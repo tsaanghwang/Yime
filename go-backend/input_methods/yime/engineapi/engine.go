@@ -62,10 +62,11 @@ type CandidateAnnotations struct {
 // the immutable index, Context is reserved for E3 contextual ranking, and
 // User comes only from the independent user model.
 type Score struct {
-	Static  int64 `json:"static"`
-	Context int64 `json:"context"`
-	User    int64 `json:"user"`
-	Total   int64 `json:"total"`
+	Static   int64 `json:"static"`
+	Context  int64 `json:"context"`
+	User     int64 `json:"user"`
+	Reranker int64 `json:"reranker,omitempty"`
+	Total    int64 `json:"total"`
 }
 
 // Segment explains one position-preserving dictionary edge used to build a

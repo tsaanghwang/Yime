@@ -109,4 +109,38 @@ $env:YIME_LEXICON_ARCHIVE_ROOT = 'D:\YimeLexiconArchive\20260821'
 
 `prepare_reproducible_handoff.py` 验证两轮隔离重建并生成 evidence；`promote_handoff_target.py` 默认只做 dry-run，只有显式传入 `--apply` 才会晋升 staging、重算目标锁和发布状态。两者只操作生成证据和既有正式派生产物，不提供手写拼音码或词典正文的入口。
 
+## BCC 组合输入路径验证
+
+已重建统一来源库和候选研究覆盖层后，可以只读抽取高频、没有整串合规读音的 BCC 字串，验证其组件拼音能否通过正式音元链生成三模式输入码：
+
+```powershell
+python tools/validate_bcc_composition_paths.py `
+  --output-dir .generated/bcc_recursive_validation
+```
+
+工具以 SQLite `mode=ro` 打开 `source_lexicon.sqlite3` 和 `input_model.sqlite3`，只把 JSON、TSV 和 manifest 写到指定生成目录。输出是“组件组合输入拼音/编码路径”，不是目标整串的规范读音；BCC 只提供频次，工具不会写 assessment、递归证据表、运行词典或用户候选。每个已报告目标保留全部结构和组件读音路径；超过配置上限的目标整项跳过并记录原因，不输出截断路径。
+
+持续抽样检查使用独立的日报脚本。它默认以 UTC 日期作为确定性 seed，随机抽取未编码 BCC 目标，先生成离线路径，再用 full、variable、shorthand 三个 compact index 启动无用户模型的 YimeCore 实例逐路径回放。运行时成功要求独立句子状态等于目标并能精确提交；普通候选列表可见性仅作为诊断字段，不替代提交验证。
+
+```powershell
+.\tools\yimecore\run-daily-bcc-validation.ps1 `
+  -IndexRoot C:\path\to\indexes
+```
+
+也可通过 `YIMECORE_INDEX_ROOT` 指定索引目录；未指定时脚本会尝试寻找最新安装的 YimeCore Experimental Trial 索引。默认产物位于 `.generated/bcc_daily_validation/<UTC 日期>/seed-<seed 哈希>/`，包括离线路径 JSON/TSV、离线 manifest、YimeCore 回放 JSON、`failures.tsv`、`developer_alerts.json` 和 `daily_summary.json`。离线跳过与每条运行时失败路径分别报告；`blocking` 区分“该模式没有任何可输出路径”和“另有成功路径的替代拆解失败”。
+
+回放诊断区分运行索引图缺少目标路径、目标路径被 production beam 淘汰、路径保留但最终排序落后，以及输入路径无效。各模式分别报告精确提交的 Top-1 成功率和“目标完整路径仍在 beam 前 9 条”的保守可纠正率；后者不表示候选窗已经可见或已经提交。开发者告警汇总这些诊断和各模式失败率，给出索引覆盖、beam 压力或排序调查建议；告警状态不改变默认退出码，需要 CI 风格门禁时仍须显式添加 `-FailOnMismatch`。输入数据库不会重建或写入，日报目标不会进入用户模型、静态词典或轻量重排器训练。
+
+Windows 每日任务的注册脚本默认只打印计划，不修改 Task Scheduler：
+
+```powershell
+.\tools\yimecore\register-daily-bcc-validation-task.ps1 `
+  -IndexRoot C:\path\to\indexes
+
+# 审阅计划后才执行注册或替换，默认每天本地时间 03:00 运行。
+.\tools\yimecore\register-daily-bcc-validation-task.ps1 `
+  -IndexRoot C:\path\to\indexes `
+  -Apply
+```
+
 `tools/build_two_level_runtime_trial.py` 不再接受仓内可变 `pinyin_hanzi.db` 默认值。若要研究性重建，必须显式传入 `--source-runtime-database`，并由调用方保证该输入只读且有内容锁。

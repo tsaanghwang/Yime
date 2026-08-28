@@ -56,6 +56,65 @@ func TestUserLearningPromotesSelectedCandidateWithExplainableScore(t *testing.T)
 	}
 }
 
+func TestRejectedCandidateGetsBoundedPenaltyThatDecaysAfterConfirmation(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "model.json")
+	model, err := OpenUserModel(path, "rejection-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	rejected := UserObservation{Code: "ab", Text: "误句", PreviousText: "前文", Rejected: true}
+	selected := UserObservation{Code: "ab", Text: "正句", PreviousText: "前文"}
+	for index := uint64(0); index < maximumRejections+3; index++ {
+		if err := model.observeBatchIdempotent([]UserObservation{rejected, selected}, ""); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if got := model.candidateBoost("ab", "误句"); got != -int64(maximumRejections)*userPenaltyPerRejection {
+		t.Fatalf("bounded candidate penalty=%d", got)
+	}
+	if got := model.contextBoost("前文", "ab", "误句"); got != -int64(maximumRejections)*contextPenaltyPerRejection {
+		t.Fatalf("bounded context penalty=%d", got)
+	}
+	if err := model.Save(); err != nil {
+		t.Fatal(err)
+	}
+	model, err = OpenUserModel(path, "rejection-test")
+	if err != nil || model.LoadedSchemaVersion() != UserModelSchemaVersion3 {
+		t.Fatalf("reopen rejection model: schema=%q err=%v", model.LoadedSchemaVersion(), err)
+	}
+	if got := model.candidateBoost("ab", "误句"); got != -int64(maximumRejections)*userPenaltyPerRejection {
+		t.Fatalf("persisted candidate penalty=%d", got)
+	}
+	if err := model.observeWithContext("ab", "误句", "前文"); err != nil {
+		t.Fatal(err)
+	}
+	if got := model.candidateBoost("ab", "误句"); got != userBoostPerSelection-int64(maximumRejections-1)*userPenaltyPerRejection {
+		t.Fatalf("decayed candidate penalty=%d", got)
+	}
+}
+
+func TestForgetRemovesRejectionOnlyCandidateAndContext(t *testing.T) {
+	model, err := NewUserModel("rejection-forget-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := model.observeBatchIdempotent([]UserObservation{{
+		Code: "ab", Text: "误句", PreviousText: "前文", Rejected: true,
+	}, {Code: "cd", Text: "正句"}}, ""); err != nil {
+		t.Fatal(err)
+	}
+	forgotten, err := model.ForgetWithError("ab", "误句")
+	if err != nil || !forgotten {
+		t.Fatalf("forget rejection-only candidate: forgotten=%v err=%v", forgotten, err)
+	}
+	if got := model.candidateBoost("ab", "误句"); got != 0 {
+		t.Fatalf("candidate penalty survived forget: %d", got)
+	}
+	if got := model.contextBoost("前文", "ab", "误句"); got != 0 {
+		t.Fatalf("context penalty survived forget: %d", got)
+	}
+}
+
 func TestLearnedRecordsAreStableImmutableCopies(t *testing.T) {
 	model, err := NewUserModel("records-test")
 	if err != nil {
@@ -339,7 +398,7 @@ func TestUserModelAtomicSaveReopenAndSourceBinding(t *testing.T) {
 	}
 }
 
-func TestUserModelV1ToV2MigrationKeepsRollbackAndIdempotency(t *testing.T) {
+func TestUserModelV1ToCurrentMigrationKeepsRollbackAndIdempotency(t *testing.T) {
 	directory := t.TempDir()
 	v1Path := filepath.Join(directory, "model-v1.json")
 	v2Path := filepath.Join(directory, "model-v2.json")
@@ -362,7 +421,7 @@ func TestUserModelV1ToV2MigrationKeepsRollbackAndIdempotency(t *testing.T) {
 		t.Fatal(err)
 	}
 	migrated, err := OpenUserModel(v1Path, "migration-source")
-	if err != nil || migrated.LoadedSchemaVersion() != UserModelSchemaVersion2 || migrated.Generation() != 1 {
+	if err != nil || migrated.LoadedSchemaVersion() != UserModelSchemaVersion3 || migrated.Generation() != 1 {
 		t.Fatalf("migrated open = %v schema=%q generation=%d", err, migrated.LoadedSchemaVersion(), migrated.Generation())
 	}
 	if err := migrated.SaveVersion1To(rollbackPath); err != nil {

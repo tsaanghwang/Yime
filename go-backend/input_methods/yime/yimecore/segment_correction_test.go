@@ -41,7 +41,8 @@ func TestSegmentCorrectionPreservesOtherSegmentsUntilExplicitSentenceCommit(t *t
 		t.Fatalf("first-segment replacement missing: %#v", focused.State)
 	}
 	replaced, err := engine.Select(replacement.ID)
-	if err != nil || replaced.Commit != "" || replaced.State.ActiveSegment != nil {
+	if err != nil || replaced.Commit != "" || replaced.State.ActiveSegment == nil ||
+		replaced.State.ActiveSegment.Text != "丙" {
 		t.Fatalf("segment selection committed early: result=%#v err=%v", replaced, err)
 	}
 	corrected := replaced.State.Sentence
@@ -123,10 +124,14 @@ func TestSegmentSelectionLearnsOnlyAfterExplicitSentenceCommit(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if err := engine.SetLinearRerankerEnabled(true); err != nil {
+		t.Fatal(err)
+	}
 	state := applyBundleCode(t, engine, "abcd")
 	if state.Sentence == nil || state.Sentence.Text != "之识" {
 		t.Fatalf("initial static sentence = %#v", state.Sentence)
 	}
+	originalSegments := append([]engineapi.Segment(nil), state.Sentence.Segments...)
 	first := state.Sentence.Segments[0]
 	focused, err := engine.Apply(engineapi.Event{
 		Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
@@ -145,6 +150,9 @@ func TestSegmentSelectionLearnsOnlyAfterExplicitSentenceCommit(t *testing.T) {
 	}
 	if model.Generation() != 0 {
 		t.Fatalf("segment replacement learned before commit: generation=%d", model.Generation())
+	}
+	if len(model.rerankerWeights) != 0 {
+		t.Fatalf("segment replacement trained reranker before commit: %#v", model.rerankerWeights)
 	}
 
 	engine.Reset()
@@ -181,6 +189,12 @@ func TestSegmentSelectionLearnsOnlyAfterExplicitSentenceCommit(t *testing.T) {
 	}
 	if boost := model.contextBoost("知", "cd", "识"); boost != contextBoostPerSelection {
 		t.Fatalf("adjacent segment pairing was not learned: boost=%d", boost)
+	}
+	if boost := model.candidateBoost("abcd", "之识"); boost != -userPenaltyPerRejection {
+		t.Fatalf("replaced sentence rejection was not learned: boost=%d", boost)
+	}
+	if correctedScore, originalScore := model.sentenceRerankerScore(replaced.State.Sentence.Segments), model.sentenceRerankerScore(originalSegments); correctedScore <= originalScore {
+		t.Fatalf("explicit correction did not train pairwise reranker: corrected=%d original=%d", correctedScore, originalScore)
 	}
 
 	learned := applyBundleCode(t, engine, "abcd").Sentence
@@ -442,11 +456,23 @@ func TestSegmentCorrectionLongSessionKeepsFirstMiddleAndFinalSegments(t *testing
 					cycle+1, segmentIndex, wanted[segmentIndex], focused.State.Candidates)
 			}
 			replaced, selectErr := engine.Select(replacement.ID)
-			if selectErr != nil || replaced.Commit != "" || replaced.State.ActiveSegment != nil ||
+			if selectErr != nil || replaced.Commit != "" ||
 				replaced.State.RawInput != "abcdef" || replaced.State.Sentence == nil ||
 				len(replaced.State.Sentence.Segments) != len(choices) {
 				t.Fatalf("cycle %d segment %d replacement failed: result=%#v err=%v",
 					cycle+1, segmentIndex, replaced, selectErr)
+			}
+			if segmentIndex+1 < len(choices) {
+				next := replaced.State.Sentence.Segments[segmentIndex+1]
+				if replaced.State.ActiveSegment == nil ||
+					replaced.State.ActiveSegment.Start != next.Start ||
+					replaced.State.ActiveSegment.End != next.End {
+					t.Fatalf("cycle %d segment %d did not advance: %#v",
+						cycle+1, segmentIndex, replaced.State)
+				}
+			} else if replaced.State.ActiveSegment != nil || len(replaced.State.Candidates) != 0 {
+				t.Fatalf("cycle %d final segment did not become commit-ready: %#v",
+					cycle+1, replaced.State)
 			}
 			for index, text := range wanted {
 				if replaced.State.Sentence.Segments[index].Text != text {
@@ -463,6 +489,109 @@ func TestSegmentCorrectionLongSessionKeepsFirstMiddleAndFinalSegments(t *testing
 	if err != nil || committed.Commit != wantedCommit || committed.State.RawInput != "" ||
 		committed.State.Sentence != nil || committed.State.ActiveSegment != nil {
 		t.Fatalf("long-session sentence commit failed: result=%#v err=%v", committed, err)
+	}
+}
+
+func TestRecursiveResegmentationLongSessionKeepsFirstMiddleAndFinalState(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "正是这", Code: "abc", Weight: 10_000},
+		{Text: "正是", Code: "ab", Weight: 900},
+		{Text: "正视", Code: "ab", Weight: 800},
+		{Text: "这", Code: "c", Weight: 700},
+		{Text: "个", Code: "d", Weight: 700},
+		{Text: "这个", Code: "cd", Weight: 8_000},
+		{Text: "问题", Code: "ef", Weight: 700},
+		{Text: "问提", Code: "ef", Weight: 600},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	model.observe("abcdef", "正是这个问题")
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for cycle := 1; cycle <= 25; cycle++ {
+		engine.Reset()
+		state := applyBundleCode(t, engine, "abcdef")
+		if state.Sentence == nil ||
+			!reflect.DeepEqual(segmentTexts(state.Sentence.Segments), []string{"正是这", "个", "问题"}) {
+			t.Fatalf("cycle %d initial learned sentence = %#v", cycle, state.Sentence)
+		}
+
+		first := state.Sentence.Segments[0]
+		focused, focusErr := engine.Apply(engineapi.Event{
+			Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
+			SegmentStart: first.Start, SegmentEnd: first.End,
+		})
+		if focusErr != nil || focused.Commit != "" || focused.State.ActiveSegment == nil ||
+			focused.State.ActiveSegment.Text != "正是" ||
+			!reflect.DeepEqual(segmentTexts(focused.State.Sentence.Segments), []string{"正是", "这", "个", "问题"}) {
+			t.Fatalf("cycle %d first segment did not expand authoritatively: result=%#v err=%v",
+				cycle, focused, focusErr)
+		}
+		firstReplacement := findBundleCandidate(focused.State.Candidates, "正视")
+		if firstReplacement == nil {
+			t.Fatalf("cycle %d first replacement missing: %#v", cycle, focused.State.Candidates)
+		}
+		recomposed, selectErr := engine.Select(firstReplacement.ID)
+		if selectErr != nil || recomposed.Commit != "" || recomposed.State.ActiveSegment == nil ||
+			recomposed.State.ActiveSegment.Text != "这个" ||
+			!reflect.DeepEqual(segmentTexts(recomposed.State.Sentence.Segments), []string{"正视", "这个", "问题"}) ||
+			findBundleCandidate(recomposed.State.Candidates, "正是这个问题") != nil {
+			t.Fatalf("cycle %d first replacement did not recompose and advance: result=%#v err=%v",
+				cycle, recomposed, selectErr)
+		}
+
+		middle := *recomposed.State.ActiveSegment
+		expanded, expandErr := engine.Apply(engineapi.Event{
+			Operation: engineapi.FocusSegment, CandidateID: recomposed.State.Sentence.ID,
+			SegmentStart: middle.Start, SegmentEnd: middle.End,
+		})
+		if expandErr != nil || expanded.Commit != "" || expanded.State.ActiveSegment == nil ||
+			expanded.State.ActiveSegment.Text != "这" ||
+			!reflect.DeepEqual(segmentTexts(expanded.State.Sentence.Segments), []string{"正视", "这", "个", "问题"}) {
+			t.Fatalf("cycle %d middle segment did not recursively expand: result=%#v err=%v",
+				cycle, expanded, expandErr)
+		}
+		middleCandidate := findBundleCandidate(expanded.State.Candidates, "这")
+		if middleCandidate == nil {
+			t.Fatalf("cycle %d middle candidate missing: %#v", cycle, expanded.State.Candidates)
+		}
+		advanced, selectErr := engine.Select(middleCandidate.ID)
+		if selectErr != nil || advanced.Commit != "" || advanced.State.ActiveSegment == nil ||
+			advanced.State.ActiveSegment.Text != "个" {
+			t.Fatalf("cycle %d middle selection did not advance: result=%#v err=%v",
+				cycle, advanced, selectErr)
+		}
+		individualCandidate := findBundleCandidate(advanced.State.Candidates, "个")
+		if individualCandidate == nil {
+			t.Fatalf("cycle %d individual middle candidate missing: %#v", cycle, advanced.State.Candidates)
+		}
+		advanced, selectErr = engine.Select(individualCandidate.ID)
+		if selectErr != nil || advanced.Commit != "" || advanced.State.ActiveSegment == nil ||
+			advanced.State.ActiveSegment.Text != "问题" ||
+			!reflect.DeepEqual(segmentTexts(advanced.State.Sentence.Segments), []string{"正视", "这", "个", "问题"}) {
+			t.Fatalf("cycle %d tail focus did not follow middle selection: result=%#v err=%v",
+				cycle, advanced, selectErr)
+		}
+
+		finalReplacement := findBundleCandidate(advanced.State.Candidates, "问提")
+		if finalReplacement == nil {
+			t.Fatalf("cycle %d final replacement missing: %#v", cycle, advanced.State.Candidates)
+		}
+		ready, selectErr := engine.Select(finalReplacement.ID)
+		if selectErr != nil || ready.Commit != "" || ready.State.ActiveSegment != nil ||
+			len(ready.State.Candidates) != 0 || ready.State.Sentence == nil ||
+			!reflect.DeepEqual(segmentTexts(ready.State.Sentence.Segments), []string{"正视", "这", "个", "问提"}) {
+			t.Fatalf("cycle %d final replacement did not become commit-ready: result=%#v err=%v",
+				cycle, ready, selectErr)
+		}
 	}
 }
 
@@ -675,6 +804,260 @@ func TestExplicitStandaloneWordExpansionAllowsUnlearnedCharacterCombination(t *t
 	committed, err := engine.SelectIdempotent(replaced.State.Sentence.ID, "commit-unlearned-he-li")
 	if err != nil || committed.Commit != "何理" || committed.State.RawInput != "" {
 		t.Fatalf("unlearned character combination did not commit: result=%#v err=%v", committed, err)
+	}
+}
+
+func TestLearnedLongSegmentExpansionReleasesRightSideForRecomposition(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "正是这", Code: "abc", Weight: 10_000},
+		{Text: "正是", Code: "ab", Weight: 900},
+		{Text: "正视", Code: "ab", Weight: 800},
+		{Text: "这", Code: "c", Weight: 700},
+		{Text: "个", Code: "d", Weight: 700},
+		{Text: "这个", Code: "cd", Weight: 8_000},
+		{Text: "问题", Code: "ef", Weight: 700},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	model.observe("abcdef", "正是这个问题")
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyBundleCode(t, engine, "abcdef")
+	if state.Sentence == nil ||
+		!reflect.DeepEqual(segmentTexts(state.Sentence.Segments), []string{"正是这", "个", "问题"}) {
+		t.Fatalf("learned high-weight segmentation = %#v", state.Sentence)
+	}
+
+	first := state.Sentence.Segments[0]
+	focused, err := engine.Apply(engineapi.Event{
+		Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
+		SegmentStart: first.Start, SegmentEnd: first.End,
+	})
+	if err != nil || focused.State.Sentence == nil ||
+		!reflect.DeepEqual(segmentTexts(focused.State.Sentence.Segments), []string{"正是", "这", "个", "问题"}) {
+		t.Fatalf("learned long segment focus did not expand = %#v, err=%v", focused.State.Sentence, err)
+	}
+	replacement := findBundleCandidate(focused.State.Candidates, "正视")
+	if replacement == nil {
+		t.Fatalf("正视 is absent after focus expansion: %#v", focused.State.Candidates)
+	}
+	recomposed, err := engine.Select(replacement.ID)
+	if err != nil || recomposed.State.Sentence == nil ||
+		!reflect.DeepEqual(segmentTexts(recomposed.State.Sentence.Segments), []string{"正视", "这个", "问题"}) ||
+		recomposed.State.ActiveSegment == nil || recomposed.State.ActiveSegment.Text != "这个" ||
+		findBundleCandidate(recomposed.State.Candidates, "这个") == nil ||
+		findBundleCandidate(recomposed.State.Candidates, "正是这个问题") != nil {
+		t.Fatalf("right side did not recompose across the old boundary: %#v, err=%v",
+			recomposed.State, err)
+	}
+	middleCandidate := findBundleCandidate(recomposed.State.Candidates, "这个")
+	advanced, err := engine.Select(middleCandidate.ID)
+	if err != nil || advanced.State.Sentence == nil ||
+		!reflect.DeepEqual(segmentTexts(advanced.State.Sentence.Segments), []string{"正视", "这个", "问题"}) ||
+		advanced.State.ActiveSegment == nil || advanced.State.ActiveSegment.Text != "问题" ||
+		findBundleCandidate(advanced.State.Candidates, "问题") == nil {
+		t.Fatalf("middle selection did not advance to final segment: %#v, err=%v", advanced.State, err)
+	}
+	finalCandidate := findBundleCandidate(advanced.State.Candidates, "问题")
+	ready, err := engine.Select(finalCandidate.ID)
+	if err != nil || ready.Commit != "" || ready.State.Sentence == nil ||
+		ready.State.Sentence.Text != "正视这个问题" || ready.State.ActiveSegment != nil ||
+		len(ready.State.Candidates) != 0 {
+		t.Fatalf("final segment did not leave the corrected sentence ready: %#v, err=%v", ready, err)
+	}
+	committed, err := engine.Select(ready.State.Sentence.ID)
+	if err != nil || committed.Commit != "正视这个问题" || committed.State.RawInput != "" {
+		t.Fatalf("corrected sentence commit failed: %#v, err=%v", committed, err)
+	}
+}
+
+func TestAutomaticallyAdvancedSegmentExpandsOnSingleFocus(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "正是这", Code: "abc", Weight: 10_000},
+		{Text: "正是", Code: "ab", Weight: 900},
+		{Text: "正视", Code: "ab", Weight: 800},
+		{Text: "这", Code: "c", Weight: 700},
+		{Text: "个", Code: "d", Weight: 700},
+		{Text: "这个", Code: "cd", Weight: 8_000},
+		{Text: "问题", Code: "ef", Weight: 700},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	model.observe("abcdef", "正是这个问题")
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyBundleCode(t, engine, "abcdef")
+	first := state.Sentence.Segments[0]
+	focused, err := engine.Apply(engineapi.Event{
+		Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
+		SegmentStart: first.Start, SegmentEnd: first.End,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacement := findBundleCandidate(focused.State.Candidates, "正视")
+	if replacement == nil {
+		t.Fatal("正视 is absent after focus expansion")
+	}
+	recomposed, err := engine.Select(replacement.ID)
+	if err != nil || recomposed.State.ActiveSegment == nil ||
+		recomposed.State.ActiveSegment.Text != "这个" {
+		t.Fatalf("这个 was not automatically focused: %#v, err=%v", recomposed.State, err)
+	}
+
+	middle := *recomposed.State.ActiveSegment
+	expanded, err := engine.Apply(engineapi.Event{
+		Operation: engineapi.FocusSegment, CandidateID: recomposed.State.Sentence.ID,
+		SegmentStart: middle.Start, SegmentEnd: middle.End,
+	})
+	if err != nil || expanded.State.Sentence == nil ||
+		!reflect.DeepEqual(segmentTexts(expanded.State.Sentence.Segments), []string{"正视", "这", "个", "问题"}) {
+		t.Fatalf("single focus did not recursively expand 这个: %#v, err=%v", expanded.State, err)
+	}
+}
+
+func TestFinalSegmentPromotesOnlyMatchingExactSentenceCandidate(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "正是这", Code: "abc", Weight: 10_000},
+		{Text: "正是", Code: "ab", Weight: 900},
+		{Text: "正视", Code: "ab", Weight: 800},
+		{Text: "这", Code: "c", Weight: 700},
+		{Text: "个", Code: "d", Weight: 700},
+		{Text: "这个", Code: "cd", Weight: 8_000},
+		{Text: "问题", Code: "ef", Weight: 700},
+		{Text: "正视这个问题", Code: "abcdef", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	model.observe("abcdef", "正是这个问题")
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyBundleCode(t, engine, "abcdef")
+	if state.Sentence == nil || len(state.Sentence.Segments) != 3 ||
+		state.Sentence.Text != "正是这个问题" {
+		t.Fatalf("learned starting sentence = %#v", state.Sentence)
+	}
+	first := state.Sentence.Segments[0]
+	focused, err := engine.Apply(engineapi.Event{
+		Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
+		SegmentStart: first.Start, SegmentEnd: first.End,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacement := findBundleCandidate(focused.State.Candidates, "正视")
+	if replacement == nil {
+		t.Fatal("正视 is absent after focus expansion")
+	}
+	advanced, err := engine.Select(replacement.ID)
+	if err != nil || advanced.State.ActiveSegment == nil ||
+		advanced.State.ActiveSegment.Text != "这个" {
+		t.Fatalf("selection did not advance to 这个: %#v, err=%v", advanced.State, err)
+	}
+	middle := findBundleCandidate(advanced.State.Candidates, "这个")
+	advanced, err = engine.Select(middle.ID)
+	if err != nil || advanced.State.ActiveSegment == nil ||
+		advanced.State.ActiveSegment.Text != "问题" {
+		t.Fatalf("selection did not advance to 问题: %#v, err=%v", advanced.State, err)
+	}
+	last := findBundleCandidate(advanced.State.Candidates, "问题")
+	ready, err := engine.Select(last.ID)
+	if err != nil || ready.State.ActiveSegment != nil || len(ready.State.Candidates) != 1 ||
+		!ready.State.Candidates[0].Exact || ready.State.Candidates[0].Code != "abcdef" ||
+		ready.State.Candidates[0].Text != "正视这个问题" {
+		t.Fatalf("matching exact sentence was not exclusively promoted: %#v, err=%v", ready.State, err)
+	}
+	committed, err := engine.Select(ready.State.Candidates[0].ID)
+	if err != nil || committed.Commit != "正视这个问题" || committed.State.RawInput != "" {
+		t.Fatalf("promoted exact sentence did not commit: %#v, err=%v", committed, err)
+	}
+}
+
+func TestLearnedSegmentExpansionPreservesExplicitSuffixCorrection(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "正是这", Code: "abc", Weight: 10_000},
+		{Text: "正是", Code: "ab", Weight: 900},
+		{Text: "正视", Code: "ab", Weight: 800},
+		{Text: "这", Code: "c", Weight: 700},
+		{Text: "个", Code: "d", Weight: 700},
+		{Text: "这个", Code: "cd", Weight: 8_000},
+		{Text: "问题", Code: "ef", Weight: 700},
+		{Text: "问提", Code: "ef", Weight: 600},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	model.observe("abcdef", "正是这个问题")
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyBundleCode(t, engine, "abcdef")
+	suffix := state.Sentence.Segments[2]
+	focused, err := engine.Apply(engineapi.Event{
+		Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
+		SegmentStart: suffix.Start, SegmentEnd: suffix.End,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacement := findBundleCandidate(focused.State.Candidates, "问提")
+	if replacement == nil {
+		t.Fatalf("suffix replacement missing: %#v", focused.State.Candidates)
+	}
+	corrected, err := engine.Select(replacement.ID)
+	if err != nil || corrected.State.Sentence == nil {
+		t.Fatalf("suffix correction failed: result=%#v err=%v", corrected, err)
+	}
+
+	first := corrected.State.Sentence.Segments[0]
+	focused, err = engine.Apply(engineapi.Event{
+		Operation: engineapi.FocusSegment, CandidateID: corrected.State.Sentence.ID,
+		SegmentStart: first.Start, SegmentEnd: first.End,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	expanded, err := engine.Apply(engineapi.Event{
+		Operation: engineapi.ExpandSegment, CandidateID: focused.State.Sentence.ID,
+		SegmentStart: first.Start, SegmentEnd: first.End,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacement = findBundleCandidate(expanded.State.Candidates, "正视")
+	if replacement == nil {
+		t.Fatalf("prefix replacement missing: %#v", expanded.State.Candidates)
+	}
+	recomposed, err := engine.Select(replacement.ID)
+	if err != nil || recomposed.State.Sentence == nil ||
+		!reflect.DeepEqual(segmentTexts(recomposed.State.Sentence.Segments), []string{"正视", "这个", "问提"}) {
+		t.Fatalf("explicit suffix correction was lost: %#v, err=%v", recomposed.State.Sentence, err)
 	}
 }
 

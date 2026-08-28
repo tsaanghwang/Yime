@@ -25,13 +25,16 @@ type Engine struct {
 	sentenceInput     string
 	sentenceStates    [][]sentencePath
 	userModel         *UserModel
+	linearReranker    bool
 	previousCommit    string
 	pageNumber        int
 	hasNextPage       bool
 	activeSegment     *engineapi.Segment
 	focusedSentence   *engineapi.Candidate
 	publishedSentence *engineapi.Candidate
+	rejectedCandidate *engineapi.Candidate
 	segmentChoices    map[segmentSpan]record
+	recalledChoices   map[segmentSpan]struct{}
 }
 
 type segmentSpan struct {
@@ -128,6 +131,14 @@ func (e *Engine) SetCandidateLimit(candidateLimit int) error {
 	return nil
 }
 
+func (e *Engine) SetLinearRerankerEnabled(enabled bool) error {
+	if e.rawInput != "" {
+		return errors.New("linear reranker cannot change during composition")
+	}
+	e.linearReranker = enabled
+	return nil
+}
+
 // Apply advances the session by one host-neutral event.
 func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 	switch event.Operation {
@@ -140,6 +151,7 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 			return engineapi.Result{}, engineapi.ErrInvalidEvent
 		}
 		if e.rawInput == "" {
+			e.rejectedCandidate = nil
 			if err := e.reloadUserLexiconIfChanged(); err != nil {
 				return engineapi.Result{}, err
 			}
@@ -157,6 +169,7 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 		}
 		if e.activeSegment != nil || len(e.segmentChoices) > 0 {
 			e.clearSegmentEdits()
+			e.rejectedCandidate = nil
 			e.resetSentenceComposer()
 		}
 		if len(e.rawInput) > 0 {
@@ -170,6 +183,7 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 		e.rawInput = ""
 		e.pageNumber = 0
 		e.clearSegmentEdits()
+		e.rejectedCandidate = nil
 		e.resetSentenceComposer()
 	case engineapi.PageNext:
 		if event.Code != "" || event.CandidateID != "" || event.SegmentStart != 0 || event.SegmentEnd != 0 {
@@ -242,10 +256,25 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 		if focused == nil || focused.End > len(e.rawInput) {
 			return engineapi.Result{}, engineapi.ErrInvalidEvent
 		}
+		alreadyActive := e.activeSegment != nil &&
+			e.activeSegment.Start == event.SegmentStart && e.activeSegment.End == event.SegmentEnd
 		e.sentence = sentence
 		e.seedLearnedSentenceChoices(sentence)
-		e.activeSegment = focused
-		e.focusedSentence = sentence
+		focusedSpan := segmentSpan{start: event.SegmentStart, end: event.SegmentEnd}
+		_, recalled := e.recalledChoices[focusedSpan]
+		if expanded, first, ok := e.expandImplicitSentenceSegment(
+			sentence, focusedSpan, recalled || alreadyActive); ok {
+			e.releaseSegmentChoicesForExpansion(segmentSpan{
+				start: event.SegmentStart,
+				end:   event.SegmentEnd,
+			})
+			e.sentence = expanded
+			e.activeSegment = first
+			e.focusedSentence = expanded
+		} else {
+			e.activeSegment = focused
+			e.focusedSentence = sentence
+		}
 		e.pageNumber = 0
 	case engineapi.ExpandSegment:
 		if event.Code != "" || event.CandidateID == "" || event.SegmentStart < 0 || event.SegmentEnd <= event.SegmentStart {
@@ -268,25 +297,18 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 				}
 			}
 		}
-		var expanded *engineapi.Candidate
-		var first *engineapi.Segment
-		var ok bool
-		if sentence != nil && len(sentence.Segments) == 0 {
-			expanded, first, ok = e.expandExactWholeSentence(sentence, event.SegmentStart, event.SegmentEnd)
-		} else if sentence != nil {
-			for _, segment := range sentence.Segments {
-				if segment.Start == event.SegmentStart && segment.End == event.SegmentEnd {
-					expanded, first, ok = e.resegmentConstruction(sentence, segment)
-					if !ok {
-						expanded, first, ok = e.expandSentenceSegment(sentence, segment)
-					}
-					break
-				}
-			}
-		}
+		expanded, first, ok := e.expandFocusedSentenceSegment(
+			sentence, event.SegmentStart, event.SegmentEnd)
 		if !ok || expanded == nil || first == nil {
+			if e.sentenceRangeAlreadyExpanded(sentence, event.SegmentStart, event.SegmentEnd) {
+				break
+			}
 			return engineapi.Result{}, engineapi.ErrInvalidEvent
 		}
+		e.releaseSegmentChoicesForExpansion(segmentSpan{
+			start: event.SegmentStart,
+			end:   event.SegmentEnd,
+		})
 		e.sentence = expanded
 		e.activeSegment = first
 		e.focusedSentence = expanded
@@ -296,6 +318,74 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 	}
 	e.refresh()
 	return engineapi.Result{State: e.snapshot()}, nil
+}
+
+func (e *Engine) sentenceRangeAlreadyExpanded(sentence *engineapi.Candidate, start, end int) bool {
+	if sentence == nil || e.activeSegment == nil || start >= end ||
+		e.activeSegment.Start < start || e.activeSegment.End > end {
+		return false
+	}
+	next := start
+	count := 0
+	for _, segment := range sentence.Segments {
+		if segment.End <= start || segment.Start >= end {
+			continue
+		}
+		if segment.Start != next || segment.End > end {
+			return false
+		}
+		next = segment.End
+		count++
+	}
+	return count >= 2 && next == end
+}
+
+func (e *Engine) expandImplicitSentenceSegment(
+	sentence *engineapi.Candidate, span segmentSpan, requested bool,
+) (*engineapi.Candidate, *engineapi.Segment, bool) {
+	if !requested {
+		return nil, nil, false
+	}
+	return e.expandFocusedSentenceSegment(sentence, span.start, span.end)
+}
+
+func (e *Engine) expandFocusedSentenceSegment(
+	sentence *engineapi.Candidate, start, end int,
+) (*engineapi.Candidate, *engineapi.Segment, bool) {
+	if sentence == nil {
+		return nil, nil, false
+	}
+	if len(sentence.Segments) == 0 {
+		return e.expandExactWholeSentence(sentence, start, end)
+	}
+	for _, segment := range sentence.Segments {
+		if segment.Start != start || segment.End != end {
+			continue
+		}
+		expanded, first, ok := e.resegmentConstruction(sentence, segment)
+		if !ok {
+			expanded, first, ok = e.expandSentenceSegment(sentence, segment)
+		}
+		return expanded, first, ok
+	}
+	return nil, nil, false
+}
+
+func (e *Engine) releaseSegmentChoicesForExpansion(expanded segmentSpan) {
+	for span := range e.segmentChoices {
+		_, recalled := e.recalledChoices[span]
+		overlapsExpanded := span.start < expanded.end && span.end > expanded.start
+		if overlapsExpanded || recalled && span.end > expanded.start {
+			delete(e.segmentChoices, span)
+			delete(e.recalledChoices, span)
+		}
+	}
+	if len(e.segmentChoices) == 0 {
+		e.segmentChoices = nil
+	}
+	if len(e.recalledChoices) == 0 {
+		e.recalledChoices = nil
+	}
 }
 
 func (e *Engine) seedLearnedSentenceChoices(sentence *engineapi.Candidate) {
@@ -319,6 +409,10 @@ func (e *Engine) seedLearnedSentenceChoices(sentence *engineapi.Candidate) {
 		choices[segmentSpan{start: segment.Start, end: segment.End}] = *selected
 	}
 	e.segmentChoices = choices
+	e.recalledChoices = make(map[segmentSpan]struct{}, len(choices))
+	for span := range choices {
+		e.recalledChoices[span] = struct{}{}
+	}
 }
 
 // Select commits a candidate from the current snapshot and clears the input.
@@ -347,6 +441,7 @@ func (e *Engine) selectCandidate(candidateID, mutationID string) (engineapi.Resu
 	for _, candidate := range e.candidates {
 		if candidate.ID == candidateID {
 			if e.activeSegment != nil {
+				e.rememberRejectedSentence()
 				span := segmentSpan{start: e.activeSegment.Start, end: e.activeSegment.End}
 				if e.segmentChoices == nil {
 					e.segmentChoices = make(map[segmentSpan]record)
@@ -354,18 +449,68 @@ func (e *Engine) selectCandidate(candidateID, mutationID string) (engineapi.Resu
 				e.segmentChoices[span] = record{
 					text: candidate.Text, code: candidate.Code, weight: candidate.Weight, source: candidate.SourceID,
 				}
+				delete(e.recalledChoices, span)
+				if len(e.recalledChoices) == 0 {
+					e.recalledChoices = nil
+				}
 				e.activeSegment = nil
 				e.pageNumber = 0
 				e.hasNextPage = false
 				e.resetSentenceComposer()
 				e.refresh()
-				e.focusedSentence = nil
+				e.focusNextSentenceSegment(span.end)
 				return engineapi.Result{State: e.snapshot()}, nil
 			}
 			return e.commitCandidate(candidate, mutationID)
 		}
 	}
 	return engineapi.Result{}, engineapi.ErrUnknownCandidate
+}
+
+func (e *Engine) rememberRejectedSentence() {
+	if e.focusedSentence != nil {
+		e.rememberRejectedCandidate(e.focusedSentence)
+		return
+	}
+	e.rememberRejectedCandidate(e.sentence)
+}
+
+func (e *Engine) rememberRejectedCandidate(candidate *engineapi.Candidate) {
+	if candidate == nil || e.rejectedCandidate != nil {
+		return
+	}
+	rejected := cloneCandidate(*candidate)
+	e.rejectedCandidate = &rejected
+}
+
+func (e *Engine) focusNextSentenceSegment(after int) {
+	e.activeSegment = nil
+	e.focusedSentence = nil
+	if e.sentence != nil {
+		for _, segment := range e.sentence.Segments {
+			if segment.Start < after {
+				continue
+			}
+			focused := segment
+			sentence := cloneCandidate(*e.sentence)
+			e.activeSegment = &focused
+			e.focusedSentence = &sentence
+			e.pageNumber = 0
+			e.refreshSegmentCandidates()
+			return
+		}
+		for _, candidate := range e.candidates {
+			if candidate.Exact && candidate.Code == e.rawInput && candidate.Text == e.sentence.Text {
+				e.candidates = []engineapi.Candidate{candidate}
+				e.pageNumber = 0
+				e.hasNextPage = false
+				return
+			}
+		}
+	}
+	e.candidates = nil
+	e.pageNumber = 0
+	e.hasNextPage = false
 }
 
 // ForgetCandidate removes learned preference for a candidate in the current
@@ -397,7 +542,12 @@ func (e *Engine) ForgetCandidate(candidateID string) (engineapi.Result, error) {
 }
 
 func (e *Engine) commitCandidate(candidate engineapi.Candidate, mutationID string) (engineapi.Result, error) {
-	observations := make([]UserObservation, 0, len(candidate.Segments)+1)
+	observations := make([]UserObservation, 0, len(candidate.Segments)+2)
+	if rejected := e.rejectedCandidate; rejected != nil && rejected.Code == candidate.Code && rejected.Text != candidate.Text {
+		observations = append(observations, UserObservation{
+			Code: rejected.Code, Text: rejected.Text, PreviousText: e.previousCommit, Rejected: true,
+		})
+	}
 	if len(candidate.Segments) > 1 {
 		previousText := e.previousCommit
 		for _, segment := range candidate.Segments {
@@ -410,7 +560,11 @@ func (e *Engine) commitCandidate(candidate engineapi.Candidate, mutationID strin
 	observations = append(observations, UserObservation{
 		Code: candidate.Code, Text: candidate.Text, PreviousText: e.previousCommit,
 	})
-	if err := e.userModel.observeBatchIdempotent(observations, mutationID); err != nil {
+	var rerankerDelta map[string]int64
+	if e.linearReranker && e.rejectedCandidate != nil {
+		rerankerDelta = rerankerCorrectionDelta(e.rejectedCandidate.Segments, candidate.Segments)
+	}
+	if err := e.userModel.observeBatchWithRerankerIdempotent(observations, rerankerDelta, mutationID); err != nil {
 		return engineapi.Result{}, fmt.Errorf("persist user selection: %w", err)
 	}
 	e.previousCommit = candidate.Text
@@ -419,6 +573,7 @@ func (e *Engine) commitCandidate(candidate engineapi.Candidate, mutationID strin
 	e.hasNextPage = false
 	e.candidates = nil
 	e.sentence = nil
+	e.rejectedCandidate = nil
 	e.clearSegmentEdits()
 	e.resetSentenceComposer()
 	return engineapi.Result{State: e.snapshot(), Commit: candidate.Text}, nil
@@ -428,6 +583,7 @@ func (e *Engine) commitCandidate(candidate engineapi.Candidate, mutationID strin
 func (e *Engine) Reset() engineapi.Result {
 	e.rawInput = ""
 	e.candidates = nil
+	e.rejectedCandidate = nil
 	e.sentence = nil
 	e.pageNumber = 0
 	e.hasNextPage = false
@@ -574,8 +730,12 @@ func (e *Engine) scoreCandidateWithContext(candidate *engineapi.Candidate, sente
 	candidate.Score.Context = saturatingAdd(sentenceContext,
 		e.userModel.contextBoost(e.previousCommit, candidate.Code, candidate.Text))
 	candidate.Score.User = e.userModel.candidateBoost(candidate.Code, candidate.Text)
+	if e.linearReranker {
+		candidate.Score.Reranker = e.userModel.sentenceRerankerScore(candidate.Segments)
+	}
 	candidate.Score.Total = saturatingAdd(candidate.Score.Static, candidate.Score.Context)
 	candidate.Score.Total = saturatingAdd(candidate.Score.Total, candidate.Score.User)
+	candidate.Score.Total = saturatingAdd(candidate.Score.Total, candidate.Score.Reranker)
 }
 
 // ClearContext drops only the session's previous-commit context. It does not
@@ -655,6 +815,7 @@ func (e *Engine) clearSegmentEdits() {
 	e.activeSegment = nil
 	e.focusedSentence = nil
 	e.segmentChoices = nil
+	e.recalledChoices = nil
 }
 
 func cloneCandidates(source []engineapi.Candidate) []engineapi.Candidate {

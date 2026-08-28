@@ -272,7 +272,7 @@ func (e *Engine) composeSentences(input string, limit int) []engineapi.Candidate
 			complete = append(complete, path)
 		}
 	}
-	sort.Slice(complete, func(i, j int) bool { return betterSentencePath(complete[i], complete[j]) })
+	sort.Slice(complete, func(i, j int) bool { return e.betterRetainedSentencePath(complete[i], complete[j]) })
 	if len(complete) > limit {
 		complete = complete[:limit]
 	}
@@ -288,6 +288,20 @@ func (e *Engine) composeSentences(input string, limit int) []engineapi.Candidate
 		result = append(result, candidate)
 	}
 	return result
+}
+
+func (e *Engine) betterRetainedSentencePath(left, right sentencePath) bool {
+	if priority := compareWordFirstSegments(left.segments, right.segments); priority != 0 {
+		return priority > 0
+	}
+	if e.linearReranker {
+		leftScore := saturatingAdd(left.score, e.userModel.sentenceRerankerScore(left.segments))
+		rightScore := saturatingAdd(right.score, e.userModel.sentenceRerankerScore(right.segments))
+		if leftScore != rightScore {
+			return leftScore > rightScore
+		}
+	}
+	return betterSentencePath(left, right)
 }
 
 // composeIncompleteTail carries already completed search-tree paths into the

@@ -17,16 +17,21 @@ import (
 )
 
 const (
-	UserModelSchemaVersion1  = "yime-user-model-v1"
-	UserModelSchemaVersion2  = "yime-user-model-v2"
-	userModelSchemaVersion1  = UserModelSchemaVersion1
-	userModelSchemaVersion2  = UserModelSchemaVersion2
-	userModelSchemaVersion   = userModelSchemaVersion2
-	userBoostPerSelection    = int64(1_000_000_000_000)
-	contextBoostPerSelection = int64(500_000_000_000)
-	maximumContextSelections = uint64(8)
-	maximumUserModelItems    = 1_000_000
-	maximumSelectionCount    = uint64(1_000_000_000)
+	UserModelSchemaVersion1    = "yime-user-model-v1"
+	UserModelSchemaVersion2    = "yime-user-model-v2"
+	UserModelSchemaVersion3    = "yime-user-model-v3"
+	userModelSchemaVersion1    = UserModelSchemaVersion1
+	userModelSchemaVersion2    = UserModelSchemaVersion2
+	userModelSchemaVersion3    = UserModelSchemaVersion3
+	userModelSchemaVersion     = userModelSchemaVersion3
+	userBoostPerSelection      = int64(1_000_000_000_000)
+	contextBoostPerSelection   = int64(500_000_000_000)
+	userPenaltyPerRejection    = int64(500_000_000_000)
+	contextPenaltyPerRejection = int64(250_000_000_000)
+	maximumContextSelections   = uint64(8)
+	maximumRejections          = uint64(8)
+	maximumUserModelItems      = 1_000_000
+	maximumSelectionCount      = uint64(1_000_000_000)
 )
 
 var ErrCorruptUserModel = errors.New("corrupt Yime user model")
@@ -35,31 +40,36 @@ var ErrIdempotencyConflict = errors.New("user mutation idempotency conflict")
 // UserModel is an independent, session-shareable selection-frequency model.
 // It never mutates the static index and performs no I/O on the key path.
 type UserModel struct {
-	mu              sync.RWMutex
-	path            string
-	sourceID        string
-	generation      uint64
-	selections      map[candidateIdentity]uint64
-	contexts        map[contextIdentity]uint64
-	appliedRequests map[string]UserMutation
-	mutationWriter  func(UserMutation) error
-	loadedSchema    string
+	mu                sync.RWMutex
+	path              string
+	sourceID          string
+	generation        uint64
+	selections        map[candidateIdentity]uint64
+	contexts          map[contextIdentity]uint64
+	rejections        map[candidateIdentity]uint64
+	contextRejections map[contextIdentity]uint64
+	rerankerWeights   map[string]int64
+	appliedRequests   map[string]UserMutation
+	mutationWriter    func(UserMutation) error
+	loadedSchema      string
 }
 
 type UserMutation struct {
-	Generation   uint64            `json:"generation"`
-	Kind         string            `json:"kind"`
-	Code         string            `json:"code"`
-	Text         string            `json:"text"`
-	PreviousText string            `json:"previous_text,omitempty"`
-	RequestID    string            `json:"request_id,omitempty"`
-	Observations []UserObservation `json:"observations,omitempty"`
+	Generation    uint64            `json:"generation"`
+	Kind          string            `json:"kind"`
+	Code          string            `json:"code"`
+	Text          string            `json:"text"`
+	PreviousText  string            `json:"previous_text,omitempty"`
+	RequestID     string            `json:"request_id,omitempty"`
+	Observations  []UserObservation `json:"observations,omitempty"`
+	RerankerDelta map[string]int64  `json:"reranker_delta,omitempty"`
 }
 
 type UserObservation struct {
 	Code         string `json:"code"`
 	Text         string `json:"text"`
 	PreviousText string `json:"previous_text,omitempty"`
+	Rejected     bool   `json:"rejected,omitempty"`
 }
 
 type LearnedRecord struct {
@@ -84,12 +94,15 @@ type contextIdentity struct {
 }
 
 type userModelPayload struct {
-	SchemaVersion   string                  `json:"schema_version"`
-	SourceID        string                  `json:"source_id"`
-	Generation      uint64                  `json:"generation"`
-	Selections      map[string]uint64       `json:"selections"`
-	Contexts        map[string]uint64       `json:"contexts,omitempty"`
-	AppliedRequests map[string]UserMutation `json:"applied_requests,omitempty"`
+	SchemaVersion     string                  `json:"schema_version"`
+	SourceID          string                  `json:"source_id"`
+	Generation        uint64                  `json:"generation"`
+	Selections        map[string]uint64       `json:"selections"`
+	Contexts          map[string]uint64       `json:"contexts,omitempty"`
+	Rejections        map[string]uint64       `json:"rejections,omitempty"`
+	ContextRejections map[string]uint64       `json:"context_rejections,omitempty"`
+	RerankerWeights   map[string]int64        `json:"reranker_weights,omitempty"`
+	AppliedRequests   map[string]UserMutation `json:"applied_requests,omitempty"`
 }
 
 type userModelFile struct {
@@ -102,7 +115,12 @@ func NewUserModel(sourceID string) (*UserModel, error) {
 	if strings.TrimSpace(sourceID) == "" {
 		return nil, fmt.Errorf("user model source ID is required")
 	}
-	return &UserModel{sourceID: sourceID, selections: make(map[candidateIdentity]uint64), contexts: make(map[contextIdentity]uint64), appliedRequests: make(map[string]UserMutation), loadedSchema: userModelSchemaVersion}, nil
+	return &UserModel{
+		sourceID: sourceID, selections: make(map[candidateIdentity]uint64), contexts: make(map[contextIdentity]uint64),
+		rejections: make(map[candidateIdentity]uint64), contextRejections: make(map[contextIdentity]uint64),
+		rerankerWeights: make(map[string]int64),
+		appliedRequests: make(map[string]UserMutation), loadedSchema: userModelSchemaVersion,
+	}, nil
 }
 
 // OpenUserModel opens or initializes a model at path. Invalid data is
@@ -132,6 +150,15 @@ func OpenUserModel(path, sourceID string) (*UserModel, error) {
 	if err != nil {
 		return nil, err
 	}
+	model.rejections, err = decodeSelectionCounts(payload.Rejections)
+	if err != nil {
+		return nil, err
+	}
+	model.contextRejections, err = decodeContextCounts(payload.ContextRejections)
+	if err != nil {
+		return nil, err
+	}
+	model.rerankerWeights = cloneInt64Map(payload.RerankerWeights)
 	model.appliedRequests = cloneMutations(payload.AppliedRequests)
 	model.loadedSchema = payload.SchemaVersion
 	return model, nil
@@ -142,12 +169,11 @@ func (m *UserModel) candidateBoost(code, text string) int64 {
 		return 0
 	}
 	m.mu.RLock()
-	count := m.selections[candidateIdentity{code: code, text: text}]
+	identity := candidateIdentity{code: code, text: text}
+	count := m.selections[identity]
+	rejections := m.rejections[identity]
 	m.mu.RUnlock()
-	if count > uint64(math.MaxInt64/userBoostPerSelection) {
-		return math.MaxInt64
-	}
-	return int64(count) * userBoostPerSelection
+	return signedLearningBoost(count, rejections, userBoostPerSelection, userPenaltyPerRejection)
 }
 
 func (m *UserModel) learnedCandidates(code string, limit int) []candidateIdentity {
@@ -191,12 +217,24 @@ func (m *UserModel) contextBoost(previousText, code, text string) int64 {
 		return 0
 	}
 	m.mu.RLock()
-	count := m.contexts[contextIdentity{previous: previousText, candidateIdentity: candidateIdentity{code: code, text: text}}]
+	identity := contextIdentity{previous: previousText, candidateIdentity: candidateIdentity{code: code, text: text}}
+	count := m.contexts[identity]
+	rejections := m.contextRejections[identity]
 	m.mu.RUnlock()
 	if count > maximumContextSelections {
 		count = maximumContextSelections
 	}
-	return int64(count) * contextBoostPerSelection
+	return signedLearningBoost(count, rejections, contextBoostPerSelection, contextPenaltyPerRejection)
+}
+
+func signedLearningBoost(selections, rejections uint64, selectionWeight, rejectionWeight int64) int64 {
+	if selections > uint64(math.MaxInt64/selectionWeight) {
+		selections = uint64(math.MaxInt64 / selectionWeight)
+	}
+	if rejections > maximumRejections {
+		rejections = maximumRejections
+	}
+	return saturatingAdd(int64(selections)*selectionWeight, -int64(rejections)*rejectionWeight)
 }
 
 func (m *UserModel) observeWithContext(code, text, previousText string) error {
@@ -210,6 +248,10 @@ func (m *UserModel) observeIdempotent(code, text, previousText, requestID string
 }
 
 func (m *UserModel) observeBatchIdempotent(observations []UserObservation, requestID string) error {
+	return m.observeBatchWithRerankerIdempotent(observations, nil, requestID)
+}
+
+func (m *UserModel) observeBatchWithRerankerIdempotent(observations []UserObservation, rerankerDelta map[string]int64, requestID string) error {
 	if m == nil || len(observations) == 0 {
 		return nil
 	}
@@ -223,7 +265,7 @@ func (m *UserModel) observeBatchIdempotent(observations []UserObservation, reque
 	defer m.mu.Unlock()
 	if existing, found := m.appliedRequests[requestID]; requestID != "" && found {
 		requested := UserMutation{Kind: UserMutationSelect, Code: primary.Code, Text: primary.Text,
-			PreviousText: primary.PreviousText, Observations: observations}
+			PreviousText: primary.PreviousText, Observations: observations, RerankerDelta: rerankerDelta}
 		if equivalentSelectionMutation(existing, requested) {
 			return nil
 		}
@@ -233,7 +275,8 @@ func (m *UserModel) observeBatchIdempotent(observations []UserObservation, reque
 		return errors.New("user mutation request ledger is full")
 	}
 	mutation := UserMutation{Generation: m.generation + 1, Kind: UserMutationSelect,
-		Code: primary.Code, Text: primary.Text, PreviousText: primary.PreviousText, RequestID: requestID}
+		Code: primary.Code, Text: primary.Text, PreviousText: primary.PreviousText, RequestID: requestID,
+		RerankerDelta: cloneInt64Map(rerankerDelta)}
 	if len(observations) > 1 {
 		mutation.Observations = append([]UserObservation(nil), observations...)
 	}
@@ -264,7 +307,19 @@ func (m *UserModel) ForgetWithError(code, text string) (bool, error) {
 	key := candidateIdentity{code: code, text: text}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	_, found := m.selections[key]
+	_, selected := m.selections[key]
+	_, rejected := m.rejections[key]
+	found := selected || rejected
+	for contextKey := range m.contexts {
+		if contextKey.candidateIdentity == key {
+			found = true
+		}
+	}
+	for contextKey := range m.contextRejections {
+		if contextKey.candidateIdentity == key {
+			found = true
+		}
+	}
 	if found {
 		mutation := UserMutation{Generation: m.generation + 1, Kind: UserMutationForget, Code: code, Text: text}
 		if m.mutationWriter != nil {
@@ -273,9 +328,15 @@ func (m *UserModel) ForgetWithError(code, text string) (bool, error) {
 			}
 		}
 		delete(m.selections, key)
+		delete(m.rejections, key)
 		for contextKey := range m.contexts {
 			if contextKey.candidateIdentity == key {
 				delete(m.contexts, contextKey)
+			}
+		}
+		for contextKey := range m.contextRejections {
+			if contextKey.candidateIdentity == key {
+				delete(m.contextRejections, contextKey)
 			}
 		}
 		m.generation++
@@ -369,9 +430,15 @@ func (m *UserModel) ApplyRecoveredMutation(mutation UserMutation) error {
 			return fmt.Errorf("%w: forget mutation contains observations", ErrCorruptUserModel)
 		}
 		delete(m.selections, key)
+		delete(m.rejections, key)
 		for contextKey := range m.contexts {
 			if contextKey.candidateIdentity == key {
 				delete(m.contexts, contextKey)
+			}
+		}
+		for contextKey := range m.contextRejections {
+			if contextKey.candidateIdentity == key {
+				delete(m.contextRejections, contextKey)
 			}
 		}
 	default:
@@ -394,21 +461,44 @@ func (m *UserModel) applySelectionMutationLocked(mutation UserMutation) {
 	}
 	for _, observation := range observations {
 		key := candidateIdentity{code: observation.Code, text: observation.Text}
+		contextKey := contextIdentity{previous: observation.PreviousText, candidateIdentity: key}
+		if observation.Rejected {
+			if m.rejections[key] < maximumRejections {
+				m.rejections[key]++
+			}
+			if observation.PreviousText != "" && m.contextRejections[contextKey] < maximumRejections {
+				m.contextRejections[contextKey]++
+			}
+			continue
+		}
 		if m.selections[key] < maximumSelectionCount {
 			m.selections[key]++
 		}
+		decrementCount(m.rejections, key)
 		if observation.PreviousText != "" {
-			contextKey := contextIdentity{previous: observation.PreviousText, candidateIdentity: key}
-			if m.contexts[contextKey] < maximumSelectionCount {
+			if m.contexts[contextKey] < maximumContextSelections {
 				m.contexts[contextKey]++
 			}
+			decrementCount(m.contextRejections, contextKey)
 		}
 	}
+	m.applyRerankerDeltaLocked(mutation.RerankerDelta)
+}
+
+func decrementCount[Key comparable](counts map[Key]uint64, key Key) {
+	if counts[key] <= 1 {
+		delete(counts, key)
+		return
+	}
+	counts[key]--
 }
 
 func validMutationObservations(mutation UserMutation) bool {
+	if !validRerankerDelta(mutation.RerankerDelta) {
+		return false
+	}
 	if mutation.Kind != UserMutationSelect {
-		return len(mutation.Observations) == 0
+		return len(mutation.Observations) == 0 && len(mutation.RerankerDelta) == 0
 	}
 	for _, observation := range mutation.Observations {
 		if observation.Code == "" || observation.Text == "" {
@@ -419,13 +509,13 @@ func validMutationObservations(mutation UserMutation) bool {
 		return true
 	}
 	primary := mutation.Observations[len(mutation.Observations)-1]
-	return primary.Code == mutation.Code && primary.Text == mutation.Text &&
+	return !primary.Rejected && primary.Code == mutation.Code && primary.Text == mutation.Text &&
 		primary.PreviousText == mutation.PreviousText
 }
 
 func equivalentSelectionMutation(left, right UserMutation) bool {
 	return left.Kind == UserMutationSelect && right.Kind == UserMutationSelect &&
-		left.Code == right.Code && left.Text == right.Text
+		left.Code == right.Code && left.Text == right.Text && equalInt64Maps(left.RerankerDelta, right.RerankerDelta)
 }
 
 // Save writes the current model through a same-directory temporary file and
@@ -446,7 +536,7 @@ func (m *UserModel) SaveTo(path string) error {
 	return m.writeSnapshot(filepath.Clean(path))
 }
 
-// SaveVersion1To writes the E5-F-compatible schema for rollback from v2.
+// SaveVersion1To writes the E5-F-compatible schema for rollback from later schemas.
 func (m *UserModel) SaveVersion1To(path string) error {
 	if m == nil || strings.TrimSpace(path) == "" {
 		return fmt.Errorf("user model rollback path is required")
@@ -472,6 +562,15 @@ func (m *UserModel) Restore(backupPath string) error {
 	if err != nil {
 		return err
 	}
+	rejections, err := decodeSelectionCounts(payload.Rejections)
+	if err != nil {
+		return err
+	}
+	contextRejections, err := decodeContextCounts(payload.ContextRejections)
+	if err != nil {
+		return err
+	}
+	rerankerWeights := cloneInt64Map(payload.RerankerWeights)
 	payload.SchemaVersion = userModelSchemaVersion
 	if err := writeUserModelFile(m.path, payload); err != nil {
 		return err
@@ -480,6 +579,9 @@ func (m *UserModel) Restore(backupPath string) error {
 	m.generation = payload.Generation
 	m.selections = selections
 	m.contexts = contexts
+	m.rejections = rejections
+	m.contextRejections = contextRejections
+	m.rerankerWeights = rerankerWeights
 	m.appliedRequests = cloneMutations(payload.AppliedRequests)
 	m.loadedSchema = userModelSchemaVersion
 	m.mu.Unlock()
@@ -491,7 +593,7 @@ func (m *UserModel) writeSnapshot(path string) error {
 }
 
 func (m *UserModel) writeSnapshotVersion(path, schemaVersion string) error {
-	if schemaVersion != userModelSchemaVersion1 && schemaVersion != userModelSchemaVersion2 {
+	if schemaVersion != userModelSchemaVersion1 && schemaVersion != userModelSchemaVersion2 && schemaVersion != userModelSchemaVersion3 {
 		return fmt.Errorf("unsupported user model schema %q", schemaVersion)
 	}
 	m.mu.RLock()
@@ -502,6 +604,16 @@ func (m *UserModel) writeSnapshotVersion(path, schemaVersion string) error {
 		Selections:      encodeSelectionCounts(m.selections),
 		Contexts:        encodeContextCounts(m.contexts),
 		AppliedRequests: cloneMutations(m.appliedRequests),
+	}
+	if schemaVersion == userModelSchemaVersion3 {
+		payload.Rejections = encodeSelectionCounts(m.rejections)
+		payload.ContextRejections = encodeContextCounts(m.contextRejections)
+		payload.RerankerWeights = cloneInt64Map(m.rerankerWeights)
+	} else {
+		for requestID, mutation := range payload.AppliedRequests {
+			mutation.RerankerDelta = nil
+			payload.AppliedRequests[requestID] = mutation
+		}
 	}
 	m.mu.RUnlock()
 	if err := writeUserModelFile(path, payload); err != nil {
@@ -574,8 +686,20 @@ func readUserModelFile(path, sourceID string) (userModelPayload, error) {
 	if err := ensureJSONEOF(decoder); err != nil {
 		return userModelPayload{}, fmt.Errorf("%w: %v", ErrCorruptUserModel, err)
 	}
-	if (file.SchemaVersion != userModelSchemaVersion1 && file.SchemaVersion != userModelSchemaVersion2) || file.SourceID != sourceID || len(file.Selections)+len(file.Contexts)+len(file.AppliedRequests) > maximumUserModelItems {
+	if (file.SchemaVersion != userModelSchemaVersion1 && file.SchemaVersion != userModelSchemaVersion2 && file.SchemaVersion != userModelSchemaVersion3) || file.SourceID != sourceID ||
+		len(file.Selections)+len(file.Contexts)+len(file.Rejections)+len(file.ContextRejections)+len(file.RerankerWeights)+len(file.AppliedRequests) > maximumUserModelItems {
 		return userModelPayload{}, fmt.Errorf("%w: schema, source identity or item count mismatch", ErrCorruptUserModel)
+	}
+	if file.SchemaVersion != userModelSchemaVersion3 &&
+		(len(file.Rejections) != 0 || len(file.ContextRejections) != 0 || len(file.RerankerWeights) != 0) {
+		return userModelPayload{}, fmt.Errorf("%w: legacy schema contains v3 fields", ErrCorruptUserModel)
+	}
+	if file.SchemaVersion != userModelSchemaVersion3 {
+		for _, mutation := range file.AppliedRequests {
+			if len(mutation.RerankerDelta) != 0 {
+				return userModelPayload{}, fmt.Errorf("%w: legacy schema contains reranker mutation", ErrCorruptUserModel)
+			}
+		}
 	}
 	for key, count := range file.Selections {
 		if key == "" || count > maximumSelectionCount {
@@ -585,6 +709,21 @@ func readUserModelFile(path, sourceID string) (userModelPayload, error) {
 	for key, count := range file.Contexts {
 		if key == "" || count > maximumSelectionCount {
 			return userModelPayload{}, fmt.Errorf("%w: invalid context record", ErrCorruptUserModel)
+		}
+	}
+	for key, count := range file.Rejections {
+		if key == "" || count > maximumRejections {
+			return userModelPayload{}, fmt.Errorf("%w: invalid rejection record", ErrCorruptUserModel)
+		}
+	}
+	for key, count := range file.ContextRejections {
+		if key == "" || count > maximumRejections {
+			return userModelPayload{}, fmt.Errorf("%w: invalid context rejection record", ErrCorruptUserModel)
+		}
+	}
+	for feature, weight := range file.RerankerWeights {
+		if feature == "" || weight == 0 || weight > maximumRerankerWeight || weight < -maximumRerankerWeight {
+			return userModelPayload{}, fmt.Errorf("%w: invalid reranker weight", ErrCorruptUserModel)
 		}
 	}
 	for requestID, mutation := range file.AppliedRequests {
@@ -610,9 +749,33 @@ func cloneMutations(source map[string]UserMutation) map[string]UserMutation {
 	result := make(map[string]UserMutation, len(source))
 	for key, mutation := range source {
 		mutation.Observations = append([]UserObservation(nil), mutation.Observations...)
+		mutation.RerankerDelta = cloneInt64Map(mutation.RerankerDelta)
 		result[key] = mutation
 	}
 	return result
+}
+
+func cloneInt64Map(source map[string]int64) map[string]int64 {
+	if len(source) == 0 {
+		return nil
+	}
+	result := make(map[string]int64, len(source))
+	for key, value := range source {
+		result[key] = value
+	}
+	return result
+}
+
+func equalInt64Maps(left, right map[string]int64) bool {
+	if len(left) != len(right) {
+		return false
+	}
+	for key, value := range left {
+		if right[key] != value {
+			return false
+		}
+	}
+	return true
 }
 
 func ensureJSONEOF(decoder *json.Decoder) error {

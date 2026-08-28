@@ -5,10 +5,12 @@ import sqlite3
 from pathlib import Path
 
 from yime.input_model import (
+    BccCompositionValidationConfig,
     RecursiveCompositionConfig,
     UnencodedCandidateReview,
     build_input_model,
     build_recursive_composition_model,
+    validate_bcc_composition_paths,
 )
 from yime.input_model.recursive_composition import _materialize_segments
 
@@ -260,3 +262,91 @@ def test_recursive_model_uses_gated_components_without_manual_labels(
         assert connection.execute(
             "SELECT COUNT(*) FROM recursive_composition_evidence"
         ).fetchone()[0] == 0
+
+
+def test_bcc_composition_validation_is_read_only_and_keeps_all_reading_paths(
+    tmp_path: Path,
+) -> None:
+    source = _source_database(tmp_path / "source.sqlite3")
+    input_model = tmp_path / "input_model.sqlite3"
+    build_input_model(
+        source_database=source,
+        output_database=input_model,
+        policy_path=POLICY,
+    )
+    source_before = source.read_bytes()
+    input_model_before = input_model.read_bytes()
+
+    result = validate_bcc_composition_paths(
+        source_database=source,
+        input_model_database=input_model,
+        output_dir=tmp_path / "validation",
+        config=BccCompositionValidationConfig(
+            sample_limit=5,
+            scan_limit=5,
+            minimum_target_length=2,
+            maximum_target_length=8,
+        ),
+    )
+
+    payload = json.loads(result.paths_json.read_text(encoding="utf-8"))
+    bank = next(item for item in payload["samples"] if item["text"] == "银行")
+    numeric_paths = {
+        item["numeric_component_input"]
+        for item in bank["composition_input_paths"]
+    }
+    assert numeric_paths == {"yin2 xing2", "yin2 hang2"}
+    assert all(
+        item["codes"][mode]["layout_key_code"]
+        for item in bank["composition_input_paths"]
+        for mode in ("full", "variable", "shorthand")
+    )
+    assert payload["semantics"]["target_whole_string_reading_is_not_created"] is True
+    assert payload["semantics"]["reported_targets_include_all_paths"] is True
+    assert source.read_bytes() == source_before
+    assert input_model.read_bytes() == input_model_before
+
+    manifest = json.loads(result.manifest.read_text(encoding="utf-8"))
+    assert manifest["input_databases_unchanged"] is True
+    with sqlite3.connect(input_model) as connection:
+        assert connection.execute(
+            "SELECT COUNT(*) FROM recursive_composition_evidence"
+        ).fetchone()[0] == 0
+
+
+def test_bcc_composition_validation_seeded_sample_is_reproducible(
+    tmp_path: Path,
+) -> None:
+    source = _source_database(tmp_path / "source.sqlite3")
+    input_model = tmp_path / "input_model.sqlite3"
+    build_input_model(
+        source_database=source,
+        output_database=input_model,
+        policy_path=POLICY,
+    )
+    source_before = source.read_bytes()
+    input_model_before = input_model.read_bytes()
+    config = BccCompositionValidationConfig(
+        sample_limit=2,
+        scan_limit=4,
+        sample_seed="2026-08-28",
+        minimum_target_length=2,
+        maximum_target_length=8,
+    )
+
+    selections = []
+    for name in ("first", "second"):
+        result = validate_bcc_composition_paths(
+            source_database=source,
+            input_model_database=input_model,
+            output_dir=tmp_path / name,
+            config=config,
+        )
+        payload = json.loads(result.paths_json.read_text(encoding="utf-8"))
+        selections.append([item["text"] for item in payload["samples"]])
+        assert payload["semantics"]["seeded_sampling_is_content_deterministic"] is True
+
+    assert selections[0] == selections[1]
+    assert len(selections[0]) == len(set(selections[0])) == 2
+    assert source.read_bytes() == source_before
+    assert input_model.read_bytes() == input_model_before

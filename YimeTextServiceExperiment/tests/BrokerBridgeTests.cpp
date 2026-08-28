@@ -168,12 +168,30 @@ bool runCorrectedSentenceCommit(yime::experiment::SurfaceSession* surface,
         if (error) *error = "local sentence correction committed early or produced the wrong sentence";
         return false;
     }
+    if (outcome.update.sentence.segments.size() < 2 || outcome.update.candidates.empty() ||
+        outcome.update.activeSegmentStart != outcome.update.sentence.segments[1].start ||
+        outcome.update.activeSegmentEnd != outcome.update.sentence.segments[1].end ||
+        outcome.update.candidates.front().text != outcome.update.sentence.segments[1].text) {
+        if (error) *error = "local sentence correction did not synchronize the next segment and candidate";
+        return false;
+    }
     const size_t candidateCountAfterCorrection = outcome.update.candidates.size();
     const std::string firstCandidateAfterCorrection = candidateCountAfterCorrection == 0
                                                           ? std::string{}
                                                           : outcome.update.candidates.front().text;
-    outcome = commitKey == 0 ? surface->CommitSentence()
-                             : surface->HandleVirtualKey(commitKey, false);
+    if (commitKey == 0) {
+        outcome = surface->CommitSentence();
+    } else {
+        const size_t maximumSelections = outcome.update.sentence.segments.size() + 1;
+        for (size_t selection = 0; selection < maximumSelections && outcome.update.commit.empty(); ++selection) {
+            outcome = surface->HandleVirtualKey(commitKey, false);
+            if (!outcome.handled || (!outcome.update.commit.empty() &&
+                outcome.update.commit != u8"这是一套子系统") ||
+                (outcome.update.commit.empty() && outcome.update.sentence.text != u8"这是一套子系统")) {
+                break;
+            }
+        }
+    }
     if (!outcome.handled || outcome.update.commit != u8"这是一套子系统" ||
         !outcome.update.rawInput.empty() || outcome.update.hasSentence) {
         if (error) {
