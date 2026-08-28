@@ -11,16 +11,17 @@ const DecodeTraceSchemaVersion = "yimecore-decode-trace-v1"
 // V1 reports paths retained by the production beam. A later schema can add
 // every rejected path and its pruning reason without changing the decoder.
 type DecodeTrace struct {
-	SchemaVersion     string                  `json:"schema_version"`
-	IndexSourceID     string                  `json:"index_source_id"`
-	Input             string                  `json:"input"`
-	PreviousCommit    string                  `json:"previous_commit,omitempty"`
-	Limits            DecodeLimits            `json:"limits"`
-	Edges             []DecodeEdge            `json:"edges"`
-	RetainedPaths     []DecodePath            `json:"retained_paths"`
-	PreeditSentence   *engineapi.Candidate    `json:"preedit_sentence,omitempty"`
-	VisibleCandidates []RankedDecodeCandidate `json:"visible_candidates"`
-	Limitations       []string                `json:"limitations,omitempty"`
+	SchemaVersion        string                  `json:"schema_version"`
+	IndexSourceID        string                  `json:"index_source_id"`
+	Input                string                  `json:"input"`
+	PreviousCommit       string                  `json:"previous_commit,omitempty"`
+	Limits               DecodeLimits            `json:"limits"`
+	Edges                []DecodeEdge            `json:"edges"`
+	SegmentLimitPressure []SegmentLimitPressure  `json:"segment_limit_pressure,omitempty"`
+	RetainedPaths        []DecodePath            `json:"retained_paths"`
+	PreeditSentence      *engineapi.Candidate    `json:"preedit_sentence,omitempty"`
+	VisibleCandidates    []RankedDecodeCandidate `json:"visible_candidates"`
+	Limitations          []string                `json:"limitations,omitempty"`
 }
 
 type DecodeLimits struct {
@@ -38,6 +39,16 @@ type DecodeEdge struct {
 	Code     string `json:"code"`
 	Weight   int64  `json:"weight"`
 	SourceID string `json:"source_id"`
+}
+
+// SegmentLimitPressure identifies an input span where the runtime candidate
+// cap excludes at least one exact dictionary record.
+type SegmentLimitPressure struct {
+	Start                 int    `json:"start"`
+	End                   int    `json:"end"`
+	Code                  string `json:"code"`
+	Limit                 int    `json:"limit"`
+	CandidateCountAtLeast int    `json:"candidate_count_at_least"`
 }
 
 // DecodePath is one complete or incomplete multi-edge path retained by the
@@ -77,12 +88,12 @@ func (e *Engine) Explain() DecodeTrace {
 	if e.rawInput == "" {
 		return trace
 	}
-	trace.Edges = e.explainEdges(e.rawInput)
+	trace.Edges, trace.SegmentLimitPressure = e.explainEdges(e.rawInput)
 	paths := e.composeSentences(e.rawInput, sentenceBeamWidth)
 	trace.RetainedPaths = make([]DecodePath, 0, len(paths))
 	for i := range paths {
 		candidate := cloneCandidate(paths[i])
-		e.scoreCandidate(&candidate)
+		e.scoreComposedCandidateWithContext(&candidate, candidate.Score.Context)
 		trace.RetainedPaths = append(trace.RetainedPaths, DecodePath{
 			Rank: i + 1, Text: candidate.Text, Code: candidate.Code, Complete: candidate.Exact,
 			Segments: append([]engineapi.Segment(nil), candidate.Segments...), Score: candidate.Score,
@@ -103,19 +114,29 @@ func (e *Engine) Explain() DecodeTrace {
 	return trace
 }
 
-func (e *Engine) explainEdges(input string) []DecodeEdge {
+func (e *Engine) explainEdges(input string) ([]DecodeEdge, []SegmentLimitPressure) {
 	maxCodeBytes := e.index.maximumCodeBytes()
 	if maxCodeBytes <= 0 {
-		return nil
+		return nil, nil
 	}
 	edges := make([]DecodeEdge, 0, len(input)*2)
+	pressure := make([]SegmentLimitPressure, 0)
 	for end := 1; end <= len(input); end++ {
 		first := end - maxCodeBytes
 		if first < 0 {
 			first = 0
 		}
 		for start := first; start < end; start++ {
-			for _, match := range e.index.exact(input[start:end], segmentCandidateLimit) {
+			code := input[start:end]
+			matches := e.index.exact(code, segmentCandidateLimit+1)
+			if len(matches) > segmentCandidateLimit {
+				pressure = append(pressure, SegmentLimitPressure{
+					Start: start, End: end, Code: code, Limit: segmentCandidateLimit,
+					CandidateCountAtLeast: len(matches),
+				})
+				matches = matches[:segmentCandidateLimit]
+			}
+			for _, match := range matches {
 				sourceID := match.source
 				if sourceID == "" {
 					sourceID = e.index.identity()
@@ -127,5 +148,5 @@ func (e *Engine) explainEdges(input string) []DecodeEdge {
 			}
 		}
 	}
-	return edges
+	return edges, pressure
 }

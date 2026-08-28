@@ -1,6 +1,6 @@
 {
   "schema_version": "yimecore-dynamic-sentence-cases-v1",
-  "description": "Real full-index regression for word-first dynamic extension and resegmentation.",
+  "description": "Real three-mode regression for word-first dynamic extension, resegmentation, and reviewed sentence ambiguities.",
   "cases": [
     {
       "id": "full-bendi-bendiren",
@@ -33,6 +33,69 @@
         { "input": "bxz]jl0x", "expected_top": "", "expected_exact": false, "required_path": ["本地", "人"] },
         { "input": "bxz]jl0xc", "expected_top": "", "expected_exact": false, "required_path": ["本地", "人"] },
         { "input": "bxz]jl0xca", "expected_top": "本地人", "expected_exact": true, "required_edge": "本地人", "required_path": ["本地", "人"] }
+      ]
+    },
+    {
+      "id": "full-reviewed-engineering-progress-check",
+      "mode": "full",
+      "steps": [
+        { "input": "gur;8we;3jcz]uio=ucztlkj3lsz8sdf", "expected_top": "工程进度问题检查", "expected_exact": true, "minimum_margin": 30491, "required_path": ["工程", "进度", "问题", "检查"] }
+      ]
+    },
+    {
+      "id": "variable-reviewed-engineering-progress-check",
+      "mode": "variable",
+      "steps": [
+        { "input": "gur;8we;3jcz]uio=ucztlkj3lsz8sdf", "expected_top": "工程进度问题检查", "expected_exact": true, "minimum_margin": 30491, "required_path": ["工程", "进度", "问题", "检查"] }
+      ]
+    },
+    {
+      "id": "shorthand-reviewed-engineering-progress-check",
+      "mode": "shorthand",
+      "steps": [
+        { "input": "gur;8we;3jcz]uo=ucztlj3lsz8sf", "expected_top": "工程进度问题检查", "expected_exact": true, "minimum_margin": 30491, "required_path": ["工程", "进度", "问题", "检查"] }
+      ]
+    },
+    {
+      "id": "full-reviewed-what-is-the-problem",
+      "mode": "full",
+      "steps": [
+        { "input": "7rewgeee9JKL9xca-eee=ucztlkj", "expected_top": "这个是什么问题", "expected_exact": true, "expected_runner_up": "这个事什么问题", "minimum_margin": 16, "required_path": ["这个是", "什么", "问题"] }
+      ]
+    },
+    {
+      "id": "variable-reviewed-what-is-the-problem",
+      "mode": "variable",
+      "steps": [
+        { "input": "7rewge9JKL9xca-e=ucztlkj", "expected_top": "这个是什么问题", "expected_exact": true, "expected_runner_up": "这个事什么问题", "minimum_margin": 16, "required_path": ["这个是", "什么", "问题"] }
+      ]
+    },
+    {
+      "id": "shorthand-reviewed-what-is-the-problem",
+      "mode": "shorthand",
+      "steps": [
+        { "input": "7rwge9JL9xca-e=ucztlj", "expected_top": "这个是什么问题", "expected_exact": true, "expected_runner_up": "这个事什么问题", "minimum_margin": 16, "required_path": ["这个是", "什么", "问题"] }
+      ]
+    },
+    {
+      "id": "full-reviewed-batched-commit-and-push",
+      "mode": "full",
+      "steps": [
+        { "input": "[vvapjjj5JKLtlkj3jfu`...tuvj4ue/", "expected_top": "分批次提交与推送", "expected_exact": true, "minimum_margin": 1830, "required_path": ["分批次", "提交", "与", "推送"] }
+      ]
+    },
+    {
+      "id": "variable-reviewed-batched-commit-and-push",
+      "mode": "variable",
+      "steps": [
+        { "input": "[vapj5JKLtlkj3jfu`.tuvj4ue/", "expected_top": "分批次提交与推送", "expected_exact": true, "minimum_margin": 1830, "required_path": ["分批次", "提交", "与", "推送"] }
+      ]
+    },
+    {
+      "id": "shorthand-reviewed-batched-commit-and-push",
+      "mode": "shorthand",
+      "steps": [
+        { "input": "[vapj5JLtlj3jfu`.tuvj4ue/", "expected_top": "分批次提交与推送", "expected_exact": true, "minimum_margin": 1830, "required_path": ["分批次", "提交", "与", "推送"] }
       ]
     }
   ]

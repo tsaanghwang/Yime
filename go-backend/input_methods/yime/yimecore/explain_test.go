@@ -1,6 +1,7 @@
 package yimecore
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -77,6 +78,72 @@ func TestExplainTracksDynamicResegmentationAfterInputExtension(t *testing.T) {
 	}
 	if !hasTracePath(trace.RetainedPaths, []string{"本地", "人"}) {
 		t.Fatalf("extended input did not retain the resegmented word path: %#v", trace.RetainedPaths)
+	}
+}
+
+func TestExplainSeparatesGeneratedSentenceScoreSources(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "甲", Code: "a", Weight: 100},
+		{Text: "乙", Code: "b", Weight: 200},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := model.observeBatchIdempotent([]UserObservation{
+		{Code: "a", Text: "甲"},
+		{Code: "b", Text: "乙", PreviousText: "甲"},
+	}, "explain-score-sources"); err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := applyCode(t, engine, "ab")
+	trace := engine.Explain()
+	if result.State.Sentence == nil || trace.PreeditSentence == nil || len(trace.RetainedPaths) == 0 {
+		t.Fatalf("generated sentence explanation is missing: state=%#v trace=%#v", result.State, trace)
+	}
+	wantStatic := int64(100 + 200 - 2*generatedSegmentPenalty)
+	for label, score := range map[string]engineapi.Score{
+		"state":    result.State.Sentence.Score,
+		"preedit":  trace.PreeditSentence.Score,
+		"retained": trace.RetainedPaths[0].Score,
+	} {
+		if score.Static != wantStatic || score.User != 2*userBoostPerSelection ||
+			score.Context != contextBoostPerSelection ||
+			score.Total != wantStatic+2*userBoostPerSelection+contextBoostPerSelection {
+			t.Fatalf("%s score attribution = %#v", label, score)
+		}
+	}
+}
+
+func TestExplainReportsSegmentCandidateLimitPressure(t *testing.T) {
+	entries := make([]Entry, segmentCandidateLimit+1)
+	for i := range entries {
+		entries[i] = Entry{Text: fmt.Sprintf("候选%d", i), Code: "a", Weight: int64(1000 - i)}
+	}
+	index, err := NewIndex(entries)
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	applyCode(t, engine, "a")
+	trace := engine.Explain()
+	if len(trace.Edges) != segmentCandidateLimit || len(trace.SegmentLimitPressure) != 1 {
+		t.Fatalf("limit pressure trace=%#v", trace)
+	}
+	pressure := trace.SegmentLimitPressure[0]
+	if pressure.Start != 0 || pressure.End != 1 || pressure.Code != "a" ||
+		pressure.Limit != segmentCandidateLimit || pressure.CandidateCountAtLeast != segmentCandidateLimit+1 {
+		t.Fatalf("limit pressure=%#v", pressure)
 	}
 }
 

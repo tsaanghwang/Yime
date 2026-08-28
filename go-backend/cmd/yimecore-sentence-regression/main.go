@@ -35,23 +35,29 @@ type regressionCase struct {
 }
 
 type step struct {
-	Input         string   `json:"input"`
-	ExpectedTop   string   `json:"expected_top"`
-	ExpectedExact bool     `json:"expected_exact"`
-	RequiredEdge  string   `json:"required_edge,omitempty"`
-	RequiredPath  []string `json:"required_path,omitempty"`
+	Input            string   `json:"input"`
+	ExpectedTop      string   `json:"expected_top"`
+	ExpectedExact    bool     `json:"expected_exact"`
+	ExpectedRunnerUp string   `json:"expected_runner_up,omitempty"`
+	MinimumMargin    int64    `json:"minimum_margin,omitempty"`
+	RequiredEdge     string   `json:"required_edge,omitempty"`
+	RequiredPath     []string `json:"required_path,omitempty"`
 }
 
 type stepResult struct {
-	Input        string   `json:"input"`
-	ExpectedTop  string   `json:"expected_top"`
-	ActualTop    string   `json:"actual_top"`
-	ActualExact  bool     `json:"actual_exact"`
-	RequiredEdge string   `json:"required_edge,omitempty"`
-	RequiredPath []string `json:"required_path,omitempty"`
-	EdgeFound    bool     `json:"edge_found"`
-	PathFound    bool     `json:"path_found"`
-	Passed       bool     `json:"passed"`
+	Input            string   `json:"input"`
+	ExpectedTop      string   `json:"expected_top"`
+	ActualTop        string   `json:"actual_top"`
+	ActualExact      bool     `json:"actual_exact"`
+	ExpectedRunnerUp string   `json:"expected_runner_up,omitempty"`
+	ActualRunnerUp   string   `json:"actual_runner_up,omitempty"`
+	MinimumMargin    int64    `json:"minimum_margin,omitempty"`
+	ActualMargin     int64    `json:"actual_margin,omitempty"`
+	RequiredEdge     string   `json:"required_edge,omitempty"`
+	RequiredPath     []string `json:"required_path,omitempty"`
+	EdgeFound        bool     `json:"edge_found"`
+	PathFound        bool     `json:"path_found"`
+	Passed           bool     `json:"passed"`
 }
 
 type caseResult struct {
@@ -153,13 +159,15 @@ func runCase(indexRoot string, item regressionCase) (caseResult, error) {
 		current = input
 		trace := engine.Explain()
 		actual := stepResult{
-			Input: input, ExpectedTop: expected.ExpectedTop, RequiredEdge: expected.RequiredEdge,
+			Input: input, ExpectedTop: expected.ExpectedTop,
+			ExpectedRunnerUp: expected.ExpectedRunnerUp, MinimumMargin: expected.MinimumMargin,
+			RequiredEdge: expected.RequiredEdge,
 			RequiredPath: append([]string(nil), expected.RequiredPath...),
 			EdgeFound:    expected.RequiredEdge == "", PathFound: len(expected.RequiredPath) == 0,
 		}
-		if len(trace.VisibleCandidates) > 0 {
-			actual.ActualTop = trace.VisibleCandidates[0].Candidate.Text
-			actual.ActualExact = trace.VisibleCandidates[0].Candidate.Exact
+		if trace.PreeditSentence != nil {
+			actual.ActualTop = trace.PreeditSentence.Text
+			actual.ActualExact = trace.PreeditSentence.Exact
 		}
 		for _, edge := range trace.Edges {
 			if edge.Text == expected.RequiredEdge && edge.Start == 0 && edge.End == len(input) {
@@ -176,9 +184,16 @@ func runCase(indexRoot string, item regressionCase) (caseResult, error) {
 				break
 			}
 		}
+		if len(trace.RetainedPaths) >= 2 {
+			actual.ActualRunnerUp = trace.RetainedPaths[1].Text
+			actual.ActualMargin = trace.RetainedPaths[0].Score.Total - trace.RetainedPaths[1].Score.Total
+		}
 		topPassed := expected.ExpectedTop == "" || actual.ActualTop == expected.ExpectedTop
+		runnerUpPassed := expected.ExpectedRunnerUp == "" || actual.ActualRunnerUp == expected.ExpectedRunnerUp
+		marginPassed := expected.MinimumMargin == 0 ||
+			(len(trace.RetainedPaths) >= 2 && actual.ActualMargin >= expected.MinimumMargin)
 		actual.Passed = topPassed && actual.ActualExact == expected.ExpectedExact &&
-			actual.EdgeFound && actual.PathFound
+			runnerUpPassed && marginPassed && actual.EdgeFound && actual.PathFound
 		result.Steps = append(result.Steps, actual)
 		result.Passed = result.Passed && actual.Passed
 	}

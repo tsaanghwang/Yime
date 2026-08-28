@@ -188,6 +188,30 @@ foreach ($row in $failureRows) {
     $diagnosisCounts[$diagnosis] = [int]$diagnosisCounts[$diagnosis] + 1
 }
 
+$segmentLimitPressure = [ordered]@{
+    attempts = 0
+    spans = 0
+    modes = [ordered]@{
+        full = 0
+        variable = 0
+        shorthand = 0
+    }
+}
+foreach ($target in $replay.targets) {
+    foreach ($mode in $target.modes) {
+        foreach ($attempt in $mode.attempts) {
+            $pressures = @($attempt.segment_limit_pressure)
+            if ($pressures.Count -eq 0) { continue }
+            $segmentLimitPressure.attempts++
+            $segmentLimitPressure.spans += $pressures.Count
+            $modeName = [string]$mode.mode
+            if ($segmentLimitPressure.modes.Contains($modeName)) {
+                $segmentLimitPressure.modes[$modeName] += $pressures.Count
+            }
+        }
+    }
+}
+
 $modeResults = [ordered]@{}
 foreach ($modeName in @('full', 'variable', 'shorthand')) {
     $passed = 0
@@ -239,6 +263,11 @@ foreach ($diagnosis in $diagnosisCounts.Keys) {
     if ($null -eq $guidance) { $guidance = $diagnosisGuidance.runtime_failure_unclassified }
     Add-DeveloperAlert $guidance[0] $diagnosis ([int]$diagnosisCounts[$diagnosis]) $guidance[1] $guidance[2]
 }
+if ($segmentLimitPressure.spans -gt 0) {
+    Add-DeveloperAlert 'warning' 'runtime_segment_candidate_limit_pressure' ([int]$segmentLimitPressure.spans) `
+        ("The runtime omitted one or more exact records on {0} input spans across {1} replay attempts because the per-segment candidate limit is 64." -f $segmentLimitPressure.spans, $segmentLimitPressure.attempts) `
+        'Inspect the reported attempt spans and target-path reachability before changing the limit; do not infer that every mismatch was caused by truncation.'
+}
 foreach ($modeName in $modeResults.Keys) {
     $modeResult = $modeResults[$modeName]
     if ($modeResult.failed -eq 0) { continue }
@@ -261,6 +290,7 @@ $alertReport = [ordered]@{
     status = $alertStatus
     evaluation_only = $true
     diagnosis_counts = $diagnosisCounts
+    segment_candidate_limit_pressure = $segmentLimitPressure
     modes = $modeResults
     alerts = $developerAlerts
 }
@@ -288,6 +318,7 @@ $summary = [ordered]@{
         failed_targets = $failedTargets
         all_targets_passed = [bool]$replay.passed
         diagnosis_counts = $diagnosisCounts
+        segment_candidate_limit_pressure = $segmentLimitPressure
         modes = $modeResults
     }
     developer_alert_status = $alertStatus

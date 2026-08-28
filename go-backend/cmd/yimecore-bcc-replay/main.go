@@ -40,20 +40,21 @@ type modeCode struct {
 }
 
 type attemptResult struct {
-	NumericComponentInput  string   `json:"numeric_component_input"`
-	Input                  string   `json:"input"`
-	ActualSentence         string   `json:"actual_sentence,omitempty"`
-	ActualSegments         []string `json:"actual_segments,omitempty"`
-	TargetPathInIndexGraph bool     `json:"target_path_in_index_graph"`
-	TargetPathRetained     bool     `json:"target_path_retained_by_beam"`
-	TargetPathRetainedRank int      `json:"target_path_retained_rank,omitempty"`
-	TargetPathWithinTopN   bool     `json:"target_path_within_top_n_retained"`
-	Diagnosis              string   `json:"diagnosis"`
-	TargetVisible          bool     `json:"runtime_target_visible"`
-	ListedCandidateVisible bool     `json:"runtime_listed_candidate_visible"`
-	CommitMatches          bool     `json:"runtime_commit_matches"`
-	Failure                string   `json:"failure,omitempty"`
-	Error                  string   `json:"error,omitempty"`
+	NumericComponentInput  string                          `json:"numeric_component_input"`
+	Input                  string                          `json:"input"`
+	SegmentLimitPressure   []yimecore.SegmentLimitPressure `json:"segment_limit_pressure,omitempty"`
+	ActualSentence         string                          `json:"actual_sentence,omitempty"`
+	ActualSegments         []string                        `json:"actual_segments,omitempty"`
+	TargetPathInIndexGraph bool                            `json:"target_path_in_index_graph"`
+	TargetPathRetained     bool                            `json:"target_path_retained_by_beam"`
+	TargetPathRetainedRank int                             `json:"target_path_retained_rank,omitempty"`
+	TargetPathWithinTopN   bool                            `json:"target_path_within_top_n_retained"`
+	Diagnosis              string                          `json:"diagnosis"`
+	TargetVisible          bool                            `json:"runtime_target_visible"`
+	ListedCandidateVisible bool                            `json:"runtime_listed_candidate_visible"`
+	CommitMatches          bool                            `json:"runtime_commit_matches"`
+	Failure                string                          `json:"failure,omitempty"`
+	Error                  string                          `json:"error,omitempty"`
 }
 
 type modeResult struct {
@@ -198,6 +199,9 @@ func replayMode(index *yimecore.FileIndex, mode string, sample pathSample) (mode
 		}
 		if attempt.Failure == "" {
 			trace := engine.Explain()
+			attempt.SegmentLimitPressure = append(
+				[]yimecore.SegmentLimitPressure(nil), trace.SegmentLimitPressure...,
+			)
 			attempt.TargetPathInIndexGraph = targetPathExists(trace, sample.Text)
 			for _, retained := range trace.RetainedPaths {
 				if retained.Complete && retained.Text == sample.Text {
