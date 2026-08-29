@@ -396,7 +396,7 @@ UINT CandidatePopup::PresentPopup(HMENU menu, POINT point, HWND owner, void*) no
 }
 
 void CandidatePopup::ForgetAt(LPARAM lParam) noexcept {
-    if (!forgetHandler_) return;
+    if (!forgetEnabled_ || !forgetHandler_) return;
     const int index = CandidateAt(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
     if (index < 0) return;
     selectedIndex_ = static_cast<size_t>(index);

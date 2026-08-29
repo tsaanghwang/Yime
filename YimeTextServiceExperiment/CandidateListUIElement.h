@@ -15,6 +15,9 @@ public:
                 size_t selectedIndex = 0, const std::string& annotationMode = "key_sequence",
                 const yime::experiment::BrokerCandidate* sentence = nullptr);
     void UpdateEmpty(ITfDocumentMgr* document, std::wstring message);
+    void UpdatePalette(ITfDocumentMgr* document,
+                       const std::vector<yime::experiment::BrokerCandidate>& candidates,
+                       size_t selectedIndex, std::wstring status, std::wstring description);
     const std::vector<std::wstring>& DisplayCandidates() const noexcept { return candidates_; }
     const std::vector<std::wstring>& PopupCandidateRows() const noexcept { return popupCandidateRows_; }
     const std::wstring& SentenceDisplay() const noexcept { return sentenceDisplay_; }
@@ -44,6 +47,7 @@ private:
     std::vector<std::wstring> popupCandidateRows_;
     std::wstring sentenceDisplay_;
 	std::wstring statusDisplay_;
+    std::wstring description_ = L"Yime 自研栈试验版候选";
     UINT selection_ = 0;
     bool selectable_ = false;
     BOOL shown_ = FALSE;

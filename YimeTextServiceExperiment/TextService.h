@@ -6,6 +6,7 @@
 
 #include "CandidatePopup.h"
 #include "ExperimentSettings.h"
+#include "PunctuationPalette.h"
 #include "SurfaceSession.h"
 
 class CandidateListUIElement;
@@ -45,6 +46,11 @@ private:
     HRESULT SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) noexcept;
     void UpdateCandidateUI(ITfContext* context, const yime::experiment::BrokerUpdate& update,
                            const RECT* compositionRect) noexcept;
+    void UpdatePunctuationUI(ITfContext* context) noexcept;
+    bool OpenPunctuationPalette(ITfContext* context) noexcept;
+    void CancelPunctuationPalette(bool restoreCompositionUI = true) noexcept;
+    bool CommitPunctuation(ITfContext* context, const std::string& punctuation,
+                           bool asynchronous = false) noexcept;
     void EndCandidateUI() noexcept;
     void AddLanguageBar() noexcept;
     void RemoveLanguageBar() noexcept;
@@ -75,6 +81,8 @@ private:
     bool keyEventFocused_ = true;
     bool compositionDocumentFocused_ = true;
     yime::experiment::SurfaceSession surface_;
+    yime::experiment::PunctuationPalette punctuationPalette_;
+    ITfContext* punctuationContext_ = nullptr;
     ITfComposition* composition_ = nullptr;
     ITfContext* compositionContext_ = nullptr;
     ITfDocumentMgr* compositionDocument_ = nullptr;

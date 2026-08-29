@@ -49,6 +49,9 @@ KeyDecision ClassifyVirtualKey(WPARAM virtualKey, bool shiftDown,
     if (!shiftDown && (virtualKey == VK_RETURN || virtualKey == VK_SPACE)) {
         return {KeyRoute::SelectCurrentCandidate, 0};
     }
+    if (shiftDown && virtualKey == '0') {
+        return {KeyRoute::OpenPunctuationPalette, 0};
+    }
     if (shiftDown && virtualKey >= '1' && virtualKey <= '9') {
         return {KeyRoute::SelectCandidate, static_cast<unsigned>(virtualKey - '0')};
     }

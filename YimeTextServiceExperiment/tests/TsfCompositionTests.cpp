@@ -536,6 +536,107 @@ int wmain(int argc, wchar_t** argv) {
         }
         std::cout << "mouse_candidate_selection_verified=true\n";
 
+        if (!yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::PunctuationChinese,
+                yime::experiment::ResolveExperimentSettingsPath(), &seededSettings)) {
+            throw std::runtime_error("could not seed Chinese punctuation palette state");
+        }
+        auto openPunctuationPalette = [&]() {
+            BYTE unshiftedState[256]{};
+            GetKeyboardState(unshiftedState);
+            BYTE shiftedState[256]{};
+            CopyMemory(shiftedState, unshiftedState, sizeof(unshiftedState));
+            shiftedState[VK_SHIFT] = 0x80;
+            shiftedState[VK_LSHIFT] = 0x80;
+            SetKeyboardState(shiftedState);
+            BOOL leaderTestEaten = FALSE;
+                require(keys->OnTestKeyDown(context, '0', 0, &leaderTestEaten),
+                    "punctuation leader test key");
+            BOOL leaderEaten = FALSE;
+                require(keys->OnKeyDown(context, '0', 0, &leaderEaten),
+                    "punctuation leader key");
+            SetKeyboardState(unshiftedState);
+            if (!leaderTestEaten || !leaderEaten) {
+                throw std::runtime_error("Shift+0 did not open the punctuation palette");
+            }
+        };
+
+        const std::wstring beforePaletteMouse = readContext(context, clientId);
+        openPunctuationPalette();
+        candidateElement = findCandidateElement(threadManager);
+        candidateCount = 0;
+        BSTR paletteDescription = nullptr;
+        BSTR paletteFirst = nullptr;
+        if (!candidateElement || FAILED(candidateElement->GetCount(&candidateCount)) ||
+            candidateCount != 9 || FAILED(candidateElement->GetDescription(&paletteDescription)) ||
+            !paletteDescription || std::wstring_view(paletteDescription).find(L"标点（中文）") ==
+                                       std::wstring_view::npos ||
+            FAILED(candidateElement->GetString(0, &paletteFirst)) || !paletteFirst ||
+            std::wstring_view(paletteFirst) != L"⇧1  ，") {
+            if (paletteFirst) SysFreeString(paletteFirst);
+            if (paletteDescription) SysFreeString(paletteDescription);
+            if (candidateElement) candidateElement->Release();
+            throw std::runtime_error("Chinese punctuation palette UI contract mismatch");
+        }
+        SysFreeString(paletteFirst);
+        SysFreeString(paletteDescription);
+        candidateElement->Release();
+        candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+        if (!candidatePopup || !IsWindowVisible(candidatePopup)) {
+            throw std::runtime_error("punctuation palette owned popup is not visible");
+        }
+        const int punctuationRowHeight = static_cast<int>(reinterpret_cast<UINT_PTR>(
+            GetPropW(candidatePopup, L"YimeTextServiceExperimentCandidateRowHeight")));
+        if (punctuationRowHeight <= 0) {
+            throw std::runtime_error("punctuation palette row geometry is unavailable");
+        }
+        const int firstPunctuationY = 8 + punctuationRowHeight + punctuationRowHeight / 2;
+        SendMessageW(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(20, firstPunctuationY));
+        pumpPendingMessages();
+        if (readContext(context, clientId) != beforePaletteMouse + L"，" ||
+            hasComposition(context) || IsWindowVisible(candidatePopup)) {
+            throw std::runtime_error("mouse-selected punctuation did not commit once and close");
+        }
+
+        const std::wstring beforeAtomicPunctuation = readContext(context, clientId);
+        for (const char character : code) {
+            const WPARAM key = character >= 'a'
+                ? static_cast<WPARAM>(character - 'a' + 'A')
+                : static_cast<WPARAM>(character);
+            eaten = FALSE;
+            require(keys->OnKeyDown(context, key, 0, &eaten),
+                    "punctuation composition setup key");
+            if (!eaten || !hasComposition(context)) {
+                throw std::runtime_error("punctuation composition setup failed");
+            }
+        }
+        openPunctuationPalette();
+        eaten = FALSE;
+        require(keys->OnKeyDown(context, VK_OEM_COMMA, 0, &eaten),
+                "composition punctuation direct key");
+        if (!eaten || readContext(context, clientId) != beforeAtomicPunctuation + L"秋，" ||
+            hasComposition(context)) {
+            throw std::runtime_error("candidate text and punctuation were not one TSF commit");
+        }
+
+        const std::wstring beforeReclassification = readContext(context, clientId);
+        openPunctuationPalette();
+        eaten = FALSE;
+        require(keys->OnKeyDown(context, '2', 0, &eaten),
+                "punctuation undefined-key reclassification");
+        if (!eaten || readContext(context, clientId) != beforeReclassification + L"2" ||
+            !hasComposition(context)) {
+            throw std::runtime_error("punctuation layer did not reclassify a base composition key");
+        }
+        eaten = FALSE;
+        require(keys->OnKeyDown(context, VK_ESCAPE, 0, &eaten),
+                "punctuation reclassification cleanup");
+        if (!eaten || hasComposition(context) ||
+            readContext(context, clientId) != beforeReclassification) {
+            throw std::runtime_error("punctuation reclassification cleanup failed");
+        }
+        std::cout << "punctuation_palette_and_atomic_commit_verified=true\n";
+
         if (!longSessionCode.empty()) {
             const std::wstring beforeLongSession = readContext(context, clientId);
             for (const char character : longSessionCode) {

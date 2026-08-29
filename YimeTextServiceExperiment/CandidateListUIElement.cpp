@@ -38,6 +38,7 @@ void CandidateListUIElement::Update(ITfDocumentMgr* document,
     popupCandidateRows_.clear();
     sentenceDisplay_.clear();
 	statusDisplay_.clear();
+    description_ = L"Yime 自研栈试验版候选";
     const auto& labels = yime::experiment::CandidateLabels();
     const bool hasSentence = sentence && !sentence->id.empty();
     const size_t available = candidates.size();
@@ -75,8 +76,18 @@ void CandidateListUIElement::UpdateEmpty(ITfDocumentMgr* document, std::wstring 
     popupCandidateRows_.clear();
     sentenceDisplay_.clear();
 	statusDisplay_ = std::move(message);
+    description_ = L"Yime 自研栈试验版候选";
     selection_ = 0;
     selectable_ = false;
+}
+
+void CandidateListUIElement::UpdatePalette(
+    ITfDocumentMgr* document,
+    const std::vector<yime::experiment::BrokerCandidate>& candidates,
+    size_t selectedIndex, std::wstring status, std::wstring description) {
+    Update(document, candidates, selectedIndex, "hidden", nullptr);
+    statusDisplay_ = std::move(status);
+    description_ = std::move(description);
 }
 
 STDMETHODIMP CandidateListUIElement::QueryInterface(REFIID iid, void** object) {
@@ -91,7 +102,7 @@ STDMETHODIMP CandidateListUIElement::QueryInterface(REFIID iid, void** object) {
 
 STDMETHODIMP_(ULONG) CandidateListUIElement::AddRef() { return ++references_; }
 STDMETHODIMP_(ULONG) CandidateListUIElement::Release() { const ULONG left = --references_; if (!left) delete this; return left; }
-STDMETHODIMP CandidateListUIElement::GetDescription(BSTR* description) { if (!description) return E_POINTER; *description = SysAllocString(L"Yime 自研栈试验版候选"); return *description ? S_OK : E_OUTOFMEMORY; }
+STDMETHODIMP CandidateListUIElement::GetDescription(BSTR* description) { if (!description) return E_POINTER; *description = SysAllocString(description_.c_str()); return *description ? S_OK : E_OUTOFMEMORY; }
 STDMETHODIMP CandidateListUIElement::GetGUID(GUID* guid) { if (!guid) return E_POINTER; *guid = GUID_YimeTextServiceExperimentCandidateList; return S_OK; }
 STDMETHODIMP CandidateListUIElement::Show(BOOL show) { shown_ = show; return S_OK; }
 STDMETHODIMP CandidateListUIElement::IsShown(BOOL* show) { if (!show) return E_POINTER; *show = shown_; return S_OK; }

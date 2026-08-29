@@ -9,6 +9,7 @@ namespace yime::experiment {
 
 enum class KeyRoute {
     PassThrough,
+    OpenPunctuationPalette,
     AppendComposition,
     BackspaceComposition,
 	ClearComposition,

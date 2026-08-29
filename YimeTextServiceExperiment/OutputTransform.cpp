@@ -139,6 +139,28 @@ bool TryDirectOutputKey(WPARAM virtualKey, bool shiftDown,
     return !commit->empty();
 }
 
+bool TranslatePunctuationKey(WPARAM virtualKey, bool shiftDown,
+                             bool asciiPunctuation, bool fullShape,
+                             std::string* commit) noexcept {
+    if (!commit) return false;
+    commit->clear();
+    char character = 0;
+    if (!TranslatePrintableKey(virtualKey, shiftDown, &character) ||
+        !IsAsciiPunctuation(character)) return false;
+
+    std::wstring transformed;
+    if (!asciiPunctuation) {
+        transformed = ChinesePunctuation(character);
+    } else if (fullShape) {
+        transformed = FullWidth(character);
+    } else {
+        transformed.assign(1, static_cast<wchar_t>(static_cast<unsigned char>(character)));
+    }
+    if (transformed.empty()) return false;
+    *commit = NarrowUtf8(transformed);
+    return !commit->empty();
+}
+
 std::string TraditionalizeUtf8(const std::string& text) noexcept {
     if (text.empty()) return {};
     try {

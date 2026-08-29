@@ -24,10 +24,14 @@ public:
                                     bool controlDown = false, bool altDown = false);
     SurfaceOutcome ForgetCandidate(size_t candidateIndex);
     SurfaceOutcome CommitSentence();
+    bool CaptureCommitTarget(std::string* candidateId) const noexcept;
+    SurfaceOutcome CommitCapturedCandidateWithSuffix(const std::string& candidateId,
+                                                      const std::string& suffix);
     SurfaceOutcome FocusSentenceSegment(int start, int end);
     SurfaceOutcome ExpandSentenceSegment(int start, int end);
     void DisconnectForRecovery() noexcept;
     void Close() noexcept;
+    const BrokerUpdate& CurrentUpdate() const noexcept { return current_; }
 
 private:
     static bool TranslateCompositionKey(WPARAM virtualKey, bool shiftDown, char* code) noexcept;

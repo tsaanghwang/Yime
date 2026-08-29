@@ -35,6 +35,8 @@ public:
         forgetHandler_ = handler;
         forgetContext_ = context;
     }
+    void SetForgetEnabled(bool enabled) noexcept { forgetEnabled_ = enabled; }
+    bool ForgetEnabled() const noexcept { return forgetEnabled_; }
     void SetForgetMenuPresenter(PopupPresenter presenter, void* context) noexcept {
         popupPresenter_ = presenter;
         popupPresenterContext_ = context;
@@ -117,6 +119,7 @@ private:
     void* selectionContext_ = nullptr;
     ForgetHandler forgetHandler_ = nullptr;
     void* forgetContext_ = nullptr;
+    bool forgetEnabled_ = true;
     PopupPresenter popupPresenter_ = nullptr;
     void* popupPresenterContext_ = nullptr;
     SentenceHandler sentenceHandler_ = nullptr;

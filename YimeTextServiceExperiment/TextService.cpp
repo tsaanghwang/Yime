@@ -229,6 +229,7 @@ STDMETHODIMP YimeTextService::Deactivate() {
     threadEventSinkAdvised_ = false;
     threadEventSinkCookie_ = TF_INVALID_COOKIE;
     RemoveLanguageBar();
+    CancelPunctuationPalette(false);
     EndCandidateUI();
     surface_.Close();
     if (composition_) {
@@ -247,6 +248,7 @@ STDMETHODIMP YimeTextService::Deactivate() {
 
 STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
     keyEventFocused_ = foreground != FALSE;
+    if (!keyEventFocused_) CancelPunctuationPalette();
     if (keyEventFocused_ && compositionDocument_ && threadManager_) {
         ITfDocumentMgr* focus = nullptr;
         compositionDocumentFocused_ = SUCCEEDED(threadManager_->GetFocus(&focus)) &&
@@ -260,8 +262,18 @@ STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
 STDMETHODIMP YimeTextService::OnInitDocumentMgr(ITfDocumentMgr*) { return S_OK; }
 
 STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
+    bool punctuationDocumentClosing = false;
+    if (document && punctuationPalette_.IsActive() && punctuationContext_) {
+        ITfDocumentMgr* punctuationDocument = nullptr;
+        punctuationDocumentClosing =
+            SUCCEEDED(punctuationContext_->GetDocumentMgr(&punctuationDocument)) &&
+            punctuationDocument == document;
+        if (punctuationDocument) punctuationDocument->Release();
+    }
+    if (punctuationDocumentClosing) CancelPunctuationPalette(false);
     if (document && document == compositionDocument_) {
         compositionDocumentFocused_ = false;
+        CancelPunctuationPalette(false);
         ShowCandidateUI(false);
     }
     return S_OK;
@@ -269,13 +281,23 @@ STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
 
 STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*) {
     compositionDocumentFocused_ = !compositionDocument_ || focus == compositionDocument_;
+    if (punctuationPalette_.IsActive() && punctuationContext_) {
+        ITfDocumentMgr* punctuationDocument = nullptr;
+        const bool punctuationFocused = SUCCEEDED(punctuationContext_->GetDocumentMgr(&punctuationDocument)) &&
+                                        punctuationDocument == focus;
+        if (punctuationDocument) punctuationDocument->Release();
+        if (!punctuationFocused) CancelPunctuationPalette();
+    }
     ShowCandidateUI(CanAcceptKeys() && compositionDocumentFocused_);
     return S_OK;
 }
 
 STDMETHODIMP YimeTextService::OnPushContext(ITfContext*) { return S_OK; }
 
-STDMETHODIMP YimeTextService::OnPopContext(ITfContext*) { return S_OK; }
+STDMETHODIMP YimeTextService::OnPopContext(ITfContext* context) {
+    if (context && context == punctuationContext_) CancelPunctuationPalette(false);
+    return S_OK;
+}
 
 bool YimeTextService::CanAcceptKeys() const noexcept {
     return keyEventFocused_;
@@ -303,6 +325,21 @@ HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, 
         const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
         const bool controlDown = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
         const bool altDown = (GetKeyState(VK_MENU) & 0x8000) != 0;
+        if (punctuationPalette_.IsActive()) {
+            if (context != punctuationContext_) return S_OK;
+            const auto punctuation = punctuationPalette_.Preview(
+                virtualKey, shiftDown, controlDown, altDown);
+            if (punctuation.route == yime::experiment::PunctuationRoute::Reclassify) {
+                const bool modeAllows = ShouldHandleCompositionKeys();
+                const bool contextMatches = ContextMatchesComposition(context);
+                const bool canHandle = modeAllows && contextMatches &&
+                    surface_.CanHandle(virtualKey, shiftDown, controlDown, altDown);
+                *eaten = context && canHandle ? TRUE : FALSE;
+            } else if (punctuation.route != yime::experiment::PunctuationRoute::Unrelated) {
+                *eaten = context && CanAcceptKeys() ? TRUE : FALSE;
+            }
+            return S_OK;
+        }
         std::string directCommit;
         if (!controlDown && !altDown && !composition_ &&
             yime::experiment::TryDirectOutputKey(virtualKey, shiftDown,
@@ -312,6 +349,13 @@ HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, 
         }
         const bool modeAllows = ShouldHandleCompositionKeys();
         const bool contextMatches = ContextMatchesComposition(context);
+        if (!controlDown && !altDown && shiftDown && virtualKey == '0' &&
+            !experimentSettings_.Get().asciiMode) {
+            std::string target;
+            const bool canOpen = !composition_ || surface_.CaptureCommitTarget(&target);
+            *eaten = context && modeAllows && contextMatches && canOpen ? TRUE : FALSE;
+            return S_OK;
+        }
         const bool canHandle = modeAllows && contextMatches &&
             surface_.CanHandle(virtualKey, shiftDown, controlDown, altDown);
         *eaten = context && canHandle ? TRUE : FALSE;
@@ -320,6 +364,7 @@ HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, 
             experimentSettings_.Get().asciiMode, composition_ != nullptr, contextMatches,
             canHandle, *eaten == TRUE, S_OK);
     } catch (...) {
+        CancelPunctuationPalette(false);
         surface_.DisconnectForRecovery();
     }
     return S_OK;
@@ -350,6 +395,40 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
         const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
         const bool controlDown = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
         const bool altDown = (GetKeyState(VK_MENU) & 0x8000) != 0;
+        if (punctuationPalette_.IsActive()) {
+            if (context != punctuationContext_) return S_OK;
+            const auto punctuation = punctuationPalette_.Preview(
+                wParam, shiftDown, controlDown, altDown);
+            if (punctuation.route == yime::experiment::PunctuationRoute::Cancel) {
+                CancelPunctuationPalette();
+                *eaten = TRUE;
+                return S_OK;
+            }
+            if (punctuation.route == yime::experiment::PunctuationRoute::PreviousPage ||
+                punctuation.route == yime::experiment::PunctuationRoute::NextPage ||
+                punctuation.route == yime::experiment::PunctuationRoute::PreviousCandidate ||
+                punctuation.route == yime::experiment::PunctuationRoute::NextCandidate) {
+                punctuationPalette_.ApplyNavigation(punctuation);
+                UpdatePunctuationUI(context);
+                *eaten = TRUE;
+                return S_OK;
+            }
+            if (punctuation.route == yime::experiment::PunctuationRoute::SelectCurrent ||
+                punctuation.route == yime::experiment::PunctuationRoute::SelectOrdinal ||
+                punctuation.route == yime::experiment::PunctuationRoute::DirectCommit) {
+                std::string commit;
+                if (punctuationPalette_.Resolve(punctuation, &commit) &&
+                    CommitPunctuation(context, commit)) {
+                    *eaten = TRUE;
+                }
+                return S_OK;
+            }
+            if (punctuation.route == yime::experiment::PunctuationRoute::Reclassify) {
+                CancelPunctuationPalette();
+            } else {
+                return S_OK;
+            }
+        }
         std::string directCommit;
         if (!controlDown && !altDown && !composition_ &&
             yime::experiment::TryDirectOutputKey(wParam, shiftDown,
@@ -364,6 +443,11 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
         }
         const bool modeAllows = ShouldHandleCompositionKeys();
         const bool contextMatches = ContextMatchesComposition(context);
+        if (!controlDown && !altDown && shiftDown && wParam == '0' &&
+            !experimentSettings_.Get().asciiMode) {
+            if (modeAllows && contextMatches && OpenPunctuationPalette(context)) *eaten = TRUE;
+            return S_OK;
+        }
         if (!modeAllows || !contextMatches) {
             RecordSelectionKeyHostResult("down-mode-context", wParam, shiftDown, controlDown,
                                          altDown, CanAcceptKeys(), experimentSettings_.Get().asciiMode,
@@ -399,6 +483,7 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
                                          CanAcceptKeys(), experimentSettings_.Get().asciiMode,
                                          composition_ != nullptr, contextMatches, canHandle, true,
                                          edit, outcome.error);
+            CancelPunctuationPalette(false);
             surface_.DisconnectForRecovery();
             return S_OK;
         }
@@ -410,6 +495,7 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
                                      composition_ != nullptr, contextMatches, canHandle, true,
                                      edit, outcome.error);
     } catch (...) {
+        CancelPunctuationPalette(false);
         surface_.DisconnectForRecovery();
     }
     return S_OK;
@@ -448,6 +534,7 @@ STDMETHODIMP YimeTextService::OnPreservedKey(ITfContext*, REFGUID, BOOL* eaten) 
 
 STDMETHODIMP YimeTextService::OnCompositionTerminated(TfEditCookie, ITfComposition* composition) {
     if (composition_ == composition) {
+        CancelPunctuationPalette(false);
         EndCandidateUI();
         composition_->Release();
         composition_ = nullptr;
@@ -525,6 +612,7 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
                                                              : update.selectedCandidateIndex;
     candidatePopup_.SetFontPoints(displaySettings.candidateFontPoints);
     candidatePopup_.SetUseYinyuanFont(displaySettings.candidateAnnotation == "yinyuan");
+    candidatePopup_.SetForgetEnabled(true);
     candidatePopup_.SetHorizontal(displaySettings.candidateLayout == "horizontal");
     const bool needsOwnedStatus = !candidateUI_->StatusDisplay().empty();
     if ((ownedCandidatePopupRequested_ || needsOwnedStatus) &&
@@ -537,6 +625,138 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
     } else {
         candidatePopup_.Show(false);
     }
+}
+
+void YimeTextService::UpdatePunctuationUI(ITfContext* context) noexcept {
+    if (!context || !punctuationPalette_.IsActive() || context != punctuationContext_) return;
+    ITfDocumentMgr* document = nullptr;
+    if (FAILED(context->GetDocumentMgr(&document))) return;
+    if (!candidateUI_) candidateUI_ = new (std::nothrow) CandidateListUIElement();
+    if (!candidateUI_) {
+        document->Release();
+        return;
+    }
+    candidateUI_->UpdatePalette(document, punctuationPalette_.Candidates(),
+                                punctuationPalette_.SelectedIndex(),
+                                punctuationPalette_.StatusText(),
+                                punctuationPalette_.Description());
+    document->Release();
+
+    RECT anchor{};
+    HWND owner = candidateOwnerAndFallbackAnchor(context, &anchor);
+    ITfUIElementMgr* manager = nullptr;
+    const bool hasManager = threadManager_ &&
+        SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfUIElementMgr),
+                                                 reinterpret_cast<void**>(&manager)));
+    if (!candidateUIRegistered_) {
+        BOOL showOwned = TRUE;
+        if (hasManager) {
+            candidateUIRegistered_ = SUCCEEDED(
+                manager->BeginUIElement(candidateUI_, &showOwned, &candidateUIId_));
+        }
+        // The TSF candidate-list interface has no status-row concept. Always
+        // retain the owned popup so the local palette remains identifiable.
+        ownedCandidatePopupRequested_ = true;
+        candidateUI_->Show(CanAcceptKeys() ? TRUE : FALSE);
+    } else if (hasManager) {
+        manager->UpdateUIElement(candidateUIId_);
+    }
+    if (manager) manager->Release();
+
+    const auto& displaySettings = experimentSettings_.Get();
+    candidatePopup_.SetFontPoints(displaySettings.candidateFontPoints);
+    candidatePopup_.SetUseYinyuanFont(false);
+    candidatePopup_.SetForgetEnabled(false);
+    candidatePopup_.SetHorizontal(displaySettings.candidateLayout == "horizontal");
+    const auto& status = candidateUI_->StatusDisplay();
+    if (candidatePopup_.Update(candidateUI_->PopupCandidateRows(), anchor, owner, false,
+                               punctuationPalette_.SelectedIndex(), nullptr, -1, -1,
+                               &status)) {
+        candidatePopup_.Show(CanAcceptKeys());
+    } else {
+        candidatePopup_.Show(false);
+    }
+}
+
+bool YimeTextService::OpenPunctuationPalette(ITfContext* context) noexcept {
+    if (!context || !CanAcceptKeys() || experimentSettings_.Get().asciiMode ||
+        !ContextMatchesComposition(context)) {
+        return false;
+    }
+    std::string frozenCandidateId;
+    if (composition_ && !surface_.CaptureCommitTarget(&frozenCandidateId)) return false;
+
+    CancelPunctuationPalette(false);
+    punctuationContext_ = context;
+    punctuationContext_->AddRef();
+    const auto& settings = experimentSettings_.Get();
+    punctuationPalette_.Open(settings.asciiPunctuation, settings.fullShape,
+                             std::move(frozenCandidateId));
+    UpdatePunctuationUI(context);
+    return true;
+}
+
+void YimeTextService::CancelPunctuationPalette(bool restoreCompositionUI) noexcept {
+    if (!punctuationPalette_.IsActive() && !punctuationContext_) return;
+    ITfContext* context = punctuationContext_;
+    if (context) context->AddRef();
+    punctuationPalette_.Cancel();
+    if (punctuationContext_) {
+        punctuationContext_->Release();
+        punctuationContext_ = nullptr;
+    }
+
+    if (restoreCompositionUI && context && composition_ &&
+        !surface_.CurrentUpdate().rawInput.empty()) {
+        auto renderedUpdate = surface_.CurrentUpdate();
+        if (experimentSettings_.Get().traditionalization) {
+            yime::experiment::ApplyTraditionalization(&renderedUpdate);
+        }
+        UpdateCandidateUI(context, renderedUpdate, nullptr);
+    } else {
+        EndCandidateUI();
+    }
+    if (context) context->Release();
+}
+
+bool YimeTextService::CommitPunctuation(ITfContext* context,
+                                        const std::string& punctuation,
+                                        bool asynchronous) noexcept {
+    if (!context || punctuation.empty() || !punctuationPalette_.IsActive() ||
+        context != punctuationContext_) {
+        return false;
+    }
+
+    yime::experiment::BrokerUpdate update;
+    const std::string frozenCandidateId = punctuationPalette_.FrozenCandidateId();
+    if (!frozenCandidateId.empty()) {
+        const auto outcome = surface_.CommitCapturedCandidateWithSuffix(frozenCandidateId,
+                                                                        punctuation);
+        if (!outcome.handled) {
+            CancelPunctuationPalette(false);
+            surface_.DisconnectForRecovery();
+            return false;
+        }
+        update = outcome.update;
+    } else {
+        update.commit = punctuation;
+    }
+    if (experimentSettings_.Get().traditionalization) {
+        yime::experiment::ApplyTraditionalization(&update);
+    }
+
+    CancelPunctuationPalette(false);
+    const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
+        context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
+        &plannedCompositionTermination_, update, nullptr, nullptr, asynchronous);
+    if (FAILED(edit)) {
+        if (!frozenCandidateId.empty()) surface_.DisconnectForRecovery();
+        EndCandidateUI();
+        return false;
+    }
+    if (composition_) RememberCompositionContext(context);
+    UpdateCandidateUI(context, update, nullptr);
+    return true;
 }
 
 void YimeTextService::CandidatePopupSelection(void* context, unsigned ordinal) noexcept {
@@ -552,6 +772,17 @@ void YimeTextService::CandidatePopupSentenceSelection(void* context) noexcept {
 }
 
 void YimeTextService::SelectCandidateFromPopup(unsigned ordinal) noexcept {
+    if (punctuationPalette_.IsActive()) {
+        if (ordinal < 1 || ordinal > 9 || !punctuationContext_ || !CanAcceptKeys()) return;
+        ITfContext* context = punctuationContext_;
+        context->AddRef();
+        std::string punctuation;
+        if (punctuationPalette_.ResolveOrdinal(ordinal, &punctuation)) {
+            CommitPunctuation(context, punctuation, true);
+        }
+        context->Release();
+        return;
+    }
     if (ordinal < 1 || ordinal > 9 || !compositionContext_ || !CanAcceptKeys()) return;
     ITfContext* context = compositionContext_;
     context->AddRef();
@@ -577,6 +808,7 @@ void YimeTextService::SelectCandidateFromPopup(unsigned ordinal) noexcept {
 }
 
 void YimeTextService::ForgetCandidateFromPopup(unsigned ordinal) noexcept {
+    if (punctuationPalette_.IsActive()) return;
     if (ordinal < 1 || ordinal > 9 || !compositionContext_ || !CanAcceptKeys()) return;
     ITfContext* context = compositionContext_;
     context->AddRef();

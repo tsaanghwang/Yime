@@ -16,6 +16,7 @@
 #include "ExperimentSettings.h"
 #include "LanguageBarItem.h"
 #include "OutputTransform.h"
+#include "PunctuationPalette.h"
 #include "YimeTextServiceIds.h"
 
 namespace {
@@ -135,8 +136,12 @@ void testKeyContract() {
         expect(shifted.route == KeyRoute::SelectCandidate, "Shift+1..9 must select candidates");
         expect(shifted.candidateOrdinal == static_cast<unsigned>(key - '0'), "candidate ordinal mismatch");
     }
-    expect(ClassifyVirtualKey('0', true).route == KeyRoute::AppendComposition,
-           "Shift+0 must not become a candidate ordinal");
+    expect(ClassifyVirtualKey('0', true).route == KeyRoute::OpenPunctuationPalette,
+           "Shift+0 must open the punctuation palette without becoming a candidate ordinal");
+    expect(ClassifyVirtualKey(VK_OEM_5, false).route == KeyRoute::AppendComposition,
+           "base backslash must remain a composition key");
+    expect(ClassifyVirtualKey(VK_OEM_5, true).route == KeyRoute::AppendComposition,
+           "Shift+backslash must remain on the normal composition path");
     for (const WPARAM key : {static_cast<WPARAM>(VK_RETURN), static_cast<WPARAM>(VK_SPACE)}) {
         const auto plain = ClassifyVirtualKey(key, false);
         expect(plain.route == KeyRoute::SelectCurrentCandidate,
@@ -179,13 +184,127 @@ void testKeyContract() {
     expect(shiftTap.OnKeyDown(VK_SHIFT) && shiftTap.OnKeyUp(VK_SHIFT),
            "single Shift tap did not request a Chinese/English toggle");
     expect(shiftTap.OnKeyDown(VK_SHIFT) && !shiftTap.OnKeyDown('A') &&
-               !shiftTap.OnKeyUp(VK_SHIFT),
-           "Shift used with another key incorrectly toggled Chinese/English");
+                !shiftTap.OnKeyUp(VK_SHIFT),
+            "Shift used with another key incorrectly toggled Chinese/English");
+       expect(shiftTap.OnKeyDown(VK_SHIFT) && !shiftTap.OnKeyDown('0') &&
+                !shiftTap.OnKeyUp(VK_SHIFT),
+            "punctuation leader incorrectly triggered the Shift language toggle");
     const auto& labels = CandidateLabels();
     constexpr std::wstring_view expected[] = {L"⇧1", L"⇧2", L"⇧3", L"⇧4", L"⇧5", L"⇧6", L"⇧7", L"⇧8", L"⇧9"};
     for (size_t index = 0; index < labels.size(); ++index) {
         expect(labels[index] == expected[index], "candidate label lost Shift marker");
     }
+}
+
+void testPunctuationPaletteContract() {
+    using namespace yime::experiment;
+    PunctuationPalette palette;
+    palette.Open(false, false, "candidate-1");
+    expect(palette.IsActive() && palette.FrozenCandidateId() == "candidate-1",
+           "punctuation palette did not freeze the commit target");
+    const std::vector<std::string> expectedFirst = {
+              u8"，", u8"。", u8"？", u8"！", u8"；", u8"：", u8"、", u8"……", u8"——",
+       };
+       const std::vector<std::string> expectedFirstIds = {
+              "comma", "period", "question", "exclamation", "semicolon",
+              "colon", "enumeration-comma", "ellipsis", "em-dash",
+    };
+    expect(palette.Candidates().size() == 9,
+           "punctuation first page must ignore the lexical candidate page size");
+    for (size_t index = 0; index < expectedFirst.size() && index < palette.Candidates().size(); ++index) {
+        expect(palette.Candidates()[index].id == "punct:zh:" + expectedFirstIds[index] &&
+                   palette.Candidates()[index].text == expectedFirst[index],
+               "punctuation first page lost its stable high-frequency ordering");
+    }
+    auto decision = palette.Preview('1', true, false, false);
+    expect(decision.route == PunctuationRoute::SelectOrdinal && decision.ordinal == 1,
+           "Shift+1 did not remain an ordinal selection inside the punctuation palette");
+    std::string output;
+    expect(palette.Resolve(decision, &output) && output == u8"，",
+           "punctuation ordinal did not resolve the matching keycap symbol");
+    decision = palette.Preview('0', true, false, false);
+    expect(decision.route == PunctuationRoute::Cancel,
+           "repeated Shift+0 did not cancel the punctuation palette");
+    decision = palette.Preview(VK_OEM_COMMA, false, false, false);
+    expect(decision.route == PunctuationRoute::DirectCommit && decision.commit == u8"，",
+           "comma did not use its original physical key in punctuation mode");
+    decision = palette.Preview(VK_OEM_COMMA, true, false, false);
+    expect(decision.route == PunctuationRoute::DirectCommit && decision.commit == u8"《",
+           "Shift+comma did not use its original title-mark key");
+    decision = palette.Preview(VK_OEM_5, false, false, false);
+    expect(decision.route == PunctuationRoute::DirectCommit && decision.commit == u8"、",
+           "base backslash did not provide the enumeration comma inside the explicit palette");
+    struct DirectPunctuationCase {
+        WPARAM key;
+        bool shifted;
+        const char* expected;
+    };
+    const std::array<DirectPunctuationCase, 21> directPunctuationCases = {{
+        {VK_OEM_3, false, u8"｀"}, {VK_OEM_3, true, u8"～"},
+        {VK_OEM_MINUS, false, u8"－"}, {VK_OEM_MINUS, true, u8"——"},
+        {VK_OEM_PLUS, false, u8"＝"}, {VK_OEM_PLUS, true, u8"＋"},
+        {VK_OEM_4, false, u8"「"}, {VK_OEM_4, true, u8"『"},
+        {VK_OEM_6, false, u8"」"}, {VK_OEM_6, true, u8"』"},
+        {VK_OEM_5, false, u8"、"},
+        {VK_OEM_1, false, u8"；"}, {VK_OEM_1, true, u8"："},
+        {VK_OEM_7, false, u8"‘"}, {VK_OEM_7, true, u8"“"},
+        {VK_OEM_COMMA, false, u8"，"}, {VK_OEM_COMMA, true, u8"《"},
+        {VK_OEM_PERIOD, false, u8"。"}, {VK_OEM_PERIOD, true, u8"》"},
+        {VK_OEM_2, false, u8"、"}, {VK_OEM_2, true, u8"？"},
+    }};
+    for (const auto& directCase : directPunctuationCases) {
+        const auto direct = palette.Preview(directCase.key, directCase.shifted, false, false);
+        expect(direct.route == PunctuationRoute::DirectCommit &&
+                   direct.commit == directCase.expected,
+               "a punctuation key no longer outputs at its original physical position");
+    }
+       expect(palette.Preview('0', true, false, false).route == PunctuationRoute::Cancel &&
+                        palette.Preview(VK_ESCAPE, false, false, false).route == PunctuationRoute::Cancel &&
+               palette.Preview(VK_BACK, false, false, false).route == PunctuationRoute::Cancel,
+           "punctuation palette cancellation keys changed");
+    expect(palette.Preview('2', false, false, false).route == PunctuationRoute::Reclassify,
+           "base digit stopped returning to the normal composition classifier");
+    expect(palette.Preview('C', false, true, false).route == PunctuationRoute::Unrelated,
+           "host Ctrl shortcut was captured by the punctuation palette");
+
+    decision = palette.Preview(VK_NEXT, false, false, false);
+    expect(decision.route == PunctuationRoute::NextPage && palette.ApplyNavigation(decision) &&
+               palette.PageIndex() == 1,
+           "punctuation palette did not open its second page");
+    const std::vector<std::string> expectedSecond = {
+        u8"（", u8"）", u8"“", u8"”", u8"‘", u8"’", u8"《", u8"》", u8"·",
+    };
+    expect(palette.Candidates().size() == expectedSecond.size(),
+           "punctuation second page must expose nine stable ordinals");
+    for (size_t index = 0; index < expectedSecond.size() && index < palette.Candidates().size(); ++index) {
+        expect(palette.Candidates()[index].text == expectedSecond[index],
+               "punctuation second-page ordering changed");
+    }
+    expect(palette.StatusText() == L"标点（中文） · 2/2",
+           "punctuation palette lost its non-selectable page annotation");
+
+    palette.Open(true, false, {});
+    const std::vector<std::string> expectedEnglishSecond = {
+        "(", ")", "\"", "'", "<", ">", "[", "]", u8"·",
+    };
+    expect(palette.ApplyNavigation(palette.Preview(VK_NEXT, false, false, false)),
+           "English punctuation palette did not advance");
+    for (size_t index = 0; index < expectedEnglishSecond.size() && index < palette.Candidates().size(); ++index) {
+        expect(palette.Candidates()[index].text == expectedEnglishSecond[index],
+               "English punctuation second-page ordering changed");
+    }
+    expect(palette.StatusText() == L"标点（英文） · 2/2",
+           "English punctuation palette annotation is ambiguous");
+    decision = palette.Preview(VK_OEM_COMMA, false, false, false);
+    expect(decision.route == PunctuationRoute::DirectCommit && decision.commit == ",",
+           "half-width English punctuation did not preserve its physical key output");
+    palette.Open(true, true, {});
+    decision = palette.Preview(VK_OEM_COMMA, false, false, false);
+    expect(decision.route == PunctuationRoute::DirectCommit && decision.commit == u8"，",
+           "full-width English punctuation did not follow the shape setting");
+    palette.Cancel();
+    expect(!palette.IsActive() && palette.FrozenCandidateId().empty(),
+           "punctuation palette cancellation retained stale state");
 }
 
 void testOutputTransformContract() {
@@ -321,6 +440,19 @@ void testCandidateElement() {
     expect(candidates->Show(TRUE) == S_OK, "candidate Show failed");
     BOOL shown = FALSE;
     expect(candidates->IsShown(&shown) == S_OK && shown, "candidate shown state mismatch");
+    yime::experiment::PunctuationPalette palette;
+    palette.Open(false, false, {});
+    candidates->UpdatePalette(nullptr, palette.Candidates(), palette.SelectedIndex(),
+                              palette.StatusText(), palette.Description());
+    count = 0;
+    expect(candidates->GetCount(&count) == S_OK && count == 9 &&
+               candidates->StatusDisplay() == L"标点（中文） · 1/2",
+           "local punctuation palette did not expose nine selectable rows plus a status annotation");
+    BSTR description = nullptr;
+    expect(candidates->GetDescription(&description) == S_OK && description &&
+               std::wstring_view(description) == L"Yime 标点（中文）第 1 页",
+           "host-rendered punctuation palette description is ambiguous");
+    SysFreeString(description);
     candidates->UpdateEmpty(nullptr, L"无匹配候选，按退格修改");
     count = 0;
     expect(candidates->GetCount(&count) == S_OK && count == 0,
@@ -346,6 +478,10 @@ void testOwnedCandidatePopup() {
     expect(popup.UsesYinyuanFont(), "candidate popup did not select the Yinyuan font");
     popup.SetUseYinyuanFont(false);
     expect(!popup.UsesYinyuanFont(), "candidate popup did not restore the UI font");
+    popup.SetForgetEnabled(false);
+    expect(!popup.ForgetEnabled(), "punctuation popup did not disable lexical forgetting");
+    popup.SetForgetEnabled(true);
+    expect(popup.ForgetEnabled(), "lexical candidate popup did not restore forgetting");
        popup.SetHorizontal(true);
        expect(popup.IsHorizontal(), "candidate popup did not select horizontal layout");
        popup.SetHorizontal(false);
@@ -394,6 +530,13 @@ void testOwnedCandidatePopup() {
     SendMessageW(window, WM_RBUTTONUP, 0, MAKELPARAM(20, 10));
     expect(forgetMenuPresented && forgotten == 1,
            "owned candidate popup did not route quick forget for the clicked row");
+    popup.SetForgetEnabled(false);
+    forgotten = 0;
+    forgetMenuPresented = false;
+    SendMessageW(window, WM_RBUTTONUP, 0, MAKELPARAM(20, 10));
+    expect(!forgetMenuPresented && forgotten == 0,
+           "local punctuation rows exposed lexical quick forget");
+    popup.SetForgetEnabled(true);
     selected = 0;
     forgotten = 0;
     forgetMenuPresented = false;
@@ -741,6 +884,7 @@ int wmain(int argc, wchar_t** argv) {
         return 2;
     }
     testKeyContract();
+    testPunctuationPaletteContract();
     testOutputTransformContract();
     testBrokerEndpoint();
     testCandidateElement();

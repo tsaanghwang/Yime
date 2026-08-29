@@ -233,6 +233,72 @@ SurfaceOutcome SurfaceSession::CommitSentence() {
     return outcome;
 }
 
+bool SurfaceSession::CaptureCommitTarget(std::string* candidateId) const noexcept {
+    if (!candidateId) return false;
+    candidateId->clear();
+    if (selectedCandidateIndex_ < current_.candidates.size() &&
+        !current_.candidates[selectedCandidateIndex_].id.empty()) {
+        *candidateId = current_.candidates[selectedCandidateIndex_].id;
+        return true;
+    }
+    if (current_.candidates.empty() && current_.hasSentence && !current_.sentence.id.empty()) {
+        *candidateId = current_.sentence.id;
+        return true;
+    }
+    return false;
+}
+
+SurfaceOutcome SurfaceSession::CommitCapturedCandidateWithSuffix(
+    const std::string& candidateId, const std::string& suffix) {
+    SurfaceOutcome outcome;
+    if (!broker_.IsConnected() || candidateId.empty() || suffix.empty()) return outcome;
+    bool targetStillVisible = current_.hasSentence && current_.sentence.id == candidateId;
+    for (const auto& candidate : current_.candidates) {
+        if (candidate.id == candidateId) {
+            targetStillVisible = true;
+            break;
+        }
+    }
+    if (!targetStillVisible) {
+        outcome.error = "Frozen punctuation commit target is no longer visible";
+        return outcome;
+    }
+
+    BrokerUpdate selected;
+    const std::string selectionMutation = mutationPrefix_ + "-" +
+        std::to_string(++mutationSequence_);
+    if (!broker_.SelectCandidate(candidateId, selectionMutation, &selected, &outcome.error)) {
+        return outcome;
+    }
+    if (selected.commit.empty()) {
+        if (!selected.hasSentence || selected.sentence.id.empty()) {
+            outcome.error = "Selected punctuation target did not produce a committable sentence";
+            return outcome;
+        }
+        BrokerUpdate committed;
+        const std::string sentenceMutation = mutationPrefix_ + "-" +
+            std::to_string(++mutationSequence_);
+        if (!broker_.SelectCandidate(selected.sentence.id, sentenceMutation,
+                                     &committed, &outcome.error)) {
+            return outcome;
+        }
+        selected = std::move(committed);
+    }
+    if (selected.commit.empty()) {
+        outcome.error = "Punctuation commit target returned an empty commit";
+        return outcome;
+    }
+    selected.commit += suffix;
+    selectedCandidateIndex_ = 0;
+    navigationSegmentStart_ = -1;
+    navigationSegmentEnd_ = -1;
+    selected.selectedCandidateIndex = 0;
+    current_ = selected;
+    outcome.handled = true;
+    outcome.update = std::move(selected);
+    return outcome;
+}
+
 SurfaceOutcome SurfaceSession::FocusSentenceSegment(int start, int end) {
     SurfaceOutcome outcome;
     if (!broker_.IsConnected() || !current_.hasSentence || start < 0 || end <= start) return outcome;

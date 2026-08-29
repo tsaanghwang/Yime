@@ -361,6 +361,23 @@ int wmain(int argc, wchar_t** argv) {
         return 1;
     }
     const std::string selectedCode = outcome.update.candidates.front().code;
+    const std::string punctuationTargetText = outcome.update.candidates.front().text;
+    std::string punctuationTargetId;
+    if (!surface.CaptureCommitTarget(&punctuationTargetId) || punctuationTargetId.empty()) {
+        std::cerr << "punctuation layer did not freeze the current candidate ID\n";
+        return 1;
+    }
+    outcome = surface.CommitCapturedCandidateWithSuffix(punctuationTargetId, u8"，");
+    if (!outcome.handled || outcome.update.commit != punctuationTargetText + u8"，" ||
+        !outcome.update.rawInput.empty()) {
+        std::cerr << "captured candidate and punctuation were not committed together: "
+                  << outcome.error << '\n';
+        return 1;
+    }
+    if (!sendCode(&surface, code, &outcome, &error)) {
+        std::cerr << "post-punctuation composition failed: " << error << '\n';
+        return 1;
+    }
     outcome = surface.HandleVirtualKey('Z', false);
     if (!outcome.handled || outcome.update.rawInput != code + "z" || !outcome.update.candidates.empty()) {
         std::cerr << "invalid-code state did not remain editable\n";

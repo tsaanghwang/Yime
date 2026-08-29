@@ -1,6 +1,8 @@
 # Yime 自研栈并行替换试验
 
-> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b、E6-B4a、E6-B4b、E6-B4c readiness、E6-B4d 已通过；未批准切换任何生产组件
+> 状态（2026-08-28）：E0 至 E5、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b、E6-B4a、E6-B4b、E6-B4c readiness、E6-B4d、E6-B5、E6-B6、E6-B7、E6-B8 与 E6-C 的当前试验门禁已通过；最新 E6-C 证据基于干净提交 `b16667f5`，无试验阻塞项
+> 切换状态：当前仍为未签名并列试验版；公开签名包、更广第三方宿主矩阵和最终 Rime 对照门禁尚未完成，未批准切换任何生产组件，E7 未启动
+> 当前工作区增量（2026-08-29）：自研 TSF 表层已实现以 `Shift+0` 打开的一次性本地标点层，并通过 x64/x86 契约、Broker 桥接及真实 `ITfContext` 自动回归；尚未重新封装、安装或完成人工桌面宿主验收，不计入既有 E6-C 干净证据
 > 试验分支：`codex/yimecore-replacement-experiment`
 > 原则：先并行、后比较；逐层验收；失败即保留现状
 
@@ -406,6 +408,8 @@ E6-C 在不切换生产输入法的前提下增加搜索排列、显示设置和
 - `manage-e6c-trial-install.ps1` 在安装前执行试验 CLSID/Profile/两套 COM 视图的强制清理，等待注册状态收敛后全新安装；默认保留学习快照和 journal。它在 Windows“已安装的应用”登记“Yime 自研栈试验版”及独立卸载命令，锁定 DLL 只登记重启后删除，不强杀 Explorer 或宿主应用。清理路径必须是试验 Program Files 根的带标记子目录，不能越界到正式 PIME/Rime。
 
 E6-C 的多索引限制现已关闭：三种模式共用一个显式稳定命名空间的 E5-C 快照/哈希链日志，每次已确认选择仍在 commit 响应前同步；每种模式分别复用 E5-D 的代际租约和事务控制，错误哈希不会改变 active，显式回滚只影响后续新会话。工具栏模式变化继续采用“当前 composition 保持在原引擎、空闲后的新会话才采用新模式”的安全策略。新表层用 GUID 级 mutation ID 防止多个宿主会话互相误判重放；Broker 还只针对已安装的旧 `e6b2a-surface-*` ID 加会话作用域，使旧试验 DLL 与新持久模型组合时仍能逐会话学习，不改变其它调用方的跨会话幂等语义。`YimeCoreTrialRuntime.exe` 以管道作用域的单实例监督独立 Broker 和工具栏，把快照、journal 与索引控制文件固定在 `%LOCALAPPDATA%\YimeCore Experimental Trial`，Broker 异常退出后原地恢复；`deploy-e6c-trial-runtime.ps1` 只启用独立试验 TIP 并建立当前用户登录自启动，现有中文输入法条目保持不变，启停可由配套脚本逆转。`run-e6c-package-experiment.ps1` 从经哈希交接的试验包生成自包含 E6-C staged package；提升后的 `run-e6b7-parallel-package-experiment.ps1` 还会从独立 Program Files 试验安装树运行同一验证器。两者都在三模式逐一证明学习重启后提升、错误切换保持 v1、既有 composition 保持 v1、有效 v2 会话在回滚后继续可用及回滚后的新会话重取 v1；包门禁还强制终止受监督 Broker 并核验 PID 更换、重启计数递增和路径不漂移。这些路径不注册或启动生产 Rime/PIME，也不改变裸数字键规则。
+
+E6-C 后的当前工作区增加一次性本地标点层，入口为 `Shift+0`。中文输入模式下，第一页固定为高频九项 `，。？！；：、……——`，不受普通候选页大小影响；OEM 标点键在层内按原键位直接提交，第二页提供分离的开闭标点。标点候选使用 `punct:*` 本地稳定 ID，不进入 Broker 候选模型、不参与学习，也不提供快速忘记。若打开时已有 composition，表层冻结与现有高亮/整句规则一致的稳定候选 ID，选中标点后把文字与标点合并到同一 TSF edit session；无有效候选时拒绝打开。`Esc`、`Backspace` 和重复 `Shift+0` 只取消，普通未定义组合键取消后在同一次按键回调内重新分类；焦点、context、composition 或 Broker 恢复边界会先清除标点层。第一版不做成对插入、引号交替或提交后光标置中。
 
 ### E7：切换与退役
 

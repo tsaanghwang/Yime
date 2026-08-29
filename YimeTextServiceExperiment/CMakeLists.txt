@@ -13,6 +13,7 @@ add_library(YimeTextServiceExperiment SHARED
     LanguageBarItem.cpp
     LanguageBarResources.rc
     OutputTransform.cpp
+    PunctuationPalette.cpp
     SurfaceSession.cpp
     TextService.cpp
     YimeTextServiceExperiment.def
@@ -34,6 +35,7 @@ add_executable(YimeTextServiceContractTests
     LanguageBarItem.cpp
     LanguageBarResources.rc
     OutputTransform.cpp
+    PunctuationPalette.cpp
 )
 target_compile_features(YimeTextServiceContractTests PRIVATE cxx_std_17)
 target_compile_definitions(YimeTextServiceContractTests PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
