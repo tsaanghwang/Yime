@@ -349,7 +349,7 @@ HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, 
         }
         const bool modeAllows = ShouldHandleCompositionKeys();
         const bool contextMatches = ContextMatchesComposition(context);
-        if (!controlDown && !altDown && shiftDown && virtualKey == '0' &&
+        if (!controlDown && !altDown && shiftDown && virtualKey == VK_OEM_5 &&
             !experimentSettings_.Get().asciiMode) {
             std::string target;
             const bool canOpen = !composition_ || surface_.CaptureCommitTarget(&target);
@@ -443,7 +443,7 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
         }
         const bool modeAllows = ShouldHandleCompositionKeys();
         const bool contextMatches = ContextMatchesComposition(context);
-        if (!controlDown && !altDown && shiftDown && wParam == '0' &&
+        if (!controlDown && !altDown && shiftDown && wParam == VK_OEM_5 &&
             !experimentSettings_.Get().asciiMode) {
             if (modeAllows && contextMatches && OpenPunctuationPalette(context)) *eaten = TRUE;
             return S_OK;

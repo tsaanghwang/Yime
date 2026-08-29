@@ -2,7 +2,7 @@
 
 > 状态（2026-08-28）：E0 至 E5、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b、E6-B4a、E6-B4b、E6-B4c readiness、E6-B4d、E6-B5、E6-B6、E6-B7、E6-B8 与 E6-C 的当前试验门禁已通过；最新 E6-C 证据基于干净提交 `b16667f5`，无试验阻塞项
 > 切换状态：当前仍为未签名并列试验版；公开签名包、更广第三方宿主矩阵和最终 Rime 对照门禁尚未完成，未批准切换任何生产组件，E7 未启动
-> 当前工作区增量（2026-08-29）：自研 TSF 表层已实现以 `Shift+0` 打开的一次性本地标点层，并通过 x64/x86 契约、Broker 桥接及真实 `ITfContext` 自动回归；尚未重新封装、安装或完成人工桌面宿主验收，不计入既有 E6-C 干净证据
+> 当前工作区增量（2026-08-29）：自研 TSF 表层已把一次性本地标点层入口修正为 `Shift+\`，只牺牲低频 `|` 键位，以保留其它符号的键盘原位输入；x64/x86 契约、真实 `ITfContext`、E6-C 封装安装和三模式运行时验证均已通过，人工桌面宿主验收仍待完成
 > 试验分支：`codex/yimecore-replacement-experiment`
 > 原则：先并行、后比较；逐层验收；失败即保留现状
 
@@ -409,7 +409,95 @@ E6-C 在不切换生产输入法的前提下增加搜索排列、显示设置和
 
 E6-C 的多索引限制现已关闭：三种模式共用一个显式稳定命名空间的 E5-C 快照/哈希链日志，每次已确认选择仍在 commit 响应前同步；每种模式分别复用 E5-D 的代际租约和事务控制，错误哈希不会改变 active，显式回滚只影响后续新会话。工具栏模式变化继续采用“当前 composition 保持在原引擎、空闲后的新会话才采用新模式”的安全策略。新表层用 GUID 级 mutation ID 防止多个宿主会话互相误判重放；Broker 还只针对已安装的旧 `e6b2a-surface-*` ID 加会话作用域，使旧试验 DLL 与新持久模型组合时仍能逐会话学习，不改变其它调用方的跨会话幂等语义。`YimeCoreTrialRuntime.exe` 以管道作用域的单实例监督独立 Broker 和工具栏，把快照、journal 与索引控制文件固定在 `%LOCALAPPDATA%\YimeCore Experimental Trial`，Broker 异常退出后原地恢复；`deploy-e6c-trial-runtime.ps1` 只启用独立试验 TIP 并建立当前用户登录自启动，现有中文输入法条目保持不变，启停可由配套脚本逆转。`run-e6c-package-experiment.ps1` 从经哈希交接的试验包生成自包含 E6-C staged package；提升后的 `run-e6b7-parallel-package-experiment.ps1` 还会从独立 Program Files 试验安装树运行同一验证器。两者都在三模式逐一证明学习重启后提升、错误切换保持 v1、既有 composition 保持 v1、有效 v2 会话在回滚后继续可用及回滚后的新会话重取 v1；包门禁还强制终止受监督 Broker 并核验 PID 更换、重启计数递增和路径不漂移。这些路径不注册或启动生产 Rime/PIME，也不改变裸数字键规则。
 
-E6-C 后的当前工作区增加一次性本地标点层，入口为 `Shift+0`。中文输入模式下，第一页固定为高频九项 `，。？！；：、……——`，不受普通候选页大小影响；OEM 标点键在层内按原键位直接提交，第二页提供分离的开闭标点。标点候选使用 `punct:*` 本地稳定 ID，不进入 Broker 候选模型、不参与学习，也不提供快速忘记。若打开时已有 composition，表层冻结与现有高亮/整句规则一致的稳定候选 ID，选中标点后把文字与标点合并到同一 TSF edit session；无有效候选时拒绝打开。`Esc`、`Backspace` 和重复 `Shift+0` 只取消，普通未定义组合键取消后在同一次按键回调内重新分类；焦点、context、composition 或 Broker 恢复边界会先清除标点层。第一版不做成对插入、引号交替或提交后光标置中。
+#### E6-C 后本地标点层固定映射
+
+中文输入模式下以 `Shift+\` 打开一次性本地标点层。这个入口只占用标准美式键盘上 `|` 的位置，使数字上档符号和其它 OEM 标点仍能按原键位输入。标点候选页固定为每页九项，不受普通候选页大小影响；候选使用 `punct:zh:*` 或 `punct:ascii:*` 本地稳定 ID，不进入 Broker 候选模型、不参与学习，也不提供快速忘记。
+
+中文标点设置的第一页与 `Shift+1` 至 `Shift+9` 的物理符号位置逐项对应：
+
+| 选择键 | 本地稳定 ID | 提交文本 |
+|---|---|---|
+| `Shift+1` | `punct:zh:digit-1` | `！` |
+| `Shift+2` | `punct:zh:digit-2` | `＠` |
+| `Shift+3` | `punct:zh:digit-3` | `＃` |
+| `Shift+4` | `punct:zh:digit-4` | `￥` |
+| `Shift+5` | `punct:zh:digit-5` | `％` |
+| `Shift+6` | `punct:zh:digit-6` | `……` |
+| `Shift+7` | `punct:zh:digit-7` | `＆` |
+| `Shift+8` | `punct:zh:digit-8` | `＊` |
+| `Shift+9` | `punct:zh:digit-9` | `（` |
+
+`Shift+0` 不占用候选序号，在标点层内按原位直接提交 `）`；再次按 `Shift+\` 取消标点层，因此 `|` 是这套布局唯一不提供原位输出的符号。
+
+中文标点设置的第二页把开闭符号分开，不做成对插入：
+
+| 选择键 | 本地稳定 ID | 提交文本 |
+|---|---|---|
+| `Shift+1` | `punct:zh:open-paren` | `（` |
+| `Shift+2` | `punct:zh:close-paren` | `）` |
+| `Shift+3` | `punct:zh:open-double-quote` | `“` |
+| `Shift+4` | `punct:zh:close-double-quote` | `”` |
+| `Shift+5` | `punct:zh:open-single-quote` | `‘` |
+| `Shift+6` | `punct:zh:close-single-quote` | `’` |
+| `Shift+7` | `punct:zh:open-title` | `《` |
+| `Shift+8` | `punct:zh:close-title` | `》` |
+| `Shift+9` | `punct:zh:middle-dot` | `·` |
+
+中文输入模式采用英文标点设置时，入口和原位关系不变；稳定 ID 和半角/全角映射为：
+
+| 页 | 选择键 | 本地稳定 ID | 半角提交文本 | 全角提交文本 |
+|---|---|---|---|---|
+| 1 | `Shift+1` | `punct:ascii:digit-1` | `!` | `！` |
+| 1 | `Shift+2` | `punct:ascii:digit-2` | `@` | `＠` |
+| 1 | `Shift+3` | `punct:ascii:digit-3` | `#` | `＃` |
+| 1 | `Shift+4` | `punct:ascii:digit-4` | `$` | `＄` |
+| 1 | `Shift+5` | `punct:ascii:digit-5` | `%` | `％` |
+| 1 | `Shift+6` | `punct:ascii:digit-6` | `^` | `＾` |
+| 1 | `Shift+7` | `punct:ascii:digit-7` | `&` | `＆` |
+| 1 | `Shift+8` | `punct:ascii:digit-8` | `*` | `＊` |
+| 1 | `Shift+9` | `punct:ascii:digit-9` | `(` | `（` |
+| 2 | `Shift+1` | `punct:ascii:open-paren` | `(` | `（` |
+| 2 | `Shift+2` | `punct:ascii:close-paren` | `)` | `）` |
+| 2 | `Shift+3` | `punct:ascii:double-quote` | `"` | `＂` |
+| 2 | `Shift+4` | `punct:ascii:single-quote` | `'` | `＇` |
+| 2 | `Shift+5` | `punct:ascii:less-than` | `<` | `＜` |
+| 2 | `Shift+6` | `punct:ascii:greater-than` | `>` | `＞` |
+| 2 | `Shift+7` | `punct:ascii:open-bracket` | `[` | `［` |
+| 2 | `Shift+8` | `punct:ascii:close-bracket` | `]` | `］` |
+| 2 | `Shift+9` | `punct:ascii:middle-dot` | `·` | `·` |
+
+英文标点设置下，层内 `Shift+0` 按半角/全角设置分别提交 `)` 或 `）`，不产生候选 ID。
+
+标点层内的 OEM 标点键按物理位置直接提交。下表键帽名称按标准美式键盘对应的 `VK_OEM_*` 位置书写；中文标点设置的映射为：
+
+| 物理键 | 无 Shift | 有 Shift |
+|---|---|---|
+| `;` | `；` | `：` |
+| `=` | `＝` | `＋` |
+| `,` | `，` | `《` |
+| `-` | `－` | `——` |
+| `.` | `。` | `》` |
+| `/` | `、` | `？` |
+| `` ` `` | `｀` | `～` |
+| `[` | `「` | `『` |
+| `\` | `、` | 取消标点层；`|` 不输出 |
+| `]` | `」` | `』` |
+| `'` | `‘` | `“` |
+
+英文标点设置下，除保留为入口的 `Shift+\` 外，OEM 键提交其半角字符；同时启用全角时提交对应的 Unicode 全角字符。OEM 直达提交不经过九项候选 ID。上述直达映射只在标点层打开时生效；标点层外的 OEM 键继续按既有规则作为 composition 编码键，不能绕过 `Shift+\` 直接提交中文标点。
+
+标点层的状态键固定为：
+
+| 按键 | 行为 |
+|---|---|
+| `PageUp` / `Left` | 上一页 |
+| `PageDown` / `Right` | 下一页 |
+| `Up` / `Down` | 移动当前高亮 |
+| `Enter` / `Space` | 提交当前高亮标点 |
+| `Esc` / `Backspace` / 再按 `Shift+\` | 取消标点层，不提交 |
+| 未在层内定义的字母或裸数字 | 取消标点层，并在同一次按键回调内按普通组合键重新分类 |
+
+若打开时已有 composition，表层冻结与现有高亮/整句规则一致的稳定候选 ID，选中标点后把文字与标点合并到同一 TSF edit session；无有效候选时拒绝打开。焦点、context、composition 或 Broker 恢复边界会先清除标点层。第一版不做成对插入、引号交替或提交后光标置中。
 
 ### E7：切换与退役
 

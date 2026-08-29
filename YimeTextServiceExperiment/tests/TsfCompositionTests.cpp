@@ -550,14 +550,14 @@ int wmain(int argc, wchar_t** argv) {
             shiftedState[VK_LSHIFT] = 0x80;
             SetKeyboardState(shiftedState);
             BOOL leaderTestEaten = FALSE;
-                require(keys->OnTestKeyDown(context, '0', 0, &leaderTestEaten),
+                require(keys->OnTestKeyDown(context, VK_OEM_5, 0, &leaderTestEaten),
                     "punctuation leader test key");
             BOOL leaderEaten = FALSE;
-                require(keys->OnKeyDown(context, '0', 0, &leaderEaten),
+                require(keys->OnKeyDown(context, VK_OEM_5, 0, &leaderEaten),
                     "punctuation leader key");
             SetKeyboardState(unshiftedState);
             if (!leaderTestEaten || !leaderEaten) {
-                throw std::runtime_error("Shift+0 did not open the punctuation palette");
+                throw std::runtime_error("Shift+backslash did not open the punctuation palette");
             }
         };
 
@@ -572,7 +572,7 @@ int wmain(int argc, wchar_t** argv) {
             !paletteDescription || std::wstring_view(paletteDescription).find(L"标点（中文）") ==
                                        std::wstring_view::npos ||
             FAILED(candidateElement->GetString(0, &paletteFirst)) || !paletteFirst ||
-            std::wstring_view(paletteFirst) != L"⇧1  ，") {
+            std::wstring_view(paletteFirst) != L"⇧1  ！") {
             if (paletteFirst) SysFreeString(paletteFirst);
             if (paletteDescription) SysFreeString(paletteDescription);
             if (candidateElement) candidateElement->Release();
@@ -593,7 +593,7 @@ int wmain(int argc, wchar_t** argv) {
         const int firstPunctuationY = 8 + punctuationRowHeight + punctuationRowHeight / 2;
         SendMessageW(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(20, firstPunctuationY));
         pumpPendingMessages();
-        if (readContext(context, clientId) != beforePaletteMouse + L"，" ||
+        if (readContext(context, clientId) != beforePaletteMouse + L"！" ||
             hasComposition(context) || IsWindowVisible(candidatePopup)) {
             throw std::runtime_error("mouse-selected punctuation did not commit once and close");
         }

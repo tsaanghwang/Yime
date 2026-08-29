@@ -80,7 +80,7 @@ std::wstring PunctuationPalette::Description() const {
 PunctuationDecision PunctuationPalette::Preview(WPARAM virtualKey, bool shiftDown,
                                                 bool controlDown, bool altDown) const noexcept {
     if (!active_ || controlDown || altDown) return {};
-    if (shiftDown && virtualKey == '0') {
+    if (shiftDown && virtualKey == VK_OEM_5) {
         return {PunctuationRoute::Cancel, 0, {}};
     }
     if (virtualKey == VK_ESCAPE || virtualKey == VK_BACK) {
@@ -100,6 +100,12 @@ PunctuationDecision PunctuationPalette::Preview(WPARAM virtualKey, bool shiftDow
     if (shiftDown && virtualKey >= '1' && virtualKey <= '9') {
         return {PunctuationRoute::SelectOrdinal,
                 static_cast<unsigned>(virtualKey - '0'), {}};
+    }
+    if (shiftDown && virtualKey == '0') {
+        std::string output;
+        if (TranslatePunctuationKey(virtualKey, true, asciiPunctuation_, fullShape_, &output)) {
+            return {PunctuationRoute::DirectCommit, 0, std::move(output)};
+        }
     }
     if (IsOemPunctuationKey(virtualKey)) {
         std::string output;
@@ -171,30 +177,22 @@ void PunctuationPalette::BuildPages() {
     const std::string prefix = asciiPunctuation_ ? "punct:ascii:" : "punct:zh:";
     pages_[0].reserve(9);
     static constexpr std::array<const char*, 9> firstPageIds = {
-        "comma", "period", "question", "exclamation", "semicolon",
-        "colon", "enumeration-comma", "ellipsis", "em-dash",
+        "digit-1", "digit-2", "digit-3", "digit-4", "digit-5",
+        "digit-6", "digit-7", "digit-8", "digit-9",
     };
     if (!asciiPunctuation_) {
         static constexpr std::array<const char*, 9> values = {
-            u8"，", u8"。", u8"？", u8"！", u8"；", u8"：", u8"、", u8"……", u8"——",
+            u8"！", u8"＠", u8"＃", u8"￥", u8"％", u8"……", u8"＆", u8"＊", u8"（",
         };
         for (size_t index = 0; index < values.size(); ++index) {
             pages_[0].push_back(Entry(prefix + firstPageIds[index], values[index]));
         }
     } else {
-        const std::array<std::pair<WPARAM, bool>, 7> keys = {{
-            {VK_OEM_COMMA, false}, {VK_OEM_PERIOD, false}, {VK_OEM_2, true},
-            {'1', true}, {VK_OEM_1, false}, {VK_OEM_1, true}, {VK_OEM_2, false},
-        }};
-        for (size_t index = 0; index < keys.size(); ++index) {
+        for (size_t index = 0; index < firstPageIds.size(); ++index) {
             pages_[0].push_back(Entry(prefix + firstPageIds[index],
-                                      ResolveAsciiKey(keys[index].first, keys[index].second,
+                                      ResolveAsciiKey(static_cast<WPARAM>('1' + index), true,
                                                       fullShape_)));
         }
-        pages_[0].push_back(Entry(prefix + firstPageIds[7],
-                                  fullShape_ ? u8"．．．" : "..."));
-        pages_[0].push_back(Entry(prefix + firstPageIds[8],
-                                  fullShape_ ? u8"－－" : "--"));
     }
 
     pages_[1].reserve(9);
