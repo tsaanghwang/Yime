@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <cwchar>
 #include <filesystem>
+#include <mutex>
+#include <unordered_map>
 #include <vector>
 
 #include "YimeTextServiceIds.h"
@@ -14,6 +16,9 @@ namespace {
 constexpr wchar_t kChinese[] = L"中";
 constexpr wchar_t kEnglish[] = L"英";
 constexpr wchar_t kTooltip[] = L"中英文切换；右键打开 Yime 自研栈试验版设置";
+constexpr UINT kToolbarRefreshMilliseconds = 200;
+std::mutex gRefreshTimersMutex;
+std::unordered_map<UINT_PTR, LanguageBarItem*> gRefreshTimers;
 
 BSTR copyText(const wchar_t* text) { return SysAllocString(text); }
 
@@ -30,6 +35,10 @@ std::wstring widenUtf8(const std::string& value) {
 
 const wchar_t* modeText(const yime::experiment::ExperimentSettings& settings) {
     return settings.asciiMode ? kEnglish : kChinese;
+}
+
+std::wstring defaultLanguageText(const yime::experiment::ExperimentSettings& settings) {
+    return settings.asciiMode ? L"默认语言：英文" : L"默认语言：中文";
 }
 
 HRESULT addMenuItem(ITfMenu* menu, UINT id, DWORD flags, const wchar_t* text,
@@ -161,10 +170,24 @@ LanguageBarItem::LanguageBarItem(std::wstring settingsPath, PopupPresenter prese
       presenterContext_(presenterContext),
       toolLauncher_(toolLauncher ? toolLauncher : LaunchTool),
       toolLauncherContext_(toolLauncherContext) {
-    lastAsciiMode_ = yime::experiment::LoadExperimentSettings(settingsPath_).asciiMode;
+        const auto settings = yime::experiment::LoadExperimentSettings(settingsPath_);
+        lastAsciiMode_ = settings.asciiMode;
+        lastFullShape_ = settings.fullShape;
+        lastAsciiPunctuation_ = settings.asciiPunctuation;
+        lastTraditionalization_ = settings.traditionalization;
+        refreshTimerId_ = SetTimer(nullptr, 0, kToolbarRefreshMilliseconds, RefreshTimerProc);
+        if (refreshTimerId_) {
+            const std::lock_guard<std::mutex> lock(gRefreshTimersMutex);
+            gRefreshTimers.emplace(refreshTimerId_, this);
+        }
 }
 
 LanguageBarItem::~LanguageBarItem() {
+    if (refreshTimerId_) {
+        KillTimer(nullptr, refreshTimerId_);
+        const std::lock_guard<std::mutex> lock(gRefreshTimersMutex);
+        gRefreshTimers.erase(refreshTimerId_);
+    }
     for (auto& sink : sinks_) sink.second->Release();
 }
 
@@ -228,8 +251,7 @@ STDMETHODIMP LanguageBarItem::GetTooltipString(BSTR* tooltip) {
 
 STDMETHODIMP LanguageBarItem::OnClick(TfLBIClick click, POINT point, const RECT*) {
     if (click == TF_LBI_CLK_LEFT) {
-        const bool asciiMode = yime::experiment::LoadExperimentSettings(settingsPath_).asciiMode;
-        const UINT command = asciiMode ? YIME_LBI_CHINESE : YIME_LBI_ENGLISH;
+        const UINT command = YIME_LBI_DEFAULT_LANGUAGE;
         const HRESULT result = Apply(command) ? S_OK : E_FAIL;
         recordHostEvent(settingsPath_, "left_click", command, result);
         return result;
@@ -255,45 +277,9 @@ STDMETHODIMP LanguageBarItem::OnClick(TfLBIClick click, POINT point, const RECT*
 STDMETHODIMP LanguageBarItem::InitMenu(ITfMenu* menu) {
     if (!menu) return E_POINTER;
     const auto settings = yime::experiment::LoadExperimentSettings(settingsPath_);
-    if (FAILED(addMenuItem(menu, YIME_LBI_CHINESE, checked(!settings.asciiMode), L"中文输入")) ||
-        FAILED(addMenuItem(menu, YIME_LBI_ENGLISH, checked(settings.asciiMode), L"英文输入")) ||
+    const auto language = defaultLanguageText(settings);
+    if (FAILED(addMenuItem(menu, YIME_LBI_DEFAULT_LANGUAGE, 0, language.c_str())) ||
         FAILED(addMenuItem(menu, 0, TF_LBMENUF_SEPARATOR, nullptr))) return E_FAIL;
-
-    ITfMenu* mode = nullptr;
-    if (FAILED(addMenuItem(menu, 0, TF_LBMENUF_SUBMENU, L"输入方案", &mode)) || !mode) return E_FAIL;
-    const bool modeOk = SUCCEEDED(addMenuItem(mode, YIME_LBI_MODE_VARIABLE,
-                                              checked(settings.mode == "variable"), L"变长模式")) &&
-                        SUCCEEDED(addMenuItem(mode, YIME_LBI_MODE_FULL,
-                                              checked(settings.mode == "full"), L"等长模式")) &&
-                        SUCCEEDED(addMenuItem(mode, YIME_LBI_MODE_SHORTHAND,
-                                              checked(settings.mode == "shorthand"), L"省键模式"));
-    mode->Release();
-    if (!modeOk) return E_FAIL;
-
-    ITfMenu* font = nullptr;
-    if (FAILED(addMenuItem(menu, 0, TF_LBMENUF_SUBMENU, L"候选字号", &font)) || !font) return E_FAIL;
-    const bool fontOk = SUCCEEDED(addMenuItem(font, YIME_LBI_FONT_SMALL,
-                                              checked(settings.candidateFontPreset == "small"), L"小")) &&
-                        SUCCEEDED(addMenuItem(font, YIME_LBI_FONT_MEDIUM,
-                                              checked(settings.candidateFontPreset == "medium"), L"中")) &&
-                        SUCCEEDED(addMenuItem(font, YIME_LBI_FONT_LARGE,
-                                              checked(settings.candidateFontPreset == "large"), L"大"));
-    font->Release();
-    if (!fontOk) return E_FAIL;
-
-    ITfMenu* annotation = nullptr;
-    if (FAILED(addMenuItem(menu, 0, TF_LBMENUF_SUBMENU, L"显示编码", &annotation)) || !annotation) return E_FAIL;
-    const bool annotationOk =
-        SUCCEEDED(addMenuItem(annotation, YIME_LBI_ANNOTATION_KEYS,
-                              checked(settings.candidateAnnotation == "key_sequence"), L"键位序列")) &&
-        SUCCEEDED(addMenuItem(annotation, YIME_LBI_ANNOTATION_YINYUAN,
-                              checked(settings.candidateAnnotation == "yinyuan"), L"音元")) &&
-        SUCCEEDED(addMenuItem(annotation, YIME_LBI_ANNOTATION_PINYIN,
-                              checked(settings.candidateAnnotation == "standard_pinyin"), L"标准拼音")) &&
-        SUCCEEDED(addMenuItem(annotation, YIME_LBI_ANNOTATION_HIDDEN,
-                              checked(settings.candidateAnnotation == "hidden"), L"隐藏"));
-    annotation->Release();
-    if (!annotationOk) return E_FAIL;
 
     ITfMenu* punctuation = nullptr;
     if (FAILED(addMenuItem(menu, 0, TF_LBMENUF_SUBMENU, L"标点样式", &punctuation)) ||
@@ -325,12 +311,12 @@ STDMETHODIMP LanguageBarItem::InitMenu(ITfMenu* menu) {
     script->Release();
     if (!scriptOk ||
         FAILED(addMenuItem(menu, 0, TF_LBMENUF_SEPARATOR, nullptr)) ||
-        FAILED(addMenuItem(menu, YIME_LBI_INPUT_TOOLBAR, 0, L"输入法工具栏")) ||
+        FAILED(addMenuItem(menu, YIME_LBI_INPUT_TOOLBAR, 0, L"基本设置")) ||
         FAILED(addMenuItem(menu, YIME_LBI_REVERSE_LOOKUP, 0, L"反查编码")) ||
         FAILED(addMenuItem(menu, YIME_LBI_USER_LEXICON, 0, L"用户词库")) ||
         FAILED(addMenuItem(menu, YIME_LBI_TRAINER_TOOL, 0, L"指法练习")) ||
         FAILED(addMenuItem(menu, YIME_LBI_TOOL_CENTER, 0, L"工具中心")) ||
-        FAILED(addMenuItem(menu, YIME_LBI_SETTINGS_TOOL, 0, L"设置工具"))) return E_FAIL;
+        FAILED(addMenuItem(menu, YIME_LBI_SETTINGS_TOOL, 0, L"候选设置"))) return E_FAIL;
     recordHostEvent(settingsPath_, "init_menu", 0, S_OK);
     return S_OK;
 }
@@ -343,8 +329,10 @@ STDMETHODIMP LanguageBarItem::OnMenuSelect(UINT id) {
 
 STDMETHODIMP LanguageBarItem::GetIcon(HICON* icon) {
     if (!icon) return E_POINTER;
-    const bool asciiMode = yime::experiment::LoadExperimentSettings(settingsPath_).asciiMode;
-    const int resource = asciiMode ? IDI_YIME_MODE_ENGLISH : IDI_YIME_MODE_CHINESE;
+    const auto settings = yime::experiment::LoadExperimentSettings(settingsPath_);
+    const int resource = settings.asciiMode
+        ? (settings.fullShape ? IDI_YIME_MODE_ENGLISH_FULL : IDI_YIME_MODE_ENGLISH_HALF)
+        : (settings.fullShape ? IDI_YIME_MODE_CHINESE_FULL : IDI_YIME_MODE_CHINESE_HALF);
     const HICON shared = static_cast<HICON>(LoadImageW(currentModule(), MAKEINTRESOURCEW(resource),
                                                        IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR));
     *icon = shared ? static_cast<HICON>(CopyImage(shared, IMAGE_ICON, 0, 0, 0)) : nullptr;
@@ -387,18 +375,7 @@ bool LanguageBarItem::Apply(UINT id) noexcept {
     using Command = yime::experiment::ExperimentSettingsCommand;
     Command command{};
     switch (id) {
-    case YIME_LBI_CHINESE: command = Command::Chinese; break;
-    case YIME_LBI_ENGLISH: command = Command::English; break;
-    case YIME_LBI_MODE_VARIABLE: command = Command::ModeVariable; break;
-    case YIME_LBI_MODE_FULL: command = Command::ModeFull; break;
-    case YIME_LBI_MODE_SHORTHAND: command = Command::ModeShorthand; break;
-    case YIME_LBI_FONT_SMALL: command = Command::FontSmall; break;
-    case YIME_LBI_FONT_MEDIUM: command = Command::FontMedium; break;
-    case YIME_LBI_FONT_LARGE: command = Command::FontLarge; break;
-    case YIME_LBI_ANNOTATION_KEYS: command = Command::AnnotationKeySequence; break;
-    case YIME_LBI_ANNOTATION_YINYUAN: command = Command::AnnotationYinyuan; break;
-    case YIME_LBI_ANNOTATION_PINYIN: command = Command::AnnotationStandardPinyin; break;
-    case YIME_LBI_ANNOTATION_HIDDEN: command = Command::AnnotationHidden; break;
+    case YIME_LBI_DEFAULT_LANGUAGE: command = Command::ToggleAscii; break;
     case YIME_LBI_PUNCTUATION_CHINESE: command = Command::PunctuationChinese; break;
     case YIME_LBI_PUNCTUATION_ENGLISH: command = Command::PunctuationEnglish; break;
     case YIME_LBI_SHAPE_HALF: command = Command::ShapeHalf; break;
@@ -410,46 +387,32 @@ bool LanguageBarItem::Apply(UINT id) noexcept {
     yime::experiment::ExperimentSettings updated;
     if (!yime::experiment::ApplyExperimentSettingsCommand(command, settingsPath_, &updated)) return false;
     const bool textChanged = updated.asciiMode != lastAsciiMode_;
+    const bool iconChanged = textChanged || updated.fullShape != lastFullShape_;
     lastAsciiMode_ = updated.asciiMode;
-    Notify(textChanged ? TF_LBI_TEXT | TF_LBI_ICON | TF_LBI_STATUS : TF_LBI_STATUS);
+    lastFullShape_ = updated.fullShape;
+    lastAsciiPunctuation_ = updated.asciiPunctuation;
+    lastTraditionalization_ = updated.traditionalization;
+    Notify(TF_LBI_STATUS | (textChanged ? TF_LBI_TEXT : 0) |
+        (iconChanged ? TF_LBI_ICON : 0));
     return true;
 }
 
 HMENU LanguageBarItem::BuildPopupMenu() const noexcept {
     const auto settings = yime::experiment::LoadExperimentSettings(settingsPath_);
     HMENU root = CreatePopupMenu();
-    HMENU mode = CreatePopupMenu();
-    HMENU font = CreatePopupMenu();
-    HMENU annotation = CreatePopupMenu();
     HMENU punctuation = CreatePopupMenu();
     HMENU shape = CreatePopupMenu();
     HMENU script = CreatePopupMenu();
-    if (!root || !mode || !font || !annotation || !punctuation || !shape || !script) {
+    if (!root || !punctuation || !shape || !script) {
         if (script) DestroyMenu(script);
         if (shape) DestroyMenu(shape);
         if (punctuation) DestroyMenu(punctuation);
-        if (annotation) DestroyMenu(annotation);
-        if (font) DestroyMenu(font);
-        if (mode) DestroyMenu(mode);
         if (root) DestroyMenu(root);
         return nullptr;
     }
-    AppendMenuW(root, win32Checked(!settings.asciiMode), YIME_LBI_CHINESE, L"中文输入");
-    AppendMenuW(root, win32Checked(settings.asciiMode), YIME_LBI_ENGLISH, L"英文输入");
+    const auto language = defaultLanguageText(settings);
+    AppendMenuW(root, MF_STRING, YIME_LBI_DEFAULT_LANGUAGE, language.c_str());
     AppendMenuW(root, MF_SEPARATOR, 0, nullptr);
-    AppendMenuW(mode, win32Checked(settings.mode == "variable"), YIME_LBI_MODE_VARIABLE, L"变长模式");
-    AppendMenuW(mode, win32Checked(settings.mode == "full"), YIME_LBI_MODE_FULL, L"等长模式");
-    AppendMenuW(mode, win32Checked(settings.mode == "shorthand"), YIME_LBI_MODE_SHORTHAND, L"省键模式");
-    AppendMenuW(root, MF_POPUP | MF_STRING, reinterpret_cast<UINT_PTR>(mode), L"输入方案");
-    AppendMenuW(font, win32Checked(settings.candidateFontPreset == "small"), YIME_LBI_FONT_SMALL, L"小");
-    AppendMenuW(font, win32Checked(settings.candidateFontPreset == "medium"), YIME_LBI_FONT_MEDIUM, L"中");
-    AppendMenuW(font, win32Checked(settings.candidateFontPreset == "large"), YIME_LBI_FONT_LARGE, L"大");
-    AppendMenuW(root, MF_POPUP | MF_STRING, reinterpret_cast<UINT_PTR>(font), L"候选字号");
-    AppendMenuW(annotation, win32Checked(settings.candidateAnnotation == "key_sequence"), YIME_LBI_ANNOTATION_KEYS, L"键位序列");
-    AppendMenuW(annotation, win32Checked(settings.candidateAnnotation == "yinyuan"), YIME_LBI_ANNOTATION_YINYUAN, L"音元");
-    AppendMenuW(annotation, win32Checked(settings.candidateAnnotation == "standard_pinyin"), YIME_LBI_ANNOTATION_PINYIN, L"标准拼音");
-    AppendMenuW(annotation, win32Checked(settings.candidateAnnotation == "hidden"), YIME_LBI_ANNOTATION_HIDDEN, L"隐藏");
-    AppendMenuW(root, MF_POPUP | MF_STRING, reinterpret_cast<UINT_PTR>(annotation), L"显示编码");
     AppendMenuW(punctuation, win32Checked(!settings.asciiPunctuation), YIME_LBI_PUNCTUATION_CHINESE, L"中文标点");
     AppendMenuW(punctuation, win32Checked(settings.asciiPunctuation), YIME_LBI_PUNCTUATION_ENGLISH, L"英文标点");
     AppendMenuW(root, MF_POPUP | MF_STRING, reinterpret_cast<UINT_PTR>(punctuation), L"标点样式");
@@ -460,12 +423,12 @@ HMENU LanguageBarItem::BuildPopupMenu() const noexcept {
     AppendMenuW(script, win32Checked(settings.traditionalization), YIME_LBI_SCRIPT_TRADITIONAL, L"繁体");
     AppendMenuW(root, MF_POPUP | MF_STRING, reinterpret_cast<UINT_PTR>(script), L"汉字字形");
     AppendMenuW(root, MF_SEPARATOR, 0, nullptr);
-    AppendMenuW(root, MF_STRING, YIME_LBI_INPUT_TOOLBAR, L"输入法工具栏");
+    AppendMenuW(root, MF_STRING, YIME_LBI_INPUT_TOOLBAR, L"基本设置");
     AppendMenuW(root, MF_STRING, YIME_LBI_REVERSE_LOOKUP, L"反查编码");
     AppendMenuW(root, MF_STRING, YIME_LBI_USER_LEXICON, L"用户词库");
     AppendMenuW(root, MF_STRING, YIME_LBI_TRAINER_TOOL, L"指法练习");
     AppendMenuW(root, MF_STRING, YIME_LBI_TOOL_CENTER, L"工具中心");
-    AppendMenuW(root, MF_STRING, YIME_LBI_SETTINGS_TOOL, L"设置工具");
+    AppendMenuW(root, MF_STRING, YIME_LBI_SETTINGS_TOOL, L"候选设置");
     return root;
 }
 
@@ -530,10 +493,28 @@ bool LanguageBarItem::LaunchTool(UINT command, const std::wstring& settingsPath,
 }
 
 void LanguageBarItem::Refresh() noexcept {
-    const bool asciiMode = yime::experiment::LoadExperimentSettings(settingsPath_).asciiMode;
-    if (asciiMode == lastAsciiMode_) return;
-    lastAsciiMode_ = asciiMode;
-    Notify(TF_LBI_TEXT | TF_LBI_ICON | TF_LBI_STATUS);
+    const auto settings = yime::experiment::LoadExperimentSettings(settingsPath_);
+    const bool textChanged = settings.asciiMode != lastAsciiMode_;
+    const bool iconChanged = textChanged || settings.fullShape != lastFullShape_;
+    const bool menuChanged = settings.asciiPunctuation != lastAsciiPunctuation_ ||
+                             settings.traditionalization != lastTraditionalization_;
+    if (!textChanged && !iconChanged && !menuChanged) return;
+    lastAsciiMode_ = settings.asciiMode;
+    lastFullShape_ = settings.fullShape;
+    lastAsciiPunctuation_ = settings.asciiPunctuation;
+    lastTraditionalization_ = settings.traditionalization;
+    Notify(TF_LBI_STATUS | (textChanged ? TF_LBI_TEXT : 0) |
+           (iconChanged ? TF_LBI_ICON : 0));
+}
+
+void CALLBACK LanguageBarItem::RefreshTimerProc(HWND, UINT, UINT_PTR timerId, DWORD) noexcept {
+    LanguageBarItem* item = nullptr;
+    {
+        const std::lock_guard<std::mutex> lock(gRefreshTimersMutex);
+        const auto found = gRefreshTimers.find(timerId);
+        if (found != gRefreshTimers.end()) item = found->second;
+    }
+    if (item) item->Refresh();
 }
 
 void LanguageBarItem::Notify(DWORD flags) noexcept {

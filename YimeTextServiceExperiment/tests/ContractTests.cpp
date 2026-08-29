@@ -105,12 +105,24 @@ private:
     std::atomic<ULONG> references_{1};
 };
 
-UINT selectChineseFromPopup(HMENU menu, POINT, void* context) noexcept {
+bool waitForLanguageBarUpdate(FakeLanguageBarSink& sink, DWORD flags, DWORD timeoutMs = 1000) {
+       const ULONGLONG deadline = GetTickCount64() + timeoutMs;
+       while ((sink.updates & flags) != flags && GetTickCount64() < deadline) {
+              MSG message{};
+              while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) {
+                     TranslateMessage(&message);
+                     DispatchMessageW(&message);
+              }
+              Sleep(10);
+       }
+       return (sink.updates & flags) == flags;
+}
+
+UINT toggleDefaultLanguageFromPopup(HMENU menu, POINT, void* context) noexcept {
     auto* seen = static_cast<bool*>(context);
-       *seen = menu && GetMenuItemCount(menu) == 16 && GetSubMenu(menu, 3) &&
-            GetSubMenu(menu, 4) && GetSubMenu(menu, 5) && GetSubMenu(menu, 6) &&
-            GetSubMenu(menu, 7) && GetSubMenu(menu, 8);
-    return YIME_LBI_CHINESE;
+       *seen = menu && GetMenuItemCount(menu) == 12 && GetSubMenu(menu, 2) &&
+                     GetSubMenu(menu, 3) && GetSubMenu(menu, 4);
+       return YIME_LBI_DEFAULT_LANGUAGE;
 }
 
 bool recordToolLaunch(UINT command, const std::wstring&, void* context) noexcept {
@@ -490,18 +502,49 @@ void testCandidateElement() {
 }
 
 void testOwnedCandidatePopup() {
-    CandidatePopup popup;
+       const std::wstring settingsPath = temporaryStatePath(L"candidate-popup-font-settings.json");
+       auto replaceFontSettings = [&](const char* preset, std::int64_t revision) {
+              const std::wstring temporaryPath = settingsPath + L".tmp";
+              DeleteFileW(temporaryPath.c_str());
+              {
+                     std::ofstream output(std::filesystem::path(temporaryPath),
+                                                         std::ios::binary | std::ios::trunc);
+                     output << R"({"version":1,"candidate_font_preset":")" << preset
+                               << R"(","revision":)" << revision << "}\n";
+              }
+              expect(MoveFileExW(temporaryPath.c_str(), settingsPath.c_str(),
+                                             MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) != FALSE,
+                        "could not atomically replace candidate popup font settings");
+       };
+       DeleteFileW(settingsPath.c_str());
+       replaceFontSettings("medium", 1);
+       CandidatePopup popup(settingsPath);
     expect(popup.FontPoints() == 12, "candidate popup medium font is not 12 points");
+    expect(popup.FontFamily() == L"Microsoft YaHei UI",
+           "candidate popup did not retain its current font as the default");
+    popup.SetFontFamily(L"system-ui");
+    expect(popup.FontFamily() == L"system-ui", "candidate popup rejected the system UI font");
+    expect(popup.EffectiveFontFamily() == L"system-ui",
+           "candidate popup changed the configured UI font without Yinyuan annotations");
+    popup.SetUseYinyuanFont(true);
+    expect(popup.UsesYinyuanFont() && popup.EffectiveFontFamily() == L"YinYuan",
+           "Yinyuan annotations did not force the private PUA font over the configured UI font");
+    popup.SetUseYinyuanFont(false);
+    expect(!popup.UsesYinyuanFont() && popup.EffectiveFontFamily() == L"system-ui",
+           "candidate popup did not restore the configured UI font after Yinyuan annotations");
+    popup.SetFontFamily(L"YinYuan");
+    expect(popup.FontFamily() == L"YinYuan" && popup.UsesYinyuanFont() &&
+               popup.EffectiveFontFamily() == L"YinYuan",
+           "candidate popup rejected the explicit Yinyuan font option");
+    popup.SetFontFamily(L"unsupported");
+    expect(popup.FontFamily() == L"Microsoft YaHei UI",
+           "candidate popup invalid font did not return to the current font");
     popup.SetFontPoints(10);
     expect(popup.FontPoints() == 10, "candidate popup small font was rejected");
     popup.SetFontPoints(16);
     expect(popup.FontPoints() == 16, "candidate popup large font was rejected");
     popup.SetFontPoints(99);
     expect(popup.FontPoints() == 12, "candidate popup invalid font did not return to medium");
-    popup.SetUseYinyuanFont(true);
-    expect(popup.UsesYinyuanFont(), "candidate popup did not select the Yinyuan font");
-    popup.SetUseYinyuanFont(false);
-    expect(!popup.UsesYinyuanFont(), "candidate popup did not restore the UI font");
     popup.SetForgetEnabled(false);
     expect(!popup.ForgetEnabled(), "punctuation popup did not disable lexical forgetting");
     popup.SetForgetEnabled(true);
@@ -544,6 +587,22 @@ void testOwnedCandidatePopup() {
     popup.Show(true);
     const HWND window = popup.Window();
     expect(window && IsWindow(window), "owned candidate popup window missing");
+    SendMessageW(window, WM_TIMER, CandidatePopup::SettingsRefreshTimerId, 0);
+    const LONG mediumHeight = popup.Bounds().bottom - popup.Bounds().top;
+    replaceFontSettings("large", 2);
+    SendMessageW(window, WM_TIMER, CandidatePopup::SettingsRefreshTimerId, 0);
+    const LONG largeHeight = popup.Bounds().bottom - popup.Bounds().top;
+    expect(popup.FontPoints() == 16 && largeHeight > mediumHeight,
+           "visible candidate popup did not apply the external 16-point preset");
+    replaceFontSettings("small", 3);
+    SendMessageW(window, WM_TIMER, CandidatePopup::SettingsRefreshTimerId, 0);
+    const LONG smallHeight = popup.Bounds().bottom - popup.Bounds().top;
+    expect(popup.FontPoints() == 10 && smallHeight < largeHeight,
+           "visible candidate popup did not apply the external 10-point preset");
+    replaceFontSettings("medium", 4);
+    SendMessageW(window, WM_TIMER, CandidatePopup::SettingsRefreshTimerId, 0);
+    expect(popup.FontPoints() == 12,
+           "visible candidate popup did not restore the external 12-point preset");
     expect(popup.Count() == 9, "owned candidate popup exceeded Shift ordinal count");
     expect((GetWindowLongPtrW(window, GWL_EXSTYLE) & (WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW)) ==
                (WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW),
@@ -659,6 +718,7 @@ void testOwnedCandidatePopup() {
     expect(!IsWindowVisible(window), "owned candidate popup did not hide");
     popup.Destroy();
     expect(!IsWindow(window), "owned candidate popup did not destroy its HWND");
+       DeleteFileW(settingsPath.c_str());
 }
 
 void testExperimentSettings() {
@@ -667,10 +727,25 @@ void testExperimentSettings() {
     expect(missing.mode == "variable", "experiment default mode is not variable");
     expect(missing.candidateFontPreset == "medium" && missing.candidateFontPoints == 12,
            "experiment medium font default is not 12 points");
+    expect(missing.candidateFontFamily == "Microsoft YaHei UI",
+           "experiment candidate font family did not preserve the current font default");
     expect(missing.candidateAnnotation == "key_sequence",
            "experiment candidate encoding default is not key sequence");
     expect(missing.candidatePageSize == 5 && missing.candidateLayout == "vertical",
            "experiment candidate count/layout defaults do not match the production UI");
+
+       const std::wstring fontPath = temporaryStatePath(L"yinyuan-font-settings.json");
+       {
+              std::ofstream output(std::filesystem::path(fontPath), std::ios::binary | std::ios::trunc);
+              output << R"({"version":1,"candidate_font_preset":"large","candidate_font_family":"YinYuan","candidate_annotation":"yinyuan"})";
+       }
+       const auto yinyuanFont = LoadExperimentSettings(fontPath);
+       expect(yinyuanFont.candidateFontPreset == "large" &&
+                        yinyuanFont.candidateFontPoints == 16 &&
+                        yinyuanFont.candidateFontFamily == "YinYuan" &&
+                        yinyuanFont.candidateAnnotation == "yinyuan",
+                 "experiment settings discarded the candidate size or required Yinyuan PUA font");
+       DeleteFileW(fontPath.c_str());
 
     const std::wstring path = temporaryStatePath(L"settings.json");
     DeleteFileW(path.c_str());
@@ -694,7 +769,7 @@ void testLanguageBarItem() {
            "could not seed language-bar state");
     bool popupSeen = false;
     UINT launchedTool = 0;
-    auto* item = new LanguageBarItem(path, selectChineseFromPopup, &popupSeen,
+       auto* item = new LanguageBarItem(path, toggleDefaultLanguageFromPopup, &popupSeen,
                                      recordToolLaunch, &launchedTool);
     TF_LANGBARITEMINFO info{};
     expect(item->GetInfo(&info) == S_OK, "language bar GetInfo failed");
@@ -725,52 +800,48 @@ void testLanguageBarItem() {
            "language bar menu path must validate the host ITfMenu callback");
 
     auto* menu = new FakeMenu();
-       expect(item->InitMenu(menu) == S_OK && menu->entries.size() == 16,
+    expect(item->InitMenu(menu) == S_OK && menu->entries.size() == 12,
            "host right-click path did not build the complete trial menu");
-    expect(menu->entries[3].text == L"输入方案" && menu->entries[3].submenu &&
-               menu->entries[3].submenu->entries.size() == 3,
-           "input scheme cascade is missing");
-    expect(menu->entries[4].text == L"候选字号" && menu->entries[4].submenu &&
-               menu->entries[4].submenu->entries.size() == 3,
-           "candidate font cascade is missing");
-    expect(menu->entries[5].text == L"显示编码" && menu->entries[5].submenu &&
-               menu->entries[5].submenu->entries.size() == 4,
-           "candidate annotation cascade is missing");
-    expect(menu->entries[6].text == L"标点样式" && menu->entries[6].submenu &&
-               menu->entries[6].submenu->entries.size() == 2 &&
-               menu->entries[6].submenu->entries[0].id == YIME_LBI_PUNCTUATION_CHINESE &&
-               menu->entries[6].submenu->entries[1].id == YIME_LBI_PUNCTUATION_ENGLISH,
+    expect(menu->entries[0].id == YIME_LBI_DEFAULT_LANGUAGE &&
+               menu->entries[0].text == L"默认语言：中文" && !menu->entries[0].submenu,
+           "default language toggle is missing or does not show its current state");
+    expect((menu->entries[1].flags & TF_LBMENUF_SEPARATOR) != 0,
+           "default language toggle is not separated from output settings");
+    expect(menu->entries[2].text == L"标点样式" && menu->entries[2].submenu &&
+               menu->entries[2].submenu->entries.size() == 2 &&
+               menu->entries[2].submenu->entries[0].id == YIME_LBI_PUNCTUATION_CHINESE &&
+               menu->entries[2].submenu->entries[1].id == YIME_LBI_PUNCTUATION_ENGLISH,
            "Chinese/English punctuation cascade is missing");
-    expect(menu->entries[7].text == L"字符宽度" && menu->entries[7].submenu &&
-               menu->entries[7].submenu->entries.size() == 2 &&
-               menu->entries[7].submenu->entries[0].id == YIME_LBI_SHAPE_HALF &&
-               menu->entries[7].submenu->entries[1].id == YIME_LBI_SHAPE_FULL,
+    expect(menu->entries[3].text == L"字符宽度" && menu->entries[3].submenu &&
+               menu->entries[3].submenu->entries.size() == 2 &&
+               menu->entries[3].submenu->entries[0].id == YIME_LBI_SHAPE_HALF &&
+               menu->entries[3].submenu->entries[1].id == YIME_LBI_SHAPE_FULL,
            "half/full-width cascade is missing");
-    expect(menu->entries[8].text == L"汉字字形" && menu->entries[8].submenu &&
-               menu->entries[8].submenu->entries.size() == 2 &&
-               menu->entries[8].submenu->entries[0].id == YIME_LBI_SCRIPT_SIMPLIFIED &&
-               menu->entries[8].submenu->entries[1].id == YIME_LBI_SCRIPT_TRADITIONAL,
+    expect(menu->entries[4].text == L"汉字字形" && menu->entries[4].submenu &&
+               menu->entries[4].submenu->entries.size() == 2 &&
+               menu->entries[4].submenu->entries[0].id == YIME_LBI_SCRIPT_SIMPLIFIED &&
+               menu->entries[4].submenu->entries[1].id == YIME_LBI_SCRIPT_TRADITIONAL,
            "simplified/traditional cascade is missing");
-    expect((menu->entries[9].flags & TF_LBMENUF_SEPARATOR) != 0,
+    expect((menu->entries[5].flags & TF_LBMENUF_SEPARATOR) != 0,
            "tool commands are not separated from composition settings");
-       expect(menu->entries[10].id == YIME_LBI_INPUT_TOOLBAR &&
-                        menu->entries[10].text == L"输入法工具栏" &&
-               (menu->entries[10].flags & TF_LBMENUF_CHECKED) == 0,
-                 "input toolbar must be present and default off");
-    expect(menu->entries[11].id == YIME_LBI_REVERSE_LOOKUP &&
-               menu->entries[11].text == L"反查编码",
+    expect(menu->entries[6].id == YIME_LBI_INPUT_TOOLBAR &&
+               menu->entries[6].text == L"基本设置" &&
+               (menu->entries[6].flags & TF_LBMENUF_CHECKED) == 0,
+           "basic settings must still launch the input toolbar");
+    expect(menu->entries[7].id == YIME_LBI_REVERSE_LOOKUP &&
+               menu->entries[7].text == L"反查编码",
            "reverse-lookup host click path is missing");
-    expect(menu->entries[12].id == YIME_LBI_USER_LEXICON &&
-               menu->entries[12].text == L"用户词库",
+    expect(menu->entries[8].id == YIME_LBI_USER_LEXICON &&
+               menu->entries[8].text == L"用户词库",
            "user-lexicon host click path is missing");
-       expect(menu->entries[13].id == YIME_LBI_TRAINER_TOOL &&
-                        menu->entries[13].text == L"指法练习",
-                 "trainer host click path is missing");
-       expect(menu->entries[14].id == YIME_LBI_TOOL_CENTER &&
-                        menu->entries[14].text == L"工具中心",
-                 "tool-center host click path is missing");
-       expect(menu->entries[15].id == YIME_LBI_SETTINGS_TOOL &&
-                        menu->entries[15].text == L"设置工具",
+    expect(menu->entries[9].id == YIME_LBI_TRAINER_TOOL &&
+               menu->entries[9].text == L"指法练习",
+           "trainer host click path is missing");
+    expect(menu->entries[10].id == YIME_LBI_TOOL_CENTER &&
+               menu->entries[10].text == L"工具中心",
+           "tool-center host click path is missing");
+    expect(menu->entries[11].id == YIME_LBI_SETTINGS_TOOL &&
+               menu->entries[11].text == L"候选设置",
            "settings-tool host click path is missing");
     menu->Release();
 
@@ -781,6 +852,38 @@ void testLanguageBarItem() {
     DWORD cookie = 0;
     expect(source && source->AdviseSink(__uuidof(ITfLangBarItemSink), &sink, &cookie) == S_OK,
            "language bar sink subscription failed");
+    const auto expectToolbarRefresh = [&](ExperimentSettingsCommand command, DWORD flags,
+                                          const char* applyFailure, const char* refreshFailure) {
+        ExperimentSettings toolbarUpdate;
+        sink.updates = 0;
+        expect(ApplyExperimentSettingsCommand(command, path, &toolbarUpdate), applyFailure);
+        expect(waitForLanguageBarUpdate(sink, flags), refreshFailure);
+    };
+    expectToolbarRefresh(ExperimentSettingsCommand::English, TF_LBI_TEXT | TF_LBI_ICON,
+                         "could not simulate the desktop toolbar English command",
+                         "desktop toolbar language change did not refresh the language-bar text and icon");
+    expectToolbarRefresh(ExperimentSettingsCommand::Chinese, TF_LBI_TEXT | TF_LBI_ICON,
+                         "could not restore the desktop toolbar Chinese command",
+                         "desktop toolbar language restore did not refresh the language-bar text and icon");
+    expectToolbarRefresh(ExperimentSettingsCommand::ShapeFull, TF_LBI_ICON,
+                         "could not simulate the desktop toolbar full-width command",
+                         "desktop toolbar width change did not refresh the language-bar icon");
+    expectToolbarRefresh(ExperimentSettingsCommand::ShapeHalf, TF_LBI_ICON,
+                         "could not restore the desktop toolbar half-width command",
+                         "desktop toolbar width restore did not refresh the language-bar icon");
+    expectToolbarRefresh(ExperimentSettingsCommand::PunctuationEnglish, TF_LBI_STATUS,
+                         "could not simulate the desktop toolbar English-punctuation command",
+                         "desktop toolbar punctuation change did not refresh the language-bar menu state");
+    expectToolbarRefresh(ExperimentSettingsCommand::PunctuationChinese, TF_LBI_STATUS,
+                         "could not restore the desktop toolbar Chinese-punctuation command",
+                         "desktop toolbar punctuation restore did not refresh the language-bar menu state");
+    expectToolbarRefresh(ExperimentSettingsCommand::ScriptTraditional, TF_LBI_STATUS,
+                         "could not simulate the desktop toolbar Traditional command",
+                         "desktop toolbar script change did not refresh the language-bar menu state");
+    expectToolbarRefresh(ExperimentSettingsCommand::ScriptSimplified, TF_LBI_STATUS,
+                         "could not restore the desktop toolbar Simplified command",
+                         "desktop toolbar script restore did not refresh the language-bar menu state");
+    sink.updates = 0;
     expect(item->OnClick(TF_LBI_CLK_LEFT, {}, nullptr) == S_OK,
            "desktop language-bar left click did not toggle to English");
     text = nullptr;
@@ -796,16 +899,18 @@ void testLanguageBarItem() {
     expect(item->OnClick(TF_LBI_CLK_RIGHT, {}, nullptr) == S_OK && popupSeen,
            "docked taskbar right click did not route through the cascading popup");
     expect(!LoadExperimentSettings(path).asciiMode,
-           "taskbar popup command did not switch back to Chinese");
-    expect(item->OnMenuSelect(YIME_LBI_MODE_FULL) == S_OK &&
-               LoadExperimentSettings(path).mode == "full",
-           "host submenu click did not persist the requested trial mode");
+           "default-language popup command did not switch back to Chinese");
+       expect(item->OnMenuSelect(0x6C11) == E_INVALIDARG,
+                 "removed input-scheme language-bar command remains reachable");
     expect(item->OnMenuSelect(YIME_LBI_PUNCTUATION_CHINESE) == S_OK &&
                !LoadExperimentSettings(path).asciiPunctuation,
            "host submenu click did not select Chinese punctuation");
+       sink.updates = 0;
     expect(item->OnMenuSelect(YIME_LBI_SHAPE_FULL) == S_OK &&
                LoadExperimentSettings(path).fullShape,
            "host submenu click did not select full-width output");
+       expect((sink.updates & TF_LBI_ICON) != 0,
+                 "full-width selection did not refresh the four-state language icon");
     expect(item->OnMenuSelect(YIME_LBI_SCRIPT_TRADITIONAL) == S_OK &&
                LoadExperimentSettings(path).traditionalization,
            "host submenu click did not select Traditional output");

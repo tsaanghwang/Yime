@@ -612,6 +612,33 @@ int wmain(int argc, wchar_t** argv) {
         }
         std::cout << "physical_mouse_candidate_selection_verified=true\n";
 
+        const unsigned punctuationExtentCalls = owner->TextExtentCalls();
+        BYTE punctuationKeyboard[256]{};
+        GetKeyboardState(punctuationKeyboard);
+        BYTE punctuationShifted[256]{};
+        CopyMemory(punctuationShifted, punctuationKeyboard, sizeof(punctuationKeyboard));
+        punctuationShifted[VK_SHIFT] = 0x80;
+        punctuationShifted[VK_LSHIFT] = 0x80;
+        SetKeyboardState(punctuationShifted);
+        dispatchKey(keystrokes, VK_OEM_5);
+        SetKeyboardState(punctuationKeyboard);
+        popup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+        if (!popup || !IsWindowVisible(popup) ||
+            !GetPropW(popup, L"YimeTextServiceExperimentTextExtentAnchor") ||
+            owner->TextExtentCalls() <= punctuationExtentCalls) {
+            throw std::runtime_error("registered punctuation popup did not use the host focus text extent");
+        }
+        GetWindowRect(popup, &popupBounds);
+        owner->GetTextExt(1, 0, 0, &expected, &clipped);
+        if (popupBounds.left != expected.left || popupBounds.top != expected.bottom) {
+            throw std::runtime_error("registered punctuation popup moved away from the host input focus");
+        }
+        dispatchKey(keystrokes, VK_ESCAPE);
+        if (IsWindowVisible(popup)) {
+            throw std::runtime_error("registered punctuation popup remained visible after cancellation");
+        }
+        std::cout << "punctuation_text_extent_anchor_verified=true\n";
+
         dispatchKey(keystrokes, '2');
         popup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
         if (!popup || !IsWindowVisible(popup)) {

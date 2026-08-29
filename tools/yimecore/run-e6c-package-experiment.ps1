@@ -74,6 +74,9 @@ $sharedDataRoot = Join-Path $repoRoot 'go-backend\input_methods\yime\data'
 $trainerDataFiles = @(
     'yime_yinyuan_layout.json',
     'yime_pinyin_codes.tsv',
+    'pinyin_normalized.json',
+    'yime_pua_pinyin.json',
+    'fonts\YinYuan-Regular.ttf',
     'yime_full.dict.yaml',
     'yime_variable.dict.yaml',
     'yime_shorthand.dict.yaml',
@@ -459,6 +462,9 @@ $sourceFiles = @(
     'go-backend\input_methods\yime\yimecore\userlexicon_overlay.go',
     'go-backend\input_methods\yime\candidateannotation\annotation.go',
     'go-backend\input_methods\yime\candidateannotation\annotation_test.go',
+    'go-backend\input_methods\yime\data\pinyin_normalized.json',
+    'go-backend\input_methods\yime\data\yime_pua_pinyin.json',
+    'go-backend\input_methods\yime\data\fonts\YinYuan-Regular.ttf',
     'go-backend\input_methods\yime\candidatefilter\filter.go',
     'go-backend\input_methods\yime\candidatefilter\filter_test.go',
     'go-backend\input_methods\yime\reverselookup\index.go',
@@ -501,6 +507,8 @@ $sourceFiles = @(
     'YimeTextServiceExperiment\PunctuationPalette.cpp',
     'go-backend\input_methods\yime\icons\chi_half_capsoff.ico',
     'go-backend\input_methods\yime\icons\eng_half_capsoff.ico',
+    'go-backend\input_methods\yime\icons\chi_full_capsoff.ico',
+    'go-backend\input_methods\yime\icons\eng_full_capsoff.ico',
     'go-backend\input_methods\yime\icon.ico',
     'YimeTextServiceExperiment\assets\yimecore-trial-profile.png',
     'YimeTextServiceExperiment\assets\yimecore-trial-profile.ico',
@@ -578,6 +586,7 @@ $summary = [ordered]@{
     dynamic_sentence_evidence_path = $dynamicSentenceEvidencePath
     dynamic_sentence_evidence_sha256 = (Get-FileHash -LiteralPath $dynamicSentenceEvidencePath -Algorithm SHA256).Hash.ToLowerInvariant()
     native_input_toolbar_packaged = [bool]$installationEvidence.native_input_toolbar_windows_gui
+    yinyuan_private_font_packaged = [bool]$installationEvidence.yinyuan_private_font_packaged
     legacy_desktop_tools_removed = [bool]($installationEvidence.legacy_trial_toolbar_absent -and
         $installationEvidence.input_toolbar_powershell_ui_absent)
     runtime_supervisor_packaged = Test-Path -LiteralPath $runtime
@@ -627,7 +636,8 @@ if (-not $summary.base_package_hash_handoff_verified -or
     -not $summary.prefix_tree_monotonicity_passed -or
     -not $summary.generated_sentence_first_candidate_passed -or
     -not $summary.dynamic_sentence_real_indexes_passed -or
-    -not $summary.native_input_toolbar_packaged -or -not $summary.legacy_desktop_tools_removed -or
+    -not $summary.native_input_toolbar_packaged -or -not $summary.yinyuan_private_font_packaged -or
+    -not $summary.legacy_desktop_tools_removed -or
     -not $summary.runtime_supervisor_packaged -or -not $summary.runtime_supervisor_broker_recovery_passed -or
     -not $summary.language_bar_x64_x86_passed -or
     -not $summary.installed_apps_uninstall_contract_passed -or

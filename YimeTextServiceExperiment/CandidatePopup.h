@@ -3,9 +3,11 @@
 #include <windows.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "BrokerClient.h"
+#include "ExperimentSettings.h"
 
 class CandidatePopup final {
 public:
@@ -16,7 +18,9 @@ public:
     using PopupPresenter = UINT (*)(HMENU menu, POINT point, HWND owner,
                                     void* context) noexcept;
 
-    CandidatePopup() noexcept = default;
+    explicit CandidatePopup(
+        std::wstring settingsPath = yime::experiment::ResolveExperimentSettingsPath()) noexcept
+        : liveSettings_(std::move(settingsPath)) {}
     ~CandidatePopup();
 
     CandidatePopup(const CandidatePopup&) = delete;
@@ -56,6 +60,7 @@ public:
     void Show(bool show) noexcept;
     void Destroy() noexcept;
     void SetFontPoints(int points) noexcept;
+    void SetFontFamily(const std::wstring& family) noexcept;
     void SetUseYinyuanFont(bool useYinyuan) noexcept;
     void SetHorizontal(bool horizontal) noexcept { horizontal_ = horizontal; }
 
@@ -66,7 +71,13 @@ public:
 			   (sentenceSegments_.empty() ? 0 : 1) + (status_.empty() ? 0 : 1);
     }
     int FontPoints() const noexcept { return fontPoints_; }
-    bool UsesYinyuanFont() const noexcept { return useYinyuanFont_; }
+    const std::wstring& FontFamily() const noexcept { return fontFamily_; }
+    bool UsesYinyuanFont() const noexcept {
+        return useYinyuanFont_ || fontFamily_ == L"YinYuan";
+    }
+    std::wstring EffectiveFontFamily() const {
+        return UsesYinyuanFont() ? L"YinYuan" : fontFamily_;
+    }
     bool IsHorizontal() const noexcept { return horizontal_; }
     int TextColumnLeft() const noexcept { return padding_ + textColumnOffset_; }
     RECT Bounds() const noexcept;
@@ -74,10 +85,13 @@ public:
     static constexpr const wchar_t* ClassName() noexcept {
         return L"YimeTextServiceExperimentCandidatePopup";
     }
+    static constexpr UINT_PTR SettingsRefreshTimerId = 1;
 
 private:
     static LRESULT CALLBACK WindowProcedure(HWND window, UINT message, WPARAM wParam, LPARAM lParam) noexcept;
     bool EnsureWindow(HWND owner) noexcept;
+    void RefreshDisplaySettings() noexcept;
+    void RefreshLayout(const RECT& anchor) noexcept;
     void Reposition(const RECT& anchor) noexcept;
     void Paint() noexcept;
     void TrackAt(LPARAM lParam) noexcept;
@@ -92,6 +106,8 @@ private:
     void ReleasePrivateYinyuanFont() noexcept;
 
     HWND window_ = nullptr;
+    RECT anchor_{};
+    yime::experiment::ExperimentSettingsCache liveSettings_;
     std::vector<std::wstring> candidates_;
     std::vector<int> candidateWidths_;
     struct SentenceSegmentCell {
@@ -109,6 +125,7 @@ private:
     int rowHeight_ = 0;
     int padding_ = 8;
     int fontPoints_ = 12;
+    std::wstring fontFamily_ = L"Microsoft YaHei UI";
     HFONT font_ = nullptr;
     bool useYinyuanFont_ = false;
     bool horizontal_ = false;

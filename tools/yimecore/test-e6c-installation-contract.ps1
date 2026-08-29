@@ -70,6 +70,8 @@ $result = [ordered]@{
     exact_trial_clsid_scoped = [bool]($managerText.Contains('{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'))
     secondary_architecture_com_only = [bool]($managerText -match 'Invoke-Registration \$x86Tool ''register-com''')
     profile_keyboard_icon_packaged = [bool](Test-Path -LiteralPath $profileIcon -PathType Leaf)
+    yinyuan_private_font_packaged = [bool](Test-Path -LiteralPath `
+        (Join-Path $packageRootPath 'data\fonts\YinYuan-Regular.ttf') -PathType Leaf)
     trial_tools_packaged = [bool]((@(
         'YimeCoreInputToolbar.exe', 'YimeCoreReverseLookup.exe',
         'YimeCoreLexiconManager.exe', 'YimeCoreTrainer.exe', 'YimeCoreToolCenter.exe',
@@ -124,6 +126,7 @@ if ($result.installed_apps_entry_planned -ne $true -or
     $result.exact_trial_clsid_scoped -ne $true -or
     $result.secondary_architecture_com_only -ne $true -or
     $result.profile_keyboard_icon_packaged -ne $true -or
+    $result.yinyuan_private_font_packaged -ne $true -or
     $result.trial_tools_packaged -ne $true -or
 	$result.help_files_packaged -ne $true -or
     $result.trainer_data_packaged -ne $true -or

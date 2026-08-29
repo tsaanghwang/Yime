@@ -15,6 +15,7 @@ struct ExperimentSettings {
     int candidatePageSize = 5;
     std::string candidateLayout = "vertical";
     std::string candidateFontPreset = "medium";
+    std::string candidateFontFamily = "Microsoft YaHei UI";
     std::string candidateAnnotation = "key_sequence";
     int candidateFontPoints = 12;
     std::int64_t revision = 0;

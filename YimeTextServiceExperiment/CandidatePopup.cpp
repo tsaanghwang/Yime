@@ -11,6 +11,7 @@ namespace {
 constexpr wchar_t kSentenceLabel[] = L"句:";
 constexpr wchar_t kQuickForgetLabel[] = L"快速遗忘（清除学习）";
 constexpr UINT kQuickForgetCommand = 1;
+constexpr UINT kSettingsRefreshMilliseconds = 250;
 
 HINSTANCE currentModule() noexcept {
     HMODULE module = nullptr;
@@ -45,16 +46,34 @@ void CandidatePopup::SetFontPoints(int points) noexcept {
     }
 }
 
+void CandidatePopup::SetFontFamily(const std::wstring& family) noexcept {
+    const std::wstring normalized = family == L"system-ui" || family == L"YinYuan"
+        ? family : L"Microsoft YaHei UI";
+    if (fontFamily_ == normalized) return;
+    const bool previouslyUsedYinyuan = UsesYinyuanFont();
+    fontFamily_ = normalized;
+    if (font_) {
+        DeleteObject(font_);
+        font_ = nullptr;
+    }
+    if (UsesYinyuanFont()) {
+        EnsurePrivateYinyuanFont();
+    } else if (previouslyUsedYinyuan) {
+        ReleasePrivateYinyuanFont();
+    }
+}
+
 void CandidatePopup::SetUseYinyuanFont(bool useYinyuan) noexcept {
     if (useYinyuanFont_ == useYinyuan) return;
+    const bool previouslyUsedYinyuan = UsesYinyuanFont();
     useYinyuanFont_ = useYinyuan;
     if (font_) {
         DeleteObject(font_);
         font_ = nullptr;
     }
-    if (useYinyuanFont_) {
+    if (UsesYinyuanFont()) {
         EnsurePrivateYinyuanFont();
-    } else {
+    } else if (previouslyUsedYinyuan) {
         ReleasePrivateYinyuanFont();
     }
 }
@@ -84,14 +103,25 @@ void CandidatePopup::ReleasePrivateYinyuanFont() noexcept {
 
 HFONT CandidatePopup::EnsureFont() noexcept {
     if (font_) return font_;
-    if (useYinyuanFont_) EnsurePrivateYinyuanFont();
+    const bool useYinyuan = UsesYinyuanFont();
+    if (useYinyuan) EnsurePrivateYinyuanFont();
     UINT dpi = 96;
     if (window_) dpi = GetDpiForWindow(window_);
     const int height = -MulDiv(fontPoints_, static_cast<int>(dpi), 72);
+    std::wstring family = fontFamily_;
+    if (family == L"system-ui") {
+        NONCLIENTMETRICSW metrics{};
+        metrics.cbSize = sizeof(metrics);
+        if (SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, sizeof(metrics), &metrics, 0)) {
+            family = metrics.lfMessageFont.lfFaceName;
+        } else {
+            family = L"Microsoft YaHei UI";
+        }
+    }
     font_ = CreateFontW(height, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
                         DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
                         CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
-                        useYinyuanFont_ ? L"YinYuan" : L"Microsoft YaHei UI");
+                        useYinyuan ? L"YinYuan" : family.c_str());
     return font_ ? font_ : static_cast<HFONT>(GetStockObject(DEFAULT_GUI_FONT));
 }
 
@@ -143,11 +173,32 @@ bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const R
     }
     selectedIndex_ = selectedIndex;
     if (!EnsureWindow(owner)) return false;
+    anchor_ = anchor;
     SetPropW(window_, L"YimeTextServiceExperimentTextExtentAnchor",
              reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(textExtentAnchor ? 1 : 0)));
+    SetPropW(window_, L"YimeTextServiceExperimentSentenceRow",
+             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(sentenceSegments_.empty() ? 0 : 1)));
+    SetPropW(window_, L"YimeTextServiceExperimentSentenceSegmentCount",
+             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(sentenceSegments_.size())));
+    SetPropW(window_, L"YimeTextServiceExperimentActiveSegmentStart",
+             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(activeSegmentStart + 1)));
+    SetPropW(window_, L"YimeTextServiceExperimentActiveSegmentEnd",
+             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(activeSegmentEnd + 1)));
+    RefreshLayout(anchor_);
+    return true;
+}
 
+void CandidatePopup::RefreshDisplaySettings() noexcept {
+    const auto& settings = liveSettings_.Get();
+    if (settings.candidateFontPoints == fontPoints_) return;
+    SetFontPoints(settings.candidateFontPoints);
+    RefreshLayout(anchor_);
+}
+
+void CandidatePopup::RefreshLayout(const RECT& anchor) noexcept {
+    if (!window_) return;
     HDC dc = GetDC(window_);
-    if (!dc) return false;
+    if (!dc) return;
     HFONT font = EnsureFont();
     HGDIOBJ previous = SelectObject(dc, font);
     TEXTMETRICW metrics{};
@@ -155,8 +206,6 @@ bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const R
     rowHeight_ = std::max(20, static_cast<int>(metrics.tmHeight) + 6);
     SetPropW(window_, L"YimeTextServiceExperimentCandidateRowHeight",
              reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(rowHeight_)));
-    SetPropW(window_, L"YimeTextServiceExperimentSentenceRow",
-             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(sentenceSegments_.empty() ? 0 : 1)));
     int textWidth = 0;
     candidateWidths_.clear();
     candidateWidths_.reserve(candidates_.size());
@@ -182,12 +231,6 @@ bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const R
     textColumnOffset_ = candidatePrefixExtent.cx;
     SetPropW(window_, L"YimeTextServiceExperimentTextColumnLeft",
              reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(padding_ + textColumnOffset_)));
-    SetPropW(window_, L"YimeTextServiceExperimentSentenceSegmentCount",
-             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(sentenceSegments_.size())));
-    SetPropW(window_, L"YimeTextServiceExperimentActiveSegmentStart",
-             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(activeSegmentStart + 1)));
-    SetPropW(window_, L"YimeTextServiceExperimentActiveSegmentEnd",
-             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(activeSegmentEnd + 1)));
     int sentenceWidth = textColumnOffset_;
     for (auto& segment : sentenceSegments_) {
         SIZE extent{};
@@ -207,7 +250,6 @@ bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const R
     Reposition(anchor);
     InvalidateRect(window_, nullptr, TRUE);
     UpdateWindow(window_);
-    return true;
 }
 
 void CandidatePopup::Reposition(const RECT& anchor) noexcept {
@@ -230,12 +272,18 @@ void CandidatePopup::Reposition(const RECT& anchor) noexcept {
 
 void CandidatePopup::Show(bool show) noexcept {
     if (!window_) return;
+    if (show) {
+        SetTimer(window_, SettingsRefreshTimerId, kSettingsRefreshMilliseconds, nullptr);
+    } else {
+        KillTimer(window_, SettingsRefreshTimerId);
+    }
     ShowWindow(window_, show ? SW_SHOWNOACTIVATE : SW_HIDE);
 }
 
 void CandidatePopup::Destroy() noexcept {
     if (window_ && GetCapture() == window_) ReleaseCapture();
     if (window_) {
+        KillTimer(window_, SettingsRefreshTimerId);
         DestroyWindow(window_);
         window_ = nullptr;
     }
@@ -441,6 +489,9 @@ LRESULT CALLBACK CandidatePopup::WindowProcedure(HWND window, UINT message, WPAR
             return 1;
         case WM_PAINT:
             if (self) self->Paint();
+            return 0;
+        case WM_TIMER:
+            if (self && wParam == SettingsRefreshTimerId) self->RefreshDisplaySettings();
             return 0;
         case WM_LBUTTONDOWN:
             if (self) self->TrackAt(lParam);

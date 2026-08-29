@@ -113,6 +113,7 @@ foreach ($architecture in @([ordered]@{ name = 'x64'; bits = 64 },
             if ($testExit -ne 0) { throw "$($architecture.name) $($definition.mode) registered host failed: $testText" }
             $observed = Convert-KeyValue $testText
             foreach ($required in @('registered_key_sink_verified', 'registered_text_extent_anchor',
+                                     'punctuation_text_extent_anchor_verified',
                                      'registered_focus_callbacks_verified', 'registered_candidate_commit',
                                      'registered_default_candidate_keys_verified',
                                      'registered_invalid_code_backspace_recovery_verified',
@@ -127,6 +128,7 @@ foreach ($architecture in @([ordered]@{ name = 'x64'; bits = 64 },
                 elapsed_ms = $timer.Elapsed.TotalMilliseconds
                 registered_key_sink_verified = $true
                 registered_text_extent_anchor = $true
+                punctuation_text_extent_anchor_verified = $true
                 registered_focus_callbacks_verified = $true
                 registered_candidate_commit = $true
                 registered_default_candidate_keys_verified = $true
@@ -188,7 +190,7 @@ $sourceHashes = Join-Path $outputDir 'source-hashes.json'
 $hashes | ConvertTo-Json -Depth 3 | Set-Content $sourceHashes -Encoding utf8
 $allModes = @($architectures | ForEach-Object { $_.modes })
 $summary = [ordered]@{
-    tool_version = 'yime-text-service-e6b6-registered-host-v1'
+    tool_version = 'yime-text-service-e6b6-registered-host-v2'
     stage = 'e6b6'
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     git_commit = (& git -C $repoRoot rev-parse HEAD).Trim()
@@ -202,6 +204,7 @@ $summary = [ordered]@{
     all_x86_x64_three_mode_registered_paths_passed = $allModes.Count -eq 6
     registered_key_sink_verified = -not ($allModes.registered_key_sink_verified -contains $false)
     registered_text_extent_anchor_verified = -not ($allModes.registered_text_extent_anchor -contains $false)
+    punctuation_text_extent_anchor_verified = -not ($allModes.punctuation_text_extent_anchor_verified -contains $false)
     registered_focus_callbacks_verified = -not ($allModes.registered_focus_callbacks_verified -contains $false)
     registered_candidate_commit_verified = -not ($allModes.registered_candidate_commit -contains $false)
     language_bar_manager_acceptance_observations = @($architectures | ForEach-Object {
@@ -231,6 +234,7 @@ Write-Host "YimeTextService E6-B6 evidence: $outputDir"
 if (-not $summary.all_x86_x64_three_mode_registered_paths_passed -or
     -not $summary.registered_key_sink_verified -or
     -not $summary.registered_text_extent_anchor_verified -or
+    -not $summary.punctuation_text_extent_anchor_verified -or
     -not $summary.registered_focus_callbacks_verified -or
     -not $summary.registered_candidate_commit_verified -or
     -not $summary.all_no_residue -or

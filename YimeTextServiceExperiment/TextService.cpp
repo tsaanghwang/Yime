@@ -18,6 +18,19 @@
 
 namespace {
 
+std::wstring widenUtf8(const std::string& value) {
+    if (value.empty()) return {};
+    const int length = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, value.data(),
+                                           static_cast<int>(value.size()), nullptr, 0);
+    if (length <= 0) return {};
+    std::wstring result(static_cast<size_t>(length), L'\0');
+    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, value.data(),
+                            static_cast<int>(value.size()), result.data(), length) != length) {
+        return {};
+    }
+    return result;
+}
+
 bool IsSelectionDiagnosticKey(WPARAM key) noexcept {
     return key == VK_RETURN || key == VK_SPACE || key == VK_UP || key == VK_DOWN ||
            (key >= '1' && key <= '9');
@@ -92,6 +105,85 @@ void RecordLanguageBarHostResult(HRESULT managerResult, HRESULT addResult,
         WriteFile(file, line, static_cast<DWORD>(bytes), &written, nullptr);
     }
     CloseHandle(file);
+}
+
+class TextExtentEditSession final : public ITfEditSession {
+public:
+    TextExtentEditSession(ITfContext* context, ITfComposition* composition,
+                          RECT* rectangle, bool* valid) noexcept
+        : context_(context), composition_(composition), rectangle_(rectangle), valid_(valid) {
+        context_->AddRef();
+        if (composition_) composition_->AddRef();
+    }
+
+    STDMETHODIMP QueryInterface(REFIID iid, void** object) override {
+        if (!object) return E_POINTER;
+        *object = nullptr;
+        if (!IsEqualIID(iid, IID_IUnknown) && !IsEqualIID(iid, __uuidof(ITfEditSession))) {
+            return E_NOINTERFACE;
+        }
+        *object = static_cast<ITfEditSession*>(this);
+        AddRef();
+        return S_OK;
+    }
+
+    STDMETHODIMP_(ULONG) AddRef() override { return ++references_; }
+
+    STDMETHODIMP_(ULONG) Release() override {
+        const ULONG remaining = --references_;
+        if (!remaining) delete this;
+        return remaining;
+    }
+
+    STDMETHODIMP DoEditSession(TfEditCookie cookie) override {
+        ITfRange* range = nullptr;
+        if (composition_) {
+            composition_->GetRange(&range);
+        } else {
+            TF_SELECTION selection{};
+            ULONG fetched = 0;
+            if (SUCCEEDED(context_->GetSelection(cookie, TF_DEFAULT_SELECTION, 1,
+                                                 &selection, &fetched)) &&
+                fetched == 1) {
+                range = selection.range;
+            }
+        }
+        ITfContextView* view = nullptr;
+        BOOL clipped = FALSE;
+        if (range && SUCCEEDED(context_->GetActiveView(&view)) &&
+            SUCCEEDED(view->GetTextExt(cookie, range, rectangle_, &clipped))) {
+            *valid_ = true;
+        }
+        if (view) view->Release();
+        if (range) range->Release();
+        return S_OK;
+    }
+
+private:
+    ~TextExtentEditSession() {
+        if (composition_) composition_->Release();
+        context_->Release();
+    }
+
+    std::atomic<ULONG> references_{1};
+    ITfContext* context_;
+    ITfComposition* composition_;
+    RECT* rectangle_;
+    bool* valid_;
+};
+
+bool TryGetTextExtentAnchor(ITfContext* context, TfClientId clientId,
+                            ITfComposition* composition, RECT* rectangle) noexcept {
+    if (!context || clientId == TF_CLIENTID_NULL || !rectangle) return false;
+    bool valid = false;
+    auto* session = new (std::nothrow)
+        TextExtentEditSession(context, composition, rectangle, &valid);
+    if (!session) return false;
+    HRESULT sessionResult = E_FAIL;
+    const HRESULT request = context->RequestEditSession(
+        clientId, session, TF_ES_SYNC | TF_ES_READ, &sessionResult);
+    session->Release();
+    return SUCCEEDED(request) && SUCCEEDED(sessionResult) && valid;
 }
 
 HWND candidateOwnerAndFallbackAnchor(ITfContext* context, RECT* anchor) noexcept {
@@ -611,6 +703,7 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
     const size_t popupSelection = update.candidates.empty() ? static_cast<size_t>(-1)
                                                              : update.selectedCandidateIndex;
     candidatePopup_.SetFontPoints(displaySettings.candidateFontPoints);
+    candidatePopup_.SetFontFamily(widenUtf8(displaySettings.candidateFontFamily));
     candidatePopup_.SetUseYinyuanFont(displaySettings.candidateAnnotation == "yinyuan");
     candidatePopup_.SetForgetEnabled(true);
     candidatePopup_.SetHorizontal(displaySettings.candidateLayout == "horizontal");
@@ -644,6 +737,8 @@ void YimeTextService::UpdatePunctuationUI(ITfContext* context) noexcept {
 
     RECT anchor{};
     HWND owner = candidateOwnerAndFallbackAnchor(context, &anchor);
+    const bool textExtentAnchor =
+        TryGetTextExtentAnchor(context, clientId_, composition_, &anchor);
     ITfUIElementMgr* manager = nullptr;
     const bool hasManager = threadManager_ &&
         SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfUIElementMgr),
@@ -665,11 +760,12 @@ void YimeTextService::UpdatePunctuationUI(ITfContext* context) noexcept {
 
     const auto& displaySettings = experimentSettings_.Get();
     candidatePopup_.SetFontPoints(displaySettings.candidateFontPoints);
+    candidatePopup_.SetFontFamily(widenUtf8(displaySettings.candidateFontFamily));
     candidatePopup_.SetUseYinyuanFont(false);
     candidatePopup_.SetForgetEnabled(false);
     candidatePopup_.SetHorizontal(displaySettings.candidateLayout == "horizontal");
     const auto& status = candidateUI_->StatusDisplay();
-    if (candidatePopup_.Update(candidateUI_->PopupCandidateRows(), anchor, owner, false,
+    if (candidatePopup_.Update(candidateUI_->PopupCandidateRows(), anchor, owner, textExtentAnchor,
                                punctuationPalette_.SelectedIndex(), nullptr, -1, -1,
                                &status)) {
         candidatePopup_.Show(CanAcceptKeys());

@@ -1,4 +1,6 @@
 #include "LanguageBarResources.h"
 
-IDI_YIME_MODE_CHINESE ICON "../go-backend/input_methods/yime/icons/chi_half_capsoff.ico"
-IDI_YIME_MODE_ENGLISH ICON "../go-backend/input_methods/yime/icons/eng_half_capsoff.ico"
+IDI_YIME_MODE_CHINESE_HALF ICON "../go-backend/input_methods/yime/icons/chi_half_capsoff.ico"
+IDI_YIME_MODE_ENGLISH_HALF ICON "../go-backend/input_methods/yime/icons/eng_half_capsoff.ico"
+IDI_YIME_MODE_CHINESE_FULL ICON "../go-backend/input_methods/yime/icons/chi_full_capsoff.ico"
+IDI_YIME_MODE_ENGLISH_FULL ICON "../go-backend/input_methods/yime/icons/eng_full_capsoff.ico"
