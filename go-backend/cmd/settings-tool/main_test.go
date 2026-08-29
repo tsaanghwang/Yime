@@ -16,10 +16,18 @@ import (
 
 func TestExecuteTrialApplyUsesOnlyIsolatedToolbarState(t *testing.T) {
 	path := filepath.Join(t.TempDir(), toolbarstate.ExperimentFileName)
-	err := executeTrialApply(path, trialApplyRequest{
+	_, err := toolbarstate.Update(path, "test", func(state *toolbarstate.State) bool {
+		state.ASCII = true
+		return true
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = executeTrialApply(path, trialApplyRequest{
 		mode: toolbarstate.ExperimentModeFull, pageSize: 7, layout: toolbarstate.CandidateLayoutHorizontal,
 		font:       toolbarstate.CandidateFontLarge,
-		annotation: toolbarstate.AnnotationStandardPinyin, ascii: true,
+		fontFamily: toolbarstate.CandidateFontSystemUI,
+		annotation: toolbarstate.AnnotationStandardPinyin,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -31,8 +39,37 @@ func TestExecuteTrialApplyUsesOnlyIsolatedToolbarState(t *testing.T) {
 	if state.ExperimentMode != toolbarstate.ExperimentModeFull ||
 		state.CandidatePageSize != 7 || state.CandidateLayout != toolbarstate.CandidateLayoutHorizontal ||
 		state.CandidateFontPreset != toolbarstate.CandidateFontLarge ||
+		state.CandidateFontFamily != toolbarstate.CandidateFontSystemUI ||
 		state.CandidateAnnotation != toolbarstate.AnnotationStandardPinyin || !state.ASCII {
 		t.Fatalf("trial settings mismatch: %+v", state)
+	}
+}
+
+func TestTrialCandidateFontOptionsIncludeRequiredYinyuanFont(t *testing.T) {
+	options := trialFontFamilyOptions()
+	if len(options) != 3 || options[0].Value != toolbarstate.CandidateFontMicrosoftYaHeiUI ||
+		options[1].Value != toolbarstate.CandidateFontSystemUI ||
+		options[2].Value != toolbarstate.CandidateFontYinyuan ||
+		options[2].Label != "音元自制字体（音元拼音时强制）" {
+		t.Fatalf("candidate font options = %#v", options)
+	}
+}
+
+func TestTrialCandidateFontPresetOptionsUseRuntimeValues(t *testing.T) {
+	options := trialFontPresetOptions()
+	if len(options) != 3 ||
+		options[0].Label != "小（10 磅）" || options[0].Value != toolbarstate.CandidateFontSmall ||
+		options[1].Label != "中（12 磅）" || options[1].Value != toolbarstate.CandidateFontMedium ||
+		options[2].Label != "大（16 磅）" || options[2].Value != toolbarstate.CandidateFontLarge {
+		t.Fatalf("candidate font preset options = %#v", options)
+	}
+}
+
+func TestTrialAnnotationOptionNamesYinyuanPinyin(t *testing.T) {
+	options := trialAnnotationOptions()
+	if len(options) < 2 || options[1].Value != toolbarstate.AnnotationYinyuan ||
+		options[1].Label != "音元拼音" {
+		t.Fatalf("candidate annotation options = %#v", options)
 	}
 }
 
@@ -76,14 +113,15 @@ func TestSettingsUILayoutReplacesOpenDirectoryWithBackupAndRestore(t *testing.T)
 		t.Fatalf("button row must align with content edges: %#v", buttons)
 	}
 	wantWidth := buttons[0].Right - buttons[0].Left
-	wantGap := buttons[1].Left - buttons[0].Right
 	for index, button := range buttons {
 		if button.Right-button.Left != wantWidth {
 			t.Fatalf("button %d is not equally sized: %#v", index, buttons)
 		}
-		if index > 0 && button.Left-buttons[index-1].Right != wantGap {
-			t.Fatalf("button %d is not evenly distributed: %#v", index, buttons)
-		}
+	}
+	if layout.restoreButton.Left-layout.backupButton.Right != 8 ||
+		(layout.backupButton.Left+layout.restoreButton.Right)/2 !=
+			(layout.schemaLabel.Left+layout.layoutCombo.Right)/2 {
+		t.Fatalf("backup and restore are not a centered compact pair: %#v", buttons)
 	}
 }
 
@@ -98,7 +136,7 @@ func TestTrialSettingsUILayoutMergesProductionAndTrialControls(t *testing.T) {
 		{layout.reverseLabel, layout.reverseCombo},
 		{layout.layoutLabel, layout.layoutCombo},
 		{layout.fontLabel, layout.fontCombo},
-		{layout.asciiLabel, layout.asciiCombo},
+		{layout.familyLabel, layout.familyCombo},
 	}
 	for index, row := range rows {
 		if row.label.Right <= row.label.Left || row.combo.Right <= row.combo.Left {
@@ -108,8 +146,13 @@ func TestTrialSettingsUILayoutMergesProductionAndTrialControls(t *testing.T) {
 			t.Fatalf("trial settings rows %d and %d overlap: %#v", index-1, index, rows)
 		}
 	}
-	if layout.applyButton.Top <= layout.asciiLabel.Bottom || layout.clientH != layout.applyButton.Bottom+16 {
+	if layout.applyButton.Top <= layout.familyLabel.Bottom || layout.clientH != layout.applyButton.Bottom+16 {
 		t.Fatalf("trial button row does not follow all merged controls: %#v", layout)
+	}
+	buttonsCenter := (layout.backupButton.Left + layout.restoreButton.Right) / 2
+	contentCenter := (layout.schemaLabel.Left + layout.layoutCombo.Right) / 2
+	if buttonsCenter != contentCenter || layout.restoreButton.Left-layout.backupButton.Right != 8 {
+		t.Fatalf("backup and restore must form a centered compact pair: %#v", layout)
 	}
 }
 

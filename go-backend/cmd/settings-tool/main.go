@@ -112,7 +112,7 @@ type settingsUILayout struct {
 	reverseLabel, reverseCombo                               rect
 	layoutLabel, layoutCombo                                 rect
 	fontLabel, fontCombo                                     rect
-	asciiLabel, asciiCombo                                   rect
+	familyLabel, familyCombo                                 rect
 	applyButton, backupButton, restoreButton, openHelpButton rect
 }
 
@@ -122,7 +122,7 @@ type appState struct {
 	experimental                            bool
 
 	mainHWND, schemaHWND, pageHWND, reverseHWND, layoutHWND syscall.Handle
-	fontHWND, asciiHWND                                     syscall.Handle
+	fontHWND, familyHWND                                    syscall.Handle
 	schemaOptions                                           []settings.SchemaOption
 	layout                                                  settingsUILayout
 
@@ -144,8 +144,8 @@ type trialApplyRequest struct {
 	pageSize   int
 	layout     string
 	font       string
+	fontFamily string
 	annotation string
-	ascii      bool
 }
 
 var applySettings = settings.Apply
@@ -155,14 +155,26 @@ var invokeRimeBuild = settings.InvokeRimeBuild
 func trialAnnotationOptions() []settings.ComboOption {
 	return []settings.ComboOption{
 		{Label: "键位序列", Value: toolbarstate.AnnotationKeySequence},
-		{Label: "音元", Value: toolbarstate.AnnotationYinyuan},
+		{Label: "音元拼音", Value: toolbarstate.AnnotationYinyuan},
 		{Label: "标准拼音", Value: toolbarstate.AnnotationStandardPinyin},
 		{Label: "隐藏", Value: toolbarstate.AnnotationHidden},
 	}
 }
 
-func trialAsciiOptions() []settings.ComboOption {
-	return []settings.ComboOption{{Label: "中文", Value: "chinese"}, {Label: "英文", Value: "english"}}
+func trialFontPresetOptions() []settings.ComboOption {
+	return []settings.ComboOption{
+		{Label: "小（10 磅）", Value: toolbarstate.CandidateFontSmall},
+		{Label: "中（12 磅）", Value: toolbarstate.CandidateFontMedium},
+		{Label: "大（16 磅）", Value: toolbarstate.CandidateFontLarge},
+	}
+}
+
+func trialFontFamilyOptions() []settings.ComboOption {
+	return []settings.ComboOption{
+		{Label: "微软雅黑 UI（当前）", Value: toolbarstate.CandidateFontMicrosoftYaHeiUI},
+		{Label: "系统界面字体", Value: toolbarstate.CandidateFontSystemUI},
+		{Label: "音元自制字体（音元拼音时强制）", Value: toolbarstate.CandidateFontYinyuan},
+	}
 }
 
 func executeTrialApply(path string, request trialApplyRequest) error {
@@ -171,13 +183,14 @@ func executeTrialApply(path string, request trialApplyRequest) error {
 		changed := state.ExperimentMode != request.mode ||
 			state.CandidatePageSize != request.pageSize || state.CandidateLayout != request.layout ||
 			state.CandidateFontPreset != request.font ||
-			state.CandidateAnnotation != request.annotation || state.ASCII != request.ascii
+			state.CandidateFontFamily != request.fontFamily ||
+			state.CandidateAnnotation != request.annotation
 		state.ExperimentMode = request.mode
 		state.CandidatePageSize = request.pageSize
 		state.CandidateLayout = request.layout
 		state.CandidateFontPreset = request.font
+		state.CandidateFontFamily = request.fontFamily
 		state.CandidateAnnotation = request.annotation
-		state.ASCII = request.ascii
 		return changed
 	})
 	return err
@@ -336,15 +349,15 @@ func (state *appState) createControls() {
 	if state.experimental {
 		createStatic(state.mainHWND, "候选字号", l.fontLabel, 0)
 		state.fontHWND = createCombo(state.mainHWND, l.fontCombo, idPageSizeCombo+10)
-		for _, option := range []string{"小", "中", "大"} {
-			text, _ := syscall.UTF16PtrFromString(option)
+		for _, option := range trialFontPresetOptions() {
+			text, _ := syscall.UTF16PtrFromString(option.Label)
 			procSendMessageW.Call(uintptr(state.fontHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 		}
-		createStatic(state.mainHWND, "默认键盘", l.asciiLabel, 0)
-		state.asciiHWND = createCombo(state.mainHWND, l.asciiCombo, idLayoutCombo+10)
-		for _, option := range trialAsciiOptions() {
+		createStatic(state.mainHWND, "候选字体", l.familyLabel, 0)
+		state.familyHWND = createCombo(state.mainHWND, l.familyCombo, idLayoutCombo+10)
+		for _, option := range trialFontFamilyOptions() {
 			text, _ := syscall.UTF16PtrFromString(option.Label)
-			procSendMessageW.Call(uintptr(state.asciiHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
+			procSendMessageW.Call(uintptr(state.familyHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 		}
 	}
 	// The selected controls already show the current configuration; do not
@@ -382,25 +395,21 @@ func buildSettingsUILayout(withHelp, experimental bool) settingsUILayout {
 	rowCount := int32(4)
 	if experimental {
 		l.fontLabel, l.fontCombo = row(4)
-		l.asciiLabel, l.asciiCombo = row(5)
+		l.familyLabel, l.familyCombo = row(5)
 		rowCount = 6
 	}
 
 	buttonY := margin + rowCount*(rowH+rowGap) + 8
-	buttons := []*rect{&l.applyButton, &l.backupButton, &l.restoreButton}
-	if withHelp {
-		buttons = append(buttons, &l.openHelpButton)
-	}
 	contentRight := l.layoutCombo.Right
-	buttonW := (contentRight - margin - buttonGap*int32(len(buttons)-1)) / int32(len(buttons))
-	x := margin
-	for index, button := range buttons {
-		right := x + buttonW
-		if index == len(buttons)-1 {
-			right = contentRight
-		}
-		*button = rect{x, buttonY, right, buttonY + buttonH}
-		x = right + buttonGap
+	const buttonW = int32(72)
+	l.applyButton = rect{margin, buttonY, margin + buttonW, buttonY + buttonH}
+	pairW := buttonW*2 + buttonGap
+	pairLeft := margin + (contentRight-margin-pairW)/2
+	l.backupButton = rect{pairLeft, buttonY, pairLeft + buttonW, buttonY + buttonH}
+	l.restoreButton = rect{pairLeft + buttonW + buttonGap, buttonY,
+		pairLeft + buttonW*2 + buttonGap, buttonY + buttonH}
+	if withHelp {
+		l.openHelpButton = rect{contentRight - buttonW, buttonY, contentRight, buttonY + buttonH}
 	}
 	l.clientW = contentRight + margin
 	l.clientH = l.applyButton.Bottom + margin
@@ -420,18 +429,9 @@ func (state *appState) refreshView() {
 			{Label: "竖排", Value: toolbarstate.CandidateLayoutVertical},
 			{Label: "横排", Value: toolbarstate.CandidateLayoutHorizontal},
 		}, snapshot.CandidateLayout)
-		font := map[string]string{toolbarstate.CandidateFontSmall: "小",
-			toolbarstate.CandidateFontMedium: "中", toolbarstate.CandidateFontLarge: "大"}[snapshot.CandidateFontPreset]
-		if font == "" {
-			font = "中"
-		}
-		setComboByText(state.fontHWND, font)
+		setComboByValue(state.fontHWND, trialFontPresetOptions(), snapshot.CandidateFontPreset)
+		setComboByValue(state.familyHWND, trialFontFamilyOptions(), snapshot.CandidateFontFamily)
 		setComboByValue(state.reverseHWND, trialAnnotationOptions(), snapshot.CandidateAnnotation)
-		ascii := "chinese"
-		if snapshot.ASCII {
-			ascii = "english"
-		}
-		setComboByValue(state.asciiHWND, trialAsciiOptions(), ascii)
 		return
 	}
 	snapshot := settings.LoadSnapshot(state.userDir, state.sharedDir)
@@ -517,10 +517,9 @@ func (state *appState) startApply() {
 				{Label: "竖排", Value: toolbarstate.CandidateLayoutVertical},
 				{Label: "横排", Value: toolbarstate.CandidateLayoutHorizontal},
 			}),
-			font: map[string]string{"小": toolbarstate.CandidateFontSmall,
-				"中": toolbarstate.CandidateFontMedium, "大": toolbarstate.CandidateFontLarge}[selectedComboText(state.fontHWND)],
+			font:       selectedComboValue(state.fontHWND, trialFontPresetOptions()),
+			fontFamily: selectedComboValue(state.familyHWND, trialFontFamilyOptions()),
 			annotation: selectedComboValue(state.reverseHWND, trialAnnotationOptions()),
-			ascii:      selectedComboValue(state.asciiHWND, trialAsciiOptions()) == "english",
 		}
 		go func() {
 			err := executeTrialApply(state.statePath, request)

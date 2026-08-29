@@ -47,7 +47,10 @@ func TestExperimentalToolHubUsesIndependentIdentityAndIsolatedManifest(t *testin
 		}
 	}
 	if entries["keyboard-layout"].Label != "键盘布局" || entries["lexicon-center"].Label != "词库管理" ||
+		entries["settings-tool"].Label != "候选设置" ||
 		entries["diagnostics-tool"].Label != "诊断工具" ||
+		entries["trial-user-data"].Label != "用户数据" ||
+		entries["trial-shared-data"].Label != "共享数据" ||
 		entries["usage-help"].Label != "使用帮助" || entries["user-feedback"].Label != "用户反馈" {
 		t.Fatalf("Trial labels were not migrated: %#v", entries)
 	}

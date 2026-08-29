@@ -14,18 +14,23 @@ const (
 	FormatVersion      = 1
 	LayoutVersion      = 1
 
-	ExperimentModeFull        = "full"
-	ExperimentModeVariable    = "variable"
-	ExperimentModeShorthand   = "shorthand"
-	CandidateFontSmall        = "small"
-	CandidateFontMedium       = "medium"
-	CandidateFontLarge        = "large"
-	CandidateLayoutVertical   = "vertical"
-	CandidateLayoutHorizontal = "horizontal"
-	AnnotationHidden          = "hidden"
-	AnnotationYinyuan         = "yinyuan"
-	AnnotationKeySequence     = "key_sequence"
-	AnnotationStandardPinyin  = "standard_pinyin"
+	ExperimentModeFull            = "full"
+	ExperimentModeVariable        = "variable"
+	ExperimentModeShorthand       = "shorthand"
+	CandidateFontSmall            = "small"
+	CandidateFontMedium           = "medium"
+	CandidateFontLarge            = "large"
+	CandidateFontMicrosoftYaHeiUI = "Microsoft YaHei UI"
+	CandidateFontSystemUI         = "system-ui"
+	CandidateFontYinyuan          = "YinYuan"
+	CandidateLayoutVertical       = "vertical"
+	CandidateLayoutHorizontal     = "horizontal"
+	AnnotationHidden              = "hidden"
+	AnnotationYinyuan             = "yinyuan"
+	AnnotationKeySequence         = "key_sequence"
+	AnnotationStandardPinyin      = "standard_pinyin"
+	ToolbarDisplayText            = "text"
+	ToolbarDisplayIcon            = "icon"
 )
 
 // State is the small, process-independent contract shared by the Yime backend
@@ -45,10 +50,13 @@ type State struct {
 	OrientationSet       bool     `json:"toolbar_orientation_set,omitempty"`
 	ToolbarLayoutVersion int      `json:"toolbar_layout_version,omitempty"`
 	HiddenButtons        []string `json:"toolbar_hidden_buttons,omitempty"`
+	ToolbarDisplay       string   `json:"toolbar_display,omitempty"`
+	ToolbarTransparent   bool     `json:"toolbar_transparent,omitempty"`
 	ExperimentMode       string   `json:"experiment_mode,omitempty"`
 	CandidatePageSize    int      `json:"candidate_page_size,omitempty"`
 	CandidateLayout      string   `json:"candidate_layout,omitempty"`
 	CandidateFontPreset  string   `json:"candidate_font_preset,omitempty"`
+	CandidateFontFamily  string   `json:"candidate_font_family,omitempty"`
 	CandidateAnnotation  string   `json:"candidate_annotation,omitempty"`
 }
 
@@ -86,6 +94,12 @@ func NormalizeExperiment(state *State) bool {
 	case CandidateFontSmall, CandidateFontMedium, CandidateFontLarge:
 	default:
 		state.CandidateFontPreset = CandidateFontMedium
+		changed = true
+	}
+	switch state.CandidateFontFamily {
+	case CandidateFontMicrosoftYaHeiUI, CandidateFontSystemUI, CandidateFontYinyuan:
+	default:
+		state.CandidateFontFamily = CandidateFontMicrosoftYaHeiUI
 		changed = true
 	}
 	if state.CandidatePageSize < 5 || state.CandidatePageSize > 9 {
