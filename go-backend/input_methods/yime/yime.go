@@ -772,7 +772,7 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	case ID_INPUT_TOOLBAR:
 		ime.launchStandaloneToolAsync(func() error {
 			return toggleInputToolbarWindow(ime)
-		}, "切换输入法工具栏失败")
+		}, "切换桌面浮动工具栏失败")
 	case ID_REVERSE_LOOKUP_TOOL:
 		ime.launchStandaloneToolAsync(ime.openReverseLookupTool, "打开反查编码失败")
 	case ID_TRAINER_TOOL:
@@ -1752,7 +1752,7 @@ func (ime *IME) publishInputToolbarState() {
 		return changed
 	})
 	if err != nil {
-		log.Printf("同步输入法工具栏状态失败: %v", err)
+		log.Printf("同步桌面浮动工具栏状态失败: %v", err)
 		return
 	}
 	ime.inputToolbarStateRevision = state.Revision
@@ -2580,9 +2580,9 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 	if traditionalization {
 		traditionalizationText = "繁体 → 简体"
 	}
-	inputToolbarText := "输入法工具栏（关）"
+	inputToolbarText := "桌面浮动工具栏（关）"
 	if queryInputToolbarVisible() {
-		inputToolbarText = "输入法工具栏（开）"
+		inputToolbarText = "桌面浮动工具栏（开）"
 	}
 
 	return []map[string]interface{}{

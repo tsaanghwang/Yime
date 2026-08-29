@@ -1858,12 +1858,12 @@ func TestInputToolbarMenuReflectsIndependentWindowAndDispatchesToggle(t *testing
 	ime := newTestIME()
 	queryInputToolbarVisible = func() bool { return false }
 	item := findTopLevelMenuItem(t, ime.buildMenu(), ID_INPUT_TOOLBAR)
-	if item["text"] != "输入法工具栏（关）" {
+	if item["text"] != "桌面浮动工具栏（关）" {
 		t.Fatalf("expected closed toolbar menu state, got %#v", item)
 	}
 	queryInputToolbarVisible = func() bool { return true }
 	item = findTopLevelMenuItem(t, ime.buildMenu(), ID_INPUT_TOOLBAR)
-	if item["text"] != "输入法工具栏（开）" {
+	if item["text"] != "桌面浮动工具栏（开）" {
 		t.Fatalf("expected open toolbar menu state, got %#v", item)
 	}
 

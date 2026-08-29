@@ -148,7 +148,7 @@ func TestExperimentalToolbarUsesProductionSurfaceWithIsolatedIdentity(t *testing
 	if got := trial.className(); got != "YimeCoreInputToolbarWindow" {
 		t.Fatalf("experimental input toolbar class=%q", got)
 	}
-	if got := trial.windowTitle(); got != "Yime 元版输入法工具栏" {
+	if got := trial.windowTitle(); got != "Yime 元版桌面浮动工具栏" {
 		t.Fatalf("experimental input toolbar title=%q", got)
 	}
 	production := &app{}
@@ -264,6 +264,117 @@ func TestPrimaryStateButtonsUseTwoCharacterLabels(t *testing.T) {
 		}
 		if !found {
 			t.Fatalf("missing primary state button %d", id)
+		}
+	}
+}
+
+func TestToolbarDisplayModeControlsLabelsWidthsAndAlpha(t *testing.T) {
+	buttons := toolbarButtons()
+	textState := toolbarstate.State{}
+	iconState := toolbarstate.State{ToolbarDisplay: toolbarstate.ToolbarDisplayIcon, ToolbarTransparent: true}
+	for _, button := range buttons {
+		if button.id == idHandle {
+			continue
+		}
+		if got := buttonDisplayLabel(button, iconState); got == "" || got == button.text {
+			t.Fatalf("button %d icon label=%q text=%q", button.id, got, button.text)
+		}
+		if width := buttonWidthForLayout(button, iconState, false); width != toolbarIconWidth {
+			t.Fatalf("button %d icon width=%d want %d", button.id, width, toolbarIconWidth)
+		}
+	}
+	if text := buttonDisplayLabel(buttons[1], textState); text != "中文" {
+		t.Fatalf("default text label=%q want 中文", text)
+	}
+	if toolbarAlpha(textState) != 255 || toolbarAlpha(iconState) == 255 {
+		t.Fatalf("toolbar alpha text=%d transparent=%d", toolbarAlpha(textState), toolbarAlpha(iconState))
+	}
+	if calculateToolbarLayout(iconState).clientWidth >= calculateToolbarLayout(textState).clientWidth {
+		t.Fatal("compact icon mode did not reduce horizontal toolbar width")
+	}
+	for _, button := range buttons {
+		if button.id != idHandle && buttonTooltip(button.id) == "" {
+			t.Fatalf("button %d has no icon tooltip", button.id)
+		}
+	}
+}
+
+func TestTextButtonsUseMeasuredLabelWidth(t *testing.T) {
+	original := measureToolbarTextWidth
+	defer func() { measureToolbarTextWidth = original }()
+	measureToolbarTextWidth = func(text string) int32 {
+		return map[string]int32{"中文": 27, "较长文字标签": 73}[text]
+	}
+
+	state := toolbarstate.State{}
+	buttons := toolbarButtons()
+	longButton := toolbarButton{id: 999, key: "long", text: "较长文字标签"}
+	if got, want := buttonWidthForLayout(buttons[1], state, false), int32(27)+toolbarTextPadding; got != want {
+		t.Fatalf("Chinese text button width=%d want measured width plus padding=%d", got, want)
+	}
+	if got, want := buttonWidthForLayout(longButton, state, false), int32(73)+toolbarTextPadding; got != want {
+		t.Fatalf("long text button width=%d want measured width plus padding=%d", got, want)
+	}
+	if buttonWidthForLayout(longButton, state, false) <= buttonWidthForLayout(buttons[1], state, false) {
+		t.Fatal("longer measured label did not produce a wider button")
+	}
+}
+
+func TestAppearanceMenuCommandsPersistDisplayAndTransparency(t *testing.T) {
+	path := filepath.Join(t.TempDir(), toolbarstate.FileName)
+	instance := &app{statePath: path, buttons: map[int]syscall.Handle{}}
+	instance.handleSettingsMenuCommand(idMenuDisplayIcon)
+	instance.handleSettingsMenuCommand(idMenuTransparent)
+	state, err := toolbarstate.Read(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if state.ToolbarDisplay != toolbarstate.ToolbarDisplayIcon || !state.ToolbarTransparent {
+		t.Fatalf("icon/transparent selection was not persisted: %#v", state)
+	}
+	instance.handleSettingsMenuCommand(idMenuDisplayText)
+	instance.handleSettingsMenuCommand(idMenuOpaque)
+	state, err = toolbarstate.Read(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if state.ToolbarDisplay != toolbarstate.ToolbarDisplayText || state.ToolbarTransparent {
+		t.Fatalf("text/opaque selection was not persisted: %#v", state)
+	}
+}
+
+func TestLanguageBarStateRefreshesAllToolbarButtonLabels(t *testing.T) {
+	path := filepath.Join(t.TempDir(), toolbarstate.ExperimentFileName)
+	initial, err := toolbarstate.Update(path, "test", func(state *toolbarstate.State) bool {
+		return true
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	instance := &app{
+		statePath: path,
+		buttons:   map[int]syscall.Handle{},
+		state:     initial,
+	}
+	_, err = toolbarstate.Update(path, "yimecore-language-bar", func(state *toolbarstate.State) bool {
+		state.ASCII = true
+		state.FullShape = true
+		state.ASCIIPunctuation = true
+		state.Traditionalization = true
+		return true
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	instance.refresh()
+	if !instance.state.ASCII || !instance.state.FullShape ||
+		!instance.state.ASCIIPunctuation || !instance.state.Traditionalization {
+		t.Fatalf("language-bar state did not reach toolbar: %#v", instance.state)
+	}
+	want := map[int]string{idLanguage: "英文", idShape: "全宽", idPunct: "英标", idScript: "繁体"}
+	for _, button := range toolbarButtons() {
+		if label, ok := want[button.id]; ok && buttonDisplayLabel(button, instance.state) != label {
+			t.Fatalf("button %d label=%q want %q", button.id, buttonDisplayLabel(button, instance.state), label)
 		}
 	}
 }

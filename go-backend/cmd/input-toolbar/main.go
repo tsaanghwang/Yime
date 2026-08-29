@@ -19,11 +19,12 @@ import (
 const (
 	windowClass           = "YimeInputToolbar"
 	experimentWindowClass = "YimeCoreInputToolbarWindow"
-	messageTitle          = "音元"
-	experimentWindowTitle = "Yime 元版输入法工具栏"
+	messageTitle          = "音元桌面浮动工具栏"
+	experimentWindowTitle = "Yime 元版桌面浮动工具栏"
 
 	wsExToolWindow = 0x00000080
 	wsExTopmost    = 0x00000008
+	wsExLayered    = 0x00080000
 	wsCaption      = 0x00C00000
 	wsSysMenu      = 0x00080000
 	wsBorder       = 0x00800000
@@ -36,6 +37,9 @@ const (
 	ssCenter       = 0x00000001
 	ssCenterImage  = 0x00000200
 	ssNotify       = 0x00000100
+	ttsAlwaysTip   = 0x00000001
+	ttfIDIsHWND    = 0x00000001
+	ttfSubclass    = 0x00000010
 
 	wmCommand       = 0x0111
 	wmTimer         = 0x0113
@@ -44,7 +48,9 @@ const (
 	wmNull          = 0x0000
 	wmLButtonDown   = 0x0201
 	wmNcLButtonDown = 0x00A1
+	wmUser          = 0x0400
 	htCaption       = 2
+	ttmAddToolW     = wmUser + 50
 
 	idHandle   = 99
 	idLanguage = 100
@@ -61,13 +67,20 @@ const (
 	idMenuSystem      = 202
 	idMenuHide        = 203
 	idMenuToolCenter  = 204
+	idMenuDisplayIcon = 205
+	idMenuDisplayText = 206
+	idMenuTransparent = 207
+	idMenuOpaque      = 208
 	idMenuButtonBase  = 300
 
-	toolbarMargin       = int32(8)
-	toolbarButtonGap    = int32(6)
-	toolbarButtonHeight = int32(32)
+	toolbarMargin       = int32(7)
+	toolbarButtonGap    = int32(4)
+	toolbarButtonHeight = int32(34)
 	toolbarHandleWidth  = int32(18)
 	toolbarHandleHeight = int32(18)
+	toolbarTextPadding  = int32(24)
+	toolbarIconWidth    = int32(40)
+	toolbarMinTextWidth = int32(48)
 
 	mfString    = 0x0000
 	mfChecked   = 0x0008
@@ -81,41 +94,50 @@ const (
 var (
 	user32   = syscall.NewLazyDLL("user32.dll")
 	kernel32 = syscall.NewLazyDLL("kernel32.dll")
+	uxtheme  = syscall.NewLazyDLL("uxtheme.dll")
+	gdi32    = syscall.NewLazyDLL("gdi32.dll")
+	dwmapi   = syscall.NewLazyDLL("dwmapi.dll")
+	comctl32 = syscall.NewLazyDLL("comctl32.dll")
 
-	createWindowExW     = user32.NewProc("CreateWindowExW")
-	defWindowProcW      = user32.NewProc("DefWindowProcW")
-	dispatchMessageW    = user32.NewProc("DispatchMessageW")
-	getMessageW         = user32.NewProc("GetMessageW")
-	translateMessageW   = user32.NewProc("TranslateMessage")
-	postQuitMessage     = user32.NewProc("PostQuitMessage")
-	destroyWindow       = user32.NewProc("DestroyWindow")
-	registerClassExW    = user32.NewProc("RegisterClassExW")
-	loadCursorW         = user32.NewProc("LoadCursorW")
-	showWindow          = user32.NewProc("ShowWindow")
-	isWindowVisible     = user32.NewProc("IsWindowVisible")
-	updateWindow        = user32.NewProc("UpdateWindow")
-	moveWindow          = user32.NewProc("MoveWindow")
-	getWindowRect       = user32.NewProc("GetWindowRect")
-	setWindowPos        = user32.NewProc("SetWindowPos")
-	setTimer            = user32.NewProc("SetTimer")
-	killTimer           = user32.NewProc("KillTimer")
-	setWindowTextW      = user32.NewProc("SetWindowTextW")
-	messageBoxW         = user32.NewProc("MessageBoxW")
-	getSystemMetrics    = user32.NewProc("GetSystemMetrics")
-	adjustWindowRectEx  = user32.NewProc("AdjustWindowRectEx")
-	createPopupMenu     = user32.NewProc("CreatePopupMenu")
-	appendMenuW         = user32.NewProc("AppendMenuW")
-	trackPopupMenu      = user32.NewProc("TrackPopupMenu")
-	destroyMenu         = user32.NewProc("DestroyMenu")
-	getCursorPos        = user32.NewProc("GetCursorPos")
-	setForegroundWindow = user32.NewProc("SetForegroundWindow")
-	postMessageW        = user32.NewProc("PostMessageW")
-	getParent           = user32.NewProc("GetParent")
-	releaseCapture      = user32.NewProc("ReleaseCapture")
-	sendMessageW        = user32.NewProc("SendMessageW")
-	callWindowProcW     = user32.NewProc("CallWindowProcW")
-	setWindowLongPtrW   = user32.NewProc("SetWindowLongPtrW")
-	getModuleHandleW    = kernel32.NewProc("GetModuleHandleW")
+	createWindowExW       = user32.NewProc("CreateWindowExW")
+	defWindowProcW        = user32.NewProc("DefWindowProcW")
+	dispatchMessageW      = user32.NewProc("DispatchMessageW")
+	getMessageW           = user32.NewProc("GetMessageW")
+	translateMessageW     = user32.NewProc("TranslateMessage")
+	postQuitMessage       = user32.NewProc("PostQuitMessage")
+	destroyWindow         = user32.NewProc("DestroyWindow")
+	registerClassExW      = user32.NewProc("RegisterClassExW")
+	loadCursorW           = user32.NewProc("LoadCursorW")
+	showWindow            = user32.NewProc("ShowWindow")
+	isWindowVisible       = user32.NewProc("IsWindowVisible")
+	updateWindow          = user32.NewProc("UpdateWindow")
+	moveWindow            = user32.NewProc("MoveWindow")
+	getWindowRect         = user32.NewProc("GetWindowRect")
+	setWindowPos          = user32.NewProc("SetWindowPos")
+	setTimer              = user32.NewProc("SetTimer")
+	killTimer             = user32.NewProc("KillTimer")
+	setWindowTextW        = user32.NewProc("SetWindowTextW")
+	messageBoxW           = user32.NewProc("MessageBoxW")
+	getSystemMetrics      = user32.NewProc("GetSystemMetrics")
+	adjustWindowRectEx    = user32.NewProc("AdjustWindowRectEx")
+	createPopupMenu       = user32.NewProc("CreatePopupMenu")
+	appendMenuW           = user32.NewProc("AppendMenuW")
+	trackPopupMenu        = user32.NewProc("TrackPopupMenu")
+	destroyMenu           = user32.NewProc("DestroyMenu")
+	getCursorPos          = user32.NewProc("GetCursorPos")
+	setForegroundWindow   = user32.NewProc("SetForegroundWindow")
+	postMessageW          = user32.NewProc("PostMessageW")
+	getParent             = user32.NewProc("GetParent")
+	setLayeredAttributes  = user32.NewProc("SetLayeredWindowAttributes")
+	releaseCapture        = user32.NewProc("ReleaseCapture")
+	sendMessageW          = user32.NewProc("SendMessageW")
+	callWindowProcW       = user32.NewProc("CallWindowProcW")
+	setWindowLongPtrW     = user32.NewProc("SetWindowLongPtrW")
+	getModuleHandleW      = kernel32.NewProc("GetModuleHandleW")
+	setWindowTheme        = uxtheme.NewProc("SetWindowTheme")
+	createSolidBrush      = gdi32.NewProc("CreateSolidBrush")
+	dwmSetWindowAttribute = dwmapi.NewProc("DwmSetWindowAttribute")
+	initCommonControlsEx  = comctl32.NewProc("InitCommonControlsEx")
 
 	windowProc         uintptr
 	handleWindowProc   uintptr
@@ -132,6 +154,7 @@ var (
 		releaseCapture.Call()
 		sendMessageW.Call(parent, wmNcLButtonDown, htCaption, 0)
 	}
+	measureToolbarTextWidth = win32ui.MeasureDefaultGUITextWidth
 )
 
 type wndClassEx struct {
@@ -166,7 +189,7 @@ type toolbarButton struct {
 	id           int
 	key          string
 	text         string
-	width        int32
+	icon         string
 	customizable bool
 }
 
@@ -189,6 +212,23 @@ type point struct {
 	X, Y int32
 }
 
+type commonControlsConfig struct {
+	Size    uint32
+	Classes uint32
+}
+
+type toolInfo struct {
+	Size     uint32
+	Flags    uint32
+	Hwnd     syscall.Handle
+	ID       uintptr
+	Box      rect
+	Instance syscall.Handle
+	Text     *uint16
+	LParam   uintptr
+	Reserved unsafe.Pointer
+}
+
 type app struct {
 	statePath      string
 	settingsTool   string
@@ -200,6 +240,8 @@ type app struct {
 	logDir         string
 	hwnd           syscall.Handle
 	buttons        map[int]syscall.Handle
+	tooltip        syscall.Handle
+	tooltipText    map[int][]uint16
 	state          toolbarstate.State
 	experimental   bool
 }
@@ -229,6 +271,7 @@ func main() {
 		helpDir:        *helpDir,
 		logDir:         *logDir,
 		buttons:        map[int]syscall.Handle{},
+		tooltipText:    map[int][]uint16{},
 		experimental:   *experimental,
 	}
 	if err := instance.run(); err != nil {
@@ -240,6 +283,8 @@ func main() {
 func (a *app) run() error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	controls := commonControlsConfig{Size: uint32(unsafe.Sizeof(commonControlsConfig{})), Classes: 0x000000ff}
+	initCommonControlsEx.Call(uintptr(unsafe.Pointer(&controls)))
 
 	if win32ui.ActivateExistingWindow(a.className()) {
 		return nil
@@ -262,16 +307,16 @@ func (a *app) run() error {
 		Icon:       syscall.Handle(icon),
 		IconSm:     syscall.Handle(icon),
 		Cursor:     syscall.Handle(cursor),
-		Background: win32ui.ColorWindowBackground,
+		Background: toolbarBackgroundBrush(),
 		ClassName:  className,
 	}
 	if ret, _, _ := registerClassExW.Call(uintptr(unsafe.Pointer(&class))); ret == 0 {
-		return errors.New("无法注册输入法工具栏窗口")
+		return errors.New("无法注册桌面浮动工具栏窗口")
 	}
 
 	title, _ := syscall.UTF16PtrFromString(a.windowTitle())
 	windowStyle := uintptr(toolbarWindowStyle())
-	windowExStyle := uintptr(wsExToolWindow | wsExTopmost)
+	windowExStyle := uintptr(wsExToolWindow | wsExTopmost | wsExLayered)
 	layout := calculateToolbarLayout(a.state)
 	width, height := windowSizeForClient(layout.clientWidth, layout.clientHeight)
 	screenW, _, _ := getSystemMetrics.Call(0)
@@ -286,12 +331,14 @@ func (a *app) run() error {
 		0, 0, instance, 0,
 	)
 	if hwnd == 0 {
-		return errors.New("无法创建输入法工具栏窗口")
+		return errors.New("无法创建桌面浮动工具栏窗口")
 	}
 	a.hwnd = syscall.Handle(hwnd)
 	a.createButtons()
+	a.createTooltips()
 	a.updateLabels()
 	a.applyLayout()
+	a.applyAppearance()
 	setTimer.Call(hwnd, timerID, 200, 0)
 	showWindow.Call(hwnd, 5)
 	updateWindow.Call(hwnd)
@@ -408,21 +455,81 @@ func (a *app) createButtons() {
 		}
 		a.buttons[item.id] = createButton(
 			a.hwnd, item.id, item.text,
-			0, 0, item.width, toolbarButtonHeight,
+			0, 0, toolbarMinTextWidth, toolbarButtonHeight,
 		)
+	}
+}
+
+func toolbarBackgroundBrush() syscall.Handle {
+	// COLORREF uses 0x00BBGGRR; this is a restrained blue-gray (#F4F7F9).
+	brush, _, _ := createSolidBrush.Call(0x00F9F7F4)
+	if brush == 0 {
+		return win32ui.ColorWindowBackground
+	}
+	return syscall.Handle(brush)
+}
+
+func (a *app) createTooltips() {
+	className, _ := syscall.UTF16PtrFromString("tooltips_class32")
+	tooltip, _, _ := createWindowExW.Call(
+		wsExTopmost,
+		uintptr(unsafe.Pointer(className)), 0,
+		wsPopup|ttsAlwaysTip,
+		0x80000000, 0x80000000, 0x80000000, 0x80000000,
+		uintptr(a.hwnd), 0, 0, 0,
+	)
+	if tooltip == 0 {
+		return
+	}
+	a.tooltip = syscall.Handle(tooltip)
+	for _, button := range a.buttonDefinitions() {
+		if button.id == idHandle {
+			continue
+		}
+		text := syscall.StringToUTF16(buttonTooltip(button.id))
+		a.tooltipText[button.id] = text
+		info := toolInfo{
+			Size:  uint32(unsafe.Sizeof(toolInfo{})),
+			Flags: ttfIDIsHWND | ttfSubclass,
+			Hwnd:  a.hwnd,
+			ID:    uintptr(a.buttons[button.id]),
+			Text:  &text[0],
+		}
+		sendMessageW.Call(tooltip, ttmAddToolW, 0, uintptr(unsafe.Pointer(&info)))
+	}
+}
+
+func buttonTooltip(id int) string {
+	switch id {
+	case idLanguage:
+		return "中文 / 英文"
+	case idShape:
+		return "半宽 / 全宽"
+	case idPunct:
+		return "中文标点 / 英文标点"
+	case idScript:
+		return "简体 / 繁体"
+	case idUnicode:
+		return "Unicode 字符"
+	case idTrainer:
+		return "指法练习"
+	case idSettings:
+		return "设置"
+	default:
+		return ""
 	}
 }
 
 func toolbarButtons() []toolbarButton {
 	return []toolbarButton{
-		{idHandle, "handle", "│", 64, false},
-		{idLanguage, "language", "中文", 54, true},
-		{idShape, "shape", "半宽", 54, true},
-		{idPunct, "punctuation", "中标", 54, true},
-		{idScript, "script", "简体", 54, true},
-		{idUnicode, "unicode", "字符", 64, true},
-		{idTrainer, "trainer", "练习", 64, true},
-		{idSettings, "settings", "设置", 64, false},
+		{idHandle, "handle", "│", "", false},
+		{idLanguage, "language", "中文", "\ue774", true},
+		{idShape, "shape", "半宽", "\ue73f", true},
+		{idPunct, "punctuation", "中标", "\ue8d2", true},
+		{idScript, "script", "简体", "\ue8c1", true},
+		{idUnicode, "unicode", "字符", "\ue8ef", true},
+		{idTrainer, "trainer", "练习", "\ue7be", true},
+		{idSettings, "settings", "设置", "\ue713", false},
 	}
 }
 
@@ -430,11 +537,18 @@ func (a *app) buttonDefinitions() []toolbarButton {
 	return toolbarButtons()
 }
 
-func buttonWidthForLayout(button toolbarButton, vertical bool) int32 {
+func buttonWidthForLayout(button toolbarButton, state toolbarstate.State, vertical bool) int32 {
 	if button.id == idHandle && !vertical {
 		return toolbarHandleWidth
 	}
-	return button.width
+	if usesToolbarIcons(state) && button.id != idHandle {
+		return toolbarIconWidth
+	}
+	width := measureToolbarTextWidth(buttonDisplayLabel(button, state)) + toolbarTextPadding
+	if width < toolbarMinTextWidth {
+		return toolbarMinTextWidth
+	}
+	return width
 }
 
 func buttonHeightForLayout(button toolbarButton, vertical bool) int32 {
@@ -463,7 +577,7 @@ func calculateToolbarLayoutFor(state toolbarstate.State, definitions []toolbarBu
 	if state.Vertical {
 		maxWidth := int32(0)
 		for _, button := range visible {
-			width := buttonWidthForLayout(button, true)
+			width := buttonWidthForLayout(button, state, true)
 			if width > maxWidth {
 				maxWidth = width
 			}
@@ -497,7 +611,7 @@ func calculateToolbarLayoutFor(state toolbarstate.State, definitions []toolbarBu
 	totalWidth := int32(0)
 	maxHeight := int32(0)
 	for index, button := range visible {
-		totalWidth += buttonWidthForLayout(button, false)
+		totalWidth += buttonWidthForLayout(button, state, false)
 		height := buttonHeightForLayout(button, false)
 		if height > maxHeight {
 			maxHeight = height
@@ -513,7 +627,7 @@ func calculateToolbarLayoutFor(state toolbarstate.State, definitions []toolbarBu
 		isVisible := !button.customizable || !hidden[button.key]
 		placement := buttonPlacement{id: button.id, visible: isVisible}
 		if isVisible {
-			width := buttonWidthForLayout(button, false)
+			width := buttonWidthForLayout(button, state, false)
 			height := buttonHeightForLayout(button, false)
 			placement.x = x
 			placement.y = toolbarMargin + (maxHeight-height)/2
@@ -565,7 +679,7 @@ func windowSizeForClient(clientWidth, clientHeight int32) (int32, int32) {
 		uintptr(unsafe.Pointer(&box)),
 		toolbarWindowStyle(),
 		0,
-		uintptr(wsExToolWindow|wsExTopmost),
+		uintptr(wsExToolWindow|wsExTopmost|wsExLayered),
 	)
 	if ret == 0 {
 		// The toolbar has no caption; reserve only a small border fallback.
@@ -587,6 +701,8 @@ func createButton(parent syscall.Handle, id int, text string, x, y, width, heigh
 	)
 	button := syscall.Handle(hwnd)
 	win32ui.ApplyDefaultGUIFont(button)
+	theme, _ := syscall.UTF16PtrFromString("Explorer")
+	setWindowTheme.Call(uintptr(button), uintptr(unsafe.Pointer(theme)), 0)
 	return button
 }
 
@@ -685,14 +801,18 @@ func (a *app) handleCommand(id int) {
 func (a *app) showSettingsMenu() {
 	menu, _, _ := createPopupMenu.Call()
 	customize, _, _ := createPopupMenu.Call()
-	if menu == 0 || customize == 0 {
+	appearance, _, _ := createPopupMenu.Call()
+	if menu == 0 || customize == 0 || appearance == 0 {
 		if menu != 0 {
 			destroyMenu.Call(menu)
 		}
 		if customize != 0 {
 			destroyMenu.Call(customize)
 		}
-		showError("无法创建工具栏设置菜单。")
+		if appearance != 0 {
+			destroyMenu.Call(appearance)
+		}
+		showError("无法创建桌面浮动工具栏设置菜单。")
 		return
 	}
 	defer destroyMenu.Call(menu)
@@ -708,14 +828,34 @@ func (a *app) showSettingsMenu() {
 		appendPopupMenuItem(customize, flags, uintptr(idMenuButtonBase+index), buttonMenuName(button.key))
 	}
 	appendPopupMenuItem(menu, mfPopup, customize, "定制")
+	iconFlags := uintptr(mfString)
+	textFlags := uintptr(mfString)
+	transparentFlags := uintptr(mfString)
+	opaqueFlags := uintptr(mfString)
+	if usesToolbarIcons(a.state) {
+		iconFlags |= mfChecked
+	} else {
+		textFlags |= mfChecked
+	}
+	if a.state.ToolbarTransparent {
+		transparentFlags |= mfChecked
+	} else {
+		opaqueFlags |= mfChecked
+	}
+	appendPopupMenuItem(appearance, iconFlags, idMenuDisplayIcon, "图标")
+	appendPopupMenuItem(appearance, textFlags, idMenuDisplayText, "文字")
+	appendPopupMenuItem(appearance, mfSeparator, 0, "")
+	appendPopupMenuItem(appearance, transparentFlags, idMenuTransparent, "半透明")
+	appendPopupMenuItem(appearance, opaqueFlags, idMenuOpaque, "不透明")
+	appendPopupMenuItem(menu, mfPopup, appearance, "外观")
 	appendPopupMenuItem(menu, mfString, idMenuOrientation, orientationMenuLabel(a.state))
 	appendPopupMenuItem(menu, mfString, idMenuHide, "隐藏")
 	appendPopupMenuItem(menu, mfSeparator, 0, "")
-	appendPopupMenuItem(menu, mfString, idMenuCandidate, "候选")
+	appendPopupMenuItem(menu, mfString, idMenuCandidate, "候选设置")
 	if a.experimental {
 		appendPopupMenuItem(menu, mfString, idMenuToolCenter, "工具中心")
 	}
-	appendPopupMenuItem(menu, mfString, idMenuSystem, "系统")
+	appendPopupMenuItem(menu, mfString, idMenuSystem, "系统设置")
 
 	var cursor point
 	getCursorPos.Call(uintptr(unsafe.Pointer(&cursor)))
@@ -786,6 +926,22 @@ func (a *app) handleSettingsMenuCommand(command int) {
 		a.updateState(func(state *toolbarstate.State) {
 			state.Vertical = !state.Vertical
 			state.OrientationSet = true
+		})
+	case idMenuDisplayIcon:
+		a.updateState(func(state *toolbarstate.State) {
+			state.ToolbarDisplay = toolbarstate.ToolbarDisplayIcon
+		})
+	case idMenuDisplayText:
+		a.updateState(func(state *toolbarstate.State) {
+			state.ToolbarDisplay = toolbarstate.ToolbarDisplayText
+		})
+	case idMenuTransparent:
+		a.updateState(func(state *toolbarstate.State) {
+			state.ToolbarTransparent = true
+		})
+	case idMenuOpaque:
+		a.updateState(func(state *toolbarstate.State) {
+			state.ToolbarTransparent = false
 		})
 	case idMenuHide:
 		closeToolbarWindow(a.hwnd)
@@ -925,6 +1081,7 @@ func (a *app) updateState(change func(*toolbarstate.State)) {
 	a.state = state
 	a.updateLabels()
 	a.applyLayout()
+	a.applyAppearance()
 }
 
 func (a *app) refresh() {
@@ -938,14 +1095,65 @@ func (a *app) refresh() {
 	a.state = state
 	a.updateLabels()
 	a.applyLayout()
+	a.applyAppearance()
 }
 
 func (a *app) updateLabels() {
-	setWindowLabel(a.buttons[idHandle], dragHandleLabel(a.state))
-	setButtonText(a.buttons[idLanguage], choose(a.state.ASCII, "英文", "中文"))
-	setButtonText(a.buttons[idShape], choose(a.state.FullShape, "全宽", "半宽"))
-	setButtonText(a.buttons[idPunct], choose(a.state.ASCIIPunctuation, "英标", "中标"))
-	setButtonText(a.buttons[idScript], choose(a.state.Traditionalization, "繁体", "简体"))
+	for _, button := range a.buttonDefinitions() {
+		setButtonText(a.buttons[button.id], buttonDisplayLabel(button, a.state))
+		if usesToolbarIcons(a.state) && button.id != idHandle {
+			win32ui.ApplyFluentIconFont(a.buttons[button.id])
+		} else {
+			win32ui.ApplyDefaultGUIFont(a.buttons[button.id])
+		}
+	}
+}
+
+func usesToolbarIcons(state toolbarstate.State) bool {
+	return state.ToolbarDisplay == toolbarstate.ToolbarDisplayIcon
+}
+
+func buttonDisplayLabel(button toolbarButton, state toolbarstate.State) string {
+	if button.id == idHandle {
+		return dragHandleLabel(state)
+	}
+	if usesToolbarIcons(state) {
+		if button.id == idShape && state.FullShape {
+			return "\ue740"
+		}
+		return button.icon
+	}
+	switch button.id {
+	case idLanguage:
+		return choose(state.ASCII, "英文", "中文")
+	case idShape:
+		return choose(state.FullShape, "全宽", "半宽")
+	case idPunct:
+		return choose(state.ASCIIPunctuation, "英标", "中标")
+	case idScript:
+		return choose(state.Traditionalization, "繁体", "简体")
+	default:
+		return button.text
+	}
+}
+
+func toolbarAlpha(state toolbarstate.State) byte {
+	if state.ToolbarTransparent {
+		return 224
+	}
+	return 255
+}
+
+func (a *app) applyAppearance() {
+	if a.hwnd == 0 {
+		return
+	}
+	const lwaAlpha = 0x00000002
+	setLayeredAttributes.Call(uintptr(a.hwnd), 0, uintptr(toolbarAlpha(a.state)), lwaAlpha)
+	cornerPreference := uint32(2) // DWMWCP_ROUND
+	borderColor := uint32(0x00D8CEC4)
+	dwmSetWindowAttribute.Call(uintptr(a.hwnd), 33, uintptr(unsafe.Pointer(&cornerPreference)), unsafe.Sizeof(cornerPreference))
+	dwmSetWindowAttribute.Call(uintptr(a.hwnd), 34, uintptr(unsafe.Pointer(&borderColor)), unsafe.Sizeof(borderColor))
 }
 
 func choose(value bool, whenTrue, whenFalse string) string {
