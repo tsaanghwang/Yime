@@ -175,6 +175,7 @@ LanguageBarItem::LanguageBarItem(std::wstring settingsPath, PopupPresenter prese
         lastFullShape_ = settings.fullShape;
         lastAsciiPunctuation_ = settings.asciiPunctuation;
         lastTraditionalization_ = settings.traditionalization;
+        lastRevision_ = settings.revision;
         refreshTimerId_ = SetTimer(nullptr, 0, kToolbarRefreshMilliseconds, RefreshTimerProc);
         if (refreshTimerId_) {
             const std::lock_guard<std::mutex> lock(gRefreshTimersMutex);
@@ -494,10 +495,15 @@ bool LanguageBarItem::LaunchTool(UINT command, const std::wstring& settingsPath,
 
 void LanguageBarItem::Refresh() noexcept {
     const auto settings = yime::experiment::LoadExperimentSettings(settingsPath_);
+    const bool settingsChanged = settings.revision != lastRevision_;
     const bool textChanged = settings.asciiMode != lastAsciiMode_;
     const bool iconChanged = textChanged || settings.fullShape != lastFullShape_;
     const bool menuChanged = settings.asciiPunctuation != lastAsciiPunctuation_ ||
                              settings.traditionalization != lastTraditionalization_;
+    lastRevision_ = settings.revision;
+    if (settingsChanged && settingsChangedHandler_) {
+        settingsChangedHandler_(settingsChangedContext_, settings);
+    }
     if (!textChanged && !iconChanged && !menuChanged) return;
     lastAsciiMode_ = settings.asciiMode;
     lastFullShape_ = settings.fullShape;

@@ -30,6 +30,8 @@ public:
     using PopupPresenter = UINT (*)(HMENU menu, POINT point, void* context) noexcept;
     using ToolLauncher = bool (*)(UINT command, const std::wstring& settingsPath,
                                   void* context) noexcept;
+    using SettingsChangedHandler = void (*)(
+        void* context, const yime::experiment::ExperimentSettings& settings) noexcept;
 
     explicit LanguageBarItem(
         std::wstring settingsPath = yime::experiment::ResolveExperimentSettingsPath(),
@@ -52,6 +54,10 @@ public:
     STDMETHODIMP UnadviseSink(DWORD cookie) override;
 
     void Refresh() noexcept;
+    void SetSettingsChangedHandler(SettingsChangedHandler handler, void* context) noexcept {
+        settingsChangedHandler_ = handler;
+        settingsChangedContext_ = context;
+    }
 
 private:
     ~LanguageBarItem();
@@ -74,6 +80,9 @@ private:
     bool lastFullShape_ = false;
     bool lastAsciiPunctuation_ = false;
     bool lastTraditionalization_ = false;
+    std::int64_t lastRevision_ = 0;
+    SettingsChangedHandler settingsChangedHandler_ = nullptr;
+    void* settingsChangedContext_ = nullptr;
     UINT_PTR refreshTimerId_ = 0;
     std::vector<std::pair<DWORD, ITfLangBarItemSink*>> sinks_;
     static std::atomic<DWORD> nextCookie_;

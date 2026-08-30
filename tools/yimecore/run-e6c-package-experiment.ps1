@@ -230,6 +230,8 @@ $maintenanceRoot = Join-Path $packageRoot 'maintenance'
 New-Item -ItemType Directory -Path $maintenanceRoot -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'manage-e6c-trial-install.ps1') `
     -Destination (Join-Path $maintenanceRoot 'Manage-YimeCoreTrial.ps1') -Force
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'repair-e6c-trial-autostart.ps1') `
+    -Destination (Join-Path $maintenanceRoot 'Repair-YimeCoreTrialAutostart.ps1') -Force
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Install-YimeCore-Trial.cmd') `
     -Destination (Join-Path $packageRoot 'Install-YimeCore-Trial.cmd') -Force
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Force-Uninstall-YimeCore-Trial.cmd') `
@@ -524,6 +526,7 @@ $sourceFiles = @(
     'tools\yimecore\run-e6b7-parallel-package-experiment.ps1',
     'tools\yimecore\run-e6c-package-experiment.ps1',
     'tools\yimecore\manage-e6c-trial-install.ps1',
+    'tools\yimecore\repair-e6c-trial-autostart.ps1',
     'tools\yimecore\Install-YimeCore-Trial.cmd',
     'tools\yimecore\Force-Uninstall-YimeCore-Trial.cmd',
     'tools\yimecore\test-e6c-installation-contract.ps1',
@@ -537,6 +540,7 @@ $sourceFiles = @(
     'tools\yimecore\trial-help\trial-feedback.html',
     'tools\yimecore\trial-help\diagnostics.html',
     'tools\yimecore\record-e6b8-desktop-host-acceptance.ps1'
+    'Build-Install-YimeCore-Trial-v3.cmd'
 )
 $sourceHashes = foreach ($relative in $sourceFiles) {
     $hash = Get-FileHash -LiteralPath (Join-Path $repoRoot $relative) -Algorithm SHA256

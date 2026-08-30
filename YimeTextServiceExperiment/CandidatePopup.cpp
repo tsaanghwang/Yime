@@ -190,9 +190,18 @@ bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const R
 
 void CandidatePopup::RefreshDisplaySettings() noexcept {
     const auto& settings = liveSettings_.Get();
-    if (settings.candidateFontPoints == fontPoints_) return;
+    const bool layoutChanged = horizontal_ != (settings.candidateLayout == "horizontal");
+    const bool desiredAnnotationFont = annotationFontFollowsSettings_ &&
+                                       settings.candidateAnnotation == "yinyuan";
+    const bool fontChanged = settings.candidateFontPoints != fontPoints_ ||
+                             widen(settings.candidateFontFamily) != fontFamily_ ||
+                             desiredAnnotationFont != useYinyuanFont_;
+    if (!layoutChanged && !fontChanged) return;
     SetFontPoints(settings.candidateFontPoints);
-    RefreshLayout(anchor_);
+    SetFontFamily(widen(settings.candidateFontFamily));
+    SetUseYinyuanFont(desiredAnnotationFont);
+    SetHorizontal(settings.candidateLayout == "horizontal");
+    if (window_) RefreshLayout(anchor_);
 }
 
 void CandidatePopup::RefreshLayout(const RECT& anchor) noexcept {

@@ -5,6 +5,7 @@ package main
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -19,8 +20,10 @@ import (
 const (
 	windowClass           = "YimeInputToolbar"
 	experimentWindowClass = "YimeCoreInputToolbarWindow"
+	previewWindowClass    = "YimePunctuationIconPreview"
 	messageTitle          = "音元桌面浮动工具栏"
 	experimentWindowTitle = "Yime 元版桌面浮动工具栏"
+	previewWindowTitle    = "中英文工具栏图标预览（点击切换）"
 
 	wsExToolWindow = 0x00000080
 	wsExTopmost    = 0x00000008
@@ -41,16 +44,19 @@ const (
 	ttfIDIsHWND    = 0x00000001
 	ttfSubclass    = 0x00000010
 
-	wmCommand       = 0x0111
-	wmTimer         = 0x0113
-	wmClose         = 0x0010
-	wmDestroy       = 0x0002
-	wmNull          = 0x0000
-	wmLButtonDown   = 0x0201
-	wmNcLButtonDown = 0x00A1
-	wmUser          = 0x0400
-	htCaption       = 2
-	ttmAddToolW     = wmUser + 50
+	wmCommand         = 0x0111
+	wmTimer           = 0x0113
+	wmClose           = 0x0010
+	wmDestroy         = 0x0002
+	wmPaint           = 0x000f
+	wmNull            = 0x0000
+	wmLButtonDown     = 0x0201
+	wmNcLButtonDown   = 0x00A1
+	wmPrintClient     = 0x0318
+	wmUser            = 0x0400
+	wmDrawToolbarIcon = wmUser + 1
+	htCaption         = 2
+	ttmAddToolW       = wmUser + 50
 
 	idHandle   = 99
 	idLanguage = 100
@@ -89,6 +95,21 @@ const (
 
 	tpmRightButton = 0x0002
 	tpmReturnCmd   = 0x0100
+
+	bmGetState = 0x00f2
+	bstPushed  = 0x0004
+	psSolid    = 0
+	nullBrush  = 5
+	nullPen    = 8
+
+	colorWindow       = 5
+	colorWindowText   = 8
+	bkModeTransparent = 1
+	dtCenter          = 0x00000001
+	dtVCenter         = 0x00000004
+	dtSingleLine      = 0x00000020
+	dtNoClip          = 0x00000100
+	dtNoPrefix        = 0x00000800
 )
 
 var (
@@ -118,8 +139,17 @@ var (
 	killTimer             = user32.NewProc("KillTimer")
 	setWindowTextW        = user32.NewProc("SetWindowTextW")
 	messageBoxW           = user32.NewProc("MessageBoxW")
+	drawTextW             = user32.NewProc("DrawTextW")
 	getSystemMetrics      = user32.NewProc("GetSystemMetrics")
+	getDpiForWindow       = user32.NewProc("GetDpiForWindow")
+	getSysColor           = user32.NewProc("GetSysColor")
+	getSysColorBrush      = user32.NewProc("GetSysColorBrush")
+	getClientRect         = user32.NewProc("GetClientRect")
+	getDC                 = user32.NewProc("GetDC")
+	releaseDC             = user32.NewProc("ReleaseDC")
 	adjustWindowRectEx    = user32.NewProc("AdjustWindowRectEx")
+	fillRect              = user32.NewProc("FillRect")
+	invalidateRect        = user32.NewProc("InvalidateRect")
 	createPopupMenu       = user32.NewProc("CreatePopupMenu")
 	appendMenuW           = user32.NewProc("AppendMenuW")
 	trackPopupMenu        = user32.NewProc("TrackPopupMenu")
@@ -136,12 +166,27 @@ var (
 	getModuleHandleW      = kernel32.NewProc("GetModuleHandleW")
 	setWindowTheme        = uxtheme.NewProc("SetWindowTheme")
 	createSolidBrush      = gdi32.NewProc("CreateSolidBrush")
+	createFontW           = gdi32.NewProc("CreateFontW")
+	createPen             = gdi32.NewProc("CreatePen")
+	deleteObject          = gdi32.NewProc("DeleteObject")
+	ellipse               = gdi32.NewProc("Ellipse")
+	getStockObject        = gdi32.NewProc("GetStockObject")
+	selectObject          = gdi32.NewProc("SelectObject")
+	setBkMode             = gdi32.NewProc("SetBkMode")
+	setTextColor          = gdi32.NewProc("SetTextColor")
+	setTextAlign          = gdi32.NewProc("SetTextAlign")
+	textOutW              = gdi32.NewProc("TextOutW")
+	getGlyphOutlineW      = gdi32.NewProc("GetGlyphOutlineW")
 	dwmSetWindowAttribute = dwmapi.NewProc("DwmSetWindowAttribute")
 	initCommonControlsEx  = comctl32.NewProc("InitCommonControlsEx")
 
-	windowProc         uintptr
-	handleWindowProc   uintptr
-	originalHandleProc uintptr
+	windowProc            uintptr
+	handleWindowProc      uintptr
+	originalHandleProc    uintptr
+	iconButtonWindowProc  uintptr
+	originalButtonProc    uintptr
+	scriptGlyphFonts      = map[int32]uintptr{}
+	punctuationGlyphFonts = map[string]uintptr{}
 
 	closeToolbarWindow = func(hwnd syscall.Handle) {
 		destroyWindow.Call(uintptr(hwnd))
@@ -185,6 +230,33 @@ type rect struct {
 	Left, Top, Right, Bottom int32
 }
 
+type shapeIconGeometry struct {
+	Outer rect
+	Light rect
+	Dark  rect
+}
+
+type punctuationIconGeometry struct {
+	Canvas       rect
+	TopGlyph     string
+	TopBounds    rect
+	BottomGlyph  string
+	BottomBounds rect
+	FontHeight   int32
+}
+
+type languageIconGeometry struct {
+	Canvas     rect
+	Glyph      string
+	FontHeight int32
+}
+
+type scriptIconGeometry struct {
+	Canvas     rect
+	Glyph      string
+	FontHeight int32
+}
+
 type toolbarButton struct {
 	id           int
 	key          string
@@ -212,6 +284,26 @@ type point struct {
 	X, Y int32
 }
 
+type fixed struct {
+	Fract uint16
+	Value int16
+}
+
+type mat2 struct {
+	M11 fixed
+	M12 fixed
+	M21 fixed
+	M22 fixed
+}
+
+type glyphMetrics struct {
+	BlackBoxX uint32
+	BlackBoxY uint32
+	Origin    point
+	CellIncX  int16
+	CellIncY  int16
+}
+
 type commonControlsConfig struct {
 	Size    uint32
 	Classes uint32
@@ -230,20 +322,21 @@ type toolInfo struct {
 }
 
 type app struct {
-	statePath      string
-	settingsTool   string
-	trainerTool    string
-	toolCenterTool string
-	userDir        string
-	sharedDir      string
-	helpDir        string
-	logDir         string
-	hwnd           syscall.Handle
-	buttons        map[int]syscall.Handle
-	tooltip        syscall.Handle
-	tooltipText    map[int][]uint16
-	state          toolbarstate.State
-	experimental   bool
+	statePath          string
+	settingsTool       string
+	trainerTool        string
+	toolCenterTool     string
+	userDir            string
+	sharedDir          string
+	helpDir            string
+	logDir             string
+	hwnd               syscall.Handle
+	buttons            map[int]syscall.Handle
+	tooltip            syscall.Handle
+	tooltipText        map[int][]uint16
+	state              toolbarstate.State
+	experimental       bool
+	previewPunctuation bool
 }
 
 func main() {
@@ -256,28 +349,61 @@ func main() {
 	helpDir := flag.String("HelpDir", "", "Yime help directory")
 	logDir := flag.String("LogDir", "", "PIME log directory")
 	experimental := flag.Bool("Experimental", false, "Run the independent YimeCore trial toolbar")
+	previewPunctuation := flag.Bool("PreviewPunctuation", false, "Preview the punctuation toolbar icons without installing PIME")
 	flag.Parse()
+	cleanupPreview := func() {}
+	if *previewPunctuation {
+		var err error
+		*statePath, cleanupPreview, err = createPunctuationPreviewState()
+		if err != nil {
+			showError(err.Error())
+			os.Exit(1)
+		}
+		defer cleanupPreview()
+	}
 	if *statePath == "" {
 		showError("缺少 StatePath 参数。")
 		os.Exit(1)
 	}
 	instance := &app{
-		statePath:      *statePath,
-		settingsTool:   *settingsTool,
-		trainerTool:    *trainerTool,
-		toolCenterTool: *toolCenterTool,
-		userDir:        *userDir,
-		sharedDir:      *sharedDir,
-		helpDir:        *helpDir,
-		logDir:         *logDir,
-		buttons:        map[int]syscall.Handle{},
-		tooltipText:    map[int][]uint16{},
-		experimental:   *experimental,
+		statePath:          *statePath,
+		settingsTool:       *settingsTool,
+		trainerTool:        *trainerTool,
+		toolCenterTool:     *toolCenterTool,
+		userDir:            *userDir,
+		sharedDir:          *sharedDir,
+		helpDir:            *helpDir,
+		logDir:             *logDir,
+		buttons:            map[int]syscall.Handle{},
+		tooltipText:        map[int][]uint16{},
+		experimental:       *experimental,
+		previewPunctuation: *previewPunctuation,
 	}
 	if err := instance.run(); err != nil {
 		showError(err.Error())
 		os.Exit(1)
 	}
+}
+
+func createPunctuationPreviewState() (string, func(), error) {
+	directory, err := os.MkdirTemp("", "yime-punctuation-preview-*")
+	if err != nil {
+		return "", func() {}, err
+	}
+	cleanup := func() { _ = os.RemoveAll(directory) }
+	path := filepath.Join(directory, toolbarstate.FileName)
+	_, err = toolbarstate.Update(path, "punctuation-preview", func(state *toolbarstate.State) bool {
+		state.Vertical = false
+		state.OrientationSet = true
+		state.ToolbarLayoutVersion = toolbarstate.LayoutVersion
+		state.ToolbarDisplay = toolbarstate.ToolbarDisplayIcon
+		return true
+	})
+	if err != nil {
+		cleanup()
+		return "", func() {}, err
+	}
+	return path, cleanup, nil
 }
 
 func (a *app) run() error {
@@ -286,7 +412,7 @@ func (a *app) run() error {
 	controls := commonControlsConfig{Size: uint32(unsafe.Sizeof(commonControlsConfig{})), Classes: 0x000000ff}
 	initCommonControlsEx.Call(uintptr(unsafe.Pointer(&controls)))
 
-	if win32ui.ActivateExistingWindow(a.className()) {
+	if !a.previewPunctuation && win32ui.ActivateExistingWindow(a.className()) {
 		return nil
 	}
 	if a.experimental {
@@ -315,13 +441,13 @@ func (a *app) run() error {
 	}
 
 	title, _ := syscall.UTF16PtrFromString(a.windowTitle())
-	windowStyle := uintptr(toolbarWindowStyle())
-	windowExStyle := uintptr(wsExToolWindow | wsExTopmost | wsExLayered)
-	layout := calculateToolbarLayout(a.state)
-	width, height := windowSizeForClient(layout.clientWidth, layout.clientHeight)
+	windowStyle := a.windowStyle()
+	windowExStyle := a.windowExStyle()
+	layout := calculateToolbarLayoutFor(a.state, a.buttonDefinitions())
+	width, height := windowSizeForClientWithStyle(layout.clientWidth, layout.clientHeight, windowStyle, windowExStyle)
 	screenW, _, _ := getSystemMetrics.Call(0)
 	screenH, _, _ := getSystemMetrics.Call(1)
-	x, y := defaultToolbarPosition(int32(screenW), int32(screenH), width, height)
+	x, y := a.defaultWindowPosition(int32(screenW), int32(screenH), width, height)
 	hwnd, _, _ := createWindowExW.Call(
 		windowExStyle,
 		uintptr(unsafe.Pointer(className)),
@@ -356,6 +482,9 @@ func (a *app) run() error {
 }
 
 func (a *app) className() string {
+	if a.previewPunctuation {
+		return previewWindowClass
+	}
 	if a.experimental {
 		return experimentWindowClass
 	}
@@ -363,6 +492,9 @@ func (a *app) className() string {
 }
 
 func (a *app) windowTitle() string {
+	if a.previewPunctuation {
+		return previewWindowTitle
+	}
 	if a.experimental {
 		return experimentWindowTitle
 	}
@@ -417,6 +549,27 @@ func toolbarWindowStyle() uintptr {
 	return wsPopup | wsBorder
 }
 
+func (a *app) windowStyle() uintptr {
+	if a.previewPunctuation {
+		return wsCaption | wsSysMenu
+	}
+	return toolbarWindowStyle()
+}
+
+func (a *app) windowExStyle() uintptr {
+	if a.previewPunctuation {
+		return wsExTopmost | wsExLayered
+	}
+	return wsExToolWindow | wsExTopmost | wsExLayered
+}
+
+func (a *app) defaultWindowPosition(screenWidth, screenHeight, width, height int32) (int32, int32) {
+	if a.previewPunctuation {
+		return (screenWidth - width) / 2, (screenHeight - height) / 2
+	}
+	return defaultToolbarPosition(screenWidth, screenHeight, width, height)
+}
+
 func defaultToolbarPosition(screenWidth, screenHeight, width, height int32) (int32, int32) {
 	const rightInset = int32(32)
 	x := screenWidth - width - rightInset
@@ -453,10 +606,14 @@ func (a *app) createButtons() {
 			a.buttons[item.id] = createDragHandle(a.hwnd, item.id, item.text)
 			continue
 		}
-		a.buttons[item.id] = createButton(
+		button := createButton(
 			a.hwnd, item.id, item.text,
 			0, 0, toolbarMinTextWidth, toolbarButtonHeight,
 		)
+		a.buttons[item.id] = button
+		if toolbarButtonUsesNativeIcon(item.id) {
+			subclassToolbarIconButton(button)
+		}
 	}
 }
 
@@ -523,10 +680,10 @@ func buttonTooltip(id int) string {
 func toolbarButtons() []toolbarButton {
 	return []toolbarButton{
 		{idHandle, "handle", "│", "", false},
-		{idLanguage, "language", "中文", "\ue774", true},
-		{idShape, "shape", "半宽", "\ue73f", true},
-		{idPunct, "punctuation", "中标", "\ue8d2", true},
-		{idScript, "script", "简体", "\ue8c1", true},
+		{idLanguage, "language", "中文", "", true},
+		{idShape, "shape", "半宽", "", true},
+		{idPunct, "punctuation", "中标", "", true},
+		{idScript, "script", "简体", "", true},
 		{idUnicode, "unicode", "字符", "\ue8ef", true},
 		{idTrainer, "trainer", "练习", "\ue7be", true},
 		{idSettings, "settings", "设置", "\ue713", false},
@@ -534,6 +691,10 @@ func toolbarButtons() []toolbarButton {
 }
 
 func (a *app) buttonDefinitions() []toolbarButton {
+	if a.previewPunctuation {
+		buttons := toolbarButtons()
+		return []toolbarButton{buttons[0], buttons[1], buttons[3]}
+	}
 	return toolbarButtons()
 }
 
@@ -656,7 +817,9 @@ func (a *app) applyLayout() {
 			showWindow.Call(uintptr(button), 0)
 		}
 	}
-	width, height := windowSizeForClient(layout.clientWidth, layout.clientHeight)
+	width, height := windowSizeForClientWithStyle(
+		layout.clientWidth, layout.clientHeight, a.windowStyle(), a.windowExStyle(),
+	)
 	const swpNoZOrder = 0x0004
 	const swpNoActivate = 0x0010
 	position := rect{}
@@ -674,12 +837,19 @@ func (a *app) applyLayout() {
 }
 
 func windowSizeForClient(clientWidth, clientHeight int32) (int32, int32) {
+	return windowSizeForClientWithStyle(
+		clientWidth, clientHeight, toolbarWindowStyle(),
+		wsExToolWindow|wsExTopmost|wsExLayered,
+	)
+}
+
+func windowSizeForClientWithStyle(clientWidth, clientHeight int32, style, exStyle uintptr) (int32, int32) {
 	box := rect{Right: clientWidth, Bottom: clientHeight}
 	ret, _, _ := adjustWindowRectEx.Call(
 		uintptr(unsafe.Pointer(&box)),
-		toolbarWindowStyle(),
+		style,
 		0,
-		uintptr(wsExToolWindow|wsExTopmost|wsExLayered),
+		exStyle,
 	)
 	if ret == 0 {
 		// The toolbar has no caption; reserve only a small border fallback.
@@ -747,6 +917,47 @@ func dragHandleWndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintp
 	return ret
 }
 
+func subclassToolbarIconButton(button syscall.Handle) {
+	if button == 0 {
+		return
+	}
+	if iconButtonWindowProc == 0 {
+		iconButtonWindowProc = syscall.NewCallback(toolbarIconButtonWndProc)
+	}
+	previous, _, _ := setWindowLongPtrW.Call(uintptr(button), ^uintptr(3), iconButtonWindowProc)
+	if previous != 0 {
+		originalButtonProc = previous
+	}
+}
+
+func toolbarIconButtonWndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
+	ret, _, _ := callWindowProcW.Call(originalButtonProc, uintptr(hwnd), uintptr(message), wParam, lParam)
+	if !toolbarIconButtonNeedsOverlay(message) {
+		return ret
+	}
+	if message == wmPrintClient && wParam != 0 {
+		requestToolbarIconOverlay(hwnd, syscall.Handle(wParam))
+		return ret
+	}
+	hdc, _, _ := getDC.Call(uintptr(hwnd))
+	if hdc != 0 {
+		requestToolbarIconOverlay(hwnd, syscall.Handle(hdc))
+		releaseDC.Call(uintptr(hwnd), hdc)
+	}
+	return ret
+}
+
+func toolbarIconButtonNeedsOverlay(message uint32) bool {
+	return message == wmPaint || message == wmPrintClient
+}
+
+func requestToolbarIconOverlay(button, hdc syscall.Handle) {
+	parent, _, _ := getParent.Call(uintptr(button))
+	if parent != 0 {
+		sendMessageW.Call(parent, wmDrawToolbarIcon, uintptr(button), uintptr(hdc))
+	}
+}
+
 func (a *app) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
 	switch message {
 	case wmClose:
@@ -759,6 +970,9 @@ func (a *app) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintpt
 		if int((wParam>>16)&0xffff) == 0 {
 			a.handleCommand(int(wParam & 0xffff))
 		}
+		return 0
+	case wmDrawToolbarIcon:
+		a.drawToolbarButtonOverlay(syscall.Handle(wParam), syscall.Handle(lParam))
 		return 0
 	case wmTimer:
 		if wParam == timerID {
@@ -775,6 +989,38 @@ func (a *app) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintpt
 	}
 	ret, _, _ := defWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
 	return ret
+}
+
+func (a *app) drawToolbarButtonOverlay(button, hdc syscall.Handle) {
+	if button == 0 || hdc == 0 || !usesToolbarIcons(a.state) {
+		return
+	}
+	isShape := button == a.buttons[idShape]
+	isPunctuation := button == a.buttons[idPunct]
+	isLanguage := button == a.buttons[idLanguage]
+	isScript := button == a.buttons[idScript]
+	if !isShape && !isPunctuation && !isLanguage && !isScript {
+		return
+	}
+	bounds := rect{}
+	if ok, _, _ := getClientRect.Call(uintptr(button), uintptr(unsafe.Pointer(&bounds))); ok == 0 {
+		return
+	}
+	dpi := uint32(96)
+	if value, _, _ := getDpiForWindow.Call(uintptr(button)); value != 0 {
+		dpi = uint32(value)
+	}
+	buttonState, _, _ := sendMessageW.Call(uintptr(button), bmGetState, 0, 0)
+	pressed := buttonState&bstPushed != 0
+	if isLanguage {
+		drawLanguageIcon(hdc, bounds, dpi, a.state.ASCII, pressed)
+	} else if isShape {
+		drawShapeIcon(hdc, bounds, dpi, a.state.FullShape, pressed)
+	} else if isPunctuation {
+		drawPunctuationIcon(hdc, bounds, dpi, a.state.ASCIIPunctuation, pressed)
+	} else {
+		drawScriptIcon(hdc, bounds, dpi, a.state.Traditionalization, pressed)
+	}
 }
 
 func (a *app) handleCommand(id int) {
@@ -1100,11 +1346,16 @@ func (a *app) refresh() {
 
 func (a *app) updateLabels() {
 	for _, button := range a.buttonDefinitions() {
-		setButtonText(a.buttons[button.id], buttonDisplayLabel(button, a.state))
-		if usesToolbarIcons(a.state) && button.id != idHandle {
+		hwnd := a.buttons[button.id]
+		drawnIcon := usesDrawnToolbarIcon(button, a.state)
+		setButtonText(hwnd, buttonDisplayLabel(button, a.state))
+		if usesToolbarIcons(a.state) && button.id != idHandle && !drawnIcon {
 			win32ui.ApplyFluentIconFont(a.buttons[button.id])
 		} else {
 			win32ui.ApplyDefaultGUIFont(a.buttons[button.id])
+		}
+		if drawnIcon && hwnd != 0 {
+			invalidateRect.Call(uintptr(hwnd), 0, 1)
 		}
 	}
 }
@@ -1113,13 +1364,21 @@ func usesToolbarIcons(state toolbarstate.State) bool {
 	return state.ToolbarDisplay == toolbarstate.ToolbarDisplayIcon
 }
 
+func usesDrawnToolbarIcon(button toolbarButton, state toolbarstate.State) bool {
+	return toolbarButtonUsesNativeIcon(button.id) && usesToolbarIcons(state)
+}
+
+func toolbarButtonUsesNativeIcon(id int) bool {
+	return id == idLanguage || id == idShape || id == idPunct || id == idScript
+}
+
 func buttonDisplayLabel(button toolbarButton, state toolbarstate.State) string {
 	if button.id == idHandle {
 		return dragHandleLabel(state)
 	}
 	if usesToolbarIcons(state) {
-		if button.id == idShape && state.FullShape {
-			return "\ue740"
+		if toolbarButtonUsesNativeIcon(button.id) {
+			return ""
 		}
 		return button.icon
 	}
@@ -1135,6 +1394,288 @@ func buttonDisplayLabel(button toolbarButton, state toolbarstate.State) string {
 	default:
 		return button.text
 	}
+}
+
+func shapeIconGeometryFor(bounds rect, dpi uint32, full, pressed bool) shapeIconGeometry {
+	outer, stroke := toolbarIconCanvasFor(bounds, dpi, pressed)
+	if outer.Right <= outer.Left || outer.Bottom <= outer.Top {
+		return shapeIconGeometry{}
+	}
+	if full {
+		return shapeIconGeometry{Outer: outer, Dark: outer}
+	}
+	inner := rect{
+		Left: outer.Left + stroke, Top: outer.Top + stroke,
+		Right: outer.Right - stroke, Bottom: outer.Bottom - stroke,
+	}
+	dark := inner
+	dark.Left = inner.Left + (inner.Right-inner.Left)/2
+	return shapeIconGeometry{Outer: outer, Light: inner, Dark: dark}
+}
+
+func toolbarIconCanvasFor(bounds rect, dpi uint32, pressed bool) (rect, int32) {
+	width := bounds.Right - bounds.Left
+	height := bounds.Bottom - bounds.Top
+	if width <= 0 || height <= 0 {
+		return rect{}, 0
+	}
+	if dpi == 0 {
+		dpi = 96
+	}
+	desired := int32((int64(18)*int64(dpi) + 48) / 96)
+	available := width
+	if height < available {
+		available = height
+	}
+	available -= 10
+	if desired > available {
+		desired = available
+	}
+	// An even outer and inner width keeps the half-width split exact and
+	// prevents either state from looking visually heavier.
+	if desired%2 != 0 {
+		desired--
+	}
+	if desired < 6 {
+		return rect{}, 0
+	}
+	stroke := int32((int64(dpi) + 48) / 96)
+	if stroke < 1 {
+		stroke = 1
+	}
+	if desired-2*stroke < 4 {
+		stroke = 1
+	}
+	left := bounds.Left + (width-desired)/2
+	top := bounds.Top + (height-desired)/2
+	if pressed {
+		left++
+		top++
+	}
+	return rect{Left: left, Top: top, Right: left + desired, Bottom: top + desired}, stroke
+}
+
+func drawShapeIcon(hdc syscall.Handle, bounds rect, dpi uint32, full, pressed bool) {
+	geometry := shapeIconGeometryFor(bounds, dpi, full, pressed)
+	if geometry.Outer.Right <= geometry.Outer.Left || geometry.Outer.Bottom <= geometry.Outer.Top {
+		return
+	}
+	darkBrush, _, _ := getSysColorBrush.Call(colorWindowText)
+	lightBrush, _, _ := getSysColorBrush.Call(colorWindow)
+	if darkBrush == 0 || lightBrush == 0 {
+		return
+	}
+	fillRect.Call(uintptr(hdc), uintptr(unsafe.Pointer(&geometry.Outer)), darkBrush)
+	if !full {
+		fillRect.Call(uintptr(hdc), uintptr(unsafe.Pointer(&geometry.Light)), lightBrush)
+		fillRect.Call(uintptr(hdc), uintptr(unsafe.Pointer(&geometry.Dark)), darkBrush)
+	}
+}
+
+func punctuationIconGeometryFor(bounds rect, dpi uint32, ascii, pressed bool) punctuationIconGeometry {
+	canvas, _ := toolbarIconCanvasFor(bounds, dpi, pressed)
+	if canvas.Right <= canvas.Left || canvas.Bottom <= canvas.Top {
+		return punctuationIconGeometry{}
+	}
+	middle := canvas.Top + (canvas.Bottom-canvas.Top)/2
+	geometry := punctuationIconGeometry{
+		Canvas:       canvas,
+		TopBounds:    rect{Left: canvas.Left, Top: canvas.Top, Right: canvas.Right, Bottom: middle},
+		BottomBounds: rect{Left: canvas.Left, Top: middle, Right: canvas.Right, Bottom: canvas.Bottom},
+		FontHeight:   (canvas.Bottom-canvas.Top)/2 + 8,
+	}
+	if ascii {
+		geometry.TopGlyph = ","
+		geometry.BottomGlyph = "."
+		return geometry
+	}
+	geometry.TopGlyph = "、"
+	geometry.BottomGlyph = "。"
+	return geometry
+}
+
+func languageIconGeometryFor(bounds rect, dpi uint32, ascii, pressed bool) languageIconGeometry {
+	canvas, _ := toolbarIconCanvasFor(bounds, dpi, pressed)
+	if canvas.Right <= canvas.Left || canvas.Bottom <= canvas.Top {
+		return languageIconGeometry{}
+	}
+	geometry := languageIconGeometry{
+		Canvas:     canvas,
+		Glyph:      "中",
+		FontHeight: canvas.Bottom - canvas.Top - 2,
+	}
+	if ascii {
+		geometry.Glyph = "A"
+	}
+	if geometry.FontHeight < 8 {
+		geometry.FontHeight = 8
+	}
+	return geometry
+}
+
+func scriptIconGeometryFor(bounds rect, dpi uint32, traditional, pressed bool) scriptIconGeometry {
+	canvas, _ := toolbarIconCanvasFor(bounds, dpi, pressed)
+	if canvas.Right <= canvas.Left || canvas.Bottom <= canvas.Top {
+		return scriptIconGeometry{}
+	}
+	glyph := "简"
+	if traditional {
+		glyph = "繁"
+	}
+	fontHeight := canvas.Bottom - canvas.Top - 2
+	if fontHeight < 8 {
+		fontHeight = 8
+	}
+	return scriptIconGeometry{Canvas: canvas, Glyph: glyph, FontHeight: fontHeight}
+}
+
+func scaleIconRect(canvas, coordinates rect) rect {
+	return rect{
+		Left:   scaleIconCoordinate(canvas.Left, canvas.Right-canvas.Left, coordinates.Left),
+		Top:    scaleIconCoordinate(canvas.Top, canvas.Bottom-canvas.Top, coordinates.Top),
+		Right:  scaleIconCoordinate(canvas.Left, canvas.Right-canvas.Left, coordinates.Right),
+		Bottom: scaleIconCoordinate(canvas.Top, canvas.Bottom-canvas.Top, coordinates.Bottom),
+	}
+}
+
+func scaleIconCoordinate(origin, size, coordinate int32) int32 {
+	return origin + (coordinate*size+9)/18
+}
+
+func drawPunctuationIcon(hdc syscall.Handle, bounds rect, dpi uint32, ascii, pressed bool) {
+	geometry := punctuationIconGeometryFor(bounds, dpi, ascii, pressed)
+	if geometry.Canvas.Right <= geometry.Canvas.Left || geometry.Canvas.Bottom <= geometry.Canvas.Top {
+		return
+	}
+	darkColor, _, _ := getSysColor.Call(colorWindowText)
+	font := punctuationGlyphFont(geometry.FontHeight, ascii)
+	if font == 0 {
+		return
+	}
+	oldFont, _, _ := selectObject.Call(uintptr(hdc), font)
+	oldBackgroundMode, _, _ := setBkMode.Call(uintptr(hdc), bkModeTransparent)
+	oldTextColor, _, _ := setTextColor.Call(uintptr(hdc), darkColor)
+	drawCenteredPunctuationGlyph(hdc, geometry.TopGlyph, geometry.TopBounds)
+	drawCenteredPunctuationGlyph(hdc, geometry.BottomGlyph, geometry.BottomBounds)
+	setTextColor.Call(uintptr(hdc), oldTextColor)
+	setBkMode.Call(uintptr(hdc), oldBackgroundMode)
+	selectObject.Call(uintptr(hdc), oldFont)
+}
+
+func drawCenteredPunctuationGlyph(hdc syscall.Handle, glyph string, bounds rect) {
+	text, err := syscall.UTF16FromString(glyph)
+	if err != nil || len(text) != 2 {
+		return
+	}
+	metrics := glyphMetrics{}
+	transform := mat2{M11: fixed{Value: 1}, M22: fixed{Value: 1}}
+	const (
+		ggoMetrics = 0
+		gdiError   = 0xffffffff
+		taBaseline = 24
+	)
+	result, _, _ := getGlyphOutlineW.Call(
+		uintptr(hdc), uintptr(text[0]), ggoMetrics,
+		uintptr(unsafe.Pointer(&metrics)), 0, 0, uintptr(unsafe.Pointer(&transform)),
+	)
+	if result == gdiError || metrics.BlackBoxX == 0 || metrics.BlackBoxY == 0 {
+		drawTextW.Call(uintptr(hdc), uintptr(unsafe.Pointer(&text[0])), 1,
+			uintptr(unsafe.Pointer(&bounds)), punctuationDrawTextFlags())
+		return
+	}
+	centerX := bounds.Left + (bounds.Right-bounds.Left)/2
+	centerY := bounds.Top + (bounds.Bottom-bounds.Top)/2
+	x := centerX - int32(metrics.BlackBoxX)/2 - metrics.Origin.X
+	baseline := centerY - int32(metrics.BlackBoxY)/2 + metrics.Origin.Y
+	oldAlignment, _, _ := setTextAlign.Call(uintptr(hdc), taBaseline)
+	textOutW.Call(uintptr(hdc), uintptr(x), uintptr(baseline), uintptr(unsafe.Pointer(&text[0])), 1)
+	setTextAlign.Call(uintptr(hdc), oldAlignment)
+}
+
+func punctuationDrawTextFlags() uintptr {
+	return dtCenter | dtVCenter | dtSingleLine | dtNoClip | dtNoPrefix
+}
+
+func drawLanguageIcon(hdc syscall.Handle, bounds rect, dpi uint32, ascii, pressed bool) {
+	geometry := languageIconGeometryFor(bounds, dpi, ascii, pressed)
+	if geometry.Canvas.Right <= geometry.Canvas.Left || geometry.Canvas.Bottom <= geometry.Canvas.Top {
+		return
+	}
+	font := punctuationGlyphFont(geometry.FontHeight, ascii)
+	if font == 0 {
+		return
+	}
+	darkColor, _, _ := getSysColor.Call(colorWindowText)
+	oldFont, _, _ := selectObject.Call(uintptr(hdc), font)
+	oldBackgroundMode, _, _ := setBkMode.Call(uintptr(hdc), bkModeTransparent)
+	oldTextColor, _, _ := setTextColor.Call(uintptr(hdc), darkColor)
+	drawCenteredPunctuationGlyph(hdc, geometry.Glyph, geometry.Canvas)
+	setTextColor.Call(uintptr(hdc), oldTextColor)
+	setBkMode.Call(uintptr(hdc), oldBackgroundMode)
+	selectObject.Call(uintptr(hdc), oldFont)
+}
+
+func drawScriptIcon(hdc syscall.Handle, bounds rect, dpi uint32, traditional, pressed bool) {
+	geometry := scriptIconGeometryFor(bounds, dpi, traditional, pressed)
+	if geometry.Canvas.Right <= geometry.Canvas.Left || geometry.Canvas.Bottom <= geometry.Canvas.Top {
+		return
+	}
+	font := scriptGlyphFont(geometry.FontHeight)
+	text, err := syscall.UTF16FromString(geometry.Glyph)
+	if font == 0 || err != nil || len(text) <= 1 {
+		return
+	}
+	darkColor, _, _ := getSysColor.Call(colorWindowText)
+	oldFont, _, _ := selectObject.Call(uintptr(hdc), font)
+	oldBackgroundMode, _, _ := setBkMode.Call(uintptr(hdc), bkModeTransparent)
+	oldTextColor, _, _ := setTextColor.Call(uintptr(hdc), darkColor)
+	drawTextW.Call(
+		uintptr(hdc), uintptr(unsafe.Pointer(&text[0])), uintptr(len(text)-1),
+		uintptr(unsafe.Pointer(&geometry.Canvas)), dtCenter|dtVCenter|dtSingleLine|dtNoPrefix,
+	)
+	setTextColor.Call(uintptr(hdc), oldTextColor)
+	setBkMode.Call(uintptr(hdc), oldBackgroundMode)
+	selectObject.Call(uintptr(hdc), oldFont)
+}
+
+func scriptGlyphFont(pixelHeight int32) uintptr {
+	if font := scriptGlyphFonts[pixelHeight]; font != 0 {
+		return font
+	}
+	family, _ := syscall.UTF16PtrFromString(win32ui.DefaultGUIFontFamily)
+	height := -pixelHeight
+	font, _, _ := createFontW.Call(
+		uintptr(height), 0, 0, 0, 400, 0, 0, 0,
+		1, 0, 0, 5, 0, uintptr(unsafe.Pointer(family)),
+	)
+	if font != 0 {
+		scriptGlyphFonts[pixelHeight] = font
+	}
+	return font
+}
+
+func punctuationGlyphFontFamily(ascii bool) string {
+	if ascii {
+		return "Georgia"
+	}
+	return "Microsoft YaHei UI"
+}
+
+func punctuationGlyphFont(pixelHeight int32, ascii bool) uintptr {
+	familyName := punctuationGlyphFontFamily(ascii)
+	cacheKey := familyName + ":" + fmt.Sprint(pixelHeight)
+	if font := punctuationGlyphFonts[cacheKey]; font != 0 {
+		return font
+	}
+	family, _ := syscall.UTF16PtrFromString(familyName)
+	font, _, _ := createFontW.Call(
+		uintptr(-pixelHeight), 0, 0, 0, 400, 0, 0, 0,
+		1, 0, 0, 5, 0, uintptr(unsafe.Pointer(family)),
+	)
+	if font != 0 {
+		punctuationGlyphFonts[cacheKey] = font
+	}
+	return font
 }
 
 func toolbarAlpha(state toolbarstate.State) byte {

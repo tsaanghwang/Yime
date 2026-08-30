@@ -332,7 +332,7 @@ std::wstring candidateTextFromRow(const std::wstring& row) {
 }
 
 bool waitForForeground(ITfKeystrokeMgr* keystrokes) {
-    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(10);
     do {
         pumpMessages();
         CLSID foreground{};
@@ -425,6 +425,9 @@ int wmain(int argc, wchar_t** argv) {
             CLSID_YimeTextServiceExperiment, kLanguageId, GUID_YimeTextServiceExperimentProfile, TRUE);
         const HRESULT activatedProfile = languageProfiles->ActivateLanguageProfile(
             CLSID_YimeTextServiceExperiment, kLanguageId, GUID_YimeTextServiceExperimentProfile);
+        const HRESULT activatedProcessProfile = profiles->ActivateProfile(
+            TF_PROFILETYPE_INPUTPROCESSOR, kLanguageId, CLSID_YimeTextServiceExperiment,
+            GUID_YimeTextServiceExperimentProfile, nullptr, TF_IPPMF_FORPROCESS);
         LANGID currentLanguage = 0;
         const HRESULT currentLanguageResult = languageProfiles->GetCurrentLanguage(&currentLanguage);
         LANGID activeLanguage = 0;
@@ -435,11 +438,14 @@ int wmain(int argc, wchar_t** argv) {
                   << "change_language_hresult=0x" << static_cast<unsigned long>(changedLanguage) << '\n'
                   << "enable_profile_hresult=0x" << static_cast<unsigned long>(enabledProfile) << '\n'
                   << "activate_profile_hresult=0x" << static_cast<unsigned long>(activatedProfile) << '\n'
+                  << "activate_process_profile_hresult=0x"
+                  << static_cast<unsigned long>(activatedProcessProfile) << '\n'
                   << "current_language_hresult=0x" << static_cast<unsigned long>(currentLanguageResult) << '\n'
                   << "current_language=0x" << currentLanguage << '\n'
                   << "active_profile_hresult=0x" << static_cast<unsigned long>(activeProfileResult) << '\n'
                   << "active_profile_language=0x" << activeLanguage << std::dec << '\n';
         if (changedLanguage != S_OK || enabledProfile != S_OK || activatedProfile != S_OK ||
+            activatedProcessProfile != S_OK ||
             currentLanguageResult != S_OK || currentLanguage != kLanguageId ||
             activeProfileResult != S_OK || activeLanguage != kLanguageId ||
             !IsEqualGUID(activeProfile, GUID_YimeTextServiceExperimentProfile)) {

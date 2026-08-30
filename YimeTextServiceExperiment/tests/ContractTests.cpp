@@ -503,21 +503,29 @@ void testCandidateElement() {
 
 void testOwnedCandidatePopup() {
        const std::wstring settingsPath = temporaryStatePath(L"candidate-popup-font-settings.json");
-       auto replaceFontSettings = [&](const char* preset, std::int64_t revision) {
+       auto replaceDisplaySettings = [&](const char* preset, const char* family,
+                                          const char* annotation, const char* layout,
+                                          bool traditionalization, std::int64_t revision) {
               const std::wstring temporaryPath = settingsPath + L".tmp";
               DeleteFileW(temporaryPath.c_str());
               {
                      std::ofstream output(std::filesystem::path(temporaryPath),
                                                          std::ios::binary | std::ios::trunc);
                      output << R"({"version":1,"candidate_font_preset":")" << preset
-                               << R"(","revision":)" << revision << "}\n";
+                               << R"(","candidate_font_family":")" << family
+                               << R"(","candidate_annotation":")" << annotation
+                               << R"(","candidate_layout":")" << layout
+                               << R"(","traditionalization":)"
+                               << (traditionalization ? "true" : "false")
+                               << R"(,"revision":)" << revision << "}\n";
               }
               expect(MoveFileExW(temporaryPath.c_str(), settingsPath.c_str(),
                                              MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) != FALSE,
-                        "could not atomically replace candidate popup font settings");
+                        "could not atomically replace candidate popup display settings");
        };
        DeleteFileW(settingsPath.c_str());
-       replaceFontSettings("medium", 1);
+       replaceDisplaySettings("medium", "Microsoft YaHei UI", "key_sequence",
+                              "vertical", false, 1);
        CandidatePopup popup(settingsPath);
     expect(popup.FontPoints() == 12, "candidate popup medium font is not 12 points");
     expect(popup.FontFamily() == L"Microsoft YaHei UI",
@@ -589,20 +597,26 @@ void testOwnedCandidatePopup() {
     expect(window && IsWindow(window), "owned candidate popup window missing");
     SendMessageW(window, WM_TIMER, CandidatePopup::SettingsRefreshTimerId, 0);
     const LONG mediumHeight = popup.Bounds().bottom - popup.Bounds().top;
-    replaceFontSettings("large", 2);
+    replaceDisplaySettings("large", "system-ui", "standard_pinyin", "horizontal", true, 2);
     SendMessageW(window, WM_TIMER, CandidatePopup::SettingsRefreshTimerId, 0);
     const LONG largeHeight = popup.Bounds().bottom - popup.Bounds().top;
-    expect(popup.FontPoints() == 16 && largeHeight > mediumHeight,
-           "visible candidate popup did not apply the external 16-point preset");
-    replaceFontSettings("small", 3);
+    expect(popup.FontPoints() == 16 && popup.FontFamily() == L"system-ui" &&
+               popup.IsHorizontal(),
+           "visible candidate popup did not synchronize all external display settings");
+    expect(largeHeight < mediumHeight,
+           "horizontal live refresh did not collapse the candidate rows");
+    replaceDisplaySettings("small", "YinYuan", "yinyuan", "vertical", false, 3);
     SendMessageW(window, WM_TIMER, CandidatePopup::SettingsRefreshTimerId, 0);
     const LONG smallHeight = popup.Bounds().bottom - popup.Bounds().top;
-    expect(popup.FontPoints() == 10 && smallHeight < largeHeight,
-           "visible candidate popup did not apply the external 10-point preset");
-    replaceFontSettings("medium", 4);
+    expect(popup.FontPoints() == 10 && popup.EffectiveFontFamily() == L"YinYuan" &&
+               !popup.IsHorizontal() && smallHeight > largeHeight,
+           "visible candidate popup did not synchronize Yinyuan and vertical settings");
+    replaceDisplaySettings("medium", "Microsoft YaHei UI", "key_sequence",
+                           "vertical", false, 4);
     SendMessageW(window, WM_TIMER, CandidatePopup::SettingsRefreshTimerId, 0);
-    expect(popup.FontPoints() == 12,
-           "visible candidate popup did not restore the external 12-point preset");
+    expect(popup.FontPoints() == 12 && popup.FontFamily() == L"Microsoft YaHei UI" &&
+               popup.EffectiveFontFamily() == L"Microsoft YaHei UI",
+           "visible candidate popup did not restore all external display settings");
     expect(popup.Count() == 9, "owned candidate popup exceeded Shift ordinal count");
     expect((GetWindowLongPtrW(window, GWL_EXSTYLE) & (WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW)) ==
                (WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW),
@@ -771,6 +785,19 @@ void testLanguageBarItem() {
     UINT launchedTool = 0;
        auto* item = new LanguageBarItem(path, toggleDefaultLanguageFromPopup, &popupSeen,
                                      recordToolLaunch, &launchedTool);
+    struct LanguageBarSettingsObservation {
+        int calls = 0;
+        std::string annotation;
+        std::int64_t revision = 0;
+    } settingsObservation;
+    item->SetSettingsChangedHandler(
+        [](void* context, const ExperimentSettings& settings) noexcept {
+            auto* observation = static_cast<LanguageBarSettingsObservation*>(context);
+            ++observation->calls;
+            observation->annotation = settings.candidateAnnotation;
+            observation->revision = settings.revision;
+        },
+        &settingsObservation);
     TF_LANGBARITEMINFO info{};
     expect(item->GetInfo(&info) == S_OK, "language bar GetInfo failed");
     expect(IsEqualGUID(info.clsidService, CLSID_YimeTextServiceExperiment), "language bar service CLSID mismatch");
@@ -852,6 +879,15 @@ void testLanguageBarItem() {
     DWORD cookie = 0;
     expect(source && source->AdviseSink(__uuidof(ITfLangBarItemSink), &sink, &cookie) == S_OK,
            "language bar sink subscription failed");
+    ExperimentSettings annotationUpdate;
+    expect(ApplyExperimentSettingsCommand(ExperimentSettingsCommand::AnnotationStandardPinyin,
+                                          path, &annotationUpdate),
+           "could not simulate an external candidate annotation update");
+    item->Refresh();
+    expect(settingsObservation.calls == 1 &&
+               settingsObservation.annotation == "standard_pinyin" &&
+               settingsObservation.revision == annotationUpdate.revision,
+           "non-icon settings did not reach the active text service refresh callback");
     const auto expectToolbarRefresh = [&](ExperimentSettingsCommand command, DWORD flags,
                                           const char* applyFailure, const char* refreshFailure) {
         ExperimentSettings toolbarUpdate;

@@ -10,7 +10,8 @@ param(
     [switch]$NoAutoStart,
     [switch]$NoLaunch,
     [switch]$NoElevation,
-    [switch]$Quiet
+    [switch]$Quiet,
+    [string]$TargetUserSid
 )
 
 $ErrorActionPreference = 'Stop'
@@ -19,7 +20,15 @@ $productKeyName = 'YimeCoreExperimentalTrial'
 $productRoot = [IO.Path]::GetFullPath((Join-Path $env:ProgramFiles 'YimeCore Experimental Trial'))
 $stateRootPath = [IO.Path]::GetFullPath($StateRoot)
 $uninstallKey = "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$productKeyName"
-$runKey = 'Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run'
+if ([string]::IsNullOrWhiteSpace($TargetUserSid)) {
+    $TargetUserSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+}
+try {
+    $TargetUserSid = ([Security.Principal.SecurityIdentifier]::new($TargetUserSid)).Value
+} catch {
+    throw "invalid target user SID: $TargetUserSid"
+}
+$runKey = "Registry::HKEY_USERS\$TargetUserSid\Software\Microsoft\Windows\CurrentVersion\Run"
 $clsid = '{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'
 $profile = '{607895A8-9504-4A2E-9BB1-2C159E3A1757}'
 $tip = "0804:$clsid$profile"
@@ -52,7 +61,8 @@ function Quote-Argument([string]$value) {
 
 function Restart-Elevated {
     $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Quote-Argument $PSCommandPath),
-        '-Action', $Action, '-StateRoot', (Quote-Argument $stateRootPath))
+        '-Action', $Action, '-StateRoot', (Quote-Argument $stateRootPath),
+        '-TargetUserSid', (Quote-Argument $TargetUserSid))
     if (-not [string]::IsNullOrWhiteSpace($PackageRoot)) {
         $arguments += @('-PackageRoot', (Quote-Argument ([IO.Path]::GetFullPath($PackageRoot))))
     }
@@ -448,6 +458,8 @@ if ($Action -eq 'Plan') {
         install_root = $target
         state_root = $stateRootPath
         installed_apps_registry_key = $uninstallKey
+        autostart_registry_key = $runKey
+        target_user_sid = $TargetUserSid
         forced_preinstall_cleanup = $true
         x64_x86_tsf_registration = $true
         taskbar_language_bar_categories = $true

@@ -62,6 +62,9 @@ public:
     void SetFontPoints(int points) noexcept;
     void SetFontFamily(const std::wstring& family) noexcept;
     void SetUseYinyuanFont(bool useYinyuan) noexcept;
+    void SetAnnotationFontFollowsSettings(bool follows) noexcept {
+        annotationFontFollowsSettings_ = follows;
+    }
     void SetHorizontal(bool horizontal) noexcept { horizontal_ = horizontal; }
 
     HWND Window() const noexcept { return window_; }
@@ -128,6 +131,7 @@ private:
     std::wstring fontFamily_ = L"Microsoft YaHei UI";
     HFONT font_ = nullptr;
     bool useYinyuanFont_ = false;
+    bool annotationFontFollowsSettings_ = true;
     bool horizontal_ = false;
     bool privateYinyuanFontAdded_ = false;
     std::wstring privateYinyuanFontPath_;

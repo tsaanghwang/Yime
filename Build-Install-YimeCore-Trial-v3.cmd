@@ -27,6 +27,14 @@ exit /b 2
 
 :args_ready
 
+tasklist.exe /FI "IMAGENAME eq WINWORD.EXE" 2>nul | find.exe /I "WINWORD.EXE" >nul
+if not errorlevel 1 (
+    echo ERROR: Microsoft Word is still running and may keep the old trial DLL loaded.
+    echo Save your documents, close every Word window, and run this script again.
+    pause
+    exit /b 3
+)
+
 set "YIME_ROOT=C:\dev\Yime"
 if exist "%~dp0tools\yimecore\run-e6c-package-experiment.ps1" (
     for %%I in ("%~dp0.") do set "YIME_ROOT=%%~fI"
@@ -63,7 +71,7 @@ echo YIME_ROOT=%YIME_ROOT%
 echo YIME_POWERSHELL=%YIME_PS%
 echo YIME_OUTPUT=%YIME_OUT%
 echo.
-echo [1/3] Building and verifying the YimeCore trial package...
+echo [1/4] Building and verifying the YimeCore trial package...
 "%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\run-e6c-package-experiment.ps1" -BasePackageRoot "%YIME_BASE%" -OutputRoot "%YIME_OUT%"
 if errorlevel 1 (
     echo.
@@ -73,7 +81,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [2/3] Installing the new trial package with one administrator confirmation...
+echo [2/4] Installing the new trial package with one administrator confirmation...
 echo The installer performs its own forced pre-cleanup and removes partial state after failure.
 "%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\manage-e6c-trial-install.ps1" -Action Install -PackageRoot "%YIME_OUT%\package" -Force
 if errorlevel 1 (
@@ -84,7 +92,16 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [3/3] Verifying the installed runtime and all three modes...
+echo [3/4] Repairing and verifying current-user autostart...
+"%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\repair-e6c-trial-autostart.ps1"
+if errorlevel 1 (
+    echo.
+    echo INSTALL COMPLETED, BUT CURRENT-USER AUTOSTART VERIFICATION FAILED.
+    pause
+    exit /b 1
+)
+
+echo [4/4] Verifying the installed runtime and all three modes...
 "%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\verify-e6c-trial-runtime.ps1"
 if errorlevel 1 (
     echo.

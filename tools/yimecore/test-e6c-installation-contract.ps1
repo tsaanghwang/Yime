@@ -1,13 +1,18 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)] [string]$PackageRoot,
-    [Parameter(Mandatory)] [string]$OutputPath
+    [Parameter(Mandatory)] [string]$OutputPath,
+    [string]$ManagerPath
 )
 
 $ErrorActionPreference = 'Stop'
 $packageRootPath = [IO.Path]::GetFullPath($PackageRoot)
 $outputPathValue = [IO.Path]::GetFullPath($OutputPath)
-$manager = Join-Path $packageRootPath 'maintenance\Manage-YimeCoreTrial.ps1'
+$manager = if ([string]::IsNullOrWhiteSpace($ManagerPath)) {
+    Join-Path $packageRootPath 'maintenance\Manage-YimeCoreTrial.ps1'
+} else {
+    [IO.Path]::GetFullPath($ManagerPath)
+}
 if (-not (Test-Path -LiteralPath $manager -PathType Leaf)) {
     throw "packaged installation manager is missing: $manager"
 }
@@ -35,6 +40,7 @@ if (-not $invalidRootRejected) { throw 'installation manager accepted a non-tria
 $sentinelPreserved = (Test-Path -LiteralPath $sentinel -PathType Leaf) -and
     ((Get-Content -LiteralPath $sentinel -Raw) -eq $sentinelValue)
 $managerText = Get-Content -LiteralPath $manager -Raw
+$currentUserSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
 $profileIcon = Join-Path $packageRootPath 'profile-icon.ico'
 $inputToolbar = Join-Path $packageRootPath 'bin\YimeCoreInputToolbar.exe'
 function Get-PeSubsystem([string]$path) {
@@ -63,6 +69,13 @@ $result = [ordered]@{
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     manager_sha256 = (Get-FileHash -LiteralPath $manager -Algorithm SHA256).Hash.ToLowerInvariant()
     installed_apps_entry_planned = [bool]([string]$plan.installed_apps_registry_key -like '*\Uninstall\YimeCoreExperimentalTrial')
+    autostart_targets_calling_user = [bool](
+        [string]$plan.target_user_sid -eq $currentUserSid -and
+        [string]$plan.autostart_registry_key -eq
+            "Registry::HKEY_USERS\$currentUserSid\Software\Microsoft\Windows\CurrentVersion\Run")
+    elevation_preserves_target_user_sid = [bool](
+        $managerText -match "'-TargetUserSid', \(Quote-Argument \`$TargetUserSid\)" -and
+        $managerText -match 'Registry::HKEY_USERS\\\$TargetUserSid\\Software')
     force_cleanup_before_install = [bool]$plan.forced_preinstall_cleanup
     x64_x86_tsf_registration_planned = [bool]$plan.x64_x86_tsf_registration
     learning_sentinel_preserved = [bool]$sentinelPreserved
@@ -119,6 +132,8 @@ $result = [ordered]@{
     invalid_root_error = $invalidText
 }
 if ($result.installed_apps_entry_planned -ne $true -or
+    $result.autostart_targets_calling_user -ne $true -or
+    $result.elevation_preserves_target_user_sid -ne $true -or
     $result.force_cleanup_before_install -ne $true -or
     $result.x64_x86_tsf_registration_planned -ne $true -or
     $result.learning_sentinel_preserved -ne $true -or

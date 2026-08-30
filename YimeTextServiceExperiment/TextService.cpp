@@ -704,6 +704,7 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
                                                              : update.selectedCandidateIndex;
     candidatePopup_.SetFontPoints(displaySettings.candidateFontPoints);
     candidatePopup_.SetFontFamily(widenUtf8(displaySettings.candidateFontFamily));
+    candidatePopup_.SetAnnotationFontFollowsSettings(true);
     candidatePopup_.SetUseYinyuanFont(displaySettings.candidateAnnotation == "yinyuan");
     candidatePopup_.SetForgetEnabled(true);
     candidatePopup_.SetHorizontal(displaySettings.candidateLayout == "horizontal");
@@ -761,6 +762,7 @@ void YimeTextService::UpdatePunctuationUI(ITfContext* context) noexcept {
     const auto& displaySettings = experimentSettings_.Get();
     candidatePopup_.SetFontPoints(displaySettings.candidateFontPoints);
     candidatePopup_.SetFontFamily(widenUtf8(displaySettings.candidateFontFamily));
+    candidatePopup_.SetAnnotationFontFollowsSettings(false);
     candidatePopup_.SetUseYinyuanFont(false);
     candidatePopup_.SetForgetEnabled(false);
     candidatePopup_.SetHorizontal(displaySettings.candidateLayout == "horizontal");
@@ -954,6 +956,32 @@ void YimeTextService::CandidatePopupSegmentExpansion(void* context, int start, i
     if (context) static_cast<YimeTextService*>(context)->ExpandSentenceSegmentFromPopup(start, end);
 }
 
+void YimeTextService::LiveSettingsChanged(
+    void* context, const yime::experiment::ExperimentSettings& settings) noexcept {
+    if (context) static_cast<YimeTextService*>(context)->RefreshLiveSettings(settings);
+}
+
+void YimeTextService::RefreshLiveSettings(
+    const yime::experiment::ExperimentSettings& settings) noexcept {
+    if (!CanAcceptKeys()) {
+        ShowCandidateUI(false);
+        return;
+    }
+    if (punctuationPalette_.IsActive()) {
+        UpdatePunctuationUI(punctuationContext_);
+        return;
+    }
+    if (!compositionContext_ || surface_.CurrentUpdate().rawInput.empty()) return;
+    ITfContext* context = compositionContext_;
+    context->AddRef();
+    auto renderedUpdate = surface_.CurrentUpdate();
+    if (settings.traditionalization) {
+        yime::experiment::ApplyTraditionalization(&renderedUpdate);
+    }
+    UpdateCandidateUI(context, renderedUpdate, nullptr);
+    context->Release();
+}
+
 void YimeTextService::FocusSentenceSegmentFromPopup(int start, int end) noexcept {
     if (!compositionContext_ || !CanAcceptKeys() || start < 0 || end <= start) return;
     ITfContext* context = compositionContext_;
@@ -1039,6 +1067,7 @@ void YimeTextService::AddLanguageBar() noexcept {
     if (languageBarItem_ || !threadManager_) return;
     languageBarItem_ = new (std::nothrow) LanguageBarItem();
     if (!languageBarItem_) return;
+    languageBarItem_->SetSettingsChangedHandler(LiveSettingsChanged, this);
     ITfLangBarItemMgr* manager = nullptr;
     const HRESULT managerResult = threadManager_->QueryInterface(
         __uuidof(ITfLangBarItemMgr), reinterpret_cast<void**>(&manager));

@@ -70,6 +70,10 @@ private:
     static void CandidatePopupSentenceSelection(void* context) noexcept;
     static void CandidatePopupSegmentSelection(void* context, int start, int end) noexcept;
     static void CandidatePopupSegmentExpansion(void* context, int start, int end) noexcept;
+    static void LiveSettingsChanged(
+        void* context, const yime::experiment::ExperimentSettings& settings) noexcept;
+    void RefreshLiveSettings(
+        const yime::experiment::ExperimentSettings& settings) noexcept;
 
     std::atomic<ULONG> references_{1};
     ITfThreadMgr* threadManager_ = nullptr;
