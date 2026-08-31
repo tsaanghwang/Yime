@@ -3,6 +3,7 @@ package yimebroker
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 )
@@ -14,6 +15,12 @@ func ServeLines(ctx context.Context, input io.Reader, output io.Writer, dispatch
 	if dispatcher == nil {
 		return fmt.Errorf("dispatcher is required")
 	}
+	connectionSessions := make(map[string]struct{})
+	defer func() {
+		for sessionID := range connectionSessions {
+			dispatcher.CloseSession(client, sessionID)
+		}
+	}()
 	scanner := bufio.NewScanner(input)
 	scanner.Buffer(make([]byte, 4096), MaxMessageBytes+1)
 	writer := bufio.NewWriter(output)
@@ -21,7 +28,20 @@ func ServeLines(ctx context.Context, input io.Reader, output io.Writer, dispatch
 		if len(scanner.Bytes()) > MaxMessageBytes {
 			return fmt.Errorf("broker request exceeds %d bytes", MaxMessageBytes)
 		}
-		response := dispatcher.HandleJSON(ctx, client, append([]byte(nil), scanner.Bytes()...))
+		frame := append([]byte(nil), scanner.Bytes()...)
+		request, requestErr := DecodeRequest(frame)
+		response := dispatcher.HandleJSON(ctx, client, frame)
+		if requestErr == nil {
+			var decoded Response
+			if json.Unmarshal(response, &decoded) == nil && decoded.Error == nil {
+				switch request.Operation {
+				case OpenSession:
+					connectionSessions[decoded.SessionID] = struct{}{}
+				case CloseSession:
+					delete(connectionSessions, request.SessionID)
+				}
+			}
+		}
 		if _, err := writer.Write(response); err != nil {
 			return err
 		}

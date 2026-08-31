@@ -405,9 +405,22 @@ E6-C 在不切换生产输入法的前提下增加搜索排列、显示设置和
 - 默认编码模式改为“变长”。工具栏“模式”按“变长、等长、省键”循环，但内部协议继续使用稳定值 `variable/full/shorthand`；已有 composition 不在中途换索引，空闲后的新会话才采用新模式。
 - 候选字号提供“小、中、大”三档，分别为 10/12/16 points，其中“中”为常规默认值。工具栏“音码”提供“键位、音元、拼音、隐藏”四项，默认显示键位序列；“拼音”显示带调标准拼音。“音元”和“拼音”只从当前仓库受审的规范记录解析，压缩码不唯一时不猜测注释。
 - 默认安装和登录自启动均使用 `-no-toolbar`，不启动独立输入法工具栏；与微软拼音相同的 Windows 原生 TSF 语言栏是唯一默认控制入口。按钮和菜单内容仍由 Yime 自己实现；注册流程从 PIME 宿主完整继承 Windows 8+ 的 `GUID_TFCAT_TIPCAP_SYSTRAYSUPPORT` 与 `GUID_TFCAT_TIPCAP_IMMERSIVESUPPORT` 接入条件。输入模式项复用 Windows 保留的 `GUID_LBI_INPUTMODE`，并采用 PIME 已验证的 `TF_LBI_STYLE_BTN_BUTTON` 样式（不设置 Windows 已不支持的 `TF_LBI_STYLE_SHOWNINTRAY`）：浮动桌面语言栏显示文字“中/英”，停靠任务栏时按中西文和全半角返回四态“中/英”图标；左击切换中英文，右击提供“默认语言”、全半角、中英标点、候选排列、基本设置、候选设置和工具入口共十二项。输入方案、候选字号、显示编码和候选字体只由“候选设置”管理。右键菜单显式打开的 `YimeCoreInputToolbar.exe` 复用“音”版 Go/Win32 输入法工具栏的按钮、布局、统一字体、方向和定制菜单，同时写入试验版独立状态；工具中心从设置菜单进入。试验 profile 使用独立图标替代任务栏的“简体”文字槽。封装不再保留旧名 `YimeCoreToolbar.exe` 或 `YimeCoreDesktopTools.exe`，也不通过 PowerShell 承载工具栏 UI。
-- `manage-e6c-trial-install.ps1` 在安装前执行试验 CLSID/Profile/两套 COM 视图的强制清理，等待注册状态收敛后全新安装；默认保留学习快照和 journal。它在 Windows“已安装的应用”登记“Yime 自研栈试验版”及独立卸载命令，锁定 DLL 只登记重启后删除，不强杀 Explorer 或宿主应用。清理路径必须是试验 Program Files 根的带标记子目录，不能越界到正式 PIME/Rime。
+- `manage-e6c-trial-install.ps1` 先在试验 Program Files 根内完整复制并写好新版本 staging，再停止旧 runtime、清理试验 CLSID/Profile/两套 COM 视图并切换注册。新注册、配置和 runtime 启动全部成功前必须保留旧版本目录；任一步失败都恢复旧注册、TIP、runtime 配置、Run 值、卸载项及原运行状态。默认保留学习快照和 journal。它在 Windows“已安装的应用”登记“Yime 自研栈试验版”及独立卸载命令，锁定 DLL 只登记重启后删除，不强杀 Explorer 或宿主应用。清理路径必须是试验 Program Files 根的带标记子目录，不能越界到正式 PIME/Rime。
 
 E6-C 的多索引限制现已关闭：三种模式共用一个显式稳定命名空间的 E5-C 快照/哈希链日志，每次已确认选择仍在 commit 响应前同步；每种模式分别复用 E5-D 的代际租约和事务控制，错误哈希不会改变 active，显式回滚只影响后续新会话。工具栏模式变化继续采用“当前 composition 保持在原引擎、空闲后的新会话才采用新模式”的安全策略。新表层用 GUID 级 mutation ID 防止多个宿主会话互相误判重放；Broker 还只针对已安装的旧 `e6b2a-surface-*` ID 加会话作用域，使旧试验 DLL 与新持久模型组合时仍能逐会话学习，不改变其它调用方的跨会话幂等语义。`YimeCoreTrialRuntime.exe` 以管道作用域的单实例监督独立 Broker 和工具栏，把快照、journal 与索引控制文件固定在 `%LOCALAPPDATA%\YimeCore Experimental Trial`，Broker 异常退出后原地恢复；`deploy-e6c-trial-runtime.ps1` 只启用独立试验 TIP 并建立当前用户登录自启动，现有中文输入法条目保持不变，启停可由配套脚本逆转。`run-e6c-package-experiment.ps1` 从经哈希交接的试验包生成自包含 E6-C staged package；提升后的 `run-e6b7-parallel-package-experiment.ps1` 还会从独立 Program Files 试验安装树运行同一验证器。两者都在三模式逐一证明学习重启后提升、错误切换保持 v1、既有 composition 保持 v1、有效 v2 会话在回滚后继续可用及回滚后的新会话重取 v1；包门禁还强制终止受监督 Broker 并核验 PID 更换、重启计数递增和路径不漂移。这些路径不注册或启动生产 Rime/PIME，也不改变裸数字键规则。
+
+#### 2026-08-31 稳定性修复的不可回退约束
+
+- 命名管道连接只拥有并回收由该连接打开的 session。EOF 或认证传输断开必须释放这些 session 和配额，但不得按客户端身份批量关闭同一进程其它仍存活连接的 session。
+- mutation 幂等比较必须覆盖完整且有序的 observations，包括上下文和分段；相同 mutation ID 携带不同 observation 必须冲突。普通单候选旧调用方的兼容重试语义可以保留，但不得通过丢弃 observation 来实现。
+- `TF_S_ASYNC` 只表示 edit session 已排队，不表示文档已写入。候选提交、分段操作和标点提交必须等 `DoEditSession` 的真实结果后才更新或关闭 UI；写失败必须保持宿主文本不变、关闭候选 UI，并断开表层 session 进入恢复路径。
+- 停用 TextService 时必须先解除 language-bar callback，再释放语言栏对象。宿主可在停用后继续持有该 COM 对象引用，任何 timer、菜单或点击回调都不得再进入已销毁的 TextService。
+- 自有候选窗 HWND 可能被宿主或系统从外部销毁。使用前必须检查 `IsWindow`，并在 `WM_NCDESTROY` 清空内部句柄；不得把缓存的非空 HWND 当作仍有效。
+- trial 升级必须“完整 staging -> 保留 staging 和旧版本 -> 清理旧注册 -> 提升 staging -> 注册并启动新版本 -> 删除旧版本”。staging 不能被旧版本扫描清理；失败回滚必须保留注册表 value kind，并恢复 COM/Profile、TIP、配置、Run、卸载项及升级前运行状态。
+- 提权后的安装/卸载必须仍由发起操作的同一 Windows SID 执行；不得把当前用户配置、Run 项或 TIP 静默写入另一个管理员账户。卸载命令必须携带目标 SID 和 state root。
+- `repair-e6c-trial-autostart.ps1 -ValidateOnly` 必须读取并严格比较真实 Run 值；missing 或 wrong value 都必须失败，不能用期望值替代实际读取结果。
+
+这些约束的最低门禁是：相关 Go 回归、x64/x86 DLL contract、x64/x86 registered-host 测试、安装 staging/rollback 故障注入、Run missing/wrong 负向验证，以及安装态三模式和 Broker supervisor 恢复。不得只靠源码单元测试宣称安装或 TSF 生命周期修复仍然有效。
 
 #### E6-C 后本地标点层固定映射
 

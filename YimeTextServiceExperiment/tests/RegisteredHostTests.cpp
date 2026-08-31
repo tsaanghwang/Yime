@@ -9,6 +9,7 @@
 #include <string>
 #include <thread>
 
+#include "ExperimentSettings.h"
 #include "YimeTextServiceIds.h"
 
 namespace {
@@ -76,6 +77,12 @@ public:
             *sessionResult = (flags & TS_LF_SYNC) ? TS_E_SYNCHRONOUS : TS_S_ASYNC;
             return S_OK;
         }
+        if (delayAsynchronousWrites_ && !(flags & TS_LF_SYNC) &&
+            (flags & TS_LF_READWRITE) == TS_LF_READWRITE) {
+            pendingLockFlags_ = flags;
+            *sessionResult = TS_S_ASYNC;
+            return S_OK;
+        }
         lockFlags_ = flags;
         *sessionResult = sink_->OnLockGranted(flags);
         lockFlags_ = 0;
@@ -132,6 +139,11 @@ public:
     }
     STDMETHODIMP SetText(DWORD, LONG start, LONG end, const WCHAR* text, ULONG count,
                          TS_TEXTCHANGE* change) override {
+        if (failWrites_) {
+            failWrites_ = false;
+            ++failedWrites_;
+            return E_FAIL;
+        }
         if (!change || (count && !text) || !ValidRange(start, end)) return E_INVALIDARG;
         return Replace(start, end, text, count, change);
     }
@@ -153,6 +165,11 @@ public:
     }
     STDMETHODIMP InsertTextAtSelection(DWORD flags, const WCHAR* text, ULONG count,
                                        LONG* start, LONG* end, TS_TEXTCHANGE* change) override {
+        if (failWrites_ && !(flags & TS_IAS_QUERYONLY)) {
+            failWrites_ = false;
+            ++failedWrites_;
+            return E_FAIL;
+        }
         if ((count && !text) || !start || !end) return E_INVALIDARG;
         *start = selectionStart_;
         *end = selectionStart_ + static_cast<LONG>(count);
@@ -214,6 +231,20 @@ public:
     unsigned TextExtentCalls() const noexcept { return textExtentCalls_; }
     void RejectSynchronousWrites(bool reject) noexcept { rejectSynchronousWrites_ = reject; }
     unsigned RejectedSynchronousWrites() const noexcept { return rejectedSynchronousWrites_; }
+    unsigned FailedWrites() const noexcept { return failedWrites_; }
+    void DelayAsynchronousWrites(bool delay) noexcept { delayAsynchronousWrites_ = delay; }
+    bool HasPendingLock() const noexcept { return pendingLockFlags_ != 0; }
+    HRESULT CompletePendingLock(bool failWrites) noexcept {
+        if (!sink_ || !pendingLockFlags_) return E_UNEXPECTED;
+        const DWORD flags = pendingLockFlags_;
+        pendingLockFlags_ = 0;
+        delayAsynchronousWrites_ = false;
+        failWrites_ = failWrites;
+        lockFlags_ = flags;
+        const HRESULT result = sink_->OnLockGranted(flags);
+        lockFlags_ = 0;
+        return result;
+    }
 
 private:
     ~ContextOwner() {
@@ -243,6 +274,10 @@ private:
     std::atomic<unsigned> textExtentCalls_{0};
     bool rejectSynchronousWrites_ = false;
     unsigned rejectedSynchronousWrites_ = 0;
+    bool delayAsynchronousWrites_ = false;
+    bool failWrites_ = false;
+    unsigned failedWrites_ = 0;
+    DWORD pendingLockFlags_ = 0;
 };
 
 class ReadSession final : public ITfEditSession {
@@ -464,7 +499,6 @@ int wmain(int argc, wchar_t** argv) {
         const HRESULT languageBarLookup =
             languageBar->GetItem(GUID_YimeTextServiceExperimentLangBar, &languageBarItem);
         const bool languageBarAccepted = languageBarLookup == S_OK && languageBarItem != nullptr;
-        if (languageBarItem) languageBarItem->Release();
 
         const std::string code = "2jru";
         for (size_t index = 0; index < code.size(); ++index) {
@@ -590,6 +624,7 @@ int wmain(int argc, wchar_t** argv) {
                          8 + rowHeight * (hasSentenceRow ? 2 : 1) + rowHeight / 2};
         ClientToScreen(popup, &clickPoint);
         owner->RejectSynchronousWrites(true);
+        owner->DelayAsynchronousWrites(true);
         SetCursorPos(clickPoint.x, clickPoint.y);
         INPUT mouseInput[2]{};
         mouseInput[0].type = INPUT_MOUSE;
@@ -600,23 +635,35 @@ int wmain(int argc, wchar_t** argv) {
             owner->RejectSynchronousWrites(false);
             throw std::runtime_error("registered physical mouse click injection failed");
         }
-        for (int attempt = 0; attempt < 100; ++attempt) {
+        for (int attempt = 0; attempt < 100 && !owner->HasPendingLock(); ++attempt) {
             pumpMessages();
-            if (!IsWindowVisible(popup)) break;
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
+        if (!owner->HasPendingLock() || !IsWindowVisible(popup) ||
+            readContext(context, clientId) != beforeMouseCommit + L"2jru") {
+            owner->RejectSynchronousWrites(false);
+            throw std::runtime_error("registered asynchronous edit completed before the host granted its lock");
+        }
+        require(owner->CompletePendingLock(false), "grant delayed asynchronous edit lock");
         for (int attempt = 0; attempt < 10; ++attempt) {
             pumpMessages();
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
         owner->RejectSynchronousWrites(false);
         const std::wstring afterMouseCommit = readContext(context, clientId);
-        if (owner->RejectedSynchronousWrites() != 0 ||
-            afterMouseCommit != beforeMouseCommit + expectedMouseCommit ||
+        if (afterMouseCommit != beforeMouseCommit + expectedMouseCommit ||
             IsWindowVisible(popup)) {
+            std::cerr << "registered physical mouse completion mismatch"
+                      << " text_matches="
+                      << (afterMouseCommit == beforeMouseCommit + expectedMouseCommit ? "true" : "false")
+                      << " expected_length=" << (beforeMouseCommit.size() + expectedMouseCommit.size())
+                      << " actual_length=" << afterMouseCommit.size()
+                      << " popup_visible=" << (IsWindowVisible(popup) ? "true" : "false")
+                      << "\n";
             throw std::runtime_error("registered physical mouse candidate did not use an asynchronous edit session");
         }
         std::cout << "physical_mouse_candidate_selection_verified=true\n";
+        std::cout << "delayed_async_edit_completion_verified=true\n";
 
         const unsigned punctuationExtentCalls = owner->TextExtentCalls();
         BYTE punctuationKeyboard[256]{};
@@ -704,10 +751,94 @@ int wmain(int argc, wchar_t** argv) {
                   << "registered_direction_and_page_keys_verified=true\n"
                   << "architecture_bits=" << sizeof(void*) * 8 << '\n';
 
+            dispatchKey(keystrokes, VK_ESCAPE);
+            pumpMessages();
+        const std::wstring beforeFailedAsyncCommit = readContext(context, clientId);
+        for (const char character : code) {
+            const WPARAM key = character >= 'a'
+                ? static_cast<WPARAM>(character - 'a' + 'A')
+                : static_cast<WPARAM>(character);
+            dispatchKey(keystrokes, key);
+        }
+        popup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+        if (!popup || !IsWindowVisible(popup)) {
+            throw std::runtime_error("failed asynchronous edit setup popup missing");
+        }
+        ITfCandidateListUIElement* failedCandidates = findCandidateElement(threadManager);
+        if (!failedCandidates) {
+            throw std::runtime_error("failed asynchronous edit candidate UI missing");
+        }
+        UINT failedCandidateCount = 0;
+        require(failedCandidates->GetCount(&failedCandidateCount),
+                "failed asynchronous edit candidate count");
+        failedCandidates->Release();
+        if (failedCandidateCount == 0) {
+            throw std::runtime_error("failed asynchronous edit setup has no candidates");
+        }
+        const int failedRowHeight = static_cast<int>(reinterpret_cast<UINT_PTR>(
+            GetPropW(popup, L"YimeTextServiceExperimentCandidateRowHeight")));
+        RECT failedPopupClient{};
+        GetClientRect(popup, &failedPopupClient);
+        if (failedRowHeight <= 0 || failedPopupClient.right <= 16) {
+            throw std::runtime_error("failed asynchronous edit popup geometry missing");
+        }
+        POINT failedClickPoint{
+            failedPopupClient.right / 2,
+            failedPopupClient.bottom - 8 - failedRowHeight / 2};
+        owner->DelayAsynchronousWrites(true);
+        SendMessageW(popup, WM_LBUTTONUP, 0,
+                     MAKELPARAM(failedClickPoint.x, failedClickPoint.y));
+        for (int attempt = 0; attempt < 100 && !owner->HasPendingLock(); ++attempt) {
+            pumpMessages();
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        if (!owner->HasPendingLock() || !IsWindowVisible(popup)) {
+            throw std::runtime_error("failed asynchronous edit was not queued by the host");
+        }
+        require(owner->CompletePendingLock(true), "fail delayed asynchronous edit lock");
+        for (int attempt = 0; attempt < 100 && IsWindowVisible(popup); ++attempt) {
+            pumpMessages();
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        const std::wstring afterFailedAsyncCommit = readContext(context, clientId);
+        const bool failedTextUnchanged =
+            afterFailedAsyncCommit == beforeFailedAsyncCommit + L"2jru";
+        const bool failedPopupVisible = IsWindowVisible(popup) != FALSE;
+        if (!failedTextUnchanged || owner->FailedWrites() != 1 || failedPopupVisible) {
+            std::cerr << "failed asynchronous edit recovery mismatch"
+                      << " text_unchanged=" << (failedTextUnchanged ? "true" : "false")
+                      << " failed_writes=" << owner->FailedWrites()
+                      << " candidate_count=" << failedCandidateCount
+                      << " expected_length=" << (beforeFailedAsyncCommit.size() + 4)
+                      << " actual_length=" << afterFailedAsyncCommit.size()
+                      << " popup_visible=" << (failedPopupVisible ? "true" : "false")
+                      << "\n";
+            throw std::runtime_error("failed asynchronous edit changed text or retained candidate UI");
+        }
+        std::cout << "failed_async_edit_recovery_verified=true\n";
+
         profiles->DeactivateProfile(TF_PROFILETYPE_INPUTPROCESSOR, kLanguageId,
                                     CLSID_YimeTextServiceExperiment,
                                     GUID_YimeTextServiceExperimentProfile, nullptr,
                                     TF_IPPMF_FORPROCESS);
+        if (languageBarItem) {
+            yime::experiment::ExperimentSettings updatedSettings;
+            if (!yime::experiment::ApplyExperimentSettingsCommand(
+                    yime::experiment::ExperimentSettingsCommand::ShapeFull,
+                    yime::experiment::ResolveExperimentSettingsPath(), &updatedSettings)) {
+                throw std::runtime_error("could not update settings after language-bar deactivation");
+            }
+            for (int attempt = 0; attempt < 30; ++attempt) {
+                pumpMessages();
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
+            DWORD retainedStatus = 0;
+            require(languageBarItem->GetStatus(&retainedStatus),
+                    "query host-retained language bar after deactivation");
+            languageBarItem->Release();
+            languageBarItem = nullptr;
+            std::cout << "retained_language_bar_after_deactivation_verified=true\n";
+        }
         languageProfiles->Release();
         languageBar->Release();
         keystrokes->Release();

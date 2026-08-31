@@ -22,10 +22,12 @@ class EditSession final : public ITfEditSession {
 public:
     EditSession(ITfContext* context, ITfCompositionSink* sink, ITfComposition** composition,
                 bool* plannedTermination, const BrokerUpdate& update, RECT* compositionRect,
-                bool* compositionRectValid)
+                bool* compositionRectValid, BrokerEditCompletionHandler completionHandler,
+                void* completionContext)
         : context_(context), sink_(sink), composition_(composition),
           plannedTermination_(plannedTermination), update_(update), compositionRect_(compositionRect),
-          compositionRectValid_(compositionRectValid) {
+            compositionRectValid_(compositionRectValid), completionHandler_(completionHandler),
+            completionContext_(completionContext) {
         context_->AddRef();
         sink_->AddRef();
     }
@@ -46,14 +48,22 @@ public:
     STDMETHODIMP DoEditSession(TfEditCookie cookie) override {
         const std::wstring raw = widen(update_.rawInput);
         const std::wstring commit = widen(update_.commit);
-        if ((!update_.rawInput.empty() && raw.empty()) || (!update_.commit.empty() && commit.empty())) return E_INVALIDARG;
-        if (!commit.empty()) return Commit(cookie, commit);
-        if (!raw.empty()) {
-            const HRESULT result = SetComposition(cookie, raw);
+        HRESULT result = E_INVALIDARG;
+        if ((!update_.rawInput.empty() && raw.empty()) ||
+            (!update_.commit.empty() && commit.empty())) {
+            result = E_INVALIDARG;
+        } else if (!commit.empty()) {
+            result = Commit(cookie, commit);
+        } else if (!raw.empty()) {
+            result = SetComposition(cookie, raw);
             if (SUCCEEDED(result)) CaptureCompositionRect(cookie);
-            return result;
+        } else {
+            result = EndComposition(cookie, L"");
         }
-        return EndComposition(cookie, L"");
+        if (completionHandler_) {
+            completionHandler_(completionContext_, context_, update_, result);
+        }
+        return result;
     }
 
 private:
@@ -182,6 +192,8 @@ private:
     BrokerUpdate update_;
     RECT* compositionRect_;
     bool* compositionRectValid_;
+    BrokerEditCompletionHandler completionHandler_;
+    void* completionContext_;
 };
 
 }  // namespace
@@ -190,12 +202,15 @@ HRESULT ApplyBrokerUpdateToContext(ITfContext* context, TfClientId clientId,
                                    ITfCompositionSink* sink, ITfComposition** composition,
                                    bool* plannedTermination, const BrokerUpdate& update,
                                    RECT* compositionRect, bool* compositionRectValid,
-                                   bool asynchronous) noexcept {
+                                   bool asynchronous,
+                                   BrokerEditCompletionHandler completionHandler,
+                                   void* completionContext) noexcept {
     if (!context || clientId == TF_CLIENTID_NULL || !sink || !composition || !plannedTermination) return E_INVALIDARG;
     if (asynchronous && (compositionRect || compositionRectValid)) return E_INVALIDARG;
     if (compositionRectValid) *compositionRectValid = false;
     auto* session = new (std::nothrow) EditSession(context, sink, composition, plannedTermination,
-                                                   update, compositionRect, compositionRectValid);
+                                                   update, compositionRect, compositionRectValid,
+                                                   completionHandler, completionContext);
     if (!session) return E_OUTOFMEMORY;
     HRESULT sessionResult = E_FAIL;
     const DWORD flags = (asynchronous ? TF_ES_ASYNC : TF_ES_SYNC) | TF_ES_READWRITE;

@@ -46,9 +46,7 @@ if (-not $ValidateOnly) {
     New-ItemProperty -LiteralPath $runKey -Name $productKeyName -Value $runValue `
         -PropertyType String -Force | Out-Null
 }
-$actualValue = if ($ValidateOnly) { $runValue } else {
-    [string](Get-ItemPropertyValue -LiteralPath $runKey -Name $productKeyName)
-}
+$actualValue = [string](Get-ItemPropertyValue -LiteralPath $runKey -Name $productKeyName)
 if (-not $actualValue.Equals($runValue, [StringComparison]::Ordinal)) {
     throw 'E6-C current-user autostart did not converge to the active runtime'
 }

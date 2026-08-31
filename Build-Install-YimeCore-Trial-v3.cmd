@@ -54,11 +54,9 @@ if errorlevel 1 (
     set "PSModulePath=%SystemRoot%\System32\WindowsPowerShell\v1.0\Modules;%PSModulePath%"
     set "YIME_PS=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
 :powershell_ready
-set "YIME_BASE=%YIME_ROOT%\.tmp\yimecore-experiment\e6c\20260824-language-bar-final\package"
-
-if not exist "%YIME_BASE%\package-manifest.json" (
-    echo ERROR: Base package is missing:
-    echo   %YIME_BASE%
+if not exist "%LOCALAPPDATA%\YimeCore Experimental Trial\runtime-config.json" (
+    echo ERROR: No installed YimeCore trial configuration was found.
+    echo Install a verified trial package once before using this upgrade entry point.
     pause
     exit /b 2
 )
@@ -71,8 +69,9 @@ echo YIME_ROOT=%YIME_ROOT%
 echo YIME_POWERSHELL=%YIME_PS%
 echo YIME_OUTPUT=%YIME_OUT%
 echo.
-echo [1/4] Building and verifying the YimeCore trial package...
-"%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\run-e6c-package-experiment.ps1" -BasePackageRoot "%YIME_BASE%" -OutputRoot "%YIME_OUT%"
+echo [1/5] Building and verifying the YimeCore trial package...
+echo The currently installed, manifest-verified trial is used as the package base.
+"%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\run-e6c-package-experiment.ps1" -OutputRoot "%YIME_OUT%"
 if errorlevel 1 (
     echo.
     echo BUILD FAILED. Evidence directory:
@@ -81,8 +80,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [2/4] Installing the new trial package with one administrator confirmation...
-echo The installer performs its own forced pre-cleanup and removes partial state after failure.
+echo [2/5] Installing the new trial package with one administrator confirmation...
+echo The installer stages first and restores the previous trial if registration or startup fails.
 "%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\manage-e6c-trial-install.ps1" -Action Install -PackageRoot "%YIME_OUT%\package" -Force
 if errorlevel 1 (
     echo.
@@ -92,7 +91,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [3/4] Repairing and verifying current-user autostart...
+echo [3/5] Repairing and verifying current-user autostart...
 "%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\repair-e6c-trial-autostart.ps1"
 if errorlevel 1 (
     echo.
@@ -101,7 +100,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [4/4] Verifying the installed runtime and all three modes...
+echo [4/5] Verifying the installed runtime and all three modes...
 "%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\verify-e6c-trial-runtime.ps1"
 if errorlevel 1 (
     echo.
@@ -110,6 +109,22 @@ if errorlevel 1 (
     echo   %YIME_OUT%\package
     echo Runtime diagnostics:
     echo   %LOCALAPPDATA%\YimeCore Experimental Trial
+    pause
+    exit /b 1
+)
+
+echo [5/5] Verifying registered x64 and x86 TSF host behavior...
+"%YIME_OUT%\package\x64\YimeRegisteredHostTests.exe" "\\.\pipe\YimeBroker.YimeCoreTrial.v1"
+if errorlevel 1 (
+    echo.
+    echo X64 REGISTERED-HOST VERIFICATION FAILED.
+    pause
+    exit /b 1
+)
+"%YIME_OUT%\package\x86\YimeRegisteredHostTests.exe" "\\.\pipe\YimeBroker.YimeCoreTrial.v1"
+if errorlevel 1 (
+    echo.
+    echo X86 REGISTERED-HOST VERIFICATION FAILED.
     pause
     exit /b 1
 )

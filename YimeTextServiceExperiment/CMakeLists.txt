@@ -81,10 +81,14 @@ target_include_directories(YimeTextServiceRegistration PRIVATE ${CMAKE_CURRENT_S
 target_link_libraries(YimeTextServiceRegistration PRIVATE advapi32 ole32)
 set_property(TARGET YimeTextServiceRegistration PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-add_executable(YimeRegisteredHostTests tests/RegisteredHostTests.cpp)
+add_executable(YimeRegisteredHostTests
+    tests/RegisteredHostTests.cpp
+    ExperimentSettings.cpp
+)
 target_compile_features(YimeRegisteredHostTests PRIVATE cxx_std_17)
 target_compile_definitions(YimeRegisteredHostTests PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
 target_compile_options(YimeRegisteredHostTests PRIVATE /utf-8 /W4 /EHsc)
-target_include_directories(YimeRegisteredHostTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(YimeRegisteredHostTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+    "${CMAKE_CURRENT_LIST_DIR}/../json/single_include")
 target_link_libraries(YimeRegisteredHostTests PRIVATE ole32 oleaut32 user32)
 set_property(TARGET YimeRegisteredHostTests PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")

@@ -846,13 +846,15 @@ bool YimeTextService::CommitPunctuation(ITfContext* context,
     CancelPunctuationPalette(false);
     const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
         context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
-        &plannedCompositionTermination_, update, nullptr, nullptr, asynchronous);
+        &plannedCompositionTermination_, update, nullptr, nullptr, asynchronous,
+        asynchronous ? AsyncBrokerEditCompletion : nullptr, this);
     if (FAILED(edit)) {
         if (!frozenCandidateId.empty()) surface_.DisconnectForRecovery();
         EndCandidateUI();
         return false;
     }
     if (composition_) RememberCompositionContext(context);
+    if (asynchronous) return true;
     UpdateCandidateUI(context, update, nullptr);
     return true;
 }
@@ -895,13 +897,13 @@ void YimeTextService::SelectCandidateFromPopup(unsigned ordinal) noexcept {
     }
     const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
         context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
-        &plannedCompositionTermination_, renderedUpdate, nullptr, nullptr, true);
+        &plannedCompositionTermination_, renderedUpdate, nullptr, nullptr, true,
+        AsyncBrokerEditCompletion, this);
     if (FAILED(edit)) {
         surface_.DisconnectForRecovery();
         context->Release();
         return;
     }
-    UpdateCandidateUI(context, renderedUpdate, nullptr);
     context->Release();
 }
 
@@ -938,13 +940,13 @@ void YimeTextService::SelectSentenceFromPopup() noexcept {
     }
     const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
         context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
-        &plannedCompositionTermination_, renderedUpdate, nullptr, nullptr, true);
+        &plannedCompositionTermination_, renderedUpdate, nullptr, nullptr, true,
+        AsyncBrokerEditCompletion, this);
     if (FAILED(edit)) {
         surface_.DisconnectForRecovery();
         context->Release();
         return;
     }
-    UpdateCandidateUI(context, renderedUpdate, nullptr);
     context->Release();
 }
 
@@ -954,6 +956,27 @@ void YimeTextService::CandidatePopupSegmentSelection(void* context, int start, i
 
 void YimeTextService::CandidatePopupSegmentExpansion(void* context, int start, int end) noexcept {
     if (context) static_cast<YimeTextService*>(context)->ExpandSentenceSegmentFromPopup(start, end);
+}
+
+void YimeTextService::AsyncBrokerEditCompletion(
+    void* context, ITfContext* editContext,
+    const yime::experiment::BrokerUpdate& update, HRESULT result) noexcept {
+    if (context) {
+        static_cast<YimeTextService*>(context)->CompleteAsyncBrokerEdit(
+            editContext, update, result);
+    }
+}
+
+void YimeTextService::CompleteAsyncBrokerEdit(
+    ITfContext* editContext, const yime::experiment::BrokerUpdate& update,
+    HRESULT result) noexcept {
+    if (FAILED(result)) {
+        surface_.DisconnectForRecovery();
+        EndCandidateUI();
+        return;
+    }
+    if (composition_) RememberCompositionContext(editContext);
+    UpdateCandidateUI(editContext, update, nullptr);
 }
 
 void YimeTextService::LiveSettingsChanged(
@@ -997,13 +1020,13 @@ void YimeTextService::FocusSentenceSegmentFromPopup(int start, int end) noexcept
     }
     const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
         context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
-        &plannedCompositionTermination_, renderedUpdate, nullptr, nullptr, true);
+        &plannedCompositionTermination_, renderedUpdate, nullptr, nullptr, true,
+        AsyncBrokerEditCompletion, this);
     if (FAILED(edit)) {
         surface_.DisconnectForRecovery();
         context->Release();
         return;
     }
-    UpdateCandidateUI(context, renderedUpdate, nullptr);
     context->Release();
 }
 
@@ -1022,13 +1045,13 @@ void YimeTextService::ExpandSentenceSegmentFromPopup(int start, int end) noexcep
     }
     const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
         context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
-        &plannedCompositionTermination_, renderedUpdate, nullptr, nullptr, true);
+        &plannedCompositionTermination_, renderedUpdate, nullptr, nullptr, true,
+        AsyncBrokerEditCompletion, this);
     if (FAILED(edit)) {
         surface_.DisconnectForRecovery();
         context->Release();
         return;
     }
-    UpdateCandidateUI(context, renderedUpdate, nullptr);
     context->Release();
 }
 
@@ -1088,6 +1111,7 @@ void YimeTextService::AddLanguageBar() noexcept {
 
 void YimeTextService::RemoveLanguageBar() noexcept {
     if (!languageBarItem_) return;
+    languageBarItem_->SetSettingsChangedHandler(nullptr, nullptr);
     if (languageBarItemAdded_ && threadManager_) {
         ITfLangBarItemMgr* manager = nullptr;
         if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfLangBarItemMgr), reinterpret_cast<void**>(&manager)))) {

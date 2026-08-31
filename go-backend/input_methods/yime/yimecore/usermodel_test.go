@@ -372,6 +372,37 @@ func TestIdempotentSelectionSurvivesSnapshotAndRejectsReuse(t *testing.T) {
 	}
 }
 
+func TestIdempotentSelectionRejectsChangedContextAndObservations(t *testing.T) {
+	model, err := NewUserModel("context-idempotency")
+	if err != nil {
+		t.Fatal(err)
+	}
+	const requestID = "sentence-request-0001"
+	original := []UserObservation{
+		{Code: "a", Text: "甲", PreviousText: "前"},
+		{Code: "b", Text: "乙", PreviousText: "甲"},
+	}
+	if err := model.observeBatchIdempotent(original, requestID); err != nil {
+		t.Fatal(err)
+	}
+	if err := model.observeBatchIdempotent(original, requestID); err != nil || model.Generation() != 1 {
+		t.Fatalf("identical retry = %v generation=%d", err, model.Generation())
+	}
+	changedContext := append([]UserObservation(nil), original...)
+	changedContext[1].PreviousText = "另"
+	if err := model.observeBatchIdempotent(changedContext, requestID); !errors.Is(err, ErrIdempotencyConflict) {
+		t.Fatalf("changed primary context = %v", err)
+	}
+	changedSegment := append([]UserObservation(nil), original...)
+	changedSegment[0].Text = "丙"
+	if err := model.observeBatchIdempotent(changedSegment, requestID); !errors.Is(err, ErrIdempotencyConflict) {
+		t.Fatalf("changed segment observation = %v", err)
+	}
+	if model.Generation() != 1 {
+		t.Fatalf("conflicts advanced generation to %d", model.Generation())
+	}
+}
+
 func TestUserModelAtomicSaveReopenAndSourceBinding(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "user-model.json")
 	model, err := OpenUserModel(path, "index-source-a")

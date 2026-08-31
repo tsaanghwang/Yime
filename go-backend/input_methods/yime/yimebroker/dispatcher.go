@@ -312,6 +312,29 @@ func (d *Dispatcher) evict(id string, target *session) {
 	d.mu.Unlock()
 }
 
+// CloseSession releases one session only when it still belongs to the
+// authenticated transport client. It cleans up abandoned sessions when a
+// connection ends without a protocol close request.
+func (d *Dispatcher) CloseSession(client TrustedClient, id string) {
+	d.mu.Lock()
+	current := d.sessions[id]
+	d.mu.Unlock()
+	if current == nil || current.owner != client.ID {
+		return
+	}
+	current.mu.Lock()
+	defer current.mu.Unlock()
+	d.mu.Lock()
+	if d.sessions[id] == current && current.owner == client.ID && !current.closed {
+		delete(d.sessions, id)
+		current.closed = true
+		d.mu.Unlock()
+		closeEngine(current.engine)
+		return
+	}
+	d.mu.Unlock()
+}
+
 func (d *Dispatcher) clientSessionCountLocked(clientID string) int {
 	count := 0
 	for _, current := range d.sessions {

@@ -70,6 +70,12 @@ private:
     static void CandidatePopupSentenceSelection(void* context) noexcept;
     static void CandidatePopupSegmentSelection(void* context, int start, int end) noexcept;
     static void CandidatePopupSegmentExpansion(void* context, int start, int end) noexcept;
+    static void AsyncBrokerEditCompletion(void* context, ITfContext* editContext,
+                                          const yime::experiment::BrokerUpdate& update,
+                                          HRESULT result) noexcept;
+    void CompleteAsyncBrokerEdit(ITfContext* editContext,
+                                 const yime::experiment::BrokerUpdate& update,
+                                 HRESULT result) noexcept;
     static void LiveSettingsChanged(
         void* context, const yime::experiment::ExperimentSettings& settings) noexcept;
     void RefreshLiveSettings(

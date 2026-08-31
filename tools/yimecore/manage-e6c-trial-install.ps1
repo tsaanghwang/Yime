@@ -59,6 +59,60 @@ function Quote-Argument([string]$value) {
     return '"' + $value.Replace('"', '\"') + '"'
 }
 
+function Get-RegistryKeySnapshot([string]$path) {
+    if (-not (Test-Path -LiteralPath $path)) {
+        return [ordered]@{ exists = $false; values = @() }
+    }
+    $key = Get-Item -LiteralPath $path
+    $values = @($key.GetValueNames() | ForEach-Object {
+        [ordered]@{
+            name = $_
+            value = $key.GetValue($_, $null, [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)
+            kind = [int]$key.GetValueKind($_)
+        }
+    })
+    return [ordered]@{ exists = $true; values = $values }
+}
+
+function Restore-RegistryKeySnapshot([string]$path, $snapshot) {
+    Remove-Item -LiteralPath $path -Recurse -Force -ErrorAction SilentlyContinue
+    if (-not $snapshot -or -not $snapshot.exists) { return }
+    New-Item -Path $path -Force | Out-Null
+    foreach ($value in @($snapshot.values)) {
+        New-ItemProperty -LiteralPath $path -Name ([string]$value.name) `
+            -Value $value.value `
+            -PropertyType ([Microsoft.Win32.RegistryValueKind]([int]$value.kind)) `
+            -Force | Out-Null
+    }
+}
+
+function Get-RegistryValueSnapshot([string]$path, [string]$name) {
+    if (-not (Test-Path -LiteralPath $path)) {
+        return [ordered]@{ exists = $false }
+    }
+    $key = Get-Item -LiteralPath $path
+    if ($key.GetValueNames() -notcontains $name) {
+        return [ordered]@{ exists = $false }
+    }
+    return [ordered]@{
+        exists = $true
+        value = $key.GetValue($name, $null,
+            [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)
+        kind = [int]$key.GetValueKind($name)
+    }
+}
+
+function Restore-RegistryValueSnapshot([string]$path, [string]$name, $snapshot) {
+    if (-not $snapshot -or -not $snapshot.exists) {
+        Remove-ItemProperty -LiteralPath $path -Name $name -ErrorAction SilentlyContinue
+        return
+    }
+    New-Item -Path $path -Force | Out-Null
+    New-ItemProperty -LiteralPath $path -Name $name -Value $snapshot.value `
+        -PropertyType ([Microsoft.Win32.RegistryValueKind]([int]$snapshot.kind)) `
+        -Force | Out-Null
+}
+
 function Restart-Elevated {
     $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Quote-Argument $PSCommandPath),
         '-Action', $Action, '-StateRoot', (Quote-Argument $stateRootPath),
@@ -326,8 +380,14 @@ function Remove-StateRuntime([switch]$Purge) {
     }
 }
 
-function Invoke-UninstallCore([switch]$ForReinstall) {
+function Invoke-UninstallCore([switch]$ForReinstall, [string[]]$PreserveInstallRoots = @()) {
     $roots = @(Get-RegisteredInstallRoots)
+    $preserved = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach ($root in $PreserveInstallRoots) {
+        if (-not [string]::IsNullOrWhiteSpace($root)) {
+            $null = $preserved.Add([IO.Path]::GetFullPath($root))
+        }
+    }
     Stop-TrialRuntime $roots
     Remove-ItemProperty -LiteralPath $runKey -Name $productKeyName -ErrorAction SilentlyContinue
     Remove-InputMethodTip
@@ -336,6 +396,7 @@ function Invoke-UninstallCore([switch]$ForReinstall) {
     $deferred = $false
     foreach ($root in $roots) {
         if (Test-Path -LiteralPath $root) {
+            if ($preserved.Contains([IO.Path]::GetFullPath($root))) { continue }
             if (-not (Test-InstallMarker $root)) {
                 [IO.File]::WriteAllText((Join-Path $root 'install-metadata.json'),
                     (([ordered]@{ schema_version = 'yimecore-trial-cleanup-recovery-v1';
@@ -348,7 +409,12 @@ function Invoke-UninstallCore([switch]$ForReinstall) {
     Remove-StateRuntime -Purge:($PurgeUserData -and -not $ForReinstall)
     return [ordered]@{
         action = if ($ForReinstall) { 'forced_preinstall_cleanup' } else { 'uninstall' }
-        removed_install_roots = $roots
+        removed_install_roots = @($roots | Where-Object {
+            -not $preserved.Contains([IO.Path]::GetFullPath($_))
+        })
+        preserved_install_roots = @($roots | Where-Object {
+            $preserved.Contains([IO.Path]::GetFullPath($_))
+        })
         deferred_delete_until_reboot = $deferred
         user_model_preserved = [bool](-not $PurgeUserData -or $ForReinstall)
         production_rime_pime_changed = $false
@@ -436,11 +502,42 @@ function Start-TrialRuntime($config) {
     throw 'trial runtime did not become ready within 15 seconds'
 }
 
+function Restore-PreviousInstallation([string]$root, [string]$configText,
+                                     $runSnapshot, $uninstallSnapshot,
+                                     [bool]$runtimeWasRunning) {
+    if ([string]::IsNullOrWhiteSpace($root) -or
+        -not (Test-Path -LiteralPath $root -PathType Container)) { return }
+    $x64Tool = Join-Path $root 'x64\YimeTextServiceRegistration.exe'
+    $x86Tool = Join-Path $root 'x86\YimeTextServiceRegistration.exe'
+    Invoke-Registration $x64Tool 'register' `
+        (Join-Path $root 'x64\YimeTextServiceExperiment.dll') 'rollback x64 TSF registration'
+    Wait-RegistrationState $x64Tool $true $true 5
+    Invoke-Registration $x86Tool 'register-com' `
+        (Join-Path $root 'x86\YimeTextServiceExperiment.dll') 'rollback x86 COM registration'
+    Wait-RegistrationState $x86Tool $true $true 5
+    Add-InputMethodTip
+    if (-not [string]::IsNullOrWhiteSpace($configText)) {
+        New-Item -ItemType Directory -Path $stateRootPath -Force | Out-Null
+        [IO.File]::WriteAllText((Join-Path $stateRootPath 'runtime-config.json'),
+            $configText, $utf8NoBom)
+    }
+    Restore-RegistryValueSnapshot $runKey $productKeyName $runSnapshot
+    Restore-RegistryKeySnapshot $uninstallKey $uninstallSnapshot
+    if ($runtimeWasRunning -and -not [string]::IsNullOrWhiteSpace($configText)) {
+        $previousConfig = $configText | ConvertFrom-Json
+        Start-TrialRuntime $previousConfig | Out-Null
+    }
+}
+
 if ($Action -ne 'Plan' -and -not (Test-Administrator)) {
     if ($NoElevation) { throw "$Action requires an elevated administrator token" }
     Restart-Elevated
 }
 if ($Action -ne 'Plan') {
+    $effectiveUserSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+    if (-not $effectiveUserSid.Equals($TargetUserSid, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "$Action must be elevated with the same Windows account that started the operation"
+    }
     Remove-Item -LiteralPath $maintenanceErrorPath -Force -ErrorAction SilentlyContinue
 }
 
@@ -461,6 +558,8 @@ if ($Action -eq 'Plan') {
         autostart_registry_key = $runKey
         target_user_sid = $TargetUserSid
         forced_preinstall_cleanup = $true
+        upgrade_rollback_supported = $true
+        package_staged_before_preinstall_cleanup = $true
         x64_x86_tsf_registration = $true
         taskbar_language_bar_categories = $true
         windows_native_language_bar_only = $true
@@ -487,7 +586,29 @@ $targetRoot = if ($requestedInstallRoot) { Assert-ProductChild $InstallRoot 'ins
     Assert-ProductChild (Join-Path $productRoot $packageId) 'install root'
 }
 
-$preinstall = Invoke-UninstallCore -ForReinstall
+$previousRoots = @(Get-RegisteredInstallRoots)
+$previousConfigPath = Join-Path $stateRootPath 'runtime-config.json'
+$previousConfigText = if (Test-Path -LiteralPath $previousConfigPath -PathType Leaf) {
+    Get-Content -LiteralPath $previousConfigPath -Raw -Encoding UTF8
+} else { '' }
+$previousRoot = if (-not [string]::IsNullOrWhiteSpace($previousConfigText)) {
+    try { [string](($previousConfigText | ConvertFrom-Json).install_root) } catch { '' }
+} else { '' }
+if ([string]::IsNullOrWhiteSpace($previousRoot) -or
+    $previousRoots -notcontains $previousRoot) {
+    $previousRoot = if ($previousRoots.Count -gt 0) { [string]$previousRoots[0] } else { '' }
+}
+$previousRunSnapshot = Get-RegistryValueSnapshot $runKey $productKeyName
+$previousUninstallSnapshot = Get-RegistryKeySnapshot $uninstallKey
+$previousStatusPath = Join-Path $stateRootPath 'runtime-status.json'
+$previousRuntimeWasRunning = $false
+if (Test-Path -LiteralPath $previousStatusPath -PathType Leaf) {
+    try {
+        $previousRuntimeWasRunning =
+            (Get-Content -LiteralPath $previousStatusPath -Raw -Encoding UTF8 | ConvertFrom-Json).state -eq 'running'
+    } catch {}
+}
+
 if (Test-Path -LiteralPath $targetRoot) {
     if ($requestedInstallRoot) { throw "requested install root is still occupied: $targetRoot" }
     $targetRoot = Assert-ProductChild ($targetRoot + '-' + (Get-Date -Format 'yyyyMMddHHmmss')) 'fallback install root'
@@ -495,6 +616,7 @@ if (Test-Path -LiteralPath $targetRoot) {
 $stagingRoot = Assert-ProductChild ($targetRoot + ".staging-$PID") 'staging root'
 if (Test-Path -LiteralPath $stagingRoot) { throw "staging root already exists: $stagingRoot" }
 
+$preinstall = $null
 try {
     New-Item -ItemType Directory -Path $stagingRoot -Force | Out-Null
     [IO.File]::WriteAllText((Join-Path $stagingRoot 'install-metadata.json'),
@@ -518,6 +640,8 @@ try {
     }
     [IO.File]::WriteAllText((Join-Path $stagingRoot 'install-metadata.json'),
         (($metadata | ConvertTo-Json -Depth 4) + "`n"), $utf8NoBom)
+    $preinstall = Invoke-UninstallCore -ForReinstall `
+        -PreserveInstallRoots @($previousRoots + $stagingRoot)
     Move-Item -LiteralPath $stagingRoot -Destination $targetRoot
 
     $x64Tool = Join-Path $targetRoot 'x64\YimeTextServiceRegistration.exe'
@@ -543,8 +667,9 @@ try {
     }
 
     $installedScript = Join-Path $targetRoot 'maintenance\Manage-YimeCoreTrial.ps1'
-    $uninstallCommand = '{0} -NoProfile -ExecutionPolicy Bypass -File {1} -Action Uninstall -Force' -f
-        (Quote-Argument $windowsPowerShell), (Quote-Argument $installedScript)
+    $uninstallCommand = '{0} -NoProfile -ExecutionPolicy Bypass -File {1} -Action Uninstall -Force -StateRoot {2} -TargetUserSid {3}' -f
+        (Quote-Argument $windowsPowerShell), (Quote-Argument $installedScript),
+        (Quote-Argument $stateRootPath), (Quote-Argument $TargetUserSid)
     New-Item -Path $uninstallKey -Force | Out-Null
     $estimatedSize = [int]([math]::Ceiling((Get-ChildItem -LiteralPath $targetRoot -Recurse -File |
         Measure-Object Length -Sum).Sum / 1KB))
@@ -566,6 +691,13 @@ try {
     }
 
     $runtimeStatus = if ($NoLaunch) { $null } else { Start-TrialRuntime $runtimeConfig }
+    foreach ($oldRoot in $previousRoots) {
+        if (-not ([IO.Path]::GetFullPath($oldRoot)).Equals(
+                [IO.Path]::GetFullPath($targetRoot), [StringComparison]::OrdinalIgnoreCase) -and
+            (Test-Path -LiteralPath $oldRoot)) {
+            Remove-ProductTree $oldRoot | Out-Null
+        }
+    }
     $result = [ordered]@{
         action = 'install'
         product_name = $productName
@@ -580,12 +712,20 @@ try {
     if (-not $Quiet) { $result | ConvertTo-Json -Depth 6 }
 } catch {
     $failure = $_
-    try { Invoke-UninstallCore -ForReinstall | Out-Null } catch {}
-    if (Test-Path -LiteralPath $targetRoot) {
-        try { Remove-ProductTree $targetRoot | Out-Null } catch {}
+    $rollbackFailure = $null
+    try {
+        if ($preinstall) {
+            Invoke-UninstallCore -ForReinstall -PreserveInstallRoots $previousRoots | Out-Null
+            if (Test-Path -LiteralPath $targetRoot) { Remove-ProductTree $targetRoot | Out-Null }
+            Restore-PreviousInstallation $previousRoot $previousConfigText `
+                $previousRunSnapshot $previousUninstallSnapshot $previousRuntimeWasRunning
+        }
+        if (Test-Path -LiteralPath $stagingRoot) { Remove-ProductTree $stagingRoot | Out-Null }
+    } catch {
+        $rollbackFailure = $_
     }
-    if (Test-Path -LiteralPath $stagingRoot) {
-        try { Remove-ProductTree $stagingRoot | Out-Null } catch {}
+    if ($rollbackFailure) {
+        throw "${failure}; restoring the previous trial installation also failed: $rollbackFailure"
     }
     throw $failure
 }

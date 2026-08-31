@@ -1,12 +1,24 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)]
     [string]$BasePackageRoot,
     [string]$OutputRoot
 )
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
+$stateRoot = Join-Path $env:LOCALAPPDATA 'YimeCore Experimental Trial'
+if ([string]::IsNullOrWhiteSpace($BasePackageRoot)) {
+    $runtimeConfigPath = Join-Path $stateRoot 'runtime-config.json'
+    if (-not (Test-Path -LiteralPath $runtimeConfigPath -PathType Leaf)) {
+        throw 'BasePackageRoot was not provided and no installed YimeCore trial configuration exists'
+    }
+    $runtimeConfig = Get-Content -LiteralPath $runtimeConfigPath -Raw -Encoding UTF8 |
+        ConvertFrom-Json
+    $BasePackageRoot = [string]$runtimeConfig.install_root
+    if ([string]::IsNullOrWhiteSpace($BasePackageRoot)) {
+        throw "installed YimeCore trial configuration has no install_root: $runtimeConfigPath"
+    }
+}
 $allowedRoot = [IO.Path]::GetFullPath((Join-Path $repoRoot '.tmp\yimecore-experiment'))
 if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
     $OutputRoot = Join-Path $allowedRoot ('e6c\' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
@@ -29,7 +41,7 @@ Start-Transcript -LiteralPath (Join-Path $outputDir 'transcript.txt') -Force | O
 function Get-PackageRecords([string]$root) {
     $normalizedRoot = [IO.Path]::GetFullPath($root)
     @(Get-ChildItem -LiteralPath $normalizedRoot -Recurse -File | Where-Object {
-        $_.Name -ne 'package-manifest.json'
+        $_.Name -notin @('package-manifest.json', 'install-metadata.json')
     } | ForEach-Object {
         [ordered]@{
             path = $_.FullName.Substring($normalizedRoot.Length + 1).Replace('\', '/')

@@ -252,7 +252,26 @@ schema 缓存全部新鲜。`dev-build-install-verify.ps1` 已把这项检查纳
 
 真实 32 位宿主使用 `C:\Windows\SysWOW64\charmap.exe`。在 64 位 Windows 上，`SysWOW64` 中该文件的 PE machine 应为 `0x014C`；不要用 `System32\charmap.exe` 代替 x86 验证。发布烟雾测试需在该进程中实际激活 YIME，并完成组字、候选和上屏。
 
-### 8.3 已完成的验证记录
+### 8.3 YimeCore trial 本地构建、事务升级与宿主验证
+
+已安装过受清单验证的 YimeCore trial 后，可在仓库根目录运行：
+
+```cmd
+Build-Install-YimeCore-Trial-v3.cmd
+```
+
+不希望脚本最后询问并执行 Windows 重启时使用 `/norestart`。v3 从
+`%LOCALAPPDATA%\YimeCore Experimental Trial\runtime-config.json` 解析当前安装根，逐文件校验其
+`package-manifest.json`，再以该安装包为 base 重建当前工作树；安装目录额外生成的
+`install-metadata.json` 不属于包清单，也不得被复制到新 staged package。
+
+流程固定为：构建并完成隔离包验证、完整 staging 后事务升级、修复并读取真实 Run 值、验证安装态
+三模式和 Broker 恢复、运行 x64/x86 `YimeRegisteredHostTests.exe`。运行前必须关闭 Word；安装阶段会
+请求一次 UAC。若新版本注册或启动失败，旧版本目录、COM/Profile、TIP、runtime 配置、Run、卸载项
+和升级前运行状态必须自动恢复。不能把该流程简化为先删除旧版本再复制，也不能用源码目录中的 DLL
+contract 代替注册宿主测试。
+
+### 8.4 已完成的验证记录
 
 - 2026-07-11：未签名开发包真实安装验证，输入响应正常，用户词“云笺试码”“笺砚验码”应用后活动会话直接出词。
 - 2026-07-12：完整安装态清单逐项跑完并留痕（[YIME_INSTALL_VERIFICATION_2026-07-12.md](YIME_INSTALL_VERIFICATION_2026-07-12.md)）——重启后干净全量重装、三件哈希构建↔安装全一致、重启自启动实测（开机 27 秒内自动拉起）、7 工具入口不崩、TIP 注册与真实组词日志、CodeIntegrity 核查、runtimechange 协议 `-race` 全绿。签名完成后须以该文档为模板复跑留新档。
@@ -261,7 +280,7 @@ schema 缓存全部新鲜。`dev-build-install-verify.ps1` 已把这项检查纳
 - 2026-07-22：完成 [YIME 1.4.0-dev 安装态复核](YIME_INSTALL_VERIFICATION_2026-07-22.md)；启动器、x86/x64 TSF DLL、Go 后端、全部原生工具、Rime 运行库与部署器均和当前构建物哈希一致，注册表安装根、自启动项及运行进程正常，无待重启的 `.new` 文件；同轮补齐并实装验证布局设计器 VERSIONINFO 与卸载项 `InstallLocation`。该轮是安装完整性复核，不替代签名发行包的宿主输入烟雾测试。
 - 2026-07-24：候选窗独立组句分段条完成安装和重启验证；已安装 `server.exe` 与构建物 SHA-256 一致，x86/x64 `PIMETextService.dll` 也分别一致。Notepad、Codex IDE 已完成初步试用，确认功能可见并有实际作用；由于鼠标分段改选需要长期使用评价，本轮记录为“进入观察期”。真实 x86 宿主基础链路曾于 2026-07-15 初步测试通过；Phase 5.6 的 x86 复测安排在取得代码签名后，随签名产物重复第一/中间/末段切换和发行验收。
 
-### 8.4 独立组句分段条
+### 8.5 独立组句分段条
 
 鼠标组句纠错必须点击 Yime 自有候选窗中的分段条，不得点击宿主编辑区中的
 composition 文字。源码测试需覆盖：

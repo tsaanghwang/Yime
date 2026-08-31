@@ -288,7 +288,6 @@ func (m *UserModel) observeBatchWithRerankerIdempotent(observations []UserObserv
 	m.applySelectionMutationLocked(mutation)
 	m.generation++
 	if requestID != "" {
-		mutation.Observations = nil
 		m.appliedRequests[requestID] = mutation
 	}
 	return nil
@@ -514,8 +513,28 @@ func validMutationObservations(mutation UserMutation) bool {
 }
 
 func equivalentSelectionMutation(left, right UserMutation) bool {
-	return left.Kind == UserMutationSelect && right.Kind == UserMutationSelect &&
-		left.Code == right.Code && left.Text == right.Text && equalInt64Maps(left.RerankerDelta, right.RerankerDelta)
+	if left.Kind != UserMutationSelect || right.Kind != UserMutationSelect ||
+		left.Code != right.Code || left.Text != right.Text ||
+		!equalInt64Maps(left.RerankerDelta, right.RerankerDelta) {
+		return false
+	}
+	// Older snapshots did not retain observations in the request ledger. Their
+	// primary selection fields are the strongest comparison available.
+	if len(left.Observations) == 0 {
+		return true
+	}
+	if left.PreviousText != right.PreviousText {
+		return false
+	}
+	if len(left.Observations) != len(right.Observations) {
+		return false
+	}
+	for index := range left.Observations {
+		if left.Observations[index] != right.Observations[index] {
+			return false
+		}
+	}
+	return true
 }
 
 // Save writes the current model through a same-directory temporary file and

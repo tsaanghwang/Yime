@@ -730,8 +730,14 @@ void testOwnedCandidatePopup() {
            "owned candidate popup escaped the monitor work area");
     popup.Show(false);
     expect(!IsWindowVisible(window), "owned candidate popup did not hide");
+    DestroyWindow(window);
+    expect(!IsWindow(window), "external candidate popup destruction failed");
+    expect(popup.Update({L"⇧1  重建"}, centeredAnchor, nullptr),
+           "candidate popup did not recover after its HWND was destroyed by the host");
+    expect(popup.Window() && IsWindow(popup.Window()) && popup.Window() != window,
+           "candidate popup retained a stale HWND after host destruction");
     popup.Destroy();
-    expect(!IsWindow(window), "owned candidate popup did not destroy its HWND");
+    expect(!popup.Window(), "owned candidate popup did not clear its HWND");
        DeleteFileW(settingsPath.c_str());
 }
 

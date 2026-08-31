@@ -156,7 +156,8 @@
       <a class="action" href="../Build-Install-YimeCore-Trial-v3.cmd" download>下载一键构建安装脚本 v3</a>
       <ol>
         <li>双击下载的 <code>Build-Install-YimeCore-Trial-v3.cmd</code>；请勿继续运行浏览器先前缓存的旧文件。</li>
-        <li>脚本依次构建并验证 x64/x86、明确执行强制卸载、确认清理后再全新安装试验版。</li>
+        <li>脚本以当前已安装且清单校验通过的 trial 为 base，重建并验证 x64/x86，再以 staging 优先、失败恢复旧版本的事务流程升级试验版。</li>
+        <li>安装后继续验证真实 Run 值、三种模式、Broker 恢复和 x64/x86 注册宿主路径；运行前必须关闭 Word。</li>
         <li>结束时输入 <code>Y</code> 才会重启 Windows；输入 <code>N</code> 会保留窗口并等待手动重启。</li>
       </ol>
       <div class="note warn"><strong>重启前先保存工作。</strong>任务栏语言栏由 Windows/Explorer 缓存，安装成功后仍应完成一次整机重启再验收。</div>

@@ -126,6 +126,7 @@ HFONT CandidatePopup::EnsureFont() noexcept {
 }
 
 bool CandidatePopup::EnsureWindow(HWND owner) noexcept {
+    if (window_ && !IsWindow(window_)) window_ = nullptr;
     if (window_) {
         SetWindowLongPtrW(window_, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(owner));
         return true;
@@ -515,6 +516,7 @@ LRESULT CALLBACK CandidatePopup::WindowProcedure(HWND window, UINT message, WPAR
             if (self) self->ForgetAt(lParam);
             return 0;
         case WM_NCDESTROY:
+            if (self) self->window_ = nullptr;
             SetWindowLongPtrW(window, GWLP_USERDATA, 0);
             break;
         default:

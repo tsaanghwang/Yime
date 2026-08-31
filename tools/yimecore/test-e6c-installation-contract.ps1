@@ -75,8 +75,15 @@ $result = [ordered]@{
             "Registry::HKEY_USERS\$currentUserSid\Software\Microsoft\Windows\CurrentVersion\Run")
     elevation_preserves_target_user_sid = [bool](
         $managerText -match "'-TargetUserSid', \(Quote-Argument \`$TargetUserSid\)" -and
-        $managerText -match 'Registry::HKEY_USERS\\\$TargetUserSid\\Software')
+        $managerText -match 'Registry::HKEY_USERS\\\$TargetUserSid\\Software' -and
+        $managerText -match '\$effectiveUserSid\.Equals\(\$TargetUserSid' -and
+        $managerText -match "-Action Uninstall -Force -StateRoot \{2\} -TargetUserSid \{3\}")
     force_cleanup_before_install = [bool]$plan.forced_preinstall_cleanup
+    failed_upgrade_restores_previous_install = [bool](
+        $plan.upgrade_rollback_supported -and
+        $plan.package_staged_before_preinstall_cleanup -and
+        $managerText.Contains('function Restore-PreviousInstallation') -and
+        $managerText.Contains('-PreserveInstallRoots $previousRoots'))
     x64_x86_tsf_registration_planned = [bool]$plan.x64_x86_tsf_registration
     learning_sentinel_preserved = [bool]$sentinelPreserved
     invalid_non_trial_root_rejected = [bool]$invalidRootRejected
@@ -135,6 +142,7 @@ if ($result.installed_apps_entry_planned -ne $true -or
     $result.autostart_targets_calling_user -ne $true -or
     $result.elevation_preserves_target_user_sid -ne $true -or
     $result.force_cleanup_before_install -ne $true -or
+    $result.failed_upgrade_restores_previous_install -ne $true -or
     $result.x64_x86_tsf_registration_planned -ne $true -or
     $result.learning_sentinel_preserved -ne $true -or
     $result.invalid_non_trial_root_rejected -ne $true -or
