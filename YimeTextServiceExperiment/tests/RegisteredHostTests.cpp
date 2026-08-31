@@ -10,6 +10,7 @@
 #include <thread>
 
 #include "ExperimentSettings.h"
+#include "LanguageBarItem.h"
 #include "YimeTextServiceIds.h"
 
 namespace {
@@ -500,6 +501,11 @@ int wmain(int argc, wchar_t** argv) {
             languageBar->GetItem(GUID_YimeTextServiceExperimentLangBar, &languageBarItem);
         const bool languageBarAccepted = languageBarLookup == S_OK && languageBarItem != nullptr;
 
+        wchar_t toolMenuSmokeValue[8]{};
+        const bool runToolMenuSmoke =
+            GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_TOOL_MENU_SMOKE",
+                                    toolMenuSmokeValue, _countof(toolMenuSmokeValue)) != 0;
+
         const std::string code = "2jru";
         for (size_t index = 0; index < code.size(); ++index) {
             const char character = code[index];
@@ -816,6 +822,26 @@ int wmain(int argc, wchar_t** argv) {
             throw std::runtime_error("failed asynchronous edit changed text or retained candidate UI");
         }
         std::cout << "failed_async_edit_recovery_verified=true\n";
+
+        if (runToolMenuSmoke) {
+            if (!languageBarItem) {
+                throw std::runtime_error(
+                    "registered language-bar item unavailable for tool-menu smoke test");
+            }
+            ITfLangBarItemButton* languageBarButton = nullptr;
+            require(languageBarItem->QueryInterface(
+                        __uuidof(ITfLangBarItemButton),
+                        reinterpret_cast<void**>(&languageBarButton)),
+                    "query registered language-bar button");
+            for (const UINT command : {YIME_LBI_INPUT_TOOLBAR, YIME_LBI_REVERSE_LOOKUP,
+                                       YIME_LBI_USER_LEXICON, YIME_LBI_SETTINGS_TOOL,
+                                       YIME_LBI_TRAINER_TOOL, YIME_LBI_TOOL_CENTER}) {
+                require(languageBarButton->OnMenuSelect(command),
+                        "invoke registered language-bar tool command");
+            }
+            languageBarButton->Release();
+            std::cout << "registered_tool_menu_commands_verified=true\n";
+        }
 
         profiles->DeactivateProfile(TF_PROFILETYPE_INPUTPROCESSOR, kLanguageId,
                                     CLSID_YimeTextServiceExperiment,

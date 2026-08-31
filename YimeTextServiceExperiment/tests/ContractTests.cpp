@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "KeyContract.h"
+#include "BrokerClient.h"
 #include "BrokerEndpoint.h"
 #include "CandidateListUIElement.h"
 #include "CandidatePopup.h"
@@ -128,6 +129,13 @@ UINT toggleDefaultLanguageFromPopup(HMENU menu, POINT, void* context) noexcept {
 bool recordToolLaunch(UINT command, const std::wstring&, void* context) noexcept {
     *static_cast<UINT*>(context) = command;
     return true;
+}
+
+bool recordRuntimeEnsure(const std::wstring&, void* context) noexcept {
+    ++*static_cast<int*>(context);
+    // Runtime recovery is best-effort: a development host with an externally
+    // supplied Broker must still be allowed to persist its output setting.
+    return false;
 }
 
 void expect(bool condition, const char* message) {
@@ -396,6 +404,39 @@ void testBrokerEndpoint() {
     } else {
         SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_PIPE", nullptr);
     }
+}
+
+void testBrokerPipeTransportLiveness() {
+    using namespace yime::experiment;
+    const std::wstring pipeName = L"\\\\.\\pipe\\YimeBroker.Transport.Contract." +
+                                  std::to_wstring(GetCurrentProcessId()) + L"." +
+                                  std::to_wstring(GetTickCount64());
+    HANDLE server = CreateNamedPipeW(
+        pipeName.c_str(), PIPE_ACCESS_DUPLEX,
+        PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, 1, 4096, 4096, 0, nullptr);
+    expect(server != INVALID_HANDLE_VALUE, "could not create transport-liveness test pipe");
+    HANDLE client = CreateFileW(pipeName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+                                OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    expect(client != INVALID_HANDLE_VALUE, "could not open transport-liveness test pipe");
+    const BOOL connected = ConnectNamedPipe(server, nullptr);
+    expect(connected || GetLastError() == ERROR_PIPE_CONNECTED,
+           "transport-liveness test pipe did not connect");
+    expect(IsBrokerPipeTransportAlive(client),
+           "connected Broker transport was reported as stale");
+
+    DisconnectNamedPipe(server);
+    CloseHandle(server);
+    bool detectedDisconnect = false;
+    for (int attempt = 0; attempt < 50; ++attempt) {
+        if (!IsBrokerPipeTransportAlive(client)) {
+            detectedDisconnect = true;
+            break;
+        }
+        Sleep(10);
+    }
+    expect(detectedDisconnect,
+           "disconnected Broker transport was reported as live after server restart");
+    CloseHandle(client);
 }
 
 void testCandidateElement() {
@@ -784,13 +825,32 @@ void testLanguageBarItem() {
     using namespace yime::experiment;
     const std::wstring path = temporaryStatePath(L"language-bar.json");
     DeleteFileW(path.c_str());
+    const auto installRootTest = std::filesystem::path(path).parent_path() / L"install-root-selection";
+    const auto staleModuleRoot = installRootTest / L"stale-module-root";
+    const auto activeRegisteredRoot = installRootTest / L"active-registered-root";
+    std::filesystem::create_directories(activeRegisteredRoot);
+    {
+        std::ofstream manifest(activeRegisteredRoot / L"package-manifest.json", std::ios::binary);
+        manifest << "{}";
+    }
+    expect(std::filesystem::path(SelectTrialInstallRoot(staleModuleRoot.wstring(),
+                                                        activeRegisteredRoot.wstring())) ==
+               activeRegisteredRoot,
+           "upgraded host did not prefer the active registered Trial install root");
+    std::filesystem::remove(activeRegisteredRoot / L"package-manifest.json");
+    expect(std::filesystem::path(SelectTrialInstallRoot(staleModuleRoot.wstring(),
+                                                        activeRegisteredRoot.wstring())) ==
+               staleModuleRoot,
+           "invalid registered Trial install root displaced the module-root fallback");
     ExperimentSettings initial;
     expect(ApplyExperimentSettingsCommand(ExperimentSettingsCommand::Chinese, path, &initial),
            "could not seed language-bar state");
     bool popupSeen = false;
     UINT launchedTool = 0;
+    int runtimeEnsures = 0;
        auto* item = new LanguageBarItem(path, toggleDefaultLanguageFromPopup, &popupSeen,
-                                     recordToolLaunch, &launchedTool);
+                                     recordToolLaunch, &launchedTool,
+                                     recordRuntimeEnsure, &runtimeEnsures);
     struct LanguageBarSettingsObservation {
         int calls = 0;
         std::string annotation;
@@ -893,7 +953,9 @@ void testLanguageBarItem() {
     expect(settingsObservation.calls == 1 &&
                settingsObservation.annotation == "standard_pinyin" &&
                settingsObservation.revision == annotationUpdate.revision,
-           "non-icon settings did not reach the active text service refresh callback");
+            "non-icon settings did not reach the active text service refresh callback");
+    expect(runtimeEnsures == 1,
+           "external candidate setting change did not ensure the Trial runtime");
     const auto expectToolbarRefresh = [&](ExperimentSettingsCommand command, DWORD flags,
                                           const char* applyFailure, const char* refreshFailure) {
         ExperimentSettings toolbarUpdate;
@@ -953,14 +1015,19 @@ void testLanguageBarItem() {
            "host submenu click did not select full-width output");
        expect((sink.updates & TF_LBI_ICON) != 0,
                  "full-width selection did not refresh the four-state language icon");
+    const int runtimeEnsuresBeforeTraditional = runtimeEnsures;
     expect(item->OnMenuSelect(YIME_LBI_SCRIPT_TRADITIONAL) == S_OK &&
                LoadExperimentSettings(path).traditionalization,
            "host submenu click did not select Traditional output");
+    expect(runtimeEnsures == runtimeEnsuresBeforeTraditional + 1,
+           "Traditional selection did not ensure the Trial runtime before returning to the host");
     for (const UINT command : {YIME_LBI_INPUT_TOOLBAR, YIME_LBI_REVERSE_LOOKUP,
                                YIME_LBI_USER_LEXICON, YIME_LBI_TRAINER_TOOL,
                                YIME_LBI_TOOL_CENTER, YIME_LBI_SETTINGS_TOOL}) {
         launchedTool = 0;
-        expect(item->OnMenuSelect(command) == S_OK && launchedTool == command,
+        const int runtimeEnsuresBeforeTool = runtimeEnsures;
+        expect(item->OnMenuSelect(command) == S_OK && launchedTool == command &&
+                   runtimeEnsures == runtimeEnsuresBeforeTool + 1,
                "language-bar tool command did not reach its exact launcher path");
     }
     expect(item->OnMenuSelect(1) == E_INVALIDARG,
@@ -975,6 +1042,12 @@ void testLanguageBarItem() {
                eventText.find("\"event\":\"right_click_open\"") != std::string::npos &&
                eventText.find("\"event\":\"menu_select\"") != std::string::npos,
            "language-bar host callbacks were not captured in the live evidence stream");
+    for (const UINT command : {YIME_LBI_INPUT_TOOLBAR, YIME_LBI_REVERSE_LOOKUP,
+                               YIME_LBI_USER_LEXICON, YIME_LBI_TRAINER_TOOL,
+                               YIME_LBI_TOOL_CENTER, YIME_LBI_SETTINGS_TOOL}) {
+        expect(eventText.find("\"command_id\":" + std::to_string(command)) != std::string::npos,
+               "one of the six right-click tool commands was not captured by its exact host ID");
+    }
     if (source) {
         expect(source->UnadviseSink(cookie) == S_OK, "language bar sink unsubscribe failed");
         source->Release();
@@ -983,6 +1056,7 @@ void testLanguageBarItem() {
     DeleteFileW(path.c_str());
     std::error_code cleanupError;
     std::filesystem::remove(eventPath, cleanupError);
+    std::filesystem::remove_all(installRootTest, cleanupError);
 }
 
 void testComLifecycle(const wchar_t* dllPath) {
@@ -1058,6 +1132,7 @@ int wmain(int argc, wchar_t** argv) {
     testPunctuationPaletteContract();
     testOutputTransformContract();
     testBrokerEndpoint();
+    testBrokerPipeTransportLiveness();
     testCandidateElement();
     testOwnedCandidatePopup();
     testExperimentSettings();

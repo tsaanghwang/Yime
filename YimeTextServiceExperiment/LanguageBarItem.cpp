@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "YimeTextServiceIds.h"
+#include "BrokerEndpoint.h"
 #include "LanguageBarResources.h"
 
 namespace {
@@ -135,7 +136,21 @@ std::filesystem::path trialInstallRoot() {
         }
         path.resize(path.size() * 2);
     }
-    return std::filesystem::path(path.data()).parent_path().parent_path();
+    const auto moduleRoot = std::filesystem::path(path.data()).parent_path().parent_path();
+    constexpr wchar_t uninstallKey[] =
+        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial";
+    DWORD bytes = 0;
+    const DWORD flags = RRF_RT_REG_SZ | RRF_SUBKEY_WOW6464KEY;
+    std::wstring registeredRoot;
+    if (RegGetValueW(HKEY_LOCAL_MACHINE, uninstallKey, L"InstallLocation", flags,
+                     nullptr, nullptr, &bytes) == ERROR_SUCCESS && bytes >= sizeof(wchar_t)) {
+        std::vector<wchar_t> value(bytes / sizeof(wchar_t));
+        if (RegGetValueW(HKEY_LOCAL_MACHINE, uninstallKey, L"InstallLocation", flags,
+                         nullptr, value.data(), &bytes) == ERROR_SUCCESS && !value.empty()) {
+            registeredRoot.assign(value.data());
+        }
+    }
+    return SelectTrialInstallRoot(moduleRoot.wstring(), registeredRoot);
 }
 
 bool startDetached(const std::filesystem::path& executable,
@@ -160,16 +175,34 @@ bool startDetached(const std::filesystem::path& executable,
 
 }  // namespace
 
+std::wstring SelectTrialInstallRoot(const std::wstring& moduleRoot,
+                                    const std::wstring& registeredRoot) noexcept {
+    try {
+        if (!registeredRoot.empty()) {
+            const std::filesystem::path activeRoot(registeredRoot);
+            if (std::filesystem::is_regular_file(activeRoot / L"package-manifest.json")) {
+                return activeRoot.lexically_normal().wstring();
+            }
+        }
+        return std::filesystem::path(moduleRoot).lexically_normal().wstring();
+    } catch (...) {
+        return moduleRoot;
+    }
+}
+
 std::atomic<DWORD> LanguageBarItem::nextCookie_{1};
 
 LanguageBarItem::LanguageBarItem(std::wstring settingsPath, PopupPresenter presenter,
                                  void* presenterContext, ToolLauncher toolLauncher,
-                                 void* toolLauncherContext) noexcept
+                                 void* toolLauncherContext, RuntimeEnsurer runtimeEnsurer,
+                                 void* runtimeEnsurerContext) noexcept
     : settingsPath_(std::move(settingsPath)),
       presenter_(presenter ? presenter : PresentPopup),
       presenterContext_(presenterContext),
       toolLauncher_(toolLauncher ? toolLauncher : LaunchTool),
-      toolLauncherContext_(toolLauncherContext) {
+      toolLauncherContext_(toolLauncherContext),
+      runtimeEnsurer_(runtimeEnsurer ? runtimeEnsurer : EnsureTrialRuntime),
+      runtimeEnsurerContext_(runtimeEnsurerContext) {
         const auto settings = yime::experiment::LoadExperimentSettings(settingsPath_);
         lastAsciiMode_ = settings.asciiMode;
         lastFullShape_ = settings.fullShape;
@@ -371,6 +404,7 @@ bool LanguageBarItem::Apply(UINT id) noexcept {
     if (id == YIME_LBI_INPUT_TOOLBAR || id == YIME_LBI_REVERSE_LOOKUP ||
         id == YIME_LBI_USER_LEXICON || id == YIME_LBI_TRAINER_TOOL ||
         id == YIME_LBI_TOOL_CENTER || id == YIME_LBI_SETTINGS_TOOL) {
+        if (runtimeEnsurer_) runtimeEnsurer_(settingsPath_, runtimeEnsurerContext_);
         return toolLauncher_ && toolLauncher_(id, settingsPath_, toolLauncherContext_);
     }
     using Command = yime::experiment::ExperimentSettingsCommand;
@@ -385,6 +419,7 @@ bool LanguageBarItem::Apply(UINT id) noexcept {
     case YIME_LBI_SCRIPT_TRADITIONAL: command = Command::ScriptTraditional; break;
     default: return false;
     }
+    if (runtimeEnsurer_) runtimeEnsurer_(settingsPath_, runtimeEnsurerContext_);
     yime::experiment::ExperimentSettings updated;
     if (!yime::experiment::ApplyExperimentSettingsCommand(command, settingsPath_, &updated)) return false;
     const bool textChanged = updated.asciiMode != lastAsciiMode_;
@@ -493,6 +528,23 @@ bool LanguageBarItem::LaunchTool(UINT command, const std::wstring& settingsPath,
     }
 }
 
+bool LanguageBarItem::EnsureTrialRuntime(const std::wstring& settingsPath,
+                                         void*) noexcept {
+    try {
+        const auto installRoot = trialInstallRoot();
+        if (installRoot.empty() || settingsPath.empty()) return false;
+        const auto stateRoot = std::filesystem::path(settingsPath).parent_path();
+        if (!startDetached(installRoot / L"bin" / L"YimeCoreTrialRuntime.exe",
+                           {L"-install-root", installRoot.wstring(),
+                            L"-state-root", stateRoot.wstring(), L"-no-toolbar"})) {
+            return false;
+        }
+        return WaitNamedPipeW(yime::experiment::ResolveBrokerPipeName().c_str(), 1500) != FALSE;
+    } catch (...) {
+        return false;
+    }
+}
+
 void LanguageBarItem::Refresh() noexcept {
     const auto settings = yime::experiment::LoadExperimentSettings(settingsPath_);
     const bool settingsChanged = settings.revision != lastRevision_;
@@ -501,6 +553,9 @@ void LanguageBarItem::Refresh() noexcept {
     const bool menuChanged = settings.asciiPunctuation != lastAsciiPunctuation_ ||
                              settings.traditionalization != lastTraditionalization_;
     lastRevision_ = settings.revision;
+    if (settingsChanged && runtimeEnsurer_) {
+        runtimeEnsurer_(settingsPath_, runtimeEnsurerContext_);
+    }
     if (settingsChanged && settingsChangedHandler_) {
         settingsChangedHandler_(settingsChangedContext_, settings);
     }

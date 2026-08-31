@@ -28,6 +28,7 @@ const (
 	wsExToolWindow = 0x00000080
 	wsExTopmost    = 0x00000008
 	wsExLayered    = 0x00080000
+	wsExNoActivate = 0x08000000
 	wsCaption      = 0x00C00000
 	wsSysMenu      = 0x00080000
 	wsBorder       = 0x00800000
@@ -49,10 +50,13 @@ const (
 	wmClose           = 0x0010
 	wmDestroy         = 0x0002
 	wmPaint           = 0x000f
+	wmMouseActivate   = 0x0021
 	wmNull            = 0x0000
 	wmLButtonDown     = 0x0201
 	wmNcLButtonDown   = 0x00A1
 	wmPrintClient     = 0x0318
+	maNoActivate      = 3
+	swShowNoActivate  = 4
 	wmUser            = 0x0400
 	wmDrawToolbarIcon = wmUser + 1
 	htCaption         = 2
@@ -466,7 +470,7 @@ func (a *app) run() error {
 	a.applyLayout()
 	a.applyAppearance()
 	setTimer.Call(hwnd, timerID, 200, 0)
-	showWindow.Call(hwnd, 5)
+	showWindow.Call(hwnd, swShowNoActivate)
 	updateWindow.Call(hwnd)
 
 	var message winMsg
@@ -560,7 +564,7 @@ func (a *app) windowExStyle() uintptr {
 	if a.previewPunctuation {
 		return wsExTopmost | wsExLayered
 	}
-	return wsExToolWindow | wsExTopmost | wsExLayered
+	return wsExToolWindow | wsExTopmost | wsExLayered | wsExNoActivate
 }
 
 func (a *app) defaultWindowPosition(screenWidth, screenHeight, width, height int32) (int32, int32) {
@@ -960,6 +964,10 @@ func requestToolbarIconOverlay(button, hdc syscall.Handle) {
 
 func (a *app) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
 	switch message {
+	case wmMouseActivate:
+		if !a.previewPunctuation {
+			return maNoActivate
+		}
 	case wmClose:
 		// Closing the independent toolbar must also release input-toolbar.exe
 		// so upgrades can replace it. The language-bar command starts a fresh

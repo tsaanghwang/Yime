@@ -25,18 +25,24 @@ inline constexpr UINT YIME_LBI_SETTINGS_TOOL = 0x6C43;
 inline constexpr UINT YIME_LBI_TRAINER_TOOL = 0x6C44;
 inline constexpr UINT YIME_LBI_TOOL_CENTER = 0x6C45;
 
+std::wstring SelectTrialInstallRoot(const std::wstring& moduleRoot,
+                                    const std::wstring& registeredRoot) noexcept;
+
 class LanguageBarItem final : public ITfLangBarItemButton, public ITfSource {
 public:
     using PopupPresenter = UINT (*)(HMENU menu, POINT point, void* context) noexcept;
     using ToolLauncher = bool (*)(UINT command, const std::wstring& settingsPath,
                                   void* context) noexcept;
+    using RuntimeEnsurer = bool (*)(const std::wstring& settingsPath,
+                                    void* context) noexcept;
     using SettingsChangedHandler = void (*)(
         void* context, const yime::experiment::ExperimentSettings& settings) noexcept;
 
     explicit LanguageBarItem(
         std::wstring settingsPath = yime::experiment::ResolveExperimentSettingsPath(),
         PopupPresenter presenter = nullptr, void* presenterContext = nullptr,
-        ToolLauncher toolLauncher = nullptr, void* toolLauncherContext = nullptr) noexcept;
+        ToolLauncher toolLauncher = nullptr, void* toolLauncherContext = nullptr,
+        RuntimeEnsurer runtimeEnsurer = nullptr, void* runtimeEnsurerContext = nullptr) noexcept;
 
     STDMETHODIMP QueryInterface(REFIID iid, void** object) override;
     STDMETHODIMP_(ULONG) AddRef() override;
@@ -68,6 +74,8 @@ private:
     static UINT PresentPopup(HMENU menu, POINT point, void* context) noexcept;
     static bool LaunchTool(UINT command, const std::wstring& settingsPath,
                            void* context) noexcept;
+    static bool EnsureTrialRuntime(const std::wstring& settingsPath,
+                                   void* context) noexcept;
 
     std::atomic<ULONG> references_{1};
     std::wstring settingsPath_;
@@ -75,6 +83,8 @@ private:
     void* presenterContext_ = nullptr;
     ToolLauncher toolLauncher_ = nullptr;
     void* toolLauncherContext_ = nullptr;
+    RuntimeEnsurer runtimeEnsurer_ = nullptr;
+    void* runtimeEnsurerContext_ = nullptr;
     DWORD status_ = 0;
     bool lastAsciiMode_ = false;
     bool lastFullShape_ = false;

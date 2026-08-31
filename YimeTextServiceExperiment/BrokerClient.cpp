@@ -15,7 +15,17 @@ std::string windowsError(const char* operation) {
 
 }  // namespace
 
+bool IsBrokerPipeTransportAlive(HANDLE pipe) noexcept {
+    if (pipe == INVALID_HANDLE_VALUE) return false;
+    DWORD available = 0;
+    return PeekNamedPipe(pipe, nullptr, 0, nullptr, &available, nullptr) != FALSE;
+}
+
 BrokerClient::~BrokerClient() { Close(); }
+
+bool BrokerClient::IsConnected() const noexcept {
+    return !sessionId_.empty() && IsBrokerPipeTransportAlive(pipe_);
+}
 
 bool BrokerClient::Connect(const std::wstring& pipeName, DWORD timeoutMs, const std::string& mode,
                            int candidateLimit, std::string* error) {

@@ -39,6 +39,8 @@ struct BrokerUpdate {
     int activeSegmentEnd = -1;
 };
 
+bool IsBrokerPipeTransportAlive(HANDLE pipe) noexcept;
+
 class BrokerClient {
 public:
     BrokerClient() = default;
@@ -63,7 +65,7 @@ public:
     bool ForgetCandidate(const std::string& candidateId, BrokerUpdate* update,
                          std::string* error);
     void Close() noexcept;
-    bool IsConnected() const noexcept { return pipe_ != INVALID_HANDLE_VALUE && !sessionId_.empty(); }
+    bool IsConnected() const noexcept;
 
 private:
     bool ApplyEvent(unsigned operation, const std::string& code, BrokerUpdate* update,

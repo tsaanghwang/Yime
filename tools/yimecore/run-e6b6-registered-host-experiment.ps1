@@ -67,6 +67,10 @@ function Stop-Broker([Diagnostics.Process]$process) {
 }
 
 $b5Payload = Join-Path $payload 'p'
+$profileIconSource = Join-Path $repoRoot 'YimeTextServiceExperiment\assets\yimecore-trial-profile.ico'
+if (-not (Test-Path -LiteralPath $profileIconSource -PathType Leaf)) {
+    throw "missing E6-B6 profile icon source: $profileIconSource"
+}
 $broker = Join-Path $b5Payload 'bin\YimeBroker.exe'
 $modeDefinitions = @(
     [ordered]@{ mode = 'full'; index = (Join-Path $b5Payload 'full\index.yidx') },
@@ -77,10 +81,12 @@ $architectures = @()
 foreach ($architecture in @([ordered]@{ name = 'x64'; bits = 64 },
                              [ordered]@{ name = 'x86'; bits = 32 })) {
     $releaseRoot = Join-Path $b5Payload ("build-$($architecture.name)\Release")
+    $profileIcon = Join-Path (Split-Path -Parent $releaseRoot) 'profile-icon.ico'
+    Copy-Item -LiteralPath $profileIconSource -Destination $profileIcon -Force
     $tool = Join-Path $releaseRoot 'YimeTextServiceRegistration.exe'
     $dll = Join-Path $releaseRoot 'YimeTextServiceExperiment.dll'
     $hostTest = Join-Path $releaseRoot 'YimeRegisteredHostTests.exe'
-    foreach ($artifact in @($tool, $dll, $hostTest, $broker)) {
+    foreach ($artifact in @($tool, $dll, $hostTest, $broker, $profileIcon)) {
         if (-not (Test-Path -LiteralPath $artifact)) { throw "missing E6-B6 artifact: $artifact" }
     }
     $architectureDir = Join-Path $outputDir $architecture.name

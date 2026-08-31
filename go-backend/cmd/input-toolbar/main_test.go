@@ -87,6 +87,9 @@ func TestToolbarUsesClientDragHandleWithoutNativeCaption(t *testing.T) {
 	if toolbarWindowStyle()&(wsDlgFrame|wsSysMenu) != 0 {
 		t.Fatalf("toolbar style %#x must not expose a native caption", toolbarWindowStyle())
 	}
+	if got := (&app{}).windowExStyle(); got&wsExNoActivate == 0 {
+		t.Fatalf("toolbar extended style %#x must not activate or replace the host input profile", got)
+	}
 	if dragHandleStyle()&ssNotify == 0 {
 		t.Fatalf("drag handle style %#x must receive mouse notifications", dragHandleStyle())
 	}
@@ -195,6 +198,9 @@ func TestPunctuationPreviewUsesIsolatedWindowAndProductionButton(t *testing.T) {
 	}
 	if preview.windowExStyle()&wsExToolWindow != 0 {
 		t.Fatalf("punctuation preview extended style %#x must remain visible in the taskbar", preview.windowExStyle())
+	}
+	if preview.windowExStyle()&wsExNoActivate != 0 {
+		t.Fatalf("interactive punctuation preview extended style %#x must remain activatable", preview.windowExStyle())
 	}
 	if x, y := preview.defaultWindowPosition(1920, 1080, 100, 80); x != 910 || y != 500 {
 		t.Fatalf("punctuation preview position=(%d,%d) want centered (910,500)", x, y)
