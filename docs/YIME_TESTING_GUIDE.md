@@ -260,7 +260,14 @@ schema 缓存全部新鲜。`dev-build-install-verify.ps1` 已把这项检查纳
 Upgrade-YimeCore-Trial.cmd
 ```
 
-不希望脚本最后询问并执行 Windows 重启时使用 `/norestart`。规范升级入口从
+人工验证时建议从当前用户的普通（非预先提权）终端运行以下命令，并在安装阶段接受一次 UAC；这样升级器会保留
+发起用户 SID。运行前先保存工作并关闭所有 Word 窗口：
+
+```cmd
+C:\dev\Yime\Upgrade-YimeCore-Trial.cmd /norestart
+```
+
+`/norestart` 会跳过脚本末尾的 Windows 重启询问；完成后仍应在方便时重启，再检查任务栏语言项。规范升级入口从
 `%LOCALAPPDATA%\YimeCore Experimental Trial\runtime-config.json` 解析当前安装根，逐文件校验其
 `package-manifest.json`，再以该安装包为 base 重建当前工作树；安装目录额外生成的
 `install-metadata.json` 不属于包清单，也不得被复制到新 staged package。
