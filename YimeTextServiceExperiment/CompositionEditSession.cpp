@@ -5,6 +5,12 @@
 #include <string>
 
 namespace yime::experiment {
+
+HRESULT ValidateCompositionRangeResult(HRESULT result, ITfRange* range) noexcept {
+	if (FAILED(result)) return result;
+	return range ? result : E_UNEXPECTED;
+}
+
 namespace {
 
 std::wstring widen(const std::string& value) {
@@ -79,11 +85,16 @@ private:
         ITfRange* range = nullptr;
         result = insertion->InsertTextAtSelection(cookie, TF_IAS_QUERYONLY, nullptr, 0, &range);
         insertion->Release();
-        if (FAILED(result)) return result;
+		result = ValidateCompositionRangeResult(result, range);
+		if (FAILED(result)) {
+			if (range) range->Release();
+			return result;
+		}
         ITfContextComposition* service = nullptr;
         result = context_->QueryInterface(__uuidof(ITfContextComposition), reinterpret_cast<void**>(&service));
         if (SUCCEEDED(result)) result = service->StartComposition(cookie, range, sink_, composition_);
         if (service) service->Release();
+		if (SUCCEEDED(result) && !*composition_) result = E_UNEXPECTED;
         if (SUCCEEDED(result)) {
             TF_SELECTION selection{};
             selection.range = range;
@@ -101,6 +112,7 @@ private:
         }
         ITfRange* range = nullptr;
         HRESULT result = (*composition_)->GetRange(&range);
+		result = ValidateCompositionRangeResult(result, range);
         if (SUCCEEDED(result)) result = range->SetText(cookie, 0, text.data(), static_cast<LONG>(text.size()));
         if (SUCCEEDED(result)) {
             range->Collapse(cookie, TF_ANCHOR_END);
@@ -145,6 +157,7 @@ private:
         ITfComposition* active = *composition_;
         ITfRange* range = nullptr;
         HRESULT result = active->GetRange(&range);
+		result = ValidateCompositionRangeResult(result, range);
         if (SUCCEEDED(result)) result = range->SetText(cookie, 0, replacement.data(), static_cast<LONG>(replacement.size()));
         if (SUCCEEDED(result)) {
             range->Collapse(cookie, TF_ANCHOR_END);

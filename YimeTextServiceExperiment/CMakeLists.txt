@@ -31,6 +31,7 @@ add_executable(YimeTextServiceContractTests
     BrokerEndpoint.cpp
     CandidateListUIElement.cpp
     CandidatePopup.cpp
+	CompositionEditSession.cpp
     ExperimentSettings.cpp
     KeyContract.cpp
     LanguageBarItem.cpp

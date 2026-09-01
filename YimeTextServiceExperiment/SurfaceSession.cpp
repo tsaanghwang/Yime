@@ -44,7 +44,7 @@ bool SurfaceSession::Connect(const std::wstring& pipeName, DWORD timeoutMs, std:
     selectedCandidateIndex_ = 0;
     navigationSegmentStart_ = -1;
     navigationSegmentEnd_ = -1;
-    const auto settings = LoadExperimentSettings();
+	const auto& settings = settings_.Get();
     connectedMode_ = settings.mode;
     connectedCandidateLimit_ = settings.candidatePageSize;
     if (!broker_.Connect(pipeName, timeoutMs, connectedMode_, connectedCandidateLimit_, error)) {
@@ -59,7 +59,7 @@ bool SurfaceSession::EnsureConnected(std::string* error) {
     if (broker_.IsConnected()) {
         if (!current_.rawInput.empty()) return true;
     }
-    const auto settings = LoadExperimentSettings();
+	const auto& settings = settings_.Get();
     const std::string desiredMode = settings.mode;
     const int desiredCandidateLimit = settings.candidatePageSize;
     if (broker_.IsConnected()) {

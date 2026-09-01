@@ -197,13 +197,14 @@ LanguageBarItem::LanguageBarItem(std::wstring settingsPath, PopupPresenter prese
                                  void* toolLauncherContext, RuntimeEnsurer runtimeEnsurer,
                                  void* runtimeEnsurerContext) noexcept
     : settingsPath_(std::move(settingsPath)),
+	  settingsCache_(settingsPath_),
       presenter_(presenter ? presenter : PresentPopup),
       presenterContext_(presenterContext),
       toolLauncher_(toolLauncher ? toolLauncher : LaunchTool),
       toolLauncherContext_(toolLauncherContext),
       runtimeEnsurer_(runtimeEnsurer ? runtimeEnsurer : EnsureTrialRuntime),
       runtimeEnsurerContext_(runtimeEnsurerContext) {
-        const auto settings = yime::experiment::LoadExperimentSettings(settingsPath_);
+		const auto& settings = settingsCache_.Get();
         lastAsciiMode_ = settings.asciiMode;
         lastFullShape_ = settings.fullShape;
         lastAsciiPunctuation_ = settings.asciiPunctuation;
@@ -213,16 +214,33 @@ LanguageBarItem::LanguageBarItem(std::wstring settingsPath, PopupPresenter prese
         if (refreshTimerId_) {
             const std::lock_guard<std::mutex> lock(gRefreshTimersMutex);
             gRefreshTimers.emplace(refreshTimerId_, this);
+			// The timer map owns a reference. Release() removes that reference
+			// when the last external COM owner goes away.
+			AddRef();
         }
 }
 
 LanguageBarItem::~LanguageBarItem() {
-    if (refreshTimerId_) {
-        KillTimer(nullptr, refreshTimerId_);
-        const std::lock_guard<std::mutex> lock(gRefreshTimersMutex);
-        gRefreshTimers.erase(refreshTimerId_);
-    }
-    for (auto& sink : sinks_) sink.second->Release();
+	StopRefreshTimer();
+	std::vector<std::pair<DWORD, ITfLangBarItemSink*>> sinks;
+	{
+		const std::lock_guard<std::mutex> lock(sinksMutex_);
+		sinks.swap(sinks_);
+	}
+	for (auto& sink : sinks) sink.second->Release();
+}
+
+void LanguageBarItem::StopRefreshTimer() noexcept {
+	UINT_PTR timer = 0;
+	{
+		const std::lock_guard<std::mutex> lock(gRefreshTimersMutex);
+		timer = refreshTimerId_;
+		if (timer) {
+			gRefreshTimers.erase(timer);
+			refreshTimerId_ = 0;
+		}
+	}
+	if (timer) KillTimer(nullptr, timer);
 }
 
 STDMETHODIMP LanguageBarItem::QueryInterface(REFIID iid, void** object) {
@@ -243,7 +261,11 @@ STDMETHODIMP LanguageBarItem::QueryInterface(REFIID iid, void** object) {
 STDMETHODIMP_(ULONG) LanguageBarItem::AddRef() { return ++references_; }
 
 STDMETHODIMP_(ULONG) LanguageBarItem::Release() {
-    const ULONG remaining = --references_;
+	ULONG remaining = --references_;
+	if (remaining == 1 && refreshTimerId_) {
+		StopRefreshTimer();
+		remaining = --references_; // release the timer map's owning reference
+	}
     if (!remaining) delete this;
     return remaining;
 }
@@ -387,11 +409,13 @@ STDMETHODIMP LanguageBarItem::AdviseSink(REFIID iid, IUnknown* sink, DWORD* cook
         return E_NOINTERFACE;
     }
     *cookie = nextCookie_++;
+	const std::lock_guard<std::mutex> lock(sinksMutex_);
     sinks_.emplace_back(*cookie, itemSink);
     return S_OK;
 }
 
 STDMETHODIMP LanguageBarItem::UnadviseSink(DWORD cookie) {
+	const std::lock_guard<std::mutex> lock(sinksMutex_);
     const auto found = std::find_if(sinks_.begin(), sinks_.end(),
                                     [cookie](const auto& value) { return value.first == cookie; });
     if (found == sinks_.end()) return CONNECT_E_NOCONNECTION;
@@ -434,7 +458,7 @@ bool LanguageBarItem::Apply(UINT id) noexcept {
 }
 
 HMENU LanguageBarItem::BuildPopupMenu() const noexcept {
-    const auto settings = yime::experiment::LoadExperimentSettings(settingsPath_);
+	const auto& settings = settingsCache_.Get();
     HMENU root = CreatePopupMenu();
     HMENU punctuation = CreatePopupMenu();
     HMENU shape = CreatePopupMenu();
@@ -546,16 +570,13 @@ bool LanguageBarItem::EnsureTrialRuntime(const std::wstring& settingsPath,
 }
 
 void LanguageBarItem::Refresh() noexcept {
-    const auto settings = yime::experiment::LoadExperimentSettings(settingsPath_);
+	const auto& settings = settingsCache_.Get();
     const bool settingsChanged = settings.revision != lastRevision_;
     const bool textChanged = settings.asciiMode != lastAsciiMode_;
     const bool iconChanged = textChanged || settings.fullShape != lastFullShape_;
     const bool menuChanged = settings.asciiPunctuation != lastAsciiPunctuation_ ||
                              settings.traditionalization != lastTraditionalization_;
     lastRevision_ = settings.revision;
-    if (settingsChanged && runtimeEnsurer_) {
-        runtimeEnsurer_(settingsPath_, runtimeEnsurerContext_);
-    }
     if (settingsChanged && settingsChangedHandler_) {
         settingsChangedHandler_(settingsChangedContext_, settings);
     }
@@ -573,11 +594,29 @@ void CALLBACK LanguageBarItem::RefreshTimerProc(HWND, UINT, UINT_PTR timerId, DW
     {
         const std::lock_guard<std::mutex> lock(gRefreshTimersMutex);
         const auto found = gRefreshTimers.find(timerId);
-        if (found != gRefreshTimers.end()) item = found->second;
+		if (found != gRefreshTimers.end()) {
+			item = found->second;
+			item->AddRef();
+		}
     }
-    if (item) item->Refresh();
+	if (item) {
+		item->Refresh();
+		item->Release();
+	}
 }
 
 void LanguageBarItem::Notify(DWORD flags) noexcept {
-    for (const auto& sink : sinks_) sink.second->OnUpdate(flags);
+	std::vector<ITfLangBarItemSink*> snapshot;
+	{
+		const std::lock_guard<std::mutex> lock(sinksMutex_);
+		snapshot.reserve(sinks_.size());
+		for (const auto& sink : sinks_) {
+			sink.second->AddRef();
+			snapshot.push_back(sink.second);
+		}
+	}
+	for (auto* sink : snapshot) {
+		sink->OnUpdate(flags);
+		sink->Release();
+	}
 }

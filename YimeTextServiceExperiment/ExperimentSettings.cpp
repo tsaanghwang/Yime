@@ -39,7 +39,10 @@ public:
         if (owned_) DeleteFileW(path_.c_str());
     }
     bool Acquire() noexcept {
-        const ULONGLONG deadline = GetTickCount64() + 3000;
+		// Language-bar commands execute on the host UI thread. A contended state
+		// file must fail quickly instead of freezing input for several seconds;
+		// the caller can retry the command on the next click/timer refresh.
+		const ULONGLONG deadline = GetTickCount64() + 75;
         while (GetTickCount64() <= deadline) {
             HANDLE file = CreateFileW(path_.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_NEW,
                                       FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_TEMPORARY, nullptr);

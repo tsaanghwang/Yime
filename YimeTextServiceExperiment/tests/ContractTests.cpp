@@ -2,11 +2,14 @@
 #include <msctf.h>
 
 #include <iostream>
+#include <atomic>
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <iterator>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <vector>
 
 #include "KeyContract.h"
@@ -14,6 +17,7 @@
 #include "BrokerEndpoint.h"
 #include "CandidateListUIElement.h"
 #include "CandidatePopup.h"
+#include "CompositionEditSession.h"
 #include "ExperimentSettings.h"
 #include "LanguageBarItem.h"
 #include "OutputTransform.h"
@@ -97,10 +101,17 @@ public:
     STDMETHODIMP OnUpdate(DWORD flags) override {
         updates |= flags;
         ++count;
+		if (unadviseOnUpdate && source) {
+			unadviseOnUpdate = false;
+			source->UnadviseSink(cookie);
+		}
         return S_OK;
     }
     DWORD updates = 0;
     unsigned count = 0;
+	ITfSource* source = nullptr;
+	DWORD cookie = 0;
+	bool unadviseOnUpdate = false;
 
 private:
     std::atomic<ULONG> references_{1};
@@ -437,6 +448,95 @@ void testBrokerPipeTransportLiveness() {
     expect(detectedDisconnect,
            "disconnected Broker transport was reported as live after server restart");
     CloseHandle(client);
+}
+
+void testBrokerPipeSecurityAndTimeouts() {
+    using namespace yime::experiment;
+    const DWORD flags = BrokerPipeClientOpenFlags();
+    expect((flags & FILE_FLAG_OVERLAPPED) != 0,
+           "Broker client pipe is not opened for cancellable overlapped I/O");
+    expect((flags & SECURITY_SQOS_PRESENT) != 0 && (flags & SECURITY_IDENTIFICATION) != 0,
+           "Broker client pipe does not cap a server at identification impersonation");
+
+    const std::wstring pipeName = L"\\\\.\\pipe\\YimeBroker.Timeout.Contract." +
+                                  std::to_wstring(GetCurrentProcessId()) + L"." +
+                                  std::to_wstring(GetTickCount64());
+    HANDLE server = CreateNamedPipeW(
+        pipeName.c_str(), PIPE_ACCESS_DUPLEX,
+        PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, 1, 4096, 4096, 0, nullptr);
+    expect(server != INVALID_HANDLE_VALUE, "could not create Broker timeout test pipe");
+    if (server == INVALID_HANDLE_VALUE) return;
+    std::atomic<int> impersonationLevel{-1};
+    std::thread stalledServer([&] {
+        const BOOL connected = ConnectNamedPipe(server, nullptr);
+        if (!connected && GetLastError() != ERROR_PIPE_CONNECTED) return;
+        if (ImpersonateNamedPipeClient(server)) {
+            HANDLE token = nullptr;
+            if (OpenThreadToken(GetCurrentThread(), TOKEN_QUERY, TRUE, &token)) {
+                SECURITY_IMPERSONATION_LEVEL level = SecurityAnonymous;
+                DWORD returned = 0;
+                if (GetTokenInformation(token, TokenImpersonationLevel, &level,
+                                        sizeof(level), &returned)) {
+                    impersonationLevel.store(static_cast<int>(level));
+                }
+                CloseHandle(token);
+            }
+            RevertToSelf();
+        }
+        char request[4096]{};
+        DWORD read = 0;
+        ReadFile(server, request, sizeof(request), &read, nullptr);
+        Sleep(400);
+        DisconnectNamedPipe(server);
+    });
+    BrokerClient client;
+    std::string error;
+    const auto started = std::chrono::steady_clock::now();
+    const bool connected = client.Connect(pipeName, 100, "variable", 9, &error);
+    const auto elapsed = std::chrono::steady_clock::now() - started;
+    expect(!connected && error.find("timeout") != std::string::npos,
+           "stalled Broker open did not fail with a timeout");
+    expect(elapsed < std::chrono::seconds(1),
+           "stalled Broker open blocked the host beyond its deadline");
+    stalledServer.join();
+    expect(impersonationLevel.load() == static_cast<int>(SecurityIdentification),
+           "spoofed Broker server obtained a client token above Identification level");
+    CloseHandle(server);
+
+    const std::wstring closePipeName = L"\\\\.\\pipe\\YimeBroker.CloseTimeout.Contract." +
+                                       std::to_wstring(GetCurrentProcessId()) + L"." +
+                                       std::to_wstring(GetTickCount64());
+    server = CreateNamedPipeW(
+        closePipeName.c_str(), PIPE_ACCESS_DUPLEX,
+        PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, 1, 4096, 4096, 0, nullptr);
+    expect(server != INVALID_HANDLE_VALUE, "could not create Broker close-timeout test pipe");
+    if (server == INVALID_HANDLE_VALUE) return;
+    std::thread closeServer([&] {
+        const BOOL accepted = ConnectNamedPipe(server, nullptr);
+        if (!accepted && GetLastError() != ERROR_PIPE_CONNECTED) return;
+        char request[4096]{};
+        DWORD read = 0;
+        if (!ReadFile(server, request, sizeof(request), &read, nullptr)) return;
+        constexpr char response[] =
+            "{\"version\":1,\"sequence\":1,\"session_id\":\"contract-session\","
+            "\"result\":{\"state\":{}}}\n";
+        DWORD written = 0;
+        if (!WriteFile(server, response, static_cast<DWORD>(sizeof(response) - 1),
+                       &written, nullptr)) return;
+        ReadFile(server, request, sizeof(request), &read, nullptr);
+        Sleep(400);
+        DisconnectNamedPipe(server);
+    });
+    error.clear();
+    expect(client.Connect(closePipeName, 100, "variable", 9, &error),
+           "fake Broker did not complete the close-timeout setup handshake");
+    const auto closeStarted = std::chrono::steady_clock::now();
+    client.Close();
+    const auto closeElapsed = std::chrono::steady_clock::now() - closeStarted;
+    expect(closeElapsed < std::chrono::seconds(1),
+           "Broker Close blocked COM deactivation beyond its deadline");
+    closeServer.join();
+    CloseHandle(server);
 }
 
 void testCandidateElement() {
@@ -782,6 +882,41 @@ void testOwnedCandidatePopup() {
        DeleteFileW(settingsPath.c_str());
 }
 
+LRESULT CALLBACK conflictingCandidatePopupProcedure(HWND window, UINT message, WPARAM wParam,
+											 LPARAM lParam) {
+	return DefWindowProcW(window, message, wParam, lParam);
+}
+
+void testCandidatePopupClassAndDpiLifecycle() {
+	const RECT anchor{100, 100, 101, 101};
+	{
+		CandidatePopup popup;
+		expect(popup.Update({L"⇧1  缩放"}, anchor, nullptr),
+			   "candidate popup could not register its owned window class");
+		const int at96 = popup.TextColumnLeft();
+		SendMessageW(popup.Window(), WM_DPICHANGED, MAKELONG(192, 192), 0);
+		expect(popup.TextColumnLeft() > at96,
+			   "candidate popup DIP metrics did not scale after WM_DPICHANGED");
+	}
+	WNDCLASSEXW stale{};
+	stale.cbSize = sizeof(stale);
+	expect(GetClassInfoExW(GetModuleHandleW(nullptr), CandidatePopup::ClassName(), &stale) == FALSE,
+		   "candidate popup class remained registered after its final lease was released");
+
+	WNDCLASSEXW conflict{};
+	conflict.cbSize = sizeof(conflict);
+	conflict.lpfnWndProc = conflictingCandidatePopupProcedure;
+	conflict.hInstance = GetModuleHandleW(nullptr);
+	conflict.lpszClassName = CandidatePopup::ClassName();
+	expect(RegisterClassExW(&conflict) != 0, "could not seed conflicting candidate popup class");
+	{
+		CandidatePopup popup;
+		expect(!popup.Update({L"⇧1  冲突"}, anchor, nullptr),
+			   "candidate popup reused a same-name class with a foreign window procedure");
+	}
+	UnregisterClassW(CandidatePopup::ClassName(), GetModuleHandleW(nullptr));
+}
+
 void testExperimentSettings() {
     using namespace yime::experiment;
     const auto missing = LoadExperimentSettings(L"Z:\\missing-yimecore-experiment-settings.json");
@@ -818,6 +953,17 @@ void testExperimentSettings() {
     expect(ApplyExperimentSettingsCommand(ExperimentSettingsCommand::ModeFull, path, &updated) &&
                updated.asciiMode && updated.mode == "full" && updated.revision > englishRevision,
            "single-field language-bar update overwrote another trial setting");
+	{
+		std::ofstream held(std::filesystem::path(path + L".lock"),
+						   std::ios::binary | std::ios::trunc);
+		held << "held";
+	}
+	const ULONGLONG contentionStarted = GetTickCount64();
+	expect(!ApplyExperimentSettingsCommand(ExperimentSettingsCommand::Chinese, path, &updated),
+		   "contended settings lock unexpectedly succeeded");
+	expect(GetTickCount64() - contentionStarted < 500,
+		   "contended language-bar settings lock blocked the host UI thread too long");
+	DeleteFileW((path + L".lock").c_str());
     DeleteFileW(path.c_str());
 }
 
@@ -954,8 +1100,16 @@ void testLanguageBarItem() {
                settingsObservation.annotation == "standard_pinyin" &&
                settingsObservation.revision == annotationUpdate.revision,
             "non-icon settings did not reach the active text service refresh callback");
-    expect(runtimeEnsures == 1,
-           "external candidate setting change did not ensure the Trial runtime");
+	expect(runtimeEnsures == 0,
+		   "passive language-bar refresh synchronously started or waited for the Trial runtime");
+	FakeLanguageBarSink reentrantSink;
+	DWORD reentrantCookie = 0;
+	expect(source->AdviseSink(__uuidof(ITfLangBarItemSink), &reentrantSink,
+						  &reentrantCookie) == S_OK,
+		   "reentrant language-bar sink subscription failed");
+	reentrantSink.source = source;
+	reentrantSink.cookie = reentrantCookie;
+	reentrantSink.unadviseOnUpdate = true;
     const auto expectToolbarRefresh = [&](ExperimentSettingsCommand command, DWORD flags,
                                           const char* applyFailure, const char* refreshFailure) {
         ExperimentSettings toolbarUpdate;
@@ -990,6 +1144,8 @@ void testLanguageBarItem() {
     sink.updates = 0;
     expect(item->OnClick(TF_LBI_CLK_LEFT, {}, nullptr) == S_OK,
            "desktop language-bar left click did not toggle to English");
+	expect(reentrantSink.count == 1 && !reentrantSink.unadviseOnUpdate,
+		   "language-bar sink could not safely unadvise itself during notification");
     text = nullptr;
     expect(item->GetText(&text) == S_OK && text && std::wstring_view(text) == L"英",
            "English mode must replace the host EN label with 英");
@@ -1133,8 +1289,12 @@ int wmain(int argc, wchar_t** argv) {
     testOutputTransformContract();
     testBrokerEndpoint();
     testBrokerPipeTransportLiveness();
+    testBrokerPipeSecurityAndTimeouts();
     testCandidateElement();
-    testOwnedCandidatePopup();
+	expect(yime::experiment::ValidateCompositionRangeResult(S_OK, nullptr) == E_UNEXPECTED,
+		   "successful TSF insertion with a null range was not rejected");
+	testOwnedCandidatePopup();
+	testCandidatePopupClassAndDpiLifecycle();
     testExperimentSettings();
     testLanguageBarItem();
     testComLifecycle(argv[1]);

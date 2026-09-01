@@ -853,12 +853,14 @@ int wmain(int argc, wchar_t** argv) {
         eaten = FALSE;
         require(keys->OnKeyDown(context, 'L', 0, &eaten), "Chinese mode key");
         if (!eaten || !hasComposition(context)) throw std::runtime_error("Chinese mode did not start composition");
-        terminateActiveComposition(context);
         std::cout << "language_bar_chinese_english_transition_verified=true\n";
 
         languageModeButton->Release();
         keys->Release();
         require(processor->Deactivate(), "deactivate processor");
+		if (hasComposition(context)) {
+			throw std::runtime_error("deactivation left an active TSF composition in the host");
+		}
         languageBarItem = nullptr;
         const HRESULT removed = languageBarManager->GetItem(GUID_YimeTextServiceExperimentLangBar, &languageBarItem);
         if (removed == S_OK || languageBarItem != nullptr) {

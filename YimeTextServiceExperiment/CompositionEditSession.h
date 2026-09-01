@@ -6,6 +6,8 @@
 
 namespace yime::experiment {
 
+HRESULT ValidateCompositionRangeResult(HRESULT result, ITfRange* range) noexcept;
+
 using BrokerEditCompletionHandler = void (*)(void* context, ITfContext* editContext,
                                               const BrokerUpdate& update,
                                               HRESULT result) noexcept;

@@ -5,6 +5,7 @@
 #include <olectl.h>
 
 #include <atomic>
+#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -67,6 +68,7 @@ public:
 
 private:
     ~LanguageBarItem();
+	void StopRefreshTimer() noexcept;
     bool Apply(UINT id) noexcept;
     HMENU BuildPopupMenu() const noexcept;
     void Notify(DWORD flags) noexcept;
@@ -79,6 +81,7 @@ private:
 
     std::atomic<ULONG> references_{1};
     std::wstring settingsPath_;
+	mutable yime::experiment::ExperimentSettingsCache settingsCache_;
     PopupPresenter presenter_ = nullptr;
     void* presenterContext_ = nullptr;
     ToolLauncher toolLauncher_ = nullptr;
@@ -94,6 +97,7 @@ private:
     SettingsChangedHandler settingsChangedHandler_ = nullptr;
     void* settingsChangedContext_ = nullptr;
     UINT_PTR refreshTimerId_ = 0;
+	std::mutex sinksMutex_;
     std::vector<std::pair<DWORD, ITfLangBarItemSink*>> sinks_;
     static std::atomic<DWORD> nextCookie_;
 };

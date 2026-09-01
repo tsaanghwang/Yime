@@ -325,8 +325,30 @@ STDMETHODIMP YimeTextService::Deactivate() {
     EndCandidateUI();
     surface_.Close();
     if (composition_) {
-        composition_->Release();
-        composition_ = nullptr;
+		// Releasing our COM reference does not terminate the document's TSF
+		// composition. Explicitly notify the context while the sink and service
+		// are still alive, so hosts do not retain an orphaned composition after
+		// profile deactivation.
+		ITfComposition* active = composition_;
+		active->AddRef();
+		ITfContextOwnerCompositionServices* owner = nullptr;
+		ITfCompositionView* view = nullptr;
+		if (compositionContext_ && SUCCEEDED(compositionContext_->QueryInterface(
+				__uuidof(ITfContextOwnerCompositionServices),
+				reinterpret_cast<void**>(&owner))) &&
+			SUCCEEDED(active->QueryInterface(__uuidof(ITfCompositionView),
+				reinterpret_cast<void**>(&view)))) {
+			plannedCompositionTermination_ = true;
+			owner->TerminateComposition(view);
+			plannedCompositionTermination_ = false;
+		}
+		if (view) view->Release();
+		if (owner) owner->Release();
+		if (composition_ == active) {
+			composition_->Release();
+			composition_ = nullptr;
+		}
+		active->Release();
     }
     ForgetCompositionContext();
     activationFlags_ = 0;
@@ -396,7 +418,6 @@ bool YimeTextService::CanAcceptKeys() const noexcept {
 }
 
 bool YimeTextService::ShouldHandleCompositionKeys() noexcept {
-    if (languageBarItem_) languageBarItem_->Refresh();
     // A state change never migrates or abandons a live composition. English
     // pass-through begins as soon as that composition reaches its idle state.
     return CanAcceptKeys() && (!experimentSettings_.Get().asciiMode || composition_ != nullptr);

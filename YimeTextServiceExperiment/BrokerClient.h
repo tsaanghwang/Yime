@@ -40,6 +40,7 @@ struct BrokerUpdate {
 };
 
 bool IsBrokerPipeTransportAlive(HANDLE pipe) noexcept;
+DWORD BrokerPipeClientOpenFlags() noexcept;
 
 class BrokerClient {
 public:
@@ -78,6 +79,7 @@ private:
     HANDLE pipe_ = INVALID_HANDLE_VALUE;
     std::string sessionId_;
     uint64_t sequence_ = 0;
+    DWORD ioTimeoutMs_ = 2000;
 };
 
 }  // namespace yime::experiment

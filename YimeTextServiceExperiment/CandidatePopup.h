@@ -92,6 +92,8 @@ public:
 
 private:
     static LRESULT CALLBACK WindowProcedure(HWND window, UINT message, WPARAM wParam, LPARAM lParam) noexcept;
+	bool AcquireWindowClass() noexcept;
+	void ReleaseWindowClass() noexcept;
     bool EnsureWindow(HWND owner) noexcept;
     void RefreshDisplaySettings() noexcept;
     void RefreshLayout(const RECT& anchor) noexcept;
@@ -105,6 +107,7 @@ private:
     int CandidateAt(int x, int y) const noexcept;
     static UINT PresentPopup(HMENU menu, POINT point, HWND owner, void* context) noexcept;
     HFONT EnsureFont() noexcept;
+	int ScaleDip(int value) const noexcept;
     void EnsurePrivateYinyuanFont() noexcept;
     void ReleasePrivateYinyuanFont() noexcept;
 
@@ -127,6 +130,7 @@ private:
     int width_ = 0;
     int rowHeight_ = 0;
     int padding_ = 8;
+	UINT dpi_ = 96;
     int fontPoints_ = 12;
     std::wstring fontFamily_ = L"Microsoft YaHei UI";
     HFONT font_ = nullptr;
@@ -134,6 +138,7 @@ private:
     bool annotationFontFollowsSettings_ = true;
     bool horizontal_ = false;
     bool privateYinyuanFontAdded_ = false;
+	bool windowClassAcquired_ = false;
     std::wstring privateYinyuanFontPath_;
     size_t selectedIndex_ = 0;
     SelectionHandler selectionHandler_ = nullptr;

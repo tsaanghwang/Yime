@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <mutex>
 #include <windowsx.h>
 
 #include "KeyContract.h"
@@ -12,6 +13,8 @@ constexpr wchar_t kSentenceLabel[] = L"句:";
 constexpr wchar_t kQuickForgetLabel[] = L"快速遗忘（清除学习）";
 constexpr UINT kQuickForgetCommand = 1;
 constexpr UINT kSettingsRefreshMilliseconds = 250;
+	std::mutex gCandidateClassMutex;
+	unsigned gCandidateClassLeases = 0;
 
 HINSTANCE currentModule() noexcept {
     HMODULE module = nullptr;
@@ -34,7 +37,10 @@ std::wstring widen(const std::string& value) {
 
 }  // namespace
 
-CandidatePopup::~CandidatePopup() { Destroy(); }
+CandidatePopup::~CandidatePopup() {
+	Destroy();
+	ReleaseWindowClass();
+}
 
 void CandidatePopup::SetFontPoints(int points) noexcept {
     const int normalized = points == 10 || points == 16 ? points : 12;
@@ -125,24 +131,62 @@ HFONT CandidatePopup::EnsureFont() noexcept {
     return font_ ? font_ : static_cast<HFONT>(GetStockObject(DEFAULT_GUI_FONT));
 }
 
+int CandidatePopup::ScaleDip(int value) const noexcept {
+	return MulDiv(value, static_cast<int>(dpi_ ? dpi_ : 96), 96);
+}
+
+bool CandidatePopup::AcquireWindowClass() noexcept {
+	if (windowClassAcquired_) return true;
+	const std::lock_guard<std::mutex> lock(gCandidateClassMutex);
+	const HINSTANCE module = currentModule();
+	if (gCandidateClassLeases == 0) {
+		WNDCLASSEXW existing{};
+		existing.cbSize = sizeof(existing);
+		if (GetClassInfoExW(module, ClassName(), &existing)) {
+			if (existing.hInstance != module || existing.lpfnWndProc != WindowProcedure) return false;
+		} else {
+			WNDCLASSEXW windowClass{};
+			windowClass.cbSize = sizeof(windowClass);
+			windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+			windowClass.lpfnWndProc = WindowProcedure;
+			windowClass.hInstance = module;
+			windowClass.hCursor = LoadCursorW(nullptr, IDC_ARROW);
+			windowClass.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
+			windowClass.lpszClassName = ClassName();
+			if (!RegisterClassExW(&windowClass)) return false;
+		}
+	}
+	++gCandidateClassLeases;
+	windowClassAcquired_ = true;
+	return true;
+}
+
+void CandidatePopup::ReleaseWindowClass() noexcept {
+	if (!windowClassAcquired_) return;
+	const std::lock_guard<std::mutex> lock(gCandidateClassMutex);
+	windowClassAcquired_ = false;
+	if (gCandidateClassLeases == 0) return;
+	--gCandidateClassLeases;
+	if (gCandidateClassLeases == 0) {
+		UnregisterClassW(ClassName(), currentModule());
+	}
+}
+
 bool CandidatePopup::EnsureWindow(HWND owner) noexcept {
     if (window_ && !IsWindow(window_)) window_ = nullptr;
     if (window_) {
         SetWindowLongPtrW(window_, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(owner));
         return true;
     }
-    WNDCLASSEXW windowClass{};
-    windowClass.cbSize = sizeof(windowClass);
-    windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
-    windowClass.lpfnWndProc = WindowProcedure;
-    windowClass.hInstance = currentModule();
-    windowClass.hCursor = LoadCursorW(nullptr, IDC_ARROW);
-    windowClass.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
-    windowClass.lpszClassName = ClassName();
-    if (!RegisterClassExW(&windowClass) && GetLastError() != ERROR_CLASS_ALREADY_EXISTS) return false;
+	if (!AcquireWindowClass()) return false;
+	const HINSTANCE module = currentModule();
     window_ = CreateWindowExW(WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_NOACTIVATE,
                               ClassName(), L"", WS_POPUP | WS_BORDER, 0, 0, 0, 0,
-                              owner, nullptr, windowClass.hInstance, this);
+							  owner, nullptr, module, this);
+	if (window_) {
+		dpi_ = GetDpiForWindow(window_);
+		padding_ = ScaleDip(8);
+	}
     return window_ != nullptr;
 }
 
@@ -213,7 +257,7 @@ void CandidatePopup::RefreshLayout(const RECT& anchor) noexcept {
     HGDIOBJ previous = SelectObject(dc, font);
     TEXTMETRICW metrics{};
     GetTextMetricsW(dc, &metrics);
-    rowHeight_ = std::max(20, static_cast<int>(metrics.tmHeight) + 6);
+	rowHeight_ = std::max(ScaleDip(20), static_cast<int>(metrics.tmHeight) + ScaleDip(6));
     SetPropW(window_, L"YimeTextServiceExperimentCandidateRowHeight",
              reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(rowHeight_)));
     int textWidth = 0;
@@ -222,7 +266,7 @@ void CandidatePopup::RefreshLayout(const RECT& anchor) noexcept {
     for (const auto& candidate : candidates_) {
         SIZE extent{};
         if (GetTextExtentPoint32W(dc, candidate.c_str(), static_cast<int>(candidate.size()), &extent)) {
-            const int candidateWidth = std::max(rowHeight_, static_cast<int>(extent.cx) + 12);
+			const int candidateWidth = std::max(rowHeight_, static_cast<int>(extent.cx) + ScaleDip(12));
             candidateWidths_.push_back(candidateWidth);
             if (horizontal_) {
                 textWidth += candidateWidth;
@@ -245,7 +289,7 @@ void CandidatePopup::RefreshLayout(const RECT& anchor) noexcept {
     for (auto& segment : sentenceSegments_) {
         SIZE extent{};
         GetTextExtentPoint32W(dc, segment.text.c_str(), static_cast<int>(segment.text.size()), &extent);
-        segment.width = std::max(rowHeight_, static_cast<int>(extent.cx) + 8);
+		segment.width = std::max(rowHeight_, static_cast<int>(extent.cx) + ScaleDip(8));
         sentenceWidth += segment.width;
     }
     SIZE statusExtent{};
@@ -503,6 +547,24 @@ LRESULT CALLBACK CandidatePopup::WindowProcedure(HWND window, UINT message, WPAR
         case WM_TIMER:
             if (self && wParam == SettingsRefreshTimerId) self->RefreshDisplaySettings();
             return 0;
+		case WM_DPICHANGED:
+			if (self) {
+				if (lParam) {
+					const auto* suggested = reinterpret_cast<const RECT*>(lParam);
+					SetWindowPos(window, nullptr, suggested->left, suggested->top,
+						suggested->right - suggested->left,
+						suggested->bottom - suggested->top,
+						SWP_NOACTIVATE | SWP_NOZORDER);
+				}
+				self->dpi_ = LOWORD(wParam);
+				self->padding_ = self->ScaleDip(8);
+				if (self->font_) {
+					DeleteObject(self->font_);
+					self->font_ = nullptr;
+				}
+				self->RefreshLayout(self->anchor_);
+			}
+			return 0;
         case WM_LBUTTONDOWN:
             if (self) self->TrackAt(lParam);
             return 0;

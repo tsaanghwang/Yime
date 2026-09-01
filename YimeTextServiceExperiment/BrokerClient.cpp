@@ -9,8 +9,91 @@ using json = nlohmann::json;
 namespace yime::experiment {
 namespace {
 
+using RequestDeadline = std::chrono::steady_clock::time_point;
+
 std::string windowsError(const char* operation) {
     return std::string(operation) + " failed with Windows error " + std::to_string(GetLastError());
+}
+
+DWORD remainingMilliseconds(RequestDeadline deadline) {
+    const auto now = std::chrono::steady_clock::now();
+    if (now >= deadline) return 0;
+    const auto remaining = std::chrono::duration_cast<std::chrono::milliseconds>(deadline - now);
+    return static_cast<DWORD>(std::max<int64_t>(1, remaining.count()));
+}
+
+bool finishOverlapped(HANDLE pipe, OVERLAPPED* overlapped, BOOL started,
+                      const char* operation, RequestDeadline deadline,
+                      DWORD* transferred, std::string* error) {
+    if (!started) {
+        const DWORD code = GetLastError();
+        if (code != ERROR_IO_PENDING) {
+            if (error) *error = windowsError(operation);
+            return false;
+        }
+        const DWORD waitResult = WaitForSingleObject(overlapped->hEvent, remainingMilliseconds(deadline));
+        if (waitResult == WAIT_TIMEOUT) {
+            CancelIoEx(pipe, overlapped);
+            WaitForSingleObject(overlapped->hEvent, INFINITE);
+            DWORD ignored = 0;
+            GetOverlappedResult(pipe, overlapped, &ignored, FALSE);
+            if (error) *error = std::string("Broker ") + operation + " timeout";
+            return false;
+        }
+        if (waitResult != WAIT_OBJECT_0) {
+            const DWORD waitError = GetLastError();
+            CancelIoEx(pipe, overlapped);
+            WaitForSingleObject(overlapped->hEvent, INFINITE);
+            DWORD ignored = 0;
+            GetOverlappedResult(pipe, overlapped, &ignored, FALSE);
+            if (error) {
+                *error = std::string("WaitForSingleObject failed with Windows error ") +
+                         std::to_string(waitError);
+            }
+            return false;
+        }
+    }
+    if (!GetOverlappedResult(pipe, overlapped, transferred, FALSE)) {
+        if (error) *error = windowsError(operation);
+        return false;
+    }
+    return true;
+}
+
+bool writeWithDeadline(HANDLE pipe, const char* data, DWORD size,
+                       RequestDeadline deadline, DWORD* transferred,
+                       std::string* error) {
+    HANDLE event = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+    if (!event) {
+        if (error) *error = windowsError("CreateEventW");
+        return false;
+    }
+    OVERLAPPED overlapped{};
+    overlapped.hEvent = event;
+    DWORD immediate = 0;
+    const BOOL started = WriteFile(pipe, data, size, &immediate, &overlapped);
+    const bool finished = finishOverlapped(pipe, &overlapped, started, "WriteFile",
+                                           deadline, transferred, error);
+    CloseHandle(event);
+    return finished;
+}
+
+bool readWithDeadline(HANDLE pipe, char* data, DWORD size,
+                      RequestDeadline deadline, DWORD* transferred,
+                      std::string* error) {
+    HANDLE event = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+    if (!event) {
+        if (error) *error = windowsError("CreateEventW");
+        return false;
+    }
+    OVERLAPPED overlapped{};
+    overlapped.hEvent = event;
+    DWORD immediate = 0;
+    const BOOL started = ReadFile(pipe, data, size, &immediate, &overlapped);
+    const bool finished = finishOverlapped(pipe, &overlapped, started, "ReadFile",
+                                           deadline, transferred, error);
+    CloseHandle(event);
+    return finished;
 }
 
 }  // namespace
@@ -19,6 +102,10 @@ bool IsBrokerPipeTransportAlive(HANDLE pipe) noexcept {
     if (pipe == INVALID_HANDLE_VALUE) return false;
     DWORD available = 0;
     return PeekNamedPipe(pipe, nullptr, 0, nullptr, &available, nullptr) != FALSE;
+}
+
+DWORD BrokerPipeClientOpenFlags() noexcept {
+    return FILE_FLAG_OVERLAPPED | SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION;
 }
 
 BrokerClient::~BrokerClient() { Close(); }
@@ -30,10 +117,11 @@ bool BrokerClient::IsConnected() const noexcept {
 bool BrokerClient::Connect(const std::wstring& pipeName, DWORD timeoutMs, const std::string& mode,
                            int candidateLimit, std::string* error) {
     Close();
+    ioTimeoutMs_ = std::max<DWORD>(timeoutMs, 1);
     const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeoutMs);
     for (;;) {
         pipe_ = CreateFileW(pipeName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
-                            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+                            OPEN_EXISTING, BrokerPipeClientOpenFlags(), nullptr);
         if (pipe_ != INVALID_HANDLE_VALUE) break;
         const DWORD code = GetLastError();
         if (code != ERROR_PIPE_BUSY && code != ERROR_FILE_NOT_FOUND) {
@@ -186,11 +274,13 @@ void BrokerClient::Disconnect() noexcept {
 
 bool BrokerClient::Exchange(const std::string& request, std::string* response, std::string* error) {
     const std::string frame = request + "\n";
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(ioTimeoutMs_);
     size_t offset = 0;
     while (offset < frame.size()) {
         DWORD written = 0;
-        if (!WriteFile(pipe_, frame.data() + offset, static_cast<DWORD>(frame.size() - offset), &written, nullptr) || written == 0) {
-            if (error) *error = windowsError("WriteFile");
+        if (!writeWithDeadline(pipe_, frame.data() + offset,
+                               static_cast<DWORD>(frame.size() - offset),
+                               deadline, &written, error) || written == 0) {
             return false;
         }
         offset += written;
@@ -199,8 +289,7 @@ bool BrokerClient::Exchange(const std::string& request, std::string* response, s
     for (;;) {
         char buffer[4096];
         DWORD read = 0;
-        if (!ReadFile(pipe_, buffer, sizeof(buffer), &read, nullptr) || read == 0) {
-            if (error) *error = windowsError("ReadFile");
+        if (!readWithDeadline(pipe_, buffer, sizeof(buffer), deadline, &read, error) || read == 0) {
             return false;
         }
         const char* newline = std::find(buffer, buffer + read, '\n');
