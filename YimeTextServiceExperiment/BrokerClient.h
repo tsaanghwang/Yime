@@ -41,6 +41,7 @@ struct BrokerUpdate {
 
 bool IsBrokerPipeTransportAlive(HANDLE pipe) noexcept;
 DWORD BrokerPipeClientOpenFlags() noexcept;
+DWORD BrokerConnectRetryDelay(DWORD errorCode, DWORD remainingMs) noexcept;
 
 class BrokerClient {
 public:

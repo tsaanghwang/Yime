@@ -304,6 +304,8 @@ $multiModeProbe = $null
 $e6cCapabilities = $null
 $architectureResults = @()
 $installedRemoved = $false
+$experimentFailure = $null
+$cleanupFailures = [Collections.Generic.List[string]]::new()
 try {
     New-Item -ItemType Directory -Force $installParent | Out-Null
     Copy-Item -LiteralPath $packageRoot -Destination $resolvedInstallRoot -Recurse
@@ -401,23 +403,73 @@ try {
             no_registration_residue = $true
         }
     }
+} catch {
+    $experimentFailure = $_
 } finally {
-    foreach ($architecture in @('x64', 'x86')) {
-        $cleanupTool = Join-Path $resolvedInstallRoot "$architecture\YimeTextServiceRegistration.exe"
-        if (Test-Path -LiteralPath $cleanupTool) { & $cleanupTool unregister *> $null }
-    }
     if (Test-Path -LiteralPath $resolvedInstallRoot) {
-        $installedManifestPath = Join-Path $resolvedInstallRoot 'package-manifest.json'
-        if (-not (Test-Path -LiteralPath $installedManifestPath)) {
-            throw "refusing cleanup without package marker: $resolvedInstallRoot"
+        $verifiedCleanup = [Collections.Generic.HashSet[string]]::new(
+            [StringComparer]::OrdinalIgnoreCase)
+        foreach ($result in @($architectureResults | Where-Object no_registration_residue)) {
+            $null = $verifiedCleanup.Add([string]$result.architecture)
         }
-        $installedMarker = Get-Content -LiteralPath $installedManifestPath -Raw | ConvertFrom-Json
-        if ($installedMarker.package_id -ne $packageId) {
-            throw "refusing cleanup of mismatched package identity: $resolvedInstallRoot"
+        foreach ($architecture in @('x64', 'x86')) {
+            if ($verifiedCleanup.Contains($architecture)) { continue }
+            try {
+                $cleanupDirectory = Join-Path $outputDir $architecture
+                New-Item -ItemType Directory -Path $cleanupDirectory -Force | Out-Null
+                $cleanupTool = Join-Path $resolvedInstallRoot "$architecture\YimeTextServiceRegistration.exe"
+                if (-not (Test-Path -LiteralPath $cleanupTool -PathType Leaf)) {
+                    throw "$architecture cleanup tool is missing"
+                }
+                $cleanupText = (& $cleanupTool unregister 2>&1) -join "`n"
+                $cleanupExit = $LASTEXITCODE
+                $cleanupText | Set-Content `
+                    (Join-Path $cleanupDirectory 'fallback-unregister.txt') -Encoding utf8
+                if ($cleanupExit -ne 0) {
+                    throw "$architecture fallback unregister failed with exit $cleanupExit"
+                }
+                $null = Wait-RegistrationState $cleanupTool $false `
+                    (Join-Path $cleanupDirectory 'fallback-status-after.txt')
+                $absentText = (& $cleanupTool verify-absent 2>&1) -join "`n"
+                $absentExit = $LASTEXITCODE
+                $absentText | Set-Content `
+                    (Join-Path $cleanupDirectory 'fallback-verify-absent.txt') -Encoding utf8
+                if ($absentExit -ne 0) {
+                    throw "$architecture fallback absence verification failed with exit $absentExit"
+                }
+            } catch {
+                $cleanupFailures.Add("$architecture fallback cleanup failed: $_")
+            }
         }
-        Remove-Item -LiteralPath $resolvedInstallRoot -Recurse -Force
+        if ($cleanupFailures.Count -eq 0) {
+            try {
+                $installedManifestPath = Join-Path $resolvedInstallRoot 'package-manifest.json'
+                if (-not (Test-Path -LiteralPath $installedManifestPath -PathType Leaf)) {
+                    throw "refusing cleanup without package marker: $resolvedInstallRoot"
+                }
+                $installedMarker = Get-Content -LiteralPath $installedManifestPath -Raw | ConvertFrom-Json
+                if ($installedMarker.package_id -ne $packageId) {
+                    throw "refusing cleanup of mismatched package identity: $resolvedInstallRoot"
+                }
+                Remove-Item -LiteralPath $resolvedInstallRoot -Recurse -Force
+            } catch {
+                $cleanupFailures.Add([string]$_)
+            }
+        }
     }
     $installedRemoved = -not (Test-Path -LiteralPath $resolvedInstallRoot)
+}
+if ($experimentFailure -and $cleanupFailures.Count -eq 0) {
+    throw $experimentFailure
+}
+if ($cleanupFailures.Count -ne 0) {
+    $messages = [Collections.Generic.List[string]]::new()
+    if ($experimentFailure) { $messages.Add("experiment failed: $experimentFailure") }
+    foreach ($cleanupFailure in $cleanupFailures) { $messages.Add("cleanup failed: $cleanupFailure") }
+    if (-not $installedRemoved) {
+        $messages.Add("installation files were preserved at $resolvedInstallRoot")
+    }
+    throw ($messages -join '; ')
 }
 
 $sourceFiles = @(

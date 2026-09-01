@@ -37,9 +37,23 @@ if ($DisableAutoStart) {
 if ($RemoveInputMethod) {
     $tip = '0804:{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}{607895A8-9504-4A2E-9BB1-2C159E3A1757}'
     $languageList = Get-WinUserLanguageList
-    $chinese = $languageList | Where-Object LanguageTag -eq 'zh-Hans-CN' | Select-Object -First 1
-    if ($chinese -and @($chinese.InputMethodTips) -contains $tip) {
-        $null = $chinese.InputMethodTips.Remove($tip)
+    $changed = $false
+    foreach ($language in @($languageList)) {
+        while (@($language.InputMethodTips) -contains $tip) {
+            if (-not $language.InputMethodTips.Remove($tip)) {
+                throw "failed to remove the YimeCore trial TIP from $($language.LanguageTag)"
+            }
+            $changed = $true
+        }
+    }
+    if ($changed) {
         Set-WinUserLanguageList -LanguageList $languageList -Force
+        $remaining = @(Get-WinUserLanguageList | Where-Object {
+            @($_.InputMethodTips) -contains $tip
+        })
+        if ($remaining.Count -ne 0) {
+            throw ('YimeCore trial TIP remained in language entries: ' +
+                (($remaining | ForEach-Object LanguageTag) -join ', '))
+        }
     }
 }

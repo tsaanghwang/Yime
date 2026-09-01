@@ -108,6 +108,11 @@ DWORD BrokerPipeClientOpenFlags() noexcept {
     return FILE_FLAG_OVERLAPPED | SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION;
 }
 
+DWORD BrokerConnectRetryDelay(DWORD errorCode, DWORD remainingMs) noexcept {
+    if (errorCode != ERROR_FILE_NOT_FOUND || remainingMs == 0) return 0;
+    return std::min<DWORD>(50, remainingMs);
+}
+
 BrokerClient::~BrokerClient() { Close(); }
 
 bool BrokerClient::IsConnected() const noexcept {
@@ -132,7 +137,13 @@ bool BrokerClient::Connect(const std::wstring& pipeName, DWORD timeoutMs, const 
             if (error) *error = "named pipe connect timeout";
             return false;
         }
-        WaitNamedPipeW(pipeName.c_str(), 50);
+        const DWORD remaining = remainingMilliseconds(deadline);
+        const DWORD retryDelay = BrokerConnectRetryDelay(code, remaining);
+        if (retryDelay != 0) {
+            Sleep(retryDelay);
+        } else {
+            WaitNamedPipeW(pipeName.c_str(), std::min<DWORD>(50, remaining));
+        }
     }
     sequence_ = 1;
     std::string response;

@@ -555,6 +555,7 @@ $sourceFiles = @(
     'tools\yimecore\Install-YimeCore-Trial.cmd',
     'tools\yimecore\Force-Uninstall-YimeCore-Trial.cmd',
     'tools\yimecore\test-e6c-installation-contract.ps1',
+	'tools\yimecore\test-yimecore-cleanup-contract.ps1',
     'tools\yimecore\deploy-e6c-trial-runtime.ps1',
     'tools\yimecore\start-e6c-trial-runtime.ps1',
     'tools\yimecore\stop-e6c-trial-runtime.ps1',

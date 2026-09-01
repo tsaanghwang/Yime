@@ -386,15 +386,25 @@ function Stop-TrialRuntime([string[]]$installRoots) {
 }
 
 function Remove-InputMethodTip {
-    try {
-        $languageList = Get-WinUserLanguageList
-        $chinese = $languageList | Where-Object LanguageTag -eq 'zh-Hans-CN' | Select-Object -First 1
-        if ($chinese -and @($chinese.InputMethodTips) -contains $tip) {
-            $null = $chinese.InputMethodTips.Remove($tip)
-            Set-WinUserLanguageList -LanguageList $languageList -Force
+    $languageList = Get-WinUserLanguageList
+    $changed = $false
+    foreach ($language in @($languageList)) {
+        while (@($language.InputMethodTips) -contains $tip) {
+            if (-not $language.InputMethodTips.Remove($tip)) {
+                throw "failed to remove the YimeCore trial TIP from $($language.LanguageTag)"
+            }
+            $changed = $true
         }
-    } catch {
-        if (-not $Force) { throw }
+    }
+    if ($changed) {
+        Set-WinUserLanguageList -LanguageList $languageList -Force
+        $remaining = @(Get-WinUserLanguageList | Where-Object {
+            @($_.InputMethodTips) -contains $tip
+        })
+        if ($remaining.Count -ne 0) {
+            throw ('YimeCore trial TIP remained in language entries: ' +
+                (($remaining | ForEach-Object LanguageTag) -join ', '))
+        }
     }
 }
 

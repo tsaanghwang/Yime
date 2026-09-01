@@ -94,6 +94,7 @@ private:
     static LRESULT CALLBACK WindowProcedure(HWND window, UINT message, WPARAM wParam, LPARAM lParam) noexcept;
 	bool AcquireWindowClass() noexcept;
 	void ReleaseWindowClass() noexcept;
+    void DestroyWindowOnly() noexcept;
     bool EnsureWindow(HWND owner) noexcept;
     void RefreshDisplaySettings() noexcept;
     void RefreshLayout(const RECT& anchor) noexcept;

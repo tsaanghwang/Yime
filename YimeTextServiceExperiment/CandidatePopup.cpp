@@ -173,10 +173,18 @@ void CandidatePopup::ReleaseWindowClass() noexcept {
 }
 
 bool CandidatePopup::EnsureWindow(HWND owner) noexcept {
+    if (owner) {
+        DWORD ownerProcess = 0;
+        const DWORD ownerThread = IsWindow(owner)
+            ? GetWindowThreadProcessId(owner, &ownerProcess) : 0;
+        if (ownerThread != GetCurrentThreadId() || ownerProcess != GetCurrentProcessId()) {
+            owner = nullptr;
+        }
+    }
     if (window_ && !IsWindow(window_)) window_ = nullptr;
     if (window_) {
-        SetWindowLongPtrW(window_, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(owner));
-        return true;
+        if (GetWindow(window_, GW_OWNER) == owner) return true;
+        DestroyWindowOnly();
     }
 	if (!AcquireWindowClass()) return false;
 	const HINSTANCE module = currentModule();
@@ -334,13 +342,21 @@ void CandidatePopup::Show(bool show) noexcept {
     ShowWindow(window_, show ? SW_SHOWNOACTIVATE : SW_HIDE);
 }
 
-void CandidatePopup::Destroy() noexcept {
+void CandidatePopup::DestroyWindowOnly() noexcept {
     if (window_ && GetCapture() == window_) ReleaseCapture();
     if (window_) {
         KillTimer(window_, SettingsRefreshTimerId);
         DestroyWindow(window_);
         window_ = nullptr;
     }
+    if (font_) {
+        DeleteObject(font_);
+        font_ = nullptr;
+    }
+}
+
+void CandidatePopup::Destroy() noexcept {
+    DestroyWindowOnly();
     candidates_.clear();
     candidateWidths_.clear();
     sentenceSegments_.clear();
@@ -350,10 +366,6 @@ void CandidatePopup::Destroy() noexcept {
     width_ = 0;
     rowHeight_ = 0;
     selectedIndex_ = 0;
-    if (font_) {
-        DeleteObject(font_);
-        font_ = nullptr;
-    }
     ReleasePrivateYinyuanFont();
 }
 

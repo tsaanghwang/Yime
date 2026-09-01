@@ -82,6 +82,8 @@ $installedValidationIndex = $managerText.IndexOf('Assert-PrivilegedPackageCopy $
 $registrationAfterValidationIndex = if ($installedValidationIndex -ge 0) {
 	$managerText.IndexOf('$registrationStarted = $true', $installedValidationIndex)
 } else { -1 }
+$removeInputMethodTipText = [regex]::Match(
+	$managerText, '(?s)function Remove-InputMethodTip\s*\{.*?\r?\n\}').Value
 $result = [ordered]@{
     tool_version = 'yimecore-e6c-installation-contract-v1'
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
@@ -173,6 +175,11 @@ $result = [ordered]@{
 		$managerText.Contains('& $tool verify-absent') -and
 		$managerText.Contains('installation files were preserved') -and
 		$managerText -notmatch '\$LASTEXITCODE -ne 0 -and -not \$Force')
+	input_method_tip_cleanup_is_global_and_fail_loud = [bool](
+		$removeInputMethodTipText -match 'foreach \(\$language in @\(\$languageList\)\)' -and
+		$removeInputMethodTipText -match 'Get-WinUserLanguageList \| Where-Object' -and
+		$removeInputMethodTipText -notmatch 'zh-Hans-CN' -and
+		$removeInputMethodTipText -notmatch 'catch')
 	pre_registration_validation_failure_avoids_untrusted_cleanup_tool = [bool](
 		$managerText.Contains('$registrationStarted = $false') -and
 		$managerText.Contains('$registrationStarted = $true') -and
@@ -212,6 +219,7 @@ if ($result.installed_apps_entry_planned -ne $true -or
     $result.registration_state_convergence_wait -ne $true -or
 	$result.privileged_copy_revalidated_before_cleanup -ne $true -or
 	$result.uninstall_requires_verified_registration_absence -ne $true -or
+	$result.input_method_tip_cleanup_is_global_and_fail_loud -ne $true -or
 	$result.pre_registration_validation_failure_avoids_untrusted_cleanup_tool -ne $true -or
     $result.taskbar_language_bar_categories -ne $true -or
     $result.windows_native_language_bar_only -ne $true -or

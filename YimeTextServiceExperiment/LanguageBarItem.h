@@ -28,6 +28,7 @@ inline constexpr UINT YIME_LBI_TOOL_CENTER = 0x6C45;
 
 std::wstring SelectTrialInstallRoot(const std::wstring& moduleRoot,
                                     const std::wstring& registeredRoot) noexcept;
+HWND CreateLanguageBarPopupOwnerWindow() noexcept;
 
 class LanguageBarItem final : public ITfLangBarItemButton, public ITfSource {
 public:

@@ -190,6 +190,12 @@ std::wstring SelectTrialInstallRoot(const std::wstring& moduleRoot,
     }
 }
 
+HWND CreateLanguageBarPopupOwnerWindow() noexcept {
+    return CreateWindowExW(WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE, L"STATIC", L"",
+                           WS_POPUP, 0, 0, 0, 0, nullptr, nullptr,
+                           currentModule(), nullptr);
+}
+
 std::atomic<DWORD> LanguageBarItem::nextCookie_{1};
 
 LanguageBarItem::LanguageBarItem(std::wstring settingsPath, PopupPresenter presenter,
@@ -389,8 +395,9 @@ STDMETHODIMP LanguageBarItem::GetIcon(HICON* icon) {
     const int resource = settings.asciiMode
         ? (settings.fullShape ? IDI_YIME_MODE_ENGLISH_FULL : IDI_YIME_MODE_ENGLISH_HALF)
         : (settings.fullShape ? IDI_YIME_MODE_CHINESE_FULL : IDI_YIME_MODE_CHINESE_HALF);
-    const HICON shared = static_cast<HICON>(LoadImageW(currentModule(), MAKEINTRESOURCEW(resource),
-                                                       IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR));
+    const HICON shared = static_cast<HICON>(LoadImageW(
+        currentModule(), MAKEINTRESOURCEW(resource), IMAGE_ICON, 0, 0,
+        LR_DEFAULTCOLOR | LR_SHARED));
     *icon = shared ? static_cast<HICON>(CopyImage(shared, IMAGE_ICON, 0, 0, 0)) : nullptr;
     return *icon ? S_OK : E_OUTOFMEMORY;
 }
@@ -493,12 +500,13 @@ HMENU LanguageBarItem::BuildPopupMenu() const noexcept {
 }
 
 UINT LanguageBarItem::PresentPopup(HMENU menu, POINT point, void*) noexcept {
-    HWND owner = GetForegroundWindow();
-    if (!owner) owner = GetDesktopWindow();
+    HWND owner = CreateLanguageBarPopupOwnerWindow();
+    if (!owner) return 0;
     const UINT command = TrackPopupMenu(menu, TPM_NONOTIFY | TPM_RETURNCMD | TPM_LEFTALIGN |
                                                TPM_BOTTOMALIGN | TPM_RIGHTBUTTON,
                                         point.x, point.y, 0, owner, nullptr);
-    if (owner) PostMessageW(owner, WM_NULL, 0, 0);
+    PostMessageW(owner, WM_NULL, 0, 0);
+    DestroyWindow(owner);
     return command;
 }
 

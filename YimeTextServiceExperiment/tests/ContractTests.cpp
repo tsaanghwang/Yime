@@ -31,6 +31,19 @@ using CanUnloadNow = HRESULT(__stdcall*)();
 
 int failures = 0;
 
+bool currentThreadCpuTime(uint64_t* ticks) {
+    if (!ticks) return false;
+    FILETIME created{}, exited{}, kernel{}, user{};
+    if (!GetThreadTimes(GetCurrentThread(), &created, &exited, &kernel, &user)) return false;
+    ULARGE_INTEGER kernelValue{}, userValue{};
+    kernelValue.LowPart = kernel.dwLowDateTime;
+    kernelValue.HighPart = kernel.dwHighDateTime;
+    userValue.LowPart = user.dwLowDateTime;
+    userValue.HighPart = user.dwHighDateTime;
+    *ticks = kernelValue.QuadPart + userValue.QuadPart;
+    return true;
+}
+
 std::wstring temporaryStatePath(const wchar_t* leaf) {
     wchar_t directory[MAX_PATH]{};
     GetTempPathW(MAX_PATH, directory);
@@ -457,6 +470,69 @@ void testBrokerPipeSecurityAndTimeouts() {
            "Broker client pipe is not opened for cancellable overlapped I/O");
     expect((flags & SECURITY_SQOS_PRESENT) != 0 && (flags & SECURITY_IDENTIFICATION) != 0,
            "Broker client pipe does not cap a server at identification impersonation");
+    expect(BrokerConnectRetryDelay(ERROR_FILE_NOT_FOUND, 200) == 50 &&
+               BrokerConnectRetryDelay(ERROR_FILE_NOT_FOUND, 20) == 20 &&
+               BrokerConnectRetryDelay(ERROR_PIPE_BUSY, 200) == 0,
+           "absent Broker retry does not use a bounded explicit delay");
+
+    const std::wstring absentPipeName = L"\\\\.\\pipe\\YimeBroker.Absent.Contract." +
+                                        std::to_wstring(GetCurrentProcessId()) + L"." +
+                                        std::to_wstring(GetTickCount64());
+    BrokerClient absentClient;
+    std::string absentError;
+    uint64_t cpuBefore = 0;
+    uint64_t cpuAfter = 0;
+    const bool cpuAvailableBefore = currentThreadCpuTime(&cpuBefore);
+    const auto absentStarted = std::chrono::steady_clock::now();
+    const bool absentConnected = absentClient.Connect(absentPipeName, 200, "variable", 9,
+                                                       &absentError);
+    const auto absentElapsed = std::chrono::steady_clock::now() - absentStarted;
+    const bool cpuAvailableAfter = currentThreadCpuTime(&cpuAfter);
+    expect(!absentConnected && absentError.find("timeout") != std::string::npos,
+           "absent Broker endpoint did not fail at the connection deadline");
+    expect(absentElapsed >= std::chrono::milliseconds(150) &&
+               absentElapsed < std::chrono::seconds(1),
+           "absent Broker endpoint did not retain the bounded activation retry window");
+    expect(cpuAvailableBefore && cpuAvailableAfter && cpuAfter >= cpuBefore &&
+               cpuAfter - cpuBefore < 100ULL * 10'000ULL,
+           "absent Broker endpoint consumed its retry window in a near-busy-spin");
+
+    const std::wstring delayedPipeName = L"\\\\.\\pipe\\YimeBroker.Delayed.Contract." +
+                                         std::to_wstring(GetCurrentProcessId()) + L"." +
+                                         std::to_wstring(GetTickCount64());
+    std::atomic<bool> delayedServerReady{false};
+    std::thread delayedServer([&] {
+        Sleep(75);
+        HANDLE delayedPipe = CreateNamedPipeW(
+            delayedPipeName.c_str(), PIPE_ACCESS_DUPLEX,
+            PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, 1, 4096, 4096, 0, nullptr);
+        if (delayedPipe == INVALID_HANDLE_VALUE) return;
+        delayedServerReady.store(true);
+        const BOOL accepted = ConnectNamedPipe(delayedPipe, nullptr);
+        if (accepted || GetLastError() == ERROR_PIPE_CONNECTED) {
+            char request[4096]{};
+            DWORD read = 0;
+            if (ReadFile(delayedPipe, request, sizeof(request), &read, nullptr)) {
+                constexpr char response[] =
+                    "{\"version\":1,\"sequence\":1,\"session_id\":\"delayed-session\","
+                    "\"result\":{\"state\":{}}}\n";
+                DWORD written = 0;
+                WriteFile(delayedPipe, response, static_cast<DWORD>(sizeof(response) - 1),
+                          &written, nullptr);
+            }
+            FlushFileBuffers(delayedPipe);
+            DisconnectNamedPipe(delayedPipe);
+        }
+        CloseHandle(delayedPipe);
+    });
+    BrokerClient delayedClient;
+    std::string delayedError;
+    const bool delayedConnected = delayedClient.Connect(delayedPipeName, 500, "variable", 9,
+                                                         &delayedError);
+    delayedServer.join();
+    expect(delayedServerReady.load() && delayedConnected,
+           "bounded absent-pipe retry missed a Broker that started before the deadline");
+    delayedClient.Close();
 
     const std::wstring pipeName = L"\\\\.\\pipe\\YimeBroker.Timeout.Contract." +
                                   std::to_wstring(GetCurrentProcessId()) + L"." +
@@ -879,6 +955,56 @@ void testOwnedCandidatePopup() {
            "candidate popup retained a stale HWND after host destruction");
     popup.Destroy();
     expect(!popup.Window(), "owned candidate popup did not clear its HWND");
+
+    HWND ownerA = CreateWindowExW(0, L"STATIC", L"", WS_OVERLAPPED,
+                                  0, 0, 0, 0, nullptr, nullptr,
+                                  GetModuleHandleW(nullptr), nullptr);
+    HWND ownerB = CreateWindowExW(0, L"STATIC", L"", WS_OVERLAPPED,
+                                  0, 0, 0, 0, nullptr, nullptr,
+                                  GetModuleHandleW(nullptr), nullptr);
+    expect(ownerA && ownerB, "could not create candidate popup owner transition fixtures");
+    if (ownerA && ownerB) {
+        CandidatePopup ownerPopup(settingsPath);
+        expect(ownerPopup.Update({L"⇧1  所有者甲"}, centeredAnchor, ownerA),
+               "candidate popup could not bind its initial owner");
+        constexpr wchar_t ownerMarker[] = L"YimeCandidateOwnerRecreationContract";
+        SetPropW(ownerPopup.Window(), ownerMarker, reinterpret_cast<HANDLE>(1));
+        expect(ownerPopup.Update({L"⇧1  所有者乙"}, centeredAnchor, ownerB),
+               "candidate popup could not move to a new document owner");
+        expect(GetWindow(ownerPopup.Window(), GW_OWNER) == ownerB &&
+                   GetPropW(ownerPopup.Window(), ownerMarker) == nullptr,
+               "candidate popup changed GWLP_HWNDPARENT instead of recreating for its new owner");
+        ownerPopup.Destroy();
+    }
+    if (ownerB) DestroyWindow(ownerB);
+    if (ownerA) DestroyWindow(ownerA);
+
+    HANDLE foreignReady = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+    HANDLE foreignRelease = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+    std::atomic<HWND> foreignOwner{nullptr};
+    std::thread foreignOwnerThread([&] {
+        foreignOwner.store(CreateWindowExW(0, L"STATIC", L"", WS_OVERLAPPED,
+                                           0, 0, 0, 0, nullptr, nullptr,
+                                           GetModuleHandleW(nullptr), nullptr));
+        SetEvent(foreignReady);
+        WaitForSingleObject(foreignRelease, 5000);
+        if (foreignOwner.load()) DestroyWindow(foreignOwner.load());
+    });
+    expect(WaitForSingleObject(foreignReady, 5000) == WAIT_OBJECT_0 && foreignOwner.load(),
+           "could not create a foreign-thread candidate owner fixture");
+    if (foreignOwner.load()) {
+        CandidatePopup foreignOwnerPopup(settingsPath);
+        expect(foreignOwnerPopup.Update({L"⇧1  外线程"}, centeredAnchor,
+                                        foreignOwner.load()),
+               "candidate popup rejected content when its proposed owner was foreign-thread");
+        expect(GetWindow(foreignOwnerPopup.Window(), GW_OWNER) == nullptr,
+               "candidate popup retained a foreign-thread owner");
+        foreignOwnerPopup.Destroy();
+    }
+    SetEvent(foreignRelease);
+    foreignOwnerThread.join();
+    if (foreignRelease) CloseHandle(foreignRelease);
+    if (foreignReady) CloseHandle(foreignReady);
        DeleteFileW(settingsPath.c_str());
 }
 
@@ -983,6 +1109,14 @@ void testLanguageBarItem() {
                                                         activeRegisteredRoot.wstring())) ==
                activeRegisteredRoot,
            "upgraded host did not prefer the active registered Trial install root");
+    HWND popupOwner = CreateLanguageBarPopupOwnerWindow();
+    DWORD popupOwnerProcess = 0;
+    const DWORD popupOwnerThread = popupOwner
+        ? GetWindowThreadProcessId(popupOwner, &popupOwnerProcess) : 0;
+    expect(popupOwner && popupOwnerThread == GetCurrentThreadId() &&
+               popupOwnerProcess == GetCurrentProcessId(),
+           "language-bar popup owner is not a transient window on the invoking thread");
+    if (popupOwner) DestroyWindow(popupOwner);
     std::filesystem::remove(activeRegisteredRoot / L"package-manifest.json");
     expect(std::filesystem::path(SelectTrialInstallRoot(staleModuleRoot.wstring(),
                                                         activeRegisteredRoot.wstring())) ==
@@ -1031,6 +1165,16 @@ void testLanguageBarItem() {
     expect(item->GetIcon(&icon) == S_OK && icon,
            "docked taskbar language bar did not receive the Chinese mode icon");
     DestroyIcon(icon);
+    const DWORD userObjectsBefore = GetGuiResources(GetCurrentProcess(), GR_USEROBJECTS);
+    for (int iteration = 0; iteration < 128; ++iteration) {
+        icon = nullptr;
+        expect(item->GetIcon(&icon) == S_OK && icon,
+               "repeated language-bar icon request failed");
+        if (icon) DestroyIcon(icon);
+    }
+    const DWORD userObjectsAfter = GetGuiResources(GetCurrentProcess(), GR_USEROBJECTS);
+    expect(userObjectsAfter <= userObjectsBefore + 2,
+           "language-bar icon requests leaked source HICON handles");
     BSTR text = nullptr;
     expect(item->GetText(&text) == S_OK && text && std::wstring_view(text) == L"中",
            "language bar Chinese text mismatch");
