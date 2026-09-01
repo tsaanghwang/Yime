@@ -1,6 +1,12 @@
 @echo off
 setlocal EnableExtensions
 
+if /I not "%YIME_UPGRADE_ENTRY%"=="1" (
+    echo NOTICE: This legacy filename is an upgrade-only compatibility entry point.
+    echo Canonical command: "%~dp0Upgrade-YimeCore-Trial.cmd"
+    echo.
+)
+
 set "YIME_NORESTART=0"
 :parse_args
 if "%~1"=="" goto args_ready
@@ -16,13 +22,13 @@ echo.
 goto usage_error
 
 :usage
-echo Usage: %~nx0 [/norestart]
+echo Usage: Upgrade-YimeCore-Trial.cmd [/norestart]
 echo.
-echo   /norestart  Build, install, and verify without restarting Windows.
+echo   /norestart  Build, upgrade, and verify without restarting Windows.
 exit /b 0
 
 :usage_error
-echo Usage: %~nx0 [/norestart]
+echo Usage: Upgrade-YimeCore-Trial.cmd [/norestart]
 exit /b 2
 
 :args_ready
@@ -113,7 +119,16 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [5/5] Verifying registered x64 and x86 TSF host behavior...
+echo [5/5] Verifying registered native and compatibility TSF host behavior...
+if /I "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
+    "%YIME_OUT%\package\arm64\YimeRegisteredHostTests.exe" "\\.\pipe\YimeBroker.YimeCoreTrial.v1"
+    if errorlevel 1 (
+        echo.
+        echo ARM64 REGISTERED-HOST VERIFICATION FAILED.
+        pause
+        exit /b 1
+    )
+)
 "%YIME_OUT%\package\x64\YimeRegisteredHostTests.exe" "\\.\pipe\YimeBroker.YimeCoreTrial.v1"
 if errorlevel 1 (
     echo.

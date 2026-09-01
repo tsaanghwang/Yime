@@ -115,10 +115,15 @@ $dynamicSentenceCasePackage = Join-Path $packageRoot 'data\dynamic_sentence_case
 Copy-Item -LiteralPath $dynamicSentenceCaseSource -Destination $dynamicSentenceCasePackage -Force
 
 $textServiceBuilds = @()
+$nativeArchitecture = if (-not [string]::IsNullOrWhiteSpace($env:PROCESSOR_ARCHITEW6432)) {
+	$env:PROCESSOR_ARCHITEW6432
+} else { $env:PROCESSOR_ARCHITECTURE }
 foreach ($architecture in @(
-    [ordered]@{ name = 'x64'; platform = 'x64' },
-    [ordered]@{ name = 'x86'; platform = 'Win32' }
+	[ordered]@{ name = 'x64'; platform = 'x64'; runnable = $true },
+	[ordered]@{ name = 'x86'; platform = 'Win32'; runnable = $true },
+	[ordered]@{ name = 'arm64'; platform = 'ARM64'; runnable = $nativeArchitecture -eq 'ARM64' }
 )) {
+	New-Item -ItemType Directory -Path (Join-Path $packageRoot $architecture.name) -Force | Out-Null
     $buildRoot = Join-Path $outputDir ('text-service-build-' + $architecture.name)
     & cmake -S (Join-Path $repoRoot 'YimeTextServiceExperiment') -B $buildRoot `
         -G 'Visual Studio 17 2022' -A $architecture.platform
@@ -129,16 +134,23 @@ foreach ($architecture in @(
     $dll = Join-Path $releaseRoot 'YimeTextServiceExperiment.dll'
     $contractTest = Join-Path $releaseRoot 'YimeTextServiceContractTests.exe'
     $contractLog = Join-Path $outputDir ('language-bar-contract-' + $architecture.name + '.txt')
-    & $contractTest $dll 2>&1 | Tee-Object -LiteralPath $contractLog
-    if ($LASTEXITCODE -ne 0) { throw "experimental language-bar contract failed: $($architecture.name)" }
+	if ($architecture.runnable) {
+		& $contractTest $dll 2>&1 | Tee-Object -LiteralPath $contractLog
+		if ($LASTEXITCODE -ne 0) { throw "experimental language-bar contract failed: $($architecture.name)" }
+	} else {
+		'Skipped execution on a non-ARM64 build host; compile and package checks passed.' |
+			Set-Content -LiteralPath $contractLog -Encoding ascii
+	}
     $registrationTool = Join-Path $releaseRoot 'YimeTextServiceRegistration.exe'
-    $registrationStatus = (& $registrationTool status 2>&1) -join "`n"
-    if ($LASTEXITCODE -ne 0 -or
-        $registrationStatus -notmatch '(?m)^com_only_registration_supported=true$' -or
-        $registrationStatus -notmatch '(?m)^profile_icon_registration_supported=true$' -or
-        $registrationStatus -notmatch '(?m)^taskbar_category_registration_supported=true$') {
-        throw "experimental registration capability missing: $($architecture.name)"
-    }
+	if ($architecture.runnable) {
+		$registrationStatus = (& $registrationTool status 2>&1) -join "`n"
+		if ($LASTEXITCODE -ne 0 -or
+			$registrationStatus -notmatch '(?m)^com_only_registration_supported=true$' -or
+			$registrationStatus -notmatch '(?m)^profile_icon_registration_supported=true$' -or
+			$registrationStatus -notmatch '(?m)^taskbar_category_registration_supported=true$') {
+			throw "experimental registration capability missing: $($architecture.name)"
+		}
+	}
     foreach ($file in @('YimeTextServiceExperiment.dll', 'YimeTextServiceRegistration.exe', 'YimeRegisteredHostTests.exe')) {
         Copy-Item -LiteralPath (Join-Path $releaseRoot $file) `
             -Destination (Join-Path (Join-Path $packageRoot $architecture.name) $file) -Force
@@ -149,7 +161,8 @@ foreach ($architecture in @(
         dll = $dll
         contract_test = $contractTest
         contract_log = $contractLog
-        tsf_test = Join-Path $releaseRoot 'YimeTsfCompositionTests.exe'
+		tsf_test = Join-Path $releaseRoot 'YimeTsfCompositionTests.exe'
+		runnable = [bool]$architecture.runnable
         com_only_registration_supported = $true
         profile_icon_registration_supported = $true
         taskbar_category_registration_supported = $true
@@ -333,7 +346,7 @@ try {
         throw 'packaged E6-C runtime supervisor reported an unexpected Broker process'
     }
     $oldBrokerPathAccessible = -not [string]::IsNullOrWhiteSpace([string]$oldBroker.ExecutablePath)
-    foreach ($textServiceBuild in $textServiceBuilds) {
+	foreach ($textServiceBuild in @($textServiceBuilds | Where-Object { $_.runnable })) {
         $tsfLog = Join-Path $outputDir ('language-bar-tsf-' + $textServiceBuild.architecture + '.txt')
         & $textServiceBuild.tsf_test $textServiceBuild.dll $runtimePipe 2>&1 | Tee-Object -LiteralPath $tsfLog
         $passed = $LASTEXITCODE -eq 0
@@ -552,7 +565,10 @@ $sourceFiles = @(
     'tools\yimecore\trial-help\trial-feedback.html',
     'tools\yimecore\trial-help\diagnostics.html',
     'tools\yimecore\record-e6b8-desktop-host-acceptance.ps1'
-    'Build-Install-YimeCore-Trial-v3.cmd'
+	'Upgrade-YimeCore-Trial.cmd',
+	'Build-Install-YimeCore-Trial.cmd',
+	'Build-Install-YimeCore-Trial-v2.cmd',
+	'Build-Install-YimeCore-Trial-v3.cmd'
 )
 $sourceHashes = foreach ($relative in $sourceFiles) {
     $hash = Get-FileHash -LiteralPath (Join-Path $repoRoot $relative) -Algorithm SHA256
@@ -611,8 +627,11 @@ $summary = [ordered]@{
     runtime_supervision_evidence_sha256 = (Get-FileHash -LiteralPath $runtimeEvidencePath -Algorithm SHA256).Hash.ToLowerInvariant()
     language_bar_evidence_path = $languageBarEvidencePath
     language_bar_evidence_sha256 = (Get-FileHash -LiteralPath $languageBarEvidencePath -Algorithm SHA256).Hash.ToLowerInvariant()
-    language_bar_x64_x86_passed = [bool](@($languageBarTsfChecks).Count -eq 2 -and
+	language_bar_x64_x86_passed = [bool](@($languageBarTsfChecks).Count -ge 2 -and
         -not (@($languageBarTsfChecks | Where-Object { -not $_.passed }).Count))
+	arm64_tsf_artifacts_packaged = [bool]((@(
+		'YimeTextServiceExperiment.dll', 'YimeTextServiceRegistration.exe', 'YimeRegisteredHostTests.exe'
+	) | Where-Object { -not (Test-Path -LiteralPath (Join-Path $packageRoot ('arm64\' + $_)) -PathType Leaf) }).Count -eq 0)
     installed_apps_uninstall_contract_passed = [bool]($installationEvidence.installed_apps_entry_planned -and
         $installationEvidence.force_cleanup_before_install -and
         $installationEvidence.x64_x86_tsf_registration_planned -and
@@ -655,7 +674,7 @@ if (-not $summary.base_package_hash_handoff_verified -or
     -not $summary.native_input_toolbar_packaged -or -not $summary.yinyuan_private_font_packaged -or
     -not $summary.legacy_desktop_tools_removed -or
     -not $summary.runtime_supervisor_packaged -or -not $summary.runtime_supervisor_broker_recovery_passed -or
-    -not $summary.language_bar_x64_x86_passed -or
+	-not $summary.language_bar_x64_x86_passed -or -not $summary.arm64_tsf_artifacts_packaged -or
     -not $summary.installed_apps_uninstall_contract_passed -or
     -not $summary.secondary_architecture_com_only_supported -or
     -not $summary.input_profile_keyboard_icon_supported -or

@@ -1,3 +1,3 @@
 @echo off
-call "C:\dev\Yime\Build-Install-YimeCore-Trial-v3.cmd" %*
+call "%~dp0Upgrade-YimeCore-Trial.cmd" %*
 exit /b %ERRORLEVEL%

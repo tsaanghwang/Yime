@@ -19,7 +19,7 @@ $productName = 'Yime ' + (-join ([char[]](0x81EA, 0x7814, 0x6808, 0x8BD5, 0x9A8C
 $productKeyName = 'YimeCoreExperimentalTrial'
 $productRoot = [IO.Path]::GetFullPath((Join-Path $env:ProgramFiles 'YimeCore Experimental Trial'))
 $stateRootPath = [IO.Path]::GetFullPath($StateRoot)
-$uninstallKey = "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$productKeyName"
+$legacyMachineUninstallKey = "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$productKeyName"
 if ([string]::IsNullOrWhiteSpace($TargetUserSid)) {
     $TargetUserSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
 }
@@ -29,6 +29,13 @@ try {
     throw "invalid target user SID: $TargetUserSid"
 }
 $runKey = "Registry::HKEY_USERS\$TargetUserSid\Software\Microsoft\Windows\CurrentVersion\Run"
+$uninstallKey = "Registry::HKEY_USERS\$TargetUserSid\Software\Microsoft\Windows\CurrentVersion\Uninstall\$productKeyName"
+$nativeArchitecture = if (-not [string]::IsNullOrWhiteSpace($env:PROCESSOR_ARCHITEW6432)) {
+	$env:PROCESSOR_ARCHITEW6432.ToUpperInvariant()
+} else { ([string]$env:PROCESSOR_ARCHITECTURE).ToUpperInvariant() }
+if ($nativeArchitecture -notin @('AMD64', 'ARM64')) {
+	throw "unsupported Windows native architecture: $nativeArchitecture"
+}
 $clsid = '{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'
 $profile = '{607895A8-9504-4A2E-9BB1-2C159E3A1757}'
 $tip = "0804:$clsid$profile"
@@ -141,9 +148,30 @@ function Assert-ProductChild([string]$path, [string]$description) {
     return $resolved
 }
 
+function Get-RegistrationArchitectures {
+	if ($nativeArchitecture -eq 'ARM64') {
+		return @(
+			[ordered]@{ name = 'arm64'; action = 'register' },
+			[ordered]@{ name = 'x64'; action = 'register-com' },
+			[ordered]@{ name = 'x86'; action = 'register-com' })
+	}
+	return @(
+		[ordered]@{ name = 'x64'; action = 'register' },
+		[ordered]@{ name = 'x86'; action = 'register-com' })
+}
+
 function Get-PackageRecords([string]$root) {
     $normalizedRoot = [IO.Path]::GetFullPath($root)
-    return @(Get-ChildItem -LiteralPath $normalizedRoot -Recurse -File | Where-Object {
+	$rootInfo = Get-Item -LiteralPath $normalizedRoot -Force
+	if (($rootInfo.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+		throw "package root must not be a reparse point: $normalizedRoot"
+	}
+	$items = @(Get-ChildItem -LiteralPath $normalizedRoot -Recurse -Force)
+	$reparsePoint = $items | Where-Object {
+		($_.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0
+	} | Select-Object -First 1
+	if ($reparsePoint) { throw "package contains a reparse point: $($reparsePoint.FullName)" }
+    return @($items | Where-Object { -not $_.PSIsContainer } | Where-Object {
         $_.Name -notin @('package-manifest.json', 'install-metadata.json')
     } | ForEach-Object {
         [ordered]@{
@@ -178,6 +206,7 @@ function Assert-Package([string]$root) {
     foreach ($required in @(
         'x64\YimeTextServiceExperiment.dll', 'x64\YimeTextServiceRegistration.exe',
         'x86\YimeTextServiceExperiment.dll', 'x86\YimeTextServiceRegistration.exe',
+		'arm64\YimeTextServiceExperiment.dll', 'arm64\YimeTextServiceRegistration.exe',
         'bin\YimeBroker.exe', 'bin\YimeCoreTrialRuntime.exe',
         'bin\YimeCoreInputToolbar.exe', 'bin\YimeCoreReverseLookup.exe',
         'bin\YimeCoreLexiconManager.exe', 'bin\YimeCoreTrainer.exe',
@@ -206,7 +235,28 @@ function Assert-Package([string]$root) {
         manifest = $manifest
         manifest_path = $manifestPath
         manifest_sha256 = (Get-FileHash -LiteralPath $manifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
+		records = $records
     }
+}
+
+function Assert-PrivilegedPackageCopy([string]$root, $trustedPackage) {
+	$copy = Assert-Package $root
+	if ([string]$copy.manifest_sha256 -ne [string]$trustedPackage.manifest_sha256) {
+		throw "staged package manifest changed after initial validation: $root"
+	}
+	if (@($copy.records).Count -ne @($trustedPackage.records).Count) {
+		throw "staged package record count changed after initial validation: $root"
+	}
+	$trusted = @{}
+	foreach ($record in @($trustedPackage.records)) { $trusted[[string]$record.path] = $record }
+	foreach ($record in @($copy.records)) {
+		$wanted = $trusted[[string]$record.path]
+		if (-not $wanted -or [int64]$wanted.bytes -ne [int64]$record.bytes -or
+			[string]$wanted.sha256 -ne [string]$record.sha256) {
+			throw "staged package differs from initially validated bytes: $($record.path)"
+		}
+	}
+	return $copy
 }
 
 function Test-InstallMarker([string]$root) {
@@ -271,6 +321,10 @@ function Get-RegisteredInstallRoots {
         $location = [string](Get-ItemProperty -LiteralPath $uninstallKey -ErrorAction SilentlyContinue).InstallLocation
         if (-not [string]::IsNullOrWhiteSpace($location)) { $roots.Add($location) }
     }
+	if (Test-Path -LiteralPath $legacyMachineUninstallKey) {
+		$location = [string](Get-ItemProperty -LiteralPath $legacyMachineUninstallKey -ErrorAction SilentlyContinue).InstallLocation
+		if (-not [string]::IsNullOrWhiteSpace($location)) { $roots.Add($location) }
+	}
     $configPath = Join-Path $stateRootPath 'runtime-config.json'
     if (Test-Path -LiteralPath $configPath -PathType Leaf) {
         try {
@@ -345,17 +399,31 @@ function Remove-InputMethodTip {
 }
 
 function Remove-TrialRegistration([string[]]$installRoots) {
+	$tools = @{}
     foreach ($root in $installRoots) {
-        foreach ($architecture in @('x64', 'x86')) {
-            $tool = Join-Path $root "$architecture\YimeTextServiceRegistration.exe"
-            if (Test-Path -LiteralPath $tool -PathType Leaf) {
-                & $tool unregister *> $null
-                if ($LASTEXITCODE -ne 0 -and -not $Force) {
-                    throw "$architecture TSF unregister failed with exit $LASTEXITCODE"
-                }
-            }
+		foreach ($architecture in Get-RegistrationArchitectures) {
+			$name = [string]$architecture.name
+			$tool = Join-Path $root "$name\YimeTextServiceRegistration.exe"
+			if (-not $tools.ContainsKey($name) -and
+				(Test-Path -LiteralPath $tool -PathType Leaf)) { $tools[$name] = $tool }
         }
     }
+	foreach ($architecture in Get-RegistrationArchitectures) {
+		$name = [string]$architecture.name
+		$tool = [string]$tools[$name]
+		if ([string]::IsNullOrWhiteSpace($tool)) {
+			throw "$name TSF unregister tool is unavailable; installation files were preserved"
+		}
+		$output = (& $tool unregister 2>&1) -join "`n"
+		if ($LASTEXITCODE -ne 0) {
+			throw "$name TSF unregister failed with exit ${LASTEXITCODE}: $output"
+		}
+		Wait-RegistrationState $tool $false $false 0
+		$verification = (& $tool verify-absent 2>&1) -join "`n"
+		if ($LASTEXITCODE -ne 0) {
+			throw "$name TSF absence verification failed with exit ${LASTEXITCODE}: $verification"
+		}
+	}
     foreach ($registryPath in @(
         "Registry::HKEY_CURRENT_USER\Software\Classes\CLSID\$clsid",
         "Registry::HKEY_CURRENT_USER\Software\Classes\WOW6432Node\CLSID\$clsid"
@@ -391,8 +459,9 @@ function Invoke-UninstallCore([switch]$ForReinstall, [string[]]$PreserveInstallR
     Stop-TrialRuntime $roots
     Remove-ItemProperty -LiteralPath $runKey -Name $productKeyName -ErrorAction SilentlyContinue
     Remove-InputMethodTip
-    Remove-TrialRegistration $roots
+	Remove-TrialRegistration @($PreserveInstallRoots + $roots)
     Remove-Item -LiteralPath $uninstallKey -Recurse -Force -ErrorAction SilentlyContinue
+	Remove-Item -LiteralPath $legacyMachineUninstallKey -Recurse -Force -ErrorAction SilentlyContinue
     $deferred = $false
     foreach ($root in $roots) {
         if (Test-Path -LiteralPath $root) {
@@ -503,18 +572,17 @@ function Start-TrialRuntime($config) {
 }
 
 function Restore-PreviousInstallation([string]$root, [string]$configText,
-                                     $runSnapshot, $uninstallSnapshot,
+                                     $runSnapshot, $uninstallSnapshot, $legacyUninstallSnapshot,
                                      [bool]$runtimeWasRunning) {
     if ([string]::IsNullOrWhiteSpace($root) -or
         -not (Test-Path -LiteralPath $root -PathType Container)) { return }
-    $x64Tool = Join-Path $root 'x64\YimeTextServiceRegistration.exe'
-    $x86Tool = Join-Path $root 'x86\YimeTextServiceRegistration.exe'
-    Invoke-Registration $x64Tool 'register' `
-        (Join-Path $root 'x64\YimeTextServiceExperiment.dll') 'rollback x64 TSF registration'
-    Wait-RegistrationState $x64Tool $true $true 5
-    Invoke-Registration $x86Tool 'register-com' `
-        (Join-Path $root 'x86\YimeTextServiceExperiment.dll') 'rollback x86 COM registration'
-    Wait-RegistrationState $x86Tool $true $true 5
+	foreach ($architecture in Get-RegistrationArchitectures) {
+		$name = [string]$architecture.name
+		$tool = Join-Path $root "$name\YimeTextServiceRegistration.exe"
+		Invoke-Registration $tool ([string]$architecture.action) `
+			(Join-Path $root "$name\YimeTextServiceExperiment.dll") "rollback $name TSF registration"
+		Wait-RegistrationState $tool $true $true 5
+	}
     Add-InputMethodTip
     if (-not [string]::IsNullOrWhiteSpace($configText)) {
         New-Item -ItemType Directory -Path $stateRootPath -Force | Out-Null
@@ -523,6 +591,7 @@ function Restore-PreviousInstallation([string]$root, [string]$configText,
     }
     Restore-RegistryValueSnapshot $runKey $productKeyName $runSnapshot
     Restore-RegistryKeySnapshot $uninstallKey $uninstallSnapshot
+	Restore-RegistryKeySnapshot $legacyMachineUninstallKey $legacyUninstallSnapshot
     if ($runtimeWasRunning -and -not [string]::IsNullOrWhiteSpace($configText)) {
         $previousConfig = $configText | ConvertFrom-Json
         Start-TrialRuntime $previousConfig | Out-Null
@@ -561,6 +630,8 @@ if ($Action -eq 'Plan') {
         upgrade_rollback_supported = $true
         package_staged_before_preinstall_cleanup = $true
         x64_x86_tsf_registration = $true
+		arm64_tsf_artifacts_required = $true
+		native_registration_architecture = $nativeArchitecture
         taskbar_language_bar_categories = $true
         windows_native_language_bar_only = $true
         user_model_preserved_on_reinstall = $true
@@ -600,6 +671,7 @@ if ([string]::IsNullOrWhiteSpace($previousRoot) -or
 }
 $previousRunSnapshot = Get-RegistryValueSnapshot $runKey $productKeyName
 $previousUninstallSnapshot = Get-RegistryKeySnapshot $uninstallKey
+$previousLegacyUninstallSnapshot = Get-RegistryKeySnapshot $legacyMachineUninstallKey
 $previousStatusPath = Join-Path $stateRootPath 'runtime-status.json'
 $previousRuntimeWasRunning = $false
 if (Test-Path -LiteralPath $previousStatusPath -PathType Leaf) {
@@ -617,6 +689,8 @@ $stagingRoot = Assert-ProductChild ($targetRoot + ".staging-$PID") 'staging root
 if (Test-Path -LiteralPath $stagingRoot) { throw "staging root already exists: $stagingRoot" }
 
 $preinstall = $null
+$preinstallStarted = $false
+$registrationStarted = $false
 try {
     New-Item -ItemType Directory -Path $stagingRoot -Force | Out-Null
     [IO.File]::WriteAllText((Join-Path $stagingRoot 'install-metadata.json'),
@@ -628,6 +702,7 @@ try {
     $maintenanceRoot = Join-Path $stagingRoot 'maintenance'
     New-Item -ItemType Directory -Path $maintenanceRoot -Force | Out-Null
     Copy-Item -LiteralPath $PSCommandPath -Destination (Join-Path $maintenanceRoot 'Manage-YimeCoreTrial.ps1') -Force
+	$null = Assert-PrivilegedPackageCopy $stagingRoot $package
     $metadata = [ordered]@{
         schema_version = 'yimecore-trial-install-v1'
         product_key = $productKeyName
@@ -640,20 +715,24 @@ try {
     }
     [IO.File]::WriteAllText((Join-Path $stagingRoot 'install-metadata.json'),
         (($metadata | ConvertTo-Json -Depth 4) + "`n"), $utf8NoBom)
+    $preinstallStarted = $true
     $preinstall = Invoke-UninstallCore -ForReinstall `
         -PreserveInstallRoots @($previousRoots + $stagingRoot)
     Move-Item -LiteralPath $stagingRoot -Destination $targetRoot
+	$null = Assert-PrivilegedPackageCopy $targetRoot $package
 
-    $x64Tool = Join-Path $targetRoot 'x64\YimeTextServiceRegistration.exe'
-    $x86Tool = Join-Path $targetRoot 'x86\YimeTextServiceRegistration.exe'
-    Wait-RegistrationState $x64Tool $false $false 0
-    Wait-RegistrationState $x86Tool $false $false 0
-    Invoke-Registration $x64Tool 'register' `
-        (Join-Path $targetRoot 'x64\YimeTextServiceExperiment.dll') 'x64 TSF registration'
-    Wait-RegistrationState $x64Tool $true $true 5
-    Invoke-Registration $x86Tool 'register-com' `
-        (Join-Path $targetRoot 'x86\YimeTextServiceExperiment.dll') 'x86 COM registration'
-    Wait-RegistrationState $x86Tool $true $true 5
+	foreach ($architecture in Get-RegistrationArchitectures) {
+		$tool = Join-Path $targetRoot (([string]$architecture.name) + '\YimeTextServiceRegistration.exe')
+		Wait-RegistrationState $tool $false $false 0
+	}
+	$registrationStarted = $true
+	foreach ($architecture in Get-RegistrationArchitectures) {
+		$name = [string]$architecture.name
+		$tool = Join-Path $targetRoot "$name\YimeTextServiceRegistration.exe"
+		Invoke-Registration $tool ([string]$architecture.action) `
+			(Join-Path $targetRoot "$name\YimeTextServiceExperiment.dll") "$name TSF registration"
+		Wait-RegistrationState $tool $true $true 5
+	}
     Add-InputMethodTip
 
     $runtimeConfig = Write-RuntimeConfiguration $targetRoot
@@ -667,7 +746,7 @@ try {
     }
 
     $installedScript = Join-Path $targetRoot 'maintenance\Manage-YimeCoreTrial.ps1'
-    $uninstallCommand = '{0} -NoProfile -ExecutionPolicy Bypass -File {1} -Action Uninstall -Force -StateRoot {2} -TargetUserSid {3}' -f
+    $uninstallCommand = '{0} -NoProfile -ExecutionPolicy Bypass -File {1} -Action Uninstall -StateRoot {2} -TargetUserSid {3}' -f
         (Quote-Argument $windowsPowerShell), (Quote-Argument $installedScript),
         (Quote-Argument $stateRootPath), (Quote-Argument $TargetUserSid)
     New-Item -Path $uninstallKey -Force | Out-Null
@@ -689,6 +768,9 @@ try {
         New-ItemProperty -LiteralPath $uninstallKey -Name $entry.Key -Value $entry.Value `
             -PropertyType $type -Force | Out-Null
     }
+	# Migrate pre-fix machine-wide visibility to the target user's Installed Apps
+	# hive. Maintenance still requires the same initiating SID.
+	Remove-Item -LiteralPath $legacyMachineUninstallKey -Recurse -Force -ErrorAction SilentlyContinue
 
     $runtimeStatus = if ($NoLaunch) { $null } else { Start-TrialRuntime $runtimeConfig }
     foreach ($oldRoot in $previousRoots) {
@@ -714,11 +796,15 @@ try {
     $failure = $_
     $rollbackFailure = $null
     try {
-        if ($preinstall) {
-            Invoke-UninstallCore -ForReinstall -PreserveInstallRoots $previousRoots | Out-Null
+        if ($preinstallStarted) {
+			if ($registrationStarted) {
+				Invoke-UninstallCore -ForReinstall `
+					-PreserveInstallRoots @($previousRoots + $targetRoot) | Out-Null
+			}
             if (Test-Path -LiteralPath $targetRoot) { Remove-ProductTree $targetRoot | Out-Null }
             Restore-PreviousInstallation $previousRoot $previousConfigText `
-                $previousRunSnapshot $previousUninstallSnapshot $previousRuntimeWasRunning
+				$previousRunSnapshot $previousUninstallSnapshot $previousLegacyUninstallSnapshot `
+				$previousRuntimeWasRunning
         }
         if (Test-Path -LiteralPath $stagingRoot) { Remove-ProductTree $stagingRoot | Out-Null }
     } catch {

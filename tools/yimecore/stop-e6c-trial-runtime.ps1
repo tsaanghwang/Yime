@@ -8,16 +8,27 @@ param(
 $ErrorActionPreference = 'Stop'
 $stateRootPath = [IO.Path]::GetFullPath($StateRoot)
 $configPath = Join-Path $stateRootPath 'runtime-config.json'
-if (Test-Path -LiteralPath $configPath -PathType Leaf) {
-    $config = Get-Content -LiteralPath $configPath -Raw -Encoding UTF8 | ConvertFrom-Json
-    if (Test-Path -LiteralPath ([string]$config.runtime_path) -PathType Leaf) {
-        $argumentLine = '-stop -install-root "{0}" -broker "{1}" -state-root "{2}"' -f
-            ([string]$config.install_root), ([string]$config.broker_path), ([string]$config.state_root)
-        $stopper = Start-Process -FilePath ([string]$config.runtime_path) -ArgumentList $argumentLine -WindowStyle Hidden -Wait -PassThru
-        if ($stopper.ExitCode -ne 0) {
-            throw "E6-C trial runtime stop request failed with exit $($stopper.ExitCode)"
-        }
-    }
+if (-not (Test-Path -LiteralPath $configPath -PathType Leaf)) {
+	throw "cannot verify E6-C trial runtime state because configuration is missing: $configPath"
+}
+$config = Get-Content -LiteralPath $configPath -Raw -Encoding UTF8 | ConvertFrom-Json
+foreach ($property in @('runtime_path', 'broker_path', 'install_root', 'state_root')) {
+	if ([string]::IsNullOrWhiteSpace([string]$config.$property)) {
+		throw "invalid E6-C trial runtime configuration: missing $property"
+	}
+}
+if (-not ([IO.Path]::GetFullPath([string]$config.state_root)).Equals(
+		$stateRootPath, [StringComparison]::OrdinalIgnoreCase)) {
+	throw 'configured E6-C state root does not match the requested state root'
+}
+if (-not (Test-Path -LiteralPath ([string]$config.runtime_path) -PathType Leaf)) {
+	throw "configured E6-C runtime is unavailable: $($config.runtime_path)"
+}
+$argumentLine = '-stop -install-root "{0}" -broker "{1}" -state-root "{2}"' -f
+	([string]$config.install_root), ([string]$config.broker_path), ([string]$config.state_root)
+$stopper = Start-Process -FilePath ([string]$config.runtime_path) -ArgumentList $argumentLine -WindowStyle Hidden -Wait -PassThru
+if ($stopper.ExitCode -ne 0) {
+	throw "E6-C trial runtime stop request failed with exit $($stopper.ExitCode)"
 }
 if ($DisableAutoStart) {
     $runKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'

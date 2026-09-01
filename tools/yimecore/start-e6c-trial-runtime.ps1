@@ -43,43 +43,57 @@ if ($brokerRecord.Count -ne 1 -or
 $argumentLine = '-install-root "{0}" -broker "{1}" -state-root "{2}" -no-toolbar' -f
     ([string]$config.install_root), ([string]$config.broker_path), ([string]$config.state_root)
 $runtime = Start-Process -FilePath ([string]$config.runtime_path) -ArgumentList $argumentLine -WindowStyle Hidden -PassThru
-$statusPath = Join-Path ([string]$config.state_root) 'runtime-status.json'
-$deadline = (Get-Date).AddSeconds($TimeoutSeconds)
-do {
-    Start-Sleep -Milliseconds 100
-    if (Test-Path -LiteralPath $statusPath -PathType Leaf) {
-        try {
-            $status = Get-Content -LiteralPath $statusPath -Raw -Encoding UTF8 | ConvertFrom-Json
-            if ($status.state -eq 'running' -and [int]$status.broker_pid -gt 0) {
-                $broker = Get-CimInstance Win32_Process -Filter "ProcessId = $([int]$status.broker_pid)"
-                $path = if ($broker) { [string]$broker.ExecutablePath } else { '' }
-                $commandLine = if ($broker) { [string]$broker.CommandLine } else { '' }
-                $pathMatchesWhenAvailable = [string]::IsNullOrWhiteSpace($path) -or
-                    ([IO.Path]::GetFullPath($path)).Equals($expectedBrokerPath, [StringComparison]::OrdinalIgnoreCase)
-                $commandLineMatchesWhenAvailable = [string]::IsNullOrWhiteSpace($commandLine) -or
-                    ($commandLine.IndexOf('-index-root', [StringComparison]::OrdinalIgnoreCase) -ge 0 -and
-                     $commandLine.IndexOf('-user-model-snapshot', [StringComparison]::OrdinalIgnoreCase) -ge 0 -and
-                     $commandLine.IndexOf('-index-control-manifest', [StringComparison]::OrdinalIgnoreCase) -ge 0)
-                if ($broker -and [int]$status.runtime_pid -eq $runtime.Id -and
-                    [int]$broker.ParentProcessId -eq $runtime.Id -and
-                    ([string]$broker.Name).Equals('YimeBroker.exe', [StringComparison]::OrdinalIgnoreCase) -and
-                    $pathMatchesWhenAvailable -and $commandLineMatchesWhenAvailable) {
-                    $status
-                    return
-                }
-            }
-            if ($status.state -eq 'failed') {
-                throw "E6-C trial runtime failed: $($status.last_error)"
-            }
-        } catch [System.Management.Automation.RuntimeException] {
-            throw
-        } catch {
-            # The status file is atomically replaced; retry a transient read/parse race.
-        }
-    }
-} while ((Get-Date) -lt $deadline)
+try {
+	$statusPath = Join-Path ([string]$config.state_root) 'runtime-status.json'
+	$deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+	do {
+		Start-Sleep -Milliseconds 100
+		if (Test-Path -LiteralPath $statusPath -PathType Leaf) {
+			try {
+				$status = Get-Content -LiteralPath $statusPath -Raw -Encoding UTF8 | ConvertFrom-Json
+				if ($status.state -eq 'running' -and [int]$status.broker_pid -gt 0) {
+					$broker = Get-CimInstance Win32_Process -Filter "ProcessId = $([int]$status.broker_pid)"
+					$path = if ($broker) { [string]$broker.ExecutablePath } else { '' }
+					$commandLine = if ($broker) { [string]$broker.CommandLine } else { '' }
+					$pathMatchesWhenAvailable = [string]::IsNullOrWhiteSpace($path) -or
+						([IO.Path]::GetFullPath($path)).Equals($expectedBrokerPath, [StringComparison]::OrdinalIgnoreCase)
+					$commandLineMatchesWhenAvailable = [string]::IsNullOrWhiteSpace($commandLine) -or
+						($commandLine.IndexOf('-index-root', [StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+						 $commandLine.IndexOf('-user-model-snapshot', [StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+						 $commandLine.IndexOf('-index-control-manifest', [StringComparison]::OrdinalIgnoreCase) -ge 0)
+					if ($broker -and [int]$status.runtime_pid -eq $runtime.Id -and
+						[int]$broker.ParentProcessId -eq $runtime.Id -and
+						([string]$broker.Name).Equals('YimeBroker.exe', [StringComparison]::OrdinalIgnoreCase) -and
+						$pathMatchesWhenAvailable -and $commandLineMatchesWhenAvailable) {
+						$status
+						return
+					}
+				}
+				if ($status.state -eq 'failed') {
+					throw "E6-C trial runtime failed: $($status.last_error)"
+				}
+			} catch [System.Management.Automation.RuntimeException] {
+				throw
+			} catch {
+				# The status file is atomically replaced; retry a transient read/parse race.
+			}
+		}
+	} while ((Get-Date) -lt $deadline)
 
-if ($runtime.HasExited) {
-    throw "E6-C trial runtime exited before becoming ready (exit $($runtime.ExitCode))"
+	if ($runtime.HasExited) {
+		throw "E6-C trial runtime exited before becoming ready (exit $($runtime.ExitCode))"
+	}
+	throw "E6-C trial runtime did not become ready within $TimeoutSeconds seconds"
+} catch {
+	$startupFailure = $_
+	# Only the exact process created by this invocation is eligible for rollback.
+	# Its kill-on-close Job owns any Broker/toolbar children.
+	if (-not $runtime.HasExited) {
+		Stop-Process -Id $runtime.Id -Force -ErrorAction SilentlyContinue
+		$runtime.WaitForExit(5000) | Out-Null
+	}
+	if (-not $runtime.HasExited) {
+		throw "${startupFailure}; cleanup could not terminate runtime PID $($runtime.Id)"
+	}
+	throw $startupFailure
 }
-throw "E6-C trial runtime did not become ready within $TimeoutSeconds seconds"

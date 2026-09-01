@@ -55,6 +55,18 @@ function Get-PeSubsystem([string]$path) {
         $stream.Dispose()
     }
 }
+function Get-PeMachine([string]$path) {
+	$stream = [IO.File]::OpenRead($path)
+	try {
+		$reader = [IO.BinaryReader]::new($stream)
+		$stream.Position = 0x3c
+		$peOffset = $reader.ReadInt32()
+		$stream.Position = $peOffset + 4
+		return $reader.ReadUInt16()
+	} finally {
+		$stream.Dispose()
+	}
+}
 $inputToolbarSubsystem = if (Test-Path -LiteralPath $inputToolbar -PathType Leaf) {
     Get-PeSubsystem $inputToolbar
 } else { 0 }
@@ -64,11 +76,18 @@ $longestInstallRoot = Join-Path $env:ProgramFiles `
     ('YimeCore Experimental Trial\yimecore-e6c-' + ('f' * 64))
 $longestAutoStartValue = ('"{0}" -no-toolbar' -f `
     (Join-Path $longestInstallRoot 'bin\YimeCoreTrialRuntime.exe'))
+$stagedValidationIndex = $managerText.IndexOf('Assert-PrivilegedPackageCopy $stagingRoot $package')
+$preinstallIndex = $managerText.IndexOf('$preinstall = Invoke-UninstallCore')
+$installedValidationIndex = $managerText.IndexOf('Assert-PrivilegedPackageCopy $targetRoot $package')
+$registrationAfterValidationIndex = if ($installedValidationIndex -ge 0) {
+	$managerText.IndexOf('$registrationStarted = $true', $installedValidationIndex)
+} else { -1 }
 $result = [ordered]@{
     tool_version = 'yimecore-e6c-installation-contract-v1'
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     manager_sha256 = (Get-FileHash -LiteralPath $manager -Algorithm SHA256).Hash.ToLowerInvariant()
-    installed_apps_entry_planned = [bool]([string]$plan.installed_apps_registry_key -like '*\Uninstall\YimeCoreExperimentalTrial')
+	installed_apps_entry_planned = [bool]([string]$plan.installed_apps_registry_key -eq
+		"Registry::HKEY_USERS\$currentUserSid\Software\Microsoft\Windows\CurrentVersion\Uninstall\YimeCoreExperimentalTrial")
     autostart_targets_calling_user = [bool](
         [string]$plan.target_user_sid -eq $currentUserSid -and
         [string]$plan.autostart_registry_key -eq
@@ -77,18 +96,35 @@ $result = [ordered]@{
         $managerText -match "'-TargetUserSid', \(Quote-Argument \`$TargetUserSid\)" -and
         $managerText -match 'Registry::HKEY_USERS\\\$TargetUserSid\\Software' -and
         $managerText -match '\$effectiveUserSid\.Equals\(\$TargetUserSid' -and
-        $managerText -match "-Action Uninstall -Force -StateRoot \{2\} -TargetUserSid \{3\}")
+        $managerText -match "-Action Uninstall -StateRoot \{2\} -TargetUserSid \{3\}" -and
+		$managerText -notmatch "-Action Uninstall -Force -StateRoot")
     force_cleanup_before_install = [bool]$plan.forced_preinstall_cleanup
     failed_upgrade_restores_previous_install = [bool](
         $plan.upgrade_rollback_supported -and
         $plan.package_staged_before_preinstall_cleanup -and
         $managerText.Contains('function Restore-PreviousInstallation') -and
-        $managerText.Contains('-PreserveInstallRoots $previousRoots'))
+		$managerText.Contains('-PreserveInstallRoots @($previousRoots + $targetRoot)'))
+	preinstall_failure_restores_previous_install = [bool](
+		$managerText.Contains('$preinstallStarted = $false') -and
+		$managerText.Contains('$preinstallStarted = $true') -and
+		$managerText.Contains('if ($preinstallStarted)') -and
+		$managerText.IndexOf('$preinstallStarted = $true') -lt $preinstallIndex)
     x64_x86_tsf_registration_planned = [bool]$plan.x64_x86_tsf_registration
     learning_sentinel_preserved = [bool]$sentinelPreserved
     invalid_non_trial_root_rejected = [bool]$invalidRootRejected
     exact_trial_clsid_scoped = [bool]($managerText.Contains('{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'))
-    secondary_architecture_com_only = [bool]($managerText -match 'Invoke-Registration \$x86Tool ''register-com''')
+	secondary_architecture_com_only = [bool](
+		$managerText -match "name = 'x86'; action = 'register-com'" -and
+		$managerText -match "name = 'x64'; action = 'register-com'")
+	arm64_tsf_packaged = [bool]((@(
+		'YimeTextServiceExperiment.dll', 'YimeTextServiceRegistration.exe', 'YimeRegisteredHostTests.exe'
+	) | Where-Object { -not (Test-Path -LiteralPath (Join-Path $packageRootPath ('arm64\' + $_)) -PathType Leaf) }).Count -eq 0)
+	arm64_dll_machine_verified = [bool]((Test-Path -LiteralPath (Join-Path $packageRootPath 'arm64\YimeTextServiceExperiment.dll')) -and
+		(Get-PeMachine (Join-Path $packageRootPath 'arm64\YimeTextServiceExperiment.dll')) -eq 0xAA64)
+	arm64_fail_fast_and_registration_planned = [bool](
+		$plan.arm64_tsf_artifacts_required -and
+		$managerText.Contains("'arm64\YimeTextServiceExperiment.dll'") -and
+		$managerText.Contains("if (`$nativeArchitecture -eq 'ARM64')"))
     profile_keyboard_icon_packaged = [bool](Test-Path -LiteralPath $profileIcon -PathType Leaf)
     yinyuan_private_font_packaged = [bool](Test-Path -LiteralPath `
         (Join-Path $packageRootPath 'data\fonts\YinYuan-Regular.ttf') -PathType Leaf)
@@ -129,6 +165,19 @@ $result = [ordered]@{
             $_.Name -like '*DesktopTools*' -or $_.Name -like '*InputToolbar*'
         }).Count -eq 0)
     registration_state_convergence_wait = [bool]($managerText.Contains('function Wait-RegistrationState'))
+	privileged_copy_revalidated_before_cleanup = [bool](
+		$managerText.Contains('function Assert-PrivilegedPackageCopy') -and
+		$stagedValidationIndex -ge 0 -and $stagedValidationIndex -lt $preinstallIndex -and
+		$installedValidationIndex -ge 0 -and $installedValidationIndex -lt $registrationAfterValidationIndex)
+	uninstall_requires_verified_registration_absence = [bool](
+		$managerText.Contains('& $tool verify-absent') -and
+		$managerText.Contains('installation files were preserved') -and
+		$managerText -notmatch '\$LASTEXITCODE -ne 0 -and -not \$Force')
+	pre_registration_validation_failure_avoids_untrusted_cleanup_tool = [bool](
+		$managerText.Contains('$registrationStarted = $false') -and
+		$managerText.Contains('$registrationStarted = $true') -and
+		$managerText.Contains('if ($registrationStarted)') -and
+		$managerText.IndexOf('$registrationStarted = $true') -gt $installedValidationIndex)
     taskbar_language_bar_categories = [bool]$plan.taskbar_language_bar_categories
     windows_native_language_bar_only = [bool]($managerText.Contains('-no-toolbar'))
     autostart_uses_runtime_defaults = [bool]$autoStartTemplate.Success
@@ -143,11 +192,15 @@ if ($result.installed_apps_entry_planned -ne $true -or
     $result.elevation_preserves_target_user_sid -ne $true -or
     $result.force_cleanup_before_install -ne $true -or
     $result.failed_upgrade_restores_previous_install -ne $true -or
+	$result.preinstall_failure_restores_previous_install -ne $true -or
     $result.x64_x86_tsf_registration_planned -ne $true -or
     $result.learning_sentinel_preserved -ne $true -or
     $result.invalid_non_trial_root_rejected -ne $true -or
     $result.exact_trial_clsid_scoped -ne $true -or
     $result.secondary_architecture_com_only -ne $true -or
+	$result.arm64_tsf_packaged -ne $true -or
+	$result.arm64_dll_machine_verified -ne $true -or
+	$result.arm64_fail_fast_and_registration_planned -ne $true -or
     $result.profile_keyboard_icon_packaged -ne $true -or
     $result.yinyuan_private_font_packaged -ne $true -or
     $result.trial_tools_packaged -ne $true -or
@@ -157,6 +210,9 @@ if ($result.installed_apps_entry_planned -ne $true -or
     $result.native_input_toolbar_windows_gui -ne $true -or
     $result.input_toolbar_powershell_ui_absent -ne $true -or
     $result.registration_state_convergence_wait -ne $true -or
+	$result.privileged_copy_revalidated_before_cleanup -ne $true -or
+	$result.uninstall_requires_verified_registration_absence -ne $true -or
+	$result.pre_registration_validation_failure_avoids_untrusted_cleanup_tool -ne $true -or
     $result.taskbar_language_bar_categories -ne $true -or
     $result.windows_native_language_bar_only -ne $true -or
     $result.autostart_uses_runtime_defaults -ne $true -or

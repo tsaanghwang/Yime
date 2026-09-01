@@ -172,28 +172,39 @@ HRESULT registerProfileAndCategories(const wchar_t* dllPath) {
     return result;
 }
 
-void unregisterProfileAndCategories() {
+HRESULT unregisterProfileAndCategories() {
+    HRESULT firstFailure = S_OK;
     ITfCategoryMgr* categories = nullptr;
-    if (SUCCEEDED(CoCreateInstance(CLSID_TF_CategoryMgr, nullptr, CLSCTX_INPROC_SERVER,
-                                   __uuidof(ITfCategoryMgr), reinterpret_cast<void**>(&categories)))) {
+    HRESULT result = CoCreateInstance(CLSID_TF_CategoryMgr, nullptr, CLSCTX_INPROC_SERVER,
+                                      __uuidof(ITfCategoryMgr), reinterpret_cast<void**>(&categories));
+    if (SUCCEEDED(result)) {
         for (const GUID* category : kTipCategories) {
-            categories->UnregisterCategory(CLSID_YimeTextServiceExperiment, *category,
-                                           CLSID_YimeTextServiceExperiment);
+            result = categories->UnregisterCategory(CLSID_YimeTextServiceExperiment, *category,
+                                                    CLSID_YimeTextServiceExperiment);
+            if (FAILED(result) && SUCCEEDED(firstFailure)) firstFailure = result;
         }
         categories->Release();
+    } else {
+        firstFailure = result;
     }
     ITfInputProcessorProfileMgr* profiles = nullptr;
-    if (SUCCEEDED(CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
-                                   __uuidof(ITfInputProcessorProfileMgr), reinterpret_cast<void**>(&profiles)))) {
-        profiles->UnregisterProfile(CLSID_YimeTextServiceExperiment, kLanguageId,
-                                    GUID_YimeTextServiceExperimentProfile, 0);
+    result = CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
+                              __uuidof(ITfInputProcessorProfileMgr), reinterpret_cast<void**>(&profiles));
+    if (SUCCEEDED(result)) {
+        result = profiles->UnregisterProfile(CLSID_YimeTextServiceExperiment, kLanguageId,
+                                             GUID_YimeTextServiceExperimentProfile, 0);
+        if (FAILED(result) && SUCCEEDED(firstFailure)) firstFailure = result;
         profiles->Release();
+    } else if (SUCCEEDED(firstFailure)) {
+        firstFailure = result;
     }
+    return firstFailure;
 }
 
 HRESULT unregisterAll() {
-    unregisterProfileAndCategories();
-    return unregisterComServer();
+    const HRESULT profileResult = unregisterProfileAndCategories();
+    const HRESULT comResult = unregisterComServer();
+    return FAILED(profileResult) ? profileResult : comResult;
 }
 
 HRESULT registerAll(const wchar_t* dllPath) {
