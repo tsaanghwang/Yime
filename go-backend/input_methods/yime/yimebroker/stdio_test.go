@@ -56,3 +56,33 @@ func TestServeLinesRejectsOversizedFrame(t *testing.T) {
 		t.Fatal("oversized frame unexpectedly succeeded")
 	}
 }
+
+func TestServeLinesPreservesStrictWireErrorsWithoutOpeningSessions(t *testing.T) {
+	dispatcher := newMemoryDispatcher(t, Config{})
+	for _, test := range []struct {
+		name string
+		line string
+		code ErrorCode
+	}{
+		{name: "unknown field", line: `{"version":1,"sequence":1,"operation":"open","unknown":true}`, code: CodeInvalidRequest},
+		{name: "unsupported version", line: `{"version":2,"sequence":1,"operation":"open"}`, code: CodeUnsupportedVersion},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			var output bytes.Buffer
+			if err := ServeLines(context.Background(), strings.NewReader(test.line+"\n"),
+				&output, dispatcher, TrustedClient{ID: "pipe-client"}); err != nil {
+				t.Fatal(err)
+			}
+			var response Response
+			if err := json.Unmarshal(bytes.TrimSpace(output.Bytes()), &response); err != nil {
+				t.Fatal(err)
+			}
+			if response.Error == nil || response.Error.Code != test.code {
+				t.Fatalf("response = %+v, want error %q", response, test.code)
+			}
+			if dispatcher.ActiveSessions() != 0 {
+				t.Fatalf("invalid request opened a session: active=%d", dispatcher.ActiveSessions())
+			}
+		})
+	}
+}

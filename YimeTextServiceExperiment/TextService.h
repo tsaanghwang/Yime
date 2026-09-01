@@ -89,6 +89,7 @@ private:
     bool threadEventSinkAdvised_ = false;
     DWORD threadEventSinkCookie_ = TF_INVALID_COOKIE;
     bool keyEventFocused_ = true;
+    bool selectionKeyDiagnosticsEnabled_ = false;
     bool compositionDocumentFocused_ = true;
     yime::experiment::SurfaceSession surface_;
     yime::experiment::PunctuationPalette punctuationPalette_;

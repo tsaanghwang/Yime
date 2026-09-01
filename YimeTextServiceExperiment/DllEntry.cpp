@@ -54,7 +54,13 @@ void YimeModuleAddRef() noexcept { ++moduleReferences; }
 void YimeModuleRelease() noexcept { --moduleReferences; }
 long YimeModuleRefCount() noexcept { return moduleReferences.load(); }
 
-extern "C" BOOL WINAPI DllMain(HINSTANCE, DWORD, void*) { return TRUE; }
+extern "C" BOOL WINAPI DllMain(HINSTANCE, DWORD, void*) {
+    // This DLL intentionally uses the static MSVC CRT (/MT). The static CRT
+    // requires thread attach/detach notifications, so calling
+    // DisableThreadLibraryCalls here would violate its documented contract.
+    // Keep DllMain otherwise empty to avoid work under the loader lock.
+    return TRUE;
+}
 
 extern "C" HRESULT __stdcall DllCanUnloadNow() {
     return YimeModuleRefCount() == 0 ? S_OK : S_FALSE;

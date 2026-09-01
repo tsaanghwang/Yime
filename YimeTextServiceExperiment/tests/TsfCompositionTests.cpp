@@ -156,6 +156,10 @@ int wmain(int argc, wchar_t** argv) {
                                           std::to_wstring(GetCurrentProcessId());
         CreateDirectoryW(localAppData.c_str(), nullptr);
         SetEnvironmentVariableW(L"LOCALAPPDATA", localAppData.c_str());
+        SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_KEY_DIAGNOSTICS", nullptr);
+        const std::wstring selectionDiagnosticPath = localAppData +
+            L"\\YimeCore Experimental Trial\\evidence\\tsf-key-host.log";
+        DeleteFileW(selectionDiagnosticPath.c_str());
         yime::experiment::ExperimentSettings seededSettings;
         if (!yime::experiment::ApplyExperimentSettingsCommand(
                 yime::experiment::ExperimentSettingsCommand::Chinese,
@@ -872,11 +876,16 @@ int wmain(int argc, wchar_t** argv) {
         document->Pop(TF_POPF_ALL);
         context->Release();
         document->Release();
+        if (GetFileAttributesW(selectionDiagnosticPath.c_str()) != INVALID_FILE_ATTRIBUTES) {
+            throw std::runtime_error("default TSF key path wrote the opt-in diagnostic log");
+        }
+        std::cout << "selection_key_diagnostics_default_off=true\n";
         threadManager->Deactivate();
         threadManager->Release();
         FreeLibrary(module);
         SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_PIPE", nullptr);
         SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", nullptr);
+        SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_KEY_DIAGNOSTICS", nullptr);
         CoUninitialize();
         std::cout << "YimeTextService E6-B2b TSF composition passed architecture_bits=" << sizeof(void*) * 8 << '\n';
         return 0;

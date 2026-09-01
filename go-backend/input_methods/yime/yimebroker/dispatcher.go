@@ -104,6 +104,14 @@ func NewDispatcher(factory EngineFactory, config Config) (*Dispatcher, error) {
 // HandleJSON includes strict wire decoding and response encoding in the E5-A
 // replay path. Trusted client identity remains a separate argument.
 func (d *Dispatcher) HandleJSON(ctx context.Context, client TrustedClient, data []byte) []byte {
+	_, _, encoded, _ := d.handleJSON(ctx, client, data)
+	return encoded
+}
+
+// handleJSON returns the decoded request and typed response alongside the wire
+// encoding so transports can track connection-owned sessions without decoding
+// either JSON document a second time.
+func (d *Dispatcher) handleJSON(ctx context.Context, client TrustedClient, data []byte) (Request, Response, []byte, bool) {
 	request, err := DecodeRequest(data)
 	if err != nil {
 		code := CodeInvalidRequest
@@ -113,15 +121,17 @@ func (d *Dispatcher) HandleJSON(ctx context.Context, client TrustedClient, data 
 		if len(data) <= MaxMessageBytes && json.Unmarshal(data, &versionProbe) == nil && versionProbe.Version != 0 && versionProbe.Version != ProtocolVersion {
 			code = CodeUnsupportedVersion
 		}
-		encoded, _ := EncodeResponse(errorResponse(0, "", code, err))
-		return encoded
+		response := errorResponse(0, "", code, err)
+		encoded, _ := EncodeResponse(response)
+		return Request{}, response, encoded, false
 	}
 	response := d.Dispatch(ctx, client, request)
 	encoded, err := EncodeResponse(response)
 	if err != nil {
-		encoded, _ = EncodeResponse(errorResponse(request.Sequence, request.SessionID, CodeEngine, err))
+		response = errorResponse(request.Sequence, request.SessionID, CodeEngine, err)
+		encoded, _ = EncodeResponse(response)
 	}
-	return encoded
+	return request, response, encoded, true
 }
 
 func (d *Dispatcher) Dispatch(ctx context.Context, client TrustedClient, request Request) (response Response) {

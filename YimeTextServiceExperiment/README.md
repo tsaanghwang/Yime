@@ -51,6 +51,9 @@ cmake --build build_yts --config Release
 - 裸数字键永远用于组码，绝不选候选；候选选择只用 `Shift+1..9`。
 - Broker 每次响应是完整权威快照；表层不得回填旧的 sentence/候选缓存。
 - Broker 不可达时按键必须报告"未吃掉"，宿主文本保持不变。
+- 选择键宿主诊断默认关闭，普通按键路径不得访问诊断文件。仅在启动宿主前设置
+  `YIME_TEXTSERVICE_EXPERIMENT_KEY_DIAGNOSTICS=1` 时写入 `evidence/tsf-key-host.log`；
+  该文件达到 1 MiB 后停止追加，删除后才重新采集。
 - 段候选模式只在显式点击句段后进入；替换后由 Broker 决定恢复全局候选。
 - 注册/反注册只经 `YimeTextServiceRegistration.exe`。AMD64 系统使用 x64 工具注册
   profile、x86 工具补齐 COM 视图；ARM64 系统由 ARM64 工具注册 profile，并由

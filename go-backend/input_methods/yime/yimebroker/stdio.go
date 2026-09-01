@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"crypto/rand"
-	"encoding/json"
 	"fmt"
 	"io"
 )
@@ -37,17 +36,13 @@ func ServeLines(ctx context.Context, input io.Reader, output io.Writer, dispatch
 			return fmt.Errorf("broker request exceeds %d bytes", MaxMessageBytes)
 		}
 		frame := append([]byte(nil), scanner.Bytes()...)
-		request, requestErr := DecodeRequest(frame)
-		response := dispatcher.HandleJSON(ctx, client, frame)
-		if requestErr == nil {
-			var decoded Response
-			if json.Unmarshal(response, &decoded) == nil && decoded.Error == nil {
-				switch request.Operation {
-				case OpenSession:
-					connectionSessions[decoded.SessionID] = struct{}{}
-				case CloseSession:
-					delete(connectionSessions, request.SessionID)
-				}
+		request, decoded, response, requestValid := dispatcher.handleJSON(ctx, client, frame)
+		if requestValid && decoded.Error == nil {
+			switch request.Operation {
+			case OpenSession:
+				connectionSessions[decoded.SessionID] = struct{}{}
+			case CloseSession:
+				delete(connectionSessions, request.SessionID)
 			}
 		}
 		if _, err := writer.Write(response); err != nil {

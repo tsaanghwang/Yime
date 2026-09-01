@@ -9,6 +9,7 @@
 #include "CompositionEditSession.h"
 #include "CandidateListUIElement.h"
 #include "BrokerEndpoint.h"
+#include "DiagnosticPolicy.h"
 #include "ExperimentSettings.h"
 #include "KeyContract.h"
 #include "LanguageBarItem.h"
@@ -36,12 +37,12 @@ bool IsSelectionDiagnosticKey(WPARAM key) noexcept {
            (key >= '1' && key <= '9');
 }
 
-void RecordSelectionKeyHostResult(const char* stage, WPARAM key, bool shiftDown,
+void RecordSelectionKeyHostResult(bool diagnosticsEnabled, const char* stage, WPARAM key, bool shiftDown,
                                   bool controlDown, bool altDown, bool keyFocused,
                                   bool asciiMode, bool hasComposition, bool contextMatches,
                                   bool canHandle, bool handled, HRESULT editResult,
                                   std::string errorText = {}) noexcept {
-    if (!stage || !IsSelectionDiagnosticKey(key)) return;
+    if (!diagnosticsEnabled || !stage || !IsSelectionDiagnosticKey(key)) return;
     for (char& character : errorText) {
         if (character == '\r' || character == '\n' || character == '|') character = '_';
     }
@@ -55,7 +56,7 @@ void RecordSelectionKeyHostResult(const char* stage, WPARAM key, bool shiftDown,
     std::filesystem::create_directories(evidence, directoryError);
     if (directoryError) return;
     HANDLE file = CreateFileW((evidence / L"tsf-key-host.log").c_str(), FILE_APPEND_DATA,
-                              FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                              FILE_SHARE_READ | FILE_SHARE_DELETE,
                               nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (file == INVALID_HANDLE_VALUE) return;
     SYSTEMTIME now{};
@@ -71,7 +72,11 @@ void RecordSelectionKeyHostResult(const char* stage, WPARAM key, bool shiftDown,
         altDown ? 1 : 0, keyFocused ? 1 : 0, asciiMode ? 1 : 0,
         hasComposition ? 1 : 0, contextMatches ? 1 : 0, canHandle ? 1 : 0,
         handled ? 1 : 0, static_cast<unsigned long>(editResult), errorText.c_str());
-    if (bytes > 0 && static_cast<size_t>(bytes) < std::size(line)) {
+    LARGE_INTEGER currentSize{};
+    if (bytes > 0 && static_cast<size_t>(bytes) < std::size(line) &&
+        GetFileSizeEx(file, &currentSize) && currentSize.QuadPart >= 0 &&
+        yime::experiment::SelectionKeyDiagnosticCanAppend(
+            static_cast<std::uint64_t>(currentSize.QuadPart), static_cast<size_t>(bytes))) {
         DWORD written = 0;
         WriteFile(file, line, static_cast<DWORD>(bytes), &written, nullptr);
     }
@@ -273,6 +278,7 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
     clientId_ = clientId;
     activationFlags_ = flags;
     keyEventFocused_ = true;
+    selectionKeyDiagnosticsEnabled_ = yime::experiment::SelectionKeyDiagnosticsEnabled();
     HRESULT result = S_OK;
     const bool directTest = GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", nullptr, 0) > 0;
     if (!directTest) {
@@ -352,6 +358,7 @@ STDMETHODIMP YimeTextService::Deactivate() {
     }
     ForgetCompositionContext();
     activationFlags_ = 0;
+    selectionKeyDiagnosticsEnabled_ = false;
     clientId_ = TF_CLIENTID_NULL;
     keyEventFocused_ = false;
     compositionDocumentFocused_ = true;
@@ -473,7 +480,7 @@ HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, 
             surface_.CanHandle(virtualKey, shiftDown, controlDown, altDown);
         *eaten = context && canHandle ? TRUE : FALSE;
         RecordSelectionKeyHostResult(
-            "test", virtualKey, shiftDown, controlDown, altDown, CanAcceptKeys(),
+            selectionKeyDiagnosticsEnabled_, "test", virtualKey, shiftDown, controlDown, altDown, CanAcceptKeys(),
             experimentSettings_.Get().asciiMode, composition_ != nullptr, contextMatches,
             canHandle, *eaten == TRUE, S_OK);
     } catch (...) {
@@ -499,7 +506,7 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
     }
     shiftTap_.OnKeyDown(wParam);
     if (!context || !CanAcceptKeys()) {
-        RecordSelectionKeyHostResult("down-no-focus", wParam, false, false, false,
+        RecordSelectionKeyHostResult(selectionKeyDiagnosticsEnabled_, "down-no-focus", wParam, false, false, false,
                                      CanAcceptKeys(), experimentSettings_.Get().asciiMode,
                                      composition_ != nullptr, false, false, false, S_OK);
         return S_OK;
@@ -562,21 +569,21 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
             return S_OK;
         }
         if (!modeAllows || !contextMatches) {
-            RecordSelectionKeyHostResult("down-mode-context", wParam, shiftDown, controlDown,
+            RecordSelectionKeyHostResult(selectionKeyDiagnosticsEnabled_, "down-mode-context", wParam, shiftDown, controlDown,
                                          altDown, CanAcceptKeys(), experimentSettings_.Get().asciiMode,
                                          composition_ != nullptr, contextMatches, false, false, S_OK);
             return S_OK;
         }
         const bool canHandle = surface_.CanHandle(wParam, shiftDown, controlDown, altDown);
         if (!canHandle) {
-            RecordSelectionKeyHostResult("down-cannot-handle", wParam, shiftDown, controlDown,
+            RecordSelectionKeyHostResult(selectionKeyDiagnosticsEnabled_, "down-cannot-handle", wParam, shiftDown, controlDown,
                                          altDown, CanAcceptKeys(), experimentSettings_.Get().asciiMode,
                                          composition_ != nullptr, contextMatches, false, false, S_OK);
             return S_OK;
         }
         const auto outcome = surface_.HandleVirtualKey(wParam, shiftDown, controlDown, altDown);
         if (!outcome.handled) {
-            RecordSelectionKeyHostResult("down-outcome", wParam, shiftDown, controlDown, altDown,
+            RecordSelectionKeyHostResult(selectionKeyDiagnosticsEnabled_, "down-outcome", wParam, shiftDown, controlDown, altDown,
                                          CanAcceptKeys(), experimentSettings_.Get().asciiMode,
                                          composition_ != nullptr, contextMatches, canHandle, false,
                                          S_OK, outcome.error);
@@ -592,7 +599,7 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
             context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
             &plannedCompositionTermination_, renderedUpdate, &compositionRect, &compositionRectValid);
         if (FAILED(edit)) {
-            RecordSelectionKeyHostResult("down-edit", wParam, shiftDown, controlDown, altDown,
+            RecordSelectionKeyHostResult(selectionKeyDiagnosticsEnabled_, "down-edit", wParam, shiftDown, controlDown, altDown,
                                          CanAcceptKeys(), experimentSettings_.Get().asciiMode,
                                          composition_ != nullptr, contextMatches, canHandle, true,
                                          edit, outcome.error);
@@ -603,7 +610,7 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
         if (composition_) RememberCompositionContext(context);
         UpdateCandidateUI(context, renderedUpdate, compositionRectValid ? &compositionRect : nullptr);
         *eaten = TRUE;
-        RecordSelectionKeyHostResult("down-success", wParam, shiftDown, controlDown, altDown,
+        RecordSelectionKeyHostResult(selectionKeyDiagnosticsEnabled_, "down-success", wParam, shiftDown, controlDown, altDown,
                                      CanAcceptKeys(), experimentSettings_.Get().asciiMode,
                                      composition_ != nullptr, contextMatches, canHandle, true,
                                      edit, outcome.error);

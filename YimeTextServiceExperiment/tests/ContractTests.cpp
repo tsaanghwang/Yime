@@ -18,6 +18,7 @@
 #include "CandidateListUIElement.h"
 #include "CandidatePopup.h"
 #include "CompositionEditSession.h"
+#include "DiagnosticPolicy.h"
 #include "ExperimentSettings.h"
 #include "LanguageBarItem.h"
 #include "OutputTransform.h"
@@ -166,6 +167,32 @@ void expect(bool condition, const char* message) {
     if (!condition) {
         std::cerr << message << '\n';
         ++failures;
+    }
+}
+
+void testDiagnosticPolicy() {
+    wchar_t previous[32]{};
+    const DWORD previousLength = GetEnvironmentVariableW(
+        yime::experiment::kSelectionKeyDiagnosticsEnvironment, previous,
+        static_cast<DWORD>(std::size(previous)));
+    SetEnvironmentVariableW(yime::experiment::kSelectionKeyDiagnosticsEnvironment, nullptr);
+    expect(!yime::experiment::SelectionKeyDiagnosticsEnabled(),
+           "selection-key diagnostics were enabled by default");
+    SetEnvironmentVariableW(yime::experiment::kSelectionKeyDiagnosticsEnvironment, L"0");
+    expect(!yime::experiment::SelectionKeyDiagnosticsEnabled(),
+           "selection-key diagnostics accepted a non-opt-in value");
+    SetEnvironmentVariableW(yime::experiment::kSelectionKeyDiagnosticsEnvironment, L"1");
+    expect(yime::experiment::SelectionKeyDiagnosticsEnabled(),
+           "selection-key diagnostics ignored the explicit opt-in");
+    expect(yime::experiment::SelectionKeyDiagnosticCanAppend(
+               yime::experiment::kSelectionKeyDiagnosticMaxBytes - 1, 1) &&
+               !yime::experiment::SelectionKeyDiagnosticCanAppend(
+                   yime::experiment::kSelectionKeyDiagnosticMaxBytes, 1),
+           "selection-key diagnostic size cap is not enforced at its boundary");
+    if (previousLength > 0 && previousLength < std::size(previous)) {
+        SetEnvironmentVariableW(yime::experiment::kSelectionKeyDiagnosticsEnvironment, previous);
+    } else {
+        SetEnvironmentVariableW(yime::experiment::kSelectionKeyDiagnosticsEnvironment, nullptr);
     }
 }
 
@@ -1429,6 +1456,7 @@ int wmain(int argc, wchar_t** argv) {
         return 2;
     }
     testKeyContract();
+    testDiagnosticPolicy();
     testPunctuationPaletteContract();
     testOutputTransformContract();
     testBrokerEndpoint();
