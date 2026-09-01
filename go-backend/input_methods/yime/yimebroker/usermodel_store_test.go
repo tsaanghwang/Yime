@@ -168,17 +168,33 @@ func TestDurableSentenceLearningUsesOneJournalRecordAndRecoversAllObservations(t
 	if retry.Sentence == nil {
 		t.Fatalf("recovered sentence missing: %#v", retry)
 	}
-	if _, err := recoveredEngine.SelectIdempotent(retry.Sentence.ID, requestID); err != nil ||
+	if _, err := recoveredEngine.SelectIdempotent(retry.Sentence.ID, requestID); !errors.Is(err, yimecore.ErrIdempotencyConflict) ||
 		recovered.Model().Generation() != 1 {
-		t.Fatalf("recovered sentence retry was not idempotent: err=%v generation=%d",
+		t.Fatalf("changed recovered observations did not conflict: err=%v generation=%d",
 			err, recovered.Model().Generation())
 	}
 	if err := recovered.Close(); err != nil {
 		t.Fatal(err)
 	}
 	snapshotData, err := os.ReadFile(snapshot)
-	if err != nil || bytes.Contains(snapshotData, []byte(`"observations"`)) {
-		t.Fatalf("v2 snapshot leaked journal-only observations: err=%v data=%s", err, snapshotData)
+	if err != nil || !bytes.Contains(snapshotData, []byte(`"observations"`)) {
+		t.Fatalf("snapshot lost ordered idempotency observations: err=%v data=%s", err, snapshotData)
+	}
+	reopened, err := OpenDurableUserModel(DurableUserModelConfig{
+		SnapshotPath: snapshot, JournalPath: journal, SourceID: sourceID, CheckpointEvery: 100,
+	})
+	if err != nil {
+		t.Fatalf("checkpointed sentence model did not reopen: %v", err)
+	}
+	defer reopened.Close()
+	reopenedEngine, err := yimecore.NewEngineWithUserModel(index, 9, reopened.Model())
+	if err != nil {
+		t.Fatal(err)
+	}
+	retry = applyTestCode(t, reopenedEngine, "abcd")
+	if _, err := reopenedEngine.SelectIdempotent(retry.Sentence.ID, requestID); !errors.Is(err, yimecore.ErrIdempotencyConflict) ||
+		reopened.Model().Generation() != 1 {
+		t.Fatalf("checkpointed changed observations did not conflict: err=%v generation=%d", err, reopened.Model().Generation())
 	}
 }
 
@@ -224,6 +240,7 @@ func TestDurableUserModelCompactsJournalAndCreatesV1Rollback(t *testing.T) {
 		if err := store.Model().ApplyRecoveredMutation(mutation); err != nil {
 			t.Fatal(err)
 		}
+		store.commit()
 	}
 	deadline := time.Now().Add(2 * time.Second)
 	for store.Stats().Compactions == 0 && time.Now().Before(deadline) {
@@ -261,6 +278,101 @@ func TestDurableUserModelCompactsJournalAndCreatesV1Rollback(t *testing.T) {
 	if err := reopened.Close(); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestDurableUserModelConcurrentCommitAndCheckpointDoesNotDeadlock(t *testing.T) {
+	directory := t.TempDir()
+	snapshot := filepath.Join(directory, "model.json")
+	journal := filepath.Join(directory, "model.journal")
+	index, err := yimecore.NewIndex([]yimecore.Entry{
+		{Text: "甲", Code: "ab", Weight: 100},
+		{Text: "乙", Code: "cd", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	store, err := OpenDurableUserModel(DurableUserModelConfig{
+		SnapshotPath: snapshot, JournalPath: journal, SourceID: "concurrent-checkpoint",
+		CheckpointEvery: 1, CompactEvery: 1_000_000,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	const goroutines = 4
+	const commitsPerGoroutine = 40
+	done := make(chan error, goroutines)
+	for worker := 0; worker < goroutines; worker++ {
+		go func(worker int) {
+			engine, engineErr := yimecore.NewEngineWithUserModel(index, 9, store.Model())
+			if engineErr != nil {
+				done <- engineErr
+				return
+			}
+			code := "ab"
+			if worker%2 != 0 {
+				code = "cd"
+			}
+			for iteration := 0; iteration < commitsPerGoroutine; iteration++ {
+				state := applyCodeWithoutTesting(engine, code)
+				if state.err != nil {
+					done <- state.err
+					return
+				}
+				if len(state.result.State.Candidates) == 0 {
+					done <- errors.New("concurrent engine returned no candidates")
+					return
+				}
+				if _, selectErr := engine.Select(state.result.State.Candidates[0].ID); selectErr != nil {
+					done <- selectErr
+					return
+				}
+			}
+			done <- nil
+		}(worker)
+	}
+	for worker := 0; worker < goroutines; worker++ {
+		select {
+		case workerErr := <-done:
+			if workerErr != nil {
+				t.Fatal(workerErr)
+			}
+		case <-time.After(10 * time.Second):
+			t.Fatal("concurrent selection and checkpoint deadlocked")
+		}
+	}
+	if err := store.Close(); err != nil {
+		t.Fatal(err)
+	}
+	reopened, err := OpenDurableUserModel(DurableUserModelConfig{
+		SnapshotPath: snapshot, JournalPath: journal, SourceID: "concurrent-checkpoint",
+		CheckpointEvery: 1,
+	})
+	if err != nil {
+		t.Fatalf("reopen after concurrent checkpoints: %v", err)
+	}
+	defer reopened.Close()
+	wantGeneration := uint64(goroutines * commitsPerGoroutine)
+	if reopened.Model().Generation() != wantGeneration {
+		t.Fatalf("reopened generation=%d want=%d", reopened.Model().Generation(), wantGeneration)
+	}
+}
+
+type applyResult struct {
+	result engineapi.Result
+	err    error
+}
+
+func applyCodeWithoutTesting(engine *yimecore.Engine, code string) applyResult {
+	var result engineapi.Result
+	for _, value := range code {
+		var err error
+		result, err = engine.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: string(value)})
+		if err != nil {
+			return applyResult{err: err}
+		}
+	}
+	return applyResult{result: result}
 }
 
 func TestDurableUserModelRejectsCompleteJournalCorruption(t *testing.T) {

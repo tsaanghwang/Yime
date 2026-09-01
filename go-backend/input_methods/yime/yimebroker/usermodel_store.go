@@ -72,6 +72,7 @@ type journalRecord struct {
 
 type durableRequest struct {
 	mutation   *yimecore.UserMutation
+	committed  bool
 	close      bool
 	checkpoint bool
 	ack        chan error
@@ -182,7 +183,7 @@ func OpenDurableUserModel(config DurableUserModelConfig) (*DurableUserModel, err
 			RecoveredMutations: recovered, TruncatedTailBytes: truncated, RollbackSnapshotPath: rollbackPath, MigratedFromSchema: migratedFrom},
 	}
 	go store.run()
-	model.SetMutationWriter(store.persist)
+	model.SetMutationHooks(store.persist, store.commit)
 	return store, nil
 }
 
@@ -204,6 +205,18 @@ func (s *DurableUserModel) persist(mutation yimecore.UserMutation) error {
 	s.requests <- request
 	s.stateMu.Unlock()
 	return <-request.ack
+}
+
+func (s *DurableUserModel) commit() {
+	s.stateMu.Lock()
+	if s.closed {
+		s.stateMu.Unlock()
+		return
+	}
+	request := durableRequest{committed: true, ack: make(chan error, 1)}
+	s.requests <- request
+	s.stateMu.Unlock()
+	<-request.ack
 }
 
 func (s *DurableUserModel) run() {
@@ -228,6 +241,38 @@ func (s *DurableUserModel) run() {
 			request.ack <- err
 			return
 		}
+		if request.committed {
+			mutationsSinceCheckpoint++
+			mutationsSinceCompaction++
+			if mutationsSinceCompaction >= s.compactEvery {
+				if compactErr := s.compactJournal(); compactErr != nil {
+					s.statsMu.Lock()
+					s.stats.CompactionFailures++
+					s.stats.LastCompactionError = compactErr.Error()
+					s.statsMu.Unlock()
+					if s.journal == nil {
+						fatalJournalError = compactErr
+					}
+				} else {
+					mutationsSinceCheckpoint = 0
+					mutationsSinceCompaction = 0
+				}
+			} else if mutationsSinceCheckpoint >= s.checkpointEvery {
+				if checkpointErr := s.model.Save(); checkpointErr != nil {
+					s.statsMu.Lock()
+					s.stats.CheckpointFailures++
+					s.stats.LastCheckpointError = checkpointErr.Error()
+					s.statsMu.Unlock()
+				} else {
+					s.statsMu.Lock()
+					s.stats.SnapshotGeneration = s.model.Generation()
+					s.statsMu.Unlock()
+				}
+				mutationsSinceCheckpoint = 0
+			}
+			request.ack <- nil
+			continue
+		}
 		err := fatalJournalError
 		if err == nil {
 			err = s.append(*request.mutation)
@@ -238,34 +283,6 @@ func (s *DurableUserModel) run() {
 		request.ack <- err
 		if err != nil {
 			continue
-		}
-		mutationsSinceCheckpoint++
-		mutationsSinceCompaction++
-		if mutationsSinceCompaction >= s.compactEvery {
-			if compactErr := s.compactJournal(); compactErr != nil {
-				s.statsMu.Lock()
-				s.stats.CompactionFailures++
-				s.stats.LastCompactionError = compactErr.Error()
-				s.statsMu.Unlock()
-				if s.journal == nil {
-					fatalJournalError = compactErr
-				}
-			} else {
-				mutationsSinceCheckpoint = 0
-				mutationsSinceCompaction = 0
-			}
-		} else if mutationsSinceCheckpoint >= s.checkpointEvery {
-			if checkpointErr := s.model.Save(); checkpointErr != nil {
-				s.statsMu.Lock()
-				s.stats.CheckpointFailures++
-				s.stats.LastCheckpointError = checkpointErr.Error()
-				s.statsMu.Unlock()
-			} else {
-				s.statsMu.Lock()
-				s.stats.SnapshotGeneration = s.model.Generation()
-				s.statsMu.Unlock()
-			}
-			mutationsSinceCheckpoint = 0
 		}
 	}
 }
@@ -390,7 +407,7 @@ func (s *DurableUserModel) close(checkpoint bool) error {
 	if s == nil {
 		return nil
 	}
-	s.model.SetMutationWriter(nil)
+	s.model.SetMutationHooks(nil, nil)
 	s.stateMu.Lock()
 	if s.closed {
 		s.stateMu.Unlock()

@@ -20,10 +20,12 @@ const (
 	UserModelSchemaVersion1    = "yime-user-model-v1"
 	UserModelSchemaVersion2    = "yime-user-model-v2"
 	UserModelSchemaVersion3    = "yime-user-model-v3"
+	UserModelSchemaVersion4    = "yime-user-model-v4"
 	userModelSchemaVersion1    = UserModelSchemaVersion1
 	userModelSchemaVersion2    = UserModelSchemaVersion2
 	userModelSchemaVersion3    = UserModelSchemaVersion3
-	userModelSchemaVersion     = userModelSchemaVersion3
+	userModelSchemaVersion4    = UserModelSchemaVersion4
+	userModelSchemaVersion     = userModelSchemaVersion4
 	userBoostPerSelection      = int64(1_000_000_000_000)
 	contextBoostPerSelection   = int64(500_000_000_000)
 	userPenaltyPerRejection    = int64(500_000_000_000)
@@ -40,6 +42,7 @@ var ErrIdempotencyConflict = errors.New("user mutation idempotency conflict")
 // UserModel is an independent, session-shareable selection-frequency model.
 // It never mutates the static index and performs no I/O on the key path.
 type UserModel struct {
+	mutationMu        sync.Mutex
 	mu                sync.RWMutex
 	path              string
 	sourceID          string
@@ -51,6 +54,7 @@ type UserModel struct {
 	rerankerWeights   map[string]int64
 	appliedRequests   map[string]UserMutation
 	mutationWriter    func(UserMutation) error
+	mutationCommitted func()
 	loadedSchema      string
 }
 
@@ -261,17 +265,21 @@ func (m *UserModel) observeBatchWithRerankerIdempotent(observations []UserObserv
 		}
 	}
 	primary := observations[len(observations)-1]
+	m.mutationMu.Lock()
+	defer m.mutationMu.Unlock()
 	m.mu.Lock()
-	defer m.mu.Unlock()
 	if existing, found := m.appliedRequests[requestID]; requestID != "" && found {
 		requested := UserMutation{Kind: UserMutationSelect, Code: primary.Code, Text: primary.Text,
 			PreviousText: primary.PreviousText, Observations: observations, RerankerDelta: rerankerDelta}
 		if equivalentSelectionMutation(existing, requested) {
+			m.mu.Unlock()
 			return nil
 		}
+		m.mu.Unlock()
 		return ErrIdempotencyConflict
 	}
 	if requestID != "" && len(m.appliedRequests) >= maximumUserModelItems {
+		m.mu.Unlock()
 		return errors.New("user mutation request ledger is full")
 	}
 	mutation := UserMutation{Generation: m.generation + 1, Kind: UserMutationSelect,
@@ -280,15 +288,23 @@ func (m *UserModel) observeBatchWithRerankerIdempotent(observations []UserObserv
 	if len(observations) > 1 {
 		mutation.Observations = append([]UserObservation(nil), observations...)
 	}
-	if m.mutationWriter != nil {
-		if err := m.mutationWriter(mutation); err != nil {
+	writer := m.mutationWriter
+	committed := m.mutationCommitted
+	m.mu.Unlock()
+	if writer != nil {
+		if err := writer(mutation); err != nil {
 			return err
 		}
 	}
+	m.mu.Lock()
 	m.applySelectionMutationLocked(mutation)
 	m.generation++
 	if requestID != "" {
 		m.appliedRequests[requestID] = mutation
+	}
+	m.mu.Unlock()
+	if committed != nil {
+		committed()
 	}
 	return nil
 }
@@ -304,8 +320,9 @@ func (m *UserModel) ForgetWithError(code, text string) (bool, error) {
 		return false, nil
 	}
 	key := candidateIdentity{code: code, text: text}
+	m.mutationMu.Lock()
+	defer m.mutationMu.Unlock()
 	m.mu.Lock()
-	defer m.mu.Unlock()
 	_, selected := m.selections[key]
 	_, rejected := m.rejections[key]
 	found := selected || rejected
@@ -321,11 +338,15 @@ func (m *UserModel) ForgetWithError(code, text string) (bool, error) {
 	}
 	if found {
 		mutation := UserMutation{Generation: m.generation + 1, Kind: UserMutationForget, Code: code, Text: text}
-		if m.mutationWriter != nil {
-			if err := m.mutationWriter(mutation); err != nil {
+		writer := m.mutationWriter
+		committed := m.mutationCommitted
+		m.mu.Unlock()
+		if writer != nil {
+			if err := writer(mutation); err != nil {
 				return false, err
 			}
 		}
+		m.mu.Lock()
 		delete(m.selections, key)
 		delete(m.rejections, key)
 		for contextKey := range m.contexts {
@@ -339,17 +360,34 @@ func (m *UserModel) ForgetWithError(code, text string) (bool, error) {
 			}
 		}
 		m.generation++
+		m.mu.Unlock()
+		if committed != nil {
+			committed()
+		}
+		return true, nil
 	}
+	m.mu.Unlock()
 	return found, nil
 }
 
 func (m *UserModel) SetMutationWriter(writer func(UserMutation) error) {
+	m.SetMutationHooks(writer, nil)
+}
+
+// SetMutationHooks installs the durable persist and post-apply boundaries as one
+// transaction. The committed hook runs only after the journaled mutation has
+// been applied to the in-memory model, so checkpoints cannot publish older state
+// and then compact away the only durable mutation record.
+func (m *UserModel) SetMutationHooks(writer func(UserMutation) error, committed func()) {
 	if m == nil {
 		return
 	}
+	m.mutationMu.Lock()
 	m.mu.Lock()
 	m.mutationWriter = writer
+	m.mutationCommitted = committed
 	m.mu.Unlock()
+	m.mutationMu.Unlock()
 }
 
 func (m *UserModel) SourceID() string {
@@ -408,6 +446,8 @@ func (m *UserModel) ApplyRecoveredMutation(mutation UserMutation) error {
 	if m == nil {
 		return fmt.Errorf("%w: nil recovered model", ErrCorruptUserModel)
 	}
+	m.mutationMu.Lock()
+	defer m.mutationMu.Unlock()
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if mutation.Generation != m.generation+1 || mutation.Code == "" || mutation.Text == "" ||
@@ -444,7 +484,6 @@ func (m *UserModel) ApplyRecoveredMutation(mutation UserMutation) error {
 		return fmt.Errorf("%w: unknown mutation kind", ErrCorruptUserModel)
 	}
 	if mutation.RequestID != "" {
-		mutation.Observations = nil
 		m.appliedRequests[mutation.RequestID] = mutation
 	}
 	m.generation = mutation.Generation
@@ -518,23 +557,26 @@ func equivalentSelectionMutation(left, right UserMutation) bool {
 		!equalInt64Maps(left.RerankerDelta, right.RerankerDelta) {
 		return false
 	}
-	// Older snapshots did not retain observations in the request ledger. Their
-	// primary selection fields are the strongest comparison available.
-	if len(left.Observations) == 0 {
-		return true
-	}
-	if left.PreviousText != right.PreviousText {
+	leftObservations := canonicalMutationObservations(left)
+	rightObservations := canonicalMutationObservations(right)
+	if len(leftObservations) != len(rightObservations) {
 		return false
 	}
-	if len(left.Observations) != len(right.Observations) {
-		return false
-	}
-	for index := range left.Observations {
-		if left.Observations[index] != right.Observations[index] {
+	for index := range leftObservations {
+		if leftObservations[index] != rightObservations[index] {
 			return false
 		}
 	}
 	return true
+}
+
+func canonicalMutationObservations(mutation UserMutation) []UserObservation {
+	if len(mutation.Observations) != 0 {
+		return mutation.Observations
+	}
+	return []UserObservation{{
+		Code: mutation.Code, Text: mutation.Text, PreviousText: mutation.PreviousText,
+	}}
 }
 
 // Save writes the current model through a same-directory temporary file and
@@ -569,6 +611,8 @@ func (m *UserModel) Restore(backupPath string) error {
 	if m == nil || m.path == "" {
 		return fmt.Errorf("user model has no persistence path")
 	}
+	m.mutationMu.Lock()
+	defer m.mutationMu.Unlock()
 	payload, err := readUserModelFile(backupPath, m.sourceID)
 	if err != nil {
 		return err
@@ -612,7 +656,8 @@ func (m *UserModel) writeSnapshot(path string) error {
 }
 
 func (m *UserModel) writeSnapshotVersion(path, schemaVersion string) error {
-	if schemaVersion != userModelSchemaVersion1 && schemaVersion != userModelSchemaVersion2 && schemaVersion != userModelSchemaVersion3 {
+	if schemaVersion != userModelSchemaVersion1 && schemaVersion != userModelSchemaVersion2 &&
+		schemaVersion != userModelSchemaVersion3 && schemaVersion != userModelSchemaVersion4 {
 		return fmt.Errorf("unsupported user model schema %q", schemaVersion)
 	}
 	m.mu.RLock()
@@ -624,12 +669,13 @@ func (m *UserModel) writeSnapshotVersion(path, schemaVersion string) error {
 		Contexts:        encodeContextCounts(m.contexts),
 		AppliedRequests: cloneMutations(m.appliedRequests),
 	}
-	if schemaVersion == userModelSchemaVersion3 {
+	if schemaVersion == userModelSchemaVersion3 || schemaVersion == userModelSchemaVersion4 {
 		payload.Rejections = encodeSelectionCounts(m.rejections)
 		payload.ContextRejections = encodeContextCounts(m.contextRejections)
 		payload.RerankerWeights = cloneInt64Map(m.rerankerWeights)
 	} else {
 		for requestID, mutation := range payload.AppliedRequests {
+			mutation.Observations = nil
 			mutation.RerankerDelta = nil
 			payload.AppliedRequests[requestID] = mutation
 		}
@@ -705,18 +751,19 @@ func readUserModelFile(path, sourceID string) (userModelPayload, error) {
 	if err := ensureJSONEOF(decoder); err != nil {
 		return userModelPayload{}, fmt.Errorf("%w: %v", ErrCorruptUserModel, err)
 	}
-	if (file.SchemaVersion != userModelSchemaVersion1 && file.SchemaVersion != userModelSchemaVersion2 && file.SchemaVersion != userModelSchemaVersion3) || file.SourceID != sourceID ||
+	if (file.SchemaVersion != userModelSchemaVersion1 && file.SchemaVersion != userModelSchemaVersion2 &&
+		file.SchemaVersion != userModelSchemaVersion3 && file.SchemaVersion != userModelSchemaVersion4) || file.SourceID != sourceID ||
 		len(file.Selections)+len(file.Contexts)+len(file.Rejections)+len(file.ContextRejections)+len(file.RerankerWeights)+len(file.AppliedRequests) > maximumUserModelItems {
 		return userModelPayload{}, fmt.Errorf("%w: schema, source identity or item count mismatch", ErrCorruptUserModel)
 	}
-	if file.SchemaVersion != userModelSchemaVersion3 &&
+	if file.SchemaVersion != userModelSchemaVersion3 && file.SchemaVersion != userModelSchemaVersion4 &&
 		(len(file.Rejections) != 0 || len(file.ContextRejections) != 0 || len(file.RerankerWeights) != 0) {
 		return userModelPayload{}, fmt.Errorf("%w: legacy schema contains v3 fields", ErrCorruptUserModel)
 	}
-	if file.SchemaVersion != userModelSchemaVersion3 {
+	if file.SchemaVersion != userModelSchemaVersion3 && file.SchemaVersion != userModelSchemaVersion4 {
 		for _, mutation := range file.AppliedRequests {
-			if len(mutation.RerankerDelta) != 0 {
-				return userModelPayload{}, fmt.Errorf("%w: legacy schema contains reranker mutation", ErrCorruptUserModel)
+			if len(mutation.Observations) != 0 || len(mutation.RerankerDelta) != 0 {
+				return userModelPayload{}, fmt.Errorf("%w: legacy schema contains extended mutation", ErrCorruptUserModel)
 			}
 		}
 	}
@@ -748,7 +795,7 @@ func readUserModelFile(path, sourceID string) (userModelPayload, error) {
 	for requestID, mutation := range file.AppliedRequests {
 		if requestID == "" || mutation.RequestID != requestID || mutation.Generation == 0 ||
 			mutation.Kind == "" || mutation.Code == "" || mutation.Text == "" ||
-			len(mutation.Observations) != 0 || !validMutationObservations(mutation) {
+			!validMutationObservations(mutation) {
 			return userModelPayload{}, fmt.Errorf("%w: invalid applied request", ErrCorruptUserModel)
 		}
 	}

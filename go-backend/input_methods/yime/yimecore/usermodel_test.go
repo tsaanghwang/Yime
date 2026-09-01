@@ -2,9 +2,11 @@ package yimecore
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 )
@@ -79,7 +81,7 @@ func TestRejectedCandidateGetsBoundedPenaltyThatDecaysAfterConfirmation(t *testi
 		t.Fatal(err)
 	}
 	model, err = OpenUserModel(path, "rejection-test")
-	if err != nil || model.LoadedSchemaVersion() != UserModelSchemaVersion3 {
+	if err != nil || model.LoadedSchemaVersion() != UserModelSchemaVersion4 {
 		t.Fatalf("reopen rejection model: schema=%q err=%v", model.LoadedSchemaVersion(), err)
 	}
 	if got := model.candidateBoost("ab", "误句"); got != -int64(maximumRejections)*userPenaltyPerRejection {
@@ -317,6 +319,32 @@ func TestUserMutationPersistenceFailureDoesNotCommitOrAdvanceModel(t *testing.T)
 	}
 }
 
+func TestMutationWriterCanInspectModelWithoutDeadlock(t *testing.T) {
+	model, err := NewUserModel("reentrant-writer")
+	if err != nil {
+		t.Fatal(err)
+	}
+	model.SetMutationWriter(func(UserMutation) error {
+		if generation := model.Generation(); generation != 0 {
+			return fmt.Errorf("generation before commit=%d", generation)
+		}
+		return nil
+	})
+	done := make(chan error, 1)
+	go func() { done <- model.observeIdempotent("ab", "甲", "", "reentrant-request") }()
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Fatal(err)
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("mutation writer deadlocked while reading the model")
+	}
+	if model.Generation() != 1 {
+		t.Fatalf("generation=%d", model.Generation())
+	}
+}
+
 func TestIdempotentSelectionSurvivesSnapshotAndRejectsReuse(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "user-model.json")
 	index, err := NewIndex([]Entry{{Text: "甲", Code: "a1", Weight: 10}, {Text: "乙", Code: "a1", Weight: 9}})
@@ -342,9 +370,10 @@ func TestIdempotentSelectionSurvivesSnapshotAndRejectsReuse(t *testing.T) {
 		t.Fatalf("generation after first selection = %d", model.Generation())
 	}
 	state = applyCode(t, engine, "a1")
-	if result, retryErr := engine.SelectIdempotent(state.State.Candidates[0].ID, requestID); retryErr != nil || result.Commit != first.Text || model.Generation() != 1 {
-		t.Fatalf("retry = %+v, %v; generation=%d", result, retryErr, model.Generation())
+	if _, retryErr := engine.SelectIdempotent(state.State.Candidates[0].ID, requestID); !errors.Is(retryErr, ErrIdempotencyConflict) || model.Generation() != 1 {
+		t.Fatalf("changed-context retry = %v; generation=%d", retryErr, model.Generation())
 	}
+	engine.Reset()
 	state = applyCode(t, engine, "a1")
 	var conflictingID string
 	for _, candidate := range state.State.Candidates {
@@ -373,7 +402,8 @@ func TestIdempotentSelectionSurvivesSnapshotAndRejectsReuse(t *testing.T) {
 }
 
 func TestIdempotentSelectionRejectsChangedContextAndObservations(t *testing.T) {
-	model, err := NewUserModel("context-idempotency")
+	path := filepath.Join(t.TempDir(), "user-model.json")
+	model, err := OpenUserModel(path, "context-idempotency")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -388,6 +418,27 @@ func TestIdempotentSelectionRejectsChangedContextAndObservations(t *testing.T) {
 	if err := model.observeBatchIdempotent(original, requestID); err != nil || model.Generation() != 1 {
 		t.Fatalf("identical retry = %v generation=%d", err, model.Generation())
 	}
+	if err := model.Save(); err != nil {
+		t.Fatal(err)
+	}
+	model, err = OpenUserModel(path, "context-idempotency")
+	if err != nil {
+		t.Fatalf("multi-observation snapshot did not reopen: %v", err)
+	}
+	if err := model.observeBatchIdempotent(original, requestID); err != nil || model.Generation() != 1 {
+		t.Fatalf("snapshot exact retry = %v generation=%d", err, model.Generation())
+	}
+	legacyV3Path := filepath.Join(filepath.Dir(path), "user-model-v3.json")
+	if err := model.writeSnapshotVersion(legacyV3Path, userModelSchemaVersion3); err != nil {
+		t.Fatal(err)
+	}
+	legacyV3, err := OpenUserModel(legacyV3Path, "context-idempotency")
+	if err != nil {
+		t.Fatalf("previously toxic v3 snapshot did not recover: %v", err)
+	}
+	if err := legacyV3.observeBatchIdempotent(original, requestID); err != nil || legacyV3.Generation() != 1 {
+		t.Fatalf("v3 exact retry = %v generation=%d", err, legacyV3.Generation())
+	}
 	changedContext := append([]UserObservation(nil), original...)
 	changedContext[1].PreviousText = "另"
 	if err := model.observeBatchIdempotent(changedContext, requestID); !errors.Is(err, ErrIdempotencyConflict) {
@@ -397,6 +448,13 @@ func TestIdempotentSelectionRejectsChangedContextAndObservations(t *testing.T) {
 	changedSegment[0].Text = "丙"
 	if err := model.observeBatchIdempotent(changedSegment, requestID); !errors.Is(err, ErrIdempotencyConflict) {
 		t.Fatalf("changed segment observation = %v", err)
+	}
+	reordered := []UserObservation{original[1], original[0]}
+	if err := model.observeBatchIdempotent(reordered, requestID); !errors.Is(err, ErrIdempotencyConflict) {
+		t.Fatalf("reordered observations = %v", err)
+	}
+	if err := model.observeBatchWithRerankerIdempotent(original, map[string]int64{"segment_count": 1}, requestID); !errors.Is(err, ErrIdempotencyConflict) {
+		t.Fatalf("changed reranker delta = %v", err)
 	}
 	if model.Generation() != 1 {
 		t.Fatalf("conflicts advanced generation to %d", model.Generation())
@@ -452,7 +510,7 @@ func TestUserModelV1ToCurrentMigrationKeepsRollbackAndIdempotency(t *testing.T) 
 		t.Fatal(err)
 	}
 	migrated, err := OpenUserModel(v1Path, "migration-source")
-	if err != nil || migrated.LoadedSchemaVersion() != UserModelSchemaVersion3 || migrated.Generation() != 1 {
+	if err != nil || migrated.LoadedSchemaVersion() != UserModelSchemaVersion4 || migrated.Generation() != 1 {
 		t.Fatalf("migrated open = %v schema=%q generation=%d", err, migrated.LoadedSchemaVersion(), migrated.Generation())
 	}
 	if err := migrated.SaveVersion1To(rollbackPath); err != nil {
