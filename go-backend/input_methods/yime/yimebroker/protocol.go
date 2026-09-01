@@ -48,7 +48,8 @@ const (
 // identity is intentionally absent from Request so wire data cannot impersonate
 // another client.
 type TrustedClient struct {
-	ID string
+	ID           string
+	ConnectionID string
 }
 
 type Request struct {

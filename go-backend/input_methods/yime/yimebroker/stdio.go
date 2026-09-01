@@ -3,6 +3,7 @@ package yimebroker
 import (
 	"bufio"
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,6 +15,13 @@ import (
 func ServeLines(ctx context.Context, input io.Reader, output io.Writer, dispatcher *Dispatcher, client TrustedClient) error {
 	if dispatcher == nil {
 		return fmt.Errorf("dispatcher is required")
+	}
+	if client.ConnectionID == "" {
+		var token [16]byte
+		if _, err := rand.Read(token[:]); err != nil {
+			return fmt.Errorf("create transport connection ID: %w", err)
+		}
+		client.ConnectionID = fmt.Sprintf("connection-%x", token)
 	}
 	connectionSessions := make(map[string]struct{})
 	defer func() {

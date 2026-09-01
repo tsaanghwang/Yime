@@ -19,6 +19,8 @@ const (
 	pipeRejectRemoteClients   = 0x00000008
 	processQueryLimitedInfo   = 0x00001000
 	tokenQuery                = 0x00000008
+	securitySQOSPresent       = 0x00100000
+	securityIdentification    = 0x00010000
 	errorPipeConnected        = syscall.Errno(535)
 	sddlRevision1             = 1
 )
@@ -58,12 +60,22 @@ func ServeNamedPipe(ctx context.Context, dispatcher *Dispatcher, config NamedPip
 		return fmt.Errorf("create named pipe security: %w", err)
 	}
 	defer security.close()
+	// Keep one unconnected first-instance handle for the server lifetime. The
+	// accept loop may briefly have no pending client instance (for example when
+	// MaxConnections is one); this anchor prevents a same-user process from
+	// claiming the well-known pipe name during that gap.
+	instanceLimit := config.MaxConnections + 1
+	anchor, anchorClient, err := createPipeAnchor(config.Name, instanceLimit, &security.attributes)
+	if err != nil {
+		return err
+	}
+	defer syscall.CloseHandle(anchor)
+	defer syscall.CloseHandle(anchorClient)
 
 	limiter := newConnectionLimiter(config.MaxConnections, config.MaxConnectionsPerClient)
 	globalSlots := make(chan struct{}, config.MaxConnections)
 	var connections sync.WaitGroup
 	defer connections.Wait()
-	firstInstance := true
 	for {
 		select {
 		case globalSlots <- struct{}{}:
@@ -71,12 +83,11 @@ func ServeNamedPipe(ctx context.Context, dispatcher *Dispatcher, config NamedPip
 			return nil
 		}
 		releaseGlobal := func() { <-globalSlots }
-		handle, createErr := createPipe(config.Name, config.MaxConnections, firstInstance, &security.attributes)
+		handle, createErr := createPipe(config.Name, instanceLimit, false, &security.attributes)
 		if createErr != nil {
 			releaseGlobal()
 			return createErr
 		}
-		firstInstance = false
 		if connectErr := connectPipe(ctx, handle); connectErr != nil {
 			_ = syscall.CloseHandle(handle)
 			releaseGlobal()
@@ -136,7 +147,7 @@ func validatePipeConfig(config *NamedPipeConfig) error {
 	if config.MaxConnectionsPerClient == 0 {
 		config.MaxConnectionsPerClient = 8
 	}
-	if config.MaxConnections < 1 || config.MaxConnections > 255 || config.MaxConnectionsPerClient < 1 || config.MaxConnectionsPerClient > config.MaxConnections {
+	if config.MaxConnections < 1 || config.MaxConnections > 254 || config.MaxConnectionsPerClient < 1 || config.MaxConnectionsPerClient > config.MaxConnections {
 		return errors.New("invalid named pipe connection limits")
 	}
 	return nil
@@ -160,6 +171,32 @@ func createPipe(name string, maxInstances int, first bool, security *syscall.Sec
 		return syscall.InvalidHandle, fmt.Errorf("create named pipe %q: %w", name, callErr)
 	}
 	return syscall.Handle(handle), nil
+}
+
+func createPipeAnchor(name string, maxInstances int, security *syscall.SecurityAttributes) (syscall.Handle, syscall.Handle, error) {
+	server, err := createPipe(name, maxInstances, true, security)
+	if err != nil {
+		return syscall.InvalidHandle, syscall.InvalidHandle, err
+	}
+	namePointer, err := syscall.UTF16PtrFromString(name)
+	if err != nil {
+		syscall.CloseHandle(server)
+		return syscall.InvalidHandle, syscall.InvalidHandle, err
+	}
+	client, err := syscall.CreateFile(
+		namePointer,
+		syscall.GENERIC_READ|syscall.GENERIC_WRITE,
+		0,
+		nil,
+		syscall.OPEN_EXISTING,
+		securitySQOSPresent|securityIdentification,
+		0,
+	)
+	if err != nil {
+		syscall.CloseHandle(server)
+		return syscall.InvalidHandle, syscall.InvalidHandle, fmt.Errorf("connect named pipe anchor: %w", err)
+	}
+	return server, client, nil
 }
 
 func connectPipe(ctx context.Context, handle syscall.Handle) error {
@@ -189,17 +226,32 @@ func connectPipe(ctx context.Context, handle syscall.Handle) error {
 		case syscall.WAIT_TIMEOUT:
 			select {
 			case <-ctx.Done():
-				_ = syscall.CancelIoEx(handle, &overlapped)
-				_, _ = syscall.WaitForSingleObject(syscall.Handle(event), 1000)
+				cancelAndDrainOverlapped(handle, &overlapped)
 				return ctx.Err()
 			default:
 			}
 		case syscall.WAIT_FAILED:
+			cancelAndDrainOverlapped(handle, &overlapped)
 			return waitErr
 		default:
+			cancelAndDrainOverlapped(handle, &overlapped)
 			return fmt.Errorf("unexpected named pipe accept wait status %d", status)
 		}
 	}
+}
+
+// CancelIoEx is asynchronous. Drain the OVERLAPPED operation before returning
+// so the kernel can no longer write to the caller's stack or signal a handle
+// that the caller is about to close.
+func cancelAndDrainOverlapped(handle syscall.Handle, overlapped *syscall.Overlapped) {
+	_ = syscall.CancelIoEx(handle, overlapped)
+	var transferred uint32
+	_, _, _ = procGetOverlappedResult.Call(
+		uintptr(handle),
+		uintptr(unsafe.Pointer(overlapped)),
+		uintptr(unsafe.Pointer(&transferred)),
+		1,
+	)
 }
 
 func trustedClientFromPipe(handle syscall.Handle) (TrustedClient, error) {

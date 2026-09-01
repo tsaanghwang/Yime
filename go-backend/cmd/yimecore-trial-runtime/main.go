@@ -10,7 +10,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -43,6 +42,8 @@ type runtimeStatus struct {
 	RuntimePID    int    `json:"runtime_pid"`
 	BrokerPID     int    `json:"broker_pid,omitempty"`
 	ToolbarPID    int    `json:"toolbar_pid,omitempty"`
+	ToolbarState  string `json:"toolbar_state,omitempty"`
+	ToolbarError  string `json:"toolbar_error,omitempty"`
 	InstallRoot   string `json:"install_root"`
 	BrokerPath    string `json:"broker_path"`
 	StateRoot     string `json:"state_root"`
@@ -180,22 +181,35 @@ func run(config options, statusPath string) error {
 	defer logFile.Close()
 	logger := log.New(logFile, "", log.LstdFlags|log.Lmicroseconds|log.LUTC)
 	logger.Printf("runtime starting install_root=%q broker=%q", config.installRoot, config.brokerPath)
+	children, err := createChildProcessJob()
+	if err != nil {
+		return fmt.Errorf("create child process job: %w", err)
+	}
+	defer children.Close()
 
-	toolbar := startToolbar(config, logger)
+	toolbar, toolbarWait, toolbarErr := startToolbar(config, logger, children)
 	toolbarPID := processID(toolbar)
+	toolbarState := "running"
+	toolbarError := ""
+	if config.noToolbar {
+		toolbarState = "disabled"
+	} else if toolbarErr != nil {
+		toolbarState = "unavailable"
+		toolbarError = toolbarErr.Error()
+	}
 	restarts := 0
 	failures := make([]time.Time, 0, 8)
 	for {
-		broker, wait, startErr := startBroker(config, logger)
+		broker, wait, startErr := startBroker(config, logger, children)
 		if startErr != nil {
-			writeRuntimeStatus(statusPath, statusFor(config, "failed", 0, toolbarPID, restarts, startErr))
+			writeRuntimeStatus(statusPath, withToolbarStatus(statusFor(config, "failed", 0, toolbarPID, restarts, startErr), toolbarState, toolbarError))
 			return startErr
 		}
-		writeRuntimeStatus(statusPath, statusFor(config, "running", broker.Process.Pid, toolbarPID, restarts, nil))
-		logger.Printf("Broker started pid=%d restart=%d", broker.Process.Pid, restarts)
+		writeRuntimeStatus(statusPath, withToolbarStatus(statusFor(config, "running", broker.PID(), toolbarPID, restarts, nil), toolbarState, toolbarError))
+		logger.Printf("Broker started pid=%d restart=%d", broker.PID(), restarts)
 		for {
 			if stopEvent.Wait(200 * time.Millisecond) {
-				_ = broker.Process.Kill()
+				_ = broker.Kill()
 				<-wait
 				stopProcess(toolbar)
 				writeRuntimeStatus(statusPath, statusFor(config, "stopped", 0, 0, restarts, nil))
@@ -203,6 +217,14 @@ func run(config options, statusPath string) error {
 				return nil
 			}
 			select {
+			case waitErr := <-toolbarWait:
+				toolbarWait = nil
+				toolbar = nil
+				toolbarPID = 0
+				toolbarState = "exited"
+				toolbarError = fmt.Sprint(waitErr)
+				logger.Printf("optional toolbar exited err=%v", waitErr)
+				writeRuntimeStatus(statusPath, withToolbarStatus(statusFor(config, "running", broker.PID(), 0, restarts, nil), toolbarState, toolbarError))
 			case waitErr := <-wait:
 				now := time.Now()
 				failures = append(failures, now)
@@ -217,7 +239,7 @@ func run(config options, statusPath string) error {
 				logger.Printf("Broker exited err=%v failures_30s=%d", waitErr, len(failures))
 				if len(failures) >= 5 {
 					err := fmt.Errorf("Broker exited five times within 30 seconds: %w", waitErr)
-					writeRuntimeStatus(statusPath, statusFor(config, "failed", 0, toolbarPID, restarts, err))
+					writeRuntimeStatus(statusPath, withToolbarStatus(statusFor(config, "failed", 0, toolbarPID, restarts, err), toolbarState, toolbarError))
 					stopProcess(toolbar)
 					return err
 				}
@@ -231,7 +253,7 @@ func run(config options, statusPath string) error {
 	}
 }
 
-func startBroker(config options, logger *log.Logger) (*exec.Cmd, <-chan error, error) {
+func startBroker(config options, logger *log.Logger, children *runtimeHandle) (*runtimeProcess, <-chan error, error) {
 	modelRoot := trialModelRoot(config)
 	controlRoot := filepath.Join(config.stateRoot, "index-control")
 	if err := os.MkdirAll(modelRoot, 0o755); err != nil {
@@ -240,24 +262,21 @@ func startBroker(config options, logger *log.Logger) (*exec.Cmd, <-chan error, e
 	if err := os.MkdirAll(controlRoot, 0o755); err != nil {
 		return nil, nil, err
 	}
-	command := exec.Command(config.brokerPath, brokerArguments(config)...)
-	configureChildProcess(command)
 	brokerLog, err := os.OpenFile(filepath.Join(config.stateRoot, "logs", "broker.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o600)
 	if err != nil {
 		return nil, nil, err
 	}
-	command.Stdout = brokerLog
-	command.Stderr = brokerLog
-	if err := command.Start(); err != nil {
+	process, err := startProcessInJob(config.brokerPath, brokerArguments(config), brokerLog, children)
+	if err != nil {
 		_ = brokerLog.Close()
 		return nil, nil, err
 	}
 	wait := make(chan error, 1)
 	go func() {
-		wait <- command.Wait()
+		wait <- process.Wait()
 		_ = brokerLog.Close()
 	}()
-	return command, wait, nil
+	return process, wait, nil
 }
 
 func brokerArguments(config options) []string {
@@ -309,29 +328,27 @@ func trialModelRoot(config options) string {
 	return filepath.Join(config.stateRoot, "user-model", trialIndexVersion(config))
 }
 
-func startToolbar(config options, logger *log.Logger) *exec.Cmd {
+func startToolbar(config options, logger *log.Logger, children *runtimeHandle) (*runtimeProcess, <-chan error, error) {
 	if config.noToolbar {
-		return nil
+		return nil, nil, nil
 	}
-	command := exec.Command(inputToolbarPath(config.installRoot), inputToolbarArguments(config)...)
-	configureChildProcess(command)
 	toolbarLog, err := os.OpenFile(filepath.Join(config.stateRoot, "logs", "toolbar.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o600)
 	if err != nil {
 		logger.Printf("open toolbar log: %v", err)
-		return nil
+		return nil, nil, err
 	}
-	command.Stdout = toolbarLog
-	command.Stderr = toolbarLog
-	if err := command.Start(); err != nil {
+	process, err := startProcessInJob(inputToolbarPath(config.installRoot), inputToolbarArguments(config), toolbarLog, children)
+	if err != nil {
 		logger.Printf("start toolbar: %v", err)
 		_ = toolbarLog.Close()
-		return nil
+		return nil, nil, err
 	}
+	wait := make(chan error, 1)
 	go func() {
-		_ = command.Wait()
+		wait <- process.Wait()
 		_ = toolbarLog.Close()
 	}()
-	return command
+	return process, wait, nil
 }
 
 func inputToolbarPath(installRoot string) string {
@@ -375,6 +392,12 @@ func statusFor(config options, state string, brokerPID, toolbarPID, restarts int
 		value.LastError = statusErr.Error()
 	}
 	return value
+}
+
+func withToolbarStatus(status runtimeStatus, state, toolbarError string) runtimeStatus {
+	status.ToolbarState = state
+	status.ToolbarError = toolbarError
+	return status
 }
 
 func writeRuntimeStatus(path string, status runtimeStatus) {
@@ -430,16 +453,16 @@ func readRuntimeStatus(path string) (runtimeStatus, error) {
 	return status, err
 }
 
-func processID(command *exec.Cmd) int {
-	if command == nil || command.Process == nil {
+func processID(process *runtimeProcess) int {
+	if process == nil {
 		return 0
 	}
-	return command.Process.Pid
+	return process.PID()
 }
 
-func stopProcess(command *exec.Cmd) {
-	if command != nil && command.Process != nil {
-		_ = command.Process.Kill()
+func stopProcess(process *runtimeProcess) {
+	if process != nil {
+		_ = process.Kill()
 	}
 }
 

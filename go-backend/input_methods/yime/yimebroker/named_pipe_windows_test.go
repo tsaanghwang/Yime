@@ -33,9 +33,17 @@ func TestServeNamedPipeHandlesConcurrentConnectionsAndRejectsIdentityFields(t *t
 	if firstResponse.Error != nil || secondResponse.Error != nil || firstResponse.SessionID == "" || secondResponse.SessionID == "" || firstResponse.SessionID == secondResponse.SessionID {
 		t.Fatalf("unexpected open responses: first=%+v second=%+v", firstResponse, secondResponse)
 	}
+	foreign := exchangePipeRequest(t, second, `{"version":1,"sequence":2,"session_id":"`+firstResponse.SessionID+`","operation":"reset"}`)
+	if foreign.Error == nil || foreign.Error.Code != CodeSessionNotFound {
+		t.Fatalf("sibling connection from the same process operated another connection's session: %+v", foreign)
+	}
 	spoofed := exchangePipeRequest(t, first, `{"version":1,"sequence":2,"session_id":"`+firstResponse.SessionID+`","operation":"reset","client_id":"spoofed"}`)
 	if spoofed.Error == nil || spoofed.Error.Code != CodeInvalidRequest {
 		t.Fatalf("request identity field was not rejected: %+v", spoofed)
+	}
+	legitimate := exchangePipeRequest(t, first, `{"version":1,"sequence":2,"session_id":"`+firstResponse.SessionID+`","operation":"reset"}`)
+	if legitimate.Error != nil {
+		t.Fatalf("opening connection lost its session after sibling rejection: %+v", legitimate)
 	}
 
 	_ = first.Close()

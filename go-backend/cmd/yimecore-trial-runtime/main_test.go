@@ -69,6 +69,15 @@ func TestInputToolbarUsesDedicatedNativeWindowsExecutable(t *testing.T) {
 	}
 }
 
+func TestOptionalToolbarFailureIsVisibleInRuntimeStatus(t *testing.T) {
+	status := withToolbarStatus(runtimeStatus{State: "running", BrokerPID: 42},
+		"unavailable", "start toolbar: access denied")
+	if status.State != "running" || status.BrokerPID != 42 ||
+		status.ToolbarState != "unavailable" || status.ToolbarError == "" {
+		t.Fatalf("optional toolbar health was not reported without failing Broker: %+v", status)
+	}
+}
+
 func TestBrokerArgumentsPinMultiIndexDurabilityAndTransactionalControl(t *testing.T) {
 	config := options{
 		installRoot: `C:\trial package`, brokerPath: `C:\runtime\YimeBroker.exe`,

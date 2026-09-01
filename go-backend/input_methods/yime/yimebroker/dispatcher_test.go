@@ -3,10 +3,12 @@ package yimebroker
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -279,6 +281,27 @@ func TestDispatcherKeepsSessionsIsolatedAndRejectsReplay(t *testing.T) {
 	}
 }
 
+func TestDispatcherBindsSessionToOpeningTransportConnection(t *testing.T) {
+	dispatcher := newMemoryDispatcher(t, Config{})
+	opening := TrustedClient{ID: "same-process", ConnectionID: "connection-a"}
+	sibling := TrustedClient{ID: "same-process", ConnectionID: "connection-b"}
+	sessionID := openSession(t, dispatcher, opening)
+
+	forged := dispatch(t, dispatcher, sibling, Request{
+		Version: 1, Sequence: 2, SessionID: sessionID, Operation: ResetSession,
+	})
+	if forged.Error == nil || forged.Error.Code != CodeSessionNotFound {
+		t.Fatalf("sibling connection operated another connection's session: %+v", forged)
+	}
+	dispatcher.CloseSession(sibling, sessionID)
+	legitimate := dispatch(t, dispatcher, opening, Request{
+		Version: 1, Sequence: 2, SessionID: sessionID, Operation: ResetSession,
+	})
+	if legitimate.Error != nil {
+		t.Fatalf("opening connection lost its session: %+v", legitimate)
+	}
+}
+
 func TestDispatcherEnforcesTotalAndPerClientQuotas(t *testing.T) {
 	dispatcher := newMemoryDispatcher(t, Config{MaxSessions: 2, MaxSessionsPerClient: 1, OperationTimeout: time.Second})
 	openSession(t, dispatcher, TrustedClient{ID: "a"})
@@ -290,6 +313,53 @@ func TestDispatcherEnforcesTotalAndPerClientQuotas(t *testing.T) {
 	third := dispatch(t, dispatcher, TrustedClient{ID: "c"}, Request{Version: 1, Sequence: 1, Operation: OpenSession})
 	if third.Error == nil || third.Error.Code != CodeSessionLimit {
 		t.Fatalf("total quota = %+v", third)
+	}
+}
+
+func TestOpeningSessionIsNotUsableUntilEngineInitializationCompletes(t *testing.T) {
+	started := make(chan struct{})
+	release := make(chan struct{})
+	dispatcher, err := NewDispatcher(func() (engineapi.Engine, error) {
+		close(started)
+		<-release
+		return &faultEngine{}, nil
+	}, Config{OperationTimeout: time.Second})
+	if err != nil {
+		t.Fatal(err)
+	}
+	client := TrustedClient{ID: "shared-process"}
+	opened := make(chan Response, 1)
+	go func() {
+		opened <- dispatcher.Dispatch(context.Background(), client, Request{Version: 1, Sequence: 1, Operation: OpenSession})
+	}()
+	<-started
+
+	dispatcher.mu.Lock()
+	var reservedID string
+	for id := range dispatcher.sessions {
+		reservedID = id
+	}
+	dispatcher.mu.Unlock()
+	if len(reservedID) != 34 || !strings.HasPrefix(reservedID, "s-") {
+		t.Fatalf("reserved session ID = %q, want 128-bit random ID", reservedID)
+	}
+	requestFinished := make(chan Response, 1)
+	go func() {
+		requestFinished <- dispatcher.Dispatch(context.Background(), client, Request{
+			Version: 1, Sequence: 2, SessionID: reservedID, Operation: ResetSession,
+		})
+	}()
+	select {
+	case response := <-requestFinished:
+		t.Fatalf("partially initialized session was usable: %+v", response)
+	case <-time.After(20 * time.Millisecond):
+	}
+	close(release)
+	if response := <-opened; response.Error != nil || response.SessionID != reservedID {
+		t.Fatalf("open response = %+v", response)
+	}
+	if response := <-requestFinished; response.Error != nil {
+		t.Fatalf("request after initialization = %+v", response)
 	}
 }
 
@@ -324,6 +394,32 @@ func TestDispatcherEvictsTimedOutAndPanickingSessions(t *testing.T) {
 			close(engine.release)
 		})
 	}
+}
+
+func TestDispatcherBoundsFactoriesThatNeverReturn(t *testing.T) {
+	release := make(chan struct{})
+	var started atomic.Int32
+	dispatcher, err := NewDispatcher(func() (engineapi.Engine, error) {
+		started.Add(1)
+		<-release
+		return &faultEngine{}, nil
+	}, Config{MaxSessions: 2, MaxSessionsPerClient: 1, OperationTimeout: 2 * time.Millisecond})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for index := 0; index < 8; index++ {
+		client := TrustedClient{ID: fmt.Sprintf("stuck-client-%d", index)}
+		response := dispatcher.Dispatch(context.Background(), client, Request{
+			Version: 1, Sequence: 1, Operation: OpenSession,
+		})
+		if response.Error == nil || (response.Error.Code != CodeTimeout && response.Error.Code != CodeSessionLimit) {
+			t.Fatalf("stuck factory response %d = %+v", index, response)
+		}
+	}
+	if got := started.Load(); got != 2 {
+		t.Fatalf("started %d permanently blocked factories, want bounded at 2", got)
+	}
+	close(release)
 }
 
 func TestConcurrentSessionsRemainIndependent(t *testing.T) {
