@@ -1,8 +1,8 @@
 # Yime 自研栈并行替换试验
 
-> 状态（2026-08-28）：E0 至 E5、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b、E6-B4a、E6-B4b、E6-B4c readiness、E6-B4d、E6-B5、E6-B6、E6-B7、E6-B8 与 E6-C 的当前试验门禁已通过；最新 E6-C 证据基于干净提交 `b16667f5`，无试验阻塞项
+> 状态（2026-09-01）：E0 至 E5、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b、E6-B4a、E6-B4b、E6-B4c readiness、E6-B4d、E6-B5、E6-B6、E6-B7、E6-B8 与 E6-C 的当前试验门禁已通过；最新已归档 E6-C 干净证据基于提交 `b16667f5`，其后的综合审查加固已完成本地全量验证，待下一轮干净提交证据归档
 > 切换状态：当前仍为未签名并列试验版；公开签名包、更广第三方宿主矩阵和最终 Rime 对照门禁尚未完成，未批准切换任何生产组件，E7 未启动
-> 当前工作区增量（2026-08-29）：自研 TSF 表层已把一次性本地标点层入口修正为 `Shift+\`，只牺牲低频 `|` 键位，以保留其它符号的键盘原位输入；x64/x86 契约、真实 `ITfContext`、E6-C 封装安装和三模式运行时验证均已通过，人工桌面宿主验收仍待完成
+> 当前工作区增量（2026-09-01）：对修复前 72 个提交、247 个文件的分支增量完成综合审查，7 项高危与 26 项中危均已修复；Go 全量 race、x64/x86 TSF 契约与真实 composition、ARM64 编译/PE、E6-C 安装回滚契约均通过。公开签名包、更广第三方宿主及真实 ARM64 桌面验收仍待完成
 > 试验分支：`codex/yimecore-replacement-experiment`
 > 原则：先并行、后比较；逐层验收；失败即保留现状
 
@@ -421,6 +421,17 @@ E6-C 的多索引限制现已关闭：三种模式共用一个显式稳定命名
 - `repair-e6c-trial-autostart.ps1 -ValidateOnly` 必须读取并严格比较真实 Run 值；missing 或 wrong value 都必须失败，不能用期望值替代实际读取结果。
 
 这些约束的最低门禁是：相关 Go 回归、x64/x86 DLL contract、x64/x86 registered-host 测试、安装 staging/rollback 故障注入、Run missing/wrong 负向验证，以及安装态三模式和 Broker supervisor 恢复。不得只靠源码单元测试宣称安装或 TSF 生命周期修复仍然有效。
+
+#### 2026-09-01 综合审查收口
+
+- 用户模型快照升级到 v4，幂等账本保留完整有序 observations；WAL 持久化、内存应用和 checkpoint/compaction 通过提交后钩子串行化，避免快照毒化、丢失已同步 mutation 或提交与 checkpoint 互锁。
+- Broker 会话归属收紧到单条认证连接，session ID 使用加密随机数；引擎只在工厂成功后原子发布，停滞工厂和操作受统一槽位上限约束。命名管道保留首实例生命周期锚点，取消 OVERLAPPED I/O 后必须排空内核操作再释放状态。
+- trial runtime 用 Job Object 约束 Broker/工具栏子进程并公开可选工具栏健康状态；并发 `Kill/Wait` 在句柄使用期间串行，避免关闭后的句柄复用。模块最低 Go 工具链提升到 1.25。
+- TSF Broker 客户端所有同步管道阶段都有截止时间和身份级 SQOS；停用会终止活动 composition，空 range、异步 edit session、语言栏 timer/sink 重入和候选窗外部 HWND 销毁均 fail closed。设置读取改为缓存，UI 文件锁等待缩短，自有候选窗按 DPI 缩放并严格管理窗口类所有权。
+- trial 安装在提升后的目标目录再次校验哈希，注销失败不得静默成功；预卸载即使中途失败也必须恢复旧安装。卸载项归属发起用户，提升链保留同一 SID；启停脚本对缺失配置和启动验证失败返回非零并回收精确 PID。
+- 包门禁同时生成 x64、x86、ARM64 表层构件并校验 PE machine；AMD64 与 ARM64 使用各自 profile 注册工具和兼容 COM 视图。规范升级入口为 `Upgrade-YimeCore-Trial.cmd`，旧 Build-Install 名称只作兼容转发。
+
+本轮验证包括 `go test -count=1 ./...`、`go vet ./...`、`go build ./...`、`go test -race -count=1 ./...`、GOARCH=386 runtime/Broker 回归、x64/x86 DLL contract、x64/x86 真实 TSF composition、ARM64 CMake 编译与 `0xAA64` PE 校验，以及 E6-C 安装契约。当前 AMD64 主机没有执行 ARM64 桌面宿主，因此该项仍是明确的发布前门禁。
 
 #### E6-C 后本地标点层固定映射
 

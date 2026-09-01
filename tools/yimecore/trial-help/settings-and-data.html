@@ -21,5 +21,9 @@
   <p>设置只写入 <code>%LOCALAPPDATA%\YimeCore Experimental Trial</code>。已有组合输入保持原会话设置，下一次输入载入新方案和候选项数。</p>
   <h2>备份与恢复</h2>
   <p>备份保存在 Windows“文档\Yime 元试验版备份”。恢复前会创建安全快照；这些操作不会读取、覆盖或重建正式版 PIME/Rime 数据。</p>
+  <h2>自启动</h2>
+  <p>安装时会为当前用户登录建立试验版运行时的自启动项（注册表 <code>HKCU\...\CurrentVersion\Run</code>）。如需临时停用，可运行安装目录内的 <code>stop-e6c-trial-runtime.ps1</code>；如需移除或修复自启动项，可运行 <code>repair-e6c-trial-autostart.ps1</code>。</p>
+  <h2>卸载与数据保留</h2>
+  <p>从“已安装应用”卸载只移除程序文件与输入法注册，<strong>不会</strong>删除 <code>%LOCALAPPDATA%\YimeCore Experimental Trial</code> 中的学习数据、设置和诊断记录，以便重装后继续使用。若要连同用户数据一并清除，请以管理员运行安装目录内的卸载脚本并附加 <code>-PurgeUserData</code> 参数。</p>
 </main></body>
 </html>

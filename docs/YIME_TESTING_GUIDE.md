@@ -34,7 +34,7 @@ CI 当前重点保护：
 - 反查顶部单排布局与内容尺寸
 - 可复现构建和签名入口
 
-CI 使用 `actions/setup-go` 固定 Go 1.26.4；`go.mod` 的 `go 1.21` 是源码语言兼容下限，不是发布构建器版本。升级构建器时必须在同一变更中复跑 `go vet`、全量测试、race 和连续构建哈希验证。
+CI 使用 `actions/setup-go` 固定 Go 1.26.4；`go.mod` 的 `go 1.25` 是模块和 Windows Broker/runtime 的最低工具链版本，不得在未重跑 x86/x64 命名管道与进程生命周期门禁时降低。升级构建器时必须在同一变更中复跑 `go vet`、全量测试、race 和连续构建哈希验证。
 
 ## 3. 全量根包门禁
 
@@ -51,13 +51,13 @@ CI 使用 `actions/setup-go` 固定 Go 1.26.4；`go.mod` 的 `go 1.21` 是源码
 `go test -race ./... -timeout 300s` 是验证基线的一部分，必须在具备 C 工具链的环境运行。Windows Go race 构建依赖 GCC，本机已配置 MSYS2 UCRT64：
 
 ```powershell
-go env -w CC=C:\msys64\ucrt64\bin\gcc.exe
 $env:CGO_ENABLED = "1"
 $env:PATH = "C:\msys64\ucrt64\bin;" + $env:PATH
+$env:CC = "gcc"
 go test -race ./... -timeout 300s
 ```
 
-仓库根目录提供可重复入口，显式设置 CGO、GCC、PATH 和工作区缓存，不依赖当前 shell 的 `go env CGO_ENABLED`：
+仓库根目录提供可重复入口，显式设置 CGO、GCC、PATH 和工作区缓存，不依赖当前 shell 的 `go env CGO_ENABLED`。Windows 上应让 `CC=gcc` 通过已加入的 UCRT64 `PATH` 解析；不要把绝对 GCC 路径直接传给 Go 1.26 的 `cgo`：
 
 ```powershell
 .\tools\test-go-race.ps1
@@ -257,22 +257,24 @@ schema 缓存全部新鲜。`dev-build-install-verify.ps1` 已把这项检查纳
 已安装过受清单验证的 YimeCore trial 后，可在仓库根目录运行：
 
 ```cmd
-Build-Install-YimeCore-Trial-v3.cmd
+Upgrade-YimeCore-Trial.cmd
 ```
 
-不希望脚本最后询问并执行 Windows 重启时使用 `/norestart`。v3 从
+不希望脚本最后询问并执行 Windows 重启时使用 `/norestart`。规范升级入口从
 `%LOCALAPPDATA%\YimeCore Experimental Trial\runtime-config.json` 解析当前安装根，逐文件校验其
 `package-manifest.json`，再以该安装包为 base 重建当前工作树；安装目录额外生成的
 `install-metadata.json` 不属于包清单，也不得被复制到新 staged package。
 
-流程固定为：构建并完成隔离包验证、完整 staging 后事务升级、修复并读取真实 Run 值、验证安装态
-三模式和 Broker 恢复、运行 x64/x86 `YimeRegisteredHostTests.exe`。运行前必须关闭 Word；安装阶段会
+流程固定为：构建 x64/x86/ARM64 表层并完成隔离包验证、完整 staging 后事务升级、修复并读取真实 Run 值、验证安装态
+三模式和 Broker 恢复、运行当前机器可执行架构的 `YimeRegisteredHostTests.exe`。非 ARM64 主机必须编译并校验 ARM64 PE，
+但不得把跳过真实 ARM64 宿主执行描述为已经通过 ARM64 桌面验收。运行前必须关闭 Word；安装阶段会
 请求一次 UAC。若新版本注册或启动失败，旧版本目录、COM/Profile、TIP、runtime 配置、Run、卸载项
 和升级前运行状态必须自动恢复。不能把该流程简化为先删除旧版本再复制，也不能用源码目录中的 DLL
 contract 代替注册宿主测试。
 
 ### 8.4 已完成的验证记录
 
+- 2026-09-01：YimeCore 分支综合审查的 7 项高危与 26 项中危修复完成。Go 全量 test/vet/build 与 `go test -race -count=1 ./...` 通过；x64/x86 DLL contract 和真实 TSF composition 宿主通过；ARM64 表层完成编译及 `0xAA64` PE 校验；E6-C 安装契约通过 staging 后复核、预卸载中途失败回滚、同 SID 每用户卸载项和三架构清单门禁。真实 ARM64 桌面宿主仍需在 ARM64 Windows 上执行。
 - 2026-07-11：未签名开发包真实安装验证，输入响应正常，用户词“云笺试码”“笺砚验码”应用后活动会话直接出词。
 - 2026-07-12：完整安装态清单逐项跑完并留痕（[YIME_INSTALL_VERIFICATION_2026-07-12.md](YIME_INSTALL_VERIFICATION_2026-07-12.md)）——重启后干净全量重装、三件哈希构建↔安装全一致、重启自启动实测（开机 27 秒内自动拉起）、7 工具入口不崩、TIP 注册与真实组词日志、CodeIntegrity 核查、runtimechange 协议 `-race` 全绿。签名完成后须以该文档为模板复跑留新档。
 - 2026-07-15：真实 32 位宿主 `C:\Windows\SysWOW64\charmap.exe` 人工烟雾测试完成，暂未发现激活、组字、候选或上屏问题；签名产物仍须重复验证。
