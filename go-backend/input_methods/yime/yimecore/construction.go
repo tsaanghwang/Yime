@@ -16,25 +16,26 @@ func (e *Engine) exactSurfaceRecord(code, text string) (record, bool) {
 }
 
 func (e *Engine) collapseExactSegmentGroups(path sentencePath) sentencePath {
-	if len(path.segments) < 2 {
+	if path.count < 2 {
 		return path
 	}
-	collapsed := make([]engineapi.Segment, 0, len(path.segments))
+	segments := sentencePathSegments(path)
+	collapsed := make([]engineapi.Segment, 0, len(segments))
 	changed := false
-	for start := 0; start < len(path.segments); {
+	for start := 0; start < len(segments); {
 		merged := false
-		for end := len(path.segments); end >= start+2; end-- {
+		for end := len(segments); end >= start+2; end-- {
 			contiguous := true
 			var text strings.Builder
 			for index := start; index < end; index++ {
-				if index > start && path.segments[index-1].End != path.segments[index].Start {
+				if index > start && segments[index-1].End != segments[index].Start {
 					contiguous = false
 					break
 				}
-				text.WriteString(path.segments[index].Text)
+				text.WriteString(segments[index].Text)
 			}
-			first := path.segments[start]
-			last := path.segments[end-1]
+			first := segments[start]
+			last := segments[end-1]
 			if !contiguous || first.Start < 0 || last.End > len(e.rawInput) {
 				continue
 			}
@@ -57,7 +58,7 @@ func (e *Engine) collapseExactSegmentGroups(path sentencePath) sentencePath {
 			break
 		}
 		if !merged {
-			collapsed = append(collapsed, path.segments[start])
+			collapsed = append(collapsed, segments[start])
 			start++
 		}
 	}
@@ -104,7 +105,7 @@ func (e *Engine) expandSentenceSegment(sentence *engineapi.Candidate, focused en
 		return nil, nil, false
 	}
 	segments := append([]engineapi.Segment(nil), sentence.Segments[:focusedIndex]...)
-	segments = append(segments, decomposed.segments...)
+	segments = append(segments, sentencePathSegments(decomposed)...)
 	segments = append(segments, sentence.Segments[focusedIndex+1:]...)
 	path, ok := e.pathForSegments(segments)
 	if !ok {
@@ -152,17 +153,14 @@ func (e *Engine) decomposeSurfaceSegment(segment engineapi.Segment) (sentencePat
 					if sourceID == "" {
 						sourceID = e.index.identity()
 					}
-					segments := append([]engineapi.Segment(nil), path.segments...)
 					candidateSegment := engineapi.Segment{
 						Start: start, End: end, Text: match.text, Code: match.code, SourceID: sourceID,
 					}
-					segments = append(segments, candidateSegment)
 					next := sentencePath{
-						text:     segment.Text[:textEnd],
-						base:     saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty),
-						segments: segments,
-						key:      appendSentencePathKey(path.key, candidateSegment),
+						text: segment.Text[:textEnd],
+						base: saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty),
 					}
+					appendSentenceSegment(&next, path, candidateSegment)
 					next.context = saturatingAdd(path.context, e.sentenceTransitionBoost(path, match))
 					next.score = saturatingAdd(next.base, next.context)
 					if states[end] == nil {
@@ -177,13 +175,15 @@ func (e *Engine) decomposeSurfaceSegment(segment engineapi.Segment) (sentencePat
 		}
 	}
 	path, found := states[segment.End][len(segment.Text)]
-	return path, found && len(path.segments) >= 2 && path.text == segment.Text
+	return path, found && path.count >= 2 && path.text == segment.Text
 }
 
 func (e *Engine) pathForSegments(segments []engineapi.Segment) (sentencePath, bool) {
 	path := sentencePath{segments: append([]engineapi.Segment(nil), segments...)}
 	for _, segment := range segments {
-		path.key = appendSentencePathKey(path.key, segment)
+		parent := path
+		path.keyHash = appendSentencePathHash(path.keyHash, segment)
+		appendSentenceShape(&path, parent, segment.Text)
 		bestContribution := int64(0)
 		found := false
 		for _, match := range e.exactMatches(segment.Code) {
@@ -209,7 +209,7 @@ func (e *Engine) pathForSegments(segments []engineapi.Segment) (sentencePath, bo
 		path.text += segment.Text
 		path.base = saturatingAdd(path.base, bestContribution)
 	}
-	path.context = e.segmentSequenceContextBoost(path.segments)
+	path.context = e.segmentSequenceContextBoost(sentencePathSegments(path))
 	path.score = saturatingAdd(path.base, path.context)
 	return path, true
 }

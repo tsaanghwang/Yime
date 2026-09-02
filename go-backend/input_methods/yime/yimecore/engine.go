@@ -29,6 +29,8 @@ type Engine struct {
 	modelGenerationOK bool
 	modelCandidate    map[candidateIdentity]int64
 	modelContext      map[contextIdentity]int64
+	modelScoreContext string
+	modelScore        map[candidateIdentity]candidateModelScore
 	modelLearned      map[prefixCacheKey][]candidateIdentity
 	linearReranker    bool
 	previousCommit    string
@@ -690,7 +692,7 @@ func (e *Engine) commitCandidate(candidate engineapi.Candidate, mutationID strin
 			path = e.collapseExactSegmentGroups(path)
 			candidate.Weight = path.base
 			candidate.Score.Context = path.context
-			candidate.Segments = path.segments
+			candidate.Segments = sentencePathSegments(path)
 		}
 	}
 	observations := make([]UserObservation, 0, len(candidate.Segments)+2)
@@ -878,10 +880,10 @@ func (e *Engine) scoreCandidate(candidate *engineapi.Candidate) {
 }
 
 func (e *Engine) scoreCandidateWithContext(candidate *engineapi.Candidate, sentenceContext int64) {
+	modelScore := e.userCandidateModelScore(e.previousCommit, candidate.Code, candidate.Text)
 	candidate.Score.Static = candidate.Weight
-	candidate.Score.Context = saturatingAdd(sentenceContext,
-		e.userContextBoost(e.previousCommit, candidate.Code, candidate.Text))
-	candidate.Score.User = e.userCandidateBoost(candidate.Code, candidate.Text)
+	candidate.Score.Context = saturatingAdd(sentenceContext, modelScore.context)
+	candidate.Score.User = modelScore.user
 	if e.linearReranker {
 		candidate.Score.Reranker = e.userModel.sentenceRerankerScore(candidate.Segments)
 	}
@@ -907,11 +909,11 @@ func (e *Engine) scoreComposedCandidateWithContext(candidate *engineapi.Candidat
 		segmentUserScore = saturatingAdd(segmentUserScore,
 			e.userCandidateBoost(segment.Code, segment.Text))
 	}
+	modelScore := e.userCandidateModelScore(e.previousCommit, candidate.Code, candidate.Text)
 	candidate.Score.Static = staticScore
-	candidate.Score.Context = saturatingAdd(sentenceContext,
-		e.userContextBoost(e.previousCommit, candidate.Code, candidate.Text))
+	candidate.Score.Context = saturatingAdd(sentenceContext, modelScore.context)
 	candidate.Score.User = saturatingAdd(segmentUserScore,
-		e.userCandidateBoost(candidate.Code, candidate.Text))
+		modelScore.user)
 	if e.linearReranker {
 		candidate.Score.Reranker = e.userModel.sentenceRerankerScore(candidate.Segments)
 	}

@@ -18,6 +18,7 @@ const (
 	maximumExactCacheItems   = 4096
 	maximumSentenceBytes     = 256
 	maximumLearnedTextBytes  = 4096
+	sentenceShapePrefix      = 8
 )
 
 type sentencePath struct {
@@ -26,7 +27,21 @@ type sentencePath struct {
 	context  int64
 	score    int64
 	segments []engineapi.Segment
-	key      string
+	tail     *sentenceNode
+	keyHash  uint64
+	lengths  [sentenceShapePrefix]uint16
+	count    uint16
+}
+
+type sentenceNode struct {
+	parent  *sentenceNode
+	segment engineapi.Segment
+}
+
+type completion struct {
+	candidate engineapi.Candidate
+	segments  int
+	score     int64
 }
 
 // bestSentence returns the single preedit sentence for the current input.
@@ -204,17 +219,14 @@ func (e *Engine) composeLearnedSentence(input, text string) *engineapi.Candidate
 					if sourceID == "" {
 						sourceID = e.index.identity()
 					}
-					segments := append([]engineapi.Segment(nil), path.segments...)
 					segment := engineapi.Segment{
 						Start: start, End: end, Text: match.text, Code: match.code, SourceID: sourceID,
 					}
-					segments = append(segments, segment)
 					next := sentencePath{
-						text:     text[:textEnd],
-						base:     saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty),
-						segments: segments,
-						key:      appendSentencePathKey(path.key, segment),
+						text: text[:textEnd],
+						base: saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty),
 					}
+					appendSentenceSegment(&next, path, segment)
 					next.context = saturatingAdd(path.context, e.sentenceTransitionBoost(path, match))
 					next.score = saturatingAdd(next.base, next.context)
 					if states[end] == nil {
@@ -229,13 +241,14 @@ func (e *Engine) composeLearnedSentence(input, text string) *engineapi.Candidate
 		}
 	}
 	path, found := states[len(input)][len(text)]
-	if !found || len(path.segments) < 2 || path.text != text {
+	if !found || path.count < 2 || path.text != text {
 		return nil
 	}
 	path = e.collapseExactSegmentGroups(path)
+	segments := sentencePathSegments(path)
 	return &engineapi.Candidate{
 		ID: sentenceCandidateID(input, path), Text: text, Code: input,
-		SourceID: "user-model", Weight: path.base, Exact: true, Segments: path.segments,
+		SourceID: "user-model", Weight: path.base, Exact: true, Segments: segments,
 		Score: engineapi.Score{Context: path.context},
 	}
 }
@@ -252,7 +265,7 @@ func (e *Engine) betterLearnedSentencePath(left, right sentencePath) bool {
 func (e *Engine) sentencePathLearningBoost(path sentencePath) int64 {
 	previous := e.previousCommit
 	var boost int64
-	for _, segment := range path.segments {
+	for _, segment := range sentencePathSegments(path) {
 		boost = saturatingAdd(boost, e.userCandidateBoost(segment.Code, segment.Text))
 		boost = saturatingAdd(boost, e.userContextBoost(previous, segment.Code, segment.Text))
 		previous = segment.Text
@@ -272,7 +285,7 @@ func (e *Engine) composeSentences(input string, limit int) []engineapi.Candidate
 
 	complete := make([]sentencePath, 0, len(e.sentenceStates[len(input)]))
 	for _, path := range e.sentenceStates[len(input)] {
-		if len(path.segments) >= 2 {
+		if path.count >= 2 {
 			complete = append(complete, path)
 		}
 	}
@@ -282,9 +295,10 @@ func (e *Engine) composeSentences(input string, limit int) []engineapi.Candidate
 	}
 	result := make([]engineapi.Candidate, 0, len(complete))
 	for _, path := range complete {
+		segments := sentencePathSegments(path)
 		result = append(result, engineapi.Candidate{
 			ID: sentenceCandidateID(input, path), Text: path.text, Code: input,
-			Weight: path.base, Exact: true, Segments: path.segments,
+			Weight: path.base, Exact: true, Segments: segments,
 			Score: engineapi.Score{Context: path.context},
 		})
 	}
@@ -295,12 +309,12 @@ func (e *Engine) composeSentences(input string, limit int) []engineapi.Candidate
 }
 
 func (e *Engine) betterRetainedSentencePath(left, right sentencePath) bool {
-	if priority := compareWordFirstSegments(left.segments, right.segments); priority != 0 {
+	if priority := compareSentencePathShape(left, right); priority != 0 {
 		return priority > 0
 	}
 	if e.linearReranker {
-		leftScore := saturatingAdd(left.score, e.userModel.sentenceRerankerScore(left.segments))
-		rightScore := saturatingAdd(right.score, e.userModel.sentenceRerankerScore(right.segments))
+		leftScore := saturatingAdd(left.score, e.userModel.sentenceRerankerScore(sentencePathSegments(left)))
+		rightScore := saturatingAdd(right.score, e.userModel.sentenceRerankerScore(sentencePathSegments(right)))
 		if leftScore != rightScore {
 			return leftScore > rightScore
 		}
@@ -320,11 +334,6 @@ func (e *Engine) composeIncompleteTail(input string, limit, maxCodeBytes int) []
 	if firstSplit < 1 {
 		firstSplit = 1
 	}
-	type completion struct {
-		candidate engineapi.Candidate
-		segments  int
-		score     int64
-	}
 	top := make([]completion, 0, limit)
 	seen := make(map[string]struct{}, limit*2)
 	for split := firstSplit; split < len(input); split++ {
@@ -334,16 +343,22 @@ func (e *Engine) composeIncompleteTail(input string, limit, maxCodeBytes int) []
 		}
 		suffix := input[split:]
 		matches := e.sentencePrefixRecords(suffix, limit)
+		pathLimit := len(paths)
+		if pathLimit > limit {
+			pathLimit = limit
+		}
+		materialized := make([][]engineapi.Segment, pathLimit)
+		for index, path := range paths[:pathLimit] {
+			if path.count > 0 {
+				materialized[index] = sentencePathSegments(path)
+			}
+		}
 		for _, match := range matches {
 			if match.code == suffix || !strings.HasPrefix(match.code, suffix) {
 				continue
 			}
-			pathLimit := len(paths)
-			if pathLimit > limit {
-				pathLimit = limit
-			}
-			for _, path := range paths[:pathLimit] {
-				if len(path.segments) == 0 {
+			for pathIndex, path := range paths[:pathLimit] {
+				if path.count == 0 {
 					continue
 				}
 				completedCode := input[:split] + match.code
@@ -357,41 +372,56 @@ func (e *Engine) composeIncompleteTail(input string, limit, maxCodeBytes int) []
 				if sourceID == "" {
 					sourceID = e.index.identity()
 				}
-				segments := append([]engineapi.Segment(nil), path.segments...)
-				segments = append(segments, engineapi.Segment{
+				segments := make([]engineapi.Segment, len(materialized[pathIndex])+1)
+				copy(segments, materialized[pathIndex])
+				segments[len(segments)-1] = engineapi.Segment{
 					Start: split, End: len(input), Text: match.text, Code: match.code, SourceID: sourceID,
-				})
+				}
 				base := saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty)
 				context := saturatingAdd(path.context, e.sentenceTransitionBoost(path, match))
 				score := saturatingAdd(base, context)
-				top = append(top, completion{candidate: engineapi.Candidate{
+				item := completion{candidate: engineapi.Candidate{
 					ID:   "sentence-prefix\x1f" + input + "\x1f" + completedCode + "\x1f" + text,
 					Text: text, Code: completedCode, Weight: base, Exact: false, Segments: segments,
 					Score: engineapi.Score{Context: context},
-				}, segments: len(segments), score: score})
+				}, segments: len(segments), score: score}
+				top = insertCompletion(top, item, limit)
 			}
 		}
-	}
-	sort.Slice(top, func(i, j int) bool {
-		if priority := compareWordFirstSegments(top[i].candidate.Segments, top[j].candidate.Segments); priority != 0 {
-			return priority > 0
-		}
-		if top[i].score != top[j].score {
-			return top[i].score > top[j].score
-		}
-		if top[i].candidate.Text != top[j].candidate.Text {
-			return top[i].candidate.Text < top[j].candidate.Text
-		}
-		return top[i].candidate.Code < top[j].candidate.Code
-	})
-	if len(top) > limit {
-		top = top[:limit]
 	}
 	result := make([]engineapi.Candidate, len(top))
 	for index := range top {
 		result[index] = top[index].candidate
 	}
 	return result
+}
+
+func insertCompletion(top []completion, item completion, limit int) []completion {
+	if len(top) == limit && !betterCompletion(item, top[len(top)-1]) {
+		return top
+	}
+	if len(top) < limit {
+		top = append(top, item)
+	} else {
+		top[len(top)-1] = item
+	}
+	for position := len(top) - 1; position > 0 && betterCompletion(top[position], top[position-1]); position-- {
+		top[position], top[position-1] = top[position-1], top[position]
+	}
+	return top
+}
+
+func betterCompletion(left, right completion) bool {
+	if priority := compareWordFirstSegments(left.candidate.Segments, right.candidate.Segments); priority != 0 {
+		return priority > 0
+	}
+	if left.score != right.score {
+		return left.score > right.score
+	}
+	if left.candidate.Text != right.candidate.Text {
+		return left.candidate.Text < right.candidate.Text
+	}
+	return left.candidate.Code < right.candidate.Code
 }
 
 func (e *Engine) syncSentenceLattice(input string, maxCodeBytes int) {
@@ -446,17 +476,14 @@ func (e *Engine) extendSentenceLattice(input string, maxCodeBytes int) {
 				if sourceID == "" {
 					sourceID = e.index.identity()
 				}
-				segments := append([]engineapi.Segment(nil), path.segments...)
 				segment := engineapi.Segment{
 					Start: start, End: end, Text: match.text, Code: match.code, SourceID: sourceID,
 				}
-				segments = append(segments, segment)
 				next := sentencePath{
-					text:     path.text + match.text,
-					base:     saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty),
-					segments: segments,
-					key:      appendSentencePathKey(path.key, segment),
+					text: path.text + match.text,
+					base: saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty),
 				}
+				appendSentenceSegment(&next, path, segment)
 				next.context = saturatingAdd(path.context, e.sentenceTransitionBoost(path, match))
 				next.score = saturatingAdd(next.base, next.context)
 				e.sentenceStates[end] = insertSentencePath(e.sentenceStates[end], next, sentenceBeamWidth)
@@ -505,7 +532,9 @@ func (e *Engine) lexicalRecordScore(item record) int64 {
 
 func (e *Engine) sentenceTransitionBoost(path sentencePath, item record) int64 {
 	previous := e.previousCommit
-	if len(path.segments) > 0 {
+	if path.tail != nil {
+		previous = path.tail.segment.Text
+	} else if len(path.segments) > 0 {
 		previous = path.segments[len(path.segments)-1].Text
 	}
 	return e.userContextBoost(previous, item.code, item.text)
@@ -522,35 +551,39 @@ func saturatingAdd(left, right int64) int64 {
 }
 
 func insertSentencePath(top []sentencePath, item sentencePath, limit int) []sentencePath {
-	itemKey := sentencePathKey(item)
-	sameText := make([]int, 0, sentenceSurfacePathLimit)
+	itemHash := sentencePathHash(item)
+	var sameText [sentenceSurfacePathLimit]int
+	sameTextCount := 0
 	for i := range top {
 		if top[i].text != item.text {
 			continue
 		}
-		sameText = append(sameText, i)
-		if sentencePathKey(top[i]) != itemKey {
+		if sameTextCount < len(sameText) {
+			sameText[sameTextCount] = i
+			sameTextCount++
+		}
+		if sentencePathHash(top[i]) != itemHash || sentencePathKey(top[i]) != sentencePathKey(item) {
 			continue
 		}
 		if betterSentencePath(item, top[i]) {
 			top[i] = item
+			bubbleSentencePathUp(top, i)
 		}
-		sort.Slice(top, func(i, j int) bool { return betterSentencePath(top[i], top[j]) })
 		return top
 	}
 	// Distinct segmentations of the same surface text must survive long enough
 	// for explainable path scoring and future word-context models. Bound their
 	// contribution so one ambiguous surface cannot consume the whole beam.
-	if len(sameText) >= sentenceSurfacePathLimit {
+	if sameTextCount >= sentenceSurfacePathLimit {
 		worst := sameText[0]
-		for _, position := range sameText[1:] {
+		for _, position := range sameText[1:sameTextCount] {
 			if betterSentencePath(top[worst], top[position]) {
 				worst = position
 			}
 		}
 		if betterSentencePath(item, top[worst]) {
 			top[worst] = item
-			sort.Slice(top, func(i, j int) bool { return betterSentencePath(top[i], top[j]) })
+			bubbleSentencePathUp(top, worst)
 		}
 		return top
 	}
@@ -568,8 +601,15 @@ func insertSentencePath(top []sentencePath, item sentencePath, limit int) []sent
 	return top
 }
 
+func bubbleSentencePathUp(top []sentencePath, position int) {
+	for position > 0 && betterSentencePath(top[position], top[position-1]) {
+		top[position], top[position-1] = top[position-1], top[position]
+		position--
+	}
+}
+
 func betterSentencePath(left, right sentencePath) bool {
-	if priority := compareWordFirstSegments(left.segments, right.segments); priority != 0 {
+	if priority := compareSentencePathShape(left, right); priority != 0 {
 		return priority > 0
 	}
 	if left.score != right.score {
@@ -579,6 +619,67 @@ func betterSentencePath(left, right sentencePath) bool {
 		return left.text < right.text
 	}
 	return sentencePathKey(left) < sentencePathKey(right)
+}
+
+func appendSentenceShape(next *sentencePath, parent sentencePath, text string) {
+	next.lengths = parent.lengths
+	next.count = parent.count + 1
+	if parent.count < sentenceShapePrefix {
+		next.lengths[parent.count] = uint16(utf8.RuneCountInString(text))
+	}
+}
+
+func appendSentenceSegment(next *sentencePath, parent sentencePath, segment engineapi.Segment) {
+	parentTail := parent.tail
+	if parentTail == nil && len(parent.segments) > 0 {
+		for _, existing := range parent.segments {
+			parentTail = &sentenceNode{parent: parentTail, segment: existing}
+		}
+	}
+	next.tail = &sentenceNode{parent: parentTail, segment: segment}
+	next.keyHash = appendSentencePathHash(parent.keyHash, segment)
+	appendSentenceShape(next, parent, segment.Text)
+}
+
+func sentencePathSegments(path sentencePath) []engineapi.Segment {
+	if path.segments != nil || path.count == 0 {
+		return path.segments
+	}
+	segments := make([]engineapi.Segment, int(path.count))
+	node := path.tail
+	for index := len(segments) - 1; index >= 0 && node != nil; index-- {
+		segments[index] = node.segment
+		node = node.parent
+	}
+	return segments
+}
+
+func compareSentencePathShape(left, right sentencePath) int {
+	count := int(left.count)
+	if int(right.count) < count {
+		count = int(right.count)
+	}
+	if count > sentenceShapePrefix {
+		count = sentenceShapePrefix
+	}
+	for index := 0; index < count; index++ {
+		if left.lengths[index] > right.lengths[index] {
+			return 1
+		}
+		if left.lengths[index] < right.lengths[index] {
+			return -1
+		}
+	}
+	if left.count <= sentenceShapePrefix && right.count <= sentenceShapePrefix {
+		if left.count < right.count {
+			return 1
+		}
+		if left.count > right.count {
+			return -1
+		}
+		return 0
+	}
+	return compareWordFirstSegments(sentencePathSegments(left), sentencePathSegments(right))
 }
 
 func compareWordFirstSegments(left, right []engineapi.Segment) int {
@@ -612,14 +713,46 @@ func sentenceCandidateID(input string, path sentencePath) string {
 }
 
 func sentencePathKey(path sentencePath) string {
-	if path.key != "" || len(path.segments) == 0 {
-		return path.key
-	}
 	key := ""
-	for _, segment := range path.segments {
+	for _, segment := range sentencePathSegments(path) {
 		key = appendSentencePathKey(key, segment)
 	}
 	return key
+}
+
+func sentencePathHash(path sentencePath) uint64 {
+	if path.keyHash != 0 || path.count == 0 {
+		return path.keyHash
+	}
+	var hash uint64
+	for _, segment := range sentencePathSegments(path) {
+		hash = appendSentencePathHash(hash, segment)
+	}
+	return hash
+}
+
+func appendSentencePathHash(hash uint64, segment engineapi.Segment) uint64 {
+	const offset64 = uint64(14695981039346656037)
+	const prime64 = uint64(1099511628211)
+	if hash == 0 {
+		hash = offset64
+	}
+	appendByte := func(value byte) { hash = (hash ^ uint64(value)) * prime64 }
+	for shift := 0; shift < 32; shift += 8 {
+		appendByte(byte(uint32(segment.Start) >> shift))
+	}
+	for shift := 0; shift < 32; shift += 8 {
+		appendByte(byte(uint32(segment.End) >> shift))
+	}
+	for index := 0; index < len(segment.Code); index++ {
+		appendByte(segment.Code[index])
+	}
+	appendByte(0xff)
+	for index := 0; index < len(segment.Text); index++ {
+		appendByte(segment.Text[index])
+	}
+	appendByte(0xfe)
+	return hash
 }
 
 func appendSentencePathKey(prefix string, segment engineapi.Segment) string {

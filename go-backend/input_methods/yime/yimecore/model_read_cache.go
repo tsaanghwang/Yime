@@ -1,5 +1,10 @@
 package yimecore
 
+type candidateModelScore struct {
+	user    int64
+	context int64
+}
+
 // User-model writes are rare compared with scoring reads. Cache immutable
 // scores per engine generation so one refresh takes one model lock to observe
 // the generation instead of taking locks for every candidate and sentence
@@ -17,7 +22,34 @@ func (e *Engine) syncUserModelReadCache() {
 	e.modelGenerationOK = true
 	e.modelCandidate = nil
 	e.modelContext = nil
+	e.modelScoreContext = ""
+	e.modelScore = nil
 	e.modelLearned = nil
+}
+
+func (e *Engine) userCandidateModelScore(previous, code, text string) candidateModelScore {
+	if e == nil || e.userModel == nil {
+		return candidateModelScore{}
+	}
+	if previous != e.modelScoreContext {
+		e.modelScoreContext = previous
+		e.modelScore = nil
+	}
+	identity := candidateIdentity{code: code, text: text}
+	if score, found := e.modelScore[identity]; found {
+		return score
+	}
+	score := candidateModelScore{
+		user:    e.userCandidateBoost(code, text),
+		context: e.userContextBoost(previous, code, text),
+	}
+	if len(e.modelScore) < maximumExactCacheItems {
+		if e.modelScore == nil {
+			e.modelScore = make(map[candidateIdentity]candidateModelScore)
+		}
+		e.modelScore[identity] = score
+	}
+	return score
 }
 
 func (e *Engine) userCandidateBoost(code, text string) int64 {
