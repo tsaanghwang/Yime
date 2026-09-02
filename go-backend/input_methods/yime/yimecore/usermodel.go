@@ -14,6 +14,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 )
 
 const (
@@ -47,6 +48,7 @@ type UserModel struct {
 	path              string
 	sourceID          string
 	generation        uint64
+	generationAtomic  atomic.Uint64
 	selections        map[candidateIdentity]uint64
 	contexts          map[contextIdentity]uint64
 	rejections        map[candidateIdentity]uint64
@@ -146,6 +148,7 @@ func OpenUserModel(path, sourceID string) (*UserModel, error) {
 		return nil, err
 	}
 	model.generation = payload.Generation
+	model.generationAtomic.Store(payload.Generation)
 	model.selections, err = decodeSelectionCounts(payload.Selections)
 	if err != nil {
 		return nil, err
@@ -299,6 +302,7 @@ func (m *UserModel) observeBatchWithRerankerIdempotent(observations []UserObserv
 	m.mu.Lock()
 	m.applySelectionMutationLocked(mutation)
 	m.generation++
+	m.generationAtomic.Store(m.generation)
 	if requestID != "" {
 		m.appliedRequests[requestID] = mutation
 	}
@@ -360,6 +364,7 @@ func (m *UserModel) ForgetWithError(code, text string) (bool, error) {
 			}
 		}
 		m.generation++
+		m.generationAtomic.Store(m.generation)
 		m.mu.Unlock()
 		if committed != nil {
 			committed()
@@ -403,9 +408,7 @@ func (m *UserModel) Generation() uint64 {
 	if m == nil {
 		return 0
 	}
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	return m.generation
+	return m.generationAtomic.Load()
 }
 
 func (m *UserModel) LoadedSchemaVersion() string {
@@ -487,6 +490,7 @@ func (m *UserModel) ApplyRecoveredMutation(mutation UserMutation) error {
 		m.appliedRequests[mutation.RequestID] = mutation
 	}
 	m.generation = mutation.Generation
+	m.generationAtomic.Store(m.generation)
 	return nil
 }
 
@@ -640,6 +644,7 @@ func (m *UserModel) Restore(backupPath string) error {
 	}
 	m.mu.Lock()
 	m.generation = payload.Generation
+	m.generationAtomic.Store(m.generation)
 	m.selections = selections
 	m.contexts = contexts
 	m.rejections = rejections

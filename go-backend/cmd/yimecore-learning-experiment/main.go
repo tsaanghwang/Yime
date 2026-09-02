@@ -17,7 +17,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore"
 )
 
-const toolVersion = "yimecore-learning-experiment-e3b-v2"
+const toolVersion = "yimecore-learning-experiment-e3b-v4"
 
 type latency struct {
 	Samples   int   `json:"samples"`
@@ -46,6 +46,7 @@ type report struct {
 	LearnedSnapshotSHA  string                `json:"learned_snapshot_sha256"`
 	StaticLatency       latency               `json:"static_latency"`
 	LearnedLatency      latency               `json:"learned_latency"`
+	MeasurementOrder    string                `json:"measurement_order"`
 	P95OverheadRatio    float64               `json:"p95_overhead_ratio"`
 	P99OverheadRatio    float64               `json:"p99_overhead_ratio"`
 	PromotionPassed     bool                  `json:"promotion_passed"`
@@ -62,9 +63,10 @@ func main() {
 	output := flag.String("output", "", "evidence JSON path")
 	modelPath := flag.String("model", "", "new primary user-model path")
 	iterations := flag.Int("iterations", 1000, "latency samples")
+	batchSize := flag.Int("batch-size", 100, "replays per latency sample")
 	flag.Parse()
-	if *indexPath == "" || *mode == "" || *output == "" || *modelPath == "" || *iterations < 10 {
-		fail(fmt.Errorf("index, mode, output, model and at least 10 iterations are required"))
+	if *indexPath == "" || *mode == "" || *output == "" || *modelPath == "" || *iterations < 10 || *batchSize < 1 {
+		fail(fmt.Errorf("index, mode, output, model, at least 10 iterations and a positive batch size are required"))
 	}
 	if _, err := os.Stat(*modelPath); !os.IsNotExist(err) {
 		fail(fmt.Errorf("model path must not already exist: %s", *modelPath))
@@ -150,7 +152,6 @@ func main() {
 	if err != nil {
 		fail(err)
 	}
-	staticLatency := measure(staticEngine, code, *iterations)
 	learningSeed := applyCode(learnedEngine, code)
 	if len(learningSeed) == 0 {
 		fail(fmt.Errorf("learned latency seed has no candidate"))
@@ -158,7 +159,7 @@ func main() {
 	if _, err := learnedEngine.Select(learningSeed[0].ID); err != nil {
 		fail(err)
 	}
-	learnedLatency := measure(learnedEngine, code, *iterations)
+	staticLatency, learnedLatency := measurePair(staticEngine, learnedEngine, code, *iterations, *batchSize)
 	p95Ratio := float64(learnedLatency.P95NS) / float64(staticLatency.P95NS)
 	p99Ratio := float64(learnedLatency.P99NS) / float64(staticLatency.P99NS)
 	latencyPassed := p95Ratio <= 1.10 && p99Ratio <= 1.20
@@ -171,6 +172,7 @@ func main() {
 		PersistedContext: persistedContext, ForgottenCandidates: forgotten,
 		LearnedSnapshotPath: filepath.Clean(learnedSnapshot), LearnedSnapshotSHA: snapshotHash,
 		StaticLatency: staticLatency, LearnedLatency: learnedLatency,
+		MeasurementOrder: "interleaved_alternating_static_learned",
 		P95OverheadRatio: p95Ratio, P99OverheadRatio: p99Ratio,
 		PromotionPassed: promotionPassed, PersistencePassed: persistencePassed, ContextPassed: contextPassed,
 		ForgetPassed: forgetPassed, LatencyGatePassed: latencyPassed,
@@ -196,16 +198,45 @@ func applyCode(engine *yimecore.Engine, code string) []engineapi.Candidate {
 	return result.State.Candidates
 }
 
-func measure(engine *yimecore.Engine, code string, iterations int) latency {
-	const batchSize = 100
-	values := make([]time.Duration, 0, iterations)
+func measurePair(staticEngine, learnedEngine *yimecore.Engine, code string, iterations, batchSize int) (latency, latency) {
+	staticValues := make([]time.Duration, 0, iterations)
+	learnedValues := make([]time.Duration, 0, iterations)
 	for i := 0; i < iterations; i++ {
-		started := time.Now()
-		for batch := 0; batch < batchSize; batch++ {
-			_ = applyCode(engine, code)
-		}
-		values = append(values, time.Since(started)/batchSize)
+		staticDuration, learnedDuration := measureInterleavedBatch(staticEngine, learnedEngine, code, batchSize, i%2 == 0)
+		staticValues = append(staticValues, staticDuration/time.Duration(batchSize))
+		learnedValues = append(learnedValues, learnedDuration/time.Duration(batchSize))
 	}
+	return summarize(staticValues, batchSize), summarize(learnedValues, batchSize)
+}
+
+func measureInterleavedBatch(staticEngine, learnedEngine *yimecore.Engine, code string, batchSize int, staticFirst bool) (time.Duration, time.Duration) {
+	const maximumChunkSize = 50
+	var staticDuration, learnedDuration time.Duration
+	for completed, chunkIndex := 0, 0; completed < batchSize; chunkIndex++ {
+		chunkSize := maximumChunkSize
+		if remaining := batchSize - completed; remaining < chunkSize {
+			chunkSize = remaining
+		}
+		measureChunk := func(engine *yimecore.Engine) time.Duration {
+			started := time.Now()
+			for replay := 0; replay < chunkSize; replay++ {
+				_ = applyCode(engine, code)
+			}
+			return time.Since(started)
+		}
+		if staticFirst == (chunkIndex%2 == 0) {
+			staticDuration += measureChunk(staticEngine)
+			learnedDuration += measureChunk(learnedEngine)
+		} else {
+			learnedDuration += measureChunk(learnedEngine)
+			staticDuration += measureChunk(staticEngine)
+		}
+		completed += chunkSize
+	}
+	return staticDuration, learnedDuration
+}
+
+func summarize(values []time.Duration, batchSize int) latency {
 	sort.Slice(values, func(i, j int) bool { return values[i] < values[j] })
 	return latency{Samples: len(values), BatchSize: batchSize, P50NS: percentile(values, 50).Nanoseconds(), P95NS: percentile(values, 95).Nanoseconds(), P99NS: percentile(values, 99).Nanoseconds(), MaxNS: values[len(values)-1].Nanoseconds()}
 }

@@ -153,13 +153,15 @@ func (e *Engine) decomposeSurfaceSegment(segment engineapi.Segment) (sentencePat
 						sourceID = e.index.identity()
 					}
 					segments := append([]engineapi.Segment(nil), path.segments...)
-					segments = append(segments, engineapi.Segment{
+					candidateSegment := engineapi.Segment{
 						Start: start, End: end, Text: match.text, Code: match.code, SourceID: sourceID,
-					})
+					}
+					segments = append(segments, candidateSegment)
 					next := sentencePath{
 						text:     segment.Text[:textEnd],
 						base:     saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty),
 						segments: segments,
+						key:      appendSentencePathKey(path.key, candidateSegment),
 					}
 					next.context = saturatingAdd(path.context, e.sentenceTransitionBoost(path, match))
 					next.score = saturatingAdd(next.base, next.context)
@@ -181,6 +183,7 @@ func (e *Engine) decomposeSurfaceSegment(segment engineapi.Segment) (sentencePat
 func (e *Engine) pathForSegments(segments []engineapi.Segment) (sentencePath, bool) {
 	path := sentencePath{segments: append([]engineapi.Segment(nil), segments...)}
 	for _, segment := range segments {
+		path.key = appendSentencePathKey(path.key, segment)
 		bestContribution := int64(0)
 		found := false
 		for _, match := range e.exactMatches(segment.Code) {
@@ -276,7 +279,7 @@ func (e *Engine) segmentSequenceContextBoost(segments []engineapi.Segment) int64
 	previous := e.previousCommit
 	var total int64
 	for _, segment := range segments {
-		total = saturatingAdd(total, e.userModel.contextBoost(previous, segment.Code, segment.Text))
+		total = saturatingAdd(total, e.userContextBoost(previous, segment.Code, segment.Text))
 		previous = segment.Text
 	}
 	return total

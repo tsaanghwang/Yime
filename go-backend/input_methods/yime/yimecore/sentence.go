@@ -1,9 +1,9 @@
 package yimecore
 
 import (
-	"fmt"
 	"math"
 	"sort"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 
@@ -26,6 +26,7 @@ type sentencePath struct {
 	context  int64
 	score    int64
 	segments []engineapi.Segment
+	key      string
 }
 
 // bestSentence returns the single preedit sentence for the current input.
@@ -204,13 +205,15 @@ func (e *Engine) composeLearnedSentence(input, text string) *engineapi.Candidate
 						sourceID = e.index.identity()
 					}
 					segments := append([]engineapi.Segment(nil), path.segments...)
-					segments = append(segments, engineapi.Segment{
+					segment := engineapi.Segment{
 						Start: start, End: end, Text: match.text, Code: match.code, SourceID: sourceID,
-					})
+					}
+					segments = append(segments, segment)
 					next := sentencePath{
 						text:     text[:textEnd],
 						base:     saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty),
 						segments: segments,
+						key:      appendSentencePathKey(path.key, segment),
 					}
 					next.context = saturatingAdd(path.context, e.sentenceTransitionBoost(path, match))
 					next.score = saturatingAdd(next.base, next.context)
@@ -250,8 +253,8 @@ func (e *Engine) sentencePathLearningBoost(path sentencePath) int64 {
 	previous := e.previousCommit
 	var boost int64
 	for _, segment := range path.segments {
-		boost = saturatingAdd(boost, e.userModel.candidateBoost(segment.Code, segment.Text))
-		boost = saturatingAdd(boost, e.userModel.contextBoost(previous, segment.Code, segment.Text))
+		boost = saturatingAdd(boost, e.userCandidateBoost(segment.Code, segment.Text))
+		boost = saturatingAdd(boost, e.userContextBoost(previous, segment.Code, segment.Text))
 		previous = segment.Text
 	}
 	return boost
@@ -444,13 +447,15 @@ func (e *Engine) extendSentenceLattice(input string, maxCodeBytes int) {
 					sourceID = e.index.identity()
 				}
 				segments := append([]engineapi.Segment(nil), path.segments...)
-				segments = append(segments, engineapi.Segment{
+				segment := engineapi.Segment{
 					Start: start, End: end, Text: match.text, Code: match.code, SourceID: sourceID,
-				})
+				}
+				segments = append(segments, segment)
 				next := sentencePath{
 					text:     path.text + match.text,
 					base:     saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty),
 					segments: segments,
+					key:      appendSentencePathKey(path.key, segment),
 				}
 				next.context = saturatingAdd(path.context, e.sentenceTransitionBoost(path, match))
 				next.score = saturatingAdd(next.base, next.context)
@@ -495,7 +500,7 @@ func lexicalScore(weight int64) int64 {
 }
 
 func (e *Engine) lexicalRecordScore(item record) int64 {
-	return saturatingAdd(lexicalScore(item.weight), e.userModel.candidateBoost(item.code, item.text))
+	return saturatingAdd(lexicalScore(item.weight), e.userCandidateBoost(item.code, item.text))
 }
 
 func (e *Engine) sentenceTransitionBoost(path sentencePath, item record) int64 {
@@ -503,7 +508,7 @@ func (e *Engine) sentenceTransitionBoost(path sentencePath, item record) int64 {
 	if len(path.segments) > 0 {
 		previous = path.segments[len(path.segments)-1].Text
 	}
-	return e.userModel.contextBoost(previous, item.code, item.text)
+	return e.userContextBoost(previous, item.code, item.text)
 }
 
 func saturatingAdd(left, right int64) int64 {
@@ -607,9 +612,26 @@ func sentenceCandidateID(input string, path sentencePath) string {
 }
 
 func sentencePathKey(path sentencePath) string {
-	var key strings.Builder
-	for _, segment := range path.segments {
-		fmt.Fprintf(&key, "%d:%d:%s:%s\x1e", segment.Start, segment.End, segment.Code, segment.Text)
+	if path.key != "" || len(path.segments) == 0 {
+		return path.key
 	}
-	return key.String()
+	key := ""
+	for _, segment := range path.segments {
+		key = appendSentencePathKey(key, segment)
+	}
+	return key
+}
+
+func appendSentencePathKey(prefix string, segment engineapi.Segment) string {
+	buffer := make([]byte, 0, len(prefix)+len(segment.Code)+len(segment.Text)+24)
+	buffer = append(buffer, prefix...)
+	buffer = strconv.AppendInt(buffer, int64(segment.Start), 10)
+	buffer = append(buffer, ':')
+	buffer = strconv.AppendInt(buffer, int64(segment.End), 10)
+	buffer = append(buffer, ':')
+	buffer = append(buffer, segment.Code...)
+	buffer = append(buffer, ':')
+	buffer = append(buffer, segment.Text...)
+	buffer = append(buffer, '\x1e')
+	return string(buffer)
 }

@@ -25,6 +25,15 @@ const (
 	indexFileHeaderSize = 128
 	indexModeSize       = 16
 	recordHeaderSize    = 12
+	// The first page needs one extra record to determine HasNext. Keeping only
+	// the nine visible candidates made every normal one- and two-byte lookup
+	// bypass this cache and scan the complete prefix range.
+	shortPrefixCacheLimit = defaultCandidateLimit + 1
+	// Prefix results are immutable. A small shared cache lets independent
+	// sessions reuse warmed ranked ranges as Rime does without allowing a long
+	// typing session to grow memory without bound.
+	maximumPrefixCacheItems   = 4096
+	maximumPrefixCacheRecords = 32768
 )
 
 // IndexBuildResult is the deterministic build evidence emitted for one mode.
@@ -56,18 +65,30 @@ type FileIndex struct {
 	mode          string
 	sourceHash    [sha256.Size]byte
 	payloadHash   [sha256.Size]byte
+	sourceID      string
 	offsets       []uint32
 	recordsEnd    uint32
 	maxCodeBytes  int
 	oneByteTop    [256]shortBucket
 	twoByteTop    []shortBucket
 	twoByteSparse map[uint16]shortBucket
+	prefixCacheMu sync.RWMutex
+	prefixCache   map[prefixCacheKey][]record
+	prefixRecords int
+	exactCacheMu  sync.RWMutex
+	exactCache    map[prefixCacheKey][]record
+	exactRecords  int
 	storageMode   string
+}
+
+type prefixCacheKey struct {
+	prefix string
+	limit  int
 }
 
 type shortBucket struct {
 	count     uint8
-	positions [defaultCandidateLimit]uint32
+	positions [shortPrefixCacheLimit]uint32
 }
 
 // BuildIndexFile compiles a Rime dictionary into the independent E1 format.
@@ -360,6 +381,7 @@ func openFileIndex(path string, resident bool) (*FileIndex, error) {
 	}
 	copy(index.sourceHash[:], header[28:60])
 	copy(index.payloadHash[:], actualPayloadHash[:])
+	index.sourceID = "yime-index-v1:" + index.mode + ":" + hex.EncodeToString(index.sourceHash[:])
 	if err := index.validateRecordsAndBuildShortPrefixes(); err != nil {
 		return nil, err
 	}
@@ -499,11 +521,11 @@ type shortBuildCandidate struct {
 }
 
 func insertShortBuildCandidate(top []shortBuildCandidate, position uint32, code, text []byte, weight int64, prefixLen int) []shortBuildCandidate {
-	if len(top) == defaultCandidateLimit && !betterShortBuildCandidate(code, text, weight, top[len(top)-1], prefixLen) {
+	if len(top) == shortPrefixCacheLimit && !betterShortBuildCandidate(code, text, weight, top[len(top)-1], prefixLen) {
 		return top
 	}
 	item := shortBuildCandidate{position: position, code: string(code), text: string(text), weight: weight}
-	if len(top) < defaultCandidateLimit {
+	if len(top) < shortPrefixCacheLimit {
 		top = append(top, item)
 	} else {
 		top[len(top)-1] = item
@@ -563,17 +585,38 @@ func (idx *FileIndex) lookup(prefix string, limit int) []record {
 	if idx == nil || prefix == "" || limit <= 0 {
 		return nil
 	}
+	key := prefixCacheKey{prefix: prefix, limit: limit}
+	idx.prefixCacheMu.RLock()
+	cached, found := idx.prefixCache[key]
+	idx.prefixCacheMu.RUnlock()
+	if found {
+		return cached
+	}
+	result := idx.lookupUncached(prefix, limit)
+	idx.prefixCacheMu.Lock()
+	if idx.prefixCache == nil {
+		idx.prefixCache = make(map[prefixCacheKey][]record)
+	}
+	if len(idx.prefixCache) < maximumPrefixCacheItems &&
+		idx.prefixRecords+len(result) <= maximumPrefixCacheRecords {
+		if _, exists := idx.prefixCache[key]; !exists {
+			idx.prefixCache[key] = result
+			idx.prefixRecords += len(result)
+		}
+	}
+	idx.prefixCacheMu.Unlock()
+	return result
+}
+
+func (idx *FileIndex) lookupUncached(prefix string, limit int) []record {
 	prefixBytes := []byte(prefix)
-	// The one- and two-byte buckets are deliberately only a first-page cache.
-	// Once the engine asks for the look-ahead item used by paging (10, 19,
-	// 28...), fall through to the complete prefix-range scan. Returning the
-	// nine cached positions for a larger request incorrectly reports that short
-	// prefixes have no next page and makes the ordering contract change at the
-	// third input byte.
-	if len(prefixBytes) == 1 && limit <= defaultCandidateLimit {
+	// The one- and two-byte buckets contain the nine visible first-page items
+	// plus the look-ahead record used to determine HasNext. Later pages still
+	// fall through to the complete prefix-range scan so ordering is unchanged.
+	if len(prefixBytes) == 1 && limit <= shortPrefixCacheLimit {
 		return idx.recordsFromShortBucket(&idx.oneByteTop[prefixBytes[0]], limit)
 	}
-	if len(prefixBytes) == 2 && limit <= defaultCandidateLimit {
+	if len(prefixBytes) == 2 && limit <= shortPrefixCacheLimit {
 		key := uint16(prefixBytes[0])<<8 | uint16(prefixBytes[1])
 		if idx.twoByteTop != nil {
 			return idx.recordsFromShortBucket(&idx.twoByteTop[key], limit)
@@ -604,6 +647,30 @@ func (idx *FileIndex) exact(code string, limit int) []record {
 	if idx == nil || code == "" || limit <= 0 {
 		return nil
 	}
+	key := prefixCacheKey{prefix: code, limit: limit}
+	idx.exactCacheMu.RLock()
+	cached, found := idx.exactCache[key]
+	idx.exactCacheMu.RUnlock()
+	if found {
+		return cached
+	}
+	result := idx.exactUncached(code, limit)
+	idx.exactCacheMu.Lock()
+	if idx.exactCache == nil {
+		idx.exactCache = make(map[prefixCacheKey][]record)
+	}
+	if len(idx.exactCache) < maximumPrefixCacheItems &&
+		idx.exactRecords+len(result) <= maximumPrefixCacheRecords {
+		if _, exists := idx.exactCache[key]; !exists {
+			idx.exactCache[key] = result
+			idx.exactRecords += len(result)
+		}
+	}
+	idx.exactCacheMu.Unlock()
+	return result
+}
+
+func (idx *FileIndex) exactUncached(code string, limit int) []record {
 	codeBytes := []byte(code)
 	start := sort.Search(len(idx.offsets), func(i int) bool {
 		recordCode, _, _, err := idx.recordAt(i)
@@ -643,7 +710,7 @@ func (idx *FileIndex) exactAll(code string) []record {
 func (idx *FileIndex) maximumCodeBytes() int { return idx.maxCodeBytes }
 
 func (idx *FileIndex) identity() string {
-	return "yime-index-v1:" + idx.mode + ":" + hex.EncodeToString(idx.sourceHash[:])
+	return idx.sourceID
 }
 
 func (idx *FileIndex) recordsFromShortBucket(bucket *shortBucket, limit int) []record {

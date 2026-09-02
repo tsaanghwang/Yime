@@ -25,6 +25,11 @@ type Engine struct {
 	sentenceInput     string
 	sentenceStates    [][]sentencePath
 	userModel         *UserModel
+	modelGeneration   uint64
+	modelGenerationOK bool
+	modelCandidate    map[candidateIdentity]int64
+	modelContext      map[contextIdentity]int64
+	modelLearned      map[prefixCacheKey][]candidateIdentity
 	linearReranker    bool
 	previousCommit    string
 	pageNumber        int
@@ -739,6 +744,7 @@ func (e *Engine) Reset() engineapi.Result {
 }
 
 func (e *Engine) refresh() {
+	e.syncUserModelReadCache()
 	if e.rawInput == "" {
 		e.candidates = nil
 		e.sentence = nil
@@ -763,7 +769,7 @@ func (e *Engine) refresh() {
 		lexicalExactCandidates = append(lexicalExactCandidates, candidate)
 		seenExact[candidate.ID] = struct{}{}
 	}
-	for _, identity := range e.userModel.learnedCandidates(e.rawInput, fetchLimit) {
+	for _, identity := range e.userLearnedCandidates(e.rawInput, fetchLimit) {
 		if restrictToSingleCharacter && !isSingleCharacter(identity.text) {
 			continue
 		}
@@ -874,8 +880,8 @@ func (e *Engine) scoreCandidate(candidate *engineapi.Candidate) {
 func (e *Engine) scoreCandidateWithContext(candidate *engineapi.Candidate, sentenceContext int64) {
 	candidate.Score.Static = candidate.Weight
 	candidate.Score.Context = saturatingAdd(sentenceContext,
-		e.userModel.contextBoost(e.previousCommit, candidate.Code, candidate.Text))
-	candidate.Score.User = e.userModel.candidateBoost(candidate.Code, candidate.Text)
+		e.userContextBoost(e.previousCommit, candidate.Code, candidate.Text))
+	candidate.Score.User = e.userCandidateBoost(candidate.Code, candidate.Text)
 	if e.linearReranker {
 		candidate.Score.Reranker = e.userModel.sentenceRerankerScore(candidate.Segments)
 	}
@@ -899,13 +905,13 @@ func (e *Engine) scoreComposedCandidateWithContext(candidate *engineapi.Candidat
 		}
 		staticScore = saturatingAdd(staticScore, lexicalScore(match.weight)-generatedSegmentPenalty)
 		segmentUserScore = saturatingAdd(segmentUserScore,
-			e.userModel.candidateBoost(segment.Code, segment.Text))
+			e.userCandidateBoost(segment.Code, segment.Text))
 	}
 	candidate.Score.Static = staticScore
 	candidate.Score.Context = saturatingAdd(sentenceContext,
-		e.userModel.contextBoost(e.previousCommit, candidate.Code, candidate.Text))
+		e.userContextBoost(e.previousCommit, candidate.Code, candidate.Text))
 	candidate.Score.User = saturatingAdd(segmentUserScore,
-		e.userModel.candidateBoost(candidate.Code, candidate.Text))
+		e.userCandidateBoost(candidate.Code, candidate.Text))
 	if e.linearReranker {
 		candidate.Score.Reranker = e.userModel.sentenceRerankerScore(candidate.Segments)
 	}

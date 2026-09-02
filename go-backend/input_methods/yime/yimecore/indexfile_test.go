@@ -245,3 +245,92 @@ func TestCompactIndexShortPrefixesRetainPagingAndOrdering(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkFileIndexShortReplay(b *testing.B) {
+	benchmarkFileIndexReplay(b, "bjjj")
+}
+
+func BenchmarkFileIndexLearnedShortReplay(b *testing.B) {
+	path := os.Getenv("YIME_BENCH_INDEX_PATH")
+	if path == "" {
+		b.Skip("YIME_BENCH_INDEX_PATH is not set")
+	}
+	index, err := OpenFileIndex(path)
+	if err != nil {
+		b.Fatal(err)
+	}
+	b.Cleanup(func() { _ = index.Close() })
+	model, err := NewUserModel(index.SourceID())
+	if err != nil {
+		b.Fatal(err)
+	}
+	seed, err := NewFileEngine(index, defaultCandidateLimit)
+	if err != nil {
+		b.Fatal(err)
+	}
+	apply := func(engine *Engine) engineapi.Result {
+		engine.Reset()
+		var result engineapi.Result
+		for _, key := range "bjjj" {
+			result, err = engine.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: string(key)})
+			if err != nil {
+				b.Fatal(err)
+			}
+		}
+		return result
+	}
+	state := apply(seed).State
+	if len(state.Candidates) < 2 {
+		b.Fatal("learning benchmark requires two candidates")
+	}
+	target := state.Candidates[1]
+	if err := model.observeWithContext(target.Code, target.Text, target.Text); err != nil {
+		b.Fatal(err)
+	}
+	engine, err := NewFileEngineWithUserModel(index, defaultCandidateLimit, model)
+	if err != nil {
+		b.Fatal(err)
+	}
+	engine.previousCommit = target.Text
+	apply(engine)
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		engine.Reset()
+		for _, key := range "bjjj" {
+			if _, err := engine.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: string(key)}); err != nil {
+				b.Fatal(err)
+			}
+		}
+	}
+}
+
+func BenchmarkFileIndexLongSentenceReplay(b *testing.B) {
+	benchmarkFileIndexReplay(b, "`...ylda9uuu0uio[sss")
+}
+
+func benchmarkFileIndexReplay(b *testing.B, code string) {
+	path := os.Getenv("YIME_BENCH_INDEX_PATH")
+	if path == "" {
+		b.Skip("YIME_BENCH_INDEX_PATH is not set")
+	}
+	index, err := OpenFileIndex(path)
+	if err != nil {
+		b.Fatal(err)
+	}
+	b.Cleanup(func() { _ = index.Close() })
+	engine, err := NewFileEngine(index, defaultCandidateLimit)
+	if err != nil {
+		b.Fatal(err)
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		engine.Reset()
+		for _, key := range code {
+			if _, err := engine.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: string(key)}); err != nil {
+				b.Fatal(err)
+			}
+		}
+	}
+}
