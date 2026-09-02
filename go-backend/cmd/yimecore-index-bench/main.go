@@ -164,14 +164,24 @@ func inspectProbe(engine *yimecore.Engine, item probe) (bool, []engineapi.Candid
 			return false, nil
 		}
 	}
+	observed := result.State.Candidates
+	if item.Generated && result.State.Sentence != nil {
+		observed = append([]engineapi.Candidate{*result.State.Sentence}, observed...)
+		candidate := result.State.Sentence
+		if candidate.Text == item.Text && candidate.Code == item.Code && candidate.Exact &&
+			len(candidate.Segments) >= 2 {
+			selected, err := engine.Select(candidate.ID)
+			return err == nil && selected.Commit == item.Text && selected.State.RawInput == "", observed
+		}
+	}
 	for _, candidate := range result.State.Candidates {
 		if candidate.Text != item.Text || candidate.Code != item.Code || !candidate.Exact || (item.Generated && len(candidate.Segments) < 2) {
 			continue
 		}
 		selected, err := engine.Select(candidate.ID)
-		return err == nil && selected.Commit == item.Text && selected.State.RawInput == "", result.State.Candidates
+		return err == nil && selected.Commit == item.Text && selected.State.RawInput == "", observed
 	}
-	return false, result.State.Candidates
+	return false, observed
 }
 
 func loadProbes(path, mode string) []probe {
