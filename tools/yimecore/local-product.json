@@ -1,0 +1,329 @@
+{
+  "schema_version": "yimecore-local-product-v1",
+  "version": "0.1.0-local.3",
+  "display_name": "Yime 独立开发版",
+  "package_contract": "yimecore-local-product-package-v1",
+  "installable": true,
+  "scope": {
+    "computer_name": "MYCOMPUTER",
+    "active_architectures": [
+      "x64"
+    ],
+    "frozen_targets": [
+      "arm64",
+      "x86",
+      "legacy_x64",
+      "other_physical_pcs",
+      "simulated_hardware_tiers"
+    ]
+  },
+  "identity": {
+    "product_key": "YimeCoreExperimentalTrial",
+    "clsid": "{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}",
+    "profile": "{607895A8-9504-4A2E-9BB1-2C159E3A1757}",
+    "language_id": "0804",
+    "state_directory": "YimeCore Experimental Trial",
+    "install_directory": "YimeCore Experimental Trial",
+    "pipe": "\\\\.\\pipe\\YimeBroker.YimeCoreTrial.v1",
+    "model_source_id": "yimecore-e6c-three-mode-trial-v1",
+    "legacy_display_name": "Yime 自研栈试验版",
+    "display_name_activation": "local product build only; stable internal names and legacy build labels unchanged"
+  },
+  "data_compatibility": {
+    "read_models": [
+      "yime-user-model-v1",
+      "yime-user-model-v2",
+      "yime-user-model-v3",
+      "yime-user-model-v4"
+    ],
+    "read_journals": [
+      "yime-user-journal-v1",
+      "yime-user-journal-v2"
+    ],
+    "migration": "preserve namespace; no rename migration",
+    "bare_digits": "composition",
+    "candidate_selection": "Shift+1..Shift+9",
+    "candidate_labels": "⇧1..⇧9"
+  },
+  "go_binaries": [
+    {
+      "path": "bin/YimeBroker.exe",
+      "source": "./cmd/yimebroker",
+      "gui": false
+    },
+    {
+      "path": "bin/YimeCoreExplain.exe",
+      "source": "./cmd/yimecore-explain",
+      "gui": false
+    },
+    {
+      "path": "bin/YimeCoreSentenceRegression.exe",
+      "source": "./cmd/yimecore-sentence-regression",
+      "gui": false
+    },
+    {
+      "path": "bin/YimeCoreIndependenceAudit.exe",
+      "source": "./cmd/yimecore-independence-audit",
+      "gui": false
+    },
+    {
+      "path": "bin/YimeCoreTrialRuntime.exe",
+      "source": "./cmd/yimecore-trial-runtime",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreInputToolbar.exe",
+      "source": "./cmd/input-toolbar",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreReverseLookup.exe",
+      "source": "./cmd/reverse-lookup-tool",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreLexiconManager.exe",
+      "source": "./cmd/lexicon-manager",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreTrainer.exe",
+      "source": "./cmd/yime-trainer",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreToolCenter.exe",
+      "source": "./cmd/tool-hub",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreLexiconCenter.exe",
+      "source": "./cmd/tool-hub",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreBlocklistManager.exe",
+      "source": "./cmd/blocklist-manager",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreSystemLexiconAudit.exe",
+      "source": "./cmd/system-lexicon-audit",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreLearningManager.exe",
+      "source": "./cmd/learning-manager",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCorePromotionScan.exe",
+      "source": "./cmd/lexicon-promotion-scan",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreProfessionalLexicon.exe",
+      "source": "./cmd/professional-lexicon-manager",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreLayoutDesigner.exe",
+      "source": "./cmd/yime-layout-designer",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreDiagnostics.exe",
+      "source": "./cmd/diagnostics-tool",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreSettingsTool.exe",
+      "source": "./cmd/settings-tool",
+      "gui": true
+    },
+    {
+      "path": "bin/YimeCoreRecoveryProbe.exe",
+      "source": "../tools/yimecore/model-recovery-probe.go",
+      "gui": false
+    }
+  ],
+  "native_binaries": [
+    "YimeTextServiceExperiment.dll",
+    "YimeTextServiceRegistration.exe",
+    "YimeRegisteredHostTests.exe"
+  ],
+  "assets": [
+    {
+      "source": "go-backend/input_methods/yime/data/yime_yinyuan_layout.json",
+      "path": "data/yime_yinyuan_layout.json"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/yime_pinyin_codes.tsv",
+      "path": "data/yime_pinyin_codes.tsv"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/pinyin_normalized.json",
+      "path": "data/pinyin_normalized.json"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/yime_pua_pinyin.json",
+      "path": "data/yime_pua_pinyin.json"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf",
+      "path": "data/fonts/YinYuan-Regular.ttf"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+      "path": "data/yime_full.dict.yaml"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/yime_variable.dict.yaml",
+      "path": "data/yime_variable.dict.yaml"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/yime_shorthand.dict.yaml",
+      "path": "data/yime_shorthand.dict.yaml"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/yime_lexicon_manifest.json",
+      "path": "data/yime_lexicon_manifest.json"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/yime_core_source_manifest.json",
+      "path": "data/yime_core_source_manifest.json"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/yime_full.schema.yaml",
+      "path": "data/yime_full.schema.yaml"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/yime_variable.schema.yaml",
+      "path": "data/yime_variable.schema.yaml"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/yime_shorthand.schema.yaml",
+      "path": "data/yime_shorthand.schema.yaml"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/yime_syllable_decomposition.tsv",
+      "path": "data/yime_syllable_decomposition.tsv"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/trainer/foundation.json",
+      "path": "data/trainer/foundation.json"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/trainer/curriculum.json",
+      "path": "data/trainer/curriculum.json"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/trainer/yinyuan_catalog.json",
+      "path": "data/trainer/yinyuan_catalog.json"
+    },
+    {
+      "source": "go-backend/input_methods/yime/data/trainer/yinyuan_groups.json",
+      "path": "data/trainer/yinyuan_groups.json"
+    },
+    {
+      "source": "go-backend/input_methods/yime/yimecore/testdata/dynamic_sentence_cases.json",
+      "path": "data/dynamic_sentence_cases.json"
+    },
+    {
+      "source": "tools/yimecore/professional-lexicons/catalog.json",
+      "path": "professional-lexicons/catalog.json"
+    },
+    {
+      "source": "YimeTextServiceExperiment/assets/yimecore-trial-profile.ico",
+      "path": "profile-icon.ico"
+    },
+    {
+      "source": "tools/yimecore/trial-help/README.html",
+      "path": "help/README.html"
+    },
+    {
+      "source": "tools/yimecore/trial-help/diagnostics.html",
+      "path": "help/diagnostics.html"
+    },
+    {
+      "source": "tools/yimecore/trial-help/settings-and-data.html",
+      "path": "help/settings-and-data.html"
+    },
+    {
+      "source": "tools/yimecore/trial-help/trial-feedback.html",
+      "path": "help/trial-feedback.html"
+    }
+  ],
+  "maintenance_assets": [
+    {
+      "source": "tools/yimecore/local-product/Install-YimeCore-Local.cmd",
+      "path": "Install-YimeCore-Local.cmd"
+    },
+    {
+      "source": "tools/yimecore/local-product/Maintain-YimeCore-Local.cmd",
+      "path": "Maintain-YimeCore-Local.cmd"
+    },
+    {
+      "source": "tools/yimecore/manage-e6c-trial-install.ps1",
+      "path": "maintenance/Manage-YimeCoreTrial.ps1"
+    },
+    {
+      "source": "tools/yimecore/manage-local-product.ps1",
+      "path": "maintenance/manage-local-product.ps1"
+    },
+    {
+      "source": "tools/yimecore/local-package-contract.ps1",
+      "path": "maintenance/local-package-contract.ps1"
+    },
+    {
+      "source": "tools/yimecore/local-product-runtime.ps1",
+      "path": "maintenance/local-product-runtime.ps1"
+    },
+    {
+      "source": "tools/yimecore/local-runtime-launcher.cs",
+      "path": "maintenance/local-runtime-launcher.cs"
+    },
+    {
+      "source": "tools/yimecore/development-scope.ps1",
+      "path": "maintenance/development-scope.ps1"
+    },
+    {
+      "source": "tools/yimecore/development-scope.json",
+      "path": "maintenance/development-scope.json"
+    },
+    {
+      "source": "tools/yimecore/local-maintenance-safety.ps1",
+      "path": "maintenance/local-maintenance-safety.ps1"
+    },
+    {
+      "source": "tools/yimecore/backup-local-trial-state.ps1",
+      "path": "maintenance/backup-local-trial-state.ps1"
+    },
+    {
+      "source": "tools/yimecore/restore-local-trial-state.ps1",
+      "path": "maintenance/restore-local-trial-state.ps1"
+    },
+    {
+      "source": "tools/yimecore/start-e6c-trial-runtime.ps1",
+      "path": "maintenance/start-e6c-trial-runtime.ps1"
+    },
+    {
+      "source": "tools/yimecore/stop-e6c-trial-runtime.ps1",
+      "path": "maintenance/stop-e6c-trial-runtime.ps1"
+    },
+    {
+      "source": "tools/yimecore/verify-e6c-trial-runtime.ps1",
+      "path": "maintenance/verify-e6c-trial-runtime.ps1"
+    },
+    {
+      "source": "tools/yimecore/local-product/LOCAL-PRODUCT.md",
+      "path": "LOCAL-PRODUCT.md"
+    }
+  ],
+  "deferred": {
+    "maintenance": "Packaged maintenance is implemented; native installed acceptance and privilege transition remain required before local-product readiness",
+    "signing": "签名证书正在申请，等候审批，暂缓相关事项",
+    "network_sync": "deferred",
+    "new_connected_speech_rules": "deferred"
+  }
+}

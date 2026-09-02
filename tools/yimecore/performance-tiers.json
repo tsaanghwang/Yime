@@ -2,6 +2,14 @@
   "schema_version": "yimecore-performance-tiers-v1",
   "profiles": [
     {
+      "id": "development_host_x64",
+      "label": "本开发机原生 x64",
+      "reference": "MYCOMPUTER; natural scheduler, no CPU quota, no fixed affinity or simulated hardware tier",
+      "private_memory_budget_mb": 1536
+    }
+  ],
+  "frozen_profiles": [
+    {
       "id": "mainstream",
       "label": "流行主流",
       "reference": "Windows 11 office PC, 6-12 cores, 16 GB RAM, NVMe SSD",
@@ -26,10 +34,10 @@
   },
   "limitations": [
     "Legacy Windows 10 and old SATA-SSD PCs are excluded from the active release gate and are retained only as historical engineering evidence.",
-    "CPU scheduling pressure is enforced with a Windows Job Object hard cap normalized to one logical processor and a fixed affinity mask.",
-    "RAM tiers are evaluated as per-process private-byte budgets; the harness does not remove physical RAM from Windows.",
+    "Only the approved development machine is measured, without a Job Object hard cap, fixed affinity, or tier simulation.",
+    "The memory budget is per-process private bytes; physical RAM is not removed from Windows.",
     "The harness does not emulate another CPU microarchitecture, cache hierarchy, storage latency, GPU, firmware or background software mix.",
     "E3 static-versus-learned relative cost is measured on the native host with interleaved samples because Job Object quota waits cannot be attributed fairly to one half of a paired microbenchmark.",
-    "Results are engineering projections and must later be confirmed on representative physical PCs before public release."
+    "ARM64, x86, other physical PCs and hardware-tier simulations are frozen until the independent core is fully usable on this machine and resumption is approved. No result implies compatibility with those targets."
   ]
 }

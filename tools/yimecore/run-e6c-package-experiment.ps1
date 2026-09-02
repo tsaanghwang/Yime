@@ -5,6 +5,9 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'development-scope.ps1')
+$developmentScope = Get-YimeCoreDevelopmentScope
+Assert-YimeCoreNativeGo
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $stateRoot = Join-Path $env:LOCALAPPDATA 'YimeCore Experimental Trial'
 if ([string]::IsNullOrWhiteSpace($BasePackageRoot)) {
@@ -37,6 +40,12 @@ if (Test-Path -LiteralPath $outputDir) {
     New-Item -ItemType Directory -Force $outputDir | Out-Null
 }
 Start-Transcript -LiteralPath (Join-Path $outputDir 'transcript.txt') -Force | Out-Null
+
+& (Join-Path $PSScriptRoot 'test-e6c-autostart-contract.ps1') `
+    -OutputPath (Join-Path $outputDir 'autostart-contract.json') | Out-Null
+& (Join-Path $PSScriptRoot 'test-e6c-user-tip-rollback.ps1')
+& (Join-Path $PSScriptRoot 'test-e6c-unpackaged-maintenance.ps1')
+& (Join-Path $PSScriptRoot 'test-e6c-system-uninstall.ps1')
 
 function Get-PackageRecords([string]$root) {
     $normalizedRoot = [IO.Path]::GetFullPath($root)
@@ -115,13 +124,8 @@ $dynamicSentenceCasePackage = Join-Path $packageRoot 'data\dynamic_sentence_case
 Copy-Item -LiteralPath $dynamicSentenceCaseSource -Destination $dynamicSentenceCasePackage -Force
 
 $textServiceBuilds = @()
-$nativeArchitecture = if (-not [string]::IsNullOrWhiteSpace($env:PROCESSOR_ARCHITEW6432)) {
-	$env:PROCESSOR_ARCHITEW6432
-} else { $env:PROCESSOR_ARCHITECTURE }
 foreach ($architecture in @(
-	[ordered]@{ name = 'x64'; platform = 'x64'; runnable = $true },
-	[ordered]@{ name = 'x86'; platform = 'Win32'; runnable = $true },
-	[ordered]@{ name = 'arm64'; platform = 'ARM64'; runnable = $nativeArchitecture -eq 'ARM64' }
+    [ordered]@{ name = 'x64'; platform = 'x64'; runnable = $true }
 )) {
 	New-Item -ItemType Directory -Path (Join-Path $packageRoot $architecture.name) -Force | Out-Null
     $buildRoot = Join-Path $outputDir ('text-service-build-' + $architecture.name)
@@ -169,6 +173,12 @@ foreach ($architecture in @(
     }
 }
 
+# These are retained maintenance payloads, not freshly built/tested support.
+$frozenPayloads = @($baseRecords | Where-Object { $_.path -match '^(x86|arm64)/' } | ForEach-Object {
+    $actualHash = (Get-FileHash -LiteralPath (Join-Path $packageRoot $_.path) -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($actualHash -ne $_.sha256) { throw "Frozen payload changed: $($_.path)" }
+    [ordered]@{ path = $_.path; sha256 = $actualHash; status = 'frozen-retained'; tested = $false }
+})
 $broker = Join-Path $binRoot 'YimeBroker.exe'
 $verifier = Join-Path $binRoot 'YimeE6CPackageExperiment.exe'
 $runtime = Join-Path $binRoot 'YimeCoreTrialRuntime.exe'
@@ -258,6 +268,8 @@ $maintenanceRoot = Join-Path $packageRoot 'maintenance'
 New-Item -ItemType Directory -Path $maintenanceRoot -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'manage-e6c-trial-install.ps1') `
     -Destination (Join-Path $maintenanceRoot 'Manage-YimeCoreTrial.ps1') -Force
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'local-runtime-launcher.cs') `
+    -Destination (Join-Path $maintenanceRoot 'local-runtime-launcher.cs') -Force
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'repair-e6c-trial-autostart.ps1') `
     -Destination (Join-Path $maintenanceRoot 'Repair-YimeCoreTrialAutostart.ps1') -Force
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Install-YimeCore-Trial.cmd') `
@@ -277,7 +289,10 @@ $packageManifest = [ordered]@{
     git_commit = $commit
     base_package_id = $baseManifest.package_id
     base_package_manifest_sha256 = (Get-FileHash -LiteralPath $baseManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
-    scope = 'parallel YimeCore trial Broker only; no production Rime or PIME registration'
+    scope = 'development-host x64 only; frozen secondary payloads retained; no production Rime or PIME registration'
+    development_scope = $developmentScope
+    frozen_payloads = $frozenPayloads
+    frozen_base_manifest_sha256 = (Get-FileHash -LiteralPath $baseManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
     files = @(Get-PackageRecords $packageRoot)
 }
 $packageManifestPath = Join-Path $packageRoot 'package-manifest.json'
@@ -432,6 +447,8 @@ $runtimeEvidencePath = Join-Path $outputDir 'runtime-supervision.json'
 $languageBarEvidencePath = Join-Path $outputDir 'language-bar-evidence.json'
 [ordered]@{
     reserved_input_mode_guid = '{2C77A81E-41CC-4178-A3A7-5F8A987568E6}'
+    development_scope = $developmentScope
+    frozen_architectures = @('x86', 'arm64')
     # Keep this script ASCII-clean so Windows PowerShell 5.1 does not depend on
     # a UTF-8 BOM when launched from the click-through .cmd entry point.
     desktop_labels = @([string][char]0x4E2D, [string][char]0x82F1)
@@ -566,11 +583,19 @@ $sourceFiles = @(
     'YimeTextServiceExperiment\tests\TsfCompositionTests.cpp',
     'tools\yimecore\run-e6b7-parallel-package-experiment.ps1',
     'tools\yimecore\run-e6c-package-experiment.ps1',
+    'tools\yimecore\development-scope.ps1',
+    'tools\yimecore\development-scope.json',
+    'tools\yimecore\test-development-scope.ps1',
+    'docs\project\YIMECORE_DEVELOPMENT_HOST_SCOPE.md',
     'tools\yimecore\manage-e6c-trial-install.ps1',
     'tools\yimecore\repair-e6c-trial-autostart.ps1',
     'tools\yimecore\Install-YimeCore-Trial.cmd',
     'tools\yimecore\Force-Uninstall-YimeCore-Trial.cmd',
     'tools\yimecore\test-e6c-installation-contract.ps1',
+    'tools\yimecore\test-e6c-autostart-contract.ps1',
+    'tools\yimecore\test-e6c-unpackaged-maintenance.ps1',
+    'tools\yimecore\test-e6c-system-uninstall.ps1',
+    'tools\yimecore\repair-e6c-system-uninstall.ps1',
 	'tools\yimecore\test-yimecore-cleanup-contract.ps1',
     'tools\yimecore\deploy-e6c-trial-runtime.ps1',
     'tools\yimecore\start-e6c-trial-runtime.ps1',
@@ -598,6 +623,9 @@ $sourceHashes | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath $sourceHashPa
 $summary = [ordered]@{
     tool_version = 'yimecore-e6c-staged-package-experiment-v1'
     stage = 'e6c'
+    development_scope = $developmentScope
+    tested_architectures = @('x64')
+    frozen_payloads = $frozenPayloads
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     git_commit = $commit
     git_dirty = [bool]((& git -C $repoRoot status --porcelain).Count)
@@ -653,7 +681,9 @@ $summary = [ordered]@{
     runtime_supervision_evidence_sha256 = (Get-FileHash -LiteralPath $runtimeEvidencePath -Algorithm SHA256).Hash.ToLowerInvariant()
     language_bar_evidence_path = $languageBarEvidencePath
     language_bar_evidence_sha256 = (Get-FileHash -LiteralPath $languageBarEvidencePath -Algorithm SHA256).Hash.ToLowerInvariant()
-	language_bar_x64_x86_passed = [bool](@($languageBarTsfChecks).Count -ge 2 -and
+    language_bar_x64_x86_passed = $null # Frozen; never represent skipped x86 as passed.
+    language_bar_x64_passed = [bool](@($languageBarTsfChecks).Count -eq 1 -and
+        $languageBarTsfChecks[0].architecture -eq 'x64' -and
         -not (@($languageBarTsfChecks | Where-Object { -not $_.passed }).Count))
 	arm64_tsf_artifacts_packaged = [bool]((@(
 		'YimeTextServiceExperiment.dll', 'YimeTextServiceRegistration.exe', 'YimeRegisteredHostTests.exe'
@@ -666,7 +696,8 @@ $summary = [ordered]@{
         $installationEvidence.registration_state_convergence_wait -and
         $installationEvidence.taskbar_language_bar_categories -and
         $installationEvidence.windows_native_language_bar_only)
-    secondary_architecture_com_only_supported = [bool](-not ($textServiceBuilds.com_only_registration_supported -contains $false))
+    secondary_architecture_com_only_supported = $null
+    active_architecture_com_only_supported = [bool](-not ($textServiceBuilds.com_only_registration_supported -contains $false))
     input_profile_keyboard_icon_supported = [bool](-not ($textServiceBuilds.profile_icon_registration_supported -contains $false) -and
         $installationEvidence.profile_keyboard_icon_packaged)
     taskbar_category_registration_supported = [bool](-not ($textServiceBuilds.taskbar_category_registration_supported -contains $false) -and
@@ -706,9 +737,9 @@ if (-not $summary.base_package_hash_handoff_verified -or
     -not $summary.native_input_toolbar_packaged -or -not $summary.yinyuan_private_font_packaged -or
     -not $summary.legacy_desktop_tools_removed -or
     -not $summary.runtime_supervisor_packaged -or -not $summary.runtime_supervisor_broker_recovery_passed -or
-	-not $summary.language_bar_x64_x86_passed -or -not $summary.arm64_tsf_artifacts_packaged -or
+    -not $summary.language_bar_x64_passed -or
     -not $summary.installed_apps_uninstall_contract_passed -or
-    -not $summary.secondary_architecture_com_only_supported -or
+    -not $summary.active_architecture_com_only_supported -or
     -not $summary.input_profile_keyboard_icon_supported -or
     -not $summary.taskbar_category_registration_supported -or
     -not $summary.e6c_limitation_closed -or

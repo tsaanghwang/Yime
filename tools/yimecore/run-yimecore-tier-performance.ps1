@@ -9,12 +9,18 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'development-scope.ps1')
+$developmentScope = Get-YimeCoreDevelopmentScope
+Assert-YimeCoreNativeGo
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $goBackend = Join-Path $repoRoot 'go-backend'
 $dataRoot = Join-Path $goBackend 'input_methods\yime\data'
 $testDataRoot = Join-Path $goBackend 'input_methods\yime\yimecore\testdata'
 $profilePath = Join-Path $PSScriptRoot 'performance-tiers.json'
 $profiles = (Get-Content -LiteralPath $profilePath -Raw | ConvertFrom-Json)
+if (@($profiles.profiles).Count -ne 1 -or $profiles.profiles[0].id -ne $developmentScope.performance_profile) {
+    throw 'Only the development-host x64 performance profile is active; other hardware tiers are frozen.'
+}
 $allowedRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot '.tmp\yimecore-tier-performance'))
 if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
     $OutputRoot = Join-Path $allowedRoot ('run-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
@@ -27,19 +33,10 @@ if ($outputDir -ne $allowedRoot -and -not $outputDir.StartsWith($allowedPrefix, 
 New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 
 if ([string]::IsNullOrWhiteSpace($InstalledRoot)) {
-    $installBase = 'C:\Program Files\YimeCore Experimental Trial'
-    $candidate = Get-ChildItem -LiteralPath $installBase -Directory -ErrorAction Stop | ForEach-Object {
-        $metadataPath = Join-Path $_.FullName 'install-metadata.json'
-        if ((Test-Path -LiteralPath $metadataPath -PathType Leaf) -and
-            (Test-Path -LiteralPath (Join-Path $_.FullName 'indexes\full.yidx') -PathType Leaf)) {
-            $metadata = Get-Content -LiteralPath $metadataPath -Raw | ConvertFrom-Json
-            [pscustomobject]@{ Root = $_.FullName; InstalledAt = [datetime]$metadata.installed_at }
-        }
-    } | Sort-Object InstalledAt -Descending | Select-Object -First 1
-    if ($null -eq $candidate) {
-        throw 'No installed YimeCore trial root with indexes was found.'
-    }
-    $InstalledRoot = $candidate.Root
+    $runtimeConfigPath = Join-Path $env:LOCALAPPDATA 'YimeCore Experimental Trial\runtime-config.json'
+    $runtimeConfig = Get-Content -LiteralPath $runtimeConfigPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    $InstalledRoot = [string]$runtimeConfig.install_root
+    if ([string]::IsNullOrWhiteSpace($InstalledRoot)) { throw 'Active runtime configuration has no install_root.' }
 }
 $InstalledRoot = [System.IO.Path]::GetFullPath($InstalledRoot)
 
@@ -48,11 +45,10 @@ New-Item -ItemType Directory -Force -Path $binDir | Out-Null
 $benchTool = Join-Path $binDir 'yimecore-index-bench.exe'
 $rimeTool = Join-Path $binDir 'yimecore-rime-compare.exe'
 $learningTool = Join-Path $binDir 'yimecore-learning-experiment.exe'
-$tierRunner = Join-Path $binDir 'yimecore-tier-runner.exe'
 $testLog = Join-Path $outputDir 'go-test.txt'
 Push-Location $goBackend
 try {
-    & go test ./input_methods/yime/yimecore ./cmd/yimecore-index-bench ./cmd/yimecore-rime-compare ./cmd/yimecore-learning-experiment ./cmd/yimecore-tier-runner 2>&1 |
+    & go test ./input_methods/yime/yimecore ./cmd/yimecore-index-bench ./cmd/yimecore-rime-compare ./cmd/yimecore-learning-experiment 2>&1 |
         Tee-Object -FilePath $testLog
     if ($LASTEXITCODE -ne 0) { throw "Performance prerequisite tests failed; see $testLog" }
     & go build -o $benchTool ./cmd/yimecore-index-bench
@@ -61,8 +57,6 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Could not build yimecore-rime-compare.' }
     & go build -o $learningTool ./cmd/yimecore-learning-experiment
     if ($LASTEXITCODE -ne 0) { throw 'Could not build yimecore-learning-experiment.' }
-    & go build -o $tierRunner ./cmd/yimecore-tier-runner
-    if ($LASTEXITCODE -ne 0) { throw 'Could not build yimecore-tier-runner.' }
 }
 finally {
     Pop-Location
@@ -74,6 +68,8 @@ $os = Get-CimInstance Win32_OperatingSystem
 $disks = Get-PhysicalDisk -ErrorAction SilentlyContinue | Select-Object FriendlyName, MediaType, BusType, Size
 $powerPlan = (& powercfg /getactivescheme) -join ''
 $hostEvidence = [ordered]@{
+    development_scope = $developmentScope
+    measurement_policy = 'native-unthrottled-no-affinity-override'
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     computer_model = $computer.Model
     cpu = $processor.Name
@@ -112,16 +108,12 @@ try {
                 if (-not (Test-Path -LiteralPath $indexPath -PathType Leaf)) { throw "Missing installed index: $indexPath" }
                 $prefix = "$stage-$mode"
                 $yimePath = Join-Path $profileDir "$prefix-yime.json"
-                $yimeRunnerPath = Join-Path $profileDir "$prefix-yime-runner.json"
-                & $tierRunner -core-percent $profile.single_core_percent -affinity-mask 1 -priority $profile.priority -evidence $yimeRunnerPath `
-                    $benchTool -index $indexPath -probes $probePath -mode $mode -iterations $Iterations -output $yimePath
+                & $benchTool -index $indexPath -probes $probePath -mode $mode -iterations $Iterations -output $yimePath
                 $yimeExit = $LASTEXITCODE
                 if (-not (Test-Path -LiteralPath $yimePath)) { throw "YimeCore $prefix did not emit evidence (exit $yimeExit)." }
 
                 $rimePath = Join-Path $profileDir "$prefix-rime.json"
-                $rimeRunnerPath = Join-Path $profileDir "$prefix-rime-runner.json"
-                & $tierRunner -core-percent $profile.single_core_percent -affinity-mask 1 -priority $profile.priority -evidence $rimeRunnerPath `
-                    $rimeTool -data-root $dataRoot -probes $probePath -mode $mode -iterations $Iterations -output $rimePath
+                & $rimeTool -data-root $dataRoot -probes $probePath -mode $mode -iterations $Iterations -output $rimePath
                 $rimeExit = $LASTEXITCODE
                 if (-not (Test-Path -LiteralPath $rimePath)) { throw "Rime $prefix did not emit evidence (exit $rimeExit)." }
 
@@ -154,7 +146,7 @@ try {
     # A Job Object enforces quota at process scheduling intervals, so charging
     # those waits to either the static or learned half creates arbitrary ratio
     # spikes. Keep E3's relative-cost gate on the native host with interleaved
-    # samples; the tiered E1/E2 runs remain the perceived-latency evidence.
+    # samples. E1/E2 also run naturally on this host in the current phase.
     $learningDir = Join-Path $outputDir 'e3-native-host'
     New-Item -ItemType Directory -Force -Path $learningDir | Out-Null
     foreach ($definition in $definitions) {
@@ -188,6 +180,8 @@ finally {
 
 $summary = [ordered]@{
     tool_version = 'yimecore-tier-performance-v1'
+    development_scope = $developmentScope
+    measurement_policy = 'native-unthrottled-no-affinity-override'
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     git_commit = (& git -C $repoRoot rev-parse HEAD).Trim()
     git_dirty = [bool]((& git -C $repoRoot status --porcelain).Count)
@@ -216,6 +210,8 @@ $sourceFiles = @(
     'go-backend/cmd/yimecore-learning-experiment/main.go',
     'go-backend/cmd/yimecore-tier-runner/main_windows.go',
     'tools/yimecore/performance-tiers.json',
+    'tools/yimecore/development-scope.ps1',
+    'tools/yimecore/development-scope.json',
     'tools/yimecore/run-yimecore-tier-performance.ps1'
 )
 $hashes = foreach ($relative in $sourceFiles) {

@@ -9,6 +9,8 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'development-scope.ps1')
+$developmentScope = Get-YimeCoreDevelopmentScope
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $allowedRoot = [IO.Path]::GetFullPath((Join-Path $repoRoot '.tmp\yimecore-experiment\e7-readiness'))
 if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
@@ -47,6 +49,10 @@ function Test-EvidenceHash([string]$Path, [string]$Expected) {
 $checks = [Collections.Generic.List[object]]::new()
 $blockers = [Collections.Generic.List[string]]::new()
 $warnings = [Collections.Generic.List[string]]::new()
+$deferredChecks = [Collections.Generic.List[object]]::new()
+function Add-DeferredCheck([string]$Name, [string]$Detail) {
+    $deferredChecks.Add([ordered]@{ name = $Name; status = 'deferred'; passed = $null; detail = $Detail })
+}
 function Add-ReadinessCheck(
     [string]$Name,
     [bool]$Passed,
@@ -67,6 +73,15 @@ $e6d = Read-JsonEvidence $e6dSummaryPathValue 'E6-D'
 $performance = Read-JsonEvidence $performanceSummaryPathValue 'performance tier'
 $currentCommit = (& git -C $repoRoot rev-parse HEAD).Trim()
 $workingTreeClean = -not [bool]((& git -C $repoRoot status --porcelain).Count)
+foreach ($entry in @(
+    @{ name = 'e6c'; evidence = $e6c }, @{ name = 'e6d'; evidence = $e6d },
+    @{ name = 'performance'; evidence = $performance }
+)) {
+    Add-ReadinessCheck ($entry.name + '_development_scope') `
+        (Test-YimeCoreScopeEvidence $entry.evidence.development_scope $developmentScope) `
+        'current development host, x64, matching scope policy hash' `
+        ($entry.name + ': evidence is missing or does not match the current development scope')
+}
 
 Add-ReadinessCheck 'source_worktree_clean' $workingTreeClean `
     "HEAD=$currentCommit" 'source: working tree is not clean'
@@ -83,11 +98,12 @@ Add-ReadinessCheck 'performance_current_clean_commit' `
 
 $performanceProfiles = @($performance.rows | Where-Object { $_.stage -in @('e1', 'e2') } |
     Select-Object -ExpandProperty profile | Sort-Object -Unique)
-$activeProfilesOnly = $performanceProfiles.Count -eq 2 -and
-    $performanceProfiles -contains 'mainstream' -and $performanceProfiles -contains 'forward_looking'
+$activeProfilesOnly = $performanceProfiles.Count -eq 1 -and
+    $performanceProfiles[0] -eq 'development_host_x64' -and
+    $performance.measurement_policy -eq 'native-unthrottled-no-affinity-override'
 Add-ReadinessCheck 'active_performance_profiles_only' $activeProfilesOnly `
     ($performanceProfiles -join ', ') `
-    'performance: evidence does not contain exactly the active mainstream and forward-looking profiles'
+    'performance: evidence must contain only this native, unthrottled development-host profile'
 $learningProfiles = @($performance.rows | Where-Object { $_.stage -eq 'e3' } |
     Select-Object -ExpandProperty profile | Sort-Object -Unique)
 $nativeLearningProfileOnly = $learningProfiles.Count -eq 1 -and
@@ -95,11 +111,22 @@ $nativeLearningProfileOnly = $learningProfiles.Count -eq 1 -and
 Add-ReadinessCheck 'native_interleaved_learning_profile' $nativeLearningProfileOnly `
     ($learningProfiles -join ', ') `
     'performance: E3 evidence is not the native-host interleaved measurement'
+$modeCoveragePassed = @($performance.rows).Count -eq 9
+foreach ($stage in @('e1', 'e2', 'e3')) {
+    foreach ($mode in @('full', 'variable', 'shorthand')) {
+        if (@($performance.rows | Where-Object { $_.stage -eq $stage -and $_.mode -eq $mode }).Count -ne 1) {
+            $modeCoveragePassed = $false
+        }
+    }
+}
+Add-ReadinessCheck 'development_host_performance_coverage' $modeCoveragePassed `
+    'exactly one full/variable/shorthand row per E1/E2/E3 stage' `
+    'performance: current-machine mode coverage is missing or duplicated'
 $performanceBudgetsPassed = [bool]($performance.all_correctness_passed -and
     $performance.all_interaction_budgets_passed -and $performance.all_memory_budgets_passed)
-Add-ReadinessCheck 'simulated_performance_budgets' $performanceBudgetsPassed `
+Add-ReadinessCheck 'development_host_performance_budgets' $performanceBudgetsPassed `
     'correctness, interaction and memory budgets' `
-    'performance: an active simulated correctness, interaction or memory budget failed'
+    'performance: a development-host correctness, interaction or memory budget failed'
 
 $requiredE6C = @(
     'base_package_hash_handoff_verified',
@@ -118,8 +145,7 @@ $requiredE6C = @(
     'system_lexicon_no_severe_latency_or_stickiness',
     'dynamic_sentence_real_indexes_passed',
     'runtime_supervisor_broker_recovery_passed',
-    'language_bar_x64_x86_passed',
-    'arm64_tsf_artifacts_packaged',
+    'language_bar_x64_passed',
     'installed_apps_uninstall_contract_passed',
     'e6c_limitation_closed'
 )
@@ -153,6 +179,7 @@ $requiredE6D = @(
     'forbidden_rime_pime_pe_imports_absent',
     'forbidden_go_runtime_dependencies_absent',
     'runtime_package_convergence_passed',
+    'current_user_autostart_convergence_passed',
     'production_registration_unchanged'
 )
 $failedE6D = @($requiredE6D | Where-Object { -not [bool]$e6d.$_ })
@@ -161,6 +188,23 @@ Add-ReadinessCheck 'e6d_required_gates' ($failedE6D.Count -eq 0) `
     'e6d: one or more installed package, dependency or registration gates failed'
 Add-ReadinessCheck 'e6d_read_only' ([bool](-not $e6d.installer_or_registration_command_executed)) `
     'read-only audit required' 'e6d: readiness evidence performed an installer or registration mutation'
+
+$autostartPath = [string]$e6d.autostart_evidence_path
+$autostartHashValid = Test-EvidenceHash $autostartPath ([string]$e6d.autostart_evidence_sha256)
+$autostart = if ($autostartHashValid) { Read-JsonEvidence $autostartPath 'E6-D autostart' } else { $null }
+Add-ReadinessCheck 'e6d_autostart_evidence' `
+    ([bool]($null -ne $autostart -and
+        [string]$autostart.schema_version -eq 'yimecore-e6c-autostart-repair-v1' -and
+        [string]$autostart.registry_reader -eq 'StdRegProv/HKEY_USERS' -and
+        $autostart.system_registry_verified -and
+        $autostart.passed -and $autostart.validated_only -and
+        -not $autostart.registry_mutation_requested -and $autostart.after.exists -and
+        [string]$autostart.after.kind -eq 'String' -and
+        [string]$autostart.after.value -ceq [string]$autostart.expected_value -and
+        [string]$autostart.expected_value -ceq ('"{0}" -no-toolbar' -f [string]$e6d.runtime_executable) -and
+        [string]$autostart.package_manifest_sha256 -eq [string]$e6d.package_manifest_sha256 -and
+        [string]$autostart.install_root -eq [string]$e6d.package_root)) `
+    $autostartPath 'e6d: matching read-only current-user autostart evidence is missing or invalid'
 
 $e6dAuditPath = [string]$e6d.package_audit_path
 $e6dAuditHashValid = Test-EvidenceHash $e6dAuditPath ([string]$e6d.package_audit_sha256)
@@ -227,20 +271,19 @@ if ($signedPackageSupplied) {
         $signatureBlocker = 'signing: signed package root does not exist'
     }
 }
-Add-ReadinessCheck 'trusted_signed_package' $signedPackageValid `
-    $(if ($signedPackageSupplied) { "checked $($signatureEvidence.Count) PE files" } else {
-        '签名证书正在申请，等候审批，暂缓相关事项'
-    }) $signatureBlocker
+if ($signedPackageSupplied) {
+    Add-ReadinessCheck 'trusted_signed_package' $signedPackageValid `
+        "checked $($signatureEvidence.Count) PE files" $signatureBlocker
+} else {
+    Add-DeferredCheck 'trusted_signed_package' '签名证书正在申请，等候审批，暂缓相关事项'
+}
 
 Add-ReadinessCheck 'external_evidence_schema' $externalSchemaValid `
     $(if ($null -eq $external) { 'not supplied' } else { [string]$external.schema_version }) `
-    'external-evidence: reviewed host, hardware and rollback evidence is missing or has the wrong schema'
+    'external-evidence: reviewed current-machine host and rollback evidence is missing or has the wrong schema'
 
 $externalRequirements = [ordered]@{
-    arm64_desktop_host_passed = 'host-matrix: real ARM64 Windows desktop-host acceptance is pending'
-    mainstream_physical_host_passed = 'hardware: mainstream physical Windows PC acceptance is pending'
-    forward_physical_host_passed = 'hardware: forward/high-end physical Windows PC acceptance is pending'
-    broader_third_party_host_matrix_passed = 'host-matrix: broader third-party desktop-host acceptance is pending'
+    broader_third_party_host_matrix_passed = 'host-matrix: broader native-x64 desktop-host acceptance on this development machine is pending'
     rollback_rehearsal_passed = 'rollback: independent package to production fallback rehearsal is pending'
     first_release_retention_plan_approved = 'rollback: first independent release retention plan for RimeAdapter and old installer is pending'
 }
@@ -249,14 +292,24 @@ foreach ($name in $externalRequirements.Keys) {
     Add-ReadinessCheck $name $passed $(if ($passed) { 'passed' } else { 'missing or false' }) `
         $externalRequirements[$name]
 }
+foreach ($name in @('arm64_desktop_host_passed', 'x86_desktop_host_passed',
+    'mainstream_physical_host_passed', 'forward_physical_host_passed', 'legacy_x64_host_passed',
+    'simulated_hardware_tiers_passed')) {
+    Add-DeferredCheck $name 'Frozen by user decision; no execution or compatibility claim until explicit resumption after local independent-core usability.'
+}
+Add-ReadinessCheck 'external_development_scope' `
+    (Test-YimeCoreScopeEvidence $external.development_scope $developmentScope) `
+    'host/rollback approvals must identify this machine and the current scope' `
+    'external-evidence: approvals do not identify the current development scope'
 
-$warnings.Add('E3 full/variable per-run 1.10 microbenchmark tail remains a non-blocking warning; maximum measured absolute p95 delta is 1.50 us.')
+$warnings.Add('E3 per-run 1.10 microbenchmark tail remains a non-blocking warning; use supplied measurements for current absolute deltas.')
 $warnings.Add("E3 strict learning ratio gate in supplied performance evidence: $([bool]$performance.all_learning_latency_gates_passed).")
 $warnings.Add('The retired legacy Windows 10/SATA tier is not part of the active release blocker set.')
 $ready = $blockers.Count -eq 0
 $summaryPath = Join-Path $outputDir 'summary.json'
 [ordered]@{
     schema_version = 'yimecore-e7-cutover-readiness-v1'
+    development_scope = $developmentScope
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     git_commit = $currentCommit
     git_dirty = -not $workingTreeClean
@@ -271,11 +324,13 @@ $summaryPath = Join-Path $outputDir 'summary.json'
     signed_package_root = if ($signedPackageSupplied) { [IO.Path]::GetFullPath($SignedPackageRoot) } else { '' }
     external_evidence_path = if ($external) { [IO.Path]::GetFullPath($ExternalEvidencePath) } else { '' }
     checks = $checks
+    deferred_checks = $deferredChecks
     signature_evidence = $signatureEvidence
     approved_signer_thumbprint = $approvedSignerThumbprint
     blockers = $blockers
     warnings = $warnings
-    ready_for_cutover_proposal = $ready
+    ready_for_development_host_milestone = $ready
+    ready_for_cutover_proposal = $false # Local development readiness does not approve a public/production cutover.
     production_rime_pime_changed = $false
     cutover_or_registration_command_executed = $false
 } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $summaryPath -Encoding utf8

@@ -1,0 +1,11 @@
+{
+  "schema_version": "yimecore-development-scope-v1",
+  "id": "development-host-x64-2026-09-02",
+  "computer_name": "MYCOMPUTER",
+  "native_architecture": "AMD64",
+  "active_architectures": ["x64"],
+  "performance_profile": "development_host_x64",
+  "frozen_targets": ["arm64", "x86", "legacy_x64", "other_physical_pcs", "simulated_hardware_tiers"],
+  "resume_condition": "After the independent core is fully usable on this development machine, explicitly review and approve resuming other targets.",
+  "frozen_payload_policy": "Retain manifest-verified base payloads unchanged for existing maintenance and rollback; do not rebuild, execute tests, or claim compatibility."
+}

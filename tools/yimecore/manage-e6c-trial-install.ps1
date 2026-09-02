@@ -11,7 +11,10 @@ param(
     [switch]$NoLaunch,
     [switch]$NoElevation,
     [switch]$Quiet,
-    [string]$TargetUserSid
+    [switch]$NativeX64Rehearsal,
+    [switch]$NativeX64Only,
+    [string]$TargetUserSid,
+    [string]$StandardUserInitiator
 )
 
 $ErrorActionPreference = 'Stop'
@@ -39,14 +42,72 @@ if ($nativeArchitecture -notin @('AMD64', 'ARM64')) {
 $clsid = '{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'
 $profile = '{607895A8-9504-4A2E-9BB1-2C159E3A1757}'
 $tip = "0804:$clsid$profile"
+$userTipKey = "Registry::HKEY_USERS\$TargetUserSid\Software\Microsoft\CTF\TIP\$clsid"
 $utf8NoBom = New-Object Text.UTF8Encoding($false)
 $windowsPowerShell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
 if (-not (Test-Path -LiteralPath $windowsPowerShell -PathType Leaf)) {
     throw "Windows PowerShell is missing: $windowsPowerShell"
 }
+function Get-YimeMaintenancePackageIdentity {
+    if (-not ('YimeMaintenancePackageIdentity' -as [type])) {
+        Add-Type @'
+using System;
+using System.Runtime.InteropServices;
+public static class YimeMaintenancePackageIdentity {
+    [DllImport("kernel32.dll", CharSet=CharSet.Unicode)]
+    public static extern int GetCurrentPackageFullName(ref uint length, IntPtr name);
+    public static int Query() { uint length=0; return GetCurrentPackageFullName(ref length, IntPtr.Zero); }
+}
+'@
+    }
+    return [YimeMaintenancePackageIdentity]::Query()
+}
+function Get-YimeMaintenancePackagedAncestor {
+    $windowsAppsPrefix = (Join-Path $env:ProgramFiles 'WindowsApps\')
+    $processId = $PID
+    $seen = @{}
+    for ($depth=0; $depth -lt 32 -and $processId -gt 0; $depth++) {
+        if ($seen.ContainsKey($processId)) { break }
+        $seen[$processId]=$true
+        $process = Get-CimInstance Win32_Process -Filter "ProcessId=$processId"
+        if (-not $process) { break }
+        if ([string]$process.ExecutablePath -and
+            ([string]$process.ExecutablePath).StartsWith($windowsAppsPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+            return [string]$process.ExecutablePath
+        }
+        if ($process.Name -ieq 'explorer.exe') { break }
+        $processId = [int]$process.ParentProcessId
+    }
+    return ''
+}
+function Assert-UnpackagedTrialMaintenance {
+    $packageResult = Get-YimeMaintenancePackageIdentity
+    # APPMODEL_ERROR_NO_PACKAGE. A packaged caller's HKCU/HKU reads and writes
+    # can agree inside its private overlay while Explorer sees an older install.
+    # A breakaway command child can report NO_PACKAGE while still observing a
+    # different registry view. Conservatively reject packaged-app ancestry too.
+    $packagedAncestor = Get-YimeMaintenancePackagedAncestor
+    if ($packageResult -ne 15700 -or -not [string]::IsNullOrEmpty($packagedAncestor)) {
+        throw "Trial maintenance requires standalone Windows PowerShell launched from Explorer under the initiating user (package query=$packageResult; packaged ancestor=$packagedAncestor). Do not launch install/uninstall from a packaged application; registry virtualization can hide Run/TIP/uninstall writes. No maintenance mutation was performed."
+    }
+}
+if ($Action -ne 'Plan') { Assert-UnpackagedTrialMaintenance }
+if ($NativeX64Only -and $Action -ne 'Plan' -and $StandardUserInitiator) {
+    $env:YIMECORE_MAINTENANCE_INITIATOR=$StandardUserInitiator
+}
+if ($NativeX64Only -and ($NativeX64Rehearsal -or $nativeArchitecture -ne 'AMD64' -or
+    -not [Environment]::Is64BitProcess -or $env:COMPUTERNAME -ne 'MYCOMPUTER' -or $PurgeUserData -or
+    ($Action -eq 'Install' -and $NoLaunch))) {
+    throw 'NativeX64Only requires MYCOMPUTER native x64, preserved user data, and is not a fault-rehearsal mode.'
+}
+if ($NativeX64Only -and $Action -ne 'Plan' -and
+    $stateRootPath -ine [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'YimeCore Experimental Trial'))) {
+    throw 'Normal local maintenance must preserve the initiating user default state namespace used at logon.'
+}
 $maintenanceErrorPath = Join-Path $stateRootPath 'maintenance-last-error.txt'
 trap {
     try {
+        if ($Action -eq 'Plan') { throw 'Read-only plan: do not write a maintenance error into AppData.' }
         New-Item -ItemType Directory -Path $stateRootPath -Force | Out-Null
         $errorText = ($_ | Format-List * -Force | Out-String) + "`n" +
             ($_.ScriptStackTrace | Out-String)
@@ -68,17 +129,23 @@ function Quote-Argument([string]$value) {
 
 function Get-RegistryKeySnapshot([string]$path) {
     if (-not (Test-Path -LiteralPath $path)) {
-        return [ordered]@{ exists = $false; values = @() }
+        return [ordered]@{ exists = $false; values = @(); children = [ordered]@{} }
     }
     $key = Get-Item -LiteralPath $path
-    $values = @($key.GetValueNames() | ForEach-Object {
+    try {
+    $values = @($key.GetValueNames() | Sort-Object | ForEach-Object {
         [ordered]@{
             name = $_
             value = $key.GetValue($_, $null, [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)
             kind = [int]$key.GetValueKind($_)
         }
     })
-    return [ordered]@{ exists = $true; values = $values }
+    $children = [ordered]@{}
+    foreach ($name in @($key.GetSubKeyNames() | Sort-Object)) {
+        $children[$name] = Get-RegistryKeySnapshot ($path + '\' + $name)
+    }
+    return [ordered]@{ exists = $true; values = $values; children = $children }
+    } finally { $key.Dispose() }
 }
 
 function Restore-RegistryKeySnapshot([string]$path, $snapshot) {
@@ -90,6 +157,11 @@ function Restore-RegistryKeySnapshot([string]$path, $snapshot) {
             -Value $value.value `
             -PropertyType ([Microsoft.Win32.RegistryValueKind]([int]$value.kind)) `
             -Force | Out-Null
+    }
+    if ($snapshot.children) {
+        foreach ($name in $snapshot.children.Keys) {
+            Restore-RegistryKeySnapshot ($path + '\' + $name) $snapshot.children[$name]
+        }
     }
 }
 
@@ -124,17 +196,25 @@ function Restart-Elevated {
     $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Quote-Argument $PSCommandPath),
         '-Action', $Action, '-StateRoot', (Quote-Argument $stateRootPath),
         '-TargetUserSid', (Quote-Argument $TargetUserSid))
+    if ($NativeX64Only) {
+        # Keep this ordinary PowerShell alive through WaitForExit below. The
+        # elevated worker may duplicate only this explicit primary token.
+        $env:YIMECORE_MAINTENANCE_INITIATOR=$null
+        Initialize-StandardUserLauncher
+        $reference=[YimeCore.LocalMaintenance.StandardUserLauncher]::CaptureInitiatorReference($TargetUserSid)
+        $arguments += @('-StandardUserInitiator',(Quote-Argument $reference))
+    }
     if (-not [string]::IsNullOrWhiteSpace($PackageRoot)) {
         $arguments += @('-PackageRoot', (Quote-Argument ([IO.Path]::GetFullPath($PackageRoot))))
     }
     if (-not [string]::IsNullOrWhiteSpace($InstallRoot)) {
         $arguments += @('-InstallRoot', (Quote-Argument ([IO.Path]::GetFullPath($InstallRoot))))
     }
-    foreach ($name in @('Force', 'PurgeUserData', 'NoAutoStart', 'NoLaunch', 'Quiet')) {
+    foreach ($name in @('Force', 'PurgeUserData', 'NoAutoStart', 'NoLaunch', 'Quiet', 'NativeX64Rehearsal', 'NativeX64Only')) {
         if ((Get-Variable -Name $name -ValueOnly)) { $arguments += "-$name" }
     }
     $process = Start-Process -FilePath $windowsPowerShell -Verb RunAs `
-        -ArgumentList ($arguments -join ' ') -PassThru
+        -ArgumentList ($arguments -join ' ') -WindowStyle Hidden -PassThru
     $process.WaitForExit()
     exit $process.ExitCode
 }
@@ -145,10 +225,26 @@ function Assert-ProductChild([string]$path, [string]$description) {
     if (-not $resolved.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) {
         throw "$description must be a child of ${productRoot}: $resolved"
     }
+    if ($NativeX64Only) {
+        $cursor = $resolved
+        while ($cursor) {
+            if ((Test-Path -LiteralPath $cursor) -and
+                ((Get-Item -LiteralPath $cursor -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+                throw "Local product paths must not traverse a symlink or junction: $cursor"
+            }
+            $cursor = Split-Path -Parent $cursor
+        }
+    }
     return $resolved
 }
 
 function Get-RegistrationArchitectures {
+    if ($NativeX64Only) {
+        return @([ordered]@{ name = 'x64'; action = 'register' })
+    }
+    if ($NativeX64Rehearsal) {
+        return @([ordered]@{ name = 'x64'; action = 'register' })
+    }
 	if ($nativeArchitecture -eq 'ARM64') {
 		return @(
 			[ordered]@{ name = 'arm64'; action = 'register' },
@@ -189,7 +285,19 @@ function Assert-Package([string]$root) {
         throw "missing package manifest: $manifestPath"
     }
     $manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
-    if ([string]$manifest.tool_version -notlike 'yimecore-e6c-staged-package-*') {
+    $localContract = $manifest.PSObject.Properties['package_contract'] -and
+        [string]$manifest.package_contract -eq 'yimecore-local-product-package-v1'
+    if ($localContract) {
+        if (-not $NativeX64Only -or $NativeX64Rehearsal) { throw 'Local product packages require normal NativeX64Only maintenance.' }
+        . (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
+        . (Join-Path $PSScriptRoot 'local-package-contract.ps1')
+        $localPackage = Assert-LocalProductPackage $resolved
+        $script:productName = [string]$localPackage.descriptor.display_name
+        return [ordered]@{ root=$resolved; manifest=$manifest; manifest_path=$manifestPath;
+            manifest_sha256=$localPackage.manifest_sha256; records=@(Get-PackageRecords $resolved) }
+    }
+    if ([string]$manifest.tool_version -notlike 'yimecore-e6c-staged-package-*' -or
+        ($manifest.PSObject.Properties['package_contract'] -and $manifest.package_contract)) {
         throw "not an E6-C trial package: $manifestPath"
     }
     $expected = @{}
@@ -296,6 +404,9 @@ namespace YimeCoreTrial {
 
 function Remove-ProductTree([string]$root) {
     $resolved = Assert-ProductChild $root 'cleanup root'
+    if ($NativeX64Only -and (Test-FrozenInstallRoot $resolved @(Get-FrozenRegistrationReferences))) {
+        throw "refusing deletion or reboot-deletion of a frozen registration dependency: $resolved"
+    }
     if (-not (Test-Path -LiteralPath $resolved)) { return $false }
     if (-not (Test-InstallMarker $resolved)) {
         throw "refusing cleanup without a YimeCore trial marker: $resolved"
@@ -354,6 +465,114 @@ function Get-RegisteredInstallRoots {
     return @($roots | ForEach-Object {
         try { Assert-ProductChild $_ 'registered install root' } catch { $null }
     } | Where-Object { $_ } | Select-Object -Unique)
+}
+
+function Get-FrozenRegistrationReferences {
+    # StdRegProv is intentionally outside this process's registry view. Never
+    # fall back to HKCU if the provider cannot read the initiating user's hive.
+    $references = @()
+    foreach ($entry in @(
+        [ordered]@{ hive = [uint32]2147483650; path = "SOFTWARE\Classes\WOW6432Node\CLSID\$clsid\InprocServer32" },
+        [ordered]@{ hive = [uint32]2147483651; path = "$TargetUserSid\Software\Classes\WOW6432Node\CLSID\$clsid\InprocServer32" }
+    )) {
+        $read = Invoke-CimMethod -Namespace root/default -ClassName StdRegProv -MethodName GetStringValue `
+            -Arguments @{ hDefKey=$entry.hive; sSubKeyName=$entry.path; sValueName='' }
+        if ($read.ReturnValue -eq 2) { continue }
+        if ($null -eq $read.ReturnValue -or $read.ReturnValue -ne 0 -or [string]::IsNullOrWhiteSpace([string]$read.sValue)) {
+            throw "Cannot resolve frozen registration; no cleanup permitted: $($entry.path)"
+        }
+        $dll = [string]$read.sValue
+        if (-not [IO.Path]::IsPathRooted($dll) -or $dll.Contains('%') -or $dll.Contains('"')) {
+            throw "Ambiguous frozen DLL path; no cleanup permitted: $($entry.path)"
+        }
+        $dll = [IO.Path]::GetFullPath($dll)
+        $references += [ordered]@{ hive=$entry.hive; registry_path=$entry.path; dll_path=$dll
+            install_root=(Split-Path -Parent (Split-Path -Parent $dll)); architecture='x86'; tested=$false }
+    }
+    return $references
+}
+
+function Test-FrozenInstallRoot([string]$Root, $References) {
+    $prefix = [IO.Path]::GetFullPath($Root).TrimEnd('\','/') + '\'
+    foreach ($reference in $References) {
+        if (([IO.Path]::GetFullPath([string]$reference.dll_path)).StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) {
+            return $true
+        }
+    }
+    return $false
+}
+
+function Test-PreviousRuntimeIdentity($Config, $Status, $Runtime, $Broker, $Boot, [string]$UserSid, $Owners) {
+    try {
+        if (-not $Config -or -not $Status -or -not $Runtime -or -not $Broker -or $Status.state -ne 'running') { return $false }
+        $root = [IO.Path]::GetFullPath([string]$Config.install_root)
+        $runtimePath = Join-Path $root 'bin\YimeCoreTrialRuntime.exe'
+        $brokerPath = Join-Path $root 'bin\YimeBroker.exe'
+        $runtimeTime = ([DateTimeOffset]$Runtime.CreationDate).UtcDateTime
+        $brokerTime = ([DateTimeOffset]$Broker.CreationDate).UtcDateTime
+        $bootTime = ([DateTimeOffset]$Boot).UtcDateTime
+        $updated = if ($Status.updated_at -is [DateTime]) { $Status.updated_at.ToUniversalTime() } else {
+            [DateTimeOffset]::Parse([string]$Status.updated_at).UtcDateTime
+        }
+        return [bool]($Runtime.ProcessId -eq $Status.runtime_pid -and $Broker.ProcessId -eq $Status.broker_pid -and
+            $Broker.ParentProcessId -eq $Runtime.ProcessId -and
+            [string]$Runtime.ExecutablePath -ieq $runtimePath -and [string]$Broker.ExecutablePath -ieq $brokerPath -and
+            [string]$Config.runtime_path -ieq $runtimePath -and [string]$Config.broker_path -ieq $brokerPath -and
+            [string]$Status.install_root -ieq $root -and [string]$Status.broker_path -ieq $brokerPath -and
+            [string]$Status.state_root -ieq [string]$Config.state_root -and
+            $runtimeTime -ge $bootTime -and $brokerTime -ge $runtimeTime -and $updated -ge $runtimeTime -and
+            $updated -le [DateTime]::UtcNow.AddSeconds(5) -and
+            @($Owners).Count -eq 2 -and @($Owners | Where-Object { $_.sid -ne $UserSid -or $_.result -ne 0 }).Count -eq 0)
+    } catch { return $false }
+}
+
+function Get-PreviousRuntimeWasRunning([string]$ConfigText) {
+    if ([string]::IsNullOrWhiteSpace($ConfigText)) {
+        $active = @(Get-CimInstance Win32_Process -Filter "Name='YimeCoreTrialRuntime.exe' OR Name='YimeBroker.exe'" |
+            Where-Object { $_.ExecutablePath -and ([string]$_.ExecutablePath).StartsWith($productRoot+'\',[StringComparison]::OrdinalIgnoreCase) })
+        if ($active.Count) { throw 'Installed runtime exists without a configuration; restore identity before maintenance.' }
+        return $false
+    }
+    $config = $ConfigText | ConvertFrom-Json
+    if ([IO.Path]::GetFullPath([string]$config.state_root) -ine $stateRootPath) { throw 'Previous runtime has a different state root.' }
+    $expectedRuntime = Join-Path ([string]$config.install_root) 'bin\YimeCoreTrialRuntime.exe'
+    $expectedBroker = Join-Path ([string]$config.install_root) 'bin\YimeBroker.exe'
+    $candidates = @(Get-CimInstance Win32_Process -Filter "Name='YimeCoreTrialRuntime.exe' OR Name='YimeBroker.exe'")
+    $matching = @($candidates | Where-Object { $_.ExecutablePath -ieq $expectedRuntime -or $_.ExecutablePath -ieq $expectedBroker })
+    # In a native elevated maintenance context these images must be visible.
+    if (@($candidates | Where-Object { [string]::IsNullOrWhiteSpace([string]$_.ExecutablePath) }).Count) {
+        throw 'Cannot inspect a runtime/Broker process; previous running state is unverified.'
+    }
+    if ($matching.Count -eq 0) { return $false } # Stale persisted "running" is not a live process.
+    $status = Get-Content -LiteralPath (Join-Path $stateRootPath 'runtime-status.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+    $runtime = @($matching | Where-Object { $_.ProcessId -eq $status.runtime_pid })
+    $broker = @($matching | Where-Object { $_.ProcessId -eq $status.broker_pid })
+    if ($runtime.Count -ne 1 -or $broker.Count -ne 1 -or $matching.Count -ne 2) { throw 'Previous runtime PID/status is ambiguous; no mutation allowed.' }
+    $owners = @($runtime[0],$broker[0] | ForEach-Object {
+        $owner = Invoke-CimMethod -InputObject $_ -MethodName GetOwnerSid
+        [ordered]@{ sid=$owner.Sid; result=$owner.ReturnValue }
+    })
+    $boot = (Get-CimInstance Win32_OperatingSystem).LastBootUpTime
+    if (-not (Test-PreviousRuntimeIdentity $config $status $runtime[0] $broker[0] $boot $TargetUserSid $owners)) {
+        throw 'Previous runtime/Broker image, owner, parent or boot identity is unverified; no mutation allowed.'
+    }
+    return $true
+}
+
+function Get-NativeRegisteredInstallRoot {
+    foreach ($path in @(
+        "Registry::HKEY_USERS\$TargetUserSid\Software\Classes\CLSID\$clsid\InprocServer32",
+        "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\$clsid\InprocServer32"
+    )) {
+        $snapshot = Get-RegistryKeySnapshot $path
+        if (-not $snapshot.exists) { continue }
+        $value = @($snapshot.values | Where-Object { $_.name -eq '' })
+        if ($value.Count -ne 1 -or [string]::IsNullOrWhiteSpace([string]$value[0].value)) {
+            throw 'Native COM registration has no unambiguous DLL path.'
+        }
+        return Assert-ProductChild (Split-Path -Parent (Split-Path -Parent ([string]$value[0].value))) 'previous native install root'
+    }
+    return ''
 }
 
 function Stop-TrialRuntime([string[]]$installRoots) {
@@ -438,6 +657,8 @@ function Remove-TrialRegistration([string[]]$installRoots) {
         "Registry::HKEY_CURRENT_USER\Software\Classes\CLSID\$clsid",
         "Registry::HKEY_CURRENT_USER\Software\Classes\WOW6432Node\CLSID\$clsid"
     )) {
+        if ($NativeX64Rehearsal -and $registryPath -like '*WOW6432Node*') { continue }
+        if ($NativeX64Only -and $registryPath -like '*WOW6432Node*') { continue }
         Remove-Item -LiteralPath $registryPath -Recurse -Force -ErrorAction SilentlyContinue
     }
 }
@@ -465,6 +686,10 @@ function Invoke-UninstallCore([switch]$ForReinstall, [string[]]$PreserveInstallR
         if (-not [string]::IsNullOrWhiteSpace($root)) {
             $null = $preserved.Add([IO.Path]::GetFullPath($root))
         }
+    }
+    $frozenReferences = @(if ($NativeX64Only) { Get-FrozenRegistrationReferences })
+    foreach ($root in $roots) {
+        if (Test-FrozenInstallRoot $root $frozenReferences) { $null = $preserved.Add([IO.Path]::GetFullPath($root)) }
     }
     Stop-TrialRuntime $roots
     Remove-ItemProperty -LiteralPath $runKey -Name $productKeyName -ErrorAction SilentlyContinue
@@ -497,6 +722,7 @@ function Invoke-UninstallCore([switch]$ForReinstall, [string[]]$PreserveInstallR
         deferred_delete_until_reboot = $deferred
         user_model_preserved = [bool](-not $PurgeUserData -or $ForReinstall)
         production_rime_pime_changed = $false
+        frozen_registration_references = $frozenReferences
     }
 }
 
@@ -565,27 +791,82 @@ function Start-TrialRuntime($config) {
     $arguments = '-install-root {0} -broker {1} -state-root {2} -no-toolbar' -f
         (Quote-Argument ([string]$config.install_root)), (Quote-Argument ([string]$config.broker_path)),
         (Quote-Argument ([string]$config.state_root))
-    $process = Start-Process -FilePath ([string]$config.runtime_path) -ArgumentList $arguments `
-        -WindowStyle Hidden -PassThru
+    if ($NativeX64Only) {
+        Initialize-StandardUserLauncher
+        $process = [YimeCore.LocalMaintenance.StandardUserLauncher]::Start(
+            [string]$config.runtime_path, $arguments, [string]$config.install_root, $TargetUserSid)
+    } else {
+        $process = Start-Process -FilePath ([string]$config.runtime_path) -ArgumentList $arguments `
+            -WindowStyle Hidden -PassThru
+    }
     $statusPath = Join-Path $stateRootPath 'runtime-status.json'
     $deadline = [DateTime]::UtcNow.AddSeconds(15)
+    try {
     do {
         Start-Sleep -Milliseconds 100
         if (Test-Path -LiteralPath $statusPath -PathType Leaf) {
-            try {
-                $status = Get-Content -LiteralPath $statusPath -Raw -Encoding UTF8 | ConvertFrom-Json
-                if ($status.state -eq 'running' -and [int]$status.runtime_pid -eq $process.Id) { return $status }
-            } catch {}
+            $status = $null
+            try { $status = Get-Content -LiteralPath $statusPath -Raw -Encoding UTF8 | ConvertFrom-Json } catch { }
+            if ($null -ne $status) {
+                if ($status.state -eq 'running' -and [int]$status.runtime_pid -eq $process.Id) {
+                    if ($NativeX64Only) {
+                        $verified = Get-PreviousRuntimeWasRunning ($config | ConvertTo-Json -Depth 6)
+                        foreach ($childPid in @([int]$status.runtime_pid,[int]$status.broker_pid)) {
+                            $token = [YimeCore.LocalMaintenance.StandardUserLauncher]::InspectProcess($childPid)
+                            if (-not [YimeCore.LocalMaintenance.StandardUserLauncher]::IsExpectedStandardToken(
+                                $token, $TargetUserSid, [Diagnostics.Process]::GetCurrentProcess().SessionId)) {
+                                throw 'Runtime/Broker did not start under the initiating standard-user token.'
+                            }
+                        }
+                        if (-not $verified) { throw 'Runtime live identity missing after standard-user launch.' }
+                    }
+                    return $status
+                }
+            }
         }
     } while ([DateTime]::UtcNow -lt $deadline -and -not $process.HasExited)
     throw 'trial runtime did not become ready within 15 seconds'
+    } catch {
+        # The runtime's job owns its children. Do not leave an unaccepted runtime
+        # running, or select other processes by executable name for cleanup.
+        if (-not $process.HasExited) { $process.Kill() }
+        throw
+    }
+}
+
+function Initialize-StandardUserLauncher {
+    . (Join-Path $PSScriptRoot 'development-scope.ps1')
+    Assert-YimeCoreMaintenanceInitiator
+    if (-not ('YimeCore.LocalMaintenance.StandardUserLauncher' -as [type])) {
+        $source = Join-Path $PSScriptRoot 'local-runtime-launcher.cs'
+        if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw 'Packaged standard-user launch helper is missing.' }
+        Add-Type -Path $source
+    }
+}
+
+function Assert-NativeX64LaunchSupport($Package) {
+    if (-not (Test-NativeX64LauncherContent $Package)) {
+        throw 'Native x64 maintenance requires the manifest-pinned standard-user launcher from this maintenance version.'
+    }
+    Initialize-StandardUserLauncher
+    $null = [YimeCore.LocalMaintenance.StandardUserLauncher]::ValidateLaunchToken($TargetUserSid)
+}
+
+function Test-NativeX64LauncherContent($Package) {
+    $records = @($Package.records | Where-Object { $_.path -eq 'maintenance/local-runtime-launcher.cs' })
+    $source = Join-Path $PSScriptRoot 'local-runtime-launcher.cs'
+    if ($records.Count -ne 1 -or -not (Test-Path -LiteralPath $source -PathType Leaf) -or
+        (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash -ine [string]$records[0].sha256) {
+        return $false
+    }
+    return $true
 }
 
 function Restore-PreviousInstallation([string]$root, [string]$configText,
                                      $runSnapshot, $uninstallSnapshot, $legacyUninstallSnapshot,
-                                     [bool]$runtimeWasRunning) {
-    if ([string]::IsNullOrWhiteSpace($root) -or
-        -not (Test-Path -LiteralPath $root -PathType Container)) { return }
+                                     [bool]$runtimeWasRunning, $userTipSnapshot) {
+    if (-not [string]::IsNullOrWhiteSpace($root)) {
+    if (-not (Test-Path -LiteralPath $root -PathType Container)) { throw "Previous package is missing: $root" }
 	foreach ($architecture in Get-RegistrationArchitectures) {
 		$name = [string]$architecture.name
 		$tool = Join-Path $root "$name\YimeTextServiceRegistration.exe"
@@ -594,10 +875,15 @@ function Restore-PreviousInstallation([string]$root, [string]$configText,
 		Wait-RegistrationState $tool $true $true 5
 	}
     Add-InputMethodTip
+    }
+    # Profile re-registration alone does not restore the per-user Enable flag.
+    Restore-RegistryKeySnapshot $userTipKey $userTipSnapshot
     if (-not [string]::IsNullOrWhiteSpace($configText)) {
         New-Item -ItemType Directory -Path $stateRootPath -Force | Out-Null
         [IO.File]::WriteAllText((Join-Path $stateRootPath 'runtime-config.json'),
             $configText, $utf8NoBom)
+    } else {
+        Remove-Item -LiteralPath (Join-Path $stateRootPath 'runtime-config.json') -Force -ErrorAction SilentlyContinue
     }
     Restore-RegistryValueSnapshot $runKey $productKeyName $runSnapshot
     Restore-RegistryKeySnapshot $uninstallKey $uninstallSnapshot
@@ -639,8 +925,13 @@ if ($Action -eq 'Plan') {
         forced_preinstall_cleanup = $true
         upgrade_rollback_supported = $true
         package_staged_before_preinstall_cleanup = $true
-        x64_x86_tsf_registration = $true
-		arm64_tsf_artifacts_required = $true
+        x64_x86_tsf_registration = [bool](-not $NativeX64Only -and -not $NativeX64Rehearsal)
+		arm64_tsf_artifacts_required = [bool](-not ($package.manifest.PSObject.Properties['package_contract'] -and
+            $package.manifest.package_contract -eq 'yimecore-local-product-package-v1'))
+		active_registration_architectures = @((Get-RegistrationArchitectures) | ForEach-Object { $_.name })
+        frozen_registration_references = @(if ($NativeX64Only) { Get-FrozenRegistrationReferences })
+        standard_user_runtime_required = [bool]$NativeX64Only
+        standard_user_launcher_package_ready = if ($NativeX64Only) { Test-NativeX64LauncherContent $package } else { $null }
 		native_registration_architecture = $nativeArchitecture
         taskbar_language_bar_categories = $true
         windows_native_language_bar_only = $true
@@ -653,6 +944,7 @@ if ($Action -eq 'Plan') {
 }
 
 if ($Action -eq 'Uninstall') {
+    if ($NativeX64Rehearsal) { throw 'NativeX64Rehearsal is only valid for the isolated failed-install exercise.' }
     $result = Invoke-UninstallCore
     if (-not $Quiet) { $result | ConvertTo-Json -Depth 5 }
     exit 0
@@ -660,6 +952,11 @@ if ($Action -eq 'Uninstall') {
 
 if ([string]::IsNullOrWhiteSpace($PackageRoot)) { throw 'Install requires -PackageRoot' }
 $package = Assert-Package $PackageRoot
+if ($NativeX64Only) { Assert-NativeX64LaunchSupport $package }
+if ($NativeX64Rehearsal -and ($nativeArchitecture -ne 'AMD64' -or -not [Environment]::Is64BitProcess -or
+    -not $package.manifest.rehearsal_only -or $NoLaunch -or $NoAutoStart -or $PurgeUserData)) {
+    throw 'NativeX64Rehearsal requires the isolated failure-only package, x64 host and full rollback exercise.'
+}
 $packageId = 'yimecore-e6c-' + ([string]$package.manifest.git_commit).Substring(0, 12) + '-' +
     ([string]$package.manifest_sha256).Substring(0, 8)
 $requestedInstallRoot = -not [string]::IsNullOrWhiteSpace($InstallRoot)
@@ -677,19 +974,14 @@ $previousRoot = if (-not [string]::IsNullOrWhiteSpace($previousConfigText)) {
 } else { '' }
 if ([string]::IsNullOrWhiteSpace($previousRoot) -or
     $previousRoots -notcontains $previousRoot) {
-    $previousRoot = if ($previousRoots.Count -gt 0) { [string]$previousRoots[0] } else { '' }
+    $previousRoot = if ($NativeX64Only) { Get-NativeRegisteredInstallRoot } elseif ($previousRoots.Count -gt 0) { [string]$previousRoots[0] } else { '' }
 }
 $previousRunSnapshot = Get-RegistryValueSnapshot $runKey $productKeyName
 $previousUninstallSnapshot = Get-RegistryKeySnapshot $uninstallKey
 $previousLegacyUninstallSnapshot = Get-RegistryKeySnapshot $legacyMachineUninstallKey
+$previousUserTipSnapshot = Get-RegistryKeySnapshot $userTipKey
 $previousStatusPath = Join-Path $stateRootPath 'runtime-status.json'
-$previousRuntimeWasRunning = $false
-if (Test-Path -LiteralPath $previousStatusPath -PathType Leaf) {
-    try {
-        $previousRuntimeWasRunning =
-            (Get-Content -LiteralPath $previousStatusPath -Raw -Encoding UTF8 | ConvertFrom-Json).state -eq 'running'
-    } catch {}
-}
+$previousRuntimeWasRunning = Get-PreviousRuntimeWasRunning $previousConfigText
 
 if (Test-Path -LiteralPath $targetRoot) {
     if ($requestedInstallRoot) { throw "requested install root is still occupied: $targetRoot" }
@@ -712,6 +1004,15 @@ try {
     $maintenanceRoot = Join-Path $stagingRoot 'maintenance'
     New-Item -ItemType Directory -Path $maintenanceRoot -Force | Out-Null
     Copy-Item -LiteralPath $PSCommandPath -Destination (Join-Path $maintenanceRoot 'Manage-YimeCoreTrial.ps1') -Force
+    if ($package.manifest.PSObject.Properties['package_contract'] -and
+        $package.manifest.package_contract -eq 'yimecore-local-product-package-v1') {
+        # Audit the staging path as the actual current path, with full identity.
+        # The final-path metadata below is only used after the atomic directory move.
+        [IO.File]::WriteAllText((Join-Path $stagingRoot 'install-metadata.json'),
+            (([ordered]@{schema_version='yimecore-trial-install-v1';product_key=$productKeyName;
+                install_root=$stagingRoot;staging=$true;package_manifest_sha256=$package.manifest_sha256;
+                git_commit=[string]$package.manifest.git_commit}|ConvertTo-Json)+"`n"),$utf8NoBom)
+    }
 	$null = Assert-PrivilegedPackageCopy $stagingRoot $package
     $metadata = [ordered]@{
         schema_version = 'yimecore-trial-install-v1'
@@ -745,6 +1046,9 @@ try {
 	}
     Add-InputMethodTip
 
+    if ($previousUserTipSnapshot.exists) {
+        Restore-RegistryKeySnapshot $userTipKey $previousUserTipSnapshot
+    }
     $runtimeConfig = Write-RuntimeConfiguration $targetRoot
     $runValue = '{0} -no-toolbar' -f (Quote-Argument ([string]$runtimeConfig.runtime_path))
     New-Item -Path $runKey -Force | Out-Null
@@ -759,12 +1063,13 @@ try {
     $uninstallCommand = '{0} -NoProfile -ExecutionPolicy Bypass -File {1} -Action Uninstall -StateRoot {2} -TargetUserSid {3}' -f
         (Quote-Argument $windowsPowerShell), (Quote-Argument $installedScript),
         (Quote-Argument $stateRootPath), (Quote-Argument $TargetUserSid)
+    if ($NativeX64Only) { $uninstallCommand += ' -NativeX64Only' }
     New-Item -Path $uninstallKey -Force | Out-Null
     $estimatedSize = [int]([math]::Ceiling((Get-ChildItem -LiteralPath $targetRoot -Recurse -File |
         Measure-Object Length -Sum).Sum / 1KB))
     $properties = [ordered]@{
         DisplayName = $productName
-        DisplayVersion = ([string]$package.manifest.git_commit).Substring(0, 12)
+        DisplayVersion = if ($package.manifest.PSObject.Properties['product_version']) { [string]$package.manifest.product_version } else { ([string]$package.manifest.git_commit).Substring(0, 12) }
         Publisher = 'Yime'
         InstallLocation = $targetRoot
         UninstallString = $uninstallCommand
@@ -783,7 +1088,11 @@ try {
 	Remove-Item -LiteralPath $legacyMachineUninstallKey -Recurse -Force -ErrorAction SilentlyContinue
 
     $runtimeStatus = if ($NoLaunch) { $null } else { Start-TrialRuntime $runtimeConfig }
+    # The failure-only exercise must never become a successful install or remove
+    # the old roots still referenced by frozen architectures.
+    if ($NativeX64Rehearsal) { throw 'Failure-only rehearsal unexpectedly started; restoring previous installation.' }
     foreach ($oldRoot in $previousRoots) {
+        if ($NativeX64Only -and (Test-FrozenInstallRoot $oldRoot @(Get-FrozenRegistrationReferences))) { continue }
         if (-not ([IO.Path]::GetFullPath($oldRoot)).Equals(
                 [IO.Path]::GetFullPath($targetRoot), [StringComparison]::OrdinalIgnoreCase) -and
             (Test-Path -LiteralPath $oldRoot)) {
@@ -814,7 +1123,7 @@ try {
             if (Test-Path -LiteralPath $targetRoot) { Remove-ProductTree $targetRoot | Out-Null }
             Restore-PreviousInstallation $previousRoot $previousConfigText `
 				$previousRunSnapshot $previousUninstallSnapshot $previousLegacyUninstallSnapshot `
-				$previousRuntimeWasRunning
+				$previousRuntimeWasRunning $previousUserTipSnapshot
         }
         if (Test-Path -LiteralPath $stagingRoot) { Remove-ProductTree $stagingRoot | Out-Null }
     } catch {

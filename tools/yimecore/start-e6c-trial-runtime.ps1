@@ -33,6 +33,17 @@ if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
     throw "missing E6-C package manifest: $manifestPath"
 }
 $manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+if ($manifest.PSObject.Properties['package_contract'] -and $manifest.package_contract -eq 'yimecore-local-product-package-v1') {
+    . (Join-Path $PSScriptRoot 'development-scope.ps1')
+    . (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
+    . (Join-Path $PSScriptRoot 'local-package-contract.ps1')
+    . (Join-Path $PSScriptRoot 'local-product-runtime.ps1')
+    $null = Get-YimeCoreDevelopmentScope
+    Assert-YimeCoreUnpackagedDataMaintenance
+    $context = Assert-LocalProductInstalledContext (Split-Path -Parent $PSScriptRoot) $stateRootPath
+    Start-LocalProductRuntime $context
+    return
+}
 $brokerRecord = @($manifest.files | Where-Object { $_.path -eq 'bin/YimeBroker.exe' })
 if ($brokerRecord.Count -ne 1 -or
     (Get-FileHash -LiteralPath $expectedBrokerPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne

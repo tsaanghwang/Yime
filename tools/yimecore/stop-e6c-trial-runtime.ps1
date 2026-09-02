@@ -24,6 +24,17 @@ if (-not ([IO.Path]::GetFullPath([string]$config.state_root)).Equals(
 if (-not (Test-Path -LiteralPath ([string]$config.runtime_path) -PathType Leaf)) {
 	throw "configured E6-C runtime is unavailable: $($config.runtime_path)"
 }
+$manifestPath=Join-Path ([string]$config.install_root) 'package-manifest.json'
+$manifest=Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+if ($manifest.PSObject.Properties['package_contract'] -and $manifest.package_contract -eq 'yimecore-local-product-package-v1') {
+    . (Join-Path $PSScriptRoot 'development-scope.ps1')
+    . (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
+    . (Join-Path $PSScriptRoot 'local-package-contract.ps1')
+    $null=Get-YimeCoreDevelopmentScope
+    Assert-YimeCoreUnpackagedDataMaintenance
+    if ($DisableAutoStart -or $RemoveInputMethod) { throw 'Use local product uninstall for registration/autostart changes.' }
+    $null=Assert-LocalProductInstalledContext (Split-Path -Parent $PSScriptRoot) $stateRootPath
+}
 $argumentLine = '-stop -install-root "{0}" -broker "{1}" -state-root "{2}"' -f
 	([string]$config.install_root), ([string]$config.broker_path), ([string]$config.state_root)
 $stopper = Start-Process -FilePath ([string]$config.runtime_path) -ArgumentList $argumentLine -WindowStyle Hidden -Wait -PassThru

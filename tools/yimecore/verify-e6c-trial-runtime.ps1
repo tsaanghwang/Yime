@@ -1,11 +1,23 @@
 [CmdletBinding()]
 param(
     [string]$StateRoot = (Join-Path $env:LOCALAPPDATA 'YimeCore Experimental Trial'),
-    [switch]$ExerciseRecovery
+    [switch]$ExerciseRecovery,
+    [switch]$LocalProduct
 )
 
 $ErrorActionPreference = 'Stop'
 $stateRootPath = [IO.Path]::GetFullPath($StateRoot)
+if ($LocalProduct) {
+    . (Join-Path $PSScriptRoot 'development-scope.ps1')
+    . (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
+    . (Join-Path $PSScriptRoot 'local-package-contract.ps1')
+    . (Join-Path $PSScriptRoot 'local-product-runtime.ps1')
+    $null = Get-YimeCoreDevelopmentScope
+    Assert-YimeCoreUnpackagedDataMaintenance
+    if ($ExerciseRecovery) { throw 'Forced broker termination is not a normal local maintenance operation.' }
+    $localContext = Assert-LocalProductInstalledContext (Split-Path -Parent $PSScriptRoot) $stateRootPath
+    $localLive = Assert-LocalProductLiveRuntime $localContext
+}
 $config = Get-Content -LiteralPath (Join-Path $stateRootPath 'runtime-config.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 $statusPath = Join-Path $stateRootPath 'runtime-status.json'
 $statusBefore = Get-Content -LiteralPath $statusPath -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -43,11 +55,15 @@ function Assert-InstalledManifestFile([string]$relativePath) {
     }
     return $path
 }
-foreach ($relativePath in @(
+$requiredIdentityFiles = @(
     'bin/YimeCoreTrialRuntime.exe', 'bin/YimeBroker.exe',
     'bin/YimeCoreSentenceRegression.exe', 'data/dynamic_sentence_cases.json',
-    'x64/YimeTextServiceExperiment.dll', 'x86/YimeTextServiceExperiment.dll'
-)) {
+    'x64/YimeTextServiceExperiment.dll'
+)
+# The legacy verifier keeps its x86 gate. Only the separately validated x64
+# local-product contract is allowed to omit that frozen payload.
+if (-not $LocalProduct) { $requiredIdentityFiles += 'x86/YimeTextServiceExperiment.dll' }
+foreach ($relativePath in $requiredIdentityFiles) {
     $null = Assert-InstalledManifestFile $relativePath
 }
 $pipeName = ([string]$config.pipe_name).Replace('\\.\pipe\', '')
@@ -181,6 +197,7 @@ if ($ExerciseRecovery) {
 }
 
 $evidencePath = Join-Path $evidenceRoot 'live-runtime-verification.json'
+if ($LocalProduct) { $localLive = Assert-LocalProductLiveRuntime $localContext }
 [ordered]@{
     schema_version = 'yimecore-e6c-live-runtime-v1'
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
@@ -191,6 +208,7 @@ $evidencePath = Join-Path $evidenceRoot 'live-runtime-verification.json'
     dynamic_sentence_evidence_path = $dynamicSentenceEvidencePath
     dynamic_sentence_evidence_sha256 = (Get-FileHash -LiteralPath $dynamicSentenceEvidencePath -Algorithm SHA256).Hash.ToLowerInvariant()
     recovery = $recovery
+    local_product_standard_user_evidence = if ($LocalProduct) { $localLive } else { $null }
     user_model_mutated_by_probe = $false
     production_rime_pime_changed = $false
     bare_digit_selection_changed = $false

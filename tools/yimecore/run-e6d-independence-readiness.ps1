@@ -6,6 +6,9 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'development-scope.ps1')
+$developmentScope = Get-YimeCoreDevelopmentScope
+Assert-YimeCoreNativeGo
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $goBackend = Join-Path $repoRoot 'go-backend'
 $allowedRoot = [IO.Path]::GetFullPath((Join-Path $repoRoot '.tmp\yimecore-experiment\e6d-independence'))
@@ -81,6 +84,11 @@ $configuredRoot = [IO.Path]::GetFullPath([string]$runtimeConfig.install_root)
 if (-not $packageRootPath.Equals($configuredRoot, [StringComparison]::OrdinalIgnoreCase)) {
     throw 'E6-D must audit the package selected by the active runtime configuration'
 }
+$autostartValidator = Join-Path $PSScriptRoot 'repair-e6c-trial-autostart.ps1'
+# A running new process does not prove that the next login will start that build.
+# Validation must not repair the registry or hide the observed mismatch.
+& $autostartValidator -StateRoot $stateRootPath -ValidateOnly `
+    -OutputPath (Join-Path $outputDir 'autostart-before.json') | Out-Null
 if ($runtimeStatus.state -ne 'running' -or [int]$runtimeStatus.runtime_pid -le 0 -or
     [int]$runtimeStatus.broker_pid -le 0) {
     throw 'E6-D requires the active trial runtime and Broker to be running'
@@ -121,11 +129,9 @@ $experimental = [ordered]@{
     x86 = Get-RegistryDefaultValue $experimentalKey '32'
 }
 $expectedExperimentalX64 = [IO.Path]::GetFullPath((Join-Path $packageRootPath 'x64\YimeTextServiceExperiment.dll'))
-$expectedExperimentalX86 = [IO.Path]::GetFullPath((Join-Path $packageRootPath 'x86\YimeTextServiceExperiment.dll'))
-if (-not $experimental.x64.exists -or -not $experimental.x86.exists -or
-    -not ([IO.Path]::GetFullPath([string]$experimental.x64.value)).Equals($expectedExperimentalX64, [StringComparison]::OrdinalIgnoreCase) -or
-    -not ([IO.Path]::GetFullPath([string]$experimental.x86.value)).Equals($expectedExperimentalX86, [StringComparison]::OrdinalIgnoreCase)) {
-    throw 'experimental x64/x86 COM registration does not converge on the active package'
+if (-not $experimental.x64.exists -or
+    -not ([IO.Path]::GetFullPath([string]$experimental.x64.value)).Equals($expectedExperimentalX64, [StringComparison]::OrdinalIgnoreCase)) {
+    throw 'experimental x64 COM registration does not converge on the active package'
 }
 foreach ($view in @('x64', 'x86')) {
     if ($productionBefore[$view].exists -and
@@ -176,13 +182,19 @@ if (-not $productionUnchanged) {
 }
 
 $summaryPath = Join-Path $outputDir 'summary.json'
+$autostartEvidencePath = Join-Path $outputDir 'autostart.json'
+$autostart = (& $autostartValidator -StateRoot $stateRootPath -ValidateOnly `
+    -OutputPath $autostartEvidencePath) | ConvertFrom-Json
 $sourceFiles = @(
     'go-backend/cmd/yimecore-independence-audit/main.go',
     'go-backend/cmd/yimecore-independence-audit/main_test.go',
     'go-backend/input_methods/yime/yimecore/dependency_boundary_test.go',
     'YimeTextServiceExperiment/CMakeLists.txt',
     'YimeTextServiceExperiment/YimeTextServiceIds.h',
-    'tools/yimecore/run-e6d-independence-readiness.ps1'
+    'tools/yimecore/run-e6d-independence-readiness.ps1',
+    'tools/yimecore/development-scope.ps1',
+    'tools/yimecore/development-scope.json',
+    'tools/yimecore/repair-e6c-trial-autostart.ps1'
 )
 $sourceHashes = foreach ($relative in $sourceFiles) {
     $absolute = Join-Path $repoRoot $relative.Replace('/', '\')
@@ -193,6 +205,8 @@ $sourceHashes = foreach ($relative in $sourceFiles) {
 }
 [ordered]@{
     schema_version = 'yimecore-e6d-independence-readiness-v1'
+    development_scope = $developmentScope
+    tested_architectures = @('x64')
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     git_commit = (& git -C $repoRoot rev-parse HEAD).Trim()
     git_dirty = [bool]((& git -C $repoRoot status --porcelain).Count)
@@ -215,6 +229,9 @@ $sourceHashes = foreach ($relative in $sourceFiles) {
     runtime_executable = $runtimeExecutable
     broker_executable = $brokerExecutable
     runtime_package_convergence_passed = $true
+    current_user_autostart_convergence_passed = [bool]$autostart.passed
+    autostart_evidence_path = $autostartEvidencePath
+    autostart_evidence_sha256 = (Get-FileHash -LiteralPath $autostartEvidencePath -Algorithm SHA256).Hash.ToLowerInvariant()
     experimental_registration = $experimental
     production_registration_before = $productionBefore
     production_registration_after = $productionAfter
@@ -222,10 +239,10 @@ $sourceHashes = foreach ($relative in $sourceFiles) {
     production_registration_mutated_by_audit = $false
     installer_or_registration_command_executed = $false
     source_hashes = $sourceHashes
-    passed = [bool]$packageEvidence.passed -and $productionUnchanged
+    passed = [bool]$packageEvidence.passed -and $productionUnchanged -and [bool]$autostart.passed
     limitations = @(
         'This gate proves package, static source-dependency and active registration separation; it does not uninstall Rime/PIME.',
-        'ARM64 PE machine type is checked on this AMD64 host, but ARM64 desktop-host execution remains a release gate.',
+        'All retained payloads receive static integrity checks only; x86/ARM64 execution and other hardware acceptance are frozen, not current blockers.',
         'Trusted package signing remains deferred while the signing certificate application is pending.'
     )
 } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $summaryPath -Encoding utf8
