@@ -260,6 +260,12 @@ func findCandidate(state engineapi.State, text string) *engineapi.Candidate {
 			return &state.Candidates[i]
 		}
 	}
+	// Dynamic multi-segment output is published separately from the paged
+	// lexical candidates. Keep direct module records authoritative above, then
+	// fall back to the generated sentence for mixed alias+core probes.
+	if state.Sentence != nil && state.Sentence.Text == text {
+		return state.Sentence
+	}
 	return nil
 }
 
