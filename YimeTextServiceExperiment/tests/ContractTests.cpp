@@ -257,9 +257,21 @@ void testKeyContract() {
     expect(shiftTap.OnKeyDown(VK_SHIFT) && !shiftTap.OnKeyDown('A') &&
                 !shiftTap.OnKeyUp(VK_SHIFT),
             "Shift used with another key incorrectly toggled Chinese/English");
-          expect(shiftTap.OnKeyDown(VK_SHIFT) && !shiftTap.OnKeyDown(VK_OEM_5) &&
+    expect(shiftTap.OnKeyDown(VK_SHIFT) && !shiftTap.OnKeyDown(VK_OEM_5) &&
                 !shiftTap.OnKeyUp(VK_SHIFT),
             "punctuation leader incorrectly triggered the Shift language toggle");
+    for (const WPARAM key : {static_cast<WPARAM>('T'), static_cast<WPARAM>('1'),
+                             static_cast<WPARAM>(VK_OEM_COMMA), static_cast<WPARAM>(VK_SPACE),
+                             static_cast<WPARAM>(VK_TAB), static_cast<WPARAM>(VK_LEFT),
+                             static_cast<WPARAM>(VK_F1), static_cast<WPARAM>(VK_CONTROL),
+                             static_cast<WPARAM>(VK_MENU)}) {
+        expect(shiftTap.OnKeyDown(VK_SHIFT) && !shiftTap.OnKeyDown(key) &&
+                   !shiftTap.OnKeyUp(VK_SHIFT),
+               "Shift chord category incorrectly toggled Chinese/English");
+    }
+    expect(shiftTap.OnKeyDown(VK_SHIFT), "Shift tracker did not arm before reset");
+    shiftTap.Reset();
+    expect(!shiftTap.OnKeyUp(VK_SHIFT), "reset Shift tracker still requested a mode toggle");
     const auto& labels = CandidateLabels();
     constexpr std::wstring_view expected[] = {L"⇧1", L"⇧2", L"⇧3", L"⇧4", L"⇧5", L"⇧6", L"⇧7", L"⇧8", L"⇧9"};
     for (size_t index = 0; index < labels.size(); ++index) {

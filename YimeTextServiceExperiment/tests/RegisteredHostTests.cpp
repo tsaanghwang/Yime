@@ -506,6 +506,76 @@ int wmain(int argc, wchar_t** argv) {
             GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_TOOL_MENU_SMOKE",
                                     toolMenuSmokeValue, _countof(toolMenuSmokeValue)) != 0;
 
+        // Reproduce the registered-host sequence used by Word: the TIP sees
+        // Shift down and the test callback for a pass-through key, but it does
+        // not receive KeyDown for that key after returning eaten=FALSE.
+        yime::experiment::ExperimentSettings shiftChordSettings;
+        if (!yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::PunctuationEnglish,
+                yime::experiment::ResolveExperimentSettingsPath(), &shiftChordSettings) ||
+            !yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::ShapeHalf,
+                yime::experiment::ResolveExperimentSettingsPath(), &shiftChordSettings) ||
+            !yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::English,
+                yime::experiment::ResolveExperimentSettingsPath(), &shiftChordSettings)) {
+            throw std::runtime_error("could not seed registered English Shift-chord state");
+        }
+        auto verifyRegisteredEnglishShiftPassThrough = [&](WPARAM key, bool controlDown,
+                                                           bool altDown) {
+            BOOL shiftEaten = FALSE;
+            require(keystrokes->TestKeyDown(VK_SHIFT, 0, &shiftEaten),
+                    "registered English Shift probe");
+            if (!shiftEaten) throw std::runtime_error("registered English mode did not claim Shift down");
+            shiftEaten = FALSE;
+            require(keystrokes->KeyDown(VK_SHIFT, 0, &shiftEaten),
+                    "registered English Shift down");
+            if (!shiftEaten) throw std::runtime_error("registered English mode did not handle Shift down");
+
+            BYTE keyboard[256]{};
+            GetKeyboardState(keyboard);
+            BYTE modified[256]{};
+            CopyMemory(modified, keyboard, sizeof(keyboard));
+            modified[VK_SHIFT] = 0x80;
+            modified[VK_LSHIFT] = 0x80;
+            if (controlDown) modified[VK_CONTROL] = 0x80;
+            if (altDown) modified[VK_MENU] = 0x80;
+            SetKeyboardState(modified);
+            BOOL chordEaten = TRUE;
+            require(keystrokes->TestKeyDown(key, 0, &chordEaten),
+                    "registered English Shift-chord pass-through probe");
+            SetKeyboardState(keyboard);
+            if (chordEaten) {
+                throw std::runtime_error("registered English Shift chord did not pass through");
+            }
+
+            BOOL shiftUpEaten = FALSE;
+            require(keystrokes->TestKeyUp(VK_SHIFT, 0, &shiftUpEaten),
+                    "registered English Shift-up probe");
+            if (!shiftUpEaten) throw std::runtime_error("registered English mode did not claim Shift up");
+            shiftUpEaten = FALSE;
+            require(keystrokes->KeyUp(VK_SHIFT, 0, &shiftUpEaten),
+                    "registered English Shift up");
+            if (!shiftUpEaten) throw std::runtime_error("registered English mode did not handle Shift up");
+            if (!yime::experiment::LoadExperimentSettings().asciiMode) {
+                throw std::runtime_error("registered English Shift chord toggled back to Chinese");
+            }
+        };
+        for (const WPARAM key : {static_cast<WPARAM>('T'), static_cast<WPARAM>('1'),
+                                 static_cast<WPARAM>(VK_OEM_COMMA), static_cast<WPARAM>(VK_SPACE),
+                                 static_cast<WPARAM>(VK_TAB), static_cast<WPARAM>(VK_LEFT),
+                                 static_cast<WPARAM>(VK_F1)}) {
+            verifyRegisteredEnglishShiftPassThrough(key, false, false);
+        }
+        verifyRegisteredEnglishShiftPassThrough('Z', true, false);
+        verifyRegisteredEnglishShiftPassThrough(VK_TAB, false, true);
+        std::cout << "registered_english_shift_passthrough_verified=true\n";
+        if (!yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::Chinese,
+                yime::experiment::ResolveExperimentSettingsPath(), &shiftChordSettings)) {
+            throw std::runtime_error("could not restore registered Chinese mode");
+        }
+
         const std::string code = "2jru";
         for (size_t index = 0; index < code.size(); ++index) {
             const char character = code[index];

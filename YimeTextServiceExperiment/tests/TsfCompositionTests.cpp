@@ -2,6 +2,7 @@
 #include <msctf.h>
 #include <ctfutb.h>
 
+#include <array>
 #include <atomic>
 #include <iostream>
 #include <string>
@@ -792,6 +793,90 @@ int wmain(int argc, wchar_t** argv) {
         eaten = TRUE;
         require(keys->OnKeyDown(context, 'L', 0, &eaten), "English pass-through key");
         if (eaten) throw std::runtime_error("English mode handled an idle host key");
+
+        // A host does not call OnKeyDown after OnTestKeyDown declines an
+        // English-mode pass-through key. Every non-Shift key observed during
+        // an armed Shift cycle must therefore cancel the tap from the test
+        // callback alone; otherwise Shift+T inserts T and then flips back to
+        // Chinese when Shift is released.
+        if (!yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::PunctuationEnglish,
+                yime::experiment::ResolveExperimentSettingsPath(), &seededSettings) ||
+            !yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::ShapeHalf,
+                yime::experiment::ResolveExperimentSettingsPath(), &seededSettings) ||
+            !yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::English,
+                yime::experiment::ResolveExperimentSettingsPath(), &seededSettings)) {
+            throw std::runtime_error("could not seed English Shift-chord state");
+        }
+        auto verifyEnglishShiftPassThrough = [&](WPARAM key, bool controlDown, bool altDown) {
+            BOOL shiftTestEaten = FALSE;
+            require(keys->OnTestKeyDown(context, VK_SHIFT, 0, &shiftTestEaten),
+                    "English Shift-chord Shift probe");
+            if (!shiftTestEaten) throw std::runtime_error("English mode did not claim Shift down");
+            BOOL shiftEaten = FALSE;
+            require(keys->OnKeyDown(context, VK_SHIFT, 0, &shiftEaten),
+                    "English Shift-chord Shift down");
+            if (!shiftEaten) throw std::runtime_error("English mode did not handle Shift down");
+
+            BYTE keyboard[256]{};
+            GetKeyboardState(keyboard);
+            BYTE modified[256]{};
+            CopyMemory(modified, keyboard, sizeof(keyboard));
+            modified[VK_SHIFT] = 0x80;
+            modified[VK_LSHIFT] = 0x80;
+            if (controlDown) modified[VK_CONTROL] = 0x80;
+            if (altDown) modified[VK_MENU] = 0x80;
+            SetKeyboardState(modified);
+            BOOL chordEaten = TRUE;
+            require(keys->OnTestKeyDown(context, key, 0, &chordEaten),
+                    "English Shift-chord pass-through probe");
+            SetKeyboardState(keyboard);
+            if (chordEaten) {
+                throw std::runtime_error("English Shift chord was not passed through to the host");
+            }
+
+            BOOL shiftUpTestEaten = FALSE;
+            require(keys->OnTestKeyUp(context, VK_SHIFT, 0, &shiftUpTestEaten),
+                    "English Shift-chord Shift-up probe");
+            if (!shiftUpTestEaten) throw std::runtime_error("English mode did not claim Shift up");
+            BOOL shiftUpEaten = FALSE;
+            require(keys->OnKeyUp(context, VK_SHIFT, 0, &shiftUpEaten),
+                    "English Shift-chord Shift up");
+            if (!shiftUpEaten) throw std::runtime_error("English mode did not handle Shift up");
+            if (!yime::experiment::LoadExperimentSettings().asciiMode) {
+                throw std::runtime_error("English Shift chord toggled back to Chinese");
+            }
+        };
+        unsigned verifiedEnglishShiftChords = 0;
+        for (WPARAM key = 'A'; key <= 'Z'; ++key) {
+            verifyEnglishShiftPassThrough(key, false, false);
+            ++verifiedEnglishShiftChords;
+        }
+        for (WPARAM key = '0'; key <= '9'; ++key) {
+            verifyEnglishShiftPassThrough(key, false, false);
+            ++verifiedEnglishShiftChords;
+        }
+        for (const WPARAM key : std::array<WPARAM, 11>{
+                 VK_OEM_1, VK_OEM_PLUS, VK_OEM_COMMA, VK_OEM_MINUS, VK_OEM_PERIOD,
+                 VK_OEM_2, VK_OEM_3, VK_OEM_4, VK_OEM_5, VK_OEM_6, VK_OEM_7}) {
+            verifyEnglishShiftPassThrough(key, false, false);
+            ++verifiedEnglishShiftChords;
+        }
+        for (const WPARAM key : std::array<WPARAM, 15>{
+                 VK_TAB, VK_SPACE, VK_RETURN, VK_BACK, VK_DELETE, VK_ESCAPE,
+                 VK_LEFT, VK_RIGHT, VK_UP, VK_DOWN, VK_PRIOR, VK_NEXT,
+                 VK_HOME, VK_END, VK_F1}) {
+            verifyEnglishShiftPassThrough(key, false, false);
+            ++verifiedEnglishShiftChords;
+        }
+        verifyEnglishShiftPassThrough('Z', true, false);
+        ++verifiedEnglishShiftChords;
+        verifyEnglishShiftPassThrough(VK_TAB, false, true);
+        ++verifiedEnglishShiftChords;
+        std::cout << "english_shift_passthrough_chords_verified="
+                  << verifiedEnglishShiftChords << '\n';
 
         // English mode still belongs to this TIP when output transforms are
         // enabled. Exercise the complete ITfKeyEventSink -> edit-session path,

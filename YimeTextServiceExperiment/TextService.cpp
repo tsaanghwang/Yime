@@ -309,6 +309,7 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
 
 STDMETHODIMP YimeTextService::Deactivate() {
     if (!threadManager_) return S_OK;
+    shiftTap_.Reset();
     if (keySinkAdvised_) {
         ITfKeystrokeMgr* keystrokes = nullptr;
         if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfKeystrokeMgr), reinterpret_cast<void**>(&keystrokes)))) {
@@ -369,7 +370,10 @@ STDMETHODIMP YimeTextService::Deactivate() {
 
 STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
     keyEventFocused_ = foreground != FALSE;
-    if (!keyEventFocused_) CancelPunctuationPalette();
+    if (!keyEventFocused_) {
+        shiftTap_.Reset();
+        CancelPunctuationPalette();
+    }
     if (keyEventFocused_ && compositionDocument_ && threadManager_) {
         ITfDocumentMgr* focus = nullptr;
         compositionDocumentFocused_ = SUCCEEDED(threadManager_->GetFocus(&focus)) &&
@@ -401,6 +405,7 @@ STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
 }
 
 STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*) {
+    shiftTap_.Reset();
     compositionDocumentFocused_ = !compositionDocument_ || focus == compositionDocument_;
     if (punctuationPalette_.IsActive() && punctuationContext_) {
         ITfDocumentMgr* punctuationDocument = nullptr;
@@ -491,6 +496,12 @@ HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, 
 }
 
 STDMETHODIMP YimeTextService::OnTestKeyDown(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
+    // TSF does not follow a declined test callback with OnKeyDown. Observe
+    // every non-Shift key here so Shift+host-pass-through chords cannot be
+    // mistaken for a standalone Shift tap when Shift is released.
+    if (wParam != VK_SHIFT && wParam != VK_LSHIFT && wParam != VK_RSHIFT) {
+        shiftTap_.Reset();
+    }
     return SetKeyDecision(context, wParam, eaten);
 }
 

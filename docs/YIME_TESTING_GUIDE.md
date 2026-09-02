@@ -279,6 +279,14 @@ C:\dev\Yime\Upgrade-YimeCore-Trial.cmd /norestart
 和升级前运行状态必须自动恢复。不能把该流程简化为先删除旧版本再复制，也不能用源码目录中的 DLL
 contract 代替注册宿主测试。
 
+> **宿主激活与自动化告警：** 新打开 Word 或其他宿主并不等于已经激活 Yime 试验版；只有 Windows 默认输入法明确设为
+> Yime 时才可能自动进入。验收前应先通过任务栏输入法切换按钮（例如当前“拼”图标）选择 **Yime 自研栈试验版**，或使用
+> 本机已经物理确认有效的切换快捷键，再以活动 Profile、宿主实际加载的试验 DLL 或裸数字进入 Yime 组合等证据确认激活。
+> 不得为了让自动化通过而修改用户默认输入法。Computer Use 把 `Alt+Space` 解释为 Word 窗口菜单，或只能在 Word 的辅助功能树中
+> 看见任务栏但不能操作独立任务栏界面，属于自动化输入/界面附着差异；若物理操作正常且安装态 x64/x86 注册宿主回归通过，
+> 必须单列为工具限制，不得误报为 Yime 或 Word 阻塞。Word 未关闭时并发注册宿主还可能报告
+> `registered TIP did not become foreground`；保存并关闭 Word 后必须重跑，重跑结果才用于判断安装态。
+
 ### 8.4 已完成的验证记录
 
 - 2026-09-01：YimeCore 分支综合审查的 7 项高危与 26 项中危修复完成。Go 全量 test/vet/build 与 `go test -race -count=1 ./...` 通过；x64/x86 DLL contract 和真实 TSF composition 宿主通过；ARM64 表层完成编译及 `0xAA64` PE 校验；E6-C 安装契约通过 staging 后复核、预卸载中途失败回滚、同 SID 每用户卸载项和三架构清单门禁。真实 ARM64 桌面宿主仍需在 ARM64 Windows 上执行。
