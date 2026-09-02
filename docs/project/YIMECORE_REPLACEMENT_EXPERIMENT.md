@@ -1,7 +1,7 @@
 # Yime 自研栈并行替换试验
 
-> 状态（2026-09-02）：E0 至 E5、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b、E6-B4a、E6-B4b、E6-B4c readiness、E6-B4d、E6-B5、E6-B6、E6-B7、E6-B8 与 E6-C 的功能门禁已通过；提交 `1059d259` 的干净 E6-C 包已升级到当前用户，Word x64 新会话和安装态 x64/x86 注册宿主验收通过
-> 切换状态：当前仍为未签名并列试验版；签名证书正在申请，等候审批，暂缓相关事项；最终 Rime 对照的正确性通过，但相对延迟和内存门槛失败，真实 ARM64 桌面宿主和更广第三方宿主矩阵仍待完成，因此未批准切换任何生产组件，E7 未启动
+> 状态（2026-09-02）：E0 至 E5、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b、E6-B4a、E6-B4b、E6-B4c readiness、E6-B4d、E6-B5、E6-B6、E6-B7、E6-B8、E6-C 与 E6-D 的功能和独立化准备门禁已通过；提交 `1059d259` 的干净 E6-C 包已升级到当前用户，Word x64 新会话和安装态 x64/x86 注册宿主验收通过
+> 切换状态：当前仍为未签名并列试验版；签名证书正在申请，等候审批，暂缓相关事项。主流和超前两档模拟的正确性、交互预算和内存预算已通过，老旧档退出发布阻塞；E3 微基准仍保留逐轮 `1.10` 尾部复现告警，但最大绝对 p95 增量仅 `1.50 µs`，不再阻塞原 Go 方案继续开发。真实 ARM64 桌面宿主、主流/超前实体机和更广第三方宿主矩阵仍待完成，因此未批准切换生产组件，E7 未启动
 > 本轮增量（2026-09-02）：修复英文状态下 `Shift+字母/符号` 释放后误切回中文的问题；x64/x86 TSF composition 各覆盖 64 个 Shift 组合，候选键契约覆盖 `Shift+1` 至 `Shift+9`；Word 中验证裸数字继续组字、`tf-cN` 提交“它们”、`Shift+T` 后继续保持英文。详见 [YimeCore 试验版安装态验收（2026-09-02）](../YIMECORE_TRIAL_ACCEPTANCE_2026-09-02.md)
 > 试验分支：`codex/yimecore-replacement-experiment`
 > 原则：先并行、后比较；逐层验收；失败即保留现状
@@ -524,6 +524,16 @@ E6-C 的多索引限制现已关闭：三种模式共用一个显式稳定命名
 若打开时已有 composition，表层冻结与现有高亮/整句规则一致的稳定候选 ID，选中标点后把文字与标点合并到同一 TSF edit session；无有效候选时拒绝打开。焦点、context、composition 或 Broker 恢复边界会先清除标点层。第一版不做成对插入、引号交替或提交后光标置中。
 
 标点候选窗定位遵循 TSF 宿主文本范围，而不是鼠标位置：已有 composition 时以 composition range 为锚点，否则以当前 selection/caret range 为锚点，在同步只读 edit session 中调用 `ITfContextView::GetTextExt`，将窗口左上角对齐到宿主返回范围的左下方。只有宿主不提供有效 view、range 或 text extent 时，才依次降级到上下文 caret、上下文窗口和系统指针位置；降级不得改变候选窗不激活、不抢宿主焦点的属性。
+
+### E6-D：完全独立准备门禁
+
+- 新增 `YimeCoreIndependenceAudit.exe`，对 staged 或已安装活动包逐项重算 manifest 大小和 SHA-256，并拒绝重复、越界、遗漏或未列入清单的载荷。
+- 审计 x64、x86、ARM64 的试验 TextService 与注册工具 PE machine；枚举全部 EXE/DLL 的真实导入表，拒绝 `rime`、`librime`、`PIME` 或 `Weasel` 构件和导入。
+- `run-e6d-independence-readiness.ps1` 只从活动 runtime config 解析包路径，不按目录修改时间猜测版本；它同时执行 Go 源码依赖边界测试、核对 runtime/Broker 与活动包收敛、核对试验 COM x64/x86 指向活动包，并在审计前后快照生产 PIME x64/x86 注册。
+- 当前活动安装的 manifest 61 个文件、28 个 PE 文件通过，导入仅来自 6 个 Windows 系统 DLL；试验 COM 指向独立 Program Files 根，生产 PIME 两个注册视图保持不变。审计是只读的，不运行安装、注销或注册命令。
+- Program Files 中可以存在升级留下的非活动版本，不能把“修改时间最新的目录”当成活动版本。只有 runtime config 指向的目录可用于安装态验收；非活动目录不在本门禁中自动删除。
+
+E6-D 证明当前包、源码运行依赖和注册边界已经为最终独立做好机械化检查，但不等于已经退役 Rime/PIME。ARM64 目前只完成静态 PE 架构检查，仍需真实 ARM64 桌面宿主执行；签名和实体机矩阵也仍是正式独立发布前事项。
 
 ### E7：切换与退役
 

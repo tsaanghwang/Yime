@@ -39,6 +39,7 @@ evidence 目录；失败即退出非零，不得静默降级。
 | `run-e6b7-parallel-package-experiment.ps1` | E6-B7 | 独立试验包组装 + Program Files 试装验证（需管理员） |
 | `record-e6b8-desktop-host-acceptance.ps1` | E6-B8 | 第三方桌面宿主人工验收记录 |
 | `run-e6c-package-experiment.ps1` | E6-C | 多索引/显示设置/语言栏控制的自包含打包门禁 |
+| `run-e6d-independence-readiness.ps1` | E6-D | 活动包清单、PE 导入、源码依赖和 Rime/PIME 注册隔离门禁 |
 
 ## 试用版安装与运维
 

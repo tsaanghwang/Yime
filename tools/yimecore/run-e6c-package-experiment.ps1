@@ -188,6 +188,7 @@ $diagnosticsTool = Join-Path $binRoot 'YimeCoreDiagnostics.exe'
 $settingsTool = Join-Path $binRoot 'YimeCoreSettingsTool.exe'
 $explainTool = Join-Path $binRoot 'YimeCoreExplain.exe'
 $sentenceRegression = Join-Path $binRoot 'YimeCoreSentenceRegression.exe'
+$independenceAudit = Join-Path $binRoot 'YimeCoreIndependenceAudit.exe'
 Push-Location (Join-Path $repoRoot 'go-backend')
 try {
     foreach ($legacyTool in @('YimeCoreToolbar.exe', 'YimeCoreDesktopTools.exe')) {
@@ -234,6 +235,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'E6-C decode explanation tool build failed' }
     & go build -trimpath -o $sentenceRegression ./cmd/yimecore-sentence-regression
     if ($LASTEXITCODE -ne 0) { throw 'E6-C dynamic sentence regression tool build failed' }
+    & go build -trimpath -o $independenceAudit ./cmd/yimecore-independence-audit
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C independence audit tool build failed' }
 } finally {
     Pop-Location
 }
@@ -279,6 +282,13 @@ $packageManifest = [ordered]@{
 }
 $packageManifestPath = Join-Path $packageRoot 'package-manifest.json'
 $packageManifest | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $packageManifestPath -Encoding utf8
+
+$independenceEvidencePath = Join-Path $outputDir 'independence-audit.json'
+& $independenceAudit -package $packageRoot -output $independenceEvidencePath
+if ($LASTEXITCODE -ne 0) { throw 'E6-C package independence audit failed' }
+$independenceEvidence = Get-Content -LiteralPath $independenceEvidencePath -Raw -Encoding UTF8 |
+    ConvertFrom-Json
+if (-not $independenceEvidence.passed) { throw 'E6-C package independence audit did not pass' }
 
 $installationEvidencePath = Join-Path $outputDir 'installation-contract.json'
 & (Join-Path $PSScriptRoot 'test-e6c-installation-contract.ps1') `
@@ -475,6 +485,8 @@ $sourceFiles = @(
     'go-backend\cmd\yimecore-explain\main_test.go',
     'go-backend\cmd\yimecore-sentence-regression\main.go',
     'go-backend\cmd\yimecore-sentence-regression\main_test.go',
+    'go-backend\cmd\yimecore-independence-audit\main.go',
+    'go-backend\cmd\yimecore-independence-audit\main_test.go',
     'go-backend\input_methods\yime\yimebroker\dispatcher.go',
     'go-backend\input_methods\yime\yimebroker\dispatcher_test.go',
     'go-backend\input_methods\yime\yimebroker\stdio.go',
@@ -488,6 +500,7 @@ $sourceFiles = @(
     'go-backend\input_methods\yime\yimebroker\usermodel_store.go',
     'go-backend\input_methods\yime\yimecore\indexfile.go',
     'go-backend\input_methods\yime\yimecore\indexfile_test.go',
+    'go-backend\input_methods\yime\yimecore\dependency_boundary_test.go',
     'go-backend\input_methods\yime\yimecore\userlexicon_overlay.go',
     'go-backend\input_methods\yime\candidateannotation\annotation.go',
     'go-backend\input_methods\yime\candidateannotation\annotation_test.go',
@@ -568,11 +581,12 @@ $sourceFiles = @(
     'tools\yimecore\trial-help\settings-and-data.html',
     'tools\yimecore\trial-help\trial-feedback.html',
     'tools\yimecore\trial-help\diagnostics.html',
-    'tools\yimecore\record-e6b8-desktop-host-acceptance.ps1'
-	'Upgrade-YimeCore-Trial.cmd',
-	'Build-Install-YimeCore-Trial.cmd',
-	'Build-Install-YimeCore-Trial-v2.cmd',
-	'Build-Install-YimeCore-Trial-v3.cmd'
+    'tools\yimecore\record-e6b8-desktop-host-acceptance.ps1',
+    'tools\yimecore\run-e6d-independence-readiness.ps1',
+    'Upgrade-YimeCore-Trial.cmd',
+    'Build-Install-YimeCore-Trial.cmd',
+    'Build-Install-YimeCore-Trial-v2.cmd',
+    'Build-Install-YimeCore-Trial-v3.cmd'
 )
 $sourceHashes = foreach ($relative in $sourceFiles) {
     $hash = Get-FileHash -LiteralPath (Join-Path $repoRoot $relative) -Algorithm SHA256
@@ -593,6 +607,14 @@ $summary = [ordered]@{
     package_root = $packageRoot
     package_manifest_sha256 = (Get-FileHash -LiteralPath $packageManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
     package_file_count = @($packageManifest.files).Count
+    independence_audit_path = $independenceEvidencePath
+    independence_audit_sha256 = (Get-FileHash -LiteralPath $independenceEvidencePath -Algorithm SHA256).Hash.ToLowerInvariant()
+    package_manifest_integrity_passed = [bool]$independenceEvidence.manifest_integrity_passed
+    install_metadata_consistency_passed = [bool]$independenceEvidence.install_metadata_passed
+    required_independent_components_passed = [bool]$independenceEvidence.required_components_passed
+    x64_x86_arm64_pe_architecture_passed = [bool]$independenceEvidence.pe_architecture_passed
+    forbidden_rime_pime_artifacts_absent = [bool]$independenceEvidence.forbidden_artifacts_absent
+    forbidden_rime_pime_pe_imports_absent = [bool]$independenceEvidence.forbidden_pe_imports_absent
     capability_evidence_path = $capabilityPath
     capability_evidence_sha256 = (Get-FileHash -LiteralPath $capabilityPath -Algorithm SHA256).Hash.ToLowerInvariant()
     recovered_user_model_generation = [uint64]$capabilities.recovered_generation
@@ -664,6 +686,12 @@ $summaryPath = Join-Path $outputDir 'summary.json'
 $summary | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $summaryPath -Encoding utf8
 Write-Host "YimeCore E6-C package evidence: $outputDir"
 if (-not $summary.base_package_hash_handoff_verified -or
+    -not $summary.package_manifest_integrity_passed -or
+    -not $summary.install_metadata_consistency_passed -or
+    -not $summary.required_independent_components_passed -or
+    -not $summary.x64_x86_arm64_pe_architecture_passed -or
+    -not $summary.forbidden_rime_pime_artifacts_absent -or
+    -not $summary.forbidden_rime_pime_pe_imports_absent -or
     -not $summary.full_variable_shorthand_learning_persistence_passed -or
     -not $summary.failed_switch_rollback_and_composition_affinity_passed -or
     -not $summary.toolbar_default_idle_session_is_variable -or
