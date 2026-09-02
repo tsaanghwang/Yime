@@ -40,6 +40,7 @@ evidence 目录；失败即退出非零，不得静默降级。
 | `record-e6b8-desktop-host-acceptance.ps1` | E6-B8 | 第三方桌面宿主人工验收记录 |
 | `run-e6c-package-experiment.ps1` | E6-C | 多索引/显示设置/语言栏控制的自包含打包门禁 |
 | `run-e6d-independence-readiness.ps1` | E6-D | 活动包清单、PE 导入、源码依赖和 Rime/PIME 注册隔离门禁 |
+| `run-e7-cutover-readiness.ps1` | E7 preflight | 汇总干净构包、活动安装、签名、实体机宿主矩阵和回退证据；只报告，不执行切换 |
 
 ## 试用版安装与运维
 

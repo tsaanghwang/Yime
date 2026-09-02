@@ -1,0 +1,13 @@
+{
+  "schema_version": "yimecore-e7-external-evidence-v1",
+  "reviewed_at": "",
+  "reviewed_by": "",
+  "approved_signer_thumbprint": "",
+  "arm64_desktop_host_passed": false,
+  "mainstream_physical_host_passed": false,
+  "forward_physical_host_passed": false,
+  "broader_third_party_host_matrix_passed": false,
+  "rollback_rehearsal_passed": false,
+  "first_release_retention_plan_approved": false,
+  "evidence_references": []
+}
