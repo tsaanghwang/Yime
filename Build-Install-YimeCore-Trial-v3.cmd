@@ -75,7 +75,7 @@ echo YIME_ROOT=%YIME_ROOT%
 echo YIME_POWERSHELL=%YIME_PS%
 echo YIME_OUTPUT=%YIME_OUT%
 echo.
-echo [1/5] Building and verifying the YimeCore trial package...
+echo [1/6] Building and verifying the YimeCore trial package...
 echo The currently installed, manifest-verified trial is used as the package base.
 "%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\run-e6c-package-experiment.ps1" -OutputRoot "%YIME_OUT%"
 if errorlevel 1 (
@@ -86,7 +86,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [2/5] Installing the new trial package with one administrator confirmation...
+echo [2/6] Installing the new trial package with one administrator confirmation...
 echo The installer stages first and restores the previous trial if registration or startup fails.
 "%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\manage-e6c-trial-install.ps1" -Action Install -PackageRoot "%YIME_OUT%\package" -Force
 if errorlevel 1 (
@@ -97,8 +97,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [3/5] Repairing and verifying current-user autostart...
-"%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\repair-e6c-trial-autostart.ps1"
+echo [3/6] Repairing and verifying current-user autostart...
+"%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\repair-e6c-trial-autostart.ps1" -OutputPath "%YIME_OUT%\installed-autostart-repair.json"
 if errorlevel 1 (
     echo.
     echo INSTALL COMPLETED, BUT CURRENT-USER AUTOSTART VERIFICATION FAILED.
@@ -106,7 +106,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [4/5] Verifying the installed runtime and all three modes...
+echo [4/6] Verifying the installed runtime and all three modes...
 "%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\verify-e6c-trial-runtime.ps1"
 if errorlevel 1 (
     echo.
@@ -119,16 +119,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [5/5] Verifying registered native and compatibility TSF host behavior...
-if /I "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
-    "%YIME_OUT%\package\arm64\YimeRegisteredHostTests.exe" "\\.\pipe\YimeBroker.YimeCoreTrial.v1"
-    if errorlevel 1 (
-        echo.
-        echo ARM64 REGISTERED-HOST VERIFICATION FAILED.
-        pause
-        exit /b 1
-    )
-)
+echo [5/6] Verifying this development machine's x64 TSF host only...
+echo ARM64, x86 and other hardware targets are frozen, not accepted.
 "%YIME_OUT%\package\x64\YimeRegisteredHostTests.exe" "\\.\pipe\YimeBroker.YimeCoreTrial.v1"
 if errorlevel 1 (
     echo.
@@ -136,15 +128,19 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
-"%YIME_OUT%\package\x86\YimeRegisteredHostTests.exe" "\\.\pipe\YimeBroker.YimeCoreTrial.v1"
+
+echo [6/6] Reading back current-user autostart after all host checks...
+"%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\repair-e6c-trial-autostart.ps1" -ValidateOnly -OutputPath "%YIME_OUT%\installed-autostart-final.json"
 if errorlevel 1 (
     echo.
-    echo X86 REGISTERED-HOST VERIFICATION FAILED.
+    echo INSTALL COMPLETED, BUT FINAL AUTOSTART READBACK FAILED. DO NOT REPORT ACCEPTANCE AS PASSED.
+    echo Evidence directory: %YIME_OUT%
     pause
     exit /b 1
 )
 
 echo Build, installation, and live runtime verification completed successfully.
+echo After reboot, verify autostart again; a currently running new process alone is not sufficient.
 echo Evidence directory:
 echo   %YIME_OUT%
 echo.
