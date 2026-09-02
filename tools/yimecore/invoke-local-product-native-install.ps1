@@ -10,7 +10,7 @@ param(
     [Parameter(ParameterSetName='Probe')][string]$ExpectedSourcesHash
 )
 $ErrorActionPreference='Stop'
-$expectedManifest='0000000000000000000000000000000000000000000000000000000000000000'
+$expectedManifest='6964099f48e0b6f534b763728d4a1806e4d4edfb1e7d7053b42c6d78d9fee74a'
 $expectedLauncher='36ccdd6cb08e05819ab994bd8fcfe032c4654d379bd612b69e0812c48650f12c'
 $expectedPreviousManifest='8d48953ac0b5017b725272ee6300d0b988e99a0d25b9e035216f6c90b774fb64'
 $expectedSid='S-1-5-21-2783006668-770716121-2150155084-1001'
