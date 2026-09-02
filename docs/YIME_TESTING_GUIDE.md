@@ -289,6 +289,7 @@ contract 代替注册宿主测试。
 
 ### 8.4 已完成的验证记录
 
+- 可信签名安装包：签名证书正在申请，等候审批，暂缓相关事项。此项不得以未签名试验包、测试证书或关闭 Windows 安全策略代替。
 - 2026-09-01：YimeCore 分支综合审查的 7 项高危与 26 项中危修复完成。Go 全量 test/vet/build 与 `go test -race -count=1 ./...` 通过；x64/x86 DLL contract 和真实 TSF composition 宿主通过；ARM64 表层完成编译及 `0xAA64` PE 校验；E6-C 安装契约通过 staging 后复核、预卸载中途失败回滚、同 SID 每用户卸载项和三架构清单门禁。真实 ARM64 桌面宿主仍需在 ARM64 Windows 上执行。
 - 2026-07-11：未签名开发包真实安装验证，输入响应正常，用户词“云笺试码”“笺砚验码”应用后活动会话直接出词。
 - 2026-07-12：完整安装态清单逐项跑完并留痕（[YIME_INSTALL_VERIFICATION_2026-07-12.md](YIME_INSTALL_VERIFICATION_2026-07-12.md)）——重启后干净全量重装、三件哈希构建↔安装全一致、重启自启动实测（开机 27 秒内自动拉起）、7 工具入口不崩、TIP 注册与真实组词日志、CodeIntegrity 核查、runtimechange 协议 `-race` 全绿。签名完成后须以该文档为模板复跑留新档。
