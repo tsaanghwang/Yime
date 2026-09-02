@@ -17,6 +17,7 @@
 - x64/x86 COM 视图均指向同一安装根；Broker PID 13348 的父进程为 `YimeCoreTrialRuntime.exe` PID 32092；包内 Broker 哈希通过。
 - staged/install 共 62 个包文件逐项路径、大小和 SHA-256 一致。安装器生成的 `install-metadata.json` 不属于 staged package 清单，单独记录其 SHA-256。
 - E6-C 包证据确认 `production_rime_pime_changed=false`、`bare_digit_selection_rules_changed=false`。
+- 安装后审计发现当前用户 Run 值仍指向旧根 `yimecore-e6c-d43eb58adca4-b193c545`。已使用 `repair-e6c-trial-autostart.ps1` 收敛到当前根，并立即以 `-ValidateOnly` 读取真实注册表值复核通过；当前 Runtime SHA-256 为 `c54a30cc839b5e3a72692a6b421a29d278e3053fb386049d399f77467f7639e7`。随后 `verify-e6c-trial-runtime.ps1` 完整通过。该偏差已修复，不再是当前 live-host blocker，但以后每次人工升级仍必须执行最终 `-ValidateOnly`，不能只看运行中的进程。
 
 机械证据目录：
 
