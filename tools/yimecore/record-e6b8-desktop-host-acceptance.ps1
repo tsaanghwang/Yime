@@ -47,7 +47,8 @@ if (-not (Test-Path -LiteralPath $resolvedInstallRoot -PathType Container)) {
 
 function Get-PackageRecords([string]$root) {
     $normalizedRoot = [IO.Path]::GetFullPath($root)
-    @(Get-ChildItem -LiteralPath $normalizedRoot -Recurse -File | ForEach-Object {
+    @(Get-ChildItem -LiteralPath $normalizedRoot -Recurse -File |
+        Where-Object { $_.Name -ne 'install-metadata.json' } | ForEach-Object {
         [ordered]@{
             path = $_.FullName.Substring($normalizedRoot.Length + 1).Replace('\', '/')
             bytes = $_.Length
@@ -72,12 +73,19 @@ for ($index = 0; $index -lt $stagedRecords.Count; $index++) {
     $packageBytes += [long]$staged.bytes
 }
 $handoffPath = Join-Path $outputDir 'package-handoff.json'
+$installMetadataPath = Join-Path $resolvedInstallRoot 'install-metadata.json'
 [ordered]@{
     staged_root = $resolvedStageRoot
     installed_root = $resolvedInstallRoot
     file_count = $stagedRecords.Count
     total_bytes = $packageBytes
     all_hashes_verified = $true
+    install_metadata_path = if (Test-Path -LiteralPath $installMetadataPath -PathType Leaf) {
+        $installMetadataPath
+    } else { $null }
+    install_metadata_sha256 = if (Test-Path -LiteralPath $installMetadataPath -PathType Leaf) {
+        (Get-FileHash -LiteralPath $installMetadataPath -Algorithm SHA256).Hash.ToLowerInvariant()
+    } else { $null }
     files = $stagedRecords
 } | ConvertTo-Json -Depth 6 | Set-Content $handoffPath -Encoding utf8
 
