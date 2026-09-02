@@ -11,12 +11,13 @@
 #include "YimeTextServiceIds.h"
 #include "BrokerEndpoint.h"
 #include "LanguageBarResources.h"
+#include "ProductIdentity.h"
 
 namespace {
 
 constexpr wchar_t kChinese[] = L"中";
 constexpr wchar_t kEnglish[] = L"英";
-constexpr wchar_t kTooltip[] = L"中英文切换；右键打开 Yime 自研栈试验版设置";
+constexpr wchar_t kTooltip[] = L"中英文切换；右键打开 " YIME_PRODUCT_NAME L"设置";
 constexpr UINT kToolbarRefreshMilliseconds = 200;
 std::mutex gRefreshTimersMutex;
 std::unordered_map<UINT_PTR, LanguageBarItem*> gRefreshTimers;

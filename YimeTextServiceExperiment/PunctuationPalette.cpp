@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "OutputTransform.h"
+#include "ProductIdentity.h"
 
 namespace yime::experiment {
 namespace {
@@ -72,7 +73,7 @@ std::wstring PunctuationPalette::StatusText() const {
 }
 
 std::wstring PunctuationPalette::Description() const {
-    if (!active_) return L"Yime 自研栈试验版候选";
+    if (!active_) return YIME_PRODUCT_NAME L"候选";
     return std::wstring(L"Yime 标点（") + (asciiPunctuation_ ? L"英文" : L"中文") +
            L"）第 " + std::to_wstring(pageIndex_ + 1) + L" 页";
 }

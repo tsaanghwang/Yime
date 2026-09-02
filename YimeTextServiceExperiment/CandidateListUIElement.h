@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "BrokerClient.h"
+#include "ProductIdentity.h"
 
 class CandidateListUIElement final : public ITfCandidateListUIElement {
 public:
@@ -47,7 +48,7 @@ private:
     std::vector<std::wstring> popupCandidateRows_;
     std::wstring sentenceDisplay_;
 	std::wstring statusDisplay_;
-    std::wstring description_ = L"Yime 自研栈试验版候选";
+    std::wstring description_ = YIME_PRODUCT_NAME L"候选";
     UINT selection_ = 0;
     bool selectable_ = false;
     BOOL shown_ = FALSE;

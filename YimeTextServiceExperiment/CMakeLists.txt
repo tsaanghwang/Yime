@@ -1,6 +1,18 @@
 cmake_minimum_required(VERSION 3.20)
 project(YimeTextServiceExperiment LANGUAGES CXX)
 
+option(YIME_LOCAL_PRODUCT "Build the current-PC independent product display identity" OFF)
+if(YIME_LOCAL_PRODUCT)
+    if(NOT CMAKE_GENERATOR_PLATFORM STREQUAL "x64")
+        message(FATAL_ERROR "Local product builds are native x64 only")
+    endif()
+    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../tools/yimecore/local-product.json" YIME_PRODUCT_JSON)
+    string(JSON YIME_LOCAL_PRODUCT_NAME GET "${YIME_PRODUCT_JSON}" display_name)
+    configure_file(LocalProductIdentity.h.in LocalProductIdentity.h @ONLY)
+    add_compile_definitions(YIME_LOCAL_PRODUCT=1)
+    include_directories("${CMAKE_CURRENT_BINARY_DIR}")
+endif()
+
 add_library(YimeTextServiceExperiment SHARED
     BrokerEndpoint.cpp
     BrokerClient.cpp

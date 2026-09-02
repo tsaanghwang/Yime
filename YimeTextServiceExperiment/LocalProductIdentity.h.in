@@ -1,0 +1,3 @@
+#pragma once
+// Generated from the canonical local-product.json; never hand-edit build output.
+#define YIME_PRODUCT_NAME L"@YIME_LOCAL_PRODUCT_NAME@"

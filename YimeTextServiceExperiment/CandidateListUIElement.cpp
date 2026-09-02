@@ -38,7 +38,7 @@ void CandidateListUIElement::Update(ITfDocumentMgr* document,
     popupCandidateRows_.clear();
     sentenceDisplay_.clear();
 	statusDisplay_.clear();
-    description_ = L"Yime 自研栈试验版候选";
+    description_ = YIME_PRODUCT_NAME L"候选";
     const auto& labels = yime::experiment::CandidateLabels();
     const bool hasSentence = sentence && !sentence->id.empty();
     const size_t available = candidates.size();
@@ -76,7 +76,7 @@ void CandidateListUIElement::UpdateEmpty(ITfDocumentMgr* document, std::wstring 
     popupCandidateRows_.clear();
     sentenceDisplay_.clear();
 	statusDisplay_ = std::move(message);
-    description_ = L"Yime 自研栈试验版候选";
+    description_ = YIME_PRODUCT_NAME L"候选";
     selection_ = 0;
     selectable_ = false;
 }

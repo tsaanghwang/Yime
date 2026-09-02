@@ -8,11 +8,12 @@
 #include <string_view>
 
 #include "YimeTextServiceIds.h"
+#include "ProductIdentity.h"
 
 namespace {
 
 constexpr LANGID kLanguageId = MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED);
-constexpr wchar_t kProfileName[] = L"Yime 自研栈试验版";
+constexpr wchar_t kProfileName[] = YIME_PRODUCT_NAME;
 constexpr const GUID* kTipCategories[] = {
     &GUID_TFCAT_TIP_KEYBOARD,
     &GUID_TFCAT_TIPCAP_UIELEMENTENABLED,
