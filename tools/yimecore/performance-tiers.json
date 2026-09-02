@@ -2,14 +2,6 @@
   "schema_version": "yimecore-performance-tiers-v1",
   "profiles": [
     {
-      "id": "old_supported",
-      "label": "老旧但仍受支持",
-      "reference": "Windows 10 office PC, 2-4 cores, 8 GB RAM, SATA SSD",
-      "single_core_percent": 35,
-      "priority": "below-normal",
-      "private_memory_budget_mb": 768
-    },
-    {
       "id": "mainstream",
       "label": "流行主流",
       "reference": "Windows 11 office PC, 6-12 cores, 16 GB RAM, NVMe SSD",
@@ -33,6 +25,7 @@
     "learning_p99_overhead_ratio": 1.20
   },
   "limitations": [
+    "Legacy Windows 10 and old SATA-SSD PCs are excluded from the active release gate and are retained only as historical engineering evidence.",
     "CPU scheduling pressure is enforced with a Windows Job Object hard cap normalized to one logical processor and a fixed affinity mask.",
     "RAM tiers are evaluated as per-process private-byte budgets; the harness does not remove physical RAM from Windows.",
     "The harness does not emulate another CPU microarchitecture, cache hierarchy, storage latency, GPU, firmware or background software mix.",
