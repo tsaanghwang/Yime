@@ -4,15 +4,15 @@ param(
     [switch]$Execute,
     [Parameter(Mandatory=$true,ParameterSetName='Probe')]
     [switch]$LaunchProbeOnly,
-    [string]$PackageRoot='C:\dev\Yime\.tmp\yimecore-local-product\20260903-local3-standard-primary\package',
+    [string]$PackageRoot='C:\dev\Yime\.tmp\yimecore-local-product\local5-name-migration-v2\package',
     [Parameter(ParameterSetName='Probe')][string]$StandardUserInitiator,
     [Parameter(ParameterSetName='Probe')][string]$EvidenceRoot,
     [Parameter(ParameterSetName='Probe')][string]$ExpectedSourcesHash
 )
 $ErrorActionPreference='Stop'
-$expectedManifest='6964099f48e0b6f534b763728d4a1806e4d4edfb1e7d7053b42c6d78d9fee74a'
+$expectedManifest='2631aeb3634f6bc103771e12e3a8d6748bd87123f890afb2ae874b1d06706c7a'
 $expectedLauncher='36ccdd6cb08e05819ab994bd8fcfe032c4654d379bd612b69e0812c48650f12c'
-$expectedPreviousManifest='8d48953ac0b5017b725272ee6300d0b988e99a0d25b9e035216f6c90b774fb64'
+$expectedPreviousManifest='324e46fc5c930d79de713b1fe8d4a0c7cefa884c88b25721dec50cb3c2ed4431'
 $expectedSid='S-1-5-21-2783006668-770716121-2150155084-1001'
 $package=[IO.Path]::GetFullPath($PackageRoot).TrimEnd('\')
 $manifestPath=Join-Path $package 'package-manifest.json'
@@ -115,16 +115,19 @@ if($StandardUserInitiator) {
 if($EvidenceRoot -or $ExpectedSourcesHash){throw 'Internal worker arguments require a retained ordinary initiator.'}
 function Get-CutoverRegistrySnapshot {
     $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value
-    $trial='{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'
+    $trial='{E40FA752-BB96-461D-A51D-F40EB437EC65}'
+    $legacyTrial='{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'
     $production='{35F67E9D-A54D-4177-9697-8B0AB71A9E04}'
     $protected=[ordered]@{}
     foreach($path in @("SOFTWARE\Classes\CLSID\$production","SOFTWARE\Classes\WOW6432Node\CLSID\$production",
         "SOFTWARE\Microsoft\CTF\TIP\$production","SOFTWARE\WOW6432Node\Microsoft\CTF\TIP\$production",
-        "SOFTWARE\Classes\WOW6432Node\CLSID\$trial","SOFTWARE\WOW6432Node\Microsoft\CTF\TIP\$trial")) {
+        "SOFTWARE\Classes\WOW6432Node\CLSID\$legacyTrial","SOFTWARE\WOW6432Node\Microsoft\CTF\TIP\$legacyTrial",
+        "SOFTWARE\Classes\WOW6432Node\CLSID\$trial")) {
         $protected[$path]=Read-YimeCoreSystemKey 2147483650 $path
     }
-    foreach($path in @("Software\Microsoft\CTF\TIP\$trial","Software\Microsoft\CTF\TIP\$production",
-        "Software\Classes\WOW6432Node\CLSID\$trial",'Control Panel\International\User Profile','Keyboard Layout\Preload')) {
+    foreach($path in @("Software\Microsoft\CTF\TIP\$legacyTrial","Software\Microsoft\CTF\TIP\$production",
+        "Software\Classes\WOW6432Node\CLSID\$legacyTrial","Software\Classes\WOW6432Node\CLSID\$trial",
+        'Keyboard Layout\Preload')) {
         $protected[$path]=Read-YimeCoreSystemKey 2147483651 "$sid\$path"
     }
     $run=Read-YimeCoreSystemKey 2147483651 "$sid\Software\Microsoft\Windows\CurrentVersion\Run"
@@ -132,6 +135,8 @@ function Get-CutoverRegistrySnapshot {
     $default=Get-WinDefaultInputMethodOverride
     $protected['default_override']=if($default){[string]$default.InputMethodTip}else{''}
     [ordered]@{protected=$protected;
+        language_profile=Read-YimeCoreSystemKey 2147483651 "$sid\Control Panel\International\User Profile";
+        mirrored_tip=Read-YimeCoreSystemKey 2147483650 "SOFTWARE\WOW6432Node\Microsoft\CTF\TIP\$trial";
         native_com=Read-YimeCoreSystemKey 2147483650 "SOFTWARE\Classes\CLSID\$trial\InprocServer32";
         native_tip=Read-YimeCoreSystemKey 2147483650 "SOFTWARE\Microsoft\CTF\TIP\$trial";
         trial_run=@($run.values|Where-Object{$_.name -eq 'YimeCoreExperimentalTrial'});
@@ -143,9 +148,33 @@ function Require-CutoverValue($Values,[string]$Name,[int]$Kind,[string]$Expected
 }
 function Assert-CutoverRegistry($Before,$After,[string]$Root,[string]$DisplayName,[string]$Sid,[string]$StateRoot) {
     if(($Before.protected|ConvertTo-Json -Depth 35 -Compress) -cne ($After.protected|ConvertTo-Json -Depth 35 -Compress)) {
-        throw 'Production, frozen registration, user TIP, default input method or unrelated autostart changed.'
+        $old=$Before.protected|ConvertTo-Json -Depth 35|ConvertFrom-Json
+        $new=$After.protected|ConvertTo-Json -Depth 35|ConvertFrom-Json
+        $changed=@($old.PSObject.Properties|Where-Object{
+            ($_.Value|ConvertTo-Json -Depth 35 -Compress) -cne ($new.($_.Name)|ConvertTo-Json -Depth 35 -Compress)
+        }|ForEach-Object{$_.Name})
+        throw ('Protected registry changed at: '+($changed -join '; ')+'. Preserve system-before.json and system-after.json; do not repeat installation.')
+    }
+    $tip='0804:{E40FA752-BB96-461D-A51D-F40EB437EC65}{126F54C6-E9B1-4E22-8652-03224CBD49F9}'
+    $projected=$After.language_profile|ConvertTo-Json -Depth 35|ConvertFrom-Json
+    $language=$projected.children.'zh-Hans-CN'
+    $added=@($language.values|Where-Object{$_.name -ceq $tip})
+    if($added.Count -ne 1 -or [int]$added[0].kind -ne 4 -or [int]$added[0].value -ne 4){throw 'Approved input-method TIP was not added exactly once to zh-Hans-CN.'}
+    $language.values=@($language.values|Where-Object{$_.name -cne $tip})
+    if(($Before.language_profile|ConvertTo-Json -Depth 35 -Compress) -cne ($projected|ConvertTo-Json -Depth 35 -Compress)) {
+        throw 'Windows user language profile changed beyond the approved new TIP.'
+    }
+    if($Before.mirrored_tip.exists -or -not $After.mirrored_tip.exists -or
+        ($After.mirrored_tip|ConvertTo-Json -Depth 35 -Compress) -cne ($After.native_tip|ConvertTo-Json -Depth 35 -Compress)) {
+        throw 'Windows TSF cross-view profile mirror is missing or differs from the native profile.'
     }
     Require-CutoverValue $After.native_com.values '' 1 (Join-Path $Root 'x64\YimeTextServiceExperiment.dll')
+    if(-not $After.native_tip.exists){throw 'Independent native TIP registration is missing.'}
+    $profile='{126F54C6-E9B1-4E22-8652-03224CBD49F9}'
+    $node=$After.native_tip.children.LanguageProfile.children.'0x00000804'.children.$profile
+    if(-not $node -or -not $node.exists){throw 'Independent native language profile is missing.'}
+    Require-CutoverValue $node.values 'Description' 1 $DisplayName
+    Require-CutoverValue $node.values 'IconFile' 1 (Join-Path $Root 'profile-icon.ico')
     Require-CutoverValue $After.trial_run 'YimeCoreExperimentalTrial' 1 ('"'+(Join-Path $Root 'bin\YimeCoreTrialRuntime.exe')+'" -no-toolbar')
     Require-CutoverValue $After.uninstall.values 'InstallLocation' 1 $Root
     Require-CutoverValue $After.uninstall.values 'DisplayName' 1 $DisplayName
@@ -159,7 +188,7 @@ Assert-YimeCorePlainPath $state
 $config=Get-Content -LiteralPath (Join-Path $state 'runtime-config.json') -Raw -Encoding UTF8|ConvertFrom-Json
 $previous=[IO.Path]::GetFullPath([string]$config.install_root)
 Assert-YimeCorePlainPath $previous
-if((Get-FileHash -LiteralPath (Join-Path $previous 'package-manifest.json')).Hash -ine $expectedPreviousManifest){throw 'Previous install is no longer the reviewed Trial baseline. Stop and re-plan; do not repeat this first-migration acceptance.'}
+if((Get-FileHash -LiteralPath (Join-Path $previous 'package-manifest.json')).Hash -ine $expectedPreviousManifest){throw 'Previous install is no longer the reviewed local.4 baseline. Stop and re-plan; do not repeat this identity-migration acceptance.'}
 if(Test-Path -LiteralPath $plan.install_root){throw 'Planned target is occupied; preserve it and re-plan before installing.'}
 if(Get-Process WINWORD -ErrorAction SilentlyContinue){throw 'Close Word and all input-method tools before starting this acceptance.'}
 $others=@(Get-CimInstance Win32_Process|Where-Object{$_.ExecutablePath -and
@@ -196,7 +225,10 @@ try {
         token_diagnostics=$tokenDiagnostics;token_diagnostic_errors=$tokenDiagnosticError;
         launch_probe_only=[bool]$LaunchProbeOnly;diagnostic_helper_sha256=(Get-FileHash -LiteralPath (Join-Path $PSScriptRoot 'local-token-diagnostics.ps1')).Hash;
         candidate_manifest_sha256=$expectedManifest;acceptance_script_sha256=(Get-FileHash -LiteralPath $PSCommandPath).Hash}) (Join-Path $archive 'preflight.json')
-    & (Join-Path $package 'bin\YimeCoreIndependenceAudit.exe') -package $previous -output (Join-Path $archive 'previous-package-audit.json')
+    # The pinned local.4 baseline predates the approved CLSID/Profile migration.
+    # Its manifest-covered auditor understands that exact historical descriptor;
+    # the local.5 auditor remains strict and is used only for the new candidate.
+    & (Join-Path $previous 'bin\YimeCoreIndependenceAudit.exe') -package $previous -output (Join-Path $archive 'previous-package-audit.json')
     if($LASTEXITCODE -ne 0){throw 'Previous package integrity audit failed.'}
     $stage='standard-user-launch-preflight'
     # Preserve this ordinary process across the read-only UAC probe. The package
@@ -222,7 +254,7 @@ try {
     $stage='fresh-backup'
     # This is still the ordinary parent: the legacy adapter restarts the old
     # runtime normally, without accidentally elevating it after the backup.
-    & (Join-Path $package 'maintenance\backup-local-trial-state.ps1') -BackupRoot $backup
+    & (Join-Path $package 'maintenance\backup-local-trial-state.ps1') -BackupRoot $backup -InstalledPackageRoot $previous
     $saved=Get-Content -LiteralPath (Join-Path $backup 'backup-manifest.json') -Raw -Encoding UTF8|ConvertFrom-Json
     if(-not $saved.passed -or -not $saved.native_context_verified -or $saved.source_install_root -ine $previous){throw 'Fresh backup identity mismatch.'}
     Assert-YimeCoreArchiveRecords (Join-Path $backup 'state') $saved.state_files
@@ -257,8 +289,26 @@ try {
     $dataAfter=@(Get-YimeCoreDataRecords $state)
     Assert-YimeCoreUnchangedData $saved.data_files $dataAfter
     Write-AcceptanceJson $dataAfter (Join-Path $archive 'data-after.json')
-    # Frozen x86 references require retaining the entire old install, byte-for-byte.
-    Assert-YimeCoreArchiveRecords $previous $saved.package_files
+    # Frozen registration can reference an older historical root, not the
+    # immediately previous active package. Verify every actually referenced
+    # frozen payload in place; an unreferenced active predecessor may be deleted.
+    $frozenRoots=@($plan.plan.frozen_registration_references|ForEach-Object{[IO.Path]::GetFullPath([string]$_.install_root)}|Sort-Object -Unique)
+    foreach($frozenRoot in $frozenRoots){
+        Assert-YimeCorePlainPath $frozenRoot
+        $frozenManifestPath=Join-Path $frozenRoot 'package-manifest.json'
+        if(-not (Test-Path -LiteralPath $frozenManifestPath -PathType Leaf)){throw "Frozen registration package manifest is missing: $frozenRoot"}
+        $frozenManifest=Get-Content -LiteralPath $frozenManifestPath -Raw -Encoding UTF8|ConvertFrom-Json
+        if(-not $frozenManifest.files){throw "Frozen registration package has no static payload inventory: $frozenRoot"}
+        foreach($record in $frozenManifest.files){
+            $payload=[IO.Path]::GetFullPath((Join-Path $frozenRoot $record.path))
+            if(-not $payload.StartsWith($frozenRoot+'\',[StringComparison]::OrdinalIgnoreCase) -or
+                -not (Test-Path -LiteralPath $payload -PathType Leaf) -or (Get-Item -LiteralPath $payload).Length -ne $record.bytes -or
+                (Get-FileHash -LiteralPath $payload).Hash -ine $record.sha256){throw "Frozen payload mismatch: $($record.path)"}
+        }
+        $expectedFiles=@($frozenManifest.files.path)+@('package-manifest.json','install-metadata.json')
+        $actualFiles=@(Get-ChildItem -LiteralPath $frozenRoot -Recurse -File|ForEach-Object{$_.FullName.Substring($frozenRoot.Length+1).Replace('\','/')})
+        if(Compare-Object $expectedFiles $actualFiles){throw "Frozen payload contains an unexpected or missing file: $frozenRoot"}
+    }
     $null=Assert-YimeCoreNativeFile (Join-Path $archive 'standard-user-runtime.json')
     $passed=$true;$stage='native-install-accepted'
 } catch {
@@ -281,7 +331,8 @@ try {
             candidate_manifest_sha256=$expectedManifest;source_install_root=$previous;planned_install_root=$plan.install_root;
             source_set_sha256=$sourceHash;initiator_reference=$reference;
             actual_backup_restore_tested=$false;actual_failed_upgrade_rollback_tested=$false;live_host_acceptance=$false;
-            reboot_requested=$false;local_product_ready=$false;public_release_ready=$false}) (Join-Path $archive 'summary.json')
+            reboot_requested=$false;frozen_payload_roots_verified=$(if($passed){$frozenRoots}else{@()});
+            local_product_ready=$false;public_release_ready=$false}) (Join-Path $archive 'summary.json')
     } finally {Stop-Transcript|Out-Null}
 }
 Write-Host "PASS: native candidate install, standard-user runtime, preserved data and system registration. Evidence: $archive"

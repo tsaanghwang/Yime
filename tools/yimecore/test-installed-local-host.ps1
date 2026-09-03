@@ -10,7 +10,8 @@ if(-not $out.StartsWith((Join-Path $repo '.tmp\yimecore-experiment\'),[StringCom
 $config=Get-Content (Join-Path $env:LOCALAPPDATA 'YimeCore Experimental Trial\runtime-config.json') -Raw|ConvertFrom-Json
 $root=[string]$config.install_root
 $dll=Join-Path $root 'x64\YimeTextServiceExperiment.dll'
-$registered=(Get-ItemProperty 'HKLM:\SOFTWARE\Classes\CLSID\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}\InprocServer32').'(default)'
+$descriptor=Get-Content (Join-Path $root 'local-product.json') -Raw -Encoding UTF8|ConvertFrom-Json
+$registered=(Get-ItemProperty ("Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\"+[string]$descriptor.identity.clsid+'\InprocServer32')).'(default)'
 if($registered -ne $dll){throw 'Registered x64 DLL differs from current installed package.'}
 New-Item -ItemType Directory -Path $out|Out-Null
 $originalLocal=$env:LOCALAPPDATA

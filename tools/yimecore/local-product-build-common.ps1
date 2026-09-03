@@ -57,8 +57,10 @@ function Get-LocalProductDescriptor([string]$Path) {
     }
     $expected = @{
         product_key = 'YimeCoreExperimentalTrial'
-        clsid = '{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'
-        profile = '{607895A8-9504-4A2E-9BB1-2C159E3A1757}'
+        clsid = '{E40FA752-BB96-461D-A51D-F40EB437EC65}'
+        profile = '{126F54C6-E9B1-4E22-8652-03224CBD49F9}'
+        legacy_clsid = '{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'
+        legacy_profile = '{607895A8-9504-4A2E-9BB1-2C159E3A1757}'
         state_directory = 'YimeCore Experimental Trial'
         install_directory = 'YimeCore Experimental Trial'
         pipe = '\\.\pipe\YimeBroker.YimeCoreTrial.v1'
@@ -141,7 +143,9 @@ function Get-LocalProductProtectionEvidence {
     # Out-of-process system view, never the calling app's virtualized HKCU view.
     $sid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
     $result = [ordered]@{ user_sid = $sid; registry = [ordered]@{} }
-    foreach ($clsid in @('{35F67E9D-A54D-4177-9697-8B0AB71A9E04}', '{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}')) {
+    foreach ($clsid in @('{35F67E9D-A54D-4177-9697-8B0AB71A9E04}',
+            '{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}',
+            '{E40FA752-BB96-461D-A51D-F40EB437EC65}')) {
         foreach ($path in @("SOFTWARE\Classes\CLSID\$clsid", "SOFTWARE\Classes\WOW6432Node\CLSID\$clsid",
                 "SOFTWARE\Microsoft\CTF\TIP\$clsid", "SOFTWARE\WOW6432Node\Microsoft\CTF\TIP\$clsid")) {
             $result.registry[$path] = Read-YimeCoreSystemKey ([uint32]2147483650) $path

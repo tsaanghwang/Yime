@@ -156,6 +156,8 @@ func validateLocalContract(root string, entries map[string]manifestFile, contrac
 			ProductKey     string `json:"product_key"`
 			CLSID          string `json:"clsid"`
 			Profile        string `json:"profile"`
+			LegacyCLSID    string `json:"legacy_clsid"`
+			LegacyProfile  string `json:"legacy_profile"`
 			StateDirectory string `json:"state_directory"`
 			Pipe           string `json:"pipe"`
 			ModelSourceID  string `json:"model_source_id"`
@@ -170,13 +172,15 @@ func validateLocalContract(root string, entries map[string]manifestFile, contrac
 		descriptor.Scope.ActiveArchitectures[0] != "x64" {
 		return errors.New("invalid local product schema, scope or installability")
 	}
-	if installable && descriptor.DisplayName != "Yime 独立开发版" {
+	if installable && descriptor.DisplayName != "音元拼音" {
 		return errors.New("unexpected local product display name")
 	}
 	id := descriptor.Identity
 	if id.ProductKey != "YimeCoreExperimentalTrial" ||
-		id.CLSID != "{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}" ||
-		id.Profile != "{607895A8-9504-4A2E-9BB1-2C159E3A1757}" ||
+		id.CLSID != "{E40FA752-BB96-461D-A51D-F40EB437EC65}" ||
+		id.Profile != "{126F54C6-E9B1-4E22-8652-03224CBD49F9}" ||
+		id.LegacyCLSID != "{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}" ||
+		id.LegacyProfile != "{607895A8-9504-4A2E-9BB1-2C159E3A1757}" ||
 		id.StateDirectory != "YimeCore Experimental Trial" ||
 		id.Pipe != `\\.\pipe\YimeBroker.YimeCoreTrial.v1` ||
 		id.ModelSourceID != "yimecore-e6c-three-mode-trial-v1" {

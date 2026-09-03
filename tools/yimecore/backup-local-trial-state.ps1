@@ -1,15 +1,17 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$BackupRoot,[switch]$LocalProduct)
+param([Parameter(Mandatory)][string]$BackupRoot,[switch]$LocalProduct,[string]$InstalledPackageRoot)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
 . (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
 $scope = Get-YimeCoreDevelopmentScope
 Assert-YimeCoreUnpackagedDataMaintenance
 $stateRoot = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'YimeCore Experimental Trial'))
-if ($LocalProduct) {
+$localProductBackup = [bool]($LocalProduct -or -not [string]::IsNullOrWhiteSpace($InstalledPackageRoot))
+if ($localProductBackup) {
     . (Join-Path $PSScriptRoot 'local-package-contract.ps1')
     . (Join-Path $PSScriptRoot 'local-product-runtime.ps1')
-    $localContext = Assert-LocalProductInstalledContext (Split-Path -Parent $PSScriptRoot) $stateRoot
+    $contextRoot = if ($LocalProduct) { Split-Path -Parent $PSScriptRoot } else { $InstalledPackageRoot }
+    $localContext = Assert-LocalProductInstalledContext $contextRoot $stateRoot
     Initialize-LocalProductLauncher $localContext
     $null = Assert-LocalProductLiveRuntime $localContext
 }
@@ -43,7 +45,10 @@ $archiveState = Join-Path $backup 'state'
 New-Item -ItemType Directory -Path $archiveState -Force | Out-Null
 $stopped = $false
 try {
-    & (Join-Path $PSScriptRoot 'stop-e6c-trial-runtime.ps1') | Out-Null
+    $stopScript = if ($localProductBackup) {
+        Join-Path $localContext.package.root 'maintenance\stop-e6c-trial-runtime.ps1'
+    } else { Join-Path $PSScriptRoot 'stop-e6c-trial-runtime.ps1' }
+    & $stopScript -StateRoot $stateRoot | Out-Null
     $stopped = $true
     foreach ($id in @([int]$status.runtime_pid,[int]$status.broker_pid)) {
         if (Get-Process -Id $id -ErrorAction SilentlyContinue) { throw "Writer still running: $id" }
@@ -74,7 +79,7 @@ try {
         Set-Content -LiteralPath (Join-Path $backup 'backup-manifest.json') -Encoding utf8
 } finally {
     if ($stopped) {
-        if ($LocalProduct) { Start-LocalProductRuntime $localContext | Out-Null }
+        if ($localProductBackup) { Start-LocalProductRuntime $localContext | Out-Null }
         else { & (Join-Path $PSScriptRoot 'start-e6c-trial-runtime.ps1') | Out-Null }
     }
 }

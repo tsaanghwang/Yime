@@ -1,15 +1,20 @@
 # 本机独立产品契约与功能保留清单
 
-更新：2026-09-03。规范入口是 `tools/yimecore/local-product.json`；当前版本 `0.1.0-local.2`，范围只有 MYCOMPUTER 原生 x64。L1/L2 首批运行包保留为历史证据，新候选接入 L3 包内维护。
+更新：2026-09-03。规范入口是 `tools/yimecore/local-product.json`；源码描述和当前安装版本均为 `0.1.0-local.4`，范围只有 MYCOMPUTER 原生 x64。local.3 的注册损伤已恢复，local.4 已修复维护链并通过纠正后的原生安装后验收。L1/L2/local.3 记录保留为历史证据，详见[local.4 原生升级记录](../YIMECORE_LOCAL_PRODUCT_LOCAL4_2026-09-03.md)。
 
 ## 身份和兼容边界
 
-显示名为“Yime 独立开发版”。新构包使用 `YIME_LOCAL_PRODUCT=ON`，从唯一描述生成原生显示名头文件，注册工具、语言栏提示与候选说明共用该身份；未启用此开关的旧 Trial 构建保持旧名称。维护器从经清单验证的描述读取显示名。语言栏菜单和按键契约不变，原生回归同时保护新旧提示文字。当前安装尚未变更，不能把构建内的名称当成已注册名称。
+2026-09-03 当前安装已升级为 `0.1.0-local.4`，manifest `324e46fc5c930d79de713b1fe8d4a0c7cefa884c88b25721dec50cb3c2ed4431`；安装与保护验收见 [local.4 记录](../YIMECORE_LOCAL_PRODUCT_LOCAL4_2026-09-03.md)。本文其它 local.3 现场描述作为事故历史保留。
+
+2026-09-03 用户已批准把活动 x64 本机产品迁移到独立 CLSID/Profile，并将显示名定为“音元拼音”。旧 CLSID/Profile 继续只归冻结旧架构所有；迁移构包、安装和真实宿主验收完成前，身份门禁仍不得标记通过。
+
+显示名为“音元拼音”。新构包使用 `YIME_LOCAL_PRODUCT=ON`，从唯一描述生成原生显示名与 CLSID/Profile 头文件，注册工具、语言栏提示与候选说明共用该身份；未启用此开关的旧 Trial 构建保持旧名称和旧 GUID。维护器从经清单验证的描述读取显示名，并只注册新 x64 身份。语言栏菜单和按键契约不变，原生回归同时保护新旧提示文字。
 
 | 身份 | 保持的值 | 当前消费者与后续接线位置 |
 | --- | --- | --- |
-| COM CLSID | `{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}` | `YimeTextServiceExperiment/YimeTextServiceIds.h`、`RegistrationTool.cpp`、维护器 COM/TIP 快照 |
-| 输入法 Profile | `{607895A8-9504-4A2E-9BB1-2C159E3A1757}`；语言 `0804` | 同一 TSF 头文件、注册工具；不新增第三个自研输入法条目 |
+| 活动 x64 COM CLSID | `{E40FA752-BB96-461D-A51D-F40EB437EC65}` | `local-product.json` 生成原生身份；注册工具和维护器只写原生 x64 视图 |
+| 活动 x64 输入法 Profile | `{126F54C6-E9B1-4E22-8652-03224CBD49F9}`；语言 `0804` | 与新 CLSID 组合成“音元拼音”输入法条目 |
+| 冻结旧身份 | CLSID `{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}`；Profile `{607895A8-9504-4A2E-9BB1-2C159E3A1757}` | 历史构建与 WOW64 静态注册；迁移前后均须逐值保持，不执行冻结二进制 |
 | 安装/状态目录 | `YimeCore Experimental Trial` | runtime 的 `resolveOptions`、`ExperimentSettings`、安装器、工具启动参数；目录内 Trial 不表示依赖 Rime |
 | Run/卸载产品键 | `YimeCoreExperimentalTrial` | `manage-e6c-trial-install.ps1`、autostart/system-uninstall 修复器 |
 | 日常管道 | `\\.\pipe\YimeBroker.YimeCoreTrial.v1` | runtime 和 TSF Broker endpoint；隔离测试使用另一个唯一管道 |

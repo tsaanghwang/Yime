@@ -1,7 +1,7 @@
 {
   "schema_version": "yimecore-local-product-v1",
-  "version": "0.1.0-local.3",
-  "display_name": "Yime 独立开发版",
+  "version": "0.1.0-local.6",
+  "display_name": "音元拼音",
   "package_contract": "yimecore-local-product-package-v1",
   "installable": true,
   "scope": {
@@ -19,15 +19,17 @@
   },
   "identity": {
     "product_key": "YimeCoreExperimentalTrial",
-    "clsid": "{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}",
-    "profile": "{607895A8-9504-4A2E-9BB1-2C159E3A1757}",
+    "clsid": "{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+    "profile": "{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
     "language_id": "0804",
     "state_directory": "YimeCore Experimental Trial",
     "install_directory": "YimeCore Experimental Trial",
     "pipe": "\\\\.\\pipe\\YimeBroker.YimeCoreTrial.v1",
     "model_source_id": "yimecore-e6c-three-mode-trial-v1",
     "legacy_display_name": "Yime 自研栈试验版",
-    "display_name_activation": "local product build only; stable internal names and legacy build labels unchanged"
+    "legacy_clsid": "{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}",
+    "legacy_profile": "{607895A8-9504-4A2E-9BB1-2C159E3A1757}",
+    "display_name_activation": "local x64 product build only; frozen legacy profile and build labels unchanged"
   },
   "data_compatibility": {
     "read_models": [

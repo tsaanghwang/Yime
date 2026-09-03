@@ -1187,7 +1187,7 @@ void testLanguageBarItem() {
     expect(item->GetTooltipString(&productTooltip) == S_OK && productTooltip,
            "language bar product tooltip missing");
 #ifdef YIME_LOCAL_PRODUCT
-    expect(productTooltip && std::wstring_view(productTooltip) == L"中英文切换；右键打开 Yime 独立开发版设置",
+    expect(productTooltip && std::wstring_view(productTooltip) == L"中英文切换；右键打开 音元拼音设置",
            "local product language bar label does not match its registration identity");
 #else
     expect(productTooltip && std::wstring_view(productTooltip) == L"中英文切换；右键打开 Yime 自研栈试验版设置",

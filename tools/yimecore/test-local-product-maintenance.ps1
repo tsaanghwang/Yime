@@ -21,7 +21,8 @@ function Import-TestFunction([string]$Name) {
 }
 foreach($name in @('Get-RegistrationArchitectures','Test-FrozenInstallRoot','Get-FrozenRegistrationReferences',
         'Assert-ProductChild','Remove-ProductTree','Test-PreviousRuntimeIdentity','Get-PreviousRuntimeWasRunning',
-        'Invoke-UninstallCore','Restore-PreviousInstallation','Test-NativeX64LauncherContent')){Import-TestFunction $name}
+        'Invoke-UninstallCore','Restore-PreviousInstallation','Test-NativeX64LauncherContent','Convert-RegistrationStatus',
+        'Wait-RegistrationState','Resolve-RegistrationAction')){Import-TestFunction $name}
 $NativeX64Only=$true; $NativeX64Rehearsal=$false; $nativeArchitecture='AMD64'
 $arches=@(Get-RegistrationArchitectures)
 Check ($arches.Count -eq 1 -and $arches[0].name -eq 'x64' -and $arches[0].action -eq 'register') 'normal native mode only executes x64'
@@ -30,6 +31,18 @@ Check (@(Get-RegistrationArchitectures).Count -eq 2) 'historical registration co
 $NativeX64Rehearsal=$true
 Check (@(Get-RegistrationArchitectures).Count -eq 1) 'fault-only rehearsal still separate'
 $NativeX64Rehearsal=$false; $NativeX64Only=$true
+function Test-TransitionTool {param($command)
+    if($command -ne 'status'){throw 'transition fixture is read-only'}
+    $global:LASTEXITCODE=0
+    "com_registered_current_view=$script:transitionCom`nprofile_registered=$script:transitionProfile`ncategories_registered_count=$script:transitionCategories"
+}
+$script:transitionCom='false';$script:transitionProfile='false';$script:transitionCategories=0
+Check ((Resolve-RegistrationAction Test-TransitionTool register) -eq 'register') 'clean native x64 state selects full register'
+$script:transitionProfile='true';$script:transitionCategories=5
+Check ((Resolve-RegistrationAction Test-TransitionTool register) -eq 'repoint') 'frozen shared profile selects x64 COM repoint'
+$script:transitionCategories=4
+Reject {Resolve-RegistrationAction Test-TransitionTool register} 'partial shared profile cannot be treated as a safe handoff'
+$script:transitionProfile='true';$script:transitionCategories=5
 $productRoot=Join-Path $out 'product'
 $protected=Join-Path $productRoot 'previous'
 $unreferenced=Join-Path $productRoot 'obsolete'
@@ -39,7 +52,9 @@ Check (-not (Test-FrozenInstallRoot ($protected+'-other') $frozen)) 'similarly n
 Check (-not (Test-FrozenInstallRoot $unreferenced $frozen)) 'unreferenced root distinguished'
 Reject {Assert-ProductChild $productRoot 'fixture'} 'cannot delete broad product root'
 $providerMode='found'
-$TargetUserSid='S-1-5-21-111-222-333-1001';$clsid='{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'
+$TargetUserSid='S-1-5-21-111-222-333-1001'
+$clsid='{E40FA752-BB96-461D-A51D-F40EB437EC65}'
+$legacyClsid='{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'
 function Invoke-CimMethod {
     param($Namespace,$ClassName,$MethodName,$Arguments,$InputObject)
     if($MethodName -eq 'GetOwnerSid'){return [pscustomobject]@{Sid=$TargetUserSid;ReturnValue=0}}
@@ -103,6 +118,8 @@ $calls=[Collections.Generic.List[string]]::new()
 foreach($path in @($protected,$unreferenced)){New-Item -ItemType Directory -Path $path -Force|Out-Null}
 function Get-RegisteredInstallRoots {return @($protected,$unreferenced)}
 function Stop-TrialRuntime {param($installRoots)$calls.Add('stop')}
+function Get-FrozenUserTipSnapshot {$calls.Add('snapshot-frozen-user');return @{exists=$true;values=@();children=@{}}}
+function Restore-FrozenUserTipSnapshot {param($snapshot)$calls.Add('restore-frozen-user')}
 function Remove-InputMethodTip {$calls.Add('remove-tip')}
 function Remove-TrialRegistration {param($installRoots)$calls.Add('unregister-x64')}
 function Remove-StateRuntime {param([switch]$Purge)$calls.Add('keep-data')}
@@ -116,6 +133,8 @@ Check ($deleted.Count -eq 1 -and $deleted[0] -eq $unreferenced) 'shared uninstal
 Check (@($cleanup.preserved_install_roots) -contains $protected) 'result records frozen-root retention'
 Check ($cleanup.user_model_preserved) 'uninstall retains user data'
 Check (@($cleanup.frozen_registration_references).Count -eq 2) 'cleanup result records static provenance'
+Check ($calls.IndexOf('snapshot-frozen-user') -lt $calls.IndexOf('remove-tip') -and
+    $calls.IndexOf('restore-frozen-user') -gt $calls.IndexOf('unregister-x64')) 'uninstall preserves frozen user TIP across language-list normalization'
 
 $restores=[Collections.Generic.List[string]]::new()
 function Restore-RegistryKeySnapshot {param($path,$snapshot)$restores.Add($path)}

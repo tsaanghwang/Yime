@@ -55,6 +55,10 @@ foreach($script in @('backup-local-trial-state.ps1','restore-local-trial-state.p
     $text=Get-Content -LiteralPath (Join-Path $PackageRoot "maintenance\$script") -Raw -Encoding UTF8
     Check ($text.Contains('Start-LocalProductRuntime $localContext') -and $text.Contains('Assert-LocalProductLiveRuntime $localContext')) "standard-user preflight/restart wired into $script"
 }
+$backupText=Get-Content -LiteralPath (Join-Path $PackageRoot 'maintenance\backup-local-trial-state.ps1') -Raw -Encoding UTF8
+Check ($backupText.Contains('$localProductBackup = [bool]($LocalProduct -or') -and
+    $backupText.Contains("Join-Path `$localContext.package.root 'maintenance\stop-e6c-trial-runtime.ps1'")) `
+    'upgrade backup uses the manifest-verified currently installed stop helper'
 
 # Exact archive inventory tests use disposable files only, never real AppData.
 $archive=Join-Path $OutputRoot 'archive-fixture'

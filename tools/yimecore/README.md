@@ -6,6 +6,12 @@
 
 ## 本机独立产品新入口
 
+**11:25 原生 `.6` 状态**：`0.1.0-local.6` 已以“音元拼音”独立 x64 身份升级，冻结用户 TIP 最终恢复、普通用户 Runtime/Broker、三模式、数据、语言列表与生产/冻结注册保护通过；真实记事本五项、实际备份恢复和启动失败升级回退也已通过。Word/浏览器/开发工具宿主、自身卸载重装及后续登录启动仍待验收。见 [local.6 记录](../../docs/YIMECORE_LOCAL_PRODUCT_LOCAL6_2026-09-03.md)。
+
+活动 x64 已使用“音元拼音”的独立 CLSID/Profile；冻结 WOW64 继续保留旧 CLSID/Profile 和原始 payload。不要把冻结旧身份改名、重注册或当作当前活动产品执行。
+
+**08:12 原生 `.3` 历史状态**：安装后的 OneDrive 自启动值丢失、冻结 x86 profile 描述/图标改变已由定向入口恢复。该维护器随后由 `.4` 替代；`test-local3-repair.ps1` 继续保留事故的固定证据回归，见[诊断](../../docs/YIMECORE_LOCAL3_REGISTRY_PRESERVATION_2026-09-03.md)。
+
 - `local-product.json`：唯一构包描述，保留现有 GUID/学习空间，限定 MYCOMPUTER x64。
 - `test-local-product-build.ps1`：38 项路径、身份、范围、依赖、源码变更和 PS5 纯文本证据序列化保护。
 - `build-local-product.ps1`：从源码和仓内数据构建，不依赖旧安装；输出到新建的 `.tmp/yimecore-local-product/<run>/`。
@@ -21,10 +27,11 @@
 - `local-package-contract.ps1`：完整清单、路径和字节核对后调用包内 x64 审计，不编译、不要求仓库。
 - `local-product-runtime.ps1`：包内恢复后的标准用户启动和真实进程/令牌验证；没有以长期管理员运行代替普通用户运行的回退。
 - `test-local-product-package.ps1`：新包只读 Plan、入口/语法、恢复精确文件集和未列出文件拒绝测试；不冒充真实安装或恢复。
+- `invoke-local6-uninstall-reinstall.ps1` / 仓库根 `Test-YimeCore-Local6-Uninstall-Reinstall.cmd`：local.6 自身卸载保留数据与完整包重装门禁。先做新鲜原生备份，保留含原路径绑定元数据的 `previous-package` 原字节恢复材料，再从其 manifest 文件生成并审计仓库外 `reinstall-package` 后重装；中间核对活动注册/进程/配置确已移除，前后核对用户数据及完整系统保护。
 
-当前描述版本为 `0.1.0-local.3`，声明完整的可安装候选契约；**是否有可用候选必须看对应构建 `summary.json`，不以源码声明代替构建通过**。`local_product_ready` 和公开发行仍为 false。包内提供 `Install-YimeCore-Local.cmd` 及默认只读的 `Maintain-YimeCore-Local.cmd`（`-Action Upgrade` 即原位升级），不另做重复的升级安装器。具体参数和保留边界见包内 `LOCAL-PRODUCT.md`。
+当前源码描述和本机安装版本均为 `0.1.0-local.6`；构包、隔离、原生升级、真实记事本、实际备份恢复和失败升级回退验收均通过。**总体是否就绪仍必须看剩余宿主、自身卸载重装和登录启动证据，不以单次升级 PASS 代替**。`local_product_ready` 和公开发行仍为 false。
 
-维护只能从资源管理器启动的独立 Windows PowerShell 运行。备份/Restore 当前继承已验证的“新鲜归档安全恢复演练”：备份后数据变化即拒绝覆盖，不提供任意历史数据的强制覆盖。实际普通用户启动、原位晋级、回退、自身重装、真实宿主和后续重启仍须由候选版本分别验收。晋级后不要混用旧的仓库 Trial 升级命令。
+维护只能从资源管理器启动的独立 Windows PowerShell 运行。备份/Restore 当前继承已验证的“新鲜归档安全恢复演练”：备份后数据变化即拒绝覆盖，不提供任意历史数据的强制覆盖。local.6 的实际普通用户启动、原位晋级、恢复和失败回退已经验收；自身卸载重装、剩余真实宿主和后续重启仍须分别验收。晋级后不要混用旧的仓库 Trial 升级命令。
 
 L3 的新增源码与未完成边界见[维护基础验收](../../docs/YIMECORE_LOCAL_PRODUCT_MAINTENANCE_2026-09-02.md)。当前旧安装包缺少新启动帮助程序，不能把它直接当成 `NativeX64Only` 候选包；Plan 会明确报告该缺口。
 

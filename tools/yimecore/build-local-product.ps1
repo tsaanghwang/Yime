@@ -20,6 +20,8 @@ $before = $null
 try {
     $before = Get-LocalProductProtectionEvidence
     Write-LocalProductJson $before (Join-Path $out 'protection-before.json')
+    & (Join-Path $PSScriptRoot 'test-local-registry-preservation.ps1') 2>&1 |
+        Tee-Object -LiteralPath (Join-Path $out 'registry-preservation.txt')
     $package = Join-Path $out 'package'
     foreach ($directory in @('bin', 'x64', 'indexes', 'data', 'build')) {
         New-Item -ItemType Directory -Path (Join-Path $package $directory) -Force | Out-Null

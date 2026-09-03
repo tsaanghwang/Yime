@@ -39,10 +39,13 @@ $nativeArchitecture = if (-not [string]::IsNullOrWhiteSpace($env:PROCESSOR_ARCHI
 if ($nativeArchitecture -notin @('AMD64', 'ARM64')) {
 	throw "unsupported Windows native architecture: $nativeArchitecture"
 }
-$clsid = '{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'
-$profile = '{607895A8-9504-4A2E-9BB1-2C159E3A1757}'
+$clsid = '{E40FA752-BB96-461D-A51D-F40EB437EC65}'
+$profile = '{126F54C6-E9B1-4E22-8652-03224CBD49F9}'
+$legacyClsid = '{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'
+$legacyProfile = '{607895A8-9504-4A2E-9BB1-2C159E3A1757}'
 $tip = "0804:$clsid$profile"
 $userTipKey = "Registry::HKEY_USERS\$TargetUserSid\Software\Microsoft\CTF\TIP\$clsid"
+$legacyUserTipKey = "Registry::HKEY_USERS\$TargetUserSid\Software\Microsoft\CTF\TIP\$legacyClsid"
 $utf8NoBom = New-Object Text.UTF8Encoding($false)
 $windowsPowerShell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
 if (-not (Test-Path -LiteralPath $windowsPowerShell -PathType Leaf)) {
@@ -186,10 +189,86 @@ function Restore-RegistryValueSnapshot([string]$path, [string]$name, $snapshot) 
         Remove-ItemProperty -LiteralPath $path -Name $name -ErrorAction SilentlyContinue
         return
     }
-    New-Item -Path $path -Force | Out-Null
+    Initialize-RegistryKeyPreservingValues $path
     New-ItemProperty -LiteralPath $path -Name $name -Value $snapshot.value `
         -PropertyType ([Microsoft.Win32.RegistryValueKind]([int]$snapshot.kind)) `
         -Force | Out-Null
+}
+
+function Initialize-RegistryKeyPreservingValues([string]$path) {
+    # Registry New-Item -Force replaces an existing key, unlike a directory.
+    # Never erase another application's Run values when ensuring our parent.
+    if (-not (Test-Path -LiteralPath $path)) { New-Item -Path $path -ErrorAction Stop | Out-Null }
+}
+
+function Restore-RegistryKeySnapshotInPlace([string]$path, $snapshot) {
+    if (-not $snapshot -or -not $snapshot.exists) {
+        Remove-Item -LiteralPath $path -Recurse -Force -ErrorAction SilentlyContinue
+        return
+    }
+    Initialize-RegistryKeyPreservingValues $path
+    $key = Get-Item -LiteralPath $path
+    try {
+        $currentValues = @($key.GetValueNames())
+        $currentChildren = @($key.GetSubKeyNames())
+        $expectedChildren = if ($snapshot.children) { @($snapshot.children.Keys) } else { @() }
+    } finally { $key.Dispose() }
+    $expectedValues = @($snapshot.values | ForEach-Object { [string]$_.name })
+    foreach ($name in $currentValues) {
+        if ($expectedValues -notcontains $name) {
+            Remove-ItemProperty -LiteralPath $path -Name $name -ErrorAction Stop
+        }
+    }
+    foreach ($value in @($snapshot.values)) {
+        New-ItemProperty -LiteralPath $path -Name ([string]$value.name) -Value $value.value `
+            -PropertyType ([Microsoft.Win32.RegistryValueKind]([int]$value.kind)) -Force | Out-Null
+    }
+    foreach ($name in $currentChildren) {
+        if ($expectedChildren -notcontains $name) {
+            Remove-Item -LiteralPath ($path + '\' + $name) -Recurse -Force -ErrorAction Stop
+        }
+    }
+    if ($snapshot.children) {
+        foreach ($name in $snapshot.children.Keys) {
+            Restore-RegistryKeySnapshotInPlace ($path + '\' + $name) $snapshot.children[$name]
+        }
+    }
+}
+
+function Get-FrozenTipSnapshot {
+    if (-not $NativeX64Only) { return $null }
+    Get-RegistryKeySnapshot "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\CTF\TIP\$legacyClsid"
+}
+
+function Restore-FrozenTipSnapshot($snapshot) {
+    if (-not $NativeX64Only) { return }
+    if ($null -eq $snapshot) { throw 'Missing frozen TIP snapshot; cannot declare native registration preservation.' }
+    # x64 TSF profile APIs can also write the WOW64 profile metadata. Preserve
+    # that exact owned subtree, including absence/value kinds, without executing
+    # a frozen binary or changing its COM server, categories or profile identity.
+    $path="Registry::HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\CTF\TIP\$legacyClsid"
+    # Preserve the identity and ACL of every expected existing key. Removing
+    # and recreating this frozen root would itself be a registration mutation.
+    Restore-RegistryKeySnapshotInPlace $path $snapshot
+    $actual=Get-RegistryKeySnapshot $path
+    if (($actual|ConvertTo-Json -Depth 35 -Compress) -cne ($snapshot|ConvertTo-Json -Depth 35 -Compress)) {
+        throw 'Frozen TIP snapshot restoration did not converge.'
+    }
+}
+
+function Get-FrozenUserTipSnapshot {
+    if (-not $NativeX64Only) { return $null }
+    Get-RegistryKeySnapshot $legacyUserTipKey
+}
+
+function Restore-FrozenUserTipSnapshot($snapshot) {
+    if (-not $NativeX64Only) { return }
+    if ($null -eq $snapshot) { throw 'Missing frozen per-user TIP snapshot; cannot declare identity preservation.' }
+    Restore-RegistryKeySnapshotInPlace $legacyUserTipKey $snapshot
+    $actual=Get-RegistryKeySnapshot $legacyUserTipKey
+    if (($actual|ConvertTo-Json -Depth 35 -Compress) -cne ($snapshot|ConvertTo-Json -Depth 35 -Compress)) {
+        throw 'Frozen per-user TIP snapshot restoration did not converge.'
+    }
 }
 
 function Restart-Elevated {
@@ -472,8 +551,8 @@ function Get-FrozenRegistrationReferences {
     # fall back to HKCU if the provider cannot read the initiating user's hive.
     $references = @()
     foreach ($entry in @(
-        [ordered]@{ hive = [uint32]2147483650; path = "SOFTWARE\Classes\WOW6432Node\CLSID\$clsid\InprocServer32" },
-        [ordered]@{ hive = [uint32]2147483651; path = "$TargetUserSid\Software\Classes\WOW6432Node\CLSID\$clsid\InprocServer32" }
+        [ordered]@{ hive = [uint32]2147483650; path = "SOFTWARE\Classes\WOW6432Node\CLSID\$legacyClsid\InprocServer32" },
+        [ordered]@{ hive = [uint32]2147483651; path = "$TargetUserSid\Software\Classes\WOW6432Node\CLSID\$legacyClsid\InprocServer32" }
     )) {
         $read = Invoke-CimMethod -Namespace root/default -ClassName StdRegProv -MethodName GetStringValue `
             -Arguments @{ hDefKey=$entry.hive; sSubKeyName=$entry.path; sValueName='' }
@@ -628,6 +707,9 @@ function Remove-InputMethodTip {
 }
 
 function Remove-TrialRegistration([string[]]$installRoots) {
+	$frozenTip = Get-FrozenTipSnapshot
+    $frozenUserTip = Get-FrozenUserTipSnapshot
+    try {
 	$tools = @{}
     foreach ($root in $installRoots) {
 		foreach ($architecture in Get-RegistrationArchitectures) {
@@ -661,6 +743,10 @@ function Remove-TrialRegistration([string[]]$installRoots) {
         if ($NativeX64Only -and $registryPath -like '*WOW6432Node*') { continue }
         Remove-Item -LiteralPath $registryPath -Recurse -Force -ErrorAction SilentlyContinue
     }
+    } finally {
+        try { Restore-FrozenTipSnapshot $frozenTip }
+        finally { Restore-FrozenUserTipSnapshot $frozenUserTip }
+    }
 }
 
 function Remove-StateRuntime([switch]$Purge) {
@@ -693,8 +779,16 @@ function Invoke-UninstallCore([switch]$ForReinstall, [string[]]$PreserveInstallR
     }
     Stop-TrialRuntime $roots
     Remove-ItemProperty -LiteralPath $runKey -Name $productKeyName -ErrorAction SilentlyContinue
-    Remove-InputMethodTip
-	Remove-TrialRegistration @($PreserveInstallRoots + $roots)
+    # Set-WinUserLanguageList can normalize or delete unrelated legacy user
+    # TIP state. Snapshot the frozen subtree before that call, not inside the
+    # later registration boundary after the damage has already happened.
+    $frozenUserTipBeforeLanguageList = Get-FrozenUserTipSnapshot
+    try {
+        Remove-InputMethodTip
+	    Remove-TrialRegistration @($PreserveInstallRoots + $roots)
+    } finally {
+        Restore-FrozenUserTipSnapshot $frozenUserTipBeforeLanguageList
+    }
     Remove-Item -LiteralPath $uninstallKey -Recurse -Force -ErrorAction SilentlyContinue
 	Remove-Item -LiteralPath $legacyMachineUninstallKey -Recurse -Force -ErrorAction SilentlyContinue
     $deferred = $false
@@ -762,9 +856,37 @@ function Wait-RegistrationState([string]$tool, [bool]$comRegistered,
     throw "TSF registration state did not converge: $statusText"
 }
 
+function Resolve-RegistrationAction([string]$tool,[string]$requestedAction) {
+    if (-not $NativeX64Only -or $requestedAction -ne 'register') {
+        Wait-RegistrationState $tool $false $false 0
+        return $requestedAction
+    }
+    # A frozen architecture can keep the shared TSF profile/categories alive
+    # after the active x64 COM view is removed. In that exact state, creating a
+    # new profile returns ERROR_ALREADY_EXISTS; only repoint the active COM view.
+    $deadline=[DateTime]::UtcNow.AddSeconds(10)
+    do {
+        $statusText=(& $tool status 2>&1)-join "`n"
+        $status=Convert-RegistrationStatus $statusText
+        if($LASTEXITCODE -eq 0 -and $status.com_registered_current_view -eq 'false') {
+            if($status.profile_registered -eq 'false' -and [int]$status.categories_registered_count -eq 0){return 'register'}
+            if($status.profile_registered -eq 'true' -and [int]$status.categories_registered_count -eq 5){return 'repoint'}
+        }
+        Start-Sleep -Milliseconds 100
+    } while([DateTime]::UtcNow -lt $deadline)
+    throw "Native x64 registration is neither clean nor an exact frozen-profile handoff: $statusText"
+}
+
 function Invoke-Registration([string]$tool, [string]$command, [string]$dll, [string]$label) {
-    $output = (& $tool $command $dll 2>&1) -join "`n"
-    if ($LASTEXITCODE -ne 0) { throw "$label failed with exit ${LASTEXITCODE}: $output" }
+    $frozenTip = Get-FrozenTipSnapshot
+    $frozenUserTip = Get-FrozenUserTipSnapshot
+    try {
+        $output = (& $tool $command $dll 2>&1) -join "`n"
+        if ($LASTEXITCODE -ne 0) { throw "$label failed with exit ${LASTEXITCODE}: $output" }
+    } finally {
+        try { Restore-FrozenTipSnapshot $frozenTip }
+        finally { Restore-FrozenUserTipSnapshot $frozenUserTip }
+    }
 }
 
 function Write-RuntimeConfiguration([string]$root) {
@@ -870,7 +992,8 @@ function Restore-PreviousInstallation([string]$root, [string]$configText,
 	foreach ($architecture in Get-RegistrationArchitectures) {
 		$name = [string]$architecture.name
 		$tool = Join-Path $root "$name\YimeTextServiceRegistration.exe"
-		Invoke-Registration $tool ([string]$architecture.action) `
+		$action=Resolve-RegistrationAction $tool ([string]$architecture.action)
+		Invoke-Registration $tool $action `
 			(Join-Path $root "$name\YimeTextServiceExperiment.dll") "rollback $name TSF registration"
 		Wait-RegistrationState $tool $true $true 5
 	}
@@ -980,6 +1103,7 @@ $previousRunSnapshot = Get-RegistryValueSnapshot $runKey $productKeyName
 $previousUninstallSnapshot = Get-RegistryKeySnapshot $uninstallKey
 $previousLegacyUninstallSnapshot = Get-RegistryKeySnapshot $legacyMachineUninstallKey
 $previousUserTipSnapshot = Get-RegistryKeySnapshot $userTipKey
+$migrationLegacyUserTipSnapshot = Get-FrozenUserTipSnapshot
 $previousStatusPath = Join-Path $stateRootPath 'runtime-status.json'
 $previousRuntimeWasRunning = Get-PreviousRuntimeWasRunning $previousConfigText
 
@@ -1032,15 +1156,17 @@ try {
     Move-Item -LiteralPath $stagingRoot -Destination $targetRoot
 	$null = Assert-PrivilegedPackageCopy $targetRoot $package
 
+	$registrationActions=@{}
 	foreach ($architecture in Get-RegistrationArchitectures) {
-		$tool = Join-Path $targetRoot (([string]$architecture.name) + '\YimeTextServiceRegistration.exe')
-		Wait-RegistrationState $tool $false $false 0
+		$name=[string]$architecture.name
+		$tool = Join-Path $targetRoot ($name + '\YimeTextServiceRegistration.exe')
+		$registrationActions[$name]=Resolve-RegistrationAction $tool ([string]$architecture.action)
 	}
 	$registrationStarted = $true
 	foreach ($architecture in Get-RegistrationArchitectures) {
 		$name = [string]$architecture.name
 		$tool = Join-Path $targetRoot "$name\YimeTextServiceRegistration.exe"
-		Invoke-Registration $tool ([string]$architecture.action) `
+		Invoke-Registration $tool ([string]$registrationActions[$name]) `
 			(Join-Path $targetRoot "$name\YimeTextServiceExperiment.dll") "$name TSF registration"
 		Wait-RegistrationState $tool $true $true 5
 	}
@@ -1051,7 +1177,7 @@ try {
     }
     $runtimeConfig = Write-RuntimeConfiguration $targetRoot
     $runValue = '{0} -no-toolbar' -f (Quote-Argument ([string]$runtimeConfig.runtime_path))
-    New-Item -Path $runKey -Force | Out-Null
+    Initialize-RegistryKeyPreservingValues $runKey
     if ($NoAutoStart) {
         Remove-ItemProperty -LiteralPath $runKey -Name $productKeyName -ErrorAction SilentlyContinue
     } else {
@@ -1133,4 +1259,9 @@ try {
         throw "${failure}; restoring the previous trial installation also failed: $rollbackFailure"
     }
     throw $failure
+} finally {
+    # Set-WinUserLanguageList can normalize per-user TIP keys after registration.
+    # The legacy subtree belongs to the frozen profile and must remain exact on
+    # both successful migration and rollback.
+    Restore-FrozenUserTipSnapshot $migrationLegacyUserTipSnapshot
 }
