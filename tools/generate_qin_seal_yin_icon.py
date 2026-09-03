@@ -1,7 +1,8 @@
 """Generate the Qin-seal 音 icons using icons/yin.png as the foreground.
 
 Preserve the source glyph's shape and antialiased transparency, tint it with
-the project's blue palette, and center it on a transparent 256-pixel canvas.
+the profile's vivid seal-vermilion palette, and center it on a transparent
+256-pixel canvas.
 Output: yime_qin_seal_yin.png and an ICO with 256/48/32/16-pixel sizes.
 
 Run with no arguments to update the repository icons, or pass an output folder.
@@ -16,7 +17,9 @@ from PIL import Image, ImageOps
 
 ICON_DIR = Path(__file__).resolve().parents[1] / "go-backend/input_methods/yime/icons"
 SOURCE_PATH = ICON_DIR / "yin.png"
-STROKE = (46, 109, 164, 255)
+# Vivid seal vermilion stays legible against both the light input switcher and
+# the dark taskbar, while keeping the profile icon visually distinct.
+STROKE = (238, 48, 35, 255)
 S = 256
 PADDING = 24
 ICO_SIZES = [(256, 256), (48, 48), (32, 32), (16, 16)]

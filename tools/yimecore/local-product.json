@@ -1,6 +1,6 @@
 {
   "schema_version": "yimecore-local-product-v1",
-  "version": "0.1.0-local.8",
+  "version": "0.1.0-local.10",
   "display_name": "音元拼音",
   "package_contract": "yimecore-local-product-package-v1",
   "installable": true,

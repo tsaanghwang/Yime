@@ -85,5 +85,17 @@ foreach ($script in @('build-local-product.ps1', 'local-product-build-common.ps1
     $null = [Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot $script), [ref]$parseTokens, [ref]$parseErrors)
     Assert-Check (@($parseErrors).Count -eq 0) "PowerShell parser $script"
 }
+$installEntry=Get-Content -LiteralPath (Join-Path $repo 'tools\yimecore\local-product\Install-YimeCore-Local.cmd') -Raw -Encoding UTF8
+Assert-Check ($installEntry.Contains('PASS: YimeCore local product install or upgrade completed.') -and
+    $installEntry.Contains('BLOCKED: YimeCore local product install or upgrade failed.') -and
+    $installEntry.Contains('if /I not "%~1"=="/nopause" pause')) `
+    'interactive install entry keeps its final result visible'
+foreach($caller in @('invoke-local-product-native-install.ps1','complete-local6-uninstall-reinstall.ps1',
+        'invoke-local6-uninstall-reinstall.ps1','invoke-local7-uninstall-reinstall.ps1',
+        'invoke-local8-uninstall-reinstall.ps1','recover-local8-from-local7-uninstall.ps1')) {
+    $callerText=Get-Content -LiteralPath (Join-Path $PSScriptRoot $caller) -Raw -Encoding UTF8
+    Assert-Check ($callerText.Contains("'Install-YimeCore-Local.cmd') /nopause")) `
+        "scripted install suppresses the interactive pause: $caller"
+}
 Write-LocalProductJson ([ordered]@{ passed=$true; count=$checks.Count; checks=@($checks); powershell=$PSVersionTable.PSVersion.ToString() }) (Join-Path $out 'summary.json')
 Write-Output "PASS: $($checks.Count) local product build contracts. Evidence: $out"

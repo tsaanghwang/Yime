@@ -134,7 +134,7 @@ try{
     $stage='reinstall-same-package'
     if((Get-FileHash -LiteralPath $manifestPath).Hash -ine $expectedManifest -or
         (Get-FileHash -LiteralPath (Join-Path $backup 'backup-manifest.json')).Hash -ine $backupManifestHash){throw 'Recovery media changed before completion install.'}
-    & (Join-Path $reinstallPackage 'Install-YimeCore-Local.cmd')
+    & (Join-Path $reinstallPackage 'Install-YimeCore-Local.cmd') /nopause
     $installExit=$LASTEXITCODE
     @('command=Install',"exit_code=$installExit")|Set-Content -LiteralPath (Join-Path $evidence 'completion-install-output.txt') -Encoding ASCII
     if($installExit -ne 0){throw "Local.6 completion install failed with exit $installExit."}

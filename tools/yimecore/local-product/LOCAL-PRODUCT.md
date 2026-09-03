@@ -9,7 +9,7 @@
 从资源管理器打开普通权限的独立 Windows PowerShell，进入本包目录；不要预先选择“以管理员身份运行”。安装入口自行请求同账户 UAC，并保留原普通用户进程，供运行时安全启动使用。不要在 Codex 等打包应用的终端中安装、卸载、备份或恢复；AppData/注册表虚拟化可能隐藏修改，脚本会拒绝。不要改用其它 Windows 账户提升权限。
 
 - `./Maintain-YimeCore-Local.cmd`：只读安装计划。
-- `./Install-YimeCore-Local.cmd`：安装或原位升级，维护阶段请求同账户管理员权限，日常 runtime/Broker 使用普通用户令牌；不自动重启。
+- `./Install-YimeCore-Local.cmd`：安装或原位升级，维护阶段请求同账户管理员权限，日常 runtime/Broker 使用普通用户令牌；完成后显示 `PASS` 或 `BLOCKED` 并等待确认，不自动重启。自动化内部调用使用 `/nopause`。
 - `./Maintain-YimeCore-Local.cmd -Action Verify`：当前安装包、进程身份和三模式验证。
 - `./Maintain-YimeCore-Local.cmd -Action Backup`：关闭 Word 和所有输入法设置工具后，将停写快照保存到用户目录下的 `YimeCore Recovery Archives`。
 - `./Maintain-YimeCore-Local.cmd -Action Restore -BackupRoot "完整归档路径"`：对刚完成的备份进行安全恢复演练。若备份后已有新学习、词库或设置变化，将拒绝覆盖；不是任意历史版本的强制回滚入口。归档中保留恢复前原件。

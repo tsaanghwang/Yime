@@ -51,6 +51,11 @@ foreach($record in $package.manifest.files|Where-Object{$_.path -like '*.ps1'}) 
 $entryText=Get-Content -LiteralPath $entry -Raw -Encoding UTF8
 Check ($entryText.IndexOf("if (`$Action -ne 'Plan') { Assert-YimeCoreUnpackagedDataMaintenance }") -lt $entryText.IndexOf('$package=Assert-LocalProductPackage')) 'native context required before non-Plan dispatch or data access'
 Check ($entryText.Contains('-TargetUserSid $sid -NativeX64Only')) 'package entry forwards same SID and native-only mode'
+$installCmdText=Get-Content -LiteralPath (Join-Path $PackageRoot 'Install-YimeCore-Local.cmd') -Raw -Encoding UTF8
+Check ($installCmdText.Contains('PASS: YimeCore local product install or upgrade completed.') -and
+    $installCmdText.Contains('BLOCKED: YimeCore local product install or upgrade failed.') -and
+    $installCmdText.Contains('if /I not "%~1"=="/nopause" pause')) `
+    'interactive install entry preserves a visible result while scripted callers can suppress pause'
 foreach($script in @('backup-local-trial-state.ps1','restore-local-trial-state.ps1')) {
     $text=Get-Content -LiteralPath (Join-Path $PackageRoot "maintenance\$script") -Raw -Encoding UTF8
     Check ($text.Contains('Start-LocalProductRuntime $localContext') -and $text.Contains('Assert-LocalProductLiveRuntime $localContext')) "standard-user preflight/restart wired into $script"

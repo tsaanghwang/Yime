@@ -262,7 +262,7 @@ try {
     $null=Assert-YimeCoreNativeFile (Join-Path $backup 'backup-manifest.json')
     Assert-YimeCoreUnchangedData $saved.data_files @(Get-YimeCoreDataRecords $state)
     $stage='install'
-    & (Join-Path $package 'Install-YimeCore-Local.cmd')
+    & (Join-Path $package 'Install-YimeCore-Local.cmd') /nopause
     if($LASTEXITCODE -ne 0){
         $installExit=$LASTEXITCODE
         $errorPath=Join-Path $state 'maintenance-last-error.txt'

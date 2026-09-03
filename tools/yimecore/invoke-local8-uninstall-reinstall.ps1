@@ -186,7 +186,7 @@ try{
     if((Get-FileHash -LiteralPath (Join-Path $archivedPackage 'package-manifest.json')).Hash -ine $expectedManifest -or
         (Get-FileHash -LiteralPath (Join-Path $reinstallPackage 'package-manifest.json')).Hash -ine $expectedManifest -or
         (Get-FileHash -LiteralPath (Join-Path $backup 'backup-manifest.json')).Hash -ine $backupManifestHash){throw 'Fresh recovery media changed during uninstall.'}
-    & (Join-Path $reinstallPackage 'Install-YimeCore-Local.cmd')
+    & (Join-Path $reinstallPackage 'Install-YimeCore-Local.cmd') /nopause
     $installExit=$LASTEXITCODE
     Write-CommandResult 'Install' $installExit (Join-Path $evidence 'reinstall-output.txt')
     if($installExit -ne 0){throw "Local.8 reinstall failed with exit $installExit; preserve evidence and recovery archive."}

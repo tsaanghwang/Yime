@@ -181,7 +181,7 @@ try{
     Write-Evidence ([ordered]@{failed_evidence=$failedEvidence;candidate_manifest_sha256=$expectedManifest;candidate_plan=$plan}) (Join-Path $output 'preflight.json')
 
     $stage='install-local8'
-    & (Join-Path $candidate 'Install-YimeCore-Local.cmd')
+    & (Join-Path $candidate 'Install-YimeCore-Local.cmd') /nopause
     $installExit=$LASTEXITCODE
     @('command=Install',"exit_code=$installExit")|Set-Content -LiteralPath (Join-Path $output 'install-output.txt') -Encoding ASCII
     if($installExit -ne 0){throw "Local.8 recovery install failed with exit $installExit; its transaction owns rollback."}
