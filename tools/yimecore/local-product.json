@@ -1,6 +1,6 @@
 {
   "schema_version": "yimecore-local-product-v1",
-  "version": "0.1.0-local.6",
+  "version": "0.1.0-local.8",
   "display_name": "音元拼音",
   "package_contract": "yimecore-local-product-package-v1",
   "installable": true,
@@ -236,7 +236,7 @@
       "path": "professional-lexicons/catalog.json"
     },
     {
-      "source": "YimeTextServiceExperiment/assets/yimecore-trial-profile.ico",
+      "source": "go-backend/input_methods/yime/icons/yime_qin_seal_yin.ico",
       "path": "profile-icon.ico"
     },
     {

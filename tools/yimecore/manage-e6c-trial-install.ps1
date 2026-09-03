@@ -271,6 +271,38 @@ function Restore-FrozenUserTipSnapshot($snapshot) {
     }
 }
 
+function Enable-TargetUserTip([string]$path, [string]$profileGuid) {
+    if ([string]::IsNullOrWhiteSpace($path) -or
+        $profileGuid -notmatch '^\{[0-9A-Fa-f-]{36}\}$') {
+        throw 'Invalid per-user TIP enable target.'
+    }
+    $profileKey = Join-Path $path "LanguageProfile\0x00000804\$profileGuid"
+    New-Item -Path $profileKey -Force | Out-Null
+    New-ItemProperty -LiteralPath $profileKey -Name Enable -Value ([uint32]1) `
+        -PropertyType DWord -Force | Out-Null
+    $key = Get-Item -LiteralPath $profileKey
+    try {
+        if ($key.GetValueKind('Enable') -ne [Microsoft.Win32.RegistryValueKind]::DWord -or
+            [int]$key.GetValue('Enable') -ne 1) {
+            throw 'New per-user TIP profile was not enabled.'
+        }
+    } finally { $key.Dispose() }
+}
+
+function Remove-TargetUserTipState {
+    if (Test-Path -LiteralPath $userTipKey) {
+        Remove-Item -LiteralPath $userTipKey -Recurse -Force
+    }
+    if (Test-Path -LiteralPath $userTipKey) {
+        throw 'Active per-user local product TIP remained after removal.'
+    }
+}
+
+function Test-RestorablePreviousUserTipSnapshot([string]$previousInstallRoot, $snapshot) {
+    return (-not [string]::IsNullOrWhiteSpace($previousInstallRoot) -and
+        $null -ne $snapshot -and [bool]$snapshot.exists)
+}
+
 function Restart-Elevated {
     $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Quote-Argument $PSCommandPath),
         '-Action', $Action, '-StateRoot', (Quote-Argument $stateRootPath),
@@ -704,6 +736,11 @@ function Remove-InputMethodTip {
                 (($remaining | ForEach-Object LanguageTag) -join ', '))
         }
     }
+    # Set-WinUserLanguageList can leave a disabled Enable=0 shell for this
+    # profile. A completed uninstall owns this exact per-user product subtree;
+    # remove the shell so a later first install cannot mistake it for an
+    # upgrade snapshot.
+    Remove-TargetUserTipState
 }
 
 function Remove-TrialRegistration([string[]]$installRoots) {
@@ -1172,9 +1209,9 @@ try {
 	}
     Add-InputMethodTip
 
-    if ($previousUserTipSnapshot.exists) {
+    if (Test-RestorablePreviousUserTipSnapshot $previousRoot $previousUserTipSnapshot) {
         Restore-RegistryKeySnapshot $userTipKey $previousUserTipSnapshot
-    }
+    } else { Enable-TargetUserTip $userTipKey $profile }
     $runtimeConfig = Write-RuntimeConfiguration $targetRoot
     $runValue = '{0} -no-toolbar' -f (Quote-Argument ([string]$runtimeConfig.runtime_path))
     Initialize-RegistryKeyPreservingValues $runKey

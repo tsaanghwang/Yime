@@ -5,7 +5,8 @@ if([string]::IsNullOrWhiteSpace($ManagerPath)){$ManagerPath=Join-Path $PSScriptR
 $tokens=$null; $errors=$null
 $ast=[Management.Automation.Language.Parser]::ParseFile($ManagerPath,[ref]$tokens,[ref]$errors)
 if($errors.Count){throw $errors[0]}
-foreach($name in @('Get-RegistryKeySnapshot','Restore-RegistryKeySnapshot')) {
+foreach($name in @('Get-RegistryKeySnapshot','Restore-RegistryKeySnapshot','Enable-TargetUserTip',
+        'Remove-TargetUserTipState','Test-RestorablePreviousUserTipSnapshot')) {
     $fn=$ast.Find({param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq $name},$true)
     if(-not $fn){throw "Missing $name"}
     . ([scriptblock]::Create($fn.Extent.Text))
@@ -29,7 +30,22 @@ try {
     if(-not $text.Contains('$previousUserTipSnapshot = Get-RegistryKeySnapshot $userTipKey') -or
        -not $text.Contains('Restore-RegistryKeySnapshot $userTipKey $userTipSnapshot') -or
        -not $text.Contains('$previousRuntimeWasRunning $previousUserTipSnapshot')) {throw 'User TIP snapshot not wired into installer rollback.'}
-    if(-not $text.Contains('Restore-RegistryKeySnapshot $userTipKey $previousUserTipSnapshot')) {throw 'Successful upgrade also loses existing per-user TIP settings.'}
+    if(-not $text.Contains('Test-RestorablePreviousUserTipSnapshot $previousRoot $previousUserTipSnapshot')) {throw 'Install does not distinguish a real upgrade from a stale post-uninstall TIP shell.'}
+    if(-not $text.Contains('else { Enable-TargetUserTip $userTipKey $profile }')) {throw 'First install does not explicitly enable the new per-user TIP.'}
+    if(-not (Test-RestorablePreviousUserTipSnapshot 'C:\Program Files\YimeCore Experimental Trial\previous' $before)){throw 'Real upgrade must preserve its existing per-user TIP snapshot.'}
+    if(Test-RestorablePreviousUserTipSnapshot '' $before){throw 'Fresh install must not restore a stale Enable=0 post-uninstall TIP shell.'}
+    if(Test-RestorablePreviousUserTipSnapshot 'C:\Program Files\YimeCore Experimental Trial\previous' @{exists=$false}){throw 'Missing upgrade snapshot must use explicit enablement.'}
+    $newProfile='{126F54C6-E9B1-4E22-8652-03224CBD49F9}'
+    Enable-TargetUserTip $testRoot $newProfile
+    $newLeaf=$testRoot+'\LanguageProfile\0x00000804\'+$newProfile
+    $newKey=Get-Item -LiteralPath $newLeaf
+    try {
+        if($newKey.GetValueKind('Enable') -ne [Microsoft.Win32.RegistryValueKind]::DWord -or
+           [int]$newKey.GetValue('Enable') -ne 1){throw 'First-install user TIP Enable is not DWORD 1.'}
+    } finally {$newKey.Dispose()}
+    $userTipKey=$testRoot
+    Remove-TargetUserTipState
+    if(Test-Path -LiteralPath $testRoot){throw 'Completed uninstall left a disabled per-user TIP shell.'}
     Write-Host 'User TIP nested Enable/value-kind rollback regression passed.'
 }finally{
     if($testRoot -notmatch '^HKCU:\\Software\\YimeCoreRollbackTests\\[0-9a-f]{32}$'){throw 'Unsafe test cleanup.'}

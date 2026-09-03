@@ -175,7 +175,9 @@ if($InstalledPackage){
     Check (@($plan.active_registration_architectures).Count -eq 1 -and $plan.active_registration_architectures[0] -eq 'x64') 'real plan has only x64 registration'
     Check ($plan.frozen_registration_references -is [array]) 'single frozen dependency keeps stable JSON array shape'
     Check (-not (Test-Path -LiteralPath $planState)) 'read-only plan creates no AppData/state files'
-    Check ($plan.standard_user_launcher_package_ready -eq $false) 'old installed package is not advertised as new-mode ready'
+    $installedManifest=Get-Content -LiteralPath (Join-Path $InstalledPackage 'package-manifest.json') -Raw -Encoding UTF8|ConvertFrom-Json
+    $expectedLauncherReady=Test-NativeX64LauncherContent @{records=@($installedManifest.files)}
+    Check ($plan.standard_user_launcher_package_ready -eq $expectedLauncherReady) 'real plan reports manifest-pinned launcher readiness'
     $plan|ConvertTo-Json -Depth 10|Set-Content -LiteralPath (Join-Path $out 'native-plan.json') -Encoding UTF8
 }
 [ordered]@{passed=$true;count=$checks.Count;checks=@($checks);powershell=$PSVersionTable.PSVersion.ToString();

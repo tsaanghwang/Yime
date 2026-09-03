@@ -1,6 +1,6 @@
 # 本机独立开发版 0.1.0-local.6：冻结用户 TIP 保护候选
 
-当前结果（2026-09-03 11:25）：local.6 已从空 staging 构建并完成本机 x64 隔离验收，随后由 Explorer 普通用户入口原生升级并通过；真实记事本五项、实际备份恢复和启动失败回退也已通过。它只修复 local.5 现场发现的维护事务缺口：`Set-WinUserLanguageList` 完成后，在最外层 `finally` 再恢复迁移开始时保存的冻结用户 TIP 完整子树。显示名、活动 CLSID/Profile、Runtime、Broker、索引和用户数据格式不变。
+当前结果（2026-09-03 16:38）：local.6 的原生升级、真实记事本五项、实际备份恢复和启动失败回退通过。自身卸载保留数据后从完整包重装的 12:49 摘要遗漏当前用户活动 Profile 的 `Enable` 状态；系统视图复核为 DWORD `Enable=0`，该假 PASS 已撤回。16:29 一次性定向修复把它改为 DWORD 1，任务栏重新出现“音元拼音”，Word 实际选择后加载 local.6 x64 DLL，用户确认组合提交、裸数字和 `Shift+1` 三项全部通过。长期修复尚未构建/安装为新候选，因此卸载重装门禁仍保持未关闭。
 
 ## 固定候选
 
@@ -26,7 +26,7 @@
 
 升级命令成功，新安装根为 `C:\Program Files\YimeCore Experimental Trial\yimecore-e6c-4bfa828009d1-42e28f7d`，manifest 与固定候选一致。新旧包独立审计、升级前停写备份、安装后三模式、用户数据连续性、语言列表逐结构一致、生产/冻结注册、无关 Run 值和冻结 x86 payload 均通过。Runtime PID 33292、Broker PID 5724 来自新根，属于目标 SID 的非提权中完整性主令牌。未重复身份迁移、未修改默认输入法、未重启。
 
-本次关闭 local.6 原生升级门禁；继续剩余真实宿主、产品自身卸载重装和最终登录启动。当前 `local_product_ready=false`、`public_release_ready=false`。
+本次关闭 local.6 原生升级门禁；自身卸载重装门禁因任务栏不可见重新打开。当前 `local_product_ready=false`、`public_release_ready=false`。
 
 ## 安装态 registered-host 回归
 
@@ -52,4 +52,18 @@ local.6 已使用严格清单覆盖、仅将 Runtime 改为退出码 86 的故�
 
 首次外层验收因 UAC 子进程没有把维护错误转发到父进程 stdout/stderr 而形成假阴性；纠正验收改用带时间和故障包路径关联的 `maintenance-last-error.txt`。随后又发现 Windows PowerShell 5.1 对顶层 JSON 数组的单层包装会让相同的 6 条记录被误报为 `1` 对 `6`；仓库纠正脚本改为两步展开，26 项回退契约通过。数据新鲜度保护没有放宽，也没有用旧备份覆盖当前数据。
 
-下一门禁“卸载保留数据后从完整包重装”会先建立新鲜原生恢复归档，原样保留含旧安装路径绑定元数据的 `previous-package`，再仅从其固定 manifest 文件生成并独立审计仓库外 `reinstall-package` 作为重装源；卸载态须证明活动 COM/TIP、Run、卸载项、Runtime/Broker 和活动配置消失，同时用户数据、生产/冻结注册及默认输入法不变。该门禁不清除数据、不执行冻结目标、不自动重启。
+## 自身卸载保留数据及完整包重装
+
+证据：`C:\Users\tsaan\YimeCore Recovery Archives\local6-uninstall-reinstall-20260903-121508-ef668e62`，最终完成时间 12:49。新鲜停写备份包含 86 项状态文件、73 项旧包文件和 6 类用户数据；候选、仓库外 `reinstall-package` 与重装后的安装根均通过独立性审计，manifest 均为 `42e28f7d…e2087`。这些子项仍有效，但原 `passed=true` 不再代表完整的任务栏可用性门禁。
+
+卸载间隙确认活动 x64 COM/TIP、Run、卸载项、Runtime/Broker、活动配置和旧安装根均已消失，6 类用户数据未变。卸载触发 `Set-WinUserLanguageList` 后，冻结用户 TIP 再次按卸载前完整系统快照恢复；之后从新鲜备份中按 manifest 复制出的完整仓库外包走首装入口。重装后完整系统注册快照除允许的安装根替换外一致，生产组件、冻结目标、默认输入法及用户数据不变；Runtime PID 40924、Broker PID 21192 均为目标 SID 的普通用户中完整性主令牌，三模式 Verify 通过。未清除数据、未执行冻结目标、未请求重启。
+
+原始编排在卸载已实际成功后，因为从被删除的安装根启动维护 CMD 而收到误导性的退出码 1；`failure.json` 保留该事实。固定完成入口先核验活动注册、进程、配置和旧根确已消失，再恢复冻结用户 TIP 并从已经创建和审计的独立包完成重装。通用编排随后改为始终从保留介质启动卸载，46 项专项契约和 54 项共享维护契约在 Windows PowerShell 5.1 下通过。没有重演卸载。这些契约此前只保护冻结旧用户 TIP，没有要求首次安装后的新用户 TIP 为 `Enable=1`，属于测试缺口。
+
+16:26 只读复核确认：`Get-WinUserLanguageList` 含新 TIP；x64 注册工具 `status` 报告 COM/Profile 与 5 个类别正常；Runtime/Broker 来自 local.6；机器级 Profile 为 `Enable=1`，但 `HKEY_USERS\<SID>\Software\Microsoft\CTF\TIP\{E40F…}\LanguageProfile\0x00000804\{126F…}\Enable` 为 DWORD 0。这一用户级覆盖直接解释了任务栏缺项。
+
+源码先加入失败回归，再修复共享安装器：若已有用户 TIP 快照则原样恢复；仅在首次安装/完整卸载后重装、旧快照不存在时显式写入 DWORD `Enable=1`。一次性 `Repair-YimeCore-Local6-Taskbar.cmd` 仅用于把当前精确故障从 0 改为 1，并保护语言列表、默认输入法、生产/冻结注册、用户数据和运行进程；15 项修复契约、用户 TIP 回归和 54 项共享维护契约通过。
+
+原生修复归档为 `C:\Users\tsaan\YimeCore Recovery Archives\local6-active-user-tip-repair-20260903-162926-d955dffc`，其独立系统视图确认 `Enable` 从 DWORD 0 变为 1，其余活动用户 TIP 内容、完整保护快照、默认输入法、语言列表、生产组件和普通 Runtime/Broker 不变。用户随后从任务栏选择“音元拼音”，Word PID 19212 加载 `yimecore-e6c-4bfa828009d1-42e28f7d\x64\YimeTextServiceExperiment.dll`；`tf-cN` 加空格提交、裸数字组合及 `Shift+1` 首候选选择全部通过。证据为 `.tmp/yimecore-experiment/local6-word-after-taskbar-repair-20260903/desktop-checks.json` 与 `live-host.json`，未导出文档正文。
+
+当前机器可继续宿主验收，但一次性修复不替代安装包修复。下一步构建并安装含长期修复的新候选，再重验完整卸载重装；浏览器、开发工具、日常使用确认和最终登录自启动仍待完成。`local_product_ready=false`、`public_release_ready=false`。
