@@ -52,7 +52,9 @@ function Get-LocalProductDescriptor([string]$Path) {
         ($value.installable -ne ($value.package_contract -eq 'yimecore-local-product-package-v1')) -or
         $value.version -notmatch '^\d+\.\d+\.\d+-local\.\d+$' -or
         $value.scope.computer_name -ne 'MYCOMPUTER' -or
-        @($value.scope.active_architectures).Count -ne 1 -or $value.scope.active_architectures[0] -ne 'x64') {
+        @($value.scope.active_architectures).Count -ne 2 -or
+        $value.scope.active_architectures[0] -ne 'x64' -or
+        $value.scope.active_architectures[1] -ne 'x86') {
         throw 'Unsupported local product descriptor, scope or package contract'
     }
     $expected = @{

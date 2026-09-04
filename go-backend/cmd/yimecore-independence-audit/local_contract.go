@@ -58,6 +58,9 @@ var requiredLocalRuntimeFiles = []string{
 	"x64/YimeTextServiceExperiment.dll",
 	"x64/YimeTextServiceRegistration.exe",
 	"x64/YimeRegisteredHostTests.exe",
+	"x86/YimeTextServiceExperiment.dll",
+	"x86/YimeTextServiceRegistration.exe",
+	"x86/YimeRegisteredHostTests.exe",
 	"data/yime_yinyuan_layout.json",
 	"data/yime_pinyin_codes.tsv",
 	"data/pinyin_normalized.json",
@@ -125,8 +128,8 @@ func validateLocalContract(root string, entries map[string]manifestFile, contrac
 		allowed[strings.ToLower(path)] = true
 	}
 	for path := range entries {
-		if strings.HasPrefix(path, "x86/") || strings.HasPrefix(path, "arm64/") {
-			return errors.New("frozen-architecture payload in x64-only runtime bundle")
+		if strings.HasPrefix(path, "arm64/") {
+			return errors.New("frozen ARM64 payload in current-machine runtime bundle")
 		}
 		if !installable && (strings.HasSuffix(path, ".cmd") || strings.HasPrefix(path, "maintenance/")) {
 			return errors.New("runtime-only bundle must not advertise installation/maintenance")
@@ -168,8 +171,8 @@ func validateLocalContract(root string, entries map[string]manifestFile, contrac
 	}
 	if descriptor.SchemaVersion != "yimecore-local-product-v1" || descriptor.PackageContract != contract ||
 		descriptor.Installable == nil || *descriptor.Installable != installable || descriptor.Version == "" ||
-		descriptor.Scope.ComputerName != "MYCOMPUTER" || len(descriptor.Scope.ActiveArchitectures) != 1 ||
-		descriptor.Scope.ActiveArchitectures[0] != "x64" {
+		descriptor.Scope.ComputerName != "MYCOMPUTER" || len(descriptor.Scope.ActiveArchitectures) != 2 ||
+		descriptor.Scope.ActiveArchitectures[0] != "x64" || descriptor.Scope.ActiveArchitectures[1] != "x86" {
 		return errors.New("invalid local product schema, scope or installability")
 	}
 	if installable && descriptor.DisplayName != "音元拼音" {

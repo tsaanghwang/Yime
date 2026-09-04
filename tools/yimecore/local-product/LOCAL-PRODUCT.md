@@ -1,8 +1,8 @@
 # 音元拼音：本机候选包
 
-仅限 MYCOMPUTER 原生 x64。可安装不等于已经通过安装、真实宿主或日常使用验收。
+仅限 MYCOMPUTER：原生 x64 Runtime/Broker，以及 x64 与 WOW64 x86 应用 TSF 表面。可安装不等于已经通过安装、真实宿主或日常使用验收。
 
-不依赖源码仓库、Go/CMake/Python 或预装 Rime/PIME。保留现有试验版的内部标识和用户数据目录，不新增第三个输入法。生产 Rime/PIME 和 Windows 默认输入法不变；冻结的 x86 注册如仍指向旧安装目录，该目录必须保留，不代表 x86 已通过验证。
+不依赖源码仓库、Go/CMake/Python 或预装 Rime/PIME。保留现有试验版的内部标识和用户数据目录，不新增第三个输入法。生产 Rime/PIME 和 Windows 默认输入法不变；旧身份 x86 注册如仍指向旧安装目录，该目录必须保留，不能执行其中的旧 x86 工具。当前包的 x86 文件由当前源码与身份重新构建。
 
 ## 使用
 
@@ -13,7 +13,7 @@
 - `./Maintain-YimeCore-Local.cmd -Action Verify`：当前安装包、进程身份和三模式验证。
 - `./Maintain-YimeCore-Local.cmd -Action Backup`：关闭 Word 和所有输入法设置工具后，将停写快照保存到用户目录下的 `YimeCore Recovery Archives`。
 - `./Maintain-YimeCore-Local.cmd -Action Restore -BackupRoot "完整归档路径"`：对刚完成的备份进行安全恢复演练。若备份后已有新学习、词库或设置变化，将拒绝覆盖；不是任意历史版本的强制回滚入口。归档中保留恢复前原件。
-- `./Maintain-YimeCore-Local.cmd -Action Uninstall`：卸载本机 x64 产品，保留用户数据及冻结架构仍引用的旧文件。也可通过 Windows 已安装的应用卸载。
+- `./Maintain-YimeCore-Local.cmd -Action Uninstall`：卸载本机当前身份的 x64/x86 TSF 与 x64 Runtime，保留用户数据及旧身份仍引用的旧文件。也可通过 Windows 已安装的应用卸载。
 
 安装独立开发版后，使用本包维护入口；不要混用仓库根目录旧的 `Upgrade-YimeCore-Trial.cmd`，它对应另一种 Trial 构包流程。
 
@@ -23,4 +23,4 @@ Word 打开后不会自动选中此输入法。请用任务栏输入法按钮选
 
 裸数字始终用于组字；Shift+1 到 Shift+9 选词。候选标签保持 ⇧1 到 ⇧9。
 
-签名证书正在申请，等候审批，暂缓相关事项。清单哈希只证明文件一致性，不是可信发布者签名。不面向公众发行。ARM64、x86、其它机型、硬件模拟、联网同步及新语境音变规则均冻结或暂缓。
+签名证书正在申请，等候审批，暂缓相关事项。清单哈希只证明文件一致性，不是可信发布者签名。不面向公众发行。除本机 WOW64 x86 应用宿主外，ARM64、其它机型、硬件模拟、联网同步及新语境音变规则仍冻结或暂缓。

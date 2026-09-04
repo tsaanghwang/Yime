@@ -19,7 +19,7 @@ if ($Action -in @('Plan','Install','Upgrade','Uninstall')) {
     $managerAction=if($Action -eq 'Upgrade'){'Install'}else{$Action}
     # Same SID and state root survive UAC in the shared transaction manager.
     & (Join-Path $PSScriptRoot 'Manage-YimeCoreTrial.ps1') -Action $managerAction -PackageRoot $packageRoot `
-        -StateRoot $stateRoot -TargetUserSid $sid -NativeX64Only
+        -StateRoot $stateRoot -TargetUserSid $sid -NativeDesktop
     exit $LASTEXITCODE
 }
 $context=Assert-LocalProductInstalledContext $packageRoot $stateRoot

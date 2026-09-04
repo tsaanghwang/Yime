@@ -284,6 +284,7 @@ Add-ReadinessCheck 'external_evidence_schema' $externalSchemaValid `
 
 $externalRequirements = [ordered]@{
     broader_third_party_host_matrix_passed = 'host-matrix: broader native-x64 desktop-host acceptance on this development machine is pending'
+    x86_desktop_host_passed = 'host-matrix: current-identity x86 registered-host plus Firefox/Notepad++ 32-bit acceptance on this development machine is pending'
     rollback_rehearsal_passed = 'rollback: independent package to production fallback rehearsal is pending'
     first_release_retention_plan_approved = 'rollback: first independent release retention plan for RimeAdapter and old installer is pending'
 }
@@ -292,7 +293,7 @@ foreach ($name in $externalRequirements.Keys) {
     Add-ReadinessCheck $name $passed $(if ($passed) { 'passed' } else { 'missing or false' }) `
         $externalRequirements[$name]
 }
-foreach ($name in @('arm64_desktop_host_passed', 'x86_desktop_host_passed',
+foreach ($name in @('arm64_desktop_host_passed',
     'mainstream_physical_host_passed', 'forward_physical_host_passed', 'legacy_x64_host_passed',
     'simulated_hardware_tiers_passed')) {
     Add-DeferredCheck $name 'Frozen by user decision; no execution or compatibility claim until explicit resumption after local independent-core usability.'

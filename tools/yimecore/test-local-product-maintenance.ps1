@@ -19,18 +19,26 @@ function Import-TestFunction([string]$Name) {
     $body=$body.Replace('$PSScriptRoot',("'"+$PSScriptRoot.Replace("'","''")+"'"))
     . ([scriptblock]::Create($body))
 }
-foreach($name in @('Get-RegistrationArchitectures','Test-FrozenInstallRoot','Get-FrozenRegistrationReferences',
+foreach($name in @('Get-RegistrationArchitectures','Get-CurrentIdentityArchitecturesForRoot',
+        'Get-RegistrationArchitecturesForRoot','Find-CurrentRegistrationTool',
+        'Test-FrozenInstallRoot','Get-FrozenRegistrationReferences',
         'Assert-ProductChild','Remove-ProductTree','Test-PreviousRuntimeIdentity','Get-PreviousRuntimeWasRunning',
         'Invoke-UninstallCore','Restore-PreviousInstallation','Test-NativeX64LauncherContent','Convert-RegistrationStatus',
         'Wait-RegistrationState','Resolve-RegistrationAction')){Import-TestFunction $name}
-$NativeX64Only=$true; $NativeX64Rehearsal=$false; $nativeArchitecture='AMD64'
+$NativeX64Only=$true; $NativeDesktop=$false; $NativeLocalProduct=$true
+$NativeX64Rehearsal=$false; $nativeArchitecture='AMD64'
 $arches=@(Get-RegistrationArchitectures)
 Check ($arches.Count -eq 1 -and $arches[0].name -eq 'x64' -and $arches[0].action -eq 'register') 'normal native mode only executes x64'
-$NativeX64Only=$false
+$NativeX64Only=$false; $NativeLocalProduct=$false
 Check (@(Get-RegistrationArchitectures).Count -eq 2) 'historical registration contract unchanged'
 $NativeX64Rehearsal=$true
 Check (@(Get-RegistrationArchitectures).Count -eq 1) 'fault-only rehearsal still separate'
-$NativeX64Rehearsal=$false; $NativeX64Only=$true
+$NativeX64Rehearsal=$false; $NativeDesktop=$true; $NativeLocalProduct=$true
+$desktopArches=@(Get-RegistrationArchitectures)
+Check ($desktopArches.Count -eq 2 -and $desktopArches[0].name -eq 'x64' -and
+    $desktopArches[1].name -eq 'x86' -and $desktopArches[1].action -eq 'register-com') `
+    'resumed desktop mode registers current-identity x64 and x86 surfaces'
+$NativeDesktop=$false; $NativeX64Only=$true
 function Test-TransitionTool {param($command)
     if($command -ne 'status'){throw 'transition fixture is read-only'}
     $global:LASTEXITCODE=0
@@ -54,7 +62,29 @@ Reject {Assert-ProductChild $productRoot 'fixture'} 'cannot delete broad product
 $providerMode='found'
 $TargetUserSid='S-1-5-21-111-222-333-1001'
 $clsid='{E40FA752-BB96-461D-A51D-F40EB437EC65}'
+$profile='{126F54C6-E9B1-4E22-8652-03224CBD49F9}'
 $legacyClsid='{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'
+$productKeyName='YimeCoreExperimentalTrial'
+
+# A previous x64-only current product may physically carry a legacy x86 tool.
+# The resumed transaction must select x86 only from a descriptor that declares
+# the current identity and x86 as active, while rollback restores only x64.
+$oldCurrent=Join-Path $productRoot 'old-current-x64'
+$newCurrent=Join-Path $productRoot 'new-current-desktop'
+foreach($root in @($oldCurrent,$newCurrent)){New-Item -ItemType Directory -Path (Join-Path $root 'x64') -Force|Out-Null;New-Item -ItemType Directory -Path (Join-Path $root 'x86') -Force|Out-Null}
+$identity=[ordered]@{product_key='YimeCoreExperimentalTrial';clsid=$clsid;profile='{126F54C6-E9B1-4E22-8652-03224CBD49F9}'}
+[ordered]@{identity=$identity;scope=[ordered]@{active_architectures=@('x64')}}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath (Join-Path $oldCurrent 'local-product.json') -Encoding UTF8
+[ordered]@{identity=$identity;scope=[ordered]@{active_architectures=@('x64','x86')}}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath (Join-Path $newCurrent 'local-product.json') -Encoding UTF8
+foreach($root in @($oldCurrent,$newCurrent)){foreach($arch in @('x64','x86')){New-Item -ItemType File -Path (Join-Path $root "$arch\YimeTextServiceRegistration.exe")|Out-Null}}
+$NativeX64Only=$false;$NativeDesktop=$true;$NativeLocalProduct=$true
+$selectedX86Tool=[string](Find-CurrentRegistrationTool @($oldCurrent,$newCurrent) 'x86')
+$expectedX86Tool=Join-Path $newCurrent 'x86\YimeTextServiceRegistration.exe'
+if ($selectedX86Tool -ine $expectedX86Tool) {
+    throw "FAIL: upgrade selected wrong x86 tool; got=$selectedX86Tool expected=$expectedX86Tool old=$(@(Get-CurrentIdentityArchitecturesForRoot $oldCurrent) -join ',') new=$(@(Get-CurrentIdentityArchitecturesForRoot $newCurrent) -join ',')"
+}
+Check $true 'upgrade never executes the carried legacy x86 tool from an x64-only package'
+$oldArches=@(Get-RegistrationArchitecturesForRoot $oldCurrent)
+Check ($oldArches.Count -eq 1 -and $oldArches[0].name -eq 'x64') 'rollback derives registration architectures from the previous package descriptor'
 function Invoke-CimMethod {
     param($Namespace,$ClassName,$MethodName,$Arguments,$InputObject)
     if($MethodName -eq 'GetOwnerSid'){return [pscustomobject]@{Sid=$TargetUserSid;ReturnValue=0}}
@@ -144,6 +174,14 @@ function Add-InputMethodTip {throw 'No previous native TIP should be synthesized
 $userTipKey='Registry::fixture-user-tip'
 Restore-PreviousInstallation '' '' @{exists=$false} @{exists=$false} @{exists=$false} $false @{exists=$false}
 Check ($restores.Count -eq 4 -and $restores.Contains($userTipKey)) 'failed first install restores absent user TIP Run and uninstall snapshots'
+$rollbackRegistrations=[Collections.Generic.List[string]]::new()
+function Resolve-RegistrationAction {param($tool,$requestedAction)return $requestedAction}
+function Invoke-Registration {param($tool,$command,$dll,$label)$rollbackRegistrations.Add($label)}
+function Wait-RegistrationState {param($tool,$comRegistered,$profileRegistered,$categoryCount)}
+function Add-InputMethodTip {$rollbackRegistrations.Add('tip')}
+Restore-PreviousInstallation $oldCurrent '' @{exists=$false} @{exists=$false} @{exists=$false} $false @{exists=$false}
+Check ($rollbackRegistrations.Count -eq 2 -and $rollbackRegistrations[0] -eq 'rollback x64 TSF registration' -and
+    $rollbackRegistrations[1] -eq 'tip') 'x64-only rollback does not execute the carried legacy x86 tool'
 
 Add-Type -Path (Join-Path $PSScriptRoot 'local-runtime-launcher.cs')
 $actualToken=[YimeCore.LocalMaintenance.StandardUserLauncher]::InspectProcess($PID)
@@ -157,7 +195,9 @@ foreach($scenario in @('elevated','high','low','sid','session','container')){
     Check (-not [YimeCore.LocalMaintenance.StandardUserLauncher]::IsExpectedStandardToken($token,$TargetUserSid,1)) "reject launch token $scenario"
 }
 Check ($ast.Extent.Text.Contains("'NativeX64Only'")) 'normal x64 mode survives elevation argument forwarding'
+Check ($ast.Extent.Text.Contains("'NativeDesktop'")) 'dual-architecture desktop mode survives elevation argument forwarding'
 Check ($ast.Extent.Text.Contains("`$uninstallCommand += ' -NativeX64Only'")) 'uninstall entry preserves normal x64 mode'
+Check ($ast.Extent.Text.Contains("`$uninstallCommand += ' -NativeDesktop'")) 'uninstall entry preserves desktop x64+x86 mode'
 Check ($ast.Extent.Text.Contains('Assert-NativeX64LaunchSupport $package')) 'launcher content pinned before staging mutation'
 Check ($ast.Extent.Text.Contains('Normal local maintenance must preserve the initiating user default state namespace used at logon.')) 'normal maintenance cannot diverge from logon data namespace'
 $helperHash=(Get-FileHash -LiteralPath (Join-Path $PSScriptRoot 'local-runtime-launcher.cs') -Algorithm SHA256).Hash
@@ -169,10 +209,11 @@ Check (-not (Test-NativeX64LauncherContent @{records=@([pscustomobject]@{path=$h
 
 if($InstalledPackage){
     $planState=Join-Path $out 'plan-state-must-not-exist'
-    $planText=(& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $manager -Action Plan -NativeX64Only -PackageRoot $InstalledPackage -StateRoot $planState) -join "`n"
-    Check ($LASTEXITCODE -eq 0) 'native x64 plan reads complete existing package'
+    $planText=(& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $manager -Action Plan -NativeDesktop -PackageRoot $InstalledPackage -StateRoot $planState) -join "`n"
+    Check ($LASTEXITCODE -eq 0) 'native desktop plan reads complete existing package'
     $plan=$planText|ConvertFrom-Json
-    Check (@($plan.active_registration_architectures).Count -eq 1 -and $plan.active_registration_architectures[0] -eq 'x64') 'real plan has only x64 registration'
+    Check (@($plan.active_registration_architectures).Count -eq 2 -and $plan.active_registration_architectures[0] -eq 'x64' -and
+        $plan.active_registration_architectures[1] -eq 'x86') 'real plan has x64 and x86 registration'
     Check ($plan.frozen_registration_references -is [array]) 'single frozen dependency keeps stable JSON array shape'
     Check (-not (Test-Path -LiteralPath $planState)) 'read-only plan creates no AppData/state files'
     $installedManifest=Get-Content -LiteralPath (Join-Path $InstalledPackage 'package-manifest.json') -Raw -Encoding UTF8|ConvertFrom-Json

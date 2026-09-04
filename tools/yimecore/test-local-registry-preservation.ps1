@@ -7,7 +7,8 @@ $ast=[Management.Automation.Language.Parser]::ParseFile($manager,[ref]$tokens,[r
 if($errors.Count){throw $errors[0]}
 foreach($name in @('Initialize-RegistryKeyPreservingValues','Restore-RegistryValueSnapshot','Get-RegistryKeySnapshot',
     'Restore-RegistryKeySnapshotInPlace','Get-FrozenTipSnapshot','Restore-FrozenTipSnapshot',
-    'Get-FrozenUserTipSnapshot','Restore-FrozenUserTipSnapshot','Invoke-Registration','Remove-TrialRegistration')) {
+    'Get-FrozenUserTipSnapshot','Restore-FrozenUserTipSnapshot','Invoke-Registration',
+    'Get-CurrentIdentityArchitecturesForRoot','Find-CurrentRegistrationTool','Remove-TrialRegistration')) {
     $fn=$ast.Find({param($n)$n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq $name},$true)
     if(-not $fn){throw "Missing function: $name"}
     . ([scriptblock]::Create($fn.Extent.Text))
@@ -51,6 +52,7 @@ try {
 }
 # Frozen registration is simulated, never executed or written on this PC.
 $NativeX64Only=$true
+$NativeLocalProduct=$true
 $legacyClsid='{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}'
 $legacyUserTipKey="Registry::HKEY_USERS\S-1-5-21-fixture\Software\Microsoft\CTF\TIP\$legacyClsid"
 $script:frozenMachine=@{exists=$true;values=@(@{name='Description';kind=1;value='old'},@{name='Enable';kind=4;value=1});children=@{}}
@@ -96,6 +98,7 @@ function Get-RegistrationArchitectures {return @(@{name='x64'})}
 Reject {Remove-TrialRegistration @()} 'missing x64 unregister tool remains failure'
 Check (-not $script:frozenMachine.exists -and -not $script:frozenUser.exists) 'unregister failure retains frozen state'
 $NativeX64Only=$false
+$NativeLocalProduct=$false
 Check ($null -eq (Get-FrozenTipSnapshot)) 'historical modes do not acquire native-only snapshot'
 Check ($null -eq (Get-FrozenUserTipSnapshot)) 'historical modes do not acquire per-user frozen snapshot'
 $text=Get-Content -LiteralPath $manager -Raw -Encoding UTF8

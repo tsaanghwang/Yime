@@ -1,17 +1,17 @@
 {
   "schema_version": "yimecore-local-product-v1",
-  "version": "0.1.0-local.10",
+  "version": "0.1.0-local.11",
   "display_name": "音元拼音",
   "package_contract": "yimecore-local-product-package-v1",
   "installable": true,
   "scope": {
     "computer_name": "MYCOMPUTER",
     "active_architectures": [
-      "x64"
+      "x64",
+      "x86"
     ],
     "frozen_targets": [
       "arm64",
-      "x86",
       "legacy_x64",
       "other_physical_pcs",
       "simulated_hardware_tiers"
@@ -29,7 +29,7 @@
     "legacy_display_name": "Yime 自研栈试验版",
     "legacy_clsid": "{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}",
     "legacy_profile": "{607895A8-9504-4A2E-9BB1-2C159E3A1757}",
-    "display_name_activation": "local x64 product build only; frozen legacy profile and build labels unchanged"
+    "display_name_activation": "local x64 runtime with current-identity x64 and x86 TSF surfaces; frozen legacy profile and build labels unchanged"
   },
   "data_compatibility": {
     "read_models": [

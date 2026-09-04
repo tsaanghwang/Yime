@@ -8,7 +8,7 @@
 
 **17:05 原生状态**：`local.7` 升级通过，但完整卸载重装在卸载间隙发现当前用户 TIP 残留 DWORD `Enable=0` 并停止，当前产品已卸载且恢复介质完整。`local.8` 同时修复“卸载删除残留壳”和“无真实旧安装时禁止恢复旧壳”，已完成 native x64 构建及隔离验证；固定恢复入口待执行。见 [local.7 记录](../../docs/YIMECORE_LOCAL_PRODUCT_LOCAL7_2026-09-03.md)和 [local.8 记录](../../docs/YIMECORE_LOCAL_PRODUCT_LOCAL8_2026-09-03.md)。
 
-活动 x64 已使用“音元拼音”的独立 CLSID/Profile；冻结 WOW64 继续保留旧 CLSID/Profile 和原始 payload。不要把冻结旧身份改名、重注册或当作当前活动产品执行。
+活动 x64 已使用“音元拼音”的独立 CLSID/Profile。2026-09-04 用户批准在本机恢复 WOW64 x86 应用宿主，并与 x64 L5/L6 同步推进；新 x86 必须从当前源码以同一活动身份构建。旧 WOW64 CLSID/Profile 和原始 payload 继续只读保留，不得改名、重注册或当作当前活动产品执行。ARM64、其他机器、老旧 x64 和硬件模拟仍冻结。
 
 **08:12 原生 `.3` 历史状态**：安装后的 OneDrive 自启动值丢失、冻结 x86 profile 描述/图标改变已由定向入口恢复。该维护器随后由 `.4` 替代；`test-local3-repair.ps1` 继续保留事故的固定证据回归，见[诊断](../../docs/YIMECORE_LOCAL3_REGISTRY_PRESERVATION_2026-09-03.md)。
 
@@ -17,7 +17,7 @@
 - `build-local-product.ps1`：从源码和仓内数据构建，不依赖旧安装；输出到新建的 `.tmp/yimecore-local-product/<run>/`。
 - `test-local-product-runtime.ps1`：由构包器调用，在仓库外隔离目录验证新包、三模式、恢复和 TSF，不做机器注册或真实 Word 验收。
 - `test-local-product-maintenance.ps1`：共享维护器的正常 x64、冻结引用保留、实际进程身份、首次安装失败状态恢复及标准令牌策略回归；带旧包只读 Plan 时共 55 项，PS5.1/PS7 已验证。
-- `local-runtime-launcher.cs`：同 SID/会话的标准用户启动帮助程序。使用明确保留的普通 PowerShell 主令牌，核对 PID/时间/映像/祖先/身份，并挂起验证实际子进程；只请求 `0x018b` 句柄权限。2026-09-03 07:32 原生启动验证已通过。`-NativeX64Only` 仍是正常 x64 模式，与故障演练分离。
+- `local-runtime-launcher.cs`：同 SID/会话的标准用户启动帮助程序。使用明确保留的普通 PowerShell 主令牌，核对 PID/时间/映像/祖先/身份，并挂起验证实际子进程；只请求 `0x018b` 句柄权限。2026-09-03 07:32 原生启动验证已通过。`-NativeDesktop` 是当前 x64 Runtime 加 x64/x86 TSF 模式；历史 x64-only 包仍由 `-NativeX64Only` 维护，两者均与故障演练分离。
 - `test-native-standard-user-launch.ps1` / `test-standard-user-launch-contract.ps1`：原生只读启动验证及当前 56 项隔离契约。`native-launch-fix-20260903-073233-5efe1c97` 已证明普通启动对照及 UAC 后实际普通主令牌子进程均通过，五份源码哈希一致；没有安装或停止输入法。探针无需重复。见[1346 / 错误 5 修复记录](../../docs/YIMECORE_STANDARD_USER_LAUNCH_FIX_2026-09-03.md)。
 - 仓库根 `Test-YimeCore-Standard-Launch.cmd`：普通资源管理器双击入口，只调用上述探针并保留结果窗口；不自己提权，不接受内部工作进程参数，不修改安全设置。由普通 PowerShell 保持发起进程，再按需请求 UAC。不要从管理员终端或 Codex 中启动。
 - `invoke-local-product-native-install.ps1`：固定新候选及原安装基线的外部验收编排，默认只读 Plan。必须普通权限启动；先请求只读启动探针 UAC，再在普通父进程中备份旧包，最后调用包内安装事务及其同账户 UAC。普通父进程保持等待，备份不能把旧 runtime 重启成管理员权限。完整执行仍须原生人工启动，不从 Codex 提权。
@@ -30,7 +30,7 @@
 - `invoke-local6-uninstall-reinstall.ps1` / 仓库根 `Test-YimeCore-Local6-Uninstall-Reinstall.cmd`：local.6 自身卸载保留数据与完整包重装门禁。12:49 的运行保留为数据、注册和进程证据，但因漏查新用户 TIP 的 `Enable=0` 而不能作为完整 PASS；固化的 `Complete-YimeCore-Local6-Uninstall-Reinstall.cmd` 只用于该次已审查中断的恢复，不是通用入口。
 - `repair-local6-active-user-tip.ps1` / 仓库根 `Repair-YimeCore-Local6-Taskbar.cmd`：只针对当前安装、SID、CLSID/Profile 和 manifest 的一次性任务栏修复；仅把活动用户 TIP 的 DWORD `Enable` 从 0 改为 1，保持语言列表、默认输入法、生产/冻结注册、数据和进程不变。必须从普通资源管理器双击，修复后仍需用户确认任务栏可见。
 
-当前安装版本为 `0.1.0-local.9`；朱红色 profile 图标候选在 `.tmp/yimecore-local-product/local9-vermilion-20260903` 完成 native x64 构建、包/运行时独立性、三模式和 TSF composition 隔离验证，manifest SHA-256 为 `4a395e073bb58b432c4a35c9446eae5d277234f2e8f8b2e4d66d0ca30c07f262`。19:03 原位安装成功，活动根为 `yimecore-e6c-d099576a9d31-4a395e07-20260903190318`；安装态清单、图标哈希、Runtime/Broker、独立性审计、系统 `IconFile` 和用户 TIP DWORD `Enable=1` 均通过。19:15 正常重启后，当前 Runtime/Broker、Shell-Core 9707/9708、系统注册、71 文件包审计和默认输入法保护通过，用户确认 profile 图标“已红”；随后在重启后新开的 VS Code 中确认组合提交、裸数字组字和 `Shift+1` 三项通过，主进程实际加载 local.9 x64 DLL。证据为 `.tmp/yimecore-experiment/local9-post-reboot-20260903/desktop-checks.json`，L4 当前候选验收已关闭。包内交互 CMD 成功或失败后立即关窗的问题已在工作树修复，下一构包版本为 `0.1.0-local.10`；无需为它再安装，只影响以后入口的可见结果。长期日常使用确认仍未关闭，`local_product_ready` 和公开发行仍为 false。日常候选升级复用包内 `Install-YimeCore-Local.cmd`（内部统一走 `Maintain-YimeCore-Local.cmd -Action Upgrade`）；仓库根版本号专用脚本只保留固定事故恢复或验收，不应为每次普通改动复制。
+当前安装版本仍为 `0.1.0-local.9`；朱红色 profile 图标候选在 `.tmp/yimecore-local-product/local9-vermilion-20260903` 完成 native x64 构建、包/运行时独立性、三模式和 TSF composition 隔离验证，manifest SHA-256 为 `4a395e073bb58b432c4a35c9446eae5d277234f2e8f8b2e4d66d0ca30c07f262`。19:03 原位安装成功，活动根为 `yimecore-e6c-d099576a9d31-4a395e07-20260903190318`；19:15 正常重启后，用户又在加载 local.9 x64 DLL 的新 VS Code 进程中确认组合提交、裸数字组字和 `Shift+1` 三项通过，L4 已关闭。2026-09-04 解冻本机 WOW64 x86 后，当前源码身份的独立 Win32 S1 构建已通过；下一构包版本升为 `0.1.0-local.11`，包内同时包含 x64/x86 TSF 表面，但 Runtime/Broker 和全部工具仍为 x64。升级事务会按各包描述符选择当前身份注册工具，禁止执行 local.9 携带的旧身份 x86 文件，并在回滚 local.9 时只恢复其实际声明的 x64。长期日常使用、双架构安装态与真实 x86 宿主验收仍未关闭，`local_product_ready` 和公开发行仍为 false。日常候选升级复用包内 `Install-YimeCore-Local.cmd`；仓库根版本号专用脚本只保留固定事故恢复或验收。
 
 维护只能从资源管理器启动的独立 Windows PowerShell 运行。备份/Restore 当前继承已验证的“新鲜归档安全恢复演练”：备份后数据变化即拒绝覆盖，不提供任意历史数据的强制覆盖。local.6 的实际普通用户启动、原位晋级、恢复和失败回退已经验收；local.8 关闭自身卸载重装缺陷，local.9 关闭真实宿主和正常重启门禁。长期日常使用确认仍待完成。晋级后不要混用旧的仓库 Trial 升级命令。
 

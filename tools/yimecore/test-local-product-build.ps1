@@ -22,7 +22,7 @@ $legacyProfile = '{607895A8-9504-4A2E-9BB1-2C159E3A1757}'
 $approvedName = -join ([char[]](0x97F3,0x5143,0x62FC,0x97F3))
 Assert-Check ($product.display_name -ceq $approvedName) 'local product uses the approved display name'
 Assert-Check ($product.identity.clsid -cne $legacyClsid -and $product.identity.profile -cne $legacyProfile) `
-    'local x64 product has an identity independent from the frozen legacy profile'
+    'local x64 runtime and x64/x86 TSF product has an identity independent from the frozen legacy profile'
 $decorated=Get-Content -LiteralPath $descriptorPath -TotalCount 1
 $plain=Convert-LocalProductPlainText $decorated
 $plainJson=ConvertTo-Json -InputObject @($plain) -Depth 2 -Compress
@@ -60,7 +60,7 @@ foreach ($prefix in @('YIME_LOCAL_CLSID','YIME_LOCAL_PROFILE')) {
 }
 $legacyIds = Get-Content -LiteralPath (Join-Path $repo 'YimeTextServiceExperiment\YimeTextServiceIds.h') -Raw -Encoding UTF8
 Assert-Check ($legacyIds.Contains('#ifdef YIME_LOCAL_PRODUCT') -and $legacyIds.Contains('LocalProductIdentity.h')) `
-    'native identity selection is compile-time isolated to local x64 builds'
+    'native identity selection is compile-time isolated to current local x64/x86 TSF builds'
 foreach ($legacy in @($legacyClsid,$legacyProfile)) {
     $compact=$legacy.Trim('{}').Replace('-','').ToLowerInvariant()
     $tokens=@([regex]::Matches($legacyIds,'0x([0-9a-fA-F]+)'))

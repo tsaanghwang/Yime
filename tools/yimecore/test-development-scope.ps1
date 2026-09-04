@@ -10,11 +10,17 @@ function Assert-ScopeTest([bool]$Passed, [string]$Name) {
     if (-not $Passed) { throw "Development scope regression failed: $Name" }
     $results.Add([ordered]@{ name = $Name; passed = $true })
 }
+Assert-ScopeTest (@($policy.active_architectures).Count -eq 2 -and
+    $policy.active_architectures[0] -eq 'x64' -and $policy.active_architectures[1] -eq 'x86' -and
+    @($policy.frozen_targets) -notcontains 'x86') 'x86_wow64_surface_resumed'
+Assert-ScopeTest (@($policy.frozen_targets) -contains 'arm64' -and
+    @($policy.frozen_targets) -contains 'other_physical_pcs' -and
+    @($policy.frozen_targets) -contains 'simulated_hardware_tiers') 'unavailable_targets_remain_frozen'
 foreach ($case in @(
     @{ name = 'approved_host'; hostName = $policy.computer_name; arch = 'AMD64'; bits = $true; reject = $false },
     @{ name = 'other_pc'; hostName = 'NOT-THE-DEVELOPMENT-PC'; arch = 'AMD64'; bits = $true; reject = $true },
     @{ name = 'arm64'; hostName = $policy.computer_name; arch = 'ARM64'; bits = $true; reject = $true },
-    @{ name = 'x86'; hostName = $policy.computer_name; arch = 'x86'; bits = $false; reject = $true },
+    @{ name = 'x86_orchestration_shell'; hostName = $policy.computer_name; arch = 'x86'; bits = $false; reject = $true },
     @{ name = 'wow64_shell'; hostName = $policy.computer_name; arch = 'AMD64'; bits = $false; reject = $true }
 )) {
     $rejected = $false
@@ -22,7 +28,7 @@ foreach ($case in @(
     Assert-ScopeTest ($rejected -eq $case.reject) $case.name
 }
 foreach ($target in @(@('windows', 'amd64'), @('windows', '386'), @('windows', 'arm64'), @('linux', 'amd64'))) {
-    # Mock the compiler query; never build or execute a frozen architecture.
+    # The Go core remains native amd64. Resumed x86 is a Win32 TSF surface.
     function go { $global:LASTEXITCODE = 0; $target }
     $rejected = $false
     try { Assert-YimeCoreNativeGo } catch { $rejected = $true }
@@ -38,7 +44,15 @@ $loop = @($ast.FindAll({ param($node)
     $node -is [Management.Automation.Language.ForEachStatementAst] -and $node.Variable.VariablePath.UserPath -eq 'architecture'
 }, $true))
 Assert-ScopeTest ($loop.Count -eq 1 -and $loop[0].Condition.Extent.Text -match "name = 'x64'" -and
-    $loop[0].Condition.Extent.Text -notmatch 'x86|Win32|arm64') 'builder_x64_only'
+    $loop[0].Condition.Extent.Text -notmatch 'x86|Win32|arm64') 'legacy_e6c_builder_remains_archival_x64'
+$x86BuilderPath = Join-Path $PSScriptRoot 'build-local-x86-surface.ps1'
+$x86Builder = Get-Content -LiteralPath $x86BuilderPath -Raw
+$x86Tokens = $null; $x86ParseErrors = $null
+$null = [Management.Automation.Language.Parser]::ParseFile($x86BuilderPath, [ref]$x86Tokens, [ref]$x86ParseErrors)
+Assert-ScopeTest ($x86ParseErrors.Count -eq 0 -and $x86Builder -match "-A Win32" -and
+    $x86Builder -match "-DYIME_LOCAL_PRODUCT=ON" -and
+    $x86Builder -match "local-product-build-common.ps1" -and
+    $x86Builder -notmatch "register-com|Manage-YimeCoreTrial") 'current_identity_x86_build_isolated_from_registration'
 $upgrade = Get-Content (Join-Path $repoRoot 'Build-Install-YimeCore-Trial-v3.cmd') -Raw
 Assert-ScopeTest ($upgrade -match 'package\\x64\\YimeRegisteredHostTests.exe' -and
     $upgrade -notmatch 'package\\(x86|arm64)\\YimeRegisteredHostTests.exe') 'upgrade_x64_only'
@@ -93,10 +107,12 @@ foreach ($case in @('local', 'old_unscoped', 'foreign_host', 'dual_tier', 'throt
     Assert-ScopeTest ($profileCheck.passed -eq ($case -notin @('dual_tier', 'throttled'))) ($case + '_performance_policy')
     $coverageCheck = $result.checks | Where-Object name -eq 'development_host_performance_coverage'
     Assert-ScopeTest ($coverageCheck.passed -eq ($case -ne 'missing_mode')) ($case + '_mode_coverage')
-    Assert-ScopeTest (@($result.deferred_checks).Count -eq 7 -and
+    Assert-ScopeTest (@($result.deferred_checks).Count -eq 6 -and
         @($result.deferred_checks | Where-Object { $null -ne $_.passed -or $_.status -ne 'deferred' }).Count -eq 0 -and
+        @($result.deferred_checks | Where-Object name -eq 'x86_desktop_host_passed').Count -eq 0 -and
         ($result.blockers -join ',') -notmatch 'ARM64|mainstream|forward/high-end|signing:') ($case + '_frozen_not_blocked_or_passed')
-    foreach ($name in @('broader_third_party_host_matrix_passed', 'rollback_rehearsal_passed', 'first_release_retention_plan_approved')) {
+    foreach ($name in @('broader_third_party_host_matrix_passed', 'x86_desktop_host_passed',
+        'rollback_rehearsal_passed', 'first_release_retention_plan_approved')) {
         $check = @($result.checks | Where-Object name -eq $name)
         Assert-ScopeTest ($check.Count -eq 1 -and -not $check[0].passed) ($case + '_' + $name)
     }

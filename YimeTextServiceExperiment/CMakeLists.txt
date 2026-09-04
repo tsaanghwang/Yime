@@ -3,8 +3,9 @@ project(YimeTextServiceExperiment LANGUAGES CXX)
 
 option(YIME_LOCAL_PRODUCT "Build the current-PC independent product display identity" OFF)
 if(YIME_LOCAL_PRODUCT)
-    if(NOT CMAKE_GENERATOR_PLATFORM STREQUAL "x64")
-        message(FATAL_ERROR "Local product builds are native x64 only")
+    if(NOT CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND
+       NOT CMAKE_GENERATOR_PLATFORM STREQUAL "Win32")
+        message(FATAL_ERROR "Local product TSF builds support x64 and Win32 only on the approved development host")
     endif()
     file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../tools/yimecore/local-product.json" YIME_PRODUCT_JSON)
     string(JSON YIME_LOCAL_PRODUCT_NAME GET "${YIME_PRODUCT_JSON}" display_name)

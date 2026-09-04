@@ -13,11 +13,14 @@ param(
     [switch]$Quiet,
     [switch]$NativeX64Rehearsal,
     [switch]$NativeX64Only,
+    [switch]$NativeDesktop,
     [string]$TargetUserSid,
     [string]$StandardUserInitiator
 )
 
 $ErrorActionPreference = 'Stop'
+$NativeLocalProduct = [bool]($NativeX64Only -or $NativeDesktop)
+if ($NativeX64Only -and $NativeDesktop) { throw 'Choose exactly one local-product architecture mode.' }
 $productName = 'Yime ' + (-join ([char[]](0x81EA, 0x7814, 0x6808, 0x8BD5, 0x9A8C, 0x7248)))
 $productKeyName = 'YimeCoreExperimentalTrial'
 $productRoot = [IO.Path]::GetFullPath((Join-Path $env:ProgramFiles 'YimeCore Experimental Trial'))
@@ -95,15 +98,15 @@ function Assert-UnpackagedTrialMaintenance {
     }
 }
 if ($Action -ne 'Plan') { Assert-UnpackagedTrialMaintenance }
-if ($NativeX64Only -and $Action -ne 'Plan' -and $StandardUserInitiator) {
+if ($NativeLocalProduct -and $Action -ne 'Plan' -and $StandardUserInitiator) {
     $env:YIMECORE_MAINTENANCE_INITIATOR=$StandardUserInitiator
 }
-if ($NativeX64Only -and ($NativeX64Rehearsal -or $nativeArchitecture -ne 'AMD64' -or
+if ($NativeLocalProduct -and ($NativeX64Rehearsal -or $nativeArchitecture -ne 'AMD64' -or
     -not [Environment]::Is64BitProcess -or $env:COMPUTERNAME -ne 'MYCOMPUTER' -or $PurgeUserData -or
     ($Action -eq 'Install' -and $NoLaunch))) {
-    throw 'NativeX64Only requires MYCOMPUTER native x64, preserved user data, and is not a fault-rehearsal mode.'
+    throw 'Native local-product maintenance requires MYCOMPUTER native x64, preserved user data, and is not a fault-rehearsal mode.'
 }
-if ($NativeX64Only -and $Action -ne 'Plan' -and
+if ($NativeLocalProduct -and $Action -ne 'Plan' -and
     $stateRootPath -ine [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'YimeCore Experimental Trial'))) {
     throw 'Normal local maintenance must preserve the initiating user default state namespace used at logon.'
 }
@@ -236,12 +239,12 @@ function Restore-RegistryKeySnapshotInPlace([string]$path, $snapshot) {
 }
 
 function Get-FrozenTipSnapshot {
-    if (-not $NativeX64Only) { return $null }
+    if (-not $NativeLocalProduct) { return $null }
     Get-RegistryKeySnapshot "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\CTF\TIP\$legacyClsid"
 }
 
 function Restore-FrozenTipSnapshot($snapshot) {
-    if (-not $NativeX64Only) { return }
+    if (-not $NativeLocalProduct) { return }
     if ($null -eq $snapshot) { throw 'Missing frozen TIP snapshot; cannot declare native registration preservation.' }
     # x64 TSF profile APIs can also write the WOW64 profile metadata. Preserve
     # that exact owned subtree, including absence/value kinds, without executing
@@ -257,12 +260,12 @@ function Restore-FrozenTipSnapshot($snapshot) {
 }
 
 function Get-FrozenUserTipSnapshot {
-    if (-not $NativeX64Only) { return $null }
+    if (-not $NativeLocalProduct) { return $null }
     Get-RegistryKeySnapshot $legacyUserTipKey
 }
 
 function Restore-FrozenUserTipSnapshot($snapshot) {
-    if (-not $NativeX64Only) { return }
+    if (-not $NativeLocalProduct) { return }
     if ($null -eq $snapshot) { throw 'Missing frozen per-user TIP snapshot; cannot declare identity preservation.' }
     Restore-RegistryKeySnapshotInPlace $legacyUserTipKey $snapshot
     $actual=Get-RegistryKeySnapshot $legacyUserTipKey
@@ -307,7 +310,7 @@ function Restart-Elevated {
     $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Quote-Argument $PSCommandPath),
         '-Action', $Action, '-StateRoot', (Quote-Argument $stateRootPath),
         '-TargetUserSid', (Quote-Argument $TargetUserSid))
-    if ($NativeX64Only) {
+    if ($NativeLocalProduct) {
         # Keep this ordinary PowerShell alive through WaitForExit below. The
         # elevated worker may duplicate only this explicit primary token.
         $env:YIMECORE_MAINTENANCE_INITIATOR=$null
@@ -321,7 +324,7 @@ function Restart-Elevated {
     if (-not [string]::IsNullOrWhiteSpace($InstallRoot)) {
         $arguments += @('-InstallRoot', (Quote-Argument ([IO.Path]::GetFullPath($InstallRoot))))
     }
-    foreach ($name in @('Force', 'PurgeUserData', 'NoAutoStart', 'NoLaunch', 'Quiet', 'NativeX64Rehearsal', 'NativeX64Only')) {
+    foreach ($name in @('Force', 'PurgeUserData', 'NoAutoStart', 'NoLaunch', 'Quiet', 'NativeX64Rehearsal', 'NativeX64Only', 'NativeDesktop')) {
         if ((Get-Variable -Name $name -ValueOnly)) { $arguments += "-$name" }
     }
     $process = Start-Process -FilePath $windowsPowerShell -Verb RunAs `
@@ -336,7 +339,7 @@ function Assert-ProductChild([string]$path, [string]$description) {
     if (-not $resolved.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) {
         throw "$description must be a child of ${productRoot}: $resolved"
     }
-    if ($NativeX64Only) {
+    if ($NativeLocalProduct) {
         $cursor = $resolved
         while ($cursor) {
             if ((Test-Path -LiteralPath $cursor) -and
@@ -353,6 +356,11 @@ function Get-RegistrationArchitectures {
     if ($NativeX64Only) {
         return @([ordered]@{ name = 'x64'; action = 'register' })
     }
+    if ($NativeDesktop) {
+        return @(
+            [ordered]@{ name = 'x64'; action = 'register' },
+            [ordered]@{ name = 'x86'; action = 'register-com' })
+    }
     if ($NativeX64Rehearsal) {
         return @([ordered]@{ name = 'x64'; action = 'register' })
     }
@@ -365,6 +373,47 @@ function Get-RegistrationArchitectures {
 	return @(
 		[ordered]@{ name = 'x64'; action = 'register' },
 		[ordered]@{ name = 'x86'; action = 'register-com' })
+}
+
+function Get-CurrentIdentityArchitecturesForRoot([string]$root) {
+    if (-not $NativeLocalProduct) { return @((Get-RegistrationArchitectures) | ForEach-Object { $_.name }) }
+    $descriptorPath = Join-Path $root 'local-product.json'
+    if (-not (Test-Path -LiteralPath $descriptorPath -PathType Leaf)) { return @() }
+    try {
+        $descriptor = Get-Content -LiteralPath $descriptorPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ([string]$descriptor.identity.clsid -cne $clsid -or
+            [string]$descriptor.identity.profile -cne $profile -or
+            [string]$descriptor.identity.product_key -cne $productKeyName) {
+            return @()
+        }
+        $active = @($descriptor.scope.active_architectures)
+        if ($active.Count -lt 1 -or @($active | Where-Object { $_ -notin @('x64','x86') }).Count -ne 0 -or
+            @($active | Select-Object -Unique).Count -ne $active.Count) {
+            throw "Invalid current-identity architecture declaration: $descriptorPath"
+        }
+        return $active
+    } catch {
+        throw "Cannot validate current-identity registration tools in ${root}: $_"
+    }
+}
+
+function Get-RegistrationArchitecturesForRoot([string]$root) {
+    if (-not $NativeLocalProduct) { return @(Get-RegistrationArchitectures) }
+    $active = @(Get-CurrentIdentityArchitecturesForRoot $root)
+    $result = @()
+    if ($active -contains 'x64') { $result += [ordered]@{ name='x64'; action='register' } }
+    if ($active -contains 'x86') { $result += [ordered]@{ name='x86'; action='register-com' } }
+    return $result
+}
+
+function Find-CurrentRegistrationTool([string[]]$roots, [string]$architecture) {
+    foreach ($root in $roots) {
+        $declared = @(Get-CurrentIdentityArchitecturesForRoot $root)
+        if ($NativeLocalProduct -and $declared -notcontains $architecture) { continue }
+        $tool = Join-Path $root "$architecture\YimeTextServiceRegistration.exe"
+        if (Test-Path -LiteralPath $tool -PathType Leaf) { return $tool }
+    }
+    return ''
 }
 
 function Get-PackageRecords([string]$root) {
@@ -399,13 +448,20 @@ function Assert-Package([string]$root) {
     $localContract = $manifest.PSObject.Properties['package_contract'] -and
         [string]$manifest.package_contract -eq 'yimecore-local-product-package-v1'
     if ($localContract) {
-        if (-not $NativeX64Only -or $NativeX64Rehearsal) { throw 'Local product packages require normal NativeX64Only maintenance.' }
         . (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
         . (Join-Path $PSScriptRoot 'local-package-contract.ps1')
         $localPackage = Assert-LocalProductPackage $resolved
+        $active = @($localPackage.descriptor.scope.active_architectures)
+        if ($NativeX64Rehearsal -or
+            (($active.Count -eq 1 -and $active[0] -eq 'x64') -and -not $NativeX64Only) -or
+            (($active.Count -eq 2 -and $active[0] -eq 'x64' -and $active[1] -eq 'x86') -and -not $NativeDesktop) -or
+            ($active.Count -notin @(1,2))) {
+            throw 'Local product package architecture scope does not match its maintenance mode.'
+        }
         $script:productName = [string]$localPackage.descriptor.display_name
         return [ordered]@{ root=$resolved; manifest=$manifest; manifest_path=$manifestPath;
-            manifest_sha256=$localPackage.manifest_sha256; records=@(Get-PackageRecords $resolved) }
+            manifest_sha256=$localPackage.manifest_sha256; records=@(Get-PackageRecords $resolved);
+            descriptor=$localPackage.descriptor }
     }
     if ([string]$manifest.tool_version -notlike 'yimecore-e6c-staged-package-*' -or
         ($manifest.PSObject.Properties['package_contract'] -and $manifest.package_contract)) {
@@ -515,7 +571,7 @@ namespace YimeCoreTrial {
 
 function Remove-ProductTree([string]$root) {
     $resolved = Assert-ProductChild $root 'cleanup root'
-    if ($NativeX64Only -and (Test-FrozenInstallRoot $resolved @(Get-FrozenRegistrationReferences))) {
+    if ($NativeLocalProduct -and (Test-FrozenInstallRoot $resolved @(Get-FrozenRegistrationReferences))) {
         throw "refusing deletion or reboot-deletion of a frozen registration dependency: $resolved"
     }
     if (-not (Test-Path -LiteralPath $resolved)) { return $false }
@@ -747,20 +803,11 @@ function Remove-TrialRegistration([string[]]$installRoots) {
 	$frozenTip = Get-FrozenTipSnapshot
     $frozenUserTip = Get-FrozenUserTipSnapshot
     try {
-	$tools = @{}
-    foreach ($root in $installRoots) {
-		foreach ($architecture in Get-RegistrationArchitectures) {
-			$name = [string]$architecture.name
-			$tool = Join-Path $root "$name\YimeTextServiceRegistration.exe"
-			if (-not $tools.ContainsKey($name) -and
-				(Test-Path -LiteralPath $tool -PathType Leaf)) { $tools[$name] = $tool }
-        }
-    }
 	foreach ($architecture in Get-RegistrationArchitectures) {
 		$name = [string]$architecture.name
-		$tool = [string]$tools[$name]
+		$tool = Find-CurrentRegistrationTool $installRoots $name
 		if ([string]::IsNullOrWhiteSpace($tool)) {
-			throw "$name TSF unregister tool is unavailable; installation files were preserved"
+			throw "$name current-identity TSF unregister tool is unavailable; installation files were preserved"
 		}
 		$output = (& $tool unregister 2>&1) -join "`n"
 		if ($LASTEXITCODE -ne 0) {
@@ -810,7 +857,7 @@ function Invoke-UninstallCore([switch]$ForReinstall, [string[]]$PreserveInstallR
             $null = $preserved.Add([IO.Path]::GetFullPath($root))
         }
     }
-    $frozenReferences = @(if ($NativeX64Only) { Get-FrozenRegistrationReferences })
+    $frozenReferences = @(if ($NativeLocalProduct) { Get-FrozenRegistrationReferences })
     foreach ($root in $roots) {
         if (Test-FrozenInstallRoot $root $frozenReferences) { $null = $preserved.Add([IO.Path]::GetFullPath($root)) }
     }
@@ -894,7 +941,7 @@ function Wait-RegistrationState([string]$tool, [bool]$comRegistered,
 }
 
 function Resolve-RegistrationAction([string]$tool,[string]$requestedAction) {
-    if (-not $NativeX64Only -or $requestedAction -ne 'register') {
+    if (-not $NativeLocalProduct -or $requestedAction -ne 'register') {
         Wait-RegistrationState $tool $false $false 0
         return $requestedAction
     }
@@ -950,7 +997,7 @@ function Start-TrialRuntime($config) {
     $arguments = '-install-root {0} -broker {1} -state-root {2} -no-toolbar' -f
         (Quote-Argument ([string]$config.install_root)), (Quote-Argument ([string]$config.broker_path)),
         (Quote-Argument ([string]$config.state_root))
-    if ($NativeX64Only) {
+    if ($NativeLocalProduct) {
         Initialize-StandardUserLauncher
         $process = [YimeCore.LocalMaintenance.StandardUserLauncher]::Start(
             [string]$config.runtime_path, $arguments, [string]$config.install_root, $TargetUserSid)
@@ -968,7 +1015,7 @@ function Start-TrialRuntime($config) {
             try { $status = Get-Content -LiteralPath $statusPath -Raw -Encoding UTF8 | ConvertFrom-Json } catch { }
             if ($null -ne $status) {
                 if ($status.state -eq 'running' -and [int]$status.runtime_pid -eq $process.Id) {
-                    if ($NativeX64Only) {
+                    if ($NativeLocalProduct) {
                         $verified = Get-PreviousRuntimeWasRunning ($config | ConvertTo-Json -Depth 6)
                         foreach ($childPid in @([int]$status.runtime_pid,[int]$status.broker_pid)) {
                             $token = [YimeCore.LocalMaintenance.StandardUserLauncher]::InspectProcess($childPid)
@@ -1026,7 +1073,11 @@ function Restore-PreviousInstallation([string]$root, [string]$configText,
                                      [bool]$runtimeWasRunning, $userTipSnapshot) {
     if (-not [string]::IsNullOrWhiteSpace($root)) {
     if (-not (Test-Path -LiteralPath $root -PathType Container)) { throw "Previous package is missing: $root" }
-	foreach ($architecture in Get-RegistrationArchitectures) {
+	$restoreArchitectures = @(Get-RegistrationArchitecturesForRoot $root)
+    if ($NativeLocalProduct -and $restoreArchitectures.Count -eq 0) {
+        throw "Previous package has no validated current-identity registration tools: $root"
+    }
+	foreach ($architecture in $restoreArchitectures) {
 		$name = [string]$architecture.name
 		$tool = Join-Path $root "$name\YimeTextServiceRegistration.exe"
 		$action=Resolve-RegistrationAction $tool ([string]$architecture.action)
@@ -1085,13 +1136,13 @@ if ($Action -eq 'Plan') {
         forced_preinstall_cleanup = $true
         upgrade_rollback_supported = $true
         package_staged_before_preinstall_cleanup = $true
-        x64_x86_tsf_registration = [bool](-not $NativeX64Only -and -not $NativeX64Rehearsal)
+        x64_x86_tsf_registration = [bool]$NativeDesktop
 		arm64_tsf_artifacts_required = [bool](-not ($package.manifest.PSObject.Properties['package_contract'] -and
             $package.manifest.package_contract -eq 'yimecore-local-product-package-v1'))
 		active_registration_architectures = @((Get-RegistrationArchitectures) | ForEach-Object { $_.name })
-        frozen_registration_references = @(if ($NativeX64Only) { Get-FrozenRegistrationReferences })
-        standard_user_runtime_required = [bool]$NativeX64Only
-        standard_user_launcher_package_ready = if ($NativeX64Only) { Test-NativeX64LauncherContent $package } else { $null }
+        frozen_registration_references = @(if ($NativeLocalProduct) { Get-FrozenRegistrationReferences })
+        standard_user_runtime_required = [bool]$NativeLocalProduct
+        standard_user_launcher_package_ready = if ($NativeLocalProduct) { Test-NativeX64LauncherContent $package } else { $null }
 		native_registration_architecture = $nativeArchitecture
         taskbar_language_bar_categories = $true
         windows_native_language_bar_only = $true
@@ -1112,7 +1163,7 @@ if ($Action -eq 'Uninstall') {
 
 if ([string]::IsNullOrWhiteSpace($PackageRoot)) { throw 'Install requires -PackageRoot' }
 $package = Assert-Package $PackageRoot
-if ($NativeX64Only) { Assert-NativeX64LaunchSupport $package }
+if ($NativeLocalProduct) { Assert-NativeX64LaunchSupport $package }
 if ($NativeX64Rehearsal -and ($nativeArchitecture -ne 'AMD64' -or -not [Environment]::Is64BitProcess -or
     -not $package.manifest.rehearsal_only -or $NoLaunch -or $NoAutoStart -or $PurgeUserData)) {
     throw 'NativeX64Rehearsal requires the isolated failure-only package, x64 host and full rollback exercise.'
@@ -1134,7 +1185,7 @@ $previousRoot = if (-not [string]::IsNullOrWhiteSpace($previousConfigText)) {
 } else { '' }
 if ([string]::IsNullOrWhiteSpace($previousRoot) -or
     $previousRoots -notcontains $previousRoot) {
-    $previousRoot = if ($NativeX64Only) { Get-NativeRegisteredInstallRoot } elseif ($previousRoots.Count -gt 0) { [string]$previousRoots[0] } else { '' }
+    $previousRoot = if ($NativeLocalProduct) { Get-NativeRegisteredInstallRoot } elseif ($previousRoots.Count -gt 0) { [string]$previousRoots[0] } else { '' }
 }
 $previousRunSnapshot = Get-RegistryValueSnapshot $runKey $productKeyName
 $previousUninstallSnapshot = Get-RegistryKeySnapshot $uninstallKey
@@ -1227,6 +1278,7 @@ try {
         (Quote-Argument $windowsPowerShell), (Quote-Argument $installedScript),
         (Quote-Argument $stateRootPath), (Quote-Argument $TargetUserSid)
     if ($NativeX64Only) { $uninstallCommand += ' -NativeX64Only' }
+    if ($NativeDesktop) { $uninstallCommand += ' -NativeDesktop' }
     New-Item -Path $uninstallKey -Force | Out-Null
     $estimatedSize = [int]([math]::Ceiling((Get-ChildItem -LiteralPath $targetRoot -Recurse -File |
         Measure-Object Length -Sum).Sum / 1KB))
@@ -1255,7 +1307,7 @@ try {
     # the old roots still referenced by frozen architectures.
     if ($NativeX64Rehearsal) { throw 'Failure-only rehearsal unexpectedly started; restoring previous installation.' }
     foreach ($oldRoot in $previousRoots) {
-        if ($NativeX64Only -and (Test-FrozenInstallRoot $oldRoot @(Get-FrozenRegistrationReferences))) { continue }
+        if ($NativeLocalProduct -and (Test-FrozenInstallRoot $oldRoot @(Get-FrozenRegistrationReferences))) { continue }
         if (-not ([IO.Path]::GetFullPath($oldRoot)).Equals(
                 [IO.Path]::GetFullPath($targetRoot), [StringComparison]::OrdinalIgnoreCase) -and
             (Test-Path -LiteralPath $oldRoot)) {

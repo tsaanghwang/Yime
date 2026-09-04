@@ -38,6 +38,6 @@
     "The memory budget is per-process private bytes; physical RAM is not removed from Windows.",
     "The harness does not emulate another CPU microarchitecture, cache hierarchy, storage latency, GPU, firmware or background software mix.",
     "E3 static-versus-learned relative cost is measured on the native host with interleaved samples because Job Object quota waits cannot be attributed fairly to one half of a paired microbenchmark.",
-    "ARM64, x86, other physical PCs and hardware-tier simulations are frozen until the independent core is fully usable on this machine and resumption is approved. No result implies compatibility with those targets."
+    "The x86 user-mode TSF surface on this AMD64 machine is active, but it does not create a separate hardware performance tier. ARM64, other physical PCs and hardware-tier simulations remain frozen. No result implies compatibility with those targets."
   ]
 }

@@ -76,6 +76,7 @@ func TestLocalRequiredFilesMatchCanonicalBuildCatalog(t *testing.T) {
 	}
 	for _, item := range descriptor.NativeBinaries {
 		want = append(want, "x64/"+item)
+		want = append(want, "x86/"+item)
 	}
 	for _, item := range descriptor.Assets {
 		want = append(want, item.Path)
@@ -167,6 +168,9 @@ func writeLocalFixture(t *testing.T) string {
 		data := []byte("fixture")
 		if strings.HasSuffix(path, ".exe") || strings.HasSuffix(path, ".dll") {
 			data = peBytes
+			if strings.HasPrefix(path, "x86/") {
+				data = peFixtureForMachine(t, data, pe.IMAGE_FILE_MACHINE_I386)
+			}
 		}
 		if path == "local-product.json" {
 			data = localDescriptorFixture(t)
@@ -206,7 +210,7 @@ func mutateLocalManifest(t *testing.T, root string, mutate func(*packageManifest
 func TestLocalAuditCompleteAndMissingComponent(t *testing.T) {
 	root := writeLocalFixture(t)
 	if report, err := auditPackage(root); err != nil || !report.Passed {
-		t.Fatalf("valid x64 bundle rejected: %+v %v", report, err)
+		t.Fatalf("valid x64+x86 current-machine bundle rejected: %+v %v", report, err)
 	}
 	path := "indexes/shorthand.yidx"
 	if err := os.Remove(filepath.Join(root, filepath.FromSlash(path))); err != nil {
@@ -251,6 +255,31 @@ func TestLocalAuditRejectsWrongArchitectureInBin(t *testing.T) {
 	}
 }
 
+func TestLocalAuditRejectsWrongArchitectureInX86Surface(t *testing.T) {
+	root := writeLocalFixture(t)
+	path := "x86/YimeTextServiceExperiment.dll"
+	full := filepath.Join(root, filepath.FromSlash(path))
+	data, err := os.ReadFile(full)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data = peFixtureForMachine(t, data, pe.IMAGE_FILE_MACHINE_AMD64)
+	if err := os.WriteFile(full, data, 0600); err != nil {
+		t.Fatal(err)
+	}
+	digest := sha256.Sum256(data)
+	mutateLocalManifest(t, root, func(m *packageManifest) {
+		for i := range m.Files {
+			if m.Files[i].Path == path {
+				m.Files[i].SHA256 = hex.EncodeToString(digest[:])
+			}
+		}
+	})
+	if report, err := auditPackage(root); err == nil || report.PEArchitecturePassed {
+		t.Fatalf("non-x86 TSF surface passed: %+v", report)
+	}
+}
+
 func TestLocalDescriptorRejectsInstallabilityAndIdentityChanges(t *testing.T) {
 	root := t.TempDir()
 	var original map[string]any
@@ -275,7 +304,7 @@ func TestLocalDescriptorRejectsInstallabilityAndIdentityChanges(t *testing.T) {
 			case "scope":
 				current["scope"].(map[string]any)["active_architectures"] = []string{"x64", "arm64"}
 			case "frozen-payload":
-				entries["x86/retained.bin"] = manifestFile{}
+				entries["arm64/retained.bin"] = manifestFile{}
 			case "installer":
 				entries["install.cmd"] = manifestFile{}
 			}

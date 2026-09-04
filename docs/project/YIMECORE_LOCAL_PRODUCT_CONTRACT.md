@@ -1,19 +1,19 @@
 # 本机独立产品契约与功能保留清单
 
-更新：2026-09-03。规范入口是 `tools/yimecore/local-product.json`；源码描述和当前安装版本均为 `0.1.0-local.4`，范围只有 MYCOMPUTER 原生 x64。local.3 的注册损伤已恢复，local.4 已修复维护链并通过纠正后的原生安装后验收。L1/L2/local.3 记录保留为历史证据，详见[local.4 原生升级记录](../YIMECORE_LOCAL_PRODUCT_LOCAL4_2026-09-03.md)。
+更新：2026-09-04。规范入口是 `tools/yimecore/local-product.json`；源码描述为 `0.1.0-local.11`，当前安装仍为已通过 L4 的 `0.1.0-local.9`。活动范围是 MYCOMPUTER 原生 x64 Runtime/Broker 及本机 x64、WOW64 x86 TSF 表面。local.3/local.4 等记录保留为历史证据。
 
 ## 身份和兼容边界
 
-2026-09-03 当前安装已升级为 `0.1.0-local.4`，manifest `324e46fc5c930d79de713b1fe8d4a0c7cefa884c88b25721dec50cb3c2ed4431`；安装与保护验收见 [local.4 记录](../YIMECORE_LOCAL_PRODUCT_LOCAL4_2026-09-03.md)。本文其它 local.3 现场描述作为事故历史保留。
+2026-09-03 当前安装最终升级为 `0.1.0-local.9` 并通过重启后的 x64 宿主三项人工确认。2026-09-04 用户批准解冻本机 WOW64 x86 应用宿主；`local.11` 双架构候选已完成源码构包与隔离验证，尚未安装。
 
-2026-09-03 用户已批准把活动 x64 本机产品迁移到独立 CLSID/Profile，并将显示名定为“音元拼音”。旧 CLSID/Profile 继续只归冻结旧架构所有；迁移构包、安装和真实宿主验收完成前，身份门禁仍不得标记通过。
+活动产品使用独立 CLSID/Profile，显示名为“音元拼音”。旧 CLSID/Profile 只归历史封存试验；旧 x86 文件不得因本机 x86 解冻而执行或改称当前产品。
 
-显示名为“音元拼音”。新构包使用 `YIME_LOCAL_PRODUCT=ON`，从唯一描述生成原生显示名与 CLSID/Profile 头文件，注册工具、语言栏提示与候选说明共用该身份；未启用此开关的旧 Trial 构建保持旧名称和旧 GUID。维护器从经清单验证的描述读取显示名，并只注册新 x64 身份。语言栏菜单和按键契约不变，原生回归同时保护新旧提示文字。
+新构包的 x64 与 Win32 TSF 均使用 `YIME_LOCAL_PRODUCT=ON`，从唯一描述生成显示名与 CLSID/Profile 头文件；未启用此开关的旧 Trial 构建保持旧名称和旧 GUID。维护器从经清单验证的描述读取显示名，并注册当前身份的 x64/x86 COM 表面。语言栏菜单和按键契约不变。
 
 | 身份 | 保持的值 | 当前消费者与后续接线位置 |
 | --- | --- | --- |
-| 活动 x64 COM CLSID | `{E40FA752-BB96-461D-A51D-F40EB437EC65}` | `local-product.json` 生成原生身份；注册工具和维护器只写原生 x64 视图 |
-| 活动 x64 输入法 Profile | `{126F54C6-E9B1-4E22-8652-03224CBD49F9}`；语言 `0804` | 与新 CLSID 组合成“音元拼音”输入法条目 |
+| 活动 x64/x86 COM CLSID | `{E40FA752-BB96-461D-A51D-F40EB437EC65}` | `local-product.json` 生成当前身份；维护器按包声明写入 x64 与 WOW64 COM 视图 |
+| 活动输入法 Profile | `{126F54C6-E9B1-4E22-8652-03224CBD49F9}`；语言 `0804` | 两种进程位数共享“音元拼音”输入法条目 |
 | 冻结旧身份 | CLSID `{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}`；Profile `{607895A8-9504-4A2E-9BB1-2C159E3A1757}` | 历史构建与 WOW64 静态注册；迁移前后均须逐值保持，不执行冻结二进制 |
 | 安装/状态目录 | `YimeCore Experimental Trial` | runtime 的 `resolveOptions`、`ExperimentSettings`、安装器、工具启动参数；目录内 Trial 不表示依赖 Rime |
 | Run/卸载产品键 | `YimeCoreExperimentalTrial` | `manage-e6c-trial-install.ps1`、autostart/system-uninstall 修复器 |
@@ -21,7 +21,7 @@
 | 学习 source ID | `yimecore-e6c-three-mode-trial-v1` | runtime、Broker durable store、备份/恢复探针；不因改名重置学习 |
 | 数据格式 | model v1–v4、journal v1–v2 兼容读取 | 现有 Go 恢复实现；本次不新增格式迁移 |
 
-`test-local-product-build.ps1` 直接核对 TSF GUID 与 runtime 兼容常量；拒绝身份改变、目标架构扩大和不规范路径。当前生产 GUID、生产文件、默认输入法不属于可写目标。旧 x86 注册引用根的保护在 L3 做静态规划，不能执行 x86 注册工具来“整理”。
+`test-local-product-build.ps1` 直接核对 TSF GUID 与 runtime 兼容常量；拒绝身份改变、范围越界和不规范路径。当前生产 GUID、生产文件、默认输入法不属于可写目标。旧身份 x86 注册引用根继续保护；只有从当前源码和身份新构建并由描述符声明活动的 x86 工具可以进入事务。
 
 ## 不悄悄删减的功能
 
@@ -42,10 +42,10 @@
 
 新入口为 `tools/yimecore/build-local-product.ps1`。从空目录构建，既不接受旧 BasePackageRoot，也不从 AppData 的 `runtime-config.json` 隐式寻找旧安装。
 
-新候选契约为 `yimecore-local-product-package-v1`，`installable=true`，必须同时包含原有 55 项运行载荷与 16 项维护/指南文件。这里的 installable 仅指可安装包类型；`local_product_ready=false`，直至真实安装、普通权限、回退和宿主使用验收完成。旧 `yimecore-local-runtime-bundle-v1` 继续要求 `installable=false`，不接受维护入口，也不可被安装器接收。
+新候选契约为 `yimecore-local-product-package-v1`，`installable=true`；`local.11` 清单包含 74 个运行、TSF、数据及维护文件。这里的 installable 仅指可安装包类型；`local_product_ready=false`，直至真实安装、普通权限、回退和 x64/x86 宿主使用验收完成。旧 `yimecore-local-runtime-bundle-v1` 继续要求 `installable=false`，不接受维护入口，也不可被安装器接收。
 
 - descriptor 的 Go/native/assets/maintenance_assets 列表驱动构包；审计器独立固定必需集合并拒绝额外载荷，测试确认集合一致，不能通过删减清单同时漏掉工具。
-- 所有包内 EXE/DLL 都必须是 x64，包括 `bin/` 下文件。新候选拒绝 x86/ARM64 目录；新维护项仅允许出现在独立安装契约中。旧 E6-C 的 x86/ARM64 必需文件要求保持。
+- `bin/`、维护器和 `x64/` PE 必须为 AMD64；只有 `x86/` 下三个 TSF PE 必须为 I386。新候选拒绝 ARM64 目录；旧 E6-C 的多架构必需文件要求保持，不借修改新契约削弱历史审计。
 - 清单拒绝未知契约、缺文件、漏列文件、重复路径、越界/ADS/非规范路径、间接路径、哈希和架构错误。静态 PE 导入及所有 Go 命令依赖都排除 Rime/PIME。
 - 保存 commit、dirty 状态、643 项首批源码/数据内容记录（以后数量随源码变化）、完整源码 ZIP、二进制 Git diff、Go/MSVC/CMake 版本和参数。包里保存来源清单；完整源码 ZIP 在构建证据目录，不作为运行依赖。
 - 新索引从仓内字典构建两次并逐字节哈希比较。源码在构包后逐文件复查，新增/删除文件也使本次构建失败。

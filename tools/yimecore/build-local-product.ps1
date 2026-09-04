@@ -23,7 +23,7 @@ try {
     & (Join-Path $PSScriptRoot 'test-local-registry-preservation.ps1') 2>&1 |
         Tee-Object -LiteralPath (Join-Path $out 'registry-preservation.txt')
     $package = Join-Path $out 'package'
-    foreach ($directory in @('bin', 'x64', 'indexes', 'data', 'build')) {
+    foreach ($directory in @('bin', 'x64', 'x86', 'indexes', 'data', 'build')) {
         New-Item -ItemType Directory -Path (Join-Path $package $directory) -Force | Out-Null
     }
     $buildTools = Join-Path $out 'build-tools'
@@ -75,18 +75,29 @@ try {
     }
     Copy-Item -LiteralPath $descriptorPath -Destination (Join-Path $package 'local-product.json')
 
-    $nativeBuild = Join-Path $out 'native-x64'
-    & cmake -S (Join-Path $repoRoot 'YimeTextServiceExperiment') -B $nativeBuild -G 'Visual Studio 17 2022' -A x64 -DYIME_LOCAL_PRODUCT=ON
-    if ($LASTEXITCODE -ne 0) { throw 'Native x64 configure failed' }
-    & cmake --build $nativeBuild --config Release --parallel
-    if ($LASTEXITCODE -ne 0) { throw 'Native x64 build failed' }
-    $release = Join-Path $nativeBuild 'Release'
-    & (Join-Path $release 'YimeTextServiceContractTests.exe') (Join-Path $release 'YimeTextServiceExperiment.dll') 2>&1 |
-        Tee-Object -LiteralPath (Join-Path $out 'native-contract.txt')
-    if ($LASTEXITCODE -ne 0) { throw 'Native contract failed' }
-    foreach ($file in $product.native_binaries) {
-        if ($file -notmatch '^Yime[A-Za-z]+\.(dll|exe)$') { throw "Unexpected native target: $file" }
-        Copy-Item -LiteralPath (Join-Path $release $file) -Destination (Join-Path $package "x64\$file")
+    $nativeReleases = @{}
+    $nativeBuilds = @{}
+    foreach ($native in @(
+        [ordered]@{ name='x64'; platform='x64' },
+        [ordered]@{ name='x86'; platform='Win32' }
+    )) {
+        $name = [string]$native.name
+        $nativeBuild = Join-Path $out "native-$name"
+        & cmake -S (Join-Path $repoRoot 'YimeTextServiceExperiment') -B $nativeBuild `
+            -G 'Visual Studio 17 2022' -A ([string]$native.platform) -DYIME_LOCAL_PRODUCT=ON
+        if ($LASTEXITCODE -ne 0) { throw "Native $name configure failed" }
+        & cmake --build $nativeBuild --config Release --parallel
+        if ($LASTEXITCODE -ne 0) { throw "Native $name build failed" }
+        $release = Join-Path $nativeBuild 'Release'
+        & (Join-Path $release 'YimeTextServiceContractTests.exe') (Join-Path $release 'YimeTextServiceExperiment.dll') 2>&1 |
+            Tee-Object -LiteralPath (Join-Path $out "native-contract-$name.txt")
+        if ($LASTEXITCODE -ne 0) { throw "Native $name contract failed" }
+        foreach ($file in $product.native_binaries) {
+            if ($file -notmatch '^Yime[A-Za-z]+\.(dll|exe)$') { throw "Unexpected native target: $file" }
+            Copy-Item -LiteralPath (Join-Path $release $file) -Destination (Join-Path $package "$name\$file")
+        }
+        $nativeBuilds[$name] = $nativeBuild
+        $nativeReleases[$name] = $release
     }
 
     Push-Location (Join-Path $repoRoot 'go-backend')
@@ -137,14 +148,24 @@ try {
             throw "Index rebuild not byte-identical: $mode"
         }
     }
-    $nativeCompiler = @(Get-ChildItem -LiteralPath (Join-Path $nativeBuild 'CMakeFiles') -Filter CMakeCXXCompiler.cmake -Recurse -File |
-        ForEach-Object { Get-Content -LiteralPath $_.FullName -Encoding UTF8 } | Where-Object { $_ -match 'CMAKE_CXX_COMPILER(_VERSION|_ID|_ARCHITECTURE_ID)? ' } |
-        ForEach-Object { Convert-LocalProductPlainText $_ })
+    $nativePlatforms = @()
+    foreach ($native in @(
+        [ordered]@{ name='x64'; platform='x64' },
+        [ordered]@{ name='x86'; platform='Win32' }
+    )) {
+        $nativeCompiler = @(Get-ChildItem -LiteralPath (Join-Path $nativeBuilds[[string]$native.name] 'CMakeFiles') `
+            -Filter CMakeCXXCompiler.cmake -Recurse -File |
+            ForEach-Object { Get-Content -LiteralPath $_.FullName -Encoding UTF8 } |
+            Where-Object { $_ -match 'CMAKE_CXX_COMPILER(_VERSION|_ID|_ARCHITECTURE_ID)? ' } |
+            ForEach-Object { Convert-LocalProductPlainText $_ })
+        $nativePlatforms += [ordered]@{ name=[string]$native.name; cmake_platform=[string]$native.platform;
+            compiler=$nativeCompiler }
+    }
     $inputs = [ordered]@{
         schema_version = 'yimecore-local-build-inputs-v1'; product_version = $product.version
         source_manifest_sha256 = $sourceHash; go_version = $goVersion; go_environment = $goEnvironment
         go_flags = @('-trimpath', '-buildvcs=false'); cmake_version = @(& cmake --version)[0]
-        native_generator = 'Visual Studio 17 2022'; native_platform = 'x64'; native_compiler = $nativeCompiler
+        native_generator = 'Visual Studio 17 2022'; native_platforms = $nativePlatforms
         index_builds = $indexEvidence; indexes_rebuilt_byte_identical = $true
         source_archive_sha256 = (Get-FileHash -LiteralPath (Join-Path $out 'source-snapshot.zip')).Hash.ToLowerInvariant()
         reproducibility = 'Go trimpath and explicit source content; indexes verified twice. PE/linker timestamps, archive timestamps, generated metadata and absolute build evidence are not claimed byte reproducible.'
@@ -155,7 +176,7 @@ try {
         tool_version = 'yimecore-local-builder-v1'; package_contract = $product.package_contract
         product_version = $product.version; package_id = "yimecore-local-$($product.version)-$($sourceHash.Substring(0,12))"
         generated_at = [DateTime]::UtcNow.ToString('o'); git_commit = $commit
-        scope = 'MYCOMPUTER native x64 local product candidate; native acceptance pending; frozen targets untouched'
+        scope = 'MYCOMPUTER native x64 runtime with current-identity x64 and x86 TSF surfaces; installed acceptance pending; frozen targets untouched'
         development_scope = $scope; source_manifest_sha256 = $sourceHash
         files = @(Get-LocalProductPayloadRecords $package)
     }
@@ -164,7 +185,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'New local runtime bundle independence/contract audit failed' }
     & (Join-Path $PSScriptRoot 'test-local-product-package.ps1') -PackageRoot $package -OutputRoot (Join-Path $out 'package-verification')
     & (Join-Path $PSScriptRoot 'test-local-product-runtime.ps1') -PackageRoot $package -OutputRoot (Join-Path $out 'runtime-verification') `
-        -MultimodeVerifier (Join-Path $buildTools 'MultimodeVerifier.exe') -TsfTest (Join-Path $release 'YimeTsfCompositionTests.exe')
+        -MultimodeVerifier (Join-Path $buildTools 'MultimodeVerifier.exe') -TsfTests @{
+            x64=(Join-Path $nativeReleases['x64'] 'YimeTsfCompositionTests.exe')
+            x86=(Join-Path $nativeReleases['x86'] 'YimeTsfCompositionTests.exe')
+        }
     Assert-LocalProductSourceUnchanged $repoRoot $sourceRecords
     Assert-LocalProductSourceSet $paths @(Get-LocalProductSourcePaths $repoRoot $product)
     # Re-audit after execution: runtime/test output must not mutate package payload.
@@ -180,10 +204,10 @@ try {
             schema_version = 'yimecore-local-build-result-v1'; passed = [bool]($passed -and $preserved)
             registration_and_default_preserved = $preserved; output_root = $out
             installable = [bool]$product.installable; local_product_ready = $false; public_release_ready = $false
-            completed_scope = 'Source-built x64 product candidate and isolated tests, not installed host acceptance'
-            next_step = 'Native same-user install, medium-token runtime, data restore, rollback and host acceptance'
+            completed_scope = 'Source-built x64 runtime plus x64/x86 TSF product candidate and isolated tests, not installed host acceptance'
+            next_step = 'Native same-user dual-architecture install, medium-token runtime, data restore, rollback and x64/x86 host acceptance'
         }) (Join-Path $out 'summary.json')
         if (-not $preserved) { throw 'System registration/default changed during build; review before/after evidence' }
     } finally { Stop-Transcript | Out-Null }
 }
-Write-Output "PASS: source-built native x64 local product candidate (native acceptance pending). Evidence: $out"
+Write-Output "PASS: source-built x64 runtime plus x64/x86 TSF local product candidate (installed acceptance pending). Evidence: $out"

@@ -11,13 +11,15 @@ $checks=[Collections.Generic.List[string]]::new()
 function Check([bool]$Condition,[string]$Name){if(-not $Condition){throw "FAIL: $Name"};$checks.Add($Name)}
 function Reject([scriptblock]$Action,[string]$Name){$failed=$false;try{& $Action|Out-Null}catch{$failed=$true};Check $failed $Name}
 $package=Assert-LocalProductPackage $PackageRoot
-Check ($package.audit.passed -and $package.descriptor.installable) 'complete installable x64 contract passes without registry writes'
+Check ($package.audit.passed -and $package.descriptor.installable) 'complete installable x64 runtime plus x64/x86 TSF contract passes without registry writes'
 $nativePS=Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
 $entry=Join-Path $PackageRoot 'maintenance\manage-local-product.ps1'
 $planText=(& $nativePS -NoProfile -ExecutionPolicy Bypass -File $entry -Action Plan) -join "`n"
 if($LASTEXITCODE -ne 0){throw "Package-local Plan failed: $planText"}
 $plan=$planText|ConvertFrom-Json
-Check ($plan.active_registration_architectures.Count -eq 1 -and $plan.active_registration_architectures[0] -eq 'x64') 'packaged manager plans only native x64'
+Check ($plan.active_registration_architectures.Count -eq 2 -and $plan.active_registration_architectures[0] -eq 'x64' -and
+    $plan.active_registration_architectures[1] -eq 'x86' -and $plan.x64_x86_tsf_registration) `
+    'packaged manager plans current-identity x64 and x86 TSF registration'
 Check ($plan.standard_user_launcher_package_ready -and -not $plan.arm64_tsf_artifacts_required) 'new contract has a pinned standard-user helper and no frozen payload requirement'
 Check ($plan.product_name -eq $package.descriptor.display_name) 'installed-app name comes from validated canonical product identity'
 Check (-not $plan.production_rime_pime_changed -and $plan.user_model_preserved_on_reinstall) 'production and user-data preservation remain in packaged plan'
@@ -50,7 +52,7 @@ foreach($record in $package.manifest.files|Where-Object{$_.path -like '*.ps1'}) 
 }
 $entryText=Get-Content -LiteralPath $entry -Raw -Encoding UTF8
 Check ($entryText.IndexOf("if (`$Action -ne 'Plan') { Assert-YimeCoreUnpackagedDataMaintenance }") -lt $entryText.IndexOf('$package=Assert-LocalProductPackage')) 'native context required before non-Plan dispatch or data access'
-Check ($entryText.Contains('-TargetUserSid $sid -NativeX64Only')) 'package entry forwards same SID and native-only mode'
+Check ($entryText.Contains('-TargetUserSid $sid -NativeDesktop')) 'package entry forwards same SID and native desktop mode'
 $installCmdText=Get-Content -LiteralPath (Join-Path $PackageRoot 'Install-YimeCore-Local.cmd') -Raw -Encoding UTF8
 Check ($installCmdText.Contains('PASS: YimeCore local product install or upgrade completed.') -and
     $installCmdText.Contains('BLOCKED: YimeCore local product install or upgrade failed.') -and

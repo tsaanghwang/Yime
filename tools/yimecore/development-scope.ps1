@@ -47,25 +47,29 @@ function Get-YimeCoreDevelopmentScope {
 }
 
 function Assert-YimeCoreDevelopmentHost($Policy, [string]$ComputerName, [string]$NativeArchitecture, [bool]$Is64BitProcess) {
+    $active = @($Policy.active_architectures)
     if ($Policy.schema_version -ne 'yimecore-development-scope-v1' -or
         $Policy.native_architecture -ne 'AMD64' -or
-        @($Policy.active_architectures).Count -ne 1 -or $Policy.active_architectures[0] -ne 'x64' -or
+        $active.Count -ne 2 -or $active[0] -ne 'x64' -or $active[1] -ne 'x86' -or
         $Policy.performance_profile -ne 'development_host_x64' -or
         $ComputerName -ne $Policy.computer_name -or $NativeArchitecture -ne 'AMD64' -or -not $Is64BitProcess) {
-        throw 'Current YimeCore scope is this development machine, native x64 only. Other targets are frozen; use 64-bit PowerShell on the approved host.'
+        throw 'Current YimeCore scope is this AMD64 development machine with native x64 runtime plus x64/x86 user-mode TSF surfaces. Use 64-bit PowerShell for orchestration; other targets remain frozen.'
     }
 }
 
 function Assert-YimeCoreNativeGo {
     $target = @(& go env GOOS GOARCH)
     if ($LASTEXITCODE -ne 0 -or $target.Count -ne 2 -or $target[0] -ne 'windows' -or $target[1] -ne 'amd64') {
-        throw 'Current YimeCore scope requires Go target windows/amd64; cross-compilation is frozen.'
+        throw 'The shared YimeCore runtime/Broker must remain windows/amd64. Resumed x86 applies only to the Win32 TSF surface, not a second Go core.'
     }
 }
 
 function Test-YimeCoreScopeEvidence($Evidence, $Scope) {
+    $expectedArchitectures = @($Scope.active_architectures)
+    $actualArchitectures = @($Evidence.active_architectures)
     return [bool]($null -ne $Evidence -and $Evidence.id -eq $Scope.id -and
         $Evidence.computer_name -eq $Scope.computer_name -and $Evidence.native_architecture -eq 'AMD64' -and
-        @($Evidence.active_architectures).Count -eq 1 -and $Evidence.active_architectures[0] -eq 'x64' -and
+        $actualArchitectures.Count -eq $expectedArchitectures.Count -and
+        ($actualArchitectures -join '|') -ceq ($expectedArchitectures -join '|') -and
         $Evidence.policy_sha256 -eq $Scope.policy_sha256)
 }

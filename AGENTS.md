@@ -2,11 +2,13 @@
 
 These rules exist to prevent AI-assisted edits from destabilizing PIME/Rime host integration.
 
-## Current development scope (user decision, 2026-09-02)
+## Current development scope (user decision, updated 2026-09-04)
 
-- Only this development PC (`MYCOMPUTER`, native x64) is an active build/verification target. Freeze ARM64, x86 (including 32-bit hosts on this PC), old x64, other physical PCs and hardware-tier simulations until the independent core is fully usable here and the user approves resumption. Do not reinstate those tasks as current blockers or provision cloud machines.
-- Preserve frozen source tests and historical evidence; frozen is not passed. Existing x86/ARM64 package files may be carried forward byte-for-byte from a manifest-verified base for maintenance/rollback, with provenance, but must not be rebuilt or test-executed in this phase. Static payload integrity and production-registration preservation checks remain mandatory.
-- Default entry points follow `tools/yimecore/development-scope.json`. Older experiment scripts are historical, not an excuse to bypass this scope. Current-machine correctness, data safety, host acceptance and rollback requirements remain active; production Rime/PIME and the user's default input method remain unchanged.
+- This development PC (`MYCOMPUTER`, native x64) remains the only active machine. Native x64 core/runtime and both x64 and x86 user-mode TSF surfaces are active: x86 means 32-bit applications running under WOW64 on this PC, not a 32-bit Windows installation or separate x86 hardware. ARM64, old x64, other physical PCs and hardware-tier simulations remain frozen; do not provision cloud machines.
+- Advance the x86 workstream alongside x64 L5 daily use and L6 sealing. The x86 sequence is source build and isolated contracts, dual-architecture package/transaction work, installed x86 registered-host verification, then Firefox/Notepad++ 32-bit live-host acceptance and sealing. An earlier stage does not imply a later stage passed.
+- Existing x86 package files belong to the frozen legacy CLSID/Profile and remain read-only historical/rollback payloads. Never execute or relabel them as the resumed current product. Resumed x86 artifacts must be rebuilt from current source with the active local-product identity and recorded in new evidence. Existing ARM64 package files may still be carried forward byte-for-byte from a manifest-verified base, with provenance, but must not be rebuilt or test-executed.
+- Preserve frozen source tests and historical evidence; frozen is not passed. Static payload integrity and production-registration preservation checks remain mandatory.
+- Default entry points follow `tools/yimecore/development-scope.json`. Older experiment scripts remain historical unless an updated current-scope entry explicitly invokes them. Current-machine correctness, data safety, host acceptance and rollback requirements remain active; production Rime/PIME and the user's default input method remain unchanged.
 
 ## Integration safeguards
 

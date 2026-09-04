@@ -203,7 +203,13 @@ func auditPackage(root string) (auditReport, error) {
 			}
 			expected := expectedMachine(relative)
 			if manifest.PackageContract == localRuntimeContract || manifest.PackageContract == localInstallableContract {
-				expected = "amd64" // Every PE, including bin/ and maintenance/, is native x64.
+				// Runtime/tooling remains native x64. Only the explicitly scoped x86/
+				// TSF surface is Win32 for WOW64 desktop hosts on this machine.
+				if strings.HasPrefix(strings.ToLower(filepath.ToSlash(relative)), "x86/") {
+					expected = "i386"
+				} else {
+					expected = "amd64"
+				}
 			}
 			if expected != "" && peItem.Machine != expected {
 				report.PEArchitecturePassed = false

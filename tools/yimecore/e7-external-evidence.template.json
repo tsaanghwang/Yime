@@ -6,7 +6,7 @@
   "reviewed_by": "",
   "approved_signer_thumbprint": "",
   "arm64_desktop_host_passed": null,
-  "x86_desktop_host_passed": null,
+  "x86_desktop_host_passed": false,
   "mainstream_physical_host_passed": null,
   "forward_physical_host_passed": null,
   "broader_third_party_host_matrix_passed": false,

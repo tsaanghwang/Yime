@@ -3,7 +3,7 @@ param(
     [Parameter(Mandatory)][string]$PackageRoot,
     [Parameter(Mandatory)][string]$OutputRoot,
     [Parameter(Mandatory)][string]$MultimodeVerifier,
-    [Parameter(Mandatory)][string]$TsfTest
+    [Parameter(Mandatory)][hashtable]$TsfTests
 )
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
@@ -74,9 +74,15 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Packaged offline recovery probe failed' }
     $runtimeProcess = Start-Process -FilePath $runtime -ArgumentList $runtimeArgs -WorkingDirectory $relocated -WindowStyle Hidden -PassThru
     $runtimeBefore = Wait-LocalTestRuntime
-    & $TsfTest (Join-Path $package 'x64\YimeTextServiceExperiment.dll') $pipeName 2>&1 |
-        Tee-Object -LiteralPath (Join-Path $OutputRoot 'tsf-composition.txt')
-    if ($LASTEXITCODE -ne 0) { throw 'Direct isolated x64 TSF/language-bar regression failed' }
+    foreach ($architecture in @('x64','x86')) {
+        $test = [string]$TsfTests[$architecture]
+        if ([string]::IsNullOrWhiteSpace($test) -or -not (Test-Path -LiteralPath $test -PathType Leaf)) {
+            throw "Direct isolated $architecture TSF test executable is unavailable"
+        }
+        & $test (Join-Path $package "$architecture\YimeTextServiceExperiment.dll") $pipeName 2>&1 |
+            Tee-Object -LiteralPath (Join-Path $OutputRoot "tsf-composition-$architecture.txt")
+        if ($LASTEXITCODE -ne 0) { throw "Direct isolated $architecture TSF/language-bar regression failed" }
+    }
     # Kill only the freshly verified child owned by our test supervisor. Nothing
     # is selected by global executable name or persisted installed status.
     $child = Get-Process -Id $runtimeBefore.broker.ProcessId
@@ -100,8 +106,9 @@ try {
         Write-LocalProductJson ([ordered]@{
             passed = [bool]($passed -and $stopped); relocated_root = $relocated; pipe = $pipeName
             runtime_before = $runtimeBefore; runtime_after_broker_failure = $runtimeAfter; runtime_stopped = $stopped
+            direct_tsf_architectures = @('x64','x86')
             registered_host_test_executed = $false; live_word_acceptance = $false
-            note = 'Direct isolated TSF and disposable data only; not physical taskbar/installed host acceptance. Retain relocated files for inspection.'
+            note = 'Direct isolated x64/x86 TSF and disposable data only; not physical taskbar/installed host acceptance. Retain relocated files for inspection.'
         }) (Join-Path $OutputRoot 'summary.json')
         Pop-Location
     }
