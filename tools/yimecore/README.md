@@ -6,6 +6,8 @@
 
 ## 本机独立产品新入口
 
+**2026-09-04 当前状态**：当前安装已升级为 `0.1.0-local.11`，活动根为 `yimecore-e6c-f435f463bfd0-5a3f847a`，manifest SHA-256 为 `5a3f847a3136fd2198f7dc9aba22dc017ed7439d8447435e8752eb379a4a5cd8`。安装态 x64/x86 registered-host 三模式 6/6 通过；Firefox 155.0 与 Notepad++ 8.9.8 两个 PE32/I386 进程均确认加载当前安装根的 x86 DLL，并由用户确认组合提交、裸数字组字、`Shift+1` 首候选三项通过。生产/冻结注册及默认输入法保持不变；详见 [local.11 x86 验收](../../docs/YIMECORE_LOCAL11_X86_ACCEPTANCE_2026-09-04.md)。x86 本机工作流已经封存；x64 L5 日常使用和 L6 合并封存仍未关闭，`local_product_ready` 和公开发行仍为 false。下方带时刻的 local.7/local.9 “当前状态”段落均为当时的过程快照。
+
 **17:05 原生状态**：`local.7` 升级通过，但完整卸载重装在卸载间隙发现当前用户 TIP 残留 DWORD `Enable=0` 并停止，当前产品已卸载且恢复介质完整。`local.8` 同时修复“卸载删除残留壳”和“无真实旧安装时禁止恢复旧壳”，已完成 native x64 构建及隔离验证；固定恢复入口待执行。见 [local.7 记录](../../docs/YIMECORE_LOCAL_PRODUCT_LOCAL7_2026-09-03.md)和 [local.8 记录](../../docs/YIMECORE_LOCAL_PRODUCT_LOCAL8_2026-09-03.md)。
 
 活动 x64 已使用“音元拼音”的独立 CLSID/Profile。2026-09-04 用户批准在本机恢复 WOW64 x86 应用宿主，并与 x64 L5/L6 同步推进；新 x86 必须从当前源码以同一活动身份构建。旧 WOW64 CLSID/Profile 和原始 payload 继续只读保留，不得改名、重注册或当作当前活动产品执行。ARM64、其他机器、老旧 x64 和硬件模拟仍冻结。
@@ -16,6 +18,7 @@
 - `test-local-product-build.ps1`：38 项路径、身份、范围、依赖、源码变更和 PS5 纯文本证据序列化保护。
 - `build-local-product.ps1`：从源码和仓内数据构建，不依赖旧安装；输出到新建的 `.tmp/yimecore-local-product/<run>/`。
 - `test-local-product-runtime.ps1`：由构包器调用，在仓库外隔离目录验证新包、三模式、恢复和 TSF，不做机器注册或真实 Word 验收。
+- `test-installed-local-host.ps1`：只读核对当前安装根的 x64/WOW64 COM、两种注册工具状态，并以隔离 Broker 在全码、变码、简码下分别运行 x64/x86 registered-host；不改变机器注册。
 - `test-local-product-maintenance.ps1`：共享维护器的正常 x64、冻结引用保留、实际进程身份、首次安装失败状态恢复及标准令牌策略回归；带旧包只读 Plan 时共 55 项，PS5.1/PS7 已验证。
 - `local-runtime-launcher.cs`：同 SID/会话的标准用户启动帮助程序。使用明确保留的普通 PowerShell 主令牌，核对 PID/时间/映像/祖先/身份，并挂起验证实际子进程；只请求 `0x018b` 句柄权限。2026-09-03 07:32 原生启动验证已通过。`-NativeDesktop` 是当前 x64 Runtime 加 x64/x86 TSF 模式；历史 x64-only 包仍由 `-NativeX64Only` 维护，两者均与故障演练分离。
 - `test-native-standard-user-launch.ps1` / `test-standard-user-launch-contract.ps1`：原生只读启动验证及当前 56 项隔离契约。`native-launch-fix-20260903-073233-5efe1c97` 已证明普通启动对照及 UAC 后实际普通主令牌子进程均通过，五份源码哈希一致；没有安装或停止输入法。探针无需重复。见[1346 / 错误 5 修复记录](../../docs/YIMECORE_STANDARD_USER_LAUNCH_FIX_2026-09-03.md)。

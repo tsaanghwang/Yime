@@ -1,10 +1,10 @@
 # 本机独立产品契约与功能保留清单
 
-更新：2026-09-04。规范入口是 `tools/yimecore/local-product.json`；源码描述为 `0.1.0-local.11`，当前安装仍为已通过 L4 的 `0.1.0-local.9`。活动范围是 MYCOMPUTER 原生 x64 Runtime/Broker 及本机 x64、WOW64 x86 TSF 表面。local.3/local.4 等记录保留为历史证据。
+更新：2026-09-04。规范入口是 `tools/yimecore/local-product.json`；源码描述和当前安装均为 `0.1.0-local.11`。活动范围是 MYCOMPUTER 原生 x64 Runtime/Broker 及本机 x64、WOW64 x86 TSF 表面。local.3/local.4 等记录保留为历史证据。
 
 ## 身份和兼容边界
 
-2026-09-03 当前安装最终升级为 `0.1.0-local.9` 并通过重启后的 x64 宿主三项人工确认。2026-09-04 用户批准解冻本机 WOW64 x86 应用宿主；`local.11` 双架构候选已完成源码构包与隔离验证，尚未安装。
+2026-09-03 的 `local.9` 已通过重启后 x64 宿主三项人工确认。2026-09-04 用户批准解冻本机 WOW64 x86 应用宿主；`local.11` 双架构包随后完成干净源码构包、真实安装和 x64/x86 三模式 registered-host，并在 Firefox/Notepad++ 32 位进程中确认加载当前 x86 DLL 及三项输入行为。x86 分支已通过，但 x64 L5 日常使用及 L6 合并封存仍待完成。
 
 活动产品使用独立 CLSID/Profile，显示名为“音元拼音”。旧 CLSID/Profile 只归历史封存试验；旧 x86 文件不得因本机 x86 解冻而执行或改称当前产品。
 
