@@ -22,7 +22,7 @@
 - [x] 用户批准本机 x86 应用宿主解冻。
 - [x] Firefox 155.0 32 位和 Notepad++ 8.9.8 32 位宿主已准备。
 - [x] S1 当前身份 Win32 构建与隔离契约。证据：`.tmp/yimecore-experiment/x86-local-surface/20260904-100339-4da4b1ea`；PE 均为 I386，原生契约通过，注册和默认输入法前后快照一致。
-- [x] S2 双架构包、注册事务与回退实现及隔离回归。`local.11` 最终候选证据：`.tmp/yimecore-local-product/20260904-102320-9d3b0b85`；74 文件，manifest SHA-256 `50e119b47124c6125e246ee98211ebbd162ae2eb167a9a078411cf1bba8e571f`。尚未执行真实安装，归入 S3。
+- [x] S2 双架构包、注册事务与回退实现及隔离回归。`local.11` 干净提交候选证据：`.tmp/yimecore-local-product/20260904-102616-bf7a7a1a`；commit `f435f463bfd0a0647d0d9ef9f5711c7ef55a698e`，构建时 `dirty=false`，74 文件，manifest SHA-256 `5a3f847a3136fd2198f7dc9aba22dc017ed7439d8447435e8752eb379a4a5cd8`。尚未执行真实安装，归入 S3。
 - [ ] S3 x86 registered-host 和实际 DLL 加载证据。
 - [ ] S4 两个真实宿主输入确认及与 x64 L6 合并封存。
 
