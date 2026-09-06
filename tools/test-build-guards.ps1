@@ -897,23 +897,190 @@ if (-not $nsisStageTestText.Contains('definitions-only-module-generates-six-stag
     -not $nsisStageTestText.Contains('PACKAGE_STAGE_ROOT')) {
     throw 'The six-macro stage-only generator contract is not protected by its isolated synthetic test.'
 }
+$builderTokens=$null;$builderParseErrors=$null
+$builderAst=[Management.Automation.Language.Parser]::ParseFile($installerBuilder,[ref]$builderTokens,[ref]$builderParseErrors)
+if(@($builderParseErrors).Count -ne 0){
+    throw ('Rime/PIME installer builder has PowerShell parse errors: '+(($builderParseErrors|ForEach-Object{$_.Message}) -join '; '))
+}
+$builderCommands=@($builderAst.FindAll({param($node) $node -is [Management.Automation.Language.CommandAst]},$true))
+$builderAssignments=@($builderAst.FindAll({param($node) $node -is [Management.Automation.Language.AssignmentStatementAst]},$true))
+$monitorOpenCommands=@($builderCommands|Where-Object{$_.GetCommandName() -ceq 'Open-RimePimeMonitoredNsisStage'})
+$monitorCompleteCommands=@($builderCommands|Where-Object{$_.GetCommandName() -ceq 'Complete-RimePimeMonitoredNsisStage'})
+$preparedPublicationCommands=@($builderCommands|Where-Object{$_.GetCommandName() -ceq 'New-RimePimePreparedPublication'})
+$publicationCommitCommands=@($builderCommands|Where-Object{$_.GetCommandName() -ceq 'Invoke-RimePimePublicationCommit'})
+$monitorCloseCommands=@($builderCommands|Where-Object{$_.GetCommandName() -ceq 'Close-RimePimeMonitoredNsisStage'})
+$makensisCommands=@($builderCommands|Where-Object{
+    $_.InvocationOperator -eq [Management.Automation.Language.TokenKind]::Ampersand -and
+    $_.CommandElements.Count -gt 0 -and $_.CommandElements[0] -is [Management.Automation.Language.VariableExpressionAst] -and
+    $_.CommandElements[0].VariablePath.UserPath -ceq 'MakensisPath'
+})
+$inputLeaseCommands=@($builderCommands|Where-Object{$_.GetCommandName() -ceq 'Open-RimePimeBuildInputLeases'})
+$prebuildLeaseAssignments=@($builderAssignments|Where-Object{
+    $assignment=$_
+    $opens=@($assignment.Right.FindAll({param($node) $node -is [Management.Automation.Language.CommandAst] -and $node.GetCommandName() -ceq 'Open-RimePimeBuildInputLeases'},$true))
+    $assignment.Left.Extent.Text -ceq '$leases' -and $opens.Count -eq 1 -and
+    $opens[0].CommandElements.Count -eq 2 -and $opens[0].CommandElements[1].Extent.Text -ceq '$expected'
+})
+$candidateLeaseAssignments=@($builderAssignments|Where-Object{
+    $assignment=$_
+    $opens=@($assignment.Right.FindAll({param($node) $node -is [Management.Automation.Language.CommandAst] -and $node.GetCommandName() -ceq 'Open-RimePimeBuildInputLeases'},$true))
+    $assignment.Left.Extent.Text -ceq '$candidateLeases' -and $opens.Count -eq 1 -and
+    $opens[0].CommandElements.Count -eq 2 -and $opens[0].CommandElements[1].Extent.Text -ceq '$candidateExpected'
+})
+$candidateProbeCommands=@($builderCommands|Where-Object{
+    $_.GetCommandName() -ceq 'Test-Path' -and $_.CommandElements.Count -eq 5 -and
+    $_.CommandElements[1] -is [Management.Automation.Language.CommandParameterAst] -and
+    $_.CommandElements[1].ParameterName -ceq 'LiteralPath' -and
+    $_.CommandElements[2] -is [Management.Automation.Language.VariableExpressionAst] -and
+    $_.CommandElements[2].VariablePath.UserPath -ceq 'candidate' -and
+    $_.CommandElements[3] -is [Management.Automation.Language.CommandParameterAst] -and
+    $_.CommandElements[3].ParameterName -ceq 'PathType' -and
+    $_.CommandElements[4] -is [Management.Automation.Language.StringConstantExpressionAst] -and
+    [string]$_.CommandElements[4].Value -ceq 'Leaf'
+})
+$candidateRecordAssignments=@($builderAssignments|Where-Object{
+    $assignment=$_
+    $records=@($assignment.Right.FindAll({param($node) $node -is [Management.Automation.Language.CommandAst] -and $node.GetCommandName() -ceq 'Get-YimePimePayloadFileRecord'},$true))
+    $assignment.Left.Extent.Text -ceq '$candidateRecord' -and $records.Count -eq 1 -and
+    $records[0].CommandElements.Count -eq 2 -and
+    $records[0].CommandElements[1] -is [Management.Automation.Language.VariableExpressionAst] -and
+    $records[0].CommandElements[1].VariablePath.UserPath -ceq 'candidate'
+})
+$makensisExitGates=@($builderAst.FindAll({param($node) $node -is [Management.Automation.Language.IfStatementAst]},$true)|Where-Object{
+    $ifNode=$_
+    $binary=$null
+    if($ifNode.Clauses.Count -eq 1){
+        $condition=$ifNode.Clauses[0].Item1
+        if($condition.PipelineElements.Count -eq 1 -and
+            $condition.PipelineElements[0] -is [Management.Automation.Language.CommandExpressionAst] -and
+            $condition.PipelineElements[0].Expression -is [Management.Automation.Language.BinaryExpressionAst]){
+            $binary=$condition.PipelineElements[0].Expression
+        }
+    }
+    $null -ne $binary -and $null -eq $ifNode.ElseClause -and
+    $binary.Operator -eq [Management.Automation.Language.TokenKind]::Ine -and
+    $binary.Left -is [Management.Automation.Language.VariableExpressionAst] -and
+    $binary.Left.VariablePath.UserPath -ceq 'LASTEXITCODE' -and
+    $binary.Right -is [Management.Automation.Language.ConstantExpressionAst] -and
+    $binary.Right.Value -is [int] -and [int]$binary.Right.Value -eq 0 -and
+    $ifNode.Clauses[0].Item2.Statements.Count -eq 1 -and
+    $ifNode.Clauses[0].Item2.Statements[0] -is [Management.Automation.Language.ThrowStatementAst]
+})
+if($monitorOpenCommands.Count -ne 1 -or $monitorCompleteCommands.Count -ne 1 -or
+    $preparedPublicationCommands.Count -ne 1 -or $publicationCommitCommands.Count -ne 1 -or
+    $monitorCloseCommands.Count -ne 1 -or $makensisCommands.Count -ne 1 -or
+    $inputLeaseCommands.Count -ne 2 -or $prebuildLeaseAssignments.Count -ne 1 -or
+    $candidateProbeCommands.Count -ne 1 -or $candidateRecordAssignments.Count -ne 1 -or
+    $candidateLeaseAssignments.Count -ne 1 -or $makensisExitGates.Count -ne 1){
+    throw 'The builder must have one AST-visible monitored makensis lifecycle, candidate admission, preparation, and commit path.'
+}
+$makensisCommand=$makensisCommands[0]
+if($makensisCommand.CommandElements.Count -ne 2 -or
+    $makensisCommand.CommandElements[1] -isnot [Management.Automation.Language.VariableExpressionAst] -or
+    -not $makensisCommand.CommandElements[1].Splatted -or
+    $makensisCommand.CommandElements[1].VariablePath.UserPath -cne 'arguments'){
+    throw 'The sole makensis command must use the reviewed splatted disabled-build argument array.'
+}
+$monitorOpen=$monitorOpenCommands[0]
+$monitorComplete=$monitorCompleteCommands[0]
+$preparedPublication=$preparedPublicationCommands[0]
+$publicationCommit=$publicationCommitCommands[0]
+$monitorClose=$monitorCloseCommands[0]
+$membershipAssignments=@($builderAssignments|Where-Object{
+    $_.Left.Extent.Text -ceq '$membershipInterval' -and
+    $_.Right.Extent.StartOffset -le $monitorComplete.Extent.StartOffset -and
+    $_.Right.Extent.EndOffset -ge $monitorComplete.Extent.EndOffset
+})
+$buildResultAssignments=@($builderAssignments|Where-Object{$_.Left.Extent.Text -ceq '$buildResult'})
+$buildResultHashtables=@()
+if($buildResultAssignments.Count -eq 1){
+    $buildResultHashtables=@($buildResultAssignments[0].Right.FindAll({param($node) $node -is [Management.Automation.Language.HashtableAst]},$true)|Where-Object{
+        $ancestor=$_.Parent
+        while($ancestor -is [Management.Automation.Language.ConvertExpressionAst]){$ancestor=$ancestor.Parent}
+        $ancestor -eq $buildResultAssignments[0].Right
+    })
+}
+$membershipResultPairs=@()
+if($buildResultHashtables.Count -eq 1){
+    $membershipResultPairs=@($buildResultHashtables[0].KeyValuePairs|Where-Object{
+        $_.Item1 -is [Management.Automation.Language.StringConstantExpressionAst] -and
+        [string]$_.Item1.Value -ceq 'nsis_compiler_membership_interval'
+    })
+}
+if($buildResultAssignments.Count -ne 1 -or $buildResultHashtables.Count -ne 1 -or $membershipResultPairs.Count -ne 1){
+    throw 'The successful buildResult must contain one nsis_compiler_membership_interval binding.'
+}
+$membershipResultValue=$membershipResultPairs[0].Item2
+if($membershipResultValue -isnot [Management.Automation.Language.PipelineAst] -or
+    $membershipResultValue.PipelineElements.Count -ne 1 -or
+    $membershipResultValue.PipelineElements[0] -isnot [Management.Automation.Language.CommandExpressionAst] -or
+    $membershipResultValue.PipelineElements[0].Expression -isnot [Management.Automation.Language.VariableExpressionAst] -or
+    $membershipResultValue.PipelineElements[0].Expression.VariablePath.UserPath -cne 'membershipInterval'){
+    throw 'The successful buildResult membership binding must have the exact value $membershipInterval.'
+}
+$monitorOwningTries=@($builderAst.FindAll({param($node) $node -is [Management.Automation.Language.TryStatementAst]},$true)|Where-Object{
+    $null -ne $_.Finally -and
+    $_.Body.Extent.StartOffset -le $monitorOpen.Extent.StartOffset -and
+    $_.Body.Extent.EndOffset -ge $publicationCommit.Extent.EndOffset -and
+    $_.Finally.Extent.StartOffset -le $monitorClose.Extent.StartOffset -and
+    $_.Finally.Extent.EndOffset -ge $monitorClose.Extent.EndOffset
+})
+if($membershipAssignments.Count -ne 1 -or $monitorOwningTries.Count -ne 1){
+    throw 'Membership completion must be assigned once before publication and the monitor must close in the owning finally.'
+}
+$monitorCloseGuards=@($monitorOwningTries[0].Finally.FindAll({param($node) $node -is [Management.Automation.Language.IfStatementAst]},$true)|Where-Object{
+    $guardIf=$_
+    $guardBinary=$null
+    if($guardIf.Clauses.Count -eq 1){
+        $guardCondition=$guardIf.Clauses[0].Item1
+        if($guardCondition.PipelineElements.Count -eq 1 -and
+            $guardCondition.PipelineElements[0] -is [Management.Automation.Language.CommandExpressionAst] -and
+            $guardCondition.PipelineElements[0].Expression -is [Management.Automation.Language.BinaryExpressionAst]){
+            $guardBinary=$guardCondition.PipelineElements[0].Expression
+        }
+    }
+    $null -ne $guardBinary -and $guardBinary.Operator -eq [Management.Automation.Language.TokenKind]::Ine -and
+    $guardBinary.Left -is [Management.Automation.Language.VariableExpressionAst] -and
+    $guardBinary.Left.VariablePath.UserPath -ceq 'null' -and
+    $guardBinary.Right -is [Management.Automation.Language.VariableExpressionAst] -and
+    $guardBinary.Right.VariablePath.UserPath -ceq 'compilerStage' -and
+    $guardIf.Clauses[0].Item2.Extent.StartOffset -le $monitorClose.Extent.StartOffset -and
+    $guardIf.Clauses[0].Item2.Extent.EndOffset -ge $monitorClose.Extent.EndOffset
+})
+if($monitorCloseGuards.Count -ne 1){
+    throw 'Close-RimePimeMonitoredNsisStage must be inside the unique $null -ne $compilerStage guard in the owning finally.'
+}
 $leaseOpen = $installerBuilderText.IndexOf('$leases=Open-RimePimeBuildInputLeases $expected')
 $preLease = if ($leaseOpen -ge 0) { $installerBuilderText.IndexOf('Test-RimePimeBuildInputLeases @($leases)', $leaseOpen) } else { -1 }
 $preStage = $installerBuilderText.IndexOf('$preStage=Test-RimePimePackageCopyStage')
 $preInclude = $installerBuilderText.IndexOf('$preInclude=Test-RimePimeNsisStageInclude')
 $stagedPeVerify = $installerBuilderText.IndexOf('& $stagePeVerifier -RepoRoot $stageResult.StageRoot')
 $postVerifierLease = if ($stagedPeVerify -ge 0) { $installerBuilderText.IndexOf('Test-RimePimeBuildInputLeases @($leases)', $stagedPeVerify) } else { -1 }
-$makensisCall = $installerBuilderText.IndexOf('& $MakensisPath @arguments')
-$candidateLeaseOpen = if ($makensisCall -ge 0) { $installerBuilderText.IndexOf('$candidateLeases=Open-RimePimeBuildInputLeases $candidateExpected', $makensisCall) } else { -1 }
+$makensisCall = $makensisCommand.Extent.StartOffset
+$makensisExitGate = $makensisExitGates[0].Extent.StartOffset
+$membershipComplete = $monitorComplete.Extent.StartOffset
+$candidateProbe = $candidateProbeCommands[0].Extent.StartOffset
+$candidateRecord = $candidateRecordAssignments[0].Extent.StartOffset
+$candidateLeaseOpen = $candidateLeaseAssignments[0].Extent.StartOffset
 $postLease = if ($makensisCall -ge 0) { $installerBuilderText.IndexOf('Test-RimePimeBuildInputLeases @($leases)', $makensisCall) } else { -1 }
 $postStage = $installerBuilderText.IndexOf('$postStage=Test-RimePimePackageCopyStage')
 $postInclude = $installerBuilderText.IndexOf('$postInclude=Test-RimePimeNsisStageInclude')
-$publishCandidate = $installerBuilderText.IndexOf('$receipt=Invoke-RimePimePublicationCommit')
-if ($leaseOpen -lt 0 -or $preLease -le $leaseOpen -or $preStage -le $preLease -or
+$prepareCandidate = $preparedPublication.Extent.StartOffset
+$buildResultBinding = $buildResultAssignments[0].Extent.StartOffset
+$publishCandidate = $publicationCommit.Extent.StartOffset
+$closeCompilerMonitor = $monitorClose.Extent.StartOffset
+if ($monitorOpen.Extent.StartOffset -lt 0 -or $leaseOpen -le $monitorOpen.Extent.StartOffset -or
+    $preLease -le $leaseOpen -or $preStage -le $preLease -or
     $preInclude -le $preStage -or $stagedPeVerify -le $preInclude -or
-    $postVerifierLease -le $stagedPeVerify -or $makensisCall -le $postVerifierLease -or $candidateLeaseOpen -le $makensisCall -or
+    $postVerifierLease -le $stagedPeVerify -or $makensisCall -le $postVerifierLease -or
+    $makensisExitGate -le $makensisCall -or $membershipComplete -le $makensisExitGate -or
+    $candidateProbe -le $membershipComplete -or $candidateRecord -le $candidateProbe -or
+    $candidateLeaseOpen -le $candidateRecord -or
     $postLease -le $candidateLeaseOpen -or
-    $postStage -le $postLease -or $postInclude -le $postStage -or $publishCandidate -le $postInclude -or
+    $postStage -le $postLease -or $postInclude -le $postStage -or
+    $prepareCandidate -le $postInclude -or $buildResultBinding -le $prepareCandidate -or
+    $publishCandidate -le $buildResultBinding -or
+    $closeCompilerMonitor -le $publishCandidate -or
     [regex]::Matches($installerBuilderText, 'Test-RimePimeBuildInputLeases @\(\$leases\)').Count -ne 3 -or
     [regex]::Matches($installerBuilderText, 'Test-RimePimePackageCopyStage').Count -ne 2 -or
     [regex]::Matches($installerBuilderText, 'Test-RimePimeNsisStageInclude').Count -ne 2 -or
@@ -926,7 +1093,7 @@ if ($leaseOpen -lt 0 -or $preLease -le $leaseOpen -or $preStage -le $preLease -o
     -not $stagedBuildTestText.Contains('fresh-publication-with-no-previous-bundle-commits-all-three-members') -or
     -not $stagedBuildHelperText.Contains('[IO.File]::Move($target,$backup);$state.OldMoved=$true') -or
     -not $stagedBuildHelperText.Contains("Name='receipt-sidecar-commit-marker'")) {
-    throw 'NSIS wrapper must hold read-only leases and reverify the same stage/include before and after compilation before publishing.'
+    throw 'NSIS wrapper must complete the monitored compiler interval, lease and reverify inputs, prepare, commit, and close the monitor in finally in admission order.'
 }
 $pimeTextServiceText = Get-Content -LiteralPath $pimeTextServiceSource -Raw
 $pimeTextServiceHeaderText = Get-Content -LiteralPath $pimeTextServiceHeader -Raw

@@ -16,6 +16,7 @@ if(-not $PublishCanonical){throw 'Explicit -PublishCanonical is required; prepar
 $module=Join-Path $PSScriptRoot 'rime-pime-package-receipt-v2.psm1'
 $logicPaths=@(
     $PSCommandPath,$module,(Join-Path $PSScriptRoot 'rime-pime-package-receipt-v2.ps1'),
+    (Join-Path $PSScriptRoot 'rime-pime-receipt-v2-store.ps1'),
     (Join-Path $PSScriptRoot 'rime-pime-staged-installer-build.psm1'),
     (Join-Path $PSScriptRoot 'rime-pime-staged-installer-build.ps1'),
     (Join-Path $PSScriptRoot 'rime-pime-package-staging.psm1'),

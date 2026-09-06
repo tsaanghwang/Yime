@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$OutputRoot)
+param([Parameter(Mandatory)][string]$OutputRoot,[switch]$DefinitionsOnly)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..')).TrimEnd('\')
 $output=[IO.Path]::GetFullPath($OutputRoot).TrimEnd('\');$allowed=Join-Path $repo '.tmp\dual-product'
@@ -8,6 +8,9 @@ if((Split-Path -Parent $output) -ine $allowed -or (Split-Path -Leaf $output) -cn
 }
 New-Item -ItemType Directory -Path $output|Out-Null
 Import-Module -Name (Join-Path $PSScriptRoot 'rime-pime-package-receipt-v2.psm1') -Force
+# Receipt-v2 deliberately does not re-export the imported staging module.
+# This fixture consumes the staging JSON writer as a separate test dependency.
+Import-Module -Name (Join-Path $PSScriptRoot 'rime-pime-package-staging.psm1') -Force
 
 $checks=[Collections.Generic.List[object]]::new()
 function Check([string]$Name,[scriptblock]$Body){
@@ -147,6 +150,8 @@ function Prepare($Case){
         -BuildResultPath $Case.BuildPath -ContentManifestPath $Case.ManifestPath -PayloadNshPath $Case.IncludePath `
         -PayloadNshReceiptPath $Case.PayloadReceiptPath -PostbuildResultPath $Case.PostPath -OutputRoot $Case.V2Output
 }
+
+if ($DefinitionsOnly) { return }
 
 Check 'matching-sealed-evidence-prepares-strict-v2' {
     $case=New-Case 'matching';$p=$null

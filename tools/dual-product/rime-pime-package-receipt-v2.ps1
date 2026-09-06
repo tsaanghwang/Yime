@@ -33,6 +33,67 @@ function Read-RimePimeReceiptV2StreamBytes {
     }finally{$Stream.Position=$position}
 }
 
+# Validate syntax before either PowerShell JSON parser can discard duplicate
+# members or accept comments/trailing commas. Keys are case-insensitive because
+# the downstream PSObject reader is case-insensitive. No JSON normalization.
+function Assert-RimePimeReceiptJsonSyntax([string]$Text) {
+    if (-not ('YimeReceiptJson.Syntax' -as [type])) {
+        Add-Type -TypeDefinition @'
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
+namespace YimeReceiptJson {
+ public sealed class Syntax {
+  readonly string s; int p;
+  Syntax(string text) { s=text; }
+  void Fail() { throw new FormatException("Invalid or ambiguous receipt JSON at offset " + p); }
+  void Ws() { while(p<s.Length && (s[p]==' ' || s[p]=='\r' || s[p]=='\n' || s[p]=='\t')) p++; }
+  bool Take(char c) { Ws(); if(p<s.Length && s[p]==c) { p++; return true; } return false; }
+  string Str() {
+   if(!Take('"')) Fail(); var b=new StringBuilder();
+   while(p<s.Length) {
+    char c=s[p++]; if(c=='"') return b.ToString(); if(c<32) Fail();
+    if(c=='\\') {
+     if(p==s.Length) Fail(); c=s[p++];
+     switch(c) {
+      case '"': case '\\': case '/': break;
+      case 'b': c='\b'; break; case 'f': c='\f'; break;
+      case 'n': c='\n'; break; case 'r': c='\r'; break; case 't': c='\t'; break;
+      case 'u':
+       if(p+4>s.Length || !Regex.IsMatch(s.Substring(p,4),"\\A[0-9a-fA-F]{4}\\z")) Fail();
+       c=(char)Convert.ToInt32(s.Substring(p,4),16); p+=4; break;
+      default: Fail(); break;
+     }
+    }
+    b.Append(c);
+   }
+   Fail(); return null;
+  }
+  void Value(int depth) {
+   if(depth>64) Fail(); Ws(); if(p==s.Length) Fail();
+   if(Take('{')) {
+    var keys=new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    if(Take('}')) return;
+    do { string key=Str(); if(!keys.Add(key) || !Take(':')) Fail(); Value(depth+1); if(Take('}')) return; } while(Take(','));
+    Fail();
+   } else if(Take('[')) {
+    if(Take(']')) return;
+    do { Value(depth+1); if(Take(']')) return; } while(Take(',')); Fail();
+   } else if(s[p]=='"') { Str(); }
+   else {
+    var m=Regex.Match(s.Substring(p),"\\A(?:true|false|null|-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)");
+    if(!m.Success) Fail(); p+=m.Length;
+   }
+  }
+  public static void Check(string text) { var v=new Syntax(text); v.Value(0); v.Ws(); if(v.p!=text.Length) v.Fail(); }
+ }
+}
+'@
+    }
+    [YimeReceiptJson.Syntax]::Check($Text)
+}
+
 function Open-RimePimeReceiptV2SealedJsonLease {
     param(
         [Parameter(Mandatory)][string]$Path,
@@ -55,12 +116,19 @@ function Open-RimePimeReceiptV2SealedJsonLease {
         $sidecarBytes=Read-RimePimeReceiptV2StreamBytes $sidecarStream 256 "$Context sidecar"
         foreach($one in $sidecarBytes){if($one -gt 127){throw "$Context sidecar is not ASCII."}}
         $sidecarText=[Text.Encoding]::ASCII.GetString($sidecarBytes)
-        $pattern='^([0-9a-f]{64})  '+[regex]::Escape([IO.Path]::GetFileName($full))+'\r?\n?$'
+        $pattern='\A([0-9a-f]{64})  '+[regex]::Escape([IO.Path]::GetFileName($full))+'(?:\r\n|\n)?\z'
         if($sidecarText -cnotmatch $pattern){throw "$Context sidecar is malformed."}
         $digest=Get-RimePimeReceiptV2Sha256Bytes $jsonBytes
         if($digest -cne [string]$Matches[1]){throw "$Context sidecar does not match its leased JSON bytes."}
         $utf8=New-Object Text.UTF8Encoding($false,$true)
-        try{$value=$utf8.GetString($jsonBytes)|ConvertFrom-Json}
+        try{
+            Assert-RimePimeReceiptJsonSyntax ($utf8.GetString($jsonBytes))
+            # PS7 otherwise coerces receipt timestamps into DateTime objects,
+            # losing their JSON representation during retained publication.
+            if ((Get-Command ConvertFrom-Json).Parameters.ContainsKey('DateKind')) {
+                $value=$utf8.GetString($jsonBytes)|ConvertFrom-Json -DateKind String
+            } else { $value=$utf8.GetString($jsonBytes)|ConvertFrom-Json }
+        }
         catch{throw "$Context is not strict UTF-8 JSON: $($_.Exception.Message)"}
         return [pscustomobject]@{
             Path=$full;Sidecar=$sidecar;JsonStream=$jsonStream;SidecarStream=$sidecarStream
@@ -108,7 +176,7 @@ function Open-RimePimeReceiptV2RawSidecarLease {
         $bytes=Read-RimePimeReceiptV2StreamBytes $stream 256 "$Context SHA-256 sidecar"
         foreach($one in $bytes){if($one -gt 127){throw "$Context SHA-256 sidecar is not ASCII."}}
         $text=[Text.Encoding]::ASCII.GetString($bytes)
-        $pattern='^'+[regex]::Escape($ExpectedSha256)+'  '+[regex]::Escape([IO.Path]::GetFileName([IO.Path]::GetFullPath($DataPath)))+'\r?\n?$'
+        $pattern='\A'+[regex]::Escape($ExpectedSha256)+'  '+[regex]::Escape([IO.Path]::GetFileName([IO.Path]::GetFullPath($DataPath)))+'(?:\r\n|\n)?\z'
         if($text -cnotmatch $pattern){throw "$Context SHA-256 sidecar does not bind the data file."}
         return [pscustomobject]@{Path=$path;Stream=$stream;Bytes=[long]$bytes.Length;Digest=(Get-RimePimeReceiptV2Sha256Bytes $bytes)}
     }catch{$stream.Dispose();throw}
@@ -736,7 +804,7 @@ function Read-RimePimePackageBuildReceiptV2 {
             -not(Test-RimePimeReceiptV2Boolean $r.disabled_build.unsigned_disabled_build $true) -or
             -not(Test-RimePimeReceiptV2Boolean $r.disabled_build.signing_hook_processes_executed $false) -or
             -not(Test-RimePimeReceiptV2Boolean $r.evidence_artifacts_embedded $false) -or
-            -not(Test-RimePimeReceiptV2Boolean $r.evidence_artifacts_durable $false) -or
+            $r.evidence_artifacts_durable -isnot [bool] -or
             -not(Test-RimePimeReceiptV2Boolean $r.unsigned_disabled_build $true) -or
             -not(Test-RimePimeReceiptV2Boolean $r.signing_complete $false) -or
             -not(Test-RimePimeReceiptV2Boolean $r.generated_uninstaller_verified $false) -or
@@ -805,23 +873,80 @@ function Read-RimePimePackageBuildReceiptV2 {
             [pscustomobject]@{Path=$r.disabled_build.result_path;Digest=$r.disabled_build.result_sha256;Context='receipt-v2 build result'},
             [pscustomobject]@{Path=$r.static_postbuild.result_path;Digest=$r.static_postbuild.result_sha256;Context='receipt-v2 postbuild result'}
         )
+        $evidence=@{}
         foreach($item in $evidencePairs){
-            $path=Resolve-RimePimePackageFile $root ([string]$item.Path)
+            $path=Resolve-RimePimeReceiptEvidence $root $r ([string]$item.Path) ([string]$item.Digest)
             $bound=Open-RimePimeReceiptV2SealedJsonLease $path ([string]$item.Context)
-            try{if($bound.Digest -cne [string]$item.Digest){throw "$($item.Context) differs from the canonical receipt."}}
+            try{
+                if($bound.Digest -cne [string]$item.Digest){throw "$($item.Context) differs from the canonical receipt."}
+                $evidence[$item.Context]=$bound.Value
+            }
             finally{$bound.SidecarStream.Dispose();$bound.JsonStream.Dispose()}
         }
-        $includePath=Resolve-RimePimePackageFile $root ([string]$r.payload_include.path)
+        if ($r.evidence_artifacts_durable) {
+            $predecessorPath=Get-RimePimeReceiptObjectPath $root $r.predecessor_v1.sha256
+            $null=Get-YimePimePayloadFileRecord $predecessorPath
+            $predecessor=Open-RimePimeReceiptV2SealedJsonLease $predecessorPath 'retained v1 predecessor'
+            try {
+                if ($predecessor.Digest -cne $r.predecessor_v1.sha256 -or $predecessor.Bytes -ne $r.predecessor_v1.bytes -or
+                    $predecessor.Value.schema_version -cne $script:RimePimePackageReceiptV1Schema) { throw 'Retained predecessor identity differs.' }
+                Assert-RimePimeReceiptV2Predecessor $predecessor.Value $root
+                foreach ($pair in @(@('installer_sha256',$r.installer.sha256),@('installer_size',$r.installer.bytes),
+                    @('installer_source_sha256',$r.installer.source_sha256),@('package_plan_sha256',$r.package_plan.sha256),
+                    @('installer_path',$r.installer.path),@('installer_source_path',$r.installer.source_path),@('package_plan_path',$r.package_plan.path))) {
+                    if ([string]$predecessor.Value.($pair[0]) -cne [string]$pair[1]) { throw 'Retained predecessor contradicts receipt identity.' }
+                }
+            } finally { $predecessor.SidecarStream.Dispose();$predecessor.JsonStream.Dispose() }
+        }
+        # Digest binding alone does not validate what the bound evidence says.
+        $plan=$evidence['receipt-v2 package plan'];$manifest=$evidence['receipt-v2 stage manifest']
+        $payload=$evidence['receipt-v2 payload receipt'];$build=$evidence['receipt-v2 build result'];$post=$evidence['receipt-v2 postbuild result']
+        if ($plan.schema_version -cne 'yime-rime-pime-package-plan-v1' -or $plan.product -cne 'rime-pime' -or
+            -not(Test-RimePimeReceiptV2OrderedArchitectures $plan.architectures) -or
+            $manifest.schema_version -cne 'yime-rime-pime-copied-content-v1' -or
+            $payload.schema_version -cne 'yime-rime-pime-nsis-stage-include-v1' -or
+            $manifest.package_plan_sha256 -cne $r.package_plan.sha256 -or $payload.package_plan_sha256 -cne $r.package_plan.sha256 -or
+            $manifest.payload_spec_sha256 -cne $r.sealed_stage.payload_spec_sha256 -or $payload.payload_spec_sha256 -cne $manifest.payload_spec_sha256 -or
+            $manifest.content_tree_sha256 -cne $r.sealed_stage.content_tree_sha256 -or $payload.content_tree_sha256 -cne $manifest.content_tree_sha256 -or
+            $payload.content_manifest_sha256 -cne $r.sealed_stage.content_manifest_sha256 -or
+            $payload.include_sha256 -cne $r.payload_include.sha256 -or $payload.include_bytes -ne $r.payload_include.bytes -or
+            -not(Test-RimePimeReceiptV2Boolean $manifest.final_payload_closure $false) -or
+            -not(Test-RimePimeReceiptV2Boolean $payload.final_payload_closure $false) -or
+            $build.product_version -cne $r.product_version -or $build.package_build_receipt_sha256 -cne $r.predecessor_v1.sha256 -or
+            $build.content_manifest_sha256 -cne $r.sealed_stage.content_manifest_sha256) { throw 'Receipt evidence contradicts its sealed identity.' }
+        $payload|Add-Member -NotePropertyName __sealed_digest -NotePropertyValue $r.payload_include.receipt_sha256
+        $v1Identity=[pscustomobject]@{installer_sha256=$r.installer.sha256;installer_size=$r.installer.bytes}
+        Assert-RimePimeReceiptV2BuildEvidence $build $v1Identity $manifest $payload $post
+        Assert-RimePimeReceiptV2PostbuildEvidence $post $build $manifest $payload
+        foreach ($property in $r.disabled_build.PSObject.Properties) {
+            if ($property.Name -in @('result_path','result_sha256')) { continue }
+            if ([string]$property.Value -cne [string]$build.($property.Name)) { throw 'Receipt build summary contradicts bound evidence.' }
+        }
+        foreach ($name in @('copied_file_count','payload_file_count','bootstrap_file_count')) {
+            if ($r.sealed_stage.$name -ne $build.$name) { throw 'Receipt stage counts contradict bound evidence.' }
+        }
+        foreach ($pair in @(@($r.static_postbuild.schema_version,$post.schema_version),
+            @($r.static_postbuild.generated_uninstaller_sha256,$post.generated_uninstaller.sha256),
+            @($r.static_postbuild.generated_uninstaller_bytes,$post.generated_uninstaller.bytes),
+            @($r.static_postbuild.installer_archive_entry_count,$post.installer_archive.entry_count),
+            @($r.static_postbuild.nested_uninstaller_archive_entry_count,$post.uninstaller_archive.entry_count),
+            @($r.static_postbuild.toolchain.toolchain_id,$post.toolchain_lock.toolchain_id),
+            @($r.static_postbuild.toolchain.seven_zip_sha256,$post.seven_zip.sha256),
+            @($r.static_postbuild.toolchain.seven_zip_parser_library_sha256,$post.seven_zip_parser_library.sha256),
+            @($r.static_postbuild.toolchain.seven_zip_parser_library_version,$post.seven_zip_parser_library.version))) {
+            if ([string]$pair[0] -cne [string]$pair[1]) { throw 'Receipt postbuild summary contradicts bound evidence.' }
+        }
+        $includePath=Resolve-RimePimeReceiptEvidence $root $r ([string]$r.payload_include.path) ([string]$r.payload_include.sha256)
         $include=Open-RimePimeReceiptV2FileLease $includePath ([string]$r.payload_include.sha256) ([long]$r.payload_include.bytes) 'receipt-v2 payload include'
         try{
             $marker=Open-RimePimeReceiptV2RawSidecarLease $includePath ([string]$r.payload_include.sha256) 'receipt-v2 payload include'
             try{}finally{$marker.Stream.Dispose()}
         }finally{$include.Stream.Dispose()}
-        $sourcePath=Resolve-RimePimePackageFile $root ([string]$r.installer.source_path)
+        $sourcePath=Resolve-RimePimeReceiptEvidence $root $r ([string]$r.installer.source_path) ([string]$r.installer.source_sha256)
         $sourceBytes=[long](Get-Item -LiteralPath $sourcePath).Length
         $source=Open-RimePimeReceiptV2FileLease $sourcePath ([string]$r.installer.source_sha256) $sourceBytes 'receipt-v2 installer source'
         $source.Stream.Dispose()
-        $installerPath=Resolve-RimePimePackageFile $root ([string]$r.installer.path)
+        $installerPath=Resolve-RimePimeReceiptEvidence $root $r ([string]$r.installer.path) ([string]$r.installer.sha256)
         $candidate=Open-RimePimeReceiptV2FileLease $installerPath ([string]$r.installer.sha256) ([long]$r.installer.bytes) 'receipt-v2 canonical installer'
         try{return [pscustomobject]@{Receipt=$r;Digest=$lease.Digest;Path=$lease.Path;Sidecar=$lease.Sidecar;InstallerPath=$installerPath}}
         finally{$candidate.Stream.Dispose()}

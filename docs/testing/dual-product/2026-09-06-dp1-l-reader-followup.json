@@ -1,0 +1,1773 @@
+{
+  "schema_version": "yime-dual-product-dp1-l-reader-followup-v1",
+  "affected_product": "rime-pime",
+  "generated_at_utc": "2026-09-06T12:55:56.311682+00:00",
+  "suites": [
+    {
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-store-review-ps5-c/store-result.json",
+      "sha256": "b82de257f01ed70e13049374974a29c68430a0bf8a9d3d07bfd86640724acc80",
+      "result": {
+        "schema_version": "yime-rime-pime-receipt-store-test-v1",
+        "total": 25,
+        "passed": 25,
+        "failed": 0,
+        "checks": [
+          {
+            "name": "retained-evidence-survives-source-removal-and-repeated-v2-supersession",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-object-temp-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-object-data-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-objects-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-intent-temp-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-intent-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-receipt-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-sidecar-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-complete-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "shared-lock-blocks-supersession",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "stale-cas-and-v1-downgrade-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "corrupt-retained-object-fails-closed",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "false-retention-claim-without-objects-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hardlinked-retained-object-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "pending-blocks-successor-and-rejects-unrelated-canonical-bytes",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "sidecar-sharing-failure-leaves-recoverable-intent",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-product_version",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-copied_file_count",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-generated_uninstaller_bytes",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-bound-build-execution-claim",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-case-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-escaped-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-comment",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-trailing-comma",
+            "passed": true,
+            "detail": "ok"
+          }
+        ],
+        "installer_or_uninstaller_executed": false,
+        "product_processes_executed": false,
+        "power_loss_verified": false
+      },
+      "shell": "ps5"
+    },
+    {
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-final-ps5-a/result.json",
+      "sha256": "71f5aca245af3e62a2b55dd73541370e8af594fa59a21e0197485e7a2dd2c2b2",
+      "result": {
+        "schema_version": "yime-rime-pime-package-receipt-v2-test-v1",
+        "generated_at_utc": "2026-09-06T12:48:00.1228942Z",
+        "total": 26,
+        "passed": 26,
+        "failed": 0,
+        "checks": [
+          {
+            "name": "matching-sealed-evidence-prepares-strict-v2",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "candidate-byte-mismatch-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "postbuild-stage-mismatch-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "postbuild-toolchain-lock-mismatch-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "missing-non-os-closure-field-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "dishonest-non-os-closure-claim-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "dishonest-transient-membership-exclusion-claim-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "missing-exact-post-snapshot-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "full-os-toolchain-closure-claim-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "postbuild-execution-boundary-violation-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "dishonest-postbuild-toolchain-closure-claim-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "postbuild-toolchain-count-string-cannot-spoof-integer",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "string-false-cannot-spoof-boolean-boundary",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "tampered-sealed-result-sidecar-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "evolved-postbuild-schema-and-generic-toolchain-id-are-accepted",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-reader-rejects-open-v2-schema",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-reader-rejects-resealed-false-archive-origin",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-reader-rejects-resealed-executed-installer-claim",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-reader-rejects-resealed-invalid-evidence-schema",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "publication-preserves-v1-copy-and-commits-v2-sidecar-last",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "publication-failure-rolls-back-exact-v1-pair",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "publication-rejects-canonical-change-after-preparation",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "existing-v2-cannot-be-used-as-v1-predecessor",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "runner-requires-explicit-canonical-publication",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "staged-builder-refuses-canonical-v2-downgrade",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "receipt-v2-implementation-has-no-process-launch-surface",
+            "passed": true,
+            "detail": "ok"
+          }
+        ],
+        "installer_or_uninstaller_executed": false,
+        "extractor_or_compiler_executed": false,
+        "registry_touched": false,
+        "installed_product_processes_touched": false,
+        "production_user_data_read_or_written": false,
+        "helper_sha256": "479114d0becf9fc9610c0493207fb9028d8de9191f15093b5d1f2186910add7e",
+        "runner_sha256": "2b0bb2546adf91e57667899c648e7c942b766e5e510b30d4b513df7612124228"
+      },
+      "shell": "ps5"
+    },
+    {
+      "path": ".tmp/dual-product/dp1-receipt-no-downgrade-final-ps5-a/result.json",
+      "sha256": "f77a613968228b6d06dd176b950d507d0d80f1b27fd12ba6063e27023bca3763",
+      "result": {
+        "schema_version": "yime-rime-pime-receipt-no-downgrade-test-v1",
+        "generated_at_utc": "2026-09-06T12:48:01.6019061Z",
+        "checks_count": 7,
+        "passed": true,
+        "checks": [
+          {
+            "name": "legacy-writer-rejects-v2-and-unknown-with-exact-bytes-unchanged",
+            "passed": true
+          },
+          {
+            "name": "legacy-writer-rejects-a-partial-receipt-pair-without-mutation",
+            "passed": true
+          },
+          {
+            "name": "validated-v1-writer-refresh-remains-supported",
+            "passed": true
+          },
+          {
+            "name": "strict-v1-reader-still-rejects-v2",
+            "passed": true
+          },
+          {
+            "name": "sign-release-rejects-v2-before-plan-read-or-signing-in-both-modes",
+            "passed": true
+          },
+          {
+            "name": "sign-release-rejects-unknown-and-partial-receipts-before-plan-read",
+            "passed": true
+          },
+          {
+            "name": "signing-guard-is-lexically-before-package-read-and-signer-call",
+            "passed": true
+          }
+        ],
+        "signing_process_executed": false,
+        "installer_or_uninstaller_executed": false,
+        "product_process_touched": false,
+        "registry_touched": false,
+        "default_input_method_changed": false,
+        "production_user_data_read_or_written": false,
+        "package_plan_helper_sha256": "f0a134f3d75d7535571f4bdfb58772a55f7cfa70db665ced73fd3e76a01c8025",
+        "sign_release_sha256": "8238102966a6913f87a7fbb6c0694b4b2d2bbecd1f7de262afccd88576869a26"
+      },
+      "shell": "ps5"
+    },
+    {
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-store-review-ps7-c/store-result.json",
+      "sha256": "913c5ee2978ecf08129309a8132ccaa6659fd30e35f473cef37cfee0d1cea974",
+      "result": {
+        "schema_version": "yime-rime-pime-receipt-store-test-v1",
+        "total": 25,
+        "passed": 25,
+        "failed": 0,
+        "checks": [
+          {
+            "name": "retained-evidence-survives-source-removal-and-repeated-v2-supersession",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-object-temp-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-object-data-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-objects-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-intent-temp-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-intent-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-receipt-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-sidecar-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-complete-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "shared-lock-blocks-supersession",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "stale-cas-and-v1-downgrade-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "corrupt-retained-object-fails-closed",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "false-retention-claim-without-objects-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hardlinked-retained-object-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "pending-blocks-successor-and-rejects-unrelated-canonical-bytes",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "sidecar-sharing-failure-leaves-recoverable-intent",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-product_version",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-copied_file_count",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-generated_uninstaller_bytes",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-bound-build-execution-claim",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-case-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-escaped-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-comment",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-trailing-comma",
+            "passed": true,
+            "detail": "ok"
+          }
+        ],
+        "installer_or_uninstaller_executed": false,
+        "product_processes_executed": false,
+        "power_loss_verified": false
+      },
+      "shell": "ps7"
+    },
+    {
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-final-ps7-a/result.json",
+      "sha256": "5fad6648bac63aa22de009438bc70d1260702372e13c6b3b9ab735553d0803d1",
+      "result": {
+        "schema_version": "yime-rime-pime-package-receipt-v2-test-v1",
+        "generated_at_utc": "2026-09-06T12:48:16.2420812Z",
+        "total": 26,
+        "passed": 26,
+        "failed": 0,
+        "checks": [
+          {
+            "name": "matching-sealed-evidence-prepares-strict-v2",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "candidate-byte-mismatch-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "postbuild-stage-mismatch-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "postbuild-toolchain-lock-mismatch-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "missing-non-os-closure-field-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "dishonest-non-os-closure-claim-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "dishonest-transient-membership-exclusion-claim-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "missing-exact-post-snapshot-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "full-os-toolchain-closure-claim-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "postbuild-execution-boundary-violation-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "dishonest-postbuild-toolchain-closure-claim-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "postbuild-toolchain-count-string-cannot-spoof-integer",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "string-false-cannot-spoof-boolean-boundary",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "tampered-sealed-result-sidecar-is-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "evolved-postbuild-schema-and-generic-toolchain-id-are-accepted",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-reader-rejects-open-v2-schema",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-reader-rejects-resealed-false-archive-origin",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-reader-rejects-resealed-executed-installer-claim",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-reader-rejects-resealed-invalid-evidence-schema",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "publication-preserves-v1-copy-and-commits-v2-sidecar-last",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "publication-failure-rolls-back-exact-v1-pair",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "publication-rejects-canonical-change-after-preparation",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "existing-v2-cannot-be-used-as-v1-predecessor",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "runner-requires-explicit-canonical-publication",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "staged-builder-refuses-canonical-v2-downgrade",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "receipt-v2-implementation-has-no-process-launch-surface",
+            "passed": true,
+            "detail": "ok"
+          }
+        ],
+        "installer_or_uninstaller_executed": false,
+        "extractor_or_compiler_executed": false,
+        "registry_touched": false,
+        "installed_product_processes_touched": false,
+        "production_user_data_read_or_written": false,
+        "helper_sha256": "479114d0becf9fc9610c0493207fb9028d8de9191f15093b5d1f2186910add7e",
+        "runner_sha256": "2b0bb2546adf91e57667899c648e7c942b766e5e510b30d4b513df7612124228"
+      },
+      "shell": "ps7"
+    },
+    {
+      "path": ".tmp/dual-product/dp1-receipt-no-downgrade-final-ps7-a/result.json",
+      "sha256": "030a1c19225e5c8118ad727e5a3c94cebb3c53ad56b26552a30c631fd9efe34e",
+      "result": {
+        "schema_version": "yime-rime-pime-receipt-no-downgrade-test-v1",
+        "generated_at_utc": "2026-09-06T12:48:14.7677664Z",
+        "checks_count": 7,
+        "passed": true,
+        "checks": [
+          {
+            "name": "legacy-writer-rejects-v2-and-unknown-with-exact-bytes-unchanged",
+            "passed": true
+          },
+          {
+            "name": "legacy-writer-rejects-a-partial-receipt-pair-without-mutation",
+            "passed": true
+          },
+          {
+            "name": "validated-v1-writer-refresh-remains-supported",
+            "passed": true
+          },
+          {
+            "name": "strict-v1-reader-still-rejects-v2",
+            "passed": true
+          },
+          {
+            "name": "sign-release-rejects-v2-before-plan-read-or-signing-in-both-modes",
+            "passed": true
+          },
+          {
+            "name": "sign-release-rejects-unknown-and-partial-receipts-before-plan-read",
+            "passed": true
+          },
+          {
+            "name": "signing-guard-is-lexically-before-package-read-and-signer-call",
+            "passed": true
+          }
+        ],
+        "signing_process_executed": false,
+        "installer_or_uninstaller_executed": false,
+        "product_process_touched": false,
+        "registry_touched": false,
+        "default_input_method_changed": false,
+        "production_user_data_read_or_written": false,
+        "package_plan_helper_sha256": "f0a134f3d75d7535571f4bdfb58772a55f7cfa70db665ced73fd3e76a01c8025",
+        "sign_release_sha256": "8238102966a6913f87a7fbb6c0694b4b2d2bbecd1f7de262afccd88576869a26"
+      },
+      "shell": "ps7"
+    }
+  ],
+  "source_baseline": {
+    "path": ".tmp/dual-product/dp1-l-final-review-c/baseline.json",
+    "sha256": "260af55b4b35360a2ace565f8c0f94d12aa8885c18ab5e0c2d20bea521e192ef",
+    "result": {
+      "schema_version": "yime-dual-product-source-baseline-v1",
+      "source_baseline_passed": true,
+      "test_level": "source-build-wiring-compiled-artifact-static-analysis-isolated-filesystem-fixtures-pure-memory-transaction-fixtures-not-installed-or-live",
+      "source_manifest": {
+        "Build.ps1": "0ec8fe3c1d08be60b81b7fafc5d9662aa070b23af71766a0547e512e92b0baa5",
+        "Build.cmd": "659b9ed9075301660a1fd793546e1dab17fbb6f7acc6645193433a569b719d89",
+        "CMakeLists.txt": "00f780b63a5f11f82f43bf400706d2dc67e0f260814632ebe9874f96754eab25",
+        ".github/workflows/ci.yaml": "23c89cf9d1bcb802ff460c12703403df8de16c6c725a76deb1d4dd36de288a55",
+        "PIMETextService/DllEntry.cpp": "79206305969b6806d3fc60005637deaa10ac1ab59d48750d7a22d0b826ab88a1",
+        "PIMETextService/PIMEImeModule.cpp": "6d3d286cc8b88fb828c7ed09a11f892158f75fc883e3ef4c0521d442cc4454e0",
+        "PIMETextService/PIMEClient.cpp": "9fdca645b9c67aa9ec6ba7969f7bc0e2c17f664ab2d7f547c7227d0845c941c4",
+        "PIMETextService/PIMETextService.cpp": "f6d32a849f56bd64709dc0370773bf5039e5b96ac5ce115b970875381c90bf6a",
+        "PIMETextService/PIMETextService.h": "e4c2ab4f82e32cb1095930bfb1338400ec6cf88a47489e053a708874ed2ee32a",
+        "PIMETextService/CMakeLists.txt": "adc20faaa4e8cb849a8c58343e29543440aba8638e2b316b7e94ed06e4ace5da",
+        "PIMETextService/RegistrationStatus.cpp": "04b1f00d406b828029c34906c016c271c2a5f8fe71c2e707df5c2e8cb72daebe",
+        "libIME2/src/ImeModule.cpp": "d204b6b251607e42d2915a09e623eea89294455d105d95d380214d63e678ab0f",
+        "PIMELauncher/.cargo/config.toml": "9f002ff2e307f9f302516b010b6788187936b3598438cee465f780c5e24c7df7",
+        "PIMELauncher/src/main.rs": "77f070ae4b7719d3c983e9480e50d21c044fe06576b4a7767381fdd54edb60e4",
+        "PIMELauncher/src/backend_manager.rs": "f7de203307a7bada95622c428f70cafb2b210528be8f52a007b8de29a5dbe0ff",
+        "PIMELauncher/src/lib.rs": "a24ffd9d37f0ceb325e07aae08dc9c1448af967b87897753b20a4d9e61d24882",
+        "PIMELauncher/src/maintenance.rs": "1148bb38428e3aaab57525af998d8f1a471c58490f69bd2e4f1ffb51b76c90dc",
+        "PIMELauncher/src/bin/mock_backend.rs": "b71d8f7d6cd66aa69f089fe163192051d2f8b645a1b525e13508083c58dcf2a0",
+        "PIMELauncher/tests/integration_test.rs": "2960e4d6c0cd0039881c975fa6ddf28a6939b87a6dec9bec85c656985308d9ea",
+        "go-backend/input_methods/yime/ime.json": "498ba087c2765d57630964cac10e9764e25f046a56ea95143cf05d9e9338ef3b",
+        "go-backend/input_methods/yime/yime.go": "c2b622e0cdfb7d90eb1ea61ccb4b79b160a3dba8ef3c4ce4816a2b806c0679b8",
+        "go-backend/input_methods/yime/native_cgo.go": "06914922fe21c7c212995b384280365413a22ca4a81f6d0a61fcfcdab313818b",
+        "go-backend/input_methods/yime/librime.go": "1a8b528c7f8781af95fb10a40f8d61deac231c9ace479e7178034e35f5d0a8d5",
+        "go-backend/input_methods/yime/rime_runtime_test.go": "993c675402bd811183f6c70586e7d77b0dde2d28d58b7163a2febe1ce8329283",
+        "go-backend/input_methods/yime/runtimechange/release_pipeline_test.go": "aa994ebb79911efe3eb870922682e190c4d0b263c3ab4f198baf9b8bb948b0d8",
+        "go-backend/server.go": "fed89dee97392941e89a7052083b2a8bd9cf4dba9aec49bdb7cd3344bf469716",
+        "go-backend/server_shutdown_test.go": "38c07c73b83db70b1e52bc3d9179586c1bee47f450d0bd426824b01c32b9f495",
+        "go-backend/build.bat": "12fa8be54b39d08aaf24aae53d3ae7ef42dcee7497f6653fb341d0ab35e5be0d",
+        "build.bat": "ad9a48f7d13fe6c56f835811cd1c4c2ba0567ed109fe1a332fead57bab31f85e",
+        "installer/installer.nsi": "fc85300eb7ed4740ae53442f4969a7892e3637f52ea52e53936a18e6009ece75",
+        "Install-PIME-Test.cmd": "0f721ecf9424ca8eaee4be131db4c981ff14fee6a4a2b9ade8d9dd863da3a0b3",
+        "Reinstall-PIME-Test.cmd": "19f765b734900cba600bc48824617f976d97a012cafda17eb9ebb45504baa33a",
+        "Uninstall-PIME-Test.cmd": "6838485cb0659f716d77542b8f68cf03b7be0c0973495a94d6f3b91cd976e0fc",
+        "dev-install.ps1": "0f41bd4002ddc122e07a98351ad9d9b60e0323e35607ef69d4d26df63a9ee93e",
+        "dev-uninstall.ps1": "a6f77d81c0abb5f93b0b6db59dafa2f6d39bdf9cda387f0ffb9481a8d4da8143",
+        "tools/dev-install.ps1": "80ff78aeb1d6110e2ed0decd5b8f207686bbfdc62fc4efa794b3afef657cfc24",
+        "tools/dev-uninstall.ps1": "6962fd37039816679db67adc56cb65951544f36e91a58c16462bda89dae0d73d",
+        "tools/dev-stop-pime.ps1": "d945dde3c21389161de549d2e2f1b003e10f43e7282923d16718c871981d870e",
+        "tools/dev-build-install-verify.ps1": "09251b22ba5c71ca96a0bc3b6a036a11756fb0c688aad3ebcd5fff6b64b26b86",
+        "tools/verify-pe-architectures.ps1": "59cf8ba342a53964078c087b88f4594728d69053d9baf790f8ebff590feb49f8",
+        "tools/test-build-guards.ps1": "d6a42b2ca4d39a90b81647eadbe737a49d4db43b5ed026f142d11b735f41688f",
+        "tools/test-installer-smoke.ps1": "2dbc1e87981aa8a4e1c6a8bc35897b4c657080f442c39752ff43d35abe51fb23",
+        "tools/build-rime-pime-installer.ps1": "b6dd3d29531c5f4b59a8afa11cf3b1273c5d5df3757f268d6cbb67f01c0d9650",
+        "tools/sign-file.ps1": "72421f9ef67cb608d9b1afeac4ee7d85a8f676ccf2f52f7f565b95e54e269565",
+        "tools/sign-release.ps1": "8238102966a6913f87a7fbb6c0694b4b2d2bbecd1f7de262afccd88576869a26",
+        "tools/import-release-signing-certificate.ps1": "a97ed2d13c8be0cfffe6fab013996e68124f28dd1ca9ad4f8f485f6f601f4395",
+        "tools/verify-release-signatures.ps1": "2cedb06b2864637914dc187c3487d383300e46a427ae770e112544a2ce01edb4",
+        "tools/write-build-manifest.ps1": "4f01fdbc2b694f0e463d558590f874f405834bb9c999c05ced7f8e3a8b404edb",
+        ".github/CODEOWNERS": "ddab53e9218f7fc379cac090a699aca65b7ee1050fce04354ed55bda64eea731",
+        "tools/refresh-ime-profiles.ps1": "c7bec8551951efa75bf22b58cf6f4dacf6ca87569e5a4c6cb87fbedb9e6f415c",
+        "tools/refresh-dev-test-cmds.ps1": "2d150d20e795e0fc823317233bb2995395297ab8124dc2a367addc2ccc42eeee",
+        "tools/templates/Install-PIME-Test.cmd": "0f721ecf9424ca8eaee4be131db4c981ff14fee6a4a2b9ade8d9dd863da3a0b3",
+        "tools/templates/Reinstall-PIME-Test.cmd": "19f765b734900cba600bc48824617f976d97a012cafda17eb9ebb45504baa33a",
+        "tools/templates/Uninstall-PIME-Test.cmd": "6838485cb0659f716d77542b8f68cf03b7be0c0973495a94d6f3b91cd976e0fc",
+        "tools/dual-product/rime-pime-target-user.ps1": "a6e6d925eb7bf0476fc1027830d7e1c88a5495a76087f01412965ce43df5a978",
+        "tools/dual-product/invoke-rime-pime-target-user.ps1": "957a38c0e79fa64f9385e91fecb316640434e1d981d72f59ba3abcd57fdfe47b",
+        "tools/dual-product/test-rime-pime-target-user.ps1": "b2f2a1d5e46687a9edeb6a8b393ffd2b3b54b9516ef0c4c040e77bc178cfec26",
+        "tools/dual-product/test-rime-pime-native-user-cleanup.ps1": "524864883e97339dbfd41e0b42d095cd8918a559527d7b867e879ca2fdbd64f9",
+        "tools/dual-product/test-rime-pime-registration-ownership.ps1": "2324bcfab8d3d3e8a23da65198065cbc7ca92afe96460775512f592b8652a337",
+        "tools/dual-product/test-rime-pime-registration-completeness.ps1": "733727d2a2753892ac0d45f23b952f2bcbb3d313948304ad0cfab821189f1826",
+        "tools/dual-product/rime-pime-transaction-engine.ps1": "7e3e565981b8b5a2d695855597dc201ebd863e35809095cd301f97304e3cd68b",
+        "tools/dual-product/test-rime-pime-transaction-faults.ps1": "ee859b9a3a6472c45db03a99d29496ecb5999dac23b9006fd2b592313133f1bc",
+        "tools/dual-product/test-rime-pime-transaction-replay-model.ps1": "5559035b60270dc12f08b71cc08e41e4ae09459fcc1a41e305707c351b811daf",
+        "tools/dual-product/rime-pime-fixture-transaction-journal.ps1": "8360763160873b6252b6253254bfaaedfb717f814cd9b831e34eaf22a8800e1b",
+        "tools/dual-product/rime-pime-fixture-transaction-journal.psm1": "92ebd2043e2cd987cc4131bcf90d79b59aadfa883c1be56265f79c62bbcf2c1b",
+        "tools/dual-product/test-rime-pime-fixture-transaction-journal.ps1": "1c9c48cd7cd990ae770bb415f8fb47a9699eebc9bdf8dd7d7a062114c764dcdd",
+        "tools/dual-product/rime-pime-payload-closure.ps1": "e5abeec460e07b81e2c05a053d959d9bc2357476990799ff0eacd04e410fa93b",
+        "tools/dual-product/test-rime-pime-payload-closure.ps1": "34dc8cfcc4a693648aa195a4a9480c80ab634364a695d386c78b13bc1a34d82e",
+        "tools/dual-product/rime-pime-go-payload-inventory.json": "9bf4e5a4cc4424d0085dc7c8a24b2788d1962494a42baec4ee1af523d369e02f",
+        "tools/dual-product/rime-pime-go-payload-inventory.json.sha256": "cf190f42440bf6cae2effc698d819dd8f5a6511e861ef1a47e3b57254c7288e8",
+        "tools/dual-product/rime-pime-package-staging.ps1": "168f8da8f3ec1564b9ba81fa46593fbf94f11331b550f16306ec0d81bf0d4f17",
+        "tools/dual-product/rime-pime-package-staging.psm1": "86b988711bb9b80689f651694cc8c195af653d4752fbe03f04e457378adbde1a",
+        "tools/dual-product/test-rime-pime-package-staging.ps1": "0aa0c476c7014c97c96b8b118fa9651180609e8f22b988d608ef3a9c2b1251c2",
+        "tools/dual-product/run-rime-pime-package-staging.ps1": "137af16ae4bbe38e2fbf58474589b280621f0f8744e8683d47fcadf425704e1e",
+        "tools/dual-product/rime-pime-nsis-stage.ps1": "379f09d12653b81d403d3e510980ffeb30af872d78ddfe02004f1764d90c4bba",
+        "tools/dual-product/rime-pime-nsis-stage.psm1": "c45ccdce64c93b237c3efc9942bc34eb5cb2685491abf328887ba9b1f50bf294",
+        "tools/dual-product/test-rime-pime-nsis-stage.ps1": "5a3a12e9c97d6c87fb5cbdcc5eb8f5671ff67b147a72088fb157555483b0f1df",
+        "tools/dual-product/rime-pime-staged-installer-build.ps1": "0e09bbad340ea481881496e9651c77a49a88ac12948afe6b64fc23f93b7fafe7",
+        "tools/dual-product/rime-pime-staged-installer-build.psm1": "5723e26853ebf00046bfc102d9b7987c829ce9b94f70ae5efdcef67a695e30b2",
+        "tools/dual-product/test-rime-pime-staged-installer-build.ps1": "a1721fe4e241b533bbef7541bb8b3687fb80d6fa6a8884ce09590c0dcd39756b",
+        "tools/dual-product/rime-pime-nsis-toolchain-closure.ps1": "c3cf5c24584a0cb0d07c057921a9482025d8a72aca9c440250bc8ad9112affa3",
+        "tools/dual-product/rime-pime-nsis-toolchain-closure.psm1": "c47fa5cf61688f11064f62e078599e0fd4aba2a0a4b8ca0fd7e983c6e5699e70",
+        "tools/dual-product/test-rime-pime-nsis-toolchain-closure.ps1": "9f29ba6a09dc413f218b27cb1afcdb613d3709c53c25820fba6354d444a1bdfc",
+        "tools/dual-product/rime-pime-nsis-membership-monitor-v1.ps1": "0794976f48e9d4103d1d93327ae5b200f87eab58eaee0b4fa7f8657377c24d82",
+        "tools/dual-product/rime-pime-nsis-membership-monitor-v1.psm1": "2c4204192bbbf313e15eb3e8db4b832f69057c455da045ed97d1e23c794b7a63",
+        "tools/dual-product/invoke-rime-pime-nsis-membership-fixture-writer-v1.ps1": "3bc792ee3ee576423a3fe763ae953204232864c3cc910d46b80b097bd98a38e4",
+        "tools/dual-product/test-rime-pime-nsis-membership-monitor-v1.ps1": "0b7ef3dbf8604acf0b1839ed878d61c879f19af01550216d5ce6a9b4927f9812",
+        "tools/dual-product/rime-pime-postbuild-toolchain-lock.json": "01e913d82b277ac9219148e9fb26df7851475ce0b70ff5d7b58df51179603c45",
+        "tools/dual-product/rime-pime-postbuild-toolchain-lock.json.sha256": "4ac0bf9bc0b9c573be317ca0c03f8023eb2efac7f368e449de963b899550958f",
+        "tools/dual-product/rime-pime-postbuild-extraction.ps1": "beb4524f383c4b2bdf6b28671846027fa42f61aad4976e344a97dfffcbdecc22",
+        "tools/dual-product/rime-pime-postbuild-extraction.psm1": "caf15e5523aeab03549bb64703c70e3e33f9497b8ec54aad86fb194a520dbe68",
+        "tools/dual-product/test-rime-pime-postbuild-extraction.ps1": "f9c3259b647d0ff7477ed3145647006821cd3c6b97ee649e5ad5dd9c02f075fb",
+        "tools/dual-product/run-rime-pime-postbuild-extraction.ps1": "3dead74a99c18b4303212d1aa6c4a0e9b8cff7a880b906ac8bd55332f3e1edc1",
+        "tools/dual-product/rime-pime-package-receipt-v2.ps1": "479114d0becf9fc9610c0493207fb9028d8de9191f15093b5d1f2186910add7e",
+        "tools/dual-product/rime-pime-receipt-v2-store.ps1": "b9a08c35502724d74e172338b7d304f89c593677011f4088d05d64e007c52317",
+        "tools/dual-product/test-rime-pime-receipt-v2-store.ps1": "a5811c69305509b5d23f090ecbfa7cf35bbc5eb38c3c37d107dadac30e50b748",
+        "tools/dual-product/rime-pime-package-receipt-v2.psm1": "150bb7a1dec1e2407b0804d9bd7378c11dbce92753d868c1580222daeb0d8376",
+        "tools/dual-product/finalize-rime-pime-package-receipt-v2.ps1": "2b0bb2546adf91e57667899c648e7c942b766e5e510b30d4b513df7612124228",
+        "tools/dual-product/test-rime-pime-package-receipt-v2.ps1": "7b8acfbd6d919f6965dd2176c9da7c9e74cb1fa759f87eb0fc9137e3259ab95e",
+        "tools/dual-product/test-rime-pime-receipt-no-downgrade.ps1": "0c1e4d80cc531763dcbbbbe1bd4e412b9259f3547609bec4c28748155278f23d",
+        "tools/dual-product/rime-pime-receipt-v2-supersession.ps1": "4329b0c0ad43e4305e529445ec4ea4723997ab65173d8ede61c3f53c4d605610",
+        "tools/dual-product/rime-pime-receipt-v2-supersession.psm1": "72ba89e560995422fc7f062a4f7144ef3f30dd8d3ba6f31a3b422648d9e6ee5e",
+        "tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1": "a8186f4edf5fc34e120898ad9ca21d333066089124620cd94c1a44a415efae99",
+        "tools/dual-product/rime-pime-package-plan.ps1": "f0a134f3d75d7535571f4bdfb58772a55f7cfa70db665ced73fd3e76a01c8025",
+        "tools/dual-product/test-pe-import-gate.ps1": "476e97e675794cdfaef30e16c3783f07f0a11b56cc0e67a5a2aa19244a0200d3",
+        "tools/dual-product/test-rime-pime-installer-static.ps1": "a859fce82da71b97abf56d104f4ae8567cafdd886aac133ba32b1a49c245a010",
+        "tools/dual-product/rime-pime-ownership.ps1": "c8b982e56eac35ee503aebd3244fc858593b862381e782f336f24af5b6aa6eeb",
+        "tools/dual-product/invoke-rime-pime-maintenance.ps1": "2f51c91bee481ae9b4e3250ff930da87d5146be863e9c76ed7827c866208f389",
+        "tools/dual-product/test-rime-maintenance.ps1": "46ca411a316e22ecbf369bcdc7574ec888d96c0acbb93b68de897980b41d7a53",
+        "tools/dual-product/rime-pime-directed-stop-contract.ps1": "bb6bb4bc9ed3c35f22940323da9fe9cae68895b03b2720899d360aa36f5bddbe",
+        "tools/dual-product/test-rime-pime-directed-stop.ps1": "0bbbdd5bc62a71a8e55c4d849ff6e334ab9f5068a810e51298850fa542781058",
+        "tools/dual-product/transaction-isolation.ps1": "884185701b30ead168fcf23008154b83f7c068320b8c93931416fe2364081226",
+        "tools/dual-product/test-transaction-isolation.ps1": "085b108f645f2093887e891ad913d7ded11c195e82a0e83845ac9a8a4da7a6aa",
+        "tools/pime-registry-cleanup.ps1": "54224335aa60a960eb5cefe9febc4929982ce557d34856e98b833c621e653671",
+        "tools/yimecore/local-product.json": "7ca897b09d8d3a638f6f1d7bfa17d6e0910da84b803fd4d4a775dfa17646bd06",
+        "tools/yimecore/build-local-product.ps1": "f782ffd957c5252b6be60873f5538ab6e2b6c57a6664365e9935408ec6339edc",
+        "tools/yimecore/manage-e6c-trial-install.ps1": "ff3a563bf58999683f34e9c6fb73656ea6790b120e48fd322b71f97c99818cca",
+        "tools/yimecore/invoke-local-product-native-install.ps1": "27bcb7c20012cc215e1fd832db57da3055d343223cde2bab70e12338254fc600",
+        "tools/yimecore/invoke-local-rollback-rehearsal.ps1": "da8b0da7fdde6db391cb3e6f490f06d402c2a2927ce69042e4948c5633e00d26",
+        "tools/yimecore/test-e6c-user-tip-rollback.ps1": "c32c764613b0fbe551d4f63503f2b2b17c85cdead8d15cf7505d68915cc5cb9d",
+        "tools/yimecore/test-local-product-maintenance.ps1": "f99d00ec32d8dcc9308a9dba26072acbf563c7f921618972c1f63db3b1460ae1",
+        "go-backend/cmd/yimecore-trial-runtime/main.go": "5008c0f1434e30c452aeae6dd279dc9efb6d4e6c45a9c40b96ac5f8aed87441e",
+        "tools/lexicon/data/yime_core_target.lock.json": "7a2d2a845e59d63112507cd071de336898e9da1a024051e156555be251c6a845",
+        "tools/dual-product/contract.json": "fe3286a4708a773e4666fff17fa11094cbcbb8581e5849c3897835f60e8684c6",
+        "tools/dual-product/baseline.py": "04906a6f2dbc15aaa9e893de399781940ed8d0f61e955f9fa99b14ecd0a2066c",
+        "tools/dual-product/test_baseline.py": "d923176cd16c1b661241d3c9406959257f84f9d828bb8d1092a6eda338a61c40",
+        "go-backend/input_methods/yime/data/yime_full.dict.yaml": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+        "go-backend/input_methods/yime/data/yime_variable.dict.yaml": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+        "go-backend/input_methods/yime/data/yime_shorthand.dict.yaml": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+        "go-backend/input_methods/yime/data/yime_yinyuan_layout.json": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0"
+      },
+      "products": {
+        "rime-pime": {
+          "clsid": "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}",
+          "profile": "{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}",
+          "language_id": "0804",
+          "install_directory": "YIME",
+          "install_parent": "ProgramFiles32",
+          "state_relative": "PIME\\Rime",
+          "state_parent": "APPDATA",
+          "log_relative": "PIME\\Logs",
+          "log_parent": "LOCALAPPDATA",
+          "run_hive": "HKLM",
+          "run_name": "PIMELauncher",
+          "uninstall_hive": "HKLM",
+          "uninstall_key": "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YIME",
+          "endpoint": "\\\\.\\pipe\\<username>\\PIME\\Launcher",
+          "process_paths": [
+            "PIMELauncher.exe",
+            "go-backend\\server.exe"
+          ],
+          "build_entry": "build.bat",
+          "maintenance_entry": "tools/dev-install.ps1"
+        },
+        "yimecore": {
+          "clsid": "{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+          "profile": "{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+          "language_id": "0804",
+          "install_directory": "YimeCore Experimental Trial",
+          "install_parent": "ProgramFiles",
+          "state_relative": "YimeCore Experimental Trial",
+          "state_parent": "LOCALAPPDATA",
+          "log_relative": "YimeCore Experimental Trial\\logs",
+          "log_parent": "LOCALAPPDATA",
+          "run_hive": "HKU/<initiating-SID>",
+          "run_name": "YimeCoreExperimentalTrial",
+          "uninstall_hive": "HKU/<initiating-SID>",
+          "uninstall_key": "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial",
+          "endpoint": "\\\\.\\pipe\\YimeBroker.YimeCoreTrial.v1",
+          "process_paths": [
+            "bin\\YimeCoreTrialRuntime.exe",
+            "bin\\YimeBroker.exe"
+          ],
+          "build_entry": "tools/yimecore/build-local-product.ps1",
+          "maintenance_entry": "tools/yimecore/manage-e6c-trial-install.ps1",
+          "descriptor_version": "0.1.0-local.13",
+          "declared_go_payload_count": 20
+        }
+      },
+      "locked_shared_build_inputs": [
+        {
+          "role": "full_mode_dictionary",
+          "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+          "sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f"
+        },
+        {
+          "role": "variable_mode_dictionary",
+          "path": "go-backend/input_methods/yime/data/yime_variable.dict.yaml",
+          "sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b"
+        },
+        {
+          "role": "shorthand_mode_dictionary",
+          "path": "go-backend/input_methods/yime/data/yime_shorthand.dict.yaml",
+          "sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c"
+        },
+        {
+          "role": "canonical_layout_projection",
+          "path": "go-backend/input_methods/yime/data/yime_yinyuan_layout.json",
+          "sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0"
+        }
+      ],
+      "known_pending": [
+        {
+          "id": "DP1-PIME-DIRECTED-EXIT-04",
+          "path": "PIMELauncher/src/maintenance.rs",
+          "line": 326,
+          "status": "source_anchors_present_installed_acceptance_pending",
+          "reason": "Root/SID/PID/start-bound shutdown, backend EOF and watchdog suppression anchors are present. This Python baseline does not execute their PowerShell/Rust tests. An installed live process-tree run remains pending."
+        },
+        {
+          "id": "DP1-PIME-REGISTRY-05",
+          "path": "tools/dual-product/rime-pime-ownership.ps1",
+          "status": "source_anchors_present_native_acceptance_pending",
+          "reason": "Initiating-SID, exact HKU cleanup and current-family registration readback anchors are present. This Python baseline does not execute the PowerShell contracts, native probes or registered profile. Legacy-only migration remains unwired and real UAC/profile acceptance remains pending."
+        },
+        {
+          "id": "DP1-PIME-TRANSACTION-06",
+          "path": "installer/installer.nsi",
+          "status": "fixture_journal_and_replay_source_anchors_present_real_transaction_pending",
+          "reason": "Pure replay/removal models and an isolated filesystem fixture-journal source contract now cover sealed records, hash-chain validation, typed privacy-safe snapshots, replay disposition and foreign-content preservation. This Python baseline only reads their source anchors and does not execute either PowerShell test. A real durable install journal, power-loss and cross-process replay, real registry recovery, installed exact removal, installer wiring, loaded-TSF upgrade handling and native installed/live acceptance remain pending."
+        },
+        {
+          "id": "DP1-PIME-COMPILER-INPUT-07",
+          "path": "tools/dual-product/rime-pime-nsis-toolchain-closure.ps1",
+          "status": "known_input_replacement_closed_membership_monitor_fixture_present_makensis_integration_pending",
+          "reason": "The pinned 303-file NSIS distribution is exact at each open/test snapshot and every known input file is read/no-delete leased. A fixture-only continuous membership monitor now detects transient file, directory and rename activity, but it is not wired around a real makensis interval and does not physically prevent membership changes; non-OS and full toolchain closure remain false."
+        },
+        {
+          "id": "DP1-PIME-RECEIPT-08",
+          "path": "tools/dual-product/rime-pime-package-receipt-v2.ps1",
+          "status": "retained_v2_supersession_wired_canonical_migration_and_power_loss_acceptance_pending",
+          "reason": "The strict v2 reader and explicit receipt-only supersession API now retain evidence by digest, share the publication lock and recover a persistent intent. Separate PS5/PS7 tests exercise interrupted publication. This source baseline does not execute those tests or migrate the actual canonical receipt; hardware power-loss acceptance and installer-identity replacement remain outside this receipt-only flow."
+        }
+      ],
+      "maintenance_source": {
+        "level": "source-guard-and-synthetic-directed-stop-checks-not-installed-live-or-transaction-acceptance",
+        "quiescent_admission_only": false,
+        "historical_findings_with_source_guard_anchors": [
+          "DP1-PIME-STOP-01",
+          "DP1-PIME-STOP-02",
+          "DP1-PIME-LEGACY-03"
+        ],
+        "directed_graceful_shutdown_source_anchors_present": true,
+        "directed_graceful_shutdown_synthetic_contract_source_anchors_present": true,
+        "automatic_force_stop_source_present": false,
+        "installed_live_directed_shutdown_examined": false
+      },
+      "transaction_source": {
+        "level": "read-only-source-anchors-including-pure-model-and-isolated-journal-fixture-not-live-transaction-evidence",
+        "synthetic_contract_source_anchors_present": true,
+        "yimecore_same_sid_source_anchors_present": true,
+        "yimecore_stage_before_active_mutation_source_anchor_present": true,
+        "yimecore_rollback_restore_source_anchors_present": true,
+        "yimecore_peer_product_snapshot_source_anchors_present": true,
+        "rime_pime_initiating_sid_chain_source_anchors_present": true,
+        "rime_pime_target_user_cleanup_source_anchors_present": true,
+        "rime_pime_target_user_synthetic_contract_source_anchors_present": true,
+        "rime_pime_native_uac_and_registered_profile_acceptance_passed": false,
+        "rime_pime_full_transaction_engine_wired_into_installer": false,
+        "rime_pime_registration_exit_and_state_source_anchors_present": true,
+        "rime_pime_legacy_registration_selected_root_only": false,
+        "rime_pime_unowned_legacy_deletion_absent": true,
+        "rime_pime_legacy_migration_wired": false,
+        "rime_pime_current_upgrade_fail_closed": true,
+        "rime_pime_fresh_install_final_vacancy_source_anchor_present": true,
+        "rime_pime_synthetic_fault_matrix_source_anchors_present": true,
+        "rime_pime_transaction_replay_model_source_anchors_present": true,
+        "rime_pime_uninstall_stage_catalog_source_anchors_present": true,
+        "rime_pime_logical_leaf_first_nonrecursive_removal_plan_present": true,
+        "rime_pime_fixture_transaction_journal_source_anchors_present": true,
+        "rime_pime_fixture_transaction_journal_test_source_anchors_present": true,
+        "rime_pime_fixture_journal_hash_chain_source_anchors_present": true,
+        "rime_pime_fixture_journal_sidecar_last_flush_protocol_present": true,
+        "rime_pime_fixture_journal_case_local_recovery_artifacts_bound": true,
+        "rime_pime_fixture_registry_snapshot_closed_typed_privacy_safe": true,
+        "rime_pime_fixture_exact_removal_source_anchors_present": true,
+        "rime_pime_fixture_changed_or_foreign_content_preserved": true,
+        "rime_pime_fixture_journal_ci_ps5_ps7_present": true,
+        "rime_pime_fixture_journal_test_executed_by_baseline": false,
+        "rime_pime_fixture_filesystem_io_executed_by_baseline": false,
+        "rime_pime_product_filesystem_mutation_executed_by_baseline": false,
+        "rime_pime_real_durable_install_transaction_journal": false,
+        "rime_pime_real_power_loss_recovery_passed": false,
+        "rime_pime_cross_process_replay_passed": false,
+        "rime_pime_concurrent_replacement_excluded": false,
+        "rime_pime_real_registry_replay_passed": false,
+        "rime_pime_installed_exact_removal_passed": false,
+        "rime_pime_real_installer_transaction_passed": false,
+        "rime_pime_nsis_membership_monitor_fixture_source_anchors_present": true,
+        "rime_pime_nsis_membership_monitor_fixture_test_source_anchors_present": true,
+        "rime_pime_receipt_v2_supersession_fixture_source_anchors_present": true,
+        "rime_pime_receipt_v2_supersession_fixture_test_source_anchors_present": true,
+        "rime_pime_dp1j_fixture_ci_ps5_ps7_present": true,
+        "rime_pime_dp1j_fixture_tests_executed_by_baseline": false,
+        "rime_pime_receipt_v2_supersession_fixture_protocol_only": true,
+        "rime_pime_receipt_v2_supersession_canonical_receipt_mutated": false,
+        "rime_pime_prepackage_copy_stage_source_anchors_present": true,
+        "rime_pime_prepackage_copy_stage_final_payload_closure": false,
+        "rime_pime_prepackage_copy_stage_natively_wired": true,
+        "rime_pime_nsis_stage_only_wired": true,
+        "rime_pime_nsis_stage_generated_macro_count": 6,
+        "rime_pime_static_archive_exact_gate_source_anchors_present": true,
+        "rime_pime_static_archive_exact_gate_wired_into_builder": false,
+        "rime_pime_static_archive_exact_gate_executed_by_baseline": false,
+        "rime_pime_synthetic_postbuild_ci_host_tool_independent": true,
+        "rime_pime_synthetic_dp1h_ci_contracts_present": true,
+        "rime_pime_final_payload_closure": false,
+        "rime_pime_delivery_admitted": false,
+        "rime_pime_generated_uninstaller_verified": false,
+        "rime_pime_generated_uninstaller_trusted": false,
+        "rime_pime_builder_safe_module_import_order": true,
+        "rime_pime_nsis_toolchain_lock_schema": "yime-rime-pime-postbuild-toolchain-lock-v2",
+        "rime_pime_nsis_toolchain_id": "mycomputer-rime-pime-nsis-static-x86-x64-v2",
+        "rime_pime_nsis_toolchain_lock_sha256": "01e913d82b277ac9219148e9fb26df7851475ce0b70ff5d7b58df51179603c45",
+        "rime_pime_nsis_compiler_input_root_count": 5,
+        "rime_pime_nsis_compiler_input_directory_count": 17,
+        "rime_pime_nsis_compiler_input_file_count": 303,
+        "rime_pime_nsis_compiler_required_input_count": 51,
+        "rime_pime_nsis_compiler_input_tree_sha256": "a908c3b306098217a87a62f0eb4a18c3b2bb5391efde93420bbec1f38ec8d352",
+        "rime_pime_nsis_known_input_file_replacement_closure": true,
+        "rime_pime_nsis_distribution_tree_exact_at_open_and_test": true,
+        "rime_pime_active_same_sid_transient_tree_membership_interference_excluded": false,
+        "rime_pime_nsis_non_os_compiler_input_closure": false,
+        "rime_pime_full_nsis_toolchain_input_closure": false,
+        "rime_pime_canonical_receipt_v2_source_contract_present": true,
+        "rime_pime_canonical_v2_binds_postbuild_source_anchors_present": true,
+        "rime_pime_canonical_receipt_v2_published_by_baseline": false,
+        "rime_pime_canonical_receipt_v2_evidence_durable": false,
+        "rime_pime_v2_to_v2_supersession_wired": true,
+        "rime_pime_installed_live_acceptance_passed": false,
+        "actual_installer_executed": false,
+        "actual_uninstaller_executed": false,
+        "actual_elevation_executed": false,
+        "actual_registry_mutation_executed": false,
+        "actual_profile_mutation_executed": false,
+        "actual_process_stop_executed": false,
+        "actual_process_start_executed": false,
+        "actual_filesystem_mutation_executed": false,
+        "actual_installed_runtime_examined": false,
+        "actual_native_probe_executed": false
+      },
+      "source_unchanged": true,
+      "dp1_full_implementation_passed": false,
+      "dp2_physical_acceptance_passed": false,
+      "installed_runtime_examined": false,
+      "rime_executed": false,
+      "system_state_mutated": false,
+      "user_text_or_learning_read": false,
+      "fixture_contract": {
+        "passed": true,
+        "tests_run": 49,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "level": "pure-memory-model-not-installer-integration",
+        "os_symlink_created": false
+      },
+      "run_id": "c7c6ec8e-4d75-4c6e-bcf9-61615549f719"
+    }
+  },
+  "earlier_trials_preserved": [
+    {
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-store-review-ps5-a/store-result.json",
+      "sha256": "bafe5bc71081cf1727cdce94e6796622151367a9517d05138648b48a4db34324",
+      "result": {
+        "schema_version": "yime-rime-pime-receipt-store-test-v1",
+        "total": 25,
+        "passed": 18,
+        "failed": 7,
+        "checks": [
+          {
+            "name": "retained-evidence-survives-source-removal-and-repeated-v2-supersession",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-object-temp-fresh-process-recovery",
+            "passed": false,
+            "detail": "Exception calling \".ctor\" with \"6\" argument(s): \"Could not find a part of the path 'C:\\dev\\Yime\\.tmp\\dual-product\\dp1-package-receipt-v2-test-store-review-ps5-a\\cases\\crash-object-temp\\repo\\installer\\receipt-evidence\\sha256\\f8\\f8aa6cdd71e47ec27c9618d515b8cecb3c25cbef0ef58a862760fe5f21b343f4.blob.sha256.writing-a8e3eb0ca7314bfd9bb71e408a5e7ee2'.\""
+          },
+          {
+            "name": "hard-exit-object-data-fresh-process-recovery",
+            "passed": false,
+            "detail": "Exception calling \".ctor\" with \"6\" argument(s): \"Could not find a part of the path 'C:\\dev\\Yime\\.tmp\\dual-product\\dp1-package-receipt-v2-test-store-review-ps5-a\\cases\\crash-object-data\\repo\\installer\\receipt-evidence\\sha256\\f8\\f8aa6cdd71e47ec27c9618d515b8cecb3c25cbef0ef58a862760fe5f21b343f4.blob.sha256.writing-bcaf765e6fb54b24997a116d6c553609'.\""
+          },
+          {
+            "name": "hard-exit-objects-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-intent-temp-fresh-process-recovery",
+            "passed": false,
+            "detail": "Child did not stop at intent-temp"
+          },
+          {
+            "name": "hard-exit-intent-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-receipt-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-sidecar-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-complete-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "shared-lock-blocks-supersession",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "stale-cas-and-v1-downgrade-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "corrupt-retained-object-fails-closed",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "false-retention-claim-without-objects-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hardlinked-retained-object-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "pending-blocks-successor-and-rejects-unrelated-canonical-bytes",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "sidecar-sharing-failure-leaves-recoverable-intent",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-product_version",
+            "passed": false,
+            "detail": "Receipt-v2 OutputRoot must be a fresh immediate .tmp/dual-product/dp1-package-receipt-v2-* directory."
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-copied_file_count",
+            "passed": false,
+            "detail": "Receipt-v2 OutputRoot must be a fresh immediate .tmp/dual-product/dp1-package-receipt-v2-* directory."
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-generated_uninstaller_bytes",
+            "passed": false,
+            "detail": "Receipt-v2 OutputRoot must be a fresh immediate .tmp/dual-product/dp1-package-receipt-v2-* directory."
+          },
+          {
+            "name": "reader-rejects-resealed-bound-build-execution-claim",
+            "passed": false,
+            "detail": "Unexpected rejection: receipt-v2 build result differs from the canonical receipt."
+          },
+          {
+            "name": "strict-json-rejects-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-case-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-escaped-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-comment",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-trailing-comma",
+            "passed": true,
+            "detail": "ok"
+          }
+        ],
+        "installer_or_uninstaller_executed": false,
+        "product_processes_executed": false,
+        "power_loss_verified": false
+      }
+    },
+    {
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-store-review-ps5-b/store-result.json",
+      "sha256": "329d7ed19b423e7ebaa41eaf8b9cb15fe5cc4c0f0bc3e5ef23fdfe424fe9e692",
+      "result": {
+        "schema_version": "yime-rime-pime-receipt-store-test-v1",
+        "total": 25,
+        "passed": 24,
+        "failed": 1,
+        "checks": [
+          {
+            "name": "retained-evidence-survives-source-removal-and-repeated-v2-supersession",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-object-temp-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-object-data-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-objects-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-intent-temp-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-intent-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-receipt-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-sidecar-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-complete-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "shared-lock-blocks-supersession",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "stale-cas-and-v1-downgrade-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "corrupt-retained-object-fails-closed",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "false-retention-claim-without-objects-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hardlinked-retained-object-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "pending-blocks-successor-and-rejects-unrelated-canonical-bytes",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "sidecar-sharing-failure-leaves-recoverable-intent",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-product_version",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-copied_file_count",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-generated_uninstaller_bytes",
+            "passed": false,
+            "detail": "Exception calling \"Move\" with \"2\" argument(s): \"Could not find a part of the path.\""
+          },
+          {
+            "name": "reader-rejects-resealed-bound-build-execution-claim",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-case-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-escaped-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-comment",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-trailing-comma",
+            "passed": true,
+            "detail": "ok"
+          }
+        ],
+        "installer_or_uninstaller_executed": false,
+        "product_processes_executed": false,
+        "power_loss_verified": false
+      }
+    },
+    {
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-store-review-ps7-a/store-result.json",
+      "sha256": "a5d78120416f85400ebef8d34840418eddb58966377e895fde75d14fc4020069",
+      "result": {
+        "schema_version": "yime-rime-pime-receipt-store-test-v1",
+        "total": 25,
+        "passed": 18,
+        "failed": 7,
+        "checks": [
+          {
+            "name": "retained-evidence-survives-source-removal-and-repeated-v2-supersession",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-object-temp-fresh-process-recovery",
+            "passed": false,
+            "detail": "系统找不到指定的路径。"
+          },
+          {
+            "name": "hard-exit-object-data-fresh-process-recovery",
+            "passed": false,
+            "detail": "系统找不到指定的路径。"
+          },
+          {
+            "name": "hard-exit-objects-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-intent-temp-fresh-process-recovery",
+            "passed": false,
+            "detail": "Child did not stop at intent-temp"
+          },
+          {
+            "name": "hard-exit-intent-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-receipt-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-sidecar-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-complete-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "shared-lock-blocks-supersession",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "stale-cas-and-v1-downgrade-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "corrupt-retained-object-fails-closed",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "false-retention-claim-without-objects-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hardlinked-retained-object-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "pending-blocks-successor-and-rejects-unrelated-canonical-bytes",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "sidecar-sharing-failure-leaves-recoverable-intent",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-product_version",
+            "passed": false,
+            "detail": "Receipt-v2 OutputRoot must be a fresh immediate .tmp/dual-product/dp1-package-receipt-v2-* directory."
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-copied_file_count",
+            "passed": false,
+            "detail": "Receipt-v2 OutputRoot must be a fresh immediate .tmp/dual-product/dp1-package-receipt-v2-* directory."
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-generated_uninstaller_bytes",
+            "passed": false,
+            "detail": "Receipt-v2 OutputRoot must be a fresh immediate .tmp/dual-product/dp1-package-receipt-v2-* directory."
+          },
+          {
+            "name": "reader-rejects-resealed-bound-build-execution-claim",
+            "passed": false,
+            "detail": "Unexpected rejection: receipt-v2 build result differs from the canonical receipt."
+          },
+          {
+            "name": "strict-json-rejects-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-case-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-escaped-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-comment",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-trailing-comma",
+            "passed": true,
+            "detail": "ok"
+          }
+        ],
+        "installer_or_uninstaller_executed": false,
+        "product_processes_executed": false,
+        "power_loss_verified": false
+      }
+    },
+    {
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-store-review-ps7-b/store-result.json",
+      "sha256": "913c5ee2978ecf08129309a8132ccaa6659fd30e35f473cef37cfee0d1cea974",
+      "result": {
+        "schema_version": "yime-rime-pime-receipt-store-test-v1",
+        "total": 25,
+        "passed": 25,
+        "failed": 0,
+        "checks": [
+          {
+            "name": "retained-evidence-survives-source-removal-and-repeated-v2-supersession",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-object-temp-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-object-data-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-objects-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-intent-temp-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-intent-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-receipt-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-sidecar-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hard-exit-complete-fresh-process-recovery",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "shared-lock-blocks-supersession",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "stale-cas-and-v1-downgrade-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "corrupt-retained-object-fails-closed",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "false-retention-claim-without-objects-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "hardlinked-retained-object-rejected",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "pending-blocks-successor-and-rejects-unrelated-canonical-bytes",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "sidecar-sharing-failure-leaves-recoverable-intent",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-product_version",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-copied_file_count",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-summary-contradiction-generated_uninstaller_bytes",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "reader-rejects-resealed-bound-build-execution-claim",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-case-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-escaped-duplicate",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-comment",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "strict-json-rejects-trailing-comma",
+            "passed": true,
+            "detail": "ok"
+          }
+        ],
+        "installer_or_uninstaller_executed": false,
+        "product_processes_executed": false,
+        "power_loss_verified": false
+      }
+    }
+  ],
+  "canonical_receipt": {
+    "path": "installer/package-build-receipt.json",
+    "sha256": "c18d1202ad78dcd6f8c1f74b34859a83489adb01fb156fa4e2546160aff5b0be",
+    "result": {
+      "schema_version": "yime-rime-pime-package-build-receipt-v2",
+      "product": "rime-pime",
+      "closure_scope": "sealed-stage-disabled-nsis-build-and-static-archive-evidence-not-release",
+      "receipt_state": "canonical-static-closure-disabled",
+      "product_version": "1.4.0-dev",
+      "architectures": [
+        "x86",
+        "x64"
+      ],
+      "package_profile": "x86-x64-v1",
+      "package_plan": {
+        "path": "installer/package-plan.json",
+        "sha256": "b5bcfe3ead26478129621cec7ea376ad028db86500d209d74572be16b04445ad"
+      },
+      "sealed_stage": {
+        "content_manifest_path": ".tmp/dual-product/dp1-package-build-stage-dp1h-root-ps7-a1/evidence/package-stage-content.json",
+        "content_manifest_sha256": "6c56bac7207229c8ca357441011d2752d73f6f5aef59b839cffc6c7274f34fc7",
+        "payload_spec_sha256": "79c08ee2586d9007fccde5df15174eac5dacd1400690072a9b9b5df21a7be998",
+        "content_tree_sha256": "bec8f30e0d85c854dda9da3b70e26bd6b752fcd89684bbe6572038ab291151b2",
+        "copied_file_count": 175,
+        "payload_file_count": 166,
+        "bootstrap_file_count": 9
+      },
+      "payload_include": {
+        "path": ".tmp/dual-product/dp1-package-build-stage-dp1h-root-ps7-a1/evidence/payload-files.nsh",
+        "sha256": "aed59cc374fc4bcdf6d3d26eefb87cc31524a6371bb84efa8839876b1e3d14fd",
+        "bytes": 22992,
+        "receipt_path": ".tmp/dual-product/dp1-package-build-stage-dp1h-root-ps7-a1/evidence/payload-files-receipt.json",
+        "receipt_sha256": "ef9d2a5d85f18ff92c23c8300944c559edaff5336abf1119674f52c48990c029"
+      },
+      "predecessor_v1": {
+        "schema_version": "yime-rime-pime-package-build-receipt-v1",
+        "source_path_at_finalization": "installer/package-build-receipt.json",
+        "sha256": "d8570876b1fe5208011ce52252b261f37ef263ffce161de44560e63c3a9d1450",
+        "bytes": 800,
+        "installer_sha256": "32a7d66e06284d512675e40495b6e244a23630d2e368ac2cf73ce652e623efe2",
+        "installer_size": 41456428,
+        "package_plan_sha256": "b5bcfe3ead26478129621cec7ea376ad028db86500d209d74572be16b04445ad"
+      },
+      "disabled_build": {
+        "result_path": ".tmp/dual-product/dp1-package-build-stage-dp1h-root-ps7-a1/evidence/build-result.json",
+        "result_sha256": "c1845b1dcb6b2ac49e8d4127d5ea8a6032c56646bcfac7c78da0574f3f7e6a49",
+        "schema_version": "yime-rime-pime-staged-nsis-build-result-v2",
+        "makensis_sha256": "25d1aa7081db1a9de9690b59983f9652b7409a189c3444328cc1841eff693e8d",
+        "nsis_toolchain_lock_sha256": "01e913d82b277ac9219148e9fb26df7851475ce0b70ff5d7b58df51179603c45",
+        "nsis_compiler_input_scope": "repository-pinned-nsis-distribution-non-os-v1",
+        "nsis_compiler_input_tree_sha256": "a908c3b306098217a87a62f0eb4a18c3b2bb5391efde93420bbec1f38ec8d352",
+        "nsis_compiler_input_file_count": 303,
+        "nsis_compiler_input_directory_count": 17,
+        "nsis_compiler_input_read_lease_count": 303,
+        "nsis_compiler_input_directory_lease_count": 19,
+        "nsis_compiler_input_anchor_directory_lease_count": 2,
+        "nsis_toolchain_control_read_lease_count": 2,
+        "nsis_compiler_input_pre_snapshot_exact": true,
+        "nsis_compiler_input_post_snapshot_exact": true,
+        "nsis_compiler_input_leases_held_during_makensis": true,
+        "nsis_known_input_file_replacement_closure": true,
+        "active_same_sid_transient_tree_membership_interference_excluded": false,
+        "nsis_non_os_compiler_input_closure": false,
+        "full_nsis_toolchain_input_closure": false,
+        "unsigned_disabled_build": true,
+        "signing_hook_processes_executed": false
+      },
+      "static_postbuild": {
+        "result_path": ".tmp/dual-product/dp1-postbuild-extraction-dp1h-root-ps7-a1/evidence/result.json",
+        "result_sha256": "c1ea171de99485ba6771c5b7e6fd9a1e4ec8a62a1d48ed9d4b5979fffc4d0a01",
+        "schema_version": "yime-rime-pime-postbuild-extraction-v1",
+        "toolchain": {
+          "toolchain_id": "mycomputer-rime-pime-nsis-static-x86-x64-v2",
+          "lock_sha256": "01e913d82b277ac9219148e9fb26df7851475ce0b70ff5d7b58df51179603c45",
+          "makensis_sha256": "25d1aa7081db1a9de9690b59983f9652b7409a189c3444328cc1841eff693e8d",
+          "seven_zip_sha256": "83967f1b02b43c4efeda302795722c809e0e81b8307de73558d10484d5676a7d",
+          "seven_zip_parser_library_sha256": "69fd4df057985c40e510e2fac182881c7f85e90aa13ec703f763a8fdb2ce61f8",
+          "seven_zip_parser_library_version": "26.02",
+          "nsis_compiler_input_scope": "repository-pinned-nsis-distribution-non-os-v1",
+          "nsis_compiler_input_tree_sha256": "a908c3b306098217a87a62f0eb4a18c3b2bb5391efde93420bbec1f38ec8d352",
+          "nsis_compiler_input_file_count": 303,
+          "nsis_compiler_input_directory_count": 17,
+          "nsis_compiler_input_read_lease_count": 303,
+          "nsis_compiler_input_directory_lease_count": 19,
+          "nsis_compiler_input_anchor_directory_lease_count": 2,
+          "nsis_toolchain_control_read_lease_count": 2,
+          "inputs_exact_and_read_leased_during_postbuild": true,
+          "known_input_file_replacement_closure": true,
+          "active_same_sid_transient_tree_membership_interference_excluded": false,
+          "compiler_input_leases_held_during_makensis": false,
+          "non_os_compiler_input_closure": false,
+          "full_toolchain_input_closure": false
+        },
+        "installer_archive_entry_count": 181,
+        "nested_uninstaller_archive_entry_count": 11,
+        "generated_uninstaller_sha256": "ea0cdb53324d215601f14c11bb69041f9006172468ddc28bfa7eacf850764a2d",
+        "generated_uninstaller_bytes": 585253,
+        "archive_content_origin_proven": true,
+        "actual_installer_or_uninstaller_executed": false
+      },
+      "installer": {
+        "path": "installer/YIME-1.4.0-dev-setup.exe",
+        "sha256": "32a7d66e06284d512675e40495b6e244a23630d2e368ac2cf73ce652e623efe2",
+        "bytes": 41456428,
+        "source_path": "installer/installer.nsi",
+        "source_sha256": "fc85300eb7ed4740ae53442f4969a7892e3637f52ea52e53936a18e6009ece75"
+      },
+      "evidence_artifacts_embedded": false,
+      "evidence_artifacts_durable": false,
+      "unsigned_disabled_build": true,
+      "signing_complete": false,
+      "generated_uninstaller_verified": false,
+      "generated_uninstaller_trusted": false,
+      "final_payload_closure": false,
+      "delivery_admitted": false,
+      "installer_executed": false,
+      "uninstaller_executed": false,
+      "installed_product_processes_touched": false,
+      "product_registry_mutated": false,
+      "default_input_method_changed": false,
+      "production_user_data_read_or_written": false,
+      "installed_yimecore_local12_touched": false,
+      "sealed_at_utc": "2026-09-06T06:20:58.8624957Z"
+    }
+  },
+  "source_hashes": {
+    "tools/dual-product/rime-pime-package-receipt-v2.ps1": "479114d0becf9fc9610c0493207fb9028d8de9191f15093b5d1f2186910add7e",
+    "tools/dual-product/rime-pime-receipt-v2-store.ps1": "b9a08c35502724d74e172338b7d304f89c593677011f4088d05d64e007c52317",
+    "tools/dual-product/test-rime-pime-receipt-v2-store.ps1": "a5811c69305509b5d23f090ecbfa7cf35bbc5eb38c3c37d107dadac30e50b748",
+    "tools/dual-product/rime-pime-package-receipt-v2.psm1": "150bb7a1dec1e2407b0804d9bd7378c11dbce92753d868c1580222daeb0d8376",
+    "tools/dual-product/finalize-rime-pime-package-receipt-v2.ps1": "2b0bb2546adf91e57667899c648e7c942b766e5e510b30d4b513df7612124228",
+    "tools/dual-product/test-rime-pime-package-receipt-v2.ps1": "7b8acfbd6d919f6965dd2176c9da7c9e74cb1fa759f87eb0fc9137e3259ab95e",
+    ".github/workflows/ci.yaml": "23c89cf9d1bcb802ff460c12703403df8de16c6c725a76deb1d4dd36de288a55"
+  },
+  "canonical_reader_verified_shells": [
+    "Windows PowerShell 5.1",
+    "PowerShell 7"
+  ],
+  "canonical_receipt_mutated": false,
+  "compiler_executed": false,
+  "installer_or_uninstaller_executed": false,
+  "installed_yimecore_local12_touched": false,
+  "product_registry_mutated": false,
+  "production_user_data_read_or_written": false,
+  "directory_metadata_durability_verified": false,
+  "hardware_power_loss_verified": false,
+  "fresh_compiler_interval_evidence_published": false,
+  "delivery_admitted": false,
+  "validation_notes": [
+    "Final store tests perform independent-process recovery after committed intent.",
+    "Trial a exposed temporary filename path length and fixture naming/assertion issues. Trial b PS5 exposed an overlong summary fixture path; fixture names were shortened. Earlier results are unchanged.",
+    "Retained evidence means persistent local file storage, not independent backup or power-loss acceptance.",
+    "Actual canonical receipt was read only and retains its historical false evidence_artifacts_durable field."
+  ]
+}

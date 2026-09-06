@@ -36,3 +36,11 @@ Each interval result has a SHA-256 sidecar. Primitive results are under `.tmp/du
 Evidence remains in fresh `.tmp` directories, not durable or bound into a new canonical receipt. No full product package build was run: the canonical v2 anti-downgrade preflight remains intact. Evidence covers the shared production stage helper around real minimal makensis compilations plus builder wiring, not a new canonical product publication.
 
 Candidates were generated but never executed. No installers/uninstallers, product registry, default input method, user data or YimeCore local.12 were touched.
+
+## Governance hardening follow-up
+
+The compiler-interval helper and its real-minimal-makensis regression are now explicit members of `tools/dual-product/contract.json`. CI runs the regression under Windows PowerShell 5.1 and PowerShell 7 after installing the pinned NSIS 3.12 toolchain and before the product builder. The source baseline fails closed if the helper, either CI invocation, false nonclaim, or builder interval ordering disappears.
+
+The former text-position guard was replaced with PowerShell AST checks in the interval test, registration-completeness test and repository build guards. They require exactly one monitored-stage open/completion/close lifecycle; one real staged makensis invocation; a structured nonzero exit gate; completion before the first candidate probe, record and lease; publication only after that admission; a null-guarded close in the owning `finally`; and one exact `nsis_compiler_membership_interval=$membershipInterval` binding in the successful build result.
+
+Fresh current-source validation passed the interval suite 7/7 under both shells, registration completeness 36/36 under both shells, repository build guards under both shells, and Python baseline tests 51/51 over a 132-file source manifest. The [DP1-K/DP1-L hardening record](../testing/dual-product/2026-09-06-dp1-k-l-governance-hardening.json) binds these result artifacts and current sources by SHA-256. The current staged build result is still schema v2 and strict receipt admission does not yet require the interval object; therefore this closes governance of the existing interval implementation, not the next canonical product generation.

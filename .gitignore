@@ -72,6 +72,7 @@ installer/*.exe
 /installer/package-build-receipt.json
 /installer/package-build-receipt.json.sha256
 /installer/.rime-pime-publication.lock
+/installer/receipt-evidence/
 .tmp/
 /tmp/
 /.generated/

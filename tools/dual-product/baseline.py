@@ -204,6 +204,8 @@ def transaction_source_status(sources):
     nsis_toolchain = sources["tools/dual-product/rime-pime-nsis-toolchain-closure.ps1"]
     nsis_toolchain_module = sources["tools/dual-product/rime-pime-nsis-toolchain-closure.psm1"]
     nsis_toolchain_test = sources["tools/dual-product/test-rime-pime-nsis-toolchain-closure.ps1"]
+    nsis_compiler_interval = sources["tools/dual-product/rime-pime-nsis-compiler-interval.ps1"]
+    nsis_compiler_interval_test = sources["tools/dual-product/test-rime-pime-nsis-compiler-interval.ps1"]
     nsis_membership_monitor = sources["tools/dual-product/rime-pime-nsis-membership-monitor-v1.ps1"]
     nsis_membership_monitor_module = sources["tools/dual-product/rime-pime-nsis-membership-monitor-v1.psm1"]
     nsis_membership_fixture_writer = sources["tools/dual-product/invoke-rime-pime-nsis-membership-fixture-writer-v1.ps1"]
@@ -215,6 +217,8 @@ def transaction_source_status(sources):
     postbuild_test = sources["tools/dual-product/test-rime-pime-postbuild-extraction.ps1"]
     postbuild_runner = sources["tools/dual-product/run-rime-pime-postbuild-extraction.ps1"]
     receipt_v2 = sources["tools/dual-product/rime-pime-package-receipt-v2.ps1"]
+    receipt_store = sources["tools/dual-product/rime-pime-receipt-v2-store.ps1"]
+    receipt_store_test = sources["tools/dual-product/test-rime-pime-receipt-v2-store.ps1"]
     receipt_v2_module = sources["tools/dual-product/rime-pime-package-receipt-v2.psm1"]
     receipt_v2_finalizer = sources["tools/dual-product/finalize-rime-pime-package-receipt-v2.ps1"]
     receipt_v2_test = sources["tools/dual-product/test-rime-pime-package-receipt-v2.ps1"]
@@ -506,6 +510,23 @@ def transaction_source_status(sources):
                                "active_same_sid_transient_tree_membership_interference_excluded=$false",
                                "nsis_non_os_compiler_input_closure=$false",
                                "full_nsis_toolchain_input_closure=$false"]),
+        (nsis_compiler_interval, ["DP1-NSIS-MEMBERSHIP-05",
+                                  "function Open-RimePimeMonitoredNsisStage",
+                                  "[YimePime.NsisMembership.MonitorHostV1]::new",
+                                  "$closure=Open-RimePimeNsisCompilerInputClosureCore",
+                                  "function Complete-RimePimeMonitoredNsisStage",
+                                  "$result=$Stage.Monitor.Seal(10000)",
+                                  "$null=Test-RimePimeNsisCompilerInputClosure $Stage.Closure",
+                                  "physical_membership_prevention_claimed=$false",
+                                  "active_same_sid_transient_tree_membership_interference_excluded=$false",
+                                  "nsis_non_os_compiler_input_closure=$false;full_nsis_toolchain_input_closure=$false"]),
+        (nsis_compiler_interval_test, ["foreach($mode in @('clean','file','directory','rename','root-file','compiler-error'))",
+                                       "!system ",
+                                       "same-SID child",
+                                       "builder-rejects-before-publication",
+                                       "actual_makensis_executed=$true",
+                                       "installer_executed=$false",
+                                       "full_nsis_toolchain_input_closure=$false"]),
         (postbuild_toolchain_lock, ["yime-rime-pime-postbuild-toolchain-lock-v2",
                                     "mycomputer-rime-pime-nsis-static-x86-x64-v2",
                                     '"directory_count":17',
@@ -604,7 +625,26 @@ def transaction_source_status(sources):
                       "Receipt-v2 publication requires the current canonical v1 receipt as its predecessor"]),
         (receipt_v2_module, ["Definitions-only entry point",
                              ". (Join-Path $PSScriptRoot 'rime-pime-package-receipt-v2.ps1')",
-                             "Export-ModuleMember -Function '*-RimePime*'"]),
+                             ". (Join-Path $PSScriptRoot 'rime-pime-receipt-v2-store.ps1')",
+                             "Export-ModuleMember -Function @(",
+                             "'New-RimePimePackageReceiptV2Preparation'",
+                             "'Close-RimePimePackageReceiptV2Preparation'",
+                             "'Publish-RimePimePackageReceiptV2'",
+                             "'Read-RimePimePackageBuildReceiptV2'",
+                             "'Publish-RimePimePackageReceiptV2Supersession'",
+                             "'Resume-RimePimePackageReceiptV2Publication'"]),
+        (receipt_store, ["function Open-RimePimeReceiptPublicationIntentLease",
+                         "Assert-RimePimeReceiptJsonSyntax $text",
+                         "function Publish-RimePimePackageReceiptV2Supersession",
+                         "function Resume-RimePimePackageReceiptV2Publication",
+                         "Open-RimePimePublicationLock", "pending.json"]),
+        (receipt_store_test, ["module-exports-only-six-explicit-receipt-apis",
+                              "strict-intent-json-rejects-",
+                              "missing-retained-object-sidecar-fails-closed",
+                              "hard-exit-", "fresh-process-recovery",
+                              "installer_or_uninstaller_executed=$false",
+                              "product_processes_executed=$false",
+                              "power_loss_verified=$false"]),
         (receipt_v2_finalizer, ["if(-not $PublishCanonical){throw",
                                 "Duplicate receipt-v2 execution logic",
                                 "Import-Module -Name $module -Force",
@@ -654,6 +694,11 @@ def transaction_source_status(sources):
         ci,
         "CI DP1-J isolated membership-monitor step",
     ).group()
+    ci_compiler_interval_step = one(
+        r"(?ms)^      - name: Test DP1-K NSIS compiler membership interval\s*$.*?(?=^      - name: |\Z)",
+        ci,
+        "CI DP1-K NSIS compiler-interval step",
+    ).group()
     ci_receipt_v2_step = one(
         r"(?ms)^      - name: Test canonical package receipt v2 contract\s*$.*?(?=^      - name: |\Z)",
         ci,
@@ -663,6 +708,11 @@ def transaction_source_status(sources):
         r"(?ms)^      - name: Test canonical receipt no-downgrade contract\s*$.*?(?=^      - name: |\Z)",
         ci,
         "CI synthetic receipt no-downgrade step",
+    ).group()
+    ci_receipt_store_step = one(
+        r"(?ms)^      - name: Test retained receipt publication and crash recovery\s*$.*?(?=^      - name: |\Z)",
+        ci,
+        "CI retained receipt publication step",
     ).group()
     ci_supersession_step = one(
         r"(?ms)^      - name: Test DP1-J isolated receipt-v2 supersession protocol\s*$.*?(?=^      - name: |\Z)",
@@ -743,6 +793,27 @@ def transaction_source_status(sources):
         "PowerShell 5.1 DP1-J receipt-v2 supersession test failed with exit code $LASTEXITCODE" in
         ci_supersession_step and
         all(re.search(pattern, dp1j_ci_steps) is None for pattern in prohibited_dp1i_ci_patterns)
+    )
+    compiler_interval_ci_ps5_ps7_present = (
+        ci_compiler_interval_step.count("test-rime-pime-nsis-compiler-interval.ps1") == 2 and
+        ci_compiler_interval_step.count("-OutputRoot") == 2 and
+        ".tmp\\dual-product\\dp1-nsis-interval-test-ci-ps5-$runId" in ci_compiler_interval_step and
+        ".tmp\\dual-product\\dp1-nsis-interval-test-ci-ps7-$runId" in ci_compiler_interval_step and
+        "PowerShell 5.1 DP1-K compiler-interval test failed with exit code $LASTEXITCODE" in
+        ci_compiler_interval_step and
+        ci.index("      - name: Install NSIS in non-secret packaging job") <
+        ci.index("      - name: Test DP1-K NSIS compiler membership interval") <
+        ci.index("      - name: Build the installer") and
+        all(name not in ci_compiler_interval_step for name in (
+            "build-rime-pime-installer.ps1", "Install-PIME-Test.cmd", "Uninstall-PIME-Test.cmd",
+        ))
+    )
+    retained_receipt_ci_ps5_ps7_present = (
+        ci_receipt_store_step.count("test-rime-pime-receipt-v2-store.ps1") == 2 and
+        ci_receipt_store_step.count("-OutputRoot") == 2 and
+        ".tmp\\dual-product\\dp1-package-receipt-v2-test-store-ps5-$runId" in ci_receipt_store_step and
+        ".tmp\\dual-product\\dp1-package-receipt-v2-test-store-ps7-$runId" in ci_receipt_store_step and
+        "PS5 retained receipt publication test failed: $LASTEXITCODE" in ci_receipt_store_step
     )
     rime_sid_chain_anchors = ("RequestExecutionLevel user" in nsis and
                               "Function bootstrapTargetUser" in nsis and
@@ -949,6 +1020,42 @@ def transaction_source_status(sources):
             "active_same_sid_transient_tree_membership_interference_excluded = $false",
         )
     )
+    interval_helper_order = tuple(nsis_compiler_interval.index(anchor) for anchor in (
+        "[YimePime.NsisMembership.MonitorHostV1]::new",
+        "$closure=Open-RimePimeNsisCompilerInputClosureCore",
+        "$result=$Stage.Monitor.Seal(10000)",
+        "$null=Test-RimePimeNsisCompilerInputClosure $Stage.Closure",
+    ))
+    interval_builder_order = tuple(staged_builder.index(anchor) for anchor in (
+        "$compilerStage=Open-RimePimeMonitoredNsisStage",
+        "$MakensisPath=Join-Path $compilerStage.Root 'Bin\\makensis.exe'",
+        "$env:NSISDIR=$compilerStage.Root",
+        "Push-Location $nsisIncludeRoot",
+        "& $MakensisPath @arguments",
+        'if ($LASTEXITCODE -ne 0)',
+        "$membershipInterval=Complete-RimePimeMonitoredNsisStage",
+        "$candidateLeases=Open-RimePimeBuildInputLeases $candidateExpected",
+        "$prepared=New-RimePimePreparedPublication",
+        "$receipt=Invoke-RimePimePublicationCommit",
+    ))
+    nsis_compiler_stage_membership_detection_rejection_wired = (
+        interval_helper_order == tuple(sorted(interval_helper_order)) and
+        interval_builder_order == tuple(sorted(interval_builder_order)) and
+        len(set(interval_builder_order)) == len(interval_builder_order) and
+        staged_builder.count("& $MakensisPath @arguments") == 1 and
+        staged_builder.count("$membershipInterval=Complete-RimePimeMonitoredNsisStage") == 1 and
+        staged_builder.count("nsis_compiler_membership_interval=$membershipInterval") == 1 and
+        staged_builder.count("Close-RimePimeMonitoredNsisStage $compilerStage") == 1 and
+        "(Join-Path $root 'tools\\dual-product\\rime-pime-nsis-membership-monitor-v1.ps1')" in staged_builder and
+        "(Join-Path $root 'tools\\dual-product\\rime-pime-nsis-compiler-interval.ps1')" in staged_builder and
+        "if($null -ne $compilerStage){Close-RimePimeMonitoredNsisStage $compilerStage}" in staged_builder and
+        all(promoted not in (nsis_compiler_interval + nsis_compiler_interval_test) for promoted in (
+            "physical_membership_prevention_claimed=$true",
+            "active_same_sid_transient_tree_membership_interference_excluded=$true",
+            "nsis_non_os_compiler_input_closure=$true",
+            "full_nsis_toolchain_input_closure=$true",
+        ))
+    )
     receipt_v2_supersession_fixture_source_anchors_present = all(
         anchor in receipt_v2_supersession for anchor in (
             "fixture-only receipt-v2 publication supersession protocol",
@@ -1069,7 +1176,38 @@ def transaction_source_status(sources):
     # Publication is a separate, explicit PowerShell action. This baseline only
     # reads source and does not inspect or publish the canonical receipt.
     canonical_receipt_v2_published_by_baseline = False
-    v2_to_v2_supersession_wired = False
+    receipt_export_block = one(
+        r"(?ms)^Export-ModuleMember -Function @\(\s*.*?^\)",
+        receipt_v2_module,
+        "receipt-v2 explicit module export",
+    ).group()
+    explicit_receipt_module_surface = (
+        receipt_v2_module.count("Export-ModuleMember") == 1 and
+        re.findall(r"'([^']+)'", receipt_export_block) == [
+            "New-RimePimePackageReceiptV2Preparation",
+            "Close-RimePimePackageReceiptV2Preparation",
+            "Publish-RimePimePackageReceiptV2",
+            "Read-RimePimePackageBuildReceiptV2",
+            "Publish-RimePimePackageReceiptV2Supersession",
+            "Resume-RimePimePackageReceiptV2Publication",
+        ]
+    )
+    v2_to_v2_supersession_wired = all(anchor in receipt_store for anchor in (
+        "function Publish-RimePimePackageReceiptV2Supersession",
+        "function Resume-RimePimePackageReceiptV2Publication",
+        "Open-RimePimePublicationLock", "ExpectedPreviousDigest",
+        "Read-RimePimePackageBuildReceiptV2", "pending.json",
+        "function Open-RimePimeReceiptPublicationIntentLease",
+        "Assert-RimePimeReceiptJsonSyntax $text",
+        "Open-RimePimeReceiptV2RawSidecarLease $full $Digest",
+    )) and all(anchor in receipt_store_test for anchor in (
+        "module-exports-only-six-explicit-receipt-apis",
+        "strict-intent-json-rejects-",
+        "missing-retained-object-sidecar-fails-closed",
+        "hard-exit-", "fresh-process-recovery",
+    )) and "Resolve-RimePimeReceiptEvidence" in receipt_v2 and \
+        ". (Join-Path $PSScriptRoot 'rime-pime-receipt-v2-store.ps1')" in receipt_v2_module and \
+        explicit_receipt_module_surface and retained_receipt_ci_ps5_ps7_present
     # These booleans classify source anchors only. This function never executes
     # the PowerShell contracts, an installer, a native probe, or installed code.
     if (not rime_sid_chain_anchors or not rime_target_user_cleanup_anchors or
@@ -1095,9 +1233,12 @@ def transaction_source_status(sources):
             not receipt_v2_supersession_fixture_source_anchors_present or
             not receipt_v2_supersession_fixture_test_source_anchors_present or
             not synthetic_dp1j_ci_contracts_present or
+            not nsis_compiler_stage_membership_detection_rejection_wired or
+            not compiler_interval_ci_ps5_ps7_present or
             not nsis_stage_only_wired or
             not static_archive_exact_gate_present or postbuild_exact_gate_wired_into_builder or
             not canonical_receipt_v2_source_contract_present or
+            not v2_to_v2_supersession_wired or
             not canonical_v2_binds_postbuild_source_anchors_present or
             not synthetic_postbuild_ci_is_host_tool_independent or
             not synthetic_dp1h_ci_contracts_present or
@@ -1151,6 +1292,9 @@ def transaction_source_status(sources):
         "rime_pime_receipt_v2_supersession_fixture_test_source_anchors_present": receipt_v2_supersession_fixture_test_source_anchors_present,
         "rime_pime_dp1j_fixture_ci_ps5_ps7_present": synthetic_dp1j_ci_contracts_present,
         "rime_pime_dp1j_fixture_tests_executed_by_baseline": False,
+        "rime_pime_nsis_compiler_stage_membership_detection_rejection_wired": nsis_compiler_stage_membership_detection_rejection_wired,
+        "rime_pime_nsis_compiler_interval_ci_ps5_ps7_present": compiler_interval_ci_ps5_ps7_present,
+        "rime_pime_nsis_compiler_interval_test_executed_by_baseline": False,
         "rime_pime_receipt_v2_supersession_fixture_protocol_only": True,
         "rime_pime_receipt_v2_supersession_canonical_receipt_mutated": False,
         "rime_pime_prepackage_copy_stage_source_anchors_present": True,
@@ -1186,6 +1330,7 @@ def transaction_source_status(sources):
         "rime_pime_canonical_receipt_v2_published_by_baseline": canonical_receipt_v2_published_by_baseline,
         "rime_pime_canonical_receipt_v2_evidence_durable": False,
         "rime_pime_v2_to_v2_supersession_wired": v2_to_v2_supersession_wired,
+        "rime_pime_retained_receipt_ci_ps5_ps7_present": retained_receipt_ci_ps5_ps7_present,
         "rime_pime_installed_live_acceptance_passed": False,
         "actual_installer_executed": False,
         "actual_uninstaller_executed": False,
@@ -1333,11 +1478,11 @@ def source_baseline(root: Path = ROOT):
           "status": "fixture_journal_and_replay_source_anchors_present_real_transaction_pending",
           "reason": "Pure replay/removal models and an isolated filesystem fixture-journal source contract now cover sealed records, hash-chain validation, typed privacy-safe snapshots, replay disposition and foreign-content preservation. This Python baseline only reads their source anchors and does not execute either PowerShell test. A real durable install journal, power-loss and cross-process replay, real registry recovery, installed exact removal, installer wiring, loaded-TSF upgrade handling and native installed/live acceptance remain pending."},
         {"id": "DP1-PIME-COMPILER-INPUT-07", "path": "tools/dual-product/rime-pime-nsis-toolchain-closure.ps1",
-          "status": "known_input_replacement_closed_membership_monitor_fixture_present_makensis_integration_pending",
-          "reason": "The pinned 303-file NSIS distribution is exact at each open/test snapshot and every known input file is read/no-delete leased. A fixture-only continuous membership monitor now detects transient file, directory and rename activity, but it is not wired around a real makensis interval and does not physically prevent membership changes; non-OS and full toolchain closure remain false."},
+          "status": "fresh_compiler_stage_real_minimal_makensis_interval_regression_wired_full_product_rebuild_and_durable_receipt_pending",
+          "reason": "The pinned 303-file NSIS distribution is copied from held leases into a fresh compiler stage and the continuous membership monitor now encloses the synchronous makensis interval before candidate admission. PS5/PS7 real-minimal-makensis regression lanes are wired, but this baseline does not execute them or a full product rebuild, does not physically prevent same-SID membership changes, and does not bind new interval evidence into a durable canonical receipt; non-OS and full toolchain closure remain false."},
         {"id": "DP1-PIME-RECEIPT-08", "path": "tools/dual-product/rime-pime-package-receipt-v2.ps1",
-          "status": "v2_source_contract_and_supersession_fixture_present_durable_canonical_wiring_pending",
-          "reason": "The explicit canonical receipt-v2 source contract binds one disabled candidate to stage, include, build and static postbuild evidence and blocks v1 downgrade. A separate fixture-only content-addressed generation, atomic-head and sealed-journal protocol now exercises supersession semantics, but it is not the strict receipt-v2 reader, does not migrate the non-durable canonical evidence and does not mutate or supersede the canonical receipt."},
+          "status": "retained_v2_supersession_wired_canonical_migration_and_power_loss_acceptance_pending",
+          "reason": "The strict v2 reader and explicit receipt-only supersession API now retain evidence by digest, share the publication lock and recover a persistent intent. Separate PS5/PS7 tests exercise interrupted publication. This source baseline does not execute those tests or migrate the actual canonical receipt; hardware power-loss acceptance and installer-identity replacement remain outside this receipt-only flow."},
     ]
     unchanged = all(digest(child(root, path)) == expected for path, expected in hashes.items())
     if not unchanged:

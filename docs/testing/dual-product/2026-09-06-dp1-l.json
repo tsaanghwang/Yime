@@ -1,0 +1,592 @@
+{
+  "schema_version": "yime-dual-product-dp1-l-evidence-v1",
+  "affected_product": "rime-pime",
+  "generated_at_utc": "2026-09-06T12:19:22.4969526Z",
+  "suites": [
+    {
+      "name": "store-ps5",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-store-ps5-i/store-result.json",
+      "sha256": "7a717fbd848addd43a2d889689ecaa780179cbff9b337874c05fc54bcd26fcd9",
+      "total": 16,
+      "passed": 16,
+      "failed": 0,
+      "checks": [
+        {
+          "name": "retained-evidence-survives-source-removal-and-repeated-v2-supersession",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-object-temp-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-object-data-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-objects-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-intent-temp-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-intent-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-receipt-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-sidecar-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-complete-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "shared-lock-blocks-supersession",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "stale-cas-and-v1-downgrade-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "corrupt-retained-object-fails-closed",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "false-retention-claim-without-objects-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hardlinked-retained-object-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "pending-blocks-successor-and-rejects-unrelated-canonical-bytes",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "sidecar-sharing-failure-leaves-recoverable-intent",
+          "passed": true,
+          "detail": "ok"
+        }
+      ]
+    },
+    {
+      "name": "store-ps7",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-store-ps7-i/store-result.json",
+      "sha256": "7262c18addae33213f9c818c53d75c405b7bf7658213a8b2ea0803471d86067c",
+      "total": 16,
+      "passed": 16,
+      "failed": 0,
+      "checks": [
+        {
+          "name": "retained-evidence-survives-source-removal-and-repeated-v2-supersession",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-object-temp-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-object-data-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-objects-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-intent-temp-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-intent-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-receipt-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-sidecar-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hard-exit-complete-fresh-process-recovery",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "shared-lock-blocks-supersession",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "stale-cas-and-v1-downgrade-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "corrupt-retained-object-fails-closed",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "false-retention-claim-without-objects-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "hardlinked-retained-object-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "pending-blocks-successor-and-rejects-unrelated-canonical-bytes",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "sidecar-sharing-failure-leaves-recoverable-intent",
+          "passed": true,
+          "detail": "ok"
+        }
+      ]
+    },
+    {
+      "name": "receipt-ps5",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-regression-ps5-h/result.json",
+      "sha256": "3462fa531448babe8ca9d6ea1ea83e741ad93f87ac205629e6cc0107b4f20693",
+      "total": 26,
+      "passed": 26,
+      "failed": 0,
+      "checks": [
+        {
+          "name": "matching-sealed-evidence-prepares-strict-v2",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "candidate-byte-mismatch-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "postbuild-stage-mismatch-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "postbuild-toolchain-lock-mismatch-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "missing-non-os-closure-field-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "dishonest-non-os-closure-claim-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "dishonest-transient-membership-exclusion-claim-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "missing-exact-post-snapshot-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "full-os-toolchain-closure-claim-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "postbuild-execution-boundary-violation-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "dishonest-postbuild-toolchain-closure-claim-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "postbuild-toolchain-count-string-cannot-spoof-integer",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "string-false-cannot-spoof-boolean-boundary",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "tampered-sealed-result-sidecar-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "evolved-postbuild-schema-and-generic-toolchain-id-are-accepted",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "strict-reader-rejects-open-v2-schema",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "strict-reader-rejects-resealed-false-archive-origin",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "strict-reader-rejects-resealed-executed-installer-claim",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "strict-reader-rejects-resealed-invalid-evidence-schema",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "publication-preserves-v1-copy-and-commits-v2-sidecar-last",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "publication-failure-rolls-back-exact-v1-pair",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "publication-rejects-canonical-change-after-preparation",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "existing-v2-cannot-be-used-as-v1-predecessor",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "runner-requires-explicit-canonical-publication",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "staged-builder-refuses-canonical-v2-downgrade",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "receipt-v2-implementation-has-no-process-launch-surface",
+          "passed": true,
+          "detail": "ok"
+        }
+      ]
+    },
+    {
+      "name": "receipt-ps7",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-regression-ps7-h/result.json",
+      "sha256": "93a1f6310487c917ea345dfcd494902f70935eaf907bbcffbf8195cef7a4b0ed",
+      "total": 26,
+      "passed": 26,
+      "failed": 0,
+      "checks": [
+        {
+          "name": "matching-sealed-evidence-prepares-strict-v2",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "candidate-byte-mismatch-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "postbuild-stage-mismatch-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "postbuild-toolchain-lock-mismatch-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "missing-non-os-closure-field-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "dishonest-non-os-closure-claim-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "dishonest-transient-membership-exclusion-claim-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "missing-exact-post-snapshot-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "full-os-toolchain-closure-claim-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "postbuild-execution-boundary-violation-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "dishonest-postbuild-toolchain-closure-claim-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "postbuild-toolchain-count-string-cannot-spoof-integer",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "string-false-cannot-spoof-boolean-boundary",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "tampered-sealed-result-sidecar-is-rejected",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "evolved-postbuild-schema-and-generic-toolchain-id-are-accepted",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "strict-reader-rejects-open-v2-schema",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "strict-reader-rejects-resealed-false-archive-origin",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "strict-reader-rejects-resealed-executed-installer-claim",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "strict-reader-rejects-resealed-invalid-evidence-schema",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "publication-preserves-v1-copy-and-commits-v2-sidecar-last",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "publication-failure-rolls-back-exact-v1-pair",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "publication-rejects-canonical-change-after-preparation",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "existing-v2-cannot-be-used-as-v1-predecessor",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "runner-requires-explicit-canonical-publication",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "staged-builder-refuses-canonical-v2-downgrade",
+          "passed": true,
+          "detail": "ok"
+        },
+        {
+          "name": "receipt-v2-implementation-has-no-process-launch-surface",
+          "passed": true,
+          "detail": "ok"
+        }
+      ]
+    },
+    {
+      "name": "no-downgrade-ps5",
+      "path": ".tmp/dual-product/dp1-receipt-no-downgrade-store-ps5-d/result.json",
+      "sha256": "e5d652543a62177ddac397b242b019e7d487eb16da0ae925920e695ddb68d622",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "checks": [
+        {
+          "name": "legacy-writer-rejects-v2-and-unknown-with-exact-bytes-unchanged",
+          "passed": true
+        },
+        {
+          "name": "legacy-writer-rejects-a-partial-receipt-pair-without-mutation",
+          "passed": true
+        },
+        {
+          "name": "validated-v1-writer-refresh-remains-supported",
+          "passed": true
+        },
+        {
+          "name": "strict-v1-reader-still-rejects-v2",
+          "passed": true
+        },
+        {
+          "name": "sign-release-rejects-v2-before-plan-read-or-signing-in-both-modes",
+          "passed": true
+        },
+        {
+          "name": "sign-release-rejects-unknown-and-partial-receipts-before-plan-read",
+          "passed": true
+        },
+        {
+          "name": "signing-guard-is-lexically-before-package-read-and-signer-call",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "no-downgrade-ps7",
+      "path": ".tmp/dual-product/dp1-receipt-no-downgrade-store-ps7-d/result.json",
+      "sha256": "1f58051e7cf16071f389d358bbb8c42b28fc72fb788526ac7c5f68d73a9ef9d5",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "checks": [
+        {
+          "name": "legacy-writer-rejects-v2-and-unknown-with-exact-bytes-unchanged",
+          "passed": true
+        },
+        {
+          "name": "legacy-writer-rejects-a-partial-receipt-pair-without-mutation",
+          "passed": true
+        },
+        {
+          "name": "validated-v1-writer-refresh-remains-supported",
+          "passed": true
+        },
+        {
+          "name": "strict-v1-reader-still-rejects-v2",
+          "passed": true
+        },
+        {
+          "name": "sign-release-rejects-v2-before-plan-read-or-signing-in-both-modes",
+          "passed": true
+        },
+        {
+          "name": "sign-release-rejects-unknown-and-partial-receipts-before-plan-read",
+          "passed": true
+        },
+        {
+          "name": "signing-guard-is-lexically-before-package-read-and-signer-call",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "python_baseline_tests_passed": 49,
+  "sources": [
+    {
+      "path": "tools/dual-product/rime-pime-receipt-v2-store.ps1",
+      "sha256": "a327643926d123422096c04268d209a86d1e0c68055ed163c87f3dc36b773848"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-package-receipt-v2.ps1",
+      "sha256": "d0a0913e7efcb74e83949e70e56de36d6807b112a025377bccc6ecbee301eb10"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-package-receipt-v2.psm1",
+      "sha256": "150bb7a1dec1e2407b0804d9bd7378c11dbce92753d868c1580222daeb0d8376"
+    },
+    {
+      "path": "tools/dual-product/test-rime-pime-receipt-v2-store.ps1",
+      "sha256": "7a946d1a491a075bde449d892077b991224eac17f4c52932d4306aff46b146c2"
+    },
+    {
+      "path": "tools/dual-product/test-rime-pime-package-receipt-v2.ps1",
+      "sha256": "7b8acfbd6d919f6965dd2176c9da7c9e74cb1fa759f87eb0fc9137e3259ab95e"
+    },
+    {
+      "path": "tools/dual-product/finalize-rime-pime-package-receipt-v2.ps1",
+      "sha256": "2b0bb2546adf91e57667899c648e7c942b766e5e510b30d4b513df7612124228"
+    },
+    {
+      "path": "tools/dual-product/baseline.py",
+      "sha256": "04906a6f2dbc15aaa9e893de399781940ed8d0f61e955f9fa99b14ecd0a2066c"
+    },
+    {
+      "path": "tools/dual-product/contract.json",
+      "sha256": "fe3286a4708a773e4666fff17fa11094cbcbb8581e5849c3897835f60e8684c6"
+    },
+    {
+      "path": "tools/dual-product/test_baseline.py",
+      "sha256": "d923176cd16c1b661241d3c9406959257f84f9d828bb8d1092a6eda338a61c40"
+    },
+    {
+      "path": ".github/workflows/ci.yaml",
+      "sha256": "23c89cf9d1bcb802ff460c12703403df8de16c6c725a76deb1d4dd36de288a55"
+    }
+  ],
+  "canonical_receipt_sha256": "c18d1202ad78dcd6f8c1f74b34859a83489adb01fb156fa4e2546160aff5b0be",
+  "canonical_receipt_mutated": false,
+  "installer_or_uninstaller_executed": false,
+  "product_processes_executed": false,
+  "hardware_power_loss_verified": false,
+  "delivery_admitted": false
+}

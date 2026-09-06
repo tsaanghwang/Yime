@@ -1,0 +1,206 @@
+{
+  "schema_version": "yime-dual-product-dp1-k-l-governance-hardening-v1",
+  "affected_product": "rime-pime",
+  "generated_at_utc": "2026-09-06T14:38:46.7462006Z",
+  "source_head_before_changes": "b89b6a0635b1e357c6cbe2aced81eb5ccc4c6562",
+  "scope": [
+    "DP1-K compiler-interval contract, CI and AST admission guards",
+    "DP1-L retained receipt strict parsing, sidecar validation, API surface and recovery"
+  ],
+  "result_artifacts": [
+    {
+      "suite": "dp1-k-nsis-compiler-interval",
+      "shell": "Windows PowerShell 5.1",
+      "path": ".tmp/dual-product/dp1-nsis-interval-test-final-ps5-c2/result.json",
+      "sha256": "4eb742f1dbd3c5f7de5cbb5141680a3a0ca39585f541c198d7ba2570ab4c8cb7",
+      "passed": 7,
+      "failed": 0,
+      "actual_minimal_makensis_executed": true,
+      "generated_candidate_executed": false,
+      "installer_executed": false
+    },
+    {
+      "suite": "dp1-k-nsis-compiler-interval",
+      "shell": "PowerShell 7",
+      "path": ".tmp/dual-product/dp1-nsis-interval-test-final-ps7-c2/result.json",
+      "sha256": "19d542c5d63b90b07d64303a486f644e1ab3d226b9a7d96ae6d9fab05456b33a",
+      "passed": 7,
+      "failed": 0,
+      "actual_minimal_makensis_executed": true,
+      "generated_candidate_executed": false,
+      "installer_executed": false
+    },
+    {
+      "suite": "dp1-l-retained-receipt-store",
+      "shell": "Windows PowerShell 5.1",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-full-ps5-c3/store-result.json",
+      "sha256": "925d23646d2ab5809e9128f59e9f903c2ae51b9dc8ee6cb086cf24b24f299a1d",
+      "passed": 36,
+      "failed": 0
+    },
+    {
+      "suite": "dp1-l-retained-receipt-store",
+      "shell": "PowerShell 7",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-full-ps7-c3/store-result.json",
+      "sha256": "8f237147b3d595b361516490959729e8b86c01841601c2638496ed30231911c1",
+      "passed": 36,
+      "failed": 0
+    },
+    {
+      "suite": "strict-package-receipt-v2",
+      "shell": "Windows PowerShell 5.1",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-final-ps5-c4/result.json",
+      "sha256": "de294b3c494b4335840c94a6622daeab0aa30ff9cb944e1970f64f909d45255c",
+      "passed": 26,
+      "failed": 0
+    },
+    {
+      "suite": "strict-package-receipt-v2",
+      "shell": "PowerShell 7",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-final-ps7-c4/result.json",
+      "sha256": "cecf5aea88edadc28d787d280852f87aa516d556fac871d82dc6563d7b699701",
+      "passed": 26,
+      "failed": 0
+    },
+    {
+      "suite": "receipt-v1-v2-no-downgrade",
+      "shell": "Windows PowerShell 5.1",
+      "path": ".tmp/dual-product/dp1-receipt-no-downgrade-final-ps5-c4/result.json",
+      "sha256": "974bf2c1c752a69797ee142573620cef41d2a504f65ead0bc7b892ce7e3fbf3e",
+      "passed": 7,
+      "failed": 0
+    },
+    {
+      "suite": "receipt-v1-v2-no-downgrade",
+      "shell": "PowerShell 7",
+      "path": ".tmp/dual-product/dp1-receipt-no-downgrade-final-ps7-c4/result.json",
+      "sha256": "3039541f1b50cf83d55b0babc46f42d19cdef214f2e7fe767d56c2d39d73f258",
+      "passed": 7,
+      "failed": 0
+    },
+    {
+      "suite": "registration-completeness-source-guards",
+      "shell": "Windows PowerShell 5.1",
+      "path": ".tmp/dual-product/dp1-registration-completeness-k-l-final-ps5-c2/result.json",
+      "sha256": "5e3fdd22a58375b2f862aed35fd0d3cd91a1dc2c05d4a4fddca44f86dc0f34e6",
+      "passed": 36,
+      "failed": 0,
+      "native_registration_probe_executed": false
+    },
+    {
+      "suite": "registration-completeness-source-guards",
+      "shell": "PowerShell 7",
+      "path": ".tmp/dual-product/dp1-registration-completeness-k-l-final-ps7-c2/result.json",
+      "sha256": "b6bf637829fd17b431049ff4fc54cd033467baee8fb5bc85009585e58f4f15b4",
+      "passed": 36,
+      "failed": 0,
+      "native_registration_probe_executed": false
+    },
+    {
+      "suite": "dual-product-source-baseline",
+      "path": ".tmp/dual-product/dp1-k-l-governance-final-c2/baseline.json",
+      "sha256": "fdbdddf29927ed4c279b998a2033657d3fae6173353a49c4c6c51342c133d7a2",
+      "source_manifest_count": 132,
+      "source_baseline_passed": true,
+      "known_pending_count": 5,
+      "dp1_full_implementation_passed": false,
+      "dp2_physical_acceptance_passed": false
+    }
+  ],
+  "command_only_checks": [
+    {
+      "suite": "tools/dual-product/test_baseline.py",
+      "passed": 51,
+      "failed": 0
+    },
+    {
+      "suite": "tools/test-build-guards.ps1 -SkipPackagedRime",
+      "shells": [
+        "Windows PowerShell 5.1",
+        "PowerShell 7"
+      ],
+      "passed": true
+    },
+    {
+      "suite": "git diff --check",
+      "passed": true,
+      "note": "Only line-ending conversion warnings were emitted."
+    }
+  ],
+  "failed_trial_artifacts": [
+    {
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-store-final-ps5-20260906-c1/store-result.json",
+      "sha256": "c1905839915195f70ee6e50bf32804534031df56717a5707bc4c918412bb2eea",
+      "passed": 33,
+      "failed": 3,
+      "accepted_as_pass": false,
+      "finding": "Three long fixture names exceeded the Windows PowerShell 5 path limit before reaching their intended assertions."
+    },
+    {
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-store-final-ps7-20260906-c1/store-result.json",
+      "sha256": "c452bf276d8e56f3dc63fd192ae5b43ee4b53cfc534df2216fc54d9a37aa058d",
+      "passed": 34,
+      "failed": 2,
+      "accepted_as_pass": false,
+      "finding": "The former .NET dollar end anchor accepted a double-LF marker and a lone-CR marker; absolute end anchoring was required."
+    }
+  ],
+  "concrete_regressions_fixed": [
+    "DP1-K helper and real-interval test were missing from the source contract, CI execution lane and current baseline status.",
+    "Builder order guards could pass if membership completion moved after candidate reads or disappeared from the owning finally lifecycle.",
+    "Two project guards did not require the monitored-stage close to remain inside its null guard in the owning finally.",
+    "All project guards could pass if the successful build result stopped carrying the completed compiler-membership interval object.",
+    "The receipt module wildcard exported 84 internal helpers instead of the six reviewed public APIs.",
+    "Pending publication intent used a second lax JSON read and did not retain one strict leased byte identity through completion.",
+    "Durable installer and installer-source object sidecars were not checked by the strict receipt reader.",
+    "Canonical receipt and sidecar recovery did not lease and validate the pair together before classifying old/old, new/old and new/new states.",
+    "The prior sidecar regular-expression tail accepted double-LF and lone-CR suffixes.",
+    "Three negative fixture names exceeded the Windows PowerShell 5 path limit and masked their assertions."
+  ],
+  "source_hashes": {
+    "tools/dual-product/rime-pime-nsis-compiler-interval.ps1": "d02b0fde03a340d7764afe7178245b10d1dc07bd869b6182f2b93f001baf12ca",
+    "tools/dual-product/test-rime-pime-nsis-compiler-interval.ps1": "5528ba7ade5f45ae3b6a568be022c68c06ebe0e7a6a2df6168c230effeceb665",
+    "tools/build-rime-pime-installer.ps1": "b6dd3d29531c5f4b59a8afa11cf3b1273c5d5df3757f268d6cbb67f01c0d9650",
+    "tools/test-build-guards.ps1": "7440012e2a1ef0f4f574b2dac4b83cfad18c2adc88cb3b8734b231e23053cadb",
+    "tools/dual-product/test-rime-pime-registration-completeness.ps1": "389b0c3d3f1c21336858771560e088e21e60d5dbfe188878cb1144f0849f2d42",
+    "tools/dual-product/contract.json": "5f47d8833b34afab37171b71640ef9b5f3d2ae7a73f68b890caa9d768d6a712c",
+    "tools/dual-product/baseline.py": "76293ac0713bc75cae564fdafc06c5a778b8a1d2f331459b5b7a47ff1aa348c4",
+    "tools/dual-product/test_baseline.py": "905d833c9e83c63f74d526bb7836c5ec9f5299e750d4fc61bb9c4950bd6edab7",
+    "tools/dual-product/rime-pime-package-receipt-v2.ps1": "888b24e56d3dbef2338210adb2be020d10ca57668f7efe950c62c617a9698e1c",
+    "tools/dual-product/rime-pime-package-receipt-v2.psm1": "426fbba5c7ce8457faf922cf507a7bdab731315ec58db9eb5b6eef96a164ad9a",
+    "tools/dual-product/rime-pime-receipt-v2-store.ps1": "d34cf33960f84d118bfbd9597a7060966295e2483fd0fd005dde636df0464c3e",
+    "tools/dual-product/test-rime-pime-receipt-v2-store.ps1": "42c67bbeba5041d6faa12dd98d1d72f485ba6411170d2ed4126952c12e44e404",
+    "tools/dual-product/test-rime-pime-package-receipt-v2.ps1": "008562ae0df9c21ea596b62f080a25005c0c1f661efef33f999d12e75eb4c573",
+    "tools/dual-product/finalize-rime-pime-package-receipt-v2.ps1": "2b0bb2546adf91e57667899c648e7c942b766e5e510b30d4b513df7612124228",
+    ".github/workflows/ci.yaml": "ace696499087556f8e262f897cb4b881e1d12f4ec1bd239cf34d884cdb5948d7"
+  },
+  "canonical_snapshot": {
+    "path": "installer/package-build-receipt.json",
+    "sha256": "c18d1202ad78dcd6f8c1f74b34859a83489adb01fb156fa4e2546160aff5b0be",
+    "sidecar_matches": true,
+    "schema_version": "yime-rime-pime-package-build-receipt-v2",
+    "evidence_artifacts_durable": false,
+    "receipt_evidence_directory_exists": false,
+    "canonical_receipt_mutated": false
+  },
+  "remaining_boundaries": [
+    "The current staged build result remains v2; strict receipt admission does not yet require the DP1-K interval object.",
+    "No full Rime/PIME product rebuild or canonical receipt supersession was performed.",
+    "No installer-identity replacement transaction was implemented or exercised.",
+    "Directory metadata and hardware power-loss durability remain unverified.",
+    "A hostile same-SID writer replacing direct paths or ancestor directories outside the shared lock remains outside the proved boundary.",
+    "Signing, delivery, installed/live host acceptance and physical target acceptance remain pending."
+  ],
+  "execution_boundaries": {
+    "full_product_package_built": false,
+    "generated_candidate_executed": false,
+    "installer_or_uninstaller_executed": false,
+    "signing_executed": false,
+    "product_processes_touched": false,
+    "product_registry_mutated": false,
+    "default_input_method_changed": false,
+    "production_rime_pime_touched": false,
+    "installed_yimecore_local12_touched": false,
+    "production_user_data_read_or_written": false
+  }
+}

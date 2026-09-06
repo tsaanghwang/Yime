@@ -150,14 +150,16 @@ class OwnershipTests(unittest.TestCase):
         self.assertFalse(self.receipt["installed_runtime_examined"])
         self.assertFalse(self.receipt["user_text_or_learning_read"])
 
-    def test_dp1j_source_manifest_and_declared_source_set_are_exact(self):
+    def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 121)
-        self.assertEqual(len(self.receipt["source_manifest"]), 128)
+        self.assertEqual(len(contract["source_paths"]), 125)
+        self.assertEqual(len(self.receipt["source_manifest"]), 132)
         for path in (
             "tools/dual-product/rime-pime-nsis-toolchain-closure.ps1",
             "tools/dual-product/rime-pime-nsis-toolchain-closure.psm1",
             "tools/dual-product/test-rime-pime-nsis-toolchain-closure.ps1",
+            "tools/dual-product/rime-pime-nsis-compiler-interval.ps1",
+            "tools/dual-product/test-rime-pime-nsis-compiler-interval.ps1",
             "tools/dual-product/rime-pime-package-receipt-v2.ps1",
             "tools/dual-product/rime-pime-package-receipt-v2.psm1",
             "tools/dual-product/finalize-rime-pime-package-receipt-v2.ps1",
@@ -174,6 +176,8 @@ class OwnershipTests(unittest.TestCase):
             "tools/dual-product/rime-pime-receipt-v2-supersession.ps1",
             "tools/dual-product/rime-pime-receipt-v2-supersession.psm1",
             "tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1",
+            "tools/dual-product/rime-pime-receipt-v2-store.ps1",
+            "tools/dual-product/test-rime-pime-receipt-v2-store.ps1",
         ):
             with self.subTest(path=path):
                 self.assertIn(path, contract["source_paths"])
@@ -372,7 +376,11 @@ class OwnershipTests(unittest.TestCase):
         self.assertTrue(status["rime_pime_canonical_v2_binds_postbuild_source_anchors_present"])
         self.assertFalse(status["rime_pime_canonical_receipt_v2_published_by_baseline"])
         self.assertFalse(status["rime_pime_canonical_receipt_v2_evidence_durable"])
-        self.assertFalse(status["rime_pime_v2_to_v2_supersession_wired"])
+        self.assertTrue(status["rime_pime_v2_to_v2_supersession_wired"])
+        self.assertTrue(status["rime_pime_retained_receipt_ci_ps5_ps7_present"])
+        self.assertTrue(status["rime_pime_nsis_compiler_stage_membership_detection_rejection_wired"])
+        self.assertTrue(status["rime_pime_nsis_compiler_interval_ci_ps5_ps7_present"])
+        self.assertFalse(status["rime_pime_nsis_compiler_interval_test_executed_by_baseline"])
         self.assertFalse(status["rime_pime_static_archive_exact_gate_wired_into_builder"])
         self.assertFalse(status["rime_pime_delivery_admitted"])
         self.assertTrue(status["rime_pime_synthetic_dp1h_ci_contracts_present"])
@@ -396,7 +404,6 @@ class OwnershipTests(unittest.TestCase):
             "rime_pime_nsis_non_os_compiler_input_closure",
             "rime_pime_full_nsis_toolchain_input_closure",
             "rime_pime_canonical_receipt_v2_evidence_durable",
-            "rime_pime_v2_to_v2_supersession_wired",
             "rime_pime_real_installer_transaction_passed",
             "rime_pime_installed_live_acceptance_passed",
         ):
@@ -439,6 +446,51 @@ class OwnershipTests(unittest.TestCase):
             line, "          Start-Process forbidden-product.exe\n" + line, 1)
         with self.assertRaisesRegex(ValueError, "dedicated review required"):
             subject.transaction_source_status(sources)
+
+    def test_dp1k_interval_wiring_and_ci_fail_closed(self):
+        cases = (
+            ("tools/dual-product/rime-pime-nsis-compiler-interval.ps1",
+             "physical_membership_prevention_claimed=$false",
+             "physical_membership_prevention_claimed=$true"),
+            ("tools/dual-product/test-rime-pime-nsis-compiler-interval.ps1",
+             "actual_makensis_executed=$true", "actual_makensis_executed=$false"),
+            ("tools/build-rime-pime-installer.ps1",
+             "$membershipInterval=Complete-RimePimeMonitoredNsisStage $compilerStage",
+             "$membershipInterval=$null"),
+            ("tools/build-rime-pime-installer.ps1",
+             "nsis_compiler_membership_interval=$membershipInterval",
+             "nsis_compiler_membership_interval=$null"),
+            (".github/workflows/ci.yaml",
+             ".tmp\\dual-product\\dp1-nsis-interval-test-ci-ps7-$runId",
+             ".tmp\\dual-product\\dp1-nsis-interval-test-ci-ps5-$runId"),
+        )
+        for path, old, new in cases:
+            sources = self.maintenance_sources()
+            self.assertIn(old, sources[path])
+            sources[path] = sources[path].replace(old, new, 1)
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                subject.transaction_source_status(sources)
+
+    def test_retained_receipt_wiring_requires_module_test_ci_and_exact_exports(self):
+        cases = (
+            ("tools/dual-product/rime-pime-package-receipt-v2.psm1",
+             ". (Join-Path $PSScriptRoot 'rime-pime-receipt-v2-store.ps1')",
+             "# store import removed"),
+            ("tools/dual-product/rime-pime-package-receipt-v2.psm1",
+             "    'Resume-RimePimePackageReceiptV2Publication'",
+             "    'Complete-RimePimeReceiptPublication'"),
+            ("tools/dual-product/test-rime-pime-receipt-v2-store.ps1",
+             "module-exports-only-six-explicit-receipt-apis", "module-export-check-removed"),
+            (".github/workflows/ci.yaml",
+             ".tmp\\dual-product\\dp1-package-receipt-v2-test-store-ps7-$runId",
+             ".tmp\\dual-product\\dp1-package-receipt-v2-test-store-ps5-$runId"),
+        )
+        for path, old, new in cases:
+            sources = self.maintenance_sources()
+            self.assertIn(old, sources[path])
+            sources[path] = sources[path].replace(old, new, 1)
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                subject.transaction_source_status(sources)
 
     def test_builder_toolchain_import_order_regression_is_rejected(self):
         sources = self.maintenance_sources()
@@ -529,9 +581,9 @@ class OwnershipTests(unittest.TestCase):
         self.assertEqual(statuses["DP1-PIME-TRANSACTION-06"],
                          "fixture_journal_and_replay_source_anchors_present_real_transaction_pending")
         self.assertEqual(statuses["DP1-PIME-COMPILER-INPUT-07"],
-                         "known_input_replacement_closed_membership_monitor_fixture_present_makensis_integration_pending")
+                         "fresh_compiler_stage_real_minimal_makensis_interval_regression_wired_full_product_rebuild_and_durable_receipt_pending")
         self.assertEqual(statuses["DP1-PIME-RECEIPT-08"],
-                         "v2_source_contract_and_supersession_fixture_present_durable_canonical_wiring_pending")
+                         "retained_v2_supersession_wired_canonical_migration_and_power_loss_acceptance_pending")
         self.assertEqual(set(statuses), {
             "DP1-PIME-DIRECTED-EXIT-04", "DP1-PIME-REGISTRY-05", "DP1-PIME-TRANSACTION-06",
             "DP1-PIME-COMPILER-INPUT-07", "DP1-PIME-RECEIPT-08",
