@@ -134,6 +134,9 @@ Check 'clone-is-local-nonhardlinked-nocheckout-and-exact-detached-head' {
         "'clone', '--local', '--no-hardlinks', '--no-checkout', '--no-tags', '--', `$root, `$clone",
         "`$gitCommand = @(Get-Command -Name `$GitPath -CommandType Application -ErrorAction Stop)[0]",
         "`$GitPath = Assert-ToolApplicationFile `$gitCommand.Source 'Git client'",
+        "'pin-clone-autocrlf-off'",
+        "'-C', `$clone, 'config', '--local', 'core.autocrlf', 'false'",
+        'Isolated clone did not pin core.autocrlf=false before checkout.',
         "'checkout', '--detach', `$head",
         "'HEAD^{commit}'", "'HEAD^{tree}'",
         "'status', '--porcelain=v1', '--untracked-files=all'",
@@ -141,8 +144,10 @@ Check 'clone-is-local-nonhardlinked-nocheckout-and-exact-detached-head' {
         'Ignored actual publication state entered the clone:'
     )) { Assert-True $source.Contains($anchor) "Missing clone identity anchor: $anchor" }
     $clonePattern = '(?m)^[ \t]*''clone'', ''--local'', ''--no-hardlinks'', ''--no-checkout'', ''--no-tags'', ''--'', \$root, \$clone[ \t]*\r?$'
+    $autocrlfPattern = '(?m)^[ \t]*''-C'', \$clone, ''config'', ''--local'', ''core\.autocrlf'', ''false''[ \t]*\r?$'
     $checkoutPattern = '(?m)^[ \t]*''-C'', \$clone, ''checkout'', ''--detach'', \$head[ \t]*\r?$'
     Assert-True ([regex]::Matches($source, $clonePattern).Count -eq 1) 'Clone argument vector is not exact.'
+    Assert-True ([regex]::Matches($source, $autocrlfPattern).Count -eq 1) 'Clone autocrlf argument vector is not exact.'
     Assert-True ([regex]::Matches($source, $checkoutPattern).Count -eq 1) 'Checkout argument vector is not exact.'
 }
 

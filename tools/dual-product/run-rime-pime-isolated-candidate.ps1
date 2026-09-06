@@ -280,6 +280,7 @@ $resultPath = Join-Path $output 'result.json'
 $failure = $null
 $summary = $null
 $protectedAfter = $null
+$cloneAutoCrlf = ''
 $environmentNames = @(
     'YIME_SIGN_CERT_SHA1', 'YIME_RELEASE_SIGNING_REQUIRED', 'YIME_SIGNTOOL_EXE', 'YIME_TIMESTAMP_URL',
     'GITHUB_SHA', 'GITHUB_REF'
@@ -294,6 +295,12 @@ try {
     Invoke-RecordedProcess 'clone-exact-head' $GitPath @(
         'clone', '--local', '--no-hardlinks', '--no-checkout', '--no-tags', '--', $root, $clone
     ) $root
+    Invoke-RecordedProcess 'pin-clone-autocrlf-off' $GitPath @(
+        '-C', $clone, 'config', '--local', 'core.autocrlf', 'false'
+    ) $root
+    $cloneAutoCrlf = ((Get-GitOutput @('-C', $clone, 'config', '--local', '--get', 'core.autocrlf') `
+        'Clone autocrlf inspection') -join '').Trim().ToLowerInvariant()
+    if ($cloneAutoCrlf -cne 'false') { throw 'Isolated clone did not pin core.autocrlf=false before checkout.' }
     Invoke-RecordedProcess 'checkout-detached-head' $GitPath @(
         '-C', $clone, 'checkout', '--detach', $head
     ) $root
@@ -486,6 +493,7 @@ $result = [pscustomobject][ordered]@{
         repo_root = $root; exact_head = $head; exact_tree = $headTree
         runner_relative_path = $runnerRelativePath; runner_head_blob = $runnerHeadBlob
         runner_worktree_blob = $runnerWorktreeBlob; runner_matches_exact_head = $true
+        clone_core_autocrlf = $cloneAutoCrlf
         clone_detached_exact_head = [bool]($null -ne $summary)
         actual_protected_snapshot_unchanged = [bool]$sourceUnchanged
         before_snapshot_sha256 = Get-Sha256Bytes ([Text.UTF8Encoding]::new($false).GetBytes((ConvertTo-CompactJson $protectedBefore)))

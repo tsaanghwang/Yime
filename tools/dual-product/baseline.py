@@ -726,6 +726,9 @@ def transaction_source_status(sources):
             "'clone', '--local', '--no-hardlinks', '--no-checkout', '--no-tags'",
             "$gitCommand = @(Get-Command -Name $GitPath -CommandType Application -ErrorAction Stop)[0]",
             "$GitPath = Assert-ToolApplicationFile $gitCommand.Source 'Git client'",
+            "'pin-clone-autocrlf-off'",
+            "'-C', $clone, 'config', '--local', 'core.autocrlf', 'false'",
+            "Isolated clone did not pin core.autocrlf=false before checkout.",
             "'checkout', '--detach', $head",
             "$runnerRelativePath = 'tools/dual-product/run-rime-pime-isolated-candidate.ps1'",
             "'hash-object', ('--path=' + $runnerRelativePath), '--', $runnerPath",
@@ -783,6 +786,7 @@ def transaction_source_status(sources):
         fail("Rime/PIME isolated current-source candidate sequence changed")
     for label, pattern in (
         ("clone", r"(?m)^[ \t]*'clone', '--local', '--no-hardlinks', '--no-checkout', '--no-tags', '--', \$root, \$clone[ \t]*$"),
+        ("autocrlf", r"(?m)^[ \t]*'-C', \$clone, 'config', '--local', 'core\.autocrlf', 'false'[ \t]*$"),
         ("checkout", r"(?m)^[ \t]*'-C', \$clone, 'checkout', '--detach', \$head[ \t]*$"),
     ):
         if len(re.findall(pattern, isolated_candidate_runner)) != 1:

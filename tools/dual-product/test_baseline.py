@@ -442,6 +442,8 @@ class OwnershipTests(unittest.TestCase):
             ("'static-installer-manifest-check'", "'removed-static-installer-manifest-check'"),
             ("actual_canonical_migration_admitted = $false", "actual_canonical_migration_admitted = $true"),
             ("Runner file differs from exact source HEAD.", "Runner HEAD mismatch ignored."),
+            ("'-C', $clone, 'config', '--local', 'core.autocrlf', 'false'",
+             "'-C', $clone, 'config', '--local', 'core.autocrlf', 'true'"),
             ("'-C', $clone, 'checkout', '--detach', $head",
              "'-C', $clone, 'checkout', '--detach', $head, '--"),
         ):
