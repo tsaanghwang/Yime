@@ -8,15 +8,25 @@
       "private_memory_budget_mb": 1536
     }
   ],
-  "frozen_profiles": [
+  "experiment_profiles": [
     {
       "id": "mainstream",
       "label": "流行主流",
       "reference": "Windows 11 office PC, 6-12 cores, 16 GB RAM, NVMe SSD",
-      "single_core_percent": 65,
-      "priority": "below-normal",
+      "architecture": "x64",
+      "measurement": "native physical host; no CPU quota or affinity override",
       "private_memory_budget_mb": 1024
     },
+    {
+      "id": "arm64",
+      "label": "Windows ARM64 实机",
+      "architecture": "arm64",
+      "reference": "Identified Windows ARM64 physical desktop host; specifications recorded with each run",
+      "measurement": "native physical host; no x64 emulation substituted for ARM64 evidence",
+      "private_memory_budget_mb": 1024
+    }
+  ],
+  "frozen_profiles": [
     {
       "id": "forward_looking",
       "label": "超前",
@@ -33,11 +43,10 @@
     "learning_p99_overhead_ratio": 1.20
   },
   "limitations": [
-    "Legacy Windows 10 and old SATA-SSD PCs are excluded from the active release gate and are retained only as historical engineering evidence.",
-    "Only the approved development machine is measured, without a Job Object hard cap, fixed affinity, or tier simulation.",
+    "The default local runner measures only the development host. Separate active experiment profiles require identified physical hosts and their own evidence.",
     "The memory budget is per-process private bytes; physical RAM is not removed from Windows.",
     "The harness does not emulate another CPU microarchitecture, cache hierarchy, storage latency, GPU, firmware or background software mix.",
     "E3 static-versus-learned relative cost is measured on the native host with interleaved samples because Job Object quota waits cannot be attributed fairly to one half of a paired microbenchmark.",
-    "The x86 user-mode TSF surface on this AMD64 machine is active, but it does not create a separate hardware performance tier. ARM64, other physical PCs and hardware-tier simulations remain frozen. No result implies compatibility with those targets."
+    "The x86 WOW64 surface is not a separate hardware tier. Mainstream x64 and ARM64 experiments are active; source builds and local measurements do not imply physical compatibility."
   ]
 }

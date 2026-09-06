@@ -2,15 +2,19 @@
 
 本目录承载 YimeCore 替换试验（E0–E6）的全部实验、打包、试用安装与运维脚本。
 
-当前按[本机独立产品实施计划](../../docs/project/YIMECORE_LOCAL_PRODUCT_IMPLEMENTATION_PLAN.md)推进。源码构包已接入 L3 包内维护；新候选使用独立的 `yimecore-local-product-package-v1` 契约。旧 L2 runtime-only 包仍不可安装，旧 E6-C 多架构完整性要求不变。
+当前开发过程遵循[双独立产品开发计划](../../docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)：Rime/PIME 版与 YimeCore 版可分别安装或同时安装，各自独立运行、维护及保存数据，互不依赖。YimeCore 是主要开发线，Rime/PIME 保持稳定维护及可选对照，不默认退役。单装／共存安装矩阵和薄三选一入口待实施；本目录脚本仍只负责各自声明的 YimeCore 范围，不因此获准维护生产 Rime/PIME。
+
+YimeCore 继续按[本机独立产品实施计划](../../docs/project/YIMECORE_LOCAL_PRODUCT_IMPLEMENTATION_PLAN.md)推进。源码构包已接入 L3 包内维护；新候选使用独立的 `yimecore-local-product-package-v1` 契约。旧 L2 runtime-only 包仍不可安装，旧 E6-C 多架构完整性要求不变。
 
 ## 本机独立产品新入口
+
+**2026-09-05 当前状态**：已安装 `local.12`；设置/未确认焦点切换、受影响注册宿主及升级后重启检查通过，最终 L5 日用确认和 L6 仍待完成，见 [L5 日志](../../docs/YIMECORE_L5_DAILY_USE_TEST_LOG.md)。24 条 Stage5C 的[正向准入／不增码与隔离 Broker 源码接入](../../docs/project/YIMECORE_SPEECH_ADMISSION_ISOLATED_SOURCE_2026-09-05.md)及 [SR4-A 默认关闭试验包](../../docs/project/YIMECORE_SPEECH_SR4_PACKAGE_2026-09-05.md)之后，[SR4-B1 正常接口与显式设置](../../docs/project/YIMECORE_SPEECH_SR4B_SOURCE_2026-09-05.md)源码回归已完成。B2 当前源码候选为默认关闭的 local.13，构包／仓外正常进程入口见本页下方；入口和契约自身不宣告任何运行结果。[DP1-B 维护源码保护](../../docs/project/YIME_DUAL_PRODUCT_DP1_B_2026-09-05.md)同步完成，完整独立安装维护和实机共存仍待验收。其他预留语流层未据此准入；全程不运行生产 Rime/PIME。旧 SR0 入口及带旧时间的记录保留原证据边界。
 
 **2026-09-04 当前状态**：当前安装已升级为 `0.1.0-local.11`，活动根为 `yimecore-e6c-f435f463bfd0-5a3f847a`，manifest SHA-256 为 `5a3f847a3136fd2198f7dc9aba22dc017ed7439d8447435e8752eb379a4a5cd8`。安装态 x64/x86 registered-host 三模式 6/6 通过；Firefox 155.0 与 Notepad++ 8.9.8 两个 PE32/I386 进程均确认加载当前安装根的 x86 DLL，并由用户确认组合提交、裸数字组字、`Shift+1` 首候选三项通过。生产/冻结注册及默认输入法保持不变；详见 [local.11 x86 验收](../../docs/YIMECORE_LOCAL11_X86_ACCEPTANCE_2026-09-04.md)。x86 本机工作流已经封存；x64 L5 日常使用和 L6 合并封存仍未关闭，`local_product_ready` 和公开发行仍为 false。下方带时刻的 local.7/local.9 “当前状态”段落均为当时的过程快照。
 
 **17:05 原生状态**：`local.7` 升级通过，但完整卸载重装在卸载间隙发现当前用户 TIP 残留 DWORD `Enable=0` 并停止，当前产品已卸载且恢复介质完整。`local.8` 同时修复“卸载删除残留壳”和“无真实旧安装时禁止恢复旧壳”，已完成 native x64 构建及隔离验证；固定恢复入口待执行。见 [local.7 记录](../../docs/YIMECORE_LOCAL_PRODUCT_LOCAL7_2026-09-03.md)和 [local.8 记录](../../docs/YIMECORE_LOCAL_PRODUCT_LOCAL8_2026-09-03.md)。
 
-活动 x64 已使用“音元拼音”的独立 CLSID/Profile。2026-09-04 用户批准在本机恢复 WOW64 x86 应用宿主，并与 x64 L5/L6 同步推进；新 x86 必须从当前源码以同一活动身份构建。旧 WOW64 CLSID/Profile 和原始 payload 继续只读保留，不得改名、重注册或当作当前活动产品执行。ARM64、其他机器、老旧 x64 和硬件模拟仍冻结。
+活动 x64 已使用“音元拼音”的独立 CLSID/Profile。2026-09-04 用户批准在本机恢复 WOW64 x86 应用宿主，并与 x64 L5/L6 同步推进；新 x86 必须从当前源码以同一活动身份构建。旧 WOW64 CLSID/Profile 和原始 payload 继续只读保留，不得改名、重注册或当作当前活动产品执行。主流 x86-64 与 ARM64 试验现已恢复，使用 `run-platform-experiment.ps1` 独立入口；本机安装与 D2 门禁保持不变，实机未验收不算通过。
 
 **08:12 原生 `.3` 历史状态**：安装后的 OneDrive 自启动值丢失、冻结 x86 profile 描述/图标改变已由定向入口恢复。该维护器随后由 `.4` 替代；`test-local3-repair.ps1` 继续保留事故的固定证据回归，见[诊断](../../docs/YIMECORE_LOCAL3_REGISTRY_PRESERVATION_2026-09-03.md)。
 
@@ -115,3 +119,36 @@ evidence 目录；失败即退出非零，不得静默降级。
 - 自启动：`HKCU\Software\Microsoft\Windows\CurrentVersion\Run`（可用
   `repair-e6c-trial-autostart.ps1` 移除）。
 - Broker 管道：`\\.\pipe\YimeBroker.YimeCoreTrial.v1`。
+## 语流音变准入与隔离源码入口（2026-09-05）
+
+`run-connected-speech-admission.ps1 -InstallRoot <明确安装根> -ExpectedManifestSha256 <固定SHA256>` 要求 PowerShell 7.5+，在新私有目录验证 24 条审定 Stage5C 别名的正向来源、四音元投影及三模式不增码，编译并运行默认不接入日用路径的新 Broker 实验分支。完整门槛包含提交学习、进程重启、禁用、错误配置拒绝和有效配置恢复；保留失败证据，保护安装元数据及历史静态载荷。它不运行 Rime、注册宿主或安装器，不读取用户文本／学习库，不修改默认输入法。
+
+当前结果与边界见 [完成记录](../../docs/project/YIMECORE_SPEECH_ADMISSION_ISOLATED_SOURCE_2026-09-05.md)。这不是 L5 最终确认、L6 封存或新包安装通过。
+
+## SR4-A 自包含试验包入口（2026-09-05）
+
+`run-connected-speech-package.ps1` 要求 PowerShell 7.5+，四个必填参数为 `-AdmissionRoot`（本仓新准入证据根）、`-ExpectedAdmissionSummarySha256`（已核对的完成收据摘要）、`-InstallRoot` 和 `-ExpectedManifestSha256`（日用包保护基线）。它只接受与当前源码和工具一致、包含新增 package 合同测试的完整准入结果；旧 exercise-only 结果不能用作构包凭据。
+
+编排生成全新 `speech-package-*` 证据根及默认关闭、不可安装的 69 文件试验包，再把固定载荷移到 Windows 用户配置根下专用 `YimeCore Isolated Fixtures\SR4` 新目录。包内工具不依赖仓库或安装路径，在独立环境和状态目录执行七阶段 Broker 验证；每次保留封存包、仓外副本及测试结果，不自动清理。它不调用安装器、Rime 或真实输入宿主，也不修改日用模块开关。环境中存在另一版时的仓外运行不等于干净机器单装验收。
+
+`test-connected-speech-package.ps1` 是可在 Windows PowerShell 5.1／PowerShell 7 运行的 57 项 AST／合成合同，不启动产品或安装维护程序。完整结果、两个真实符号链接 SKIP 及下一步 SR4-B 边界见 [SR4-A 记录](../../docs/project/YIMECORE_SPEECH_SR4_PACKAGE_2026-09-05.md)。双产品的独立来源／维护合同入口另见 [tools/dual-product](../dual-product/README.md)。
+
+## SR4-B1 正常产品源码验证入口（2026-09-05）
+
+`run-connected-speech-product-source.ps1 -InstallRoot <明确安装根> -ExpectedManifestSha256 <固定SHA256>` 要求 PowerShell 7.5+，在新的仓内私有环境运行正常产品接口、设置、学习保持、候选注释等源码／合成测试，并编译正常 Broker、Runtime 与 SettingsTool。它不接通构包、执行新构建程序的完整安装流程或操作日用设置。
+
+无能力声明的旧包保持原输入路径；新产品接口固定默认关闭、24 条 Stage5C、完整三模式及哈希绑定的审定显示证据。能力、资源和显式开关属于本版，不从 Rime/PIME、源码仓库或 SR4-A fixture 根隐式寻找运行依赖。关闭静态模块不删除学习。
+
+入口清除真实 Rime／TSF 及旧试验 opt-in，固定无网络 Go 工具环境，记录命名测试节点和实际 SKIP，前后比较源码、锁定输入、安装元数据和历史静态载荷并精确恢复环境。测试程序子进程及隐藏原生控件不等于已安装真实宿主验收。
+
+源码结果见 [SR4-B1 记录](../../docs/project/YIMECORE_SPEECH_SR4B_SOURCE_2026-09-05.md)；11 文件资源导出与可选构包边界见[产品契约](../../docs/project/YIMECORE_SPEECH_SR4B_PRODUCT_CONTRACT_2026-09-05.md)。B1 时点 local.12 描述和安装均未改变；B2 当前源码候选推进为 local.13，日用安装仍是 local.12，安装／维护／宿主与日用确认仍分别安排。
+
+## SR4-B2 默认关闭的正常候选构包
+
+`local-product.json` 为 local.13 声明默认关闭的可选 `speech` 能力。构包必须显式提供新鲜准入根、准入 summary SHA256 和 source inventory SHA256；旧入口不带这些参数会在创建输出前拒绝。无能力声明的旧 local.12 包仍保持原审计合同。
+
+`run-connected-speech-product-package.ps1` 要求 PowerShell 7.5+、上述三个准入参数、日用安装根／manifest 固定摘要，以及 `-ProcessFixtureRoot <实际用户目录>\YimeCore Isolated Fixtures\SR4B2\speech-product-test-<新ID>`。它先验证源码仍匹配，隔离运行 PowerShell／Go 合同，构建正常 x64 Runtime 与 x64/x86 TSF 包，再在指定仓外副本运行七阶段正常 Runtime/Broker 夹具。所有进程使用显式唯一管道和新状态目录；不调用安装、真实维护、注册宿主或日用管道。
+
+`local-product-speech-build.ps1` 只接收 build-only 导出器验证的 11 文件：9 个准入文件逐字节复制，2 个产品 envelope 新生成。正常三模式索引仍独立构建两次并与准入 core SHA256 比对。导出 mapping 和源码证明留在包外；包内 `build/build-inputs.json` 只绑定固定摘要。Python、准入工具、旧运行结果和试验状态不进入安装 payload。
+
+`test-local-product-speech-build.ps1` 验证构包预检与源顺序，不冒充实际导出；`test-speech-maintenance-data.ps1` 验证 `speech.json` 进入实际维护数据枚举及隔离 restore 映射，不运行真实备份／恢复事务。SR4-B2 的构包和正常私有进程通过也不等于安装、Windows 重启或 Word／Notepad++ 人工验收通过。

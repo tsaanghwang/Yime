@@ -1,0 +1,14 @@
+{
+  "schema_version": "yimecore-l5-preparation-verification-v1",
+  "generated_at": "2026-09-04T16:48:15.2789748+08:00",
+  "scope": "Preparation only, not D1 end-of-day acceptance",
+  "baseline": "2026-09-04-baseline.json",
+  "package_integrity_passed": true,
+  "runtime_identity_passed": true,
+  "registered_x64_matches": true,
+  "package_unchanged": true,
+  "changed_protected_keys": [],
+  "manual_tests": "pending",
+  "syntax_check": "passed",
+  "wrong_manifest_rejected": true
+}

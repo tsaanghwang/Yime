@@ -293,10 +293,12 @@ foreach ($name in $externalRequirements.Keys) {
     Add-ReadinessCheck $name $passed $(if ($passed) { 'passed' } else { 'missing or false' }) `
         $externalRequirements[$name]
 }
-foreach ($name in @('arm64_desktop_host_passed',
-    'mainstream_physical_host_passed', 'forward_physical_host_passed', 'legacy_x64_host_passed',
-    'simulated_hardware_tiers_passed')) {
-    Add-DeferredCheck $name 'Frozen by user decision; no execution or compatibility claim until explicit resumption after local independent-core usability.'
+$resumedTargetChecks = @(foreach ($target in $developmentScope.experiment_targets) {
+    [ordered]@{ target=$target.id; status='pending_target_evidence'; passed=$null;
+        detail='Active experiment, not frozen. Source build, native runtime, target package transactions and physical registered/live host acceptance require separate reviewed evidence. Local E7 does not certify another target.' }
+})
+foreach ($name in @('forward_physical_host_passed', 'simulated_hardware_tiers_passed')) {
+    Add-DeferredCheck $name 'Outside the currently approved experiment targets; no compatibility claim.'
 }
 Add-ReadinessCheck 'external_development_scope' `
     (Test-YimeCoreScopeEvidence $external.development_scope $developmentScope) `
@@ -305,7 +307,6 @@ Add-ReadinessCheck 'external_development_scope' `
 
 $warnings.Add('E3 per-run 1.10 microbenchmark tail remains a non-blocking warning; use supplied measurements for current absolute deltas.')
 $warnings.Add("E3 strict learning ratio gate in supplied performance evidence: $([bool]$performance.all_learning_latency_gates_passed).")
-$warnings.Add('The retired legacy Windows 10/SATA tier is not part of the active release blocker set.')
 $ready = $blockers.Count -eq 0
 $summaryPath = Join-Path $outputDir 'summary.json'
 [ordered]@{
@@ -326,6 +327,8 @@ $summaryPath = Join-Path $outputDir 'summary.json'
     external_evidence_path = if ($external) { [IO.Path]::GetFullPath($ExternalEvidencePath) } else { '' }
     checks = $checks
     deferred_checks = $deferredChecks
+    resumed_target_checks = $resumedTargetChecks
+    ready_for_resumed_target_release = $false
     signature_evidence = $signatureEvidence
     approved_signer_thumbprint = $approvedSignerThumbprint
     blockers = $blockers

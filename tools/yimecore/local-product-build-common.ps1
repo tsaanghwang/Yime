@@ -71,6 +71,16 @@ function Get-LocalProductDescriptor([string]$Path) {
     foreach ($name in $expected.Keys) {
         if ($value.identity.$name -cne $expected[$name]) { throw "Stable identity changed: $name" }
     }
+    if ($value.PSObject.Properties['speech']) {
+        $speech = $value.speech
+        if ($null -eq $speech -or @($speech.PSObject.Properties).Count -ne 2 -or
+            -not $speech.PSObject.Properties['capability_path'] -or
+            -not $speech.PSObject.Properties['default_enabled'] -or
+            $speech.capability_path -cne 'speech-capability.json' -or
+            $speech.default_enabled -isnot [bool] -or $speech.default_enabled) {
+            throw 'Unsupported optional speech capability; explicit default-off fixed path required.'
+        }
+    }
     $seen = @{}
     $maintenance = if ($value.PSObject.Properties['maintenance_assets']) { @($value.maintenance_assets) } else { @() }
     foreach ($entry in @($value.go_binaries) + @($value.assets) + @($maintenance)) {
@@ -141,7 +151,7 @@ function Assert-LocalProductSourceSet($Expected, $Actual) {
     }
 }
 
-function Get-LocalProductProtectionEvidence {
+function Get-LocalProductProtectionEvidence([switch]$HashesOnly) {
     # Out-of-process system view, never the calling app's virtualized HKCU view.
     $sid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
     $result = [ordered]@{ user_sid = $sid; registry = [ordered]@{} }
@@ -159,6 +169,14 @@ function Get-LocalProductProtectionEvidence {
             'Software\Microsoft\Windows\CurrentVersion\Run',
             'Software\Microsoft\Windows\CurrentVersion\Uninstall\YimeCoreExperimentalTrial')) {
         $result.registry[$path] = Read-YimeCoreSystemKey ([uint32]2147483651) "$sid\$path"
+    }
+    if ($HashesOnly) {
+        foreach ($key in @($result.registry.Keys)) {
+            $payload = ConvertTo-Json -InputObject $result.registry[$key] -Depth 30 -Compress
+            $digest = [Security.Cryptography.SHA256]::Create()
+            try { $result.registry[$key] = ([BitConverter]::ToString($digest.ComputeHash([Text.Encoding]::UTF8.GetBytes($payload)))).Replace('-','').ToLowerInvariant() }
+            finally { $digest.Dispose() }
+        }
     }
     return $result
 }

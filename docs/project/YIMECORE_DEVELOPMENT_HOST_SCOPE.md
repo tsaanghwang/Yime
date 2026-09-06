@@ -1,37 +1,26 @@
-# YimeCore：本开发机 x64 核心与 x64/x86 应用宿主阶段
+# YimeCore：本机产品与主流 x64 / ARM64 试验范围
 
-最初生效日期：2026-09-02；范围于 2026-09-04 经用户明确批准扩展到本机 WOW64 x86 应用宿主。本文优先于历史试验计划中的多架构、多机型要求。
+更新：2026-09-04。用户已明确批准主流 Windows x86-64 和 Windows ARM64 试验恢复。本文与 `tools/yimecore/development-scope.json` 优先于历史阶段的冻结描述。
 
-## 范围
+## 两条独立执行路线
 
-- 唯一活动机器：本开发机 `MYCOMPUTER`，原生 Windows x64（本次决策时为 i9-13900K）。活动软件架构为原生 x64 Runtime/Broker、x64 TSF，以及 WOW64 32 位应用加载的 x86 TSF。本机结果不自动代表所有同型号或同档次机器。
-- x86 在这里仅表示本机 32 位用户态应用宿主，不表示恢复 32 位 Windows、32 位硬件或第二套 Go 核心。Firefox 32 位和 Notepad++ 32 位是计划中的实际宿主。
-- 冻结：ARM64、老旧 x64、其他主流/超前实体机，以及硬件分档模拟。暂不租云机器、不添置测试机，不以这些证据缺失阻塞本机开发。
-- 解冻：2026-09-04 已批准本机 x86 应用宿主与 x64 L5/L6 同步推进。其余目标仍须另行评审和批准；老旧档不自动重新进入支持范围。
-- 签名证书正在申请，等候审批，暂缓相关事项。
+- 本机产品：MYCOMPUTER 原生 x64 Runtime/Broker，x64 与 WOW64 x86 TSF；继续当前 local.11 的 L5 日常使用和 L6 封存。x86 是 32 位应用表面，不是独立硬件/Windows 目标。
+- 平台试验：白名单仅列 `mainstream_x64`、`arm64`，使用 `run-platform-experiment.ps1`，不以 L6 完成为启动前置条件。可在本开发机源码构建，实机阶段需指定可用目标。
+- 不自动采购、租用或创建云机器。硬件配额模拟与额外高端实体机分支不在本次批准范围。
+- 签名事项继续等待审批，公开发行及生产替换不因范围恢复而获准。
 
-## 默认流程
+## 入口与保护
 
-`tools/yimecore/development-scope.json` 是范围配置；共同入口核验机器名、原生架构和 64 位 PowerShell。Go Runtime/Broker 仍固定为 `windows/amd64`；x86 仅由 Visual Studio Win32 构建 TSF 表层。
+`Get-YimeCoreDevelopmentScope` 仍保护 MYCOMPUTER 本机安装/编排路线；不能把本机包直接装到新目标。`Get-YimeCoreExperimentTarget` 校验独立试验白名单，目标架构必须与 Go/CMake 映射一致。
 
-1. 当前 x64 local.9 安装继续进行 L5 日常使用；在新的双架构安装事务完成并通过回归前，不用历史升级入口覆盖它。
-2. `build-local-x86-surface.ps1` 从当前源码、当前 local-product 身份构建 Win32 TSF 并运行隔离契约；该阶段不安装、不注册。旧包中的 x86/ARM64 载荷仍按基包哈希原样保留，旧 x86 不得执行或改称当前产品。
-3. E6-D 的核心独立性仍以 x64 Runtime/Broker 收敛为主；当前身份 x86 TSF 由新增的构包、WOW64 注册和宿主门禁覆盖。对旧身份留存载荷仍只做完整性/依赖静态审计，不把它冒充当前 x86 通过证据。
-4. 性能入口保留原文件名 `run-yimecore-tier-performance.ps1`，但只运行 `development_host_x64` 自然调度测量，不施加 CPU 配额或固定亲和性。保留原 50/100 ms 交互预算；单进程内存预算为原高配档的 1536 MiB。三种编码模式的 E1/E2/E3 覆盖仍必须完整。
-5. E7 将 `x86_desktop_host_passed` 从 deferred 改为当前阻塞项；ARM64、其他机器和模拟仍为 deferred。`ready_for_cutover_proposal` 不因本机 x64/x86 通过而自动变为 true。
+`run-platform-experiment.ps1 -Target mainstream_x64` 或 `-Target arm64` 默认为只读 Plan；加 `-Action Build` 才在 `.tmp/yimecore-platform-experiments` 的新子目录从当前身份源码构建 TSF 与 Go 工具，记录源码/PE 哈希并验证机器类型，不安装、不注册、不执行目标二进制。旧身份 x86/ARM64 载荷保持只读，不能重命名或当作新产物。
 
-历史多架构脚本、模拟工具及旧 x86 二进制保留，但当前不运行历史入口绕过范围配置。不修改历史验收记录来制造“新范围全部通过”。
+后续顺序：源码构建 → 目标原生隔离契约 → 目标完整包/升级回退 → 安装态 registered-host → 实机常用应用 → 日常使用与封存。每级单独留证，交叉编译不等于原生运行，本机高配测量不等于主流实机测量。具体见 [恢复计划](YIMECORE_PLATFORM_RESUMPTION_2026-09-04.md)。
 
-## 本机仍须完成
+默认性能脚本仍仅测 `development_host_x64`，自然调度、无 CPU 配额或亲和性强制；`experiment_profiles` 描述主流 x64/ARM64 的实机测量，历史模拟不复制成新证据。E7 的 `resumed_target_checks` 明确列活动但待目标证据的项目，不再列为冻结；它们与本机就绪分开，公开切换仍为 false。
 
-- 当前包/源码身份、独立依赖、COM/runtime、自启动及重启后收敛。
-- 本机原生 x64 宿主功能：明确选择试验输入法，再核验 DLL、语言栏、组合与候选提交、裸数字组字、Shift+1…9、英文 Shift 组合，以及更多本机宿主应用。
-- 用户学习、词库、设置等功能的数据安全；升级失败恢复、数据备份及经批准的本机回退演练。
-- 完成本机独立产品的安装/维护闭环；保留方案和生产切换需要明确批准。本阶段范围调整不是卸载 Rime/PIME 或更改默认输入法的授权。
-- x86 当前身份源码构建、双架构 staging/升级/回退、WOW64 COM 注册、32 位 registered-host，以及 Firefox/Notepad++ 真实加载 DLL 和输入验收。
-
-真实任务栏能人工操作但 Computer Use 不能向独立任务栏发输入，是自动化限制，不能重新列为产品阻塞。Word 未主动选择试验输入法也不算失败。
+保护不变：不改默认输入法、生产 Rime/PIME、真实用户学习/词库；不覆盖当前安装或原始恢复介质。安装/备份/恢复仍须 Explorer 启动的非打包维护上下文，原子 staging、同 SID、系统注册表独立核验及回退规则不能弱化。
 
 ## 回归
 
-`pwsh -NoProfile -File tools/yimecore/test-development-scope.ps1` 验证 64 位编排宿主、x64 Go 核心、隔离 Win32 TSF 构建入口、无分档模拟、E7 的 x86 当前阻塞项、其余冻结项不误报通过，以及本机安全门禁。测试夹具不是安装态验收。
+`test-development-scope.ps1` 验证本机编排边界、目标白名单、目标映射、当前 x86 路线、E7 未测不误报通过，以及自然调度性能入口。测试夹具不是实机验收。

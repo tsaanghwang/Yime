@@ -45,7 +45,7 @@
 | `runtime-verification/multimode.json`、`packaged-recovery.json` | 三模式、学习与克隆恢复通过；generation=12、records=11；不是当前用户学习数据 |
 | `runtime-verification/tsf-composition.txt` | 64 组英文 Shift、组合/提交、数字键契约、鼠标选词、标点原子提交、失焦/跨上下文/终止恢复等通过；`text_extent_anchor=false` 如实保留，夹具没有实际 Word 文本区域 |
 | `native-contract.txt` | 本机产品名称和原有语言栏/候选回归通过 |
-| `.tmp/yimecore-local-product/legacy-native-20260903` | 同一源码以旧 Trial 显示开关构建 x64 DLL 和契约测试通过；不是冻结的老旧机型性能评测，无 x86/ARM64 构建或执行 |
+| `.tmp/yimecore-local-product/legacy-native-20260903` | 同一源码以旧 Trial 显示开关构建 x64 DLL 和契约测试通过；仅为显示身份契约验证，无 x86/ARM64 构建或执行 |
 
 38 项构包回归在 PS5.1/PS7 通过；共用维护器 55 项在 PS5.1/PS7 通过。旧 E6-C 安装契约、用户 TIP Enable/值类型、5 项故障演练保护、5+3 项上下文保护、24 项数据安全、12 项自启动和 5 项系统卸载事务回归亦通过。编码回归为 54 处显式读取、3 个 Unicode 夹具。本轮未重跑真实旧包回退。
 

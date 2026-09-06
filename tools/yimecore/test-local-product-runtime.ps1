@@ -2,19 +2,23 @@
 param(
     [Parameter(Mandatory)][string]$PackageRoot,
     [Parameter(Mandatory)][string]$OutputRoot,
+    [Parameter(Mandatory)][string]$BuildRoot,
     [Parameter(Mandatory)][string]$MultimodeVerifier,
     [Parameter(Mandatory)][hashtable]$TsfTests
 )
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
 . (Join-Path $PSScriptRoot 'local-product-build-common.ps1')
+. (Join-Path $PSScriptRoot 'local-product-test-isolation.ps1')
 $null = Get-YimeCoreDevelopmentScope
 $product = Get-LocalProductDescriptor (Join-Path $PackageRoot 'local-product.json')
 if (Test-Path -LiteralPath $OutputRoot) { throw 'Runtime verification requires a new evidence directory' }
 Assert-LocalProductPlainPath $OutputRoot
 New-Item -ItemType Directory -Path $OutputRoot | Out-Null
-# Exercise a copied package outside the repository, with explicit disposable
-# state. Never rename/move the user's repository or touch installed state.
+# Exercise a copied package under the caller's temporary root, with explicit
+# disposable state. A caller may itself isolate TEMP inside the repository;
+# this test alone therefore does not claim an outside-repository execution.
+# Never rename/move the user's repository or touch installed state.
 $relocated = Join-Path ([IO.Path]::GetTempPath()) ('YimeCore-Local-' + [guid]::NewGuid().ToString('N'))
 Assert-LocalProductPlainPath $relocated
 New-Item -ItemType Directory -Path $relocated | Out-Null
@@ -31,6 +35,7 @@ $runtimeBefore = $null
 $runtimeAfter = $null
 $passed = $false
 $stopped = $false
+$directTsfArchitectures = @()
 
 function Wait-LocalTestRuntime([int]$PreviousBroker = 0) {
     $deadline = [DateTime]::UtcNow.AddSeconds(30)
@@ -79,9 +84,10 @@ try {
         if ([string]::IsNullOrWhiteSpace($test) -or -not (Test-Path -LiteralPath $test -PathType Leaf)) {
             throw "Direct isolated $architecture TSF test executable is unavailable"
         }
-        & $test (Join-Path $package "$architecture\YimeTextServiceExperiment.dll") $pipeName 2>&1 |
-            Tee-Object -LiteralPath (Join-Path $OutputRoot "tsf-composition-$architecture.txt")
-        if ($LASTEXITCODE -ne 0) { throw "Direct isolated $architecture TSF/language-bar regression failed" }
+        Invoke-LocalProductIsolatedTestTool -Tool $test `
+            -Arguments @((Join-Path $package "$architecture\YimeTextServiceExperiment.dll"), $pipeName, 'bjbjbj') `
+            -BuildRoot $BuildRoot -EvidenceRoot $OutputRoot -LogName "tsf-composition-$architecture.txt"
+        $directTsfArchitectures += $architecture
     }
     # Kill only the freshly verified child owned by our test supervisor. Nothing
     # is selected by global executable name or persisted installed status.
@@ -106,7 +112,9 @@ try {
         Write-LocalProductJson ([ordered]@{
             passed = [bool]($passed -and $stopped); relocated_root = $relocated; pipe = $pipeName
             runtime_before = $runtimeBefore; runtime_after_broker_failure = $runtimeAfter; runtime_stopped = $stopped
-            direct_tsf_architectures = @('x64','x86')
+            direct_tsf_architectures = $directTsfArchitectures
+            direct_tsf_default_mode = 'variable'; direct_tsf_long_session_requested = $true
+            native_test_environment_evidence = 'tsf-composition-<architecture>.txt.fixture.json'
             registered_host_test_executed = $false; live_word_acceptance = $false
             note = 'Direct isolated x64/x86 TSF and disposable data only; not physical taskbar/installed host acceptance. Retain relocated files for inspection.'
         }) (Join-Path $OutputRoot 'summary.json')

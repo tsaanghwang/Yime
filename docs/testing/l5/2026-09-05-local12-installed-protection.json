@@ -1,0 +1,85 @@
+{
+  "verified_at": "2026-09-05T14:04:03.6535101+08:00",
+  "protected_key_count": 12,
+  "changed_protected_keys": [],
+  "boot_unchanged": true,
+  "current_profile_subtrees": [
+    {
+      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "exists": true,
+      "sha256": "b08d516fa7834d2691e36ecefe36813a66ba536f3ea5c7584e4aa6e8fa9f6c00",
+      "matches_preupgrade_audit": false
+    },
+    {
+      "key": "SOFTWARE\\WOW6432Node\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "exists": true,
+      "sha256": "b08d516fa7834d2691e36ecefe36813a66ba536f3ea5c7584e4aa6e8fa9f6c00",
+      "matches_preupgrade_audit": false
+    },
+    {
+      "key": "S-1-5-21-2783006668-770716121-2150155084-1001\\Software\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "exists": true,
+      "sha256": "96d670fd1e719b772ab3c41b82b13f36616b366822164a4d8752ed53b437a82b",
+      "matches_preupgrade_audit": true
+    }
+  ],
+  "run_value_kind": 1,
+  "run_value_kind_matches_original_reg_sz": true,
+  "user_text_read": false,
+  "user_state_files_read": false,
+  "writes": false,
+  "tip_path_migration": {
+    "verified_at": "2026-09-05T14:08:01.9342258+08:00",
+    "machine_tip_path_migration": [
+      {
+        "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+        "old_package_root_occurrences": 1,
+        "only_package_root_path_replacement_changed": true,
+        "expected_icon_path": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-62af8b507c91-9b3366b3\\profile-icon.ico"
+      },
+      {
+        "key": "SOFTWARE\\WOW6432Node\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+        "old_package_root_occurrences": 1,
+        "only_package_root_path_replacement_changed": true,
+        "expected_icon_path": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-62af8b507c91-9b3366b3\\profile-icon.ico"
+      }
+    ],
+    "new_runtime_and_dll_hashes": [
+      {
+        "path": "x86/YimeRegisteredHostTests.exe",
+        "sha256": "3481a926d6b0e98fa128c99773feaaa501fe3bb16cb5ef53c73a50b59c0ff48f",
+        "bytes": 384000
+      },
+      {
+        "path": "x64/YimeTextServiceExperiment.dll",
+        "sha256": "a22b5212596b0e6d1bfeada33c5362133b2eecb6a5cbf74eabd650a6e16e6d76",
+        "bytes": 669184
+      },
+      {
+        "path": "x64/YimeRegisteredHostTests.exe",
+        "sha256": "8dc90d8373e9eb8d995c6c9b0cfbee6a64ded52950314be98eccbef803fd19ac",
+        "bytes": 458240
+      },
+      {
+        "path": "bin/YimeBroker.exe",
+        "sha256": "c97a1a21f4443fb80c56d739729ebdfe06acae7635068a7641e76daa4d1ce95b",
+        "bytes": 4884480
+      },
+      {
+        "path": "x86/YimeTextServiceExperiment.dll",
+        "sha256": "f5727bfe5c322ef9ceeb1d04c4232b81957d01911e889b770dcbe59c402f7699",
+        "bytes": 580608
+      },
+      {
+        "path": "bin/YimeCoreTrialRuntime.exe",
+        "sha256": "52e6de312cddea26e4c6d7fab3247cf541eab7ad7a54e81bf3e236d02442afb2",
+        "bytes": 4142080
+      },
+      {
+        "path": "bin/YimeCoreSettingsTool.exe",
+        "sha256": "f51849de97b9e03d89d0bbe33e748e66ee167799ca92db58aca9d20c1b9f935f",
+        "bytes": 4271616
+      }
+    ]
+  }
+}

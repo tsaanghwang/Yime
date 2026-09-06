@@ -60,6 +60,9 @@ private:
     bool ContextMatchesComposition(ITfContext* context) const noexcept;
     void RememberCompositionContext(ITfContext* context) noexcept;
     void ForgetCompositionContext() noexcept;
+    void CancelUnconfirmedComposition() noexcept;
+    static void FocusCancellationCompleted(void* context, ITfComposition* expectedComposition,
+        HRESULT result) noexcept;
     void SelectCandidateFromPopup(unsigned ordinal) noexcept;
     void ForgetCandidateFromPopup(unsigned ordinal) noexcept;
     void SelectSentenceFromPopup() noexcept;
@@ -98,6 +101,8 @@ private:
     ITfContext* compositionContext_ = nullptr;
     ITfDocumentMgr* compositionDocument_ = nullptr;
     bool plannedCompositionTermination_ = false;
+    // Borrowed from the pending cancellation edit, which owns an AddRef.
+    ITfComposition* focusCancellationPending_ = nullptr;
     CandidateListUIElement* candidateUI_ = nullptr;
     CandidatePopup candidatePopup_;
     yime::experiment::ExperimentSettingsCache experimentSettings_;

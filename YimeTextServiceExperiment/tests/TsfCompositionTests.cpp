@@ -5,7 +5,9 @@
 #include <array>
 #include <atomic>
 #include <iostream>
+#include <iterator>
 #include <string>
+#include <thread>
 
 #include "YimeTextServiceIds.h"
 #include "ExperimentSettings.h"
@@ -15,6 +17,101 @@ namespace {
 using GetClassObject = HRESULT(__stdcall*)(REFCLSID, REFIID, void**);
 
 void require(HRESULT result, const char* operation);
+
+bool matchesCurrentWindowOwner(DWORD processId, DWORD threadId) noexcept {
+    return processId == GetCurrentProcessId() && threadId == GetCurrentThreadId();
+}
+
+bool isCurrentThreadWindow(HWND window) noexcept {
+    if (!window || !IsWindow(window)) return false;
+    DWORD processId = 0;
+    const DWORD threadId = GetWindowThreadProcessId(window, &processId);
+    return matchesCurrentWindowOwner(processId, threadId);
+}
+
+HWND findOwnedWindowByClass(const wchar_t* className) noexcept {
+    struct Lookup { const wchar_t* className; HWND found = nullptr; } lookup{className};
+    EnumThreadWindows(GetCurrentThreadId(), [](HWND window, LPARAM parameter) -> BOOL {
+        auto* state = reinterpret_cast<Lookup*>(parameter);
+        wchar_t actualClass[128]{};
+        if (isCurrentThreadWindow(window) &&
+            GetClassNameW(window, actualClass, static_cast<int>(std::size(actualClass))) &&
+            lstrcmpW(actualClass, state->className) == 0) {
+            state->found = window;
+            return FALSE;
+        }
+        return TRUE;
+    }, reinterpret_cast<LPARAM>(&lookup));
+    return lookup.found;
+}
+
+HWND findOwnedCandidatePopup() noexcept {
+    return findOwnedWindowByClass(L"YimeTextServiceExperimentCandidatePopup");
+}
+
+void requireOwnedCandidatePopup(HWND window) {
+    wchar_t actualClass[128]{};
+    if (!isCurrentThreadWindow(window) ||
+        !GetClassNameW(window, actualClass, static_cast<int>(std::size(actualClass))) ||
+        lstrcmpW(actualClass, L"YimeTextServiceExperimentCandidatePopup") != 0) {
+        throw std::runtime_error("candidate popup is not owned by this test process and thread");
+    }
+}
+
+LRESULT sendOwnedCandidateMessage(HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
+    requireOwnedCandidatePopup(window);
+    return SendMessageW(window, message, wparam, lparam);
+}
+
+void verifyOwnedPopupLookup() {
+    // Every probe belongs to this disposable test process. The worker owns and
+    // destroys its hidden window; this test never contacts a live foreign HWND.
+    constexpr wchar_t probeClass[] = L"YimeTestOwnedPopupLookupProbe";
+    const HINSTANCE instance = GetModuleHandleW(nullptr);
+    WNDCLASSW windowClass{};
+    windowClass.lpfnWndProc = DefWindowProcW;
+    windowClass.hInstance = instance;
+    windowClass.lpszClassName = probeClass;
+    if (!RegisterClassW(&windowClass)) throw std::runtime_error("register ownership probe class failed");
+    HANDLE ready = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+    HANDLE stop = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+    if (!ready || !stop) {
+        if (ready) CloseHandle(ready);
+        if (stop) CloseHandle(stop);
+        UnregisterClassW(probeClass, instance);
+        throw std::runtime_error("create ownership probe events failed");
+    }
+    std::atomic<HWND> foreignThreadWindow{nullptr};
+    std::thread worker([&]() {
+        HWND window = CreateWindowExW(0, probeClass, L"", WS_POPUP, 0, 0, 1, 1,
+                                      nullptr, nullptr, instance, nullptr);
+        foreignThreadWindow.store(window);
+        SetEvent(ready);
+        WaitForSingleObject(stop, 5000);
+        if (isCurrentThreadWindow(window)) DestroyWindow(window);
+    });
+    const bool workerReady = WaitForSingleObject(ready, 2000) == WAIT_OBJECT_0;
+    const HWND foreignWindow = foreignThreadWindow.load();
+    const bool rejectedForeignThread = workerReady && foreignWindow &&
+        !isCurrentThreadWindow(foreignWindow) && !findOwnedWindowByClass(probeClass);
+    HWND localWindow = CreateWindowExW(0, probeClass, L"", WS_POPUP, 0, 0, 1, 1,
+                                      nullptr, nullptr, instance, nullptr);
+    const bool foundLocal = localWindow && findOwnedWindowByClass(probeClass) == localWindow;
+    const bool rejectedForeignIdentities =
+        !matchesCurrentWindowOwner(GetCurrentProcessId() ^ 1u, GetCurrentThreadId()) &&
+        !matchesCurrentWindowOwner(GetCurrentProcessId(), GetCurrentThreadId() ^ 1u);
+    if (isCurrentThreadWindow(localWindow)) DestroyWindow(localWindow);
+    SetEvent(stop);
+    worker.join();
+    CloseHandle(ready);
+    CloseHandle(stop);
+    UnregisterClassW(probeClass, instance);
+    if (!rejectedForeignThread || !foundLocal || !rejectedForeignIdentities) {
+        throw std::runtime_error("candidate popup ownership guard accepted a foreign identity or window");
+    }
+    std::cout << "candidate_popup_ownership_guard_verified=true\n";
+}
+
 
 class ReadSession final : public ITfEditSession {
 public:
@@ -149,18 +246,56 @@ int wmain(int argc, wchar_t** argv) {
             }
         }
         require(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED), "CoInitializeEx");
+        verifyOwnedPopupLookup();
         SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_PIPE", argv[2]);
         SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", L"1");
         wchar_t tempDirectory[MAX_PATH]{};
-        GetTempPathW(MAX_PATH, tempDirectory);
-        const std::wstring localAppData = std::wstring(tempDirectory) + L"yime-tsf-language-bar-" +
-                                          std::to_wstring(GetCurrentProcessId());
-        CreateDirectoryW(localAppData.c_str(), nullptr);
-        SetEnvironmentVariableW(L"LOCALAPPDATA", localAppData.c_str());
+        const DWORD tempLength = GetTempPathW(MAX_PATH, tempDirectory);
+        if (!tempLength || tempLength >= MAX_PATH) {
+            throw std::runtime_error("isolated TSF fixture TEMP is unavailable or too long");
+        }
+        wchar_t absoluteTempDirectory[MAX_PATH]{};
+        const DWORD absoluteLength = GetFullPathNameW(tempDirectory, MAX_PATH,
+                                                      absoluteTempDirectory, nullptr);
+        if (!absoluteLength || absoluteLength >= MAX_PATH || absoluteTempDirectory[1] != L':' ||
+            absoluteTempDirectory[2] != L'\\') {
+            throw std::runtime_error("isolated TSF fixture requires an absolute local TEMP path");
+        }
+        std::wstring taskTempPath(absoluteTempDirectory);
+        while (taskTempPath.size() > 3 && taskTempPath.back() == L'\\') taskTempPath.pop_back();
+        for (size_t boundary = 3;;) {
+            const DWORD attributes = GetFileAttributesW(taskTempPath.substr(0, boundary).c_str());
+            if (attributes == INVALID_FILE_ATTRIBUTES || !(attributes & FILE_ATTRIBUTE_DIRECTORY) ||
+                (attributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
+                throw std::runtime_error("isolated TSF fixture TEMP includes a missing or reparse directory");
+            }
+            if (boundary == taskTempPath.size()) break;
+            const size_t separator = taskTempPath.find(L'\\', boundary + 1);
+            boundary = separator == std::wstring::npos ? taskTempPath.size() : separator;
+        }
+        GUID fixtureId{};
+        require(CoCreateGuid(&fixtureId), "create isolated TSF fixture identity");
+        wchar_t fixtureIdText[40]{};
+        if (!StringFromGUID2(fixtureId, fixtureIdText, static_cast<int>(std::size(fixtureIdText)))) {
+            throw std::runtime_error("format isolated TSF fixture identity failed");
+        }
+        const std::wstring localAppData = taskTempPath + L"\\yime-tsf-language-bar-" + fixtureIdText;
+        if (!CreateDirectoryW(localAppData.c_str(), nullptr)) {
+            throw std::runtime_error("create fresh isolated TSF fixture directory failed");
+        }
+        const DWORD fixtureAttributes = GetFileAttributesW(localAppData.c_str());
+        if (fixtureAttributes == INVALID_FILE_ATTRIBUTES ||
+            !(fixtureAttributes & FILE_ATTRIBUTE_DIRECTORY) ||
+            (fixtureAttributes & FILE_ATTRIBUTE_REPARSE_POINT) ||
+            !SetEnvironmentVariableW(L"LOCALAPPDATA", localAppData.c_str())) {
+            throw std::runtime_error("fresh isolated TSF fixture directory is unsafe or unavailable");
+        }
         SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_KEY_DIAGNOSTICS", nullptr);
         const std::wstring selectionDiagnosticPath = localAppData +
             L"\\YimeCore Experimental Trial\\evidence\\tsf-key-host.log";
-        DeleteFileW(selectionDiagnosticPath.c_str());
+        if (GetFileAttributesW(selectionDiagnosticPath.c_str()) != INVALID_FILE_ATTRIBUTES) {
+            throw std::runtime_error("fresh isolated TSF fixture unexpectedly contains an earlier diagnostic");
+        }
         yime::experiment::ExperimentSettings seededSettings;
         if (!yime::experiment::ApplyExperimentSettingsCommand(
                 yime::experiment::ExperimentSettingsCommand::Chinese,
@@ -228,6 +363,10 @@ int wmain(int argc, wchar_t** argv) {
         std::cout << "language_bar_manager_accepted=" << (languageBarManagerAccepted ? "true" : "false") << '\n';
         ITfKeyEventSink* keys = nullptr;
         require(processor->QueryInterface(__uuidof(ITfKeyEventSink), reinterpret_cast<void**>(&keys)), "query key sink");
+        ITfThreadMgrEventSink* documentFocusEvents = nullptr;
+        require(processor->QueryInterface(__uuidof(ITfThreadMgrEventSink),
+                                          reinterpret_cast<void**>(&documentFocusEvents)),
+                "query direct document-focus event sink");
 
         const std::string code = "2jru";
         for (size_t index = 0; index < code.size(); ++index) {
@@ -251,7 +390,7 @@ int wmain(int argc, wchar_t** argv) {
                     throw std::runtime_error("first composition key did not publish candidate UI");
                 }
                 firstKeyElement->Release();
-                HWND firstKeyPopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+                HWND firstKeyPopup = findOwnedCandidatePopup();
                 if (!firstKeyPopup || !IsWindowVisible(firstKeyPopup)) {
                     throw std::runtime_error("first composition key did not show the owned candidate popup");
                 }
@@ -304,7 +443,7 @@ int wmain(int argc, wchar_t** argv) {
         SysFreeString(candidateText);
         candidateElement->Release();
         if (firstCandidate != L"⇧1  秋  2jru") throw std::runtime_error("candidate UI Shift label, text or default key-sequence encoding mismatch");
-        HWND candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+        HWND candidatePopup = findOwnedCandidatePopup();
         if (!candidatePopup || !IsWindowVisible(candidatePopup)) {
             throw std::runtime_error("owned candidate popup was not visible");
         }
@@ -355,7 +494,7 @@ int wmain(int argc, wchar_t** argv) {
             !hasComposition(context)) {
             throw std::runtime_error("deleted code resurrected after continued TSF input");
         }
-        candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+        candidatePopup = findOwnedCandidatePopup();
         if (!candidatePopup || !IsWindowVisible(candidatePopup)) {
             throw std::runtime_error("candidate UI did not recover after Backspace correction");
         }
@@ -374,7 +513,7 @@ int wmain(int argc, wchar_t** argv) {
             require(keys->OnKeyDown(context, key, 0, &restartEaten), "post-Escape composition key");
             if (!restartEaten) throw std::runtime_error("post-Escape composition key was not handled");
         }
-        candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+        candidatePopup = findOwnedCandidatePopup();
         if (readContext(context, clientId) != L"2jru" || !hasComposition(context) ||
             !candidatePopup || !IsWindowVisible(candidatePopup)) {
             throw std::runtime_error("composition did not restart after Escape cancellation");
@@ -382,61 +521,39 @@ int wmain(int argc, wchar_t** argv) {
         std::cout << "escape_cancellation_verified=true\n";
 
         require(keys->OnSetFocus(FALSE), "lose key-sink focus");
-        candidateElement = findCandidateElement(threadManager);
-        if (!candidateElement) throw std::runtime_error("candidate UI element disappeared instead of hiding on focus loss");
-        BOOL candidateShown = TRUE;
-        require(candidateElement->IsShown(&candidateShown), "read candidate focus-loss visibility");
-        candidateElement->Release();
-        if (candidateShown) throw std::runtime_error("candidate UI remained shown after focus loss");
-        if (IsWindowVisible(candidatePopup)) throw std::runtime_error("owned candidate popup remained visible after focus loss");
+        pumpPendingMessages();
+        if (!readContext(context, clientId).empty() || hasComposition(context) ||
+            IsWindowVisible(candidatePopup)) {
+            throw std::runtime_error("focus loss did not cancel unconfirmed code without committing text");
+        }
+        if (ITfCandidateListUIElement* residual = findCandidateElement(threadManager)) {
+            residual->Release();
+            throw std::runtime_error("candidate UI remained after focus cancellation");
+        }
         BOOL focusEaten = TRUE;
         require(keys->OnTestKeyDown(context, 'J', 0, &focusEaten), "focus-loss test key");
         if (focusEaten) throw std::runtime_error("focus-loss test key was claimed");
         focusEaten = TRUE;
         require(keys->OnKeyDown(context, 'J', 0, &focusEaten), "focus-loss key");
-        if (focusEaten || readContext(context, clientId) != L"2jru" || !hasComposition(context)) {
-            throw std::runtime_error("focus-loss key changed the active composition");
+        if (focusEaten || !readContext(context, clientId).empty() || hasComposition(context)) {
+            throw std::runtime_error("focus-loss key recreated the cancelled composition");
         }
-        ITfDocumentMgr* otherDocument = nullptr;
-        require(threadManager->CreateDocumentMgr(&otherDocument), "create cross-context document manager");
-        ITfContext* otherContext = nullptr;
-        TfEditCookie otherOwnerCookie = 0;
-        require(otherDocument->CreateContext(clientId, 0, nullptr, &otherContext, &otherOwnerCookie),
-                "create cross-context context");
-        require(otherDocument->Push(otherContext), "push cross-context context");
-        require(threadManager->SetFocus(otherDocument), "focus cross-context document");
-        require(keys->OnSetFocus(TRUE), "focus key sink on cross-context document");
-        focusEaten = TRUE;
-        require(keys->OnTestKeyDown(otherContext, 'J', 0, &focusEaten), "cross-context test key");
-        if (focusEaten) throw std::runtime_error("cross-context test key was claimed by the old composition");
-        focusEaten = TRUE;
-        require(keys->OnKeyDown(otherContext, 'J', 0, &focusEaten), "cross-context key");
-        if (focusEaten || !readContext(otherContext, clientId).empty() ||
-            readContext(context, clientId) != L"2jru" || !hasComposition(context)) {
-            throw std::runtime_error("cross-context key contaminated a TSF document");
-        }
-        candidateElement = findCandidateElement(threadManager);
-        if (!candidateElement) throw std::runtime_error("candidate UI element missing during cross-context isolation");
-        candidateShown = TRUE;
-        require(candidateElement->IsShown(&candidateShown), "read cross-context candidate visibility");
-        candidateElement->Release();
-        if (candidateShown) throw std::runtime_error("old candidate UI was shown on a different document");
-        if (IsWindowVisible(candidatePopup)) throw std::runtime_error("owned candidate popup was shown on a different document");
-        std::cout << "cross_context_isolation_verified=true\n";
-        require(keys->OnSetFocus(FALSE), "leave cross-context key focus");
-        require(threadManager->SetFocus(document), "restore composition document focus");
         require(keys->OnSetFocus(TRUE), "restore key-sink focus");
-        candidateElement = findCandidateElement(threadManager);
-        if (!candidateElement) throw std::runtime_error("candidate UI element missing after focus restore");
-        candidateShown = FALSE;
-        require(candidateElement->IsShown(&candidateShown), "read candidate focus-restore visibility");
-        candidateElement->Release();
-        if (!candidateShown) throw std::runtime_error("candidate UI did not return after focus restore");
-        if (!IsWindowVisible(candidatePopup)) throw std::runtime_error("owned candidate popup did not return after focus restore");
-        std::cout << "key_focus_transition_verified=true\n";
-        otherDocument->Pop(TF_POPF_ALL);
-        otherContext->Release();
-        otherDocument->Release();
+        if (!readContext(context, clientId).empty() || hasComposition(context) ||
+            IsWindowVisible(candidatePopup)) {
+            throw std::runtime_error("focus restore resurrected unconfirmed input");
+        }
+        for (const WPARAM key : {static_cast<WPARAM>('2'), static_cast<WPARAM>('J'),
+                               static_cast<WPARAM>('R'), static_cast<WPARAM>('U')}) {
+            focusEaten = FALSE;
+            require(keys->OnKeyDown(context, key, 0, &focusEaten), "fresh post-focus composition key");
+            if (!focusEaten) throw std::runtime_error("fresh post-focus composition was not handled");
+        }
+        if (readContext(context, clientId) != L"2jru" || !hasComposition(context)) {
+            throw std::runtime_error("fresh post-focus composition reused cancelled input");
+        }
+        std::cout << "key_focus_transition_verified=true\n"
+                  << "key_focus_cancellation_verified=true\n";
 
         BYTE keyboard[256]{};
         GetKeyboardState(keyboard);
@@ -456,6 +573,92 @@ int wmain(int argc, wchar_t** argv) {
             residual->Release();
             throw std::runtime_error("candidate UI remained after commit");
         }
+
+        // This no-host direct contract invokes the document callback explicitly,
+        // just as it invokes the key sink above. Actual TSF callback delivery is
+        // tested separately by RegisteredHostTests, never inferred from here.
+        // Cancellation must not rely on the BOOL key-sink focus-loss callback
+        // and must not erase text explicitly committed above.
+        const std::wstring committedFocusPrefix = readContext(context, clientId);
+        ITfDocumentMgr* otherDocument = nullptr;
+        require(threadManager->CreateDocumentMgr(&otherDocument), "create cross-context document manager");
+        ITfContext* otherContext = nullptr;
+        TfEditCookie otherOwnerCookie = 0;
+        require(otherDocument->CreateContext(clientId, 0, nullptr, &otherContext, &otherOwnerCookie),
+                "create cross-context context");
+        require(otherDocument->Push(otherContext), "push cross-context context");
+        eaten = FALSE;
+        require(keys->OnKeyDown(context, '2', 0, &eaten), "document-focus cancellation setup key");
+        if (!eaten || readContext(context, clientId) != committedFocusPrefix + L"2" ||
+            !hasComposition(context)) {
+            throw std::runtime_error("document-focus cancellation setup failed");
+        }
+        candidatePopup = findOwnedCandidatePopup();
+        require(threadManager->SetFocus(otherDocument), "focus cross-context document");
+        require(documentFocusEvents->OnSetFocus(otherDocument, document),
+                "invoke direct document-focus loss callback");
+        pumpPendingMessages();
+        if (readContext(context, clientId) != committedFocusPrefix || hasComposition(context) ||
+            !readContext(otherContext, clientId).empty() || hasComposition(otherContext) ||
+            IsWindowVisible(candidatePopup)) {
+            const std::wstring oldDocumentText = readContext(context, clientId);
+            const std::wstring newDocumentText = readContext(otherContext, clientId);
+            ITfDocumentMgr* observedFocus = nullptr;
+            const HRESULT focusResult = threadManager->GetFocus(&observedFocus);
+            std::cerr << "document focus cancellation fixture mismatch"
+                      << " old_text_matches_prefix=" << (oldDocumentText == committedFocusPrefix)
+                      << " old_text_matches_prefix_plus_raw="
+                      << (oldDocumentText == committedFocusPrefix + L"2")
+                      << " expected_length=" << committedFocusPrefix.size()
+                      << " old_length=" << oldDocumentText.size()
+                      << " new_length=" << newDocumentText.size()
+                      << " old_composition=" << hasComposition(context)
+                      << " new_composition=" << hasComposition(otherContext)
+                      << " popup_visible=" << (IsWindowVisible(candidatePopup) != FALSE)
+                      << " focus_query_result=" << static_cast<unsigned long>(focusResult)
+                      << " focus_is_new_document=" << (observedFocus == otherDocument)
+                      << " focus_is_old_document=" << (observedFocus == document)
+                      << '\n';
+            if (observedFocus) observedFocus->Release();
+            throw std::runtime_error("document focus loss retained raw code or changed committed text");
+        }
+        require(keys->OnSetFocus(TRUE), "focus key sink on cross-context document");
+        focusEaten = FALSE;
+        require(keys->OnTestKeyDown(otherContext, 'J', 0, &focusEaten), "cross-context fresh test key");
+        if (!focusEaten) throw std::runtime_error("cross-context fresh key was not claimed after cancellation");
+        focusEaten = FALSE;
+        require(keys->OnKeyDown(otherContext, 'J', 0, &focusEaten), "cross-context fresh key");
+        if (!focusEaten || readContext(otherContext, clientId) != L"j" ||
+            !hasComposition(otherContext) || readContext(context, clientId) != committedFocusPrefix) {
+            throw std::runtime_error("cross-context fresh input reused old code or changed the old document");
+        }
+        require(threadManager->SetFocus(document), "restore original document focus");
+        require(documentFocusEvents->OnSetFocus(document, otherDocument),
+                "invoke direct return document-focus callback");
+        pumpPendingMessages();
+        require(keys->OnSetFocus(TRUE), "restore original key-sink focus");
+        if (readContext(context, clientId) != committedFocusPrefix || hasComposition(context) ||
+            !readContext(otherContext, clientId).empty() || hasComposition(otherContext)) {
+            throw std::runtime_error("return document focus resurrected raw input or lost committed text");
+        }
+        eaten = FALSE;
+        require(keys->OnKeyDown(context, '2', 0, &eaten), "prefix-preserving key-focus setup");
+        if (!eaten || !hasComposition(context)) {
+            throw std::runtime_error("prefix-preserving key-focus setup failed");
+        }
+        require(keys->OnSetFocus(FALSE), "cancel key focus after a committed prefix");
+        pumpPendingMessages();
+        if (readContext(context, clientId) != committedFocusPrefix || hasComposition(context)) {
+            throw std::runtime_error("key focus cancellation changed the committed prefix");
+        }
+        require(keys->OnSetFocus(TRUE), "restore key focus after prefix check");
+        std::cout << "cross_context_isolation_verified=true\n"
+                  << "direct_document_focus_callback_invoked=true\n"
+                  << "document_focus_cancellation_verified=true\n"
+                  << "focus_cancellation_preserves_committed_text_verified=true\n";
+        otherDocument->Pop(TF_POPF_ALL);
+        otherContext->Release();
+        otherDocument->Release();
 
         for (const WPARAM defaultSelectionKey : {static_cast<WPARAM>(VK_SPACE), static_cast<WPARAM>(VK_RETURN)}) {
             const std::wstring beforeDefaultCommit = readContext(context, clientId);
@@ -499,7 +702,7 @@ int wmain(int argc, wchar_t** argv) {
         if (preMouseComposition != beforeMouseCommit + L"2jru" || !hasComposition(context)) {
             throw std::runtime_error("normal commit incorrectly closed the Broker session");
         }
-        candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+        candidatePopup = findOwnedCandidatePopup();
         if (!candidatePopup || !IsWindowVisible(candidatePopup)) {
             throw std::runtime_error("owned candidate popup missing before mouse selection");
         }
@@ -517,7 +720,7 @@ int wmain(int argc, wchar_t** argv) {
         const int popupRows = static_cast<int>(candidateCount) + (hasSentenceRow ? 1 : 0);
         const int rowHeight = (popupClient.bottom - 16) / popupRows;
         const int candidateRowY = 8 + rowHeight * (hasSentenceRow ? 1 : 0) + rowHeight / 2;
-        SendMessageW(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(20, candidateRowY));
+        sendOwnedCandidateMessage(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(20, candidateRowY));
         for (int attempt = 0; attempt < 100; ++attempt) {
             MSG message{};
             while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) {
@@ -586,7 +789,7 @@ int wmain(int argc, wchar_t** argv) {
         SysFreeString(paletteFirst);
         SysFreeString(paletteDescription);
         candidateElement->Release();
-        candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+        candidatePopup = findOwnedCandidatePopup();
         if (!candidatePopup || !IsWindowVisible(candidatePopup)) {
             throw std::runtime_error("punctuation palette owned popup is not visible");
         }
@@ -596,7 +799,7 @@ int wmain(int argc, wchar_t** argv) {
             throw std::runtime_error("punctuation palette row geometry is unavailable");
         }
         const int firstPunctuationY = 8 + punctuationRowHeight + punctuationRowHeight / 2;
-        SendMessageW(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(20, firstPunctuationY));
+        sendOwnedCandidateMessage(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(20, firstPunctuationY));
         pumpPendingMessages();
         if (readContext(context, clientId) != beforePaletteMouse + L"！" ||
             hasComposition(context) || IsWindowVisible(candidatePopup)) {
@@ -664,7 +867,7 @@ int wmain(int argc, wchar_t** argv) {
             constexpr int cycles = 25;
             for (int cycle = 0; cycle < cycles; ++cycle) {
                 for (int targetIndex = 0; targetIndex < 3; ++targetIndex) {
-                    candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+                    candidatePopup = findOwnedCandidatePopup();
                     if (!candidatePopup || !IsWindowVisible(candidatePopup)) {
                         throw std::runtime_error("long-session sentence popup disappeared");
                     }
@@ -680,8 +883,8 @@ int wmain(int argc, wchar_t** argv) {
                     const int segmentX = textColumnLeft + targetIndex * segmentRowHeight +
                                          segmentRowHeight / 2;
                     const int segmentY = 8 + segmentRowHeight / 2;
-                    SendMessageW(candidatePopup, WM_LBUTTONDOWN, 0, MAKELPARAM(segmentX, segmentY));
-                    SendMessageW(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(segmentX, segmentY));
+                    sendOwnedCandidateMessage(candidatePopup, WM_LBUTTONDOWN, 0, MAKELPARAM(segmentX, segmentY));
+                    sendOwnedCandidateMessage(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(segmentX, segmentY));
                     pumpPendingMessages();
                     const int activeStart = static_cast<int>(reinterpret_cast<UINT_PTR>(GetPropW(
                         candidatePopup, L"YimeTextServiceExperimentActiveSegmentStart"))) - 1;
@@ -737,21 +940,31 @@ int wmain(int argc, wchar_t** argv) {
             std::cout << "long_segment_session_verified=true\n";
         }
 
+        const std::wstring beforeForcedTermination = readContext(context, clientId);
         eaten = FALSE;
         require(keys->OnKeyDown(context, '2', 0, &eaten), "forced-termination setup key");
-        if (!eaten || !hasComposition(context)) throw std::runtime_error("forced-termination setup failed");
+        if (!eaten || !hasComposition(context) ||
+            readContext(context, clientId) != beforeForcedTermination + L"2") {
+            throw std::runtime_error("forced-termination setup failed");
+        }
+        candidatePopup = findOwnedCandidatePopup();
         terminateActiveComposition(context);
-        if (hasComposition(context)) throw std::runtime_error("host-forced composition remained active");
+        pumpPendingMessages();
+        if (hasComposition(context) || readContext(context, clientId) != beforeForcedTermination ||
+            IsWindowVisible(candidatePopup)) {
+            throw std::runtime_error("host-forced termination did not cancel raw input and preserve committed text");
+        }
         BOOL testEaten = FALSE;
         require(keys->OnTestKeyDown(context, 'J', 0, &testEaten), "post-termination test key");
         if (!testEaten) throw std::runtime_error("host-forced termination did not reconnect the Broker session");
         eaten = FALSE;
         require(keys->OnKeyDown(context, 'J', 0, &eaten), "post-termination key");
         const std::wstring recoveredText = readContext(context, clientId);
-        if (!eaten || recoveredText.empty() || recoveredText.back() != L'j' || !hasComposition(context)) {
+        if (!eaten || recoveredText != beforeForcedTermination + L"j" || !hasComposition(context)) {
             throw std::runtime_error("post-termination key did not start a fresh composition");
         }
-        std::cout << "host_termination_recovery_verified=true\n";
+        std::cout << "host_termination_recovery_verified=true\n"
+                  << "host_termination_cancellation_preserves_committed_text_verified=true\n";
 
         if (!languageModeButton) throw std::runtime_error("input-mode language-bar button was not registered");
         BSTR languageText = nullptr;
@@ -946,6 +1159,7 @@ int wmain(int argc, wchar_t** argv) {
 
         languageModeButton->Release();
         keys->Release();
+        documentFocusEvents->Release();
         require(processor->Deactivate(), "deactivate processor");
 		if (hasComposition(context)) {
 			throw std::runtime_error("deactivation left an active TSF composition in the host");

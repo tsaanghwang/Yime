@@ -11,6 +11,16 @@ HRESULT ValidateCompositionRangeResult(HRESULT result, ITfRange* range) noexcept
 	return range ? result : E_UNEXPECTED;
 }
 
+HRESULT ClearCompositionText(TfEditCookie cookie, ITfComposition* composition) noexcept {
+    if (!composition) return E_INVALIDARG;
+    ITfRange* range = nullptr;
+    HRESULT result = composition->GetRange(&range);
+    result = ValidateCompositionRangeResult(result, range);
+    if (SUCCEEDED(result)) result = range->SetText(cookie, 0, L"", 0);
+    if (range) range->Release();
+    return result;
+}
+
 namespace {
 
 std::wstring widen(const std::string& value) {
@@ -29,13 +39,16 @@ public:
     EditSession(ITfContext* context, ITfCompositionSink* sink, ITfComposition** composition,
                 bool* plannedTermination, const BrokerUpdate& update, RECT* compositionRect,
                 bool* compositionRectValid, BrokerEditCompletionHandler completionHandler,
-                void* completionContext)
+                void* completionContext, ITfComposition* expectedComposition = nullptr,
+                CompositionCancellationCompletionHandler cancellationHandler = nullptr)
         : context_(context), sink_(sink), composition_(composition),
           plannedTermination_(plannedTermination), update_(update), compositionRect_(compositionRect),
             compositionRectValid_(compositionRectValid), completionHandler_(completionHandler),
-            completionContext_(completionContext) {
+            completionContext_(completionContext), expectedComposition_(expectedComposition),
+            cancellationHandler_(cancellationHandler) {
         context_->AddRef();
         sink_->AddRef();
+        if (expectedComposition_) expectedComposition_->AddRef();
     }
     STDMETHODIMP QueryInterface(REFIID iid, void** object) override {
         if (!object) return E_POINTER;
@@ -52,6 +65,13 @@ public:
         return remaining;
     }
     STDMETHODIMP DoEditSession(TfEditCookie cookie) override {
+        // A deferred focus cancellation belongs to this exact old composition.
+        // A confirmed commit/external termination may already have ended it.
+        // Holding a COM reference also prevents pointer reuse by a new one.
+        if (expectedComposition_ && *composition_ != expectedComposition_) {
+            NotifyCompletion(S_FALSE);
+            return S_FALSE;
+        }
         const std::wstring raw = widen(update_.rawInput);
         const std::wstring commit = widen(update_.commit);
         HRESULT result = E_INVALIDARG;
@@ -66,14 +86,17 @@ public:
         } else {
             result = EndComposition(cookie, L"");
         }
-        if (completionHandler_) {
-            completionHandler_(completionContext_, context_, update_, result);
-        }
+        NotifyCompletion(result);
         return result;
     }
 
 private:
+    void NotifyCompletion(HRESULT result) noexcept {
+        if (cancellationHandler_) cancellationHandler_(completionContext_, expectedComposition_, result);
+        else if (completionHandler_) completionHandler_(completionContext_, context_, update_, result);
+    }
     ~EditSession() {
+        if (expectedComposition_) expectedComposition_->Release();
         sink_->Release();
         context_->Release();
     }
@@ -207,9 +230,30 @@ private:
     bool* compositionRectValid_;
     BrokerEditCompletionHandler completionHandler_;
     void* completionContext_;
+    ITfComposition* expectedComposition_;
+    CompositionCancellationCompletionHandler cancellationHandler_;
 };
 
 }  // namespace
+
+HRESULT CancelCompositionInContext(ITfContext* context, TfClientId clientId,
+                                    ITfCompositionSink* sink, ITfComposition** composition,
+                                    bool* plannedTermination,
+                                    CompositionCancellationCompletionHandler completionHandler,
+                                    void* completionContext) noexcept {
+    if (!context || clientId == TF_CLIENTID_NULL || !sink || !composition ||
+        !*composition || !plannedTermination || !completionHandler) return E_INVALIDARG;
+    // Empty update is the same document-edit operation as Escape: replace the
+    // composition with nothing, never select/commit a candidate or raw code.
+    auto* session = new (std::nothrow) EditSession(context, sink, composition, plannedTermination,
+        BrokerUpdate{}, nullptr, nullptr, nullptr, completionContext, *composition, completionHandler);
+    if (!session) return E_OUTOFMEMORY;
+    HRESULT sessionResult = E_FAIL;
+    const HRESULT request = context->RequestEditSession(clientId, session,
+        TF_ES_ASYNCDONTCARE | TF_ES_READWRITE, &sessionResult);
+    session->Release();
+    return FAILED(request) ? request : sessionResult;
+}
 
 HRESULT ApplyBrokerUpdateToContext(ITfContext* context, TfClientId clientId,
                                    ITfCompositionSink* sink, ITfComposition** composition,

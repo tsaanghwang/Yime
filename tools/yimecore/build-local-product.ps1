@@ -1,15 +1,18 @@
 [CmdletBinding()]
-param([string]$OutputRoot)
+param([string]$OutputRoot,[string]$SpeechAdmissionRoot,[string]$ExpectedSpeechAdmissionSummarySha256,[string]$ExpectedSpeechSourceInventorySha256)
 
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
 . (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
 . (Join-Path $PSScriptRoot 'local-product-build-common.ps1')
+. (Join-Path $PSScriptRoot 'local-product-speech-build.ps1')
+. (Join-Path $PSScriptRoot 'local-product-test-isolation.ps1')
 $scope = Get-YimeCoreDevelopmentScope
 Assert-YimeCoreNativeGo
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $descriptorPath = Join-Path $PSScriptRoot 'local-product.json'
 $product = Get-LocalProductDescriptor $descriptorPath
+$speechRequested = Assert-LocalProductSpeechBuildInputs $product $SpeechAdmissionRoot $ExpectedSpeechAdmissionSummarySha256 $ExpectedSpeechSourceInventorySha256
 if (-not $OutputRoot) {
     $OutputRoot = Join-Path $repoRoot ('.tmp\yimecore-local-product\' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,8))
 }
@@ -18,7 +21,7 @@ Start-Transcript -LiteralPath (Join-Path $out 'transcript.txt') | Out-Null
 $passed = $false
 $before = $null
 try {
-    $before = Get-LocalProductProtectionEvidence
+    $before = Get-LocalProductProtectionEvidence -HashesOnly
     Write-LocalProductJson $before (Join-Path $out 'protection-before.json')
     & (Join-Path $PSScriptRoot 'test-local-registry-preservation.ps1') 2>&1 |
         Tee-Object -LiteralPath (Join-Path $out 'registry-preservation.txt')
@@ -89,9 +92,11 @@ try {
         & cmake --build $nativeBuild --config Release --parallel
         if ($LASTEXITCODE -ne 0) { throw "Native $name build failed" }
         $release = Join-Path $nativeBuild 'Release'
-        & (Join-Path $release 'YimeTextServiceContractTests.exe') (Join-Path $release 'YimeTextServiceExperiment.dll') 2>&1 |
-            Tee-Object -LiteralPath (Join-Path $out "native-contract-$name.txt")
-        if ($LASTEXITCODE -ne 0) { throw "Native $name contract failed" }
+        Invoke-LocalProductIsolatedTestTool -Tool (Join-Path $release 'YimeTextServiceContractTests.exe') `
+            -Arguments @((Join-Path $release 'YimeTextServiceExperiment.dll')) `
+            -BuildRoot $out -EvidenceRoot $out -LogName "native-contract-$name.txt"
+        Invoke-LocalProductIsolatedTestTool -Tool (Join-Path $release 'YimeFocusCancellationTests.exe') `
+            -BuildRoot $out -EvidenceRoot $out -LogName "native-focus-cancellation-$name.txt"
         foreach ($file in $product.native_binaries) {
             if ($file -notmatch '^Yime[A-Za-z]+\.(dll|exe)$') { throw "Unexpected native target: $file" }
             Copy-Item -LiteralPath (Join-Path $release $file) -Destination (Join-Path $package "$name\$file")
@@ -117,9 +122,10 @@ try {
         Assert-LocalProductDependencies $coreDependencies -Core
         $coreDependencies | Set-Content -LiteralPath (Join-Path $out 'core-dependencies.txt') -Encoding UTF8
         $dependencies | Sort-Object -Unique | Set-Content -LiteralPath (Join-Path $package 'build\go-runtime-dependencies.txt') -Encoding UTF8
-        & go test ./cmd/yimecore-independence-audit ./cmd/yimecore-trial-runtime ./input_methods/yime/yimecore ./input_methods/yime/yimebroker 2>&1 |
-            Tee-Object -LiteralPath (Join-Path $out 'go-tests.txt')
-        if ($LASTEXITCODE -ne 0) { throw 'Local product Go regressions failed' }
+        Invoke-LocalProductIsolatedTestTool -Tool go -Arguments @('test', '-count=1', './cmd/settings-tool',
+            './cmd/yimecore-independence-audit', './cmd/yimecore-trial-runtime',
+            './input_methods/yime/yimecore', './input_methods/yime/yimebroker') `
+            -BuildRoot $out -EvidenceRoot $out -LogName 'go-tests.txt'
         foreach ($binary in $product.go_binaries) {
             $buildArgs = @('build', '-trimpath', '-buildvcs=false', '-o', (Resolve-LocalProductChild $package $binary.path))
             if ($binary.gui) { $buildArgs += @('-ldflags', '-H=windowsgui') }
@@ -130,6 +136,10 @@ try {
         if ($LASTEXITCODE -ne 0) { throw 'Index builder failed' }
         & go build -trimpath -buildvcs=false -o (Join-Path $buildTools 'MultimodeVerifier.exe') ./cmd/yimebroker-multimode-experiment
         if ($LASTEXITCODE -ne 0) { throw 'Multimode verifier build failed' }
+        if ($speechRequested) {
+            & go build -trimpath -buildvcs=false -o (Join-Path $buildTools 'SpeechProductExporter.exe') ./cmd/yimecore-speech-admission
+            if ($LASTEXITCODE -ne 0) { throw 'Build-only speech exporter build failed' }
+        }
     } finally { Pop-Location }
 
     $indexEvidence = @()
@@ -147,6 +157,12 @@ try {
         if ($LASTEXITCODE -ne 0 -or (Get-FileHash -LiteralPath $repeat).Hash -ne (Get-FileHash -LiteralPath $indexPath).Hash) {
             throw "Index rebuild not byte-identical: $mode"
         }
+    }
+    $speechBinding = $null
+    if ($speechRequested) {
+        $speechBinding = Add-LocalProductSpeechPayload -RepoRoot $repoRoot -PackageRoot $package -BuildRoot $out `
+            -Exporter (Join-Path $buildTools 'SpeechProductExporter.exe') -AdmissionRoot $SpeechAdmissionRoot `
+            -SummarySHA256 $ExpectedSpeechAdmissionSummarySha256 -SourceInventorySHA256 $ExpectedSpeechSourceInventorySha256
     }
     $nativePlatforms = @()
     foreach ($native in @(
@@ -171,6 +187,7 @@ try {
         reproducibility = 'Go trimpath and explicit source content; indexes verified twice. PE/linker timestamps, archive timestamps, generated metadata and absolute build evidence are not claimed byte reproducible.'
         installed_package_used_as_input = $false
     }
+    if ($speechRequested) { $inputs.speech = $speechBinding }
     Write-LocalProductJson $inputs (Join-Path $package 'build\build-inputs.json')
     $manifest = [ordered]@{
         tool_version = 'yimecore-local-builder-v1'; package_contract = $product.package_contract
@@ -184,7 +201,7 @@ try {
     & (Join-Path $package 'bin\YimeCoreIndependenceAudit.exe') -package $package -output (Join-Path $out 'independence-audit.json')
     if ($LASTEXITCODE -ne 0) { throw 'New local runtime bundle independence/contract audit failed' }
     & (Join-Path $PSScriptRoot 'test-local-product-package.ps1') -PackageRoot $package -OutputRoot (Join-Path $out 'package-verification')
-    & (Join-Path $PSScriptRoot 'test-local-product-runtime.ps1') -PackageRoot $package -OutputRoot (Join-Path $out 'runtime-verification') `
+    & (Join-Path $PSScriptRoot 'test-local-product-runtime.ps1') -PackageRoot $package -OutputRoot (Join-Path $out 'runtime-verification') -BuildRoot $out `
         -MultimodeVerifier (Join-Path $buildTools 'MultimodeVerifier.exe') -TsfTests @{
             x64=(Join-Path $nativeReleases['x64'] 'YimeTsfCompositionTests.exe')
             x86=(Join-Path $nativeReleases['x86'] 'YimeTsfCompositionTests.exe')
@@ -197,7 +214,7 @@ try {
     $passed = $true
 } finally {
     try {
-        $after = Get-LocalProductProtectionEvidence
+        $after = Get-LocalProductProtectionEvidence -HashesOnly
         Write-LocalProductJson $after (Join-Path $out 'protection-after.json')
         $preserved = ($before | ConvertTo-Json -Depth 30 -Compress) -ceq ($after | ConvertTo-Json -Depth 30 -Compress)
         Write-LocalProductJson ([ordered]@{

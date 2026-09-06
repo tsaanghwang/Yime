@@ -1,0 +1,125 @@
+{
+  "schema_version": "yimecore-l5-focus-fix-registration-audit-v1",
+  "generated_at": "2026-09-05T04:50:12.0087023Z",
+  "audit_kind": "read-only system-registry metadata and source review",
+  "provider": "out-of-process StdRegProv; no process-view fallback",
+  "current_sid": "S-1-5-21-2783006668-770716121-2150155084-1001",
+  "powershell_version": "7.6.5",
+  "expected_install_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a",
+  "current_aggregate_sha256": "e51bcdcd6942271b2abbf030536e0f1e3b6844321a7b47788375a47b0c4a818b",
+  "per_key_sha256": {
+    "SOFTWARE\\Classes\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "c155612c1f530895365b0853f483c7741ad225c0b7af12292e5d9830b94e3278",
+    "SOFTWARE\\Classes\\WOW6432Node\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "79222059bf3f60e1a5d2990b3722224d68b1cc55acc16eda25238ea05dff1c59",
+    "SOFTWARE\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "641c99dd3f8d3bd98beb9945bf1c9b46ca1c0e9e4fee92e63def44b692b4139a",
+    "SOFTWARE\\WOW6432Node\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "641c99dd3f8d3bd98beb9945bf1c9b46ca1c0e9e4fee92e63def44b692b4139a",
+    "S-1-5-21-2783006668-770716121-2150155084-1001\\Software\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "e39f603a5ebcff23859d200f9c9dc20f6c19d48aa185d09445bd42e31abcc3ff",
+    "SOFTWARE\\Classes\\CLSID\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "e39f603a5ebcff23859d200f9c9dc20f6c19d48aa185d09445bd42e31abcc3ff",
+    "SOFTWARE\\Classes\\WOW6432Node\\CLSID\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "cc12f6b74672f85fa166a5dc195f2695a81355c947ab08c7fec53af5d3c677c6",
+    "SOFTWARE\\Microsoft\\CTF\\TIP\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "a623f0671e15f5eff35385563ec23451f930e53969d5b1869246b8a08d90977f",
+    "SOFTWARE\\WOW6432Node\\Microsoft\\CTF\\TIP\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "a623f0671e15f5eff35385563ec23451f930e53969d5b1869246b8a08d90977f",
+    "S-1-5-21-2783006668-770716121-2150155084-1001\\Software\\Microsoft\\CTF\\TIP\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "141e5f7734d60b4b7a8150f4730180d678a56b48d868b2e780c8f11482ebf6d3",
+    "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}": "3d30604cc7032e9e0d3b1f9cd81ae276e67c173f6e818ac53fbdf214d7be92c7",
+    "SOFTWARE\\Classes\\WOW6432Node\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}": "2c3d9545f196db6dc2bc1a9f976fc5be6f7c0aeb047a5b5fb4261091c262d8de",
+    "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}": "18536f49db7d75bd168151aed253b1cb4df7c04db91bdf480e2857a3b79b3033",
+    "SOFTWARE\\WOW6432Node\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}": "18536f49db7d75bd168151aed253b1cb4df7c04db91bdf480e2857a3b79b3033",
+    "S-1-5-21-2783006668-770716121-2150155084-1001\\Software\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}": "96d670fd1e719b772ab3c41b82b13f36616b366822164a4d8752ed53b437a82b",
+    "Control Panel\\International\\User Profile": "e0ebcad9414a4fa51ae57fd1a1386fd688e1c4c29acbed38b2edb51bc4053bcf",
+    "Keyboard Layout\\Preload": "079bb037883fad5ce2d4a922ef13ead05ef10f23f6b72ee9103f011d26ec44c3",
+    "Software\\Microsoft\\Windows\\CurrentVersion\\Run": "68cddcddade58f71460655cacf022a5288f8c25ad61194a9f2f8ea34e414dabb",
+    "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial": "225c92b48d0aed78be45ca4feb2f5547efc3d17f02bd867a4387f1c9b90176fc"
+  },
+  "current_product_metadata": {
+    "run": {
+      "name": "YimeCoreExperimentalTrial",
+      "kind": 1,
+      "value": "\"C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\bin\\YimeCoreTrialRuntime.exe\" -no-toolbar",
+      "exact_local11_match": true,
+      "contains_fixture_path": false,
+      "explicit_state_root_argument": false,
+      "state_resolution_note": "Source resolveOptions defaults an omitted state-root to the launching native process LOCALAPPDATA/YimeCore Experimental Trial; no runtime-config content was read."
+    },
+    "com_x64": {
+      "dll": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\x64\\YimeTextServiceExperiment.dll",
+      "value_kind": 1,
+      "threading_model": "Apartment",
+      "exact_local11_match": true
+    },
+    "com_x86": {
+      "dll": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\x86\\YimeTextServiceExperiment.dll",
+      "value_kind": 1,
+      "threading_model": "Apartment",
+      "exact_local11_match": true
+    },
+    "uninstall": {
+      "display_version": "0.1.0-local.11",
+      "install_location": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a",
+      "values_kind": 1,
+      "exact_local11_match": true
+    }
+  },
+  "referenced_evidence": {
+    "historical_exact_local11": {
+      "path": ".tmp/yimecore-experiment/local11-x86-live-host-20260904/protection-after-live-acceptance.json",
+      "file_sha256": "1f703e3de028c390876421ea26097b374149468e20605c824dc1b746dffbd26d",
+      "reserialized_aggregate_sha256": "e51bcdcd6942271b2abbf030536e0f1e3b6844321a7b47788375a47b0c4a818b",
+      "matches_current_aggregate": true,
+      "all_protection_subtree_hashes_checked": 19,
+      "all_protection_subtree_hashes_matching": 19,
+      "product_registration_run_and_uninstall_subtree_hashes_checked": 7,
+      "matching_checked_hashes": 7,
+      "product_run_exact_value_matches": true
+    },
+    "d2_preflight": {
+      "path": "docs/testing/l5/2026-09-05-focus-fix-preflight.json",
+      "file_sha256": "057b9f6e1118119838e0145ec20e41a241a063379702a72b3dd0a894c6451f69",
+      "protected_keys_checked": 12,
+      "matching_hashes": 12
+    },
+    "d2_interim": {
+      "path": "docs/testing/l5/2026-09-05-focus-fix-interim.json",
+      "file_sha256": "65d3ee7a76a29d33d34958296db88b73f9a29ad9c8f3b7e31951e6cd70c95a9d",
+      "protected_keys_checked": 12,
+      "matching_hashes": 12
+    }
+  },
+  "cross_run_difference": {
+    "first_run_summary": ".tmp/yimecore-focus-cancellation/20260905-122512-be854d9e/summary.json",
+    "first_before_and_after_sha256": "d10b9a8dc72a0a8e904c4837917712c28d2c98001c821a3b147e3ec743350e5c",
+    "later_run_summary": ".tmp/yimecore-focus-cancellation/20260905-124219-a915d5f9/summary.json",
+    "later_before_and_after_sha256": "e51bcdcd6942271b2abbf030536e0f1e3b6844321a7b47788375a47b0c4a818b",
+    "cause": "unresolved",
+    "mutation_proven": false,
+    "exact_raw_first_run_registry_snapshot_available": false,
+    "note": "The aggregate includes all user Run values, not only YimeCore. Different aggregate strings alone cannot identify a mutation or its cause. Current exact product metadata, current per-key hashes and the referenced historical local.11 aggregate match; no causal claim is made about the unexplained first-run digest."
+  },
+  "source_and_control_flow_review": {
+    "runtime_registry_or_run_writes_found": false,
+    "runtime_config_writer_found": false,
+    "reviewed_sources": [
+      "go-backend/cmd/yimecore-trial-runtime/main.go",
+      "go-backend/cmd/yimecore-trial-runtime/runtime_windows.go",
+      "YimeTextServiceExperiment/LanguageBarItem.cpp"
+    ],
+    "same_pipe_runtime_already_running_behavior": "run creates fixture logs directory, checks the pipe-namespaced mutex, and returns before starting another Broker when the mutex already exists.",
+    "first_failed_direct_test_log": ".tmp/yimecore-focus-cancellation/20260905-122512-be854d9e/full/tsf-x64.txt",
+    "first_failed_direct_test_reached_language_bar_onclick": false,
+    "first_failed_direct_test_note": "Retained output stops at document-focus cancellation assertion, earlier than the languageModeButton OnClick sections. This statement applies only to this retained run, not unexamined ad hoc executions."
+  },
+  "conclusion": {
+    "concrete_current_product_registration_or_run_regression_detected": false,
+    "protection_hashes_match_d2_preflight_and_interim": true,
+    "current_product_matches_historical_local11": true,
+    "installed_config_integrity_claimed": false,
+    "registered_host_executed_by_this_audit": false,
+    "live_host_acceptance_claimed": false,
+    "repair_performed": false
+  },
+  "privacy": {
+    "user_settings_read": false,
+    "runtime_config_read": false,
+    "user_model_read": false,
+    "user_text_read_or_recorded": false,
+    "unrelated_run_values_emitted": false,
+    "source_or_prior_evidence_modified": false
+  }
+}

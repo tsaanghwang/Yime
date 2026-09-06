@@ -67,7 +67,7 @@ function Get-YimeCoreDataRecords([string]$StateRoot) {
             if(-not $item.PSIsContainer){$files+=@($item)}
         }
     }
-    foreach($name in @('professional-lexicons.json','yime_blocklist.txt','yime_user_phrases.txt','yimecore_experimental_toolbar_state.json')) {
+    foreach($name in @('learning.json','professional-lexicons.json','speech.json','yime_blocklist.txt','yime_user_phrases.txt','yimecore_experimental_toolbar_state.json')) {
         $path=Join-Path $root $name
         Assert-YimeCorePlainPath $path
         if(Test-Path -LiteralPath $path -PathType Leaf){$files+=@(Get-Item -LiteralPath $path)}

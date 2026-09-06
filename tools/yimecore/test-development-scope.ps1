@@ -13,9 +13,16 @@ function Assert-ScopeTest([bool]$Passed, [string]$Name) {
 Assert-ScopeTest (@($policy.active_architectures).Count -eq 2 -and
     $policy.active_architectures[0] -eq 'x64' -and $policy.active_architectures[1] -eq 'x86' -and
     @($policy.frozen_targets) -notcontains 'x86') 'x86_wow64_surface_resumed'
-Assert-ScopeTest (@($policy.frozen_targets) -contains 'arm64' -and
-    @($policy.frozen_targets) -contains 'other_physical_pcs' -and
-    @($policy.frozen_targets) -contains 'simulated_hardware_tiers') 'unavailable_targets_remain_frozen'
+Assert-ScopeTest (@($policy.frozen_targets) -notcontains 'arm64' -and
+    @($policy.experiment_targets).Count -eq 2 -and
+    @($policy.frozen_targets) -contains 'simulated_hardware_tiers') 'approved_platform_experiments_resumed'
+Assert-ScopeTest ((Get-YimeCoreExperimentTarget 'arm64').go_arch -eq 'arm64') 'arm64_native_mapping'
+Assert-ScopeTest ((Get-YimeCoreExperimentTarget 'mainstream_x64').cmake_platform -eq 'x64') 'mainstream_native_mapping'
+foreach ($target in @('unlisted', 'x86', 'forward_looking', '')) {
+    $rejected=$false
+    try { $null=Get-YimeCoreExperimentTarget $target } catch { $rejected=$true }
+    Assert-ScopeTest $rejected ('unlisted_target_rejected_' + $target)
+}
 foreach ($case in @(
     @{ name = 'approved_host'; hostName = $policy.computer_name; arch = 'AMD64'; bits = $true; reject = $false },
     @{ name = 'other_pc'; hostName = 'NOT-THE-DEVELOPMENT-PC'; arch = 'AMD64'; bits = $true; reject = $true },
@@ -61,6 +68,8 @@ Assert-ScopeTest ($performanceScript -notmatch '& \$tierRunner|-core-percent|-af
     $performanceScript -match '& \$benchTool' -and $performanceScript -match '& \$rimeTool') 'no_hardware_simulation'
 $profiles = Get-Content (Join-Path $PSScriptRoot 'performance-tiers.json') -Raw | ConvertFrom-Json
 Assert-ScopeTest (@($profiles.profiles).Count -eq 1 -and $profiles.profiles[0].id -eq 'development_host_x64') 'single_native_profile'
+Assert-ScopeTest (@($profiles.experiment_profiles).Count -eq 2 -and
+    ($profiles.experiment_profiles.id -join '|') -eq 'mainstream|arm64') 'physical_experiment_profiles'
 foreach ($entry in @('run-e6c-package-experiment.ps1', 'run-e6d-independence-readiness.ps1',
     'run-e7-cutover-readiness.ps1', 'run-yimecore-tier-performance.ps1')) {
     $source = Get-Content (Join-Path $PSScriptRoot $entry) -Raw
@@ -107,10 +116,13 @@ foreach ($case in @('local', 'old_unscoped', 'foreign_host', 'dual_tier', 'throt
     Assert-ScopeTest ($profileCheck.passed -eq ($case -notin @('dual_tier', 'throttled'))) ($case + '_performance_policy')
     $coverageCheck = $result.checks | Where-Object name -eq 'development_host_performance_coverage'
     Assert-ScopeTest ($coverageCheck.passed -eq ($case -ne 'missing_mode')) ($case + '_mode_coverage')
-    Assert-ScopeTest (@($result.deferred_checks).Count -eq 6 -and
+    Assert-ScopeTest (@($result.deferred_checks).Count -eq 3 -and
         @($result.deferred_checks | Where-Object { $null -ne $_.passed -or $_.status -ne 'deferred' }).Count -eq 0 -and
         @($result.deferred_checks | Where-Object name -eq 'x86_desktop_host_passed').Count -eq 0 -and
         ($result.blockers -join ',') -notmatch 'ARM64|mainstream|forward/high-end|signing:') ($case + '_frozen_not_blocked_or_passed')
+    Assert-ScopeTest (@($result.resumed_target_checks).Count -eq 2 -and
+        @($result.resumed_target_checks | Where-Object { $null -ne $_.passed -or $_.status -ne 'pending_target_evidence' }).Count -eq 0 -and
+        -not $result.ready_for_resumed_target_release) ($case + '_resumed_not_falsely_accepted')
     foreach ($name in @('broader_third_party_host_matrix_passed', 'x86_desktop_host_passed',
         'rollback_rehearsal_passed', 'first_release_retention_plan_approved')) {
         $check = @($result.checks | Where-Object name -eq $name)

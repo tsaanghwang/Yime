@@ -1,0 +1,60 @@
+{
+  "schema_version": "yimecore-l5-word-reopen-metadata-v1",
+  "generated_at": "2026-09-05T11:48:37.3928908+08:00",
+  "reference": "2026-09-05-settings-ui-observation-metadata.json",
+  "reference_package_version": "0.1.0-local.11",
+  "boot_at": "2026-09-05T07:34:00.5000000+08:00",
+  "boot_changed": false,
+  "previous_word": [
+    {
+      "name": "WINWORD.EXE",
+      "pid": 33640,
+      "started_at": "2026-09-05T11:26:39.029967+08:00"
+    }
+  ],
+  "processes": [
+    {
+      "name": "YimeCoreTrialRuntime.exe",
+      "pid": 8796,
+      "image": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\bin\\YimeCoreTrialRuntime.exe",
+      "started_at": "2026-09-05T07:34:34.5942420+08:00",
+      "yime_modules": [],
+      "module_check_error": null
+    },
+    {
+      "name": "YimeBroker.exe",
+      "pid": 20188,
+      "image": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\bin\\YimeBroker.exe",
+      "started_at": "2026-09-05T07:34:34.6848550+08:00",
+      "yime_modules": [],
+      "module_check_error": null
+    },
+    {
+      "name": "WINWORD.EXE",
+      "pid": 33640,
+      "image": "C:\\Program Files\\Microsoft Office\\Root\\Office16\\WINWORD.EXE",
+      "started_at": "2026-09-05T11:26:39.0299670+08:00",
+      "yime_modules": [
+        {
+          "path": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\x64\\YimeTextServiceExperiment.dll",
+          "sha256": "a9f7ceaaa2d7e48ac6779269e94f1a286eecf67d45a0799630f7a5a67eb61900"
+        }
+      ],
+      "module_check_error": null
+    }
+  ],
+  "runtime_comparison": [
+    {
+      "name": "YimeCoreTrialRuntime.exe",
+      "unchanged_identity_and_start": true
+    },
+    {
+      "name": "YimeBroker.exe",
+      "unchanged_identity_and_start": true
+    }
+  ],
+  "settings_or_learning_files_read": false,
+  "user_text_read": false,
+  "window_titles_read": false,
+  "product_mutated": false
+}

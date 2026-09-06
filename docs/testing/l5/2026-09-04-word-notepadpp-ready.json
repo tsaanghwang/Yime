@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-09-04T17:05:57.9608101+08:00",
+  "hosts": [
+    {
+      "name": "WINWORD",
+      "pid": 7984,
+      "image": "C:\\Program Files\\Microsoft Office\\Root\\Office16\\WINWORD.EXE",
+      "version": "16.0.20326.20112",
+      "pe_machine": "0x8664",
+      "modules": [
+        {
+          "path": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\x64\\YimeTextServiceExperiment.dll",
+          "sha256": "a9f7ceaaa2d7e48ac6779269e94f1a286eecf67d45a0799630f7a5a67eb61900"
+        }
+      ]
+    },
+    {
+      "name": "notepad++",
+      "pid": 35848,
+      "image": "C:\\Users\\tsaan\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Notepad++.Notepad++_Microsoft.Winget.Source_8wekyb3d8bbwe\\notepad++.exe",
+      "version": "8.9.8.0",
+      "pe_machine": "0x014C",
+      "modules": [
+        {
+          "path": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\x86\\YimeTextServiceExperiment.dll",
+          "sha256": "6cc329939a8931a1e7194743728efaf50a5b285bdb3f4549117fa3bc9d2f1545"
+        }
+      ]
+    }
+  ],
+  "text_read": false,
+  "active_profile_requires_physical_confirmation": true,
+  "focus_test_result": null
+}

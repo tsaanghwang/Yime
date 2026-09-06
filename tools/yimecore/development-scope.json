@@ -1,13 +1,18 @@
 {
   "schema_version": "yimecore-development-scope-v1",
-  "id": "development-host-x64-x86-wow64-2026-09-04",
+  "id": "mainstream-x64-arm64-resumed-2026-09-04",
   "computer_name": "MYCOMPUTER",
   "native_architecture": "AMD64",
   "active_architectures": ["x64", "x86"],
   "performance_profile": "development_host_x64",
   "x86_execution_model": "Win32 user-mode TSF surfaces in WOW64 applications on this AMD64 development machine; the shared core runtime and Broker remain native x64.",
-  "parallel_workstreams": ["x64_daily_use_and_sealing", "x86_wow64_surface_build_package_host_acceptance", "current_machine_experiment_closure"],
-  "frozen_targets": ["arm64", "legacy_x64", "other_physical_pcs", "simulated_hardware_tiers"],
-  "resume_condition": "Explicitly review and approve any target beyond this machine's native x64 runtime and x64/x86 user-mode application hosts.",
-  "frozen_payload_policy": "Retain legacy x86 and ARM64 base payloads unchanged for maintenance, rollback, and history. New active x86 artifacts must be source-built with the current local-product identity; ARM64 and other frozen targets must not be rebuilt, executed, or claimed compatible."
+  "parallel_workstreams": ["x64_daily_use_and_sealing", "x86_wow64_surface_build_package_host_acceptance", "mainstream_x64_experiment", "arm64_experiment"],
+  "experiment_targets": [
+    {"id": "mainstream_x64", "architecture": "x64", "go_arch": "amd64", "cmake_platform": "x64", "status": "active", "physical_host": null},
+    {"id": "arm64", "architecture": "arm64", "go_arch": "arm64", "cmake_platform": "ARM64", "status": "active", "physical_host": null}
+  ],
+  "experiment_entrypoint": "run-platform-experiment.ps1",
+  "frozen_targets": ["forward_physical_pcs", "simulated_hardware_tiers"],
+  "resume_condition": "Only listed experiment targets are authorized. Identify an available physical host before native acceptance; no automatic cloud provisioning or hardware purchase. Local-product maintenance stays on the pinned development host.",
+  "frozen_payload_policy": "Retain old-identity x86/ARM64 base payloads unchanged for rollback/history. Rebuild resumed targets from current source and identity into new isolated output; never execute or relabel the old payload. Cross-build success is not physical acceptance."
 }

@@ -37,7 +37,7 @@ try {
     $cmdText=(& (Join-Path $relocated 'package\Maintain-YimeCore-Local.cmd')) -join "`n"
     if($LASTEXITCODE -ne 0){throw "Relocated CMD Plan failed: $cmdText"}
     $cmdPlan=$cmdText|ConvertFrom-Json
-    Check ($cmdPlan.standard_user_launcher_package_ready -and $cmdPlan.package_root -eq (Join-Path $relocated 'package')) 'real CMD Plan works outside repository with spaces and unrelated working directory'
+    Check ($cmdPlan.standard_user_launcher_package_ready -and $cmdPlan.package_root -eq (Join-Path $relocated 'package')) 'real CMD Plan works in a separate copied root with spaces and unrelated working directory'
     Check ($env:PSModulePath -ceq $environmentBefore) 'native child module scope does not change calling environment'
     Write-LocalProductJson ([ordered]@{passed=$true;relocated_root=$relocated;plan=$cmdPlan;mutation_requested=$false}) (Join-Path $OutputRoot 'relocated-cmd-plan.json')
 } finally { Pop-Location }

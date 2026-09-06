@@ -1,9 +1,13 @@
 {
   "schema_version": "yimecore-local-product-v1",
-  "version": "0.1.0-local.11",
+  "version": "0.1.0-local.13",
   "display_name": "音元拼音",
   "package_contract": "yimecore-local-product-package-v1",
   "installable": true,
+  "speech": {
+    "capability_path": "speech-capability.json",
+    "default_enabled": false
+  },
   "scope": {
     "computer_name": "MYCOMPUTER",
     "active_architectures": [
@@ -11,9 +15,7 @@
       "x86"
     ],
     "frozen_targets": [
-      "arm64",
-      "legacy_x64",
-      "other_physical_pcs",
+      "forward_physical_pcs",
       "simulated_hardware_tiers"
     ]
   },

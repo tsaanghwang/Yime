@@ -345,9 +345,9 @@ STDMETHODIMP YimeTextService::Deactivate() {
 				reinterpret_cast<void**>(&owner))) &&
 			SUCCEEDED(active->QueryInterface(__uuidof(ITfCompositionView),
 				reinterpret_cast<void**>(&view)))) {
-			plannedCompositionTermination_ = true;
-			owner->TerminateComposition(view);
+			// Deactivation cancels, unlike an already-confirmed commit.
 			plannedCompositionTermination_ = false;
+			owner->TerminateComposition(view);
 		}
 		if (view) view->Release();
 		if (owner) owner->Release();
@@ -358,6 +358,7 @@ STDMETHODIMP YimeTextService::Deactivate() {
 		active->Release();
     }
     ForgetCompositionContext();
+    focusCancellationPending_ = nullptr;
     activationFlags_ = 0;
     selectionKeyDiagnosticsEnabled_ = false;
     clientId_ = TF_CLIENTID_NULL;
@@ -372,7 +373,8 @@ STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
     keyEventFocused_ = foreground != FALSE;
     if (!keyEventFocused_) {
         shiftTap_.Reset();
-        CancelPunctuationPalette();
+        CancelPunctuationPalette(false);
+        CancelUnconfirmedComposition();
     }
     if (keyEventFocused_ && compositionDocument_ && threadManager_) {
         ITfDocumentMgr* focus = nullptr;
@@ -407,6 +409,7 @@ STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
 STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*) {
     shiftTap_.Reset();
     compositionDocumentFocused_ = !compositionDocument_ || focus == compositionDocument_;
+    if (!compositionDocumentFocused_) CancelUnconfirmedComposition();
     if (punctuationPalette_.IsActive() && punctuationContext_) {
         ITfDocumentMgr* punctuationDocument = nullptr;
         const bool punctuationFocused = SUCCEEDED(punctuationContext_->GetDocumentMgr(&punctuationDocument)) &&
@@ -663,8 +666,17 @@ STDMETHODIMP YimeTextService::OnPreservedKey(ITfContext*, REFGUID, BOOL* eaten) 
     return S_OK;
 }
 
-STDMETHODIMP YimeTextService::OnCompositionTerminated(TfEditCookie, ITfComposition* composition) {
+STDMETHODIMP YimeTextService::OnCompositionTerminated(TfEditCookie cookie, ITfComposition* composition) {
+    HRESULT result = S_OK;
     if (composition_ == composition) {
+        // Host-driven termination can arrive before the focus callback. Its
+        // supplied write cookie is the last safe chance to cancel this range.
+        // Our own confirmed commit/cancel already replaced it and must not be
+        // erased, and EndComposition must never be called recursively here.
+        if (!plannedCompositionTermination_) {
+            result = yime::experiment::ClearCompositionText(cookie, composition);
+        }
+        if (focusCancellationPending_ == composition) focusCancellationPending_ = nullptr;
         CancelPunctuationPalette(false);
         EndCandidateUI();
         composition_->Release();
@@ -672,7 +684,37 @@ STDMETHODIMP YimeTextService::OnCompositionTerminated(TfEditCookie, ITfCompositi
         ForgetCompositionContext();
         if (!plannedCompositionTermination_) surface_.DisconnectForRecovery();
     }
-    return S_OK;
+    return result;
+}
+
+void YimeTextService::CancelUnconfirmedComposition() noexcept {
+    if (!composition_ || !compositionContext_ || focusCancellationPending_ == composition_) return;
+    ITfComposition* expected = composition_;
+    // Keep the comparison identity alive even if a synchronous completion ends it.
+    expected->AddRef();
+    focusCancellationPending_ = expected;
+    ShowCandidateUI(false);
+    // Never synthesize Escape into whichever application now has focus.
+    const HRESULT edit = yime::experiment::CancelCompositionInContext(
+        compositionContext_, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
+        &plannedCompositionTermination_, FocusCancellationCompleted, this);
+    if (FAILED(edit) && focusCancellationPending_ == expected) {
+        focusCancellationPending_ = nullptr;
+        EndCandidateUI();
+        surface_.DisconnectForRecovery();
+    }
+    expected->Release();
+}
+
+void YimeTextService::FocusCancellationCompleted(void* context, ITfComposition* expected,
+    HRESULT result) noexcept {
+    auto* service = static_cast<YimeTextService*>(context);
+    if (service->focusCancellationPending_ == expected) service->focusCancellationPending_ = nullptr;
+    if (result == S_FALSE) return; // Old composition was already ended/replaced.
+    if (service->composition_ && service->composition_ != expected) return;
+    service->EndCandidateUI();
+    service->surface_.DisconnectForRecovery();
+    if (SUCCEEDED(result) && !service->composition_) service->ForgetCompositionContext();
 }
 
 void YimeTextService::RememberCompositionContext(ITfContext* context) noexcept {
@@ -1115,6 +1157,7 @@ void YimeTextService::EndCandidateUI() noexcept {
 
 void YimeTextService::ShowCandidateUI(bool show) noexcept {
     if (!candidateUI_) return;
+    show = show && (!composition_ || focusCancellationPending_ != composition_);
     candidateUI_->Show(show ? TRUE : FALSE);
     candidatePopup_.Show(show && ownedCandidatePopupRequested_);
     if (!candidateUIRegistered_ || !threadManager_) return;
@@ -1127,7 +1170,21 @@ void YimeTextService::ShowCandidateUI(bool show) noexcept {
 
 void YimeTextService::AddLanguageBar() noexcept {
     if (languageBarItem_ || !threadManager_) return;
-    languageBarItem_ = new (std::nothrow) LanguageBarItem();
+    const bool directTest = GetEnvironmentVariableW(
+        L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", nullptr, 0) > 0;
+    if (directTest) {
+        // A directly loaded test DLL must not discover/launch an installed
+        // Runtime or tool through the language bar's registration fallback.
+        // Its caller supplies the private Broker and settings fixture already.
+        // Keep real click/state callbacks, but inject no external side effects.
+        languageBarItem_ = new (std::nothrow) LanguageBarItem(
+            yime::experiment::ResolveExperimentSettingsPath(),
+            [](HMENU, POINT, void*) noexcept -> UINT { return 0; }, nullptr,
+            [](UINT, const std::wstring&, void*) noexcept { return false; }, nullptr,
+            [](const std::wstring&, void*) noexcept { return false; }, nullptr);
+    } else {
+        languageBarItem_ = new (std::nothrow) LanguageBarItem();
+    }
     if (!languageBarItem_) return;
     languageBarItem_->SetSettingsChangedHandler(LiveSettingsChanged, this);
     ITfLangBarItemMgr* manager = nullptr;

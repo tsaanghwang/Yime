@@ -1,0 +1,320 @@
+{
+  "schema_version": "yimecore-l5-local12-build-handoff-v1",
+  "generated_at": "2026-09-05T13:35:22.3832583+08:00",
+  "authority": "User agreed to combine D2-S-UI-01 and D2-F-01 fixes, build and assist a new install/restart. Save/close confirmation and native same-user maintenance remain pending; no automatic reboot.",
+  "status": "source_fixes_and_isolated_candidate_build_completed_installation_pending",
+  "candidate": {
+    "version": "0.1.0-local.12",
+    "package_root": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\package",
+    "manifest_sha256": "9b3366b350ef2b23fd285fc9d97d876bf1ae6e2fc0f8613c647640f01184502e",
+    "package_files_verified": 74,
+    "source_files_verified": 700,
+    "exact_source_set_verified": true,
+    "source_manifest_sha256": "2f31f6d278a7fa46e2b7ae2118df88649cefd02ec7a6c3b017d3a5eb099f2c57",
+    "source_archive_sha256": "4c5b89fa5088aed016ebb2905ec6409f2688cde8054100756fdbdb1b6897ac74",
+    "git_commit": "62af8b507c91b510cb1f025ea03b992d4fdde333",
+    "dirty_source_snapshot": true,
+    "installed_package_used_as_build_input": false,
+    "planned_install_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-62af8b507c91-9b3366b3",
+    "planned_root_is_not_actual_install_evidence": true,
+    "native_runtime_architecture": "x64",
+    "tsf_architectures": [
+      "x64",
+      "x86"
+    ],
+    "identity_unchanged": true
+  },
+  "regressions": [
+    {
+      "id": "D2-S-UI-01",
+      "installed_status": "open_pending_new_package_live_verification",
+      "source_fix": "Use CB_GETLBTEXTLEN for allocation and CB_GETLBTEXT for whole-item readback; refresh/reopen matches saved selection.",
+      "red_evidence": "Isolated native ComboBox with old implementation displayed 5 for values 6..9; unchanged Apply wrote 5 to disposable state.",
+      "tests": {
+        "architectures": [
+          "amd64",
+          "386"
+        ],
+        "top_level_tests_per_architecture": 16,
+        "subcases_per_architecture": 10,
+        "passed": true,
+        "page_sizes": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "actual_native_apply_completion": true,
+        "reopen": true,
+        "unchanged_reapply": true,
+        "unrelated_settings_preserved": true,
+        "hidden_test_owned_windows": true,
+        "private_temporary_state_only": true
+      },
+      "production_paging_logic_changed": false
+    },
+    {
+      "id": "D2-F-01",
+      "installed_status": "open_pending_new_package_live_verification",
+      "source_fix": "Cancel unconfirmed preedit on focus loss or external composition termination, without raw-code or automatic Chinese commit; preserve confirmed text and guard delayed edits by original composition identity.",
+      "tests": {
+        "direct_matrix_architectures": [
+          "x64",
+          "x86"
+        ],
+        "modes": [
+          "full",
+          "variable",
+          "shorthand"
+        ],
+        "direct_passed": 6,
+        "direct_total": 6,
+        "mock_checks_per_architecture": 32,
+        "mock_failures": 0,
+        "contract_both_architectures_passed": true,
+        "registered_host_executables_built": true,
+        "registered_host_executed": false,
+        "direct_document_focus_callback_explicit": true,
+        "actual_registered_routing_evidence": false
+      },
+      "full_matrix_root": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-132652-1cef092c"
+    }
+  ],
+  "build_verification": {
+    "passed": true,
+    "registry_preservation_contract_checks": 28,
+    "package_maintenance_contract_checks": 37,
+    "fresh_go_groups_passed": 5,
+    "settings_tool_in_build_go_group": true,
+    "go_test_cache_disabled": true,
+    "three_indexes_rebuilt_byte_identical": true,
+    "index_records_per_mode": 1166753,
+    "independence_before_and_after_passed": true,
+    "relocated_independence_passed": true,
+    "direct_tsf_variable_long_session_architectures": [
+      "x64",
+      "x86"
+    ],
+    "dynamic_sentence": {
+      "passed": true,
+      "cases": 12
+    },
+    "synthetic_multimode": {
+      "passed": true,
+      "all_modes_passed": true,
+      "clean_restart_passed": true,
+      "crash_journal_recovery_passed": true,
+      "recovered_generation": 12
+    },
+    "synthetic_packaged_recovery": {
+      "passed": true,
+      "generation": 12,
+      "learned_record_count": 11
+    },
+    "private_runtime": {
+      "pid": 2372,
+      "broker_before": 29924,
+      "broker_after": 30596,
+      "restart_count_before": 0,
+      "restart_count_after": 1,
+      "actual_image_and_parent_verified": true,
+      "stopped": true
+    },
+    "build_private_environment_invocations_passed_and_restored": 7,
+    "focus_matrix_private_environment_invocations_passed_and_restored": 10,
+    "focus_matrix_private_brokers_stopped": 3,
+    "installed_registered_host_tests_executed": false,
+    "word_or_notepadpp_automated": false
+  },
+  "installed_pre_post": {
+    "prebuild_at": "2026-09-05T13:18:02.3428148+08:00",
+    "postbuild_at": "2026-09-05T13:32:47.7266240+08:00",
+    "version": "0.1.0-local.11",
+    "install_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a",
+    "manifest_sha256": "5a3f847a3136fd2198f7dc9aba22dc017ed7439d8447435e8752eb379a4a5cd8",
+    "files_verified": 74,
+    "comparison": {
+      "protected_key_count": 12,
+      "changed": [],
+      "package_same": true,
+      "processes_same": true,
+      "boot_same": true
+    },
+    "runtime_pid": 8796,
+    "broker_pid": 20188,
+    "new_candidate_installed": false,
+    "native_backup_executed": false,
+    "system_restarted": false
+  },
+  "protection": {
+    "provider": "out-of-process StdRegProv",
+    "build_aggregate_before_after": "e51bcdcd6942271b2abbf030536e0f1e3b6844321a7b47788375a47b0c4a818b",
+    "focus_matrix_aggregate_before_after": "e51bcdcd6942271b2abbf030536e0f1e3b6844321a7b47788375a47b0c4a818b",
+    "default_input_method_changed": false,
+    "production_rime_pime_changed": false,
+    "legacy_payloads_executed": false,
+    "arm64_native_execution_claimed": false,
+    "user_text_read": false,
+    "user_text_recorded": false,
+    "private_observations_or_word_files_accessed": false,
+    "durable_user_model_read": false,
+    "durable_user_model_changed": false,
+    "user_apps_closed_or_restarted": false
+  },
+  "caveats": [
+    "Source and isolated results do not close installed D2 regressions, registered host routing, runtime startup after a real reboot, D2 daily use, L5 or L6.",
+    "The pre-fix settings evidence preserves a corrected test-fixture deadlock and initial cache restriction; those are not product regressions.",
+    "Build transcript has one caught missing private runtime-status.json initial readiness probe. Bounded readiness then passed actual runtime/Broker identity checks; not a fatal failure.",
+    "Only the child build process PATH/Path names were normalized; persistent environment was not changed.",
+    "The newly installed root may differ from the Plan if a same-named directory already exists; verify actual native install result before installed Verify.",
+    "Previous D1 and local.11 raw results remain historical; no retroactive PASS and no extra five-round manual focus requirement."
+  ],
+  "remaining": [
+    "User saves and closes Word, Notepad++, current-product settings/tools and other relevant IME hosts.",
+    "Same user launches ordinary Windows PowerShell 5.1 from Explorer, not a child of Codex.",
+    "Current installed local.11 maintenance Backup must succeed to a durable external archive before installing the pinned local.12 package.",
+    "Inspect actual native install result, package integrity, current x64/x86 COM/profile, independent autostart and runtime identities; installed Verify uses actual new install directory.",
+    "Run new-package registered-host focus/failed-write/delayed-lock tests with Word closed, using isolated evidence and privacy-safe inputs.",
+    "User controls a real reboot after saving work; verify later boot/current PID/path/logon startup, then retained page size and same sample position before training.",
+    "Minimal physical settings and focus repair verification, no user text/screenshots required; final daily-use acceptance remains the user's decision."
+  ],
+  "gates": {
+    "source_candidate_installable": true,
+    "installed_acceptance_passed": false,
+    "d2_daily_use_complete": false,
+    "l5_daily_use_accepted": false,
+    "l6_sealed": false,
+    "public_release_ready": false
+  },
+  "artifacts": [
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\summary.json",
+      "sha256": "9617d830f689e7080d27b82d3ca846cae7891a26130f8d7969bcf9e60a9c7aec"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\package\\package-manifest.json",
+      "sha256": "9b3366b350ef2b23fd285fc9d97d876bf1ae6e2fc0f8613c647640f01184502e"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\package\\build\\source-manifest.json",
+      "sha256": "2f31f6d278a7fa46e2b7ae2118df88649cefd02ec7a6c3b017d3a5eb099f2c57"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\package\\build\\build-inputs.json",
+      "sha256": "9bbcabb231adc43582a17b2d2c5a23adbf73e0e2419dd619f92ba4fadc222ba9"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\source-snapshot.zip",
+      "sha256": "4c5b89fa5088aed016ebb2905ec6409f2688cde8054100756fdbdb1b6897ac74"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\independence-audit.json",
+      "sha256": "70d75f177534f4f3f457e30c031d24847cc3555f1e36a1f8f7e4f0910112089c"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\independence-after-tests.json",
+      "sha256": "62e89cf6bdc88d8093ff01cc958fac52d7a82b1e1df1fd85758658dada3f0316"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\protection-before.json",
+      "sha256": "1f703e3de028c390876421ea26097b374149468e20605c824dc1b746dffbd26d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\protection-after.json",
+      "sha256": "1f703e3de028c390876421ea26097b374149468e20605c824dc1b746dffbd26d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\registry-preservation.txt",
+      "sha256": "5532d9681b68b0e9f8a4829bd3f2bf5a2c7955fef22508b7cb62e25d5ea34544"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\go-tests.txt",
+      "sha256": "37a3bc682c514984fde08c7d82f5edb8338cc7178dbf4581c9c95a5898210b50"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\package-verification\\summary.json",
+      "sha256": "07fc033de6bf7732edfebfeaaffff5a5bf14679cfb456d721c560fafe09cb3bb"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\package-verification\\packaged-plan.json",
+      "sha256": "a6100afc43ff08fe4e8e572d3b683086e868c575b693cf0add128dc68584f3e3"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\runtime-verification\\summary.json",
+      "sha256": "315b11aaaa985af2ab848503d0fe95077bb1973b791677a57315dcc39841215f"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\runtime-verification\\multimode.json",
+      "sha256": "74364c039cc274154dd3fbc3fb2a2e8665e19b2f07427076def90c994c9d83b3"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\runtime-verification\\packaged-recovery.json",
+      "sha256": "62d89b4416b6384cd08b373c95f977bc982dfeb2eb2a897cb881af80171b73d4"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\runtime-verification\\sentence-regression.json",
+      "sha256": "aea0048ae77be31567572ecb1831e3cbb49dfa385775edb872a6b27b77e5e9c6"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\runtime-verification\\relocated-audit.json",
+      "sha256": "da4508e41348a084fb4edc00c6195e19482a039aa1069201b803a48e9aaadf3a"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\runtime-verification\\tsf-composition-x64.txt",
+      "sha256": "c33fd9bb0bfeefafd0592482726a95838bfbf21fd868320d7a9ff32ca5e78ea1"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\runtime-verification\\tsf-composition-x86.txt",
+      "sha256": "593406f84a69c561d5751eba7e898f25bf1893af5b75d33b8d0f921160cfc306"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\native-contract-x64.txt",
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\native-contract-x86.txt",
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\native-focus-cancellation-x64.txt",
+      "sha256": "c181518da6a5945f42345daeeac5830b742f09b5025bcd4daaeb00628d14137d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\native-focus-cancellation-x86.txt",
+      "sha256": "c181518da6a5945f42345daeeac5830b742f09b5025bcd4daaeb00628d14137d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\20260905-132513-73c86ac2\\transcript.txt",
+      "sha256": "dcac3e42f66cdb0b99944cd147013327a019c953f8d53151a8bc2dcf69889342"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\settings-combo-regression-20260905\\before-fix.txt",
+      "sha256": "2be06d07a1a951faae19079b79c24554413ac09bd4133ccd7cd9898988bea2b2"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\settings-combo-regression-20260905\\after-fix-x64.txt",
+      "sha256": "727b1734b505fd3e89085ad8cf9060b7e44181183257dcd4ab5b531c744eea17"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\settings-combo-regression-20260905\\after-fix-x86.txt",
+      "sha256": "08eeb4c952ced7754c03340b79d01fc86ad5130d5715f02bcf930b5d005bb1be"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-132652-1cef092c\\summary.json",
+      "sha256": "cb0ceed6c575cc29ff2482c0249ab4fab7ac48de9f8c456db2deca09f1e57f98"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-132652-1cef092c\\source-hashes.json",
+      "sha256": "41114485b4849b5e19906af74fc0377e807ea70bf2bb2d2b2af245d5aaa435d8"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-132652-1cef092c\\artifact-hashes.json",
+      "sha256": "0e6f03f3155164e5741fc3e1f52eeba1b457d756b1dfca2ad4ba0e276cae5f6a"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-132652-1cef092c\\test-fixtures.json",
+      "sha256": "d09cf825435b45d5df1e8d6b44993e251f5bf6cd66b6ef84325b7706f52cd409"
+    }
+  ]
+}

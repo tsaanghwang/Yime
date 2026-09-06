@@ -242,7 +242,7 @@ $sourceHashes = foreach ($relative in $sourceFiles) {
     passed = [bool]$packageEvidence.passed -and $productionUnchanged -and [bool]$autostart.passed
     limitations = @(
         'This gate proves package, static source-dependency and active registration separation; it does not uninstall Rime/PIME.',
-        'Legacy x86 and ARM64 retained payloads receive static integrity checks only. Current-identity x86 is an active separate build/package/host gate; ARM64 and other hardware remain frozen.',
+        'Old-identity x86/ARM64 retained payloads receive static integrity checks only. Current-identity mainstream x64/ARM64 experiments use separate source-build and physical-host evidence; this local report does not certify them.',
         'Trusted package signing remains deferred while the signing certificate application is pending.'
     )
 } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $summaryPath -Encoding utf8

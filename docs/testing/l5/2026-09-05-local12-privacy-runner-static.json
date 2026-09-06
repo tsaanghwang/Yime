@@ -1,0 +1,14 @@
+{
+  "verified_at": "2026-09-05T14:19:24.6239710+08:00",
+  "powershell_version": "5.1.26100.9168",
+  "parser_passed": true,
+  "pure_synthetic_checks_passed": 8,
+  "required_boolean_markers": 17,
+  "script_sha256": "71bd6440b6d1219995cd299073f61f9e751d58b3ecbb79f35010f0c31655bd95",
+  "full_runner_executed": false,
+  "native_preflight_executed": false,
+  "registered_host_executed": false,
+  "user_data_accessed": false,
+  "installed_package_modified": false,
+  "orchestrator_clixml_output_retry": true
+}

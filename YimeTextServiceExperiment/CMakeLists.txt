@@ -4,8 +4,9 @@ project(YimeTextServiceExperiment LANGUAGES CXX)
 option(YIME_LOCAL_PRODUCT "Build the current-PC independent product display identity" OFF)
 if(YIME_LOCAL_PRODUCT)
     if(NOT CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND
-       NOT CMAKE_GENERATOR_PLATFORM STREQUAL "Win32")
-        message(FATAL_ERROR "Local product TSF builds support x64 and Win32 only on the approved development host")
+       NOT CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" AND
+       NOT CMAKE_GENERATOR_PLATFORM STREQUAL "ARM64")
+        message(FATAL_ERROR "Current-identity TSF builds support x64, Win32 and ARM64; installation requires target-specific acceptance")
     endif()
     file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../tools/yimecore/local-product.json" YIME_PRODUCT_JSON)
     string(JSON YIME_LOCAL_PRODUCT_NAME GET "${YIME_PRODUCT_JSON}" display_name)
@@ -81,6 +82,19 @@ set_property(TARGET YimeTextServiceContractTests PROPERTY MSVC_RUNTIME_LIBRARY "
 enable_testing()
 add_test(NAME YimeTextServiceContractTests
     COMMAND YimeTextServiceContractTests $<TARGET_FILE:YimeTextServiceExperiment>)
+
+add_executable(YimeFocusCancellationTests
+    tests/FocusCancellationTests.cpp
+    CompositionEditSession.cpp
+)
+target_compile_features(YimeFocusCancellationTests PRIVATE cxx_std_17)
+target_compile_definitions(YimeFocusCancellationTests PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
+target_compile_options(YimeFocusCancellationTests PRIVATE /utf-8 /W4 /EHsc)
+target_include_directories(YimeFocusCancellationTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+    "${CMAKE_CURRENT_LIST_DIR}/../json/single_include")
+target_link_libraries(YimeFocusCancellationTests PRIVATE ole32)
+set_property(TARGET YimeFocusCancellationTests PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+add_test(NAME YimeFocusCancellationTests COMMAND YimeFocusCancellationTests)
 
 add_executable(YimeBrokerBridgeTests
     tests/BrokerBridgeTests.cpp

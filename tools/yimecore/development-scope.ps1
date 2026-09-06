@@ -42,6 +42,7 @@ function Get-YimeCoreDevelopmentScope {
         active_architectures = @($policy.active_architectures)
         performance_profile = $policy.performance_profile
         frozen_targets = @($policy.frozen_targets)
+        experiment_targets = @($policy.experiment_targets)
         policy_sha256 = (Get-FileHash -LiteralPath $policyPath -Algorithm SHA256).Hash.ToLowerInvariant()
     }
 }
@@ -53,8 +54,21 @@ function Assert-YimeCoreDevelopmentHost($Policy, [string]$ComputerName, [string]
         $active.Count -ne 2 -or $active[0] -ne 'x64' -or $active[1] -ne 'x86' -or
         $Policy.performance_profile -ne 'development_host_x64' -or
         $ComputerName -ne $Policy.computer_name -or $NativeArchitecture -ne 'AMD64' -or -not $Is64BitProcess) {
-        throw 'Current YimeCore scope is this AMD64 development machine with native x64 runtime plus x64/x86 user-mode TSF surfaces. Use 64-bit PowerShell for orchestration; other targets remain frozen.'
+        throw 'This local-product lane requires the pinned AMD64 development host and 64-bit PowerShell. Use the separate approved platform-experiment lane for resumed targets.'
     }
+}
+
+function Get-YimeCoreExperimentTarget([string]$Target) {
+    $policy = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'development-scope.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+    $match = @($policy.experiment_targets | Where-Object { $_.id -ceq $Target -and $_.status -eq 'active' })
+    if ($match.Count -ne 1 -or $Target -cnotin @('mainstream_x64', 'arm64')) {
+        throw 'Target is not in the approved experiment allowlist.'
+    }
+    $expected = if ($Target -eq 'arm64') { 'arm64|arm64|ARM64' } else { 'x64|amd64|x64' }
+    if ((@($match[0].architecture, $match[0].go_arch, $match[0].cmake_platform) -join '|') -cne $expected) {
+        throw 'Experiment target architecture mapping is invalid.'
+    }
+    return $match[0]
 }
 
 function Assert-YimeCoreNativeGo {

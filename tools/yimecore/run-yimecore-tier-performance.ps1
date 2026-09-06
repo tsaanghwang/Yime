@@ -19,7 +19,7 @@ $testDataRoot = Join-Path $goBackend 'input_methods\yime\yimecore\testdata'
 $profilePath = Join-Path $PSScriptRoot 'performance-tiers.json'
 $profiles = (Get-Content -LiteralPath $profilePath -Raw | ConvertFrom-Json)
 if (@($profiles.profiles).Count -ne 1 -or $profiles.profiles[0].id -ne $developmentScope.performance_profile) {
-    throw 'Only the development-host x64 performance profile is active; other hardware tiers are frozen.'
+    throw 'This local performance runner accepts only its native development-host profile; resumed target experiments use separate evidence.'
 }
 $allowedRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot '.tmp\yimecore-tier-performance'))
 if ([string]::IsNullOrWhiteSpace($OutputRoot)) {

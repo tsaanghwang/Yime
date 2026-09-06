@@ -120,7 +120,7 @@ if errorlevel 1 (
 )
 
 echo [5/6] Verifying this development machine's x64 TSF host only...
-echo ARM64, x86 and other hardware targets are frozen, not accepted.
+echo Historical x64 entry only. Current x86 and resumed x64/ARM64 use their own current-identity entrypoints.
 "%YIME_OUT%\package\x64\YimeRegisteredHostTests.exe" "\\.\pipe\YimeBroker.YimeCoreTrial.v1"
 if errorlevel 1 (
     echo.
