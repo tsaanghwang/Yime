@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Advance the unreleased `v1.4.0` development identity from `1.4.0-dev` to `1.4.0-dev.1`, reserving a distinct versioned leaf for a later exact-HEAD isolated DP1 successor candidate; the fixed PE version remains `1.4.0.0`, and this identity change does not itself build, publish, install or migrate a candidate or receipt
+- Advance the unreleased `v1.4.0` development identity from `1.4.0-dev` to `1.4.0-dev.1`, reserve a distinct versioned leaf, and subsequently build the unsigned, disabled x86/x64 DP1-P successor from exact HEAD with its static gates passing and `identity_transition_admitted=true`; the fixed PE version remains `1.4.0.0`, while actual canonical migration, installation, signing, delivery, and ARM64-native validation remain unadmitted or unperformed
 - Make the repository, installer, build, and CI product path YIME-only; permanently remove the retired Python, Node, McBopomofoWeb, libchewing backends and their submodule records
 - Remove the obsolete root-level Rime/Brise/OpenCC data mirror, retired AppVeyor pipeline, Python/Node hacking guide, embedded-Python license, and root libchewing test fixtures after confirming that the YIME build and installer have no dependency on them
 - Reuse message windows within the same TSF owner, keep candidate/message UI anchored after composition changes, replace duplicate language-bar button registrations, cache IME configuration metadata, and localize the missing-config-tool prompt

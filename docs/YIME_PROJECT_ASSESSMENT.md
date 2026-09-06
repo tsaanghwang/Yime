@@ -4,7 +4,7 @@
 >
 > 适用基线：`1.4.0-dev`，含 2026-07-22 的拆分 CI、布局设计器和安装态复核
 >
-> 2026-09-07 当前源码身份已推进到 `1.4.0-dev.1`，仅为后续 exact-HEAD 隔离 successor candidate 预留独立版本叶；下列 `1.4.0-dev` 安装态结论保持历史原义，不自动成为新身份的构建或安装验收。
+> 2026-09-07 当前源码身份已推进到 `1.4.0-dev.1`，并已从 exact HEAD 构建一个未签名、禁用且未执行的隔离 successor candidate，静态门禁通过，且 `identity_transition_admitted=true`；下列 `1.4.0-dev` 安装态结论保持历史原义，新身份没有安装、签名、交付或 ARM64 原生验收，`actual_canonical_migration_admitted=false` 且未执行。详见 [DP1-P 记录](project/YIME_DUAL_PRODUCT_DP1_P_VERSIONED_SUCCESSOR_CANDIDATE_2026-09-07.md)。
 >
 > 相关文档：[架构](YIME_ARCHITECTURE.md) | [测试](YIME_TESTING_GUIDE.md) | [发布与签名](YIME_RELEASE_AND_SIGNING.md) | [原生 UI](YIME_NATIVE_UI_GUIDELINES.md)
 
@@ -24,7 +24,7 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 | 语言栏 | 已清理 | 保留静态标签和稳定命令 ID；高风险点击路径有回归测试 |
 | 构建与打包 | 稳定 | 9 个 Go EXE 可复现、统一图标和 VERSIONINFO、包内不携带 Go 源码 |
 | CI 与测试 | 完整度较高 | 构建契约、Rust、原生构建、Go、真实 Rime、MSYS2 race 和安装器已拆分；`core-build` 是聚合 required check |
-| 正式签名发布 | 开发版待发行 | `version.txt` 当前为 `1.4.0-dev.1`；正式目标仍是尚未发布的 `v1.4.0`，公开发行仍待受信任签名产物验证 |
+| 正式签名发布 | 仍硬阻断 | `version.txt` 当前为 `1.4.0-dev.1`；DP1-P 候选未签名且不可交付，actual canonical 未迁移，tag 构包与签名门禁均未解除；正式目标仍是尚未发布的 `v1.4.0` |
 | 安装态验证 | 前一开发身份已复核 | 07-12／07-22 的真实安装结论属于 `1.4.0-dev`；`1.4.0-dev.1` 尚未安装或继承该结论，详见[07-22 安装态复核](YIME_INSTALL_VERIFICATION_2026-07-22.md) |
 
 ## 2. 两轮评估已处理事项
@@ -55,7 +55,7 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 - 9 个 Go EXE 使用稳定版本、`-trimpath -buildvcs=false`、统一 Yime 图标和 VERSIONINFO；连续构建哈希一致。
 - 打包脚本递归清理复制目录中的 `.go` 文件，避免发布包泄露源码并防止 `go test ./...` 重复执行打包副本。
 - CI 增加反查测试、根包测试、Rust 格式检查和 CTest 实际执行。
-- 标签发布强制导入可信签名证书；临时 PFX 在导入后删除。
+- 受保护标签发布流程设计为强制导入可信签名证书；临时 PFX 在导入后删除。当前 tag 构包仍硬阻断，尚未生成签名发布物。
 - 签名前检查私钥、有效期、RSA 和代码签名 EKU；签名后检查签名者指纹及时间戳。
 - CI 明确区分带提交 SHA 的 `YIME-unsigned-test-installer-{sha}` 和 `YIME-signed-installer`。
 - CI 已拆为可独立重跑的并行作业，`installer-package` 只消费全部前置门禁通过的原生制品，`core-build` 聚合最终结论；普通分支制品名为 `YIME-unsigned-test-installer-{sha}`。
@@ -68,8 +68,8 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 - 配置本机 MSYS2 UCRT64 GCC 16.1.0（`go env CC` 持久化），`go test -race ./...` 全量通过，补齐此前缺失的竞态检测完成证明。
 - 修复 Win32 `PIMELauncher` 重建链路：Corrosion 升级到 v0.6.1 并在根 `CMakeLists.txt` 固定 `Rust_TOOLCHAIN=stable-i686-pc-windows-msvc`（host==target==i686，消除跨编译时 build-script 被链 i686 库导致的 LNK4272/145 个未解析符号）；前置为 `rustup toolchain install stable-i686-pc-windows-msvc`。
 - 2026-07-14 复评收口：Win32 回调地址改用显式结构体复制，`go vet ./...` 恢复绿色；CI 固定 Go 1.26.4，并在执行关键测试前逐项确认测试名存在；新增 `tools/test-go-race.ps1` 固化 CGO/GCC/PATH/缓存环境；开发包版本从历史 `1.3.0-beta2` 调整为 `1.4.0-dev`。
-- 2026-07-14 安装复核发现旧 `build/` 实为 x64，却因空的 `CMAKE_GENERATOR_PLATFORM` 被误判为 Win32。现已重建显式 Win32 树，并新增 `tools/test-build-guards.ps1`：本地构建、开发安装和 CI 均强制核对 x86/x64/ARM64 PE machine type。后续安装复核又确认旧版 `meow`/`simple_pinyin`/`fcitx5` 演示包已无 `ime.json` 且不可激活，现已删除源码、生产注册和默认回退；协议测试改用测试专用假服务，Go 打包只复制带 `ime.json` 的运行时目录，NSIS 升级以非递归方式清理三个旧空目录。
-- 2026-07-15 当日曾将版本切到 `1.4.0` 并以旧聚合作业名 `build` 做发布演练；后续开发已恢复 `1.4.0-dev`，当前聚合门禁名为 `core-build`。当日 32 位 `SysWOW64\\charmap.exe` 宿主人工烟雾测试仍作为历史验证记录保留。
+- 2026-07-14 安装复核发现旧 `build/` 实为 x64，却因空的 `CMAKE_GENERATOR_PLATFORM` 被误判为 Win32。现已重建显式 Win32 树，并新增 `tools/test-build-guards.ps1`：本地构建、开发安装和 CI 均强制核对 x86/x64/ARM64 PE machine type。后续安装复核又确认旧版 `meow`/`simple_pinyin`/`fcitx5` 演示包已无 `ime.json` 且不可激活，现已删除源码、生产注册和默认回退；协议测试改用测试专用假服务，Go 打包只复制带 `ime.json` 的运行时目录，NSIS 升级以非递归方式清理三个旧空目录。其中 ARM64 只取得 PE machine type 等交叉构建静态检查，不是 ARM64 原生执行、安装或宿主证据。
+- 2026-07-15 当日曾将版本切到 `1.4.0` 并以旧聚合作业名 `build` 做发布演练；后续开发先恢复 `1.4.0-dev`，2026-09-07 再推进到 `1.4.0-dev.1`，当前聚合门禁名为 `core-build`。当日 32 位 `SysWOW64\\charmap.exe` 宿主人工烟雾测试仍作为历史验证记录保留。
 - 2026-07-15 未签名发布演练发现并修复标准安装器的锁定 DLL 升级缺陷：旧逻辑会递归删除后以退出码 2 中止，留下部分安装；新逻辑使用 `.new` 暂存和 `/REBOOTOK` 原位替换。修复后安装器返回 0，YIME-only 目录、版本、许可证、注册表和启动项均通过核对；当时被占用的 x64 DLL 进入重启替换队列。该历史待办已由 2026-07-22 安装态复核关闭：安装树无 `.new` 文件，x86/x64 DLL 均与当前构建物一致。详见[1.4.0 发布演练](YIME_RELEASE_REHEARSAL_2026-07-15.md)和[7 月 22 日安装态复核](YIME_INSTALL_VERIFICATION_2026-07-22.md)。
 
 ## 3. 固化的架构约束
@@ -119,7 +119,7 @@ git diff --check
 
 发行状态补充清单：
 
-- **已完成——1.4.0 发布身份与 Changelog 内容**：2026-07-15 已完成 `1.4.0` 发布演练并确定该发布身份；后续开发已恢复 `1.4.0-dev`。只有创建正式标签时才把 `version.txt` 切换为 `1.4.0`，历史标签和版本身份不得复用。
+- **已完成——1.4.0 发布身份与 Changelog 内容**：2026-07-15 已完成 `1.4.0` 发布演练并确定该发布身份；后续开发先恢复 `1.4.0-dev`，2026-09-07 又推进到 `1.4.0-dev.1` 并仅形成 DP1-P 隔离 successor candidate。只有创建正式标签时才把 `version.txt` 切换为 `1.4.0`，历史标签和版本身份不得复用。
 - **待办——可信签名**：证书正在办理，尚未生成和验证公开受信任的完整签名安装包。
 - **待办——签名后验收**：受签名事项阻塞；签名完成后必须重建、重装并重新执行 TSF、工具入口、语言栏菜单和 CodeIntegrity 清单。
 - **已完成——真实 x86 宿主烟雾测试**：2026-07-15 已在 `C:\Windows\SysWOW64\charmap.exe` 中完成用户人工验证，暂未发现激活、组字、候选或上屏问题；签名产物仍须按同一清单复跑。

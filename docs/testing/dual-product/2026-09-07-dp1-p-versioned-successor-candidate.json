@@ -1,0 +1,330 @@
+{
+  "schema_version": "yime-dual-product-dp1-p-versioned-successor-candidate-evidence-v1",
+  "affected_product": "rime-pime",
+  "generated_at_utc": "2026-09-06T23:21:15.4761116Z",
+  "verified_source": {
+    "version_identity_gate_commit": "6b7b7332979ae03a810df6a40a0ccd2bb3130279",
+    "version_identity_commit": "9f536635f29960365afac32a2561bfaa62f84d1b",
+    "exact_head": "9f536635f29960365afac32a2561bfaa62f84d1b",
+    "exact_tree": "25952901b3cca25591fc88e23f6723583bd7bbba",
+    "runner_head_blob": "d5ac007d5ebaae91d14ccd5a61c301454838cd9b",
+    "runner_worktree_blob": "d5ac007d5ebaae91d14ccd5a61c301454838cd9b",
+    "runner_matches_exact_head": true,
+    "clone_detached_exact_head": true,
+    "clone_core_autocrlf": false
+  },
+  "outcome": {
+    "dp1_p_version_identity_gate_completed": true,
+    "versioned_successor_candidate_completed": true,
+    "current_source_full_build_completed": true,
+    "x86_x64_package_profile_built": true,
+    "static_only_installer_manifest_passed": true,
+    "ps7_static_postbuild_passed": true,
+    "ps5_labeled_independent_static_postbuild_passed": true,
+    "strict_v2_read_ps5": true,
+    "strict_v2_read_ps7": true,
+    "identity_transition_admitted": true,
+    "identity_transition_reasons": [],
+    "actual_protected_snapshot_unchanged": true,
+    "actual_canonical_migration_admitted": false,
+    "actual_canonical_migrated": false,
+    "product_regressions": []
+  },
+  "version_transition": {
+    "old_product_version": "1.4.0-dev",
+    "successor_product_version": "1.4.0-dev.1",
+    "formal_release_target": "v1.4.0",
+    "fixed_pe_numeric_version": "1.4.0.0",
+    "old_installer_path": "installer/YIME-1.4.0-dev-setup.exe",
+    "successor_installer_path": "installer/YIME-1.4.0-dev.1-setup.exe",
+    "semver_strictly_increasing": true,
+    "paths_compared_case_insensitively_for_windows": true,
+    "installer_sha256_distinct": true
+  },
+  "final_candidate": {
+    "product_version": "1.4.0-dev.1",
+    "package_profile": ["x86", "x64"],
+    "path": ".tmp/dual-product/dp1-o-candidate-20260907-d/repo/installer/YIME-1.4.0-dev.1-setup.exe",
+    "bytes": 41455231,
+    "sha256": "ac97f65af80e9686525a3c2f289670aaa14edb60a6effc80ce7cc3580333970d",
+    "unsigned_disabled": true,
+    "executed": false,
+    "arm64_note": "build.bat also produced and statically identified ARM64 cross-compiled PIMETextService artifacts; no ARM64 native execution, package or compatibility result is claimed"
+  },
+  "final_runner": {
+    "path": ".tmp/dual-product/dp1-o-candidate-20260907-d/result.json",
+    "bytes": 6177,
+    "sha256": "9833ebe569a3ebf4e6962b22f820e4cf42abffb88db07e740794b434917848c8",
+    "sidecar_verified": true,
+    "commands_passed": 10,
+    "protected_snapshot_sha256_before": "9f887a07abc684864b221eb8f3d564b1ccee633dee753d8b46e747481803b33f",
+    "protected_snapshot_sha256_after": "9f887a07abc684864b221eb8f3d564b1ccee633dee753d8b46e747481803b33f"
+  },
+  "candidate_chain": {
+    "package_plan": {
+      "bytes": 4758,
+      "sha256": "0999fec6a2799e923118ce6cb047821eb1c2e5beff1c939df34e1888ce5a418e"
+    },
+    "build_result": {
+      "schema_version": "yime-rime-pime-staged-nsis-build-result-membership-interval-v1",
+      "bytes": 7990,
+      "sha256": "65ab931e7238e59855d1ccf27abc7aa371406073a9d27220132608d899bd7195",
+      "package_plan_artifact_count": 20,
+      "package_plan_matching_stage_binding_count": 22
+    },
+    "build_manifest": {
+      "bytes": 5547,
+      "sha256": "537d396bbc99f4142670bdc29e49a1f6153cac1ae749dd9964bfc67a13928128",
+      "static_only_passed": true
+    },
+    "ps7_postbuild": {
+      "path": ".tmp/dual-product/dp1-o-candidate-20260907-d/repo/.tmp/dual-product/dp1-postbuild-extraction-4a24ccaa0f074d2398963e382fd2fb19/evidence/result.json",
+      "bytes": 47934,
+      "sha256": "7dd531596cc4fe943596c4782e54670330b63055e9e0b7177f1ffa419b202c49",
+      "installer_archive_entry_count": 181,
+      "nested_uninstaller_archive_entry_count": 11
+    },
+    "ps5_labeled_independent_postbuild": {
+      "path": ".tmp/dual-product/dp1-o-candidate-20260907-d/repo/.tmp/dual-product/dp1-postbuild-extraction-dp1p-ps5-20260907-a/evidence/result.json",
+      "bytes": 47856,
+      "sha256": "548333f4dd096061eabfffd2283a64e903c5ceaff26a9ff82623fe9ecb817b10",
+      "installer_archive_entry_count": 181,
+      "nested_uninstaller_archive_entry_count": 11
+    },
+    "generated_uninstaller": {
+      "bytes": 585292,
+      "sha256": "ffd37a56d45b8c108c0c8e1c5780cfdcc41babcb435012aac7c88a6a6416fb26",
+      "static_archive_member_verified": true,
+      "generated_uninstaller_verified": false,
+      "trusted": false
+    },
+    "historical_v1_receipt": {
+      "bytes": 802,
+      "sha256": "c8a2bb8277261e9bc3dcd2b24f19f71729b12901033ef761331fe8d4f9889bb0"
+    },
+    "strict_retained_v2_receipt": {
+      "path": ".tmp/dual-product/dp1-o-candidate-20260907-d/repo/installer/package-build-receipt.json",
+      "bytes": 6185,
+      "sha256": "185d9056e11a89c7ed5f425147e91b66a677a043e9234a1702acdda5372567fa",
+      "schema_version": "yime-rime-pime-package-build-receipt-v2",
+      "evidence_artifacts_durable": true,
+      "durability_scope": "isolated-clone-content-addressed-process-interruption-protocol",
+      "strict_reader_passed_ps5": true,
+      "strict_reader_passed_ps7": true
+    }
+  },
+  "passing_suites": [
+    {
+      "name": "version-identity-admission-ps5",
+      "path": ".tmp/dual-product/dp1-version-identity-test-dp1p-final-ps5-20260907/result.json",
+      "sha256": "b7a0e9f52b146c2699314b1a27532c4e66591f730208ea7f18059c9d3de97feb",
+      "passed": 17,
+      "total": 17
+    },
+    {
+      "name": "version-identity-admission-ps7",
+      "path": ".tmp/dual-product/dp1-version-identity-test-dp1p-final-ps7-20260907/result.json",
+      "sha256": "b7a0e9f52b146c2699314b1a27532c4e66591f730208ea7f18059c9d3de97feb",
+      "passed": 17,
+      "total": 17
+    },
+    {
+      "name": "isolated-candidate-runner-contract-ps5",
+      "path": ".tmp/dual-product/dp1-o-runner-contract-dp1p-final-ps5-20260907/result.json",
+      "sha256": "053e54c96a8ac07b151223b8086edb94beb45296a5ab6834594d178057d5897f",
+      "passed": 15,
+      "total": 15,
+      "skipped": 0
+    },
+    {
+      "name": "isolated-candidate-runner-contract-ps7",
+      "path": ".tmp/dual-product/dp1-o-runner-contract-dp1p-final-ps7-20260907/result.json",
+      "sha256": "053e54c96a8ac07b151223b8086edb94beb45296a5ab6834594d178057d5897f",
+      "passed": 15,
+      "total": 15,
+      "skipped": 0
+    },
+    {
+      "name": "dual-product-source-baseline",
+      "path": ".tmp/dual-product/dp1-p-versioned-candidate-baseline-20260907-a/baseline.json",
+      "sha256": "fef3dfbb1543f553b2983f43a08e4ec39269a299939d3b43721d6bdec1ad08c8",
+      "source_count": 142,
+      "fixture_tests_passed": 60,
+      "pending_count": 6,
+      "dp2_physical_acceptance_passed": false
+    }
+  ],
+  "passing_commands_without_result_artifact": [
+    {
+      "name": "strict-retained-v2-reader-ps5",
+      "exit_code": 0,
+      "receipt_sha256": "185d9056e11a89c7ed5f425147e91b66a677a043e9234a1702acdda5372567fa"
+    },
+    {
+      "name": "strict-retained-v2-reader-ps7",
+      "exit_code": 0,
+      "receipt_sha256": "185d9056e11a89c7ed5f425147e91b66a677a043e9234a1702acdda5372567fa"
+    },
+    {
+      "name": "build-guards-ps5-skip-packaged-rime",
+      "exit_code": 0
+    },
+    {
+      "name": "build-guards-ps7-skip-packaged-rime",
+      "exit_code": 0
+    },
+    {
+      "name": "pimelauncher-pinned-i686-cargo-test",
+      "exit_code": 0,
+      "passed": 26,
+      "total": 26
+    },
+    {
+      "name": "baseline-unit-tests",
+      "command": "Python 3.14 tools/dual-product/test_baseline.py",
+      "exit_code": 0,
+      "passed": 60,
+      "total": 60
+    }
+  ],
+  "development_gate_regressions": [
+    {
+      "kind": "windows-path-case-semantics",
+      "outcome": "fixed-before-versioned-candidate",
+      "detail": "The DP1-O distinct-leaf calculation used case-sensitive comparison even though installer paths are Windows identities. It now uses case-insensitive comparison and has a case-only negative fixture."
+    },
+    {
+      "kind": "successor-version-precedence",
+      "outcome": "fixed-before-versioned-candidate",
+      "detail": "The first admission rule required only different version strings and could have admitted a downgrade. It now implements strict SemVer precedence, including release/prerelease and arbitrary-size numeric identifier ordering, and rejects equal or lower versions."
+    },
+    {
+      "kind": "reviewed-source-version-binding",
+      "outcome": "fixed-before-versioned-candidate",
+      "detail": "The isolated runner initially read exact-HEAD version.txt without requiring the same HEAD contract.json to review that value. It now fails before build when the two identities differ."
+    },
+    {
+      "kind": "version-grammar-and-resource-propagation-baseline",
+      "outcome": "fixed-before-versioned-candidate",
+      "detail": "The source baseline accepted leading-zero core components and did not lock both Launcher numeric VERSIONINFO calls or the TextService numeric PRODUCTVERSION line. The grammar and propagation anchors now fail closed."
+    },
+    {
+      "kind": "ci-installer-leaf-ambiguity",
+      "outcome": "fixed-before-versioned-candidate",
+      "detail": "CI previously selected the first YIME-*-setup.exe and could inspect the wrong file when multiple leaves existed. It now requires exactly one case-exact version.txt-derived leaf."
+    },
+    {
+      "kind": "pure-module-command-allowlist-fixture",
+      "outcome": "fixed-before-final-fixture",
+      "failed_result_sha256": "879bb6b7bced111b9e84c71bbfa65a9bd281cad5fa120ecde3105df4963d15cf",
+      "detail": "The first AST purity test omitted the harmless Set-StrictMode command from its allowlist and failed one of 17 checks under both shells. The reviewed allowlist was corrected; the final PS5 and PS7 results are identical and pass 17 of 17."
+    },
+    {
+      "kind": "empty-reasons-parameter-binding-fixture",
+      "outcome": "fixed-before-final-fixture",
+      "detail": "The first admission-fixture invocation passed an empty Reasons array through ordinary parameter binding and failed all 13 then-current checks before testing product behavior. The helper binding was corrected and the expanded final suite passes 17 of 17 under both shells."
+    }
+  ],
+  "actual_checkout_protection": {
+    "protected_snapshot_sha256": "9f887a07abc684864b221eb8f3d564b1ccee633dee753d8b46e747481803b33f",
+    "canonical_receipt": {
+      "path": "installer/package-build-receipt.json",
+      "bytes": 5688,
+      "sha256": "c18d1202ad78dcd6f8c1f74b34859a83489adb01fb156fa4e2546160aff5b0be",
+      "sidecar_sha256": "ae28a8f7ed01aa784ff657f465616d794204ca624c680fa4c159a4fde15d5a74",
+      "product_version": "1.4.0-dev",
+      "strict_reader_passed": true,
+      "evidence_artifacts_durable": false,
+      "mutated": false
+    },
+    "actual_installer": {
+      "path": "installer/YIME-1.4.0-dev-setup.exe",
+      "bytes": 41456428,
+      "sha256": "32a7d66e06284d512675e40495b6e244a23630d2e368ac2cf73ce652e623efe2",
+      "mutated": false
+    },
+    "actual_successor_installer_present": false,
+    "actual_receipt_evidence_directory_present": false,
+    "preserved_unrelated_worktree_files": [
+      {
+        "path": "docs/YIMECORE_L5_DAILY_USE_TEST_LOG.md",
+        "sha256": "45ef892de9f5651c386561f774a80d874d7ff88ed1fcd649adbad39a55d7c04b"
+      },
+      {
+        "path": "tools/yimecore/get-l5-daily-use-baseline.ps1",
+        "sha256": "abe618f6125dfd77dff772ff723dafd3773153385832bbc44528e52230df6ae4"
+      },
+      {
+        "path": "docs/YIMECORE_LOCAL12_L5_FINAL_CONFIRMATION_2026-09-06.md",
+        "sha256": "75f8b56a5dae9d871d1be87bd7fcca0757f4a983585b426a62129f12cb5bfab8"
+      }
+    ]
+  },
+  "source_files": [
+    {"path": "version.txt", "sha256": "37e806f19ac26295abfe1258d8f2771442da1365655c7641acacba31bc21dd63"},
+    {"path": "tools/dual-product/contract.json", "sha256": "d351564f838ef17adb567fcbe82a594e97647ded69bcafefb19af50938a829ad"},
+    {"path": "tools/dual-product/rime-pime-version-identity-admission.psm1", "sha256": "2e5b248f906ac28950fafcb2bfe4143637f3a32ce3b95202c11ec42dd4275ab6"},
+    {"path": "tools/dual-product/test-rime-pime-version-identity-admission.ps1", "sha256": "6874b7c49a5d38cf6a80f2f2239fa11ddb36e4c6ae8bdc604ae6e2b860cc65c4"},
+    {"path": "tools/dual-product/run-rime-pime-isolated-candidate.ps1", "sha256": "9fff0080d8714d76096b3e5faa0712d9f7c3eba8184ef2320e90c6933db2ccc9"},
+    {"path": "tools/dual-product/test-rime-pime-isolated-candidate.ps1", "sha256": "136886556771ded4a533e2298c4e80d68970a6412193d8bf8e94a6e1ddb61862"},
+    {"path": "tools/dual-product/baseline.py", "sha256": "db3d696315128a67a346701be3aad59ace0a42fe672418182b70818584b7f2cd"},
+    {"path": "tools/dual-product/test_baseline.py", "sha256": "e1da3afeb90ab5bfa4c8971dc23dc0c746c62a5716fed8b302190e5d3499e778"},
+    {"path": ".github/workflows/ci.yaml", "sha256": "84917b68fffd2f679cc376d8e87189d17a36b030d3ba32c98f456db8c8f7d057"},
+    {"path": "tools/test-build-guards.ps1", "sha256": "cf04d7cc70a74a3cf4d590f2e2d9adad80efbf70ba477c1516ee24aed84a8087"}
+  ],
+  "governance": {
+    "reviewed_source_version": "1.4.0-dev.1",
+    "distinct_versioned_installer_leaf_for_dp1n": true,
+    "identity_transition_admitted": true,
+    "identity_admission_is_not_actual_migration_admission": true,
+    "actual_canonical_migration_admitted": false,
+    "actual_canonical_migrated": false,
+    "next_gate": "separately review whether an actual canonical installer-plus-receipt migration is authorized and adequately durable; do not invoke DP1-N from this evidence alone"
+  },
+  "evidence_limitations": {
+    "ps5_postbuild_artifact_self_identifies_shell_version": false,
+    "ps5_postbuild_result_bound_into_durable_v2_receipt": false,
+    "ps5_postbuild_result_archived_outside_outer_tmp": false,
+    "identity_admission_object_carries_old_and_new_installer_hashes_and_bytes": false,
+    "tracked_record_sources_installer_hashes_and_bytes_from_old_and_new_receipts": true,
+    "protected_snapshot_exposes_aggregate_hash_only": true,
+    "protected_snapshot_cross_run_equality_claimed": false,
+    "note": "The independent rerun is labeled PS5 by its command-selected output path, but its result JSON does not self-record the PowerShell version. The before/after protected hashes prove equality only within this run."
+  },
+  "boundaries": {
+    "actual_canonical_migrated": false,
+    "actual_installer_published": false,
+    "real_installer_transaction_adapter_wired": false,
+    "generated_uninstaller_trusted": false,
+    "final_payload_closure": false,
+    "full_nsis_toolchain_input_closure": false,
+    "release_signing_complete": false,
+    "delivery_admitted": false,
+    "outer_tmp_retention_guaranteed": false,
+    "evidence_archived_outside_tmp_by_runner": false,
+    "hardware_power_loss_verified": false,
+    "directory_metadata_durability_verified": false,
+    "active_hostile_same_sid_physical_replacement_prevented": false,
+    "installed_or_registered_host_verified": false,
+    "arm64_native_execution_verified": false,
+    "dp1_complete": false,
+    "dp2_complete": false,
+    "dp3_complete": false,
+    "l5_complete": false,
+    "l6_complete": false
+  },
+  "safety": {
+    "installer_executed": false,
+    "uninstaller_executed": false,
+    "signing_process_executed": false,
+    "installed_product_process_started_or_stopped": false,
+    "product_registry_mutated": false,
+    "default_input_method_changed": false,
+    "production_rime_pime_touched": false,
+    "installed_yimecore_local12_touched": false,
+    "production_user_data_read_or_written": false,
+    "user_text_recorded": false,
+    "frozen_or_historical_payload_executed": false,
+    "fixture_roots": ".tmp/dual-product"
+  }
+}

@@ -10,7 +10,7 @@
 
 - 工作区干净，发布目标提交已合入并推送到 `main`；`yime-stable` 仅作为保留的集成分支
 - 子模块提交已先推送到各自 remote，主仓库不引用远端不存在的提交
-- `version.txt` 与构建身份一致；当前未发布开发线使用 `1.4.0-dev.1`，这是为后续 exact-HEAD 隔离 successor candidate 预留的唯一字符串身份，本身不表示 candidate 已构建、签名或安装，固定 PE 数值版仍为 `1.4.0.0`；只有创建正式 `v1.4.0` 标签前才改为 `1.4.0`
+- `version.txt` 与构建身份一致；当前未发布开发线使用 `1.4.0-dev.1`，[DP1-P](project/YIME_DUAL_PRODUCT_DP1_P_VERSIONED_SUCCESSOR_CANDIDATE_2026-09-07.md)已从 exact HEAD 构建一个未签名、禁用且未执行的隔离 successor candidate，并通过静态门，`identity_transition_admitted=true`；版本字符串及该静态候选都不表示已签名、安装或可交付，`actual_canonical_migration_admitted=false` 且迁移未执行，ARM64 原生验证亦未准入。固定 PE 数值版仍为 `1.4.0.0`；只有创建正式 `v1.4.0` 标签前才改为 `1.4.0`
 - 不得重新使用已经存在的历史标签。仓库已有 `v1.0.0`、`v1.1.0` 和 `v1.3.0-*`；即使 Yime 作为独立产品首次公开发布，也不能再次创建同名 `v1.0.0` 标签
 - `CHANGELOG.md` 的 `[Unreleased]` 已核对
 - Visual Studio、Windows SDK、CMake、Rust、Go、Python 和 NSIS 符合 `tools/toolchain.lock.json`；`python tools/verify_toolchain_lock.py` 通过
@@ -82,7 +82,7 @@ $env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
 .\tools\sign-release.ps1 -RequireComplete
 ```
 
-该脚本覆盖 Go EXE、`rime.dll`、`rime_deployer.exe`、PIMELauncher 和各架构 TSF DLL。NSIS 的 `!uninstfinalize` 与 `!finalize` 会分别签名卸载程序和最终安装包。
+该脚本覆盖 Go EXE、`rime.dll`、`rime_deployer.exe`、PIMELauncher 和构包 profile 实际纳入的各架构 TSF DLL。NSIS 的 `!uninstfinalize` 与 `!finalize` 会分别签名卸载程序和最终安装包。
 
 验证：
 
@@ -96,7 +96,7 @@ $env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
 
 签名 job 会把待签名的标签产物与签名实现分开：产物来自标签构建，证书导入、签名、验证和 manifest 脚本则从仓库默认分支独立检出，随后在证书进入 runner 前整体移到 `$RUNNER_TEMP/yime-trusted-signing`，并只执行这一份受保护实现。不得把该第二 checkout 留在主源码工作树或用 `.gitignore` 隐藏它，否则干净发布的 source identity 会被污染或掩盖。`.github/workflows/ci.yaml`、`tools/sign-*.ps1`、`tools/import-release-signing-certificate.ps1`、`tools/verify-*.ps1` 和 `installer/**` 都是 CODEOWNERS 保护面；分支保护必须要求 Code Owner 审批后才能合入默认分支。
 
-2026-09-06 的 tag 构包仍被硬阻断。解除前还必须把默认分支上的受信签名实现解析为一个受保护 commit，在两个签名 job 间传递并核对同一 commit，且把该工具 commit 写入最终 provenance；不得让两个 job 各自解析一个可能变化的默认分支。还必须锁定 `sign → verify → manifest → upload` 的相对顺序，并对外层签名后的 clean、`signedRelease=true` manifest 再执行 StaticOnly 验证。完成这些门禁后，标签产物名才可使用 `YIME-signed-installer`；PR 与普通分支产物名为 `YIME-unsigned-test-installer-{sha}`，不得作为公开发布包。
+2026-09-07 DP1-P 完成后，tag 构包仍被硬阻断；version identity admission 和 unsigned／disabled isolated candidate 不解除签名或发布门禁。解除前还必须把默认分支上的受信签名实现解析为一个受保护 commit，在两个签名 job 间传递并核对同一 commit，且把该工具 commit 写入最终 provenance；不得让两个 job 各自解析一个可能变化的默认分支。还必须锁定 `sign → verify → manifest → upload` 的相对顺序，并对外层签名后的 clean、`signedRelease=true` manifest 再执行 StaticOnly 验证。完成这些门禁后，标签产物名才可使用 `YIME-signed-installer`；PR 与普通分支产物名为 `YIME-unsigned-test-installer-{sha}`，不得作为公开发布包。
 
 安装器仅在系统缺少 VC++ Runtime 时下载 Microsoft redistributable。下载落在 NSIS 随机私有的 `$PLUGINSDIR`，执行前由 `tools/verify-microsoft-authenticode.ps1` 验证 Windows 信任链、Microsoft Corporation 签名者和代码签名 EKU；任何下载或签名异常都会删除文件并中止安装，不能退回共享 `$TEMP` 路径或跳过验证。
 
@@ -132,7 +132,7 @@ cmd /c build.bat
 - NSIS 必装主组件递归包含 `go-backend/build/go-backend/`，安装包中不存在旧 Python/Node 输入法及其组件选择逻辑
 - `input_methods/yime/data/`、`rime.dll`、`rime_deployer.exe` 已打包
 - 打包目录 `input_methods/` 下没有 `.go` 源码或测试文件
-- x86/x64 `PIMETextService.dll` 均存在，并通过 `tools/test-build-guards.ps1` 验证 PE machine type；仅检查文件名或存在性不算通过
+- 当前 Rime/PIME 构包 profile 仅为 x86/x64；x86/x64 `PIMETextService.dll` 均存在，并通过 `tools/test-build-guards.ps1` 验证 PE machine type。ARM64 交叉编译产物不在本安装包中，也不是 ARM64 原生构包、签名、执行、注册或 live-host 证据；仅检查文件名或存在性不算通过
 - `go-backend/build/go-backend/input_methods/` 只包含带 `ime.json` 的运行时输入法目录
 - 安装包和内部二进制签名有效
 - 安装包 SHA-256 已记录在发布说明中
