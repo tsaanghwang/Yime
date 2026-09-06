@@ -223,6 +223,15 @@ def transaction_source_status(sources):
     receipt_v2_finalizer = sources["tools/dual-product/finalize-rime-pime-package-receipt-v2.ps1"]
     receipt_v2_test = sources["tools/dual-product/test-rime-pime-package-receipt-v2.ps1"]
     receipt_no_downgrade_test = sources["tools/dual-product/test-rime-pime-receipt-no-downgrade.ps1"]
+    installer_receipt_transaction = sources[
+        "tools/dual-product/rime-pime-installer-receipt-transaction.ps1"
+    ]
+    installer_receipt_transaction_module = sources[
+        "tools/dual-product/rime-pime-installer-receipt-transaction.psm1"
+    ]
+    installer_receipt_transaction_test = sources[
+        "tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1"
+    ]
     receipt_v2_supersession = sources["tools/dual-product/rime-pime-receipt-v2-supersession.ps1"]
     receipt_v2_supersession_module = sources["tools/dual-product/rime-pime-receipt-v2-supersession.psm1"]
     receipt_v2_supersession_test = sources["tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1"]
@@ -657,6 +666,56 @@ def transaction_source_status(sources):
         (receipt_no_downgrade_test, ["yime-rime-pime-receipt-no-downgrade-test-v1",
                                      "Refusing to overwrite canonical package build receipt schema",
                                      "v1/v2 no-downgrade checks passed without signing or product execution"]),
+        (installer_receipt_transaction, [
+            "Definitions-only, fixture-gated installer/receipt identity replacement",
+            "function Assert-RimePimeInstallerReceiptTransactionFixtureRoot",
+            "dp1-package-receipt-v2-test-dp1n-",
+            "function Move-RimePimeInstallerReceiptNoReplace",
+            "[YimeReceiptStorage.Native]::MoveFileEx($Source,$Destination,8)",
+            "Deliberately omit REPLACE_EXISTING.",
+            "function Write-RimePimeInstallerReceiptIntentNoReplace",
+            "('.rime-pime-intent-'+[guid]::NewGuid().ToString('N')+'.tmp')",
+            "Invoke-RimePimeInstallerReceiptTransactionCheckpoint 'intent-copy'",
+            "function Stage-RimePimeInstallerReceiptPhysicalLeaf",
+            "New physical installer must remain absent while its durable stage is prepared.",
+            "('.rime-pime-copy-'+[guid]::NewGuid().ToString('N')+'.tmp')",
+            "Invoke-RimePimeInstallerReceiptTransactionCheckpoint 'installer-copy'",
+            "function Assert-RimePimeInstallerReceiptCompletionTargetAbsent",
+            "function Complete-RimePimeInstallerReceiptTransaction",
+            "function Publish-RimePimeInstallerReceiptTransaction",
+            "function Resume-RimePimeInstallerReceiptTransaction",
+            "Canonical receipt pair is outside the allowed old/new transaction states.",
+        ]),
+        (installer_receipt_transaction_module, [
+            "Definitions-only isolated DP1-N entry point.",
+            "rime-pime-nsis-toolchain-closure.psm1",
+            "rime-pime-package-staging.psm1",
+            "rime-pime-nsis-stage.psm1",
+            "rime-pime-staged-installer-build.psm1",
+            ". (Join-Path $PSScriptRoot 'rime-pime-package-receipt-v2.ps1')",
+            ". (Join-Path $PSScriptRoot 'rime-pime-receipt-v2-store.ps1')",
+            ". (Join-Path $PSScriptRoot 'rime-pime-installer-receipt-transaction.ps1')",
+            "Export-ModuleMember -Function @(",
+            "'Publish-RimePimeInstallerReceiptTransaction'",
+            "'Resume-RimePimeInstallerReceiptTransaction'",
+        ]),
+        (installer_receipt_transaction_test, [
+            "Transaction worker is fixture-only.",
+            "module-exports-only-two-isolated-transaction-apis",
+            "foreign-completion-leaf-is-rejected-before-any-transaction-write",
+            "installer-no-replace-preserves-foreign-before-move-race",
+            "completion-no-replace-rename-preserves-pending-file-id",
+            "'objects','installer-copy','installer-temp','intent-copy','intent-temp'",
+            "full_suite_executed=[bool]$fullSuiteExecuted",
+            "all_executed_checks_passed=[bool]$allChecksPassed",
+            "full_transaction_matrix=[bool]$fullMatrixVerified",
+            "fixture_only=$true",
+            "invoked_process_class='PowerShell test workers only'",
+            "installed_product_actions_out_of_scope=$true",
+            "hardware_power_loss_verified=$false",
+            "directory_metadata_durability_verified=$false",
+            "active_same_sid_physical_replacement_prevention_verified=$false",
+        ]),
     ):
         missing = [anchor for anchor in anchors if anchor not in body]
         if missing:
@@ -713,6 +772,11 @@ def transaction_source_status(sources):
         r"(?ms)^      - name: Test retained receipt publication and crash recovery\s*$.*?(?=^      - name: |\Z)",
         ci,
         "CI retained receipt publication step",
+    ).group()
+    ci_installer_receipt_transaction_step = one(
+        r"(?ms)^      - name: Test DP1-N isolated installer and receipt transaction\s*$.*?(?=^      - name: |\Z)",
+        ci,
+        "CI DP1-N isolated installer/receipt transaction step",
     ).group()
     ci_supersession_step = one(
         r"(?ms)^      - name: Test DP1-J isolated receipt-v2 supersession protocol\s*$.*?(?=^      - name: |\Z)",
@@ -814,6 +878,39 @@ def transaction_source_status(sources):
         ".tmp\\dual-product\\dp1-package-receipt-v2-test-store-ps5-$runId" in ci_receipt_store_step and
         ".tmp\\dual-product\\dp1-package-receipt-v2-test-store-ps7-$runId" in ci_receipt_store_step and
         "PS5 retained receipt publication test failed: $LASTEXITCODE" in ci_receipt_store_step
+    )
+    installer_receipt_ps5_ci_invocation = (
+        "          & $ps5 -NoProfile -ExecutionPolicy Bypass -File "
+        ".\\tools\\dual-product\\test-rime-pime-installer-receipt-transaction.ps1 `\n"
+        "            -OutputRoot (Join-Path $pwd \".tmp\\dual-product\\"
+        "dp1-package-receipt-v2-test-dp1n-ci-ps5-$runId\")\n"
+    )
+    installer_receipt_ps7_ci_invocation = (
+        "          .\\tools\\dual-product\\test-rime-pime-installer-receipt-transaction.ps1 `\n"
+        "            -OutputRoot (Join-Path $pwd \".tmp\\dual-product\\"
+        "dp1-package-receipt-v2-test-dp1n-ci-ps7-$runId\")\n"
+    )
+    installer_receipt_transaction_ci_ps5_ps7_present = (
+        ci_installer_receipt_transaction_step.count(
+            "test-rime-pime-installer-receipt-transaction.ps1"
+        ) == 2 and
+        ci_installer_receipt_transaction_step.count("-OutputRoot") == 2 and
+        ".tmp\\dual-product\\dp1-package-receipt-v2-test-dp1n-ci-ps5-$runId" in
+        ci_installer_receipt_transaction_step and
+        ".tmp\\dual-product\\dp1-package-receipt-v2-test-dp1n-ci-ps7-$runId" in
+        ci_installer_receipt_transaction_step and
+        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in
+        ci_installer_receipt_transaction_step and
+        "& $ps5 -NoProfile -ExecutionPolicy Bypass -File" in
+        ci_installer_receipt_transaction_step and
+        ci_installer_receipt_transaction_step.count(installer_receipt_ps5_ci_invocation) == 1 and
+        ci_installer_receipt_transaction_step.count(installer_receipt_ps7_ci_invocation) == 1 and
+        all(parameter.casefold() not in ci_installer_receipt_transaction_step.casefold()
+            for parameter in ("-CheckPattern", "-WorkerCasePath", "-Phase")) and
+        "PowerShell 5.1 DP1-N installer/receipt transaction test failed with exit code $LASTEXITCODE" in
+        ci_installer_receipt_transaction_step and
+        all(re.search(pattern, ci_installer_receipt_transaction_step) is None
+            for pattern in prohibited_dp1i_ci_patterns)
     )
     rime_sid_chain_anchors = ("RequestExecutionLevel user" in nsis and
                               "Function bootstrapTargetUser" in nsis and
@@ -1247,6 +1344,228 @@ def transaction_source_status(sources):
     )) and "Resolve-RimePimeReceiptEvidence" in receipt_v2 and \
         ". (Join-Path $PSScriptRoot 'rime-pime-receipt-v2-store.ps1')" in receipt_v2_module and \
         explicit_receipt_module_surface and retained_receipt_ci_ps5_ps7_present
+    installer_receipt_move = powershell_function(
+        installer_receipt_transaction, "Move-RimePimeInstallerReceiptNoReplace"
+    )
+    installer_receipt_intent = powershell_function(
+        installer_receipt_transaction, "Write-RimePimeInstallerReceiptIntentNoReplace"
+    )
+    installer_receipt_stage = powershell_function(
+        installer_receipt_transaction, "Stage-RimePimeInstallerReceiptPhysicalLeaf"
+    )
+    installer_receipt_complete = powershell_function(
+        installer_receipt_transaction, "Complete-RimePimeInstallerReceiptTransaction"
+    )
+    installer_receipt_publish = powershell_function(
+        installer_receipt_transaction, "Publish-RimePimeInstallerReceiptTransaction"
+    )
+    installer_receipt_worker = one(
+        r"(?ms)^if\(\$WorkerCasePath\)\{.*?^}\s*$",
+        installer_receipt_transaction_test,
+        "installer/receipt transaction fixture worker",
+    ).group()
+    installer_receipt_worker_schema_fields = re.findall(
+        r"'([^']+)'",
+        one(
+            r"(?ms)Assert-RimePimeExactProperties \$Value @\((.*?)\)\s*"
+            r"'transaction worker input'",
+            installer_receipt_worker,
+            "installer/receipt transaction worker exact schema",
+        ).group(1),
+    )
+    installer_receipt_worker_required_fields = re.findall(
+        r"'([^']+)'",
+        one(
+            r"(?ms)foreach\(\$name in @\((.*?)\)\)\{",
+            installer_receipt_worker,
+            "installer/receipt transaction worker required fields",
+        ).group(1),
+    )
+    installer_receipt_write_worker = powershell_function(
+        installer_receipt_transaction_test, "Write-WorkerCase"
+    )
+    installer_receipt_result = one(
+        r"(?ms)^\$result=\[ordered\]@\{.*?^}\s*$",
+        installer_receipt_transaction_test,
+        "installer/receipt transaction dynamic result",
+    ).group()
+    installer_receipt_export_block = one(
+        r"(?ms)^Export-ModuleMember -Function @\(\s*.*?^\)",
+        installer_receipt_transaction_module,
+        "installer/receipt transaction explicit module export",
+    ).group()
+    installer_receipt_module_import_order = tuple(
+        installer_receipt_transaction_module.index(anchor) for anchor in (
+            "rime-pime-nsis-toolchain-closure.psm1",
+            "rime-pime-package-staging.psm1",
+            "rime-pime-nsis-stage.psm1",
+            "rime-pime-staged-installer-build.psm1",
+            "rime-pime-package-receipt-v2.ps1",
+            "rime-pime-receipt-v2-store.ps1",
+            "rime-pime-installer-receipt-transaction.ps1",
+        )
+    )
+    installer_receipt_fixture_source_anchors_present = all(
+        anchor in installer_receipt_transaction for anchor in (
+            "Definitions-only, fixture-gated installer/receipt identity replacement",
+            "Assert-RimePimeInstallerReceiptTransactionFixtureRoot $RepoRoot",
+            "Assert-RimePimeNoReparsePath $path",
+            "dp1-package-receipt-v2-test-dp1n-",
+        )
+    ) and all(anchor in installer_receipt_transaction_test for anchor in (
+        "Transaction worker is fixture-only.",
+        "actual-checkout-root-is-rejected-before-any-transaction-access",
+        "fixture_only=$true",
+        "installed_product_actions_out_of_scope=$true",
+        "registry_and_default_input_method_actions_out_of_scope=$true",
+        "production_user_data_actions_out_of_scope=$true",
+    ))
+    installer_receipt_preintent_durable_stage_present = (
+        installer_receipt_stage.index("$destination.Flush($true)") <
+        installer_receipt_stage.index("Move-RimePimeInstallerReceiptNoReplace $copy $stage") <
+        installer_receipt_stage.rindex(
+            "Open-RimePimeInstallerReceiptPhysicalLeaf $stage $Sha256 $Bytes 'staged new installer'"
+        ) and
+        installer_receipt_publish.index(
+            "$null=Stage-RimePimeInstallerReceiptPhysicalLeaf $newObject.Lease.Stream"
+        ) < installer_receipt_publish.index(
+            "Write-RimePimeInstallerReceiptIntentNoReplace $pending $intent"
+        )
+    )
+    installer_receipt_unique_copy_checkpoints_present = (
+        installer_receipt_intent.index("('.rime-pime-intent-'+[guid]::NewGuid().ToString('N')+'.tmp')") <
+        installer_receipt_intent.index(
+            "Invoke-RimePimeInstallerReceiptTransactionCheckpoint 'intent-copy'"
+        ) < installer_receipt_intent.index(
+            "Move-RimePimeInstallerReceiptNoReplace $temp $Pending"
+        ) and
+        installer_receipt_stage.index("('.rime-pime-copy-'+[guid]::NewGuid().ToString('N')+'.tmp')") <
+        installer_receipt_stage.index(
+            "Invoke-RimePimeInstallerReceiptTransactionCheckpoint 'installer-copy'"
+        ) < installer_receipt_stage.index(
+            "Move-RimePimeInstallerReceiptNoReplace $copy $stage"
+        ) and
+        all(anchor in installer_receipt_transaction_test for anchor in (
+            "Mid-copy hard exit did not retain exactly one unique attempt leaf.",
+            "Mid-copy hard exit did not retain exactly one unique intent leaf.",
+            "'objects','installer-copy','installer-temp','intent-copy','intent-temp'",
+        ))
+    )
+    installer_receipt_no_replace_present = (
+        installer_receipt_transaction.count("[YimeReceiptStorage.Native]::MoveFileEx(") == 1 and
+        "[YimeReceiptStorage.Native]::MoveFileEx($Source,$Destination,8)" in installer_receipt_move and
+        "Deliberately omit REPLACE_EXISTING." in installer_receipt_move and
+        len(re.findall(
+            r"(?m)^\s+Move-RimePimeInstallerReceiptNoReplace\s+",
+            installer_receipt_transaction,
+        )) == 4 and
+        "Move-RimePimeReceiptDurableFile" not in installer_receipt_transaction and
+        "Move-Item" not in installer_receipt_transaction and
+        all(anchor in installer_receipt_transaction_test for anchor in (
+            "installer-no-replace-preserves-foreign-before-move-race",
+            "installer-no-replace-preserves-exact-before-move-race",
+            "completion-no-replace-rename-preserves-pending-file-id",
+        ))
+    )
+    installer_receipt_completed_preflight_present = (
+        installer_receipt_complete.index(
+            "$completed=Assert-RimePimeInstallerReceiptCompletionTargetAbsent $Pending $intent.operation_id"
+        ) < installer_receipt_complete.index(
+            "$bindings=Read-RimePimeInstallerReceiptTransactionBindings $root $intent"
+        ) < installer_receipt_complete.index(
+            "Write-RimePimeReceiptAtomicBytes $Canonical $bindings.NewReceiptBytes"
+        ) and
+        installer_receipt_publish.index(
+            "$null=Assert-RimePimeInstallerReceiptCompletionTargetAbsent $pending $intent.operation_id"
+        ) < installer_receipt_publish.index(
+            "$null=Stage-RimePimeInstallerReceiptPhysicalLeaf $newObject.Lease.Stream"
+        ) < installer_receipt_publish.index(
+            "Write-RimePimeInstallerReceiptIntentNoReplace $pending $intent"
+        ) and
+        "foreign-completion-leaf-is-rejected-before-any-transaction-write" in
+        installer_receipt_transaction_test
+    )
+    installer_receipt_physical_leases_present = (
+        installer_receipt_complete.index(
+            "$oldPhysical=Open-RimePimeInstallerReceiptPhysicalLeaf $bindings.OldInstaller.Path"
+        ) < installer_receipt_complete.index(
+            "$newPhysical=Open-RimePimeInstallerReceiptPhysicalLeaf $bindings.NewInstaller.Path"
+        ) < installer_receipt_complete.index(
+            "Write-RimePimeReceiptAtomicBytes $Canonical $bindings.NewReceiptBytes"
+        ) < installer_receipt_complete.index(
+            "Move-RimePimeInstallerReceiptNoReplace $Pending $completed"
+        ) < installer_receipt_complete.index(
+            "if($null -ne $newPhysical){$newPhysical.Lease.Stream.Dispose()}"
+        ) and
+        installer_receipt_complete.index(
+            "Move-RimePimeInstallerReceiptNoReplace $Pending $completed"
+        ) < installer_receipt_complete.index(
+            "if($null -ne $oldPhysical){$oldPhysical.Lease.Stream.Dispose()}"
+        )
+    )
+    installer_receipt_exact_two_api_surface = (
+        installer_receipt_transaction_module.count("Export-ModuleMember") == 1 and
+        re.findall(r"'([^']+)'", installer_receipt_export_block) == [
+            "Publish-RimePimeInstallerReceiptTransaction",
+            "Resume-RimePimeInstallerReceiptTransaction",
+        ] and
+        installer_receipt_module_import_order == tuple(sorted(installer_receipt_module_import_order)) and
+        "module-exports-only-two-isolated-transaction-apis" in installer_receipt_transaction_test
+    )
+    installer_receipt_nondurable_historical_v1_coverage_present = (
+        installer_receipt_transaction_test.count(
+            "Check 'non-durable-old-clean-publish-binds-distinct-retention-and-history' {"
+        ) == 1 and
+        installer_receipt_transaction_test.count(
+            "Check 'non-durable-old-intent-hard-exit-resumes-in-fresh-process' {"
+        ) == 1 and
+        installer_receipt_worker_schema_fields == [
+            "schema_version", "Root", "NextDigest", "Before", "HistoricalV1Path",
+        ] and
+        installer_receipt_worker_required_fields == [
+            "Root", "NextDigest", "Before", "HistoricalV1Path",
+        ] and
+        installer_receipt_worker.count("-HistoricalV1Path $case.HistoricalV1Path") == 2 and
+        "HistoricalV1Path=[string]$Case.HistoricalV1Path" in installer_receipt_write_worker and
+        "non_durable_old_retention_conversion_and_recovery=(Test-NamedChecksPassed @(" in
+        installer_receipt_result and
+        "'non-durable-old-clean-publish-binds-distinct-retention-and-history'" in
+        installer_receipt_result and
+        "'non-durable-old-intent-hard-exit-resumes-in-fresh-process'" in
+        installer_receipt_result
+    )
+    installer_receipt_dynamic_result_and_limitations_present = (
+        all(anchor in installer_receipt_transaction_test for anchor in (
+            "$fullSuiteExecuted=(($selectedNames -join \"`n\") -ceq ($expectedNames -join \"`n\"))",
+            "$allChecksPassed=($failed.Count -eq 0)",
+            "$fullMatrixVerified=($fullSuiteExecuted -and $allChecksPassed)",
+            "full_suite_executed=[bool]$fullSuiteExecuted",
+            "all_executed_checks_passed=[bool]$allChecksPassed",
+            "full_transaction_matrix=[bool]$fullMatrixVerified",
+            "hardware_power_loss_verified=$false",
+            "directory_metadata_durability_verified=$false",
+            "active_same_sid_physical_replacement_prevention_verified=$false",
+        )) and all(promoted not in installer_receipt_transaction_test for promoted in (
+            "full_suite_executed=$true",
+            "all_executed_checks_passed=$true",
+            "full_transaction_matrix=$true",
+            "hardware_power_loss_verified=$true",
+            "directory_metadata_durability_verified=$true",
+            "active_same_sid_physical_replacement_prevention_verified=$true",
+        ))
+    )
+    installer_receipt_transaction_isolated_contract_wired = all((
+        installer_receipt_fixture_source_anchors_present,
+        installer_receipt_preintent_durable_stage_present,
+        installer_receipt_unique_copy_checkpoints_present,
+        installer_receipt_no_replace_present,
+        installer_receipt_completed_preflight_present,
+        installer_receipt_physical_leases_present,
+        installer_receipt_exact_two_api_surface,
+        installer_receipt_nondurable_historical_v1_coverage_present,
+        installer_receipt_dynamic_result_and_limitations_present,
+        installer_receipt_transaction_ci_ps5_ps7_present,
+    ))
     # These booleans classify source anchors only. This function never executes
     # the PowerShell contracts, an installer, a native probe, or installed code.
     if (not rime_sid_chain_anchors or not rime_target_user_cleanup_anchors or
@@ -1283,6 +1602,7 @@ def transaction_source_status(sources):
             not canonical_v2_binds_postbuild_source_anchors_present or
             not synthetic_postbuild_ci_is_host_tool_independent or
             not synthetic_dp1h_ci_contracts_present or
+            not installer_receipt_transaction_isolated_contract_wired or
             'InstallLayoutOrTip(w "${YIME_TIP}"' not in nsis or
             'Get-ChildItem -LiteralPath "Registry::HKEY_USERS"' in pime_cleanup):
         fail("Rime/PIME registration/SID/transaction status changed; dedicated review required")
@@ -1374,6 +1694,20 @@ def transaction_source_status(sources):
         "rime_pime_canonical_receipt_v2_published_by_baseline": canonical_receipt_v2_published_by_baseline,
         "rime_pime_canonical_receipt_v2_evidence_durable": False,
         "rime_pime_actual_canonical_migrated_to_current_build_evidence": False,
+        "rime_pime_installer_receipt_transaction_fixture_source_anchors_present": installer_receipt_fixture_source_anchors_present,
+        "rime_pime_installer_receipt_transaction_preintent_durable_stage_present": installer_receipt_preintent_durable_stage_present,
+        "rime_pime_installer_receipt_transaction_unique_copy_checkpoints_present": installer_receipt_unique_copy_checkpoints_present,
+        "rime_pime_installer_receipt_transaction_no_replace_present": installer_receipt_no_replace_present,
+        "rime_pime_installer_receipt_transaction_completed_preflight_present": installer_receipt_completed_preflight_present,
+        "rime_pime_installer_receipt_transaction_physical_leases_present": installer_receipt_physical_leases_present,
+        "rime_pime_installer_receipt_transaction_exact_two_api_surface": installer_receipt_exact_two_api_surface,
+        "rime_pime_installer_receipt_transaction_nondurable_historical_v1_coverage_present": installer_receipt_nondurable_historical_v1_coverage_present,
+        "rime_pime_installer_receipt_transaction_dynamic_result_and_limitations_present": installer_receipt_dynamic_result_and_limitations_present,
+        "rime_pime_installer_receipt_transaction_ci_ps5_ps7_present": installer_receipt_transaction_ci_ps5_ps7_present,
+        "rime_pime_installer_receipt_transaction_isolated_contract_wired": installer_receipt_transaction_isolated_contract_wired,
+        "rime_pime_installer_receipt_transaction_test_executed_by_baseline": False,
+        "rime_pime_installer_receipt_transaction_actual_canonical_migration_executed": False,
+        "rime_pime_installer_receipt_transaction_full_real_transaction_passed": False,
         "rime_pime_installer_identity_replacement_transaction_wired": False,
         "rime_pime_v2_to_v2_supersession_wired": v2_to_v2_supersession_wired,
         "rime_pime_retained_receipt_ci_ps5_ps7_present": retained_receipt_ci_ps5_ps7_present,
@@ -1529,6 +1863,9 @@ def source_baseline(root: Path = ROOT):
         {"id": "DP1-PIME-RECEIPT-08", "path": "tools/dual-product/rime-pime-package-receipt-v2.ps1",
           "status": "retained_v2_supersession_and_current_interval_admission_wired_canonical_migration_pending",
           "reason": "The strict receipt-v2 reader retains historical build-result-v2 read compatibility while new preparation and changed receipt supersession require the tagged membership-interval build evidence. Publish and recovery both guard that boundary. The receipt-only store retains evidence by digest, shares the publication lock and recovers a persistent intent. This source baseline does not execute the PS5/PS7 contracts or migrate the actual canonical receipt; hardware power-loss acceptance and installer-identity replacement remain outside this receipt-only flow."},
+        {"id": "DP1-PIME-INSTALLER-RECEIPT-09", "path": "tools/dual-product/rime-pime-installer-receipt-transaction.ps1",
+          "status": "isolated_installer_receipt_transaction_contract_wired_actual_canonical_migration_and_full_real_transaction_pending",
+          "reason": "The fixture-gated source contract stages the new installer durably before intent, uses unique installer/intent copy checkpoints and no-replace MoveFileEx publication, preflights completed leaves, holds old/new physical leases through completion, covers non-durable old-receipt retention with an exact HistoricalV1Path worker binding, exports exactly two APIs, and has unfiltered PS5/PS7 full-suite CI commands with dynamic results and explicit limitations. This Python baseline does not execute that PowerShell suite, migrate the actual canonical receipt, wire or run an installer, or prove a full real transaction, hardware power-loss directory durability, or active same-SID physical replacement prevention."},
     ]
     unchanged = all(digest(child(root, path)) == expected for path, expected in hashes.items())
     if not unchanged:

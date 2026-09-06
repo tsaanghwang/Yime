@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 125)
-        self.assertEqual(len(self.receipt["source_manifest"]), 132)
+        self.assertEqual(len(contract["source_paths"]), 128)
+        self.assertEqual(len(self.receipt["source_manifest"]), 135)
         for path in (
             "tools/dual-product/rime-pime-nsis-toolchain-closure.ps1",
             "tools/dual-product/rime-pime-nsis-toolchain-closure.psm1",
@@ -165,6 +165,9 @@ class OwnershipTests(unittest.TestCase):
             "tools/dual-product/finalize-rime-pime-package-receipt-v2.ps1",
             "tools/dual-product/test-rime-pime-package-receipt-v2.ps1",
             "tools/dual-product/test-rime-pime-receipt-no-downgrade.ps1",
+            "tools/dual-product/rime-pime-installer-receipt-transaction.ps1",
+            "tools/dual-product/rime-pime-installer-receipt-transaction.psm1",
+            "tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1",
             "tools/dual-product/test-rime-pime-transaction-replay-model.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.psm1",
@@ -390,6 +393,140 @@ class OwnershipTests(unittest.TestCase):
         self.assertFalse(status["rime_pime_static_archive_exact_gate_wired_into_builder"])
         self.assertFalse(status["rime_pime_delivery_admitted"])
         self.assertTrue(status["rime_pime_synthetic_dp1h_ci_contracts_present"])
+
+    def test_dp1n_isolated_installer_receipt_contract_is_wired_without_real_promotion(self):
+        status = self.receipt["transaction_source"]
+        for field in (
+            "rime_pime_installer_receipt_transaction_fixture_source_anchors_present",
+            "rime_pime_installer_receipt_transaction_preintent_durable_stage_present",
+            "rime_pime_installer_receipt_transaction_unique_copy_checkpoints_present",
+            "rime_pime_installer_receipt_transaction_no_replace_present",
+            "rime_pime_installer_receipt_transaction_completed_preflight_present",
+            "rime_pime_installer_receipt_transaction_physical_leases_present",
+            "rime_pime_installer_receipt_transaction_exact_two_api_surface",
+            "rime_pime_installer_receipt_transaction_nondurable_historical_v1_coverage_present",
+            "rime_pime_installer_receipt_transaction_dynamic_result_and_limitations_present",
+            "rime_pime_installer_receipt_transaction_ci_ps5_ps7_present",
+            "rime_pime_installer_receipt_transaction_isolated_contract_wired",
+        ):
+            with self.subTest(field=field):
+                self.assertTrue(status[field])
+        for field in (
+            "rime_pime_installer_receipt_transaction_test_executed_by_baseline",
+            "rime_pime_installer_receipt_transaction_actual_canonical_migration_executed",
+            "rime_pime_installer_receipt_transaction_full_real_transaction_passed",
+            "rime_pime_installer_identity_replacement_transaction_wired",
+            "rime_pime_actual_canonical_migrated_to_current_build_evidence",
+            "rime_pime_real_installer_transaction_passed",
+        ):
+            with self.subTest(field=field):
+                self.assertFalse(status[field])
+
+    def test_dp1n_source_contract_anchor_tamper_fails_closed(self):
+        cases = (
+            ("tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1",
+             "fixture_only=$true", "fixture_only=$false"),
+            ("tools/dual-product/rime-pime-installer-receipt-transaction.ps1",
+             "$null=Stage-RimePimeInstallerReceiptPhysicalLeaf $newObject.Lease.Stream",
+             "$null=Write-Output $newObject.Lease.Stream"),
+            ("tools/dual-product/rime-pime-installer-receipt-transaction.ps1",
+             "Invoke-RimePimeInstallerReceiptTransactionCheckpoint 'intent-copy'",
+             "Invoke-RimePimeInstallerReceiptTransactionCheckpoint 'intent-copy-removed'"),
+            ("tools/dual-product/rime-pime-installer-receipt-transaction.ps1",
+             "Invoke-RimePimeInstallerReceiptTransactionCheckpoint 'installer-copy'",
+             "Invoke-RimePimeInstallerReceiptTransactionCheckpoint 'installer-copy-removed'"),
+            ("tools/dual-product/rime-pime-installer-receipt-transaction.ps1",
+             "[YimeReceiptStorage.Native]::MoveFileEx($Source,$Destination,8)",
+             "[YimeReceiptStorage.Native]::MoveFileEx($Source,$Destination,9)"),
+            ("tools/dual-product/rime-pime-installer-receipt-transaction.ps1",
+             "$completed=Assert-RimePimeInstallerReceiptCompletionTargetAbsent $Pending $intent.operation_id",
+             "$completed=Get-RimePimeInstallerReceiptCompletedPath $Pending $intent.operation_id"),
+            ("tools/dual-product/rime-pime-installer-receipt-transaction.ps1",
+             "$oldPhysical=Open-RimePimeInstallerReceiptPhysicalLeaf $bindings.OldInstaller.Path",
+             "$oldPhysical=Get-YimePimePayloadFileRecord $bindings.OldInstaller.Path"),
+            ("tools/dual-product/rime-pime-installer-receipt-transaction.ps1",
+             "$newPhysical=Open-RimePimeInstallerReceiptPhysicalLeaf $bindings.NewInstaller.Path",
+             "$newPhysical=Get-YimePimePayloadFileRecord $bindings.NewInstaller.Path"),
+            ("tools/dual-product/rime-pime-installer-receipt-transaction.psm1",
+             "    'Resume-RimePimeInstallerReceiptTransaction'",
+             "    'Complete-RimePimeInstallerReceiptTransaction'"),
+            ("tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1",
+             "full_transaction_matrix=[bool]$fullMatrixVerified",
+             "full_transaction_matrix=$true"),
+            ("tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1",
+             "hardware_power_loss_verified=$false",
+             "hardware_power_loss_verified=$true"),
+            ("tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1",
+             "Check 'non-durable-old-clean-publish-binds-distinct-retention-and-history' {",
+             "Check 'removed-non-durable-old-clean-publish' {"),
+            ("tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1",
+             "Check 'non-durable-old-intent-hard-exit-resumes-in-fresh-process' {",
+             "Check 'removed-non-durable-old-intent-resume' {"),
+            ("tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1",
+             "'schema_version','Root','NextDigest','Before','HistoricalV1Path'",
+             "'schema_version','Root','NextDigest','Before'"),
+            ("tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1",
+             "'schema_version','Root','NextDigest','Before','HistoricalV1Path'",
+             "'schema_version','Root','NextDigest','Before','HistoricalV1Path','Unexpected'"),
+            ("tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1",
+             "HistoricalV1Path=[string]$Case.HistoricalV1Path",
+             "HistoricalV1Path=''"),
+            ("tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1",
+             "-HistoricalV1Path $case.HistoricalV1Path",
+             "-HistoricalV1Path ''"),
+            ("tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1",
+             "non_durable_old_retention_conversion_and_recovery=(Test-NamedChecksPassed @(",
+             "non_durable_old_retention_conversion_and_recovery=$true #"),
+        )
+        for path, old, new in cases:
+            sources = self.maintenance_sources()
+            self.assertIn(old, sources[path])
+            sources[path] = sources[path].replace(old, new, 1)
+            with self.subTest(path=path, old=old), self.assertRaises(ValueError):
+                subject.transaction_source_status(sources)
+
+    def test_dp1n_ci_requires_ps5_ps7_fixture_only_commands(self):
+        sources = self.maintenance_sources()
+        sources[".github/workflows/ci.yaml"] = sources[".github/workflows/ci.yaml"].replace(
+            ".tmp\\dual-product\\dp1-package-receipt-v2-test-dp1n-ci-ps7-$runId",
+            ".tmp\\dual-product\\dp1-package-receipt-v2-test-dp1n-ci-ps5-$runId",
+            1,
+        )
+        with self.assertRaisesRegex(ValueError, "dedicated review required"):
+            subject.transaction_source_status(sources)
+
+        ps7_output = (
+            '            -OutputRoot (Join-Path $pwd "'
+            '.tmp\\dual-product\\dp1-package-receipt-v2-test-dp1n-ci-ps7-$runId")'
+        )
+        for argument in (
+            "-CheckPattern 'clean*'",
+            "-WorkerCasePath '.tmp\\dual-product\\foreign\\worker.json'",
+            "-Phase recover",
+        ):
+            sources = self.maintenance_sources()
+            self.assertIn(ps7_output, sources[".github/workflows/ci.yaml"])
+            sources[".github/workflows/ci.yaml"] = sources[".github/workflows/ci.yaml"].replace(
+                ps7_output,
+                ps7_output + " `\n            " + argument,
+                1,
+            )
+            with self.subTest(argument=argument), self.assertRaisesRegex(
+                    ValueError, "dedicated review required"):
+                subject.transaction_source_status(sources)
+
+        sources = self.maintenance_sources()
+        invocation = (
+            "          .\\tools\\dual-product\\test-rime-pime-installer-receipt-transaction.ps1 `\n"
+        )
+        self.assertIn(invocation, sources[".github/workflows/ci.yaml"])
+        sources[".github/workflows/ci.yaml"] = sources[".github/workflows/ci.yaml"].replace(
+            invocation,
+            "          Start-Process forbidden-product.exe\n" + invocation,
+            1,
+        )
+        with self.assertRaisesRegex(ValueError, "dedicated review required"):
+            subject.transaction_source_status(sources)
 
     def test_dp1j_fixtures_are_source_contracts_not_product_wiring(self):
         status = self.receipt["transaction_source"]
@@ -637,9 +774,14 @@ class OwnershipTests(unittest.TestCase):
                          "fresh_compiler_stage_and_strict_interval_build_admission_wired_full_product_rebuild_and_durable_receipt_pending")
         self.assertEqual(statuses["DP1-PIME-RECEIPT-08"],
                          "retained_v2_supersession_and_current_interval_admission_wired_canonical_migration_pending")
+        self.assertEqual(
+            statuses["DP1-PIME-INSTALLER-RECEIPT-09"],
+            "isolated_installer_receipt_transaction_contract_wired_actual_canonical_migration_and_full_real_transaction_pending",
+        )
         self.assertEqual(set(statuses), {
             "DP1-PIME-DIRECTED-EXIT-04", "DP1-PIME-REGISTRY-05", "DP1-PIME-TRANSACTION-06",
             "DP1-PIME-COMPILER-INPUT-07", "DP1-PIME-RECEIPT-08",
+            "DP1-PIME-INSTALLER-RECEIPT-09",
         })
 
     def test_target_sid_bootstrap_cannot_revert_to_manifest_auto_elevation(self):

@@ -301,6 +301,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PS5 retained receipt publication test failed: $LASTEXITCODE" }
           .\tools\dual-product\test-rime-pime-receipt-v2-store.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-store-ps7-$runId")
+      - name: Test DP1-N isolated installer and receipt transaction
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-installer-receipt-transaction.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-dp1n-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-N installer/receipt transaction test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-installer-receipt-transaction.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-dp1n-ci-ps7-$runId")
       - name: Test canonical receipt no-downgrade contract
         shell: pwsh
         run: |

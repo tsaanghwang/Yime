@@ -56,14 +56,22 @@ $requiredBuildLogicSources=@(
     'tools/dual-product/rime-pime-postbuild-toolchain-lock.json',
     'tools/dual-product/rime-pime-postbuild-toolchain-lock.json.sha256'
 ) | Sort-Object
-function New-Case([string]$Name){
+function New-Case(
+    [string]$Name,
+    [string]$ProductVersion='1.0-test',
+    [ValidateRange(0,255)][int]$InstallerSeed=0
+){
+    if($ProductVersion -cnotmatch '^[A-Za-z0-9][A-Za-z0-9.+_-]{0,63}$'){
+        throw 'Fixture product version is invalid.'
+    }
     $caseRoot=Join-Path $output ('cases\'+$Name);$root=Join-Path $caseRoot 'repo'
     $installerDir=Join-Path $root 'installer'
     $work=Join-Path $root '.tmp\dual-product\dp1-package-build-stage-fixture'
     $evidence=Join-Path $work 'evidence'
     New-Item -ItemType Directory -Path $installerDir,$evidence,(Join-Path $root '.tmp\dual-product') -Force|Out-Null
     $source=Join-Path $installerDir 'installer.nsi';[IO.File]::WriteAllText($source,'disabled fixture source',[Text.UTF8Encoding]::new($false))
-    $installer=Join-Path $installerDir 'YIME-1.0-test-setup.exe';[IO.File]::WriteAllBytes($installer,(New-Object byte[] 65536))
+    $installerLeaf='YIME-'+$ProductVersion+'-setup.exe'
+    $installer=Join-Path $installerDir $installerLeaf;[IO.File]::WriteAllBytes($installer,(New-Object byte[] 65536))
     $installerHash=Hash $installer;$sourceHash=Hash $source
     $planPath=Join-Path $installerDir 'package-plan.json'
     $artifactSpecs=@(Get-RimePimePackageArtifactSpecs -ArchitectureSet @('x86','x64'))
@@ -159,7 +167,7 @@ function New-Case([string]$Name){
     $goInventoryDigest=Seal $goInventory $goInventoryPath
     $payloadSpecPath=Join-Path $evidence 'payload-spec.json'
     $payloadSpec=[pscustomobject][ordered]@{
-        schema_version='yime-rime-pime-payload-spec-v1';product='rime-pime';product_version='1.0-test'
+        schema_version='yime-rime-pime-payload-spec-v1';product='rime-pime';product_version=$ProductVersion
         package_profile='x86-x64-v1';architectures=@('x86','x64');phase='declared-copy-inputs-before-generated-output'
         hash_algorithm='sha256';directory_policy='derived-nonempty-only-v1';limits=[pscustomobject][ordered]@{
             max_files=512;max_directories=256;max_total_bytes=536870912;max_file_bytes=134217728;max_path_chars=512;max_path_depth=16
@@ -173,7 +181,7 @@ function New-Case([string]$Name){
     $payloadSpecDigest=Seal $payloadSpec $payloadSpecPath
     $manifestPath=Join-Path $evidence 'package-stage-content.json'
     $manifest=[pscustomobject][ordered]@{
-        schema_version='yime-rime-pime-copied-content-v1';product='rime-pime';product_version='1.0-test'
+        schema_version='yime-rime-pime-copied-content-v1';product='rime-pime';product_version=$ProductVersion
         package_profile='x86-x64-v1';architectures=@('x86','x64');phase='copied-inputs-awaiting-generated-output'
         hash_algorithm='sha256';directory_policy='derived-nonempty-only-v1';package_plan_sha256=$planDigest
         payload_spec_sha256=$payloadSpecDigest;content_tree_sha256=$contentTreeDigest;directories=@($manifestDirectories)
@@ -193,6 +201,10 @@ function New-Case([string]$Name){
         [Array]::Copy($bindingBytes,0,$installerBytes,$bindingOffset,$bindingBytes.Length)
         $bindingOffset+=$bindingBytes.Length+16
     }
+    # A fixture-only byte outside the four raw-binding regions lets later
+    # transaction tests build two distinct installer identities without
+    # weakening any receipt or embedded-digest relationship.
+    $installerBytes[4096]=[byte]$InstallerSeed
     [IO.File]::WriteAllBytes($installer,$installerBytes);$installerHash=Hash $installer
     $payloadReceiptPath=Join-Path $evidence 'payload-files-receipt.json'
     $payloadReceipt=[pscustomobject][ordered]@{
@@ -213,7 +225,7 @@ function New-Case([string]$Name){
         closure_scope='declared-packaged-product-pe-inputs-only-not-installed-payload';architectures=@('x86','x64')
         package_plan_path='installer/package-plan.json';package_plan_sha256=$planDigest;nsis_profile='x86-x64-v1'
         installer_source_path='installer/installer.nsi';installer_source_sha256=$sourceHash
-        installer_path='installer/YIME-1.0-test-setup.exe';installer_size=65536;installer_sha256=$installerHash
+        installer_path=('installer/'+$installerLeaf);installer_size=65536;installer_sha256=$installerHash
         sealed_at_utc=[DateTime]::UtcNow.ToString('o')
     }
     $v1Digest=Seal $v1 $v1Path
@@ -253,7 +265,7 @@ function New-Case([string]$Name){
         full_nsis_toolchain_input_closure=$false
     }
     $build=[pscustomobject][ordered]@{
-        schema_version=$currentBuildSchema;product='rime-pime';product_version='1.0-test'
+        schema_version=$currentBuildSchema;product='rime-pime';product_version=$ProductVersion
         package_profile='x86-x64-v1';architectures=@('x86','x64');package_plan_sha256=$planDigest
         payload_spec_sha256=$payloadSpecDigest;content_manifest_sha256=$manifestDigest;content_tree_sha256=$contentTreeDigest;payload_nsh_sha256=$includeHash
         copied_file_count=[int]$includeDocument.UniqueStageFileCount;payload_file_count=[int]$includeDocument.PayloadCount
@@ -280,7 +292,7 @@ function New-Case([string]$Name){
         makensis_path=(Join-Path $compilerStagePath 'Bin\makensis.exe');makensis_sha256=$makensisDigest;makensis_path_lease_verified=$true
         unsigned_disabled_build=$true;signing_hook_processes_executed=$false
         signing_host_and_release_signing_pending=$true;path_searched_signing_host_not_executed=$true
-        candidate_installer_path=(Join-Path $work 'candidate\YIME-1.0-test-setup.exe')
+        candidate_installer_path=(Join-Path $work ('candidate\'+$installerLeaf))
         candidate_installer_sha256=$installerHash;candidate_installer_bytes=65536;published_installer_path=$installer
         package_build_receipt_path=$v1Path;package_build_receipt_sha256=$v1Digest
         publication_status_at_evidence_seal='prepared-awaiting-receipt-sidecar-commit-marker'
@@ -299,7 +311,7 @@ function New-Case([string]$Name){
     $null=Seal $build $buildPath
     $postPath=Join-Path $evidence 'postbuild-result.json'
     $post=[pscustomobject][ordered]@{
-        schema_version='yime-rime-pime-postbuild-extraction-v2';product='rime-pime';product_version='1.0-test'
+        schema_version='yime-rime-pime-postbuild-extraction-v2';product='rime-pime';product_version=$ProductVersion
         package_profile='x86-x64-v1';architectures=@('x86','x64');package_plan_sha256=$planDigest
         content_manifest_sha256=$manifestDigest;content_tree_sha256=$contentTreeDigest;payload_nsh_receipt_sha256=$payloadReceiptDigest
         payload_nsh_sha256=$includeHash;installer=[pscustomobject]@{

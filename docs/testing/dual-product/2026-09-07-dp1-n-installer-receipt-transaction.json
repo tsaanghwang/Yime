@@ -1,0 +1,185 @@
+{
+  "schema_version": "yime-dual-product-dp1-n-installer-receipt-transaction-evidence-v1",
+  "affected_product": "rime-pime",
+  "generated_at_utc": "2026-09-06T20:02:35.3592653Z",
+  "source_head_before_change": "ede94de3f7b6c248f6ac9773c6f169ca4000f710",
+  "outcome": {
+    "fixture_only_installer_receipt_transaction_contract": true,
+    "exact_full_suite_ps5": true,
+    "exact_full_suite_ps7": true,
+    "checks_per_shell": 45,
+    "distinct_versioned_installer_paths_and_sha256": true,
+    "non_durable_old_retention_conversion_and_historical_v1": true,
+    "pre_intent_durable_installer_stage": true,
+    "post_intent_roll_forward_only": true,
+    "hard_exit_checkpoint_state_matrix": true,
+    "installer_target_no_replace_races": true,
+    "completion_no_replace_file_identity": true,
+    "old_installer_preserved": true,
+    "actual_checkout_canonical_pair_unchanged": true
+  },
+  "passing_suites": [
+    {
+      "name": "installer-receipt-transaction-ps5",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-dp1n-final-ps5-c/transaction-result.json",
+      "sha256": "24e6f4125dc4ecfa33df6d90fc1aec528d7b6582c20e390a78a6ac879b0c8d2f",
+      "passed": 45,
+      "total": 45,
+      "full_suite_executed": true,
+      "all_reviewed_verified_fields": true
+    },
+    {
+      "name": "installer-receipt-transaction-ps7",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-dp1n-final-ps7-c/transaction-result.json",
+      "sha256": "ec6f473d7893600689b1abb44f5ad4c3a2eb3b956b4c9bcbabcedd072f532d12",
+      "passed": 45,
+      "total": 45,
+      "full_suite_executed": true,
+      "all_reviewed_verified_fields": true
+    },
+    {
+      "name": "receipt-v2-ps5",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-dp1n-regression-ps5/result.json",
+      "sha256": "8dd854bfb07cbe0acc3c32800ee566e1d00a6b48cfc9fd1e00cebe285bd5853c",
+      "passed": 95,
+      "total": 95
+    },
+    {
+      "name": "receipt-v2-ps7",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-dp1n-regression-ps7/result.json",
+      "sha256": "eb957e168b76da51dbeaad50a3fee2790cbfadd753ac5b8b787f816b4863ce9d",
+      "passed": 95,
+      "total": 95
+    },
+    {
+      "name": "retained-receipt-store-ps5",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-store-dp1n-ps5/store-result.json",
+      "sha256": "095f2d60d061b4f32afcca00e7b8f970a267765bf11927d337e9817e693fbff2",
+      "passed": 41,
+      "total": 41
+    },
+    {
+      "name": "retained-receipt-store-ps7",
+      "path": ".tmp/dual-product/dp1-package-receipt-v2-test-store-dp1n-ps7/store-result.json",
+      "sha256": "9552db12d3c1774e70255df3846826c0e8f659b66b4827d71b57e6948c28543c",
+      "passed": 41,
+      "total": 41
+    },
+    {
+      "name": "receipt-no-downgrade-ps5",
+      "path": ".tmp/dual-product/dp1-receipt-no-downgrade-dp1n-ps5/result.json",
+      "sha256": "2046b3b2ce7039299836ce8e3741c0c92dff7eecf50b4be121da37b2ec835187",
+      "passed": 7,
+      "total": 7
+    },
+    {
+      "name": "receipt-no-downgrade-ps7",
+      "path": ".tmp/dual-product/dp1-receipt-no-downgrade-dp1n-ps7/result.json",
+      "sha256": "1b1fa7a5c1c9b7ded7a7136940478436622cfe1f2ca64b1707b5724f647f7b9d",
+      "passed": 7,
+      "total": 7
+    },
+    {
+      "name": "dual-product-source-baseline",
+      "path": ".tmp/dual-product/dp1-dp1n-final-c/baseline.json",
+      "sha256": "cd50d703d0e229ed65d5f7693980673db31e1e84b1deb8bd76264ed2cc2e801f",
+      "source_count": 135,
+      "fixture_tests_passed": 55,
+      "pending_count": 6
+    }
+  ],
+  "passing_commands_without_result_artifact": [
+    {
+      "name": "build-guards-ps5",
+      "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/test-build-guards.ps1 -SkipPackagedRime",
+      "exit_code": 0
+    },
+    {
+      "name": "build-guards-ps7",
+      "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File tools/test-build-guards.ps1 -SkipPackagedRime",
+      "exit_code": 0
+    },
+    {
+      "name": "baseline-unit-tests",
+      "command": "bundled-python tools/dual-product/test_baseline.py",
+      "exit_code": 0,
+      "passed": 55,
+      "total": 55
+    }
+  ],
+  "validation_corrections": [
+    {
+      "kind": "coverage-gap",
+      "outcome": "fixed-before-final-runs",
+      "detail": "The first matrix revision used an already-durable old canonical receipt. Two required checks were added for a genuinely non-durable old receipt, a distinct retention-only digest, HistoricalV1Path retention, and fresh-process recovery after durable intent. Incomplete runs were interrupted and are not passing evidence."
+    },
+    {
+      "kind": "test-harness-compatibility",
+      "outcome": "fixed-before-final-runs",
+      "failed_result_path": ".tmp/dual-product/dp1-package-receipt-v2-test-dp1n-final-ps5-b/transaction-result.json",
+      "failed_result_sha256": "51f39b1c8f752d6c094b1ad701fd82738597c106ce03a90d3341e66e80f5cb15",
+      "failed": 1,
+      "passed": 44,
+      "detail": "Windows PowerShell 5.1 rejected System.IO.File.WriteAllText with an alternate-data-stream suffix before the transaction ran. The fixture now creates the ADS through Set-Content -Stream; targeted PS5/PS7 checks and both final full suites pass. This was not a product-logic regression."
+    }
+  ],
+  "source_files": [
+    {"path": ".github/workflows/ci.yaml", "sha256": "a3e7c2d5207b3da563f8079d41a636842a930d34c41142af90bf163654940571"},
+    {"path": "README.md", "sha256": "aa0b5c3037548c61c1791001d26dac2e2f099a6f512e2f6ffab10435022200e6"},
+    {"path": "docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md", "sha256": "ffdf051f0d5058eb257b801d5fabb87244d2b2420009682a802c05765beff100"},
+    {"path": "docs/project/YIME_DUAL_PRODUCT_DP1_N_INSTALLER_RECEIPT_TRANSACTION_2026-09-07.md", "sha256": "18f26c9dfae14bd12421da0867f1bfb97210c6135c97b49ddb3100a6378392d7"},
+    {"path": "tools/dual-product/README.md", "sha256": "c1a9104ca377fafde19304fee6ab4cc01085a9e543edfc66ddee449a1fa0bca8"},
+    {"path": "tools/dual-product/baseline.py", "sha256": "c422f360071875399572c07c085bd3fa355ba96629718b9e083f746ab89bb798"},
+    {"path": "tools/dual-product/contract.json", "sha256": "1c801110a4085454cb936ebfc18cfab958ee39c35221d3d951d81d8334922e69"},
+    {"path": "tools/dual-product/rime-pime-installer-receipt-transaction.ps1", "sha256": "4c86639d73531384b08588954310f51c76f35dbf08368e088aa766e54a8ec831"},
+    {"path": "tools/dual-product/rime-pime-installer-receipt-transaction.psm1", "sha256": "e3385a7b5c6d9a54fee379b34d15ec22061d946cee55af881e97bb24e3600e1c"},
+    {"path": "tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1", "sha256": "ee4b33a6539d50e80209ea76aa21e3f347e290854923c14639ff7f4e404e448b"},
+    {"path": "tools/dual-product/test-rime-pime-package-receipt-v2.ps1", "sha256": "d10baf2e65d82fc21e21252a6e2602cb789ef4f74ad42b826bc75092bfcdb3b4"},
+    {"path": "tools/dual-product/test_baseline.py", "sha256": "5396e425f077222cea576fc3ca3cec354e700878c86c79dee3ebfbbc57a776ab"}
+  ],
+  "canonical_receipt": {
+    "path": "installer/package-build-receipt.json",
+    "sha256": "c18d1202ad78dcd6f8c1f74b34859a83489adb01fb156fa4e2546160aff5b0be",
+    "evidence_artifacts_durable": false,
+    "mutated": false,
+    "receipt_evidence_directory_present": false
+  },
+  "governance": {
+    "isolated_contract_wired": true,
+    "nondurable_historical_v1_coverage_present": true,
+    "ci_ps5_ps7_exact_full_suite_present": true,
+    "baseline_executes_transaction_suite": false,
+    "actual_canonical_migration_executed": false,
+    "full_real_transaction_passed": false,
+    "real_installer_transaction_wired": false
+  },
+  "boundaries": {
+    "complete_product_candidate_built": false,
+    "actual_canonical_migrated": false,
+    "actual_installer_identity_replaced": false,
+    "real_installer_or_maintenance_adapter_connected": false,
+    "hardware_power_loss_verified": false,
+    "directory_metadata_durability_verified": false,
+    "active_hostile_same_sid_physical_replacement_prevented": false,
+    "delivery_admitted": false,
+    "dp1_complete": false,
+    "dp2_complete": false,
+    "dp3_complete": false,
+    "l5_complete": false,
+    "l6_complete": false
+  },
+  "safety": {
+    "actual_installer_executed": false,
+    "actual_uninstaller_executed": false,
+    "complete_product_build_executed": false,
+    "product_process_started_or_stopped": false,
+    "product_registry_touched": false,
+    "default_input_method_changed": false,
+    "production_rime_pime_touched": false,
+    "installed_yimecore_local12_touched": false,
+    "production_user_data_read_or_written": false,
+    "user_text_recorded": false,
+    "frozen_or_historical_payload_executed": false,
+    "fixture_roots": ".tmp/dual-product"
+  }
+}
