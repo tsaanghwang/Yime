@@ -25,14 +25,17 @@ const (
 )
 
 type options struct {
-	installRoot  string
-	brokerPath   string
-	stateRoot    string
-	pipeName     string
-	noToolbar    bool
-	indexRoot    string
-	dataDir      string
-	indexVersion string
+	installRoot      string
+	brokerPath       string
+	stateRoot        string
+	pipeName         string
+	noToolbar        bool
+	indexRoot        string
+	dataDir          string
+	indexVersion     string
+	speechManifest   string
+	speechSHA256     string
+	maintenanceQuery bool
 }
 
 type runtimeStatus struct {
@@ -67,7 +70,7 @@ func main() {
 
 	resolved, err := resolveOptions(options{
 		installRoot: *installRoot, brokerPath: *brokerPath, stateRoot: *stateRoot,
-		pipeName: *pipeName, noToolbar: *noToolbar,
+		pipeName: *pipeName, noToolbar: *noToolbar, maintenanceQuery: *stop || *status,
 	})
 	if err != nil {
 		fail(err)
@@ -146,6 +149,11 @@ func resolveOptions(value options) (options, error) {
 		value.indexVersion = generation.Version
 	} else if !errors.Is(loadErr, os.ErrNotExist) {
 		return value, fmt.Errorf("load Trial layout generation: %w", loadErr)
+	}
+	if !value.maintenanceQuery {
+		if err := resolveSpeechOptions(&value); err != nil {
+			return value, err
+		}
 	}
 	if !value.noToolbar {
 		for _, tool := range []string{inputToolbarPath(value.installRoot), trainerPath(value.installRoot), toolCenterPath(value.installRoot)} {
@@ -282,7 +290,7 @@ func startBroker(config options, logger *log.Logger, children *runtimeHandle) (*
 func brokerArguments(config options) []string {
 	modelRoot := trialModelRoot(config)
 	controlRoot := filepath.Join(config.stateRoot, "index-control")
-	return []string{
+	arguments := []string{
 		"-index-root", trialIndexRoot(config),
 		"-default-mode", "variable",
 		"-annotation-data-dir", trialDataDir(config),
@@ -301,6 +309,13 @@ func brokerArguments(config options) []string {
 		"-index-control-manifest", filepath.Join(controlRoot, "request.json"),
 		"-index-control-status", filepath.Join(controlRoot, "status.json"),
 	}
+	if config.speechManifest != "" {
+		arguments = append(arguments, "-speech-product-root", config.installRoot,
+			"-speech-product-manifest", config.speechManifest,
+			"-speech-product-sha256", config.speechSHA256,
+			"-speech-settings", filepath.Join(config.stateRoot, "speech.json"))
+	}
+	return arguments
 }
 
 func trialIndexRoot(config options) string {

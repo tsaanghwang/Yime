@@ -1,0 +1,266 @@
+{
+  "schema_version": "yimecore-speech-sr4a-reviewed-outcome-v1",
+  "completed_at": "2026-09-05T20:03:52.7217481+08:00",
+  "phase": "SR4-A",
+  "passed": true,
+  "scope": "Non-installable default-off 24-record Stage5C package and isolated relocated execution; not installed product acceptance.",
+  "payload_files": 69,
+  "payload_bytes": 143512412,
+  "forward_source_files": 56,
+  "source_snapshot_files": 540,
+  "go_named_test_nodes_passed": 462,
+  "go_failed": 0,
+  "go_skipped": 2,
+  "go_tests": [
+    {
+      "package": "./input_methods/yime/connectedspeech",
+      "selector": "^TestStage5CAdmission",
+      "passed_count": 45,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./input_methods/yime/layoutdesigner",
+      "selector": "^Test(ProjectIDRecord|ReencodeUsesYinyuanIDsAndSemanticShorthand$|ReencodePreservesVirtualShouyinAsSyllableBoundary$|DescribeIDDistinguishesRealAndVirtualShouyin$|ValidateRejectsReservedCandidateKey$)",
+      "passed_count": 6,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./input_methods/yime/yimecore",
+      "selector": "^Test",
+      "passed_count": 181,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./input_methods/yime/yimebroker",
+      "selector": "^Test(BundleGenerationManager|ConnectedSpeechReconnectBrokerBundleDurableLifecycle|ServeLines|ConnectionLimiter)",
+      "passed_count": 33,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./input_methods/yime/speechruntime",
+      "selector": "^TestSpeech(Manifest|Forward)",
+      "passed_count": 123,
+      "failed_count": 0,
+      "skipped_count": 1,
+      "skipped_tests": [
+        "TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink"
+      ],
+      "passed": true
+    },
+    {
+      "package": "./cmd/yimebroker",
+      "selector": "^Test(SpeechExperiment|EnabledUserModelHonorsLearningConfigWithoutDeletingModel$)",
+      "passed_count": 3,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./cmd/yimecore-speech-admission",
+      "selector": "^TestSpeech(Exercise|Package)",
+      "passed_count": 71,
+      "failed_count": 0,
+      "skipped_count": 1,
+      "skipped_tests": [
+        "TestSpeechPackageRejectsSymlinkPayload"
+      ],
+      "passed": true
+    }
+  ],
+  "python_forward_contracts_passed": 11,
+  "powershell_runner_contracts": {
+    "count": 57,
+    "powershell_7_passed": true,
+    "windows_powershell_5_1_passed": true,
+    "level": "AST and synthetic contracts only"
+  },
+  "dp1": {
+    "source_files": 22,
+    "synthetic_tests_passed": 19,
+    "full_implementation_passed": false,
+    "physical_acceptance_passed": false,
+    "pending": [
+      "DP1-PIME-STOP-01",
+      "DP1-PIME-STOP-02",
+      "DP1-PIME-LEGACY-03"
+    ]
+  },
+  "relocated_process_stages": [
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": false,
+      "exit_code": 0,
+      "learning_generation": 0,
+      "modes_passed": 3,
+      "name": "disabled-before",
+      "passed": true,
+      "pid": 36220
+    },
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": true,
+      "exit_code": 0,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "enabled-train",
+      "passed": true,
+      "pid": 38688
+    },
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": true,
+      "exit_code": 0,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "enabled-restart",
+      "passed": true,
+      "pid": 38324
+    },
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": false,
+      "exit_code": 0,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "disabled-after",
+      "passed": true,
+      "pid": 4904
+    },
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": true,
+      "exit_code": 0,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "reenabled",
+      "passed": true,
+      "pid": 14248
+    },
+    {
+      "exit_code": 42,
+      "name": "invalid-generation-rejected",
+      "passed": true,
+      "pid": 37896,
+      "state_unchanged": true
+    },
+    {
+      "canonical_checks": 3,
+      "exit_code": 0,
+      "learned_alias_checks": 3,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "valid-generation-recovery",
+      "passed": true,
+      "pid": 38836
+    }
+  ],
+  "installed_version_unchanged": "0.1.0-local.12",
+  "installed_package_files": 74,
+  "installed_runtime_pid": 31596,
+  "installed_broker_pid": 31672,
+  "protected_registry_summaries": 12,
+  "default_enabled": false,
+  "installable": false,
+  "real_rime_executed": false,
+  "registered_or_live_host_tested": false,
+  "windows_reboot_tested": false,
+  "frozen_targets_executed": false,
+  "user_text_or_live_learning_read": false,
+  "local_product_ready": false,
+  "public_release_ready": false,
+  "evidence_files": [
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-package-20260905-200337-a4344c320b7b45c8925c51d66d865a76\\summary.json",
+      "sha256": "861f1bb2f9188769ffa2edf45c62ced64931d608da17b39e05f1373493e52883",
+      "bytes": 5024
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-package-20260905-200337-a4344c320b7b45c8925c51d66d865a76\\speech-admission-package-20260905-200337-a4344c320b7b45c8925c51d66d865a76\\package-manifest.json",
+      "sha256": "009265b9aca18347ac06184199e09460d1a42b0b9b7af6abc24d491e799875d1",
+      "bytes": 15196
+    },
+    {
+      "path": "C:\\Users\\tsaan\\YimeCore Isolated Fixtures\\SR4\\speech-admission-package-20260905-200337-a4344c320b7b45c8925c51d66d865a76\\package-manifest.json",
+      "sha256": "009265b9aca18347ac06184199e09460d1a42b0b9b7af6abc24d491e799875d1",
+      "bytes": 15196
+    },
+    {
+      "path": "C:\\Users\\tsaan\\YimeCore Isolated Fixtures\\SR4\\speech-admission-exercise-20260905-200337-a4344c320b7b45c8925c51d66d865a76\\package-exercise-outcome.json",
+      "sha256": "2224421f0501161894887ba3964c9cf951bfc81a01220cc550816f4c4d3f8c9b",
+      "bytes": 436
+    },
+    {
+      "path": "C:\\Users\\tsaan\\YimeCore Isolated Fixtures\\SR4\\speech-admission-exercise-20260905-200337-a4344c320b7b45c8925c51d66d865a76\\process-outcome.json",
+      "sha256": "507ca20e9261c43ff0503631f5e96b822573981525613a08aca49a04c8293307",
+      "bytes": 2131
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260905-200148-018c4686edd54b06a241c8ed6b8ef78c\\summary.json",
+      "sha256": "60ecfff394291eb1ba4aa7dfd95f14064e87eda72fcdc34d85ee77ac90e0bc8d",
+      "bytes": 17732
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260905-200148-018c4686edd54b06a241c8ed6b8ef78c\\forward-source.json",
+      "sha256": "96293d0d6f6dce025428dfe14034e08a5781cbb5a649404b3aed90797d4ffdbd",
+      "bytes": 17920
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260905-200148-018c4686edd54b06a241c8ed6b8ef78c\\source-hashes-after.json",
+      "sha256": "b3ec4494b0f6076914f1d08f13986231ae1e5a57c1d8e26f0eff78a5eeb90e6d",
+      "bytes": 97927
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260905-200148-018c4686edd54b06a241c8ed6b8ef78c\\process-outcome.json",
+      "sha256": "beeb0cbf2c731e75065c7a973c7dd36718cda312c9fd373f42e596632b31c6b9",
+      "bytes": 2132
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-package-20260905-200337-a4344c320b7b45c8925c51d66d865a76\\installed-before.json",
+      "sha256": "9bb2fcf15118fb6d954260a3655f08a4f83c7c1f8d230a5db45cfbdb27e7cbf8",
+      "bytes": 3544
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-package-20260905-200337-a4344c320b7b45c8925c51d66d865a76\\installed-after.json",
+      "sha256": "0c730672afbdd585c048f3cbb2cd48f9561fbc4bb6e2e366998c05f613901184",
+      "bytes": 3544
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-package-20260905-200337-a4344c320b7b45c8925c51d66d865a76\\legacy-static-before.json",
+      "sha256": "b465dfa48cea445afeded9047346a3e8f37f7a5ac1a54993acee032ebe3ebde4",
+      "bytes": 1153
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-package-20260905-200337-a4344c320b7b45c8925c51d66d865a76\\legacy-static-after.json",
+      "sha256": "b465dfa48cea445afeded9047346a3e8f37f7a5ac1a54993acee032ebe3ebde4",
+      "bytes": 1153
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-package-20260905-200337-a4344c320b7b45c8925c51d66d865a76\\runner-contracts.log",
+      "sha256": "18440931d26786701928d7fa9cc2a48e04a0045b879f680ceab66b0044ff7531",
+      "bytes": 112
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\dual-product\\dp1-20260905-a2\\baseline.json",
+      "sha256": "6d05ae9fe1241b0e7933f420eae914979b5b82eb92bd3578c7267fac1b4da86b",
+      "bytes": 6779
+    }
+  ]
+}

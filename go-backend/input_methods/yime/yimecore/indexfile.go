@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"io"
 	"math"
@@ -52,6 +53,7 @@ type IndexBuildResult struct {
 	IndexSHA256         string `json:"index_sha256"`
 	BuildElapsedNS      int64  `json:"build_elapsed_ns"`
 	PeakObservedHeap    uint64 `json:"peak_observed_heap_bytes"`
+	ProvenanceSHA256    string `json:"provenance_sha256,omitempty"`
 }
 
 // FileIndex is an immutable E1 index backed by a validated read-only file and
@@ -64,6 +66,7 @@ type FileIndex struct {
 	closeOnce     sync.Once
 	mode          string
 	sourceHash    [sha256.Size]byte
+	fileHash      [sha256.Size]byte
 	payloadHash   [sha256.Size]byte
 	sourceID      string
 	offsets       []uint32
@@ -106,6 +109,48 @@ func BuildIndexFile(mode, sourcePath, outputPath string) (IndexBuildResult, erro
 	if err != nil {
 		return IndexBuildResult{}, err
 	}
+	return buildIndexRecords(mode, entries, sourcePath, outputPath, sourceHash, sourceBytes, peakHeap, started)
+}
+
+// BuildIndexEntries writes independently admitted records directly to E1. The
+// provenance document is hashed, never interpreted as a dictionary or used to
+// infer pronunciation. Both this entry point and the legacy text importer use
+// the same deterministic serializer and runtime format.
+func BuildIndexEntries(mode string, entries []Entry, provenancePath, outputPath string) (IndexBuildResult, error) {
+	if mode != "full" && mode != "variable" && mode != "shorthand" {
+		return IndexBuildResult{}, fmt.Errorf("unsupported entry index mode")
+	}
+	if len(entries) == 0 || provenancePath == "" || outputPath == "" {
+		return IndexBuildResult{}, fmt.Errorf("admitted entries, provenance and output are required")
+	}
+	started := time.Now()
+	data, err := os.ReadFile(provenancePath)
+	if err != nil {
+		return IndexBuildResult{}, err
+	}
+	provenanceHash := sha256.Sum256(data)
+	normalized, err := NewIndex(entries)
+	if err != nil {
+		return IndexBuildResult{}, err
+	}
+	canonical := make([]Entry, 0, len(normalized.records))
+	for _, record := range normalized.records {
+		canonical = append(canonical, Entry{Text: record.text, Code: record.code, Weight: record.weight})
+	}
+	identity, err := json.Marshal(struct {
+		Schema, Mode, Provenance string
+		Records                  []Entry
+	}{"yimecore-admitted-entry-source-v1", mode, hex.EncodeToString(provenanceHash[:]), canonical})
+	if err != nil {
+		return IndexBuildResult{}, err
+	}
+	hash := sha256.Sum256(identity)
+	result, err := buildIndexRecords(mode, entries, provenancePath, outputPath, hash, int64(len(identity)), 0, started)
+	result.ProvenanceSHA256 = hex.EncodeToString(provenanceHash[:])
+	return result, err
+}
+
+func buildIndexRecords(mode string, entries []Entry, sourcePath, outputPath string, sourceHash [sha256.Size]byte, sourceBytes int64, peakHeap uint64, started time.Time) (IndexBuildResult, error) {
 	parsedRecords := len(entries)
 	index, err := NewIndex(entries)
 	if err != nil {
@@ -405,6 +450,9 @@ func openFileIndex(path string, resident bool) (*FileIndex, error) {
 		index.unmap = unmap
 		index.storageMode = "mapped"
 	}
+	// Bind the actual loaded bytes, independently of the dictionary provenance
+	// identity. Product overlays use this to reject mixed index generations.
+	index.fileHash = sha256.Sum256(index.data)
 	closeOnError = false
 	runtime.SetFinalizer(index, func(open *FileIndex) { _ = open.Close() })
 	return index, nil
@@ -581,6 +629,15 @@ func (idx *FileIndex) VisitEntries(visit func(Entry) bool) error {
 // SourceID binds independent user data to the exact static-index provenance.
 func (idx *FileIndex) SourceID() string { return idx.identity() }
 
+// SHA256 identifies the complete immutable index bytes loaded by this object.
+// It does not replace or alter SourceID, which owns existing learning identity.
+func (idx *FileIndex) SHA256() string {
+	if idx == nil {
+		return ""
+	}
+	return hex.EncodeToString(idx.fileHash[:])
+}
+
 func (idx *FileIndex) lookup(prefix string, limit int) []record {
 	if idx == nil || prefix == "" || limit <= 0 {
 		return nil
@@ -629,12 +686,21 @@ func (idx *FileIndex) lookupUncached(prefix string, limit int) []record {
 		return err != nil || bytes.Compare(code, prefixBytes) >= 0
 	})
 	top := make([]fileRecord, 0, limit)
+	useHeap := limit > 64
 	for i := start; i < len(idx.offsets); i++ {
 		code, text, weight, err := idx.recordAt(i)
 		if err != nil || !bytes.HasPrefix(code, prefixBytes) {
 			break
 		}
-		top = insertFileTop(top, fileRecord{code: code, text: text, weight: weight}, prefixBytes, limit)
+		item := fileRecord{code: code, text: text, weight: weight}
+		if useHeap {
+			top = insertFileHeap(top, item, prefixBytes, limit)
+		} else {
+			top = insertFileTop(top, item, prefixBytes, limit)
+		}
+	}
+	if useHeap {
+		sort.Slice(top, func(i, j int) bool { return betterFileRecord(top[i], top[j], prefixBytes) })
 	}
 	result := make([]record, 0, len(top))
 	for _, item := range top {

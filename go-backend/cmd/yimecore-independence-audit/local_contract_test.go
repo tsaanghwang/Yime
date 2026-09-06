@@ -27,6 +27,8 @@ func localDescriptorFixture(t *testing.T) []byte {
 	}
 	descriptor["package_contract"] = localRuntimeContract
 	descriptor["installable"] = false
+	descriptor["version"] = "0.1.0-local.12"
+	delete(descriptor, "speech")
 	data, err = json.Marshal(descriptor)
 	if err != nil {
 		t.Fatal(err)
@@ -112,7 +114,12 @@ func TestInstallableContractRequiredMaintenanceAndIdentity(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	data, err := os.ReadFile(filepath.Join("..", "..", "..", "tools", "yimecore", "local-product.json"))
+	var legacy map[string]any
+	if err := json.Unmarshal(localDescriptorFixture(t), &legacy); err != nil {
+		t.Fatal(err)
+	}
+	legacy["package_contract"], legacy["installable"] = localInstallableContract, true
+	data, err := json.Marshal(legacy)
 	if err != nil {
 		t.Fatal(err)
 	}

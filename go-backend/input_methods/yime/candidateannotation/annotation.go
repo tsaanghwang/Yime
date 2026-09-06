@@ -28,6 +28,7 @@ type Resolver struct {
 	marked        map[string]string
 	pua           map[string]string
 	sourceTruth   map[string][]string
+	reviewed      map[string]reviewedAnnotation
 }
 
 func Load(dataDir, modeName string) (*Resolver, error) {
@@ -76,6 +77,9 @@ func (r *Resolver) Annotate(candidate *engineapi.Candidate) {
 	}
 	candidate.Annotations.KeySequence = strings.ReplaceAll(strings.TrimSpace(candidate.Code), " ", "")
 	if r == nil || candidate.Annotations.KeySequence == "" {
+		return
+	}
+	if r.annotateReviewed(candidate) {
 		return
 	}
 	alternatives := r.sourceTruth[reverselookup.SourceTruthLookupKey(candidate.Text, candidate.Code)]
@@ -346,5 +350,8 @@ func (e *Engine) IndexVersion() string {
 func (e *Engine) decorate(result *engineapi.Result) {
 	for index := range result.State.Candidates {
 		e.resolver.Annotate(&result.State.Candidates[index])
+	}
+	if len(e.resolver.reviewed) > 0 && result.State.Sentence != nil {
+		e.resolver.Annotate(result.State.Sentence)
 	}
 }

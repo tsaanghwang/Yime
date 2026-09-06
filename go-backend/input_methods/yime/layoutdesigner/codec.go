@@ -105,10 +105,28 @@ func (c *Codec) Reencode(full string) (codemode.Record, error) {
 		}
 		ids = append(ids, id)
 	}
+	return projectIDRecord(ids, c.targetByID)
+}
+
+// ProjectIDRecord derives all three modes directly from stable Yinyuan IDs.
+// Unlike ReencodeRecord it never decodes physical keys, whose intentional
+// shared projections cannot preserve the original contextual identity.
+func ProjectIDRecord(ids []string, target Profile) (codemode.Record, error) {
+	if err := target.Validate(); err != nil {
+		return codemode.Record{}, err
+	}
+	return projectIDRecord(ids, target.Projection)
+}
+
+// Keep ID-level merging and shorthand selection shared with legacy reencoding.
+func projectIDRecord(ids []string, targetByID map[string]string) (codemode.Record, error) {
+	if len(ids) == 0 || len(ids)%4 != 0 {
+		return codemode.Record{}, fmt.Errorf("four-Yinyuan sequence length must be a positive multiple of 4: %d", len(ids))
+	}
 	project := func(items []string) (string, error) {
 		var b strings.Builder
 		for _, id := range items {
-			key := c.targetByID[id]
+			key := targetByID[id]
 			if key == "" {
 				return "", fmt.Errorf("目标布局缺少 %s", id)
 			}

@@ -43,6 +43,12 @@ const (
 	idBtnBackup     = 202
 	idBtnRestore    = 203
 	idBtnOpenHelp   = 204
+
+	cbGetCount     = 0x0146
+	cbGetCurSel    = 0x0147
+	cbGetLBText    = 0x0148
+	cbGetLBTextLen = 0x0149
+	cbSetCurSel    = 0x014E
 )
 
 var (
@@ -113,16 +119,19 @@ type settingsUILayout struct {
 	layoutLabel, layoutCombo                                 rect
 	fontLabel, fontCombo                                     rect
 	familyLabel, familyCombo                                 rect
+	speechLabel, speechCombo, speechApplyButton, speechHint  rect
 	applyButton, backupButton, restoreButton, openHelpButton rect
 }
 
 type appState struct {
 	userDir, sharedDir, helpDir, backupRoot string
 	statePath                               string
+	installRoot                             string
 	experimental                            bool
 
 	mainHWND, schemaHWND, pageHWND, reverseHWND, layoutHWND syscall.Handle
 	fontHWND, familyHWND                                    syscall.Handle
+	speechHWND, speechApplyHWND, speechHintHWND             syscall.Handle
 	schemaOptions                                           []settings.SchemaOption
 	layout                                                  settingsUILayout
 
@@ -242,6 +251,11 @@ func runApp(state *appState) error {
 	windowClass := "YimeSettingsTool"
 	windowTitle := "Yime 设置"
 	if state.experimental {
+		executable, err := os.Executable()
+		if err != nil {
+			return err
+		}
+		state.installRoot = filepath.Dir(filepath.Dir(executable))
 		windowClass = "YimeCoreTrialSettingsTool"
 		windowTitle = "Yime 试验版设置"
 	}
@@ -359,6 +373,7 @@ func (state *appState) createControls() {
 			text, _ := syscall.UTF16PtrFromString(option.Label)
 			procSendMessageW.Call(uintptr(state.familyHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 		}
+		state.createSpeechControls()
 	}
 	// The selected controls already show the current configuration; do not
 	// duplicate it in a developer-oriented "current configuration" summary.
@@ -396,7 +411,11 @@ func buildSettingsUILayout(withHelp, experimental bool) settingsUILayout {
 	if experimental {
 		l.fontLabel, l.fontCombo = row(4)
 		l.familyLabel, l.familyCombo = row(5)
-		rowCount = 6
+		l.speechLabel, l.speechCombo = row(6)
+		l.speechApplyButton = rect{l.speechCombo.Right - 104, l.speechCombo.Top, l.speechCombo.Right, l.speechCombo.Top + rowH}
+		l.speechCombo.Right = l.speechApplyButton.Left - controlGap
+		l.speechHint = rect{margin, l.speechLabel.Bottom + 8, l.layoutCombo.Right, l.speechLabel.Bottom + 36}
+		rowCount = 8
 	}
 
 	buttonY := margin + rowCount*(rowH+rowGap) + 8
@@ -432,6 +451,7 @@ func (state *appState) refreshView() {
 		setComboByValue(state.fontHWND, trialFontPresetOptions(), snapshot.CandidateFontPreset)
 		setComboByValue(state.familyHWND, trialFontFamilyOptions(), snapshot.CandidateFontFamily)
 		setComboByValue(state.reverseHWND, trialAnnotationOptions(), snapshot.CandidateAnnotation)
+		state.refreshSpeechView()
 		return
 	}
 	snapshot := settings.LoadSnapshot(state.userDir, state.sharedDir)
@@ -457,6 +477,9 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 		return 0
 	case wmAppRestoreDone:
 		state.finishRestore()
+		return 0
+	case wmAppSpeechDone:
+		state.finishSpeechApply()
 		return 0
 	case win32ui.WmDeferredPresent:
 		win32ui.PresentMainWindow(state.mainHWND)
@@ -492,6 +515,8 @@ func (state *appState) handleCommand(wParam uintptr) {
 	switch int(wParam & 0xffff) {
 	case idBtnApply:
 		state.startApply()
+	case idBtnSpeechApply:
+		state.startSpeechApply()
 	case idBtnBackup:
 		state.startBackup()
 	case idBtnRestore:
@@ -679,6 +704,9 @@ func executeRestore(userDir, sharedDir, backupRoot string, snapshot userbackup.S
 func (state *appState) finishRestore() {
 	err, info := state.finishOperation()
 	if err != nil {
+		if state.experimental {
+			state.refreshSpeechView()
+		}
 		message := "恢复未能完整完成：" + err.Error()
 		if info != "" {
 			message += "\n\n" + info
@@ -688,7 +716,7 @@ func (state *appState) finishRestore() {
 	}
 	state.refreshView()
 	if state.experimental {
-		showInfo("元试验版用户数据已经恢复；新设置会在下一次输入时载入。\n\n" + info)
+		showInfo("本版用户数据已经恢复；语流设置是否可用请查看语流行提示。\n\n" + info)
 		return
 	}
 	showInfo("可移植用户数据已经恢复，Rime 已重新构建并通知 YIME 重新加载。\n\n" + info)
@@ -780,26 +808,39 @@ func setComboByValue(hwnd syscall.Handle, options []settings.ComboOption, value 
 }
 
 func setComboByText(hwnd syscall.Handle, text string) {
-	length, _, _ := procSendMessageW.Call(uintptr(hwnd), 0x0146, 0, 0)
-	for i := 0; i < int(length); i++ {
-		buf := make([]uint16, 256)
-		procSendMessageW.Call(uintptr(hwnd), 0x0149, uintptr(i), uintptr(unsafe.Pointer(&buf[0])))
-		if syscall.UTF16ToString(buf) == text {
-			procSendMessageW.Call(uintptr(hwnd), 0x014E, uintptr(i), 0)
+	count, _, _ := procSendMessageW.Call(uintptr(hwnd), cbGetCount, 0, 0)
+	for i := 0; i < int(int32(count)); i++ {
+		item, ok := comboItemText(hwnd, uintptr(i))
+		if ok && item == text {
+			procSendMessageW.Call(uintptr(hwnd), cbSetCurSel, uintptr(i), 0)
 			return
 		}
 	}
-	procSendMessageW.Call(uintptr(hwnd), 0x014E, 0, 0)
+	procSendMessageW.Call(uintptr(hwnd), cbSetCurSel, 0, 0)
 }
 
 func selectedComboText(hwnd syscall.Handle) string {
-	index, _, _ := procSendMessageW.Call(uintptr(hwnd), 0x0147, 0, 0)
+	index, _, _ := procSendMessageW.Call(uintptr(hwnd), cbGetCurSel, 0, 0)
 	if int32(index) < 0 {
 		return ""
 	}
-	buf := make([]uint16, 256)
-	procSendMessageW.Call(uintptr(hwnd), 0x0148, index, uintptr(unsafe.Pointer(&buf[0])))
-	return syscall.UTF16ToString(buf)
+	text, _ := comboItemText(hwnd, index)
+	return text
+}
+
+func comboItemText(hwnd syscall.Handle, index uintptr) (string, bool) {
+	// These string ComboBoxes are read on their owning UI thread. The length
+	// message does not write text; get the item separately with room for NUL.
+	length, _, _ := procSendMessageW.Call(uintptr(hwnd), cbGetLBTextLen, index, 0)
+	if int32(length) < 0 || length >= uintptr(^uint(0)>>1) {
+		return "", false
+	}
+	buf := make([]uint16, int(length)+1)
+	copied, _, _ := procSendMessageW.Call(uintptr(hwnd), cbGetLBText, index, uintptr(unsafe.Pointer(&buf[0])))
+	if int32(copied) < 0 || copied > length {
+		return "", false
+	}
+	return syscall.UTF16ToString(buf[:int(copied)]), true
 }
 
 func createStatic(parent syscall.Handle, text string, box rect, id int) syscall.Handle {

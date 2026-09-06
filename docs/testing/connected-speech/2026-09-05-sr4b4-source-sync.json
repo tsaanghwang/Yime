@@ -1,0 +1,56 @@
+{
+  "schema_version": "yimecore-speech-sr4b4-source-sync-record-v1",
+  "date": "2026-09-05",
+  "passed": true,
+  "current_uninstalled_candidate": true,
+  "supersedes": {
+    "record": "docs/testing/connected-speech/2026-09-05-sr4b3-maintenance.json",
+    "package_id": "yimecore-local-0.1.0-local.13-6fa24332928d",
+    "package_manifest_sha256": "f785acad59ab63c7a44dca3280416bee021a4ffd015f066611953abca856cf03"
+  },
+  "reason": "DP1 Rime/PIME EOF closure changed files in the Stage5C fixed source inventory",
+  "admission": {
+    "root": "C:/dev/Yime/.tmp/yimecore-experiment/speech-admission-20260905-234633-841d5369665c466488da3e7f975a4ff8",
+    "summary_sha256": "e87bac1ccad7d86168a5838fbd360f568a51e5a670aade5288931470104d55c4",
+    "source_inventory_sha256": "9ef5dd5b6241c43b3fe7fb4ce8dfca165c5f14f8c73fbf4a59fd6726122c45b4",
+    "passed_tests": 498,
+    "failed_tests": 0,
+    "skipped_tests": 3
+  },
+  "candidate": {
+    "version": "0.1.0-local.13",
+    "package_id": "yimecore-local-0.1.0-local.13-dbfab0b45dd2",
+    "build_root": "C:/dev/Yime/.tmp/yimecore-local-product/speech-20260905-234758-b7db9c9f",
+    "build_summary_sha256": "478ad1ce5b3665fcb62140de1998c4036a7d18954d8ab91670375cc8358aca1f",
+    "package_manifest_sha256": "70ec357cb1d7137096798d8b70e66351af34c57186b53fb59462b82149130c97",
+    "files": 85,
+    "default_speech_enabled": false,
+    "installed": false
+  },
+  "product_package": {
+    "root": "C:/dev/Yime/.tmp/yimecore-experiment/speech-product-package-20260905-234758-2e87afb1d0a04eb28648c03dfc172b55",
+    "summary_sha256": "e3a1a2b4d6d9c1b8816e19a8317f0cb5c55d51f5b4d1516c8ccc32ccca9139be",
+    "passed_tests": 478,
+    "failed_tests": 0,
+    "skipped_tests": 4,
+    "powershell_checks_per_shell": 38,
+    "normal_process_lifecycle_passed": true
+  },
+  "process_fixture": {
+    "root": "C:/Users/tsaan/YimeCore Isolated Fixtures/SR4B2/speech-product-test-20260905-2349-directed-exit-a1",
+    "summary_sha256": "75288cee59b323a4b4ff4b241cde5292bdfa51755fa43621092fcef3ee79b14b",
+    "stages": 7,
+    "user_data_read": false,
+    "rime_executed": false
+  },
+  "installed_local12_unchanged": true,
+  "default_input_method_changed": false,
+  "production_rime_pime_touched": false,
+  "frozen_targets_executed": false,
+  "installed_acceptance_passed": false,
+  "registered_host_passed": false,
+  "windows_reboot_passed": false,
+  "l5_final_confirmation_passed": false,
+  "l6_passed": false,
+  "remaining_skips": 4
+}

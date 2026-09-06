@@ -5,6 +5,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -13,7 +14,6 @@ import (
 	"time"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/candidateannotation"
-	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/candidatefilter"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/learningconfig"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/professionallexicon"
@@ -46,11 +46,38 @@ func main() {
 	learningConfig := flag.String("learning-config", "", "optional trial-private learning configuration")
 	professionalRoot := flag.String("professional-root", "", "optional installed professional lexicon catalog root")
 	professionalState := flag.String("professional-state", "", "optional trial-private professional lexicon selection")
+	speechProductRoot := flag.String("speech-product-root", "", "explicit owning product installation root")
+	speechProductManifest := flag.String("speech-product-manifest", "", "fixed speech/product.json capability path")
+	speechProductSHA := flag.String("speech-product-sha256", "", "pinned product speech manifest SHA-256")
+	speechSettings := flag.String("speech-settings", "", "explicit private speech.json settings")
+	speechManifest := flag.String("speech-experiment-manifest", "", "explicit isolated speech bundle manifest, relative to speech-experiment-root")
+	speechManifestSHA := flag.String("speech-experiment-sha256", "", "pinned isolated speech manifest SHA-256")
+	speechRoot := flag.String("speech-experiment-root", "", "explicit speech-admission trial root; never installed state")
 	exitBeforeRequest := flag.Int("experiment-exit-before-request", 0, "E5-B fault injection only")
 	hangBeforeRequest := flag.Int("experiment-hang-before-request", 0, "E5-B fault injection only")
 	exitAfterRequest := flag.Int("experiment-exit-after-request", 0, "E5-F fault injection after durable handling but before response")
 	exitCompactionStage := flag.String("experiment-exit-compaction-stage", "", "E5-G fault injection at a named compaction stage")
 	flag.Parse()
+	var visited []string
+	flag.Visit(func(f *flag.Flag) { visited = append(visited, f.Name) })
+	if speechProductRequested(visited) {
+		if err := validateSpeechProductFlags(visited, *indexRoot, *speechProductRoot, *speechProductManifest, *speechProductSHA, *speechSettings); err != nil {
+			fail(err)
+		}
+	}
+	if speechExperimentRequested(visited) {
+		if err := validateSpeechExperimentFlags(visited, *speechRoot, *speechManifest, *speechManifestSHA, *trustedClientID); err != nil {
+			fail(err)
+		}
+		if err := runSpeechExperiment(*speechRoot, *speechManifest, *speechManifestSHA, *trustedClientID); err != nil {
+			if errors.Is(err, errSpeechAdmissionRejected) {
+				fmt.Fprintln(os.Stderr, "REJECTED: isolated speech admission; durable state not opened.")
+				os.Exit(speechAdmissionRejectedExitCode)
+			}
+			fail(err)
+		}
+		return
+	}
 	if *indexRoot != "" {
 		if *indexPath != "" || *mode != "" {
 			fail(fmt.Errorf("index-root cannot be combined with index or mode"))
@@ -65,6 +92,7 @@ func main() {
 			indexRoot: *indexRoot, defaultMode: *defaultMode, annotationDataDir: *annotationDataDir,
 			userLexiconDir: *userLexiconDir, userBlocklist: *userBlocklist, learningConfig: *learningConfig,
 			professionalRoot: *professionalRoot, professionalState: *professionalState,
+			speechProductRoot: *speechProductRoot, speechProductManifest: *speechProductManifest, speechProductSHA: *speechProductSHA, speechSettings: *speechSettings,
 			namedPipe: *namedPipe, trustedClientID: *trustedClientID,
 			pipeMaxConnections: *pipeMaxConnections, pipeMaxConnectionsPerClient: *pipeMaxConnectionsPerClient,
 			userSnapshot: *userSnapshot, userJournal: *userJournal, userModelSourceID: *userModelSourceID,
@@ -222,6 +250,10 @@ type multiModeConfig struct {
 	learningConfig              string
 	professionalRoot            string
 	professionalState           string
+	speechProductRoot           string
+	speechProductManifest       string
+	speechProductSHA            string
+	speechSettings              string
 	namedPipe                   string
 	trustedClientID             string
 	pipeMaxConnections          int
@@ -241,6 +273,13 @@ func runMultiMode(config multiModeConfig) {
 	if (config.namedPipe == "") == (config.trustedClientID == "") {
 		fail(fmt.Errorf("supply exactly one of named-pipe or trusted-client-id"))
 	}
+	// Capability and explicit settings are validated before any durable model
+	// is opened. This is the normal product path, never the isolated experiment.
+	speech, speechErr := openBrokerSpeechProduct(config)
+	if speechErr != nil {
+		fail(speechErr)
+	}
+	defer speech.Close()
 	modes := []string{"full", "variable", "shorthand"}
 	resolvers := make(map[string]*candidateannotation.Resolver, len(modes))
 	for _, mode := range modes {
@@ -251,6 +290,9 @@ func runMultiMode(config multiModeConfig) {
 			}
 			resolvers[mode] = resolver
 		}
+	}
+	if err := speech.BindAnnotations(resolvers); err != nil {
+		fail(err)
 	}
 	if (config.userSnapshot == "") != (config.userJournal == "") {
 		fail(fmt.Errorf("user-model-snapshot and user-model-journal must be supplied together"))
@@ -288,8 +330,11 @@ func runMultiMode(config multiModeConfig) {
 		}()
 	}
 	builder := func(mode string, index *yimecore.FileIndex) (engineapi.Engine, error) {
-		var engine engineapi.Engine
-		var err error
+		modules, err := speech.Modules(mode, index)
+		if err != nil {
+			return nil, err
+		}
+		modules = append(professional.Modules(mode), modules...)
 		var model *yimecore.UserModel
 		if durable != nil {
 			model, err = enabledUserModel(config.learningConfig, durable.Model())
@@ -297,41 +342,7 @@ func runMultiMode(config multiModeConfig) {
 				return nil, err
 			}
 		}
-		modules := professional.Modules(mode)
-		if len(modules) > 0 {
-			bundle, bundleErr := yimecore.NewBundleIndex(index, modules)
-			if bundleErr != nil {
-				return nil, bundleErr
-			}
-			if config.userLexiconDir != "" {
-				engine, err = yimecore.NewBundleEngineWithUserLexicon(
-					bundle, 9, filepath.Join(config.userLexiconDir, "custom_phrase_"+mode+".txt"), model)
-			} else if model != nil {
-				engine, err = yimecore.NewBundleEngineWithUserModel(bundle, 9, model)
-			} else {
-				engine, err = yimecore.NewBundleEngine(bundle, 9)
-			}
-		} else if config.userLexiconDir != "" {
-			engine, err = yimecore.NewFileEngineWithUserLexicon(index, 9,
-				filepath.Join(config.userLexiconDir, "custom_phrase_"+mode+".txt"), model)
-		} else if model != nil {
-			engine, err = yimecore.NewFileEngineWithUserModel(index, 9, model)
-		} else {
-			engine, err = yimecore.NewFileEngine(index, 9)
-		}
-		if err != nil {
-			return engine, err
-		}
-		if resolvers[mode] != nil {
-			engine, err = candidateannotation.Wrap(engine, resolvers[mode])
-			if err != nil {
-				return nil, err
-			}
-		}
-		if config.userBlocklist != "" {
-			engine, err = candidatefilter.Wrap(engine, config.userBlocklist)
-		}
-		return engine, err
+		return buildMultiModeEngine(config, mode, index, modules, model, resolvers[mode])
 	}
 	controlEnabled := config.indexControlManifest != "" || config.indexControlStatus != "" || config.indexVersion != ""
 	if controlEnabled && (config.indexControlManifest == "" || config.indexControlStatus == "" || config.indexVersion == "") {
