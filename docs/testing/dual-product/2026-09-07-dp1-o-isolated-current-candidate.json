@@ -1,0 +1,262 @@
+{
+  "schema_version": "yime-dual-product-dp1-o-isolated-current-candidate-evidence-v1",
+  "affected_product": "rime-pime",
+  "generated_at_utc": "2026-09-06T22:00:15.1035389Z",
+  "verified_source": {
+    "implementation_commit": "22a0f2eef98696aadc299ebb2392390cba7509ee",
+    "preflight_hardening_commit": "61a5d385f0fb7e8d23bf68cac79a3407eb4fed7e",
+    "clone_eol_commit": "ba0e2dc2d42fee66ac4e707800c43c2630794f7a",
+    "exact_head": "ba0e2dc2d42fee66ac4e707800c43c2630794f7a",
+    "exact_tree": "c35a67406e4d3292139dcd7d5d82a37bdb8ec0e5",
+    "runner_head_blob": "3890f311bf34967e381989b55c91531205817e40",
+    "runner_worktree_blob": "3890f311bf34967e381989b55c91531205817e40",
+    "runner_matches_exact_head": true,
+    "clone_detached_exact_head": true,
+    "clone_core_autocrlf": false
+  },
+  "outcome": {
+    "dp1_o_isolated_current_source_candidate_completed": true,
+    "current_source_full_build_completed": true,
+    "x86_x64_package_profile_built": true,
+    "static_only_installer_manifest_passed": true,
+    "ps7_static_postbuild_passed": true,
+    "ps5_independent_static_postbuild_passed": true,
+    "strict_v2_read_ps5": true,
+    "strict_v2_read_ps7": true,
+    "actual_protected_snapshot_unchanged": true,
+    "product_regressions": []
+  },
+  "final_candidate": {
+    "product_version": "1.4.0-dev",
+    "package_profile": ["x86", "x64"],
+    "path": ".tmp/dual-product/dp1-o-candidate-20260907-c/repo/installer/YIME-1.4.0-dev-setup.exe",
+    "bytes": 41431585,
+    "sha256": "c55905a0c0cf518fb4eeda10f69d95c6d357b036461560a051accc67766699e2",
+    "unsigned_disabled": true,
+    "executed": false,
+    "arm64_note": "build.bat also produced and statically identified ARM64 cross-compiled PIMETextService artifacts; no ARM64 native execution or compatibility result is claimed"
+  },
+  "final_runner": {
+    "path": ".tmp/dual-product/dp1-o-candidate-20260907-c/result.json",
+    "bytes": 5470,
+    "sha256": "d922c851ef74895a65424248f176d76d30cdd6cccdd5cd1385f88afdb961af0a",
+    "commands_passed": 10,
+    "protected_snapshot_sha256_before": "7c3599619af5d82130f7852fc3c53b96302b2128cde86b54c69dba8c982b4ead",
+    "protected_snapshot_sha256_after": "7c3599619af5d82130f7852fc3c53b96302b2128cde86b54c69dba8c982b4ead"
+  },
+  "candidate_chain": {
+    "package_plan_sha256": "32e545d837280d754e871f84c9953a853929a402f6a16889a527004f5b5136b3",
+    "build_result": {
+      "schema_version": "yime-rime-pime-staged-nsis-build-result-membership-interval-v1",
+      "sha256": "78f8bfc5c067b8502f48c4fd33977482006fb08fe3a5cd948e14aaa59f12c29c",
+      "package_plan_artifact_count": 20,
+      "package_plan_matching_stage_binding_count": 22
+    },
+    "build_manifest": {
+      "bytes": 5543,
+      "sha256": "47cc17e98b4323a16bacd06dfffaf54cb036043b1634d35aa28253c2ff82fe36",
+      "static_only_passed": true
+    },
+    "ps7_postbuild": {
+      "path": ".tmp/dual-product/dp1-o-candidate-20260907-c/repo/.tmp/dual-product/dp1-postbuild-extraction-a83a52c4068849e987ad0a3f47d1570e/evidence/result.json",
+      "sha256": "da64f083cdd386115ea76fb7ea23435e86dfa6aa93a098aef4aeb42fc0c6bc20",
+      "installer_archive_entry_count": 181,
+      "nested_uninstaller_archive_entry_count": 11
+    },
+    "ps5_postbuild": {
+      "path": ".tmp/dual-product/dp1-o-candidate-20260907-c/repo/.tmp/dual-product/dp1-postbuild-extraction-dp1o-ps5-20260907-a/evidence/result.json",
+      "bytes": 47844,
+      "sha256": "4124c20af87da5c335becf63d53c3cf196254a1d8c6b44b2022b1449c994c005",
+      "installer_archive_entry_count": 181,
+      "nested_uninstaller_archive_entry_count": 11
+    },
+    "generated_uninstaller_sha256": "584a332db6e2e057045a72768962ccace78c1f7019803189e2a64d013d7e4198",
+    "historical_v1_receipt_sha256": "2ca2e39dd308678a33c84448351767046bae1f9655aa9e5666fa787091621ee5",
+    "strict_retained_v2_receipt": {
+      "path": ".tmp/dual-product/dp1-o-candidate-20260907-c/repo/installer/package-build-receipt.json",
+      "sha256": "0575afbf3138e24861a014dcb0bafadad1800c5b506c85a4db4dc99f03107f11",
+      "schema_version": "yime-rime-pime-package-build-receipt-v2",
+      "evidence_artifacts_durable": true,
+      "durability_scope": "isolated-clone-content-addressed-process-interruption-protocol"
+    }
+  },
+  "passing_suites": [
+    {
+      "name": "isolated-candidate-runner-contract-ps5",
+      "path": ".tmp/dual-product/dp1-o-runner-contract-final-ps5-20260907-a/result.json",
+      "sha256": "82428718742cdb325838581d5d860c563db540030bd513822e9032cbd8766ddd",
+      "passed": 15,
+      "total": 15,
+      "skipped": 0
+    },
+    {
+      "name": "isolated-candidate-runner-contract-ps7",
+      "path": ".tmp/dual-product/dp1-o-runner-contract-final-ps7-20260907-a/result.json",
+      "sha256": "82428718742cdb325838581d5d860c563db540030bd513822e9032cbd8766ddd",
+      "passed": 15,
+      "total": 15,
+      "skipped": 0
+    },
+    {
+      "name": "dual-product-source-baseline",
+      "path": ".tmp/dual-product/dp1-dp1o-final-a/baseline.json",
+      "sha256": "7d6066b59046c2dc6900f3702e9c283c05d53b96f2b7fcb23beface27e8b8945",
+      "source_count": 137,
+      "fixture_tests_passed": 57,
+      "pending_count": 6
+    }
+  ],
+  "passing_commands_without_result_artifact": [
+    {
+      "name": "strict-retained-v2-reader-ps5",
+      "exit_code": 0,
+      "receipt_sha256": "0575afbf3138e24861a014dcb0bafadad1800c5b506c85a4db4dc99f03107f11"
+    },
+    {
+      "name": "strict-retained-v2-reader-ps7",
+      "exit_code": 0,
+      "receipt_sha256": "0575afbf3138e24861a014dcb0bafadad1800c5b506c85a4db4dc99f03107f11"
+    },
+    {
+      "name": "build-guards-ps5-skip-packaged-rime",
+      "exit_code": 0
+    },
+    {
+      "name": "build-guards-ps7-skip-packaged-rime",
+      "exit_code": 0
+    },
+    {
+      "name": "baseline-unit-tests",
+      "command": "Python 3.14 tools/dual-product/test_baseline.py",
+      "exit_code": 0,
+      "passed": 57,
+      "total": 57
+    }
+  ],
+  "development_harness_regressions": [
+    {
+      "kind": "tool-validation-compatibility",
+      "outcome": "fixed-before-final-run",
+      "failed_result_path": ".tmp/dual-product/dp1-o-runner-contract-check-ps5-0dba6c305d014ea8b709f4fb2953a419/result.json",
+      "failed_result_sha256": "0f002fef18a49fa078c5b1970dcbf5cc474c06f26b030c8557815fe8d6bcd258",
+      "detail": "The generic evidence-file hard-link rule rejected the legitimate hard-linked Git for Windows executable. Tool validation now rejects reparse traversal and alternate data streams while allowing that installed-tool layout; evidence and candidate files retain the stricter rule."
+    },
+    {
+      "kind": "empty-array-json-serialization",
+      "outcome": "fixed-before-build-started",
+      "failed_output_path_created": false,
+      "detail": "Pipeline-form ConvertTo-Json produced null for the absent actual receipt-evidence directory. The runner now uses -InputObject so an empty protected tree is serialized deterministically."
+    },
+    {
+      "kind": "source-contract-false-positive-risk",
+      "outcome": "fixed-before-final-run",
+      "detail": "Substring checks could accept extra clone or checkout arguments. Contract and Python baseline now require exact argument-vector lines and include append/change negative cases."
+    },
+    {
+      "kind": "runner-source-identity-gap",
+      "outcome": "fixed-before-final-run",
+      "detail": "The executing runner was not initially bound to the cloned HEAD. It now requires its tracked repository path and a Git-filtered worktree blob equal to the exact HEAD blob before creating output."
+    },
+    {
+      "kind": "powershell5-junction-cleanup",
+      "outcome": "fixed-before-final-run",
+      "detail": "Windows PowerShell 5.1 Remove-Item raised a provider NullReferenceException for the negative-test junction. Cleanup now verifies the owned reparse leaf and deletes only that leaf through System.IO.Directory."
+    },
+    {
+      "kind": "postbuild-result-field-contract",
+      "outcome": "fixed-before-full-run",
+      "detail": "Review corrected the postbuild result leaf from postbuild-result.json to evidence/result.json and the nested archive count source to uninstaller_archive.entry_count."
+    },
+    {
+      "kind": "clone-eol-reproducibility",
+      "outcome": "fixed-and-rebuilt-from-fresh-clone",
+      "failed_result_path": ".tmp/dual-product/dp1-o-candidate-20260907-b/result.json",
+      "failed_result_bytes": 2571,
+      "failed_result_sha256": "f1b072659cdf270e696742e3c6feb317f3a646a0780bfb55c9acddec6f9c121f",
+      "detail": "Global core.autocrlf=true checked out go-backend/go.mod as CRLF and the Go tool rewrote it as LF, leaving a byte-dirty but Git-blob-identical file. The fresh no-checkout clone now pins clone-local core.autocrlf=false before checkout; the tracked-source cleanliness gate was not weakened."
+    }
+  ],
+  "actual_checkout_protection": {
+    "canonical_receipt": {
+      "path": "installer/package-build-receipt.json",
+      "sha256": "c18d1202ad78dcd6f8c1f74b34859a83489adb01fb156fa4e2546160aff5b0be",
+      "sidecar_sha256": "ae28a8f7ed01aa784ff657f465616d794204ca624c680fa4c159a4fde15d5a74",
+      "product_version": "1.4.0-dev",
+      "mutated": false
+    },
+    "actual_installer": {
+      "path": "installer/YIME-1.4.0-dev-setup.exe",
+      "bytes": 41456428,
+      "sha256": "32a7d66e06284d512675e40495b6e244a23630d2e368ac2cf73ce652e623efe2",
+      "mutated": false
+    },
+    "actual_receipt_evidence_directory_present": false,
+    "preserved_unrelated_worktree_files": [
+      {
+        "path": "docs/YIMECORE_L5_DAILY_USE_TEST_LOG.md",
+        "sha256": "45ef892de9f5651c386561f774a80d874d7ff88ed1fcd649adbad39a55d7c04b"
+      },
+      {
+        "path": "tools/yimecore/get-l5-daily-use-baseline.ps1",
+        "sha256": "abe618f6125dfd77dff772ff723dafd3773153385832bbc44528e52230df6ae4"
+      },
+      {
+        "path": "docs/YIMECORE_LOCAL12_L5_FINAL_CONFIRMATION_2026-09-06.md",
+        "sha256": "75f8b56a5dae9d871d1be87bd7fcca0757f4a983585b426a62129f12cb5bfab8"
+      }
+    ]
+  },
+  "source_files": [
+    {"path": ".github/workflows/ci.yaml", "sha256": "18a78cb31f81aa5f635f70d881ce1badc0425e7ece04bb2b8d8652cf75074357"},
+    {"path": "tools/dual-product/baseline.py", "sha256": "4ce70b656acadd406308c50b3bd4d86cf3b33b806c606fd3847f46d10726f812"},
+    {"path": "tools/dual-product/contract.json", "sha256": "2dbadc9b4afef73409d3ce4b968ac494c53326dd5f8218568ddc1796dd14d102"},
+    {"path": "tools/dual-product/test_baseline.py", "sha256": "2d5e51c8118e7cf0f9864ea6b513038d776e34bc006a2d3a2e567c27e6ce7fc8"},
+    {"path": "tools/dual-product/run-rime-pime-isolated-candidate.ps1", "sha256": "3d88bff9c6ba4c26d1904169136c2d0e21d3b97f73449c6b5a2236d05e9671fc"},
+    {"path": "tools/dual-product/test-rime-pime-isolated-candidate.ps1", "sha256": "c2d38c17746ce41e51c789085c5d31f679e4e88e625dda35f76cd01d2c41100b"}
+  ],
+  "governance": {
+    "runner_contract_wired": true,
+    "ci_contract_ps5_ps7_present": true,
+    "actual_and_candidate_product_versions_equal": true,
+    "actual_and_candidate_installer_leaf_equal": true,
+    "distinct_versioned_installer_leaf_for_dp1n": false,
+    "actual_canonical_migration_admitted": false,
+    "next_gate": "review and assign a distinct Rime/PIME product version, rebuild a fresh candidate, then separately review actual canonical migration"
+  },
+  "boundaries": {
+    "actual_canonical_migrated": false,
+    "actual_installer_published": false,
+    "real_installer_transaction_adapter_wired": false,
+    "generated_uninstaller_trusted": false,
+    "final_payload_closure": false,
+    "full_nsis_toolchain_input_closure": false,
+    "release_signing_complete": false,
+    "delivery_admitted": false,
+    "outer_tmp_retention_guaranteed": false,
+    "evidence_archived_outside_tmp_by_runner": false,
+    "hardware_power_loss_verified": false,
+    "directory_metadata_durability_verified": false,
+    "active_hostile_same_sid_physical_replacement_prevented": false,
+    "installed_or_registered_host_verified": false,
+    "arm64_native_execution_verified": false,
+    "dp1_complete": false,
+    "dp2_complete": false,
+    "dp3_complete": false,
+    "l5_complete": false,
+    "l6_complete": false
+  },
+  "safety": {
+    "installer_executed": false,
+    "uninstaller_executed": false,
+    "signing_process_executed": false,
+    "installed_product_process_started_or_stopped": false,
+    "product_registry_mutated": false,
+    "default_input_method_changed": false,
+    "production_rime_pime_touched": false,
+    "installed_yimecore_local12_touched": false,
+    "production_user_data_read_or_written": false,
+    "user_text_recorded": false,
+    "frozen_or_historical_payload_executed": false,
+    "fixture_roots": ".tmp/dual-product"
+  }
+}
