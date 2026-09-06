@@ -232,6 +232,12 @@ def transaction_source_status(sources):
     installer_receipt_transaction_test = sources[
         "tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1"
     ]
+    isolated_candidate_runner = sources[
+        "tools/dual-product/run-rime-pime-isolated-candidate.ps1"
+    ]
+    isolated_candidate_test = sources[
+        "tools/dual-product/test-rime-pime-isolated-candidate.ps1"
+    ]
     receipt_v2_supersession = sources["tools/dual-product/rime-pime-receipt-v2-supersession.ps1"]
     receipt_v2_supersession_module = sources["tools/dual-product/rime-pime-receipt-v2-supersession.psm1"]
     receipt_v2_supersession_test = sources["tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1"]
@@ -716,6 +722,33 @@ def transaction_source_status(sources):
             "directory_metadata_durability_verified=$false",
             "active_same_sid_physical_replacement_prevention_verified=$false",
         ]),
+        (isolated_candidate_runner, [
+            "'clone', '--local', '--no-hardlinks', '--no-checkout', '--no-tags'",
+            "$gitCommand = @(Get-Command -Name $GitPath -CommandType Application -ErrorAction Stop)[0]",
+            "$GitPath = Assert-ToolApplicationFile $gitCommand.Source 'Git client'",
+            "'checkout', '--detach', $head",
+            "'build-current-source'",
+            "'static-installer-manifest-check'",
+            "'-StaticOnly'",
+            "'static-postbuild-extraction'",
+            "'finalize-canonical-receipt-v2'",
+            "$retainedV2 = Publish-RimePimePackageReceiptV2Supersession",
+            "$strictV2 = Read-RimePimePackageBuildReceiptV2",
+            "Protected actual repository state changed during isolated candidate work.",
+            "distinct_versioned_installer_leaf_for_dp1n = [bool]$distinctVersionedInstallerLeaf",
+            "actual_canonical_migration_admitted = $false",
+            "directory_metadata_durability_verified = $false",
+            "full_nsis_toolchain_input_closure = $false",
+        ]),
+        (isolated_candidate_test, [
+            "yime-rime-pime-isolated-candidate-contract-test-v1",
+            "existing-output-is-rejected-before-clone",
+            "reparse-repository-root-is-rejected",
+            "full-static-chain-order-is-fixed",
+            "product-install-sign-and-dp1n-entrypoints-are-absent",
+            "full_candidate_build_executed = $false",
+            "actual_canonical_touched = $false",
+        ]),
     ):
         missing = [anchor for anchor in anchors if anchor not in body]
         if missing:
@@ -728,6 +761,25 @@ def transaction_source_status(sources):
     ))
     if builder_import_order != tuple(sorted(builder_import_order)):
         fail("Rime/PIME builder module import safety order changed")
+    isolated_candidate_order = tuple(isolated_candidate_runner.index(anchor) for anchor in (
+        "'build-current-source'",
+        "'seal-package-plan'",
+        "'build-disabled-installer'",
+        "'write-build-manifest'",
+        "'static-installer-manifest-check'",
+        "'static-postbuild-extraction'",
+        "'finalize-canonical-receipt-v2'",
+        "$retainedV2 = Publish-RimePimePackageReceiptV2Supersession",
+        "$strictV2 = Read-RimePimePackageBuildReceiptV2",
+    ))
+    if isolated_candidate_order != tuple(sorted(isolated_candidate_order)):
+        fail("Rime/PIME isolated current-source candidate sequence changed")
+    if any(name in isolated_candidate_runner for name in (
+            "-AllowLocalMachine", "sign-release.ps1", "verify-release-signatures.ps1",
+            "Install-PIME-Test.cmd", "Uninstall-PIME-Test.cmd",
+            "rime-pime-installer-receipt-transaction.ps1")):
+        fail("Rime/PIME isolated current-source candidate runner gained a prohibited product entrypoint")
+    isolated_candidate_runner_source_contract_wired = True
     if core.index("New-Item -ItemType Directory -Path $stagingRoot") >= core.index("$preinstall = Invoke-UninstallCore"):
         fail("YimeCore active mutation moved before complete package staging")
     ci_postbuild_step = one(
@@ -777,6 +829,11 @@ def transaction_source_status(sources):
         r"(?ms)^      - name: Test DP1-N isolated installer and receipt transaction\s*$.*?(?=^      - name: |\Z)",
         ci,
         "CI DP1-N isolated installer/receipt transaction step",
+    ).group()
+    ci_isolated_candidate_step = one(
+        r"(?ms)^      - name: Test DP1-O isolated current-source candidate runner contract\s*$.*?(?=^      - name: |\Z)",
+        ci,
+        "CI DP1-O isolated current-source candidate runner contract step",
     ).group()
     ci_supersession_step = one(
         r"(?ms)^      - name: Test DP1-J isolated receipt-v2 supersession protocol\s*$.*?(?=^      - name: |\Z)",
@@ -911,6 +968,21 @@ def transaction_source_status(sources):
         ci_installer_receipt_transaction_step and
         all(re.search(pattern, ci_installer_receipt_transaction_step) is None
             for pattern in prohibited_dp1i_ci_patterns)
+    )
+    isolated_candidate_runner_contract_ci_ps5_ps7_present = (
+        ci_isolated_candidate_step.count("test-rime-pime-isolated-candidate.ps1") == 2 and
+        ci_isolated_candidate_step.count("-OutputRoot") == 2 and
+        ".tmp\\dual-product\\dp1-o-runner-contract-ci-ps5-$runId" in ci_isolated_candidate_step and
+        ".tmp\\dual-product\\dp1-o-runner-contract-ci-ps7-$runId" in ci_isolated_candidate_step and
+        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in
+        ci_isolated_candidate_step and
+        "PowerShell 5.1 DP1-O isolated-candidate runner contract failed with exit code $LASTEXITCODE" in
+        ci_isolated_candidate_step and
+        "run-rime-pime-isolated-candidate.ps1" not in ci_isolated_candidate_step and
+        all(name not in ci_isolated_candidate_step for name in (
+            "build-rime-pime-installer.ps1", "finalize-rime-pime-package-receipt-v2.ps1",
+            "sign-release.ps1", "Install-PIME-Test.cmd", "Uninstall-PIME-Test.cmd",
+        ))
     )
     rime_sid_chain_anchors = ("RequestExecutionLevel user" in nsis and
                               "Function bootstrapTargetUser" in nsis and
@@ -1603,6 +1675,8 @@ def transaction_source_status(sources):
             not synthetic_postbuild_ci_is_host_tool_independent or
             not synthetic_dp1h_ci_contracts_present or
             not installer_receipt_transaction_isolated_contract_wired or
+            not isolated_candidate_runner_source_contract_wired or
+            not isolated_candidate_runner_contract_ci_ps5_ps7_present or
             'InstallLayoutOrTip(w "${YIME_TIP}"' not in nsis or
             'Get-ChildItem -LiteralPath "Registry::HKEY_USERS"' in pime_cleanup):
         fail("Rime/PIME registration/SID/transaction status changed; dedicated review required")
@@ -1709,6 +1783,10 @@ def transaction_source_status(sources):
         "rime_pime_installer_receipt_transaction_actual_canonical_migration_executed": False,
         "rime_pime_installer_receipt_transaction_full_real_transaction_passed": False,
         "rime_pime_installer_identity_replacement_transaction_wired": False,
+        "rime_pime_isolated_current_candidate_runner_source_contract_wired": isolated_candidate_runner_source_contract_wired,
+        "rime_pime_isolated_current_candidate_runner_contract_ci_ps5_ps7_present": isolated_candidate_runner_contract_ci_ps5_ps7_present,
+        "rime_pime_isolated_current_candidate_full_build_executed_by_baseline": False,
+        "rime_pime_isolated_current_candidate_actual_canonical_migrated": False,
         "rime_pime_v2_to_v2_supersession_wired": v2_to_v2_supersession_wired,
         "rime_pime_retained_receipt_ci_ps5_ps7_present": retained_receipt_ci_ps5_ps7_present,
         "rime_pime_installed_live_acceptance_passed": False,

@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 128)
-        self.assertEqual(len(self.receipt["source_manifest"]), 135)
+        self.assertEqual(len(contract["source_paths"]), 130)
+        self.assertEqual(len(self.receipt["source_manifest"]), 137)
         for path in (
             "tools/dual-product/rime-pime-nsis-toolchain-closure.ps1",
             "tools/dual-product/rime-pime-nsis-toolchain-closure.psm1",
@@ -168,6 +168,8 @@ class OwnershipTests(unittest.TestCase):
             "tools/dual-product/rime-pime-installer-receipt-transaction.ps1",
             "tools/dual-product/rime-pime-installer-receipt-transaction.psm1",
             "tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1",
+            "tools/dual-product/run-rime-pime-isolated-candidate.ps1",
+            "tools/dual-product/test-rime-pime-isolated-candidate.ps1",
             "tools/dual-product/test-rime-pime-transaction-replay-model.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.psm1",
@@ -421,6 +423,32 @@ class OwnershipTests(unittest.TestCase):
         ):
             with self.subTest(field=field):
                 self.assertFalse(status[field])
+
+    def test_dp1o_isolated_current_candidate_runner_is_wired_without_execution_or_promotion(self):
+        status = self.receipt["transaction_source"]
+        self.assertTrue(status["rime_pime_isolated_current_candidate_runner_source_contract_wired"])
+        self.assertTrue(status["rime_pime_isolated_current_candidate_runner_contract_ci_ps5_ps7_present"])
+        self.assertFalse(status["rime_pime_isolated_current_candidate_full_build_executed_by_baseline"])
+        self.assertFalse(status["rime_pime_isolated_current_candidate_actual_canonical_migrated"])
+        self.assertFalse(status["rime_pime_installer_identity_replacement_transaction_wired"])
+        self.assertFalse(status["rime_pime_delivery_admitted"])
+
+    def test_dp1o_sequence_or_negative_boundary_tamper_fails_closed(self):
+        original = self.receipt["source_manifest"]
+        contract_paths = subject.json.loads(
+            subject.CONTRACT.read_text(encoding="utf-8-sig")
+        )["source_paths"]
+        for old, new in (
+            ("'static-installer-manifest-check'", "'removed-static-installer-manifest-check'"),
+            ("actual_canonical_migration_admitted = $false", "actual_canonical_migration_admitted = $true"),
+        ):
+            with self.subTest(anchor=old):
+                sources = {path: (subject.ROOT / path).read_text(encoding="utf-8-sig")
+                           for path in original if path in contract_paths}
+                path = "tools/dual-product/run-rime-pime-isolated-candidate.ps1"
+                sources[path] = sources[path].replace(old, new, 1)
+                with self.assertRaisesRegex(ValueError, "anchor changed|sequence changed"):
+                    subject.transaction_source_status(sources)
 
     def test_dp1n_source_contract_anchor_tamper_fails_closed(self):
         cases = (
