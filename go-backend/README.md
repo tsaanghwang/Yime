@@ -1,6 +1,8 @@
-# PIME Go 后端
+# Yime Go 源码与 Rime/PIME 后端指南
 
-使用 Go 语言实现的 PIME 输入法后端框架。
+本目录同时容纳 Rime/PIME 产品的 Go 后端框架，以及 YimeCore 产品的独立内核、Broker、运行维护工具等源码。按[双产品开发计划](../docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)，YimeCore 为主要功能开发方向，Rime/PIME 持续稳定维护；两者可各自单装或同时安装，运行、升级、卸载及可写数据必须互相独立，对方不存在时仍能工作。
+
+下文的 `server.exe`、PIME 配置、协议和构建指引仅适用于 **Rime/PIME 产品**，不能视为 YimeCore 的启动或安装流程。YimeCore 请使用[独立开发与维护入口](../tools/yimecore/README.md)。三种安装组合须分别验收；统一的“三选一”安装入口尚未实现。
 
 ## 项目结构
 
@@ -12,12 +14,12 @@ go-backend/
 │   ├── service.go      # 文本服务接口
 │   └── service_manager.go  # 服务管理器
 ├── input_methods/
-│   └── yime/           # 唯一产品输入法；Rime 后端与原生工具
+│   └── yime/           # Yime 代码与数据；含 Rime 后端及独立 Core/Broker 等包
 ├── go.mod              # Go 模块定义
 └── README.md           # 说明文档
 ```
 
-## 快速开始
+## 快速开始（Rime/PIME）
 
 ### 1. 编译
 
@@ -74,11 +76,11 @@ build/
 
 产品包只注册 `input_methods/yime/ime.json`。目录扫描不会为未知名称提供默认输入法实现；新增产品输入法必须显式实现并注册工厂，不能回退到测试或演示服务。
 
-## 测试输入法
+## 测试输入法（Rime/PIME）
 
 服务器协议集成测试使用 `server_integration_test.go` 内的测试专用假服务。该 fixture 不进入生产二进制，也不在安装包中生成输入法目录。
 
-## 协议说明
+## 协议说明（Rime/PIME）
 
 ### 通信方式
 

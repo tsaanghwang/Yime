@@ -1,5 +1,11 @@
 # 音元输入法架构文档
 
+> 适用范围更新（2026-09-05）：本文现有进程图、PIME 协议、Rime 会话与部署描述属于 **Rime/PIME 版架构**，不是整个 Yime 项目的唯一运行架构。原图和历史技术记录保留，不改作 YimeCore 已实现能力的证据。
+
+当前关系见 [Yime 双独立产品开发计划](project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)：YimeCore 是主要开发线，Rime/PIME 版持续稳定维护；两版按可单独安装或同时安装、各自完整运行和维护、可写数据互不依赖的契约开发。YimeCore 的 TSF、Runtime、Broker 与静态数据边界见[本机产品契约](project/YIMECORE_LOCAL_PRODUCT_CONTRACT.md)，开发入口见[本机实施计划](project/YIMECORE_LOCAL_PRODUCT_IMPLEMENTATION_PLAN.md)。
+
+源码与离线规范源可以共享，但本版不能借用另一版的已安装组件、可写目录或维护进程。不得依据本文旧的 PIME 构建、安装或重启说明自动操作生产 Rime/PIME 来完成 YimeCore 工作；真实 Rime 回归、可选行为对照与自研版无 Rime 独立验收按[测试指南的作用域](YIME_TESTING_GUIDE.md)分别执行和记证。
+
 > 版本：2026-07-22
 > 配套文档：[项目综合评估](YIME_PROJECT_ASSESSMENT.md) | [可用性评估](YIME_USABILITY_ASSESSMENT.md) | [开发路线图](YIME_DEVELOPMENT_ROADMAP.md)
 
@@ -698,7 +704,7 @@ go test ./input_methods/yime -run 'Test(NativeBackendKeepsRimeOwnedCandidatePagi
 | `TestJoinRuneLookupPartialMissing` | 反查缺失字符占位符 |
 | `TestApplyUserLexiconWritesAllThreeModes` | 用户词库跨方案同步 |
 | `TestSyncRimeSchemasRefreshesAllModes` | 升级后的三套用户 schema 指向各自词库 |
-| `TestReleasePipelineSignsPayloadInstallerAndUninstaller` | 安装路径兜底、Go 后端打包、标准组件和签名链 |
+| `TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease` | 安装路径兜底、Go 后端打包、签名钩子，以及未封口卸载器的标签发布硬阻断 |
 
 ### 5.2 边界场景测试
 

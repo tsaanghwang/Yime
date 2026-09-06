@@ -121,7 +121,7 @@ ai1	Hffu
 }
 ```
 
-该文件不参与 Rime 按键解析和词库编码；Rime 内部仍使用 `yime_pinyin_codes.tsv` 中的 ASCII 编码。`fonts/YinYuan-Regular.ttf` 提供 PUA 字形，由安装包注册到 Windows 字体目录。
+该文件不参与 Rime 按键解析和词库编码；Rime 内部仍使用 `yime_pinyin_codes.tsv` 中的 ASCII 编码。`fonts/YinYuan-Regular.ttf` 提供 PUA 字形，随产品后端包携带，并由每个 TSF 宿主进程以 `FR_PRIVATE` 私有加载；安装器不写 Windows 字体目录或系统字体注册表。
 
 ### yime_full / yime_variable / yime_shorthand.dict.yaml
 

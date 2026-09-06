@@ -1,5 +1,11 @@
 # 音元输入法开发路线图
 
+> 适用范围更新（2026-09-05）：本文保留为 **Rime/PIME 版的稳定维护路线图**；下列版本、阶段和能力记录不再代表整个项目的唯一主线，也不构成 Rime/PIME 版自动退役安排。
+
+当前开发顺序以 [Yime 双独立产品开发计划](project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)为准：YimeCore 是主要开发线，Rime/PIME 版持续稳定维护。两版按可单独安装或同时安装、运行与维护互不依赖、可写数据分别归属的契约开发；这不是全组合安装验收已经完成的声明。
+
+YimeCore 当前工作使用[本机实施计划](project/YIMECORE_LOCAL_PRODUCT_IMPLEMENTATION_PLAN.md)和[独立工具入口](../tools/yimecore/README.md)。不得因本文的旧构建、安装或进程指引，为 YimeCore 任务自动安装、重启或改动生产 Rime/PIME。受影响的 Rime 及共同语流产物仍须执行各自必要回归；可选行为对照与 YimeCore 无 Rime 独立验收分别记证。
+
 > 更新日期：2026-08-18
 > 当前版本：`1.4.0-dev`
 > 当前阶段：开发版观察期、运行数据闭环加固与可信签名准备

@@ -1,5 +1,11 @@
 # Yime 测试与验证指南
 
+> 适用范围更新（2026-09-05）：先按 [Yime 双独立产品开发计划](project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)标明共同源、Rime/PIME 版、YimeCore 版或共存安装影响面，再选择对应测试。本文现有 PIME 构建、注册、重装及进程操作不是所有 YimeCore 任务的通用前置条件。
+
+YimeCore 是主要开发线，使用[本机实施计划](project/YIMECORE_LOCAL_PRODUCT_IMPLEMENTATION_PLAN.md)和[独立工具入口](../tools/yimecore/README.md)完成本版核心、Broker、TSF 及无 Rime 运行验收。Rime/PIME 版继续稳定维护；两版按可单装或同装、运行维护与可写数据独立的契约分别验证。执行一版测试不授权安装、停止、重启或改写另一版，尤其不得自动操作生产 PIME 或用户默认输入法。
+
+共享纯逻辑测试可以复用。受影响的 Rime 适配及共同语流音变产物仍须通过必要的三模式真实 Rime 回归，并在隔离 Rime 链中执行；该结果证明 Rime 产物兼容性，不代替 YimeCore 无 Rime 独立验收。额外 Rime 行为对照是显式可选的排查手段，不能与上述必需回归混淆。以下历史验证记录保留原日期与证据级别，不据此推定两版独立或共存安装已通过。
+
 本文档说明 Yime 的测试分层、CI 稳定集、真实 Rime 测试和安装态验证。测试强度应随修改风险增加，TSF/语言栏、候选分页和部署路径不能只依赖单元测试。
 
 ## 1. 测试层级

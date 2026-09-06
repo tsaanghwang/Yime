@@ -2,6 +2,10 @@
 
 本文档定义 Windows 发布物从版本确认、构建、测试、签名、打包到安装验证的标准流程。开发测试包可以不签名，但对外发布包必须使用受信任的 RSA 代码签名证书。
 
+> 2026-09-06 当前 DP1-E 状态：Rime/PIME 构包只形成不可运行的未签名静态候选；安装和卸载最早入口均无条件阻断，标签发布 job 也被阻断。它只封存声明的产品 PE 构建输入，不是完整安装载荷闭包。在完整暂存、非 PE 清单、打包后解包比对、持久事务及另行授权的 installed/live 验证完成前，不得按本文后续命令安装或发布该候选。
+
+当前 `Build.ps1` 和 `tools/build-rime-pime-installer.ps1` 都只允许未签名禁用构建；若进程中存在证书指纹、强制签名、`signtool` 或时间戳变量，它们会在读取 plan／调用 NSIS 前拒绝。签名只能走受保护发布流程，不能靠直接调用 wrapper 触发。
+
 ## 1. 发布前条件
 
 - 工作区干净，发布目标提交已合入并推送到 `main`；`yime-stable` 仅作为保留的集成分支
@@ -90,7 +94,9 @@ $env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
 
 标签 `v*` 会触发正式发布签名门禁。仓库必须建立名为 `release-signing` 的 GitHub Environment，并把 `YIME_SIGN_CERT_BASE64`（PFX 的 Base64）和 `YIME_SIGN_CERT_PASSWORD` 设为该 Environment 的 secrets，而不是仓库级 secrets。该 Environment 必须配置至少一名独立 required reviewer，且禁止发起工作流的人自行批准；`v*` 标签还必须通过 ruleset 限制为受保护发布维护者才能创建或更新。缺少密钥或人工批准时，签名任务会直接停住或失败。
 
-签名 job 会把待签名的标签产物与签名实现分开：产物来自标签构建，证书导入、签名、验证和 manifest 脚本则从仓库默认分支独立检出到 `.trusted-signing`，并在证书进入 runner 后只执行这一份受保护实现。`.github/workflows/ci.yaml`、`tools/sign-*.ps1`、`tools/import-release-signing-certificate.ps1`、`tools/verify-*.ps1` 和 `installer/**` 都是 CODEOWNERS 保护面；分支保护必须要求 Code Owner 审批后才能合入默认分支。标签产物名为 `YIME-signed-installer`；PR 与普通分支产物名为 `YIME-unsigned-test-installer-{sha}`，不得作为公开发布包。
+签名 job 会把待签名的标签产物与签名实现分开：产物来自标签构建，证书导入、签名、验证和 manifest 脚本则从仓库默认分支独立检出，随后在证书进入 runner 前整体移到 `$RUNNER_TEMP/yime-trusted-signing`，并只执行这一份受保护实现。不得把该第二 checkout 留在主源码工作树或用 `.gitignore` 隐藏它，否则干净发布的 source identity 会被污染或掩盖。`.github/workflows/ci.yaml`、`tools/sign-*.ps1`、`tools/import-release-signing-certificate.ps1`、`tools/verify-*.ps1` 和 `installer/**` 都是 CODEOWNERS 保护面；分支保护必须要求 Code Owner 审批后才能合入默认分支。
+
+2026-09-06 的 tag 构包仍被硬阻断。解除前还必须把默认分支上的受信签名实现解析为一个受保护 commit，在两个签名 job 间传递并核对同一 commit，且把该工具 commit 写入最终 provenance；不得让两个 job 各自解析一个可能变化的默认分支。还必须锁定 `sign → verify → manifest → upload` 的相对顺序，并对外层签名后的 clean、`signedRelease=true` manifest 再执行 StaticOnly 验证。完成这些门禁后，标签产物名才可使用 `YIME-signed-installer`；PR 与普通分支产物名为 `YIME-unsigned-test-installer-{sha}`，不得作为公开发布包。
 
 安装器仅在系统缺少 VC++ Runtime 时下载 Microsoft redistributable。下载落在 NSIS 随机私有的 `$PLUGINSDIR`，执行前由 `tools/verify-microsoft-authenticode.ps1` 验证 Windows 信任链、Microsoft Corporation 签名者和代码签名 EKU；任何下载或签名异常都会删除文件并中止安装，不能退回共享 `$TEMP` 路径或跳过验证。
 
@@ -130,7 +136,8 @@ cmd /c build.bat
 - `go-backend/build/go-backend/input_methods/` 只包含带 `ime.json` 的运行时输入法目录
 - 安装包和内部二进制签名有效
 - 安装包 SHA-256 已记录在发布说明中
-- `installer/build-manifest.json` 记录版本、提交、分支、签名状态及关键产物 SHA-256；回退时按该清单选择上一提交制品
+- `installer/build-manifest.json` schema 3 记录版本、提交、分支、签名状态、源码身份状态及声明产物 SHA-256。只有 `sourceIdentity.kind=git-commit`、`treeDirty=false` 且环境提交与当前 `HEAD` 一致时，commit 才是完整源码身份；本地脏树明确记作 `working-tree`，commit 只给出基点，不能单独用于复现或回退
+- manifest 的 `signedRelease` 是受保护发布流程传入的期望状态，不是独立的 Authenticode 证明；必须同时保留其前一步 `verify-release-signatures.ps1 -IncludeInstaller` 的成功证据，脱离该顺序单独运行 manifest writer 不得据此宣称签名有效
 - 全新安装、开发卸载后安装和已有版本升级三种情况下，目标目录都保持为 `C:\Program Files (x86)\YIME`
 
 ```powershell

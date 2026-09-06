@@ -1,14 +1,24 @@
 # 音元输入法 Windows 版
 
-**音元拼音** — 基于 [PIME](https://github.com/EasyIME/PIME) 框架和 [Rime](https://rime.im) 引擎的 Windows 中文音码输入法。
+**音元拼音** — 面向 Windows 的中文音码输入法，按两个独立产品开发：[Rime](https://rime.im)/[PIME](https://github.com/EasyIME/PIME) 版与自研内核、中层和外层的 YimeCore 版。
 
 [English](README.md)
+
+按照 [2026-09-05 双产品开发计划](docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)，YimeCore 为主要功能开发方向，Rime/PIME 持续稳定维护。用户可只装任一方，也可同时安装；各自必须独立运行、升级、卸载和维护可写数据，不依赖对方存在。三种安装组合仍需各自验收，统一的“三选一”安装入口尚未实现。
+
+当前 [DP1-H 证据](docs/project/YIME_DUAL_PRODUCT_DP1_H_CANONICAL_V2_NSIS_INPUT_BOUNDARY_2026-09-06.md)已把一个 x86/x64 Rime/PIME 禁用候选、精确 stage、生成 include、构建结果和静态归档核对绑定进 canonical v2 receipt。固定 NSIS 分发树覆盖 17 个目录中的 303 个已知文件，但同一 SID 进程仍能在两次快照之间瞬时增删未列插件，因此完整工具链闭包明确为 false。候选仍未签名、默认禁用、从未执行、不可交付并依赖非耐久证据；v2 后续封存、持久事务与 installed/live 验收仍待完成。
+
+当前 [DP1-I 证据](docs/project/YIME_DUAL_PRODUCT_DP1_I_FIXTURE_TRANSACTION_JOURNAL_2026-09-06.md)新增了仅限夹具的哈希链 journal、幂等 replay 判定、类型化合成注册快照和 manifest-driven leaf-first removal。PowerShell 5.1／7 的 journal 各 114/114，replay model 各 16/16；原 24 阶段、96 故障例矩阵仍各 9/9。实际创建和删除的只有仓内全新 `.tmp` 夹具；`Resume` 不执行 rollback／cleanup adapter，模块重载不是真实进程崩溃，跨进程 replay／lock、断电／目录耐久、真实注册表恢复及并发替换安全均未证明。当前没有接入 engine／installer；安装、发布、DP1–DP3、L5、L6 门禁全部保持阻断。
+
+当前 [DP1-J 证据](docs/project/YIME_DUAL_PRODUCT_DP1_J_ISOLATED_MEMBERSHIP_AND_SUPERSESSION_2026-09-06.md)新增两套仅限夹具的协议：连续 NSIS tree-membership monitor 在 PowerShell 5.1／7 各 15/15，内容寻址 generation、原子 head 与密封 journal supersession 模型各 16/16。监测尚未包围真实 `makensis`；supersession 未调用严格 receipt-v2 reader、迁移耐久 evidence 或修改 canonical receipt。跨进程崩溃／replay、目录耐久、hardlink、并发替换、真实事务 adapter 及全部 installed/live 门禁仍待办。
+
+下方功能、构建、安装、首次运行和调试说明均针对 **Rime/PIME 产品**。YimeCore 使用独立的[开发与维护入口](tools/yimecore/README.md)，不能套用下方 PIME 重装或注册命令。
 
 音元输入法将拼音音节映射到结构化的键盘编码，首音遵循易记的规律（zh/ch/sh → 7/8/9，j/q/x → 3/2/1，z/c/s → 6/5/4）。正式安装提供变长、等长和省键三种模式，三者都从同一份整理后的核心候选集确定性派生。
 
 等长模式的每个音节由一个首音和位于其后的干音构成；干音固定包含呼音、主音、末音三个音元。变长模式保留实首音或虚首音，只合并组成干音的相邻相同音元：三者不同时保持不变，只有前两者相同时合并前两者，只有后两者相同时合并后两者，三者相同时合并为一个音元。省键模式再从变长结果省略符合条件的干音中调音元。详细结构见[数据文件格式参考](docs/YIME_DATA_FORMAT_REFERENCE.md#首音干音与三模式派生)。
 
-## 功能特性
+## 功能特性（Rime/PIME）
 
 - **动态组句** — 1124631 条已编码单字和短部件负责组句，Rime 可组合未预装长词并学习人工纠正
 - **证据化核心** — 候选按 BCC 优先、RIME-LMDG 补充、结构保底策略排序，来源和哈希写入清单
@@ -35,7 +45,7 @@ libIME2/                 上游 IME 库
 docs/                    开发文档
 ```
 
-当前默认运行架构和验收证据见[默认动态词库运行方案](docs/DEFAULT_DYNAMIC_LEXICON_RUNTIME.md)。
+Rime/PIME 产品的运行架构和验收证据见[默认动态词库运行方案](docs/DEFAULT_DYNAMIC_LEXICON_RUNTIME.md)。
 
 ## 分支
 
@@ -48,7 +58,7 @@ docs/                    开发文档
 Yime 自己维护编码、词典、布局与离线评估真源。旧 Python 原型是脱离产品链的维护/数据清理工作区；
 Yime 默认禁止读取它或任何其它 Git 仓库。具体门禁见[仓库数据边界](docs/project/YIME_REPOSITORY_DATA_BOUNDARY.md)。
 
-## 构建要求
+## 构建要求（Rime/PIME）
 
 - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)，含 C++ 桌面开发工作负载
 - [CMake](https://cmake.org/) 3.5+
@@ -56,7 +66,7 @@ Yime 默认禁止读取它或任何其它 Git 仓库。具体门禁见[仓库数
 - [Go](https://go.dev/) 1.26.4（CI/可复现构建版本；`go.mod` 的 1.21 是语言兼容下限）
 - [Git](https://git-scm.com/)
 
-## 构建
+## 构建（Rime/PIME）
 
 ### 克隆和初始化
 
@@ -92,7 +102,7 @@ Go 后端，并执行 PE 架构门禁。无需再单独进入 `go-backend` 重�
 `YIME_SIGN_CERT_SHA1`，使用受信任提供商签发的 RSA 代码签名证书；仅有
 VERSIONINFO 不能保证通过 Smart App Control。
 
-## 安装
+## 安装（Rime/PIME）
 
 ### 开发重装
 
@@ -133,7 +143,7 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x86\PIMETextService.dll"
 regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 ```
 
-## 首次运行检查清单
+## 首次运行检查清单（Rime/PIME）
 
 - [ ] 克隆仓库，初始化子模块，确认工具链已安装
 - [ ] 若整理后的核心真源有变更，运行 `tools\deploy-yime-rime-data.ps1 -InputPath <two_level_full.dict.yaml> -EvidenceManifest <dictionary.manifest.json> -PronunciationEntries <entries.tsv> -SourceRevision <提交>`（参见 [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md)）
@@ -178,7 +188,7 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 
 候选窗不直接用标点键面作序号，因为连续标点不易辨认。与流行拼音输入法不同，Yime 有意不采用裸数字键选词：Base 层 `0`…`9` 十个数字键全部属于编码输入，候选出现时也不会切换含义；按序号选词统一使用 Shift+1…Shift+9，Shift+0 不选词。
 
-## 调试
+## 调试（Rime/PIME）
 
 带控制台窗口启动：
 
@@ -192,6 +202,9 @@ PIMELauncher.exe /console
 
 | 文档 | 说明 |
 |------|------|
+| [双产品开发计划](docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md) | 独立产品、可选共存、开发优先级与剩余验收门禁 |
+| [DP1-J 隔离成员监测与 supersession](docs/project/YIME_DUAL_PRODUCT_DP1_J_ISOLATED_MEMBERSHIP_AND_SUPERSESSION_2026-09-06.md) | fixture-only 连续成员监测、supersession 协议证据及明确非声明 |
+| [YimeCore 开发入口](tools/yimecore/README.md) | 自研产品独立构包、试验与维护边界 |
 | [项目综合评估](docs/YIME_PROJECT_ASSESSMENT.md) | 两轮全面评估结论、已完成修复、验证证据和剩余风险 |
 | [架构文档](docs/YIME_ARCHITECTURE.md) | 系统架构、关键机制、数据文件 |
 | [可用性评估](docs/YIME_USABILITY_ASSESSMENT.md) | 当前可用性问题及优先级 |
@@ -217,7 +230,7 @@ PIMELauncher.exe /console
 
 ## 与 PIME 的关系
 
-Yime for Windows 是从 [EasyIME/PIME](https://github.com/EasyIME/PIME)
+Yime for Windows 的 Rime/PIME 版是从 [EasyIME/PIME](https://github.com/EasyIME/PIME)
 派生并由 Yime 项目独立维护的下游发行版。Yime 复用并修改了 PIME 的 Windows
 TSF 文本服务宿主、进程启动器、后端通信协议以及安装与注册基础设施，并保留相关
 的上游 Git 历史、版权声明和许可证条款。音元编码体系、Rime 集成、词库、维护工具
