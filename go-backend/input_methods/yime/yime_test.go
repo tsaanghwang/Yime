@@ -67,7 +67,7 @@ func (b *directSegmentNavigationTestBackend) SetCompositionCaret(rawPosition int
 
 func (b *segmentNavigationTestBackend) Initialize(string, string, bool) bool { return true }
 func (b *segmentNavigationTestBackend) EnsureSession() bool                  { return true }
-func (b *segmentNavigationTestBackend) DestroySession()                      {}
+func (b *segmentNavigationTestBackend) DestroySession() bool                 { return true }
 func (b *segmentNavigationTestBackend) ClearComposition()                    {}
 func (b *segmentNavigationTestBackend) SelectCandidate(index int) bool {
 	if b.stateIndex+1 >= len(b.states) {
@@ -400,7 +400,9 @@ func (b *redeployTestBackend) Redeploy() bool {
 	if !b.redeployResult {
 		return false
 	}
-	b.DestroySession()
+	if !b.DestroySession() {
+		return false
+	}
 	b.EnsureSession()
 	return true
 }
@@ -435,12 +437,13 @@ func (b *testBackend) EnsureSession() bool {
 	return true
 }
 
-func (b *testBackend) DestroySession() {
+func (b *testBackend) DestroySession() bool {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	b.destroyCount++
 	b.session = false
 	b.clearCompositionLocked()
+	return true
 }
 
 func (b *testBackend) ClearComposition() {
@@ -722,6 +725,22 @@ func newTestIME() *IME {
 		ime.recordRuntimeChange(event)
 	}
 	return ime
+}
+
+func TestIMECloseWithErrorDestroysItsNativeSession(t *testing.T) {
+	backend := newTestBackend()
+	backend.session = true
+	ime := &IME{
+		TextServiceBase: pime.NewTextServiceBase(&pime.Client{ID: "shutdown-fixture"}),
+		backend:         backend,
+	}
+	if err := ime.CloseWithError(); err != nil {
+		t.Fatalf("CloseWithError: %v", err)
+	}
+	if backend.session || backend.destroyCount != 1 {
+		t.Fatalf("close left session=%t destroyCount=%d, want false/1",
+			backend.session, backend.destroyCount)
+	}
 }
 
 type modeAnnotationFixture struct {

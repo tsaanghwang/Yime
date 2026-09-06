@@ -51,3 +51,19 @@ add_executable(PIMERpcResponseTests
 )
 target_compile_options(PIMERpcResponseTests PRIVATE /utf-8)
 add_test(NAME PIMERpcResponseTests COMMAND PIMERpcResponseTests)
+
+# Read-only TSF registration convergence probe. The installer uses the
+# architecture-matched copies for pre-mutation admission and for post-register
+# or post-removal convergence; the probe never mutates a profile itself.
+add_executable(PIMERegistrationStatus RegistrationStatus.cpp)
+target_compile_definitions(PIMERegistrationStatus PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
+target_compile_options(PIMERegistrationStatus PRIVATE /utf-8 /W4 /EHsc)
+target_link_libraries(PIMERegistrationStatus ole32 oleaut32)
+if(MSVC)
+    # The installed read-only probe must run before any VC redistributable can
+    # be assumed present on a clean machine. Keep this target self-contained
+    # even when PIMETextService is configured independently of the root flags.
+    set_property(TARGET PIMERegistrationStatus PROPERTY
+        MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+    )
+endif()

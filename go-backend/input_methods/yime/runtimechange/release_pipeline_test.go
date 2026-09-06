@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
+func TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease(t *testing.T) {
 	read := func(path string) string {
 		data, err := os.ReadFile(path)
 		if err != nil {
@@ -28,10 +28,14 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	}
 	installer := read(filepath.Join(root, "installer", "installer.nsi"))
 	installer = strings.ReplaceAll(installer, "\r\n", "\n")
+	textService := read(filepath.Join(root, "PIMETextService", "PIMETextService.cpp"))
 	devUninstaller := read(filepath.Join(root, "tools", "dev-uninstall.ps1"))
 	devStop := read(filepath.Join(root, "tools", "dev-stop-pime.ps1"))
 	signer := read(filepath.Join(root, "tools", "sign-release.ps1"))
 	verifier := read(filepath.Join(root, "tools", "verify-release-signatures.ps1"))
+	packagePlan := read(filepath.Join(root, "tools", "dual-product", "rime-pime-package-plan.ps1"))
+	installerBuilder := read(filepath.Join(root, "tools", "build-rime-pime-installer.ps1"))
+	buildManifest := read(filepath.Join(root, "tools", "write-build-manifest.ps1"))
 	signFile := read(filepath.Join(root, "tools", "sign-file.ps1"))
 	certificateImporter := read(filepath.Join(root, "tools", "import-release-signing-certificate.ps1"))
 
@@ -39,6 +43,19 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 		if !strings.Contains(ci, fragment) {
 			t.Fatalf("CI release signing chain is missing %q", fragment)
 		}
+	}
+	for _, fragment := range []string{
+		"Block tagged installer until signed-uninstaller and removal closure",
+		"Tagged Rime/PIME installer release is disabled until the embedded uninstaller is trusted",
+	} {
+		if !strings.Contains(ci, fragment) {
+			t.Fatalf("CI unsealed-release block is missing %q", fragment)
+		}
+	}
+	block := strings.Index(ci, "Block tagged installer until signed-uninstaller and removal closure")
+	outerBuild := strings.Index(ci[block:], "build-rime-pime-installer.ps1")
+	if block < 0 || outerBuild < 0 {
+		t.Fatal("tagged release must fail before building the outer installer")
 	}
 	for _, fragment := range []string{
 		"actions/setup-go@v6",
@@ -72,6 +89,8 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 		`ReadRegStr $R1 HKLM "${PRODUCT_INSTALL_KEY}" ""`,
 		`StrCpy $INSTDIR $R1`,
 		`StrCpy $INSTDIR "$PROGRAMFILES32\YIME"`,
+		`Call enforceInstallRootPolicy`,
+		`Command-line /D overrides and user-writable roots are not admitted.`,
 		`File /r "..\go-backend\build\go-backend\*.*"`,
 		`SetOutPath "$INSTDIR\licenses"`,
 		`File "..\LICENSE.txt"`,
@@ -85,18 +104,39 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 		`RMDir "$INSTDIR\go-backend\input_methods\fcitx5"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\meow"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\simple_pinyin"`,
-		`File /oname=YinYuan-Regular.ttf "..\go-backend\input_methods\yime\data\fonts\YinYuan-Regular.ttf"`,
-		`AddFontResource`,
-		`YinYuan Regular (TrueType)`,
-		`Function stopRunningBackend`,
-		`Call stopRunningBackend`,
-		`ExecWait '"$INSTDIR\PIMELauncher.exe" /quit'`,
-		`taskkill.exe" /F /T /IM PIMELauncher.exe`,
+		`File /oname=$PLUGINSDIR\rime-pime-ownership.ps1`,
+		`File /oname=$PLUGINSDIR\rime-pime-directed-stop-contract.ps1`,
+		`File /oname=$PLUGINSDIR\invoke-rime-pime-maintenance.ps1`,
 		`input.dll::InstallLayoutOrTip`,
 		`0x0804:{35F67E9D-A54D-4177-9697-8B0AB71A9E04}{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}`,
 	} {
 		if !strings.Contains(installer, fragment) {
 			t.Fatalf("NSIS installer is missing install-path or Yime payload guard %q", fragment)
+		}
+	}
+	for _, forbidden := range []string{`$FONTS`, `CurrentVersion\Fonts`, `AddFontResource(`, `YinYuan Regular (TrueType)`} {
+		if strings.Contains(installer, forbidden) {
+			t.Fatalf("NSIS installer retains forbidden system-font mutation %q", forbidden)
+		}
+	}
+	if strings.Contains(installer, `File /oname=YinYuan-Regular.ttf`) {
+		t.Fatal("NSIS installer must not duplicate the font already present in the staged backend tree")
+	}
+	for _, fragment := range []string{
+		`\\go-backend\\input_methods\\yime\\data\\fonts\\YinYuan-Regular.ttf`,
+		`AddFontResourceExW(privateFontPath_.c_str(), FR_PRIVATE, nullptr)`,
+		`RemoveFontResourceExW(privateFontPath_.c_str(), FR_PRIVATE, nullptr)`,
+	} {
+		if !strings.Contains(textService, fragment) {
+			t.Fatalf("text service private-font lifecycle is missing %q", fragment)
+		}
+	}
+	for _, forbidden := range []string{
+		`ExecWait '"$INSTDIR\PIMELauncher.exe" /quit'`,
+		`taskkill.exe" /F /T /IM PIMELauncher.exe`,
+	} {
+		if strings.Contains(installer, forbidden) {
+			t.Fatalf("NSIS installer retains forbidden global Rime/PIME stop primitive %q", forbidden)
 		}
 	}
 	for _, path := range []string{
@@ -121,33 +161,42 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	if strings.Contains(installer, "Section $(CHEWING) chewing\n\t\t\tSectionIn 1 2") {
 		t.Fatal("standard Yime installation must not select the legacy Python Chewing backend")
 	}
-	for _, fragment := range []string{
-		`Microsoft\Windows\CurrentVersion\Uninstall\YIME`,
-		`Microsoft\Windows\CurrentVersion\Uninstall\PIME`,
-	} {
-		if !strings.Contains(devUninstaller, fragment) {
-			t.Fatalf("developer uninstall must remove stale uninstall registration %q", fragment)
+	if !strings.Contains(devUninstaller, `Microsoft\Windows\CurrentVersion\Uninstall\YIME`) {
+		t.Fatal("developer uninstall must remove its owned YIME uninstall registration")
+	}
+	if strings.Contains(devUninstaller, `Remove-RegistryTree -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PIME"`) {
+		t.Fatal("developer uninstall must not clean the independent legacy PIME uninstall registration")
+	}
+	for _, fragment := range []string{"PIMELauncher.exe", "PIMETextService.dll", "rime_deployer.exe", "rime_dict_manager.exe", "rime.dll", "input-toolbar.exe", "yime-trainer.exe", "yime-layout-designer.exe"} {
+		if !strings.Contains(packagePlan, fragment) {
+			t.Fatalf("sealed release package plan is missing %q", fragment)
 		}
 	}
-	for _, fragment := range []string{"PIMELauncher.exe", "PIMETextService.dll", "rime_deployer.exe", "rime_dict_manager.exe", "rime.dll"} {
+	for _, fragment := range []string{"Read-RimePimePackagePlan", "Write-RimePimePackagePlan"} {
 		if !strings.Contains(signer, fragment) {
-			t.Fatalf("release payload signer is missing %q", fragment)
+			t.Fatalf("release payload signer is not bound to the sealed plan lifecycle %q", fragment)
 		}
 	}
+	for _, fragment := range []string{"PACKAGE_PLAN_SHA256", "PACKAGE_PLAN_X86_X64", "Write-RimePimePackageBuildReceipt"} {
+		if !strings.Contains(installerBuilder, fragment) {
+			t.Fatalf("installer builder is missing package-plan binding %q", fragment)
+		}
+	}
+	if !strings.Contains(buildManifest, "Read-RimePimePackageBuildReceipt") || !strings.Contains(buildManifest, "receiptSha256") {
+		t.Fatal("build manifest is not bound to the sealed package plan and receipt")
+	}
 	for _, fragment := range []string{
-		`Stop-ProcessByPathPrefix -Name "input-toolbar"`,
-		`[IO.Path]::GetFullPath($path).StartsWith($normalizedPrefix`,
+		`dual-product\rime-pime-ownership.ps1`,
+		`Stop-YimePimeOwnedProcesses`,
+		`TargetUserSid`,
 	} {
 		if !strings.Contains(devStop, fragment) {
-			t.Fatalf("developer stop flow must release the persistent toolbar executable: missing %q", fragment)
+			t.Fatalf("developer stop flow is missing directed ownership contract %q", fragment)
 		}
 	}
-	if strings.Contains(devStop, `Stop-ProcessByName`) {
-		t.Fatal("developer stop flow must not terminate generic process names outside an explicit YIME/PIME install root")
-	}
-	for _, tool := range []string{"input-toolbar.exe", "yime-trainer.exe", "yime-layout-designer.exe"} {
-		if !strings.Contains(signer, tool) {
-			t.Fatalf("release payload signer is missing %s", tool)
+	for _, forbidden := range []string{`Stop-ProcessByName`, `Stop-ProcessByPathPrefix`, `PIMELauncher.exe" /quit`, `taskkill.exe`} {
+		if strings.Contains(devStop, forbidden) {
+			t.Fatalf("developer stop flow retains forbidden global/name stop primitive %q", forbidden)
 		}
 	}
 	if !strings.Contains(verifier, "Get-AuthenticodeSignature") || !strings.Contains(verifier, "Valid") {
@@ -168,10 +217,24 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 		`set "WIN32_CMAKE_PLATFORM=-A Win32"`,
 		`/c:"CMAKE_GENERATOR_PLATFORM:INTERNAL="`,
 		`%WIN32_CMAKE_PLATFORM% -DCMAKE_POLICY_VERSION_MINIMUM=3.5`,
+		`--build build --config Release --target PIMETextService PIMERegistrationStatus`,
+		`--build build64 --config Release --target PIMETextService PIMERegistrationStatus`,
+		`--build build_arm64 --config Release --target PIMETextService PIMERegistrationStatus`,
+		`set "ARM64_PE_ARGS="`,
+		`set "ARM64_PE_ARGS=-Arm64TextService "%ROOT_DIR%\build_arm64\PIMETextService\Release\PIMETextService.dll" -Arm64RegistrationStatus "%ROOT_DIR%\build_arm64\PIMETextService\Release\PIMERegistrationStatus.exe""`,
+		`verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" -SkipPackagedRime`,
 	} {
 		if !strings.Contains(rootBuildScript, fragment) {
 			t.Fatalf("root build script is missing legacy Win32 CMake-cache compatibility %q", fragment)
 		}
+	}
+	goPackageBuild := strings.Index(rootBuildScript, "cmd /C build.bat")
+	fullPayloadGate := strings.LastIndex(rootBuildScript, `verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" %ARM64_PE_ARGS% || exit /b 1`)
+	armBuild := strings.Index(rootBuildScript, `--build build_arm64 --config Release --target PIMETextService PIMERegistrationStatus`)
+	armArgs := strings.Index(rootBuildScript, `set "ARM64_PE_ARGS=-Arm64TextService`)
+	if goPackageBuild < 0 || fullPayloadGate <= goPackageBuild || armBuild < 0 || armArgs <= armBuild ||
+		strings.Count(rootBuildScript, "%ARM64_PE_ARGS%") != 2 || strings.Count(rootBuildScript, "verify-pe-architectures.ps1") != 2 {
+		t.Fatal("root build must run the complete PE gate only after the Go package exists")
 	}
 	if !strings.Contains(buildScript, `for /r "%PACKAGE_DIR%\input_methods" %%F in (*.go)`) {
 		t.Fatal("package build must recursively remove copied Go source files")

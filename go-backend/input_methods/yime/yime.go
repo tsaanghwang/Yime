@@ -136,7 +136,7 @@ type cachedCompositionSegment struct {
 type rimeBackend interface {
 	Initialize(sharedDir, userDir string, firstRun bool) bool
 	EnsureSession() bool
-	DestroySession()
+	DestroySession() bool
 	ClearComposition()
 	ProcessKey(req *pime.Request, translatedKeyCode, modifiers int) bool
 	SelectCandidate(index int) bool
@@ -1127,8 +1127,23 @@ func (ime *IME) recordRuntimeChange(event runtimechange.Event) {
 }
 
 func (ime *IME) Close() {
-	ime.destroySession(nil)
+	if err := ime.CloseWithError(); err != nil {
+		log.Printf("RIME 输入法关闭失败: %v", err)
+	}
+}
+
+// CloseWithError lets the server reject a directed-maintenance EOF when the
+// native Rime session could not be destroyed. Destroying the bundled librime
+// session releases its engine and commits the user dictionary's pending
+// transaction before the backend process reports a successful exit.
+func (ime *IME) CloseWithError() error {
+	ime.entryMu.Lock()
+	defer ime.entryMu.Unlock()
+	if !ime.destroySession(nil) {
+		return fmt.Errorf("destroy native Rime session")
+	}
 	log.Println("RIME 输入法关闭")
+	return nil
 }
 
 func (ime *IME) BackendAvailable() bool {
@@ -1652,15 +1667,17 @@ func (ime *IME) applyCandidateFont(resp *pime.Response) {
 	ime.pendingCandidateFont = false
 }
 
-func (ime *IME) destroySession(resp *pime.Response) {
+func (ime *IME) destroySession(resp *pime.Response) bool {
 	ime.clearResponse(resp)
+	destroyed := true
 	if ime.backend != nil {
 		ime.backend.ClearComposition()
-		ime.backend.DestroySession()
+		destroyed = ime.backend.DestroySession()
 	}
 	ime.keyComposing = false
 	ime.selectKeys = ""
 	ime.candidatePageStart = 0
+	return destroyed
 }
 
 func (ime *IME) clearResponse(resp *pime.Response) {
@@ -3500,14 +3517,16 @@ func (ime *IME) reloadBackendSessionForSchema(schemaID string) bool {
 	if state := ime.backend.State(); state.Composition != "" {
 		savedComposition = state.Composition
 	}
-	ime.backend.DestroySession()
+	if !ime.backend.DestroySession() {
+		return false
+	}
 	if !ime.backend.EnsureSession() {
 		return false
 	}
 	if !ime.backend.SelectSchema(schemaID) {
 		// Do not silently leave the freshly created session on a different Rime
 		// schema. That can look like an unexpected fallback dictionary.
-		ime.backend.DestroySession()
+		_ = ime.backend.DestroySession()
 		return false
 	}
 	ime.backend.ClearComposition()

@@ -1,9 +1,16 @@
 param(
     [string]$RepoRoot = (Split-Path -Parent $PSScriptRoot),
-    [string]$InstallRoot = "C:\Program Files (x86)\YIME"
+    [string]$InstallRoot = "C:\Program Files (x86)\YIME",
+    [string]$TargetUserSid
 )
 
 $ErrorActionPreference = "Stop"
+
+$ownershipHelper = Join-Path $PSScriptRoot 'dual-product\rime-pime-ownership.ps1'
+if (-not (Test-Path -LiteralPath $ownershipHelper -PathType Leaf)) { throw 'Required Rime/PIME ownership helper is unavailable.' }
+. $ownershipHelper
+$TargetUserSid = Assert-YimePimeTargetSid $TargetUserSid -RequireExplicit
+$InstallRoot = (Assert-YimePimeOwnedRoot -Root $InstallRoot -AllowNew).path
 
 & (Join-Path $PSScriptRoot 'assert-win32-build-prerequisites.ps1') `
     -RepoRoot $RepoRoot `
@@ -155,31 +162,17 @@ foreach ($toolExe in @(
 }
 
 $stopScript = Join-Path $PSScriptRoot "dev-stop-pime.ps1"
-if (Test-Path -LiteralPath $stopScript) {
-    & $stopScript -InstallRoots @($InstallRoot, "C:\Program Files (x86)\PIME") -Quiet
-} else {
-    Write-Host "Stopping any running PIMELauncher instance..."
-    $installedLauncher = Join-Path $InstallRoot "PIMELauncher.exe"
-    $runningLaunchers = @(Get-Process -Name "PIMELauncher" -ErrorAction SilentlyContinue)
-    if ($runningLaunchers.Count -gt 0) {
-        if (Test-Path -LiteralPath $installedLauncher) {
-            Start-Process -FilePath $installedLauncher -ArgumentList "/quit" -WindowStyle Hidden | Out-Null
-            Start-Sleep -Seconds 2
-        }
-        $runningLaunchers = @(Get-Process -Name "PIMELauncher" -ErrorAction SilentlyContinue)
-        if ($runningLaunchers.Count -gt 0) {
-            $runningLaunchers | Stop-Process -Force
-            Start-Sleep -Seconds 1
-        }
-    }
-}
+$stopResult = Invoke-YimePimeRequiredStopScript -ScriptPath $stopScript -InstallRoots @($InstallRoot) -TargetUserSid $TargetUserSid
+if ($stopResult -eq 2) { Write-Host 'PIMETextService.dll remains loaded; preserving the existing in-place DLL replacement path.' }
+# Recheck after preflight, before the first unregister or payload write.
+$InstallRoot = (Assert-YimePimeOwnedRoot -Root $InstallRoot -AllowNew).path
 
 $installedX64Dll = Join-Path $InstallRoot "x64\PIMETextService.dll"
 $installedX86Dll = Join-Path $InstallRoot "x86\PIMETextService.dll"
 if ((Test-Path -LiteralPath $installedX64Dll) -or (Test-Path -LiteralPath $installedX86Dll)) {
     Write-Host "Unregistering installed text service DLLs before copying ..."
     Unregister-PIMETextServiceDlls -InstallRoots @($InstallRoot)
-    Remove-PIMETextServiceRegistry
+    Remove-PIMETextServiceRegistry -TargetUserSid $TargetUserSid
 }
 
 Write-Host "Creating installation layout at $InstallRoot"

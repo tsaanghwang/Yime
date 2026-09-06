@@ -3,7 +3,8 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tokio::process::Command;
-use tokio::sync::{mpsc, Mutex};
+use tokio::sync::{mpsc, watch, Mutex};
+use tokio::task::JoinHandle;
 use tracing::{debug, error, info, warn};
 
 use crate::backend_registry::{BackendConfig, BackendRegistry};
@@ -16,6 +17,7 @@ use tokio_util::codec::{FramedRead, FramedWrite, LinesCodec};
 pub struct BackendManager {
     state: Arc<Mutex<BackendManagerState>>,
     registry: Arc<BackendRegistry>,
+    shutdown: watch::Sender<bool>,
 }
 
 struct BackendManagerState {
@@ -25,17 +27,28 @@ struct BackendManagerState {
 
 struct BackendProcess {
     stdin_tx: mpsc::Sender<String>,
+    task: JoinHandle<Result<(), String>>,
 }
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum BackendLoopExit {
+    Restart,
+    Shutdown,
+}
+
+const MAINTENANCE_BACKEND_EXIT_TIMEOUT: Duration = Duration::from_secs(8);
 
 impl BackendManager {
     /// Creates a new BackendManager with the given registry and root directory.
     pub fn new(registry: BackendRegistry) -> Self {
+        let (shutdown, _) = watch::channel(false);
         Self {
             state: Arc::new(Mutex::new(BackendManagerState {
                 backends: HashMap::new(),
                 clients: HashMap::new(),
             })),
             registry: Arc::new(registry),
+            shutdown,
         }
     }
 
@@ -72,7 +85,13 @@ impl BackendManager {
 
     /// Retrieves a channel to send messages directly to the backend.
     pub async fn get_backend_input(&self, backend_name: &str) -> Option<mpsc::Sender<String>> {
+        if *self.shutdown.borrow() {
+            return None;
+        }
         let mut state = self.state.lock().await;
+        if *self.shutdown.borrow() {
+            return None;
+        }
         if !state.backends.contains_key(backend_name) {
             // Dynamically look up the backend configuration
             if let Some(config) = self.registry.get_backend(backend_name) {
@@ -117,9 +136,13 @@ impl BackendManager {
         let backend_name_clone = backend_name.to_string();
         let manager_clone = self.clone();
         let config_clone = config.clone();
+        let mut shutdown = self.shutdown.subscribe();
 
-        tokio::spawn(async move {
+        let task = tokio::spawn(async move {
             loop {
+                if *shutdown.borrow() {
+                    return Ok(());
+                }
                 let mut child_process = match Self::create_backend_process(
                     &config_clone,
                     &manager_clone.registry.top_dir,
@@ -127,7 +150,12 @@ impl BackendManager {
                     Ok(c) => c,
                     Err(e) => {
                         error!("Failed to spawn backend {}: {}", backend_name_clone, e);
-                        tokio::time::sleep(Duration::from_secs(5)).await;
+                        tokio::select! {
+                            _ = tokio::time::sleep(Duration::from_secs(5)) => {}
+                            changed = shutdown.changed() => {
+                                if changed.is_err() || *shutdown.borrow() { return Ok(()); }
+                            }
+                        }
                         continue;
                     }
                 };
@@ -151,23 +179,93 @@ impl BackendManager {
                     Self::log_backend_stderr(stderr, backend_name_for_stderr).await;
                 });
 
-                Self::forward_inputs_to_backend(
+                let loop_exit = Self::forward_inputs_to_backend(
                     &mut stdin_rx,       // Inputs received from client connections.
                     stdin,               // Backend stdin.
                     &mut child_process,  // Backend process.
                     &backend_name_clone, // Backend name.
                     last_output_time,    // Output tracker.
+                    &mut shutdown,       // Directed maintenance cancellation.
                 )
                 .await;
+
+                if loop_exit == BackendLoopExit::Shutdown {
+                    let status = match tokio::time::timeout(
+                        MAINTENANCE_BACKEND_EXIT_TIMEOUT,
+                        child_process.wait(),
+                    )
+                    .await
+                    {
+                        Ok(Ok(status)) => status,
+                        Ok(Err(error)) => {
+                            return Err(format!(
+                                "wait for backend {backend_name_clone} shutdown: {error}"
+                            ));
+                        }
+                        Err(_) => {
+                            // Dropping a Child configured with kill_on_drop would be a
+                            // force stop. Leak only this process handle while the worker
+                            // takes the non-maintenance failure exit; the watchdog may
+                            // recover normally and maintenance remains rejected.
+                            std::mem::forget(child_process);
+                            stdout_task.abort();
+                            stderr_task.abort();
+                            return Err(format!(
+                                "backend {backend_name_clone} did not exit from EOF within {} seconds; it was not force-stopped",
+                                MAINTENANCE_BACKEND_EXIT_TIMEOUT.as_secs()
+                            ));
+                        }
+                    };
+                    info!(
+                        "Backend {} exited for maintenance with status {:?}",
+                        backend_name_clone, status
+                    );
+                    let _ = stdout_task.await;
+                    let _ = stderr_task.await;
+                    if !status.success() {
+                        return Err(format!(
+                            "backend {backend_name_clone} exited unsuccessfully during EOF maintenance shutdown: {status}"
+                        ));
+                    }
+                    return Ok(());
+                }
 
                 stdout_task.abort();
                 stderr_task.abort();
                 warn!("Restarting backend {}", backend_name_clone);
-                tokio::time::sleep(Duration::from_secs(1)).await;
+                tokio::select! {
+                    _ = tokio::time::sleep(Duration::from_secs(1)) => {}
+                    changed = shutdown.changed() => {
+                        if changed.is_err() || *shutdown.borrow() { return Ok(()); }
+                    }
+                }
             }
         });
 
-        BackendProcess { stdin_tx }
+        BackendProcess { stdin_tx, task }
+    }
+
+    /// Stops accepting backend work, closes every backend stdin stream and waits
+    /// for each child to exit from EOF. It never force-terminates a child.
+    pub async fn shutdown_gracefully(&self) -> Result<(), String> {
+        let _ = self.shutdown.send(true);
+        let backends = {
+            let mut state = self.state.lock().await;
+            state.clients.clear();
+            state
+                .backends
+                .drain()
+                .map(|(_, backend)| backend)
+                .collect::<Vec<_>>()
+        };
+        for backend in backends {
+            drop(backend.stdin_tx);
+            backend
+                .task
+                .await
+                .map_err(|error| format!("join backend maintenance shutdown: {error}"))??;
+        }
+        Ok(())
     }
 
     /// Background task that reads backend stderr and logs it.
@@ -280,7 +378,8 @@ impl BackendManager {
         child_process: &mut tokio::process::Child,
         backend_name: &str,
         last_output_time: Arc<AtomicU64>,
-    ) {
+        shutdown: &mut watch::Receiver<bool>,
+    ) -> BackendLoopExit {
         let mut stdin_writer = FramedWrite::new(stdin, LinesCodec::new_with_max_length(1048576));
         let mut last_request_time: Option<u64> = None;
 
@@ -288,10 +387,16 @@ impl BackendManager {
 
         loop {
             tokio::select! {
+                changed = shutdown.changed() => {
+                    if changed.is_err() || *shutdown.borrow() {
+                        info!("Backend {} received directed maintenance shutdown; closing stdin without force.", backend_name);
+                        return BackendLoopExit::Shutdown;
+                    }
+                }
                 msg = stdin_rx.recv() => {
                     let Some(data) = msg else {
                         info!("Backend {} stdin channel closed. Exiting input loop.", backend_name);
-                        break;
+                        return if *shutdown.borrow() { BackendLoopExit::Shutdown } else { BackendLoopExit::Restart };
                     };
                     let now = Self::current_ms();
                     last_request_time = Some(now);
@@ -302,12 +407,12 @@ impl BackendManager {
                     if let Err(_) = write_res {
                         error!("Timeout writing to backend {}. Forcing restart.", backend_name);
                         let _ = child_process.kill().await;
-                        break;
+                        return BackendLoopExit::Restart;
                     }
                     if let Err(e) = write_res.unwrap() {
                         error!("Failed to write to backend {}: {}", backend_name, e);
                         let _ = child_process.kill().await;
-                        break;
+                        return BackendLoopExit::Restart;
                     }
                 }
                 _ = watchdog_interval.tick() => {
@@ -323,13 +428,13 @@ impl BackendManager {
                             error!("Backend {} seems to be hung (no output for 15s after request). last_out={}, req_t={}, now={}. Forcing restart.",
                                 backend_name, last_out, req_t, now);
                             let _ = child_process.kill().await;
-                            break;
+                            return BackendLoopExit::Restart;
                         }
                     }
                 }
                 status = child_process.wait() => {
                     warn!("Backend {} exited with status {:?}", backend_name, status);
-                    break;
+                    return BackendLoopExit::Restart;
                 }
             }
         }

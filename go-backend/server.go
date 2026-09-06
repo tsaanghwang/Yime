@@ -5,6 +5,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -94,14 +95,18 @@ func (s *Server) RegisterService(guid string, factory ServiceFactory) {
 }
 
 // Run 运行服务器
-func (s *Server) Run() error {
+func (s *Server) Run() (runErr error) {
 	s.running = true
 	log.Println("PIME Go 后端服务器已启动")
+	defer func() {
+		s.running = false
+		runErr = errors.Join(runErr, s.closeAllClients())
+	}()
 
 	for s.running {
 		line, err := s.reader.ReadString('\n')
 		if err != nil {
-			if err.Error() == "EOF" {
+			if errors.Is(err, io.EOF) {
 				log.Println("收到 EOF，服务器停止")
 				return nil
 			}
@@ -127,6 +132,47 @@ func (s *Server) Run() error {
 	}
 
 	return nil
+}
+
+type fallibleTextServiceCloser interface {
+	CloseWithError() error
+}
+
+func closeTextService(service pime.TextService) error {
+	if service == nil {
+		return nil
+	}
+	if closer, ok := service.(fallibleTextServiceCloser); ok {
+		return closer.CloseWithError()
+	}
+	service.Close()
+	return nil
+}
+
+// closeAllClients releases every service created from this server's single
+// stdin transport after its sole request loop has stopped. The map is detached
+// so service callbacks run without holding the server lock.
+func (s *Server) closeAllClients() error {
+	s.mu.Lock()
+	clients := s.clients
+	s.clients = make(map[string]*Client)
+	s.mu.Unlock()
+
+	var firstErr error
+	for clientID, client := range clients {
+		if client == nil {
+			continue
+		}
+		if err := closeTextService(client.Service); err != nil {
+			log.Printf("关闭客户端失败 client=%s guid=%s: %v", clientID, client.GUID, err)
+			if firstErr == nil {
+				firstErr = fmt.Errorf("close client %s: %w", clientID, err)
+			}
+			continue
+		}
+		log.Printf("服务器退出时关闭客户端 client=%s guid=%s", clientID, client.GUID)
+	}
+	return firstErr
 }
 
 // handleMessage 处理消息
@@ -218,11 +264,12 @@ func (s *Server) handleRequest(clientID string, req *pime.Request) map[string]in
 			IsConsole:       req.IsConsole,
 		}
 		client.Service = factory(pimeClient, guid)
-		s.clients[clientID] = client
 
 		// 初始化服务
 		if !client.Service.Init(req) {
-			delete(s.clients, clientID)
+			if err := closeTextService(client.Service); err != nil {
+				log.Printf("初始化失败后关闭服务失败 client=%s guid=%s: %v", clientID, guid, err)
+			}
 			log.Printf("初始化失败 client=%s seq=%d guid=%s 原因=Service.Init返回false", clientID, req.SeqNum, guid)
 			return map[string]interface{}{
 				"seqNum":  req.SeqNum,
@@ -230,6 +277,17 @@ func (s *Server) handleRequest(clientID string, req *pime.Request) map[string]in
 				"error":   "初始化失败",
 			}
 		}
+		if previous, ok := s.clients[clientID]; ok {
+			if err := closeTextService(previous.Service); err != nil {
+				_ = closeTextService(client.Service)
+				log.Printf("替换客户端失败 client=%s guid=%s: %v", clientID, guid, err)
+				return map[string]interface{}{
+					"seqNum": req.SeqNum, "success": false,
+					"error": "无法关闭现有客户端会话",
+				}
+			}
+		}
+		s.clients[clientID] = client
 
 		log.Printf("初始化成功 client=%s seq=%d guid=%s windows8=%t metro=%t uiless=%t console=%t", clientID, req.SeqNum, guid, req.IsWindows8Above, req.IsMetroApp, req.IsUiLess, req.IsConsole)
 
@@ -240,7 +298,13 @@ func (s *Server) handleRequest(clientID string, req *pime.Request) map[string]in
 
 	case "close":
 		if client, ok := s.clients[clientID]; ok {
-			client.Service.Close()
+			if err := closeTextService(client.Service); err != nil {
+				log.Printf("客户端关闭失败 client=%s guid=%s: %v", clientID, client.GUID, err)
+				return map[string]interface{}{
+					"seqNum": req.SeqNum, "success": false,
+					"error": "关闭输入法会话失败",
+				}
+			}
 			delete(s.clients, clientID)
 			log.Printf("客户端关闭 client=%s guid=%s", clientID, client.GUID)
 		} else {

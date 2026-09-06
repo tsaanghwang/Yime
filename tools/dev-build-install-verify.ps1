@@ -5,14 +5,21 @@ param(
     [int]$RimeCacheWaitSeconds = 60,
     [string]$LongSessionAcceptancePath,
     [switch]$RequireLongSessionAcceptance,
-    [switch]$SkipBuild
+    [switch]$SkipBuild,
+    [string]$TargetUserSid
 )
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
+$ownershipHelper = Join-Path $PSScriptRoot 'dual-product\rime-pime-ownership.ps1'
+if (-not (Test-Path -LiteralPath $ownershipHelper -PathType Leaf)) { throw 'Required Rime/PIME ownership helper is unavailable.' }
+. $ownershipHelper
+$currentSid=Get-YimePimeCurrentSid
 $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = [Security.Principal.WindowsPrincipal]::new($identity)
 if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    if ([string]::IsNullOrWhiteSpace($TargetUserSid)) { $TargetUserSid=$currentSid }
+    $TargetUserSid=Assert-YimePimeTargetSid $TargetUserSid -RequireExplicit
     Write-Host 'Requesting elevation for developer install verification...'
     $elevatedArgs = @(
         '-NoProfile',
@@ -20,7 +27,8 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
         '-File', ('"' + $PSCommandPath + '"'),
         '-RepoRoot', ('"' + $repoRoot + '"'),
         '-InstallRoot', ('"' + $InstallRoot + '"')
-        '-RimeCacheWaitSeconds', $RimeCacheWaitSeconds
+        '-RimeCacheWaitSeconds', $RimeCacheWaitSeconds,
+        '-TargetUserSid', $TargetUserSid
     )
     if ($SkipBuild) { $elevatedArgs += '-SkipBuild' }
     if ($LongSessionAcceptancePath) { $elevatedArgs += @('-LongSessionAcceptancePath', ('"' + $LongSessionAcceptancePath + '"')) }
@@ -32,6 +40,7 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
     $elevated.WaitForExit()
     exit $elevated.ExitCode
 }
+$TargetUserSid=Assert-YimePimeTargetSid $TargetUserSid -RequireExplicit
 
 if (-not $SkipBuild) {
     Write-Host '=== Build source and package inputs ==='
@@ -42,7 +51,7 @@ if (-not $SkipBuild) {
 & (Join-Path $PSScriptRoot 'assert-win32-build-prerequisites.ps1') -RepoRoot $repoRoot -RequireBuildArtifacts
 
 Write-Host '=== Canonical reinstall (including DLL-lock fallback) ==='
-& cmd.exe /d /c (Join-Path $repoRoot 'Reinstall-PIME-Test.cmd')
+& cmd.exe /d /c (Join-Path $repoRoot 'Reinstall-PIME-Test.cmd') "/TargetUserSid=$TargetUserSid"
 if ($LASTEXITCODE -ne 0) { throw "Reinstall-PIME-Test.cmd failed with exit code $LASTEXITCODE" }
 
 Write-Host "=== Wait up to $RimeCacheWaitSeconds seconds for Rime compiled caches ==="

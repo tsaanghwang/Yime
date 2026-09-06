@@ -1,6 +1,7 @@
 param(
     [string]$InstallRoot = "C:\Program Files (x86)\YIME",
-    [switch]$KeepInstallRoot
+    [switch]$KeepInstallRoot,
+    [Parameter(Mandatory)][string]$TargetUserSid
 )
 
 $ErrorActionPreference = "Stop"
@@ -10,4 +11,4 @@ if (-not (Test-Path -LiteralPath $scriptPath)) {
     throw "Missing script: $scriptPath"
 }
 
-& $scriptPath -InstallRoot $InstallRoot -KeepInstallRoot:$KeepInstallRoot
+& $scriptPath -InstallRoot $InstallRoot -KeepInstallRoot:$KeepInstallRoot -TargetUserSid $TargetUserSid

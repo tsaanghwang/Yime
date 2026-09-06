@@ -72,6 +72,12 @@ async fn setup_test_environment(pipe_name: &str) -> (BackendManager, TempDir) {
             params: "--scenario hang".to_string(),
         },
         BackendConfig {
+            name: "eof-fail".to_string(),
+            command: "mock_backend.exe".to_string(),
+            working_dir: "".to_string(),
+            params: "--scenario eof-fail".to_string(),
+        },
+        BackendConfig {
             name: "fail".to_string(),
             command: "non_existent.exe".to_string(),
             working_dir: "".to_string(),
@@ -313,5 +319,54 @@ async fn test_fragmented_messages() -> TestResult {
     // We should get "REPLY: Next Message"
     let reply = read_line(&mut lines).await?;
     assert_eq!(reply, "REPLY: Next Message");
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_directed_maintenance_closes_synthetic_backend_stdin_without_restart() -> TestResult {
+    let pipe_name = format!(r#"\\.\pipe\pime_maintenance_{}"#, uuid::Uuid::new_v4());
+    let (manager, _pime_root) = setup_test_environment(&pipe_name).await;
+    let sender = manager
+        .get_backend_input("echo")
+        .await
+        .ok_or("synthetic backend did not start")?;
+    sender.send("fixture|warmup".to_string()).await?;
+    tokio::time::sleep(Duration::from_millis(200)).await;
+    drop(sender);
+
+    timeout(Duration::from_secs(5), manager.shutdown_gracefully())
+        .await
+        .map_err(|_| "synthetic backend EOF shutdown timed out")??;
+    assert!(
+        manager.get_backend_input("echo").await.is_none(),
+        "backend restarted after maintenance shutdown"
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_directed_maintenance_rejects_nonzero_backend_eof_exit() -> TestResult {
+    let pipe_name = format!(r#"\\.\pipe\pime_maintenance_fail_{}"#, uuid::Uuid::new_v4());
+    let (manager, _pime_root) = setup_test_environment(&pipe_name).await;
+    let sender = manager
+        .get_backend_input("eof-fail")
+        .await
+        .ok_or("synthetic EOF-fail backend did not start")?;
+    sender.send("fixture|warmup".to_string()).await?;
+    tokio::time::sleep(Duration::from_millis(200)).await;
+    drop(sender);
+
+    let error = timeout(Duration::from_secs(5), manager.shutdown_gracefully())
+        .await
+        .map_err(|_| "synthetic EOF-fail backend shutdown timed out")?
+        .expect_err("nonzero backend EOF exit was accepted as graceful maintenance");
+    assert!(
+        error.contains("exited unsuccessfully during EOF maintenance shutdown"),
+        "unexpected nonzero EOF error: {error}"
+    );
+    assert!(
+        manager.get_backend_input("eof-fail").await.is_none(),
+        "maintenance failure reopened backend work inside the worker"
+    );
     Ok(())
 }

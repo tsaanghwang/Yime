@@ -1,6 +1,7 @@
 param(
     [string]$InstallRoot = "C:\Program Files (x86)\YIME",
-    [switch]$KeepInstallRoot
+    [switch]$KeepInstallRoot,
+    [string]$TargetUserSid
 )
 
 $ErrorActionPreference = "Stop"
@@ -15,9 +16,12 @@ function Assert-Admin {
 
 Assert-Admin
 
-. (Join-Path $PSScriptRoot "pime-registry-cleanup.ps1")
+$ownershipHelper = Join-Path $PSScriptRoot 'dual-product\rime-pime-ownership.ps1'
+if (-not (Test-Path -LiteralPath $ownershipHelper -PathType Leaf)) { throw 'Required Rime/PIME ownership helper is unavailable.' }
+. $ownershipHelper
+$TargetUserSid = Assert-YimePimeTargetSid $TargetUserSid -RequireExplicit
 
-$LegacyDefaultInstallRoot = "C:\Program Files (x86)\PIME"
+. (Join-Path $PSScriptRoot "pime-registry-cleanup.ps1")
 
 function Remove-RegistryTree {
     param([string]$Path)
@@ -30,27 +34,6 @@ function Remove-RegistryValue {
         [string]$Name
     )
     Remove-ItemProperty -Path $Path -Name $Name -ErrorAction SilentlyContinue
-}
-
-function Stop-ProcessByPathPrefix {
-    param(
-        [string]$Name,
-        [string]$PathPrefix
-    )
-
-    $processes = @(Get-Process -Name $Name -ErrorAction SilentlyContinue)
-    foreach ($process in $processes) {
-        $path = ""
-        try {
-            $path = $process.Path
-        } catch {
-            $path = ""
-        }
-        if ($path -and $path.StartsWith($PathPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
-            Write-Host "Stopping $Name pid=$($process.Id)"
-            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-        }
-    }
 }
 
 function Get-TextServiceDllUsers {
@@ -78,6 +61,7 @@ function Show-TextServiceDllUsers {
 function Remove-InstallTree {
     param([string]$Path)
 
+    $Path = (Assert-YimePimeOwnedRoot -Root $Path).path
     Write-Host "Removing installation tree $Path"
     try {
         Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction Stop
@@ -89,33 +73,16 @@ function Remove-InstallTree {
     }
 }
 
-function Get-NormalizedPath {
-    param([string]$Path)
-
-    if (-not $Path) {
-        return $null
-    }
-
-    try {
-        if (Test-Path -LiteralPath $Path) {
-            return (Resolve-Path -LiteralPath $Path).Path
-        }
-    } catch {
-    }
-
-    return $Path.TrimEnd("\")
-}
-
 function Add-InstallRootCandidate {
     param(
         [System.Collections.Generic.List[string]]$Candidates,
         [string]$Path
     )
 
-    $normalized = Get-NormalizedPath -Path $Path
-    if (-not $normalized) {
-        return
-    }
+    if ([string]::IsNullOrWhiteSpace($Path)) { return }
+    $owned = Assert-YimePimeOwnedRoot -Root $Path -AllowAbsent
+    if (-not $owned.exists) { return }
+    $normalized = $owned.path
     foreach ($existing in $Candidates) {
         if ($existing.Equals($normalized, [System.StringComparison]::OrdinalIgnoreCase)) {
             return
@@ -124,40 +91,24 @@ function Add-InstallRootCandidate {
     $Candidates.Add($normalized)
 }
 
-$installRoots = New-Object 'System.Collections.Generic.List[string]'
-Add-InstallRootCandidate -Candidates $installRoots -Path $InstallRoot
-
-try {
-    $legacyInstallKey = Get-Item -Path "HKLM:\SOFTWARE\PIME" -ErrorAction SilentlyContinue
-    if ($legacyInstallKey) {
-        $legacyInstallRootFromRegistry = $legacyInstallKey.GetValue("")
-    }
-    Add-InstallRootCandidate -Candidates $installRoots -Path $legacyInstallRootFromRegistry
-} catch {
+function Get-InstallRootsForMaintenance {
+    param([string]$SelectedRoot)
+    # Only the explicitly selected/default current product root is maintained.
+    # An unrelated legacy PIME directory or registry entry is not a dependency.
+    $candidates = New-Object 'System.Collections.Generic.List[string]'
+    Add-InstallRootCandidate -Candidates $candidates -Path $SelectedRoot
+    if ($candidates.Count -eq 0) { throw 'No identified Rime/PIME install root; refusing registry or directory cleanup.' }
+    return ,$candidates
 }
-
-Add-InstallRootCandidate -Candidates $installRoots -Path $LegacyDefaultInstallRoot
+$installRoots = Get-InstallRootsForMaintenance -SelectedRoot $InstallRoot
 
 $stopScript = Join-Path $PSScriptRoot "dev-stop-pime.ps1"
-if (Test-Path -LiteralPath $stopScript) {
-    & $stopScript -InstallRoots $installRoots -Quiet
-    if ($LASTEXITCODE -eq 2) {
-        Write-Host "PIMETextService.dll is still loaded; keeping installation tree for in-place upgrade."
-        $KeepInstallRoot = $true
-    }
-} else {
-    Write-Host "Stopping PIMELauncher and installed Go backend if they are running..."
-    foreach ($root in $installRoots) {
-        $launcherExe = Join-Path $root "PIMELauncher.exe"
-        if (Test-Path -LiteralPath $launcherExe) {
-            & $launcherExe /quit | Out-Null
-            Start-Sleep -Seconds 1
-        }
-        Stop-ProcessByPathPrefix -Name "PIMELauncher" -PathPrefix $root
-        Stop-ProcessByPathPrefix -Name "server" -PathPrefix (Join-Path $root "go-backend")
-    }
-    Start-Sleep -Milliseconds 500
+$stopResult = Invoke-YimePimeRequiredStopScript -ScriptPath $stopScript -InstallRoots $installRoots.ToArray() -TargetUserSid $TargetUserSid
+if ($stopResult -eq 2) {
+    Write-Host "PIMETextService.dll is still loaded; keeping installation tree for in-place upgrade."
+    $KeepInstallRoot = $true
 }
+foreach ($root in $installRoots) { Assert-YimePimeOwnedRoot -Root $root | Out-Null }
 
 Write-Host "Unregistering text service DLLs ..."
 Unregister-PIMETextServiceDlls -InstallRoots $installRoots
@@ -167,11 +118,10 @@ Remove-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
 Remove-RegistryValue -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run" -Name "PIMELauncher"
 Remove-RegistryTree -Path "HKLM:\SOFTWARE\YIME"
 Remove-RegistryTree -Path "HKLM:\SOFTWARE\WOW6432Node\YIME"
-Remove-RegistryTree -Path "HKLM:\SOFTWARE\PIME"
-Remove-RegistryTree -Path "HKLM:\SOFTWARE\WOW6432Node\PIME"
 Remove-RegistryTree -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\YIME"
-Remove-RegistryTree -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PIME"
-Remove-PIMETextServiceRegistry -IncludeClassRegistration
+# Legacy PIME install/uninstall keys are not this explicit root's cleanup targets.
+# A legacy migration requires separate root/registration ownership validation.
+Remove-PIMETextServiceRegistry -TargetUserSid $TargetUserSid -IncludeClassRegistration
 
 if (-not $KeepInstallRoot -and (Test-TextServiceDllLoaded)) {
     Show-TextServiceDllUsers

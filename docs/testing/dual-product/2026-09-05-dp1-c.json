@@ -1,0 +1,104 @@
+{
+  "schema_version": "yime-dual-product-dp1-c-source-record-v1",
+  "date": "2026-09-05",
+  "source_and_synthetic_contracts_passed": true,
+  "dp1_full_implementation_passed": false,
+  "dp2_physical_acceptance_passed": false,
+  "regressions": [
+    {
+      "id": "pime-backend-eof-did-not-close-tracked-services",
+      "status": "fixed_in_source",
+      "red_observation": {
+        "tracked_services": 2,
+        "close_counts": [0, 0],
+        "expected_close_counts": [1, 1],
+        "json_receipt_available": false
+      },
+      "green": {
+        "server_tests_passed": 3,
+        "ime_checked_close_tests_passed": 1,
+        "full_go_test_passed": true
+      }
+    },
+    {
+      "id": "rime-pime-target-user-sid-not-carried-and-hku-cleanup-not-scoped",
+      "status": "fixed_in_source_native_acceptance_pending",
+      "red": {
+        "ps5_checks": 17,
+        "ps5_failures": 16,
+        "ps5_sha256": "71bd22cee603806e3ec790339b7d625f770a8a37557289caa626b0895797f0ab",
+        "ps7_checks": 17,
+        "ps7_failures": 16,
+        "ps7_sha256": "45adf52686735e9a88ff089c399a0c0c27ea66867b8ac5e923cc6694ce6bc4a2"
+      }
+    }
+  ],
+  "green_receipts": {
+    "target_user": {
+      "checks_per_shell": 24,
+      "ps5_path": "C:/dev/Yime/.tmp/dual-product/dp1-target-user-current-ps5-20260905-a2/result.json",
+      "ps5_sha256": "921ec50a170355551dbc19bd2909f32a9509f6af7a2d060ed130b1b723eee8a5",
+      "ps7_path": "C:/dev/Yime/.tmp/dual-product/dp1-target-user-current-ps7-20260905-a2/result.json",
+      "ps7_sha256": "9e896ec01579827ad18ee86eb1905b37642ec87cd90a7638aff25f04cb7510b5"
+    },
+    "transaction_model": {
+      "checks_per_shell": 41,
+      "ps5_path": "C:/dev/Yime/.tmp/dual-product/dp1-transaction-current-ps5-20260905-a2/result.json",
+      "ps5_sha256": "dd4eb1adf9adcab6aa1e9f0a53cd77114e5d99bacaccf1d5d1f58623b33278d7",
+      "ps7_path": "C:/dev/Yime/.tmp/dual-product/dp1-transaction-current-ps7-20260905-a2/result.json",
+      "ps7_sha256": "7b6266bb93b208da6f0cf26d29f31ca2e5c1589494a59ad767f13159081eb3a8"
+    },
+    "directed_stop": {
+      "checks_per_shell": 17,
+      "ps5_sha256": "3f69d05e47a263e97157f17ff9ac8f2bb076a459ef4caec4c7b2d0bbd75f00a6",
+      "ps7_sha256": "fc625eed065e338a0fbd8d3aa9bc4aaf490ae73e4896ac20e9c80ff92a95cdc4"
+    },
+    "quiescent_maintenance": {
+      "checks_per_shell": 31,
+      "ps5_sha256": "bd66b589e4b96ad839bcff4d3ca9359d7a4583515f19338786ec5d6070a4a96d",
+      "ps7_sha256": "da320ffb21083826e8c250d504f4c5025e73fa9d7d61535beb81b315582893ba"
+    },
+    "baseline": {
+      "path": "C:/dev/Yime/.tmp/dual-product/dp1-target-user-current-baseline-20260905-a2/baseline.json",
+      "sha256": "499da30aa00401da9cb9d6906a4a5ca9683942658b4807d7cbc9904acef5f616",
+      "source_inputs": 59,
+      "python_tests_passed": 28,
+      "python_tests_failed": 0,
+      "known_pending": 3
+    }
+  },
+  "temporary_real_rime_regression": {
+    "librime_version": "1.17.0",
+    "librime_revision": "33e7814",
+    "user_directory": "go-testing-tmpdir",
+    "runs_passed": 2,
+    "finalize_deliberately_omitted_after_checked_end_session": true,
+    "production_rime_data_read": false,
+    "json_receipt_available": false
+  },
+  "installer_build": {
+    "path": "C:/dev/Yime/installer/YIME-1.4.0-dev-setup.exe",
+    "sha256": "36156e5a00abfe09bb99ce5c99cb2a5fd72c131da9e4c7481f139d4ef5333756",
+    "makensis_version": "3.12",
+    "build_exit_code": 0,
+    "executed": false,
+    "signed_release_artifact": false
+  },
+  "remaining_gates": [
+    "installed directed-stop process tree and learning flush",
+    "real same-user UAC and alternate-credential rejection",
+    "registered profile changes restricted to TargetUserSid",
+    "registration ownership bound to selected install root",
+    "complete package staging, convergence and exact failure rollback",
+    "DP2 single-install and both coexistence orders"
+  ],
+  "actual_elevation_executed": false,
+  "actual_install_or_uninstall_executed": false,
+  "actual_registry_or_profile_mutation_executed": false,
+  "actual_installed_process_stop_executed": false,
+  "default_input_method_changed": false,
+  "production_rime_pime_touched": false,
+  "installed_yimecore_touched": false,
+  "user_text_or_learning_read": false,
+  "frozen_targets_executed": false
+}

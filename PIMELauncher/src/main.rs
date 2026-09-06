@@ -2,6 +2,7 @@
 
 use pimelauncher::backend_manager::BackendManager;
 use pimelauncher::backend_registry::BackendRegistry;
+use pimelauncher::maintenance::{self, MaintenanceIdentity, DIRECTED_MAINTENANCE_EXIT_CODE};
 use pimelauncher::pipe_server;
 use std::path::PathBuf;
 use tracing::{error, info, warn};
@@ -9,12 +10,18 @@ use tracing::{error, info, warn};
 /// Spawns and monitors the worker process, restarting it if it exits.
 async fn run_watchdog(original_args: &[String]) {
     let exe = std::env::current_exe().expect("Failed to get current exe");
+    let watchdog_pid = std::process::id();
+    let watchdog_start = maintenance::current_process_start_filetime()
+        .expect("Failed to bind watchdog process start identity");
 
-    // Prepare worker arguments: keep original args and add /worker
-    let mut worker_args: Vec<String> = original_args.iter().skip(1).cloned().collect();
-    if !worker_args.iter().any(|arg| arg == "/worker") {
-        worker_args.push("/worker".to_string());
-    }
+    // Strip internal lifecycle arguments before adding the identities owned by
+    // this watchdog. A caller cannot choose the worker's parent binding.
+    let mut worker_args = sanitized_worker_args(original_args);
+    worker_args.push("/worker".to_string());
+    worker_args.push("/watchdog-pid".to_string());
+    worker_args.push(watchdog_pid.to_string());
+    worker_args.push("/watchdog-start-filetime-utc".to_string());
+    worker_args.push(watchdog_start);
 
     info!("Watchdog started. Monitoring worker...");
 
@@ -47,6 +54,10 @@ async fn run_watchdog(original_args: &[String]) {
 
         tokio::select! {
             status = child.wait() => {
+                if matches!(status, Ok(ref status) if status.code() == Some(DIRECTED_MAINTENANCE_EXIT_CODE)) {
+                    info!("Worker completed identity-bound maintenance shutdown; watchdog restart is suppressed.");
+                    return;
+                }
                 warn!("Worker process exited with status: {:?}. Restarting in 1s...", status);
                 tokio::time::sleep(std::time::Duration::from_secs(1)).await;
             }
@@ -73,6 +84,28 @@ fn signal_quit_event() {
             println!("Quit signal sent.");
         }
     }
+}
+
+fn sanitized_worker_args(original_args: &[String]) -> Vec<String> {
+    let mut result = Vec::new();
+    let mut index = 1;
+    while index < original_args.len() {
+        match original_args[index].as_str() {
+            "/worker" => index += 1,
+            "/watchdog-pid" | "/watchdog-start-filetime-utc" => index += 2,
+            _ => {
+                result.push(original_args[index].clone());
+                index += 1;
+            }
+        }
+    }
+    result
+}
+
+fn argument_value<'a>(args: &'a [String], name: &str) -> Option<&'a str> {
+    args.windows(2)
+        .find(|pair| pair[0].eq_ignore_ascii_case(name))
+        .map(|pair| pair[1].as_str())
 }
 
 /// Clears any stale quit signal left by a previous `/quit` invocation.
@@ -153,7 +186,14 @@ async fn main() {
         reset_quit_event();
         run_watchdog(&args).await;
     } else {
-        run_worker().await;
+        match run_worker(&args).await {
+            Ok(true) => std::process::exit(DIRECTED_MAINTENANCE_EXIT_CODE),
+            Ok(false) => {}
+            Err(error) => {
+                error!("Worker failed: {}", error);
+                std::process::exit(1);
+            }
+        }
     }
 }
 
@@ -174,7 +214,7 @@ fn setup_error_mode() {
 }
 
 /// Core logic for the PIME Worker process.
-async fn run_worker() {
+async fn run_worker(args: &[String]) -> Result<bool, String> {
     let username = std::env::var("USERNAME").expect("USERNAME environment variable must be set");
     let pipe_name = format!(r"\\.\pipe\{}\PIME\Launcher", username);
 
@@ -187,8 +227,70 @@ async fn run_worker() {
     print_diagnostics(&registry);
 
     let backend_manager = BackendManager::new(registry);
-    let server = pipe_server::PipeServer::new(pipe_name, backend_manager);
-    server.run().await;
+    let server = pipe_server::PipeServer::new(pipe_name, backend_manager.clone());
+    let watchdog_pid = argument_value(args, "/watchdog-pid")
+        .ok_or_else(|| "worker is missing watchdog PID binding".to_string())?
+        .parse::<u32>()
+        .map_err(|_| "worker watchdog PID binding is invalid".to_string())?;
+    let watchdog_start_filetime_utc = argument_value(args, "/watchdog-start-filetime-utc")
+        .filter(|value| !value.is_empty() && value.bytes().all(|byte| byte.is_ascii_digit()))
+        .ok_or_else(|| "worker is missing watchdog start identity".to_string())?
+        .to_string();
+    let identity = MaintenanceIdentity {
+        install_root: pime_root,
+        user_sid: maintenance::current_user_sid()?,
+        watchdog_pid,
+        watchdog_start_filetime_utc,
+        worker_pid: std::process::id(),
+        worker_start_filetime_utc: maintenance::current_process_start_filetime()?,
+    };
+
+    match tokio::select! {
+        _ = server.run() => return Ok(false),
+        request = maintenance::wait_for_directed_stop(&identity) => request,
+    } {
+        Ok(request) => {
+            info!(
+                "Accepted directed maintenance request {} for this exact worker.",
+                request.request_id
+            );
+            backend_manager.shutdown_gracefully().await?;
+            info!("Backend exited from EOF; worker will use the maintenance exit code.");
+            Ok(true)
+        }
+        Err(error) => {
+            // Failure to create the optional maintenance channel must not stop
+            // input service. It only keeps automatic maintenance fail-closed.
+            error!("Directed maintenance channel unavailable: {}", error);
+            server.run().await;
+            Ok(false)
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn internal_worker_identity_arguments_cannot_be_injected() {
+        let args = vec![
+            "PIMELauncher.exe".to_string(),
+            "/console".to_string(),
+            "/worker".to_string(),
+            "/watchdog-pid".to_string(),
+            "999".to_string(),
+            "/watchdog-start-filetime-utc".to_string(),
+            "888".to_string(),
+        ];
+        assert_eq!(sanitized_worker_args(&args), vec!["/console"]);
+    }
+
+    #[test]
+    fn argument_value_requires_a_following_value() {
+        let args = vec!["PIMELauncher.exe".to_string(), "/watchdog-pid".to_string()];
+        assert_eq!(argument_value(&args, "/watchdog-pid"), None);
+    }
 }
 
 /// Prints available backends and GUID mappings for debugging.

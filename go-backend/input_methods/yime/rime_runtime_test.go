@@ -2309,6 +2309,129 @@ func rimeProbeInputWithMinCandidates(t *testing.T, sessionID RimeSessionId, min 
 	return "", RimeMenu{}
 }
 
+// TestRealRimeEndSessionPersistsLearningAcrossRestart proves the persistence
+// half of directed backend shutdown against a temporary Rime user directory.
+// Selection and EndSession happen in a child test process that deliberately
+// exits without Finalize, matching server EOF after all IME services close.
+func TestRealRimeEndSessionPersistsLearningAcrossRestart(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	userDir := filepath.Join(t.TempDir(), "Rime")
+	writeRuntimeTestDefaultCustom(t, userDir)
+
+	if !RimeInit(dataDir, userDir, APP, APP_VERSION, false) {
+		t.Fatal("baseline RimeInit failed")
+	}
+	baseline, ok := StartSession()
+	if !ok || baseline == 0 {
+		Finalize()
+		t.Fatal("baseline StartSession failed")
+	}
+	if !SelectSchema(baseline, settings.SchemaVariable) {
+		_ = EndSession(baseline)
+		Finalize()
+		t.Fatal("select baseline yime_variable schema")
+	}
+	SetOption(baseline, "ascii_mode", false)
+	input, initialMenu := rimeProbeInputWithMinCandidates(t, baseline, 2)
+	targetRank := 1
+	target := initialMenu.Candidates[targetRank].Text
+	if !EndSession(baseline) {
+		Finalize()
+		t.Fatal("destroy baseline session")
+	}
+	Finalize()
+
+	testExecutable, err := os.Executable()
+	if err != nil {
+		t.Fatalf("locate test executable: %v", err)
+	}
+	helper := exec.Command(testExecutable, "-test.run=^TestRealRimeEndSessionPersistenceHelper$")
+	helper.Env = append(os.Environ(),
+		"YIME_RIME_EOF_HELPER=1",
+		"YIME_RIME_EOF_DATA_DIR="+dataDir,
+		"YIME_RIME_EOF_USER_DIR="+userDir,
+		"YIME_RIME_EOF_INPUT="+input,
+		"YIME_RIME_EOF_TARGET="+target,
+		"YIME_RIME_EOF_TARGET_RANK="+strconv.Itoa(targetRank),
+	)
+	if output, err := helper.CombinedOutput(); err != nil {
+		t.Fatalf("EndSession persistence helper: %v\n%s", err, output)
+	}
+
+	if !RimeInit(dataDir, userDir, APP, APP_VERSION, false) {
+		t.Fatal("restart RimeInit failed")
+	}
+	var restarted RimeSessionId
+	t.Cleanup(func() {
+		_ = EndSession(restarted)
+		Finalize()
+	})
+	restarted, ok = StartSession()
+	if !ok || restarted == 0 {
+		t.Fatal("restart StartSession failed")
+	}
+	if !SelectSchema(restarted, settings.SchemaVariable) {
+		t.Fatal("select restarted yime_variable schema")
+	}
+	SetOption(restarted, "ascii_mode", false)
+	learnedMenu, ok := rimeMenuAfterASCII(t, restarted, input)
+	if !ok {
+		t.Fatalf("no menu after process restart for %q", input)
+	}
+	learnedRank := -1
+	for index, candidate := range learnedMenu.Candidates {
+		if candidate.Text == target {
+			learnedRank = index
+			break
+		}
+	}
+	if learnedRank < 0 || learnedRank >= targetRank {
+		t.Fatalf("learning target %q rank after process restart = %d, want less than %d; candidates=%#v",
+			target, learnedRank, targetRank, learnedMenu.Candidates)
+	}
+}
+
+func TestRealRimeEndSessionPersistenceHelper(t *testing.T) {
+	if os.Getenv("YIME_RIME_EOF_HELPER") != "1" {
+		return
+	}
+	dataDir := os.Getenv("YIME_RIME_EOF_DATA_DIR")
+	userDir := os.Getenv("YIME_RIME_EOF_USER_DIR")
+	input := os.Getenv("YIME_RIME_EOF_INPUT")
+	target := os.Getenv("YIME_RIME_EOF_TARGET")
+	targetRank, err := strconv.Atoi(os.Getenv("YIME_RIME_EOF_TARGET_RANK"))
+	if err != nil || dataDir == "" || userDir == "" || input == "" || target == "" {
+		t.Fatal("incomplete EndSession persistence helper contract")
+	}
+	if !RimeInit(dataDir, userDir, APP, APP_VERSION, false) {
+		t.Fatal("helper RimeInit failed")
+	}
+	sessionID, ok := StartSession()
+	if !ok || sessionID == 0 {
+		t.Fatal("helper StartSession failed")
+	}
+	if !SelectSchema(sessionID, settings.SchemaVariable) {
+		t.Fatal("helper select yime_variable schema")
+	}
+	SetOption(sessionID, "ascii_mode", false)
+	menu, ok := rimeMenuAfterASCII(t, sessionID, input)
+	if !ok || targetRank >= len(menu.Candidates) || menu.Candidates[targetRank].Text != target {
+		t.Fatalf("helper target drift: rank=%d target=%q menu=%#v", targetRank, target, menu.Candidates)
+	}
+	if !SelectCandidate(sessionID, targetRank) {
+		t.Fatalf("helper select target %q at rank %d", target, targetRank)
+	}
+	if commit, ok := GetCommit(sessionID); !ok || commit.Text != target {
+		t.Fatalf("helper commit = %#v ok=%t, want %q", commit, ok, target)
+	}
+	if !EndSession(sessionID) {
+		t.Fatal("helper RimeDestroySession rejected learning session")
+	}
+	// Intentionally bypass Go defers and RimeFinalize. Successful persistence
+	// must already follow from the checked RimeDestroySession call.
+	os.Exit(0)
+}
+
 func writeUserSchemaWithPageSize(t *testing.T, dataDir, userDir, schemaID string, size int) string {
 	t.Helper()
 	sharedPath := filepath.Join(dataDir, schemaID+".schema.yaml")

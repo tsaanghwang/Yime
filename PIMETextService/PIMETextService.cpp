@@ -71,6 +71,13 @@ TextService::TextService(ImeModule* module):
 	selKeys_(L"1234567890"),
 	candUseCursor_(true),
 	candFontSize_(kDefaultCandidateFontSize) {
+	if (module && !module->programDir().empty()) {
+		privateFontPath_ = module->programDir() +
+			L"\\go-backend\\input_methods\\yime\\data\\fonts\\YinYuan-Regular.ttf";
+		if (::AddFontResourceExW(privateFontPath_.c_str(), FR_PRIVATE, nullptr) == 0) {
+			privateFontPath_.clear();
+		}
+	}
 
 	// font for candidate and mesasge windows
 	font_ = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
@@ -97,6 +104,9 @@ TextService::~TextService(void) {
 
 	if(font_)
 		::DeleteObject(font_);
+
+	if (!privateFontPath_.empty())
+		::RemoveFontResourceExW(privateFontPath_.c_str(), FR_PRIVATE, nullptr);
 }
 
 // virtual

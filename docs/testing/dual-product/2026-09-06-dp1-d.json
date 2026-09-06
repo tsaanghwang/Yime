@@ -1,0 +1,198 @@
+{
+  "schema_version": "yime-dual-product-dp1-d-source-record-v1",
+  "date": "2026-09-06",
+  "scope": "rime-pime-source-build-wiring-and-pure-synthetic-transaction-model",
+  "evidence_level": {
+    "registration": "source_build_wiring_and_synthetic_snapshots_only",
+    "transaction": "pure_in_memory_model_only",
+    "arm64": "cross_build_wiring_and_synthetic_arm64_x86_state_only_no_native_execution"
+  },
+  "source_contract_receipts": {
+    "registration_completeness": {
+      "powershell_5": {
+        "status": "passed",
+        "checks_passed": 25,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-registration-completeness-final2-ps5-20260906-a1/result.json",
+        "sha256": "a05cdc5f1f5d7cd4136b20be328f197c756802707da611baac67e12d3a3f79bf"
+      },
+      "powershell_7": {
+        "status": "passed",
+        "checks_passed": 25,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-registration-completeness-final2-ps7-20260906-a1/result.json",
+        "sha256": "a5f65233b9d7e2add1572239532c698d21e1d04c8bf22732a52a457001d587e3"
+      },
+      "actual_registration_probe_executed": false,
+      "actual_installer_or_uninstaller_executed": false,
+      "actual_registry_profile_or_category_read_or_mutation_executed": false
+    },
+    "registration_ownership": {
+      "powershell_5": {
+        "status": "passed",
+        "checks_passed": 21,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-registration-ownership-final2-ps5-20260906-a1/result.json",
+        "sha256": "e8fca90ef9b39991a71abbf970cf27b7720288154730581a4f9001043e49357f"
+      },
+      "powershell_7": {
+        "status": "passed",
+        "checks_passed": 21,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-registration-ownership-final2-ps7-20260906-a1/result.json",
+        "sha256": "0f3688b8f0bdaf89f89bc65297c08eb59f4eb4b2ca89cde42a91adcb7ea45199"
+      },
+      "actual_registry_read_or_mutation_executed": false,
+      "actual_install_or_uninstall_executed": false,
+      "actual_elevation_executed": false
+    },
+    "native_user_cleanup": {
+      "powershell_5": {
+        "status": "passed",
+        "checks_passed": 11,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-native-user-cleanup-final2-ps5-20260906-a1/result.json",
+        "sha256": "3fa71167cb091f78588f0c8c76f621326a93af782292f85c0b87596c3afccad7"
+      },
+      "powershell_7": {
+        "status": "passed",
+        "checks_passed": 11,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-native-user-cleanup-final2-ps7-20260906-a1/result.json",
+        "sha256": "3e8e40f03523dce4ea65922246371728f1ac8112598d4b3c87c75dbc413718a0"
+      },
+      "actual_installer_or_uninstaller_executed": false,
+      "actual_registry_or_profile_mutation_executed": false,
+      "user_registry_or_data_read": false
+    }
+  },
+  "synthetic_transaction_model": {
+    "passed": true,
+    "checks_per_shell": 9,
+    "expected_stage_count": 24,
+    "rollback_dimension_count": 10,
+    "fault_case_count": 96,
+    "architecture_sets": [
+      ["x64", "x86"],
+      ["arm64", "x86"]
+    ],
+    "fault_points_per_stage": ["before", "after"],
+    "powershell_5": {
+      "path": "C:/dev/Yime/.tmp/dual-product/dp1-transaction-faults-final2-ps5-20260906-a1/result.json",
+      "sha256": "342ef7807957f1706b88cb4e17a2bb0799a397a2ddf72fbe424d58b936a2a31d",
+      "failed_count": 0
+    },
+    "powershell_7": {
+      "path": "C:/dev/Yime/.tmp/dual-product/dp1-transaction-faults-final2-ps7-20260906-a1/result.json",
+      "sha256": "f67cf1e32e80b5095f8b993c1a7a3def46cc30e42e2b4fcfa0a72c54969ba0c9",
+      "failed_count": 0
+    },
+    "engine_sha256": "000804999698ec4235924ccb3c46996ee0afa4f5a41a8f88349f324524a93cfa",
+    "test_sha256": "75a4bbab120d9d245d7d543381fdc90bd1c0983e68a605bfcccdb6955bdccdc9",
+    "actual_filesystem_registry_process_or_elevation_executed": false,
+    "installed_runtime_examined": false,
+    "production_or_user_data_read": false
+  },
+  "additional_final_validation": {
+    "target_user_contract": {
+      "checks_per_shell": 25,
+      "powershell_5": {
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-target-user-final2-ps5-20260906-a1/result.json",
+        "sha256": "e90824d6b9ba6b1f18d66367979560e9688cc37adc8e440d64875d7afb0a81f3"
+      },
+      "powershell_7": {
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-target-user-final2-ps7-20260906-a1/result.json",
+        "sha256": "b500b0cbe6a9230c9b65d1a4c33f5b4853f33ee3ca5d41c325f63e77cb27f739"
+      }
+    },
+    "maintenance_contract": {
+      "checks_per_shell": 31,
+      "powershell_5": {
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-rime-maint-final2-ps5-20260906-a1/result.json",
+        "sha256": "91b20295afd8710f24e0458fd4354bd85bb16fc49ecf9eec27c49c1559496f41"
+      },
+      "powershell_7": {
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-rime-maint-final2-ps7-20260906-a1/result.json",
+        "sha256": "308fdf1bd32e3b8ea94f597ae9bc93319735103a4d0dfe9b1e305ad1bed66702"
+      }
+    },
+    "directed_stop_contract": {
+      "checks_per_shell": 17,
+      "powershell_5": {
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-directed-stop-final2-ps5-20260906-a1/result.json",
+        "sha256": "77153d07acb13ed2b4215c42823c0778b0b6867290cf9f61d719079c2a6358fe"
+      },
+      "powershell_7": {
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-directed-stop-final2-ps7-20260906-a1/result.json",
+        "sha256": "39ba0db825aba993880ac7b314c3e499da000dcf123b4feac2e1c820240bba2f"
+      }
+    },
+    "transaction_isolation_contract": {
+      "checks_per_shell": 52,
+      "powershell_5": {
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-transaction-isolation-final2-ps5-20260906-a1/result.json",
+        "sha256": "e06d7a5710d6ecb23e5b612826154b4a2fe691196c320820d96337c0a3a88c7e"
+      },
+      "powershell_7": {
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-transaction-isolation-final2-ps7-20260906-a1/result.json",
+        "sha256": "b40178b9fc93f2d21bd316eb5d0d9e6d7082eec896fff9045072af84880f23f3"
+      }
+    },
+    "python_source_baseline": {
+      "source_count": 68,
+      "tests_passed": 35,
+      "tests_failed": 0,
+      "path": "C:/dev/Yime/.tmp/dual-product/dp1-registration-transaction-final2-baseline-20260906-a1/baseline.json",
+      "sha256": "a2ba2388169f83ef889928d9d588e71976453a85f2aa6b4191a8d613e0cc256b"
+    },
+    "build_only": {
+      "x86_text_service_and_probe_built": true,
+      "x64_text_service_and_probe_built": true,
+      "arm64_text_service_and_probe_cross_built": true,
+      "x86_ctest_passed": 4,
+      "x64_ctest_passed": 4,
+      "pe_machine_checks_passed": 7,
+      "arm64_native_execution_performed": false,
+      "installer_compiled": true,
+      "installer_executed": false,
+      "installer_signed": false,
+      "installer_path": "C:/dev/Yime/installer/YIME-1.4.0-dev-setup.exe",
+      "installer_size": 39836691,
+      "installer_sha256": "3b95adb3f37e9e2dcc5bd6223b03aaa80527276ee31abf78237843c49d0b7183"
+    }
+  },
+  "pending_gates": [
+    "complete package transaction wired into installer and maintenance entry",
+    "persistent journal recovery archive and crash or reboot replay",
+    "real rollback for all owned dimensions including rollback-failure continuation",
+    "non-elevated runtime launch with exact pid image sid integrity and readiness readback",
+    "real UAC registration install upgrade uninstall restore and registered-host acceptance",
+    "x64 and WOW64 x86 live-host acceptance for the new Rime/PIME candidate",
+    "ARM64 native install registration process and live-host acceptance",
+    "legacy migration transaction",
+    "DP2 single-product and both-install-order physical matrix"
+  ],
+  "installed_state": {
+    "daily_use_yimecore": "local.12",
+    "daily_use_yimecore_changed": false,
+    "local_13_installed": false
+  },
+  "dp1_full_implementation_passed": false,
+  "dp2_physical_acceptance_passed": false,
+  "dp3_selector_acceptance_passed": false,
+  "l5_final_confirmation_complete": false,
+  "l6_sealing_complete": false,
+  "actual_native_probe_executed": false,
+  "actual_elevation_executed": false,
+  "actual_install_or_uninstall_executed": false,
+  "actual_registry_or_profile_read_or_mutation_executed": false,
+  "actual_real_process_start_or_stop_executed": false,
+  "actual_persistent_rollback_or_crash_replay_executed": false,
+  "default_input_method_changed": false,
+  "production_rime_pime_touched": false,
+  "installed_yimecore_touched": false,
+  "user_text_or_learning_read": false,
+  "frozen_targets_executed": false,
+  "record_sha256": null,
+  "record_sha256_reason": "A file cannot contain its own stable SHA-256; the final hash is stored in the adjacent .sha256 sidecar."
+}

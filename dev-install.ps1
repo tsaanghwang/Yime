@@ -1,6 +1,7 @@
 param(
     [string]$RepoRoot = $PSScriptRoot,
-    [string]$InstallRoot = "C:\Program Files (x86)\YIME"
+    [string]$InstallRoot = "C:\Program Files (x86)\YIME",
+    [Parameter(Mandatory)][string]$TargetUserSid
 )
 
 $ErrorActionPreference = "Stop"
@@ -10,4 +11,4 @@ if (-not (Test-Path -LiteralPath $scriptPath)) {
     throw "Missing script: $scriptPath"
 }
 
-& $scriptPath -RepoRoot $RepoRoot -InstallRoot $InstallRoot
+& $scriptPath -RepoRoot $RepoRoot -InstallRoot $InstallRoot -TargetUserSid $TargetUserSid
