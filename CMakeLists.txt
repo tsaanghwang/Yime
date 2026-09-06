@@ -1,5 +1,16 @@
 cmake_minimum_required(VERSION 3.5...4.0)
 
+# Select the MSVC runtime through CMake's target property model before any
+# language is enabled. This prevents Visual Studio generators from replacing
+# hand-written /MT flags with their default MultiThreadedDLL setting.
+if(POLICY CMP0091)
+    cmake_policy(SET CMP0091 NEW)
+else()
+    message(FATAL_ERROR "YIME requires CMake 3.15 or newer for static MSVC runtime selection")
+endif()
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+    CACHE STRING "MSVC runtime used by all YIME C/C++ targets" FORCE)
+
 # override default c/c++ flags, add /MT to link VC++ runtime statically.
 # NOTE: these two lines should go before the project() command according to CMake FAQ:
 # https://cmake.org/Wiki/CMake_FAQ#Make_Override_Files

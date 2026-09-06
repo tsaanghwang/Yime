@@ -201,7 +201,7 @@ jobs:
         run: |
           call "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64 >nul
           cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-          cmake --build build64 --config Release --target PIMETextService PIMERpcResponseTests
+          cmake --build build64 --config Release --target PIMETextService PIMERpcResponseTests PIMERegistrationStatus
       - name: Run native C++ regression tests (Win32)
         shell: pwsh
         run: ctest --test-dir build -C Release --output-on-failure
@@ -210,7 +210,144 @@ jobs:
         run: ctest --test-dir build64 -C Release -R "^PIMERpcResponseTests$" --output-on-failure
       - name: Verify native build outputs
         shell: pwsh
-        run: .\tools\test-build-guards.ps1
+        run: .\tools\test-build-guards.ps1 -SkipPackagedRime
+      - name: Test exact payload-closure rejection model
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-payload-closure.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-payload-closure-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 payload-closure test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-payload-closure.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-payload-closure-ci-ps7-$runId")
+      - name: Test pre-package copy-stage contract
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-package-staging.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-staging-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 package-staging test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-package-staging.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-staging-ci-ps7-$runId")
+      - name: Test deterministic NSIS stage include contract
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-nsis-stage.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-stage-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 NSIS-stage test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-nsis-stage.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-stage-ci-ps7-$runId")
+      - name: Test staged installer build lease and publication contract
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-staged-installer-build.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-staged-build-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 staged-installer-build test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-staged-installer-build.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-staged-build-ci-ps7-$runId")
+      - name: Test NSIS compiler input closure contract
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-nsis-toolchain-closure.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-toolchain-closure-test-ci-ps5-$runId") -SyntheticOnly
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 NSIS toolchain-closure test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-nsis-toolchain-closure.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-toolchain-closure-test-ci-ps7-$runId") -SyntheticOnly
+      - name: Test DP1-J isolated NSIS membership monitor
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-nsis-membership-monitor-v1.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-j-membership-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-J membership-monitor test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-nsis-membership-monitor-v1.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-j-membership-test-ci-ps7-$runId")
+      - name: Test post-build archive extraction contract
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-postbuild-extraction.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-postbuild-extraction-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 postbuild-extraction test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-postbuild-extraction.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-postbuild-extraction-test-ci-ps7-$runId")
+      - name: Test canonical package receipt v2 contract
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-package-receipt-v2.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 package-receipt-v2 test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-package-receipt-v2.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-ci-ps7-$runId")
+      - name: Test canonical receipt no-downgrade contract
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-receipt-no-downgrade.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-receipt-no-downgrade-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 receipt no-downgrade test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-receipt-no-downgrade.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-receipt-no-downgrade-ci-ps7-$runId")
+      - name: Test DP1-J isolated receipt-v2 supersession protocol
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-receipt-v2-supersession.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-j-receipt-v2-supersession-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-J receipt-v2 supersession test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-receipt-v2-supersession.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-j-receipt-v2-supersession-ci-ps7-$runId")
+      - name: Test DP1-I pure transaction replay model
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-transaction-replay-model.ps1
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-I replay-model test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-transaction-replay-model.ps1
+      - name: Test DP1-I isolated fixture transaction journal
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-fixture-transaction-journal.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-i-journal-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-I fixture-journal test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-fixture-transaction-journal.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-i-journal-ci-ps7-$runId")
+      - name: Test normal and delay PE import static CRT rejection
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-pe-import-gate.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-pe-import-gate-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 PE-import gate test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-pe-import-gate.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-pe-import-gate-ci-ps7-$runId")
+      - name: Test static installer artifact verifier
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-installer-static.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-installer-static-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 installer-static test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-installer-static.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-installer-static-ci-ps7-$runId")
       - name: Test installed-runtime evidence capture
         shell: pwsh
         run: .\tools\test-sentence-segment-evidence.ps1
@@ -221,7 +358,9 @@ jobs:
           New-Item -ItemType Directory -Path "$stage\build\PIMELauncher", "$stage\build\PIMETextService\Release", "$stage\build64\PIMETextService\Release" -Force | Out-Null
           Copy-Item build\PIMELauncher\PIMELauncher.exe "$stage\build\PIMELauncher\PIMELauncher.exe"
           Copy-Item build\PIMETextService\Release\PIMETextService.dll "$stage\build\PIMETextService\Release\PIMETextService.dll"
+          Copy-Item build\PIMETextService\Release\PIMERegistrationStatus.exe "$stage\build\PIMETextService\Release\PIMERegistrationStatus.exe"
           Copy-Item build64\PIMETextService\Release\PIMETextService.dll "$stage\build64\PIMETextService\Release\PIMETextService.dll"
+          Copy-Item build64\PIMETextService\Release\PIMERegistrationStatus.exe "$stage\build64\PIMETextService\Release\PIMERegistrationStatus.exe"
       - uses: actions/upload-artifact@v6
         with:
           name: yime-native-${{ github.sha }}
@@ -256,6 +395,12 @@ jobs:
           cmd /C build.bat
           if ($LASTEXITCODE -ne 0) { throw "go-backend build failed with exit code $LASTEXITCODE" }
           Pop-Location
+      - name: Verify complete packaged PE architecture and static CRT closure
+        shell: pwsh
+        run: .\tools\verify-pe-architectures.ps1
+      - name: Seal default x86/x64 package plan
+        shell: pwsh
+        run: .\tools\dual-product\rime-pime-package-plan.ps1 -WritePlan -PlanRepoRoot $env:GITHUB_WORKSPACE -OutputPlanPath (Join-Path $env:GITHUB_WORKSPACE 'installer\package-plan.json')
       - name: Verify packaged dictionaries, manifests, layout and help
         shell: pwsh
         run: |
@@ -269,8 +414,12 @@ jobs:
           path: |
             build/PIMELauncher/PIMELauncher.exe
             build/PIMETextService/Release/PIMETextService.dll
+            build/PIMETextService/Release/PIMERegistrationStatus.exe
             build64/PIMETextService/Release/PIMETextService.dll
+            build64/PIMETextService/Release/PIMERegistrationStatus.exe
             go-backend/build/go-backend
+            installer/package-plan.json
+            installer/package-plan.json.sha256
           if-no-files-found: error
           retention-days: 14
 
@@ -289,6 +438,19 @@ jobs:
           path: .trusted-signing
           sparse-checkout: tools
           persist-credentials: false
+      - name: Move trusted signing implementation outside source checkout
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $source = Join-Path $env:GITHUB_WORKSPACE '.trusted-signing'
+          $trustedRoot = Join-Path $env:RUNNER_TEMP 'yime-trusted-signing'
+          if (Test-Path -LiteralPath $trustedRoot) { throw 'Trusted signing runner-temp destination already exists.' }
+          Move-Item -LiteralPath $source -Destination $trustedRoot
+          if ((Test-Path -LiteralPath $source) -or
+              -not (Test-Path -LiteralPath (Join-Path $trustedRoot 'tools\sign-release.ps1') -PathType Leaf)) {
+            throw 'Trusted signing implementation did not move completely outside the source checkout.'
+          }
+          Add-Content -LiteralPath $env:GITHUB_ENV -Value "YIME_TRUSTED_SIGNING_ROOT=$trustedRoot" -Encoding utf8
       - name: Restore unsigned installer payload
         uses: actions/download-artifact@v7
         with:
@@ -299,13 +461,16 @@ jobs:
         env:
           YIME_SIGN_CERT_BASE64: ${{ secrets.YIME_SIGN_CERT_BASE64 }}
           YIME_SIGN_CERT_PASSWORD: ${{ secrets.YIME_SIGN_CERT_PASSWORD }}
-        run: .\.trusted-signing\tools\import-release-signing-certificate.ps1
+        run: |
+          & (Join-Path $env:YIME_TRUSTED_SIGNING_ROOT 'tools\import-release-signing-certificate.ps1')
       - name: Sign release payload
         shell: pwsh
-        run: .\.trusted-signing\tools\sign-release.ps1 -Root $env:GITHUB_WORKSPACE -RequireComplete
+        run: |
+          & (Join-Path $env:YIME_TRUSTED_SIGNING_ROOT 'tools\sign-release.ps1') -Root $env:GITHUB_WORKSPACE -RequireComplete -PackagePlanPath (Join-Path $env:GITHUB_WORKSPACE 'installer\package-plan.json')
       - name: Verify signed release payload
         shell: pwsh
-        run: .\.trusted-signing\tools\verify-release-signatures.ps1 -Root $env:GITHUB_WORKSPACE
+        run: |
+          & (Join-Path $env:YIME_TRUSTED_SIGNING_ROOT 'tools\verify-release-signatures.ps1') -Root $env:GITHUB_WORKSPACE
       - name: Upload signed installer payload
         uses: actions/upload-artifact@v6
         with:
@@ -313,8 +478,12 @@ jobs:
           path: |
             build/PIMELauncher/PIMELauncher.exe
             build/PIMETextService/Release/PIMETextService.dll
+            build/PIMETextService/Release/PIMERegistrationStatus.exe
             build64/PIMETextService/Release/PIMETextService.dll
+            build64/PIMETextService/Release/PIMERegistrationStatus.exe
             go-backend/build/go-backend
+            installer/package-plan.json
+            installer/package-plan.json.sha256
           if-no-files-found: error
           retention-days: 14
 
@@ -333,28 +502,31 @@ jobs:
       - name: Install NSIS in non-secret packaging job
         uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
         with:
-          nsis-version: 3.08
+          nsis-version: 3.12
       - name: Build the installer
         shell: pwsh
-        run: |
-          Set-Location installer
-          & 'C:\Program Files (x86)\NSIS\Bin\makensis.exe' installer.nsi
-          if ($LASTEXITCODE -ne 0) { throw "makensis failed with exit code $LASTEXITCODE" }
-      - name: Write commit-addressed build manifest
+        run: .\tools\build-rime-pime-installer.ps1 -RepoRoot $env:GITHUB_WORKSPACE -PackagePlanPath (Join-Path $env:GITHUB_WORKSPACE 'installer\package-plan.json')
+      - name: Write source-identity-aware build manifest
         shell: pwsh
         run: .\tools\write-build-manifest.ps1
-      - name: Smoke-test unsigned installer on ephemeral runner
+      - name: Validate unsigned installer artifact without native installation
         shell: pwsh
         run: |
           $installer = Get-ChildItem installer\YIME-*-setup.exe | Select-Object -First 1
           if (-not $installer) { throw 'Unsigned installer was not found.' }
-          .\tools\test-installer-smoke.ps1 -InstallerPath $installer.FullName
+          .\tools\test-installer-smoke.ps1 -InstallerPath $installer.FullName -StaticOnly `
+            -ExpectedCommit $env:GITHUB_SHA -ExpectedRef $env:GITHUB_REF -ExpectedSignedRelease false `
+            -ExpectedSourceTreeDirty false
       - uses: actions/upload-artifact@v6
         with:
           name: YIME-unsigned-test-installer-${{ github.sha }}
           path: |
             installer/YIME-*-setup.exe
             installer/build-manifest.json
+            installer/package-plan.json
+            installer/package-plan.json.sha256
+            installer/package-build-receipt.json
+            installer/package-build-receipt.json.sha256
           if-no-files-found: error
           retention-days: 30
 
@@ -365,6 +537,9 @@ jobs:
     needs: [release-sign-payload]
     steps:
       - uses: actions/checkout@v6
+      - name: Block tagged installer until signed-uninstaller and removal closure
+        shell: pwsh
+        run: throw 'Tagged Rime/PIME installer release is disabled until the embedded uninstaller is trusted and exact payload/font removal with durable recovery is sealed.'
       - name: Restore signed installer payload
         uses: actions/download-artifact@v7
         with:
@@ -373,18 +548,18 @@ jobs:
       - name: Install NSIS in non-secret packaging job
         uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
         with:
-          nsis-version: 3.08
+          nsis-version: 3.12
       - name: Build unsigned outer installer
         shell: pwsh
-        run: |
-          Set-Location installer
-          & 'C:\Program Files (x86)\NSIS\Bin\makensis.exe' installer.nsi
-          if ($LASTEXITCODE -ne 0) { throw "makensis failed with exit code $LASTEXITCODE" }
+        run: .\tools\build-rime-pime-installer.ps1 -RepoRoot $env:GITHUB_WORKSPACE -PackagePlanPath (Join-Path $env:GITHUB_WORKSPACE 'installer\package-plan.json')
       - name: Upload unsigned outer installer
         uses: actions/upload-artifact@v6
         with:
           name: yime-unsigned-outer-installer-${{ github.sha }}
-          path: installer/YIME-*-setup.exe
+          path: |
+            installer/YIME-*-setup.exe
+            installer/package-build-receipt.json
+            installer/package-build-receipt.json.sha256
           if-no-files-found: error
           retention-days: 14
 
@@ -403,6 +578,19 @@ jobs:
           path: .trusted-signing
           sparse-checkout: tools
           persist-credentials: false
+      - name: Move trusted signing implementation outside source checkout
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $source = Join-Path $env:GITHUB_WORKSPACE '.trusted-signing'
+          $trustedRoot = Join-Path $env:RUNNER_TEMP 'yime-trusted-signing'
+          if (Test-Path -LiteralPath $trustedRoot) { throw 'Trusted signing runner-temp destination already exists.' }
+          Move-Item -LiteralPath $source -Destination $trustedRoot
+          if ((Test-Path -LiteralPath $source) -or
+              -not (Test-Path -LiteralPath (Join-Path $trustedRoot 'tools\sign-release.ps1') -PathType Leaf)) {
+            throw 'Trusted signing implementation did not move completely outside the source checkout.'
+          }
+          Add-Content -LiteralPath $env:GITHUB_ENV -Value "YIME_TRUSTED_SIGNING_ROOT=$trustedRoot" -Encoding utf8
       - name: Restore signed installer payload
         uses: actions/download-artifact@v7
         with:
@@ -418,19 +606,20 @@ jobs:
         env:
           YIME_SIGN_CERT_BASE64: ${{ secrets.YIME_SIGN_CERT_BASE64 }}
           YIME_SIGN_CERT_PASSWORD: ${{ secrets.YIME_SIGN_CERT_PASSWORD }}
-        run: .\.trusted-signing\tools\import-release-signing-certificate.ps1
-      - name: Sign outer installer
+        run: |
+          & (Join-Path $env:YIME_TRUSTED_SIGNING_ROOT 'tools\import-release-signing-certificate.ps1')
+      - name: Sign outer installer and refresh its sealed receipt
         shell: pwsh
         run: |
-          $installer = Get-ChildItem installer\YIME-*-setup.exe | Select-Object -First 1
-          if (-not $installer) { throw 'Unsigned outer installer was not found.' }
-          .\.trusted-signing\tools\sign-file.ps1 -Path $installer.FullName
+          & (Join-Path $env:YIME_TRUSTED_SIGNING_ROOT 'tools\sign-release.ps1') -Root $env:GITHUB_WORKSPACE -IncludeInstaller -PackagePlanPath (Join-Path $env:GITHUB_WORKSPACE 'installer\package-plan.json') -ReceiptPath (Join-Path $env:GITHUB_WORKSPACE 'installer\package-build-receipt.json')
       - name: Verify complete tagged release signatures
         shell: pwsh
-        run: .\.trusted-signing\tools\verify-release-signatures.ps1 -Root $env:GITHUB_WORKSPACE -IncludeInstaller
-      - name: Write commit-addressed signed build manifest
+        run: |
+          & (Join-Path $env:YIME_TRUSTED_SIGNING_ROOT 'tools\verify-release-signatures.ps1') -Root $env:GITHUB_WORKSPACE -IncludeInstaller
+      - name: Write source-identity-aware signed build manifest
         shell: pwsh
-        run: .\.trusted-signing\tools\write-build-manifest.ps1 -RepoRoot $env:GITHUB_WORKSPACE
+        run: |
+          & (Join-Path $env:YIME_TRUSTED_SIGNING_ROOT 'tools\write-build-manifest.ps1') -RepoRoot $env:GITHUB_WORKSPACE -OutputPath (Join-Path $env:GITHUB_WORKSPACE 'installer\build-manifest.json')
       - name: Upload signed installer
         uses: actions/upload-artifact@v6
         with:
@@ -438,6 +627,10 @@ jobs:
           path: |
             installer/YIME-*-setup.exe
             installer/build-manifest.json
+            installer/package-plan.json
+            installer/package-plan.json.sha256
+            installer/package-build-receipt.json
+            installer/package-build-receipt.json.sha256
           if-no-files-found: error
           retention-days: 30
 

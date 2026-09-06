@@ -20,6 +20,9 @@ $cargoConfig = Get-Content -LiteralPath (Join-Path $repoRoot 'PIMELauncher\.carg
 if ($cargoConfig -notmatch 'target\s*=\s*"i686-pc-windows-msvc"') {
     throw 'PIMELauncher/.cargo/config.toml must target i686-pc-windows-msvc.'
 }
+if ($cargoConfig -notmatch 'rustflags\s*=\s*\[[^\]]*"target-feature=\+crt-static"') {
+    throw 'PIMELauncher must statically link its Win32 CRT for a self-contained package.'
+}
 if ($cargoConfig -notmatch 'offline\s*=\s*true' -or
     $cargoConfig -notmatch 'replace-with\s*=\s*"vendored-sources"' -or
     $cargoConfig -notmatch 'directory\s*=\s*"vendor"') {

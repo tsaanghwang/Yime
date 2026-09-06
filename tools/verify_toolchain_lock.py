@@ -91,6 +91,7 @@ def verify(lock_path: Path = DEFAULT_LOCK) -> dict[str, Any]:
     )
     build = (REPO_ROOT / "go-backend" / "build.bat").read_text(encoding="utf-8")
     cmake = (REPO_ROOT / "CMakeLists.txt").read_text(encoding="utf-8")
+    launcher_config = (REPO_ROOT / "PIMELauncher" / ".cargo" / "config.toml").read_text(encoding="utf-8")
     for fragment in (
         "runs-on: windows-2022",
         "go-version: '1.26.4'",
@@ -103,6 +104,8 @@ def verify(lock_path: Path = DEFAULT_LOCK) -> dict[str, Any]:
         raise VerificationError("go-backend no longer builds vendored go-winres")
     if 'Rust_TOOLCHAIN "stable-i686-pc-windows-msvc"' not in cmake:
         raise VerificationError("CMake no longer pins the i686 Rust host toolchain")
+    if 'target-feature=+crt-static' not in launcher_config:
+        raise VerificationError("PIMELauncher no longer statically links the Win32 CRT")
     return {
         "decision": "pass",
         "lock_id": lock.get("lock_id"),

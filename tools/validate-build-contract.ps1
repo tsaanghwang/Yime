@@ -92,6 +92,7 @@ Require-Text 'CMakeLists.txt' @(
 )
 Require-Text 'PIMELauncher/.cargo/config.toml' @(
     'target = "i686-pc-windows-msvc"'
+    'target-feature=+crt-static'
     'offline = true'
     'replace-with = "vendored-sources"'
     'directory = "vendor"'

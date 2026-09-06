@@ -1,0 +1,248 @@
+{
+  "schema_version": "yime-dual-product-dp1-h-evidence-v1",
+  "generated_at_utc": "2026-09-06T06:38:57.5653709Z",
+  "product": "rime-pime",
+  "scope": "canonical-v2-disabled-static-receipt-and-known-nsis-distribution-input-boundary",
+  "architectures": ["x86", "x64"],
+  "implementation": {
+    "builder": "tools/build-rime-pime-installer.ps1",
+    "toolchain_closure": "tools/dual-product/rime-pime-nsis-toolchain-closure.ps1",
+    "toolchain_lock": "tools/dual-product/rime-pime-postbuild-toolchain-lock.json",
+    "receipt_v2": "tools/dual-product/rime-pime-package-receipt-v2.ps1",
+    "receipt_v2_finalizer": "tools/dual-product/finalize-rime-pime-package-receipt-v2.ps1",
+    "postbuild_verifier": "tools/dual-product/rime-pime-postbuild-extraction.ps1",
+    "source_contract_count": 110,
+    "source_baseline_count": 117,
+    "source_baseline_contract_tests": 42,
+    "current_package_profile": "x86-x64-v1",
+    "builder_automatically_invokes_postbuild_verifier": false,
+    "canonical_receipt_v2_explicitly_finalized": true,
+    "canonical_receipt_binds_postbuild_evidence": true,
+    "canonical_receipt_is_release_receipt": false
+  },
+  "concrete_regressions": [
+    {
+      "id": "DP1-NSIS-MEMBERSHIP-05",
+      "status": "open",
+      "finding": "A Windows directory identity lease does not freeze child membership. A same-SID process can create and remove an unlisted plugin while all directory leases remain valid, so discrete pre/post exact snapshots do not prove continuous tree-membership closure.",
+      "regression_check": "same-sid-transient-unlisted-child-is-not-excluded-by-directory-leases",
+      "nsis_known_input_file_replacement_closure": true,
+      "active_same_sid_transient_tree_membership_interference_excluded": false,
+      "nsis_non_os_compiler_input_closure": false,
+      "full_nsis_toolchain_input_closure": false
+    },
+    {
+      "id": "DP1-NSIS-PSMODULE-06",
+      "status": "closed",
+      "finding": "Importing the toolchain module last under Windows PowerShell 5.1 removed the globally visible staging export and the real builder could not resolve Get-YimePimePayloadFileRecord.",
+      "failure_preceded_candidate_or_canonical_write": true,
+      "remediation": "Pin the builder import order to toolchain, staging, nsis-stage, staged-build.",
+      "real_ps5_disabled_build_passed_after_fix": true
+    },
+    {
+      "id": "DP1-RECEIPT-PSMODULE-07",
+      "status": "closed",
+      "finding": "The finalizer relied on a nested module to re-export the staging record helper and exited before canonical publication.",
+      "failure_preceded_canonical_write": true,
+      "remediation": "Re-import the already leased staging module after the receipt module and guard the order in the receipt-v2 regression suite.",
+      "canonical_v2_publication_passed_after_fix": true
+    }
+  ],
+  "nsis_compiler_input_boundary": {
+    "scope": "repository-pinned-nsis-distribution-non-os-v1",
+    "toolchain_id": "mycomputer-rime-pime-nsis-static-x86-x64-v2",
+    "toolchain_lock_sha256": "01e913d82b277ac9219148e9fb26df7851475ce0b70ff5d7b58df51179603c45",
+    "canonical_tree_sha256": "a908c3b306098217a87a62f0eb4a18c3b2bb5391efde93420bbec1f38ec8d352",
+    "root_count": 5,
+    "directory_count": 17,
+    "file_count": 303,
+    "required_input_count": 51,
+    "file_read_lease_count": 303,
+    "directory_identity_lease_count": 19,
+    "anchor_directory_identity_lease_count": 2,
+    "control_read_lease_count": 2,
+    "makensis_sha256": "25d1aa7081db1a9de9690b59983f9652b7409a189c3444328cc1841eff693e8d",
+    "distribution_tree_exact_at_open_and_test": true,
+    "known_input_file_replacement_closure": true,
+    "compiler_input_pre_snapshot_exact": true,
+    "compiler_input_post_snapshot_exact": true,
+    "compiler_input_leases_held_during_makensis": true,
+    "active_same_sid_transient_tree_membership_interference_excluded": false,
+    "non_os_compiler_input_closure": false,
+    "windows_loader_environment_and_scheduling_inputs_closed": false,
+    "full_toolchain_input_closure": false
+  },
+  "real_disabled_builds": {
+    "shared": {
+      "copied_file_count": 175,
+      "payload_file_count": 166,
+      "bootstrap_file_count": 9,
+      "content_tree_sha256": "bec8f30e0d85c854dda9da3b70e26bd6b752fcd89684bbe6572038ab291151b2",
+      "payload_nsh_sha256": "aed59cc374fc4bcdf6d3d26eefb87cc31524a6371bb84efa8839876b1e3d14fd",
+      "prebuild_leased_input_count": 509,
+      "executed_build_logic_source_count": 14,
+      "staged_pe_unique_artifact_count": 20,
+      "staged_pe_path_binding_count": 22,
+      "unsigned_disabled_build": true,
+      "signing_hook_processes_executed": false,
+      "installer_executed": false,
+      "uninstaller_executed": false
+    },
+    "ps5": {
+      "root": ".tmp/dual-product/dp1-package-build-stage-dp1h-root-ps5-a2",
+      "build_result": ".tmp/dual-product/dp1-package-build-stage-dp1h-root-ps5-a2/evidence/build-result.json",
+      "build_result_sha256": "c1c91c07b596e00a66bd4f3a56b552e65ce0a1bc3b35da174804de22763935c2",
+      "candidate_sha256": "4657267f8e0017ad668a91f44b5f7dcb9331b1cce3a08200809b5141aa9e49c3",
+      "candidate_bytes": 41452870,
+      "publication_receipt_v1_sha256": "137b927845ef4789c368ddbd3d42bdff19fd43038cf9b0ffd7389a4a75046437",
+      "postbuild_result": ".tmp/dual-product/dp1-postbuild-extraction-dp1h-root-ps5-a1/evidence/result.json",
+      "postbuild_result_sha256": "2b018dd88485f020a1b417fc14d5360c1eec98348d405793b14b2ecc5d8f0384"
+    },
+    "ps7": {
+      "root": ".tmp/dual-product/dp1-package-build-stage-dp1h-root-ps7-a1",
+      "build_result": ".tmp/dual-product/dp1-package-build-stage-dp1h-root-ps7-a1/evidence/build-result.json",
+      "build_result_sha256": "c1845b1dcb6b2ac49e8d4127d5ea8a6032c56646bcfac7c78da0574f3f7e6a49",
+      "candidate_sha256": "32a7d66e06284d512675e40495b6e244a23630d2e368ac2cf73ce652e623efe2",
+      "candidate_bytes": 41456428,
+      "publication_receipt_v1_sha256": "d8570876b1fe5208011ce52252b261f37ef263ffce161de44560e63c3a9d1450",
+      "postbuild_result": ".tmp/dual-product/dp1-postbuild-extraction-dp1h-root-ps7-a1/evidence/result.json",
+      "postbuild_result_sha256": "c1ea171de99485ba6771c5b7e6fd9a1e4ec8a62a1d48ed9d4b5979fffc4d0a01"
+    }
+  },
+  "canonical_receipt_v2": {
+    "path": "installer/package-build-receipt.json",
+    "schema_version": "yime-rime-pime-package-build-receipt-v2",
+    "receipt_state": "canonical-static-closure-disabled",
+    "sha256": "c18d1202ad78dcd6f8c1f74b34859a83489adb01fb156fa4e2546160aff5b0be",
+    "sidecar_matches": true,
+    "installer_path": "installer/YIME-1.4.0-dev-setup.exe",
+    "installer_sha256": "32a7d66e06284d512675e40495b6e244a23630d2e368ac2cf73ce652e623efe2",
+    "installer_bytes": 41456428,
+    "predecessor_v1_sha256": "d8570876b1fe5208011ce52252b261f37ef263ffce161de44560e63c3a9d1450",
+    "build_result_sha256": "c1845b1dcb6b2ac49e8d4127d5ea8a6032c56646bcfac7c78da0574f3f7e6a49",
+    "postbuild_result_sha256": "c1ea171de99485ba6771c5b7e6fd9a1e4ec8a62a1d48ed9d4b5979fffc4d0a01",
+    "generated_uninstaller_sha256": "ea0cdb53324d215601f14c11bb69041f9006172468ddc28bfa7eacf850764a2d",
+    "generated_uninstaller_bytes": 585253,
+    "strict_reader_ps5_passed": true,
+    "strict_reader_ps7_passed": true,
+    "evidence_artifacts_embedded": false,
+    "evidence_artifacts_durable": false,
+    "unsigned_disabled_build": true,
+    "signing_complete": false,
+    "generated_uninstaller_verified": false,
+    "generated_uninstaller_trusted": false,
+    "final_payload_closure": false,
+    "delivery_admitted": false,
+    "v1_builder_downgrade_attempt_rejected_before_output_or_makensis": true,
+    "v2_to_v2_supersession_wired": false
+  },
+  "fixture_tests": [
+    {
+      "name": "nsis-toolchain-local",
+      "checks_per_shell": 15,
+      "ps5_result": ".tmp/dual-product/dp1-nsis-toolchain-closure-test-root-ps5-a1/result.json",
+      "ps5_result_sha256": "d4679e09b651e07e648aa575d607ad52dc122259b784a3f4ec6c2526dd9fc51e",
+      "ps7_result": ".tmp/dual-product/dp1-nsis-toolchain-closure-test-root-ps7-a2/result.json",
+      "ps7_result_sha256": "c44680f1311ab852f766d9f1b276390b36bfe8de2ba3d6fac3f8d68138ce373f"
+    },
+    {
+      "name": "nsis-toolchain-synthetic-only-ci-contract",
+      "checks_per_shell": 14,
+      "ps5_result_sha256": "c883d342a6d19f23dc02c70ec67ecd05d3c0f7f027693c4fe43bc1d3eb708110",
+      "ps7_result_sha256": "877f7b52bb93d1d0bc680d03684ab93b3110076358f0c6f92e6b00cf3fa29448"
+    },
+    {
+      "name": "package-receipt-v2",
+      "checks_per_shell": 26,
+      "ps5_result_sha256": "f8c8698d536e78e3c68eeb7b131bb8cddc60c2f0d4f8c5f5d8618cce2ae986ab",
+      "ps7_result_sha256": "f9352e457d5387e76bd7b17533da4b804003b1f82c89052cf47bac119604704f"
+    },
+    {
+      "name": "receipt-no-downgrade",
+      "checks_per_shell": 7,
+      "ps5_result_sha256": "a0c9911b7837e65af191738b73d325fa358ff0cfcacc25e527ab08d03e72f965",
+      "ps7_result_sha256": "7f9ba1f09fab00fbada669dc8b1f324bba3ef524a0bb4da332789ec362301c4f"
+    },
+    {
+      "name": "staged-installer-publication",
+      "checks_per_shell": 12,
+      "ps5_result_sha256": "70fd20f9c5e4bd6fc33b99c64a583ff3a8fe2554a283ced3b07c5aed2c6dc369",
+      "ps7_result_sha256": "cfd971b7ca261b72dfc9fc76e683198cf419c0bd2b82f68e1989141cc4e21de3"
+    },
+    {
+      "name": "postbuild-synthetic",
+      "checks_per_shell": 50,
+      "ps5_result_sha256": "8e09fea959ede5fe66515f3b1e2135ea37e3b1d673a65b1c9e9eec4169cb788f",
+      "ps7_result_sha256": "403b7b393881274996621f5a0f4e06680d85f9a787c7dca79658307b04e05c8f"
+    }
+  ],
+  "source_baseline": {
+    "passed": true,
+    "source_count": 117,
+    "contract_tests_passed": 42,
+    "known_pending_count": 5,
+    "known_pending_ids": [
+      "DP1-PIME-DIRECTED-EXIT-04",
+      "DP1-PIME-REGISTRY-05",
+      "DP1-PIME-TRANSACTION-06",
+      "DP1-PIME-COMPILER-INPUT-07",
+      "DP1-PIME-RECEIPT-08"
+    ],
+    "result": ".tmp/dual-product/dp1-h-baseline-root-a3/baseline.json",
+    "result_sha256": "1d71c8964863f6799e1b872fa41269058e503604a298362584c70d5da60c37be"
+  },
+  "source_sha256": {
+    "tools/build-rime-pime-installer.ps1": "97ec17086ab00ffed1c76657afdee7c38c7f706217c117d4e3fb84553db34d07",
+    "tools/dual-product/rime-pime-nsis-toolchain-closure.ps1": "c3cf5c24584a0cb0d07c057921a9482025d8a72aca9c440250bc8ad9112affa3",
+    "tools/dual-product/rime-pime-nsis-toolchain-closure.psm1": "53a00733a2d9c51a8690d73ab358112c5b5c36c84650233bab72594d23830264",
+    "tools/dual-product/test-rime-pime-nsis-toolchain-closure.ps1": "9f29ba6a09dc413f218b27cb1afcdb613d3709c53c25820fba6354d444a1bdfc",
+    "tools/dual-product/rime-pime-package-receipt-v2.ps1": "d6b2492b7c978db329d28086ae230feed48bfc770b33b3878f430deeb7473701",
+    "tools/dual-product/rime-pime-package-receipt-v2.psm1": "9160b795d9aa25e048775c6db96622061ecf27286231aed969f4fb40f7358e6e",
+    "tools/dual-product/finalize-rime-pime-package-receipt-v2.ps1": "5fb2b93a8055f109e0a0d8c3f86339006308675d373943bb4130798d85c92637",
+    "tools/dual-product/test-rime-pime-package-receipt-v2.ps1": "ad103c098c9507da6f9c1f175d85bbf6b62763e0aa00ea684d99274ab9a4ff4b",
+    "tools/dual-product/test-rime-pime-receipt-no-downgrade.ps1": "0c1e4d80cc531763dcbbbbe1bd4e412b9259f3547609bec4c28748155278f23d",
+    "tools/dual-product/rime-pime-staged-installer-build.ps1": "0e09bbad340ea481881496e9651c77a49a88ac12948afe6b64fc23f93b7fafe7",
+    "tools/dual-product/rime-pime-package-plan.ps1": "f0a134f3d75d7535571f4bdfb58772a55f7cfa70db665ced73fd3e76a01c8025",
+    "tools/sign-release.ps1": "8238102966a6913f87a7fbb6c0694b4b2d2bbecd1f7de262afccd88576869a26",
+    "tools/dual-product/rime-pime-postbuild-extraction.ps1": "beb4524f383c4b2bdf6b28671846027fa42f61aad4976e344a97dfffcbdecc22",
+    "tools/dual-product/run-rime-pime-postbuild-extraction.ps1": "3dead74a99c18b4303212d1aa6c4a0e9b8cff7a880b906ac8bd55332f3e1edc1",
+    "tools/dual-product/rime-pime-postbuild-toolchain-lock.json": "01e913d82b277ac9219148e9fb26df7851475ce0b70ff5d7b58df51179603c45",
+    "tools/dual-product/contract.json": "37055c4168bfc012c15f58bd377de00cf21c52d792505f16be304d736f6af89b",
+    "tools/dual-product/baseline.py": "fe2d46863c5615bbe84ef7f2c7b2d38f9897f43af4b9522ce31ff87ee3fd41f9",
+    "tools/dual-product/test_baseline.py": "184e54d1f86070f99724dc9be59ed789adfa34cce9e77ae119e903f7396a88f6",
+    ".github/workflows/ci.yaml": "74eac0b4f9ffca3c7f930eac1a4249df3f0e8b693a0f97b3e7973a9ed084cbbc",
+    "docs/project/YIME_DUAL_PRODUCT_DP1_H_CANONICAL_V2_NSIS_INPUT_BOUNDARY_2026-09-06.md": "e2d6a0a2b975d0afd261fff9d439660d167e8bed74a6069d52d2e4fd3cb07de0"
+  },
+  "boundaries": {
+    "full_nsis_toolchain_input_closure": false,
+    "active_same_sid_transient_tree_membership_interference_excluded": false,
+    "canonical_v2_evidence_complete_for_static_disabled_scope": true,
+    "canonical_v2_evidence_durable": false,
+    "v2_to_v2_supersession_wired": false,
+    "durable_install_journal_wired": false,
+    "crash_replay_verified": false,
+    "exact_manifest_leaf_first_removal_wired": false,
+    "release_signing_executed": false,
+    "installer_or_uninstaller_executed": false,
+    "installed_or_live_runtime_examined": false,
+    "registry_or_product_process_touched": false,
+    "default_input_method_changed": false,
+    "production_user_data_read_or_written": false,
+    "installed_yimecore_local12_touched": false,
+    "yimecore_local13_installed": false,
+    "arm64_native_evidence_obtained": false,
+    "hard_blocks_remain": true
+  },
+  "next_required_evidence": [
+    "Prevent transient same-SID NSIS tree membership changes for the full makensis interval and separately account for Windows loader, environment and scheduling inputs.",
+    "Move all receipt-v2 dependencies to a durable content-addressed evidence root and implement failure-recoverable v2-to-v2 supersession without v1 downgrade.",
+    "Implement a flushed, exclusively locked prepared/commit hash-chain journal with idempotent replay and privacy-safe typed synthetic recovery archives.",
+    "Replace recursive removal with manifest-driven leaf-first exact removal that rejects or preserves unexpected files, then close elevated-helper, side-by-side TSF and non-elevated Runtime launch boundaries.",
+    "Verify signing, generated-uninstaller trust, installed registration, live hosts, reboot recovery and both coexistence orders only after a separate authorized handoff."
+  ],
+  "dp1_full_implementation_passed": false,
+  "dp2_physical_acceptance_passed": false,
+  "dp3_selector_acceptance_passed": false,
+  "l5_final_confirmation_complete": false,
+  "l6_sealing_complete": false
+}

@@ -1,0 +1,189 @@
+{
+  "schema_version": "yime-dual-product-dp1-g-evidence-v1",
+  "generated_at_utc": "2026-09-06T04:30:56.6062796Z",
+  "product": "rime-pime",
+  "scope": "sealed-stage-only-nsis-build-and-read-only-static-archive-comparison",
+  "architectures": ["x86", "x64"],
+  "implementation": {
+    "builder": "tools/build-rime-pime-installer.ps1",
+    "installer_source": "installer/installer.nsi",
+    "stage_generator": "tools/dual-product/rime-pime-nsis-stage.ps1",
+    "postbuild_verifier": "tools/dual-product/rime-pime-postbuild-extraction.ps1",
+    "source_contract_count": 102,
+    "source_baseline_count": 109,
+    "source_baseline_contract_tests": 37,
+    "current_package_profile": "x86-x64-v1",
+    "repository_relative_or_recursive_product_file_inputs_in_installer": false,
+    "builder_automatically_invokes_postbuild_verifier": false,
+    "canonical_receipt_binds_postbuild_evidence": false
+  },
+  "concrete_regressions": [
+    {
+      "id": "DP1-NSIS-PS51-04",
+      "status": "closed_by_real_ps51_build",
+      "finding": "The real builder resolved its default RepoRoot from PSScriptRoot in the parameter declaration; Windows PowerShell 5.1 observed an empty value and exited before mutation while PowerShell 7 did not reproduce it.",
+      "remediation": "Resolve the default repository root after parameter binding.",
+      "real_ps51_build_passed": true,
+      "system_or_product_state_changed_by_failed_attempt": false
+    }
+  ],
+  "sealed_stage": {
+    "copy_file_count": 175,
+    "installed_namespace_file_count": 166,
+    "bootstrap_namespace_file_count": 9,
+    "closed_go_source_tree_file_count": 148,
+    "package_plan_sha256": "b5bcfe3ead26478129621cec7ea376ad028db86500d209d74572be16b04445ad",
+    "payload_spec_sha256": "79c08ee2586d9007fccde5df15174eac5dacd1400690072a9b9b5df21a7be998",
+    "content_manifest_sha256": "6c56bac7207229c8ca357441011d2752d73f6f5aef59b839cffc6c7274f34fc7",
+    "content_tree_sha256": "bec8f30e0d85c854dda9da3b70e26bd6b752fcd89684bbe6572038ab291151b2",
+    "generated_macro_count": 6,
+    "generated_file_reference_count": 176,
+    "payload_nsh_sha256": "aed59cc374fc4bcdf6d3d26eefb87cc31524a6371bb84efa8839876b1e3d14fd",
+    "payload_nsh_receipt_sha256": "ef9d2a5d85f18ff92c23c8300944c559edaff5336abf1119674f52c48990c029"
+  },
+  "real_disabled_builds": {
+    "shared": {
+      "prebuild_leased_input_count": 200,
+      "executed_build_logic_source_count": 10,
+      "staged_pe_unique_artifact_count": 20,
+      "staged_pe_path_binding_count": 22,
+      "makensis_no_current_directory_change": true,
+      "makensis_user_config_disabled": true,
+      "repository_local_compiler_inputs_leased": true,
+      "path_searched_signing_host_not_executed": true,
+      "unsigned_disabled_build": true,
+      "signing_hook_processes_executed": false,
+      "full_nsis_toolchain_input_closure": false
+    },
+    "ps5": {
+      "root": ".tmp/dual-product/dp1-package-build-stage-sealed-final2-ps5-a1",
+      "result": ".tmp/dual-product/dp1-package-build-stage-sealed-final2-ps5-a1/evidence/build-result.json",
+      "result_sha256": "17ece115766d063aca84c681d0802f0a0f832a977da2e7e3b10565f010b1da8c",
+      "candidate_sha256": "67d75fda241f7354d7c1a775afbbd42fbfe7099ba320ea20365050b763fb3e7d",
+      "candidate_bytes": 41488070,
+      "publication_receipt_sha256": "8522a7c17b251099551558e01ccc142036f59471bf7bb340ab974747e14fbebe"
+    },
+    "ps7": {
+      "root": ".tmp/dual-product/dp1-package-build-stage-sealed-final2-ps7-a1",
+      "result": ".tmp/dual-product/dp1-package-build-stage-sealed-final2-ps7-a1/evidence/build-result.json",
+      "result_sha256": "fddc0d833aea68757dda5baac40bafea392afe7081602b468020dc3b05708aa4",
+      "candidate_sha256": "89afd38568e624213f69989af99cd02c488925de128e9ba4bd7fd0413589bd70",
+      "candidate_bytes": 41473007,
+      "publication_receipt_sha256": "91bdd5a21bbaab4e2beca751d3c78594a26186b63e073fbd9a6f0191f1958fe0"
+    },
+    "canonical_publication": {
+      "installer": "installer/YIME-1.4.0-dev-setup.exe",
+      "installer_sha256": "89afd38568e624213f69989af99cd02c488925de128e9ba4bd7fd0413589bd70",
+      "receipt": "installer/package-build-receipt.json",
+      "receipt_sha256": "91bdd5a21bbaab4e2beca751d3c78594a26186b63e073fbd9a6f0191f1958fe0",
+      "receipt_sidecar_matches": true,
+      "publication_protocol": "cross-process-locked-receipt-sidecar-last-recoverable-commit",
+      "atomic_filesystem_transaction_claimed": false
+    }
+  },
+  "postbuild_static_archive": {
+    "outer_archive_entry_count": 181,
+    "outer_installed_payload_count": 166,
+    "outer_product_bootstrap_count": 9,
+    "outer_nsis_support_count": 5,
+    "outer_generated_uninstaller_count": 1,
+    "nested_uninstaller_entry_count": 11,
+    "nested_product_bootstrap_count": 9,
+    "nested_nsis_support_count": 2,
+    "seven_zip_call_count_per_run": 197,
+    "seven_zip_text_call_count_per_run": 5,
+    "seven_zip_per_entry_raw_stdout_call_count_per_run": 192,
+    "installer_file_read_lease_count": 181,
+    "uninstaller_file_read_lease_count": 11,
+    "execution_logic_read_lease_count": 12,
+    "installer_archive_listing_exact": true,
+    "nested_uninstaller_archive_listing_exact": true,
+    "archive_content_origin_proven": true,
+    "same_sid_replacement_window_closed": true,
+    "seven_zip": {
+      "path": "C:/Program Files/7-Zip/7z.exe",
+      "sha256": "83967f1b02b43c4efeda302795722c809e0e81b8307de73558d10484d5676a7d"
+    },
+    "seven_zip_parser_library": {
+      "path": "C:/Program Files/7-Zip/7z.dll",
+      "sha256": "69fd4df057985c40e510e2fac182881c7f85e90aa13ec703f763a8fdb2ce61f8",
+      "read_lease_held_for_all_calls": true
+    },
+    "ps5": {
+      "result": ".tmp/dual-product/dp1-postbuild-extraction-final2-ps5-a1/evidence/result.json",
+      "result_sha256": "2241ea660cc67bd772ece8763f250d2933a0f307debeddfe2bd6964a8a32b464",
+      "sidecar_matches": true
+    },
+    "ps7": {
+      "result": ".tmp/dual-product/dp1-postbuild-extraction-final2-ps7-a1/evidence/result.json",
+      "result_sha256": "143a38ba366134093d4145b9506cb3b8480081686f18f6099fc2c6776325078b",
+      "sidecar_matches": true
+    },
+    "generated_uninstaller_present": true,
+    "generated_uninstaller_static_archive_member_verified": true,
+    "generated_uninstaller_verified": false,
+    "generated_uninstaller_trusted": false,
+    "uninstaller_trust_state": "unsigned-disabled-static-observation-only",
+    "final_payload_closure": false,
+    "delivery_admitted": false
+  },
+  "fixture_tests": [
+    {"name": "package-staging", "checks_per_shell": 31, "ps5_result_sha256": "d2d141c3fb52c748f52f498b4ddf42670ef0420390c6ce723eb2c59c3ce023ec", "ps7_result_sha256": "2a73772961a9a60b3aee3c7ccb89651190691b5724c27ce7702e1c2a61734975"},
+    {"name": "nsis-stage", "checks_per_shell": 20, "ps5_result_sha256": "408d51b044492bc3fe116ac5045ac02fb23b550092dc58df4a21bb0b56043093", "ps7_result_sha256": "242433b1b330443f0bf0b6a5e8a0ca330b722afce6077c19b325b300eb6744d6"},
+    {"name": "staged-installer-build", "checks_per_shell": 9, "ps5_result_sha256": "5c04a0c1c815fdadc6f847e06ad1542ff192cc9d3e338abebb44661e13199f10", "ps7_result_sha256": "bb1c13c8226034c26264a44271abd57e7bc85e7070ae40ccc1f02443b91e68e5"},
+    {"name": "installer-static", "checks_per_shell": 42, "ps5_result_sha256": "d67cd66bb13022f4b7b0c12a3cb681eb22db85caea9c309b8b28bd7690c8cd76", "ps7_result_sha256": "0ba6284aaa446df2432ea01522fac178d0625429912cacbde969562daa5c43af"},
+    {"name": "postbuild-synthetic", "checks_per_shell": 50, "ps5_result_sha256": "cc34dfb76e786bee82b00a97823232c826d6a5a028f47fa2c586735e1f1c7420", "ps7_result_sha256": "36f863d8e9cff2a46e04b920a17c2c257ccddae3cb716caf02d5b82135531959"},
+    {"name": "registration-completeness", "checks_per_shell": 36, "ps5_result_sha256": "0f36d839a4921100c9fcab1ed489567c64858a0bd8226cbfed956eba36f584a4", "ps7_result_sha256": "0142a4cec329390ac33dd2c59b3f51a4f10f849d927fdce62620b7f83a1aeefb"},
+    {"name": "rime-pime-maintenance", "checks_per_shell": 33, "ps5_result_sha256": "e79fa7c6105a741d5077d7588bfceea1ff205eec3e4e53dc98715614eb8a9b8c", "ps7_result_sha256": "9b17bbb0963f2ece61548fed9ba6482b6b75e57b44f25be81b03c0cd0a2ef7f0"}
+  ],
+  "source_baseline": {
+    "passed": true,
+    "source_count": 109,
+    "contract_tests_passed": 37,
+    "known_pending_count": 3,
+    "result": ".tmp/dual-product/dp1-source-closure-20260906-final-root-001/baseline.json",
+    "result_sha256": "9ceb03a68e89e8ab85f34dbf44310f6c08d7ba119eaea7d4fca2340276ab2ce2"
+  },
+  "source_sha256": {
+    "tools/build-rime-pime-installer.ps1": "2054457ae56e73d13fd870617fb2e623ac3d5fb22849b12c7f3e65cbea15abce",
+    "installer/installer.nsi": "fc85300eb7ed4740ae53442f4969a7892e3637f52ea52e53936a18e6009ece75",
+    "tools/dual-product/rime-pime-nsis-stage.ps1": "379f09d12653b81d403d3e510980ffeb30af872d78ddfe02004f1764d90c4bba",
+    "tools/dual-product/rime-pime-staged-installer-build.ps1": "1a74a452330e0a514ebeedfc16e861b3d3bd7da12239be87926a031b40f7566c",
+    "tools/dual-product/rime-pime-postbuild-extraction.ps1": "08829880be0754780b73ed713113edd3bd17d18833a9b5db6680f7482b72be12",
+    "tools/dual-product/rime-pime-postbuild-extraction.psm1": "632c112f99785d17e2d9010e6487761845df63a7f87177c3c81ca58e05f2156e",
+    "tools/dual-product/test-rime-pime-postbuild-extraction.ps1": "7d802f97152199ac8ca593bafed903cee144a06796686b7bb8d238ae6561493b",
+    "tools/dual-product/run-rime-pime-postbuild-extraction.ps1": "ae95bb85deea6bc7d1ce14efcd816da3bb831719e004d21925c4dfd8ca7ea8cc",
+    "tools/dual-product/rime-pime-postbuild-toolchain-lock.json": "32bb7a9b8fce8ed91699dd02c8e482eeb93b5975b03282d9bd9d168e830ac7a3",
+    "tools/dual-product/contract.json": "3b1e721e138e8790059e8d54a0c6f52643c17a35730fdaef78e015d225df633f",
+    "tools/dual-product/baseline.py": "60f096fefa6670cf69762cc3211d20e4deff1ba4bda427cd7718692e2eabc08b",
+    ".github/workflows/ci.yaml": "f166176a1fcf8c9ddc3ef58a6bd20d4d679f12085d3e96a70c2a5e200bd3ccf7"
+  },
+  "boundaries": {
+    "full_nsis_toolchain_input_closure": false,
+    "canonical_v2_evidence_complete": false,
+    "durable_install_journal_wired": false,
+    "crash_replay_verified": false,
+    "release_signing_executed": false,
+    "installer_or_uninstaller_executed": false,
+    "installed_or_live_runtime_examined": false,
+    "registry_or_product_process_touched": false,
+    "default_input_method_changed": false,
+    "production_user_data_read_or_written": false,
+    "installed_yimecore_local12_touched": false,
+    "yimecore_local13_installed": false,
+    "arm64_native_evidence_obtained": false,
+    "hard_blocks_remain": true
+  },
+  "next_required_evidence": [
+    "Bind sealed-stage and postbuild archive evidence into a canonical v2 package receipt and close the full NSIS compiler toolchain input set.",
+    "Wire a durable prepared/commit journal, recovery archive, exact removal, dimensional rollback and crash replay into the actual maintenance transaction.",
+    "Verify same-initiating-SID UAC/Profile API behavior, registration convergence and non-elevated Runtime readiness on an explicitly authorized isolated target.",
+    "Verify release Authenticode, VERSIONINFO and generated-uninstaller identity before delivery can be admitted.",
+    "Run installed, registered and live-host single-product/coexistence acceptance only after a separate authorized handoff."
+  ],
+  "dp1_full_implementation_passed": false,
+  "dp2_physical_acceptance_passed": false,
+  "dp3_selector_acceptance_passed": false,
+  "l5_final_confirmation_complete": false,
+  "l6_sealing_complete": false
+}

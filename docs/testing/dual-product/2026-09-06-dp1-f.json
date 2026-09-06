@@ -1,0 +1,116 @@
+{
+  "schema_version": "yime-dual-product-dp1-f-evidence-v1",
+  "generated_at_utc": "2026-09-06T01:16:00.4401977Z",
+  "product": "rime-pime",
+  "scope": "prepackage-copy-stage-before-generated-uninstaller-or-nsis-consumption",
+  "architectures": ["x86", "x64"],
+  "implementation": {
+    "stage_helper": "tools/dual-product/rime-pime-package-staging.ps1",
+    "fixture_test": "tools/dual-product/test-rime-pime-package-staging.ps1",
+    "current_tree_runner": "tools/dual-product/run-rime-pime-package-staging.ps1",
+    "source_baseline_count": 94,
+    "source_baseline_contract_tests": 37,
+    "directory_policy": "derived-nonempty-only-v1",
+    "source_tree_wildcard_used_for_copy": false,
+    "portable_content_digest_separate_from_local_file_identity_observation": true
+  },
+  "concrete_regressions": [
+    {
+      "id": "DP1-PACKAGE-ADS-01",
+      "status": "source_fix_and_current_build_copy_verified_full_root_rebuild_pending",
+      "finding": "The disposable Go package tree inherited one Zone.Identifier stream on input_methods/yime/icons/yin.png; the stream name and 128-byte size were observed without reading its contents.",
+      "remediation": "go-backend/build.bat now removes only Zone.Identifier from the disposable copied input-method tree, while package staging rejects every alternate stream that remains.",
+      "current_build_copy_main_sha256": "ca61581f0d13d0a4e1281dbe602ad55a02697d52318a541cc6f492ab05d2b275",
+      "repository_source_stream_removed": false,
+      "full_root_rebuild_after_source_fix_executed": false
+    },
+    {
+      "id": "DP1-STAGE-PS51-02",
+      "status": "closed_by_real_ps51_stage_run",
+      "finding": "PowerShell 5.1 evaluated the runner's parameter default before PSScriptRoot was available and rejected the empty package-plan path.",
+      "remediation": "The package-plan default is now resolved after parameter binding.",
+      "real_ps51_stage_passed": true
+    },
+    {
+      "id": "DP1-STAGE-JSON-03",
+      "status": "closed_by_cross_shell_digest_equality",
+      "finding": "PowerShell 5.1 and 7 emitted different ConvertTo-Json whitespace for the same spec, so manifest byte hashes were not portable even though the framed content-tree hash matched.",
+      "remediation": "The new staging chain uses a deterministic integer-only canonical JSON writer with UTF-8 without BOM and LF termination.",
+      "spec_digest_equal_across_shells": true,
+      "manifest_digest_equal_across_shells": true,
+      "content_tree_digest_equal_across_shells": true,
+      "local_observation_digest_equal_across_copies": false
+    }
+  ],
+  "fixture_tests": [
+    {
+      "shell": "Windows PowerShell 5.1",
+      "checks_passed": 21,
+      "checks_failed": 0,
+      "result": ".tmp/dual-product/dp1-package-staging-dev-ps5-20260906-d/result.json",
+      "result_sha256": "63294012126b069927410b412545c55fd01fff44ef501542cd29179a3e9c9ba0"
+    },
+    {
+      "shell": "PowerShell 7",
+      "checks_passed": 21,
+      "checks_failed": 0,
+      "result": ".tmp/dual-product/dp1-package-staging-dev-ps7-20260906-d/result.json",
+      "result_sha256": "03a9d4330046b8f91f8f4e09732415b0dfddcb25dc866bc3384989e7476c560a"
+    }
+  ],
+  "current_tree_stage": {
+    "copy_file_count": 175,
+    "installed_namespace_file_count": 166,
+    "bootstrap_namespace_file_count": 9,
+    "closed_go_source_tree_file_count": 148,
+    "declared_nonempty_directory_count": 16,
+    "total_bytes": 161138955,
+    "package_plan_sha256": "b5bcfe3ead26478129621cec7ea376ad028db86500d209d74572be16b04445ad",
+    "payload_spec_sha256": "f52d6dc33b73f4ccbc1550dcdbbe5884a414b5d0d349d42ac982fdd8922ba78d",
+    "content_manifest_sha256": "1f260bd73ba0307782c302e88312f3557ce8d706f30369c512ee3d289ef4625b",
+    "content_tree_sha256": "bec8f30e0d85c854dda9da3b70e26bd6b752fcd89684bbe6572038ab291151b2",
+    "ps5": {
+      "result": ".tmp/dual-product/dp1-package-stage-canonical-ps5-20260906-a/evidence/result.json",
+      "result_sha256": "fd21560bb1c001743cca16f289ad68652f17f6efda8f97042b3998b27f3b1701",
+      "local_observation_sha256": "6caf46626879a8d909055f03ccfb036d5ca4c0adb50ad7bfd83042128fe93a47"
+    },
+    "ps7": {
+      "result": ".tmp/dual-product/dp1-package-stage-canonical-ps7-20260906-a/evidence/result.json",
+      "result_sha256": "8de65911c3c5db327af77f047414615fc65199d495199b2b6265ab28b78eed25",
+      "local_observation_sha256": "04d3ddc11b60b1eb4b48226daadf003b69fb69f199e199eb4dbb63c6deecc43b"
+    }
+  },
+  "source_baseline": {
+    "passed": true,
+    "source_count": 94,
+    "contract_tests_passed": 37,
+    "result": ".tmp/dual-product/dp1-package-stage-baseline-20260906-c/baseline.json",
+    "result_sha256": "68c4e399d04dc03d0bcca220bee2c4b15590db8680c8552a54ff5a39c225f252"
+  },
+  "boundaries": {
+    "generated_uninstaller_present": false,
+    "generated_uninstaller_verified": false,
+    "nsis_consumes_stage": false,
+    "postbuild_extraction_compared_to_stage": false,
+    "final_payload_closure": false,
+    "installer_or_uninstaller_executed": false,
+    "installed_or_production_runtime_examined": false,
+    "registry_or_process_touched": false,
+    "default_input_method_changed": false,
+    "production_user_data_read_or_written": false,
+    "installed_yimecore_local12_touched": false,
+    "hard_blocks_remain": true
+  },
+  "next_required_evidence": [
+    "Generate deterministic explicit NSIS payload macros from the sealed content manifest and reject every repository-relative or wildcard product File input.",
+    "Make the build wrapper consume only the stage, verify the stage before and after makensis, and compare a static extraction to the exact staged namespaces.",
+    "Produce and independently verify the Uninstall.exe identity, signature, VERSIONINFO and content-manifest binding before final payload closure.",
+    "Complete durable install, rollback, removal and crash-replay transaction wiring before any hard block can be reconsidered.",
+    "Run installed and live-host acceptance only after a separate authorized handoff."
+  ],
+  "dp1_full_implementation_passed": false,
+  "dp2_physical_acceptance_passed": false,
+  "dp3_selector_acceptance_passed": false,
+  "l5_final_confirmation_complete": false,
+  "l6_sealing_complete": false
+}

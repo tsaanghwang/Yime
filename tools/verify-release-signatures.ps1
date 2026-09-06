@@ -1,31 +1,23 @@
 param(
 	[switch]$IncludeInstaller,
-	[string]$Root = (Split-Path -Parent $PSScriptRoot)
+	[string]$Root = (Split-Path -Parent $PSScriptRoot),
+	[string]$PackagePlanPath,
+	[string]$ReceiptPath
 )
 
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath $Root).Path
-$patterns = @(
-    'build\PIMELauncher\PIMELauncher.exe',
-    'build\PIMETextService\Release\PIMETextService.dll',
-    'build64\PIMETextService\Release\PIMETextService.dll',
-    'go-backend\build\go-backend\*.exe',
-    'go-backend\build\go-backend\input_methods\yime\rime_deployer.exe',
-	'go-backend\build\go-backend\input_methods\yime\rime_dict_manager.exe',
-    'go-backend\build\go-backend\input_methods\yime\rime.dll'
-)
-if (Test-Path -LiteralPath (Join-Path $root 'build_arm64\PIMETextService\Release\PIMETextService.dll')) {
-    $patterns += 'build_arm64\PIMETextService\Release\PIMETextService.dll'
-}
+$packageModule=Join-Path $PSScriptRoot 'dual-product\rime-pime-package-plan.ps1'
+. $packageModule
+if (-not $PackagePlanPath) { $PackagePlanPath=Join-Path $root 'installer\package-plan.json' }
+$package=Read-RimePimePackagePlan -RepoRoot $root -PlanPath $PackagePlanPath -VerifyArtifacts
+$files=@($package.Plan.artifacts | ForEach-Object {
+    Get-Item -LiteralPath (Join-Path $root $_.path.Replace('/','\')) -ErrorAction Stop
+})
 if ($IncludeInstaller) {
-    $patterns += 'installer\YIME-*-setup.exe'
-}
-
-$files = foreach ($pattern in $patterns) {
-    Get-ChildItem -Path (Join-Path $root $pattern) -File -ErrorAction SilentlyContinue
-}
-if (-not $files) {
-    throw 'No release files were found for signature verification.'
+    if (-not $ReceiptPath) { $ReceiptPath=Join-Path $root 'installer\package-build-receipt.json' }
+    $receipt=Read-RimePimePackageBuildReceipt -Package $package -ReceiptPath $ReceiptPath
+    $files+=@(Get-Item -LiteralPath $receipt.InstallerPath -ErrorAction Stop)
 }
 $invalid = foreach ($file in $files | Sort-Object FullName -Unique) {
     $signature = Get-AuthenticodeSignature -LiteralPath $file.FullName

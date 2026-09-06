@@ -20,6 +20,7 @@ if errorlevel 1 exit /b 1
 
 set "CMAKE_EXE=cmake"
 set "SKIP_ARM64=1"
+set "ARM64_PE_ARGS="
 call :detect_arm64_toolchain
 
 where cmake >nul 2>&1
@@ -53,28 +54,33 @@ if exist "build\CMakeCache.txt" (
 	)
 )
 "%CMAKE_EXE%" . -Bbuild -G "Visual Studio 17 2022" %WIN32_CMAKE_PLATFORM% -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit /b 1
-"%CMAKE_EXE%" --build build --config Release --target PIMETextService || exit /b 1
+"%CMAKE_EXE%" --build build --config Release --target PIMETextService PIMERegistrationStatus || exit /b 1
 call :build_pimelauncher || exit /b 1
 
 call "%VS_DEV_CMD%" -arch=x64 -host_arch=x64 >nul || exit /b 1
 "%CMAKE_EXE%" . -Bbuild64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit /b 1
-"%CMAKE_EXE%" --build build64 --config Release --target PIMETextService || exit /b 1
+"%CMAKE_EXE%" --build build64 --config Release --target PIMETextService PIMERegistrationStatus || exit /b 1
 
 if defined SKIP_ARM64 (
 	echo Skipping ARM64 build. Install VS2022 ARM64 C++ build tools to enable it.
 ) else (
 	call "%VS_DEV_CMD%" -arch=arm64 -host_arch=x64 >nul || exit /b 1
 	"%CMAKE_EXE%" . -Bbuild_arm64 -G "Visual Studio 17 2022" -A ARM64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit /b 1
-	"%CMAKE_EXE%" --build build_arm64 --config Release --target PIMETextService || exit /b 1
+	"%CMAKE_EXE%" --build build_arm64 --config Release --target PIMETextService PIMERegistrationStatus || exit /b 1
+	rem Admit only the pair produced by this successful current-source build.
+	set "ARM64_PE_ARGS=-Arm64TextService "%ROOT_DIR%\build_arm64\PIMETextService\Release\PIMETextService.dll" -Arm64RegistrationStatus "%ROOT_DIR%\build_arm64\PIMETextService\Release\PIMERegistrationStatus.exe""
 )
 
 echo "Verify native PE architectures"
-powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\tools\verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" || exit /b 1
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\tools\verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" -SkipPackagedRime %ARM64_PE_ARGS% || exit /b 1
 
 echo "Start building go-backend"
 pushd go-backend || exit /b 1
 cmd /C build.bat || exit /b 1
 popd
+
+echo "Verify complete installer payload PE architectures"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\tools\verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" %ARM64_PE_ARGS% || exit /b 1
 
 echo "Refresh test install command files"
 powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\tools\refresh-dev-test-cmds.ps1" -RepoRoot "%ROOT_DIR%" || exit /b 1

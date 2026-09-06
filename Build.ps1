@@ -1,27 +1,43 @@
-# Build YIME: compile everything, then pack the NSIS installer.
-# Usage (elevated PowerShell optional for build; installer step needs write access):
-#   Set-Location $PSScriptRoot
-#   .\Build.ps1
+# Build the current source and produce an unsigned, deliberately disabled
+# Rime/PIME development installer plus its sealed evidence files. This entry is
+# not a release-signing path and never installs the result.
+[CmdletBinding()]
+param()
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 
-Set-Location $PSScriptRoot
-cmd /c build.bat
-if ($LASTEXITCODE -ne 0) {
-    throw "build.bat failed with exit code $LASTEXITCODE"
+foreach ($name in @(
+    'YIME_SIGN_CERT_SHA1',
+    'YIME_RELEASE_SIGNING_REQUIRED',
+    'YIME_SIGNTOOL_EXE',
+    'YIME_TIMESTAMP_URL'
+)) {
+    if (-not [string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name, 'Process'))) {
+        throw "Build.ps1 is an unsigned development entry; clear process signing variable $name and use the protected release workflow for signing."
+    }
 }
 
-Set-Location (Join-Path $PSScriptRoot 'installer')
-$makensis = 'C:\Program Files (x86)\NSIS\makensis.exe'
-if (-not (Test-Path -LiteralPath $makensis)) {
-    throw "NSIS not found: $makensis"
-}
-& $makensis /V2 .\installer.nsi
-if ($LASTEXITCODE -ne 0) {
-    throw "makensis failed with exit code $LASTEXITCODE"
+$repoRoot = [IO.Path]::GetFullPath($PSScriptRoot)
+Push-Location $repoRoot
+try {
+    cmd /c build.bat
+    if ($LASTEXITCODE -ne 0) {
+        throw "build.bat failed with exit code $LASTEXITCODE"
+    }
+
+    $planPath = Join-Path $repoRoot 'installer\package-plan.json'
+    & (Join-Path $repoRoot 'tools\dual-product\rime-pime-package-plan.ps1') `
+        -WritePlan -PlanRepoRoot $repoRoot -OutputPlanPath $planPath | Out-Null
+    & (Join-Path $repoRoot 'tools\build-rime-pime-installer.ps1') `
+        -RepoRoot $repoRoot -PackagePlanPath $planPath
+    & (Join-Path $repoRoot 'tools\write-build-manifest.ps1') `
+        -RepoRoot $repoRoot -PackagePlanPath $planPath
+} finally {
+    Pop-Location
 }
 
-Write-Host ""
-Write-Host ("Done. Installer: {0}" -f (Join-Path $PSScriptRoot "installer\YIME-*-setup.exe"))
+$version = (Get-Content -LiteralPath (Join-Path $repoRoot 'version.txt') -Raw).Trim()
+$installer = Join-Path $repoRoot "installer\YIME-$version-setup.exe"
+Write-Host "Done. Unsigned disabled installer (do not run): $installer"
 
 

@@ -1,13 +1,18 @@
+param([switch]$SkipPackagedRime)
+
 $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
 $verifier = Join-Path $PSScriptRoot 'verify-pe-architectures.ps1'
+$peImportGateTest = Join-Path $root 'tools\dual-product\test-pe-import-gate.ps1'
 $x64Dll = Join-Path $root 'build64\PIMETextService\Release\PIMETextService.dll'
 $launcher = Join-Path $root 'build\PIMELauncher\PIMELauncher.exe'
 $workflow = Join-Path $root '.github\workflows\ci.yaml'
 $codeOwners = Join-Path $root '.github\CODEOWNERS'
 $buildContract = Join-Path $PSScriptRoot 'validate-build-contract.ps1'
 $rootBuild = Join-Path $root 'build.bat'
+$rootBuildPowerShell = Join-Path $root 'Build.ps1'
+$rootBuildCommand = Join-Path $root 'Build.cmd'
 $goBuild = Join-Path $root 'go-backend\build.bat'
 $coreImporter = Join-Path $root 'tools\import-yime-core-lexicon.ps1'
 $coreSourceManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_core_source_manifest.json'
@@ -26,8 +31,17 @@ $installedParticleAVerifierTests = Join-Path $root 'tools\test-installed-particl
 $releaseCertificateImporter = Join-Path $root 'tools\import-release-signing-certificate.ps1'
 $microsoftAuthenticodeVerifier = Join-Path $root 'tools\verify-microsoft-authenticode.ps1'
 $installer = Join-Path $root 'installer\installer.nsi'
+$installerBuilder = Join-Path $root 'tools\build-rime-pime-installer.ps1'
+$packagePlanModule = Join-Path $root 'tools\dual-product\rime-pime-package-plan.ps1'
+$packageStagingModule = Join-Path $root 'tools\dual-product\rime-pime-package-staging.ps1'
+$nsisStageGenerator = Join-Path $root 'tools\dual-product\rime-pime-nsis-stage.ps1'
+$nsisStageTest = Join-Path $root 'tools\dual-product\test-rime-pime-nsis-stage.ps1'
+$stagedBuildHelper = Join-Path $root 'tools\dual-product\rime-pime-staged-installer-build.ps1'
+$stagedBuildTest = Join-Path $root 'tools\dual-product\test-rime-pime-staged-installer-build.ps1'
 $devInstall = Join-Path $root 'tools\dev-install.ps1'
 $devStop = Join-Path $root 'tools\dev-stop-pime.ps1'
+$pimeOwnership = Join-Path $root 'tools\dual-product\rime-pime-ownership.ps1'
+$directedStopContract = Join-Path $root 'tools\dual-product\rime-pime-directed-stop-contract.ps1'
 $devBuildInstallVerify = Join-Path $root 'tools\dev-build-install-verify.ps1'
 $installedRuntimeVerifier = Join-Path $root 'tools\verify-installed-runtime.ps1'
 $buildPrereqs = Join-Path $root 'tools\assert-win32-build-prerequisites.ps1'
@@ -37,11 +51,16 @@ $realRimeTest = Join-Path $root 'tools\test-real-rime.ps1'
 $installerLocales = Get-ChildItem -LiteralPath (Join-Path $root 'installer\locale') -Filter '*.nsh'
 $launcherManifest = Join-Path $root 'PIMELauncher\Cargo.toml'
 $launcherBuild = Join-Path $root 'PIMELauncher\build.rs'
+$launcherCargoConfig = Join-Path $root 'PIMELauncher\.cargo\config.toml'
 $readme = Join-Path $root 'README.md'
 $textServiceResource = Join-Path $root 'PIMETextService\PIMETextService.rc.in'
+$pimeTextServiceSource = Join-Path $root 'PIMETextService\PIMETextService.cpp'
+$pimeTextServiceHeader = Join-Path $root 'PIMETextService\PIMETextService.h'
 
+$verifierCommon = @{RepoRoot=$root}
+if ($SkipPackagedRime) { $verifierCommon.SkipPackagedRime = $true }
 try {
-    & $verifier -RepoRoot $root -X86TextService $x64Dll -X64TextService $x64Dll -X86Launcher $launcher
+    & $verifier @verifierCommon -X86TextService $x64Dll -X64TextService $x64Dll -X86Launcher $launcher
     throw 'Architecture verifier accepted an x64 DLL in the Win32 slot.'
 } catch {
     if ($_.Exception.Message -notmatch 'Win32 PIMETextService\.dll expected 0x014C but found 0x8664') {
@@ -50,10 +69,49 @@ try {
     Write-Host 'Architecture mismatch rejection test passed.'
 }
 
-& $verifier -RepoRoot $root
+if (-not $SkipPackagedRime) {
+    $goExecutableNames=@(
+        'server.exe','tool-hub.exe','yime-trainer.exe','input-toolbar.exe',
+        'settings-tool.exe','diagnostics-tool.exe','yime-layout-designer.exe',
+        'lexicon-manager.exe','reverse-lookup.exe','system-lexicon-audit.exe',
+        'lexicon-promotion-scan.exe','blocklist-manager.exe'
+    )
+    $tempBase=[IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\')
+    $negativeGoRoot=Join-Path $tempBase ('yime-go-architecture-negative-'+[Guid]::NewGuid().ToString('N'))
+    if ((Split-Path -Parent $negativeGoRoot) -ine $tempBase -or
+        (Split-Path -Leaf $negativeGoRoot) -cnotmatch '^yime-go-architecture-negative-[0-9a-f]{32}$') {
+        throw 'Unsafe Go architecture-negative fixture root.'
+    }
+    New-Item -ItemType Directory -Path $negativeGoRoot | Out-Null
+    try {
+        foreach ($name in $goExecutableNames) {
+            Copy-Item -LiteralPath (Join-Path $root "go-backend\build\go-backend\$name") `
+                -Destination (Join-Path $negativeGoRoot $name)
+        }
+        Copy-Item -LiteralPath $launcher -Destination (Join-Path $negativeGoRoot 'server.exe') -Force
+        try {
+            & $verifier @verifierCommon -GoBackendRoot $negativeGoRoot
+            throw 'Architecture verifier accepted a Win32 executable in the x64 Go payload.'
+        } catch {
+            if ($_.Exception.Message -notmatch 'x64 packaged Go server\.exe expected 0x8664 but found 0x014C') { throw }
+            Write-Host 'Go payload architecture mismatch rejection test passed.'
+        }
+    } finally {
+        if ((Test-Path -LiteralPath $negativeGoRoot) -and
+            (Split-Path -Parent ([IO.Path]::GetFullPath($negativeGoRoot))) -ieq $tempBase) {
+            Remove-Item -LiteralPath $negativeGoRoot -Recurse -Force
+        }
+    }
+}
+
+& $verifier @verifierCommon
 
 $workflowText = Get-Content -LiteralPath $workflow -Raw
 & $buildContract
+
+if ($workflowText -match '(?m)^\s*run:\s*&') {
+    throw 'CI PowerShell commands must use YAML-safe block scalars instead of an anchor-like run: & value.'
+}
 
 $externalReusableWorkflowPattern = '(?m)^\s*uses:\s+(?!\./)[^/\s]+/[^/\s]+/\.github/workflows/'
 foreach ($forbiddenExample in @(
@@ -136,8 +194,11 @@ $requiredGovernanceGuards = @(
     'cmake --build build64 --config Release --target PIMETextService PIMERpcResponseTests',
     'ctest --test-dir build64 -C Release -R "^PIMERpcResponseTests$" --output-on-failure',
     '.\tools\write-build-manifest.ps1',
+    "Join-Path `$env:YIME_TRUSTED_SIGNING_ROOT 'tools\write-build-manifest.ps1'",
     '.\tools\test-installer-smoke.ps1',
+    '-StaticOnly',
     'uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0',
+    'nsis-version: 3.12',
     'uses: actions/download-artifact@v7'
 )
 foreach ($guard in $requiredGovernanceGuards) {
@@ -228,7 +289,10 @@ if ($rootBuildText.Contains('npm run build:pime')) {
 }
 foreach ($guard in @(
     'tools\invoke-build-environment.ps1',
-    'rustup run stable-i686-pc-windows-msvc cargo build --release --target i686-pc-windows-msvc'
+    'rustup run stable-i686-pc-windows-msvc cargo build --release --target i686-pc-windows-msvc',
+    '--build build --config Release --target PIMETextService PIMERegistrationStatus',
+    '--build build64 --config Release --target PIMETextService PIMERegistrationStatus',
+    '--build build_arm64 --config Release --target PIMETextService PIMERegistrationStatus'
 )) {
     if (-not $rootBuildText.Contains($guard)) {
         throw "Win32 pinned-host build guard is missing: $guard"
@@ -238,7 +302,11 @@ $goBuildText = Get-Content -LiteralPath $goBuild -Raw
 foreach ($guard in @(
     'third_party\go-winres',
     'go build -mod=vendor -trimpath -buildvcs=false',
-    '[ERROR] go-winres failed for'
+    'set "GOOS=windows"',
+    'set "GOARCH=amd64"',
+    '[ERROR] go-winres failed for',
+    'Get-ChildItem -LiteralPath $env:YIME_PACKAGE_INPUT_METHODS -Recurse -File -Force | Unblock-File -ErrorAction Stop',
+    'package staging gate still rejects every alternate stream that remains'
 )) {
     if (-not $goBuildText.Contains($guard)) {
         throw "Offline go-winres build guard is missing: $guard"
@@ -347,6 +415,38 @@ $extractJob = {
     if (-not $match.Success) { throw "CI job is missing: $Name" }
     $match.Value
 }
+$nativePeGate=$rootBuildText.IndexOf('verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" -SkipPackagedRime')
+$goPackageBuild=$rootBuildText.IndexOf('cmd /C build.bat')
+$completePayloadGate=$rootBuildText.LastIndexOf('verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" %ARM64_PE_ARGS% || exit /b 1')
+$arm64Build=$rootBuildText.IndexOf('--build build_arm64 --config Release --target PIMETextService PIMERegistrationStatus')
+$arm64ArgumentsReset=$rootBuildText.IndexOf('set "ARM64_PE_ARGS="')
+$arm64Arguments=$rootBuildText.IndexOf('set "ARM64_PE_ARGS=-Arm64TextService')
+if ($nativePeGate -lt 0 -or $goPackageBuild -le $nativePeGate -or
+    $completePayloadGate -le $goPackageBuild -or
+    $arm64ArgumentsReset -lt 0 -or $arm64ArgumentsReset -ge $arm64Build -or
+    $arm64Build -lt 0 -or $arm64Arguments -le $arm64Build -or $arm64Arguments -ge $nativePeGate -or
+    [regex]::Matches($rootBuildText,'ARM64_PE_ARGS%').Count -ne 2 -or
+    [regex]::Matches($rootBuildText,'-Arm64TextService').Count -ne 1 -or
+    [regex]::Matches($rootBuildText,'-Arm64RegistrationStatus').Count -ne 1 -or
+    [regex]::Matches($rootBuildText,'verify-pe-architectures\.ps1').Count -ne 2) {
+    throw 'Root build must verify native artifacts first and the complete Go/Rime payload only after packaging.'
+}
+$verifierText=Get-Content -LiteralPath $verifier -Raw
+foreach ($name in @(
+    'server.exe','tool-hub.exe','yime-trainer.exe','input-toolbar.exe',
+    'settings-tool.exe','diagnostics-tool.exe','yime-layout-designer.exe',
+    'lexicon-manager.exe','reverse-lookup.exe','system-lexicon-audit.exe',
+    'lexicon-promotion-scan.exe','blocklist-manager.exe')) {
+    if (-not $verifierText.Contains("'$name'")) { throw "Packaged Go PE architecture gate is missing: $name" }
+}
+$nativeBuildJob = & $extractJob 'native-build'
+$installerPayloadJob = & $extractJob 'installer-payload'
+$goPackageBuild = $installerPayloadJob.IndexOf('cmd /C build.bat')
+$completePeGate = $installerPayloadJob.IndexOf('.\tools\verify-pe-architectures.ps1')
+if (-not $nativeBuildJob.Contains('.\tools\test-build-guards.ps1 -SkipPackagedRime') -or
+    $goPackageBuild -lt 0 -or $completePeGate -lt 0 -or $completePeGate -lt $goPackageBuild) {
+    throw 'CI must defer the complete Rime payload PE/CRT gate until after the Go package build.'
+}
 foreach ($jobName in @('release-sign-payload', 'release-sign-installer')) {
     $jobText = & $extractJob $jobName
     if (-not $jobText.Contains('secrets.YIME_SIGN_CERT_BASE64')) {
@@ -358,11 +458,21 @@ foreach ($jobName in @('release-sign-payload', 'release-sign-installer')) {
         'ref: ${{ github.event.repository.default_branch }}',
         'path: .trusted-signing',
         'persist-credentials: false',
-        '.\.trusted-signing\tools\import-release-signing-certificate.ps1'
+        'Move trusted signing implementation outside source checkout',
+        "Join-Path `$env:RUNNER_TEMP 'yime-trusted-signing'",
+        'YIME_TRUSTED_SIGNING_ROOT',
+        "Join-Path `$env:YIME_TRUSTED_SIGNING_ROOT 'tools\import-release-signing-certificate.ps1'"
     )) {
         if (-not $jobText.Contains($required)) {
             throw "Release signing trust-boundary guard is missing: $jobName -> $required"
         }
+    }
+    $moveStep = $jobText.IndexOf('Move trusted signing implementation outside source checkout')
+    $certificateStep = $jobText.IndexOf('Import release signing certificate')
+    if ($moveStep -lt 0 -or $certificateStep -le $moveStep -or
+        -not $jobText.Contains("Test-Path -LiteralPath `$source") -or
+        -not $jobText.Contains("Add-Content -LiteralPath `$env:GITHUB_ENV")) {
+        throw "Trusted signing implementation can remain inside the source checkout when signing begins: $jobName"
     }
     foreach ($forbidden in @('repolevedavaj/install-nsis', 'Invoke-WebRequest', 'go install ')) {
         if ($jobText.Contains($forbidden)) {
@@ -378,8 +488,8 @@ foreach ($jobName in @('unsigned-installer-package', 'release-installer-package'
 }
 $devStopText = Get-Content -LiteralPath $devStop -Raw
 foreach ($guard in @(
-    '-ErrorAction Stop',
-    '$remainingProcesses',
+    '$ErrorActionPreference = "Stop"',
+    'Stop-YimePimeOwnedProcesses',
     'exit 3'
 )) {
     if (-not $devStopText.Contains($guard)) {
@@ -391,6 +501,15 @@ if ($devStopText -match 'Stop-Process[^\r\n]+-ErrorAction\s+SilentlyContinue') {
 }
 if ($devStopText.Contains('Stop-ProcessByName')) {
     throw 'dev-stop-pime.ps1 must not terminate generic process names outside explicit install roots.'
+}
+$pimeOwnershipText = Get-Content -LiteralPath $pimeOwnership -Raw
+$directedStopText = Get-Content -LiteralPath $directedStopContract -Raw
+if (-not $pimeOwnershipText.Contains('Invoke-YimePimeDirectedStop') -or
+    -not $directedStopText.Contains('Wait-Process -InputObject') -or
+    -not $directedStopText.Contains('-ErrorAction Stop') -or
+    -not $directedStopText.Contains('$remaining') -or
+    -not $directedStopText.Contains('Acknowledged directed stop did not leave the selected product quiescent.')) {
+    throw 'Directed Rime/PIME stop no longer proves exact-process quiescence after acknowledgement.'
 }
 $sourceEvidence = Get-Content -LiteralPath $coreSourceManifest -Raw -Encoding UTF8 | ConvertFrom-Json
 $pscDeriveIndex = $coreImporterText.IndexOf('go run ./cmd/yime-psc-peripheral-derive')
@@ -546,18 +665,306 @@ $installerText = Get-Content -LiteralPath $installer -Raw
 if ($installerText -match 'YIME_ENABLE_RETIRED_PIME_BACKENDS|\\python\\|\\node\\|McBopomofo|libchewing') {
     throw 'Retired PIME backend code or paths returned to the YIME installer.'
 }
-foreach ($fragment in @(
-    '!macro DownloadVerifiedVCRedist URL FILE_NAME',
-    'StrCpy $R1 "$PLUGINSDIR\${FILE_NAME}"',
-    'verify-microsoft-authenticode.ps1',
-    'ExecWait ''"$R1"'' $0'
+$launcherCargoConfigText=Get-Content -LiteralPath $launcherCargoConfig -Raw
+$verifierText=Get-Content -LiteralPath $verifier -Raw
+$peImportGateTestText=Get-Content -LiteralPath $peImportGateTest -Raw
+if(-not $launcherCargoConfigText.Contains('target-feature=+crt-static') -or
+    [regex]::Matches($verifierText,'VerifyStaticCrt\s*=\s*\$true').Count -ne 11 -or
+    $verifierText -notmatch 'X86Launcher[^\r\n]+VerifyStaticCrt\s*=\s*\$true' -or
+    [regex]::Matches($verifierText,'PIMETextService\.dll''; VerifyStaticCrt = \$true').Count -ne 3 -or
+    [regex]::Matches($verifierText,'PIMERegistrationStatus\.exe''; VerifyStaticCrt = \$true').Count -ne 3 -or
+    $verifierText -notmatch 'RimeDll[^\r\n]+VerifyStaticCrt\s*=\s*\$true' -or
+    $verifierText -notmatch 'RimeDeployer[^\r\n]+VerifyStaticCrt\s*=\s*\$true' -or
+    $verifierText -notmatch 'RimeDictManager[^\r\n]+VerifyStaticCrt\s*=\s*\$true'){
+    throw 'Native package components are not all guarded as static-CRT binaries.'
+}
+foreach ($guard in @(
+    'Read-PeNormalImportNames',
+    'Read-PeDelayImportNames',
+    '$dataDirectoryOffset + (13 * 8)',
+    'requires both -Arm64TextService and -Arm64RegistrationStatus explicitly',
+    'msvcr.*',
+    'api-ms-win-crt.*'
 )) {
-    if (-not $installerText.Contains($fragment)) {
-        throw "Installer VC++ redistributable trust guard is missing: $fragment"
+    if (-not $verifierText.Contains($guard)) {
+        throw "PE normal/delay import closure guard is missing: $guard"
     }
 }
-if ($installerText -match '\$TEMP\\vc_redist\.' -or $installerText -match 'ExecWait\s+"\$TEMP') {
-    throw 'Installer must not execute VC++ redistributables from a shared TEMP path.'
+foreach ($guard in @(
+    'accepts-safe-normal-import',
+    'accepts-safe-delay-import',
+    'default-gate-ignores-unselected-stale-arm64-build-tree',
+    'accepts-explicit-paired-arm64-inputs',
+    'rejects-one-sided-arm64-input',
+    'rejects-msvcr-in-normal-import-directory',
+    "-ImportKind normal -ImportedDll 'msvcr120.dll'",
+    'rejects-vcruntime-in-delay-import-directory',
+    "-ImportKind delay -ImportedDll 'vcruntime140.dll'",
+    'synthetic_pe_images_executed = $false'
+)) {
+    if (-not $peImportGateTestText.Contains($guard)) {
+        throw "Synthetic PE import regression guard is missing: $guard"
+    }
+}
+if (-not $workflowText.Contains('Test normal and delay PE import static CRT rejection') -or
+    [regex]::Matches($workflowText,'test-pe-import-gate\.ps1').Count -ne 2) {
+    throw 'CI must run the non-executing normal/delay PE import gate under PowerShell 5.1 and 7.'
+}
+if (-not $workflowText.Contains('Test pre-package copy-stage contract') -or
+    [regex]::Matches($workflowText,'test-rime-pime-package-staging\.ps1').Count -ne 2) {
+    throw 'CI must run the isolated pre-package copy-stage contract under PowerShell 5.1 and 7.'
+}
+if ($installerText -match 'DownloadVerifiedVCRedist|ensureVCRedist|vc_redist\.|inetc::get') {
+    throw 'A runtime download path returned even though every packaged native component is static-CRT guarded.'
+}
+$localeText = ($installerLocales | ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw }) -join "`n"
+if (-not $installerText.Contains('${IfNot} ${AtLeastWin10}') -or
+    -not $installerText.Contains('${IfNot} ${AtLeastBuild} 18362') -or
+    [regex]::Matches($installerText,'AtLeastWin10_1903_MESSAGE').Count -ne 2 -or
+    $installerText.Contains('AtLeastWinVista') -or
+    [regex]::Matches($localeText,'AtLeastWin10_1903_MESSAGE').Count -ne 3 -or
+    $localeText.Contains('AtLeastWinVista')) {
+    throw 'Installer and locale minimum-OS contract must remain Windows 10 version 1903.'
+}
+foreach ($localeFile in $installerLocales) {
+    $oneLocale = Get-Content -LiteralPath $localeFile.FullName -Raw
+    if ([regex]::Matches($oneLocale,'AtLeastWin10_1903_MESSAGE').Count -ne 1 -or
+        -not $oneLocale.Contains('1903') -or $oneLocale.Contains('AtLeastWinVista')) {
+        throw "Installer minimum-OS locale drifted: $($localeFile.Name)"
+    }
+}
+$installInitText = [regex]::Match($installerText,
+    '(?ms)^Function \.onInit\s+(.*?)^FunctionEnd').Groups[1].Value
+$uninstallInitText = [regex]::Match($installerText,
+    '(?ms)^Function un\.onInit\s+(.*?)^FunctionEnd').Groups[1].Value
+$osGateIndex = $installInitText.IndexOf('${IfNot} ${AtLeastWin10}')
+$buildGateIndex = $installInitText.IndexOf('${IfNot} ${AtLeastBuild} 18362')
+$bootstrapIndex = $installInitText.IndexOf('Call bootstrapTargetUser')
+if ([regex]::Matches($installerText,'(?m)^ManifestSupportedOS[ \t]+all[ \t]*\r?$').Count -ne 1 -or
+    $osGateIndex -lt 0 -or $buildGateIndex -le $osGateIndex -or $bootstrapIndex -le $buildGateIndex -or
+    [regex]::Matches($workflowText,'nsis-version: 3\.12').Count -ne 2 -or
+    $workflowText.Contains('nsis-version: 3.08')) {
+    throw 'Real Windows version reporting, pre-bootstrap admission, or the NSIS 3.12 build pin drifted.'
+}
+$rootPolicy=$installInitText.IndexOf('Call enforceInstallRootPolicy')
+$targetBootstrap=$installInitText.IndexOf('Call bootstrapTargetUser')
+if ($rootPolicy -lt 0 -or $targetBootstrap -le $rootPolicy -or
+    -not $installerText.Contains('GetFullPathName $R0 "$PROGRAMFILES32\YIME"') -or
+    -not $installerText.Contains('Command-line /D overrides and user-writable roots are not admitted.')) {
+    throw 'Installer must reject alternate or user-writable roots before same-SID bootstrap.'
+}
+$arm64InstallBranch = [regex]::Match($installInitText,
+    '(?ms)\$\{If\} \$\{IsNativeARM64\}(.*?)\$\{ElseIf\} \$\{IsNativeAMD64\}').Groups[1].Value
+if (-not $arm64InstallBranch.Contains('Arm64X text-service surface') -or
+    -not $arm64InstallBranch.Contains('x64-emulated') -or
+    -not $arm64InstallBranch.Contains('Abort') -or
+    $arm64InstallBranch.Contains('StrCpy $RimeNativeArchitecture "arm64"') -or
+    $arm64InstallBranch.Contains('StrCpy $UPDATEARM64DLL "True"')) {
+    throw 'Windows ARM64 installation must remain fail closed until Arm64X and all three host surfaces are sealed.'
+}
+$installerBuilderText = Get-Content -LiteralPath $installerBuilder -Raw
+if($installerBuilderText -match '\[string\]\$RepoRoot\s*=\s*\(Split-Path\s+-Parent\s+\$PSScriptRoot\)' -or
+    -not $installerBuilderText.Contains('if([string]::IsNullOrWhiteSpace($RepoRoot)){$RepoRoot=Split-Path -Parent $PSScriptRoot}')){
+    throw 'The Rime/PIME builder must resolve its default repository root in the script body for PowerShell 5.1 compatibility.'
+}
+$buildLogicLeaseStart=$installerBuilderText.IndexOf('$buildLogicLeases=[Collections.Generic.List[object]]::new()')
+$firstBuildLogicOpen=$installerBuilderText.IndexOf('$stream=[IO.File]::Open($full,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)',$buildLogicLeaseStart)
+$firstModuleImport=$installerBuilderText.IndexOf('Import-Module -Name $stagingModule -Force')
+$postImportTopology=$installerBuilderText.IndexOf('$record=Get-YimePimePayloadFileRecord $lease.Path',$firstModuleImport)
+$firstPackageRead=$installerBuilderText.IndexOf('$package=Read-RimePimePackagePlan',$postImportTopology)
+$stageLeaseOpen=$installerBuilderText.IndexOf('$leases=Open-RimePimeBuildInputLeases $expected',$firstPackageRead)
+$stagedPeVerify=$installerBuilderText.IndexOf('& $stagePeVerifier -RepoRoot $stageResult.StageRoot',$stageLeaseOpen)
+$makensisCall=$installerBuilderText.IndexOf('& $MakensisPath @arguments',$stagedPeVerify)
+if($buildLogicLeaseStart -lt 0 -or $firstBuildLogicOpen -le $buildLogicLeaseStart -or
+    $firstModuleImport -le $firstBuildLogicOpen -or $postImportTopology -le $firstModuleImport -or
+    $firstPackageRead -le $postImportTopology -or $stageLeaseOpen -le $firstPackageRead -or
+    $stagedPeVerify -le $stageLeaseOpen -or $makensisCall -le $stagedPeVerify -or
+    -not $installerBuilderText.Contains('Build-logic source traverses a reparse point before import') -or
+    -not $installerBuilderText.Contains('Hard-linked build-logic source rejected before import') -or
+    -not $installerBuilderText.Contains('Alternate data stream on build-logic source rejected before import') -or
+    -not $installerBuilderText.Contains("(Join-Path `$root 'tools\verify-pe-architectures.ps1')") -or
+    -not $installerBuilderText.Contains('staged_pe_architecture_verified_under_read_leases=$true')){
+    throw 'Every executable build-logic source, including the PE verifier, must be read-leased and topology-checked before import or invocation.'
+}
+$packagePlanModuleText = Get-Content -LiteralPath $packagePlanModule -Raw
+$packageStagingModuleText = Get-Content -LiteralPath $packageStagingModule -Raw
+$nsisStageGeneratorText = Get-Content -LiteralPath $nsisStageGenerator -Raw
+$stagedBuildHelperText = Get-Content -LiteralPath $stagedBuildHelper -Raw
+$stagedBuildTestText = Get-Content -LiteralPath $stagedBuildTest -Raw
+$stagedBuilderCombinedText = $installerBuilderText + "`n" + $stagedBuildHelperText
+$nsisStageTestText = Get-Content -LiteralPath $nsisStageTest -Raw
+$rootBuildPowerShellText = Get-Content -LiteralPath $rootBuildPowerShell -Raw
+$rootBuildCommandText = Get-Content -LiteralPath $rootBuildCommand -Raw
+if ($installerText.Contains('!if /FileExists "..\build_arm64') -or
+    $installerText.Contains('HAVE_ARM64_PIMETS') -or
+    $installerText.Contains('INCLUDE_ARM64_ARTIFACTS') -or
+    -not $installerText.Contains('!ifndef PACKAGE_PLAN_SHA256') -or
+    -not $installerText.Contains('!ifndef PACKAGE_PLAN_X86_X64') -or
+    -not $installerText.Contains('!ifdef PACKAGE_PLAN_X86_ARM64X') -or
+    -not $installerText.Contains('!ifndef PACKAGE_STAGE_ROOT') -or
+    -not $installerText.Contains('!ifndef PACKAGE_STAGE_MANIFEST_SHA256') -or
+    -not $installerText.Contains('!ifndef PACKAGE_STAGE_CONTENT_SHA256') -or
+    -not $installerText.Contains('!ifndef PACKAGE_PAYLOAD_NSH_PATH') -or
+    -not $installerText.Contains('!ifndef PACKAGE_PAYLOAD_NSH_SHA256') -or
+    -not $installerText.Contains('!ifndef PACKAGE_OUTPUT_PATH') -or
+    -not $installerText.Contains('!include "${PACKAGE_PAYLOAD_NSH_PATH}"') -or
+    -not $installerText.Contains('!define /file PRODUCT_VERSION "${PACKAGE_STAGE_ROOT}\payload\version.txt"') -or
+    -not $installerText.Contains('OutFile "${PACKAGE_OUTPUT_PATH}"') -or
+    -not $installerBuilderText.Contains('Read-RimePimePackagePlan -RepoRoot $root -PlanPath $PackagePlanPath -VerifyArtifacts') -or
+    -not $installerBuilderText.Contains('New-RimePimePackageCopyStage') -or
+    -not $installerBuilderText.Contains('Write-RimePimeNsisStageInclude') -or
+    -not $installerBuilderText.Contains('RefreshReceiptOnly is not admitted after staged NSIS consumption') -or
+    -not $installerBuilderText.Contains('only builds an unsigned disabled package') -or
+    -not $installerBuilderText.Contains('YIME_SIGN_CERT_SHA1') -or
+    -not $installerBuilderText.Contains('YIME_RELEASE_SIGNING_REQUIRED') -or
+    -not $installerBuilderText.Contains('YIME_SIGNTOOL_EXE') -or
+    -not $installerBuilderText.Contains('YIME_TIMESTAMP_URL') -or
+    -not $installerBuilderText.Contains('"/DPACKAGE_PLAN_SHA256=$($package.Digest)"') -or
+    -not $installerBuilderText.Contains("'/DPACKAGE_PLAN_X86_X64=1'") -or
+    -not $installerBuilderText.Contains('"/DPACKAGE_STAGE_ROOT=$($stageResult.StageRoot)"') -or
+    -not $installerBuilderText.Contains('"/DPACKAGE_STAGE_MANIFEST_SHA256=$($stageResult.ContentManifestDigest)"') -or
+    -not $installerBuilderText.Contains('"/DPACKAGE_STAGE_CONTENT_SHA256=$($content.Manifest.content_tree_sha256)"') -or
+    -not $installerBuilderText.Contains('"/DPACKAGE_PAYLOAD_NSH_PATH=$($include.IncludePath)"') -or
+    -not $installerBuilderText.Contains('"/DPACKAGE_PAYLOAD_NSH_SHA256=$($include.IncludeDigest)"') -or
+    -not $installerBuilderText.Contains('"/DPACKAGE_OUTPUT_PATH=$candidate"') -or
+    -not $installerBuilderText.Contains("'/NOCD','/NOCONFIG'") -or
+    -not $installerBuilderText.Contains('"/DPACKAGE_LOCALE_ROOT=$localeRoot"') -or
+    -not $installerBuilderText.Contains("'/DPACKAGE_UNSIGNED_DISABLED_BUILD=1'") -or
+    -not $installerBuilderText.Contains('signing_hook_processes_executed=$false') -or
+    $installerBuilderText.Contains('/DPACKAGE_SIGN_FILE_PATH=') -or
+    $installerBuilderText.Contains('/DPACKAGE_POWERSHELL_PATH=') -or
+    -not $installerBuilderText.Contains('Push-Location $nsisIncludeRoot') -or
+    [regex]::Matches($installerBuilderText,'Import-Module -Name \$(?:stagingModule|nsisStageModule|stagedBuildModule) -Force').Count -ne 3 -or
+    -not $installerBuilderText.Contains('$buildLogicDigests') -or
+    -not $packagePlanModuleText.Contains('function Read-RimePimePackagePlan') -or
+    -not $packagePlanModuleText.Contains("closure_scope='declared-packaged-product-pe-inputs-only-not-installed-payload'") -or
+    -not $packagePlanModuleText.Contains('Get-RimePimePackagedPePaths') -or
+    -not $packagePlanModuleText.Contains('PE set is not the exact sealed allowlist') -or
+    -not $rootBuildPowerShellText.Contains('rime-pime-package-plan.ps1') -or
+    -not $rootBuildPowerShellText.Contains('-WritePlan -PlanRepoRoot $repoRoot -OutputPlanPath $planPath') -or
+    -not $rootBuildPowerShellText.Contains('build-rime-pime-installer.ps1') -or
+    -not $rootBuildPowerShellText.Contains('write-build-manifest.ps1') -or
+    -not $rootBuildPowerShellText.Contains('Build.ps1 is an unsigned development entry') -or
+    $rootBuildPowerShellText -match '(?i)\bmakensis(?:\.exe)?\b' -or
+    -not $rootBuildCommandText.Contains('-File "%~dp0Build.ps1"') -or
+    $rootBuildCommandText -match '(?i)makensis|installer\.nsi' -or
+    [regex]::Matches($workflowText,'build-rime-pime-installer\.ps1').Count -ne 2 -or
+    $workflowText.Contains("& 'C:\Program Files (x86)\NSIS\Bin\makensis.exe'") -or
+    $workflowText.Contains('IncludeArm64Artifacts') -or
+    $workflowText.Contains('INCLUDE_ARM64_ARTIFACTS')) {
+    throw 'Current packaging must be bound to the sealed x86/x64 package plan and reject implicit ARM64 artifacts.'
+}
+$stageMacroCalls = [ordered]@{
+    YimePimeStageTargetUserHelpers = 1
+    YimePimeStageOwnershipHelpers = 1
+    YimePimeStageRegistrationTools = 2
+    YimePimeStageMainPayload = 1
+    YimePimeStageTextServiceX86 = 1
+    YimePimeStageTextServiceX64 = 1
+}
+foreach ($entry in $stageMacroCalls.GetEnumerator()) {
+    $callPattern = '!insertmacro\s+' + [regex]::Escape([string]$entry.Key) + '(?:\s|$)'
+    $definitionPattern = 'Add-RimePimeNsisMacro\s+\$lines\s+''' + [regex]::Escape([string]$entry.Key) + ''''
+    if ([regex]::Matches($installerText, $callPattern).Count -ne [int]$entry.Value -or
+        [regex]::Matches($nsisStageGeneratorText, $definitionPattern).Count -ne 1) {
+        throw "Rime/PIME stage macro definition or call-site count drifted: $($entry.Key)"
+    }
+}
+$directInstallerFiles = [regex]::Matches($installerText, '(?mi)^[ \t]*File(?:[ \t]|$)')
+if ($directInstallerFiles.Count -ne 0 -or $installerText -match '(?mi)^[ \t]*File[ \t]+/r\b' -or
+    $installerText -match '(?mi)^[ \t]*File[^\r\n]*\.\.\\') {
+    throw 'installer.nsi must not read product bytes directly or recursively outside the sealed package stage.'
+}
+$bareBuiltinInclude='(?mi)^[ \t]*!include[ \t]+"(?:MUI2|x64|Winver|LogicLib|FileFunc)\.nsh"'
+foreach($name in @('MUI2','x64','Winver','LogicLib','FileFunc')){
+    if($installerText -match $bareBuiltinInclude -or
+        -not $installerText.Contains('!include "${NSISDIR}\Include\'+$name+'.nsh"')){
+        throw 'NSIS built-in includes must use the fixed NSISDIR path so repository-local shadow files cannot become compiler inputs.'
+    }
+}
+if(-not $installerText.Contains('!include "${PACKAGE_LOCALE_ROOT}\${LANGLOAD}.nsh"') -or
+    $installerText.Contains('!include "locale\${LANGLOAD}.nsh"') -or
+    -not $installerText.Contains('-File "${PACKAGE_SIGN_FILE_PATH}"') -or
+    $installerText.Contains('-File "..\tools\sign-file.ps1"') -or
+    -not $installerText.Contains('!ifndef PACKAGE_UNSIGNED_DISABLED_BUILD') -or
+    -not $installerText.Contains('!ifndef PACKAGE_POWERSHELL_PATH') -or
+    [regex]::Matches($installerText,'(?m)^!(?:uninst)?finalize\s+''"\$\{PACKAGE_POWERSHELL_PATH\}"').Count -ne 2 -or
+    $installerText -match '(?mi)^!(?:uninst)?finalize\s+''powershell\.exe\b'){
+    throw 'Repository-local locale and signing-hook inputs must be absolute build definitions when makensis runs with /NOCD.'
+}
+if (-not $nsisStageTestText.Contains('definitions-only-module-generates-six-stage-only-macros') -or
+    -not $nsisStageTestText.Contains('macro_file_reference_count') -or
+    -not $nsisStageTestText.Contains('PACKAGE_STAGE_ROOT')) {
+    throw 'The six-macro stage-only generator contract is not protected by its isolated synthetic test.'
+}
+$leaseOpen = $installerBuilderText.IndexOf('$leases=Open-RimePimeBuildInputLeases $expected')
+$preLease = if ($leaseOpen -ge 0) { $installerBuilderText.IndexOf('Test-RimePimeBuildInputLeases @($leases)', $leaseOpen) } else { -1 }
+$preStage = $installerBuilderText.IndexOf('$preStage=Test-RimePimePackageCopyStage')
+$preInclude = $installerBuilderText.IndexOf('$preInclude=Test-RimePimeNsisStageInclude')
+$stagedPeVerify = $installerBuilderText.IndexOf('& $stagePeVerifier -RepoRoot $stageResult.StageRoot')
+$postVerifierLease = if ($stagedPeVerify -ge 0) { $installerBuilderText.IndexOf('Test-RimePimeBuildInputLeases @($leases)', $stagedPeVerify) } else { -1 }
+$makensisCall = $installerBuilderText.IndexOf('& $MakensisPath @arguments')
+$candidateLeaseOpen = if ($makensisCall -ge 0) { $installerBuilderText.IndexOf('$candidateLeases=Open-RimePimeBuildInputLeases $candidateExpected', $makensisCall) } else { -1 }
+$postLease = if ($makensisCall -ge 0) { $installerBuilderText.IndexOf('Test-RimePimeBuildInputLeases @($leases)', $makensisCall) } else { -1 }
+$postStage = $installerBuilderText.IndexOf('$postStage=Test-RimePimePackageCopyStage')
+$postInclude = $installerBuilderText.IndexOf('$postInclude=Test-RimePimeNsisStageInclude')
+$publishCandidate = $installerBuilderText.IndexOf('$receipt=Invoke-RimePimePublicationCommit')
+if ($leaseOpen -lt 0 -or $preLease -le $leaseOpen -or $preStage -le $preLease -or
+    $preInclude -le $preStage -or $stagedPeVerify -le $preInclude -or
+    $postVerifierLease -le $stagedPeVerify -or $makensisCall -le $postVerifierLease -or $candidateLeaseOpen -le $makensisCall -or
+    $postLease -le $candidateLeaseOpen -or
+    $postStage -le $postLease -or $postInclude -le $postStage -or $publishCandidate -le $postInclude -or
+    [regex]::Matches($installerBuilderText, 'Test-RimePimeBuildInputLeases @\(\$leases\)').Count -ne 3 -or
+    [regex]::Matches($installerBuilderText, 'Test-RimePimePackageCopyStage').Count -ne 2 -or
+    [regex]::Matches($installerBuilderText, 'Test-RimePimeNsisStageInclude').Count -ne 2 -or
+    -not $stagedBuilderCombinedText.Contains('[IO.FileShare]::Read') -or
+    $stagedBuilderCombinedText.Contains('[IO.FileShare]::ReadWrite') -or
+    -not $stagedBuildHelperText.Contains('$share=[IO.FileShare]::Read -bor [IO.FileShare]::Delete') -or
+    -not $stagedBuildHelperText.Contains('function Open-RimePimePublicationLock') -or
+    -not $stagedBuildHelperText.Contains('[IO.FileShare]::None') -or
+    -not $stagedBuildTestText.Contains('canonical-publication-lock-excludes-a-second-publisher-and-is-reusable') -or
+    -not $stagedBuildTestText.Contains('fresh-publication-with-no-previous-bundle-commits-all-three-members') -or
+    -not $stagedBuildHelperText.Contains('[IO.File]::Move($target,$backup);$state.OldMoved=$true') -or
+    -not $stagedBuildHelperText.Contains("Name='receipt-sidecar-commit-marker'")) {
+    throw 'NSIS wrapper must hold read-only leases and reverify the same stage/include before and after compilation before publishing.'
+}
+$pimeTextServiceText = Get-Content -LiteralPath $pimeTextServiceSource -Raw
+$pimeTextServiceHeaderText = Get-Content -LiteralPath $pimeTextServiceHeader -Raw
+if (-not $installerText.Contains('!insertmacro YimePimeStageMainPayload') -or
+    $installerText.Contains('SetOutPath "$INSTDIR\fonts"') -or
+    $installerText -match 'File[^\r\n]*YinYuan-Regular\.ttf' -or
+    $installerText -match '\$FONTS|CurrentVersion\\Fonts|AddFontResource\(|WM_FONTCHANGE|SendMessage 0xffff 0x001D' -or
+    -not $pimeTextServiceText.Contains('L"\\go-backend\\input_methods\\yime\\data\\fonts\\YinYuan-Regular.ttf"') -or
+    -not $pimeTextServiceText.Contains('AddFontResourceExW(privateFontPath_.c_str(), FR_PRIVATE, nullptr)') -or
+    -not $pimeTextServiceText.Contains('RemoveFontResourceExW(privateFontPath_.c_str(), FR_PRIVATE, nullptr)') -or
+    -not $pimeTextServiceHeaderText.Contains('std::wstring privateFontPath_')) {
+    throw 'YinYuan candidate font must remain a symmetric per-host private resource.'
+}
+$mainInstallSection = [regex]::Match($installerText,
+    '(?ms)^Section \$\(SECTION_MAIN\) SecMain\s+(.*?)^SectionEnd').Groups[1].Value
+$finalVacancy = $mainInstallSection.LastIndexOf('Call verifyStagedRegistrationAbsent')
+$unsealedBlock = $mainInstallSection.IndexOf('This Rime/PIME development package is not installable yet.')
+$installAbort = $mainInstallSection.IndexOf('Abort',$unsealedBlock)
+$firstPayloadWrite = $mainInstallSection.IndexOf('SetOverwrite on')
+$uninstallSectionText = [regex]::Match($installerText,
+    '(?ms)^Section "Uninstall"\s+(.*?)^SectionEnd').Groups[1].Value
+$uninstallBlockedAtEntry = $uninstallSectionText -match
+    '(?s)^\s*MessageBox[^\r\n]*development uninstaller is disabled until exact payload ownership, durable recovery and reboot-journal closure[^\r\n]*\r?\n\s*Abort\b'
+$installInitBlockedAtEntry = $installInitText -match
+    '(?s)^\s*MessageBox[^\r\n]*development installer is disabled until exact payload ownership, durable recovery and reboot-journal closure[^\r\n]*\r?\n\s*Abort\b'
+$uninstallInitBlockedAtEntry = $uninstallInitText -match
+    '(?s)^\s*MessageBox[^\r\n]*development uninstaller is disabled until exact payload ownership, durable recovery and reboot-journal closure[^\r\n]*\r?\n\s*Abort\b'
+$releaseInstallerJob = & $extractJob 'release-installer-package'
+$releaseBlock = $releaseInstallerJob.IndexOf('Block tagged installer until signed-uninstaller and removal closure')
+$releasePackageBuild = $releaseInstallerJob.IndexOf('build-rime-pime-installer.ps1')
+if ($finalVacancy -lt 0 -or $unsealedBlock -le $finalVacancy -or
+    $firstPayloadWrite -le $unsealedBlock -or
+    $installAbort -le $unsealedBlock -or $installAbort -ge $firstPayloadWrite -or
+    -not $installInitBlockedAtEntry -or -not $uninstallInitBlockedAtEntry -or
+    -not $uninstallBlockedAtEntry -or
+    $releaseBlock -lt 0 -or $releasePackageBuild -le $releaseBlock -or
+    -not $releaseInstallerJob.Contains("run: throw 'Tagged Rime/PIME installer release is disabled")) {
+    throw 'Unsealed install/removal or signed-uninstaller work can reach a runnable tagged package.'
 }
 $releaseVersion = (Get-Content -LiteralPath (Join-Path $root 'version.txt') -Raw).Trim()
 $numericReleaseVersion = (($releaseVersion -split '-', 2)[0]) + '.0'
@@ -567,7 +974,10 @@ foreach ($fragment in @(
     'VIAddVersionKey /LANG=${LANG_ID} "ProductVersion" "${PRODUCT_VERSION}"',
     'VIAddVersionKey /LANG=${LANG_ID} "ProductName" "${PRODUCT_NAME_VALUE}"',
     'VIAddVersionKey /LANG=${LANG_ID} "FileDescription" "${FILE_DESCRIPTION_VALUE}"',
-    'VIAddVersionKey /LANG=${LANG_ID} "LegalCopyright" "Copyright (C) 2026 YIME contributors"'
+    'VIAddVersionKey /LANG=${LANG_ID} "LegalCopyright" "Copyright (C) 2026 YIME contributors"',
+    'VIAddVersionKey /LANG=${LANG_ID} "PackageStageManifestSHA256" "${PACKAGE_STAGE_MANIFEST_SHA256}"',
+    'VIAddVersionKey /LANG=${LANG_ID} "PackageStageContentSHA256" "${PACKAGE_STAGE_CONTENT_SHA256}"',
+    'VIAddVersionKey /LANG=${LANG_ID} "PackagePayloadNshSHA256" "${PACKAGE_PAYLOAD_NSH_SHA256}"'
 )) {
     if (-not $installerText.Contains($fragment)) {
         throw "Installer/uninstaller VERSIONINFO guard is missing: $fragment"
@@ -598,25 +1008,36 @@ if (-not $installerText.Contains('WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "Inst
 if (-not $devInstallText.Contains('RequireBuildArtifacts')) {
     throw 'Developer install must fail early with the shared build-artifact preflight.'
 }
-$localeText = ($installerLocales | ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw }) -join "`n"
 if ($localeText -match 'PYTHON_SECTION_GROUP|NODE_SECTION_GROUP|MCBOPOMOFO|BRAILLE_CHEWING|SET_CHEWING') {
     throw 'Retired PIME input-method strings returned to installer locales.'
 }
 foreach ($fragment in @(
-    '!macro InstallTextServiceDll ARCH SOURCE UPDATE_FLAG',
-    'File /oname=PIMETextService.dll.new "${SOURCE}"',
-    'Rename /REBOOTOK "$INSTDIR\${ARCH}\PIMETextService.dll.new" "$INSTDIR\${ARCH}\PIMETextService.dll"',
+    '!macro InstallTextServiceDll ARCH UPDATE_FLAG',
+    'Only a vacant fresh root reaches this macro',
+    '!insertmacro InstallTextServiceDll "x64" $UPDATEX64DLL',
+    '!insertmacro YimePimeStageTextServiceX64',
+    '!insertmacro InstallTextServiceDll "x86" $UPDATEX86DLL',
+    '!insertmacro YimePimeStageTextServiceX86',
     'Exec ''"$INSTDIR\PIMELauncher.exe"'''
 )) {
     if (-not $installerText.Contains($fragment)) {
-        throw "Locked-DLL in-place upgrade guard is missing: $fragment"
+        throw "Fresh-only installer guard is missing: $fragment"
     }
+}
+$installMacroMatch = [regex]::Match($installerText, '(?s)!macro InstallTextServiceDll .*?!macroend')
+if (-not $installMacroMatch.Success -or $installMacroMatch.Value.Contains(' SOURCE ') -or
+    $installMacroMatch.Value -match '(?mi)^[ \t]*File(?:[ \t]|$)|(?:Rename|Delete) /REBOOTOK') {
+    throw 'Fresh-only text-service admission must not read source bytes or defer replacement of mapped old DLL bytes.'
 }
 $upgradeFunctionMatch = [regex]::Match($installerText, '(?s)Function uninstallOldVersion.*?FunctionEnd')
 if (-not $upgradeFunctionMatch.Success) {
-    throw 'Could not locate installer in-place upgrade function.'
+    throw 'Could not locate installer fresh-only admission function.'
 }
 foreach ($forbiddenUpgradeFragment in @(
+    'Call stopRunningBackend',
+    '/u /s',
+    'RMDir',
+    'DeleteReg',
     'Delete /REBOOTOK "$INSTDIR\PIMELauncher.exe"',
     'Delete "$INSTDIR\version.txt"',
     'Delete "$INSTDIR\Uninstall.exe"'
@@ -624,6 +1045,9 @@ foreach ($forbiddenUpgradeFragment in @(
     if ($upgradeFunctionMatch.Value.Contains($forbiddenUpgradeFragment)) {
         throw "Destructive pre-install upgrade step returned: $forbiddenUpgradeFragment"
     }
+}
+if (-not $upgradeFunctionMatch.Value.Contains('In-place upgrade is not enabled')) {
+    throw 'Current-family in-place upgrade must remain explicitly fail closed.'
 }
 
 $requiredLegalFiles = @(
@@ -654,18 +1078,19 @@ foreach ($fragment in @('Relationship to PIME', 'not an official EasyIME/PIME re
     }
 }
 $requiredInstallerLegalFragments = @(
-    'SetOutPath "$INSTDIR\licenses"',
-    'File "..\LICENSE.txt"',
-    'File "..\NOTICE.md"',
-    'File "..\THIRD_PARTY_NOTICES.md"',
-    'File "..\LICENSES\PIME-UPSTREAM-LICENSE.txt"',
-    'File "..\LICENSES\RIME-FROST-GPL-3.0.txt"',
-    'File "..\LICENSES\RUST-DEPENDENCIES.md"',
+    '!insertmacro MUI_PAGE_LICENSE "${PACKAGE_STAGE_ROOT}\payload\licenses\LGPL-2.0.txt"',
+    '!insertmacro YimePimeStageMainPayload',
     'RMDir /REBOOTOK /r "$INSTDIR\licenses"'
 )
 foreach ($fragment in $requiredInstallerLegalFragments) {
     if (-not $installerText.Contains($fragment)) {
         throw "Installer legal-notice packaging guard is missing: $fragment"
+    }
+}
+foreach ($relativePath in $requiredLegalFiles) {
+    $canonical = $relativePath.Replace('\','/')
+    if (-not $packageStagingModuleText.Contains("'$canonical'")) {
+        throw "Required legal notice has no explicit pre-package stage binding: $canonical"
     }
 }
 $resourceText = Get-Content -LiteralPath $textServiceResource -Raw

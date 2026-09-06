@@ -1,0 +1,319 @@
+{
+  "schema_version": "yime-dual-product-dp1-e-build-input-closure-record-v1",
+  "date": "2026-09-06",
+  "record_status": "final-source-static-and-synthetic-evidence",
+  "scope": "rime-pime-source-build-wiring-compiled-artifact-static-analysis-isolated-filesystem-and-pure-memory-transaction-only",
+  "evidence_level": {
+    "source": "source-and-build-wiring-static-inspection",
+    "compiled_artifacts": "pe-header-machine-normal-and-delay-import-static-analysis-no-image-execution",
+    "filesystem": "isolated-fixtures-only-not-installed-payload",
+    "transaction": "pure-memory-model-only-not-installer-integration"
+  },
+  "package_plan_contract": {
+    "schema_version": "yime-rime-pime-package-plan-v1",
+    "closure_scope": "declared-packaged-product-pe-inputs-only-not-installed-payload",
+    "architectures": ["x86", "x64"],
+    "declared_pe_input_count": 20,
+    "drives_signing_verification_nsis_manifest_and_static_smoke": true,
+    "recursive_go_tree_extra_pe_rejected": true,
+    "wrong_machine_rejected_after_reseal": true,
+    "normal_and_delay_loaded_dynamic_crt_rejected": true,
+    "installer_plan_digest_check": "ascii-or-utf16-byte-occurrence-in-whole-installer",
+    "named_package_plan_versioninfo_parsed": false,
+    "embedded_payload_provenance_from_digest_occurrence": false,
+    "complete_installed_payload_closure_proven": false,
+    "immutable_staging_or_post_build_extraction_proven": false,
+    "final_current_real_tree_plan": {
+      "path": "C:/dev/Yime/installer/package-plan.json",
+      "size": 7259,
+      "sha256": "b5bcfe3ead26478129621cec7ea376ad028db86500d209d74572be16b04445ad",
+      "sidecar_path": "C:/dev/Yime/installer/package-plan.json.sha256",
+      "sidecar_size": 84,
+      "sidecar_sha256": "6904979f1aefd9059cd543929d0dc2c981b2833fb389886f49f4308cfb6ac712",
+      "verified_after_final_source_change": true
+    }
+  },
+  "build_manifest_contract": {
+    "schema_version": 3,
+    "head_commit": "62af8b507c91b510cb1f025ea03b992d4fdde333",
+    "manifest_commit_matches_head": true,
+    "environment_commit_mismatch_rejected": true,
+    "dirty_tree_expected_identity": {
+      "kind": "working-tree",
+      "treeDirty": true,
+      "commitIsCompleteSourceIdentity": false
+    },
+    "commit_field_is_complete_source_identity_when_dirty": false,
+    "dirty_tree_manifest_is_reproducible_release_proof": false,
+    "signed_release_field_is_standalone_authenticode_proof": false,
+    "signed_release_requires_separate_signature_verification_evidence": true,
+    "trusted_signing_tool_commit_fixed_across_jobs": false,
+    "trusted_signing_tool_commit_recorded_in_manifest": false,
+    "signed_manifest_static_smoke_after_outer_signing": false
+  },
+  "current_compiled_artifacts": {
+    "package_build_receipt": {
+      "path": "C:/dev/Yime/installer/package-build-receipt.json",
+      "size": 903,
+      "sha256": "15a5bc34cfcd558690f24229f44ebabca53c1017aeb6d971558869b19e0e0b2e",
+      "sidecar_path": "C:/dev/Yime/installer/package-build-receipt.json.sha256",
+      "sidecar_size": 93,
+      "sidecar_sha256": "b7ee8f5c72003c313bed56550efedfa3c702a4993e8a11767a75037d0ebc1853"
+    },
+    "build_manifest": {
+      "path": "C:/dev/Yime/installer/build-manifest.json",
+      "size": 5552,
+      "sha256": "d7369de9cb06912871668dcfc87d9748fcdea8c00ff84ecd7492ed4182ed1e95"
+    },
+    "disabled_installer": {
+      "path": "C:/dev/Yime/installer/YIME-1.4.0-dev-setup.exe",
+      "size": 40728260,
+      "sha256": "83624a05190e40f7622b9f4b43ced78f14e1e8be6903e1b110f494d0a5b8d83a",
+      "authenticode_status": "NotSigned",
+      "executed": false,
+      "deliverable": false
+    }
+  },
+  "compiled_tree_validation": {
+    "root_build_entry_status": "passed-before-final-source-only-manifest-wrapper-and-signing-provenance-guard-changes",
+    "root_build_reexecuted_after_final_wrapper_guard": false,
+    "product_binary_inputs_changed_after_root_build": false,
+    "current_plan_receipt_manifest_and_installer_reverified_after_final_source_change": true,
+    "installer_executed_by_build": false,
+    "go_test_all_packages": "passed",
+    "rust_i686_locked_tests_passed": 26,
+    "ctest_x86_passed": 4,
+    "ctest_x64_passed": 4,
+    "real_pe_targets_checked_per_shell": 22,
+    "real_pe_gate_powershell_5": "passed",
+    "real_pe_gate_powershell_7": "passed",
+    "arm64_real_pe_rows_are_cross_built_static_artifacts_only": true,
+    "runtimechange_go_regression": "passed",
+    "changed_powershell_scripts_parsed_per_shell": 66,
+    "git_diff_check": "passed",
+    "workflow_yaml_independent_parser_available": true,
+    "workflow_yaml_parser": "Red Hat YAML Language Server 1.24.0",
+    "workflow_yaml_node_path": "C:/Program Files/nodejs/node.exe",
+    "workflow_yaml_node_version": "24.15.0",
+    "workflow_yaml_language_server_path": "C:/Users/tsaan/.vscode/extensions/redhat.vscode-yaml-1.24.0/dist/languageserver.js",
+    "workflow_yaml_protocol": "LSP stdio initialize initialized textDocument/didOpen then publishDiagnostics",
+    "workflow_yaml_diagnostics": 0,
+    "workflow_yaml_diagnostics_persisted": false,
+    "workflow_yaml_sha256": "ee0528ce341e93277a923051f8ce290d8817471c543de132319c954ac8035b1a",
+    "workflow_contract_source_checks": "passed-under-powershell-5-and-7"
+  },
+  "source_contract_receipts": {
+    "unified_powershell_fixture_batch": {
+      "suite_count_per_shell": 11,
+      "checks_passed_per_shell": 281,
+      "checks_failed_per_shell": 0,
+      "powershell_5_version": "5.1.26100.9168",
+      "powershell_7_version": "7.6.5",
+      "installer_or_uninstaller_executed": false,
+      "native_probe_executed": false,
+      "system_state_mutated": false
+    },
+    "installer_static": {
+      "powershell_5": {
+        "status": "passed",
+        "checks_passed": 40,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-installer-static-finalf-ps5-20260906/result.json",
+        "sha256": "23e3e194a1af300af68cbe07d2cb19ba666809a759c00af39fd6291ce63137b1"
+      },
+      "powershell_7": {
+        "status": "passed",
+        "checks_passed": 40,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-installer-static-finalf-ps7-20260906/result.json",
+        "sha256": "a4b97431eda049017b1d917ee52d1bf76eef1185ed2143877472a799c28fc168"
+      },
+      "actual_installer_executed": false,
+      "actual_registry_or_process_touched": false
+    },
+    "registration_and_build_completeness": {
+      "powershell_5": {
+        "status": "passed",
+        "checks_passed": 35,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-registration-completeness-finalf-ps5-20260906/result.json",
+        "sha256": "58cb88c14d9372dbad1bb27acddd07e9b6cfb519c9e752934d30932c83031468"
+      },
+      "powershell_7": {
+        "status": "passed",
+        "checks_passed": 35,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-registration-completeness-finalf-ps7-20260906/result.json",
+        "sha256": "86a368f2f4768fc37d467b3a35ff34d2ea8f157383570f22f6db176131fae611"
+      },
+      "actual_registration_probe_executed": false,
+      "actual_registry_profile_or_category_read_or_mutation_executed": false
+    },
+    "registration_ownership": {
+      "checks_per_shell": 22,
+      "powershell_5": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-registration-ownership-finalf-ps5-20260906/result.json", "sha256": "01e423fff8824eae71f7d383a0d8ac12a715642f96ec3a088baaa6ca76a0578c"},
+      "powershell_7": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-registration-finalf-ps7-20260906/result.json", "sha256": "594e984ec53acb1ed6ae2ed4fa788e4332349e70cc17003bb0812d51927092f6"}
+    },
+    "native_user_cleanup": {
+      "checks_per_shell": 12,
+      "powershell_5": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-native-user-cleanup-finalf-ps5-20260906/result.json", "sha256": "e6eecce1e2ed1a786c4e6dceed244b6a38e10a2d51f4bb59eff5521184b24a5e"},
+      "powershell_7": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-native-user-cleanup-finalf-ps7-20260906/result.json", "sha256": "d45ab18249191036654954b8a1f74b76a99729b5891fed0a22530f73c815b479"}
+    },
+    "target_user": {
+      "checks_per_shell": 25,
+      "powershell_5": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-target-user-finalf-ps5-20260906/result.json", "sha256": "ad26674482df7ffd4cbda5191c503d20d303d4c5f3fe2946548a873ca53b837e"},
+      "powershell_7": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-target-user-finalf-ps7-20260906/result.json", "sha256": "4cd5bfa8ce68e1045cba19257041c9bd165dfb65e052505d148723c376513faa"}
+    },
+    "rime_maintenance": {
+      "checks_per_shell": 31,
+      "powershell_5": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-rime-maint-finalf-ps5-20260906/result.json", "sha256": "f67943301010cf6dc797f733d2ca516313aa20d6cfc04872c6c40b92c161ccef"},
+      "powershell_7": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-rime-maint-finalf-ps7-20260906/result.json", "sha256": "3bfdc7464b6ea58da8993c04a2c90abfe81937ad18a90ae2f18c68fb6d73646c"}
+    },
+    "directed_stop": {
+      "checks_per_shell": 17,
+      "powershell_5": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-directed-stop-finalf-ps5-20260906/result.json", "sha256": "e3e9505b1d6749529a187ad0b94b0dbcb167752df7b39c7a78b82ad1f9f1a83f"},
+      "powershell_7": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-directed-stop-finalf-ps7-20260906/result.json", "sha256": "020783ee043aba26f8d27aa02e46bd5a2e2c40d03e7b3528d70a18bc42edd5d0"}
+    },
+    "transaction_faults": {
+      "checks_per_shell": 9,
+      "powershell_5": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-transaction-faults-finalf-ps5-20260906/result.json", "sha256": "5bb5cfd6ab547f3e30793fe2d7eedea34778b26ecef8a626b476d6ed7481408f"},
+      "powershell_7": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-transaction-faults-finalf-ps7-20260906/result.json", "sha256": "ad98dc2a7018ecfc516c09e8aed70edda90f44100266691d267895d2d1718a7d"},
+      "expected_stage_count": 24,
+      "rollback_dimension_count": 10,
+      "fault_case_count": 96
+    },
+    "transaction_isolation": {
+      "checks_per_shell": 52,
+      "powershell_5": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-transaction-isolation-finalf-ps5-20260906/result.json", "sha256": "2c02a04b8e9dd6af5bf4fabd26a7495d2e3bb11c9738295ce4786114654e5b69"},
+      "powershell_7": {"path": "C:/dev/Yime/.tmp/dual-product/dp1-transaction-finalf-ps7-20260906/result.json", "sha256": "7429c28447e88e12cabfdcf39211e731e74bc8930cd3848cdb48923c34d76887"}
+    },
+    "pe_import_gate": {
+      "powershell_5": {
+        "status": "passed",
+        "checks_passed": 9,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-pe-import-gate-finalf-ps5-20260906/result.json",
+        "sha256": "3db5af37b0f49575e873a7198a5f8de8fc1a736c42e404b9633a87e0541fd6d8"
+      },
+      "powershell_7": {
+        "status": "passed",
+        "checks_passed": 9,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-pe-import-gate-finalf-ps7-20260906/result.json",
+        "sha256": "68bc65bc9af1cf1a8cc9694a2a623516d121f2d0b5bff0d7c42825511e3a3c80"
+      },
+      "synthetic_pe_images_executed": false,
+      "arm64_pair_static_validation_covered": true,
+      "arm64_native_execution_performed": false
+    },
+    "isolated_payload_closure_model": {
+      "powershell_5": {
+        "status": "passed",
+        "checks_passed": 29,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-payload-closure-finalf-ps5-20260906/result.json",
+        "sha256": "a23a46b60277015eaf23cda14ef60ae7428e2a3c8883fc42c595f87d1988438d"
+      },
+      "powershell_7": {
+        "status": "passed",
+        "checks_passed": 29,
+        "checks_failed": 0,
+        "path": "C:/dev/Yime/.tmp/dual-product/dp1-payload-closure-finalf-ps7-20260906/result.json",
+        "sha256": "e1d2596bc7eaf22e88f3c696df9299557e46f7f276fc2f71a1a07fea93cd9867"
+      },
+      "actual_installer_or_uninstaller_executed": false,
+      "wired_to_actual_staged_or_installed_payload": false
+    },
+    "source_baseline": {
+      "status": "passed",
+      "source_inputs": 91,
+      "pure_contract_tests_passed": 37,
+      "pure_contract_tests_failed": 0,
+      "path": "C:/dev/Yime/.tmp/dual-product/dp1-e-sealed-baseline-finalf-20260906/baseline.json",
+      "sha256": "d0801690e3cc1d738e4545a0cc79d390a520f0632ec52102074dafeec8c349cb",
+      "source_unchanged_during_run": true,
+      "installed_runtime_examined": false
+    }
+  },
+  "pure_transaction_model_reference": {
+    "record": "docs/testing/dual-product/2026-09-06-dp1-d.json",
+    "checks_per_shell": 9,
+    "expected_stage_count": 24,
+    "rollback_dimension_count": 10,
+    "fault_case_count": 96,
+    "powershell_5": {
+      "path": "C:/dev/Yime/.tmp/dual-product/dp1-transaction-faults-finalf-ps5-20260906/result.json",
+      "sha256": "5bb5cfd6ab547f3e30793fe2d7eedea34778b26ecef8a626b476d6ed7481408f"
+    },
+    "powershell_7": {
+      "path": "C:/dev/Yime/.tmp/dual-product/dp1-transaction-faults-finalf-ps7-20260906/result.json",
+      "sha256": "ad98dc2a7018ecfc516c09e8aed70edda90f44100266691d267895d2d1718a7d"
+    },
+    "actual_filesystem_registry_process_or_elevation_executed": false,
+    "wired_to_installer": false
+  },
+  "safety_state": {
+    "installer_on_init_hard_blocked_before_bootstrap_or_elevation": true,
+    "installer_section_hard_blocked_before_product_mutation": true,
+    "uninstaller_on_init_hard_blocked_before_bootstrap_or_elevation": true,
+    "uninstaller_section_hard_blocked_before_product_mutation": true,
+    "unsigned_wrapper_rejects_inherited_signing_environment_before_input_read": true,
+    "trusted_signing_checkout_moved_outside_source_before_certificate_read": true,
+    "yaml_anchor_like_run_values_rejected": true,
+    "signing_leaf_scripts_and_codeowners_in_exact_source_snapshot": true,
+    "direct_unsealed_makensis_rejected": true,
+    "tagged_release_blocked_before_package_build": true,
+    "unsigned_disabled_package_deliverable": false,
+    "unsigned_disabled_package_daily_use_candidate": false
+  },
+  "arm64_state": {
+    "cross_build_reference": "docs/testing/dual-product/2026-09-06-dp1-d.json",
+    "cross_build_and_explicit_paired_static_pe_validation_only": true,
+    "included_in_current_package_plan": false,
+    "current_package_architectures": ["x86", "x64"],
+    "arm64x_package_profile_admitted": false,
+    "arm64_installer_compiled": false,
+    "arm64_native_execution_or_registration_performed": false,
+    "arm64_registered_or_live_host_acceptance_passed": false
+  },
+  "pending_gates": [
+    "actual staged package full file and directory manifest generated independently of the installed tree",
+    "post-build installer extraction proving exact embedded payload bytes",
+    "named VERSIONINFO parsing or stronger structured provenance for the embedded package-plan digest",
+    "independently signed and verified uninstaller self-image",
+    "exact removal ownership journal durable recovery media and after-removal closure",
+    "persistent prepared and commit journal with crash or reboot replay",
+    "real rollback of every owned dimension and rollback-failure continuation",
+    "clean reproducible signed source identity rather than a dirty working-tree reference",
+    "one protected trusted-signing tool commit fixed across both signing jobs and recorded in release provenance",
+    "strict sign verify manifest upload ordering plus clean signed-manifest StaticOnly verification",
+    "real same-SID UAC COM TIP Profile and non-elevated runtime readiness",
+    "x64 and WOW64 x86 registered-host and single-product or both-install-order physical matrix",
+    "ARM64X package profile and ARM64 native install registration process registered-host and live-host acceptance",
+    "legacy identity migration transaction",
+    "release tag unblocking only after all package removal and recovery closures"
+  ],
+  "installed_state": {
+    "daily_use_yimecore": "local.12",
+    "daily_use_yimecore_changed": false,
+    "local_13_installed": false,
+    "production_rime_pime_touched": false
+  },
+  "dp1_full_implementation_passed": false,
+  "dp2_physical_acceptance_passed": false,
+  "dp3_selector_acceptance_passed": false,
+  "l5_final_confirmation_complete": false,
+  "l6_sealing_complete": false,
+  "actual_native_probe_executed": false,
+  "actual_elevation_executed": false,
+  "actual_installer_or_uninstaller_executed": false,
+  "actual_registry_or_profile_read_or_mutation_executed": false,
+  "actual_real_process_start_or_stop_executed": false,
+  "actual_persistent_rollback_or_crash_replay_executed": false,
+  "default_input_method_changed": false,
+  "installed_yimecore_touched": false,
+  "user_text_or_learning_read": false,
+  "frozen_targets_executed": false,
+  "record_sha256_sidecar": "docs/testing/dual-product/2026-09-06-dp1-e.json.sha256",
+  "record_sha256_embedded": false
+}

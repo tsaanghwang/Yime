@@ -41,6 +41,8 @@
 /tools/evaluation/** @tsaanghwang
 /internal_data/psc_outline/** @tsaanghwang
 /tools/test-installer-smoke.ps1 @tsaanghwang
+/tools/build-rime-pime-installer.ps1 @tsaanghwang
+/tools/dual-product/rime-pime-package-plan.ps1 @tsaanghwang
 /tools/assert-win32-build-prerequisites.ps1 @tsaanghwang
 /tools/initialize-dev-environment.ps1 @tsaanghwang
 /tools/invoke-build-environment.ps1 @tsaanghwang
