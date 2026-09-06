@@ -441,13 +441,18 @@ class OwnershipTests(unittest.TestCase):
         for old, new in (
             ("'static-installer-manifest-check'", "'removed-static-installer-manifest-check'"),
             ("actual_canonical_migration_admitted = $false", "actual_canonical_migration_admitted = $true"),
+            ("Runner file differs from exact source HEAD.", "Runner HEAD mismatch ignored."),
+            ("'-C', $clone, 'checkout', '--detach', $head",
+             "'-C', $clone, 'checkout', '--detach', $head, '--"),
         ):
             with self.subTest(anchor=old):
                 sources = {path: (subject.ROOT / path).read_text(encoding="utf-8-sig")
                            for path in original if path in contract_paths}
                 path = "tools/dual-product/run-rime-pime-isolated-candidate.ps1"
                 sources[path] = sources[path].replace(old, new, 1)
-                with self.assertRaisesRegex(ValueError, "anchor changed|sequence changed"):
+                with self.assertRaisesRegex(
+                    ValueError, "anchor changed|sequence changed|argument vector changed"
+                ):
                     subject.transaction_source_status(sources)
 
     def test_dp1n_source_contract_anchor_tamper_fails_closed(self):

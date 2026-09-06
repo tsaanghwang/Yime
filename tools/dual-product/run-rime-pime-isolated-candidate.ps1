@@ -54,7 +54,7 @@ function Get-Sha256Bytes([byte[]]$Bytes) {
 }
 
 function ConvertTo-CompactJson($Value) {
-    return ($Value | ConvertTo-Json -Depth 100 -Compress)
+    return (ConvertTo-Json -InputObject $Value -Depth 100 -Compress)
 }
 
 function Get-RelativePath([string]$Base, [string]$Path) {
@@ -237,6 +237,17 @@ if ((Split-Path -Parent $output) -ine $workParent -or
     (Split-Path -Leaf $output) -cnotmatch '^dp1-o-candidate-[A-Za-z0-9-]+$' -or
     (Test-Path -LiteralPath $output)) {
     throw 'OutputRoot must be a fresh immediate .tmp/dual-product/dp1-o-candidate-* directory.'
+}
+$runnerRelativePath = 'tools/dual-product/run-rime-pime-isolated-candidate.ps1'
+$runnerExpectedPath = [IO.Path]::GetFullPath((Join-Path $root $runnerRelativePath.Replace('/', '\')))
+$runnerPath = [IO.Path]::GetFullPath($PSCommandPath)
+if ($runnerPath -ine $runnerExpectedPath) { throw 'Runner must execute from its tracked repository path.' }
+$runnerHeadBlob = ((Get-GitOutput @('-C', $root, 'rev-parse', '--verify', ($head + ':' + $runnerRelativePath)) `
+    'Runner HEAD blob inspection') -join '').Trim().ToLowerInvariant()
+$runnerWorktreeBlob = ((Get-GitOutput @('-C', $root, 'hash-object', ('--path=' + $runnerRelativePath), '--', $runnerPath) `
+    'Runner worktree blob inspection') -join '').Trim().ToLowerInvariant()
+if ($runnerHeadBlob -cnotmatch '^[0-9a-f]{40}(?:[0-9a-f]{24})?$' -or $runnerWorktreeBlob -cne $runnerHeadBlob) {
+    throw 'Runner file differs from exact source HEAD.'
 }
 $null = Assert-PlainFile $PowerShellPath 'PowerShell host'
 $null = Assert-PlainFile $MakensisPath 'NSIS compiler'
@@ -449,6 +460,7 @@ try {
         durable_v2_receipt = [pscustomobject][ordered]@{
             path = Get-RelativePath $output $canonicalReceipt; sha256 = $strictV2.Digest
             schema_version = [string]$strictV2.Receipt.schema_version; evidence_artifacts_durable = $true
+            durability_scope = 'isolated-clone-content-addressed-process-interruption-protocol'
         }
     }
 } catch {
@@ -472,6 +484,8 @@ $result = [pscustomobject][ordered]@{
     status = if ($passed) { 'pass' } else { 'fail' }
     source = [pscustomobject][ordered]@{
         repo_root = $root; exact_head = $head; exact_tree = $headTree
+        runner_relative_path = $runnerRelativePath; runner_head_blob = $runnerHeadBlob
+        runner_worktree_blob = $runnerWorktreeBlob; runner_matches_exact_head = $true
         clone_detached_exact_head = [bool]($null -ne $summary)
         actual_protected_snapshot_unchanged = [bool]$sourceUnchanged
         before_snapshot_sha256 = Get-Sha256Bytes ([Text.UTF8Encoding]::new($false).GetBytes((ConvertTo-CompactJson $protectedBefore)))
@@ -490,6 +504,8 @@ $result = [pscustomobject][ordered]@{
         release_signing_complete = $false; delivery_admitted = $false
         hardware_power_loss_durability_verified = $false
         directory_metadata_durability_verified = $false
+        outer_tmp_retention_guaranteed = $false
+        evidence_archived_outside_tmp = $false
         active_same_sid_physical_replacement_prevented = $false
         full_nsis_toolchain_input_closure = $false
     }

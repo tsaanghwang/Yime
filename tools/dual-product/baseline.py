@@ -727,6 +727,10 @@ def transaction_source_status(sources):
             "$gitCommand = @(Get-Command -Name $GitPath -CommandType Application -ErrorAction Stop)[0]",
             "$GitPath = Assert-ToolApplicationFile $gitCommand.Source 'Git client'",
             "'checkout', '--detach', $head",
+            "$runnerRelativePath = 'tools/dual-product/run-rime-pime-isolated-candidate.ps1'",
+            "'hash-object', ('--path=' + $runnerRelativePath), '--', $runnerPath",
+            "Runner file differs from exact source HEAD.",
+            "runner_matches_exact_head = $true",
             "'build-current-source'",
             "'static-installer-manifest-check'",
             "'-StaticOnly'",
@@ -738,6 +742,9 @@ def transaction_source_status(sources):
             "distinct_versioned_installer_leaf_for_dp1n = [bool]$distinctVersionedInstallerLeaf",
             "actual_canonical_migration_admitted = $false",
             "directory_metadata_durability_verified = $false",
+            "outer_tmp_retention_guaranteed = $false",
+            "evidence_archived_outside_tmp = $false",
+            "durability_scope = 'isolated-clone-content-addressed-process-interruption-protocol'",
             "full_nsis_toolchain_input_closure = $false",
         ]),
         (isolated_candidate_test, [
@@ -774,6 +781,12 @@ def transaction_source_status(sources):
     ))
     if isolated_candidate_order != tuple(sorted(isolated_candidate_order)):
         fail("Rime/PIME isolated current-source candidate sequence changed")
+    for label, pattern in (
+        ("clone", r"(?m)^[ \t]*'clone', '--local', '--no-hardlinks', '--no-checkout', '--no-tags', '--', \$root, \$clone[ \t]*$"),
+        ("checkout", r"(?m)^[ \t]*'-C', \$clone, 'checkout', '--detach', \$head[ \t]*$"),
+    ):
+        if len(re.findall(pattern, isolated_candidate_runner)) != 1:
+            fail(f"Rime/PIME isolated current-source candidate {label} argument vector changed")
     if any(name in isolated_candidate_runner for name in (
             "-AllowLocalMachine", "sign-release.ps1", "verify-release-signatures.ps1",
             "Install-PIME-Test.cmd", "Uninstall-PIME-Test.cmd",

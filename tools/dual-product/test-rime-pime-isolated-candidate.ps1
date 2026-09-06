@@ -61,6 +61,17 @@ Check 'fresh-immediate-output-contract-is-explicit' {
     )) { Assert-True $source.Contains($anchor) "Missing output guard: $anchor" }
 }
 
+Check 'executed-runner-must-match-exact-head-blob' {
+    foreach ($anchor in @(
+        "`$runnerRelativePath = 'tools/dual-product/run-rime-pime-isolated-candidate.ps1'",
+        "`$runnerPath = [IO.Path]::GetFullPath(`$PSCommandPath)",
+        "'hash-object', ('--path=' + `$runnerRelativePath), '--', `$runnerPath",
+        'Runner must execute from its tracked repository path.',
+        'Runner file differs from exact source HEAD.',
+        'runner_matches_exact_head = $true'
+    )) { Assert-True $source.Contains($anchor) "Missing runner/HEAD binding anchor: $anchor" }
+}
+
 Check 'existing-output-is-rejected-before-clone' {
     $existing = Join-Path $allowedParent ('dp1-o-candidate-existing-' + [Guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $existing | Out-Null
@@ -129,6 +140,10 @@ Check 'clone-is-local-nonhardlinked-nocheckout-and-exact-detached-head' {
         'Detached clone is not the exact clean source HEAD.',
         'Ignored actual publication state entered the clone:'
     )) { Assert-True $source.Contains($anchor) "Missing clone identity anchor: $anchor" }
+    $clonePattern = '(?m)^[ \t]*''clone'', ''--local'', ''--no-hardlinks'', ''--no-checkout'', ''--no-tags'', ''--'', \$root, \$clone[ \t]*\r?$'
+    $checkoutPattern = '(?m)^[ \t]*''-C'', \$clone, ''checkout'', ''--detach'', \$head[ \t]*\r?$'
+    Assert-True ([regex]::Matches($source, $clonePattern).Count -eq 1) 'Clone argument vector is not exact.'
+    Assert-True ([regex]::Matches($source, $checkoutPattern).Count -eq 1) 'Checkout argument vector is not exact.'
 }
 
 Check 'signing-environment-is-cleared-and-restored' {
@@ -181,6 +196,7 @@ Check 'actual-publication-and-user-worktree-snapshot-is-protected' {
         'docs/YIMECORE_L5_DAILY_USE_TEST_LOG.md',
         'tools/yimecore/get-l5-daily-use-baseline.ps1',
         'docs/YIMECORE_LOCAL12_L5_FINAL_CONFIRMATION_2026-09-06.md',
+        'ConvertTo-Json -InputObject $Value -Depth 100 -Compress',
         'Protected actual repository state changed during isolated candidate work.'
     )) { Assert-True $source.Contains($anchor) "Missing protected snapshot anchor: $anchor" }
 }
@@ -204,6 +220,9 @@ Check 'migration-version-and-trust-boundaries-stay-negative' {
         'delivery_admitted = $false',
         'hardware_power_loss_durability_verified = $false',
         'directory_metadata_durability_verified = $false',
+        'outer_tmp_retention_guaranteed = $false',
+        'evidence_archived_outside_tmp = $false',
+        "durability_scope = 'isolated-clone-content-addressed-process-interruption-protocol'",
         'active_same_sid_physical_replacement_prevented = $false',
         'full_nsis_toolchain_input_closure = $false'
     )) { Assert-True $source.Contains($anchor) "Missing negative boundary: $anchor" }
