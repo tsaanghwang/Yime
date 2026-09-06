@@ -1,0 +1,311 @@
+{
+  "schema_version": "yime-dual-product-dp1-j-evidence-v1",
+  "generated_at_utc": "2026-09-06T09:01:03.8170714Z",
+  "product": "rime-pime",
+  "scope": "fixture-only-continuous-nsis-membership-monitor-and-receipt-v2-supersession-protocol",
+  "privacy": {
+    "contains_user_text": false,
+    "contains_real_registry_values": false,
+    "contains_raw_sid_or_event_names": false,
+    "contains_unexpected_fixture_filenames": false,
+    "evidence_is_counts_digests_and_boolean_boundaries_only": true
+  },
+  "implementation": {
+    "membership_monitor": {
+      "helper": "tools/dual-product/rime-pime-nsis-membership-monitor-v1.ps1",
+      "module": "tools/dual-product/rime-pime-nsis-membership-monitor-v1.psm1",
+      "independent_fixture_writer": "tools/dual-product/invoke-rime-pime-nsis-membership-fixture-writer-v1.ps1",
+      "test": "tools/dual-product/test-rime-pime-nsis-membership-monitor-v1.ps1",
+      "fixture_only": true,
+      "exported_fixture_api_count": 4,
+      "read_directory_changes_w_overlapped": true,
+      "random_completion_sentinel": true,
+      "root_volume_and_file_id_revalidated": true,
+      "recursive_name_and_directory_notifications": true,
+      "cancel_wait_get_overlapped_result_before_release": true,
+      "monotonic_timeout": true
+    },
+    "receipt_v2_supersession_fixture": {
+      "helper": "tools/dual-product/rime-pime-receipt-v2-supersession.ps1",
+      "module": "tools/dual-product/rime-pime-receipt-v2-supersession.psm1",
+      "test": "tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1",
+      "fixture_only": true,
+      "exported_fixture_api_count": 6,
+      "content_addressed_objects": true,
+      "content_addressed_generation_catalog": true,
+      "single_atomic_head": true,
+      "exclusive_publication_lock": true,
+      "sealed_hash_chain_journal": true,
+      "compare_and_swap": true,
+      "same_process_module_reimport_replay_only": true,
+      "synthetic_json_uses_v2_schema_marker_only": true
+    }
+  },
+  "concrete_regressions": [
+    {
+      "id": "DP1-MONITOR-MAXPATH-01",
+      "status": "closed",
+      "finding": "The initial overflow negative failed at the Windows path-length boundary instead of exercising notification overflow.",
+      "remediation": "Use legal-length multi-event pressure input."
+    },
+    {
+      "id": "DP1-MONITOR-CANCEL-02",
+      "status": "closed",
+      "finding": "The initial cancellation path released OVERLAPPED storage after CancelIoEx and a wait without GetOverlappedResult.",
+      "remediation": "Settle cancel, wait and GetOverlappedResult before releasing native storage."
+    },
+    {
+      "id": "DP1-MONITOR-ROOT-SHARE-03",
+      "status": "closed",
+      "finding": "The root directory handle initially allowed delete sharing, permitting root rename or replacement to evade the prerequisite.",
+      "remediation": "Exclude delete sharing and revalidate root identity."
+    },
+    {
+      "id": "DP1-MONITOR-CLEANUP-04",
+      "status": "closed",
+      "finding": "Complete could mark the monitor Closed after cleanup failure.",
+      "remediation": "Enter Closed only after all native resources are disposed and keep failed cleanup retriable."
+    },
+    {
+      "id": "DP1-MONITOR-BARRIER-05",
+      "status": "closed",
+      "finding": "Completion-sentinel state was initially recorded too late for an exception-safe linearization point.",
+      "remediation": "Record the unique sentinel immediately after successful creation."
+    },
+    {
+      "id": "DP1-MONITOR-PARSER-06",
+      "status": "closed",
+      "finding": "The notification parser initially accepted overlapping record offsets.",
+      "remediation": "Validate alignment, bounds and non-overlap and fail closed."
+    },
+    {
+      "id": "DP1-MONITOR-REPARSE-07",
+      "status": "closed",
+      "finding": "The first boundary check did not reject every parent-chain reparse point.",
+      "remediation": "Validate each ancestor and require a fresh immediate fixture root."
+    },
+    {
+      "id": "DP1-MONITOR-CLOCK-08",
+      "status": "closed",
+      "finding": "Timeouts initially used a wall clock that can move backwards.",
+      "remediation": "Use a monotonic Stopwatch."
+    },
+    {
+      "id": "DP1-SUPERSESSION-MODULE-01",
+      "status": "closed",
+      "finding": "A full-path Get-Module lookup did not identify the imported module consistently across shells.",
+      "remediation": "Validate the actual imported identity and exact export allowlist."
+    },
+    {
+      "id": "DP1-SUPERSESSION-JSON-02",
+      "status": "closed",
+      "finding": "Windows PowerShell 5.1 and PowerShell 7 initially serialized result formatting differently.",
+      "remediation": "Emit stable compact JSON."
+    },
+    {
+      "id": "DP1-SUPERSESSION-CATALOG-03",
+      "status": "closed",
+      "finding": "The initial generation reader verified only the receipt object, not every catalog object.",
+      "remediation": "Reread every catalog object and verify its length and digest."
+    },
+    {
+      "id": "DP1-SUPERSESSION-PARTIAL-04",
+      "status": "closed",
+      "finding": "Partial sidecar, object-data and head-temp states could not be recovered safely.",
+      "remediation": "Rebuild only explicitly unsealed or unpublished material from its bound intent."
+    },
+    {
+      "id": "DP1-SUPERSESSION-JOURNAL-05",
+      "status": "closed",
+      "finding": "The initial journal reader ignored extra directory members.",
+      "remediation": "Require exact file and directory membership."
+    },
+    {
+      "id": "DP1-SUPERSESSION-INTERLEAVE-06",
+      "status": "closed",
+      "finding": "A successor transaction could bypass a prior prepared-only or head-switched non-terminal transaction.",
+      "remediation": "Reject all successors while any previous transaction is unresolved."
+    },
+    {
+      "id": "DP1-SUPERSESSION-SEAL-07",
+      "status": "closed",
+      "finding": "Any seal mismatch could initially be misclassified as a repairable torn tail.",
+      "remediation": "Repair only an explicitly short sidecar; reject full-length mismatches."
+    },
+    {
+      "id": "DP1-BASELINE-ESCAPE-08",
+      "status": "closed",
+      "finding": "New CI anchor strings used invalid Python backslash escapes.",
+      "remediation": "Use valid literals and rerun the baseline suite."
+    },
+    {
+      "id": "DP1-BASELINE-COUNT-09",
+      "status": "closed",
+      "finding": "The baseline test retained the pre-DP1-J source counts after seven source files were added.",
+      "remediation": "Require 121 contract sources and 128 final hash sources."
+    },
+    {
+      "id": "DP1-BASELINE-PROMOTION-10",
+      "status": "closed",
+      "finding": "A single false-to-true supersession capability promotion was not initially rejected.",
+      "remediation": "Reject true promotions across every relevant source and cover a single-site tamper."
+    }
+  ],
+  "verification": {
+    "membership_monitor": {
+      "windows_powershell_5_1": {
+        "result": ".tmp/dual-product/dp1-j-membership-test-root-final-ps5-20260906-a2/result.json",
+        "checks_passed": 15,
+        "checks_failed": 0,
+        "result_sha256": "4b6da068ea02aeb7cc920c17f6174596e2fb03da73ec3eaeac366074df65463f"
+      },
+      "powershell_7": {
+        "result": ".tmp/dual-product/dp1-j-membership-test-root-final-ps7-20260906-a2/result.json",
+        "checks_passed": 15,
+        "checks_failed": 0,
+        "result_sha256": "4b6da068ea02aeb7cc920c17f6174596e2fb03da73ec3eaeac366074df65463f"
+      },
+      "byte_identical_results": true
+    },
+    "receipt_v2_supersession_fixture": {
+      "windows_powershell_5_1": {
+        "result": ".tmp/dual-product/dp1-j-receipt-v2-supersession-root-final-ps5-20260906-a2/result.json",
+        "checks_passed": 16,
+        "checks_failed": 0,
+        "result_sha256": "7b6ab62bb4d4e0cf16b04073e379677079d94916acb89da6ee43c542a37a64f0"
+      },
+      "powershell_7": {
+        "result": ".tmp/dual-product/dp1-j-receipt-v2-supersession-root-final-ps7-20260906-a2/result.json",
+        "checks_passed": 16,
+        "checks_failed": 0,
+        "result_sha256": "7b6ab62bb4d4e0cf16b04073e379677079d94916acb89da6ee43c542a37a64f0"
+      },
+      "byte_identical_results": true
+    },
+    "carried_regression_suites": {
+      "strict_receipt_v2": {
+        "windows_powershell_5_1_checks_passed": 26,
+        "powershell_7_checks_passed": 26
+      },
+      "receipt_no_downgrade": {
+        "windows_powershell_5_1_checks_passed": 7,
+        "powershell_7_checks_passed": 7
+      },
+      "dp1_i_fixture_journal": {
+        "windows_powershell_5_1_checks_passed": 114,
+        "powershell_7_checks_passed": 114,
+        "result_sha256": "a9a44e449b93313ba1248ab08645bf19e1544c8fee3fdf5a26d1abc823066d45"
+      },
+      "transaction_replay_reference_model": {
+        "windows_powershell_5_1_checks_passed": 16,
+        "powershell_7_checks_passed": 16
+      },
+      "existing_transaction_fault_matrix": {
+        "windows_powershell_5_1_checks_passed": 9,
+        "powershell_7_checks_passed": 9,
+        "stage_count": 24,
+        "fault_case_count": 96
+      }
+    },
+    "source_baseline": {
+      "result": ".tmp/dual-product/dp1-j-baseline-root-final-20260906-a1/baseline.json",
+      "result_sha256": "8890332604fa46f630d83a5a178df8c112920fa2f125f20f0118b8bd499e7acf",
+      "source_contract_count": 121,
+      "source_hash_count": 128,
+      "contract_tests_passed": 49,
+      "known_pending_count": 5,
+      "fixture_powershell_tests_executed_by_baseline": false,
+      "dp1_full_implementation_passed": false,
+      "dp2_physical_acceptance_passed": false
+    }
+  },
+  "known_pending": [
+    {
+      "id": "DP1-PIME-DIRECTED-EXIT-04",
+      "status": "source_anchors_present_installed_acceptance_pending"
+    },
+    {
+      "id": "DP1-PIME-REGISTRY-05",
+      "status": "source_anchors_present_native_acceptance_pending"
+    },
+    {
+      "id": "DP1-PIME-TRANSACTION-06",
+      "status": "fixture_journal_and_replay_source_anchors_present_real_transaction_pending"
+    },
+    {
+      "id": "DP1-PIME-COMPILER-INPUT-07",
+      "status": "known_input_replacement_closed_membership_monitor_fixture_present_makensis_integration_pending"
+    },
+    {
+      "id": "DP1-PIME-RECEIPT-08",
+      "status": "v2_source_contract_and_supersession_fixture_present_durable_canonical_wiring_pending"
+    }
+  ],
+  "source_sha256": {
+    "tools/dual-product/rime-pime-nsis-membership-monitor-v1.ps1": "0794976f48e9d4103d1d93327ae5b200f87eab58eaee0b4fa7f8657377c24d82",
+    "tools/dual-product/rime-pime-nsis-membership-monitor-v1.psm1": "2c4204192bbbf313e15eb3e8db4b832f69057c455da045ed97d1e23c794b7a63",
+    "tools/dual-product/invoke-rime-pime-nsis-membership-fixture-writer-v1.ps1": "3bc792ee3ee576423a3fe763ae953204232864c3cc910d46b80b097bd98a38e4",
+    "tools/dual-product/test-rime-pime-nsis-membership-monitor-v1.ps1": "0b7ef3dbf8604acf0b1839ed878d61c879f19af01550216d5ce6a9b4927f9812",
+    "tools/dual-product/rime-pime-receipt-v2-supersession.ps1": "4329b0c0ad43e4305e529445ec4ea4723997ab65173d8ede61c3f53c4d605610",
+    "tools/dual-product/rime-pime-receipt-v2-supersession.psm1": "72ba89e560995422fc7f062a4f7144ef3f30dd8d3ba6f31a3b422648d9e6ee5e",
+    "tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1": "a8186f4edf5fc34e120898ad9ca21d333066089124620cd94c1a44a415efae99",
+    "tools/dual-product/contract.json": "eb0591471628404c415972be9f2e12185030cbf7c143e0ed2b383eeb17b15579",
+    "tools/dual-product/baseline.py": "6344e0f6ea40a4da1a04e39928381bd6bf20af854ce58503e2ecf483d9b1d6ad",
+    "tools/dual-product/test_baseline.py": "1a34609d457fcee0219ff8a8e355469569ec342a1562f1e0c36f9f7168e6344d",
+    ".github/workflows/ci.yaml": "8377f49c1b488c9739dc5db4a8c0d287b79ef71bb478bdd3f8a41a1c26778a1c",
+    "docs/project/YIME_DUAL_PRODUCT_DP1_J_ISOLATED_MEMBERSHIP_AND_SUPERSESSION_2026-09-06.md": "d3a90fb8eceb304ca815303def3140f18cde7180cc7d9fa9163d885c0a975d5a"
+  },
+  "carried_dp1_h_state": {
+    "canonical_receipt_v2_sha256": "c18d1202ad78dcd6f8c1f74b34859a83489adb01fb156fa4e2546160aff5b0be",
+    "candidate_unsigned_disabled_unexecuted_non_deliverable": true,
+    "active_same_sid_transient_tree_membership_interference_excluded": false,
+    "canonical_v2_evidence_durable": false,
+    "v2_to_v2_supersession_wired": false,
+    "canonical_receipt_mutated_by_dp1_j": false
+  },
+  "boundaries": {
+    "fixture_filesystem_io_executed": true,
+    "actual_makensis_executed": false,
+    "physical_membership_prevention_claimed": false,
+    "makensis_interval_covered": false,
+    "active_same_sid_transient_tree_membership_interference_excluded": false,
+    "nsis_non_os_compiler_input_closure": false,
+    "full_nsis_toolchain_input_closure": false,
+    "physical_object_immutability_enforced": false,
+    "concurrent_content_replacement_excluded": false,
+    "actual_receipt_v2_reader_used": false,
+    "actual_strict_receipt_v2_schema_verified": false,
+    "cross_process_crash_or_replay_verified": false,
+    "same_process_module_reimport_is_real_crash_recovery": false,
+    "hardlink_negative_verified": false,
+    "retention_durability_claimed": false,
+    "directory_metadata_durability_verified": false,
+    "power_loss_verified": false,
+    "file_replace_or_flush_true_proves_power_loss_or_directory_durability": false,
+    "canonical_receipt_mutated": false,
+    "real_durable_install_journal_wired": false,
+    "transaction_engine_or_installer_wiring_complete": false,
+    "installer_or_uninstaller_executed": false,
+    "makensis_or_signing_executed": false,
+    "registry_provider_used": false,
+    "product_process_or_registry_touched": false,
+    "installed_or_live_runtime_examined": false,
+    "default_input_method_changed": false,
+    "production_rime_pime_touched": false,
+    "production_user_data_read_or_written": false,
+    "installed_yimecore_local12_touched": false,
+    "hard_blocks_remain": true
+  },
+  "next_required_evidence": [
+    "Copy the known NSIS tree to a fresh compiler stage and surround the complete disabled makensis child-process lifetime with the membership monitor, existing leases and sealing before static extraction.",
+    "Connect the actual strict receipt-v2 reader to a durable content-addressed evidence root and add cross-process lock and replay, directory-durability, hardlink and concurrent-replacement negatives.",
+    "Only then perform canonical v2-to-v2 supersession under the real publication lock without treating the fixture head as canonical state.",
+    "After those prerequisites, connect a restricted real transaction adapter and prove independent-process rollback and cleanup, registry convergence, child hard-crash recovery and installed exact removal.",
+    "Keep installer, uninstaller, signing, installed, registered, live-host, reboot, single-install and both coexistence-order acceptance behind a separate authorized handoff."
+  ],
+  "dp1_full_implementation_passed": false,
+  "dp2_physical_acceptance_passed": false,
+  "dp3_selector_acceptance_passed": false,
+  "l5_final_confirmation_complete": false,
+  "l6_sealing_complete": false
+}

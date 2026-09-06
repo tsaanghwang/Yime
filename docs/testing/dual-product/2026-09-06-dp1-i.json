@@ -1,0 +1,213 @@
+{
+  "schema_version": "yime-dual-product-dp1-i-evidence-v1",
+  "generated_at_utc": "2026-09-06T07:52:44.7620671Z",
+  "product": "rime-pime",
+  "scope": "fixture-only-transaction-journal-replay-typed-snapshot-and-exact-removal-contract",
+  "privacy": {
+    "contains_user_text": false,
+    "contains_real_registry_values": false,
+    "contains_unexpected_fixture_filenames": false,
+    "evidence_is_counts_digests_and_boolean_boundaries_only": true
+  },
+  "implementation": {
+    "transaction_engine": "tools/dual-product/rime-pime-transaction-engine.ps1",
+    "replay_model_test": "tools/dual-product/test-rime-pime-transaction-replay-model.ps1",
+    "fixture_journal": "tools/dual-product/rime-pime-fixture-transaction-journal.ps1",
+    "fixture_journal_module": "tools/dual-product/rime-pime-fixture-transaction-journal.psm1",
+    "fixture_journal_test": "tools/dual-product/test-rime-pime-fixture-transaction-journal.ps1",
+    "fixture_only": true,
+    "exported_fixture_api_count": 26,
+    "prepared_step_commit_terminal_hash_chain": true,
+    "operation_id_bound_to_transaction_and_stage": true,
+    "case_local_recovery_artifacts_bound": true,
+    "create_new_write_through_flush_true_sidecar_last": true,
+    "fileshare_none_lock_anchor": true,
+    "typed_synthetic_registry_snapshot": true,
+    "manifest_driven_leaf_first_nonrecursive_removal": true,
+    "changed_or_foreign_fixture_content_preserved": true,
+    "unexpected_filenames_disclosed": false
+  },
+  "concrete_regressions": [
+    {
+      "id": "DP1-JOURNAL-DATE-01",
+      "status": "closed",
+      "finding": "PowerShell 7 converted the UTC journal string to a date object and canonical serialization failed.",
+      "remediation": "Use string date parsing when supported and reject DateTime and DateTimeOffset values."
+    },
+    {
+      "id": "DP1-JOURNAL-PS5-PATH-02",
+      "status": "closed",
+      "finding": "A path API overload was not compatible with Windows PowerShell 5.1.",
+      "remediation": "Use the path check supported by both tested shells."
+    },
+    {
+      "id": "DP1-JOURNAL-PS5-LIST-03",
+      "status": "closed",
+      "finding": "Generic-list argument binding differed under Windows PowerShell 5.1.",
+      "remediation": "Remove the incompatible binding dependency and test both shells."
+    },
+    {
+      "id": "DP1-JOURNAL-CONTEXT-04",
+      "status": "closed",
+      "finding": "The initial fixture context could self-report its repository root and case paths.",
+      "remediation": "Anchor the repository to the helper location, recompute all case paths, and require a fresh immediate DP1-I fixture root."
+    },
+    {
+      "id": "DP1-JOURNAL-CASE-BINDING-05",
+      "status": "closed",
+      "finding": "The initial journal test could reference sealed recovery artifacts from another fixture case.",
+      "remediation": "Require and revalidate same-case registry and removal artifacts on start and resume."
+    },
+    {
+      "id": "DP1-JOURNAL-PROTECTED-STATE-06",
+      "status": "closed",
+      "finding": "The initial step writer omitted a protected-state digest required by its reader.",
+      "remediation": "Bind each step to the prepared protected-state digest and cover tampering."
+    },
+    {
+      "id": "DP1-JOURNAL-OPERATION-ID-07",
+      "status": "closed",
+      "finding": "The initial reader accepted an operation ID without recomputing its transaction and stage binding.",
+      "remediation": "Recompute the operation ID during validation and add a negative test."
+    },
+    {
+      "id": "DP1-JOURNAL-EXPORT-08",
+      "status": "closed",
+      "finding": "Wildcard module export exposed low-level fixture writers.",
+      "remediation": "Export only the fixed 26-function fixture API allowlist."
+    },
+    {
+      "id": "DP1-JOURNAL-STATIC-SCAN-09",
+      "status": "closed",
+      "finding": "The static negative scan initially matched forbidden-pattern assertions in its own test source.",
+      "remediation": "Scan the helper and module surfaces while retaining the forbidden API assertions."
+    },
+    {
+      "id": "DP1-JOURNAL-RESULT-SCHEMA-10",
+      "status": "closed",
+      "finding": "The initial result lacked a stable schema and fixture-only marker.",
+      "remediation": "Publish a closed result schema with explicit false capability claims."
+    },
+    {
+      "id": "DP1-BASELINE-FLUSH-11",
+      "status": "closed",
+      "finding": "The first baseline anchor accepted either one of two required Flush(true) sites, so a single-site downgrade was not rejected.",
+      "remediation": "Require at least two Flush(true) source anchors and cover the single-site tamper case."
+    }
+  ],
+  "verification": {
+    "fixture_journal": {
+      "windows_powershell_5_1": {
+        "result": ".tmp/dual-product/dp1-i-journal-root-review-ps5-final/fixture/result.json",
+        "checks_passed": 114,
+        "checks_failed": 0,
+        "result_sha256": "a9a44e449b93313ba1248ab08645bf19e1544c8fee3fdf5a26d1abc823066d45",
+        "sidecar_matches": true
+      },
+      "powershell_7": {
+        "result": ".tmp/dual-product/dp1-i-journal-root-review-ps7-final/fixture/result.json",
+        "checks_passed": 114,
+        "checks_failed": 0,
+        "result_sha256": "a9a44e449b93313ba1248ab08645bf19e1544c8fee3fdf5a26d1abc823066d45",
+        "sidecar_matches": true
+      },
+      "aggregate_evidence_sha256": "3b10aee256c09f720925fbf4a8f544fbbc39ec8b27226e1a4801d74f13fcb347",
+      "registry_snapshot_sha256": "e70e3487ec25ebfc5a7b580560b7dd55a12481212c245f40cf096773f62a0b54",
+      "removal_manifest_sha256": "1e504d8b51dd49c4e178e2802e39a08333b844a7ee9347e538b202dc9b3014d6"
+    },
+    "replay_reference_model": {
+      "windows_powershell_5_1_checks_passed": 16,
+      "powershell_7_checks_passed": 16,
+      "generic_upgrade_stage_count": 24,
+      "uninstall_stage_count": 21,
+      "physical_deletion_executed": false,
+      "filesystem_registry_process_installer_or_product_operation_executed": false
+    },
+    "existing_transaction_fault_matrix": {
+      "stage_count": 24,
+      "fault_case_count": 96,
+      "windows_powershell_5_1": {
+        "result": ".tmp/dual-product/dp1-transaction-faults-dp1i-review-ps5/result.json",
+        "checks_passed": 9,
+        "result_sha256": "1bfc9faffcae8ce0e7a952e719330ce060046346b5620083198d36c4f7920564"
+      },
+      "powershell_7": {
+        "result": ".tmp/dual-product/dp1-transaction-faults-dp1i-review-ps7/result.json",
+        "checks_passed": 9,
+        "result_sha256": "89f339703474880ce862d4cffb3df74f02c76dd7229695298142fda4bf89061a"
+      }
+    },
+    "source_baseline": {
+      "result": ".tmp/dual-product/dp1-i-baseline-root-review-a1/baseline.json",
+      "result_sha256": "f6d172759bcd3361d406c6559f7224b0175a3fa53d6d0b054bee4efbfa4b5295",
+      "source_contract_count": 114,
+      "source_hash_count": 121,
+      "contract_tests_passed": 46,
+      "known_pending_count": 5,
+      "known_pending_ids": [
+        "DP1-PIME-DIRECTED-EXIT-04",
+        "DP1-PIME-REGISTRY-05",
+        "DP1-PIME-TRANSACTION-06",
+        "DP1-PIME-COMPILER-INPUT-07",
+        "DP1-PIME-RECEIPT-08"
+      ],
+      "dp1_full_implementation_passed": false,
+      "dp2_physical_acceptance_passed": false
+    }
+  },
+  "source_sha256": {
+    "tools/dual-product/rime-pime-transaction-engine.ps1": "7e3e565981b8b5a2d695855597dc201ebd863e35809095cd301f97304e3cd68b",
+    "tools/dual-product/test-rime-pime-transaction-replay-model.ps1": "5559035b60270dc12f08b71cc08e41e4ae09459fcc1a41e305707c351b811daf",
+    "tools/dual-product/rime-pime-fixture-transaction-journal.ps1": "8360763160873b6252b6253254bfaaedfb717f814cd9b831e34eaf22a8800e1b",
+    "tools/dual-product/rime-pime-fixture-transaction-journal.psm1": "92ebd2043e2cd987cc4131bcf90d79b59aadfa883c1be56265f79c62bbcf2c1b",
+    "tools/dual-product/test-rime-pime-fixture-transaction-journal.ps1": "1c9c48cd7cd990ae770bb415f8fb47a9699eebc9bdf8dd7d7a062114c764dcdd",
+    "tools/dual-product/contract.json": "d83f5d3dc7223650662d5b034cbc0980a239949394b37f0087f8e7eada0442c1",
+    "tools/dual-product/baseline.py": "c86f6f94200e978668d3f43b1877c2ae88e6315a34f63234ef85aadebb79b522",
+    "tools/dual-product/test_baseline.py": "95afc8a57061b8ec384749f54e0c5b59de0bcd31e3c4898c6bdd63472588df7c",
+    ".github/workflows/ci.yaml": "88a129a111b78318750592120a5e18724d947d1d6e72cd5f2429b35a5275e867",
+    "docs/project/YIME_DUAL_PRODUCT_DP1_I_FIXTURE_TRANSACTION_JOURNAL_2026-09-06.md": "0332477265a4ff7ebd748af4452ae009b439d5b8885514d58b8dde762059202b"
+  },
+  "carried_dp1_h_state": {
+    "canonical_receipt_v2_sha256": "c18d1202ad78dcd6f8c1f74b34859a83489adb01fb156fa4e2546160aff5b0be",
+    "disabled_candidate_sha256": "32a7d66e06284d512675e40495b6e244a23630d2e368ac2cf73ce652e623efe2",
+    "candidate_unsigned_disabled_unexecuted_non_deliverable": true,
+    "active_same_sid_transient_tree_membership_interference_excluded": false,
+    "canonical_v2_evidence_durable": false,
+    "v2_to_v2_supersession_wired": false
+  },
+  "boundaries": {
+    "fixture_filesystem_io_executed": true,
+    "product_filesystem_mutation_executed": false,
+    "resume_executes_rollback_or_cleanup_adapter": false,
+    "real_durable_install_journal_wired": false,
+    "cross_process_lock_or_replay_passed": false,
+    "child_process_hard_crash_recovery_passed": false,
+    "real_crash_or_power_loss_recovery_passed": false,
+    "directory_metadata_durability_proven": false,
+    "concurrent_replacement_excluded": false,
+    "real_registry_snapshot_or_restore_passed": false,
+    "installed_exact_removal_passed": false,
+    "transaction_engine_or_installer_wiring_complete": false,
+    "installer_or_uninstaller_executed": false,
+    "registry_provider_used": false,
+    "product_process_accessed": false,
+    "installed_or_live_runtime_examined": false,
+    "default_input_method_changed": false,
+    "production_rime_pime_touched": false,
+    "production_user_data_read_or_written": false,
+    "installed_yimecore_local12_touched": false,
+    "hard_blocks_remain": true
+  },
+  "next_required_evidence": [
+    "Close the DP1-H same-SID transient NSIS tree-membership gap.",
+    "Move canonical-v2 dependencies to a durable content-addressed evidence root and implement failure-recoverable v2-to-v2 supersession.",
+    "Add a restricted real transaction adapter only after those prerequisites, then prove rollback and cleanup from an independent process restart.",
+    "Add child hard-crash, cross-process lock and replay, torn-write, and explicit directory-durability tests without claiming real power-loss recovery prematurely.",
+    "Wire manifest-driven removal into protected installed ownership and close check-to-delete concurrency, reparse, hardlink, elevation, signing, registered-host, live-host, reboot, and coexistence gates under a separate authorized handoff."
+  ],
+  "dp1_full_implementation_passed": false,
+  "dp2_physical_acceptance_passed": false,
+  "dp3_selector_acceptance_passed": false,
+  "l5_final_confirmation_complete": false,
+  "l6_sealing_complete": false
+}
