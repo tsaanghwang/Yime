@@ -208,7 +208,12 @@ function Read-RimePimeSealedJson([string]$Path,[string]$Context) {
         finally{$sha.Dispose()}
         if ($actual -cne $expected) { throw "$Context SHA-256 sidecar does not match its JSON bytes." }
         $strictUtf8=New-Object Text.UTF8Encoding($false,$true)
-        try{$jsonText=$strictUtf8.GetString([byte[]]$leases.JsonBytes);$value=$jsonText|ConvertFrom-Json}
+        try{
+            $jsonText=$strictUtf8.GetString([byte[]]$leases.JsonBytes)
+            if((Get-Command ConvertFrom-Json).Parameters.ContainsKey('DateKind')){
+                $value=$jsonText|ConvertFrom-Json -DateKind String
+            }else{$value=$jsonText|ConvertFrom-Json}
+        }
         catch{throw "Invalid $Context JSON or UTF-8: $($_.Exception.Message)"}
         return [pscustomobject]@{Value=$value;Digest=$actual;Path=$leases.Path;Sidecar=$leases.Sidecar}
     }finally{
@@ -254,21 +259,22 @@ function Write-RimePimePackagePlan(
     return Read-RimePimePackagePlan -RepoRoot $root -PlanPath $plan -VerifyArtifacts
 }
 
-function Read-RimePimePackagePlan(
-    [string]$RepoRoot,
-    [string]$PlanPath,
-    [switch]$VerifyArtifacts
-) {
-    $root=[IO.Path]::GetFullPath($RepoRoot).TrimEnd('\')
-    $planFull=[IO.Path]::GetFullPath($PlanPath)
-    if (-not $planFull.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)) {
-        throw 'Package plan must stay inside the repository root.'
-    }
-    $sealed=Read-RimePimeSealedJson $planFull 'package plan'
-    $plan=$sealed.Value
+function Assert-RimePimePackagePlanValue {
+    param([Parameter(Mandatory)]$Plan)
+    $plan=$Plan
     Assert-RimePimeExactProperties $plan @(
         'schema_version','product','closure_scope','architectures','hash_algorithm','sealed_at_utc','artifacts') 'package plan'
-    if ([string]$plan.schema_version -cne 'yime-rime-pime-package-plan-v1' -or
+    $architectures=@($plan.architectures)
+    if ($plan.schema_version -isnot [string] -or
+        $plan.product -isnot [string] -or
+        $plan.closure_scope -isnot [string] -or
+        $plan.hash_algorithm -isnot [string] -or
+        $plan.sealed_at_utc -isnot [string] -or
+        $plan.architectures -isnot [Array] -or $architectures.Count -ne 2 -or
+        $plan.artifacts -isnot [Array] -or
+        $architectures[0] -isnot [string] -or $architectures[1] -isnot [string] -or
+        [string]$architectures[0] -cne 'x86' -or [string]$architectures[1] -cne 'x64' -or
+        [string]$plan.schema_version -cne 'yime-rime-pime-package-plan-v1' -or
         [string]$plan.product -cne 'rime-pime' -or
         [string]$plan.closure_scope -cne 'declared-packaged-product-pe-inputs-only-not-installed-payload' -or
         [string]$plan.hash_algorithm -cne 'sha256' -or
@@ -281,9 +287,13 @@ function Read-RimePimePackagePlan(
     $seen=[Collections.Generic.Dictionary[string,object]]::new([StringComparer]::OrdinalIgnoreCase)
     foreach ($row in $rows) {
         Assert-RimePimeExactProperties $row @('path','architecture','size','sha256') 'package-plan artifact'
+        if ($row.path -isnot [string] -or $row.architecture -isnot [string] -or $row.sha256 -isnot [string]) {
+            throw 'Package-plan artifact strings have invalid JSON types.'
+        }
         $relative=ConvertTo-RimePimePackagePath ([string]$row.path)
         if ($seen.ContainsKey($relative)) { throw "Case-folded duplicate package artifact: $relative" }
-        if (-not ($row.size -is [int] -or $row.size -is [long]) -or [long]$row.size -lt 0 -or
+        $minimumPeBytes=if ([string]$row.architecture -ceq 'x86') { 122L } else { 138L }
+        if (-not ($row.size -is [int] -or $row.size -is [long]) -or [long]$row.size -lt $minimumPeBytes -or
             [string]$row.sha256 -cnotmatch '^[0-9a-f]{64}$') {
             throw "Invalid package artifact size or SHA-256: $relative"
         }
@@ -296,6 +306,28 @@ function Read-RimePimePackagePlan(
             [string]$row.architecture -cne [string]$spec.architecture) {
             throw "Package plan artifact order, path, or architecture drifted at index $i."
         }
+    }
+    return [pscustomobject]@{Plan=$plan;Specs=@($specs);Rows=@($rows)}
+}
+
+function Read-RimePimePackagePlan(
+    [string]$RepoRoot,
+    [string]$PlanPath,
+    [switch]$VerifyArtifacts
+) {
+    $root=[IO.Path]::GetFullPath($RepoRoot).TrimEnd('\')
+    $planFull=[IO.Path]::GetFullPath($PlanPath)
+    if (-not $planFull.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Package plan must stay inside the repository root.'
+    }
+    $sealed=Read-RimePimeSealedJson $planFull 'package plan'
+    $validated=Assert-RimePimePackagePlanValue $sealed.Value
+    $plan=$validated.Plan
+    $specs=@($validated.Specs)
+    $rows=@($validated.Rows)
+    for ($i=0;$i -lt $specs.Count;$i++) {
+        $spec=$specs[$i]
+        $row=$rows[$i]
         if ($VerifyArtifacts) {
             $path=Resolve-RimePimePackageFile $root $spec.path
             if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Package artifact is missing: $($spec.path)" }

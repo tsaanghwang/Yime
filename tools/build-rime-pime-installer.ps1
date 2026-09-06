@@ -304,7 +304,9 @@ try{
         -PublicationRoot (Join-Path $work 'prepared-publication')
     Test-RimePimeBuildInputLeases @($candidateLeases)
     $buildResult=[pscustomobject][ordered]@{
-        schema_version='yime-rime-pime-staged-nsis-build-result-v2';product='rime-pime';product_version=$version
+        # Tagged so pre-DP1-M validators with an open result-vN regex reject it
+        # instead of accepting a membership interval they do not validate.
+        schema_version='yime-rime-pime-staged-nsis-build-result-membership-interval-v1';product='rime-pime';product_version=$version
         package_profile='x86-x64-v1';architectures=@('x86','x64');package_plan_sha256=$package.Digest
         payload_spec_sha256=$spec.Digest;content_manifest_sha256=$stageResult.ContentManifestDigest
         content_tree_sha256=[string]$content.Manifest.content_tree_sha256;payload_nsh_sha256=$include.IncludeDigest

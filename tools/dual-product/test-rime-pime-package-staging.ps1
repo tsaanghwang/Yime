@@ -114,22 +114,34 @@ Check 'sealed-spec-builds-and-verifies-exact-copy-stage' {
 }
 
 Check 'copied-architecture-inputs-remain-bound-to-the-sealed-package-plan' {
-    $case=New-StagingCase 'plan-binding-positive'
-    $stage=New-CaseStage $case
-    $content=Read-RimePimeCopiedContentManifest $stage.ContentManifestPath $stage.ContentManifestDigest
-    $row=@($content.Manifest.files|Where-Object{[string]$_.source_path -ceq 'go-backend/build/go-backend/app.bin'})[0]
+    $specs=@(Get-RimePimePackageArtifactSpecs @('x86','x64'))
+    $artifacts=[Collections.Generic.List[object]]::new()
+    $files=[Collections.Generic.List[object]]::new()
+    for($i=0;$i -lt $specs.Count;$i++){
+        $size=[long](1001+$i);$digest=('{0:x64}' -f (1001+$i))
+        $artifacts.Add([pscustomobject][ordered]@{
+            path=[string]$specs[$i].path;architecture=[string]$specs[$i].architecture;size=$size;sha256=$digest
+        })
+        $files.Add([pscustomobject][ordered]@{
+            source_path=[string]$specs[$i].path;architecture=[string]$specs[$i].architecture;bytes=$size;sha256=$digest
+        })
+    }
     $package=[pscustomobject]@{
         Digest=('1'*64)
-        Plan=[pscustomobject]@{artifacts=@([pscustomobject]@{
-            path=[string]$row.source_path;architecture='x64';size=[long]$row.bytes;sha256=[string]$row.sha256
-        })}
+        Plan=[pscustomobject][ordered]@{
+            schema_version='yime-rime-pime-package-plan-v1';product='rime-pime'
+            closure_scope='declared-packaged-product-pe-inputs-only-not-installed-payload'
+            architectures=@('x86','x64');hash_algorithm='sha256';sealed_at_utc='2026-09-07T00:00:00.0000000Z'
+            artifacts=@($artifacts)
+        }
     }
-    $verified=Assert-RimePimePackagePlanStageBindings -Package $package -ContentManifest $content.Manifest
-    Assert-True ($verified.passed -and $verified.package_plan_artifact_count -eq 1 -and
-        $verified.matching_stage_binding_count -eq 1) 'Package-plan to stage binding counts are wrong.'
+    $content=[pscustomobject]@{package_plan_sha256=('1'*64);files=@($files)}
+    $verified=Assert-RimePimePackagePlanStageBindings -Package $package -ContentManifest $content
+    Assert-True ($verified.passed -and $verified.package_plan_artifact_count -eq 20 -and
+        $verified.matching_stage_binding_count -eq 20) 'Package-plan to stage binding counts are wrong.'
     $package.Plan.artifacts[0].sha256=('2'*64)
     Assert-Rejected {
-        Assert-RimePimePackagePlanStageBindings -Package $package -ContentManifest $content.Manifest
+        Assert-RimePimePackagePlanStageBindings -Package $package -ContentManifest $content
     } '*differs from its sealed package-plan artifact*'
 }
 

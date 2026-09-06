@@ -42,7 +42,7 @@ function New-PublicationCase($Name) {
     try { $null=Publish-RimePimePackageReceiptV2 $p $case.V1Path } finally { Close-RimePimePackageReceiptV2Preparation $p }
     $history=Join-Path $case.V2Output 'historical\package-build-receipt-v1.json'
     $next=Join-Path (Split-Path -Parent $case.Root) 'next.json'
-    $value=[IO.File]::ReadAllText($case.V1Path)|ConvertFrom-Json
+    $value=ConvertFrom-TestJson ([IO.File]::ReadAllText($case.V1Path))
     $value.sealed_at_utc='2031-02-03T04:05:06.0000000Z';$null=Seal $value $next
     $case|Add-Member -NotePropertyName Next -NotePropertyValue $next
     $case|Add-Member -NotePropertyName History -NotePropertyValue $history
@@ -58,6 +58,32 @@ function Stop-PublicationAtIntent($Case) {
 }
 function Get-TestReceiptObjectPath($Root,[string]$Digest) {
     return Join-Path $Root ('installer\receipt-evidence\sha256\'+$Digest.Substring(0,2)+'\'+$Digest+'.blob')
+}
+function Save-TestReceiptEvidence($Case,[string]$ReceiptPath) {
+    $module=Get-Module rime-pime-package-receipt-v2
+    return & $module {
+        param($Root,$Path,$History)
+        Save-RimePimeReceiptEvidence $Root $Path $History
+    } $Case.Root $ReceiptPath $Case.History
+}
+function Write-TestPendingPublication($Case,[string]$NextReceiptPath) {
+    $module=Get-Module rime-pime-package-receipt-v2
+    return & $module {
+        param($Root,$Canonical,$Next,$History)
+        $current=Read-RimePimePackageBuildReceiptV2 $Root $Canonical
+        $old=Save-RimePimeReceiptEvidence $Root $Canonical $History
+        $new=Save-RimePimeReceiptEvidence $Root $Next $History
+        $pending=Join-Path $Root 'installer\receipt-evidence\pending.json'
+        $intent=[ordered]@{
+            schema_version='yime-rime-pime-retained-publication-v1'
+            previous=$current.Digest
+            previous_retained=$old.Retained.Digest
+            next=$new.Retained.Digest
+            installer_path=$new.Retained.Receipt.installer.path
+        }
+        Write-RimePimeReceiptAtomicBytes $pending ([Text.UTF8Encoding]::new($false).GetBytes((ConvertTo-RimePimeStageCanonicalJson $intent)+"`n"))
+        return [pscustomobject]@{Path=$pending;Intent=$intent}
+    } $Case.Root $Case.V1Path $NextReceiptPath $Case.History
 }
 Check 'module-exports-only-six-explicit-receipt-apis' {
     $expected=@(
@@ -130,6 +156,57 @@ Check 'stale-cas-and-v1-downgrade-rejected' {
     Assert-Rejected { Publish-RimePimePackageReceiptV2Supersession $c.Root $c.Next ('0'*64) $c.History } '*Stale*'
     Assert-Rejected { Publish-RimePimePackageReceiptV2Supersession $c.Root $c.History $c.Before $c.History }
     Assert-True ((Hash $c.V1Path) -ceq $c.Before) 'Rejected update changed receipt.'
+}
+Check 'changed-successor-with-legacy-v2-build-evidence-is-rejected' {
+    $c=New-PublicationCase 'legacy-next'
+    $null=Convert-ReceiptFileToHistoricalV2 $c $c.Next 'legacy-next-build.json'
+    Assert-Rejected { Publish-RimePimePackageReceiptV2Supersession $c.Root $c.Next $c.Before $c.History } '*membership-interval build evidence*'
+    Assert-True ((Hash $c.V1Path) -ceq $c.Before) 'Rejected legacy successor changed the canonical receipt.'
+}
+Check 'pending-resume-rejects-changed-legacy-v2-successor' {
+    $c=New-PublicationCase 'legacy-resume'
+    $null=Convert-ReceiptFileToHistoricalV2 $c $c.Next 'legacy-resume-build.json'
+    $pending=Write-TestPendingPublication $c $c.Next
+    Assert-True ($pending.Intent.next -cne $pending.Intent.previous_retained) 'Fixture did not create a changed successor intent.'
+    Assert-Rejected { Resume-RimePimePackageReceiptV2Publication $c.Root } '*membership-interval build evidence*'
+    Assert-True ((Hash $c.V1Path) -ceq $c.Before) 'Rejected legacy recovery changed the canonical receipt.'
+    Assert-True (Test-Path -LiteralPath $pending.Path -PathType Leaf) 'Rejected legacy recovery removed its pending evidence.'
+}
+Check 'pending-receipt-switched-resume-rejects-changed-legacy-v2-successor-without-writing' {
+    $c=New-PublicationCase 'legacy-resume-receipt'
+    $null=Convert-ReceiptFileToHistoricalV2 $c $c.Next 'legacy-resume-receipt-build.json'
+    $pending=Write-TestPendingPublication $c $c.Next
+    Assert-True ($pending.Intent.next -cne $pending.Intent.previous_retained) 'Fixture did not create a changed successor intent.'
+    $nextObject=Get-TestReceiptObjectPath $c.Root $pending.Intent.next
+    [IO.File]::WriteAllBytes($c.V1Path,[IO.File]::ReadAllBytes($nextObject))
+    $receiptBefore=[IO.File]::ReadAllBytes($c.V1Path)
+    $sidecarBefore=[IO.File]::ReadAllBytes($c.V1Path+'.sha256')
+    Assert-Rejected { Resume-RimePimePackageReceiptV2Publication $c.Root } '*membership-interval build evidence*'
+    Assert-True ([Convert]::ToBase64String([IO.File]::ReadAllBytes($c.V1Path)) -ceq [Convert]::ToBase64String($receiptBefore)) 'Rejected legacy recovery rewrote the switched receipt leaf.'
+    Assert-True ([Convert]::ToBase64String([IO.File]::ReadAllBytes($c.V1Path+'.sha256')) -ceq [Convert]::ToBase64String($sidecarBefore)) 'Rejected legacy recovery rewrote the old sidecar leaf.'
+    Assert-True (Test-Path -LiteralPath $pending.Path -PathType Leaf) 'Rejected legacy recovery removed its pending evidence.'
+}
+Check 'tagged-current-summary-cannot-mask-bound-legacy-build' {
+    $c=New-PublicationCase 'legacy-masked'
+    $null=Convert-ReceiptFileToHistoricalV2 $c $c.Next 'legacy-masked-build.json'
+    $masked=ConvertFrom-TestJson ([IO.File]::ReadAllText($c.Next))
+    $masked.disabled_build.schema_version=$currentBuildSchema
+    $null=Seal $masked $c.Next
+    Assert-Rejected { Read-RimePimePackageBuildReceiptV2 $c.Root $c.Next } '*open or incomplete schema*'
+    Assert-Rejected { Publish-RimePimePackageReceiptV2Supersession $c.Root $c.Next $c.Before $c.History } '*open or incomplete schema*'
+    Assert-True ((Hash $c.V1Path) -ceq $c.Before) 'Masked legacy successor changed the canonical receipt.'
+}
+Check 'same-digest-retention-only-historical-v2-remains-readable' {
+    $c=New-PublicationCase 'legacy-same'
+    $null=Convert-ReceiptFileToHistoricalV2 $c $c.Next 'legacy-same-build.json'
+    $saved=Save-TestReceiptEvidence $c $c.Next
+    $legacyDigest=Seal $saved.Retained.Receipt $c.V1Path
+    Assert-True ($legacyDigest -ceq $saved.Retained.Digest) 'Fixture did not install the exact retained historical receipt.'
+    $before=Hash $c.V1Path
+    $read=Read-RimePimePackageBuildReceiptV2 $c.Root $c.V1Path
+    Assert-True ([string]$read.Receipt.disabled_build.schema_version -ceq $legacyBuildSchema) 'Historical retained receipt was not readable.'
+    $again=Publish-RimePimePackageReceiptV2Supersession $c.Root $c.V1Path $before $c.History
+    Assert-True ($again.Digest -ceq $before) 'Same-digest historical retention-only publication changed bytes.'
 }
 Check 'corrupt-retained-object-fails-closed' {
     $c=New-PublicationCase 'corrupt'
@@ -211,7 +288,7 @@ foreach ($bad in @('duplicate','case-duplicate','escaped-duplicate','comment','t
 Check 'intent-rejects-non-string-member' {
     $c=New-PublicationCase 'intent-type'
     $pending=Stop-PublicationAtIntent $c
-    $intent=[IO.File]::ReadAllText($pending)|ConvertFrom-Json
+    $intent=ConvertFrom-TestJson ([IO.File]::ReadAllText($pending))
     $intent.installer_path=@([string]$intent.installer_path)
     [IO.File]::WriteAllText($pending,(ConvertTo-Json $intent -Compress),[Text.UTF8Encoding]::new($false))
     $before=Hash $c.V1Path
@@ -256,7 +333,7 @@ Check 'reader-rejects-resealed-bound-build-execution-claim' {
     $c=New-PublicationCase 'bound-build'
     $r=(Read-RimePimePackageBuildReceiptV2 $c.Root $c.Next).Receipt
     $path=Join-Path $c.Root $r.disabled_build.result_path
-    $build=[IO.File]::ReadAllText($path)|ConvertFrom-Json
+    $build=ConvertFrom-TestJson ([IO.File]::ReadAllText($path))
     $build.installer_executed=$true
     $r.disabled_build.result_sha256=Seal $build $path
     $null=Seal $r $c.Next

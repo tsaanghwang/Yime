@@ -373,9 +373,15 @@ class OwnershipTests(unittest.TestCase):
         self.assertFalse(status["rime_pime_nsis_non_os_compiler_input_closure"])
         self.assertFalse(status["rime_pime_full_nsis_toolchain_input_closure"])
         self.assertTrue(status["rime_pime_canonical_receipt_v2_source_contract_present"])
+        self.assertTrue(status["rime_pime_legacy_build_v2_read_compatibility_wired"])
+        self.assertTrue(status["rime_pime_current_membership_interval_build_admission_wired"])
+        self.assertEqual(status["rime_pime_current_build_evidence_schema"],
+                         "yime-rime-pime-staged-nsis-build-result-membership-interval-v1")
         self.assertTrue(status["rime_pime_canonical_v2_binds_postbuild_source_anchors_present"])
         self.assertFalse(status["rime_pime_canonical_receipt_v2_published_by_baseline"])
         self.assertFalse(status["rime_pime_canonical_receipt_v2_evidence_durable"])
+        self.assertFalse(status["rime_pime_actual_canonical_migrated_to_current_build_evidence"])
+        self.assertFalse(status["rime_pime_installer_identity_replacement_transaction_wired"])
         self.assertTrue(status["rime_pime_v2_to_v2_supersession_wired"])
         self.assertTrue(status["rime_pime_retained_receipt_ci_ps5_ps7_present"])
         self.assertTrue(status["rime_pime_nsis_compiler_stage_membership_detection_rejection_wired"])
@@ -469,6 +475,53 @@ class OwnershipTests(unittest.TestCase):
             self.assertIn(old, sources[path])
             sources[path] = sources[path].replace(old, new, 1)
             with self.subTest(path=path), self.assertRaises(ValueError):
+                subject.transaction_source_status(sources)
+
+    def test_dp1m_current_build_evidence_admission_fails_closed(self):
+        cases = (
+            ("tools/build-rime-pime-installer.ps1",
+             "yime-rime-pime-staged-nsis-build-result-membership-interval-v1",
+             "yime-rime-pime-staged-nsis-build-result-v3"),
+            ("tools/dual-product/rime-pime-package-receipt-v2.ps1",
+             "function Assert-RimePimeReceiptV2CompilerMembershipInterval",
+             "function Assert-RemovedCompilerMembershipInterval"),
+            ("tools/dual-product/rime-pime-package-receipt-v2.ps1",
+             "New receipt preparation requires current membership-interval build evidence; legacy evidence is read-only.",
+             "legacy evidence accepted"),
+            ("tools/dual-product/rime-pime-package-receipt-v2.ps1",
+             "(Split-Path -Parent $buildStage) -ine $allowedStageParent",
+             "(Split-Path -Parent $buildStage) -ieq $allowedStageParent"),
+            ("tools/dual-product/rime-pime-package-receipt-v2.ps1",
+             "[int]$Build.package_plan_artifact_count -ne [int]$Build.staged_pe_unique_artifact_count",
+             "[int]$Build.package_plan_artifact_count -ne [int]$Build.staged_pe_path_binding_count"),
+            ("tools/dual-product/rime-pime-package-receipt-v2.ps1",
+             "Current membership-interval build evidence has an invalid prebuild leased-input count.",
+             "Current membership-interval build evidence accepts any leased-input count."),
+            ("tools/dual-product/rime-pime-package-receipt-v2.ps1",
+             "Current build publication paths contradict the actual predecessor identity.",
+             "Current build publication paths trust self-reported predecessor identity."),
+            ("tools/dual-product/rime-pime-package-receipt-v2.ps1",
+             "Test-RimePimeReceiptV2Boolean $manifest.Value.final_payload_closure $false",
+             "[bool]$manifest.Value.final_payload_closure"),
+            ("tools/dual-product/rime-pime-package-receipt-v2.ps1",
+             "Open-RimePimeReceiptV2FileLease $logicPath ([string]$row.sha256)",
+             "Write-Output $logicPath ([string]$row.sha256)"),
+            ("tools/dual-product/rime-pime-package-receipt-v2.ps1",
+             "Current build evidence contradicts the leased repository NSIS toolchain lock.",
+             "Current build evidence trusts a self-reported NSIS toolchain lock."),
+            ("tools/dual-product/rime-pime-receipt-v2-store.ps1",
+             "Changed receipt publication requires current membership-interval build evidence.",
+             "changed legacy receipt accepted"),
+            ("tools/dual-product/rime-pime-receipt-v2-store.ps1",
+             "Changed receipt recovery requires current membership-interval build evidence.",
+             "changed legacy recovery accepted"),
+        )
+        for path, old, new in cases:
+            sources = self.maintenance_sources()
+            self.assertIn(old, sources[path])
+            sources[path] = sources[path].replace(old, new, 1)
+            with self.subTest(path=path, old=old), self.assertRaisesRegex(
+                    ValueError, "dedicated review required"):
                 subject.transaction_source_status(sources)
 
     def test_retained_receipt_wiring_requires_module_test_ci_and_exact_exports(self):
@@ -581,9 +634,9 @@ class OwnershipTests(unittest.TestCase):
         self.assertEqual(statuses["DP1-PIME-TRANSACTION-06"],
                          "fixture_journal_and_replay_source_anchors_present_real_transaction_pending")
         self.assertEqual(statuses["DP1-PIME-COMPILER-INPUT-07"],
-                         "fresh_compiler_stage_real_minimal_makensis_interval_regression_wired_full_product_rebuild_and_durable_receipt_pending")
+                         "fresh_compiler_stage_and_strict_interval_build_admission_wired_full_product_rebuild_and_durable_receipt_pending")
         self.assertEqual(statuses["DP1-PIME-RECEIPT-08"],
-                         "retained_v2_supersession_wired_canonical_migration_and_power_loss_acceptance_pending")
+                         "retained_v2_supersession_and_current_interval_admission_wired_canonical_migration_pending")
         self.assertEqual(set(statuses), {
             "DP1-PIME-DIRECTED-EXIT-04", "DP1-PIME-REGISTRY-05", "DP1-PIME-TRANSACTION-06",
             "DP1-PIME-COMPILER-INPUT-07", "DP1-PIME-RECEIPT-08",

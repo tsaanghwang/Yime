@@ -302,26 +302,19 @@ function Get-RimePimeSourceTreeFiles {
     return $result
 }
 
-function Read-RimePimeGoPayloadInventory {
-    param(
-        [Parameter(Mandatory)][string]$SourceRoot,
-        [Parameter(Mandatory)][string]$InventoryPath,
-        [string]$ExpectedDigest,
-        [switch]$VerifySourceTree
-    )
-    $source = Assert-YimePimePayloadAbsolutePath $SourceRoot
-    $inventoryFull = Get-RimePimeStageFullPath $source $InventoryPath
-    $sealed = Read-RimePimeSealedJson $inventoryFull 'Go payload inventory'
-    if ($ExpectedDigest -and ([string]$sealed.Digest -cne [string]$ExpectedDigest)) {
-        throw 'Go payload inventory does not match the externally supplied digest.'
-    }
-    $inventory = $sealed.Value
+function Assert-RimePimeGoPayloadInventoryValue {
+    param([Parameter(Mandatory)]$Inventory)
+    $inventory=$Inventory
     Assert-YimePimePayloadProperties $inventory @(
         'schema_version','source_root','destination_root','selection_policy','files') 'Go payload inventory'
+    foreach($name in @('schema_version','source_root','destination_root','selection_policy')){
+        if($inventory.$name -isnot [string]){throw "Go payload inventory has non-string $name."}
+    }
     $sourceTree = Assert-RimePimeStagePathWithinLimits ([string]$inventory.source_root)
     $destinationTree = Assert-RimePimeStagePathWithinLimits ([string]$inventory.destination_root)
     $files = @($inventory.files)
-    if ([string]$inventory.schema_version -cne 'yime-rime-pime-go-payload-inventory-v1' -or
+    if ($inventory.files -isnot [Array] -or
+        [string]$inventory.schema_version -cne 'yime-rime-pime-go-payload-inventory-v1' -or
         $sourceTree -cne 'go-backend/build/go-backend' -or $destinationTree -cne 'go-backend' -or
         [string]$inventory.selection_policy -cne 'exact-versioned-path-list-v1' -or
         $files.Count -lt 1 -or $files.Count -gt $script:RimePimeStageLimits.max_files) {
@@ -340,20 +333,41 @@ function Read-RimePimeGoPayloadInventory {
         $previous = $relative
         $sourcePaths.Add($sourceTree + '/' + $relative)
     }
+    return [pscustomobject]@{
+        Inventory=$inventory;SourceRoot=$sourceTree;DestinationRoot=$destinationTree
+        RelativeFiles=@($files);SourcePaths=@($sourcePaths)
+    }
+}
+
+function Read-RimePimeGoPayloadInventory {
+    param(
+        [Parameter(Mandatory)][string]$SourceRoot,
+        [Parameter(Mandatory)][string]$InventoryPath,
+        [string]$ExpectedDigest,
+        [switch]$VerifySourceTree
+    )
+    $source = Assert-YimePimePayloadAbsolutePath $SourceRoot
+    $inventoryFull = Get-RimePimeStageFullPath $source $InventoryPath
+    $sealed = Read-RimePimeSealedJson $inventoryFull 'Go payload inventory'
+    if ($ExpectedDigest -and ([string]$sealed.Digest -cne [string]$ExpectedDigest)) {
+        throw 'Go payload inventory does not match the externally supplied digest.'
+    }
+    $validated=Assert-RimePimeGoPayloadInventoryValue $sealed.Value
     if ($VerifySourceTree) {
-        $actual = @(Get-RimePimeSourceTreeFiles $source $sourceTree)
-        if ($actual.Count -ne $sourcePaths.Count) {
-            throw "Go payload source tree differs from the exact versioned inventory: expected $($sourcePaths.Count), found $($actual.Count)."
+        $actual = @(Get-RimePimeSourceTreeFiles $source $validated.SourceRoot)
+        if ($actual.Count -ne $validated.SourcePaths.Count) {
+            throw "Go payload source tree differs from the exact versioned inventory: expected $($validated.SourcePaths.Count), found $($actual.Count)."
         }
         for ($i=0; $i -lt $actual.Count; $i++) {
-            if ([string]$actual[$i] -cne [string]$sourcePaths[$i]) {
+            if ([string]$actual[$i] -cne [string]$validated.SourcePaths[$i]) {
                 throw "Go payload source tree differs from the exact versioned inventory at index ${i}."
             }
         }
     }
     return [pscustomobject]@{
         Inventory=$inventory;Digest=[string]$sealed.Digest;Path=[string]$sealed.Path;Sidecar=[string]$sealed.Sidecar
-        SourceRoot=$sourceTree;DestinationRoot=$destinationTree;RelativeFiles=@($files);SourcePaths=@($sourcePaths)
+        SourceRoot=$validated.SourceRoot;DestinationRoot=$validated.DestinationRoot
+        RelativeFiles=@($validated.RelativeFiles);SourcePaths=@($validated.SourcePaths)
     }
 }
 
@@ -731,11 +745,12 @@ function Assert-RimePimePackagePlanStageBindings {
         [Parameter(Mandatory)]$Package,
         [Parameter(Mandatory)]$ContentManifest
     )
+    $validatedPlan=Assert-RimePimePackagePlanValue $Package.Plan
     if ([string]$ContentManifest.package_plan_sha256 -cne [string]$Package.Digest) {
         throw 'Copied stage names a different package plan.'
     }
     $planBySource = [Collections.Generic.Dictionary[string,object]]::new([StringComparer]::Ordinal)
-    foreach ($artifact in @($Package.Plan.artifacts)) {
+    foreach ($artifact in @($validatedPlan.Rows)) {
         $sourcePath = Assert-RimePimeStagePathWithinLimits ([string]$artifact.path)
         if ($planBySource.ContainsKey($sourcePath)) {
             throw "Package plan contains a duplicate artifact path: $sourcePath"
@@ -820,21 +835,24 @@ function Copy-RimePimeStageFile {
     return $copied
 }
 
-function Read-RimePimeCopiedContentManifest {
-    param(
-        [Parameter(Mandatory)][string]$ManifestPath,
-        [Parameter(Mandatory)][string]$ExpectedDigest
-    )
-    if ($ExpectedDigest -cnotmatch '^[0-9a-f]{64}$') { throw 'Expected copied-content digest is invalid.' }
-    $sealed = Read-RimePimeSealedJson $ManifestPath 'copied-content manifest'
-    if ([string]$sealed.Digest -cne $ExpectedDigest) { throw 'Copied-content manifest does not match its external digest.' }
-    $manifest = $sealed.Value
+function Assert-RimePimeCopiedContentManifestValue {
+    param([Parameter(Mandatory)]$Manifest)
+    $manifest = $Manifest
     Assert-YimePimePayloadProperties $manifest @(
         'schema_version','product','product_version','package_profile','architectures','phase','hash_algorithm',
         'directory_policy','package_plan_sha256','payload_spec_sha256','content_tree_sha256','directories','files',
         'pending_generated_outputs','final_payload_closure') 'copied-content manifest'
     $architectures=@($manifest.architectures)
-    if ([string]$manifest.schema_version -cne $script:RimePimeStageContentSchema -or
+    if ($manifest.schema_version -isnot [string] -or $manifest.product -isnot [string] -or
+        $manifest.product_version -isnot [string] -or $manifest.package_profile -isnot [string] -or
+        $manifest.phase -isnot [string] -or $manifest.hash_algorithm -isnot [string] -or
+        $manifest.directory_policy -isnot [string] -or $manifest.package_plan_sha256 -isnot [string] -or
+        $manifest.payload_spec_sha256 -isnot [string] -or $manifest.content_tree_sha256 -isnot [string] -or
+        $manifest.architectures -isnot [Array] -or
+        $architectures.Count -ne 2 -or $architectures[0] -isnot [string] -or $architectures[1] -isnot [string] -or
+        $manifest.files -isnot [Array] -or $manifest.directories -isnot [Array] -or
+        $manifest.pending_generated_outputs -isnot [Array] -or
+        [string]$manifest.schema_version -cne $script:RimePimeStageContentSchema -or
         [string]$manifest.product -cne 'rime-pime' -or
         [string]$manifest.product_version -notmatch '^[0-9A-Za-z][0-9A-Za-z.+-]{0,63}$' -or
         [string]$manifest.package_profile -cne 'x86-x64-v1' -or
@@ -861,6 +879,9 @@ function Read-RimePimeCopiedContentManifest {
         Assert-YimePimePayloadProperties $row @(
             'stage_scope','path','bytes','sha256','owner_class','architecture','install_scope','origin_class','source_path') `
             'copied-content file record'
+        foreach($name in @('stage_scope','path','sha256','owner_class','architecture','install_scope','origin_class','source_path')){
+            if($row.$name -isnot [string]){throw "Copied-content file record has non-string $name."}
+        }
         $path=Assert-RimePimeStagePathWithinLimits ([string]$row.path)
         $key=[string]$row.stage_scope+'/'+$path
         if([string]$row.stage_scope -notin @('payload','bootstrap') -or -not (Test-RimePimeStageInteger $row.bytes) -or
@@ -887,6 +908,9 @@ function Read-RimePimeCopiedContentManifest {
     foreach($row in $directories){
         Assert-YimePimePayloadProperties $row @('stage_scope','path','owner_class','removal_policy','install_scope') `
             'copied-content directory record'
+        foreach($name in @('stage_scope','path','owner_class','removal_policy','install_scope')){
+            if($row.$name -isnot [string]){throw "Copied-content directory record has non-string $name."}
+        }
         $path=Assert-RimePimeStagePathWithinLimits ([string]$row.path)
         $key=[string]$row.stage_scope+'/'+$path
         if([string]$row.stage_scope -notin @('payload','bootstrap') -or
@@ -923,6 +947,9 @@ function Read-RimePimeCopiedContentManifest {
     Assert-YimePimePayloadProperties $generated @(
         'destination_path','stage_scope','generator_id','identity_policy_id','owner_class','architecture','install_scope') `
         'copied-content pending generated output'
+    foreach($name in @('destination_path','stage_scope','generator_id','identity_policy_id','owner_class','architecture','install_scope')){
+        if($generated.$name -isnot [string]){throw "Copied-content pending generated output has non-string $name."}
+    }
     $generatedPath=Assert-RimePimeStagePathWithinLimits ([string]$generated.destination_path)
     $generatedKey=[string]$generated.stage_scope+'/'+$generatedPath
     if($generatedPath -cne 'Uninstall.exe' -or [string]$generated.stage_scope -cne 'payload' -or
@@ -935,7 +962,199 @@ function Read-RimePimeCopiedContentManifest {
     }
     $computed=Get-RimePimeStageContentDigest $directories $files
     if($computed -cne [string]$manifest.content_tree_sha256){throw 'Copied-content tree digest is invalid.'}
+    return $manifest
+}
+
+function Read-RimePimeCopiedContentManifest {
+    param(
+        [Parameter(Mandatory)][string]$ManifestPath,
+        [Parameter(Mandatory)][string]$ExpectedDigest
+    )
+    if ($ExpectedDigest -cnotmatch '^[0-9a-f]{64}$') { throw 'Expected copied-content digest is invalid.' }
+    $sealed = Read-RimePimeSealedJson $ManifestPath 'copied-content manifest'
+    if ([string]$sealed.Digest -cne $ExpectedDigest) { throw 'Copied-content manifest does not match its external digest.' }
+    $manifest = Assert-RimePimeCopiedContentManifestValue $sealed.Value
     return [pscustomobject]@{Manifest=$manifest;Digest=$sealed.Digest;Path=$sealed.Path;Sidecar=$sealed.Sidecar}
+}
+
+function Assert-RimePimeStageSpecManifestBinding {
+    param(
+        [Parameter(Mandatory)]$Spec,
+        [Parameter(Mandatory)]$Manifest,
+        [Parameter(Mandatory)]$PackagePlan,
+        [Parameter(Mandatory)]$GoPayloadInventory,
+        [Parameter(Mandatory)][string]$GoPayloadInventoryDigest
+    )
+    $null=Assert-RimePimeCopiedContentManifestValue $Manifest
+    $validatedPlan=Assert-RimePimePackagePlanValue $PackagePlan
+    $inventory=Assert-RimePimeGoPayloadInventoryValue $GoPayloadInventory
+    if($GoPayloadInventoryDigest -cnotmatch '^[0-9a-f]{64}$'){
+        throw 'Go payload inventory digest is invalid.'
+    }
+    Assert-YimePimePayloadProperties $Spec @(
+        'schema_version','product','product_version','package_profile','architectures','phase',
+        'hash_algorithm','directory_policy','limits','package_plan_sha256','source_trees',
+        'directories','copy_files','generated_outputs') 'payload stage spec'
+    $architectures=@($Spec.architectures)
+    foreach($name in @('schema_version','product','product_version','package_profile','phase','hash_algorithm','directory_policy','package_plan_sha256')){
+        if($Spec.$name -isnot [string]){throw "Payload stage spec has non-string $name."}
+    }
+    if($Spec.architectures -isnot [Array] -or $architectures.Count -ne 2 -or
+        $architectures[0] -isnot [string] -or $architectures[1] -isnot [string] -or
+        $Spec.source_trees -isnot [Array] -or $Spec.directories -isnot [Array] -or
+        $Spec.copy_files -isnot [Array] -or $Spec.generated_outputs -isnot [Array] -or
+        [string]$Spec.schema_version -cne $script:RimePimeStageSpecSchema -or
+        [string]$Spec.product -cne 'rime-pime' -or [string]$Spec.product_version -cne [string]$Manifest.product_version -or
+        [string]$Spec.package_profile -cne 'x86-x64-v1' -or
+        [string]$architectures[0] -cne 'x86' -or [string]$architectures[1] -cne 'x64' -or
+        [string]$Spec.phase -cne 'declared-copy-inputs-before-generated-output' -or
+        [string]$Spec.hash_algorithm -cne 'sha256' -or [string]$Spec.directory_policy -cne 'derived-nonempty-only-v1' -or
+        [string]$Spec.package_plan_sha256 -cne [string]$Manifest.package_plan_sha256){
+        throw 'Payload stage spec identity does not match its copied-content manifest.'
+    }
+    Assert-YimePimePayloadProperties $Spec.limits @(
+        'max_files','max_directories','max_total_bytes','max_file_bytes','max_path_chars','max_path_depth') 'stage limits'
+    foreach($name in @('max_files','max_directories','max_total_bytes','max_file_bytes','max_path_chars','max_path_depth')){
+        if(-not(Test-RimePimeStageInteger $Spec.limits.$name) -or
+            [long]$Spec.limits.$name -ne [long]$script:RimePimeStageLimits.$name){
+            throw "Payload stage spec changed sealed limit: $name"
+        }
+    }
+    $copyFiles=@($Spec.copy_files);$manifestFiles=@($Manifest.files)
+    if($copyFiles.Count -ne $manifestFiles.Count){throw 'Payload stage spec and copied-content manifest file sets differ.'}
+    for($i=0;$i -lt $copyFiles.Count;$i++){
+        $copy=$copyFiles[$i];$copied=$manifestFiles[$i]
+        Assert-YimePimePayloadProperties $copy @(
+            'source_path','destination_path','stage_scope','owner_class','architecture','install_scope',
+            'source_bytes','source_sha256') 'payload stage copy record'
+        foreach($name in @('source_path','destination_path','stage_scope','owner_class','architecture','install_scope','source_sha256')){
+            if($copy.$name -isnot [string]){throw "Payload stage copy record has non-string $name."}
+        }
+        if(-not(Test-RimePimeStageInteger $copy.source_bytes) -or
+            [string]$copy.source_path -cne [string]$copied.source_path -or
+            [string]$copy.destination_path -cne [string]$copied.path -or
+            [string]$copy.stage_scope -cne [string]$copied.stage_scope -or
+            [string]$copy.owner_class -cne [string]$copied.owner_class -or
+            [string]$copy.architecture -cne [string]$copied.architecture -or
+            [string]$copy.install_scope -cne [string]$copied.install_scope -or
+            [long]$copy.source_bytes -ne [long]$copied.bytes -or
+            [string]$copy.source_sha256 -cne [string]$copied.sha256){
+            throw "Payload stage spec differs from the copied-content manifest at file index $i."
+        }
+    }
+    $planByPath=[Collections.Generic.Dictionary[string,object]]::new([StringComparer]::Ordinal)
+    foreach($artifact in @($validatedPlan.Rows)){$planByPath.Add([string]$artifact.path,$artifact)}
+    $expected=[Collections.Generic.Dictionary[string,object]]::new([StringComparer]::Ordinal)
+    $addExpected={
+        param([string]$SourcePath,[string]$DestinationPath,[string]$StageScope,[string]$OwnerClass,
+            [string]$Architecture,[string]$InstallScope,$Artifact)
+        $key=$StageScope+'/'+$DestinationPath
+        if($expected.ContainsKey($key)){throw "Duplicate current package stage declaration: $key"}
+        $expected.Add($key,[pscustomobject]@{
+            source_path=$SourcePath;destination_path=$DestinationPath;stage_scope=$StageScope
+            owner_class=$OwnerClass;architecture=$Architecture;install_scope=$InstallScope;artifact=$Artifact
+        })
+    }
+    & $addExpected 'version.txt' 'version.txt' 'payload' 'metadata' 'neutral' 'installed' $null
+    & $addExpected 'backends.json' 'backends.json' 'payload' 'metadata' 'neutral' 'installed' $null
+    foreach($mapping in @(
+        @('LICENSE.txt','LICENSE.txt'),@('NOTICE.md','NOTICE.md'),@('AUTHORS.txt','AUTHORS.txt'),
+        @('THIRD_PARTY_NOTICES.md','THIRD_PARTY_NOTICES.md'),@('LGPL-2.0.txt','LGPL-2.0.txt'),
+        @('APACHE-2.0.txt','APACHE-2.0.txt'),@('json/LICENSE.MIT','NLOHMANN-JSON-MIT.txt'),
+        @('LICENSES/PIME-UPSTREAM-LICENSE.txt','PIME-UPSTREAM-LICENSE.txt'),
+        @('LICENSES/RIME-BSD-3-Clause.txt','RIME-BSD-3-Clause.txt'),
+        @('LICENSES/RIME-FROST-GPL-3.0.txt','RIME-FROST-GPL-3.0.txt'),
+        @('LICENSES/SIL-OFL-1.1.txt','SIL-OFL-1.1.txt'),@('LICENSES/UNICODE-3.0.txt','UNICODE-3.0.txt'),
+        @('LICENSES/RUST-DEPENDENCIES.md','RUST-DEPENDENCIES.md'))){
+        & $addExpected ([string]$mapping[0]) ('licenses/'+[string]$mapping[1]) 'payload' 'license' 'neutral' 'installed' $null
+    }
+    $launcher=$planByPath['build/PIMELauncher/PIMELauncher.exe']
+    & $addExpected $launcher.path 'PIMELauncher.exe' 'payload' 'runtime' 'x86' 'installed' $launcher
+    foreach($architecture in @('x86','x64')){
+        $prefix=if($architecture -ceq 'x86'){'build'}else{'build64'}
+        $service=$planByPath[$prefix+'/PIMETextService/Release/PIMETextService.dll']
+        $registration=$planByPath[$prefix+'/PIMETextService/Release/PIMERegistrationStatus.exe']
+        & $addExpected $service.path ($architecture+'/PIMETextService.dll') 'payload' 'text-service' $architecture 'installed' $service
+        & $addExpected $service.path ('PIMETextService_'+$architecture+'.dll') 'bootstrap' 'text-service' $architecture 'transient' $service
+        & $addExpected $registration.path ('PIMERegistrationStatus_'+$architecture+'.exe') 'bootstrap' 'maintenance' $architecture 'transient' $registration
+    }
+    foreach($relative in @($inventory.RelativeFiles)){
+        $source='go-backend/build/go-backend/'+[string]$relative
+        $artifact=if($planByPath.ContainsKey($source)){$planByPath[$source]}else{$null}
+        $architecture=if($null -ne $artifact){'x64'}else{'neutral'}
+        & $addExpected $source ('go-backend/'+[string]$relative) 'payload' 'backend' $architecture 'installed' $artifact
+    }
+    foreach($helper in @(
+        'rime-pime-target-user.ps1','invoke-rime-pime-target-user.ps1','rime-pime-ownership.ps1',
+        'rime-pime-directed-stop-contract.ps1','invoke-rime-pime-maintenance.ps1')){
+        & $addExpected ('tools/dual-product/'+$helper) $helper 'bootstrap' 'maintenance' 'neutral' 'transient' $null
+    }
+    if($expected.Count -ne $copyFiles.Count){throw 'Payload stage spec is not the exact current package declaration.'}
+    foreach($copy in $copyFiles){
+        $key=[string]$copy.stage_scope+'/'+[string]$copy.destination_path
+        if(-not $expected.ContainsKey($key)){throw "Unexpected payload stage copy destination: $key"}
+        $wanted=$expected[$key]
+        foreach($name in @('source_path','destination_path','stage_scope','owner_class','architecture','install_scope')){
+            if([string]$copy.$name -cne [string]$wanted.$name){throw "Payload stage copy differs from the current declaration: $key"}
+        }
+        if($null -ne $wanted.artifact -and
+            ([long]$copy.source_bytes -ne [long]$wanted.artifact.size -or
+             [string]$copy.source_sha256 -cne [string]$wanted.artifact.sha256)){
+            throw "Payload stage copy differs from the sealed package-plan artifact: $key"
+        }
+    }
+    $specDirectories=@($Spec.directories);$manifestDirectories=@($Manifest.directories)
+    if($specDirectories.Count -ne $manifestDirectories.Count){throw 'Payload stage spec and copied-content directory sets differ.'}
+    for($i=0;$i -lt $specDirectories.Count;$i++){
+        Assert-YimePimePayloadProperties $specDirectories[$i] @('stage_scope','path','owner_class','removal_policy','install_scope') `
+            'payload stage directory record'
+        foreach($name in @('stage_scope','path','owner_class','removal_policy','install_scope')){
+            if($specDirectories[$i].$name -isnot [string] -or
+                [string]$specDirectories[$i].$name -cne [string]$manifestDirectories[$i].$name){
+                throw "Payload stage spec differs from the copied-content directory set at index $i."
+            }
+        }
+    }
+    $generated=@($Spec.generated_outputs);$pending=@($Manifest.pending_generated_outputs)
+    if($generated.Count -ne 1 -or $pending.Count -ne 1){throw 'Payload stage spec lost its single pending generated output.'}
+    Assert-YimePimePayloadProperties $generated[0] @(
+        'destination_path','stage_scope','generator_id','identity_policy_id','owner_class','architecture','install_scope') `
+        'pending generated output'
+    foreach($name in @('destination_path','stage_scope','generator_id','identity_policy_id','owner_class','architecture','install_scope')){
+        if($generated[0].$name -isnot [string] -or [string]$generated[0].$name -cne [string]$pending[0].$name){
+            throw 'Payload stage spec pending output differs from the copied-content manifest.'
+        }
+    }
+    $trees=@($Spec.source_trees)
+    if($trees.Count -ne 1){throw 'Current payload stage spec must contain one exact Go payload source tree.'}
+    $tree=$trees[0]
+    Assert-YimePimePayloadProperties $tree @(
+        'source_root','destination_root','stage_scope','file_count','inventory_path','inventory_sha256') 'closed source tree record'
+    foreach($name in @('source_root','destination_root','stage_scope','inventory_path','inventory_sha256')){
+        if($tree.$name -isnot [string]){throw "Closed source tree record has non-string $name."}
+    }
+    $goFiles=@($copyFiles|Where-Object{[string]$_.source_path -clike 'go-backend/build/go-backend/*'})
+    if([string]$tree.source_root -cne 'go-backend/build/go-backend' -or
+        [string]$tree.destination_root -cne 'go-backend' -or [string]$tree.stage_scope -cne 'payload' -or
+        [string]$tree.inventory_path -cne 'tools/dual-product/rime-pime-go-payload-inventory.json' -or
+        [string]$tree.inventory_sha256 -cne $GoPayloadInventoryDigest -or
+        [string]$inventory.SourceRoot -cne [string]$tree.source_root -or
+        [string]$inventory.DestinationRoot -cne [string]$tree.destination_root -or
+        -not(Test-RimePimeStageInteger $tree.file_count) -or [int]$tree.file_count -ne $goFiles.Count -or $goFiles.Count -lt 1){
+        throw 'Current payload stage spec Go source-tree identity is invalid.'
+    }
+    if($inventory.RelativeFiles.Count -ne $goFiles.Count){
+        throw 'Current payload stage spec differs from the sealed Go payload inventory count.'
+    }
+    for($i=0;$i -lt $goFiles.Count;$i++){
+        $row=$goFiles[$i]
+        $suffix=[string]$row.source_path.Substring('go-backend/build/go-backend/'.Length)
+        if([string]$inventory.RelativeFiles[$i] -cne $suffix -or
+            [string]$row.destination_path -cne ('go-backend/'+$suffix)){
+            throw 'Current payload stage spec Go source-tree mapping is not position preserving.'
+        }
+    }
+    return [pscustomobject]@{Spec=$Spec;CopyFileCount=$copyFiles.Count;SourceTreeFileCount=$goFiles.Count;DeclarationCount=$expected.Count}
 }
 
 function Get-RimePimeCopiedStageSnapshot {

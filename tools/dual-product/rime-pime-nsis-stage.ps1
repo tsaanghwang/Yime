@@ -306,6 +306,68 @@ function Write-RimePimeNsisStageInclude {
     }
 }
 
+function Assert-RimePimeNsisStageIncludeReceiptValue {
+    param(
+        [Parameter(Mandatory)]$Receipt,
+        [Parameter(Mandatory)]$Manifest,
+        [Parameter(Mandatory)][string]$ContentManifestDigest,
+        [Parameter(Mandatory)][string]$ExpectedPackagePlanDigest
+    )
+    $receipt=$Receipt
+    Assert-YimePimePayloadProperties $receipt @(
+        'schema_version','product','package_profile','architectures','phase','package_plan_sha256','payload_spec_sha256',
+        'content_manifest_sha256','content_tree_sha256','include_file','include_sha256','include_bytes','encoding','line_ending',
+        'macros','unique_stage_file_count','payload_file_count','bootstrap_file_count','main_payload_file_count',
+        'macro_file_reference_count','final_payload_closure') 'NSIS stage include receipt'
+    $architectures=@($receipt.architectures)
+    foreach($name in @(
+        'schema_version','product','package_profile','phase','package_plan_sha256','payload_spec_sha256',
+        'content_manifest_sha256','content_tree_sha256','include_file','include_sha256','encoding','line_ending')){
+        if($receipt.$name -isnot [string]){throw "NSIS stage include receipt has non-string $name."}
+    }
+    if($receipt.architectures -isnot [Array] -or $architectures.Count -ne 2 -or
+        $architectures[0] -isnot [string] -or $architectures[1] -isnot [string] -or
+        $receipt.macros -isnot [Array] -or
+        [string]$receipt.schema_version -cne $script:RimePimeNsisStageReceiptSchema -or
+        [string]$receipt.product -cne 'rime-pime' -or [string]$receipt.package_profile -cne 'x86-x64-v1' -or
+        [string]$architectures[0] -cne 'x86' -or [string]$architectures[1] -cne 'x64' -or
+        [string]$receipt.phase -cne 'copied-inputs-awaiting-generated-output' -or
+        [string]$receipt.package_plan_sha256 -cne $ExpectedPackagePlanDigest -or
+        [string]$receipt.payload_spec_sha256 -cne [string]$Manifest.payload_spec_sha256 -or
+        [string]$receipt.content_manifest_sha256 -cne $ContentManifestDigest -or
+        [string]$receipt.content_tree_sha256 -cne [string]$Manifest.content_tree_sha256 -or
+        [string]$receipt.include_file -cnotmatch '^[A-Za-z0-9._-]+\.nsh$' -or
+        [string]$receipt.include_sha256 -cnotmatch '^[0-9a-f]{64}$' -or
+        -not (Test-RimePimeStageInteger $receipt.include_bytes) -or [long]$receipt.include_bytes -lt 1 -or
+        [string]$receipt.encoding -cne 'us-ascii' -or [string]$receipt.line_ending -cne 'lf' -or
+        $receipt.final_payload_closure -isnot [bool] -or $receipt.final_payload_closure) {
+        throw 'NSIS stage include receipt identity or boundary is invalid.'
+    }
+    $document=Get-RimePimeNsisStageIncludeDocument $Manifest $ContentManifestDigest $ExpectedPackagePlanDigest
+    $macros=@($receipt.macros)
+    if($macros.Count -ne $document.MacroCounts.Count){throw 'NSIS stage include macro inventory is incomplete.'}
+    for($i=0;$i -lt $macros.Count;$i++){
+        Assert-YimePimePayloadProperties $macros[$i] @('name','file_reference_count') 'NSIS stage macro receipt'
+        if($macros[$i].name -isnot [string] -or
+            [string]$macros[$i].name -cne [string]$document.MacroCounts[$i].name -or
+            -not (Test-RimePimeStageInteger $macros[$i].file_reference_count) -or
+            [long]$macros[$i].file_reference_count -ne [long]$document.MacroCounts[$i].file_reference_count){
+            throw 'NSIS stage include macro inventory differs from generated commands.'
+        }
+    }
+    foreach($name in @('unique_stage_file_count','payload_file_count','bootstrap_file_count','main_payload_file_count','macro_file_reference_count')){
+        if(-not (Test-RimePimeStageInteger $receipt.$name)){throw "NSIS stage include receipt count is not an integer: $name"}
+    }
+    if([long]$receipt.unique_stage_file_count -ne [long]$document.UniqueStageFileCount -or
+        [long]$receipt.payload_file_count -ne [long]$document.PayloadCount -or
+        [long]$receipt.bootstrap_file_count -ne [long]$document.BootstrapCount -or
+        [long]$receipt.main_payload_file_count -ne [long]$document.MainPayloadCount -or
+        [long]$receipt.macro_file_reference_count -ne [long]$document.FileReferenceCount){
+        throw 'NSIS stage include receipt counts differ from the exact macro partition.'
+    }
+    return [pscustomobject]@{Receipt=$receipt;Document=$document}
+}
+
 function Test-RimePimeNsisStageInclude {
     param(
         [Parameter(Mandatory)][string]$StageRoot,
@@ -320,29 +382,9 @@ function Test-RimePimeNsisStageInclude {
     $null = Test-RimePimePackageCopyStage $stage $manifest.Path $manifest.Digest
     $sealed = Read-RimePimeSealedJson $ReceiptPath 'NSIS stage include receipt'
     if ([string]$sealed.Digest -cne $ExpectedReceiptDigest) { throw 'NSIS stage include receipt does not match its external digest.' }
-    $receipt = $sealed.Value
-    Assert-YimePimePayloadProperties $receipt @(
-        'schema_version','product','package_profile','architectures','phase','package_plan_sha256','payload_spec_sha256',
-        'content_manifest_sha256','content_tree_sha256','include_file','include_sha256','include_bytes','encoding','line_ending',
-        'macros','unique_stage_file_count','payload_file_count','bootstrap_file_count','main_payload_file_count',
-        'macro_file_reference_count','final_payload_closure') 'NSIS stage include receipt'
-    $architectures=@($receipt.architectures)
-    if ([string]$receipt.schema_version -cne $script:RimePimeNsisStageReceiptSchema -or
-        [string]$receipt.product -cne 'rime-pime' -or [string]$receipt.package_profile -cne 'x86-x64-v1' -or
-        $architectures.Count -ne 2 -or [string]$architectures[0] -cne 'x86' -or [string]$architectures[1] -cne 'x64' -or
-        [string]$receipt.phase -cne 'copied-inputs-awaiting-generated-output' -or
-        [string]$receipt.package_plan_sha256 -cne $ExpectedPackagePlanDigest -or
-        [string]$receipt.payload_spec_sha256 -cne [string]$manifest.Manifest.payload_spec_sha256 -or
-        [string]$receipt.content_manifest_sha256 -cne $manifest.Digest -or
-        [string]$receipt.content_tree_sha256 -cne [string]$manifest.Manifest.content_tree_sha256 -or
-        [string]$receipt.include_file -cnotmatch '^[A-Za-z0-9._-]+\.nsh$' -or
-        [string]$receipt.include_sha256 -cnotmatch '^[0-9a-f]{64}$' -or
-        -not (Test-RimePimeStageInteger $receipt.include_bytes) -or [long]$receipt.include_bytes -lt 1 -or
-        [string]$receipt.encoding -cne 'us-ascii' -or [string]$receipt.line_ending -cne 'lf' -or
-        $receipt.final_payload_closure -isnot [bool] -or $receipt.final_payload_closure) {
-        throw 'NSIS stage include receipt identity or boundary is invalid.'
-    }
-    $document = Get-RimePimeNsisStageIncludeDocument $manifest.Manifest $manifest.Digest $ExpectedPackagePlanDigest
+    $validated=Assert-RimePimeNsisStageIncludeReceiptValue $sealed.Value $manifest.Manifest $manifest.Digest $ExpectedPackagePlanDigest
+    $receipt=$validated.Receipt
+    $document=$validated.Document
     $include = Join-Path (Split-Path -Parent $sealed.Path) ([string]$receipt.include_file)
     Assert-RimePimeNoReparsePath $include
     if (-not (Test-Path -LiteralPath $include -PathType Leaf)) { throw 'NSIS stage include is missing.' }
@@ -363,26 +405,6 @@ function Test-RimePimeNsisStageInclude {
     for($i=0;$i -lt $actualBytes.Length;$i++){if($actualBytes[$i] -ne $expectedBytes[$i]){throw 'NSIS stage include bytes are not deterministic.'}}
     $actualDigest=(Get-FileHash -LiteralPath $include -Algorithm SHA256).Hash.ToLowerInvariant()
     if($actualDigest -cne [string]$receipt.include_sha256){throw 'NSIS stage include hash is invalid.'}
-    $macros=@($receipt.macros)
-    if($macros.Count -ne $document.MacroCounts.Count){throw 'NSIS stage include macro inventory is incomplete.'}
-    for($i=0;$i -lt $macros.Count;$i++){
-        Assert-YimePimePayloadProperties $macros[$i] @('name','file_reference_count') 'NSIS stage macro receipt'
-        if([string]$macros[$i].name -cne [string]$document.MacroCounts[$i].name -or
-            -not (Test-RimePimeStageInteger $macros[$i].file_reference_count) -or
-            [long]$macros[$i].file_reference_count -ne [long]$document.MacroCounts[$i].file_reference_count){
-            throw 'NSIS stage include macro inventory differs from generated commands.'
-        }
-    }
-    foreach($name in @('unique_stage_file_count','payload_file_count','bootstrap_file_count','main_payload_file_count','macro_file_reference_count')){
-        if(-not (Test-RimePimeStageInteger $receipt.$name)){throw "NSIS stage include receipt count is not an integer: $name"}
-    }
-    if([long]$receipt.unique_stage_file_count -ne [long]$document.UniqueStageFileCount -or
-        [long]$receipt.payload_file_count -ne [long]$document.PayloadCount -or
-        [long]$receipt.bootstrap_file_count -ne [long]$document.BootstrapCount -or
-        [long]$receipt.main_payload_file_count -ne [long]$document.MainPayloadCount -or
-        [long]$receipt.macro_file_reference_count -ne [long]$document.FileReferenceCount){
-        throw 'NSIS stage include receipt counts differ from the exact macro partition.'
-    }
     return [pscustomobject][ordered]@{
         passed=$true;include_sha256=$actualDigest;include_bytes=$actualBytes.Length
         unique_stage_file_count=$document.UniqueStageFileCount;payload_file_count=$document.PayloadCount

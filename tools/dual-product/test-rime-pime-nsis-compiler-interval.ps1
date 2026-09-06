@@ -105,15 +105,29 @@ try{
             $ancestor -eq $buildResultAssignments[0].Right
         })
     }
+    $schemaResultPairs=@()
     $membershipResultPairs=@()
     if($buildResultHashtables.Count -eq 1){
+        $schemaResultPairs=@($buildResultHashtables[0].KeyValuePairs|Where-Object{
+            $_.Item1 -is [Management.Automation.Language.StringConstantExpressionAst] -and
+            [string]$_.Item1.Value -ceq 'schema_version'
+        })
         $membershipResultPairs=@($buildResultHashtables[0].KeyValuePairs|Where-Object{
             $_.Item1 -is [Management.Automation.Language.StringConstantExpressionAst] -and
             [string]$_.Item1.Value -ceq 'nsis_compiler_membership_interval'
         })
     }
-    if($buildResultAssignments.Count -ne 1 -or $buildResultHashtables.Count -ne 1 -or $membershipResultPairs.Count -ne 1){
-        throw 'The successful buildResult must contain one nsis_compiler_membership_interval binding.'
+    if($buildResultAssignments.Count -ne 1 -or $buildResultHashtables.Count -ne 1 -or
+        $schemaResultPairs.Count -ne 1 -or $membershipResultPairs.Count -ne 1){
+        throw 'The successful buildResult must contain one exact schema_version and one nsis_compiler_membership_interval binding.'
+    }
+    $schemaResultValue=$schemaResultPairs[0].Item2
+    if($schemaResultValue -isnot [Management.Automation.Language.PipelineAst] -or
+        $schemaResultValue.PipelineElements.Count -ne 1 -or
+        $schemaResultValue.PipelineElements[0] -isnot [Management.Automation.Language.CommandExpressionAst] -or
+        $schemaResultValue.PipelineElements[0].Expression -isnot [Management.Automation.Language.StringConstantExpressionAst] -or
+        [string]$schemaResultValue.PipelineElements[0].Expression.Value -cne 'yime-rime-pime-staged-nsis-build-result-membership-interval-v1'){
+        throw 'The successful buildResult schema_version must be the exact literal yime-rime-pime-staged-nsis-build-result-membership-interval-v1; bare result-v3 is not admissible.'
     }
     $membershipResultValue=$membershipResultPairs[0].Item2
     if($membershipResultValue -isnot [Management.Automation.Language.PipelineAst] -or

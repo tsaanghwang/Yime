@@ -70,7 +70,8 @@ function Save-RimePimeReceiptObject($RepoRoot,[byte[]]$Bytes) {
 
 function Get-RimePimeReceiptEvidenceSet($Receipt) {
     $r=$Receipt
-    return @(
+    $set=[Collections.Generic.List[object]]::new()
+    foreach($pair in @(
         @($r.package_plan.path,$r.package_plan.sha256),
         @($r.sealed_stage.content_manifest_path,$r.sealed_stage.content_manifest_sha256),
         @($r.payload_include.path,$r.payload_include.sha256),
@@ -80,7 +81,17 @@ function Get-RimePimeReceiptEvidenceSet($Receipt) {
         @($r.installer.source_path,$r.installer.source_sha256),
         @($r.installer.path,$r.installer.sha256),
         @($r.predecessor_v1.source_path_at_finalization,$r.predecessor_v1.sha256)
-    )
+    )){$set.Add($pair)}
+    if($null -ne $r.sealed_stage.PSObject.Properties['payload_spec_path']){
+        $set.Add(@($r.sealed_stage.payload_spec_path,$r.sealed_stage.payload_spec_sha256))
+    }
+    if($null -ne $r.sealed_stage.PSObject.Properties['go_payload_inventory_path']){
+        $set.Add(@($r.sealed_stage.go_payload_inventory_path,$r.sealed_stage.go_payload_inventory_sha256))
+    }
+    if($null -ne $r.disabled_build.PSObject.Properties['nsis_toolchain_lock_path']){
+        $set.Add(@($r.disabled_build.nsis_toolchain_lock_path,$r.disabled_build.nsis_toolchain_lock_sha256))
+    }
+    return @($set)
 }
 
 # Called only under the canonical publication lock. Original receipts are kept
@@ -189,6 +200,10 @@ function Complete-RimePimeReceiptPublication($RepoRoot,$Canonical,$Pending) {
     } finally { $old.SidecarStream.Dispose();$old.JsonStream.Dispose() }
     $previous=Read-RimePimePackageBuildReceiptV2 $RepoRoot (Get-RimePimeReceiptObjectPath $RepoRoot $intent.previous_retained)
     $next=Read-RimePimePackageBuildReceiptV2 $RepoRoot (Get-RimePimeReceiptObjectPath $RepoRoot $intent.next)
+    if($intent.next -cne $intent.previous_retained -and
+        [string]$next.Receipt.disabled_build.schema_version -cne $script:RimePimeCurrentBuildEvidenceSchema){
+        throw 'Changed receipt recovery requires current membership-interval build evidence.'
+    }
     $old.Value.evidence_artifacts_durable=$true
     $expectedRetained=[Text.UTF8Encoding]::new($false).GetBytes((ConvertTo-RimePimeStageCanonicalJson $old.Value)+"`n")
     if ((Get-RimePimeReceiptV2Sha256Bytes $expectedRetained) -cne $intent.previous_retained) { throw 'Retained previous receipt is not the exact retention conversion.' }
@@ -276,6 +291,10 @@ function Publish-RimePimePackageReceiptV2Supersession {
         $current=Read-RimePimePackageBuildReceiptV2 $RepoRoot $canonical
         if ($current.Digest -cne $ExpectedPreviousDigest) { throw 'Stale expected previous receipt digest.' }
         $next=Read-RimePimePackageBuildReceiptV2 $RepoRoot $ReceiptPath
+        if($next.Digest -cne $current.Digest -and
+            [string]$next.Receipt.disabled_build.schema_version -cne $script:RimePimeCurrentBuildEvidenceSchema){
+            throw 'Changed receipt publication requires current membership-interval build evidence.'
+        }
         if ($next.Receipt.installer.sha256 -cne $current.Receipt.installer.sha256 -or $next.Receipt.installer.path -cne $current.Receipt.installer.path) {
             throw 'Receipt-only supersession cannot replace the installer identity.'
         }

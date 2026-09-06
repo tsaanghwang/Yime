@@ -4,6 +4,66 @@
 
 $script:RimePimePackageReceiptV2Schema='yime-rime-pime-package-build-receipt-v2'
 $script:RimePimePackageReceiptV1Schema='yime-rime-pime-package-build-receipt-v1'
+$script:RimePimeLegacyBuildEvidenceSchema='yime-rime-pime-staged-nsis-build-result-v2'
+# Deliberately does not end in "result-vN".  Earlier validators admitted every
+# future numeric version without understanding its fields; the tagged name
+# makes those validators fail closed instead of silently discarding DP1-K.
+$script:RimePimeCurrentBuildEvidenceSchema='yime-rime-pime-staged-nsis-build-result-membership-interval-v1'
+$script:RimePimeCompilerMembershipIntervalSchema='yime-rime-pime-nsis-compiler-membership-interval-v1'
+$script:RimePimeCurrentBuildExclusiveProperties=@(
+    'nsis_compiler_membership_interval','nsis_compiler_stage_path',
+    'nsis_compiler_stage_file_lease_count','nsis_compiler_stage_directory_lease_count'
+)
+$script:RimePimeCurrentBuildEvidenceProperties=@(
+    'schema_version','product','product_version','package_profile','architectures','package_plan_sha256',
+    'payload_spec_sha256','content_manifest_sha256','content_tree_sha256','payload_nsh_sha256','copied_file_count',
+    'payload_file_count','bootstrap_file_count','main_payload_file_count','package_plan_artifact_count',
+    'package_plan_matching_stage_binding_count','staged_pe_unique_artifact_count','staged_pe_path_binding_count',
+    'staged_pe_architecture_verified_under_read_leases','executed_build_logic_source_count',
+    'executed_build_logic_sources','build_logic_read_lease_count','prebuild_leased_input_count','candidate_leased',
+    'lease_share_mode','repository_local_compiler_inputs_leased','repository_local_bare_include_shadowing_closed',
+    'makensis_no_current_directory_change','makensis_user_config_disabled','compiler_working_directory',
+    'nsis_compiler_membership_interval','nsis_compiler_stage_path','nsis_compiler_stage_file_lease_count',
+    'nsis_compiler_stage_directory_lease_count','nsis_toolchain_lock_sha256','nsis_compiler_input_scope',
+    'nsis_compiler_input_tree_sha256','nsis_compiler_input_file_count','nsis_compiler_input_directory_count',
+    'nsis_compiler_input_read_lease_count','nsis_compiler_input_directory_lease_count',
+    'nsis_compiler_input_anchor_directory_lease_count','nsis_toolchain_control_read_lease_count',
+    'nsis_distribution_tree_exact_at_open_and_test','nsis_known_input_file_replacement_closure',
+    'nsis_compiler_input_pre_snapshot_exact','nsis_compiler_input_post_snapshot_exact',
+    'nsis_compiler_input_leases_held_during_makensis','active_same_sid_transient_tree_membership_interference_excluded',
+    'nsis_non_os_compiler_input_closure','full_nsis_toolchain_input_closure','makensis_path','makensis_sha256',
+    'makensis_path_lease_verified','unsigned_disabled_build','signing_hook_processes_executed',
+    'signing_host_and_release_signing_pending','path_searched_signing_host_not_executed','candidate_installer_path',
+    'candidate_installer_sha256','candidate_installer_bytes','published_installer_path','package_build_receipt_path',
+    'package_build_receipt_sha256','publication_status_at_evidence_seal','publication_commit_marker_path',
+    'publication_failure_rollback_enabled','publication_cross_process_lock','publication_lock_path',
+    'prebuild_stage_verified','postbuild_stage_verified','prebuild_include_verified','postbuild_include_verified',
+    'installer_raw_byte_search_found_expected_digests','postbuild_extraction_compared_to_stage',
+    'canonical_receipt_binds_stage_evidence','canonical_receipt_v2_finalization_required',
+    'canonical_receipt_v2_finalizer_automatically_invoked','canonical_receipt_v2_requires_sealed_postbuild_result',
+    'v1_receipt_semantics_preserved_until_explicit_v2_finalization','generated_uninstaller_verified',
+    'final_payload_closure','installer_executed','uninstaller_executed','build_tool_processes_executed',
+    'makensis_executed','installed_product_processes_touched','product_registry_mutated','default_input_method_changed',
+    'production_user_data_read_or_written','installed_yimecore_local12_touched'
+)
+$script:RimePimeCurrentBuildLogicSources=@(
+    'tools/build-rime-pime-installer.ps1',
+    'tools/dual-product/rime-pime-package-staging.psm1',
+    'tools/dual-product/rime-pime-package-staging.ps1',
+    'tools/dual-product/rime-pime-package-plan.ps1',
+    'tools/dual-product/rime-pime-payload-closure.ps1',
+    'tools/verify-pe-architectures.ps1',
+    'tools/dual-product/rime-pime-nsis-stage.psm1',
+    'tools/dual-product/rime-pime-nsis-stage.ps1',
+    'tools/dual-product/rime-pime-staged-installer-build.psm1',
+    'tools/dual-product/rime-pime-staged-installer-build.ps1',
+    'tools/dual-product/rime-pime-nsis-toolchain-closure.psm1',
+    'tools/dual-product/rime-pime-nsis-membership-monitor-v1.ps1',
+    'tools/dual-product/rime-pime-nsis-compiler-interval.ps1',
+    'tools/dual-product/rime-pime-nsis-toolchain-closure.ps1',
+    'tools/dual-product/rime-pime-postbuild-toolchain-lock.json',
+    'tools/dual-product/rime-pime-postbuild-toolchain-lock.json.sha256'
+) | Sort-Object
 
 function Get-RimePimeReceiptV2Sha256Bytes {
     param([Parameter(Mandatory)][byte[]]$Bytes)
@@ -182,6 +242,51 @@ function Open-RimePimeReceiptV2RawSidecarLease {
     }catch{$stream.Dispose();throw}
 }
 
+function Assert-RimePimeReceiptV2LeasedIncludeDocument {
+    param(
+        [Parameter(Mandatory)]$IncludeLease,
+        [Parameter(Mandatory)]$Document,
+        [Parameter(Mandatory)][string]$Context
+    )
+    $actual=[byte[]](Read-RimePimeReceiptV2StreamBytes $IncludeLease.Stream 4194304 $Context)
+    $expected=[Text.Encoding]::ASCII.GetBytes([string]$Document.Text)
+    if($actual.Length -ne $expected.Length){throw "$Context differs from the deterministic manifest-derived include."}
+    for($i=0;$i -lt $actual.Length;$i++){
+        if($actual[$i] -ne $expected[$i]){throw "$Context differs from the deterministic manifest-derived include."}
+    }
+}
+
+function Assert-RimePimeReceiptV2ToolchainLockLease {
+    param([Parameter(Mandatory)]$Lease)
+    $strictUtf8=[Text.UTF8Encoding]::new($false,$true)
+    try{$raw=$strictUtf8.GetString([byte[]]$Lease.JsonBytes)}
+    catch{throw "Current NSIS toolchain lock is not strict UTF-8: $($_.Exception.Message)"}
+    $canonical=(ConvertTo-RimePimeStageCanonicalJson $Lease.Value)+"`n"
+    if($raw -cne $canonical){throw 'Current NSIS toolchain lock is not canonical single-line JSON.'}
+    $null=Test-RimePimeNsisCompilerToolchainLockDocument $Lease.Value
+}
+
+function Assert-RimePimeReceiptV2InstallerRawBindings {
+    param(
+        [Parameter(Mandatory)]$InstallerLease,
+        [Parameter(Mandatory)]$PackagePlanDigest,
+        [Parameter(Mandatory)]$ContentManifestDigest,
+        [Parameter(Mandatory)]$ContentTreeDigest,
+        [Parameter(Mandatory)]$PayloadIncludeDigest
+    )
+    $bytes=[byte[]](Read-RimePimeReceiptV2StreamBytes $InstallerLease.Stream 536870912 'disabled installer raw bindings')
+    $latin1=[Text.Encoding]::GetEncoding(28591);$haystack=$latin1.GetString($bytes)
+    foreach($pair in @(
+        @('package plan',$PackagePlanDigest),@('content manifest',$ContentManifestDigest),
+        @('content tree',$ContentTreeDigest),@('payload include',$PayloadIncludeDigest))){
+        Assert-RimePimeReceiptV2Hash $pair[1] "disabled installer $($pair[0]) binding"
+        $needle=$latin1.GetString([Text.Encoding]::Unicode.GetBytes([string]$pair[1]))
+        if($haystack.IndexOf($needle,[StringComparison]::Ordinal) -lt 0){
+            throw "Disabled installer lacks its sealed $($pair[0]) raw-byte binding."
+        }
+    }
+}
+
 function Close-RimePimePackageReceiptV2Preparation {
     param($Prepared)
     if($null -eq $Prepared){return}
@@ -195,12 +300,23 @@ function Close-RimePimePackageReceiptV2Preparation {
 function Test-RimePimeReceiptV2OrderedArchitectures {
     param($Value)
     $items=@($Value)
-    return $items.Count -eq 2 -and [string]$items[0] -ceq 'x86' -and [string]$items[1] -ceq 'x64'
+    return $Value -is [Array] -and $items.Count -eq 2 -and
+        $items[0] -is [string] -and $items[1] -is [string] -and
+        [string]$items[0] -ceq 'x86' -and [string]$items[1] -ceq 'x64'
 }
 
 function Assert-RimePimeReceiptV2Hash {
     param($Value,[string]$Context)
-    if([string]$Value -cnotmatch '^[0-9a-f]{64}$'){throw "$Context is not a lowercase SHA-256 digest."}
+    if($Value -isnot [string] -or [string]$Value -cnotmatch '^[0-9a-f]{64}$'){
+        throw "$Context is not a lowercase SHA-256 digest."
+    }
+}
+
+function Assert-RimePimeReceiptV2StringFields {
+    param($Value,[string[]]$Names,[string]$Context)
+    foreach($name in $Names){
+        if($Value.$name -isnot [string]){throw "$Context $name must be a JSON string."}
+    }
 }
 
 function Assert-RimePimeReceiptV2RequiredProperties {
@@ -213,6 +329,228 @@ function Assert-RimePimeReceiptV2RequiredProperties {
 function Test-RimePimeReceiptV2Boolean {
     param($Value,[bool]$Expected)
     return $Value -is [bool] -and [bool]$Value -eq $Expected
+}
+
+function Test-RimePimeReceiptV2BuildEvidenceSchema {
+    param($Value)
+    return $Value -is [string] -and
+        ($Value -ceq $script:RimePimeLegacyBuildEvidenceSchema -or
+         $Value -ceq $script:RimePimeCurrentBuildEvidenceSchema)
+}
+
+function Assert-RimePimeReceiptV2CompilerMembershipInterval {
+    param($Interval)
+    Assert-RimePimeExactProperties $Interval @(
+        'schema_version','armed_before_baseline','completion_barrier_after_compiler_exit',
+        'unexpected_membership_event_count','notification_batch_count','physical_membership_prevention_claimed',
+        'active_same_sid_transient_tree_membership_interference_excluded','nsis_non_os_compiler_input_closure',
+        'full_nsis_toolchain_input_closure'
+    ) 'receipt-v2 compiler membership interval'
+    if($Interval.schema_version -isnot [string] -or
+        [string]$Interval.schema_version -cne $script:RimePimeCompilerMembershipIntervalSchema -or
+        -not(Test-RimePimeReceiptV2Boolean $Interval.armed_before_baseline $true) -or
+        -not(Test-RimePimeReceiptV2Boolean $Interval.completion_barrier_after_compiler_exit $true) -or
+        -not(Test-RimePimeStageInteger $Interval.unexpected_membership_event_count) -or
+        [long]$Interval.unexpected_membership_event_count -ne 0 -or
+        -not(Test-RimePimeStageInteger $Interval.notification_batch_count) -or
+        [long]$Interval.notification_batch_count -lt 1 -or
+        [long]$Interval.notification_batch_count -gt [int]::MaxValue -or
+        -not(Test-RimePimeReceiptV2Boolean $Interval.physical_membership_prevention_claimed $false) -or
+        -not(Test-RimePimeReceiptV2Boolean $Interval.active_same_sid_transient_tree_membership_interference_excluded $false) -or
+        -not(Test-RimePimeReceiptV2Boolean $Interval.nsis_non_os_compiler_input_closure $false) -or
+        -not(Test-RimePimeReceiptV2Boolean $Interval.full_nsis_toolchain_input_closure $false)){
+        throw 'Current membership-interval build evidence has an invalid compiler interval.'
+    }
+}
+
+function Assert-RimePimeReceiptV2CurrentBuildLogicSources {
+    param($Build)
+    $sources=@($Build.executed_build_logic_sources)
+    if($Build.executed_build_logic_sources -isnot [Array] -or
+        $sources.Count -ne $script:RimePimeCurrentBuildLogicSources.Count -or
+        [int]$Build.executed_build_logic_source_count -ne $script:RimePimeCurrentBuildLogicSources.Count -or
+        [int]$Build.build_logic_read_lease_count -ne $script:RimePimeCurrentBuildLogicSources.Count){
+        throw 'Current membership-interval build evidence has an incomplete build-logic source closure.'
+    }
+    $seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    for($i=0;$i -lt $sources.Count;$i++){
+        $row=$sources[$i]
+        Assert-RimePimeExactProperties $row @('path','sha256') 'receipt-v2 current build-logic source'
+        if($row.path -isnot [string] -or -not $seen.Add([string]$row.path)){
+            throw 'Current membership-interval build evidence has a duplicate or non-string build-logic source.'
+        }
+        $path=ConvertTo-RimePimePackagePath ([string]$row.path)
+        if($path -cne [string]$script:RimePimeCurrentBuildLogicSources[$i]){
+            throw 'Current membership-interval build evidence has an unexpected or unordered build-logic source.'
+        }
+        Assert-RimePimeReceiptV2Hash $row.sha256 'receipt-v2 current build-logic source sha256'
+    }
+}
+
+function Assert-RimePimeReceiptV2CurrentBuildEvidence {
+    param($Build,[Parameter(Mandatory)][string]$RepoRoot,$Manifest,$PayloadReceipt,$PlanBindings)
+    Assert-RimePimeExactProperties $Build $script:RimePimeCurrentBuildEvidenceProperties 'receipt-v2 current membership-interval build evidence'
+    Assert-RimePimeReceiptV2CompilerMembershipInterval $Build.nsis_compiler_membership_interval
+    Assert-RimePimeReceiptV2CurrentBuildLogicSources $Build
+
+    if($Build.product -isnot [string] -or $Build.product_version -isnot [string] -or
+        $Build.package_profile -isnot [string] -or $Build.nsis_compiler_input_scope -isnot [string] -or
+        [string]$Build.product -cne 'rime-pime' -or [string]$Build.package_profile -cne 'x86-x64-v1' -or
+        [string]$Build.nsis_compiler_input_scope -cne 'repository-pinned-nsis-distribution-non-os-v1' -or
+        $Manifest.product_version -isnot [string] -or
+        [string]$Build.product_version -cnotmatch '^[A-Za-z0-9][A-Za-z0-9.+_-]{0,63}$' -or
+        $Manifest.product -isnot [string] -or $PayloadReceipt.product -isnot [string] -or
+        [string]$Manifest.product -cne 'rime-pime' -or [string]$PayloadReceipt.product -cne 'rime-pime' -or
+        $Manifest.package_profile -isnot [string] -or $PayloadReceipt.package_profile -isnot [string] -or
+        [string]$Manifest.package_profile -cne 'x86-x64-v1' -or
+        [string]$PayloadReceipt.package_profile -cne 'x86-x64-v1' -or
+        -not(Test-RimePimeReceiptV2OrderedArchitectures $Manifest.architectures) -or
+        -not(Test-RimePimeReceiptV2OrderedArchitectures $PayloadReceipt.architectures)){
+        throw 'Current membership-interval build evidence has an invalid or contradictory product identity.'
+    }
+    foreach($name in @(
+        'package_plan_sha256','payload_spec_sha256','content_manifest_sha256','content_tree_sha256','payload_nsh_sha256',
+        'nsis_toolchain_lock_sha256','nsis_compiler_input_tree_sha256','makensis_sha256','candidate_installer_sha256',
+        'package_build_receipt_sha256')){
+        Assert-RimePimeReceiptV2Hash $Build.$name "receipt-v2 current build $name"
+    }
+
+    foreach($name in @(
+        'copied_file_count','payload_file_count','bootstrap_file_count','main_payload_file_count',
+        'package_plan_artifact_count','package_plan_matching_stage_binding_count','staged_pe_unique_artifact_count',
+        'staged_pe_path_binding_count','prebuild_leased_input_count','candidate_installer_bytes')){
+        if(-not(Test-RimePimeStageInteger $Build.$name) -or [long]$Build.$name -lt 1){
+            throw "Current membership-interval build evidence has an invalid $name."
+        }
+    }
+    if($null -eq $PlanBindings -or -not(Test-RimePimeReceiptV2Boolean $PlanBindings.passed $true) -or
+        -not(Test-RimePimeStageInteger $PlanBindings.package_plan_artifact_count) -or
+        -not(Test-RimePimeStageInteger $PlanBindings.matching_stage_binding_count) -or
+        [int]$Build.package_plan_artifact_count -ne [int]$PlanBindings.package_plan_artifact_count -or
+        [int]$Build.package_plan_matching_stage_binding_count -ne [int]$PlanBindings.matching_stage_binding_count -or
+        [int]$Build.package_plan_artifact_count -ne [int]$Build.staged_pe_unique_artifact_count -or
+        [int]$Build.package_plan_matching_stage_binding_count -ne [int]$Build.staged_pe_path_binding_count -or
+        [int]$PlanBindings.package_plan_artifact_count -lt 1 -or
+        [int]$PlanBindings.matching_stage_binding_count -lt [int]$PlanBindings.package_plan_artifact_count){
+        throw 'Current membership-interval build evidence does not close its staged PE artifact and path-binding sets.'
+    }
+    Assert-RimePimeReceiptV2RequiredProperties $PayloadReceipt @(
+        'content_manifest_sha256','unique_stage_file_count','payload_file_count','bootstrap_file_count','main_payload_file_count'
+    ) 'receipt-v2 current payload include receipt'
+    foreach($name in @('unique_stage_file_count','payload_file_count','bootstrap_file_count','main_payload_file_count')){
+        if(-not(Test-RimePimeStageInteger $PayloadReceipt.$name) -or [long]$PayloadReceipt.$name -lt 1){
+            throw "Current membership-interval payload include receipt has an invalid $name."
+        }
+    }
+    if([string]$Build.content_manifest_sha256 -cne [string]$PayloadReceipt.content_manifest_sha256 -or
+        [long]$Build.copied_file_count -ne [long]$PayloadReceipt.unique_stage_file_count -or
+        [long]$Build.copied_file_count -ne @($Manifest.files).Count -or
+        [long]$Build.payload_file_count -ne [long]$PayloadReceipt.payload_file_count -or
+        [long]$Build.bootstrap_file_count -ne [long]$PayloadReceipt.bootstrap_file_count -or
+        [long]$Build.main_payload_file_count -ne [long]$PayloadReceipt.main_payload_file_count -or
+        [long]$Build.copied_file_count -ne ([long]$Build.payload_file_count+[long]$Build.bootstrap_file_count) -or
+        [long]$Build.main_payload_file_count -gt [long]$Build.payload_file_count){
+        throw 'Current membership-interval build evidence contradicts its sealed manifest or payload include counts.'
+    }
+    $expectedPrebuildLeaseCount=[long]$Build.copied_file_count+15L+
+        [long]$Build.build_logic_read_lease_count+[long]$Build.nsis_compiler_input_read_lease_count+
+        [long]$Build.nsis_toolchain_control_read_lease_count
+    if([long]$Build.prebuild_leased_input_count -ne $expectedPrebuildLeaseCount){
+        throw 'Current membership-interval build evidence has an invalid prebuild leased-input count.'
+    }
+    if([long]$Build.candidate_installer_bytes -lt 65536 -or [long]$Build.candidate_installer_bytes -gt 536870912){
+        throw 'Current membership-interval build evidence candidate size is outside the admitted disabled-installer range.'
+    }
+    foreach($name in @(
+        'candidate_leased','repository_local_compiler_inputs_leased','repository_local_bare_include_shadowing_closed',
+        'makensis_no_current_directory_change','makensis_user_config_disabled','staged_pe_architecture_verified_under_read_leases',
+        'nsis_distribution_tree_exact_at_open_and_test','nsis_known_input_file_replacement_closure',
+        'nsis_compiler_input_pre_snapshot_exact','nsis_compiler_input_post_snapshot_exact',
+        'nsis_compiler_input_leases_held_during_makensis','makensis_path_lease_verified','unsigned_disabled_build',
+        'signing_host_and_release_signing_pending','path_searched_signing_host_not_executed',
+        'publication_failure_rollback_enabled','publication_cross_process_lock','prebuild_stage_verified',
+        'postbuild_stage_verified','prebuild_include_verified','postbuild_include_verified',
+        'installer_raw_byte_search_found_expected_digests','canonical_receipt_v2_finalization_required',
+        'canonical_receipt_v2_requires_sealed_postbuild_result','v1_receipt_semantics_preserved_until_explicit_v2_finalization',
+        'build_tool_processes_executed','makensis_executed')){
+        if(-not(Test-RimePimeReceiptV2Boolean $Build.$name $true)){
+            throw "Current membership-interval build evidence has an invalid true boundary $name."
+        }
+    }
+    foreach($name in @(
+        'active_same_sid_transient_tree_membership_interference_excluded','nsis_non_os_compiler_input_closure',
+        'full_nsis_toolchain_input_closure','signing_hook_processes_executed','postbuild_extraction_compared_to_stage',
+        'canonical_receipt_binds_stage_evidence','canonical_receipt_v2_finalizer_automatically_invoked',
+        'generated_uninstaller_verified','final_payload_closure','installer_executed','uninstaller_executed',
+        'installed_product_processes_touched','product_registry_mutated','default_input_method_changed',
+        'production_user_data_read_or_written','installed_yimecore_local12_touched')){
+        if(-not(Test-RimePimeReceiptV2Boolean $Build.$name $false)){
+            throw "Current membership-interval build evidence has an invalid false boundary $name."
+        }
+    }
+    if($Build.lease_share_mode -isnot [string] -or [string]$Build.lease_share_mode -cne 'read-only-with-file-share-read' -or
+        $Build.publication_status_at_evidence_seal -isnot [string] -or
+        [string]$Build.publication_status_at_evidence_seal -cne 'prepared-awaiting-receipt-sidecar-commit-marker'){
+        throw 'Current membership-interval build evidence has an invalid lease or publication state.'
+    }
+
+    foreach($name in @('nsis_compiler_stage_file_lease_count','nsis_compiler_stage_directory_lease_count')){
+        if(-not(Test-RimePimeStageInteger $Build.$name)){
+            throw "Current membership-interval build evidence has an invalid $name."
+        }
+    }
+    if([int]$Build.nsis_compiler_stage_file_lease_count -ne 303 -or
+        [int]$Build.nsis_compiler_stage_file_lease_count -ne [int]$Build.nsis_compiler_input_read_lease_count -or
+        [int]$Build.nsis_compiler_stage_directory_lease_count -ne 19 -or
+        [int]$Build.nsis_compiler_stage_directory_lease_count -ne [int]$Build.nsis_compiler_input_directory_lease_count){
+        throw 'Current membership-interval build evidence stage lease counts are not closed.'
+    }
+    if($Build.nsis_compiler_membership_interval.active_same_sid_transient_tree_membership_interference_excluded -ne
+            $Build.active_same_sid_transient_tree_membership_interference_excluded -or
+        $Build.nsis_compiler_membership_interval.nsis_non_os_compiler_input_closure -ne $Build.nsis_non_os_compiler_input_closure -or
+        $Build.nsis_compiler_membership_interval.full_nsis_toolchain_input_closure -ne $Build.full_nsis_toolchain_input_closure){
+        throw 'Current membership-interval build evidence contradicts its closure boundaries.'
+    }
+
+    $repo=[IO.Path]::GetFullPath($RepoRoot).TrimEnd([char]92)
+    $allowedStageParent=[IO.Path]::GetFullPath((Join-Path $repo '.tmp\dual-product')).TrimEnd([char]92)
+    $stageText=[string]$Build.nsis_compiler_stage_path
+    try{$stage=[IO.Path]::GetFullPath($stageText).TrimEnd([char]92)}catch{throw 'Current membership-interval build evidence has an invalid compiler stage path.'}
+    $buildStage=Split-Path -Parent $stage
+    if($Build.nsis_compiler_stage_path -isnot [string] -or -not[IO.Path]::IsPathRooted($stageText) -or
+        $stageText -cne $stage -or (Split-Path -Leaf $stage) -cne 'NSIS' -or
+        (Split-Path -Leaf $buildStage) -cnotmatch '^dp1-package-build-stage-[A-Za-z0-9-]+$' -or
+        (Split-Path -Parent $buildStage) -ine $allowedStageParent -or
+        $Build.makensis_path -isnot [string] -or
+        [string]$Build.makensis_path -ine (Join-Path $stage 'Bin\makensis.exe') -or
+        $Build.compiler_working_directory -isnot [string] -or
+        [string]$Build.compiler_working_directory -ine (Join-Path $stage 'Include')){
+        throw 'Current membership-interval build evidence has inconsistent compiler stage paths.'
+    }
+    $pathFields=@(
+        'candidate_installer_path','published_installer_path','package_build_receipt_path',
+        'publication_commit_marker_path','publication_lock_path'
+    )
+    $normalizedPaths=@{}
+    foreach($name in $pathFields){
+        if($Build.$name -isnot [string] -or [string]::IsNullOrWhiteSpace([string]$Build.$name)){
+            throw "Current membership-interval build evidence has an invalid $name."
+        }
+        try{$normalized=[IO.Path]::GetFullPath([string]$Build.$name)}catch{throw "Current membership-interval build evidence has an invalid $name."}
+        if(-not[IO.Path]::IsPathRooted([string]$Build.$name) -or [string]$Build.$name -ine $normalized){
+            throw "Current membership-interval build evidence has a non-canonical $name."
+        }
+        $normalizedPaths[$name]=$normalized
+    }
+    $expectedInstallerLeaf=('YIME-'+[string]$Build.product_version+'-setup'+'.exe')
+    $expectedReceipt=Join-Path $repo 'installer\package-build-receipt.json'
+    if([string]$normalizedPaths.candidate_installer_path -ine (Join-Path $buildStage ('candidate\'+$expectedInstallerLeaf)) -or
+        [string]$normalizedPaths.published_installer_path -ine (Join-Path $repo ('installer\'+$expectedInstallerLeaf)) -or
+        [string]$normalizedPaths.package_build_receipt_path -ine $expectedReceipt -or
+        [string]$normalizedPaths.publication_commit_marker_path -ine ($expectedReceipt+'.sha256') -or
+        [string]$normalizedPaths.publication_lock_path -ine (Join-Path $repo 'installer\.rime-pime-publication.lock')){
+        throw 'Current membership-interval build evidence has inconsistent candidate or publication paths.'
+    }
 }
 
 function ConvertTo-RimePimeReceiptV2RelativePath {
@@ -228,6 +566,9 @@ function Assert-RimePimeReceiptV2Predecessor {
     Assert-RimePimeExactProperties $Receipt @(
         'schema_version','product','closure_scope','architectures','package_plan_path','package_plan_sha256','nsis_profile',
         'installer_source_path','installer_source_sha256','installer_path','installer_size','installer_sha256','sealed_at_utc') 'receipt-v2 predecessor v1'
+    Assert-RimePimeReceiptV2StringFields $Receipt @(
+        'schema_version','product','closure_scope','nsis_profile','package_plan_path','installer_source_path','installer_path','sealed_at_utc'
+    ) 'receipt-v2 predecessor'
     if([string]$Receipt.schema_version -cne $script:RimePimePackageReceiptV1Schema -or
         [string]$Receipt.product -cne 'rime-pime' -or
         [string]$Receipt.closure_scope -cne 'declared-packaged-product-pe-inputs-only-not-installed-payload' -or
@@ -244,7 +585,10 @@ function Assert-RimePimeReceiptV2Predecessor {
 }
 
 function Assert-RimePimeReceiptV2BuildEvidence {
-    param($Build,$V1,$Manifest,$PayloadReceipt,$Postbuild)
+    param($Build,$V1,$Manifest,$PayloadReceipt,$Postbuild,[Parameter(Mandatory)][string]$RepoRoot,$PlanBindings)
+    if($null -eq $Build -or -not(Test-RimePimeReceiptV2BuildEvidenceSchema $Build.schema_version)){
+        throw 'Build result schema is not an admitted legacy or current membership-interval format.'
+    }
     Assert-RimePimeReceiptV2RequiredProperties $Build @(
         'schema_version','product','product_version','package_profile','architectures','package_plan_sha256','payload_spec_sha256',
         'content_manifest_sha256','content_tree_sha256','payload_nsh_sha256','copied_file_count','payload_file_count','bootstrap_file_count',
@@ -263,8 +607,7 @@ function Assert-RimePimeReceiptV2BuildEvidence {
         'unsigned_disabled_build','signing_hook_processes_executed','installer_executed','uninstaller_executed',
         'installed_product_processes_touched','product_registry_mutated','default_input_method_changed','production_user_data_read_or_written',
         'installed_yimecore_local12_touched') 'receipt-v2 build result'
-    if([string]$Build.schema_version -cnotmatch '^yime-rime-pime-staged-nsis-build-result-v[1-9][0-9]*$' -or
-        [string]$Build.product -cne 'rime-pime' -or [string]$Build.product_version -cne [string]$Manifest.product_version -or
+    if([string]$Build.product -cne 'rime-pime' -or [string]$Build.product_version -cne [string]$Manifest.product_version -or
         [string]$Build.package_profile -cne 'x86-x64-v1' -or -not(Test-RimePimeReceiptV2OrderedArchitectures $Build.architectures) -or
         [string]$Build.package_plan_sha256 -cne [string]$Manifest.package_plan_sha256 -or
         [string]$Build.payload_spec_sha256 -cne [string]$Manifest.payload_spec_sha256 -or
@@ -325,6 +668,20 @@ function Assert-RimePimeReceiptV2BuildEvidence {
         [int]$Build.nsis_toolchain_control_read_lease_count -ne 2){
         throw 'Build result NSIS compiler-input lease counts do not close its exact sets.'
     }
+    if([string]$Build.schema_version -ceq $script:RimePimeLegacyBuildEvidenceSchema){
+        $actual=@($Build.PSObject.Properties|ForEach-Object Name)
+        foreach($name in $script:RimePimeCurrentBuildExclusiveProperties){
+            if($actual -ccontains $name){
+                throw 'Legacy build evidence cannot carry membership-interval fields under the old schema.'
+            }
+        }
+    }else{
+        if($null -ne $V1.PSObject.Properties['installer_source_path'] -and
+            [string]$V1.installer_source_path -cne 'installer/installer.nsi'){
+            throw 'Current membership-interval build evidence has a non-canonical installer source path.'
+        }
+        Assert-RimePimeReceiptV2CurrentBuildEvidence $Build $RepoRoot $Manifest $PayloadReceipt $PlanBindings
+    }
 }
 
 function Assert-RimePimeReceiptV2PostbuildEvidence {
@@ -368,6 +725,26 @@ function Assert-RimePimeReceiptV2PostbuildEvidence {
     Assert-RimePimeReceiptV2RequiredProperties $Postbuild.makensis @('sha256','bytes') 'receipt-v2 postbuild makensis'
     Assert-RimePimeReceiptV2RequiredProperties $Postbuild.installer_archive @('entry_count','raw_stdout_entry_count') 'receipt-v2 installer archive'
     Assert-RimePimeReceiptV2RequiredProperties $Postbuild.uninstaller_archive @('entry_count','raw_stdout_entry_count') 'receipt-v2 uninstaller archive'
+    Assert-RimePimeReceiptV2StringFields $Postbuild @(
+        'schema_version','product','product_version','package_profile','package_plan_sha256','content_manifest_sha256',
+        'content_tree_sha256','payload_nsh_receipt_sha256','payload_nsh_sha256','nsis_toolchain_lock_sha256',
+        'nsis_compiler_input_scope','nsis_compiler_input_tree_sha256'
+    ) 'receipt-v2 postbuild result'
+    Assert-RimePimeReceiptV2StringFields $Postbuild.installer @('sha256','signature_status') 'receipt-v2 postbuild installer'
+    Assert-RimePimeReceiptV2StringFields $Postbuild.generated_uninstaller @('sha256','signature_status') 'receipt-v2 postbuild generated uninstaller'
+    Assert-RimePimeReceiptV2StringFields $Postbuild.toolchain_lock @('sha256','toolchain_id') 'receipt-v2 postbuild toolchain lock'
+    Assert-RimePimeReceiptV2StringFields $Postbuild.seven_zip @('sha256') 'receipt-v2 postbuild 7-Zip'
+    Assert-RimePimeReceiptV2StringFields $Postbuild.seven_zip_parser_library @('sha256','version') 'receipt-v2 postbuild parser library'
+    Assert-RimePimeReceiptV2StringFields $Postbuild.makensis @('sha256') 'receipt-v2 postbuild makensis'
+    foreach($value in @(
+        $Postbuild.installer.bytes,$Postbuild.generated_uninstaller.bytes,$Postbuild.seven_zip.bytes,
+        $Postbuild.seven_zip_parser_library.bytes,$Postbuild.makensis.bytes,
+        $Postbuild.installer_archive.entry_count,$Postbuild.installer_archive.raw_stdout_entry_count,
+        $Postbuild.uninstaller_archive.entry_count,$Postbuild.uninstaller_archive.raw_stdout_entry_count)){
+        if(-not(Test-RimePimeStageInteger $value) -or [long]$value -lt 1){
+            throw 'Postbuild result has an invalid bound byte or archive count value.'
+        }
+    }
     foreach($name in @(
         'nsis_compiler_input_file_count','nsis_compiler_input_directory_count','nsis_compiler_input_read_lease_count',
         'nsis_compiler_input_directory_lease_count','nsis_compiler_input_anchor_directory_lease_count',
@@ -455,6 +832,14 @@ function Assert-RimePimeReceiptV2PostbuildEvidence {
         throw 'Postbuild result does not close the same disabled candidate under the required static-only boundaries.'
     }
     foreach($pair in @(
+        @($Postbuild.package_plan_sha256,'postbuild package plan'),
+        @($Postbuild.content_manifest_sha256,'postbuild content manifest'),
+        @($Postbuild.content_tree_sha256,'postbuild content tree'),
+        @($Postbuild.payload_nsh_receipt_sha256,'postbuild payload receipt'),
+        @($Postbuild.payload_nsh_sha256,'postbuild payload include'),
+        @($Postbuild.nsis_toolchain_lock_sha256,'postbuild top-level toolchain lock'),
+        @($Postbuild.nsis_compiler_input_tree_sha256,'postbuild compiler input tree'),
+        @($Postbuild.installer.sha256,'postbuild installer'),
         @($Postbuild.toolchain_lock.sha256,'postbuild toolchain lock'),
         @($Postbuild.seven_zip.sha256,'postbuild seven_zip'),
         @($Postbuild.seven_zip_parser_library.sha256,'postbuild seven_zip parser library'),
@@ -533,13 +918,16 @@ function New-RimePimePackageReceiptV2Preparation {
         $manifest=Open-RimePimeReceiptV2SealedJsonLease $ContentManifestPath 'sealed copied-content manifest';$jsonLeases.Add($manifest)
         $payloadReceipt=Open-RimePimeReceiptV2SealedJsonLease $PayloadNshReceiptPath 'sealed payload include receipt';$jsonLeases.Add($payloadReceipt)
         $postbuild=Open-RimePimeReceiptV2SealedJsonLease $PostbuildResultPath 'sealed postbuild result';$jsonLeases.Add($postbuild)
+        $null=Assert-RimePimePackagePlanValue $plan.Value
+        $manifest.Value=Assert-RimePimeCopiedContentManifestValue $manifest.Value
         if($plan.Digest -cne [string]$v1.Value.package_plan_sha256 -or
             [string]$plan.Value.schema_version -cne 'yime-rime-pime-package-plan-v1' -or
             [string]$plan.Value.product -cne 'rime-pime' -or
             -not(Test-RimePimeReceiptV2OrderedArchitectures $plan.Value.architectures)){
             throw 'Package plan does not match the historical v1 receipt identity.'
         }
-        $payloadReceipt.Value|Add-Member -NotePropertyName __sealed_digest -NotePropertyValue $payloadReceipt.Digest
+        $payloadValidation=Assert-RimePimeNsisStageIncludeReceiptValue $payloadReceipt.Value $manifest.Value `
+            $manifest.Digest $plan.Digest
         if([string]$manifest.Value.schema_version -cne 'yime-rime-pime-copied-content-v1' -or
             [string]$payloadReceipt.Value.schema_version -cne 'yime-rime-pime-nsis-stage-include-v1' -or
             [string]$manifest.Value.package_plan_sha256 -cne [string]$v1.Value.package_plan_sha256 -or
@@ -547,22 +935,90 @@ function New-RimePimePackageReceiptV2Preparation {
             [string]$payloadReceipt.Value.payload_spec_sha256 -cne [string]$manifest.Value.payload_spec_sha256 -or
             [string]$payloadReceipt.Value.content_manifest_sha256 -cne $manifest.Digest -or
             [string]$payloadReceipt.Value.content_tree_sha256 -cne [string]$manifest.Value.content_tree_sha256 -or
-            [bool]$manifest.Value.final_payload_closure -or [bool]$payloadReceipt.Value.final_payload_closure){
+            -not(Test-RimePimeReceiptV2Boolean $manifest.Value.final_payload_closure $false) -or
+            -not(Test-RimePimeReceiptV2Boolean $payloadReceipt.Value.final_payload_closure $false)){
             throw 'Stage manifest and payload include receipt do not share one copied-input identity.'
         }
-        Assert-RimePimeReceiptV2BuildEvidence $build.Value $v1.Value $manifest.Value $payloadReceipt.Value $postbuild.Value
+        $payloadReceipt.Value|Add-Member -NotePropertyName __sealed_digest -NotePropertyValue $payloadReceipt.Digest
+        $planBindings=$null
+        if([string]$build.Value.schema_version -ceq $script:RimePimeCurrentBuildEvidenceSchema){
+            $planBindings=Assert-RimePimePackagePlanStageBindings `
+                -Package ([pscustomobject]@{Digest=$plan.Digest;Plan=$plan.Value}) -ContentManifest $manifest.Value
+        }
+        Assert-RimePimeReceiptV2BuildEvidence $build.Value $v1.Value $manifest.Value $payloadReceipt.Value $postbuild.Value $root $planBindings
+        if([string]$build.Value.schema_version -cne $script:RimePimeCurrentBuildEvidenceSchema){
+            throw 'New receipt preparation requires current membership-interval build evidence; legacy evidence is read-only.'
+        }
+        $predecessorInstallerPath=Resolve-RimePimePackageFile $root ([string]$v1.Value.installer_path)
+        if([string]$build.Value.package_build_receipt_path -ine [string]$v1.Path -or
+            [string]$build.Value.published_installer_path -ine $predecessorInstallerPath){
+            throw 'Current build publication paths contradict the actual predecessor identity.'
+        }
+        $expectedBuildResultPath=Join-Path (Split-Path -Parent ([string]$build.Value.nsis_compiler_stage_path)) 'evidence\build-result.json'
+        if([string]$build.Path -ine [IO.Path]::GetFullPath($expectedBuildResultPath)){
+            throw 'Current build evidence must be the sealed build-result.json from its declared build root.'
+        }
+        $expectedEvidenceRoot=Split-Path -Parent $expectedBuildResultPath
+        if([string]$manifest.Path -ine (Join-Path $expectedEvidenceRoot 'package-stage-content.json') -or
+            [string]$payloadReceipt.Path -ine (Join-Path $expectedEvidenceRoot 'payload-files-receipt.json') -or
+            [IO.Path]::GetFullPath($PayloadNshPath) -ine (Join-Path $expectedEvidenceRoot 'payload-files.nsh')){
+            throw 'Current build evidence inputs do not share its declared evidence root.'
+        }
+        $payloadSpecPath=Join-Path $expectedEvidenceRoot 'payload-spec.json'
+        $payloadSpec=Open-RimePimeReceiptV2SealedJsonLease $payloadSpecPath 'sealed payload stage spec';$jsonLeases.Add($payloadSpec)
+        $goInventoryPath=Join-Path $root 'tools\dual-product\rime-pime-go-payload-inventory.json'
+        $goInventory=Open-RimePimeReceiptV2SealedJsonLease $goInventoryPath 'sealed Go payload inventory';$jsonLeases.Add($goInventory)
+        if($payloadSpec.Digest -cne [string]$manifest.Value.payload_spec_sha256){
+            throw 'Payload stage spec does not match the copied-content manifest identity.'
+        }
+        $null=Assert-RimePimeStageSpecManifestBinding $payloadSpec.Value $manifest.Value $plan.Value `
+            $goInventory.Value $goInventory.Digest
+        foreach($row in @($build.Value.executed_build_logic_sources)){
+            $logicPath=Resolve-RimePimePackageFile $root ([string]$row.path)
+            $logicRecord=Get-YimePimePayloadFileRecord $logicPath
+            $logicLease=Open-RimePimeReceiptV2FileLease $logicPath ([string]$row.sha256) ([long]$logicRecord.bytes) 'current build-logic source'
+            $fileLeases.Add($logicLease)
+        }
+        $toolchainLockPath=Join-Path $root 'tools\dual-product\rime-pime-postbuild-toolchain-lock.json'
+        $toolchainLock=Open-RimePimeReceiptV2SealedJsonLease $toolchainLockPath 'current NSIS toolchain lock';$jsonLeases.Add($toolchainLock)
+        Assert-RimePimeReceiptV2ToolchainLockLease $toolchainLock
+        $toolchainClosure=$toolchainLock.Value.nsis.compiler_input_closure
+        if($toolchainLock.Digest -cne [string]$build.Value.nsis_toolchain_lock_sha256 -or
+            [string]$toolchainLock.Value.schema_version -cne 'yime-rime-pime-postbuild-toolchain-lock-v2' -or
+            [string]$toolchainLock.Value.package_profile -cne [string]$build.Value.package_profile -or
+            [string]$toolchainLock.Value.nsis.makensis.sha256 -cne [string]$build.Value.makensis_sha256 -or
+            [string]$toolchainClosure.scope -cne [string]$build.Value.nsis_compiler_input_scope -or
+            [string]$toolchainClosure.tree_sha256 -cne [string]$build.Value.nsis_compiler_input_tree_sha256 -or
+            -not(Test-RimePimeStageInteger $toolchainClosure.file_count) -or
+            [int]$toolchainClosure.file_count -ne [int]$build.Value.nsis_compiler_input_file_count -or
+            -not(Test-RimePimeStageInteger $toolchainClosure.directory_count) -or
+            [int]$toolchainClosure.directory_count -ne [int]$build.Value.nsis_compiler_input_directory_count){
+            throw 'Current build evidence contradicts the leased repository NSIS toolchain lock.'
+        }
         if([string]$build.Value.package_build_receipt_sha256 -cne $v1.Digest){throw 'Build result does not bind the supplied historical v1 receipt bytes.'}
         Assert-RimePimeReceiptV2PostbuildEvidence $postbuild.Value $build.Value $manifest.Value $payloadReceipt.Value
+        if([string]$postbuild.Value.toolchain_lock.toolchain_id -cne [string]$toolchainLock.Value.toolchain_id -or
+            [string]$postbuild.Value.seven_zip.sha256 -cne [string]$toolchainLock.Value.seven_zip.sha256 -or
+            [long]$postbuild.Value.seven_zip.bytes -ne [long]$toolchainLock.Value.seven_zip.bytes -or
+            [string]$postbuild.Value.seven_zip_parser_library.sha256 -cne [string]$toolchainLock.Value.seven_zip.library.sha256 -or
+            [long]$postbuild.Value.seven_zip_parser_library.bytes -ne [long]$toolchainLock.Value.seven_zip.library.bytes -or
+            [string]$postbuild.Value.makensis.sha256 -cne [string]$toolchainLock.Value.nsis.makensis.sha256 -or
+            [long]$postbuild.Value.makensis.bytes -ne [long]$toolchainLock.Value.nsis.makensis.bytes){
+            throw 'Postbuild tool identities contradict the code-pinned NSIS toolchain lock.'
+        }
         $includePath=[IO.Path]::GetFullPath($PayloadNshPath)
         if((Split-Path -Parent $includePath) -ine (Split-Path -Parent $payloadReceipt.Path) -or
             [IO.Path]::GetFileName($includePath) -cne [string]$payloadReceipt.Value.include_file){throw 'Payload include path differs from its sealed receipt.'}
         $include=Open-RimePimeReceiptV2FileLease $includePath ([string]$payloadReceipt.Value.include_sha256) ([long]$payloadReceipt.Value.include_bytes) 'payload include';$fileLeases.Add($include)
         $includeSidecar=Open-RimePimeReceiptV2RawSidecarLease $includePath $include.Digest 'payload include';$fileLeases.Add($includeSidecar)
+        Assert-RimePimeReceiptV2LeasedIncludeDocument $include $payloadValidation.Document 'payload include'
         $sourcePath=Resolve-RimePimePackageFile $root ([string]$v1.Value.installer_source_path)
         $sourceBytes=[long](Get-Item -LiteralPath $sourcePath).Length
         $source=Open-RimePimeReceiptV2FileLease $sourcePath ([string]$v1.Value.installer_source_sha256) $sourceBytes 'installer source';$fileLeases.Add($source)
         $installerPath=Resolve-RimePimePackageFile $root ([string]$v1.Value.installer_path)
         $installer=Open-RimePimeReceiptV2FileLease $installerPath ([string]$v1.Value.installer_sha256) ([long]$v1.Value.installer_size) 'canonical disabled installer';$fileLeases.Add($installer)
+        Assert-RimePimeReceiptV2InstallerRawBindings $installer $plan.Digest $manifest.Digest `
+            ([string]$manifest.Value.content_tree_sha256) $include.Digest
         foreach($path in @($build.Path,$manifest.Path,$payloadReceipt.Path,$postbuild.Path,$include.Path)){$null=ConvertTo-RimePimeReceiptV2RelativePath $root $path}
         $receipt=[pscustomobject][ordered]@{
             schema_version=$script:RimePimePackageReceiptV2Schema;product='rime-pime'
@@ -572,7 +1028,11 @@ function New-RimePimePackageReceiptV2Preparation {
             package_plan=[pscustomobject][ordered]@{path=[string]$v1.Value.package_plan_path;sha256=[string]$v1.Value.package_plan_sha256}
             sealed_stage=[pscustomobject][ordered]@{
                 content_manifest_path=(ConvertTo-RimePimeReceiptV2RelativePath $root $manifest.Path)
-                content_manifest_sha256=$manifest.Digest;payload_spec_sha256=[string]$manifest.Value.payload_spec_sha256
+                content_manifest_sha256=$manifest.Digest
+                payload_spec_path=(ConvertTo-RimePimeReceiptV2RelativePath $root $payloadSpec.Path)
+                payload_spec_sha256=[string]$manifest.Value.payload_spec_sha256
+                go_payload_inventory_path=(ConvertTo-RimePimeReceiptV2RelativePath $root $goInventory.Path)
+                go_payload_inventory_sha256=$goInventory.Digest
                 content_tree_sha256=[string]$manifest.Value.content_tree_sha256
                 copied_file_count=[int]$build.Value.copied_file_count;payload_file_count=[int]$build.Value.payload_file_count
                 bootstrap_file_count=[int]$build.Value.bootstrap_file_count
@@ -589,6 +1049,7 @@ function New-RimePimePackageReceiptV2Preparation {
             disabled_build=[pscustomobject][ordered]@{
                 result_path=(ConvertTo-RimePimeReceiptV2RelativePath $root $build.Path);result_sha256=$build.Digest
                 schema_version=[string]$build.Value.schema_version;makensis_sha256=[string]$build.Value.makensis_sha256
+                nsis_toolchain_lock_path=(ConvertTo-RimePimeReceiptV2RelativePath $root $toolchainLock.Path)
                 nsis_toolchain_lock_sha256=[string]$build.Value.nsis_toolchain_lock_sha256
                 nsis_compiler_input_scope=[string]$build.Value.nsis_compiler_input_scope
                 nsis_compiler_input_tree_sha256=[string]$build.Value.nsis_compiler_input_tree_sha256
@@ -748,10 +1209,16 @@ function Read-RimePimePackageBuildReceiptV2 {
             'installer_executed','uninstaller_executed','installed_product_processes_touched','product_registry_mutated',
             'default_input_method_changed','production_user_data_read_or_written','installed_yimecore_local12_touched','sealed_at_utc') 'package build receipt v2'
         Assert-RimePimeExactProperties $r.package_plan @('path','sha256') 'receipt-v2 package plan'
-        Assert-RimePimeExactProperties $r.sealed_stage @('content_manifest_path','content_manifest_sha256','payload_spec_sha256','content_tree_sha256','copied_file_count','payload_file_count','bootstrap_file_count') 'receipt-v2 stage'
+        $currentReceiptEvidence=[string]$r.disabled_build.schema_version -ceq $script:RimePimeCurrentBuildEvidenceSchema
+        $stageProperties=@('content_manifest_path','content_manifest_sha256','payload_spec_sha256','content_tree_sha256','copied_file_count','payload_file_count','bootstrap_file_count')
+        if($currentReceiptEvidence){$stageProperties=@(
+            'content_manifest_path','content_manifest_sha256','payload_spec_path','payload_spec_sha256',
+            'go_payload_inventory_path','go_payload_inventory_sha256','content_tree_sha256',
+            'copied_file_count','payload_file_count','bootstrap_file_count')}
+        Assert-RimePimeExactProperties $r.sealed_stage $stageProperties 'receipt-v2 stage'
         Assert-RimePimeExactProperties $r.payload_include @('path','sha256','bytes','receipt_path','receipt_sha256') 'receipt-v2 payload include'
         Assert-RimePimeExactProperties $r.predecessor_v1 @('schema_version','source_path_at_finalization','sha256','bytes','installer_sha256','installer_size','package_plan_sha256') 'receipt-v2 predecessor identity'
-        Assert-RimePimeExactProperties $r.disabled_build @(
+        $disabledBuildProperties=@(
             'result_path','result_sha256','schema_version','makensis_sha256','nsis_toolchain_lock_sha256','nsis_compiler_input_scope',
             'nsis_compiler_input_tree_sha256','nsis_compiler_input_file_count','nsis_compiler_input_directory_count',
             'nsis_compiler_input_read_lease_count','nsis_compiler_input_directory_lease_count','nsis_compiler_input_anchor_directory_lease_count',
@@ -759,7 +1226,15 @@ function Read-RimePimePackageBuildReceiptV2 {
             'nsis_compiler_input_pre_snapshot_exact','nsis_compiler_input_post_snapshot_exact',
             'nsis_compiler_input_leases_held_during_makensis',
             'active_same_sid_transient_tree_membership_interference_excluded','nsis_non_os_compiler_input_closure',
-            'full_nsis_toolchain_input_closure','unsigned_disabled_build','signing_hook_processes_executed') 'receipt-v2 disabled build'
+            'full_nsis_toolchain_input_closure','unsigned_disabled_build','signing_hook_processes_executed')
+        if($currentReceiptEvidence){$disabledBuildProperties=@('result_path','result_sha256','schema_version','makensis_sha256','nsis_toolchain_lock_path','nsis_toolchain_lock_sha256','nsis_compiler_input_scope',
+            'nsis_compiler_input_tree_sha256','nsis_compiler_input_file_count','nsis_compiler_input_directory_count',
+            'nsis_compiler_input_read_lease_count','nsis_compiler_input_directory_lease_count','nsis_compiler_input_anchor_directory_lease_count',
+            'nsis_toolchain_control_read_lease_count','nsis_known_input_file_replacement_closure','nsis_compiler_input_pre_snapshot_exact',
+            'nsis_compiler_input_post_snapshot_exact','nsis_compiler_input_leases_held_during_makensis',
+            'active_same_sid_transient_tree_membership_interference_excluded','nsis_non_os_compiler_input_closure',
+            'full_nsis_toolchain_input_closure','unsigned_disabled_build','signing_hook_processes_executed')}
+        Assert-RimePimeExactProperties $r.disabled_build $disabledBuildProperties 'receipt-v2 disabled build'
         Assert-RimePimeExactProperties $r.static_postbuild @('result_path','result_sha256','schema_version','toolchain','installer_archive_entry_count','nested_uninstaller_archive_entry_count','generated_uninstaller_sha256','generated_uninstaller_bytes','archive_content_origin_proven','actual_installer_or_uninstaller_executed') 'receipt-v2 static postbuild'
         Assert-RimePimeExactProperties $r.static_postbuild.toolchain @(
             'toolchain_id','lock_sha256','makensis_sha256','seven_zip_sha256','seven_zip_parser_library_sha256','seven_zip_parser_library_version',
@@ -769,6 +1244,26 @@ function Read-RimePimePackageBuildReceiptV2 {
             'active_same_sid_transient_tree_membership_interference_excluded','compiler_input_leases_held_during_makensis',
             'non_os_compiler_input_closure','full_toolchain_input_closure') 'receipt-v2 toolchain'
         Assert-RimePimeExactProperties $r.installer @('path','sha256','bytes','source_path','source_sha256') 'receipt-v2 installer'
+        Assert-RimePimeReceiptV2StringFields $r @(
+            'schema_version','product','closure_scope','receipt_state','product_version','package_profile','sealed_at_utc'
+        ) 'receipt-v2'
+        Assert-RimePimeReceiptV2StringFields $r.disabled_build @('schema_version','nsis_compiler_input_scope') 'receipt-v2 disabled build'
+        Assert-RimePimeReceiptV2StringFields $r.predecessor_v1 @('schema_version') 'receipt-v2 predecessor identity'
+        Assert-RimePimeReceiptV2StringFields $r.static_postbuild @('schema_version') 'receipt-v2 static postbuild'
+        Assert-RimePimeReceiptV2StringFields $r.static_postbuild.toolchain @(
+            'toolchain_id','seven_zip_parser_library_version','nsis_compiler_input_scope'
+        ) 'receipt-v2 static postbuild toolchain'
+        foreach($pathValue in @(
+            $r.package_plan.path,$r.sealed_stage.content_manifest_path,$r.payload_include.path,$r.payload_include.receipt_path,
+            $r.predecessor_v1.source_path_at_finalization,$r.disabled_build.result_path,$r.static_postbuild.result_path,
+            $r.installer.path,$r.installer.source_path)){
+            if($pathValue -isnot [string]){throw 'Receipt-v2 bound paths must be JSON strings.'}
+        }
+        if($currentReceiptEvidence){
+            foreach($pathValue in @($r.sealed_stage.payload_spec_path,$r.sealed_stage.go_payload_inventory_path,$r.disabled_build.nsis_toolchain_lock_path)){
+                if($pathValue -isnot [string]){throw 'Current receipt-v2 bound paths must be JSON strings.'}
+            }
+        }
         if([string]$r.schema_version -cne $script:RimePimePackageReceiptV2Schema -or [string]$r.product -cne 'rime-pime' -or
             [string]$r.closure_scope -cne 'sealed-stage-disabled-nsis-build-and-static-archive-evidence-not-release' -or
             [string]$r.receipt_state -cne 'canonical-static-closure-disabled' -or
@@ -783,7 +1278,7 @@ function Read-RimePimePackageBuildReceiptV2 {
             [string]$r.disabled_build.nsis_toolchain_lock_sha256 -cne [string]$r.static_postbuild.toolchain.lock_sha256 -or
             [string]$r.disabled_build.nsis_compiler_input_scope -cne [string]$r.static_postbuild.toolchain.nsis_compiler_input_scope -or
             [string]$r.disabled_build.nsis_compiler_input_tree_sha256 -cne [string]$r.static_postbuild.toolchain.nsis_compiler_input_tree_sha256 -or
-            [string]$r.disabled_build.schema_version -cnotmatch '^yime-rime-pime-staged-nsis-build-result-v[1-9][0-9]*$' -or
+            -not(Test-RimePimeReceiptV2BuildEvidenceSchema $r.disabled_build.schema_version) -or
             [string]$r.static_postbuild.schema_version -cnotmatch '^yime-rime-pime-postbuild-extraction-v[1-9][0-9]*$' -or
             [string]::IsNullOrWhiteSpace([string]$r.static_postbuild.toolchain.toolchain_id) -or
             [string]$r.static_postbuild.toolchain.toolchain_id -cnotmatch '^[A-Za-z0-9._+-]{1,128}$' -or
@@ -823,14 +1318,17 @@ function Read-RimePimePackageBuildReceiptV2 {
             -not(Test-RimePimeUtcTimestamp $r.sealed_at_utc)){
             throw 'Package receipt-v2 identity or fail-closed boundary is invalid.'
         }
-        foreach($value in @(
+        $boundDigests=@(
             $r.package_plan.sha256,$r.sealed_stage.content_manifest_sha256,$r.sealed_stage.payload_spec_sha256,$r.sealed_stage.content_tree_sha256,
-            $r.payload_include.sha256,$r.payload_include.receipt_sha256,$r.predecessor_v1.sha256,$r.disabled_build.result_sha256,
+            $r.payload_include.sha256,$r.payload_include.receipt_sha256,$r.predecessor_v1.sha256,
+            $r.predecessor_v1.installer_sha256,$r.predecessor_v1.package_plan_sha256,$r.disabled_build.result_sha256,
             $r.disabled_build.makensis_sha256,$r.disabled_build.nsis_toolchain_lock_sha256,$r.disabled_build.nsis_compiler_input_tree_sha256,
             $r.static_postbuild.result_sha256,$r.static_postbuild.toolchain.lock_sha256,
-            $r.static_postbuild.toolchain.nsis_compiler_input_tree_sha256,
+            $r.static_postbuild.toolchain.makensis_sha256,$r.static_postbuild.toolchain.nsis_compiler_input_tree_sha256,
             $r.static_postbuild.toolchain.seven_zip_sha256,$r.static_postbuild.toolchain.seven_zip_parser_library_sha256,
-            $r.static_postbuild.generated_uninstaller_sha256,$r.installer.sha256,$r.installer.source_sha256)){
+            $r.static_postbuild.generated_uninstaller_sha256,$r.installer.sha256,$r.installer.source_sha256)
+        if($currentReceiptEvidence){$boundDigests+=@($r.sealed_stage.go_payload_inventory_sha256)}
+        foreach($value in $boundDigests){
             Assert-RimePimeReceiptV2Hash $value 'receipt-v2 bound digest'
         }
         foreach($path in @($r.package_plan.path,$r.sealed_stage.content_manifest_path,$r.payload_include.path,$r.payload_include.receipt_path,
@@ -873,12 +1371,20 @@ function Read-RimePimePackageBuildReceiptV2 {
             [pscustomobject]@{Path=$r.disabled_build.result_path;Digest=$r.disabled_build.result_sha256;Context='receipt-v2 build result'},
             [pscustomobject]@{Path=$r.static_postbuild.result_path;Digest=$r.static_postbuild.result_sha256;Context='receipt-v2 postbuild result'}
         )
+        if($currentReceiptEvidence){
+            $evidencePairs+=@([pscustomobject]@{Path=$r.sealed_stage.payload_spec_path;Digest=$r.sealed_stage.payload_spec_sha256;Context='receipt-v2 payload stage spec'})
+            $evidencePairs+=@([pscustomobject]@{Path=$r.sealed_stage.go_payload_inventory_path;Digest=$r.sealed_stage.go_payload_inventory_sha256;Context='receipt-v2 Go payload inventory'})
+            $evidencePairs+=@([pscustomobject]@{Path=$r.disabled_build.nsis_toolchain_lock_path;Digest=$r.disabled_build.nsis_toolchain_lock_sha256;Context='receipt-v2 NSIS toolchain lock'})
+        }
         $evidence=@{}
         foreach($item in $evidencePairs){
             $path=Resolve-RimePimeReceiptEvidence $root $r ([string]$item.Path) ([string]$item.Digest)
             $bound=Open-RimePimeReceiptV2SealedJsonLease $path ([string]$item.Context)
             try{
                 if($bound.Digest -cne [string]$item.Digest){throw "$($item.Context) differs from the canonical receipt."}
+                if([string]$item.Context -ceq 'receipt-v2 NSIS toolchain lock'){
+                    Assert-RimePimeReceiptV2ToolchainLockLease $bound
+                }
                 $evidence[$item.Context]=$bound.Value
             }
             finally{$bound.SidecarStream.Dispose();$bound.JsonStream.Dispose()}
@@ -901,6 +1407,24 @@ function Read-RimePimePackageBuildReceiptV2 {
         # Digest binding alone does not validate what the bound evidence says.
         $plan=$evidence['receipt-v2 package plan'];$manifest=$evidence['receipt-v2 stage manifest']
         $payload=$evidence['receipt-v2 payload receipt'];$build=$evidence['receipt-v2 build result'];$post=$evidence['receipt-v2 postbuild result']
+        $null=Assert-RimePimePackagePlanValue $plan
+        $manifest=Assert-RimePimeCopiedContentManifestValue $manifest
+        $payloadValidation=Assert-RimePimeNsisStageIncludeReceiptValue $payload $manifest `
+            ([string]$r.sealed_stage.content_manifest_sha256) ([string]$r.package_plan.sha256)
+        if($currentReceiptEvidence){
+            $null=Assert-RimePimeStageSpecManifestBinding $evidence['receipt-v2 payload stage spec'] $manifest $plan `
+                $evidence['receipt-v2 Go payload inventory'] ([string]$r.sealed_stage.go_payload_inventory_sha256)
+            $lock=$evidence['receipt-v2 NSIS toolchain lock']
+            if([string]$post.toolchain_lock.toolchain_id -cne [string]$lock.toolchain_id -or
+                [string]$post.seven_zip.sha256 -cne [string]$lock.seven_zip.sha256 -or
+                [long]$post.seven_zip.bytes -ne [long]$lock.seven_zip.bytes -or
+                [string]$post.seven_zip_parser_library.sha256 -cne [string]$lock.seven_zip.library.sha256 -or
+                [long]$post.seven_zip_parser_library.bytes -ne [long]$lock.seven_zip.library.bytes -or
+                [string]$post.makensis.sha256 -cne [string]$lock.nsis.makensis.sha256 -or
+                [long]$post.makensis.bytes -ne [long]$lock.nsis.makensis.bytes){
+                throw 'Bound postbuild tools contradict the retained code-pinned NSIS toolchain lock.'
+            }
+        }
         if ($plan.schema_version -cne 'yime-rime-pime-package-plan-v1' -or $plan.product -cne 'rime-pime' -or
             -not(Test-RimePimeReceiptV2OrderedArchitectures $plan.architectures) -or
             $manifest.schema_version -cne 'yime-rime-pime-copied-content-v1' -or
@@ -916,10 +1440,32 @@ function Read-RimePimePackageBuildReceiptV2 {
             $build.content_manifest_sha256 -cne $r.sealed_stage.content_manifest_sha256) { throw 'Receipt evidence contradicts its sealed identity.' }
         $payload|Add-Member -NotePropertyName __sealed_digest -NotePropertyValue $r.payload_include.receipt_sha256
         $v1Identity=[pscustomobject]@{installer_sha256=$r.installer.sha256;installer_size=$r.installer.bytes}
-        Assert-RimePimeReceiptV2BuildEvidence $build $v1Identity $manifest $payload $post
+        $planBindings=$null
+        if([string]$build.schema_version -ceq $script:RimePimeCurrentBuildEvidenceSchema){
+            $planBindings=Assert-RimePimePackagePlanStageBindings `
+                -Package ([pscustomobject]@{Digest=[string]$r.package_plan.sha256;Plan=$plan}) -ContentManifest $manifest
+        }
+        Assert-RimePimeReceiptV2BuildEvidence $build $v1Identity $manifest $payload $post $root $planBindings
         Assert-RimePimeReceiptV2PostbuildEvidence $post $build $manifest $payload
+        if([string]$build.schema_version -ceq $script:RimePimeCurrentBuildEvidenceSchema){
+            $expectedEvidenceRoot=Join-Path (Split-Path -Parent ([string]$build.nsis_compiler_stage_path)) 'evidence'
+            if([string]$r.disabled_build.result_path -cne (ConvertTo-RimePimeReceiptV2RelativePath $root (Join-Path $expectedEvidenceRoot 'build-result.json')) -or
+                [string]$r.sealed_stage.content_manifest_path -cne (ConvertTo-RimePimeReceiptV2RelativePath $root (Join-Path $expectedEvidenceRoot 'package-stage-content.json')) -or
+                [string]$r.sealed_stage.payload_spec_path -cne (ConvertTo-RimePimeReceiptV2RelativePath $root (Join-Path $expectedEvidenceRoot 'payload-spec.json')) -or
+                [string]$r.sealed_stage.go_payload_inventory_path -cne 'tools/dual-product/rime-pime-go-payload-inventory.json' -or
+                [string]$r.payload_include.path -cne (ConvertTo-RimePimeReceiptV2RelativePath $root (Join-Path $expectedEvidenceRoot 'payload-files.nsh')) -or
+                [string]$r.payload_include.receipt_path -cne (ConvertTo-RimePimeReceiptV2RelativePath $root (Join-Path $expectedEvidenceRoot 'payload-files-receipt.json')) -or
+                [string]$r.disabled_build.nsis_toolchain_lock_path -cne 'tools/dual-product/rime-pime-postbuild-toolchain-lock.json' -or
+                [string]$r.installer.source_path -cne 'installer/installer.nsi'){
+                throw 'Current receipt evidence paths do not match the declared build evidence root.'
+            }
+            if([string]$build.package_build_receipt_path -ine (Resolve-RimePimePackageFile $root ([string]$r.predecessor_v1.source_path_at_finalization)) -or
+                [string]$build.published_installer_path -ine (Resolve-RimePimePackageFile $root ([string]$r.installer.path))){
+                throw 'Current receipt publication paths contradict its predecessor or installer identity.'
+            }
+        }
         foreach ($property in $r.disabled_build.PSObject.Properties) {
-            if ($property.Name -in @('result_path','result_sha256')) { continue }
+            if ($property.Name -in @('result_path','result_sha256','nsis_toolchain_lock_path')) { continue }
             if ([string]$property.Value -cne [string]$build.($property.Name)) { throw 'Receipt build summary contradicts bound evidence.' }
         }
         foreach ($name in @('copied_file_count','payload_file_count','bootstrap_file_count')) {
@@ -940,7 +1486,8 @@ function Read-RimePimePackageBuildReceiptV2 {
         $include=Open-RimePimeReceiptV2FileLease $includePath ([string]$r.payload_include.sha256) ([long]$r.payload_include.bytes) 'receipt-v2 payload include'
         try{
             $marker=Open-RimePimeReceiptV2RawSidecarLease $includePath ([string]$r.payload_include.sha256) 'receipt-v2 payload include'
-            try{}finally{$marker.Stream.Dispose()}
+            try{Assert-RimePimeReceiptV2LeasedIncludeDocument $include $payloadValidation.Document 'receipt-v2 payload include'}
+            finally{$marker.Stream.Dispose()}
         }finally{$include.Stream.Dispose()}
         $sourcePath=Resolve-RimePimeReceiptEvidence $root $r ([string]$r.installer.source_path) ([string]$r.installer.source_sha256)
         $sourceBytes=[long](Get-Item -LiteralPath $sourcePath).Length
@@ -948,7 +1495,11 @@ function Read-RimePimePackageBuildReceiptV2 {
         $source.Stream.Dispose()
         $installerPath=Resolve-RimePimeReceiptEvidence $root $r ([string]$r.installer.path) ([string]$r.installer.sha256)
         $candidate=Open-RimePimeReceiptV2FileLease $installerPath ([string]$r.installer.sha256) ([long]$r.installer.bytes) 'receipt-v2 canonical installer'
-        try{return [pscustomobject]@{Receipt=$r;Digest=$lease.Digest;Path=$lease.Path;Sidecar=$lease.Sidecar;InstallerPath=$installerPath}}
+        try{
+            Assert-RimePimeReceiptV2InstallerRawBindings $candidate $r.package_plan.sha256 `
+                $r.sealed_stage.content_manifest_sha256 $r.sealed_stage.content_tree_sha256 $r.payload_include.sha256
+            return [pscustomobject]@{Receipt=$r;Digest=$lease.Digest;Path=$lease.Path;Sidecar=$lease.Sidecar;InstallerPath=$installerPath}
+        }
         finally{$candidate.Stream.Dispose()}
     }finally{$lease.SidecarStream.Dispose();$lease.JsonStream.Dispose()}
 }

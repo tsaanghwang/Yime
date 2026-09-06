@@ -35,14 +35,25 @@ function Copy-JsonValue($Value){
     return $Value|ConvertTo-Json -Depth 16 -Compress|ConvertFrom-Json
 }
 function New-PlanStageBindingFixture {
-    $planDigest=('1'*64)-join '';$artifactDigest=('2'*64)-join ''
+    $planDigest=('1'*64)-join '';$specs=@(Get-RimePimePackageArtifactSpecs @('x86','x64'))
+    $artifacts=[Collections.Generic.List[object]]::new();$files=[Collections.Generic.List[object]]::new()
+    for($i=0;$i -lt $specs.Count;$i++){
+        $size=[long](1001+$i);$artifactDigest=('{0:x64}' -f (1001+$i))
+        $artifacts.Add([pscustomobject][ordered]@{
+            path=[string]$specs[$i].path;architecture=[string]$specs[$i].architecture;size=$size;sha256=$artifactDigest
+        })
+        $files.Add([pscustomobject][ordered]@{
+            source_path=[string]$specs[$i].path;architecture=[string]$specs[$i].architecture;bytes=$size;sha256=$artifactDigest
+        })
+    }
     return [pscustomobject]@{
-        Package=[pscustomobject]@{Digest=$planDigest;Plan=[pscustomobject]@{artifacts=@(
-            [pscustomobject][ordered]@{path='build/tool.exe';architecture='x86';size=[long]4;sha256=$artifactDigest}
-        )}}
-        Manifest=[pscustomobject]@{package_plan_sha256=$planDigest;files=@(
-            [pscustomobject][ordered]@{source_path='build/tool.exe';architecture='x86';bytes=[long]4;sha256=$artifactDigest}
-        )}
+        Package=[pscustomobject]@{Digest=$planDigest;Plan=[pscustomobject][ordered]@{
+            schema_version='yime-rime-pime-package-plan-v1';product='rime-pime'
+            closure_scope='declared-packaged-product-pe-inputs-only-not-installed-payload'
+            architectures=@('x86','x64');hash_algorithm='sha256';sealed_at_utc='2026-09-07T00:00:00.0000000Z'
+            artifacts=@($artifacts)
+        }}
+        Manifest=[pscustomobject]@{package_plan_sha256=$planDigest;files=@($files)}
     }
 }
 function New-ContentRow([string]$Path,[string]$Text,[string]$Category){
@@ -231,7 +242,7 @@ Check 'runner-explicitly-binds-real-package-to-stage-before-extraction' {
 Check 'plan-stage-artifact-binding-is-accepted' {
     $bound=New-PlanStageBindingFixture
     $result=Assert-RimePimePackagePlanStageBindings -Package $bound.Package -ContentManifest $bound.Manifest
-    Assert-True ($result.passed -and $result.package_plan_artifact_count -eq 1 -and $result.matching_stage_binding_count -eq 1) 'Plan-stage binding count is wrong.'
+    Assert-True ($result.passed -and $result.package_plan_artifact_count -eq 20 -and $result.matching_stage_binding_count -eq 20) 'Plan-stage binding count is wrong.'
 }
 Check 'same-plan-digest-but-artifact-size-mismatch-is-rejected' {
     $bound=New-PlanStageBindingFixture;$bound.Manifest.files[0].bytes=[long]5

@@ -1045,6 +1045,10 @@ def transaction_source_status(sources):
         staged_builder.count("& $MakensisPath @arguments") == 1 and
         staged_builder.count("$membershipInterval=Complete-RimePimeMonitoredNsisStage") == 1 and
         staged_builder.count("nsis_compiler_membership_interval=$membershipInterval") == 1 and
+        staged_builder.count(
+            "schema_version='yime-rime-pime-staged-nsis-build-result-membership-interval-v1'"
+        ) == 1 and
+        "schema_version='yime-rime-pime-staged-nsis-build-result-v3'" not in staged_builder and
         staged_builder.count("Close-RimePimeMonitoredNsisStage $compilerStage") == 1 and
         "(Join-Path $root 'tools\\dual-product\\rime-pime-nsis-membership-monitor-v1.ps1')" in staged_builder and
         "(Join-Path $root 'tools\\dual-product\\rime-pime-nsis-compiler-interval.ps1')" in staged_builder and
@@ -1168,6 +1172,41 @@ def transaction_source_status(sources):
         "staged-builder-refuses-canonical-v2-downgrade" in receipt_v2_test and
         "yime-rime-pime-receipt-no-downgrade-test-v1" in receipt_no_downgrade_test
     )
+    legacy_build_v2_read_compatibility_wired = all(anchor in receipt_v2 for anchor in (
+        "$script:RimePimeLegacyBuildEvidenceSchema='yime-rime-pime-staged-nsis-build-result-v2'",
+        "Legacy build evidence cannot carry membership-interval fields under the old schema.",
+        "function Test-RimePimeReceiptV2BuildEvidenceSchema",
+    )) and all(anchor in receipt_v2_test for anchor in (
+        "function Convert-ReceiptFileToHistoricalV2",
+        "function Convert-CaseBuildToHistoricalV2",
+    ))
+    current_membership_interval_build_admission_wired = (
+        "$script:RimePimeCurrentBuildEvidenceSchema='yime-rime-pime-staged-nsis-build-result-membership-interval-v1'" in receipt_v2 and
+        "$script:RimePimeCompilerMembershipIntervalSchema='yime-rime-pime-nsis-compiler-membership-interval-v1'" in receipt_v2 and
+        "function Assert-RimePimeReceiptV2CompilerMembershipInterval" in receipt_v2 and
+        "function Assert-RimePimeReceiptV2CurrentBuildLogicSources" in receipt_v2 and
+        "function Assert-RimePimeReceiptV2CurrentBuildEvidence" in receipt_v2 and
+        "$allowedStageParent=[IO.Path]::GetFullPath((Join-Path $repo '.tmp\\dual-product')).TrimEnd([char]92)" in receipt_v2 and
+        "(Split-Path -Parent $buildStage) -ine $allowedStageParent" in receipt_v2 and
+        "[int]$Build.package_plan_artifact_count -ne [int]$Build.staged_pe_unique_artifact_count" in receipt_v2 and
+        "[int]$Build.package_plan_matching_stage_binding_count -ne [int]$Build.staged_pe_path_binding_count" in receipt_v2 and
+        "Current membership-interval build evidence contradicts its sealed manifest or payload include counts." in receipt_v2 and
+        "Current membership-interval build evidence has an invalid prebuild leased-input count." in receipt_v2 and
+        "Current membership-interval build evidence has inconsistent candidate or publication paths." in receipt_v2 and
+        "Current build evidence must be the sealed build-result.json from its declared build root." in receipt_v2 and
+        "Assert-RimePimePackagePlanStageBindings" in receipt_v2 and
+        "Current build publication paths contradict the actual predecessor identity." in receipt_v2 and
+        "Test-RimePimeReceiptV2Boolean $manifest.Value.final_payload_closure $false" in receipt_v2 and
+        "Open-RimePimeReceiptV2FileLease $logicPath ([string]$row.sha256)" in receipt_v2 and
+        "Current build evidence contradicts the leased repository NSIS toolchain lock." in receipt_v2 and
+        "New receipt preparation requires current membership-interval build evidence; legacy evidence is read-only." in receipt_v2 and
+        "^yime-rime-pime-staged-nsis-build-result-v[1-9][0-9]*$" not in receipt_v2 and
+        "Changed receipt publication requires current membership-interval build evidence." in receipt_store and
+        "Changed receipt recovery requires current membership-interval build evidence." in receipt_store and
+        "notification_batch_count=1" in receipt_v2_test and
+        "nsis_compiler_stage_file_lease_count=303" in receipt_v2_test and
+        "nsis_compiler_stage_directory_lease_count=19" in receipt_v2_test
+    )
     canonical_v2_binds_postbuild_source_anchors_present = (
         "static_postbuild" in receipt_v2 and
         "Postbuild result does not close the same disabled candidate" in receipt_v2 and
@@ -1238,6 +1277,8 @@ def transaction_source_status(sources):
             not nsis_stage_only_wired or
             not static_archive_exact_gate_present or postbuild_exact_gate_wired_into_builder or
             not canonical_receipt_v2_source_contract_present or
+            not legacy_build_v2_read_compatibility_wired or
+            not current_membership_interval_build_admission_wired or
             not v2_to_v2_supersession_wired or
             not canonical_v2_binds_postbuild_source_anchors_present or
             not synthetic_postbuild_ci_is_host_tool_independent or
@@ -1326,9 +1367,14 @@ def transaction_source_status(sources):
         "rime_pime_nsis_non_os_compiler_input_closure": False,
         "rime_pime_full_nsis_toolchain_input_closure": False,
         "rime_pime_canonical_receipt_v2_source_contract_present": canonical_receipt_v2_source_contract_present,
+        "rime_pime_legacy_build_v2_read_compatibility_wired": legacy_build_v2_read_compatibility_wired,
+        "rime_pime_current_membership_interval_build_admission_wired": current_membership_interval_build_admission_wired,
+        "rime_pime_current_build_evidence_schema": "yime-rime-pime-staged-nsis-build-result-membership-interval-v1",
         "rime_pime_canonical_v2_binds_postbuild_source_anchors_present": canonical_v2_binds_postbuild_source_anchors_present,
         "rime_pime_canonical_receipt_v2_published_by_baseline": canonical_receipt_v2_published_by_baseline,
         "rime_pime_canonical_receipt_v2_evidence_durable": False,
+        "rime_pime_actual_canonical_migrated_to_current_build_evidence": False,
+        "rime_pime_installer_identity_replacement_transaction_wired": False,
         "rime_pime_v2_to_v2_supersession_wired": v2_to_v2_supersession_wired,
         "rime_pime_retained_receipt_ci_ps5_ps7_present": retained_receipt_ci_ps5_ps7_present,
         "rime_pime_installed_live_acceptance_passed": False,
@@ -1478,11 +1524,11 @@ def source_baseline(root: Path = ROOT):
           "status": "fixture_journal_and_replay_source_anchors_present_real_transaction_pending",
           "reason": "Pure replay/removal models and an isolated filesystem fixture-journal source contract now cover sealed records, hash-chain validation, typed privacy-safe snapshots, replay disposition and foreign-content preservation. This Python baseline only reads their source anchors and does not execute either PowerShell test. A real durable install journal, power-loss and cross-process replay, real registry recovery, installed exact removal, installer wiring, loaded-TSF upgrade handling and native installed/live acceptance remain pending."},
         {"id": "DP1-PIME-COMPILER-INPUT-07", "path": "tools/dual-product/rime-pime-nsis-toolchain-closure.ps1",
-          "status": "fresh_compiler_stage_real_minimal_makensis_interval_regression_wired_full_product_rebuild_and_durable_receipt_pending",
-          "reason": "The pinned 303-file NSIS distribution is copied from held leases into a fresh compiler stage and the continuous membership monitor now encloses the synchronous makensis interval before candidate admission. PS5/PS7 real-minimal-makensis regression lanes are wired, but this baseline does not execute them or a full product rebuild, does not physically prevent same-SID membership changes, and does not bind new interval evidence into a durable canonical receipt; non-OS and full toolchain closure remain false."},
+          "status": "fresh_compiler_stage_and_strict_interval_build_admission_wired_full_product_rebuild_and_durable_receipt_pending",
+          "reason": "The pinned 303-file NSIS distribution is copied from held leases into a fresh compiler stage and the continuous membership monitor encloses the synchronous makensis interval before candidate admission. A tagged build-evidence schema now fails closed in old validators and current receipt preparation requires its exact interval, stage-lease and build-logic-source shape. PS5/PS7 real-minimal-makensis and synthetic strict-admission lanes are wired, but this baseline executes neither lane nor a full product rebuild, does not physically prevent same-SID membership changes, and does not migrate the actual canonical receipt; non-OS and full toolchain closure remain false."},
         {"id": "DP1-PIME-RECEIPT-08", "path": "tools/dual-product/rime-pime-package-receipt-v2.ps1",
-          "status": "retained_v2_supersession_wired_canonical_migration_and_power_loss_acceptance_pending",
-          "reason": "The strict v2 reader and explicit receipt-only supersession API now retain evidence by digest, share the publication lock and recover a persistent intent. Separate PS5/PS7 tests exercise interrupted publication. This source baseline does not execute those tests or migrate the actual canonical receipt; hardware power-loss acceptance and installer-identity replacement remain outside this receipt-only flow."},
+          "status": "retained_v2_supersession_and_current_interval_admission_wired_canonical_migration_pending",
+          "reason": "The strict receipt-v2 reader retains historical build-result-v2 read compatibility while new preparation and changed receipt supersession require the tagged membership-interval build evidence. Publish and recovery both guard that boundary. The receipt-only store retains evidence by digest, shares the publication lock and recovers a persistent intent. This source baseline does not execute the PS5/PS7 contracts or migrate the actual canonical receipt; hardware power-loss acceptance and installer-identity replacement remain outside this receipt-only flow."},
     ]
     unchanged = all(digest(child(root, path)) == expected for path, expected in hashes.items())
     if not unchanged:

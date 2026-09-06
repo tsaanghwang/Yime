@@ -301,7 +301,7 @@ Check 'rejects-reserved-arm64x-plan-profile' {
     $plan=Get-Content -LiteralPath $case.PlanPath -Raw -Encoding UTF8 | ConvertFrom-Json
     $plan.architectures=@('x86','arm64x')
     Write-RimePimeSealedJson $plan $case.PlanPath | Out-Null
-    Assert-Rejected { Invoke-StaticValidation $case } '*reserved but not admitted*'
+    Assert-Rejected { Invoke-StaticValidation $case } '*Package plan identity or seal metadata is invalid*'
 }
 
 Check 'rejects-missing-package-plan-sidecar' {
