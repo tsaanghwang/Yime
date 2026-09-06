@@ -2,7 +2,7 @@
   "schema_version": "yime-dual-product-source-contract-v1",
   "decision": "docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md",
   "products": ["rime-pime", "yimecore"],
-  "rime_pime_source_product_version": "1.4.0-dev",
+  "rime_pime_source_product_version": "1.4.0-dev.1",
   "installation_choices": [["rime-pime"], ["yimecore"], ["rime-pime", "yimecore"]],
   "runtime_dependencies_between_products": [],
   "writable_state_shared_between_products": false,

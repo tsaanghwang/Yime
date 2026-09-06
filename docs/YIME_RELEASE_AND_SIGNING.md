@@ -2,7 +2,7 @@
 
 本文档定义 Windows 发布物从版本确认、构建、测试、签名、打包到安装验证的标准流程。开发测试包可以不签名，但对外发布包必须使用受信任的 RSA 代码签名证书。
 
-> 2026-09-06 当前 DP1-E 状态：Rime/PIME 构包只形成不可运行的未签名静态候选；安装和卸载最早入口均无条件阻断，标签发布 job 也被阻断。它只封存声明的产品 PE 构建输入，不是完整安装载荷闭包。在完整暂存、非 PE 清单、打包后解包比对、持久事务及另行授权的 installed/live 验证完成前，不得按本文后续命令安装或发布该候选。
+> 当前双产品构包门禁与未完成项以[双独立产品开发计划](project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)为准。Rime/PIME 安装和卸载最早入口及标签发布 job 仍无条件阻断；隔离的 unsigned／disabled candidate、静态证据或版本身份准入都不是可交付、签名、安装或 installed/live 证据，不得据此执行本文后续安装或发布命令。
 
 当前 `Build.ps1` 和 `tools/build-rime-pime-installer.ps1` 都只允许未签名禁用构建；若进程中存在证书指纹、强制签名、`signtool` 或时间戳变量，它们会在读取 plan／调用 NSIS 前拒绝。签名只能走受保护发布流程，不能靠直接调用 wrapper 触发。
 
@@ -10,7 +10,7 @@
 
 - 工作区干净，发布目标提交已合入并推送到 `main`；`yime-stable` 仅作为保留的集成分支
 - 子模块提交已先推送到各自 remote，主仓库不引用远端不存在的提交
-- `version.txt` 与构建身份一致；当前未发布开发线使用 `1.4.0-dev`，只有创建正式 `v1.4.0` 标签前才改为 `1.4.0`
+- `version.txt` 与构建身份一致；当前未发布开发线使用 `1.4.0-dev.1`，这是为后续 exact-HEAD 隔离 successor candidate 预留的唯一字符串身份，本身不表示 candidate 已构建、签名或安装，固定 PE 数值版仍为 `1.4.0.0`；只有创建正式 `v1.4.0` 标签前才改为 `1.4.0`
 - 不得重新使用已经存在的历史标签。仓库已有 `v1.0.0`、`v1.1.0` 和 `v1.3.0-*`；即使 Yime 作为独立产品首次公开发布，也不能再次创建同名 `v1.0.0` 标签
 - `CHANGELOG.md` 的 `[Unreleased]` 已核对
 - Visual Studio、Windows SDK、CMake、Rust、Go、Python 和 NSIS 符合 `tools/toolchain.lock.json`；`python tools/verify_toolchain_lock.py` 通过
