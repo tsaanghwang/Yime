@@ -30,10 +30,32 @@ EXPECTED_TEST_LEVEL = (
     "isolated-filesystem-fixtures-pure-memory-transaction-fixtures-"
     "not-installed-or-live"
 )
+RIME_PIME_PRODUCT_VERSION_PATTERN = re.compile(
+    r"(?P<major>0|[1-9][0-9]*)\."
+    r"(?P<minor>0|[1-9][0-9]*)\."
+    r"(?P<patch>0|[1-9][0-9]*)"
+    r"(?:-(?P<suffix>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?"
+)
 
 
 def fail(message):
     raise ValueError(message)
+
+
+def parse_rime_pime_product_version(version):
+    if not isinstance(version, str) or len(version) > 64:
+        fail("Rime/PIME source product version is not a supported semantic Windows version")
+    match = RIME_PIME_PRODUCT_VERSION_PATTERN.fullmatch(version)
+    if match is None:
+        fail("Rime/PIME source product version is not a supported semantic Windows version")
+    parts = tuple(match.group(name) for name in ("major", "minor", "patch"))
+    suffix = match.group("suffix")
+    suffix_identifiers = suffix.split(".") if suffix is not None else ()
+    if (any(int(part) > 65535 for part in parts) or
+            any(identifier.isdigit() and len(identifier) > 1 and identifier.startswith("0")
+                for identifier in suffix_identifiers)):
+        fail("Rime/PIME source product version is not a supported semantic Windows version")
+    return parts, ".".join(parts) + ".0"
 
 
 def plain(path: Path) -> Path:
@@ -237,6 +259,12 @@ def transaction_source_status(sources):
     ]
     isolated_candidate_test = sources[
         "tools/dual-product/test-rime-pime-isolated-candidate.ps1"
+    ]
+    version_identity_admission = sources[
+        "tools/dual-product/rime-pime-version-identity-admission.psm1"
+    ]
+    version_identity_admission_test = sources[
+        "tools/dual-product/test-rime-pime-version-identity-admission.ps1"
     ]
     receipt_v2_supersession = sources["tools/dual-product/rime-pime-receipt-v2-supersession.ps1"]
     receipt_v2_supersession_module = sources["tools/dual-product/rime-pime-receipt-v2-supersession.psm1"]
@@ -742,7 +770,13 @@ def transaction_source_status(sources):
             "$retainedV2 = Publish-RimePimePackageReceiptV2Supersession",
             "$strictV2 = Read-RimePimePackageBuildReceiptV2",
             "Protected actual repository state changed during isolated candidate work.",
+            "rime_pime_source_product_version -cne $headVersion",
+            "Exact source HEAD version.txt differs from the reviewed dual-product source product identity.",
             "distinct_versioned_installer_leaf_for_dp1n = [bool]$distinctVersionedInstallerLeaf",
+            "$cloneInstallerLeaf -ine $actualCanonicalInstallerLeaf",
+            "Read-RimePimePackageBuildReceiptV2 -RepoRoot $root -ReceiptPath $actualCanonicalPath",
+            "Get-RimePimeVersionIdentityAdmission -OldIdentity $oldIdentity",
+            "dp1n_version_identity_admission = $identityAdmission",
             "actual_canonical_migration_admitted = $false",
             "directory_metadata_durability_verified = $false",
             "outer_tmp_retention_guaranteed = $false",
@@ -758,6 +792,32 @@ def transaction_source_status(sources):
             "product-install-sign-and-dp1n-entrypoints-are-absent",
             "full_candidate_build_executed = $false",
             "actual_canonical_touched = $false",
+        ]),
+        (version_identity_admission, [
+            "Pure-data DP1-P admission contract",
+            "function Get-RimePimeVersionIdentityAdmission",
+            "old-and-successor-installer-path-not-distinct-on-windows",
+            "$oldPath -ieq $newPath",
+            "successor-durable-evidence-not-proven",
+            "successor-current-build-evidence-not-proven",
+            "successor-product-version-is-not-strictly-greater-by-semver",
+            "function Compare-RimePimeProductVersionPrecedence",
+            "actual_canonical_migration_admitted = $false",
+            "installer_or_uninstaller_executed = $false",
+            "registry_or_product_process_touched = $false",
+            "Export-ModuleMember -Function 'Get-RimePimeVersionIdentityAdmission'",
+        ]),
+        (version_identity_admission_test, [
+            "yime-rime-pime-version-identity-admission-test-v1",
+            "distinct-canonical-successor-is-admitted-only-at-identity-layer",
+            "module-exports-only-pure-admission-function",
+            "same-leaf-different-hash-is-rejected",
+            "core-version-downgrade-is-rejected",
+            "semver-prerelease-precedence-is-enforced",
+            "case-only-version-and-leaf-change-is-rejected-on-windows",
+            "distinct-leaf-same-hash-is-rejected",
+            "actual_canonical_read_or_written = $false",
+            "actual_canonical_migration_admitted = $false",
         ]),
     ):
         missing = [anchor for anchor in anchors if anchor not in body]
@@ -851,6 +911,11 @@ def transaction_source_status(sources):
         r"(?ms)^      - name: Test DP1-O isolated current-source candidate runner contract\s*$.*?(?=^      - name: |\Z)",
         ci,
         "CI DP1-O isolated current-source candidate runner contract step",
+    ).group()
+    ci_version_identity_step = one(
+        r"(?ms)^      - name: Test DP1-P version identity admission contract\s*$.*?(?=^      - name: |\Z)",
+        ci,
+        "CI DP1-P version identity admission step",
     ).group()
     ci_supersession_step = one(
         r"(?ms)^      - name: Test DP1-J isolated receipt-v2 supersession protocol\s*$.*?(?=^      - name: |\Z)",
@@ -1000,6 +1065,18 @@ def transaction_source_status(sources):
             "build-rime-pime-installer.ps1", "finalize-rime-pime-package-receipt-v2.ps1",
             "sign-release.ps1", "Install-PIME-Test.cmd", "Uninstall-PIME-Test.cmd",
         ))
+    )
+    version_identity_admission_ci_ps5_ps7_present = (
+        ci_version_identity_step.count("test-rime-pime-version-identity-admission.ps1") == 2 and
+        ci_version_identity_step.count("-OutputRoot") == 2 and
+        ".tmp\\dual-product\\dp1-version-identity-test-ci-ps5-$runId" in ci_version_identity_step and
+        ".tmp\\dual-product\\dp1-version-identity-test-ci-ps7-$runId" in ci_version_identity_step and
+        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in
+        ci_version_identity_step and
+        "PowerShell 5.1 DP1-P version-identity admission test failed with exit code $LASTEXITCODE" in
+        ci_version_identity_step and
+        all(re.search(pattern, ci_version_identity_step) is None
+            for pattern in prohibited_dp1i_ci_patterns)
     )
     rime_sid_chain_anchors = ("RequestExecutionLevel user" in nsis and
                               "Function bootstrapTargetUser" in nsis and
@@ -1694,6 +1771,7 @@ def transaction_source_status(sources):
             not installer_receipt_transaction_isolated_contract_wired or
             not isolated_candidate_runner_source_contract_wired or
             not isolated_candidate_runner_contract_ci_ps5_ps7_present or
+            not version_identity_admission_ci_ps5_ps7_present or
             'InstallLayoutOrTip(w "${YIME_TIP}"' not in nsis or
             'Get-ChildItem -LiteralPath "Registry::HKEY_USERS"' in pime_cleanup):
         fail("Rime/PIME registration/SID/transaction status changed; dedicated review required")
@@ -1804,6 +1882,10 @@ def transaction_source_status(sources):
         "rime_pime_isolated_current_candidate_runner_contract_ci_ps5_ps7_present": isolated_candidate_runner_contract_ci_ps5_ps7_present,
         "rime_pime_isolated_current_candidate_full_build_executed_by_baseline": False,
         "rime_pime_isolated_current_candidate_actual_canonical_migrated": False,
+        "rime_pime_version_identity_admission_source_contract_wired": True,
+        "rime_pime_version_identity_admission_ci_ps5_ps7_present": version_identity_admission_ci_ps5_ps7_present,
+        "rime_pime_version_identity_admission_test_executed_by_baseline": False,
+        "rime_pime_version_identity_actual_canonical_migration_admitted": False,
         "rime_pime_v2_to_v2_supersession_wired": v2_to_v2_supersession_wired,
         "rime_pime_retained_receipt_ci_ps5_ps7_present": retained_receipt_ci_ps5_ps7_present,
         "rime_pime_installed_live_acceptance_passed": False,
@@ -1849,6 +1931,28 @@ def source_baseline(root: Path = ROOT):
     hashes["tools/dual-product/baseline.py"] = digest(child(root, "tools/dual-product/baseline.py"))
     hashes["tools/dual-product/test_baseline.py"] = digest(child(root, "tools/dual-product/test_baseline.py"))
     nsis = sources["installer/installer.nsi"]
+    version = sources["version.txt"].strip()
+    if version != contract.get("rime_pime_source_product_version"):
+        fail("Rime/PIME version.txt differs from the reviewed source product identity")
+    version_parts, numeric_version = parse_rime_pime_product_version(version)
+    if f'VIProductVersion "{numeric_version}"' not in nsis:
+        fail("Rime/PIME NSIS numeric VERSIONINFO differs from version.txt")
+    launcher_version = sources["PIMELauncher/build.rs"]
+    if ('.join("..").join("version.txt")' not in launcher_version or
+            'version.split_once(\'-\')' not in launcher_version or
+            '.set("FileVersion", version)' not in launcher_version or
+            '.set("ProductVersion", version)' not in launcher_version or
+            '.set_version_info(winresource::VersionInfo::FILEVERSION, numeric_version)' not in launcher_version or
+            '.set_version_info(winresource::VersionInfo::PRODUCTVERSION, numeric_version)' not in launcher_version):
+        fail("Rime/PIME launcher version identity is no longer derived from version.txt")
+    text_service_version = sources["PIMETextService/PIMETextService.rc.in"]
+    for anchor in (
+            "FILEVERSION @PIME_VERSION_MAJOR@,@PIME_VERSION_MINOR@,@PIME_VERSION_PATCH@",
+            "PRODUCTVERSION @PIME_VERSION_MAJOR@,@PIME_VERSION_MINOR@,@PIME_VERSION_PATCH@",
+            'VALUE "FileVersion", "@PIME_VERSION_MAJOR@.@PIME_VERSION_MINOR@.@PIME_VERSION_PATCH@"',
+            'VALUE "ProductVersion", "@PIME_VERSION_MAJOR@.@PIME_VERSION_MINOR@.@PIME_VERSION_PATCH@"'):
+        if anchor not in text_service_version:
+            fail("Rime/PIME text-service numeric version derivation changed")
     ime = json.loads(sources["go-backend/input_methods/yime/ime.json"])
     desc = json.loads(sources["tools/yimecore/local-product.json"])
     identity = desc["identity"]
@@ -1910,6 +2014,9 @@ def source_baseline(root: Path = ROOT):
         artifacts.append({"role": role, "path": item["path"], "sha256": actual})
     products = {
         "rime-pime": {
+            "product_version": version,
+            "installer_leaf": "YIME-" + version + "-setup.exe",
+            "numeric_file_version": numeric_version,
             "clsid": native_guid, "profile": ime["guid"].upper(),
             "language_id": tip.group(1), "install_directory": install_dir,
             "install_parent": "ProgramFiles32", "state_relative": app + "\\Rime",

@@ -216,7 +216,17 @@ Check 'product-install-sign-and-dp1n-entrypoints-are-absent' {
 
 Check 'migration-version-and-trust-boundaries-stay-negative' {
     foreach ($anchor in @(
+        "':tools/dual-product/contract.json'",
+        "rime_pime_source_product_version -cne `$headVersion",
+        'Exact source HEAD version.txt differs from the reviewed dual-product source product identity.',
         'distinct_versioned_installer_leaf_for_dp1n = [bool]$distinctVersionedInstallerLeaf',
+        '$cloneInstallerLeaf -ine $actualCanonicalInstallerLeaf',
+        'Read-RimePimePackageBuildReceiptV2 -RepoRoot $root -ReceiptPath $actualCanonicalPath',
+        'actual_canonical_strict_reader_passed = [bool]($null -ne $actualCanonicalStrictReceipt)',
+        'actual_canonical_strict_reader_error = $actualCanonicalStrictReadError',
+        'Get-RimePimeVersionIdentityAdmission -OldIdentity $oldIdentity',
+        'dp1n_version_identity_admission = $identityAdmission',
+        'paths_compared_case_insensitively_for_windows',
         'actual_canonical_migration_admitted = $false',
         'actual_canonical_migrated = $false',
         'actual_installer_published = $false',

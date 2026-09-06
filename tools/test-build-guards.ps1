@@ -441,11 +441,27 @@ foreach ($name in @(
 }
 $nativeBuildJob = & $extractJob 'native-build'
 $installerPayloadJob = & $extractJob 'installer-payload'
+$unsignedInstallerJob = & $extractJob 'unsigned-installer-package'
 $goPackageBuild = $installerPayloadJob.IndexOf('cmd /C build.bat')
 $completePeGate = $installerPayloadJob.IndexOf('.\tools\verify-pe-architectures.ps1')
 if (-not $nativeBuildJob.Contains('.\tools\test-build-guards.ps1 -SkipPackagedRime') -or
     $goPackageBuild -lt 0 -or $completePeGate -lt 0 -or $completePeGate -lt $goPackageBuild) {
     throw 'CI must defer the complete Rime payload PE/CRT gate until after the Go package build.'
+}
+foreach ($guard in @(
+    "(Get-Content -LiteralPath .\version.txt -Raw).Trim()",
+    '$expectedLeaf = "YIME-$version-setup.exe"',
+    "Get-ChildItem -LiteralPath .\installer -File -Filter 'YIME-*-setup.exe'",
+    '$installers.Count -ne 1',
+    '$installers[0].Name -cne $expectedLeaf',
+    '$installer = $installers[0]'
+)) {
+    if (-not $unsignedInstallerJob.Contains($guard)) {
+        throw "Unsigned installer CI must select one exact version.txt-derived leaf: $guard"
+    }
+}
+if ($unsignedInstallerJob.Contains('Select-Object -First 1')) {
+    throw 'Unsigned installer CI must reject multiple versioned leaves instead of selecting an arbitrary first match.'
 }
 foreach ($jobName in @('release-sign-payload', 'release-sign-installer')) {
     $jobText = & $extractJob $jobName

@@ -255,16 +255,36 @@ $protectedBefore = Get-ProtectedSnapshot $root
 if ([string]$protectedBefore.head -cne $head) { throw 'Source HEAD changed before isolated output creation.' }
 $headVersion = ((Get-GitOutput @('-C', $root, 'show', ($head + ':version.txt')) 'HEAD version inspection') -join '').Trim()
 if ([string]::IsNullOrWhiteSpace($headVersion)) { throw 'Exact source HEAD has no product version.' }
+$headContractText = (Get-GitOutput @('-C', $root, 'show', ($head + ':tools/dual-product/contract.json')) `
+    'HEAD dual-product contract inspection') -join "`n"
+try { $headContract = $headContractText | ConvertFrom-Json }
+catch { throw "Exact source HEAD dual-product contract is not valid JSON: $($_.Exception.Message)" }
+if ($null -eq $headContract.PSObject.Properties['rime_pime_source_product_version'] -or
+    [string]$headContract.rime_pime_source_product_version -cne $headVersion) {
+    throw 'Exact source HEAD version.txt differs from the reviewed dual-product source product identity.'
+}
 $actualCanonicalInstallerLeaf = ''
+$actualCanonicalInstallerPath = ''
+$actualCanonicalInstallerSha256 = ''
+$actualCanonicalInstallerBytes = $null
 $actualCanonicalVersion = ''
+$actualCanonical = $null
+$actualCanonicalStrictReceipt = $null
+$actualCanonicalStrictReadError = ''
 $actualCanonicalPath = Join-Path $root 'installer\package-build-receipt.json'
 if (Test-Path -LiteralPath $actualCanonicalPath -PathType Leaf) {
     $actualCanonical = Read-SealedJson $actualCanonicalPath 'actual canonical receipt'
     $actualCanonicalVersion = [string]$actualCanonical.Value.product_version
-    $actualInstallerPath = if ($null -ne $actualCanonical.Value.PSObject.Properties['installer']) {
-        [string]$actualCanonical.Value.installer.path
-    } else { [string]$actualCanonical.Value.installer_path }
-    $actualCanonicalInstallerLeaf = [IO.Path]::GetFileName($actualInstallerPath.Replace('/', '\'))
+    if ($null -ne $actualCanonical.Value.PSObject.Properties['installer']) {
+        $actualCanonicalInstallerPath = [string]$actualCanonical.Value.installer.path
+        $actualCanonicalInstallerSha256 = [string]$actualCanonical.Value.installer.sha256
+        $actualCanonicalInstallerBytes = $actualCanonical.Value.installer.bytes
+    } else {
+        $actualCanonicalInstallerPath = [string]$actualCanonical.Value.installer_path
+        $actualCanonicalInstallerSha256 = [string]$actualCanonical.Value.installer_sha256
+        $actualCanonicalInstallerBytes = $actualCanonical.Value.installer_size
+    }
+    $actualCanonicalInstallerLeaf = [IO.Path]::GetFileName($actualCanonicalInstallerPath.Replace('/', '\'))
     if ([string]::IsNullOrWhiteSpace($actualCanonicalInstallerLeaf)) {
         throw 'Actual canonical receipt has no installer leaf identity.'
     }
@@ -319,6 +339,25 @@ try {
     }
     if (@(Get-ChildItem -LiteralPath (Join-Path $clone 'installer') -File -Filter 'YIME-*-setup.exe').Count -ne 0) {
         throw 'An ignored actual installer entered the clone.'
+    }
+
+    if (Test-Path -LiteralPath $actualCanonicalPath -PathType Leaf) {
+        $exactReceiptModule = Join-Path $clone 'tools\dual-product\rime-pime-package-receipt-v2.psm1'
+        Import-Module -Name $exactReceiptModule -Force
+        try {
+            try {
+                $actualCanonicalStrictReceipt = Read-RimePimePackageBuildReceiptV2 -RepoRoot $root -ReceiptPath $actualCanonicalPath
+            } catch {
+                $actualCanonicalStrictReadError = [string]$_.Exception.Message
+                $actualCanonicalStrictReceipt = $null
+            }
+        } finally { Remove-Module -Name rime-pime-package-receipt-v2 -Force -ErrorAction SilentlyContinue }
+        if ($null -ne $actualCanonicalStrictReceipt -and
+            ($actualCanonicalStrictReceipt.Digest -cne $actualCanonical.Digest -or
+             [string]$actualCanonicalStrictReceipt.Receipt.product -cne 'rime-pime')) {
+            $actualCanonicalStrictReadError = 'Actual canonical receipt did not pass the exact-HEAD strict reader identity check.'
+            $actualCanonicalStrictReceipt = $null
+        }
     }
 
     Invoke-RecordedProcess 'build-current-source' $env:ComSpec @('/D', '/C', 'build.bat') $clone
@@ -440,7 +479,36 @@ try {
     if ($cloneVersion -cne $headVersion) { throw 'Built clone version differs from exact HEAD version.txt.' }
     $cloneInstallerLeaf = [IO.Path]::GetFileName($installerPath)
     $distinctVersionedInstallerLeaf = -not [string]::IsNullOrWhiteSpace($actualCanonicalInstallerLeaf) -and
-        $cloneInstallerLeaf -cne $actualCanonicalInstallerLeaf
+        $cloneInstallerLeaf -ine $actualCanonicalInstallerLeaf
+
+    $oldIdentity = [pscustomobject][ordered]@{
+        product_version = if ($null -ne $actualCanonical) { [string]$actualCanonical.Value.product_version } else { $null }
+        installer_path = if ($null -ne $actualCanonical) { $actualCanonicalInstallerPath } else { $null }
+        installer_sha256 = if ($null -ne $actualCanonical) { $actualCanonicalInstallerSha256 } else { $null }
+        installer_bytes = if ($null -ne $actualCanonical) { $actualCanonicalInstallerBytes } else { $null }
+        strict_receipt = [bool]($null -ne $actualCanonicalStrictReceipt)
+    }
+    $successorIdentity = [pscustomobject][ordered]@{
+        product_version = [string]$strictV2.Receipt.product_version
+        installer_path = [string]$strictV2.Receipt.installer.path
+        installer_sha256 = [string]$strictV2.Receipt.installer.sha256
+        installer_bytes = $strictV2.Receipt.installer.bytes
+        strict_receipt = $true
+        evidence_artifacts_durable = [bool]$strictV2.Receipt.evidence_artifacts_durable
+        current_build_evidence = [string]$strictV2.Receipt.disabled_build.schema_version -ceq `
+            'yime-rime-pime-staged-nsis-build-result-membership-interval-v1'
+    }
+    $identityModule = Join-Path $clone 'tools\dual-product\rime-pime-version-identity-admission.psm1'
+    Import-Module -Name $identityModule -Force
+    try {
+        $identityAdmission = Get-RimePimeVersionIdentityAdmission -OldIdentity $oldIdentity `
+            -SuccessorIdentity $successorIdentity -ExpectedSuccessorProductVersion $headVersion
+    } finally { Remove-Module -Name rime-pime-version-identity-admission -Force -ErrorAction SilentlyContinue }
+    if (-not [bool]$identityAdmission.paths_compared_case_insensitively_for_windows -or
+        [bool]$identityAdmission.actual_canonical_migration_admitted -or
+        [bool]$identityAdmission.actual_canonical_migrated) {
+        throw 'Version-identity admission result weakened its Windows path or actual-migration boundary.'
+    }
 
     $summary = [pscustomobject][ordered]@{
         clone_path = Get-RelativePath $output $clone
@@ -448,7 +516,10 @@ try {
         clone_current_version = $cloneVersion
         actual_canonical_product_version = $actualCanonicalVersion
         actual_canonical_installer_leaf = $actualCanonicalInstallerLeaf
+        actual_canonical_strict_reader_passed = [bool]($null -ne $actualCanonicalStrictReceipt)
+        actual_canonical_strict_reader_error = $actualCanonicalStrictReadError
         distinct_versioned_installer_leaf_for_dp1n = [bool]$distinctVersionedInstallerLeaf
+        dp1n_version_identity_admission = $identityAdmission
         package_plan = [pscustomobject][ordered]@{ path = Get-RelativePath $output $planPath; sha256 = [string]$strictV2.Receipt.package_plan.sha256 }
         build_result = [pscustomobject][ordered]@{ path = Get-RelativePath $output $buildResult.Path; sha256 = $buildResult.Digest; schema_version = [string]$buildResult.Value.schema_version }
         build_manifest = [pscustomobject][ordered]@{ path = Get-RelativePath $output $manifestPath; bytes = [long]$manifestRecord.Length; sha256 = Get-Sha256 $manifestPath; static_only_passed = $true }

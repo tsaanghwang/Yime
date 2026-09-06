@@ -321,6 +321,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-O isolated-candidate runner contract failed with exit code $LASTEXITCODE" }
           .\tools\dual-product\test-rime-pime-isolated-candidate.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-o-runner-contract-ci-ps7-$runId")
+      - name: Test DP1-P version identity admission contract
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-version-identity-admission.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-version-identity-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-P version-identity admission test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-version-identity-admission.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-version-identity-test-ci-ps7-$runId")
       - name: Test canonical receipt no-downgrade contract
         shell: pwsh
         run: |
@@ -552,8 +562,13 @@ jobs:
       - name: Validate unsigned installer artifact without native installation
         shell: pwsh
         run: |
-          $installer = Get-ChildItem installer\YIME-*-setup.exe | Select-Object -First 1
-          if (-not $installer) { throw 'Unsigned installer was not found.' }
+          $version = (Get-Content -LiteralPath .\version.txt -Raw).Trim()
+          $expectedLeaf = "YIME-$version-setup.exe"
+          $installers = @(Get-ChildItem -LiteralPath .\installer -File -Filter 'YIME-*-setup.exe')
+          if ($installers.Count -ne 1 -or $installers[0].Name -cne $expectedLeaf) {
+            throw "Unsigned installer identity is ambiguous or differs from version.txt: expected $expectedLeaf; found $(@($installers.Name) -join ', ')"
+          }
+          $installer = $installers[0]
           .\tools\test-installer-smoke.ps1 -InstallerPath $installer.FullName -StaticOnly `
             -ExpectedCommit $env:GITHUB_SHA -ExpectedRef $env:GITHUB_REF -ExpectedSignedRelease false `
             -ExpectedSourceTreeDirty false

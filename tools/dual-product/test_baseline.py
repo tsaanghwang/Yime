@@ -152,9 +152,12 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 130)
-        self.assertEqual(len(self.receipt["source_manifest"]), 137)
+        self.assertEqual(len(contract["source_paths"]), 135)
+        self.assertEqual(len(self.receipt["source_manifest"]), 142)
         for path in (
+            "version.txt",
+            "PIMELauncher/build.rs",
+            "PIMETextService/PIMETextService.rc.in",
             "tools/dual-product/rime-pime-nsis-toolchain-closure.ps1",
             "tools/dual-product/rime-pime-nsis-toolchain-closure.psm1",
             "tools/dual-product/test-rime-pime-nsis-toolchain-closure.ps1",
@@ -170,6 +173,8 @@ class OwnershipTests(unittest.TestCase):
             "tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1",
             "tools/dual-product/run-rime-pime-isolated-candidate.ps1",
             "tools/dual-product/test-rime-pime-isolated-candidate.ps1",
+            "tools/dual-product/rime-pime-version-identity-admission.psm1",
+            "tools/dual-product/test-rime-pime-version-identity-admission.ps1",
             "tools/dual-product/test-rime-pime-transaction-replay-model.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.psm1",
@@ -187,6 +192,30 @@ class OwnershipTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertIn(path, contract["source_paths"])
 
+    def test_rime_product_version_identity_is_reviewed_and_derived(self):
+        contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
+        product = self.products["rime-pime"]
+        self.assertEqual(product["product_version"], contract["rime_pime_source_product_version"])
+        self.assertEqual(product["installer_leaf"], "YIME-" + product["product_version"] + "-setup.exe")
+        core = product["product_version"].split("-", 1)[0]
+        self.assertEqual(product["numeric_file_version"], core + ".0")
+
+    def test_rime_product_version_grammar_matches_windows_and_semver_contract(self):
+        for version, expected_numeric in (
+                ("1.4.0-dev", "1.4.0.0"),
+                ("1.4.0-dev.1", "1.4.0.0"),
+                ("1.4.0", "1.4.0.0"),
+                ("65535.0.7-rc.1", "65535.0.7.0")):
+            with self.subTest(version=version):
+                _, numeric = subject.parse_rime_pime_product_version(version)
+                self.assertEqual(numeric, expected_numeric)
+        for version in (
+                None, "", "1.4", "01.4.0-dev", "1.04.0-dev", "1.4.00-dev",
+                "1.4.0+build.7", "1.4.0_dev", "1.4.0-dev.01", "65536.0.0-dev"):
+            with self.subTest(version=version), self.assertRaisesRegex(
+                    ValueError, "not a supported semantic Windows version"):
+                subject.parse_rime_pime_product_version(version)
+
     def test_contract_evidence_level_drift_fails_closed(self):
         real_loads = subject.json.loads
 
@@ -198,6 +227,19 @@ class OwnershipTests(unittest.TestCase):
 
         with mock.patch.object(subject.json, "loads", side_effect=load_with_drift):
             with self.assertRaisesRegex(ValueError, "evidence test level changed"):
+                subject.source_baseline()
+
+    def test_reviewed_rime_product_version_drift_fails_closed(self):
+        real_loads = subject.json.loads
+
+        def load_with_drift(payload, *args, **kwargs):
+            parsed = real_loads(payload, *args, **kwargs)
+            if isinstance(parsed, dict) and parsed.get("schema_version") == "yime-dual-product-source-contract-v1":
+                parsed["rime_pime_source_product_version"] = "9.9.9-dev"
+            return parsed
+
+        with mock.patch.object(subject.json, "loads", side_effect=load_with_drift):
+            with self.assertRaisesRegex(ValueError, "reviewed source product identity"):
                 subject.source_baseline()
 
     def test_source_reader_paths_cannot_escape_checkout(self):
