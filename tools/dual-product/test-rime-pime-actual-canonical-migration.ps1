@@ -81,14 +81,21 @@ Check 'resume-reuses-the-authorized-pre-migration-plan' {
     foreach($anchor in @('$authorizationCandidate=Assert-Dp1TAuthorization $AuthorizationPath $null',
         '$snapshot=[string]$authorizationCandidate.Value.actual_snapshot_sha256',
         'Recovery old receipt object differs from authorization.',
-        '[string]$current.Digest -ceq [string]$archive.Receipt.sha256')){
+        '[string]$current.Digest -ceq [string]$successor.Receipt.Digest')){
         Assert-True $adapterSource.Contains($anchor) "Missing stable-resume anchor: $anchor"
     }
 }
 Check 'archive-objects-are-hash-checked-and-copied-no-replace' {
     foreach($anchor in @('Archive object differs from its manifest.','Copy-Dp1TNoReplace','MoveFileEx($temp,$Destination,8)',
-        'Existing retained object differs.','Seeded successor receipt differs from the archive.')){
+        'Existing retained object differs.','Seeded migrated successor receipt differs from the deterministic migration.')){
         Assert-True $adapterSource.Contains($anchor) "Missing archive/CAS anchor: $anchor"
+    }
+}
+Check 'isolated-evidence-paths-are-deterministically-rebased' {
+    foreach($anchor in @('Get-Dp1TMigratedSuccessor','Convert-Dp1TArchivedJsonRoot',
+        'archive_candidate_receipt_sha256','migrated_build_result_sha256','migrated_postbuild_result_sha256',
+        'Archived build result is not rooted in the admitted isolated candidate checkout.')){
+        Assert-True $adapterSource.Contains($anchor) "Missing evidence-rebase anchor: $anchor"
     }
 }
 Check 'adapter-has-no-product-or-installer-execution-surface' {

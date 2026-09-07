@@ -182,6 +182,66 @@ function Get-Dp1TSourceSet([string]$Root){
     return [pscustomobject]@{Rows=$rows;Digest=$digest}
 }
 
+function Get-Dp1TArchiveObjectPath($Archive,[string]$Digest){
+    return Join-Path $Archive.Root ('objects\sha256\'+$Digest.Substring(0,2)+'\'+$Digest+'.blob')
+}
+
+function Convert-Dp1TArchivedJsonRoot([byte[]]$Bytes,[string]$SourceRoot,[string]$ActualRoot,[string]$Context){
+    $encoding=[Text.UTF8Encoding]::new($false,$true)
+    $text=$encoding.GetString($Bytes)
+    $sourceJson=$SourceRoot.Replace('\','\\')
+    $actualJson=$ActualRoot.Replace('\','\\')
+    if(-not $text.Contains($sourceJson)){throw "$Context does not contain its isolated source root."}
+    return $encoding.GetBytes($text.Replace($sourceJson,$actualJson))
+}
+
+function Get-Dp1TMigratedSuccessor([string]$Root,$Archive){
+    $sourceReceiptPath=Get-Dp1TArchiveObjectPath $Archive ([string]$Archive.Receipt.sha256)
+    $sourceReceiptBytes=[IO.File]::ReadAllBytes($sourceReceiptPath)
+    $sourceReceipt=Read-Dp1TJson $sourceReceiptPath 'archived successor receipt'
+    if([string]$sourceReceipt.schema_version -cne 'yime-rime-pime-package-build-receipt-v2' -or
+        $sourceReceipt.evidence_artifacts_durable -isnot [bool] -or -not [bool]$sourceReceipt.evidence_artifacts_durable){
+        throw 'Archived successor is not a durable receipt v2.'
+    }
+    $sourceBuildDigest=[string]$sourceReceipt.disabled_build.result_sha256
+    $sourcePostDigest=[string]$sourceReceipt.static_postbuild.result_sha256
+    $sourceBuildPath=Get-Dp1TArchiveObjectPath $Archive $sourceBuildDigest
+    $sourcePostPath=Get-Dp1TArchiveObjectPath $Archive $sourcePostDigest
+    $sourceBuild=Read-Dp1TJson $sourceBuildPath 'archived build result'
+    $published=[IO.Path]::GetFullPath([string]$sourceBuild.published_installer_path)
+    $sourceRoot=(Split-Path -Parent (Split-Path -Parent $published)).TrimEnd('\')
+    $allowed=[IO.Path]::GetFullPath((Join-Path $Root '.tmp\dual-product')).TrimEnd('\')
+    if(-not $sourceRoot.StartsWith($allowed+'\',[StringComparison]::OrdinalIgnoreCase) -or
+        (Split-Path -Leaf $sourceRoot) -cne 'repo' -or
+        (Split-Path -Leaf (Split-Path -Parent $sourceRoot)) -cnotmatch '^dp1-o-candidate-[A-Za-z0-9-]+$'){
+        throw 'Archived build result is not rooted in the admitted isolated candidate checkout.'
+    }
+    $buildBytes=Convert-Dp1TArchivedJsonRoot ([IO.File]::ReadAllBytes($sourceBuildPath)) $sourceRoot $Root 'archived build result'
+    $postBytes=Convert-Dp1TArchivedJsonRoot ([IO.File]::ReadAllBytes($sourcePostPath)) $sourceRoot $Root 'archived postbuild result'
+    $buildDigest=Get-Dp1THashBytes $buildBytes
+    $postDigest=Get-Dp1THashBytes $postBytes
+    $receiptText=[Text.UTF8Encoding]::new($false,$true).GetString($sourceReceiptBytes)
+    foreach($pair in @(@($sourceBuildDigest,$buildDigest),@($sourcePostDigest,$postDigest))){
+        if(([regex]::Matches($receiptText,[regex]::Escape([string]$pair[0]))).Count -ne 1){
+            throw 'Archived receipt does not contain exactly one migratable evidence digest.'
+        }
+        $receiptText=$receiptText.Replace([string]$pair[0],[string]$pair[1])
+    }
+    $receiptBytes=Get-Dp1TUtf8Bytes $receiptText
+    $receiptDigest=Get-Dp1THashBytes $receiptBytes
+    $receiptValue=$receiptText|ConvertFrom-Json
+    if([string]$receiptValue.disabled_build.result_sha256 -cne $buildDigest -or
+        [string]$receiptValue.static_postbuild.result_sha256 -cne $postDigest){
+        throw 'Migrated successor receipt evidence digests are inconsistent.'
+    }
+    return [pscustomobject]@{
+        SourceRoot=$sourceRoot;SourceReceiptSha256=[string]$Archive.Receipt.sha256
+        Receipt=[pscustomobject]@{Name='migrated-receipt.json';Bytes=$receiptBytes;Digest=$receiptDigest;Value=$receiptValue}
+        Build=[pscustomobject]@{Name='migrated-build-result.json';Bytes=$buildBytes;Digest=$buildDigest}
+        Postbuild=[pscustomobject]@{Name='migrated-postbuild-result.json';Bytes=$postBytes;Digest=$postDigest}
+    }
+}
+
 function Get-Dp1TFaultMatrix([string]$Ps5Path,[string]$Ps7Path){
     if(-not $Ps5Path -and -not $Ps7Path){
         return [pscustomobject]@{Verified=$false;Digest=('0'*64);Ps5Sha256=('0'*64);Ps7Sha256=('0'*64)}
@@ -204,7 +264,7 @@ function Get-Dp1TFaultMatrix([string]$Ps5Path,[string]$Ps7Path){
         Ps5Sha256=[string]$rows[0].sha256;Ps7Sha256=[string]$rows[1].sha256}
 }
 
-function Get-Dp1TPlan([string]$Root,$Archive,$Old,$SourceSet,$FaultMatrix,[string]$Snapshot){
+function Get-Dp1TPlan([string]$Root,$Archive,$Successor,$Old,$SourceSet,$FaultMatrix,[string]$Snapshot){
     $oldInstaller=[string]$Old.Receipt.installer.path
     $plan=[ordered]@{
         schema_version='yime-rime-pime-actual-canonical-migration-plan-v1'
@@ -218,11 +278,14 @@ function Get-Dp1TPlan([string]$Root,$Archive,$Old,$SourceSet,$FaultMatrix,[strin
         fault_matrix_ps7_sha256=$FaultMatrix.Ps7Sha256
         archive_root=$Archive.Root
         archive_manifest_sha256=$Archive.ManifestSha256
+        archive_candidate_receipt_sha256=$Successor.SourceReceiptSha256
+        migrated_build_result_sha256=$Successor.Build.Digest
+        migrated_postbuild_result_sha256=$Successor.Postbuild.Digest
         expected_actual_snapshot_sha256=$Snapshot
         expected_old_receipt_sha256=[string]$Old.Digest
         expected_old_installer_path=$oldInstaller
         expected_old_installer_sha256=[string]$Old.Receipt.installer.sha256
-        expected_successor_receipt_sha256=[string]$Archive.Receipt.sha256
+        expected_successor_receipt_sha256=[string]$Successor.Receipt.Digest
         expected_successor_installer_path=[string]$Archive.Manifest.installer_path
         expected_successor_installer_sha256=[string]$Archive.Installer.sha256
         write_set_roles=$script:ExactWriteRoles
@@ -324,10 +387,32 @@ function Copy-Dp1TArchiveObjects([string]$Root,$Archive){
     return $copied
 }
 
+function Write-Dp1TMigratedObjects([string]$OutputRoot,$Successor){
+    foreach($item in @($Successor.Build,$Successor.Postbuild,$Successor.Receipt)){
+        $source=Join-Path $OutputRoot ([string]$item.Name)
+        [IO.File]::WriteAllBytes($source,[byte[]]$item.Bytes)
+        [IO.File]::WriteAllText($source+'.sha256',[string]$item.Digest+'  '+[string]$item.Name+"`n",[Text.UTF8Encoding]::new($false))
+    }
+}
+
+function Publish-Dp1TMigratedObjects([string]$Root,[string]$OutputRoot,$Successor){
+    $copied=0
+    foreach($item in @($Successor.Build,$Successor.Postbuild,$Successor.Receipt)){
+        $source=Join-Path $OutputRoot ([string]$item.Name)
+        $destination=Join-Path $Root ('installer\receipt-evidence\sha256\'+([string]$item.Digest).Substring(0,2)+'\'+[string]$item.Digest+'.blob')
+        if(Copy-Dp1TNoReplace $source $destination ([string]$item.Digest) ([long]$item.Bytes.Length)){$copied++}
+        $casSidecar=Join-Path $OutputRoot ([string]$item.Name+'.cas.sha256')
+        [IO.File]::WriteAllText($casSidecar,[string]$item.Digest+'  '+[IO.Path]::GetFileName($destination)+"`n",[Text.UTF8Encoding]::new($false))
+        if(Copy-Dp1TNoReplace $casSidecar ($destination+'.sha256') (Get-Dp1TSha256 $casSidecar) (Get-Dp1TBytes $casSidecar)){$copied++}
+    }
+    return $copied
+}
+
 if(-not $RepoRoot){$RepoRoot=Join-Path $PSScriptRoot '..\..'}
 $root=Resolve-Dp1TActualRoot $RepoRoot
 $out=Resolve-Dp1TOutputRoot $root $OutputRoot
 $archive=Read-Dp1TArchive $ArchiveRoot
+$successor=Get-Dp1TMigratedSuccessor $root $archive
 $module=Get-Dp1TModule $root
 try{
     $canonical=Join-Path $root 'installer\package-build-receipt.json'
@@ -353,9 +438,10 @@ try{
         (Get-Dp1TBytes $oldInstaller) -ne [long]$old.Receipt.installer.bytes){throw 'Old physical installer differs from its strict receipt.'}
 $sourceSet=Get-Dp1TSourceSet $root
 $faultMatrix=Get-Dp1TFaultMatrix $FaultMatrixPs5Path $FaultMatrixPs7Path
-$plan=Get-Dp1TPlan $root $archive $old $sourceSet $faultMatrix $snapshot
+$plan=Get-Dp1TPlan $root $archive $successor $old $sourceSet $faultMatrix $snapshot
     [IO.File]::WriteAllBytes((Join-Path $out 'migration-plan.json'),$plan.Bytes)
     [IO.File]::WriteAllText((Join-Path $out 'migration-plan.json.sha256'),$plan.Digest+'  migration-plan.json'+"`n",[Text.UTF8Encoding]::new($false))
+    Write-Dp1TMigratedObjects $out $successor
 
     $authorization=$null
     $copied=0
@@ -369,33 +455,37 @@ $plan=Get-Dp1TPlan $root $archive $old $sourceSet $faultMatrix $snapshot
         if(-not $historical.StartsWith(([IO.Path]::GetFullPath((Join-Path $root '.tmp\dual-product')).TrimEnd('\')+'\'),[StringComparison]::OrdinalIgnoreCase) -or
             (Get-Dp1TSha256 $historical) -cne [string]$old.Receipt.predecessor_v1.sha256){throw 'Historical v1 receipt does not match the old canonical predecessor.'}
         $copied=Copy-Dp1TArchiveObjects $root $archive
-        $successorObject=Join-Path $root ('installer\receipt-evidence\sha256\'+([string]$archive.Receipt.sha256).Substring(0,2)+'\'+[string]$archive.Receipt.sha256+'.blob')
-        $successor=Read-Dp1TStrictReceipt $module $root $successorObject
-        if([string]$successor.Digest -cne [string]$archive.Receipt.sha256){throw 'Seeded successor receipt differs from the archive.'}
+        $copied+=Publish-Dp1TMigratedObjects $root $out $successor
+        $successorObject=Join-Path $root ('installer\receipt-evidence\sha256\'+$successor.Receipt.Digest.Substring(0,2)+'\'+$successor.Receipt.Digest+'.blob')
+        $strictSuccessor=Read-Dp1TStrictReceipt $module $root $successorObject
+        if([string]$strictSuccessor.Digest -cne [string]$successor.Receipt.Digest){throw 'Seeded migrated successor receipt differs from the deterministic migration.'}
         if($Mode -ceq 'Resume' -or (Test-Path -LiteralPath $pending) -or
-            [string]$current.Digest -ceq [string]$archive.Receipt.sha256){
+            [string]$current.Digest -ceq [string]$successor.Receipt.Digest){
             $resultReceipt=& $module {param($r) Resume-RimePimeInstallerReceiptTransactionActual -RepoRoot $r} $root
             $transactionDisposition='resumed'
         }else{
             $resultReceipt=& $module {param($r,$n,$o,$h) Publish-RimePimeInstallerReceiptTransactionActual `
                 -RepoRoot $r -NextReceiptDigest $n -ExpectedPreviousDigest $o -HistoricalV1Path $h} `
-                $root ([string]$archive.Receipt.sha256) ([string]$old.Digest) $historical
+                $root ([string]$successor.Receipt.Digest) ([string]$old.Digest) $historical
             $transactionDisposition='published'
         }
     }
     $final=Read-Dp1TStrictReceipt $module $root $canonical
-    $migrated=[bool]($final.Digest -ceq [string]$archive.Receipt.sha256)
+    $migrated=[bool]($final.Digest -ceq [string]$successor.Receipt.Digest)
     $result=[ordered]@{
         schema_version=$script:AdapterSchema;generated_at_utc=[DateTime]::UtcNow.ToString('o')
         affected_product='rime-pime';mode=$Mode;status='pass';actual_repo_root=$root
         archive_manifest_sha256=$archive.ManifestSha256;migration_plan_sha256=$plan.Digest
+        archive_candidate_receipt_sha256=$successor.SourceReceiptSha256
+        migrated_build_result_sha256=$successor.Build.Digest
+        migrated_postbuild_result_sha256=$successor.Postbuild.Digest
         fault_matrix_sha256=$faultMatrix.Digest;fault_matrix_ps5_sha256=$faultMatrix.Ps5Sha256
         fault_matrix_ps7_sha256=$faultMatrix.Ps7Sha256
         adapter_sha256=$plan.Value.adapter_sha256;adapter_source_set_sha256=$sourceSet.Digest
         authorization_id=if($authorization){[string]$authorization.Value.authorization_id}else{''}
         authorization_record_sha256=if($authorization){[string]$authorization.Digest}else{''}
         expected_old_receipt_sha256=[string]$old.Digest
-        expected_successor_receipt_sha256=[string]$archive.Receipt.sha256
+        expected_successor_receipt_sha256=[string]$successor.Receipt.Digest
         final_canonical_receipt_sha256=[string]$final.Digest
         expected_successor_installer_sha256=[string]$archive.Installer.sha256
         actual_snapshot_sha256=$snapshot;write_set_roles=$script:ExactWriteRoles
