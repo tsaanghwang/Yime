@@ -281,6 +281,15 @@ def transaction_source_status(sources):
     actual_migration_review_test = sources[
         "tools/dual-product/test-rime-pime-actual-migration-review.ps1"
     ]
+    dp1r_trust_admission = sources[
+        "tools/dual-product/rime-pime-dp1r-trust-admission.psm1"
+    ]
+    dp1r_trust_admission_test = sources[
+        "tools/dual-product/test-rime-pime-dp1r-trust-admission.ps1"
+    ]
+    dp1r_actual_review = sources[
+        "tools/dual-product/review-rime-pime-dp1r-trust.ps1"
+    ]
     receipt_v2_supersession = sources["tools/dual-product/rime-pime-receipt-v2-supersession.ps1"]
     receipt_v2_supersession_module = sources["tools/dual-product/rime-pime-receipt-v2-supersession.psm1"]
     receipt_v2_supersession_test = sources["tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1"]
@@ -935,6 +944,42 @@ def transaction_source_status(sources):
             "[IO.FileMode]::CreateNew",
             "$stream.Flush($true)",
         ]),
+        (dp1r_trust_admission, [
+            "function Get-RimePimeDp1RTrustAdmission",
+            "full_payload_static_closure = [bool]$ready",
+            "nsis_non_os_compiler_input_closure = [bool]$ready",
+            "generated_uninstaller_trusted_for_unsigned_disabled_static_scope = [bool]$ready",
+            "historical_build_and_postbuild_non_claims_preserved = $true",
+            "active_same_sid_physical_replacement_prevented = $false",
+            "full_nsis_toolchain_input_closure = $false",
+            "generated_uninstaller_signature_trusted = $false",
+            "delivery_admitted = $false",
+            "dp1_complete = $false",
+            "Export-ModuleMember -Function 'Get-RimePimeDp1RTrustAdmission'",
+        ]),
+        (dp1r_trust_admission_test, [
+            "yime-rime-pime-dp1r-trust-admission-test-v1",
+            "complete-converged-evidence-is-admitted-in-static-scope",
+            "membership-event-is-rejected",
+            "ps7-uninstaller-mismatch-is-rejected",
+            "script-property-is-not-executed",
+            "actual_installer_or_uninstaller_executed=$false",
+            "installed_yimecore_local12_touched=$false",
+            "full_nsis_toolchain_input_closure=$false",
+            "delivery_admitted=$false;dp1_complete=$false",
+        ]),
+        (dp1r_actual_review, [
+            "yime-rime-pime-dp1r-actual-trust-review-v1",
+            "actual DP1-R static trust review completed without executing installer or uninstaller",
+            "dynamic_compiler_directives_absent=$true",
+            "environment_macro_reads_absent=$true",
+            "wildcard_payload_reads_absent=$true",
+            "historical_build_and_postbuild_non_claims_preserved=$true",
+            "active_same_sid_physical_replacement_prevented=$false",
+            "full_nsis_toolchain_input_closure=$false",
+            "generated_uninstaller_signature_trusted=$false",
+            "installed_or_registered_host_verified=$false;dp1_complete=$false",
+        ]),
     ):
         missing = [anchor for anchor in anchors if anchor not in body]
         if missing:
@@ -1020,6 +1065,19 @@ def transaction_source_status(sources):
         if re.search(r"\b" + re.escape(promoted) + r"\s*=\s*\$true\b", actual_migration_review):
             fail("Rime/PIME actual migration review promoted an execution boundary")
     actual_migration_review_source_contract_wired = True
+    if dp1r_trust_admission.count("Export-ModuleMember") != 1:
+        fail("Rime/PIME DP1-R trust admission export surface changed")
+    for forbidden in (
+            "Start-Process", "Invoke-Expression", "Invoke-Command", "Remove-Item", "Move-Item",
+            "Copy-Item", "Set-Content", "Add-Content", "Registry::", "HKLM", "HKCU",
+            "Get-Process", "Stop-Process", "makensis.exe", "7z.exe"):
+        if forbidden in dp1r_trust_admission:
+            fail("Rime/PIME DP1-R pure trust admission gained an action surface")
+    for forbidden in ("Install-PIME-Test.cmd", "Uninstall-PIME-Test.cmd", "Reinstall-PIME-Test.cmd",
+                      "Start-Process", "Stop-Process", "Registry::"):
+        if forbidden in dp1r_actual_review:
+            fail("Rime/PIME DP1-R actual review gained a prohibited product action")
+    dp1r_trust_admission_source_contract_wired = True
     if core.index("New-Item -ItemType Directory -Path $stagingRoot") >= core.index("$preinstall = Invoke-UninstallCore"):
         fail("YimeCore active mutation moved before complete package staging")
     ci_postbuild_step = one(
@@ -1089,6 +1147,11 @@ def transaction_source_status(sources):
         r"(?ms)^      - name: Test DP1-Q actual migration review contract\s*$.*?(?=^      - name: |\Z)",
         ci,
         "CI DP1-Q actual migration review step",
+    ).group()
+    ci_dp1r_trust_admission_step = one(
+        r"(?ms)^      - name: Test DP1-R static trust admission contract\s*$.*?(?=^      - name: |\Z)",
+        ci,
+        "CI DP1-R static trust admission step",
     ).group()
     ci_supersession_step = one(
         r"(?ms)^      - name: Test DP1-J isolated receipt-v2 supersession protocol\s*$.*?(?=^      - name: |\Z)",
@@ -1283,6 +1346,22 @@ def transaction_source_status(sources):
         "PowerShell 5.1 DP1-Q actual-migration review test failed with exit code $LASTEXITCODE" in
         ci_actual_migration_review_step and
         all(re.search(pattern, ci_actual_migration_review_step) is None
+            for pattern in prohibited_dp1i_ci_patterns)
+    )
+    dp1r_trust_admission_ci_ps5_ps7_present = (
+        ci_dp1r_trust_admission_step.count(
+            "test-rime-pime-dp1r-trust-admission.ps1"
+        ) == 2 and
+        ci_dp1r_trust_admission_step.count("-OutputRoot") == 2 and
+        ".tmp\\dual-product\\dp1-r-trust-admission-test-ci-ps5-$runId" in
+        ci_dp1r_trust_admission_step and
+        ".tmp\\dual-product\\dp1-r-trust-admission-test-ci-ps7-$runId" in
+        ci_dp1r_trust_admission_step and
+        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in
+        ci_dp1r_trust_admission_step and
+        "PowerShell 5.1 DP1-R trust-admission test failed with exit code $LASTEXITCODE" in
+        ci_dp1r_trust_admission_step and
+        all(re.search(pattern, ci_dp1r_trust_admission_step) is None
             for pattern in prohibited_dp1i_ci_patterns)
     )
     rime_sid_chain_anchors = ("RequestExecutionLevel user" in nsis and
@@ -1983,6 +2062,8 @@ def transaction_source_status(sources):
             not candidate_evidence_archive_ci_ps5_ps7_present or
             not actual_migration_review_source_contract_wired or
             not actual_migration_review_ci_ps5_ps7_present or
+            not dp1r_trust_admission_source_contract_wired or
+            not dp1r_trust_admission_ci_ps5_ps7_present or
             'InstallLayoutOrTip(w "${YIME_TIP}"' not in nsis or
             'Get-ChildItem -LiteralPath "Registry::HKEY_USERS"' in pime_cleanup):
         fail("Rime/PIME registration/SID/transaction status changed; dedicated review required")
@@ -2108,6 +2189,13 @@ def transaction_source_status(sources):
         "rime_pime_actual_migration_review_test_executed_by_baseline": False,
         "rime_pime_actual_migration_review_ready_from_actual_evidence": False,
         "rime_pime_actual_migration_review_separate_execution_gate_required": True,
+        "rime_pime_dp1r_trust_admission_source_contract_wired": dp1r_trust_admission_source_contract_wired,
+        "rime_pime_dp1r_trust_admission_ci_ps5_ps7_present": dp1r_trust_admission_ci_ps5_ps7_present,
+        "rime_pime_dp1r_trust_admission_test_executed_by_baseline": False,
+        "rime_pime_dp1r_actual_candidate_review_executed_by_baseline": False,
+        "rime_pime_dp1r_full_payload_static_closure_from_actual_evidence": False,
+        "rime_pime_dp1r_nsis_non_os_compiler_input_closure_from_actual_evidence": False,
+        "rime_pime_dp1r_generated_uninstaller_trusted_static_scope_from_actual_evidence": False,
         "rime_pime_actual_evidence_archived_outside_repository_tmp": False,
         "rime_pime_actual_canonical_migration_admitted": False,
         "rime_pime_actual_canonical_migration_executed": False,

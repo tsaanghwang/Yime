@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 140)
-        self.assertEqual(len(self.receipt["source_manifest"]), 147)
+        self.assertEqual(len(contract["source_paths"]), 143)
+        self.assertEqual(len(self.receipt["source_manifest"]), 150)
         for path in (
             "version.txt",
             "PIMELauncher/build.rs",
@@ -180,6 +180,9 @@ class OwnershipTests(unittest.TestCase):
             "tools/dual-product/test-rime-pime-candidate-evidence-archive.ps1",
             "tools/dual-product/rime-pime-actual-migration-review.psm1",
             "tools/dual-product/test-rime-pime-actual-migration-review.ps1",
+            "tools/dual-product/rime-pime-dp1r-trust-admission.psm1",
+            "tools/dual-product/test-rime-pime-dp1r-trust-admission.ps1",
+            "tools/dual-product/review-rime-pime-dp1r-trust.ps1",
             "tools/dual-product/test-rime-pime-transaction-replay-model.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.psm1",
@@ -488,6 +491,18 @@ class OwnershipTests(unittest.TestCase):
         self.assertFalse(status["rime_pime_actual_migration_review_ready_from_actual_evidence"])
         self.assertTrue(status["rime_pime_actual_migration_review_separate_execution_gate_required"])
         self.assertFalse(status["rime_pime_actual_evidence_archived_outside_repository_tmp"])
+
+    def test_dp1r_static_trust_admission_is_wired_without_actual_promotion(self):
+        status = self.receipt["transaction_source"]
+        self.assertTrue(status["rime_pime_dp1r_trust_admission_source_contract_wired"])
+        self.assertTrue(status["rime_pime_dp1r_trust_admission_ci_ps5_ps7_present"])
+        self.assertFalse(status["rime_pime_dp1r_trust_admission_test_executed_by_baseline"])
+        self.assertFalse(status["rime_pime_dp1r_actual_candidate_review_executed_by_baseline"])
+        self.assertFalse(status["rime_pime_dp1r_full_payload_static_closure_from_actual_evidence"])
+        self.assertFalse(status["rime_pime_dp1r_nsis_non_os_compiler_input_closure_from_actual_evidence"])
+        self.assertFalse(status["rime_pime_dp1r_generated_uninstaller_trusted_static_scope_from_actual_evidence"])
+        self.assertFalse(status["rime_pime_full_nsis_toolchain_input_closure"])
+        self.assertFalse(status["rime_pime_delivery_admitted"])
         self.assertFalse(status["rime_pime_actual_canonical_migration_admitted"])
         self.assertFalse(status["rime_pime_actual_canonical_migration_executed"])
 
