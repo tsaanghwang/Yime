@@ -48,8 +48,10 @@ foreach ($key in @('Control Panel\International\User Profile', 'Keyboard Layout\
 $activeKey = "SOFTWARE\Classes\CLSID\$($descriptor.identity.clsid)\InprocServer32"
 $activeCom = Read-YimeCoreSystemKey 2147483650 $activeKey
 $registeredDll = @($activeCom.values | Where-Object { $_.name -eq '' } | ForEach-Object { $_.value })
-$boot = (Get-CimInstance Win32_OperatingSystem).LastBootUpTime
-$processes = @(Get-CimInstance Win32_Process -Filter "Name='YimeCoreTrialRuntime.exe' OR Name='YimeBroker.exe'" | ForEach-Object {
+$boot = (Get-CimInstance Win32_OperatingSystem -Property LastBootUpTime).LastBootUpTime
+# Restrict the provider query itself; filtering output alone would still fetch
+# unneeded fields such as CommandLine before serialization.
+$processes = @(Get-CimInstance Win32_Process -Filter "Name='YimeCoreTrialRuntime.exe' OR Name='YimeBroker.exe'" -Property Name,ProcessId,ExecutablePath,CreationDate | ForEach-Object {
     [ordered]@{name=$_.Name;pid=$_.ProcessId;image=$_.ExecutablePath;started_at=$_.CreationDate.ToString('o');
         current_package=($_.ExecutablePath -ieq (Join-Path $root "bin\$($_.Name)"));after_boot=($_.CreationDate -ge $boot)}
 })
