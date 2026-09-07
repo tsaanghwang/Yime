@@ -1,0 +1,81 @@
+{
+  "schema_version": "yime-dual-product-dp1-s-off-repository-archive-evidence-v1",
+  "affected_product": "rime-pime",
+  "generated_at_utc": "2026-09-07T12:51:14.9222933Z",
+  "verified_source": {
+    "implementation_commit": "adfa55505580f6ceb6b28f7b89d2e620dc46d335",
+    "implementation_tree": "6886a601aa11c8cffc704a08d039f0cf54068332",
+    "source_files": [
+      { "path": "tools/dual-product/publish-rime-pime-dp1s-off-repository-archive.ps1", "bytes": 25922, "sha256": "c0ea3287866ca9e810026d31c9dca603377ddc247fd88c40e3cde4a592a0d319" },
+      { "path": "tools/dual-product/test-rime-pime-dp1s-off-repository-archive.ps1", "bytes": 9952, "sha256": "aeb393ffa184d0df15bdf8d5f371c328cc4d117001b33c52af39d3b7ab5218bb" },
+      { "path": "tools/dual-product/rime-pime-candidate-evidence-archive.ps1", "bytes": 88962, "sha256": "82964d121ffcdfddd56bd021ac4b32b6bfbf6a8f1b7d2bf4e320f5bf9cf8a952" },
+      { "path": "tools/dual-product/test-rime-pime-candidate-evidence-archive.ps1", "bytes": 41042, "sha256": "e9165628240921b601ed1b5b1b4c3179313346983ed7929fdc96d14b61bd9b73" },
+      { "path": ".github/workflows/ci.yaml", "bytes": 41723, "sha256": "e7bd4051a6ba96af894b31d52f6c60eab964837a6fef02bcc706642e667392df" },
+      { "path": "tools/dual-product/baseline.py", "bytes": 169387, "sha256": "e09c729827e50fd07d196088e1a8b5a246578b33c2ff6b5ef026cce729102239" },
+      { "path": "tools/dual-product/contract.json", "bytes": 8377, "sha256": "dffc3fd81a8c6fb85648d40b27c0f1a33a4ddf03366aef0da855aebb48c2e3f2" },
+      { "path": "tools/dual-product/test_baseline.py", "bytes": 64296, "sha256": "92ea9ced036bbde6a64fd69a80b6ec29ba897050a257d60cf3cb948a5378c100" }
+    ]
+  },
+  "actual_archive": {
+    "root": "C:\\Users\\tsaan\\Yime Rime-PIME Evidence Archives\\DP1-S\\c4a1f035ce830c24be1582dda4ce548d10846316a5f6681495ebf6ce2adddc06.capsule",
+    "archive_id": "c4a1f035ce830c24be1582dda4ce548d10846316a5f6681495ebf6ce2adddc06",
+    "manifest_bytes": 12587,
+    "manifest_sha256": "cfee7781d1ccf71bc383373f15de8697964d083ec0a80c7666381da83a907185",
+    "archived_object_count": 43,
+    "physical_file_count": 88,
+    "physical_total_bytes": 41789196,
+    "outside_repository": true,
+    "outside_repository_tmp": true,
+    "outside_all_git_worktrees": true,
+    "immutable_content_addressed": true
+  },
+  "actual_reopen": {
+    "source_temporarily_unavailable": true,
+    "projection_reconstructed_only_from_archive": true,
+    "strict_receipt_read_ps5": true,
+    "strict_receipt_read_ps7": true,
+    "candidate_hash_verified_ps5": true,
+    "candidate_hash_verified_ps7": true,
+    "candidate_bytes": 41455231,
+    "candidate_sha256": "ac97f65af80e9686525a3c2f289670aaa14edb60a6effc80ce7cc3580333970d",
+    "ps5_verification": { "bytes": 994, "sha256": "c44fa2068b6b4b92785306a380fd5634ab14e8e87a24c70622f6b8eaab68bab5", "powershell": "5.1.26100.9278", "package_identity_absent": true },
+    "ps7_verification": { "bytes": 982, "sha256": "7945adf3dcbc67a528842b77de6132fe705df7e964fa443d4492dc33c1fc2e81", "powershell": "7.6.5", "package_identity_absent": true },
+    "child_processes_have_packaged_codex_ancestor": true,
+    "explorer_launched_independent_reopen_verified": false
+  },
+  "publication_results": [
+    { "purpose": "first-completed-verification", "path": ".tmp/dual-product/dp1-s-actual-20260907-f/result.json", "sha256": "0db119987e3fe21150d60da42f7a3a05b4636c0630b6b1f41ea77bed25ce76d7" },
+    { "purpose": "idempotent-read-only-recheck", "path": ".tmp/dual-product/dp1-s-actual-20260907-g/result.json", "sha256": "a09f9efdd6721c20bc66e7fa36ed60dc3e5fa447d39eea083bbe64fff0114597", "ps5_verification_reused": true, "ps7_verification_reused": true }
+  ],
+  "passing_suites": [
+    { "name": "dp1-s-contract-ps5", "result": "11/11", "sha256": "096f4668b9cb0067db1c509e58462b18860d84d01208b81ab2b53cfd87e48933" },
+    { "name": "dp1-s-contract-ps7", "result": "11/11", "sha256": "392c2ea1ccd15eda196e42b35d94830185ce0de0ee29306b0e9d6aa228734b11" },
+    { "name": "dp1-s-actual-reopen-ps5", "result": "12/12", "sha256": "0d8113b4581b4ce38c86467582b1b69d615f50639633c53f8768b9a3eb672b06" },
+    { "name": "dp1-s-actual-reopen-ps7", "result": "12/12", "sha256": "589ffaa4641d47cd7e5a78a357efe7dd4969422669b9ff56cad4a4cacf788c4f" },
+    { "name": "dp1-q-regression-ps5", "result": "24/24", "sha256": "537069d0b328420340b6f4278a911abefd9cb1a1bb1ac5ceab49d948513a5775" },
+    { "name": "dp1-q-regression-ps7", "result": "24/24", "sha256": "0236e7246b9811753b23784ec369a20cb401f818f58d87d40921dab6d94dec46" },
+    { "name": "current-source-baseline", "source_count": 152, "result": "66/66", "pending_count": 7, "sha256": "141e7d01d1c737cfdb3e8df34a329c060d16b0d6ed35f562df88cd39149a9a31" }
+  ],
+  "outcome": {
+    "dp1_s_complete_for_current_process_and_static_scope": true,
+    "actual_off_repository_archive_completed": true,
+    "fresh_process_ps5_ps7_reopen_completed": true,
+    "source_candidate_bytes_changed": false,
+    "directory_metadata_durability_verified": false,
+    "hardware_power_loss_verified": false,
+    "active_hostile_same_sid_physical_replacement_prevented": false,
+    "actual_canonical_migration_admitted": false,
+    "actual_canonical_migration_executed": false,
+    "dp1_complete": false,
+    "dp2_complete": false,
+    "dp3_complete": false
+  },
+  "safety": {
+    "installer_or_uninstaller_executed": false,
+    "registry_or_profile_mutated": false,
+    "product_process_touched": false,
+    "installed_yimecore_local12_touched": false,
+    "default_input_method_touched": false,
+    "production_user_data_read_or_written": false
+  }
+}
