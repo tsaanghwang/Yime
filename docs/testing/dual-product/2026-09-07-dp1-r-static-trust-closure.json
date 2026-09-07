@@ -1,0 +1,126 @@
+{
+  "schema_version": "yime-dual-product-dp1-r-static-trust-closure-v1",
+  "affected_product": "rime-pime",
+  "generated_at_utc": "2026-09-07T11:50:25.8631623Z",
+  "verified_source": {
+    "implementation_commit": "9a94c63941c9f8e938f766421138a933829b8819",
+    "implementation_tree": "84c9347f70ea8555aa52c0af9d38d007eee9f417",
+    "whole_worktree_clean_after_commit": true,
+    "source_files": [
+      { "path": ".github/workflows/ci.yaml", "bytes": 40966, "sha256": "468338f6cdf485279cd9b1638a8893c0d10b325dc65926aef2ae8678ceb8a9c4" },
+      { "path": "tools/dual-product/baseline.py", "bytes": 165556, "sha256": "ba8960875de805fdc680936d714b154945a53bbe10098268f533beb100d89a4b" },
+      { "path": "tools/dual-product/contract.json", "bytes": 8228, "sha256": "2ff5544fe729aff40d062be75b49bb120b8d385eb9ebd7ba77af5849a11228b9" },
+      { "path": "tools/dual-product/test_baseline.py", "bytes": 63273, "sha256": "5fa20114fc0c8109bcc95a683bdb4ca530d6ad8545a2996a990b0ee156f11216" },
+      { "path": "tools/dual-product/rime-pime-dp1r-trust-admission.psm1", "bytes": 15514, "sha256": "fbc0863c4147bb658f036eb3be0880fba5cb971a3bac1db6220042d8a47266f4" },
+      { "path": "tools/dual-product/test-rime-pime-dp1r-trust-admission.ps1", "bytes": 14012, "sha256": "d0e8dc09b4cd58859713b18d5d0ef54b5247d5de6cfff5e00e676ac3634ad19c" },
+      { "path": "tools/dual-product/review-rime-pime-dp1r-trust.ps1", "bytes": 11226, "sha256": "1c0b2289f6bae7a47a23c94ce3ae8dc0efd9a81ca0413976dc72fcf67672b863" }
+    ]
+  },
+  "outcome": {
+    "actual_source_and_candidate_bytes_examined": true,
+    "full_payload_static_closure": true,
+    "nsis_non_os_compiler_input_closure": true,
+    "generated_uninstaller_verified": true,
+    "generated_uninstaller_trusted_for_unsigned_disabled_static_scope": true,
+    "independent_ps5_ps7_postbuild_convergence": true,
+    "historical_build_and_postbuild_non_claims_preserved": true,
+    "active_same_sid_physical_replacement_prevented": false,
+    "full_nsis_toolchain_input_closure": false,
+    "generated_uninstaller_signature_trusted": false,
+    "signing_complete": false,
+    "delivery_admitted": false,
+    "installer_or_uninstaller_execution_admitted": false,
+    "installed_or_registered_host_action_admitted": false,
+    "actual_off_repository_archive_completed": false,
+    "actual_canonical_migration_admitted": false,
+    "actual_canonical_migration_executed": false,
+    "dp1_complete": false,
+    "dp2_complete": false,
+    "dp3_complete": false
+  },
+  "actual_candidate": {
+    "product_version": "1.4.0-dev.1",
+    "installer": { "leaf": "YIME-1.4.0-dev.1-setup.exe", "bytes": 41455231, "sha256": "ac97f65af80e9686525a3c2f289670aaa14edb60a6effc80ce7cc3580333970d", "executed": false },
+    "generated_uninstaller": { "bytes": 585292, "sha256": "ffd37a56d45b8c108c0c8e1c5780cfdcc41babcb435012aac7c88a6a6416fb26", "executed": false },
+    "build_result_sha256": "65ab931e7238e59855d1ccf27abc7aa371406073a9d27220132608d899bd7195",
+    "ps5_postbuild_result_sha256": "548333f4dd096061eabfffd2283a64e903c5ceaff26a9ff82623fe9ecb817b10",
+    "ps7_postbuild_result_sha256": "7dd531596cc4fe943596c4782e54670330b63055e9e0b7177f1ffa419b202c49",
+    "installer_source_sha256": "06de32b208d74949c63b2c1b9be84f66675113570e367fe76a07a4167e70a35d",
+    "generated_payload_include_sha256": "5087ce979db68b9e0ffa8d6ee6532708bf9c5d5be25818a1e7cbb5c03b11e730",
+    "outer_archive_entry_count": 181,
+    "nested_uninstaller_entry_count": 11,
+    "unsigned_disabled": true
+  },
+  "actual_reviews": [
+    {
+      "shell_selected_by_command": "PowerShell 7.6.5",
+      "result_self_reports_shell": false,
+      "path": ".tmp/dual-product/dp1-r-trust-review-20260907-a/result.json",
+      "bytes": 4139,
+      "sha256": "4167cca64ce9c03796f749a521f239c7ec21713cf731db51af25f82788c7b821",
+      "review_passed": true
+    },
+    {
+      "shell_selected_by_command": "Windows PowerShell 5.1",
+      "result_self_reports_shell": false,
+      "path": ".tmp/dual-product/dp1-r-trust-review-20260907-ps5-a/result.json",
+      "bytes": 5334,
+      "sha256": "6d2fe295b926c620e3f8813db8c8bee026e4ae832ef3b76593e12f1d7cd52524",
+      "review_passed": true
+    }
+  ],
+  "passing_suites": [
+    {
+      "name": "dp1-r-trust-admission-ps5",
+      "powershell": "5.1.26100.9168",
+      "path": ".tmp/dual-product/dp1-r-trust-admission-test-ps5-20260907-b/result.json",
+      "bytes": 1666,
+      "sha256": "a7a1c7ea058378e0fd1c032d946184356dce5199c6127f560db92be3aa9f6813",
+      "check_count": 15,
+      "passed_count": 15,
+      "failed_count": 0
+    },
+    {
+      "name": "dp1-r-trust-admission-ps7",
+      "powershell": "7.6.5",
+      "path": ".tmp/dual-product/dp1-r-trust-admission-test-ps7-20260907-b/result.json",
+      "bytes": 1657,
+      "sha256": "e6f14bb829cee798f55bb55d4456479a3aa4a3407a5a7b4892413bc448dc9c3f",
+      "check_count": 15,
+      "passed_count": 15,
+      "failed_count": 0
+    },
+    {
+      "name": "dual-product-source-baseline-after-implementation-commit",
+      "path": ".tmp/dual-product/dp1-r-source-baseline-20260907-a/baseline.json",
+      "bytes": 37525,
+      "sha256": "2e1edf61eb33a97b5fc11fb134b5170e06e0f3b35068ef7c8a06f9b946c94062",
+      "contract_source_paths": 143,
+      "source_manifest_count": 150,
+      "fixture_tests_passed": 65,
+      "pending_count": 7,
+      "dp1_full_implementation_passed": false,
+      "dp2_physical_acceptance_passed": false
+    }
+  ],
+  "passing_commands_without_result_artifact": [
+    { "name": "baseline-unit-tests", "passed": 65, "failed": 0, "exit_code": 0 },
+    { "name": "build-guards-ps5-skip-packaged-rime", "exit_code": 0 },
+    { "name": "build-guards-ps7-skip-packaged-rime", "exit_code": 0 }
+  ],
+  "safety": {
+    "actual_installer_executed": false,
+    "actual_uninstaller_executed": false,
+    "registry_or_profile_mutated": false,
+    "product_process_touched": false,
+    "installed_rime_pime_runtime_examined": false,
+    "installed_yimecore_local12_touched": false,
+    "default_input_method_touched": false,
+    "production_user_data_read_or_written": false
+  },
+  "next_ordered_gates": [
+    "DP1-S actual off-repository archive plus directory-metadata, power-loss and hostile same-SID evidence",
+    "DP1-T dedicated actual adapter plus exact one-time authorization and canonical migration",
+    "DP1-U registration convergence, rollback, concurrent-safe removal and non-elevated runtime readiness"
+  ]
+}
