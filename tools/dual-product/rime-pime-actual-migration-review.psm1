@@ -528,9 +528,12 @@ function Get-RimePimeActualMigrationReview {
         'fault_matrix_ps5','fault_matrix_ps7','stale_cas_rejected','no_replace_races_verified',
         'foreign_state_fails_closed','old_installer_preserved','unrelated_installer_leaves_preserved',
         'yimecore_unchanged','registry_unchanged','product_processes_unchanged',
-        'default_input_method_unchanged','production_user_data_untouched','hardware_power_loss_recovery_verified',
-        'directory_metadata_durability_verified','hostile_same_sid_replacement_prevented'
+        'default_input_method_unchanged','production_user_data_untouched'
     )) { Test-RimePimeMigrationReviewBoolean $AdapterEvidence $name $true 'adapter' $reasons }
+    foreach ($name in @(
+        'hardware_power_loss_recovery_verified','directory_metadata_durability_verified',
+        'hostile_same_sid_replacement_prevented'
+    )) { Test-RimePimeMigrationReviewBoolean $AdapterEvidence $name $false 'adapter' $reasons }
     foreach ($binding in @(
         @('expected_old_receipt_sha256',$oldReceipt,'old-receipt'),
         @('expected_successor_receipt_sha256',$newReceipt,'successor-receipt'),
@@ -609,6 +612,9 @@ function Get-RimePimeActualMigrationReview {
         arm64_native_claim_admitted = $false
         registry_process_default_ime_or_user_data_action_admitted = $false
         installed_yimecore_action_admitted = $false
+        hardware_power_loss_recovery_verified = $false
+        directory_metadata_durability_verified = $false
+        hostile_same_sid_replacement_prevented = $false
         dp1_or_release_completion_admitted = $false
     }
 }

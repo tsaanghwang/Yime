@@ -126,6 +126,8 @@
     "tools/dual-product/test-rime-pime-candidate-evidence-archive.ps1",
     "tools/dual-product/rime-pime-actual-migration-review.psm1",
     "tools/dual-product/test-rime-pime-actual-migration-review.ps1",
+    "tools/dual-product/invoke-rime-pime-actual-canonical-migration.ps1",
+    "tools/dual-product/test-rime-pime-actual-canonical-migration.ps1",
     "tools/dual-product/rime-pime-dp1r-trust-admission.psm1",
     "tools/dual-product/test-rime-pime-dp1r-trust-admission.ps1",
     "tools/dual-product/review-rime-pime-dp1r-trust.ps1",

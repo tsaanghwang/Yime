@@ -7,6 +7,7 @@ $script:RimePimeInstallerReceiptTransactionSchema='yime-rime-pime-installer-rece
 $script:RimePimeInstallerReceiptOperationSchema='yime-rime-pime-installer-receipt-operation-v1'
 $script:RimePimeInstallerReceiptTransactionWorkspaceRoot=
     [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..')).TrimEnd('\')
+$script:RimePimeInstallerReceiptActualRootEnabled=$false
 
 function Assert-RimePimeInstallerReceiptTransactionFixtureRoot {
     param([Parameter(Mandatory)][string]$RepoRoot)
@@ -14,6 +15,16 @@ function Assert-RimePimeInstallerReceiptTransactionFixtureRoot {
     $root=[IO.Path]::GetFullPath($RepoRoot).TrimEnd('\')
     if(-not(Test-Path -LiteralPath $root -PathType Container)){
         throw 'Installer/receipt transaction fixture repository is missing.'
+    }
+    if($script:RimePimeInstallerReceiptActualRootEnabled){
+        if($root -ine $script:RimePimeInstallerReceiptTransactionWorkspaceRoot -or
+            -not(Test-Path -LiteralPath (Join-Path $root '.git'))){
+            throw 'Actual installer/receipt transaction capability is bound to this exact checkout only.'
+        }
+        foreach($path in @($root,(Join-Path $root 'installer'))){
+            Assert-RimePimeNoReparsePath $path
+        }
+        return $root
     }
     $caseRoot=Split-Path -Parent $root
     $casesRoot=Split-Path -Parent $caseRoot
@@ -768,4 +779,37 @@ function Resume-RimePimeInstallerReceiptTransaction {
         }
         return Complete-RimePimeInstallerReceiptTransaction $root $canonical $pending
     }finally{$lock.Stream.Dispose()}
+}
+
+# Private actual-checkout capability. It is intentionally absent from the
+# module export list. The dedicated DP1-T adapter invokes it inside this module
+# scope only after its own exact-root, archive, CAS and authorization checks.
+function Publish-RimePimeInstallerReceiptTransactionActual {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$RepoRoot,
+        [Parameter(Mandatory)][string]$NextReceiptDigest,
+        [Parameter(Mandatory)][string]$ExpectedPreviousDigest,
+        [Parameter(Mandatory)][string]$HistoricalV1Path
+    )
+    if($script:RimePimeInstallerReceiptActualRootEnabled){
+        throw 'Nested actual installer/receipt transaction capability is not allowed.'
+    }
+    $script:RimePimeInstallerReceiptActualRootEnabled=$true
+    try{
+        return Publish-RimePimeInstallerReceiptTransaction -RepoRoot $RepoRoot `
+            -NextReceiptDigest $NextReceiptDigest -ExpectedPreviousDigest $ExpectedPreviousDigest `
+            -HistoricalV1Path $HistoricalV1Path
+    }finally{$script:RimePimeInstallerReceiptActualRootEnabled=$false}
+}
+
+function Resume-RimePimeInstallerReceiptTransactionActual {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][string]$RepoRoot)
+    if($script:RimePimeInstallerReceiptActualRootEnabled){
+        throw 'Nested actual installer/receipt transaction capability is not allowed.'
+    }
+    $script:RimePimeInstallerReceiptActualRootEnabled=$true
+    try{return Resume-RimePimeInstallerReceiptTransaction -RepoRoot $RepoRoot}
+    finally{$script:RimePimeInstallerReceiptActualRootEnabled=$false}
 }

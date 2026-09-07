@@ -230,9 +230,9 @@ function New-CompleteReviewInput {
         product_processes_unchanged=$true
         default_input_method_unchanged=$true
         production_user_data_untouched=$true
-        hardware_power_loss_recovery_verified=$true
-        directory_metadata_durability_verified=$true
-        hostile_same_sid_replacement_prevented=$true
+        hardware_power_loss_recovery_verified=$false
+        directory_metadata_durability_verified=$false
+        hostile_same_sid_replacement_prevented=$false
     }
     $authorization = [pscustomobject][ordered]@{
         schema_version='yime-rime-pime-actual-canonical-authorization-v1'
@@ -511,18 +511,18 @@ Check 'actual-adapter-must-preserve-dp1n-fixture-gate-and-exact-write-set' {
     }
 }
 
-Check 'actual-adapter-requires-durability-and-hostile-same-sid-closure' {
+Check 'actual-adapter-preserves-physical-durability-and-hostile-same-sid-nonclaims' {
     $case = New-CompleteReviewInput
     $case.AdapterEvidence = Copy-ReviewObject $case.AdapterEvidence '' @{
-        hardware_power_loss_recovery_verified=$false;directory_metadata_durability_verified=$false;
-        hostile_same_sid_replacement_prevented=$false
+        hardware_power_loss_recovery_verified=$true;directory_metadata_durability_verified=$true;
+        hostile_same_sid_replacement_prevented=$true
     }
     $result = Invoke-ReviewCase $case
     foreach ($reason in @(
-        'adapter-hardware-power-loss-recovery-verified-not-true',
-        'adapter-directory-metadata-durability-verified-not-true',
-        'adapter-hostile-same-sid-replacement-prevented-not-true')) {
-        Assert-ReviewTrue (@($result.reasons) -ccontains $reason) "Durability reason is missing: $reason"
+        'adapter-hardware-power-loss-recovery-verified-not-false',
+        'adapter-directory-metadata-durability-verified-not-false',
+        'adapter-hostile-same-sid-replacement-prevented-not-false')) {
+        Assert-ReviewTrue (@($result.reasons) -ccontains $reason) "Non-claim reason is missing: $reason"
     }
 }
 
@@ -610,6 +610,8 @@ Check 'review-result-field-set-is-exact-and-action-flags-stay-negative' {
         'installer_or_uninstaller_execution_admitted','signing_admitted','delivery_admitted',
         'installed_or_registered_host_action_admitted','arm64_native_claim_admitted',
         'registry_process_default_ime_or_user_data_action_admitted','installed_yimecore_action_admitted',
+        'hardware_power_loss_recovery_verified','directory_metadata_durability_verified',
+        'hostile_same_sid_replacement_prevented',
         'dp1_or_release_completion_admitted'
     )
     $actual = @($result.PSObject.Properties.Name)
