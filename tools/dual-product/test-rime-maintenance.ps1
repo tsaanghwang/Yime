@@ -3,7 +3,7 @@ param([Parameter(Mandatory)][string]$OutputRoot, [switch]$StaticOnly)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'rime-pime-ownership.ps1')
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..')).TrimEnd('\')
-$output = Assert-YimePimePlainPath $OutputRoot
+$output = [IO.Path]::GetFullPath($OutputRoot).TrimEnd('\')
 $expectedParent = Join-Path $repo '.tmp\dual-product'
 if ((Split-Path -Parent $output) -ine $expectedParent -or
     (Split-Path -Leaf $output) -cnotmatch '^dp1-rime-maint-[a-zA-Z0-9-]+$' -or (Test-Path -LiteralPath $output)) {
@@ -11,6 +11,13 @@ if ((Split-Path -Parent $output) -ine $expectedParent -or
 }
 if (-not (Test-Path -LiteralPath $expectedParent)) {
     New-Item -ItemType Directory -Path $expectedParent -Force | Out-Null
+}
+for ($cursor = $expectedParent; $cursor; $cursor = Split-Path -Parent $cursor) {
+    if ((Test-Path -LiteralPath $cursor) -and
+        ((Get-Item -LiteralPath $cursor -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+        throw 'Maintenance evidence path traverses a reparse point.'
+    }
+    if ($cursor -ieq (Split-Path -Qualifier $cursor)) { break }
 }
 New-Item -ItemType Directory -Path $output | Out-Null
 $checks = [Collections.Generic.List[object]]::new()

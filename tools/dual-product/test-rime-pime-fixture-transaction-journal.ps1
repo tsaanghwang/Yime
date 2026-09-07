@@ -571,6 +571,8 @@ $aggregate=Get-FixtureTestBytesSha256 ([Text.Encoding]::ASCII.GetBytes(
     "$($rollbackChain.head_sha256)`n$($commitChain.head_sha256)`n$($registryReceipt.sha256)`n$($payload.receipt.sha256)`n"))
 $result=[pscustomobject][ordered]@{
     schema_version='yime-rime-pime-fixture-journal-test-result-v1'
+    powershell_edition=[string]$PSVersionTable.PSEdition
+    powershell_version=$PSVersionTable.PSVersion.ToString()
     fixture_only=$true
     checks_total=[int]$script:checkCount
     checks_passed=[int]$script:checkCount

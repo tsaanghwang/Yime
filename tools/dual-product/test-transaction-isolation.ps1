@@ -249,7 +249,10 @@ $sourceAudit=[ordered]@{
         $nsis.Contains('registrationExitCode') -and
         $nsis.Contains('$WINDIR\Sysnative\regsvr32.exe') -and
         $nsis.Contains('$WINDIR\SysWOW64\regsvr32.exe') -and
-        $nsis.Contains('PIMERegistrationStatus.exe') -and
+        $nsis.Contains('PIMERegistrationStatus_x86.exe') -and
+        $nsis.Contains('PIMERegistrationStatus_x64.exe') -and
+        $nsis.Contains('PIMERegistrationStatus_arm64.exe') -and
+        $nsis.Contains('!macro RunCheckedRegistrationCommand') -and
         $nsis.Contains('verify-present') -and $nsis.Contains('verify-absent') -and
         $registrationProbe.Contains('ITfInputProcessorProfileMgr') -and
         $registrationProbe.Contains('EnumProfiles') -and

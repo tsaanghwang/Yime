@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 147)
-        self.assertEqual(len(self.receipt["source_manifest"]), 154)
+        self.assertEqual(len(contract["source_paths"]), 150)
+        self.assertEqual(len(self.receipt["source_manifest"]), 157)
         for path in (
             "version.txt",
             "PIMELauncher/build.rs",
@@ -528,6 +528,18 @@ class OwnershipTests(unittest.TestCase):
         self.assertFalse(status["rime_pime_dp1t_actual_adapter_dry_run_executed_by_baseline"])
         self.assertFalse(status["rime_pime_dp1t_exact_authorization_consumed_by_baseline"])
         self.assertFalse(status["rime_pime_actual_canonical_migration_admitted"])
+
+    def test_dp1u_gate_is_wired_without_installed_acceptance_promotion(self):
+        status = self.receipt["transaction_source"]
+        self.assertTrue(status["rime_pime_dp1u_maintenance_runtime_gate_source_contract_wired"])
+        self.assertTrue(status["rime_pime_dp1u_maintenance_runtime_gate_ci_ps5_ps7_present"])
+        self.assertFalse(status["rime_pime_dp1u_gate_test_executed_by_baseline"])
+        self.assertFalse(status["rime_pime_dp1u_current_readiness_executed_by_baseline"])
+        self.assertFalse(status["rime_pime_dp1u_acceptance_passed"])
+        self.assertFalse(status["actual_installer_executed"])
+        self.assertFalse(status["actual_uninstaller_executed"])
+        self.assertFalse(status["actual_registry_mutation_executed"])
+        self.assertFalse(status["actual_installed_runtime_examined"])
 
     def test_dp1q_candidate_evidence_archive_is_wired_without_actual_archive_claim(self):
         status = self.receipt["transaction_source"]
@@ -974,10 +986,15 @@ class OwnershipTests(unittest.TestCase):
             statuses["DP1-PIME-CANDIDATE-EVIDENCE-10"],
             "actual_archive_adapter_and_canonical_migration_complete_external_to_source_baseline",
         )
+        self.assertEqual(
+            statuses["DP1-PIME-MAINTENANCE-RUNTIME-11"],
+            "source_admission_gate_implemented_ps5_ps7_actual_installed_acceptance_pending",
+        )
         self.assertEqual(set(statuses), {
             "DP1-PIME-DIRECTED-EXIT-04", "DP1-PIME-REGISTRY-05", "DP1-PIME-TRANSACTION-06",
             "DP1-PIME-COMPILER-INPUT-07", "DP1-PIME-RECEIPT-08",
             "DP1-PIME-INSTALLER-RECEIPT-09", "DP1-PIME-CANDIDATE-EVIDENCE-10",
+            "DP1-PIME-MAINTENANCE-RUNTIME-11",
         })
 
     def test_target_sid_bootstrap_cannot_revert_to_manifest_auto_elevation(self):

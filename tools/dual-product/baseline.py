@@ -302,6 +302,15 @@ def transaction_source_status(sources):
     dp1t_actual_adapter_test = sources[
         "tools/dual-product/test-rime-pime-actual-canonical-migration.ps1"
     ]
+    dp1u_gate = sources[
+        "tools/dual-product/rime-pime-dp1u-maintenance-runtime-gate.psm1"
+    ]
+    dp1u_gate_test = sources[
+        "tools/dual-product/test-rime-pime-dp1u-maintenance-runtime-gate.ps1"
+    ]
+    dp1u_current_review = sources[
+        "tools/dual-product/review-rime-pime-dp1u-current-readiness.ps1"
+    ]
     receipt_v2_supersession = sources["tools/dual-product/rime-pime-receipt-v2-supersession.ps1"]
     receipt_v2_supersession_module = sources["tools/dual-product/rime-pime-receipt-v2-supersession.psm1"]
     receipt_v2_supersession_test = sources["tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1"]
@@ -1039,6 +1048,37 @@ def transaction_source_status(sources):
             "plan-mode-is-read-only-for-canonical-artifacts",
             "hardware_power_loss_recovery_verified=$false",
         ]),
+        (dp1u_gate, [
+            "yime-rime-pime-dp1u-maintenance-runtime-evidence-v1",
+            "Test-RimePimeDp1UMaintenanceRuntimeGate",
+            "actual_registration_converged_x86",
+            "actual_rollback_persistent_journal_replayed",
+            "actual_removal_concurrent_replacement_excluded",
+            "actual_runtime_non_elevated",
+            "installed_yimecore_local12_touched",
+            "hardware_power_loss_verified",
+            "directory_metadata_durability_verified",
+            "Export-ModuleMember -Function Test-RimePimeDp1UMaintenanceRuntimeGate",
+        ]),
+        (dp1u_gate_test, [
+            "yime-rime-pime-dp1u-maintenance-runtime-gate-test-v1",
+            "complete-actual-evidence-admits-all-four-gates",
+            "current-no-execution-evidence-keeps-four-acceptance-gates-closed",
+            "every-registration-observation-is-required",
+            "every-rollback-observation-is-required",
+            "every-removal-observation-is-required",
+            "every-runtime-observation-is-required",
+            "physical-nonclaims-must-remain-false",
+        ]),
+        (dp1u_current_review, [
+            "yime-rime-pime-dp1u-current-readiness-result-v1",
+            "DP1-U current readiness must pass source contracts and keep unexecuted acceptance closed.",
+            "actual_registration_probe_executed=$false",
+            "actual_rollback_executed=$false",
+            "actual_uninstaller_executed=$false",
+            "actual_runtime_executed=$false",
+            "installed_yimecore_local12_touched=$false",
+        ]),
     ):
         missing = [anchor for anchor in anchors if anchor not in body]
         if missing:
@@ -1145,6 +1185,10 @@ def transaction_source_status(sources):
     if "Start-Process" in dp1t_actual_adapter or "Registry::" in dp1t_actual_adapter:
         fail("Rime/PIME DP1-T actual adapter gained a prohibited product action")
     dp1t_actual_adapter_source_contract_wired = True
+    for forbidden in ("Start-Process", "Stop-Process", "Remove-Item", "Registry::", "HKLM", "HKCU", "msiexec"):
+        if forbidden in dp1u_gate:
+            fail("Rime/PIME DP1-U pure gate gained a prohibited action surface")
+    dp1u_maintenance_runtime_gate_source_contract_wired = True
     if core.index("New-Item -ItemType Directory -Path $stagingRoot") >= core.index("$preinstall = Invoke-UninstallCore"):
         fail("YimeCore active mutation moved before complete package staging")
     ci_postbuild_step = one(
@@ -1229,6 +1273,11 @@ def transaction_source_status(sources):
         r"(?ms)^      - name: Test DP1-T actual canonical migration adapter contract\s*$.*?(?=^      - name: |\Z)",
         ci,
         "CI DP1-T actual canonical migration adapter step",
+    ).group()
+    ci_dp1u_gate_step = one(
+        r"(?ms)^      - name: Test DP1-U maintenance and Runtime admission gate\s*$.*?(?=^      - name: |\Z)",
+        ci,
+        "CI DP1-U maintenance and Runtime gate step",
     ).group()
     ci_supersession_step = one(
         r"(?ms)^      - name: Test DP1-J isolated receipt-v2 supersession protocol\s*$.*?(?=^      - name: |\Z)",
@@ -1472,6 +1521,15 @@ def transaction_source_status(sources):
         ci_dp1t_actual_adapter_step and
         all(re.search(pattern, ci_dp1t_actual_adapter_step) is None
             for pattern in prohibited_dp1i_ci_patterns)
+    )
+    dp1u_maintenance_runtime_gate_ci_ps5_ps7_present = (
+        ci_dp1u_gate_step.count("test-rime-pime-dp1u-maintenance-runtime-gate.ps1") == 2 and
+        ci_dp1u_gate_step.count("-OutputRoot") == 2 and
+        ".tmp\\dual-product\\dp1-u-gate-test-ci-ps5-$runId" in ci_dp1u_gate_step and
+        ".tmp\\dual-product\\dp1-u-gate-test-ci-ps7-$runId" in ci_dp1u_gate_step and
+        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in ci_dp1u_gate_step and
+        "PowerShell 5.1 DP1-U admission-gate test failed with exit code $LASTEXITCODE" in ci_dp1u_gate_step and
+        all(re.search(pattern, ci_dp1u_gate_step) is None for pattern in prohibited_dp1i_ci_patterns)
     )
     rime_sid_chain_anchors = ("RequestExecutionLevel user" in nsis and
                               "Function bootstrapTargetUser" in nsis and
@@ -2177,6 +2235,8 @@ def transaction_source_status(sources):
             not dp1s_off_repository_archive_ci_ps5_ps7_present or
             not dp1t_actual_adapter_source_contract_wired or
             not dp1t_actual_adapter_ci_ps5_ps7_present or
+            not dp1u_maintenance_runtime_gate_source_contract_wired or
+            not dp1u_maintenance_runtime_gate_ci_ps5_ps7_present or
             'InstallLayoutOrTip(w "${YIME_TIP}"' not in nsis or
             'Get-ChildItem -LiteralPath "Registry::HKEY_USERS"' in pime_cleanup):
         fail("Rime/PIME registration/SID/transaction status changed; dedicated review required")
@@ -2321,6 +2381,11 @@ def transaction_source_status(sources):
         "rime_pime_dp1t_actual_adapter_test_executed_by_baseline": False,
         "rime_pime_dp1t_actual_adapter_dry_run_executed_by_baseline": False,
         "rime_pime_dp1t_exact_authorization_consumed_by_baseline": False,
+        "rime_pime_dp1u_maintenance_runtime_gate_source_contract_wired": dp1u_maintenance_runtime_gate_source_contract_wired,
+        "rime_pime_dp1u_maintenance_runtime_gate_ci_ps5_ps7_present": dp1u_maintenance_runtime_gate_ci_ps5_ps7_present,
+        "rime_pime_dp1u_gate_test_executed_by_baseline": False,
+        "rime_pime_dp1u_current_readiness_executed_by_baseline": False,
+        "rime_pime_dp1u_acceptance_passed": False,
         "rime_pime_actual_evidence_archived_outside_repository_tmp": False,
         "rime_pime_actual_canonical_migration_admitted": False,
         "rime_pime_actual_canonical_migration_executed": False,
@@ -2509,6 +2574,9 @@ def source_baseline(root: Path = ROOT):
         {"id": "DP1-PIME-CANDIDATE-EVIDENCE-10", "path": "tools/dual-product/invoke-rime-pime-actual-canonical-migration.ps1",
           "status": "actual_archive_adapter_and_canonical_migration_complete_external_to_source_baseline",
           "reason": "DP1-S publishes a content-addressed archive outside Git worktrees. DP1-T deterministically rebases path-bound build evidence, binds an identical PS5/PS7 plan plus both full fault matrices to one exact authorization, and completes the actual canonical artifact migration through the private DP1-N capability while the public API still rejects the checkout. The tracked baseline verifies source and CI anchors only; the separate DP1-T evidence proves execution. Hardware-power-loss, directory-metadata and hostile same-SID physical prevention remain false."},
+        {"id": "DP1-PIME-MAINTENANCE-RUNTIME-11", "path": "tools/dual-product/rime-pime-dp1u-maintenance-runtime-gate.psm1",
+          "status": "source_admission_gate_implemented_ps5_ps7_actual_installed_acceptance_pending",
+          "reason": "DP1-U now has one fail-closed evidence schema for registration, rollback, exact removal and Runtime readiness, plus PS5/PS7 regressions and a current-readiness review over the DP1-T canonical receipt and existing source/fixture suites. No installer or uninstaller was run, so every installed acceptance gate remains false. Hardware-power-loss and directory-metadata durability remain false."},
     ]
     unchanged = all(digest(child(root, path)) == expected for path, expected in hashes.items())
     if not unchanged:

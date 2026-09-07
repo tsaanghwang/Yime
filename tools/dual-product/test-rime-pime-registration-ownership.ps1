@@ -516,7 +516,12 @@ Check 'maintenance-architecture-string-is-parsed-as-an-exact-set' {
 Check 'installer-checks-every-register-exit-before-owned-state-verification' {
     $nsis = $source['installer/installer.nsi']
     $register = [regex]::Match($nsis, '(?s)Section "" Register\s+(.*?)SectionEnd').Groups[1].Value
-    Assert-True ([regex]::Matches($register,'!insertmacro RunCheckedRegistrationCommand').Count -ge 6 -and
+    Assert-True ([regex]::Matches($register,'!insertmacro RunCheckedRegistrationCommand').Count -ge 5 -and
+        $register.Contains('"$RimeNativeRegsvr32" /s "$INSTDIR\x64\PIMETextService.dll"') -and
+        $register.Contains('"$RimeX86Regsvr32" /s "$INSTDIR\x86\PIMETextService.dll"') -and
+        $register.Contains('PIMERegistrationStatus_x86.exe" verify-present') -and
+        $register.Contains('PIMERegistrationStatus_x64.exe" verify-present') -and
+        $register.Contains('PIMERegistrationStatus_arm64.exe" verify-present') -and
         $register.Contains('Call verifyRegistrationOwnership')) 'Registration exit/state verification wiring is missing.'
     Assert-True ($register.IndexOf('WriteUninstaller') -ge 0 -and
         $register.IndexOf('WriteUninstaller') -lt $register.IndexOf('Call verifyRegistrationOwnership') -and
