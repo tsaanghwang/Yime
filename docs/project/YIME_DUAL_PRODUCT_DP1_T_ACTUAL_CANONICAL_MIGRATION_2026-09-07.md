@@ -8,7 +8,7 @@ Affected product: the independent Rime/PIME product. DP1-T migrates repository c
 - Byte-identical PS5/PS7 migration plan and full 45/45 fault-matrix binding: **PASS**.
 - One-time authorized actual canonical installer-plus-receipt migration: **PASS**.
 - PS7 idempotent Resume after completion: **PASS**.
-- Installed registration, rollback, uninstall and Runtime readiness: **not exercised; DP1-U remains next**.
+- Installed registration, rollback, uninstall and Runtime readiness: **not exercised; DP1-U later implemented their source admission gates, while actual acceptance remains closed**.
 - Directory-metadata durability, real hardware power-loss recovery and physical prevention of hostile same-SID replacement: **false**.
 
 The final implementation is commit `5d12adfbd3da7f4dce4c6d4d4e0c58bbb8b53b30`, tree `db3b81133406c74dbb1c5b3beaea8df19454293d`. The [structured evidence](../testing/dual-product/2026-09-07-dp1-t-actual-canonical-migration.json) binds the implementation, external authorization, actual transition and regressions.
@@ -58,4 +58,4 @@ Build guards pass under PS5 and PS7 with `-SkipPackagedRime`. The baseline is in
 
 The transaction uses write-through file streams, `Flush(true)`, no-replace moves, persistent intent and roll-forward Resume. This is process-interruption evidence. It does not prove directory-entry persistence after physical power loss, and it does not physically exclude a hostile same-SID process from replacing an unleased ancestor or creating an unlisted tree member. Those fields remain false.
 
-No installer or uninstaller was run. Registration, rollback, installed removal, Runtime readiness, registered/native hosts, signing, delivery and ARM64-native acceptance remain separate gates. DP1-U is next; DP1, DP2, DP3, L5 and L6 remain incomplete.
+No installer or uninstaller was run. Registration, rollback, installed removal, Runtime readiness, registered/native hosts, signing, delivery and ARM64-native acceptance remain separate gates. DP1-U now supplies the unified source admission layer, but those actual installed gates remain false; DP1, DP2, DP3, L5 and L6 remain incomplete.

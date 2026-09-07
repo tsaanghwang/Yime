@@ -1,0 +1,66 @@
+{
+  "schema_version": "yime-dual-product-dp1-u-maintenance-runtime-gates-evidence-v1",
+  "affected_product": "rime-pime",
+  "implementation": {
+    "commit": "c4d9fb45c106b4a45ba2dd60aaacfbac8e1bfaf6",
+    "tree": "9c844386a41dc18256fe66be8b4d7c9cf9f11c40",
+    "gate_is_pure": true,
+    "exact_ordered_evidence_schema": true,
+    "ci_ps5_ps7": true
+  },
+  "canonical_input": {
+    "dp1_t_receipt_sha256": "f1b67aa40d0fce85244e00656f6017b4e9e8c313eed538f596da5fd9ba312719",
+    "dp1_t_apply_result_sha256": "f2e62791c515ed1fdf34635399f6ac4728e6af4595fa75b1295d4e05fbcf36f1",
+    "dp1_t_resume_result_sha256": "70a40cbb9497687ead05e647fceb5c9be68bd82ee8177087166cb2ab85a3916e"
+  },
+  "gate_regressions": {
+    "ps5": {"path": ".tmp/dual-product/dp1-u-gate-test-ps5-e/result.json", "result": "11/11", "sha256": "3ac9ebc3d074cf0e492fa8d7e9bdfec546d515c082b605c8f909e845abe07b88"},
+    "ps7": {"path": ".tmp/dual-product/dp1-u-gate-test-ps7-e/result.json", "result": "11/11", "sha256": "37fdec60d412fb4fb719abea04cc66a0c674869013758a2527a8602e8f3d5313"}
+  },
+  "current_readiness": {
+    "ps5_path": ".tmp/dual-product/dp1-u-current-readiness-ps5-b/result.json",
+    "ps5_sha256": "7a13d7cd07fcfcc66c0d233c5ef76c229edcdf101ad9486b8472d1a118ecc36c",
+    "ps7_path": ".tmp/dual-product/dp1-u-current-readiness-ps7-b/result.json",
+    "ps7_sha256": "4595e99c96f1eb2fe6192a63308f53210eb62dbcfca3e903f900506f4ac48658",
+    "source_contract_ready": true,
+    "dp1_u_gate_implementation_complete": true,
+    "registration_gate_passed": false,
+    "rollback_gate_passed": false,
+    "removal_gate_passed": false,
+    "runtime_gate_passed": false,
+    "dp1_u_acceptance_passed": false
+  },
+  "source_and_fixture_regressions": [
+    {"name": "registration-ownership", "ps5_path": ".tmp/dual-product/dp1-registration-dp1u-ps5-b/result.json", "ps5": "22/22", "ps5_sha256": "03ecf271c344a4beab3735259b36320a760f575fcf2abacb4f5467badbf76430", "ps7_path": ".tmp/dual-product/dp1-registration-dp1u-ps7-b/result.json", "ps7": "22/22", "ps7_sha256": "91f1a18ca986f599b3517ba67ef281170d20f4979dae49e90f7b76c1bbf34567"},
+    {"name": "registration-completeness", "ps5_path": ".tmp/dual-product/dp1-registration-completeness-dp1u-ps5/result.json", "ps5": "36/36", "ps5_sha256": "85bfde6c99f9c8efd9a3a7cdaf94b3c2ee51ae432aee44bb48696ed04ef7253a", "ps7_path": ".tmp/dual-product/dp1-registration-completeness-dp1u-ps7/result.json", "ps7": "36/36", "ps7_sha256": "66637c91bfdb8312ea1b3d91eb94e94f3854b24355afb9f97292992ed479c601"},
+    {"name": "native-user-cleanup", "ps5_path": ".tmp/dual-product/dp1-native-user-cleanup-dp1u-ps5/result.json", "ps5": "12/12", "ps5_sha256": "75a33fc41e4c93c22a57cb577fe203235e7eacb44b6f3093e3a959a86072ffcf", "ps7_path": ".tmp/dual-product/dp1-native-user-cleanup-dp1u-ps7/result.json", "ps7": "12/12", "ps7_sha256": "6ec07cf30d873d1c25da25f56f98d843f057a4ff26a55a047cbbfdd013df8054"},
+    {"name": "transaction-faults", "ps5_path": ".tmp/dual-product/dp1-transaction-faults-dp1u-ps5/result.json", "ps5": "9/9", "ps5_sha256": "9a23d68c1d8c1382ac74a2b2e9e1539c18e1649ee2e7903c87fec2b9ec9d567d", "ps7_path": ".tmp/dual-product/dp1-transaction-faults-dp1u-ps7/result.json", "ps7": "9/9", "ps7_sha256": "89f339703474880ce862d4cffb3df74f02c76dd7229695298142fda4bf89061a"},
+    {"name": "transaction-isolation", "ps5_path": ".tmp/dual-product/dp1-transaction-dp1u-ps5-b/result.json", "ps5": "52/52", "ps5_sha256": "76190b8cd2d0dcb0ae07e79a9873988505bd231424df2ba37daf986b82bff8de", "ps7_path": ".tmp/dual-product/dp1-transaction-dp1u-ps7-b/result.json", "ps7": "52/52", "ps7_sha256": "b4507f5b3292f79031a8575b89b6ad8121980670906c5b63b91e9911164703c6"},
+    {"name": "fixture-journal", "ps5_path": ".tmp/dual-product/dp1-i-journal-dp1u-ps5-b/fixture/result.json", "ps5": "114/114", "ps5_sha256": "e76a25f2cd22aa48e200f4b3f5480189a4fb9acaac1030d9113674af9a44a3f3", "ps7_path": ".tmp/dual-product/dp1-i-journal-dp1u-ps7-b/fixture/result.json", "ps7": "114/114", "ps7_sha256": "035b6ce97d4374730fc2bccbe8f37df8feb1bd50d773c89dac49a289025742bd"},
+    {"name": "maintenance", "ps5_path": ".tmp/dual-product/dp1-rime-maint-dp1u-ps5/result.json", "ps5": "16/16", "ps5_sha256": "757f0e8b1fd773b0a4a6bb413d93b7a76b59e35f990758f42ed1add902e00953", "ps7_path": ".tmp/dual-product/dp1-rime-maint-dp1u-ps7/result.json", "ps7": "16/16", "ps7_sha256": "81068b79bbe68dd3d5d262e8f265acffd273ec16193c2fadabd1fdcb77a5ee30"}
+  ],
+  "baseline": {
+    "path": ".tmp/dual-product/dp1-u-baseline-final-docs/baseline.json",
+    "source_count": 157,
+    "tests": "68/68",
+    "pending_count": 8,
+    "sha256": "3a9b743339223e7932a5da4eca2f97e65db091099ba9daff4cf55b5c2e69313ff"
+  },
+  "safety": {
+    "installer_or_uninstaller_executed": false,
+    "registry_or_product_process_touched": false,
+    "production_user_data_accessed": false,
+    "default_input_method_changed": false,
+    "installed_yimecore_local12_touched": false,
+    "hardware_power_loss_verified": false,
+    "directory_metadata_durability_verified": false,
+    "hostile_same_sid_physical_prevention_verified": false
+  },
+  "outcome": {
+    "dp1_u_gate_implementation_complete": true,
+    "dp1_u_installed_acceptance_complete": false,
+    "dp1_complete": false,
+    "dp2_complete": false,
+    "dp3_complete": false
+  }
+}

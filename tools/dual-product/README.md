@@ -1,6 +1,6 @@
 # 双产品 DP1 只读基线与隔离合同
 
-影响面：共存安装合同／两版源码基线。当前已完成首批基线、定向退出、`TargetUserSid`、Rime/PIME 注册所有权／状态接线、纯事务参考模型、全量密封 stage、stage-only NSIS 构建、只读静态归档核对、canonical v2 静态证据绑定，以及 fixture-only journal／replay／类型化合成快照／精确 removal、连续 tree-membership monitor、严格 build-evidence admission、receipt supersession、installer＋receipt identity replacement、严格版本／installer leaf 准入、versioned successor disabled candidate、仓外候选证据 capsule 和受限 actual canonical 工件迁移。DP1-T 已在一次精确授权下迁移仓库 canonical receipt／versioned installer，并用 PS7 完成幂等 Resume。**未运行 native probe、安装器、卸载器、注册表操作或真实产品进程**，不是完整 DP1 或 DP2 单装／共存实机验收。
+影响面：共存安装合同／两版源码基线。当前已完成首批基线、定向退出、`TargetUserSid`、Rime/PIME 注册所有权／状态接线、纯事务参考模型、全量密封 stage、stage-only NSIS 构建、只读静态归档核对、canonical v2 静态证据绑定，以及 fixture-only journal／replay／类型化合成快照／精确 removal、连续 tree-membership monitor、严格 build-evidence admission、receipt supersession、installer＋receipt identity replacement、严格版本／installer leaf 准入、versioned successor disabled candidate、仓外候选证据 capsule、受限 actual canonical 工件迁移和 DP1-U 四类维护／Runtime 统一门禁。DP1-T 已迁移仓库 canonical receipt／versioned installer；DP1-U 源码门禁已完成，但四类 installed acceptance 仍为 false。**未运行 native probe、安装器、卸载器、注册表操作或真实产品进程**，不是完整 DP1 或 DP2 单装／共存实机验收。
 
 - `contract.json` 固定产品选择、无相互运行依赖、无共享可写状态及此次读取的源码清单。
 - `baseline.py` 从真实源码提取 CLSID/Profile、安装和状态根、端点、Run／卸载归属及进程名，交叉校验来源；只对明确列出的生成数据计算哈希。
@@ -35,6 +35,7 @@
 
 - `publish-rime-pime-dp1s-off-repository-archive.ps1` 把实际 DP1-P 证据发布到 `%USERPROFILE%\Yime Rime-PIME Evidence Archives\DP1-S` 下的 immutable content-addressed capsule，并拒绝任何 Git worktree 或仓库 `.tmp` 目标。原候选目录不可用期间，它仅从 capsule 重建严格收据所需的 exact-root 投影，再由 fresh PS5／PS7 子进程完成 strict receipt 和 installer bytes 复核；二次运行只读复用验证记录。`test-rime-pime-dp1s-off-repository-archive.ps1` 的合同与实际模式分别为 11/11 和 12/12。Explorer 独立启动、目录 metadata、hardware power loss、hostile same-SID physical prevention 及 migration 均保持 false。准确结果见 [DP1-S 记录](../../docs/project/YIME_DUAL_PRODUCT_DP1_S_OFF_REPOSITORY_ARCHIVE_2026-09-07.md)。
 - `invoke-rime-pime-actual-canonical-migration.ps1` 是 DP1-T 的 exact-checkout 适配器。它将 DP1-S 中绑定隔离 clone 绝对路径的 build／postbuild 证据确定性重定位到 actual root，将一致的 PS5／PS7 计划、两套 45/45 故障矩阵和一次授权绑定后，通过 DP1-N 的私有 actual capability 发布 `1.4.0-dev.1` installer 及 strict receipt。公开 DP1-N API 仍拒绝 actual checkout。Apply 与 PS7 Resume 均通过；安装／卸载、注册表、产品进程、用户数据及 local.12 均未触碰。准确证据见 [DP1-T 记录](../../docs/project/YIME_DUAL_PRODUCT_DP1_T_ACTUAL_CANONICAL_MIGRATION_2026-09-07.md)。
+- `rime-pime-dp1u-maintenance-runtime-gate.psm1` 是 DP1-U 的纯准入层，统一要求实际注册、持久回滚、精确 removal 与非提升 Runtime 证据。`test-rime-pime-dp1u-maintenance-runtime-gate.ps1` 在 PS5／PS7 各 11/11；`review-rime-pime-dp1u-current-readiness.ps1` 汇入 DP1-T actual receipt 及七组双 shell 源码／夹具结果，得到 `source_contract_ready=true`，同时保持四个实际门和总 acceptance 为 false。准确证据见 [DP1-U 记录](../../docs/project/YIME_DUAL_PRODUCT_DP1_U_MAINTENANCE_RUNTIME_GATES_2026-09-07.md)。
 
 从仓库根目录运行，输出必须是尚不存在的 `dp1-*` 目录：
 
@@ -72,4 +73,4 @@ DP1-I 阶段曾在隔离夹具层固定持久 hash-chain journal、幂等 replay
 
 DP1-J 首批把连续 NSIS membership monitor 和 receipt-v2 supersession protocol 固定在隔离夹具层：PS5／PS7 分别为 15/15 和 16/16；当时全局基线固定 121 个 contract source path、128 个 hash source，49/49 项 Python 合同通过。准确历史边界见 [DP1-J 记录](../../docs/project/YIME_DUAL_PRODUCT_DP1_J_ISOLATED_MEMBERSHIP_AND_SUPERSESSION_2026-09-06.md)与[结构化证据](../../docs/testing/dual-product/2026-09-06-dp1-j.json)。其“尚未包围真实 makensis／尚未接入严格 reader”是当时结论，不代表当前源码状态。
 
-DP1-K 至 DP1-S 已依次接入 full-interval membership、strict receipt retention、build-evidence admission、installer＋receipt replacement、versioned successor、actual review、static trust 与仓外 capsule。DP1-T 已用完全相同的 PS5／PS7 计划和一次授权执行 actual canonical 工件迁移，并用 PS7 Resume 确认幂等收敛。旧 installer 保留，新 installer 与 canonical strict receipt 已发布；安装器和产品状态未执行。下一步是 DP1-U 注册／回滚／removal／Runtime 门禁。物理 same-SID 防止、目录 metadata／断电耐久、签名、交付和 ARM64 原生验证保持未通过；installed／registered／live-host 硬门不变，DP1、DP2、DP3、L5、L6 均未完成。
+DP1-K 至 DP1-S 已依次接入 full-interval membership、strict receipt retention、build-evidence admission、installer＋receipt replacement、versioned successor、actual review、static trust 与仓外 capsule。DP1-T 已完成 actual canonical 工件迁移；DP1-U 已实现注册、回滚、removal 与 Runtime 的统一失败关闭门禁，并在 PS5／PS7 证明源码准入。旧 installer 保留，新 installer 与 canonical strict receipt 已发布；安装器和产品状态未执行，所以四类 installed acceptance 仍为 false。物理 same-SID 防止、目录 metadata／断电耐久、签名、交付和 ARM64 原生验证保持未通过；DP1、DP2、DP3、L5、L6 均未完成。
