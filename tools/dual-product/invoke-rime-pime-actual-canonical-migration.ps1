@@ -19,6 +19,8 @@ $ErrorActionPreference='Stop'
 $script:AdapterSchema='yime-rime-pime-actual-canonical-adapter-result-v1'
 $script:AuthorizationSchema='yime-rime-pime-actual-canonical-authorization-v1'
 $script:ShaPattern='^[0-9a-f]{64}$'
+$script:ExpectedUserInstruction=[Text.UTF8Encoding]::new($false).GetString([Convert]::FromBase64String(
+    '5oyJ6aG65bqP5a6M5oiQIERQMS1TIOS7k+WkluivgeaNruW9kuaho+OAgURQMS1UIOWunumZhei/geenu+mAgumFjeWZqOOAgURQMS1VIOazqOWGjC/lm57mu5ov5Y246L29L1J1bnRpbWUg6Zeo56aB'))
 $script:ExactWriteRoles=@(
     'unique-staging-leaves','retained-evidence-objects','retained-evidence-sidecars',
     'successor-installer-stage','successor-installer','pending-intent','canonical-receipt',
@@ -253,7 +255,7 @@ function Assert-Dp1TAuthorization([string]$Path,$Plan){
         $auth.explicit_user_authorization -isnot [bool] -or -not [bool]$auth.explicit_user_authorization -or
         $auth.one_time_authorization -isnot [bool] -or -not [bool]$auth.one_time_authorization -or
         [string]$auth.scope -cne 'actual-canonical-artifacts-only' -or
-        [string]$auth.user_instruction -cne '按顺序完成 DP1-S 仓外证据归档、DP1-T 实际迁移适配器、DP1-U 注册/回滚/卸载/Runtime 门禁'){
+        [string]$auth.user_instruction -cne $script:ExpectedUserInstruction){
         throw 'Authorization record does not carry the exact user-approved migration scope.'
     }
     $digest=Get-Dp1TSha256 $full

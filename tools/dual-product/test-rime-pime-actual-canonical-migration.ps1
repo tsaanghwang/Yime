@@ -66,7 +66,7 @@ Check 'adapter-write-set-is-exact-and-bounded' {
 Check 'authorization-binds-exact-user-scope-and-all-identities' {
     foreach($anchor in @('one-time-actual-canonical-artifact-migration','actual-canonical-artifacts-only',
         'migration_plan_sha256','actual_snapshot_sha256','archive_manifest_sha256','adapter_source_set_sha256',
-        '按顺序完成 DP1-S 仓外证据归档、DP1-T 实际迁移适配器、DP1-U 注册/回滚/卸载/Runtime 门禁')){
+        '$script:ExpectedUserInstruction','5oyJ6aG65bqP5a6M5oiQIERQMS1T')){
         Assert-True $adapterSource.Contains($anchor) "Missing authorization binding: $anchor"
     }
 }
