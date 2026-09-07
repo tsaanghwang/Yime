@@ -6,6 +6,8 @@
 >
 > 2026-09-07 当前源码身份已推进到 `1.4.0-dev.1`，并已从 exact HEAD 构建一个未签名、禁用且未执行的隔离 successor candidate，静态门禁通过，且 `identity_transition_admitted=true`；下列 `1.4.0-dev` 安装态结论保持历史原义，新身份没有安装、签名、交付或 ARM64 原生验收，`actual_canonical_migration_admitted=false` 且未执行。详见 [DP1-P 记录](project/YIME_DUAL_PRODUCT_DP1_P_VERSIONED_SUCCESSOR_CANDIDATE_2026-09-07.md)。
 >
+> [DP1-Q](project/YIME_DUAL_PRODUCT_DP1_Q_CANDIDATE_EVIDENCE_ARCHIVE_AND_ACTUAL_MIGRATION_REVIEW_2026-09-07.md)仅新增仓库 `.tmp` 内的归档夹具（PS5／PS7 各 24/24）和 pure-data migration review 合同（各 23/23）。DP1-P 证据尚未真实仓外归档，合成 `review_ready=true` 不是实际审查或授权；actual archive／review／migration／adapter／DP1-N、安装、签名、交付及 ARM64 原生验证仍未执行或未准入。
+>
 > 相关文档：[架构](YIME_ARCHITECTURE.md) | [测试](YIME_TESTING_GUIDE.md) | [发布与签名](YIME_RELEASE_AND_SIGNING.md) | [原生 UI](YIME_NATIVE_UI_GUIDELINES.md)
 
 本文汇总近期两轮全面评估及连续修复的结果，用于回答三个问题：当前项目是否完整、已处理哪些系统性风险、正式发布前还缺少哪些验证。专题实现细节仍以各专项文档为准，本报告只维护结论、证据和未闭环事项。
@@ -24,7 +26,7 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 | 语言栏 | 已清理 | 保留静态标签和稳定命令 ID；高风险点击路径有回归测试 |
 | 构建与打包 | 稳定 | 9 个 Go EXE 可复现、统一图标和 VERSIONINFO、包内不携带 Go 源码 |
 | CI 与测试 | 完整度较高 | 构建契约、Rust、原生构建、Go、真实 Rime、MSYS2 race 和安装器已拆分；`core-build` 是聚合 required check |
-| 正式签名发布 | 仍硬阻断 | `version.txt` 当前为 `1.4.0-dev.1`；DP1-P 候选未签名且不可交付，actual canonical 未迁移，tag 构包与签名门禁均未解除；正式目标仍是尚未发布的 `v1.4.0` |
+| 正式签名发布 | 仍硬阻断 | `version.txt` 当前为 `1.4.0-dev.1`；DP1-Q 只通过归档夹具和纯数据审查合同，DP1-P 证据仍未真实仓外归档，actual canonical 未迁移，tag 构包与签名门禁均未解除；正式目标仍是尚未发布的 `v1.4.0` |
 | 安装态验证 | 前一开发身份已复核 | 07-12／07-22 的真实安装结论属于 `1.4.0-dev`；`1.4.0-dev.1` 尚未安装或继承该结论，详见[07-22 安装态复核](YIME_INSTALL_VERIFICATION_2026-07-22.md) |
 
 ## 2. 两轮评估已处理事项
@@ -142,6 +144,7 @@ git diff --check
 
 ### 发布前必须完成
 
+- 按 DP1-R → DP1-S → DP1-T → DP1-U 顺序完成 full payload／non-OS／NSIS／generated-uninstaller trust、真实仓外归档＋目录／断电／same-SID、真实 adapter／授权／migration，以及注册／回滚／removal／Runtime；在此之前不得把合成 `review_ready` 视为实际审查或执行准入，也不得执行 actual DP1-N transaction、安装、签名、交付或 ARM64 原生验收。
 - 将当前 `1.4.0-dev.1` 更新为实际发布版本并核对 `CHANGELOG.md`；只有准备创建正式标签时才切换为 `1.4.0`。
 - ~~执行一次未签名标准安装器发布演练。~~ 2026-07-15 已完成构建、连续哈希、标准安装器和原位升级验证；当时锁定的 x64 DLL 已在后续重启中完成替换，并于 2026-07-22 确认最终哈希一致且无待替换 `.new` 文件。
 - 使用可信签名服务或证书生成一次完整签名安装包，并运行 `tools/verify-release-signatures.ps1 -IncludeInstaller`。

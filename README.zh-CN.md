@@ -12,6 +12,8 @@
 
 当前 [DP1-J 证据](docs/project/YIME_DUAL_PRODUCT_DP1_J_ISOLATED_MEMBERSHIP_AND_SUPERSESSION_2026-09-06.md)新增两套仅限夹具的协议：连续 NSIS tree-membership monitor 在 PowerShell 5.1／7 各 15/15，内容寻址 generation、原子 head 与密封 journal supersession 模型各 16/16。监测尚未包围真实 `makensis`；supersession 未调用严格 receipt-v2 reader、迁移耐久 evidence 或修改 canonical receipt。跨进程崩溃／replay、目录耐久、hardlink、并发替换、真实事务 adapter 及全部 installed/live 门禁仍待办。
 
+当前 [DP1-Q 证据](docs/project/YIME_DUAL_PRODUCT_DP1_Q_CANDIDATE_EVIDENCE_ARCHIVE_AND_ACTUAL_MIGRATION_REVIEW_2026-09-07.md)新增候选证据归档夹具（PowerShell 5.1／7 各 24/24）和 pure-data actual migration review 合同（各 23/23）。归档夹具仍在仓库 `.tmp`，DP1-P 证据尚未真实归档到仓外；合成 `review_ready=true` 不等于实际审查或授权。actual archive、review、migration、adapter、DP1-N actual transaction、安装、签名、交付和 ARM64 原生验证均未执行或未准入。后续顺序是 DP1-R 完整 payload／non-OS／NSIS／generated-uninstaller trust，DP1-S 真实仓外归档＋目录／断电／same-SID，DP1-T 真实 adapter／授权／migration，DP1-U 注册／回滚／removal／Runtime。
+
 下方功能、构建、安装、首次运行和调试说明均针对 **Rime/PIME 产品**。YimeCore 使用独立的[开发与维护入口](tools/yimecore/README.md)，不能套用下方 PIME 重装或注册命令。
 
 音元输入法将拼音音节映射到结构化的键盘编码，首音遵循易记的规律（zh/ch/sh → 7/8/9，j/q/x → 3/2/1，z/c/s → 6/5/4）。正式安装提供变长、等长和省键三种模式，三者都从同一份整理后的核心候选集确定性派生。
@@ -204,6 +206,7 @@ PIMELauncher.exe /console
 |------|------|
 | [双产品开发计划](docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md) | 独立产品、可选共存、开发优先级与剩余验收门禁 |
 | [DP1-J 隔离成员监测与 supersession](docs/project/YIME_DUAL_PRODUCT_DP1_J_ISOLATED_MEMBERSHIP_AND_SUPERSESSION_2026-09-06.md) | fixture-only 连续成员监测、supersession 协议证据及明确非声明 |
+| [DP1-Q 候选证据归档与 actual migration review](docs/project/YIME_DUAL_PRODUCT_DP1_Q_CANDIDATE_EVIDENCE_ARCHIVE_AND_ACTUAL_MIGRATION_REVIEW_2026-09-07.md) | 仅限仓内 `.tmp` 归档夹具和纯数据审查合同；不表示真实归档、授权或迁移 |
 | [YimeCore 开发入口](tools/yimecore/README.md) | 自研产品独立构包、试验与维护边界 |
 | [项目综合评估](docs/YIME_PROJECT_ASSESSMENT.md) | 两轮全面评估结论、已完成修复、验证证据和剩余风险 |
 | [架构文档](docs/YIME_ARCHITECTURE.md) | 系统架构、关键机制、数据文件 |

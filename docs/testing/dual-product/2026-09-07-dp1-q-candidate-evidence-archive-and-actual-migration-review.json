@@ -1,0 +1,393 @@
+{
+  "schema_version": "yime-dual-product-dp1-q-candidate-evidence-archive-and-actual-migration-review-v1",
+  "affected_product": "rime-pime",
+  "generated_at_utc": "2026-09-07T01:24:54.7883756Z",
+  "verified_source": {
+    "implementation_commit": "4c524cb5c629146e2e3c5963e47f76e506436b62",
+    "implementation_tree": "39a5582ba65d63cd90e4054f31f808a8a3f07f5d",
+    "parent_commit": "cf6814b213dc12a85a1ea2ab4c6ccff1b357e33b",
+    "whole_worktree_clean": false,
+    "unrelated_user_l5_changes_excluded_from_implementation_commit": true,
+    "source_files": [
+      {
+        "path": ".github/workflows/ci.yaml",
+        "bytes": 40208,
+        "sha256": "7c7551a5cbdd04bfff4bddbbaa9eac757745a22b978449c81471cee02404f676"
+      },
+      {
+        "path": "tools/dual-product/baseline.py",
+        "bytes": 160522,
+        "sha256": "0cd0e78fdbd75027c447e022d1d83724ee905e932bcf1dbc9a94e3c5cf2e7977"
+      },
+      {
+        "path": "tools/dual-product/contract.json",
+        "bytes": 8042,
+        "sha256": "c3a62a73c83ebb843ac7d3eb35eae768687b9c3872465b72508d535a0efa2d6e"
+      },
+      {
+        "path": "tools/dual-product/test_baseline.py",
+        "bytes": 62100,
+        "sha256": "35baddce201f4d5018d651de1dfc6bb657e15bb774d54613e9a3e002fa414a4e"
+      },
+      {
+        "path": "tools/dual-product/rime-pime-candidate-evidence-archive.ps1",
+        "bytes": 88970,
+        "sha256": "27e80dea238d7747649c6f296773b331266bf5f677320e2f9e0b3e17019cf4e7"
+      },
+      {
+        "path": "tools/dual-product/rime-pime-candidate-evidence-archive.psm1",
+        "bytes": 586,
+        "sha256": "b4ace7c5887bfd063691a4de5fcee85309de4e132fff1628bd9e16110b890760"
+      },
+      {
+        "path": "tools/dual-product/test-rime-pime-candidate-evidence-archive.ps1",
+        "bytes": 41058,
+        "sha256": "1ab5e24568660b6a0b12b0f64275ae69c8c669d3531867edbb9fa94671a2b54c"
+      },
+      {
+        "path": "tools/dual-product/rime-pime-actual-migration-review.psm1",
+        "bytes": 38179,
+        "sha256": "f223a21080d280e01ff1b76f435374e0c7fee240e69b7a8a1853d0bc02629e27"
+      },
+      {
+        "path": "tools/dual-product/test-rime-pime-actual-migration-review.ps1",
+        "bytes": 33972,
+        "sha256": "d8ef996ef9dbb5ca8a3ab56df810e8e5848ba0df8d88e49cbd9dccc49aabfb70"
+      }
+    ]
+  },
+  "outcome": {
+    "dp1_q_fixture_candidate_evidence_archive_contract_completed": true,
+    "dp1_q_pure_actual_migration_review_contract_completed": true,
+    "candidate_archive_ci_ps5_ps7_wired": true,
+    "migration_review_ci_ps5_ps7_wired": true,
+    "candidate_archive_ps5_full_suite_passed": true,
+    "candidate_archive_ps7_full_suite_passed": true,
+    "migration_review_ps5_full_suite_passed": true,
+    "migration_review_ps7_full_suite_passed": true,
+    "source_baseline_passed": true,
+    "build_guards_ps5_ps7_passed": true,
+    "actual_archive_root_published": false,
+    "actual_evidence_archived_outside_repository_tmp": false,
+    "actual_dp1_p_candidate_archived": false,
+    "actual_migration_review_executed": false,
+    "actual_migration_review_ready": false,
+    "actual_canonical_migration_admitted": false,
+    "actual_canonical_migrated": false,
+    "product_regressions": []
+  },
+  "dp1_p_candidate_reference": {
+    "reference_only_not_archived_by_dp1_q": true,
+    "tracked_evidence": {
+      "path": "docs/testing/dual-product/2026-09-07-dp1-p-versioned-successor-candidate.json",
+      "bytes": 15820,
+      "sha256": "216eed8b6cabfdd5b1fa5c084cae0747a7132206dd04647ec2807a8117bf65c4",
+      "sidecar_path": "docs/testing/dual-product/2026-09-07-dp1-p-versioned-successor-candidate.json.sha256",
+      "sidecar_sha256": "d94a2a0fbc93323a8da4ad0a23b3e3b713e2fb7be5c3e7935b8cdaa55856a8f7"
+    },
+    "transient_runner": {
+      "path": ".tmp/dual-product/dp1-o-candidate-20260907-d/result.json",
+      "bytes": 6177,
+      "sha256": "9833ebe569a3ebf4e6962b22f820e4cf42abffb88db07e740794b434917848c8",
+      "sidecar_sha256": "0cbe845fdc41a4efaab0924946eddaf48a802278deb9a9c1a7fba1b481eeb189"
+    },
+    "successor_installer": {
+      "path": ".tmp/dual-product/dp1-o-candidate-20260907-d/repo/installer/YIME-1.4.0-dev.1-setup.exe",
+      "bytes": 41455231,
+      "sha256": "ac97f65af80e9686525a3c2f289670aaa14edb60a6effc80ce7cc3580333970d",
+      "unsigned_disabled": true,
+      "executed": false
+    },
+    "retained_v2_receipt": {
+      "path": ".tmp/dual-product/dp1-o-candidate-20260907-d/repo/installer/package-build-receipt.json",
+      "bytes": 6185,
+      "sha256": "185d9056e11a89c7ed5f425147e91b66a677a043e9234a1702acdda5372567fa",
+      "sidecar_sha256": "1de445864edf213933738977812e40459f417acfbb8325adcf35ed6ef82c6ecb"
+    }
+  },
+  "fixture_candidate_evidence_archive": {
+    "scope": "fixture-only-case-sibling-archive-under-repository-tmp",
+    "allowed_case_pattern": ".tmp/dual-product/dp1-candidate-evidence-archive-test-*/cases/*",
+    "public_functions": [
+      "Publish-RimePimeCandidateEvidenceArchive",
+      "Resume-RimePimeCandidateEvidenceArchive",
+      "Read-RimePimeCandidateEvidenceArchive"
+    ],
+    "sealed_control_schemas": [
+      "yime-rime-pime-candidate-evidence-archive-root-v1",
+      "yime-rime-pime-candidate-evidence-archive-manifest-v1",
+      "yime-rime-pime-candidate-evidence-archive-head-v1",
+      "yime-rime-pime-candidate-evidence-archive-intent-v1",
+      "yime-rime-pime-candidate-evidence-archive-completion-v1"
+    ],
+    "content_addressed_objects": true,
+    "object_filename_data_sha256_bound": true,
+    "semantic_runner_receipt_installer_rows_uniquely_bound": true,
+    "exact_physical_member_set": true,
+    "create_new_write_through_flush_true": true,
+    "no_replace_same_volume_move": true,
+    "pre_intent_source_revalidation": true,
+    "post_intent_source_independent_roll_forward": true,
+    "independent_process_hard_exit_checkpoints": 10,
+    "interrupted_writing_orphans_quarantined_before_commit": true,
+    "hardlink_ads_reparse_rejected": true,
+    "representative_clean_fixture_capsule": {
+      "path": ".tmp/dual-product/dp1-candidate-evidence-archive-test-pass7/cases/clean/archive",
+      "archive_id": "7b39cbba6c311ba01a77ea4c7c4a391693496bf429893099590cc14dbdbed1d6",
+      "operation_id": "4bbc2290326ba736b5c1dcfde14289bc965eaefc18d18193109c7af7ffbf1cba",
+      "manifest_sha256": "1f0fcf2b456e003200f109bdea8f8b5b4e3ea9e0e93972dce633be432290ed7a",
+      "head_sha256": "2d91528f4be0c2dfddc03f423e79ce5a1e648322ded53b4abc8a208f7bb2e018",
+      "runner_result_sha256": "78f7097c90d8e04193ea04567578623dc7d47c2d1a8dd991189e0356029ca575",
+      "retained_receipt_sha256": "9b66d3277de50538ebbf80c6e3de4a73a676e690f83f557e0ab55f7b51f37582",
+      "artifact_count": 41,
+      "generation_ordinal": 1,
+      "post_intent_roll_forward_only": true,
+      "capsule_complete": true
+    },
+    "actual_archive_root_published": false,
+    "actual_evidence_archived_outside_repository_tmp": false
+  },
+  "pure_actual_migration_review": {
+    "module": "tools/dual-product/rime-pime-actual-migration-review.psm1",
+    "only_export": "Get-RimePimeActualMigrationReview",
+    "review_input_groups": [
+      "identity-admission",
+      "old-canonical",
+      "successor",
+      "off-repository-archive",
+      "actual-adapter",
+      "one-time-authorization",
+      "downstream-boundaries"
+    ],
+    "complete_synthetic_case_review_ready": true,
+    "complete_synthetic_case_is_not_execution_authorization": true,
+    "downstream_readiness_requires_valid_upstream_chain": true,
+    "script_property_getters_executed": false,
+    "filesystem_registry_process_build_install_sign_product_actions_available": false,
+    "actual_evidence_review_executed": false,
+    "actual_evidence_review_ready": false,
+    "separate_execution_gate_required": true,
+    "actual_canonical_migration_admitted": false,
+    "actual_canonical_migrated": false
+  },
+  "passing_suites": [
+    {
+      "name": "candidate-evidence-archive-ps5",
+      "path": ".tmp/dual-product/dp1-candidate-evidence-archive-test-pass5/candidate-evidence-archive-result.json",
+      "bytes": 3446,
+      "sha256": "eed8ccdc2548346c308bacac76600edebf620b4521285a8d40872a512f841190",
+      "sidecar_sha256": "b6f6fd4872f71cce076ecf62233cc08e5e39cedcd5715bf976f54b10c7b95a7b",
+      "sidecar_verified": true,
+      "schema_version": "yime-rime-pime-candidate-evidence-archive-test-v1",
+      "powershell_edition": "Desktop",
+      "powershell_version": "5.1.26100.9168",
+      "total": 24,
+      "passed": 24,
+      "failed": 0,
+      "full_suite_executed": true
+    },
+    {
+      "name": "candidate-evidence-archive-ps7",
+      "path": ".tmp/dual-product/dp1-candidate-evidence-archive-test-pass7/candidate-evidence-archive-result.json",
+      "bytes": 3434,
+      "sha256": "e925963311a11ead921d9dc89dab3c0ef9c19faf72da3857ca406ed8e948657b",
+      "sidecar_sha256": "8db7f1316eba444d2ff42a9fd70eac0a18a44000b5600240eb3f3cdf81a5c244",
+      "sidecar_verified": true,
+      "schema_version": "yime-rime-pime-candidate-evidence-archive-test-v1",
+      "powershell_edition": "Core",
+      "powershell_version": "7.6.5",
+      "total": 24,
+      "passed": 24,
+      "failed": 0,
+      "full_suite_executed": true
+    },
+    {
+      "name": "pure-actual-migration-review-ps5",
+      "path": ".tmp/dual-product/dp1-actual-migration-review-test-final-ps5/result.json",
+      "bytes": 2968,
+      "sha256": "a19f41cb240b09513d77347ca80518e0dc83dc780ec288272a8036e74c7d9f8b",
+      "sidecar_sha256": "150832fd37c7fd6df45257573d040549f213ee2dc7732d7f68f6e5318310cf9b",
+      "sidecar_verified": true,
+      "schema_version": "yime-rime-pime-actual-migration-review-test-v1",
+      "shell_selected_by_command": "Windows PowerShell 5.1",
+      "result_self_reports_shell": false,
+      "total": 23,
+      "passed": 23,
+      "failed": 0
+    },
+    {
+      "name": "pure-actual-migration-review-ps7",
+      "path": ".tmp/dual-product/dp1-actual-migration-review-test-final-ps7/result.json",
+      "bytes": 2968,
+      "sha256": "a19f41cb240b09513d77347ca80518e0dc83dc780ec288272a8036e74c7d9f8b",
+      "sidecar_sha256": "150832fd37c7fd6df45257573d040549f213ee2dc7732d7f68f6e5318310cf9b",
+      "sidecar_verified": true,
+      "schema_version": "yime-rime-pime-actual-migration-review-test-v1",
+      "shell_selected_by_command": "PowerShell 7.6.5",
+      "result_self_reports_shell": false,
+      "total": 23,
+      "passed": 23,
+      "failed": 0
+    },
+    {
+      "name": "dual-product-source-baseline-after-implementation-commit",
+      "path": ".tmp/dual-product/dp1-q-baseline-commit-final/baseline.json",
+      "bytes": 36605,
+      "sha256": "11bebe01b0b37fc5ab1ab40e0b90cb7368887f65c1536dcf07380bbf91a6e463",
+      "contract_source_paths": 140,
+      "source_manifest_count": 147,
+      "fixture_tests_passed": 64,
+      "pending_count": 7,
+      "dp1_full_implementation_passed": false,
+      "dp2_physical_acceptance_passed": false
+    }
+  ],
+  "passing_commands_without_result_artifact": [
+    {
+      "name": "baseline-unit-tests",
+      "command": "bundled Python -B tools/dual-product/test_baseline.py",
+      "passed": 64,
+      "failed": 0,
+      "exit_code": 0
+    },
+    {
+      "name": "build-guards-ps5-skip-packaged-rime",
+      "exit_code": 0
+    },
+    {
+      "name": "build-guards-ps7-skip-packaged-rime",
+      "exit_code": 0
+    }
+  ],
+  "actual_checkout_protection": {
+    "comparison_basis": "read-only file identity comparison with tracked DP1-P evidence; no aggregate snapshot was recomputed",
+    "aggregate_snapshot_recomputed": false,
+    "canonical_receipt": {
+      "path": "installer/package-build-receipt.json",
+      "bytes": 5688,
+      "sha256": "c18d1202ad78dcd6f8c1f74b34859a83489adb01fb156fa4e2546160aff5b0be",
+      "matches_dp1_p": true,
+      "mutated": false
+    },
+    "canonical_receipt_sidecar": {
+      "path": "installer/package-build-receipt.json.sha256",
+      "bytes": 93,
+      "sha256": "ae28a8f7ed01aa784ff657f465616d794204ca624c680fa4c159a4fde15d5a74",
+      "matches_dp1_p": true,
+      "mutated": false
+    },
+    "canonical_installer": {
+      "path": "installer/YIME-1.4.0-dev-setup.exe",
+      "bytes": 41456428,
+      "sha256": "32a7d66e06284d512675e40495b6e244a23630d2e368ac2cf73ce652e623efe2",
+      "matches_dp1_p": true,
+      "mutated": false
+    },
+    "actual_successor_installer_present": false,
+    "actual_receipt_evidence_directory_present": false
+  },
+  "development_gate_regressions": [
+    {
+      "kind": "pre-intent-classification",
+      "outcome": "fixed-before-final-suite",
+      "detail": "An intent data file without its sealed sidecar was initially treated as durable post-intent state. Post-intent recovery now requires both leaves; data-only state revalidates the source."
+    },
+    {
+      "kind": "interrupted-copy-orphan-membership",
+      "outcome": "fixed-before-final-suite",
+      "detail": "An interrupted .writing file could remain in the staged capsule. Orphans are now moved with no-replace semantics into a case-local quarantine outside the capsule before exact-set validation and final ownership."
+    },
+    {
+      "kind": "content-addressed-object-binding",
+      "outcome": "fixed-before-final-suite",
+      "detail": "The reader initially checked a manifest object's byte count but did not explicitly require its actual SHA-256 to equal the manifest row and object filename. A same-length replacement with a rewritten object sidecar is now rejected in both final and intent-stage readers."
+    },
+    {
+      "kind": "semantic-manifest-binding",
+      "outcome": "fixed-before-final-suite",
+      "detail": "A fully self-consistent reseal could remove or alter the runner, retained-receipt or candidate-installer semantic row mapping. The reader now requires unique path, digest and byte bindings and rereads the runner and receipt semantics."
+    },
+    {
+      "kind": "scalar-and-path-shape",
+      "outcome": "fixed-before-final-suite",
+      "detail": "Single-element arrays, zero build-manifest bytes, non-false core.autocrlf and non-canonical manifest member paths were not all rejected. Exact scalar types, positive lengths and full Windows path-segment rules are now enforced."
+    },
+    {
+      "kind": "pure-review-property-access",
+      "outcome": "fixed-before-final-suite",
+      "detail": "The first pure-review implementation could evaluate ScriptProperty getters and could admit null or non-string identity bindings. Only NoteProperty values are now read, with strict nonempty scalar types."
+    },
+    {
+      "kind": "pure-review-path-and-repository-binding",
+      "outcome": "fixed-before-final-suite",
+      "detail": "Dot segments, invalid Windows characters, a relative adapter path and incompletely cross-bound repository roots could leave review sections ready. Paths are now canonical, the adapter path is exact, and repository identities are cross-bound."
+    },
+    {
+      "kind": "pure-review-readiness-dependency",
+      "outcome": "fixed-before-final-suite",
+      "detail": "An invalid upstream source identity made the overall review fail but could leave downstream archive, adapter and authorization readiness true. Downstream readiness now depends on the complete valid upstream chain."
+    },
+    {
+      "kind": "ps5-ads-negative-fixture",
+      "outcome": "test-fixture-fixed-before-final-suite",
+      "detail": "The first ADS negative fixture used a .NET path suffix that Windows PowerShell 5.1 rejected before exercising the contract. It now uses the FileSystem provider Stream parameter in both shells."
+    }
+  ],
+  "governance": {
+    "known_pending_id": "DP1-PIME-CANDIDATE-EVIDENCE-10",
+    "known_pending_status": "fixture_candidate_evidence_archive_and_pure_migration_review_wired_actual_archive_and_canonical_migration_pending",
+    "installation_and_release_hard_blocks_preserved": true,
+    "next_ordered_gates": [
+      "DP1-R full payload, non-OS and NSIS input closure plus generated-uninstaller trust",
+      "DP1-S actual off-repository archive plus directory metadata, hardware power-loss and hostile same-SID durability",
+      "DP1-T dedicated actual-checkout adapter, exact authorization and canonical migration",
+      "DP1-U registration convergence, dimensional rollback, concurrent-safe removal and non-elevated runtime readiness"
+    ]
+  },
+  "evidence_limitations": {
+    "fixture_archive_remains_under_repository_tmp": true,
+    "outer_tmp_retention_guaranteed": false,
+    "hardware_power_loss_verified": false,
+    "directory_metadata_durability_verified": false,
+    "active_hostile_same_sid_physical_replacement_prevented": false,
+    "generated_uninstaller_trusted": false,
+    "final_payload_closure": false,
+    "full_nsis_toolchain_input_closure": false,
+    "installed_or_registered_host_verified": false,
+    "arm64_native_execution_verified": false
+  },
+  "boundaries": {
+    "actual_archive_root_published": false,
+    "actual_evidence_archived_outside_repository_tmp": false,
+    "actual_dp1_p_candidate_archived": false,
+    "actual_migration_review_executed": false,
+    "actual_migration_review_ready": false,
+    "actual_canonical_migration_admitted": false,
+    "actual_canonical_migrated": false,
+    "actual_installer_published": false,
+    "real_actual_checkout_adapter_wired": false,
+    "real_actual_checkout_adapter_executed": false,
+    "explicit_one_time_authorization_present": false,
+    "dp1n_invoked": false,
+    "release_signing_complete": false,
+    "delivery_admitted": false,
+    "dp1_complete": false,
+    "dp2_complete": false,
+    "dp3_complete": false,
+    "l5_complete": false,
+    "l6_complete": false
+  },
+  "safety": {
+    "installer_executed": false,
+    "uninstaller_executed": false,
+    "signing_process_executed": false,
+    "product_process_started_or_stopped": false,
+    "product_registry_or_profile_mutated": false,
+    "default_input_method_changed": false,
+    "production_rime_pime_touched": false,
+    "installed_yimecore_touched": false,
+    "production_user_data_read_or_written": false,
+    "user_text_or_learning_read": false,
+    "historical_or_frozen_payload_executed_or_changed": false
+  }
+}

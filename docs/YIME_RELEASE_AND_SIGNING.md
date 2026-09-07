@@ -2,7 +2,7 @@
 
 本文档定义 Windows 发布物从版本确认、构建、测试、签名、打包到安装验证的标准流程。开发测试包可以不签名，但对外发布包必须使用受信任的 RSA 代码签名证书。
 
-> 当前双产品构包门禁与未完成项以[双独立产品开发计划](project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)为准。Rime/PIME 安装和卸载最早入口及标签发布 job 仍无条件阻断；隔离的 unsigned／disabled candidate、静态证据或版本身份准入都不是可交付、签名、安装或 installed/live 证据，不得据此执行本文后续安装或发布命令。
+> 当前双产品构包门禁与未完成项以[双独立产品开发计划](project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)为准。Rime/PIME 安装和卸载最早入口及标签发布 job 仍无条件阻断；隔离的 unsigned／disabled candidate、静态证据、版本身份准入、DP1-Q 仓内 `.tmp` 归档夹具和 synthetic `review_ready` 都不是可交付、签名、安装、实际迁移授权或 installed/live 证据，不得据此执行本文后续安装或发布命令。
 
 当前 `Build.ps1` 和 `tools/build-rime-pime-installer.ps1` 都只允许未签名禁用构建；若进程中存在证书指纹、强制签名、`signtool` 或时间戳变量，它们会在读取 plan／调用 NSIS 前拒绝。签名只能走受保护发布流程，不能靠直接调用 wrapper 触发。
 
@@ -10,7 +10,7 @@
 
 - 工作区干净，发布目标提交已合入并推送到 `main`；`yime-stable` 仅作为保留的集成分支
 - 子模块提交已先推送到各自 remote，主仓库不引用远端不存在的提交
-- `version.txt` 与构建身份一致；当前未发布开发线使用 `1.4.0-dev.1`，[DP1-P](project/YIME_DUAL_PRODUCT_DP1_P_VERSIONED_SUCCESSOR_CANDIDATE_2026-09-07.md)已从 exact HEAD 构建一个未签名、禁用且未执行的隔离 successor candidate，并通过静态门，`identity_transition_admitted=true`；版本字符串及该静态候选都不表示已签名、安装或可交付，`actual_canonical_migration_admitted=false` 且迁移未执行，ARM64 原生验证亦未准入。固定 PE 数值版仍为 `1.4.0.0`；只有创建正式 `v1.4.0` 标签前才改为 `1.4.0`
+- `version.txt` 与构建身份一致；当前未发布开发线使用 `1.4.0-dev.1`，[DP1-P](project/YIME_DUAL_PRODUCT_DP1_P_VERSIONED_SUCCESSOR_CANDIDATE_2026-09-07.md)已从 exact HEAD 构建一个未签名、禁用且未执行的隔离 successor candidate，并通过静态门，`identity_transition_admitted=true`；[DP1-Q](project/YIME_DUAL_PRODUCT_DP1_Q_CANDIDATE_EVIDENCE_ARCHIVE_AND_ACTUAL_MIGRATION_REVIEW_2026-09-07.md)仅以 PS5／PS7 各 24/24 固定仓内 `.tmp` 归档夹具、各 23/23 固定 pure-data review 合同，DP1-P 证据没有真实仓外归档，`review_ready` 不是实际审查或授权。actual archive、review、migration、adapter、DP1-N actual transaction、安装、签名、交付和 ARM64 原生验证均未执行或未准入。固定 PE 数值版仍为 `1.4.0.0`；只有创建正式 `v1.4.0` 标签前才改为 `1.4.0`
 - 不得重新使用已经存在的历史标签。仓库已有 `v1.0.0`、`v1.1.0` 和 `v1.3.0-*`；即使 Yime 作为独立产品首次公开发布，也不能再次创建同名 `v1.0.0` 标签
 - `CHANGELOG.md` 的 `[Unreleased]` 已核对
 - Visual Studio、Windows SDK、CMake、Rust、Go、Python 和 NSIS 符合 `tools/toolchain.lock.json`；`python tools/verify_toolchain_lock.py` 通过
@@ -96,7 +96,7 @@ $env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
 
 签名 job 会把待签名的标签产物与签名实现分开：产物来自标签构建，证书导入、签名、验证和 manifest 脚本则从仓库默认分支独立检出，随后在证书进入 runner 前整体移到 `$RUNNER_TEMP/yime-trusted-signing`，并只执行这一份受保护实现。不得把该第二 checkout 留在主源码工作树或用 `.gitignore` 隐藏它，否则干净发布的 source identity 会被污染或掩盖。`.github/workflows/ci.yaml`、`tools/sign-*.ps1`、`tools/import-release-signing-certificate.ps1`、`tools/verify-*.ps1` 和 `installer/**` 都是 CODEOWNERS 保护面；分支保护必须要求 Code Owner 审批后才能合入默认分支。
 
-2026-09-07 DP1-P 完成后，tag 构包仍被硬阻断；version identity admission 和 unsigned／disabled isolated candidate 不解除签名或发布门禁。解除前还必须把默认分支上的受信签名实现解析为一个受保护 commit，在两个签名 job 间传递并核对同一 commit，且把该工具 commit 写入最终 provenance；不得让两个 job 各自解析一个可能变化的默认分支。还必须锁定 `sign → verify → manifest → upload` 的相对顺序，并对外层签名后的 clean、`signedRelease=true` manifest 再执行 StaticOnly 验证。完成这些门禁后，标签产物名才可使用 `YIME-signed-installer`；PR 与普通分支产物名为 `YIME-unsigned-test-installer-{sha}`，不得作为公开发布包。
+2026-09-07 DP1-Q 完成后，tag 构包仍被硬阻断；fixture archive 和 pure-data migration review 不解除签名、发布或迁移门禁。下一步须依次完成 DP1-R full payload／non-OS／NSIS／generated-uninstaller trust、DP1-S 真实仓外归档＋目录／断电／same-SID、DP1-T 真实 adapter／授权／migration、DP1-U 注册／回滚／removal／Runtime；在此之前实际归档、审查、migration、DP1-N、安装、签名、交付和 ARM64 原生验证均未执行或未准入。签名门解除前还必须把默认分支上的受信签名实现解析为一个受保护 commit，在两个签名 job 间传递并核对同一 commit，且把该工具 commit 写入最终 provenance；不得让两个 job 各自解析一个可能变化的默认分支。还必须锁定 `sign → verify → manifest → upload` 的相对顺序，并对外层签名后的 clean、`signedRelease=true` manifest 再执行 StaticOnly 验证。完成这些门禁后，标签产物名才可使用 `YIME-signed-installer`；PR 与普通分支产物名为 `YIME-unsigned-test-installer-{sha}`，不得作为公开发布包。
 
 安装器仅在系统缺少 VC++ Runtime 时下载 Microsoft redistributable。下载落在 NSIS 随机私有的 `$PLUGINSDIR`，执行前由 `tools/verify-microsoft-authenticode.ps1` 验证 Windows 信任链、Microsoft Corporation 签名者和代码签名 EKU；任何下载或签名异常都会删除文件并中止安装，不能退回共享 `$TEMP` 路径或跳过验证。
 

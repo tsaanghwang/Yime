@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add DP1-Q fixture-only candidate-evidence archival (PowerShell 5.1/7, 24/24 each) and pure-data actual-migration review (23/23 each), while keeping the DP1-P evidence inside repository `.tmp` and treating synthetic `review_ready` as neither actual review nor authorization; actual archival, review, migration, adapter/DP1-N execution, installation, signing, delivery, and ARM64-native validation remain unperformed or unadmitted, with DP1-R through DP1-U retaining those ordered gates
 - Split GitHub Actions into independently rerunnable Rust, native, Go, real-Rime, race, and installer jobs; retain commit-addressed native and installer artifacts for rollback
 - Add machine-readable installed-runtime hash verification, unsigned installer smoke testing, and commit-addressed build manifests
 - Pin go-winres v0.3.3 in installer CI so test packages retain required Windows VERSIONINFO instead of silently degrading
