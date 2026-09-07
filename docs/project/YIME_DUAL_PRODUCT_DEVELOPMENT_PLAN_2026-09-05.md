@@ -121,3 +121,4 @@ YimeCore 的包依赖审计、核心／Broker／TSF 回归和独立运行验收�
 Rime/PIME 版不设默认退役日期；用户选择只用一版不等于停止另一版维护。未来若要停止维护、删除兼容代码或卸载／清除数据，须针对具体范围另行作出决定，不把这些动作作为自研版独立运行、L6 或独立发布的必经步骤。
 
 2026-09-06 后续：[DP1-K](YIME_DUAL_PRODUCT_DP1_K_NSIS_COMPILER_INTERVAL_2026-09-06.md)关闭 DP1-NSIS-MEMBERSHIP-05 的检测并拒绝边界。上文 DP1-J 的未接入监测描述为历史阶段事实。物理防止、non-OS 和 full closure 保持 false；其他门禁不变。
+2026-09-07 DP1-T 增量：[actual canonical 工件迁移](YIME_DUAL_PRODUCT_DP1_T_ACTUAL_CANONICAL_MIGRATION_2026-09-07.md)已完成。适配器对 DP1-S capsule 中绑定隔离 clone 的 build／postbuild 绝对路径做确定性 actual-root 重定位；PS5／PS7 生成的最终计划逐字节一致，与两套 45/45 DP1-N 故障矩阵、仓外 capsule 及一次授权共同绑定。actual Apply 将 canonical receipt 从 `c18d1202...b0be` 迁移到 `f1b67aa4...2719`，发布 `YIME-1.4.0-dev.1-setup.exe`，保留旧 installer，PS7 幂等 Resume 通过。迁移只涉及仓库 canonical／CAS 工件；未运行安装器、卸载器或产品进程，未改注册表、默认输入法、用户数据或 YimeCore local.12。目录 metadata／hardware power loss／hostile same-SID 物理防止继续为 false。下一步是 DP1-U 注册／回滚／removal／Runtime 门禁。

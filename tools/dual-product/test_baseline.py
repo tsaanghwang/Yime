@@ -963,16 +963,16 @@ class OwnershipTests(unittest.TestCase):
         self.assertEqual(statuses["DP1-PIME-TRANSACTION-06"],
                          "fixture_journal_and_replay_source_anchors_present_real_transaction_pending")
         self.assertEqual(statuses["DP1-PIME-COMPILER-INPUT-07"],
-                         "fresh_compiler_stage_and_strict_interval_build_admission_wired_full_product_rebuild_and_durable_receipt_pending")
+                         "fresh_compiler_stage_and_strict_interval_build_admission_wired_actual_migration_external_physical_limits_pending")
         self.assertEqual(statuses["DP1-PIME-RECEIPT-08"],
-                         "retained_v2_supersession_and_current_interval_admission_wired_canonical_migration_pending")
+                         "retained_v2_supersession_and_current_interval_admission_wired_actual_migration_external_physical_limits_pending")
         self.assertEqual(
             statuses["DP1-PIME-INSTALLER-RECEIPT-09"],
-            "isolated_installer_receipt_transaction_contract_wired_actual_canonical_migration_and_full_real_transaction_pending",
+            "installer_receipt_transaction_contract_and_private_actual_adapter_wired_actual_migration_external_installed_transaction_pending",
         )
         self.assertEqual(
             statuses["DP1-PIME-CANDIDATE-EVIDENCE-10"],
-            "actual_archive_and_dedicated_migration_adapter_wired_actual_execution_external_to_source_baseline",
+            "actual_archive_adapter_and_canonical_migration_complete_external_to_source_baseline",
         )
         self.assertEqual(set(statuses), {
             "DP1-PIME-DIRECTED-EXIT-04", "DP1-PIME-REGISTRY-05", "DP1-PIME-TRANSACTION-06",
