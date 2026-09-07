@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 135)
-        self.assertEqual(len(self.receipt["source_manifest"]), 142)
+        self.assertEqual(len(contract["source_paths"]), 140)
+        self.assertEqual(len(self.receipt["source_manifest"]), 147)
         for path in (
             "version.txt",
             "PIMELauncher/build.rs",
@@ -175,6 +175,11 @@ class OwnershipTests(unittest.TestCase):
             "tools/dual-product/test-rime-pime-isolated-candidate.ps1",
             "tools/dual-product/rime-pime-version-identity-admission.psm1",
             "tools/dual-product/test-rime-pime-version-identity-admission.ps1",
+            "tools/dual-product/rime-pime-candidate-evidence-archive.ps1",
+            "tools/dual-product/rime-pime-candidate-evidence-archive.psm1",
+            "tools/dual-product/test-rime-pime-candidate-evidence-archive.ps1",
+            "tools/dual-product/rime-pime-actual-migration-review.psm1",
+            "tools/dual-product/test-rime-pime-actual-migration-review.ps1",
             "tools/dual-product/test-rime-pime-transaction-replay-model.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.psm1",
@@ -474,6 +479,78 @@ class OwnershipTests(unittest.TestCase):
         self.assertFalse(status["rime_pime_isolated_current_candidate_actual_canonical_migrated"])
         self.assertFalse(status["rime_pime_installer_identity_replacement_transaction_wired"])
         self.assertFalse(status["rime_pime_delivery_admitted"])
+
+    def test_dp1q_pure_actual_migration_review_is_wired_without_promotion(self):
+        status = self.receipt["transaction_source"]
+        self.assertTrue(status["rime_pime_actual_migration_review_source_contract_wired"])
+        self.assertTrue(status["rime_pime_actual_migration_review_ci_ps5_ps7_present"])
+        self.assertFalse(status["rime_pime_actual_migration_review_test_executed_by_baseline"])
+        self.assertFalse(status["rime_pime_actual_migration_review_ready_from_actual_evidence"])
+        self.assertTrue(status["rime_pime_actual_migration_review_separate_execution_gate_required"])
+        self.assertFalse(status["rime_pime_actual_evidence_archived_outside_repository_tmp"])
+        self.assertFalse(status["rime_pime_actual_canonical_migration_admitted"])
+        self.assertFalse(status["rime_pime_actual_canonical_migration_executed"])
+
+    def test_dp1q_candidate_evidence_archive_is_wired_without_actual_archive_claim(self):
+        status = self.receipt["transaction_source"]
+        self.assertTrue(status["rime_pime_candidate_evidence_archive_source_contract_wired"])
+        self.assertTrue(status["rime_pime_candidate_evidence_archive_ci_ps5_ps7_present"])
+        self.assertFalse(status["rime_pime_candidate_evidence_archive_test_executed_by_baseline"])
+        self.assertTrue(status["rime_pime_candidate_evidence_archive_fixture_protocol_only"])
+        self.assertFalse(status["rime_pime_candidate_evidence_archive_actual_root_published"])
+        self.assertFalse(status["rime_pime_candidate_evidence_archive_actual_evidence_archived"])
+        self.assertFalse(status["rime_pime_actual_evidence_archived_outside_repository_tmp"])
+        self.assertFalse(status["rime_pime_actual_canonical_migration_admitted"])
+
+    def test_dp1q_candidate_archive_export_claim_and_ci_boundaries_fail_closed(self):
+        cases = (
+            ("tools/dual-product/rime-pime-candidate-evidence-archive.psm1",
+             "    'Read-RimePimeCandidateEvidenceArchive'",
+             "    '*-RimePime*'"),
+            ("tools/dual-product/rime-pime-candidate-evidence-archive.ps1",
+             "MoveFileEx($nativeSource,$nativeDestination,8)",
+             "MoveFileEx($nativeSource,$nativeDestination,9)"),
+            ("tools/dual-product/rime-pime-candidate-evidence-archive.ps1",
+             "$object.Data.Sha256 -cne [string]$row.sha256",
+             "$object.Data.Length -lt 0"),
+            ("tools/dual-product/rime-pime-candidate-evidence-archive.ps1",
+             "actual_archive_root_published=$false;actual_evidence_archived_outside_repository_tmp=$false",
+             "actual_archive_root_published=$true;actual_evidence_archived_outside_repository_tmp=$true"),
+            (".github/workflows/ci.yaml",
+             ".tmp\\dual-product\\dp1-candidate-evidence-archive-test-ci-ps7-$runId",
+             ".tmp\\dual-product\\dp1-candidate-evidence-archive-test-ci-ps5-$runId"),
+        )
+        for path, old, new in cases:
+            sources = self.maintenance_sources()
+            self.assertIn(old, sources[path])
+            sources[path] = sources[path].replace(old, new, 1)
+            with self.subTest(path=path, old=old), self.assertRaises(ValueError):
+                subject.transaction_source_status(sources)
+
+    def test_dp1q_pure_review_export_action_and_ci_boundaries_fail_closed(self):
+        cases = (
+            ("tools/dual-product/rime-pime-actual-migration-review.psm1",
+             "Export-ModuleMember -Function 'Get-RimePimeActualMigrationReview'",
+             "Export-ModuleMember -Function '*'"),
+            ("tools/dual-product/rime-pime-actual-migration-review.psm1",
+             "actual_canonical_migration_admitted = $false",
+             "actual_canonical_migration_admitted = $true"),
+            ("tools/dual-product/rime-pime-actual-migration-review.psm1",
+             "'tools/dual-product/invoke-rime-pime-actual-canonical-migration.ps1'",
+             "'..\\..\\outside.ps1'"),
+            ("tools/dual-product/rime-pime-actual-migration-review.psm1",
+             "# no filesystem, registry, process, build, installer, signing, or product",
+             "Get-Content 'actual-canonical.json'\n# action surface"),
+            (".github/workflows/ci.yaml",
+             ".tmp\\dual-product\\dp1-actual-migration-review-test-ci-ps7-$runId",
+             ".tmp\\dual-product\\dp1-actual-migration-review-test-ci-ps5-$runId"),
+        )
+        for path, old, new in cases:
+            sources = self.maintenance_sources()
+            self.assertIn(old, sources[path])
+            sources[path] = sources[path].replace(old, new, 1)
+            with self.subTest(path=path, old=old), self.assertRaises(ValueError):
+                subject.transaction_source_status(sources)
 
     def test_dp1o_sequence_or_negative_boundary_tamper_fails_closed(self):
         original = self.receipt["source_manifest"]
@@ -855,10 +932,14 @@ class OwnershipTests(unittest.TestCase):
             statuses["DP1-PIME-INSTALLER-RECEIPT-09"],
             "isolated_installer_receipt_transaction_contract_wired_actual_canonical_migration_and_full_real_transaction_pending",
         )
+        self.assertEqual(
+            statuses["DP1-PIME-CANDIDATE-EVIDENCE-10"],
+            "fixture_candidate_evidence_archive_and_pure_migration_review_wired_actual_archive_and_canonical_migration_pending",
+        )
         self.assertEqual(set(statuses), {
             "DP1-PIME-DIRECTED-EXIT-04", "DP1-PIME-REGISTRY-05", "DP1-PIME-TRANSACTION-06",
             "DP1-PIME-COMPILER-INPUT-07", "DP1-PIME-RECEIPT-08",
-            "DP1-PIME-INSTALLER-RECEIPT-09",
+            "DP1-PIME-INSTALLER-RECEIPT-09", "DP1-PIME-CANDIDATE-EVIDENCE-10",
         })
 
     def test_target_sid_bootstrap_cannot_revert_to_manifest_auto_elevation(self):

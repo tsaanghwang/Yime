@@ -266,6 +266,21 @@ def transaction_source_status(sources):
     version_identity_admission_test = sources[
         "tools/dual-product/test-rime-pime-version-identity-admission.ps1"
     ]
+    candidate_evidence_archive = sources[
+        "tools/dual-product/rime-pime-candidate-evidence-archive.ps1"
+    ]
+    candidate_evidence_archive_module = sources[
+        "tools/dual-product/rime-pime-candidate-evidence-archive.psm1"
+    ]
+    candidate_evidence_archive_test = sources[
+        "tools/dual-product/test-rime-pime-candidate-evidence-archive.ps1"
+    ]
+    actual_migration_review = sources[
+        "tools/dual-product/rime-pime-actual-migration-review.psm1"
+    ]
+    actual_migration_review_test = sources[
+        "tools/dual-product/test-rime-pime-actual-migration-review.ps1"
+    ]
     receipt_v2_supersession = sources["tools/dual-product/rime-pime-receipt-v2-supersession.ps1"]
     receipt_v2_supersession_module = sources["tools/dual-product/rime-pime-receipt-v2-supersession.psm1"]
     receipt_v2_supersession_test = sources["tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1"]
@@ -819,6 +834,107 @@ def transaction_source_status(sources):
             "actual_canonical_read_or_written = $false",
             "actual_canonical_migration_admitted = $false",
         ]),
+        (candidate_evidence_archive, [
+            "Definitions-only DP1-Q protocol",
+            ".tmp/dual-product/dp1-candidate-evidence-archive-test-*/cases/*",
+            "'tools/dual-product/run-rime-pime-isolated-candidate.ps1'",
+            "yime-rime-pime-candidate-evidence-archive-root-v1",
+            "yime-rime-pime-candidate-evidence-archive-manifest-v1",
+            "yime-rime-pime-candidate-evidence-archive-head-v1",
+            "yime-rime-pime-candidate-evidence-archive-intent-v1",
+            "yime-rime-pime-candidate-evidence-archive-completion-v1",
+            "owner_scope='fixture-candidate-evidence-only'",
+            "[IO.FileMode]::CreateNew",
+            "$stream.Flush($true)",
+            "MoveFileEx($nativeSource,$nativeDestination,8)",
+            "function Assert-RimePimeCandidateArchiveRelativePathText",
+            "$object.Data.Sha256 -cne [string]$row.sha256",
+            "Candidate archive manifest must uniquely bind its $kind path, digest, and byte count.",
+            "function Move-RimePimeCandidateArchiveWritingOrphans",
+            "Candidate archive root physical member set is not exact.",
+            "function Publish-RimePimeCandidateEvidenceArchive",
+            "function Resume-RimePimeCandidateEvidenceArchive",
+            "function Read-RimePimeCandidateEvidenceArchive",
+            "fixture_sibling_archive_protocol_passed=$true",
+            "actual_archive_root_published=$false;actual_evidence_archived_outside_repository_tmp=$false",
+            "actual_canonical_migration_admitted=$false;actual_canonical_migrated=$false",
+            "hardware_power_loss_verified=$false;directory_metadata_durability_verified=$false",
+            "active_hostile_same_sid_physical_replacement_prevented=$false",
+        ]),
+        (candidate_evidence_archive_module, [
+            "Import-Module -Name (Join-Path $PSScriptRoot 'rime-pime-package-staging.psm1')",
+            ". (Join-Path $PSScriptRoot 'rime-pime-candidate-evidence-archive.ps1')",
+            "'Publish-RimePimeCandidateEvidenceArchive'",
+            "'Resume-RimePimeCandidateEvidenceArchive'",
+            "'Read-RimePimeCandidateEvidenceArchive'",
+        ]),
+        (candidate_evidence_archive_test, [
+            "yime-rime-pime-candidate-evidence-archive-test-v1",
+            "dp1-candidate-evidence-archive-test-",
+            "module-exports-exact-public-api",
+            "clean-publish-read-and-source-independent-idempotency",
+            "wrong-expected-runner-is-rejected-before-an-archive",
+            "foreign-final-root-wins-before-commit-race-without-replacement",
+            "hardlinked-source-is-rejected",
+            "alternate-data-stream-source-is-rejected",
+            "reparse-source-ancestor-is-rejected",
+            "hard-exit-'+$phaseCopy+'-resumes-in-a-fresh-process",
+            "'lock-created','object-copy','object-data'",
+            "Committed archive retained an interrupted writing orphan.",
+            "Interrupted object-copy orphan was not isolated outside the archive capsule.",
+            "actual-checkout-root-is-rejected",
+            "semantically-resealed-and-scalar-shape-tampering-is-rejected",
+            "actual_archive_root_published=$false;actual_evidence_archived_outside_repository_tmp=$false",
+            "actual_canonical_migration_admitted=$false;actual_canonical_migrated=$false",
+            "hardware_power_loss_verified=$false;directory_metadata_durability_verified=$false",
+            "active_hostile_same_sid_physical_replacement_prevented=$false",
+        ]),
+        (actual_migration_review, [
+            "Pure-data DP1-Q review gate",
+            "function Get-RimePimeActualMigrationReview",
+            "function Test-RimePimeMigrationReviewCanonicalWindowsPath",
+            "$segment -match '[\\x00-\\x1f<>:\"|?*]'",
+            "'tools/dual-product/invoke-rime-pime-actual-canonical-migration.ps1'",
+            "non-note-property-",
+            "'schema_version','product','repo_root','product_version'",
+            "'schema_version','adapter_kind','actual_repo_root','adapter_path'",
+            "yime-rime-pime-off-repository-archive-evidence-v1",
+            "yime-rime-pime-actual-canonical-adapter-evidence-v1",
+            "yime-rime-pime-actual-canonical-authorization-v1",
+            "review_scope = 'actual-canonical-artifacts-only'",
+            "review_ready = $reasons.Count -eq 0",
+            "separate_execution_gate_required = $true",
+            "archive-root-is-inside-actual-repository",
+            "adapter-actual-repo-root-binding-mismatch",
+            "authorization-repo-root-binding-mismatch",
+            "$archiveReady = [bool]($sourceReady -and $reasons.Count -eq $archiveStart)",
+            "$adapterReady = [bool]($sourceReady -and $archiveReady -and $reasons.Count -eq $adapterStart)",
+            "actual_canonical_migration_admitted = $false",
+            "actual_canonical_migrated = $false",
+            "installer_or_uninstaller_execution_admitted = $false",
+            "installed_yimecore_action_admitted = $false",
+            "dp1_or_release_completion_admitted = $false",
+            "Export-ModuleMember -Function 'Get-RimePimeActualMigrationReview'",
+        ]),
+        (actual_migration_review_test, [
+            "yime-rime-pime-actual-migration-review-test-v1",
+            "module-exports-only-one-pure-review-function",
+            "complete-synthetic-evidence-is-review-ready-but-never-admitted",
+            "every-required-field-has-a-stable-missing-reason",
+            "script-property-getters-are-rejected-without-execution",
+            "identity-binding-fields-must-be-nonempty-strings",
+            "archive-and-repository-paths-must-be-canonical-and-cross-bound",
+            "canonical-windows-paths-and-adapter-path-fail-closed",
+            "archive-must-survive-source-unavailability-in-fresh-ps5-and-ps7-processes",
+            "downstream-readiness-depends-on-valid-upstream-bindings",
+            "actual-adapter-must-preserve-dp1n-fixture-gate-and-exact-write-set",
+            "actual-adapter-requires-durability-and-hostile-same-sid-closure",
+            "explicit-one-time-user-authorization-is-required",
+            "install-sign-delivery-host-and-arm64-remain-independent-negative-boundaries",
+            "actual_canonical_read_or_written = $false",
+            "[IO.FileMode]::CreateNew",
+            "$stream.Flush($true)",
+        ]),
     ):
         missing = [anchor for anchor in anchors if anchor not in body]
         if missing:
@@ -857,6 +973,53 @@ def transaction_source_status(sources):
             "rime-pime-installer-receipt-transaction.ps1")):
         fail("Rime/PIME isolated current-source candidate runner gained a prohibited product entrypoint")
     isolated_candidate_runner_source_contract_wired = True
+    if (candidate_evidence_archive_module.count("Export-ModuleMember") != 1 or
+            any(candidate_evidence_archive_module.count("'" + name + "'") != 1 for name in (
+                "Publish-RimePimeCandidateEvidenceArchive",
+                "Resume-RimePimeCandidateEvidenceArchive",
+                "Read-RimePimeCandidateEvidenceArchive")) or
+            "*-RimePime" in candidate_evidence_archive_module):
+        fail("Rime/PIME candidate evidence archive export surface changed")
+    for prohibited in (
+            "Install-PIME-Test.cmd", "Uninstall-PIME-Test.cmd", "Reinstall-PIME-Test.cmd",
+            "build-rime-pime-installer.ps1",
+            "Publish-RimePimeInstallerReceiptTransaction", "Registry::", "Start-Process"):
+        if prohibited in candidate_evidence_archive + candidate_evidence_archive_module:
+            fail("Rime/PIME candidate evidence archive gained a prohibited product action")
+    if candidate_evidence_archive.count(
+            "'tools/dual-product/run-rime-pime-isolated-candidate.ps1'") != 1:
+        fail("Rime/PIME candidate evidence archive runner identity binding changed")
+    if candidate_evidence_archive.count(
+            "$object.Data.Sha256 -cne [string]$row.sha256") != 2:
+        fail("Rime/PIME candidate evidence archive object path-to-bytes binding changed")
+    for promoted in (
+            "actual_archive_root_published", "actual_evidence_archived_outside_repository_tmp",
+            "actual_canonical_migration_admitted", "actual_canonical_migrated",
+            "hardware_power_loss_verified", "directory_metadata_durability_verified",
+            "active_hostile_same_sid_physical_replacement_prevented"):
+        if re.search(r"\b" + re.escape(promoted) + r"\s*=\s*\$true\b", candidate_evidence_archive):
+            fail("Rime/PIME candidate evidence archive promoted an unverified boundary")
+    candidate_evidence_archive_source_contract_wired = True
+    if actual_migration_review.count("Export-ModuleMember") != 1:
+        fail("Rime/PIME actual migration review export surface changed")
+    for forbidden in (
+            "Get-Content", "Set-Content", "Test-Path", "New-Item", "Remove-Item",
+            "Copy-Item", "Move-Item", "Start-Process", "Stop-Process", "Invoke-Expression",
+            "Import-Module", "Read-RimePimePackageBuildReceiptV2", "[IO.File",
+            "[Microsoft.Win32.Registry", "[Diagnostics.Process", "Registry::",
+            "Publish-RimePimeInstallerReceiptTransaction",
+            "Resume-RimePimeInstallerReceiptTransaction"):
+        if forbidden in actual_migration_review:
+            fail("Rime/PIME actual migration review gained an action surface")
+    for promoted in (
+            "actual_canonical_migration_admitted", "actual_canonical_migrated",
+            "installer_or_uninstaller_execution_admitted", "signing_admitted",
+            "delivery_admitted", "installed_or_registered_host_action_admitted",
+            "arm64_native_claim_admitted", "installed_yimecore_action_admitted",
+            "dp1_or_release_completion_admitted"):
+        if re.search(r"\b" + re.escape(promoted) + r"\s*=\s*\$true\b", actual_migration_review):
+            fail("Rime/PIME actual migration review promoted an execution boundary")
+    actual_migration_review_source_contract_wired = True
     if core.index("New-Item -ItemType Directory -Path $stagingRoot") >= core.index("$preinstall = Invoke-UninstallCore"):
         fail("YimeCore active mutation moved before complete package staging")
     ci_postbuild_step = one(
@@ -916,6 +1079,16 @@ def transaction_source_status(sources):
         r"(?ms)^      - name: Test DP1-P version identity admission contract\s*$.*?(?=^      - name: |\Z)",
         ci,
         "CI DP1-P version identity admission step",
+    ).group()
+    ci_candidate_evidence_archive_step = one(
+        r"(?ms)^      - name: Test DP1-Q candidate evidence archive contract\s*$.*?(?=^      - name: |\Z)",
+        ci,
+        "CI DP1-Q candidate evidence archive step",
+    ).group()
+    ci_actual_migration_review_step = one(
+        r"(?ms)^      - name: Test DP1-Q actual migration review contract\s*$.*?(?=^      - name: |\Z)",
+        ci,
+        "CI DP1-Q actual migration review step",
     ).group()
     ci_supersession_step = one(
         r"(?ms)^      - name: Test DP1-J isolated receipt-v2 supersession protocol\s*$.*?(?=^      - name: |\Z)",
@@ -1076,6 +1249,40 @@ def transaction_source_status(sources):
         "PowerShell 5.1 DP1-P version-identity admission test failed with exit code $LASTEXITCODE" in
         ci_version_identity_step and
         all(re.search(pattern, ci_version_identity_step) is None
+            for pattern in prohibited_dp1i_ci_patterns)
+    )
+    candidate_evidence_archive_ci_ps5_ps7_present = (
+        ci_candidate_evidence_archive_step.count(
+            "test-rime-pime-candidate-evidence-archive.ps1"
+        ) == 2 and
+        ci_candidate_evidence_archive_step.count("-OutputRoot") == 2 and
+        ".tmp\\dual-product\\dp1-candidate-evidence-archive-test-ci-ps5-$runId" in
+        ci_candidate_evidence_archive_step and
+        ".tmp\\dual-product\\dp1-candidate-evidence-archive-test-ci-ps7-$runId" in
+        ci_candidate_evidence_archive_step and
+        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in
+        ci_candidate_evidence_archive_step and
+        "PowerShell 5.1 DP1-Q candidate-evidence archive test failed with exit code $LASTEXITCODE" in
+        ci_candidate_evidence_archive_step and
+        all(parameter.casefold() not in ci_candidate_evidence_archive_step.casefold()
+            for parameter in ("-CheckPattern", "-WorkerCasePath", "-Phase")) and
+        all(re.search(pattern, ci_candidate_evidence_archive_step) is None
+            for pattern in prohibited_dp1i_ci_patterns)
+    )
+    actual_migration_review_ci_ps5_ps7_present = (
+        ci_actual_migration_review_step.count(
+            "test-rime-pime-actual-migration-review.ps1"
+        ) == 2 and
+        ci_actual_migration_review_step.count("-OutputRoot") == 2 and
+        ".tmp\\dual-product\\dp1-actual-migration-review-test-ci-ps5-$runId" in
+        ci_actual_migration_review_step and
+        ".tmp\\dual-product\\dp1-actual-migration-review-test-ci-ps7-$runId" in
+        ci_actual_migration_review_step and
+        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in
+        ci_actual_migration_review_step and
+        "PowerShell 5.1 DP1-Q actual-migration review test failed with exit code $LASTEXITCODE" in
+        ci_actual_migration_review_step and
+        all(re.search(pattern, ci_actual_migration_review_step) is None
             for pattern in prohibited_dp1i_ci_patterns)
     )
     rime_sid_chain_anchors = ("RequestExecutionLevel user" in nsis and
@@ -1772,6 +1979,10 @@ def transaction_source_status(sources):
             not isolated_candidate_runner_source_contract_wired or
             not isolated_candidate_runner_contract_ci_ps5_ps7_present or
             not version_identity_admission_ci_ps5_ps7_present or
+            not candidate_evidence_archive_source_contract_wired or
+            not candidate_evidence_archive_ci_ps5_ps7_present or
+            not actual_migration_review_source_contract_wired or
+            not actual_migration_review_ci_ps5_ps7_present or
             'InstallLayoutOrTip(w "${YIME_TIP}"' not in nsis or
             'Get-ChildItem -LiteralPath "Registry::HKEY_USERS"' in pime_cleanup):
         fail("Rime/PIME registration/SID/transaction status changed; dedicated review required")
@@ -1886,6 +2097,20 @@ def transaction_source_status(sources):
         "rime_pime_version_identity_admission_ci_ps5_ps7_present": version_identity_admission_ci_ps5_ps7_present,
         "rime_pime_version_identity_admission_test_executed_by_baseline": False,
         "rime_pime_version_identity_actual_canonical_migration_admitted": False,
+        "rime_pime_candidate_evidence_archive_source_contract_wired": candidate_evidence_archive_source_contract_wired,
+        "rime_pime_candidate_evidence_archive_ci_ps5_ps7_present": candidate_evidence_archive_ci_ps5_ps7_present,
+        "rime_pime_candidate_evidence_archive_test_executed_by_baseline": False,
+        "rime_pime_candidate_evidence_archive_fixture_protocol_only": True,
+        "rime_pime_candidate_evidence_archive_actual_root_published": False,
+        "rime_pime_candidate_evidence_archive_actual_evidence_archived": False,
+        "rime_pime_actual_migration_review_source_contract_wired": actual_migration_review_source_contract_wired,
+        "rime_pime_actual_migration_review_ci_ps5_ps7_present": actual_migration_review_ci_ps5_ps7_present,
+        "rime_pime_actual_migration_review_test_executed_by_baseline": False,
+        "rime_pime_actual_migration_review_ready_from_actual_evidence": False,
+        "rime_pime_actual_migration_review_separate_execution_gate_required": True,
+        "rime_pime_actual_evidence_archived_outside_repository_tmp": False,
+        "rime_pime_actual_canonical_migration_admitted": False,
+        "rime_pime_actual_canonical_migration_executed": False,
         "rime_pime_v2_to_v2_supersession_wired": v2_to_v2_supersession_wired,
         "rime_pime_retained_receipt_ci_ps5_ps7_present": retained_receipt_ci_ps5_ps7_present,
         "rime_pime_installed_live_acceptance_passed": False,
@@ -2068,6 +2293,9 @@ def source_baseline(root: Path = ROOT):
         {"id": "DP1-PIME-INSTALLER-RECEIPT-09", "path": "tools/dual-product/rime-pime-installer-receipt-transaction.ps1",
           "status": "isolated_installer_receipt_transaction_contract_wired_actual_canonical_migration_and_full_real_transaction_pending",
           "reason": "The fixture-gated source contract stages the new installer durably before intent, uses unique installer/intent copy checkpoints and no-replace MoveFileEx publication, preflights completed leaves, holds old/new physical leases through completion, covers non-durable old-receipt retention with an exact HistoricalV1Path worker binding, exports exactly two APIs, and has unfiltered PS5/PS7 full-suite CI commands with dynamic results and explicit limitations. This Python baseline does not execute that PowerShell suite, migrate the actual canonical receipt, wire or run an installer, or prove a full real transaction, hardware power-loss directory durability, or active same-SID physical replacement prevention."},
+        {"id": "DP1-PIME-CANDIDATE-EVIDENCE-10", "path": "tools/dual-product/rime-pime-candidate-evidence-archive.ps1",
+          "status": "fixture_candidate_evidence_archive_and_pure_migration_review_wired_actual_archive_and_canonical_migration_pending",
+          "reason": "The DP1-Q source contracts add a fixture-gated content-addressed candidate-evidence archive with interruption recovery and a pure actual-migration readiness review. The Python baseline only verifies source and CI anchors: it does not execute either PowerShell suite, archive the DP1-P candidate evidence outside .tmp, invoke DP1-N, mutate the actual canonical installer or receipt, or prove hardware power-loss, directory metadata durability, active same-SID physical replacement prevention, an actual-root adapter, or explicit migration authorization."},
     ]
     unchanged = all(digest(child(root, path)) == expected for path, expected in hashes.items())
     if not unchanged:
