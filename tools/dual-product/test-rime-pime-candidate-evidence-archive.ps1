@@ -222,7 +222,7 @@ function New-TestEvidence([string]$CaseName) {
         }
         evidence_artifacts_durable=$true;delivery_admitted=$false
     }
-    $receiptPath = Join-Path $source 'repo\installer\YIME-package-build-receipt-v2.json'
+    $receiptPath = Join-Path $source 'repo\installer\package-build-receipt.json'
     $receiptRecord = Write-TestSealedJson $receiptPath $receipt
     $null = Add-TestRetainedObject $source ([byte[]]$receiptRecord.Bytes)
 
@@ -268,7 +268,7 @@ function New-TestEvidence([string]$CaseName) {
             }
             historical_v1_receipt=[pscustomobject][ordered]@{ path='repo/evidence/historical-v1.json';sha256=[string]$records.history.Digest }
             durable_v2_receipt=[pscustomobject][ordered]@{
-                path='repo/installer/YIME-package-build-receipt-v2.json';sha256=[string]$receiptRecord.Digest
+                path='repo/installer/package-build-receipt.json';sha256=[string]$receiptRecord.Digest
                 schema_version='yime-rime-pime-package-build-receipt-v2';evidence_artifacts_durable=$true
                 durability_scope='isolated-clone-content-addressed-process-interruption-protocol'
             }

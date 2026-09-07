@@ -290,6 +290,12 @@ def transaction_source_status(sources):
     dp1r_actual_review = sources[
         "tools/dual-product/review-rime-pime-dp1r-trust.ps1"
     ]
+    dp1s_archive_runner = sources[
+        "tools/dual-product/publish-rime-pime-dp1s-off-repository-archive.ps1"
+    ]
+    dp1s_archive_test = sources[
+        "tools/dual-product/test-rime-pime-dp1s-off-repository-archive.ps1"
+    ]
     receipt_v2_supersession = sources["tools/dual-product/rime-pime-receipt-v2-supersession.ps1"]
     receipt_v2_supersession_module = sources["tools/dual-product/rime-pime-receipt-v2-supersession.psm1"]
     receipt_v2_supersession_test = sources["tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1"]
@@ -980,6 +986,30 @@ def transaction_source_status(sources):
             "generated_uninstaller_signature_trusted=$false",
             "installed_or_registered_host_verified=$false;dp1_complete=$false",
         ]),
+        (dp1s_archive_runner, [
+            "yime-rime-pime-dp1s-off-repository-archive-result-v1",
+            "Yime Rime-PIME Evidence Archives\\DP1-S",
+            "Assert-OutsideWorktrees $archiveBase $worktrees",
+            "New-ArchiveSourceProjection",
+            "Read-RimePimePackageBuildReceiptV2",
+            "source_temporarily_unavailable_during_reverification=$true",
+            "strict_receipt_read_ps5_without_source=$true",
+            "strict_receipt_read_ps7_without_source=$true",
+            "child_processes_have_packaged_codex_ancestor=$true",
+            "explorer_launched_independent_reopen_verified=$false",
+            "directory_metadata_durability_verified=$false;hardware_power_loss_verified=$false",
+            "active_hostile_same_sid_physical_replacement_prevented=$false",
+            "actual_canonical_migration_admitted=$false;actual_canonical_migrated=$false",
+            "installed_yimecore_local12_touched=$false;production_user_data_read_or_written=$false",
+        ]),
+        (dp1s_archive_test, [
+            "yime-rime-pime-dp1s-off-repository-archive-test-v1",
+            "actual-off-repository-archive-and-verifications-reopen",
+            "candidate-archive-canonical-receipt-path-matches-real-build",
+            "verification-files-are-create-new-and-never-overwritten",
+            "directory_metadata_durability_verified=$false;hardware_power_loss_verified=$false",
+            "actual_canonical_migration_admitted=$false",
+        ]),
     ):
         missing = [anchor for anchor in anchors if anchor not in body]
         if missing:
@@ -1078,6 +1108,11 @@ def transaction_source_status(sources):
         if forbidden in dp1r_actual_review:
             fail("Rime/PIME DP1-R actual review gained a prohibited product action")
     dp1r_trust_admission_source_contract_wired = True
+    if "[IO.File]::Delete($ResultPath)" in dp1s_archive_runner:
+        fail("Rime/PIME DP1-S archived verification gained an overwrite path")
+    if "YIME-package-build-receipt-v2.json" in candidate_evidence_archive:
+        fail("Rime/PIME candidate archive reverted to its fixture-only receipt path")
+    dp1s_off_repository_archive_source_contract_wired = True
     if core.index("New-Item -ItemType Directory -Path $stagingRoot") >= core.index("$preinstall = Invoke-UninstallCore"):
         fail("YimeCore active mutation moved before complete package staging")
     ci_postbuild_step = one(
@@ -1152,6 +1187,11 @@ def transaction_source_status(sources):
         r"(?ms)^      - name: Test DP1-R static trust admission contract\s*$.*?(?=^      - name: |\Z)",
         ci,
         "CI DP1-R static trust admission step",
+    ).group()
+    ci_dp1s_archive_step = one(
+        r"(?ms)^      - name: Test DP1-S off-repository archive boundary\s*$.*?(?=^      - name: |\Z)",
+        ci,
+        "CI DP1-S off-repository archive step",
     ).group()
     ci_supersession_step = one(
         r"(?ms)^      - name: Test DP1-J isolated receipt-v2 supersession protocol\s*$.*?(?=^      - name: |\Z)",
@@ -1362,6 +1402,22 @@ def transaction_source_status(sources):
         "PowerShell 5.1 DP1-R trust-admission test failed with exit code $LASTEXITCODE" in
         ci_dp1r_trust_admission_step and
         all(re.search(pattern, ci_dp1r_trust_admission_step) is None
+            for pattern in prohibited_dp1i_ci_patterns)
+    )
+    dp1s_off_repository_archive_ci_ps5_ps7_present = (
+        ci_dp1s_archive_step.count(
+            "test-rime-pime-dp1s-off-repository-archive.ps1"
+        ) == 2 and
+        ci_dp1s_archive_step.count("-OutputRoot") == 2 and
+        ".tmp\\dual-product\\dp1-s-archive-test-ci-ps5-$runId" in
+        ci_dp1s_archive_step and
+        ".tmp\\dual-product\\dp1-s-archive-test-ci-ps7-$runId" in
+        ci_dp1s_archive_step and
+        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in
+        ci_dp1s_archive_step and
+        "PowerShell 5.1 DP1-S archive-boundary test failed with exit code $LASTEXITCODE" in
+        ci_dp1s_archive_step and
+        all(re.search(pattern, ci_dp1s_archive_step) is None
             for pattern in prohibited_dp1i_ci_patterns)
     )
     rime_sid_chain_anchors = ("RequestExecutionLevel user" in nsis and
@@ -2064,6 +2120,8 @@ def transaction_source_status(sources):
             not actual_migration_review_ci_ps5_ps7_present or
             not dp1r_trust_admission_source_contract_wired or
             not dp1r_trust_admission_ci_ps5_ps7_present or
+            not dp1s_off_repository_archive_source_contract_wired or
+            not dp1s_off_repository_archive_ci_ps5_ps7_present or
             'InstallLayoutOrTip(w "${YIME_TIP}"' not in nsis or
             'Get-ChildItem -LiteralPath "Registry::HKEY_USERS"' in pime_cleanup):
         fail("Rime/PIME registration/SID/transaction status changed; dedicated review required")
@@ -2196,6 +2254,13 @@ def transaction_source_status(sources):
         "rime_pime_dp1r_full_payload_static_closure_from_actual_evidence": False,
         "rime_pime_dp1r_nsis_non_os_compiler_input_closure_from_actual_evidence": False,
         "rime_pime_dp1r_generated_uninstaller_trusted_static_scope_from_actual_evidence": False,
+        "rime_pime_dp1s_off_repository_archive_source_contract_wired": dp1s_off_repository_archive_source_contract_wired,
+        "rime_pime_dp1s_off_repository_archive_ci_ps5_ps7_present": dp1s_off_repository_archive_ci_ps5_ps7_present,
+        "rime_pime_dp1s_actual_archive_executed_by_baseline": False,
+        "rime_pime_dp1s_actual_archive_completed_from_tracked_source": False,
+        "rime_pime_dp1s_directory_metadata_durability_verified": False,
+        "rime_pime_dp1s_hardware_power_loss_verified": False,
+        "rime_pime_dp1s_hostile_same_sid_physical_replacement_prevented": False,
         "rime_pime_actual_evidence_archived_outside_repository_tmp": False,
         "rime_pime_actual_canonical_migration_admitted": False,
         "rime_pime_actual_canonical_migration_executed": False,

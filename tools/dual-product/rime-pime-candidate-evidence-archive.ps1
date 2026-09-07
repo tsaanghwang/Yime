@@ -785,7 +785,7 @@ function Assert-RimePimeCandidateArchiveManifest {
         $Manifest.source_runner_result_path -isnot [string] -or [string]$Manifest.source_runner_result_path -cne 'result.json' -or
         $Manifest.retained_receipt_path -isnot [string] -or $Manifest.installer_source_relative_path -isnot [string] -or
         $Manifest.installer_path -isnot [string] -or
-        [string]$Manifest.retained_receipt_path -cne 'repo/installer/YIME-package-build-receipt-v2.json' -or
+        [string]$Manifest.retained_receipt_path -cne 'repo/installer/package-build-receipt.json' -or
         [string]$Manifest.installer_path -cne ('installer/YIME-'+[string]$Manifest.product_version+'-setup.exe') -or
         [string]$Manifest.installer_source_relative_path -cne ('repo/'+[string]$Manifest.installer_path) -or
         $Manifest.source_head -isnot [string] -or [string]$Manifest.source_head -cnotmatch '^[0-9a-f]{40}(?:[0-9a-f]{24})?$' -or

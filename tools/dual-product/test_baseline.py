@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 143)
-        self.assertEqual(len(self.receipt["source_manifest"]), 150)
+        self.assertEqual(len(contract["source_paths"]), 145)
+        self.assertEqual(len(self.receipt["source_manifest"]), 152)
         for path in (
             "version.txt",
             "PIMELauncher/build.rs",
@@ -183,6 +183,8 @@ class OwnershipTests(unittest.TestCase):
             "tools/dual-product/rime-pime-dp1r-trust-admission.psm1",
             "tools/dual-product/test-rime-pime-dp1r-trust-admission.ps1",
             "tools/dual-product/review-rime-pime-dp1r-trust.ps1",
+            "tools/dual-product/publish-rime-pime-dp1s-off-repository-archive.ps1",
+            "tools/dual-product/test-rime-pime-dp1s-off-repository-archive.ps1",
             "tools/dual-product/test-rime-pime-transaction-replay-model.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.psm1",
@@ -505,6 +507,17 @@ class OwnershipTests(unittest.TestCase):
         self.assertFalse(status["rime_pime_delivery_admitted"])
         self.assertFalse(status["rime_pime_actual_canonical_migration_admitted"])
         self.assertFalse(status["rime_pime_actual_canonical_migration_executed"])
+
+    def test_dp1s_off_repository_archive_is_wired_without_baseline_promotion(self):
+        status = self.receipt["transaction_source"]
+        self.assertTrue(status["rime_pime_dp1s_off_repository_archive_source_contract_wired"])
+        self.assertTrue(status["rime_pime_dp1s_off_repository_archive_ci_ps5_ps7_present"])
+        self.assertFalse(status["rime_pime_dp1s_actual_archive_executed_by_baseline"])
+        self.assertFalse(status["rime_pime_dp1s_actual_archive_completed_from_tracked_source"])
+        self.assertFalse(status["rime_pime_dp1s_directory_metadata_durability_verified"])
+        self.assertFalse(status["rime_pime_dp1s_hardware_power_loss_verified"])
+        self.assertFalse(status["rime_pime_dp1s_hostile_same_sid_physical_replacement_prevented"])
+        self.assertFalse(status["rime_pime_actual_canonical_migration_admitted"])
 
     def test_dp1q_candidate_evidence_archive_is_wired_without_actual_archive_claim(self):
         status = self.receipt["transaction_source"]

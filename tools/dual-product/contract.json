@@ -129,6 +129,8 @@
     "tools/dual-product/rime-pime-dp1r-trust-admission.psm1",
     "tools/dual-product/test-rime-pime-dp1r-trust-admission.ps1",
     "tools/dual-product/review-rime-pime-dp1r-trust.ps1",
+    "tools/dual-product/publish-rime-pime-dp1s-off-repository-archive.ps1",
+    "tools/dual-product/test-rime-pime-dp1s-off-repository-archive.ps1",
     "tools/dual-product/rime-pime-receipt-v2-supersession.ps1",
     "tools/dual-product/rime-pime-receipt-v2-supersession.psm1",
     "tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1",

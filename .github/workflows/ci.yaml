@@ -361,6 +361,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-R trust-admission test failed with exit code $LASTEXITCODE" }
           .\tools\dual-product\test-rime-pime-dp1r-trust-admission.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-r-trust-admission-test-ci-ps7-$runId")
+      - name: Test DP1-S off-repository archive boundary
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-dp1s-off-repository-archive.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-s-archive-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-S archive-boundary test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-dp1s-off-repository-archive.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-s-archive-test-ci-ps7-$runId")
       - name: Test canonical receipt no-downgrade contract
         shell: pwsh
         run: |
