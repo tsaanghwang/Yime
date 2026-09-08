@@ -383,7 +383,8 @@ jobs:
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-          $runId = [Guid]::NewGuid().ToString('N')
+          # Keep nested SHA-256 sidecars below Win32 MAX_PATH in both shells.
+          $runId = [Guid]::NewGuid().ToString('N').Substring(0,16)
           & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-candidate-evidence-archive.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-candidate-evidence-archive-test-ci-ps5-$runId")
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-Q candidate-evidence archive test failed with exit code $LASTEXITCODE" }
