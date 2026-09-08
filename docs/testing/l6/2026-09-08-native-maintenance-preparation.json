@@ -1,0 +1,177 @@
+{
+  "schema_version": "yimecore-native-maintenance-preparation-review-v1",
+  "reviewed_date": "2026-09-08",
+  "affected_product": "YimeCore",
+  "scope": "source-preparation-public-artifact-archive-own-fixtures-only",
+  "normal_package": {
+    "package_id": "yimecore-local-0.1.0-local.13-af06362e5433",
+    "source_commit": "8f6422e7c2522cdc352103b2e5815e8fc7d85b35",
+    "manifest_sha256": "dccbf6f7ef553bda1e20d7b8fa1659fe7e4b691d5d492b8210c9b7c606a7ced4",
+    "members": 85,
+    "build_review": "docs/testing/l6/2026-09-08-local13-controller-rebuild.json"
+  },
+  "fault_package": {
+    "root": "C:\\dev\\Yime\\.tmp\\yimecore-local13-maintenance-preparation\\guarded-reviewed-20260908-ps5\\package",
+    "package_id": "yimecore-local-0.1.0-local.13-af06362e5433-rollback-failure-643da92717be",
+    "manifest_sha256": "5a9b274b9a3a07f847964bc0871b1ea15c3d4a9447e7fd7e3d86a424c5eea3b5",
+    "runtime_sha256": "643da92717beb1c99eea07e84c107a36c832b5d95278f6bb9cb81ed0b1df9ffe",
+    "members_verified": 85,
+    "changed_listed_members": [
+      "bin/YimeCoreTrialRuntime.exe"
+    ],
+    "separate_derived_manifest": true,
+    "controller_sha256": "e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a",
+    "preparation_module_used_sha256": "988e484980e192d153d45850c83b938ee767dc210e2ce41fab68e9bc8e33b496",
+    "preparation_module_later_strict_type_fix_sha256": "621d21591f840d73c79b85a8aa2204987a3c165c9d545da54a82982c29ff4101",
+    "later_type_fix_rewrote_preparation_or_archive": false,
+    "expected_probe_exit_code": 86,
+    "probe_exit_observed": false,
+    "unexpected_success_rollback_guard_available": true,
+    "same_sid_execution_boundary": false
+  },
+  "archive": {
+    "root": "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local13-maintenance-candidates-20260908-48e207e2e6f9419183ed823423b5472d",
+    "manifest_sha256": "e539e75cc4159bdbc4b18daf5fb3d61e3600a6813915f9d59d24dff5239ce900",
+    "summary_sha256": "77a8d1c80aee098cf21044987d8fe0ea0fc0f4efeb4c7d79c2cd6e1958695950",
+    "public_inputs": 182,
+    "public_input_bytes": 910652829,
+    "source_zip_entries_verified": 774,
+    "static_outside_repository_copy_verified": true,
+    "source_retained": true,
+    "independent_static_review_files_verified": 182,
+    "independent_static_review_failed_files": 0,
+    "independent_native_system_visibility_verified": false,
+    "user_state_backup": false
+  },
+  "native_observer": {
+    "default_action": "Plan",
+    "context_scope": "MYCOMPUTER-native-x64-64bit-non-elevated-same-SID-PowerShell-to-system-Explorer",
+    "context_process_handles_held_across_capture": true,
+    "readonly_registry_coordinates": 46,
+    "registry_provider_review": "docs/testing/l6/2026-09-08-native-maintenance-evidence.json",
+    "actual_context_available": false,
+    "actual_context_rejection_reason": "拒绝访问 ",
+    "actual_rejection_proves_packaged_ancestry": false,
+    "actual_product_capture_invoked": false,
+    "positive_explorer_and_capture_tests_are_synthetic": true,
+    "capture_source_digests_authenticate_loaded_code": false,
+    "atomic_registry_snapshot": false,
+    "continuous_registry_protection": false,
+    "registry_link_identity_verified": false
+  },
+  "regressions": {
+    "powershell_5": "5.1.26100.9278",
+    "powershell_7": "7.6.5",
+    "per_shell": {
+      "local13_preparation": 54,
+      "legacy_local12_preparation": 35,
+      "native_registry_evidence": 85,
+      "native_context": 48
+    },
+    "native_registry_per_shell_synthetic": 79,
+    "native_registry_per_shell_own_random_fixture": 6,
+    "native_registry_fixture_cleanup_verified": true,
+    "default_plan_both_shells_passed": true,
+    "default_plan_sid": "S-1-5-21-1-2-3-1001",
+    "ci_runs_native_registry_fixture": false,
+    "dual_product_declared_sources": 168,
+    "dual_product_locked_dependencies": 7,
+    "dual_product_tests": 68,
+    "dual_product_pending": 8
+  },
+  "current_source": [
+    {
+      "path": "tools/yimecore/local12-maintenance-preparation.psm1",
+      "sha256": "621d21591f840d73c79b85a8aa2204987a3c165c9d545da54a82982c29ff4101"
+    },
+    {
+      "path": "tools/yimecore/prepare-local13-maintenance.ps1",
+      "sha256": "45ca2fc2e4d3384b03c8a45fe1bcd26d30ab1f6710d2ef231e476466439065ac"
+    },
+    {
+      "path": "tools/yimecore/test-local13-maintenance-preparation.ps1",
+      "sha256": "f6f073950b4c24d71d3cf13c5659a75c9372758f0ec0256836b8020de50c12e1"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-context.psm1",
+      "sha256": "628fab8ee1885e8726fb709c2d9d33190714aa32793425d790e5c7ce48a15bbe"
+    },
+    {
+      "path": "tools/yimecore/capture-native-maintenance-registry.ps1",
+      "sha256": "930e57a213136dcf6774921cd8a2621e357d507959ee07700b80a1971f4d6901"
+    },
+    {
+      "path": "tools/yimecore/test-native-maintenance-context.ps1",
+      "sha256": "bf68eb74f3500f1228c845100e3c970a23aaf57f50cfc41db3e7b8dc256f6493"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".tmp/local13-public-archive-review-7a964f37faa94746ad14c4b6b77515a6.json",
+      "sha256": "61934ad71d45714b2fbcb7ee4e245791a4ad3c43590b34141186521cd7b7486b"
+    },
+    {
+      "path": ".tmp/local13-maintenance-preparation-types-20260908/ps5.json",
+      "sha256": "781fa85d95674db8bb40da7d47dbc159882785f1872cc3570d65a149c2973c8a"
+    },
+    {
+      "path": ".tmp/local13-maintenance-preparation-types-20260908/ps7.json",
+      "sha256": "d869aaf40804801851ee67de3087625572435d28abd59d235d0b8e43a5372e78"
+    },
+    {
+      "path": ".tmp/native-maintenance-context-review-20260908/ps5.json",
+      "sha256": "e50eb8a935ae3f9c65ed22a661a51cb15eebb0030083482f4e1b1f86d4a63588"
+    },
+    {
+      "path": ".tmp/native-maintenance-context-review-20260908/ps7.json",
+      "sha256": "63f65ddb6474eeb555a5edbaf63d8ebf49265badd5af175845a7e430db75c647"
+    },
+    {
+      "path": ".tmp/native-maintenance-context-review-20260908/current-context-ps7.json",
+      "sha256": "cf185bc9bc62788cd110ae55e0e4c235c3a016f197ecde77239fc2e0d9117dda"
+    },
+    {
+      "path": ".tmp/native-maintenance-context-review-20260908/plan-ps5.json",
+      "sha256": "583775d2cebb97e252b54330cfb481168e6d9365c46b8ff81dce54d60f9525a5"
+    },
+    {
+      "path": ".tmp/native-maintenance-context-review-20260908/plan-ps7.json",
+      "sha256": "e267e973a6f9710fe5a6ecc1fb9521812a8abdee456f812cfb2d61ffad432fa5"
+    },
+    {
+      "path": ".tmp/native-maintenance-context-review-20260908/fault-independent-review.json",
+      "sha256": "8d29551e2712f7a7d630f767b37ec4c16c67c9c8476c407d49cca19f4bff087b"
+    },
+    {
+      "path": ".tmp/yimecore-local13-maintenance-preparation/guarded-reviewed-20260908-ps5/preparation.json",
+      "sha256": "e7a62cb62e78825588d3c56da516600cc117a1e22195808ca3bec27c5165bbde"
+    },
+    {
+      "path": ".tmp/dual-product/dp1-native-maintenance-20260908-final/baseline.json",
+      "sha256": "8aa6ed22650315647e9a794068d2e218edd097ad63673f480aeb0673a68f5a88"
+    }
+  ],
+  "pending": [
+    "native maintenance mutation harness and executable source identity",
+    "process/config/old-root and per-stage failure/rollback evidence providers",
+    "fresh native user-state backup/restore and bounded protection fingerprints",
+    "independent native visibility of public archive",
+    "actual dual-architecture rollback and retain-data uninstall/reinstall acceptance",
+    "Rime/PIME executable trusted candidate, independent target and DP1-U transaction acceptance",
+    "DP2 and DP3"
+  ],
+  "actual_current_candidate_restore_passed": false,
+  "actual_current_candidate_rollback_passed": false,
+  "actual_current_candidate_uninstall_passed": false,
+  "actual_product_registry_collected": false,
+  "product_registry_modified": false,
+  "installed_local12_changed": false,
+  "installer_executed": false,
+  "product_executed": false,
+  "user_text_settings_or_learning_read": false,
+  "execution_authorized": false,
+  "ready_to_execute": false,
+  "L6_sealed": false,
+  "local_product_ready": false,
+  "public_release_ready": false
+}

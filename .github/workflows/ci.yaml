@@ -241,6 +241,17 @@ jobs:
           & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\yimecore\test-native-desktop-rehearsal.ps1
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 native desktop rehearsal test failed with exit code $LASTEXITCODE" }
           .\tools\yimecore\test-native-desktop-rehearsal.ps1
+      - name: Test YimeCore guarded maintenance preparation and native observations
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $evidence = Join-Path $pwd ('.tmp/native-maintenance-ci-' + [guid]::NewGuid().ToString('N'))
+          New-Item -ItemType Directory -Path $evidence | Out-Null
+          foreach ($test in @('test-local13-maintenance-preparation.ps1', 'test-native-maintenance-evidence.ps1', 'test-native-maintenance-context.ps1')) {
+            & $ps5 -NoProfile -ExecutionPolicy Bypass -File (Join-Path '.\tools\yimecore' $test) -OutputPath (Join-Path $evidence ($test + '-ps5.json'))
+            if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 $test failed with exit code $LASTEXITCODE" }
+            & (Join-Path '.\tools\yimecore' $test) -OutputPath (Join-Path $evidence ($test + '-ps7.json'))
+          }
       - name: Test exact payload-closure rejection model
         shell: pwsh
         run: |

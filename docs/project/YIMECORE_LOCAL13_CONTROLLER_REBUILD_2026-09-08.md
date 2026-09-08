@@ -1,5 +1,7 @@
 # YimeCore local.13 新控制器候选构包复核
 
+后续状态（2026-09-08）：本普通候选及新准备的故障候选已完成[仓外公开介质归档](YIMECORE_NATIVE_MAINTENANCE_PREPARATION_2026-09-08.md)。本文件及其 JSON 保留构包完成时的观察；下方“尚未归档/故障候选待准备”为该时点状态。原生系统可见性、完整维护事务与实际安装态验收仍未通过。
+
 2026-09-08，影响产品：YimeCore。新普通候选 `yimecore-local-0.1.0-local.13-af06362e5433` 已从干净提交 `8f6422e7c2522cdc352103b2e5815e8fc7d85b35` 独立构建，完整通过隔离验证。候选仅保留在仓内 `.tmp/yimecore-local-product/rb13-0908-b903f821/package`，尚未仓外封存或安装。结构化绑定见 [构包复核记录](../testing/l6/2026-09-08-local13-controller-rebuild.json)。
 
 包 manifest SHA-256 为 `dccbf6f7ef553bda1e20d7b8fa1659fe7e4b691d5d492b8210c9b7c606a7ced4`，85/85 成员的大小与哈希通过复核。774 项构包来源的 manifest SHA-256 为 `af06362e54338732875209456025d9531ada3170020edc320a73e032788fc74b`。源码 `tools/yimecore/manage-e6c-trial-install.ps1`、源码 manifest、源码 ZIP 内控制器及包内 `maintenance/Manage-YimeCoreTrial.ps1` 均绑定 `e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a`，因此新普通候选包含 [NativeDesktop 演练提交前回滚保护](../testing/l6/2026-09-08-native-desktop-rehearsal-source.json)。
