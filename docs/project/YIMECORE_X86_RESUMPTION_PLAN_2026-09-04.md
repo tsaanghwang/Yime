@@ -25,6 +25,6 @@
 - [x] S2 双架构包、注册事务与回退实现及隔离回归。`local.11` 干净提交候选证据：`.tmp/yimecore-local-product/20260904-102616-bf7a7a1a`；commit `f435f463bfd0a0647d0d9ef9f5711c7ef55a698e`，构建时 `dirty=false`，74 文件，manifest SHA-256 `5a3f847a3136fd2198f7dc9aba22dc017ed7439d8447435e8752eb379a4a5cd8`。2026-09-04 已通过资源管理器入口安装为当前版本。
 - [x] S3 安装态 x64/x86 registered-host 在三模式下 6/6 通过；Firefox PID 4968 和 Notepad++ PID 33112 均机械确认加载当前安装根的 x86 DLL。证据：`.tmp/yimecore-experiment/local11-installed-x64-x86-host-20260904` 与 `.tmp/yimecore-experiment/local11-x86-live-host-20260904`。
 - [x] S4 的 x86 分支：Firefox 155.0 与 Notepad++ 8.9.8 均由用户确认组合提交、裸数字组字、`Shift+1` 首候选三项通过；见 [local.11 x86 验收记录](../YIMECORE_LOCAL11_X86_ACCEPTANCE_2026-09-04.md)。
-- [ ] S4 共同退出：x64 L5 日常使用结论及 L6 本机包/恢复介质合并封存仍待完成，故 `local_product_ready` 仍为 false。
+- [ ] S4 共同退出：x64 L5 日常使用结论已完成，L6 仓外包已封存；local.12 当前维护控制器的实际恢复/故障升级回退仍待单独维护窗口，故 `local_product_ready` 仍为 false。
 
 任何单项成功只关闭对应门禁，不提前宣称整个 x86 工作流或公开发行完成。

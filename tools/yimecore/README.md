@@ -8,7 +8,9 @@ YimeCore 继续按[本机独立产品实施计划](../../docs/project/YIMECORE_L
 
 ## 本机独立产品新入口
 
-**2026-09-05 当前状态**：已安装 `local.12`；设置/未确认焦点切换、受影响注册宿主及升级后重启检查通过，最终 L5 日用确认和 L6 仍待完成，见 [L5 日志](../../docs/YIMECORE_L5_DAILY_USE_TEST_LOG.md)。24 条 Stage5C 的[正向准入／不增码与隔离 Broker 源码接入](../../docs/project/YIMECORE_SPEECH_ADMISSION_ISOLATED_SOURCE_2026-09-05.md)及 [SR4-A 默认关闭试验包](../../docs/project/YIMECORE_SPEECH_SR4_PACKAGE_2026-09-05.md)之后，[SR4-B1 正常接口与显式设置](../../docs/project/YIMECORE_SPEECH_SR4B_SOURCE_2026-09-05.md)源码回归已完成。B2 当前源码候选为默认关闭的 local.13，构包／仓外正常进程入口见本页下方；入口和契约自身不宣告任何运行结果。[DP1-B 维护源码保护](../../docs/project/YIME_DUAL_PRODUCT_DP1_B_2026-09-05.md)同步完成，完整独立安装维护和实机共存仍待验收。其他预留语流层未据此准入；全程不运行生产 Rime/PIME。旧 SR0 入口及带旧时间的记录保留原证据边界。
+**2026-09-08 当前状态**：已安装 `local.12`；设置/未确认焦点切换、受影响注册宿主、升级后重启及最终 L5 日用确认均已通过，见 [L5 日志](../../docs/YIMECORE_L5_DAILY_USE_TEST_LOG.md)。[L6 只读就绪审查](../../docs/project/YIMECORE_LOCAL12_L6_READINESS_2026-09-08.md)已封存仓外候选并接入 PS5/PS7 门禁；由于 local.12 的维护控制器不同于既有实际回退版本，当前候选恢复/故障升级回退仍需单独的原生维护窗口，故 `L6_sealed=false`、`local_product_ready=false`。B2 当前源码候选为默认关闭且未安装的 local.13；DP1 独立 Rime/PIME 仍按自身计划推进。其他预留语流层未据此准入；旧过程记录保留原证据边界。
+
+只读重算 L6 状态使用 `powershell -NoProfile -ExecutionPolicy Bypass -File tools\yimecore\run-local-product-readiness.ps1`。退出码 `2` 表示仍有诚实 pending 项，不代表脚本异常；未提供当前候选恢复证据时不会执行或建议执行维护操作。
 
 **2026-09-04 当前状态**：当前安装已升级为 `0.1.0-local.11`，活动根为 `yimecore-e6c-f435f463bfd0-5a3f847a`，manifest SHA-256 为 `5a3f847a3136fd2198f7dc9aba22dc017ed7439d8447435e8752eb379a4a5cd8`。安装态 x64/x86 registered-host 三模式 6/6 通过；Firefox 155.0 与 Notepad++ 8.9.8 两个 PE32/I386 进程均确认加载当前安装根的 x86 DLL，并由用户确认组合提交、裸数字组字、`Shift+1` 首候选三项通过。生产/冻结注册及默认输入法保持不变；详见 [local.11 x86 验收](../../docs/YIMECORE_LOCAL11_X86_ACCEPTANCE_2026-09-04.md)。x86 本机工作流已经封存；x64 L5 日常使用和 L6 合并封存仍未关闭，`local_product_ready` 和公开发行仍为 false。下方带时刻的 local.7/local.9 “当前状态”段落均为当时的过程快照。
 

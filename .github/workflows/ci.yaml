@@ -211,6 +211,13 @@ jobs:
       - name: Verify native build outputs
         shell: pwsh
         run: .\tools\test-build-guards.ps1 -SkipPackagedRime
+      - name: Test YimeCore local-product readiness contract
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\yimecore\test-local-product-readiness.ps1
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 local-product readiness test failed with exit code $LASTEXITCODE" }
+          .\tools\yimecore\test-local-product-readiness.ps1
       - name: Test exact payload-closure rejection model
         shell: pwsh
         run: |

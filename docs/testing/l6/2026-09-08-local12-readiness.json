@@ -1,0 +1,81 @@
+﻿{
+    "schema_version":  "yimecore-local-product-readiness-v1",
+    "generated_at":  "2026-09-08T01:42:08.0216735Z",
+    "affected_product":  "YimeCore",
+    "scope":  "MYCOMPUTER x64 runtime plus WOW64 x86 TSF; installed local.12",
+    "package":  {
+                    "passed":  true,
+                    "root":  "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local12-l6-sealed-20260908\\package",
+                    "version":  "0.1.0-local.12",
+                    "manifest_sha256":  "9b3366b350ef2b23fd285fc9d97d876bf1ae6e2fc0f8613c647640f01184502e",
+                    "file_count":  74,
+                    "mismatches":  [
+
+                                   ],
+                    "missing_required_members":  [
+
+                                                 ],
+                    "source_manifest_sha256":  "2f31f6d278a7fa46e2b7ae2118df88649cefd02ec7a6c3b017d3a5eb099f2c57"
+                },
+    "checks":  {
+                   "sealed_package_integrity":  true,
+                   "sealed_package_outside_repository":  true,
+                   "l5_final_user_confirmation":  true,
+                   "l5_post_use_identity_and_protection":  true,
+                   "installed_x64_x86_registered_hosts":  true,
+                   "local12_reboot_and_logon_autostart":  true,
+                   "x86_live_host_evidence_chain":  true,
+                   "previous_working_package_backup_preserved":  true,
+                   "current_candidate_actual_restore_and_failed_upgrade_rollback":  false
+               },
+    "local_product_ready":  false,
+    "public_release_ready":  false,
+    "pending":  [
+                    "current_candidate_actual_restore_and_failed_upgrade_rollback"
+                ],
+    "deferred":  [
+                     "trusted signing",
+                     "ARM64 native installed and live-host acceptance",
+                     "other physical PC acceptance"
+                 ],
+    "evidence":  {
+                     "daily_use":  {
+                                       "path":  "C:\\dev\\Yime\\docs\\testing\\l5\\2026-09-08-local12-final-daily-use.json",
+                                       "sha256":  "6a892e48ababbb5653b495d1480cc224b180d7936ace2b19bfd704d29dc50524"
+                                   },
+                     "registered_hosts":  {
+                                              "path":  "C:\\dev\\Yime\\docs\\testing\\l5\\2026-09-05-local12-registered-acceptance.json",
+                                              "sha256":  "6f1fbd98681be19f82c8c747b5dd1041cc8c635e6cdd905b19c0945769980f99"
+                                          },
+                     "reboot":  {
+                                    "path":  "C:\\dev\\Yime\\docs\\testing\\l5\\2026-09-05-local12-reboot-outcomes.json",
+                                    "sha256":  "82f4604caebf142cdc9eb24637ebd71a00ffd8eb8ca1c5bfaba2e25c6d522b53"
+                                },
+                     "x86_live_hosts":  {
+                                            "path":  "C:\\dev\\Yime\\docs\\YIMECORE_LOCAL11_X86_ACCEPTANCE_2026-09-04.md",
+                                            "sha256":  "bad10e47013bb7ea897216196243e718fcab4cfbdd202046c7645ec008c7787a"
+                                        },
+                     "local12_affected_x86_manual":  {
+                                                         "path":  "C:\\dev\\Yime\\docs\\testing\\l5\\2026-09-05-local12-manual-pre-reboot.json",
+                                                         "sha256":  "1348ef403e56a7ba43a867191b9768c4916c95384bf6d30186fabac5423f35ce"
+                                                     },
+                     "previous_package_backup":  {
+                                                     "path":  "C:\\dev\\Yime\\docs\\testing\\l5\\2026-09-05-local12-native-backup.json",
+                                                     "sha256":  "1dde9e8195282cfc8855ea11d187ab51443de6ebc0712ba0d5d636376c715027"
+                                                 },
+                     "current_candidate_recovery":  null
+                 },
+    "privacy":  {
+                    "installer_executed":  false,
+                    "product_or_registry_mutated":  false,
+                    "default_input_method_changed":  false,
+                    "user_text_read":  false,
+                    "user_settings_or_learning_files_read":  false,
+                    "raw_logs_or_events_read":  false
+                },
+    "limitations":  [
+                        "A prior-version recovery rehearsal is not promoted to current-candidate recovery evidence after the packaged maintenance controller changed.",
+                        "The general x86 physical-host checks remain bound to local.11. local.12 changed the x86 TSF binary, so the evidence chain also requires its affected Notepad++ focus-switch path and exact loaded DLL hash; it does not claim a full physical-host rerun.",
+                        "public_release_ready remains false independently of local readiness."
+                    ]
+}
