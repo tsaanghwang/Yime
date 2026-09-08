@@ -1,0 +1,504 @@
+{
+  "schema_version": "yimecore-local13-outcome-candidates-review-v1",
+  "reviewed_date": "2026-09-08",
+  "affected_product": "YimeCore",
+  "normal": {
+    "package_root": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\package",
+    "package_id": "yimecore-local-0.1.0-local.13-3687a998fda0",
+    "manifest_sha256": "1fd54730bffe9b986249cdeaedbd7c8807b255da36e75c6463ff983e378275a9",
+    "member_count": 85,
+    "controller_sha256": "9f69d9aba12e4c50c8aa06edb945375dc72a721cd208791ffab2e4207442f39d",
+    "wrapper_sha256": "ec206153c53d96b98aa43cd522167bb55eef83b7d7acedf745f8f966c6851479",
+    "source_commit": "73228cf5da8f7ff6d900b42ce497938f6109ebca",
+    "source_clean": true,
+    "source_manifest_sha256": "3687a998fda0b17124b5a02198e0b295b375a2bd37139d61657718ad347d03d5",
+    "source_zip_members_verified": 787,
+    "typed_outcome_producer_packaged": true,
+    "later_reader_included_in_fixed_source_snapshot": false,
+    "isolated_build_and_runtime_passed": true,
+    "registration_and_default_preserved": true
+  },
+  "speech": {
+    "source_count": 580,
+    "passed": 499,
+    "failed": 0,
+    "skipped": 3,
+    "skipped_tests": [
+      "TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink",
+      "TestSpeechPackageRejectsSymlinkPayload",
+      "TestSpeechProductExportRejectsIndirectSources"
+    ],
+    "failed_sandbox_baseline_preserved": true,
+    "no_protection_guard_weakened": true
+  },
+  "fault": {
+    "package_root": "C:\\dev\\Yime\\.tmp\\yimecore-local13-maintenance-preparation\\outcome-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\package",
+    "package_id": "yimecore-local-0.1.0-local.13-3687a998fda0-rollback-failure-5ae5a75eb47a",
+    "manifest_sha256": "7a70ba727e0cc157358680213ea5e4cbb52b711631c74d0d2182b5029cc141ef",
+    "runtime_sha256": "5ae5a75eb47a69abe1378ac86c6e5695daebbd3b4ed91af5712bfdc1729b168e",
+    "normal_derivation_manifest_sha256": "1fd54730bffe9b986249cdeaedbd7c8807b255da36e75c6463ff983e378275a9",
+    "member_count": 85,
+    "changed_listed_members": [
+      "bin/YimeCoreTrialRuntime.exe"
+    ],
+    "derived_manifest_changed": true,
+    "typed_outcome_controller_preserved": true,
+    "expected_probe_exit_code": 86,
+    "probe_exit_observed": false,
+    "preparation_entry_sha256": "f2ec9c3b0f9e9780fe4fdabbd2628d370dcb31707488f936c1d59fa9cf5d5f52",
+    "preparation_module_sha256": "462d5184c48c223e22cbcfa6dfc53c73d4ddcfb0693d832286b9f7101e75ab84"
+  },
+  "archive": {
+    "root": "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local13-maintenance-candidates-20260908-7a42bbe7efe245d89f6faae080d8f4ea",
+    "manifest_sha256": "1d74e0d714231e36f2300eca534de60165c2c3d94492d35f08a831962ff8af4e",
+    "summary_sha256": "38317725084b264d4ef216cf88f72f19ec12613f39f330c17c8f742581c0706a",
+    "public_inputs": 182,
+    "public_input_bytes": 910740777,
+    "file_leases": 184,
+    "directory_leases": 33,
+    "ps5_ps7_fixed_open_close_passed": true,
+    "leases_closed": true,
+    "continuous_membership_protection": false,
+    "independent_native_system_visibility_verified": false,
+    "user_state_backup": false,
+    "previous_e65_archive_retained": true
+  },
+  "reader": {
+    "api": "Read-YimeCoreNativeRehearsalOutcome",
+    "checks_per_shell": 224,
+    "source_producer_compatible_cases": 10,
+    "expected_source_manifest_means": "fault source_package_manifest_sha256: NORMAL package-manifest.json, not build/source-manifest.json",
+    "explicit_alias": "ExpectedNormalPackageManifestSha256",
+    "strict_file_content_and_supplied_context_consistency": true,
+    "actual_exit_os_authenticated": false,
+    "producer_process_authenticated": false,
+    "native_execution_authenticated": false,
+    "loaded_helper_identity_authenticated": false,
+    "independent_restore_verified": false
+  },
+  "ci": {
+    "actual_workflow_body_executed": true,
+    "workflow_sha256": "096ecd6521fa4e65bb9dbf63fb91ef53125cc3852bed4e0a1eff49bf5c4bce42",
+    "shell_results": 14,
+    "checks_per_shell": {
+      "preparation": 57,
+      "registry_synthetic": 79,
+      "native_context": 48,
+      "input_leases": 52,
+      "process_synthetic": 47,
+      "producer": 99,
+      "reader": 224
+    }
+  },
+  "source_baseline": {
+    "declared_paths": 176,
+    "locked_dependencies": 7,
+    "total_sources": 183,
+    "fixture_checks": 68,
+    "pending": 8
+  },
+  "scope": {
+    "installer_executed": false,
+    "actual_registration_executed": false,
+    "installed_local12_mutated": false,
+    "installed_user_state_read": false,
+    "production_rime_pime_mutated": false,
+    "default_input_method_changed": false
+  },
+  "closure": {
+    "native_maintenance_orchestrator_complete": false,
+    "native_data_restore_verified": false,
+    "native_rollback_verified": false,
+    "native_uninstall_reinstall_verified": false,
+    "L6_sealed": false,
+    "local_product_ready": false,
+    "public_release_ready": false,
+    "dp1_full_implementation_passed": false,
+    "dp2_physical_acceptance_passed": false,
+    "dp3_complete": false
+  },
+  "sources": [
+    {
+      "path": "C:\\dev\\Yime\\.gitattributes",
+      "bytes": 2650,
+      "sha256": "73df6840771f7ca5aaadbf188c165c40e1dc94969afdc63ebd0a2fb308e8b025"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.github\\workflows\\ci.yaml",
+      "bytes": 48640,
+      "sha256": "096ecd6521fa4e65bb9dbf63fb91ef53125cc3852bed4e0a1eff49bf5c4bce42"
+    },
+    {
+      "path": "C:\\dev\\Yime\\tools\\dual-product\\contract.json",
+      "bytes": 10307,
+      "sha256": "7e0559e58f7964ced4497f794d891252c6763ada4213d4d82fadbed5adf8b91d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\tools\\dual-product\\test_baseline.py",
+      "bytes": 69036,
+      "sha256": "39bba16717e645eb8f556b0a3b15d7014ffa0b68b33c9cd24f63fecbf4317032"
+    },
+    {
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\manage-e6c-trial-install.ps1",
+      "bytes": 84311,
+      "sha256": "9f69d9aba12e4c50c8aa06edb945375dc72a721cd208791ffab2e4207442f39d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\native-rehearsal-outcome-reader.psm1",
+      "bytes": 22983,
+      "sha256": "5cd3ef4a1322fa354166593fba8715e073703b83a7be4620d745ca84dd7fc8a3"
+    },
+    {
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\test-native-rehearsal-outcome-reader.ps1",
+      "bytes": 24413,
+      "sha256": "d8a101733671193f2b50145e2e617a534e612f1305e5e4333bfbf8d2c3751d77"
+    },
+    {
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\prepare-local13-maintenance.ps1",
+      "bytes": 6388,
+      "sha256": "f2ec9c3b0f9e9780fe4fdabbd2628d370dcb31707488f936c1d59fa9cf5d5f52"
+    },
+    {
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\test-local13-maintenance-preparation.ps1",
+      "bytes": 18298,
+      "sha256": "2858f3d8870a81733c66d81570eec36c112f14d5888fe5a959e819e9c10dcf10"
+    },
+    {
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\local12-maintenance-preparation.psm1",
+      "bytes": 21601,
+      "sha256": "462d5184c48c223e22cbcfa6dfc53c73d4ddcfb0693d832286b9f7101e75ab84"
+    },
+    {
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\local13-maintenance-inputs.psm1",
+      "bytes": 23014,
+      "sha256": "19824e24a89106dc40632cd3df5a2e13116384d25be17131a56c707004d8aa1c"
+    },
+    {
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\test-local13-maintenance-inputs.ps1",
+      "bytes": 17492,
+      "sha256": "1bc2c56750d15c00a07528bc38835e6fa354084bf7e8b2aa4f54e298d1280a60"
+    },
+    {
+      "path": "C:\\dev\\Yime\\tools\\dual-product\\rime-pime-dp1u-native-facts.cs",
+      "bytes": 6082,
+      "sha256": "9969b68b42bc11428d4af6a8bb348a9658e248c0758b953bd9e3834109f97be4"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local13-outcome-rebuild-20260908\\normal-review.json",
+      "bytes": 8176,
+      "sha256": "cdb92a69f15ac704ee3d8a827af88822e27f0010ad9c751eae48f04628aa08e5"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-rehearsal-outcome-reader-20260908\\ps5-frozen.json",
+      "bytes": 15693,
+      "sha256": "62b43845b8be0657e738fe2c22be05032f8436362fe4369d85ef473c4eff1151"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-rehearsal-outcome-reader-20260908\\ps7-frozen.json",
+      "bytes": 12260,
+      "sha256": "f7979b2a7ee1c251be3d37f51c585820ebc74473df7e0de11520052cde633f25"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-outcome-ci-20260908\\summary.json",
+      "bytes": 4213,
+      "sha256": "14bd76187fb608f49393d98fc9ef6734bba5dee975968cca184d7b8de0ca9036"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-outcome-ci-20260908\\transcript.txt",
+      "bytes": 101376,
+      "sha256": "fae8419191ddad74ffac4ac7d3919e1050295f335cb75027500bab777d82bd89"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\dual-product\\dp1-local13-outcome-candidates-20260908\\baseline.json",
+      "bytes": 44286,
+      "sha256": "4ca57db78e17f632d3dca5fcb89e3516e39598681193e9ad1e23e9d855004dea"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local13-maintenance-preparation\\outcome-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\preparation.json",
+      "bytes": 2131,
+      "sha256": "4efc8eebf8629c196f74d32ef163545470ae0ba60f14e137c2e71731b3ba0712"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local13-maintenance-preparation\\outcome-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\plan.json",
+      "bytes": 1925,
+      "sha256": "817feacf00b871a06e1dd35773f2f22c716803fc6b2fff57c53443314d33a712"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local13-maintenance-preparation\\outcome-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\package\\package-manifest.json",
+      "bytes": 24534,
+      "sha256": "7a70ba727e0cc157358680213ea5e4cbb52b711631c74d0d2182b5029cc141ef"
+    },
+    {
+      "path": "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local13-maintenance-candidates-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\archive-manifest.json",
+      "bytes": 80241,
+      "sha256": "1d74e0d714231e36f2300eca534de60165c2c3d94492d35f08a831962ff8af4e"
+    },
+    {
+      "path": "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local13-maintenance-candidates-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\archive-summary.json",
+      "bytes": 834,
+      "sha256": "38317725084b264d4ef216cf88f72f19ec12613f39f330c17c8f742581c0706a"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local13-outcome-artifacts-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\inventory.json",
+      "bytes": 79423,
+      "sha256": "055eb995820735266eef20ad012cf80320029caa689702562193504a18e2ea7a"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local13-outcome-artifacts-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\archive-local13-public.ps1",
+      "bytes": 17466,
+      "sha256": "732e2bd9d2efbbb0569a7b697c02956235f73fb61a79713a1fb294e44d33006c"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local13-outcome-artifacts-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\normal-verification.json",
+      "bytes": 891,
+      "sha256": "c5d7b5386de5e268e61361f1a915dc57825f4c8dc44fe2571caf3d4370fdf2dd"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local13-outcome-artifacts-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\plan-ps5.json",
+      "bytes": 1922,
+      "sha256": "ad83b7ebac7e41cee13631775033f5afda4842871c53d13036e6821c0883e1b3"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local13-outcome-artifacts-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\plan-ps7.json",
+      "bytes": 1704,
+      "sha256": "e1574667298f51d98e27f1d161381b87fae9f7846e253d0f4475f251ec16bcc0"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local13-outcome-artifacts-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\preparation-test-ps5.json",
+      "bytes": 4435,
+      "sha256": "4263a0b58985d27d55c0b0f554e02dc1504b5e253b48bcc3ba500fe501075273"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local13-outcome-artifacts-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\preparation-test-ps7.json",
+      "bytes": 3516,
+      "sha256": "d4ab4c1ed74c912ae96ba84a04c622f395bcb6cb331dfeb4cdf4c8ddfcb0829e"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local13-outcome-artifacts-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\input-test-ps5.json",
+      "bytes": 4448,
+      "sha256": "0de8cdc515b0b8db673cfa47cb8502723d19ed0b24aafc3486b9f6b95caaeb33"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local13-outcome-artifacts-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\input-test-ps7.json",
+      "bytes": 3601,
+      "sha256": "5acc4c6eb3501a10292603da3b2fd2f76a9354e9e5777cd4fb9b11fc448bad5f"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local13-outcome-artifacts-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\fixed-input-ps5.json",
+      "bytes": 1534,
+      "sha256": "e0bc5b19c5ba2d7d926f00e9cfeab69d84b7d4d0c4dc9d201273ced663a7d2ab"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local13-outcome-artifacts-20260908-7a42bbe7efe245d89f6faae080d8f4ea\\fixed-input-ps7.json",
+      "bytes": 1444,
+      "sha256": "0338a08433c3929bc30b2c8226f74118d9c1915b537bcc083d2981e3a017f32d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\summary.json",
+      "bytes": 602,
+      "sha256": "b739e164a023c12febd7ec9e18e8beac00a42a673deaad8dfa5afdf500365613"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\source-snapshot.zip",
+      "bytes": 54006303,
+      "sha256": "72f2f62517c7e09f434e474c49136c8531e8b52cb775d16bcc315fcaa329d891"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\working-tree.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\protection-before.json",
+      "bytes": 2975,
+      "sha256": "225d25c3b0ecf7a3ddb2f48c8d74b0e02abbfbfa3ac98b8b762a44b41ccbbf5d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\protection-after.json",
+      "bytes": 2975,
+      "sha256": "225d25c3b0ecf7a3ddb2f48c8d74b0e02abbfbfa3ac98b8b762a44b41ccbbf5d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\transcript.txt",
+      "bytes": 7695,
+      "sha256": "f82aa598fbb36581aa3944dacec7323310b63d6b7e4936430769bacc886ebe36"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\registry-preservation.txt",
+      "bytes": 181,
+      "sha256": "442c2e274bc0d50eb8eea825eb296bacddac4e057d43801d994ff4b15b8168e8"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\native-contract-x64.txt",
+      "bytes": 40,
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\native-contract-x86.txt",
+      "bytes": 40,
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\native-focus-cancellation-x64.txt",
+      "bytes": 55,
+      "sha256": "c181518da6a5945f42345daeeac5830b742f09b5025bcd4daaeb00628d14137d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\native-focus-cancellation-x86.txt",
+      "bytes": 55,
+      "sha256": "c181518da6a5945f42345daeeac5830b742f09b5025bcd4daaeb00628d14137d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\go-tests.txt",
+      "bytes": 395,
+      "sha256": "28b869b20946e820c55725511b0e96dbc9b63744db829c87536abb07d047e411"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\speech-product-export-mapping.json",
+      "bytes": 6333,
+      "sha256": "412df3db297b04e10f9978577f8bb6dbed19a8a6d9096858fd53bf87f3378b5a"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\package-verification\\summary.json",
+      "bytes": 2821,
+      "sha256": "4f65daa5b2d479b710eeba6c64ad43d62e8fce4962a2d1c4c90151dbc4ada628"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\runtime-verification\\summary.json",
+      "bytes": 3469,
+      "sha256": "4be03db835b57789a09122a4cc50e9cfd5d2a918ed17f9d792a0c20d4dbaf8b6"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\runtime-verification\\tsf-composition-x64.txt",
+      "bytes": 1028,
+      "sha256": "c33fd9bb0bfeefafd0592482726a95838bfbf21fd868320d7a9ff32ca5e78ea1"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\runtime-verification\\tsf-composition-x86.txt",
+      "bytes": 1028,
+      "sha256": "593406f84a69c561d5751eba7e898f25bf1893af5b75d33b8d0f921160cfc306"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\runtime-verification\\sentence-regression.json",
+      "bytes": 14312,
+      "sha256": "00b95743001a745dfd51a610fd7bee370ab37070c67181ce9eb5ccb7fb83f1ba"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\runtime-verification\\multimode.json",
+      "bytes": 5921,
+      "sha256": "ab8c684d337242aab0c94539586cd03c1fae6e4053f913e05a411446eb05f9b4"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\runtime-verification\\packaged-recovery.json",
+      "bytes": 629,
+      "sha256": "bcbc32da8019170fe8f7e4f90a4183bcc4d904d5dc0bc07d13b0541b0d4f175f"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\independence-audit.json",
+      "bytes": 5169,
+      "sha256": "9dc134b2b91efd624621a33b734e6f3c729420131eeb33d3fe57636454ac4c60"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\independence-after-tests.json",
+      "bytes": 5169,
+      "sha256": "eb93b4ce30c4f0fa39a6cb130d0b34191b17dcdb980040f6af5bef49c584d0ee"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\package\\package-manifest.json",
+      "bytes": 16024,
+      "sha256": "1fd54730bffe9b986249cdeaedbd7c8807b255da36e75c6463ff983e378275a9"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\package\\build\\source-manifest.json",
+      "bytes": 152791,
+      "sha256": "3687a998fda0b17124b5a02198e0b295b375a2bd37139d61657718ad347d03d5"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-local-product\\outcome13\\package\\build\\build-inputs.json",
+      "bytes": 5615,
+      "sha256": "21d2eb929add3a4b25c20817f16f9972533c59d7f8f09d718e6a3ce8bd8cfdfa"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-experiment\\speech-admission-20260908-132133-f7deba48e84e4595a921780fdaddd1ae\\summary.json",
+      "bytes": 21748,
+      "sha256": "6d84d7390898b6c4ee38b5eff128acfae70299480b589f8c5be16a294b21189e"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\w13o\\.tmp\\yimecore-experiment\\speech-admission-20260908-132133-f7deba48e84e4595a921780fdaddd1ae\\source-hashes-after.json",
+      "bytes": 105290,
+      "sha256": "e7260d5335f17792535db533314b3fead4787381077fafd90035fe44d6b6b814"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-local13-maintenance-inputs.ps1-ps5.json",
+      "bytes": 4448,
+      "sha256": "0de8cdc515b0b8db673cfa47cb8502723d19ed0b24aafc3486b9f6b95caaeb33"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-local13-maintenance-inputs.ps1-ps7.json",
+      "bytes": 3601,
+      "sha256": "5acc4c6eb3501a10292603da3b2fd2f76a9354e9e5777cd4fb9b11fc448bad5f"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-local13-maintenance-preparation.ps1-ps5.json",
+      "bytes": 4435,
+      "sha256": "4263a0b58985d27d55c0b0f554e02dc1504b5e253b48bcc3ba500fe501075273"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-local13-maintenance-preparation.ps1-ps7.json",
+      "bytes": 3516,
+      "sha256": "d4ab4c1ed74c912ae96ba84a04c622f395bcb6cb331dfeb4cdf4c8ddfcb0829e"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-native-maintenance-context.ps1-ps5.json",
+      "bytes": 4529,
+      "sha256": "e50eb8a935ae3f9c65ed22a661a51cb15eebb0030083482f4e1b1f86d4a63588"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-native-maintenance-context.ps1-ps7.json",
+      "bytes": 3748,
+      "sha256": "63f65ddb6474eeb555a5edbaf63d8ebf49265badd5af175845a7e430db75c647"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-native-maintenance-evidence.ps1-ps5.json",
+      "bytes": 12897,
+      "sha256": "1e417d3e9282c2a0529b0987a6d310c8f4de717dedbbcea5ac660cc9bb65014e"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-native-maintenance-evidence.ps1-ps7.json",
+      "bytes": 7394,
+      "sha256": "04686b86e5d80f6eef8f542f24beb1f7187703773fe496fab2def94df6e00245"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-native-maintenance-processes.ps1-ps5.json",
+      "bytes": 8590,
+      "sha256": "f5200da351e33a72fcf70f61e16eef6e92bb34ed1bc8a2f1c9457e0e5ea210ce"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-native-maintenance-processes.ps1-ps7.json",
+      "bytes": 5059,
+      "sha256": "7bcb139f106ab4c049789c7d585bc513de612e525ac882e3cc7ae6bf37c57abe"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-native-rehearsal-outcome-reader.ps1-ps5.json",
+      "bytes": 15693,
+      "sha256": "62b43845b8be0657e738fe2c22be05032f8436362fe4369d85ef473c4eff1151"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-native-rehearsal-outcome-reader.ps1-ps7.json",
+      "bytes": 12260,
+      "sha256": "85a056e929436d5f178c0b1420c3e31d6f4eccee161f9ab2daac543ddddb595e"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-native-rehearsal-outcome.ps1-ps5.json",
+      "bytes": 8329,
+      "sha256": "c096dc701586d811e9517389fe5e519bf2d3ae0b6511823d776fbccae4f6d820"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-2bbf76d184e44001a22eb2178bb297ba\\test-native-rehearsal-outcome.ps1-ps7.json",
+      "bytes": 6413,
+      "sha256": "2d633dfece7c3881ce6f44c71dd9b0fe041cbffa93e5c13f6516a5ea4a355488"
+    }
+  ]
+}
