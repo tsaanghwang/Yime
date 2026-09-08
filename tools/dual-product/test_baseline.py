@@ -211,6 +211,8 @@ class OwnershipTests(unittest.TestCase):
             "tools/yimecore/native-maintenance-process-facts.cs",
             "tools/yimecore/test-native-maintenance-processes.ps1",
             "tools/yimecore/test-native-rehearsal-outcome.ps1",
+            "tools/yimecore/native-rehearsal-outcome-reader.psm1",
+            "tools/yimecore/test-native-rehearsal-outcome-reader.ps1",
             "tools/dual-product/test-rime-pime-transaction-replay-model.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.psm1",

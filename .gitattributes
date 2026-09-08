@@ -14,6 +14,7 @@ tools/yimecore/native-maintenance-evidence.psm1 text eol=crlf
 tools/yimecore/local13-maintenance-inputs.psm1 text eol=crlf
 tools/yimecore/native-maintenance-processes.psm1 text eol=crlf
 tools/yimecore/native-maintenance-process-facts.cs text eol=crlf
+tools/yimecore/native-rehearsal-outcome-reader.psm1 text eol=crlf
 *.bat text eol=crlf
 *.cmd text eol=crlf
 
