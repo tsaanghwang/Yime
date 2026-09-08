@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 212)
-        self.assertEqual(len(self.receipt["source_manifest"]), 219)
+        self.assertEqual(len(contract["source_paths"]), 213)
+        self.assertEqual(len(self.receipt["source_manifest"]), 220)
         for path in (
             "version.txt",
             "PIMELauncher/build.rs",
@@ -232,6 +232,7 @@ class OwnershipTests(unittest.TestCase):
             "tools/yimecore/native-maintenance-health-client.cs",
             "tools/yimecore/test-native-maintenance-health.ps1",
             "tools/yimecore/test-native-health-interop.ps1",
+            "tools/yimecore/test-local-product-health.ps1",
             "go-backend/cmd/yimebroker/main.go",
             "go-backend/cmd/yimebroker/health.go",
             "go-backend/cmd/yimebroker/health_test.go",
