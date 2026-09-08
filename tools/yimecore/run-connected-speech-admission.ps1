@@ -39,6 +39,7 @@ function Get-AdmissionSourceRecords([string]$Repo) {
         'tools/yimecore/build-local-product.ps1','tools/yimecore/local-product-speech-build.ps1',
         'tools/yimecore/test-local-product-speech-build.ps1','tools/yimecore/test-speech-maintenance-data.ps1',
         'tools/yimecore/test-local-maintenance-config-data.ps1',
+        'tools/yimecore/test-speech-symlink-evidence.ps1',
         'tools/yimecore/run-connected-speech-product-package.ps1','tools/yimecore/speech-product-contract.json',
         'tools/yimecore/run-connected-speech-product-source.ps1',
         'go-backend/input_methods/yime/data/yime_full.dict.yaml','go-backend/input_methods/yime/data/yime_variable.dict.yaml',

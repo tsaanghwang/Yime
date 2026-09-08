@@ -98,11 +98,43 @@ Check 'build-order-and-export-output-isolation-source-contract' {
         $helper.Contains('-source-inventory-sha256 $SourceInventorySHA256.ToLowerInvariant()')) 'Accepted uppercase pins must be normalized at the strict Go CLI boundary.'
     Assert-True ($helper.Contains('[IO.File]::Copy($source,$destination,$false)')) 'Speech staging may overwrite files.'
 }
+Check 'admission-collector-covers-independent-exporter-fixed-sources' {
+    # Execute only the reviewed source inventory function against owned empty
+    # code trees. Synthetic record helpers return paths without reading files.
+    # This covers the actual runner, unlike exporter fixtures generated from
+    # exportFixedSources itself, which could not detect the omitted runner row.
+    $runner=Join-Path $PSScriptRoot 'run-connected-speech-admission.ps1'
+    $tokens=$null; $parseErrors=$null
+    $ast=[Management.Automation.Language.Parser]::ParseFile($runner,[ref]$tokens,[ref]$parseErrors)
+    Assert-True (@($parseErrors).Count -eq 0) 'Admission runner parse failed.'
+    $functions=@($ast.FindAll({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq 'Get-AdmissionSourceRecords'},$false))
+    Assert-True ($functions.Count -eq 1) 'Admission inventory function is ambiguous.'
+    $fixture=Join-Path $out 'source-collector-fixture'
+    foreach ($tree in @('go-backend/input_methods/yime','go-backend/cmd','go-backend/internal','syllable','yime')) {
+        New-Item -ItemType Directory -Path (Join-Path $fixture $tree) -Force | Out-Null
+    }
+    $collected=@(& {
+        function Resolve-SpeechChild([string]$Root,[string]$Relative) { Join-Path $Root $Relative }
+        function Get-SpeechRecord([string]$Root,[string]$Relative) { [pscustomobject]@{path=$Relative} }
+        . ([scriptblock]::Create($functions[0].Extent.Text))
+        Get-AdmissionSourceRecords $fixture
+    })
+    $exporter=Get-Content -LiteralPath (Join-Path $repo 'go-backend/cmd/yimecore-speech-admission/product_export.go') -Raw
+    $block=[regex]::Match($exporter,'(?s)var exportFixedSources = \[\]string\{(.*?)\r?\n\}')
+    Assert-True $block.Success 'Independent exporter fixed source declaration is unavailable.'
+    $required=@([regex]::Matches($block.Groups[1].Value,'"([^"\r\n]+)"') | ForEach-Object {$_.Groups[1].Value})
+    Assert-True ($required.Count -gt 0) 'Independent exporter source set is empty.'
+    foreach ($path in $required) {
+        Assert-True (@($collected | Where-Object {$_.path -ceq $path}).Count -eq 1) "Admission collector omitted or duplicated independent exporter source: $path"
+    }
+}
 $failed=@($checks | Where-Object {-not $_.passed})
 $sources=[ordered]@{}
 foreach ($file in @('local-product.json','local-product-build-common.ps1','local-product-speech-build.ps1','build-local-product.ps1','test-local-product-speech-build.ps1')) {
     $sources[$file]=(Get-FileHash -LiteralPath (Join-Path $PSScriptRoot $file) -Algorithm SHA256).Hash.ToLowerInvariant()
 }
+$sources['run-connected-speech-admission.ps1']=(Get-FileHash -LiteralPath (Join-Path $PSScriptRoot 'run-connected-speech-admission.ps1') -Algorithm SHA256).Hash.ToLowerInvariant()
+$sources['go-backend/cmd/yimecore-speech-admission/product_export.go']=(Get-FileHash -LiteralPath (Join-Path $repo 'go-backend/cmd/yimecore-speech-admission/product_export.go') -Algorithm SHA256).Hash.ToLowerInvariant()
 Write-LocalProductJson ([ordered]@{schema_version='yimecore-speech-build-contract-v1';passed=($failed.Count -eq 0);checks=$checks.ToArray();checks_count=$checks.Count;
     failed_count=$failed.Count;powershell=$PSVersionTable.PSVersion.ToString();source_sha256=$sources;
     installed_or_user_data_read=$false;registry_read_or_written=$false;package_exported=$false;
