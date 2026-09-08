@@ -353,7 +353,10 @@ def reserve_output(repo: Path, output: Path) -> Path:
     resolved_repo = repo.resolve(strict=True)
     expected_parent = resolved_repo / ".tmp" / "yimecore-experiment"
     _require(output.name == "forward-source.json", "output_filename_rejected")
-    _require(output.parent.parent == expected_parent, "output_parent_rejected")
+    # _no_links already rejected any symlink in output's ancestry, so resolving
+    # here only normalizes case/short-name (e.g. Windows 8.3 "RUNNER~1") drift
+    # against the already-resolved expected_parent, not a symlink escape.
+    _require(output.parent.parent.resolve() == expected_parent, "output_parent_rejected")
     _require(re.fullmatch(r"speech-admission-[A-Za-z0-9][A-Za-z0-9-]{7,100}", output.parent.name) is not None, "output_directory_rejected")
     _require(not output.parent.exists(), "output_directory_must_be_new")
     expected_parent.mkdir(parents=True, exist_ok=True)
