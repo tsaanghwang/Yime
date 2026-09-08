@@ -38,13 +38,18 @@ try {
     $text=[IO.File]::ReadAllText($modulePath)
     Check (-not $text.Contains('OpenProcess(') -and -not $text.Contains('GetProcessById(') -and -not $text.Contains('.Kill(') -and -not $text.Contains('ReadToEnd(')) 'adapter has no PID reopen termination or stdio EOF implementation'
     foreach($code in @(0,1,20,21,22,23,24,25,26,86)){
-        $child=Start-OwnedChild ('/d /c "set /p fixture= & exit '+$code+'"')
-        $lease=Open-YimeCoreNativeMaintenanceChild -Process $child -ExpectedImagePath $cmd
+        # A release file keeps this fixture alive through the handle-bound
+        # identity capture without relying on redirected-console input timing.
+        $release=Join-Path $fixture ('exit-'+$code+'-'+[guid]::NewGuid().ToString('N'))
+        $script='$end=[DateTime]::UtcNow.AddSeconds(5); while(-not [IO.File]::Exists('''+$release+''') -and [DateTime]::UtcNow -lt $end){Start-Sleep -Milliseconds 10}; exit '+$code
+        $encoded=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($script))
+        $child=Start-OwnedChild ('-NoProfile -NonInteractive -EncodedCommand '+$encoded) $powershell
+        $lease=Open-YimeCoreNativeMaintenanceChild -Process $child -ExpectedImagePath $powershell
         try {
-            $child.StandardInput.WriteLine('finish');$child.StandardInput.Close()
+            [IO.File]::WriteAllText($release,'finish')
             $facts=Wait-YimeCoreNativeMaintenanceChild -Lease $lease -TimeoutMilliseconds 5000
             Check ($facts.exit_observed -and $facts.actual_exit_os_observed -and $facts.exit_code -eq $code -and -not $facts.timed_out) ('real original child exit '+$code)
-            Check ($facts.pid -eq $child.Id -and $facts.creation_filetime -eq $child.StartTime.ToUniversalTime().ToFileTimeUtc() -and $facts.image_path -ieq $cmd) ('real held-handle identity '+$code)
+            Check ($facts.pid -eq $child.Id -and $facts.creation_filetime -eq $child.StartTime.ToUniversalTime().ToFileTimeUtc() -and $facts.image_path -ieq $powershell) ('real held-handle identity '+$code)
             Check (-not $facts.may_advance_maintenance -and -not $facts.loaded_script_authenticated -and -not $facts.target_sid_authenticated -and -not $facts.registration_restore_verified -and -not $facts.local_product_ready -and -not $facts.public_release_ready -and -not $facts.L6_sealed) ('exit alone grants no maintenance or readiness '+$code)
         }finally{Close-YimeCoreNativeMaintenanceChild $lease}
     }
