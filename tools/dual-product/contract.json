@@ -160,6 +160,7 @@
     "tools/pime-registry-cleanup.ps1",
     "tools/yimecore/local-product.json",
     "tools/yimecore/build-local-product.ps1",
+    "tools/yimecore/test-local-product-build-result.ps1",
     "tools/yimecore/manage-e6c-trial-install.ps1",
     "tools/yimecore/invoke-local-product-native-install.ps1",
     "tools/yimecore/invoke-local-rollback-rehearsal.ps1",

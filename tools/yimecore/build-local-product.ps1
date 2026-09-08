@@ -217,12 +217,23 @@ try {
         $after = Get-LocalProductProtectionEvidence -HashesOnly
         Write-LocalProductJson $after (Join-Path $out 'protection-after.json')
         $preserved = ($before | ConvertTo-Json -Depth 30 -Compress) -ceq ($after | ConvertTo-Json -Depth 30 -Compress)
+        $resultPassed = [bool]($passed -and $preserved)
+        # The descriptor records the requested product type. A result describes
+        # this build's artifact, which is not installable after any failed gate.
+        $requestedInstallable = [bool]($product.installable -is [bool] -and $product.installable)
+        $artifactInstallable = [bool]($resultPassed -and $requestedInstallable)
         Write-LocalProductJson ([ordered]@{
-            schema_version = 'yimecore-local-build-result-v1'; passed = [bool]($passed -and $preserved)
+            schema_version = 'yimecore-local-build-result-v1'; passed = $resultPassed
             registration_and_default_preserved = $preserved; output_root = $out
-            installable = [bool]$product.installable; local_product_ready = $false; public_release_ready = $false
-            completed_scope = 'Source-built x64 runtime plus x64/x86 TSF product candidate and isolated tests, not installed host acceptance'
-            next_step = 'Native same-user dual-architecture install, medium-token runtime, data restore, rollback and x64/x86 host acceptance'
+            requested_installable = $requestedInstallable; installable = $artifactInstallable
+            local_product_ready = $false; public_release_ready = $false
+            completed_scope = if ($resultPassed) {
+                'Source-built x64 runtime plus x64/x86 TSF candidate and isolated tests, not installed host acceptance'
+            } else { 'Build or protection gates incomplete; no installable candidate claimed' }
+            next_step = if ($artifactInstallable) {
+                'Native same-user dual-architecture install, medium-token runtime, data restore, rollback and x64/x86 host acceptance'
+            } elseif ($resultPassed) { 'Review the verified runtime bundle; this output is not an installable product' }
+            else { 'Review failure evidence, correct the build issue and rebuild into fresh output; do not install this output' }
         }) (Join-Path $out 'summary.json')
         if (-not $preserved) { throw 'System registration/default changed during build; review before/after evidence' }
     } finally { Stop-Transcript | Out-Null }
