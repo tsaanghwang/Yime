@@ -1,5 +1,7 @@
 # Yime 双独立产品开发计划
 
+2026-09-08 本轮最终增量（当前判定）：[local.13 新控制器候选](YIMECORE_LOCAL13_CONTROLLER_REBUILD_2026-09-08.md)已经完成独立重构及隔离 Runtime/x64/x86 验证，85 个成员和 37 项包合同通过；源码清单补漏及失败构包误报可安装的修复已加入 PS5/PS7 回归和 CI。双产品来源基线更新为 160 个声明路径加 7 个锁定依赖、68/68、8 个 pending。此处关闭的是审查发现的源码与构包缺口；DP1-U 完整原生事务执行器、可信可运行的 Rime/PIME 候选、独立目标实际验收，以及之后的 DP2/DP3 仍未完成。YimeCore 原生维护补验和 L6 也继续按实际证据判定；没有执行产品安装/卸载或改动已安装 local.12。
+
 2026-09-08 后续修复收口（当前判定）：DP1-U 原生探针 V2 已直接接入完整 strict receipt reader，PS5/PS7 各 15 项夹具加 2 项实际 canonical 只读检查通过；当前 disabled canonical 的来源链成立，可执行安装准入仍为 false，DP1-R 派生静态信任未撤回。YimeCore 新增 NativeDesktop 演练提交前强制回滚保护，覆盖 Runtime 意外成功后删除旧根的实际源码缺口；双 shell 各 41 项回归、60 项普通维护和 5 项历史演练通过。[最小维护方案](YIMECORE_LOCAL12_MINIMAL_MAINTENANCE_RETEST_2026-09-08.md)记录旧根文件租约不能防止重启删除的反例，以及新控制器与旧封存包的区别。源码/CI 基线现为 159 个声明路径加 7 个锁定依赖、68/68、8 个 pending。带新控制器的候选需要独立重构；完整原生事务、真实 DP1-U/DP2 验收及之后的 DP3 仍未完成。下文各批次数字和未实现项保留为阶段记录，以本段及对应最新证据为准。
 
 2026-09-08 当前复审增量：[DP1-U 原生只读探针](YIME_DUAL_PRODUCT_DP1_U_NATIVE_READONLY_PROBE_2026-09-08.md)已实现 OS 目标/架构/SID/祖先观测、固定 HKLM/HKU 双视图保护检查和工件句柄/字节绑定，PS5/PS7 各 74/74；本机实测仅为自有进程/文件夹具和 MYCOMPUTER 入口早拒绝，独立机与 StdRegProv 正路径未执行。新增源码进入来源闭包及双 shell CI，当前基线 164 个来源、68/68 测试、8 个 pending。此前四门纯判定已修复缺失字段及类型导致抛错的缺口，PS5/PS7 各 14/14。原生探针不会授予执行能力，完整 native transaction providers、可信可执行候选和实际安装验收仍待完成；不是仅差用户批准即可执行。

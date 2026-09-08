@@ -1,0 +1,272 @@
+{
+  "schema_version": "yimecore-local13-controller-rebuild-review-v1",
+  "reviewed_date": "2026-09-08",
+  "affected_product": "YimeCore",
+  "scope": "Fresh ordinary local.13 candidate in repository-local isolation; not installation, external sealing or native maintenance acceptance",
+  "source": {
+    "git_commit": "8f6422e7c2522cdc352103b2e5815e8fc7d85b35",
+    "dirty": false,
+    "source_count": 774,
+    "source_manifest_sha256": "af06362e54338732875209456025d9531ada3170020edc320a73e032788fc74b",
+    "source_archive_sha256": "ae184060ec5070293524eb5b4eeb01fead5d106ccb4c0f02dae8010fcfcf0e6c",
+    "controller": {
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\manage-e6c-trial-install.ps1",
+      "bytes": 72468,
+      "sha256": "e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a"
+    },
+    "controller_in_source_manifest_and_archive_verified": true
+  },
+  "candidate": {
+    "output_root": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821",
+    "package_id": "yimecore-local-0.1.0-local.13-af06362e5433",
+    "product_version": "0.1.0-local.13",
+    "manifest": {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\package\\package-manifest.json",
+      "bytes": 16024,
+      "sha256": "dccbf6f7ef553bda1e20d7b8fa1659fe7e4b691d5d492b8210c9b7c606a7ced4"
+    },
+    "manifest_members_verified": 85,
+    "controller": {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\package\\maintenance\\Manage-YimeCoreTrial.ps1",
+      "bytes": 72468,
+      "sha256": "e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a"
+    },
+    "source_controller_matches_packaged_controller": true,
+    "ordinary_candidate": true,
+    "failure_injection_package": false,
+    "built": true,
+    "externally_sealed": false,
+    "installed": false,
+    "local_product_ready": false,
+    "public_release_ready": false
+  },
+  "admission": {
+    "root": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260908-105515-a54ff8e1409c445c8d1e96e26ecbadf5",
+    "summary": {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260908-105515-a54ff8e1409c445c8d1e96e26ecbadf5\\summary.json",
+      "bytes": 21712,
+      "sha256": "8b7e257c1eccf096aae4b9b9d853d57f6b7b419330052840f2388599915cc865"
+    },
+    "source_inventory": {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260908-105515-a54ff8e1409c445c8d1e96e26ecbadf5\\source-hashes-after.json",
+      "bytes": 105290,
+      "sha256": "0c0b1aa9b19d06b6d08f5e90fc92109e5ade386f88861d02db030cb9edb979e8"
+    },
+    "source_count": 580,
+    "passed": true,
+    "passed_test_cases": 499,
+    "failed_test_cases": 0,
+    "skipped_test_cases": 3,
+    "skipped_tests": [
+      {
+        "package": "./input_methods/yime/speechruntime",
+        "test": "TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink"
+      },
+      {
+        "package": "./cmd/yimecore-speech-admission",
+        "test": "TestSpeechPackageRejectsSymlinkPayload"
+      },
+      {
+        "package": "./cmd/yimecore-speech-admission",
+        "test": "TestSpeechProductExportRejectsIndirectSources"
+      }
+    ],
+    "installed_baseline_unchanged": true,
+    "source_set_unchanged": true,
+    "legacy_static_unchanged": true,
+    "binding_in_build_inputs": {
+      "schema_version": "yimecore-speech-build-binding-v1",
+      "admission_summary_sha256": "8b7e257c1eccf096aae4b9b9d853d57f6b7b419330052840f2388599915cc865",
+      "source_inventory_sha256": "0c0b1aa9b19d06b6d08f5e90fc92109e5ade386f88861d02db030cb9edb979e8",
+      "export_receipt_sha256": "0a615a0815e7f1c9109b64e547dd593062f8c779fbffb2ea49ef733e164b75b0",
+      "capability_sha256": "0915dcbdf26409bb61aa8a9a92a381efe83f36987660217cb2e9433a1985fa4a",
+      "product_manifest_sha256": "95c5b7296e7d4f2a011896324abe8608069429fbc796c8805607fcd8902b4354"
+    }
+  },
+  "builder": {
+    "passed": true,
+    "requested_installable": true,
+    "installable_artifact_contract": true,
+    "installable_is_not_native_execution_approval": true,
+    "registration_and_default_preserved": true,
+    "installed_package_used_as_input": false,
+    "registry_fixture_checks_passed": 28,
+    "go_test_packages_passed": 5,
+    "native_contract_architectures": [
+      "x64",
+      "x86"
+    ],
+    "focus_cancellation_checks_per_architecture": 32,
+    "indexes_rebuilt_byte_identical": true,
+    "dictionary_records_per_mode": 1166753,
+    "package_contract_checks_passed": 37,
+    "sentence_regression_cases_passed": 12,
+    "synthetic_multimode_count": 3,
+    "synthetic_recovery_generation": 12,
+    "synthetic_recovery_records": 11,
+    "private_runtime_passed": true,
+    "private_runtime_stopped": true,
+    "private_broker_restart_count": 1,
+    "direct_tsf_architectures": [
+      "x64",
+      "x86"
+    ],
+    "direct_tsf_text_extent_anchor_verified": false,
+    "registered_host_test_executed": false,
+    "live_word_acceptance": false,
+    "elapsed_seconds": 143
+  },
+  "retained_failed_attempt": {
+    "git_commit": "41f4e855dc5501811c6f17cda753564ce033a524",
+    "output_root": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-a641d36f",
+    "summary": {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-a641d36f\\summary.json",
+      "bytes": 574,
+      "sha256": "7c5673b8e5c0c79fb681cde1f906a564673af2abeefbba17ee529ce62a0c5a8d"
+    },
+    "passed": false,
+    "failure": "export evidence source set incomplete",
+    "admission_sources": 579,
+    "required_sources": 580,
+    "omitted_source": "tools/yimecore/test-speech-symlink-evidence.ps1",
+    "original_installable_true_was_invalid": true,
+    "raw_evidence_preserved": true,
+    "used_as_candidate": false
+  },
+  "source_fix_regressions": {
+    "collector_vs_independent_exporter_checks_per_shell": 21,
+    "ps5": {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-build-contract-20260908-sourcefix-ps5\\result.json",
+      "bytes": 4646,
+      "sha256": "62a03c597a0dd9d230473b2873bba6d873fbed0e3db3a138bb80da2343f2091f"
+    },
+    "ps7": {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-build-contract-20260908-sourcefix-ps7\\result.json",
+      "bytes": 3021,
+      "sha256": "4c30e4043ec93e893db47f67069048a8eb7f3d32f21fd643412eb54ce38ffbb0"
+    },
+    "note": "These pre-commit fixture result records bind the tested source bytes; the subsequent fresh admission/build binds the normalized committed source."
+  },
+  "evidence": [
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\summary.json",
+      "bytes": 599,
+      "sha256": "afab4cdbf46858e44cf5ee79c9278d21518ed2e197f97c0c291f0c84a35f644d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\package\\package-manifest.json",
+      "bytes": 16024,
+      "sha256": "dccbf6f7ef553bda1e20d7b8fa1659fe7e4b691d5d492b8210c9b7c606a7ced4"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\package\\build\\source-manifest.json",
+      "bytes": 150318,
+      "sha256": "af06362e54338732875209456025d9531ada3170020edc320a73e032788fc74b"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\package\\build\\build-inputs.json",
+      "bytes": 5599,
+      "sha256": "6b2f32a198ce4ad55823ef4e3520317a45fc2454613bcbb4348eecf5f53dd007"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\source-snapshot.zip",
+      "bytes": 53941146,
+      "sha256": "ae184060ec5070293524eb5b4eeb01fead5d106ccb4c0f02dae8010fcfcf0e6c"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\working-tree.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\speech-product-export-mapping.json",
+      "bytes": 6333,
+      "sha256": "0a615a0815e7f1c9109b64e547dd593062f8c779fbffb2ea49ef733e164b75b0"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\protection-before.json",
+      "bytes": 2975,
+      "sha256": "225d25c3b0ecf7a3ddb2f48c8d74b0e02abbfbfa3ac98b8b762a44b41ccbbf5d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\protection-after.json",
+      "bytes": 2975,
+      "sha256": "225d25c3b0ecf7a3ddb2f48c8d74b0e02abbfbfa3ac98b8b762a44b41ccbbf5d"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\package-verification\\summary.json",
+      "bytes": 2821,
+      "sha256": "8f4780351d19aadc0574df373f27abbe2dfa759652f368488ffa1cd71be496fc"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\runtime-verification\\summary.json",
+      "bytes": 3771,
+      "sha256": "76d1f3ede7e2317e0f0f4fde8bb70915f49fa670422f6e9e321e4248d7a0bb48"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\runtime-verification\\multimode.json",
+      "bytes": 5993,
+      "sha256": "45e17f0be537d68394e92966bdab5951d84736308a2981a933acf369f1060742"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\runtime-verification\\packaged-recovery.json",
+      "bytes": 675,
+      "sha256": "a5d5d9ffa44c5a54fca22fb49bf37c08132f4cc744f6074ec465a28f5f5c5ec7"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\runtime-verification\\sentence-regression.json",
+      "bytes": 14358,
+      "sha256": "d28b0506fd273aaf1c921bb48af29264dfcba94a601dd2e0d9c3e00ac7438e46"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\independence-audit.json",
+      "bytes": 5166,
+      "sha256": "0d629f6d59eac507b938399e751ce57bdf2d1a91dd223d6a20f956c8c6c32ef6"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\independence-after-tests.json",
+      "bytes": 5166,
+      "sha256": "f76f91e9bd1b6dc6136153756ed8a6580c939ddd55b9f1a10defdd4af368b9ba"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\rb13-0908-b903f821\\transcript.txt",
+      "bytes": 7742,
+      "sha256": "649d66dfcb9651adf41bdcd589ca2e6a3e9296be5828d62f3852ff69bb8ec661"
+    }
+  ],
+  "historical_boundary": {
+    "installed_local12_manifest_sha256": "9b3366b350ef2b23fd285fc9d97d876bf1ae6e2fc0f8613c647640f01184502e",
+    "installed_local12_changed": false,
+    "local12_l5_user_confirmation_remains_valid": true,
+    "sealed_local12_controller_sha256": "ff3a563bf58999683f34e9c6fb73656ea6790b120e48fd322b71f97c99818cca",
+    "sealed_local12_new_guard_available": false,
+    "prior_prepared_failure_manifest_sha256": "36b897897ebf579dbb2cad5e7e9479a3ff0803f12f8aa8e36cd836f3c77ae03a",
+    "prior_prepared_failure_package_changed": false,
+    "prior_prepared_failure_package_ready_to_execute": false
+  },
+  "execution_boundary": {
+    "candidate_private_runtime_executed": true,
+    "synthetic_state_used": true,
+    "owned_random_registry_fixture_written": true,
+    "installed_public_payload_and_protection_metadata_read_only": true,
+    "installed_product_executed": false,
+    "installer_executed": false,
+    "product_registration_changed": false,
+    "default_input_method_changed": false,
+    "user_text_or_settings_or_learning_read": false,
+    "new_guarded_native_transaction_executed": false,
+    "native_same_sid_harness_completed": false,
+    "actual_current_candidate_restore_passed": false,
+    "actual_current_candidate_rollback_passed": false,
+    "actual_current_candidate_uninstall_passed": false,
+    "L6_sealed": false,
+    "local_product_ready": false,
+    "public_release_ready": false
+  },
+  "remaining": [
+    "Implement and review the same-SID native maintenance harness and required native evidence providers; this is not merely an authorization or execution wait.",
+    "Prepare a separately identified guarded failure-injection candidate from current source; the prior local.12 preparation remains historical and non-executable.",
+    "Archive the new ordinary candidate outside the repository before treating it as independent recovery media.",
+    "Obtain explicitly authorized native maintenance and installed-host evidence for the affected current candidate paths; isolated tests do not close these gates."
+  ]
+}

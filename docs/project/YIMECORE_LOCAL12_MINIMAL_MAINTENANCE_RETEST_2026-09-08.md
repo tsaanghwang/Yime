@@ -120,6 +120,8 @@ CI 新增调用为两种 PowerShell 的 `-NoProfile -File tools/yimecore/test-na
 
 ## 完成条件
 
+2026-09-08 后续构包已关闭“新控制器尚未进入独立候选”这一项：[local.13 重构记录](YIMECORE_LOCAL13_CONTROLLER_REBUILD_2026-09-08.md)绑定干净源码 `8f6422e7`、85 成员 manifest 和包内控制器 `e65ea013…cd95a`。该包是新正常候选，既不是旧 local.12 故障包的原位修补，也不是已经运行的故障演练。上文旧准备包保持原状；原生取证执行器及新鲜 Backup/Restore、双架构回退、卸载重装仍未实施。
+
 本批关闭具体维护差异比较、最小补验范围、准备工具及隔离故障包生成。当前 `current_candidate_actual_restore_and_failed_upgrade_rollback`、当前双架构完整卸载实机结果、`L6_sealed`、`local_product_ready`、`public_release_ready` 均不因此置为 true。
 
 后续关闭维护门禁需要精确绑定候选与新鲜归档的原生证据，而非本文件、历史汇总布尔值或 PS5/PS7 合成 PASS。实际执行仍受 [AGENTS.md](../../AGENTS.md) 的安装、同 SID、原生上下文和数据边界约束，以及本轮“不触碰已安装 local.12”的明确范围限制。没有用户数据访问和实际维护窗口的明确授权时，继续实现和验证准备工具即可，不能以“完成尚待工作”代替真实运行证据。
