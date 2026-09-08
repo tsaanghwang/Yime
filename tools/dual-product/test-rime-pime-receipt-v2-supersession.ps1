@@ -160,8 +160,12 @@ Check 'fault-after-terminal-is-an-exact-idempotent-noop' {
 Check 'fixed-exclusive-lock-blocks-a-second-writer' {
     $lease=& $script:loadedModule { param($c) Open-RimePimeSupersessionExclusiveLock $c } $context
     try {
-        Assert-Rejected { Invoke-RimePimeReceiptV2Supersession -Context $context -TransactionId (Tx 6) -MutationId (Tx 106) `
-            -ExpectedHeadSha256 $script:head7.sha256 -GenerationOrdinal 8 -ReceiptBytes (Receipt-Bytes 'eight') } '*used by another process*'
+        $lockFailure=$null
+        try { Invoke-RimePimeReceiptV2Supersession -Context $context -TransactionId (Tx 6) -MutationId (Tx 106) `
+            -ExpectedHeadSha256 $script:head7.sha256 -GenerationOrdinal 8 -ReceiptBytes (Receipt-Bytes 'eight') | Out-Null }
+        catch { $lockFailure=$_.Exception.GetBaseException() }
+        # Require ERROR_SHARING_VIOLATION, not localized exception text.
+        Assert-True ($lockFailure -is [IO.IOException] -and $lockFailure.HResult -eq -2147024864) 'Second writer did not fail with a sharing violation.'
     } finally { $lease.Dispose() }
     Assert-True ((Get-RimePimeReceiptV2SupersessionHead $context).sha256 -ceq $script:head7.sha256) 'Blocked second writer changed the head.'
 }

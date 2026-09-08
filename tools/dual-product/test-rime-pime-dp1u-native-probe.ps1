@@ -104,7 +104,11 @@ $lease=& $module { param($p,$h) Open-Dp1UNativeArtifact $p $h -Json } $artifact 
 try {
     Check 'native file handle/digest/identity binding' ($lease.sha256 -ceq $hash -and $lease.file_identity -match '^[a-f0-9]{8}:[a-f0-9]{16}$')
     Check 'PS5/PS7 timestamp stays string' ($lease.value.at -is [string])
-    Reject 'artifact read lease denies concurrent write' { $s=[IO.File]::Open($artifact,[IO.FileMode]::Open,[IO.FileAccess]::Write,[IO.FileShare]::ReadWrite); $s.Dispose() } 'used by another process|being used|另一个进程|使用'
+    $writeFailure=$null
+    try { $s=[IO.File]::Open($artifact,[IO.FileMode]::Open,[IO.FileAccess]::Write,[IO.FileShare]::ReadWrite); $s.Dispose() }
+    catch { $writeFailure=$_.Exception.GetBaseException() }
+    # ERROR_SHARING_VIOLATION is independent of Windows UI language and PS5 decoding.
+    Check 'artifact read lease denies concurrent write' ($writeFailure -is [IO.IOException] -and $writeFailure.HResult -eq -2147024864)
 } finally { $lease.stream.Dispose() }
 Reject 'artifact hash substitution' { & $module { param($p) Open-Dp1UNativeArtifact $p ('0'*64) -Json } $artifact } 'digest mismatch'
 Reject 'bounded artifact read' { & $module { param($p) Open-Dp1UNativeArtifact $p '' 1 -Json } $artifact } 'size'

@@ -520,12 +520,13 @@ foreach ($metadataCase in @(
     @{name='ref';property='ref';value='refs/tags/foreign'},
     @{name='signed-state';property='signedRelease';value=$true}
 )) {
+    # Check runs immediately in this scope; keep the fixture helpers visible.
     Check "rejects-wrong-$($metadataCase.name)" {
         $case=New-StaticCase "wrong-$($metadataCase.name)"
         $case.Manifest.($metadataCase.property)=$metadataCase.value
         Write-StaticManifest $case
         Assert-Rejected { Invoke-StaticValidation $case } '*manifest*'
-    }.GetNewClosure()
+    }
 }
 
 $failed=@($checks | Where-Object { -not $_.passed })
