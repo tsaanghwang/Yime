@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore"
@@ -198,12 +199,15 @@ type reconnectSession struct {
 
 func newReconnectSession(t *testing.T, mode string, bundle *yimecore.BundleIndex, model *yimecore.UserModel) *reconnectSession {
 	t.Helper()
+	// This lifecycle fixture exercises durable storage under the race detector.
+	// Give it the same budget as other integration fixtures; timeout behavior
+	// is covered separately by the dispatcher's fault-engine tests.
 	dispatcher, err := NewModeDispatcher(mode, func(requestedMode string) (engineapi.Engine, error) {
 		if requestedMode != mode {
 			return nil, fmt.Errorf("unexpected fixture mode %q", requestedMode)
 		}
 		return yimecore.NewBundleEngineWithUserModel(bundle, 9, model)
-	}, Config{})
+	}, Config{OperationTimeout: time.Second})
 	if err != nil {
 		t.Fatal(err)
 	}

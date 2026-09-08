@@ -197,8 +197,7 @@ $requiredGovernanceGuards = @(
     "Join-Path `$env:YIME_TRUSTED_SIGNING_ROOT 'tools\write-build-manifest.ps1'",
     '.\tools\test-installer-smoke.ps1',
     '-StaticOnly',
-    'uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0',
-    'nsis-version: 3.12',
+    ".\tools\install-locked-nsis.ps1 -Version '3.12'",
     'uses: actions/download-artifact@v7'
 )
 foreach ($guard in $requiredGovernanceGuards) {
@@ -384,8 +383,8 @@ foreach ($guard in @(
         throw "Curated core evidence import guard is missing: $guard"
     }
 }
-if ($workflowText -match 'uses:\s*repolevedavaj/install-nsis@(?![0-9a-f]{40}(?:\s|#|$))') {
-    throw 'Third-party NSIS setup must be pinned to a full immutable commit SHA.'
+if ($workflowText -match 'repolevedavaj/install-nsis') {
+    throw 'CI must not use the NSIS action that applies unpinned patches and plugins.'
 }
 foreach ($requiredScript in @($rimeCacheChecker, $rimeCacheTests, $installedParticleAVerifier, $installedParticleAVerifierTests, $releaseCertificateImporter, $microsoftAuthenticodeVerifier)) {
     if (-not (Test-Path -LiteralPath $requiredScript -PathType Leaf)) {
@@ -415,6 +414,9 @@ $extractJob = {
     if (-not $match.Success) { throw "CI job is missing: $Name" }
     $match.Value
 }
+$lockedNsisInstall = ".\tools\install-locked-nsis.ps1 -Version '3.12'"
+$lockedNsisStepPattern = '(?m)^      - name: Install NSIS in non-secret packaging job\r?\n        shell: pwsh\r?\n        run: ' +
+    [regex]::Escape($lockedNsisInstall) + '\r?$'
 $nativePeGate=$rootBuildText.IndexOf('verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" -SkipPackagedRime')
 $goPackageBuild=$rootBuildText.IndexOf('cmd /C build.bat')
 $completePayloadGate=$rootBuildText.LastIndexOf('verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" %ARM64_PE_ARGS% || exit /b 1')
@@ -490,7 +492,7 @@ foreach ($jobName in @('release-sign-payload', 'release-sign-installer')) {
         -not $jobText.Contains("Add-Content -LiteralPath `$env:GITHUB_ENV")) {
         throw "Trusted signing implementation can remain inside the source checkout when signing begins: $jobName"
     }
-    foreach ($forbidden in @('repolevedavaj/install-nsis', 'Invoke-WebRequest', 'go install ')) {
+    foreach ($forbidden in @('repolevedavaj/install-nsis', 'install-locked-nsis.ps1', 'Invoke-WebRequest', 'go install ')) {
         if ($jobText.Contains($forbidden)) {
             throw "Release signing job executes untrusted setup after secrets are exposed: $jobName -> $forbidden"
         }
@@ -498,6 +500,10 @@ foreach ($jobName in @('release-sign-payload', 'release-sign-installer')) {
 }
 foreach ($jobName in @('unsigned-installer-package', 'release-installer-package')) {
     $jobText = & $extractJob $jobName
+    if ([regex]::Matches($jobText, $lockedNsisStepPattern).Count -ne 1 -or
+        [regex]::Matches($jobText, 'install-locked-nsis\.ps1').Count -ne 1) {
+        throw "NSIS packaging job must invoke the plain locked NSIS 3.12 helper exactly once: $jobName"
+    }
     if ($jobText.Contains('secrets.YIME_') -or $jobText.Contains('import-release-signing-certificate.ps1')) {
         throw "NSIS packaging job must not receive release signing secrets: $jobName"
     }
@@ -758,8 +764,8 @@ $buildGateIndex = $installInitText.IndexOf('${IfNot} ${AtLeastBuild} 18362')
 $bootstrapIndex = $installInitText.IndexOf('Call bootstrapTargetUser')
 if ([regex]::Matches($installerText,'(?m)^ManifestSupportedOS[ \t]+all[ \t]*\r?$').Count -ne 1 -or
     $osGateIndex -lt 0 -or $buildGateIndex -le $osGateIndex -or $bootstrapIndex -le $buildGateIndex -or
-    [regex]::Matches($workflowText,'nsis-version: 3\.12').Count -ne 2 -or
-    $workflowText.Contains('nsis-version: 3.08')) {
+    [regex]::Matches($workflowText, $lockedNsisStepPattern).Count -ne 2 -or
+    [regex]::Matches($workflowText, 'install-locked-nsis\.ps1').Count -ne 2) {
     throw 'Real Windows version reporting, pre-bootstrap admission, or the NSIS 3.12 build pin drifted.'
 }
 $rootPolicy=$installInitText.IndexOf('Call enforceInstallRootPolicy')

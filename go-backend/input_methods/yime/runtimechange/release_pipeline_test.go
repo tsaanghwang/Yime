@@ -13,7 +13,7 @@ func TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease(t *testing.T) 
 		if err != nil {
 			t.Fatal(err)
 		}
-		return string(data)
+		return strings.ReplaceAll(string(data), "\r\n", "\n")
 	}
 	root := filepath.Clean(filepath.Join("..", "..", "..", ".."))
 	ci := read(filepath.Join(root, ".github", "workflows", "ci.yaml"))
@@ -27,7 +27,6 @@ func TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease(t *testing.T) 
 		read(filepath.Join(root, "go-backend", "input_methods", "yime", "learningmigration", "migration.go")),
 	}
 	installer := read(filepath.Join(root, "installer", "installer.nsi"))
-	installer = strings.ReplaceAll(installer, "\r\n", "\n")
 	textService := read(filepath.Join(root, "PIMETextService", "PIMETextService.cpp"))
 	devUninstaller := read(filepath.Join(root, "tools", "dev-uninstall.ps1"))
 	devStop := read(filepath.Join(root, "tools", "dev-stop-pime.ps1"))
@@ -35,14 +34,28 @@ func TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease(t *testing.T) 
 	verifier := read(filepath.Join(root, "tools", "verify-release-signatures.ps1"))
 	packagePlan := read(filepath.Join(root, "tools", "dual-product", "rime-pime-package-plan.ps1"))
 	installerBuilder := read(filepath.Join(root, "tools", "build-rime-pime-installer.ps1"))
+	nsisStage := read(filepath.Join(root, "tools", "dual-product", "rime-pime-nsis-stage.ps1"))
+	stagedBuilder := read(filepath.Join(root, "tools", "dual-product", "rime-pime-staged-installer-build.ps1"))
 	buildManifest := read(filepath.Join(root, "tools", "write-build-manifest.ps1"))
 	signFile := read(filepath.Join(root, "tools", "sign-file.ps1"))
 	certificateImporter := read(filepath.Join(root, "tools", "import-release-signing-certificate.ps1"))
 
-	for _, fragment := range []string{"tags: ['v*']", "environment: release-signing", "Checkout trusted signing implementation", ".trusted-signing\\tools\\sign-release.ps1", ".trusted-signing\\tools\\verify-release-signatures.ps1", "YIME-unsigned-test-installer", "installer/YIME-*-setup.exe"} {
+	for _, fragment := range []string{
+		"tags: ['v*']", "environment: release-signing", "Checkout trusted signing implementation",
+		"ref: ${{ github.event.repository.default_branch }}", "persist-credentials: false",
+		`$trustedRoot = Join-Path $env:RUNNER_TEMP 'yime-trusted-signing'`,
+		`Move-Item -LiteralPath $source -Destination $trustedRoot`,
+		`YIME_TRUSTED_SIGNING_ROOT=$trustedRoot`,
+		`& (Join-Path $env:YIME_TRUSTED_SIGNING_ROOT 'tools\sign-release.ps1')`,
+		`& (Join-Path $env:YIME_TRUSTED_SIGNING_ROOT 'tools\verify-release-signatures.ps1')`,
+		"YIME-unsigned-test-installer", "installer/YIME-*-setup.exe",
+	} {
 		if !strings.Contains(ci, fragment) {
 			t.Fatalf("CI release signing chain is missing %q", fragment)
 		}
+	}
+	if strings.Contains(ci, `.trusted-signing\tools\`) {
+		t.Fatal("CI must invoke trusted signing outside the source checkout")
 	}
 	for _, fragment := range []string{
 		"Block tagged installer until signed-uninstaller and removal closure",
@@ -53,8 +66,7 @@ func TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease(t *testing.T) 
 		}
 	}
 	block := strings.Index(ci, "Block tagged installer until signed-uninstaller and removal closure")
-	outerBuild := strings.Index(ci[block:], "build-rime-pime-installer.ps1")
-	if block < 0 || outerBuild < 0 {
+	if block < 0 || !strings.Contains(ci[block:], "build-rime-pime-installer.ps1") {
 		t.Fatal("tagged release must fail before building the outer installer")
 	}
 	for _, fragment := range []string{
@@ -79,7 +91,11 @@ func TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease(t *testing.T) 
 	if strings.Contains(ci, "TestDeployCommandRedeploysCurrentSchema") || strings.Contains(goTestScript, "TestDeployCommandRedeploysCurrentSchema") {
 		t.Fatal("CI must not retain the removed synchronous native-redeploy test name")
 	}
-	for _, fragment := range []string{"!finalize", "!uninstfinalize", "sign-file.ps1"} {
+	for _, fragment := range []string{
+		"!ifndef PACKAGE_SIGN_FILE_PATH", "!ifndef PACKAGE_POWERSHELL_PATH",
+		`!finalize '"${PACKAGE_POWERSHELL_PATH}" -NoProfile -ExecutionPolicy Bypass -File "${PACKAGE_SIGN_FILE_PATH}" -Path "%1"' = 0`,
+		`!uninstfinalize '"${PACKAGE_POWERSHELL_PATH}" -NoProfile -ExecutionPolicy Bypass -File "${PACKAGE_SIGN_FILE_PATH}" -Path "%1"' = 0`,
+	} {
 		if !strings.Contains(installer, fragment) {
 			t.Fatalf("NSIS signing hooks are missing %q", fragment)
 		}
@@ -91,28 +107,54 @@ func TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease(t *testing.T) 
 		`StrCpy $INSTDIR "$PROGRAMFILES32\YIME"`,
 		`Call enforceInstallRootPolicy`,
 		`Command-line /D overrides and user-writable roots are not admitted.`,
-		`File /r "..\go-backend\build\go-backend\*.*"`,
-		`SetOutPath "$INSTDIR\licenses"`,
-		`File "..\LICENSE.txt"`,
-		`File "..\NOTICE.md"`,
-		`File "..\THIRD_PARTY_NOTICES.md"`,
-		`File "..\LICENSES\PIME-UPSTREAM-LICENSE.txt"`,
-		`File "..\LICENSES\RIME-FROST-GPL-3.0.txt"`,
-		`File "..\LICENSES\RUST-DEPENDENCIES.md"`,
+		`!include "${PACKAGE_PAYLOAD_NSH_PATH}"`,
+		`!insertmacro YimePimeStageMainPayload`,
+		`!insertmacro YimePimeStageTargetUserHelpers`,
+		`!insertmacro YimePimeStageOwnershipHelpers`,
+		`!insertmacro YimePimeStageRegistrationTools`,
+		`!insertmacro YimePimeStageTextServiceX86`,
+		`!insertmacro YimePimeStageTextServiceX64`,
 		`WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"`,
 		`RMDir /REBOOTOK /r "$INSTDIR\licenses"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\fcitx5"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\meow"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\simple_pinyin"`,
-		`File /oname=$PLUGINSDIR\rime-pime-ownership.ps1`,
-		`File /oname=$PLUGINSDIR\rime-pime-directed-stop-contract.ps1`,
-		`File /oname=$PLUGINSDIR\invoke-rime-pime-maintenance.ps1`,
 		`input.dll::InstallLayoutOrTip`,
 		`0x0804:{35F67E9D-A54D-4177-9697-8B0AB71A9E04}{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}`,
 	} {
 		if !strings.Contains(installer, fragment) {
 			t.Fatalf("NSIS installer is missing install-path or Yime payload guard %q", fragment)
 		}
+	}
+	// Payload and helper File commands now belong to the deterministic sealed-stage
+	// include, not to the installer source or a recursive repository-tree copy.
+	for _, fragment := range []string{
+		`$source = '${PACKAGE_STAGE_ROOT}\payload\'`,
+		`$source = '${PACKAGE_STAGE_ROOT}\' + $Scope`,
+		`Get-RimePimeNsisMainPayloadCommands $mainRows`,
+		`Get-RimePimeNsisPluginFileCommands $ownershipRows 'bootstrap'`,
+		`licenses/LICENSE.txt`, `licenses/NOTICE.md`, `licenses/THIRD_PARTY_NOTICES.md`,
+		`licenses/PIME-UPSTREAM-LICENSE.txt`, `licenses/RIME-FROST-GPL-3.0.txt`, `licenses/RUST-DEPENDENCIES.md`,
+		`rime-pime-ownership.ps1`, `rime-pime-directed-stop-contract.ps1`, `invoke-rime-pime-maintenance.ps1`,
+		`if (-not $mainSet.Contains($required)) { throw`,
+		`NSIS bootstrap stage set is not the exact fixed helper/tool set.`,
+		`NSIS macro partition does not exactly cover the staged file set.`,
+	} {
+		if !strings.Contains(nsisStage, fragment) {
+			t.Fatalf("sealed NSIS stage is missing payload or ownership guard %q", fragment)
+		}
+	}
+	for _, source := range []string{installer, nsisStage} {
+		for _, forbidden := range []string{`File /r`, `File "..\`} {
+			if strings.Contains(source, forbidden) {
+				t.Fatalf("NSIS must consume explicit sealed-stage files, not %q", forbidden)
+			}
+		}
+	}
+	installBlock := strings.Index(installer, "This Rime/PIME development package is not installable yet.")
+	payloadWrite := strings.Index(installer, "\tSetOverwrite on")
+	if installBlock < 0 || payloadWrite <= installBlock || !strings.Contains(installer[installBlock:payloadWrite], "\n\tAbort\n") {
+		t.Fatal("the unsealed installer must abort before writing any product payload")
 	}
 	for _, forbidden := range []string{`$FONTS`, `CurrentVersion\Fonts`, `AddFontResource(`, `YinYuan Regular (TrueType)`} {
 		if strings.Contains(installer, forbidden) {
@@ -177,9 +219,28 @@ func TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease(t *testing.T) 
 			t.Fatalf("release payload signer is not bound to the sealed plan lifecycle %q", fragment)
 		}
 	}
-	for _, fragment := range []string{"PACKAGE_PLAN_SHA256", "PACKAGE_PLAN_X86_X64", "Write-RimePimePackageBuildReceipt"} {
+	for _, fragment := range []string{
+		"PACKAGE_PLAN_SHA256", "PACKAGE_PLAN_X86_X64", "PACKAGE_STAGE_ROOT", "PACKAGE_PAYLOAD_NSH_SHA256",
+		"Read-RimePimePackagePlan -RepoRoot $root -PlanPath $PackagePlanPath -VerifyArtifacts",
+		"Write-RimePimeNsisStageInclude -StageRoot $stageResult.StageRoot",
+		"New-RimePimePreparedPublication -Package $package -CandidateStream $candidateLeases[0].Stream",
+		"Invoke-RimePimePublicationCommit -Package $package -Prepared $prepared",
+		`tools\dual-product\rime-pime-staged-installer-build.psm1`,
+		"/DPACKAGE_UNSIGNED_DISABLED_BUILD=1",
+	} {
 		if !strings.Contains(installerBuilder, fragment) {
 			t.Fatalf("installer builder is missing package-plan binding %q", fragment)
+		}
+	}
+	for _, fragment := range []string{
+		"package_plan_sha256=$Package.Digest", "installer_sha256=$CandidateDigest",
+		"Write-RimePimeSealedJson $value $pendingReceipt",
+		"receipt-sidecar-commit-marker",
+		"Read-RimePimePackageBuildReceipt -Package $Package -ReceiptPath $ReceiptPath",
+		"Committed package receipt differs from its prepared identity.",
+	} {
+		if !strings.Contains(stagedBuilder, fragment) {
+			t.Fatalf("staged installer publication is missing sealed receipt binding %q", fragment)
 		}
 	}
 	if !strings.Contains(buildManifest, "Read-RimePimePackageBuildReceipt") || !strings.Contains(buildManifest, "receiptSha256") {

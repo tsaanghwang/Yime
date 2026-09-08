@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -24,6 +25,41 @@ def _load(path: Path) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise VerificationError("toolchain lock root must be an object")
     return value
+
+
+def verify_ci_nsis_pin(workflow: str, version: str) -> None:
+    """Check the active install step in both packaging jobs, not a global token.
+
+    Accept only the repository's explicit single-line setup command. The old
+    action adds plugins and patched stubs that do not match the distribution
+    closure even when its NSIS version matches.
+    """
+    if re.search(r"(?m)^\s*(?:- )?uses:\s*repolevedavaj/install-nsis@", workflow):
+        raise VerificationError("CI must not use an NSIS action that patches the locked distribution")
+    for job in ("unsigned-installer-package", "release-installer-package"):
+        blocks = re.findall(
+            rf"^  {re.escape(job)}:[ \t]*\n(.*?)(?=^  [A-Za-z0-9_-]+:|\Z)",
+            workflow,
+            flags=re.MULTILINE | re.DOTALL,
+        )
+        if len(blocks) != 1:
+            raise VerificationError(f"CI must define exactly one {job} job")
+        steps = re.split(r"(?m)^      - ", blocks[0])[1:]
+        installs = [step for step in steps if re.search(
+            r"(?m)^(?:run:|        run:)[ \t]+.*install-locked-nsis\.ps1", step
+        )]
+        if len(installs) != 1:
+            raise VerificationError(f"{job} must contain exactly one NSIS install step")
+        step = installs[0]
+        if re.findall(r"(?m)^        shell:[ \t]*(.*?)[ \t]*$", step) != ["pwsh"]:
+            raise VerificationError(f"{job} NSIS install step must use PowerShell 7")
+        commands = re.findall(r"(?m)^(?:run:|        run:)[ \t]*(.*?)[ \t]*$", step)
+        expected = re.escape(version)
+        if len(commands) != 1 or not re.fullmatch(
+            r"\.\\tools\\install-locked-nsis\.ps1[ \t]+-Version[ \t]+"
+            rf"(?:{expected}|'{expected}'|\"{expected}\")[ \t]*(?:#.*)?", commands[0]
+        ):
+            raise VerificationError(f"{job} must pin NSIS {version} from toolchain lock")
 
 
 def verify(lock_path: Path = DEFAULT_LOCK) -> dict[str, Any]:
@@ -96,10 +132,11 @@ def verify(lock_path: Path = DEFAULT_LOCK) -> dict[str, Any]:
         "runs-on: windows-2022",
         "go-version: '1.26.4'",
         "python-version: '3.14'",
-        "nsis-version: 3.08",
     ):
         if fragment not in workflow:
             raise VerificationError(f"CI no longer matches toolchain lock: {fragment}")
+    nsis = next(tool for tool in tools if tool["id"] == "nsis")
+    verify_ci_nsis_pin(workflow, str(nsis["version"]))
     if "third_party\\go-winres" not in build or "go build -mod=vendor" not in build:
         raise VerificationError("go-backend no longer builds vendored go-winres")
     if 'Rust_TOOLCHAIN "stable-i686-pc-windows-msvc"' not in cmake:

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import ModuleType, SimpleNamespace
 from unittest.mock import patch
 
 from tools.lexicon import validate_connected_speech_forward as forward
@@ -54,6 +56,17 @@ class ConnectedSpeechForwardTests(unittest.TestCase):
 
         with patch.object(forward, "_load_json", side_effect=changed_layout):
             with self.assertRaisesRegex(forward.ForwardValidationError, "layout_projection_mismatch"):
+                forward.validate_forward_sources(forward.REPO_ROOT)
+
+    def test_preloaded_undeclared_formal_import_is_rejected(self) -> None:
+        # Isolation belongs in the test runner, not a weaker production guard.
+        # In particular, checking only imports added during validation would
+        # miss this already-loaded, undeclared dependency.
+        name = "yime.undeclared_test_dependency"
+        module = ModuleType(name)
+        module.__file__ = str(forward.REPO_ROOT / "yime/repository_boundary.py")
+        with patch.dict(sys.modules, {name: module}):
+            with self.assertRaisesRegex(forward.ForwardValidationError, "formal_import_outside_declared_sources"):
                 forward.validate_forward_sources(forward.REPO_ROOT)
 
     def test_unrelated_checkout_is_rejected(self) -> None:
@@ -130,7 +143,9 @@ class ConnectedSpeechForwardTests(unittest.TestCase):
 
     def test_output_must_be_fresh_exact_scoped_path(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            # Windows TEMP may use an 8.3 user-directory alias. The output
+            # contract compares against the resolved repository root.
+            root = Path(directory).resolve(strict=True)
             output = root / ".tmp/yimecore-experiment/speech-admission-unittest-1234/forward-source.json"
             self.assertEqual(forward.reserve_output(root, output), output)
             self.assertTrue(output.parent.is_dir())
@@ -145,6 +160,34 @@ class ConnectedSpeechForwardTests(unittest.TestCase):
             ):
                 with self.assertRaises(forward.ForwardValidationError):
                     forward.reserve_output(root, invalid)
+
+    def test_output_rejects_parent_traversal_without_creating_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve(strict=True)
+            output = root / ".tmp/yimecore-experiment/../speech-admission-unittest-1234/forward-source.json"
+            with self.assertRaisesRegex(forward.ForwardValidationError, "output_parent_rejected"):
+                forward.reserve_output(root, output)
+            self.assertFalse((root / ".tmp").exists())
+
+    def test_output_rejects_reparse_parent_before_creating_output(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve(strict=True)
+            boundary = root / ".tmp"
+            boundary.mkdir()
+            output = boundary / "yimecore-experiment/speech-admission-unittest-1234/forward-source.json"
+            original_lstat = Path.lstat
+
+            def reparse_lstat(path: Path, *args, **kwargs):
+                info = original_lstat(path, *args, **kwargs)
+                if path == boundary:
+                    # Exercise the Windows junction/reparse guard on every OS.
+                    return SimpleNamespace(st_mode=info.st_mode, st_file_attributes=0x400)
+                return info
+
+            with patch.object(Path, "lstat", reparse_lstat):
+                with self.assertRaisesRegex(forward.ForwardValidationError, "linked_path_rejected"):
+                    forward.reserve_output(root, output)
+            self.assertEqual(list(boundary.iterdir()), [])
 
 
 if __name__ == "__main__":

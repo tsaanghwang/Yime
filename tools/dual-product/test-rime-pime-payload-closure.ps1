@@ -167,12 +167,14 @@ foreach ($invalid in @(
     @{name='trailing-dot';path='bad./file.bin'},
     @{name='reserved-device';path='aux.txt'}
 )) {
+    # Check invokes each action synchronously; keep the script helper scope.
+    # GetNewClosure creates a dynamic module that hides helpers in PowerShell 7.
     Check "manifest-rejects-$($invalid.name)" {
         $case=New-PayloadCase "invalid-$($invalid.name)"
         $case.Manifest.files[0].path=$invalid.path
         Write-CaseManifest $case
         Assert-Rejected { Read-YimePimePayloadManifest $case.Trusted } '*payload*'
-    }.GetNewClosure()
+    }
 }
 
 Check 'manifest-rejects-case-folded-file-duplicate' {

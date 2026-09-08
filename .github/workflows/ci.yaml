@@ -22,6 +22,8 @@ jobs:
         run: .\tools\validate-build-contract.ps1
       - name: Verify locked Windows toolchain metadata
         run: python .\tools\verify_toolchain_lock.py
+      - name: Test locked Windows toolchain metadata
+        run: python -m unittest tools.test_verify_toolchain_lock -v
       - name: Verify detached lexicon archive identity
         run: python .\tools\lexicon\verify_external_archive_lock.py
 
@@ -230,11 +232,16 @@ jobs:
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-          foreach ($test in @('test-local-product-build-result.ps1', 'test-local-product-speech-build.ps1')) {
-            & $ps5 -NoProfile -ExecutionPolicy Bypass -File (Join-Path '.\tools\yimecore' $test)
-            if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 $test failed with exit code $LASTEXITCODE" }
-            & (Join-Path '.\tools\yimecore' $test)
-          }
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\yimecore\test-local-product-build-result.ps1
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 build-result test failed with exit code $LASTEXITCODE" }
+          .\tools\yimecore\test-local-product-build-result.ps1
+          $runId = [guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\yimecore\test-local-product-speech-build.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\yimecore-experiment\speech-build-contract-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 speech-build test failed with exit code $LASTEXITCODE" }
+          .\tools\yimecore\test-local-product-speech-build.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\yimecore-experiment\speech-build-contract-ci-ps7-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 7 speech-build test failed with exit code $LASTEXITCODE" }
       - name: Test YimeCore local12 maintenance preparation
         shell: pwsh
         run: |
@@ -384,7 +391,8 @@ jobs:
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-          $runId = [Guid]::NewGuid().ToString('N')
+          # Keep nested SHA-256 sidecars below Win32 MAX_PATH in both shells.
+          $runId = [Guid]::NewGuid().ToString('N').Substring(0,16)
           & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-candidate-evidence-archive.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-candidate-evidence-archive-test-ci-ps5-$runId")
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-Q candidate-evidence archive test failed with exit code $LASTEXITCODE" }
@@ -679,9 +687,8 @@ jobs:
           name: yime-unsigned-payload-${{ github.sha }}
           path: .
       - name: Install NSIS in non-secret packaging job
-        uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
-        with:
-          nsis-version: 3.12
+        shell: pwsh
+        run: .\tools\install-locked-nsis.ps1 -Version '3.12'
       - name: Test DP1-K NSIS compiler membership interval
         shell: pwsh
         run: |
@@ -740,9 +747,8 @@ jobs:
           name: yime-signed-payload-${{ github.sha }}
           path: .
       - name: Install NSIS in non-secret packaging job
-        uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
-        with:
-          nsis-version: 3.12
+        shell: pwsh
+        run: .\tools\install-locked-nsis.ps1 -Version '3.12'
       - name: Build unsigned outer installer
         shell: pwsh
         run: .\tools\build-rime-pime-installer.ps1 -RepoRoot $env:GITHUB_WORKSPACE -PackagePlanPath (Join-Path $env:GITHUB_WORKSPACE 'installer\package-plan.json')

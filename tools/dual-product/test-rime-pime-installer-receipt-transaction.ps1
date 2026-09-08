@@ -432,7 +432,8 @@ function Assert-TransactionCommitted($Case){
     return $read
 }
 
-$null=Get-YimePimePayloadFileRecord (Join-Path $repo 'installer\package-build-receipt.json')
+# Initialize file identity inspection without requiring a local build receipt.
+Initialize-YimePimePayloadNativeInspection
 $actualCheckoutBaseline=Get-ActualCheckoutSnapshot
 
 function Assert-HardExitState($Case,[string]$Stop,[string]$ActualBefore){
