@@ -1,8 +1,10 @@
 // Additional read-only handle observations; no process launch/termination APIs.
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using Microsoft.Win32.SafeHandles;
 
 namespace Yime.MaintenanceProcesses {
     public sealed class ProcessObservation {
@@ -16,13 +18,44 @@ namespace Yime.MaintenanceProcesses {
     public sealed class ProcessPin : IDisposable {
         private IntPtr handle;
         private readonly int pid;
-        private ProcessPin(IntPtr handle, int pid) { this.handle=handle; this.pid=pid; }
+        private readonly bool ownsHandle;
+        private readonly Process source;
+        private readonly SafeProcessHandle sourceHandle;
+        private readonly long referenceCreation;
+        private ProcessPin(IntPtr handle, int pid) { this.handle=handle; this.pid=pid; ownsHandle=true; }
+        private ProcessPin(Process source) {
+            if (source == null || source.GetType() != typeof(Process)) throw new ArgumentException("Original exact Process instance required.");
+            this.source=source;sourceHandle=source.SafeHandle;
+            try {
+                bool referenceHeld=false;
+                try {
+                    if (sourceHandle.IsClosed || sourceHandle.IsInvalid) throw new InvalidOperationException("Original Process handle is closed.");
+                    sourceHandle.DangerousAddRef(ref referenceHeld);
+                    IntPtr original=sourceHandle.DangerousGetHandle();
+                    if (original == IntPtr.Zero || original == new IntPtr(-1)) throw new InvalidOperationException("Invalid original Process handle.");
+                    // Duplicate THIS kernel object, with only query/synchronize
+                    // rights. No PID lookup or handle-reopening fallback.
+                    IntPtr current=GetCurrentProcess();
+                    if (!DuplicateHandle(current,original,current,out handle,0x00101000,false,0)) throw new Win32Exception(Marshal.GetLastWin32Error());
+                    ownsHandle=true;
+                } finally { if (referenceHeld) sourceHandle.DangerousRelease(); }
+                // Do not retain DangerousAddRef for the lease interval: doing
+                // so can hide caller Dispose from SafeHandle.IsClosed.
+                uint originalPid=GetProcessId(handle);
+                if (originalPid == 0 || originalPid > Int32.MaxValue) throw new Win32Exception(Marshal.GetLastWin32Error());
+                pid=(int)originalPid;
+                referenceCreation=Capture().CreationFileTime;
+                Capture();
+            } catch { Dispose();throw; }
+        }
         [StructLayout(LayoutKind.Sequential)] private struct FileTime { public uint Low, High; }
         // NTSTATUS and KPRIORITY each occupy a pointer-aligned slot in PBI.
         [StructLayout(LayoutKind.Sequential)] private struct BasicInfo {
             public IntPtr ExitStatus, Peb, Affinity, BasePriority, ProcessId, ParentId;
         }
         [DllImport("kernel32.dll", SetLastError=true)] private static extern IntPtr OpenProcess(uint access, bool inherit, int pid);
+        [DllImport("kernel32.dll")] private static extern IntPtr GetCurrentProcess();
+        [DllImport("kernel32.dll", SetLastError=true)] private static extern bool DuplicateHandle(IntPtr sourceProcess, IntPtr sourceHandle, IntPtr targetProcess, out IntPtr targetHandle, uint access, bool inherit, uint options);
         [DllImport("kernel32.dll", SetLastError=true)] private static extern bool CloseHandle(IntPtr handle);
         [DllImport("kernel32.dll", SetLastError=true)] private static extern uint WaitForSingleObject(IntPtr handle, uint milliseconds);
         [DllImport("kernel32.dll", SetLastError=true)] private static extern uint GetProcessId(IntPtr process);
@@ -37,6 +70,14 @@ namespace Yime.MaintenanceProcesses {
             var result=new ProcessPin(handle,pid);
             try { result.Capture(); return result; } catch { result.Dispose(); throw; }
         }
+        // Bind the supplied reference and a private duplicate of its original
+        // SafeHandle. Never replace it by opening the same numeric PID again.
+        public static ProcessPin OpenReference(Process source) { return new ProcessPin(source); }
+        private void RequireAssociation() {
+            if (source == null) return;
+            if (sourceHandle.IsClosed || sourceHandle.IsInvalid || source.Id != pid || !Object.ReferenceEquals(source.SafeHandle,sourceHandle))
+                throw new InvalidOperationException("Original Process reference association changed.");
+        }
         private void RequireLive() {
             if (handle == IntPtr.Zero) throw new ObjectDisposedException("ProcessPin");
             uint result=WaitForSingleObject(handle,0);
@@ -45,10 +86,15 @@ namespace Yime.MaintenanceProcesses {
         }
         public ProcessObservation Capture() {
             RequireLive();
+            RequireAssociation();
             if (GetProcessId(handle) != (uint)pid) throw new InvalidOperationException("Pinned PID mismatch.");
             FileTime creation, exit, kernel, user;
             if (!GetProcessTimes(handle,out creation,out exit,out kernel,out user)) throw new Win32Exception(Marshal.GetLastWin32Error());
             if (exit.Low != 0 || exit.High != 0) throw new InvalidOperationException("Pinned process terminated during capture.");
+            long observedCreation=((long)creation.High << 32) | creation.Low;
+            if (observedCreation <= 0 || (referenceCreation != 0 && observedCreation != referenceCreation) ||
+                (source != null && source.StartTime.ToUniversalTime().ToFileTimeUtc() != observedCreation))
+                throw new InvalidOperationException("Original Process creation identity changed.");
             var image=new StringBuilder(32768); int length=image.Capacity;
             if (!QueryFullProcessImageName(handle,0,image,ref length)) throw new Win32Exception(Marshal.GetLastWin32Error());
             BasicInfo basic; int returned; int size=Marshal.SizeOf(typeof(BasicInfo));
@@ -57,10 +103,14 @@ namespace Yime.MaintenanceProcesses {
                 throw new InvalidOperationException("Native parent/process identity unavailable.");
             ushort processMachine, nativeMachine;
             if (!IsWow64Process2(handle,out processMachine,out nativeMachine)) throw new Win32Exception(Marshal.GetLastWin32Error());
+            RequireAssociation();
             RequireLive();
-            return new ProcessObservation {Pid=pid,ParentPid=(int)basic.ParentId.ToInt64(),CreationFileTime=((long)creation.High << 32) | creation.Low,
+            return new ProcessObservation {Pid=pid,ParentPid=(int)basic.ParentId.ToInt64(),CreationFileTime=observedCreation,
                 Image=image.ToString(),ProcessMachine=processMachine,NativeMachine=nativeMachine};
         }
-        public void Dispose() { if (handle != IntPtr.Zero) { CloseHandle(handle); handle=IntPtr.Zero; } }
+        public void Dispose() {
+            IntPtr old=handle;handle=IntPtr.Zero;
+            if (ownsHandle && old != IntPtr.Zero) CloseHandle(old);
+        }
     }
 }
