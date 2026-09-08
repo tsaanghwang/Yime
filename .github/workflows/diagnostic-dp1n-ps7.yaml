@@ -1,0 +1,24 @@
+name: Yime DP1-N PS7 Diagnostic
+
+on:
+  push:
+    branches: ['diagnostic/yime-dp1n-ps7']
+
+permissions:
+  contents: read
+
+jobs:
+  dp1n-ps7:
+    name: DP1-N installer and receipt transaction / PowerShell 7
+    runs-on: windows-2022
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Test DP1-N isolated installer and receipt transaction in PowerShell 7
+        shell: pwsh
+        run: |
+          $runId = [Guid]::NewGuid().ToString('N')
+          .\tools\dual-product\test-rime-pime-installer-receipt-transaction.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-dp1n-ci-ps7-$runId")
