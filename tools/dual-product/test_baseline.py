@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 168)
-        self.assertEqual(len(self.receipt["source_manifest"]), 175)
+        self.assertEqual(len(contract["source_paths"]), 174)
+        self.assertEqual(len(self.receipt["source_manifest"]), 181)
         for path in (
             "version.txt",
             "PIMELauncher/build.rs",
@@ -205,6 +205,12 @@ class OwnershipTests(unittest.TestCase):
             "tools/yimecore/capture-native-maintenance-registry.ps1",
             "tools/yimecore/test-native-maintenance-context.ps1",
             "tools/yimecore/test-native-maintenance-evidence.ps1",
+            "tools/yimecore/local13-maintenance-inputs.psm1",
+            "tools/yimecore/test-local13-maintenance-inputs.ps1",
+            "tools/yimecore/native-maintenance-processes.psm1",
+            "tools/yimecore/native-maintenance-process-facts.cs",
+            "tools/yimecore/test-native-maintenance-processes.ps1",
+            "tools/yimecore/test-native-rehearsal-outcome.ps1",
             "tools/dual-product/test-rime-pime-transaction-replay-model.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.psm1",
