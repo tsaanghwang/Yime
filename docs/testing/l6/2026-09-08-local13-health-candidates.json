@@ -1,0 +1,378 @@
+{
+  "schema_version": "yimecore-local13-health-candidates-review-v1",
+  "evidence_date": "2026-09-08",
+  "affected_product": "YimeCore",
+  "review_scope": "Public build, isolated new candidate health, static fault preparation, archive copy and metadata observation; no installed-product maintenance acceptance.",
+  "evidence_consistency_verified": true,
+  "normal_candidate": {
+    "package_root": "C:\\dev\\Yime\\.tmp\\w13h\\.tmp\\yimecore-local-product\\health13\\package",
+    "package_id": "yimecore-local-0.1.0-local.13-7f86b4384fef",
+    "package_manifest_sha256": "8f7e44ab9097a99d938891b507d0a07b753ffa66dbbec887cb0576286470f2cc",
+    "listed_payload_count": 85,
+    "source_commit": "e2d9d4222b09c548f978101668940262b895e4fc",
+    "source_clean": true,
+    "source_manifest_sha256": "7f86b4384fefedf6d7c3e62bff8397757b0ae780f2a58d13876e79b54e6e008f",
+    "source_zip_members_verified": 818,
+    "health_server_sources_in_snapshot": true,
+    "later_health_test_in_snapshot": false,
+    "later_input_lease_hardening_and_catalog_in_snapshot": false,
+    "controller_sha256": "9f69d9aba12e4c50c8aa06edb945375dc72a721cd208791ffab2e4207442f39d",
+    "wrapper_sha256": "ec206153c53d96b98aa43cd522167bb55eef83b7d7acedf745f8f966c6851479",
+    "runtime_sha256": "ee4efa963a130bcea1695aa2a196d5dc5176ed4c69cdcac3baaefa53724c7e0d",
+    "broker_sha256": "eee55bd1d2e8c2fd73d947541546c4c4950defec704a1288c8ceda647516e69d",
+    "build_review_passed": true,
+    "historical_normal_review_candidate_health_challenge_verified": false,
+    "historical_review_note": "The normal review preceded the isolated health runs; its false challenge field is retained in the original evidence."
+  },
+  "speech_admission": {
+    "source_count": 590,
+    "passed_count": 499,
+    "failed_count": 0,
+    "skipped_count": 3,
+    "skipped_tests": [
+      "TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink",
+      "TestSpeechPackageRejectsSymlinkPayload",
+      "TestSpeechProductExportRejectsIndirectSources"
+    ]
+  },
+  "isolated_candidate_health": {
+    "runs": [
+      {
+        "shell": "ps5",
+        "powershell": "5.1.26100.9278",
+        "passed": true,
+        "required_test_exit_code": 0,
+        "round_count": 2,
+        "isolated_actual_candidate_parent_child_health": true,
+        "original_handle_exits": [
+          {
+            "role": "stopper",
+            "exit_code": 0,
+            "original_handle_exit_verified": true,
+            "test_harness_forced_termination": false
+          },
+          {
+            "role": "runtime",
+            "exit_code": 0,
+            "original_handle_exit_verified": true,
+            "test_harness_forced_termination": false
+          },
+          {
+            "role": "broker",
+            "exit_code": 1,
+            "original_handle_exit_verified": true,
+            "test_harness_forced_termination": false
+          }
+        ],
+        "cleanup_error_count": 0
+      },
+      {
+        "shell": "ps7",
+        "powershell": "7.6.5",
+        "passed": true,
+        "required_test_exit_code": 0,
+        "round_count": 2,
+        "isolated_actual_candidate_parent_child_health": true,
+        "original_handle_exits": [
+          {
+            "role": "stopper",
+            "exit_code": 0,
+            "original_handle_exit_verified": true,
+            "test_harness_forced_termination": false
+          },
+          {
+            "role": "runtime",
+            "exit_code": 0,
+            "original_handle_exit_verified": true,
+            "test_harness_forced_termination": false
+          },
+          {
+            "role": "broker",
+            "exit_code": 1,
+            "original_handle_exit_verified": true,
+            "test_harness_forced_termination": false
+          }
+        ],
+        "cleanup_error_count": 0
+      }
+    ],
+    "pure_contracts": [
+      {
+        "shell": "ps5",
+        "passed": true,
+        "check_count": 65,
+        "source_sha256": "486ddf90f6c9db0edda02aeb03264469be125d2e6626c215accd61702b295e04",
+        "candidate_executed": false
+      },
+      {
+        "shell": "ps7",
+        "passed": true,
+        "check_count": 65,
+        "source_sha256": "486ddf90f6c9db0edda02aeb03264469be125d2e6626c215accd61702b295e04",
+        "candidate_executed": false
+      }
+    ],
+    "test_script_sha256": "486ddf90f6c9db0edda02aeb03264469be125d2e6626c215accd61702b295e04",
+    "broker_exit_note": "Broker exit 1 was observed after the explicit private Runtime stop; Runtime source terminates its Broker. The test harness did not force termination.",
+    "ordinary_pipe_connection_opened": false,
+    "production_process_discovery_used": false,
+    "production_lease_adapter_integrated": false,
+    "collector_integrated": false,
+    "native_desktop_verified": false,
+    "continuous_package_membership_verified": false,
+    "engine_ready_proven": false
+  },
+  "fault_candidate": {
+    "package_root": "C:\\dev\\Yime\\.tmp\\yimecore-local13-maintenance-preparation\\health-20260908\\package",
+    "package_id": "yimecore-local-0.1.0-local.13-7f86b4384fef-rollback-failure-0be33f97a652",
+    "package_manifest_sha256": "d8cd1338ea2439620f840ef5f43687f15069200f16e1de16b2b6653c9e217161",
+    "listed_payload_count": 85,
+    "normal_package_manifest_sha256": "8f7e44ab9097a99d938891b507d0a07b753ffa66dbbec887cb0576286470f2cc",
+    "runtime_sha256": "0be33f97a6527b0adb2a4fa3f3639f4aebbb32ef4d15d7330333443bf8afbaad",
+    "changed_package_members": [
+      "bin/YimeCoreTrialRuntime.exe",
+      "package-manifest.json"
+    ],
+    "maintenance_controller_preserved": true,
+    "static_package_verification_passed": true,
+    "probe_source_sha256": "c17ee123594a4453260583cb53c9ca8133ddde6df4defa2f50d37d3dc75d13b9",
+    "probe_compiled": true,
+    "expected_probe_exit_code": 86,
+    "probe_exit_observed": false,
+    "probe_executed": false,
+    "preparation_entry_sha256": "43e8cd483339a1c0c0883cf401755526f18285b933b06191a2b268c01809b36a",
+    "preparation_module_sha256": "462d5184c48c223e22cbcfa6dfc53c73d4ddcfb0693d832286b9f7101e75ab84",
+    "same_sid_execution_boundary": false,
+    "ready_to_execute": false
+  },
+  "archive": {
+    "root": "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local13-health-candidates-20260908-9d59c3b5324f4313921901325effcc79",
+    "archive_manifest_sha256": "19c96df216e8a246e07ca967c3d1e215a058bda2a6708c95f7cc4e29a1ee0b1d",
+    "archive_summary_sha256": "5391b75f5f30dedaf65bfa36b7f3963b6f5cc0acfdeef829d16cc2c9bfa40b69",
+    "public_input_count": 186,
+    "public_input_bytes": 911194310,
+    "total_file_count": 188,
+    "static_copy_and_input_binding_verified": true,
+    "source_and_previous_archives_retained": true,
+    "artifact_executed_during_archive_copy": false,
+    "artifact_execution_scope_note": "The false archive-copy execution field does not deny the earlier isolated normal-candidate execution.",
+    "user_state_backup": false,
+    "observations": [
+      {
+        "shell": "ps5",
+        "passed": true,
+        "file_lease_count": 188,
+        "directory_lease_count": 36,
+        "leases_closed": true,
+        "system_metadata_visible": true,
+        "bound_metadata": true,
+        "local_held_hashes_verified": true,
+        "metadata_file_count": 4,
+        "independent_content_hash_verified": false,
+        "independent_file_identity_verified": false,
+        "continuous_membership_protection": false
+      },
+      {
+        "shell": "ps7",
+        "passed": true,
+        "file_lease_count": 188,
+        "directory_lease_count": 36,
+        "leases_closed": true,
+        "system_metadata_visible": true,
+        "bound_metadata": true,
+        "local_held_hashes_verified": true,
+        "metadata_file_count": 4,
+        "independent_content_hash_verified": false,
+        "independent_file_identity_verified": false,
+        "continuous_membership_protection": false
+      }
+    ],
+    "independently_visible_metadata_paths": [
+      "archive-manifest.json",
+      "archive-summary.json",
+      "fault/package/package-manifest.json",
+      "normal/package/package-manifest.json"
+    ],
+    "independent_complete_archive_content_hash_verified": false,
+    "power_loss_durability_proven": false,
+    "hostile_same_sid_physical_prevention_proven": false
+  },
+  "maintenance_ci": {
+    "passed": true,
+    "workflow_sha256": "7c861eb34d4daf9690924c5de09a3d05db3cd352a76715099afa667676a16ec6",
+    "step": "Test YimeCore guarded maintenance preparation and native observations",
+    "invocation": "actual CI body: external PS5 and in-process PS7",
+    "report_count": 30,
+    "all_30_raw_sizes_and_hashes_reverified": true,
+    "checks_per_shell": 1510,
+    "total_checks": 3020,
+    "per_script_checks_per_shell": {
+      "test-local13-maintenance-inputs": 59,
+      "test-local13-maintenance-preparation": 57,
+      "test-native-maintenance-backup": 155,
+      "test-native-maintenance-child": 71,
+      "test-native-maintenance-context": 48,
+      "test-native-maintenance-data": 51,
+      "test-native-maintenance-deferred-delete": 201,
+      "test-native-maintenance-evidence": 79,
+      "test-native-maintenance-health": 73,
+      "test-native-maintenance-processes": 47,
+      "test-native-maintenance-runtime": 72,
+      "test-native-maintenance-visibility": 104,
+      "test-native-rehearsal-outcome-reader": 224,
+      "test-native-rehearsal-outcome": 99,
+      "test-native-rollback-collection": 170
+    },
+    "deferred_delete_optional_native_fixture_requested": false,
+    "deferred_delete_provider_owned_fixture_requested": false,
+    "visibility_optional_native_fixture_requested": false,
+    "native_visibility_note": "CI optional native fixtures were not requested; the separate archive observations above actually checked four public metadata files."
+  },
+  "final_dual_product_source_baseline": {
+    "source_baseline_passed": true,
+    "source_count": 220,
+    "fixture_checks": 68,
+    "known_pending_count": 8,
+    "source_unchanged": true,
+    "reference_role": "final_dual_product_source_baseline"
+  },
+  "scope": {
+    "isolated_new_normal_candidate_executed": true,
+    "fault_probe_executed": false,
+    "installer_executed": false,
+    "native_backup_restore_upgrade_rollback_uninstall_reinstall_executed": false,
+    "installed_local12_mutated": false,
+    "production_rime_pime_mutated": false,
+    "default_input_method_changed": false,
+    "actual_user_state_read": false,
+    "build_readonly_public_install_and_registration_baseline_used": true,
+    "build_own_registry_preservation_fixture_checks": 28,
+    "all_round_zero_registry_access_claimed": false
+  },
+  "closure": {
+    "production_health_lease_adapter_integrated": false,
+    "collector_health_integrated": false,
+    "native_desktop_accepted": false,
+    "runtime_ready": false,
+    "config_consumed_verified": false,
+    "startup_path_verified": false,
+    "E7_accepted": false,
+    "L6_sealed": false,
+    "local_product_ready": false,
+    "public_release_ready": false,
+    "full_acceptance": false,
+    "dp1_full_implementation_passed": false,
+    "dp2_physical_acceptance_passed": false,
+    "dp3_install_entry_accepted": false
+  },
+  "evidence": [
+    {
+      "role": "normal_review",
+      "path": "C:\\dev\\Yime\\.tmp\\local13-health-candidate-20260908\\normal-review.json",
+      "bytes": 8628,
+      "sha256": "5698b63c6546c9750229af6a8e352659f79978ed98f49bbd8f645da06b5dd69c"
+    },
+    {
+      "role": "final_input_catalog_binding",
+      "path": "C:\\dev\\Yime\\.tmp\\local13-health-candidate-20260908\\input-binding.json",
+      "bytes": 1603,
+      "sha256": "1a7d499c4a0b3d2cb0feaa13aedf0f108abfa7a19dcb61b1d92ac6b80e81a0a2"
+    },
+    {
+      "role": "isolated_candidate_health_ps5",
+      "path": "C:\\dev\\Yime\\.tmp\\local13-health-candidate-20260908\\health-ps5\\summary.json",
+      "bytes": 12601,
+      "sha256": "cd80818f698ba8f87b04821cad9b8c762b34308fa451926917a98383512bfb84"
+    },
+    {
+      "role": "isolated_candidate_health_ps7",
+      "path": "C:\\dev\\Yime\\.tmp\\local13-health-candidate-20260908\\health-ps7\\summary.json",
+      "bytes": 7727,
+      "sha256": "4d661dab6ec3662a9c1c5e03c43282de6b668369264a5aedba8081062a38b3c3"
+    },
+    {
+      "role": "archive_observation_ps5",
+      "path": "C:\\dev\\Yime\\.tmp\\local13-health-candidate-20260908\\archive-observation-ps5.json",
+      "bytes": 10065,
+      "sha256": "4297480d0cb2145cdb1cd4843dd019ecbf23e2c7d179d51e190a92b06e6d5681"
+    },
+    {
+      "role": "archive_observation_ps7",
+      "path": "C:\\dev\\Yime\\.tmp\\local13-health-candidate-20260908\\archive-observation-ps7.json",
+      "bytes": 6042,
+      "sha256": "9b0c59b7a60ffd62e33dbc8e83684aa4422026bfd6254ad9865d7f6512028322"
+    },
+    {
+      "role": "archive_inventory",
+      "path": "C:\\dev\\Yime\\.tmp\\local13-health-candidate-20260908\\inventory.json",
+      "bytes": 59779,
+      "sha256": "c9f2917d236f5a83501c94f0653ed222bfddd1dea535f9b7499ccbdab7c98441"
+    },
+    {
+      "role": "archive_manifest",
+      "path": "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local13-health-candidates-20260908-9d59c3b5324f4313921901325effcc79\\archive-manifest.json",
+      "bytes": 60555,
+      "sha256": "19c96df216e8a246e07ca967c3d1e215a058bda2a6708c95f7cc4e29a1ee0b1d"
+    },
+    {
+      "role": "archive_summary",
+      "path": "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local13-health-candidates-20260908-9d59c3b5324f4313921901325effcc79\\archive-summary.json",
+      "bytes": 783,
+      "sha256": "5391b75f5f30dedaf65bfa36b7f3963b6f5cc0acfdeef829d16cc2c9bfa40b69"
+    },
+    {
+      "role": "fault_preparation",
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local13-maintenance-preparation\\health-20260908\\preparation.json",
+      "bytes": 1903,
+      "sha256": "b595cdb85e365804f2204ba6fba45f7b0aed21ba6d6d2a197697d9d5acfcfa4f"
+    },
+    {
+      "role": "fault_preparation_plan",
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local13-maintenance-preparation\\health-20260908\\plan.json",
+      "bytes": 1703,
+      "sha256": "69a7d59086a33cb20708c2ecac5a0d8dcac59964f09d4a83032d445ff6eee8ce"
+    },
+    {
+      "role": "health_wrapper_pure_contracts_ps5",
+      "path": "C:\\dev\\Yime\\.tmp\\health-candidate-contracts-20260908\\ps5-final.json",
+      "bytes": 10181,
+      "sha256": "d64775463c49b54b0c1299fddd9343c38d8f374654897fd2ab4788ccce14079d"
+    },
+    {
+      "role": "health_wrapper_pure_contracts_ps7",
+      "path": "C:\\dev\\Yime\\.tmp\\health-candidate-contracts-20260908\\ps7-final.json",
+      "bytes": 5845,
+      "sha256": "722c3f8d9c396bb41938389d2541f499b593b40fe50e602c0dff000bdb61dee6"
+    },
+    {
+      "role": "actual_ci_step_summary_binding_30_results",
+      "path": "C:\\dev\\Yime\\.tmp\\local13-health-candidate-20260908\\summary.json",
+      "bytes": 8407,
+      "sha256": "e99709026d4b3bbd205db1604f6de8ff271dbe1f31479ed16bb6a8151355f5ce"
+    },
+    {
+      "role": "final_dual_product_source_baseline",
+      "path": "C:\\dev\\Yime\\.tmp\\dual-product\\dp1-health-candidates-final-20260908\\baseline.json",
+      "bytes": 48942,
+      "sha256": "f2c5288db857d74da39dff5b512dcebd5993db79f616463de580112df6651fee"
+    },
+    {
+      "role": "isolated_health_test_source",
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\test-local-product-health.ps1",
+      "bytes": 29099,
+      "sha256": "486ddf90f6c9db0edda02aeb03264469be125d2e6626c215accd61702b295e04"
+    },
+    {
+      "role": "fixed_input_catalog_source",
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\local13-maintenance-inputs.psm1",
+      "bytes": 23922,
+      "sha256": "8ccf43d4718f3c7b7166f7a267c1e1f79b5128fd754d276affeaa3b8b453a76c"
+    },
+    {
+      "role": "fixed_input_catalog_regression_source",
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\test-local13-maintenance-inputs.ps1",
+      "bytes": 21946,
+      "sha256": "d6b8c05118e28a0fe7eede034df145e45695855303f5f2bc2495da29d9a741c0"
+    }
+  ]
+}
