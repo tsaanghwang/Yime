@@ -51,4 +51,10 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/dual-product/test-
 pwsh.exe -NoProfile -File tools/dual-product/test-rime-pime-dp1u-isolated-preflight.ps1 -OutputRoot (Join-Path $pwd ('.tmp/dual-product/dp1-u-preflight-test-ps7-' + [Guid]::NewGuid().ToString('N')))
 ```
 
-真实目标批准、执行授权、四类 installed acceptance 和 DP1-U 总验收仍为 false。DP1、DP2、DP3、L5、L6、目录 metadata durability、hardware power loss 和 hostile same-SID physical prevention 均未据此完成。
+真实目标批准、执行授权、四类 installed acceptance 和 DP1-U 总验收仍为 false。DP1、DP2、DP3、L6、目录 metadata durability、hardware power loss 和 hostile same-SID physical prevention 均未据此完成；YimeCore local.12 的 L5 最终确认已于 2026-09-08 另行完成，不由本预检证据证明。
+
+## 来源闭包与 CI 接线复核
+
+后续项目审查发现，本批四个预检输入最初已有独立 246/246 结果，但尚未列入 `tools/dual-product/contract.json` 的受保护来源集合，也没有进入 CI 的 PS5／PS7 步骤。若继续实现执行适配器，这会允许强制前置条件在全局基线外漂移。现已先关闭该接线缺口：模块、schema、合成输入及测试共四个路径加入来源闭包；全局基线绑定其关键语义和禁止执行面；CI 在两种 PowerShell 下运行同一测试。
+
+[接线证据](../testing/dual-product/2026-09-08-dp1-u-preflight-wiring.json)记录 PS5 5.1.26100.9278 与 PS7 7.6.5 各 246/246、全局基线 161 个来源与 68/68 测试、8 个诚实 pending，以及两种 shell 的构建守卫通过。基线新增字段确认预检源码与 CI 已接线，同时 `real_target_approved=false`、`execution_authorized=false`。这次只修复来源治理，未实现或运行执行适配器，也未触碰 installed YimeCore local.12、生产 Rime/PIME、注册表、产品进程、默认输入法或用户数据。

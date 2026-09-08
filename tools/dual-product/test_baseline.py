@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 150)
-        self.assertEqual(len(self.receipt["source_manifest"]), 157)
+        self.assertEqual(len(contract["source_paths"]), 154)
+        self.assertEqual(len(self.receipt["source_manifest"]), 161)
         for path in (
             "version.txt",
             "PIMELauncher/build.rs",
@@ -187,6 +187,10 @@ class OwnershipTests(unittest.TestCase):
             "tools/dual-product/test-rime-pime-dp1s-off-repository-archive.ps1",
             "tools/dual-product/invoke-rime-pime-actual-canonical-migration.ps1",
             "tools/dual-product/test-rime-pime-actual-canonical-migration.ps1",
+            "tools/dual-product/rime-pime-dp1u-isolated-preflight.psm1",
+            "tools/dual-product/rime-pime-dp1u-isolated-preflight.schema.json",
+            "tools/dual-product/fixtures/dp1u-isolated-preflight.synthetic.json",
+            "tools/dual-product/test-rime-pime-dp1u-isolated-preflight.ps1",
             "tools/dual-product/test-rime-pime-transaction-replay-model.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.psm1",
@@ -533,6 +537,11 @@ class OwnershipTests(unittest.TestCase):
         status = self.receipt["transaction_source"]
         self.assertTrue(status["rime_pime_dp1u_maintenance_runtime_gate_source_contract_wired"])
         self.assertTrue(status["rime_pime_dp1u_maintenance_runtime_gate_ci_ps5_ps7_present"])
+        self.assertTrue(status["rime_pime_dp1u_isolated_preflight_source_contract_wired"])
+        self.assertTrue(status["rime_pime_dp1u_isolated_preflight_ci_ps5_ps7_present"])
+        self.assertFalse(status["rime_pime_dp1u_isolated_preflight_test_executed_by_baseline"])
+        self.assertFalse(status["rime_pime_dp1u_real_target_approved"])
+        self.assertFalse(status["rime_pime_dp1u_execution_authorized"])
         self.assertFalse(status["rime_pime_dp1u_gate_test_executed_by_baseline"])
         self.assertFalse(status["rime_pime_dp1u_current_readiness_executed_by_baseline"])
         self.assertFalse(status["rime_pime_dp1u_acceptance_passed"])
@@ -988,7 +997,7 @@ class OwnershipTests(unittest.TestCase):
         )
         self.assertEqual(
             statuses["DP1-PIME-MAINTENANCE-RUNTIME-11"],
-            "source_admission_gate_implemented_ps5_ps7_actual_installed_acceptance_pending",
+            "isolated_preflight_and_source_gate_wired_ps5_ps7_execution_adapter_and_installed_acceptance_pending",
         )
         self.assertEqual(set(statuses), {
             "DP1-PIME-DIRECTED-EXIT-04", "DP1-PIME-REGISTRY-05", "DP1-PIME-TRANSACTION-06",

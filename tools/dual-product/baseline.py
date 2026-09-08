@@ -311,6 +311,18 @@ def transaction_source_status(sources):
     dp1u_current_review = sources[
         "tools/dual-product/review-rime-pime-dp1u-current-readiness.ps1"
     ]
+    dp1u_preflight = sources[
+        "tools/dual-product/rime-pime-dp1u-isolated-preflight.psm1"
+    ]
+    dp1u_preflight_schema = sources[
+        "tools/dual-product/rime-pime-dp1u-isolated-preflight.schema.json"
+    ]
+    dp1u_preflight_fixture = sources[
+        "tools/dual-product/fixtures/dp1u-isolated-preflight.synthetic.json"
+    ]
+    dp1u_preflight_test = sources[
+        "tools/dual-product/test-rime-pime-dp1u-isolated-preflight.ps1"
+    ]
     receipt_v2_supersession = sources["tools/dual-product/rime-pime-receipt-v2-supersession.ps1"]
     receipt_v2_supersession_module = sources["tools/dual-product/rime-pime-receipt-v2-supersession.psm1"]
     receipt_v2_supersession_test = sources["tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1"]
@@ -1079,6 +1091,35 @@ def transaction_source_status(sources):
             "actual_runtime_executed=$false",
             "installed_yimecore_local12_touched=$false",
         ]),
+        (dp1u_preflight, [
+            "yime-rime-pime-dp1u-isolated-preflight-result-v1",
+            "Test-RimePimeDp1UIsolatedPreflight",
+            "Independent approval digest missing or mismatched",
+            "MYCOMPUTER daily-use local.12 target prohibited",
+            "execution_authorized=$false",
+            "Export-ModuleMember -Function Test-RimePimeDp1UIsolatedPreflight",
+        ]),
+        (dp1u_preflight_schema, [
+            "DP1-U supplied isolated authorization and preflight contract (no execution capability)",
+            "yime-rime-pime-dp1u-isolated-preflight-evidence-v1",
+            "unpackaged-explorer-powershell",
+            "out-of-process-StdRegProv",
+            "isolated-mainstream-windows-x64",
+        ]),
+        (dp1u_preflight_fixture, [
+            "fixture-only:NOT-A-REAL-APPROVAL",
+            "DP1-FIXTURE-PC",
+            "production_rime_pime_allowed\": false",
+            "yimecore_local12_allowed\": false",
+        ]),
+        (dp1u_preflight_test, [
+            "yime-rime-pime-dp1u-isolated-preflight-test-v1",
+            "synthetic-positive-never-authorizes-execution-or-installed-gates",
+            "mycomputer-rejected-even-with-resealed-approval",
+            "same-sid-chain-and-explicit-hku-required",
+            "source-has-no-process-registry-or-maintenance-execution-commands",
+            "actual_installer_or_uninstaller_executed=$false",
+        ]),
     ):
         missing = [anchor for anchor in anchors if anchor not in body]
         if missing:
@@ -1189,6 +1230,10 @@ def transaction_source_status(sources):
         if forbidden in dp1u_gate:
             fail("Rime/PIME DP1-U pure gate gained a prohibited action surface")
     dp1u_maintenance_runtime_gate_source_contract_wired = True
+    for forbidden in ("Start-Process", "Stop-Process", "Remove-Item", "Registry::", "HKLM", "HKCU", "msiexec", "Invoke-Expression"):
+        if forbidden in dp1u_preflight:
+            fail("Rime/PIME DP1-U supplied-evidence preflight gained an execution surface")
+    dp1u_isolated_preflight_source_contract_wired = True
     if core.index("New-Item -ItemType Directory -Path $stagingRoot") >= core.index("$preinstall = Invoke-UninstallCore"):
         fail("YimeCore active mutation moved before complete package staging")
     ci_postbuild_step = one(
@@ -1278,6 +1323,11 @@ def transaction_source_status(sources):
         r"(?ms)^      - name: Test DP1-U maintenance and Runtime admission gate\s*$.*?(?=^      - name: |\Z)",
         ci,
         "CI DP1-U maintenance and Runtime gate step",
+    ).group()
+    ci_dp1u_preflight_step = one(
+        r"(?ms)^      - name: Test DP1-U isolated target preflight contract\s*$.*?(?=^      - name: |\Z)",
+        ci,
+        "CI DP1-U isolated target preflight step",
     ).group()
     ci_supersession_step = one(
         r"(?ms)^      - name: Test DP1-J isolated receipt-v2 supersession protocol\s*$.*?(?=^      - name: |\Z)",
@@ -1530,6 +1580,15 @@ def transaction_source_status(sources):
         "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in ci_dp1u_gate_step and
         "PowerShell 5.1 DP1-U admission-gate test failed with exit code $LASTEXITCODE" in ci_dp1u_gate_step and
         all(re.search(pattern, ci_dp1u_gate_step) is None for pattern in prohibited_dp1i_ci_patterns)
+    )
+    dp1u_isolated_preflight_ci_ps5_ps7_present = (
+        ci_dp1u_preflight_step.count("test-rime-pime-dp1u-isolated-preflight.ps1") == 2 and
+        ci_dp1u_preflight_step.count("-OutputRoot") == 2 and
+        ".tmp\\dual-product\\dp1-u-preflight-test-ci-ps5-$runId" in ci_dp1u_preflight_step and
+        ".tmp\\dual-product\\dp1-u-preflight-test-ci-ps7-$runId" in ci_dp1u_preflight_step and
+        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in ci_dp1u_preflight_step and
+        "PowerShell 5.1 DP1-U isolated-preflight test failed with exit code $LASTEXITCODE" in ci_dp1u_preflight_step and
+        all(re.search(pattern, ci_dp1u_preflight_step) is None for pattern in prohibited_dp1i_ci_patterns)
     )
     rime_sid_chain_anchors = ("RequestExecutionLevel user" in nsis and
                               "Function bootstrapTargetUser" in nsis and
@@ -2237,6 +2296,8 @@ def transaction_source_status(sources):
             not dp1t_actual_adapter_ci_ps5_ps7_present or
             not dp1u_maintenance_runtime_gate_source_contract_wired or
             not dp1u_maintenance_runtime_gate_ci_ps5_ps7_present or
+            not dp1u_isolated_preflight_source_contract_wired or
+            not dp1u_isolated_preflight_ci_ps5_ps7_present or
             'InstallLayoutOrTip(w "${YIME_TIP}"' not in nsis or
             'Get-ChildItem -LiteralPath "Registry::HKEY_USERS"' in pime_cleanup):
         fail("Rime/PIME registration/SID/transaction status changed; dedicated review required")
@@ -2383,6 +2444,11 @@ def transaction_source_status(sources):
         "rime_pime_dp1t_exact_authorization_consumed_by_baseline": False,
         "rime_pime_dp1u_maintenance_runtime_gate_source_contract_wired": dp1u_maintenance_runtime_gate_source_contract_wired,
         "rime_pime_dp1u_maintenance_runtime_gate_ci_ps5_ps7_present": dp1u_maintenance_runtime_gate_ci_ps5_ps7_present,
+        "rime_pime_dp1u_isolated_preflight_source_contract_wired": dp1u_isolated_preflight_source_contract_wired,
+        "rime_pime_dp1u_isolated_preflight_ci_ps5_ps7_present": dp1u_isolated_preflight_ci_ps5_ps7_present,
+        "rime_pime_dp1u_isolated_preflight_test_executed_by_baseline": False,
+        "rime_pime_dp1u_real_target_approved": False,
+        "rime_pime_dp1u_execution_authorized": False,
         "rime_pime_dp1u_gate_test_executed_by_baseline": False,
         "rime_pime_dp1u_current_readiness_executed_by_baseline": False,
         "rime_pime_dp1u_acceptance_passed": False,
@@ -2575,8 +2641,8 @@ def source_baseline(root: Path = ROOT):
           "status": "actual_archive_adapter_and_canonical_migration_complete_external_to_source_baseline",
           "reason": "DP1-S publishes a content-addressed archive outside Git worktrees. DP1-T deterministically rebases path-bound build evidence, binds an identical PS5/PS7 plan plus both full fault matrices to one exact authorization, and completes the actual canonical artifact migration through the private DP1-N capability while the public API still rejects the checkout. The tracked baseline verifies source and CI anchors only; the separate DP1-T evidence proves execution. Hardware-power-loss, directory-metadata and hostile same-SID physical prevention remain false."},
         {"id": "DP1-PIME-MAINTENANCE-RUNTIME-11", "path": "tools/dual-product/rime-pime-dp1u-maintenance-runtime-gate.psm1",
-          "status": "source_admission_gate_implemented_ps5_ps7_actual_installed_acceptance_pending",
-          "reason": "DP1-U now has one fail-closed evidence schema for registration, rollback, exact removal and Runtime readiness, plus PS5/PS7 regressions and a current-readiness review over the DP1-T canonical receipt and existing source/fixture suites. No installer or uninstaller was run, so every installed acceptance gate remains false. Hardware-power-loss and directory-metadata durability remain false."},
+          "status": "isolated_preflight_and_source_gate_wired_ps5_ps7_execution_adapter_and_installed_acceptance_pending",
+          "reason": "DP1-U now has a source-closed, PS5/PS7 CI-enforced supplied-evidence preflight before its fail-closed registration, rollback, exact-removal and Runtime gate. The preflight validates an exact external approval digest and target/product boundaries but never authorizes execution. A native execution adapter, a separately approved isolated target and all installed evidence remain pending; no installer or uninstaller was run. Hardware-power-loss and directory-metadata durability remain false."},
     ]
     unchanged = all(digest(child(root, path)) == expected for path, expected in hashes.items())
     if not unchanged:

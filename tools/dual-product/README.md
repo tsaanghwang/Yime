@@ -1,6 +1,6 @@
 # 双产品 DP1 只读基线与隔离合同
 
-2026-09-08 DP1-U 增量：[隔离目标授权与执行前合同](../../docs/project/YIME_DUAL_PRODUCT_DP1_U_ISOLATED_PREFLIGHT_2026-09-08.md)新增纯校验模块、精确 evidence schema 和 PS5／PS7 合成夹具各 246/246。绑定独立审批摘要、目标身份、发起 SID、系统可见状态／恢复根及双产品资源边界；拒绝 MYCOMPUTER local.12、生产 Rime/PIME、默认输入法变更、packaged ancestry 和歧义注册视图。没有真实目标批准、执行适配器或 installed 证据，`execution_authorized=false`，四类 installed 门禁及总验收仍为 false。
+2026-09-08 DP1-U 增量：[隔离目标授权与执行前合同](../../docs/project/YIME_DUAL_PRODUCT_DP1_U_ISOLATED_PREFLIGHT_2026-09-08.md)新增纯校验模块、精确 evidence schema 和 PS5／PS7 合成夹具各 246/246。绑定独立审批摘要、目标身份、发起 SID、系统可见状态／恢复根及双产品资源边界；拒绝 MYCOMPUTER local.12、生产 Rime/PIME、默认输入法变更、packaged ancestry 和歧义注册视图。后续审查已将四个预检路径纳入受保护来源闭包、双 shell CI 与 161 来源全局基线。没有真实目标批准、执行适配器或 installed 证据，`execution_authorized=false`，四类 installed 门禁及总验收仍为 false。
 
 影响面：共存安装合同／两版源码基线。当前已完成首批基线、定向退出、`TargetUserSid`、Rime/PIME 注册所有权／状态接线、纯事务参考模型、全量密封 stage、stage-only NSIS 构建、只读静态归档核对、canonical v2 静态证据绑定，以及 fixture-only journal／replay／类型化合成快照／精确 removal、连续 tree-membership monitor、严格 build-evidence admission、receipt supersession、installer＋receipt identity replacement、严格版本／installer leaf 准入、versioned successor disabled candidate、仓外候选证据 capsule、受限 actual canonical 工件迁移和 DP1-U 四类维护／Runtime 统一门禁。DP1-T 已迁移仓库 canonical receipt／versioned installer；DP1-U 源码门禁已完成，但四类 installed acceptance 仍为 false。**未运行 native probe、安装器、卸载器、注册表操作或真实产品进程**，不是完整 DP1 或 DP2 单装／共存实机验收。
 

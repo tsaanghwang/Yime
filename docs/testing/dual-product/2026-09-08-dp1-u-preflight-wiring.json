@@ -1,0 +1,73 @@
+{
+  "schema_version": "yime-rime-pime-dp1u-preflight-wiring-evidence-v1",
+  "recorded_at": "2026-09-08",
+  "affected_product": "rime-pime",
+  "scope": "source closure and CI wiring only",
+  "review_finding": {
+    "preflight_contract_existed": true,
+    "preflight_sources_in_contract_before": false,
+    "preflight_ps5_ps7_ci_before": false,
+    "risk": "The required installed-execution preflight could drift outside the protected source baseline and CI."
+  },
+  "implemented": {
+    "preflight_sources_added_to_contract": true,
+    "preflight_module_schema_fixture_and_test_hash_bound": true,
+    "preflight_ps5_ps7_ci_added": true,
+    "baseline_requires_preflight_source_and_ci_wiring": true,
+    "baseline_nonclaims_preserved": true
+  },
+  "source_sha256": {
+    ".github/workflows/ci.yaml": "ba0d0c3a014a23c1d1d9f850a291c4d4e6382373c269bf087d3c060a6fee5dac",
+    "tools/dual-product/contract.json": "c8f7f78430b17e15439d5d8fd6f5d566069d35f793e75601bb973b8aa30a38db",
+    "tools/dual-product/baseline.py": "9e3b3117e97c58df1f64a428c4077ef5005648c110d42fc95cfc45651a4e42a2",
+    "tools/dual-product/test_baseline.py": "1c7b1a892e873ad0cf037a600bf92a73203b2eff48c25e7089929177063a014d",
+    "tools/dual-product/rime-pime-dp1u-isolated-preflight.psm1": "6a0083024ad920f6fc2ba3979e008257029e38e132b7740ba2a3d625e1230963",
+    "tools/dual-product/rime-pime-dp1u-isolated-preflight.schema.json": "a22d0ddc9eec9faf5d28631a6580450b62e9c448897be6eea35ee39cc0758b8b",
+    "tools/dual-product/fixtures/dp1u-isolated-preflight.synthetic.json": "5e7f45f70b1b23e0e0f510a6fd80ab32ab59ead322f6a9cb8df53dba34b60f8e",
+    "tools/dual-product/test-rime-pime-dp1u-isolated-preflight.ps1": "c37a5c5339ec4b37e2f7a926b679feccb8a12f61b7b90118344f0217c33501f7"
+  },
+  "validation": {
+    "preflight_ps5": {
+      "powershell_version": "5.1.26100.9278",
+      "passed": true,
+      "checks": 246,
+      "result_sha256": "11fd114bd63d0112d53ad943e78210f709ba301313924ea6ab968b1ee5d6e762"
+    },
+    "preflight_ps7": {
+      "powershell_version": "7.6.5",
+      "passed": true,
+      "checks": 246,
+      "result_sha256": "ad1c6288f540552783f513fea01be4994c9111449468ee81ebab3050a5380d79"
+    },
+    "baseline_unit_tests": {
+      "passed": true,
+      "checks": 68
+    },
+    "current_source_baseline": {
+      "passed": true,
+      "source_count": 161,
+      "checks": 68,
+      "pending_count": 8,
+      "result_sha256": "cb678eadb6ec954a7b43d16d49c5b02b5590bcea41ae245d809e789cad5f0a51"
+    },
+    "build_guards_ps5": true,
+    "build_guards_ps7": true
+  },
+  "closure": {
+    "preflight_source_contract_wired": true,
+    "preflight_ci_ps5_ps7_present": true,
+    "real_target_approved": false,
+    "execution_authorized": false,
+    "execution_adapter_implemented": false,
+    "actual_installer_or_uninstaller_executed": false,
+    "actual_registry_or_product_process_touched": false,
+    "installed_yimecore_local12_touched": false,
+    "production_user_data_accessed": false,
+    "default_input_method_changed": false,
+    "dp1_u_acceptance_passed": false,
+    "dp1_complete": false,
+    "dp2_complete": false,
+    "dp3_complete": false
+  },
+  "next_step": "Implement the native execution adapter against this protected preflight boundary; execute it only after a separate exact isolated-target approval."
+}
