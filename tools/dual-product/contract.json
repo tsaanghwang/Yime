@@ -138,6 +138,7 @@
     "tools/dual-product/rime-pime-dp1u-native-facts.cs",
     "tools/dual-product/rime-pime-dp1u-native-probe.psm1",
     "tools/dual-product/test-rime-pime-dp1u-native-probe.ps1",
+    "tools/dual-product/test-rime-pime-dp1u-native-candidate.ps1",
     "tools/dual-product/rime-pime-dp1r-trust-admission.psm1",
     "tools/dual-product/test-rime-pime-dp1r-trust-admission.ps1",
     "tools/dual-product/review-rime-pime-dp1r-trust.ps1",
@@ -164,6 +165,7 @@
     "tools/yimecore/invoke-local-rollback-rehearsal.ps1",
     "tools/yimecore/test-e6c-user-tip-rollback.ps1",
     "tools/yimecore/test-local-product-maintenance.ps1",
+    "tools/yimecore/test-native-desktop-rehearsal.ps1",
     "go-backend/cmd/yimecore-trial-runtime/main.go",
     "tools/lexicon/data/yime_core_target.lock.json"
   ],

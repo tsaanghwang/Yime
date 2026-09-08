@@ -1,5 +1,7 @@
 # YimeCore 本机独立产品实施计划
 
+2026-09-08 维护源码后续修复：[NativeDesktop 演练提交前回滚保护](YIMECORE_LOCAL12_MINIMAL_MAINTENANCE_RETEST_2026-09-08.md)已经实现并通过双 shell 各 41 项回归、普通维护各 60 项及旧演练各 5 项。Runtime 意外成功也会在旧根删除/重启删除登记前进入回滚；这项修复在当前源码中，封存和已安装 local.12 以及旧准备包均未改动。新控制器候选重构、原生取证执行器及实际维护仍按各自证据判定，不因源码修复关闭 L6。
+
 2026-09-08 复审纠正：[L6 v2 核验](YIMECORE_LOCAL12_L6_READINESS_2026-09-08.md)修复字符串真值与原始证据未绑定的问题，重新核验源码封存、registered/x86 记录及上一包公共回退介质；历史 v1 结果保留，不再凭报告字段关闭就绪。按[最小补验方案](YIMECORE_LOCAL12_MINIMAL_MAINTENANCE_RETEST_2026-09-08.md)，local.11/.12 维护控制器相同，local.6 已有实际恢复/失败回退；后续集中补 NativeDesktop 双架构故障回退、精确注销及卸载重装。原生执行入口与实际证据仍待完成，L6/local/public 三项保持 false；L5 用户确认不重做。
 
 2026-09-08 补充：[SR4-B 符号链接证据](YIMECORE_SPEECH_SR4B_SYMLINK_EVIDENCE_2026-09-08.md)完成严格夹具判定和 PS5/PS7 分项报告接线，定向回归 260 PASS／4 SKIP。当前四项均因 Windows 1314 未执行真实拒绝；严格模式如实失败，不能标记 OS 门槛完成。未读取 local.12、未构包或安装；B4 包保留历史身份，本次源码闭包需后续新鲜准入与重构。

@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 157)
-        self.assertEqual(len(self.receipt["source_manifest"]), 164)
+        self.assertEqual(len(contract["source_paths"]), 159)
+        self.assertEqual(len(self.receipt["source_manifest"]), 166)
         for path in (
             "version.txt",
             "PIMELauncher/build.rs",
@@ -194,6 +194,8 @@ class OwnershipTests(unittest.TestCase):
             "tools/dual-product/rime-pime-dp1u-native-facts.cs",
             "tools/dual-product/rime-pime-dp1u-native-probe.psm1",
             "tools/dual-product/test-rime-pime-dp1u-native-probe.ps1",
+            "tools/dual-product/test-rime-pime-dp1u-native-candidate.ps1",
+            "tools/yimecore/test-native-desktop-rehearsal.ps1",
             "tools/dual-product/test-rime-pime-transaction-replay-model.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.psm1",
@@ -324,6 +326,9 @@ class OwnershipTests(unittest.TestCase):
         self.assertFalse(status["rime_pime_full_transaction_engine_wired_into_installer"])
         self.assertTrue(status["yimecore_same_sid_source_anchors_present"])
         self.assertTrue(status["yimecore_rollback_restore_source_anchors_present"])
+        self.assertTrue(status["yimecore_desktop_rehearsal_guard_source_anchors_present"])
+        self.assertTrue(status["yimecore_desktop_rehearsal_ci_ps5_ps7_present"])
+        self.assertFalse(status["yimecore_desktop_rehearsal_actual_acceptance_passed"])
         self.assertNotIn("synthetic_contract_implemented", status)
         self.assertNotIn("synthetic_contract_wired_into_installers", status)
         self.assertEqual(
@@ -544,6 +549,7 @@ class OwnershipTests(unittest.TestCase):
         self.assertTrue(status["rime_pime_dp1u_isolated_preflight_ci_ps5_ps7_present"])
         self.assertTrue(status["rime_pime_dp1u_native_readonly_probe_source_contract_wired"])
         self.assertTrue(status["rime_pime_dp1u_native_readonly_probe_ci_ps5_ps7_present"])
+        self.assertTrue(status["rime_pime_dp1u_native_candidate_ci_ps5_ps7_present"])
         self.assertFalse(status["rime_pime_dp1u_native_readonly_probe_executed_by_baseline"])
         self.assertFalse(status["rime_pime_dp1u_native_execution_adapter_complete"])
         self.assertFalse(status["rime_pime_dp1u_isolated_preflight_test_executed_by_baseline"])

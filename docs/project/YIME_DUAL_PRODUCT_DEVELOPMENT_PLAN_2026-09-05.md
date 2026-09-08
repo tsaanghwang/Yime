@@ -1,5 +1,7 @@
 # Yime 双独立产品开发计划
 
+2026-09-08 后续修复收口（当前判定）：DP1-U 原生探针 V2 已直接接入完整 strict receipt reader，PS5/PS7 各 15 项夹具加 2 项实际 canonical 只读检查通过；当前 disabled canonical 的来源链成立，可执行安装准入仍为 false，DP1-R 派生静态信任未撤回。YimeCore 新增 NativeDesktop 演练提交前强制回滚保护，覆盖 Runtime 意外成功后删除旧根的实际源码缺口；双 shell 各 41 项回归、60 项普通维护和 5 项历史演练通过。[最小维护方案](YIMECORE_LOCAL12_MINIMAL_MAINTENANCE_RETEST_2026-09-08.md)记录旧根文件租约不能防止重启删除的反例，以及新控制器与旧封存包的区别。源码/CI 基线现为 159 个声明路径加 7 个锁定依赖、68/68、8 个 pending。带新控制器的候选需要独立重构；完整原生事务、真实 DP1-U/DP2 验收及之后的 DP3 仍未完成。下文各批次数字和未实现项保留为阶段记录，以本段及对应最新证据为准。
+
 2026-09-08 当前复审增量：[DP1-U 原生只读探针](YIME_DUAL_PRODUCT_DP1_U_NATIVE_READONLY_PROBE_2026-09-08.md)已实现 OS 目标/架构/SID/祖先观测、固定 HKLM/HKU 双视图保护检查和工件句柄/字节绑定，PS5/PS7 各 74/74；本机实测仅为自有进程/文件夹具和 MYCOMPUTER 入口早拒绝，独立机与 StdRegProv 正路径未执行。新增源码进入来源闭包及双 shell CI，当前基线 164 个来源、68/68 测试、8 个 pending。此前四门纯判定已修复缺失字段及类型导致抛错的缺口，PS5/PS7 各 14/14。原生探针不会授予执行能力，完整 native transaction providers、可信可执行候选和实际安装验收仍待完成；不是仅差用户批准即可执行。
 
 本轮 YimeCore [L6 核验纠正](YIMECORE_LOCAL12_L6_READINESS_2026-09-08.md)已完成：原始证据、源码封存和公共回退包重新核验，历史结果保留。local.12 普通日用及 L5 用户确认不重做，维护补验按[最小范围](YIMECORE_LOCAL12_MINIMAL_MAINTENANCE_RETEST_2026-09-08.md)准备。保持开发顺序：完成执行器与候选审查 → 指定独立机实际 DP1-U 验收 → DP2 单装/两种安装顺序/各自维护矩阵 → 各自安装器通过后再实现 DP3 三选一入口。没有运行安装器或触碰已安装 local.12。
