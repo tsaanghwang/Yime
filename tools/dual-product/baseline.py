@@ -1491,7 +1491,7 @@ def transaction_source_status(sources):
         ".tmp\\dual-product\\dp1-nsis-interval-test-ci-ps7-$runId" in ci_compiler_interval_step and
         "PowerShell 5.1 DP1-K compiler-interval test failed with exit code $LASTEXITCODE" in
         ci_compiler_interval_step and
-        ci.index("      - name: Install NSIS in non-secret packaging job") <
+        ci.index("      - name: Prepare pinned NSIS in non-secret packaging job") <
         ci.index("      - name: Test DP1-K NSIS compiler membership interval") <
         ci.index("      - name: Build the installer") and
         all(name not in ci_compiler_interval_step for name in (

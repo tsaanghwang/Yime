@@ -197,7 +197,8 @@ $requiredGovernanceGuards = @(
     "Join-Path `$env:YIME_TRUSTED_SIGNING_ROOT 'tools\write-build-manifest.ps1'",
     '.\tools\test-installer-smoke.ps1',
     '-StaticOnly',
-    'uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0',
+    'uses: ./.github/actions/prepare-pinned-nsis',
+    '.\tools\ci\test-prepare-pinned-nsis.ps1',
     'nsis-version: 3.12',
     'uses: actions/download-artifact@v7'
 )
@@ -384,8 +385,8 @@ foreach ($guard in @(
         throw "Curated core evidence import guard is missing: $guard"
     }
 }
-if ($workflowText -match 'uses:\s*repolevedavaj/install-nsis@(?![0-9a-f]{40}(?:\s|#|$))') {
-    throw 'Third-party NSIS setup must be pinned to a full immutable commit SHA.'
+if ($workflowText.Contains('repolevedavaj/install-nsis')) {
+    throw 'NSIS preparation must use the repository-verified distribution without third-party overlays.'
 }
 foreach ($requiredScript in @($rimeCacheChecker, $rimeCacheTests, $installedParticleAVerifier, $installedParticleAVerifierTests, $releaseCertificateImporter, $microsoftAuthenticodeVerifier)) {
     if (-not (Test-Path -LiteralPath $requiredScript -PathType Leaf)) {
@@ -490,7 +491,7 @@ foreach ($jobName in @('release-sign-payload', 'release-sign-installer')) {
         -not $jobText.Contains("Add-Content -LiteralPath `$env:GITHUB_ENV")) {
         throw "Trusted signing implementation can remain inside the source checkout when signing begins: $jobName"
     }
-    foreach ($forbidden in @('repolevedavaj/install-nsis', 'Invoke-WebRequest', 'go install ')) {
+    foreach ($forbidden in @('repolevedavaj/install-nsis', './.github/actions/prepare-pinned-nsis', 'Invoke-WebRequest', 'go install ')) {
         if ($jobText.Contains($forbidden)) {
             throw "Release signing job executes untrusted setup after secrets are exposed: $jobName -> $forbidden"
         }
@@ -498,6 +499,12 @@ foreach ($jobName in @('release-sign-payload', 'release-sign-installer')) {
 }
 foreach ($jobName in @('unsigned-installer-package', 'release-installer-package')) {
     $jobText = & $extractJob $jobName
+    $nsisPreparation = $jobText.IndexOf('uses: ./.github/actions/prepare-pinned-nsis')
+    $installerCompilation = $jobText.IndexOf('build-rime-pime-installer.ps1')
+    if ($nsisPreparation -lt 0 -or $installerCompilation -le $nsisPreparation -or
+        -not $jobText.Contains('nsis-version: 3.12')) {
+        throw "NSIS packaging must prepare the repository-pinned distribution before compilation: $jobName"
+    }
     if ($jobText.Contains('secrets.YIME_') -or $jobText.Contains('import-release-signing-certificate.ps1')) {
         throw "NSIS packaging job must not receive release signing secrets: $jobName"
     }
