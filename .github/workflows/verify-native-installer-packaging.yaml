@@ -1,0 +1,216 @@
+name: Verify native installer packaging
+
+on:
+  push:
+    branches: ['diagnostic/yime-packaging-check']
+    paths: ['.github/workflows/verify-native-installer-packaging.yaml']
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostic-native-build:
+    name: diagnostic-native-build
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Guard and track libIME2 component commits
+        shell: pwsh
+        env:
+          LIBIME2_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          $report = Join-Path $env:RUNNER_TEMP 'libime2-change-report.tsv'
+          .\tools\check-libime2-change-boundary.ps1 `
+            -BaseRef $env:LIBIME2_BASE_SHA `
+            -HeadRef '${{ github.sha }}' `
+            -ReportPath $report
+      - name: Upload libIME2 change report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: libime2-change-report-${{ github.sha }}
+          path: ${{ runner.temp }}/libime2-change-report.tsv
+          if-no-files-found: error
+          retention-days: 30
+      - name: Test libIME2 gate rejection paths
+        shell: pwsh
+        run: .\tools\test-libime2-change-boundary.ps1
+      - name: Set up MSVC developer environment
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          if (-not (Test-Path $vswhere)) { throw "vswhere.exe was not found at $vswhere" }
+          $installPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $installPath) { throw 'A Visual Studio installation with x86/x64 VC tools was not found.' }
+          $vsDevCmd = Join-Path $installPath 'Common7\Tools\VsDevCmd.bat'
+          if (-not (Test-Path $vsDevCmd)) { throw "VsDevCmd.bat was not found at $vsDevCmd" }
+          $envDump = Join-Path $env:RUNNER_TEMP 'vsdevcmd-env.txt'
+          cmd /c "`"$vsDevCmd`" -arch=x64 -host_arch=x64 >nul && set > `"$envDump`""
+          if ($LASTEXITCODE -ne 0) { throw 'VsDevCmd.bat failed.' }
+          Get-Content $envDump | ForEach-Object {
+            if ($_ -match '^(.*?)=(.*)$') {
+              "$($matches[1])=$($matches[2])" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            }
+          }
+      - name: Install pinned i686 host toolchain
+        run: rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
+      - name: Verify vendored Win32 build dependencies
+        run: python .\tools\verify_vendored_build_dependencies.py
+      - name: Verify Win32 Rust and offline dependency pins
+        shell: pwsh
+        run: .\tools\assert-win32-build-prerequisites.ps1 -RequireToolchain
+      - name: Build Win32 C++ components
+        shell: cmd
+        run: |
+          call "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" -arch=x86 -host_arch=x64 >nul
+          cmake . -Bbuild -G "Visual Studio 17 2022" -A Win32 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+          cmake --build build --config Release
+      - name: Build x64 C++ components
+        shell: cmd
+        run: |
+          call "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64 >nul
+          cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+          cmake --build build64 --config Release --target PIMETextService PIMERpcResponseTests PIMERegistrationStatus
+      - name: Run native C++ regression tests (Win32)
+        shell: pwsh
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: Run x64 PIME RPC regression tests
+        shell: pwsh
+        run: ctest --test-dir build64 -C Release -R "^PIMERpcResponseTests$" --output-on-failure
+      - name: Verify native build outputs
+        shell: pwsh
+        run: .\tools\test-build-guards.ps1 -SkipPackagedRime
+      - name: Stage native installer inputs
+        shell: pwsh
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP 'yime-native'
+          New-Item -ItemType Directory -Path "$stage\build\PIMELauncher", "$stage\build\PIMETextService\Release", "$stage\build64\PIMETextService\Release" -Force | Out-Null
+          Copy-Item build\PIMELauncher\PIMELauncher.exe "$stage\build\PIMELauncher\PIMELauncher.exe"
+          Copy-Item build\PIMETextService\Release\PIMETextService.dll "$stage\build\PIMETextService\Release\PIMETextService.dll"
+          Copy-Item build\PIMETextService\Release\PIMERegistrationStatus.exe "$stage\build\PIMETextService\Release\PIMERegistrationStatus.exe"
+          Copy-Item build64\PIMETextService\Release\PIMETextService.dll "$stage\build64\PIMETextService\Release\PIMETextService.dll"
+          Copy-Item build64\PIMETextService\Release\PIMERegistrationStatus.exe "$stage\build64\PIMETextService\Release\PIMERegistrationStatus.exe"
+      - uses: actions/upload-artifact@v6
+        with:
+          name: yime-native-${{ github.sha }}
+          path: ${{ runner.temp }}/yime-native
+          if-no-files-found: error
+          retention-days: 14
+
+  installer-payload:
+    name: installer-payload
+    runs-on: windows-2022
+    timeout-minutes: 45
+    needs: [diagnostic-native-build]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Restore native installer inputs
+        uses: actions/download-artifact@v7
+        with:
+          name: yime-native-${{ github.sha }}
+          path: .
+      - name: Use Go 1.26.4
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.4'
+          cache-dependency-path: go-backend/go.sum
+      - name: Use Python 3.14 for package handoff verification
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Build Go backend package
+        shell: pwsh
+        run: |
+          Push-Location go-backend
+          cmd /C build.bat
+          if ($LASTEXITCODE -ne 0) { throw "go-backend build failed with exit code $LASTEXITCODE" }
+          Pop-Location
+      - name: Verify complete packaged PE architecture and static CRT closure
+        shell: pwsh
+        run: .\tools\verify-pe-architectures.ps1
+      - name: Seal default x86/x64 package plan
+        shell: pwsh
+        run: .\tools\dual-product\rime-pime-package-plan.ps1 -WritePlan -PlanRepoRoot $env:GITHUB_WORKSPACE -OutputPlanPath (Join-Path $env:GITHUB_WORKSPACE 'installer\package-plan.json')
+      - name: Verify packaged dictionaries, manifests, layout and help
+        shell: pwsh
+        run: |
+          python .\tools\lexicon\verify_package_handoff.py `
+            --package-root .\go-backend\build\go-backend\input_methods\yime `
+            --output (Join-Path $env:RUNNER_TEMP 'package-handoff.json')
+      - name: Upload unsigned installer payload
+        uses: actions/upload-artifact@v6
+        with:
+          name: yime-unsigned-payload-${{ github.sha }}
+          path: |
+            build/PIMELauncher/PIMELauncher.exe
+            build/PIMETextService/Release/PIMETextService.dll
+            build/PIMETextService/Release/PIMERegistrationStatus.exe
+            build64/PIMETextService/Release/PIMETextService.dll
+            build64/PIMETextService/Release/PIMERegistrationStatus.exe
+            go-backend/build/go-backend
+            installer/package-plan.json
+            installer/package-plan.json.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+  unsigned-installer-package:
+    name: unsigned-installer-package
+    if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: windows-2022
+    timeout-minutes: 45
+    needs: [installer-payload]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Restore unsigned installer payload
+        uses: actions/download-artifact@v7
+        with:
+          name: yime-unsigned-payload-${{ github.sha }}
+          path: .
+      - name: Install NSIS in non-secret packaging job
+        uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
+        with:
+          nsis-version: 3.12
+      - name: Test DP1-K NSIS compiler membership interval
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-nsis-compiler-interval.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-interval-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-K compiler-interval test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-nsis-compiler-interval.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-interval-test-ci-ps7-$runId")
+      - name: Build the installer
+        shell: pwsh
+        run: .\tools\build-rime-pime-installer.ps1 -RepoRoot $env:GITHUB_WORKSPACE -PackagePlanPath (Join-Path $env:GITHUB_WORKSPACE 'installer\package-plan.json')
+      - name: Write source-identity-aware build manifest
+        shell: pwsh
+        run: .\tools\write-build-manifest.ps1
+      - name: Validate unsigned installer artifact without native installation
+        shell: pwsh
+        run: |
+          $version = (Get-Content -LiteralPath .\version.txt -Raw).Trim()
+          $expectedLeaf = "YIME-$version-setup.exe"
+          $installers = @(Get-ChildItem -LiteralPath .\installer -File -Filter 'YIME-*-setup.exe')
+          if ($installers.Count -ne 1 -or $installers[0].Name -cne $expectedLeaf) {
+            throw "Unsigned installer identity is ambiguous or differs from version.txt: expected $expectedLeaf; found $(@($installers.Name) -join ', ')"
+          }
+          $installer = $installers[0]
+          .\tools\test-installer-smoke.ps1 -InstallerPath $installer.FullName -StaticOnly `
+            -ExpectedCommit $env:GITHUB_SHA -ExpectedRef $env:GITHUB_REF -ExpectedSignedRelease false `
+            -ExpectedSourceTreeDirty false
+      - uses: actions/upload-artifact@v6
+        with:
+          name: YIME-unsigned-test-installer-${{ github.sha }}
+          path: |
+            installer/YIME-*-setup.exe
+            installer/build-manifest.json
+            installer/package-plan.json
+            installer/package-plan.json.sha256
+            installer/package-build-receipt.json
+            installer/package-build-receipt.json.sha256
+          if-no-files-found: error
+          retention-days: 30
