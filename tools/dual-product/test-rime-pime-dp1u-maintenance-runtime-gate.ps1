@@ -113,6 +113,31 @@ Check 'schema-product-field-set-order-and-types-fail-closed' {
     foreach($case in $cases){$r=Test-RimePimeDp1UMaintenanceRuntimeGate $case;Assert-True (-not $r.dp1_u_acceptance_passed) 'Malformed evidence passed.'}
 }
 
+Check 'missing-fields-return-rejection-instead-of-throwing' {
+    foreach($name in @((New-Evidence).PSObject.Properties.Name)){
+        $e=Copy-Evidence (New-Evidence);$e.PSObject.Properties.Remove($name)
+        $r=Test-RimePimeDp1UMaintenanceRuntimeGate $e
+        Assert-True (-not $r.source_contract_ready -and -not $r.dp1_u_acceptance_passed) "Missing field passed: $name"
+        Assert-Reason $r 'field-set-or-order-not-exact'
+    }
+}
+Check 'null-scalars-arrays-and-dictionaries-return-rejection' {
+    foreach($e in @($null,'not-evidence',1,$false,@(),@(1,2),@{schema_version='fake'})){
+        $r=Test-RimePimeDp1UMaintenanceRuntimeGate -Evidence $e
+        Assert-True (-not $r.source_contract_ready -and -not $r.dp1_u_acceptance_passed) 'Non-object input passed.'
+        Assert-Reason $r 'evidence-not-object'
+    }
+}
+Check 'all-boolean-fields-reject-nonboolean-values' {
+    foreach($name in @((New-Evidence).PSObject.Properties.Name | Select-Object -Skip 2)){
+        foreach($value in @('true','false',0,1,$null,@(),@{value=$true})){
+            $e=Copy-Evidence (New-Evidence);$e.$name=$value
+            $r=Test-RimePimeDp1UMaintenanceRuntimeGate $e
+            Assert-True (-not $r.dp1_u_acceptance_passed) "Nonboolean value passed: $name"
+        }
+    }
+}
+
 $failed=@($checks|Where-Object{-not $_.passed})
 $result=[ordered]@{
     schema_version='yime-rime-pime-dp1u-maintenance-runtime-gate-test-v1'

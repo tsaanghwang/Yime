@@ -1081,6 +1081,9 @@ def transaction_source_status(sources):
             "every-removal-observation-is-required",
             "every-runtime-observation-is-required",
             "physical-nonclaims-must-remain-false",
+            "missing-fields-return-rejection-instead-of-throwing",
+            "null-scalars-arrays-and-dictionaries-return-rejection",
+            "all-boolean-fields-reject-nonboolean-values",
         ]),
         (dp1u_current_review, [
             "yime-rime-pime-dp1u-current-readiness-result-v1",

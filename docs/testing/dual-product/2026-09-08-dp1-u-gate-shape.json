@@ -1,0 +1,40 @@
+{
+  "schema_version": "yime-dp1u-gate-shape-validation-v1",
+  "affected_product": "rime-pime",
+  "recorded_at_utc": "2026-09-08T01:58:34.6326452Z",
+  "results": [
+    {
+      "path": ".tmp/dual-product/dp1-u-gate-test-red-ecb8492ce6d74dd887fed8823d3e1d55/result.json",
+      "sha256": "79504b0e56430c424a9494f31eb1f11e5eb3a897fa62baf5b834ab1bf65cac51",
+      "shell": "Desktop",
+      "version": "5.1.26100.9278",
+      "passed": false,
+      "checks": 14,
+      "failed": 2
+    },
+    {
+      "path": ".tmp/dual-product/dp1-u-gate-test-shape-ps5-fece655b8c0d42c281079448a587b652/result.json",
+      "sha256": "9d98693b0ca7a9c7470c4bb42a7a653a4f7b045c846a5cc4cbad8baed8f34798",
+      "shell": "Desktop",
+      "version": "5.1.26100.9278",
+      "passed": true,
+      "checks": 14,
+      "failed": 0
+    },
+    {
+      "path": ".tmp/dual-product/dp1-u-gate-test-shape-ps7-69f2e280752f4aaab1f963db758b3369/result.json",
+      "sha256": "56f911b8eb3a142d5f0522e16b9b87a0749a18121ffb25dd9393f7d84f01cf1f",
+      "shell": "Core",
+      "version": "7.6.5",
+      "passed": true,
+      "checks": 14,
+      "failed": 0
+    }
+  ],
+  "missing_evidence_returns_rejection": true,
+  "all_boolean_fields_wrong_type_tested": true,
+  "installer_executed": false,
+  "registry_or_product_process_touched": false,
+  "installed_yimecore_local12_touched": false,
+  "dp1_u_native_acceptance_passed": false
+}

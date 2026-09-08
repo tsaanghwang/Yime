@@ -38,9 +38,9 @@ function Test-Dp1UBool($Evidence,[string]$Name,[bool]$Expected,[Collections.Gene
 
 function Test-RimePimeDp1UMaintenanceRuntimeGate {
     [CmdletBinding()]
-    param([Parameter(Mandatory)]$Evidence)
+    param([Parameter(Mandatory)][AllowNull()][AllowEmptyCollection()][AllowEmptyString()]$Evidence)
     $reasons=[Collections.Generic.List[string]]::new()
-    if($null -eq $Evidence -or $null -eq $Evidence.PSObject){
+    if($null -eq $Evidence -or $Evidence -isnot [pscustomobject]){
         $reasons.Add('evidence-not-object')
         return [pscustomobject][ordered]@{
             schema_version='yime-rime-pime-dp1u-maintenance-runtime-gate-result-v1'
@@ -52,8 +52,12 @@ function Test-RimePimeDp1UMaintenanceRuntimeGate {
     }
     $actual=@($Evidence.PSObject.Properties|ForEach-Object{[string]$_.Name})
     if(($actual-join "`n") -cne ($script:Dp1UFields-join "`n")){Add-Dp1UReason $reasons 'field-set-or-order-not-exact'}
-    if([string]$Evidence.schema_version -cne $script:Dp1USchema){Add-Dp1UReason $reasons 'schema-not-supported'}
-    if([string]$Evidence.affected_product -cne 'rime-pime'){Add-Dp1UReason $reasons 'affected-product-not-rime-pime'}
+    $schemaProperty=$Evidence.PSObject.Properties['schema_version']
+    $productProperty=$Evidence.PSObject.Properties['affected_product']
+    if($null -eq $schemaProperty -or $schemaProperty.Value -isnot [string] -or
+        $schemaProperty.Value -cne $script:Dp1USchema){Add-Dp1UReason $reasons 'schema-not-supported'}
+    if($null -eq $productProperty -or $productProperty.Value -isnot [string] -or
+        $productProperty.Value -cne 'rime-pime'){Add-Dp1UReason $reasons 'affected-product-not-rime-pime'}
 
     $sourceReady=($reasons.Count -eq 0)
     foreach($name in @(
@@ -93,6 +97,7 @@ function Test-RimePimeDp1UMaintenanceRuntimeGate {
 
     $hardware=Test-Dp1UBool $Evidence 'hardware_power_loss_verified' $false $reasons
     $directory=Test-Dp1UBool $Evidence 'directory_metadata_durability_verified' $false $reasons
+    $local12Property=$Evidence.PSObject.Properties['installed_yimecore_local12_touched']
     return [pscustomobject][ordered]@{
         schema_version='yime-rime-pime-dp1u-maintenance-runtime-gate-result-v1'
         source_contract_ready=[bool]$sourceReady
@@ -102,7 +107,7 @@ function Test-RimePimeDp1UMaintenanceRuntimeGate {
         runtime_gate_passed=[bool]$runtime
         dp1_u_acceptance_passed=[bool]($registration -and $rollback -and $removal -and $runtime -and $hardware -and $directory)
         reasons=@($reasons)
-        installed_yimecore_local12_touched=[bool]($Evidence.installed_yimecore_local12_touched -is [bool] -and $Evidence.installed_yimecore_local12_touched)
+        installed_yimecore_local12_touched=[bool]($null -ne $local12Property -and $local12Property.Value -is [bool] -and $local12Property.Value)
         hardware_power_loss_verified=[bool]($hardware -and $false)
         directory_metadata_durability_verified=[bool]($directory -and $false)
     }
