@@ -38,9 +38,77 @@ function Assert-PreparationRecordPath([string]$Relative) {
     }
 }
 
+function Get-PreparationVersion([hashtable]$Contract) {
+    if (-not $Contract.ContainsKey('product_version')) { return '0.1.0-local.12' }
+    if ($Contract.product_version -isnot [string] -or $Contract.product_version -notin @('0.1.0-local.12','0.1.0-local.13')) { throw 'Unsupported preparation version.' }
+    return $Contract.product_version
+}
+
+function Assert-PreparationStringProperty($Object,[string]$Name) {
+    $property=$Object.PSObject.Properties[$Name]
+    if (-not $property -or $property.Value -isnot [string]) { throw 'Preparation identity requires literal JSON strings.' }
+}
+
+function Test-PreparationGuard([hashtable]$Contract) {
+    if (-not $Contract.ContainsKey('guarded_native_desktop_rehearsal')) { return $false }
+    if ($Contract.guarded_native_desktop_rehearsal -isnot [bool]) { throw 'Preparation guard claim must be a JSON boolean.' }
+    if ($Contract.guarded_native_desktop_rehearsal -and (Get-PreparationVersion $Contract) -ne '0.1.0-local.13') { throw 'Legacy preparation cannot claim the new guard.' }
+    # Guard availability is a reviewed source policy, not a caller-supplied claim.
+    # A future controller must receive a separate review before entering this pin.
+    if ($Contract.guarded_native_desktop_rehearsal -and
+        $Contract.manager_sha256 -cne 'e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a') { throw 'Controller is not approved for guarded NativeDesktop rehearsal.' }
+    return $Contract.guarded_native_desktop_rehearsal
+}
+
+function Get-PreparationStreamHash([IO.Stream]$Stream) {
+    $hash = [Security.Cryptography.SHA256]::Create()
+    try { $Stream.Position=0;return ([BitConverter]::ToString($hash.ComputeHash($Stream))).Replace('-','').ToLowerInvariant() }
+    finally { $Stream.Position=0;$hash.Dispose() }
+}
+
+function Read-PreparationPinnedJson([string]$Path,[string]$ExpectedSha256) {
+    $full=Assert-PreparationPlainPath $Path
+    $stream=[IO.File]::Open($full,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+    try {
+        if ((Get-PreparationStreamHash $stream) -cne $ExpectedSha256) { throw 'Pinned JSON input hash mismatch.' }
+        # Hash and parse from the same held stream, never two path-based reads.
+        $reader=[IO.StreamReader]::new($stream,[Text.Encoding]::UTF8,$true,4096,$true)
+        try { return ($reader.ReadToEnd() | ConvertFrom-Json) } finally { $reader.Dispose() }
+    } finally { $stream.Dispose() }
+}
+
+function Open-PreparationInputLeases($Catalog,[string]$ReplacementRuntime,[string]$ExpectedRuntimeSha256) {
+    $leases=@{}
+    try {
+        $records=@([pscustomobject]@{path='package-manifest.json';sha256=$Catalog.manifest_sha256;bytes=$null})+@($Catalog.manifest.files)
+        foreach ($record in $records) {
+            $path=Assert-PreparationPlainPath (Join-Path $Catalog.root $record.path)
+            $stream=[IO.File]::Open($path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+            $leases[$record.path]=$stream
+            if (($null -ne $record.bytes -and $stream.Length -ne $record.bytes) -or (Get-PreparationStreamHash $stream) -cne $record.sha256) { throw 'Public input changed before its copy lease.' }
+        }
+        $path=Assert-PreparationPlainPath $ReplacementRuntime
+        $stream=[IO.File]::Open($path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+        $leases['replacement-runtime']=$stream
+        if ((Get-PreparationStreamHash $stream) -cne $ExpectedRuntimeSha256) { throw 'Replacement runtime changed before its copy lease.' }
+        return $leases
+    } catch { foreach ($stream in $leases.Values) { $stream.Dispose() };throw }
+}
+
+function Copy-PreparationLeasedFile([IO.Stream]$InputStream,[string]$Destination,[string]$ExpectedSha256,[long]$ExpectedBytes) {
+    $null=Assert-PreparationPlainPath $Destination
+    $output=[IO.File]::Open($Destination,[IO.FileMode]::CreateNew,[IO.FileAccess]::ReadWrite,[IO.FileShare]::Read)
+    try {
+        $InputStream.Position=0;$InputStream.CopyTo($output);$output.Flush()
+        if ($output.Length -ne $ExpectedBytes -or (Get-PreparationStreamHash $output) -cne $ExpectedSha256) { throw 'Prepared member copy failed hash verification.' }
+    } finally { $output.Dispose() }
+}
+
 function Get-YimeCoreFaultPreparationCatalog {
     [CmdletBinding()]
     param([Parameter(Mandatory)][string]$PackageRoot, [Parameter(Mandatory)][hashtable]$Contract)
+    $version = Get-PreparationVersion $Contract
+    $guarded = Test-PreparationGuard $Contract
     $root = Assert-PreparationPlainPath $PackageRoot
     if (-not (Test-Path -LiteralPath $root -PathType Container) -or
         (Test-Path -LiteralPath (Join-Path $root 'install-metadata.json'))) {
@@ -49,15 +117,20 @@ function Get-YimeCoreFaultPreparationCatalog {
     foreach ($key in @('manifest_sha256','manager_sha256','wrapper_sha256')) {
         if ($Contract[$key] -isnot [string] -or $Contract[$key] -cnotmatch '^[a-f0-9]{64}$') { throw 'Invalid pinned preparation contract.' }
     }
+    if (($Contract.member_count -isnot [int] -and $Contract.member_count -isnot [long]) -or $Contract.member_count -lt 1) { throw 'Preparation member count must be a positive integer.' }
     $manifestPath = Join-Path $root 'package-manifest.json'
     $null = Assert-PreparationPlainPath $manifestPath
-    $manifestHash = (Get-FileHash -LiteralPath $manifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
-    if ($manifestHash -cne $Contract.manifest_sha256) { throw 'Pinned package manifest mismatch.' }
-    $manifest = Get-Content -LiteralPath $manifestPath -Encoding UTF8 -Raw | ConvertFrom-Json
+    $manifestHash = $Contract.manifest_sha256
+    $manifest = Read-PreparationPinnedJson $manifestPath $manifestHash
+    foreach ($name in @('package_contract','tool_version','product_version')) { Assert-PreparationStringProperty $manifest $name }
     if ($manifest.package_contract -cne 'yimecore-local-product-package-v1' -or
         $manifest.tool_version -cne 'yimecore-local-builder-v1' -or
-        $manifest.product_version -cne '0.1.0-local.12' -or
-        @($manifest.files).Count -ne $Contract.member_count) { throw 'Unexpected local.12 package identity or member count.' }
+        $manifest.product_version -cne $version -or
+        @($manifest.files).Count -ne $Contract.member_count) { throw 'Unexpected package identity or member count.' }
+    if ($Contract.ContainsKey('package_id') -and
+        ($Contract.package_id -isnot [string] -or -not $manifest.PSObject.Properties['package_id'] -or
+            $manifest.package_id -isnot [string] -or $manifest.package_id -cne $Contract.package_id)) { throw 'Pinned public package ID mismatch.' }
+    if ($guarded -and (-not $Contract.ContainsKey('package_id') -or [string]::IsNullOrWhiteSpace($Contract.package_id))) { throw 'Guarded preparation requires a pinned package ID.' }
     $expected = @{}
     $directories = @{}
     foreach ($record in @($manifest.files)) {
@@ -105,8 +178,13 @@ function Get-YimeCoreFaultPreparationCatalog {
     if ($actualCount -ne $expected.Count) { throw 'Public package catalog is incomplete.' }
     if ($expected['maintenance/Manage-YimeCoreTrial.ps1'].sha256 -cne $Contract.manager_sha256 -or
         $expected['maintenance/manage-local-product.ps1'].sha256 -cne $Contract.wrapper_sha256) { throw 'Pinned maintenance controller mismatch.' }
-    $descriptor = Get-Content -LiteralPath (Join-Path $root 'local-product.json') -Encoding UTF8 -Raw | ConvertFrom-Json
-    if ($descriptor.schema_version -cne 'yimecore-local-product-v1' -or $descriptor.version -cne '0.1.0-local.12' -or
+    $descriptor = Read-PreparationPinnedJson (Join-Path $root 'local-product.json') $expected['local-product.json'].sha256
+    foreach ($name in @('schema_version','version')) { Assert-PreparationStringProperty $descriptor $name }
+    Assert-PreparationStringProperty $descriptor.scope 'computer_name'
+    foreach ($name in @('product_key','clsid','profile')) { Assert-PreparationStringProperty $descriptor.identity $name }
+    $active=$descriptor.scope.active_architectures
+    if ($active -isnot [array] -or $active.Count -ne 2 -or $active[0] -isnot [string] -or $active[1] -isnot [string]) { throw 'Preparation architectures require an ordered JSON string array.' }
+    if ($descriptor.schema_version -cne 'yimecore-local-product-v1' -or $descriptor.version -cne $version -or
         $descriptor.scope.computer_name -cne 'MYCOMPUTER' -or
         (@($descriptor.scope.active_architectures) -join '|') -cne 'x64|x86' -or
         $descriptor.identity.product_key -cne 'YimeCoreExperimentalTrial' -or
@@ -120,11 +198,14 @@ function Get-YimeCoreFaultPreparationPlan {
     param([Parameter(Mandatory)][string]$PackageRoot, [Parameter(Mandatory)][hashtable]$Contract,
         [Parameter(Mandatory)][string]$ProbeSource, [Parameter(Mandatory)][string]$ExpectedProbeSourceSha256)
     $catalog = Get-YimeCoreFaultPreparationCatalog $PackageRoot $Contract
+    $version=Get-PreparationVersion $Contract
+    $guarded=Test-PreparationGuard $Contract
+    $tag=if ($version -ceq '0.1.0-local.13') {'local13'} else {'local12'}
     $probe = Assert-PreparationPlainPath $ProbeSource
     $probeHash = (Get-FileHash -LiteralPath $probe -Algorithm SHA256).Hash.ToLowerInvariant()
     if ($ExpectedProbeSourceSha256 -cnotmatch '^[a-f0-9]{64}$' -or $probeHash -cne $ExpectedProbeSourceSha256) { throw 'Reviewed exit-86 probe source changed.' }
     return [ordered]@{
-        schema_version='yimecore-local12-fault-preparation-plan-v1';action='Plan';package_version='0.1.0-local.12'
+        schema_version=('yimecore-'+$tag+'-fault-preparation-plan-v1');action='Plan';package_version=$version
         source_package=$catalog.root;source_manifest_sha256=$catalog.manifest_sha256;verified_member_count=$catalog.file_count
         manager_sha256=$Contract.manager_sha256;wrapper_sha256=$Contract.wrapper_sha256
         target_computer='MYCOMPUTER';native_architecture='x64';tsf_architectures=@('x64','x86')
@@ -133,8 +214,8 @@ function Get-YimeCoreFaultPreparationPlan {
         source_catalog_verified=$true;prepared_only=$true;failure_package_prepared=$false
         execution_authorized=$false;ready_to_execute=$false;installer_executed=$false;product_executed=$false
         installed_package_read=$false;user_state_read=$false;product_mutated=$false
-        unexpected_success_rollback_guard_available=$false
-        pending=@('NativeDesktop unexpected-success rollback guard','reviewed same-SID native execution harness and fresh backup','explicit maintenance window')
+        unexpected_success_rollback_guard_available=$guarded
+        pending=$(if ($guarded) { @('reviewed same-SID native execution harness and fresh backup','explicit maintenance window') } else { @('NativeDesktop unexpected-success rollback guard','reviewed same-SID native execution harness and fresh backup','explicit maintenance window') })
     }
 }
 
@@ -162,6 +243,9 @@ function New-YimeCoreFaultPreparationOutput {
         [Parameter(Mandatory)][string]$ReplacementRuntime, [Parameter(Mandatory)][string]$ExpectedRuntimeSha256,
         [Parameter(Mandatory)][string]$OutputRoot, [Parameter(Mandatory)][string]$ApprovedOutputParent)
     $catalog = Get-YimeCoreFaultPreparationCatalog $PackageRoot $Contract
+    $version=Get-PreparationVersion $Contract
+    $guarded=Test-PreparationGuard $Contract
+    $tag=if ($version -ceq '0.1.0-local.13') {'local13'} else {'local12'}
     $out = Assert-PreparationNewChild $OutputRoot $ApprovedOutputParent
     if ($out.StartsWith($catalog.root+'\',[StringComparison]::OrdinalIgnoreCase) -or
         $catalog.root.StartsWith($out+'\',[StringComparison]::OrdinalIgnoreCase)) { throw 'Preparation source and output overlap.' }
@@ -169,6 +253,8 @@ function New-YimeCoreFaultPreparationOutput {
     if ($ExpectedRuntimeSha256 -cnotmatch '^[a-f0-9]{64}$' -or
         (Get-FileHash -LiteralPath $ReplacementRuntime -Algorithm SHA256).Hash -ine $ExpectedRuntimeSha256) { throw 'Compiled failure probe hash mismatch.' }
     if ($ExpectedRuntimeSha256 -ceq $catalog.files['bin/YimeCoreTrialRuntime.exe'].sha256) { throw 'Failure probe cannot be the ordinary runtime.' }
+    $leases=Open-PreparationInputLeases $catalog $ReplacementRuntime $ExpectedRuntimeSha256
+    try {
     New-Item -ItemType Directory -Path $out | Out-Null
     # Copy only enumerated public files, never a recursive wildcard or state/archive metadata.
     foreach ($record in $catalog.manifest.files) {
@@ -176,9 +262,10 @@ function New-YimeCoreFaultPreparationOutput {
         $parent = Split-Path -Parent $destination
         New-Item -ItemType Directory -Path $parent -Force | Out-Null
         $null = Assert-PreparationPlainPath $parent
-        $input = if ($record.path -ceq 'bin/YimeCoreTrialRuntime.exe') { $ReplacementRuntime } else { Join-Path $catalog.root $record.path }
-        $null = Assert-PreparationPlainPath $input
-        Copy-Item -LiteralPath $input -Destination $destination
+        $replacement=$record.path -ceq 'bin/YimeCoreTrialRuntime.exe'
+        $inputStream=if ($replacement) { $leases['replacement-runtime'] } else { $leases[$record.path] }
+        $expectedHash=if ($replacement) { $ExpectedRuntimeSha256 } else { $record.sha256 }
+        Copy-PreparationLeasedFile $inputStream $destination $expectedHash $inputStream.Length
     }
     $manifest = $catalog.manifest
     $runtimeRecord = @($manifest.files | Where-Object { $_.path -ceq 'bin/YimeCoreTrialRuntime.exe' })[0]
@@ -190,21 +277,33 @@ function New-YimeCoreFaultPreparationOutput {
     $manifest | Add-Member -NotePropertyName rehearsal_only -NotePropertyValue $true -Force
     $manifest | Add-Member -NotePropertyName preparation_only -NotePropertyValue $true -Force
     $manifest | Add-Member -NotePropertyName source_package_manifest_sha256 -NotePropertyValue $catalog.manifest_sha256 -Force
+    if ($guarded) {
+        $sourceId=$manifest.package_id
+        $manifest.package_id=$sourceId+'-rollback-failure-'+$ExpectedRuntimeSha256.Substring(0,12)
+        $manifest | Add-Member -NotePropertyName source_package_id -NotePropertyValue $sourceId -Force
+        $manifest | Add-Member -NotePropertyName rehearsal_mode -NotePropertyValue 'NativeDesktopRehearsal' -Force
+        $manifest | Add-Member -NotePropertyName expected_runtime_exit_code -NotePropertyValue 86 -Force
+    }
     $manifest | ConvertTo-Json -Depth 30 | Set-Content -LiteralPath (Join-Path $out 'package-manifest.json') -Encoding UTF8
     $derivedContract = $Contract.Clone()
     $derivedContract.manifest_sha256 = (Get-FileHash -LiteralPath (Join-Path $out 'package-manifest.json') -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($guarded) { $derivedContract.package_id=$manifest.package_id }
     $verified = Get-YimeCoreFaultPreparationCatalog $out $derivedContract
-    # Recheck source after copying. This proves bytes, not a same-SID execution boundary.
+    # Input handles stay open through source/output verification. These copy leases
+    # do not seal directory membership, deny preexisting mappings, or authorize execution.
     $null = Get-YimeCoreFaultPreparationCatalog $PackageRoot $Contract
     return [ordered]@{
-        schema_version='yimecore-local12-fault-preparation-output-v1';prepared_only=$true;failure_package_prepared=$true
+        schema_version=('yimecore-'+$tag+'-fault-preparation-output-v1');prepared_only=$true;failure_package_prepared=$true
         source_package=$catalog.root;source_manifest_sha256=$catalog.manifest_sha256;output_root=$out
         failure_manifest_sha256=$verified.manifest_sha256;file_count=$verified.file_count;failure_runtime_sha256=$runtimeRecord.sha256
         changed_package_members=@('bin/YimeCoreTrialRuntime.exe','package-manifest.json');maintenance_controller_preserved=$true
         expected_probe_exit_code=86;probe_exit_observed=$false;probe_pe_machine='AMD64';static_package_verification_passed=$true
         execution_authorized=$false;ready_to_execute=$false;installer_executed=$false;product_executed=$false
-        installed_package_read=$false;user_state_read=$false;product_mutated=$false;unexpected_success_rollback_guard_available=$false
+        installed_package_read=$false;user_state_read=$false;product_mutated=$false;unexpected_success_rollback_guard_available=$guarded
+        input_copy_leases='FileShare.Read; held through output/source verification';same_sid_execution_boundary=$false
+        source_package_id=$(if ($guarded) {$sourceId} else {$null});failure_package_id=$(if ($guarded) {$manifest.package_id} else {$null})
     }
+    } finally { foreach ($stream in $leases.Values) { $stream.Dispose() } }
 }
 
 Export-ModuleMember -Function Get-YimeCoreFaultPreparationCatalog,Get-YimeCoreFaultPreparationPlan,New-YimeCoreFaultPreparationOutput,Assert-YimeCoreFailureProbePe,Assert-PreparationNewChild
