@@ -1,0 +1,1422 @@
+{
+  "schema_version": "yimecore-native-health-protocol-review-v1",
+  "reviewed_date": "2026-09-08",
+  "affected_product": "YimeCore",
+  "source_implementation_complete_for": "independent session-free health transport, supervisor snapshot and retained-process client",
+  "collector_schema_unchanged": "yimecore-native-rollback-collection-v2",
+  "collector_health_integrated": false,
+  "protocol": {
+    "request_bytes": 48,
+    "response_bytes": 80,
+    "nonce_bytes": 32,
+    "per_server_connection_deadline_ms": 1000,
+    "shared_client_pair_protocol_budget_ms": 1000,
+    "cleanup_hard_realtime_bound": false,
+    "independent_health_slots": 2,
+    "ordinary_connection_or_session_slots_used": false,
+    "server_same_sid_required": true,
+    "local_first_instance_anchor": true,
+    "anchor_alone_prevents_same_sid_spoofing": false,
+    "client_os_server_pid_bound": true,
+    "client_native_process_creation_bound": true,
+    "retained_observation_rechecked": true,
+    "server_rejects_buffered_extra_bytes": true,
+    "late_bytes_dispatch_again": false,
+    "client_exact_response_and_eof": true,
+    "runtime_snapshot_max_age_ms": 2000,
+    "health_reads_refresh_snapshot": false,
+    "broker_serving_means": "ordinary pipe anchor lifecycle, not an engine input operation",
+    "runtime_serving_means": "recent supervisor observation of its original live child handle",
+    "trusted_fast_in_memory_snapshot_callback_required": true
+  },
+  "evidence_scope": {
+    "maintenance": "private providers and owned fixtures; no actual product observations",
+    "native_client": "22 owned-pipe cases per shell; full lease composition uses a private process provider",
+    "interop": "actual Go server and C# client in two sibling helpers per shell; not actual Runtime/Broker parentage",
+    "go": "three packages executed on x64 and x86 WOW64",
+    "arm64": "two test binaries cross-compiled only",
+    "ci": "actual fifteen-script maintenance body executed locally; remote workflow execution not claimed"
+  },
+  "checks": {
+    "test-local13-maintenance-inputs.ps1-ps5.json": 52,
+    "test-local13-maintenance-inputs.ps1-ps7.json": 52,
+    "test-local13-maintenance-preparation.ps1-ps5.json": 57,
+    "test-local13-maintenance-preparation.ps1-ps7.json": 57,
+    "test-native-maintenance-backup.ps1-ps5.json": 155,
+    "test-native-maintenance-backup.ps1-ps7.json": 155,
+    "test-native-maintenance-child.ps1-ps5.json": 71,
+    "test-native-maintenance-child.ps1-ps7.json": 71,
+    "test-native-maintenance-context.ps1-ps5.json": 48,
+    "test-native-maintenance-context.ps1-ps7.json": 48,
+    "test-native-maintenance-data.ps1-ps5.json": 51,
+    "test-native-maintenance-data.ps1-ps7.json": 51,
+    "test-native-maintenance-deferred-delete.ps1-ps5.json": 201,
+    "test-native-maintenance-deferred-delete.ps1-ps7.json": 201,
+    "test-native-maintenance-evidence.ps1-ps5.json": 79,
+    "test-native-maintenance-evidence.ps1-ps7.json": 79,
+    "test-native-maintenance-health.ps1-ps5.json": 73,
+    "test-native-maintenance-health.ps1-ps7.json": 73,
+    "test-native-maintenance-processes.ps1-ps5.json": 47,
+    "test-native-maintenance-processes.ps1-ps7.json": 47,
+    "test-native-maintenance-runtime.ps1-ps5.json": 72,
+    "test-native-maintenance-runtime.ps1-ps7.json": 72,
+    "test-native-maintenance-visibility.ps1-ps5.json": 104,
+    "test-native-maintenance-visibility.ps1-ps7.json": 104,
+    "test-native-rehearsal-outcome-reader.ps1-ps5.json": 224,
+    "test-native-rehearsal-outcome-reader.ps1-ps7.json": 224,
+    "test-native-rehearsal-outcome.ps1-ps5.json": 99,
+    "test-native-rehearsal-outcome.ps1-ps7.json": 99,
+    "test-native-rollback-collection.ps1-ps5.json": 170,
+    "test-native-rollback-collection.ps1-ps7.json": 170
+  },
+  "checks_per_shell": {
+    "ps5": 1503,
+    "ps7": 1503
+  },
+  "native_client_cases": {
+    "test-native-maintenance-health.ps1-ps5.json": [
+      {
+        "mode": "valid",
+        "accepted": true,
+        "elapsed_ms": 7,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": ""
+      },
+      {
+        "mode": "fragmented",
+        "accepted": true,
+        "elapsed_ms": 2,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": ""
+      },
+      {
+        "mode": "magic",
+        "accepted": false,
+        "elapsed_ms": 1,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "role",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "starting",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "stopping",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "unknown-state",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "nonce",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "pid",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "creation",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "broker-related-pid",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "broker-related-creation",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "runtime-related-pid",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "runtime-related-creation",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "reserved",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "short",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Short health response\""
+      },
+      {
+        "mode": "extra",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Extra health response bytes\""
+      },
+      {
+        "mode": "no-response",
+        "accepted": false,
+        "elapsed_ms": 1006,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health pair protocol deadline exceeded\""
+      },
+      {
+        "mode": "no-eof",
+        "accepted": false,
+        "elapsed_ms": 1007,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health pair protocol deadline exceeded\""
+      },
+      {
+        "mode": "shared-budget",
+        "accepted": false,
+        "elapsed_ms": 1050,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health pair protocol deadline exceeded\""
+      },
+      {
+        "mode": "wrong-os-pid",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health pipe belongs to another process\""
+      },
+      {
+        "mode": "stale-os-creation",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 6020,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health process creation identity differs\""
+      }
+    ],
+    "test-native-maintenance-health.ps1-ps7.json": [
+      {
+        "mode": "valid",
+        "accepted": true,
+        "elapsed_ms": 7,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": ""
+      },
+      {
+        "mode": "fragmented",
+        "accepted": true,
+        "elapsed_ms": 4,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": ""
+      },
+      {
+        "mode": "magic",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "role",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "starting",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "stopping",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "unknown-state",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "nonce",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "pid",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "creation",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "broker-related-pid",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "broker-related-creation",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "runtime-related-pid",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "runtime-related-creation",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "reserved",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health response does not bind the serving process and fresh nonce\""
+      },
+      {
+        "mode": "short",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Short health response\""
+      },
+      {
+        "mode": "extra",
+        "accepted": false,
+        "elapsed_ms": 1,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Extra health response bytes\""
+      },
+      {
+        "mode": "no-response",
+        "accepted": false,
+        "elapsed_ms": 1003,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health pair protocol deadline exceeded\""
+      },
+      {
+        "mode": "no-eof",
+        "accepted": false,
+        "elapsed_ms": 1002,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health pair protocol deadline exceeded\""
+      },
+      {
+        "mode": "shared-budget",
+        "accepted": false,
+        "elapsed_ms": 1002,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health pair protocol deadline exceeded\""
+      },
+      {
+        "mode": "wrong-os-pid",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health pipe belongs to another process\""
+      },
+      {
+        "mode": "stale-os-creation",
+        "accepted": false,
+        "elapsed_ms": 0,
+        "outstanding_io": 0,
+        "fixture_pid": 25280,
+        "error": "Exception calling \"ProbePair\" with \"5\" argument(s): \"Health process creation identity differs\""
+      }
+    ]
+  },
+  "interop": [
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-reviewed-ps5-v2.json",
+        "bytes": 13908,
+        "sha256": "a3745ad8ee91956fa97781dd73dcd8fbace35aa7be8243941ab068685499a4d1"
+      },
+      "result": {
+        "schema_version": "yimecore-health-go-native-client-interop-v1",
+        "passed": true,
+        "powershell_version": "5.1.26100.9278",
+        "test_source": {
+          "path": "C:\\dev\\Yime\\tools\\yimecore\\test-native-health-interop.ps1",
+          "bytes": 11510,
+          "sha256": "e2da38f3f55fc03c2762c83a40c2fc3877191405076c7ec3da93e20e6077be54"
+        },
+        "client_source": {
+          "path": "C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-health-client.cs",
+          "bytes": 9724,
+          "sha256": "cb9e7189d70e0c3a033ff6dd591d1c7ce91c637d92d9bf9a93f23b78be4858e3"
+        },
+        "go_package_sources": [
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\atomicreplace_other.go",
+            "bytes": 161,
+            "sha256": "181c3eb87ee09863a4046ffb01761dc33e564e55ace383385e1589b0d595df33"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\atomicreplace_windows.go",
+            "bytes": 674,
+            "sha256": "658853e2e082ccecf2fba3961ca2b5d20b0d49db23b4d80c73031b89195477fa"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\bundle_generation_manager.go",
+            "bytes": 14762,
+            "sha256": "40ab8a55475d359a3f5a6d60909e4891423473aa04b115ed216e5219f5f70c69"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\bundle_generation_manager_test.go",
+            "bytes": 19139,
+            "sha256": "0614c6b67a1b45877980f676e4e5f4dd84b92504fc6e5bc42be91565d99a8b0c"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\connected_speech_reconnect_test.go",
+            "bytes": 12444,
+            "sha256": "417b8910ec3674036afbc64781d34cd4347d6102756911d41951757e57fc216a"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\connection_limiter.go",
+            "bytes": 822,
+            "sha256": "4d8c2bb58f903abc89e107fe3cfa654067013dfd3b7c4069b26096b4d05beaaa"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\connection_limiter_test.go",
+            "bytes": 753,
+            "sha256": "c76b51c215d058337fa8fc5b14578abee55d19d87aee47b948d612e40f50c737"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\dispatcher.go",
+            "bytes": 15259,
+            "sha256": "a134d835aafee9b5e2b09289563941c13c7771c91375968f35d578335eba4326"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\dispatcher_test.go",
+            "bytes": 24338,
+            "sha256": "a33ac7d5eed97610ddcc3c48a2bbbe5516ce05d2c722090b1b149685aec6eb9c"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\health.go",
+            "bytes": 4679,
+            "sha256": "72399be57195f1e4693a21387011be0bb31b04e76e11c57d3dc1397879f81147"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\health_stub.go",
+            "bytes": 321,
+            "sha256": "7dfc2db5954532277717698330a009ada09d1c7e45eb9c0520bdee192ce4c7d4"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\health_test.go",
+            "bytes": 5134,
+            "sha256": "daf7c9b8595c3fc37be37111a8028eabe247b5807c44292bac93a386b9ca949a"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\health_windows.go",
+            "bytes": 6319,
+            "sha256": "f586f3af6fba296652f2eb6744fd7a620628b664ceecd9c84703520f92227da9"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\health_windows_test.go",
+            "bytes": 16633,
+            "sha256": "d63ba297034b82d235958f80c1730b56790b32819d5914b851a832e02e54cb22"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\index_control.go",
+            "bytes": 7620,
+            "sha256": "b3c3b97f14f6acdee8eae2858e9f30ff3937225112b04f96ed9d170cbf30c7c6"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\index_manager.go",
+            "bytes": 9597,
+            "sha256": "c36dc3dd1a38f4f051187fa6ad336b1614b0a97b5d5127dbadacac1a367fa3ff"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\index_manager_test.go",
+            "bytes": 7429,
+            "sha256": "17fc29ec823ba0b0e0326fc5f94a16ee1273c130aaa59b0bd615a4146ff169fe"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\mode_index_manager.go",
+            "bytes": 3978,
+            "sha256": "5c22c00066662cd550d891a828fb0b01c308dfcc9071e1127110ac55f2912d05"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\mode_index_manager_test.go",
+            "bytes": 10638,
+            "sha256": "1e3ce95ee1a1837254885cb4807107d9656e12ca138f4af68c7333cb43fc5bc8"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\named_pipe_stub.go",
+            "bytes": 450,
+            "sha256": "6915ffe4949a0406eccc3bc270e01aa968c7d6caad0eeb8390f39b19507a19aa"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\named_pipe_windows.go",
+            "bytes": 12298,
+            "sha256": "faf4310b477820b9675936350084e83b0bff79d1cdf1abadbaff4efcbeb6910c"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\named_pipe_windows_test.go",
+            "bytes": 5195,
+            "sha256": "886091ed93f3b7efe4716eddfb0271af0f65e922f4eaf3036cbff215d34024fc"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\protocol.go",
+            "bytes": 6723,
+            "sha256": "c4e782ec68420b9f78e7473e4dc30f4f63c421f47bbd490039cf1ee45668b4ad"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\stdio.go",
+            "bytes": 1823,
+            "sha256": "838604b7ffbbcc6fee781944a98bf42c901e3394bdb2e4cb30de9db53b37a5ca"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\stdio_test.go",
+            "bytes": 3109,
+            "sha256": "3d582fbdeb09ae5ab3db84bfa9e05948af47f0674e9c39b5ea730b1b526fa505"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\usermodel_store.go",
+            "bytes": 15133,
+            "sha256": "ad126a533e617bf693ad29cc168f41a7b6d4ea547b5d8dc955955e857835d646"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\usermodel_store_test.go",
+            "bytes": 15375,
+            "sha256": "9b362a8ef01048d5f80bfacba1f45a0ac9a1e5e42f17390a3cbb4b4e5239a94d"
+          }
+        ],
+        "binary": {
+          "path": "C:\\dev\\Yime\\.tmp\\health-interop-35fe8893338b4b1f8cc9187c3ab4711d\\health-interop.test.exe",
+          "bytes": 6452736,
+          "sha256": "a4da14d3cf32268b1d3637efdcff9fab7e3765558ea8a873bfb08e1a6392a781"
+        },
+        "round_trips": [
+          {
+            "round": 1,
+            "roles": [
+              "broker",
+              "runtime"
+            ],
+            "nonce_verified": true,
+            "os_pid_and_creation_verified": true,
+            "outstanding_io": 0
+          },
+          {
+            "round": 2,
+            "roles": [
+              "broker",
+              "runtime"
+            ],
+            "nonce_verified": true,
+            "os_pid_and_creation_verified": true,
+            "outstanding_io": 0
+          }
+        ],
+        "children": [
+          {
+            "pid": 38572,
+            "role": 1,
+            "exit_code": 0,
+            "ready_file": {
+              "path": "C:\\dev\\Yime\\.tmp\\health-interop-35fe8893338b4b1f8cc9187c3ab4711d\\health-interop-ready-ea9011ab22c34488854beb544e33d0ee.json",
+              "bytes": 254,
+              "sha256": "e47a4dbcd663b6f3d6ef1bd778777783f39e22e9578ce78ffe9d4f51209a6e1e"
+            },
+            "stdout": "PASS\n",
+            "stderr": ""
+          },
+          {
+            "pid": 13700,
+            "role": 2,
+            "exit_code": 0,
+            "ready_file": {
+              "path": "C:\\dev\\Yime\\.tmp\\health-interop-35fe8893338b4b1f8cc9187c3ab4711d\\health-interop-ready-b1470150ca984b8e9016a552aebbc4a4.json",
+              "bytes": 283,
+              "sha256": "f771eaa5a98cba6517c8885436de6abd146fa4cf9bd771af8e30e6c1c352750f"
+            },
+            "stdout": "PASS\n",
+            "stderr": ""
+          }
+        ],
+        "error": "",
+        "cleanup_error": "",
+        "separate_owned_processes": true,
+        "retained_product_lease_integration_verified": false,
+        "parentage_verified": false,
+        "wire_fixture_only": true,
+        "actual_product_executed": false,
+        "installed_local12_mutated": false,
+        "production_endpoint_contacted": false,
+        "user_state_read": false,
+        "runtime_ready_verified": false,
+        "E7_verified": false,
+        "L6_sealed": false,
+        "full_acceptance": false,
+        "in_memory_code_identity_verified": false
+      }
+    },
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-reviewed-ps7-v2.json",
+        "bytes": 8539,
+        "sha256": "6572a93fce05fd5bf46dff0e5756cda71718f8a622556d41a1ebc0564c653d58"
+      },
+      "result": {
+        "schema_version": "yimecore-health-go-native-client-interop-v1",
+        "passed": true,
+        "powershell_version": "7.6.5",
+        "test_source": {
+          "path": "C:\\dev\\Yime\\tools\\yimecore\\test-native-health-interop.ps1",
+          "bytes": 11510,
+          "sha256": "e2da38f3f55fc03c2762c83a40c2fc3877191405076c7ec3da93e20e6077be54"
+        },
+        "client_source": {
+          "path": "C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-health-client.cs",
+          "bytes": 9724,
+          "sha256": "cb9e7189d70e0c3a033ff6dd591d1c7ce91c637d92d9bf9a93f23b78be4858e3"
+        },
+        "go_package_sources": [
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\atomicreplace_other.go",
+            "bytes": 161,
+            "sha256": "181c3eb87ee09863a4046ffb01761dc33e564e55ace383385e1589b0d595df33"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\atomicreplace_windows.go",
+            "bytes": 674,
+            "sha256": "658853e2e082ccecf2fba3961ca2b5d20b0d49db23b4d80c73031b89195477fa"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\bundle_generation_manager_test.go",
+            "bytes": 19139,
+            "sha256": "0614c6b67a1b45877980f676e4e5f4dd84b92504fc6e5bc42be91565d99a8b0c"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\bundle_generation_manager.go",
+            "bytes": 14762,
+            "sha256": "40ab8a55475d359a3f5a6d60909e4891423473aa04b115ed216e5219f5f70c69"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\connected_speech_reconnect_test.go",
+            "bytes": 12444,
+            "sha256": "417b8910ec3674036afbc64781d34cd4347d6102756911d41951757e57fc216a"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\connection_limiter_test.go",
+            "bytes": 753,
+            "sha256": "c76b51c215d058337fa8fc5b14578abee55d19d87aee47b948d612e40f50c737"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\connection_limiter.go",
+            "bytes": 822,
+            "sha256": "4d8c2bb58f903abc89e107fe3cfa654067013dfd3b7c4069b26096b4d05beaaa"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\dispatcher_test.go",
+            "bytes": 24338,
+            "sha256": "a33ac7d5eed97610ddcc3c48a2bbbe5516ce05d2c722090b1b149685aec6eb9c"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\dispatcher.go",
+            "bytes": 15259,
+            "sha256": "a134d835aafee9b5e2b09289563941c13c7771c91375968f35d578335eba4326"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\health_stub.go",
+            "bytes": 321,
+            "sha256": "7dfc2db5954532277717698330a009ada09d1c7e45eb9c0520bdee192ce4c7d4"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\health_test.go",
+            "bytes": 5134,
+            "sha256": "daf7c9b8595c3fc37be37111a8028eabe247b5807c44292bac93a386b9ca949a"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\health_windows_test.go",
+            "bytes": 16633,
+            "sha256": "d63ba297034b82d235958f80c1730b56790b32819d5914b851a832e02e54cb22"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\health_windows.go",
+            "bytes": 6319,
+            "sha256": "f586f3af6fba296652f2eb6744fd7a620628b664ceecd9c84703520f92227da9"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\health.go",
+            "bytes": 4679,
+            "sha256": "72399be57195f1e4693a21387011be0bb31b04e76e11c57d3dc1397879f81147"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\index_control.go",
+            "bytes": 7620,
+            "sha256": "b3c3b97f14f6acdee8eae2858e9f30ff3937225112b04f96ed9d170cbf30c7c6"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\index_manager_test.go",
+            "bytes": 7429,
+            "sha256": "17fc29ec823ba0b0e0326fc5f94a16ee1273c130aaa59b0bd615a4146ff169fe"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\index_manager.go",
+            "bytes": 9597,
+            "sha256": "c36dc3dd1a38f4f051187fa6ad336b1614b0a97b5d5127dbadacac1a367fa3ff"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\mode_index_manager_test.go",
+            "bytes": 10638,
+            "sha256": "1e3ce95ee1a1837254885cb4807107d9656e12ca138f4af68c7333cb43fc5bc8"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\mode_index_manager.go",
+            "bytes": 3978,
+            "sha256": "5c22c00066662cd550d891a828fb0b01c308dfcc9071e1127110ac55f2912d05"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\named_pipe_stub.go",
+            "bytes": 450,
+            "sha256": "6915ffe4949a0406eccc3bc270e01aa968c7d6caad0eeb8390f39b19507a19aa"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\named_pipe_windows_test.go",
+            "bytes": 5195,
+            "sha256": "886091ed93f3b7efe4716eddfb0271af0f65e922f4eaf3036cbff215d34024fc"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\named_pipe_windows.go",
+            "bytes": 12298,
+            "sha256": "faf4310b477820b9675936350084e83b0bff79d1cdf1abadbaff4efcbeb6910c"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\protocol.go",
+            "bytes": 6723,
+            "sha256": "c4e782ec68420b9f78e7473e4dc30f4f63c421f47bbd490039cf1ee45668b4ad"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\stdio_test.go",
+            "bytes": 3109,
+            "sha256": "3d582fbdeb09ae5ab3db84bfa9e05948af47f0674e9c39b5ea730b1b526fa505"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\stdio.go",
+            "bytes": 1823,
+            "sha256": "838604b7ffbbcc6fee781944a98bf42c901e3394bdb2e4cb30de9db53b37a5ca"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\usermodel_store_test.go",
+            "bytes": 15375,
+            "sha256": "9b362a8ef01048d5f80bfacba1f45a0ac9a1e5e42f17390a3cbb4b4e5239a94d"
+          },
+          {
+            "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimebroker\\usermodel_store.go",
+            "bytes": 15133,
+            "sha256": "ad126a533e617bf693ad29cc168f41a7b6d4ea547b5d8dc955955e857835d646"
+          }
+        ],
+        "binary": {
+          "path": "C:\\dev\\Yime\\.tmp\\health-interop-acfe85f3e88d4d768322f3517246fe2a\\health-interop.test.exe",
+          "bytes": 6452736,
+          "sha256": "a4da14d3cf32268b1d3637efdcff9fab7e3765558ea8a873bfb08e1a6392a781"
+        },
+        "round_trips": [
+          {
+            "round": 1,
+            "roles": [
+              "broker",
+              "runtime"
+            ],
+            "nonce_verified": true,
+            "os_pid_and_creation_verified": true,
+            "outstanding_io": 0
+          },
+          {
+            "round": 2,
+            "roles": [
+              "broker",
+              "runtime"
+            ],
+            "nonce_verified": true,
+            "os_pid_and_creation_verified": true,
+            "outstanding_io": 0
+          }
+        ],
+        "children": [
+          {
+            "pid": 33604,
+            "role": 1,
+            "exit_code": 0,
+            "ready_file": {
+              "path": "C:\\dev\\Yime\\.tmp\\health-interop-acfe85f3e88d4d768322f3517246fe2a\\health-interop-ready-cc8c5140f1aa456e8cede6b847bcfe6b.json",
+              "bytes": 254,
+              "sha256": "e886a07cffe170d719fb1de60424cd8987dbe253b591cb31787add19588e72f0"
+            },
+            "stdout": "PASS\n",
+            "stderr": ""
+          },
+          {
+            "pid": 34096,
+            "role": 2,
+            "exit_code": 0,
+            "ready_file": {
+              "path": "C:\\dev\\Yime\\.tmp\\health-interop-acfe85f3e88d4d768322f3517246fe2a\\health-interop-ready-a54fedb8a0ab472aace7738296f5349e.json",
+              "bytes": 283,
+              "sha256": "d0bc153fed45cb6fda1bb3956680462e7abf0429973bcce8d667779d25193363"
+            },
+            "stdout": "PASS\n",
+            "stderr": ""
+          }
+        ],
+        "error": "",
+        "cleanup_error": "",
+        "separate_owned_processes": true,
+        "retained_product_lease_integration_verified": false,
+        "parentage_verified": false,
+        "wire_fixture_only": true,
+        "actual_product_executed": false,
+        "installed_local12_mutated": false,
+        "production_endpoint_contacted": false,
+        "user_state_read": false,
+        "runtime_ready_verified": false,
+        "E7_verified": false,
+        "L6_sealed": false,
+        "full_acceptance": false,
+        "in_memory_code_identity_verified": false
+      }
+    }
+  ],
+  "go": {
+    "amd64": {
+      "actual_execution": true,
+      "test_pass_events": 124,
+      "includes_subtests": true,
+      "packages": {
+        "github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-trial-runtime": 16,
+        "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker": 82,
+        "github.com/tsaanghwang/Yime/go-backend/cmd/yimebroker": 26
+      },
+      "skipped": [
+        {
+          "package": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker",
+          "test": "TestHealthInteropServer"
+        }
+      ],
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\go-amd64.jsonl",
+        "bytes": 131821,
+        "sha256": "88e3357eff2d3cd772885ba2dcc16b73923967eaf67086419638a24b04eb3091"
+      }
+    },
+    "wow64": {
+      "actual_execution": true,
+      "test_pass_events": 124,
+      "includes_subtests": true,
+      "packages": {
+        "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker": 82,
+        "github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-trial-runtime": 16,
+        "github.com/tsaanghwang/Yime/go-backend/cmd/yimebroker": 26
+      },
+      "skipped": [
+        {
+          "package": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker",
+          "test": "TestHealthInteropServer"
+        }
+      ],
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\go-wow64.jsonl",
+        "bytes": 131841,
+        "sha256": "c2caa524af732b6aeccb151a91c426805e149084e60b4349fb520e4126eaa78e"
+      }
+    }
+  },
+  "interop_environment_checks": [
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-environment-ps5-v2.json",
+        "bytes": 244,
+        "sha256": "f2b1880a993b1cec66f8a52051c844eb65daa31563f0a86c0cf3546944c92816"
+      },
+      "result": {
+        "passed": true,
+        "shell": "5.1.26100.9278",
+        "environment_restored": true,
+        "interop_path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-reviewed-ps5-v2.json",
+        "actual_product_executed": false
+      }
+    },
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-environment-ps7-v2.json",
+        "bytes": 217,
+        "sha256": "e65f731b9ad9455a94b9b36fd1b9bed85910697e07c38947f60d0263818e9a75"
+      },
+      "result": {
+        "passed": true,
+        "shell": "7.6.5",
+        "environment_restored": true,
+        "interop_path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-reviewed-ps7-v2.json",
+        "actual_product_executed": false
+      }
+    }
+  ],
+  "preserved_earlier_interop": [
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-final-ps5.json",
+        "bytes": 13905,
+        "sha256": "388060fd66d68b5e23f3e501e6c2eae67403e58fdb6dc6361fc6368b432cb49b"
+      },
+      "superseded_by_reviewed_runner": true,
+      "historical_wire_interop_passed": true
+    },
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-first-ps7.json",
+        "bytes": 8538,
+        "sha256": "f3caf396d03f2aaf6862fcf1c829e655bab6c6eb851e5a1a346b34fe1b04366c"
+      },
+      "superseded_by_reviewed_runner": true,
+      "historical_wire_interop_passed": true
+    },
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-reviewed-ps5.json",
+        "bytes": 13907,
+        "sha256": "6013c15a055c421644cd08f8999e9402d707dd1501ade1d4e4f5b8280a8372a9"
+      },
+      "superseded_by_reviewed_runner": true,
+      "historical_wire_interop_passed": true
+    },
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-reviewed-ps7.json",
+        "bytes": 8538,
+        "sha256": "4e7b9f90abbdbe8eacff2c0e2453db939f65462d5405e90f32418002d00af3c1"
+      },
+      "superseded_by_reviewed_runner": true,
+      "historical_wire_interop_passed": true
+    }
+  ],
+  "preserved_failed_environment_check": {
+    "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-environment-ps7-failed.json",
+    "bytes": 552,
+    "sha256": "96f7abfe4bc054ec46c4f82f9b994100075bf8f9e03da7c42241cd3ece3e1284"
+  },
+  "go_toolchain": "go1.26.4 windows/amd64",
+  "targeted_go_vet_passed": true,
+  "arm64_cross_compile": [
+    {
+      "binary": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\broker-health-arm64.test.exe",
+        "bytes": 5943808,
+        "sha256": "0ed4d2a27bdfde42a3b3fe4c0dacc4f1fae4a14848cadfc64c099569bf5afd80"
+      },
+      "machine": "ARM64",
+      "executed": false,
+      "native_acceptance": false
+    },
+    {
+      "binary": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\runtime-health-arm64.test.exe",
+        "bytes": 5045760,
+        "sha256": "71e59e945e8f1937fb08d6612eedbb700bc13680ed2ad52985bd661952db1455"
+      },
+      "machine": "ARM64",
+      "executed": false,
+      "native_acceptance": false
+    }
+  ],
+  "baseline": {
+    "declared_sources": 212,
+    "locked_dependencies": 7,
+    "sources": 219,
+    "pure_memory_tests": 68,
+    "pending_count": 8
+  },
+  "previous_immutable_record": {
+    "path": "C:\\dev\\Yime\\docs\\testing\\l6\\2026-09-08-native-maintenance-gates.json",
+    "bytes": 41344,
+    "sha256": "8c233879f2be85698887c6fb4d24f8f24c8ce26c3cb049bed9aea80895caae57"
+  },
+  "sources": [
+    {
+      "path": ".gitattributes",
+      "sha256": "bd9ae560f2524472db7e865d671aaab028af88458837026c9ef017e8554464f9"
+    },
+    {
+      "path": ".github/workflows/ci.yaml",
+      "sha256": "7c861eb34d4daf9690924c5de09a3d05db3cd352a76715099afa667676a16ec6"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker/health.go",
+      "sha256": "552689970846a87b7ec3e67bcdaf31c89ef4c82ed535460273dba26ff223a51e"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker/health_test.go",
+      "sha256": "4864efb38619f7bd46555ebf26295e08a021158d63445f038a9258ec9540e167"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker/health_windows_test.go",
+      "sha256": "0f5bbfa394500a651cc61ad925b3479a74ef4378cbff8e862e0e88d78b33962b"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker/main.go",
+      "sha256": "2021e588d7483b7db6be866ac99999488726bed7f183b0663160df9b52b9c6f2"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/health.go",
+      "sha256": "7621857b3330249f2d20db16f5652f42bde423cbaf396027156436e78b4fe701"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/health_test.go",
+      "sha256": "146ecd483ca52cc834191f13c1592a158e59876be4ceb5354ee3f9ede136ef59"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/main.go",
+      "sha256": "02fe4ad1db07a0ad817f18c6ba53ea9a0d068d3fdd2bb9b95d00d9780b82bc90"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/main_test.go",
+      "sha256": "cf9af001a7a373e7cbda5c9a06cd43524553bf4fc4e804bf0cbb57fc44f38aca"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/runtime_stub.go",
+      "sha256": "b93aef5a1340d2751d1acd11077e1b173a8847a1b27fa481c19ccc153dc3ace6"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/runtime_windows.go",
+      "sha256": "661f874b9f988635e7d98418086b45a63a05764f738d3a59ecffb966130edcdc"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/runtime_windows_test.go",
+      "sha256": "eda96abbfe93ef9be7dbac8e5e7701183c8838bf31f53e2029fb3542d5cd9a88"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/health.go",
+      "sha256": "72399be57195f1e4693a21387011be0bb31b04e76e11c57d3dc1397879f81147"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/health_stub.go",
+      "sha256": "7dfc2db5954532277717698330a009ada09d1c7e45eb9c0520bdee192ce4c7d4"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/health_test.go",
+      "sha256": "daf7c9b8595c3fc37be37111a8028eabe247b5807c44292bac93a386b9ca949a"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/health_windows.go",
+      "sha256": "f586f3af6fba296652f2eb6744fd7a620628b664ceecd9c84703520f92227da9"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/health_windows_test.go",
+      "sha256": "d63ba297034b82d235958f80c1730b56790b32819d5914b851a832e02e54cb22"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/named_pipe_stub.go",
+      "sha256": "6915ffe4949a0406eccc3bc270e01aa968c7d6caad0eeb8390f39b19507a19aa"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/named_pipe_windows.go",
+      "sha256": "faf4310b477820b9675936350084e83b0bff79d1cdf1abadbaff4efcbeb6910c"
+    },
+    {
+      "path": "tools/dual-product/contract.json",
+      "sha256": "e5688db703fe90d6211e8d6ff1ea7970e191b55322c5c710ca1d54e9f57cedb0"
+    },
+    {
+      "path": "tools/dual-product/test_baseline.py",
+      "sha256": "c0d1f5f8851e29316048299ac25b09785776ebb0e8b0a487296e7a764820dd79"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-health-client.cs",
+      "sha256": "cb9e7189d70e0c3a033ff6dd591d1c7ce91c637d92d9bf9a93f23b78be4858e3"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-health.psm1",
+      "sha256": "7aa2ae06343b2484bd65c24ef793efa3e4527972c516442478b8a2b990aaf398"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-process-facts.cs",
+      "sha256": "d75096623a1426f750f8df97dd12158ec099d50ac54763bca9cca33ed4ca7e3c"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-processes.psm1",
+      "sha256": "50b2a4a9be648b93140c5bce1cf8fbcd1fae85c925871f29031c38cf5c970ec5"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-runtime.psm1",
+      "sha256": "c4c238bcac7a4e403a6e4348d05e747bf96fc746cc236336592c31e10af6a880"
+    },
+    {
+      "path": "tools/yimecore/native-rollback-collection.psm1",
+      "sha256": "f6c08bae5cc327c5febbaa8c8609a9060e823644e92279706a5d7211fea69dd0"
+    },
+    {
+      "path": "tools/yimecore/test-native-health-interop.ps1",
+      "sha256": "e2da38f3f55fc03c2762c83a40c2fc3877191405076c7ec3da93e20e6077be54"
+    },
+    {
+      "path": "tools/yimecore/test-native-maintenance-health.ps1",
+      "sha256": "fc9156b5a8558ef925f910daf24ac2aee24963e74b8ea4c70a7bd6260bf6ab79"
+    },
+    {
+      "path": "tools/yimecore/test-native-maintenance-runtime.ps1",
+      "sha256": "e56c977d2bd8e8d168de53c4b4edf36dab98bfa49695d25b8dfdc6e612dac6ff"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\summary.json",
+      "bytes": 8407,
+      "sha256": "b7c53848f5d96dcc3d289e050f299608cebe472547483ca8e5b9b36cfe52c27e"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\run-ci.ps1",
+      "bytes": 1892,
+      "sha256": "552578afb59b007a241ad439541300a6bf1fdaf0fa9a7bff3c639939f961d545"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\transcript.txt",
+      "bytes": 268033,
+      "sha256": "3484f33191cc6673385dcb6def78403bc4bb7394727fb44924cfb163d9fb030a"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-local13-maintenance-inputs.ps1-ps5.json",
+      "bytes": 4448,
+      "sha256": "0de8cdc515b0b8db673cfa47cb8502723d19ed0b24aafc3486b9f6b95caaeb33"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-local13-maintenance-inputs.ps1-ps7.json",
+      "bytes": 3601,
+      "sha256": "5acc4c6eb3501a10292603da3b2fd2f76a9354e9e5777cd4fb9b11fc448bad5f"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-local13-maintenance-preparation.ps1-ps5.json",
+      "bytes": 4435,
+      "sha256": "4263a0b58985d27d55c0b0f554e02dc1504b5e253b48bcc3ba500fe501075273"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-local13-maintenance-preparation.ps1-ps7.json",
+      "bytes": 3516,
+      "sha256": "d4ab4c1ed74c912ae96ba84a04c622f395bcb6cb331dfeb4cdf4c8ddfcb0829e"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-backup.ps1-ps5.json",
+      "bytes": 10842,
+      "sha256": "972a745fc262299a11224f080517db65867a8d3f6450c84b2ca5589a386b4c7f"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-backup.ps1-ps7.json",
+      "bytes": 8447,
+      "sha256": "b18f76ce19a4824f62d2765c8f17c8ae79809488649250c8952f6871fe5212b5"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-child.ps1-ps5.json",
+      "bytes": 5248,
+      "sha256": "e59a31ad885075ea0351aa001dad5365d9761f7b0c09767368c7672e93fa2959"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-child.ps1-ps7.json",
+      "bytes": 4122,
+      "sha256": "169869afca805e98c59d07d6b22aa878984cc709d5d2c54b3d4d9da467e877ab"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-context.ps1-ps5.json",
+      "bytes": 4529,
+      "sha256": "e50eb8a935ae3f9c65ed22a661a51cb15eebb0030083482f4e1b1f86d4a63588"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-context.ps1-ps7.json",
+      "bytes": 3748,
+      "sha256": "63f65ddb6474eeb555a5edbaf63d8ebf49265badd5af175845a7e430db75c647"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-data.ps1-ps5.json",
+      "bytes": 9183,
+      "sha256": "2990d96295d393c7cfc6441c34c6b8fb6d377b0c28ebe4a9fe175831f6c4ccc9"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-data.ps1-ps7.json",
+      "bytes": 5765,
+      "sha256": "0177d61f79f78293a88d3d92d096ddc61897361ad4209df9f774589ac19860c5"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-deferred-delete.ps1-ps5.json",
+      "bytes": 16579,
+      "sha256": "903083918d082d1e223bcea89584a9d0955e80ddf0eab4614e6731466f21aa26"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-deferred-delete.ps1-ps7.json",
+      "bytes": 12269,
+      "sha256": "e0855acf2026fc618ff13216f81ed9684946dc723d2c9c6a1ea4bd29c87a7e27"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-evidence.ps1-ps5.json",
+      "bytes": 12897,
+      "sha256": "1e417d3e9282c2a0529b0987a6d310c8f4de717dedbbcea5ac660cc9bb65014e"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-evidence.ps1-ps7.json",
+      "bytes": 7394,
+      "sha256": "04686b86e5d80f6eef8f542f24beb1f7187703773fe496fab2def94df6e00245"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-health.ps1-ps5.json",
+      "bytes": 24470,
+      "sha256": "d8664e32a853bc695d5dd3eed8996e02142eb13e9d4344dbf06b4256d703b7e0"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-health.ps1-ps7.json",
+      "bytes": 13273,
+      "sha256": "ccb0a15c3de337e1dc85f8460fd1cd57c436656ce9abbaf607f2453d28507036"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-processes.ps1-ps5.json",
+      "bytes": 8590,
+      "sha256": "f5200da351e33a72fcf70f61e16eef6e92bb34ed1bc8a2f1c9457e0e5ea210ce"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-processes.ps1-ps7.json",
+      "bytes": 5059,
+      "sha256": "7bcb139f106ab4c049789c7d585bc513de612e525ac882e3cc7ae6bf37c57abe"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-runtime.ps1-ps5.json",
+      "bytes": 13412,
+      "sha256": "7eed20f3c0865fccd108787f5144c51642526847cf0132b9a26bff80d77f9854"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-runtime.ps1-ps7.json",
+      "bytes": 8584,
+      "sha256": "c944f41ba5786ac3d9780d5e8a124acd26d8dbf8be0e4f79aea45fed7f3e4dd1"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-visibility.ps1-ps5.json",
+      "bytes": 17514,
+      "sha256": "b273338a9d658e9b7100fd8e39d29a90d239fab1fe9b46f4dea1d6154f7121d1"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-maintenance-visibility.ps1-ps7.json",
+      "bytes": 10382,
+      "sha256": "e3d22231509fed496d28abe871b614fc0bfb29b8b07f67da8edd11a0e1179920"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-rehearsal-outcome-reader.ps1-ps5.json",
+      "bytes": 15693,
+      "sha256": "62b43845b8be0657e738fe2c22be05032f8436362fe4369d85ef473c4eff1151"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-rehearsal-outcome-reader.ps1-ps7.json",
+      "bytes": 12260,
+      "sha256": "f5324f5077167d1af93394c86c0c1978df27185616091e43365ed3a2c949b8f7"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-rehearsal-outcome.ps1-ps5.json",
+      "bytes": 8329,
+      "sha256": "c096dc701586d811e9517389fe5e519bf2d3ae0b6511823d776fbccae4f6d820"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-rehearsal-outcome.ps1-ps7.json",
+      "bytes": 6413,
+      "sha256": "2d633dfece7c3881ce6f44c71dd9b0fe041cbffa93e5c13f6516a5ea4a355488"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-rollback-collection.ps1-ps5.json",
+      "bytes": 15619,
+      "sha256": "ed82bebb30464c155c2f3a15efa1a940cd1ccdd665b89794ea1c80c61a4bace6"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-003926218e7f45fb8ace1b5083d3726f\\test-native-rollback-collection.ps1-ps7.json",
+      "bytes": 12996,
+      "sha256": "9ac78d37f10da584e0eadde835600d8c9706f77bb7d604db2f6f8744d70f7757"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-reviewed-ps5-v2.json",
+      "bytes": 13908,
+      "sha256": "a3745ad8ee91956fa97781dd73dcd8fbace35aa7be8243941ab068685499a4d1"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-reviewed-ps7-v2.json",
+      "bytes": 8539,
+      "sha256": "6572a93fce05fd5bf46dff0e5756cda71718f8a622556d41a1ebc0564c653d58"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-environment-ps5-v2.json",
+      "bytes": 244,
+      "sha256": "f2b1880a993b1cec66f8a52051c844eb65daa31563f0a86c0cf3546944c92816"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\interop-environment-ps7-v2.json",
+      "bytes": 217,
+      "sha256": "e65f731b9ad9455a94b9b36fd1b9bed85910697e07c38947f60d0263818e9a75"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\run-interop-reviewed.ps1",
+      "bytes": 886,
+      "sha256": "e4a3b82a115df46a044964df650903420b7920609a9eba1198ddda71b5b34184"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\go-amd64.jsonl",
+      "bytes": 131821,
+      "sha256": "88e3357eff2d3cd772885ba2dcc16b73923967eaf67086419638a24b04eb3091"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\go-amd64-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\go-wow64.jsonl",
+      "bytes": 131841,
+      "sha256": "c2caa524af732b6aeccb151a91c426805e149084e60b4349fb520e4126eaa78e"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-final-20260908\\go-wow64-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\dual-product\\dp1-native-health-reviewed-v2-20260908\\baseline.json",
+      "bytes": 48822,
+      "sha256": "6584c23eb50a1a36c5f911b541425eb7c2983c2b17249edd504ba8293531949e"
+    }
+  ],
+  "independent_reviews": {
+    "go_server": true,
+    "runtime_broker_wiring": true,
+    "native_client": true
+  },
+  "new_candidates_rebuilt": false,
+  "new_source_in_existing_candidates": false,
+  "archive_republished": false,
+  "installer_executed": false,
+  "actual_uac_requested": false,
+  "actual_backup_executed": false,
+  "actual_rollback_executed": false,
+  "actual_restore_executed": false,
+  "actual_uninstall_executed": false,
+  "actual_product_endpoints_contacted": false,
+  "actual_product_or_user_state_read": false,
+  "installed_local12_mutated": false,
+  "production_rime_pime_mutated": false,
+  "default_input_method_changed": false,
+  "actual_runtime_broker_pair_health_verified": false,
+  "in_memory_code_identity_verified": false,
+  "runtime_ready_verified": false,
+  "runtime_consumed_config_verified": false,
+  "startup_path_verified": false,
+  "reboot_logon_startup_verified": false,
+  "E7_accepted": false,
+  "rollback_acceptance": false,
+  "independent_data_restore_verified": false,
+  "execution_authorized": false,
+  "full_acceptance": false,
+  "L6_sealed": false,
+  "local_product_ready": false,
+  "public_release_ready": false,
+  "dp1u_actual_transaction_accepted": false,
+  "dp2_accepted": false,
+  "dp3_accepted": false
+}

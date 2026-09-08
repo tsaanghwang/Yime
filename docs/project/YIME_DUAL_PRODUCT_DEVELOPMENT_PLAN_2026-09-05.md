@@ -1,5 +1,7 @@
 # Yime 双独立产品开发计划
 
+2026-09-08 当前健康协议增量：[YimeCore 无会话只读健康协议](YIMECORE_NATIVE_HEALTH_PROTOCOL_2026-09-08.md)已有服务端、原生客户端、PS5/PS7 互通及 x64/x86 WOW64 Go 回归，双产品基线为 219 项来源、68 项测试、8 项待办。该证据仅属于 YimeCore 源码与自有夹具；未重构候选、接入既有采集 v2 或读取真实产品端点，不提升 L6/local/public、Rime/PIME DP1-U 实际事务和 DP2/DP3。后续先重构独立候选并封存；下方健康协议和来源数量描述按阶段保留。
+
 2026-09-08 当前门禁增量：[YimeCore 原生维护观察门禁](YIMECORE_NATIVE_MAINTENANCE_GATES_2026-09-08.md)补齐回退编排 v2 的延期删除、系统文件元数据及 Runtime/config 前后检查，新增独立提供程序与双 PowerShell 回归。真实维护、无会话健康协议、L6/local/public 未关闭；Rime/PIME 的可信候选、独立目标、DP1-U 实际事务及 DP2/DP3 不借用本轮证据提升。未运行安装器或改动 local.12、正式 Rime/PIME、默认输入法和实际用户数据；旧候选与原始记录保留。
 
 2026-09-08 当前增量：[YimeCore 原生回退证据采集编排](YIMECORE_NATIVE_ROLLBACK_COLLECTION_2026-09-08.md)新增原始子进程退出、完整备份读取、数据/config 观察及实际维护步骤的源码串联，验证范围为自有进程/文件和私有编排替身。真实维护与最终验收尚未执行，local.12、正式 Rime/PIME、默认输入法和真实用户状态未改动；L6、Rime/PIME DP1-U 实际事务及 DP2/DP3 不变。精确新来源和回归结果见该报告；下方来源数量与“编排待实现”保留为历史。
