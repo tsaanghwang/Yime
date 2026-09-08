@@ -12,6 +12,7 @@ $modulePath=Join-Path $PSScriptRoot 'native-maintenance-child.psm1'
 $module=Import-Module $modulePath -Force -PassThru
 $checks=New-Object 'Collections.Generic.List[string]'
 $children=New-Object 'Collections.Generic.List[object]'
+$releases=New-Object 'Collections.Generic.List[string]'
 $cmd=Join-Path $env:SystemRoot 'System32\cmd.exe'
 $powershell=Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
 function Check([bool]$Condition,[string]$Name){if(-not $Condition){throw "FAIL: $Name"};$checks.Add($Name)}
@@ -23,13 +24,32 @@ function Start-OwnedChild([string]$Arguments,[string]$Image=$cmd){
     if(-not $process.Start()){throw 'Owned fixture did not start'}
     $null=$process.SafeHandle;$children.Add($process);return $process
 }
+function Start-ReleaseChild([int]$Code=20,[switch]$PassThru){
+    $release=Join-Path $fixture ('release-'+[guid]::NewGuid().ToString('N'))
+    $releases.Add($release)
+    # CI has no interactive console. Hold the child independently of stdin;
+    # deadline expiry is a fixture failure, never the requested exit code.
+    $script='$ErrorActionPreference="Stop"; $release='''+$release.Replace("'","''")+'''; $end=[DateTime]::UtcNow.AddSeconds(30); while(-not [IO.File]::Exists($release)){if([DateTime]::UtcNow -ge $end){exit 99}; Start-Sleep -Milliseconds 10}; exit '+$Code
+    $encoded=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($script))
+    $arguments='-NoProfile -NonInteractive -EncodedCommand '+$encoded
+    if($PassThru){
+        $process=Start-Process -FilePath $powershell -ArgumentList $arguments -WindowStyle Hidden -PassThru
+        $children.Add($process)
+    }else{
+        $process=Start-OwnedChild $arguments $powershell
+        $process.StandardInput.Close()
+    }
+    return [pscustomobject]@{process=$process;release=$release}
+}
 function Stop-OwnedChildren {
+    foreach($release in $releases){[IO.File]::WriteAllText($release,'finish')}
     foreach($child in $children){
         try{
-            if(-not $child.HasExited){try{$child.StandardInput.WriteLine('finish');$child.StandardInput.Close()}catch{};if(-not $child.WaitForExit(10000)){throw 'Owned fixture failed to exit; no product process is terminated'}}
+            if(-not $child.HasExited){if(-not $child.WaitForExit(10000)){throw 'Owned fixture failed to exit; no product process is terminated'}}
         }catch [InvalidOperationException] {} finally{$child.Dispose()}
     }
     $children.Clear()
+    $releases.Clear()
 }
 try {
     $commands=@(Get-Command -Module $module.Name)
@@ -38,15 +58,10 @@ try {
     $text=[IO.File]::ReadAllText($modulePath)
     Check (-not $text.Contains('OpenProcess(') -and -not $text.Contains('GetProcessById(') -and -not $text.Contains('.Kill(') -and -not $text.Contains('ReadToEnd(')) 'adapter has no PID reopen termination or stdio EOF implementation'
     foreach($code in @(0,1,20,21,22,23,24,25,26,86)){
-        # A release file keeps this fixture alive through the handle-bound
-        # identity capture without relying on redirected-console input timing.
-        $release=Join-Path $fixture ('exit-'+$code+'-'+[guid]::NewGuid().ToString('N'))
-        $script='$end=[DateTime]::UtcNow.AddSeconds(5); while(-not [IO.File]::Exists('''+$release+''') -and [DateTime]::UtcNow -lt $end){Start-Sleep -Milliseconds 10}; exit '+$code
-        $encoded=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($script))
-        $child=Start-OwnedChild ('-NoProfile -NonInteractive -EncodedCommand '+$encoded) $powershell
+        $waiting=Start-ReleaseChild $code;$child=$waiting.process
         $lease=Open-YimeCoreNativeMaintenanceChild -Process $child -ExpectedImagePath $powershell
         try {
-            [IO.File]::WriteAllText($release,'finish')
+            [IO.File]::WriteAllText($waiting.release,'finish')
             $facts=Wait-YimeCoreNativeMaintenanceChild -Lease $lease -TimeoutMilliseconds 5000
             Check ($facts.exit_observed -and $facts.actual_exit_os_observed -and $facts.exit_code -eq $code -and -not $facts.timed_out) ('real original child exit '+$code)
             Check ($facts.pid -eq $child.Id -and $facts.creation_filetime -eq $child.StartTime.ToUniversalTime().ToFileTimeUtc() -and $facts.image_path -ieq $powershell) ('real held-handle identity '+$code)
@@ -59,14 +74,11 @@ try {
     catch{Check ($_.Exception.ToString().Contains('Native child image unavailable before a bound exit observation.')) 'quick exit missing native image evidence is rejected without StartInfo fallback'}
     finally{if($null -ne $lease){Close-YimeCoreNativeMaintenanceChild $lease}}
     # Explicitly cover the orchestration-facing Start-Process -PassThru shape.
-    $passRelease=Join-Path $fixture 'passthru-release'
-    $passScript='$end=[DateTime]::UtcNow.AddSeconds(5); while(-not [IO.File]::Exists('''+$passRelease+''') -and [DateTime]::UtcNow -lt $end){Start-Sleep -Milliseconds 25}; exit 21'
-    $passEncoded=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($passScript))
-    $child=Start-Process -FilePath $powershell -ArgumentList ('-NoProfile -NonInteractive -EncodedCommand '+$passEncoded) -WindowStyle Hidden -PassThru
-    $children.Add($child);$lease=Open-YimeCoreNativeMaintenanceChild $child $powershell
-    try{[IO.File]::WriteAllText($passRelease,'finish');Check ((Wait-YimeCoreNativeMaintenanceChild $lease 5000).exit_code -eq 21) 'actual Start-Process PassThru object accepted'}finally{Close-YimeCoreNativeMaintenanceChild $lease}
-    $child=Start-OwnedChild '/d /c set /p fixture='
-    $lease=Open-YimeCoreNativeMaintenanceChild $child $cmd
+    $waiting=Start-ReleaseChild 21 -PassThru;$child=$waiting.process
+    $lease=Open-YimeCoreNativeMaintenanceChild $child $powershell
+    try{[IO.File]::WriteAllText($waiting.release,'finish');Check ((Wait-YimeCoreNativeMaintenanceChild $lease 5000).exit_code -eq 21) 'actual Start-Process PassThru object accepted'}finally{Close-YimeCoreNativeMaintenanceChild $lease}
+    $waiting=Start-ReleaseChild;$child=$waiting.process
+    $lease=Open-YimeCoreNativeMaintenanceChild $child $powershell
     try {
         $facts=Wait-YimeCoreNativeMaintenanceChild $lease 25
         Check ($facts.timed_out -and -not $facts.exit_observed -and -not $facts.actual_exit_os_observed -and $null -eq $facts.exit_code -and -not $facts.may_consume_outcome -and -not $facts.may_advance_maintenance -and -not $facts.termination_requested) 'timeout never kills or permits next maintenance step'
@@ -77,12 +89,13 @@ try {
         $clone=$lease|ConvertTo-Json -Depth 6|ConvertFrom-Json
         Reject {Wait-YimeCoreNativeMaintenanceChild $clone 0} 'serialized child lease cannot wait'
         Reject {Close-YimeCoreNativeMaintenanceChild $clone} 'serialized child lease cannot close'
-        Reject {Open-YimeCoreNativeMaintenanceChild $child $cmd} 'duplicate live lease for same Process rejected'
+        Reject {Open-YimeCoreNativeMaintenanceChild $child $powershell} 'duplicate live lease for same Process rejected'
         foreach($timeout in @(-1,60001,'1',$true,@(1))){Reject {Wait-YimeCoreNativeMaintenanceChild $lease $timeout} ('reject nonliteral or unbounded timeout '+$checks.Count)}
         $id=$lease.lease_id;$lease.lease_id='0'*32
         try{Reject {Wait-YimeCoreNativeMaintenanceChild $lease 0} 'tampered lease identifier rejected'}finally{$lease.lease_id=$id}
-        $child.StandardInput.WriteLine('finish');$child.StandardInput.Close()
-        Check (Wait-YimeCoreNativeMaintenanceChild $lease 5000).exit_observed 'same handle can observe exit after earlier timeout'
+        [IO.File]::WriteAllText($waiting.release,'finish')
+        $released=Wait-YimeCoreNativeMaintenanceChild $lease 5000
+        Check ($released.exit_observed -and $released.exit_code -eq 20) 'same handle can observe requested exit after earlier timeout with stdin closed'
     }finally{Close-YimeCoreNativeMaintenanceChild $lease}
     Close-YimeCoreNativeMaintenanceChild $lease
     Reject {Wait-YimeCoreNativeMaintenanceChild $lease 0} 'closed lease cannot wait'
@@ -92,11 +105,11 @@ try {
     Reject {Open-YimeCoreNativeMaintenanceChild $child 'C:\Wrong\cmd.exe'} 'native image cannot be supplied by caller fiction'
     foreach($image in @('cmd.exe','C:\Windows\..\Windows\System32\cmd.exe','C:\Windows\System32\cmd.exe:stream','\\host\share\cmd.exe',@($cmd))){Reject {Open-YimeCoreNativeMaintenanceChild $child $image} ('reject ambiguous expected child path '+$checks.Count)}
     $child.Dispose();Reject {Open-YimeCoreNativeMaintenanceChild $child $cmd} 'disposed Process rejected at acquisition'
-    $child=Start-OwnedChild '/d /c "set /p fixture= & exit 20"';$lease=Open-YimeCoreNativeMaintenanceChild $child $cmd
-    $child.StandardInput.WriteLine('finish');$child.StandardInput.Close();$null=$child.WaitForExit(5000);$child.Dispose()
+    $waiting=Start-ReleaseChild;$child=$waiting.process;$lease=Open-YimeCoreNativeMaintenanceChild $child $powershell
+    [IO.File]::WriteAllText($waiting.release,'finish');Check ($child.WaitForExit(5000)) 'disposal fixture exits after release';$child.Dispose()
     try{Reject {Wait-YimeCoreNativeMaintenanceChild $lease 0} 'external Process disposal invalidates live lease'}finally{Close-YimeCoreNativeMaintenanceChild $lease}
-    $child=Start-OwnedChild '/d /c "set /p fixture= & exit 20"';$lease=Open-YimeCoreNativeMaintenanceChild $child $cmd
-    $child.StandardInput.WriteLine('finish');$child.StandardInput.Close();$null=$child.WaitForExit(5000);$child.StartInfo.Arguments='/d /c exit 21';$null=$child.Start()
+    $waiting=Start-ReleaseChild;$child=$waiting.process;$lease=Open-YimeCoreNativeMaintenanceChild $child $powershell
+    [IO.File]::WriteAllText($waiting.release,'finish');Check ($child.WaitForExit(5000)) 'reuse fixture exits before Process restart';$child.StartInfo.FileName=$cmd;$child.StartInfo.Arguments='/d /c exit 21';Check ($child.Start()) 'replacement child starts on reused Process'
     try{Reject {Wait-YimeCoreNativeMaintenanceChild $lease 5000} 'reusing original Process for another child cannot replace retained target'}finally{Close-YimeCoreNativeMaintenanceChild $lease}
     # The child owns this bounded resident grandchild; pipe EOF is deliberately
     # later than the child exit. We never call stdout/stderr ReadToEnd.
@@ -114,12 +127,12 @@ try {
         $grand=[Diagnostics.Process]::GetProcessById($grandId) # Only own signaled fixture PID, outside adapter.
         try{Check (-not $grand.HasExited) 'owned descendant is still live after controller child observation'}finally{[IO.File]::WriteAllText($release,'finish');$null=$grand.WaitForExit(5000);$grand.Dispose()}
     }finally{Close-YimeCoreNativeMaintenanceChild $lease;[IO.File]::WriteAllText($release,'finish')}
-    $child=Start-OwnedChild '/d /c set /p fixture=';$lease=Open-YimeCoreNativeMaintenanceChild $child $cmd
+    $waiting=Start-ReleaseChild;$child=$waiting.process;$lease=Open-YimeCoreNativeMaintenanceChild $child $powershell
     $native=& $module {param($id)$script:ChildLeases[$id].native} $lease.lease_id
     Close-YimeCoreNativeMaintenanceChild $lease
     Reject {$native.Initial()} 'close releases retained native lease handle reference'
     Check (-not $child.HasExited) 'close neither terminates child nor disposes caller Process'
-    $lease=Open-YimeCoreNativeMaintenanceChild $child $cmd
+    $lease=Open-YimeCoreNativeMaintenanceChild $child $powershell
     $native=& $module {param($id)$script:ChildLeases[$id].native} $lease.lease_id
     Remove-Module $module
     Reject {$native.Initial()} 'module removal releases remaining child lease references'
