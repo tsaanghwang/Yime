@@ -70,11 +70,11 @@ function RejectFixture($Fixture,[string]$Name){UseFixture $Fixture;Reject {Open-
     $sessions=& $module {$script:InputSessions.Count};Check ($sessions -eq 0) ($Name+' releases unsuccessful session')}
 try{
     $fixedPlan=Get-YimeCoreLocal13MaintenanceInputPlan
-    Check ($fixedPlan.normal.manifest_sha256 -ceq 'dccbf6f7ef553bda1e20d7b8fa1659fe7e4b691d5d492b8210c9b7c606a7ced4' -and $fixedPlan.fault.manifest_sha256 -ceq '5a9b274b9a3a07f847964bc0871b1ea15c3d4a9447e7fd7e3d86a424c5eea3b5' -and $fixedPlan.normal.member_count -eq 85) 'default Plan returns fixed reviewed candidate constants'
-    Check ($fixedPlan.controller_sha256 -ceq 'e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a') 'default provider pins archived controller independently of current workspace manager'
+    Check ($fixedPlan.normal.manifest_sha256 -ceq '1fd54730bffe9b986249cdeaedbd7c8807b255da36e75c6463ff983e378275a9' -and $fixedPlan.fault.manifest_sha256 -ceq '7a70ba727e0cc157358680213ea5e4cbb52b711631c74d0d2182b5029cc141ef' -and $fixedPlan.normal.member_count -eq 85) 'default Plan returns fixed reviewed candidate constants'
+    Check ($fixedPlan.controller_sha256 -ceq '9f69d9aba12e4c50c8aa06edb945375dc72a721cd208791ffab2e4207442f39d') 'default provider pins archived controller independently of current workspace manager'
     Check (-not $fixedPlan.verification_performed -and -not $fixedPlan.input_files_opened -and -not $fixedPlan.execution_authorized) 'default Plan does not inspect or authorize inputs'
     $fixedPlan.normal.package_id='caller mutation'
-    Check ((Get-YimeCoreLocal13MaintenanceInputPlan).normal.package_id -ceq 'yimecore-local-0.1.0-local.13-af06362e5433') 'Plan mutation cannot change provider catalog'
+    Check ((Get-YimeCoreLocal13MaintenanceInputPlan).normal.package_id -ceq 'yimecore-local-0.1.0-local.13-3687a998fda0') 'Plan mutation cannot change provider catalog'
     $exports=@($module.ExportedFunctions.Keys|Sort-Object)
     Check (($exports -join '|') -ceq 'Close-YimeCoreLocal13MaintenanceInputs|Get-YimeCoreLocal13MaintenanceInputPlan|Open-YimeCoreLocal13MaintenanceInputs') 'only three fixed provider APIs exported'
     Check (-not (Get-Command Open-YimeCoreLocal13MaintenanceInputs).Parameters.ContainsKey('PackageRoot') -and -not (Get-Command Open-YimeCoreLocal13MaintenanceInputs).Parameters.ContainsKey('Contract')) 'Open has no public root or hash override'

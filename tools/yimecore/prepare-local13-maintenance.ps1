@@ -3,13 +3,13 @@ param([ValidateSet('Plan','Prepare')][string]$Action='Plan',[string]$OutputRoot)
 $ErrorActionPreference='Stop'
 Import-Module (Join-Path $PSScriptRoot 'local12-maintenance-preparation.psm1') -Force
 $repo=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
-$source=Join-Path $repo '.tmp\yimecore-local-product\rb13-0908-b903f821\package'
+$source=Join-Path $repo '.tmp\w13o\.tmp\yimecore-local-product\outcome13\package'
 $contract=@{
-    product_version='0.1.0-local.13';package_id='yimecore-local-0.1.0-local.13-af06362e5433'
+    product_version='0.1.0-local.13';package_id='yimecore-local-0.1.0-local.13-3687a998fda0'
     guarded_native_desktop_rehearsal=$true
-    manifest_sha256='dccbf6f7ef553bda1e20d7b8fa1659fe7e4b691d5d492b8210c9b7c606a7ced4'
-    manager_sha256='e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a'
-    wrapper_sha256='b0d85e48d43cf3b8f04f32c3b713fc7cab094e7811001086277f30be9860af06';member_count=85
+    manifest_sha256='1fd54730bffe9b986249cdeaedbd7c8807b255da36e75c6463ff983e378275a9'
+    manager_sha256='9f69d9aba12e4c50c8aa06edb945375dc72a721cd208791ffab2e4207442f39d'
+    wrapper_sha256='ec206153c53d96b98aa43cd522167bb55eef83b7d7acedf745f8f966c6851479';member_count=85
 }
 $probeSource=Join-Path $PSScriptRoot 'rollback-failure-runtime.go'
 $probeHash='c17ee123594a4453260583cb53c9ca8133ddde6df4defa2f50d37d3dc75d13b9'
