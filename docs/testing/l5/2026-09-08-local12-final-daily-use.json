@@ -1,0 +1,75 @@
+{
+  "schema_version": "yimecore-local12-l5-final-daily-use-v1",
+  "recorded_at": "2026-09-08T08:17:40.2416487+08:00",
+  "affected_product": "YimeCore",
+  "scope": "MYCOMPUTER installed 0.1.0-local.12 only",
+  "user_report": {
+    "use_date": "2026-09-08",
+    "approximate_duration": "exact minutes not supplied; from the guided test start until the report",
+    "applications": [
+      "Notepad",
+      "Edge"
+    ],
+    "unexpected_issue_category": "none",
+    "accepted_for_daily_use": true,
+    "completion_basis": "User returned the prescribed minimal report after the guided daily-use scenario. No content or code was requested or recorded."
+  },
+  "guided_scenario": {
+    "user_executed": true,
+    "coverage": [
+      "ordinary composition and candidate commit",
+      "short Chinese text and punctuation in a blank Notepad document",
+      "Notepad and Edge focus round trip"
+    ],
+    "individual_input_or_candidate_content_recorded": false,
+    "computer_use_attempt_counted_as_acceptance": false,
+    "computer_use_limit": "The agent-controlled browser key path produced a raw synthetic digit and did not establish TSF/profile activation; only the user's physical guided run is acceptance evidence."
+  },
+  "mechanical_post_use": {
+    "snapshot_path": "docs/testing/l5/2026-09-08-local12-final-post-use.json",
+    "snapshot_sha256": "ae21321f7c263e78857dcbd2d4a49caa71f0ff083754954599394e1c49c3390f",
+    "reference_path": "docs/testing/l5/2026-09-05-local12-reboot-outcomes.json",
+    "reference_sha256": "82f4604caebf142cdc9eb24637ebd71a00ffd8eb8ca1c5bfaba2e25c6d522b53",
+    "pre_use_snapshot_sha256": "6f4432e29aeb6030da1ef8380387101f4031e46d37f299af6d0748e63a16389d",
+    "checks": {
+      "computer_matches": true,
+      "package_version_matches": true,
+      "install_root_matches": true,
+      "manifest_matches": true,
+      "package_file_count_matches": true,
+      "package_integrity_passed": true,
+      "runtime_identity_passed": true,
+      "registered_x64_matches": true,
+      "protected_registry_exact_12": true,
+      "pre_post_processes_exact": true,
+      "pre_post_registry_exact": true,
+      "privacy_nonclaims_preserved": true
+    },
+    "passed": true
+  },
+  "gates": {
+    "D2_daily_use_final_confirmed": true,
+    "L5_final_user_confirmation": true,
+    "L6_sealed": false,
+    "local_product_ready": false,
+    "public_release_ready": false
+  },
+  "new_confirmed_regressions": [],
+  "privacy": {
+    "user_text_read": false,
+    "user_text_recorded": false,
+    "input_codes_or_candidates_recorded": false,
+    "user_documents_read": false,
+    "user_settings_or_learning_files_read": false,
+    "raw_logs_or_events_recorded": false,
+    "product_or_registry_mutated": false,
+    "default_input_method_changed": false,
+    "installer_executed": false,
+    "frozen_targets_executed": false
+  },
+  "limitations": [
+    "The exact duration remains unknown because the user supplied X minutes and described the interval instead of a numeric estimate.",
+    "This confirms the stated Notepad and Edge daily-use scenario on MYCOMPUTER local.12; it does not add unreported app, mode, key-range, performance or fault-recovery coverage.",
+    "L6 sealing, local_product_ready and public_release_ready remain separate and false."
+  ]
+}
