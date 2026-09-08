@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/tsaanghwang/Yime/go-backend/internal/symlinkfixture"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -439,17 +440,17 @@ func TestSpeechPackagePrivateChildEnvironmentAndFreshOutput(t *testing.T) {
 func TestSpeechPackageRejectsSymlinkPayload(t *testing.T) {
 	f := newSpeechPackageFixture(t)
 	digest := f.seal(t)
+	if _, err := verifyPackage(f.output, digest); err != nil {
+		t.Fatal("plain fixture rejected", err)
+	}
 	target := filepath.Join(f.output, "admitted-records.json")
 	renamed := filepath.Join(t.TempDir(), "fixture-records.json")
 	if err := os.Rename(target, renamed); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.Symlink(renamed, target); err != nil {
-		t.Skipf("symlink capability unavailable: %v", err)
-	}
-	if _, err := verifyPackage(f.output, digest); err == nil {
-		t.Fatal("symlink payload accepted")
-	}
+	symlinkfixture.Create(t, renamed, target)
+	_, err := verifyPackage(f.output, digest)
+	symlinkfixture.Rejected(t, err, symlinkfixture.PackageDiagnostic())
 }
 
 func TestSpeechPackageCloneCopiesOnlyRuntimeAndPreservesSeal(t *testing.T) {

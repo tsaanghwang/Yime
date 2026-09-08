@@ -71,6 +71,15 @@ try {
     $go='C:\Program Files\Go\bin\go.exe'
     $stage='powershell-fixture-contracts'
     foreach ($shell in @(@{id='ps7';exe=(Get-Process -Id $PID).Path},@{id='ps5';exe=(Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe')})) {
+        $linkOut=Join-Path $repo ('.tmp\sr4b-symlink-'+$shell.id+'-'+$runID)
+        Invoke-AdmissionLogged $shell.exe @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $PSScriptRoot 'test-speech-symlink-evidence.ps1'),'-OutputRoot',$linkOut) (Join-Path $out ('logs/'+$shell.id+'-symlink.log'))
+        $linkResult=Get-Content -LiteralPath (Join-Path $linkOut 'result.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+        if (-not $linkResult.passed -or $linkResult.checks_count -ne 5 -or $linkResult.failed_count -ne 0 -or
+            ($linkResult.exercised_rejection_count+$linkResult.skipped_count) -ne 4) { throw 'Incomplete symlink fixture evidence.' }
+        $psTests+=@{shell=$shell.id;test='test-speech-symlink-evidence.ps1';root=$linkOut;checks_count=$linkResult.checks_count;
+            skipped_count=$linkResult.skipped_count;exercised_rejection_count=$linkResult.exercised_rejection_count;
+            all_four_rejections_exercised=$linkResult.all_four_rejections_exercised;
+            result_sha256=(Get-FileHash -LiteralPath (Join-Path $linkOut 'result.json') -Algorithm SHA256).Hash.ToLowerInvariant()}
         foreach ($test in @(
             @{file='test-local-product-speech-build.ps1';prefix='speech-build-contract-'},
             @{file='test-speech-maintenance-data.ps1';prefix='speech-maintenance-data-'},

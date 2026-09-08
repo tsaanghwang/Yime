@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/tsaanghwang/Yime/go-backend/internal/symlinkfixture"
 	"os"
 	"path/filepath"
 	"strings"
@@ -407,13 +408,12 @@ func TestSpeechProductExportRetainsExplicitSkipEvidence(t *testing.T) {
 
 func TestSpeechProductExportRejectsIndirectSources(t *testing.T) {
 	f := newProductExportFixture(t)
+	if _, err := exportValidateSummary(f.config); err != nil {
+		t.Fatal("plain fixture rejected", err)
+	}
 	target := filepath.Join(f.config.repo, "go-backend", "cmd", "indirect.go")
-	if err := os.Symlink(filepath.Join(f.config.repo, "AGENTS.md"), target); err != nil {
-		t.Skip("platform does not permit a synthetic symlink")
-	}
-	if err := exportProduct(f.config); err == nil {
-		t.Fatal("indirect source accepted")
-	}
+	symlinkfixture.Create(t, filepath.Join(f.config.repo, "AGENTS.md"), target)
+	symlinkfixture.Rejected(t, exportProduct(f.config), symlinkfixture.PackageDiagnostic())
 }
 
 func TestSpeechProductExportFixedCollectionContainsNoExecutableOrState(t *testing.T) {
@@ -437,4 +437,13 @@ func TestSpeechProductExportFixedSourcesIncludeMaintenanceConfigContract(t *test
 		}
 	}
 	t.Fatal("maintenance config contract is outside fixed product source evidence")
+}
+
+func TestSpeechProductExportFixedSourcesIncludeSymlinkContract(t *testing.T) {
+	for _, path := range exportFixedSources {
+		if path == "tools/yimecore/test-speech-symlink-evidence.ps1" {
+			return
+		}
+	}
+	t.Fatal("symlink evidence runner is outside fixed product source evidence")
 }

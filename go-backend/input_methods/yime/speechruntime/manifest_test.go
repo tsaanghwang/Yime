@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/tsaanghwang/Yime/go-backend/internal/symlinkfixture"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -448,12 +449,15 @@ func TestSpeechManifestRejectsOutsideAndIndirectPaths(t *testing.T) {
 	}
 	t.Run("symlink", func(t *testing.T) {
 		target := t.TempDir()
+		if err := os.WriteFile(filepath.Join(target, "file.json"), []byte("{}"), 0600); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := Child(target, "file.json"); err != nil {
+			t.Fatal("plain fixture rejected", err)
+		}
 		link := filepath.Join(f.root, "indirect")
-		if err := os.Symlink(target, link); err != nil {
-			t.Skipf("local account cannot create an isolated symlink fixture: %v", err)
-		}
-		if _, err := Child(f.root, "indirect/file.json"); err == nil {
-			t.Fatal("indirect trial path accepted")
-		}
+		symlinkfixture.Create(t, target, link)
+		_, err := Child(f.root, "indirect/file.json")
+		symlinkfixture.Rejected(t, err, "indirect trial paths are forbidden")
 	})
 }

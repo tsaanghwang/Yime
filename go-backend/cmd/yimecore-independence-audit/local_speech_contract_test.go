@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"github.com/tsaanghwang/Yime/go-backend/internal/symlinkfixture"
 	"os"
 	"path/filepath"
 	"strings"
@@ -429,6 +430,9 @@ func TestLocalSpeechBuildBindingPinsOnlyArchivedDigests(t *testing.T) {
 
 func TestLocalSpeechContractRejectsIndirectResources(t *testing.T) {
 	f := newLocalSpeechFixture(t, "")
+	if err := f.validate(); err != nil {
+		t.Fatal("plain fixture rejected", err)
+	}
 	path := filepath.Join(f.root, speechruntime.CapabilityFilename)
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -441,12 +445,8 @@ func TestLocalSpeechContractRejectsIndirectResources(t *testing.T) {
 	if err := os.Remove(path); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.Symlink(target, path); err != nil {
-		t.Skip("symbolic-link creation is unavailable; no indirect-path pass inferred")
-	}
-	if err := f.validate(); err == nil {
-		t.Fatal("indirect speech payload accepted")
-	}
+	symlinkfixture.Create(t, target, path)
+	symlinkfixture.Rejected(t, f.validate(), "symlinks and junctions are not package payloads")
 }
 
 func TestLocalSpeechAuditorPreservesOuterIntegrityAndLegacyScope(t *testing.T) {

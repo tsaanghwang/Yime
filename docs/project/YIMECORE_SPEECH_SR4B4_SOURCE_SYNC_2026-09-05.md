@@ -1,5 +1,7 @@
 # SR4-B4：DP1 共享源码变更后的 local.13 重构
 
+2026-09-08 后续：[符号链接夹具与证据报告修订](YIMECORE_SPEECH_SR4B_SYMLINK_EVIDENCE_2026-09-08.md)改变测试／导出来源闭包，本篇包及通过数保留为 B4 时点历史证据，不代表新源码。四项实际符号链接拒绝仍受 Windows 1314 限制；未重构或安装。
+
 日期：2026-09-05。影响面为 YimeCore 自研版 Stage5C 固定来源闭包和未安装候选构包。Rime/PIME 的定向退出修复改动了 `go-backend/input_methods/yime` 下被该闭包锁定的共享源码；因此 SR4-B3 的 local.13 包仍保留为历史证据，但不再代表当前源码。本批重新准入并构包，没有把 Rime/PIME 变成 YimeCore 的运行依赖。
 
 ## 结果

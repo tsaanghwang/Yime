@@ -145,6 +145,8 @@ evidence 目录；失败即退出非零，不得静默降级。
 
 ## SR4-B2 默认关闭的正常候选构包
 
+2026-09-08：[符号链接负例补充记录](../../docs/project/YIMECORE_SPEECH_SR4B_SYMLINK_EVIDENCE_2026-09-08.md)。独立 `test-speech-symlink-evidence.ps1` 支持 PS5/PS7，只读源码及自有合成夹具；普通模式区分确切权限 SKIP 与已执行拒绝，`-RequireFixtures` 要求四项真实拒绝全部执行。当前两版均因 Windows 1314 保留四项 SKIP，不能视为 OS 验收闭合。完整构包 runner 已接入分项收据，本次未运行它、未重建或安装包。
+
 `local-product.json` 为 local.13 声明默认关闭的可选 `speech` 能力。构包必须显式提供新鲜准入根、准入 summary SHA256 和 source inventory SHA256；旧入口不带这些参数会在创建输出前拒绝。无能力声明的旧 local.12 包仍保持原审计合同。
 
 `run-connected-speech-product-package.ps1` 要求 PowerShell 7.5+、上述三个准入参数、日用安装根／manifest 固定摘要，以及 `-ProcessFixtureRoot <实际用户目录>\YimeCore Isolated Fixtures\SR4B2\speech-product-test-<新ID>`。它先验证源码仍匹配，隔离运行 PowerShell／Go 合同，构建正常 x64 Runtime 与 x64/x86 TSF 包，再在指定仓外副本运行七阶段正常 Runtime/Broker 夹具。所有进程使用显式唯一管道和新状态目录；不调用安装、真实维护、注册宿主或日用管道。

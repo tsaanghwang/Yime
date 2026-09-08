@@ -95,6 +95,7 @@ var exportFixedSources = []string{
 	"go-backend/input_methods/yime/data/yime_full.dict.yaml", "go-backend/input_methods/yime/data/yime_variable.dict.yaml",
 	"go-backend/input_methods/yime/data/yime_shorthand.dict.yaml", "tools/lexicon/data/yime_core_target.lock.json",
 	"tools/yimecore/run-connected-speech-product-source.ps1",
+	"tools/yimecore/test-speech-symlink-evidence.ps1",
 }
 
 func hexDigest(data []byte) string { sum := sha256.Sum256(data); return hex.EncodeToString(sum[:]) }
