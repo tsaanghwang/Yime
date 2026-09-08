@@ -218,6 +218,13 @@ jobs:
           & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\yimecore\test-local-product-readiness.ps1
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 local-product readiness test failed with exit code $LASTEXITCODE" }
           .\tools\yimecore\test-local-product-readiness.ps1
+      - name: Test YimeCore local12 maintenance preparation
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\yimecore\test-local12-maintenance-preparation.ps1
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 local12 maintenance preparation test failed with exit code $LASTEXITCODE" }
+          .\tools\yimecore\test-local12-maintenance-preparation.ps1
       - name: Test exact payload-closure rejection model
         shell: pwsh
         run: |

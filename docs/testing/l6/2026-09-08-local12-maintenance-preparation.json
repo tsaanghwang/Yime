@@ -1,0 +1,79 @@
+{
+  "schema_version": "yimecore-local12-maintenance-preparation-review-v1",
+  "reviewed_date": "2026-09-08",
+  "affected_product": "YimeCore",
+  "scope": "public sealed local.12 package and new repository-local preparation output",
+  "source_package_version": "0.1.0-local.12",
+  "source_manifest_sha256": "9b3366b350ef2b23fd285fc9d97d876bf1ae6e2fc0f8613c647640f01184502e",
+  "source_package_members_verified": 74,
+  "default_plan": {
+    "ps5_passed": true,
+    "ps7_passed": true,
+    "source_member_count": 74,
+    "writes_product_or_state": false
+  },
+  "regressions": {
+    "ps5_passed": true,
+    "ps7_passed": true,
+    "checks_per_shell": 35,
+    "junction_fixture_rejection_exercised_in_both_shells": true,
+    "synthetic_fixtures_only": true,
+    "compiler_executed_by_tests": false,
+    "product_executed_by_tests": false
+  },
+  "actual_prepare": {
+    "shell": "Windows PowerShell 5.1",
+    "passed": true,
+    "output_root": "C:\\dev\\Yime\\.tmp\\yimecore-local12-maintenance-preparation\\reviewed-20260908-ps5",
+    "compiled_reviewed_probe_source": true,
+    "probe_source_sha256": "c17ee123594a4453260583cb53c9ca8133ddde6df4defa2f50d37d3dc75d13b9",
+    "failure_manifest_sha256": "36b897897ebf579dbb2cad5e7e9479a3ff0803f12f8aa8e36cd836f3c77ae03a",
+    "failure_runtime_sha256": "8add9dadabcdcd09abe1d28163f1faf74d30c90c85950e49b40d6c00accd9396",
+    "changed_package_members": ["bin/YimeCoreTrialRuntime.exe", "package-manifest.json"],
+    "maintenance_controller_preserved": true,
+    "source_package_reverified_after_copy": true,
+    "expected_probe_exit_code": 86,
+    "probe_exit_observed": false,
+    "prepared_only": true
+  },
+  "evidence": [
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local12-preparation-tests-20260908\\ps5.json",
+      "sha256": "21e1892c1d5f7fbc20e7adc1497a9b46c8749d9be961f2d92048b61e09a990a0"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local12-preparation-tests-20260908\\ps7.json",
+      "sha256": "72f138b120578686a994f178aac63bc6e3195a8a07aa77002cbd5349aafa5a82"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local12-preparation-tests-20260908\\real-plan-ps5.json",
+      "sha256": "0de052611fc506b195836509e5e7c4304b1b2fb526809ce39273166e0349e222"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\local12-preparation-tests-20260908\\real-plan-ps7.json",
+      "sha256": "52a98c604afe5458a7e7922fcfc659cb1287b5b6a5a6bee4a12cf638d9f662ac"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\yimecore-local12-maintenance-preparation\\reviewed-20260908-ps5\\preparation.json",
+      "sha256": "5b67906e8ba30bd261da4beda96f114362885bca7a9748d5b193dabbed7564af"
+    }
+  ],
+  "execution_authorized": false,
+  "ready_to_execute": false,
+  "unexpected_success_rollback_guard_available": false,
+  "installer_executed": false,
+  "product_executed": false,
+  "installed_package_read": false,
+  "user_state_read": false,
+  "product_mutated": false,
+  "actual_restore_passed": false,
+  "actual_failed_upgrade_rollback_passed": false,
+  "actual_uninstall_reinstall_passed": false,
+  "local_product_ready": false,
+  "public_release_ready": false,
+  "remaining": [
+    "NativeDesktop unexpected-success rollback guard and reviewed same-SID native execution harness",
+    "explicit authorized maintenance window with fresh data backup",
+    "actual current-candidate restore and dual-architecture failure rollback/uninstall evidence"
+  ]
+}

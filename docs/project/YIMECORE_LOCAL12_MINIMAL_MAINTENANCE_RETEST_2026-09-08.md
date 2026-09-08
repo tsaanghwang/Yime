@@ -68,12 +68,37 @@ local.12 的仓外 `seal.json` 固定源码快照 `4c5b89fa5088aed016ebb2905ec64
 5. **一次双架构卸载重装。**仅前面全部通过后，取新鲜保护快照和恢复包，执行保留数据的精确卸载。检查当前身份 x64/x86 COM/TIP、用户 TIP 子树、Run、卸载项、Runtime/Broker 和活动配置消失，旧身份及 Rime/PIME、默认设置、用户数据和仓外包保留；之后从已验证的同版 public 包重装，核验 DWORD `Enable=1`、双架构注册和普通权限运行。残留或数据变化时保留现场并停止，不能强删 DLL、杀 Explorer 或清空用户目录来获得 PASS。
 6. **最小人工确认和独立复核。**用户只需保存/关闭受影响宿主、从 Explorer 打开普通 Windows PowerShell、以同一账户确认 UAC，以及维护后实际选择“音元拼音”完成一次短输入确认。若该次维护改变了 Run/安装根并要求新的登录启动证据，由用户自行决定真实重启时间；手动启动不能冒充重启证据。无需重新报告既有 L5 时长或做额外两天日用。
 
-**当前尚不能发出可执行维护命令。**上述第 4 步缺少已审查的 local.12 双架构故障候选与取证执行计划。现有 `invoke-local6-failed-upgrade-rollback.ps1` 锁定 local.6 manifest、SID 和旧故障包；`complete-local-trial-closure.ps1` 使用历史 E6-C 准备计划；两者均不能原样用于 local.12。不得去掉哈希/SID/范围检查来使旧命令运行。
+**当前尚不能发出可执行维护命令。**本轮已补入下节所述的 preparation-only 故障候选；上述第 4 步仍缺少已审查的双架构取证执行计划及意外成功保护。现有 `invoke-local6-failed-upgrade-rollback.ps1` 锁定 local.6 manifest、SID 和旧故障包；`complete-local-trial-closure.ps1` 使用历史 E6-C 准备计划；两者均不能原样用于 local.12。不得去掉哈希/SID/范围检查来使旧命令运行。
 
 还需解决一个明确的故障边界：local.12 控制器拒绝把 `NativeDesktop` 与 `NativeX64Rehearsal` 混用，且“故障包意外启动成功也强制回退”的分支只属于后者。因此新双架构演练执行器必须证明注入只会失败，并处理意外成功时的安全停止/恢复；单写 `rehearsal_only=true` 不能提供该保证。不得在尚未解决时运行故障包，也不得修改已封存 local.12 控制器然后继续声称测试的是原包。
 
+## 已实现的准备工具与验证
+
+新增 [prepare-local12-maintenance.ps1](../../tools/yimecore/prepare-local12-maintenance.ps1)、[local12-maintenance-preparation.psm1](../../tools/yimecore/local12-maintenance-preparation.psm1) 和 [test-local12-maintenance-preparation.ps1](../../tools/yimecore/test-local12-maintenance-preparation.ps1)。固定入口只接受封存 local.12 候选及控制器、双架构身份、74 文件和退出 86 探针源码的已审查哈希，默认 `Plan` 只输出 JSON。它不 dot-source 包内脚本，也不调用会启动 IndependenceAudit EXE 的 `Assert-LocalProductPackage`。
+
+显式 `Prepare` 只在仓内 `.tmp/yimecore-local12-maintenance-preparation` 的新直接子目录工作，使用本地 Go 编译器与关闭下载的独立子进程环境编译已有 `rollback-failure-runtime.go`。编译后静态检查 AMD64 PE32+，按清单复制公开包，仅替换 Runtime 与重新生成 manifest，保留原维护器、注册工具与其他成员。现有目录、路径越界、reparse point、未列成员、旧产品身份、错架构、错误清单/探针哈希均拒绝。失败输出保留，禁止覆写旧目录。准备工具没有安装、升级、卸载或注册动作。
+
+2026-09-08 实际验证：
+
+- PS5 与 PS7 的默认 `Plan` 均通过，封存包为 74/74；没有读取已安装包或用户状态。
+- PS5 与 PS7 的 35 项小型合成回归均通过，包含真实 fixture junction 拒绝。合成 PE 从未启动，不作为实际运行结果。
+- PS5 显式 `Prepare` 已完成一次仓内复制与编译，输出根 `C:\dev\Yime\.tmp\yimecore-local12-maintenance-preparation\reviewed-20260908-ps5`。未运行编译所得探针、产品 EXE、包内脚本、安装器或维护器。
+- 准备后 manifest SHA-256：`36b897897ebf579dbb2cad5e7e9479a3ff0803f12f8aa8e36cd836f3c77ae03a`；探针 SHA-256：`8add9dadabcdcd09abe1d28163f1faf74d30c90c85950e49b40d6c00accd9396`。原始 public 包再次核验通过，维护器仍为 `ff3a563b…`。
+- `expected_probe_exit_code=86` 表示已锁定源码的预期，不是观察到的运行结果；`probe_exit_observed=false`。`execution_authorized`、`ready_to_execute`、`unexpected_success_rollback_guard_available` 均恒为 false。
+
+结构化结果及证据哈希见 [2026-09-08-local12-maintenance-preparation.json](../testing/l6/2026-09-08-local12-maintenance-preparation.json)。首次回归的 PS5 junction 清理错误及默认计划的探针哈希拼写错误已修正并完整重跑；保留准确退出状态，不把首次控制台 PASS 字样当作整次成功。
+
+PS5/PS7 合成回归已接入 CI，不依赖本机封存路径，也不会编译或执行产品；三个工具的 Git 换行属性固定为 LF，保证已生成准备记录中的源码摘要在跨机器检出后不变。独立审查未发现阻断其“仅准备”范围的问题。回归命令：
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/yimecore/test-local12-maintenance-preparation.ps1
+pwsh.exe -NoProfile -File tools/yimecore/test-local12-maintenance-preparation.ps1
+```
+
+本机只读复查入口是 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime\tools\yimecore\prepare-local12-maintenance.ps1`。准备产物仍等待上节明确的原生执行边界，不提供针对该故障包的升级/安装命令。
+
 ## 完成条件
 
-本文件只关闭“比较具体变化并准备最小补验范围”。当前 `current_candidate_actual_restore_and_failed_upgrade_rollback`、当前双架构完整卸载实机结果、`L6_sealed`、`local_product_ready`、`public_release_ready` 均不因此置为 true。
+本批关闭具体维护差异比较、最小补验范围、准备工具及隔离故障包生成。当前 `current_candidate_actual_restore_and_failed_upgrade_rollback`、当前双架构完整卸载实机结果、`L6_sealed`、`local_product_ready`、`public_release_ready` 均不因此置为 true。
 
 后续关闭维护门禁需要精确绑定候选与新鲜归档的原生证据，而非本文件、历史汇总布尔值或 PS5/PS7 合成 PASS。实际执行仍受 [AGENTS.md](../../AGENTS.md) 的安装、同 SID、原生上下文和数据边界约束，以及本轮“不触碰已安装 local.12”的明确范围限制。没有用户数据访问和实际维护窗口的明确授权时，继续实现和验证准备工具即可，不能以“完成尚待工作”代替真实运行证据。
