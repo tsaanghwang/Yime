@@ -70,15 +70,59 @@ function RejectFixture($Fixture,[string]$Name){UseFixture $Fixture;Reject {Open-
     $sessions=& $module {$script:InputSessions.Count};Check ($sessions -eq 0) ($Name+' releases unsuccessful session')}
 try{
     $fixedPlan=Get-YimeCoreLocal13MaintenanceInputPlan
-    Check ($fixedPlan.normal.manifest_sha256 -ceq '1fd54730bffe9b986249cdeaedbd7c8807b255da36e75c6463ff983e378275a9' -and $fixedPlan.fault.manifest_sha256 -ceq '7a70ba727e0cc157358680213ea5e4cbb52b711631c74d0d2182b5029cc141ef' -and $fixedPlan.normal.member_count -eq 85) 'default Plan returns fixed reviewed candidate constants'
+    Check ($fixedPlan.normal.manifest_sha256 -ceq '8f7e44ab9097a99d938891b507d0a07b753ffa66dbbec887cb0576286470f2cc' -and $fixedPlan.fault.manifest_sha256 -ceq 'd8cd1338ea2439620f840ef5f43687f15069200f16e1de16b2b6653c9e217161' -and $fixedPlan.normal.member_count -eq 85) 'default Plan returns fixed reviewed candidate constants'
     Check ($fixedPlan.controller_sha256 -ceq '9f69d9aba12e4c50c8aa06edb945375dc72a721cd208791ffab2e4207442f39d') 'default provider pins archived controller independently of current workspace manager'
     Check (-not $fixedPlan.verification_performed -and -not $fixedPlan.input_files_opened -and -not $fixedPlan.execution_authorized) 'default Plan does not inspect or authorize inputs'
     $fixedPlan.normal.package_id='caller mutation'
-    Check ((Get-YimeCoreLocal13MaintenanceInputPlan).normal.package_id -ceq 'yimecore-local-0.1.0-local.13-3687a998fda0') 'Plan mutation cannot change provider catalog'
+    Check ((Get-YimeCoreLocal13MaintenanceInputPlan).normal.package_id -ceq 'yimecore-local-0.1.0-local.13-7f86b4384fef') 'Plan mutation cannot change provider catalog'
     $exports=@($module.ExportedFunctions.Keys|Sort-Object)
     Check (($exports -join '|') -ceq 'Close-YimeCoreLocal13MaintenanceInputs|Get-YimeCoreLocal13MaintenanceInputPlan|Open-YimeCoreLocal13MaintenanceInputs') 'only three fixed provider APIs exported'
     Check (-not (Get-Command Open-YimeCoreLocal13MaintenanceInputs).Parameters.ContainsKey('PackageRoot') -and -not (Get-Command Open-YimeCoreLocal13MaintenanceInputs).Parameters.ContainsKey('Contract')) 'Open has no public root or hash override'
     $fixture=Fixture 'valid';UseFixture $fixture
+    # Preload the former global names only in a disposable child so this test
+    # cannot poison a later test or retained input lease in the caller's PS7.
+    $oldFacts='Yime.Local13InputFacts.Facts' -as [type]
+    $oldDirectories='Yime.Local13InputDirectories' -as [type]
+    $spoofScript=Join-Path $root 'spoof-global-types.ps1';$spoofCatalog=Join-Path $root 'spoof-catalog.json';$spoofResult=Join-Path $root 'spoof-result.json'
+    Json $fixture.catalog $spoofCatalog
+    $spoofSource=@'
+param([string]$ModulePath,[string]$CatalogPath,[string]$ResultPath)
+$ErrorActionPreference='Stop'
+Add-Type -TypeDefinition @"
+using System;
+using System.IO;
+using Microsoft.Win32.SafeHandles;
+namespace Yime.Local13InputFacts {
+    public static class Facts {
+        public static string VerifyFileHandle(FileStream stream,string path){throw new Exception("Preloaded fake file facts were adopted");}
+    }
+}
+namespace Yime {
+    public static class Local13InputDirectories {
+        public static SafeFileHandle Open(string path){throw new Exception("Preloaded fake directory pin was adopted");}
+        public static void Verify(SafeFileHandle handle,string path){throw new Exception("Preloaded fake directory verification was adopted");}
+    }
+}
+"@
+$module=Import-Module $ModulePath -Force -PassThru
+$catalog=Get-Content -LiteralPath $CatalogPath -Raw|ConvertFrom-Json
+& $module {param($value) $script:InputCatalog=$value} $catalog
+$inputs=$null
+try{
+    $inputs=Open-YimeCoreLocal13MaintenanceInputs
+    $private=& $module {($script:InputFactsType.Namespace -cmatch '^Yime\.Local13Inputs_[a-f0-9]{32}$') -and
+        ($script:InputDirectoriesType.Namespace -ceq $script:InputFactsType.Namespace)}
+    if(-not $private -or -not $inputs.verified -or -not $inputs.final_paths_and_single_file_links_verified){throw 'Private native input helpers were not used'}
+    if($inputs.continuous_membership_protection -or $inputs.execution_authorized){throw 'Read leases were promoted to execution protection'}
+    [IO.File]::WriteAllText($ResultPath,'{"passed":true}',[Text.UTF8Encoding]::new($false))
+}finally{if($null -ne $inputs){Close-YimeCoreLocal13MaintenanceInputs $inputs}}
+'@
+    [IO.File]::WriteAllText($spoofScript,$spoofSource,[Text.UTF8Encoding]::new($false))
+    $shell=Join-Path $PSHOME $(if($PSVersionTable.PSVersion.Major -ge 7){'pwsh.exe'}else{'powershell.exe'})
+    & $shell -NoLogo -NoProfile -ExecutionPolicy Bypass -File $spoofScript -ModulePath $modulePath -CatalogPath $spoofCatalog -ResultPath $spoofResult
+    Check ($LASTEXITCODE -eq 0 -and (Test-Path -LiteralPath $spoofResult) -and (Get-Content -LiteralPath $spoofResult -Raw|ConvertFrom-Json).passed) 'preloaded global fake helpers cannot replace native input verification'
+    Check ([object]::ReferenceEquals($oldFacts,('Yime.Local13InputFacts.Facts' -as [type])) -and
+        [object]::ReferenceEquals($oldDirectories,('Yime.Local13InputDirectories' -as [type]))) 'spoof fixture leaves caller global helper types unchanged'
     $before=@(Get-ChildItem -LiteralPath $fixture.root -Recurse -File).Count
     $result=Open-YimeCoreLocal13MaintenanceInputs;$leases.Add($result)
     Check ($result.verified -and $result.file_lease_count -eq $fixture.catalog.archive_inputs+2 -and $result.directory_lease_count -gt 2 -and $result.leases_held) 'Open holds complete file and directory leases'
@@ -88,6 +132,26 @@ try{
     Reject {$s=[IO.File]::Open($locked,[IO.FileMode]::Open,[IO.FileAccess]::Write,[IO.FileShare]::ReadWrite);$s.Dispose()} 'member write denied while leased'
     Reject {[IO.File]::Delete($locked)} 'member deletion denied while leased'
     Reject {[IO.Directory]::Move($fixture.root,($fixture.root+'-moved'))} 'archive root rename denied while directory lease held'
+    $nativeDirectoryType=& $module {$script:InputDirectoriesType}
+    Check (($nativeDirectoryType.Namespace -cmatch '^Yime\.Local13Inputs_[a-f0-9]{32}$') -and
+        (& $module {$script:InputFactsType.Namespace -ceq $script:InputDirectoriesType.Namespace})) 'both input helpers are retained Types in the private module namespace'
+    # An empty directory has no child file lease that might independently deny
+    # its rename. Exercise the actual private directory helper in isolation.
+    foreach($relative in @('empty-pin-root','empty-pin-parent/empty-child')){
+        $emptyPath=Join-Path $root $relative;$movedPath=$emptyPath+'-moved'
+        New-Item -ItemType Directory -Path $emptyPath -Force|Out-Null
+        $directoryHandle=$nativeDirectoryType::Open($emptyPath);$renamed=$false
+        try{
+            $nativeDirectoryType::Verify($directoryHandle,$emptyPath)
+            try{[IO.Directory]::Move($emptyPath,$movedPath);$renamed=$true}catch{}
+        }finally{
+            $directoryHandle.Dispose()
+            if($renamed){[IO.Directory]::Move($movedPath,$emptyPath)}
+        }
+        Check (-not $renamed) ('directory LIST lease alone denies real empty directory rename: '+$relative)
+        [IO.Directory]::Move($emptyPath,$movedPath);[IO.Directory]::Move($movedPath,$emptyPath)
+        Check $true ('empty directory becomes movable after its own lease closes: '+$relative)
+    }
     $transient=Join-Path $fixture.root 'normal/package/transient-fixture-only.tmp';$transientCreated=$false
     try{[IO.File]::WriteAllText($transient,'fixture only');$transientCreated=$true} catch{} finally{if(Test-Path -LiteralPath $transient){[IO.File]::Delete($transient)}}
     Check (-not $result.continuous_membership_protection) 'transient member attempts do not turn read leases into a continuous membership claim'

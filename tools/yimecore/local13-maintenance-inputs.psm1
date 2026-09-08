@@ -4,24 +4,27 @@ $ErrorActionPreference='Stop'
 # Private fixed catalog. Tests may replace it inside the module's own session;
 # no exported function accepts a root, hash, policy, or provider override.
 $script:InputCatalog=@{
-    root='C:\Users\tsaan\YimeCore Recovery Archives\local13-maintenance-candidates-20260908-7a42bbe7efe245d89f6faae080d8f4ea'
-    archive_manifest_sha256='1d74e0d714231e36f2300eca534de60165c2c3d94492d35f08a831962ff8af4e'
-    archive_summary_sha256='38317725084b264d4ef216cf88f72f19ec12613f39f330c17c8f742581c0706a'
-    normal_manifest_sha256='1fd54730bffe9b986249cdeaedbd7c8807b255da36e75c6463ff983e378275a9'
-    fault_manifest_sha256='7a70ba727e0cc157358680213ea5e4cbb52b711631c74d0d2182b5029cc141ef'
-    normal_id='yimecore-local-0.1.0-local.13-3687a998fda0'
-    fault_id='yimecore-local-0.1.0-local.13-3687a998fda0-rollback-failure-5ae5a75eb47a'
-    package_members=85;archive_inputs=182
+    root='C:\Users\tsaan\YimeCore Recovery Archives\local13-health-candidates-20260908-9d59c3b5324f4313921901325effcc79'
+    archive_manifest_sha256='19c96df216e8a246e07ca967c3d1e215a058bda2a6708c95f7cc4e29a1ee0b1d'
+    archive_summary_sha256='5391b75f5f30dedaf65bfa36b7f3963b6f5cc0acfdeef829d16cc2c9bfa40b69'
+    normal_manifest_sha256='8f7e44ab9097a99d938891b507d0a07b753ffa66dbbec887cb0576286470f2cc'
+    fault_manifest_sha256='d8cd1338ea2439620f840ef5f43687f15069200f16e1de16b2b6653c9e217161'
+    normal_id='yimecore-local-0.1.0-local.13-7f86b4384fef'
+    fault_id='yimecore-local-0.1.0-local.13-7f86b4384fef-rollback-failure-0be33f97a652'
+    package_members=85;archive_inputs=186
     controller_sha256='9f69d9aba12e4c50c8aa06edb945375dc72a721cd208791ffab2e4207442f39d'
     wrapper_sha256='ec206153c53d96b98aa43cd522167bb55eef83b7d7acedf745f8f966c6851479'
-    preparation_sha256='4efc8eebf8629c196f74d32ef163545470ae0ba60f14e137c2e71731b3ba0712'
-    plan_sha256='817feacf00b871a06e1dd35773f2f22c716803fc6b2fff57c53443314d33a712'
-    runtime_sha256='5ae5a75eb47a69abe1378ac86c6e5695daebbd3b4ed91af5712bfdc1729b168e'
+    preparation_sha256='b595cdb85e365804f2204ba6fba45f7b0aed21ba6d6d2a197697d9d5acfcfa4f'
+    plan_sha256='69a7d59086a33cb20708c2ecac5a0d8dcac59964f09d4a83032d445ff6eee8ce'
+    runtime_sha256='0be33f97a6527b0adb2a4fa3f3639f4aebbb32ef4d15d7330333443bf8afbaad'
     probe_source_sha256='c17ee123594a4453260583cb53c9ca8133ddde6df4defa2f50d37d3dc75d13b9'
-    preparation_entry_sha256='f2ec9c3b0f9e9780fe4fdabbd2628d370dcb31707488f936c1d59fa9cf5d5f52'
+    preparation_entry_sha256='43e8cd483339a1c0c0883cf401755526f18285b933b06191a2b268c01809b36a'
     preparation_module_sha256='462d5184c48c223e22cbcfa6dfc53c73d4ddcfb0693d832286b9f7101e75ab84'
 }
 $script:NativeFactsHash='9969b68b42bc11428d4af6a8bb348a9658e248c0758b953bd9e3834109f97be4'
+$script:InputNativeNamespace='Yime.Local13Inputs_'+[guid]::NewGuid().ToString('N')
+$script:InputFactsType=$null
+$script:InputDirectoriesType=$null
 $script:InputSessions=@{}
 $script:ClosedSessions=@{}
 
@@ -66,11 +69,16 @@ function Initialize-InputNativeFacts {
         $reader=[IO.StreamReader]::new($stream,[Text.Encoding]::UTF8,$true,4096,$true)
         try{$text=$reader.ReadToEnd()}finally{$reader.Dispose()}
     }finally{$stream.Dispose()}
-    if(-not ('Yime.Local13InputFacts.Facts' -as [type])) {
-        Add-Type -TypeDefinition ($text.Replace('namespace Yime.Dp1UNative {','namespace Yime.Local13InputFacts {'))
+    # Keep only Types compiled from these reviewed source bytes in this module's
+    # own namespace. Caller-preloaded global helper names are not evidence.
+    if($null -eq $script:InputFactsType) {
+        $types=@(Add-Type -TypeDefinition ($text.Replace('namespace Yime.Dp1UNative {',('namespace '+$script:InputNativeNamespace+' {'))) -PassThru)
+        $matches=@($types|Where-Object {$_.FullName -ceq ($script:InputNativeNamespace+'.Facts')})
+        if($matches.Count -ne 1){throw 'Private input facts Type was not compiled.'}
+        $script:InputFactsType=$matches[0]
     }
-    if(-not ('Yime.Local13InputDirectories' -as [type])) {
-        Add-Type -TypeDefinition @'
+    if($null -eq $script:InputDirectoriesType) {
+        $directorySource=@'
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -83,10 +91,10 @@ namespace Yime {
         [DllImport("kernel32.dll", SetLastError=true)] private static extern bool GetFileInformationByHandleEx(SafeFileHandle handle, int kind, out AttributeTag info, uint size);
         [StructLayout(LayoutKind.Sequential)] private struct AttributeTag { public uint Attributes, Tag; }
         public static SafeFileHandle Open(string path) {
-            // Read attributes, FILE_SHARE_READ, OPEN_EXISTING, backup semantics
-            // and OPEN_REPARSE_POINT. This denies ordinary rename/delete while
-            // held; it is not a continuous directory-membership enforcement API.
-            var handle=CreateFile(path,0x80,1,IntPtr.Zero,3,0x02200000,IntPtr.Zero);
+            // LIST_DIRECTORY | READ_ATTRIBUTES with FILE_SHARE_READ. Attribute-
+            // only access does not exclude rename. This pins the directory
+            // itself, not continuous membership of files created below it.
+            var handle=CreateFile(path,0x81,1,IntPtr.Zero,3,0x02200000,IntPtr.Zero);
             if(handle.IsInvalid){handle.Dispose();throw new Win32Exception(Marshal.GetLastWin32Error());}
             try { Verify(handle,path);return handle; } catch {handle.Dispose();throw;}
         }
@@ -101,6 +109,10 @@ namespace Yime {
     }
 }
 '@
+        $types=@(Add-Type -TypeDefinition ($directorySource.Replace('namespace Yime {',('namespace '+$script:InputNativeNamespace+' {'))) -PassThru)
+        $matches=@($types|Where-Object {$_.FullName -ceq ($script:InputNativeNamespace+'.Local13InputDirectories')})
+        if($matches.Count -ne 1){throw 'Private input directory Type was not compiled.'}
+        $script:InputDirectoriesType=$matches[0]
     }
 }
 function Add-InputFileLease($State,[string]$Relative,[string]$Hash,[long]$Bytes=-1) {
@@ -109,7 +121,7 @@ function Add-InputFileLease($State,[string]$Relative,[string]$Hash,[long]$Bytes=
     $path=Assert-InputPlainPath (Join-Path $State.root $Relative)
     $stream=[IO.File]::Open($path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
     $State.files[$Relative]=$stream
-    $State.file_ids[$Relative]=[Yime.Local13InputFacts.Facts]::VerifyFileHandle($stream,$path)
+    $State.file_ids[$Relative]=$script:InputFactsType::VerifyFileHandle($stream,$path)
     if(($Bytes -ge 0 -and $stream.Length -ne $Bytes) -or (Get-InputStreamHash $stream) -cne $Hash){throw 'Pinned maintenance input bytes changed.'}
 }
 function Assert-InputRecords($Records,[int]$Count) {
@@ -125,13 +137,13 @@ function Assert-InputRecords($Records,[int]$Count) {
 function Assert-InputTree($State) {
     $seenFiles=@{};$seenDirs=@{};$queue=New-Object 'Collections.Generic.Queue[string]';$queue.Enqueue($State.root)
     while($queue.Count){$dir=$queue.Dequeue()
-        [Yime.Local13InputDirectories]::Verify($State.directories[$dir],$dir)
+        $script:InputDirectoriesType::Verify($State.directories[$dir],$dir)
         foreach($item in Get-ChildItem -LiteralPath $dir -Force){
             if($item.Attributes -band [IO.FileAttributes]::ReparsePoint){throw 'Indirect maintenance input tree member.'}
             if($item.PSIsContainer){if(-not $State.directories.ContainsKey($item.FullName)){throw 'Unlisted maintenance input directory.'};$seenDirs[$item.FullName]=1;$queue.Enqueue($item.FullName)}
             else{$relative=$item.FullName.Substring($State.root.Length+1).Replace('\','/')
                 if(-not $State.files.ContainsKey($relative)){throw 'Unlisted maintenance input file.'};$seenFiles[$relative]=1
-                $id=[Yime.Local13InputFacts.Facts]::VerifyFileHandle($State.files[$relative],$item.FullName)
+                $id=$script:InputFactsType::VerifyFileHandle($State.files[$relative],$item.FullName)
                 if($id -cne $State.file_ids[$relative]){throw 'Maintenance input file identity changed.'}
             }
         }
@@ -199,7 +211,7 @@ function Open-YimeCoreLocal13MaintenanceInputs {
     $state=@{root=(Assert-InputPlainPath $script:InputCatalog.root);files=@{};file_ids=@{};directories=@{};records=@{}}
     $success=$false
     try {
-        $state.directories[$state.root]=[Yime.Local13InputDirectories]::Open($state.root)
+        $state.directories[$state.root]=$script:InputDirectoriesType::Open($state.root)
         Add-InputFileLease $state 'archive-manifest.json' $script:InputCatalog.archive_manifest_sha256
         $archive=Read-InputJson $state.files['archive-manifest.json'] $script:InputCatalog.archive_manifest_sha256
         Assert-InputString $archive.schema_version 'yimecore-local13-public-archive-v1';Assert-InputString $archive.root $state.root
@@ -213,7 +225,7 @@ function Open-YimeCoreLocal13MaintenanceInputs {
             if($row.path -in @('archive-manifest.json','archive-summary.json')){throw 'Archive metadata cannot be an input member.'}
             $parts=$row.path.Split('/');for($i=1;$i -lt $parts.Count;$i++){$directories[(Join-Path $state.root ($parts[0..($i-1)] -join '/'))]=1}
         }
-        foreach($directory in @($directories.Keys|Sort-Object Length,{$_})){$null=Assert-InputPlainPath $directory;$state.directories[$directory]=[Yime.Local13InputDirectories]::Open($directory)}
+        foreach($directory in @($directories.Keys|Sort-Object Length,{$_})){$null=Assert-InputPlainPath $directory;$state.directories[$directory]=$script:InputDirectoriesType::Open($directory)}
         Add-InputFileLease $state 'archive-summary.json' $script:InputCatalog.archive_summary_sha256
         foreach($row in $archive.files){Add-InputFileLease $state $row.path $row.sha256 $row.bytes}
         Assert-InputTree $state

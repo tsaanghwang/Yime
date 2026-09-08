@@ -3,11 +3,11 @@ param([ValidateSet('Plan','Prepare')][string]$Action='Plan',[string]$OutputRoot)
 $ErrorActionPreference='Stop'
 Import-Module (Join-Path $PSScriptRoot 'local12-maintenance-preparation.psm1') -Force
 $repo=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
-$source=Join-Path $repo '.tmp\w13o\.tmp\yimecore-local-product\outcome13\package'
+$source=Join-Path $repo '.tmp\w13h\.tmp\yimecore-local-product\health13\package'
 $contract=@{
-    product_version='0.1.0-local.13';package_id='yimecore-local-0.1.0-local.13-3687a998fda0'
+    product_version='0.1.0-local.13';package_id='yimecore-local-0.1.0-local.13-7f86b4384fef'
     guarded_native_desktop_rehearsal=$true
-    manifest_sha256='1fd54730bffe9b986249cdeaedbd7c8807b255da36e75c6463ff983e378275a9'
+    manifest_sha256='8f7e44ab9097a99d938891b507d0a07b753ffa66dbbec887cb0576286470f2cc'
     manager_sha256='9f69d9aba12e4c50c8aa06edb945375dc72a721cd208791ffab2e4207442f39d'
     wrapper_sha256='ec206153c53d96b98aa43cd522167bb55eef83b7d7acedf745f8f966c6851479';member_count=85
 }
