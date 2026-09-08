@@ -15,14 +15,25 @@ param(
     [switch]$NativeX64Only,
     [switch]$NativeDesktop,
     [switch]$NativeDesktopRehearsal,
+    [string]$RehearsalAttemptId,
+    [string]$RehearsalOutcomePath,
     [string]$TargetUserSid,
     [string]$StandardUserInitiator
 )
 
 $ErrorActionPreference = 'Stop'
+$script:rehearsalOutcome = $null
+$script:rehearsalOutcomeStream = $null
+$script:rehearsalOutcomeExitCode = 1
 $NativeLocalProduct = [bool]($NativeX64Only -or $NativeDesktop)
 if ($NativeX64Only -and $NativeDesktop) { throw 'Choose exactly one local-product architecture mode.' }
 function Assert-NativeDesktopRehearsalOptions {
+    if ($RehearsalAttemptId -or $RehearsalOutcomePath) {
+        if (-not $NativeDesktopRehearsal -or $Action -ne 'Install' -or
+            $RehearsalAttemptId -cnotmatch '^[a-f0-9]{32}$' -or -not $RehearsalOutcomePath) {
+            throw 'Typed outcome requires an explicit desktop Install rehearsal, attempt ID and fresh outcome path.'
+        }
+    }
     if ($NativeDesktopRehearsal -and (-not $NativeDesktop -or $NativeX64Only -or $NativeX64Rehearsal -or
         $Action -notin @('Plan','Install') -or $PurgeUserData -or $NoLaunch -or $NoAutoStart)) {
         throw 'NativeDesktopRehearsal requires the desktop architecture mode, Plan/Install, preserved data and full runtime/autostart rollback.'
@@ -120,6 +131,9 @@ if ($NativeLocalProduct -and $Action -ne 'Plan' -and
 }
 $maintenanceErrorPath = Join-Path $stateRootPath 'maintenance-last-error.txt'
 trap {
+    # No receipt, or a failed/incomplete receipt, must never authorize the next
+    # maintenance stage. Keep the original installation failure as the exit.
+    try { Complete-RehearsalOutcome } catch { Write-Warning 'Rehearsal outcome could not be persisted; acceptance is incomplete.' }
     try {
         if ($Action -eq 'Plan') { throw 'Read-only plan: do not write a maintenance error into AppData.' }
         New-Item -ItemType Directory -Path $stateRootPath -Force | Out-Null
@@ -127,8 +141,8 @@ trap {
             ($_.ScriptStackTrace | Out-String)
         [IO.File]::WriteAllText($maintenanceErrorPath, $errorText, $utf8NoBom)
     } catch {}
-    Write-Error $_
-    exit 1
+    Write-Error $_ -ErrorAction Continue
+    exit $script:rehearsalOutcomeExitCode
 }
 
 function Test-Administrator {
@@ -139,6 +153,136 @@ function Test-Administrator {
 
 function Quote-Argument([string]$value) {
     return '"' + $value.Replace('"', '\"') + '"'
+}
+
+function Get-RehearsalOutcomeEnvironment {
+    $self=[Diagnostics.Process]::GetCurrentProcess()
+    try { [ordered]@{parent=(Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)) 'YimeCore Recovery Archives');
+        pid=$self.Id;created=$self.StartTime.ToUniversalTime().ToFileTimeUtc();
+        sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value;
+        controller_sha256=(Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()} }
+    finally { $self.Dispose() }
+}
+function Initialize-RehearsalOutcomeFileType {
+    if ('YimeCore.Rehearsal.OutcomeFile' -as [type]) { return }
+    Add-Type @'
+using System;
+using System.IO;
+using System.Text;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
+namespace YimeCore.Rehearsal {
+ public static class OutcomeFile {
+  [StructLayout(LayoutKind.Sequential)] struct FT { public uint Low, High; }
+  [StructLayout(LayoutKind.Sequential)] struct Info {
+   public uint Attributes; public FT Created, Accessed, Written;
+   public uint Volume, SizeHigh, SizeLow, Links, IndexHigh, IndexLow;
+  }
+  [DllImport("kernel32.dll", SetLastError=true)] static extern bool GetFileInformationByHandle(SafeFileHandle h, out Info i);
+  [DllImport("kernel32.dll", CharSet=CharSet.Unicode, SetLastError=true)] static extern uint GetFinalPathNameByHandle(SafeFileHandle h, StringBuilder p, uint n, uint f);
+  public static void Verify(FileStream stream, string expected) {
+   Info info;
+   if (!GetFileInformationByHandle(stream.SafeFileHandle, out info)) throw new Win32Exception(Marshal.GetLastWin32Error());
+   if ((info.Attributes & 0x400) != 0 || info.Links != 1) throw new InvalidOperationException("Indirect outcome file rejected.");
+   var path=new StringBuilder(32768);
+   uint n=GetFinalPathNameByHandle(stream.SafeFileHandle,path,(uint)path.Capacity,0);
+   if (n == 0 || n >= path.Capacity) throw new Win32Exception(Marshal.GetLastWin32Error());
+   if (!String.Equals(path.ToString(),@"\\?\"+expected,StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException("Outcome final path changed.");
+  }
+ }
+}
+'@
+}
+function Initialize-RehearsalOutcome {
+    if (-not $RehearsalOutcomePath) { return }
+    Assert-NativeDesktopRehearsalOptions
+    $script:rehearsalOutcomeExitCode=25
+    $observed=Get-RehearsalOutcomeEnvironment
+    if ($observed.sid -cne $TargetUserSid) { throw 'Outcome producer SID differs from initiating SID.' }
+    $full=[IO.Path]::GetFullPath($RehearsalOutcomePath)
+    if ($full -cne $RehearsalOutcomePath -or (Split-Path -Parent $full) -ine $observed.parent -or
+        (Split-Path -Leaf $full) -cne ('native-desktop-rehearsal-'+$RehearsalAttemptId+'.json')) { throw 'Unexpected rehearsal outcome destination.' }
+    if (-not (Test-Path -LiteralPath $observed.parent -PathType Container)) { throw 'Native recovery archive parent is absent.' }
+    $cursor=$observed.parent
+    while ($cursor) {
+        if ((Get-Item -LiteralPath $cursor -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Indirect rehearsal outcome parent.' }
+        if (Test-Path -LiteralPath (Join-Path $cursor '.git')) { throw 'Rehearsal outcome must be outside Git.' }
+        $cursor=Split-Path -Parent $cursor
+    }
+    Initialize-RehearsalOutcomeFileType
+    $stream=[IO.File]::Open($full,[IO.FileMode]::CreateNew,[IO.FileAccess]::ReadWrite,[IO.FileShare]::Read)
+    try { [YimeCore.Rehearsal.OutcomeFile]::Verify($stream,$full) } catch { $stream.Dispose();throw }
+    $script:rehearsalOutcomeStream=$stream
+    $script:rehearsalOutcome=[ordered]@{
+        schema_version='yimecore-native-desktop-rehearsal-outcome-v1';attempt_id=$RehearsalAttemptId;
+        producer_pid=$observed.pid;producer_creation_filetime=$observed.created;target_user_sid=$observed.sid;
+        controller_sha256=$observed.controller_sha256;failure_manifest_sha256=$null;source_manifest_sha256=$null;
+        state_root=$stateRootPath;previous_install_root=$null;target_install_root=$null;
+        phase='preflight';events=(New-Object 'Collections.Generic.List[object]');registered_architectures=@();
+        fault_runtime=$null;rollback_attempted=$false;rollback_procedure_completed=$false;
+        frozen_tip_finalizer_completed=$false;unexpected_runtime_success=$false;outcome='incomplete';
+        independent_registry_restore_verified=$false;data_restore_verified=$false;deferred_delete_absence_verified=$false;
+        loaded_code_identity_verified=$false;execution_authorized=$false;L6_sealed=$false;local_product_ready=$false;
+        public_release_ready=$false;outcome_complete=$false
+    }
+    Set-RehearsalPhase 'preflight'
+}
+function Set-RehearsalPhase([string]$Phase) {
+    if (-not $script:rehearsalOutcome) { return }
+    $script:rehearsalOutcome.phase=$Phase
+    $script:rehearsalOutcome.events.Add([ordered]@{sequence=$script:rehearsalOutcome.events.Count+1;
+        phase=$Phase;observed_utc=[DateTime]::UtcNow.ToString('o')})
+}
+function Set-RehearsalRuntimeExit($Process) {
+    if (-not $script:rehearsalOutcome -or -not $script:rehearsalOutcome.fault_runtime -or
+        $Process.Id -ne $script:rehearsalOutcome.fault_runtime.pid) { return }
+    # Called before our own Kill. A controller-terminated process is not proof
+    # that the injected executable naturally returned its expected exit code.
+    if ($Process.HasExited) {
+        $script:rehearsalOutcome.fault_runtime.exit_code=[int]$Process.ExitCode
+        $script:rehearsalOutcome.fault_runtime.natural_exit_observed=$true
+        Set-RehearsalPhase 'fault_runtime_exited'
+    }
+}
+function Complete-RehearsalOutcome {
+    if (-not $script:rehearsalOutcomeStream) { return }
+    try {
+        $record=$script:rehearsalOutcome
+        $record.outcome=if ($record.rollback_attempted -and -not $record.rollback_procedure_completed) {'rollback_failed'}
+            elseif (-not $record.frozen_tip_finalizer_completed -and $record.rollback_attempted) {'protection_finalizer_failed'}
+            elseif (-not $record.rollback_attempted) {'preflight_or_staging_rejected'}
+            elseif ($record.unexpected_runtime_success) {'unexpected_runtime_success_rollback_completed'}
+            elseif ($record.fault_runtime -and $record.fault_runtime.natural_exit_observed -and
+                $record.fault_runtime.exit_code -eq 86 -and ($record.registered_architectures -join '|') -ceq 'x64|x86') {'expected_fault_rollback_completed'}
+            else {'unexpected_failure_rollback_completed'}
+        # Acceptance must pair this record with the actual child exit. Even a
+        # complete JSON left by a failed flush is rejected with process exit 26.
+        $record.required_controller_exit_code=switch($record.outcome){
+            'expected_fault_rollback_completed' {20}
+            'unexpected_runtime_success_rollback_completed' {21}
+            'rollback_failed' {22}
+            'protection_finalizer_failed' {23}
+            'unexpected_failure_rollback_completed' {24}
+            default {25}
+        }
+        $script:rehearsalOutcomeExitCode=26
+        $record.outcome_complete=$true
+        $bytes=(New-Object Text.UTF8Encoding($false)).GetBytes(($record|ConvertTo-Json -Depth 12)+"`n")
+        [YimeCore.Rehearsal.OutcomeFile]::Verify($script:rehearsalOutcomeStream,$RehearsalOutcomePath)
+        $script:rehearsalOutcomeStream.Write($bytes,0,$bytes.Length)
+        $script:rehearsalOutcomeStream.Flush($true)
+        $script:rehearsalOutcomeExitCode=$record.required_controller_exit_code
+    } catch {
+        # Best effort invalidation is supplementary; the actual exit code is
+        # authoritative even if a storage failure prevents truncation as well.
+        try { $script:rehearsalOutcomeStream.SetLength(0) } catch {}
+        throw
+    } finally {
+        try { $script:rehearsalOutcomeStream.Dispose() }
+        catch { $script:rehearsalOutcomeExitCode=26;throw }
+        finally { $script:rehearsalOutcomeStream=$null }
+    }
 }
 
 function Get-RegistryKeySnapshot([string]$path) {
@@ -331,6 +475,10 @@ function Restart-Elevated {
     }
     if (-not [string]::IsNullOrWhiteSpace($InstallRoot)) {
         $arguments += @('-InstallRoot', (Quote-Argument ([IO.Path]::GetFullPath($InstallRoot))))
+    }
+    if ($RehearsalOutcomePath) {
+        $arguments += @('-RehearsalAttemptId', (Quote-Argument $RehearsalAttemptId),
+            '-RehearsalOutcomePath', (Quote-Argument $RehearsalOutcomePath))
     }
     foreach ($name in @('Force', 'PurgeUserData', 'NoAutoStart', 'NoLaunch', 'Quiet', 'NativeX64Rehearsal', 'NativeX64Only', 'NativeDesktop', 'NativeDesktopRehearsal')) {
         if ((Get-Variable -Name $name -ValueOnly)) { $arguments += "-$name" }
@@ -1032,6 +1180,7 @@ function Write-RuntimeConfiguration([string]$root) {
 }
 
 function Start-TrialRuntime($config) {
+    $captureRehearsalRuntime=[bool]($script:rehearsalOutcome -and $script:rehearsalOutcome.phase -ceq 'registered')
     $arguments = '-install-root {0} -broker {1} -state-root {2} -no-toolbar' -f
         (Quote-Argument ([string]$config.install_root)), (Quote-Argument ([string]$config.broker_path)),
         (Quote-Argument ([string]$config.state_root))
@@ -1046,6 +1195,12 @@ function Start-TrialRuntime($config) {
     $statusPath = Join-Path $stateRootPath 'runtime-status.json'
     $deadline = [DateTime]::UtcNow.AddSeconds(15)
     try {
+    if ($captureRehearsalRuntime) {
+        $script:rehearsalOutcome.fault_runtime=[ordered]@{pid=$process.Id;
+            creation_filetime=$process.StartTime.ToUniversalTime().ToFileTimeUtc();launch_path=[string]$config.runtime_path;
+            natural_exit_observed=$false;exit_code=$null;controller_termination_requested=$false}
+        Set-RehearsalPhase 'fault_runtime_launched'
+    }
     do {
         Start-Sleep -Milliseconds 100
         if (Test-Path -LiteralPath $statusPath -PathType Leaf) {
@@ -1073,8 +1228,16 @@ function Start-TrialRuntime($config) {
     } catch {
         # The runtime's job owns its children. Do not leave an unaccepted runtime
         # running, or select other processes by executable name for cleanup.
-        if (-not $process.HasExited) { $process.Kill() }
+        if ($captureRehearsalRuntime) { Set-RehearsalRuntimeExit $process }
+        if (-not $process.HasExited) {
+            if ($captureRehearsalRuntime -and $script:rehearsalOutcome.fault_runtime) {
+                $script:rehearsalOutcome.fault_runtime.controller_termination_requested=$true
+            }
+            $process.Kill()
+        }
         throw
+    } finally {
+        $process.Dispose()
     }
 }
 
@@ -1152,6 +1315,7 @@ if ($Action -ne 'Plan') {
     if (-not $effectiveUserSid.Equals($TargetUserSid, [StringComparison]::OrdinalIgnoreCase)) {
         throw "$Action must be elevated with the same Windows account that started the operation"
     }
+    Initialize-RehearsalOutcome
     Remove-Item -LiteralPath $maintenanceErrorPath -Force -ErrorAction SilentlyContinue
 }
 
@@ -1203,6 +1367,11 @@ if ($Action -eq 'Uninstall') {
 
 if ([string]::IsNullOrWhiteSpace($PackageRoot)) { throw 'Install requires -PackageRoot' }
 $package = Assert-Package $PackageRoot
+if ($script:rehearsalOutcome) {
+    $script:rehearsalOutcome.failure_manifest_sha256=$package.manifest_sha256
+    $script:rehearsalOutcome.source_manifest_sha256=$package.manifest.source_package_manifest_sha256
+    Set-RehearsalPhase 'package_verified'
+}
 if ($NativeLocalProduct) { Assert-NativeX64LaunchSupport $package }
 if ($NativeX64Rehearsal -and ($nativeArchitecture -ne 'AMD64' -or -not [Environment]::Is64BitProcess -or
     -not $package.manifest.rehearsal_only -or $NoLaunch -or $NoAutoStart -or $PurgeUserData)) {
@@ -1235,12 +1404,17 @@ $migrationLegacyUserTipSnapshot = Get-FrozenUserTipSnapshot
 $previousStatusPath = Join-Path $stateRootPath 'runtime-status.json'
 $previousRuntimeWasRunning = Get-PreviousRuntimeWasRunning $previousConfigText
 Assert-NativeDesktopRehearsalBaseline $previousRoot $previousRuntimeWasRunning
+if ($script:rehearsalOutcome) {
+    $script:rehearsalOutcome.previous_install_root=$previousRoot
+    Set-RehearsalPhase 'baseline_verified'
+}
 
 if (Test-Path -LiteralPath $targetRoot) {
     if ($requestedInstallRoot) { throw "requested install root is still occupied: $targetRoot" }
     $targetRoot = Assert-ProductChild ($targetRoot + '-' + (Get-Date -Format 'yyyyMMddHHmmss')) 'fallback install root'
 }
 $stagingRoot = Assert-ProductChild ($targetRoot + ".staging-$PID") 'staging root'
+if ($script:rehearsalOutcome) { $script:rehearsalOutcome.target_install_root=$targetRoot }
 if (Test-Path -LiteralPath $stagingRoot) { throw "staging root already exists: $stagingRoot" }
 
 $preinstall = $null
@@ -1267,6 +1441,7 @@ try {
                 git_commit=[string]$package.manifest.git_commit}|ConvertTo-Json)+"`n"),$utf8NoBom)
     }
 	$null = Assert-PrivilegedPackageCopy $stagingRoot $package
+    if ($script:rehearsalOutcome) { Set-RehearsalPhase 'staged' }
     $metadata = [ordered]@{
         schema_version = 'yimecore-trial-install-v1'
         product_key = $productKeyName
@@ -1280,6 +1455,7 @@ try {
     [IO.File]::WriteAllText((Join-Path $stagingRoot 'install-metadata.json'),
         (($metadata | ConvertTo-Json -Depth 4) + "`n"), $utf8NoBom)
     $preinstallStarted = $true
+    if ($script:rehearsalOutcome) { Set-RehearsalPhase 'preinstall_started' }
     $preinstall = Invoke-UninstallCore -ForReinstall `
         -PreserveInstallRoots @($previousRoots + $stagingRoot)
     Move-Item -LiteralPath $stagingRoot -Destination $targetRoot
@@ -1298,8 +1474,13 @@ try {
 		Invoke-Registration $tool ([string]$registrationActions[$name]) `
 			(Join-Path $targetRoot "$name\YimeTextServiceExperiment.dll") "$name TSF registration"
 		Wait-RegistrationState $tool $true $true 5
+		if ($script:rehearsalOutcome) {
+            $script:rehearsalOutcome.registered_architectures += $name
+            Set-RehearsalPhase ('registered_'+$name)
+        }
 	}
     Add-InputMethodTip
+    if ($script:rehearsalOutcome) { Set-RehearsalPhase 'registered' }
 
     if (Test-RestorablePreviousUserTipSnapshot $previousRoot $previousUserTipSnapshot) {
         Restore-RegistryKeySnapshot $userTipKey $previousUserTipSnapshot
@@ -1350,7 +1531,13 @@ try {
     # This terminal barrier runs inside the rollback try/catch and before any
     # old-root deletion (including deferred reboot deletion). A successful fault
     # runtime must never commit a NativeDesktop rehearsal.
-    if ($NativeDesktopRehearsal) { throw 'NativeDesktop failure-only rehearsal unexpectedly started; restoring previous installation.' }
+    if ($NativeDesktopRehearsal) {
+        if ($script:rehearsalOutcome) {
+            $script:rehearsalOutcome.unexpected_runtime_success=$true
+            Set-RehearsalPhase 'unexpected_runtime_success'
+        }
+        throw 'NativeDesktop failure-only rehearsal unexpectedly started; restoring previous installation.'
+    }
     foreach ($oldRoot in $previousRoots) {
         if ($NativeLocalProduct -and (Test-FrozenInstallRoot $oldRoot @(Get-FrozenRegistrationReferences))) { continue }
         if (-not ([IO.Path]::GetFullPath($oldRoot)).Equals(
@@ -1376,6 +1563,10 @@ try {
     $rollbackFailure = $null
     try {
         if ($preinstallStarted) {
+            if ($script:rehearsalOutcome) {
+                $script:rehearsalOutcome.rollback_attempted=$true
+                Set-RehearsalPhase 'rollback_started'
+            }
 			if ($registrationStarted) {
 				Invoke-UninstallCore -ForReinstall `
 					-PreserveInstallRoots @($previousRoots + $targetRoot) | Out-Null
@@ -1384,8 +1575,10 @@ try {
             Restore-PreviousInstallation $previousRoot $previousConfigText `
 				$previousRunSnapshot $previousUninstallSnapshot $previousLegacyUninstallSnapshot `
 				$previousRuntimeWasRunning $previousUserTipSnapshot
+            if ($script:rehearsalOutcome) { Set-RehearsalPhase 'previous_installation_restored' }
         }
         if (Test-Path -LiteralPath $stagingRoot) { Remove-ProductTree $stagingRoot | Out-Null }
+        if ($script:rehearsalOutcome -and $preinstallStarted) { $script:rehearsalOutcome.rollback_procedure_completed=$true }
     } catch {
         $rollbackFailure = $_
     }
@@ -1397,5 +1590,11 @@ try {
     # Set-WinUserLanguageList can normalize per-user TIP keys after registration.
     # The legacy subtree belongs to the frozen profile and must remain exact on
     # both successful migration and rollback.
-    Restore-FrozenUserTipSnapshot $migrationLegacyUserTipSnapshot
+    try {
+        Restore-FrozenUserTipSnapshot $migrationLegacyUserTipSnapshot
+        if ($script:rehearsalOutcome) {
+            $script:rehearsalOutcome.frozen_tip_finalizer_completed=$true
+            Set-RehearsalPhase 'frozen_tip_finalizer_completed'
+        }
+    } finally { Complete-RehearsalOutcome }
 }

@@ -70,6 +70,11 @@ try {
     Reject {Get-YimeCoreFaultPreparationPlan $fake.root $fake.contract $source (Hash $source)} 'self-attested fake controller cannot claim guard availability'
     $wrong=$fixture.contract.Clone();$wrong.manager_sha256='ff3a563bf58999683f34e9c6fb73656ea6790b120e48fd322b71f97c99818cca'
     Reject {Get-YimeCoreFaultPreparationCatalog $fixture.root $wrong} 'legacy controller cannot claim the local13 guard'
+    foreach($reviewedHash in @('e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a','9f69d9aba12e4c50c8aa06edb945375dc72a721cd208791ffab2e4207442f39d')) {
+        $approved=& $module {param($h) Test-PreparationGuard @{product_version='0.1.0-local.13';guarded_native_desktop_rehearsal=$true;manager_sha256=$h}} $reviewedHash
+        Check ($approved -is [bool] -and $approved) ('reviewed guard source policy accepts '+$reviewedHash.Substring(0,8))
+    }
+    Reject {& $module {Test-PreparationGuard @{product_version='0.1.0-local.13';guarded_native_desktop_rehearsal=$true;manager_sha256=('1'*64)}}} 'guard source allowlist rejects arbitrary caller hash'
     foreach ($field in @('package_contract','tool_version','product_version','package_id')) {
         $bad=Fixture ('array-manifest-'+$field);$bad.manifest[$field]=@($bad.manifest[$field])
         Json $bad.manifest (Join-Path $bad.root 'package-manifest.json');$bad.contract.manifest_sha256=Hash (Join-Path $bad.root 'package-manifest.json')

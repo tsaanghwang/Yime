@@ -54,9 +54,13 @@ function Test-PreparationGuard([hashtable]$Contract) {
     if ($Contract.guarded_native_desktop_rehearsal -isnot [bool]) { throw 'Preparation guard claim must be a JSON boolean.' }
     if ($Contract.guarded_native_desktop_rehearsal -and (Get-PreparationVersion $Contract) -ne '0.1.0-local.13') { throw 'Legacy preparation cannot claim the new guard.' }
     # Guard availability is a reviewed source policy, not a caller-supplied claim.
-    # A future controller must receive a separate review before entering this pin.
+    # A future controller must receive a separate review before entering this list.
+    # These pins approve guard source only; fixed candidate entries retain their
+    # own single controller pin and never acquire execution authorization here.
     if ($Contract.guarded_native_desktop_rehearsal -and
-        $Contract.manager_sha256 -cne 'e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a') { throw 'Controller is not approved for guarded NativeDesktop rehearsal.' }
+        ($Contract.manager_sha256 -isnot [string] -or $Contract.manager_sha256 -cnotin @(
+            'e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a',
+            '9f69d9aba12e4c50c8aa06edb945375dc72a721cd208791ffab2e4207442f39d'))) { throw 'Controller is not approved for guarded NativeDesktop rehearsal.' }
     return $Contract.guarded_native_desktop_rehearsal
 }
 

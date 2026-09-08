@@ -106,6 +106,7 @@ function Add-InputMethodTip {}
 function Restore-RegistryKeySnapshot {param($key,$snapshot) $script:restoredRegistry.Add($key)}
 function Restore-RegistryValueSnapshot {param($key,$name,$snapshot) $script:restoredRegistry.Add($key+'/'+$name)}
 function Restore-FrozenUserTipSnapshot { $script:finallyObserved=$true }
+function Complete-RehearsalOutcome {}
 function Invoke-UninstallCore {param([switch]$ForReinstall,[string[]]$PreserveInstallRoots) $script:rollbackUninstallObserved=$true;@{}}
 function Start-TrialRuntime {param($config)
     if($config.install_root -eq $script:oldRoot){$script:oldRuntimeRestored=$true;return @{state='running'}}
