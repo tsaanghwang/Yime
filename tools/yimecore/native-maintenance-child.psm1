@@ -47,11 +47,10 @@ namespace Yime.MaintenanceChild {
    if(!GetProcessTimes(handle,out created,out exited,out kernel,out user))throw new Win32Exception(Marshal.GetLastWin32Error());
    long start=((long)created.High<<32)|created.Low;if(start<=0)throw new InvalidOperationException("Invalid native creation time.");
    string observedImage=capturedImage;
-   if(capturedImage==null || WaitForSingleObject(handle,0)!=0){
+   if(capturedImage==null){
     var path=new StringBuilder(32768);int size=path.Capacity;
     if(QueryFullProcessImageName(handle,0,path,ref size))observedImage=path.ToString();
-    else if(capturedImage==null || WaitForSingleObject(handle,0)!=0)
-     throw new InvalidOperationException("Native child image unavailable before a bound exit observation.",new Win32Exception(Marshal.GetLastWin32Error()));
+    else throw new InvalidOperationException("Native child image unavailable before a bound exit observation.",new Win32Exception(Marshal.GetLastWin32Error()));
    }
    // After exit Windows may refuse the image query. Only an image already
    // observed from THIS retained handle may survive that race; StartInfo is

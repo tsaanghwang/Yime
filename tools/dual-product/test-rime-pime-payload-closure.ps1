@@ -172,7 +172,7 @@ foreach ($invalid in @(
         $case.Manifest.files[0].path=$invalid.path
         Write-CaseManifest $case
         Assert-Rejected { Read-YimePimePayloadManifest $case.Trusted } '*payload*'
-    }.GetNewClosure()
+    }
 }
 
 Check 'manifest-rejects-case-folded-file-duplicate' {
