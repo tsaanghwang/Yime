@@ -685,7 +685,7 @@ jobs:
       - name: Install NSIS in non-secret packaging job
         uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
         with:
-          nsis-version: 3.08
+          nsis-version: 3.12
       - name: Test DP1-K NSIS compiler membership interval
         shell: pwsh
         run: |
@@ -746,7 +746,7 @@ jobs:
       - name: Install NSIS in non-secret packaging job
         uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
         with:
-          nsis-version: 3.08
+          nsis-version: 3.12
       - name: Build unsigned outer installer
         shell: pwsh
         run: .\tools\build-rime-pime-installer.ps1 -RepoRoot $env:GITHUB_WORKSPACE -PackagePlanPath (Join-Path $env:GITHUB_WORKSPACE 'installer\package-plan.json')

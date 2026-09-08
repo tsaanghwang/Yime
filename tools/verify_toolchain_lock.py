@@ -96,7 +96,7 @@ def verify(lock_path: Path = DEFAULT_LOCK) -> dict[str, Any]:
         "runs-on: windows-2022",
         "go-version: '1.26.4'",
         "python-version: '3.14'",
-        "nsis-version: 3.08",
+        "nsis-version: 3.12",
     ):
         if fragment not in workflow:
             raise VerificationError(f"CI no longer matches toolchain lock: {fragment}")
