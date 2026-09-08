@@ -1,5 +1,7 @@
 # Yime 双独立产品开发计划
 
+2026-09-08 当前门禁增量：[YimeCore 原生维护观察门禁](YIMECORE_NATIVE_MAINTENANCE_GATES_2026-09-08.md)补齐回退编排 v2 的延期删除、系统文件元数据及 Runtime/config 前后检查，新增独立提供程序与双 PowerShell 回归。真实维护、无会话健康协议、L6/local/public 未关闭；Rime/PIME 的可信候选、独立目标、DP1-U 实际事务及 DP2/DP3 不借用本轮证据提升。未运行安装器或改动 local.12、正式 Rime/PIME、默认输入法和实际用户数据；旧候选与原始记录保留。
+
 2026-09-08 当前增量：[YimeCore 原生回退证据采集编排](YIMECORE_NATIVE_ROLLBACK_COLLECTION_2026-09-08.md)新增原始子进程退出、完整备份读取、数据/config 观察及实际维护步骤的源码串联，验证范围为自有进程/文件和私有编排替身。真实维护与最终验收尚未执行，local.12、正式 Rime/PIME、默认输入法和真实用户状态未改动；L6、Rime/PIME DP1-U 实际事务及 DP2/DP3 不变。精确新来源和回归结果见该报告；下方来源数量与“编排待实现”保留为历史。
 
 2026-09-08 最新增量：[YimeCore local.13 终态候选与读取器](YIMECORE_LOCAL13_OUTCOME_CANDIDATES_2026-09-08.md)已把 `9f69…` 协议纳入新普通/故障候选及仓外公开归档，固定输入入口同步更新。严格读取器 PS5/PS7 各 224 项，实际 CI 七脚本组合通过；基线为 176 个声明来源加 7 个锁定依赖、68 项测试、8 个 pending。未运行安装器或改动 local.12；YimeCore 原生维护编排/真实验收与 L6、Rime/PIME 可信可执行候选/独立目标/DP1-U 实际事务、DP2/DP3 均未关闭。下方较早阶段的来源数量及候选准备状态保留为历史快照。
