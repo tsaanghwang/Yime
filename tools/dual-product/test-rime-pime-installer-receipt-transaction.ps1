@@ -103,6 +103,7 @@ if($leaf -cnotmatch '^dp1-package-receipt-v2-test-dp1n-[A-Za-z0-9-]+$'){
 Import-Module (Join-Path $PSScriptRoot 'rime-pime-installer-receipt-transaction.psm1') -Force
 
 $declaredChecks=[Collections.Generic.List[string]]::new()
+$caseDirectories=[Collections.Generic.List[object]]::new()
 function Check([string]$Name,[scriptblock]$Body){
     if($declaredChecks.Contains($Name)){throw "Duplicate transaction check name: $Name"}
     $declaredChecks.Add($Name)
@@ -183,13 +184,16 @@ function Assert-TestProtectedUnchanged($Case,[string]$Before,[string]$Context){
     Assert-True ($after -ceq $Before) "$Context changed the protected transaction set."
 }
 
-function Get-ActualCheckoutSnapshot {
-    $canonical=Join-Path $repo 'installer\package-build-receipt.json'
+function Get-TestReceiptPairSnapshot([string]$Canonical){
     $value=@(
-        Get-TestPathObservation $canonical
-        Get-TestPathObservation ($canonical+'.sha256')
+        Get-TestPathObservation $Canonical
+        Get-TestPathObservation ($Canonical+'.sha256')
     )
     return ($value|ConvertTo-Json -Depth 8 -Compress)
+}
+
+function Get-ActualCheckoutSnapshot {
+    return Get-TestReceiptPairSnapshot (Join-Path $repo 'installer\package-build-receipt.json')
 }
 
 function Assert-ActualCheckoutPreserved([string]$Before,[string]$Context){
@@ -272,6 +276,28 @@ function New-ReplacementCase(
     [switch]$OldReceiptNonDurable,
     [switch]$AllowSameInstallerPath
 ){
+    # Keep labels in the result rather than repeating them in both the case
+    # directory and receipt-v2 output. PS5 must also move the complete tree
+    # into snapshots, including its deepest SHA-256 sidecars.
+    $caseLabel=$Name
+    $Name='c{0}' -f ($script:caseDirectories.Count+1)
+    $snapshotRepo=Join-Path $output ('snapshots\'+$Name+'\repo')
+    $receiptOutput='.tmp\dual-product\dp1-package-receipt-v2-'+$Name
+    $budgetPaths=@(
+        ($receiptOutput+'\publication-recovery\previous\package-build-receipt.json.sha256'),
+        ($receiptOutput+'\historical\package-build-receipt-v1.json.sha256'),
+        ('installer\receipt-evidence\sha256\aa\'+('a'*64)+'.blob.sha256'),
+        ('installer\receipt-evidence\completed-'+('a'*64)+'.json'),
+        ('installer\.rime-pime-installer-'+('a'*64)+'.staged')
+    )
+    foreach($relative in $budgetPaths){
+        if((Join-Path $snapshotRepo $relative).Length -ge 260){
+            throw 'DP1-N fixture exceeds the Win32 path budget; use a shorter checkout or fresh output root.'
+        }
+    }
+    $script:caseDirectories.Add([pscustomobject][ordered]@{
+        name=$caseLabel;relative_directory=('cases/'+$Name);snapshot_relative_directory=('snapshots/'+$Name)
+    })
     $newGeneration=New-TestGeneration -Name $Name -Version $NewVersion -Seed $NewSeed
     $caseRoot=Split-Path -Parent $newGeneration.Case.Root
     $snapshotParent=Join-Path $output 'snapshots'
@@ -432,7 +458,9 @@ function Assert-TransactionCommitted($Case){
     return $read
 }
 
-$null=Get-YimePimePayloadFileRecord (Join-Path $repo 'installer\package-build-receipt.json')
+# Initialize native identity observations without requiring a locally built
+# receipt. Clean CI checkouts legitimately have no canonical receipt pair.
+Initialize-YimePimePayloadNativeInspection
 $actualCheckoutBaseline=Get-ActualCheckoutSnapshot
 
 function Assert-HardExitState($Case,[string]$Stop,[string]$ActualBefore){
@@ -482,6 +510,41 @@ Check 'module-exports-only-two-isolated-transaction-apis' {
     $expected=@('Publish-RimePimeInstallerReceiptTransaction','Resume-RimePimeInstallerReceiptTransaction')|Sort-Object
     $actual=@((Get-Module rime-pime-installer-receipt-transaction).ExportedCommands.Keys|Sort-Object)
     Assert-True (($expected -join "`n") -ceq ($actual -join "`n")) ('Unexpected transaction exports: '+($actual -join ', '))
+}
+
+Check 'absent-checkout-receipt-pair-is-observed-without-creating-files' {
+    $fixture=Join-Path $output 'checkout-observation-absent'
+    [IO.Directory]::CreateDirectory($fixture)|Out-Null
+    $canonical=Join-Path $fixture 'package-build-receipt.json'
+    $before=Get-TestReceiptPairSnapshot $canonical
+    $records=ConvertFrom-TestJson $before
+    Assert-True ($records.Count -eq 2) 'Absent receipt pair did not produce two observations.'
+    Assert-True ($records[0].kind -ceq 'absent' -and $records[1].kind -ceq 'absent') 'Missing receipt pair was not recorded as absent.'
+    Assert-True ((Get-TestReceiptPairSnapshot $canonical) -ceq $before) 'Read-only absent observations changed.'
+    Assert-True (@(Get-ChildItem -LiteralPath $fixture -Force).Count -eq 0) 'Absent observation created a file.'
+    Assert-Rejected {Get-YimePimePayloadFileRecord $canonical} '*Payload file is missing:*'
+}
+
+Check 'present-checkout-receipt-pair-keeps-native-identity-and-detects-content-change' {
+    $fixture=Join-Path $output 'checkout-observation-present'
+    [IO.Directory]::CreateDirectory($fixture)|Out-Null
+    $canonical=Join-Path $fixture 'package-build-receipt.json'
+    [IO.File]::WriteAllBytes($canonical,[byte[]]@(1,2,3,4))
+    [IO.File]::WriteAllText($canonical+'.sha256','fixture sidecar',[Text.Encoding]::ASCII)
+    $before=Get-TestReceiptPairSnapshot $canonical
+    $records=ConvertFrom-TestJson $before
+    Assert-True ($records.Count -eq 2) 'Present receipt pair did not produce two observations.'
+    foreach($record in $records){
+        Assert-True ($record.kind -ceq 'file' -and -not [string]::IsNullOrEmpty($record.file_id)) 'Present observation omitted native file identity.'
+        Assert-True ($record.link_count -eq 1 -and @($record.streams).Count -eq 1 -and @($record.streams)[0] -ceq '::$DATA') 'Present observation omitted native link/stream facts.'
+    }
+    Assert-True ((Get-TestReceiptPairSnapshot $canonical) -ceq $before) 'Read-only present observations changed.'
+    [IO.File]::WriteAllBytes($canonical,[byte[]]@(4,3,2,1))
+    Assert-True ((Get-TestReceiptPairSnapshot $canonical) -cne $before) 'Same-length receipt content change was not observed.'
+    [IO.File]::WriteAllBytes($canonical,[byte[]]@(1,2,3,4))
+    $beforeSidecar=Get-TestReceiptPairSnapshot $canonical
+    [IO.File]::WriteAllText($canonical+'.sha256','fixture changed',[Text.Encoding]::ASCII)
+    Assert-True ((Get-TestReceiptPairSnapshot $canonical) -cne $beforeSidecar) 'Sidecar content change was not observed.'
 }
 
 Check 'two-generations-pass-the-real-strict-reader-at-one-absolute-fixture-root' {
@@ -1015,6 +1078,8 @@ $noWriteCheckNames=@(
 ) + $intentFaultCheckNames
 $expectedCheckNames=@(
     'module-exports-only-two-isolated-transaction-apis',
+    'absent-checkout-receipt-pair-is-observed-without-creating-files',
+    'present-checkout-receipt-pair-keeps-native-identity-and-detects-content-change',
     'two-generations-pass-the-real-strict-reader-at-one-absolute-fixture-root',
     'clean-installer-and-receipt-identity-replacement-rolls-forward',
     'non-durable-old-clean-publish-binds-distinct-retention-and-history',
@@ -1078,6 +1143,7 @@ $postIntentHardExitNames=@(
 $result=[ordered]@{
     schema_version='yime-rime-pime-installer-receipt-transaction-test-v1'
     total=$checks.Count;passed=$checks.Count-$failed.Count;failed=$failed.Count;checks=@($checks)
+    fixture_case_directories=@($caseDirectories)
     selected_check_pattern=$CheckPattern
     expected_check_count=$expectedCheckNames.Count
     full_suite_executed=[bool]$fullSuiteExecuted
