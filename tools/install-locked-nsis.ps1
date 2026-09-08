@@ -27,12 +27,15 @@ $runId = [Guid]::NewGuid().ToString('N')
 $downloadRoot = Join-Path $env:RUNNER_TEMP "yime-nsis-$runId"
 New-Item -ItemType Directory -Path $downloadRoot | Out-Null
 $setupPath = Join-Path $downloadRoot 'nsis-setup.exe'
-Invoke-WebRequest -Uri ([string]$acquisition.url) -OutFile $setupPath
+# SourceForge returns a download page for PowerShell's browser-like default UA.
+Invoke-WebRequest -Uri ([string]$acquisition.url) -UserAgent 'curl/8.20.0' -OutFile $setupPath
 
 # Keep the verified installer read-leased through execution.
 $setupLease = [IO.File]::Open($setupPath,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
 try {
-    if ($setupLease.Length -ne [long]$acquisition.size) { throw 'NSIS setup size differs from the toolchain lock.' }
+    if ($setupLease.Length -ne [long]$acquisition.size) {
+        throw "NSIS setup size differs from the toolchain lock: expected $($acquisition.size), received $($setupLease.Length)."
+    }
     $sha = [Security.Cryptography.SHA256]::Create()
     try { $digest = ([BitConverter]::ToString($sha.ComputeHash($setupLease))).Replace('-','').ToLowerInvariant() }
     finally { $sha.Dispose() }

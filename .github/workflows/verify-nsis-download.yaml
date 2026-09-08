@@ -1,0 +1,73 @@
+name: Verify NSIS download responses
+
+on:
+  push:
+    branches: ['diagnostic/yime-packaging-check']
+    paths: ['.github/workflows/verify-nsis-download.yaml', 'tools/install-locked-nsis.ps1']
+
+permissions:
+  contents: read
+
+jobs:
+  nsis-download:
+    name: Inspect three NSIS download responses
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Compare downloaded bytes with the NSIS lock
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version 2.0
+          $ErrorActionPreference = 'Stop'
+          $ProgressPreference = 'SilentlyContinue'
+          $lock = Get-Content -LiteralPath .\tools\toolchain.lock.json -Raw | ConvertFrom-Json
+          $records = @($lock.tools | Where-Object { $_.id -ceq 'nsis' })
+          if ($records.Count -ne 1 -or [string]$records[0].version -cne '3.12') {
+            throw 'Expected exactly one NSIS 3.12 acquisition record.'
+          }
+          $acquisition = $records[0].acquisition
+          $expectedSize = [long]$acquisition.size
+          $expectedSha256 = [string]$acquisition.sha256
+          if ($expectedSize -le 0 -or $expectedSha256 -cnotmatch '^[0-9a-f]{64}$') {
+            throw 'NSIS acquisition size or SHA-256 is invalid.'
+          }
+          $downloadRoot = Join-Path $env:RUNNER_TEMP ('yime-nsis-download-' + [Guid]::NewGuid().ToString('N'))
+          New-Item -ItemType Directory -Path $downloadRoot | Out-Null
+          $attempts = @(
+            [pscustomobject]@{ Name = 'locked-url-default-ua'; Url = [string]$acquisition.url; UserAgent = $null }
+            [pscustomobject]@{ Name = 'locked-url-curl-ua'; Url = [string]$acquisition.url; UserAgent = 'curl/8.20.0' }
+            [pscustomobject]@{ Name = 'action-url-curl-ua'; Url = 'https://sourceforge.net/projects/nsis/files/NSIS%203/3.12/nsis-3.12-setup.exe/download?'; UserAgent = 'curl/8.20.0' }
+          )
+          Write-Host "Expected: bytes=$expectedSize; sha256=$expectedSha256"
+          $anyMatch = $false
+          foreach ($attempt in $attempts) {
+            $path = Join-Path $downloadRoot ($attempt.Name + '.exe')
+            $request = @{ Uri = $attempt.Url; OutFile = $path; TimeoutSec = 120 }
+            if ($null -ne $attempt.UserAgent) { $request.UserAgent = $attempt.UserAgent }
+            try {
+              Invoke-WebRequest @request
+              $stream = [IO.File]::Open($path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+              try {
+                $actualSize = $stream.Length
+                $isMz = ($stream.ReadByte() -eq 0x4d) -and ($stream.ReadByte() -eq 0x5a)
+                $stream.Position = 0
+                $sha = [Security.Cryptography.SHA256]::Create()
+                try { $actualSha256 = ([BitConverter]::ToString($sha.ComputeHash($stream))).Replace('-', '').ToLowerInvariant() }
+                finally { $sha.Dispose() }
+              } finally { $stream.Dispose() }
+              $sizeMatches = $actualSize -eq $expectedSize
+              $shaMatches = $actualSha256 -ceq $expectedSha256
+              $matchesLock = $sizeMatches -and $shaMatches -and $isMz
+              Write-Host ('{0}: bytes={1}; sha256={2}; mz={3}; size_match={4}; sha256_match={5}; lock_match={6}' -f $attempt.Name, $actualSize, $actualSha256, $isMz, $sizeMatches, $shaMatches, $matchesLock)
+              if ($matchesLock) { $anyMatch = $true }
+            } catch {
+              # Exception bodies can contain a downloaded HTML response. Log only metadata.
+              Write-Host ('{0}: download_error={1}; category={2}' -f $attempt.Name, $_.Exception.GetType().FullName, $_.CategoryInfo.Category)
+            }
+          }
+          if (-not $anyMatch) { throw 'None of the three downloads matched the exact NSIS acquisition lock and MZ header.' }
+          Write-Host 'PASS: at least one download matched the exact NSIS acquisition lock and MZ header.'
+      - name: Install locked original NSIS and verify the complete compiler closure
+        shell: pwsh
+        run: .\tools\install-locked-nsis.ps1 -Version '3.12'
