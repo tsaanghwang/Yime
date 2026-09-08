@@ -68,6 +68,13 @@ func packageDigest(value string) bool {
 }
 
 func packageChild(root, relative string) (string, error) {
+	// Check the package-specific (OS-precise) reparse diagnostic before the
+	// generic speechruntime one, so callers see the more precise message.
+	if abs, err := filepath.Abs(root); err == nil {
+		if err := packagePlainPath(filepath.Join(abs, filepath.FromSlash(relative))); err != nil {
+			return "", err
+		}
+	}
 	path, err := speechruntime.Child(root, relative)
 	if err != nil {
 		return "", err

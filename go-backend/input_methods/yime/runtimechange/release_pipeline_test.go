@@ -3,6 +3,7 @@ package runtimechange
 import (
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -39,7 +40,14 @@ func TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease(t *testing.T) 
 	signFile := read(filepath.Join(root, "tools", "sign-file.ps1"))
 	certificateImporter := read(filepath.Join(root, "tools", "import-release-signing-certificate.ps1"))
 
-	for _, fragment := range []string{"tags: ['v*']", "environment: release-signing", "Checkout trusted signing implementation", ".trusted-signing\\tools\\sign-release.ps1", ".trusted-signing\\tools\\verify-release-signatures.ps1", "YIME-unsigned-test-installer", "installer/YIME-*-setup.exe"} {
+	for _, fragment := range []string{
+		"tags: ['v*']", "environment: release-signing", "Checkout trusted signing implementation",
+		".trusted-signing", "Move trusted signing implementation outside source checkout",
+		"YIME_TRUSTED_SIGNING_ROOT=$trustedRoot",
+		"Join-Path $env:YIME_TRUSTED_SIGNING_ROOT 'tools\\sign-release.ps1'",
+		"Join-Path $env:YIME_TRUSTED_SIGNING_ROOT 'tools\\verify-release-signatures.ps1'",
+		"YIME-unsigned-test-installer", "installer/YIME-*-setup.exe",
+	} {
 		if !strings.Contains(ci, fragment) {
 			t.Fatalf("CI release signing chain is missing %q", fragment)
 		}
@@ -79,7 +87,7 @@ func TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease(t *testing.T) 
 	if strings.Contains(ci, "TestDeployCommandRedeploysCurrentSchema") || strings.Contains(goTestScript, "TestDeployCommandRedeploysCurrentSchema") {
 		t.Fatal("CI must not retain the removed synchronous native-redeploy test name")
 	}
-	for _, fragment := range []string{"!finalize", "!uninstfinalize", "sign-file.ps1"} {
+	for _, fragment := range []string{"!finalize", "!uninstfinalize", "PACKAGE_SIGN_FILE_PATH"} {
 		if !strings.Contains(installer, fragment) {
 			t.Fatalf("NSIS signing hooks are missing %q", fragment)
 		}
@@ -91,28 +99,31 @@ func TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease(t *testing.T) 
 		`StrCpy $INSTDIR "$PROGRAMFILES32\YIME"`,
 		`Call enforceInstallRootPolicy`,
 		`Command-line /D overrides and user-writable roots are not admitted.`,
-		`File /r "..\go-backend\build\go-backend\*.*"`,
-		`SetOutPath "$INSTDIR\licenses"`,
-		`File "..\LICENSE.txt"`,
-		`File "..\NOTICE.md"`,
-		`File "..\THIRD_PARTY_NOTICES.md"`,
-		`File "..\LICENSES\PIME-UPSTREAM-LICENSE.txt"`,
-		`File "..\LICENSES\RIME-FROST-GPL-3.0.txt"`,
-		`File "..\LICENSES\RUST-DEPENDENCIES.md"`,
 		`WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"`,
 		`RMDir /REBOOTOK /r "$INSTDIR\licenses"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\fcitx5"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\meow"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\simple_pinyin"`,
-		`File /oname=$PLUGINSDIR\rime-pime-ownership.ps1`,
-		`File /oname=$PLUGINSDIR\rime-pime-directed-stop-contract.ps1`,
-		`File /oname=$PLUGINSDIR\invoke-rime-pime-maintenance.ps1`,
 		`input.dll::InstallLayoutOrTip`,
 		`0x0804:{35F67E9D-A54D-4177-9697-8B0AB71A9E04}{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}`,
 	} {
 		if !strings.Contains(installer, fragment) {
 			t.Fatalf("NSIS installer is missing install-path or Yime payload guard %q", fragment)
 		}
+	}
+	// Direct File/SetOutPath payload directives were sealed into a
+	// content-hash-verified generated include; see rime-pime-nsis-stage.ps1.
+	for _, fragment := range []string{
+		"!ifndef PACKAGE_PAYLOAD_NSH_PATH",
+		"!ifndef PACKAGE_PAYLOAD_NSH_SHA256",
+		`!include "${PACKAGE_PAYLOAD_NSH_PATH}"`,
+	} {
+		if !strings.Contains(installer, fragment) {
+			t.Fatalf("NSIS installer is missing sealed payload-stage include %q", fragment)
+		}
+	}
+	if regexp.MustCompile(`(?mi)^[ \t]*File(?:[ \t]|$)`).MatchString(installer) {
+		t.Fatal("NSIS installer must not read product payload directly through File; use the sealed stage include")
 	}
 	for _, forbidden := range []string{`$FONTS`, `CurrentVersion\Fonts`, `AddFontResource(`, `YinYuan Regular (TrueType)`} {
 		if strings.Contains(installer, forbidden) {
@@ -177,7 +188,7 @@ func TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease(t *testing.T) 
 			t.Fatalf("release payload signer is not bound to the sealed plan lifecycle %q", fragment)
 		}
 	}
-	for _, fragment := range []string{"PACKAGE_PLAN_SHA256", "PACKAGE_PLAN_X86_X64", "Write-RimePimePackageBuildReceipt"} {
+	for _, fragment := range []string{"PACKAGE_PLAN_SHA256", "PACKAGE_PLAN_X86_X64", "New-RimePimePreparedPublication"} {
 		if !strings.Contains(installerBuilder, fragment) {
 			t.Fatalf("installer builder is missing package-plan binding %q", fragment)
 		}

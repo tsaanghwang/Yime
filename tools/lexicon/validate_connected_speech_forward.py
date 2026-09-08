@@ -283,6 +283,9 @@ def validate_forward_sources(repo_root: Path) -> dict[str, Any]:
     before = {role: _sha256(path) for role, path in paths.items()}
     if str(repo) not in sys.path:
         sys.path.insert(0, str(repo))
+    # Modules already cached by unrelated code (other tests sharing this
+    # process, etc.) are out of scope; only this import's own closure counts.
+    modules_before_import = set(sys.modules)
     from syllable.analysis.syllable_encoding_pipeline import SyllableEncodingPipeline
     from syllable.codec.yinjie_encoder import YinjieEncoder
     from yime.utils.yinyuan_id_chain import (
@@ -292,8 +295,9 @@ def validate_forward_sources(repo_root: Path) -> dict[str, Any]:
     )
 
     declared_python = {path.resolve() for path in paths.values() if path.suffix == ".py"}
-    for name, module in tuple(sys.modules.items()):
+    for name in set(sys.modules) - modules_before_import:
         if name in {"syllable", "yime"} or name.startswith(("syllable.", "yime.")):
+            module = sys.modules[name]
             filename = getattr(module, "__file__", None)
             _require(bool(filename) and Path(filename).resolve() in declared_python, "formal_import_outside_declared_sources")
 
