@@ -71,3 +71,43 @@ jobs:
       - name: Install locked original NSIS and verify the complete compiler closure
         shell: pwsh
         run: .\tools\install-locked-nsis.ps1 -Version '3.12'
+      - name: Inspect installed compiler tree without changing its lock
+        if: ${{ always() }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $lock = Get-Content -LiteralPath .\tools\dual-product\rime-pime-postbuild-toolchain-lock.json -Raw | ConvertFrom-Json
+          $root = ([string]$lock.nsis.root).Replace('/','\')
+          $closure = $lock.nsis.compiler_input_closure
+          $directories = [Collections.Generic.List[string]]::new()
+          $files = [Collections.Generic.Dictionary[string,object]]::new([StringComparer]::Ordinal)
+          foreach ($scope in $closure.roots) {
+            $path = Join-Path $root ([string]$scope.path)
+            foreach ($directory in @((Get-Item -LiteralPath $path)) + @(Get-ChildItem -LiteralPath $path -Recurse -Force -Directory)) {
+              $directories.Add($directory.FullName.Substring($root.Length+1).Replace('\','/'))
+            }
+            foreach ($file in Get-ChildItem -LiteralPath $path -Recurse -Force -File) {
+              $relative = $file.FullName.Substring($root.Length+1).Replace('\','/')
+              $files.Add($relative, [pscustomobject]@{ bytes=$file.Length; sha256=(Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant() })
+            }
+          }
+          $directoryPaths = $directories.ToArray()
+          [Array]::Sort($directoryPaths, [StringComparer]::Ordinal)
+          $filePaths = [string[]]@($files.Keys)
+          [Array]::Sort($filePaths, [StringComparer]::Ordinal)
+          $builder = [Text.StringBuilder]::new()
+          foreach ($path in $directoryPaths) { $null = $builder.Append("D`t$path`n") }
+          foreach ($path in $filePaths) { $row=$files[$path]; $null = $builder.Append("F`t$path`t$($row.bytes)`t$($row.sha256)`n") }
+          $bytes = [Text.UTF8Encoding]::new($false).GetBytes($builder.ToString())
+          $sha = [Security.Cryptography.SHA256]::Create()
+          try { $digest = ([BitConverter]::ToString($sha.ComputeHash($bytes))).Replace('-','').ToLowerInvariant() }
+          finally { $sha.Dispose() }
+          Write-Host "EXPECTED TREE: files=$($closure.file_count); dirs=$($closure.directory_count); bytes=$($closure.canonical_tree_bytes); sha256=$($closure.tree_sha256)"
+          Write-Host "ACTUAL TREE: files=$($files.Count); dirs=$($directories.Count); bytes=$($bytes.Length); sha256=$digest"
+          foreach ($expected in @($lock.nsis.makensis) + @($lock.nsis.support)) {
+            $actual = $files[[string]$expected.relative_path]
+            Write-Host "PINNED FILE: $($expected.relative_path); expected_bytes=$($expected.bytes); actual_bytes=$($actual.bytes); expected_sha256=$($expected.sha256); actual_sha256=$($actual.sha256)"
+          }
+          Write-Host 'CANONICAL TREE START'
+          Write-Host $builder.ToString()
+          Write-Host 'CANONICAL TREE END'
