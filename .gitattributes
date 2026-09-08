@@ -34,3 +34,8 @@ third_party/go-winres/** -text -whitespace
 docs/testing/l6/local12-evidence-20260908/*.json -text !eol whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 docs/testing/l6/2026-09-08-local12-readiness-v2-*.json -text !eol whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 tools/yimecore/local12-readiness-evidence.json -text !eol whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# DP1-U native observations record these reviewed source bytes as LF hashes.
+tools/dual-product/rime-pime-dp1u-native-facts.cs text eol=lf
+tools/dual-product/rime-pime-dp1u-native-probe.psm1 text eol=lf
+tools/dual-product/test-rime-pime-dp1u-native-probe.ps1 text eol=lf

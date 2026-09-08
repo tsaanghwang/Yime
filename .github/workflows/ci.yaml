@@ -398,6 +398,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-U isolated-preflight test failed with exit code $LASTEXITCODE" }
           .\tools\dual-product\test-rime-pime-dp1u-isolated-preflight.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-preflight-test-ci-ps7-$runId")
+      - name: Test DP1-U native read-only probe
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-dp1u-native-probe.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-native-probe-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-U native read-only probe test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-dp1u-native-probe.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-native-probe-test-ci-ps7-$runId")
       - name: Test DP1-U maintenance and Runtime admission gate
         shell: pwsh
         run: |

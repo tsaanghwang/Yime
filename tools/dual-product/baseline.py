@@ -323,6 +323,9 @@ def transaction_source_status(sources):
     dp1u_preflight_test = sources[
         "tools/dual-product/test-rime-pime-dp1u-isolated-preflight.ps1"
     ]
+    dp1u_native_facts = sources["tools/dual-product/rime-pime-dp1u-native-facts.cs"]
+    dp1u_native_probe = sources["tools/dual-product/rime-pime-dp1u-native-probe.psm1"]
+    dp1u_native_probe_test = sources["tools/dual-product/test-rime-pime-dp1u-native-probe.ps1"]
     receipt_v2_supersession = sources["tools/dual-product/rime-pime-receipt-v2-supersession.ps1"]
     receipt_v2_supersession_module = sources["tools/dual-product/rime-pime-receipt-v2-supersession.psm1"]
     receipt_v2_supersession_test = sources["tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1"]
@@ -1123,6 +1126,28 @@ def transaction_source_status(sources):
             "source-has-no-process-registry-or-maintenance-execution-commands",
             "actual_installer_or_uninstaller_executed=$false",
         ]),
+        (dp1u_native_facts, [
+            "namespace Yime.Dp1UNative",
+            "OpenProcessFacts",
+            "GetPackageFullName",
+            "GetFileInformationByHandle",
+            "GetFinalPathNameByHandle",
+            "Indirect or multiply-linked artifact rejected.",
+        ]),
+        (dp1u_native_probe, [
+            "yime-rime-pime-dp1u-native-readonly-observation-v1",
+            "MYCOMPUTER daily-use local.12 target prohibited before probing",
+            "StdRegProv failure; no process registry fallback",
+            "native_preflight_complete=$false; execution_authorized=$false",
+            "registration_gate_passed=$false; rollback_gate_passed=$false; removal_gate_passed=$false; runtime_gate_passed=$false; dp1_u_acceptance_passed=$false",
+            "Export-ModuleMember -Function Invoke-RimePimeDp1UNativeReadOnlyProbe",
+        ]),
+        (dp1u_native_probe_test, [
+            "yime-rime-pime-dp1u-native-readonly-probe-tests-v1",
+            "multiply-linked artifact rejected",
+            "live MYCOMPUTER rejected before nonexistent authorization read",
+            "execution and installed acceptance are never promoted",
+        ]),
     ):
         missing = [anchor for anchor in anchors if anchor not in body]
         if missing:
@@ -1237,6 +1262,8 @@ def transaction_source_status(sources):
         if forbidden in dp1u_preflight:
             fail("Rime/PIME DP1-U supplied-evidence preflight gained an execution surface")
     dp1u_isolated_preflight_source_contract_wired = True
+    # These source checks cover the read-only collector, not native acceptance.
+    dp1u_native_readonly_probe_source_contract_wired = True
     if core.index("New-Item -ItemType Directory -Path $stagingRoot") >= core.index("$preinstall = Invoke-UninstallCore"):
         fail("YimeCore active mutation moved before complete package staging")
     ci_postbuild_step = one(
@@ -1331,6 +1358,11 @@ def transaction_source_status(sources):
         r"(?ms)^      - name: Test DP1-U isolated target preflight contract\s*$.*?(?=^      - name: |\Z)",
         ci,
         "CI DP1-U isolated target preflight step",
+    ).group()
+    ci_dp1u_native_probe_step = one(
+        r"(?ms)^      - name: Test DP1-U native read-only probe\s*$.*?(?=^      - name: |\Z)",
+        ci,
+        "CI DP1-U native read-only probe step",
     ).group()
     ci_supersession_step = one(
         r"(?ms)^      - name: Test DP1-J isolated receipt-v2 supersession protocol\s*$.*?(?=^      - name: |\Z)",
@@ -1592,6 +1624,15 @@ def transaction_source_status(sources):
         "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in ci_dp1u_preflight_step and
         "PowerShell 5.1 DP1-U isolated-preflight test failed with exit code $LASTEXITCODE" in ci_dp1u_preflight_step and
         all(re.search(pattern, ci_dp1u_preflight_step) is None for pattern in prohibited_dp1i_ci_patterns)
+    )
+    dp1u_native_readonly_probe_ci_ps5_ps7_present = (
+        ci_dp1u_native_probe_step.count("test-rime-pime-dp1u-native-probe.ps1") == 2 and
+        ci_dp1u_native_probe_step.count("-OutputRoot") == 2 and
+        ".tmp\\dual-product\\dp1-u-native-probe-test-ci-ps5-$runId" in ci_dp1u_native_probe_step and
+        ".tmp\\dual-product\\dp1-u-native-probe-test-ci-ps7-$runId" in ci_dp1u_native_probe_step and
+        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in ci_dp1u_native_probe_step and
+        "PowerShell 5.1 DP1-U native read-only probe test failed with exit code $LASTEXITCODE" in ci_dp1u_native_probe_step and
+        all(re.search(pattern, ci_dp1u_native_probe_step) is None for pattern in prohibited_dp1i_ci_patterns)
     )
     rime_sid_chain_anchors = ("RequestExecutionLevel user" in nsis and
                               "Function bootstrapTargetUser" in nsis and
@@ -2301,6 +2342,8 @@ def transaction_source_status(sources):
             not dp1u_maintenance_runtime_gate_ci_ps5_ps7_present or
             not dp1u_isolated_preflight_source_contract_wired or
             not dp1u_isolated_preflight_ci_ps5_ps7_present or
+            not dp1u_native_readonly_probe_source_contract_wired or
+            not dp1u_native_readonly_probe_ci_ps5_ps7_present or
             'InstallLayoutOrTip(w "${YIME_TIP}"' not in nsis or
             'Get-ChildItem -LiteralPath "Registry::HKEY_USERS"' in pime_cleanup):
         fail("Rime/PIME registration/SID/transaction status changed; dedicated review required")
@@ -2449,6 +2492,10 @@ def transaction_source_status(sources):
         "rime_pime_dp1u_maintenance_runtime_gate_ci_ps5_ps7_present": dp1u_maintenance_runtime_gate_ci_ps5_ps7_present,
         "rime_pime_dp1u_isolated_preflight_source_contract_wired": dp1u_isolated_preflight_source_contract_wired,
         "rime_pime_dp1u_isolated_preflight_ci_ps5_ps7_present": dp1u_isolated_preflight_ci_ps5_ps7_present,
+        "rime_pime_dp1u_native_readonly_probe_source_contract_wired": dp1u_native_readonly_probe_source_contract_wired,
+        "rime_pime_dp1u_native_readonly_probe_ci_ps5_ps7_present": dp1u_native_readonly_probe_ci_ps5_ps7_present,
+        "rime_pime_dp1u_native_readonly_probe_executed_by_baseline": False,
+        "rime_pime_dp1u_native_execution_adapter_complete": False,
         "rime_pime_dp1u_isolated_preflight_test_executed_by_baseline": False,
         "rime_pime_dp1u_real_target_approved": False,
         "rime_pime_dp1u_execution_authorized": False,
@@ -2644,8 +2691,8 @@ def source_baseline(root: Path = ROOT):
           "status": "actual_archive_adapter_and_canonical_migration_complete_external_to_source_baseline",
           "reason": "DP1-S publishes a content-addressed archive outside Git worktrees. DP1-T deterministically rebases path-bound build evidence, binds an identical PS5/PS7 plan plus both full fault matrices to one exact authorization, and completes the actual canonical artifact migration through the private DP1-N capability while the public API still rejects the checkout. The tracked baseline verifies source and CI anchors only; the separate DP1-T evidence proves execution. Hardware-power-loss, directory-metadata and hostile same-SID physical prevention remain false."},
         {"id": "DP1-PIME-MAINTENANCE-RUNTIME-11", "path": "tools/dual-product/rime-pime-dp1u-maintenance-runtime-gate.psm1",
-          "status": "isolated_preflight_and_source_gate_wired_ps5_ps7_execution_adapter_and_installed_acceptance_pending",
-          "reason": "DP1-U now has a source-closed, PS5/PS7 CI-enforced supplied-evidence preflight before its fail-closed registration, rollback, exact-removal and Runtime gate. The preflight validates an exact external approval digest and target/product boundaries but never authorizes execution. A native execution adapter, a separately approved isolated target and all installed evidence remain pending; no installer or uninstaller was run. Hardware-power-loss and directory-metadata durability remain false."},
+          "status": "native_readonly_probe_and_source_gates_wired_ps5_ps7_execution_adapter_and_installed_acceptance_pending",
+          "reason": "DP1-U has source-closed, PS5/PS7 CI-enforced supplied-evidence gates and a native read-only context/artifact collector. The collector does not authorize execution or complete native preflight: strict receipt semantics, trusted runnable candidate, transaction mutation providers, interval protection and installed evidence remain pending. No independent target is approved; MYCOMPUTER is rejected. No installer or uninstaller was run. Hardware-power-loss and directory-metadata durability remain false."},
     ]
     unchanged = all(digest(child(root, path)) == expected for path, expected in hashes.items())
     if not unchanged:

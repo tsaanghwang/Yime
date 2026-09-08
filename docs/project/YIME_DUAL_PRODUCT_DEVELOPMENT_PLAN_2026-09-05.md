@@ -1,5 +1,9 @@
 # Yime 双独立产品开发计划
 
+2026-09-08 当前复审增量：[DP1-U 原生只读探针](YIME_DUAL_PRODUCT_DP1_U_NATIVE_READONLY_PROBE_2026-09-08.md)已实现 OS 目标/架构/SID/祖先观测、固定 HKLM/HKU 双视图保护检查和工件句柄/字节绑定，PS5/PS7 各 74/74；本机实测仅为自有进程/文件夹具和 MYCOMPUTER 入口早拒绝，独立机与 StdRegProv 正路径未执行。新增源码进入来源闭包及双 shell CI，当前基线 164 个来源、68/68 测试、8 个 pending。此前四门纯判定已修复缺失字段及类型导致抛错的缺口，PS5/PS7 各 14/14。原生探针不会授予执行能力，完整 native transaction providers、可信可执行候选和实际安装验收仍待完成；不是仅差用户批准即可执行。
+
+本轮 YimeCore [L6 核验纠正](YIMECORE_LOCAL12_L6_READINESS_2026-09-08.md)已完成：原始证据、源码封存和公共回退包重新核验，历史结果保留。local.12 普通日用及 L5 用户确认不重做，维护补验按[最小范围](YIMECORE_LOCAL12_MINIMAL_MAINTENANCE_RETEST_2026-09-08.md)准备。保持开发顺序：完成执行器与候选审查 → 指定独立机实际 DP1-U 验收 → DP2 单装/两种安装顺序/各自维护矩阵 → 各自安装器通过后再实现 DP3 三选一入口。没有运行安装器或触碰已安装 local.12。
+
 2026-09-08 DP1-U 增量：[隔离目标授权与执行前合同](YIME_DUAL_PRODUCT_DP1_U_ISOLATED_PREFLIGHT_2026-09-08.md)新增纯校验模块、精确 evidence schema 和 PS5／PS7 合成夹具各 246/246。绑定独立审批摘要、目标身份、发起 SID、系统可见状态／恢复根及双产品资源边界；拒绝 MYCOMPUTER local.12、生产 Rime/PIME、默认输入法变更、packaged ancestry 和歧义注册视图。后续审查已把模块、schema、fixture 和测试补入受保护来源闭包及双 shell CI；当前基线为 161 个来源、68/68 测试、8 个诚实 pending。没有真实目标批准、执行适配器或 installed 证据，`execution_authorized=false`，四类 installed 门禁及总验收仍为 false。
 
 2026-09-07 DP1-U 增量：[注册、回滚、卸载与 Runtime 门禁](YIME_DUAL_PRODUCT_DP1_U_MAINTENANCE_RUNTIME_GATES_2026-09-07.md)已完成门禁实现。统一的精确 evidence schema 对四类实际证据逐项失败关闭，PS5／PS7 真值表各 11/11；当前审查汇入 DP1-T actual canonical receipt 及七组双 shell 源码／夹具结果，得到 `source_contract_ready=true`。依照本轮不运行安装器的约束，注册、回滚、removal、Runtime 四个实际门和总 acceptance 均保持 false；未触碰注册表、产品进程、默认输入法、生产用户数据或 YimeCore local.12。目录 metadata、hardware power loss 和 hostile same-SID physical prevention 继续为 false，DP1 仍未完成。

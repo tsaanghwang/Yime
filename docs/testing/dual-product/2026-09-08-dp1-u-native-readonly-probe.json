@@ -1,0 +1,54 @@
+{
+  "schema_version": "yime-rime-pime-dp1u-native-readonly-increment-evidence-v1",
+  "date": "2026-09-08",
+  "affected_product": "rime-pime",
+  "status": "native_readonly_probe_source_and_owned_fixture_tests_complete_real_target_and_execution_pending",
+  "sources": [
+    {"path": "tools/dual-product/rime-pime-dp1u-native-probe.psm1", "sha256": "3a7066aaebd7548ec306019de3627a75d48ef956272fd5876a5df13cc3b34c78"},
+    {"path": "tools/dual-product/rime-pime-dp1u-native-facts.cs", "sha256": "9969b68b42bc11428d4af6a8bb348a9658e248c0758b953bd9e3834109f97be4"},
+    {"path": "tools/dual-product/test-rime-pime-dp1u-native-probe.ps1", "sha256": "7703f2dac44719bc753668c5d005c3785bef8cce095bd130a6aec75b21292adc"}
+  ],
+  "regressions": [
+    {
+      "shell": "Windows PowerShell 5.1.26100.9278",
+      "passed": true,
+      "checks_passed": 74,
+      "result_path": ".tmp/dual-product/dp1-u-native-probe-51039631009944be8b86889f3449cad9/result.json",
+      "result_sha256": "983ba161695c9375dfab4cd1b46f2797256a3e3d5d0a05df2e5897d19ac56bec"
+    },
+    {
+      "shell": "PowerShell 7.6.5",
+      "passed": true,
+      "checks_passed": 74,
+      "result_path": ".tmp/dual-product/dp1-u-native-probe-5192225883e649daa5b3cd2b4ddb0651/result.json",
+      "result_sha256": "f6873fdd23090d916d565e8b95fb0e565bf93c4538934c30a542c421c0da908b"
+    }
+  ],
+  "observed": {
+    "native_win32_owned_process_and_file_primitives_tested": true,
+    "actual_mycomputer_early_rejection_executed": true,
+    "synthetic_authorization_and_registry_policy_tested": true,
+    "native_success_on_isolated_target_tested": false,
+    "stdregprov_native_positive_path_tested": false,
+    "native_ancestry_success_path_tested": false
+  },
+  "closure": {
+    "real_target_approved": false,
+    "native_preflight_complete": false,
+    "execution_authorized": false,
+    "registration_gate_passed": false,
+    "rollback_gate_passed": false,
+    "removal_gate_passed": false,
+    "runtime_gate_passed": false,
+    "dp1_u_acceptance_passed": false,
+    "public_release_ready": false
+  },
+  "privacy": {
+    "installer_or_uninstaller_executed": false,
+    "product_processes_started_or_stopped": false,
+    "registry_mutated": false,
+    "installed_yimecore_local12_touched": false,
+    "user_data_read": false,
+    "default_input_method_changed": false
+  }
+}
