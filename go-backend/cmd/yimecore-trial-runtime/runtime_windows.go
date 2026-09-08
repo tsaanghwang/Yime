@@ -191,6 +191,32 @@ func (p *runtimeProcess) PID() int {
 	return p.pid
 }
 
+// Query only the original child handle while holding the same lock as Wait's
+// close path. Reopening by PID would lose the ownership and reuse boundary.
+func (p *runtimeProcess) healthIdentity() (uint32, uint64, error) {
+	if p == nil {
+		return 0, 0, errors.New("no retained child")
+	}
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if p.handle == 0 || p.pid <= 0 {
+		return 0, 0, errors.New("retained child handle is closed")
+	}
+	status, err := syscall.WaitForSingleObject(p.handle, 0)
+	if err != nil || status != syscall.WAIT_TIMEOUT {
+		return 0, 0, errors.New("retained child has exited")
+	}
+	var creation, exit, kernel, user syscall.Filetime
+	if err := syscall.GetProcessTimes(p.handle, &creation, &exit, &kernel, &user); err != nil {
+		return 0, 0, err
+	}
+	stamp := uint64(creation.HighDateTime)<<32 | uint64(creation.LowDateTime)
+	if stamp == 0 {
+		return 0, 0, errors.New("retained child has no creation time")
+	}
+	return uint32(p.pid), stamp, nil
+}
+
 func (p *runtimeProcess) Kill() error {
 	if p == nil {
 		return nil

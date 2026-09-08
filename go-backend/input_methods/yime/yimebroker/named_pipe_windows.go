@@ -44,6 +44,9 @@ type NamedPipeConfig struct {
 	MaxConnections          int
 	MaxConnectionsPerClient int
 	OnConnectionError       func(error)
+	// These callbacks report the retained listener lifetime, not engine readiness.
+	OnListening func()
+	OnStopped   func()
 }
 
 // ServeNamedPipe accepts independent byte-stream connections on a local-only,
@@ -75,7 +78,19 @@ func ServeNamedPipe(ctx context.Context, dispatcher *Dispatcher, config NamedPip
 	limiter := newConnectionLimiter(config.MaxConnections, config.MaxConnectionsPerClient)
 	globalSlots := make(chan struct{}, config.MaxConnections)
 	var connections sync.WaitGroup
-	defer connections.Wait()
+	serveContext, cancelConnections := context.WithCancel(ctx)
+	defer func() {
+		cancelConnections()
+		connections.Wait()
+	}()
+	// Revoke listening evidence before waiting for any connected client to drain,
+	// including a create/accept error while the caller's context is still live.
+	if config.OnStopped != nil {
+		defer config.OnStopped()
+	}
+	if config.OnListening != nil {
+		config.OnListening()
+	}
 	for {
 		select {
 		case globalSlots <- struct{}{}:
@@ -122,7 +137,7 @@ func ServeNamedPipe(ctx context.Context, dispatcher *Dispatcher, config NamedPip
 			defer connections.Done()
 			defer release()
 			defer releaseGlobal()
-			servePipeFile(ctx, file, dispatcher, client, config)
+			servePipeFile(serveContext, file, dispatcher, client, config)
 		}(file, client, release, releaseGlobal)
 	}
 }
