@@ -1,0 +1,30 @@
+﻿{
+    "architecture":  "x64",
+    "mode":  "variable",
+    "fixture_root":  "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\local12-20260905-142517-06e26544\\x64\\variable",
+    "passed":  true,
+    "exit_code":  0,
+    "timed_out":  false,
+    "outcomes":  {
+                     "candidate_popup_ownership_guard_verified":  true,
+                     "registered_key_sink_verified":  true,
+                     "registered_text_extent_anchor":  true,
+                     "registered_candidate_commit":  true,
+                     "registered_default_candidate_keys_verified":  true,
+                     "registered_invalid_code_backspace_recovery_verified":  true,
+                     "registered_direction_and_page_keys_verified":  true,
+                     "registered_english_shift_passthrough_verified":  true,
+                     "physical_mouse_candidate_selection_verified":  true,
+                     "delayed_async_edit_completion_verified":  true,
+                     "failed_async_edit_recovery_verified":  true,
+                     "punctuation_text_extent_anchor_verified":  true,
+                     "retained_language_bar_after_deactivation_verified":  true,
+                     "registered_focus_callbacks_verified":  true,
+                     "registered_focus_cancellation_preserves_committed_text_verified":  true,
+                     "registered_delayed_focus_cancellation_verified":  true,
+                     "registered_failed_focus_cancellation_text_preservation_verified":  true,
+                     "registered_language_bar_accepted":  true,
+                     "registered_focus_outcome":  "unconfirmed_input_cancelled",
+                     "architecture_verified":  true
+                 }
+}

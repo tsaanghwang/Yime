@@ -1,0 +1,94 @@
+{
+  "schema_version": "yimecore-local12-readiness-evidence-index-v1",
+  "computer": "MYCOMPUTER",
+  "package_version": "0.1.0-local.12",
+  "manifest_sha256": "9b3366b350ef2b23fd285fc9d97d876bf1ae6e2fc0f8613c647640f01184502e",
+  "seal_sha256": "ac4975a772b4ab48408f22c3fe316b6a207dee2c1d27845427fbd070ed894a82",
+  "records": {
+    "daily_use": {
+      "path": "docs/testing/l5/2026-09-08-local12-final-daily-use.json",
+      "sha256": "6a892e48ababbb5653b495d1480cc224b180d7936ace2b19bfd704d29dc50524",
+      "schema": "yimecore-local12-l5-final-daily-use-v1"
+    },
+    "post_use": {
+      "path": "docs/testing/l5/2026-09-08-local12-final-post-use.json",
+      "sha256": "ae21321f7c263e78857dcbd2d4a49caa71f0ff083754954599394e1c49c3390f",
+      "schema": "yimecore-l5-metadata-v1"
+    },
+    "registered_hosts": {
+      "path": "docs/testing/l5/2026-09-05-local12-registered-acceptance.json",
+      "sha256": "6f1fbd98681be19f82c8c747b5dd1041cc8c635e6cdd905b19c0945769980f99",
+      "schema": "yimecore-l5-local12-registered-acceptance-v1"
+    },
+    "reboot": {
+      "path": "docs/testing/l5/2026-09-05-local12-reboot-outcomes.json",
+      "sha256": "82f4604caebf142cdc9eb24637ebd71a00ffd8eb8ca1c5bfaba2e25c6d522b53",
+      "schema": "yimecore-l5-local12-reboot-outcomes-v1"
+    },
+    "manual": {
+      "path": "docs/testing/l5/2026-09-05-local12-manual-pre-reboot.json",
+      "sha256": "1348ef403e56a7ba43a867191b9768c4916c95384bf6d30186fabac5423f35ce",
+      "schema": "yimecore-l5-local12-manual-pre-reboot-v1"
+    },
+    "backup": {
+      "path": "docs/testing/l5/2026-09-05-local12-native-backup.json",
+      "sha256": "1dde9e8195282cfc8855ea11d187ab51443de6ebc0712ba0d5d636376c715027",
+      "schema": "yimecore-l5-local12-native-backup-evidence-v1"
+    },
+    "x86_live_hosts": {
+      "path": "docs/testing/l6/local12-evidence-20260908/x86_live_hosts.json",
+      "sha256": "dab025f94713f3d06ab6365623eb446d46bc5709da41ca763a38cb48e00bfd54",
+      "schema": "yimecore-x86-live-host-acceptance-v1",
+      "original_path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\local11-x86-live-host-20260904\\summary.json"
+    },
+    "x86_registered": {
+      "path": "docs/testing/l6/local12-evidence-20260908/x86_registered.json",
+      "sha256": "e59200812ae1e7c3dc0ad17ccd5f2dfe207cb4a0bea84196789d74a7e4bd0e4c",
+      "schema": "yimecore-installed-local-host-v1",
+      "original_path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\local11-installed-x64-x86-host-20260904\\summary.json"
+    },
+    "x86_protection": {
+      "schema": "",
+      "path": "docs/testing/l6/local12-evidence-20260908/x86_protection.json",
+      "sha256": "d27dbf679e95f136da8ab7973da88df77177ed11141171728b925c642dae5276",
+      "original_path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\local11-x86-live-host-20260904\\protected-state-comparison.json"
+    }
+  },
+  "registered_artifacts": [
+    {
+      "original_path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\local12-20260905-142517-06e26544\\summary.json",
+      "path": "docs/testing/l6/local12-evidence-20260908/registered-0.json",
+      "sha256": "80d74c77472648ab4135596015b2ca58f81c296451a6c9e627695e071d2f0726"
+    },
+    {
+      "original_path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\local12-20260905-142517-06e26544\\x64\\full\\outcome.json",
+      "path": "docs/testing/l6/local12-evidence-20260908/registered-1.json",
+      "sha256": "0051bc067d298b1046158a61bff484cadf7184345f9fb5540a55fbfb9f39d457"
+    },
+    {
+      "original_path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\local12-20260905-142517-06e26544\\x64\\variable\\outcome.json",
+      "path": "docs/testing/l6/local12-evidence-20260908/registered-2.json",
+      "sha256": "cbd0dd1d46088f57150fb51bde1a2c9cfb00439f98fd0ba4d05720492d5e9a7d"
+    },
+    {
+      "original_path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\local12-20260905-142517-06e26544\\x64\\shorthand\\outcome.json",
+      "path": "docs/testing/l6/local12-evidence-20260908/registered-3.json",
+      "sha256": "b795701c791f1011086035f7c130c540d36ec68e0d7391f0f3b2ac2564e364a2"
+    },
+    {
+      "original_path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\local12-20260905-142517-06e26544\\x86\\full\\outcome.json",
+      "path": "docs/testing/l6/local12-evidence-20260908/registered-4.json",
+      "sha256": "d858cab0c6d2302695a9b82e4db220154e0331506df3ba08fe1cedbb89013e8b"
+    },
+    {
+      "original_path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\local12-20260905-142517-06e26544\\x86\\variable\\outcome.json",
+      "path": "docs/testing/l6/local12-evidence-20260908/registered-5.json",
+      "sha256": "07b80b9804010fa888a935ff3820c011530be76fbfeb58e46f81a141335c8268"
+    },
+    {
+      "original_path": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\local12-20260905-142517-06e26544\\x86\\shorthand\\outcome.json",
+      "path": "docs/testing/l6/local12-evidence-20260908/registered-6.json",
+      "sha256": "9ecea457435198712235b0e5a19b8a5646bf7d5672a68feecbe79c148679e8e6"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "schema_version": "yimecore-x86-live-host-acceptance-v1",
+  "generated_at": "2026-09-04T05:34:03.5465780Z",
+  "computer_name": "MYCOMPUTER",
+  "package_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a",
+  "package_version": "0.1.0-local.11",
+  "package_git_commit": "f435f463bfd0a0647d0d9ef9f5711c7ef55a698e",
+  "package_manifest_sha256": "5a3f847a3136fd2198f7dc9aba22dc017ed7439d8447435e8752eb379a4a5cd8",
+  "x86_text_service_sha256": "6cc329939a8931a1e7194743728efaf50a5b285bdb3f4549117fa3bc9d2f1545",
+  "registered_host_summary": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\local11-installed-x64-x86-host-20260904\\summary.json",
+  "registered_host_summary_sha256": "e59200812ae1e7c3dc0ad17ccd5f2dfe207cb4a0bea84196789d74a7e4bd0e4c",
+  "x64_x86_registered_host_three_modes_passed": true,
+  "hosts": [
+    {
+      "name": "Firefox",
+      "process_id": 4968,
+      "executable": "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
+      "executable_version": "155.0",
+      "executable_sha256": "653d779b8f7ca24cafc7c5dbd1721c31c9f146cfd92a4ebba7e0f3e6e17ae835",
+      "pe_machine": "0x014C",
+      "architecture": "x86",
+      "loaded_text_service": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\x86\\YimeTextServiceExperiment.dll",
+      "loaded_text_service_sha256": "6cc329939a8931a1e7194743728efaf50a5b285bdb3f4549117fa3bc9d2f1545",
+      "exact_installed_x86_module_verified": true,
+      "input_observations": {
+        "composition_and_commit": true,
+        "bare_digits_remain_composition": true,
+        "shift_1_selects_first_candidate": true
+      },
+      "input_observations_source": "user physical confirmation in current acceptance session",
+      "all_input_observations_passed": true
+    },
+    {
+      "name": "Notepad++",
+      "process_id": 33112,
+      "executable": "C:\\Users\\tsaan\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Notepad++.Notepad++_Microsoft.Winget.Source_8wekyb3d8bbwe\\notepad++.exe",
+      "executable_version": "8.9.8.0",
+      "executable_sha256": "960ad7a8d443536ceeeafa18f99aecb70793fc7c4fb6ef23678a9d46bbf7bc78",
+      "pe_machine": "0x014C",
+      "architecture": "x86",
+      "loaded_text_service": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\x86\\YimeTextServiceExperiment.dll",
+      "loaded_text_service_sha256": "6cc329939a8931a1e7194743728efaf50a5b285bdb3f4549117fa3bc9d2f1545",
+      "exact_installed_x86_module_verified": true,
+      "input_observations": {
+        "composition_and_commit": true,
+        "bare_digits_remain_composition": true,
+        "shift_1_selects_first_candidate": true
+      },
+      "input_observations_source": "user physical confirmation in current acceptance session",
+      "all_input_observations_passed": true
+    }
+  ],
+  "protected_state_comparison": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\local11-x86-live-host-20260904\\protected-state-comparison.json",
+  "protected_state_unchanged": true,
+  "default_input_method": {
+    "tip": "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+    "description": "简体中文(中国大陆) - 微软拼音",
+    "changed_by_acceptance": false
+  },
+  "computer_use_native_app_control_available": false,
+  "manual_action_reason": "native app UI control was unavailable; operator selected the profile and performed the three input checks",
+  "x86_current_machine_workstream_passed": true,
+  "local_product_ready": false,
+  "remaining_scope": [
+    "x64 L5 daily-use observation",
+    "L6 local package and recovery-media sealing"
+  ],
+  "public_release_ready": false,
+  "frozen_targets_executed": false,
+  "passed": true
+}

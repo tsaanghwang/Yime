@@ -1,0 +1,102 @@
+{
+  "schema_version": "yimecore-local-product-readiness-v2",
+  "generated_at": "2026-09-08T02:06:52.8517329Z",
+  "affected_product": "YimeCore",
+  "scope": "MYCOMPUTER local.12 historical acceptance and currently sealed public artifacts; no fresh live-host acceptance",
+  "package": {
+    "passed": true,
+    "root": "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local12-l6-sealed-20260908\\package",
+    "version": "0.1.0-local.12",
+    "manifest_sha256": "9b3366b350ef2b23fd285fc9d97d876bf1ae6e2fc0f8613c647640f01184502e",
+    "file_count": 74,
+    "source_manifest_sha256": "2f31f6d278a7fa46e2b7ae2118df88649cefd02ec7a6c3b017d3a5eb099f2c57"
+  },
+  "checks": {
+    "sealed_package_integrity": true,
+    "sealed_package_outside_repository": true,
+    "sealed_source_and_build_archive_integrity": true,
+    "l5_final_user_confirmation": true,
+    "l5_post_use_identity_and_protection": true,
+    "installed_x64_x86_registered_hosts": true,
+    "local12_reboot_and_logon_autostart": true,
+    "previous_working_package_backup_preserved": true,
+    "x86_live_host_evidence_chain": true,
+    "current_candidate_actual_restore_and_failed_upgrade_rollback": false
+  },
+  "check_failures": {
+    "current_candidate_actual_restore_and_failed_upgrade_rollback": "No reviewed native recovery producer is integrated; determine inherited evidence and minimal maintenance coverage before execution."
+  },
+  "local_product_ready": false,
+  "L6_sealed": false,
+  "public_release_ready": false,
+  "pending": [
+    "current_candidate_actual_restore_and_failed_upgrade_rollback"
+  ],
+  "evidence_index": {
+    "path": "C:\\dev\\Yime\\tools\\yimecore\\local12-readiness-evidence.json",
+    "sha256": "54df81a7037f30c81bc1b4396956fb9e113f25875ba0c8bccfa218705ac7e326"
+  },
+  "evidence": {
+    "seal": {
+      "path": "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local12-l6-sealed-20260908\\seal.json",
+      "sha256": "ac4975a772b4ab48408f22c3fe316b6a207dee2c1d27845427fbd070ed894a82"
+    },
+    "daily_use": {
+      "path": "C:\\dev\\Yime\\docs\\testing\\l5\\2026-09-08-local12-final-daily-use.json",
+      "sha256": "6a892e48ababbb5653b495d1480cc224b180d7936ace2b19bfd704d29dc50524"
+    },
+    "post_use": {
+      "path": "C:\\dev\\Yime\\docs\\testing\\l5\\2026-09-08-local12-final-post-use.json",
+      "sha256": "ae21321f7c263e78857dcbd2d4a49caa71f0ff083754954599394e1c49c3390f"
+    },
+    "reboot": {
+      "path": "C:\\dev\\Yime\\docs\\testing\\l5\\2026-09-05-local12-reboot-outcomes.json",
+      "sha256": "82f4604caebf142cdc9eb24637ebd71a00ffd8eb8ca1c5bfaba2e25c6d522b53"
+    },
+    "registered_hosts": {
+      "path": "C:\\dev\\Yime\\docs\\testing\\l5\\2026-09-05-local12-registered-acceptance.json",
+      "sha256": "6f1fbd98681be19f82c8c747b5dd1041cc8c635e6cdd905b19c0945769980f99"
+    },
+    "manual": {
+      "path": "C:\\dev\\Yime\\docs\\testing\\l5\\2026-09-05-local12-manual-pre-reboot.json",
+      "sha256": "1348ef403e56a7ba43a867191b9768c4916c95384bf6d30186fabac5423f35ce"
+    },
+    "backup": {
+      "path": "C:\\dev\\Yime\\docs\\testing\\l5\\2026-09-05-local12-native-backup.json",
+      "sha256": "1dde9e8195282cfc8855ea11d187ab51443de6ebc0712ba0d5d636376c715027"
+    },
+    "previous_package": {
+      "root": "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local-product-20260905-135008-38219e5a\\previous-package",
+      "file_count": 74,
+      "manifest_sha256": "5a3f847a3136fd2198f7dc9aba22dc017ed7439d8447435e8752eb379a4a5cd8"
+    },
+    "x86_live_hosts": {
+      "path": "C:\\dev\\Yime\\docs\\testing\\l6\\local12-evidence-20260908\\x86_live_hosts.json",
+      "sha256": "dab025f94713f3d06ab6365623eb446d46bc5709da41ca763a38cb48e00bfd54"
+    },
+    "x86_registered": {
+      "path": "C:\\dev\\Yime\\docs\\testing\\l6\\local12-evidence-20260908\\x86_registered.json",
+      "sha256": "e59200812ae1e7c3dc0ad17ccd5f2dfe207cb4a0bea84196789d74a7e4bd0e4c"
+    },
+    "x86_protection": {
+      "path": "C:\\dev\\Yime\\docs\\testing\\l6\\local12-evidence-20260908\\x86_protection.json",
+      "sha256": "d27dbf679e95f136da8ab7973da88df77177ed11141171728b925c642dae5276"
+    }
+  },
+  "privacy": {
+    "installed_product_read": false,
+    "user_settings_or_learning_files_read": false,
+    "user_text_read": false,
+    "installer_executed": false,
+    "raw_logs_or_events_read": false,
+    "default_input_method_changed": false,
+    "product_or_registry_mutated": false,
+    "recovery_state_contents_read": false
+  },
+  "limitations": [
+    "Historical reports retain their original scope and dates; this is a public-artifact and evidence validation, not current installed acceptance.",
+    "Hashes bind reviewed evidence; they do not authenticate a forged new recovery report. Recovery needs a reviewed producer and a decision on inherited coverage.",
+    "The x86 chain inherits local.11 physical hosts and local.12 affected-path manual confirmation; a full physical rerun is not claimed.",
+    "Signing, ARM64 native acceptance and other physical PC acceptance remain separate."
+  ]
+}

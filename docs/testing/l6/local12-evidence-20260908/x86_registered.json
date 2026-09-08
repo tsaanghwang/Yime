@@ -1,0 +1,76 @@
+{
+  "schema_version": "yimecore-installed-local-host-v1",
+  "development_scope": {
+    "id": "development-host-x64-x86-wow64-2026-09-04",
+    "computer_name": "MYCOMPUTER",
+    "native_architecture": "AMD64",
+    "active_architectures": [
+      "x64",
+      "x86"
+    ],
+    "performance_profile": "development_host_x64",
+    "frozen_targets": [
+      "arm64",
+      "legacy_x64",
+      "other_physical_pcs",
+      "simulated_hardware_tiers"
+    ],
+    "policy_sha256": "e40a6bd6c4dc97f624e0a28b094dff8d27fd3e9669c06c0ce1490b0598ef6984"
+  },
+  "generated_at": "2026-09-04T04:55:14.9744069Z",
+  "package_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a",
+  "manifest_sha256": "5A3F847A3136FD2198F7DC9ABA22DC017ED7439D8447435E8752EB379A4A5CD8",
+  "registered_dlls": {
+    "x64": {
+      "path": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\x64\\YimeTextServiceExperiment.dll",
+      "sha256": "A9F7CEAAA2D7E48AC6779269E94F1A286EECF67D45A0799630F7A5A67EB61900",
+      "registry_path": "Registry::HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32"
+    },
+    "x86": {
+      "path": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\x86\\YimeTextServiceExperiment.dll",
+      "sha256": "6CC329939A8931A1E7194743728EFAF50A5B285BDB3F4549117FA3BC9D2F1545",
+      "registry_path": "Registry::HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\WOW6432Node\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32"
+    }
+  },
+  "isolated_settings_and_broker": true,
+  "registration_changed_by_runner": false,
+  "results": [
+    {
+      "architecture": "x64",
+      "mode": "full",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "architecture": "x64",
+      "mode": "variable",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "architecture": "x64",
+      "mode": "shorthand",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "architecture": "x86",
+      "mode": "full",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "architecture": "x86",
+      "mode": "variable",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "architecture": "x86",
+      "mode": "shorthand",
+      "exit_code": 0,
+      "passed": true
+    }
+  ],
+  "passed": true
+}
