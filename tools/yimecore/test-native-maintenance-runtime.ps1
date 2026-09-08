@@ -89,7 +89,7 @@ Check 'actual fixed config writer schema and active identity match fixture catal
     foreach($key in (New-ConfigFixture).config.Keys){Require ($writer[0].Extent.Text.Contains($key)) 'Source writer schema changed'}
     Require ($controller.Contains('$clsid = ''{E40FA752-BB96-461D-A51D-F40EB437EC65}''') -and $controller.Contains('$profile = ''{126F54C6-E9B1-4E22-8652-03224CBD49F9}''')) 'Source identity changed'
 }
-Check 'source Broker protocol has no session-free health operation' {
+Check 'ordinary input protocol remains separate from the session-free health service' {
     $protocol=Get-Content -LiteralPath (Join-Path $repo 'go-backend/input_methods/yime/yimebroker/protocol.go') -Raw
     $ops=@([regex]::Matches($protocol,'(?m)^\s*\w+\s+Operation\s*=\s*"([a-z]+)"')|ForEach-Object {$_.Groups[1].Value})
     Require (($ops -join ',') -ceq 'open,apply,select,forget,reset,close') 'Protocol changed; re-evaluate read-only health support'

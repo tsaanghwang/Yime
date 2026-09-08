@@ -90,6 +90,14 @@ jobs:
       - name: Run Go regression tests
         shell: pwsh
         run: .\tools\test-go.ps1
+      - name: Test Go health protocol with native PowerShell clients
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $evidence = Join-Path $pwd ('.tmp/health-interop-ci-' + [guid]::NewGuid().ToString('N'))
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\yimecore\test-native-health-interop.ps1 -OutputPath (Join-Path $evidence 'ps5.json')
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 health interop failed with exit code $LASTEXITCODE" }
+          & .\tools\yimecore\test-native-health-interop.ps1 -OutputPath (Join-Path $evidence 'ps7.json')
       - name: Run PSC Python tooling regression tests
         shell: pwsh
         run: python -m unittest discover -s tools -p "test_*.py" -v
@@ -247,7 +255,7 @@ jobs:
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
           $evidence = Join-Path $pwd ('.tmp/native-maintenance-ci-' + [guid]::NewGuid().ToString('N'))
           New-Item -ItemType Directory -Path $evidence | Out-Null
-          foreach ($test in @('test-local13-maintenance-preparation.ps1', 'test-native-maintenance-evidence.ps1', 'test-native-maintenance-context.ps1', 'test-local13-maintenance-inputs.ps1', 'test-native-maintenance-processes.ps1', 'test-native-rehearsal-outcome.ps1', 'test-native-rehearsal-outcome-reader.ps1', 'test-native-maintenance-child.ps1', 'test-native-maintenance-data.ps1', 'test-native-maintenance-backup.ps1', 'test-native-maintenance-deferred-delete.ps1', 'test-native-maintenance-visibility.ps1', 'test-native-maintenance-runtime.ps1', 'test-native-rollback-collection.ps1')) {
+          foreach ($test in @('test-local13-maintenance-preparation.ps1', 'test-native-maintenance-evidence.ps1', 'test-native-maintenance-context.ps1', 'test-local13-maintenance-inputs.ps1', 'test-native-maintenance-processes.ps1', 'test-native-rehearsal-outcome.ps1', 'test-native-rehearsal-outcome-reader.ps1', 'test-native-maintenance-child.ps1', 'test-native-maintenance-data.ps1', 'test-native-maintenance-backup.ps1', 'test-native-maintenance-deferred-delete.ps1', 'test-native-maintenance-visibility.ps1', 'test-native-maintenance-runtime.ps1', 'test-native-maintenance-health.ps1', 'test-native-rollback-collection.ps1')) {
             & $ps5 -NoProfile -ExecutionPolicy Bypass -File (Join-Path '.\tools\yimecore' $test) -OutputPath (Join-Path $evidence ($test + '-ps5.json'))
             if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 $test failed with exit code $LASTEXITCODE" }
             & (Join-Path '.\tools\yimecore' $test) -OutputPath (Join-Path $evidence ($test + '-ps7.json'))
