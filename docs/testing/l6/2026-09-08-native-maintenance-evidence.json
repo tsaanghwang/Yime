@@ -1,0 +1,59 @@
+{
+  "schema_version": "yimecore-native-maintenance-evidence-review-v1",
+  "reviewed_date": "2026-09-08",
+  "affected_product": "YimeCore",
+  "module": {
+    "path": "tools/yimecore/native-maintenance-evidence.psm1",
+    "sha256": "7d9c70d95845417e4aac6c7502865602a4e547d711f8d74ab624f147428b06f0",
+    "snapshot_schema": "yimecore-native-maintenance-snapshot-v1",
+    "fixed_coordinates_per_view": 23,
+    "required_views": [32, 64],
+    "process_registry_fallback": false,
+    "public_provider_or_root_override": false,
+    "supported_types": ["REG_SZ", "REG_BINARY", "REG_DWORD", "REG_MULTI_SZ", "REG_QWORD"],
+    "unsupported_types_fail_closed": ["REG_NONE", "REG_EXPAND_SZ", "REG_LINK", "other unsupported kinds"],
+    "atomic_snapshot": false,
+    "continuous_monitoring": false,
+    "registry_link_identity_verified": false
+  },
+  "regressions": {
+    "path": "tools/yimecore/test-native-maintenance-evidence.ps1",
+    "sha256": "3884bbde465fce94f9b3b7aeca2c36ed03626b7c1113ce72ea242f1628a3ed2e",
+    "ps5_version": "5.1.26100.9278",
+    "ps7_version": "7.6.5",
+    "passed_checks_per_shell": 85,
+    "failed_checks_per_shell": 0,
+    "synthetic_checks_per_shell": 79,
+    "native_random_fixture_checks_per_shell": 6,
+    "native_supported_value_types_exactly_verified_in_both_views": true,
+    "native_expand_type_rejected": true,
+    "native_random_key_cleanup_verified_in_both_views": true,
+    "malformed_self_comparison_rejected": true,
+    "unpaired_surrogates_rejected": true,
+    "cross_shell_catalog_and_mock_snapshot_digests_match": true,
+    "catalog_sha256": "0a14a782bc921b5ef8b698b3f4ff1b17a39a569627a36142ce4aa8412641162d",
+    "mock_snapshot_sha256": "e9e1efa8349332d21cc9c11e38bc3ac6febab3ef76f1404e6ba64bc9130ee204"
+  },
+  "evidence": [
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-evidence-20260908\\ps5-final-v2.json",
+      "sha256": "eb88cd386d1c3ca3eebc727ef4e992e09499476ed9926fdf6fdcfd246a1e7ab0"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-evidence-20260908\\ps7-final-v2.json",
+      "sha256": "b752cf4f9679040c20304442b15dea5ea62f805f491c6128611337162d0ed7f3"
+    }
+  ],
+  "actual_product_registry_collected": false,
+  "product_registry_modified": false,
+  "installed_product_executed": false,
+  "installer_executed": false,
+  "user_text_settings_or_learning_read": false,
+  "installed_local12_changed": false,
+  "actual_current_candidate_restore_passed": false,
+  "actual_current_candidate_rollback_passed": false,
+  "actual_current_candidate_uninstall_passed": false,
+  "L6_sealed": false,
+  "local_product_ready": false,
+  "public_release_ready": false
+}

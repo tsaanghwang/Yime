@@ -9,6 +9,8 @@
 *.toml text eol=lf
 *.sh text eol=lf
 *.ps1 text eol=crlf
+tools/yimecore/native-maintenance-context.psm1 text eol=crlf
+tools/yimecore/native-maintenance-evidence.psm1 text eol=crlf
 *.bat text eol=crlf
 *.cmd text eol=crlf
 
