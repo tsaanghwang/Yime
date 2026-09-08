@@ -1,0 +1,246 @@
+# Optional diagnostic branch workflow. Original native-build test commands are
+# copied from ci.yaml at d2aeef18a393327123a6ed2826a117b039879d58.
+name: Verify remaining dual-product contracts
+
+on:
+  push:
+    branches: ['diagnostic/yime-remaining-contracts']
+
+permissions:
+  contents: read
+
+jobs:
+  dp1n-transaction:
+    name: DP1-N installer and receipt transaction
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Test DP1-N isolated installer and receipt transaction
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-installer-receipt-transaction.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-dp1n-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-N installer/receipt transaction test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-installer-receipt-transaction.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-dp1n-ci-ps7-$runId")
+
+  dp1o-through-dp1t:
+    name: DP1-O through DP1-T contracts
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Test DP1-O isolated current-source candidate runner contract
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-isolated-candidate.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-o-runner-contract-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-O isolated-candidate runner contract failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-isolated-candidate.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-o-runner-contract-ci-ps7-$runId")
+      - name: Test DP1-P version identity admission contract
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-version-identity-admission.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-version-identity-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-P version-identity admission test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-version-identity-admission.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-version-identity-test-ci-ps7-$runId")
+      - name: Test DP1-Q candidate evidence archive contract
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-candidate-evidence-archive.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-candidate-evidence-archive-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-Q candidate-evidence archive test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-candidate-evidence-archive.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-candidate-evidence-archive-test-ci-ps7-$runId")
+      - name: Test DP1-Q actual migration review contract
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-actual-migration-review.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-actual-migration-review-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-Q actual-migration review test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-actual-migration-review.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-actual-migration-review-test-ci-ps7-$runId")
+      - name: Test DP1-R static trust admission contract
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-dp1r-trust-admission.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-r-trust-admission-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-R trust-admission test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-dp1r-trust-admission.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-r-trust-admission-test-ci-ps7-$runId")
+      - name: Test DP1-S off-repository archive boundary
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-dp1s-off-repository-archive.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-s-archive-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-S archive-boundary test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-dp1s-off-repository-archive.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-s-archive-test-ci-ps7-$runId")
+      - name: Test DP1-T actual canonical migration adapter contract
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-actual-canonical-migration.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-t-actual-adapter-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-T actual-adapter test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-actual-canonical-migration.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-t-actual-adapter-test-ci-ps7-$runId")
+
+  dp1u-contracts:
+    name: DP1-U contracts
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Test DP1-U isolated target preflight contract
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-dp1u-isolated-preflight.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-preflight-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-U isolated-preflight test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-dp1u-isolated-preflight.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-preflight-test-ci-ps7-$runId")
+      - name: Test DP1-U native read-only probe
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-dp1u-native-probe.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-native-probe-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-U native read-only probe test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-dp1u-native-probe.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-native-probe-test-ci-ps7-$runId")
+      - name: Test DP1-U native candidate evidence chain
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-dp1u-native-candidate.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-native-candidate-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-U native candidate test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-dp1u-native-candidate.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-native-candidate-test-ci-ps7-$runId")
+      - name: Test DP1-U maintenance and Runtime admission gate
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-dp1u-maintenance-runtime-gate.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-gate-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-U admission-gate test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-dp1u-maintenance-runtime-gate.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-gate-test-ci-ps7-$runId")
+
+  remaining-contracts:
+    name: Remaining dual-product contracts
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Test canonical receipt no-downgrade contract
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-receipt-no-downgrade.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-receipt-no-downgrade-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 receipt no-downgrade test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-receipt-no-downgrade.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-receipt-no-downgrade-ci-ps7-$runId")
+      - name: Test DP1-J isolated receipt-v2 supersession protocol
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-receipt-v2-supersession.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-j-receipt-v2-supersession-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-J receipt-v2 supersession test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-receipt-v2-supersession.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-j-receipt-v2-supersession-ci-ps7-$runId")
+      - name: Test DP1-I pure transaction replay model
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-transaction-replay-model.ps1
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-I replay-model test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-transaction-replay-model.ps1
+      - name: Test DP1-I isolated fixture transaction journal
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-fixture-transaction-journal.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-i-journal-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-I fixture-journal test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-fixture-transaction-journal.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-i-journal-ci-ps7-$runId")
+      - name: Test normal and delay PE import static CRT rejection
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-pe-import-gate.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-pe-import-gate-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 PE-import gate test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-pe-import-gate.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-pe-import-gate-ci-ps7-$runId")
+      - name: Test static installer artifact verifier
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-installer-static.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-installer-static-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 installer-static test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-installer-static.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-installer-static-ci-ps7-$runId")
+      - name: Test installed-runtime evidence capture
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: .\tools\test-sentence-segment-evidence.ps1
