@@ -13,45 +13,91 @@ $checks=[Collections.Generic.List[object]]::new()
 function Check([string]$Name,[scriptblock]$Body){try{& $Body | Out-Null;$checks.Add([ordered]@{name=$Name;passed=$true})}catch{$checks.Add([ordered]@{name=$Name;passed=$false;error=$_.Exception.Message})}}
 function Require([bool]$Value,[string]$Message){if(-not $Value){throw $Message}}
 function Reject([scriptblock]$Body){$rejected=$false;try{& $Body | Out-Null}catch{$rejected=$true};Require $rejected 'Expected refusal'}
+# stdin is deliberately closed after every owned launch. A private named event
+# owns lifetime instead: EOF, CI's noninteractive host, and redirected handles
+# must not be mistaken for a caller-requested stop.
+function New-OwnedFixtureRelease {
+    $name='Local\YimeMaintenanceProcessFixture.'+[guid]::NewGuid().ToString('N');$created=$false
+    $handle=[Threading.EventWaitHandle]::new($false,[Threading.EventResetMode]::ManualReset,$name,[ref]$created)
+    if(-not $created){$handle.Dispose();throw 'Owned release event was already present'}
+    [pscustomobject]@{name=$name;handle=$handle}
+}
+function New-OwnedFixtureStart([string]$Path,[string]$Mode,[string[]]$ReleaseNames) {
+    if($Mode -cnotin @('--wait','--runtime') -or @($ReleaseNames|Where-Object {$_ -cnotmatch '^Local\\YimeMaintenanceProcessFixture\.[a-f0-9]{32}$'}).Count){throw 'Invalid owned fixture arguments'}
+    $info=[Diagnostics.ProcessStartInfo]::new($Path,($Mode+' '+($ReleaseNames -join ' ')))
+    $info.UseShellExecute=$false;$info.CreateNoWindow=$true;$info.RedirectStandardInput=$true;$info.RedirectStandardOutput=$true
+    return $info
+}
+function Read-OwnedFixtureReady($Process) {
+    $Process.StandardInput.Close()
+    $ready=$Process.StandardOutput.ReadLineAsync()
+    if(-not $ready.Wait(5000) -or $ready.Result -cnotmatch '^[1-9][0-9]*$'){throw 'Bounded owned fixture readiness handshake failed'}
+    return [int]$ready.Result
+}
+function Stop-OwnedFixture($Process,$Release) {
+    if($null -ne $Release){[void]$Release.handle.Set()}
+    if($null -ne $Process -and -not $Process.HasExited){if(-not $Process.WaitForExit(5000)){$Process.Kill();$Process.WaitForExit();throw 'Owned fixture required forced cleanup after release'}}
+}
 $nativeEvidence=$null
 $privateTypeEvidence=$null
 try {
-if($RunNativeFixture){
-    $fixture=Join-Path (Split-Path -Parent $out) ('own-processes-'+[guid]::NewGuid().ToString('N'))
-    $bin=Join-Path $fixture 'bin';New-Item -ItemType Directory -Path $bin | Out-Null
-    $stub=Join-Path $fixture 'OwnedProcessFixture.cs'
-    $code=@'
+$waitRoot=Join-Path (Split-Path -Parent $out) ('owned-release-'+[guid]::NewGuid().ToString('N'))
+[void][IO.Directory]::CreateDirectory($waitRoot)
+$waitSource=Join-Path $waitRoot 'OwnedProcessFixture.cs';$waitHelper=Join-Path $waitRoot 'OwnedWait.exe'
+$code=@'
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
+using System.Threading;
 class OwnedProcessFixture {
+    static EventWaitHandle Release(string name) {
+        if(!Regex.IsMatch(name,@"\ALocal\\YimeMaintenanceProcessFixture\.[a-f0-9]{32}\z")) throw new ArgumentException("Owned event name required");
+        return EventWaitHandle.OpenExisting(name);
+    }
     static int Main(string[] args) {
-        if(args.Length != 1) return 2;
-        if(args[0] == "--broker") { Console.ReadLine(); return 0; }
-        if(args[0] != "--runtime") return 2;
-        var start=new ProcessStartInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"YimeBroker.exe"),"--broker");
-        start.UseShellExecute=false;start.CreateNoWindow=true;start.RedirectStandardInput=true;
-        using(var child=Process.Start(start)) {
-            try {Console.WriteLine(child.Id);Console.Out.Flush();Console.ReadLine();}
-            finally {if(!child.HasExited){child.StandardInput.WriteLine("stop");if(!child.WaitForExit(5000)){child.Kill();child.WaitForExit();}}}
+        if(args.Length == 2 && args[0] == "--wait") {
+            using(var release=Release(args[1])) {
+                Console.WriteLine(Process.GetCurrentProcess().Id);Console.Out.Flush();
+                return release.WaitOne(90000) ? 0 : 124;
+            }
         }
-        return 0;
+        if(args.Length != 3 || args[0] != "--runtime") return 2;
+        using(var release=Release(args[1])) using(var brokerRelease=Release(args[2])) {
+            var start=new ProcessStartInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"YimeBroker.exe"),"--wait "+args[2]);
+            start.UseShellExecute=false;start.CreateNoWindow=true;start.RedirectStandardInput=true;start.RedirectStandardOutput=true;
+            using(var child=Process.Start(start)) {
+                int result=3;
+                try {
+                    child.StandardInput.Close();var ready=child.StandardOutput.ReadLineAsync();
+                    if(ready.Wait(5000) && ready.Result == child.Id.ToString()) {
+                        Console.WriteLine(child.Id);Console.Out.Flush();
+                        result=release.WaitOne(90000) ? 0 : 124;
+                    }
+                } finally {brokerRelease.Set();if(!child.WaitForExit(5000)){child.Kill();child.WaitForExit();result=125;}}
+                return result;
+            }
+        }
     }
 }
 '@
-    [IO.File]::WriteAllText($stub,$code,[Text.UTF8Encoding]::new($false))
+[IO.File]::WriteAllText($waitSource,$code,[Text.UTF8Encoding]::new($false))
+& 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe' /nologo /target:exe /platform:x64 ("/out:"+$waitHelper) $waitSource
+if($LASTEXITCODE -ne 0){throw 'Owned release fixture compiler failed'}
+if($RunNativeFixture){
+    $fixture=Join-Path (Split-Path -Parent $out) ('own-processes-'+[guid]::NewGuid().ToString('N'))
+    $bin=Join-Path $fixture 'bin';New-Item -ItemType Directory -Path $bin | Out-Null
     $runtimePath=Join-Path $bin 'YimeCoreTrialRuntime.exe';$brokerPath=Join-Path $bin 'YimeBroker.exe'
-    & 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe' /nologo /target:exe /platform:x64 ("/out:"+$runtimePath) $stub
-    if($LASTEXITCODE -ne 0){throw 'Owned fixture compiler failed'}
+    [IO.File]::Copy($waitHelper,$runtimePath,$false)
     [IO.File]::Copy($runtimePath,$brokerPath,$false)
     $hash=(Get-FileHash -LiteralPath $runtimePath -Algorithm SHA256).Hash.ToLowerInvariant()
-    $start=[Diagnostics.ProcessStartInfo]::new($runtimePath,'--runtime');$start.UseShellExecute=$false;$start.CreateNoWindow=$true
-    $start.RedirectStandardInput=$true;$start.RedirectStandardOutput=$true
-    $runtime=[Diagnostics.Process]::Start($start);$held=$null;$referenceHeld=$null;$brokerReference=$null
+    $runtimeRelease=New-OwnedFixtureRelease;$brokerRelease=New-OwnedFixtureRelease
+    $start=New-OwnedFixtureStart $runtimePath '--runtime' @($runtimeRelease.name,$brokerRelease.name)
+    $runtime=$null;$held=$null;$referenceHeld=$null;$brokerReference=$null
     try {
-        $ready=$runtime.StandardOutput.ReadLineAsync()
-        if(-not $ready.Wait(5000) -or $ready.Result -notmatch '^[1-9][0-9]*$'){throw 'Owned helper handshake failed'}
-        $brokerId=[int]$ready.Result
+        $runtime=[Diagnostics.Process]::Start($start)
+        $brokerId=Read-OwnedFixtureReady $runtime
+        Check 'native-pair-survives-closed-stdin-until-explicit-release' {Require (-not $runtime.WaitForExit(200)) 'Owned Runtime stopped on stdin EOF'}
         # Feed only our two child PIDs to discovery. The real product process
         # enumerator is never called, even when the installed product is live.
         & $module {param($r,$b) $script:ownedRuntime=$r;$script:ownedBroker=$b
@@ -102,17 +148,15 @@ class OwnedProcessFixture {
                 Reject {$stream=[IO.File]::Open($path,[IO.FileMode]::Open,[IO.FileAccess]::Write,[IO.FileShare]::ReadWrite);$stream.Dispose()}
             }
         }
-        $runtime.StandardInput.WriteLine('stop');Require ($runtime.WaitForExit(5000)) 'Owned helper did not stop'
+        [void]$runtimeRelease.handle.Set();Require ($runtime.WaitForExit(5000) -and $runtime.ExitCode -eq 0) 'Owned helper did not stop after explicit release'
         Check 'native-original-references-reject-natural-exit' {Require ($null -ne $referenceHeld) 'No retained reference lease';Reject {Assert-YimeCoreNativeMaintenanceProcessesCurrent $referenceHeld}}
         Check 'native-retained-handle-rejects-terminated-process' {Require ($null -ne $held) 'No retained observation';Reject {Assert-YimeCoreNativeMaintenanceProcessesCurrent $held}}
         if($null -ne $held){Close-YimeCoreNativeMaintenanceProcesses $held}
         Check 'native-closed-observation-refused' {Require ($null -ne $held) 'No retained observation';Reject {Assert-YimeCoreNativeMaintenanceProcessesCurrent $held}}
     } finally {
-        if($null -ne $referenceHeld){Close-YimeCoreNativeMaintenanceProcesses $referenceHeld}
-        if($null -ne $held){Close-YimeCoreNativeMaintenanceProcesses $held}
-        if(-not $runtime.HasExited){$runtime.StandardInput.WriteLine('stop');if(-not $runtime.WaitForExit(5000)){$runtime.Kill();$runtime.WaitForExit()}}
-        $runtime.Dispose()
-        if($null -ne $brokerReference){$brokerReference.Dispose()}
+        try{if($null -ne $referenceHeld){Close-YimeCoreNativeMaintenanceProcesses $referenceHeld}}
+        finally{try{if($null -ne $held){Close-YimeCoreNativeMaintenanceProcesses $held}}
+            finally{try{[void]$brokerRelease.handle.Set();Stop-OwnedFixture $runtime $runtimeRelease}finally{if($null -ne $runtime){$runtime.Dispose()};if($null -ne $brokerReference){$brokerReference.Dispose()};$runtimeRelease.handle.Dispose();$brokerRelease.handle.Dispose()}}}
     }
 }
 
@@ -122,7 +166,7 @@ Check 'private-native-types-ignore-preloaded-global-fakes-and-bind-original-hand
     $childPath=Join-Path $childRoot 'preloaded-types.ps1';$childOutput=Join-Path $childRoot 'summary.json'
     $beforeFacts='Yime.Dp1UNative.Facts' -as [type];$beforePin='Yime.MaintenanceProcesses.ProcessPin' -as [type]
     $childSource=@'
-param([string]$ModulePath,[string]$ResultPath)
+param([string]$ModulePath,[string]$ResultPath,[string]$HelperPath)
 $ErrorActionPreference='Stop'
 Add-Type -TypeDefinition @"
 using System;
@@ -130,8 +174,15 @@ namespace Yime.Dp1UNative { public static class Facts { public static object Ope
 namespace Yime.MaintenanceProcesses { public static class ProcessPin { public static object Open(int pid){throw new Exception("Global fake ProcessPin adopted");} public static object OpenReference(System.Diagnostics.Process process){throw new Exception("Global fake reference pin adopted");} } }
 "@
 $m=Import-Module $ModulePath -Force -PassThru
-$result=& $m {
-    $sources=Open-MaintenanceProcessSources;$pin=$null;$token=$null;$self=[Diagnostics.Process]::GetCurrentProcess();$own=$null;$reassociatedPin=$null;$reassociatedWrapper=$null;$reassociatedStarted=$false
+$result=& $m {param($HelperPath)
+    function New-Release {
+        $name='Local\YimeMaintenanceProcessFixture.'+[guid]::NewGuid().ToString('N');$created=$false
+        $handle=[Threading.EventWaitHandle]::new($false,[Threading.EventResetMode]::ManualReset,$name,[ref]$created)
+        if(-not $created){$handle.Dispose();throw 'Owned child release event already exists'}
+        [pscustomobject]@{name=$name;handle=$handle}
+    }
+    function Ready-AfterEof($process){$process.StandardInput.Close();$ready=$process.StandardOutput.ReadLineAsync();if(-not $ready.Wait(5000) -or $ready.Result -cne [string]$process.Id){throw 'Owned child readiness failed'};if($process.WaitForExit(200)){throw 'Owned child exited on stdin EOF'}}
+    $sources=Open-MaintenanceProcessSources;$pin=$null;$token=$null;$self=[Diagnostics.Process]::GetCurrentProcess();$own=$null;$reassociatedPin=$null;$reassociatedWrapper=$null;$reassociatedStarted=$false;$ownRelease=$null;$reassociatedRelease=$null;$forcedCleanup=$false
     try{
         Initialize-MaintenanceProcessFacts $sources
         if($script:ProcessFactsType.Namespace -cnotmatch '^Yime\.MaintenanceProcessLease_[a-f0-9]{32}$' -or $script:ProcessPinType.Namespace -cne $script:ProcessFactsType.Namespace){throw 'Private type namespace not used'}
@@ -140,18 +191,21 @@ $result=& $m {
         if($first.Pid -ne $self.Id -or $first.CreationFileTime -ne $token.CreationFileTime){throw 'Original self handle identity differs'}
         $pin.Dispose();$pin=$null
         if($self.HasExited -or $self.SafeHandle.IsClosed){throw 'Reference pin disposed caller handle'}
-        $setup=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:WINDIR 'System32\cmd.exe'),'/d /q /c "set /p owned_process_input="')
-        $setup.UseShellExecute=$false;$setup.CreateNoWindow=$true;$setup.RedirectStandardInput=$true
-        $own=[Diagnostics.Process]::Start($setup);$reassociatedPin=$script:ProcessPinType::OpenReference($own)
-        $originalId=$own.Id;$own.StandardInput.WriteLine('stop');if(-not $own.WaitForExit(5000)){throw 'Owned process did not stop'}
+        $ownRelease=New-Release
+        $setup=[Diagnostics.ProcessStartInfo]::new($HelperPath,('--wait '+$ownRelease.name))
+        $setup.UseShellExecute=$false;$setup.CreateNoWindow=$true;$setup.RedirectStandardInput=$true;$setup.RedirectStandardOutput=$true
+        $own=[Diagnostics.Process]::Start($setup);Ready-AfterEof $own;$reassociatedPin=$script:ProcessPinType::OpenReference($own)
+        $originalId=$own.Id;[void]$ownRelease.handle.Set();if(-not $own.WaitForExit(5000) -or $own.ExitCode -ne 0){throw 'Owned process did not stop after explicit release'}
         $exitedRejected=$false;try{$reassociatedPin.Capture()|Out-Null}catch{$exitedRejected=$true};if(-not $exitedRejected){throw 'Exited original handle accepted'}
         $reassociatedPin.Dispose();$reassociatedPin=$null
         # The old target remains this live PowerShell process. Reassociation
         # refusal must therefore come from the original object/handle binding,
-        # not merely from observing that a former cmd process already exited.
+        # not merely from observing that a former helper already exited.
         $reassociatedWrapper=[Diagnostics.Process]::GetCurrentProcess();$reassociatedPin=$script:ProcessPinType::OpenReference($reassociatedWrapper)
+        $reassociatedRelease=New-Release;$setup.Arguments='--wait '+$reassociatedRelease.name
         $reassociatedWrapper.Close();$reassociatedWrapper.StartInfo=$setup
         $reassociatedStarted=$reassociatedWrapper.Start();if(-not $reassociatedStarted){throw 'Own wrapper reassociation failed'}
+        Ready-AfterEof $reassociatedWrapper
         $reassociatedRejected=$false;try{$reassociatedPin.Capture()|Out-Null}catch{$reassociatedRejected=$true};if(-not $reassociatedRejected){throw 'Process Close/Start association was reopened by PID'}
         if($self.HasExited){throw 'Old reassociated process is not live'}
         $closedRejected=$false;$duplicate=[Diagnostics.Process]::GetCurrentProcess();$closedPin=$null
@@ -160,22 +214,26 @@ $result=& $m {
         $rawClosedRejected=$false;$rawWrapper=[Diagnostics.Process]::GetCurrentProcess();$rawPin=$null
         try{$rawPin=$script:ProcessPinType::OpenReference($rawWrapper);$rawWrapper.SafeHandle.Dispose();try{$rawPin.Capture()|Out-Null}catch{$rawClosedRejected=$true}}finally{if($null -ne $rawPin){$rawPin.Dispose()};$rawWrapper.Dispose()}
         if(-not $rawClosedRejected -or $self.HasExited){throw 'Caller-closed SafeHandle accepted or caller process stopped'}
-        [ordered]@{passed=$true;private_types=$true;original_handle_identity=$true;caller_handle_preserved=$true;exited_reference_rejected=$exitedRejected;reassociated_reference_rejected=$reassociatedRejected;reassociation_old_process_still_live=$true;disposed_reference_rejected=$closedRejected;raw_closed_handle_rejected=$rawClosedRejected;global_product_discovery_used=$false}
+        [ordered]@{passed=$true;private_types=$true;original_handle_identity=$true;caller_handle_preserved=$true;exited_reference_rejected=$exitedRejected;reassociated_reference_rejected=$reassociatedRejected;reassociation_old_process_still_live=$true;disposed_reference_rejected=$closedRejected;raw_closed_handle_rejected=$rawClosedRejected;owned_helpers_survived_stdin_eof=$true;global_product_discovery_used=$false}
     }finally{
-        if($null -ne $reassociatedWrapper){if($reassociatedStarted -and -not $reassociatedWrapper.HasExited){$reassociatedWrapper.StandardInput.WriteLine('stop');if(-not $reassociatedWrapper.WaitForExit(5000)){$reassociatedWrapper.Kill();$reassociatedWrapper.WaitForExit()}};$reassociatedWrapper.Dispose()}
-        if($null -ne $own){if(-not $own.HasExited){$own.StandardInput.WriteLine('stop');if(-not $own.WaitForExit(5000)){$own.Kill();$own.WaitForExit()}};$own.Dispose()}
+        if($null -ne $reassociatedRelease){[void]$reassociatedRelease.handle.Set()}
+        if($null -ne $ownRelease){[void]$ownRelease.handle.Set()}
+        if($null -ne $reassociatedWrapper){if($reassociatedStarted -and -not $reassociatedWrapper.HasExited){if(-not $reassociatedWrapper.WaitForExit(5000)){$forcedCleanup=$true;$reassociatedWrapper.Kill();$reassociatedWrapper.WaitForExit()}};$reassociatedWrapper.Dispose()}
+        if($null -ne $own){if(-not $own.HasExited){if(-not $own.WaitForExit(5000)){$forcedCleanup=$true;$own.Kill();$own.WaitForExit()}};$own.Dispose()}
+        if($null -ne $reassociatedRelease){$reassociatedRelease.handle.Dispose()};if($null -ne $ownRelease){$ownRelease.handle.Dispose()}
         if($null -ne $reassociatedPin){$reassociatedPin.Dispose()};if($null -ne $pin){$pin.Dispose()};if($null -ne $token){$token.Dispose()};$self.Dispose();Close-MaintenanceProcessSources $sources
+        if($forcedCleanup){throw 'Owned reference fixture required forced cleanup after explicit release'}
     }
-}
+} $HelperPath
 [IO.File]::WriteAllText($ResultPath,($result|ConvertTo-Json),[Text.UTF8Encoding]::new($false))
 Remove-Module $m
 '@
     [IO.File]::WriteAllText($childPath,$childSource,[Text.UTF8Encoding]::new($false))
     $shell=Join-Path $PSHOME $(if($PSVersionTable.PSVersion.Major -ge 7){'pwsh.exe'}else{'powershell.exe'})
-    & $shell -NoLogo -NoProfile -ExecutionPolicy Bypass -File $childPath -ModulePath $modulePath -ResultPath $childOutput
+    & $shell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $childPath -ModulePath $modulePath -ResultPath $childOutput -HelperPath $waitHelper
     Require ($LASTEXITCODE -eq 0 -and (Test-Path -LiteralPath $childOutput)) 'Private type/reference native child failed'
     $proof=Get-Content -LiteralPath $childOutput -Raw|ConvertFrom-Json
-    Require ($proof.passed -eq $true -and $proof.private_types -eq $true -and $proof.reassociated_reference_rejected -eq $true -and $proof.reassociation_old_process_still_live -eq $true -and $proof.disposed_reference_rejected -eq $true -and $proof.raw_closed_handle_rejected -eq $true) 'Native reference association proof missing'
+    Require ($proof.passed -eq $true -and $proof.private_types -eq $true -and $proof.reassociated_reference_rejected -eq $true -and $proof.reassociation_old_process_still_live -eq $true -and $proof.disposed_reference_rejected -eq $true -and $proof.raw_closed_handle_rejected -eq $true -and $proof.owned_helpers_survived_stdin_eof -eq $true) 'Native reference association proof missing'
     Require ([object]::ReferenceEquals($beforeFacts,('Yime.Dp1UNative.Facts' -as [type])) -and [object]::ReferenceEquals($beforePin,('Yime.MaintenanceProcesses.ProcessPin' -as [type]))) 'Disposable child polluted caller global types'
     $script:privateTypeEvidence=[ordered]@{passed=$true;raw_closed_handle_rejected=$proof.raw_closed_handle_rejected;reassociation_old_process_still_live=$proof.reassociation_old_process_still_live;evidence=@(foreach($path in @($childPath,$childOutput)){[ordered]@{path=$path;bytes=(Get-Item -LiteralPath $path).Length;sha256=(Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()}})}
 }
@@ -278,13 +336,15 @@ foreach($root in @('relative','C:\SyntheticProcessFixture\','C:\SyntheticProcess
     Check ('reject-root-'+$root){$bad=@{};foreach($key in $parameters.Keys){$bad[$key]=$parameters[$key]};$bad.ExpectedInstallRoot=$root;Reject {Get-YimeCoreNativeMaintenanceProcesses @bad}}
 }
 # Only two genuine Process objects are supplied to the synthetic References
-# branch. Their role facts are private fixtures, not a claim about cmd or self
-# being product executables. No global product discovery is needed or allowed.
-$referenceSelf=[Diagnostics.Process]::GetCurrentProcess();$referenceChild=$null
-$start=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:WINDIR 'System32\cmd.exe'),'/d /q /c "set /p owned_fixture_input="')
-$start.UseShellExecute=$false;$start.CreateNoWindow=$true;$start.RedirectStandardInput=$true
+# branch. Their role facts are private fixtures, not a claim that self or the
+# compiled event waiter is a product executable. No global product discovery
+# is needed or allowed.
+$referenceSelf=[Diagnostics.Process]::GetCurrentProcess();$referenceChild=$null;$referenceRelease=New-OwnedFixtureRelease
+$start=New-OwnedFixtureStart $waitHelper '--wait' @($referenceRelease.name)
 try {
     $referenceChild=[Diagnostics.Process]::Start($start)
+    $referenceReadyId=Read-OwnedFixtureReady $referenceChild
+    Check 'reference-fixture-survives-stdin-eof-until-explicit-release' {Require ($referenceReadyId -eq $referenceChild.Id -and -not $referenceChild.WaitForExit(200)) 'Owned reference fixture stopped on stdin EOF'}
     & $module {param($r,$b)$script:runtimeId=[int]$r;$script:brokerId=[int]$b} $referenceSelf.Id $referenceChild.Id
     $referenceParameters=@{};foreach($key in $parameters.Keys){$referenceParameters[$key]=$parameters[$key]}
     $referenceParameters.RuntimeProcess=$referenceSelf;$referenceParameters.BrokerProcess=$referenceChild
@@ -352,10 +412,12 @@ try {
             Require ($actual.processes[1].pid -eq $referenceChild.Id) 'Health removal invalidated original observation registry'
         }finally{if($null -ne $health){Remove-Module $health};Close-YimeCoreNativeMaintenanceProcesses $lease}
     }
+    Check 'reference-fixture-exits-zero-after-explicit-event-release' {
+        [void]$referenceRelease.handle.Set()
+        Require ($referenceChild.WaitForExit(5000) -and $referenceChild.ExitCode -eq 0) 'Owned reference fixture did not acknowledge explicit release'
+    }
 }finally{
-    if($null -ne $referenceChild){if(-not $referenceChild.HasExited){$referenceChild.StandardInput.WriteLine('stop');if(-not $referenceChild.WaitForExit(5000)){$referenceChild.Kill();$referenceChild.WaitForExit()}};$referenceChild.Dispose()}
-    $referenceSelf.Dispose()
-    & $module {$script:runtimeId=101;$script:brokerId=102}
+    try{Stop-OwnedFixture $referenceChild $referenceRelease}finally{if($null -ne $referenceChild){$referenceChild.Dispose()};$referenceRelease.handle.Dispose();$referenceSelf.Dispose();& $module {$script:runtimeId=101;$script:brokerId=102}}
 }
 Check 'bundle-cleanup-continues-after-first-file-dispose-error' {
     Set-Mode valid
@@ -380,7 +442,7 @@ Check 'module-removal-cleans-all-observations-despite-earlier-dispose-error' {
 }
 $failed=@($checks | Where-Object {-not $_.passed})
 $pins=@();foreach($path in @($modulePath,(Join-Path $PSScriptRoot 'native-maintenance-process-facts.cs'),$PSCommandPath,(Join-Path $PSScriptRoot '../dual-product/rime-pime-dp1u-native-facts.cs'),(Join-Path $PSScriptRoot 'native-maintenance-health.psm1'))){$pins += [ordered]@{path=$path;sha256=(Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()}}
-$result=[ordered]@{schema_version='yimecore-native-maintenance-process-tests-v1';passed=($failed.Count -eq 0);powershell=$PSVersionTable.PSVersion.ToString();checks_count=$checks.Count;failed_count=$failed.Count;checks=$checks.ToArray();native_own_process_fixture_executed=[bool]$RunNativeFixture;native_reference_association_fixture=$privateTypeEvidence;synthetic_reference_parameters_use_owned_cmd_process=$true;native_observation=$nativeEvidence;source_pins=$pins;product_processes_enumerated=$false;installed_product_read_or_executed=$false;product_registry_read_or_written=$false;user_state_read=$false;product_start_stop_or_session_quota_changed=$false;note='Default tests use self/owned cmd handles and private identity fixtures. RunNativeFixture additionally uses compiled owned Runtime/Broker stubs and an internal enumerator of only their PIDs. No global product discovery or installed process is used; neither path proves startup/readiness or in-memory executable integrity.'}
+$result=[ordered]@{schema_version='yimecore-native-maintenance-process-tests-v1';passed=($failed.Count -eq 0);powershell=$PSVersionTable.PSVersion.ToString();checks_count=$checks.Count;failed_count=$failed.Count;checks=$checks.ToArray();native_own_process_fixture_executed=[bool]$RunNativeFixture;native_reference_association_fixture=$privateTypeEvidence;synthetic_reference_parameters_use_owned_cmd_process=$false;synthetic_reference_parameters_use_owned_event_waiter=$true;owned_fixture_stdin_explicitly_closed=$true;owned_fixture_release_protocol='Fresh named manual-reset event; createdNew required; 5s readiness and release bounds; helper expires with failure after 90s without release';owned_fixture_sources=@(foreach($path in @($waitSource,$waitHelper)){[ordered]@{path=$path;bytes=(Get-Item -LiteralPath $path).Length;sha256=(Get-FileHash -LiteralPath $path).Hash.ToLowerInvariant()}});native_observation=$nativeEvidence;source_pins=$pins;product_processes_enumerated=$false;installed_product_read_or_executed=$false;product_registry_read_or_written=$false;user_state_read=$false;product_start_stop_or_session_quota_changed=$false;note='Default tests use self/owned event-waiter handles and private identity fixtures. All owned helpers receive stdin EOF and remain live until an explicit named-event release. RunNativeFixture additionally uses compiled owned Runtime/Broker stubs and an internal enumerator of only their PIDs. No global product discovery or installed process is used; neither path proves startup/readiness or in-memory executable integrity.'}
 [IO.File]::WriteAllText($out,(($result | ConvertTo-Json -Depth 18).Replace("`r`n","`n")+"`n"),[Text.UTF8Encoding]::new($false))
 Write-Output "Native maintenance processes: $($checks.Count) checks, $($failed.Count) failed; $out"
 if($failed.Count){$failed | ForEach-Object {[pscustomobject]$_} | Format-Table name,error -AutoSize;exit 1}
