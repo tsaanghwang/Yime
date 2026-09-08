@@ -285,3 +285,6 @@ $digest=(Get-FileHash (Join-Path $output 'result.json') -Algorithm SHA256).Hash.
 [IO.File]::WriteAllText((Join-Path $output 'result.json.sha256'),$digest+"`n",[Text.UTF8Encoding]::new($false))
 $checks|Format-Table -AutoSize
 if(-not $result.passed){throw 'Compiler interval regressions failed.'}
+# The final fixture intentionally makes makensis fail. GitHub's PowerShell
+# wrapper propagates LASTEXITCODE, so clear it only after every check and write succeeds.
+$global:LASTEXITCODE=0
