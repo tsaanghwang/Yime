@@ -3,7 +3,8 @@ $ErrorActionPreference='Stop'
 $script:CollectionSource=$PSCommandPath
 $script:CollectionModules=@('native-maintenance-context.psm1','local13-maintenance-inputs.psm1','native-maintenance-child.psm1',
     'native-maintenance-backup.psm1','native-maintenance-data.psm1','native-maintenance-evidence.psm1',
-    'native-maintenance-processes.psm1','native-rehearsal-outcome-reader.psm1')
+    'native-maintenance-processes.psm1','native-rehearsal-outcome-reader.psm1','native-maintenance-deferred-delete.psm1',
+    'native-maintenance-visibility.psm1','native-maintenance-runtime.psm1')
 # Import definitions in this module's script scope. Never force-reload a shared
 # dependency: it may own live native leases in this same initiating process.
 $script:CollectionDependencyImports=@(foreach($name in $script:CollectionModules){Import-Module (Join-Path $PSScriptRoot $name) -Scope Local -PassThru})
@@ -26,10 +27,12 @@ function Get-CollectionLayout([string]$AttemptId) {
 function Get-YimeCoreNativeRollbackCollectionPlan {
     [CmdletBinding()]param([Parameter(Mandatory)]$AttemptId)
     Assert-CollectionAttempt $AttemptId
-    [pscustomobject]@{schema_version='yimecore-native-rollback-collection-plan-v1';layout=(Get-CollectionLayout $AttemptId);
-        steps=@('retain ordinary native PS5 Explorer initiator','open fixed public candidate leases','backup with pinned normal helper and retained child exit 0',
-            'verify fresh backup bytes and independent before observations','direct same-SID UAC fault controller with retained initiator',
-            'wait original child handle and bind typed outcome','compare independent after observations');
+    [pscustomobject]@{schema_version='yimecore-native-rollback-collection-plan-v2';layout=(Get-CollectionLayout $AttemptId);
+        steps=@('retain ordinary native PS5 Explorer initiator','open fixed public candidate leases',
+            'require clear deferred-delete point and independent candidate metadata visibility','backup with pinned normal helper and retained child exit 0',
+            'verify backup bytes and independent backup metadata visibility','bind data/config and retained Runtime process context; recheck deferred delete',
+            'direct same-SID UAC fault controller with retained initiator','wait original child handle and bind typed outcome',
+            'compare independent after observations and recheck deferred delete, backup visibility and Runtime context');
         timeout_policy='Mark overtime, keep the PS5 initiator alive until the original child exits, then refuse to advance';
         rollback_acceptance=$false;execution_authorized=$false;ready_to_execute=$false;installed_package_read=$false;user_state_read=$false;
         installer_executed=$false;L6_sealed=$false;local_product_ready=$false;public_release_ready=$false}
@@ -38,7 +41,8 @@ function Initialize-CollectionDependencies {
     if($script:CollectionDependencyImports.Count -ne $script:CollectionModules.Count){throw 'Collection dependency definitions are incomplete'}
     foreach($command in @('Open-YimeCoreNativeMaintenanceContext','Open-YimeCoreLocal13MaintenanceInputs','Open-YimeCoreNativeMaintenanceChild',
         'Read-YimeCoreNativeMaintenanceBackup','Get-YimeCoreNativeMaintenanceDataSnapshot','Get-YimeCoreNativeMaintenanceSnapshot',
-        'Get-YimeCoreNativeMaintenanceProcesses','Read-YimeCoreNativeRehearsalOutcome')){Get-Command $command -ErrorAction Stop | Out-Null}
+        'Get-YimeCoreNativeMaintenanceProcesses','Read-YimeCoreNativeRehearsalOutcome','Get-YimeCoreNativeMaintenanceDeferredDeleteSnapshot',
+        'Get-YimeCoreNativeMaintenanceFileVisibility','Get-YimeCoreNativeMaintenanceRuntime')){Get-Command $command -ErrorAction Stop | Out-Null}
 }
 function Open-CollectionContext($Layout) {
     if($PSVersionTable.PSVersion.Major -ne 5 -or $PSVersionTable.PSEdition -cne 'Desktop'){throw 'Execute requires the retained ordinary Windows PowerShell 5.1 parent'}
@@ -209,12 +213,41 @@ function Assert-CollectionBoundFile($Row) {
 }
 function Read-CollectionRegistry($Layout){Get-YimeCoreNativeMaintenanceSnapshot -TargetUserSid $Layout.sid}
 function Compare-CollectionRegistry($Before,$After){Assert-YimeCoreNativeMaintenanceSnapshotEqual -Before $Before -After $After}
-function Read-CollectionProcesses($Layout,$Backup) {
+function Read-CollectionRuntime($Layout,$Backup) {
     $runtime=@($Backup.manifest.package_files|Where-Object path -CEQ 'bin/YimeCoreTrialRuntime.exe')
     $broker=@($Backup.manifest.package_files|Where-Object path -CEQ 'bin/YimeBroker.exe')
-    if($runtime.Count -ne 1 -or $broker.Count -ne 1){throw 'Backup lacks the exact previous process image records'}
-    Get-YimeCoreNativeMaintenanceProcesses -TargetUserSid $Layout.sid -ExpectedInstallRoot $Layout.previous_root `
+    $config=@($Backup.manifest.state_files|Where-Object path -CEQ 'runtime-config.json')
+    if($runtime.Count -ne 1 -or $broker.Count -ne 1 -or $config.Count -ne 1){throw 'Backup lacks the exact previous process image or runtime-config records'}
+    $observation=Open-YimeCoreNativeMaintenanceProcesses -TargetUserSid $Layout.sid -ExpectedInstallRoot $Layout.previous_root `
         -ExpectedRuntimeSha256 $runtime[0].sha256 -ExpectedBrokerSha256 $broker[0].sha256
+    try {
+        Get-YimeCoreNativeMaintenanceRuntime -ProcessObservation $observation -StateRoot $Layout.state_root -ExpectedRuntimeConfigSha256 $config[0].sha256
+    }finally{Close-YimeCoreNativeMaintenanceProcesses -Observation $observation}
+}
+function Read-CollectionDeferredDelete($Layout) {
+    # Include all maintained/retained media and production payload ownership. The
+    # classifier also treats an operation on an ancestor as intersecting a root.
+    $roots=@($Layout.previous_root,$Layout.target_root,$Layout.state_root,$Layout.archive_parent,'C:\Program Files (x86)\YIME')
+    Get-YimeCoreNativeMaintenanceDeferredDeleteSnapshot -ProtectedRoots $roots
+}
+function Read-CollectionCandidateVisibility($Inputs) {
+    $expected=@()
+    foreach($spec in @(
+        @{path=(Join-Path $Inputs.archive_root 'archive-manifest.json');sha256=$Inputs.archive_manifest_sha256},
+        @{path=(Join-Path $Inputs.normal.root 'package-manifest.json');sha256=$Inputs.normal.manifest_sha256},
+        @{path=(Join-Path $Inputs.fault.root 'package-manifest.json');sha256=$Inputs.fault.manifest_sha256})){
+        # Length is only a provisional caller observation. The visibility
+        # provider independently opens native handles and hashes against the
+        # already pinned manifest digest before checking system metadata.
+        $expected+=,[pscustomobject]@{path=$spec.path;bytes=(Get-Item -LiteralPath $spec.path -Force -ErrorAction Stop).Length;sha256=$spec.sha256}
+    }
+    Get-YimeCoreNativeMaintenanceFileVisibility -ApprovedRoot $Inputs.archive_root -ExpectedFiles $expected
+}
+function Read-CollectionBackupVisibility($Layout,$Backup) {
+    $file=$Backup.backup_manifest
+    if($file.path -cne (Join-Path $Layout.backup_root 'backup-manifest.json')){throw 'Verified backup metadata path differs'}
+    Get-YimeCoreNativeMaintenanceFileVisibility -ApprovedRoot $Layout.backup_root -ExpectedFiles @(
+        [pscustomobject]@{path=$file.path;bytes=$file.bytes;sha256=$file.sha256})
 }
 function Read-CollectionOutcome($Layout,$Inputs,$Child) {
     Read-YimeCoreNativeRehearsalOutcome -OutcomePath $Layout.outcome_path -ActualControllerExitCode $Child.exit_code `
@@ -231,10 +264,11 @@ function Invoke-YimeCoreNativeRollbackCollection {
     Initialize-CollectionDependencies
     $layout=Get-CollectionLayout $AttemptId
     $context=$null;$sources=$null;$inputs=$null;$out=$null;$child=$null;$lease=$null;$stage='native-parent';$completed=$false
-    $result=[ordered]@{schema_version='yimecore-native-rollback-collection-v1';attempt_id=$AttemptId;collection_completed=$false;
+    $result=[ordered]@{schema_version='yimecore-native-rollback-collection-v2';attempt_id=$AttemptId;collection_completed=$false;
         backup_started=$false;controller_started=$false;execution_requested=$true;execution_authorized=$false;
         controller_exit_os_observed=$false;controller_loaded_script_authenticated=$false;rollback_acceptance=$false;
         independent_data_restore_verified=$false;deferred_delete_absence_verified=$false;independent_system_visibility_verified=$false;
+        deferred_delete_points_clear=$false;independent_system_metadata_visible=$false;runtime_configuration_bound=$false;
         startup_verified=$false;runtime_ready_verified=$false;L6_sealed=$false;local_product_ready=$false;public_release_ready=$false}
     try {
         $context=Open-CollectionContext $layout
@@ -242,6 +276,11 @@ function Invoke-YimeCoreNativeRollbackCollection {
         $stage='fresh-paths';Assert-CollectionFreshPaths $layout;Assert-CollectionPrevious $layout
         $out=New-CollectionOutput $layout
         Write-CollectionJson $out 'source-observation.json' $sources.records
+        $stage='pre-backup-observations';$initialDeferred=Read-CollectionDeferredDelete $layout
+        Assert-CollectionTrue $initialDeferred.point_in_time_clear 'initial deferred-delete point'
+        $candidateVisibility=Read-CollectionCandidateVisibility $inputs
+        Assert-CollectionTrue $candidateVisibility.system_metadata_visible 'candidate system metadata'
+        Write-CollectionJson $out 'pre-backup-observations.json' ([ordered]@{deferred_delete=$initialDeferred;candidate_visibility=$candidateVisibility})
         $stage='backup-child';$info=New-CollectionStartInfo $layout $inputs 'backup' $context.initiator
         $child=Start-CollectionChild $info;$result.backup_started=$true;$lease=Open-CollectionChild $child $layout.powershell
         $wait=Wait-CollectionChild $lease;Write-CollectionJson $out 'backup-child.json' $wait
@@ -249,13 +288,19 @@ function Invoke-YimeCoreNativeRollbackCollection {
         if($wait.execution_budget_exceeded -or $wait.observation.exit_code -ne 0){throw 'Backup child failed or exceeded budget; do not begin fault rehearsal'}
         $stage='backup-integrity';$backup=Read-CollectionBackup $layout $wait.observation;Assert-CollectionTrue $backup.static_backup_verified 'backup bytes'
         Write-CollectionJson $out 'backup-verification.json' $backup
+        $stage='backup-visibility';$backupVisibility=Read-CollectionBackupVisibility $layout $backup
+        Assert-CollectionTrue $backupVisibility.system_metadata_visible 'backup system metadata'
         $stage='before-observations';$backupData=Read-CollectionData (Join-Path $layout.backup_root 'state') $false
         $stage='backup-data-binding';$backupDataBinding=Assert-CollectionBackupDataBinding $layout $backup $backupData
         $stage='before-observations'
         $beforeData=Read-CollectionData $layout.state_root $true;$beforeEquality=Compare-CollectionData $backupData $beforeData
         Assert-CollectionTrue $beforeEquality.unchanged 'backup and current data/config'
-        $beforeRegistry=Read-CollectionRegistry $layout;$beforeProcesses=Read-CollectionProcesses $layout $backup
-        Write-CollectionJson $out 'before-observations.json' ([ordered]@{backup_data=$backupData;backup_data_binding=$backupDataBinding;data=$beforeData;registry=$beforeRegistry;processes=$beforeProcesses})
+        $beforeRegistry=Read-CollectionRegistry $layout;$beforeRuntime=Read-CollectionRuntime $layout $backup
+        Assert-CollectionTrue $beforeRuntime.context_consistent 'before Runtime/config context'
+        $beforeDeferred=Read-CollectionDeferredDelete $layout
+        Assert-CollectionTrue $beforeDeferred.point_in_time_clear 'before-controller deferred-delete point'
+        Write-CollectionJson $out 'before-observations.json' ([ordered]@{backup_data=$backupData;backup_data_binding=$backupDataBinding;
+            backup_visibility=$backupVisibility;data=$beforeData;registry=$beforeRegistry;runtime=$beforeRuntime;deferred_delete=$beforeDeferred})
         $stage='controller-child';$info=New-CollectionStartInfo $layout $inputs 'controller' $context.initiator
         $child=Start-CollectionChild $info;$result.controller_started=$true;$lease=Open-CollectionChild $child $layout.powershell
         $wait=Wait-CollectionChild $lease;Write-CollectionJson $out 'controller-child.json' $wait
@@ -269,8 +314,15 @@ function Invoke-YimeCoreNativeRollbackCollection {
         Assert-CollectionTrue $registryEquality.equal 'registry equality'
         $afterData=Read-CollectionData $layout.state_root $true;$dataEquality=Compare-CollectionData $backupData $afterData
         Assert-CollectionTrue $dataEquality.unchanged 'data/config equality'
-        $afterProcesses=Read-CollectionProcesses $layout $backup
-        Write-CollectionJson $out 'after-observations.json' ([ordered]@{registry=$afterRegistry;data=$afterData;processes=$afterProcesses;registry_equality=$registryEquality;data_equality=$dataEquality})
+        $afterRuntime=Read-CollectionRuntime $layout $backup
+        Assert-CollectionTrue $afterRuntime.context_consistent 'after Runtime/config context'
+        $afterDeferred=Read-CollectionDeferredDelete $layout
+        Assert-CollectionTrue $afterDeferred.point_in_time_clear 'after-controller deferred-delete point'
+        $afterBackupVisibility=Read-CollectionBackupVisibility $layout $backup
+        Assert-CollectionTrue $afterBackupVisibility.system_metadata_visible 'retained backup system metadata'
+        Write-CollectionJson $out 'after-observations.json' ([ordered]@{registry=$afterRegistry;data=$afterData;runtime=$afterRuntime;deferred_delete=$afterDeferred;
+            backup_visibility=$afterBackupVisibility;registry_equality=$registryEquality;data_equality=$dataEquality})
+        $result.deferred_delete_points_clear=$true;$result.independent_system_metadata_visible=$true;$result.runtime_configuration_bound=$true
         $result.collection_completed=$true;$completed=$true
         $result.observed_scope='Original child OS exit plus typed fault record and independent point observations; no restore/uninstall, continuous protection, startup or final acceptance inferred'
     }finally{

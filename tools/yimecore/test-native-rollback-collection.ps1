@@ -16,7 +16,7 @@ $globalChildBefore=Get-Command Open-YimeCoreNativeMaintenanceChild -ErrorAction 
 $module=Import-Module $source -Force -PassThru
 $attempt='abcdabcdabcdabcdabcdabcdabcdabcd'
 $dependencies=@(& $module {$script:CollectionDependencyImports})
-Check ($dependencies.Count -eq 8) 'dependencies import into collector module script scope'
+Check ($dependencies.Count -eq 11) 'dependencies import into collector module script scope'
 $childDependency=@($dependencies|Where-Object Name -CEQ 'native-maintenance-child')[0]
 $marker=[object]::new()
 & $childDependency {param($value)$script:CollectionSmokeMarker=$value} $marker
@@ -26,7 +26,7 @@ $globalChildAfter=Get-Command Open-YimeCoreNativeMaintenanceChild -ErrorAction S
 Check (($null -eq $globalChildBefore -and $null -eq $globalChildAfter) -or
     ($null -ne $globalChildBefore -and $null -ne $globalChildAfter -and [object]::ReferenceEquals($globalChildBefore.Module,$globalChildAfter.Module))) 'dependency imports preserve caller global command scope'
 $entryPlan=(& $entry -AttemptId $attempt)|ConvertFrom-Json
-Check ($entryPlan.schema_version -ceq 'yimecore-native-rollback-collection-plan-v1' -and -not $entryPlan.installer_executed -and -not $entryPlan.user_state_read) 'actual default entry performs only static Plan'
+Check ($entryPlan.schema_version -ceq 'yimecore-native-rollback-collection-plan-v2' -and -not $entryPlan.installer_executed -and -not $entryPlan.user_state_read) 'actual default entry performs only static Plan'
 Check ([object]::ReferenceEquals($marker,(& $childDependency {$script:CollectionSmokeMarker}))) 'default entry does not force reload live dependency definitions'
 $plan=Get-YimeCoreNativeRollbackCollectionPlan -AttemptId $attempt
 Check (-not $plan.installer_executed -and -not $plan.user_state_read -and -not $plan.ready_to_execute -and -not $plan.rollback_acceptance) 'static plan has no execution or acceptance claim'
@@ -47,6 +47,54 @@ foreach($flag in @('-NativeDesktop','-NativeDesktopRehearsal','-NoElevation','-S
 Check ($faultInfo.Arguments.Contains('Manage-YimeCoreTrial.ps1') -and -not $faultInfo.Arguments.Contains('manage-local-product.ps1')) 'typed rehearsal bypasses ordinary wrapper without changing it'
 Reject {& $module {Quote-CollectionArgument 'C:\bad"argument'}} 'reject embedded quote in fixed process arguments'
 Reject {& $module {param($l,$i) New-CollectionStartInfo $l $i 'controller' '123'} $layout $inputs} 'reject missing creation time in initiator'
+
+# Exercise the real new wrappers while replacing only their outbound APIs. This
+# binds roots, hashes and the retained observation object without product reads.
+& $module {
+    function script:Open-YimeCoreNativeMaintenanceProcesses($TargetUserSid,$ExpectedInstallRoot,$ExpectedRuntimeSha256,$ExpectedBrokerSha256){
+        $script:WrapperArgs=@($TargetUserSid,$ExpectedInstallRoot,$ExpectedRuntimeSha256,$ExpectedBrokerSha256)
+        $script:WrapperLease=[pscustomobject]@{token=[guid]::NewGuid().ToString('N')};$script:WrapperClosed=$false;$script:WrapperLease
+    }
+    function script:Get-YimeCoreNativeMaintenanceRuntime($ProcessObservation,$StateRoot,$ExpectedRuntimeConfigSha256){
+        if(-not [object]::ReferenceEquals($ProcessObservation,$script:WrapperLease)){throw 'Original process lease was not forwarded'}
+        $script:WrapperRuntimeArgs=@($StateRoot,$ExpectedRuntimeConfigSha256)
+        if($script:WrapperFail){throw 'synthetic Runtime observer failure'}
+        [pscustomobject]@{context_consistent=$true}
+    }
+    function script:Close-YimeCoreNativeMaintenanceProcesses($Observation){
+        if(-not [object]::ReferenceEquals($Observation,$script:WrapperLease)){throw 'Wrong lease closed'};$script:WrapperClosed=$true
+    }
+    function script:Get-YimeCoreNativeMaintenanceFileVisibility($ApprovedRoot,$ExpectedFiles){
+        [pscustomobject]@{system_metadata_visible=$true;root=$ApprovedRoot;files=$ExpectedFiles}
+    }
+    function script:Get-YimeCoreNativeMaintenanceDeferredDeleteSnapshot($ProtectedRoots){[pscustomobject]@{roots=$ProtectedRoots;point_in_time_clear=$true}}
+    $script:WrapperFail=$false
+}
+$wrapperBackup=[pscustomobject]@{manifest=[pscustomobject]@{package_files=@(
+    [pscustomobject]@{path='bin/YimeCoreTrialRuntime.exe';sha256=('a'*64)},[pscustomobject]@{path='bin/YimeBroker.exe';sha256=('b'*64)});
+    state_files=@([pscustomobject]@{path='runtime-config.json';sha256=('c'*64)})}}
+$wrapperResult=& $module {param($l,$b)Read-CollectionRuntime $l $b} $layout $wrapperBackup
+Check ($wrapperResult.context_consistent -and (& $module {$script:WrapperClosed})) 'Runtime wrapper forwards original lease and closes it after success'
+Check ((& $module {$script:WrapperArgs[0]}) -ceq $layout.sid -and (& $module {$script:WrapperArgs[1]}) -ceq $layout.previous_root -and
+    (& $module {$script:WrapperArgs[2]}) -ceq ('a'*64) -and (& $module {$script:WrapperArgs[3]}) -ceq ('b'*64) -and
+    (& $module {$script:WrapperRuntimeArgs[0]}) -ceq $layout.state_root -and (& $module {$script:WrapperRuntimeArgs[1]}) -ceq ('c'*64)) 'Runtime wrapper binds verified package/config hashes and explicit roots'
+& $module {$script:WrapperFail=$true}
+Reject {& $module {param($l,$b)Read-CollectionRuntime $l $b} $layout $wrapperBackup} 'Runtime wrapper propagates observer failure'
+Check (& $module {$script:WrapperClosed}) 'Runtime wrapper releases original lease on failure'
+$deferredWrapper=& $module {param($l)Read-CollectionDeferredDelete $l} $layout
+Check ($deferredWrapper.roots.Count -eq 5 -and $deferredWrapper.roots -contains $layout.archive_parent -and $deferredWrapper.roots -contains 'C:\Program Files (x86)\YIME') 'queue wrapper protects current target state retained archives and production'
+$candidateRoot=Join-Path $root 'candidate-wrapper';[IO.Directory]::CreateDirectory((Join-Path $candidateRoot 'normal'))|Out-Null;[IO.Directory]::CreateDirectory((Join-Path $candidateRoot 'fault'))|Out-Null
+foreach($relative in @('archive-manifest.json','normal/package-manifest.json','fault/package-manifest.json')){[IO.File]::WriteAllText((Join-Path $candidateRoot $relative),'owned metadata')}
+$candidateInputs=[pscustomobject]@{archive_root=$candidateRoot;archive_manifest_sha256=('d'*64);normal=[pscustomobject]@{root=(Join-Path $candidateRoot 'normal');manifest_sha256=('e'*64)};fault=[pscustomobject]@{root=(Join-Path $candidateRoot 'fault');manifest_sha256=('f'*64)}}
+$visible=& $module {param($i)Read-CollectionCandidateVisibility $i} $candidateInputs
+Check ($visible.root -ceq $candidateRoot -and $visible.files.Count -eq 3 -and $visible.files[0].sha256 -ceq ('d'*64) -and $visible.files[1].sha256 -ceq ('e'*64) -and $visible.files[2].sha256 -ceq ('f'*64)) 'candidate metadata wrapper preserves three fixed manifest hashes'
+$wrapperBackup|Add-Member -NotePropertyName backup_manifest -NotePropertyValue ([pscustomobject]@{path=(Join-Path $layout.backup_root 'backup-manifest.json');bytes=123L;sha256=('e'*64)})
+$visible=& $module {param($l,$b)Read-CollectionBackupVisibility $l $b} $layout $wrapperBackup
+Check ($visible.root -ceq $layout.backup_root -and $visible.files.Count -eq 1 -and $visible.files[0].bytes -eq 123 -and $visible.files[0].sha256 -ceq ('e'*64)) 'backup visibility wrapper binds already verified manifest bytes'
+$wrapperBackup.backup_manifest.path=Join-Path $root 'wrong-manifest.json'
+Reject {& $module {param($l,$b)Read-CollectionBackupVisibility $l $b} $layout $wrapperBackup} 'backup visibility wrapper rejects mismatched manifest path before provider'
+Remove-Module $module
+$module=Import-Module $source -Force -PassThru
 
 & $module {
     function script:Initialize-CollectionDependencies { }
@@ -111,12 +159,27 @@ Reject {& $module {param($l,$i) New-CollectionStartInfo $l $i 'controller' '123'
     }
     function script:Read-CollectionRegistry($Layout){Event 'registry';[pscustomobject]@{fixture=$true}}
     function script:Compare-CollectionRegistry($Before,$After){Event 'compare-registry';[pscustomobject]@{equal=($script:Failure -cne 'registry-changed')}}
-    function script:Read-CollectionProcesses($Layout,$Backup){Event 'processes';[pscustomobject]@{fixture=$true}}
+    function script:Read-CollectionRuntime($Layout,$Backup){
+        Event 'processes';$script:RuntimeCount++;$name='runtime-'+$script:RuntimeCount;Event $name
+        $ok=$script:Failure -cne ($name+'-inconsistent');if($script:Failure -ceq ($name+'-string')){$ok='true'}
+        [pscustomobject]@{context_consistent=$ok;runtime_ready_verified=$false}
+    }
+    function script:Read-CollectionDeferredDelete($Layout){
+        $script:QueueCount++;$name='queue-'+$script:QueueCount;Event $name
+        $ok=$script:Failure -cne ($name+'-pending');if($script:Failure -ceq ($name+'-string')){$ok='true'}
+        [pscustomobject]@{point_in_time_clear=$ok;continuous_monitoring=$false}
+    }
+    function script:Read-CollectionCandidateVisibility($Inputs){Event 'candidate-visibility';[pscustomobject]@{system_metadata_visible=($script:Failure -cne 'candidate-invisible')}}
+    function script:Read-CollectionBackupVisibility($Layout,$Backup){
+        $script:VisibilityCount++;$name='backup-visibility-'+$script:VisibilityCount;Event $name
+        $ok=$script:Failure -cne ($name+'-invisible');if($script:Failure -ceq ($name+'-string')){$ok='true'}
+        [pscustomobject]@{system_metadata_visible=$ok;independent_content_hash_verified=$false}
+    }
     function script:Read-CollectionOutcome($Layout,$Inputs,$Child){Event 'outcome';if($Child.pid -ne 900 -or $Child.creation_filetime -ne 1234567890L -or $Child.exit_code -ne 20){throw 'OS producer binding did not match'};[pscustomobject]@{expected_fault_procedure_observed=($script:Failure -cne 'unexpected-outcome')}}
 }
 function Run-Case([string]$Failure){
     $fixture=Join-Path $root ([guid]::NewGuid().ToString('N'));New-Item -ItemType Directory -Path $fixture|Out-Null
-    & $module {param($f,$failure)$script:Fixture=$f;$script:Failure=$failure;$script:Log=New-Object 'Collections.Generic.List[string]'} $fixture $Failure
+    & $module {param($f,$failure)$script:Fixture=$f;$script:Failure=$failure;$script:QueueCount=0;$script:RuntimeCount=0;$script:VisibilityCount=0;$script:Log=New-Object 'Collections.Generic.List[string]'} $fixture $Failure
     $ok=$true;$value=$null;$failureText='';try{$value=Invoke-YimeCoreNativeRollbackCollection -Execute -AttemptId $attempt}catch{$ok=$false;$failureText=$_.Exception.Message+' '+$_.ScriptStackTrace}
     [pscustomobject]@{success=$ok;value=$value;log=@(& $module {$script:Log.ToArray()});root=$fixture;failure=$failureText}
 }
@@ -124,6 +187,11 @@ $good=Run-Case ''
 if(-not $good.success){throw $good.failure}
 Check $good.success 'actual coordinator sequence completes with private fixture providers'
 Check ($good.value.collection_completed -and $good.value.controller_exit_os_observed -and -not $good.value.rollback_acceptance -and -not $good.value.L6_sealed -and -not $good.value.local_product_ready -and -not $good.value.public_release_ready) 'successful observation sequence preserves honest unclosed acceptance'
+Check ($good.value.deferred_delete_points_clear -and $good.value.independent_system_metadata_visible -and $good.value.runtime_configuration_bound -and
+    -not $good.value.deferred_delete_absence_verified -and -not $good.value.independent_system_visibility_verified -and -not $good.value.startup_verified -and -not $good.value.runtime_ready_verified) 'narrow point and metadata gates do not promote complete rollback or Runtime readiness'
+Check ([array]::IndexOf($good.log,'queue-1') -lt [array]::IndexOf($good.log,'start-backup') -and [array]::IndexOf($good.log,'candidate-visibility') -lt [array]::IndexOf($good.log,'start-backup') -and
+    [array]::IndexOf($good.log,'queue-2') -lt [array]::IndexOf($good.log,'start-controller') -and [array]::IndexOf($good.log,'backup-visibility-1') -lt [array]::IndexOf($good.log,'start-controller')) 'system metadata and deferred-delete gates precede the relevant mutations'
+Check ([array]::IndexOf($good.log,'queue-3') -gt [array]::IndexOf($good.log,'wait-controller') -and [array]::IndexOf($good.log,'runtime-2') -gt [array]::IndexOf($good.log,'wait-controller') -and $good.log -contains 'backup-visibility-2') 'after observations include queue Runtime/config and retained backup visibility'
 Check ([array]::IndexOf($good.log,'wait-backup') -lt [array]::IndexOf($good.log,'backup-integrity') -and [array]::IndexOf($good.log,'backup-integrity') -lt [array]::IndexOf($good.log,'start-controller')) 'backup original child exit precedes integrity and fault launch'
 Check ([array]::IndexOf($good.log,'processes') -gt [array]::IndexOf($good.log,'wait-backup')) 'Runtime baseline is recaptured after backup restart'
 Check ([array]::IndexOf($good.log,'wait-controller') -lt [array]::IndexOf($good.log,'outcome') -and [array]::IndexOf($good.log,'outcome') -lt [array]::IndexOf($good.log,'compare-registry')) 'OS child observation supplies typed verdict before after comparisons'
@@ -152,6 +220,20 @@ foreach($failure in @('start-controller','open-controller','wait-controller','bu
     if($failure -cne 'start-controller'){Check ([array]::IndexOf($case.log,'drain-controller') -ge 0 -and [array]::IndexOf($case.log,'drain-controller') -lt [array]::IndexOf($case.log,'close-context')) ('retained ordinary parent drains original controller before close: '+$failure)}
     $summary=Get-Content -LiteralPath (Join-Path $case.root 'out/collection-summary.json') -Raw|ConvertFrom-Json
     Check (-not $summary.collection_completed -and -not $summary.rollback_acceptance) ('failed summary never reports acceptance: '+$failure)
+}
+foreach($failure in @('queue-1','queue-1-pending','queue-1-string','candidate-visibility','candidate-invisible')){
+    $case=Run-Case $failure
+    Check (-not $case.success -and $case.log -notcontains 'start-backup' -and $case.log -notcontains 'start-controller') ('pre-backup gate prevents any maintenance child: '+$failure)
+}
+foreach($failure in @('backup-visibility-1','backup-visibility-1-invisible','backup-visibility-1-string','runtime-1','runtime-1-inconsistent','runtime-1-string','queue-2','queue-2-pending','queue-2-string')){
+    $case=Run-Case $failure
+    Check (-not $case.success -and $case.log -contains 'wait-backup' -and $case.log -notcontains 'start-controller') ('post-backup gate prevents fault controller: '+$failure)
+}
+foreach($failure in @('runtime-2','runtime-2-inconsistent','runtime-2-string','queue-3','queue-3-pending','queue-3-string','backup-visibility-2','backup-visibility-2-invisible','backup-visibility-2-string')){
+    $case=Run-Case $failure
+    Check (-not $case.success -and $case.log -contains 'wait-controller') ('after gate rejects incomplete recovery observations: '+$failure)
+    $summary=Get-Content -LiteralPath (Join-Path $case.root 'out/collection-summary.json') -Raw|ConvertFrom-Json
+    Check (-not $summary.collection_completed -and -not $summary.rollback_acceptance -and -not $summary.runtime_ready_verified -and -not $summary.deferred_delete_absence_verified) ('after failure never publishes acceptance: '+$failure)
 }
 $noContext=Run-Case 'context'
 Check ($noContext.log -notcontains 'inputs' -and $noContext.log -notcontains 'output' -and $noContext.log -notcontains 'previous') 'native context rejection precedes product roots and output mutation'
