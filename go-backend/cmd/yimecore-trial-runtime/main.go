@@ -3,6 +3,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -16,6 +17,7 @@ import (
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/layoutdesigner"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolbarstate"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker"
 )
 
 const (
@@ -36,6 +38,7 @@ type options struct {
 	speechManifest   string
 	speechSHA256     string
 	maintenanceQuery bool
+	healthPipe       string
 }
 
 type runtimeStatus struct {
@@ -129,6 +132,13 @@ func resolveOptions(value options) (options, error) {
 	if value.pipeName == "" {
 		return value, errors.New("trial Broker pipe is required")
 	}
+	value.healthPipe, err = yimebroker.HealthPipeName(value.pipeName, yimebroker.HealthRoleBroker)
+	if err != nil {
+		return value, err
+	}
+	if _, err := yimebroker.HealthPipeName(value.pipeName, yimebroker.HealthRoleRuntime); err != nil {
+		return value, err
+	}
 	for _, required := range []string{
 		value.brokerPath,
 		filepath.Join(value.installRoot, "indexes", "full.yidx"),
@@ -182,6 +192,14 @@ func run(config options, statusPath string) error {
 		return err
 	}
 	defer stopEvent.Close()
+	supervisor := &supervisorHealth{}
+	health, err := yimebroker.StartHealthServer(context.Background(), yimebroker.HealthConfig{
+		Name: config.pipeName, Role: yimebroker.HealthRoleRuntime, Snapshot: supervisor.snapshotNow,
+	})
+	if err != nil {
+		return fmt.Errorf("start Runtime health endpoint: %w", err)
+	}
+	defer health.Close()
 	logFile, err := os.OpenFile(filepath.Join(config.stateRoot, "logs", "runtime.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o600)
 	if err != nil {
 		return err
@@ -208,6 +226,7 @@ func run(config options, statusPath string) error {
 	restarts := 0
 	failures := make([]time.Time, 0, 8)
 	for {
+		supervisor.publish(0, 0, time.Now())
 		broker, wait, startErr := startBroker(config, logger, children)
 		if startErr != nil {
 			writeRuntimeStatus(statusPath, withToolbarStatus(statusFor(config, "failed", 0, toolbarPID, restarts, startErr), toolbarState, toolbarError))
@@ -216,7 +235,9 @@ func run(config options, statusPath string) error {
 		writeRuntimeStatus(statusPath, withToolbarStatus(statusFor(config, "running", broker.PID(), toolbarPID, restarts, nil), toolbarState, toolbarError))
 		logger.Printf("Broker started pid=%d restart=%d", broker.PID(), restarts)
 		for {
+			supervisor.observe(broker)
 			if stopEvent.Wait(200 * time.Millisecond) {
+				supervisor.publish(0, 0, time.Now())
 				_ = broker.Kill()
 				<-wait
 				stopProcess(toolbar)
@@ -234,6 +255,7 @@ func run(config options, statusPath string) error {
 				logger.Printf("optional toolbar exited err=%v", waitErr)
 				writeRuntimeStatus(statusPath, withToolbarStatus(statusFor(config, "running", broker.PID(), 0, restarts, nil), toolbarState, toolbarError))
 			case waitErr := <-wait:
+				supervisor.publish(0, 0, time.Now())
 				now := time.Now()
 				failures = append(failures, now)
 				cutoff := now.Add(-30 * time.Second)
@@ -308,6 +330,9 @@ func brokerArguments(config options) []string {
 		"-index-version", trialIndexVersion(config),
 		"-index-control-manifest", filepath.Join(controlRoot, "request.json"),
 		"-index-control-status", filepath.Join(controlRoot, "status.json"),
+	}
+	if config.healthPipe != "" {
+		arguments = append(arguments, "-health-pipe", config.healthPipe)
 	}
 	if config.speechManifest != "" {
 		arguments = append(arguments, "-speech-product-root", config.installRoot,

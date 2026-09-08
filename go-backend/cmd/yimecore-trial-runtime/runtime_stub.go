@@ -30,3 +30,6 @@ func startProcessInJob(string, []string, *os.File, *runtimeHandle) (*runtimeProc
 func (p *runtimeProcess) PID() int    { return 0 }
 func (p *runtimeProcess) Kill() error { return nil }
 func (p *runtimeProcess) Wait() error { return nil }
+func (p *runtimeProcess) healthIdentity() (uint32, uint64, error) {
+	return 0, 0, errors.New("trial runtime requires Windows")
+}

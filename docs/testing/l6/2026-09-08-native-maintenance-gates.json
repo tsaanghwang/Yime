@@ -1,0 +1,885 @@
+{
+  "schema_version": "yimecore-native-maintenance-gates-review-v1",
+  "reviewed_date": "2026-09-08",
+  "affected_product": "YimeCore",
+  "source_implementation_complete_for": "collector v2 point gates for deferred deletion, independent file metadata and retained-process/config consistency",
+  "default_entry": "static Plan; no installed package, registry, candidate or actual user state reads",
+  "execute_parent_requirement": "ordinary same-SID native Windows PowerShell 5.1 retained until original controller exit",
+  "collection_schema": "yimecore-native-rollback-collection-v2",
+  "point_gates": {
+    "deferred_delete": [
+      "before backup",
+      "before fault controller",
+      "after controller exit"
+    ],
+    "candidate_visibility": "three fixed candidate/archive manifests before backup",
+    "backup_visibility": [
+      "verified backup manifest before controller",
+      "same manifest after controller"
+    ],
+    "runtime_configuration": [
+      "before controller",
+      "after controller"
+    ]
+  },
+  "deferred_delete": {
+    "provider": "StdRegProv with forced 32/64 views and two equal bounded observations",
+    "eligible_point": "successful key enumeration; both PendingFileRenameOperations and PendingFileRenameOperations2 absent in both views",
+    "any_present_value_ineligible": true,
+    "unknown_or_incomplete_value_ineligible": true,
+    "unrelated_paths_disclosed": false,
+    "provider_raw_multisz_completeness_verified": false,
+    "continuous_absence_verified": false
+  },
+  "system_visibility": {
+    "provider": "exact CIM_DataFile query using literal Count and ItemIndex; native object path and property declarations checked",
+    "approved_scope": "only explicit allowlisted public/candidate/backup metadata leaves",
+    "local_content": "same held native single-link file size/hash/final path bound to expected receipt",
+    "independent_evidence": "system provider exact file path and length",
+    "independent_content_hash_verified": false,
+    "independent_file_identity_verified": false,
+    "continuous_membership_protection": false
+  },
+  "runtime_configuration": {
+    "retained_process_reference": true,
+    "serialized_observation_accepted": false,
+    "process_identity_rechecks": "before and after config read",
+    "config": "strict same-file bounded JSON; expected backup hash plus fixed active identity, roots, endpoints and optional paired image hashes",
+    "status_or_settings_or_learning_read": false,
+    "runtime_consumed_config_verified": false,
+    "readonly_health_protocol_available": false,
+    "health_endpoint_contacted": false,
+    "process_command_line_verified": false,
+    "rollback_restart_verified": false,
+    "reboot_logon_startup_verified": false
+  },
+  "regression_scope": {
+    "ci": "actual fourteen-script workflow body: external PS5 and same-process PS7",
+    "collection": "private providers around actual wrappers and sequence; fail-closed typed gates; no real backup/controller",
+    "runtime": "owned native config files and private retained-process provider; source-AST contract of actual config writer schema; producer not executed",
+    "native": "separate explicit self-owned metadata/registry fixtures; no product reads or actual system pending queue"
+  },
+  "checks": {
+    "test-local13-maintenance-inputs.ps1-ps5.json": 52,
+    "test-local13-maintenance-inputs.ps1-ps7.json": 52,
+    "test-local13-maintenance-preparation.ps1-ps5.json": 57,
+    "test-local13-maintenance-preparation.ps1-ps7.json": 57,
+    "test-native-maintenance-backup.ps1-ps5.json": 155,
+    "test-native-maintenance-backup.ps1-ps7.json": 155,
+    "test-native-maintenance-child.ps1-ps5.json": 71,
+    "test-native-maintenance-child.ps1-ps7.json": 71,
+    "test-native-maintenance-context.ps1-ps5.json": 48,
+    "test-native-maintenance-context.ps1-ps7.json": 48,
+    "test-native-maintenance-data.ps1-ps5.json": 51,
+    "test-native-maintenance-data.ps1-ps7.json": 51,
+    "test-native-maintenance-deferred-delete.ps1-ps5.json": 201,
+    "test-native-maintenance-deferred-delete.ps1-ps7.json": 201,
+    "test-native-maintenance-evidence.ps1-ps5.json": 79,
+    "test-native-maintenance-evidence.ps1-ps7.json": 79,
+    "test-native-maintenance-processes.ps1-ps5.json": 47,
+    "test-native-maintenance-processes.ps1-ps7.json": 47,
+    "test-native-maintenance-runtime.ps1-ps5.json": 72,
+    "test-native-maintenance-runtime.ps1-ps7.json": 72,
+    "test-native-maintenance-visibility.ps1-ps5.json": 104,
+    "test-native-maintenance-visibility.ps1-ps7.json": 104,
+    "test-native-rehearsal-outcome-reader.ps1-ps5.json": 224,
+    "test-native-rehearsal-outcome-reader.ps1-ps7.json": 224,
+    "test-native-rehearsal-outcome.ps1-ps5.json": 99,
+    "test-native-rehearsal-outcome.ps1-ps7.json": 99,
+    "test-native-rollback-collection.ps1-ps5.json": 170,
+    "test-native-rollback-collection.ps1-ps7.json": 170
+  },
+  "baseline": {
+    "declared_sources": 191,
+    "locked_dependencies": 7,
+    "sources": 198,
+    "pure_memory_tests": 68,
+    "pending_count": 8
+  },
+  "previous_collection_record": {
+    "path": "C:\\dev\\Yime\\docs\\testing\\l6\\2026-09-08-native-rollback-collection.json",
+    "bytes": 14093,
+    "sha256": "ce00d67c277c6c87d6b22a973a5e299dac99f7cdb3c82c5068cfcda8af58e85b"
+  },
+  "native_fixtures": {
+    "visibility": [
+      {
+        "shell": "ps5",
+        "raw": {
+          "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\visibility-native-final-ps5.json",
+          "bytes": 23109,
+          "sha256": "ab09099c128a47ea500aa8128dd1b6f6afde4acf7988de179d4d104bee6faa89"
+        },
+        "outcome": {
+          "requested": true,
+          "attempted": true,
+          "passed": true,
+          "provider_error": null,
+          "metadata": {
+            "schema_version": "yimecore-native-maintenance-visibility-v1",
+            "approved_root": "C:\\dev\\Yime\\.tmp\\native-visibility-28758f83c89b4930906bfe49119dffa3",
+            "records": [
+              {
+                "path": "C:\\dev\\Yime\\.tmp\\native-visibility-28758f83c89b4930906bfe49119dffa3\\backup-manifest.json",
+                "bytes": 23,
+                "local_sha256": "3a0153bf151287bee55009bdc10fbdd38579f647e779f5c7e65931f4c59dd426",
+                "local_file_identity": "28f3ca37:00050000002e3a84",
+                "system_metadata": {
+                  "path": "C:\\dev\\Yime\\.tmp\\native-visibility-28758f83c89b4930906bfe49119dffa3\\backup-manifest.json",
+                  "kind": "file",
+                  "class": "CIM_DataFile",
+                  "namespace": "root\\cimv2",
+                  "server": "MYCOMPUTER",
+                  "bytes": 23
+                },
+                "system_metadata_visible": true,
+                "bound_metadata": true,
+                "independent_content_hash_verified": false
+              },
+              {
+                "path": "C:\\dev\\Yime\\.tmp\\native-visibility-28758f83c89b4930906bfe49119dffa3\\package-manifest.json",
+                "bytes": 23,
+                "local_sha256": "e9e69485cc135a79a7e808629c111b881f807c3aec6f23c1f75ad14954c1be6c",
+                "local_file_identity": "28f3ca37:000b0000002e3a80",
+                "system_metadata": {
+                  "path": "C:\\dev\\Yime\\.tmp\\native-visibility-28758f83c89b4930906bfe49119dffa3\\package-manifest.json",
+                  "kind": "file",
+                  "class": "CIM_DataFile",
+                  "namespace": "root\\cimv2",
+                  "server": "MYCOMPUTER",
+                  "bytes": 23
+                },
+                "system_metadata_visible": true,
+                "bound_metadata": true,
+                "independent_content_hash_verified": false
+              }
+            ],
+            "file_count": 2,
+            "provider": "out-of-process WMI CIM_DataFile metadata via root/cimv2",
+            "system_metadata_visible": true,
+            "bound_metadata": true,
+            "local_held_hashes_verified": true,
+            "independent_content_hash_verified": false,
+            "independent_file_identity_verified": false,
+            "expected_manifest_origin_authenticated": false,
+            "loaded_provider_identity_authenticated": false,
+            "continuous_membership_protection": false,
+            "atomic": false,
+            "leases_released_on_return": true,
+            "execution_authorized": false,
+            "ready_to_execute": false,
+            "full_acceptance": false,
+            "L6_sealed": false,
+            "local_product_ready": false,
+            "public_release_ready": false
+          },
+          "only_owned_fixture_files": true,
+          "acceptance_inferred": false
+        }
+      },
+      {
+        "shell": "ps7",
+        "raw": {
+          "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\visibility-native-final-ps7.json",
+          "bytes": 12912,
+          "sha256": "a003e731fe9104a0ad4a10d23309b21e5ca932ae65537bf10613fb20ff0974cf"
+        },
+        "outcome": {
+          "requested": true,
+          "attempted": true,
+          "passed": true,
+          "provider_error": null,
+          "metadata": {
+            "schema_version": "yimecore-native-maintenance-visibility-v1",
+            "approved_root": "C:\\dev\\Yime\\.tmp\\native-visibility-9fc1024cffd14cfba698317362890fe7",
+            "records": [
+              {
+                "path": "C:\\dev\\Yime\\.tmp\\native-visibility-9fc1024cffd14cfba698317362890fe7\\backup-manifest.json",
+                "bytes": 23,
+                "local_sha256": "3a0153bf151287bee55009bdc10fbdd38579f647e779f5c7e65931f4c59dd426",
+                "local_file_identity": "28f3ca37:00060000002e3a87",
+                "system_metadata": {
+                  "path": "C:\\dev\\Yime\\.tmp\\native-visibility-9fc1024cffd14cfba698317362890fe7\\backup-manifest.json",
+                  "kind": "file",
+                  "class": "CIM_DataFile",
+                  "namespace": "root\\cimv2",
+                  "server": "MYCOMPUTER",
+                  "bytes": 23
+                },
+                "system_metadata_visible": true,
+                "bound_metadata": true,
+                "independent_content_hash_verified": false
+              },
+              {
+                "path": "C:\\dev\\Yime\\.tmp\\native-visibility-9fc1024cffd14cfba698317362890fe7\\package-manifest.json",
+                "bytes": 23,
+                "local_sha256": "e9e69485cc135a79a7e808629c111b881f807c3aec6f23c1f75ad14954c1be6c",
+                "local_file_identity": "28f3ca37:00080000002e3a86",
+                "system_metadata": {
+                  "path": "C:\\dev\\Yime\\.tmp\\native-visibility-9fc1024cffd14cfba698317362890fe7\\package-manifest.json",
+                  "kind": "file",
+                  "class": "CIM_DataFile",
+                  "namespace": "root\\cimv2",
+                  "server": "MYCOMPUTER",
+                  "bytes": 23
+                },
+                "system_metadata_visible": true,
+                "bound_metadata": true,
+                "independent_content_hash_verified": false
+              }
+            ],
+            "file_count": 2,
+            "provider": "out-of-process WMI CIM_DataFile metadata via root/cimv2",
+            "system_metadata_visible": true,
+            "bound_metadata": true,
+            "local_held_hashes_verified": true,
+            "independent_content_hash_verified": false,
+            "independent_file_identity_verified": false,
+            "expected_manifest_origin_authenticated": false,
+            "loaded_provider_identity_authenticated": false,
+            "continuous_membership_protection": false,
+            "atomic": false,
+            "leases_released_on_return": true,
+            "execution_authorized": false,
+            "ready_to_execute": false,
+            "full_acceptance": false,
+            "L6_sealed": false,
+            "local_product_ready": false,
+            "public_release_ready": false
+          },
+          "only_owned_fixture_files": true,
+          "acceptance_inferred": false
+        }
+      }
+    ],
+    "deferred": [
+      {
+        "shell": "ps5",
+        "raw": {
+          "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\deferred-native-final-ps5.json",
+          "bytes": 19659,
+          "sha256": "0fa4ed1f29876fca489f6c5d0adf8f26984257b80892f4b8873d7cfcc3e40f4a"
+        },
+        "outcome": {
+          "requested": true,
+          "production_queue_accessed": false,
+          "fixture_registry_path": "HKEY_CURRENT_USER\\Software\\YimeMaintenanceFixtures\\8c33fdcb6614402ea60cbd6e9392f224",
+          "fixture_raw_sha256": "c11ceeba128b409bb871de4ce47958851156491118fa1b7a6ffd90cec13da92f",
+          "fixture_created": true,
+          "fixture_removed": true,
+          "native_fixture_completed": false,
+          "raw_multisz_lossless_observed": false,
+          "views": [],
+          "provider_diagnostics": [
+            {
+              "stage": "EnumValues",
+              "view": 32,
+              "hive": 2147483651,
+              "key": "S-1-5-21-2783006668-770716121-2150155084-1001\\Software\\YimeMaintenanceFixtures\\8c33fdcb6614402ea60cbd6e9392f224",
+              "return_type": "System.Int32",
+              "return_code": 2,
+              "names_type": "null",
+              "names_count": 0,
+              "types_type": "null"
+            }
+          ],
+          "error": "System.Management.Automation.RuntimeException: StdRegProv error; no registry-view fallback",
+          "error_stage": "owned-registry-fixture",
+          "error_script_stack": "at Assert-DeferredReturn, C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-deferred-delete.psm1: line 32\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 290\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 277",
+          "cleanup_error": ""
+        },
+        "provider_owned_fixture": {
+          "requested": true,
+          "fixture_registry_path": "HKEY_USERS\\S-1-5-21-2783006668-770716121-2150155084-1001\\Software\\YimeMaintenanceFixtures\\da9b83d7a7fc406b93e471551b5fe073",
+          "created_views": [
+            32,
+            64
+          ],
+          "removed_views": [
+            32
+          ],
+          "already_absent_views": [
+            64
+          ],
+          "initial_absence_clear": true,
+          "present_gate_rejected": true,
+          "native_fixture_completed": true,
+          "provider_roundtrip_exact": true,
+          "raw_multisz_completeness_verified": false,
+          "creation_ownership_authenticated": false,
+          "production_queue_accessed": false,
+          "views": [
+            {
+              "view": 32,
+              "return_type": "System.Int32",
+              "return_code": 0,
+              "expected_string_count": 4,
+              "captured_string_count": 4,
+              "exact_roundtrip": true
+            },
+            {
+              "view": 64,
+              "return_type": "System.Int32",
+              "return_code": 0,
+              "expected_string_count": 4,
+              "captured_string_count": 4,
+              "exact_roundtrip": true
+            }
+          ],
+          "error": "",
+          "cleanup_error": "",
+          "cleanup_retained": false
+        }
+      },
+      {
+        "shell": "ps7",
+        "raw": {
+          "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\deferred-native-final-ps7.json",
+          "bytes": 13857,
+          "sha256": "e1714db639479aa26f57ec6bf4ce3c716dbf9d40481f3bd9e8d8174dccf89e41"
+        },
+        "outcome": {
+          "requested": true,
+          "production_queue_accessed": false,
+          "fixture_registry_path": "HKEY_CURRENT_USER\\Software\\YimeMaintenanceFixtures\\d4303f2d42354889ab945159660977f0",
+          "fixture_raw_sha256": "c11ceeba128b409bb871de4ce47958851156491118fa1b7a6ffd90cec13da92f",
+          "fixture_created": true,
+          "fixture_removed": true,
+          "native_fixture_completed": false,
+          "raw_multisz_lossless_observed": false,
+          "views": [],
+          "provider_diagnostics": [
+            {
+              "stage": "EnumValues",
+              "view": 32,
+              "hive": 2147483651,
+              "key": "S-1-5-21-2783006668-770716121-2150155084-1001\\Software\\YimeMaintenanceFixtures\\d4303f2d42354889ab945159660977f0",
+              "return_type": "System.Int32",
+              "return_code": 2,
+              "names_type": "null",
+              "names_count": 0,
+              "types_type": "null"
+            }
+          ],
+          "error": "System.Management.Automation.RuntimeException: StdRegProv error; no registry-view fallback",
+          "error_stage": "owned-registry-fixture",
+          "error_script_stack": "at Assert-DeferredReturn, C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-deferred-delete.psm1: line 32\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 290\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 277",
+          "cleanup_error": ""
+        },
+        "provider_owned_fixture": {
+          "requested": true,
+          "fixture_registry_path": "HKEY_USERS\\S-1-5-21-2783006668-770716121-2150155084-1001\\Software\\YimeMaintenanceFixtures\\bc19135fb43c45b8998986de453e3122",
+          "created_views": [
+            32,
+            64
+          ],
+          "removed_views": [
+            32
+          ],
+          "already_absent_views": [
+            64
+          ],
+          "initial_absence_clear": true,
+          "present_gate_rejected": true,
+          "native_fixture_completed": true,
+          "provider_roundtrip_exact": true,
+          "raw_multisz_completeness_verified": false,
+          "creation_ownership_authenticated": false,
+          "production_queue_accessed": false,
+          "views": [
+            {
+              "view": 32,
+              "return_type": "System.Int32",
+              "return_code": 0,
+              "expected_string_count": 4,
+              "captured_string_count": 4,
+              "exact_roundtrip": true
+            },
+            {
+              "view": 64,
+              "return_type": "System.Int32",
+              "return_code": 0,
+              "expected_string_count": 4,
+              "captured_string_count": 4,
+              "exact_roundtrip": true
+            }
+          ],
+          "error": "",
+          "cleanup_error": "",
+          "cleanup_retained": false
+        }
+      }
+    ]
+  },
+  "preserved_failed_native_attempts": [
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\visibility-native-ps5.json",
+        "bytes": 17106,
+        "sha256": "84bca2b292f7ab5a0015cc1c3334ebbb5e7780f36dd77c4eaa7413ed90a3e03c"
+      },
+      "outcome": {
+        "requested": true,
+        "attempted": true,
+        "passed": false,
+        "provider_error": "The property 'SystemProperties_' cannot be found on this object. Verify that the property exists.",
+        "metadata": null,
+        "only_owned_fixture_files": true,
+        "acceptance_inferred": false
+      }
+    },
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\visibility-native-ps7.json",
+        "bytes": 10162,
+        "sha256": "c64e3b2c9dc797b0d61c424c5e3a27fca347f84e815a90c72761202ad1c9bfcf"
+      },
+      "outcome": {
+        "requested": true,
+        "attempted": true,
+        "passed": false,
+        "provider_error": "The property 'SystemProperties_' cannot be found on this object. Verify that the property exists.",
+        "metadata": null,
+        "only_owned_fixture_files": true,
+        "acceptance_inferred": false
+      }
+    },
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\deferred-native-ps5.json",
+        "bytes": 13807,
+        "sha256": "27a8368c45ac7a15941df8a2819275f133fdbb07b07fe6251c860c7c61932d35"
+      },
+      "outcome": {
+        "requested": true,
+        "production_queue_accessed": false,
+        "fixture_registry_path": "HKEY_CURRENT_USER\\Software\\YimeMaintenanceFixtures\\d3c13544578d4c52b71463c5309dd47f",
+        "fixture_raw_sha256": "c11ceeba128b409bb871de4ce47958851156491118fa1b7a6ffd90cec13da92f",
+        "fixture_created": true,
+        "fixture_removed": true,
+        "native_fixture_completed": false,
+        "raw_multisz_lossless_observed": false,
+        "views": [],
+        "error": "System.InvalidCastException: Specified cast is not valid.",
+        "error_stage": "owned-registry-fixture",
+        "error_script_stack": "at Invoke-DeferredRegistryMethod, C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-deferred-delete.psm1: line 68\r\nat Read-DeferredEnumeration, C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-deferred-delete.psm1: line 77\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 216\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 211",
+        "cleanup_error": ""
+      }
+    },
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\deferred-native-ps7.json",
+        "bytes": 10745,
+        "sha256": "857b75b92f950374796ee43d9b6349bee40b05dd3b4814a6c2eb152c2c1dea5c"
+      },
+      "outcome": {
+        "requested": true,
+        "production_queue_accessed": false,
+        "fixture_registry_path": "HKEY_CURRENT_USER\\Software\\YimeMaintenanceFixtures\\63b77d4f6eed4199bcdfc223683a6ca4",
+        "fixture_raw_sha256": "c11ceeba128b409bb871de4ce47958851156491118fa1b7a6ffd90cec13da92f",
+        "fixture_created": true,
+        "fixture_removed": true,
+        "native_fixture_completed": false,
+        "raw_multisz_lossless_observed": false,
+        "views": [],
+        "error": "System.InvalidCastException: Unable to cast object of type 'System.String' to type 'System.UInt32'.",
+        "error_stage": "owned-registry-fixture",
+        "error_script_stack": "at Invoke-DeferredRegistryMethod, C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-deferred-delete.psm1: line 68\r\nat Read-DeferredEnumeration, C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-deferred-delete.psm1: line 77\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 216\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 211",
+        "cleanup_error": ""
+      }
+    },
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\deferred-native-ps5-typed.json",
+        "bytes": 13856,
+        "sha256": "4d4cd39a44e85bc8a38b78b6dd3aa97a3a66d74defa2919b0e57b05ab7922141"
+      },
+      "outcome": {
+        "requested": true,
+        "production_queue_accessed": false,
+        "fixture_registry_path": "HKEY_CURRENT_USER\\Software\\YimeMaintenanceFixtures\\51a89f62196e41f3997298e6b5ae7f05",
+        "fixture_raw_sha256": "c11ceeba128b409bb871de4ce47958851156491118fa1b7a6ffd90cec13da92f",
+        "fixture_created": true,
+        "fixture_removed": true,
+        "native_fixture_completed": false,
+        "raw_multisz_lossless_observed": false,
+        "views": [],
+        "error": "System.Management.Automation.RuntimeException: StdRegProv error; no registry-view fallback",
+        "error_stage": "owned-registry-fixture",
+        "error_script_stack": "at Assert-DeferredReturn, C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-deferred-delete.psm1: line 32\r\nat Read-DeferredEnumeration, C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-deferred-delete.psm1: line 81\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 216\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 211",
+        "cleanup_error": ""
+      }
+    },
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\deferred-native-ps7-typed.json",
+        "bytes": 10752,
+        "sha256": "c64727b11af74cefc74cd57fdf00c5c4d58dfa421a1ef111167c34fb5cace6a0"
+      },
+      "outcome": {
+        "requested": true,
+        "production_queue_accessed": false,
+        "fixture_registry_path": "HKEY_CURRENT_USER\\Software\\YimeMaintenanceFixtures\\b4927f14d8f644139200adb66ca63d1c",
+        "fixture_raw_sha256": "c11ceeba128b409bb871de4ce47958851156491118fa1b7a6ffd90cec13da92f",
+        "fixture_created": true,
+        "fixture_removed": true,
+        "native_fixture_completed": false,
+        "raw_multisz_lossless_observed": false,
+        "views": [],
+        "error": "System.Management.Automation.RuntimeException: StdRegProv error; no registry-view fallback",
+        "error_stage": "owned-registry-fixture",
+        "error_script_stack": "at Assert-DeferredReturn, C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-deferred-delete.psm1: line 32\r\nat Read-DeferredEnumeration, C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-deferred-delete.psm1: line 81\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 216\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 211",
+        "cleanup_error": ""
+      }
+    },
+    {
+      "raw": {
+        "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\deferred-native-ps5-diagnostic.json",
+        "bytes": 14820,
+        "sha256": "3e7104eda3758d2453cb475c5a8663ac481477865fd7a21cdc2e2b858b064f21"
+      },
+      "outcome": {
+        "requested": true,
+        "production_queue_accessed": false,
+        "fixture_registry_path": "HKEY_CURRENT_USER\\Software\\YimeMaintenanceFixtures\\5aa226f30ba140beb0f09650a7018615",
+        "fixture_raw_sha256": "c11ceeba128b409bb871de4ce47958851156491118fa1b7a6ffd90cec13da92f",
+        "fixture_created": true,
+        "fixture_removed": true,
+        "native_fixture_completed": false,
+        "raw_multisz_lossless_observed": false,
+        "views": [],
+        "provider_diagnostics": [
+          {
+            "stage": "EnumValues",
+            "view": 32,
+            "hive": 2147483651,
+            "key": "S-1-5-21-2783006668-770716121-2150155084-1001\\Software\\YimeMaintenanceFixtures\\5aa226f30ba140beb0f09650a7018615",
+            "return_type": "System.Int32",
+            "return_code": 2,
+            "names_type": "null",
+            "names_count": 0,
+            "types_type": "null"
+          }
+        ],
+        "error": "System.Management.Automation.RuntimeException: StdRegProv error; no registry-view fallback",
+        "error_stage": "owned-registry-fixture",
+        "error_script_stack": "at Assert-DeferredReturn, C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-deferred-delete.psm1: line 32\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 225\r\nat <ScriptBlock>, C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-deferred-delete.ps1: line 212",
+        "cleanup_error": ""
+      }
+    }
+  ],
+  "sources": [
+    {
+      "path": ".gitattributes",
+      "sha256": "4835a1716360eb4a147cf3dd9e866c1a39f2da7107f61c7a1857bb1323879b09"
+    },
+    {
+      "path": ".github/workflows/ci.yaml",
+      "sha256": "228d323113fc6c49b35180d4bdfae9288746b0823148d57e67f33f0e2834d3a2"
+    },
+    {
+      "path": "tools/dual-product/contract.json",
+      "sha256": "55c348c38455d33db615d04bb77616a79d480aa620126649bfcf894297cda845"
+    },
+    {
+      "path": "tools/dual-product/test_baseline.py",
+      "sha256": "2efe782db9f6dcd86e12f7a0b5dfa25061773b8d7d05d7ce088993fdbe4ce0da"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-native-facts.cs",
+      "sha256": "9969b68b42bc11428d4af6a8bb348a9658e248c0758b953bd9e3834109f97be4"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-deferred-delete.psm1",
+      "sha256": "2802fa825d461d3e0d72b3b7ceb32855511a8e444c900ff7dd640bef6dbf49e1"
+    },
+    {
+      "path": "tools/yimecore/test-native-maintenance-deferred-delete.ps1",
+      "sha256": "bf7e83b3c17f8b403b8b73f41da13fb034dc9567c721698c5061167955cfb3b3"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-visibility.psm1",
+      "sha256": "940555fb01f9d3d0c045bd52e7ee0d5ef364bd5523135038abbc39cd86bd9379"
+    },
+    {
+      "path": "tools/yimecore/test-native-maintenance-visibility.ps1",
+      "sha256": "2e9bb8d1a85dbe3ce85d46ad4c433ee939fbfe8b00da02f5e2a2c21c70b02e85"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-runtime.psm1",
+      "sha256": "c4c238bcac7a4e403a6e4348d05e747bf96fc746cc236336592c31e10af6a880"
+    },
+    {
+      "path": "tools/yimecore/test-native-maintenance-runtime.ps1",
+      "sha256": "c4f1175309aa741c9c1a7a578c9c6e9c3a413e670d8300c4efb73b85c46553ca"
+    },
+    {
+      "path": "tools/yimecore/native-rollback-collection.psm1",
+      "sha256": "f6c08bae5cc327c5febbaa8c8609a9060e823644e92279706a5d7211fea69dd0"
+    },
+    {
+      "path": "tools/yimecore/invoke-native-rollback-collection.ps1",
+      "sha256": "f1b227b9dc983e0fb51b873f8b648047b664c3d431b883067a3d05733b9bc534"
+    },
+    {
+      "path": "tools/yimecore/test-native-rollback-collection.ps1",
+      "sha256": "390a69153c44504e9d0acd4b66a55f8cd694b4b047410ef10d524359cf914ea9"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-child.psm1",
+      "sha256": "66e9d7c9adf69d8d1fc6d03d4dd9c2bbb771c9f3c2e95f7f29a8dfc00359a966"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-data.psm1",
+      "sha256": "b86e8b1d2530487d0d6478616cb5ad402ce17f8210cd3e31d285cd7cfb249bbd"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-backup.psm1",
+      "sha256": "847cf067dee46feb71d1384d900341c4445c5ca4eefe0698d8996ebcdc37d04c"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-context.psm1",
+      "sha256": "628fab8ee1885e8726fb709c2d9d33190714aa32793425d790e5c7ce48a15bbe"
+    },
+    {
+      "path": "tools/yimecore/local13-maintenance-inputs.psm1",
+      "sha256": "19824e24a89106dc40632cd3df5a2e13116384d25be17131a56c707004d8aa1c"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-evidence.psm1",
+      "sha256": "7d9c70d95845417e4aac6c7502865602a4e547d711f8d74ab624f147428b06f0"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-processes.psm1",
+      "sha256": "50b2a4a9be648b93140c5bce1cf8fbcd1fae85c925871f29031c38cf5c970ec5"
+    },
+    {
+      "path": "tools/yimecore/native-maintenance-process-facts.cs",
+      "sha256": "d75096623a1426f750f8df97dd12158ec099d50ac54763bca9cca33ed4ca7e3c"
+    },
+    {
+      "path": "tools/yimecore/native-rehearsal-outcome-reader.psm1",
+      "sha256": "5cd3ef4a1322fa354166593fba8715e073703b83a7be4620d745ca84dd7fc8a3"
+    },
+    {
+      "path": "tools/yimecore/backup-local-trial-state.ps1",
+      "sha256": "3e1bc247dec0283f3d0f0dcaee91bd18ec2c41ac005792f478e63d6c121da3e8"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\summary.json",
+      "bytes": 7885,
+      "sha256": "dd2d422c137932331f7befdf166957e987826ed0c76e9ac8a7a8f8c6d9559965"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\run-ci.ps1",
+      "bytes": 1892,
+      "sha256": "3bca18f1a360f4eaa598c97c083e4db8b95a380e3e535fc3ddf0d6f6562e9f44"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\transcript.txt",
+      "bytes": 259804,
+      "sha256": "2d9f733d315ce52f75d171d503a1779236a9ad6c88594f9df88d87f8a19781e2"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-local13-maintenance-inputs.ps1-ps5.json",
+      "bytes": 4448,
+      "sha256": "0de8cdc515b0b8db673cfa47cb8502723d19ed0b24aafc3486b9f6b95caaeb33"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-local13-maintenance-inputs.ps1-ps7.json",
+      "bytes": 3601,
+      "sha256": "5acc4c6eb3501a10292603da3b2fd2f76a9354e9e5777cd4fb9b11fc448bad5f"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-local13-maintenance-preparation.ps1-ps5.json",
+      "bytes": 4435,
+      "sha256": "4263a0b58985d27d55c0b0f554e02dc1504b5e253b48bcc3ba500fe501075273"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-local13-maintenance-preparation.ps1-ps7.json",
+      "bytes": 3516,
+      "sha256": "d4ab4c1ed74c912ae96ba84a04c622f395bcb6cb331dfeb4cdf4c8ddfcb0829e"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-backup.ps1-ps5.json",
+      "bytes": 10842,
+      "sha256": "972a745fc262299a11224f080517db65867a8d3f6450c84b2ca5589a386b4c7f"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-backup.ps1-ps7.json",
+      "bytes": 8447,
+      "sha256": "b18f76ce19a4824f62d2765c8f17c8ae79809488649250c8952f6871fe5212b5"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-child.ps1-ps5.json",
+      "bytes": 5248,
+      "sha256": "e59a31ad885075ea0351aa001dad5365d9761f7b0c09767368c7672e93fa2959"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-child.ps1-ps7.json",
+      "bytes": 4122,
+      "sha256": "169869afca805e98c59d07d6b22aa878984cc709d5d2c54b3d4d9da467e877ab"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-context.ps1-ps5.json",
+      "bytes": 4529,
+      "sha256": "e50eb8a935ae3f9c65ed22a661a51cb15eebb0030083482f4e1b1f86d4a63588"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-context.ps1-ps7.json",
+      "bytes": 3748,
+      "sha256": "63f65ddb6474eeb555a5edbaf63d8ebf49265badd5af175845a7e430db75c647"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-data.ps1-ps5.json",
+      "bytes": 9183,
+      "sha256": "36efbb3802b520735d93444c2a45a633e842362b5a251ae7466b0b07065f8422"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-data.ps1-ps7.json",
+      "bytes": 5765,
+      "sha256": "555e98108fd078a80c61e308e89caefaf97601a73b883fbe6811dc1f5b22a9e4"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-deferred-delete.ps1-ps5.json",
+      "bytes": 16579,
+      "sha256": "903083918d082d1e223bcea89584a9d0955e80ddf0eab4614e6731466f21aa26"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-deferred-delete.ps1-ps7.json",
+      "bytes": 12269,
+      "sha256": "e0855acf2026fc618ff13216f81ed9684946dc723d2c9c6a1ea4bd29c87a7e27"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-evidence.ps1-ps5.json",
+      "bytes": 12897,
+      "sha256": "1e417d3e9282c2a0529b0987a6d310c8f4de717dedbbcea5ac660cc9bb65014e"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-evidence.ps1-ps7.json",
+      "bytes": 7394,
+      "sha256": "04686b86e5d80f6eef8f542f24beb1f7187703773fe496fab2def94df6e00245"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-processes.ps1-ps5.json",
+      "bytes": 8590,
+      "sha256": "f5200da351e33a72fcf70f61e16eef6e92bb34ed1bc8a2f1c9457e0e5ea210ce"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-processes.ps1-ps7.json",
+      "bytes": 5059,
+      "sha256": "7bcb139f106ab4c049789c7d585bc513de612e525ac882e3cc7ae6bf37c57abe"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-runtime.ps1-ps5.json",
+      "bytes": 13394,
+      "sha256": "8df0e290217f233716602f8c8d2c4957b12769d01b30fe33b5a0c16a67c8a43b"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-runtime.ps1-ps7.json",
+      "bytes": 8566,
+      "sha256": "2278aa241ad20dad643a5fbc013eda7fed8cc414cdd90ede4333e5b15e101d8c"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-visibility.ps1-ps5.json",
+      "bytes": 17514,
+      "sha256": "f828c53d6213904bcecaa461d04ba9ced6226f39ae7c5793465bfd30b3d1fb5a"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-maintenance-visibility.ps1-ps7.json",
+      "bytes": 10382,
+      "sha256": "a2620ede2746b4fda47b74cf84af6957333983ecda194f8ae3774f391dd91f29"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-rehearsal-outcome-reader.ps1-ps5.json",
+      "bytes": 15693,
+      "sha256": "62b43845b8be0657e738fe2c22be05032f8436362fe4369d85ef473c4eff1151"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-rehearsal-outcome-reader.ps1-ps7.json",
+      "bytes": 12260,
+      "sha256": "aa56922f1e33a728de346a5a59d9457258e2d976aaadbd0fe357f15c37b2f4b4"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-rehearsal-outcome.ps1-ps5.json",
+      "bytes": 8329,
+      "sha256": "c096dc701586d811e9517389fe5e519bf2d3ae0b6511823d776fbccae4f6d820"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-rehearsal-outcome.ps1-ps7.json",
+      "bytes": 6413,
+      "sha256": "2d633dfece7c3881ce6f44c71dd9b0fe041cbffa93e5c13f6516a5ea4a355488"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-rollback-collection.ps1-ps5.json",
+      "bytes": 15619,
+      "sha256": "ed82bebb30464c155c2f3a15efa1a940cd1ccdd665b89794ea1c80c61a4bace6"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-ci-383ecb575a28429cbc289b90cdb4ac4e\\test-native-rollback-collection.ps1-ps7.json",
+      "bytes": 12996,
+      "sha256": "9ac78d37f10da584e0eadde835600d8c9706f77bb7d604db2f6f8744d70f7757"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\dual-product\\dp1-native-maintenance-gates-20260908\\baseline.json",
+      "bytes": 46160,
+      "sha256": "66c4be6e4a2b7e9153aa360d1d9f691230a9105e1c07f010bd7117821c1c2aea"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\visibility-native-final-ps5.json",
+      "bytes": 23109,
+      "sha256": "ab09099c128a47ea500aa8128dd1b6f6afde4acf7988de179d4d104bee6faa89"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\visibility-native-final-ps7.json",
+      "bytes": 12912,
+      "sha256": "a003e731fe9104a0ad4a10d23309b21e5ca932ae65537bf10613fb20ff0974cf"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\deferred-native-final-ps5.json",
+      "bytes": 19659,
+      "sha256": "0fa4ed1f29876fca489f6c5d0adf8f26984257b80892f4b8873d7cfcc3e40f4a"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-maintenance-final-gates-20260908\\deferred-native-final-ps7.json",
+      "bytes": 13857,
+      "sha256": "e1714db639479aa26f57ec6bf4ce3c716dbf9d40481f3bd9e8d8174dccf89e41"
+    }
+  ],
+  "independent_reviews": {
+    "observer_peer_review": true,
+    "collector_boundary_review": true,
+    "documentation_claims_review": true
+  },
+  "candidates_rebuilt_this_turn": false,
+  "candidate_archive_republished_this_turn": false,
+  "new_source_in_existing_candidates": false,
+  "actual_backup_executed": false,
+  "actual_uac_requested": false,
+  "installer_executed": false,
+  "actual_rollback_collection_executed": false,
+  "actual_product_or_user_state_read": false,
+  "production_pending_queue_accessed": false,
+  "installed_local12_mutated": false,
+  "production_rime_pime_mutated": false,
+  "default_input_method_changed": false,
+  "actual_deferred_delete_points_clear": false,
+  "actual_independent_system_metadata_visible": false,
+  "actual_runtime_configuration_bound": false,
+  "controller_loaded_script_authenticated": false,
+  "rollback_acceptance": false,
+  "independent_data_restore_verified": false,
+  "deferred_delete_absence_verified": false,
+  "independent_system_visibility_verified": false,
+  "startup_verified": false,
+  "runtime_ready_verified": false,
+  "E7_verified": false,
+  "L6_sealed": false,
+  "local_product_ready": false,
+  "public_release_ready": false,
+  "dp1u_actual_transaction_accepted": false,
+  "dp2_physical_acceptance_passed": false,
+  "dp3_completed": false
+}

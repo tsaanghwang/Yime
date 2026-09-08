@@ -35,6 +35,9 @@ func TestResolveOptionsRequiresCompleteIndependentTrialPackage(t *testing.T) {
 	if resolved.brokerPath != broker || resolved.stateRoot != state {
 		t.Fatalf("custom durable runtime paths changed: %+v", resolved)
 	}
+	if resolved.healthPipe != defaultPipeName+".health-v1" || !slices.Contains(brokerArguments(resolved), resolved.healthPipe) {
+		t.Fatal("resolved Runtime did not enable the derived independent Broker health endpoint")
+	}
 	if err := os.Remove(filepath.Join(root, "package", "indexes", "shorthand.yidx")); err != nil {
 		t.Fatal(err)
 	}

@@ -28,6 +28,7 @@ func main() {
 	defaultMode := flag.String("default-mode", "variable", "default mode for multi-index session opens")
 	trustedClientID := flag.String("trusted-client-id", "", "identity bound by the launching transport adapter")
 	namedPipe := flag.String("named-pipe", "", "E6-A local Windows named pipe path")
+	healthPipe := flag.String("health-pipe", "", "optional separate health pipe, fixed suffix of named-pipe")
 	pipeMaxConnections := flag.Int("pipe-max-connections", 64, "maximum concurrent named pipe connections")
 	pipeMaxConnectionsPerClient := flag.Int("pipe-max-connections-per-client", 8, "maximum concurrent named pipe connections per authenticated process")
 	userSnapshot := flag.String("user-model-snapshot", "", "optional durable user model snapshot")
@@ -58,6 +59,9 @@ func main() {
 	exitAfterRequest := flag.Int("experiment-exit-after-request", 0, "E5-F fault injection after durable handling but before response")
 	exitCompactionStage := flag.String("experiment-exit-compaction-stage", "", "E5-G fault injection at a named compaction stage")
 	flag.Parse()
+	if err := validateHealthPipe(*namedPipe, *healthPipe); err != nil {
+		fail(err)
+	}
 	var visited []string
 	flag.Visit(func(f *flag.Flag) { visited = append(visited, f.Name) })
 	if speechProductRequested(visited) {
@@ -93,7 +97,7 @@ func main() {
 			userLexiconDir: *userLexiconDir, userBlocklist: *userBlocklist, learningConfig: *learningConfig,
 			professionalRoot: *professionalRoot, professionalState: *professionalState,
 			speechProductRoot: *speechProductRoot, speechProductManifest: *speechProductManifest, speechProductSHA: *speechProductSHA, speechSettings: *speechSettings,
-			namedPipe: *namedPipe, trustedClientID: *trustedClientID,
+			namedPipe: *namedPipe, healthPipe: *healthPipe, trustedClientID: *trustedClientID,
 			pipeMaxConnections: *pipeMaxConnections, pipeMaxConnectionsPerClient: *pipeMaxConnectionsPerClient,
 			userSnapshot: *userSnapshot, userJournal: *userJournal, userModelSourceID: *userModelSourceID,
 			checkpointEvery: *checkpointEvery, compactEvery: *compactEvery, rollbackSnapshot: *rollbackSnapshot,
@@ -224,10 +228,10 @@ func main() {
 		}()
 	}
 	if *namedPipe != "" {
-		err = yimebroker.ServeNamedPipe(serveContext, dispatcher, yimebroker.NamedPipeConfig{
+		err = serveBrokerPipe(serveContext, dispatcher, yimebroker.NamedPipeConfig{
 			Name: *namedPipe, MaxConnections: *pipeMaxConnections, MaxConnectionsPerClient: *pipeMaxConnectionsPerClient,
 			OnConnectionError: func(connectionErr error) { fmt.Fprintln(os.Stderr, connectionErr) },
-		})
+		}, *healthPipe)
 	} else {
 		client := yimebroker.TrustedClient{ID: *trustedClientID}
 		if *exitBeforeRequest == 0 && *hangBeforeRequest == 0 && *exitAfterRequest == 0 {
@@ -255,6 +259,7 @@ type multiModeConfig struct {
 	speechProductSHA            string
 	speechSettings              string
 	namedPipe                   string
+	healthPipe                  string
 	trustedClientID             string
 	pipeMaxConnections          int
 	pipeMaxConnectionsPerClient int
@@ -270,6 +275,9 @@ type multiModeConfig struct {
 }
 
 func runMultiMode(config multiModeConfig) {
+	if err := validateHealthPipe(config.namedPipe, config.healthPipe); err != nil {
+		fail(err)
+	}
 	if (config.namedPipe == "") == (config.trustedClientID == "") {
 		fail(fmt.Errorf("supply exactly one of named-pipe or trusted-client-id"))
 	}
@@ -386,10 +394,10 @@ func runMultiMode(config multiModeConfig) {
 		}()
 	}
 	if config.namedPipe != "" {
-		err = yimebroker.ServeNamedPipe(serveContext, dispatcher, yimebroker.NamedPipeConfig{
+		err = serveBrokerPipe(serveContext, dispatcher, yimebroker.NamedPipeConfig{
 			Name: config.namedPipe, MaxConnections: config.pipeMaxConnections, MaxConnectionsPerClient: config.pipeMaxConnectionsPerClient,
 			OnConnectionError: func(connectionErr error) { fmt.Fprintln(os.Stderr, connectionErr) },
-		})
+		}, config.healthPipe)
 	} else {
 		err = yimebroker.ServeLines(serveContext, os.Stdin, os.Stdout, dispatcher, yimebroker.TrustedClient{ID: config.trustedClientID})
 	}

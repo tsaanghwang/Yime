@@ -259,7 +259,12 @@ function Get-RimePimeNsisCompilerInputTreeSnapshot {
         [int]$ClosureRecord.file_count -ne $filePaths.Count -or
         [int]$ClosureRecord.canonical_tree_bytes -ne $canonicalBytes.Length -or
         [string]$ClosureRecord.tree_sha256 -cne $digest){
-        throw 'NSIS compiler input tree differs from the repository-pinned exact set.'
+        # Preserve the exact rejection; report identity metadata, never file contents.
+        throw ("NSIS compiler input tree differs from the repository-pinned exact set. " +
+            "Expected directories=$($ClosureRecord.directory_count), files=$($ClosureRecord.file_count), " +
+            "canonical_bytes=$($ClosureRecord.canonical_tree_bytes), sha256=$($ClosureRecord.tree_sha256); " +
+            "observed directories=$($directoryPaths.Count), files=$($filePaths.Count), " +
+            "canonical_bytes=$($canonicalBytes.Length), sha256=$digest.")
     }
     $previousRequired=$null
     foreach($required in @($ClosureRecord.required_inputs)){

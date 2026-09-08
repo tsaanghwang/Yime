@@ -35,6 +35,11 @@ func TestRuntimeJobKillsAssignedChildWhenOwnerCloses(t *testing.T) {
 		job.Close()
 		t.Fatal(err)
 	}
+	pid, creation, err := process.healthIdentity()
+	if err != nil || pid != uint32(process.PID()) || creation == 0 {
+		job.Close()
+		t.Fatalf("held child health identity unavailable: pid=%d creation=%d err=%v", pid, creation, err)
+	}
 	if err := job.Close(); err != nil {
 		t.Fatal(err)
 	}
@@ -42,6 +47,9 @@ func TestRuntimeJobKillsAssignedChildWhenOwnerCloses(t *testing.T) {
 	go func() { done <- process.Wait() }()
 	select {
 	case <-done:
+		if _, _, err := process.healthIdentity(); err == nil {
+			t.Fatal("closed child handle was reopened by PID for health evidence")
+		}
 	case <-time.After(5 * time.Second):
 		_ = process.Kill()
 		t.Fatal("closing the runtime Job Object did not terminate its child")

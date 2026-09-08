@@ -12,6 +12,8 @@ type NamedPipeConfig struct {
 	MaxConnections          int
 	MaxConnectionsPerClient int
 	OnConnectionError       func(error)
+	OnListening             func()
+	OnStopped               func()
 }
 
 func ServeNamedPipe(context.Context, *Dispatcher, NamedPipeConfig) error {

@@ -160,7 +160,13 @@ Check 'synthetic-unlisted-file-is-rejected' {
 }
 Check 'synthetic-content-change-is-rejected' {
     $case=New-Fixture 'changed-file';[IO.File]::WriteAllText((Join-Path $case.Root 'Include\base.nsh'),'changed')
-    Assert-Rejected {Get-RimePimeNsisCompilerInputTreeSnapshot $case.Root $case.Record} '*exact set*'
+    $observed=Get-FixtureTreeRecord $case.Root
+    Assert-True ($observed.tree_sha256 -cne $case.Record.tree_sha256) 'Mutation must change the fixture identity.'
+    $expected="*exact set. Expected directories=$($case.Record.directory_count), files=$($case.Record.file_count), " +
+        "canonical_bytes=$($case.Record.canonical_tree_bytes), sha256=$($case.Record.tree_sha256); " +
+        "observed directories=$($observed.directory_count), files=$($observed.file_count), " +
+        "canonical_bytes=$($observed.canonical_tree_bytes), sha256=$($observed.tree_sha256)."
+    Assert-Rejected {Get-RimePimeNsisCompilerInputTreeSnapshot $case.Root $case.Record} $expected
 }
 Check 'synthetic-missing-input-is-rejected' {
     $case=New-Fixture 'missing-file';[IO.File]::Delete((Join-Path $case.Root 'Include\base.nsh'))
