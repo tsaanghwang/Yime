@@ -247,7 +247,7 @@ jobs:
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
           $evidence = Join-Path $pwd ('.tmp/native-maintenance-ci-' + [guid]::NewGuid().ToString('N'))
           New-Item -ItemType Directory -Path $evidence | Out-Null
-          foreach ($test in @('test-local13-maintenance-preparation.ps1', 'test-native-maintenance-evidence.ps1', 'test-native-maintenance-context.ps1', 'test-local13-maintenance-inputs.ps1', 'test-native-maintenance-processes.ps1', 'test-native-rehearsal-outcome.ps1', 'test-native-rehearsal-outcome-reader.ps1')) {
+          foreach ($test in @('test-local13-maintenance-preparation.ps1', 'test-native-maintenance-evidence.ps1', 'test-native-maintenance-context.ps1', 'test-local13-maintenance-inputs.ps1', 'test-native-maintenance-processes.ps1', 'test-native-rehearsal-outcome.ps1', 'test-native-rehearsal-outcome-reader.ps1', 'test-native-maintenance-child.ps1', 'test-native-maintenance-data.ps1', 'test-native-maintenance-backup.ps1', 'test-native-rollback-collection.ps1')) {
             & $ps5 -NoProfile -ExecutionPolicy Bypass -File (Join-Path '.\tools\yimecore' $test) -OutputPath (Join-Path $evidence ($test + '-ps5.json'))
             if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 $test failed with exit code $LASTEXITCODE" }
             & (Join-Path '.\tools\yimecore' $test) -OutputPath (Join-Path $evidence ($test + '-ps7.json'))

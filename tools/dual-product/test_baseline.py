@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 176)
-        self.assertEqual(len(self.receipt["source_manifest"]), 183)
+        self.assertEqual(len(contract["source_paths"]), 185)
+        self.assertEqual(len(self.receipt["source_manifest"]), 192)
         for path in (
             "version.txt",
             "PIMELauncher/build.rs",
@@ -213,6 +213,15 @@ class OwnershipTests(unittest.TestCase):
             "tools/yimecore/test-native-rehearsal-outcome.ps1",
             "tools/yimecore/native-rehearsal-outcome-reader.psm1",
             "tools/yimecore/test-native-rehearsal-outcome-reader.ps1",
+            "tools/yimecore/native-maintenance-child.psm1",
+            "tools/yimecore/test-native-maintenance-child.ps1",
+            "tools/yimecore/native-maintenance-data.psm1",
+            "tools/yimecore/test-native-maintenance-data.ps1",
+            "tools/yimecore/native-maintenance-backup.psm1",
+            "tools/yimecore/test-native-maintenance-backup.ps1",
+            "tools/yimecore/native-rollback-collection.psm1",
+            "tools/yimecore/invoke-native-rollback-collection.ps1",
+            "tools/yimecore/test-native-rollback-collection.ps1",
             "tools/dual-product/test-rime-pime-transaction-replay-model.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.ps1",
             "tools/dual-product/rime-pime-fixture-transaction-journal.psm1",
