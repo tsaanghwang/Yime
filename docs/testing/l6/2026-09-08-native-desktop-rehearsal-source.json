@@ -1,0 +1,66 @@
+{
+  "schema_version": "yimecore-native-desktop-rehearsal-source-review-v1",
+  "reviewed_date": "2026-09-08",
+  "affected_product": "YimeCore",
+  "source_controller": {
+    "path": "tools/yimecore/manage-e6c-trial-install.ps1",
+    "sha256": "e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a",
+    "new_switch": "NativeDesktopRehearsal",
+    "unexpected_success_throws_before_old_root_cleanup": true,
+    "ordinary_install_rejects_marked_failure_packages": true,
+    "requires_actual_json_boolean_markers": true,
+    "normal_package_cannot_enable_rehearsal": true,
+    "same_sid_elevation_forwards_new_switch": true,
+    "existing_running_dual_architecture_baseline_required": true
+  },
+  "sealed_local12": {
+    "manifest_sha256": "9b3366b350ef2b23fd285fc9d97d876bf1ae6e2fc0f8613c647640f01184502e",
+    "controller_sha256": "ff3a563bf58999683f34e9c6fb73656ea6790b120e48fd322b71f97c99818cca",
+    "changed": false,
+    "new_guard_available": false
+  },
+  "prior_preparation_package": {
+    "manifest_sha256": "36b897897ebf579dbb2cad5e7e9479a3ff0803f12f8aa8e36cd836f3c77ae03a",
+    "changed": false,
+    "ready_to_execute": false
+  },
+  "regressions": {
+    "new_script": "tools/yimecore/test-native-desktop-rehearsal.ps1",
+    "new_script_sha256": "6081eee38369cba0329ebd17e21a87d5afc281c29324335315783385e45eddc5",
+    "ps5_checks_passed": 41,
+    "ps7_checks_passed": 41,
+    "actual_transaction_ast_used": true,
+    "actual_catch_and_finally_used": true,
+    "synthetic_startup_registration_and_registry_only": true,
+    "old_root_lease_red_counterexample_reproduced": true,
+    "test_leaves_product_native_helper_type_unchanged": true,
+    "local_product_maintenance_contracts_per_shell": 60,
+    "legacy_x64_rehearsal_contracts_per_shell": 5,
+    "user_tip_value_kind_regression_both_shells_passed": true,
+    "user_tip_initial_sandbox_access_denied": true,
+    "user_tip_rerun_only_random_test_keys": true
+  },
+  "evidence": [
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-desktop-rehearsal-20260908\\ps5.json",
+      "sha256": "7bab4760db045498dd73e1dd4b975f8aa6f16905b241781856b591157b59d978"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\native-desktop-rehearsal-20260908\\ps7.json",
+      "sha256": "9242505ad347d7cce3616f1b27ecb9dee6d6603e5210d8b32deaadb8a27fc9ae"
+    }
+  ],
+  "new_guarded_candidate_rebuilt": false,
+  "new_guarded_candidate_native_execution_passed": false,
+  "native_same_sid_harness_completed": false,
+  "native_reboot_deletion_called": false,
+  "installer_executed": false,
+  "product_executed": false,
+  "installed_local12_changed": false,
+  "user_data_read_or_changed": false,
+  "actual_current_candidate_restore_passed": false,
+  "actual_current_candidate_rollback_passed": false,
+  "actual_current_candidate_uninstall_passed": false,
+  "local_product_ready": false,
+  "public_release_ready": false
+}

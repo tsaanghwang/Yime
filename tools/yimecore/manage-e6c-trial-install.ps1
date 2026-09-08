@@ -14,6 +14,7 @@ param(
     [switch]$NativeX64Rehearsal,
     [switch]$NativeX64Only,
     [switch]$NativeDesktop,
+    [switch]$NativeDesktopRehearsal,
     [string]$TargetUserSid,
     [string]$StandardUserInitiator
 )
@@ -21,6 +22,13 @@ param(
 $ErrorActionPreference = 'Stop'
 $NativeLocalProduct = [bool]($NativeX64Only -or $NativeDesktop)
 if ($NativeX64Only -and $NativeDesktop) { throw 'Choose exactly one local-product architecture mode.' }
+function Assert-NativeDesktopRehearsalOptions {
+    if ($NativeDesktopRehearsal -and (-not $NativeDesktop -or $NativeX64Only -or $NativeX64Rehearsal -or
+        $Action -notin @('Plan','Install') -or $PurgeUserData -or $NoLaunch -or $NoAutoStart)) {
+        throw 'NativeDesktopRehearsal requires the desktop architecture mode, Plan/Install, preserved data and full runtime/autostart rollback.'
+    }
+}
+Assert-NativeDesktopRehearsalOptions
 $productName = 'Yime ' + (-join ([char[]](0x81EA, 0x7814, 0x6808, 0x8BD5, 0x9A8C, 0x7248)))
 $productKeyName = 'YimeCoreExperimentalTrial'
 $productRoot = [IO.Path]::GetFullPath((Join-Path $env:ProgramFiles 'YimeCore Experimental Trial'))
@@ -324,7 +332,7 @@ function Restart-Elevated {
     if (-not [string]::IsNullOrWhiteSpace($InstallRoot)) {
         $arguments += @('-InstallRoot', (Quote-Argument ([IO.Path]::GetFullPath($InstallRoot))))
     }
-    foreach ($name in @('Force', 'PurgeUserData', 'NoAutoStart', 'NoLaunch', 'Quiet', 'NativeX64Rehearsal', 'NativeX64Only', 'NativeDesktop')) {
+    foreach ($name in @('Force', 'PurgeUserData', 'NoAutoStart', 'NoLaunch', 'Quiet', 'NativeX64Rehearsal', 'NativeX64Only', 'NativeDesktop', 'NativeDesktopRehearsal')) {
         if ((Get-Variable -Name $name -ValueOnly)) { $arguments += "-$name" }
     }
     $process = Start-Process -FilePath $windowsPowerShell -Verb RunAs `
@@ -438,6 +446,34 @@ function Get-PackageRecords([string]$root) {
     } | Sort-Object path)
 }
 
+function Assert-NativeDesktopRehearsalPackage($manifest) {
+    $marked = $false
+    foreach ($name in @('rehearsal_only','preparation_only')) {
+        $property = $manifest.PSObject.Properties[$name]
+        if ($property -and $property.Value -isnot [bool]) { throw 'Local rehearsal markers must be JSON booleans.' }
+        if ($property -and $property.Value) { $marked = $true }
+        if ($NativeDesktopRehearsal -and (-not $property -or $property.Value -ne $true)) {
+            throw 'NativeDesktopRehearsal requires an explicitly prepared failure-only package.'
+        }
+    }
+    if ($marked -and -not $NativeDesktopRehearsal) { throw 'A prepared local failure package cannot use normal installation.' }
+    if ($NativeDesktopRehearsal) {
+        $origin = $manifest.PSObject.Properties['source_package_manifest_sha256']
+        if (-not $origin -or $origin.Value -isnot [string] -or $origin.Value -cnotmatch '^[a-f0-9]{64}$') {
+            throw 'NativeDesktopRehearsal requires the reviewed source manifest identity.'
+        }
+    }
+}
+
+function Assert-NativeDesktopRehearsalBaseline([string]$root, [bool]$runtimeWasRunning) {
+    if (-not $NativeDesktopRehearsal) { return }
+    if ([string]::IsNullOrWhiteSpace($root) -or -not (Test-Path -LiteralPath $root -PathType Container) -or
+        -not $runtimeWasRunning -or
+        (@(Get-RegistrationArchitecturesForRoot $root | ForEach-Object { $_.name }) -join '|') -cne 'x64|x86') {
+        throw 'NativeDesktopRehearsal requires an existing running current-identity x64/x86 installation to restore.'
+    }
+}
+
 function Assert-Package([string]$root) {
     $resolved = [IO.Path]::GetFullPath($root)
     $manifestPath = Join-Path $resolved 'package-manifest.json'
@@ -447,7 +483,9 @@ function Assert-Package([string]$root) {
     $manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
     $localContract = $manifest.PSObject.Properties['package_contract'] -and
         [string]$manifest.package_contract -eq 'yimecore-local-product-package-v1'
+    if ($NativeDesktopRehearsal -and -not $localContract) { throw 'NativeDesktopRehearsal accepts only the independent local-product package contract.' }
     if ($localContract) {
+        Assert-NativeDesktopRehearsalPackage $manifest
         . (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
         . (Join-Path $PSScriptRoot 'local-package-contract.ps1')
         $localPackage = Assert-LocalProductPackage $resolved
@@ -1135,6 +1173,8 @@ if ($Action -eq 'Plan') {
         target_user_sid = $TargetUserSid
         forced_preinstall_cleanup = $true
         upgrade_rollback_supported = $true
+        native_desktop_failure_rehearsal = [bool]$NativeDesktopRehearsal
+        unexpected_success_forces_rollback = [bool]($NativeDesktopRehearsal -or $NativeX64Rehearsal)
         package_staged_before_preinstall_cleanup = $true
         x64_x86_tsf_registration = [bool]$NativeDesktop
 		arm64_tsf_artifacts_required = [bool](-not ($package.manifest.PSObject.Properties['package_contract'] -and
@@ -1194,6 +1234,7 @@ $previousUserTipSnapshot = Get-RegistryKeySnapshot $userTipKey
 $migrationLegacyUserTipSnapshot = Get-FrozenUserTipSnapshot
 $previousStatusPath = Join-Path $stateRootPath 'runtime-status.json'
 $previousRuntimeWasRunning = Get-PreviousRuntimeWasRunning $previousConfigText
+Assert-NativeDesktopRehearsalBaseline $previousRoot $previousRuntimeWasRunning
 
 if (Test-Path -LiteralPath $targetRoot) {
     if ($requestedInstallRoot) { throw "requested install root is still occupied: $targetRoot" }
@@ -1306,6 +1347,10 @@ try {
     # The failure-only exercise must never become a successful install or remove
     # the old roots still referenced by frozen architectures.
     if ($NativeX64Rehearsal) { throw 'Failure-only rehearsal unexpectedly started; restoring previous installation.' }
+    # This terminal barrier runs inside the rollback try/catch and before any
+    # old-root deletion (including deferred reboot deletion). A successful fault
+    # runtime must never commit a NativeDesktop rehearsal.
+    if ($NativeDesktopRehearsal) { throw 'NativeDesktop failure-only rehearsal unexpectedly started; restoring previous installation.' }
     foreach ($oldRoot in $previousRoots) {
         if ($NativeLocalProduct -and (Test-FrozenInstallRoot $oldRoot @(Get-FrozenRegistrationReferences))) { continue }
         if (-not ([IO.Path]::GetFullPath($oldRoot)).Equals(

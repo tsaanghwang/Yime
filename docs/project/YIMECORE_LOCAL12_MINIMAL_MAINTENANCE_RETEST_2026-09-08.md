@@ -72,6 +72,8 @@ local.12 的仓外 `seal.json` 固定源码快照 `4c5b89fa5088aed016ebb2905ec64
 
 还需解决一个明确的故障边界：local.12 控制器拒绝把 `NativeDesktop` 与 `NativeX64Rehearsal` 混用，且“故障包意外启动成功也强制回退”的分支只属于后者。因此新双架构演练执行器必须证明注入只会失败，并处理意外成功时的安全停止/恢复；单写 `rehearsal_only=true` 不能提供该保证。不得在尚未解决时运行故障包，也不得修改已封存 local.12 控制器然后继续声称测试的是原包。
 
+该限制现已有下节后的源码修复和合成回归；本段仍适用于封存 local.12 及由它准备的原故障包，不代表新源码修复已经进入这些包。
+
 ## 已实现的准备工具与验证
 
 新增 [prepare-local12-maintenance.ps1](../../tools/yimecore/prepare-local12-maintenance.ps1)、[local12-maintenance-preparation.psm1](../../tools/yimecore/local12-maintenance-preparation.psm1) 和 [test-local12-maintenance-preparation.ps1](../../tools/yimecore/test-local12-maintenance-preparation.ps1)。固定入口只接受封存 local.12 候选及控制器、双架构身份、74 文件和退出 86 探针源码的已审查哈希，默认 `Plan` 只输出 JSON。它不 dot-source 包内脚本，也不调用会启动 IndependenceAudit EXE 的 `Assert-LocalProductPackage`。
@@ -96,6 +98,25 @@ pwsh.exe -NoProfile -File tools/yimecore/test-local12-maintenance-preparation.ps
 ```
 
 本机只读复查入口是 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime\tools\yimecore\prepare-local12-maintenance.ps1`。准备产物仍等待上节明确的原生执行边界，不提供针对该故障包的升级/安装命令。
+
+## 提交前强制回滚：源码修复已完成，封存包保持原样
+
+进一步审查确认，外部 harness 的源码哈希、退出 86 探针和旧文件共享租约不能代替控制器内屏障。封存 local.12 控制器的第 1305 行接收 Runtime 成功，1308 行只为 `NativeX64Rehearsal` 抛错，1309–1315 行随后清理旧根。其第 572–592 行 `Remove-ProductTree` 遇到租约导致的删除失败会调用 `MoveFileEx(..., 4)` 登记重启删除，并返回；因此用共享租约阻止文件删除，反而可能留下重启删除队列。第 1075 行的回滚又要求原安装根仍存在，控制器没有从仓外备份重建已删除旧根的补偿事务。上述行号及结论对应固定 SHA-256 `ff3a563bf58999683f34e9c6fb73656ea6790b120e48fd322b71f97c99818cca`。
+
+本轮仅修改仓内 [manage-e6c-trial-install.ps1](../../tools/yimecore/manage-e6c-trial-install.ps1)，新增独立 `NativeDesktopRehearsal` 开关，保留历史 `NativeX64Rehearsal` 约束：
+
+- 只接受 `NativeDesktop` 的 Plan/Install，禁止混用单架构模式、旧演练模式、清空数据、跳过 Runtime 或跳过自启动。
+- 要求 local-product 包中的 `rehearsal_only` 与 `preparation_only` 都是实际 JSON boolean `true`，并有有效 source manifest SHA-256；正常包不能启用演练。普通 NativeDesktop 安装入口也拒绝标记为故障/准备的包，不能通过省略演练开关进入正常成功路径。
+- 提权参数显式透传新开关。实际安装前要求存在、正在运行的当前身份 x64/x86 旧安装，确保回退基线有效。
+- Runtime 意外启动成功后，在原事务 `try` 内、任何旧根清理之前明确抛错，进入现有 `catch`。新目标清理、旧 x64/x86 注册恢复、用户 TIP/Run/卸载快照及原运行状态恢复沿用原事务路径。普通成功升级路径保持原行为。
+
+新源码 SHA-256 为 `e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a`；它与封存 local.12 控制器明确不同。**没有将新源码覆盖到封存包或前述 `reviewed-20260908-ps5` 准备产物，也没有把该修复说成已安装。**要使用此屏障，必须重构带新控制器和新完整 manifest 的独立审查候选，再固定原生执行计划；不能让 staging 自动覆盖旧 manifest 中的控制器。
+
+新增 [test-native-desktop-rehearsal.ps1](../../tools/yimecore/test-native-desktop-rehearsal.ps1)，PS5/PS7 各 41 项合成回归通过。测试直接提取真实控制器 AST 的提交尾段、原 `catch/finally` 和恢复函数；启动与注册为内存 fixture，文件只在随机临时目录。覆盖预期启动失败、意外启动成功、双架构及原快照/Runtime 恢复、UAC 透传、标记类型、普通安装误用拒绝与正常成功升级。去除新屏障的 red 对照明确复现“旧根租约仍允许重启删除排队”。测试使用独立 fixture 类型记录延迟删除，不注册真实产品名的假 `NativeFile`，也不调用 Win32 延迟删除 API。
+
+另外，默认合成维护契约两壳各 60 项、历史 x64 演练契约两壳各 5 项、用户 TIP 嵌套 Enable/值类型回归两壳均通过。TIP 回归第一次被沙箱拒绝创建随机 `HKCU\Software\YimeCoreRollbackTests\<guid>` 测试键；确认清理仅限该随机根后在允许的环境复跑通过，没有操作产品注册键。结构化结果见 [2026-09-08-native-desktop-rehearsal-source.json](../testing/l6/2026-09-08-native-desktop-rehearsal-source.json)。
+
+CI 新增调用为两种 PowerShell 的 `-NoProfile -File tools/yimecore/test-native-desktop-rehearsal.ps1`（PS5 可加 `-ExecutionPolicy Bypass`）。当前只关闭源码屏障缺口：新候选重构、同 SID 原生 harness 与完整执行取证、实际恢复/回退/卸载仍未执行，不得因此改变 local.12 的 ready 字段。
 
 ## 完成条件
 
