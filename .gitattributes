@@ -19,6 +19,9 @@ tools/yimecore/native-maintenance-child.psm1 text eol=crlf
 tools/yimecore/native-maintenance-data.psm1 text eol=crlf
 tools/yimecore/native-maintenance-backup.psm1 text eol=crlf
 tools/yimecore/native-rollback-collection.psm1 text eol=crlf
+tools/yimecore/native-maintenance-deferred-delete.psm1 text eol=crlf
+tools/yimecore/native-maintenance-visibility.psm1 text eol=crlf
+tools/yimecore/native-maintenance-runtime.psm1 text eol=crlf
 *.bat text eol=crlf
 *.cmd text eol=crlf
 
