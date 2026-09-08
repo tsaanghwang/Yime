@@ -1,0 +1,451 @@
+{
+  "schema_version": "yimecore-native-health-adapter-review-v1",
+  "evidence_date": "2026-09-08",
+  "affected_product": "YimeCore",
+  "current_evidence_consistency_verified": true,
+  "result": "Actual retained Process references now connect the isolated candidate Runtime/Broker pair to the native health adapter; installed-product and maintenance acceptance remain unproven.",
+  "implementation": {
+    "default_discovery_scope": "global_exact_pair",
+    "new_discovery_scope": "explicit_process_references",
+    "reference_inputs": "Original exact System.Diagnostics.Process RuntimeProcess and BrokerProcess objects",
+    "handle_binding": "Short DangerousAddRef protects DuplicateHandle of the original kernel object; the lease retains a private query/synchronize duplicate and the original Process/SafeHandle association. No PID-reopening fallback.",
+    "caller_closed_safe_handle_rejected": true,
+    "caller_process_disposal_or_reassociation_rejected": true,
+    "lease_close_does_not_dispose_or_terminate_caller_process": true,
+    "private_guid_native_types": true,
+    "reviewed_helper_hashes_bound_to_held_source_streams": true,
+    "source_read_leases_held_through_observation": true,
+    "cleanup_continues_after_individual_dispose_failure": true,
+    "process_start_origin_authenticated": false
+  },
+  "unchanged_candidate": {
+    "package_root": "C:\\dev\\Yime\\.tmp\\w13h\\.tmp\\yimecore-local-product\\health13\\package",
+    "package_id": "yimecore-local-0.1.0-local.13-7f86b4384fef",
+    "product_version": "0.1.0-local.13",
+    "package_manifest_sha256": "8f7e44ab9097a99d938891b507d0a07b753ffa66dbbec887cb0576286470f2cc",
+    "listed_payload_count": 85,
+    "source_commit": "e2d9d4222b09c548f978101668940262b895e4fc",
+    "source_manifest_sha256": "7f86b4384fefedf6d7c3e62bff8397757b0ae780f2a58d13876e79b54e6e008f",
+    "source_zip_member_count_from_preserved_build_review": 818,
+    "candidate_manifest_and_two_health_binaries_current_hashes_verified": true,
+    "rebuilt_this_round": false,
+    "current_adapter_changes_in_candidate_source_snapshot": false,
+    "historical_source_note": "The e2d9d422 source snapshot and old raw source_pins retain their historical bytes. This round does not assert that old wrapper 486ddf90 or ProcessPin d7509662 hashes describe current source."
+  },
+  "isolated_actual_adapter_runs": [
+    {
+      "shell": "ps5",
+      "powershell": "5.1.26100.9278",
+      "passed": true,
+      "required_test_exit_code": 0,
+      "round_count": 2,
+      "isolated_actual_candidate_parent_child_health": true,
+      "production_lease_adapter_integrated": true,
+      "process_discovery_scope": "explicit_process_references",
+      "private_provider_replacements_used": false,
+      "adapter_import_preserved_existing_lease": true,
+      "adapter_lease_closed": true,
+      "adapter_regressions": [
+        "health import preserves original live process registry",
+        "serialized public observation refused",
+        "caller evidence replacement does not replace native facts",
+        "terminated original process references refused",
+        "closed process observation refused"
+      ],
+      "original_handle_exits": [
+        {
+          "role": "stopper",
+          "exit_code": 0,
+          "original_handle_exit_verified": true,
+          "test_harness_forced_termination": false
+        },
+        {
+          "role": "runtime",
+          "exit_code": 0,
+          "original_handle_exit_verified": true,
+          "test_harness_forced_termination": false
+        },
+        {
+          "role": "broker",
+          "exit_code": 1,
+          "original_handle_exit_verified": true,
+          "test_harness_forced_termination": false
+        }
+      ],
+      "cleanup_error_count": 0
+    },
+    {
+      "shell": "ps7",
+      "powershell": "7.6.5",
+      "passed": true,
+      "required_test_exit_code": 0,
+      "round_count": 2,
+      "isolated_actual_candidate_parent_child_health": true,
+      "production_lease_adapter_integrated": true,
+      "process_discovery_scope": "explicit_process_references",
+      "private_provider_replacements_used": false,
+      "adapter_import_preserved_existing_lease": true,
+      "adapter_lease_closed": true,
+      "adapter_regressions": [
+        "health import preserves original live process registry",
+        "serialized public observation refused",
+        "caller evidence replacement does not replace native facts",
+        "terminated original process references refused",
+        "closed process observation refused"
+      ],
+      "original_handle_exits": [
+        {
+          "role": "stopper",
+          "exit_code": 0,
+          "original_handle_exit_verified": true,
+          "test_harness_forced_termination": false
+        },
+        {
+          "role": "runtime",
+          "exit_code": 0,
+          "original_handle_exit_verified": true,
+          "test_harness_forced_termination": false
+        },
+        {
+          "role": "broker",
+          "exit_code": 1,
+          "original_handle_exit_verified": true,
+          "test_harness_forced_termination": false
+        }
+      ],
+      "cleanup_error_count": 0
+    }
+  ],
+  "regression": {
+    "process_tests": [
+      {
+        "shell": "ps5",
+        "mode": "default",
+        "passed": true,
+        "check_count": 89,
+        "native_named_runtime_broker_pair_executed": false,
+        "native_self_and_owned_cmd_reference_checks_executed": true,
+        "raw_closed_handle_rejected": true,
+        "reassociation_old_process_still_live": true,
+        "product_processes_enumerated": false
+      },
+      {
+        "shell": "ps5",
+        "mode": "native_pair",
+        "passed": true,
+        "check_count": 100,
+        "native_named_runtime_broker_pair_executed": true,
+        "native_self_and_owned_cmd_reference_checks_executed": true,
+        "raw_closed_handle_rejected": true,
+        "reassociation_old_process_still_live": true,
+        "product_processes_enumerated": false
+      },
+      {
+        "shell": "ps7",
+        "mode": "default",
+        "passed": true,
+        "check_count": 89,
+        "native_named_runtime_broker_pair_executed": false,
+        "native_self_and_owned_cmd_reference_checks_executed": true,
+        "raw_closed_handle_rejected": true,
+        "reassociation_old_process_still_live": true,
+        "product_processes_enumerated": false
+      },
+      {
+        "shell": "ps7",
+        "mode": "native_pair",
+        "passed": true,
+        "check_count": 100,
+        "native_named_runtime_broker_pair_executed": true,
+        "native_self_and_owned_cmd_reference_checks_executed": true,
+        "raw_closed_handle_rejected": true,
+        "reassociation_old_process_still_live": true,
+        "product_processes_enumerated": false
+      }
+    ],
+    "default_test_scope": "Synthetic role/identity failures plus genuine self/owned cmd handle association in a disposable PowerShell child; default tests are not entirely synthetic.",
+    "native_pair_scope": "RunNativeFixture additionally compiles and launches only owned Runtime/Broker stubs with a private enumerator of their PIDs.",
+    "wrapper_contracts": [
+      {
+        "shell": "ps5",
+        "passed": true,
+        "check_count": 65,
+        "candidate_executed": false,
+        "registry_queried": false,
+        "source_sha256": "4c9bc8d3f34fabe2d5448a2752a761176c2db71ff0ef1b7aa83337362ed5cb9a"
+      },
+      {
+        "shell": "ps7",
+        "passed": true,
+        "check_count": 65,
+        "candidate_executed": false,
+        "registry_queried": false,
+        "source_sha256": "4c9bc8d3f34fabe2d5448a2752a761176c2db71ff0ef1b7aa83337362ed5cb9a"
+      }
+    ],
+    "wrapper_contract_scope": "No candidate execution: private source/AST and owned filesystem contracts.",
+    "post_merge_payload_closure": [
+      {
+        "shell": "ps5",
+        "passed": true,
+        "check_count": 29,
+        "test_level": "isolated-fixtures-only",
+        "actual_installer_or_uninstaller_executed": false,
+        "registry_or_process_touched": false,
+        "default_input_method_changed": false,
+        "production_user_data_read_or_written": false,
+        "helper_sha256": "e5abeec460e07b81e2c05a053d959d9bc2357476990799ff0eacd04e410fa93b",
+        "test_sha256": "e6e8efa396d5760f8c3d7246ed5cbca79a32dbb3886af0d7a26d99e00f58c42d"
+      },
+      {
+        "shell": "ps7",
+        "passed": true,
+        "check_count": 29,
+        "test_level": "isolated-fixtures-only",
+        "actual_installer_or_uninstaller_executed": false,
+        "registry_or_process_touched": false,
+        "default_input_method_changed": false,
+        "production_user_data_read_or_written": false,
+        "helper_sha256": "e5abeec460e07b81e2c05a053d959d9bc2357476990799ff0eacd04e410fa93b",
+        "test_sha256": "e6e8efa396d5760f8c3d7246ed5cbca79a32dbb3886af0d7a26d99e00f58c42d"
+      }
+    ],
+    "post_merge_payload_closure_scope": "Two isolated fixture runs, 29 checks per shell, separate from the 1555 maintenance CI checks per shell. The PS5 retry used child-process ExecutionPolicy Bypass only; no system execution policy was modified."
+  },
+  "maintenance_ci": {
+    "passed": true,
+    "workflow_sha256": "d6bda4b622907f0f48e271ba142668f910fdf0804f8cf9ebbc0628bd15ca5473",
+    "step": "Test YimeCore guarded maintenance preparation and native observations",
+    "invocation": "actual CI body: external PS5 and in-process PS7",
+    "report_count": 30,
+    "all_30_raw_sizes_and_hashes_reverified": true,
+    "checks_per_shell": 1555,
+    "total_checks": 3110,
+    "per_script_checks_per_shell": {
+      "test-local13-maintenance-inputs": 59,
+      "test-local13-maintenance-preparation": 57,
+      "test-native-maintenance-backup": 155,
+      "test-native-maintenance-child": 74,
+      "test-native-maintenance-context": 48,
+      "test-native-maintenance-data": 51,
+      "test-native-maintenance-deferred-delete": 201,
+      "test-native-maintenance-evidence": 79,
+      "test-native-maintenance-health": 73,
+      "test-native-maintenance-processes": 89,
+      "test-native-maintenance-runtime": 72,
+      "test-native-maintenance-visibility": 104,
+      "test-native-rehearsal-outcome-reader": 224,
+      "test-native-rehearsal-outcome": 99,
+      "test-native-rollback-collection": 170
+    },
+    "deferred_delete_optional_native_fixture_requested": false,
+    "deferred_delete_provider_owned_fixture_requested": false,
+    "visibility_optional_native_fixture_requested": false,
+    "validation_context": "Final CI after merging the remote child and payload fixture fixes; the prior CI raw files remain preserved."
+  },
+  "final_source_baseline": {
+    "source_baseline_passed": true,
+    "source_unchanged": true,
+    "source_count": 220,
+    "fixture_checks": 68,
+    "known_pending_count": 8,
+    "all_220_current_source_hashes_reverified": true
+  },
+  "preserved_archive": {
+    "root": "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local13-health-candidates-20260908-9d59c3b5324f4313921901325effcc79",
+    "archive_manifest_sha256": "19c96df216e8a246e07ca967c3d1e215a058bda2a6708c95f7cc4e29a1ee0b1d",
+    "archive_summary_sha256": "5391b75f5f30dedaf65bfa36b7f3963b6f5cc0acfdeef829d16cc2c9bfa40b69",
+    "recorded_public_input_count": 186,
+    "recorded_total_file_count": 188,
+    "metadata_hashes_reverified_this_round": true,
+    "all_archive_members_rehashed_this_round": false,
+    "rebuilt_or_rebound_this_round": false,
+    "new_adapter_sources_and_results_added_to_existing_archive": false,
+    "historical_raw_preserved": true
+  },
+  "scope": {
+    "isolated_existing_normal_candidate_executed": true,
+    "production_lease_adapter_integrated_for_explicit_references": true,
+    "private_provider_replacements_used_in_actual_runs": false,
+    "global_production_process_discovery_used": false,
+    "ordinary_input_pipe_connection_opened": false,
+    "fault_probe_executed": false,
+    "installer_executed": false,
+    "actual_native_backup_restore_upgrade_rollback_uninstall_reinstall_executed": false,
+    "installed_local12_read_or_executed_by_health_runs": false,
+    "installed_local12_mutated": false,
+    "production_rime_pime_mutated": false,
+    "default_input_method_changed": false,
+    "actual_user_state_read": false,
+    "broker_exit_note": "The actual Broker exit code is 1 after explicit private Runtime stop; Runtime source terminates its Broker. No harness-forced termination occurred."
+  },
+  "closure": {
+    "global_discovery_health_acceptance": false,
+    "installed_product_health_observed": false,
+    "collector_health_integrated": false,
+    "engine_ready_verified": false,
+    "runtime_ready": false,
+    "config_consumed_verified": false,
+    "startup_path_verified": false,
+    "native_desktop_accepted": false,
+    "process_start_origin_authenticated": false,
+    "continuous_package_membership_verified": false,
+    "in_memory_code_identity_verified": false,
+    "E7_accepted": false,
+    "L6_sealed": false,
+    "local_product_ready": false,
+    "public_release_ready": false,
+    "full_acceptance": false,
+    "dp1_full_implementation_passed": false,
+    "dp2_physical_acceptance_passed": false,
+    "dp3_install_entry_accepted": false
+  },
+  "current_sources": [
+    {
+      "role": "current_source",
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-processes.psm1",
+      "bytes": 19259,
+      "sha256": "2d15b76b555e68b550865508dd6b489ad26541f99fcc42c9f013e8c1a28c4132"
+    },
+    {
+      "role": "current_source",
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-process-facts.cs",
+      "bytes": 8532,
+      "sha256": "55e81dc42c9280aed1f054a816534d9961d5e52b99e2a098d89a5be0392b2370"
+    },
+    {
+      "role": "current_source",
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\test-native-maintenance-processes.ps1",
+      "bytes": 39272,
+      "sha256": "af10c54fa1bfa81f339260fd9eb3582388c09ed3a133d3e22aa821f898fea215"
+    },
+    {
+      "role": "current_source",
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\test-local-product-health.ps1",
+      "bytes": 34065,
+      "sha256": "4c9bc8d3f34fabe2d5448a2752a761176c2db71ff0ef1b7aa83337362ed5cb9a"
+    },
+    {
+      "role": "current_source",
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-health.psm1",
+      "bytes": 6503,
+      "sha256": "7aa2ae06343b2484bd65c24ef793efa3e4527972c516442478b8a2b990aaf398"
+    },
+    {
+      "role": "current_source",
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\native-maintenance-health-client.cs",
+      "bytes": 9724,
+      "sha256": "cb9e7189d70e0c3a033ff6dd591d1c7ce91c637d92d9bf9a93f23b78be4858e3"
+    }
+  ],
+  "evidence": [
+    {
+      "role": "actual_adapter_health_ps5",
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-adapter-20260908\\health-ps5\\summary.json",
+      "bytes": 21554,
+      "sha256": "27ca348f14650361963c7fac70f87bd356189c8be0b1cdb86cf04ead3d32a1d8"
+    },
+    {
+      "role": "wrapper_contracts_ps5",
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-adapter-20260908\\wrapper-contracts-ps5.json",
+      "bytes": 10181,
+      "sha256": "73bdfac731ddd6c933eb9394d69bdead4080c60978e0d5d7bb10ebe683917673"
+    },
+    {
+      "role": "process_regression_default_ps5",
+      "path": "C:\\dev\\Yime\\.tmp\\native-process-reference-tests-20260908\\ps5-final.json",
+      "bytes": 17923,
+      "sha256": "fb2a99a55242a22ebce0284de59ad4042186c0b34cc8a72c56a2ce41d3154a80"
+    },
+    {
+      "role": "process_regression_native_pair_ps5",
+      "path": "C:\\dev\\Yime\\.tmp\\native-process-reference-tests-20260908\\native-ps5-final.json",
+      "bytes": 24835,
+      "sha256": "9ee875c09d76254a44873b30c180ecb45ae91064b8b486a18fc0d8c7528ab28f"
+    },
+    {
+      "role": "actual_adapter_health_ps7",
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-adapter-20260908\\health-ps7\\summary.json",
+      "bytes": 12143,
+      "sha256": "a475c49adb74d77c6454e4ada5b71d946aaf8ff28b1d0674878d7b9325f3dfe4"
+    },
+    {
+      "role": "wrapper_contracts_ps7",
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-adapter-20260908\\wrapper-contracts-ps7.json",
+      "bytes": 5845,
+      "sha256": "7a3b2fc94ea00499a3bae58639db9d01533005ea60ea0056991a9df9b1fcd514"
+    },
+    {
+      "role": "process_regression_default_ps7",
+      "path": "C:\\dev\\Yime\\.tmp\\native-process-reference-tests-20260908\\ps7-final.json",
+      "bytes": 10625,
+      "sha256": "08b0cf9ff0df01e309291217bad55baa4c8d8a4af38426a188f2f0136c14b98c"
+    },
+    {
+      "role": "process_regression_native_pair_ps7",
+      "path": "C:\\dev\\Yime\\.tmp\\native-process-reference-tests-20260908\\native-ps7-final.json",
+      "bytes": 14300,
+      "sha256": "3cd69372f71721832575f2ec7629a6279bba66a9359fc1e277cce5ed734acebe"
+    },
+    {
+      "role": "actual_ci_step_summary_binding_30_results",
+      "path": "C:\\dev\\Yime\\.tmp\\native-health-adapter-20260908\\merged\\summary.json",
+      "bytes": 8409,
+      "sha256": "aee75c644f3557132cbc6e1fba5267869e5f346b4f1f169aa6d84ca2f028766d"
+    },
+    {
+      "role": "final_dual_product_source_baseline",
+      "path": "C:\\dev\\Yime\\.tmp\\dual-product\\dp1-health-adapter-merged-20260908\\baseline.json",
+      "bytes": 48942,
+      "sha256": "9ded504675888528f6556f541943297cbc6bf5efaab130f9e4956066e94182c4"
+    },
+    {
+      "role": "unchanged_candidate_manifest",
+      "path": "C:\\dev\\Yime\\.tmp\\w13h\\.tmp\\yimecore-local-product\\health13\\package\\package-manifest.json",
+      "bytes": 16024,
+      "sha256": "8f7e44ab9097a99d938891b507d0a07b753ffa66dbbec887cb0576286470f2cc"
+    },
+    {
+      "role": "unchanged_candidate_binary",
+      "path": "C:\\dev\\Yime\\.tmp\\w13h\\.tmp\\yimecore-local-product\\health13\\package\\bin\\YimeCoreTrialRuntime.exe",
+      "bytes": 4505600,
+      "sha256": "ee4efa963a130bcea1695aa2a196d5dc5176ed4c69cdcac3baaefa53724c7e0d"
+    },
+    {
+      "role": "unchanged_candidate_binary",
+      "path": "C:\\dev\\Yime\\.tmp\\w13h\\.tmp\\yimecore-local-product\\health13\\package\\bin\\YimeBroker.exe",
+      "bytes": 5512192,
+      "sha256": "eee55bd1d2e8c2fd73d947541546c4c4950defec704a1288c8ceda647516e69d"
+    },
+    {
+      "role": "unchanged_existing_archive_manifest",
+      "path": "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local13-health-candidates-20260908-9d59c3b5324f4313921901325effcc79\\archive-manifest.json",
+      "bytes": 60555,
+      "sha256": "19c96df216e8a246e07ca967c3d1e215a058bda2a6708c95f7cc4e29a1ee0b1d"
+    },
+    {
+      "role": "unchanged_existing_archive_summary",
+      "path": "C:\\Users\\tsaan\\YimeCore Recovery Archives\\local13-health-candidates-20260908-9d59c3b5324f4313921901325effcc79\\archive-summary.json",
+      "bytes": 783,
+      "sha256": "5391b75f5f30dedaf65bfa36b7f3963b6f5cc0acfdeef829d16cc2c9bfa40b69"
+    },
+    {
+      "role": "historical_candidate_build_and_archive_summary",
+      "path": "C:\\dev\\Yime\\docs\\testing\\l6\\2026-09-08-local13-health-candidates.json",
+      "bytes": 15823,
+      "sha256": "af58b885628b828bd46798447b7d3bb9ec00ab28d895cb1530a7bf059dcbc41b"
+    },
+    {
+      "role": "post_merge_payload_closure_ps5",
+      "path": "C:\\dev\\Yime\\.tmp\\dual-product\\dp1-payload-closure-health-merge-ps5-20260908\\result.json",
+      "bytes": 5269,
+      "sha256": "d1ce9c06546f72656e806481eaefe7401a42db97d2b81efdb5c0ce323c5e648d"
+    },
+    {
+      "role": "post_merge_payload_closure_ps7",
+      "path": "C:\\dev\\Yime\\.tmp\\dual-product\\dp1-payload-closure-health-merge-ps7-20260908\\result.json",
+      "bytes": 3303,
+      "sha256": "3b6c5af50ccb9f2a7464ae6bae91f5cf4bfde9788c3abb106ee35ffa893b8cef"
+    }
+  ]
+}
