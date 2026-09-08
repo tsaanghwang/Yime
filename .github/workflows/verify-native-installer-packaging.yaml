@@ -170,9 +170,8 @@ jobs:
           name: yime-unsigned-payload-${{ github.sha }}
           path: .
       - name: Install NSIS in non-secret packaging job
-        uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
-        with:
-          nsis-version: 3.12
+        shell: pwsh
+        run: .\tools\install-locked-nsis.ps1 -Version '3.12'
       - name: Test DP1-K NSIS compiler membership interval
         shell: pwsh
         run: |

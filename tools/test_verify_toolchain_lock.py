@@ -16,9 +16,8 @@ def workflow_with_pins(unsigned: str = "3.12", release: str = "3.12") -> str:
         "    runs-on: windows-2022\n"
         "    steps:\n"
         "      - name: Install NSIS\n"
-        "        uses: repolevedavaj/install-nsis@pinned-test-revision\n"
-        "        with:\n"
-        f"          nsis-version: {version}\n"
+        "        shell: pwsh\n"
+        f"        run: .\\tools\\install-locked-nsis.ps1 -Version {version}\n"
         for job, version in zip(JOBS, (unsigned, release))
     )
 
@@ -53,37 +52,48 @@ class ToolchainLockTests(unittest.TestCase):
                 with self.assertRaises(lockcheck.VerificationError):
                     lockcheck.verify_ci_nsis_pin(changed, "3.12")
 
-    def test_missing_duplicate_comment_or_dynamic_input_fails(self) -> None:
+    def test_missing_duplicate_comment_or_dynamic_command_fails(self) -> None:
         workflow = workflow_with_pins()
-        pin = "          nsis-version: 3.12\n"
+        pin = "        run: .\\tools\\install-locked-nsis.ps1 -Version 3.12\n"
         for replacement in (
             "",
             pin + pin,
-            "          # nsis-version: 3.12\n",
-            "          nsis-version: ${{ inputs.nsis }}\n",
-            "          nsis-version: 3.120\n",
+            pin.replace("run:", "# run:"),
+            pin.replace("3.12", "${{ inputs.nsis }}"),
+            pin.replace("3.12", "3.120"),
+            pin.replace("3.12", "3.12; Write-Host unreviewed"),
         ):
             with self.subTest(replacement=replacement):
                 with self.assertRaises(lockcheck.VerificationError):
                     lockcheck.verify_ci_nsis_pin(workflow.replace(pin, replacement, 1), "3.12")
 
-    def test_comment_or_run_text_is_not_an_install_step(self) -> None:
+    def test_comment_or_nested_run_text_is_not_an_install_step(self) -> None:
         workflow = workflow_with_pins()
-        for replacement in ("        # uses:", "        run:"):
+        for replacement in ("        # run:", "        run: |\n          # run:"):
             with self.subTest(replacement=replacement):
                 with self.assertRaises(lockcheck.VerificationError):
-                    lockcheck.verify_ci_nsis_pin(workflow.replace("        uses:", replacement, 1), "3.12")
+                    lockcheck.verify_ci_nsis_pin(workflow.replace("        run:", replacement, 1), "3.12")
 
-    def test_duplicate_install_step_or_missing_with_fails(self) -> None:
+    def test_duplicate_install_step_or_wrong_shell_fails(self) -> None:
         workflow = workflow_with_pins()
         first_step = workflow.split("    steps:\n", 1)[1].split("  release-installer-package:", 1)[0]
         for changed in (
             workflow.replace(first_step, first_step + first_step, 1),
-            workflow.replace("        with:\n", "", 1),
+            workflow.replace("        shell: pwsh\n", "", 1),
+            workflow.replace("        shell: pwsh\n", "        shell: cmd\n", 1),
         ):
             with self.subTest(changed=changed):
                 with self.assertRaises(lockcheck.VerificationError):
                     lockcheck.verify_ci_nsis_pin(changed, "3.12")
+
+    def test_patching_action_is_rejected_even_after_a_correct_setup(self) -> None:
+        workflow = workflow_with_pins() + (
+            "      - uses: repolevedavaj/install-nsis@" + "a" * 40 + "\n"
+            "        with:\n"
+            "          nsis-version: 3.12\n"
+        )
+        with self.assertRaisesRegex(lockcheck.VerificationError, "patches the locked distribution"):
+            lockcheck.verify_ci_nsis_pin(workflow, "3.12")
 
 
 if __name__ == "__main__":
