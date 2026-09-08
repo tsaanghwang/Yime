@@ -22,7 +22,8 @@ if ($testModules.Count -eq 0) {
 # fresh interpreter that the production proof CLI also uses.
 $testExitCode = 0
 foreach ($testModule in $testModules) {
-    & $runner -Python $Python -m unittest discover -s $testRoot -p $testModule.Name -v
+    # Bind the array explicitly so Python's -p cannot abbreviate -Python.
+    & $runner -Python $Python -ToolArguments @('-m', 'unittest', 'discover', '-s', $testRoot, '-p', $testModule.Name, '-v')
     if ($LASTEXITCODE -ne 0) {
         $testExitCode = $LASTEXITCODE
     }
