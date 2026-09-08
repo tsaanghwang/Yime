@@ -1,0 +1,112 @@
+{
+  "schema_version": "yime-rime-pime-dp1u-isolated-preflight-source-evidence-v1",
+  "date": "2026-09-08",
+  "affected_products": [
+    "rime-pime"
+  ],
+  "protected_product": "yimecore",
+  "scope": "pure-supplied-authorization-and-preflight-contract-plus-synthetic-fixtures-only",
+  "implementation_files": [
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-isolated-preflight.psm1",
+      "sha256": "6a0083024ad920f6fc2ba3979e008257029e38e132b7740ba2a3d625e1230963"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-isolated-preflight.schema.json",
+      "sha256": "a22d0ddc9eec9faf5d28631a6580450b62e9c448897be6eea35ee39cc0758b8b"
+    },
+    {
+      "path": "tools/dual-product/fixtures/dp1u-isolated-preflight.synthetic.json",
+      "sha256": "5e7f45f70b1b23e0e0f510a6fd80ab32ab59ead322f6a9cb8df53dba34b60f8e"
+    },
+    {
+      "path": "tools/dual-product/test-rime-pime-dp1u-isolated-preflight.ps1",
+      "sha256": "c37a5c5339ec4b37e2f7a926b679feccb8a12f61b7b90118344f0217c33501f7"
+    }
+  ],
+  "fixture_results": [
+    {
+      "lane": "isolated-preflight",
+      "shell": "ps5",
+      "path": ".tmp/dual-product/dp1-u-preflight-test-ps5-20260908-c/result.json",
+      "sha256": "11fd114bd63d0112d53ad943e78210f709ba301313924ea6ab968b1ee5d6e762",
+      "powershell_version": "5.1.26100.9278",
+      "passed_count": 246,
+      "check_count": 246,
+      "fixture_only": true
+    },
+    {
+      "lane": "existing-maintenance-runtime-gate",
+      "shell": "ps5",
+      "path": ".tmp/dual-product/dp1-u-gate-test-ps5-20260908-preflight/result.json",
+      "sha256": "3ac9ebc3d074cf0e492fa8d7e9bdfec546d515c082b605c8f909e845abe07b88",
+      "powershell_version": "5.1.26100.9278",
+      "passed_count": 11,
+      "check_count": 11,
+      "fixture_only": true
+    },
+    {
+      "lane": "isolated-preflight",
+      "shell": "ps7",
+      "path": ".tmp/dual-product/dp1-u-preflight-test-ps7-20260908-c/result.json",
+      "sha256": "ad1c6288f540552783f513fea01be4994c9111449468ee81ebab3050a5380d79",
+      "powershell_version": "7.6.5",
+      "passed_count": 246,
+      "check_count": 246,
+      "fixture_only": true
+    },
+    {
+      "lane": "existing-maintenance-runtime-gate",
+      "shell": "ps7",
+      "path": ".tmp/dual-product/dp1-u-gate-test-ps7-20260908-preflight/result.json",
+      "sha256": "37fdec60d412fb4fb719abea04cc66a0c674869013758a2527a8602e8f3d5313",
+      "powershell_version": "7.6.5",
+      "passed_count": 11,
+      "check_count": 11,
+      "fixture_only": true
+    }
+  ],
+  "initial_failed_fixture_attempts": {
+    "ps5": ".tmp/dual-product/dp1-u-preflight-test-ps5-20260908-a/result.json",
+    "ps7": ".tmp/dual-product/dp1-u-preflight-test-ps7-20260908-a/result.json",
+    "resolution": "Test helper parameter shadowing and PS7 JSON date conversion fixed; strict input types retained."
+  },
+  "claims": {
+    "source_contract_implemented": true,
+    "ps5_fixture_passed": true,
+    "ps7_fixture_passed": true,
+    "real_target_approved": false,
+    "native_preflight_executed": false,
+    "execution_authorized": false,
+    "installer_or_uninstaller_executed": false,
+    "registry_read_or_mutated": false,
+    "product_process_executed": false,
+    "installed_yimecore_local12_touched": false,
+    "production_rime_pime_touched": false,
+    "production_user_data_accessed": false,
+    "default_input_method_changed": false,
+    "registration_gate_passed": false,
+    "rollback_gate_passed": false,
+    "removal_gate_passed": false,
+    "runtime_gate_passed": false,
+    "dp1_u_acceptance_passed": false,
+    "fixture_receipts_are_durable_recovery_media": false,
+    "hardware_power_loss_verified": false,
+    "directory_metadata_durability_verified": false,
+    "hostile_same_sid_physical_prevention_verified": false,
+    "dp1_complete": false,
+    "dp2_complete": false,
+    "dp3_complete": false,
+    "l5_complete": false,
+    "l6_complete": false
+  },
+  "pending": [
+    "Independent target-specific approval and trusted approval provenance",
+    "Native target and ancestry observations with no packaged ancestor",
+    "System-visible SID, registry views and resource identity verification",
+    "Persistent approval consumption/revocation and repeat preflight at phase transitions",
+    "Separately reviewed execution adapter with static payload and registration preservation guards",
+    "Actual registration, rollback, removal and non-elevated Runtime evidence",
+    "Independent ARM64 package and native acceptance contract"
+  ]
+}

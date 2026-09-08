@@ -1,5 +1,7 @@
 # Yime 双独立产品开发计划
 
+2026-09-08 DP1-U 增量：[隔离目标授权与执行前合同](YIME_DUAL_PRODUCT_DP1_U_ISOLATED_PREFLIGHT_2026-09-08.md)新增纯校验模块、精确 evidence schema 和 PS5／PS7 合成夹具各 246/246。绑定独立审批摘要、目标身份、发起 SID、系统可见状态／恢复根及双产品资源边界；拒绝 MYCOMPUTER local.12、生产 Rime/PIME、默认输入法变更、packaged ancestry 和歧义注册视图。没有真实目标批准、执行适配器或 installed 证据，`execution_authorized=false`，四类 installed 门禁及总验收仍为 false。
+
 2026-09-07 DP1-U 增量：[注册、回滚、卸载与 Runtime 门禁](YIME_DUAL_PRODUCT_DP1_U_MAINTENANCE_RUNTIME_GATES_2026-09-07.md)已完成门禁实现。统一的精确 evidence schema 对四类实际证据逐项失败关闭，PS5／PS7 真值表各 11/11；当前审查汇入 DP1-T actual canonical receipt 及七组双 shell 源码／夹具结果，得到 `source_contract_ready=true`。依照本轮不运行安装器的约束，注册、回滚、removal、Runtime 四个实际门和总 acceptance 均保持 false；未触碰注册表、产品进程、默认输入法、生产用户数据或 YimeCore local.12。目录 metadata、hardware power loss 和 hostile same-SID physical prevention 继续为 false，DP1 仍未完成。
 
 2026-09-07 DP1-S 增量：[实际仓外证据归档](YIME_DUAL_PRODUCT_DP1_S_OFF_REPOSITORY_ARCHIVE_2026-09-07.md)已完成当前进程／静态证据范围。现有 DP1-P 候选被发布为位于所有 Git worktree 和仓库 `.tmp` 之外的 43 对象 immutable capsule；原候选目录不可用期间，fresh PS5／PS7 子进程均只从仓外对象重建精确路径投影，并通过 strict receipt 与 installer bytes 复核。二次运行只读复用现有验证记录。两个子进程本身无 package identity，但仍有 packaged Codex ancestor，故 Explorer 独立启动仍为 false；目录 metadata durability、真实 hardware power loss 与 hostile same-SID physical prevention 也保持 false。未执行安装／卸载、注册、产品进程或 canonical migration，未触碰 local.12。下一步依次为 DP1-T 真实 adapter／一次授权／migration、DP1-U 注册／回滚／removal／Runtime。

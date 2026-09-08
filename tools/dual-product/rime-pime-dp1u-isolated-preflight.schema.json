@@ -1,0 +1,529 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DP1-U supplied isolated authorization and preflight contract (no execution capability)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "authorization",
+    "preflight",
+    "product_boundary"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "yime-rime-pime-dp1u-isolated-preflight-evidence-v1"
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "approval_reference",
+        "approved_by",
+        "approved_at_utc",
+        "expires_at_utc",
+        "run_id",
+        "target_name",
+        "target_machine_id",
+        "initiating_sid",
+        "state_root",
+        "install_root",
+        "recovery_root",
+        "package_sha256",
+        "canonical_receipt_sha256",
+        "product_boundary_sha256",
+        "affected_product",
+        "target_class",
+        "package_architectures",
+        "operations",
+        "production_rime_pime_allowed",
+        "yimecore_local12_allowed",
+        "default_input_method_mutation_allowed",
+        "production_user_data_allowed",
+        "cross_product_mutation_allowed",
+        "historical_payload_execution_allowed",
+        "shared_runtime_or_state_allowed"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "yime-rime-pime-dp1u-isolated-authorization-v1"
+        },
+        "approval_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "approved_by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "approved_at_utc": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expires_at_utc": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "target_name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9-]{0,62}$"
+        },
+        "target_machine_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "initiating_sid": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^S-1-5-21-[1-9][0-9]*-[1-9][0-9]*-[1-9][0-9]*-[1-9][0-9]*$"
+        },
+        "state_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "install_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recovery_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "package_sha256": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "canonical_receipt_sha256": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "product_boundary_sha256": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "affected_product": {
+          "type": "string",
+          "const": "rime-pime"
+        },
+        "target_class": {
+          "type": "string",
+          "const": "isolated-mainstream-windows-x64"
+        },
+        "package_architectures": {
+          "type": "string",
+          "const": "x86,x64"
+        },
+        "operations": {
+          "type": "string",
+          "const": "registration,rollback,removal,runtime"
+        },
+        "production_rime_pime_allowed": {
+          "type": "boolean",
+          "const": false
+        },
+        "yimecore_local12_allowed": {
+          "type": "boolean",
+          "const": false
+        },
+        "default_input_method_mutation_allowed": {
+          "type": "boolean",
+          "const": false
+        },
+        "production_user_data_allowed": {
+          "type": "boolean",
+          "const": false
+        },
+        "cross_product_mutation_allowed": {
+          "type": "boolean",
+          "const": false
+        },
+        "historical_payload_execution_allowed": {
+          "type": "boolean",
+          "const": false
+        },
+        "shared_runtime_or_state_allowed": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "preflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "observed_at_utc",
+        "run_id",
+        "target_name",
+        "target_machine_id",
+        "initiating_sid",
+        "state_root",
+        "install_root",
+        "recovery_root",
+        "package_sha256",
+        "canonical_receipt_sha256",
+        "product_boundary_sha256",
+        "process_sid",
+        "elevation_worker_sid",
+        "runtime_sid",
+        "available_target_identified",
+        "native_architecture",
+        "production_rime_pime_present",
+        "yimecore_local12_present",
+        "process_package_identity",
+        "ancestry_complete",
+        "packaged_ancestor_present",
+        "launch_origin",
+        "registry_provider",
+        "registry_hku_path",
+        "registry_views",
+        "registry_provider_succeeded",
+        "registry_views_unambiguous",
+        "registry_com_shadow_absent",
+        "registry_process_view_fallback_used",
+        "registry_value_kinds_preserved",
+        "roots_system_visible",
+        "roots_alias_and_reparse_free",
+        "recovery_outside_appdata_and_git",
+        "product_boundary_manifest_verified",
+        "peer_identity_disjoint",
+        "peer_endpoints_disjoint",
+        "peer_payload_state_recovery_disjoint",
+        "peer_registration_preservation_baseline_bound",
+        "production_registration_preservation_baseline_bound",
+        "default_input_method_baseline_bound",
+        "static_payload_integrity_verified",
+        "package_execution_safety_review_passed",
+        "non_elevated_runtime_required",
+        "runtime_independent_of_yimecore",
+        "default_input_method_mutation_requested",
+        "production_user_data_access_requested"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "yime-rime-pime-dp1u-isolated-observation-v1"
+        },
+        "observed_at_utc": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "target_name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9-]{0,62}$"
+        },
+        "target_machine_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "initiating_sid": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^S-1-5-21-[1-9][0-9]*-[1-9][0-9]*-[1-9][0-9]*-[1-9][0-9]*$"
+        },
+        "state_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "install_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recovery_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "package_sha256": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "canonical_receipt_sha256": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "product_boundary_sha256": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "process_sid": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^S-1-5-21-[1-9][0-9]*-[1-9][0-9]*-[1-9][0-9]*-[1-9][0-9]*$"
+        },
+        "elevation_worker_sid": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^S-1-5-21-[1-9][0-9]*-[1-9][0-9]*-[1-9][0-9]*-[1-9][0-9]*$"
+        },
+        "runtime_sid": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^S-1-5-21-[1-9][0-9]*-[1-9][0-9]*-[1-9][0-9]*-[1-9][0-9]*$"
+        },
+        "available_target_identified": {
+          "type": "boolean",
+          "const": true
+        },
+        "native_architecture": {
+          "type": "string",
+          "const": "x64"
+        },
+        "production_rime_pime_present": {
+          "type": "boolean",
+          "const": false
+        },
+        "yimecore_local12_present": {
+          "type": "boolean",
+          "const": false
+        },
+        "process_package_identity": {
+          "type": "string",
+          "const": "none"
+        },
+        "ancestry_complete": {
+          "type": "boolean",
+          "const": true
+        },
+        "packaged_ancestor_present": {
+          "type": "boolean",
+          "const": false
+        },
+        "launch_origin": {
+          "type": "string",
+          "const": "unpackaged-explorer-powershell"
+        },
+        "registry_provider": {
+          "type": "string",
+          "const": "out-of-process-StdRegProv"
+        },
+        "registry_hku_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "registry_views": {
+          "type": "string",
+          "const": "Registry32,Registry64"
+        },
+        "registry_provider_succeeded": {
+          "type": "boolean",
+          "const": true
+        },
+        "registry_views_unambiguous": {
+          "type": "boolean",
+          "const": true
+        },
+        "registry_com_shadow_absent": {
+          "type": "boolean",
+          "const": true
+        },
+        "registry_process_view_fallback_used": {
+          "type": "boolean",
+          "const": false
+        },
+        "registry_value_kinds_preserved": {
+          "type": "boolean",
+          "const": true
+        },
+        "roots_system_visible": {
+          "type": "boolean",
+          "const": true
+        },
+        "roots_alias_and_reparse_free": {
+          "type": "boolean",
+          "const": true
+        },
+        "recovery_outside_appdata_and_git": {
+          "type": "boolean",
+          "const": true
+        },
+        "product_boundary_manifest_verified": {
+          "type": "boolean",
+          "const": true
+        },
+        "peer_identity_disjoint": {
+          "type": "boolean",
+          "const": true
+        },
+        "peer_endpoints_disjoint": {
+          "type": "boolean",
+          "const": true
+        },
+        "peer_payload_state_recovery_disjoint": {
+          "type": "boolean",
+          "const": true
+        },
+        "peer_registration_preservation_baseline_bound": {
+          "type": "boolean",
+          "const": true
+        },
+        "production_registration_preservation_baseline_bound": {
+          "type": "boolean",
+          "const": true
+        },
+        "default_input_method_baseline_bound": {
+          "type": "boolean",
+          "const": true
+        },
+        "static_payload_integrity_verified": {
+          "type": "boolean",
+          "const": true
+        },
+        "package_execution_safety_review_passed": {
+          "type": "boolean",
+          "const": true
+        },
+        "non_elevated_runtime_required": {
+          "type": "boolean",
+          "const": true
+        },
+        "runtime_independent_of_yimecore": {
+          "type": "boolean",
+          "const": true
+        },
+        "default_input_method_mutation_requested": {
+          "type": "boolean",
+          "const": false
+        },
+        "production_user_data_access_requested": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "product_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "install_root",
+        "state_root",
+        "recovery_root",
+        "peer_install_root",
+        "peer_state_root",
+        "peer_recovery_root",
+        "production_install_root",
+        "production_state_root",
+        "clsid",
+        "profile_guid",
+        "peer_clsid",
+        "peer_profile_guid",
+        "runtime_endpoint",
+        "peer_runtime_endpoint",
+        "run_value_name",
+        "peer_run_value_name",
+        "uninstall_key_name",
+        "peer_uninstall_key_name"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "yime-rime-pime-dp1u-product-boundary-v1"
+        },
+        "install_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recovery_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "peer_install_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "peer_state_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "peer_recovery_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "production_install_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "production_state_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "clsid": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^\\{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\}$"
+        },
+        "profile_guid": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^\\{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\}$"
+        },
+        "peer_clsid": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^\\{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\}$"
+        },
+        "peer_profile_guid": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^\\{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\}$"
+        },
+        "runtime_endpoint": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "peer_runtime_endpoint": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "run_value_name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "peer_run_value_name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "uninstall_key_name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "peer_uninstall_key_name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        }
+      }
+    }
+  }
+}
