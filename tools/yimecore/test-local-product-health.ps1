@@ -14,9 +14,11 @@ $allowedRoot=Join-Path $repoRoot '.tmp'
 $candidateCommit='e2d9d4222b09c548f978101668940262b895e4fc'
 $sourcePins=@(
     @{relative='tools/dual-product/rime-pime-dp1u-native-facts.cs';sha256='9969b68b42bc11428d4af6a8bb348a9658e248c0758b953bd9e3834109f97be4'},
-    @{relative='tools/yimecore/native-maintenance-process-facts.cs';sha256='d75096623a1426f750f8df97dd12158ec099d50ac54763bca9cca33ed4ca7e3c'},
+    @{relative='tools/yimecore/native-maintenance-process-facts.cs';sha256='55e81dc42c9280aed1f054a816534d9961d5e52b99e2a098d89a5be0392b2370'},
     @{relative='tools/yimecore/native-maintenance-health-client.cs';sha256='cb9e7189d70e0c3a033ff6dd591d1c7ce91c637d92d9bf9a93f23b78be4858e3'},
-    @{relative='tools/yimecore/native-maintenance-backup.psm1';sha256='847cf067dee46feb71d1384d900341c4445c5ca4eefe0698d8996ebcdc37d04c'}
+    @{relative='tools/yimecore/native-maintenance-backup.psm1';sha256='847cf067dee46feb71d1384d900341c4445c5ca4eefe0698d8996ebcdc37d04c'},
+    @{relative='tools/yimecore/native-maintenance-processes.psm1';sha256='2d15b76b555e68b550865508dd6b489ad26541f99fcc42c9f013e8c1a28c4132'},
+    @{relative='tools/yimecore/native-maintenance-health.psm1';sha256='7aa2ae06343b2484bd65c24ef793efa3e4527972c516442478b8a2b990aaf398'}
 )
 $streams=[Collections.Generic.List[IO.FileStream]]::new()
 $sources=[Collections.Generic.List[object]]::new()
@@ -24,7 +26,9 @@ $directories=@{}
 $packageFiles=[Collections.Generic.List[object]]::new()
 $owned=[Collections.Generic.List[object]]::new()
 $nativePins=[Collections.Generic.List[object]]::new()
-$factsType=$null;$processType=$null;$clientType=$null;$directoryType=$null;$jsonType=$null;$fixtureType=$null;$readerModule=$null
+$factsType=$null;$processType=$null;$directoryType=$null;$jsonType=$null;$fixtureType=$null;$readerModule=$null
+$processModule=$null;$healthModule=$null;$adapterLease=$null;$adapterLeaseClosed=$false;$adapterImportPreserved=$false
+$adapterChecks=[Collections.Generic.List[string]]::new()
 $createdOutput=$false;$success=$false;$failure=$null;$cleanupErrors=[Collections.Generic.List[string]]::new()
 $rounds=[Collections.Generic.List[object]]::new();$exitRecords=[Collections.Generic.List[object]]::new()
 $runtime=$null;$broker=$null;$stopper=$null;$runtimePin=$null;$brokerPin=$null;$manifestFile=$null;$manifest=$null
@@ -171,6 +175,23 @@ function Complete-HealthOwned($Record,[int]$TimeoutMs) {
     }
     return $receipt.Code
 }
+function Assert-HealthRefusal([scriptblock]$Body,[string]$Name) {
+    $rejected=$false;try{& $Body|Out-Null}catch{$rejected=$true}
+    if(-not $rejected){throw ('Expected adapter refusal: '+$Name)};$adapterChecks.Add($Name)
+}
+function Get-HealthPendingIo {
+    if($null -eq $healthModule){return 0}
+    & $healthModule {if($null -eq $script:HealthClientType){return 0};$script:HealthClientType::OutstandingIo}
+}
+function Read-HealthAdapterLease {
+    $evidence=& $processModule {param($o)Assert-YimeCoreNativeMaintenanceProcessesCurrent -Observation $o} $adapterLease
+    if($evidence.discovery_scope -cne 'explicit_process_references' -or $evidence.processes.Count -ne 2 -or
+        $evidence.processes[0].pid -ne $runtime.process.Id -or $evidence.processes[0].creation_filetime -ne $runtime.creation -or
+        $evidence.processes[1].pid -ne $broker.process.Id -or $evidence.processes[1].creation_filetime -ne $broker.creation -or
+        $evidence.processes[0].image_sha256 -cne $packageRecords['bin/YimeCoreTrialRuntime.exe'].sha256 -or
+        $evidence.processes[1].image_sha256 -cne $packageRecords['bin/YimeBroker.exe'].sha256){throw 'Production process adapter differs from the owned candidate'}
+    return $evidence
+}
 
 try {
     Assert-HealthInside $PackageRoot $allowedRoot;Assert-HealthInside $OutputRoot $allowedRoot
@@ -183,7 +204,6 @@ try {
     foreach($pin in $sourcePins){$loaded[$pin.relative]=Read-HealthSource (Join-Path $repoRoot $pin.relative) $pin.sha256}
     $factsType=New-HealthType $loaded[$sourcePins[0].relative].text 'namespace Yime.Dp1UNative {' 'Facts'
     $processType=New-HealthType $loaded[$sourcePins[1].relative].text 'namespace Yime.MaintenanceProcesses {' 'ProcessPin'
-    $clientType=New-HealthType $loaded[$sourcePins[2].relative].text 'namespace Yime.MaintenanceHealth {' 'Client'
     # Reuse only reviewed read-only literals/functions, extracted from a held,
     # hash-pinned source. Never import or invoke the actual backup entry point.
     $parseErrors=$null;$tokens=$null
@@ -231,6 +251,12 @@ namespace Yime.HealthFixturePrimitives {
 '@
     $fixtureType=New-HealthType $nativeFixture 'namespace Yime.HealthFixturePrimitives {' 'Native'
     foreach($source in $sources){Pin-HealthAncestors (Split-Path -Parent $source.path);$source.identity=$factsType::VerifyFileHandle($source.stream,$source.path);$directoryType::RejectNamedStreams($source.path)}
+    # Fresh standalone fixture process only. Import exact held module files and
+    # retain their module objects; no private provider replacements or Force.
+    foreach($name in @('native-maintenance-processes','native-maintenance-health')){
+        if(@(Get-Module -Name $name -All).Count){throw 'Fixture requires initially unloaded production adapters'}
+    }
+    $processModule=Import-Module -Name (Join-Path $PSScriptRoot 'native-maintenance-processes.psm1') -Scope Local -PassThru
     Pin-HealthAncestors $PackageRoot
     $manifestFile=& $readerModule {param($s,$p,$h)Open-BackupFile $s $p $h} $streams (Join-Path $PackageRoot 'package-manifest.json') $ExpectedManifestSha256
     $packageFiles.Add($manifestFile)
@@ -290,23 +316,45 @@ namespace Yime.HealthFixturePrimitives {
         if($fixtureType::PipeAvailable($pipe)){break};Start-Sleep -Milliseconds 25
     }while([DateTime]::UtcNow -lt $deadline)
     if(-not $fixtureType::PipeAvailable($pipe)){throw 'Owned ordinary listener did not become available'}
+    $openParameters=@{TargetUserSid=$caller.Sid;ExpectedInstallRoot=$PackageRoot;
+        ExpectedRuntimeSha256=$packageRecords['bin/YimeCoreTrialRuntime.exe'].sha256;
+        ExpectedBrokerSha256=$packageRecords['bin/YimeBroker.exe'].sha256;RuntimeProcess=$runtime.process;BrokerProcess=$broker.process}
+    $adapterLease=& $processModule {param($p)Open-YimeCoreNativeMaintenanceProcesses @p} $openParameters
+    $beforeImport=Read-HealthAdapterLease
+    $healthModule=Import-Module -Name (Join-Path $PSScriptRoot 'native-maintenance-health.psm1') -Scope Local -PassThru
+    $afterImport=Read-HealthAdapterLease
+    if(($beforeImport|ConvertTo-Json -Depth 20 -Compress) -cne ($afterImport|ConvertTo-Json -Depth 20 -Compress)){throw 'Health import changed an existing live process lease'}
+    $adapterImportPreserved=$true;$adapterChecks.Add('health import preserves original live process registry')
+    $copy=$adapterLease|ConvertTo-Json -Depth 20|ConvertFrom-Json
+    Assert-HealthRefusal {& $healthModule {param($o,$p)Get-YimeCoreNativeMaintenanceHealth -ProcessObservation $o -BrokerPipeName $p} $copy $pipe} 'serialized public observation refused'
+    # The public projection is not authoritative; reads must use the registry's
+    # original handles even when its caller-editable evidence is replaced.
+    $adapterLease.evidence=[pscustomobject]@{caller_changed='not native evidence'}
+    [void](Read-HealthAdapterLease);$adapterChecks.Add('caller evidence replacement does not replace native facts')
     for($round=1;$round -le 2;$round++){
         $beforeRuntime=Assert-HealthOwnedIdentity $runtime $runtimePin $runtimePath $PID $caller
         $beforeBroker=Assert-HealthOwnedIdentity $broker $brokerPin $brokerPath $runtime.process.Id $caller
-        $replies=@($clientType::ProbePair($pipe,$runtime.process.Id,$runtime.creation,$broker.process.Id,$broker.creation))
-        if($replies.Count -ne 2 -or $clientType::OutstandingIo -ne 0){throw 'Health pair incomplete or has pending IO'}
+        [void](Read-HealthAdapterLease)
+        $health=& $healthModule {param($o,$p)Get-YimeCoreNativeMaintenanceHealth -ProcessObservation $o -BrokerPipeName $p} $adapterLease $pipe
+        if($health.records.Count -ne 2 -or $health.health_service_responsive -isnot [bool] -or -not $health.health_service_responsive -or
+            $health.retained_process_observation_rechecked -isnot [bool] -or -not $health.retained_process_observation_rechecked -or
+            (Get-HealthPendingIo) -ne 0){throw 'Production health adapter incomplete or has pending IO'}
+        [void](Read-HealthAdapterLease)
         [void](Assert-HealthOwnedIdentity $runtime $runtimePin $runtimePath $PID $caller)
         [void](Assert-HealthOwnedIdentity $broker $brokerPin $brokerPath $runtime.process.Id $caller)
         $rounds.Add([pscustomobject][ordered]@{round=$round;observed_at=[DateTime]::UtcNow.ToString('o');runtime=$beforeRuntime;broker=$beforeBroker;
-            replies=@($replies|ForEach-Object {[pscustomobject][ordered]@{role=$_.Role;pipe_name=$_.PipeName;pid=$_.ProcessId;creation_filetime=$_.CreationFileTime;
-                nonce_verified=$_.NonceVerified;pipe_server_identity_bound=$_.PipeServerIdentityBound;health_service_responsive=$_.HealthServiceResponsive}});
-            retained_native_handles_rechecked=$true;outstanding_client_io=$clientType::OutstandingIo})
+            replies=$health.records;production_adapter=$health;
+            retained_native_handles_rechecked=$true;outstanding_client_io=(Get-HealthPendingIo)})
     }
     Assert-HealthFilesCurrent
     $stopper=Start-HealthOwned 'stopper' @($runtimeArgs+@('-stop'))
     if((Complete-HealthOwned $stopper 10000) -ne 0){throw 'Owned candidate stopper failed'}
     if((Complete-HealthOwned $runtime 10000) -ne 0){throw 'Owned Runtime did not exit successfully after its stop request'}
     [void](Complete-HealthOwned $broker 10000)
+    Assert-HealthRefusal {& $healthModule {param($o,$p)Get-YimeCoreNativeMaintenanceHealth -ProcessObservation $o -BrokerPipeName $p} $adapterLease $pipe} 'terminated original process references refused'
+    & $processModule {param($o)Close-YimeCoreNativeMaintenanceProcesses -Observation $o} $adapterLease
+    $adapterLeaseClosed=$true
+    Assert-HealthRefusal {& $healthModule {param($o,$p)Get-YimeCoreNativeMaintenanceHealth -ProcessObservation $o -BrokerPipeName $p} $adapterLease $pipe} 'closed process observation refused'
     Assert-HealthFilesCurrent
     $success=$true
 } catch {
@@ -323,18 +371,25 @@ namespace Yime.HealthFixturePrimitives {
             }catch{$cleanupErrors.Add($record.role+': '+$_.Exception.Message)}
         }
     }
-    if($null -ne $clientType -and $clientType::OutstandingIo -ne 0){$cleanupErrors.Add('Health client retains pending IO')}
+    if($null -ne $adapterLease -and -not $adapterLeaseClosed){
+        try{& $processModule {param($o)Close-YimeCoreNativeMaintenanceProcesses -Observation $o} $adapterLease;$adapterLeaseClosed=$true}
+        catch{$cleanupErrors.Add('Process adapter lease close: '+$_.Exception.Message)}
+    }
+    if((Get-HealthPendingIo) -ne 0){$cleanupErrors.Add('Health client retains pending IO')}
     if($cleanupErrors.Count){$success=$false}
     if($createdOutput){
         try{
-            $report=[ordered]@{schema_version='yimecore-isolated-candidate-health-v1';passed=$success;required_test_exit_code=0;generated_at=[DateTime]::UtcNow.ToString('o');powershell=$PSVersionTable.PSVersion.ToString();
+            $report=[ordered]@{schema_version='yimecore-isolated-candidate-health-v2';passed=$success;required_test_exit_code=0;generated_at=[DateTime]::UtcNow.ToString('o');powershell=$PSVersionTable.PSVersion.ToString();
                 package_root=$PackageRoot;package_manifest_sha256=$manifestFile.sha256;candidate_git_commit=$candidateCommit;candidate_package_id=$manifest.package_id;
                 listed_payload_count=85;verified_package_file_count=$packageFiles.Count;output_root=$OutputRoot;state_root=$stateRoot;pipe_name=$pipe;
                 source_pins=@($sources|ForEach-Object {[ordered]@{path=$_.path;sha256=$_.sha256;bytes=$_.bytes}});
                 test_wrapper_in_candidate_source=$false;isolated_actual_candidate_parent_child_health=($success -and $rounds.Count -eq 2);
                 rounds=$rounds.ToArray();original_handle_exits=$exitRecords.ToArray();failure=$failure;cleanup_errors=$cleanupErrors.ToArray();
                 private_child_environment=@('APPDATA','LOCALAPPDATA','TEMP','TMP','USERPROFILE');ordinary_pipe_connection_opened=$false;
-                production_process_discovery_used=$false;production_lease_adapter_integrated=$false;collector_integrated=$false;installed_product_executed=$false;
+                production_process_discovery_used=$false;production_lease_adapter_integrated=($success -and $adapterImportPreserved -and $adapterLeaseClosed);
+                process_discovery_scope='explicit_process_references';private_provider_replacements_used=$false;
+                adapter_import_preserved_existing_lease=$adapterImportPreserved;adapter_lease_closed=$adapterLeaseClosed;adapter_regressions=$adapterChecks.ToArray();
+                collector_integrated=$false;installed_product_executed=$false;
                 installed_product_state_read=$false;user_state_read=$false;packaged_ancestry_excluded=$false;native_desktop_verified=$false;
                 continuous_package_membership_verified=$false;in_memory_code_identity_verified=$false;runtime_ready=$false;config_consumed_verified=$false;
                 startup_path_verified=$false;E7_accepted=$false;L6_sealed=$false;local_product_ready=$false;public_release_ready=$false;full_acceptance=$false}
@@ -354,6 +409,8 @@ namespace Yime.HealthFixturePrimitives {
     foreach($stream in $streams){$stream.Dispose()}
     foreach($directory in $directories.Values){$directory.Dispose()}
     if($null -ne $readerModule){Remove-Module $readerModule}
+    if($null -ne $healthModule){Remove-Module $healthModule}
+    if($null -ne $processModule){Remove-Module $processModule}
 }
 if(-not $success){
     if($null -ne $failure){Write-Error ($failure.type+': '+$failure.message) -ErrorAction Continue}

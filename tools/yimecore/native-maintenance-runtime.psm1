@@ -165,7 +165,7 @@ function Get-YimeCoreNativeMaintenanceRuntime {
             runtime_status_read=$false;settings_or_learning_read=$false;rollback_restart_verified=$false;reboot_logon_startup_verified=$false;
             startup_verified=$false;runtime_ready_verified=$false;continuous_monitoring=$false;E7_verified=$false;L6_sealed=$false;
             execution_authorized=$false;ready_to_execute=$false;local_product_ready=$false;public_release_ready=$false;
-            pending_reason='The current Broker protocol has no session-free read-only health request; process/config consistency does not establish responsiveness, a rollback-caused restart, or reboot/logon startup.'}
+            pending_reason='This observer validates process/config consistency without requesting health. The rollback collector still pins legacy local.12; this observation does not determine other candidates health capability, engine readiness, a rollback-caused restart, or reboot/logon startup.'}
     } finally {$stream.Dispose()}
 }
 Export-ModuleMember -Function Get-YimeCoreNativeMaintenanceRuntime
