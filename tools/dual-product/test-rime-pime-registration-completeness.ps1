@@ -728,13 +728,24 @@ Check 'registration-probes-enter-build-handoff-signing-and-manifest-closure' {
         $verifyReleaseSignatures.Contains('Read-RimePimePackagePlan') -and
         $buildManifest.Contains('Read-RimePimePackageBuildReceipt')) `
         'Release signature/manifest closure can silently omit a required exact artifact.'
+    $lockedNsisInstall = ".\tools\install-locked-nsis.ps1 -Version '3.12'"
+    $lockedNsisStepPattern = '(?m)^      - name: Install NSIS in non-secret packaging job\r?\n        shell: pwsh\r?\n        run: ' +
+        [regex]::Escape($lockedNsisInstall) + '\r?$'
+    foreach ($jobName in @('unsigned-installer-package', 'release-installer-package')) {
+        $jobText = [regex]::Match($workflow,
+            "(?ms)^  $([regex]::Escape($jobName)):\r?\n.*?(?=^  [A-Za-z0-9_-]+:\r?$|\z)").Value
+        Assert-True ([regex]::Matches($jobText, $lockedNsisStepPattern).Count -eq 1 -and
+            [regex]::Matches($jobText, 'install-locked-nsis\.ps1').Count -eq 1) `
+            "NSIS packaging job must invoke the plain locked NSIS 3.12 helper exactly once: $jobName"
+    }
     Assert-True ($workflow.Contains('test-installer-smoke.ps1 -InstallerPath $installer.FullName -StaticOnly') -and
         $workflow.Contains('without native installation') -and
-        [regex]::Matches($workflow,'nsis-version: 3\.12').Count -eq 2 -and
+        [regex]::Matches($workflow, $lockedNsisStepPattern).Count -eq 2 -and
+        [regex]::Matches($workflow, 'install-locked-nsis\.ps1').Count -eq 2 -and
         $workflow.Contains("Join-Path `$env:YIME_TRUSTED_SIGNING_ROOT 'tools\write-build-manifest.ps1') -RepoRoot `$env:GITHUB_WORKSPACE -OutputPath (Join-Path `$env:GITHUB_WORKSPACE 'installer\build-manifest.json')") -and
         [regex]::Matches($workflow,'installer/package-plan\.json\.sha256').Count -ge 3 -and
         [regex]::Matches($workflow,'installer/package-build-receipt\.json\.sha256').Count -ge 3 -and
-        -not $workflow.Contains('nsis-version: 3.08')) `
+        $workflow -notmatch 'repolevedavaj/install-nsis') `
         'Hosted CI still executes the installer without an Explorer same-SID physical target.'
 }
 Check 'installer-uses-explicit-native-and-wow64-regsvr32-paths' {
