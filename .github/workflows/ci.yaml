@@ -683,10 +683,23 @@ jobs:
         with:
           name: yime-unsigned-payload-${{ github.sha }}
           path: .
-      - name: Install NSIS in non-secret packaging job
-        uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
+      - name: Prepare pinned NSIS in non-secret packaging job
+        id: nsis
+        uses: ./.github/actions/prepare-pinned-nsis
         with:
           nsis-version: 3.12
+      - name: Test pinned NSIS preparation in PowerShell 5 and 7
+        shell: pwsh
+        env:
+          NSIS_ARCHIVE: ${{ steps.nsis.outputs.archive-path }}
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N').Substring(0,16)
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\ci\test-prepare-pinned-nsis.ps1 `
+            -ArchivePath $env:NSIS_ARCHIVE -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-preparation-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 pinned NSIS preparation test failed with exit code $LASTEXITCODE" }
+          .\tools\ci\test-prepare-pinned-nsis.ps1 `
+            -ArchivePath $env:NSIS_ARCHIVE -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-preparation-test-ci-ps7-$runId")
       - name: Test DP1-K NSIS compiler membership interval
         shell: pwsh
         run: |
@@ -744,8 +757,8 @@ jobs:
         with:
           name: yime-signed-payload-${{ github.sha }}
           path: .
-      - name: Install NSIS in non-secret packaging job
-        uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
+      - name: Prepare pinned NSIS in non-secret packaging job
+        uses: ./.github/actions/prepare-pinned-nsis
         with:
           nsis-version: 3.12
       - name: Build unsigned outer installer

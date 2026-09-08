@@ -1,0 +1,71 @@
+name: Prepare repository-pinned NSIS
+description: Extract and verify the official distribution without running its installer.
+inputs:
+  nsis-version:
+    description: The repository-pinned NSIS version
+    required: true
+outputs:
+  archive-path:
+    description: Hash-verified official setup archive, retained as data for regressions
+    value: ${{ steps.prepare.outputs.archive-path }}
+runs:
+  using: composite
+  steps:
+    - id: prepare
+      shell: pwsh
+      env:
+        NSIS_VERSION: ${{ inputs.nsis-version }}
+        NSIS_RUNNER_ENVIRONMENT: ${{ runner.environment }}
+      run: |
+        $ErrorActionPreference = 'Stop'
+        if ($env:GITHUB_ACTIONS -cne 'true' -or $env:NSIS_RUNNER_ENVIRONMENT -cne 'github-hosted') {
+          throw 'Fixed-root NSIS preparation is restricted to GitHub-hosted CI.'
+        }
+        if ($env:NSIS_VERSION -cne '3.12') { throw 'Only the pinned NSIS 3.12 distribution is admissible.' }
+        if (-not (Test-Path -LiteralPath $env:GITHUB_PATH -PathType Leaf)) { throw 'Missing CI PATH output file.' }
+        if (-not (Test-Path -LiteralPath $env:GITHUB_OUTPUT -PathType Leaf)) { throw 'Missing CI step output file.' }
+        $repo = [IO.Path]::GetFullPath($env:GITHUB_WORKSPACE)
+        $module = Import-Module (Join-Path $repo 'tools\dual-product\rime-pime-nsis-toolchain-closure.psm1') -PassThru
+        $lock = Read-RimePimeNsisCompilerToolchainLockDocument
+        $parent = Join-Path $repo '.tmp\dual-product'
+        & $module { param($path) Assert-RimePimeNoReparsePath $path } $parent
+        [IO.Directory]::CreateDirectory($parent) | Out-Null
+        $id = [Guid]::NewGuid().ToString('N')
+        $download = Join-Path $parent ('dp1-nsis-download-' + $id)
+        [IO.Directory]::CreateDirectory($download) | Out-Null
+        $archive = Join-Path $download 'nsis-3.12-setup.exe'
+        Invoke-WebRequest -UserAgent 'curl/8.20.0' -Uri 'https://sourceforge.net/projects/nsis/files/NSIS%203/3.12/nsis-3.12-setup.exe/download?' -OutFile $archive
+        $output = Join-Path $parent ('dp1-nsis-distribution-' + $id)
+        $prepared = & (Join-Path $repo 'tools\ci\prepare-pinned-nsis.ps1') -ArchivePath $archive -OutputRoot $output
+        if ($prepared.Root -cne (Join-Path $output 'NSIS')) { throw 'Unexpected prepared NSIS root.' }
+        # Stage on the destination volume before either rename. Preserve the old
+        # distribution for diagnosis; never overlay or recursively delete it.
+        $destination = [IO.Path]::GetFullPath($lock.Document.nsis.root)
+        if ($destination -cne 'C:\Program Files (x86)\NSIS') { throw 'Unexpected pinned NSIS destination.' }
+        $destinationParent = Split-Path -Parent $destination
+        $candidate = Join-Path $destinationParent ('NSIS-yime-prepared-' + $id)
+        $backup = Join-Path $destinationParent ('NSIS-yime-previous-' + $id)
+        foreach ($path in @($destination, $candidate, $backup)) {
+          if ((Split-Path -Parent ([IO.Path]::GetFullPath($path))) -cne $destinationParent) { throw 'NSIS destination escaped its fixed parent.' }
+          & $module { param($path) Assert-RimePimeNoReparsePath $path } $path
+        }
+        if ((Test-Path -LiteralPath $candidate) -or (Test-Path -LiteralPath $backup)) { throw 'NSIS preparation destination already exists.' }
+        Copy-Item -LiteralPath $prepared.Root -Destination $candidate -Recurse -ErrorAction Stop
+        & $module {
+          param($root, $record)
+          $closure = Open-RimePimeNsisCompilerInputClosureCore $root $record
+          try { if ($closure.FileCount -ne 303 -or $closure.DirectoryCount -ne 17) { throw 'Wrong prepared NSIS inventory.' } }
+          finally { Close-RimePimeNsisCompilerInputClosure $closure }
+        } $candidate $lock.Document.nsis.compiler_input_closure
+        if (Test-Path -LiteralPath $destination) {
+          if (-not (Test-Path -LiteralPath $destination -PathType Container)) { throw 'Pinned NSIS destination is not a directory.' }
+          [IO.Directory]::Move($destination, $backup)
+        }
+        [IO.Directory]::Move($candidate, $destination)
+        $closure = Open-RimePimeNsisCompilerInputClosure
+        try {
+          Test-RimePimeNsisCompilerInputClosure $closure | ConvertTo-Json -Depth 6 | Write-Host
+          Add-Content -LiteralPath $env:GITHUB_PATH -Value (Join-Path $destination 'Bin')
+          Add-Content -LiteralPath $env:GITHUB_PATH -Value $destination
+          Add-Content -LiteralPath $env:GITHUB_OUTPUT -Value ('archive-path=' + $archive)
+        } finally { Close-RimePimeNsisCompilerInputClosure $closure }
