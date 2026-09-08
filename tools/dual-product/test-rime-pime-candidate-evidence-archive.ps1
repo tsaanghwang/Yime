@@ -100,6 +100,7 @@ New-Item -ItemType Directory -Path $casesRoot | Out-Null
 $module = Import-Module -Name $modulePath -Force -PassThru
 
 $checks = [Collections.Generic.List[object]]::new()
+$caseDirectories = [Collections.Generic.List[object]]::new()
 function Check([string]$Name,[scriptblock]$Body) {
     if ($Name -notlike $CheckPattern) { return }
     try {
@@ -169,8 +170,30 @@ function Add-TestRetainedObject([string]$SourceRoot,[byte[]]$Bytes) {
     return [pscustomobject]@{ Digest=$digest;Path=$path;Bytes=[byte[]]$Bytes;Length=[long]$Bytes.Length }
 }
 function New-TestEvidence([string]$CaseName) {
-    $caseRoot = Join-Path $casesRoot $CaseName
+    # Keep descriptive names in evidence, not in every nested CAS path.  The
+    # CI run prefix and SHA-256 object names must also fit Windows PowerShell
+    # 5.1 after the source tree is withheld for recovery checks.
+    $caseLeaf = 'c{0}' -f ($script:caseDirectories.Count + 1)
+    $caseRoot = Join-Path $casesRoot $caseLeaf
+    $budgetPaths = [Collections.Generic.List[string]]::new()
+    foreach ($sourceLeaf in @('outer-tmp','source-withheld-after-commit','source-withheld-before-resume')) {
+        $budgetPaths.Add($sourceLeaf+'\repo\installer\receipt-evidence\sha256\aa\'+('a'*64)+'.blob.sha256')
+    }
+    foreach ($archiveLeaf in @('archive',('.rpa-'+('a'*16)+'.staged'))) {
+        $budgetPaths.Add($archiveLeaf+'\objects\sha256\aa\'+('a'*64)+'.blob.sha256')
+        $budgetPaths.Add($archiveLeaf+'\objects\sha256\aa\.writing-'+('a'*32)+'.tmp')
+        $budgetPaths.Add($archiveLeaf+'\transactions\completed.json.sha256')
+        $budgetPaths.Add($archiveLeaf+'\manifest.json.sha256')
+    }
+    $budgetPaths.Add('.candidate-evidence-archive-quarantine\'+('a'*16)+'\'+('a'*64)+'.orphan')
+    $budgetPaths.Add('tamper-reseal-withheld\old-manifest-'+('a'*64)+'.blob.sha256')
+    foreach ($relative in $budgetPaths) {
+        if ((Join-Path $caseRoot $relative).Length -ge 260) {
+            throw 'Archive fixture exceeds the Win32 path budget; use the CI 16-character run ID under a shorter checkout root.'
+        }
+    }
     New-Item -ItemType Directory -Path $caseRoot | Out-Null
+    $script:caseDirectories.Add([pscustomobject][ordered]@{name=$CaseName;relative_directory=('cases/'+$caseLeaf)})
     $source = Join-Path $caseRoot 'outer-tmp'
     Ensure-TestDirectory (Join-Path $source 'repo\evidence')
     Ensure-TestDirectory (Join-Path $source 'repo\installer\receipt-evidence\sha256')
@@ -640,6 +663,7 @@ $result = [pscustomobject][ordered]@{
     generated_at_utc=[DateTime]::UtcNow.ToString('o')
     powershell_edition=[string]$PSVersionTable.PSEdition;powershell_version=[string]$PSVersionTable.PSVersion
     total=[int]$checks.Count;passed=[int]($checks.Count-$failed.Count);failed=[int]$failed.Count;checks=@($checks)
+    fixture_case_directories=@($caseDirectories)
     selected_check_pattern=$CheckPattern;expected_check_count=[int]$expectedCheckNames.Count
     full_suite_executed=[bool]$fullSuiteExecuted;all_executed_checks_passed=[bool]$allPassed
     verified=[pscustomobject][ordered]@{
