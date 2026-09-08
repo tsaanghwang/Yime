@@ -115,7 +115,7 @@ Reject 'multiply-linked artifact rejected' { & $module { param($p) Open-Dp1UNati
 $earlyRejection=$false
 if ([Environment]::MachineName -ieq 'MYCOMPUTER') {
     Reject 'live MYCOMPUTER rejected before nonexistent authorization read' {
-        Invoke-RimePimeDp1UNativeReadOnlyProbe -AuthorizationPath 'C:\nonexistent-dp1u-probe-approval.json' -TrustedApprovalSha256 ('0'*64) -BoundaryPath 'C:\none-boundary.json' -PackagePath 'C:\none-package.exe' -CanonicalReceiptPath 'C:\none-receipt.json'
+        Invoke-RimePimeDp1UNativeReadOnlyProbe -AuthorizationPath 'C:\nonexistent-dp1u-probe-approval.json' -TrustedApprovalSha256 ('0'*64) -BoundaryPath 'C:\none-boundary.json' -PackagePath 'C:\none-package.exe' -CanonicalReceiptPath 'C:\none-receipt.json' -ReceiptEvidenceRoot 'C:\none-evidence'
     } 'MYCOMPUTER.*before probing'
     $earlyRejection=$true
 }

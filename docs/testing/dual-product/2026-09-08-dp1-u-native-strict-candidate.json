@@ -1,0 +1,81 @@
+{
+  "schema_version": "yime-rime-pime-dp1u-native-strict-candidate-increment-evidence-v1",
+  "date": "2026-09-08",
+  "affected_product": "rime-pime",
+  "status": "strict_receipt_reader_integrated_actual_canonical_chain_verified_executable_candidate_rejected",
+  "sources": [
+    {"path": "tools/dual-product/rime-pime-dp1u-native-probe.psm1", "sha256": "31c0063121dfc5adb523f356e79f0620d2de2f327b0cedaed6c048587d9a5cb4"},
+    {"path": "tools/dual-product/test-rime-pime-dp1u-native-probe.ps1", "sha256": "4802983bdc2020bf9a7313132cf6b118a158112a01029307ad62b54f9daa5f18"},
+    {"path": "tools/dual-product/test-rime-pime-dp1u-native-candidate.ps1", "sha256": "b376cf92da3e5ef66f9f00608bb046c5028f610722d3ed1cf87a9cb0130ae92f"},
+    {"path": "tools/dual-product/rime-pime-package-receipt-v2.ps1", "sha256": "8f197478e2c85e35d39304528a3eb2b35049c5331bb1dcc01aa9277922e0ca51"},
+    {"path": "tools/dual-product/rime-pime-receipt-v2-store.ps1", "sha256": "715d4578cc95906c0ed8ffb77aecc0174e73c8c8df6442c2973ddeabd1d10839"}
+  ],
+  "strict_candidate_regressions": [
+    {
+      "shell": "Windows PowerShell 5.1.26100.9278",
+      "passed": true,
+      "checks_passed": 17,
+      "complete_fixture_checks": 15,
+      "actual_canonical_checks": 2,
+      "result_path": ".tmp/dual-product/dp1-u-native-candidate-8a5ac94f847a4b90a0e2b404dbfdaf6a/result.json",
+      "result_sha256": "5e223b7d5ea3f3d48afa019ae92ebbc2d13041b075f0eb4abb33eccaf46e2607"
+    },
+    {
+      "shell": "PowerShell 7.6.5",
+      "passed": true,
+      "checks_passed": 17,
+      "complete_fixture_checks": 15,
+      "actual_canonical_checks": 2,
+      "result_path": ".tmp/dual-product/dp1-u-native-candidate-8198e9fbae5f4f26827353f70624a321/result.json",
+      "result_sha256": "8434248adabe3ce205c50fd7839dfd2c6634ab86eab3c9a3b3abc115292c6f9d"
+    }
+  ],
+  "native_context_regressions": [
+    {
+      "shell": "Windows PowerShell 5.1.26100.9278",
+      "passed": true,
+      "checks_passed": 74,
+      "result_path": ".tmp/dual-product/dp1-u-native-probe-51646fb1e5d94949be0c4fde03d1ff4f/result.json",
+      "result_sha256": "983ba161695c9375dfab4cd1b46f2797256a3e3d5d0a05df2e5897d19ac56bec"
+    },
+    {
+      "shell": "PowerShell 7.6.5",
+      "passed": true,
+      "checks_passed": 74,
+      "result_path": ".tmp/dual-product/dp1-u-native-probe-8a199a5aa4c74c61bc4195d3ffbd0661/result.json",
+      "result_sha256": "f6873fdd23090d916d565e8b95fb0e565bf93c4538934c30a542c421c0da908b"
+    }
+  ],
+  "actual_canonical": {
+    "path": "installer/package-build-receipt.json",
+    "receipt_sha256": "f1b67aa40d0fce85244e00656f6017b4e9e8c313eed538f596da5fd9ba312719",
+    "package_sha256": "ac97f65af80e9686525a3c2f289670aaa14edb60a6effc80ce7cc3580333970d",
+    "strict_receipt_evidence_chain_verified": true,
+    "retained_evidence_used": true,
+    "strict_reader_mocked": false,
+    "receipt_state": "canonical-static-closure-disabled",
+    "executable_candidate_safe": false,
+    "candidate_execution_admitted": false,
+    "dp1_r_derived_disabled_static_trust_not_revoked": true
+  },
+  "closure": {
+    "strict_receipt_source_integration_complete": true,
+    "real_target_approved": false,
+    "native_preflight_complete": false,
+    "execution_authorized": false,
+    "registration_gate_passed": false,
+    "rollback_gate_passed": false,
+    "removal_gate_passed": false,
+    "runtime_gate_passed": false,
+    "dp1_u_acceptance_passed": false,
+    "public_release_ready": false
+  },
+  "privacy": {
+    "installer_or_uninstaller_executed": false,
+    "product_processes_started_or_stopped": false,
+    "registry_mutated": false,
+    "installed_yimecore_local12_touched": false,
+    "user_data_read": false,
+    "default_input_method_changed": false
+  }
+}

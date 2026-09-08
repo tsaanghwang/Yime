@@ -231,11 +231,48 @@ function Get-Dp1UNativeContext([string]$Sid, [string]$MachineGuid) {
     } finally { foreach ($lease in $leases) { $lease.Dispose() } }
 }
 
+function Get-Dp1UNativeCandidateAssessment([string]$EvidenceRoot, $PackageLease, $ReceiptLease) {
+    Assert-Dp1UNativePlainPath $EvidenceRoot
+    $root=[IO.Path]::GetFullPath($EvidenceRoot).TrimEnd('\')
+    if (-not (Test-Path -LiteralPath $root -PathType Container)) { throw 'Explicit receipt evidence root is missing' }
+    foreach ($path in @($PackageLease.path,$ReceiptLease.path)) {
+        if (-not $path.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)) { throw 'Approved artifact is outside its explicit receipt evidence root' }
+    }
+    # Reuse the source-owned strict reader, including retained objects/sidecars,
+    # cross-evidence semantics and NSIS raw digest bindings. No execution callbacks.
+    Import-Module -Name (Join-Path $PSScriptRoot 'rime-pime-package-receipt-v2.psm1') -Scope Local
+    $strict = rime-pime-package-receipt-v2\Read-RimePimePackageBuildReceiptV2 -RepoRoot $root -ReceiptPath $ReceiptLease.path
+    if ($strict.Digest -cne $ReceiptLease.sha256 -or $strict.Receipt.installer.sha256 -cne $PackageLease.sha256 -or
+        [long]$strict.Receipt.installer.bytes -ne $PackageLease.bytes) { throw 'Strict receipt differs from approved leased candidate' }
+    $r=$strict.Receipt
+    # The understood canonical-v2 schema is explicitly disabled/unsigned. A new
+    # executable schema needs its own trusted reader; it cannot be admitted by
+    # flipping these booleans, adding a signature to this file, or a caller flag.
+    if ($r.receipt_state -cne 'canonical-static-closure-disabled' -or
+        $r.unsigned_disabled_build -isnot [bool] -or -not $r.unsigned_disabled_build -or
+        $r.delivery_admitted -isnot [bool] -or $r.delivery_admitted -or
+        $r.signing_complete -isnot [bool] -or $r.signing_complete) { throw 'Strict reader returned an unsupported executable-candidate contract' }
+    [pscustomobject][ordered]@{
+        schema_version='yime-rime-pime-dp1u-native-candidate-assessment-v1'
+        strict_reader='Read-RimePimePackageBuildReceiptV2'; strict_receipt_evidence_chain_verified=$true
+        evidence_root=$root; receipt_sha256=$strict.Digest; package_sha256=$PackageLease.sha256
+        product_version=$r.product_version; receipt_state=$r.receipt_state
+        retained_evidence_used=$r.evidence_artifacts_durable
+        executable_candidate_safe=$false; candidate_execution_admitted=$false
+        rejection_reasons=@('canonical-v2 is a disabled NSIS artifact, not an executable candidate',
+            'trusted executable-release identity and signing have not been admitted',
+            'canonical delivery_admitted remains false; DP1-R derived disabled-static trust is not execution permission')
+        strict_reader_source_sha256=(Get-FileHash -LiteralPath (Join-Path $PSScriptRoot 'rime-pime-package-receipt-v2.ps1') -Algorithm SHA256).Hash.ToLowerInvariant()
+        retained_store_source_sha256=(Get-FileHash -LiteralPath (Join-Path $PSScriptRoot 'rime-pime-receipt-v2-store.ps1') -Algorithm SHA256).Hash.ToLowerInvariant()
+        execution_authorized=$false; installer_executed=$false; uninstaller_executed=$false
+    }
+}
+
 function Invoke-RimePimeDp1UNativeReadOnlyProbe {
     [CmdletBinding()]
     param([Parameter(Mandatory)][string]$AuthorizationPath, [Parameter(Mandatory)][string]$TrustedApprovalSha256,
         [Parameter(Mandatory)][string]$BoundaryPath, [Parameter(Mandatory)][string]$PackagePath,
-        [Parameter(Mandatory)][string]$CanonicalReceiptPath)
+        [Parameter(Mandatory)][string]$CanonicalReceiptPath, [Parameter(Mandatory)][string]$ReceiptEvidenceRoot)
     # MUST precede reading any caller path, package, registry, or product fact.
     if ([Environment]::MachineName -match '(?i)^MYCOMPUTER(?:\.|$)') { throw 'MYCOMPUTER daily-use local.12 target prohibited before probing' }
     Initialize-Dp1UNativeFacts
@@ -260,21 +297,19 @@ function Invoke-RimePimeDp1UNativeReadOnlyProbe {
         if (Test-Path -LiteralPath $b.peer_install_root) { throw 'Protected YimeCore install root exists' }
         $package = Open-Dp1UNativeArtifact $PackagePath $a.package_sha256 4294967296; $leases.Add($package)
         $receipt = Open-Dp1UNativeArtifact $CanonicalReceiptPath $a.canonical_receipt_sha256 -Json; $leases.Add($receipt)
-        if ($receipt.value.schema_version -cne 'yime-rime-pime-package-build-receipt-v2' -or
-            $receipt.value.product -cne 'rime-pime' -or $receipt.value.installer.sha256 -cne $package.sha256 -or
-            ($receipt.value.installer.bytes -isnot [int] -and $receipt.value.installer.bytes -isnot [long]) -or
-            [long]$receipt.value.installer.bytes -ne $package.bytes) { throw 'Canonical receipt/package binding mismatch' }
+        $candidate = Get-Dp1UNativeCandidateAssessment $ReceiptEvidenceRoot $package $receipt
         # Recheck bounded approval time at completion, while all artifact leases remain held.
         Assert-Dp1UNativeRequest $a $b $TrustedApprovalSha256 ([Environment]::MachineName) ([DateTime]::UtcNow)
         [pscustomobject][ordered]@{
-            schema_version='yime-rime-pime-dp1u-native-readonly-observation-v1'; observed_at_utc=[DateTime]::UtcNow.ToString('o')
+            schema_version='yime-rime-pime-dp1u-native-readonly-observation-v2'; observed_at_utc=[DateTime]::UtcNow.ToString('o')
             run_id=$a.run_id; target_name=[Environment]::MachineName; target_machine_id=$a.target_machine_id; initiating_sid=$a.initiating_sid
             authorization_sha256=$TrustedApprovalSha256; authorization_raw_sha256=$approval.sha256; boundary_raw_sha256=$boundary.sha256
             product_boundary_sha256=$a.product_boundary_sha256; package_sha256=$package.sha256; canonical_receipt_sha256=$receipt.sha256
             package_file_identity=$package.file_identity; receipt_file_identity=$receipt.file_identity; native_context=$context
+            candidate_assessment=$candidate; candidate_execution_admitted=$candidate.candidate_execution_admitted
             native_readonly_observation_completed=$true; native_preflight_complete=$false; execution_authorized=$false
             registration_gate_passed=$false; rollback_gate_passed=$false; removal_gate_passed=$false; runtime_gate_passed=$false; dp1_u_acceptance_passed=$false
-            pending=@('independent approval authentication/revocation and run-id consumption','strict receipt evidence-chain and executable-candidate safety validation',
+            pending=@('independent approval authentication/revocation and run-id consumption','trusted runnable candidate with a supported executable receipt contract',
                 'system-visible root identity leases through complete transaction','default-input-method preservation baseline',
                 'same-SID elevation worker and non-elevated runtime native observations','native registration/rollback/removal/runtime transaction providers and actual acceptance')
             privacy=[ordered]@{installer_executed=$false;registry_mutated=$false;product_processes_started_or_stopped=$false;user_data_read=$false;default_input_method_changed=$false}

@@ -2,6 +2,8 @@
 
 日期：2026-09-08。影响产品：独立 Rime/PIME 隔离 package lane。保护对象：YimeCore local.12、历史 YimeCore 身份及生产 Rime/PIME。本批提供原生只读观测代码和隔离回归，不执行安装、卸载、注册、恢复、Runtime，也不改变默认输入法或读取用户数据。
 
+以下 V1 实现/待办/74 项记录保留为首批历史；后续 V2 strict candidate 接线进展见本页末段。首批 JSON 及其源码摘要不改写。
+
 ## 本批实现
 
 - `tools/dual-product/rime-pime-dp1u-native-probe.psm1` 唯一导出 `Invoke-RimePimeDp1UNativeReadOnlyProbe`；必须显式传入授权文件、独立授权摘要、产品边界文件、package 文件和 canonical receipt 文件。不存在可注入命令、scriptblock、provider 或 Apply 开关。
@@ -36,3 +38,24 @@ pwsh.exe -NoProfile -File tools/dual-product/test-rime-pime-dp1u-native-probe.ps
 ```
 
 原生 probe 没有默认目标，也没有可在当前开发机复制即执行的申请示例。其五个参数都是明确审阅的文件/摘要；未获得隔离目标前不生成实机批准 JSON。
+
+## V2：接入真实 strict receipt 来源链及执行拒绝
+
+V2 新增显式必填 `ReceiptEvidenceRoot`，共六个参数；输出升级为 `yime-rime-pime-dp1u-native-readonly-observation-v2`。MYCOMPUTER 早拒绝仍发生在任何调用者路径读取前，没有新增默认目标或执行入口。
+
+内部 `Get-Dp1UNativeCandidateAssessment` 直接调用来源模块的 `Read-RimePimePackageBuildReceiptV2`，复用其严格 JSON/sidecar、retained object、plan/manifest/payload 关系、build/postbuild 语义、源码及 NSIS 原始摘要绑定检查。阅读器结果必须与仍持有的批准 package/receipt 文件租约摘要和长度一致，两个文件都须在显式 evidence root 内。它没有用 `schema_version` 与汇总布尔代替来源链，也没有复制一个可以单独漂移的弱化阅读器。
+
+成功静态读取只关闭“尚未接入 strict receipt 来源链”的源码缺口。现有 v2 阅读器理解的 canonical schema 明确为 `canonical-static-closure-disabled`，因此返回 `strict_receipt_evidence_chain_verified=true` 时，可执行候选仍明确拒绝：`executable_candidate_safe=false`、`candidate_execution_admitted=false`。将 `delivery_admitted` 改为 true、伪造签名布尔、改未来 schema 或重封一份语义矛盾的 receipt，都由真实阅读器拒绝。受信可运行候选须有独立可执行 schema、签名和安全准入合同，不能把 disabled receipt 原位改字段放行。
+
+这里的拒绝限定于**可执行发行准入**。DP1-R 已取得的独立派生 disabled 静态信任/闭包结果保持原义；canonical 原始 `delivery_admitted=false` 不否定该静态证据，也不授予安装、卸载或 Runtime 执行许可。
+
+新 [strict candidate 回归](../../tools/dual-product/test-rime-pime-dp1u-native-candidate.ps1) 直接复用现有完整 receipt fixture factory，未 mock strict reader。默认 15 项只创建/验证合成来源链；包括缺附件、错误 sidecar、与来源矛盾的版本、已重封的 build 篡改、原始字段伪造、缺完整 schema、未知版本、重复 JSON 属性、NSIS 源码篡改及错误 evidence root。加 `-ReviewCurrentCanonical` 后再只读检查仓内当前 canonical 与其 retained sources，两套 PowerShell 各 17 项通过；当前 canonical 静态链通过且执行准入为 false。旧 native context 74 项也重新通过。
+
+新结果见 [2026-09-08-dp1-u-native-strict-candidate.json](../testing/dual-product/2026-09-08-dp1-u-native-strict-candidate.json)。只读 canonical 审查不调用原生目标 probe、不打开 installed local.12 目录、不读取用户数据。native target、真实 registry/ancestry 成功路径和 installed 四门仍未执行，既有未完成字段不提升。
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/dual-product/test-rime-pime-dp1u-native-candidate.ps1
+pwsh.exe -NoProfile -File tools/dual-product/test-rime-pime-dp1u-native-candidate.ps1
+```
+
+来源链检查读取的证据租约遵循既有阅读器，只证明这次静态检查，返回后不为未来执行保留所有证据或目录租约；完整事务身份保护、防重放、worker/Runtime 原生观察及 mutation providers 仍待完成。

@@ -39,6 +39,7 @@ tools/yimecore/local12-readiness-evidence.json -text !eol whitespace=blank-at-eo
 tools/dual-product/rime-pime-dp1u-native-facts.cs text eol=lf
 tools/dual-product/rime-pime-dp1u-native-probe.psm1 text eol=lf
 tools/dual-product/test-rime-pime-dp1u-native-probe.ps1 text eol=lf
+tools/dual-product/test-rime-pime-dp1u-native-candidate.ps1 text eol=lf
 
 # The prepared local.12 fault package records these source hashes as well.
 tools/yimecore/local12-maintenance-preparation.psm1 text eol=lf
