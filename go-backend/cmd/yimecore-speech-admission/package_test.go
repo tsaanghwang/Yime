@@ -450,7 +450,9 @@ func TestSpeechPackageRejectsSymlinkPayload(t *testing.T) {
 	}
 	symlinkfixture.Create(t, renamed, target)
 	_, err := verifyPackage(f.output, digest)
-	symlinkfixture.Rejected(t, err, symlinkfixture.PackageDiagnostic())
+	// packageChild rejects this declared member through speechruntime.PlainPath
+	// before the platform-specific package path check, on Windows as well.
+	symlinkfixture.Rejected(t, err, "indirect trial paths are forbidden")
 }
 
 func TestSpeechPackageCloneCopiesOnlyRuntimeAndPreservesSeal(t *testing.T) {

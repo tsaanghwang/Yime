@@ -22,6 +22,8 @@ jobs:
         run: .\tools\validate-build-contract.ps1
       - name: Verify locked Windows toolchain metadata
         run: python .\tools\verify_toolchain_lock.py
+      - name: Test locked Windows toolchain metadata
+        run: python -m unittest tools.test_verify_toolchain_lock -v
       - name: Verify detached lexicon archive identity
         run: python .\tools\lexicon\verify_external_archive_lock.py
 
@@ -222,11 +224,16 @@ jobs:
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-          foreach ($test in @('test-local-product-build-result.ps1', 'test-local-product-speech-build.ps1')) {
-            & $ps5 -NoProfile -ExecutionPolicy Bypass -File (Join-Path '.\tools\yimecore' $test)
-            if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 $test failed with exit code $LASTEXITCODE" }
-            & (Join-Path '.\tools\yimecore' $test)
-          }
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\yimecore\test-local-product-build-result.ps1
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 build-result test failed with exit code $LASTEXITCODE" }
+          .\tools\yimecore\test-local-product-build-result.ps1
+          $runId = [guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\yimecore\test-local-product-speech-build.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\yimecore-experiment\speech-build-contract-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 speech-build test failed with exit code $LASTEXITCODE" }
+          .\tools\yimecore\test-local-product-speech-build.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\yimecore-experiment\speech-build-contract-ci-ps7-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 7 speech-build test failed with exit code $LASTEXITCODE" }
       - name: Test YimeCore local12 maintenance preparation
         shell: pwsh
         run: |

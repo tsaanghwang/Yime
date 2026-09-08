@@ -94,12 +94,14 @@
     },
     {
       "id": "nsis",
-      "version": "3.08",
+      "version": "3.12",
       "role": "Windows installer compiler",
       "acquisition": {
-        "url": "https://downloads.sourceforge.net/project/nsis/NSIS%203/3.08/nsis-3.08-setup.exe",
-        "size": 1554195,
-        "sha256": "bbc76be36ecb2fc00d493c91befdaf71654226ad8a4fc4dc338458916bf224d0"
+        "url": "https://downloads.sourceforge.net/project/nsis/NSIS%203/3.12/nsis-3.12-setup.exe",
+        "size": 1566914,
+        "sha256": "3bc2b06253a7e4957111be152ac6a536e0c7478a706e19da814038db5d706495",
+        "sha256_source": "https://github.com/microsoft/winget-pkgs/blob/bc23f96b968c037a79e8929f09654177dabe165a/manifests/n/NSIS/NSIS/3.12/NSIS.NSIS.installer.yaml",
+        "size_source": "https://fossies.org/windows/misc/nsis-3.12-setup.exe/"
       },
       "verify": "makensis.exe /VERSION"
     },
