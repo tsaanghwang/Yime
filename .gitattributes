@@ -61,6 +61,8 @@ tools/dual-product/rime-pime-dp1u-exact-file-removal.cs text eol=crlf
 tools/dual-product/rime-pime-dp1u-exact-file-removal.psm1 text eol=crlf
 tools/dual-product/rime-pime-dp1u-application-hive.cs text eol=crlf
 tools/dual-product/rime-pime-dp1u-application-hive.psm1 text eol=crlf
+tools/dual-product/rime-pime-dp1u-native-transaction.cs text eol=crlf
+tools/dual-product/rime-pime-dp1u-native-transaction.psm1 text eol=crlf
 
 # The prepared local.12 fault package records these source hashes as well.
 tools/yimecore/local12-maintenance-preparation.psm1 text eol=lf

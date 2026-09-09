@@ -331,6 +331,8 @@ def transaction_source_status(sources):
     dp1u_exact_removal_native = sources["tools/dual-product/rime-pime-dp1u-exact-file-removal.cs"]
     dp1u_exact_removal_module = sources["tools/dual-product/rime-pime-dp1u-exact-file-removal.psm1"]
     dp1u_exact_removal_test = sources["tools/dual-product/test-rime-pime-dp1u-exact-file-removal.ps1"]
+    dp1u_native_tx = sources["tools/dual-product/rime-pime-dp1u-native-transaction.cs"]
+    dp1u_native_tx_module = sources["tools/dual-product/rime-pime-dp1u-native-transaction.psm1"]
     receipt_v2_supersession = sources["tools/dual-product/rime-pime-receipt-v2-supersession.ps1"]
     receipt_v2_supersession_module = sources["tools/dual-product/rime-pime-receipt-v2-supersession.psm1"]
     receipt_v2_supersession_test = sources["tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1"]
@@ -1304,6 +1306,20 @@ def transaction_source_status(sources):
     )):
         fail("DP1-U exact removal lost its handle or isolated entry boundary")
     dp1u_exact_file_removal_source_contract_wired = True
+    # This is a native API fixture protocol, not a product registration executor.
+    if not all(token in dp1u_native_tx for token in (
+        "MoveFileExW(temp,path,8)", "stream.Flush(true)", "FileShare.None",
+        "Native.Verify(stream.SafeFileHandle,path,false)", "Native.RejectNamedStreams(path)",
+    )) or not all(token in dp1u_native_tx_module for token in (
+        "New-RimePimeDp1UNativeTransaction", "Resume-RimePimeDp1UNativeTransaction",
+        "Prepared record differs from external SHA256 binding.",
+        "Unapproved current registry value; preserved.", "Assert-TxHash $r.prepared_sha256",
+        "$r.schema_version -isnot [string]", "$r.transaction_id -isnot [string]",
+        "full_native_product_transaction_complete=$false;dp1_u_acceptance_passed=$false",
+        "hardware_power_loss_verified=$false;directory_metadata_durability_verified=$false",
+    )):
+        fail("DP1-U native fixture transaction lost an immutable decision, binding or honest boundary")
+    dp1u_native_fixture_transaction_source_contract_wired = True
     if core.index("New-Item -ItemType Directory -Path $stagingRoot") >= core.index("$preinstall = Invoke-UninstallCore"):
         fail("YimeCore active mutation moved before complete package staging")
     ci_postbuild_step = one(
@@ -1553,6 +1569,20 @@ def transaction_source_status(sources):
         "PowerShell 5.1 DP1-U exact-removal test failed with exit code $LASTEXITCODE" in ci_dp1u_exact_removal_step and
         re.search(r"(?m)^\s+(?:if|continue-on-error):|-(?:Skip|CheckPattern)\b", ci_dp1u_exact_removal_step) is None
     )
+    ci_dp1u_native_tx_step = one(
+        r"(?ms)^      - name: Test DP1-U native transaction interruption recovery\s*$.*?(?=^      - name: |\Z)",
+        ci, "CI DP1-U native transaction interruption step",
+    ).group()
+    dp1u_native_fixture_transaction_ci_ps5_ps7_present = (
+        ci_dp1u_native_tx_step.count("test-rime-pime-dp1u-native-transaction.ps1") == 2 and
+        all(f"dp1-u-native-transaction-test-ci-{host}-$runId" in ci_dp1u_native_tx_step
+            for host in ("ps5", "ps7")) and
+        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in ci_dp1u_native_tx_step and
+        "PowerShell 5.1 DP1-U native-transaction test failed with exit code $LASTEXITCODE" in ci_dp1u_native_tx_step and
+        re.search(r"(?m)^\s+(?:if|continue-on-error):|-(?:Skip|CheckPattern)\b", ci_dp1u_native_tx_step) is None
+    )
+    if not dp1u_native_fixture_transaction_ci_ps5_ps7_present:
+        fail("DP1-U native fixture transaction lost its dual-shell CI boundary")
     ci_core_desktop_rehearsal_step = one(
         r"(?ms)^      - name: Test YimeCore native desktop rollback rehearsal\s*$.*?(?=^      - name: |\Z)",
         ci,
@@ -2669,6 +2699,9 @@ def transaction_source_status(sources):
         "rime_pime_dp1u_exact_file_removal_source_contract_wired": dp1u_exact_file_removal_source_contract_wired,
         "rime_pime_dp1u_exact_file_removal_ci_ps5_ps7_present": dp1u_exact_file_removal_ci_ps5_ps7_present,
         "rime_pime_dp1u_exact_file_removal_executed_by_baseline": False,
+        "rime_pime_dp1u_native_fixture_transaction_source_contract_wired": dp1u_native_fixture_transaction_source_contract_wired,
+        "rime_pime_dp1u_native_fixture_transaction_ci_ps5_ps7_present": dp1u_native_fixture_transaction_ci_ps5_ps7_present,
+        "rime_pime_dp1u_native_fixture_transaction_executed_by_baseline": False,
         "rime_pime_dp1u_native_readonly_probe_executed_by_baseline": False,
         "rime_pime_dp1u_native_execution_adapter_complete": False,
         "rime_pime_dp1u_isolated_preflight_test_executed_by_baseline": False,
@@ -2852,7 +2885,7 @@ def source_baseline(root: Path = ROOT):
          "reason": "Initiating-SID, exact HKU cleanup and current-family registration readback anchors are present. This Python baseline does not execute the PowerShell contracts, native probes or registered profile. Legacy-only migration remains unwired and real UAC/profile acceptance remains pending."},
         {"id": "DP1-PIME-TRANSACTION-06", "path": "installer/installer.nsi",
           "status": "fixture_journal_and_replay_source_anchors_present_real_transaction_pending",
-          "reason": "Pure replay/removal models and an isolated filesystem fixture-journal source contract now cover sealed records, hash-chain validation, typed privacy-safe snapshots, replay disposition and foreign-content preservation. This Python baseline only reads their source anchors and does not execute either PowerShell test. A real durable install journal, power-loss and cross-process replay, real registry recovery, installed exact removal, installer wiring, loaded-TSF upgrade handling and native installed/live acceptance remain pending."},
+          "reason": "Pure replay/removal models, an isolated filesystem fixture journal and a native private-hive/exact-file transaction source contract now cover sealed records, typed snapshots, process-interruption recovery decisions and foreign-content preservation. This Python baseline reads source anchors and CI wiring; it does not execute the PowerShell regressions. Production install-journal integration and cross-process recovery, hardware power loss, system registry recovery, installed exact removal, installer wiring, loaded-TSF upgrade handling and native installed/live acceptance remain pending."},
         {"id": "DP1-PIME-COMPILER-INPUT-07", "path": "tools/dual-product/rime-pime-nsis-toolchain-closure.ps1",
           "status": "fresh_compiler_stage_and_strict_interval_build_admission_wired_actual_migration_external_physical_limits_pending",
           "reason": "The pinned 303-file NSIS distribution is copied from held leases into a fresh compiler stage and the continuous membership monitor encloses the synchronous makensis interval before candidate admission. A tagged build-evidence schema fails closed in old validators and current receipt preparation requires its exact interval, stage-lease and build-logic-source shape. The tracked baseline executes neither lane nor the external DP1-T migration; the separate DP1-T record binds the completed actual canonical migration. Physical same-SID prevention and full toolchain closure remain false."},

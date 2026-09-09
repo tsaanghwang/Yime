@@ -1,6 +1,10 @@
 # Yime 双独立产品开发计划
 
-本轮来源记录：`.tmp/dual-product/dp1-app-hive-startup-health-final-20260909/baseline.json`，SHA-256 `3c38c07b57ac40b28529e6dfa7118c34bacb88d100a1311113375754ea4424ec`；235 项来源在分批提交后逐项复核一致。提交前另发现上一轮 CI 的工具栏绘图测试失败，已完成[线程约束修复与本地回归](CI_COST_CONTROL_2026-09-09.md)，作为独立主题一起推送；远端新提交的 CI 结果另行核对，不继承旧提交的成功状态。
+2026-09-09 最新事务增量：[DP1-U 私有 hive 与精确文件删除的原生持久事务](YIME_DUAL_PRODUCT_DP1_U_NATIVE_TRANSACTION_2026-09-09.md)已完成自有夹具实现和 PS5/PS7 各 45 项实际回归，支持进程中断后由新进程按持久决定恢复；私有 hive 原始类型值导出与准备前准入各通过 53 项。提交前恢复旧值并保留文件，提交后只前进完成已批准文件清理；损坏决定、未知值和身份变化拒绝继续，待删除不能误报完成。新增回归进入现有 `contract-tests` 双 shell 顺序步骤。当前来源基线为 231 个声明路径加 7 个锁定依赖、74 项测试、8 个 pending。此处完成的是私有原生 API 事务协议；系统注册提供程序、完整产品维护编排、可信可执行候选和独立目标实际 DP1-U 仍待完成，之后才是 DP2 安装顺序矩阵与 DP3 三选一入口。未运行安装器/卸载器或产品 Runtime，未触碰 local.12、生产 Rime/PIME、默认输入法与用户数据；产品验收和硬件断电等字段保持未通过。之前 `d846c36f0` 的 CI 运行 `34331201021` 已成功，本批提交需要自己的 CI 结果。下方数字及待办保留为对应历史阶段。
+
+最新事务来源记录：`.tmp/dual-product/dp1-u-native-transaction-source-final-20260909/baseline.json`，SHA-256 `200d5b6e9424427dac46bfd5b0758c80ce78d6432d042a1d8961cf6d441bd059`；238 项来源、74/74、8 个 pending。原生执行证据与完整限制见上方事务说明。
+
+此前来源记录：`.tmp/dual-product/dp1-app-hive-startup-health-final-20260909/baseline.json`，SHA-256 `3c38c07b57ac40b28529e6dfa7118c34bacb88d100a1311113375754ea4424ec`；235 项来源在分批提交后逐项复核一致。提交前另发现上一轮 CI 的工具栏绘图测试失败，已完成[线程约束修复与本地回归](CI_COST_CONTROL_2026-09-09.md)，作为独立主题一起推送；远端新提交的 CI 结果另行核对，不继承旧提交的成功状态。
 
 2026-09-09 当前执行增量：Rime/PIME 新增 [DP1-U 私有 application hive 类型快照与恢复](YIME_DUAL_PRODUCT_DP1_U_APPLICATION_HIVE_2026-09-09.md)，PS5/PS7 各 43/43；只操作仓内私有 hive，生产注册视图及完整原生事务未接入。YimeCore [启动健康门禁](YIMECORE_STARTUP_HEALTH_GATE_2026-09-09.md)接入两个实际 Start 函数，新包必须声明并携带自己的六个 helper，历史包按自己的合同启动，禁止必需健康检查的新包用 NoLaunch 跳过；启动夹具各 47/47，复制包布局的进程/管道夹具各 103/73 项通过。当前来源基线为 235 个来源、72 项测试、8 个 pending。没有构建或安装新候选、真实恢复、访问产品用户数据或修改 local.12。下一步继续补齐 Rime/PIME 完整原生注册/回滚编排及可信可执行候选，再在指定独立目标完成实际 DP1-U；DP2 安装顺序矩阵及 DP3 三选一入口依旧按前置条件顺序推进。源码和私有夹具通过不提升 DP1/DP2/DP3、YimeCore L6/local/public 验收字段。
 

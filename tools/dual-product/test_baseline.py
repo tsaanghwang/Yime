@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 228)
-        self.assertEqual(len(self.receipt["source_manifest"]), 235)
+        self.assertEqual(len(contract["source_paths"]), 231)
+        self.assertEqual(len(self.receipt["source_manifest"]), 238)
         for path in (
             "version.txt",
             "PIMELauncher/build.rs",
@@ -648,6 +648,35 @@ class OwnershipTests(unittest.TestCase):
             old = f"dp1-u-exact-removal-test-ci-{host}-$runId"
             self.assertIn(old, sources[path])
             sources[path] = sources[path].replace(old, "lost-host-boundary", 1)
+            with self.subTest(host=host), self.assertRaises(ValueError):
+                subject.transaction_source_status(sources)
+
+    def test_native_fixture_transaction_keeps_decisions_and_installed_claims_separate(self):
+        status = self.receipt["transaction_source"]
+        self.assertTrue(status["rime_pime_dp1u_native_fixture_transaction_source_contract_wired"])
+        self.assertTrue(status["rime_pime_dp1u_native_fixture_transaction_ci_ps5_ps7_present"])
+        self.assertFalse(status["rime_pime_dp1u_native_fixture_transaction_executed_by_baseline"])
+        self.assertFalse(status["rime_pime_dp1u_native_execution_adapter_complete"])
+        native = "tools/dual-product/rime-pime-dp1u-native-transaction.cs"
+        module = "tools/dual-product/rime-pime-dp1u-native-transaction.psm1"
+        for path, old, new in (
+            (native, "MoveFileExW(temp,path,8)", "MoveFileExW(temp,path,9)"),
+            (module, "dp1_u_acceptance_passed=$false", "dp1_u_acceptance_passed=$true"),
+            (module, "Assert-TxHash $r.prepared_sha256", "# dropped decision binding"),
+        ):
+            sources = self.maintenance_sources()
+            self.assertIn(old, sources[path])
+            sources[path] = sources[path].replace(old, new, 1)
+            with self.subTest(path=path, old=old), self.assertRaises(ValueError):
+                subject.transaction_source_status(sources)
+
+    def test_native_fixture_transaction_cannot_lose_a_ci_host(self):
+        for host in ("ps5", "ps7"):
+            sources = self.maintenance_sources()
+            path = ".github/workflows/ci.yaml"
+            old = f"dp1-u-native-transaction-test-ci-{host}-$runId"
+            self.assertIn(old, sources[path])
+            sources[path] = sources[path].replace(old, "missing-native-fixture-host", 1)
             with self.subTest(host=host), self.assertRaises(ValueError):
                 subject.transaction_source_status(sources)
 
