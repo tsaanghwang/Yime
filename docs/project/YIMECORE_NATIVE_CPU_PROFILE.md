@@ -62,7 +62,10 @@ functional checks, untrusted-helper refusal before import, path/junction refusal
 evidence completeness and path removal from concise reports. Its real Go smoke
 test builds the derived command, creates tiny synthetic indexes for all three
 modes, collects both labels, reads flat/cumulative tables with go tool pprof,
-and verifies that an attempted rerun cannot overwrite earlier evidence.
+and verifies that an attempted rerun cannot overwrite earlier evidence. It also
+runs the complete public command against a synthetic package with hardware and
+registry discovery stubbed only in the test fixture's private helper instance;
+source/package validation, compilation, sampling and report generation run for real.
 These CI fixtures do not establish performance on the user's physical PC.
 
 References: Go's [runtime/pprof API](https://pkg.go.dev/runtime/pprof) and

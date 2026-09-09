@@ -99,8 +99,13 @@ func main() {
         $null = & $diagnosticModule $runChild $go @('build','-o',$argumentExe,$argumentFile) $working (Join-Path $work 'arguments-build.log')
         $expectedArguments = @('','with spaces','C:\trailing path\','a"quote','two\\slashes')
         $argumentResult = & $diagnosticModule $runChild $argumentExe $expectedArguments $work (Join-Path $work 'arguments.log')
-        $observedArguments = @($argumentResult.stdout | ConvertFrom-Json)
-        Assert-ProfileTest (($observedArguments | ConvertTo-Json -Compress) -ceq ($expectedArguments | ConvertTo-Json -Compress)) 'Windows process argument round trip failed'
+        # Windows PowerShell 5.1 emits a JSON array as one pipeline object.
+        # Assign it directly so an outer array does not change the comparison.
+        $observedArguments = $argumentResult.stdout | ConvertFrom-Json
+        Assert-ProfileTest ($observedArguments.Count -eq $expectedArguments.Count) 'Windows process argument count changed'
+        for ($argumentIndex = 0; $argumentIndex -lt $expectedArguments.Count; $argumentIndex++) {
+            Assert-ProfileTest ($observedArguments[$argumentIndex] -ceq $expectedArguments[$argumentIndex]) "Windows process argument $argumentIndex changed"
+        }
         Assert-ProfileTest ($argumentResult.stderr.Contains('successful child')) 'Stderr from successful child was lost'
         Assert-ProfileRejected { & $diagnosticModule $runChild $argumentExe @('fail') $work (Join-Path $work 'failure.log') } 'exited 7'
         foreach ($mode in @('full','variable','shorthand')) {
