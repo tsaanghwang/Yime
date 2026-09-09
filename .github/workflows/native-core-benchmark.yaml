@@ -1,0 +1,32 @@
+name: Native core benchmark contracts
+
+on:
+  push:
+    branches: [native-x64-benchmark-kit]
+  pull_request:
+    branches: [codex/yimecore-replacement-experiment]
+    paths:
+      - tools/yimecore/native-core-benchmark.psm1
+      - tools/yimecore/test-native-core-benchmark.ps1
+      - .github/workflows/native-core-benchmark.yaml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-core-benchmark-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  contracts:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Windows PowerShell 5.1 contracts
+        shell: powershell
+        run: .\tools\yimecore\test-native-core-benchmark.ps1
+      - name: PowerShell 7 contracts
+        shell: pwsh
+        run: .\tools\yimecore\test-native-core-benchmark.ps1
