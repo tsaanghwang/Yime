@@ -70,11 +70,21 @@ try {
     Reject {Get-YimeCoreFaultPreparationPlan $fake.root $fake.contract $source (Hash $source)} 'self-attested fake controller cannot claim guard availability'
     $wrong=$fixture.contract.Clone();$wrong.manager_sha256='ff3a563bf58999683f34e9c6fb73656ea6790b120e48fd322b71f97c99818cca'
     Reject {Get-YimeCoreFaultPreparationCatalog $fixture.root $wrong} 'legacy controller cannot claim the local13 guard'
-    foreach($reviewedHash in @('e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a','9f69d9aba12e4c50c8aa06edb945375dc72a721cd208791ffab2e4207442f39d')) {
+    foreach($reviewedHash in @('e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a','9f69d9aba12e4c50c8aa06edb945375dc72a721cd208791ffab2e4207442f39d','c4585051463c18b1164a4bf5eeb624f232fcc4b2c4177180feebe2e3c4448d75')) {
         $approved=& $module {param($h) Test-PreparationGuard @{product_version='0.1.0-local.13';guarded_native_desktop_rehearsal=$true;manager_sha256=$h}} $reviewedHash
         Check ($approved -is [bool] -and $approved) ('reviewed guard source policy accepts '+$reviewedHash.Substring(0,8))
     }
     Reject {& $module {Test-PreparationGuard @{product_version='0.1.0-local.13';guarded_native_desktop_rehearsal=$true;manager_sha256=('1'*64)}}} 'guard source allowlist rejects arbitrary caller hash'
+    $modified=Fixture 'modified-reviewed-controller'
+    $modifiedManager=Join-Path $modified.root 'maintenance/Manage-YimeCoreTrial.ps1'
+    [IO.File]::AppendAllText($modifiedManager,"`n# Synthetic unreviewed byte change.`n",[Text.UTF8Encoding]::new($false))
+    $modified.contract.manager_sha256=Hash $modifiedManager
+    $modifiedRecord=@($modified.manifest.files|Where-Object {$_.path -ceq 'maintenance/Manage-YimeCoreTrial.ps1'})[0]
+    $modifiedRecord.sha256=$modified.contract.manager_sha256;$modifiedRecord.bytes=(Get-Item -LiteralPath $modifiedManager).Length
+    Json $modified.manifest (Join-Path $modified.root 'package-manifest.json');$modified.contract.manifest_sha256=Hash (Join-Path $modified.root 'package-manifest.json')
+    $modifiedError=$null
+    try {$null=Get-YimeCoreFaultPreparationPlan $modified.root $modified.contract $source (Hash $source)} catch {$modifiedError=$_.Exception.Message}
+    Check ($modifiedError -ceq 'Controller is not approved for guarded NativeDesktop rehearsal.') 'resealed change to reviewed controller is rejected by independent source policy'
     foreach ($field in @('package_contract','tool_version','product_version','package_id')) {
         $bad=Fixture ('array-manifest-'+$field);$bad.manifest[$field]=@($bad.manifest[$field])
         Json $bad.manifest (Join-Path $bad.root 'package-manifest.json');$bad.contract.manifest_sha256=Hash (Join-Path $bad.root 'package-manifest.json')

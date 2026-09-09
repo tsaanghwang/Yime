@@ -14,6 +14,11 @@ QUICK = {'build-contract', 'lexicon-offline-tooling', 'rust-i686-host',
          'native-build', 'go-tests', 'real-rime-tests', 'go-race-msys2',
          'nsis-preflight'}
 CONTRACTS = {'contract-tests', 'dp1-long-contracts'}
+CONTROLLER_POLICY_CALLS = (
+    r'& $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\yimecore\test-local13-maintenance-preparation.ps1',
+    'if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 controller preparation policy test failed with exit code $LASTEXITCODE" }',
+    r'          .\tools\yimecore\test-local13-maintenance-preparation.ps1',
+)
 
 
 def require(condition, message):
@@ -76,6 +81,10 @@ def validate(text):
     for command in ('test_workflow_contract.py', 'baseline.py',
                     'check-libime2-change-boundary.ps1', 'fetch-depth: 0'):
         require(command in preflight, f'Cheap preflight missing: {command}')
+    for command in CONTROLLER_POLICY_CALLS:
+        require(command in preflight, 'Reviewed controller policy must pass both shells before builds')
+    require('test-local13-maintenance-preparation.ps1' not in graph['contract-tests'],
+            'Controller policy should run once per shell in cheap preflight')
     long = graph['dp1-long-contracts']
     require('      fail-fast: true\n      max-parallel: 2\n' in long,
             'Long fixtures must stop sibling work on failure and bound parallelism')
@@ -135,6 +144,11 @@ class WorkflowContractTests(unittest.TestCase):
                               ('shell: [powershell, pwsh]', 'shell: [pwsh]'),
                               ('timeout-minutes: 60', 'timeout-minutes: 360')]:
             self.reject_in_job('dp1-long-contracts', before, after)
+
+    def test_controller_policy_cannot_move_after_expensive_work_or_lose_a_shell(self):
+        for command in CONTROLLER_POLICY_CALLS:
+            with self.subTest(command=command):
+                self.reject_in_job('build-contract', command, '')
 
     def test_manual_and_tag_runs_cannot_be_cancelled_by_push(self):
         changed = re.sub(r'^  cancel-in-progress:.*$', '  cancel-in-progress: true', self.text, flags=re.M)
