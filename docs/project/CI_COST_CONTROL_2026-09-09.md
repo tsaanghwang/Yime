@@ -84,6 +84,13 @@ actionlint 1.7.7 发布包，并核对官方 SHA-256。已有原生构建产物�
 各 PowerShell host 的实际耗时。该数值是估算；新的远程运行通过和计时才是优化验收证据。
 本记录不宣布签名发布、真实安装、卸载/回滚或完整 NSIS 输入闭包已经通过。
 
+2026-09-09 远程验收补记：提交 `d5d0670473ef6df540dd10f00e37a2b2c4da6c9d` 的
+[运行 34307751867](https://github.com/tsaanghwang/Yime/actions/runs/34307751867)
+最终为 `success`，UTC 03:36:04 至 04:24:06，耗时 **48 分 02 秒**。六个长回归
+矩阵项、普通合约、原生构建和 unsigned 包均通过，三个仅标签发布 job 正常跳过。
+相比前述成功运行的 118 分 14 秒，墙钟时间减少约 59%；这不代表 runner 总分钟或
+AI 费用按相同比例下降。本地原始验证记录中的远程未通过字段保留为写入时的状态。
+
 参考：[GitHub 并发控制](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)、
 [矩阵失败处理](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations)、
 [重跑工作流与 job](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs)。

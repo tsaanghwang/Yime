@@ -1,5 +1,7 @@
 # Yime 双独立产品开发计划
 
+2026-09-09 按顺序推进增量：先完成 [Rime/PIME DP1-U 普通文件按句柄删除原语](YIME_DUAL_PRODUCT_DP1_U_EXACT_FILE_REMOVAL_2026-09-09.md)，再修复 [YimeCore 恢复证据准入](YIMECORE_RESTORE_EVIDENCE_ADMISSION_2026-09-09.md)。前者在 PS5/PS7 各 45 项真实私有文件回归中通过，公开入口只允许仓内指定夹具；后者两种 shell 各 107 项，通过严格布尔、JSON 类型和本次 clone/source 绑定，拒绝错误证据进入停止/移动路径。当前来源基线 227 个来源、72 项测试、8 个 pending；没有安装、真实恢复、产品注册或 local.12 修改。这两批是源码及隔离回归进展，未刷新或替换已安装包。Rime/PIME 完整原生事务、可信可执行候选与独立目标仍待完成；DP2 的第二安装顺序不能通过删除 clean-target 保护提前放行。下一步继续 DP1-U 执行器与 YimeCore 维护健康接线，具备前置后才进行实际 DP2，最后 DP3。此前 [CI 优化](CI_COST_CONTROL_2026-09-09.md)已由 `d5d067047` 的远程运行验证为 48 分 02 秒全成功；本轮新提交的 CI 结果另行判断，不借用旧 SHA 的 PASS。
+
 2026-09-08 当前健康适配器增量：[YimeCore 原生健康适配器与进程引用](YIMECORE_NATIVE_HEALTH_ADAPTER_2026-09-08.md)承接[上一批健康候选及归档](YIMECORE_LOCAL13_HEALTH_CANDIDATES_2026-09-08.md)。观察器新增 `References` 参数集，固定源码帮助类型私有化，复制原句柄并核对原 `Process`/`SafeHandle`、创建时间及父子关系；只读取对应内核对象，不按 PID 重开替代，默认全局发现的严格条件不变。显式引用无需查询正在日用的产品；PS5/PS7 各通过默认 89 项及显式自有 stub 100 项，`8f7e44…` 普通候选的实际健康适配器组合结果见新报告。旧候选、818 项源码 ZIP 和 188 文件归档不变，本轮工具另有来源哈希，未给旧 local.12 添加协议或在采集 v2 中强制探测。健康观察不关闭真实维护、引擎就绪或登录启动；YimeCore L6/local/public、Rime/PIME DP1-U 四类实际门禁以及 DP1/DP2/DP3 状态保持未完成。下方来源数量及候选描述保留为相应阶段。
 
 2026-09-08 当前门禁增量：[YimeCore 原生维护观察门禁](YIMECORE_NATIVE_MAINTENANCE_GATES_2026-09-08.md)补齐回退编排 v2 的延期删除、系统文件元数据及 Runtime/config 前后检查，新增独立提供程序与双 PowerShell 回归。真实维护、无会话健康协议、L6/local/public 未关闭；Rime/PIME 的可信候选、独立目标、DP1-U 实际事务及 DP2/DP3 不借用本轮证据提升。未运行安装器或改动 local.12、正式 Rime/PIME、默认输入法和实际用户数据；旧候选与原始记录保留。
