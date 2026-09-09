@@ -121,6 +121,34 @@ GetDC 到 ReleaseDC 及全部清理，绘图后检查 GdiFlush，并拒绝 GetPi
 日志，包括早期本机 cgo 编译退出 2 及同一工具链在沙箱外普通用户下成功的结果。
 本轮只编译/运行该测试包，未启动安装器、实际工具栏或修改已安装产品。
 
+2026-09-09 第二次失败核对：`222f2d5f6411df1a942b12d0a11735a7205fe7df` 的
+[`go-race-msys2` 日志](https://github.com/tsaanghwang/Yime/actions/runs/34320910054/job/102367315120)
+确认工具栏包已通过（1.331 秒），本次失败转为
+`TestConnectedSpeechReconnectBrokerBundleDurableLifecycle/full` 的候选选择超时。
+该语义测试使用真实临时 journal，选择路径包含 `Write`、`Sync` 和确认；测试 helper
+原来的 `Config{}` 同时继承了生产的 50ms 交互期限。在 race 插桩、共享 runner 和真实
+磁盘操作中，这不能作为普通生命周期测试的固定时延假设。日志没有报告 data race，
+也没有足够分段计时证明具体是哪一次 Sync 或调度延迟造成超时。
+
+修复只将 `connected_speech_reconnect_test.go` 的 `newReconnectSession` 明确配置为
+有限的 5 秒夹具预算；生产默认、journal Sync、严格 JSON 解码和原有 5ms/2ms 超时
+驱逐测试不变。新增反例在原 writer 外层延迟 150ms，仍调用真实 `store.persist` 和
+`store.commit`：修前实际得到同一 select timeout，修后核对单次 journal/model
+generation、明确提交、学习记录及 Close/reopen 一致性。五组定向测试在普通与 race
+模式各重复 10 次通过，独立复审未发现阻断。原始日志及源文件哈希摘要保留在
+`.tmp/ci-race-second-failure-20260909/`。
+
+这是持久化生命周期与交互时延测试的职责修正，不是生产 50ms 目标的性能验收。
+生产超时停止等待、迟到持久化仍可能完成的既有语义未由本批改变或关闭。
+
+本地完整验证使用与 CI 相同的 `tools/test-go-race.ps1`，Go 1.26.4、MSYS2 UCRT64
+GCC 16.1.0，实际退出码为 0；49 个测试包通过，缓存结果 0 个，另 29 个包无测试文件，
+未报告 data race。定向普通/race 各有 100 个测试 PASS 事件（含子测试，顶层各 50 次）。
+源码 SHA-256 为 `4db2f6d4f1cf4509ef9c1feca3aa414b30d8325b69baadb3c592874242e028d2`；
+`summary.json` 为 `b36c17568eb856e1e4589cbb220c3c8993d60b2d8f66b14d72bc97543660b523`，
+绑定修前反例、定向回归及完整日志。记录形成时新 SHA 尚未推送，远端字段保留 false；
+没有运行安装器或访问已安装 local.12、生产用户状态。
+
 参考：[GitHub 并发控制](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)、
 [矩阵失败处理](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations)、
 [重跑工作流与 job](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs)。

@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore"
@@ -170,6 +171,60 @@ func TestConnectedSpeechReconnectBrokerBundleDurableLifecycle(t *testing.T) {
 	}
 }
 
+func TestReconnectLifecycleWaitsForDurableSelection(t *testing.T) {
+	root := t.TempDir()
+	const code, target = "abcd", "审"
+	index := reconnectFixtureIndex(t, root, "full", "slow-durable-core", target+"\t"+code+"\t1\n")
+	bundle, err := yimecore.NewBundleIndex(index, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	config := DurableUserModelConfig{
+		SnapshotPath: filepath.Join(root, "model.json"), JournalPath: filepath.Join(root, "model.journal"),
+		SourceID: "reconnect-slow-durable-synthetic-v1", CheckpointEvery: 1000,
+	}
+	store, err := OpenDurableUserModel(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = store.Close() })
+	// Force persistence beyond the interactive 50ms budget without replacing
+	// the real journal writer, Sync, or post-apply commit hook. This is a
+	// lifecycle correctness fixture, not a latency acceptance test.
+	const persistDelay = 150 * time.Millisecond
+	store.Model().SetMutationHooks(func(mutation yimecore.UserMutation) error {
+		time.Sleep(persistDelay)
+		return store.persist(mutation)
+	}, store.commit)
+	session := newReconnectSession(t, "full", bundle, store.Model())
+	candidate := session.find(session.input(code), target)
+	started := time.Now()
+	selected := session.request(Request{Operation: Select, CandidateID: candidate.ID, MutationID: "slow-durable-selection"})
+	if time.Since(started) < persistDelay {
+		t.Fatal("selection acknowledged before the delayed durable writer completed")
+	}
+	if selected.Result == nil || selected.Result.Commit != target || store.Model().Generation() != 1 ||
+		store.Stats().JournalGeneration != 1 {
+		t.Fatal("delayed selection did not commit exactly one journaled mutation")
+	}
+	learned := store.Model().LearnedRecords()
+	if !hasLearnedRecord(learned, code, target) {
+		t.Fatal("delayed selection was not learned")
+	}
+	session.close()
+	if err := store.Close(); err != nil {
+		t.Fatal(err)
+	}
+	reopened, err := OpenDurableUserModel(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = reopened.Close() })
+	if reopened.Model().Generation() != 1 || !reflect.DeepEqual(reopened.Model().LearnedRecords(), learned) {
+		t.Fatal("delayed durable selection changed after clean reopen")
+	}
+}
+
 func reconnectFixtureIndex(t *testing.T, root, mode, name, body string) *yimecore.FileIndex {
 	t.Helper()
 	source := filepath.Join(root, name+".dict.yaml")
@@ -198,12 +253,17 @@ type reconnectSession struct {
 
 func newReconnectSession(t *testing.T, mode string, bundle *yimecore.BundleIndex, model *yimecore.UserModel) *reconnectSession {
 	t.Helper()
+	// These semantic lifecycle checks include real journal Sync and race
+	// instrumentation on shared CI runners. Keep a bounded fixture budget,
+	// separate from the production 50ms interactive deadline; dedicated
+	// dispatcher timeout/eviction tests retain their short explicit deadlines.
+	const operationBudget = 5 * time.Second
 	dispatcher, err := NewModeDispatcher(mode, func(requestedMode string) (engineapi.Engine, error) {
 		if requestedMode != mode {
 			return nil, fmt.Errorf("unexpected fixture mode %q", requestedMode)
 		}
 		return yimecore.NewBundleEngineWithUserModel(bundle, 9, model)
-	}, Config{})
+	}, Config{OperationTimeout: operationBudget})
 	if err != nil {
 		t.Fatal(err)
 	}
