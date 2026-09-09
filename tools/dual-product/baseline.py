@@ -2729,6 +2729,32 @@ def transaction_source_status(sources):
     }
 
 
+def executable_candidate_source_status(sources):
+    """Inventory the new guarded lane; never promote the disabled canonical lane."""
+    controller = sources["tools/dual-product/rime-pime-candidate-maintenance.psm1"]
+    reader = sources["tools/dual-product/rime-pime-executable-candidate.psm1"]
+    workflow = sources[".github/workflows/ci.yaml"]
+    for token in ("Assert-CandidateTargetHost", "Assert-MaintenanceWorkerDecision",
+                  "Export-MaintenanceRecoveryTicket", "Open-MaintenanceRemoval",
+                  "Request-MaintenanceRemoval", "Resume-MaintenanceRuntime",
+                  "-and $null -eq $removal", "CoordinationHandle=",
+                  "installed_acceptance_passed=$false", "dp1_u_acceptance_passed=$false",
+                  "public_release_admitted=$false"):
+        if token not in controller:
+            fail("guarded candidate maintenance boundary missing")
+    if "schema_version='yime-rime-pime-executable-candidate-v1'" not in reader:
+        fail("guarded candidate schema boundary missing")
+    for name in ("executable-candidate", "executable-receipt", "candidate-maintenance",
+                 "candidate-coordinator", "dp1u-candidate-registration", "dp1u-candidate-runtime"):
+        if workflow.count(f"test-rime-pime-{name}.ps1") < 2:
+            fail("guarded candidate dual-shell regression wiring missing")
+    return {"source_contract_wired": True, "ci_ps5_ps7_present": True,
+            "powershell_suites_executed_by_baseline": False,
+            "candidate_built_by_baseline": False, "candidate_installed": False,
+            "system_registration_executed": False, "product_runtime_executed": False,
+            "dp1_u_acceptance_passed": False, "public_release_admitted": False}
+
+
 def source_baseline(root: Path = ROOT):
     root = plain(root)
     contract_path = child(root, "tools/dual-product/contract.json")
@@ -2873,6 +2899,7 @@ def source_baseline(root: Path = ROOT):
             fail("cross-product identity collision: " + field)
     maintenance = maintenance_source_status(sources)
     transaction = transaction_source_status(sources)
+    executable_candidate = executable_candidate_source_status(sources)
     directed_anchor = one(r'^pub async fn wait_for_directed_stop\b',
                           sources["PIMELauncher/src/maintenance.rs"], "directed maintenance server")
     pending = [
@@ -2909,7 +2936,7 @@ def source_baseline(root: Path = ROOT):
             "test_level": contract["test_level"],
             "source_manifest": hashes, "products": products, "locked_shared_build_inputs": artifacts,
             "known_pending": pending, "maintenance_source": maintenance,
-            "transaction_source": transaction, "source_unchanged": unchanged,
+            "transaction_source": transaction, "executable_candidate_source": executable_candidate, "source_unchanged": unchanged,
             "dp1_full_implementation_passed": False, "dp2_physical_acceptance_passed": False,
             "installed_runtime_examined": False, "rime_executed": False, "system_state_mutated": False,
             "user_text_or_learning_read": False}

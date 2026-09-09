@@ -563,6 +563,66 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-U application-hive test failed with exit code $LASTEXITCODE" }
           .\tools\dual-product\test-rime-pime-dp1u-application-hive.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-app-hive-test-ci-ps7-$runId")
+      - name: Test guarded executable candidate manifest
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-executable-candidate.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-executable-candidate-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 executable-candidate test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-executable-candidate.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-executable-candidate-test-ci-ps7-$runId")
+      - name: Test guarded executable candidate receipt
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-executable-receipt.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\executable-receipt-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 executable-receipt test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-executable-receipt.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\executable-receipt-test-ci-ps7-$runId")
+      - name: Test guarded candidate maintenance recovery
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-candidate-maintenance.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-candidate-maintenance-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 candidate-maintenance test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-candidate-maintenance.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-candidate-maintenance-test-ci-ps7-$runId")
+      - name: Test guarded candidate registration provider
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-dp1u-candidate-registration.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-candidate-registration-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 dp1u-candidate-registration test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-dp1u-candidate-registration.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-candidate-registration-test-ci-ps7-$runId")
+      - name: Test guarded candidate Runtime provider
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-dp1u-candidate-runtime.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-candidate-runtime-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 dp1u-candidate-runtime test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-dp1u-candidate-runtime.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-candidate-runtime-test-ci-ps7-$runId")
+      - name: Test guarded candidate cross-process coordinator
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-candidate-coordinator.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\coordinator-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 candidate-coordinator test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-candidate-coordinator.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\coordinator-test-ci-ps7-$runId")
       - name: Test DP1-U native transaction interruption recovery
         shell: pwsh
         run: |

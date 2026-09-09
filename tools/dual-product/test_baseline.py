@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 231)
-        self.assertEqual(len(self.receipt["source_manifest"]), 238)
+        self.assertEqual(len(contract["source_paths"]), 255)
+        self.assertEqual(len(self.receipt["source_manifest"]), 262)
         for path in (
             "version.txt",
             "PIMELauncher/build.rs",
@@ -679,6 +679,28 @@ class OwnershipTests(unittest.TestCase):
             sources[path] = sources[path].replace(old, "missing-native-fixture-host", 1)
             with self.subTest(host=host), self.assertRaises(ValueError):
                 subject.transaction_source_status(sources)
+
+    def test_guarded_executable_contract_does_not_promote_installed_evidence(self):
+        status = self.receipt["executable_candidate_source"]
+        self.assertTrue(status["source_contract_wired"])
+        for name, value in status.items():
+            if name not in ("source_contract_wired", "ci_ps5_ps7_present"):
+                self.assertIs(value, False)
+
+    def test_guarded_executable_cannot_lose_recovery_decision_or_truthful_status(self):
+        path = "tools/dual-product/rime-pime-candidate-maintenance.psm1"
+        for old in ("-and $null -eq $removal", "installed_acceptance_passed=$false"):
+            sources = self.maintenance_sources()
+            sources[path] = sources[path].replace(old, "lost-boundary")
+            with self.subTest(old=old), self.assertRaises(ValueError):
+                subject.executable_candidate_source_status(sources)
+
+    def test_guarded_executable_cannot_drop_dual_shell_regressions(self):
+        sources = self.maintenance_sources()
+        path = ".github/workflows/ci.yaml"
+        sources[path] = sources[path].replace("test-rime-pime-candidate-maintenance.ps1", "missing-test.ps1", 1)
+        with self.assertRaises(ValueError):
+            subject.executable_candidate_source_status(sources)
 
     def test_dp1q_candidate_evidence_archive_is_wired_without_actual_archive_claim(self):
         status = self.receipt["transaction_source"]
