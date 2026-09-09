@@ -1,5 +1,13 @@
 # DP1-U 私有 application hive 的类型快照与恢复
 
+2026-09-09 后续增量：增加 `Export-RimePimeDp1UApplicationHiveValues`，只从原上下文
+持有的快照深复制固定六值的类型与原始 bytes；`ConvertTo-RimePimeDp1UApplicationHiveValues`
+复用写入准入进行无写入校验。导出值须在 Set 时重新准入，不是可反序列化的快照授权。
+原 metadata 快照和 Restore 引用约束不变。PS5/PS7 各 **53/53** 通过，最终来源与
+结果索引位于 `.tmp/apphive-values-20260909-1788948326522/summary.json`；此前并行运行的
+目录租约冲突原始记录保留，最终两版按顺序执行。本增量仍只处理私有 hive，不提升实际
+注册、系统视图、完整产品事务或 DP1-U 验收。下文 43 项及来源哈希保留为初版记录。
+
 影响产品：Rime/PIME。继按句柄删除普通文件之后，本批增加真正调用 Windows 注册表
 API 的快照、写入与恢复原语。对象仅为新建仓内私有 hive，未接入安装器或真实 COM、
 TIP、Run、卸载项；既有 fixture journal 的合成 JSON 结果及字段不改判。

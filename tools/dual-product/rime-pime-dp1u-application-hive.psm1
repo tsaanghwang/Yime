@@ -1,7 +1,7 @@
 # Fixture-only native typed registry operations through a private application hive.
 Set-StrictMode -Version 2.0
 $ErrorActionPreference='Stop'
-$script:HiveSourceHash='4cf061813ae60f3d0f6d62606d6394388e40be1f4d07c52afe2a72217968694a'
+$script:HiveSourceHash='7fa9d4e086aca0fd9dd407ac4309b4ff0d0d3bc096ef0719edf18bfe57333cf4'
 $script:HiveNamespace='Yime.Dp1UApplicationHive_'+[guid]::NewGuid().ToString('N')
 $script:HiveType=$null;$script:HiveInputType=$null;$script:HiveNativeType=$null
 $script:HiveContexts=@{}
@@ -98,9 +98,7 @@ function Invoke-AppHiveWrite($Bundle,$Before,$Wanted,[string]$Operation) {
         }
     }finally{$check.Dispose()}
 }
-function Set-RimePimeDp1UApplicationHiveValues {
-    [CmdletBinding()]param([Parameter(Mandatory)]$Context,[Parameter(Mandatory)]$ExpectedBefore,[Parameter(Mandatory)]$Values)
-    $bundle=Get-AppHiveBundle $Context;$before=Get-AppHiveSnapshot $bundle $ExpectedBefore
+function New-AppHivePreparedSnapshot($Bundle,$Values) {
     if($Values -isnot [array] -or $Values.Count -ne 6){throw 'Values must be a literal six-element array.'}
     $inputs=[Array]::CreateInstance($script:HiveInputType,6)
     for($i=0;$i -lt 6;$i++){
@@ -111,7 +109,35 @@ function Set-RimePimeDp1UApplicationHiveValues {
         if($row.value_id -isnot [string] -or $row.kind -isnot [string] -or $row.raw_bytes -isnot [byte[]]){throw 'Value requires literal string/string/byte[] fields.'}
         $inputs.SetValue([Activator]::CreateInstance($script:HiveInputType,[object[]]@($row.value_id,$row.kind,$row.raw_bytes)),$i)
     }
-    $wanted=$bundle.native.PrepareValues($inputs)
+    $check=Open-AppHiveSource
+    try{return $Bundle.native.PrepareValues($inputs)}finally{$check.Dispose()}
+}
+function ConvertFrom-AppHiveSnapshot($Bundle,$Snapshot) {
+    $check=Open-AppHiveSource
+    try{
+        $rows=@($Bundle.native.ExportValues($Snapshot)|ForEach-Object{[pscustomobject][ordered]@{value_id=$_.Name;kind=$_.Kind;raw_bytes=$_.RawBytes}})
+        return ,$rows
+    }finally{$check.Dispose()}
+}
+function Export-RimePimeDp1UApplicationHiveValues {
+    <# Explicitly exports fixture-only raw bytes for the six fixed values. This returns copies
+       of an original retained snapshot, not a current observation or a portable snapshot token.
+       The caller owns any persistence; no durability or transaction acceptance is implied. #>
+    [CmdletBinding()]param([Parameter(Mandatory)]$Context,[Parameter(Mandatory)]$Snapshot)
+    $bundle=Get-AppHiveBundle $Context;$native=Get-AppHiveSnapshot $bundle $Snapshot
+    return ,(ConvertFrom-AppHiveSnapshot $bundle $native)
+}
+function ConvertTo-RimePimeDp1UApplicationHiveValues {
+    <# Admits and deep-copies fixture-only values in canonical order without registry writes.
+       The returned literal rows are data, not an authorization token: Set revalidates them. #>
+    [CmdletBinding()]param([Parameter(Mandatory)]$Context,[Parameter(Mandatory)]$Values)
+    $bundle=Get-AppHiveBundle $Context;$wanted=New-AppHivePreparedSnapshot $bundle $Values
+    return ,(ConvertFrom-AppHiveSnapshot $bundle $wanted)
+}
+function Set-RimePimeDp1UApplicationHiveValues {
+    [CmdletBinding()]param([Parameter(Mandatory)]$Context,[Parameter(Mandatory)]$ExpectedBefore,[Parameter(Mandatory)]$Values)
+    $bundle=Get-AppHiveBundle $Context;$before=Get-AppHiveSnapshot $bundle $ExpectedBefore
+    $wanted=New-AppHivePreparedSnapshot $bundle $Values
     Invoke-AppHiveWrite $bundle $before $wanted 'apply'
 }
 function Restore-RimePimeDp1UApplicationHive {
@@ -135,4 +161,4 @@ $ExecutionContext.SessionState.Module.OnRemove={
     }
     $script:HiveContexts.Clear();if($null -ne $first){throw $first}
 }
-Export-ModuleMember -Function Open-RimePimeDp1UApplicationHive,Open-RimePimeDp1UExistingApplicationHive,Get-RimePimeDp1UApplicationHiveSnapshot,Set-RimePimeDp1UApplicationHiveValues,Restore-RimePimeDp1UApplicationHive,Close-RimePimeDp1UApplicationHive
+Export-ModuleMember -Function Open-RimePimeDp1UApplicationHive,Open-RimePimeDp1UExistingApplicationHive,Get-RimePimeDp1UApplicationHiveSnapshot,Export-RimePimeDp1UApplicationHiveValues,ConvertTo-RimePimeDp1UApplicationHiveValues,Set-RimePimeDp1UApplicationHiveValues,Restore-RimePimeDp1UApplicationHive,Close-RimePimeDp1UApplicationHive

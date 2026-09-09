@@ -33,6 +33,15 @@ function New-Values {
 }
 function Hash-Bytes([byte[]]$Bytes){$sha=[Security.Cryptography.SHA256]::Create();try{return ([BitConverter]::ToString($sha.ComputeHash($Bytes))).Replace('-','').ToLowerInvariant()}finally{$sha.Dispose()}}
 function Same-Snapshot($Left,$Right){return (($Left.values|ConvertTo-Json -Depth 5 -Compress) -ceq ($Right.values|ConvertTo-Json -Depth 5 -Compress))}
+function Require-Values($Rows,$Expected){
+    Require ($Rows -is [object[]] -and $Rows.Count -eq 6) 'Export did not return one literal six-row object array.'
+    for($i=0;$i -lt 6;$i++){
+        $row=$Rows[$i];$fields=@($row.PSObject.Properties|ForEach-Object{$_.Name})
+        Require ($row -is [pscustomobject] -and ($fields -join ',') -ceq 'value_id,kind,raw_bytes') 'Export field set mismatch.'
+        Require ($row.value_id -is [string] -and $row.value_id -ceq $names[$i] -and $row.kind -is [string] -and $row.raw_bytes -is [byte[]]) 'Export literal types/order mismatch.'
+        Require ($row.kind -ceq $Expected[$i].kind -and $row.raw_bytes.Length -eq $Expected[$i].raw_bytes.Length -and (Hash-Bytes $row.raw_bytes) -ceq (Hash-Bytes $Expected[$i].raw_bytes)) "Export changed typed raw bytes: $i"
+    }
+}
 function Release($Context){if($null -ne $Context){Close-RimePimeDp1UApplicationHive $Context|Out-Null}}
 function Native-Value($Context,[string]$Name,[uint32]$Type,[byte[]]$Data){
     & $module {param($c,$name,$type,$data)
@@ -102,6 +111,103 @@ Check 'rollback-restores-absent-values-and-preserves-foreign-value' {
         $foreign=Native-Read $ctx 'foreign-value';Require ($foreign.type -eq 3 -and [BitConverter]::ToString($foreign.raw) -ceq '01-03-05-07') 'Foreign value changed.'
     }finally{Release $ctx}
 }
+Check 'explicit-raw-export-preserves-six-fixed-values-and-metadata-stays-content-free' {
+    $c=New-Case;$ctx=Open-RimePimeDp1UApplicationHive $c.path
+    try{
+        $before=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;$values=New-Values
+        Native-Value $ctx 'foreign-value' 3 ([byte[]]@(1,3,5,7))
+        Require (Set-RimePimeDp1UApplicationHiveValues $ctx $before $values).passed 'Setup failed.'
+        $snapshot=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;$metadata=$snapshot|ConvertTo-Json -Depth 8 -Compress
+        $rows=Export-RimePimeDp1UApplicationHiveValues $ctx $snapshot;Require-Values $rows $values
+        Require (($snapshot|ConvertTo-Json -Depth 8 -Compress) -ceq $metadata -and $snapshot.raw_value_bytes_exported -is [bool] -and -not $snapshot.raw_value_bytes_exported) 'Raw export changed the metadata API.'
+        Require ($metadata -notmatch 'raw_bytes|fixture-x86|fixture-native|%PATH%|foreign-value') 'Metadata API leaked raw values.'
+        $foreign=Native-Read $ctx 'foreign-value';Require ([BitConverter]::ToString($foreign.raw) -ceq '01-03-05-07') 'Raw export mutated a foreign value.'
+    }finally{Release $ctx}
+}
+Check 'raw-export-preserves-absent-and-zero-byte-present-distinctions' {
+    $c=New-Case;$ctx=Open-RimePimeDp1UApplicationHive $c.path
+    try{
+        $before=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;$absent=Export-RimePimeDp1UApplicationHiveValues $ctx $before
+        foreach($row in $absent){Require ($row.kind -ceq 'Absent' -and $row.raw_bytes -is [byte[]] -and $row.raw_bytes.Length -eq 0) 'Absent value was coerced.'}
+        $values=New-Values;$values[0].raw_bytes=[byte[]]::new(0);$values[3].kind='Absent';$values[3].raw_bytes=[byte[]]::new(0);$values[5].raw_bytes=[byte[]]::new(0)
+        Require (Set-RimePimeDp1UApplicationHiveValues $ctx $before $values).passed 'Setup failed.'
+        Require-Values (Export-RimePimeDp1UApplicationHiveValues $ctx (Get-RimePimeDp1UApplicationHiveSnapshot $ctx)) $values
+    }finally{Release $ctx}
+}
+Check 'raw-export-deep-copy-and-historical-snapshot-do-not-become-current-state' {
+    $c=New-Case;$ctx=Open-RimePimeDp1UApplicationHive $c.path
+    try{
+        $empty=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;$values=New-Values
+        Require (Set-RimePimeDp1UApplicationHiveValues $ctx $empty $values).passed 'Setup failed.'
+        $before=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;$rows=Export-RimePimeDp1UApplicationHiveValues $ctx $before
+        $rows[0].raw_bytes[0]=0;$rows[1].kind='Absent';$rows[2].value_id='foreign-value';$rows[3]=$null
+        Require-Values (Export-RimePimeDp1UApplicationHiveValues $ctx $before) $values
+        Require (Same-Snapshot $before (Get-RimePimeDp1UApplicationHiveSnapshot $ctx)) 'Export returned a retained data alias.'
+        $changed=New-Values;$changed[0].raw_bytes=[Text.Encoding]::Unicode.GetBytes("later`0")
+        Require (Set-RimePimeDp1UApplicationHiveValues $ctx $before $changed).passed 'Second apply failed.'
+        $before.values=@();$before.id='edited metadata';Require-Values (Export-RimePimeDp1UApplicationHiveValues $ctx $before) $values
+        Reject {Set-RimePimeDp1UApplicationHiveValues $ctx $before $values} '*conflict*'
+        Require-Values (Export-RimePimeDp1UApplicationHiveValues $ctx (Get-RimePimeDp1UApplicationHiveSnapshot $ctx)) $changed
+    }finally{Release $ctx}
+}
+Check 'prepare-canonicalizes-without-writes-or-retained-snapshot-registration' {
+    $c=New-Case;$ctx=Open-RimePimeDp1UApplicationHive $c.path;$old=& $module {(Get-Item Function:Write-AppHiveValue).ScriptBlock}
+    try{
+        $before=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;$values=New-Values;$reversed=@($values[5..0])
+        $count=& $module {param($c)(Get-AppHiveBundle $c).snapshots.Count} $ctx
+        & $module {Set-Item Function:script:Write-AppHiveValue {throw 'Prepare must not write.'}}
+        $prepared=ConvertTo-RimePimeDp1UApplicationHiveValues $ctx $reversed;Require-Values $prepared $values
+        Require ((& $module {param($c)(Get-AppHiveBundle $c).snapshots.Count} $ctx) -eq $count) 'Prepare registered a portable snapshot token.'
+        Require (Same-Snapshot $before (Get-RimePimeDp1UApplicationHiveSnapshot $ctx)) 'Prepare changed registry values.'
+        $values[0].raw_bytes[0]=0;Require ($prepared[0].raw_bytes[0] -ne 0) 'Prepared rows retain caller input bytes.'
+        $prepared[1].raw_bytes[0]=0;Require ($values[1].raw_bytes[0] -ne 0) 'Prepared bytes alias caller input.'
+        Require-Values (ConvertTo-RimePimeDp1UApplicationHiveValues $ctx (New-Values)) (New-Values)
+        Reject {Restore-RimePimeDp1UApplicationHive $ctx $prepared $before} '*Original*'
+    }finally{& $module {param($body)Set-Item Function:script:Write-AppHiveValue $body} $old;Release $ctx}
+}
+Check 'prepared-rows-are-revalidated-and-require-current-original-before-on-set' {
+    $c=New-Case;$ctx=Open-RimePimeDp1UApplicationHive $c.path
+    try{
+        $before=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;$prepared=ConvertTo-RimePimeDp1UApplicationHiveValues $ctx (New-Values)
+        $prepared[5].kind='String';Reject {Set-RimePimeDp1UApplicationHiveValues $ctx $before $prepared} '*allowlist*'
+        Require (Same-Snapshot $before (Get-RimePimeDp1UApplicationHiveSnapshot $ctx)) 'Modified preparation bypassed admission.'
+        $prepared=ConvertTo-RimePimeDp1UApplicationHiveValues $ctx (New-Values)
+        Require (Set-RimePimeDp1UApplicationHiveValues $ctx $before $prepared).passed 'Prepared values did not use existing Set path.'
+        Reject {Set-RimePimeDp1UApplicationHiveValues $ctx $before $prepared} '*conflict*'
+    }finally{Release $ctx}
+}
+Check 'raw-export-and-prepare-require-live-original-context-and-export-original-snapshot' {
+    $a=New-Case;$b=New-Case;$ca=Open-RimePimeDp1UApplicationHive $a.path;$cb=Open-RimePimeDp1UApplicationHive $b.path
+    try{
+        $sa=Get-RimePimeDp1UApplicationHiveSnapshot $ca;$sb=Get-RimePimeDp1UApplicationHiveSnapshot $cb
+        $copy=$ca|ConvertTo-Json|ConvertFrom-Json
+        Reject {Export-RimePimeDp1UApplicationHiveValues $copy $sa} '*Original*'
+        Reject {ConvertTo-RimePimeDp1UApplicationHiveValues $copy (New-Values)} '*Original*'
+        Reject {Export-RimePimeDp1UApplicationHiveValues $ca ($sa|ConvertTo-Json -Depth 8|ConvertFrom-Json)} '*Original*'
+        Reject {Export-RimePimeDp1UApplicationHiveValues $ca $sb} '*Original*'
+        Reject {& $module {param($a,$b,$s)$ba=Get-AppHiveBundle $a;$bb=Get-AppHiveBundle $b;$ba.native.ExportValues((Get-AppHiveSnapshot $bb $s))} $ca $cb $sb} '*same-context*'
+    }finally{Release $ca;Release $cb}
+    Reject {Export-RimePimeDp1UApplicationHiveValues $ca $sa} '*closed*'
+    Reject {ConvertTo-RimePimeDp1UApplicationHiveValues $ca (New-Values)} '*closed*'
+}
+Check 'exported-fixture-values-survive-serialization-only-through-readmission-and-current-snapshot' {
+    $c=New-Case;$ctx=Open-RimePimeDp1UApplicationHive $c.path;$values=New-Values
+    try{
+        $empty=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Require (Set-RimePimeDp1UApplicationHiveValues $ctx $empty $values).passed 'Setup failed.'
+        $original=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;$raw=Export-RimePimeDp1UApplicationHiveValues $ctx $original
+        $encoded=@($raw|ForEach-Object{[pscustomobject]@{value_id=$_.value_id;kind=$_.kind;raw_base64=[Convert]::ToBase64String($_.raw_bytes)}})
+        $saved=Join-Path $c.root 'owned-values.json';[IO.File]::WriteAllText($saved,($encoded|ConvertTo-Json -Depth 6),[Text.UTF8Encoding]::new($false))
+        Require (Set-RimePimeDp1UApplicationHiveValues $ctx $original (Export-RimePimeDp1UApplicationHiveValues $ctx $empty)).passed 'Own hive clear failed.'
+        $identity=Close-RimePimeDp1UApplicationHive $ctx;$ctx=$null
+        $ctx=Open-RimePimeDp1UExistingApplicationHive $c.path $identity
+        Reject {Export-RimePimeDp1UApplicationHiveValues $ctx $original} '*Original*'
+        $storedRows=[IO.File]::ReadAllText($saved)|ConvertFrom-Json
+        $decoded=@(foreach($storedRow in $storedRows){[pscustomobject]@{value_id=$storedRow.value_id;kind=$storedRow.kind;raw_bytes=[Convert]::FromBase64String($storedRow.raw_base64)}})
+        $admitted=ConvertTo-RimePimeDp1UApplicationHiveValues $ctx $decoded;Require-Values $admitted $values
+        $current=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Require (Set-RimePimeDp1UApplicationHiveValues $ctx $current $admitted).passed 'Readmitted typed recovery failed.'
+        Require-Values (Export-RimePimeDp1UApplicationHiveValues $ctx (Get-RimePimeDp1UApplicationHiveSnapshot $ctx)) $values
+    }finally{Release $ctx}
+}
 Check 'rollback-restores-original-types-order-empty-elements-and-raw-terminators' {
     $c=New-Case;$ctx=Open-RimePimeDp1UApplicationHive $c.path
     try{
@@ -140,13 +246,14 @@ Check 'same-bytes-different-native-kind-conflicts' {
     $c=New-Case;$ctx=Open-RimePimeDp1UApplicationHive $c.path
     try{Native-Value $ctx $names[0] 1 ([byte[]]@(1,0,0,0));$before=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Native-Value $ctx $names[0] 2 ([byte[]]@(1,0,0,0));$after=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Require ($before.values[0].sha256 -ceq $after.values[0].sha256 -and -not(Same-Snapshot $before $after)) 'Kind not part of snapshot.';Reject {Set-RimePimeDp1UApplicationHiveValues $ctx $before (New-Values)} '*conflict*';Require (Restore-RimePimeDp1UApplicationHive $ctx $before $after).passed 'Raw observed kind restore failed.'}finally{Release $ctx}
 }
-$invalidCases=@('missing-row','extra-row','duplicate','wrong-case','unknown-name','wrong-kind','kind-array','name-array','raw-untyped','raw-null','odd-string','short-dword','absent-nonempty','oversize','extra-field','case-field','unterminated-string','unterminated-expand-string','unterminated-multi-string')
+$invalidCases=@('null-values','non-array-values','nested-values','missing-row','extra-row','duplicate','wrong-case','unknown-name','wrong-kind','kind-array','name-array','raw-untyped','raw-null','odd-string','short-dword','absent-nonempty','oversize','extra-field','case-field','unterminated-string','unterminated-expand-string','unterminated-multi-string')
 foreach($bad in $invalidCases){
 Check ('full-preflight-rejects-'+$bad+'-without-partial-write') {
     $c=New-Case;$ctx=Open-RimePimeDp1UApplicationHive $c.path
     try{
         $before=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;$rows=New-Values
         switch($bad){
+            'null-values'{$rows=$null};'non-array-values'{$list=[Collections.Generic.List[object]]::new();foreach($row in $rows){$list.Add($row)};$rows=$list};'nested-values'{$rows=,$rows}
             'missing-row'{$rows=@($rows[0..4])};'extra-row'{$rows=@($rows)+@($rows[0])};'duplicate'{$rows[5].value_id=$rows[0].value_id};'wrong-case'{$rows[5].value_id=$rows[5].value_id.ToUpperInvariant()};'unknown-name'{$rows[5].value_id='foreign-value'}
             'wrong-kind'{$rows[5].kind='String'};'kind-array'{$rows[5].kind=@('MultiString')};'name-array'{$rows[5].value_id=@($rows[5].value_id)};'raw-untyped'{$rows[5].raw_bytes=@(0,0)};'raw-null'{$rows[5].raw_bytes=$null}
             'odd-string'{$rows[1].raw_bytes=[byte[]]@(1)};'short-dword'{$rows[4].raw_bytes=[byte[]]@(1,0)};'absent-nonempty'{$rows[5].kind='Absent'};'oversize'{$rows[5].raw_bytes=[byte[]]::new(65538)}
@@ -154,6 +261,7 @@ Check ('full-preflight-rejects-'+$bad+'-without-partial-write') {
             'unterminated-string'{$rows[0].raw_bytes=[byte[]]@(1,0)};'unterminated-expand-string'{$rows[3].raw_bytes=[byte[]]@(1,0)};'unterminated-multi-string'{$rows[5].raw_bytes=[byte[]]@(1,0,0,0)}
         }
         Reject {Set-RimePimeDp1UApplicationHiveValues $ctx $before $rows}
+        Reject {ConvertTo-RimePimeDp1UApplicationHiveValues $ctx $rows}
         Require (Same-Snapshot $before (Get-RimePimeDp1UApplicationHiveSnapshot $ctx)) 'Validation produced partial mutation.'
     }finally{Release $ctx}
 }}
@@ -266,7 +374,7 @@ Check 'source-read-lease-and-module-removal-release-all-contexts' {
 }
 } finally {if($null -ne $module){Remove-Module $module}}
 $sources=@('rime-pime-dp1u-application-hive.cs','rime-pime-dp1u-application-hive.psm1','test-rime-pime-dp1u-application-hive.ps1'|ForEach-Object{$p=Join-Path $PSScriptRoot $_;[ordered]@{path=$p;sha256=(Get-FileHash $p -Algorithm SHA256).Hash.ToLowerInvariant();bytes=(Get-Item $p).Length}})
-$result=[ordered]@{schema_version='yime-rime-pime-dp1u-app-hive-tests-v1';passed=(@($checks|Where-Object{-not $_.passed}).Count -eq 0);check_count=$checks.Count;shell_version=$PSVersionTable.PSVersion.ToString();process_is_64_bit=[Environment]::Is64BitProcess;checks=@($checks.ToArray());source_files=$sources;fixture_roots=@($fixtures.ToArray());native_application_hive_exercised=$true;real_hkcu_hklm_accessed=$false;product_registration_modified=$false;installer_executed=$false;installed_yimecore_local12_touched=$false;production_user_data_accessed=$false;hostile_same_sid_creation_prevention_verified=$false;physical_crash_durability_verified=$false;dp1_u_acceptance_passed=$false}
+$result=[ordered]@{schema_version='yime-rime-pime-dp1u-app-hive-tests-v1';passed=(@($checks|Where-Object{-not $_.passed}).Count -eq 0);check_count=$checks.Count;shell_version=$PSVersionTable.PSVersion.ToString();process_is_64_bit=[Environment]::Is64BitProcess;checks=@($checks.ToArray());source_files=$sources;fixture_roots=@($fixtures.ToArray());native_application_hive_exercised=$true;fixture_raw_value_export_exercised=$true;prepare_without_registry_write_exercised=$true;real_hkcu_hklm_accessed=$false;product_registration_modified=$false;installer_executed=$false;installed_yimecore_local12_touched=$false;production_user_data_accessed=$false;hostile_same_sid_creation_prevention_verified=$false;physical_crash_durability_verified=$false;dp1_u_acceptance_passed=$false}
 [IO.File]::WriteAllText((Join-Path $output 'result.json'),($result|ConvertTo-Json -Depth 9),[Text.UTF8Encoding]::new($false))
 if(-not $result.passed){throw 'Application hive regressions failed; see retained result.json.'}
 $global:LASTEXITCODE=0

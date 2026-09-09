@@ -20,6 +20,11 @@ namespace Yime.Dp1UApplicationHive {
         public readonly int Bytes;
         internal ValueMetadata(ValueRecord row) { Name=row.Name;Kind=row.Kind;Bytes=row.Data.Length;Sha256=Native.Hash(row.Data); }
     }
+    public sealed class ValueExport {
+        public readonly string Name, Kind;
+        public readonly byte[] RawBytes;
+        internal ValueExport(ValueRecord row) { Name=row.Name;Kind=row.Kind;RawBytes=(byte[])row.Data.Clone(); }
+    }
     internal sealed class ValueRecord {
         internal readonly string Name,Kind;
         internal readonly uint Type;
@@ -119,6 +124,13 @@ namespace Yime.Dp1UApplicationHive {
             Validate();return new HiveSnapshot(this,rows);
         }
         private void RequireSnapshot(HiveSnapshot snapshot) { Validate();if(snapshot==null || !Object.ReferenceEquals(snapshot.Owner,this))throw new InvalidOperationException("Original same-context snapshot required."); }
+        // Explicit fixture-only raw export. A retained snapshot may describe an earlier state;
+        // this does not observe current values or authorize a write. Never share its byte arrays.
+        public ValueExport[] ExportValues(HiveSnapshot snapshot) {
+            RequireSnapshot(snapshot);var rows=new ValueExport[Names.Length];
+            for(int i=0;i<rows.Length;i++)rows[i]=new ValueExport(snapshot.Records[i]);
+            Validate();return rows;
+        }
         public void RequireCurrent(HiveSnapshot snapshot) {
             RequireSnapshot(snapshot);var current=Capture();
             for(int i=0;i<Names.Length;i++)if(!snapshot.Records[i].Equal(current.Records[i]))throw new InvalidOperationException("Expected-before snapshot conflict.");
