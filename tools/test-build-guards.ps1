@@ -183,7 +183,7 @@ $requiredGovernanceGuards = @(
     'Preserve protected installer-package contract',
     'name: core-build',
     'Preserve legacy aggregate build contract',
-    'needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2]',
+    'needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, nsis-preflight, contract-tests, dp1-long-contracts]',
     '.\tools\lexicon\replay-approved-handoff.ps1',
     '.\tools\evaluation\run.ps1',
     'verify_release_readiness.py --require-release',
@@ -765,7 +765,7 @@ $buildGateIndex = $installInitText.IndexOf('${IfNot} ${AtLeastBuild} 18362')
 $bootstrapIndex = $installInitText.IndexOf('Call bootstrapTargetUser')
 if ([regex]::Matches($installerText,'(?m)^ManifestSupportedOS[ \t]+all[ \t]*\r?$').Count -ne 1 -or
     $osGateIndex -lt 0 -or $buildGateIndex -le $osGateIndex -or $bootstrapIndex -le $buildGateIndex -or
-    [regex]::Matches($workflowText,'nsis-version: 3\.12').Count -ne 2 -or
+    [regex]::Matches($workflowText,'nsis-version: 3\.12').Count -ne 3 -or
     $workflowText.Contains('nsis-version: 3.08')) {
     throw 'Real Windows version reporting, pre-bootstrap admission, or the NSIS 3.12 build pin drifted.'
 }

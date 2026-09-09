@@ -11,12 +11,21 @@ on:
 permissions:
   contents: read
 
+# Superseded automatic branch/PR runs stop spending runner minutes. Manual runs
+# and tags have unique groups so a push cannot cancel an intentional validation.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')) && github.run_id || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/tags/') }}
+
 jobs:
   build-contract:
     name: build-contract / validate-build-contract
     runs-on: windows-2022
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: Reject weakened YIME build pipelines
         shell: pwsh
         run: .\tools\validate-build-contract.ps1
@@ -24,10 +33,40 @@ jobs:
         run: python .\tools\verify_toolchain_lock.py
       - name: Verify detached lexicon archive identity
         run: python .\tools\lexicon\verify_external_archive_lock.py
+      - name: Test CI scheduling and failure propagation
+        run: python .\tools\ci\test_workflow_contract.py
+      - name: Verify dual-product source contracts before expensive tests
+        shell: pwsh
+        run: |
+          $runId = [Guid]::NewGuid().ToString('N')
+          python .\tools\dual-product\baseline.py --output ".tmp/dual-product/dp1-ci-preflight-$runId/baseline.json"
+      - name: Guard and track libIME2 component commits
+        shell: pwsh
+        env:
+          LIBIME2_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          $report = Join-Path $env:RUNNER_TEMP 'libime2-change-report.tsv'
+          .\tools\check-libime2-change-boundary.ps1 `
+            -BaseRef $env:LIBIME2_BASE_SHA `
+            -HeadRef '${{ github.sha }}' `
+            -ReportPath $report
+      - name: Upload libIME2 change report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: libime2-change-report-${{ github.sha }}
+          path: ${{ runner.temp }}/libime2-change-report.tsv
+          if-no-files-found: error
+          retention-days: 30
+      - name: Test libIME2 gate rejection paths
+        shell: pwsh
+        run: .\tools\test-libime2-change-boundary.ps1
 
   lexicon-offline-tooling:
     name: lexicon-offline-tooling
     runs-on: windows-2022
+    timeout-minutes: 30
+    needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
       - name: Use current stable Python 3.14 series
@@ -66,6 +105,8 @@ jobs:
   rust-i686-host:
     name: rust-i686-host
     runs-on: windows-2022
+    timeout-minutes: 20
+    needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
       - name: Install pinned i686 host toolchain
@@ -80,6 +121,8 @@ jobs:
   go-tests:
     name: go-tests
     runs-on: windows-2022
+    timeout-minutes: 20
+    needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
       - name: Use Go 1.26.4
@@ -112,6 +155,7 @@ jobs:
     name: real-rime-tests
     runs-on: windows-2022
     timeout-minutes: 30
+    needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
       - name: Use Go 1.26.4
@@ -126,6 +170,8 @@ jobs:
   go-race-msys2:
     name: go-race-msys2
     runs-on: windows-2022
+    timeout-minutes: 20
+    needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
       - name: Use Go 1.26.4
@@ -149,31 +195,10 @@ jobs:
   native-build:
     name: native-build
     runs-on: windows-2022
+    timeout-minutes: 20
+    needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Guard and track libIME2 component commits
-        shell: pwsh
-        env:
-          LIBIME2_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
-        run: |
-          $report = Join-Path $env:RUNNER_TEMP 'libime2-change-report.tsv'
-          .\tools\check-libime2-change-boundary.ps1 `
-            -BaseRef $env:LIBIME2_BASE_SHA `
-            -HeadRef '${{ github.sha }}' `
-            -ReportPath $report
-      - name: Upload libIME2 change report
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v6
-        with:
-          name: libime2-change-report-${{ github.sha }}
-          path: ${{ runner.temp }}/libime2-change-report.tsv
-          if-no-files-found: error
-          retention-days: 30
-      - name: Test libIME2 gate rejection paths
-        shell: pwsh
-        run: .\tools\test-libime2-change-boundary.ps1
       - name: Set up MSVC developer environment
         shell: pwsh
         run: |
@@ -219,6 +244,75 @@ jobs:
       - name: Verify native build outputs
         shell: pwsh
         run: .\tools\test-build-guards.ps1 -SkipPackagedRime
+      - name: Test staged installer build lease and publication contract
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-staged-installer-build.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-staged-build-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 staged-installer-build test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-staged-installer-build.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-staged-build-ci-ps7-$runId")
+      - name: Stage native installer inputs
+        shell: pwsh
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP 'yime-native'
+          New-Item -ItemType Directory -Path "$stage\build\PIMELauncher", "$stage\build\PIMETextService\Release", "$stage\build64\PIMETextService\Release" -Force | Out-Null
+          Copy-Item build\PIMELauncher\PIMELauncher.exe "$stage\build\PIMELauncher\PIMELauncher.exe"
+          Copy-Item build\PIMETextService\Release\PIMETextService.dll "$stage\build\PIMETextService\Release\PIMETextService.dll"
+          Copy-Item build\PIMETextService\Release\PIMERegistrationStatus.exe "$stage\build\PIMETextService\Release\PIMERegistrationStatus.exe"
+          Copy-Item build64\PIMETextService\Release\PIMETextService.dll "$stage\build64\PIMETextService\Release\PIMETextService.dll"
+          Copy-Item build64\PIMETextService\Release\PIMERegistrationStatus.exe "$stage\build64\PIMETextService\Release\PIMERegistrationStatus.exe"
+      - uses: actions/upload-artifact@v6
+        with:
+          name: yime-native-${{ github.sha }}
+          path: ${{ runner.temp }}/yime-native
+          if-no-files-found: error
+          retention-days: 14
+
+  nsis-preflight:
+    name: nsis-preflight
+    runs-on: windows-2022
+    timeout-minutes: 20
+    needs: [build-contract]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Prepare pinned NSIS in non-secret packaging job
+        id: nsis
+        uses: ./.github/actions/prepare-pinned-nsis
+        with:
+          nsis-version: 3.12
+      - name: Test pinned NSIS preparation in PowerShell 5 and 7
+        shell: pwsh
+        env:
+          NSIS_ARCHIVE: ${{ steps.nsis.outputs.archive-path }}
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N').Substring(0,16)
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\ci\test-prepare-pinned-nsis.ps1 `
+            -ArchivePath $env:NSIS_ARCHIVE -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-preparation-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 pinned NSIS preparation test failed with exit code $LASTEXITCODE" }
+          .\tools\ci\test-prepare-pinned-nsis.ps1 `
+            -ArchivePath $env:NSIS_ARCHIVE -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-preparation-test-ci-ps7-$runId")
+      - name: Test DP1-K NSIS compiler membership interval
+        shell: pwsh
+        run: |
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $runId = [Guid]::NewGuid().ToString('N')
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-nsis-compiler-interval.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-interval-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-K compiler-interval test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-nsis-compiler-interval.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-interval-test-ci-ps7-$runId")
+
+  contract-tests:
+    name: contract-tests
+    runs-on: windows-2022
+    timeout-minutes: 40
+    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, nsis-preflight]
+    steps:
+      - uses: actions/checkout@v6
       - name: Test YimeCore local-product readiness contract
         shell: pwsh
         run: |
@@ -294,16 +388,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 NSIS-stage test failed with exit code $LASTEXITCODE" }
           .\tools\dual-product\test-rime-pime-nsis-stage.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-stage-ci-ps7-$runId")
-      - name: Test staged installer build lease and publication contract
-        shell: pwsh
-        run: |
-          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-          $runId = [Guid]::NewGuid().ToString('N')
-          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-staged-installer-build.ps1 `
-            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-staged-build-ci-ps5-$runId")
-          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 staged-installer-build test failed with exit code $LASTEXITCODE" }
-          .\tools\dual-product\test-rime-pime-staged-installer-build.ps1 `
-            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-staged-build-ci-ps7-$runId")
       - name: Test NSIS compiler input closure contract
         shell: pwsh
         run: |
@@ -344,26 +428,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 package-receipt-v2 test failed with exit code $LASTEXITCODE" }
           .\tools\dual-product\test-rime-pime-package-receipt-v2.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-ci-ps7-$runId")
-      - name: Test retained receipt publication and crash recovery
-        shell: pwsh
-        run: |
-          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-          $runId = [Guid]::NewGuid().ToString('N')
-          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-receipt-v2-store.ps1 `
-            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-store-ps5-$runId")
-          if ($LASTEXITCODE -ne 0) { throw "PS5 retained receipt publication test failed: $LASTEXITCODE" }
-          .\tools\dual-product\test-rime-pime-receipt-v2-store.ps1 `
-            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-store-ps7-$runId")
-      - name: Test DP1-N isolated installer and receipt transaction
-        shell: pwsh
-        run: |
-          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-          $runId = [Guid]::NewGuid().ToString('N')
-          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-installer-receipt-transaction.ps1 `
-            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-dp1n-ci-ps5-$runId")
-          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-N installer/receipt transaction test failed with exit code $LASTEXITCODE" }
-          .\tools\dual-product\test-rime-pime-installer-receipt-transaction.ps1 `
-            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-dp1n-ci-ps7-$runId")
       - name: Test DP1-O isolated current-source candidate runner contract
         shell: pwsh
         run: |
@@ -384,17 +448,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-P version-identity admission test failed with exit code $LASTEXITCODE" }
           .\tools\dual-product\test-rime-pime-version-identity-admission.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-version-identity-test-ci-ps7-$runId")
-      - name: Test DP1-Q candidate evidence archive contract
-        shell: pwsh
-        run: |
-          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-          # Retain the reviewed Win32 path budget for nested SHA-256 sidecars.
-          $runId = [Guid]::NewGuid().ToString('N').Substring(0,16)
-          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-candidate-evidence-archive.ps1 `
-            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-candidate-evidence-archive-test-ci-ps5-$runId")
-          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-Q candidate-evidence archive test failed with exit code $LASTEXITCODE" }
-          .\tools\dual-product\test-rime-pime-candidate-evidence-archive.ps1 `
-            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-candidate-evidence-archive-test-ci-ps7-$runId")
       - name: Test DP1-Q actual migration review contract
         shell: pwsh
         run: |
@@ -535,27 +588,71 @@ jobs:
       - name: Test installed-runtime evidence capture
         shell: pwsh
         run: .\tools\test-sentence-segment-evidence.ps1
-      - name: Stage native installer inputs
-        shell: pwsh
+
+  dp1-long-contracts:
+    name: dp1-long-contracts / ${{ matrix.suite }} / ${{ matrix.shell }}
+    runs-on: windows-2022
+    timeout-minutes: 60
+    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, nsis-preflight]
+    strategy:
+      fail-fast: true
+      max-parallel: 2
+      matrix:
+        suite: [installer-transaction, receipt-store, evidence-archive]
+        shell: [powershell, pwsh]
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+    env:
+      CI_TEST_SHELL: ${{ matrix.shell }}
+      CI_TEST_TAG: ${{ matrix.shell == 'powershell' && 'ps5' || 'ps7' }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify actual PowerShell test host
         run: |
-          $stage = Join-Path $env:RUNNER_TEMP 'yime-native'
-          New-Item -ItemType Directory -Path "$stage\build\PIMELauncher", "$stage\build\PIMETextService\Release", "$stage\build64\PIMETextService\Release" -Force | Out-Null
-          Copy-Item build\PIMELauncher\PIMELauncher.exe "$stage\build\PIMELauncher\PIMELauncher.exe"
-          Copy-Item build\PIMETextService\Release\PIMETextService.dll "$stage\build\PIMETextService\Release\PIMETextService.dll"
-          Copy-Item build\PIMETextService\Release\PIMERegistrationStatus.exe "$stage\build\PIMETextService\Release\PIMERegistrationStatus.exe"
-          Copy-Item build64\PIMETextService\Release\PIMETextService.dll "$stage\build64\PIMETextService\Release\PIMETextService.dll"
-          Copy-Item build64\PIMETextService\Release\PIMERegistrationStatus.exe "$stage\build64\PIMETextService\Release\PIMERegistrationStatus.exe"
-      - uses: actions/upload-artifact@v6
+          if (($env:CI_TEST_SHELL -eq 'powershell' -and $PSVersionTable.PSVersion.Major -ne 5) -or
+              ($env:CI_TEST_SHELL -eq 'pwsh' -and $PSVersionTable.PSVersion.Major -lt 7)) {
+            throw 'The matrix shell does not match the actual PowerShell test host.'
+          }
+      - name: Test retained receipt publication and crash recovery
+        if: matrix.suite == 'receipt-store'
+        run: |
+          # Keep the existing short Win32 path budget and run the complete suite.
+          $runId = [Guid]::NewGuid().ToString('N').Substring(0,16)
+          .\tools\dual-product\test-rime-pime-receipt-v2-store.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-store-$env:CI_TEST_TAG-$runId")
+      - name: Test DP1-N isolated installer and receipt transaction
+        if: matrix.suite == 'installer-transaction'
+        run: |
+          # Keep the existing short Win32 path budget and run the complete suite.
+          $runId = [Guid]::NewGuid().ToString('N').Substring(0,16)
+          .\tools\dual-product\test-rime-pime-installer-receipt-transaction.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-dp1n-ci-$env:CI_TEST_TAG-$runId")
+      - name: Test DP1-Q candidate evidence archive contract
+        if: matrix.suite == 'evidence-archive'
+        run: |
+          # Keep the existing short Win32 path budget and run the complete suite.
+          $runId = [Guid]::NewGuid().ToString('N').Substring(0,16)
+          .\tools\dual-product\test-rime-pime-candidate-evidence-archive.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-candidate-evidence-archive-test-ci-$env:CI_TEST_TAG-$runId")
+      - name: Retain isolated contract summaries
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v6
         with:
-          name: yime-native-${{ github.sha }}
-          path: ${{ runner.temp }}/yime-native
-          if-no-files-found: error
+          name: dp1-contract-${{ matrix.suite }}-${{ matrix.shell }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            .tmp/dual-product/dp1-package-receipt-v2-test-store-*/store-result.json
+            .tmp/dual-product/dp1-package-receipt-v2-test-dp1n-ci-*/transaction-result.json
+            .tmp/dual-product/dp1-candidate-evidence-archive-test-ci-*/candidate-evidence-archive-result.json*
+          include-hidden-files: true
+          if-no-files-found: warn
           retention-days: 14
 
   installer-payload:
     name: installer-payload
     runs-on: windows-2022
-    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2]
+    timeout-minutes: 15
+    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, nsis-preflight, contract-tests, dp1-long-contracts]
     steps:
       - uses: actions/checkout@v6
       - name: Restore native installer inputs
@@ -611,6 +708,7 @@ jobs:
     name: release-sign-payload
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: windows-2022
+    timeout-minutes: 15
     environment: release-signing
     needs: [installer-payload]
     steps:
@@ -675,7 +773,8 @@ jobs:
     name: unsigned-installer-package
     if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
     runs-on: windows-2022
-    needs: [installer-payload]
+    timeout-minutes: 20
+    needs: [installer-payload, nsis-preflight]
     steps:
       - uses: actions/checkout@v6
       - name: Restore unsigned installer payload
@@ -688,28 +787,6 @@ jobs:
         uses: ./.github/actions/prepare-pinned-nsis
         with:
           nsis-version: 3.12
-      - name: Test pinned NSIS preparation in PowerShell 5 and 7
-        shell: pwsh
-        env:
-          NSIS_ARCHIVE: ${{ steps.nsis.outputs.archive-path }}
-        run: |
-          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-          $runId = [Guid]::NewGuid().ToString('N').Substring(0,16)
-          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\ci\test-prepare-pinned-nsis.ps1 `
-            -ArchivePath $env:NSIS_ARCHIVE -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-preparation-test-ci-ps5-$runId")
-          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 pinned NSIS preparation test failed with exit code $LASTEXITCODE" }
-          .\tools\ci\test-prepare-pinned-nsis.ps1 `
-            -ArchivePath $env:NSIS_ARCHIVE -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-preparation-test-ci-ps7-$runId")
-      - name: Test DP1-K NSIS compiler membership interval
-        shell: pwsh
-        run: |
-          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-          $runId = [Guid]::NewGuid().ToString('N')
-          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-nsis-compiler-interval.ps1 `
-            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-interval-test-ci-ps5-$runId")
-          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-K compiler-interval test failed with exit code $LASTEXITCODE" }
-          .\tools\dual-product\test-rime-pime-nsis-compiler-interval.ps1 `
-            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-interval-test-ci-ps7-$runId")
       - name: Build the installer
         shell: pwsh
         run: .\tools\build-rime-pime-installer.ps1 -RepoRoot $env:GITHUB_WORKSPACE -PackagePlanPath (Join-Path $env:GITHUB_WORKSPACE 'installer\package-plan.json')
@@ -746,7 +823,8 @@ jobs:
     name: release-installer-package
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: windows-2022
-    needs: [release-sign-payload]
+    timeout-minutes: 20
+    needs: [release-sign-payload, nsis-preflight]
     steps:
       - uses: actions/checkout@v6
       - name: Block tagged installer until signed-uninstaller and removal closure
@@ -779,6 +857,7 @@ jobs:
     name: release-sign-installer
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: windows-2022
+    timeout-minutes: 15
     environment: release-signing
     needs: [release-sign-payload, release-installer-package]
     steps:
@@ -850,6 +929,7 @@ jobs:
     name: installer-package
     if: ${{ always() }}
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [installer-payload, unsigned-installer-package, release-sign-installer]
     steps:
       - name: Preserve protected installer-package contract
@@ -873,7 +953,8 @@ jobs:
     name: core-build
     if: ${{ always() }}
     runs-on: ubuntu-latest
-    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, installer-package]
+    timeout-minutes: 5
+    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, nsis-preflight, contract-tests, dp1-long-contracts, installer-package]
     steps:
       - name: Preserve legacy aggregate build contract
         shell: bash
@@ -885,6 +966,9 @@ jobs:
           GO_RESULT: ${{ needs['go-tests'].result }}
           REAL_RIME_RESULT: ${{ needs['real-rime-tests'].result }}
           RACE_RESULT: ${{ needs['go-race-msys2'].result }}
+          NSIS_RESULT: ${{ needs['nsis-preflight'].result }}
+          CONTRACT_TEST_RESULT: ${{ needs['contract-tests'].result }}
+          LONG_CONTRACT_RESULT: ${{ needs['dp1-long-contracts'].result }}
           INSTALLER_RESULT: ${{ needs['installer-package'].result }}
         run: |
           test "$CONTRACT_RESULT" = success
@@ -894,4 +978,7 @@ jobs:
           test "$GO_RESULT" = success
           test "$REAL_RIME_RESULT" = success
           test "$RACE_RESULT" = success
+          test "$NSIS_RESULT" = success
+          test "$CONTRACT_TEST_RESULT" = success
+          test "$LONG_CONTRACT_RESULT" = success
           test "$INSTALLER_RESULT" = success

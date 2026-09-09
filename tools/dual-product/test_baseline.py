@@ -643,7 +643,7 @@ class OwnershipTests(unittest.TestCase):
              "actual_archive_root_published=$false;actual_evidence_archived_outside_repository_tmp=$false",
              "actual_archive_root_published=$true;actual_evidence_archived_outside_repository_tmp=$true"),
             (".github/workflows/ci.yaml",
-             ".tmp\\dual-product\\dp1-candidate-evidence-archive-test-ci-ps7-$runId",
+             ".tmp\\dual-product\\dp1-candidate-evidence-archive-test-ci-$env:CI_TEST_TAG-$runId",
              ".tmp\\dual-product\\dp1-candidate-evidence-archive-test-ci-ps5-$runId"),
         )
         for path, old, new in cases:
@@ -768,16 +768,16 @@ class OwnershipTests(unittest.TestCase):
     def test_dp1n_ci_requires_ps5_ps7_fixture_only_commands(self):
         sources = self.maintenance_sources()
         sources[".github/workflows/ci.yaml"] = sources[".github/workflows/ci.yaml"].replace(
-            ".tmp\\dual-product\\dp1-package-receipt-v2-test-dp1n-ci-ps7-$runId",
+            ".tmp\\dual-product\\dp1-package-receipt-v2-test-dp1n-ci-$env:CI_TEST_TAG-$runId",
             ".tmp\\dual-product\\dp1-package-receipt-v2-test-dp1n-ci-ps5-$runId",
             1,
         )
         with self.assertRaisesRegex(ValueError, "dedicated review required"):
             subject.transaction_source_status(sources)
 
-        ps7_output = (
+        matrix_output = (
             '            -OutputRoot (Join-Path $pwd "'
-            '.tmp\\dual-product\\dp1-package-receipt-v2-test-dp1n-ci-ps7-$runId")'
+            '.tmp\\dual-product\\dp1-package-receipt-v2-test-dp1n-ci-$env:CI_TEST_TAG-$runId")'
         )
         for argument in (
             "-CheckPattern 'clean*'",
@@ -785,10 +785,10 @@ class OwnershipTests(unittest.TestCase):
             "-Phase recover",
         ):
             sources = self.maintenance_sources()
-            self.assertIn(ps7_output, sources[".github/workflows/ci.yaml"])
+            self.assertIn(matrix_output, sources[".github/workflows/ci.yaml"])
             sources[".github/workflows/ci.yaml"] = sources[".github/workflows/ci.yaml"].replace(
-                ps7_output,
-                ps7_output + " `\n            " + argument,
+                matrix_output,
+                matrix_output + " `\n            " + argument,
                 1,
             )
             with self.subTest(argument=argument), self.assertRaisesRegex(
@@ -807,6 +807,107 @@ class OwnershipTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "dedicated review required"):
             subject.transaction_source_status(sources)
+
+    def assert_long_contract_ci_rejected(self, old, new):
+        sources = self.maintenance_sources()
+        path = ".github/workflows/ci.yaml"
+        job = subject.one(
+            r"(?ms)^  dp1-long-contracts:\n.*?(?=^  [A-Za-z0-9_-]+:\n|\Z)",
+            sources[path], "long-contract regression fixture job",
+        ).group()
+        self.assertIn(old, job)
+        sources[path] = sources[path].replace(job, job.replace(old, new, 1), 1)
+        with self.assertRaises(ValueError):
+            subject.transaction_source_status(sources)
+
+    def test_long_contract_matrix_requires_real_ps5_ps7_and_complete_suites(self):
+        cases = (
+            ("shell: [powershell, pwsh]", "shell: [pwsh]"),
+            ("shell: [powershell, pwsh]", "shell: [pwsh, pwsh]"),
+            ("suite: [installer-transaction, receipt-store, evidence-archive]",
+             "suite: [installer-transaction, receipt-store]"),
+            ("suite: [installer-transaction, receipt-store, evidence-archive]",
+             "suite: [installer-transaction, receipt-store, receipt-store]"),
+            ("        shell: [powershell, pwsh]\n",
+             "        shell: [powershell, pwsh]\n        exclude: [{shell: powershell}]\n"),
+            ("fail-fast: true", "fail-fast: false"),
+            ("max-parallel: 2", "max-parallel: 3"),
+            ("        shell: ${{ matrix.shell }}", "        shell: pwsh"),
+            ("CI_TEST_SHELL: ${{ matrix.shell }}", "CI_TEST_SHELL: pwsh"),
+            ("CI_TEST_TAG: ${{ matrix.shell == 'powershell' && 'ps5' || 'ps7' }}",
+             "CI_TEST_TAG: ps7"),
+            ("$PSVersionTable.PSVersion.Major -ne 5", "$PSVersionTable.PSVersion.Major -ne 7"),
+            ("$PSVersionTable.PSVersion.Major -lt 7", "$PSVersionTable.PSVersion.Major -lt 5"),
+            ("    runs-on: windows-2022\n", "    runs-on: windows-2022\n    if: false\n"),
+            ("    runs-on: windows-2022\n", "    runs-on: windows-2022\n    continue-on-error: true\n"),
+            ("      - name: Verify actual PowerShell test host\n",
+             "      - name: Verify actual PowerShell test host\n        if: false\n"),
+            ("      - name: Verify actual PowerShell test host\n",
+             "      - name: Verify actual PowerShell test host\n        shell: pwsh\n"),
+            ("      - uses: actions/checkout@v6\n",
+             "      - uses: actions/checkout@v6\n      - run: Write-Host skipped\n"),
+        )
+        for old, new in cases:
+            with self.subTest(old=old, new=new):
+                self.assert_long_contract_ci_rejected(old, new)
+
+    def test_long_contract_matrix_requires_unfiltered_calls_and_retained_results(self):
+        for suite, script in (
+            ("receipt-store", "test-rime-pime-receipt-v2-store.ps1"),
+            ("installer-transaction", "test-rime-pime-installer-receipt-transaction.ps1"),
+            ("evidence-archive", "test-rime-pime-candidate-evidence-archive.ps1"),
+        ):
+            condition = f"        if: matrix.suite == '{suite}'\n"
+            invocation = f"          .\\tools\\dual-product\\{script} `\n"
+            cases = (
+                (condition, ""),
+                (condition, "        if: matrix.suite == 'missing-suite'\n"),
+                (condition, condition + "        shell: pwsh\n"),
+                (condition, condition + "        continue-on-error: true\n"),
+                (invocation, invocation + "            -CheckPattern 'clean*' `\n"),
+                (invocation, invocation + "            -WorkerCasePath '.tmp\\worker.json' `\n"),
+                (invocation, invocation + "            -Phase recover `\n"),
+                (invocation, "          Start-Process forbidden-product.exe\n" + invocation),
+                (invocation, invocation + invocation),
+            )
+            for old, new in cases:
+                with self.subTest(suite=suite, new=new):
+                    self.assert_long_contract_ci_rejected(old, new)
+        cases = (
+            (".Substring(0,16)", ".Substring(0,32)"),
+            ("        if: ${{ always() }}", "        if: ${{ success() }}"),
+            ("          include-hidden-files: true", "          include-hidden-files: false"),
+            ("          if-no-files-found: warn", "          if-no-files-found: ignore"),
+            ("-${{ github.sha }}-${{ github.run_attempt }}", ""),
+            ("-${{ matrix.suite }}-${{ matrix.shell }}", ""),
+        )
+        for result_glob in (
+            ".tmp/dual-product/dp1-package-receipt-v2-test-store-*/store-result.json",
+            ".tmp/dual-product/dp1-package-receipt-v2-test-dp1n-ci-*/transaction-result.json",
+            ".tmp/dual-product/dp1-candidate-evidence-archive-test-ci-*/candidate-evidence-archive-result.json*",
+        ):
+            cases += ((result_glob, ".tmp/unrelated.json"),)
+        for old, new in cases:
+            with self.subTest(old=old, new=new):
+                self.assert_long_contract_ci_rejected(old, new)
+
+    def test_nsis_preflight_must_gate_both_packaging_jobs_after_preparation(self):
+        for old, new in (
+            ("    needs: [installer-payload, nsis-preflight]",
+             "    needs: [installer-payload]"),
+            ("    needs: [release-sign-payload, nsis-preflight]",
+             "    needs: [release-sign-payload]"),
+            ("  nsis-preflight:\n", "  nsis-preflight:\n    if: false\n"),
+            ("  nsis-preflight:\n", "  nsis-preflight:\n    continue-on-error: true\n"),
+            ("      - name: Prepare pinned NSIS in non-secret packaging job",
+             "      - name: Preparation removed"),
+        ):
+            sources = self.maintenance_sources()
+            path = ".github/workflows/ci.yaml"
+            self.assertIn(old, sources[path])
+            sources[path] = sources[path].replace(old, new, 1)
+            with self.subTest(old=old), self.assertRaises(ValueError):
+                subject.transaction_source_status(sources)
 
     def test_dp1j_fixtures_are_source_contracts_not_product_wiring(self):
         status = self.receipt["transaction_source"]
@@ -952,7 +1053,7 @@ class OwnershipTests(unittest.TestCase):
             ("tools/dual-product/test-rime-pime-receipt-v2-store.ps1",
              "module-exports-only-six-explicit-receipt-apis", "module-export-check-removed"),
             (".github/workflows/ci.yaml",
-             ".tmp\\dual-product\\dp1-package-receipt-v2-test-store-ps7-$runId",
+             ".tmp\\dual-product\\dp1-package-receipt-v2-test-store-$env:CI_TEST_TAG-$runId",
              ".tmp\\dual-product\\dp1-package-receipt-v2-test-store-ps5-$runId"),
         )
         for path, old, new in cases:

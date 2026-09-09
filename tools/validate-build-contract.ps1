@@ -54,6 +54,11 @@ Require-Text '.github/workflows/ci.yaml' @(
     'go-tests:'
     'go-race-msys2:'
     'installer-package:'
+    'nsis-preflight:'
+    'contract-tests:'
+    'dp1-long-contracts:'
+    'python .\tools\ci\test_workflow_contract.py'
+    'python .\tools\dual-product\baseline.py --output'
 )
 
 Require-Text 'AGENTS.md' @(

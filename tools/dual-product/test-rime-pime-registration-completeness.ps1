@@ -730,7 +730,7 @@ Check 'registration-probes-enter-build-handoff-signing-and-manifest-closure' {
         'Release signature/manifest closure can silently omit a required exact artifact.'
     Assert-True ($workflow.Contains('test-installer-smoke.ps1 -InstallerPath $installer.FullName -StaticOnly') -and
         $workflow.Contains('without native installation') -and
-        [regex]::Matches($workflow,'nsis-version: 3\.12').Count -eq 2 -and
+        [regex]::Matches($workflow,'nsis-version: 3\.12').Count -eq 3 -and
         $workflow.Contains("Join-Path `$env:YIME_TRUSTED_SIGNING_ROOT 'tools\write-build-manifest.ps1') -RepoRoot `$env:GITHUB_WORKSPACE -OutputPath (Join-Path `$env:GITHUB_WORKSPACE 'installer\build-manifest.json')") -and
         [regex]::Matches($workflow,'installer/package-plan\.json\.sha256').Count -ge 3 -and
         [regex]::Matches($workflow,'installer/package-build-receipt\.json\.sha256').Count -ge 3 -and

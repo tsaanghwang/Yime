@@ -1313,10 +1313,140 @@ def transaction_source_status(sources):
         "CI DP1-J isolated membership-monitor step",
     ).group()
     ci_compiler_interval_step = one(
-        r"(?ms)^      - name: Test DP1-K NSIS compiler membership interval\s*$.*?(?=^      - name: |\Z)",
+        r"(?ms)^      - name: Test DP1-K NSIS compiler membership interval\s*$.*?(?=^      - name: |^  [A-Za-z0-9_-]+:|\Z)",
         ci,
         "CI DP1-K NSIS compiler-interval step",
     ).group()
+    def ci_job(name):
+        return one(
+            rf"(?ms)^  {re.escape(name)}:\n.*?(?=^  [A-Za-z0-9_-]+:\n|\Z)",
+            ci, "CI " + name + " job",
+        ).group()
+
+    ci_nsis_preflight_job = ci_job("nsis-preflight")
+    ci_long_contracts_job = ci_job("dp1-long-contracts")
+    ci_long_strategy = one(
+        r"(?ms)^    strategy:\n.*?(?=^    \S|\Z)",
+        ci_long_contracts_job, "CI complete long-contract matrix",
+    ).group()
+    ci_long_environment = one(
+        r"(?ms)^    env:\n.*?(?=^    \S|\Z)",
+        ci_long_contracts_job, "CI long-contract shell environment",
+    ).group()
+    ci_long_defaults = one(
+        r"(?ms)^    defaults:\n.*?(?=^    \S|\Z)",
+        ci_long_contracts_job, "CI long-contract default shell",
+    ).group()
+    ci_long_host_step = one(
+        r"(?ms)^      - name: Verify actual PowerShell test host\n.*?(?=^      - |\Z)",
+        ci_long_contracts_job, "CI actual matrix PowerShell host verification",
+    ).group()
+    ci_long_upload_step = one(
+        r"(?ms)^      - name: Retain isolated contract summaries\n.*?(?=^      - |\Z)",
+        ci_long_contracts_job, "CI retained long-contract summaries",
+    ).group()
+    expected_long_strategy = (
+        "    strategy:\n"
+        "      fail-fast: true\n"
+        "      max-parallel: 2\n"
+        "      matrix:\n"
+        "        suite: [installer-transaction, receipt-store, evidence-archive]\n"
+        "        shell: [powershell, pwsh]\n"
+    )
+    expected_long_environment = (
+        "    env:\n"
+        "      CI_TEST_SHELL: ${{ matrix.shell }}\n"
+        "      CI_TEST_TAG: ${{ matrix.shell == 'powershell' && 'ps5' || 'ps7' }}\n"
+    )
+    expected_long_defaults = (
+        "    defaults:\n"
+        "      run:\n"
+        "        shell: ${{ matrix.shell }}\n"
+    )
+    expected_long_host_step = (
+        "      - name: Verify actual PowerShell test host\n"
+        "        run: |\n"
+        "          if (($env:CI_TEST_SHELL -eq 'powershell' -and $PSVersionTable.PSVersion.Major -ne 5) -or\n"
+        "              ($env:CI_TEST_SHELL -eq 'pwsh' -and $PSVersionTable.PSVersion.Major -lt 7)) {\n"
+        "            throw 'The matrix shell does not match the actual PowerShell test host.'\n"
+        "          }\n"
+    )
+    expected_long_upload_step = (
+        "      - name: Retain isolated contract summaries\n"
+        "        if: ${{ always() }}\n"
+        "        uses: actions/upload-artifact@v6\n"
+        "        with:\n"
+        "          name: dp1-contract-${{ matrix.suite }}-${{ matrix.shell }}-${{ github.sha }}-${{ github.run_attempt }}\n"
+        "          path: |\n"
+        "            .tmp/dual-product/dp1-package-receipt-v2-test-store-*/store-result.json\n"
+        "            .tmp/dual-product/dp1-package-receipt-v2-test-dp1n-ci-*/transaction-result.json\n"
+        "            .tmp/dual-product/dp1-candidate-evidence-archive-test-ci-*/candidate-evidence-archive-result.json*\n"
+        "          include-hidden-files: true\n"
+        "          if-no-files-found: warn\n"
+        "          retention-days: 14\n"
+    )
+    long_contract_matrix_ci_present = (
+        ci_long_strategy == expected_long_strategy and
+        ci_long_environment == expected_long_environment and
+        ci_long_defaults == expected_long_defaults and
+        ci_long_host_step.rstrip() == expected_long_host_step.rstrip() and
+        ci_long_upload_step.rstrip() == expected_long_upload_step.rstrip() and
+        len(re.findall(r"(?m)^    runs-on: windows-2022$", ci_long_contracts_job)) == 1 and
+        ci_long_contracts_job.count("\n        run: |") == 4 and
+        re.findall(r"(?m)^      - (.*)$", ci_long_contracts_job) == [
+            "uses: actions/checkout@v6",
+            "name: Verify actual PowerShell test host",
+            "name: Test retained receipt publication and crash recovery",
+            "name: Test DP1-N isolated installer and receipt transaction",
+            "name: Test DP1-Q candidate evidence archive contract",
+            "name: Retain isolated contract summaries",
+        ] and
+        re.search(r"(?m)^    if:|^\s+continue-on-error:", ci_long_contracts_job) is None
+    )
+
+    def full_matrix_suite(step, name, suite, script, output_prefix):
+        # Compare the complete executable step, allowing standalone comments.
+        # No filter, worker-only phase, extra command, or step-level bypass can
+        # replace the full script invocation while satisfying this contract.
+        executable = "\n".join(
+            line for line in step.splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        ) + "\n"
+        expected = (
+            f"      - name: {name}\n"
+            f"        if: matrix.suite == '{suite}'\n"
+            "        run: |\n"
+            "          $runId = [Guid]::NewGuid().ToString('N').Substring(0,16)\n"
+            f"          .\\tools\\dual-product\\{script} `\n"
+            f'            -OutputRoot (Join-Path $pwd ".tmp\\dual-product\\{output_prefix}-$env:CI_TEST_TAG-$runId")\n'
+        )
+        return (
+            long_contract_matrix_ci_present and executable == expected and
+            ci.count(script) == 1 and
+            step in ci_long_contracts_job and
+            ci_long_contracts_job.index(ci_long_host_step) < ci_long_contracts_job.index(step) <
+            ci_long_contracts_job.index(ci_long_upload_step) and
+            all(re.search(pattern, step) is None for pattern in prohibited_dp1i_ci_patterns)
+        )
+
+    nsis_preflight_before_packaging = (
+        ci_compiler_interval_step in ci_nsis_preflight_job and
+        ci_nsis_preflight_job.index("      - name: Prepare pinned NSIS in non-secret packaging job") <
+        ci_nsis_preflight_job.index(ci_compiler_interval_step) and
+        re.search(r"(?m)^    if:|^\s+continue-on-error:", ci_nsis_preflight_job) is None
+    )
+    for packaging_name, build_step in (
+        ("unsigned-installer-package", "Build the installer"),
+        ("release-installer-package", "Build unsigned outer installer"),
+    ):
+        packaging_job = ci_job(packaging_name)
+        needs = one(r"^    needs: \[([^\]\n]+)\]$", packaging_job, "CI packaging needs").group(1)
+        nsis_preflight_before_packaging = nsis_preflight_before_packaging and (
+            "nsis-preflight" in [name.strip() for name in needs.split(",")] and
+            packaging_job.count("uses: ./.github/actions/prepare-pinned-nsis") == 1 and
+            packaging_job.index("      - name: Prepare pinned NSIS in non-secret packaging job") <
+            packaging_job.index("      - name: " + build_step)
+        )
     ci_receipt_v2_step = one(
         r"(?ms)^      - name: Test canonical package receipt v2 contract\s*$.*?(?=^      - name: |\Z)",
         ci,
@@ -1491,52 +1621,20 @@ def transaction_source_status(sources):
         ".tmp\\dual-product\\dp1-nsis-interval-test-ci-ps7-$runId" in ci_compiler_interval_step and
         "PowerShell 5.1 DP1-K compiler-interval test failed with exit code $LASTEXITCODE" in
         ci_compiler_interval_step and
-        ci.index("      - name: Prepare pinned NSIS in non-secret packaging job") <
-        ci.index("      - name: Test DP1-K NSIS compiler membership interval") <
-        ci.index("      - name: Build the installer") and
+        nsis_preflight_before_packaging and
         all(name not in ci_compiler_interval_step for name in (
             "build-rime-pime-installer.ps1", "Install-PIME-Test.cmd", "Uninstall-PIME-Test.cmd",
         ))
     )
-    retained_receipt_ci_ps5_ps7_present = (
-        ci_receipt_store_step.count("test-rime-pime-receipt-v2-store.ps1") == 2 and
-        ci_receipt_store_step.count("-OutputRoot") == 2 and
-        ".tmp\\dual-product\\dp1-package-receipt-v2-test-store-ps5-$runId" in ci_receipt_store_step and
-        ".tmp\\dual-product\\dp1-package-receipt-v2-test-store-ps7-$runId" in ci_receipt_store_step and
-        "PS5 retained receipt publication test failed: $LASTEXITCODE" in ci_receipt_store_step
+    retained_receipt_ci_ps5_ps7_present = full_matrix_suite(
+        ci_receipt_store_step, "Test retained receipt publication and crash recovery",
+        "receipt-store", "test-rime-pime-receipt-v2-store.ps1",
+        "dp1-package-receipt-v2-test-store",
     )
-    installer_receipt_ps5_ci_invocation = (
-        "          & $ps5 -NoProfile -ExecutionPolicy Bypass -File "
-        ".\\tools\\dual-product\\test-rime-pime-installer-receipt-transaction.ps1 `\n"
-        "            -OutputRoot (Join-Path $pwd \".tmp\\dual-product\\"
-        "dp1-package-receipt-v2-test-dp1n-ci-ps5-$runId\")\n"
-    )
-    installer_receipt_ps7_ci_invocation = (
-        "          .\\tools\\dual-product\\test-rime-pime-installer-receipt-transaction.ps1 `\n"
-        "            -OutputRoot (Join-Path $pwd \".tmp\\dual-product\\"
-        "dp1-package-receipt-v2-test-dp1n-ci-ps7-$runId\")\n"
-    )
-    installer_receipt_transaction_ci_ps5_ps7_present = (
-        ci_installer_receipt_transaction_step.count(
-            "test-rime-pime-installer-receipt-transaction.ps1"
-        ) == 2 and
-        ci_installer_receipt_transaction_step.count("-OutputRoot") == 2 and
-        ".tmp\\dual-product\\dp1-package-receipt-v2-test-dp1n-ci-ps5-$runId" in
-        ci_installer_receipt_transaction_step and
-        ".tmp\\dual-product\\dp1-package-receipt-v2-test-dp1n-ci-ps7-$runId" in
-        ci_installer_receipt_transaction_step and
-        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in
-        ci_installer_receipt_transaction_step and
-        "& $ps5 -NoProfile -ExecutionPolicy Bypass -File" in
-        ci_installer_receipt_transaction_step and
-        ci_installer_receipt_transaction_step.count(installer_receipt_ps5_ci_invocation) == 1 and
-        ci_installer_receipt_transaction_step.count(installer_receipt_ps7_ci_invocation) == 1 and
-        all(parameter.casefold() not in ci_installer_receipt_transaction_step.casefold()
-            for parameter in ("-CheckPattern", "-WorkerCasePath", "-Phase")) and
-        "PowerShell 5.1 DP1-N installer/receipt transaction test failed with exit code $LASTEXITCODE" in
-        ci_installer_receipt_transaction_step and
-        all(re.search(pattern, ci_installer_receipt_transaction_step) is None
-            for pattern in prohibited_dp1i_ci_patterns)
+    installer_receipt_transaction_ci_ps5_ps7_present = full_matrix_suite(
+        ci_installer_receipt_transaction_step, "Test DP1-N isolated installer and receipt transaction",
+        "installer-transaction", "test-rime-pime-installer-receipt-transaction.ps1",
+        "dp1-package-receipt-v2-test-dp1n-ci",
     )
     isolated_candidate_runner_contract_ci_ps5_ps7_present = (
         ci_isolated_candidate_step.count("test-rime-pime-isolated-candidate.ps1") == 2 and
@@ -1565,23 +1663,10 @@ def transaction_source_status(sources):
         all(re.search(pattern, ci_version_identity_step) is None
             for pattern in prohibited_dp1i_ci_patterns)
     )
-    candidate_evidence_archive_ci_ps5_ps7_present = (
-        ci_candidate_evidence_archive_step.count(
-            "test-rime-pime-candidate-evidence-archive.ps1"
-        ) == 2 and
-        ci_candidate_evidence_archive_step.count("-OutputRoot") == 2 and
-        ".tmp\\dual-product\\dp1-candidate-evidence-archive-test-ci-ps5-$runId" in
-        ci_candidate_evidence_archive_step and
-        ".tmp\\dual-product\\dp1-candidate-evidence-archive-test-ci-ps7-$runId" in
-        ci_candidate_evidence_archive_step and
-        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in
-        ci_candidate_evidence_archive_step and
-        "PowerShell 5.1 DP1-Q candidate-evidence archive test failed with exit code $LASTEXITCODE" in
-        ci_candidate_evidence_archive_step and
-        all(parameter.casefold() not in ci_candidate_evidence_archive_step.casefold()
-            for parameter in ("-CheckPattern", "-WorkerCasePath", "-Phase")) and
-        all(re.search(pattern, ci_candidate_evidence_archive_step) is None
-            for pattern in prohibited_dp1i_ci_patterns)
+    candidate_evidence_archive_ci_ps5_ps7_present = full_matrix_suite(
+        ci_candidate_evidence_archive_step, "Test DP1-Q candidate evidence archive contract",
+        "evidence-archive", "test-rime-pime-candidate-evidence-archive.ps1",
+        "dp1-candidate-evidence-archive-test-ci",
     )
     actual_migration_review_ci_ps5_ps7_present = (
         ci_actual_migration_review_step.count(

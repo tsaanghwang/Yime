@@ -21,6 +21,7 @@
 
 /tools/test-build-guards.ps1 @tsaanghwang
 /tools/validate-build-contract.ps1 @tsaanghwang
+/tools/ci/** @tsaanghwang
 /tools/verify_psc_outline_snapshot.py @tsaanghwang
 /tools/verify_vendored_build_dependencies.py @tsaanghwang
 /tools/toolchain.lock.json @tsaanghwang
