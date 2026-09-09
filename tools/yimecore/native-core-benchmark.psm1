@@ -378,8 +378,8 @@ function Invoke-YimeCoreNativeBenchmark {
         $before = Get-NBRegistration (Join-Path $package 'support/native-maintenance-evidence.psm1')
         Write-NBJson $before (Join-Path $run 'registration-before.json')
         $profiles = Get-Content -LiteralPath (Join-Path $package 'performance-tiers.json') -Raw -Encoding UTF8 | ConvertFrom-Json
-        $profile = @($profiles.experiment_profiles | Where-Object { $_.id -ceq 'mainstream' -and $_.architecture -ceq 'x64' })
-        if ($profile.Count -ne 1 -or $profile[0].private_memory_budget_mb -le 0) { throw 'Missing physical x64 memory budget' }
+        $benchmarkProfile = @($profiles.experiment_profiles | Where-Object { $_.id -ceq 'mainstream' -and $_.architecture -ceq 'x64' })
+        if ($benchmarkProfile.Count -ne 1 -or $benchmarkProfile[0].private_memory_budget_mb -le 0) { throw 'Missing physical x64 memory budget' }
         $budgets = $profiles.provisional_interaction_budgets_ms
         foreach ($stage in @('e1', 'e2')) {
             $probe = if ($stage -ceq 'e1') { 'e1_probes.json' } else { 'e2_sentence_probes.json' }
@@ -391,7 +391,7 @@ function Invoke-YimeCoreNativeBenchmark {
                     '-mode', $mode, '-iterations', $Iterations.ToString(), '-output', $output)
                 $code = Invoke-NBTool (Join-Path $package 'bin/yimecore-index-bench.exe') $arguments (Join-Path $run "$stage-$mode.log")
                 $report = Get-Content -LiteralPath $output -Raw -Encoding UTF8 | ConvertFrom-Json
-                $rows.Add((Get-NBQueryRow $report $code $stage $mode $Iterations $budget ([uint64]$profile[0].private_memory_budget_mb * 1MB)))
+                $rows.Add((Get-NBQueryRow $report $code $stage $mode $Iterations $budget ([uint64]$benchmarkProfile[0].private_memory_budget_mb * 1MB)))
             }
         }
         foreach ($mode in @('full', 'variable', 'shorthand')) {
