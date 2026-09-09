@@ -296,6 +296,26 @@ func (s *Server) handleRequest(clientID string, req *pime.Request) map[string]in
 			"success": true,
 		}
 
+	case "maintenanceReady":
+		client, ok := s.clients[clientID]
+		if !ok || !client.AllowCommands {
+			return map[string]interface{}{"seqNum": req.SeqNum, "success": false, "errorCode": "authorization_denied"}
+		}
+		probe, ok := client.Service.(interface{ MaintenanceReadiness() (bool, string) })
+		ready, schema := false, ""
+		if ok {
+			ready, schema = probe.MaintenanceReadiness()
+		}
+		ready = ready && schema != "" && schema != ".default"
+		if !ready {
+			schema = ""
+		}
+		return map[string]interface{}{
+			"seqNum": req.SeqNum, "success": ready,
+			"schema_version":    "yime-rime-pime-native-ready-v1",
+			"native_rime_ready": ready, "schema_id": schema, "backend_pid": os.Getpid(),
+		}
+
 	case "close":
 		if client, ok := s.clients[clientID]; ok {
 			if err := closeTextService(client.Service); err != nil {

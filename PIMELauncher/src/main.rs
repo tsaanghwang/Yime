@@ -146,6 +146,14 @@ async fn wait_for_quit_event() {
 async fn main() {
     setup_error_mode();
 
+    // Candidate builds require their installed, SID-bound state configuration
+    // on every entry path, including TSF auto-launch and watchdog restart.
+    #[cfg(feature = "dp1-candidate")]
+    if let Err(error) = pimelauncher::candidate_state::apply() {
+        eprintln!("Candidate state configuration rejected: {error}");
+        std::process::exit(2);
+    }
+
     let args: Vec<String> = std::env::args().collect();
     let is_worker = args.iter().any(|arg| arg == "/worker");
     let show_console = args.iter().any(|arg| arg == "/console");

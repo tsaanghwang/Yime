@@ -20,6 +20,9 @@ windows = { version = "0.52", features = ["Win32_Foundation", "Win32_Security", 
 tracing = "0.1"
 tracing-subscriber = "0.3"
 
+[features]
+dp1-candidate = []
+
 [dev-dependencies]
 tempfile = "3"
 tokio-test = "0.4"
