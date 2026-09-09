@@ -91,6 +91,36 @@ actionlint 1.7.7 发布包，并核对官方 SHA-256。已有原生构建产物�
 相比前述成功运行的 118 分 14 秒，墙钟时间减少约 59%；这不代表 runner 总分钟或
 AI 费用按相同比例下降。本地原始验证记录中的远程未通过字段保留为写入时的状态。
 
+2026-09-09 后续失败核对：`cf427cdc82a8a50f8bda5a87af65224061890ad1` 的
+[运行 34317346502](https://github.com/tsaanghwang/Yime/actions/runs/34317346502)
+中，`native-build` 成功（06:03:46–06:09:58 UTC），失败源是
+[`go-race-msys2` 的 GDI 绘图测试](https://github.com/tsaanghwang/Yime/actions/runs/34317346502/job/102356443425)：
+`TestLanguageIconsRenderDistinctNonEmptyGDIInk` 得到中文 0、英文 64 个着色像素；
+日志没有报告 Go data race。快速前置失败后，普通合约、六项长矩阵及安装包构建未启动，
+两个汇总门禁按设计失败。不能把这次失败归到原生编译，也不能借用上一提交的全绿。
+原始日志保留在 `.tmp/ci-race-gdi-20260909/prior-run-34317346502-job-102356443425.log`。
+
+本轮对 `go-backend/cmd/input-toolbar/main_test.go` 作局部修复。生产 `app.run` 已锁定
+OS 线程，绘图夹具原来没有；新增受控线程让出回归在修复前实际记录 owner=42892、
+resumed=1516、holder=42892 并失败，证明夹具违反了 GDI 线程合同。现在锁定范围覆盖
+GetDC 到 ReleaseDC 及全部清理，绘图后检查 GdiFlush，并拒绝 GetPixel 的无效返回值。
+字体、生产绘图实现、非空与图形差异断言均未改动。依据是微软的
+[同线程释放 DC 要求](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-releasedc)、
+[按线程存储的 GDI 批处理](https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-gdiflush)
+及 Go 的 [LockOSThread](https://pkg.go.dev/runtime#LockOSThread) 约束。
+
+四项绘图/线程回归修后普通与 race 各重复 100 次，分别 **400/400 通过**；修前仅重复
+原三项测试也曾通过，因此不声称已证明远端单次空白的唯一历史原因。修复的是实际
+复现的线程合同缺口，远端结果仍需由新 SHA 的 CI 验证。原失败日志、迁移反例以及
+本地输出均保留，不用重跑旧 SHA 或取消断言来消除失败。
+
+完整 `input-toolbar` 包的普通/race 回归各 **33/33 通过**，无 race 报告。源码固定为
+`fc5d71b9df1bf9ac8df09072da65d0f433f3062cf6d8968c4d414b4e320ec316`；最终摘要
+`.tmp/toolbar-gdi-fix-20260909/summary-final.json` 的 SHA-256 为
+`87a44c525a0311ff7827f300432bb2ae688aabe008669a5132d725f3ce303072`，逐项绑定九份原始
+日志，包括早期本机 cgo 编译退出 2 及同一工具链在沙箱外普通用户下成功的结果。
+本轮只编译/运行该测试包，未启动安装器、实际工具栏或修改已安装产品。
+
 参考：[GitHub 并发控制](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)、
 [矩阵失败处理](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations)、
 [重跑工作流与 job](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs)。

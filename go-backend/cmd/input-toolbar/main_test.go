@@ -4,8 +4,10 @@ package main
 
 import (
 	"path/filepath"
+	"runtime"
 	"syscall"
 	"testing"
+	"time"
 	"unsafe"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolbarstate"
@@ -539,6 +541,58 @@ func TestScriptIconsRenderDistinctNonEmptyGDIInk(t *testing.T) {
 	}
 }
 
+func TestGDIPixelFixtureKeepsDrawingOnOwningThread(t *testing.T) {
+	// With one P, the runnable holder takes the current OS thread at Gosched
+	// unless the rendering fixture has pinned it. The holder keeps that thread
+	// occupied until the bitmap has been sampled and its DC has been released.
+	previousProcs := runtime.GOMAXPROCS(1)
+	defer runtime.GOMAXPROCS(previousProcs)
+	currentThreadID := kernel32.NewProc("GetCurrentThreadId")
+	ready := make(chan uintptr, 1)
+	release := make(chan struct{})
+	done := make(chan struct{})
+	holderStarted := false
+	defer func() {
+		close(release)
+		if !holderStarted {
+			return
+		}
+		select {
+		case <-done:
+		case <-time.After(5 * time.Second):
+			t.Error("OS-thread holder did not stop")
+		}
+	}()
+
+	ink, _ := renderToolbarIconForTest(t, func(hdc syscall.Handle, bounds rect) {
+		owner, _, _ := currentThreadID.Call()
+		holderStarted = true
+		go func() {
+			runtime.LockOSThread()
+			defer close(done)
+			defer runtime.UnlockOSThread()
+			threadID, _, _ := currentThreadID.Call()
+			ready <- threadID
+			<-release
+		}()
+		runtime.Gosched()
+		var holder uintptr
+		select {
+		case holder = <-ready:
+		case <-time.After(5 * time.Second):
+			t.Fatal("OS-thread holder did not start")
+		}
+		resumed, _, _ := currentThreadID.Call()
+		if resumed != owner || holder == owner {
+			t.Fatalf("GDI fixture migrated OS threads: owner=%d resumed=%d holder=%d", owner, resumed, holder)
+		}
+		drawLanguageIcon(hdc, bounds, 96, false, false)
+	})
+	if ink == 0 {
+		t.Fatal("thread-bound Chinese language drawing produced blank output")
+	}
+}
+
 func renderPunctuationIconForTest(t *testing.T, ascii bool) (int, uint64) {
 	t.Helper()
 	return renderToolbarIconForTest(t, func(hdc syscall.Handle, bounds rect) {
@@ -562,15 +616,24 @@ func renderScriptIconForTest(t *testing.T, traditional bool) (int, uint64) {
 
 func renderToolbarIconForTest(t *testing.T, draw func(syscall.Handle, rect)) (int, uint64) {
 	t.Helper()
+	// Match app.run: ReleaseDC must run on the GetDC thread, and GDI batches
+	// belong to an OS thread. A Go goroutine alone does not preserve either.
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	createCompatibleDC := gdi32.NewProc("CreateCompatibleDC")
 	createCompatibleBitmap := gdi32.NewProc("CreateCompatibleBitmap")
 	deleteDC := gdi32.NewProc("DeleteDC")
 	getPixel := gdi32.NewProc("GetPixel")
+	gdiFlush := gdi32.NewProc("GdiFlush")
 	screenDC, _, _ := getDC.Call(0)
 	if screenDC == 0 {
 		t.Fatal("GetDC desktop failed")
 	}
-	defer releaseDC.Call(0, screenDC)
+	defer func() {
+		if released, _, _ := releaseDC.Call(0, screenDC); released == 0 {
+			t.Error("ReleaseDC desktop failed")
+		}
+	}()
 	memoryDC, _, _ := createCompatibleDC.Call(screenDC)
 	if memoryDC == 0 {
 		t.Fatal("CreateCompatibleDC failed")
@@ -589,12 +652,18 @@ func renderToolbarIconForTest(t *testing.T, draw func(syscall.Handle, rect)) (in
 	backgroundBrush, _, _ := getSysColorBrush.Call(colorWindow)
 	fillRect.Call(memoryDC, uintptr(unsafe.Pointer(&bounds)), backgroundBrush)
 	draw(syscall.Handle(memoryDC), bounds)
+	if flushed, _, _ := gdiFlush.Call(); flushed == 0 {
+		t.Fatal("GdiFlush reported a drawing failure before pixel sampling")
+	}
 	background, _, _ := getSysColor.Call(colorWindow)
 	ink := 0
 	fingerprint := uint64(1469598103934665603)
 	for y := int32(0); y < bounds.Bottom; y++ {
 		for x := int32(0); x < bounds.Right; x++ {
 			pixel, _, _ := getPixel.Call(memoryDC, uintptr(x), uintptr(y))
+			if uint32(pixel) == 0xffffffff {
+				t.Fatalf("GetPixel failed at (%d, %d)", x, y)
+			}
 			if uint32(pixel) != uint32(background) {
 				ink++
 				fingerprint ^= uint64(uint32(pixel)) + uint64(x+1)<<24 + uint64(y+1)<<32
