@@ -29,6 +29,24 @@ func localDescriptorFixture(t *testing.T) []byte {
 	descriptor["installable"] = false
 	descriptor["version"] = "0.1.0-local.12"
 	delete(descriptor, "speech")
+	delete(descriptor, "maintenance_health")
+	// Reconstruct the historical catalog rather than relabeling the current
+	// health-capable descriptor as a local.12 maintenance package.
+	maintenance := descriptor["maintenance_assets"].([]any)
+	legacyMaintenance := make([]any, 0, len(maintenance))
+	for _, asset := range maintenance {
+		path := asset.(map[string]any)["path"].(string)
+		healthOnly := false
+		for _, required := range requiredLocalMaintenanceHealthFiles {
+			if required != "maintenance/local-product-runtime.ps1" && path == required {
+				healthOnly = true
+			}
+		}
+		if !healthOnly {
+			legacyMaintenance = append(legacyMaintenance, asset)
+		}
+	}
+	descriptor["maintenance_assets"] = legacyMaintenance
 	data, err = json.Marshal(descriptor)
 	if err != nil {
 		t.Fatal(err)

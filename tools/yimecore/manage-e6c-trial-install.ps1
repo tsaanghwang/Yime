@@ -1180,6 +1180,15 @@ function Write-RuntimeConfiguration([string]$root) {
 }
 
 function Start-TrialRuntime($config) {
+    $startupPackage=$null
+    if($NativeLocalProduct){
+        . (Join-Path $PSScriptRoot 'local-package-contract.ps1')
+        . (Join-Path $PSScriptRoot 'local-product-runtime.ps1')
+        # Revalidate the package actually being started, including rollback to a
+        # historical package; never inherit the new candidate's health policy.
+        $startupPackage=Assert-LocalProductPackage ([string]$config.install_root)
+        $null=Get-LocalProductStartupHealthRequired $startupPackage
+    }
     $captureRehearsalRuntime=[bool]($script:rehearsalOutcome -and $script:rehearsalOutcome.phase -ceq 'registered')
     $arguments = '-install-root {0} -broker {1} -state-root {2} -no-toolbar' -f
         (Quote-Argument ([string]$config.install_root)), (Quote-Argument ([string]$config.broker_path)),
@@ -1218,6 +1227,8 @@ function Start-TrialRuntime($config) {
                             }
                         }
                         if (-not $verified) { throw 'Runtime live identity missing after standard-user launch.' }
+                        $health=Assert-LocalProductStartedHealth $startupPackage $config $process $status.broker_pid $TargetUserSid
+                        if($null -ne $health){$status|Add-Member -NotePropertyName startup_health -NotePropertyValue $health -Force}
                     }
                     return $status
                 }
@@ -1367,6 +1378,12 @@ if ($Action -eq 'Uninstall') {
 
 if ([string]::IsNullOrWhiteSpace($PackageRoot)) { throw 'Install requires -PackageRoot' }
 $package = Assert-Package $PackageRoot
+if($NativeLocalProduct){
+    . (Join-Path $PSScriptRoot 'local-product-runtime.ps1')
+    if((Get-LocalProductStartupHealthRequired $package) -and $NoLaunch){
+        throw 'A package requiring startup health cannot be installed with NoLaunch.'
+    }
+}
 if ($script:rehearsalOutcome) {
     $script:rehearsalOutcome.failure_manifest_sha256=$package.manifest_sha256
     $script:rehearsalOutcome.source_manifest_sha256=$package.manifest.source_package_manifest_sha256

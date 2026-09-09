@@ -2,6 +2,42 @@
 param([string]$OutputRoot,[string]$SpeechAdmissionRoot,[string]$ExpectedSpeechAdmissionSummarySha256,[string]$ExpectedSpeechSourceInventorySha256)
 
 $ErrorActionPreference = 'Stop'
+function Assert-LocalProductMaintenanceHealthBuildInputs($Product) {
+    $declarations=@($Product.PSObject.Properties|Where-Object {$_.Name -ieq 'maintenance_health'})
+    if($declarations.Count -eq 0){return $false} # Existing descriptors keep their original catalog.
+    if($declarations.Count -ne 1 -or $declarations[0].Name -cne 'maintenance_health'){
+        throw 'Maintenance health declaration must use its canonical field name.'
+    }
+    $health=$declarations[0].Value
+    if($health -isnot [pscustomobject] -or @($health.PSObject.Properties).Count -ne 2 -or
+        @($health.PSObject.Properties.Name) -cnotcontains 'protocol' -or
+        @($health.PSObject.Properties.Name) -cnotcontains 'required_on_start' -or
+        $health.protocol -isnot [string] -or $health.protocol -cne 'yimecore-maintenance-health-v1' -or
+        $health.required_on_start -isnot [bool] -or -not $health.required_on_start -or
+        $Product.package_contract -cne 'yimecore-local-product-package-v1' -or
+        $Product.installable -isnot [bool] -or -not $Product.installable){
+        throw 'Declared maintenance health requires the fixed protocol and literal required_on_start true in an installable package.'
+    }
+    # Preserve the process observer's existing relative source path and bytes.
+    # This is a repository source copied inside this package, not an installed
+    # Rime/PIME dependency or a lookup outside the candidate.
+    $required=[ordered]@{
+        'maintenance/local-product-runtime.ps1'='tools/yimecore/local-product-runtime.ps1'
+        'maintenance/native-maintenance-processes.psm1'='tools/yimecore/native-maintenance-processes.psm1'
+        'maintenance/native-maintenance-process-facts.cs'='tools/yimecore/native-maintenance-process-facts.cs'
+        'dual-product/rime-pime-dp1u-native-facts.cs'='tools/dual-product/rime-pime-dp1u-native-facts.cs'
+        'maintenance/native-maintenance-health.psm1'='tools/yimecore/native-maintenance-health.psm1'
+        'maintenance/native-maintenance-health-client.cs'='tools/yimecore/native-maintenance-health-client.cs'
+    }
+    if($Product.maintenance_assets -isnot [array]){throw 'Declared health requires an explicit maintenance asset array.'}
+    foreach($path in $required.Keys){
+        $matches=@($Product.maintenance_assets|Where-Object {$_.path -is [string] -and $_.path -ceq $path})
+        if($matches.Count -ne 1 -or $matches[0].source -isnot [string] -or $matches[0].source -cne $required[$path]){
+            throw "Declared health lacks its exact self-contained helper source: $path"
+        }
+    }
+    return $true
+}
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
 . (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
 . (Join-Path $PSScriptRoot 'local-product-build-common.ps1')
@@ -12,6 +48,7 @@ Assert-YimeCoreNativeGo
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $descriptorPath = Join-Path $PSScriptRoot 'local-product.json'
 $product = Get-LocalProductDescriptor $descriptorPath
+$maintenanceHealthRequested = Assert-LocalProductMaintenanceHealthBuildInputs $product
 $speechRequested = Assert-LocalProductSpeechBuildInputs $product $SpeechAdmissionRoot $ExpectedSpeechAdmissionSummarySha256 $ExpectedSpeechSourceInventorySha256
 if (-not $OutputRoot) {
     $OutputRoot = Join-Path $repoRoot ('.tmp\yimecore-local-product\' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,8))

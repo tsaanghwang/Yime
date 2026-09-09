@@ -4,6 +4,10 @@
   "display_name": "音元拼音",
   "package_contract": "yimecore-local-product-package-v1",
   "installable": true,
+  "maintenance_health": {
+    "protocol": "yimecore-maintenance-health-v1",
+    "required_on_start": true
+  },
   "speech": {
     "capability_path": "speech-capability.json",
     "default_enabled": false
@@ -282,6 +286,26 @@
     {
       "source": "tools/yimecore/local-product-runtime.ps1",
       "path": "maintenance/local-product-runtime.ps1"
+    },
+    {
+      "source": "tools/yimecore/native-maintenance-processes.psm1",
+      "path": "maintenance/native-maintenance-processes.psm1"
+    },
+    {
+      "source": "tools/yimecore/native-maintenance-process-facts.cs",
+      "path": "maintenance/native-maintenance-process-facts.cs"
+    },
+    {
+      "source": "tools/dual-product/rime-pime-dp1u-native-facts.cs",
+      "path": "dual-product/rime-pime-dp1u-native-facts.cs"
+    },
+    {
+      "source": "tools/yimecore/native-maintenance-health.psm1",
+      "path": "maintenance/native-maintenance-health.psm1"
+    },
+    {
+      "source": "tools/yimecore/native-maintenance-health-client.cs",
+      "path": "maintenance/native-maintenance-health-client.cs"
     },
     {
       "source": "tools/yimecore/local-runtime-launcher.cs",
