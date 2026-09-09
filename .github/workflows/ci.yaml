@@ -310,14 +310,24 @@ jobs:
         shell: pwsh
         env:
           NSIS_ARCHIVE: ${{ steps.nsis.outputs.archive-path }}
+          SEVENZIP_ROOT: ${{ steps.nsis.outputs.sevenzip-root }}
+          SEVENZIP_BOOTSTRAP: ${{ steps.nsis.outputs.sevenzip-bootstrap }}
+          SEVENZIP_ARCHIVE: ${{ steps.nsis.outputs.sevenzip-archive }}
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
           $runId = [Guid]::NewGuid().ToString('N').Substring(0,16)
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\ci\test-prepare-pinned-sevenzip.ps1 `
+            -BootstrapPath $env:SEVENZIP_BOOTSTRAP -ArchivePath $env:SEVENZIP_ARCHIVE `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-sevenzip-preparation-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 pinned 7-Zip preparation test failed with exit code $LASTEXITCODE" }
+          .\tools\ci\test-prepare-pinned-sevenzip.ps1 `
+            -BootstrapPath $env:SEVENZIP_BOOTSTRAP -ArchivePath $env:SEVENZIP_ARCHIVE `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-sevenzip-preparation-test-ci-ps7-$runId")
           & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\ci\test-prepare-pinned-nsis.ps1 `
-            -ArchivePath $env:NSIS_ARCHIVE -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-preparation-test-ci-ps5-$runId")
+            -ArchivePath $env:NSIS_ARCHIVE -SevenZipRoot $env:SEVENZIP_ROOT -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-preparation-test-ci-ps5-$runId")
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 pinned NSIS preparation test failed with exit code $LASTEXITCODE" }
           .\tools\ci\test-prepare-pinned-nsis.ps1 `
-            -ArchivePath $env:NSIS_ARCHIVE -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-preparation-test-ci-ps7-$runId")
+            -ArchivePath $env:NSIS_ARCHIVE -SevenZipRoot $env:SEVENZIP_ROOT -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-preparation-test-ci-ps7-$runId")
       - name: Test DP1-K NSIS compiler membership interval
         shell: pwsh
         run: |

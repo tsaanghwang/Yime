@@ -1,0 +1,113 @@
+{
+  "schema_version": "yime-ci-sevenzip-fix-evidence-v1",
+  "affected_product": "rime-pime-ci-tool-preparation",
+  "failed_source_commit": "75f27b6353daa9d79ae6e1addc977ad0df4aef90",
+  "failed_run_url": "https://github.com/tsaanghwang/Yime/actions/runs/34355291018",
+  "failed_job": 102478737342,
+  "error": "NSIS preparation 7-Zip input differs from the repository-pinned record.",
+  "failed_log": {
+    "path": ".tmp/ci-sevenzip-fix-20260909/failed-nsis-preflight.log",
+    "bytes": 11882,
+    "sha256": "a36a4c88c72515a8b67ad7b4229436cd15e33a0c0f22e9be989b74213270808d"
+  },
+  "sources": [
+    {
+      "path": ".github/actions/prepare-pinned-nsis/action.yml",
+      "bytes": 6048,
+      "sha256": "8a83b3955b1e849e26442dca9ee7aaabe1c77dde0ed43238ed59af98423bcbe8"
+    },
+    {
+      "path": ".github/workflows/ci.yaml",
+      "bytes": 63809,
+      "sha256": "8cf19d73a166624a217a6937c8f3d185a16aeae47fa54009a6fce7767efdfe50"
+    },
+    {
+      "path": "tools/ci/prepare-pinned-sevenzip.ps1",
+      "bytes": 9688,
+      "sha256": "6bd9254d2f1631a7d861a432ad1aee369d51d2e10fffbfc223d7d9d6643a18dd"
+    },
+    {
+      "path": "tools/ci/test-prepare-pinned-sevenzip.ps1",
+      "bytes": 13453,
+      "sha256": "70d89b50cf1a3d29435e3c968586e46542d18b735e9bed652278eaaac5b3e63d"
+    },
+    {
+      "path": "tools/ci/prepare-pinned-nsis.ps1",
+      "bytes": 12094,
+      "sha256": "c641103f7f70ce95913e3fe15942b1059a0af4191ca20255984dd78eba525951"
+    },
+    {
+      "path": "tools/ci/test-prepare-pinned-nsis.ps1",
+      "bytes": 16204,
+      "sha256": "20b9e5fcfbcf4d9d650e33b0e7c542ff958db6442230b54fa220327ba64cd2e8"
+    },
+    {
+      "path": "tools/ci/test_workflow_contract.py",
+      "bytes": 12663,
+      "sha256": "b2cea069b0cebfd8132fa4859ed831c1fd036d1a267813708a2bae259fd93ff9"
+    }
+  ],
+  "regressions": [
+    {
+      "path": ".tmp/dual-product/dp1-sevenzip-preparation-test-ps5-20260909-a/summary.json",
+      "bytes": 13315,
+      "sha256": "da658684811257da72cbaf35097f96308d3e5f62b30d7cbd0baea235cc9d1784",
+      "suite": "sevenzip",
+      "shell": "PS5",
+      "powershell_version": "5.1.26100.9444",
+      "passed": true,
+      "check_count": 38
+    },
+    {
+      "path": ".tmp/dual-product/dp1-sevenzip-preparation-test-ps7-20260909-a/summary.json",
+      "bytes": 8709,
+      "sha256": "b169f37ddc7f5a4339069643f91368695e94f415973ae2b0fcf0bb6beafccc2c",
+      "suite": "sevenzip",
+      "shell": "PS7",
+      "powershell_version": "7.6.5",
+      "passed": true,
+      "check_count": 38
+    },
+    {
+      "path": ".tmp/dual-product/dp1-nsis-preparation-test-sevenzip-final-ps5-20260909/summary.json",
+      "bytes": 16494,
+      "sha256": "1bd36c043b7dfeea7a2f25c4fe2afa719524e3bf1ba34e6652dd5870af06a821",
+      "suite": "nsis",
+      "shell": "PS5",
+      "powershell_version": "5.1.26100.9444",
+      "passed": true,
+      "check_count": 41
+    },
+    {
+      "path": ".tmp/dual-product/dp1-nsis-preparation-test-sevenzip-final-ps7-20260909/summary.json",
+      "bytes": 9872,
+      "sha256": "610a5804222300105846745c16af1cb25f8277751f7b535ecb3ba9968872f6fe",
+      "suite": "nsis",
+      "shell": "PS7",
+      "powershell_version": "7.6.5",
+      "passed": true,
+      "check_count": 41
+    }
+  ],
+  "total_checks_per_shell": 79,
+  "workflow_contract_tests_passed": 11,
+  "actionlint_passed": true,
+  "build_contract_passed": true,
+  "source_baseline": {
+    "path": ".tmp/dual-product/dp1-ci-sevenzip-fix-20260909/baseline.json",
+    "bytes": 55265,
+    "sha256": "3e6a0e57aa463471e70573fbf3690eb63028b53943d667ef8c09ec10e75145da"
+  },
+  "source_baseline_tests_passed": 77,
+  "source_baseline_pending": 8,
+  "repository_toolchain_lock_sha256": "01e913d82b277ac9219148e9fb26df7851475ce0b70ff5d7b58df51179603c45",
+  "installer_executed": false,
+  "uninstaller_executed": false,
+  "installed_seven_zip_modified": false,
+  "installed_nsis_modified_locally": false,
+  "product_runtime_executed": false,
+  "local12_touched": false,
+  "full_toolchain_input_closure": false,
+  "installed_acceptance_passed": false,
+  "subsequent_ci_success_claimed": false
+}

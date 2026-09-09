@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)][string]$ArchivePath,
-    [Parameter(Mandatory)][string]$OutputRoot
+    [Parameter(Mandatory)][string]$OutputRoot,
+    [string]$SevenZipRoot
 )
 
 Set-StrictMode -Version Latest
@@ -20,7 +21,7 @@ if (Test-Path -LiteralPath $OutputRoot) { throw 'NSIS preparation output already
 # the existing trust boundary and must not be reset by Import-Module -Force.
 $module = Import-Module (Join-Path $repo 'tools\dual-product\rime-pime-nsis-toolchain-closure.psm1') -PassThru
 & $module {
-    param($archivePath, $outputRoot, $parent)
+    param($archivePath, $outputRoot, $parent, $sevenZipRoot)
     $archiveRecord = [pscustomobject]@{
         bytes = [long]1566914
         sha256 = '3bc2b06253a7e4957111be152ac6a536e0c7478a706e19da814038db5d706495'
@@ -63,8 +64,24 @@ $module = Import-Module (Join-Path $repo 'tools\dual-product\rime-pime-nsis-tool
         }
         $heldLock = Read-RimePimeNsisCompilerToolchainLockDocument
         if ($heldLock.Digest -cne $lock.Digest) { throw 'NSIS preparation toolchain lock changed.' }
+        # CI supplies an isolated, bootstrapped copy. The executable and parser
+        # library must still match the original repository pins, never the host
+        # version or a caller-provided digest. Local callers keep the old default.
+        if ([string]::IsNullOrEmpty($sevenZipRoot)) {
+            $sevenZipRoot = Split-Path -Parent (([string]$lock.Document.seven_zip.path).Replace('/', '\'))
+        } else {
+            $null = Assert-YimePimePayloadAbsolutePath $sevenZipRoot
+            $toolStage = Split-Path -Parent $sevenZipRoot
+            if ($sevenZipRoot -cne [IO.Path]::GetFullPath($sevenZipRoot) -or
+                (Split-Path -Leaf $sevenZipRoot) -cne '7-Zip' -or
+                (Split-Path -Parent $toolStage) -cne $parent -or
+                (Split-Path -Leaf $toolStage) -cnotmatch '^dp1-sevenzip-distribution-[A-Za-z0-9][A-Za-z0-9-]*$') {
+                throw 'SevenZipRoot must be an isolated repository 7-Zip preparation root.'
+            }
+        }
+        $sevenZipExe = Join-Path $sevenZipRoot '7z.exe'
         foreach ($record in @($lock.Document.seven_zip, $lock.Document.seven_zip.library)) {
-            $path = ([string]$record.path).Replace('/', '\')
+            $path = Join-Path $sevenZipRoot ([IO.Path]::GetFileName([string]$record.path))
             Add-PreparationDirectoryPins (Split-Path -Parent $path)
             $files.Add((Open-RimePimeNsisClosureFileLease $path $record 'NSIS preparation 7-Zip input'))
         }
@@ -87,7 +104,7 @@ $module = Import-Module (Join-Path $repo 'tools\dual-product\rime-pime-nsis-tool
         $arguments += @($roots | ForEach-Object { '"' + $_.Replace('/', '\') + '\*"' })
         $process = [Diagnostics.Process]::new()
         $process.StartInfo = [Diagnostics.ProcessStartInfo]::new()
-        $process.StartInfo.FileName = ([string]$lock.Document.seven_zip.path).Replace('/', '\')
+        $process.StartInfo.FileName = $sevenZipExe
         $process.StartInfo.Arguments = $arguments -join ' '
         $process.StartInfo.WorkingDirectory = $outputRoot
         $process.StartInfo.UseShellExecute = $false
@@ -153,6 +170,7 @@ $module = Import-Module (Join-Path $repo 'tools\dual-product\rime-pime-nsis-tool
             official_archive_bytes = $archiveLease.Record.bytes
             seven_zip_exe_sha256 = [string]$lock.Document.seven_zip.sha256
             seven_zip_library_sha256 = [string]$lock.Document.seven_zip.library.sha256
+            seven_zip_root = $sevenZipRoot
             extraction_scope = $roots
             canonical_case_mappings = @($caseMappings)
             extraction_input_read_leases_held = $true
@@ -172,4 +190,4 @@ $module = Import-Module (Join-Path $repo 'tools\dual-product\rime-pime-nsis-tool
             for ($i = $directories.Count - 1; $i -ge 0; $i--) { $directories[$i].Native.Dispose() }
         }
     }
-} $ArchivePath $OutputRoot $parent
+} $ArchivePath $OutputRoot $parent $SevenZipRoot

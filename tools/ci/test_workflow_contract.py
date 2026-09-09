@@ -10,6 +10,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / '.github/workflows/ci.yaml'
+NSIS_ACTION = ROOT / '.github/actions/prepare-pinned-nsis/action.yml'
 QUICK = {'build-contract', 'lexicon-offline-tooling', 'rust-i686-host',
          'native-build', 'go-tests', 'real-rime-tests', 'go-race-msys2',
          'nsis-preflight'}
@@ -35,6 +36,21 @@ def jobs(text):
 def needs(job):
     match = re.search(r'^    needs: \[([^\]\n]*)\]$', job, re.M)
     return set(match[1].split(', ')) if match else set()
+
+
+def validate_nsis_action(text):
+    for command in ('tools\\ci\\prepare-pinned-sevenzip.ps1',
+                    '-BootstrapPath $bootstrap -ArchivePath $sevenZipArchive',
+                    '-SevenZipRoot $sevenZip.Root',
+                    'https://github.com/ip7z/7zip/releases/download/26.02/7zr.exe',
+                    'https://github.com/ip7z/7zip/releases/download/26.02/7z2602-x64.exe',
+                    "'sevenzip-root=' + $sevenZip.Root",
+                    "'sevenzip-bootstrap=' + $bootstrap",
+                    "'sevenzip-archive=' + $sevenZipArchive"):
+        require(command in text, 'Pinned isolated 7-Zip bootstrap or handoff missing')
+    require(text.index('tools\\ci\\prepare-pinned-sevenzip.ps1') <
+            text.index('tools\\ci\\prepare-pinned-nsis.ps1'),
+            'Pinned extractor must be prepared before NSIS')
 
 
 def validate(text):
@@ -86,6 +102,15 @@ def validate(text):
             'Long fixtures must not hold native artifacts hostage')
     require('test-rime-pime-staged-installer-build.ps1' in native,
             'Staged-build PE regression requires native artifacts')
+    nsis = graph['nsis-preflight']
+    require(nsis.count('test-prepare-pinned-sevenzip.ps1') == 2 and
+            'PowerShell 5.1 pinned 7-Zip preparation test failed with exit code $LASTEXITCODE' in nsis and
+            nsis.count('-SevenZipRoot $env:SEVENZIP_ROOT') == 2 and
+            nsis.count('-BootstrapPath $env:SEVENZIP_BOOTSTRAP -ArchivePath $env:SEVENZIP_ARCHIVE') == 2,
+            'NSIS regressions must exercise isolated pinned 7-Zip in both shells')
+    for output in ('sevenzip-root', 'sevenzip-bootstrap', 'sevenzip-archive'):
+        require('${{ steps.nsis.outputs.' + output + ' }}' in nsis,
+                'NSIS bootstrap regression inputs must bind action outputs')
     preflight = graph['build-contract']
     for command in ('test_workflow_contract.py', 'baseline.py',
                     'check-libime2-change-boundary.ps1', 'fetch-depth: 0'):
@@ -114,6 +139,23 @@ class WorkflowContractTests(unittest.TestCase):
 
     def test_current_workflow(self):
         validate(self.text)
+        validate_nsis_action(NSIS_ACTION.read_text(encoding='utf-8-sig'))
+
+    def test_nsis_preflight_cannot_drop_isolated_extractor_or_shell(self):
+        for command in ('test-prepare-pinned-sevenzip.ps1',
+                        '-SevenZipRoot $env:SEVENZIP_ROOT',
+                        '${{ steps.nsis.outputs.sevenzip-root }}',
+                        'PowerShell 5.1 pinned 7-Zip preparation test failed with exit code $LASTEXITCODE'):
+            with self.subTest(command=command):
+                self.reject_in_job('nsis-preflight', command, '')
+
+    def test_nsis_action_cannot_fall_back_to_host_extractor(self):
+        action = NSIS_ACTION.read_text(encoding='utf-8-sig')
+        for command in ('tools\\ci\\prepare-pinned-sevenzip.ps1',
+                        '-SevenZipRoot $sevenZip.Root',
+                        "'sevenzip-root=' + $sevenZip.Root"):
+            with self.subTest(command=command), self.assertRaises(ValueError):
+                validate_nsis_action(action.replace(command, '', 1))
 
     def test_i686_host_install_capability_and_execution_cannot_disappear(self):
         for name in ('rust-i686-host', 'native-build'):

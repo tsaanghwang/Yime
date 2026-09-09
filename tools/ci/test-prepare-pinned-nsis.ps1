@@ -2,6 +2,7 @@
 param(
     [Parameter(Mandatory)][string]$ArchivePath,
     [Parameter(Mandatory)][string]$OutputRoot,
+    [string]$SevenZipRoot,
     [string]$PatchedFixtureRoot,
     [string]$EnVarFixtureRoot
 )
@@ -18,6 +19,8 @@ if (Test-Path -LiteralPath $OutputRoot) { throw 'Test output already exists.' }
 $null = New-Item -ItemType Directory -Path $OutputRoot
 $id = [Guid]::NewGuid().ToString('N')
 $prepare = Join-Path $PSScriptRoot 'prepare-pinned-nsis.ps1'
+$prepareArgs = @{}
+if ($SevenZipRoot) { $prepareArgs.SevenZipRoot = $SevenZipRoot }
 $lock = Read-RimePimeNsisCompilerToolchainLockDocument
 $results = [Collections.Generic.List[object]]::new()
 $createdStages = [Collections.Generic.List[string]]::new()
@@ -110,10 +113,32 @@ try {
     Test-CompositeGuards
     $originalHash = (Get-FileHash -LiteralPath $ArchivePath -Algorithm SHA256).Hash.ToLowerInvariant()
     $goodStage = New-StagePath 'good'
-    $success = @(& $prepare -ArchivePath $ArchivePath -OutputRoot $goodStage)
+    $success = @(& $prepare -ArchivePath $ArchivePath -OutputRoot $goodStage @prepareArgs)
     Add-Check 'single-result-object' ($success.Count -eq 1 -and $null -ne $success[0].Evidence)
     $prepared = $success[0]
     Add-Check 'official-archive-pin' ($prepared.Evidence.official_archive_sha256 -ceq '3bc2b06253a7e4957111be152ac6a536e0c7478a706e19da814038db5d706495' -and $prepared.Evidence.official_archive_bytes -eq 1566914)
+    Add-Check 'original-sevenzip-pins-preserved' ($prepared.Evidence.seven_zip_exe_sha256 -ceq $lock.Document.seven_zip.sha256 -and
+        $prepared.Evidence.seven_zip_library_sha256 -ceq $lock.Document.seven_zip.library.sha256)
+    if ($SevenZipRoot) {
+        Add-Check 'explicit-sevenzip-root-used' ($prepared.Evidence.seven_zip_root -ceq $SevenZipRoot)
+        foreach ($leaf in @('7z.exe', '7z.dll')) {
+            $toolStage = Join-Path $parent ('dp1-sevenzip-distribution-' + $id + '-' + $leaf.Replace('.', '-'))
+            $toolRoot = Join-Path $toolStage '7-Zip'
+            $null = [IO.Directory]::CreateDirectory($toolStage)
+            Copy-TestTree $SevenZipRoot $toolRoot
+            Change-TestByte (Join-Path $toolRoot $leaf)
+            $rejectStage = New-StagePath ('wrong-' + $leaf.Replace('.', '-'))
+            Assert-Rejected ('wrong-sevenzip-' + $leaf + '-rejected') {
+                & $prepare -ArchivePath $ArchivePath -OutputRoot $rejectStage -SevenZipRoot $toolRoot
+            } 'NSIS preparation 7-Zip input differs from the repository-pinned record'
+            Add-Check ('wrong-sevenzip-' + $leaf + '-rejected-before-output') (-not (Test-Path -LiteralPath $rejectStage))
+        }
+        $rejectStage = New-StagePath 'outside-sevenzip'
+        Assert-Rejected 'outside-sevenzip-root-rejected' {
+            & $prepare -ArchivePath $ArchivePath -OutputRoot $rejectStage -SevenZipRoot $OutputRoot
+        } '^SevenZipRoot must be an isolated repository 7-Zip preparation root'
+        Add-Check 'outside-sevenzip-root-rejected-before-output' (-not (Test-Path -LiteralPath $rejectStage))
+    }
     Add-Check 'strict-tree-pin' ($prepared.Evidence.nsis_compiler_input_tree_sha256 -ceq 'a908c3b306098217a87a62f0eb4a18c3b2bb5391efde93420bbec1f38ec8d352' -and
         $prepared.Evidence.nsis_compiler_input_file_count -eq 303 -and $prepared.Evidence.nsis_compiler_input_directory_count -eq 17)
     Add-Check 'original-incomplete-closure-fields-preserved' (-not $prepared.Evidence.active_same_sid_transient_tree_membership_interference_excluded -and
@@ -137,17 +162,17 @@ try {
     $badArchive = Join-Path $OutputRoot 'wrong-archive.exe'
     [IO.File]::Copy($ArchivePath, $badArchive, $false); Change-TestByte $badArchive
     $badStage = New-StagePath 'wrong-archive'
-    Assert-Rejected 'wrong-archive-pin-rejected' { & $prepare -ArchivePath $badArchive -OutputRoot $badStage } 'Official NSIS setup archive differs from the repository-pinned record'
+    Assert-Rejected 'wrong-archive-pin-rejected' { & $prepare -ArchivePath $badArchive -OutputRoot $badStage @prepareArgs } 'Official NSIS setup archive differs from the repository-pinned record'
     Add-Check 'wrong-archive-rejected-before-output-creation' (-not (Test-Path -LiteralPath $badStage))
-    Assert-Rejected 'existing-output-rejected-first' { & $prepare -ArchivePath (Join-Path $OutputRoot 'absent.exe') -OutputRoot $goodStage } '^NSIS preparation output already exists\.$'
+    Assert-Rejected 'existing-output-rejected-first' { & $prepare -ArchivePath (Join-Path $OutputRoot 'absent.exe') -OutputRoot $goodStage @prepareArgs } '^NSIS preparation output already exists\.$'
     Assert-Rejected 'outside-output-root-rejected' { & $prepare -ArchivePath $ArchivePath -OutputRoot (Join-Path $OutputRoot 'dp1-nsis-distribution-escape') } '^OutputRoot must be '
     $linkStage = New-StagePath 'junction'
     $target = Join-Path $OutputRoot 'junction-target'; $null = New-Item -ItemType Directory -Path $target
     $null = New-Item -ItemType Junction -Path $linkStage -Target $target
-    Assert-Rejected 'reparse-output-rejected' { & $prepare -ArchivePath $ArchivePath -OutputRoot $linkStage } 'already exists|[Rr]eparse'
+    Assert-Rejected 'reparse-output-rejected' { & $prepare -ArchivePath $ArchivePath -OutputRoot $linkStage @prepareArgs } 'already exists|[Rr]eparse'
     $archiveLink = Join-Path $OutputRoot 'archive-link'; $null = New-Item -ItemType Junction -Path $archiveLink -Target $OutputRoot
     $linkedStage = New-StagePath 'archive-junction'
-    Assert-Rejected 'reparse-archive-ancestor-rejected' { & $prepare -ArchivePath (Join-Path $archiveLink 'wrong-archive.exe') -OutputRoot $linkedStage } '[Rr]eparse'
+    Assert-Rejected 'reparse-archive-ancestor-rejected' { & $prepare -ArchivePath (Join-Path $archiveLink 'wrong-archive.exe') -OutputRoot $linkedStage @prepareArgs } '[Rr]eparse'
     Add-Check 'reparse-archive-rejected-before-output-creation' (-not (Test-Path -LiteralPath $linkedStage))
 
     foreach ($case in @('extra-file', 'extra-directory', 'missing-file', 'changed-compiler', 'changed-stub')) {

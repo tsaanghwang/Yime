@@ -26,6 +26,7 @@
    双产品源码合约和 libIME2 修改边界。失败后不会启动后续 Windows 构建/回归。
 2. 原生编译、Go/Rust/Rime/词典检查、`nsis-preflight` 并行执行。
    NSIS 准备和编译区间的 PS5/PS7 回归在这里提前完成。
+   [固定 7-Zip 准备](CI_PINNED_SEVENZIP_FIX_2026-09-09.md)在独立目录提供原锁定解压器，避免 runner 预装版本变化使 NSIS 前置检查失败；相关回归也在这一步完成。
    `native-build` 保留真实 PE 依赖的 staged-installer-build 回归，并立即保存
    `yime-native-<SHA>` 工件。
 3. 上述检查全部成功后，普通 `contract-tests` 与 `dp1-long-contracts` 并行。

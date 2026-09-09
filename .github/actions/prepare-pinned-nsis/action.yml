@@ -8,6 +8,15 @@ outputs:
   archive-path:
     description: Hash-verified official setup archive, retained as data for regressions
     value: ${{ steps.prepare.outputs.archive-path }}
+  sevenzip-root:
+    description: Isolated hash-verified 7-Zip executable and parser library
+    value: ${{ steps.prepare.outputs.sevenzip-root }}
+  sevenzip-bootstrap:
+    description: Pinned standalone 7zr retained for regressions
+    value: ${{ steps.prepare.outputs.sevenzip-bootstrap }}
+  sevenzip-archive:
+    description: Pinned 7-Zip distribution retained as archive data
+    value: ${{ steps.prepare.outputs.sevenzip-archive }}
 runs:
   using: composite
   steps:
@@ -35,8 +44,15 @@ runs:
         [IO.Directory]::CreateDirectory($download) | Out-Null
         $archive = Join-Path $download 'nsis-3.12-setup.exe'
         Invoke-WebRequest -UserAgent 'curl/8.20.0' -Uri 'https://sourceforge.net/projects/nsis/files/NSIS%203/3.12/nsis-3.12-setup.exe/download?' -OutFile $archive
+        # The runner's preinstalled 7-Zip version is not a repository pin.
+        # Bootstrap with a pinned standalone decoder; never run either setup.
+        $bootstrap = Join-Path $download '7zr.exe'
+        $sevenZipArchive = Join-Path $download '7z2602-x64.exe'
+        Invoke-WebRequest -Uri 'https://github.com/ip7z/7zip/releases/download/26.02/7zr.exe' -OutFile $bootstrap
+        Invoke-WebRequest -Uri 'https://github.com/ip7z/7zip/releases/download/26.02/7z2602-x64.exe' -OutFile $sevenZipArchive
+        $sevenZip = & (Join-Path $repo 'tools\ci\prepare-pinned-sevenzip.ps1') -BootstrapPath $bootstrap -ArchivePath $sevenZipArchive -OutputRoot (Join-Path $parent ('dp1-sevenzip-distribution-' + $id))
         $output = Join-Path $parent ('dp1-nsis-distribution-' + $id)
-        $prepared = & (Join-Path $repo 'tools\ci\prepare-pinned-nsis.ps1') -ArchivePath $archive -OutputRoot $output
+        $prepared = & (Join-Path $repo 'tools\ci\prepare-pinned-nsis.ps1') -ArchivePath $archive -OutputRoot $output -SevenZipRoot $sevenZip.Root
         if ($prepared.Root -cne (Join-Path $output 'NSIS')) { throw 'Unexpected prepared NSIS root.' }
         # Stage on the destination volume before either rename. Preserve the old
         # distribution for diagnosis; never overlay or recursively delete it.
@@ -68,4 +84,7 @@ runs:
           Add-Content -LiteralPath $env:GITHUB_PATH -Value (Join-Path $destination 'Bin')
           Add-Content -LiteralPath $env:GITHUB_PATH -Value $destination
           Add-Content -LiteralPath $env:GITHUB_OUTPUT -Value ('archive-path=' + $archive)
+          Add-Content -LiteralPath $env:GITHUB_OUTPUT -Value ('sevenzip-root=' + $sevenZip.Root)
+          Add-Content -LiteralPath $env:GITHUB_OUTPUT -Value ('sevenzip-bootstrap=' + $bootstrap)
+          Add-Content -LiteralPath $env:GITHUB_OUTPUT -Value ('sevenzip-archive=' + $sevenZipArchive)
         } finally { Close-RimePimeNsisCompilerInputClosure $closure }
