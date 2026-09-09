@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 213)
-        self.assertEqual(len(self.receipt["source_manifest"]), 220)
+        self.assertEqual(len(contract["source_paths"]), 216)
+        self.assertEqual(len(self.receipt["source_manifest"]), 223)
         for path in (
             "version.txt",
             "PIMELauncher/build.rs",
@@ -195,6 +195,9 @@ class OwnershipTests(unittest.TestCase):
             "tools/dual-product/rime-pime-dp1u-native-probe.psm1",
             "tools/dual-product/test-rime-pime-dp1u-native-probe.ps1",
             "tools/dual-product/test-rime-pime-dp1u-native-candidate.ps1",
+            "tools/dual-product/rime-pime-dp1u-exact-file-removal.cs",
+            "tools/dual-product/rime-pime-dp1u-exact-file-removal.psm1",
+            "tools/dual-product/test-rime-pime-dp1u-exact-file-removal.ps1",
             "tools/yimecore/test-native-desktop-rehearsal.ps1",
             "tools/yimecore/test-local-product-build-result.ps1",
             "tools/yimecore/local12-maintenance-preparation.psm1",
@@ -604,6 +607,9 @@ class OwnershipTests(unittest.TestCase):
         self.assertTrue(status["rime_pime_dp1u_native_readonly_probe_source_contract_wired"])
         self.assertTrue(status["rime_pime_dp1u_native_readonly_probe_ci_ps5_ps7_present"])
         self.assertTrue(status["rime_pime_dp1u_native_candidate_ci_ps5_ps7_present"])
+        self.assertTrue(status["rime_pime_dp1u_exact_file_removal_source_contract_wired"])
+        self.assertTrue(status["rime_pime_dp1u_exact_file_removal_ci_ps5_ps7_present"])
+        self.assertFalse(status["rime_pime_dp1u_exact_file_removal_executed_by_baseline"])
         self.assertFalse(status["rime_pime_dp1u_native_readonly_probe_executed_by_baseline"])
         self.assertFalse(status["rime_pime_dp1u_native_execution_adapter_complete"])
         self.assertFalse(status["rime_pime_dp1u_isolated_preflight_test_executed_by_baseline"])
@@ -616,6 +622,22 @@ class OwnershipTests(unittest.TestCase):
         self.assertFalse(status["actual_uninstaller_executed"])
         self.assertFalse(status["actual_registry_mutation_executed"])
         self.assertFalse(status["actual_installed_runtime_examined"])
+
+    def test_dp1u_exact_removal_cannot_gain_path_delete_or_lose_either_host(self):
+        native = "tools/dual-product/rime-pime-dp1u-exact-file-removal.cs"
+        for token in ("File.Delete(path);", "Directory.Delete(root);", "MoveFileEx(a,b,4);"):
+            sources = self.maintenance_sources()
+            sources[native] += "\n" + token
+            with self.subTest(token=token), self.assertRaisesRegex(ValueError, "path-based deletion"):
+                subject.transaction_source_status(sources)
+        for host in ("ps5", "ps7"):
+            sources = self.maintenance_sources()
+            path = ".github/workflows/ci.yaml"
+            old = f"dp1-u-exact-removal-test-ci-{host}-$runId"
+            self.assertIn(old, sources[path])
+            sources[path] = sources[path].replace(old, "lost-host-boundary", 1)
+            with self.subTest(host=host), self.assertRaises(ValueError):
+                subject.transaction_source_status(sources)
 
     def test_dp1q_candidate_evidence_archive_is_wired_without_actual_archive_claim(self):
         status = self.receipt["transaction_source"]

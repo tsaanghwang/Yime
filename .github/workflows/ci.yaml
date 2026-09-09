@@ -518,6 +518,17 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-U native candidate test failed with exit code $LASTEXITCODE" }
           .\tools\dual-product\test-rime-pime-dp1u-native-candidate.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-native-candidate-test-ci-ps7-$runId")
+      - name: Test DP1-U native exact file removal
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $runId = [Guid]::NewGuid().ToString('N').Substring(0, 16)
+          $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          & $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\dual-product\test-rime-pime-dp1u-exact-file-removal.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-exact-removal-test-ci-ps5-$runId")
+          if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-U exact-removal test failed with exit code $LASTEXITCODE" }
+          .\tools\dual-product\test-rime-pime-dp1u-exact-file-removal.ps1 `
+            -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-exact-removal-test-ci-ps7-$runId")
       - name: Test DP1-U maintenance and Runtime admission gate
         shell: pwsh
         run: |

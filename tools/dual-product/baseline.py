@@ -328,6 +328,9 @@ def transaction_source_status(sources):
     dp1u_native_probe = sources["tools/dual-product/rime-pime-dp1u-native-probe.psm1"]
     dp1u_native_probe_test = sources["tools/dual-product/test-rime-pime-dp1u-native-probe.ps1"]
     dp1u_native_candidate_test = sources["tools/dual-product/test-rime-pime-dp1u-native-candidate.ps1"]
+    dp1u_exact_removal_native = sources["tools/dual-product/rime-pime-dp1u-exact-file-removal.cs"]
+    dp1u_exact_removal_module = sources["tools/dual-product/rime-pime-dp1u-exact-file-removal.psm1"]
+    dp1u_exact_removal_test = sources["tools/dual-product/test-rime-pime-dp1u-exact-file-removal.ps1"]
     receipt_v2_supersession = sources["tools/dual-product/rime-pime-receipt-v2-supersession.ps1"]
     receipt_v2_supersession_module = sources["tools/dual-product/rime-pime-receipt-v2-supersession.psm1"]
     receipt_v2_supersession_test = sources["tools/dual-product/test-rime-pime-receipt-v2-supersession.ps1"]
@@ -1287,6 +1290,20 @@ def transaction_source_status(sources):
     dp1u_isolated_preflight_source_contract_wired = True
     # These source checks cover the read-only collector, not native acceptance.
     dp1u_native_readonly_probe_source_contract_wired = True
+    # A fixture-scoped native primitive does not complete the installed executor.
+    if any(token in dp1u_exact_removal_native + dp1u_exact_removal_module for token in (
+        "File.Delete(", "[IO.File]::Delete", "Remove-Item", "MoveFileEx", "DeleteFileW",
+        "Directory.Delete(", "[IO.Directory]::Delete",
+    )):
+        fail("DP1-U exact removal gained a path-based deletion or reboot fallback")
+    if not all(token in dp1u_exact_removal_native for token in (
+        "SetFileInformationByHandle", "GetFileInformationByHandle", "GetFinalPathNameByHandle",
+    )) or not all(token in dp1u_exact_removal_module for token in (
+        "Open-RimePimeDp1UExactFileRemoval", "Invoke-RimePimeDp1UExactFileRemoval",
+        "Close-RimePimeDp1UExactFileRemoval", "dp1-u-exact-removal-",
+    )):
+        fail("DP1-U exact removal lost its handle or isolated entry boundary")
+    dp1u_exact_file_removal_source_contract_wired = True
     if core.index("New-Item -ItemType Directory -Path $stagingRoot") >= core.index("$preinstall = Invoke-UninstallCore"):
         fail("YimeCore active mutation moved before complete package staging")
     ci_postbuild_step = one(
@@ -1522,6 +1539,20 @@ def transaction_source_status(sources):
         ci,
         "CI DP1-U native candidate step",
     ).group()
+    ci_dp1u_exact_removal_step = one(
+        r"(?ms)^      - name: Test DP1-U native exact file removal\s*$.*?(?=^      - name: |\Z)",
+        ci,
+        "CI DP1-U native exact file removal step",
+    ).group()
+    dp1u_exact_file_removal_ci_ps5_ps7_present = (
+        ci_dp1u_exact_removal_step.count("test-rime-pime-dp1u-exact-file-removal.ps1") == 2 and
+        ci_dp1u_exact_removal_step.count("-OutputRoot") == 2 and
+        ".tmp\\dual-product\\dp1-u-exact-removal-test-ci-ps5-$runId" in ci_dp1u_exact_removal_step and
+        ".tmp\\dual-product\\dp1-u-exact-removal-test-ci-ps7-$runId" in ci_dp1u_exact_removal_step and
+        "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in ci_dp1u_exact_removal_step and
+        "PowerShell 5.1 DP1-U exact-removal test failed with exit code $LASTEXITCODE" in ci_dp1u_exact_removal_step and
+        re.search(r"(?m)^\s+(?:if|continue-on-error):|-(?:Skip|CheckPattern)\b", ci_dp1u_exact_removal_step) is None
+    )
     ci_core_desktop_rehearsal_step = one(
         r"(?ms)^      - name: Test YimeCore native desktop rollback rehearsal\s*$.*?(?=^      - name: |\Z)",
         ci,
@@ -2479,6 +2510,8 @@ def transaction_source_status(sources):
             not dp1u_native_readonly_probe_source_contract_wired or
             not dp1u_native_readonly_probe_ci_ps5_ps7_present or
             not dp1u_native_candidate_ci_ps5_ps7_present or
+            not dp1u_exact_file_removal_source_contract_wired or
+            not dp1u_exact_file_removal_ci_ps5_ps7_present or
             'InstallLayoutOrTip(w "${YIME_TIP}"' not in nsis or
             'Get-ChildItem -LiteralPath "Registry::HKEY_USERS"' in pime_cleanup):
         fail("Rime/PIME registration/SID/transaction status changed; dedicated review required")
@@ -2633,6 +2666,9 @@ def transaction_source_status(sources):
         "rime_pime_dp1u_native_readonly_probe_source_contract_wired": dp1u_native_readonly_probe_source_contract_wired,
         "rime_pime_dp1u_native_readonly_probe_ci_ps5_ps7_present": dp1u_native_readonly_probe_ci_ps5_ps7_present,
         "rime_pime_dp1u_native_candidate_ci_ps5_ps7_present": dp1u_native_candidate_ci_ps5_ps7_present,
+        "rime_pime_dp1u_exact_file_removal_source_contract_wired": dp1u_exact_file_removal_source_contract_wired,
+        "rime_pime_dp1u_exact_file_removal_ci_ps5_ps7_present": dp1u_exact_file_removal_ci_ps5_ps7_present,
+        "rime_pime_dp1u_exact_file_removal_executed_by_baseline": False,
         "rime_pime_dp1u_native_readonly_probe_executed_by_baseline": False,
         "rime_pime_dp1u_native_execution_adapter_complete": False,
         "rime_pime_dp1u_isolated_preflight_test_executed_by_baseline": False,
