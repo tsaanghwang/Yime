@@ -164,10 +164,14 @@ function ConvertTo-NPArgument([AllowEmptyString()][string]$Value) {
     return $text.ToString()
 }
 function Invoke-NPProcess([string]$File, [string[]]$Arguments, [string]$WorkingDirectory, [string]$Log) {
+    if (-not (Test-Path -LiteralPath $File -PathType Leaf)) { throw "Missing diagnostic executable: $File" }
+    if (-not (Test-Path -LiteralPath $WorkingDirectory -PathType Container)) { throw "Missing diagnostic working directory: $WorkingDirectory" }
     $info = [Diagnostics.ProcessStartInfo]::new()
     $info.FileName = $File
     $info.Arguments = (@($Arguments | ForEach-Object { ConvertTo-NPArgument $_ }) -join ' ')
     $info.WorkingDirectory = $WorkingDirectory
+    $header = "Executable: $File" + [Environment]::NewLine + "Working directory: $WorkingDirectory" + [Environment]::NewLine
+    [IO.File]::WriteAllText($Log, $header, [Text.UTF8Encoding]::new($false))
     $info.UseShellExecute = $false; $info.CreateNoWindow = $true
     $info.RedirectStandardOutput = $true; $info.RedirectStandardError = $true
     $process = [Diagnostics.Process]::new(); $process.StartInfo = $info
@@ -180,7 +184,7 @@ function Invoke-NPProcess([string]$File, [string[]]$Arguments, [string]$WorkingD
         $process.WaitForExit()
         $stdout = $stdoutTask.GetAwaiter().GetResult()
         $stderr = $stderrTask.GetAwaiter().GetResult()
-        [IO.File]::WriteAllText($Log, ($stdout + [Environment]::NewLine + $stderr), [Text.UTF8Encoding]::new($false))
+        [IO.File]::WriteAllText($Log, ($header + $stdout + [Environment]::NewLine + $stderr), [Text.UTF8Encoding]::new($false))
         if ($process.ExitCode -ne 0) {
             throw "Diagnostic child exited $($process.ExitCode); preserve log $Log. $stderr"
         }
@@ -240,7 +244,7 @@ function Invoke-YimeCoreNativeLearningProfile {
     if ($state.git_commit -cne $manifest.git_commit -or $state.git_dirty -ne $manifest.git_dirty) { throw 'Source provenance mismatch' }
     $checkSnapshot = { param($p,$s) Assert-NBRecords $p $s.files; Assert-NBNames @($s.files.path | Sort-Object) @(Get-NBFileNames $p) }
     & $guard $checkSnapshot $snapshot $state
-    $go = (Get-Command go -CommandType Application -ErrorAction Stop).Source
+    $go = (Get-Command go -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
     $lock = [IO.File]::Open((Join-Path $root 'native-benchmark.lock'), [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
     $run = $null; $old = $null; $before = $null; $failure = $null
     $allRecords = $null; $driverRecords = @(); $copy = $null; $exeHash = $null

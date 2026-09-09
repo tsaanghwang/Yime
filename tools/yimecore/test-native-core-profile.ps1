@@ -4,7 +4,8 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $diagnosticModule = Import-Module (Join-Path $PSScriptRoot 'native-core-profile.psm1') -Force -PassThru
-$work = Join-Path ([IO.Path]::GetTempPath()) ('Yime CPU fixture ' + [guid]::NewGuid().ToString('N'))
+$fixtureParent = if ($env:RUNNER_TEMP) { $env:RUNNER_TEMP } else { [IO.Path]::GetTempPath() }
+$work = Join-Path $fixtureParent ('Yime CPU fixture ' + [guid]::NewGuid().ToString('N').Substring(0,8))
 $null = New-Item -ItemType Directory -Path $work
 $utf8 = [Text.UTF8Encoding]::new($false)
 $originalPath = Join-Path $repo 'go-backend/cmd/yimecore-learning-experiment/main.go'
@@ -68,7 +69,7 @@ try {
     Assert-ProfileTest ($sanitized.Count -eq 1 -and $sanitized[0] -ceq $safeText) 'Share report leaked a local path'
     Write-Host 'CPU diagnostic PowerShell contracts passed.'
     if ($RunGoSmoke) {
-        $go = (Get-Command go -CommandType Application).Source
+        $go = (Get-Command go -CommandType Application | Select-Object -First 1).Source
         foreach ($name in @('GOOS','GOARCH','GOAMD64','CGO_ENABLED','GOWORK','GOFLAGS','GOENV','GOTOOLCHAIN','GOPROXY','GOSUMDB')) {
             $oldEnvironment[$name] = [Environment]::GetEnvironmentVariable($name,'Process')
         }
@@ -81,7 +82,7 @@ try {
         [IO.File]::WriteAllText($mainFile, $generated, $utf8)
         [IO.File]::WriteAllText($driverFile, $driver, $utf8)
         $exe = Join-Path $work 'diagnostic fixture.exe'; $indexExe = Join-Path $work 'index fixture.exe'
-        $runChild = { param($file,$arguments,$directory,$log) Invoke-NPProcess $file $arguments $directory $log }
+        $runChild = { param($file,$arguments,$directory,$log) Invoke-NPProcess -File $file -Arguments $arguments -WorkingDirectory $directory -Log $log }
         $null = & $diagnosticModule $runChild $go @('build','-trimpath','-buildvcs=false','-o',$exe,$mainFile,$driverFile) $working (Join-Path $work 'build.log')
         $null = & $diagnosticModule $runChild $go @('build','-trimpath','-buildvcs=false','-o',$indexExe,'./cmd/yimecore-index') $working (Join-Path $work 'index-build.log')
         $argumentSource = @'
@@ -137,6 +138,62 @@ func main() {
             Assert-ProfileTest ((Get-FileHash -LiteralPath $cpu -Algorithm SHA256).Hash.ToLowerInvariant() -ceq $profileHash) 'Existing CPU evidence was overwritten'
             Write-Host "Real Go CPU profile fixture passed: $mode"
         }
+        # Exercise the complete public orchestration against a synthetic package.
+        # Only hardware discovery and registry reads are stubbed in this private
+        # fixture module instance; production hashes, paths, build and pprof run.
+        $bench = Join-Path $work 'public flow'
+        $package = Join-Path $bench 'packages/fixture'
+        $preparation = Join-Path $bench 'preparations/fixture'
+        $snapshot = Join-Path $preparation 'source'
+        $null = New-Item -ItemType Directory -Force -Path $package,$snapshot
+        $copiedHelper = Join-Path $package 'native-core-benchmark.psm1'
+        Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'native-core-benchmark.psm1') -Destination $copiedHelper
+        $fixtureGuard = Import-Module $copiedHelper -PassThru
+        & $fixtureGuard {
+            function script:Get-NBHost { param($memory) [ordered]@{ fixture_only=$true; memory_profile='fixture' } }
+            function script:Get-NBRegistration { param($path) [pscustomobject]@{ fixture_only=$true; snapshot_sha256=('b' * 64) } }
+        }
+        $sourceFiles = @(Get-ChildItem -LiteralPath (Join-Path $repo 'go-backend') -Recurse -File -Filter '*.go')
+        $sourceFiles += Get-Item -LiteralPath (Join-Path $repo 'go-backend/go.mod')
+        foreach ($file in $sourceFiles) {
+            $relative = $file.FullName.Substring($repo.TrimEnd('\','/').Length+1)
+            $destination = Join-Path $snapshot $relative
+            $null = New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination)
+            Copy-Item -LiteralPath $file.FullName -Destination $destination
+        }
+        $sourceRecords = @(& $fixtureGuard { param($r) Get-NBFileNames $r | ForEach-Object { Get-NBFileRecord $r $_ } } $snapshot)
+        $state = [pscustomobject]@{ git_commit=('0' * 40); git_dirty=$false; files=$sourceRecords }
+        & $fixtureGuard { param($v,$p) Write-NBJson $v $p } $state (Join-Path $package 'source-state.json')
+        foreach ($relative in @('support/native-maintenance-evidence.psm1','performance-tiers.json','probes/e1_probes.json','probes/e2_sentence_probes.json')) {
+            $destination = Join-Path $package $relative
+            $null = New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination)
+            [IO.File]::WriteAllText($destination,'{}',$utf8)
+        }
+        foreach ($mode in @('full','variable','shorthand')) {
+            $destination = Join-Path $package "indexes/$mode.yidx"
+            $null = New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination)
+            Copy-Item -LiteralPath (Join-Path $work "$mode/fixture.yidx") -Destination $destination
+        }
+        foreach ($name in @('yimecore-index-bench','yimecore-learning-experiment')) {
+            $destination = Join-Path $package "bin/$name.exe"
+            $null = New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination)
+            Copy-Item -LiteralPath $indexExe -Destination $destination
+        }
+        $inventory = @(& $fixtureGuard { param($r) Get-NBFileNames $r | ForEach-Object { Get-NBFileRecord $r $_ } } $package)
+        $goVersion = (& $go version) -join ''
+        if ($LASTEXITCODE -ne 0) { throw 'Cannot read fixture Go version' }
+        $manifest = [ordered]@{schema_version='yimecore-native-core-benchmark-v1';target='mainstream_x64';
+            cpu_model='i7-7820X';installable=$false;build_passed=$true;files=$inventory;
+            package_id='fixture';git_commit=$state.git_commit;git_dirty=$false;go_version=$goVersion;preparation_evidence=$preparation}
+        $manifestPath = Join-Path $package 'package-manifest.json'
+        & $fixtureGuard { param($v,$p) Write-NBJson $v $p } $manifest $manifestPath
+        $manifestHash = (Get-FileHash -LiteralPath $manifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
+        $outcome = Invoke-YimeCoreNativeLearningProfile -PackageRoot $package -ManifestSHA256 $manifestHash -BenchmarkRoot $bench -Replays 250013
+        $summary = Get-Content -LiteralPath $outcome.SummaryPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        Assert-ProfileTest ($summary.diagnostic_complete -and -not $summary.eligible_for_acceptance -and $summary.rows.Count -eq 3) 'Public profile orchestration incomplete'
+        Assert-ProfileTest ($summary.package_unchanged -and $summary.source_unchanged -and $summary.protected_registration_unchanged) 'Public profile preservation failed'
+        Assert-ProfileTest (Test-Path -LiteralPath $outcome.ShareReport -PathType Leaf) 'Missing public share report'
+        Write-Host 'Public profiling orchestration fixture passed; hardware and registry checks were fixture stubs, not native acceptance.'
     }
     Assert-ProfileTest ((Get-FileHash -LiteralPath $originalPath -Algorithm SHA256).Hash -ceq $originalHash) 'Source entry point was changed'
     Write-Host 'CPU diagnostic checks complete. This is fixture evidence, not physical-host performance acceptance.'

@@ -53,7 +53,7 @@ jobs:
         if: failure()
         shell: pwsh
         run: |
-          Get-ChildItem -LiteralPath $env:RUNNER_TEMP -Directory -Filter 'Yime CPU fixture *' |
+          Get-ChildItem -LiteralPath @($env:RUNNER_TEMP, [IO.Path]::GetTempPath()) -Directory -Filter 'Yime CPU fixture *' |
             ForEach-Object {
               Get-ChildItem -LiteralPath $_.FullName -Recurse -File -Filter '*.log' |
                 ForEach-Object {
