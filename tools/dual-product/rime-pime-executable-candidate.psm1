@@ -67,6 +67,47 @@ function Get-CandidatePath([string]$Root, $Relative) {
     }
     Join-Path $Root $Relative.Replace('/', '\')
 }
+function Open-CandidateSourceEvidence([string]$SourceRoot,[object[]]$Records) {
+    # Provenance only: these default streams are never compiler inputs or copied
+    # by this helper. Preserve origin ADS; actual bundle/compiler leases remain
+    # subject to the strict no-ADS contract above and below.
+    Initialize-CandidateNative
+    $root=[IO.Path]::GetFullPath($SourceRoot).TrimEnd('\');$script:CandidateNative::CanonicalPath($root)
+    $leases=[Collections.Generic.List[object]]::new();$directories=[Collections.Generic.Dictionary[string,object]]::new([StringComparer]::OrdinalIgnoreCase)
+    $files=[Collections.Generic.List[object]]::new()
+    $openDirectory=$script:CandidateNative.GetMethod('OpenDirectory',[Reflection.BindingFlags]'NonPublic,Static')
+    $verify=$script:CandidateNative.GetMethod('Verify',[Reflection.BindingFlags]'NonPublic,Static')
+    try {
+        foreach($row in $Records){
+            Assert-CandidateObject $row @('path','bytes','sha256');Assert-CandidateHash $row.sha256
+            if($row.path -isnot [string] -or $row.path -cnotmatch '^[A-Za-z0-9_.+() -]+(?:/[A-Za-z0-9_.+() -]+)*$' -or
+                ($row.bytes -isnot [int] -and $row.bytes -isnot [long]) -or $row.bytes -lt 0 -or $row.bytes -gt 536870912){throw 'Invalid source provenance record.'}
+            foreach($part in $row.path.Split('/')){if($part -in @('.','..') -or $part -cne $part.Trim() -or $part.EndsWith('.') -or $part -match '^(?i:CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9])(?:\.|$)'){throw 'Ambiguous source provenance path.'}}
+            $path=Join-Path $root $row.path.Replace('/','\')
+            $pending=[Collections.Generic.Stack[string]]::new()
+            for($p=[IO.Path]::GetDirectoryName($path);$null -ne $p;$p=[IO.Path]::GetDirectoryName($p)){if($directories.ContainsKey($p)){break};$pending.Push($p)}
+            while($pending.Count){$p=$pending.Pop();$handle=$openDirectory.Invoke($null,[object[]]@([string]$p));$leases.Add($handle)
+                $id=$verify.Invoke($null,[object[]]@($handle,[string]$p,$true));$directories.Add($p,[pscustomobject]@{path=$p;id=$id;handle=$handle})}
+            $stream=[IO.File]::Open($path,'Open','Read','Read');$leases.Add($stream)
+            $id=$verify.Invoke($null,[object[]]@($stream.SafeFileHandle,[string]$path,$false))
+            $files.Add([pscustomobject]@{path=$path;bytes=[long]$row.bytes;sha256=[string]$row.sha256;id=$id;stream=$stream})
+        }
+        $result=[pscustomobject]@{files=$files;directories=$directories;leases=$leases;provenance_only=$true}
+        $null=Assert-CandidateSourceEvidence $result
+        return $result
+    }catch{foreach($lease in $leases){$lease.Dispose()};throw}
+}
+function Assert-CandidateSourceEvidence($Evidence) {
+    $verify=$script:CandidateNative.GetMethod('Verify',[Reflection.BindingFlags]'NonPublic,Static')
+    foreach($directory in $Evidence.directories.Values){if($verify.Invoke($null,[object[]]@($directory.handle,[string]$directory.path,$true)) -cne $directory.id){throw 'Source provenance directory identity changed.'}}
+    foreach($file in $Evidence.files){
+        if($verify.Invoke($null,[object[]]@($file.stream.SafeFileHandle,[string]$file.path,$false)) -cne $file.id){throw 'Source provenance identity changed.'}
+        $file.stream.Position=0;$sha=[Security.Cryptography.SHA256]::Create()
+        try{$hash=([BitConverter]::ToString($sha.ComputeHash($file.stream))).Replace('-','').ToLowerInvariant()}finally{$sha.Dispose();$file.stream.Position=0}
+        if($file.stream.Length -ne $file.bytes -or $hash -cne $file.sha256){throw ('Source provenance default stream differs: '+$file.path)}
+    }
+}
+function Close-CandidateSourceEvidence($Evidence) {foreach($lease in $Evidence.leases){$lease.Dispose()}}
 function Assert-CandidateManifest($Manifest) {
     Assert-CandidateObject $Manifest @('schema_version','product','product_version','architectures','installation_scope',
         'launcher_mode','maintenance_entry','registration_provider','runtime_provider','files','source_inventory_sha256',

@@ -10,7 +10,7 @@ if($ProductVersion -cnotmatch '^1\.4\.0-dev\.[1-9][0-9]*$' -or $ProductVersion -
 $candidateModule=Import-Module (Join-Path $PSScriptRoot 'rime-pime-executable-candidate.psm1') -Scope Local -PassThru
 Import-Module (Join-Path $PSScriptRoot 'rime-pime-postbuild-extraction.psm1') -Scope Local
 Import-Module (Join-Path $PSScriptRoot 'rime-pime-nsis-toolchain-closure.psm1') -Scope Local
-$leases=[Collections.Generic.List[object]]::new();$stage=$null;$bundleLease=$null
+$leases=[Collections.Generic.List[object]]::new();$stage=$null;$bundleLease=$null;$sourceEvidence=$null
 function Get-BuildHash([string]$Path){(Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()}
 function Write-BuildJson($Value,[string]$Path){$raw=[Text.UTF8Encoding]::new($false).GetBytes((ConvertTo-Json -InputObject $Value -Depth 70 -Compress)+"`n");$s=[IO.File]::Open($Path,'CreateNew','Write','None');try{$s.Write($raw,0,$raw.Length);$s.Flush($true)}finally{$s.Dispose()};Get-BuildHash $Path}
 function Assert-BuildPath([string]$Path){
@@ -20,11 +20,6 @@ function Assert-BuildPath([string]$Path){
     return $full
 }
 function Open-BuildFile([string]$Path,$Expected){$lease=Open-RimePimePostbuildReadLease -Path $Path -ExpectedRecord $Expected -Context 'candidate build input';$leases.Add($lease);return $lease}
-function Get-BuildSourcePath([string]$Relative){
-    if($Relative -cnotmatch '^[A-Za-z0-9_.+() -]+(?:/[A-Za-z0-9_.+() -]+)*$'){throw 'Non-literal source inventory path.'}
-    foreach($part in $Relative.Split('/')){if($part -in @('.','..') -or $part -cne $part.Trim() -or $part.EndsWith('.') -or $part -match '^(?i:CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9])(?:\.|$)'){throw 'Ambiguous source inventory path.'}}
-    return Join-Path $repo $Relative.Replace('/','\')
-}
 function Copy-BuildFile($Lease,[string]$Destination){$null=[IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($Destination));$s=[IO.File]::Open($Destination,'CreateNew','Write','None');try{$Lease.Stream.Position=0;$Lease.Stream.CopyTo($s);$s.Flush($true)}finally{$s.Dispose();$Lease.Stream.Position=0};if((Get-BuildHash $Destination) -cne $Lease.Record.sha256){throw 'Source payload copy changed.'}}
 try{
     $versionLease=Open-BuildFile (Join-Path $repo 'version.txt') $null
@@ -47,7 +42,7 @@ try{
     } $inventory
     $head=(& git -C $repo rev-parse HEAD).Trim();if($LASTEXITCODE -ne 0 -or $head -cne $inventory.source_commit){throw 'Source payload belongs to another source commit.'}
     # Bind every supplied source to actual current bytes; HEAD alone is insufficient.
-    foreach($row in $inventory.sources){$p=Get-BuildSourcePath $row.path;$null=Open-BuildFile $p $row}
+    $sourceEvidence=& $candidateModule {param($root,$rows)Open-CandidateSourceEvidence $root $rows} $repo $inventory.sources
     foreach($required in @('PIMELauncher/src/main.rs','PIMELauncher/Cargo.toml')){if(@($inventory.sources.path) -cnotcontains $required){throw 'Candidate feature build source evidence is missing.'}}
     $null=[IO.Directory]::CreateDirectory($out);$bundle=Join-Path $out 'bundle';$null=[IO.Directory]::CreateDirectory($bundle)
     foreach($row in $inventory.files){
@@ -91,6 +86,7 @@ try{
     $stage=Open-RimePimeMonitoredNsisStage (Join-Path $out 'NSIS');$makensis=Join-Path $stage.Root 'Bin\makensis.exe'
     $installer=Join-Path $out ('YIME-RimePime-'+$ProductVersion+'-candidate.exe');$nsisSource=Join-Path $repo 'installer\rime-pime-candidate.nsi'
     foreach($l in $leases){$null=Assert-RimePimePostbuildReadLease $l}
+    & $candidateModule {param($e)Assert-CandidateSourceEvidence $e} $sourceEvidence
     $saved=[Environment]::GetEnvironmentVariable('NSISDIR','Process');$env:NSISDIR=$stage.Root
     Push-Location (Join-Path $stage.Root 'Include')
     try{& $makensis '/NOCD' '/NOCONFIG' ('/DCANDIDATE_OUTPUT='+$installer) ('/DCANDIDATE_INCLUDE='+$includePath) ('/DCANDIDATE_MANIFEST_SHA256='+$manifestHash) $nsisSource;if($LASTEXITCODE -ne 0){throw 'Guarded candidate makensis failed.'}}
@@ -109,9 +105,10 @@ try{
     foreach($entry in $parsed.entries){if(-not $expected.ContainsKey($entry.path) -or -not $seen.Add($entry.path) -or ($null -ne $entry.bytes -and $entry.bytes -ne $expected[$entry.path].bytes)){throw ('Unlisted, duplicate or changed static archive member: '+$entry.path)};$v=Invoke-RimePimePostbuildSevenZipRawEntry -SevenZipLease $seven -SevenZipLibraryLease $sevenLib -ArchiveLease $installerLease -ArchivePath $entry.path -ExpectedRecord $expected[$entry.path] -Operation 'candidate raw payload';$verified.Add([pscustomobject][ordered]@{path=$entry.path;bytes=$v.bytes;sha256=$v.sha256})}
     $staticPath=Join-Path $out 'static-payload.json';$staticHash=Write-BuildJson @($verified|Sort-Object path -CaseSensitive) $staticPath
     foreach($l in $leases){$null=Assert-RimePimePostbuildReadLease $l}
+    & $candidateModule {param($e)Assert-CandidateSourceEvidence $e} $sourceEvidence
     $receipt=[pscustomobject][ordered]@{schema_version='yime-rime-pime-executable-build-receipt-v1';product='rime-pime';product_version=$ProductVersion;installer=[ordered]@{sha256=$installerLease.Record.sha256;bytes=$installerLease.Record.bytes};manifest_sha256=$manifestHash;source_inventory_sha256=$ExpectedSourceInventorySha256;build_sources=$buildSources;compiler_interval=$interval;static_payload=[ordered]@{verified=$true;member_count=$verified.Count;tree_sha256=$staticHash};makensis_sha256=(Get-BuildHash $makensis);nsis_toolchain_lock_sha256=$toolchain.Digest;signing_complete=$false;installed_acceptance_passed=$false;public_release_admitted=$false}
     $receiptPath=Join-Path $out 'executable-build-receipt.json';$receiptHash=Write-BuildJson $receipt $receiptPath
     Import-Module (Join-Path $PSScriptRoot 'rime-pime-executable-receipt.psm1') -Scope Local
     $null=Read-RimePimeExecutableReceipt -ReceiptPath $receiptPath -ExpectedReceiptSha256 $receiptHash -InstallerPath $installer -ExpectedInstallerSha256 $installerLease.Record.sha256 -ExpectedManifestSha256 $manifestHash
     [pscustomobject]@{installer_path=$installer;installer_sha256=$installerLease.Record.sha256;receipt_path=$receiptPath;receipt_sha256=$receiptHash;manifest_sha256=$manifestHash;source_inventory_sha256=$ExpectedSourceInventorySha256;source_build_candidate_prepared=$true;execution_authorized=$false;installer_executed=$false;uninstaller_executed=$false;installed_acceptance_passed=$false;public_release_admitted=$false}
-}finally{if($null -ne $bundleLease){Close-RimePimeExecutableCandidate $bundleLease};if($null -ne $stage){Close-RimePimeMonitoredNsisStage $stage};for($i=$leases.Count-1;$i -ge 0;$i--){$leases[$i].Stream.Dispose()}}
+}finally{if($null -ne $bundleLease){Close-RimePimeExecutableCandidate $bundleLease};if($null -ne $stage){Close-RimePimeMonitoredNsisStage $stage};if($null -ne $sourceEvidence){& $candidateModule {param($e)Close-CandidateSourceEvidence $e} $sourceEvidence};for($i=$leases.Count-1;$i -ge 0;$i--){$leases[$i].Stream.Dispose()}}

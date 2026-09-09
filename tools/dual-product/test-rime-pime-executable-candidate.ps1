@@ -70,6 +70,25 @@ Check 'duplicate json key rejected with matching outer digest' {
     [IO.File]::WriteAllText($path,('{"product":"rime-pime",'+$raw.Substring(1)),[Text.UTF8Encoding]::new($false))
     $case.hash=(Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant();Reject {Open-Case $case} 'Invalid transaction JSON'
 }
+Check 'source provenance retains origin ADS while pinning only default bytes' {
+    $case=New-Fixture;$path=Join-Path $case.root 'PIMELauncher.exe'
+    Set-Content -LiteralPath $path -Stream Zone.Identifier -Value 'owned origin metadata' -Encoding ASCII -NoNewline
+    $e=& $module {param($root,$rows)Open-CandidateSourceEvidence $root $rows} $case.root @($case.manifest.files[0])
+    try{& $module {param($v)Assert-CandidateSourceEvidence $v} $e;Assert ($e.provenance_only -and (Get-Content -LiteralPath $path -Stream Zone.Identifier -Raw) -ceq 'owned origin metadata') 'Source metadata changed.'}
+    finally{& $module {param($v)Close-CandidateSourceEvidence $v} $e}
+}
+Check 'actual payload continues to reject named streams' {
+    $case=New-Fixture;Set-Content -LiteralPath (Join-Path $case.root 'PIMELauncher.exe') -Stream Zone.Identifier -Value 'owned metadata' -Encoding ASCII -NoNewline
+    Reject {Open-Case $case} 'Named stream rejected'
+}
+Check 'source provenance blocks writes and rejects changed default bytes' {
+    $case=New-Fixture;$path=Join-Path $case.root 'PIMELauncher.exe'
+    $e=& $module {param($root,$rows)Open-CandidateSourceEvidence $root $rows} $case.root @($case.manifest.files[0])
+    try{Reject {[IO.File]::AppendAllText($path,'changed')} 'used by another process|being used|sharing|process cannot'}
+    finally{& $module {param($v)Close-CandidateSourceEvidence $v} $e}
+    [IO.File]::AppendAllText($path,'changed')
+    Reject {& $module {param($root,$rows)Open-CandidateSourceEvidence $root $rows} $case.root @($case.manifest.files[0])} 'default stream differs'
+}
 $result=[ordered]@{schema_version='yime-rime-pime-executable-candidate-reader-test-v1';passed=$true;checks=@($checks.ToArray());
     powershell_version=$PSVersionTable.PSVersion.ToString();installer_executed=$false;product_runtime_started=$false;
     production_registration_modified=$false;installed_local12_touched=$false;dp1_u_acceptance_passed=$false}
