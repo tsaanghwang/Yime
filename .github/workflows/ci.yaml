@@ -117,7 +117,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install pinned i686 host toolchain
-        run: rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
+        run: |
+          $installHelp = rustup toolchain install --help | Out-String
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect rustup toolchain install options.' }
+          $nonHostArgs = @()
+          if ($installHelp.Contains('--force-non-host')) { $nonHostArgs = @('--force-non-host') }
+          rustup toolchain install stable-i686-pc-windows-msvc --profile minimal @nonHostArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain installation failed.' }
+          rustup run stable-i686-pc-windows-msvc cargo --version
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain cannot execute.' }
       - name: Run Rust checks
         shell: pwsh
         run: |
@@ -224,7 +232,15 @@ jobs:
             }
           }
       - name: Install pinned i686 host toolchain
-        run: rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
+        run: |
+          $installHelp = rustup toolchain install --help | Out-String
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect rustup toolchain install options.' }
+          $nonHostArgs = @()
+          if ($installHelp.Contains('--force-non-host')) { $nonHostArgs = @('--force-non-host') }
+          rustup toolchain install stable-i686-pc-windows-msvc --profile minimal @nonHostArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain installation failed.' }
+          rustup run stable-i686-pc-windows-msvc cargo --version
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain cannot execute.' }
       - name: Verify vendored Win32 build dependencies
         run: python .\tools\verify_vendored_build_dependencies.py
       - name: Verify Win32 Rust and offline dependency pins

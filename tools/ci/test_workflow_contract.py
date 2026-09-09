@@ -70,6 +70,15 @@ def validate(text):
     require(needs(graph['release-installer-package']) == {'release-sign-payload', 'nsis-preflight'},
             'Tagged compiler preflight is not a prerequisite')
     native = graph['native-build']
+    for name in ('rust-i686-host', 'native-build'):
+        for command in ('rustup toolchain install --help',
+                        "$nonHostArgs = @()",
+                        "if ($installHelp.Contains('--force-non-host')) { $nonHostArgs = @('--force-non-host') }",
+                        'rustup toolchain install stable-i686-pc-windows-msvc --profile minimal @nonHostArgs',
+                        "if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain installation failed.' }",
+                        'rustup run stable-i686-pc-windows-msvc cargo --version',
+                        "if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain cannot execute.' }"):
+            require(command in graph[name], f'{name}: native i686 host installation compatibility lost')
     require('Stage native installer inputs' in native and
             'name: yime-native-${{ github.sha }}' in native,
             'Native checkpoint must be published in native-build')
@@ -105,6 +114,14 @@ class WorkflowContractTests(unittest.TestCase):
 
     def test_current_workflow(self):
         validate(self.text)
+
+    def test_i686_host_install_capability_and_execution_cannot_disappear(self):
+        for name in ('rust-i686-host', 'native-build'):
+            for command in ("$nonHostArgs = @()", "if ($installHelp.Contains('--force-non-host')) { $nonHostArgs = @('--force-non-host') }",
+                            'rustup toolchain install stable-i686-pc-windows-msvc --profile minimal @nonHostArgs',
+                            'rustup run stable-i686-pc-windows-msvc cargo --version'):
+                with self.subTest(job=name, command=command):
+                    self.reject_in_job(name, command, '')
 
     def reject_in_job(self, name, before, after):
         block = jobs(self.text)[name]
