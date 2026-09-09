@@ -72,7 +72,7 @@ try{
     # Exact paths only; unknown payload members can never be discovered by File /r.
     $includePath=Join-Path $out 'candidate-payload.nsh';$lines=[Collections.Generic.List[string]]::new()
     $archiveRows=@($files)+@([pscustomobject]@{path='candidate.json';bytes=[long](Get-Item -LiteralPath $manifestPath).Length;sha256=$manifestHash})
-    foreach($row in $archiveRows){$dir=[IO.Path]::GetDirectoryName($row.path.Replace('/','\'));$path=Join-Path $bundle $row.path.Replace('/','\');$leaf=[IO.Path]::GetFileName($path);$lines.Add(('SetOutPath "$PLUGINSDIR\bundle'+$(if($dir){'\'+$dir}else{''})+'"'));$lines.Add(('File /oname="'+$leaf+'" "'+$path+'"'))}
+    foreach($row in $archiveRows){$dir=[IO.Path]::GetDirectoryName($row.path.Replace('/','\'));$path=Join-Path $bundle $row.path.Replace('/','\');$leaf=[IO.Path]::GetFileName($path);$lines.Add(('SetOutPath "$PLUGINSDIR\bundle'+$(if($dir){'\'+$dir}else{''})+'"'));$lines.Add(('File "/oname='+$leaf+'" "'+$path+'"'))}
     [IO.File]::WriteAllText($includePath,($lines -join "`r`n")+"`r`n",[Text.UTF8Encoding]::new($false));$null=Open-BuildFile $includePath $null
     $buildRelative=@('version.txt','tools/dual-product/build-rime-pime-executable-candidate.ps1','installer/rime-pime-candidate.nsi','tools/verify-pe-architectures.ps1','tools/dual-product/rime-pime-executable-receipt.psm1','tools/dual-product/rime-pime-executable-candidate.psm1',
         'tools/dual-product/rime-pime-nsis-toolchain-closure.psm1','tools/dual-product/rime-pime-nsis-toolchain-closure.ps1','tools/dual-product/rime-pime-nsis-compiler-interval.ps1','tools/dual-product/rime-pime-nsis-membership-monitor-v1.ps1',

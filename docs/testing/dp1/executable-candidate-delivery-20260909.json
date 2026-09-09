@@ -1,0 +1,94 @@
+{
+  "schema_version": "yime-rime-pime-executable-candidate-delivery-v1",
+  "product": "rime-pime",
+  "product_version": "1.4.0-dev.1",
+  "runtime_source_commit": "2c4cb250f79f652bbd86b1fda3f2575d371881c7",
+  "builder_source_binding": "Exact build_sources hashes in the build receipt include the subsequently committed NSIS oname quoting fix. Runtime source commit alone does not identify the entire build implementation.",
+  "artifacts": {
+    "installer": {
+      "path": ".tmp/dual-product/dp1-package-build-stage-executable-20260909-3/YIME-RimePime-1.4.0-dev.1-candidate.exe",
+      "bytes": 41404929,
+      "sha256": "3096da82a02e78b1d411ea554fcc9eeaddb45e6c6c746be64b803a261d2b65fa"
+    },
+    "receipt": {
+      "path": ".tmp/dual-product/dp1-package-build-stage-executable-20260909-3/executable-build-receipt.json",
+      "bytes": 3942,
+      "sha256": "a86cf1112c3b947bd3b3cbc0c2e962d05dddf50b3002193d9f9dff333fdf037c"
+    },
+    "manifest": {
+      "path": ".tmp/dual-product/dp1-package-build-stage-executable-20260909-3/bundle/candidate.json",
+      "bytes": 29389,
+      "sha256": "689d8252d79587e5f9880405f746ac810ab48016966b82e9a413959e45ed3928"
+    },
+    "static_payload": {
+      "path": ".tmp/dual-product/dp1-package-build-stage-executable-20260909-3/static-payload.json",
+      "bytes": 32570,
+      "sha256": "ff26da68e808e36b1efbdf88039cffefa284b8049b8c4e46f164a1eb15bc8c33"
+    },
+    "source_baseline": {
+      "path": ".tmp/dual-product/dp1-executable-delivery-source-20260909/baseline.json",
+      "bytes": 55265,
+      "sha256": "c4ebbc28c3e0224a75f3f8f59a9b7298a3ce2090cb41075bd9afc345999ecce5"
+    },
+    "source_inventory": {
+      "path": ".tmp/dual-product/dp1-package-build-stage-executable-20260909-3/bundle/source-payload-inventory.json",
+      "bytes": 392024,
+      "sha256": "3d99f531b75603fe0b0d26f56bf4732393e909a2968946a2b86be616dd8c3fe7"
+    }
+  },
+  "compiler_interval": {
+    "schema_version": "yime-rime-pime-nsis-compiler-membership-interval-v1",
+    "armed_before_baseline": true,
+    "completion_barrier_after_compiler_exit": true,
+    "unexpected_membership_event_count": 0,
+    "notification_batch_count": 1,
+    "physical_membership_prevention_claimed": false,
+    "active_same_sid_transient_tree_membership_interference_excluded": false,
+    "nsis_non_os_compiler_input_closure": false,
+    "full_nsis_toolchain_input_closure": false
+  },
+  "static_member_count": 189,
+  "regression_index": "docs/testing/dp1/executable-candidate-regressions-20260909.json",
+  "installer_executed": false,
+  "uninstaller_executed": false,
+  "product_runtime_executed": false,
+  "local12_touched": false,
+  "signing_complete": false,
+  "installed_acceptance_passed": false,
+  "dp1_u_acceptance_passed": false,
+  "public_release_admitted": false,
+  "actual_package_readonly_verifications": [
+    {
+      "path": ".tmp/dual-product/dp1-package-build-stage-executable-20260909-3/verification-ps5.json",
+      "bytes": 623,
+      "sha256": "9ed6803de4f5348577ca6598d936dc61ac31d9075b53e16bac45fb10437b7af7",
+      "schema_version": "yime-rime-pime-actual-candidate-read-verification-v1",
+      "powershell": "5.1.26100.9444",
+      "passed": true
+    },
+    {
+      "path": ".tmp/dual-product/dp1-package-build-stage-executable-20260909-3/verification-ps7.json",
+      "bytes": 578,
+      "sha256": "ee81bc898cd05bc568ed19e3a7a2fcca365b333ab7a1aab14c34a1d2752c5301",
+      "schema_version": "yime-rime-pime-actual-candidate-read-verification-v1",
+      "powershell": "7.6.5",
+      "passed": true
+    },
+    {
+      "path": ".tmp/dual-product/dp1-package-build-stage-executable-20260909-3/verification-bundle-dependencies-ps5.json",
+      "bytes": 2354,
+      "sha256": "58a3b261638dd8df7aeabc5cfbf711571997a82f9627c609cef89c7877aadf4f",
+      "schema_version": "yime-rime-pime-actual-bundle-import-verification-v1",
+      "powershell": "5.1.26100.9444",
+      "passed": true
+    },
+    {
+      "path": ".tmp/dual-product/dp1-package-build-stage-executable-20260909-3/verification-bundle-dependencies-ps7.json",
+      "bytes": 1646,
+      "sha256": "5392abcb42a176b66b31ceb8e140a63093c3906043d5c6681c4688de3c90f42f",
+      "schema_version": "yime-rime-pime-actual-bundle-import-verification-v1",
+      "powershell": "7.6.5",
+      "passed": true
+    }
+  ]
+}

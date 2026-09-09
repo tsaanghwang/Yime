@@ -1,0 +1,121 @@
+{
+  "schema_version": "yime-rime-pime-executable-candidate-regressions-v1",
+  "source_commit": "2c4cb250f79f652bbd86b1fda3f2575d371881c7",
+  "evidence": [
+    {
+      "suite": "reader",
+      "shell": "PS5",
+      "passed": true,
+      "test_count": 19,
+      "path": ".tmp/dual-product/dp1-executable-candidate-test-7adfa798ecae4300918f80426ed912bd/result.json",
+      "bytes": 3518,
+      "sha256": "98aa108e6e6d99fe3b72bf0111eb04b3220e87d823334da29bedcf0a4cb447ed"
+    },
+    {
+      "suite": "reader",
+      "shell": "PS7",
+      "passed": true,
+      "test_count": 19,
+      "path": ".tmp/dual-product/dp1-executable-candidate-test-0a61730e0325499ea21275e37ee8bd88/result.json",
+      "bytes": 2215,
+      "sha256": "c28126d51203cf4fbd2a5454c0ade185aa0dfcc28fbce34eeddc237323cc8bb5"
+    },
+    {
+      "suite": "maintenance",
+      "shell": "PS5",
+      "passed": true,
+      "test_count": 13,
+      "path": ".tmp/dual-product/dp1-candidate-maintenance-test-31f4be22e08f4863aa0280da8960e1c4/result.json",
+      "bytes": 2986,
+      "sha256": "1c5fa56182a0b74764a2ed2f5fed9c6166fa2b9c85be3072c94b47fd187cab2d"
+    },
+    {
+      "suite": "maintenance",
+      "shell": "PS7",
+      "passed": true,
+      "test_count": 13,
+      "path": ".tmp/dual-product/dp1-candidate-maintenance-test-c50bd9be3d0448c18ee2005bd2c36b08/result.json",
+      "bytes": 2073,
+      "sha256": "5fa1ab870a14ec8b6bd53eb57a4ca4986ad92171384585fb38c7c77ffbfe41cc"
+    },
+    {
+      "suite": "registration",
+      "shell": "PS5",
+      "passed": true,
+      "test_count": 29,
+      "path": ".tmp/dual-product/dp1-u-candidate-registration-test-final-atomic-ps5-20260909-1300/result.json",
+      "bytes": 5551,
+      "sha256": "fc223bda9beb04ba1cd64a90aea27b581739969aaf7a1747ae1099b8fe4924c7"
+    },
+    {
+      "suite": "registration",
+      "shell": "PS7",
+      "passed": true,
+      "test_count": 29,
+      "path": ".tmp/dual-product/dp1-u-candidate-registration-test-final-atomic-ps7-20260909-1300/result.json",
+      "bytes": 3570,
+      "sha256": "c64afda8c928701fc773c99aae9796aacaa7264a6adaf9137f7f27649ed87a1a"
+    },
+    {
+      "suite": "coordinator",
+      "shell": "PS5",
+      "passed": true,
+      "test_count": 19,
+      "path": ".tmp/dual-product/coordinator-test-bd84c397ff0c49718ee1b70aae40caf8/result.json",
+      "bytes": 3545,
+      "sha256": "671c82568b4507f01e2216ba0afcf98aabd5c370b360838851c11508b624a8ad"
+    },
+    {
+      "suite": "coordinator",
+      "shell": "PS7",
+      "passed": true,
+      "test_count": 19,
+      "path": ".tmp/dual-product/coordinator-test-c8d0ce34c8254a46a62cd5fa0df1470b/result.json",
+      "bytes": 2162,
+      "sha256": "7a250c32bfb6c78afe25f22a5270bb1ea3541894a27c33eba0ad095e53bac010"
+    },
+    {
+      "suite": "receipt",
+      "shell": "PS5",
+      "passed": true,
+      "test_count": 26,
+      "path": ".tmp/dual-product/executable-receipt-test-091e266c76db44d69e0ce69cb0df9791/result.json",
+      "bytes": 4238,
+      "sha256": "42c29ebdb36536d5bd737f23d9bada79449691bd1d014e56ad50de1e507bf98a"
+    },
+    {
+      "suite": "receipt",
+      "shell": "PS7",
+      "passed": true,
+      "test_count": 26,
+      "path": ".tmp/dual-product/executable-receipt-test-223f25e60fd94c80a7ec5fe142a01d47/result.json",
+      "bytes": 2368,
+      "sha256": "671dcae0049a0913f8c128563d93f1f582953138b160ea09bf48693c758ca1b7"
+    },
+    {
+      "suite": "runtime",
+      "shell": "PS5",
+      "passed": true,
+      "test_count": 37,
+      "path": ".tmp/candidate-runtime-ps5-final37/result.json",
+      "bytes": 5840,
+      "sha256": "34e39f074adc10b842ef6fac796e0b1363e8bd5b2ac34a3a96f36ad8b2556c1a"
+    },
+    {
+      "suite": "runtime",
+      "shell": "PS7",
+      "passed": true,
+      "test_count": 37,
+      "path": ".tmp/candidate-runtime-ps7-final37/result.json",
+      "bytes": 3492,
+      "sha256": "63f8472a1491c8f110a37ad070a6d23e075a1707c30e49b093326430f49867fc"
+    }
+  ],
+  "total_checks_per_shell": 143,
+  "registration_and_runtime_product_operations_mocked": true,
+  "owned_native_process_file_pipe_tests_executed": true,
+  "installer_executed": false,
+  "installed_acceptance_passed": false,
+  "dp1_u_acceptance_passed": false,
+  "public_release_admitted": false
+}
