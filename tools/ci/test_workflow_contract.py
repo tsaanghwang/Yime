@@ -120,7 +120,7 @@ def validate(text):
     require('test-local13-maintenance-preparation.ps1' not in graph['contract-tests'],
             'Controller policy should run once per shell in cheap preflight')
     long = graph['dp1-long-contracts']
-    require('      fail-fast: true\n      max-parallel: 2\n' in long,
+    require('      fail-fast: true\n      max-parallel: 6\n' in long,
             'Long fixtures must stop sibling work on failure and bound parallelism')
     require('shell: [powershell, pwsh]' in long, 'Both PowerShell hosts are required')
     # Concurrency is deliberately separate per event; PR merge commits are not
@@ -199,7 +199,8 @@ class WorkflowContractTests(unittest.TestCase):
 
     def test_matrix_limits_and_timeout_cannot_disappear(self):
         for before, after in [('fail-fast: true', 'fail-fast: false'),
-                              ('max-parallel: 2', 'max-parallel: 6'),
+                              ('max-parallel: 6', 'max-parallel: 2'),
+                              ('max-parallel: 6', 'max-parallel: 7'),
                               ('shell: [powershell, pwsh]', 'shell: [pwsh]'),
                               ('timeout-minutes: 60', 'timeout-minutes: 360')]:
             self.reject_in_job('dp1-long-contracts', before, after)

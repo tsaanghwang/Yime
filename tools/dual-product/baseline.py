@@ -1381,7 +1381,7 @@ def transaction_source_status(sources):
     expected_long_strategy = (
         "    strategy:\n"
         "      fail-fast: true\n"
-        "      max-parallel: 2\n"
+        "      max-parallel: 6\n"
         "      matrix:\n"
         "        suite: [installer-transaction, receipt-store, evidence-archive]\n"
         "        shell: [powershell, pwsh]\n"
