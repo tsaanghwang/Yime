@@ -8,7 +8,7 @@
   "x86_execution_model": "Win32 user-mode TSF surfaces in WOW64 applications on this AMD64 development machine; the shared core runtime and Broker remain native x64.",
   "parallel_workstreams": ["x64_daily_use_and_sealing", "x86_wow64_surface_build_package_host_acceptance", "mainstream_x64_experiment", "arm64_experiment"],
   "experiment_targets": [
-    {"id": "mainstream_x64", "architecture": "x64", "go_arch": "amd64", "cmake_platform": "x64", "status": "active", "physical_host": null},
+    {"id": "mainstream_x64", "architecture": "x64", "go_arch": "amd64", "cmake_platform": "x64", "status": "active", "physical_host": {"computer_name": "计算机", "cpu": "Intel Core i7-7820X", "owner": "developer", "approved_uses": ["source_build", "isolated_native_contracts", "target_package_transactions"]}},
     {"id": "arm64", "architecture": "arm64", "go_arch": "arm64", "cmake_platform": "ARM64", "status": "active", "physical_host": null}
   ],
   "experiment_entrypoint": "run-platform-experiment.ps1",

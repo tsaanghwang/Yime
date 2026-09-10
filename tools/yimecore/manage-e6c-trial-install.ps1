@@ -29,6 +29,7 @@ $script:rehearsalOutcomeExitCode = 1
 # Assert-Package makes its functions disappear when that function returns,
 # leaving a later runtime-start transaction without Assert-YimeCorePlainPath.
 . (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
+. (Join-Path $PSScriptRoot 'development-scope.ps1')
 $NativeLocalProduct = [bool]($NativeX64Only -or $NativeDesktop)
 if ($NativeX64Only -and $NativeDesktop) { throw 'Choose exactly one local-product architecture mode.' }
 function Assert-NativeDesktopRehearsalOptions {
@@ -137,9 +138,9 @@ if ($NativeLocalProduct -and $Action -ne 'Plan') {
     if ($StandardUserInitiator) { $env:YIMECORE_MAINTENANCE_INITIATOR=$StandardUserInitiator }
 }
 if ($NativeLocalProduct -and ($NativeX64Rehearsal -or $nativeArchitecture -ne 'AMD64' -or
-    -not [Environment]::Is64BitProcess -or $env:COMPUTERNAME -ne 'MYCOMPUTER' -or $PurgeUserData -or
+    -not [Environment]::Is64BitProcess -or $PurgeUserData -or
     ($Action -eq 'Install' -and $NoLaunch))) {
-    throw 'Native local-product maintenance requires MYCOMPUTER native x64, preserved user data, and is not a fault-rehearsal mode.'
+    throw 'Native local-product maintenance requires native x64, preserved user data, and is not a fault-rehearsal mode.'
 }
 if ($NativeLocalProduct -and $Action -ne 'Plan' -and
     $stateRootPath -ine [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'YimeCore Experimental Trial'))) {
@@ -1031,9 +1032,19 @@ function Remove-TrialRegistration([string[]]$installRoots) {
 		if ([string]::IsNullOrWhiteSpace($tool)) {
 			throw "$name current-identity TSF unregister tool is unavailable; installation files were preserved"
 		}
-		$output = (& $tool unregister 2>&1) -join "`n"
+		$statusText = (& $tool status 2>&1) -join "`n"
 		if ($LASTEXITCODE -ne 0) {
-			throw "$name TSF unregister failed with exit ${LASTEXITCODE}: $output"
+			throw "$name TSF pre-unregister status failed with exit ${LASTEXITCODE}: $statusText"
+		}
+		$status = Convert-RegistrationStatus $statusText
+		$alreadyAbsent = [string]$status.com_registered_current_view -ceq 'false' -and
+			[string]$status.profile_registered -ceq 'false' -and
+			[int]$status.categories_registered_count -eq 0
+		if (-not $alreadyAbsent) {
+			$output = (& $tool unregister 2>&1) -join "`n"
+			if ($LASTEXITCODE -ne 0) {
+				throw "$name TSF unregister failed with exit ${LASTEXITCODE}: $output"
+			}
 		}
 		Wait-RegistrationState $tool $false $false 0
 		$verification = (& $tool verify-absent 2>&1) -join "`n"
@@ -1263,7 +1274,14 @@ function Start-TrialRuntime($config) {
                             }
                         }
                         if (-not $verified) { throw 'Runtime live identity missing after standard-user launch.' }
-                        $health=Assert-LocalProductStartedHealth $startupPackage $config $process $status.broker_pid $TargetUserSid
+                        try {
+                            $health=Assert-LocalProductStartedHealth $startupPackage $config $process $status.broker_pid $TargetUserSid
+                        } catch {
+                            if (-not (Test-LocalProductStartupHealthPending $_.Exception) -or
+                                $process.HasExited -or [DateTime]::UtcNow -ge $deadline) { throw }
+                            Start-Sleep -Milliseconds 100
+                            continue
+                        }
                         if($null -ne $health){$status|Add-Member -NotePropertyName startup_health -NotePropertyValue $health -Force}
                     }
                     return $status
@@ -1358,6 +1376,15 @@ function Restore-PreviousInstallation([string]$root, [string]$configText,
     }
 }
 
+if ($NativeLocalProduct -and $Action -ne 'Plan') {
+    $scopePackage=Assert-Package $PackageRoot
+    $experimentTarget=[string]$scopePackage.manifest.experiment_target
+    if ($experimentTarget) {
+        $null=Get-YimeCoreExperimentBuildScope $experimentTarget
+    } else {
+        $null=Get-YimeCoreDevelopmentScope
+    }
+}
 if ($Action -ne 'Plan' -and -not (Test-Administrator)) {
     if ($NoElevation) { throw "$Action requires an elevated administrator token" }
     Restart-Elevated

@@ -1,5 +1,6 @@
 [CmdletBinding()]
-param([string]$OutputRoot,[string]$SpeechAdmissionRoot,[string]$ExpectedSpeechAdmissionSummarySha256,[string]$ExpectedSpeechSourceInventorySha256)
+param([string]$OutputRoot,[string]$SpeechAdmissionRoot,[string]$ExpectedSpeechAdmissionSummarySha256,[string]$ExpectedSpeechSourceInventorySha256,
+    [ValidateSet('mainstream_x64')][string]$ExperimentTarget)
 
 $ErrorActionPreference = 'Stop'
 function Assert-LocalProductMaintenanceHealthBuildInputs($Product) {
@@ -43,17 +44,19 @@ function Assert-LocalProductMaintenanceHealthBuildInputs($Product) {
 . (Join-Path $PSScriptRoot 'local-product-build-common.ps1')
 . (Join-Path $PSScriptRoot 'local-product-speech-build.ps1')
 . (Join-Path $PSScriptRoot 'local-product-test-isolation.ps1')
-$scope = Get-YimeCoreDevelopmentScope
+$scope = if ($ExperimentTarget) { Get-YimeCoreExperimentBuildScope $ExperimentTarget } else { Get-YimeCoreDevelopmentScope }
 Assert-YimeCoreNativeGo
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $descriptorPath = Join-Path $PSScriptRoot 'local-product.json'
 $product = Get-LocalProductDescriptor $descriptorPath
 $maintenanceHealthRequested = Assert-LocalProductMaintenanceHealthBuildInputs $product
 $speechRequested = Assert-LocalProductSpeechBuildInputs $product $SpeechAdmissionRoot $ExpectedSpeechAdmissionSummarySha256 $ExpectedSpeechSourceInventorySha256
+$nativeGenerator = if ($ExperimentTarget) { 'Visual Studio 18 2026' } else { 'Visual Studio 17 2022' }
 if (-not $OutputRoot) {
-    $OutputRoot = Join-Path $repoRoot ('.tmp\yimecore-local-product\' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,8))
+    $base = if ($ExperimentTarget) { '.tmp\yimecore-platform-experiments\mx64-package-' } else { '.tmp\yimecore-local-product\' }
+    $OutputRoot = Join-Path $repoRoot ($base + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,8))
 }
-$out = New-LocalProductBuildRoot $repoRoot $OutputRoot
+$out = New-LocalProductBuildRoot $repoRoot $OutputRoot $ExperimentTarget
 Start-Transcript -LiteralPath (Join-Path $out 'transcript.txt') | Out-Null
 $passed = $false
 $before = $null
@@ -124,7 +127,7 @@ try {
         $name = [string]$native.name
         $nativeBuild = Join-Path $out "native-$name"
         & cmake -S (Join-Path $repoRoot 'YimeTextServiceExperiment') -B $nativeBuild `
-            -G 'Visual Studio 17 2022' -A ([string]$native.platform) -DYIME_LOCAL_PRODUCT=ON
+            -G $nativeGenerator -A ([string]$native.platform) -DYIME_LOCAL_PRODUCT=ON
         if ($LASTEXITCODE -ne 0) { throw "Native $name configure failed" }
         & cmake --build $nativeBuild --config Release --parallel
         if ($LASTEXITCODE -ne 0) { throw "Native $name build failed" }
@@ -218,7 +221,7 @@ try {
         schema_version = 'yimecore-local-build-inputs-v1'; product_version = $product.version
         source_manifest_sha256 = $sourceHash; go_version = $goVersion; go_environment = $goEnvironment
         go_flags = @('-trimpath', '-buildvcs=false'); cmake_version = @(& cmake --version)[0]
-        native_generator = 'Visual Studio 17 2022'; native_platforms = $nativePlatforms
+        native_generator = $nativeGenerator; native_platforms = $nativePlatforms
         index_builds = $indexEvidence; indexes_rebuilt_byte_identical = $true
         source_archive_sha256 = (Get-FileHash -LiteralPath (Join-Path $out 'source-snapshot.zip')).Hash.ToLowerInvariant()
         reproducibility = 'Go trimpath and explicit source content; indexes verified twice. PE/linker timestamps, archive timestamps, generated metadata and absolute build evidence are not claimed byte reproducible.'
@@ -230,7 +233,8 @@ try {
         tool_version = 'yimecore-local-builder-v1'; package_contract = $product.package_contract
         product_version = $product.version; package_id = "yimecore-local-$($product.version)-$($sourceHash.Substring(0,12))"
         generated_at = [DateTime]::UtcNow.ToString('o'); git_commit = $commit
-        scope = 'MYCOMPUTER native x64 runtime with current-identity x64 and x86 TSF surfaces; installed acceptance pending; frozen targets untouched'
+        scope = if ($ExperimentTarget) { 'Approved mainstream_x64 test-machine experiment: current-identity x64 Runtime/Broker plus x64/x86 TSF surfaces; not installed or registered; frozen payloads untouched' } else { 'MYCOMPUTER native x64 runtime with current-identity x64 and x86 TSF surfaces; installed acceptance pending; frozen targets untouched' }
+        experiment_target = $ExperimentTarget
         development_scope = $scope; source_manifest_sha256 = $sourceHash
         files = @(Get-LocalProductPayloadRecords $package)
     }
@@ -242,7 +246,7 @@ try {
         -MultimodeVerifier (Join-Path $buildTools 'MultimodeVerifier.exe') -TsfTests @{
             x64=(Join-Path $nativeReleases['x64'] 'YimeTsfCompositionTests.exe')
             x86=(Join-Path $nativeReleases['x86'] 'YimeTsfCompositionTests.exe')
-        }
+        } -ExperimentTarget $ExperimentTarget
     Assert-LocalProductSourceUnchanged $repoRoot $sourceRecords
     Assert-LocalProductSourceSet $paths @(Get-LocalProductSourcePaths $repoRoot $product)
     # Re-audit after execution: runtime/test output must not mutate package payload.

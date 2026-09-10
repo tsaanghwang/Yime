@@ -71,6 +71,24 @@ function Get-YimeCoreExperimentTarget([string]$Target) {
     return $match[0]
 }
 
+function Get-YimeCoreExperimentBuildScope([string]$Target) {
+    $targetConfig = Get-YimeCoreExperimentTarget $Target
+    if ($Target -eq 'arm64') { return Get-YimeCoreDevelopmentScope }
+    $nativeArchitecture = if ($env:PROCESSOR_ARCHITEW6432) { $env:PROCESSOR_ARCHITEW6432 } else { $env:PROCESSOR_ARCHITECTURE }
+    $physicalHost = $targetConfig.physical_host
+    if ($Target -ne 'mainstream_x64' -or $null -eq $physicalHost -or $physicalHost.computer_name -cne $env:COMPUTERNAME -or
+        $physicalHost.owner -cne 'developer' -or @($physicalHost.approved_uses).Count -ne 3 -or
+        (@($physicalHost.approved_uses) -join '|') -cne 'source_build|isolated_native_contracts|target_package_transactions' -or
+        $nativeArchitecture -ne 'AMD64' -or -not [Environment]::Is64BitProcess) {
+        throw 'The mainstream_x64 experiment build requires its identified developer-owned AMD64 physical host and 64-bit PowerShell.'
+    }
+    [ordered]@{
+        id = 'yimecore-mainstream-x64-experiment-build-v1'; target = $Target; computer_name = $env:COMPUTERNAME
+        native_architecture = $nativeArchitecture; active_architectures = @('x64', 'x86'); target_architecture = $targetConfig.architecture
+        output_policy = 'Separate platform-experiment output only; no installation, registration, or default-input mutation.'
+    }
+}
+
 function Assert-YimeCoreNativeGo {
     $target = @(& go env GOOS GOARCH)
     if ($LASTEXITCODE -ne 0 -or $target.Count -ne 2 -or $target[0] -ne 'windows' -or $target[1] -ne 'amd64') {

@@ -4,13 +4,14 @@ param(
     [Parameter(Mandatory)][string]$OutputRoot,
     [Parameter(Mandatory)][string]$BuildRoot,
     [Parameter(Mandatory)][string]$MultimodeVerifier,
-    [Parameter(Mandatory)][hashtable]$TsfTests
+    [Parameter(Mandatory)][hashtable]$TsfTests,
+    [ValidateSet('mainstream_x64')][string]$ExperimentTarget
 )
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
 . (Join-Path $PSScriptRoot 'local-product-build-common.ps1')
 . (Join-Path $PSScriptRoot 'local-product-test-isolation.ps1')
-$null = Get-YimeCoreDevelopmentScope
+$null = if ($ExperimentTarget) { Get-YimeCoreExperimentBuildScope $ExperimentTarget } else { Get-YimeCoreDevelopmentScope }
 $product = Get-LocalProductDescriptor (Join-Path $PackageRoot 'local-product.json')
 if (Test-Path -LiteralPath $OutputRoot) { throw 'Runtime verification requires a new evidence directory' }
 Assert-LocalProductPlainPath $OutputRoot
@@ -48,7 +49,25 @@ function Wait-LocalTestRuntime([int]$PreviousBroker = 0) {
             $child = Get-CimInstance Win32_Process -Filter "ProcessId=$([int]$status.broker_pid)"
             if ($child -and $child.ParentProcessId -eq $runtimeProcess.Id -and $child.ExecutablePath -ieq $broker -and
                 $child.CreationDate -ge $runtimeProcess.StartTime) {
-                return [ordered]@{ status = $status; broker = ($child | Select-Object ProcessId,ParentProcessId,ExecutablePath,CreationDate) }
+                # The supervisor publishes the child PID before the Broker has
+                # finished loading indexes and retained its input listener. On
+                # a cold/older machine that gap can exceed the TSF activation
+                # timeout, so require one real transport connection before
+                # dispatching the direct TSF tests.
+                $pipeLeaf = $pipeName.Substring('\\.\pipe\'.Length)
+                $probe = [IO.Pipes.NamedPipeClientStream]::new(
+                    '.', $pipeLeaf, [IO.Pipes.PipeDirection]::InOut,
+                    [IO.Pipes.PipeOptions]::Asynchronous,
+                    [Security.Principal.TokenImpersonationLevel]::Identification)
+                try {
+                    $probe.Connect(100)
+                    return [ordered]@{ status = $status; broker = ($child | Select-Object ProcessId,ParentProcessId,ExecutablePath,CreationDate) }
+                } catch {
+                    # The process is alive but the real input endpoint is not
+                    # ready yet. Keep polling within the existing 30s bound.
+                } finally {
+                    $probe.Dispose()
+                }
             }
         }
         Start-Sleep -Milliseconds 100

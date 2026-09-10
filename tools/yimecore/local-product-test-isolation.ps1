@@ -10,10 +10,10 @@ function Invoke-LocalProductIsolatedTestTool {
         [Parameter(Mandatory)][string]$LogName
     )
     $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
-    $allowed = Join-Path $repo '.tmp\yimecore-local-product'
+    $allowedRoots = @((Join-Path $repo '.tmp\yimecore-local-product'), (Join-Path $repo '.tmp\yimecore-platform-experiments'))
     $build = [IO.Path]::GetFullPath($BuildRoot).TrimEnd('\')
     $evidence = [IO.Path]::GetFullPath($EvidenceRoot).TrimEnd('\')
-    if (-not $build.StartsWith($allowed + '\', [StringComparison]::OrdinalIgnoreCase) -or
+    if (-not (@($allowedRoots | Where-Object { $build.StartsWith($_ + '\', [StringComparison]::OrdinalIgnoreCase) }).Count -eq 1) -or
         ($evidence -ine $build -and -not $evidence.StartsWith($build + '\', [StringComparison]::OrdinalIgnoreCase)) -or
         $LogName -notmatch '^[a-z0-9][a-z0-9-]*\.txt$') {
         throw 'Test tools require attributable build-local evidence paths.'
@@ -38,7 +38,10 @@ function Invoke-LocalProductIsolatedTestTool {
     if ((Test-Path -LiteralPath $log) -or (Test-Path -LiteralPath $metadata)) { throw 'Do not overwrite earlier test evidence.' }
     # Keep TEMP short enough for native MAX_PATH state helpers, even when the
     # direct TSF test adds its own fresh GUID-named subdirectory.
-    $fixture = Join-Path $evidence ('t\' + [guid]::NewGuid().ToString('N').Substring(0,16))
+    # Runtime verification writes logs below a descriptive evidence child, but
+    # native state APIs still need a short TEMP. Anchor fixtures at the already
+    # validated build root and retain attribution through the GUID metadata.
+    $fixture = Join-Path $build ('t\' + [guid]::NewGuid().ToString('N').Substring(0,16))
     $fixtureTemp = Join-Path $fixture 'tmp'
     if ($fixtureTemp.Length -gt 120) { throw 'Test TEMP is too long for native state-file APIs.' }
     Assert-LocalProductPlainPath $fixture

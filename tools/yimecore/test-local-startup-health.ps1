@@ -30,8 +30,17 @@ $checks=[Collections.Generic.List[object]]::new()
 function Check([string]$Name,[scriptblock]$Body){try{& $Body|Out-Null;$checks.Add([ordered]@{name=$Name;passed=$true});Write-Host "PASS: $Name"}catch{$checks.Add([ordered]@{name=$Name;passed=$false;error=$_.Exception.Message});Write-Host "FAIL: $Name - $($_.Exception.Message)"}}
 function Reject([scriptblock]$Body){$caught=$false;try{& $Body|Out-Null}catch{$caught=$true};Require $caught 'Expected fail-closed rejection.'}
 $runtimeAst=Read-Ast $runtimeSource;$manageAst=Read-Ast $manageSource
-$helperNames=@('Get-LocalProductStartupHealthRequired','Get-LocalProductHealthImageHash','Assert-LocalProductStartedHealth')
+$helperNames=@('Get-LocalProductStartupHealthRequired','Get-LocalProductHealthImageHash','Test-LocalProductStartupHealthPending','Assert-LocalProductStartedHealth')
 foreach($name in $helperNames){. ([scriptblock]::Create((Get-FunctionText $runtimeAst $name)))}
+
+Check 'startup health retry admits only timeout exception chains' {
+    Require (Test-LocalProductStartupHealthPending ([TimeoutException]::new('not ready'))) 'Direct timeout was not retryable.'
+    $nested=[Reflection.TargetInvocationException]::new(
+        'wrapped', [TimeoutException]::new('not ready'))
+    Require (Test-LocalProductStartupHealthPending $nested) 'Wrapped timeout was not retryable.'
+    Require (-not (Test-LocalProductStartupHealthPending ([IO.InvalidDataException]::new('bad protocol')))) 'Protocol failure became retryable.'
+    Require (-not (Test-LocalProductStartupHealthPending ([InvalidOperationException]::new('wrong identity')))) 'Identity failure became retryable.'
+}
 
 # Only the launcher type reference is substituted. The actual production Start
 # bodies, success gates, catch/Kill and finally/Dispose remain executable code.

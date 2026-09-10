@@ -24,6 +24,16 @@ function Get-LocalProductHealthImageHash($Package,[string]$Relative) {
     return $rows[0].sha256
 }
 
+function Test-LocalProductStartupHealthPending([Exception]$Exception) {
+    # A health endpoint may legitimately be absent while the Broker is still
+    # loading its resident indexes. Retry only a real timeout found in the
+    # exception chain; identity, hash, protocol and nonce failures stay fatal.
+    for ($current = $Exception; $null -ne $current; $current = $current.InnerException) {
+        if ($current -is [TimeoutException]) { return $true }
+    }
+    return $false
+}
+
 function Assert-LocalProductStartedHealth($Package,$Config,$RuntimeProcess,$BrokerPid,[string]$TargetUserSid) {
     if(-not (Get-LocalProductStartupHealthRequired $Package)){return $null}
     if($RuntimeProcess -isnot [Diagnostics.Process] -or $RuntimeProcess.HasExited -or
@@ -113,8 +123,15 @@ function Start-LocalProductRuntime($Context) {
             try { $status = Get-Content -LiteralPath (Join-Path $Context.state_root 'runtime-status.json') -Raw -Encoding UTF8 | ConvertFrom-Json } catch {}
             if ($status -and $status.state -eq 'running' -and [int]$status.runtime_pid -eq $process.Id) {
                 $live=Assert-LocalProductLiveRuntime $Context
-                $health=Assert-LocalProductStartedHealth $Context.package $config $process $status.broker_pid `
-                    ([Security.Principal.WindowsIdentity]::GetCurrent().User.Value)
+                try {
+                    $health=Assert-LocalProductStartedHealth $Context.package $config $process $status.broker_pid `
+                        ([Security.Principal.WindowsIdentity]::GetCurrent().User.Value)
+                } catch {
+                    if (-not (Test-LocalProductStartupHealthPending $_.Exception) -or
+                        $process.HasExited -or [DateTime]::UtcNow -ge $deadline) { throw }
+                    Start-Sleep -Milliseconds 100
+                    continue
+                }
                 if($null -ne $health){$live['startup_health']=$health}
                 return $live
             }

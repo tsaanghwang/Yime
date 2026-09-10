@@ -1,8 +1,11 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)][ValidateSet('mainstream_x64','arm64')][string]$Target,
-    [ValidateSet('Plan','Build')][string]$Action='Plan',
-    [string]$OutputRoot
+    [ValidateSet('Plan','Build','Package')][string]$Action='Plan',
+    [string]$OutputRoot,
+    [string]$SpeechAdmissionRoot,
+    [string]$ExpectedSpeechAdmissionSummarySha256,
+    [string]$ExpectedSpeechSourceInventorySha256
 )
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
@@ -16,13 +19,27 @@ $plan=[ordered]@{target=$Target;status='active';architecture=$targetConfig.archi
     cloud_provisioning_authorized=$false;hardware_purchase_authorized=$false;
     note='Build produces current-identity source artifacts only. No registration, installation or target executable execution. Native acceptance requires an identified physical host.'}
 if($Action -eq 'Plan'){$plan|ConvertTo-Json -Depth 8;return}
-$scope=Get-YimeCoreDevelopmentScope # build coordinator, not target acceptance
+$scope=Get-YimeCoreExperimentBuildScope $Target
 $allowed=Join-Path $repo '.tmp\yimecore-platform-experiments'
-if(-not $OutputRoot){$OutputRoot=Join-Path $allowed ($Target+'-'+(Get-Date -Format 'yyyyMMdd-HHmmss')+'-'+[guid]::NewGuid().ToString('N').Substring(0,8))}
+if(-not $OutputRoot){$prefix=if($Action -eq 'Package' -and $Target -eq 'mainstream_x64'){'mx64-package-'}else{$Target+'-'};$OutputRoot=Join-Path $allowed ($prefix+(Get-Date -Format 'yyyyMMdd-HHmmss')+'-'+[guid]::NewGuid().ToString('N').Substring(0,8))}
 $out=[IO.Path]::GetFullPath($OutputRoot)
 if(-not $out.StartsWith($allowed+'\',[StringComparison]::OrdinalIgnoreCase) -or (Test-Path -LiteralPath $out)){throw 'Use a new isolated platform-experiment output child.'}
 Assert-LocalProductPlainPath $out
+$expectedLeaf=if($Action -eq 'Package' -and $Target -eq 'mainstream_x64'){'^mx64-package-[0-9]{8}-[0-9]{6}-[a-f0-9]{8}$'}else{'^'+[regex]::Escape($Target)+'-[0-9]{8}-[0-9]{6}-[a-f0-9]{8}$'}
+if((Split-Path -Leaf $out) -cnotmatch $expectedLeaf){throw 'Output name must identify the isolated target and action.'}
+if($Action -eq 'Package'){
+    if([string]::IsNullOrWhiteSpace($SpeechAdmissionRoot) -or $ExpectedSpeechAdmissionSummarySha256 -notmatch '^[a-fA-F0-9]{64}$' -or $ExpectedSpeechSourceInventorySha256 -notmatch '^[a-fA-F0-9]{64}$'){
+        throw 'Package requires an explicit completed speech admission root and both SHA256 pins.'
+    }
+    & (Join-Path $PSScriptRoot 'build-local-product.ps1') -OutputRoot $out -ExperimentTarget $Target `
+        -SpeechAdmissionRoot $SpeechAdmissionRoot -ExpectedSpeechAdmissionSummarySha256 $ExpectedSpeechAdmissionSummarySha256 `
+        -ExpectedSpeechSourceInventorySha256 $ExpectedSpeechSourceInventorySha256
+    if($LASTEXITCODE -ne 0){throw 'Target package build failed; inspect its isolated evidence.'}
+    Write-Output "Experiment package complete only; installation and host acceptance pending. Evidence: $out"
+    return
+}
 $null=Get-Command cmake,go -ErrorAction Stop
+$nativeGenerator=if($Target -eq 'mainstream_x64'){'Visual Studio 18 2026'}else{'Visual Studio 17 2022'}
 New-Item -ItemType Directory -Path $out | Out-Null
 $before=Get-LocalProductProtectionEvidence
 $product=Get-LocalProductDescriptor (Join-Path $PSScriptRoot 'local-product.json')
@@ -36,7 +53,7 @@ $passed=$false;$failure=$null;$records=@();$protected=$false
 try {
     $env:GOOS='windows';$env:GOARCH=$targetConfig.go_arch;$env:CGO_ENABLED='0';$env:GOFLAGS=''
     $build=Join-Path $out 'tsf-build'
-    & cmake -S (Join-Path $repo 'YimeTextServiceExperiment') -B $build -G 'Visual Studio 17 2022' -A $targetConfig.cmake_platform -DYIME_LOCAL_PRODUCT=ON 2>&1 | Tee-Object -FilePath (Join-Path $out 'configure.txt')
+    & cmake -S (Join-Path $repo 'YimeTextServiceExperiment') -B $build -G $nativeGenerator -A $targetConfig.cmake_platform -DYIME_LOCAL_PRODUCT=ON 2>&1 | Tee-Object -FilePath (Join-Path $out 'configure.txt')
     if($LASTEXITCODE -ne 0){throw 'Target TSF configure failed; inspect the isolated configure log.'}
     & cmake --build $build --config Release --parallel 2>&1 | Tee-Object -FilePath (Join-Path $out 'build.txt')
     if($LASTEXITCODE -ne 0){throw 'Target TSF build failed.'}

@@ -18,6 +18,9 @@ Assert-ScopeTest (@($policy.frozen_targets) -notcontains 'arm64' -and
     @($policy.frozen_targets) -contains 'simulated_hardware_tiers') 'approved_platform_experiments_resumed'
 Assert-ScopeTest ((Get-YimeCoreExperimentTarget 'arm64').go_arch -eq 'arm64') 'arm64_native_mapping'
 Assert-ScopeTest ((Get-YimeCoreExperimentTarget 'mainstream_x64').cmake_platform -eq 'x64') 'mainstream_native_mapping'
+$mainstreamHost=(Get-YimeCoreExperimentTarget 'mainstream_x64').physical_host
+Assert-ScopeTest ($mainstreamHost.computer_name -ceq '计算机' -and $mainstreamHost.owner -ceq 'developer' -and
+    (@($mainstreamHost.approved_uses) -join '|') -ceq 'source_build|isolated_native_contracts|target_package_transactions') 'mainstream_physical_host_identified'
 foreach ($target in @('unlisted', 'x86', 'forward_looking', '')) {
     $rejected=$false
     try { $null=Get-YimeCoreExperimentTarget $target } catch { $rejected=$true }

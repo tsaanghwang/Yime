@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory)][string]$InstallRoot,
-    [Parameter(Mandatory)][ValidatePattern('^[a-fA-F0-9]{64}$')][string]$ExpectedManifestSha256,
+    [string]$InstallRoot,
+    [ValidatePattern('^[a-fA-F0-9]{64}$')][string]$ExpectedManifestSha256,
+    [ValidateSet('mainstream_x64')][string]$ExperimentTarget,
     [string]$Python = 'C:\Users\tsaan\AppData\Local\Programs\Python\Python312\python.exe'
 )
 # Current-source, Stage5C-only admission and owned anonymous-stdio Broker trial.
@@ -151,11 +152,25 @@ function Assert-AdmissionProcessOutcome($Report, [string]$BrokerHash) {
     if (@($pids | Sort-Object -Unique).Count -ne 7) { throw 'Independent process starts were not identified uniquely.' }
 }
 
+function Get-PlatformAdmissionProtectionSnapshot($Scope) {
+    $roots=@('C:\Program Files\YimeCore Experimental Trial','C:\Program Files (x86)\YimeCore Experimental Trial')
+    $records=@($roots|ForEach-Object {[ordered]@{path=$_;exists=[bool](Test-Path -LiteralPath $_)}})
+    if(@($records|Where-Object exists).Count){throw 'The clean mainstream_x64 package host unexpectedly has a YimeCore trial root.'}
+    [ordered]@{schema_version='yimecore-platform-admission-protection-v1';mode='clean-target-absence';
+        target=$Scope.target;computer_name=$Scope.computer_name;roots=$records}
+}
+
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..')).TrimEnd('\')
-$install = [IO.Path]::GetFullPath($InstallRoot).TrimEnd('\')
-$scope = Get-YimeCoreDevelopmentScope
-if ($scope.computer_name -cne 'MYCOMPUTER') { throw 'This isolated admission lane is pinned to MYCOMPUTER.' }
-Assert-SpeechPlainPath $install
+$platformAdmission=[bool]$ExperimentTarget
+if($platformAdmission){
+    if($InstallRoot -or $ExpectedManifestSha256){throw 'Platform admission uses clean-target absence, not a local installed-package baseline.'}
+    $install=$null;$scope=Get-YimeCoreExperimentBuildScope $ExperimentTarget
+}else{
+    if(-not $InstallRoot -or $ExpectedManifestSha256 -notmatch '^[a-fA-F0-9]{64}$'){throw 'Local admission requires an explicit installed root and manifest SHA256.'}
+    $install=[IO.Path]::GetFullPath($InstallRoot).TrimEnd('\');$scope=Get-YimeCoreDevelopmentScope
+    if($scope.computer_name -cne 'MYCOMPUTER'){throw 'This local admission lane is pinned to MYCOMPUTER.'}
+    Assert-SpeechPlainPath $install
+}
 Assert-SpeechPlainPath $Python
 if (-not [IO.Path]::IsPathRooted($Python) -or -not (Test-Path -LiteralPath $Python -PathType Leaf)) { throw 'An explicit installed Python executable is required.' }
 $go = 'C:\Program Files\Go\bin\go.exe'
@@ -185,13 +200,13 @@ $environment = [ordered]@{
 $original = @{}; foreach ($name in $environment.Keys) { $original[$name] = [Environment]::GetEnvironmentVariable($name,'Process') }
 $restoreFailures=@(); $environmentRestored=$false; $pythonOutput=@()
 try {
-    $before = & $baselineScript -InstallRoot $install -ExpectedManifestSha256 $ExpectedManifestSha256.ToLowerInvariant() | ConvertFrom-Json
-    Assert-SpeechBaseline $before $install $ExpectedManifestSha256
+    if($platformAdmission){$before=Get-PlatformAdmissionProtectionSnapshot $scope}
+    else{$before=& $baselineScript -InstallRoot $install -ExpectedManifestSha256 $ExpectedManifestSha256.ToLowerInvariant()|ConvertFrom-Json;Assert-SpeechBaseline $before $install $ExpectedManifestSha256}
     $stage='input-snapshots'
     $inputsBefore = @(Get-SpeechLockedInputs $repo)
     $sourcesBefore = @(Get-AdmissionSourceRecords $repo)
     if (@($sourcesBefore | Where-Object { $_.path -ceq 'tools/yimecore/run-connected-speech-reconnect.ps1' -and $_.sha256 -ceq $helperLoadedSHA }).Count -ne 1) { throw 'Loaded helper no longer matches the source snapshot.' }
-    $legacyBefore = @(Get-AdmissionLegacyRecords)
+    $legacyBefore=if($platformAdmission){@($before.roots)}else{@(Get-AdmissionLegacyRecords)}
     $stage='forward-source'
     # -I ignores ambient Python paths/user-site; -B and the checker prohibit
     # bytecode writes. The checker alone exclusively creates this new root.
@@ -291,8 +306,18 @@ finally {
             switch ($check) {
                 'inputs' { $value=@(Get-SpeechLockedInputs $repo); Write-SpeechJson $value (Join-Path $evidenceRoot 'locked-inputs-after.json'); if ($inputsBefore.Count -eq 0) { throw 'No initial lock snapshot.' }; Assert-SpeechSameRecords $inputsBefore $value; $inputsUnchanged=$true }
                 'sources' { $value=@(Get-AdmissionSourceRecords $repo); Write-SpeechJson $value (Join-Path $evidenceRoot 'source-hashes-after.json'); if ($sourcesBefore.Count -eq 0) { throw 'No initial source snapshot.' }; Assert-SpeechSameRecords $sourcesBefore $value; $sourcesUnchanged=$true }
-                'legacy' { $value=@(Get-AdmissionLegacyRecords); Write-SpeechJson $value (Join-Path $evidenceRoot 'legacy-static-after.json'); if ($legacyBefore.Count -ne 7) { throw 'No complete retained payload snapshot.' }; Assert-SpeechSameRecords $legacyBefore $value; $legacyUnchanged=$true }
-                'baseline' { $after=& $baselineScript -InstallRoot $install -ExpectedManifestSha256 $ExpectedManifestSha256.ToLowerInvariant() | ConvertFrom-Json; Write-SpeechJson $after (Join-Path $evidenceRoot 'installed-after.json'); Assert-SpeechBaseline $after $install $ExpectedManifestSha256; if ($null -eq $before) { throw 'No initial installed baseline.' }; Assert-SpeechBaselineUnchanged $before $after; $baselineUnchanged=$true }
+                'legacy' {
+                    $value=if($platformAdmission){@((Get-PlatformAdmissionProtectionSnapshot $scope).roots)}else{@(Get-AdmissionLegacyRecords)}
+                    Write-SpeechJson $value (Join-Path $evidenceRoot 'legacy-static-after.json')
+                    if($platformAdmission){if(($legacyBefore|ConvertTo-Json -Depth 8 -Compress)-cne($value|ConvertTo-Json -Depth 8 -Compress)){throw 'Clean-target roots changed.'}}
+                    else{if($legacyBefore.Count -ne 7){throw 'No complete retained payload snapshot.'};Assert-SpeechSameRecords $legacyBefore $value}
+                    $legacyUnchanged=$true
+                }
+                'baseline' {
+                    if($platformAdmission){$after=Get-PlatformAdmissionProtectionSnapshot $scope;if(($before|ConvertTo-Json -Depth 8 -Compress)-cne($after|ConvertTo-Json -Depth 8 -Compress)){throw 'Platform protection baseline changed.'}}
+                    else{$after=& $baselineScript -InstallRoot $install -ExpectedManifestSha256 $ExpectedManifestSha256.ToLowerInvariant()|ConvertFrom-Json;Assert-SpeechBaseline $after $install $ExpectedManifestSha256;if($null -eq $before){throw 'No initial installed baseline.'};Assert-SpeechBaselineUnchanged $before $after}
+                    Write-SpeechJson $after (Join-Path $evidenceRoot 'installed-after.json');$baselineUnchanged=$true
+                }
             }
         } catch { if ($null -eq $failure) { $failure=[ordered]@{stage='after-'+$check;code='protection_verification_failed';detail='Preserve isolated evidence; no repair attempted.'} } }
     }
@@ -314,7 +339,8 @@ finally {
         stage=$(if($passed){'complete'}else{'incomplete'});
         source_inventory=$sourceInventory;
         source_inventory_before=$sourceInventoryBefore;admission_artifacts=$artifactRecords;
-        development_scope=$scope;trial_root=$out;install_root=$install;installed_manifest_sha256=$ExpectedManifestSha256.ToLowerInvariant();
+        development_scope=$scope;trial_root=$out;install_root=$install;installed_manifest_sha256=$(if($ExpectedManifestSha256){$ExpectedManifestSha256.ToLowerInvariant()}else{$null});
+        protection_baseline_mode=$(if($platformAdmission){'clean-target-absence'}else{'installed-local-product'});
         module='third-tone-stage5c';reviewed_records=24;mode_alias_rows=72;forward_source_passed=$forwardPassed;admission_prepare_passed=$preparePassed;owned_process_acceptance_passed=$processPassed;
         dependency_boundary_passed=$dependencyPassed;dependencies=$dependencyRecords;directed_tests=$tests;tools=$toolRecords;go_toolchain=$go;go_version=$goVersion;python=$Python;
         python_contracts_passed=$pythonTestsPassed;

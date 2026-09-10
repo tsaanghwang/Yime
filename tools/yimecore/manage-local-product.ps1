@@ -8,11 +8,16 @@ $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
 . (Join-Path $PSScriptRoot 'local-package-contract.ps1')
 . (Join-Path $PSScriptRoot 'local-product-runtime.ps1')
-$null=Get-YimeCoreDevelopmentScope
 # Verify writes evidence and opens broker sessions, so only Plan is read-only.
 if ($Action -ne 'Plan') { Assert-YimeCoreUnpackagedDataMaintenance }
 $packageRoot=Split-Path -Parent $PSScriptRoot
 $package=Assert-LocalProductPackage $packageRoot
+$experimentTarget=[string]$package.manifest.experiment_target
+if ($experimentTarget) {
+    $null=Get-YimeCoreExperimentBuildScope $experimentTarget
+} else {
+    $null=Get-YimeCoreDevelopmentScope
+}
 $stateRoot=Join-Path $env:LOCALAPPDATA 'YimeCore Experimental Trial'
 $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value
 if ($Action -in @('Plan','Install','Upgrade','Uninstall')) {

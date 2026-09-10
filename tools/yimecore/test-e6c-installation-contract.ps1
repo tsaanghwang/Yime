@@ -184,6 +184,8 @@ $result = [ordered]@{
         $managerText -match '(?s)function Restore-PreviousInstallation.*?\[bool\]\$expected\.com_registered.*?Wait-RegistrationState \$tool \(\[bool\]\$expected\.com_registered\)')
 	uninstall_requires_verified_registration_absence = [bool](
 		$managerText.Contains('& $tool verify-absent') -and
+		$managerText.Contains('$statusText = (& $tool status 2>&1)') -and
+		$managerText.Contains('if (-not $alreadyAbsent)') -and
 		$managerText.Contains('installation files were preserved') -and
 		$managerText -notmatch '\$LASTEXITCODE -ne 0 -and -not \$Force')
 	input_method_tip_cleanup_is_global_and_fail_loud = [bool](

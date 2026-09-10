@@ -98,11 +98,15 @@ function Get-LocalProductDescriptor([string]$Path) {
     return $value
 }
 
-function New-LocalProductBuildRoot([string]$RepoRoot, [string]$OutputRoot) {
-    $allowed = Join-Path $RepoRoot '.tmp\yimecore-local-product'
+function New-LocalProductBuildRoot([string]$RepoRoot, [string]$OutputRoot, [string]$ExperimentTarget) {
+    $allowed = if ($ExperimentTarget) { Join-Path $RepoRoot '.tmp\yimecore-platform-experiments' } else { Join-Path $RepoRoot '.tmp\yimecore-local-product' }
     $rootPath = [IO.Path]::GetFullPath($OutputRoot)
     if (-not $rootPath.StartsWith($allowed + '\', [StringComparison]::OrdinalIgnoreCase)) {
         throw "Output must be a new child of $allowed"
+    }
+    $experimentPrefix=if($ExperimentTarget -eq 'mainstream_x64'){'mx64-package'}else{$null}
+    if ($ExperimentTarget -and ((Split-Path -Leaf $rootPath) -cnotmatch ('^' + [regex]::Escape($experimentPrefix) + '-[0-9]{8}-[0-9]{6}-[a-f0-9]{8}$'))) {
+        throw 'Experiment package output must use its fresh target-specific package name.'
     }
     Assert-LocalProductPlainPath $rootPath
     if (Test-Path -LiteralPath $rootPath) { throw "Build output already exists; preserve it: $rootPath" }
