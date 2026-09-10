@@ -368,6 +368,14 @@ int wmain(int argc, wchar_t** argv) {
                                           reinterpret_cast<void**>(&documentFocusEvents)),
                 "query direct document-focus event sink");
 
+        BOOL invalidInitialEaten = FALSE;
+        require(keys->OnKeyDown(context, 'A', 0, &invalidInitialEaten),
+                "invalid initial code key down");
+        if (!invalidInitialEaten || !readContext(context, clientId).empty() ||
+            hasComposition(context) || findCandidateElement(threadManager)) {
+            throw std::runtime_error("invalid initial code started or leaked into a TSF composition");
+        }
+
         const std::string code = "2jru";
         for (size_t index = 0; index < code.size(); ++index) {
             const char character = code[index];
@@ -459,35 +467,33 @@ int wmain(int argc, wchar_t** argv) {
 
         BOOL invalidEaten = FALSE;
         require(keys->OnKeyDown(context, 'Z', 0, &invalidEaten), "invalid-code key down");
-        if (!invalidEaten || readContext(context, clientId) != L"2jruz" || !hasComposition(context)) {
-            throw std::runtime_error("invalid code terminated or desynchronized the TSF composition");
+        if (!invalidEaten || readContext(context, clientId) != L"2jru" || !hasComposition(context)) {
+            throw std::runtime_error("invalid code was not rejected while preserving the TSF composition");
         }
         candidateElement = findCandidateElement(threadManager);
         if (!candidateElement) {
-            throw std::runtime_error("invalid code removed the empty correction UI state");
+            throw std::runtime_error("invalid code removed the previous candidate UI state");
         }
-        candidateCount = 99;
-        require(candidateElement->GetCount(&candidateCount), "empty correction candidate count");
-        UINT emptySelection = 99;
-        if (candidateCount != 0 || candidateElement->GetSelection(&emptySelection) != E_FAIL ||
-            emptySelection != 0) {
+        candidateCount = 0;
+        require(candidateElement->GetCount(&candidateCount), "preserved candidate count");
+        UINT preservedSelection = 99;
+        if (candidateCount == 0 || candidateElement->GetSelection(&preservedSelection) != S_OK ||
+            preservedSelection != 0) {
             candidateElement->Release();
-            throw std::runtime_error("invalid code exposed a selectable synthetic candidate");
+            throw std::runtime_error("invalid code did not preserve selectable candidates");
         }
         candidateElement->Release();
         if (!IsWindow(candidatePopup) || !IsWindowVisible(candidatePopup)) {
-            throw std::runtime_error("invalid code did not keep the owned correction status visible");
+            throw std::runtime_error("invalid code did not keep the prior candidate popup visible");
         }
         BOOL backspaceTestEaten = FALSE;
         require(keys->OnTestKeyDown(context, VK_BACK, 0, &backspaceTestEaten), "Backspace test key down");
         if (!backspaceTestEaten) throw std::runtime_error("Backspace was not claimed for active raw input");
         BOOL backspaceEaten = FALSE;
         require(keys->OnKeyDown(context, VK_BACK, 0, &backspaceEaten), "Backspace key down");
-        if (!backspaceEaten || readContext(context, clientId) != L"2jru" || !hasComposition(context)) {
-            throw std::runtime_error("Backspace did not restore the pre-error Broker state");
+        if (!backspaceEaten || readContext(context, clientId) != L"2jr" || !hasComposition(context)) {
+            throw std::runtime_error("Backspace did not remove the last valid code after rejection");
         }
-        backspaceEaten = FALSE;
-        require(keys->OnKeyDown(context, VK_BACK, 0, &backspaceEaten), "second Backspace key down");
         invalidEaten = FALSE;
         require(keys->OnKeyDown(context, 'U', 0, &invalidEaten), "continued input after Backspace");
         if (!backspaceEaten || !invalidEaten || readContext(context, clientId) != L"2jru" ||
@@ -498,7 +504,9 @@ int wmain(int argc, wchar_t** argv) {
         if (!candidatePopup || !IsWindowVisible(candidatePopup)) {
             throw std::runtime_error("candidate UI did not recover after Backspace correction");
         }
-        std::cout << "invalid_code_backspace_recovery_verified=true\n";
+        std::cout << "invalid_initial_code_rejection_verified=true\n"
+                  << "invalid_code_rejection_verified=true\n"
+                  << "invalid_code_backspace_recovery_verified=true\n";
         BOOL escapeTestEaten = FALSE;
         require(keys->OnTestKeyDown(context, VK_ESCAPE, 0, &escapeTestEaten), "Escape test key down");
         BOOL escapeEaten = FALSE;
@@ -624,11 +632,11 @@ int wmain(int argc, wchar_t** argv) {
         }
         require(keys->OnSetFocus(TRUE), "focus key sink on cross-context document");
         focusEaten = FALSE;
-        require(keys->OnTestKeyDown(otherContext, 'J', 0, &focusEaten), "cross-context fresh test key");
+        require(keys->OnTestKeyDown(otherContext, '2', 0, &focusEaten), "cross-context fresh test key");
         if (!focusEaten) throw std::runtime_error("cross-context fresh key was not claimed after cancellation");
         focusEaten = FALSE;
-        require(keys->OnKeyDown(otherContext, 'J', 0, &focusEaten), "cross-context fresh key");
-        if (!focusEaten || readContext(otherContext, clientId) != L"j" ||
+        require(keys->OnKeyDown(otherContext, '2', 0, &focusEaten), "cross-context fresh key");
+        if (!focusEaten || readContext(otherContext, clientId) != L"2" ||
             !hasComposition(otherContext) || readContext(context, clientId) != committedFocusPrefix) {
             throw std::runtime_error("cross-context fresh input reused old code or changed the old document");
         }
@@ -955,12 +963,12 @@ int wmain(int argc, wchar_t** argv) {
             throw std::runtime_error("host-forced termination did not cancel raw input and preserve committed text");
         }
         BOOL testEaten = FALSE;
-        require(keys->OnTestKeyDown(context, 'J', 0, &testEaten), "post-termination test key");
+        require(keys->OnTestKeyDown(context, '2', 0, &testEaten), "post-termination test key");
         if (!testEaten) throw std::runtime_error("host-forced termination did not reconnect the Broker session");
         eaten = FALSE;
-        require(keys->OnKeyDown(context, 'J', 0, &eaten), "post-termination key");
+        require(keys->OnKeyDown(context, '2', 0, &eaten), "post-termination key");
         const std::wstring recoveredText = readContext(context, clientId);
-        if (!eaten || recoveredText != beforeForcedTermination + L"j" || !hasComposition(context)) {
+        if (!eaten || recoveredText != beforeForcedTermination + L"2" || !hasComposition(context)) {
             throw std::runtime_error("post-termination key did not start a fresh composition");
         }
         std::cout << "host_termination_recovery_verified=true\n"
@@ -1150,10 +1158,10 @@ int wmain(int argc, wchar_t** argv) {
 
         require(languageModeButton->OnClick(TF_LBI_CLK_LEFT, {}, nullptr), "toggle input mode to Chinese");
         testEaten = FALSE;
-        require(keys->OnTestKeyDown(context, 'L', 0, &testEaten), "Chinese mode test key");
+        require(keys->OnTestKeyDown(context, '2', 0, &testEaten), "Chinese mode test key");
         if (!testEaten) throw std::runtime_error("Chinese mode did not reclaim composition keys");
         eaten = FALSE;
-        require(keys->OnKeyDown(context, 'L', 0, &eaten), "Chinese mode key");
+        require(keys->OnKeyDown(context, '2', 0, &eaten), "Chinese mode key");
         if (!eaten || !hasComposition(context)) throw std::runtime_error("Chinese mode did not start composition");
         std::cout << "language_bar_chinese_english_transition_verified=true\n";
 

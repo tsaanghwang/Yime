@@ -185,6 +185,30 @@ SurfaceOutcome SurfaceSession::HandleVirtualKey(WPARAM virtualKey, bool shiftDow
         char code = 0;
         if (!TranslateCompositionKey(virtualKey, shiftDown, &code)) return outcome;
         outcome.handled = broker_.ApplyCode(code, &outcome.update, &outcome.error);
+        if (outcome.handled && outcome.update.rawInput == current_.rawInput) {
+            // Rime ignored a key outside the active schema alphabet. Consume only
+            // that key so it cannot leak into the host document.
+            outcome.invalidCodeRejected = true;
+            outcome.update = current_;
+        } else if (outcome.handled && outcome.update.rawInput == current_.rawInput + code &&
+                   outcome.update.candidates.empty() && !outcome.update.hasSentence) {
+            // Keep the last valid composition. The Broker has already observed
+            // the bad code, so roll back exactly one code point before exposing
+            // the state to TSF.
+            BrokerUpdate restored;
+            std::string rollbackError;
+            if (!broker_.Backspace(&restored, &rollbackError) ||
+                restored.rawInput != current_.rawInput) {
+                outcome.handled = false;
+                outcome.error = rollbackError.empty()
+                    ? "Invalid-code rollback did not restore the previous composition"
+                    : "Invalid-code rollback failed: " + rollbackError;
+                DisconnectForRecovery();
+                return outcome;
+            }
+            outcome.invalidCodeRejected = true;
+            outcome.update = std::move(restored);
+        }
     }
     if (outcome.handled) {
         if (outcome.update.rawInput.empty() || outcome.update.rawInput != current_.rawInput) {
