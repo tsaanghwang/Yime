@@ -23,6 +23,20 @@
 - x64 与 x86 `YimeRegisteredHostTests.exe` 均退出 0；注册键接管、候选提交、Shift 直通、候选方向/翻页、焦点取消、延迟及失败异步写入恢复、语言栏释放后回调保护均通过。
 - 用户已在本次重启并重新登录后手动确认“音元拼音”仍可实际输入；具体宿主应用未记录，因此该结果是重启后基本输入通过，不扩展宣称 Word、32 位 Firefox/Notepad++ 等逐项兼容矩阵均已完成。
 
+### 条件式只读复核（2026-09-10 19:23）
+
+新增 `tools/yimecore/capture-installed-readonly-evidence.ps1`，将每项观察独立标记为 `pass`、`fail` 或 `unavailable`；某个 PowerShell 提供程序、日志或文件不可用时，其余只读证据仍会保留，不再依赖反复执行零散命令。Windows PowerShell 5.1 与 PowerShell 7 的降级合同测试均通过。
+
+本机实跑生成 `docs/testing/platform/2026-09-10-mainstream-x64-reboot.json`，结果为 `complete=true`、`passed=true`：
+
+- 当前计算机名、安装清单 `133c91fe…`、安装元数据与 Runtime 状态绑定一致。
+- 清单中的 90 个载荷大小及 SHA-256 全部匹配。
+- Runtime PID 28436 与 Broker PID 9360 均属于当前用户、来自当前安装根且在本次开机后启动；Broker 父 PID 为 Runtime。
+- 进程外 `StdRegProv` 读取的 Run、卸载项和 x64/x86 COM 路径全部匹配。
+- Shell-Core Operational 事件 9708 于 18:03:59（Asia/Shanghai）记录当前 Runtime PID，并与当前用户 SID 匹配；提交的证据只保留 SID 摘要，不公开完整 SID。
+- 当前没有显式 `Get-WinDefaultInputMethodOverride` 覆盖值；这只是当前观察，不在缺少独立基线时宣称默认输入法“未变化”。
+- 采集器未安装或维护产品、未启动或停止进程、未修改注册表或产品状态，也未读取用户输入正文和学习数据。
+
 ## 目标机器与源码
 
 - 计算机名：`计算机`；范围身份：`mainstream_x64` 实体测试机；使用者/所有者：开发者本人。

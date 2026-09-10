@@ -92,3 +92,9 @@ Exact retained summaries and path-scrubbed concise CPU reports are under
 generated executables, copied source trees and synthetic learning state remain
 local under `C:\YimeBench`; they are not required to read this result and are not
 committed as repository payloads.
+
+All six retained summaries and concise CPU reports have published SHA-256 values
+that bind their original Windows bytes. Path-specific `.gitattributes` rules keep
+the three JSON and three `share-*.txt` Git blobs byte-exact; this avoids both the
+repository-wide JSON LF rule and implicit `core.autocrlf` text normalization.
+The existing hashes are not recalculated to hide the earlier blob mismatch.
