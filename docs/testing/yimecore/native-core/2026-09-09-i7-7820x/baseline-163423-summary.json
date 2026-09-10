@@ -1,0 +1,186 @@
+{
+    "schema_version":  "yimecore-native-core-measurement-v1",
+    "target":  "mainstream_x64",
+    "package_id":  "i7-7820x-20260909-151806-fb97a7db",
+    "package_manifest_sha256":  "086172b22c94933b727e8afebd156b29a581312bbeb61e5b78047518a1c1d842",
+    "git_commit":  "222f2d5f6411df1a942b12d0a11735a7205fe7df",
+    "git_dirty":  false,
+    "host":  {
+                 "computer_name":  "计算机",
+                 "computer_model":  "System Product Name",
+                 "cpu":  "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+                 "native_architecture":  9,
+                 "process_64bit":  true,
+                 "cores":  8,
+                 "logical_processors":  16,
+                 "reported_physical_memory_bytes":  102731558912,
+                 "os_visible_memory_bytes":  102731558912,
+                 "os_caption":  "Microsoft Windows 11 家庭版",
+                 "os_version":  "10.0.26300",
+                 "os_build":  "26300",
+                 "memory_profile":  "baseline",
+                 "power_plan":  "电源方案 GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (高性能)",
+                 "process_affinity":  65535,
+                 "process_priority":  "Normal",
+                 "disks":  [
+                               {
+                                   "FriendlyName":  "NVMe INTEL SSDPEKKW25",
+                                   "MediaType":  "SSD",
+                                   "BusType":  "RAID",
+                                   "Size":  256060514304
+                               },
+                               {
+                                   "FriendlyName":  "Kingston DataTraveler Max",
+                                   "MediaType":  "Unspecified",
+                                   "BusType":  "USB",
+                                   "Size":  256060514304
+                               },
+                               {
+                                   "FriendlyName":  "NVMe Samsung SSD 980",
+                                   "MediaType":  "SSD",
+                                   "BusType":  "RAID",
+                                   "Size":  1000204886016
+                               }
+                           ],
+                 "measured_at":  "2026-09-09T08:34:23.7246342Z",
+                 "runner_changes_cpu_or_os_memory_limits":  false,
+                 "cleared_process_environment":  {
+                                                     "GODEBUG":  null,
+                                                     "GOMAXPROCS":  null,
+                                                     "GOMEMLIMIT":  null
+                                                 }
+             },
+    "iterations":  1000,
+    "learning_iterations":  100,
+    "rows":  [
+                 {
+                     "stage":  "e1",
+                     "mode":  "full",
+                     "exit_code":  0,
+                     "correctness_passed":  true,
+                     "p95_ms":  2.41074,
+                     "p99_ms":  2.69171,
+                     "private_bytes":  70811648,
+                     "interaction_budget_ms":  50,
+                     "memory_budget_bytes":  1073741824,
+                     "interaction_budget_passed":  true,
+                     "memory_budget_passed":  true,
+                     "passed":  true
+                 },
+                 {
+                     "stage":  "e1",
+                     "mode":  "variable",
+                     "exit_code":  0,
+                     "correctness_passed":  true,
+                     "p95_ms":  5.86271,
+                     "p99_ms":  6.02365,
+                     "private_bytes":  69464064,
+                     "interaction_budget_ms":  50,
+                     "memory_budget_bytes":  1073741824,
+                     "interaction_budget_passed":  true,
+                     "memory_budget_passed":  true,
+                     "passed":  true
+                 },
+                 {
+                     "stage":  "e1",
+                     "mode":  "shorthand",
+                     "exit_code":  0,
+                     "correctness_passed":  true,
+                     "p95_ms":  5.75508,
+                     "p99_ms":  5.87404,
+                     "private_bytes":  68837376,
+                     "interaction_budget_ms":  50,
+                     "memory_budget_bytes":  1073741824,
+                     "interaction_budget_passed":  true,
+                     "memory_budget_passed":  true,
+                     "passed":  true
+                 },
+                 {
+                     "stage":  "e2",
+                     "mode":  "full",
+                     "exit_code":  0,
+                     "correctness_passed":  true,
+                     "p95_ms":  12.83758,
+                     "p99_ms":  13.19442,
+                     "private_bytes":  72851456,
+                     "interaction_budget_ms":  100,
+                     "memory_budget_bytes":  1073741824,
+                     "interaction_budget_passed":  true,
+                     "memory_budget_passed":  true,
+                     "passed":  true
+                 },
+                 {
+                     "stage":  "e2",
+                     "mode":  "variable",
+                     "exit_code":  0,
+                     "correctness_passed":  true,
+                     "p95_ms":  15.81918,
+                     "p99_ms":  16.31315,
+                     "private_bytes":  70610944,
+                     "interaction_budget_ms":  100,
+                     "memory_budget_bytes":  1073741824,
+                     "interaction_budget_passed":  true,
+                     "memory_budget_passed":  true,
+                     "passed":  true
+                 },
+                 {
+                     "stage":  "e2",
+                     "mode":  "shorthand",
+                     "exit_code":  0,
+                     "correctness_passed":  true,
+                     "p95_ms":  16.07345,
+                     "p99_ms":  16.21232,
+                     "private_bytes":  71376896,
+                     "interaction_budget_ms":  100,
+                     "memory_budget_bytes":  1073741824,
+                     "interaction_budget_passed":  true,
+                     "memory_budget_passed":  true,
+                     "passed":  true
+                 },
+                 {
+                     "stage":  "e3",
+                     "mode":  "full",
+                     "exit_code":  1,
+                     "correctness_passed":  true,
+                     "p95_overhead_ratio":  1.1174917491749174,
+                     "p99_overhead_ratio":  1.1067341077628703,
+                     "latency_gate_passed":  false,
+                     "passed":  false
+                 },
+                 {
+                     "stage":  "e3",
+                     "mode":  "variable",
+                     "exit_code":  1,
+                     "correctness_passed":  true,
+                     "p95_overhead_ratio":  1.1387387387387387,
+                     "p99_overhead_ratio":  1.1322874297888825,
+                     "latency_gate_passed":  false,
+                     "passed":  false
+                 },
+                 {
+                     "stage":  "e3",
+                     "mode":  "shorthand",
+                     "exit_code":  1,
+                     "correctness_passed":  true,
+                     "p95_overhead_ratio":  1.1231985588470776,
+                     "p99_overhead_ratio":  1.1373604856079891,
+                     "latency_gate_passed":  false,
+                     "passed":  false
+                 }
+             ],
+    "failure":  null,
+    "package_unchanged":  true,
+    "protected_registration_unchanged":  true,
+    "core_benchmark_passed":  false,
+    "installed_host_passed":  null,
+    "physical_ime_compatibility_passed":  null,
+    "rime_comparison_passed":  null,
+    "release_ready":  false,
+    "limitations":  [
+                        "E1/E2 report batch-amortized complete probe sets, not individual keystrokes or end-to-end input latency.",
+                        "Memory is a post-workload process snapshot, not a measured peak. Index-open timing is not a controlled cold boot.",
+                        "E3 uses new synthetic learning files in this result directory.",
+                        "No IPC, TSF, installed desktop host, Rime comparison or broad x64-machine acceptance is claimed.",
+                        "OS-visible RAM limits do not reproduce another CPU, memory-channel layout, SSD or machine."
+                    ]
+}

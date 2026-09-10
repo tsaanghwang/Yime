@@ -1,5 +1,8 @@
 # i7-7820X physical core benchmark
 
+The retained 2026-09-09 physical result is published in
+`YIMECORE_I7_7820X_NATIVE_BENCHMARK_RESULT_2026-09-09.md`.
+
 Affected product: YimeCore. This is a separate, core-only experiment for the
 user-identified physical x64 PC. The existing MYCOMPUTER build/install lane and
 its guards remain intact. This package cannot be installed as an input method.
