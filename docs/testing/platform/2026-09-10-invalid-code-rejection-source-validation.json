@@ -1,0 +1,55 @@
+{
+  "schema_version": "yimecore-invalid-code-rejection-source-validation-v1",
+  "generated_at": "2026-09-10T21:00:00+08:00",
+  "computer_name": "计算机",
+  "source_commit": "487d21c850f459c262ab71bd698489a32113f8d7",
+  "decision": {
+    "invalid_trailing_code": "consume only the invalid code and preserve the last valid composition and candidates",
+    "invalid_initial_code": "consume the invalid code without starting a composition",
+    "bare_digits": "remain composition keys",
+    "audible_feedback": "optional future enhancement; not a correctness dependency"
+  },
+  "bridge_validation": {
+    "output_root": ".tmp/yimecore-experiment/invalid-code-rejection-20260910",
+    "summary_sha256": "94c025814d48505bf54bce54b219d2641408bbaf3ae5af6069f09ffcfd03a64c",
+    "architectures": ["x64", "x86"],
+    "modes": ["full", "variable", "shorthand"],
+    "mode_architecture_runs": 6,
+    "all_modes_passed": true,
+    "restart_within_two_seconds": true
+  },
+  "direct_tsf_validation": {
+    "output_root": ".tmp/yimecore-experiment/invalid-code-rejection-20260910/tsf-invalid-code-rerun-3",
+    "runs": [
+      {"mode": "full", "architecture": "x64", "sha256": "d120aebbe1b513521045a866d716f7193d7313696f2d98a8dcd3329e5dbd684d", "passed": true},
+      {"mode": "full", "architecture": "x86", "sha256": "573fc6b8dbaa8edd703f1c514ea32c84ec533a46e1e7cbc3ef3737ca59b76b85", "passed": true},
+      {"mode": "variable", "architecture": "x64", "sha256": "d120aebbe1b513521045a866d716f7193d7313696f2d98a8dcd3329e5dbd684d", "passed": true},
+      {"mode": "variable", "architecture": "x86", "sha256": "573fc6b8dbaa8edd703f1c514ea32c84ec533a46e1e7cbc3ef3737ca59b76b85", "passed": true},
+      {"mode": "shorthand", "architecture": "x64", "sha256": "d120aebbe1b513521045a866d716f7193d7313696f2d98a8dcd3329e5dbd684d", "passed": true},
+      {"mode": "shorthand", "architecture": "x86", "sha256": "573fc6b8dbaa8edd703f1c514ea32c84ec533a46e1e7cbc3ef3737ca59b76b85", "passed": true}
+    ],
+    "invalid_initial_code_rejection_verified": true,
+    "invalid_trailing_code_rejection_verified": true,
+    "backspace_after_rejection_verified": true,
+    "focus_and_language_transition_regressions_passed": true
+  },
+  "registered_host": {
+    "x64_executable_built": true,
+    "x86_executable_built": true,
+    "executed_on_test_pc": false,
+    "reason": "The test PC has the current local.13 identity registered and a real x86 host owns the foreground TIP. Temporary registration must not replace the installed product registration.",
+    "required_next": "Run the isolated x64/x86 three-mode registered-host gate on the development branch before packaging."
+  },
+  "powershell_preflight_review": {
+    "reviewed_remote_commit": "8429992105a1d1bc0924c057bcc7bfa4c58106ec",
+    "file_conflict": false,
+    "invocation_documentation_aligned": true,
+    "limitation": "The preflight validates shell, syntax and parameters; it does not locate external tools such as cmake or amend PATH."
+  },
+  "installed_product_changed": false,
+  "default_input_method_changed": false,
+  "production_rime_pime_touched": false,
+  "user_text_read": false,
+  "learning_data_read": false,
+  "passed": true
+}
