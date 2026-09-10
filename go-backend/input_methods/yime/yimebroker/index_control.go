@@ -10,7 +10,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -232,11 +234,19 @@ func writeIndexControlStatus(path string, status IndexControlStatus) error {
 	if err := temporary.Close(); err != nil {
 		return err
 	}
-	if err := os.Rename(temporaryPath, path); err == nil {
-		return nil
+	// Windows readers may briefly deny replacement. Keep the last complete
+	// status until replacement succeeds; deleting it first loses that status.
+	deadline := time.Now().Add(250 * time.Millisecond)
+	for {
+		err := replaceJournalAtomically(temporaryPath, path)
+		if err == nil {
+			return nil
+		}
+		locked := runtime.GOOS == "windows" && (errors.Is(err, syscall.Errno(5)) ||
+			errors.Is(err, syscall.Errno(32)) || errors.Is(err, syscall.Errno(33)))
+		if !locked || !time.Now().Before(deadline) {
+			return err
+		}
+		time.Sleep(5 * time.Millisecond)
 	}
-	if err := os.Remove(path); err != nil && !errors.Is(err, os.ErrNotExist) {
-		return err
-	}
-	return os.Rename(temporaryPath, path)
 }

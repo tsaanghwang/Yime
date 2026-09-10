@@ -104,6 +104,12 @@ func TestModeIndexControlRejectsFailedSwitchAndRollsBackEachMode(t *testing.T) {
 	defer cancel()
 	done := make(chan error, 1)
 	go func() { done <- WatchModeIndexControl(ctx, manifest, statusPath, manager, 10*time.Millisecond) }()
+	defer func() {
+		cancel()
+		if err := <-done; err != nil {
+			t.Errorf("mode control watcher failed: %v", err)
+		}
+	}()
 	waitModeControlStatus(t, statusPath, "startup")
 
 	for _, mode := range supportedIndexModes {
@@ -112,6 +118,7 @@ func TestModeIndexControlRejectsFailedSwitchAndRollsBackEachMode(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		defer pinned.(interface{ Close() error }).Close()
 		first := string(fixture.code[0])
 		if result, applyErr := pinned.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: first}); applyErr != nil || result.State.RawInput != first {
 			t.Fatalf("%s pinned composition result=%+v err=%v", mode, result, applyErr)
@@ -147,6 +154,7 @@ func TestModeIndexControlRejectsFailedSwitchAndRollsBackEachMode(t *testing.T) {
 		if err != nil || v2.(interface{ IndexVersion() string }).IndexVersion() != "v2" {
 			t.Fatalf("%s new session did not use v2: engine=%T err=%v", mode, v2, err)
 		}
+		defer v2.(interface{ Close() error }).Close()
 
 		rollbackID := "rollback-" + mode
 		writeModeControlRequest(t, manifest, IndexControlRequest{
@@ -159,13 +167,10 @@ func TestModeIndexControlRejectsFailedSwitchAndRollsBackEachMode(t *testing.T) {
 		if err != nil || postRollback.(interface{ IndexVersion() string }).IndexVersion() != "v1" || v2.(interface{ IndexVersion() string }).IndexVersion() != "v2" {
 			t.Fatalf("%s rollback changed leased engines: post=%T v2=%T err=%v", mode, postRollback, v2, err)
 		}
+		defer postRollback.(interface{ Close() error }).Close()
 		_ = pinned.(interface{ Close() error }).Close()
 		_ = v2.(interface{ Close() error }).Close()
 		_ = postRollback.(interface{ Close() error }).Close()
-	}
-	cancel()
-	if err := <-done; err != nil {
-		t.Fatal(err)
 	}
 }
 
