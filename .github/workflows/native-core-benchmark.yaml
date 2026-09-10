@@ -1,0 +1,63 @@
+name: Native core benchmark contracts
+
+on:
+  push:
+    branches: [native-x64-benchmark-kit]
+  pull_request:
+    branches: [codex/yimecore-replacement-experiment]
+    paths:
+      - tools/yimecore/native-core-benchmark.psm1
+      - tools/yimecore/test-native-core-benchmark.ps1
+      - tools/yimecore/native-core-profile.psm1
+      - tools/yimecore/test-native-core-profile.ps1
+      - docs/project/YIMECORE_NATIVE_CPU_PROFILE.md
+      - .github/workflows/native-core-benchmark.yaml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-core-benchmark-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  contracts:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - name: Windows PowerShell 5.1 contracts
+        shell: powershell
+        run: .\tools\yimecore\test-native-core-benchmark.ps1
+      - name: PowerShell 7 contracts
+        shell: pwsh
+        run: .\tools\yimecore\test-native-core-benchmark.ps1
+      - name: Windows PowerShell 5.1 profile contracts
+        shell: powershell
+        run: .\tools\yimecore\test-native-core-profile.ps1
+      - name: PowerShell 7 profile contracts
+        shell: pwsh
+        run: .\tools\yimecore\test-native-core-profile.ps1
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.4'
+          cache: false
+      - name: Validate focused workflow syntax
+        shell: pwsh
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.7 .github/workflows/native-core-benchmark.yaml
+      - name: Go profiling smoke tests under Windows PowerShell 5.1
+        shell: powershell
+        run: .\tools\yimecore\test-native-core-profile.ps1 -RunGoSmoke
+      - name: Show diagnostic fixture logs on failure
+        if: failure()
+        shell: pwsh
+        run: |
+          Get-ChildItem -LiteralPath @($env:RUNNER_TEMP, [IO.Path]::GetTempPath()) -Directory -Filter 'Yime CPU fixture *' |
+            ForEach-Object {
+              Get-ChildItem -LiteralPath $_.FullName -Recurse -File -Filter '*.log' |
+                ForEach-Object {
+                  Write-Host $_.Name
+                  Get-Content -LiteralPath $_.FullName -Tail 40
+                }
+            }
