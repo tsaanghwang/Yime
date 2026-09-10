@@ -1,9 +1,9 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param()
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
 $scope = Get-YimeCoreDevelopmentScope
-$policy = Get-Content (Join-Path $PSScriptRoot 'development-scope.json') -Raw | ConvertFrom-Json
+$policy = Get-Content (Join-Path $PSScriptRoot 'development-scope.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $results = [Collections.Generic.List[object]]::new()
 function Assert-ScopeTest([bool]$Passed, [string]$Name) {

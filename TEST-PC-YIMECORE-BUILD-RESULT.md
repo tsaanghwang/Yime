@@ -16,6 +16,8 @@
 
 ## 当前已安装验收
 
+2026-09-10 后续用户反馈：“已重启并登录，输入法还在”。按本测试机上下文记录为重启登录后输入法入口保留；尚无该次开机的 Runtime/Broker 身份、Run 及 Shell-Core 登录事件原始记录，不据此宣称登录自启动完整通过。
+
 - 安装根：`C:\Program Files\YimeCore Experimental Trial\yimecore-e6c-e346a1dad76d-133c91fe`；安装元数据绑定清单 SHA-256 `133c91fe205fcae911fa701a278465dad040e7dadce006b541697b656e50405a`。
 - x64 与 x86 当前身份 COM/Profile 注册均存在，分别注册 5 个 TSF 类别；状态查询退出码均为 0。
 - Runtime PID 38644 与 Broker PID 12336 均从该安装根运行；Broker 父 PID 为 38644，状态为 `running`，重启计数为 0。
@@ -69,10 +71,10 @@
 - 独立 Runtime/Broker 启动、Broker 失败后恢复、12 条动态句子回归、恢复克隆以及 x64/x86 直接 TSF 组合模拟通过；验证会等待真实 Broker 输入管道就绪，不再仅凭子进程 PID 抢跑；所有状态均在一次性 TEMP/APPDATA 夹具中。
 - 最终 `summary.json`：`passed=true`、`installable=true`、`registration_and_default_preserved=true`。
 
-## 尚未执行，不能据此宣称通过
+## 剩余验收（安装后更新）
 
-- 实际安装、升级、卸载与回退事务。
-- Windows TSF/输入法注册及 x64/x86 已注册宿主测试。
+- 实际安装及 x64/x86 注册宿主测试已由上文记录为测试机报告通过；不再列作未执行。
+- 完整升级、卸载、备份恢复与故障回退矩阵仍未完成。第二次安装触发回退，不等于各维度回退验收全部通过。
 - Word、记事本、32 位 Firefox/Notepad++ 等真实应用输入。
 - 任务栏手动选择“音元拼音”、真实候选窗和语言栏点击。
 - 重启、重新登录、自启动与日常使用/L5-L6 封存。
@@ -80,7 +82,7 @@
 
 因此 `local_product_ready=false`、`public_release_ready=false`；交叉编译与直接 TSF 模拟均不替代已安装真实宿主证据。
 
-## 后续获授权后的安装命令
+## 历史安装交接命令（已完成安装，无需重复执行）
 
 不要从 Codex/打包应用的祖先进程中直接执行安装。关闭 Codex 中启动的终端，从 Explorer 打开独立的普通 Windows PowerShell（同一开发者账户），先只读查看计划：
 
