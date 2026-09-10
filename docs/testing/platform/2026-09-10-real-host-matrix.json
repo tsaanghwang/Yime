@@ -1,0 +1,180 @@
+{
+  "schema_version": "yimecore-test-pc-real-host-matrix-v1",
+  "created_at": "2026-09-10T00:00:00+08:00",
+  "computer_name": "计算机",
+  "package": {
+    "version": "0.1.0-local.13",
+    "git_commit": "e346a1dad76d58f50652a2dd665c64ec8aeef49e",
+    "install_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe",
+    "manifest_sha256": "133c91fe205fcae911fa701a278465dad040e7dadce006b541697b656e50405a",
+    "x64_text_service_sha256": "32e71c5082fccb07a0041649a89401aaada65523b301ac93a67399d6cb43e1c7",
+    "x86_text_service_sha256": "d6e64406e300869582ee1324f4decaa21b37c584169cbb1c4f9eb4c47cd4f864"
+  },
+  "modes": ["full", "variable", "shorthand"],
+  "required_repetitions_per_host_mode": 3,
+  "hosts": [
+    {
+      "name": "Windows Notepad",
+      "required": true,
+      "architecture": "x64",
+      "executable": "C:\\Windows\\System32\\notepad.exe",
+      "executable_version": "10.0.26100.8875",
+      "pe_machine": "0x8664",
+      "availability": "available",
+      "manual_status": "not_run"
+    },
+    {
+      "name": "Microsoft Word",
+      "required": true,
+      "architecture": "x64",
+      "executable": "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
+      "executable_version": "16.0.20326.20132",
+      "pe_machine": "0x8664",
+      "availability": "available",
+      "manual_status": "not_run"
+    },
+    {
+      "name": "Mozilla Firefox",
+      "required": true,
+      "architecture": "x86",
+      "executable": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+      "executable_version": "155.0.1",
+      "pe_machine": "0x014C",
+      "availability": "available",
+      "manual_status": "not_run"
+    },
+    {
+      "name": "Notepad++ 32-bit",
+      "required": true,
+      "architecture": "x86",
+      "executable": "C:\\Program Files (x86)\\Notepad++\\notepad++.exe",
+      "executable_version": "8.9.8.0",
+      "executable_sha256": "960ad7a8d443536ceeeafa18f99aecb70793fc7c4fb6ef23678a9d46bbf7bc78",
+      "pe_machine": "0x014C",
+      "availability": "available",
+      "installation": {
+        "version": "8.9.8",
+        "source": "official GitHub release",
+        "installer_sha256": "9753e2eba8f0ff056d60c52a917f7760ea81227e41b1786260e1ac76db398434",
+        "elevated_installer_exit_code": 0
+      },
+      "manual_status": "pass",
+      "completed_modes": ["full", "variable", "shorthand"]
+    },
+    {
+      "name": "Notepad++ 64-bit",
+      "required": false,
+      "architecture": "x64",
+      "executable": null,
+      "executable_version": null,
+      "pe_machine": "0x8664",
+      "availability": "unavailable",
+      "blocking_reason": "The official x86 installer replaced the prior x64 installation. This host is supplemental and is not required for the x86 acceptance gate.",
+      "manual_status": "unavailable"
+    }
+  ],
+  "behavior_checks": [
+    "current_profile_physically_selected",
+    "composition_and_space_commit",
+    "bare_digits_remain_composition",
+    "shift_candidate_labels",
+    "shift_1_selects_first_candidate",
+    "candidate_page_forward_and_back",
+    "focus_loss_cancels_only_unconfirmed_preedit",
+    "confirmed_text_preserved",
+    "fresh_input_after_focus_return",
+    "language_bar_left_and_right_click",
+    "host_reopen_recovery"
+  ],
+  "manual_results": [
+    {
+      "host": "Notepad++ 32-bit",
+      "architecture": "x86",
+      "mode": "variable",
+      "mode_display_name_reported_by_user": "变长码",
+      "mode_inherited_from_previous_setting": true,
+      "repetitions": 3,
+      "execution_reported_complete": true,
+      "candidates_per_page": 9,
+      "individual_behavior_outcomes": {
+        "composition_and_space_commit": "pass",
+        "shift_candidate_labels": "pass",
+        "shift_1_selects_first_candidate": "pass",
+        "bare_digits_remain_composition": "pass",
+        "candidate_page_forward_and_back": "pass",
+        "language_bar_right_click": "pass"
+      },
+      "result_source": "User physical confirmation: three repetitions were completely normal.",
+      "status": "pass"
+    },
+    {
+      "host": "Notepad++ 32-bit",
+      "architecture": "x86",
+      "mode": "full",
+      "mode_display_name_reported_by_user": "等长码",
+      "repetitions": 3,
+      "execution_reported_complete": true,
+      "candidates_per_page": 9,
+      "individual_behavior_outcomes": {
+        "candidate_page_forward_and_back": "pass",
+        "arrow_candidate_selection": "pass",
+        "shift_ordinal_commit": "pass",
+        "bare_digits_remain_composition": "pass",
+        "interactive_prompt": "pass",
+        "escape_cancellation": "pass"
+      },
+      "result_source": "User physical confirmation: three repetitions and all stated interactions were normal.",
+      "status": "pass"
+    },
+    {
+      "host": "Notepad++ 32-bit",
+      "architecture": "x86",
+      "mode": "shorthand",
+      "mode_display_name_reported_by_user": "省键码",
+      "repetitions": 3,
+      "execution_reported_complete": true,
+      "candidates_per_page": 7,
+      "individual_behavior_outcomes": {
+        "candidate_page_forward_and_back": "pass",
+        "arrow_candidate_selection": "pass",
+        "shift_ordinal_commit": "pass",
+        "bare_digits_remain_composition": "pass",
+        "interactive_prompt": "pass",
+        "escape_cancellation": "pass"
+      },
+      "result_source": "User physical confirmation: three repetitions and all stated interactions were normal.",
+      "status": "pass"
+    }
+  ],
+  "module_evidence": [
+    {
+      "host": "Notepad++ 32-bit",
+      "architecture": "x86",
+      "pre_manual": "docs/testing/platform/2026-09-10-notepadpp-x86-live-metadata.json",
+      "post_manual": "docs/testing/platform/2026-09-10-notepadpp-x86-post-manual-20260910-203029.json",
+      "exact_current_module_verified_before_and_after": true,
+      "language_bar_events": {
+        "mode_observed": "variable",
+        "mode_display_name_reported_by_user": "变长码",
+        "mode_source": "inherited from the previous saved setting; not selected during this test",
+        "right_click_open_hresult_zero": true,
+        "right_click_cancel_hresult_zero": true,
+        "right_click_command_hresult_zero": true
+      },
+      "manual_behavior_result": "pass_for_all_three_modes_three_repetitions_each"
+    }
+  ],
+  "computer_use_native_app_control_available": false,
+  "automation_limitation": "Computer Use returned no controllable Windows apps after reset; physical profile selection and keyboard checks are required and are not a product failure.",
+  "privacy": {
+    "fixed_synthetic_input_only": true,
+    "user_text_recorded": false,
+    "window_titles_read": false,
+    "clipboard_read": false,
+    "learning_data_read": false
+  },
+  "default_input_method_changed": false,
+  "production_rime_pime_touched": false,
+  "complete": false,
+  "passed": false
+}
