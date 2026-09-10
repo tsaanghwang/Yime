@@ -1,5 +1,12 @@
 # Agent Constraints
 
+## PowerShell invocation preflight (user decision, 2026-09-10)
+
+- Before executing PowerShell work in this repository, use `python tools/powershell/run_checked.py --script <path> --edition ps7` (or explicit `ps5` for compatibility checks). This entry checks and then executes in one selected PowerShell process. Do not separately repeat the same preflight before using this entry.
+- Supply named arguments through `--params-file <UTF-8 JSON file>` for complex values; use full parameter names. For short inline work, use `--command <text>`. Prefer a temporary `.ps1` under `.tmp` for multiline work rather than nested shell quoting. Use `--check-only` for validation without execution.
+- Route PowerShell statements through this entry instead of raw shell command bodies; a shell used solely to launch the Python entry is the bootstrap exception. Native tools such as Git, Python and rg may be called directly without a redundant PowerShell preflight. This is a repository agent rule, not a verified desktop-wide interception hook.
+- Select PS5/PS7 deliberately. Do not rerun both editions for unrelated changes, retry automatically, or repeatedly probe the environment. The tool validates syntax, script existence and statically provable parameter errors; it does not certify runtime behavior, hash approval policies, permissions or product acceptance. Existing native maintenance and installation safeguards still apply.
+
 These rules exist to prevent AI-assisted edits from destabilizing PIME/Rime host integration.
 
 ## Current development scope (user decision, updated 2026-09-04)

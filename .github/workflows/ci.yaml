@@ -162,6 +162,9 @@ jobs:
       - name: Validate dual-product acceptance matrix
         shell: pwsh
         run: python -m unittest discover -s tools/dual-product -p "test_acceptance_matrix.py" -v
+      - name: Validate checked PowerShell entry
+        shell: pwsh
+        run: python -m unittest discover -s tools/powershell -p "test_run_checked.py" -v
       - name: Run Rime compiled-cache freshness regression tests
         shell: pwsh
         run: .\tools\test-rime-cache-freshness.ps1
