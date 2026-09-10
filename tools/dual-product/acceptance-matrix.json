@@ -1,0 +1,149 @@
+{
+  "schema_version": "yime-dual-product-acceptance-plan-v2",
+  "products": [
+    "yimecore",
+    "rime-pime"
+  ],
+  "lanes": [
+    {
+      "target": "yimecore",
+      "peer_installed": false,
+      "installation_order": [
+        "yimecore"
+      ]
+    },
+    {
+      "target": "rime-pime",
+      "peer_installed": false,
+      "installation_order": [
+        "rime-pime"
+      ]
+    },
+    {
+      "target": "yimecore",
+      "peer_installed": true,
+      "installation_order": [
+        "yimecore",
+        "rime-pime"
+      ]
+    },
+    {
+      "target": "rime-pime",
+      "peer_installed": true,
+      "installation_order": [
+        "yimecore",
+        "rime-pime"
+      ]
+    },
+    {
+      "target": "yimecore",
+      "peer_installed": true,
+      "installation_order": [
+        "rime-pime",
+        "yimecore"
+      ]
+    },
+    {
+      "target": "rime-pime",
+      "peer_installed": true,
+      "installation_order": [
+        "rime-pime",
+        "yimecore"
+      ]
+    }
+  ],
+  "operations": [
+    "install",
+    "upgrade",
+    "failed-upgrade-rollback",
+    "backup-restore",
+    "reboot-logon",
+    "registered-live-host",
+    "uninstall",
+    "reinstall"
+  ],
+  "binding_fields": [
+    "target_machine_id",
+    "initiating_sid",
+    "architecture",
+    "target_package_sha256",
+    "target_source_identity",
+    "peer_package_sha256_or_absent",
+    "pre_state_sha256",
+    "post_state_sha256",
+    "native_evidence_sha256"
+  ],
+  "protected_dimensions": [
+    "peer_registration",
+    "peer_payloads",
+    "peer_process_identity",
+    "peer_settings_learning",
+    "peer_run_uninstall",
+    "default_input_method"
+  ],
+  "evidence_by_operation": {
+    "install": [
+      "native-install-transaction",
+      "registration-x64-x86",
+      "standard-user-runtime-ready",
+      "self-contained-package"
+    ],
+    "upgrade": [
+      "fresh-backup",
+      "staging-before-disruption",
+      "registration-x64-x86",
+      "target-user-tip-value-kinds",
+      "standard-user-runtime-ready"
+    ],
+    "failed-upgrade-rollback": [
+      "fresh-backup",
+      "injected-failure",
+      "original-registration-and-value-kinds",
+      "original-payload-and-config",
+      "original-running-state",
+      "original-user-data"
+    ],
+    "backup-restore": [
+      "native-independent-archive",
+      "archive-hashes",
+      "actual-restore",
+      "settings-learning-reopen",
+      "standard-user-runtime-ready"
+    ],
+    "reboot-logon": [
+      "boot-after-maintenance",
+      "system-run-value",
+      "shell-logon-event",
+      "live-pid-image-boot-owner",
+      "standard-user-runtime-ready"
+    ],
+    "registered-live-host": [
+      "current-profile-activation",
+      "x64-three-modes",
+      "x86-wow64-three-modes",
+      "physical-host-input",
+      "shift-candidate-selection",
+      "composition-cancellation"
+    ],
+    "uninstall": [
+      "directed-target-stop",
+      "target-registration-absent",
+      "target-run-uninstall-absent",
+      "exact-owned-file-removal",
+      "user-data-retained",
+      "independent-recovery-retained"
+    ],
+    "reinstall": [
+      "prior-uninstall-evidence",
+      "retained-user-data-binding",
+      "native-install-transaction",
+      "registration-x64-x86",
+      "settings-learning-reopen",
+      "standard-user-runtime-ready"
+    ]
+  },
+  "coverage_rule": "A row requires its own native evidence bound to its target, peer state and exact package; no inheritance from another row.",
+  "execution_authorized": false,
+  "installed_acceptance_passed": false,
+  "three_choice_entry_admitted": false
+}
