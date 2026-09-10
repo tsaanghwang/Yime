@@ -10,6 +10,7 @@ namespace yime::experiment {
 
 struct SurfaceOutcome {
     bool handled = false;
+    bool invalidCodeRejected = false;
     BrokerUpdate update;
     std::string error;
 };

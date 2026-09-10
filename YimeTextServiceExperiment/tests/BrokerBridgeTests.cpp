@@ -379,18 +379,14 @@ int wmain(int argc, wchar_t** argv) {
         return 1;
     }
     outcome = surface.HandleVirtualKey('Z', false);
-    if (!outcome.handled || outcome.update.rawInput != code + "z" || !outcome.update.candidates.empty()) {
-        std::cerr << "invalid-code state did not remain editable\n";
-        return 1;
-    }
-    outcome = surface.HandleVirtualKey(VK_BACK, false);
-    if (!outcome.handled || outcome.update.rawInput != code || outcome.update.candidates.empty()) {
-        std::cerr << "Backspace did not restore the Broker candidate state\n";
+    if (!outcome.handled || !outcome.invalidCodeRejected ||
+        outcome.update.rawInput != code || outcome.update.candidates.empty()) {
+        std::cerr << "invalid trailing code was not rejected atomically\n";
         return 1;
     }
     outcome = surface.HandleVirtualKey(VK_BACK, false);
     if (!outcome.handled || outcome.update.rawInput != "2jr") {
-        std::cerr << "second Backspace did not update Broker raw input\n";
+        std::cerr << "Backspace did not remove the last valid code\n";
         return 1;
     }
     outcome = surface.HandleVirtualKey('U', false);
@@ -402,6 +398,12 @@ int wmain(int argc, wchar_t** argv) {
     outcome = surface.HandleVirtualKey('1', true);
     if (!outcome.handled || outcome.update.commit != selected || !outcome.update.rawInput.empty()) {
         std::cerr << "Shift+1 stable candidate selection failed: " << outcome.error << '\n';
+        return 1;
+    }
+    outcome = surface.HandleVirtualKey(VK_OEM_1, true);
+    if (!outcome.handled || !outcome.invalidCodeRejected || !outcome.update.rawInput.empty() ||
+        !outcome.update.candidates.empty()) {
+        std::cerr << "invalid initial code was not consumed without starting a composition\n";
         return 1;
     }
     std::string pagingCode;

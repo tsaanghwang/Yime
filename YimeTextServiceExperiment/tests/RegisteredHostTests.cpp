@@ -691,6 +691,12 @@ int wmain(int argc, wchar_t** argv) {
             throw std::runtime_error("could not restore registered Chinese mode");
         }
 
+        dispatchKey(keystrokes, 'A');
+        if (!readContext(context, clientId).empty() || hasComposition(context) ||
+            findCandidateElement(threadManager)) {
+            throw std::runtime_error("registered invalid initial code started or leaked into a composition");
+        }
+
         const std::string code = "2jru";
         for (size_t index = 0; index < code.size(); ++index) {
             const char character = code[index];
@@ -738,15 +744,14 @@ int wmain(int argc, wchar_t** argv) {
         }
 
         dispatchKey(keystrokes, 'Z');
-        if (readContext(context, clientId) != L"2jruz" || !IsWindow(popup) || !IsWindowVisible(popup)) {
-            throw std::runtime_error("registered invalid code did not keep correction status visible");
+        if (readContext(context, clientId) != L"2jru" || !IsWindow(popup) || !IsWindowVisible(popup)) {
+            throw std::runtime_error("registered invalid code did not preserve the last valid state");
         }
         dispatchKey(keystrokes, VK_BACK);
 		popup = findOwnedCandidatePopup();
-        if (readContext(context, clientId) != L"2jru" || !IsWindowVisible(popup)) {
-            throw std::runtime_error("registered Backspace did not restore candidates");
+        if (readContext(context, clientId) != L"2jr" || !IsWindowVisible(popup)) {
+            throw std::runtime_error("registered Backspace did not remove the last valid code");
         }
-        dispatchKey(keystrokes, VK_BACK);
         dispatchKey(keystrokes, 'U');
         if (readContext(context, clientId) != L"2jru" || !IsWindowVisible(popup)) {
             throw std::runtime_error("registered deleted code resurrected after continued input");
@@ -923,12 +928,12 @@ int wmain(int argc, wchar_t** argv) {
             throw std::runtime_error("registered candidate UI survived focus cancellation");
         }
         BOOL crossContextEaten = FALSE;
-        require(keystrokes->TestKeyDown('J', 0, &crossContextEaten), "registered cross-context TestKeyDown");
+        require(keystrokes->TestKeyDown('2', 0, &crossContextEaten), "registered cross-context TestKeyDown");
         if (!crossContextEaten) {
             throw std::runtime_error("registered focus cancellation did not reconnect for the new context");
         }
-        dispatchKey(keystrokes, 'J');
-        if (readContext(otherContext, clientId) != L"j" || !hasComposition(otherContext) ||
+        dispatchKey(keystrokes, '2');
+        if (readContext(otherContext, clientId) != L"2" || !hasComposition(otherContext) ||
             readContext(context, clientId) != beforeFocusCancellation) {
             throw std::runtime_error("registered fresh target-context input reused cancelled code");
         }
@@ -942,8 +947,8 @@ int wmain(int argc, wchar_t** argv) {
             !readContext(otherContext, clientId).empty() || hasComposition(otherContext)) {
             throw std::runtime_error("registered return focus resurrected raw code or lost committed text");
         }
-        dispatchKey(keystrokes, 'J');
-        if (readContext(context, clientId) != beforeFocusCancellation + L"j" ||
+        dispatchKey(keystrokes, '2');
+        if (readContext(context, clientId) != beforeFocusCancellation + L"2" ||
             !hasComposition(context)) {
             throw std::runtime_error("registered focus recovery did not apply a fresh composition");
         }
@@ -956,6 +961,8 @@ int wmain(int argc, wchar_t** argv) {
                   << "registered_focus_cancellation_preserves_committed_text_verified=true\n"
                   << "registered_candidate_commit=true\n"
                   << "registered_default_candidate_keys_verified=true\n"
+                  << "registered_invalid_initial_code_rejection_verified=true\n"
+                  << "registered_invalid_code_rejection_verified=true\n"
                   << "registered_invalid_code_backspace_recovery_verified=true\n"
                   << "registered_direction_and_page_keys_verified=true\n"
                   << "architecture_bits=" << sizeof(void*) * 8 << '\n';
@@ -992,8 +999,8 @@ int wmain(int argc, wchar_t** argv) {
         }
         require(threadManager->SetFocus(document), "restore focus after delayed cancellation");
         pumpMessages();
-        dispatchKey(keystrokes, 'J');
-        if (readContext(context, clientId) != beforeDelayedFocusCancellation + L"j" ||
+        dispatchKey(keystrokes, '2');
+        if (readContext(context, clientId) != beforeDelayedFocusCancellation + L"2" ||
             !hasComposition(context)) {
             throw std::runtime_error("registered delayed focus cancellation did not recover fresh input");
         }
