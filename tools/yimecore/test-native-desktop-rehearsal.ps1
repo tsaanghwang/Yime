@@ -17,6 +17,12 @@ function Import-ControllerFunction([string]$Name){
 }
 foreach($name in @('Assert-NativeDesktopRehearsalOptions','Assert-NativeDesktopRehearsalPackage','Assert-NativeDesktopRehearsalBaseline','Remove-ProductTree','Restore-PreviousInstallation')){Import-ControllerFunction $name}
 $NativeX64Only=$false;$NativeDesktop=$true;$NativeDesktopRehearsal=$true;$NativeX64Rehearsal=$false;$NativeLocalProduct=$true
+# The transaction now restores the captured registration state, rather than
+# assuming that every previous architecture was registered.
+$previousRegistrationSnapshot=@{
+    x64=@{com_registered=$true;profile_registered=$true;categories_registered_count=5}
+    x86=@{com_registered=$true;profile_registered=$true;categories_registered_count=5}
+}
 $Action='Install';$PurgeUserData=$false;$NoLaunch=$false;$NoAutoStart=$false
 Assert-NativeDesktopRehearsalOptions
 Check $true 'valid explicit desktop rehearsal options'

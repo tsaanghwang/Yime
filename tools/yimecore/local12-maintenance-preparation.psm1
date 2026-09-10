@@ -59,11 +59,16 @@ function Test-PreparationGuard([hashtable]$Contract) {
     # own single controller pin and never acquire execution authorization here.
     # The startup-health controller was reviewed on 2026-09-09: the terminal
     # rollback barrier, old-root retention and finalizer remain intact.
+    # 2026-09-10: reviewed e346a1dad/fc2d7db65 controller changes (initiator
+    # handoff, registration snapshot, target scope and bounded health retry).
+    # The rehearsal rollback barrier and old-root retention remain mandatory.
+    # See docs/project/YIMECORE_CI_CONTROLLER_POLICY_2026-09-10.md.
     if ($Contract.guarded_native_desktop_rehearsal -and
         ($Contract.manager_sha256 -isnot [string] -or $Contract.manager_sha256 -cnotin @(
             'e65ea013b5c947c68604bc633e180563a811b856ed6c2aa7b09f3d5c291cd95a',
             '9f69d9aba12e4c50c8aa06edb945375dc72a721cd208791ffab2e4207442f39d',
-            'c4585051463c18b1164a4bf5eeb624f232fcc4b2c4177180feebe2e3c4448d75'))) { throw 'Controller is not approved for guarded NativeDesktop rehearsal.' }
+            'c4585051463c18b1164a4bf5eeb624f232fcc4b2c4177180feebe2e3c4448d75',
+            '24bbfce74039cef780db095edfb1667b65f15b68bc76956723afbbb99f2c155e'))) { throw 'Controller is not approved for guarded NativeDesktop rehearsal.' }
     return $Contract.guarded_native_desktop_rehearsal
 }
 

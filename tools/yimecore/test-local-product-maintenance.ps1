@@ -179,7 +179,8 @@ function Resolve-RegistrationAction {param($tool,$requestedAction)return $reques
 function Invoke-Registration {param($tool,$command,$dll,$label)$rollbackRegistrations.Add($label)}
 function Wait-RegistrationState {param($tool,$comRegistered,$profileRegistered,$categoryCount)}
 function Add-InputMethodTip {$rollbackRegistrations.Add('tip')}
-Restore-PreviousInstallation $oldCurrent '' @{exists=$false} @{exists=$false} @{exists=$false} $false @{exists=$false}
+$registeredSnapshot=@{x64=@{com_registered=$true;profile_registered=$true;categories_registered_count=5}}
+Restore-PreviousInstallation $oldCurrent '' @{exists=$false} @{exists=$false} @{exists=$false} $false @{exists=$false} $registeredSnapshot
 Check ($rollbackRegistrations.Count -eq 2 -and $rollbackRegistrations[0] -eq 'rollback x64 TSF registration' -and
     $rollbackRegistrations[1] -eq 'tip') 'x64-only rollback does not execute the carried legacy x86 tool'
 
