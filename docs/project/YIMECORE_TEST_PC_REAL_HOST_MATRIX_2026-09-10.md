@@ -44,13 +44,20 @@
 
 宿主保持打开且已经实际选择当前 profile 后，用进程 PID 运行：
 
-```powershell
-pwsh -NoProfile -File .\tools\yimecore\capture-live-host-matrix.ps1 `
-  -HostProcessId 1234,5678 `
-  -OutputPath .\docs\testing\platform\2026-09-10-real-host-live-metadata.json
+```json
+{
+  "HostProcessId": [1234, 5678],
+  "OutputPath": "docs/testing/platform/2026-09-10-real-host-live-metadata.json"
+}
 ```
 
-脚本只收集进程映像、版本、PE 架构、哈希和已加载 YimeCore DLL；它拒绝覆盖既有证据。人工行为结果另存，不能由模块加载自动推导。
+将上述 JSON 保存为 `.tmp/live-host-params.json`，再通过统一预检入口运行：
+
+```text
+python tools/powershell/run_checked.py --edition ps7 --script tools/yimecore/capture-live-host-matrix.ps1 --params-file .tmp/live-host-params.json
+```
+
+脚本只收集进程映像、版本、PE 架构、哈希和已加载 YimeCore DLL；它拒绝覆盖既有证据。人工行为结果另存，不能由模块加载自动推导。统一预检负责 PowerShell 版本、语法和参数绑定，不负责补齐 `cmake` 等外部依赖或修改 PATH。
 
 ## 当前执行顺序
 
