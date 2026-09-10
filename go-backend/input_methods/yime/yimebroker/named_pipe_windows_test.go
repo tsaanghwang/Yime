@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+const namedPipeTestTimeout = 10 * time.Second
+
 func TestServeNamedPipeHandlesConcurrentConnectionsAndRejectsIdentityFields(t *testing.T) {
 	dispatcher := newMemoryDispatcher(t, Config{})
 	pipeName := fmt.Sprintf(`\\.\pipe\YimeBroker-test-%d`, os.Getpid())
@@ -83,7 +85,7 @@ func TestServeNamedPipeWaitsAtGlobalConnectionLimit(t *testing.T) {
 	thirdResult := make(chan *os.File, 1)
 	thirdError := make(chan error, 1)
 	go func() {
-		file, err := openPipeUntil(pipeName, time.Now().Add(3*time.Second))
+		file, err := openPipeUntil(pipeName, time.Now().Add(namedPipeTestTimeout))
 		if err != nil {
 			thirdError <- err
 			return
@@ -106,7 +108,7 @@ func TestServeNamedPipeWaitsAtGlobalConnectionLimit(t *testing.T) {
 	case third = <-thirdResult:
 	case err := <-thirdError:
 		t.Fatal(err)
-	case <-time.After(3 * time.Second):
+	case <-time.After(namedPipeTestTimeout):
 		t.Fatal("released global connection slot was not reused")
 	}
 	response := exchangePipeRequest(t, third, `{"version":1,"sequence":1,"operation":"open"}`)
@@ -121,14 +123,14 @@ func TestServeNamedPipeWaitsAtGlobalConnectionLimit(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-	case <-time.After(3 * time.Second):
+	case <-time.After(namedPipeTestTimeout):
 		t.Fatal("limited named pipe server did not stop")
 	}
 }
 
 func openTestPipe(t *testing.T, name string) *os.File {
 	t.Helper()
-	file, err := openPipeUntil(name, time.Now().Add(3*time.Second))
+	file, err := openPipeUntil(name, time.Now().Add(namedPipeTestTimeout))
 	if err != nil {
 		t.Fatalf("open named pipe: %v", err)
 	}

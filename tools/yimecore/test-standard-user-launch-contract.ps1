@@ -58,6 +58,9 @@ Check ($source.Contains('attempt.TokenAccess=PrimaryLaunchAccess;') -and $source
 Check ($source.Contains('TerminateProcess(created.process, 1)') -and $source.Contains('if (initiator != IntPtr.Zero) CloseHandle(initiator)')) 'failed owned launch and source token are cleaned up'
 $manager=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'manage-e6c-trial-install.ps1') -Raw -Encoding UTF8
 Check ($manager.Contains("@('-StandardUserInitiator',(Quote-Argument `$reference))") -and $manager.Contains('$process.WaitForExit()')) 'UAC explicitly forwards initiator and retains its lifetime'
+Check ($manager.Contains('$inheritedInitiator = [string]$env:YIMECORE_MAINTENANCE_INITIATOR') -and
+    $manager.Contains('Standard-user maintenance initiator channels disagree.') -and
+    $manager.Contains('$env:YIMECORE_MAINTENANCE_INITIATOR=$reference')) 'UAC handoff retains a matching inherited initiator reference when a named argument is lost'
 $runtime=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'local-product-runtime.ps1') -Raw -Encoding UTF8
 Check ($runtime.Contains('Assert-YimeCoreMaintenanceInitiator')) 'package backup and restore launcher also checks initiating ancestry'
 $probe=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'test-native-standard-user-launch.ps1') -Raw -Encoding UTF8

@@ -18,20 +18,23 @@ if (-not (Test-Path -LiteralPath $manager -PathType Leaf)) {
 }
 
 $stateRoot = Join-Path (Split-Path -Parent $outputPathValue) 'installer-contract-state'
+$manifestForMode=Get-Content -LiteralPath (Join-Path $packageRootPath 'package-manifest.json') -Raw -Encoding UTF8|ConvertFrom-Json
+$isLocalProduct=[string]$manifestForMode.package_contract -ceq 'yimecore-local-product-package-v1'
+$maintenanceMode=@(if($isLocalProduct){'-NativeDesktop'})
 $sentinel = Join-Path $stateRoot 'user-model\learning-sentinel.json'
 New-Item -ItemType Directory -Path (Split-Path -Parent $sentinel) -Force | Out-Null
 $sentinelValue = '{"generation":17,"mode":"variable"}'
 [IO.File]::WriteAllText($sentinel, $sentinelValue, (New-Object Text.UTF8Encoding($false)))
 
 $planText = (& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $manager -Action Plan `
-    -PackageRoot $packageRootPath -StateRoot $stateRoot 2>&1) -join "`n"
+    -PackageRoot $packageRootPath -StateRoot $stateRoot @maintenanceMode 2>&1) -join "`n"
 if ($LASTEXITCODE -ne 0) { throw "installation plan contract failed: $planText" }
 $plan = $planText | ConvertFrom-Json
 
 $savedErrorActionPreference = $ErrorActionPreference
 $ErrorActionPreference = 'Continue'
 $invalidText = (& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $manager -Action Plan `
-    -PackageRoot $packageRootPath -InstallRoot 'C:\Program Files\PIME' -StateRoot $stateRoot 2>&1) -join "`n"
+    -PackageRoot $packageRootPath -InstallRoot 'C:\Program Files\PIME' -StateRoot $stateRoot @maintenanceMode 2>&1) -join "`n"
 $invalidExitCode = $LASTEXITCODE
 $ErrorActionPreference = $savedErrorActionPreference
 $invalidRootRejected = $invalidExitCode -ne 0
@@ -171,6 +174,14 @@ $result = [ordered]@{
 		$managerText.Contains('function Assert-PrivilegedPackageCopy') -and
 		$stagedValidationIndex -ge 0 -and $stagedValidationIndex -lt $preinstallIndex -and
 		$installedValidationIndex -ge 0 -and $installedValidationIndex -lt $registrationAfterValidationIndex)
+	privileged_copy_compares_local_payload_records = [bool](
+		$managerText -match '(?s)\$localPackage\s*=\s*Assert-LocalProductPackage\s+\$resolved.*?records\s*=\s*@\(Get-PackageRecords\s+\$resolved\)' -and
+		$managerText -match '(?s)function Assert-PrivilegedPackageCopy.*?\$copy\.records.*?\$trustedPackage\.records')
+	rollback_restores_per_architecture_registration_state = [bool](
+        $managerText -match '(?s)function Get-RegistrationStateForRoot.*?com_registered.*?profile_registered.*?categories_registered_count' -and
+        $managerText.Contains('$previousRegistrationSnapshot = if') -and
+        $managerText.Contains('$previousRuntimeWasRunning $previousUserTipSnapshot $previousRegistrationSnapshot') -and
+        $managerText -match '(?s)function Restore-PreviousInstallation.*?\[bool\]\$expected\.com_registered.*?Wait-RegistrationState \$tool \(\[bool\]\$expected\.com_registered\)')
 	uninstall_requires_verified_registration_absence = [bool](
 		$managerText.Contains('& $tool verify-absent') -and
 		$managerText.Contains('installation files were preserved') -and
@@ -205,9 +216,11 @@ if ($result.installed_apps_entry_planned -ne $true -or
     $result.invalid_non_trial_root_rejected -ne $true -or
     $result.exact_trial_clsid_scoped -ne $true -or
     $result.secondary_architecture_com_only -ne $true -or
-	$result.arm64_tsf_packaged -ne $true -or
-	$result.arm64_dll_machine_verified -ne $true -or
-	$result.arm64_fail_fast_and_registration_planned -ne $true -or
+    (-not $isLocalProduct -and ($result.arm64_tsf_packaged -ne $true -or
+        $result.arm64_dll_machine_verified -ne $true -or
+        $result.arm64_fail_fast_and_registration_planned -ne $true)) -or
+    ($isLocalProduct -and ($plan.arm64_tsf_artifacts_required -ne $false -or
+        (@($plan.active_registration_architectures) -join ',') -cne 'x64,x86')) -or
     $result.profile_keyboard_icon_packaged -ne $true -or
     $result.yinyuan_private_font_packaged -ne $true -or
     $result.trial_tools_packaged -ne $true -or
@@ -218,6 +231,8 @@ if ($result.installed_apps_entry_planned -ne $true -or
     $result.input_toolbar_powershell_ui_absent -ne $true -or
     $result.registration_state_convergence_wait -ne $true -or
 	$result.privileged_copy_revalidated_before_cleanup -ne $true -or
+	$result.privileged_copy_compares_local_payload_records -ne $true -or
+	$result.rollback_restores_per_architecture_registration_state -ne $true -or
 	$result.uninstall_requires_verified_registration_absence -ne $true -or
 	$result.input_method_tip_cleanup_is_global_and_fail_loud -ne $true -or
 	$result.pre_registration_validation_failure_avoids_untrusted_cleanup_tool -ne $true -or

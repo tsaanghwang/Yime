@@ -25,6 +25,10 @@ $ErrorActionPreference = 'Stop'
 $script:rehearsalOutcome = $null
 $script:rehearsalOutcomeStream = $null
 $script:rehearsalOutcomeExitCode = 1
+# Keep path and archive guards in script scope.  Loading this helper only from
+# Assert-Package makes its functions disappear when that function returns,
+# leaving a later runtime-start transaction without Assert-YimeCorePlainPath.
+. (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
 $NativeLocalProduct = [bool]($NativeX64Only -or $NativeDesktop)
 if ($NativeX64Only -and $NativeDesktop) { throw 'Choose exactly one local-product architecture mode.' }
 function Assert-NativeDesktopRehearsalOptions {
@@ -117,8 +121,20 @@ function Assert-UnpackagedTrialMaintenance {
     }
 }
 if ($Action -ne 'Plan') { Assert-UnpackagedTrialMaintenance }
-if ($NativeLocalProduct -and $Action -ne 'Plan' -and $StandardUserInitiator) {
-    $env:YIMECORE_MAINTENANCE_INITIATOR=$StandardUserInitiator
+if ($NativeLocalProduct -and $Action -ne 'Plan') {
+    # The explicit command-line argument is the primary UAC handoff.  Keep the
+    # same captured reference in the inherited environment as a bounded backup:
+    # some ShellExecute/UAC paths have dropped a trailing named argument even
+    # though they preserve the parent environment.  Either channel still has to
+    # name the live, same-SID native PowerShell process and is fully revalidated
+    # by StandardUserLauncher before it can launch a medium-token child.
+    $inheritedInitiator = [string]$env:YIMECORE_MAINTENANCE_INITIATOR
+    if ($StandardUserInitiator -and $inheritedInitiator -and
+        -not $StandardUserInitiator.Equals($inheritedInitiator, [StringComparison]::Ordinal)) {
+        throw 'Standard-user maintenance initiator channels disagree.'
+    }
+    if (-not $StandardUserInitiator) { $StandardUserInitiator = $inheritedInitiator }
+    if ($StandardUserInitiator) { $env:YIMECORE_MAINTENANCE_INITIATOR=$StandardUserInitiator }
 }
 if ($NativeLocalProduct -and ($NativeX64Rehearsal -or $nativeArchitecture -ne 'AMD64' -or
     -not [Environment]::Is64BitProcess -or $env:COMPUTERNAME -ne 'MYCOMPUTER' -or $PurgeUserData -or
@@ -465,9 +481,12 @@ function Restart-Elevated {
     if ($NativeLocalProduct) {
         # Keep this ordinary PowerShell alive through WaitForExit below. The
         # elevated worker may duplicate only this explicit primary token.
-        $env:YIMECORE_MAINTENANCE_INITIATOR=$null
         Initialize-StandardUserLauncher
         $reference=[YimeCore.LocalMaintenance.StandardUserLauncher]::CaptureInitiatorReference($TargetUserSid)
+        # Preserve the exact capture through the UAC boundary as well as the
+        # named argument below. The worker rejects a mismatch and validates the
+        # retained process identity, package state, SID, session and token.
+        $env:YIMECORE_MAINTENANCE_INITIATOR=$reference
         $arguments += @('-StandardUserInitiator',(Quote-Argument $reference))
     }
     if (-not [string]::IsNullOrWhiteSpace($PackageRoot)) {
@@ -560,6 +579,23 @@ function Get-RegistrationArchitecturesForRoot([string]$root) {
     if ($active -contains 'x64') { $result += [ordered]@{ name='x64'; action='register' } }
     if ($active -contains 'x86') { $result += [ordered]@{ name='x86'; action='register-com' } }
     return $result
+}
+
+function Get-RegistrationStateForRoot([string]$root) {
+    $states=@{}
+    foreach($architecture in @(Get-RegistrationArchitecturesForRoot $root)) {
+        $name=[string]$architecture.name
+        $tool=Join-Path $root "$name\YimeTextServiceRegistration.exe"
+        $text=(& $tool status 2>&1)-join "`n"
+        if($LASTEXITCODE -ne 0){throw "Cannot capture previous $name TSF registration state: $text"}
+        $status=Convert-RegistrationStatus $text
+        $states[$name]=[ordered]@{
+            com_registered=([string]$status.com_registered_current_view -ceq 'true')
+            profile_registered=([string]$status.profile_registered -ceq 'true')
+            categories_registered_count=[int]$status.categories_registered_count
+        }
+    }
+    return $states
 }
 
 function Find-CurrentRegistrationTool([string[]]$roots, [string]$architecture) {
@@ -1282,7 +1318,7 @@ function Test-NativeX64LauncherContent($Package) {
 
 function Restore-PreviousInstallation([string]$root, [string]$configText,
                                      $runSnapshot, $uninstallSnapshot, $legacyUninstallSnapshot,
-                                     [bool]$runtimeWasRunning, $userTipSnapshot) {
+                                     [bool]$runtimeWasRunning, $userTipSnapshot, $registrationSnapshot) {
     if (-not [string]::IsNullOrWhiteSpace($root)) {
     if (-not (Test-Path -LiteralPath $root -PathType Container)) { throw "Previous package is missing: $root" }
 	$restoreArchitectures = @(Get-RegistrationArchitecturesForRoot $root)
@@ -1292,10 +1328,15 @@ function Restore-PreviousInstallation([string]$root, [string]$configText,
 	foreach ($architecture in $restoreArchitectures) {
 		$name = [string]$architecture.name
 		$tool = Join-Path $root "$name\YimeTextServiceRegistration.exe"
-		$action=Resolve-RegistrationAction $tool ([string]$architecture.action)
-		Invoke-Registration $tool $action `
-			(Join-Path $root "$name\YimeTextServiceExperiment.dll") "rollback $name TSF registration"
-		Wait-RegistrationState $tool $true $true 5
+        $expected=$registrationSnapshot[$name]
+        if($null -eq $expected){throw "Missing previous $name TSF registration snapshot"}
+        if([bool]$expected.com_registered){
+			$action=Resolve-RegistrationAction $tool ([string]$architecture.action)
+			Invoke-Registration $tool $action `
+				(Join-Path $root "$name\YimeTextServiceExperiment.dll") "rollback $name TSF registration"
+        }
+		Wait-RegistrationState $tool ([bool]$expected.com_registered) `
+            ([bool]$expected.profile_registered) ([int]$expected.categories_registered_count)
 	}
     Add-InputMethodTip
     }
@@ -1417,6 +1458,9 @@ $previousRunSnapshot = Get-RegistryValueSnapshot $runKey $productKeyName
 $previousUninstallSnapshot = Get-RegistryKeySnapshot $uninstallKey
 $previousLegacyUninstallSnapshot = Get-RegistryKeySnapshot $legacyMachineUninstallKey
 $previousUserTipSnapshot = Get-RegistryKeySnapshot $userTipKey
+$previousRegistrationSnapshot = if (-not [string]::IsNullOrWhiteSpace($previousRoot)) {
+    Get-RegistrationStateForRoot $previousRoot
+} else { @{} }
 $migrationLegacyUserTipSnapshot = Get-FrozenUserTipSnapshot
 $previousStatusPath = Join-Path $stateRootPath 'runtime-status.json'
 $previousRuntimeWasRunning = Get-PreviousRuntimeWasRunning $previousConfigText
@@ -1591,7 +1635,7 @@ try {
             if (Test-Path -LiteralPath $targetRoot) { Remove-ProductTree $targetRoot | Out-Null }
             Restore-PreviousInstallation $previousRoot $previousConfigText `
 				$previousRunSnapshot $previousUninstallSnapshot $previousLegacyUninstallSnapshot `
-				$previousRuntimeWasRunning $previousUserTipSnapshot
+				$previousRuntimeWasRunning $previousUserTipSnapshot $previousRegistrationSnapshot
             if ($script:rehearsalOutcome) { Set-RehearsalPhase 'previous_installation_restored' }
         }
         if (Test-Path -LiteralPath $stagingRoot) { Remove-ProductTree $stagingRoot | Out-Null }
