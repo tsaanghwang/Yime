@@ -31,6 +31,10 @@
 
 ## 证据
 
+### 用户现场补充（2026-09-12）
+
+用户明确确认：输入法列表新增的是 **Rime/PIME 图标**，选中后不能输入。这是用户现场观察，未由自动化再次复现，与本轮部分注册仍存在、候选运行进程为空的采集结果相容；不计为安装或真实宿主输入验收通过。此反馈针对 Rime/PIME，未提供 YimeCore 当前输入能力的对照结果，也不改变上述 YimeCore 用户 TIP 子树变化的保护失败结论。
+
 [复核结果](../testing/platform/2026-09-12-defaultstring-peer-failure/verified-result.json)、[脱敏 peer 差异](../testing/platform/2026-09-12-defaultstring-peer-failure/peer-diff-redacted.json)、[五份失败详情](../testing/platform/2026-09-12-defaultstring-peer-failure/failure-details-redacted.json)、[注册存在性](../testing/platform/2026-09-12-defaultstring-peer-failure/registration-presence.json)、[事务决定](../testing/platform/2026-09-12-defaultstring-peer-failure/decisions.json)、[外部证据索引](../testing/platform/2026-09-12-defaultstring-peer-failure/external-evidence-index.json)、[仓库副本索引](../testing/platform/2026-09-12-defaultstring-peer-failure/index.json)。
 
 原始授权、完整快照、控制台和日志继续留在 Git 外 `%USERPROFILE%\Yime Rime-PIME Test Archives`，本次入口目录为 `defaultstring-install-3182c545-once`，只读目录为 `readonly-9fe7f28d-0889-4828-85b5-1f481431b43a-17b56960a495491b94bb0c2ce462c630`。仓库只提交必要非敏感结果；用户目录和 SID 已替换，未提交授权或用户数据原文。
