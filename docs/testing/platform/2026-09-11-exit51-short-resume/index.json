@@ -1,0 +1,286 @@
+{
+  "delivery_commit": "79f8b10c",
+  "transport": {
+    "schema_version": "yime-original-resume-transport-v1",
+    "installer_sha256": "0276245dff5aa5e6441a829152eb178471b8cba0a21314e15ba04a9e5ff83617",
+    "receipt_sha256": "c4badd8cc2c3b06389ed044f08bcfb0383eb963affe5ca93a3e1c5e870eea4a1",
+    "command_length_upper_bound": 939,
+    "original_parameters_sha256": "108bd85f168a6f2f9c0d1f64c97d07c9a772bbb4a07678bc01bdcb2e93c176a7",
+    "maintenance_executed": false
+  },
+  "process_result": {
+    "returncode": 1,
+    "attempts": 1,
+    "start_utc": "2026-09-11T11:59:23.666826+00:00",
+    "end_utc": "2026-09-11T12:01:39.378479+00:00"
+  },
+  "after_summary": {
+    "collection_completed": true,
+    "original_evidence_unchanged": true,
+    "payload_count": 191,
+    "payload_errors": 0,
+    "payload_mismatches": 0,
+    "registry_errors": 0,
+    "registry_present": 0,
+    "default_matches": true,
+    "process_count": 0,
+    "log_count": 0,
+    "installed_acceptance_passed": false
+  },
+  "decisions": {
+    "prepared_binding_valid": true,
+    "install_commit": null,
+    "install_terminal": null,
+    "removal_commit": {
+      "schema_version": "yime-rime-pime-candidate-decision-v1",
+      "prepared_sha256": "f7635d2fc42d8ec6dc273c9ac7d562d4e9c19d7860dccc519dab320e92878bfd",
+      "disposition": "remove-requested"
+    },
+    "removal_terminal": null,
+    "parser_source": "6321067de503463a71262a84239b8f5c3064f10d",
+    "parsed_copies_only": true
+  },
+  "peer_results": [
+    {
+      "schema_version": "yime-rime-pime-peer-comparison-v1",
+      "unchanged": true,
+      "before_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "after_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "installed_acceptance_passed": false
+    },
+    {
+      "schema_version": "yime-rime-pime-peer-comparison-v1",
+      "unchanged": true,
+      "before_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "after_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "installed_acceptance_passed": false
+    }
+  ],
+  "files": [
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\resume-short-79f8b10c-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\after-evidence.txt",
+      "bytes": 122,
+      "sha256": "1ca0a5cd06b45b4d7efa02600e07089ee54a754ceddca5e864e038f619c377c6"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\resume-short-79f8b10c-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\before-evidence.txt",
+      "bytes": 122,
+      "sha256": "102857619cde8f5b298036d10ba2e7a8a2a978b5caddce6fd52cfdce889afeab"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\resume-short-79f8b10c-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\console.txt",
+      "bytes": 2494,
+      "sha256": "f1267ca45d4777caecc826581f4ad208d51c749bb5f6fa17f97db7ddbaef1e97"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\resume-short-79f8b10c-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\execute-parameters-path.txt",
+      "bytes": 113,
+      "sha256": "f3309ce87b61d95763fc9094bc278666489292dcb40b43467090333a957c6535"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\resume-short-79f8b10c-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\execution-result.json",
+      "bytes": 141,
+      "sha256": "67eaa5eb6732f8bdb7fece382aabe2904a5fc2367f26152a6ba2ca32e69587c8"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\resume-short-79f8b10c-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\resume-process-result.json",
+      "bytes": 143,
+      "sha256": "a64dd99bffc4dba1b8b62228aef6767ead40ed599e1b0e729b9c6653d6cf3518"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\resume-short-79f8b10c-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\resume-started.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\resume-short-79f8b10c-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\resume-stderr.txt",
+      "bytes": 79,
+      "sha256": "d9e53f212383961cc5e21a9a9dfce35db879443a0ffe5c79021f8738f3927cb8"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\resume-short-79f8b10c-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\resume-stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\resume-short-79f8b10c-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\short-parameters-path.txt",
+      "bytes": 44,
+      "sha256": "bcd212ffb9731ab26c171b4a5f14973ca52758451f97b2bfa08f4650d84e9d55"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-5f4d9dd34b704c7fbdba26f38a576731\\decisions.json",
+      "bytes": 555,
+      "sha256": "0145a84e1ab0dc0dcd3679f9de37ef822b5c98b2198a9b9bdd73b0df01eff2d3"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-5f4d9dd34b704c7fbdba26f38a576731\\default-comparison.json",
+      "bytes": 561,
+      "sha256": "da452f859d67a00c1d5fe6040ea8ec400a031647771a450c63ff77a43514ca32"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-5f4d9dd34b704c7fbdba26f38a576731\\existing-log-inventory.json",
+      "bytes": 134,
+      "sha256": "b8005cceb5e6cc2ca400a2f7b1db1d58c17a554f4a21b3cb6f9f318e6e159405"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-5f4d9dd34b704c7fbdba26f38a576731\\original-files-after.json",
+      "bytes": 3362,
+      "sha256": "f428b28ae2d4a2e82e96cc11ba0f202c9837d4ddaa91a986029f369907ba5765"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-5f4d9dd34b704c7fbdba26f38a576731\\original-files-before.json",
+      "bytes": 3362,
+      "sha256": "f428b28ae2d4a2e82e96cc11ba0f202c9837d4ddaa91a986029f369907ba5765"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-5f4d9dd34b704c7fbdba26f38a576731\\payload-observations.json",
+      "bytes": 76835,
+      "sha256": "d91dae5312d650351a97c184a2ad67c36452e57ff7d914cfeb1448166d56595f"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-5f4d9dd34b704c7fbdba26f38a576731\\process-observations.json",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-5f4d9dd34b704c7fbdba26f38a576731\\registry-observations-private.json",
+      "bytes": 27985,
+      "sha256": "ad337e465195b02b3a67e881e92f31f4a35d43f5274c025aba145f114444e5a9"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-5f4d9dd34b704c7fbdba26f38a576731\\summary.json",
+      "bytes": 348,
+      "sha256": "f98bf58332c037bac46bcbad7cc847cddad0f52f29d2cb60673a539e5d5f9bbb"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-09d74715032c46a4af47642e44e61071\\decisions.json",
+      "bytes": 555,
+      "sha256": "0145a84e1ab0dc0dcd3679f9de37ef822b5c98b2198a9b9bdd73b0df01eff2d3"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-09d74715032c46a4af47642e44e61071\\default-comparison.json",
+      "bytes": 561,
+      "sha256": "da452f859d67a00c1d5fe6040ea8ec400a031647771a450c63ff77a43514ca32"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-09d74715032c46a4af47642e44e61071\\existing-log-inventory.json",
+      "bytes": 134,
+      "sha256": "b8005cceb5e6cc2ca400a2f7b1db1d58c17a554f4a21b3cb6f9f318e6e159405"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-09d74715032c46a4af47642e44e61071\\original-files-after.json",
+      "bytes": 3362,
+      "sha256": "f428b28ae2d4a2e82e96cc11ba0f202c9837d4ddaa91a986029f369907ba5765"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-09d74715032c46a4af47642e44e61071\\original-files-before.json",
+      "bytes": 3362,
+      "sha256": "f428b28ae2d4a2e82e96cc11ba0f202c9837d4ddaa91a986029f369907ba5765"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-09d74715032c46a4af47642e44e61071\\payload-observations.json",
+      "bytes": 76835,
+      "sha256": "d91dae5312d650351a97c184a2ad67c36452e57ff7d914cfeb1448166d56595f"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-09d74715032c46a4af47642e44e61071\\process-observations.json",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-09d74715032c46a4af47642e44e61071\\registry-observations-private.json",
+      "bytes": 27985,
+      "sha256": "ad337e465195b02b3a67e881e92f31f4a35d43f5274c025aba145f114444e5a9"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-09d74715032c46a4af47642e44e61071\\summary.json",
+      "bytes": 348,
+      "sha256": "f98bf58332c037bac46bcbad7cc847cddad0f52f29d2cb60673a539e5d5f9bbb"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-85a63a67-b423-4ea2-959c-ec43c3aba0f9\\authorization.json",
+      "bytes": 1541,
+      "sha256": "06a5acc18fba3d643725fe3f76a2c007532b7524a14542d44e401ee77e0259b9"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-85a63a67-b423-4ea2-959c-ec43c3aba0f9\\boundary.json",
+      "bytes": 1232,
+      "sha256": "5fb2dd6a4457b77449e45dad08db176dd524f8763cafd236e1da2d02dc0c4272"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-85a63a67-b423-4ea2-959c-ec43c3aba0f9\\execute-parameters.json",
+      "bytes": 807,
+      "sha256": "108bd85f168a6f2f9c0d1f64c97d07c9a772bbb4a07678bc01bdcb2e93c176a7"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-85a63a67-b423-4ea2-959c-ec43c3aba0f9\\peer-85a63a67-b423-4ea2-959c-ec43c3aba0f9-7b3f97c92ef34840b5c11718332c936d-after.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-85a63a67-b423-4ea2-959c-ec43c3aba0f9\\peer-85a63a67-b423-4ea2-959c-ec43c3aba0f9-7b3f97c92ef34840b5c11718332c936d-before.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-85a63a67-b423-4ea2-959c-ec43c3aba0f9\\peer-85a63a67-b423-4ea2-959c-ec43c3aba0f9-7b3f97c92ef34840b5c11718332c936d-result.json",
+      "bytes": 272,
+      "sha256": "9dad66cc8749ebb1be0138f70e7163ee235638c352f145bfb98ca4dfe6bae1de"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-85a63a67-b423-4ea2-959c-ec43c3aba0f9\\peer-85a63a67-b423-4ea2-959c-ec43c3aba0f9-e0a392464dcf42cb8b2e38fe363eb5d1-after.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-85a63a67-b423-4ea2-959c-ec43c3aba0f9\\peer-85a63a67-b423-4ea2-959c-ec43c3aba0f9-e0a392464dcf42cb8b2e38fe363eb5d1-before.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-85a63a67-b423-4ea2-959c-ec43c3aba0f9\\peer-85a63a67-b423-4ea2-959c-ec43c3aba0f9-e0a392464dcf42cb8b2e38fe363eb5d1-result.json",
+      "bytes": 272,
+      "sha256": "9dad66cc8749ebb1be0138f70e7163ee235638c352f145bfb98ca4dfe6bae1de"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-85a63a67-b423-4ea2-959c-ec43c3aba0f9\\peer-preflight.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\short-resume-events-4f1b2abad6f04e199de0c2340a57a715\\events-private.json",
+      "bytes": 2576100,
+      "sha256": "0017995a819ce8424113464a74bd8d25cdea4b6e7f71123db77fca4b4d8cbab6"
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\short-resume-events-4f1b2abad6f04e199de0c2340a57a715\\query.json",
+      "bytes": 166,
+      "sha256": "3ba438ec397d2079066f9934b336f146060a6e99d154a9894778c07a7e926327"
+    },
+    {
+      "path": "C:\\Users\\Golde\\YRP-e76b286a491a\\execute.json",
+      "bytes": 732,
+      "sha256": "1ff9bcf5b5e0be28789f909c6807ec430e0517b494387a3449b61f715f12ceeb"
+    },
+    {
+      "path": "C:\\Users\\Golde\\YRP-e76b286a491a\\p.exe",
+      "bytes": 41133632,
+      "sha256": "0276245dff5aa5e6441a829152eb178471b8cba0a21314e15ba04a9e5ff83617"
+    },
+    {
+      "path": "C:\\Users\\Golde\\YRP-e76b286a491a\\r.json",
+      "bytes": 3942,
+      "sha256": "c4badd8cc2c3b06389ed044f08bcfb0383eb963affe5ca93a3e1c5e870eea4a1"
+    },
+    {
+      "path": "C:\\Users\\Golde\\YRP-e76b286a491a\\resume-started",
+      "bytes": 1,
+      "sha256": "4bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459a"
+    },
+    {
+      "path": "C:\\Users\\Golde\\YRP-e76b286a491a\\transport.json",
+      "bytes": 432,
+      "sha256": "0205b0fda9fe05db4e2de37b26e850b60c03d9aedc16a88aad7e9434ddfee88d"
+    }
+  ]
+}

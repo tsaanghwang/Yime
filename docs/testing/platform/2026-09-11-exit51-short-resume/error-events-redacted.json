@@ -1,0 +1,44 @@
+[
+  {
+    "id": 4100,
+    "record_id": 5956,
+    "time_utc": "2026-09-11T12:01:39.3331517Z",
+    "payload": "错误消息 = Candidate failed with exit code 51; retain all evidence and recovery tickets.\n全限定错误 ID = Candidate failed with exit code 51; retain all evidence and recovery tickets.\n",
+    "script_path": "<TEST_REPO>\\tools\\dual-product\\execute-rime-pime-coexistence-test.ps1"
+  },
+  {
+    "id": 4100,
+    "record_id": 5955,
+    "time_utc": "2026-09-11T12:01:38.4920053Z",
+    "payload": "错误消息 = 系统错误。\n",
+    "script_path": ""
+  },
+  {
+    "id": 4100,
+    "record_id": 5954,
+    "time_utc": "2026-09-11T12:01:38.4059833Z",
+    "payload": "错误消息 = Candidate elevated worker failed with exit code 51; persistent plan retained.\n全限定错误 ID = Candidate elevated worker failed with exit code 51; persistent plan retained.\n",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg8392.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1"
+  },
+  {
+    "id": 4100,
+    "record_id": 5953,
+    "time_utc": "2026-09-11T12:01:30.5618927Z",
+    "payload": "错误消息 = Registration child left active descendants; its job was terminated and drained; partial state retained for recovery.\n全限定错误 ID = Registration child left active descendants; its job was terminated and drained; partial state retained for recovery.\n",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg8392.tmp\\bundle\\maintenance\\rime-pime-dp1u-candidate-registration.psm1"
+  },
+  {
+    "id": 4100,
+    "record_id": 5952,
+    "time_utc": "2026-09-11T12:01:24.2413030Z",
+    "payload": "错误消息 = Registration child left active descendants; its job was terminated and drained; partial state retained for recovery.\n全限定错误 ID = Registration child left active descendants; its job was terminated and drained; partial state retained for recovery.\n",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg8392.tmp\\bundle\\maintenance\\rime-pime-dp1u-candidate-registration.psm1"
+  },
+  {
+    "id": 4100,
+    "record_id": 5950,
+    "time_utc": "2026-09-11T12:00:17.5761600Z",
+    "payload": "错误消息 = Registration child left active descendants; its job was terminated and drained; partial state retained for recovery.\n全限定错误 ID = Registration child left active descendants; its job was terminated and drained; partial state retained for recovery.\n",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg8392.tmp\\bundle\\maintenance\\rime-pime-dp1u-candidate-registration.psm1"
+  }
+]
