@@ -1,0 +1,118 @@
+[
+  {
+    "index": 4,
+    "before": {
+      "hive": "Users",
+      "view": "Registry32",
+      "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "exists": true,
+      "values": [],
+      "children": [
+        {
+          "hive": "Users",
+          "view": "Registry32",
+          "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+          "exists": true,
+          "values": [],
+          "children": [
+            {
+              "hive": "Users",
+              "view": "Registry32",
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "hive": "Users",
+                  "view": "Registry32",
+                  "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                  "exists": true,
+                  "values": [
+                    {
+                      "id": "peer",
+                      "hive": "Users",
+                      "view": "Registry32",
+                      "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                      "name": "Enable",
+                      "exists": true,
+                      "value_kind": "DWord",
+                      "value": "1",
+                      "reader": "StdRegProv"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "hive": "Users",
+      "view": "Registry32",
+      "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "exists": false,
+      "values": [],
+      "children": []
+    }
+  },
+  {
+    "index": 10,
+    "before": {
+      "hive": "Users",
+      "view": "Registry64",
+      "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "exists": true,
+      "values": [],
+      "children": [
+        {
+          "hive": "Users",
+          "view": "Registry64",
+          "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+          "exists": true,
+          "values": [],
+          "children": [
+            {
+              "hive": "Users",
+              "view": "Registry64",
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "hive": "Users",
+                  "view": "Registry64",
+                  "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                  "exists": true,
+                  "values": [
+                    {
+                      "id": "peer",
+                      "hive": "Users",
+                      "view": "Registry64",
+                      "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                      "name": "Enable",
+                      "exists": true,
+                      "value_kind": "DWord",
+                      "value": "1",
+                      "reader": "StdRegProv"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "hive": "Users",
+      "view": "Registry64",
+      "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "exists": false,
+      "values": [],
+      "children": []
+    }
+  }
+]

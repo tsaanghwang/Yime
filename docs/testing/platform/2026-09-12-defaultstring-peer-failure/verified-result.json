@@ -1,0 +1,27 @@
+{
+  "run_id": "9fe7f28d-0889-4828-85b5-1f481431b43a",
+  "source_commit": "3182c545d30d977c57682fbc018f1cf44b0b42b0",
+  "installer_sha256": "0602438008d5110767857ff9b5facd23a1bd54a74baff1f81fba5b1e56e2bdd3",
+  "installer_exit_code": 51,
+  "execution": {
+    "returncode": 1,
+    "start_utc": "2026-09-11T23:39:36.321202+00:00",
+    "end_utc": "2026-09-11T23:42:33.971295+00:00",
+    "attempts": 1
+  },
+  "installed_acceptance_passed": false,
+  "rollback_completion_verified": false,
+  "peer_preserved": false,
+  "changed_peer_registry_views": [
+    "Registry32",
+    "Registry64"
+  ],
+  "other_peer_snapshot_fields_equal": true,
+  "default_matches": true,
+  "payload_present_and_matching": 192,
+  "registry_present": 30,
+  "registry_errors": 0,
+  "candidate_process_count": 0,
+  "native_readiness_tested": false,
+  "original_evidence_unchanged": true
+}

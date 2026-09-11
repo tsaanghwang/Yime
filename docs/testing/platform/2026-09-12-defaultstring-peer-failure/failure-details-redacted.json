@@ -1,0 +1,62 @@
+[
+  {
+    "schema_version": "yime-maintenance-failure-v1",
+    "utc": "2026-09-11T23:41:40.1001000Z",
+    "pid": 6756,
+    "phase": "elevated-Register",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "message": "Protected YimeCore peer changed; preserve both observations and do not report completion.",
+    "exception": "System.Management.Automation.RuntimeException: Protected YimeCore peer changed; preserve both observations and do not report completion.",
+    "script_stack": "在 Assert-RimePimePeerProtectionUnchanged、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-peer-protection.psm1 中: 第 111 行\r\n在 <ScriptBlock>、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1 中: 第 119 行\r\n在 Complete-MaintenancePeerProtection、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1 中: 第 119 行\r\n在 Invoke-RimePimeCandidateWorker、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1 中: 第 540 行\r\n在 <ScriptBlock>、<无文件> 中: 第 1 行",
+    "error_id": "Protected YimeCore peer changed; preserve both observations and do not report completion.",
+    "installed_acceptance_passed": false
+  },
+  {
+    "schema_version": "yime-maintenance-failure-v1",
+    "utc": "2026-09-11T23:41:40.2559202Z",
+    "pid": 21372,
+    "phase": "install-original",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "message": "Candidate elevated worker failed with exit code 51; persistent plan retained.",
+    "exception": "System.Management.Automation.RuntimeException: Candidate elevated worker failed with exit code 51; persistent plan retained.",
+    "script_stack": "在 Invoke-MaintenanceWorker、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1 中: 第 475 行\r\n在 Invoke-RimePimeCandidateMaintenance、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1 中: 第 579 行\r\n在 <ScriptBlock>、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\invoke-rime-pime-candidate.ps1 中: 第 11 行\r\n在 <ScriptBlock>、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\invoke-rime-pime-candidate-request.ps1 中: 第 24 行",
+    "error_id": "Candidate elevated worker failed with exit code 51; persistent plan retained.",
+    "installed_acceptance_passed": false
+  },
+  {
+    "schema_version": "yime-maintenance-failure-v1",
+    "utc": "2026-09-11T23:42:24.9890867Z",
+    "pid": 43720,
+    "phase": "elevated-Remove",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "message": "Ambiguous mixed Control Panel profile reference; cleanup is forbidden.",
+    "exception": "System.Management.Automation.RuntimeException: Ambiguous mixed Control Panel profile reference; cleanup is forbidden.",
+    "script_stack": "在 Test-YimePimeProfileRegistryReference、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-ownership.ps1 中: 第 491 行\r\n在 Test-YimePimeTargetUserControlPanelReference、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-ownership.ps1 中: 第 515 行\r\n在 Invoke-RimePimeDp1UCandidateRegistration、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-dp1u-candidate-registration.psm1 中: 第 330 行\r\n在 <ScriptBlock>、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1 中: 第 528 行\r\n在 Invoke-RimePimeCandidateWorker、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1 中: 第 528 行\r\n在 <ScriptBlock>、<无文件> 中: 第 1 行",
+    "error_id": "Ambiguous mixed Control Panel profile reference; cleanup is forbidden.",
+    "installed_acceptance_passed": false
+  },
+  {
+    "schema_version": "yime-maintenance-failure-v1",
+    "utc": "2026-09-11T23:42:25.1240063Z",
+    "pid": 21372,
+    "phase": "rollback",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "message": "Candidate elevated worker failed with exit code 51; persistent plan retained.",
+    "exception": "System.Management.Automation.RuntimeException: Candidate elevated worker failed with exit code 51; persistent plan retained.",
+    "script_stack": "在 Invoke-MaintenanceWorker、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1 中: 第 475 行\r\n在 Complete-MaintenanceRemoval、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1 中: 第 362 行\r\n在 Invoke-RimePimeCandidateMaintenance、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1 中: 第 607 行\r\n在 <ScriptBlock>、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\invoke-rime-pime-candidate.ps1 中: 第 11 行\r\n在 <ScriptBlock>、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\invoke-rime-pime-candidate-request.ps1 中: 第 24 行",
+    "error_id": "Candidate elevated worker failed with exit code 51; persistent plan retained.",
+    "installed_acceptance_passed": false
+  },
+  {
+    "schema_version": "yime-maintenance-failure-v1",
+    "utc": "2026-09-11T23:42:32.8811176Z",
+    "pid": 21372,
+    "phase": "controller-Install",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "message": "Protected YimeCore peer changed; preserve both observations and do not report completion.",
+    "exception": "System.Management.Automation.RuntimeException: Protected YimeCore peer changed; preserve both observations and do not report completion.",
+    "script_stack": "在 Assert-RimePimePeerProtectionUnchanged、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-peer-protection.psm1 中: 第 111 行\r\n在 <ScriptBlock>、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1 中: 第 119 行\r\n在 Complete-MaintenancePeerProtection、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1 中: 第 119 行\r\n在 Invoke-RimePimeCandidateMaintenance、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1 中: 第 649 行\r\n在 <ScriptBlock>、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\invoke-rime-pime-candidate.ps1 中: 第 11 行\r\n在 <ScriptBlock>、C:\\Users\\Golde\\AppData\\Local\\Temp\\nse8DC6.tmp\\bundle\\maintenance\\invoke-rime-pime-candidate-request.ps1 中: 第 24 行",
+    "error_id": "Protected YimeCore peer changed; preserve both observations and do not report completion.",
+    "installed_acceptance_passed": false
+  }
+]

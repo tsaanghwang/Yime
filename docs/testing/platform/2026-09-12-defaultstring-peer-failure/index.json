@@ -1,0 +1,49 @@
+{
+  "files": [
+    {
+      "path": "decisions.json",
+      "bytes": 555,
+      "sha256": "a2cf2831461c1ed60ac2488a21837b5ba8d7c0f4052bac2ddb8754e89321c0b1"
+    },
+    {
+      "path": "execute-process.json",
+      "bytes": 143,
+      "sha256": "7a3c020722982bba58e8159cf7d2ce81ab1dd440cbeb0d78c34dfa32625b1bef"
+    },
+    {
+      "path": "external-evidence-index.json",
+      "bytes": 73275,
+      "sha256": "c9bacacbe2624a8aa3f966a3216637da3d6ed358d5f85bd0164d9e2df9f96b7d"
+    },
+    {
+      "path": "failure-details-redacted.json",
+      "bytes": 7223,
+      "sha256": "99afea8feb13ca21757f4ee5e8d3be0ada5a9c1ba8b280b5e4f8bf147640326d"
+    },
+    {
+      "path": "peer-diff-redacted.json",
+      "bytes": 4344,
+      "sha256": "cc2aa432a279c882a465ccd8f6a95e1950533dd13d5ef7a2d0734cced4f8f6c0"
+    },
+    {
+      "path": "process-observations.json",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "registration-presence.json",
+      "bytes": 3587,
+      "sha256": "a3e059b5514395bb68a0fd4f032a52f2c6717f1663f7f9f1b07d9ec1ca2b098b"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 349,
+      "sha256": "f1b56dd22219371ddf47e69b78542c68a0b1cb5ea5f91ead2939248b72909a39"
+    },
+    {
+      "path": "verified-result.json",
+      "bytes": 879,
+      "sha256": "c1ec4f0f3965bf8b0d1aaaaaf58cf3a7e501f3412a46d157ffc3b979bf2b9aae"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+    "prepared_binding_valid":  true,
+    "install_commit":  null,
+    "install_terminal":  null,
+    "removal_commit":  {
+                           "schema_version":  "yime-rime-pime-candidate-decision-v1",
+                           "prepared_sha256":  "1a7092600cbd1b1121586dd585438703237378292a6860c6c6dc574ca62d274c",
+                           "disposition":  "remove-requested"
+                       },
+    "removal_terminal":  null,
+    "parser_source":  "3182c545d30d977c57682fbc018f1cf44b0b42b0",
+    "parsed_copies_only":  true
+}

@@ -1,0 +1,187 @@
+[
+  {
+    "id": "com-x86",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "com-x86-server",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "com-x64",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "com-x64-server",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "tip",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "categories",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "categories-by-category",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "categories-by-item",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-item",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "languages",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "language",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-service-{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-item-{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-{046B8C80-1647-40F7-9B21-B93B81AABC1B}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-service-{046B8C80-1647-40F7-9B21-B93B81AABC1B}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-item-{046B8C80-1647-40F7-9B21-B93B81AABC1B}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-service-{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-item-{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-service-{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-item-{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-service-{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-item-{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-service-{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "category-item-{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "profile",
+    "exists": true,
+    "error": null
+  },
+  {
+    "id": "user-tip",
+    "exists": false,
+    "error": null
+  },
+  {
+    "id": "user-languages",
+    "exists": false,
+    "error": null
+  },
+  {
+    "id": "user-language",
+    "exists": false,
+    "error": null
+  },
+  {
+    "id": "user-profile",
+    "exists": false,
+    "error": null
+  },
+  {
+    "id": "marker-root",
+    "exists": false,
+    "error": null
+  },
+  {
+    "id": "marker-uninstall",
+    "exists": false,
+    "error": null
+  },
+  {
+    "id": "run",
+    "exists": false,
+    "error": null
+  }
+]

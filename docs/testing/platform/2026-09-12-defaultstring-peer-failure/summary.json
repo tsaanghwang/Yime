@@ -1,0 +1,13 @@
+{
+    "collection_completed":  true,
+    "original_evidence_unchanged":  true,
+    "payload_count":  192,
+    "payload_errors":  0,
+    "payload_mismatches":  0,
+    "registry_errors":  0,
+    "registry_present":  30,
+    "default_matches":  true,
+    "process_count":  0,
+    "log_count":  0,
+    "installed_acceptance_passed":  false
+}
