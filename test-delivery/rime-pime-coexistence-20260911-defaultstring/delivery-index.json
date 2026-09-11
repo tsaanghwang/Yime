@@ -1,0 +1,40 @@
+{
+  "schema_version": "yime-rime-pime-executable-candidate-delivery-v1",
+  "product": "rime-pime",
+  "product_version": "1.4.0-dev.1",
+  "source_compile_commit": "85a8c82fe11497ed78ca1c6b640027ca8f96ced3",
+  "artifacts": {
+    "installer": {
+      "path": "YIME-RimePime-1.4.0-dev.1-candidate.exe",
+      "bytes": 41248163,
+      "sha256": "0602438008d5110767857ff9b5facd23a1bd54a74baff1f81fba5b1e56e2bdd3"
+    },
+    "receipt": {
+      "path": "executable-build-receipt.json",
+      "bytes": 3942,
+      "sha256": "ec37ee81db218e4c755b8ccf281b33e8ce2db2fd25fbbe36439e39ac368241c6"
+    },
+    "manifest": {
+      "path": "candidate.json",
+      "bytes": 29692,
+      "sha256": "256a9ab5d213093248001d2bb32f918bcb0c4431628ec40ea5295e8b14a76ddf"
+    },
+    "static_payload": {
+      "path": "static-payload.json",
+      "bytes": 32901,
+      "sha256": "84c59d294780cfddd65ae8664e7a3a4d1d5dce7a9e90db866794ffa8ad5beec7"
+    },
+    "source_baseline": {
+      "path": "baseline.json",
+      "bytes": 56694,
+      "sha256": "45ede943472464229f3076b98a96854b7b32550f47cd219548e0537d63c8f1ba"
+    },
+    "source_inventory": {
+      "path": "source-payload-inventory.json",
+      "bytes": 392193,
+      "sha256": "511d3892ed8fad8568ed58cdc33e733323da23a9e04fc69ffebc9784380d7b8a"
+    }
+  },
+  "installed_acceptance_passed": false,
+  "public_release_admitted": false
+}

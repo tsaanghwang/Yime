@@ -94,4 +94,5 @@ test-delivery/rime-pime-coexistence-20260911-stdreg/** -text !eol
 test-delivery/rime-pime-coexistence-20260911-empty/** -text !eol
 test-delivery/rime-pime-coexistence-20260911-request/** -text !eol
 test-delivery/rime-pime-coexistence-20260911-jobexit/** -text !eol
+test-delivery/rime-pime-coexistence-20260911-defaultstring/** -text !eol
 test-delivery/original-rollback-finalizer-20260911/** -text !eol

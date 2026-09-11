@@ -23,3 +23,5 @@
 - 修复后的实际只读 COM 观察在 Registry32/Registry64 均得到一个值、一个子键，reader=StdRegProv。生产安装保持不变。
 
 旧 jobexit 包的自动回滚成功证据保持原样，不重写旧包内容。开发端制作独立的新候选及交接，等对应 CI 通过后，再在“计算机”执行一次新事务；此前失败事务不重放。新安装验收、宿主输入、重启和维护矩阵均未因本地测试而提升状态。
+
+最终交付入口：[defaultstring 单次安装交接](YIME_RIME_PIME_DEFAULTSTRING_INSTALL_HANDOFF_2026-09-11.md)。`test-delivery/rime-pime-coexistence-20260911-defaultstring` 对应完整类型保护源码 `85a8c82fe11497ed78ca1c6b640027ca8f96ced3`，x86/x64 原生组件、Launcher 和 Go 载荷均从该版本构建；具体包摘要由交付目录 PIN.json 固定。仅用于调查空枚举的 defaultvalue 中间包没有交付，不得用于测试。
