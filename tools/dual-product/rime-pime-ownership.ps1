@@ -290,7 +290,18 @@ function Get-YimePimeSystemRegistryValueRecord($Expected) {
             $index=$candidate;break
         }
     }
-    if($index -lt 0){return [pscustomobject]$record}
+    if($index -lt 0){
+        # StdRegProv EnumValues returns null arrays when only the default value
+        # exists. Do not infer its absence from enumeration. The typed provider
+        # read must succeed; errors (including missing/unsupported type) fail closed.
+        if([string]$Expected.name -ceq '' -and $names.Count -eq 0){
+            $read=Invoke-YimePimeSystemRegistryMethod -Method GetStringValue -Hive $coordinate.hive -Key $coordinate.key `
+                -ProviderArchitecture $coordinate.provider_architecture -Values @{sValueName=''}
+            if([int]$read.ReturnValue -ne 0 -or $read.sValue -isnot [string]){throw 'Default registry string could not be established from system provider.'}
+            $record.exists=$true;$record.value_kind='String';$record.value=[string]$read.sValue
+        }
+        return [pscustomobject]$record
+    }
     $record.exists=$true
     $kind=[int]$types[$index]
     $record.value_kind=[string]([Microsoft.Win32.RegistryValueKind]$kind)

@@ -106,6 +106,34 @@ Check 'real-worker-termination-closes-job-and-terminates-owned-child' {
     }
 }
 # All calls below use private module-scope doubles for the native boundary.
+Check 'real-reader-default-only-enumeration-retains-typed-system-value' {
+    & $module {
+        $testMode='present'
+        function Invoke-YimePimeStdRegProvMethod($Method,$Arguments,$ProviderArchitecture){
+            if($ProviderArchitecture -ne 64){throw 'Wrong registry view.'}
+            switch($Method){
+                EnumValues {return [pscustomobject]@{ReturnValue=0;sNames=$null;Types=$null}}
+                EnumKey {return [pscustomobject]@{ReturnValue=0;sNames=@('InprocServer32')}}
+                GetStringValue {
+                    if($Arguments.sValueName -cne ''){throw 'Default name not preserved.'}
+                    if($testMode -eq 'denied'){return [pscustomobject]@{ReturnValue=5;sValue=$null}}
+                    if($testMode -eq 'missing-or-wrong-type'){return [pscustomobject]@{ReturnValue=1;sValue=$null}}
+                    if($testMode -eq 'null-data'){return [pscustomobject]@{ReturnValue=0;sValue=$null}}
+                    return [pscustomobject]@{ReturnValue=0;sValue=$testMode}
+                }
+                default {throw 'Unexpected provider method; mutation prohibited.'}
+            }
+        }
+        $tree=New-CandidateTree 'com-x64' LocalMachine Registry64 'SOFTWARE\fixture' @((New-CandidateValue '' String 'present')) @('InprocServer32')
+        $r=Get-CandidateTreeObservation $tree
+        if(-not $r.exists -or $r.values.Count -ne 1 -or $r.values[0].value -cne 'present' -or $r.values[0].reader -cne 'StdRegProv'){throw 'Default-only COM key lost its actual system value.'}
+        foreach($testMode in @('denied','missing-or-wrong-type','null-data','foreign-value')){
+            $rejected=$false
+            try{$null=Get-CandidateTreeObservation $tree}catch{$rejected=$true}
+            if(-not $rejected){throw ('Unsafe default value admitted: '+$testMode)}
+        }
+    }
+}
 # No system registry, product process, installer or private hive is touched.
 & $module {
     $script:TestKeys=@{};$script:TestCalls=[Collections.Generic.List[string]]::new();$script:TestContext=$null;$script:TestDefault='';$script:TestLanguageReference=$false;$script:TestFail=''

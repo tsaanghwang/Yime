@@ -118,6 +118,11 @@ function Get-CandidateRegistryShape([string]$Hive,[string]$View,[string]$Key) {
 }
 function Get-CandidateTreeObservation($Tree,[switch]$AllowDisabled) {
     $shape=Get-CandidateRegistryShape $Tree.hive $Tree.view $Tree.key
+    # A required default-only REG_SZ key has null EnumValues arrays in StdRegProv.
+    # Recover only this expected value through a typed system-provider read below.
+    if($shape.exists -and @($shape.value_names).Count -eq 0 -and @($Tree.values|Where-Object{$_.name -ceq '' -and $_.value_kind -ceq 'String'}).Count -eq 1){
+        $shape.value_names=@('');$shape.value_types=@(1)
+    }
     $values=[Collections.Generic.List[object]]::new()
     if($shape.exists) {
         foreach($child in @($shape.subkey_names)){if(@($Tree.children) -inotcontains [string]$child){throw ('Foreign registration subkey preserved: '+$Tree.id)}}
@@ -175,7 +180,11 @@ function Assert-CandidateObservationPresent($Context,$Observation) {
 function Assert-CandidateMachineRegistration($Context,$Observation,[switch]$NativeOnly) {
     foreach($tree in @(Get-CandidateRegistrationLayout $Context|Where-Object{$_.hive -ceq 'LocalMachine' -and $_.id -notlike 'marker-*' -and (-not $NativeOnly -or $_.id -notlike 'com-x86*')})) {
         $actual=@($Observation.trees|Where-Object{$_.id -ceq $tree.id})
-        if($actual.Count -ne 1 -or -not $actual[0].exists -or @($actual[0].values).Count -ne @($tree.values).Count -or @($actual[0].subkeys).Count -ne @($tree.children).Count){throw ('Machine registration not complete: '+$tree.id)}
+        if($actual.Count -ne 1 -or -not $actual[0].exists -or @($actual[0].values).Count -ne @($tree.values).Count -or @($actual[0].subkeys).Count -ne @($tree.children).Count){
+            $detail=[ordered]@{id=$tree.id;view=$tree.view;matches=$actual.Count;expected_values=@($tree.values).Count;expected_subkeys=@($tree.children).Count}
+            if($actual.Count -eq 1){$detail.exists=[bool]$actual[0].exists;$detail.actual_values=@($actual[0].values).Count;$detail.actual_subkeys=@($actual[0].subkeys).Count}
+            throw ('Machine registration not complete: '+$tree.id+'; '+($detail|ConvertTo-Json -Compress))
+        }
     }
 }
 
