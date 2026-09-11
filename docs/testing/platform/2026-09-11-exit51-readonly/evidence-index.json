@@ -1,0 +1,134 @@
+{
+  "schema_version": "yime-exit51-readonly-evidence-index-v1",
+  "evidence_root": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-ce41cbffd5e14fdca76af1fb6dbfc6b0",
+  "summary": {
+    "collection_completed": true,
+    "original_evidence_unchanged": true,
+    "payload_count": 191,
+    "payload_errors": 0,
+    "payload_mismatches": 0,
+    "registry_errors": 0,
+    "registry_present": 0,
+    "default_matches": true,
+    "process_count": 0,
+    "log_count": 0,
+    "installed_acceptance_passed": false
+  },
+  "original_files": [
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\candidate-recovery-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0.json",
+      "bytes": 475,
+      "sha256": "05352e3da345967e3e71fb5b6551f1db5739473f46a36ce3b311c46313d2b039",
+      "last_write_utc": "2026-09-11T07:44:52.9281136Z",
+      "error": null
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\authorization.json",
+      "bytes": 1541,
+      "sha256": "89359001856f4d875dcb109c1b148b655be56fb8e1d4fa5728705fd4c117cfab",
+      "last_write_utc": "2026-09-11T07:40:07.7774860Z",
+      "error": null
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\boundary.json",
+      "bytes": 1232,
+      "sha256": "5fb2dd6a4457b77449e45dad08db176dd524f8763cafd236e1da2d02dc0c4272",
+      "last_write_utc": "2026-09-11T07:40:07.7819408Z",
+      "error": null
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\approval-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\execute-parameters.json",
+      "bytes": 744,
+      "sha256": "2d01ab8cd616702baeafb8acfab8993172687b3b3fb42b93bc07832a05cc9a14",
+      "last_write_utc": "2026-09-11T07:40:07.8357560Z",
+      "error": null
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\recovery-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\install-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\prepared.bin",
+      "bytes": 38176,
+      "sha256": "9f14badfc704b77fc1ac1cae458f1a004b1df0710516ffe46e6a7fec3557f908",
+      "last_write_utc": "2026-09-11T07:44:52.9160091Z",
+      "error": null
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\recovery-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\install-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\transaction.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "last_write_utc": "2026-09-11T07:44:49.9391162Z",
+      "error": null
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\recovery-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\remove-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\commit.bin",
+      "bytes": 219,
+      "sha256": "eb0b4e872515c7bbbe5302b755887855a38a16aae94d3afb3a1dfe164ab00944",
+      "last_write_utc": "2026-09-11T07:45:29.6379401Z",
+      "error": null
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\recovery-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\remove-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\prepared.bin",
+      "bytes": 439,
+      "sha256": "fbacc2b27edc836db134bb7c4b7f3d4c07d8c9256bdc84bb8959ada9411d132c",
+      "last_write_utc": "2026-09-11T07:45:29.6219360Z",
+      "error": null
+    },
+    {
+      "path": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\recovery-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\remove-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0\\transaction.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "last_write_utc": "2026-09-11T07:45:29.6107304Z",
+      "error": null
+    }
+  ],
+  "evidence_files": [
+    {
+      "name": "decisions.json",
+      "bytes": 555,
+      "sha256": "0145a84e1ab0dc0dcd3679f9de37ef822b5c98b2198a9b9bdd73b0df01eff2d3"
+    },
+    {
+      "name": "default-comparison.json",
+      "bytes": 561,
+      "sha256": "da452f859d67a00c1d5fe6040ea8ec400a031647771a450c63ff77a43514ca32"
+    },
+    {
+      "name": "existing-log-inventory.json",
+      "bytes": 134,
+      "sha256": "b8005cceb5e6cc2ca400a2f7b1db1d58c17a554f4a21b3cb6f9f318e6e159405"
+    },
+    {
+      "name": "original-files-after.json",
+      "bytes": 3362,
+      "sha256": "f428b28ae2d4a2e82e96cc11ba0f202c9837d4ddaa91a986029f369907ba5765"
+    },
+    {
+      "name": "original-files-before.json",
+      "bytes": 3362,
+      "sha256": "f428b28ae2d4a2e82e96cc11ba0f202c9837d4ddaa91a986029f369907ba5765"
+    },
+    {
+      "name": "payload-observations.json",
+      "bytes": 76835,
+      "sha256": "d91dae5312d650351a97c184a2ad67c36452e57ff7d914cfeb1448166d56595f"
+    },
+    {
+      "name": "process-observations.json",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "name": "registry-observations-private.json",
+      "bytes": 27985,
+      "sha256": "ad337e465195b02b3a67e881e92f31f4a35d43f5274c025aba145f114444e5a9"
+    },
+    {
+      "name": "summary.json",
+      "bytes": 348,
+      "sha256": "f98bf58332c037bac46bcbad7cc847cddad0f52f29d2cb60673a539e5d5f9bbb"
+    }
+  ],
+  "collector": {
+    "path": "C:\\dev\\Yime-localtest\\.tmp\\Collect-Coexistence-Readonly.ps1",
+    "sha256": "05710495d79958ae0e66a9edd4e07d5420a5eb590de38fb535b23788b3527377"
+  },
+  "private_contents_published": false
+}
