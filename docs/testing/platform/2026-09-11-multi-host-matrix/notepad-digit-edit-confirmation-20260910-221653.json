@@ -1,0 +1,23 @@
+{
+  "schema_version": "yimecore-manual-observation-v1",
+  "generated_at": "2026-09-10T14:16:53.9430287Z",
+  "host": "Windows Notepad",
+  "architecture": "x64",
+  "user_report": "已测，各测三组双数字键组合。esc取消，backspace，删除后一码元。",
+  "context": "Response to three-mode bare digit composition check; Backspace understood as deleting the final single code element.",
+  "modes": [
+    "full",
+    "shorthand",
+    "variable"
+  ],
+  "double_digit_groups_per_mode": 3,
+  "exact_digit_pairs": null,
+  "outcomes": {
+    "bare_digits_remain_composition": "pass",
+    "backspace_deletes_last_single_code_element": "pass",
+    "escape_cancellation": "pass"
+  },
+  "evidence_basis": "user physical test report",
+  "metadata_evidence": "notepad-post-manual-20260910-221037.json",
+  "complete": false
+}

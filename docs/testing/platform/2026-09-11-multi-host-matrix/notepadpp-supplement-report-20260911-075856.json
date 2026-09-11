@@ -1,0 +1,27 @@
+{
+  "schema_version": "yimecore-manual-observation-v1",
+  "generated_at": "2026-09-10T23:58:56.3389023Z",
+  "host": "Notepad++",
+  "architecture": "x86",
+  "user_report": "所缺几项已测。请复核。",
+  "supplement_execution_reported": true,
+  "requested_rounds_per_mode": 3,
+  "manual_outcomes": null,
+  "requested_checks": [
+    "full_and_shorthand_space_commit",
+    "full_and_shorthand_shift_labels",
+    "three_mode_focus_cancel_without_commit",
+    "three_mode_confirmed_text_and_focus_return_recovery",
+    "three_mode_language_bar_left_click",
+    "full_and_shorthand_language_bar_right_click",
+    "three_mode_reopen_recovery"
+  ],
+  "metadata_evidence": "notepadpp-supplement-metadata-20260911-075856.json",
+  "baseline_package_and_x86_dll_match": true,
+  "process_ids": [
+    32692
+  ],
+  "historical_evidence": "docs/testing/platform/2026-09-10-real-host-matrix.json",
+  "complete": false,
+  "limitation": "Execution reported; explicit pass/fail outcomes pending. Module evidence does not prove manual behavior. No pre-test protected-registration snapshot is present in this local matrix evidence directory."
+}

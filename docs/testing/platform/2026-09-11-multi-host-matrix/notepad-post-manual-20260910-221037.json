@@ -1,0 +1,54 @@
+{
+  "schema_version": "yimecore-real-live-host-metadata-v1",
+  "generated_at": "2026-09-10T14:10:37.7142674Z",
+  "computer_name": "计算机",
+  "package": {
+    "status": "pass",
+    "version": "0.1.0-local.13",
+    "git_commit": "e346a1dad76d58f50652a2dd665c64ec8aeef49e",
+    "install_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe",
+    "manifest_sha256": "133c91fe205fcae911fa701a278465dad040e7dadce006b541697b656e50405a",
+    "expected_modules": {
+      "x64": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x64\\YimeTextServiceExperiment.dll",
+      "x86": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll"
+    }
+  },
+  "hosts": [
+    {
+      "process_id": 34492,
+      "status": "pass",
+      "reason": "Exactly one current-package text-service DLL is loaded.",
+      "process_name": "Notepad",
+      "executable": "C:\\Program Files\\WindowsApps\\Microsoft.WindowsNotepad_11.2607.14.0_x64__8wekyb3d8bbwe\\Notepad\\Notepad.exe",
+      "executable_version": "11.2607.14.0",
+      "executable_sha256": "03745e9e21684c0e6d9fdc50d91caa0935f4baf50f626c11987ab7d6991d58d1",
+      "pe_machine": "0x8664",
+      "architecture": "x64",
+      "started_at": "2026-09-10T13:45:54.0833887Z",
+      "expected_text_service": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x64\\YimeTextServiceExperiment.dll",
+      "loaded_yime_modules": [
+        {
+          "path": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x64\\YimeTextServiceExperiment.dll",
+          "sha256": "32e71c5082fccb07a0041649a89401aaada65523b301ac93a67399d6cb43e1c7"
+        }
+      ],
+      "exact_current_module_verified": true
+    }
+  ],
+  "complete": true,
+  "passed": true,
+  "privacy": {
+    "learning_data_read": false,
+    "user_text_read": false,
+    "window_titles_read": false,
+    "command_lines_read": false,
+    "clipboard_read": false
+  },
+  "side_effects": {
+    "default_input_method_changed": false,
+    "processes_changed": false,
+    "registry_changed": false,
+    "product_state_changed": false
+  },
+  "limitation": "Loaded-module metadata does not prove that the profile was active or that input behavior passed; join it only with the operator manual-result record."
+}

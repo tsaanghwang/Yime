@@ -1,0 +1,2 @@
+# Preserve original evidence bytes so exported SHA-256 values survive Git transport.
+*.json -text -eol whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

@@ -1,0 +1,189 @@
+{
+  "schema_version": "yimecore-real-live-host-metadata-v1",
+  "generated_at": "2026-09-10T15:59:01.0572061Z",
+  "computer_name": "计算机",
+  "package": {
+    "status": "pass",
+    "version": "0.1.0-local.13",
+    "git_commit": "e346a1dad76d58f50652a2dd665c64ec8aeef49e",
+    "install_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe",
+    "manifest_sha256": "133c91fe205fcae911fa701a278465dad040e7dadce006b541697b656e50405a",
+    "expected_modules": {
+      "x64": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x64\\YimeTextServiceExperiment.dll",
+      "x86": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll"
+    }
+  },
+  "hosts": [
+    {
+      "process_id": 31908,
+      "status": "fail",
+      "reason": "The exact current-package text-service DLL is not loaded.",
+      "process_name": "firefox",
+      "executable": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+      "executable_version": "155.0.1",
+      "executable_sha256": "d2818de4b2349760ce2fb60e2b55831e98a4f724fe935afda5a7cd63432b729d",
+      "pe_machine": "0x014C",
+      "architecture": "x86",
+      "started_at": "2026-09-10T15:56:05.3431933Z",
+      "expected_text_service": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll",
+      "loaded_yime_modules": [],
+      "exact_current_module_verified": false
+    },
+    {
+      "process_id": 42436,
+      "status": "fail",
+      "reason": "The exact current-package text-service DLL is not loaded.",
+      "process_name": "firefox",
+      "executable": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+      "executable_version": "155.0.1",
+      "executable_sha256": "d2818de4b2349760ce2fb60e2b55831e98a4f724fe935afda5a7cd63432b729d",
+      "pe_machine": "0x014C",
+      "architecture": "x86",
+      "started_at": "2026-09-10T15:56:05.3968636Z",
+      "expected_text_service": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll",
+      "loaded_yime_modules": [],
+      "exact_current_module_verified": false
+    },
+    {
+      "process_id": 42672,
+      "status": "pass",
+      "reason": "Exactly one current-package text-service DLL is loaded.",
+      "process_name": "firefox",
+      "executable": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+      "executable_version": "155.0.1",
+      "executable_sha256": "d2818de4b2349760ce2fb60e2b55831e98a4f724fe935afda5a7cd63432b729d",
+      "pe_machine": "0x014C",
+      "architecture": "x86",
+      "started_at": "2026-09-10T15:56:04.6371762Z",
+      "expected_text_service": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll",
+      "loaded_yime_modules": [
+        {
+          "path": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll",
+          "sha256": "d6e64406e300869582ee1324f4decaa21b37c584169cbb1c4f9eb4c47cd4f864"
+        }
+      ],
+      "exact_current_module_verified": true
+    },
+    {
+      "process_id": 42892,
+      "status": "fail",
+      "reason": "The exact current-package text-service DLL is not loaded.",
+      "process_name": "firefox",
+      "executable": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+      "executable_version": "155.0.1",
+      "executable_sha256": "d2818de4b2349760ce2fb60e2b55831e98a4f724fe935afda5a7cd63432b729d",
+      "pe_machine": "0x014C",
+      "architecture": "x86",
+      "started_at": "2026-09-10T15:56:04.8827990Z",
+      "expected_text_service": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll",
+      "loaded_yime_modules": [],
+      "exact_current_module_verified": false
+    },
+    {
+      "process_id": 42996,
+      "status": "fail",
+      "reason": "The exact current-package text-service DLL is not loaded.",
+      "process_name": "firefox",
+      "executable": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+      "executable_version": "155.0.1",
+      "executable_sha256": "d2818de4b2349760ce2fb60e2b55831e98a4f724fe935afda5a7cd63432b729d",
+      "pe_machine": "0x014C",
+      "architecture": "x86",
+      "started_at": "2026-09-10T15:56:05.0906007Z",
+      "expected_text_service": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll",
+      "loaded_yime_modules": [],
+      "exact_current_module_verified": false
+    },
+    {
+      "process_id": 43312,
+      "status": "fail",
+      "reason": "The exact current-package text-service DLL is not loaded.",
+      "process_name": "firefox",
+      "executable": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+      "executable_version": "155.0.1",
+      "executable_sha256": "d2818de4b2349760ce2fb60e2b55831e98a4f724fe935afda5a7cd63432b729d",
+      "pe_machine": "0x014C",
+      "architecture": "x86",
+      "started_at": "2026-09-10T15:56:05.8348873Z",
+      "expected_text_service": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll",
+      "loaded_yime_modules": [],
+      "exact_current_module_verified": false
+    },
+    {
+      "process_id": 43696,
+      "status": "fail",
+      "reason": "The exact current-package text-service DLL is not loaded.",
+      "process_name": "firefox",
+      "executable": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+      "executable_version": "155.0.1",
+      "executable_sha256": "d2818de4b2349760ce2fb60e2b55831e98a4f724fe935afda5a7cd63432b729d",
+      "pe_machine": "0x014C",
+      "architecture": "x86",
+      "started_at": "2026-09-10T15:56:06.3250917Z",
+      "expected_text_service": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll",
+      "loaded_yime_modules": [],
+      "exact_current_module_verified": false
+    },
+    {
+      "process_id": 43748,
+      "status": "fail",
+      "reason": "The exact current-package text-service DLL is not loaded.",
+      "process_name": "firefox",
+      "executable": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+      "executable_version": "155.0.1",
+      "executable_sha256": "d2818de4b2349760ce2fb60e2b55831e98a4f724fe935afda5a7cd63432b729d",
+      "pe_machine": "0x014C",
+      "architecture": "x86",
+      "started_at": "2026-09-10T15:56:06.4688195Z",
+      "expected_text_service": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll",
+      "loaded_yime_modules": [],
+      "exact_current_module_verified": false
+    },
+    {
+      "process_id": 43904,
+      "status": "fail",
+      "reason": "The exact current-package text-service DLL is not loaded.",
+      "process_name": "firefox",
+      "executable": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+      "executable_version": "155.0.1",
+      "executable_sha256": "d2818de4b2349760ce2fb60e2b55831e98a4f724fe935afda5a7cd63432b729d",
+      "pe_machine": "0x014C",
+      "architecture": "x86",
+      "started_at": "2026-09-10T15:56:06.7859288Z",
+      "expected_text_service": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll",
+      "loaded_yime_modules": [],
+      "exact_current_module_verified": false
+    },
+    {
+      "process_id": 43916,
+      "status": "fail",
+      "reason": "The exact current-package text-service DLL is not loaded.",
+      "process_name": "firefox",
+      "executable": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+      "executable_version": "155.0.1",
+      "executable_sha256": "d2818de4b2349760ce2fb60e2b55831e98a4f724fe935afda5a7cd63432b729d",
+      "pe_machine": "0x014C",
+      "architecture": "x86",
+      "started_at": "2026-09-10T15:56:06.8002408Z",
+      "expected_text_service": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll",
+      "loaded_yime_modules": [],
+      "exact_current_module_verified": false
+    }
+  ],
+  "complete": true,
+  "passed": false,
+  "privacy": {
+    "user_text_read": false,
+    "window_titles_read": false,
+    "clipboard_read": false,
+    "command_lines_read": false,
+    "learning_data_read": false
+  },
+  "side_effects": {
+    "default_input_method_changed": false,
+    "registry_changed": false,
+    "processes_changed": false,
+    "product_state_changed": false
+  },
+  "limitation": "Loaded-module metadata does not prove that the profile was active or that input behavior passed; join it only with the operator manual-result record."
+}
