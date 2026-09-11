@@ -18,13 +18,18 @@
 
 从本工作分支读取交付目录 `test-delivery/rime-pime-coexistence-20260911` 和同目录的 `PIN.json`。
 安装器、收据、manifest、静态载荷核对记录及来源记录均按原始字节保存。
+来源编译提交：`cf651886efefd8e0eee343fcdf2bd62766b42f14`。
+安装器 SHA-256：`4bd0d4f3a63a97c857f422813d79f19eb8310f9ac75c1c65afd9d428f4f82c98`，41,247,685 字节。
+新构建包含 168 项来源载荷；NSIS 编译后已核对完整归档成员和原始内容哈希，没有执行安装器。
 先用 `tools/dual-product/verify_delivery.py` 核验 `PIN.json` 中的 index SHA-256；验证结果只是交付完整性，不是实机验收。
 
 ## 执行顺序
 
-1. 等候候选来源提交的 CI 成功。读取 `PIN.json` 核对固定交付，不用目录中“最新”的其他 EXE，也不自行重包或修改准入。
+1. 等候包含本交付的提交 CI 成功。读取 `PIN.json` 核对固定交付，不用目录中“最新”的其他 EXE，也不自行重包或修改准入。
 2. 从资源管理器启动独立的、未提升的 Windows PowerShell。不要在 Codex、Windows Terminal 等可能带包身份的父进程内安装，也不要提前以管理员启动。
 3. 使用下列准备命令。路径按本机仓库绝对路径填写；`--params-file` 指向准备参数 JSON，包含 `DeliveryRoot` 和 `ExpectedIndexSha256`。准备过程绑定本机名称、StdRegProv MachineGuid、发起 SID、现行 YimeCore 安装/状态路径和固定候选，只写仓库外的操作文件。
+
+仓库中已提供 `test-delivery/rime-pime-coexistence-20260911/prepare-parameters.json`，在仓库根目录运行时可以直接使用。也可从资源管理器双击根目录 `Prepare-Rime-PIME-Coexistence-Test.cmd`，它只准备，不安装。
 
 ```text
 python tools/powershell/run_checked.py --script tools/dual-product/prepare-rime-pime-coexistence-test.ps1 --edition ps5 --params-file <准备参数JSON绝对路径>

@@ -2737,6 +2737,8 @@ def executable_candidate_source_status(sources):
     for token in ("Assert-CandidateTargetHost", "Assert-MaintenanceWorkerDecision",
                   "Export-MaintenanceRecoveryTicket", "Open-MaintenanceRemoval",
                   "Request-MaintenanceRemoval", "Resume-MaintenanceRuntime",
+                  "Start-MaintenancePeerProtection", "Assert-MaintenancePeerProtection",
+                  "Complete-MaintenancePeerProtection", "peer_protection",
                   "-and $null -eq $removal", "CoordinationHandle=",
                   "installed_acceptance_passed=$false", "dp1_u_acceptance_passed=$false",
                   "public_release_admitted=$false"):
@@ -2745,7 +2747,7 @@ def executable_candidate_source_status(sources):
     if "schema_version='yime-rime-pime-executable-candidate-v2'" not in reader:
         fail("guarded candidate schema boundary missing")
     for name in ("executable-candidate", "executable-receipt", "candidate-maintenance",
-                 "candidate-coordinator", "dp1u-candidate-registration", "dp1u-candidate-runtime"):
+                 "candidate-coordinator", "dp1u-candidate-registration", "dp1u-candidate-runtime", "peer-protection"):
         if workflow.count(f"test-rime-pime-{name}.ps1") < 2:
             fail("guarded candidate dual-shell regression wiring missing")
     return {"source_contract_wired": True, "ci_ps5_ps7_present": True,

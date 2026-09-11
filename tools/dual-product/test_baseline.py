@@ -152,9 +152,13 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 255)
-        self.assertEqual(len(self.receipt["source_manifest"]), 262)
+        self.assertEqual(len(contract["source_paths"]), 259)
+        self.assertEqual(len(self.receipt["source_manifest"]), 266)
         for path in (
+            "tools/dual-product/rime-pime-peer-protection.psm1",
+            "tools/dual-product/test-rime-pime-peer-protection.ps1",
+            "tools/dual-product/prepare-rime-pime-coexistence-test.ps1",
+            "tools/dual-product/execute-rime-pime-coexistence-test.ps1",
             "version.txt",
             "PIMELauncher/build.rs",
             "PIMETextService/PIMETextService.rc.in",

@@ -1,9 +1,23 @@
 {
   "schema_version": "yime-dual-product-source-contract-v1",
   "decision": "docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md",
-  "products": ["rime-pime", "yimecore"],
+  "products": [
+    "rime-pime",
+    "yimecore"
+  ],
   "rime_pime_source_product_version": "1.4.0-dev.1",
-  "installation_choices": [["rime-pime"], ["yimecore"], ["rime-pime", "yimecore"]],
+  "installation_choices": [
+    [
+      "rime-pime"
+    ],
+    [
+      "yimecore"
+    ],
+    [
+      "rime-pime",
+      "yimecore"
+    ]
+  ],
   "runtime_dependencies_between_products": [],
   "writable_state_shared_between_products": false,
   "default_input_method_mutation_authorized": false,
@@ -263,7 +277,16 @@
     "go-backend/input_methods/yime/yimebroker/health_test.go",
     "go-backend/input_methods/yime/yimebroker/health_windows.go",
     "go-backend/input_methods/yime/yimebroker/health_windows_test.go",
-    "tools/lexicon/data/yime_core_target.lock.json"
+    "tools/lexicon/data/yime_core_target.lock.json",
+    "tools/dual-product/rime-pime-peer-protection.psm1",
+    "tools/dual-product/test-rime-pime-peer-protection.ps1",
+    "tools/dual-product/prepare-rime-pime-coexistence-test.ps1",
+    "tools/dual-product/execute-rime-pime-coexistence-test.ps1"
   ],
-  "locked_artifact_roles": ["full_mode_dictionary", "variable_mode_dictionary", "shorthand_mode_dictionary", "canonical_layout_projection"]
+  "locked_artifact_roles": [
+    "full_mode_dictionary",
+    "variable_mode_dictionary",
+    "shorthand_mode_dictionary",
+    "canonical_layout_projection"
+  ]
 }
