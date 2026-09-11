@@ -18,6 +18,10 @@ $definitions=Join-Path $PSScriptRoot 'original-rollback-finalizer.ps1'
     if($p.Mode -cne 'Resume' -or $p.PreparedSha256 -cne $original.prepared_sha256 -or $p.ExpectedInstallerSha256 -cne '0276245dff5aa5e6441a829152eb178471b8cba0a21314e15ba04a9e5ff83617'){throw 'Finalizer requires the fixed original package and ticket.'}
     $context=$null;$coordinator=$null;$package=$null;$ticket=$null;$protection=$null
     try{
+        # This is a raw file digest, not the canonical approval object digest
+        # stored in the authenticated recovery ticket and prepared plan.
+        $originalAuthorizationPath=Join-Path ([IO.Path]::GetDirectoryName([IO.Path]::GetFullPath($ticketPath))) 'authorization.json'
+        if((Get-MaintenanceHash $originalAuthorizationPath) -cne '89359001856f4d875dcb109c1b148b655be56fb8e1d4fa5728705fd4c117cfab'){throw 'Original authorization file hash mismatch.'}
         $context=Open-MaintenanceAuthorization $p.AuthorizationPath $p.TrustedApprovalSha256 $p.BoundaryPath
         Assert-MaintenanceInitiator $context
         if($context.authorization.package_sha256 -cne $p.ExpectedInstallerSha256 -or $context.authorization.canonical_receipt_sha256 -cne 'c4badd8cc2c3b06389ed044f08bcfb0383eb963affe5ca93a3e1c5e870eea4a1'){throw 'New authorization must retain the original package and receipt.'}
@@ -33,8 +37,8 @@ $definitions=Join-Path $PSScriptRoot 'original-rollback-finalizer.ps1'
         $protection=Start-MaintenancePeerProtection $context
         $journal=Join-Path $context.authorization.recovery_root 'install-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0'
         $ticket=Read-MaintenancePreparedPlan $context $journal $p.PreparedSha256
-        if($ticket.plan.original_approval_sha256 -cne '89359001856f4d875dcb109c1b148b655be56fb8e1d4fa5728705fd4c117cfab' -or $ticket.plan.manifest_sha256 -cne $manifest -or $ticket.plan.files.Count -ne 191){throw 'Finalizer plan differs from reviewed original transaction.'}
         . $definitions
+        Assert-FinalizerPlanBinding $ticket.plan $original $manifest
         $result=Invoke-AbsentRollbackFinalization $context $ticket $bundle -Apply:$apply
         $resultPath=Join-Path ([IO.Path]::GetDirectoryName($context.authorization_path)) ('original-finalizer-'+[guid]::NewGuid().ToString('N')+'.json')
         Write-MaintenancePeerEvidence $resultPath $result

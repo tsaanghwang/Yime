@@ -1,5 +1,14 @@
 # Definitions only. Dot-source inside the reviewed maintenance module scope.
 # This separate recovery policy never invokes registration/removal workers.
+function Assert-FinalizerPlanBinding($Plan,$Original,[string]$Manifest){
+    # The caller authenticates the original ticket bytes before parsing them.
+    # Both fields below are canonical approval object digests, not JSON file hashes.
+    if($Original.approval_sha256 -cnotmatch '^[0-9a-f]{64}$' -or
+        $Plan.original_approval_sha256 -cne $Original.approval_sha256 -or
+        $Plan.manifest_sha256 -cne $Manifest -or $Plan.files.Count -ne 191){
+        throw 'Finalizer plan differs from authenticated original ticket or manifest.'
+    }
+}
 function Assert-FinalizerRuntimeAbsent($Plan){
     $parameters=Get-MaintenanceRuntimeParameters $Plan
     & $script:CandidateRuntimeModule {

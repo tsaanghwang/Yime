@@ -1,5 +1,7 @@
 # 原事务专用收尾与 Job 修复候选包交接
 
+> **执行前更新：须拉取本页所述摘要域修复，并等待修复提交 CI 成功。** `e08b5487e` 的 CI 成功不足以执行旧入口。测试端在运行前发现授权摘要域混用，尚未生成新授权或运行 preview/Apply，现场未被本轮工具修改。报告见 [执行前问题报告](YIME_RIME_PIME_FINALIZER_APPROVAL_PIN_REVIEW_2026-09-11.md)。修复通过后，继续下列步骤，无需重制候选包或更改现场文件。
+
 影响产品：Rime/PIME；保留当前 YimeCore。源修复 `6457bb7fedcc733f595ef2dd5b518cc3c3f60ae6` 的 CI [34597860336](https://github.com/tsaanghwang/Yime/actions/runs/34597860336) 成功。**本页新增恢复工具及交付物须等包含本页的提交 CI 成功后才执行。** 当前未取得真实恢复成功证据。
 
 本页替代短路径恢复方案的执行步骤。旧 `-empty` 和 `-request` 安装器都含旧 Job 判断；停止重复 Resume，不替换旧包内的脚本。本次先完成原事务收尾并回传报告，开发端审阅后另行启动 `-jobexit` 新包安装。
@@ -7,6 +9,8 @@
 ## 专用收尾的边界
 
 这是独立、限于本次故障的恢复策略：固定原事务 `84ccacac-c115-4c2d-8d7a-47df8e0ea4a0`、原票据、原包、原收据和原计划；使用当前源码中修复后的只读注册观察器，确认注册、Run、uninstall 均缺失且无原候选运行时。它不会调用旧注册 worker、启动或停止运行时，也不是新候选包接管旧票据。
+
+授权摘要分开核验：原票据先通过固定文件哈希认证，再用其中 `approval_sha256` 校验计划的 `original_approval_sha256`，两者均为规范化对象摘要（测试端核对值 `1a27c02e0f8af39fd845c2dbb776ea3776ea2c6a504aa6d59fc5816c744e03a6`）。原票据同目录的 `authorization.json` 另以原始文件 SHA-256 `89359001856f4d875dcb109c1b148b655be56fb8e1d4fa5728705fd4c117cfab` 校验。不要将文件摘要填入对象摘要字段，也不要改原件迎合检查。
 
 只有原安装无 commit/terminal、原 removal 已有 remove-requested 且无 terminal、原计划全部 191 个文件的身份/大小/摘要仍匹配、peer 和默认输入未变时才继续。Apply 按原计划精确删除载荷，成功后通过原日志协议发布 removal=remove-complete、install=rolled-back。它不删除未列文件、用户状态、恢复 EXE、原票据、日志或历史证据。任何检查或删除失败立即停止，禁止自动生成新授权重试或手写终态。
 
@@ -60,4 +64,4 @@ python tools/powershell/run_checked.py --script tools/dual-product/finalize-orig
 - EXE SHA-256：`ffdd6f380a9fe7518f9c6db6d54c100f526201989d268a8638c6c6a603d3eacd`
 - 其他摘要见该目录 `PIN.json`。
 
-新包只用于恢复审阅通过后的新安装事务。本轮不运行其 prepare/Install。专用恢复入口本地已通过 PS5/PS7 各 24 项维护夹具检查、解压认证正反例和入口语法检查；真实 SID、注册观察、权限及收尾结果仍需测试机证据。
+新包只用于恢复审阅通过后的新安装事务。本轮不运行其 prepare/Install。专用恢复入口本地已通过 PS5/PS7 各 25 项维护夹具检查、解压认证正反例和入口语法检查。新增回归执行实际入口中的计划校验调用，覆盖正确对象摘要通过、误用文件摘要拒绝、票据不匹配、manifest 变化和文件计数变化；此前 24 项夹具漏测了这个入口校验。真实 SID、注册观察、权限及收尾结果仍需测试机证据。

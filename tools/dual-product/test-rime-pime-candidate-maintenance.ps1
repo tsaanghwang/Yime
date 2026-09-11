@@ -215,6 +215,32 @@ Check 'worker refuses removal without durable intent and registration after comm
         Reject {& $module {param($t,$c) Assert-MaintenanceWorkerDecision $t 'Register' $c} $opened $f.context} 'cannot replay'
     }finally{$opened.store.Dispose()}
 }
+Check 'public finalizer plan guard uses ticket object digest instead of raw authorization hash' {
+    . (Join-Path $PSScriptRoot 'original-rollback-finalizer.ps1')
+    $tokens=$null;$parseErrors=$null
+    $ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'finalize-original-rollback.ps1'),[ref]$tokens,[ref]$parseErrors)
+    Assert ($parseErrors.Count -eq 0) 'Public finalizer syntax failed.'
+    $calls=@($ast.FindAll({param($node) $node -is [Management.Automation.Language.CommandAst] -and $node.GetCommandName() -ceq 'Assert-FinalizerPlanBinding'},$true))
+    Assert ($calls.Count -eq 1) 'Public finalizer must call the tested plan guard exactly once.'
+    # Execute the actual public-entry call expression with non-product fixtures.
+    $call=[scriptblock]::Create($calls[0].Extent.Text)
+    $canonical='1a27c02e0f8af39fd845c2dbb776ea3776ea2c6a504aa6d59fc5816c744e03a6'
+    $rawFile='89359001856f4d875dcb109c1b148b655be56fb8e1d4fa5728705fd4c117cfab'
+    $manifest='3f676b80b86f4c752e96c5ed06655bddb3b5b4aedd762ca8369483e7ae14b01d'
+    $original=[pscustomobject]@{approval_sha256=$canonical}
+    $ticket=[pscustomobject]@{plan=[pscustomobject]@{original_approval_sha256=$canonical;manifest_sha256=$manifest;files=@(1..191)}}
+    & $call
+    $ticket.plan.original_approval_sha256=$rawFile
+    Reject {& $call} 'authenticated original ticket'
+    $ticket.plan.original_approval_sha256=$canonical
+    $original.approval_sha256=$rawFile
+    Reject {& $call} 'authenticated original ticket'
+    $original.approval_sha256=$canonical
+    $ticket.plan.manifest_sha256=$rawFile
+    Reject {& $call} 'authenticated original ticket'
+    $ticket.plan.manifest_sha256=$manifest;$ticket.plan.files=@(1..190)
+    Reject {& $call} 'authenticated original ticket'
+}
 function Finalize-Fixture($Case,$Opened,[switch]$Apply){
     & $module {
         param($defs,$f,$ticket,$apply)
