@@ -183,7 +183,7 @@ $requiredGovernanceGuards = @(
     'Preserve protected installer-package contract',
     'name: core-build',
     'Preserve legacy aggregate build contract',
-    'needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, nsis-preflight, contract-tests, dp1-long-contracts]',
+    'needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, nsis-preflight, contract-tests, dp1-long-contracts, shard-coverage]',
     '.\tools\lexicon\replay-approved-handoff.ps1',
     '.\tools\evaluation\run.ps1',
     'verify_release_readiness.py --require-release',
@@ -675,7 +675,7 @@ if (-not $buildEnvironmentText.Contains('initialize-dev-environment.ps1') -or -n
     throw 'Build and VS Code CMake entry points must share proxy/PATH initialization.'
 }
 $realRimeText = Get-Content -LiteralPath $realRimeTest -Raw
-foreach ($guard in @('go test -v', 'TestRealRimeKeepsCandidatesWhileCompletingFinalSyllable', 'TestRealRimeLongSessionSwitchesFirstMiddleAndFinalSegments', 'TestRealRimeParticleAStage6DDualTrackAcrossAllThreeSchemas', 'TestRealRimeExternalBuildAppliesPageSize')) {
+foreach ($guard in @('go test -json', "New-CIShardResult 'real-rime'", 'TestRealRimeKeepsCandidatesWhileCompletingFinalSyllable', 'TestRealRimeLongSessionSwitchesFirstMiddleAndFinalSegments', 'TestRealRimeParticleAStage6DDualTrackAcrossAllThreeSchemas', 'TestRealRimeExternalBuildAppliesPageSize')) {
     if (-not $realRimeText.Contains($guard)) {
         throw "Real librime CI guard is missing: $guard"
     }
