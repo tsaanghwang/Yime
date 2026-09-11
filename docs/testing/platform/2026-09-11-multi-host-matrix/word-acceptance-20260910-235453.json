@@ -1,0 +1,68 @@
+{
+  "schema_version": "yimecore-word-manual-acceptance-v1",
+  "generated_at": "2026-09-10T15:54:53.9039802Z",
+  "host": "Microsoft Word",
+  "architecture": "x64",
+  "package": {
+    "status": "pass",
+    "version": "0.1.0-local.13",
+    "git_commit": "e346a1dad76d58f50652a2dd665c64ec8aeef49e",
+    "install_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe",
+    "manifest_sha256": "133c91fe205fcae911fa701a278465dad040e7dadce006b541697b656e50405a",
+    "expected_modules": {
+      "x64": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x64\\YimeTextServiceExperiment.dll",
+      "x86": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll"
+    }
+  },
+  "manual_result": "pass",
+  "modes": [
+    {
+      "mode": "full",
+      "rounds": 3,
+      "display_name": "等长",
+      "candidates_per_page_reported": 9
+    },
+    {
+      "mode": "shorthand",
+      "rounds": 3,
+      "display_name": "省键",
+      "candidates_per_page_reported": 5
+    },
+    {
+      "mode": "variable",
+      "rounds": 3,
+      "display_name": "变长",
+      "candidates_per_page_reported": 7
+    }
+  ],
+  "passed_checks": [
+    "space_commit",
+    "shift_valid_ordinal_commit",
+    "shift_candidate_labels",
+    "bare_digit_composition",
+    "backspace_last_code_element",
+    "escape_cancel",
+    "candidate_page_forward_and_back",
+    "arrow_candidate_selection_and_commit",
+    "focus_loss_cancel_without_commit",
+    "confirmed_text_protection",
+    "focus_return_recovery",
+    "language_bar_mode_switch_and_menu",
+    "host_reopen_recovery"
+  ],
+  "final_user_report": "正常。",
+  "final_report_context": "Explicit confirmation that focus cancellation/text protection, language bar and reopen recovery were normal in all three modes, three rounds each.",
+  "manual_evidence": [
+    "word-basic-confirmation-20260910-233405.json",
+    "word-final-user-report-20260910-235342.json"
+  ],
+  "module_evidence": [
+    "word-pre-manual-20260910-225904.json",
+    "word-post-manual-20260910-235342.json"
+  ],
+  "package_and_dll_unchanged": true,
+  "host_behavior_acceptance_passed": true,
+  "entire_host_matrix_complete": false,
+  "new_invalid_code_fix_installed_validation": false,
+  "limitation": "Manual outcomes are user-reported. Covers installed local.13 only; no new-fix installation or independent global registration/default-preservation audit."
+}

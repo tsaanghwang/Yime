@@ -1,0 +1,18 @@
+{
+  "schema_version": "yimecore-manual-observation-v1",
+  "generated_at": "2026-09-10T15:53:42.8427195Z",
+  "host": "Microsoft Word",
+  "user_report": "已测试，请核验。",
+  "requested_checks": [
+    "three_modes_three_rounds_focus_loss_and_text_protection",
+    "language_bar",
+    "host_reopen_recovery"
+  ],
+  "execution_reported": true,
+  "manual_outcomes": null,
+  "metadata_evidence": "word-post-manual-20260910-235342.json",
+  "metadata_matches_previous_package_and_dll": true,
+  "new_process_observed": true,
+  "complete": false,
+  "note": "User reported execution, but did not explicitly confirm pass/fail outcomes. Metadata cannot establish manual behavior results."
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": "yimecore-protection-evidence-disposition-v1",
+  "generated_at": "2026-09-11T00:05:43.3693576Z",
+  "user_report": "原来就是微软拼音和其它一些键盘布局。没有装过 Pime/Rime，暂时不能提供对照数据。只有等那边提要求再说。",
+  "reported_preinstall_state": {
+    "microsoft_pinyin_present": true,
+    "other_keyboard_layouts_present": true,
+    "pime_rime_ever_installed": false
+  },
+  "evidence_basis": "User recollection, not a captured pre-test registry/default snapshot",
+  "protection_comparison_status": "deferred_pending_development_side_request",
+  "additional_checks_requested_now": false,
+  "behavior_acceptance_unchanged": true,
+  "previous_summary": "matrix-summary-20260911-080027.json",
+  "committed": false,
+  "pushed": false
+}

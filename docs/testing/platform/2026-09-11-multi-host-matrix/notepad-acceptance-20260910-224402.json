@@ -1,0 +1,68 @@
+{
+  "schema_version": "yimecore-notepad-manual-acceptance-v1",
+  "generated_at": "2026-09-10T14:44:26.7979074Z",
+  "host": "Windows Notepad",
+  "architecture": "x64",
+  "package": {
+    "status": "pass",
+    "version": "0.1.0-local.13",
+    "git_commit": "e346a1dad76d58f50652a2dd665c64ec8aeef49e",
+    "install_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe",
+    "manifest_sha256": "133c91fe205fcae911fa701a278465dad040e7dadce006b541697b656e50405a",
+    "expected_modules": {
+      "x64": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x64\\YimeTextServiceExperiment.dll",
+      "x86": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll"
+    }
+  },
+  "manual_result": "pass",
+  "modes": [
+    {
+      "mode": "full",
+      "candidates_per_page": 7,
+      "rounds": 3
+    },
+    {
+      "mode": "shorthand",
+      "candidates_per_page": 9,
+      "rounds": 3
+    },
+    {
+      "mode": "variable",
+      "candidates_per_page": 5,
+      "rounds": 3
+    }
+  ],
+  "passed_checks": [
+    "space_commit",
+    "shift_ordinal_commit",
+    "shift_candidate_labels",
+    "bare_digit_composition",
+    "escape_cancel",
+    "backspace_last_code_element",
+    "paging",
+    "arrow_candidate_selection",
+    "focus_loss_cancel_without_commit",
+    "confirmed_text_protection",
+    "focus_return_recovery",
+    "language_bar_mode_switch_and_menu",
+    "host_reopen_recovery"
+  ],
+  "final_user_report": "全部正常。",
+  "final_report_context": "Confirmation of three modes, three rounds each for Space commit, language bar switching/menu and host reopen recovery.",
+  "manual_evidence": [
+    "notepad-commit-confirmation-20260910-221454.json",
+    "notepad-digit-edit-confirmation-20260910-221653.json",
+    "notepad-focus-confirmation-20260910-223819.json",
+    "notepad-paging-confirmation-20260910-221849.json"
+  ],
+  "module_evidence": [
+    "notepad-post-manual-20260910-221037.json",
+    "notepad-final-metadata-20260910-224402.json"
+  ],
+  "package_and_dll_unchanged": true,
+  "reopened_process_observed": true,
+  "host_behavior_acceptance_passed": true,
+  "entire_host_matrix_complete": false,
+  "new_invalid_code_fix_installed_validation": false,
+  "limitation": "Manual outcomes are user-reported, not inferred from DLL loading. This covers installed local.13 only; no new-fix installation or global registration/default-preservation audit was performed."
+}
