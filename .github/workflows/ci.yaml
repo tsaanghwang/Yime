@@ -663,7 +663,10 @@ jobs:
       - name: Test candidate request argument transport
         if: matrix.lane == 'maintenance'
         shell: pwsh
-        run: python tools/dual-product/test_candidate_request.py
+        run: |
+          python tools/dual-product/test_candidate_request.py
+          if ($LASTEXITCODE -ne 0) { throw "Candidate request transport tests failed" }
+          python tools/powershell/run_checked.py --script tools/dual-product/test-legacy-resume-transport.ps1 --edition ps5
       - name: Test current YimeCore peer protection
         if: matrix.lane == 'maintenance'
         shell: pwsh

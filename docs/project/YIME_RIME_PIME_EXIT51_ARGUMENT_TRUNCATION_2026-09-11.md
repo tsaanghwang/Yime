@@ -1,5 +1,7 @@
 # 联合补证复核：复现 NSIS 截断恢复摘要
 
+> 修复 CI 已通过，后续交付见[原事务短路径恢复与新候选交付](YIME_RIME_PIME_SHORT_TRANSPORT_RECOVERY_2026-09-11.md)。旧包保持原字节，新包不能接管旧票据。
+
 影响产品：Rime/PIME 候选启动入口。已合入测试提交 `f243eaa07`。十六项只读检查通过；PowerShell 4100 / RecordId 5758 在原失败窗口记录 `Expected literal candidate SHA256.`。所查询的安全日志没有相关阻止事件，当前不应关闭防火墙或安全保护。
 
 已发布 JSON 的字节哈希均与索引一致。仅 `.gitattributes` 文件实测为 `69b41196a7c03d457e057c82b33417fb7168b489cb013f31b06c80d2a3083897`，与索引不符；保留原文件及原索引，不把它写成全部文件校验通过。这不改变 JSON 本身的哈希核验结果。
