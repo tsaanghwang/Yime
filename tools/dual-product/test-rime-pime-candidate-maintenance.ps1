@@ -91,6 +91,7 @@ Check 'controller loads reader through its retained module without global import
         $opened=Read-MaintenancePreparedPlan $Context $Ticket.journal_root $Ticket.prepared_sha256
         try{Assert-MaintenanceWorkerDecision $opened $Action $Context}finally{$opened.store.Dispose()}
         if($script:fixture.fail -ceq $Action){throw ('injected '+$Action)}
+        if($script:fixture.fail -ceq 'RegisterAndRemove' -and $Action -in @('Register','Remove')){throw ('injected '+$Action)}
         if($Action -eq 'Remove'){$script:fixture.registration='absent';$script:fixture.remove_count++}else{$script:fixture.registration='present'}
     }
     function script:Get-MaintenanceRegistration {param($c,$p,$r,$s)
@@ -147,6 +148,25 @@ Check 'durable removal takes priority over older install commit after interrupti
     & $module {param($t) Request-MaintenanceRemoval $t} $f.ticket
     $r=Invoke-Case $f 'Resume' $f.ticket.prepared_sha256
     Assert ($r.disposition -ceq 'remove-complete' -and $f.resume_count -eq 0 -and $f.remove_count -eq 1) 'Removal resumed as installation.'
+}
+Check 'exit51 prepared-only install resumes committed removal without registration or runtime restart' {
+    $f=New-Fixture;$f.fail='RegisterAndRemove'
+    Reject {Invoke-Case $f} 'rollback incomplete'
+    $opened=Open-Ticket $f
+    try{Assert (-not $opened.store.Has('commit.bin') -and -not $opened.store.Has('terminal.bin')) 'Fixture is not a prepared-only install.'}finally{$opened.store.Dispose()}
+    $rm=& $module {param($t) Open-MaintenanceRemoval $t} $f.ticket
+    try{Assert ($rm.commit -and -not $rm.terminal) 'Fixture lacks pending committed removal.'}finally{$rm.store.Dispose()}
+    foreach($row in $f.ticket.plan.files){Assert (Test-Path (Join-Path $f.ticket.plan.install_root $row.path)) 'Fixture payload unexpectedly missing.'}
+    $f.fail='';$f.events.Clear()
+    $f.context.authorization.run_id=[guid]::NewGuid().ToString();$f.context.approval_sha256='b'*64
+    $r=Invoke-Case $f 'Resume' $f.ticket.prepared_sha256
+    Assert ($r.disposition -ceq 'rolled-back' -and $f.start_count -eq 0 -and $f.resume_count -eq 0) 'Recovery restarted installation/runtime.'
+    Assert (-not $f.events.Contains('worker-Register') -and -not $f.events.Contains('worker-PublishMarkers')) 'Recovery replayed registration.'
+    $opened=Open-Ticket $f
+    try{$d=& $module {param($t) Get-MaintenanceDecision $t.store 'terminal.bin' $t.prepared_sha256 @('rolled-back')} $opened;Assert ($d.disposition -ceq 'rolled-back' -and -not $opened.store.Has('commit.bin')) 'Install rollback decision missing.'}finally{$opened.store.Dispose()}
+    $rm=& $module {param($t) Open-MaintenanceRemoval $t} $f.ticket
+    try{Assert ($rm.terminal.disposition -ceq 'remove-complete') 'Removal terminal missing.'}finally{$rm.store.Dispose()}
+    foreach($row in $f.ticket.plan.files){Assert (-not (Test-Path (Join-Path $f.ticket.plan.install_root $row.path))) 'Owned payload remains.'}
 }
 Check 'uninstall preserves foreign files state directories and recovery executable' {
     $f=New-Fixture;$null=Invoke-Case $f
