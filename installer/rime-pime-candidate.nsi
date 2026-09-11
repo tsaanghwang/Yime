@@ -115,10 +115,27 @@ FunctionEnd
 Section
   InitPluginsDir
   !include "${CANDIDATE_INCLUDE}"
+  ; One value per write: the combined command can exceed NSIS_MAX_STRLEN.
+  ; UTF-16LE data is parsed and splatted by the bootstrap, never evaluated.
+  ClearErrors
+  FileOpen $0 "$PLUGINSDIR\candidate-request.txt" w
+  FileWriteUTF16LE $0 "$Mode$\r$\n"
+  FileWriteUTF16LE $0 "$EXEPATH$\r$\n"
+  FileWriteUTF16LE $0 "$Authorization$\r$\n"
+  FileWriteUTF16LE $0 "$Approval$\r$\n"
+  FileWriteUTF16LE $0 "$Boundary$\r$\n"
+  FileWriteUTF16LE $0 "$Receipt$\r$\n"
+  FileWriteUTF16LE $0 "$Prepared$\r$\n"
+  FileWriteUTF16LE $0 "${CANDIDATE_MANIFEST_SHA256}$\r$\n"
+  FileClose $0
+  ${If} ${Errors}
+    SetErrorLevel 70
+    Quit
+  ${EndIf}
   ; The source-owned controller validates exact SID, approval, receipt and target
   ; before UAC or mutation. No NSIS registration, deletion, Run key or uninstaller.
   ClearErrors
-  ExecWait '"$PowerShell" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$PLUGINSDIR\bundle\maintenance\invoke-rime-pime-candidate.ps1" -Mode "$Mode" -PackageRoot "$PLUGINSDIR\bundle" -ExpectedManifestSha256 "${CANDIDATE_MANIFEST_SHA256}" -InstallerPath "$EXEPATH" -AuthorizationPath "$Authorization" -TrustedApprovalSha256 "$Approval" -BoundaryPath "$Boundary" -ReceiptPath "$Receipt" -PreparedSha256 "$Prepared"' $0
+  ExecWait '"$PowerShell" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$PLUGINSDIR\bundle\maintenance\invoke-rime-pime-candidate-request.ps1" -RequestPath "$PLUGINSDIR\candidate-request.txt"' $0
   ${If} ${Errors}
     SetErrorLevel 70
   ${Else}

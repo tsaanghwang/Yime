@@ -1,5 +1,7 @@
 # 十一项通过后的事务与环境补证
 
+> 联合补证已收到并复核，不再重复本页任务。开发端已复现长命令截断缺陷，见[定位与源码修复说明](YIME_RIME_PIME_EXIT51_ARGUMENT_TRUNCATION_2026-09-11.md)。旧事务继续暂停。
+
 影响产品：Rime/PIME 失败事务；YimeCore 继续保持。已接收 `5e62c459a`，逐字节核对 output.json、execution-result.json 的长度和 SHA-256，与索引一致。十一项全通过，returncode=0、attempts=1。它们证明归档计划结构及当前身份绑定检查通过，不代表旧 Resume 执行成功。
 
 ## 下一次只读采集：一次交回两组证据

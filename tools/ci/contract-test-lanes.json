@@ -25,6 +25,7 @@
   "Test guarded executable candidate manifest": "maintenance",
   "Test guarded executable candidate receipt": "maintenance",
   "Test guarded candidate maintenance recovery": "maintenance",
+  "Test candidate request argument transport": "maintenance",
   "Test current YimeCore peer protection": "maintenance",
   "Test guarded candidate registration provider": "maintenance",
   "Test guarded candidate Runtime provider": "maintenance",

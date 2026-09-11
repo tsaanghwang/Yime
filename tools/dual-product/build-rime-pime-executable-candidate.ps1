@@ -52,7 +52,7 @@ try{
         Copy-BuildFile (Open-BuildFile $src $row) $dst
     }
     Copy-BuildFile $inventoryLease (Join-Path $bundle 'source-payload-inventory.json')
-    $maintenance=@('rime-pime-peer-protection.psm1','invoke-rime-pime-candidate.ps1','rime-pime-candidate-maintenance.psm1','rime-pime-executable-candidate.psm1','rime-pime-executable-receipt.psm1',
+    $maintenance=@('rime-pime-peer-protection.psm1','invoke-rime-pime-candidate.ps1','invoke-rime-pime-candidate-request.ps1','rime-pime-candidate-maintenance.psm1','rime-pime-executable-candidate.psm1','rime-pime-executable-receipt.psm1',
         'rime-pime-dp1u-candidate-registration.psm1','rime-pime-dp1u-candidate-registration-child.cs','rime-pime-dp1u-candidate-runtime.psm1','rime-pime-dp1u-candidate-runtime.cs',
         'rime-pime-candidate-coordinator.cs','rime-pime-candidate-coordinator.psm1','rime-pime-ownership.ps1','rime-pime-directed-stop-contract.ps1','rime-pime-target-user.ps1',
         'rime-pime-dp1u-native-probe.psm1','rime-pime-dp1u-native-facts.cs','rime-pime-dp1u-isolated-preflight.schema.json',
