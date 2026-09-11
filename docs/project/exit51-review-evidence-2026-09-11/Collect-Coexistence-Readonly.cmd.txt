@@ -1,0 +1,9 @@
+REVIEW ONLY - NOT AN EXECUTION ENTRY. Paths are placeholders.
+Original script body follows unchanged except path redaction.
+
+@echo off
+setlocal
+set "PATH=<TEST_USER>\.cache\codex-runtimes\codex-primary-runtime\dependencies\python;%PATH%"
+cd /d "<TEST_REPO>"
+python tools\powershell\run_checked.py --script .tmp\Collect-Coexistence-Readonly.ps1 --edition ps5
+pause

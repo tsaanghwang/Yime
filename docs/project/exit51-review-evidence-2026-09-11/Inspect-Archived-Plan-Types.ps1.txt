@@ -1,0 +1,30 @@
+REVIEW ONLY - NOT AN EXECUTION ENTRY. Paths are placeholders.
+Original script body follows unchanged except path redaction.
+
+[CmdletBinding()]
+param()
+$ErrorActionPreference='Stop'
+$archive='<TEST_ARCHIVES>\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-8848c54e5746489390c27a2876951f74\install-journal-copy\prepared.bin'
+$pkg=Import-Module './.tmp/exit51-original-6321067d/tools/dual-product/rime-pime-executable-candidate.psm1' -PassThru
+$raw=[IO.File]::ReadAllBytes($archive)
+if($raw.Length -lt 44 -or [Text.Encoding]::ASCII.GetString($raw,0,8) -cne 'YDP1UTX1'){throw 'Invalid archived envelope.'}
+$length=[BitConverter]::ToInt32($raw,8)
+if($length -lt 1 -or $length -ne $raw.Length-44){throw 'Invalid archived length.'}
+$payload=[byte[]]::new($length);[Array]::Copy($raw,44,$payload,0,$length)
+$sha=[Security.Cryptography.SHA256]::Create()
+try{$digest=$sha.ComputeHash($payload)}finally{$sha.Dispose()}
+for($i=0;$i -lt 32;$i++){if($digest[$i] -ne $raw[12+$i]){throw 'Archived payload digest mismatch.'}}
+$plan=& $pkg {param($v) ConvertFrom-CandidateJson $v} $payload
+function TypeName($v){if($null -eq $v){'null'}else{$v.GetType().FullName}}
+$meta=[ordered]@{
+    parser_source='6321067de503463a71262a84239b8f5c3064f10d';powershell_version=$PSVersionTable.PSVersion.ToString();source='archived install-journal-copy/prepared.bin';opened_original_transaction_lock=$false;
+    top_level_fields=@($plan.PSObject.Properties|ForEach-Object {[ordered]@{name=$_.Name;type=(TypeName $_.Value)}});
+    files_type=(TypeName $plan.files);files_count=$plan.files.Count;generated_files_type=(TypeName $plan.generated_files);generated_files_count=$plan.generated_files.Count;
+    file_field_types=@($plan.files[0].PSObject.Properties|ForEach-Object {[ordered]@{name=$_.Name;type=(TypeName $_.Value)}});
+    default_field_types=@($plan.default_input.PSObject.Properties|ForEach-Object {[ordered]@{name=$_.Name;type=(TypeName $_.Value)}});
+    product_version=$plan.product_version;install_state_directory_identity_verified=$false;recovery_executable_identity_verified=$false
+}
+$dest='<TEST_REPO>\docs\project\exit51-review-evidence-2026-09-11\plan-types.json'
+[IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($dest))|Out-Null
+[IO.File]::WriteAllText($dest,($meta|ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
+Write-Output 'Archived plan metadata exported; no original transaction lock opened.'

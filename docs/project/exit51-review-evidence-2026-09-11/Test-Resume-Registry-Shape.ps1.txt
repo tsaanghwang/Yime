@@ -1,0 +1,23 @@
+REVIEW ONLY - NOT AN EXECUTION ENTRY. Paths are placeholders.
+Original script body follows unchanged except path redaction.
+
+[CmdletBinding()]
+param()
+$ErrorActionPreference='Stop'
+$tokens=$null;$errors=$null
+$ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD '.tmp\Resume-Coexistence-Once.ps1'),[ref]$tokens,[ref]$errors)
+if($errors.Count){throw 'Parse failure.'}
+$fn=$ast.Find({param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq 'ReadJson'},$true)
+. ([scriptblock]::Create($fn.Extent.Text))
+$root=Join-Path $PWD ('.tmp\resume-shape-test-'+[guid]::NewGuid().ToString('N'))
+[void][IO.Directory]::CreateDirectory($root)
+$path=Join-Path $root 'registry.json'
+foreach($count in @(37,36)){
+    $rows=@(1..$count|ForEach-Object {[pscustomobject]@{id=('node-'+$_);error=$null;observation=[pscustomobject]@{exists=$false}}})
+    ConvertTo-Json -InputObject $rows -Depth 5|Set-Content -LiteralPath $path -Encoding UTF8
+    $old=@(ReadJson $path)
+    $reg=ReadJson $path
+    $valid=$reg -is [array] -and $reg.Count -eq 37 -and @($reg.id|Select-Object -Unique).Count -eq 37 -and @($reg|Where-Object {$_.error -or $_.observation.exists}).Count -eq 0
+    if($valid -ne ($count -eq 37)){throw 'Registry completeness regression failed.'}
+    Write-Output ('PASS: rows='+$count+' old-wrapper-count='+$old.Count+' corrected-count='+$reg.Count+' accepted='+$valid)
+}

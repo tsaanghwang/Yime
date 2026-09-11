@@ -1,0 +1,110 @@
+REVIEW ONLY - NOT AN EXECUTION ENTRY. Paths are placeholders.
+Original script body follows unchanged except path redaction.
+
+[CmdletBinding()]
+param([string]$ResultPath)
+$ErrorActionPreference='Stop'
+Set-Location -LiteralPath '<TEST_REPO>'
+$run='84ccacac-c115-4c2d-8d7a-47df8e0ea4a0'
+$base=Join-Path $env:USERPROFILE 'Yime Rime-PIME Test Archives'
+$approval=Join-Path $base ('approval-'+$run)
+$output=Join-Path $base ('readonly-'+$run+'-'+[guid]::NewGuid().ToString('N'))
+[void][IO.Directory]::CreateDirectory($output)
+function Save($name,$value){
+    $json=if($null -eq $value){'null'}elseif($value -is [array] -and $value.Count -eq 0){'[]'}else{ConvertTo-Json -InputObject $value -Depth 30}
+    $bytes=[Text.UTF8Encoding]::new($false).GetBytes($json)
+    $s=[IO.File]::Open((Join-Path $output $name),'CreateNew','Write','None')
+    try{$s.Write($bytes,0,$bytes.Length);$s.Flush($true)}finally{$s.Dispose()}
+}
+function FileRecord([string]$path){
+    try{$f=Get-Item -LiteralPath $path -ErrorAction Stop
+        if($f.Attributes -band [IO.FileAttributes]::ReparsePoint){throw 'Reparse point refused.'}
+        [pscustomobject]@{path=$path;bytes=$f.Length;sha256=(Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant();last_write_utc=$f.LastWriteTimeUtc.ToString('o');error=$null}
+    }catch{[pscustomobject]@{path=$path;error=$_.Exception.Message}}
+}
+$context=$null;$stores=@()
+try{
+    $original=Join-Path $PWD '.tmp\exit51-original-6321067d\tools\dual-product'
+    $m=Import-Module (Join-Path $original 'rime-pime-candidate-maintenance.psm1') -PassThru
+    $p=Get-Content -LiteralPath (Join-Path $approval 'execute-parameters.json') -Raw -Encoding UTF8|ConvertFrom-Json
+    & $m {Initialize-CandidateMaintenance}
+    $context=& $m {param($p) Open-MaintenanceAuthorization $p.AuthorizationPath $p.TrustedApprovalSha256 $p.BoundaryPath} $p
+    & $m {param($c) Assert-MaintenanceInitiator $c} $context
+    $a=$context.authorization
+    if($a.run_id -cne $run){throw 'Unexpected transaction identity.'}
+    $ticketPath=Join-Path $approval ('candidate-recovery-'+$run+'.json')
+    $ticket=Get-Content -LiteralPath $ticketPath -Raw -Encoding UTF8|ConvertFrom-Json
+    $paths=@($ticketPath,$p.AuthorizationPath,$p.BoundaryPath,(Join-Path $approval 'execute-parameters.json'))
+    foreach($kind in @('install','remove')){
+        $journal=Join-Path $a.recovery_root ($kind+'-'+$run)
+        $paths+=@(Get-ChildItem -LiteralPath $journal -File|ForEach-Object FullName)
+    }
+    $before=@($paths|ForEach-Object {FileRecord $_});Save 'original-files-before.json' $before
+    if(@($before|Where-Object error).Count){throw 'Original evidence could not be read; inspect before inventory.'}
+    $copies=@{}
+    foreach($kind in @('install','remove')){
+        $source=Join-Path $a.recovery_root ($kind+'-'+$run)
+        $dest=Join-Path $output ($kind+'-journal-copy');[void][IO.Directory]::CreateDirectory($dest)
+        foreach($f in @(Get-ChildItem -LiteralPath $source -File)){
+            [IO.File]::Copy($f.FullName,(Join-Path $dest $f.Name),$false)
+            $old=@($before|Where-Object path -CEQ $f.FullName)[0]
+            if((FileRecord (Join-Path $dest $f.Name)).sha256 -cne $old.sha256){throw 'Evidence copy digest mismatch.'}
+        }
+        $copies[$kind]=$dest
+    }
+    $pkg=Import-Module (Join-Path $original 'rime-pime-executable-candidate.psm1') -PassThru
+    $install=& $pkg {param($r) Open-CandidateJournal $r $false} $copies.install;$stores+=,$install
+    $plan=& $pkg {param($s,$h) Read-CandidateJournal $s 'prepared.bin' $h} $install $ticket.prepared_sha256
+    foreach($field in @('install_root','state_root','recovery_root','initiating_sid','target_machine_id','target_name','package_sha256')){
+        if($plan.$field -cne $a.$field){throw ('Retained plan binding differs: '+$field)}
+    }
+    if($ticket.approval_sha256 -cne $p.TrustedApprovalSha256 -or $plan.original_approval_sha256 -cne $ticket.approval_sha256 -or $ticket.package_sha256 -cne $plan.package_sha256){throw 'Original ticket binding mismatch.'}
+    if($ticket.journal_root -cne (Join-Path $a.recovery_root ('install-'+$run)) -or $plan.run_id -cne $run){throw 'Original journal path binding mismatch.'}
+    $commit=& $m {param($s,$h) Get-MaintenanceDecision $s 'commit.bin' $h @('installed')} $install $ticket.prepared_sha256
+    $terminal=& $m {param($s,$h) Get-MaintenanceDecision $s 'terminal.bin' $h @('install-complete','rolled-back')} $install $ticket.prepared_sha256
+    $remove=& $pkg {param($r) Open-CandidateJournal $r $false} $copies.remove;$stores+=,$remove
+    $intent=[pscustomobject][ordered]@{schema_version='yime-rime-pime-candidate-removal-intent-v1';install_prepared_sha256=$ticket.prepared_sha256;original_approval_sha256=$plan.original_approval_sha256;install_root=$plan.install_root;disposition='remove-or-rollback'}
+    $hash=& $pkg {param($v) Get-CandidateBytesHash ([Text.UTF8Encoding]::new($false).GetBytes(($v|ConvertTo-Json -Compress)))} $intent
+    $null=& $pkg {param($s,$h) Read-CandidateJournal $s 'prepared.bin' $h} $remove $hash
+    $rc=& $m {param($s,$h) Get-MaintenanceDecision $s 'commit.bin' $h @('remove-requested')} $remove $hash
+    $rt=& $m {param($s,$h) Get-MaintenanceDecision $s 'terminal.bin' $h @('remove-complete')} $remove $hash
+    Save 'decisions.json' ([ordered]@{prepared_binding_valid=$true;install_commit=$commit;install_terminal=$terminal;removal_commit=$rc;removal_terminal=$rt;parser_source='6321067de503463a71262a84239b8f5c3064f10d';parsed_copies_only=$true})
+    $files=@(foreach($row in $plan.files){
+        $path=Join-Path $plan.install_root $row.path
+        try{
+            $v=& $pkg {param($p) $script:CandidateNative::Inspect($p)} $path
+            [pscustomobject]@{path=$row.path;exists=$true;bytes=$v.Bytes;sha256=$v.Sha256;file_id=$v.FileId;size_matches=($v.Bytes -eq $row.bytes);hash_matches=($v.Sha256 -ceq $row.sha256);identity_matches=($v.FileId -ceq $row.file_id);error=$null}
+        }catch{[pscustomobject]@{path=$row.path;exists=(Test-Path -LiteralPath $path);error=$_.Exception.Message}}
+    });Save 'payload-observations.json' $files
+    $reg=Import-Module (Join-Path $original 'rime-pime-dp1u-candidate-registration.psm1') -PassThru
+    $c=[pscustomobject]@{authorization=$a;request=[pscustomobject]@{InstallRoot=$plan.install_root;TargetUserSid=$a.initiating_sid;DisplayVersion=$plan.product_version}}
+    $registry=@(& $reg {param($c)
+        foreach($tree in @(Get-CandidateRegistrationLayout $c)){
+            try{$v=Get-CandidateTreeObservation $tree -AllowDisabled;[pscustomobject]@{id=$tree.id;observation=$v;error=$null}}
+            catch{[pscustomobject]@{id=$tree.id;error=$_.Exception.Message}}
+        }
+        try{[pscustomobject]@{id='run';observation=(Get-CandidateRunObservation $c);error=$null}}catch{[pscustomobject]@{id='run';error=$_.Exception.Message}}
+    } $c);Save 'registry-observations-private.json' $registry
+    $default=& $m {Get-MaintenanceDefaultInput}
+    Save 'default-comparison.json' ([ordered]@{matches=(($default|ConvertTo-Json -Compress) -ceq ($plan.default_input|ConvertTo-Json -Compress));baseline=$plan.default_input;current=$default})
+    $images=@($plan.files|Where-Object {$_.path -in @('PIMELauncher.exe','go-backend/server.exe','go-backend\server.exe')}|ForEach-Object {Join-Path $plan.install_root $_.path})
+    $processes=@(Get-CimInstance Win32_Process -Filter "Name='PIMELauncher.exe' OR Name='server.exe'" -ErrorAction Stop|ForEach-Object {
+        if(-not $_.ExecutablePath){[pscustomobject]@{pid=$_.ProcessId;error='Candidate-name process image unavailable; ownership unresolved.'}}
+        elseif($images -icontains $_.ExecutablePath){[pscustomobject]@{pid=$_.ProcessId;image=$_.ExecutablePath;started_utc=$_.CreationDate.ToUniversalTime().ToString('o');error=$null}}
+    });Save 'process-observations.json' $processes
+    $logs=@(foreach($r in @($plan.state_root,(Join-Path $plan.install_root 'logs'))){
+        if(Test-Path -LiteralPath $r){Get-ChildItem -LiteralPath $r -Recurse -File|Where-Object {$_.Extension -in @('.log','.txt') -or $_.Name -like '*error*.json'}|ForEach-Object {FileRecord $_.FullName}}
+    });Save 'existing-log-inventory.json' ([ordered]@{files=$logs;original_stderr='Not persisted by original controller/worker; no replay performed.'})
+    $after=@($paths|ForEach-Object {FileRecord $_});Save 'original-files-after.json' $after
+    $unchanged=($before|ConvertTo-Json -Depth 5 -Compress) -ceq ($after|ConvertTo-Json -Depth 5 -Compress)
+    Save 'summary.json' ([ordered]@{collection_completed=$true;original_evidence_unchanged=$unchanged;payload_count=$files.Count;payload_errors=@($files|Where-Object error).Count;payload_mismatches=@($files|Where-Object {-not $_.error -and (-not $_.hash_matches -or -not $_.size_matches -or -not $_.identity_matches)}).Count;registry_errors=@($registry|Where-Object error).Count;registry_present=@($registry|Where-Object {$_.observation.exists}).Count;default_matches=(($default|ConvertTo-Json -Compress) -ceq ($plan.default_input|ConvertTo-Json -Compress));process_count=$processes.Count;log_count=$logs.Count;installed_acceptance_passed=$false})
+    Write-Host 'Read-only collection completed. No installation or recovery was executed.'
+}catch{
+    Save 'collection-error-private.json' ([ordered]@{type=$_.Exception.GetType().FullName;message=$_.Exception.Message;stack=$_.ScriptStackTrace})
+    Write-Host ('Read-only collection stopped: '+$_.Exception.Message)
+}finally{
+    foreach($s in $stores){$s.Dispose()}
+    if($context){& $m {param($c) Close-MaintenanceAuthorization $c} $context}
+    Write-Host ('Evidence directory: '+$output)
+    if($ResultPath){[IO.File]::WriteAllText($ResultPath,$output,[Text.UTF8Encoding]::new($false))}
+}
