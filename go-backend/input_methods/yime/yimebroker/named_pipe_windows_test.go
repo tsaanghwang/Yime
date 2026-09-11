@@ -19,12 +19,16 @@ func TestServeNamedPipeHandlesConcurrentConnectionsAndRejectsIdentityFields(t *t
 	dispatcher := newMemoryDispatcher(t, Config{})
 	pipeName := fmt.Sprintf(`\\.\pipe\YimeBroker-test-%d`, os.Getpid())
 	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	listening := make(chan struct{})
 	serverDone := make(chan error, 1)
 	go func() {
 		serverDone <- ServeNamedPipe(ctx, dispatcher, NamedPipeConfig{
 			Name: pipeName, MaxConnections: 4, MaxConnectionsPerClient: 4,
+			OnListening: func() { close(listening) },
 		})
 	}()
+	waitTestPipeListening(t, listening, serverDone)
 
 	first := openTestPipe(t, pipeName)
 	defer first.Close()
@@ -74,14 +78,20 @@ func TestServeNamedPipeWaitsAtGlobalConnectionLimit(t *testing.T) {
 	dispatcher := newMemoryDispatcher(t, Config{})
 	pipeName := fmt.Sprintf(`\\.\pipe\YimeBroker-limit-test-%d`, os.Getpid())
 	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	listening := make(chan struct{})
 	serverDone := make(chan error, 1)
 	go func() {
 		serverDone <- ServeNamedPipe(ctx, dispatcher, NamedPipeConfig{
 			Name: pipeName, MaxConnections: 2, MaxConnectionsPerClient: 2,
+			OnListening: func() { close(listening) },
 		})
 	}()
+	waitTestPipeListening(t, listening, serverDone)
 	first := openTestPipe(t, pipeName)
+	defer first.Close()
 	second := openTestPipe(t, pipeName)
+	defer second.Close()
 	thirdResult := make(chan *os.File, 1)
 	thirdError := make(chan error, 1)
 	go func() {
@@ -125,6 +135,19 @@ func TestServeNamedPipeWaitsAtGlobalConnectionLimit(t *testing.T) {
 		}
 	case <-time.After(namedPipeTestTimeout):
 		t.Fatal("limited named pipe server did not stop")
+	}
+}
+
+func waitTestPipeListening(t *testing.T, listening <-chan struct{}, serverDone <-chan error) {
+	t.Helper()
+	// The first instance is an internal anchor. Connecting before the server
+	// consumes it can steal that connection and make server startup fail.
+	select {
+	case <-listening:
+	case err := <-serverDone:
+		t.Fatalf("named pipe server exited before listening: %v", err)
+	case <-time.After(namedPipeTestTimeout):
+		t.Fatal("named pipe server did not report listening")
 	}
 }
 
