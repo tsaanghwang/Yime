@@ -1,5 +1,7 @@
 # “计算机”共存安装测试交接
 
+> **已被单次 Resume 失败复核取代：原恢复方案已执行并再次返回 51，禁止重复执行本页历史命令。当前只交回现有证据，见 [开发端复核与补证交接](YIME_RIME_PIME_EXIT51_RESUME_REVIEW_2026-09-11.md)。**
+
 > **2026-09-11 exit 51 后暂停执行以下安装步骤。** 当前事务已写入载荷且回滚未闭合。所有候选（包括 `-empty`）暂停新 Install/Remove/Resume；先执行 [exit 51 只读补证交接](YIME_RIME_PIME_EXIT51_RECOVERY_HANDOFF_2026-09-11.md)。后文保留为历史流程，不能把 CI 成功当作恢复授权。
 
 影响产品：Rime/PIME 候选安装与维护；现行 YimeCore 作为只读保护对象。
