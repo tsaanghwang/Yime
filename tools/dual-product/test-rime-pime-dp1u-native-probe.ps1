@@ -41,6 +41,10 @@ function Validate($Approval,$Boundary,[string]$Digest,[string]$Machine='DP1-FIXT
 }
 Validate $a $b $digest
 Check 'explicit synthetic source-identity policy accepts valid binding' $true
+$named=ConvertFrom-Json -InputObject ($a|ConvertTo-Json -Depth 8) @options
+$named.target_name=-join @([char]0x8ba1,[char]0x7b97,[char]0x673a)
+Validate $named $b (Digest $named 'authorization' 'dp1u-authorization-v1') $named.target_name
+Check 'identified Chinese test-PC name keeps exact native target binding' $true
 Reject 'missing approval digest' { Validate $a $b '' } 'approval digest'
 Reject 'wrong approval digest' { Validate $a $b ('f'*64) } 'approval digest'
 Reject 'wrong native target' { Validate $a $b $digest 'OTHER-PC' } 'native computer'

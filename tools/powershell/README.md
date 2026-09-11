@@ -15,3 +15,9 @@ python tools/powershell/run_checked.py --command "Get-Date" --check-only
 测试覆盖 PS5/PS7 的缺参、未知参数、缺失路径、语法错误、仅检查无副作用、带空格路径执行、显式失败退出码和字面量引号。运行 `python -m unittest discover -s tools/powershell -p test_run_checked.py -v`。
 
 项目 `AGENTS.md` 要求后续 PowerShell 工作使用此入口。未配置或声称当前 Codex 客户端已具备全局每次调用的强制钩子；直接绕过入口的程序不会被拦截。安装维护上下文、控制器审核哈希及运行时回归仍由原有工具负责。本工具能减少调用失误，不能防止所有 PowerShell 或 CI 失败。
+# PS5 module isolation
+
+When selecting PS5, the Python entry removes inherited `PowerShell/Modules`
+directories belonging to PS7 (including a bundled host). It preserves native
+`WindowsPowerShell/Modules` and custom module directories. This prevents a PS7
+parent from shadowing PS5 built-ins such as `Get-FileHash`; PS7 is unchanged.

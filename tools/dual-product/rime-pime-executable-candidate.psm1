@@ -1,4 +1,4 @@
-# A separate contract for guarded isolated-target executable candidates.
+﻿# A separate contract for guarded isolated-target executable candidates.
 # The canonical disabled receipt is deliberately not accepted or upgraded here.
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
@@ -113,8 +113,8 @@ function Assert-CandidateManifest($Manifest) {
         'launcher_mode','maintenance_entry','registration_provider','runtime_provider','files','source_inventory_sha256',
         'public_release_admitted','installed_acceptance_passed')
     $constants = @{
-        schema_version='yime-rime-pime-executable-candidate-v1'; product='rime-pime'
-        architectures='x86,x64'; installation_scope='approved-clean-isolated-x64-target'
+        schema_version='yime-rime-pime-executable-candidate-v2'; product='rime-pime'
+        architectures='x86,x64'; installation_scope='approved-isolated-x64-current-peer-protected'
         launcher_mode='required-dp1-candidate-state'; maintenance_entry='maintenance/invoke-rime-pime-candidate.ps1'
         registration_provider='maintenance/rime-pime-dp1u-candidate-registration.psm1'
         runtime_provider='maintenance/rime-pime-dp1u-candidate-runtime.psm1'
@@ -138,7 +138,8 @@ function Assert-CandidateManifest($Manifest) {
     }
     foreach ($required in @('PIMELauncher.exe','x86/PIMETextService.dll','x64/PIMETextService.dll',
         'x86/PIMERegistrationStatus.exe','x64/PIMERegistrationStatus.exe','go-backend/server.exe',
-        $Manifest.maintenance_entry,$Manifest.registration_provider,$Manifest.runtime_provider)) {
+        $Manifest.maintenance_entry,$Manifest.registration_provider,$Manifest.runtime_provider,
+        'maintenance/rime-pime-peer-protection.psm1')) {
         if (-not $seen.Contains($required)) { throw ('Candidate required member missing: ' + $required) }
     }
     return $Manifest

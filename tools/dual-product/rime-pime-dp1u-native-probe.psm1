@@ -181,7 +181,7 @@ function Test-Dp1UNativeNamedValuePresent($Reply, [string]$Name) {
     return $false
 }
 
-function Get-Dp1UNativeContext([string]$Sid, [string]$MachineGuid) {
+function Get-Dp1UNativeContext([string]$Sid, [string]$MachineGuid, [switch]$AllowCurrentYimeCore) {
     if ([Yime.Dp1UNative.Facts]::Architecture() -cne 'x64') { throw 'Native x64 target required' }
     if ([Security.Principal.WindowsIdentity]::GetCurrent().User.Value -cne $Sid) { throw 'Same initiating SID required' }
     $leases = [Collections.Generic.List[object]]::new()
@@ -213,6 +213,10 @@ function Get-Dp1UNativeContext([string]$Sid, [string]$MachineGuid) {
             $hku = Invoke-Dp1UNativeRegistryRead EnumValues 2147483651 $Sid '' $view
             if ($hku.ReturnValue -ne 0) { throw 'Initiating HKU hive is not system visible' }
             foreach ($coordinate in @(Get-Dp1UNativeRegistryCatalog $Sid)) {
+                # Only the current peer is admitted by the executable controller,
+                # which separately binds and protects its complete observation.
+                # The historical readonly probe retains its clean-target default.
+                if($AllowCurrentYimeCore -and ($coordinate.key -imatch '\{E40FA752-BB96-461D-A51D-F40EB437EC65\}|\\Uninstall\\YimeCoreExperimentalTrial$')){continue}
                 $record = Invoke-Dp1UNativeRegistryRead EnumValues $coordinate.hive $coordinate.key '' $view
                 if ($record.ReturnValue -ne 2) { throw 'Protected YimeCore/local.12 or production Rime/PIME registration exists' }
                 $registry += [pscustomobject][ordered]@{view=$view;hive=$coordinate.hive;key=$coordinate.key;name=$null;exists=$false}
@@ -222,6 +226,7 @@ function Get-Dp1UNativeContext([string]$Sid, [string]$MachineGuid) {
                 if ($hive -eq 2147483651) { $runKey=$Sid+'\'+$runKey }
                 $runNames = Invoke-Dp1UNativeRegistryRead EnumValues $hive $runKey '' $view
                 foreach ($runName in @('PIMELauncher','YimeCoreExperimentalTrial')) {
+                    if($AllowCurrentYimeCore -and $runName -ceq 'YimeCoreExperimentalTrial'){continue}
                     if (Test-Dp1UNativeNamedValuePresent $runNames $runName) { throw 'Protected product autostart exists (any registry value kind)' }
                     $registry += [pscustomobject][ordered]@{view=$view;hive=$hive;key=$runKey;name=$runName;exists=$false}
                 }

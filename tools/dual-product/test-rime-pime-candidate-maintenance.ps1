@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param([string]$OutputRoot)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
@@ -19,12 +19,12 @@ function New-Fixture {
     $root=Join-Path $OutputRoot ([guid]::NewGuid().ToString('N'));$bundle=Join-Path $root 'bundle'
     $rows=@()
     foreach($name in @('PIMELauncher.exe','x86/PIMETextService.dll','x64/PIMETextService.dll','x86/PIMERegistrationStatus.exe','x64/PIMERegistrationStatus.exe',
-        'go-backend/server.exe','maintenance/invoke-rime-pime-candidate.ps1','maintenance/rime-pime-dp1u-candidate-registration.psm1','maintenance/rime-pime-dp1u-candidate-runtime.psm1')){
+        'go-backend/server.exe','maintenance/invoke-rime-pime-candidate.ps1','maintenance/rime-pime-dp1u-candidate-registration.psm1','maintenance/rime-pime-dp1u-candidate-runtime.psm1','maintenance/rime-pime-peer-protection.psm1')){
         $path=Join-Path $bundle $name;Write-Bytes $path ('inert fixture '+$name)
         $rows += [pscustomobject]@{path=$name;bytes=[long](Get-Item $path).Length;sha256=(Hash $path)}
     }
-    $manifest=[ordered]@{schema_version='yime-rime-pime-executable-candidate-v1';product='rime-pime';product_version='1.4.0-dev.1';architectures='x86,x64';
-        installation_scope='approved-clean-isolated-x64-target';launcher_mode='required-dp1-candidate-state';maintenance_entry='maintenance/invoke-rime-pime-candidate.ps1';
+    $manifest=[ordered]@{schema_version='yime-rime-pime-executable-candidate-v2';product='rime-pime';product_version='1.4.0-dev.1';architectures='x86,x64';
+        installation_scope='approved-isolated-x64-current-peer-protected';launcher_mode='required-dp1-candidate-state';maintenance_entry='maintenance/invoke-rime-pime-candidate.ps1';
         registration_provider='maintenance/rime-pime-dp1u-candidate-registration.psm1';runtime_provider='maintenance/rime-pime-dp1u-candidate-runtime.psm1';
         files=$rows;source_inventory_sha256=('a'*64);public_release_admitted=$false;installed_acceptance_passed=$false}
     Write-Bytes (Join-Path $bundle 'candidate.json') ($manifest|ConvertTo-Json -Depth 10 -Compress)
@@ -44,7 +44,7 @@ Check 'controller loads reader through its retained module without global import
         $candidate=Open-MaintenanceCandidate -PackageRoot $r -ExpectedManifestSha256 $h
         try{$candidate.files.Count}finally{Close-MaintenanceCandidate $candidate}
     } $f.bundle $f.hash
-    Assert ($count -eq 9) 'Nested import lost the reader commands.'
+    Assert ($count -eq 10) 'Nested import lost the reader commands.'
 }
 # Every native product boundary below is replaced only inside this imported
 # module instance. The reader, real file leases, journal, and exact removal run.
@@ -58,6 +58,14 @@ Check 'controller loads reader through its retained module without global import
     function script:Assert-MaintenanceInitiator {param($c,[switch]$RequireVacant)}
     function script:Open-MaintenanceVerifiedPackage {param($r,$h,$c,$i,$p) Open-MaintenanceCandidate -PackageRoot $r -ExpectedManifestSha256 $h}
     function script:Initialize-MaintenanceProviders {param($r)}
+    function script:Start-MaintenancePeerProtection {param($c)
+        $p=[pscustomobject]@{fixture=$true};$c|Add-Member -NotePropertyName peer_protection -NotePropertyValue $p -Force;return $p
+    }
+    function script:Assert-MaintenancePeerProtection {param($p)
+        if($null -eq $p){throw 'fixture missing peer baseline'}
+        if($script:fixture.fail -ceq 'Peer'){throw 'injected peer changed'}
+    }
+    function script:Complete-MaintenancePeerProtection {param($p) Assert-MaintenancePeerProtection $p}
     function script:Get-MaintenanceDefaultInput {[pscustomobject][ordered]@{override='fixture';first_language='fixture';first_tip='fixture'}}
     $script:CandidateCoordinatorModule=New-Module {
         function Open-RimePimeCandidateCoordinator {[pscustomobject]@{delegation_token='fixture-only'}}
@@ -100,6 +108,12 @@ Check 'fresh fixture stages complete payload and commits only after two ready ob
     $ticket=Join-Path (Split-Path $f.context.authorization_path) ('candidate-recovery-'+$f.context.authorization.run_id+'.json')
     Assert ((Get-Content $ticket -Raw|ConvertFrom-Json).prepared_sha256 -ceq $f.ticket.prepared_sha256) 'Original digest not independently exported.'
     Assert (($f.events -join ',') -match 'worker-Register,observe-Partial,runtime-start,worker-PublishMarkers,observe-Present') 'Registration/readiness sequence changed.'
+}
+Check 'peer drift prevents install completion and preserves recovery evidence' {
+    $f=New-Fixture;$f.fail='Peer';Reject {Invoke-Case $f} 'peer changed'
+    Assert ($f.start_count -eq 0) 'Peer drift allowed Runtime startup.'
+    $opened=Open-Ticket $f
+    try{Assert (-not $opened.store.Has('terminal.bin')) 'Peer drift was reported as successful completion.'}finally{$opened.store.Dispose()}
 }
 Check 'registration failure durably rolls back without starting Runtime' {
     $f=New-Fixture;$f.fail='Register';Reject {Invoke-Case $f} 'rolled back'

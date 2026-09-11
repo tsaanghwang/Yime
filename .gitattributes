@@ -86,3 +86,7 @@ tools/dual-product/rime-pime-dp1u-candidate-runtime.cs text eol=crlf
 tools/dual-product/rime-pime-dp1u-candidate-runtime.psm1 text eol=crlf
 tools/dual-product/rime-pime-executable-candidate.psm1 text eol=crlf
 tools/dual-product/rime-pime-executable-receipt.psm1 text eol=crlf
+
+tools/dual-product/rime-pime-peer-protection.psm1 text eol=crlf
+# The test PC consumes this exact immutable candidate and its raw evidence.
+test-delivery/rime-pime-coexistence-20260911/** -text !eol

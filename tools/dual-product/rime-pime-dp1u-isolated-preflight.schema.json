@@ -74,7 +74,7 @@
         "target_name": {
           "type": "string",
           "minLength": 1,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9-]{0,62}$"
+          "pattern": "^(?:[A-Za-z0-9][A-Za-z0-9-]{0,62}|\u8ba1\u7b97\u673a)$"
         },
         "target_machine_id": {
           "type": "string",
@@ -228,7 +228,7 @@
         "target_name": {
           "type": "string",
           "minLength": 1,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9-]{0,62}$"
+          "pattern": "^(?:[A-Za-z0-9][A-Za-z0-9-]{0,62}|\u8ba1\u7b97\u673a)$"
         },
         "target_machine_id": {
           "type": "string",

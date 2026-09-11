@@ -612,6 +612,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 candidate-maintenance test failed with exit code $LASTEXITCODE" }
           .\tools\dual-product\test-rime-pime-candidate-maintenance.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-candidate-maintenance-test-ci-ps7-$runId")
+      - name: Test current YimeCore peer protection
+        shell: pwsh
+        run: |
+          python tools/powershell/run_checked.py --script tools/dual-product/test-rime-pime-peer-protection.ps1 --edition ps5
+          if ($LASTEXITCODE -ne 0) { throw 'PS5 peer protection failed' }
+          python tools/powershell/run_checked.py --script tools/dual-product/test-rime-pime-peer-protection.ps1 --edition ps7
+          if ($LASTEXITCODE -ne 0) { throw 'PS7 peer protection failed' }
       - name: Test guarded candidate registration provider
         shell: pwsh
         run: |

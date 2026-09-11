@@ -1,4 +1,4 @@
-# The executable candidate's real clean-target maintenance controller.
+# The executable candidate's maintenance controller with current-peer protection.
 # Import has no product, registry, Runtime, or filesystem mutation.
 Set-StrictMode -Version 2.0
 $ErrorActionPreference='Stop'
@@ -58,6 +58,42 @@ function Open-MaintenanceAuthorization([string]$AuthorizationPath,[string]$Trust
     }catch{if($a){$a.stream.Dispose()};if($b){$b.stream.Dispose()};throw}
 }
 function Close-MaintenanceAuthorization($Context){foreach($lease in $Context.leases){$lease.stream.Dispose()}}
+function Write-MaintenancePeerEvidence([string]$Path,$Value){
+    $bytes=[Text.UTF8Encoding]::new($false).GetBytes(($Value|ConvertTo-Json -Depth 90 -Compress))
+    $stream=[IO.File]::Open($Path,'CreateNew','Write','None')
+    try{$stream.Write($bytes,0,$bytes.Length);$stream.Flush($true)}finally{$stream.Dispose()}
+}
+function Start-MaintenancePeerProtection($Context){
+    $module=Import-Module (Join-Path $PSScriptRoot 'rime-pime-peer-protection.psm1') -PassThru -Scope Local
+    $a=$Context.authorization
+    $before=& $module {param($b,$s) Get-RimePimePeerProtectionSnapshot $b $s} $Context.boundary $a.initiating_sid
+    # Keep observations outside the transaction tree even if staging fails.
+    $directory=[IO.Path]::GetDirectoryName($Context.authorization_path)
+    foreach($root in @($a.install_root,$a.state_root,$a.recovery_root,$Context.boundary.peer_install_root,$Context.boundary.peer_state_root,$Context.boundary.peer_recovery_root)){
+        Assert-MaintenanceRootDisjoint $directory $root
+    }
+    Assert-MaintenanceRecoveryRoot $directory
+    $prefix=Join-Path $directory ('peer-'+$a.run_id+'-'+[guid]::NewGuid().ToString('N'))
+    Write-MaintenancePeerEvidence ($prefix+'-before.json') $before
+    $result=[pscustomobject]@{module=$module;boundary=$Context.boundary;sid=$a.initiating_sid;before=$before;prefix=$prefix}
+    $Context|Add-Member -NotePropertyName peer_protection -NotePropertyValue $result -Force
+    return $result
+}
+function Assert-MaintenancePeerProtection($Protection){
+    if($null -eq $Protection){throw 'Peer protection baseline is required before completion.'}
+    $after=& $Protection.module {param($b,$s) Get-RimePimePeerProtectionSnapshot $b $s} $Protection.boundary $Protection.sid
+    & $Protection.module {param($b,$a) Assert-RimePimePeerProtectionUnchanged $b $a} $Protection.before $after
+}
+function Complete-MaintenancePeerProtection($Protection){
+    $after=& $Protection.module {param($b,$s) Get-RimePimePeerProtectionSnapshot $b $s} $Protection.boundary $Protection.sid
+    Write-MaintenancePeerEvidence ($Protection.prefix+'-after.json') $after
+    & $Protection.module {param($b,$a) Assert-RimePimePeerProtectionUnchanged $b $a} $Protection.before $after
+    Write-MaintenancePeerEvidence ($Protection.prefix+'-result.json') ([ordered]@{
+        schema_version='yime-rime-pime-peer-comparison-v1';unchanged=$true;
+        before_sha256=(Get-MaintenanceHash ($Protection.prefix+'-before.json'));
+        after_sha256=(Get-MaintenanceHash ($Protection.prefix+'-after.json'));
+        installed_acceptance_passed=$false})
+}
 function Assert-MaintenanceInitiator($Context,[switch]$RequireVacant){
     $a=$Context.authorization
     # A normal candidate is started from an unpackaged Explorer ancestor, including
@@ -79,7 +115,7 @@ function Assert-MaintenanceInitiator($Context,[switch]$RequireVacant){
         if([Yime.Dp1UNative.Facts]::Architecture() -cne 'x64'){throw 'Candidate requires native x64 Windows.'}
         $machine=& $Context.probe {Invoke-Dp1UNativeRegistryRead GetStringValue 2147483650 'SOFTWARE\Microsoft\Cryptography' 'MachineGuid' 64}
         if($machine.ReturnValue -ne 0 -or $machine.sValue -ine $a.target_machine_id){throw 'Candidate native MachineGuid mismatch.'}
-        if($RequireVacant){$null=& $Context.probe {param($sid,$id) Get-Dp1UNativeContext $sid $id} $a.initiating_sid $a.target_machine_id}
+        if($RequireVacant){$null=& $Context.probe {param($sid,$id) Get-Dp1UNativeContext $sid $id -AllowCurrentYimeCore} $a.initiating_sid $a.target_machine_id}
     }finally{foreach($lease in $leases){$lease.Dispose()}}
 }
 function Get-MaintenanceDefaultInput {
@@ -296,9 +332,11 @@ function Complete-MaintenanceRemoval($Context,$Ticket,[hashtable]$WorkerArgument
     Stop-MaintenanceRuntime $Ticket.plan $Runtime
     Invoke-MaintenanceWorker -Action Remove @WorkerArguments
     $null=Get-MaintenanceRegistration $Context $Ticket.plan $WorkerArguments.PackageRoot 'Absent'
+    Assert-MaintenancePeerProtection $Context.peer_protection
     Assert-MaintenanceDefaultInput $Ticket.plan.default_input
     if($InstalledLease){Close-MaintenanceCandidate $InstalledLease}
     Remove-MaintenanceInstalledFiles $Ticket.plan
+    Assert-MaintenancePeerProtection $Context.peer_protection
     $removal=Open-MaintenanceRemoval $Ticket
     try{if(-not $removal.terminal){Publish-MaintenanceDecision $removal.store 'terminal.bin' $removal.hash 'remove-complete'}}
     finally{$removal.store.Dispose()}
@@ -429,7 +467,7 @@ function Invoke-RimePimeCandidateWorker {
         [Parameter(Mandatory)][long]$ParentCreationFileTime,[Parameter(Mandatory)][string]$DelegationToken)
     Assert-CandidateTargetHost
     Initialize-CandidateMaintenance
-    $context=$null;$package=$null;$ticket=$null;$parent=$null;$self=$null;$coordinator=$null;$installed=$null
+    $protection=$null;$context=$null;$package=$null;$ticket=$null;$parent=$null;$self=$null;$coordinator=$null;$installed=$null
     try{
         $context=Open-MaintenanceAuthorization $AuthorizationPath $TrustedApprovalSha256 $BoundaryPath
         $coordinator=& $script:CandidateCoordinatorModule {param($p,$t,$s,$d) Join-RimePimeCandidateCoordinator -ParentPid $p -ParentCreationFileTime $t -TargetUserSid $s -DelegationToken $d} `
@@ -442,9 +480,11 @@ function Invoke-RimePimeCandidateWorker {
             $parent.Image -ine (Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe')){throw 'Elevated worker lost its exact non-elevated initiating process/SID binding.'}
         $package=Open-MaintenanceVerifiedPackage $PackageRoot $ExpectedManifestSha256 $context $InstallerPath $ReceiptPath
         Initialize-MaintenanceProviders $PackageRoot
+        $protection=Start-MaintenancePeerProtection $context
         $ticket=Read-MaintenancePreparedPlan $context $JournalRoot $PreparedSha256
         if($ticket.plan.manifest_sha256 -cne $ExpectedManifestSha256){throw 'Worker candidate differs from retained plan.'}
         Assert-MaintenanceWorkerDecision $ticket $Action $context
+        Assert-MaintenancePeerProtection $protection
         Assert-MaintenanceDefaultInput $ticket.plan.default_input
         $parameters=Get-MaintenanceProviderParameters $context $ticket.plan $PackageRoot
         if($Action -eq 'Remove'){
@@ -465,12 +505,15 @@ function Invoke-RimePimeCandidateWorker {
             $steps=if($Action -eq 'Register'){@('AssertVacant','RegisterNative','RegisterWow64','EnableTip')}else{@('PublishMarkers','VerifyPresent')}
             foreach($step in $steps){& $script:CandidateRegistrationModule {param($p,$s) Invoke-RimePimeDp1UCandidateRegistration @p -Action $s} $parameters $step | Out-Null}
         }
+        Assert-MaintenancePeerProtection $protection
         Assert-MaintenanceDefaultInput $ticket.plan.default_input
     }finally{
+        try{if($protection){Complete-MaintenancePeerProtection $protection}}finally{
         if($installed){Close-MaintenanceCandidate $installed}
         if($ticket){$ticket.store.Dispose()};if($package){Close-MaintenanceCandidate $package};if($context){Close-MaintenanceAuthorization $context}
         if($parent){$parent.Dispose()};if($self){$self.Dispose()}
         if($coordinator){& $script:CandidateCoordinatorModule {param($c) Close-RimePimeCandidateCoordinator -Context $c} $coordinator}
+        }
     }
 }
 
@@ -483,7 +526,7 @@ function Invoke-RimePimeCandidateMaintenance {
         [Parameter(Mandatory)][string]$ReceiptPath,[string]$PreparedSha256)
     Assert-CandidateTargetHost
     Initialize-CandidateMaintenance
-    $context=$null;$package=$null;$ticket=$null;$runtime=$null;$runtimeReady=$null;$coordinator=$null;$installed=$null
+    $protection=$null;$context=$null;$package=$null;$ticket=$null;$runtime=$null;$runtimeReady=$null;$coordinator=$null;$installed=$null
     try{
         $context=Open-MaintenanceAuthorization $AuthorizationPath $TrustedApprovalSha256 $BoundaryPath
         $coordinator=& $script:CandidateCoordinatorModule {Open-RimePimeCandidateCoordinator}
@@ -491,6 +534,7 @@ function Invoke-RimePimeCandidateMaintenance {
         Assert-MaintenanceInitiator $context -RequireVacant:($Mode -eq 'Install')
         $package=Open-MaintenanceVerifiedPackage $PackageRoot $ExpectedManifestSha256 $context $InstallerPath $ReceiptPath
         Initialize-MaintenanceProviders $PackageRoot
+        $protection=Start-MaintenancePeerProtection $context
         if($Mode -eq 'Install'){
             if($PreparedSha256){throw 'Initial installation cannot reuse a prepared transaction.'}
             $configuration=New-MaintenanceRuntimeConfiguration $context
@@ -505,12 +549,14 @@ function Invoke-RimePimeCandidateMaintenance {
             try{
                 Invoke-MaintenanceWorker -Action Register @workerArguments
                 $null=Get-MaintenanceRegistration $context $ticket.plan $PackageRoot 'Partial'
+                Assert-MaintenancePeerProtection $protection
                 Assert-MaintenanceDefaultInput $ticket.plan.default_input
                 $runtime=Start-MaintenanceRuntime $ticket.plan
                 $runtimeReady=Test-MaintenanceRuntime $runtime
                 Invoke-MaintenanceWorker -Action PublishMarkers @workerArguments
                 $null=Get-MaintenanceRegistration $context $ticket.plan $PackageRoot 'Present'
                 $runtimeReady=Test-MaintenanceRuntime $runtime
+                Assert-MaintenancePeerProtection $protection
                 Assert-MaintenanceDefaultInput $ticket.plan.default_input
                 $opened=Read-MaintenancePreparedPlan $context $ticket.journal_root $ticket.prepared_sha256
                 try{
@@ -557,6 +603,7 @@ function Invoke-RimePimeCandidateMaintenance {
             $null=Test-MaintenanceInstalledFiles $ticket.plan
             $installed=Open-MaintenanceCandidate -PackageRoot $ticket.plan.install_root -ExpectedManifestSha256 $ExpectedManifestSha256 -InstalledGeneratedFiles $ticket.plan.generated_files
             $null=Get-MaintenanceRegistration $context $ticket.plan $PackageRoot 'Present'
+            Assert-MaintenancePeerProtection $protection
             Assert-MaintenanceDefaultInput $ticket.plan.default_input
             $runtime=Resume-MaintenanceRuntime $ticket.plan
             $runtimeReady=Test-MaintenanceRuntime $runtime
@@ -569,9 +616,11 @@ function Invoke-RimePimeCandidateMaintenance {
         return New-MaintenanceOutcome $Mode $(if($commit){'remove-complete'}else{'rolled-back'}) $ticket $null
 
     }finally{
+        try{if($protection){Complete-MaintenancePeerProtection $protection}}finally{
         if($installed){Close-MaintenanceCandidate $installed}
         if($package){Close-MaintenanceCandidate $package};if($context){Close-MaintenanceAuthorization $context}
         if($coordinator){& $script:CandidateCoordinatorModule {param($c) Close-RimePimeCandidateCoordinator -Context $c} $coordinator}
+        }
     }
 }
 function New-MaintenanceOutcome([string]$Mode,[string]$Disposition,$Ticket,$RuntimeReady){

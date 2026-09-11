@@ -51,7 +51,7 @@ def verify(root, expected):
         content[name] = data
     receipt = json.loads(content['receipt'].decode('utf-8-sig'))
     manifest = json.loads(content['manifest'].decode('utf-8-sig'))
-    if receipt.get('schema_version') != 'yime-rime-pime-executable-build-receipt-v1' or manifest.get('schema_version') != 'yime-rime-pime-executable-candidate-v1':
+    if receipt.get('schema_version') != 'yime-rime-pime-executable-build-receipt-v1' or manifest.get('schema_version') not in ('yime-rime-pime-executable-candidate-v1', 'yime-rime-pime-executable-candidate-v2'):
         raise ValueError('Unsupported receipt or manifest')
     for item in (receipt, manifest):
         if item.get('product') != 'rime-pime' or item.get('product_version') != index['product_version']:

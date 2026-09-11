@@ -2742,7 +2742,7 @@ def executable_candidate_source_status(sources):
                   "public_release_admitted=$false"):
         if token not in controller:
             fail("guarded candidate maintenance boundary missing")
-    if "schema_version='yime-rime-pime-executable-candidate-v1'" not in reader:
+    if "schema_version='yime-rime-pime-executable-candidate-v2'" not in reader:
         fail("guarded candidate schema boundary missing")
     for name in ("executable-candidate", "executable-receipt", "candidate-maintenance",
                  "candidate-coordinator", "dp1u-candidate-registration", "dp1u-candidate-runtime"):

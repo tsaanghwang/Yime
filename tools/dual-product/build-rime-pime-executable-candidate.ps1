@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param([Parameter(Mandatory)][string]$SourcePayloadRoot,[Parameter(Mandatory)][string]$ExpectedSourceInventorySha256,
     [Parameter(Mandatory)][string]$OutputRoot,[string]$ProductVersion)
 # Builds a new guarded artifact from explicit source-build output. Never executes it.
@@ -52,14 +52,14 @@ try{
         Copy-BuildFile (Open-BuildFile $src $row) $dst
     }
     Copy-BuildFile $inventoryLease (Join-Path $bundle 'source-payload-inventory.json')
-    $maintenance=@('invoke-rime-pime-candidate.ps1','rime-pime-candidate-maintenance.psm1','rime-pime-executable-candidate.psm1','rime-pime-executable-receipt.psm1',
+    $maintenance=@('rime-pime-peer-protection.psm1','invoke-rime-pime-candidate.ps1','rime-pime-candidate-maintenance.psm1','rime-pime-executable-candidate.psm1','rime-pime-executable-receipt.psm1',
         'rime-pime-dp1u-candidate-registration.psm1','rime-pime-dp1u-candidate-registration-child.cs','rime-pime-dp1u-candidate-runtime.psm1','rime-pime-dp1u-candidate-runtime.cs',
         'rime-pime-candidate-coordinator.cs','rime-pime-candidate-coordinator.psm1','rime-pime-ownership.ps1','rime-pime-directed-stop-contract.ps1','rime-pime-target-user.ps1',
         'rime-pime-dp1u-native-probe.psm1','rime-pime-dp1u-native-facts.cs','rime-pime-dp1u-isolated-preflight.schema.json',
         'rime-pime-dp1u-exact-file-removal.cs','rime-pime-dp1u-native-transaction.cs')
     foreach($name in $maintenance){Copy-BuildFile (Open-BuildFile (Join-Path $PSScriptRoot $name) $null) (Join-Path $bundle ('maintenance\'+$name))}
     $files=@(Get-ChildItem -LiteralPath $bundle -File -Recurse | ForEach-Object{[pscustomobject][ordered]@{path=$_.FullName.Substring($bundle.Length+1).Replace('\','/');bytes=[long]$_.Length;sha256=Get-BuildHash $_.FullName}} | Sort-Object path -CaseSensitive)
-    $manifest=[ordered]@{schema_version='yime-rime-pime-executable-candidate-v1';product='rime-pime';product_version=$ProductVersion;architectures='x86,x64';installation_scope='approved-clean-isolated-x64-target';launcher_mode='required-dp1-candidate-state';maintenance_entry='maintenance/invoke-rime-pime-candidate.ps1';registration_provider='maintenance/rime-pime-dp1u-candidate-registration.psm1';runtime_provider='maintenance/rime-pime-dp1u-candidate-runtime.psm1';files=$files;source_inventory_sha256=$ExpectedSourceInventorySha256;public_release_admitted=$false;installed_acceptance_passed=$false}
+    $manifest=[ordered]@{schema_version='yime-rime-pime-executable-candidate-v2';product='rime-pime';product_version=$ProductVersion;architectures='x86,x64';installation_scope='approved-isolated-x64-current-peer-protected';launcher_mode='required-dp1-candidate-state';maintenance_entry='maintenance/invoke-rime-pime-candidate.ps1';registration_provider='maintenance/rime-pime-dp1u-candidate-registration.psm1';runtime_provider='maintenance/rime-pime-dp1u-candidate-runtime.psm1';files=$files;source_inventory_sha256=$ExpectedSourceInventorySha256;public_release_admitted=$false;installed_acceptance_passed=$false}
     $manifestPath=Join-Path $bundle 'candidate.json';$manifestHash=Write-BuildJson $manifest $manifestPath
     $bundleLease=Open-RimePimeExecutableCandidate -PackageRoot $bundle -ExpectedManifestSha256 $manifestHash
     $peVerifier=Join-Path $repo 'tools\verify-pe-architectures.ps1'

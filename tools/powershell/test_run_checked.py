@@ -4,11 +4,21 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from run_checked import child_environment
 
 RUNNER = Path(__file__).with_name('run_checked.py')
 
 
 class CheckedPowerShellTests(unittest.TestCase):
+    def test_ps5_does_not_autoload_ps7_modules_from_parent(self):
+        native = r'C:\Windows\System32\WindowsPowerShell\v1.0\Modules'
+        custom = r'C:\Custom\Modules'
+        parent = {'PSModulePath': ';'.join([r'C:\Program Files\PowerShell\Modules',
+                  r'C:\Runtime\native\powershell\Modules', native, custom]), 'OTHER': 'kept'}
+        self.assertEqual(child_environment('ps5', parent)['PSModulePath'], native + ';' + custom)
+        self.assertEqual(child_environment('ps7', parent), parent)
+        self.assertEqual(parent['OTHER'], 'kept')
+
     def test_preflight_and_execution_in_each_edition(self):
         for edition in ('ps5', 'ps7'):
             with self.subTest(edition=edition), tempfile.TemporaryDirectory() as directory:

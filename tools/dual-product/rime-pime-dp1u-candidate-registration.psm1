@@ -1,9 +1,10 @@
-# Actual fixed-identity registration provider for an explicitly admitted clean
+﻿# Actual fixed-identity registration provider for an explicitly admitted clean
 # x64 target. Import defines functions only. The controller owns the durable
 # transaction, package authentication, staging leases and mutation ordering.
 Set-StrictMode -Version 2.0
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'rime-pime-ownership.ps1')
+Import-Module (Join-Path $PSScriptRoot 'rime-pime-peer-protection.psm1') -Scope Local
 $script:CandidateProbe=$null
 $script:CandidateChildType=$null
 $script:CandidateClsid='{35F67E9D-A54D-4177-9697-8B0AB71A9E04}'
@@ -41,35 +42,12 @@ function Open-CandidateRegistrationContext($Request,[bool]$RequireElevated) {
         Assert-YimePimePlainPath $Request.InstallRoot | Out-Null
         # Full native Explorer ancestry/UAC parent binding is additionally checked
         # by the outer controller; a caller-supplied success Boolean is not used.
-        $peer=Get-CandidatePeerAbsence $a.initiating_sid
-        return [pscustomobject]@{authorization=$a;boundary=$b;leases=$leases;peer_absence=$peer;request=$Request;current=$current}
+        $peer=Get-RimePimePeerProtectionSnapshot $b $a.initiating_sid
+        Assert-YimePimeNoLegacyMarkers | Out-Null
+        Assert-YimePimeNoWrongViewProductMarkers | Out-Null
+        Assert-YimePimeTargetUserComShadowsAbsent -TargetUserSid $a.initiating_sid -Architectures @('x86','x64') | Out-Null
+        return [pscustomobject]@{authorization=$a;boundary=$b;leases=$leases;peer_protection=$peer;request=$Request;current=$current}
     }catch{foreach($lease in $leases){$lease.Dispose()};throw}
-}
-
-function Get-CandidatePeerAbsence([string]$Sid) {
-    $result=[Collections.Generic.List[object]]::new()
-    foreach($view in @('Registry32','Registry64')) {
-        foreach($clsid in @('{E40FA752-BB96-461D-A51D-F40EB437EC65}','{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}')) {
-            foreach($hive in @('LocalMachine','Users')) {
-                $prefix=if($hive -ceq 'Users'){$Sid+'\'}else{''}
-                foreach($relative in @("SOFTWARE\Classes\CLSID\$clsid","SOFTWARE\Microsoft\CTF\TIP\$clsid")) {
-                    $key=$prefix+$relative
-                    if(Test-YimePimeSystemRegistryKeyExists $hive $view $key){throw 'Protected YimeCore registration exists; candidate target rejected.'}
-                    $result.Add([pscustomobject]@{hive=$hive;view=$view;key=$key;exists=$false;reader='StdRegProv'})
-                }
-            }
-        }
-        foreach($hive in @('LocalMachine','Users')) {
-            $prefix=if($hive -ceq 'Users'){$Sid+'\'}else{''}
-            $key=$prefix+'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\YimeCoreExperimentalTrial'
-            if(Test-YimePimeSystemRegistryKeyExists $hive $view $key){throw 'Protected YimeCore uninstall registration exists.'}
-            if(Test-YimePimeSystemRegistryValueExists $hive $view ($prefix+'SOFTWARE\Microsoft\Windows\CurrentVersion\Run') 'YimeCoreExperimentalTrial'){throw 'Protected YimeCore autostart exists.'}
-        }
-    }
-    Assert-YimePimeNoLegacyMarkers | Out-Null
-    Assert-YimePimeNoWrongViewProductMarkers | Out-Null
-    Assert-YimePimeTargetUserComShadowsAbsent -TargetUserSid $Sid -Architectures @('x86','x64') | Out-Null
-    return $result.ToArray()
 }
 
 function New-CandidateTree([string]$Id,[string]$Hive,[string]$View,[string]$Key,$Values,$Children) {
@@ -180,7 +158,7 @@ function Get-CandidateDefaultObservation([string]$Sid) {
     return $value
 }
 function Get-CandidateAllObservation($Context,[switch]$AllowDisabled) {
-    [pscustomobject]@{schema_version='yime-rime-pime-candidate-registration-observation-v1';target_user_sid=$Context.request.TargetUserSid;install_root=$Context.request.InstallRoot;trees=@(Get-CandidateRegistrationLayout $Context|ForEach-Object{Get-CandidateTreeObservation $_ -AllowDisabled:$AllowDisabled});run=(Get-CandidateRunObservation $Context);default_input=(Get-CandidateDefaultObservation $Context.request.TargetUserSid);peer_absence=@($Context.peer_absence);actual_registration_probe_executed=$false;dp1_u_acceptance_passed=$false;local12_touched=$false;production_user_data_accessed=$false}
+    [pscustomobject]@{schema_version='yime-rime-pime-candidate-registration-observation-v1';target_user_sid=$Context.request.TargetUserSid;install_root=$Context.request.InstallRoot;trees=@(Get-CandidateRegistrationLayout $Context|ForEach-Object{Get-CandidateTreeObservation $_ -AllowDisabled:$AllowDisabled});run=(Get-CandidateRunObservation $Context);default_input=(Get-CandidateDefaultObservation $Context.request.TargetUserSid);peer_protection=$Context.peer_protection;actual_registration_probe_executed=$false;dp1_u_acceptance_passed=$false;local12_touched=$false;production_user_data_accessed=$false}
 }
 function Assert-CandidateObservationAbsent($Observation) {
     if(@($Observation.trees|Where-Object{$_.exists}).Count -gt 0 -or $Observation.run.exists){throw 'Fresh registration vacancy or exact removal absence not established.'}
@@ -334,6 +312,7 @@ function Invoke-RimePimeDp1UCandidateRegistration {
             VerifyAbsent {Assert-CandidateObservationAbsent $before;Invoke-CandidateNativeProbe $context 'verify-absent'}
         }
         $after=Get-CandidateAllObservation $context -AllowDisabled
+        Assert-RimePimePeerProtectionUnchanged $context.peer_protection (Get-RimePimePeerProtectionSnapshot $context.boundary $context.request.TargetUserSid)
         if(($before.default_input|ConvertTo-Json -Compress) -cne ($after.default_input|ConvertTo-Json -Compress)){throw 'Default input override changed during candidate registration; preserve evidence.'}
         [pscustomobject]@{schema_version='yime-rime-pime-candidate-registration-result-v1';action=$Action;before=$before;after=$after;native_provider_invoked=($Action -notin @('AssertVacant','VerifyPresent','VerifyAbsent'));actual_registration_probe_executed=($Action -in @('AssertVacant','EnableTip','PublishMarkers','VerifyPresent','VerifyAbsent'));full_native_product_transaction_complete=$false;dp1_u_acceptance_passed=$false;local12_touched=$false;production_user_data_accessed=$false;default_input_method_changed=$false;hostile_same_sid_prevention_verified=$false}
     }finally{foreach($lease in $context.leases){$lease.Dispose()}}

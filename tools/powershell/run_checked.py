@@ -2,10 +2,22 @@
 import argparse
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import shutil
 import subprocess
 import sys
+
+
+def child_environment(edition, environment):
+    """Do not let a PS7 parent shadow PS5's built-in Windows modules."""
+    result = dict(environment)
+    if edition == 'ps5':
+        key = next((k for k in result if k.lower() == 'psmodulepath'), 'PSModulePath')
+        paths = result.get(key, '').split(';')
+        paths = [p for p in paths if p and
+                 tuple(x.lower() for x in PureWindowsPath(p).parts[-2:]) != ('powershell', 'modules')]
+        result[key] = ';'.join(paths)
+    return result
 
 
 def main():
@@ -36,7 +48,8 @@ def main():
         result = subprocess.run([shell, '-NoLogo', '-NoProfile', '-NonInteractive',
                                  '-ExecutionPolicy', 'Bypass', '-File',
                                  str(Path(__file__).with_name('preflight.ps1'))],
-                                input=json.dumps(request, ensure_ascii=True), text=True)
+                                input=json.dumps(request, ensure_ascii=True), text=True,
+                                env=child_environment(args.edition, os.environ))
         return result.returncode
     except (ValueError, OSError, KeyError) as error:
         print(f'PowerShell preflight: {error}', file=sys.stderr)

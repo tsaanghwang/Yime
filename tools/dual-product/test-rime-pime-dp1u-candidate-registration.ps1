@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param([Parameter(Mandatory)][string]$OutputRoot)
 $ErrorActionPreference='Stop';Set-StrictMode -Version 2.0
 $repo=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..')).TrimEnd('\')
@@ -103,9 +103,10 @@ Check 'real-worker-termination-closes-job-and-terminates-owned-child' {
 # No system registry, product process, installer or private hive is touched.
 & $module {
     $script:TestKeys=@{};$script:TestCalls=[Collections.Generic.List[string]]::new();$script:TestContext=$null;$script:TestDefault='';$script:TestLanguageReference=$false;$script:TestFail=''
+    function script:Get-RimePimePeerProtectionSnapshot {param($b,$s) [pscustomobject]@{fixture=$true}}
     function script:Open-CandidateRegistrationContext($Request,[bool]$RequireElevated) {
         $script:TestCalls.Add('context:'+([string]$RequireElevated))
-        $script:TestContext=[pscustomobject]@{request=$Request;authorization=[pscustomobject]@{state_root='C:\Dp1RegistrationFixture\state';recovery_root='C:\Dp1RegistrationFixture\recovery';package_sha256=('c'*64)};boundary=[pscustomobject]@{};leases=@();peer_absence=@();current=[pscustomobject]@{Elevated=$RequireElevated}}
+        $script:TestContext=[pscustomobject]@{request=$Request;authorization=[pscustomobject]@{state_root='C:\Dp1RegistrationFixture\state';recovery_root='C:\Dp1RegistrationFixture\recovery';package_sha256=('c'*64)};boundary=[pscustomobject]@{};leases=@();peer_protection=[pscustomobject]@{fixture=$true};current=[pscustomobject]@{Elevated=$RequireElevated}}
         return $script:TestContext
     }
     function script:Test-Key([string]$Hive,[string]$View,[string]$Key){$Hive+'|'+$View+'|'+$Key}
