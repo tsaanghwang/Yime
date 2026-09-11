@@ -1,0 +1,52 @@
+[
+    {
+        "channel":  "Application",
+        "enabled":  true,
+        "status":  "no-related-records-in-window",
+        "window_event_count":  57,
+        "related_event_count":  0,
+        "unrenderable_message_count":  0,
+        "error_id":  null,
+        "error_type":  null
+    },
+    {
+        "channel":  "Microsoft-Windows-CodeIntegrity/Operational",
+        "enabled":  true,
+        "status":  "no-records-in-window",
+        "window_event_count":  0,
+        "related_event_count":  0,
+        "unrenderable_message_count":  0,
+        "error_id":  null,
+        "error_type":  null
+    },
+    {
+        "channel":  "Microsoft-Windows-Windows Defender/Operational",
+        "enabled":  true,
+        "status":  "no-records-in-window",
+        "window_event_count":  0,
+        "related_event_count":  0,
+        "unrenderable_message_count":  0,
+        "error_id":  null,
+        "error_type":  null
+    },
+    {
+        "channel":  "Microsoft-Windows-AppLocker/EXE and DLL",
+        "enabled":  true,
+        "status":  "no-records-in-window",
+        "window_event_count":  0,
+        "related_event_count":  0,
+        "unrenderable_message_count":  0,
+        "error_id":  null,
+        "error_type":  null
+    },
+    {
+        "channel":  "Microsoft-Windows-PowerShell/Operational",
+        "enabled":  true,
+        "status":  "related-records-found",
+        "window_event_count":  114,
+        "related_event_count":  11,
+        "unrenderable_message_count":  0,
+        "error_id":  null,
+        "error_type":  null
+    }
+]

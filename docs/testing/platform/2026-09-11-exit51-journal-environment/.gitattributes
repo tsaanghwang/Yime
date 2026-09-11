@@ -1,0 +1,5 @@
+diagnostic-output.json -text
+execution-results.json -text
+window.json -text
+event-query-summary.json -text
+acl-summary.json -text

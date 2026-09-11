@@ -1,0 +1,11 @@
+{
+    "source":  "original Resume console transcript timestamps",
+    "timezone":  "China Standard Time",
+    "start_local":  "2026-09-11T17:14:18",
+    "end_local":  "2026-09-11T17:15:07",
+    "query_start_local":  "2026-09-11T17:04:18",
+    "query_end_local":  "2026-09-11T17:25:07",
+    "query_start_utc":  "2026-09-11T09:04:18.0000000Z",
+    "query_end_utc":  "2026-09-11T09:25:07.0000000Z",
+    "console_sha256":  "32524e595978608c9bca6009ec2ada18fb0259af41775bc53938771fe8c50c1e"
+}

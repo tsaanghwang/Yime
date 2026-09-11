@@ -1,0 +1,111 @@
+{
+  "diagnostic_commit": "484ebd55",
+  "external_root": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\journal-environment-484ebd55",
+  "private_events_and_acl_published": false,
+  "files": [
+    {
+      "name": "acl-private.json",
+      "bytes": 8961,
+      "sha256": "836970e5d36feefc37f21890099d37225a0ff8c21f74a18d1a5bfd66ec6a5625"
+    },
+    {
+      "name": "acl-summary.json",
+      "bytes": 1059,
+      "sha256": "26feefaacfee04973693cf6743ec2b282642c4a39dcd8ae84c6d0af876ab1325"
+    },
+    {
+      "name": "diagnostic-error.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diagnostic-output.json",
+      "bytes": 3402,
+      "sha256": "ff75c067bb286e1e53f4069959d106753aa200143de71fa0ca7f1eed86c8be0f"
+    },
+    {
+      "name": "environment-error.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "environment-output.txt",
+      "bytes": 112,
+      "sha256": "c5a0dc5cc311009115bf7544b792e47aa337fdf4f72937d7bb17051ffc3c9b87"
+    },
+    {
+      "name": "environment-parameters.json",
+      "bytes": 105,
+      "sha256": "de7524b03d8fa2ba21866873f5d1677c6adf17315ebf0ee63a37f11f4a0e9d20"
+    },
+    {
+      "name": "event-query-summary.json",
+      "bytes": 1605,
+      "sha256": "cdf1b41a6c7df9582285fb2e012a382f282536472afb275d361b8cb82eda6bff"
+    },
+    {
+      "name": "execution-results.json",
+      "bytes": 164,
+      "sha256": "3e34fb3aaf9535ec6ebdbffdb798b7a313f1a53cfe56b22ae25dfe3b7470794f"
+    },
+    {
+      "name": "parameters.json",
+      "bytes": 573,
+      "sha256": "33c59b82b909e5e6aaa81bedfc29f8f3cb4ae42492d5f096a3d23d2fe294da16"
+    },
+    {
+      "name": "related-events-private.json",
+      "bytes": 230076,
+      "sha256": "5ca95c121d67cd69d8f230d055906eccf6b1e811926a8ffad7c03556e505d477"
+    },
+    {
+      "name": "window.json",
+      "bytes": 497,
+      "sha256": "7081b7fb80e0c0ae5d1258f12af8039f6f227b0fe8d25f03649d3b237664f587"
+    }
+  ],
+  "script_hashes": [
+    {
+      "path": "tools/dual-product/inspect-resume-bindings.ps1",
+      "sha256": "17eab3dc5426a07d9518955cb5653d344f88cc3b0b651cb7db49a77ed9f4ac06"
+    },
+    {
+      "path": ".tmp/Collect-Resume-Environment.ps1",
+      "sha256": "fa7b5650638bc1254a38dabec46aaf3a521e8cdab28b77d2686e3d8e7f907ad0"
+    },
+    {
+      "path": ".tmp/Run-Journal-Environment.py",
+      "sha256": "6eb090accccc3f3e36f04b9f5dcdfe9c7349e4c3b01346fab2568c6678331b29"
+    }
+  ],
+  "published_files": [
+    {
+      "name": ".gitattributes",
+      "sha256": "d4d3a03b9cfa36e6de6243b624fde3bf9461b1989415be27fff991342dbf5875"
+    },
+    {
+      "name": "acl-summary.json",
+      "sha256": "26feefaacfee04973693cf6743ec2b282642c4a39dcd8ae84c6d0af876ab1325"
+    },
+    {
+      "name": "diagnostic-output.json",
+      "sha256": "ff75c067bb286e1e53f4069959d106753aa200143de71fa0ca7f1eed86c8be0f"
+    },
+    {
+      "name": "event-query-summary.json",
+      "sha256": "cdf1b41a6c7df9582285fb2e012a382f282536472afb275d361b8cb82eda6bff"
+    },
+    {
+      "name": "execution-results.json",
+      "sha256": "3e34fb3aaf9535ec6ebdbffdb798b7a313f1a53cfe56b22ae25dfe3b7470794f"
+    },
+    {
+      "name": "related-events-redacted.json",
+      "sha256": "5c0564f934fbd14755d1b5a6ee52b216a4d69e2dccfc282ffb93185dea4346c1"
+    },
+    {
+      "name": "window.json",
+      "sha256": "7081b7fb80e0c0ae5d1258f12af8039f6f227b0fe8d25f03649d3b237664f587"
+    }
+  ]
+}

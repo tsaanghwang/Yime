@@ -1,0 +1,114 @@
+[
+  {
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "provider": "Microsoft-Windows-PowerShell",
+    "id": 4100,
+    "record_id": 5759,
+    "time_local": "2026-09-11T17:15:03.0589083+08:00",
+    "time_utc": "2026-09-11T09:15:03.0589083Z",
+    "script_path": "",
+    "interpretation": "PowerShell error record; specific argument/call site not identified",
+    "payload_excerpt": "错误消息 = 系统错误。\n"
+  },
+  {
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "provider": "Microsoft-Windows-PowerShell",
+    "id": 4100,
+    "record_id": 5758,
+    "time_local": "2026-09-11T17:15:02.9516922+08:00",
+    "time_utc": "2026-09-11T09:15:02.9516922Z",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg9A36.tmp\\bundle\\maintenance\\rime-pime-executable-candidate.psm1",
+    "interpretation": "PowerShell error record; specific argument/call site not identified",
+    "payload_excerpt": "错误消息 = Expected literal candidate SHA256.\n全限定错误 ID = Expected literal candidate SHA256.\n"
+  },
+  {
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "provider": "Microsoft-Windows-PowerShell",
+    "id": 4103,
+    "record_id": 5757,
+    "time_local": "2026-09-11T17:14:46.6955425+08:00",
+    "time_utc": "2026-09-11T09:14:46.6955425Z",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg9A36.tmp\\bundle\\maintenance\\rime-pime-dp1u-candidate-runtime.psm1",
+    "interpretation": "PowerShell execution/script logging; not by itself a security block event"
+  },
+  {
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "provider": "Microsoft-Windows-PowerShell",
+    "id": 4104,
+    "record_id": 5743,
+    "time_local": "2026-09-11T17:14:44.9672030+08:00",
+    "time_utc": "2026-09-11T09:14:44.9672030Z",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg9A36.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1",
+    "interpretation": "PowerShell execution/script logging; not by itself a security block event"
+  },
+  {
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "provider": "Microsoft-Windows-PowerShell",
+    "id": 4103,
+    "record_id": 5742,
+    "time_local": "2026-09-11T17:14:43.6617501+08:00",
+    "time_utc": "2026-09-11T09:14:43.6617501Z",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg9A36.tmp\\bundle\\maintenance\\rime-pime-candidate-coordinator.psm1",
+    "interpretation": "PowerShell execution/script logging; not by itself a security block event"
+  },
+  {
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "provider": "Microsoft-Windows-PowerShell",
+    "id": 4103,
+    "record_id": 5741,
+    "time_local": "2026-09-11T17:14:43.1712485+08:00",
+    "time_utc": "2026-09-11T09:14:43.1712485Z",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg9A36.tmp\\bundle\\maintenance\\rime-pime-executable-candidate.psm1",
+    "interpretation": "PowerShell execution/script logging; not by itself a security block event"
+  },
+  {
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "provider": "Microsoft-Windows-PowerShell",
+    "id": 4103,
+    "record_id": 5740,
+    "time_local": "2026-09-11T17:14:42.7407244+08:00",
+    "time_utc": "2026-09-11T09:14:42.7407244Z",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg9A36.tmp\\bundle\\maintenance\\rime-pime-dp1u-native-probe.psm1",
+    "interpretation": "PowerShell execution/script logging; not by itself a security block event"
+  },
+  {
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "provider": "Microsoft-Windows-PowerShell",
+    "id": 4104,
+    "record_id": 5737,
+    "time_local": "2026-09-11T17:14:42.5001119+08:00",
+    "time_utc": "2026-09-11T09:14:42.5001119Z",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg9A36.tmp\\bundle\\maintenance\\rime-pime-candidate-coordinator.psm1",
+    "interpretation": "PowerShell execution/script logging; not by itself a security block event"
+  },
+  {
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "provider": "Microsoft-Windows-PowerShell",
+    "id": 4104,
+    "record_id": 5735,
+    "time_local": "2026-09-11T17:14:42.3403003+08:00",
+    "time_utc": "2026-09-11T09:14:42.3403003Z",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg9A36.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1",
+    "interpretation": "PowerShell execution/script logging; not by itself a security block event"
+  },
+  {
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "provider": "Microsoft-Windows-PowerShell",
+    "id": 4104,
+    "record_id": 5734,
+    "time_local": "2026-09-11T17:14:42.3402045+08:00",
+    "time_utc": "2026-09-11T09:14:42.3402045Z",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg9A36.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1",
+    "interpretation": "PowerShell execution/script logging; not by itself a security block event"
+  },
+  {
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "provider": "Microsoft-Windows-PowerShell",
+    "id": 4104,
+    "record_id": 5733,
+    "time_local": "2026-09-11T17:14:42.3401684+08:00",
+    "time_utc": "2026-09-11T09:14:42.3401684Z",
+    "script_path": "<USER_PROFILE>\\AppData\\Local\\Temp\\nsg9A36.tmp\\bundle\\maintenance\\rime-pime-candidate-maintenance.psm1",
+    "interpretation": "PowerShell execution/script logging; not by itself a security block event"
+  }
+]

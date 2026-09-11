@@ -1,0 +1,12 @@
+[
+  {
+    "stage": "diagnostic",
+    "returncode": 0,
+    "attempts": 1
+  },
+  {
+    "stage": "environment",
+    "returncode": 0,
+    "attempts": 1
+  }
+]

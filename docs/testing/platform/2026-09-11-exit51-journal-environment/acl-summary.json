@@ -1,0 +1,38 @@
+[
+    {
+        "label":  "install-journal",
+        "success":  true,
+        "attributes":  "Directory",
+        "inheritance_protected":  false,
+        "rule_count":  4,
+        "deny_rule_count":  0,
+        "effective_write_access_tested":  false
+    },
+    {
+        "label":  "install-lock",
+        "success":  true,
+        "attributes":  "Archive",
+        "inheritance_protected":  false,
+        "rule_count":  4,
+        "deny_rule_count":  0,
+        "effective_write_access_tested":  false
+    },
+    {
+        "label":  "remove-journal",
+        "success":  true,
+        "attributes":  "Directory",
+        "inheritance_protected":  false,
+        "rule_count":  4,
+        "deny_rule_count":  0,
+        "effective_write_access_tested":  false
+    },
+    {
+        "label":  "remove-lock",
+        "success":  true,
+        "attributes":  "Archive",
+        "inheritance_protected":  false,
+        "rule_count":  4,
+        "deny_rule_count":  0,
+        "effective_write_access_tested":  false
+    }
+]
