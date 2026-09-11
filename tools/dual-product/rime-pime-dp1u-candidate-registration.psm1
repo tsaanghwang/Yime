@@ -116,6 +116,28 @@ function Get-CandidateRegistryShape([string]$Hive,[string]$View,[string]$Key) {
     if(@($shape.value_names).Count -ne @($shape.value_types).Count){throw 'Inconsistent registry name/type enumeration.'}
     return $shape
 }
+function Assert-CandidateDefaultStringAgreement($Kind,$NativeValue,[string]$SystemValue){
+    if($Kind -ne [Microsoft.Win32.RegistryValueKind]::String -or $NativeValue -isnot [string] -or $NativeValue -cne $SystemValue){
+        throw 'Default registry type or native/system value agreement failed.'
+    }
+}
+function Assert-CandidateDefaultStringKind($Expected,[string]$SystemValue){
+    # Supplemental exact-type agreement in the admitted native caller. The
+    # controller retains Explorer/UAC ancestry; this never replaces a failed
+    # StdRegProv read or supplies an alternative value on provider errors.
+    if($Expected.hive -cne 'LocalMachine' -or $Expected.view -notin @('Registry32','Registry64') -or $Expected.name -cne ''){throw 'Unsupported candidate default type coordinate.'}
+    $facts=[Yime.Dp1UNative.Facts]::OpenProcessFacts($PID)
+    try{if($facts.PackageQuery -ne 15700){throw 'Packaged caller cannot supplement registry type evidence.'}}
+    finally{$facts.Dispose()}
+    $base=[Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine,[Microsoft.Win32.RegistryView]$Expected.view)
+    try{
+        $key=$base.OpenSubKey($Expected.key,$false)
+        try{
+            if($null -eq $key){throw 'Default registry key changed during type verification.'}
+            Assert-CandidateDefaultStringAgreement ($key.GetValueKind('')) ($key.GetValue('',$null,[Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)) $SystemValue
+        }finally{if($key){$key.Dispose()}}
+    }finally{$base.Dispose()}
+}
 function Get-CandidateTreeObservation($Tree,[switch]$AllowDisabled) {
     $shape=Get-CandidateRegistryShape $Tree.hive $Tree.view $Tree.key
     # A required default-only REG_SZ key has null EnumValues arrays in StdRegProv.
@@ -134,6 +156,10 @@ function Get-CandidateTreeObservation($Tree,[switch]$AllowDisabled) {
             if($wanted.Count -ne 1){throw ('Foreign registration value preserved: '+$Tree.id)}
             $expected=[pscustomobject]@{id=$Tree.id+':'+$name;hive=$Tree.hive;view=$Tree.view;key=$Tree.key;name=$name}
             $actual=Get-YimePimeSystemRegistryValueRecord $expected
+            if($actual.exists -and $actual.value_kind -ceq 'StringOrExpandString'){
+                Assert-CandidateDefaultStringKind $expected $actual.value
+                $actual.value_kind='String'
+            }
             if(-not $actual.exists -or $actual.value_kind -cne $wanted[0].value_kind){throw ('Registration changed or mistyped: '+$Tree.id)}
             $disabled=$AllowDisabled -and $Tree.id -ceq 'user-profile' -and $name -ceq 'Enable' -and $actual.value -ceq '0'
             if(-not $disabled -and $actual.value -cne $wanted[0].value){throw ('Registration value owned by another root or unknown state: '+$Tree.id)}

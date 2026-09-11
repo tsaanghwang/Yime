@@ -298,7 +298,8 @@ function Get-YimePimeSystemRegistryValueRecord($Expected) {
             $read=Invoke-YimePimeSystemRegistryMethod -Method GetStringValue -Hive $coordinate.hive -Key $coordinate.key `
                 -ProviderArchitecture $coordinate.provider_architecture -Values @{sValueName=''}
             if([int]$read.ReturnValue -ne 0 -or $read.sValue -isnot [string]){throw 'Default registry string could not be established from system provider.'}
-            $record.exists=$true;$record.value_kind='String';$record.value=[string]$read.sValue
+            # The provider also accepts REG_EXPAND_SZ. Do not infer REG_SZ.
+            $record.exists=$true;$record.value_kind='StringOrExpandString';$record.value=[string]$read.sValue
         }
         return [pscustomobject]$record
     }

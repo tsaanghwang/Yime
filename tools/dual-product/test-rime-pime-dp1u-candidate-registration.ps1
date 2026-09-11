@@ -109,6 +109,11 @@ Check 'real-worker-termination-closes-job-and-terminates-owned-child' {
 Check 'real-reader-default-only-enumeration-retains-typed-system-value' {
     & $module {
         $testMode='present'
+        function Assert-CandidateDefaultStringKind($Expected,$SystemValue){
+            $kind=[Microsoft.Win32.RegistryValueKind]::String
+            if($testMode -eq 'expanded-string'){$kind=[Microsoft.Win32.RegistryValueKind]::ExpandString}
+            Assert-CandidateDefaultStringAgreement $kind $SystemValue $SystemValue
+        }
         function Invoke-YimePimeStdRegProvMethod($Method,$Arguments,$ProviderArchitecture){
             if($ProviderArchitecture -ne 64){throw 'Wrong registry view.'}
             switch($Method){
@@ -119,7 +124,8 @@ Check 'real-reader-default-only-enumeration-retains-typed-system-value' {
                     if($testMode -eq 'denied'){return [pscustomobject]@{ReturnValue=5;sValue=$null}}
                     if($testMode -eq 'missing-or-wrong-type'){return [pscustomobject]@{ReturnValue=1;sValue=$null}}
                     if($testMode -eq 'null-data'){return [pscustomobject]@{ReturnValue=0;sValue=$null}}
-                    return [pscustomobject]@{ReturnValue=0;sValue=$testMode}
+                    $value=$testMode;if($testMode -eq 'expanded-string'){$value='present'}
+                    return [pscustomobject]@{ReturnValue=0;sValue=$value}
                 }
                 default {throw 'Unexpected provider method; mutation prohibited.'}
             }
@@ -127,10 +133,20 @@ Check 'real-reader-default-only-enumeration-retains-typed-system-value' {
         $tree=New-CandidateTree 'com-x64' LocalMachine Registry64 'SOFTWARE\fixture' @((New-CandidateValue '' String 'present')) @('InprocServer32')
         $r=Get-CandidateTreeObservation $tree
         if(-not $r.exists -or $r.values.Count -ne 1 -or $r.values[0].value -cne 'present' -or $r.values[0].reader -cne 'StdRegProv'){throw 'Default-only COM key lost its actual system value.'}
-        foreach($testMode in @('denied','missing-or-wrong-type','null-data','foreign-value')){
+        foreach($testMode in @('denied','missing-or-wrong-type','null-data','foreign-value','expanded-string')){
             $rejected=$false
             try{$null=Get-CandidateTreeObservation $tree}catch{$rejected=$true}
             if(-not $rejected){throw ('Unsafe default value admitted: '+$testMode)}
+        }
+    }
+}
+Check 'supplemental-default-type-and-system-value-must-agree' {
+    & $module {
+        Assert-CandidateDefaultStringAgreement ([Microsoft.Win32.RegistryValueKind]::String) 'expected' 'expected'
+        foreach($case in @(@([Microsoft.Win32.RegistryValueKind]::ExpandString,'expected'),@([Microsoft.Win32.RegistryValueKind]::DWord,7),@([Microsoft.Win32.RegistryValueKind]::String,'different'))){
+            $rejected=$false
+            try{Assert-CandidateDefaultStringAgreement $case[0] $case[1] 'expected'}catch{$rejected=$true}
+            if(-not $rejected){throw 'Supplemental default type/value mismatch admitted.'}
         }
     }
 }

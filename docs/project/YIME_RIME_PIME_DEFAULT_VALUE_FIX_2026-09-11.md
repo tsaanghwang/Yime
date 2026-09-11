@@ -12,11 +12,13 @@
 
 ## 修复及验证
 
-只在既存键、枚举没有值且预期包含默认 REG_SZ 时，通过系统提供程序的 [GetStringValue 空名称接口](https://learn.microsoft.com/en-us/previous-versions/windows/desktop/regprov/getstringvalue-method-in-class-stdregprov)读取默认值。实际读取必须成功且数据为字符串，并继续核对内容、类型、子键和所属根。访问拒绝、默认值缺失或不支持的类型均拒绝，不改用进程视图、不补写注册、不把提供程序错误当成功。
+只在既存键、枚举没有值且预期包含默认 REG_SZ 时，通过系统提供程序的 [GetStringValue 空名称接口](https://learn.microsoft.com/en-us/previous-versions/windows/desktop/regprov/getstringvalue-method-in-class-stdregprov)读取默认值。实际读取必须成功且数据为字符串，并继续核对内容、类型、子键和所属根。访问拒绝、默认值缺失或不支持的类型均拒绝，不补写注册、不把提供程序错误当成功。
+
+额外的独立测试键验证发现 GetStringValue 也接受 REG_EXPAND_SZ，因此公共读取器明确返回类型歧义，不直接冒称 REG_SZ。候选注册适配器在已通过原生 Explorer/UAC 调用链准入的上下文中，补充只读的精确类型检查，要求 REG_SZ，并要求未展开的原生值与 StdRegProv 的值完全一致。系统提供程序失败时不会进行替代读取；补充结果只能增加拒绝条件，不能覆盖系统提供程序的失败或返回另一份值。其他调用者也不能把类型歧义当成 String 放行。
 
 未预期默认值的空键保持原空集合语义；另为机器注册断言加入匹配数量、存在性、预期/实际值数和子键数，后续错误不再只剩 com-x64 标签。诊断不输出用户值内容。
 
-- PS5/PS7 各 31 项注册回归通过，新增测试保留实际读取和观察函数，仅替换最底层系统调用，覆盖空枚举下默认值存在、缺失/错误类型、拒绝访问、null 数据和错误内容。
+- PS5/PS7 各 32 项注册回归通过，覆盖空枚举下默认值存在、缺失/错误类型、拒绝访问、null 数据、错误内容、可展开字符串以及原生/系统值不一致。系统调用和原生读取边界使用夹具，公共读取、观察和类型/值判断保持实际实现。
 - PS5/PS7 各 22 项所有权检查通过；源基线 77 项通过。
 - 修复后的实际只读 COM 观察在 Registry32/Registry64 均得到一个值、一个子键，reader=StdRegProv。生产安装保持不变。
 
