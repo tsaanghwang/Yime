@@ -1,0 +1,59 @@
+{
+    "schema_version":  "yime-resume-binding-diagnostic-v1",
+    "checks":  [
+                   {
+                       "check":  "approval-install_root",
+                       "passed":  true,
+                       "error_type":  null
+                   },
+                   {
+                       "check":  "approval-state_root",
+                       "passed":  true,
+                       "error_type":  null
+                   },
+                   {
+                       "check":  "approval-recovery_root",
+                       "passed":  true,
+                       "error_type":  null
+                   },
+                   {
+                       "check":  "approval-initiating_sid",
+                       "passed":  true,
+                       "error_type":  null
+                   },
+                   {
+                       "check":  "approval-target_machine_id",
+                       "passed":  true,
+                       "error_type":  null
+                   },
+                   {
+                       "check":  "approval-target_name",
+                       "passed":  true,
+                       "error_type":  null
+                   },
+                   {
+                       "check":  "approval-package_sha256",
+                       "passed":  true,
+                       "error_type":  null
+                   },
+                   {
+                       "check":  "install-directory-identity",
+                       "passed":  true,
+                       "error_type":  null
+                   },
+                   {
+                       "check":  "state-directory-identity",
+                       "passed":  true,
+                       "error_type":  null
+                   },
+                   {
+                       "check":  "recovery-executable-identity",
+                       "passed":  true,
+                       "error_type":  null
+                   }
+               ],
+    "all_checks_passed":  true,
+    "opened_transaction_store":  false,
+    "maintenance_executed":  false,
+    "installed_acceptance_passed":  false
+}

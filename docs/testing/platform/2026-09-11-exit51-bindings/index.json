@@ -1,0 +1,42 @@
+{
+  "schema_version": "yime-binding-diagnostic-evidence-index-v1",
+  "diagnostic_commit": "ff488d28",
+  "script_sha256": "7bff0173d9c87596e5ca4f512bd9e8eaa76fd82e6dcbaa46b5740b3bd934037d",
+  "external_root": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\binding-diagnostic-24fc59b096b3468d94d79a85f3286f1b",
+  "input_hashes_reverified": true,
+  "raw_output_sha256": "14f44c224a1e017215a3b62e1b03d44f6ad8e69e7cb7e4e2cb53f1e1f8a91ed0",
+  "exit_code_reliably_recorded": false,
+  "stderr_bytes": 0,
+  "files": [
+    {
+      "name": "error.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "exit-code.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "input-hashes.json",
+      "bytes": 823,
+      "sha256": "a737127e5d791bf2b093481c60fb78d3a9466bfc46f5e45864c4da8f64851279"
+    },
+    {
+      "name": "output.json",
+      "bytes": 2169,
+      "sha256": "14f44c224a1e017215a3b62e1b03d44f6ad8e69e7cb7e4e2cb53f1e1f8a91ed0"
+    },
+    {
+      "name": "parameters.json",
+      "bytes": 536,
+      "sha256": "a389db7c262cbfa480adb5127ea277874679bd1923e5faac983a7deb63c58bc8"
+    },
+    {
+      "name": "started.txt",
+      "bytes": 9,
+      "sha256": "0688b12a164f46996f50b8dd74bcf06f7f448528337bfd3b2ad4693111e20e83"
+    }
+  ]
+}
