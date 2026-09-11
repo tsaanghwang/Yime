@@ -1,5 +1,7 @@
 # 原事务短路径恢复与新候选交付
 
+> **已执行并失败，暂停本页所有执行步骤。** 新错误及修复见[Job 退出记账复核](YIME_RIME_PIME_JOB_EXIT_ACCOUNTING_2026-09-11.md)。不要新建暂存目录重复 Resume；`-request` 包也暂不安装。
+
 影响产品：Rime/PIME；YimeCore 继续保护。修复提交 `9aeadc74c` 的 CI [34590441170](https://github.com/tsaanghwang/Yime/actions/runs/34590441170) 已成功。此处新增恢复准备与执行保护还需本次交付提交的 CI 通过，不能把上一轮 CI 当作新增代码验证。
 
 ## 先恢复旧事务，后测试新包

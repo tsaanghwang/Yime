@@ -38,6 +38,12 @@ Check 'real-contained-failing-child-retains-exit-status' {
     $r=& $module {param($exe,$arguments,$gate) Invoke-CandidateContainedProcess $exe $arguments 10000 $gate} $fixtureHost (Encoded-ChildArguments 'exit 9') $fixtureGateHandle
     Assert ($r.ExitCode -eq 9 -and $r.JobEmptyBeforeReturn) 'Owned child error was lost.'
 }
+Check 'real-fast-exit-waits-for-job-accounting-without-false-descendants' {
+    for($i=0;$i -lt 20;$i++){
+        $r=& $module {param($exe,$gate) Invoke-CandidateContainedProcess $exe '/d /c exit 0' 10000 $gate} (Join-Path $env:SystemRoot 'System32\cmd.exe') $fixtureGateHandle
+        Assert ($r.ExitCode -eq 0 -and $r.JobEmptyBeforeReturn -and -not $r.TimedOut -and -not $r.DescendantsTerminated) 'Fast clean exit misclassified as surviving descendants.'
+    }
+}
 Check 'real-contained-timeout-terminates-and-drains-owned-job' {
     $r=& $module {param($exe,$arguments,$gate) Invoke-CandidateContainedProcess $exe $arguments 500 $gate} $fixtureHost (Encoded-ChildArguments 'Start-Sleep -Seconds 120') $fixtureGateHandle
     Assert ($r.TimedOut -and $r.JobEmptyBeforeReturn -and $r.ExitCode -ne 259) 'Timed-out child can remain active.'

@@ -57,6 +57,16 @@ namespace Yime.CandidateRegistrationChild {
             if (!QueryInformationJobObject(job, 1, out value, (uint)Marshal.SizeOf(typeof(Accounting)), IntPtr.Zero)) throw new Win32Exception(Marshal.GetLastWin32Error());
             return value.ActiveProcesses == 0;
         }
+        private static bool WaitForEmptyAfterExit(IntPtr job) {
+            // A signaled process handle can precede the job accounting update.
+            // Keep every lease and the restrictive job alive while observing it.
+            var elapsed = System.Diagnostics.Stopwatch.StartNew();
+            do {
+                if (Empty(job)) return true;
+                if (elapsed.ElapsedMilliseconds >= 1000) return false;
+                Thread.Sleep(10);
+            } while (true);
+        }
         private static void Drain(IntPtr job, IntPtr process, bool assigned) {
             // An uncertain or failed termination never becomes an ordinary error
             // while a child can still mutate registration. Keep the caller and
@@ -118,7 +128,7 @@ namespace Yime.CandidateRegistrationChild {
                 // Even a successful registrar may not leave a live descendant.
                 // Terminate a timed-out job, or any descendant left after its
                 // initial process exits, and confirm the entire job is empty.
-                bool descendantsTerminated = !timedOut && !Empty(job);
+                bool descendantsTerminated = !timedOut && !WaitForEmptyAfterExit(job);
                 if (timedOut || descendantsTerminated) Drain(job, process.Process, true);
                 drained = true;
                 uint exitCode;

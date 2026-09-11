@@ -184,7 +184,7 @@ function Invoke-CandidateCheckedProcess([string]$Path,[string]$Arguments,[IntPtr
     $result=Invoke-CandidateContainedProcess $Path $Arguments 60000 $CoordinationHandle
     if(-not $result.JobEmptyBeforeReturn){throw 'Registration job completion not established.'}
     if($result.TimedOut){throw 'Registration job exceeded deadline and was terminated; all owned children have exited; partial state retained for recovery.'}
-    if($result.DescendantsTerminated){throw 'Registration child left active descendants; its job was terminated and drained; partial state retained for recovery.'}
+    if($result.DescendantsTerminated){throw 'Registration child job remained active after the bounded exit observation; its job was terminated and drained; partial state retained for recovery.'}
     if($result.ExitCode -ne 0){throw ('Registration child returned '+$result.ExitCode+'; all owned children have exited; partial state retained for journal recovery.')}
 }
 function Invoke-CandidateContainedProcess([string]$Path,[string]$Arguments,[int]$TimeoutMilliseconds,[IntPtr]$CoordinationHandle) {
