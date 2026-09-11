@@ -246,6 +246,27 @@ function Invoke-YimePimeSystemRegistryMethod {
         $code=if($null -eq $result){'null'}else{[string]$result.ReturnValue}
         throw "System registry $Method failed ($code); process-view fallback is forbidden."
     }
+    if([int]$result.ReturnValue -eq 0 -and $Method -in @('EnumValues','EnumKey')) {
+        # WMI returns scalar DBNull (or null) for an empty enumeration, not
+        # a registry value whose name is the empty/default-value string.
+        $names=@()
+        if($null -ne $result.sNames -and $result.sNames -isnot [DBNull]){$names=@($result.sNames)}
+        foreach($name in $names){
+            if($name -isnot [string] -or ($Method -eq 'EnumKey' -and $name.Length -eq 0)){
+                throw 'System registry enumeration contains an invalid name.'
+            }
+        }
+        if($Method -eq 'EnumValues'){
+            $types=@()
+            if($null -ne $result.Types -and $result.Types -isnot [DBNull]){$types=@($result.Types)}
+            if($names.Count -ne $types.Count){throw 'System registry value names/types are inconsistent.'}
+            foreach($kind in $types){
+                if($kind -isnot [int] -and $kind -isnot [uint32]){throw 'System registry enumeration contains an invalid value type.'}
+            }
+            $result.Types=$types
+        }
+        $result.sNames=$names
+    }
     return $result
 }
 

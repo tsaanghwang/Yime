@@ -281,6 +281,7 @@
     "tools/dual-product/rime-pime-peer-protection.psm1",
     "tools/dual-product/test-rime-pime-peer-protection.ps1",
     "tools/dual-product/test-rime-pime-stdregprov-native-read.ps1",
+    "tools/dual-product/test-rime-pime-stdregprov-empty-values.ps1",
     "tools/dual-product/prepare-rime-pime-coexistence-test.ps1",
     "tools/dual-product/execute-rime-pime-coexistence-test.ps1",
     "tools/test-real-rime.ps1",

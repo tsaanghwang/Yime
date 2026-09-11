@@ -672,6 +672,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'PS5 native StdRegProv read failed' }
           python tools/powershell/run_checked.py --script tools/dual-product/test-rime-pime-stdregprov-native-read.ps1 --edition ps7
           if ($LASTEXITCODE -ne 0) { throw 'PS7 native StdRegProv read failed' }
+          python tools/powershell/run_checked.py --script tools/dual-product/test-rime-pime-stdregprov-empty-values.ps1 --edition ps5
+          if ($LASTEXITCODE -ne 0) { throw 'PS5 empty StdRegProv enumeration failed' }
+          python tools/powershell/run_checked.py --script tools/dual-product/test-rime-pime-stdregprov-empty-values.ps1 --edition ps7
+          if ($LASTEXITCODE -ne 0) { throw 'PS7 empty StdRegProv enumeration failed' }
       - name: Test guarded candidate registration provider
         if: matrix.lane == 'maintenance'
         shell: pwsh
