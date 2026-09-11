@@ -215,6 +215,54 @@ Check 'worker refuses removal without durable intent and registration after comm
         Reject {& $module {param($t,$c) Assert-MaintenanceWorkerDecision $t 'Register' $c} $opened $f.context} 'cannot replay'
     }finally{$opened.store.Dispose()}
 }
+function Finalize-Fixture($Case,$Opened,[switch]$Apply){
+    & $module {
+        param($defs,$f,$ticket,$apply)
+        . $defs
+        function Assert-FinalizerRuntimeAbsent($Plan){if($script:fixture.fail -ceq 'Runtime'){throw 'fixture Runtime still present'}}
+        Invoke-AbsentRollbackFinalization $f.context $ticket $f.bundle -Apply:$apply
+    } (Join-Path $PSScriptRoot 'original-rollback-finalizer.ps1') $Case $Opened ([bool]$Apply)
+}
+Check 'absent rollback finalizer previews then closes original journals without worker or runtime action' {
+    $f=New-Fixture;$f.fail='RegisterAndRemove';Reject {Invoke-Case $f} 'rollback incomplete';$f.fail=''
+    $unlisted=Join-Path $f.ticket.plan.install_root 'retain-user-note.txt';Write-Bytes $unlisted 'retained'
+    $beforeEvents=$f.events.Count;$beforeStops=$f.stop_count
+    $opened=Open-Ticket $f
+    try{
+        $preview=Finalize-Fixture $f $opened
+        Assert ($preview.eligible -and -not $preview.applied -and -not $opened.store.Has('terminal.bin')) 'Preview mutated decision.'
+        $result=Finalize-Fixture $f $opened -Apply
+        Assert ($result.applied -and $result.disposition -ceq 'rolled-back') 'Finalization failed.'
+        $decision=& $module {param($t) Get-MaintenanceDecision $t.store 'terminal.bin' $t.prepared_sha256 @('rolled-back')} $opened
+        Assert ($decision.disposition -ceq 'rolled-back') 'Missing install terminal.'
+        $rm=& $module {param($t) Open-MaintenanceRemoval $t} $opened
+        try{Assert ($rm.terminal.disposition -ceq 'remove-complete') 'Missing removal terminal.'}finally{$rm.store.Dispose()}
+        Assert ($f.stop_count -eq $beforeStops -and @($f.events|Select-Object -Skip $beforeEvents|Where-Object {$_ -match '^worker-|^runtime-'}).Count -eq 0) 'Finalizer invoked mutation provider.'
+        foreach($row in $opened.plan.files){Assert (-not (Test-Path (Join-Path $opened.plan.install_root $row.path))) 'Planned payload remains.'}
+        Assert (Test-Path (Join-Path $opened.plan.recovery_root 'maintenance-candidate.exe')) 'Recovery EXE removed.'
+        Assert (Test-Path $unlisted) 'Unlisted file removed.'
+    }finally{$opened.store.Dispose()}
+}
+foreach($failure in @('registration','Runtime','Peer','payload','commit','Default','once')){
+    Check ('absent finalizer rejects '+$failure+' before removal') {
+        $f=New-Fixture;$f.fail='RegisterAndRemove';Reject {Invoke-Case $f} 'rollback incomplete';$f.fail=''
+        $opened=Open-Ticket $f
+        try{
+            switch($failure){
+                'registration'{$f.registration='present'}
+                'Runtime'{$f.fail='Runtime'}
+                'Peer'{$f.fail='Peer'}
+                'payload'{Write-Bytes (Join-Path $opened.plan.install_root 'PIMELauncher.exe') 'changed fixture'}
+                'commit'{& $module {param($t) Publish-MaintenanceDecision $t.store 'commit.bin' $t.prepared_sha256 'installed'} $opened}
+                'Default'{$opened.plan.default_input.override='different fixture'}
+                'once'{Write-Bytes (Join-Path ([IO.Path]::GetDirectoryName($f.context.authorization_path)) 'original-finalizer-started') 'prior attempt'}
+            }
+            Reject {Finalize-Fixture $f $opened -Apply} 'registration|Runtime|peer|member changed|undecided|Default|default|already exists'
+            Assert (-not $opened.store.Has('terminal.bin')) 'Rejected finalizer wrote terminal.'
+            foreach($row in $opened.plan.files){Assert (Test-Path (Join-Path $opened.plan.install_root $row.path)) 'Rejected finalizer removed payload.'}
+        }finally{$opened.store.Dispose()}
+    }
+}
 $result=[ordered]@{schema_version='yime-rime-pime-candidate-maintenance-test-v1';passed=$true;powershell_version=$PSVersionTable.PSVersion.ToString();checks=@($checks.ToArray());
     real_file_journal_and_exact_removal_used=$true;registration_and_runtime_providers_mocked=$true;installer_executed=$false;product_runtime_started=$false;
     production_registration_modified=$false;installed_local12_touched=$false;dp1_u_acceptance_passed=$false}

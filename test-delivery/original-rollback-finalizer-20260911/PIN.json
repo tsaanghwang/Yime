@@ -1,0 +1,11 @@
+{
+  "schema_version": "yime-original-rollback-finalizer-data-v1",
+  "archive_sha256": "378ef716b20bb170fde4c4ff18939c3093c03ecd9252866e6d655d8a9acb1c96",
+  "archive_bytes": 68979260,
+  "manifest_sha256": "3f676b80b86f4c752e96c5ed06655bddb3b5b4aedd762ca8369483e7ae14b01d",
+  "member_count": 189,
+  "original_installer_sha256": "0276245dff5aa5e6441a829152eb178471b8cba0a21314e15ba04a9e5ff83617",
+  "original_receipt_sha256": "c4badd8cc2c3b06389ed044f08bcfb0383eb963affe5ca93a3e1c5e870eea4a1",
+  "original_ticket_sha256": "05352e3da345967e3e71fb5b6551f1db5739473f46a36ce3b311c46313d2b039",
+  "recovery_completed": false
+}
