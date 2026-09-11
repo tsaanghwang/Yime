@@ -3,9 +3,12 @@ param(
     [string]$OutputRoot,
     [string]$WorkerCasePath,
     [string]$Phase,
-    [string]$CheckPattern='*'
+    [string]$CheckPattern='*',
+    [ValidateSet(1,3)][int]$ShardCount=1,
+    [ValidateRange(0,2)][int]$ShardIndex=0
 )
 $ErrorActionPreference='Stop'
+if($ShardIndex -ge $ShardCount -or ($ShardCount -gt 1 -and ($CheckPattern -cne '*' -or $WorkerCasePath))){throw 'Sharded runs require the complete controller test inventory.'}
 $repo=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..')).TrimEnd('\')
 
 if($WorkerCasePath){
@@ -103,11 +106,13 @@ if($leaf -cnotmatch '^dp1-package-receipt-v2-test-dp1n-[A-Za-z0-9-]+$'){
 Import-Module (Join-Path $PSScriptRoot 'rime-pime-installer-receipt-transaction.psm1') -Force
 
 $declaredChecks=[Collections.Generic.List[string]]::new()
+Import-Module (Join-Path $PSScriptRoot '..\ci\test-shards.psm1') -Scope Local
 $caseDirectories=[Collections.Generic.List[object]]::new()
 function Check([string]$Name,[scriptblock]$Body){
     if($declaredChecks.Contains($Name)){throw "Duplicate transaction check name: $Name"}
     $declaredChecks.Add($Name)
     if($Name -notlike $CheckPattern){return}
+    if(($declaredChecks.Count-1) % $ShardCount -ne $ShardIndex){return}
     try{& $Body;$checks.Add([pscustomobject]@{name=$Name;passed=$true;detail='ok'})}
     catch{$checks.Add([pscustomobject]@{name=$Name;passed=$false;detail=$_.Exception.Message})}
 }
@@ -1128,6 +1133,7 @@ function Test-NamedChecksPassed([string[]]$Names){
 }
 
 $failed=@($checks|Where-Object{-not $_.passed})
+if((@($declaredChecks|Sort-Object) -join "`n") -cne (@($expectedCheckNames|Sort-Object) -join "`n")){throw 'Every shard must declare the complete reviewed test inventory.'}
 if($checks.Count -eq 0){throw 'No checks selected.'}
 $selectedNames=@($checks|ForEach-Object{[string]$_.name}|Sort-Object)
 $expectedNames=@($expectedCheckNames|Sort-Object)
@@ -1147,6 +1153,7 @@ $result=[ordered]@{
     selected_check_pattern=$CheckPattern
     expected_check_count=$expectedCheckNames.Count
     full_suite_executed=[bool]$fullSuiteExecuted
+    ci_shard=$(if($CheckPattern -ceq '*'){New-CIShardResult 'installer-transaction' $declaredChecks.ToArray() $selectedNames $ShardIndex $ShardCount $allChecksPassed $PSCommandPath}else{$null})
     all_executed_checks_passed=[bool]$allChecksPassed
     verified=[ordered]@{
         full_transaction_matrix=[bool]$fullMatrixVerified

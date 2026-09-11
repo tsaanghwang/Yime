@@ -152,8 +152,8 @@ class OwnershipTests(unittest.TestCase):
 
     def test_current_source_manifest_and_declared_source_set_are_exact(self):
         contract = subject.json.loads(subject.CONTRACT.read_text(encoding="utf-8-sig"))
-        self.assertEqual(len(contract["source_paths"]), 259)
-        self.assertEqual(len(self.receipt["source_manifest"]), 266)
+        self.assertEqual(len(contract["source_paths"]), 265)
+        self.assertEqual(len(self.receipt["source_manifest"]), 272)
         for path in (
             "tools/dual-product/rime-pime-peer-protection.psm1",
             "tools/dual-product/test-rime-pime-peer-protection.ps1",
@@ -913,15 +913,15 @@ class OwnershipTests(unittest.TestCase):
         cases = (
             ("shell: [powershell, pwsh]", "shell: [pwsh]"),
             ("shell: [powershell, pwsh]", "shell: [pwsh, pwsh]"),
-            ("suite: [installer-transaction, receipt-store, evidence-archive]",
+            ("suite: [installer-transaction-0, installer-transaction-1, installer-transaction-2, receipt-store, evidence-archive]",
              "suite: [installer-transaction, receipt-store]"),
-            ("suite: [installer-transaction, receipt-store, evidence-archive]",
+            ("suite: [installer-transaction-0, installer-transaction-1, installer-transaction-2, receipt-store, evidence-archive]",
              "suite: [installer-transaction, receipt-store, receipt-store]"),
             ("        shell: [powershell, pwsh]\n",
              "        shell: [powershell, pwsh]\n        exclude: [{shell: powershell}]\n"),
             ("fail-fast: true", "fail-fast: false"),
-            ("max-parallel: 6", "max-parallel: 2"),
-            ("max-parallel: 6", "max-parallel: 7"),
+            ("max-parallel: 10", "max-parallel: 2"),
+            ("max-parallel: 10", "max-parallel: 7"),
             ("        shell: ${{ matrix.shell }}", "        shell: pwsh"),
             ("CI_TEST_SHELL: ${{ matrix.shell }}", "CI_TEST_SHELL: pwsh"),
             ("CI_TEST_TAG: ${{ matrix.shell == 'powershell' && 'ps5' || 'ps7' }}",
@@ -947,7 +947,8 @@ class OwnershipTests(unittest.TestCase):
             ("installer-transaction", "test-rime-pime-installer-receipt-transaction.ps1"),
             ("evidence-archive", "test-rime-pime-candidate-evidence-archive.ps1"),
         ):
-            condition = f"        if: matrix.suite == '{suite}'\n"
+            condition = ("        if: startsWith(matrix.suite, 'installer-transaction-')\n" if suite == 'installer-transaction'
+                         else f"        if: matrix.suite == '{suite}'\n")
             invocation = f"          .\\tools\\dual-product\\{script} `\n"
             cases = (
                 (condition, ""),

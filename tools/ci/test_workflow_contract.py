@@ -5,6 +5,7 @@ YAML. actionlint checks GitHub syntax separately. Mutations protect the expensiv
 work boundary and the success-only aggregate when jobs are split or reordered.
 """
 from pathlib import Path
+import json
 import re
 import unittest
 
@@ -15,6 +16,7 @@ QUICK = {'build-contract', 'lexicon-offline-tooling', 'rust-i686-host',
          'native-build', 'go-tests', 'real-rime-tests', 'go-race-msys2',
          'nsis-preflight'}
 CONTRACTS = {'contract-tests', 'dp1-long-contracts'}
+AGGREGATES = {'shard-coverage'}
 CONTROLLER_POLICY_CALLS = (
     r'& $ps5 -NoProfile -ExecutionPolicy Bypass -File .\tools\yimecore\test-local13-maintenance-preparation.ps1',
     'if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 controller preparation policy test failed with exit code $LASTEXITCODE" }',
@@ -55,7 +57,7 @@ def validate_nsis_action(text):
 
 def validate(text):
     graph = jobs(text)
-    expected = QUICK | CONTRACTS | {'installer-payload', 'release-sign-payload',
+    expected = QUICK | CONTRACTS | AGGREGATES | {'installer-payload', 'release-sign-payload',
         'unsigned-installer-package', 'release-installer-package',
         'release-sign-installer', 'installer-package', 'core-build'}
     require(set(graph) == expected, 'Required CI stage missing or unreviewed stage added')
@@ -66,13 +68,15 @@ def validate(text):
         require('continue-on-error:' not in job, f'{name}: failures must propagate')
         if name in QUICK - {'build-contract'}:
             require(needs(job) == {'build-contract'}, f'{name}: bypasses cheap preflight')
-        if name in QUICK | CONTRACTS | {'installer-payload'}:
+        if name in QUICK | CONTRACTS | AGGREGATES | {'installer-payload'}:
             require(not re.search(r'^    if:', job, re.M), f'{name}: success gating overridden')
         if name in CONTRACTS:
             require(needs(job) == QUICK, f'{name}: bypasses quick regressions')
-    require(needs(graph['installer-payload']) == QUICK | CONTRACTS,
+    require(needs(graph['shard-coverage']) == {'real-rime-tests', 'dp1-long-contracts'},
+            'Coverage must wait for every shard family')
+    require(needs(graph['installer-payload']) == QUICK | CONTRACTS | AGGREGATES,
             'Payload publication must require every regression stage')
-    require(needs(graph['core-build']) == QUICK | CONTRACTS | {'installer-package'},
+    require(needs(graph['core-build']) == QUICK | CONTRACTS | AGGREGATES | {'installer-package'},
             'Protected aggregate must include every stage')
     core = graph['core-build']
     require('    if: ${{ always() }}' in core, 'Aggregate must run after failure/skip')
@@ -113,6 +117,7 @@ def validate(text):
                 'NSIS bootstrap regression inputs must bind action outputs')
     preflight = graph['build-contract']
     for command in ('test_workflow_contract.py', 'baseline.py',
+                    'test_shard_coverage.py',
                     'check-libime2-change-boundary.ps1', 'fetch-depth: 0'):
         require(command in preflight, f'Cheap preflight missing: {command}')
     for command in CONTROLLER_POLICY_CALLS:
@@ -120,9 +125,35 @@ def validate(text):
     require('test-local13-maintenance-preparation.ps1' not in graph['contract-tests'],
             'Controller policy should run once per shell in cheap preflight')
     long = graph['dp1-long-contracts']
-    require('      fail-fast: true\n      max-parallel: 6\n' in long,
+    require('      fail-fast: true\n      max-parallel: 10\n' in long,
             'Long fixtures must stop sibling work on failure and bound parallelism')
     require('shell: [powershell, pwsh]' in long, 'Both PowerShell hosts are required')
+    require('suite: [installer-transaction-0, installer-transaction-1, installer-transaction-2, receipt-store, evidence-archive]' in long,
+            'All three transaction shards and both other suites are required')
+    real = graph['real-rime-tests']
+    require('        shard: [0, 1, 2]\n' in real and
+            '        run: .\\tools\\test-real-rime.ps1 -ShardCount 3 -ShardIndex ${{ matrix.shard }}' in real and
+            '          name: real-rime-${{ matrix.shard }}-${{ github.sha }}-${{ github.run_attempt }}' in real,
+            'Real-Rime shard execution/evidence missing')
+    lanes = json.loads((ROOT / 'tools/ci/contract-test-lanes.json').read_text())
+    contract = graph['contract-tests']
+    named = re.findall(r'^      - name: ([^\n]+)\n(.*?)(?=^      - |\Z)', contract, re.M | re.S)
+    require(len(named) == len(lanes) and {name for name, _ in named} == set(lanes),
+            'Contract test inventory missing or duplicated')
+    for name, body in named:
+        require(re.findall(r'^        if: (.+)$', body, re.M) == ["matrix.lane == '" + lanes[name] + "'"],
+                'Contract test must run in exactly its reviewed lane')
+    for job, dimension in ((real, 'shard: [0, 1, 2]'), (contract, 'lane: [core, package, maintenance]')):
+        strategy = re.search(r'^    strategy:\n.*?(?=^    \S|\Z)', job, re.M | re.S)[0]
+        require(strategy == '    strategy:\n      fail-fast: true\n      max-parallel: 3\n      matrix:\n        ' + dimension + '\n',
+                'Parallel test matrix must be exact and complete')
+    coverage = graph['shard-coverage']
+    for required in ('pattern: real-rime-*-${{ github.sha }}-${{ github.run_attempt }}',
+                     'pattern: dp1-contract-installer-transaction-*-${{ github.sha }}-${{ github.run_attempt }}',
+                     'python tools/ci/verify_shard_coverage.py .tmp/shard-evidence --commit ${{ github.sha }}',
+                     "if ($LASTEXITCODE -ne 0) { throw 'Required shard coverage did not pass' }"):
+        require(required in coverage, 'Exact shard coverage gate missing')
+    require(not re.search(r'^        if:', coverage, re.M), 'Coverage step may not be skipped')
     # Concurrency is deliberately separate per event; PR merge commits are not
     # equivalent to branch pushes. Manual/tag runs get unique, uncancelled groups.
     require("group: ${{ github.workflow }}-${{ github.event_name }}-${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')) && github.run_id || github.ref }}" in text,
@@ -178,7 +209,7 @@ class WorkflowContractTests(unittest.TestCase):
                 self.reject_in_job(name, '    needs: [build-contract]\n', '')
 
     def test_expensive_jobs_reject_each_missing_prerequisite(self):
-        for name in CONTRACTS | {'installer-payload'}:
+        for name in CONTRACTS | AGGREGATES | {'installer-payload'}:
             for prerequisite in needs(jobs(self.text)[name]):
                 with self.subTest(job=name, prerequisite=prerequisite):
                     old = re.search(r'^    needs: .*$', jobs(self.text)[name], re.M)[0]
@@ -193,17 +224,29 @@ class WorkflowContractTests(unittest.TestCase):
                 self.reject_in_job('core-build', f'test "${var}" = success', ':')
 
     def test_failure_and_skip_bypasses_rejected(self):
-        for name in CONTRACTS:
+        for name in CONTRACTS | AGGREGATES:
             self.reject_in_job(name, '    steps:', '    if: ${{ always() }}\n    steps:')
             self.reject_in_job(name, '    steps:', '    continue-on-error: true\n    steps:')
 
     def test_matrix_limits_and_timeout_cannot_disappear(self):
         for before, after in [('fail-fast: true', 'fail-fast: false'),
-                              ('max-parallel: 6', 'max-parallel: 2'),
-                              ('max-parallel: 6', 'max-parallel: 7'),
+                              ('max-parallel: 10', 'max-parallel: 2'),
+                              ('max-parallel: 10', 'max-parallel: 11'),
                               ('shell: [powershell, pwsh]', 'shell: [pwsh]'),
                               ('timeout-minutes: 60', 'timeout-minutes: 360')]:
             self.reject_in_job('dp1-long-contracts', before, after)
+
+    def test_parallel_shards_and_coverage_cannot_be_skipped(self):
+        for name, before, after in [
+            ('real-rime-tests', 'shard: [0, 1, 2]', 'shard: [0, 1]'),
+            ('real-rime-tests', '-ShardCount 3', '-ShardCount 1'),
+            ('contract-tests', 'lane: [core, package, maintenance]', 'lane: [core, package]'),
+            ('contract-tests', "if: matrix.lane == 'core'", "if: matrix.lane == 'missing'"),
+            ('shard-coverage', 'verify_shard_coverage.py', 'ignore_coverage.py'),
+            ('shard-coverage', '--commit ${{ github.sha }}', '--commit stale'),
+        ]:
+            with self.subTest(name=name, before=before):
+                self.reject_in_job(name, before, after)
 
     def test_controller_policy_cannot_move_after_expensive_work_or_lose_a_shell(self):
         for command in CONTROLLER_POLICY_CALLS:

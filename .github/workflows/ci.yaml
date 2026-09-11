@@ -35,6 +35,8 @@ jobs:
         run: python .\tools\lexicon\verify_external_archive_lock.py
       - name: Test CI scheduling and failure propagation
         run: python .\tools\ci\test_workflow_contract.py
+      - name: Test shard coverage rejection paths
+        run: python -m unittest discover -s tools/ci -p test_shard_coverage.py
       - name: Verify dual-product source contracts before expensive tests
         shell: pwsh
         run: |
@@ -176,10 +178,15 @@ jobs:
         run: .\tools\test-installed-particle-a-stage6d-verifier.ps1
 
   real-rime-tests:
-    name: real-rime-tests
+    name: real-rime-tests / ${{ matrix.shard }}
     runs-on: windows-2022
     timeout-minutes: 30
     needs: [build-contract]
+    strategy:
+      fail-fast: true
+      max-parallel: 3
+      matrix:
+        shard: [0, 1, 2]
     steps:
       - uses: actions/checkout@v6
       - name: Use Go 1.26.4
@@ -189,7 +196,17 @@ jobs:
           cache-dependency-path: go-backend/go.sum
       - name: Run real Rime integration tests
         shell: pwsh
-        run: .\tools\test-real-rime.ps1
+        run: .\tools\test-real-rime.ps1 -ShardCount 3 -ShardIndex ${{ matrix.shard }}
+
+      - name: Retain real Rime shard evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: real-rime-${{ matrix.shard }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: .tmp/real-rime-shard-*.json*
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
 
   go-race-msys2:
     name: go-race-msys2
@@ -349,13 +366,19 @@ jobs:
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-interval-test-ci-ps7-$runId")
 
   contract-tests:
-    name: contract-tests
+    name: contract-tests / ${{ matrix.lane }}
     runs-on: windows-2022
     timeout-minutes: 40
     needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, nsis-preflight]
+    strategy:
+      fail-fast: true
+      max-parallel: 3
+      matrix:
+        lane: [core, package, maintenance]
     steps:
       - uses: actions/checkout@v6
       - name: Test YimeCore local-product readiness contract
+        if: matrix.lane == 'core'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -363,6 +386,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 local-product readiness test failed with exit code $LASTEXITCODE" }
           .\tools\yimecore\test-local-product-readiness.ps1
       - name: Test YimeCore local-product build contracts
+        if: matrix.lane == 'core'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -376,6 +400,7 @@ jobs:
           .\tools\yimecore\test-local-product-speech-build.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\yimecore-experiment\speech-build-contract-ci-ps7-$runId")
       - name: Test YimeCore local12 maintenance preparation
+        if: matrix.lane == 'core'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -383,6 +408,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 local12 maintenance preparation test failed with exit code $LASTEXITCODE" }
           .\tools\yimecore\test-local12-maintenance-preparation.ps1
       - name: Test YimeCore native desktop rollback rehearsal
+        if: matrix.lane == 'core'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -390,6 +416,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 native desktop rehearsal test failed with exit code $LASTEXITCODE" }
           .\tools\yimecore\test-native-desktop-rehearsal.ps1
       - name: Test YimeCore guarded maintenance preparation and native observations
+        if: matrix.lane == 'core'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -401,6 +428,7 @@ jobs:
             & (Join-Path '.\tools\yimecore' $test) -OutputPath (Join-Path $evidence ($test + '-ps7.json'))
           }
       - name: Test exact payload-closure rejection model
+        if: matrix.lane == 'package'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -411,6 +439,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-payload-closure.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-payload-closure-ci-ps7-$runId")
       - name: Test pre-package copy-stage contract
+        if: matrix.lane == 'package'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -421,6 +450,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-package-staging.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-staging-ci-ps7-$runId")
       - name: Test deterministic NSIS stage include contract
+        if: matrix.lane == 'package'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -431,6 +461,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-nsis-stage.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-stage-ci-ps7-$runId")
       - name: Test NSIS compiler input closure contract
+        if: matrix.lane == 'package'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -441,6 +472,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-nsis-toolchain-closure.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-nsis-toolchain-closure-test-ci-ps7-$runId") -SyntheticOnly
       - name: Test DP1-J isolated NSIS membership monitor
+        if: matrix.lane == 'package'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -451,6 +483,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-nsis-membership-monitor-v1.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-j-membership-test-ci-ps7-$runId")
       - name: Test post-build archive extraction contract
+        if: matrix.lane == 'package'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -461,6 +494,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-postbuild-extraction.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-postbuild-extraction-test-ci-ps7-$runId")
       - name: Test canonical package receipt v2 contract
+        if: matrix.lane == 'package'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -471,6 +505,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-package-receipt-v2.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-ci-ps7-$runId")
       - name: Test DP1-O isolated current-source candidate runner contract
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -481,6 +516,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-isolated-candidate.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-o-runner-contract-ci-ps7-$runId")
       - name: Test DP1-P version identity admission contract
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -491,6 +527,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-version-identity-admission.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-version-identity-test-ci-ps7-$runId")
       - name: Test DP1-Q actual migration review contract
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -501,6 +538,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-actual-migration-review.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-actual-migration-review-test-ci-ps7-$runId")
       - name: Test DP1-R static trust admission contract
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -511,6 +549,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-dp1r-trust-admission.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-r-trust-admission-test-ci-ps7-$runId")
       - name: Test DP1-S off-repository archive boundary
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -521,6 +560,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-dp1s-off-repository-archive.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-s-archive-test-ci-ps7-$runId")
       - name: Test DP1-T actual canonical migration adapter contract
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -531,6 +571,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-actual-canonical-migration.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-t-actual-adapter-test-ci-ps7-$runId")
       - name: Test DP1-U isolated target preflight contract
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -541,6 +582,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-dp1u-isolated-preflight.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-preflight-test-ci-ps7-$runId")
       - name: Test DP1-U native read-only probe
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -551,6 +593,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-dp1u-native-probe.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-native-probe-test-ci-ps7-$runId")
       - name: Test DP1-U native candidate evidence chain
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -561,6 +604,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-dp1u-native-candidate.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-native-candidate-test-ci-ps7-$runId")
       - name: Test DP1-U native exact file removal
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -572,6 +616,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-dp1u-exact-file-removal.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-exact-removal-test-ci-ps7-$runId")
       - name: Test DP1-U private application hive rollback
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -583,6 +628,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-dp1u-application-hive.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-app-hive-test-ci-ps7-$runId")
       - name: Test guarded executable candidate manifest
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -593,6 +639,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-executable-candidate.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-executable-candidate-test-ci-ps7-$runId")
       - name: Test guarded executable candidate receipt
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -603,6 +650,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-executable-receipt.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\executable-receipt-test-ci-ps7-$runId")
       - name: Test guarded candidate maintenance recovery
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -613,6 +661,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-candidate-maintenance.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-candidate-maintenance-test-ci-ps7-$runId")
       - name: Test current YimeCore peer protection
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           python tools/powershell/run_checked.py --script tools/dual-product/test-rime-pime-peer-protection.ps1 --edition ps5
@@ -620,6 +669,7 @@ jobs:
           python tools/powershell/run_checked.py --script tools/dual-product/test-rime-pime-peer-protection.ps1 --edition ps7
           if ($LASTEXITCODE -ne 0) { throw 'PS7 peer protection failed' }
       - name: Test guarded candidate registration provider
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -630,6 +680,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-dp1u-candidate-registration.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-candidate-registration-test-ci-ps7-$runId")
       - name: Test guarded candidate Runtime provider
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -640,6 +691,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-dp1u-candidate-runtime.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-candidate-runtime-test-ci-ps7-$runId")
       - name: Test guarded candidate cross-process coordinator
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -650,6 +702,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-candidate-coordinator.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\coordinator-test-ci-ps7-$runId")
       - name: Test DP1-U native transaction interruption recovery
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -661,6 +714,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-dp1u-native-transaction.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-native-transaction-test-ci-ps7-$runId")
       - name: Test DP1-U maintenance and Runtime admission gate
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -671,6 +725,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-dp1u-maintenance-runtime-gate.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-u-gate-test-ci-ps7-$runId")
       - name: Test canonical receipt no-downgrade contract
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -681,6 +736,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-receipt-no-downgrade.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-receipt-no-downgrade-ci-ps7-$runId")
       - name: Test DP1-J isolated receipt-v2 supersession protocol
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -691,6 +747,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-receipt-v2-supersession.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-j-receipt-v2-supersession-ci-ps7-$runId")
       - name: Test DP1-I pure transaction replay model
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -698,6 +755,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "PowerShell 5.1 DP1-I replay-model test failed with exit code $LASTEXITCODE" }
           .\tools\dual-product\test-rime-pime-transaction-replay-model.ps1
       - name: Test DP1-I isolated fixture transaction journal
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -708,6 +766,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-fixture-transaction-journal.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-i-journal-ci-ps7-$runId")
       - name: Test normal and delay PE import static CRT rejection
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -718,6 +777,7 @@ jobs:
           .\tools\dual-product\test-pe-import-gate.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-pe-import-gate-ci-ps7-$runId")
       - name: Test static installer artifact verifier
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: |
           $ps5 = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -728,6 +788,7 @@ jobs:
           .\tools\dual-product\test-rime-pime-installer-static.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-installer-static-ci-ps7-$runId")
       - name: Test installed-runtime evidence capture
+        if: matrix.lane == 'maintenance'
         shell: pwsh
         run: .\tools\test-sentence-segment-evidence.ps1
 
@@ -738,14 +799,15 @@ jobs:
     needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, nsis-preflight]
     strategy:
       fail-fast: true
-      max-parallel: 6
+      max-parallel: 10
       matrix:
-        suite: [installer-transaction, receipt-store, evidence-archive]
+        suite: [installer-transaction-0, installer-transaction-1, installer-transaction-2, receipt-store, evidence-archive]
         shell: [powershell, pwsh]
     defaults:
       run:
         shell: ${{ matrix.shell }}
     env:
+      CI_TEST_SUITE: ${{ matrix.suite }}
       CI_TEST_SHELL: ${{ matrix.shell }}
       CI_TEST_TAG: ${{ matrix.shell == 'powershell' && 'ps5' || 'ps7' }}
     steps:
@@ -764,11 +826,13 @@ jobs:
           .\tools\dual-product\test-rime-pime-receipt-v2-store.ps1 `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-store-$env:CI_TEST_TAG-$runId")
       - name: Test DP1-N isolated installer and receipt transaction
-        if: matrix.suite == 'installer-transaction'
+        if: startsWith(matrix.suite, 'installer-transaction-')
         run: |
-          # Keep the existing short Win32 path budget and run the complete suite.
+          # Independent runner, disjoint fixture root, complete declared inventory on every shard.
           $runId = [Guid]::NewGuid().ToString('N').Substring(0,16)
+          $shard = [int]($env:CI_TEST_SUITE.Split('-')[-1])
           .\tools\dual-product\test-rime-pime-installer-receipt-transaction.ps1 `
+            -ShardCount 3 -ShardIndex $shard `
             -OutputRoot (Join-Path $pwd ".tmp\dual-product\dp1-package-receipt-v2-test-dp1n-ci-$env:CI_TEST_TAG-$runId")
       - name: Test DP1-Q candidate evidence archive contract
         if: matrix.suite == 'evidence-archive'
@@ -790,11 +854,32 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+  shard-coverage:
+    name: shard-coverage
+    runs-on: windows-2022
+    timeout-minutes: 5
+    needs: [real-rime-tests, dp1-long-contracts]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v6
+        with:
+          pattern: real-rime-*-${{ github.sha }}-${{ github.run_attempt }}
+          path: .tmp/shard-evidence/real-rime
+      - uses: actions/download-artifact@v6
+        with:
+          pattern: dp1-contract-installer-transaction-*-${{ github.sha }}-${{ github.run_attempt }}
+          path: .tmp/shard-evidence/transactions
+      - name: Require exact complete shard coverage
+        shell: pwsh
+        run: |
+          python tools/ci/verify_shard_coverage.py .tmp/shard-evidence --commit ${{ github.sha }}
+          if ($LASTEXITCODE -ne 0) { throw 'Required shard coverage did not pass' }
+
   installer-payload:
     name: installer-payload
     runs-on: windows-2022
     timeout-minutes: 15
-    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, nsis-preflight, contract-tests, dp1-long-contracts]
+    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, nsis-preflight, contract-tests, dp1-long-contracts, shard-coverage]
     steps:
       - uses: actions/checkout@v6
       - name: Restore native installer inputs
@@ -1096,11 +1181,12 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, nsis-preflight, contract-tests, dp1-long-contracts, installer-package]
+    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, nsis-preflight, contract-tests, dp1-long-contracts, installer-package, shard-coverage]
     steps:
       - name: Preserve legacy aggregate build contract
         shell: bash
         env:
+          SHARD_COVERAGE: ${{ needs['shard-coverage'].result }}
           CONTRACT_RESULT: ${{ needs['build-contract'].result }}
           LEXICON_RESULT: ${{ needs['lexicon-offline-tooling'].result }}
           RUST_RESULT: ${{ needs['rust-i686-host'].result }}
@@ -1113,6 +1199,7 @@ jobs:
           LONG_CONTRACT_RESULT: ${{ needs['dp1-long-contracts'].result }}
           INSTALLER_RESULT: ${{ needs['installer-package'].result }}
         run: |
+          test "$SHARD_COVERAGE" = success
           test "$CONTRACT_RESULT" = success
           test "$LEXICON_RESULT" = success
           test "$RUST_RESULT" = success

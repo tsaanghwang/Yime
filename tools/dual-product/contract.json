@@ -281,7 +281,13 @@
     "tools/dual-product/rime-pime-peer-protection.psm1",
     "tools/dual-product/test-rime-pime-peer-protection.ps1",
     "tools/dual-product/prepare-rime-pime-coexistence-test.ps1",
-    "tools/dual-product/execute-rime-pime-coexistence-test.ps1"
+    "tools/dual-product/execute-rime-pime-coexistence-test.ps1",
+    "tools/test-real-rime.ps1",
+    "tools/ci/test-shards.psm1",
+    "tools/ci/verify_shard_coverage.py",
+    "tools/ci/test_shard_coverage.py",
+    "tools/ci/contract-test-lanes.json",
+    "tools/ci/test_workflow_contract.py"
   ],
   "locked_artifact_roles": [
     "full_mode_dictionary",

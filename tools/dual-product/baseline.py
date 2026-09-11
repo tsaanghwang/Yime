@@ -1381,13 +1381,14 @@ def transaction_source_status(sources):
     expected_long_strategy = (
         "    strategy:\n"
         "      fail-fast: true\n"
-        "      max-parallel: 6\n"
+        "      max-parallel: 10\n"
         "      matrix:\n"
-        "        suite: [installer-transaction, receipt-store, evidence-archive]\n"
+        "        suite: [installer-transaction-0, installer-transaction-1, installer-transaction-2, receipt-store, evidence-archive]\n"
         "        shell: [powershell, pwsh]\n"
     )
     expected_long_environment = (
         "    env:\n"
+        "      CI_TEST_SUITE: ${{ matrix.suite }}\n"
         "      CI_TEST_SHELL: ${{ matrix.shell }}\n"
         "      CI_TEST_TAG: ${{ matrix.shell == 'powershell' && 'ps5' || 'ps7' }}\n"
     )
@@ -1445,12 +1446,17 @@ def transaction_source_status(sources):
             line for line in step.splitlines()
             if line.strip() and not line.lstrip().startswith("#")
         ) + "\n"
+        condition = ("startsWith(matrix.suite, 'installer-transaction-')" if suite == 'installer-transaction'
+                     else f"matrix.suite == '{suite}'")
+        shard_setup = "          $shard = [int]($env:CI_TEST_SUITE.Split('-')[-1])\n" if suite == 'installer-transaction' else ''
+        shard_arguments = "            -ShardCount 3 -ShardIndex $shard `\n" if suite == 'installer-transaction' else ''
         expected = (
             f"      - name: {name}\n"
-            f"        if: matrix.suite == '{suite}'\n"
+            f"        if: {condition}\n"
             "        run: |\n"
             "          $runId = [Guid]::NewGuid().ToString('N').Substring(0,16)\n"
-            f"          .\\tools\\dual-product\\{script} `\n"
+            + shard_setup + f"          .\\tools\\dual-product\\{script} `\n"
+            + shard_arguments +
             f'            -OutputRoot (Join-Path $pwd ".tmp\\dual-product\\{output_prefix}-$env:CI_TEST_TAG-$runId")\n'
         )
         return (
@@ -1567,7 +1573,8 @@ def transaction_source_status(sources):
         ".tmp\\dual-product\\dp1-u-exact-removal-test-ci-ps7-$runId" in ci_dp1u_exact_removal_step and
         "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in ci_dp1u_exact_removal_step and
         "PowerShell 5.1 DP1-U exact-removal test failed with exit code $LASTEXITCODE" in ci_dp1u_exact_removal_step and
-        re.search(r"(?m)^\s+(?:if|continue-on-error):|-(?:Skip|CheckPattern)\b", ci_dp1u_exact_removal_step) is None
+        ci_dp1u_exact_removal_step.count("        if: matrix.lane == 'maintenance'\n") == 1 and
+        re.search(r"(?m)^\s+(?:if|continue-on-error):|-(?:Skip|CheckPattern)\b", ci_dp1u_exact_removal_step.replace("        if: matrix.lane == 'maintenance'\n", '', 1)) is None
     )
     ci_dp1u_native_tx_step = one(
         r"(?ms)^      - name: Test DP1-U native transaction interruption recovery\s*$.*?(?=^      - name: |\Z)",
@@ -1579,7 +1586,8 @@ def transaction_source_status(sources):
             for host in ("ps5", "ps7")) and
         "$env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'" in ci_dp1u_native_tx_step and
         "PowerShell 5.1 DP1-U native-transaction test failed with exit code $LASTEXITCODE" in ci_dp1u_native_tx_step and
-        re.search(r"(?m)^\s+(?:if|continue-on-error):|-(?:Skip|CheckPattern)\b", ci_dp1u_native_tx_step) is None
+        ci_dp1u_native_tx_step.count("        if: matrix.lane == 'maintenance'\n") == 1 and
+        re.search(r"(?m)^\s+(?:if|continue-on-error):|-(?:Skip|CheckPattern)\b", ci_dp1u_native_tx_step.replace("        if: matrix.lane == 'maintenance'\n", '', 1)) is None
     )
     if not dp1u_native_fixture_transaction_ci_ps5_ps7_present:
         fail("DP1-U native fixture transaction lost its dual-shell CI boundary")
