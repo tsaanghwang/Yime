@@ -1,0 +1,50 @@
+{
+  "run_id": "80f6a615-c0c6-407f-8ed3-b2a021605d2c",
+  "source_commit": "d4552abc93b599acc48bd205ad474aa1687e6203",
+  "installer_sha256": "ffdd6f380a9fe7518f9c6db6d54c100f526201989d268a8638c6c6a603d3eacd",
+  "installer_exit_code": 51,
+  "execution": {
+    "returncode": 1,
+    "start_utc": "2026-09-11T15:19:01.146626+00:00",
+    "end_utc": "2026-09-11T15:23:03.633320+00:00",
+    "attempts": 1
+  },
+  "failure": "Machine registration not complete: com-x64",
+  "rollback_completion_verified": true,
+  "payload_absent_count": 192,
+  "absence_method": "os.lstat; FileNotFoundError only",
+  "registry_observation_count": 37,
+  "registry_present_count": 0,
+  "candidate_process_count": 0,
+  "default_matches": true,
+  "independent_peer_structural_equality": true,
+  "controller_peer_comparisons": [
+    {
+      "schema_version": "yime-rime-pime-peer-comparison-v1",
+      "unchanged": true,
+      "before_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "after_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "installed_acceptance_passed": false
+    },
+    {
+      "schema_version": "yime-rime-pime-peer-comparison-v1",
+      "unchanged": true,
+      "before_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "after_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "installed_acceptance_passed": false
+    },
+    {
+      "schema_version": "yime-rime-pime-peer-comparison-v1",
+      "unchanged": true,
+      "before_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "after_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "installed_acceptance_passed": false
+    }
+  ],
+  "original_evidence_unchanged": true,
+  "installed_acceptance_passed": false,
+  "native_readiness_tested": false,
+  "live_host_tested": false,
+  "reboot_tested": false,
+  "upgrade_uninstall_matrix_tested": false
+}

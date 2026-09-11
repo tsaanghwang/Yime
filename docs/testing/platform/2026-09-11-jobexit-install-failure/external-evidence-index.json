@@ -1,0 +1,380 @@
+{
+  "originals_retained_outside_git": true,
+  "files": [
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\authorization.json",
+      "bytes": 1541,
+      "sha256": "fc739f8486365d7745b7548819e2356f8b918d1ccbe866568744e0b164ff3536"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\boundary.json",
+      "bytes": 1232,
+      "sha256": "4f80c9e7a0b6cb08b3db0e8ae60b96537f99a1610a1787fdf1490e90ba9d438e"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\candidate-recovery-80f6a615-c0c6-407f-8ed3-b2a021605d2c.json",
+      "bytes": 475,
+      "sha256": "1e651d7dd7637a61f748416de4a99dc7693145929a18d4f9f0b79ee759cc63f2"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\execute-parameters.json",
+      "bytes": 748,
+      "sha256": "de5014f2b906649409c18ec814191a980a2cc574b0a4dc80dec0c33762a1084c"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\peer-80f6a615-c0c6-407f-8ed3-b2a021605d2c-6a0fe37601b5491da93d6cd82698d5cc-after.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\peer-80f6a615-c0c6-407f-8ed3-b2a021605d2c-6a0fe37601b5491da93d6cd82698d5cc-before.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\peer-80f6a615-c0c6-407f-8ed3-b2a021605d2c-6a0fe37601b5491da93d6cd82698d5cc-result.json",
+      "bytes": 272,
+      "sha256": "9dad66cc8749ebb1be0138f70e7163ee235638c352f145bfb98ca4dfe6bae1de"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\peer-80f6a615-c0c6-407f-8ed3-b2a021605d2c-aec4418d4c994757bb0515b46e5618be-after.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\peer-80f6a615-c0c6-407f-8ed3-b2a021605d2c-aec4418d4c994757bb0515b46e5618be-before.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\peer-80f6a615-c0c6-407f-8ed3-b2a021605d2c-aec4418d4c994757bb0515b46e5618be-result.json",
+      "bytes": 272,
+      "sha256": "9dad66cc8749ebb1be0138f70e7163ee235638c352f145bfb98ca4dfe6bae1de"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\peer-80f6a615-c0c6-407f-8ed3-b2a021605d2c-efc0c7d7362b47549e899a9adc0d4d4d-after.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\peer-80f6a615-c0c6-407f-8ed3-b2a021605d2c-efc0c7d7362b47549e899a9adc0d4d4d-before.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\peer-80f6a615-c0c6-407f-8ed3-b2a021605d2c-efc0c7d7362b47549e899a9adc0d4d4d-result.json",
+      "bytes": 272,
+      "sha256": "9dad66cc8749ebb1be0138f70e7163ee235638c352f145bfb98ca4dfe6bae1de"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\peer-preflight.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\diagnostics\\failure-1fc8c078320e417aa72ef0b0b2ad1836.json",
+      "bytes": 1538,
+      "sha256": "7b1c95f33d6f702fb3897270459c3579940744bb03bebc381c1c79a737ab0ca1"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\diagnostics\\failure-38c1c934be7643e3adc9349e6df80006.json",
+      "bytes": 1300,
+      "sha256": "fc024e63713b0148228446d8f10ac9241cfaecd1bbbffc4e6bd74d8e5aac3d95"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\diagnostics\\failure-cb9788ab222f4361b9e4d13325e9ee36.json",
+      "bytes": 1293,
+      "sha256": "82bee3e114edd946188ef4606c49ba942ccc781da09855e8acc217a4b52554e0"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\after-default.json",
+      "bytes": 182,
+      "sha256": "4ea1abd83f7dbac6281cd0ca216c2ba117159faed5f412a4e805958069f1c806"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\after-parameters.json",
+      "bytes": 244,
+      "sha256": "e906fd97f40a358c377e946a89c045c0b74ba0a85fc5fdbe318939dc0e589950"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\after-peer-private.json",
+      "bytes": 139092,
+      "sha256": "5abcc2f56e769d3ff08ca291e5040cd8f15a403ab104d4efefbe21856a140503"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\after-process.json",
+      "bytes": 143,
+      "sha256": "a28b13a3a657d0ff271c1591969c8a55290c3f3fef6f4c8a6e5c3c926a191aab"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\after-processes.json",
+      "bytes": 537,
+      "sha256": "e9a69bf3876486451a3b542ebe150dfb955f4624c2f22d1521769c3d39bfeaf2"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\after.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\after.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\before-default.json",
+      "bytes": 182,
+      "sha256": "4ea1abd83f7dbac6281cd0ca216c2ba117159faed5f412a4e805958069f1c806"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\before-parameters.json",
+      "bytes": 263,
+      "sha256": "3eb96bf0ed8368368f97dbe82e225dbe3715b32fae21b298839dfe600a7a0ab4"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\before-peer-private.json",
+      "bytes": 139092,
+      "sha256": "5abcc2f56e769d3ff08ca291e5040cd8f15a403ab104d4efefbe21856a140503"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\before-process.json",
+      "bytes": 143,
+      "sha256": "259dd29300e41e794bbb4a4bc560ff0228a05e66929da3088eca1fdfdffcd2b2"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\before-processes.json",
+      "bytes": 537,
+      "sha256": "e9a69bf3876486451a3b542ebe150dfb955f4624c2f22d1521769c3d39bfeaf2"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\before.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\before.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\collect-parameters.json",
+      "bytes": 174,
+      "sha256": "2ea9c6e7d4e039da077a434a0ec11a25ba788bc89b0e076fe0570c3247057fbc"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\collect-process.json",
+      "bytes": 143,
+      "sha256": "709b7909a92a2f0d2fe63736efc8aa6a4edeba137b0ae56bdaefe6154c3c227f"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\collect.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\collect.stdout.log",
+      "bytes": 217,
+      "sha256": "fef17714484020b9ad0026cdeb40aea168399bfae87e2be4e8f11cfb4688784e"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\collection-path.txt",
+      "bytes": 122,
+      "sha256": "646409c1a39048f83ca7fc89b5064979b1358820acec76e254a107412385a2dc"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\execute-process.json",
+      "bytes": 143,
+      "sha256": "affa9ab24243ee9268bb680cce3551a1d1b5fadcdb76db13b3034695d924f05b"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\execute.stderr.log",
+      "bytes": 79,
+      "sha256": "d9e53f212383961cc5e21a9a9dfce35db879443a0ffe5c79021f8738f3927cb8"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\execute.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\execution-started",
+      "bytes": 32,
+      "sha256": "daaecf159a459e4892859c1f4b9f5e04c2c4ee16195fd45c633e8c73c07689dc"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\helper-evidence-index.json",
+      "bytes": 7502,
+      "sha256": "08d76e00b6a03fe49d6a1669e2cba4d3e692129943ea6fa8a04816733d00a245"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\independent-default-comparison.json",
+      "bytes": 26,
+      "sha256": "c1626a9cefb73d90ce756f65a5c053f8bbdc20e693f2aa6f37ed0d2584bfd3f9"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\independent-peer-comparison.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\integrity-process.json",
+      "bytes": 143,
+      "sha256": "c40864b5b1cc9b94b36b907d0f7a8249df7e1d3aaee193faa0ae13367c6f8995"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\integrity.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\integrity.stdout.log",
+      "bytes": 152,
+      "sha256": "599bed3936244f51e9546920327677163da1a2e18ed29a2edeca1b5e6abbd983"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\new-run.json",
+      "bytes": 200,
+      "sha256": "1f180c126ac65a319445cfbe4fe63ce14ef82e1b5f1bdeddb81b0ba87463f714"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\prepare-process.json",
+      "bytes": 143,
+      "sha256": "5d150e6281597e935a67ca62a5464c45b1cadbc0e50a33714f5276c301ddc662"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\prepare.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\prepare.stdout.log",
+      "bytes": 379,
+      "sha256": "82d65dd264c8b70474aacf8f0fbe5ab79fdb789c3d81365253acd3761a256b13"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\jobexit-install-d4552abc-once\\source.json",
+      "bytes": 151,
+      "sha256": "26b9ae78743527c1a935caebdc54e2e472d880c12291ac86c300781670147e42"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\decisions.json",
+      "bytes": 1143,
+      "sha256": "cc18b2baa5a1b89c2656ca3439347af19a16a80f02192350bdf654f05d2cdbf7"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\default-comparison.json",
+      "bytes": 561,
+      "sha256": "da452f859d67a00c1d5fe6040ea8ec400a031647771a450c63ff77a43514ca32"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\existing-log-inventory.json",
+      "bytes": 134,
+      "sha256": "b8005cceb5e6cc2ca400a2f7b1db1d58c17a554f4a21b3cb6f9f318e6e159405"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\install-journal-copy\\prepared.bin",
+      "bytes": 38366,
+      "sha256": "eaaad338d24a366b5b0888c40b55093f1ef8b36060e71ce4fb0f09eaf3f68e13"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\install-journal-copy\\terminal.bin",
+      "bytes": 214,
+      "sha256": "05f6fbed1cd63c977965f4a32d5727801baac61b2bd2822a3683f9937852b7e7"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\install-journal-copy\\transaction.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\original-files-after.json",
+      "bytes": 4133,
+      "sha256": "87b9eacf03ccaaca05801f2d1f2b41fa2d4b6fe195eec7c22816a92ab07cd782"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\original-files-before.json",
+      "bytes": 4133,
+      "sha256": "87b9eacf03ccaaca05801f2d1f2b41fa2d4b6fe195eec7c22816a92ab07cd782"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\payload-observations.json",
+      "bytes": 44887,
+      "sha256": "4396f76df893bf20eb1405feb6888b45355cf7d52ec1de7108b64db67fd08ba2"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\process-observations.json",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\registry-observations-private.json",
+      "bytes": 27985,
+      "sha256": "ad337e465195b02b3a67e881e92f31f4a35d43f5274c025aba145f114444e5a9"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\remove-journal-copy\\commit.bin",
+      "bytes": 219,
+      "sha256": "965058391cbb7f9889e8fca0d69e1aaec00e13e700d76733745f76b2bfdbee2e"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\remove-journal-copy\\prepared.bin",
+      "bytes": 439,
+      "sha256": "67d2fbedcafbd27edcb6d297211eaf2f87a790be21073cd7a335c1356d69a3a6"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\remove-journal-copy\\terminal.bin",
+      "bytes": 218,
+      "sha256": "de60fa5f94c8ef46f811ae867b535d409c2e595c87e213d7d3ab4c432797762d"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\remove-journal-copy\\transaction.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659\\summary.json",
+      "bytes": 350,
+      "sha256": "5a0d26565c7d84740cf9d885a55a459a4afd4d8d824ee00d43f4b4809a12f19d"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\install-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\prepared.bin",
+      "bytes": 38366,
+      "sha256": "eaaad338d24a366b5b0888c40b55093f1ef8b36060e71ce4fb0f09eaf3f68e13"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\install-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\terminal.bin",
+      "bytes": 214,
+      "sha256": "05f6fbed1cd63c977965f4a32d5727801baac61b2bd2822a3683f9937852b7e7"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\install-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\transaction.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\maintenance-candidate.exe",
+      "bytes": 41209079,
+      "sha256": "ffdd6f380a9fe7518f9c6db6d54c100f526201989d268a8638c6c6a603d3eacd"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\remove-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\commit.bin",
+      "bytes": 219,
+      "sha256": "965058391cbb7f9889e8fca0d69e1aaec00e13e700d76733745f76b2bfdbee2e"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\remove-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\prepared.bin",
+      "bytes": 439,
+      "sha256": "67d2fbedcafbd27edcb6d297211eaf2f87a790be21073cd7a335c1356d69a3a6"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\remove-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\terminal.bin",
+      "bytes": 218,
+      "sha256": "de60fa5f94c8ef46f811ae867b535d409c2e595c87e213d7d3ab4c432797762d"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\remove-80f6a615-c0c6-407f-8ed3-b2a021605d2c\\transaction.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

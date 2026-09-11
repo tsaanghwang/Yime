@@ -1,0 +1,21 @@
+{
+    "prepared_binding_valid":  true,
+    "install_commit":  null,
+    "install_terminal":  {
+                             "schema_version":  "yime-rime-pime-candidate-decision-v1",
+                             "prepared_sha256":  "c8c3b9e6411b119ad0f05ad218bffb7c5d3560350ea804d2523801eb57ab655f",
+                             "disposition":  "rolled-back"
+                         },
+    "removal_commit":  {
+                           "schema_version":  "yime-rime-pime-candidate-decision-v1",
+                           "prepared_sha256":  "64755c27d232696d1d8ee29b753e18a87a1ba982dc82e92849bea661d82165b8",
+                           "disposition":  "remove-requested"
+                       },
+    "removal_terminal":  {
+                             "schema_version":  "yime-rime-pime-candidate-decision-v1",
+                             "prepared_sha256":  "64755c27d232696d1d8ee29b753e18a87a1ba982dc82e92849bea661d82165b8",
+                             "disposition":  "remove-complete"
+                         },
+    "parser_source":  "d4552abc93b599acc48bd205ad474aa1687e6203",
+    "parsed_copies_only":  true
+}
