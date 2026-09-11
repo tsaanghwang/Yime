@@ -3,6 +3,14 @@
 影响产品：Rime/PIME 候选安装与维护；现行 YimeCore 作为只读保护对象。
 用户在 2026-09-11 指定：这边完成共存保护、候选包和说明，提交当前工作分支，由“计算机”执行安装测试，然后优化 CI。
 
+## 2026-09-11 测试机反馈后的重交付
+
+已合入测试分支 `32ff041c6`。原候选在准备阶段触发 PS5 的 StdRegProv COM 参数转换异常，安装器没有启动。旧目录 `test-delivery/rime-pime-coexistence-20260911` 原样保留作历史证据，停止用于本轮测试。
+
+当前唯一交付改为带 `-stdreg` 后缀的新目录；根目录准备入口已经指向它。重新拉取当前开发分支，等包含本次重交付的 CI 成功后，从资源管理器重新准备。不得复用旧 execute-parameters、approval、boundary 或手工更改旧 PIN；已有错误记录继续保留。
+
+开发端重新构建 x86/x64、候选 Launcher 和 Go 载荷，并重制 NSIS 包。PS5/PS7 的真实只读 StdRegProv 回归均通过，PS5 注册归属 22 项、peer 保护 9 项、源码合同 77 项及 CI 调度 12 项均通过。真实注册表回归已加入 CI 双 shell 检查。静态核对不替代完整准备、安装、双产品宿主和重启验收；这些仍待测试机执行。
+
 ## 本轮范围
 
 执行 **YimeCore 已安装 → Rime/PIME 首装** 这一行，不卸载或升级 YimeCore 来凑单装环境。
@@ -16,10 +24,10 @@
 
 ## 获取固定候选
 
-从本工作分支读取交付目录 `test-delivery/rime-pime-coexistence-20260911` 和同目录的 `PIN.json`。
+从本工作分支读取交付目录 `test-delivery/rime-pime-coexistence-20260911-stdreg` 和同目录的 `PIN.json`。
 安装器、收据、manifest、静态载荷核对记录及来源记录均按原始字节保存。
-来源编译提交：`cf651886efefd8e0eee343fcdf2bd62766b42f14`。
-安装器 SHA-256：`4bd0d4f3a63a97c857f422813d79f19eb8310f9ac75c1c65afd9d428f4f82c98`，41,247,685 字节。
+来源编译提交：`a2d063a01dfe608de25e168fdafbc95cc8c52f93`。
+安装器 SHA-256：`6301c6611edb7f1b55623be82a0f5c2c42072475fd80865eef0bf4f66a064e7b`，41,132,913 字节。
 新构建包含 168 项来源载荷；NSIS 编译后已核对完整归档成员和原始内容哈希，没有执行安装器。
 先用 `tools/dual-product/verify_delivery.py` 核验 `PIN.json` 中的 index SHA-256；验证结果只是交付完整性，不是实机验收。
 
@@ -29,7 +37,7 @@
 2. 从资源管理器启动独立的、未提升的 Windows PowerShell。不要在 Codex、Windows Terminal 等可能带包身份的父进程内安装，也不要提前以管理员启动。
 3. 使用下列准备命令。路径按本机仓库绝对路径填写；`--params-file` 指向准备参数 JSON，包含 `DeliveryRoot` 和 `ExpectedIndexSha256`。准备过程绑定本机名称、StdRegProv MachineGuid、发起 SID、现行 YimeCore 安装/状态路径和固定候选，只写仓库外的操作文件。
 
-仓库中已提供 `test-delivery/rime-pime-coexistence-20260911/prepare-parameters.json`，在仓库根目录运行时可以直接使用。也可从资源管理器双击根目录 `Prepare-Rime-PIME-Coexistence-Test.cmd`，它只准备，不安装。
+仓库中已提供 `test-delivery/rime-pime-coexistence-20260911-stdreg/prepare-parameters.json`，在仓库根目录运行时可以直接使用。也可从资源管理器双击根目录 `Prepare-Rime-PIME-Coexistence-Test.cmd`，它只准备，不安装。
 
 ```text
 python tools/powershell/run_checked.py --script tools/dual-product/prepare-rime-pime-coexistence-test.ps1 --edition ps5 --params-file <准备参数JSON绝对路径>
