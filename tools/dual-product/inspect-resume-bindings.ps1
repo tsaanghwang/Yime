@@ -31,8 +31,15 @@ $authorization=& $pkg {param($b) ConvertFrom-CandidateJson $b} $authBytes
 $checks=[Collections.Generic.List[object]]::new()
 function Check([string]$Name,[scriptblock]$Body){
     try{& $Body; $checks.Add([ordered]@{check=$Name;passed=$true;error_type=$null})}
-    catch{$checks.Add([ordered]@{check=$Name;passed=$false;error_type=$_.Exception.GetType().FullName})}
+    catch{
+        $row=[ordered]@{check=$Name;passed=$false;error_type=$_.Exception.GetType().FullName}
+        # The copied schema validator uses fixed messages, without identity values.
+        if($Name -ceq 'complete-plan-schema'){$row.error_message=$_.Exception.Message}
+        $checks.Add($row)
+    }
 }
+Import-Module (Join-Path $PSScriptRoot 'resume-plan-diagnostic.psm1') -Force
+Check 'complete-plan-schema' { Assert-ArchivedResumePlan -Plan $plan -PackageModule $pkg }
 foreach($field in @('install_root','state_root','recovery_root','initiating_sid','target_machine_id','target_name','package_sha256')){
     Check ('approval-'+$field) {
         if($plan.$field -isnot [string] -or $plan.$field -cne $authorization.$field){throw 'Binding mismatch.'}

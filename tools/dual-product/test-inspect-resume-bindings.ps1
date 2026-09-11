@@ -20,6 +20,15 @@ foreach($f in @('install','state')){
     } $a[$f+'_root']
 }
 $plan.recovery_executable=@{file_id=$obs.FileId;bytes=$obs.Bytes;sha256=$obs.Sha256}
+$plan.schema_version='yime-rime-pime-candidate-install-plan-v1'
+$plan.run_id=[guid]::NewGuid().ToString()
+$plan.manifest_sha256='a'*64
+$plan.original_approval_sha256='b'*64
+$plan.product_version='1.4.0-dev.1'
+$plan.default_input=@{override='';first_language='';first_tip=''}
+$plan.files=@(@{path='rime-pime-candidate-state.json';bytes=3;sha256=$obs.Sha256;file_id=$obs.FileId};@{path='maintenance-candidate.exe';bytes=3;sha256=$obs.Sha256;file_id=$obs.FileId})
+foreach($n in 1..10){$plan.files+=@{path=('fixture-'+$n+'.dll');bytes=3;sha256=$obs.Sha256;file_id=$obs.FileId}}
+$plan.generated_files=@(@{path='rime-pime-candidate-state.json';bytes=3;sha256=$obs.Sha256};@{path='maintenance-candidate.exe';bytes=3;sha256=$obs.Sha256})
 $prepared=Join-Path $root 'prepared.bin';$auth=Join-Path $root 'authorization.json'
 function SavePlan {
     $b=Bytes $plan;$sha=[Security.Cryptography.SHA256]::Create()
@@ -35,7 +44,11 @@ function Probe {
     $text|ConvertFrom-Json
 }
 $r=Probe
-if(-not $r.all_checks_passed -or $r.checks.Count -ne 10){throw 'Positive fixture failed.'}
+if(-not $r.all_checks_passed -or $r.checks.Count -ne 11){throw 'Positive fixture failed.'}
+$plan.files[11].bytes='3';$expected=SavePlan
+$r=Probe
+if(($r.checks|Where-Object check -EQ 'complete-plan-schema').passed){throw 'Invalid later file type accepted.'}
+$plan.files[11].bytes=3;$expected=SavePlan
 $plan.install_directory_id='00000000:0000000000000000';$expected=SavePlan
 $r=Probe
 if(@($r.checks|Where-Object {-not $_.passed}).Count -ne 1 -or ($r.checks|Where-Object check -EQ 'install-directory-identity').passed){throw 'Directory mismatch not isolated.'}
@@ -50,4 +63,4 @@ if($snapshot -cne (Hash ([IO.File]::ReadAllBytes($prepared))) -or [IO.File]::Exi
 $expected='0'*64;$rejected=$false
 try{$null=Probe}catch{$rejected=$true}
 if(-not $rejected){throw 'Wrong ticket digest accepted.'}
-Write-Output 'PASS: ten positive checks, directory/approval/recovery mismatch rejection, archive preservation, ticket digest rejection. Isolated fixtures retained in temporary directory.'
+Write-Output 'PASS: eleven positive checks, complete plan rejects invalid later file type, directory/approval/recovery mismatch rejection, archive preservation, ticket digest rejection. Isolated fixtures retained in temporary directory.'
