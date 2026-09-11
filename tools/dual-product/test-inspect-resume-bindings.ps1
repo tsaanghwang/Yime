@@ -40,11 +40,31 @@ $expected=SavePlan
 [IO.File]::WriteAllBytes($auth,(Bytes $a))
 $authHash=Hash ([IO.File]::ReadAllBytes($auth))
 function Probe {
-    $text=& (Join-Path $PSScriptRoot 'inspect-resume-bindings.ps1') -ArchivedPreparedPath $prepared -ExpectedPreparedSha256 $expected -AuthorizationPath $auth -ExpectedAuthorizationSha256 $authHash
+    param([switch]$Journal)
+    $text=& (Join-Path $PSScriptRoot 'inspect-resume-bindings.ps1') -ArchivedPreparedPath $prepared -ExpectedPreparedSha256 $expected -AuthorizationPath $auth -ExpectedAuthorizationSha256 $authHash -IncludeJournalReadChecks:$Journal
     $text|ConvertFrom-Json
 }
 $r=Probe
 if(-not $r.all_checks_passed -or $r.checks.Count -ne 11){throw 'Positive fixture failed.'}
+foreach($kind in @('install','remove')){
+    $jr=Join-Path $a.recovery_root ($kind+'-'+$plan.run_id)
+    $null=[IO.Directory]::CreateDirectory($jr)
+    [IO.File]::WriteAllBytes((Join-Path $jr 'transaction.lock'),[byte[]]@())
+}
+$lockPath=Join-Path $a.recovery_root ('install-'+$plan.run_id+'\transaction.lock')
+$lockTime=[IO.File]::GetLastWriteTimeUtc($lockPath)
+$r=Probe -Journal
+if(-not $r.all_checks_passed -or $r.checks.Count -ne 16 -or $r.write_access_tested){throw 'Journal read positive fixture failed.'}
+if([IO.File]::GetLastWriteTimeUtc($lockPath) -ne $lockTime -or [IO.File]::ReadAllBytes($lockPath).Length -ne 0){throw 'Read probe modified lock.'}
+$held=[IO.File]::Open($lockPath,'Open','Read','None')
+try{
+    $r=Probe -Journal
+    $failure=$r.checks|Where-Object check -EQ 'install-lock-exclusive-read'
+    if($failure.passed -or $null -eq $failure.hresult){throw 'Sharing conflict not reported.'}
+}finally{$held.Dispose()}
+[IO.File]::WriteAllBytes((Join-Path ([IO.Path]::GetDirectoryName($lockPath)) 'unexpected.bin'),[byte[]]@(1))
+$r=Probe -Journal
+if(($r.checks|Where-Object check -EQ 'install-journal-inventory').passed){throw 'Unexpected member accepted.'}
 $plan.files[11].bytes='3';$expected=SavePlan
 $r=Probe
 if(($r.checks|Where-Object check -EQ 'complete-plan-schema').passed){throw 'Invalid later file type accepted.'}
@@ -63,4 +83,4 @@ if($snapshot -cne (Hash ([IO.File]::ReadAllBytes($prepared))) -or [IO.File]::Exi
 $expected='0'*64;$rejected=$false
 try{$null=Probe}catch{$rejected=$true}
 if(-not $rejected){throw 'Wrong ticket digest accepted.'}
-Write-Output 'PASS: eleven positive checks, complete plan rejects invalid later file type, directory/approval/recovery mismatch rejection, archive preservation, ticket digest rejection. Isolated fixtures retained in temporary directory.'
+Write-Output 'PASS: 11 base/16 extended checks; sharing conflict and unknown journal member rejected; lock bytes/mtime preserved; plan/binding/recovery and ticket negative cases passed. Isolated fixtures retained in temporary directory.'

@@ -3,7 +3,8 @@ param(
     [Parameter(Mandatory=$true)][string]$ArchivedPreparedPath,
     [Parameter(Mandatory=$true)][string]$ExpectedPreparedSha256,
     [Parameter(Mandatory=$true)][string]$AuthorizationPath,
-    [Parameter(Mandatory=$true)][string]$ExpectedAuthorizationSha256
+    [Parameter(Mandatory=$true)][string]$ExpectedAuthorizationSha256,
+    [switch]$IncludeJournalReadChecks
 )
 # Diagnostic only. Never opens a transaction store or invokes maintenance.
 Set-StrictMode -Version 2.0
@@ -33,6 +34,8 @@ function Check([string]$Name,[scriptblock]$Body){
     try{& $Body; $checks.Add([ordered]@{check=$Name;passed=$true;error_type=$null})}
     catch{
         $row=[ordered]@{check=$Name;passed=$false;error_type=$_.Exception.GetType().FullName}
+        $row.base_error_type=$_.Exception.GetBaseException().GetType().FullName
+        $row.hresult=$_.Exception.GetBaseException().HResult
         # The copied schema validator uses fixed messages, without identity values.
         if($Name -ceq 'complete-plan-schema'){$row.error_message=$_.Exception.Message}
         $checks.Add($row)
@@ -73,8 +76,45 @@ Check 'recovery-executable-identity' {
     $observation=& $pkg {param($p) $script:CandidateNative::Inspect($p)} (Join-Path $plan.recovery_root 'maintenance-candidate.exe')
     if($observation.FileId -cne $plan.recovery_executable.file_id -or $observation.Bytes -ne $plan.recovery_executable.bytes -or $observation.Sha256 -cne $plan.package_sha256 -or $observation.Sha256 -cne $plan.recovery_executable.sha256){throw 'Recovery identity mismatch.'}
 }
+if($IncludeJournalReadChecks){
+    # These are read observations, not TransactionStore.Open or a maintenance lease.
+    # Read-only exclusive sharing does NOT prove that ReadWrite access is permitted.
+    Check 'single-install-journal' {
+        $roots=@(Get-ChildItem -LiteralPath $plan.recovery_root -Directory -Filter 'install-*' -ErrorAction Stop)
+        if($roots.Count -ne 1 -or $roots[0].FullName -cne (Join-Path $plan.recovery_root ('install-'+$plan.run_id))){throw 'Unexpected retained install journal set.'}
+    }
+    foreach($kind in @('install','remove')){
+        $journal=Join-Path $plan.recovery_root ($kind+'-'+$plan.run_id)
+        Check ($kind+'-journal-inventory') {
+            $count=0
+            foreach($entry in [IO.Directory]::EnumerateFileSystemEntries($journal)){
+                $count++
+                $name=[IO.Path]::GetFileName($entry)
+                if($count -gt 128 -or [IO.Directory]::Exists($entry) -or
+                    ($name -cnotin @('transaction.lock','prepared.bin','commit.bin','terminal.bin') -and
+                     $name -cnotmatch '^(prepared|commit|terminal)\.bin\.pending-[a-f0-9]{32}$')){throw 'Unexpected journal member.'}
+            }
+        }
+        Check ($kind+'-lock-exclusive-read') {
+            $lockPath=Join-Path $journal 'transaction.lock'
+            & $pkg {
+                param([string]$p)
+                $script:CandidateNative::CanonicalPath($p)
+                $s=[IO.File]::Open($p,'Open','Read','None')
+                try{
+                    $verify=$script:CandidateNative.GetMethod('Verify',[Reflection.BindingFlags]'NonPublic,Static')
+                    $ads=$script:CandidateNative.GetMethod('RejectNamedStreams',[Reflection.BindingFlags]'NonPublic,Static')
+                    $null=$verify.Invoke($null,[object[]]@($s.SafeFileHandle,$p,$false))
+                    $null=$ads.Invoke($null,[object[]]@($p))
+                    if($s.Length -ne 0){throw 'Nonempty transaction lock.'}
+                }finally{$s.Dispose()}
+            } $lockPath
+        }
+    }
+}
 [ordered]@{
     schema_version='yime-resume-binding-diagnostic-v1';checks=@($checks.ToArray());
     all_checks_passed=(@($checks|Where-Object {-not $_.passed}).Count -eq 0);
-    opened_transaction_store=$false;maintenance_executed=$false;installed_acceptance_passed=$false
+    opened_transaction_store=$false;maintenance_executed=$false;installed_acceptance_passed=$false;
+    journal_read_checks_requested=[bool]$IncludeJournalReadChecks;write_access_tested=$false
 }|ConvertTo-Json -Depth 6
