@@ -1,0 +1,48 @@
+{
+  "schema_version": "yime-eleven-check-diagnostic-index-v1",
+  "diagnostic_commit": "b15a4e16",
+  "external_root": "C:\\Users\\Golde\\Yime Rime-PIME Test Archives\\binding-diagnostic-eleven-b15a4e16",
+  "input_hashes_reverified": true,
+  "parameters_identical_to_previous": true,
+  "scripts": [
+    {
+      "path": "tools/dual-product/inspect-resume-bindings.ps1",
+      "sha256": "04d68dd67c28c98d145512bda9763f464e1a2ed5b8f702382a633c359674724d"
+    },
+    {
+      "path": "tools/dual-product/resume-plan-diagnostic.psm1",
+      "sha256": "1f0848ff202cd3aaae27e7286bbf61060a9c47aeda706cf74b62a043b230e67a"
+    },
+    {
+      "path": ".tmp/Run-Eleven-Check-Diagnostic.py",
+      "sha256": "08ec9876bdaa3ef2584678e31d9465c1ab1351a746410994e34136891eada288"
+    }
+  ],
+  "files": [
+    {
+      "name": "error.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "execution-result.json",
+      "bytes": 88,
+      "sha256": "0bcef3812ebb51db0006047d5ff0b3eca261487187d45229b1475cf859f6033c"
+    },
+    {
+      "name": "input-hashes.json",
+      "bytes": 823,
+      "sha256": "a737127e5d791bf2b093481c60fb78d3a9466bfc46f5e45864c4da8f64851279"
+    },
+    {
+      "name": "output.json",
+      "bytes": 2357,
+      "sha256": "6ebaec28a92d1dad3e635a932c1de6f0f914930e6e3ed5a2a794e394e5614327"
+    },
+    {
+      "name": "parameters.json",
+      "bytes": 536,
+      "sha256": "a389db7c262cbfa480adb5127ea277874679bd1923e5faac983a7deb63c58bc8"
+    }
+  ]
+}
