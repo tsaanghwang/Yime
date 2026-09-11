@@ -36,6 +36,18 @@ function New-Fixture {
     [pscustomobject]@{root=$root;bundle=$bundle;hash=(Hash (Join-Path $bundle 'candidate.json'));installer=$exe;context=$ctx;
         events=[Collections.Generic.List[string]]::new();registration='absent';fail='';stop_count=0;start_count=0;resume_count=0;remove_count=0;ready_count=0;ticket=$null}
 }
+Check 'original and rollback diagnostics preserve separate durable exceptions' {
+    $failure=$null
+    try{throw [InvalidOperationException]::new('synthetic diagnostic fixture')}catch{$failure=$_}
+    $first=& $module {param($e) Save-RimePimeMaintenanceFailure -Failure $e -Phase 'fixture-install-original' -PassThru} $failure
+    $before=Hash $first
+    $second=& $module {param($e) Save-RimePimeMaintenanceFailure -Failure $e -Phase 'fixture-rollback' -PassThru} $failure
+    Assert ($first -ne $second -and (Hash $first) -ceq $before) 'Failure evidence was overwritten.'
+    $a=Get-Content -LiteralPath $first -Raw -Encoding UTF8|ConvertFrom-Json
+    $b=Get-Content -LiteralPath $second -Raw -Encoding UTF8|ConvertFrom-Json
+    Assert ($a.phase -ceq 'fixture-install-original' -and $b.phase -ceq 'fixture-rollback') 'Failure phases lost.'
+    Assert ($a.exception_type -ceq 'System.InvalidOperationException' -and $a.message -ceq 'synthetic diagnostic fixture' -and $a.script_stack -and -not $a.installed_acceptance_passed) 'Exception details or acceptance boundary lost.'
+}
 Check 'controller loads reader through its retained module without global imports' {
     $f=New-Fixture
     $count=& $module {

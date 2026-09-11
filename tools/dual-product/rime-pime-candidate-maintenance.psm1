@@ -7,6 +7,35 @@ $script:CandidateRegistrationModule=$null
 $script:CandidateRuntimeModule=$null
 $script:CandidateCoordinatorModule=$null
 
+function Save-RimePimeMaintenanceFailure {
+    param([Parameter(Mandatory)][System.Management.Automation.ErrorRecord]$Failure,
+        [Parameter(Mandatory)][string]$Phase,[switch]$PassThru)
+    # Diagnostics never authorize recovery and never overwrite an earlier error.
+    # Do not serialize the request: it contains approval and delegation material.
+    try {
+        $directory=Join-Path ([Environment]::GetFolderPath('UserProfile')) 'Yime Rime-PIME Test Archives\diagnostics'
+        for($cursor=$directory;$cursor;$cursor=[IO.Path]::GetDirectoryName($cursor)){
+            if((Test-Path -LiteralPath $cursor) -and ((Get-Item -LiteralPath $cursor -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)){throw 'Diagnostic path traverses a reparse point.'}
+            if(Test-Path -LiteralPath (Join-Path $cursor '.git')){throw 'Diagnostics must remain outside Git.'}
+        }
+        $null=[IO.Directory]::CreateDirectory($directory)
+        $path=Join-Path $directory ('failure-'+[guid]::NewGuid().ToString('N')+'.json')
+        $record=[ordered]@{schema_version='yime-maintenance-failure-v1';utc=[DateTime]::UtcNow.ToString('o');
+            pid=$PID;phase=$Phase;exception_type=$Failure.Exception.GetType().FullName;
+            message=$Failure.Exception.Message;exception=$Failure.Exception.ToString();
+            script_stack=$Failure.ScriptStackTrace;error_id=$Failure.FullyQualifiedErrorId;
+            installed_acceptance_passed=$false}
+        $bytes=[Text.UTF8Encoding]::new($false).GetBytes(($record|ConvertTo-Json -Depth 8)+"`n")
+        $stream=[IO.File]::Open($path,'CreateNew','Write','None')
+        try{$stream.Write($bytes,0,$bytes.Length);$stream.Flush($true)}finally{$stream.Dispose()}
+        Write-Host ('Maintenance failure evidence: '+$path)
+        if($PassThru){return $path}
+    }catch{
+        # Never replace the original installation/rollback error with a log error.
+        Write-Warning ('Could not persist maintenance failure: '+$_.Exception.Message) -WarningAction Continue
+    }
+}
+
 function Assert-CandidateTargetHost {
     # This guard intentionally precedes every caller-path read in public entry points.
     if([Environment]::MachineName -match '(?i)^MYCOMPUTER(?:\.|$)') {
@@ -435,7 +464,7 @@ function Invoke-MaintenanceWorker([string]$Action,$Context,$Ticket,[string]$Pack
             DelegationToken=$Coordinator.delegation_token}
         $payload=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($request|ConvertTo-Json -Compress)))
         $modulePath=(Join-Path $PackageRoot 'maintenance\rime-pime-candidate-maintenance.psm1').Replace("'","''")
-        $command="`$ErrorActionPreference='Stop'; try { `$v=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('$payload'))|ConvertFrom-Json; `$p=@{}; foreach(`$x in `$v.PSObject.Properties){`$p[`$x.Name]=`$x.Value}; Import-Module '$modulePath'; Invoke-RimePimeCandidateWorker @p; exit 0 } catch { Write-Error `$_ -ErrorAction Continue; exit 51 }"
+        $command="`$ErrorActionPreference='Stop'; try { `$v=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('$payload'))|ConvertFrom-Json; `$p=@{}; foreach(`$x in `$v.PSObject.Properties){`$p[`$x.Name]=`$x.Value}; Import-Module '$modulePath'; Invoke-RimePimeCandidateWorker @p; exit 0 } catch { if(Get-Command Save-RimePimeMaintenanceFailure -ErrorAction SilentlyContinue){Save-RimePimeMaintenanceFailure -Failure `$_ -Phase 'elevated-$Action'}; Write-Error `$_ -ErrorAction Continue; exit 51 }"
         $encoded=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($command))
         $hostPath=Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
         $process=Start-Process -FilePath $hostPath -Verb RunAs -WindowStyle Hidden -ArgumentList @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-EncodedCommand',$encoded) -PassThru
@@ -567,6 +596,7 @@ function Invoke-RimePimeCandidateMaintenance {
                 }finally{$opened.store.Dispose()}
                 return New-MaintenanceOutcome $Mode 'install-complete' $ticket $runtimeReady
             }catch{
+                Save-RimePimeMaintenanceFailure -Failure $_ -Phase 'install-original'
                 $original=$_.Exception.Message
                 # A published install commit is never changed into rollback.
                 $opened=Read-MaintenancePreparedPlan $context $ticket.journal_root $ticket.prepared_sha256
@@ -577,7 +607,7 @@ function Invoke-RimePimeCandidateMaintenance {
                     Complete-MaintenanceRemoval $context $ticket $workerArguments $runtime $installed
                     $installed=$null
                     $runtime=$null
-                }catch{throw ('Install failed: '+$original+'; rollback incomplete, retain plan '+$ticket.prepared_sha256+': '+$_.Exception.Message)}
+                }catch{Save-RimePimeMaintenanceFailure -Failure $_ -Phase 'rollback';throw ('Install failed: '+$original+'; rollback incomplete, retain plan '+$ticket.prepared_sha256+': '+$_.Exception.Message)}
                 throw ('Install failed and its native transaction rolled back: '+$original+'; retained plan '+$ticket.prepared_sha256)
             }
         }
@@ -630,4 +660,4 @@ function New-MaintenanceOutcome([string]$Mode,[string]$Disposition,$Ticket,$Runt
         hardware_power_loss_verified=$false;hostile_same_sid_prevention_verified=$false;directory_metadata_durability_verified=$false;
         installed_acceptance_passed=$false;dp1_u_acceptance_passed=$false;public_release_admitted=$false}
 }
-Export-ModuleMember -Function Invoke-RimePimeCandidateMaintenance,Invoke-RimePimeCandidateWorker
+Export-ModuleMember -Function Invoke-RimePimeCandidateMaintenance,Invoke-RimePimeCandidateWorker,Save-RimePimeMaintenanceFailure

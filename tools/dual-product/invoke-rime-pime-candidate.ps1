@@ -10,4 +10,7 @@ try{
     Import-Module (Join-Path $PSScriptRoot 'rime-pime-candidate-maintenance.psm1')
     Invoke-RimePimeCandidateMaintenance @PSBoundParameters | ConvertTo-Json -Depth 20
     exit 0
-}catch{Write-Error $_ -ErrorAction Continue;exit 51}
+}catch{
+    if(Get-Command Save-RimePimeMaintenanceFailure -ErrorAction SilentlyContinue){Save-RimePimeMaintenanceFailure -Failure $_ -Phase ('controller-'+$Mode)}
+    Write-Error $_ -ErrorAction Continue;exit 51
+}
