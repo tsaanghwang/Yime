@@ -1,0 +1,34 @@
+{
+  "rollback_completion_verified": true,
+  "listed_payload_absence_count": 191,
+  "absence_checked_with": "os.lstat: FileNotFoundError only; other errors are not absence",
+  "original_existing_evidence_hashes_unchanged": true,
+  "install_commit_absent": true,
+  "install_terminal": "rolled-back",
+  "removal_terminal": "remove-complete",
+  "registry_observation_count": 37,
+  "registry_present_count": 0,
+  "candidate_process_count": 0,
+  "default_matches": true,
+  "peer_comparisons": [
+    {
+      "schema_version": "yime-rime-pime-peer-comparison-v1",
+      "unchanged": true,
+      "before_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "after_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "installed_acceptance_passed": false
+    },
+    {
+      "schema_version": "yime-rime-pime-peer-comparison-v1",
+      "unchanged": true,
+      "before_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "after_sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "installed_acceptance_passed": false
+    }
+  ],
+  "install_state_recovery_directories_retained": true,
+  "recovery_executable_hash_unchanged": true,
+  "remaining_install_file_count": 0,
+  "new_package_installed": false,
+  "installed_acceptance_passed": false
+}
