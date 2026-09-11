@@ -3,13 +3,21 @@
 影响产品：Rime/PIME 候选安装与维护；现行 YimeCore 作为只读保护对象。
 用户在 2026-09-11 指定：这边完成共存保护、候选包和说明，提交当前工作分支，由“计算机”执行安装测试，然后优化 CI。
 
-## 2026-09-11 测试机反馈后的重交付
+## 历史：首次参数类型修复交付
 
 已合入测试分支 `32ff041c6`。原候选在准备阶段触发 PS5 的 StdRegProv COM 参数转换异常，安装器没有启动。旧目录 `test-delivery/rime-pime-coexistence-20260911` 原样保留作历史证据，停止用于本轮测试。
 
-当前唯一交付改为带 `-stdreg` 后缀的新目录；根目录准备入口已经指向它。重新拉取当前开发分支，等包含本次重交付的 CI 成功后，从资源管理器重新准备。不得复用旧 execute-parameters、approval、boundary 或手工更改旧 PIN；已有错误记录继续保留。
+当时交付改为带 `-stdreg` 后缀的目录，随后在空枚举处失败，现已被下述 `-empty` 交付替代；旧参数和原始错误记录继续保留作历史证据。
 
 开发端重新构建 x86/x64、候选 Launcher 和 Go 载荷，并重制 NSIS 包。PS5/PS7 的真实只读 StdRegProv 回归均通过，PS5 注册归属 22 项、peer 保护 9 项、源码合同 77 项及 CI 调度 12 项均通过。真实注册表回归已加入 CI 双 shell 检查。静态核对不替代完整准备、安装、双产品宿主和重启验收；这些仍待测试机执行。
+
+## 当前交付：空注册表枚举修复
+
+已合入测试分支 `6321067de`。`-stdreg` 候选的准备流程在空键返回 DBNull 时失败，安装器仍未启动。统一读取器现在把成功枚举返回的标量 null/DBNull 规范为零元素集合，保留真实默认值、畸形输入拒绝与 provider 错误拒绝，不跳过保护键，不回退进程注册视图。
+
+当前唯一测试交付是 `test-delivery/rime-pime-coexistence-20260911-empty`。前两个目录原样保留，均停止用于本轮测试。等包含本次交付的 CI 成功后拉取当前开发分支，从资源管理器双击根目录准备入口，重新生成 execute-parameters、approval 和 boundary；不要复用旧执行参数或旧包，也不要自行修改 PIN。
+
+开发端重新构建 x86/x64、候选 Launcher 和 Go 载荷；两种 PowerShell 的空枚举回归及真实只读注册表回归均通过。PS5 peer 保护 9 项、注册归属 22 项、来源合同 77 项、CI 调度 12 项与 actionlint 均通过，空枚举回归已经进入 CI 双 shell 检查。测试机完整准备、安装、宿主输入和重启验收仍待执行，现有失败记录不被覆盖。
 
 ## 本轮范围
 
@@ -24,10 +32,10 @@
 
 ## 获取固定候选
 
-从本工作分支读取交付目录 `test-delivery/rime-pime-coexistence-20260911-stdreg` 和同目录的 `PIN.json`。
+从本工作分支读取交付目录 `test-delivery/rime-pime-coexistence-20260911-empty` 和同目录的 `PIN.json`。
 安装器、收据、manifest、静态载荷核对记录及来源记录均按原始字节保存。
-来源编译提交：`a2d063a01dfe608de25e168fdafbc95cc8c52f93`。
-安装器 SHA-256：`6301c6611edb7f1b55623be82a0f5c2c42072475fd80865eef0bf4f66a064e7b`，41,132,913 字节。
+来源编译提交：`6321067de503463a71262a84239b8f5c3064f10d`。
+安装器 SHA-256：`0276245dff5aa5e6441a829152eb178471b8cba0a21314e15ba04a9e5ff83617`，41,133,632 字节。
 新构建包含 168 项来源载荷；NSIS 编译后已核对完整归档成员和原始内容哈希，没有执行安装器。
 先用 `tools/dual-product/verify_delivery.py` 核验 `PIN.json` 中的 index SHA-256；验证结果只是交付完整性，不是实机验收。
 
@@ -37,7 +45,7 @@
 2. 从资源管理器启动独立的、未提升的 Windows PowerShell。不要在 Codex、Windows Terminal 等可能带包身份的父进程内安装，也不要提前以管理员启动。
 3. 使用下列准备命令。路径按本机仓库绝对路径填写；`--params-file` 指向准备参数 JSON，包含 `DeliveryRoot` 和 `ExpectedIndexSha256`。准备过程绑定本机名称、StdRegProv MachineGuid、发起 SID、现行 YimeCore 安装/状态路径和固定候选，只写仓库外的操作文件。
 
-仓库中已提供 `test-delivery/rime-pime-coexistence-20260911-stdreg/prepare-parameters.json`，在仓库根目录运行时可以直接使用。也可从资源管理器双击根目录 `Prepare-Rime-PIME-Coexistence-Test.cmd`，它只准备，不安装。
+仓库中已提供 `test-delivery/rime-pime-coexistence-20260911-empty/prepare-parameters.json`，在仓库根目录运行时可以直接使用。也可从资源管理器双击根目录 `Prepare-Rime-PIME-Coexistence-Test.cmd`，它只准备，不安装。
 
 ```text
 python tools/powershell/run_checked.py --script tools/dual-product/prepare-rime-pime-coexistence-test.ps1 --edition ps5 --params-file <准备参数JSON绝对路径>

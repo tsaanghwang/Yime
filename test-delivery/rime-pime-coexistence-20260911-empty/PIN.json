@@ -1,0 +1,8 @@
+{
+  "source_compile_commit": "6321067de503463a71262a84239b8f5c3064f10d",
+  "expected_index_sha256": "b45f350998f85bfd19b1c450ae2e7aa9ca630fcd89325771ad4baa2389e7cf63",
+  "installer_sha256": "0276245dff5aa5e6441a829152eb178471b8cba0a21314e15ba04a9e5ff83617",
+  "manifest_sha256": "3f676b80b86f4c752e96c5ed06655bddb3b5b4aedd762ca8369483e7ae14b01d",
+  "receipt_sha256": "c4badd8cc2c3b06389ed044f08bcfb0383eb963affe5ca93a3e1c5e870eea4a1",
+  "native_acceptance_passed": false
+}
