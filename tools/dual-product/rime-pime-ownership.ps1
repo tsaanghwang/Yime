@@ -203,15 +203,22 @@ function Invoke-YimePimeStdRegProvMethod {
     $context=$null;$locator=$null;$services=$null;$provider=$null;$metadata=$null;$input=$null;$output=$null
     try {
         $context=New-Object -ComObject WbemScripting.SWbemNamedValueSet
-        $context.Add('__ProviderArchitecture',$ProviderArchitecture)
-        $context.Add('__RequiredArchitecture',$true)
+        $null=$context.Add('__ProviderArchitecture',$ProviderArchitecture)
+        $null=$context.Add('__RequiredArchitecture',$true)
         $locator=New-Object -ComObject WbemScripting.SWbemLocator
         $services=$locator.ConnectServer('.', 'root\default', '', '', '', '', 0, $context)
         $provider=$services.Get('StdRegProv')
         $metadata=$provider.Methods_.Item($Method)
         $input=$metadata.InParameters.SpawnInstance_()
         foreach($entry in $Arguments.GetEnumerator()) {
-            $input.Properties_.Item([string]$entry.Key).Value=$entry.Value
+            # Explicit casts at the COM boundary avoid PS5's dynamic hashtable
+            # value conversion failure for the registry provider's typed inputs.
+            switch ([string]$entry.Key) {
+                'hDefKey' { $input.Properties_.Item('hDefKey').Value=[uint32]$entry.Value }
+                'sSubKeyName' { $input.Properties_.Item('sSubKeyName').Value=[string]$entry.Value }
+                'sValueName' { $input.Properties_.Item('sValueName').Value=[string]$entry.Value }
+                default { $input.Properties_.Item([string]$entry.Key).Value=$entry.Value }
+            }
         }
         $output=$provider.ExecMethod_($Method,$input,0,$context)
         $copy=[ordered]@{}
