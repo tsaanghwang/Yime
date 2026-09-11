@@ -1,5 +1,7 @@
 # 单次 Resume 失败：开发端复核与补证交接
 
+> 已收到 `5ef571a61` 补证。本页收集任务已完成，下一步执行[只读绑定诊断](YIME_RIME_PIME_EXIT51_BINDING_DIAGNOSTIC_2026-09-11.md)，不要重复收集或恢复。
+
 影响产品：Rime/PIME 候选恢复；YimeCore 为保护对象。
 
 ## 复核结论

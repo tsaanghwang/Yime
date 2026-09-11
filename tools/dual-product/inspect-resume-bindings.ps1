@@ -1,0 +1,73 @@
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$true)][string]$ArchivedPreparedPath,
+    [Parameter(Mandatory=$true)][string]$ExpectedPreparedSha256,
+    [Parameter(Mandatory=$true)][string]$AuthorizationPath,
+    [Parameter(Mandatory=$true)][string]$ExpectedAuthorizationSha256
+)
+# Diagnostic only. Never opens a transaction store or invokes maintenance.
+Set-StrictMode -Version 2.0
+$ErrorActionPreference='Stop'
+$pkg=Import-Module (Join-Path $PSScriptRoot 'rime-pime-executable-candidate.psm1') -PassThru -Force
+& $pkg {param($a,$b) Assert-CandidateHash $a; Assert-CandidateHash $b} $ExpectedPreparedSha256 $ExpectedAuthorizationSha256
+function ReadBounded([string]$Path,[int]$Maximum){
+    $s=[IO.File]::Open($Path,'Open','Read','Read')
+    try{
+        if($s.Length -lt 1 -or $s.Length -gt $Maximum){throw 'Diagnostic input size invalid.'}
+        $m=[IO.MemoryStream]::new()
+        try{$s.CopyTo($m);return ,$m.ToArray()}finally{$m.Dispose()}
+    }finally{$s.Dispose()}
+}
+$raw=ReadBounded $ArchivedPreparedPath 1048620
+if($raw.Length -lt 45 -or [Text.Encoding]::ASCII.GetString($raw,0,8) -cne 'YDP1UTX1' -or [BitConverter]::ToInt32($raw,8) -ne $raw.Length-44){throw 'Invalid archived journal envelope.'}
+$payload=[byte[]]::new($raw.Length-44);[Array]::Copy($raw,44,$payload,0,$payload.Length)
+$embedded=([BitConverter]::ToString($raw,12,32)).Replace('-','').ToLowerInvariant()
+$digest=& $pkg {param($b) Get-CandidateBytesHash $b} $payload
+if($digest -cne $embedded -or $digest -cne $ExpectedPreparedSha256){throw 'Archived payload differs from ticket digest.'}
+$authBytes=ReadBounded $AuthorizationPath 1048576
+if((& $pkg {param($b) Get-CandidateBytesHash $b} $authBytes) -cne $ExpectedAuthorizationSha256){throw 'Authorization digest mismatch.'}
+$plan=& $pkg {param($b) ConvertFrom-CandidateJson $b} $payload
+$authorization=& $pkg {param($b) ConvertFrom-CandidateJson $b} $authBytes
+$checks=[Collections.Generic.List[object]]::new()
+function Check([string]$Name,[scriptblock]$Body){
+    try{& $Body; $checks.Add([ordered]@{check=$Name;passed=$true;error_type=$null})}
+    catch{$checks.Add([ordered]@{check=$Name;passed=$false;error_type=$_.Exception.GetType().FullName})}
+}
+foreach($field in @('install_root','state_root','recovery_root','initiating_sid','target_machine_id','target_name','package_sha256')){
+    Check ('approval-'+$field) {
+        if($plan.$field -isnot [string] -or $plan.$field -cne $authorization.$field){throw 'Binding mismatch.'}
+    }
+}
+foreach($field in @('install','state')){
+    Check ($field+'-directory-identity') {
+        $path=$plan.($field+'_root');$expected=$plan.($field+'_directory_id')
+        $observed=& $pkg {
+            param([string]$path)
+            Initialize-CandidateNative
+            $script:CandidateNative::CanonicalPath($path)
+            $open=$script:CandidateNative.GetMethod('OpenDirectory',[Reflection.BindingFlags]'NonPublic,Static')
+            $verify=$script:CandidateNative.GetMethod('Verify',[Reflection.BindingFlags]'NonPublic,Static')
+            $ads=$script:CandidateNative.GetMethod('RejectNamedStreams',[Reflection.BindingFlags]'NonPublic,Static')
+            $handles=[Collections.Generic.List[object]]::new()
+            try{
+                $pending=[Collections.Generic.Stack[string]]::new()
+                for($p=$path;$null -ne $p;$p=[IO.Path]::GetDirectoryName($p)){$pending.Push($p)}
+                while($pending.Count){
+                    $p=$pending.Pop();$h=$open.Invoke($null,[object[]]@($p));$handles.Add($h)
+                    $id=$verify.Invoke($null,[object[]]@($h,$p,$true));$null=$ads.Invoke($null,[object[]]@($p))
+                }
+                return $id
+            }finally{foreach($h in $handles){$h.Dispose()}}
+        } $path
+        if($expected -isnot [string] -or $observed -cne $expected){throw 'Directory identity mismatch.'}
+    }
+}
+Check 'recovery-executable-identity' {
+    $observation=& $pkg {param($p) $script:CandidateNative::Inspect($p)} (Join-Path $plan.recovery_root 'maintenance-candidate.exe')
+    if($observation.FileId -cne $plan.recovery_executable.file_id -or $observation.Bytes -ne $plan.recovery_executable.bytes -or $observation.Sha256 -cne $plan.package_sha256 -or $observation.Sha256 -cne $plan.recovery_executable.sha256){throw 'Recovery identity mismatch.'}
+}
+[ordered]@{
+    schema_version='yime-resume-binding-diagnostic-v1';checks=@($checks.ToArray());
+    all_checks_passed=(@($checks|Where-Object {-not $_.passed}).Count -eq 0);
+    opened_transaction_store=$false;maintenance_executed=$false;installed_acceptance_passed=$false
+}|ConvertTo-Json -Depth 6
