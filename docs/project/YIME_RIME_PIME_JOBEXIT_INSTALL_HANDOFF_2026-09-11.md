@@ -1,5 +1,7 @@
 # 给“计算机”AI：取包并执行一次新候选安装测试
 
+> **本轮已执行且安装失败，自动回滚完成；停止重复执行本页安装步骤。** 见 [测试报告及开发端审阅](YIME_RIME_PIME_JOBEXIT_INSTALL_FAILURE_2026-09-11.md)。保留新旧恢复材料，不运行 Resume、Remove 或旧 finalizer。
+
 影响产品：Rime/PIME；当前 YimeCore 是共存保护对象。本页是原事务收尾审阅通过后的新安装交接。原事务 `84ccacac-c115-4c2d-8d7a-47df8e0ea4a0` 已回滚完成，不再运行其 Resume、preview 或 Apply，继续保留全部恢复材料。
 
 ## 包已在仓库，无需等待另发

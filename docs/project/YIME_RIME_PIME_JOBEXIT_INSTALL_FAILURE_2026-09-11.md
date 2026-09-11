@@ -29,3 +29,11 @@
 [复核结果](../testing/platform/2026-09-11-jobexit-install-failure/verified-result.json)、[事务决定](../testing/platform/2026-09-11-jobexit-install-failure/decisions.json)、[执行记录](../testing/platform/2026-09-11-jobexit-install-failure/execute-process.json)、[仓库副本索引](../testing/platform/2026-09-11-jobexit-install-failure/index.json)、[外部证据 SHA-256 索引](../testing/platform/2026-09-11-jobexit-install-failure/external-evidence-index.json)。
 
 原始控制台、授权、边界、完整 peer 和注册观察均保留于 Git 外 `%USERPROFILE%\Yime Rime-PIME Test Archives`，包括 `jobexit-install-d4552abc-once`、本轮 `approval-80f6a615-...`、`readonly-80f6a615-c0c6-407f-8ed3-b2a021605d2c-5884e03a4fd34644bf235115162ae659` 和 diagnostics 下本次三份错误。授权和用户数据原文未提交；外部索引将用户主目录替换为 `%USERPROFILE%`。
+
+## 开发端审阅及暂停点
+
+已接收 `167c5906e`，七份仓库证据副本的长度和 SHA-256 全部匹配索引。接受本轮“安装失败、自动回滚完成、peer 与默认输入未变”的报告结论；外部原始文件未在开发端重新读取。无需再次收尾，不重放任何新旧事务。
+
+源码路径表明，`RegisterNative` 在 x64 regsvr32 的受控子进程检查通过后，才调用机器注册断言；该断言对 com-x64 的匹配项数量、键存在性、值数量和子键数量使用同一个错误文本。预期该键有一个默认字符串值及一个 InprocServer32 子键。当前提交没有失败瞬间的这些实际数量，不能判定是哪一项不符，也不能由进程退出 0 推定注册结果完整。DLL 的源码写入 HKLM Classes，不能未经证据改写为防火墙问题、HKCU 重定向问题或 Windows 安全策略问题。
+
+下一步由开发端补足这条注册断言的失败观测，并核对注册写入与系统视图读取的对应关系；在有可审阅的定位或新诊断候选前，测试端保持现状，不重装来补截图，不关闭安全软件。若已有执行期原始日志含注册前后快照，可另交非敏感摘要；没有就记录缺失，不以回滚后快照替代。宿主输入、重启与维护矩阵继续未验。
