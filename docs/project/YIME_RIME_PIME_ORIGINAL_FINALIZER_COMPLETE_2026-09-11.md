@@ -30,8 +30,16 @@
 
 新授权目录为 `approval-b5e657c6-084f-4ab2-87c7-9c4b998ce2eb`；外部执行目录 `original-finalizer-40e45635-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0`；后置采集目录 `readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-2bbf184c051b428fa86e93e37038d675`，均在用户的 Yime Rime-PIME Test Archives 下。
 
-- [独立复核结果](../../testing/platform/2026-09-11-original-finalizer-complete/verified-result.json)
-- [关联决策](../../testing/platform/2026-09-11-original-finalizer-complete/decisions.json)
-- [证据索引](../../testing/platform/2026-09-11-original-finalizer-complete/index.json)
+- [独立复核结果](../testing/platform/2026-09-11-original-finalizer-complete/verified-result.json)
+- [关联决策](../testing/platform/2026-09-11-original-finalizer-complete/decisions.json)
+- [证据索引](../testing/platform/2026-09-11-original-finalizer-complete/index.json)
 
 按本轮交接停在收尾报告回传点，供开发端审阅后另行启动 `-jobexit` 新包测试。新候选尚未 prepare/Install，本次成功仅证明原事务回滚完成，不提升共存安装、宿主输入或重启验收状态。
+
+## 开发端审阅
+
+已接收测试提交 `898ba0a0a`。开发端核实 CI 34606641192 对应 `40e45635f5059a010db1d77f8b8e21808caf4aa6` 且成功；逐字节核对仓库内 preview-process、apply-process、decisions 三份副本，其长度与 SHA-256 均匹配外部证据索引。决策和复核摘要相符，removal 的 prepared 摘要与此前短路径失败报告一致，未将新终态误归到新事务。
+
+基于本次提交的报告、决策副本和复核结果，接受原失败事务回滚完成，关闭该恢复阻塞项。不再执行旧 Resume、finalizer preview 或 Apply。测试机上的外部原始日志、注册观察和文件快照没有在开发端重新读取，此结论保留这一证据范围。
+
+下一阶段为 `-jobexit` 新候选的独立 Install 测试：使用新授权和新事务，不复用旧 PreparedSha256；继续保留旧恢复证据和当前 YimeCore。具体执行按后续新安装交接，不把本次回滚成功当成新包安装成功。本次审阅只更新文档，没有更换候选包或恢复工具。

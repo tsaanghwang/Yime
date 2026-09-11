@@ -1,5 +1,7 @@
 # 原事务专用收尾与 Job 修复候选包交接
 
+> **已完成并经开发端审阅：本页执行步骤转为历史记录，不再运行 preview、Apply 或旧 Resume。** 见 [收尾报告及审阅结论](YIME_RIME_PIME_ORIGINAL_FINALIZER_COMPLETE_2026-09-11.md)。后续进入新候选安装测试的独立交接。
+
 > **执行前更新：须拉取本页所述摘要域修复，并等待修复提交 CI 成功。** `e08b5487e` 的 CI 成功不足以执行旧入口。测试端在运行前发现授权摘要域混用，尚未生成新授权或运行 preview/Apply，现场未被本轮工具修改。报告见 [执行前问题报告](YIME_RIME_PIME_FINALIZER_APPROVAL_PIN_REVIEW_2026-09-11.md)。修复通过后，继续下列步骤，无需重制候选包或更改现场文件。
 
 影响产品：Rime/PIME；保留当前 YimeCore。源修复 `6457bb7fedcc733f595ef2dd5b518cc3c3f60ae6` 的 CI [34597860336](https://github.com/tsaanghwang/Yime/actions/runs/34597860336) 成功。**本页新增恢复工具及交付物须等包含本页的提交 CI 成功后才执行。** 当前未取得真实恢复成功证据。
