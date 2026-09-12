@@ -1,5 +1,7 @@
 # 给“计算机”AI：复用已准备目录，重做恢复验证
 
+> 本轮验证已通过，Apply 停在 Python 路径数组绑定。下一步转 [Python 启动修复交接](YIME_RIME_PIME_RECOVERY_PYTHONFIX_HANDOFF_2026-09-12.md)，不要重复执行本页旧参数。
+
 影响产品：Rime/PIME 恢复、YimeCore peer 比较。已接收 `459272d7`，5 个仓库副本大小/摘要均匹配；确认准备成功，验证因 `evidence/language-bar-host.log` 元数据变化退出，Apply 未执行。
 
 ## 修正范围

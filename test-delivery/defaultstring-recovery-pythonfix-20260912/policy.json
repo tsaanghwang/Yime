@@ -1,0 +1,378 @@
+{
+  "transaction_id": "9fe7f28d-0889-4828-85b5-1f481431b43a",
+  "code_hash_normalization": "UTF-8 bytes with CRLF converted to LF; BOM preserved",
+  "code": [
+    {
+      "path": "tools/dual-product/acceptance-matrix.json",
+      "sha256": "eda638f7837ece249675c3e4635d6362e030e59120a041de582abd465db4869c"
+    },
+    {
+      "path": "tools/dual-product/acceptance_matrix.py",
+      "sha256": "8ce06c3d9a016633f610640f4a00e154ceccd142be9e95717b464bab8bb9b139"
+    },
+    {
+      "path": "tools/dual-product/baseline.py",
+      "sha256": "c179951ff8024663ce5937f4f8eabc7685bd6180bcf19f5372ed4554f5c1edf7"
+    },
+    {
+      "path": "tools/dual-product/build-rime-pime-executable-candidate.ps1",
+      "sha256": "7c67901b5991989dff80f35bdab4fe95e804ce233b83ba1c5482091661718d6f"
+    },
+    {
+      "path": "tools/dual-product/collect-peer-failure-current-state.ps1",
+      "sha256": "a2101fbdced31cc8d4966fc7f9612bc265029ae2925c5d7dd3c7c3ac57e04d22"
+    },
+    {
+      "path": "tools/dual-product/contract.json",
+      "sha256": "48e1cd2f882bce8920892b516682f65c2e78f1dad73a0b9859ff57fd9e76d0e4"
+    },
+    {
+      "path": "tools/dual-product/defaultstring-peer-repair.ps1",
+      "sha256": "426fada478a77dc8b360973dcf564d31304a4e47a8a88d4d67655c6e40192548"
+    },
+    {
+      "path": "tools/dual-product/defaultstring-recovery-adapter.ps1",
+      "sha256": "013d15b1f26c7eb1927d620ef2c7e91533cab0193a27959f7fde06a06baadd8e"
+    },
+    {
+      "path": "tools/dual-product/execute-rime-pime-coexistence-test.ps1",
+      "sha256": "0a5d49be96a060e737e560760eb76794f53b43274a5d3f56067268b33260c430"
+    },
+    {
+      "path": "tools/dual-product/extract-original-recovery-bundle.py",
+      "sha256": "1d1c1ff0a082b4865a378cf64ba7428932c7b00e5f1df6a8ae93351a648dc7b6"
+    },
+    {
+      "path": "tools/dual-product/finalize-original-rollback.ps1",
+      "sha256": "eaee95ccb87a1c60fa8af1f5f637ac9e23cafbc5a3216676e882dd40282c990e"
+    },
+    {
+      "path": "tools/dual-product/finalize-rime-pime-package-receipt-v2.ps1",
+      "sha256": "2b0bb2546adf91e57667899c648e7c942b766e5e510b30d4b513df7612124228"
+    },
+    {
+      "path": "tools/dual-product/inspect-resume-bindings.ps1",
+      "sha256": "93e8e87743fa97d31e7ebd5a0c962db220a153c1790953a97edb22da6422ca4d"
+    },
+    {
+      "path": "tools/dual-product/invoke-rime-pime-actual-canonical-migration.ps1",
+      "sha256": "01f94942ab1210b6f50b71288166b497e9d40bf49a4e0cfc39fb6c890120f928"
+    },
+    {
+      "path": "tools/dual-product/invoke-rime-pime-candidate-request.ps1",
+      "sha256": "d454a0c58670af66eef17d51304bde9be6bf339d1bdc8c32627fa8552c52be8e"
+    },
+    {
+      "path": "tools/dual-product/invoke-rime-pime-candidate.ps1",
+      "sha256": "625a5aa95409a66b0a860f814d0539ec84d885cd937a3b76f8bbd8af394b74c5"
+    },
+    {
+      "path": "tools/dual-product/invoke-rime-pime-maintenance.ps1",
+      "sha256": "2f51c91bee481ae9b4e3250ff930da87d5146be863e9c76ed7827c866208f389"
+    },
+    {
+      "path": "tools/dual-product/invoke-rime-pime-nsis-membership-fixture-writer-v1.ps1",
+      "sha256": "3bc792ee3ee576423a3fe763ae953204232864c3cc910d46b80b097bd98a38e4"
+    },
+    {
+      "path": "tools/dual-product/invoke-rime-pime-target-user.ps1",
+      "sha256": "957a38c0e79fa64f9385e91fecb316640434e1d981d72f59ba3abcd57fdfe47b"
+    },
+    {
+      "path": "tools/dual-product/legacy-resume-transport.psm1",
+      "sha256": "aac11e422dfb30063139c3fbe82f59942249556ab4a1bed8eaa8bba31c0d3716"
+    },
+    {
+      "path": "tools/dual-product/original-rollback-finalizer.ps1",
+      "sha256": "50073733db9586adbeb94d62e6ee1ec6a06ef0626b939e6659364aeed67fbf0b"
+    },
+    {
+      "path": "tools/dual-product/prepare-defaultstring-recovery.ps1",
+      "sha256": "20ed346e1fcd16559034143f63e09120076c16017d3b512a1d253f338bff85ca"
+    },
+    {
+      "path": "tools/dual-product/prepare-rime-pime-coexistence-test.ps1",
+      "sha256": "f2e76555ed83c9936921ce969781a3f2807490a85dac51ec6d7ce78bc3b0b526"
+    },
+    {
+      "path": "tools/dual-product/publish-rime-pime-dp1s-off-repository-archive.ps1",
+      "sha256": "c0ea3287866ca9e810026d31c9dca603377ddc247fd88c40e3cde4a592a0d319"
+    },
+    {
+      "path": "tools/dual-product/recover-defaultstring-transaction.ps1",
+      "sha256": "7774a5be93d3386202c86ee52c77eb168431856c1c9a9f1dbf87e4fd036c5ce4"
+    },
+    {
+      "path": "tools/dual-product/resume-plan-diagnostic.psm1",
+      "sha256": "5fa5c2058f6e167360249efdd926b3ba33445fbe209905c108d300d22351df81"
+    },
+    {
+      "path": "tools/dual-product/review-rime-pime-dp1r-trust.ps1",
+      "sha256": "1c0b2289f6bae7a47a23c94ce3ae8dc0efd9a81ca0413976dc72fcf67672b863"
+    },
+    {
+      "path": "tools/dual-product/review-rime-pime-dp1u-current-readiness.ps1",
+      "sha256": "8e07627f6ffb35d46a8f47bac01601fc21105a6d51392d9822dbc093e9c305ad"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-actual-migration-review.psm1",
+      "sha256": "d1f3f11bc9d52fce76e740a82b4258fe05b448842fe84748871295bc72ceab4c"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-candidate-coordinator.cs",
+      "sha256": "547fdb32780d0efe7d4c13fe6b5cdfdb7120de519649ac8ba89ec73265d5dd6b"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-candidate-coordinator.psm1",
+      "sha256": "08a4b8af2268581abd3ad9cdd7f182c8da8cebb6a2ee2beee18edc945cc11a45"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-candidate-evidence-archive.ps1",
+      "sha256": "82964d121ffcdfddd56bd021ac4b32b6bfbf6a8f1b7d2bf4e320f5bf9cf8a952"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-candidate-evidence-archive.psm1",
+      "sha256": "b4ace7c5887bfd063691a4de5fcee85309de4e132fff1628bd9e16110b890760"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-candidate-maintenance.psm1",
+      "sha256": "9fc99cced59b7c3215a2b7cfe15a12b3ede415289dcccfcc9f428b293a2e20ef"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-directed-stop-contract.ps1",
+      "sha256": "bb6bb4bc9ed3c35f22940323da9fe9cae68895b03b2720899d360aa36f5bddbe"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1r-trust-admission.psm1",
+      "sha256": "fbc0863c4147bb658f036eb3be0880fba5cb971a3bac1db6220042d8a47266f4"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-application-hive.cs",
+      "sha256": "3c54ca1b5ca6ccab33028e1ad43c9f0c4752787adbdc43fbf0f3bdf46b19efc4"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-application-hive.psm1",
+      "sha256": "226d113f28d47502eb156102247e453b70f24e9ee03c31c3ad3e2ae8cd141a2a"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-candidate-registration-child.cs",
+      "sha256": "7cd240189ec8b46dd057ac2ba929ea525ffa0874a6c48feb14a6e8eb0bf31985"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-candidate-registration.psm1",
+      "sha256": "a85fb879acc8424c34d953bdf1f191e56c65cc6120de86ab79d40a784c234502"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-candidate-runtime.cs",
+      "sha256": "a42d570ca915234f5857c61b900f37c50e2edfa4ba103833add18b4c7ec66741"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-candidate-runtime.psm1",
+      "sha256": "ac4987e833675408a1b7ceeef04259f9087cd6cc48881f012d4e07db4608d05a"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-exact-file-removal.cs",
+      "sha256": "3a58ba9ca9aef005e27b1efefb7bc9ae0eed24d67f159d89d4a5b7fb96eaed22"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-exact-file-removal.psm1",
+      "sha256": "b1ec9c907700d3bf6e12bf65159e85b699a676f12a9118104a3c46f8b295f87a"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-isolated-preflight.psm1",
+      "sha256": "6a0083024ad920f6fc2ba3979e008257029e38e132b7740ba2a3d625e1230963"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-isolated-preflight.schema.json",
+      "sha256": "86562c401f398b2cc9cfef2e20e4c37142933d380edf3200d30039056af8a822"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-maintenance-runtime-gate.psm1",
+      "sha256": "d4376713048a439011c44601ac7350e713716556e38ad1a3a1c76ab8a2656087"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-native-facts.cs",
+      "sha256": "9969b68b42bc11428d4af6a8bb348a9658e248c0758b953bd9e3834109f97be4"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-native-probe.psm1",
+      "sha256": "a222fec3f8a5dcd92dfebb928c0119d5c6d0d03acac585a0ad3275e312bdb6c3"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-native-transaction.cs",
+      "sha256": "034a3c332eb4fa344cd8b0efe31be4123698f27a27fa9883be4c64af60242a97"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-dp1u-native-transaction.psm1",
+      "sha256": "ea1b2ed5e0065f835155de782a7f040c28da83af8b1246200cf4ae3065934b9a"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-executable-candidate.psm1",
+      "sha256": "4220aee8f197b0c74a66a9f3f8de71de4a3b0ec1baf8ede84273d2162f9d3885"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-executable-receipt.psm1",
+      "sha256": "e51d5a811a9091a84b277e79e0ae3f22639c2d398fe3d2862c186d7d85d50a04"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-fixture-transaction-journal.ps1",
+      "sha256": "8360763160873b6252b6253254bfaaedfb717f814cd9b831e34eaf22a8800e1b"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-fixture-transaction-journal.psm1",
+      "sha256": "92ebd2043e2cd987cc4131bcf90d79b59aadfa883c1be56265f79c62bbcf2c1b"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-go-payload-inventory.json",
+      "sha256": "9bf4e5a4cc4424d0085dc7c8a24b2788d1962494a42baec4ee1af523d369e02f"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-installer-receipt-transaction.ps1",
+      "sha256": "37c8a9e36bd9a5abb5fd062a548aada4a4368e624a888a5f844efcd59a2a178d"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-installer-receipt-transaction.psm1",
+      "sha256": "e3385a7b5c6d9a54fee379b34d15ec22061d946cee55af881e97bb24e3600e1c"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-nsis-compiler-interval.ps1",
+      "sha256": "947d25fca4cd8d61ef311ffaec16da7d318def9fe2ff52f0b36da67c72a61d99"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-nsis-membership-monitor-v1.ps1",
+      "sha256": "0794976f48e9d4103d1d93327ae5b200f87eab58eaee0b4fa7f8657377c24d82"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-nsis-membership-monitor-v1.psm1",
+      "sha256": "2c4204192bbbf313e15eb3e8db4b832f69057c455da045ed97d1e23c794b7a63"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-nsis-stage.ps1",
+      "sha256": "73a8bda86100f3e2dcfa93cabac69df76674fb46c4f6e2be9285c42cc9c814dc"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-nsis-stage.psm1",
+      "sha256": "c45ccdce64c93b237c3efc9942bc34eb5cb2685491abf328887ba9b1f50bf294"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-nsis-toolchain-closure.ps1",
+      "sha256": "c3cf5c24584a0cb0d07c057921a9482025d8a72aca9c440250bc8ad9112affa3"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-nsis-toolchain-closure.psm1",
+      "sha256": "e07a993e09b99ff1583fcaca7022a0788570b19eefa1d51174dfb6a2bb098937"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-ownership.ps1",
+      "sha256": "1e01d32b891066833c98fae54a3a7a74ef6f0e164b529ec8ceebe9149e14f9ee"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-package-plan.ps1",
+      "sha256": "d9242e1b7a23ad03b6d6d96ac761a50732abcf8664db3e9eef06a6963e1645f0"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-package-receipt-v2.ps1",
+      "sha256": "8f197478e2c85e35d39304528a3eb2b35049c5331bb1dcc01aa9277922e0ca51"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-package-receipt-v2.psm1",
+      "sha256": "072863c34a56a5fbae4e4a824e1475401a1fe4defd04c8264704b6906c7cb38f"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-package-staging.ps1",
+      "sha256": "4f503f189c7c780af9e03c1a46410d42d7218fab62f901de1c0fdcaad34868a9"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-package-staging.psm1",
+      "sha256": "86b988711bb9b80689f651694cc8c195af653d4752fbe03f04e457378adbde1a"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-payload-closure.ps1",
+      "sha256": "e5abeec460e07b81e2c05a053d959d9bc2357476990799ff0eacd04e410fa93b"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-peer-protection.psm1",
+      "sha256": "867a707da56e74f04a4ffd6cad5c517e7c9af0093b0000751a3697a9fabe60e3"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-postbuild-extraction.ps1",
+      "sha256": "beb4524f383c4b2bdf6b28671846027fa42f61aad4976e344a97dfffcbdecc22"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-postbuild-extraction.psm1",
+      "sha256": "caf15e5523aeab03549bb64703c70e3e33f9497b8ec54aad86fb194a520dbe68"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-postbuild-toolchain-lock.json",
+      "sha256": "01e913d82b277ac9219148e9fb26df7851475ce0b70ff5d7b58df51179603c45"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-receipt-v2-store.ps1",
+      "sha256": "715d4578cc95906c0ed8ffb77aecc0174e73c8c8df6442c2973ddeabd1d10839"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-receipt-v2-supersession.ps1",
+      "sha256": "4329b0c0ad43e4305e529445ec4ea4723997ab65173d8ede61c3f53c4d605610"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-receipt-v2-supersession.psm1",
+      "sha256": "72ba89e560995422fc7f062a4f7144ef3f30dd8d3ba6f31a3b422648d9e6ee5e"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-staged-installer-build.ps1",
+      "sha256": "0e09bbad340ea481881496e9651c77a49a88ac12948afe6b64fc23f93b7fafe7"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-staged-installer-build.psm1",
+      "sha256": "5723e26853ebf00046bfc102d9b7987c829ce9b94f70ae5efdcef67a695e30b2"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-target-user.ps1",
+      "sha256": "a6e6d925eb7bf0476fc1027830d7e1c88a5495a76087f01412965ce43df5a978"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-transaction-engine.ps1",
+      "sha256": "7e3e565981b8b5a2d695855597dc201ebd863e35809095cd301f97304e3cd68b"
+    },
+    {
+      "path": "tools/dual-product/rime-pime-version-identity-admission.psm1",
+      "sha256": "2e5b248f906ac28950fafcb2bfe4143637f3a32ce3b95202c11ec42dd4275ab6"
+    },
+    {
+      "path": "tools/dual-product/run-rime-pime-isolated-candidate.ps1",
+      "sha256": "9fff0080d8714d76096b3e5faa0712d9f7c3eba8184ef2320e90c6933db2ccc9"
+    },
+    {
+      "path": "tools/dual-product/run-rime-pime-package-staging.ps1",
+      "sha256": "137af16ae4bbe38e2fbf58474589b280621f0f8744e8683d47fcadf425704e1e"
+    },
+    {
+      "path": "tools/dual-product/run-rime-pime-postbuild-extraction.ps1",
+      "sha256": "3dead74a99c18b4303212d1aa6c4a0e9b8cff7a880b906ac8bd55332f3e1edc1"
+    },
+    {
+      "path": "tools/dual-product/stage-defaultstring-recovery.py",
+      "sha256": "ee0084a76da59e6ac5c84495c2abf8a793bd2ceb0693bf299cee4d7eccbfa020"
+    },
+    {
+      "path": "tools/dual-product/stage-original-resume-transport.ps1",
+      "sha256": "08b8f70e7802892654f3b9b248b6800c4b5252fef5c2a5a55cbc0e3fac951fea"
+    },
+    {
+      "path": "tools/dual-product/transaction-isolation.ps1",
+      "sha256": "884185701b30ead168fcf23008154b83f7c068320b8c93931416fe2364081226"
+    },
+    {
+      "path": "tools/dual-product/verify_delivery.py",
+      "sha256": "d4c3bf1da2c07c0c6c2e18c630593f3aaf9bbbebc2c3db659dec3a9e5941bbdd"
+    },
+    {
+      "path": "tools/powershell/preflight.ps1",
+      "sha256": "38c38746cc402a5d2f7b515047c2874053b438fefad802cd8335006bfb3e0ad9"
+    },
+    {
+      "path": "tools/powershell/run_checked.py",
+      "sha256": "09ed4b1cc4e6c05b90019bd69f12a0cb68b9ac825dc8f47dfcbfcff4a3d6d261"
+    }
+  ]
+}

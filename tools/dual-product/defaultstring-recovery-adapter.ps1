@@ -1,4 +1,20 @@
 # Reviewed recovery providers operate on the immutable original payload.
+function Get-RecoveryPythonPath {
+    foreach($command in @(Get-Command python -CommandType Application -All -ErrorAction Stop)){
+        $path=$command.Source
+        # WindowsApps may expose an app-execution alias, not the native Python
+        # required by this worker. Keep PATH precedence among real executables.
+        if($path -isnot [string] -or -not [IO.Path]::IsPathRooted($path) -or
+            $path -match '(?i)\\WindowsApps\\' -or -not (Test-Path -LiteralPath $path -PathType Leaf)){continue}
+        return $path
+    }
+    throw 'No native Python executable found for recovery; do not launch an app-execution alias.'
+}
+function Start-RecoveryCheckedWorker([string]$Checked,[string]$Runner,[string]$Entry){
+    $python=Get-RecoveryPythonPath
+    if($python -isnot [string]){throw 'Recovery Python path must be one string.'}
+    Start-Process -FilePath $python -Verb RunAs -WindowStyle Hidden -PassThru -ArgumentList @(('"'+$Checked+'"'),'--script',('"'+$Runner+'"'),'--edition','ps5','--params-file',('"'+$Entry+'"'))
+}
 function Initialize-MaintenanceProviders([string]$PackageRoot){
     $script:CandidateRegistrationModule=Import-Module (Join-Path $PSScriptRoot 'rime-pime-dp1u-candidate-registration.psm1') -PassThru -Scope Local
     $script:CandidateRuntimeModule=Import-Module (Join-Path $PSScriptRoot 'rime-pime-dp1u-candidate-runtime.psm1') -PassThru -Scope Local
@@ -19,8 +35,7 @@ function Invoke-MaintenanceWorker([string]$Action,$Context,$Ticket,[string]$Pack
         Write-MaintenancePeerEvidence $entry @{PolicyPath=$script:RecoveryPolicyPath;ExpectedPolicySha256=$script:RecoveryPolicyHash;WorkerParametersPath=$worker}
         $checked=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\powershell\run_checked.py'))
         $runner=Join-Path $PSScriptRoot 'recover-defaultstring-transaction.ps1'
-        $python=(Get-Command python -CommandType Application -ErrorAction Stop).Source
-        $process=Start-Process -FilePath $python -Verb RunAs -WindowStyle Hidden -PassThru -ArgumentList @(('"'+$checked+'"'),'--script',('"'+$runner+'"'),'--edition','ps5','--params-file',('"'+$entry+'"'))
+        $process=Start-RecoveryCheckedWorker $checked $runner $entry
         try{$process.WaitForExit();if($process.ExitCode -ne 0){throw ('Recovery worker failed: '+$process.ExitCode)}}finally{$process.Dispose()}
     }finally{$self.Dispose()}
 }
