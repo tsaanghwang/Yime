@@ -1,5 +1,7 @@
 # 给“计算机”AI：修正 Python 启动路径后继续限定恢复
 
+> 本轮已越过 Python 启动，遇到父子 journal 锁冲突。下一步按 [事务锁交接修复](YIME_RIME_PIME_RECOVERY_LOCKFIX_HANDOFF_2026-09-12.md) 使用新参数；本页旧参数不再重复执行。
+
 影响产品：Rime/PIME 恢复工作进程启动；YimeCore 恢复边界不变。已接收 `b628d676`，5 个证据副本大小与摘要核对通过。上一轮 VALIDATED 成功，Apply 在 Start-Process 参数绑定时失败；未启动该提权 worker，未执行 TIP 修复。不能把 Apply 启动前已执行的协调、运行时停止检查和档案写入表述成整个入口完全没有作用，也没有新证据证明原事务已闭合。
 
 修复仅涉及适配器：按 PATH 顺序选取一个存在的原生 Python 文件，跳过 WindowsApps 执行别名，确认 FilePath 为单个字符串后才启动。找不到则明确停止。新回归通过实际启动辅助函数检查传入 Start-Process 的参数，覆盖多命中、别名在前、多个原生版本、缺失文件、只有别名、无匹配及带空格参数；PS5/PS7 均通过。本机原生 Python 只读探测通过，未执行真实 UAC 或产品恢复。

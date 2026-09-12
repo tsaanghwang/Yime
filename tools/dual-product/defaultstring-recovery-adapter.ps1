@@ -1,4 +1,12 @@
 # Reviewed recovery providers operate on the immutable original payload.
+function Release-RecoveryJournalForWorker($Ticket){
+    # The controller retains the product coordinator, authenticated inputs and
+    # plan. The worker must independently acquire and verify the install journal.
+    # Do not carry its exclusive transaction.lock lease across that process hop.
+    if($null -eq $Ticket.store){throw 'Expected an owned journal lease before handoff.'}
+    $Ticket.store.Dispose()
+    $Ticket.store=$null
+}
 function Get-RecoveryPythonPath {
     foreach($command in @(Get-Command python -CommandType Application -All -ErrorAction Stop)){
         $path=$command.Source

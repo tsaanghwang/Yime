@@ -79,6 +79,7 @@ try{
                 Write-Host 'VALIDATED: fixed recovery inputs; no product mutation. Apply must repeat every check.'
                 return
             }
+            Release-RecoveryJournalForWorker $ticket
             $arguments=@{Context=$context;Ticket=$ticket;PackageRoot=$bundle;ExpectedManifestSha256=$manifest;InstallerPath=$p.InstallerPath;ReceiptPath=$p.ReceiptPath;Coordinator=$coordinator}
             Complete-MaintenanceRemoval $context $ticket $arguments $null
             $null=Get-MaintenanceRegistration $context $ticket.plan $bundle 'Absent'
@@ -92,7 +93,7 @@ try{
             Write-Host ('RECOVERED: rollback and original peer snapshot verified. Evidence: '+$evidence)
         }catch{Save-RimePimeMaintenanceFailure -Failure $_ -Phase 'defaultstring-recovery';throw}
         finally{
-            if($ticket){$ticket.store.Dispose()};if($package){Close-MaintenanceCandidate $package};if($context){Close-MaintenanceAuthorization $context}
+            if($ticket -and $ticket.store){$ticket.store.Dispose()};if($package){Close-MaintenanceCandidate $package};if($context){Close-MaintenanceAuthorization $context}
             if($coordinator){& $script:CandidateCoordinatorModule {param($c) Close-RimePimeCandidateCoordinator -Context $c} $coordinator}
         }
     } $ExecutionParametersPath $PackageRoot ([bool]$Apply) $WorkerParametersPath $PolicyPath $ExpectedPolicySha256 $old $original $baseline
