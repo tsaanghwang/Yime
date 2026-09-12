@@ -1,0 +1,1325 @@
+[
+  {
+    "path": "backends.json",
+    "exists": false
+  },
+  {
+    "path": "go-backend/blocklist-manager.exe",
+    "exists": false
+  },
+  {
+    "path": "go-backend/diagnostics-tool.exe",
+    "exists": false
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/cangjie5.dict.yaml",
+    "exists": false
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/cangjie5.schema.yaml",
+    "exists": false
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/default.yaml",
+    "exists": false
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/essay.txt",
+    "exists": false
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf",
+    "exists": true,
+    "bytes": 16024176,
+    "sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/luna_pinyin.dict.yaml",
+    "exists": true,
+    "bytes": 282450,
+    "sha256": "971baa1f38a42d3d82f858b5bbdcad6482371f8d93a2f5d5c4ab341046419e3b",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/luna_pinyin.schema.yaml",
+    "exists": true,
+    "bytes": 3585,
+    "sha256": "f08549cd3275da3889cea302c6ec3ecc99346d5dae2a79b65e83d37f2c04d0a7",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/hk2s.json",
+    "exists": true,
+    "bytes": 643,
+    "sha256": "71d5f687e1ca78d3af0e64850e84000555848744e41a09f98d33849a7f126be3",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/hk2t.json",
+    "exists": true,
+    "bytes": 450,
+    "sha256": "2a3456a87414f2995fd3f9aefd0e089f5be8f80be53259e07246815bcf7334eb",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/HKVariants.ocd2",
+    "exists": true,
+    "bytes": 4893,
+    "sha256": "1b71281a9a093619eda66c3d65ddedbe8f9be5383bb02cd1c2ebadee320f179a",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/HKVariantsRev.ocd2",
+    "exists": true,
+    "bytes": 4923,
+    "sha256": "b879b0a7f7d2f6031b38523cd6430440e32e9b819ca052e4c7d156ad5b0c099b",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/HKVariantsRevPhrases.ocd2",
+    "exists": true,
+    "bytes": 7030,
+    "sha256": "a6b0675755b1df44b2af090c6e15672b7184c03f74b3c226e57f94391b4d0ec1",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/jp2t.json",
+    "exists": true,
+    "bytes": 540,
+    "sha256": "3f9b091520ba0d55ecfe6fca719a672bb2691b1eb9b0c0a43a4aa4326b15fd9e",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/JPShinjitaiCharacters.ocd2",
+    "exists": true,
+    "bytes": 4263,
+    "sha256": "6c97633ec8a1087a4041a8677cbc3c872b68804ebace6c4b30aa2d02c484b8d1",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/JPShinjitaiPhrases.ocd2",
+    "exists": true,
+    "bytes": 7462,
+    "sha256": "6caef7c983668e43799498104062ede559033ca759665600f5be18ede4821016",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/JPVariants.ocd2",
+    "exists": true,
+    "bytes": 7993,
+    "sha256": "14f32b4906b1fe22d3a4f96c6cb5c64c39a8726a73df556570ff7653fb9ce732",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/JPVariantsRev.ocd2",
+    "exists": true,
+    "bytes": 7991,
+    "sha256": "3aa7d165035e584b701487c6512866425d1c711ba3afb91ab0c9c109f5d3c15d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/s2hk.json",
+    "exists": true,
+    "bytes": 507,
+    "sha256": "3708e756ea01783e9cf6b3cce527580810b3d539b8c7fcc3594dd1517aa05bff",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/s2t.json",
+    "exists": true,
+    "bytes": 406,
+    "sha256": "710bb970e406d9c0a3dd33c609248686cf1c5578d064b7b7fc89e70fbb9ea75d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/s2tw.json",
+    "exists": true,
+    "bytes": 505,
+    "sha256": "67ce1f5aa3d6b21ebb523084b40e66f80bec27bb2dc6b540d44dac2e27f7194e",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/s2twp.json",
+    "exists": true,
+    "bytes": 599,
+    "sha256": "72d187574510542be608c862d5359d29480ee61f137082df8a06d74f7bcfc79c",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/STCharacters.ocd2",
+    "exists": true,
+    "bytes": 45310,
+    "sha256": "e2bcc2f3b6a552abf2c21f1e9d4bc232ea57e9836151fb381eff703d88c12425",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/STPhrases.ocd2",
+    "exists": true,
+    "bytes": 925143,
+    "sha256": "5e8d8289beacc7d4ab7baa7193ebb589f3d5a956449ed9c81ccff431ae503f6e",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/t2hk.json",
+    "exists": true,
+    "bytes": 304,
+    "sha256": "a8531beb7430fe1afed0294a893af529c7b7fd2ad41567b5daccb8399c8ef2f0",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/t2jp.json",
+    "exists": true,
+    "bytes": 318,
+    "sha256": "4fb22429d63173715fec30524111ec141c0577b66c9f090513ea8bac4741ad77",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/t2s.json",
+    "exists": true,
+    "bytes": 406,
+    "sha256": "b818534194f27c2d95f01001edb0a5ec49b9050119892cb30a0504bb202cc07c",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/t2tw.json",
+    "exists": true,
+    "bytes": 302,
+    "sha256": "11495bf144cd932a9568810822a5af0fbba2db9c2e06a2bb2871583423fac24a",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/TSCharacters.ocd2",
+    "exists": true,
+    "bytes": 46126,
+    "sha256": "64aee2ead703e0734525decf0a11891f3dad07930433c8b1672274a9b22963bc",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/TSPhrases.ocd2",
+    "exists": true,
+    "bytes": 9776,
+    "sha256": "edafc46f5c3eca61a754c78e47117e7c73995cacd6c99aadcb8a219d7ae3e53d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/tw2s.json",
+    "exists": true,
+    "bytes": 641,
+    "sha256": "05ac8731e870babac8118d9a79ebf06c616576bf4c8b378cf36d0359b5d9ebe5",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/tw2sp.json",
+    "exists": true,
+    "bytes": 727,
+    "sha256": "8bb1ce11c560f623a7d07593affe575ee936be0fe63cda0983a672000adf68ec",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/tw2t.json",
+    "exists": true,
+    "bytes": 448,
+    "sha256": "3ca6a912f9da989ce3e83dab11084f2473af2a1ea6f9e67675ba48ad2f3c3e51",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/TWPhrases.ocd2",
+    "exists": true,
+    "bytes": 15610,
+    "sha256": "14ce3a5beded4e387f571ff6aa0473d631c02b6e9af019960c87e1cd278640c5",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/TWPhrasesRev.ocd2",
+    "exists": true,
+    "bytes": 15597,
+    "sha256": "966115eab0dc898754e25acb55590d55346e126c5325c12e3a44b5d8c183319d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/TWVariants.ocd2",
+    "exists": true,
+    "bytes": 4595,
+    "sha256": "4845dffeeb7efe1ba46e655b80580edd73191cd33cc8ade20451047cb398702a",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/TWVariantsRev.ocd2",
+    "exists": true,
+    "bytes": 4627,
+    "sha256": "60f6b6bf9aa17756356a0f6fbb4299cce774431ea84d7eeb767e7a0411494485",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/opencc/TWVariantsRevPhrases.ocd2",
+    "exists": true,
+    "bytes": 5333,
+    "sha256": "8cfd338887d3b6b3e035f1cccf3821bf2b2581c6024a530c6c1b243a189d06f8",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/pinyin_normalized.json",
+    "exists": true,
+    "bytes": 33435,
+    "sha256": "535df5b54fc615b548fe51a1f354c118cd0deef3abcfcb093f3c29d98110805b",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/symbols.yaml",
+    "exists": true,
+    "bytes": 24410,
+    "sha256": "e4cda5663039e284ce62d7febe207bf6b788df6a9705ca174fabd7f8c140ed30",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/trainer/curriculum.json",
+    "exists": true,
+    "bytes": 994,
+    "sha256": "6b57e56d91686fdf244b9df273477b73c53f19558fa4c40fc164b01bbec1ca51",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/trainer/foundation.json",
+    "exists": true,
+    "bytes": 2015,
+    "sha256": "94c110348e6c6eb081b1b24707d3024d8bf199dbde6f7f5ff484176a5b581555",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/trainer/README.md",
+    "exists": true,
+    "bytes": 4659,
+    "sha256": "6eedbe4730d28d9a6b43cb70a7ae041ecf0f59da0a8c9f6280b17f97723a729a",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/trainer/yinyuan_catalog.json",
+    "exists": true,
+    "bytes": 8358,
+    "sha256": "adcbbca053785bf189c6ca834aef27fadb9c4ccf3a55c0acfeb352a5743ea5c3",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/trainer/yinyuan_groups.json",
+    "exists": true,
+    "bytes": 3093,
+    "sha256": "0821ce4e8da0149af75ae8e78e0ed579d15f3c04039f1de3acf5c3e717f8ab0c",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_core_source_manifest.json",
+    "exists": true,
+    "bytes": 1842,
+    "sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_full.dict.yaml",
+    "exists": true,
+    "bytes": 4710,
+    "sha256": "8b65157cbdc489d97faa4a769972a2d74c5878c1bb5bdbcf4a537e7460fcf36a",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_full.schema.yaml",
+    "exists": true,
+    "bytes": 357,
+    "sha256": "d1e00c4187a3241952636cc7d92867a8bdc885e2642507d3da8ebab3c071dc0e",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_manifest.json",
+    "exists": true,
+    "bytes": 4044,
+    "sha256": "0a1f89dc4df28682924a62f62f2cc224bcf97ca09443ea4e6ee659acbe16091c",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_full.dict.yaml",
+    "exists": true,
+    "bytes": 3181,
+    "sha256": "b67f2cee5e3d9f7dbf2ba471d4bde890239902143d00eb27f91c8437991bc0c1",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_shorthand.dict.yaml",
+    "exists": true,
+    "bytes": 3046,
+    "sha256": "b84bf88ac11a8b4539f0dcd978f676b874c8efac52b5fa12ab88cad872020705",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_variable.dict.yaml",
+    "exists": true,
+    "bytes": 3072,
+    "sha256": "aec8483fa49c159007b564b264c2a1f9e3755fbb9be1c91e6626f6258fba8d76",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.dict.yaml",
+    "exists": true,
+    "bytes": 4373,
+    "sha256": "eee94ba46bed6495477f45d7d5b7deabf4be0041197d3a0128a90d6072c6b570",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.schema.yaml",
+    "exists": true,
+    "bytes": 372,
+    "sha256": "ca22d7d16b6bedff767972329ef53bb880c187ce5b821ebf57022d4f165a8bbb",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_variable.dict.yaml",
+    "exists": true,
+    "bytes": 4411,
+    "sha256": "011448c018f309303af488fa143c31e82803f76a3734ca301c3b73a9599ca51d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_variable.schema.yaml",
+    "exists": true,
+    "bytes": 369,
+    "sha256": "aed6d0a4953b6a7fc55054b1d0711088f9dffce49f961972913bdf59914babbc",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_reverse_source.tsv",
+    "exists": true,
+    "bytes": 40241,
+    "sha256": "896d69089125826e4d2d83601ad4ee60d23ba2f556a9888551097546bc0f3f05",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+    "exists": true,
+    "bytes": 31621303,
+    "sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_full.schema.yaml",
+    "exists": true,
+    "bytes": 1959,
+    "sha256": "5889514c808199a00c1c1618a4f940c71acd1e69eb8dc9592788e67a346114c0",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_lexicon_manifest.json",
+    "exists": true,
+    "bytes": 667,
+    "sha256": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_full.dict.yaml",
+    "exists": true,
+    "bytes": 150994,
+    "sha256": "e570b452543845542f0dc0e04233e44aa0ab9cfab12d655d9e811019fbc8064b",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_manifest.json",
+    "exists": true,
+    "bytes": 2549,
+    "sha256": "e176793b2359b3d32cef397a8d20a7fc24c24f9c52cf98e381ce240c4b2bba11",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_shorthand.dict.yaml",
+    "exists": true,
+    "bytes": 132044,
+    "sha256": "e8e34cd76847bfb2cc2b6a3df4f5a76641a40f402fb818a099e06dec24e86b7d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_variable.dict.yaml",
+    "exists": true,
+    "bytes": 134218,
+    "sha256": "1b80e35ea9c04a3600fd0a5e60cdba3a2cd6b5743c6c376ddfcfbb478cd53cd0",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_pinyin_codes.tsv",
+    "exists": true,
+    "bytes": 19448,
+    "sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_pinyin_reverse_source.tsv",
+    "exists": true,
+    "bytes": 2039059,
+    "sha256": "85c9b28b2e46752d56d84fcd924160d260cc9e5cfcbc3c5606d0f4d47c6a319a",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_full.dict.yaml",
+    "exists": true,
+    "bytes": 2842,
+    "sha256": "339caa6828e0ce569bd81a1f93d3a1b3b4c9e69c468f65108690fbee9e83cf15",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_full.schema.yaml",
+    "exists": true,
+    "bytes": 367,
+    "sha256": "53134bf8ee5134f3e2615a53c794b162e8a249520a52937a4145ae5c47daed0e",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_manifest.json",
+    "exists": true,
+    "bytes": 2073,
+    "sha256": "2e4a3ac0dba4bf497519dc2f60f89ae899f2e34d1bdecbe776490b2273052807",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_full.dict.yaml",
+    "exists": true,
+    "bytes": 3038,
+    "sha256": "1dac84cb9de9565d54768688fec9f712279a6e8e78801c1f511e74f56d18622d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_shorthand.dict.yaml",
+    "exists": true,
+    "bytes": 2734,
+    "sha256": "41c39164c0a8cbc2a038d08dbaef4d14d2002a03efd60accc7316dc332e56f78",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_variable.dict.yaml",
+    "exists": true,
+    "bytes": 2759,
+    "sha256": "22929e9c35a0daf6918ede8fe2de4b800ba78154bc195eaa2e22ecaf3362c22d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_shorthand.dict.yaml",
+    "exists": true,
+    "bytes": 2538,
+    "sha256": "1ff18ea29b4be8b9a9979941018042d4a1b333be8e4a5a43aaa4fd312eb7fa73",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_shorthand.schema.yaml",
+    "exists": true,
+    "bytes": 377,
+    "sha256": "bbd7176d482772f6655d153752892b0cf539ab0979f7a6ad4aad49db7261104c",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_variable.dict.yaml",
+    "exists": true,
+    "bytes": 2563,
+    "sha256": "96850c6e75d07250fcf0aba1bed685c13592556ee4742a61a929254212ae9026",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_variable.schema.yaml",
+    "exists": true,
+    "bytes": 375,
+    "sha256": "515abf7f3c4e92aefa67764bd25a51b077d5a8dee72908d5d8c72173cd521279",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_pua_pinyin.json",
+    "exists": true,
+    "bytes": 67880,
+    "sha256": "aca1a72283e74368ff95be27b60c3ce7a733366759f9d1bd8d2b2886b031d196",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_runtime_profile.json",
+    "exists": true,
+    "bytes": 3764,
+    "sha256": "f40b40e001bea799a45877f524d380e229d1c0499c3ba50a16c5d8ef19091741",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_sentence_full.dict.yaml",
+    "exists": true,
+    "bytes": 368,
+    "sha256": "bdcc06ecb949eb589884f2de1f0d591ac42b331b9327b8a9f2424f5a9375603e",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_sentence_shorthand.dict.yaml",
+    "exists": true,
+    "bytes": 398,
+    "sha256": "ca26b480507b90b6be0d47e0138ad463d0b367cc5fa1bdbb9b6ef47c232243ab",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_sentence_variable.dict.yaml",
+    "exists": true,
+    "bytes": 392,
+    "sha256": "3a1569ec196835195a13ea2ccb55f719faf08a4ccb3b8cb82506e1b7bd921e57",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_shorthand.dict.yaml",
+    "exists": true,
+    "bytes": 29563931,
+    "sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_shorthand.schema.yaml",
+    "exists": true,
+    "bytes": 1996,
+    "sha256": "d3b2fb6b39e958f30a0479de411ea65c6b4578b2548da106d1b23fda89910eaf",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_syllable_decomposition.tsv",
+    "exists": true,
+    "bytes": 175405,
+    "sha256": "ad4beb24cef782e0d4b8ce5767b45bfdb7e76ec7ea0456f3605405cc897f3f94",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_syllable_inventory_manifest.json",
+    "exists": true,
+    "bytes": 557,
+    "sha256": "516a4e3c993845875e3b59856835425b6456f2e771cd2a89e4168cf4981f7617",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_system_candidate_exclusions.tsv",
+    "exists": true,
+    "bytes": 6051,
+    "sha256": "a8ea7cb186ce8e27ba4848e608fdedf260e8d4b2010a38ce8aabc893bc1f22b2",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_full.dict.yaml",
+    "exists": true,
+    "bytes": 694,
+    "sha256": "e6a478b4d8fc0474ae02b13dc6a5cffaf62ff7ca3ad1ba0f75b937cf75854f89",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_manifest.json",
+    "exists": true,
+    "bytes": 1551,
+    "sha256": "b53b46ef49da894d019b5db4dc281b19aaceec9fe9ec570b26653b8e0c54d82e",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_shorthand.dict.yaml",
+    "exists": true,
+    "bytes": 676,
+    "sha256": "4b9e428a09b8f5be8478a6d7d947f54760c2e395eeb1117b8a3702d04c840253",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_variable.dict.yaml",
+    "exists": true,
+    "bytes": 675,
+    "sha256": "052b5b75cc0c8e1d5deae9f3c05a1ed45d36b02339630f130860a1204f011f84",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_variable.dict.yaml",
+    "exists": true,
+    "bytes": 30155261,
+    "sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_variable.schema.yaml",
+    "exists": true,
+    "bytes": 2067,
+    "sha256": "2a0d05769a3aee860ed14b503a24d295749f3f788cecf2fd792018094cd0f330",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_yinyuan_layout.json",
+    "exists": true,
+    "bytes": 1023,
+    "sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/help/diagnostics.html",
+    "exists": true,
+    "bytes": 3460,
+    "sha256": "48dcd41ea1d7df858846e35ecdcde46b4aefd994df2c81e3aca7d648bd8b4da5",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/help/diagnostics.md",
+    "exists": true,
+    "bytes": 4985,
+    "sha256": "8ae36fb4774e3b3924b5f8de9cc2c82b3d096f9b99db8f1c9e6555f445d5b370",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/help/README.html",
+    "exists": true,
+    "bytes": 7437,
+    "sha256": "e3b1b537915b2fa2c587f40c046e6fb348f66ed5678a44eca960e8c94a16bbae",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/help/README.md",
+    "exists": true,
+    "bytes": 5824,
+    "sha256": "1e4ae85cecf3c686d161591b4880b98816d8b065ba6ae6d10e9ddc01033b4d7f",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/help/settings-and-data.html",
+    "exists": true,
+    "bytes": 10982,
+    "sha256": "5f44cd6168479dbfa8d33444a3418d44bbd852899b64b622db36c7bb0d1dbe27",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/help/settings-and-data.md",
+    "exists": true,
+    "bytes": 11848,
+    "sha256": "9a176509a71c811fd8c58b897f41bd27b7988b16e94f7cf2d33ef3e67b8c0868",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/help/trial-feedback.html",
+    "exists": true,
+    "bytes": 2381,
+    "sha256": "ddae8166d6a9be3db8eebce603d293a328a8b572cd15a98cbdd1a60be0c83608",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/help/trial-feedback.md",
+    "exists": true,
+    "bytes": 882,
+    "sha256": "56b2157af3a8575b658dbf80e4ebb2871033286d0091f88d6a5b751ea550e915",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icon.ico",
+    "exists": true,
+    "bytes": 62966,
+    "sha256": "d7700838dc9a00524e0d7d1d11be069fbf8f16b922ee94c8935d57204a5af77a",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/chi.ico",
+    "exists": true,
+    "bytes": 17542,
+    "sha256": "d15134b92044f5d461ef5f0004166c8892ae2f1c2469d6fba3b3612dc5434f39",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/chi_full_capsoff.ico",
+    "exists": true,
+    "bytes": 17542,
+    "sha256": "5670ea56fc3885a23cc1eab8394318762c1e2aa8f0391a265554c235c470b628",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/chi_full_capson.ico",
+    "exists": true,
+    "bytes": 17542,
+    "sha256": "9fc3598031aa6ef83dd197d9b109e78f0e755cbbd3a45862aa0202851fdbb132",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/chi_half_capsoff.ico",
+    "exists": true,
+    "bytes": 17542,
+    "sha256": "359bd741a89bee4fc0147f741de78b00cf5e469d63e6f3b56a5a92b239ea2721",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/chi_half_capson.ico",
+    "exists": true,
+    "bytes": 17542,
+    "sha256": "f18bd377d148dcf98f41ec6d4705ddafc1194e0e2c95a3734c4bdce0f9211880",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/config.ico",
+    "exists": true,
+    "bytes": 1406,
+    "sha256": "e4b92538f15a2456f03b7138d22708c939a2977e739850cbec0f8d1641461d0d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/eng.ico",
+    "exists": true,
+    "bytes": 1406,
+    "sha256": "43644407945e044ad3ec50d172eafb9c80f09027750506fc8ca7dcac85151e86",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/eng_full_capsoff.ico",
+    "exists": true,
+    "bytes": 17542,
+    "sha256": "d9904b84b8effde669be732f9b38cc06caba9f362985bcc0d24c5d186002c60e",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/eng_full_capson.ico",
+    "exists": true,
+    "bytes": 17542,
+    "sha256": "672c7e5d5894fb014278adf0e787e1eec60f04b93b625f1dd76670e431a35d3d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/eng_half_capsoff.ico",
+    "exists": true,
+    "bytes": 17542,
+    "sha256": "f03896add520532ae4d903a6d8c328dddfca2c3a2ba21d9d523c1d0f06fdeee2",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/eng_half_capson.ico",
+    "exists": true,
+    "bytes": 17542,
+    "sha256": "543e8df861da6bb109b3f214709f49847d8ddf76c3d7e8fa7ed40b7557536f29",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/full.ico",
+    "exists": true,
+    "bytes": 894,
+    "sha256": "905e7ece5468265b5cbc43bd3a85518ba76a8dd1b680361f78afc1670327ff41",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/half.ico",
+    "exists": true,
+    "bytes": 1406,
+    "sha256": "8126e19feb23ba0f5aa05e1293a175d1db6b0e95a1c54a5535d15608acf2859c",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/layout_horizontal.ico",
+    "exists": true,
+    "bytes": 655,
+    "sha256": "36e4d276ce7ca755203131211bee03fd744cf3854bade79efd0c39338bd65aca",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/layout_vertical.ico",
+    "exists": true,
+    "bytes": 690,
+    "sha256": "4bfce90dd2af785d8bfce644c08e5a1bcec8531a15c69bd34919791a4a5b10b3",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/lexicon.ico",
+    "exists": true,
+    "bytes": 2141,
+    "sha256": "6ee1ef6ad89381a8b5a2df70fcdbdc8adb2d77aa5f63fd121e100fa67b670275",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/punct_chi.ico",
+    "exists": true,
+    "bytes": 5430,
+    "sha256": "eb382e466a064fc431e2e8ee3ea9d56384a7f135f8ef9ac46e6d25cf02b51060",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/punct_eng.ico",
+    "exists": true,
+    "bytes": 5430,
+    "sha256": "206de2fabff086533b9d0db51bdfd2f8ae7d59ea96d568992b39313a716e9162",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/reverse-lookup.ico",
+    "exists": true,
+    "bytes": 669,
+    "sha256": "c7f20db9831c64ea75525f126ffc59dd33f514fa46616c1ad388be556655c99f",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/tools.ico",
+    "exists": true,
+    "bytes": 2334,
+    "sha256": "80207f517c706e4eb861e9b35d6b509fe82c45e9ef5ce20757c7415cb48a1c4e",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/yime_qin_seal_yin.ico",
+    "exists": true,
+    "bytes": 19067,
+    "sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/yime_qin_seal_yin.png",
+    "exists": true,
+    "bytes": 14334,
+    "sha256": "4930a312b6e9b1852da8a16431217fc99dab9d5f6a36924adfe01beef82f325d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/icons/yin.png",
+    "exists": true,
+    "bytes": 1196,
+    "sha256": "ca61581f0d13d0a4e1281dbe602ad55a02697d52318a541cc6f492ab05d2b275",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/ime.json",
+    "exists": true,
+    "bytes": 330,
+    "sha256": "498ba087c2765d57630964cac10e9764e25f046a56ea95143cf05d9e9338ef3b",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/layoutdesigner/README.md",
+    "exists": true,
+    "bytes": 3596,
+    "sha256": "32f958b7d8f1550f4843f77cdbe876dadea1cbd550cc74d14c4b1207113e97d4",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/lexiconpromotion/README.md",
+    "exists": true,
+    "bytes": 1189,
+    "sha256": "92630ce3b92299a17f46f11b7084bf1c72dde22aa3050dc5d0bde5cd973fde9f",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/rime.dll",
+    "exists": true,
+    "bytes": 3739136,
+    "sha256": "86b4c7357d4c6d293ce5589b234d8859ca2ac30923a03bedfa3926eeaf97fb0b",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/rime_deployer.exe",
+    "exists": true,
+    "bytes": 459776,
+    "sha256": "3abb72b5bb56fcafcfe925d533ae5f832c68d5a0bc9952fd0eea0682fb1ab071",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/rime_dict_manager.exe",
+    "exists": true,
+    "bytes": 278016,
+    "sha256": "1c1eb1f84f98704161efbf3315a16e3456f5989efa56f340d7e9e3e5f8bf9e1b",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/rime_runtime.lock.json",
+    "exists": true,
+    "bytes": 618,
+    "sha256": "548d7fd41af93dcd438f194877cfbc4fd326454a4251f55dfdfe74efe87df637",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/yimecore/testdata/dynamic_sentence_cases.json",
+    "exists": true,
+    "bytes": 5338,
+    "sha256": "8193a4096f4af139ce64b6f853ec4f33952f366e282fd365bb8ac3be5b524412",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/yimecore/testdata/e1_probes.json",
+    "exists": true,
+    "bytes": 1432,
+    "sha256": "da497c555c9f65c0275eaecdc08e7bcd111a79ae1e0b79be025192c0666de162",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/yimecore/testdata/e2_sentence_probes.json",
+    "exists": true,
+    "bytes": 1319,
+    "sha256": "2a47352fe13f8a47b7cc7a36e6f5e20c36432e66b977220aa75a60d989879d3f",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/yimecore/testdata/e2b_segment_probes.json",
+    "exists": true,
+    "bytes": 341,
+    "sha256": "808f2616e345227876bb33bf6049d1bd8fbbfcc6875347e916ae9b4dc114d7b2",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input_methods/yime/yimecore/testdata/e4_reviewed_alias_probes.json",
+    "exists": true,
+    "bytes": 2533,
+    "sha256": "5f928fefd8da28f9130b6be3001e1ee9041986477389ffb652c225b1ce405442",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/input-toolbar.exe",
+    "exists": true,
+    "bytes": 2670592,
+    "sha256": "905c0784c5f85dc956457e0e1debda2441f6ba8daced1576f2df884c97ec6312",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/lexicon-manager.exe",
+    "exists": true,
+    "bytes": 3101696,
+    "sha256": "a987bc4b93d97cdd80e401f402fa917895b154dfeddb04030f6152fda98cd01f",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/lexicon-promotion-scan.exe",
+    "exists": true,
+    "bytes": 2901504,
+    "sha256": "ffbfa91f6519b0f1fc81dfd54c4cbafb7c48c8346068aeadd337b80cbd629e8c",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/reverse-lookup.exe",
+    "exists": true,
+    "bytes": 3136000,
+    "sha256": "95266af6c7cf12f3f5a296f1c7134de8705f28ceb32fcc3a1d011fa890318267",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/server.exe",
+    "exists": true,
+    "bytes": 3794944,
+    "sha256": "a9b4cc43d611a0e53e52e744863073b5de6e89738e386114c2a6efeabe70b654",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/settings-tool.exe",
+    "exists": true,
+    "bytes": 3467776,
+    "sha256": "2ea0a97e8d7b036d4cce5d0e571e31715c114c2a1b154cdbd46d29d26cda80ab",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/system-lexicon-audit.exe",
+    "exists": true,
+    "bytes": 2632704,
+    "sha256": "dd6fd39c8ade54ed17848e3b5aab491a854d28febbc2e7b926cd261ca0e65ba4",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/tool-hub.exe",
+    "exists": true,
+    "bytes": 2889216,
+    "sha256": "8b4338d14e0398156a9509c71cca2710e72644aff570670458e2e2ed1c91317e",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/yime-layout-designer.exe",
+    "exists": true,
+    "bytes": 3609088,
+    "sha256": "c63d3d6c4d5b2c3663851be64ebd5556b07b38dad08a764498a5c364b3b0b3c0",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "go-backend/yime-trainer.exe",
+    "exists": true,
+    "bytes": 3359232,
+    "sha256": "c82a268f2681f29bcc0fac7ac61cef09581d9654c2c58c527e1e0e1bbbd868ee",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "licenses/APACHE-2.0.txt",
+    "exists": true,
+    "bytes": 11560,
+    "sha256": "3ddf9be5c28fe27dad143a5dc76eea25222ad1dd68934a047064e56ed2fa40c5",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "licenses/AUTHORS.txt",
+    "exists": true,
+    "bytes": 1292,
+    "sha256": "546aea9307fcb39c82b50e9ef3847244203f39f6271dd4756ce15b15e470029f",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "licenses/LGPL-2.0.txt",
+    "exists": true,
+    "bytes": 27030,
+    "sha256": "510ccb0ba9b0a9bf99343901040a8ec42f92310704203d2068cea815cbbabb8f",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "licenses/LICENSE.txt",
+    "exists": true,
+    "bytes": 3170,
+    "sha256": "e2f98d8989e8ffed485ff8f6f5bf7aed1bfa623bbe17e4c9b5f6656e1f77c357",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "licenses/NLOHMANN-JSON-MIT.txt",
+    "exists": true,
+    "bytes": 1097,
+    "sha256": "b9715282b2f1db1359a919bb3a542dd4362fd9e38ae72d421367eb11abe62eec",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "licenses/NOTICE.md",
+    "exists": true,
+    "bytes": 2413,
+    "sha256": "f7775fb5d7aa82c65c9721802ed55951cf2cae128f1de7b77732f8618153c520",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "licenses/PIME-UPSTREAM-LICENSE.txt",
+    "exists": true,
+    "bytes": 1532,
+    "sha256": "8ab82ae7eb8b31884ec0160ebd3a1c455a584e88e4aa86c020b48b8e85aca720",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "licenses/RIME-BSD-3-Clause.txt",
+    "exists": true,
+    "bytes": 1513,
+    "sha256": "f67d27a6d2d586fcfed4b4c886a83747095396a39b6641e18e855086be2ec400",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "licenses/RIME-FROST-GPL-3.0.txt",
+    "exists": true,
+    "bytes": 35149,
+    "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "licenses/RUST-DEPENDENCIES.md",
+    "exists": true,
+    "bytes": 10928,
+    "sha256": "40099e7c6f18fb8de662ce15c83b89274d60c9a59255b70601a21f1f89d16041",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "licenses/SIL-OFL-1.1.txt",
+    "exists": true,
+    "bytes": 4463,
+    "sha256": "fcac737e761ec63dbfbdce11030a1780161920d80315edba9c8beff1c2bac5a2",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "licenses/THIRD_PARTY_NOTICES.md",
+    "exists": true,
+    "bytes": 5248,
+    "sha256": "86b29dec98dcd08f33db3f55567b0d21e4d95ad734d0fb49d3ad5457f936113d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "licenses/UNICODE-3.0.txt",
+    "exists": true,
+    "bytes": 2033,
+    "sha256": "cbdf187491780d89a65ce1e61fd73017afda3b4b13552d8a09c415d29041a343",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/invoke-rime-pime-candidate.ps1",
+    "exists": true,
+    "bytes": 1073,
+    "sha256": "237a63c6ee9912d54721c5e6850d3b99b4d2f29c2a1c77fa18422645bdeec3fe",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/invoke-rime-pime-candidate-request.ps1",
+    "exists": true,
+    "bytes": 1927,
+    "sha256": "d454a0c58670af66eef17d51304bde9be6bf339d1bdc8c32627fa8552c52be8e",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-candidate-coordinator.cs",
+    "exists": true,
+    "bytes": 6638,
+    "sha256": "910b355670b3061e38cfec4c26c2306373762db48469581ceca48c6e4f7bdc11",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-candidate-coordinator.psm1",
+    "exists": true,
+    "bytes": 2977,
+    "sha256": "78ea47c9b77e4c93832ec104c6d53a9e12991f80cb0a8e5bba02c8371516cff7",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-candidate-maintenance.psm1",
+    "exists": true,
+    "bytes": 52773,
+    "sha256": "473073b37a050b32d73ae1fcbd846d6e0f28d5b3648e0b3477304e255e205cba",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-directed-stop-contract.ps1",
+    "exists": true,
+    "bytes": 10824,
+    "sha256": "bb6bb4bc9ed3c35f22940323da9fe9cae68895b03b2720899d360aa36f5bddbe",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-dp1u-candidate-registration.psm1",
+    "exists": true,
+    "bytes": 30697,
+    "sha256": "cec584e6aac342096b3963d4bca1367c4d5c8245dd6bd6dfaef22764505bcf09",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-dp1u-candidate-registration-child.cs",
+    "exists": true,
+    "bytes": 12361,
+    "sha256": "a1080f736f640f5dd5a00ff223a7b4acc0a2aa430093bc5485ab32384e246ed1",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-dp1u-candidate-runtime.cs",
+    "exists": true,
+    "bytes": 8300,
+    "sha256": "b7c9b312b0de4d3591a5ffa3ceca74d5bedb0316c5f3518be9ef6c9dbc7eed47",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-dp1u-candidate-runtime.psm1",
+    "exists": true,
+    "bytes": 19156,
+    "sha256": "d2c1233c29f7be2939c83f71476f564cd026f3c6b8bc56aaba818bc8cd604c14",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-dp1u-exact-file-removal.cs",
+    "exists": true,
+    "bytes": 15716,
+    "sha256": "38ca72ec665187b1ecb958797660508e9f755a7b6f9d57b64eff6e7396e3b5a6",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-dp1u-isolated-preflight.schema.json",
+    "exists": true,
+    "bytes": 15150,
+    "sha256": "86562c401f398b2cc9cfef2e20e4c37142933d380edf3200d30039056af8a822",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-dp1u-native-facts.cs",
+    "exists": true,
+    "bytes": 6082,
+    "sha256": "9969b68b42bc11428d4af6a8bb348a9658e248c0758b953bd9e3834109f97be4",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-dp1u-native-probe.psm1",
+    "exists": true,
+    "bytes": 24791,
+    "sha256": "a222fec3f8a5dcd92dfebb928c0119d5c6d0d03acac585a0ad3275e312bdb6c3",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-dp1u-native-transaction.cs",
+    "exists": true,
+    "bytes": 10291,
+    "sha256": "4859d2abcd3f8eafd17053f10b6063944572796fc81b853606d1ce0da34431b8",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-executable-candidate.psm1",
+    "exists": true,
+    "bytes": 18942,
+    "sha256": "712ab4d05f388ded2f1ca7ec67ae90f9904308da9277ca986e7099a335508bf3",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-executable-receipt.psm1",
+    "exists": true,
+    "bytes": 8291,
+    "sha256": "1d9b760a9f99c0708f25d92d766af12e7a940c8989572d50adbd8eeb7045a4c1",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-ownership.ps1",
+    "exists": true,
+    "bytes": 54718,
+    "sha256": "f4d33a177a1f487b5d84c21568f3c853ad7f2fe57ca2ffc720087f3cb5e2b7bf",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-peer-protection.psm1",
+    "exists": true,
+    "bytes": 8801,
+    "sha256": "8e7e5e6583ccd2b0d4e94111c1907ec5bbba27aa1a63400bdeae515bf8e0cfac",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance/rime-pime-target-user.ps1",
+    "exists": true,
+    "bytes": 9919,
+    "sha256": "a6e6d925eb7bf0476fc1027830d7e1c88a5495a76087f01412965ce43df5a978",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "PIMELauncher.exe",
+    "exists": true,
+    "bytes": 659968,
+    "sha256": "688954522b6e6b63bf6fe714f68dfd3f54d769def6d248e15c4b0eb72a1c0afc",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "source-payload-inventory.json",
+    "exists": true,
+    "bytes": 392193,
+    "sha256": "511d3892ed8fad8568ed58cdc33e733323da23a9e04fc69ffebc9784380d7b8a",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "version.txt",
+    "exists": true,
+    "bytes": 12,
+    "sha256": "37e806f19ac26295abfe1258d8f2771442da1365655c7641acacba31bc21dd63",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "x64/PIMERegistrationStatus.exe",
+    "exists": true,
+    "bytes": 268800,
+    "sha256": "35ab47dade6f5d33caf745cd9d1b01b6ae6ae9b150b65bbca443fac6e5cc846d",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "x64/PIMETextService.dll",
+    "exists": true,
+    "bytes": 580096,
+    "sha256": "755abfa6ca48bfe326ee386ed78eaeb42dc9b9272166a25717aa3755505c9a80",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "x86/PIMERegistrationStatus.exe",
+    "exists": true,
+    "bytes": 213504,
+    "sha256": "4be5399e2e1c8215ce250767391d2549f497b10262053408d43bbc8e7b1fdd04",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "x86/PIMETextService.dll",
+    "exists": true,
+    "bytes": 484352,
+    "sha256": "d9dcfdad4c5b0608494e3837b5a0b38ea4f039ee11ca30be1eeae3ac9c2a491c",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "candidate.json",
+    "exists": true,
+    "bytes": 29692,
+    "sha256": "256a9ab5d213093248001d2bb32f918bcb0c4431628ec40ea5295e8b14a76ddf",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "rime-pime-candidate-state.json",
+    "exists": true,
+    "bytes": 337,
+    "sha256": "877743bfd70cb396239c30b207fca9c37875828241d274c0852445e3d7f37c2f",
+    "hash_matches_prior": true
+  },
+  {
+    "path": "maintenance-candidate.exe",
+    "exists": true,
+    "bytes": 41248163,
+    "sha256": "0602438008d5110767857ff9b5facd23a1bd54a74baff1f81fba5b1e56e2bdd3",
+    "hash_matches_prior": true
+  }
+]

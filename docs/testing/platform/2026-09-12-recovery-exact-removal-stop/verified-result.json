@@ -1,0 +1,14 @@
+{
+  "transaction_id": "9fe7f28d-0889-4828-85b5-1f481431b43a",
+  "source_commit": "1814a63ffdbc12cfd4a0d00e9305509e5eb3904a",
+  "validate_returncode": 0,
+  "apply_returncode": 1,
+  "apply_attempts": 1,
+  "recovery_passed": false,
+  "tip_repair_reached": false,
+  "listed_payload_present": 185,
+  "listed_payload_absent": 7,
+  "per_file_removal_outcomes_persisted": false,
+  "current_registry_not_recollected": true,
+  "current_journal_not_parsed": true
+}

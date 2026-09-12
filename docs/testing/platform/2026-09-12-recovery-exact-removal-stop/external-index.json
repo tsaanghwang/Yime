@@ -1,0 +1,40 @@
+{
+  "indexed_utc": "2026-09-12T04:15:24.463220+00:00",
+  "files": [
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\diagnostics\\failure-642b55542e354dac8f5f557a0b83459d.json",
+      "bytes": 1288,
+      "sha256": "c29e07254514af21ceda2fcf468cad0ccab87827fcaeb882c492fb1a350637f8"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-lockfix-1814a63f-once\\apply-process.json",
+      "bytes": 143,
+      "sha256": "2c2b8c17ebe088fd070ea0645e58473c99922bedfedd487919b0afde18d57e14"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-lockfix-1814a63f-once\\apply.stderr.log",
+      "bytes": 75,
+      "sha256": "780ccfbc51bcc2ebb38beb96d5736b69da2f72f694f4a61f63bc51b7bf6e5fac"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-lockfix-1814a63f-once\\apply.stdout.log",
+      "bytes": 132,
+      "sha256": "0bbff3305bafe42056638b0b7b6f2d090c6d684f7f32edc58969b9d8fbc88fac"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-lockfix-1814a63f-once\\validate-process.json",
+      "bytes": 143,
+      "sha256": "7582c73b3380068ccf82483a1b3dc0c09fcc33f52277528fff6748e44ca04e59"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-lockfix-1814a63f-once\\validate.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-lockfix-1814a63f-once\\validate.stdout.log",
+      "bytes": 86,
+      "sha256": "dd0ff32e59828424808a581b301d201cc0afc18876cb85a9d4c577e939c7214f"
+    }
+  ]
+}

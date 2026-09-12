@@ -1,0 +1,34 @@
+{
+  "files": [
+    {
+      "path": "apply-process.json",
+      "bytes": 145,
+      "sha256": "5c100be2180fd430cc8b98c918038329e236e0f1f8070e26ec05e7b51a6c6207"
+    },
+    {
+      "path": "external-index.json",
+      "bytes": 1722,
+      "sha256": "a170ffc7fba7a830d851a56e016212b39c4f4f3537e620cdde2f0b032665a30e"
+    },
+    {
+      "path": "failure.json",
+      "bytes": 1229,
+      "sha256": "fad448832ace8ca2e2b6b677fe2396498b675f1f8f760bffcffde7c3d05309d3"
+    },
+    {
+      "path": "payload-observations.json",
+      "bytes": 44411,
+      "sha256": "c3a64893ed1a82a7d74583629739b0f3c5e5ed2dd54213c1a993c3c7ff52fca9"
+    },
+    {
+      "path": "validate-process.json",
+      "bytes": 145,
+      "sha256": "3e64f2b2870f00382c02f4a19754fb2f2210b82f6692de19fd87a2a689159652"
+    },
+    {
+      "path": "verified-result.json",
+      "bytes": 468,
+      "sha256": "93f10ad1c98bf15b6ec09ea1f26ecb5fedbe566fdbdc3c49304fb21ce0ebd867"
+    }
+  ]
+}
