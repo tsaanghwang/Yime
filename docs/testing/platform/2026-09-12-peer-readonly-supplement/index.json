@@ -1,10 +1,10 @@
 {
-  "assembled_at_utc": "2026-09-12T00:04:32.824381+00:00",
+  "assembled_at_utc": "2026-09-12T00:05:42.417370+00:00",
   "files": [
     {
       "path": "external-index.json",
       "bytes": 4820,
-      "sha256": "a6ffe1a9ea4d059807bb33e8da2137a89990837bc77cb91a4e2d2f303d2f9aeb"
+      "sha256": "8b4e4650d8f48fc82f880dd433f52939e9f7f0e7184587308e9a802df05e4926"
     },
     {
       "path": "gaps.json",
@@ -14,12 +14,12 @@
     {
       "path": "peer-stage-observations.json",
       "bytes": 154405,
-      "sha256": "2c63a7bb2c44969f655a43b0f388acbb16d5e27bc7ef016bd07d97bcb357afa8"
+      "sha256": "57abdbd43dcc72ec28c7ad362dfe870c89fd5c9d990706af3839fad56049e747"
     },
     {
       "path": "retained-errors.json",
-      "bytes": 7223,
-      "sha256": "99afea8feb13ca21757f4ee5e8d3be0ada5a9c1ba8b280b5e4f8bf147640326d"
+      "bytes": 7151,
+      "sha256": "64af38dd15d0619f9a077c4f80d28daa0e747ca00b11a3e11fad612838f5aac3"
     }
   ]
 }
