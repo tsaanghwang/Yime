@@ -1,0 +1,598 @@
+{
+    "schema_version":  "yime-peer-current-readonly-v1",
+    "transaction_id":  "9fe7f28d-0889-4828-85b5-1f481431b43a",
+    "assembled_utc":  "2026-09-12T00:25:49.1280696Z",
+    "computer":  "计算机",
+    "initiating_sid":  "<initiating-SID>",
+    "product_mutation_executed":  false,
+    "physical_input":  "not tested",
+    "observations":  [
+                         {
+                             "utc":  "2026-09-12T00:25:48.1888596Z",
+                             "hive":  "Users",
+                             "view":  "Shared",
+                             "key":  "<initiating-SID>\\Control Panel\\International\\User Profile",
+                             "method":  "EnumKey",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+                                                           "en-US",
+                                                           "und-Latn",
+                                                           "zh-Hans-CN"
+                                                       ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.2349299Z",
+                             "hive":  "Users",
+                             "view":  "Shared",
+                             "key":  "<initiating-SID>\\Control Panel\\International\\User Profile",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+                                                           "ShowAutoCorrection",
+                                                           "ShowTextPrediction",
+                                                           "Languages",
+                                                           "ShowCasing",
+                                                           "ShowShiftLock"
+                                                       ],
+                                            "Types":  [
+                                                          4,
+                                                          4,
+                                                          7,
+                                                          4,
+                                                          4
+                                                      ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.2723764Z",
+                             "hive":  "Users",
+                             "view":  "Shared",
+                             "key":  "<initiating-SID>\\Control Panel\\International\\User Profile\\en-US",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+                                                           "CachedLanguageName",
+                                                           "0409:00000409"
+                                                       ],
+                                            "Types":  [
+                                                          1,
+                                                          4
+                                                      ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.3039724Z",
+                             "hive":  "Users",
+                             "view":  "Shared",
+                             "key":  "<initiating-SID>\\Control Panel\\International\\User Profile\\und-Latn",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+                                                           "CachedLanguageName",
+                                                           "TransientLangId",
+                                                           "2000:{FE0420F1-38D1-4B4C-96BF-E7E20A74CFB7}{E51785DC-9874-431C-AE8A-2DF418D96A19}"
+                                                       ],
+                                            "Types":  [
+                                                          1,
+                                                          4,
+                                                          4
+                                                      ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.3360300Z",
+                             "hive":  "Users",
+                             "view":  "Shared",
+                             "key":  "<initiating-SID>\\Control Panel\\International\\User Profile\\zh-Hans-CN",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+                                                           "CachedLanguageName",
+                                                           "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+                                                           "0804:{E40FA752-BB96-461D-A51D-F40EB437EC65}{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                                                           "0804:{35F67E9D-A54D-4177-9697-8B0AB71A9E04}{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}"
+                                                       ],
+                                            "Types":  [
+                                                          1,
+                                                          4,
+                                                          4,
+                                                          4
+                                                      ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.4761414Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry32",
+                             "key":  "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                             "method":  "EnumKey",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+                                                           "InprocServer32"
+                                                       ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.5032436Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry32",
+                             "key":  "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+
+                                                       ],
+                                            "Types":  [
+
+                                                      ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.5314427Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry32",
+                             "key":  "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                             "method":  "EnumKey",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+
+                                                       ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.5568029Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry32",
+                             "key":  "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+                                                           "",
+                                                           "ThreadingModel"
+                                                       ],
+                                            "Types":  [
+                                                          1,
+                                                          1
+                                                      ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.5823866Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry32",
+                             "key":  "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                             "method":  "EnumKey",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+                                                           "Category",
+                                                           "LanguageProfile"
+                                                       ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.6102383Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry32",
+                             "key":  "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+
+                                                       ],
+                                            "Types":  [
+
+                                                      ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.6353317Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry32",
+                             "key":  "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                             "method":  "EnumKey",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+
+                                                       ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.6603930Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry32",
+                             "key":  "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+                                                           "Description",
+                                                           "IconFile",
+                                                           "IconIndex",
+                                                           "Enable"
+                                                       ],
+                                            "Types":  [
+                                                          1,
+                                                          1,
+                                                          4,
+                                                          4
+                                                      ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.6851643Z",
+                             "hive":  "Users",
+                             "view":  "Registry32",
+                             "key":  "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                             "method":  "EnumKey",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  2,
+                                            "sNames":  null
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.7109188Z",
+                             "hive":  "Users",
+                             "view":  "Registry32",
+                             "key":  "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  2,
+                                            "sNames":  null,
+                                            "Types":  null
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.7385163Z",
+                             "hive":  "Users",
+                             "view":  "Registry32",
+                             "key":  "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                             "method":  "EnumKey",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  2,
+                                            "sNames":  null
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.7651030Z",
+                             "hive":  "Users",
+                             "view":  "Registry32",
+                             "key":  "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  2,
+                                            "sNames":  null,
+                                            "Types":  null
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.7961093Z",
+                             "hive":  "Users",
+                             "view":  "Registry32",
+                             "key":  "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                             "method":  "GetDWORDValue",
+                             "arguments":  {
+                                               "sValueName":  "Enable"
+                                           },
+                             "result":  {
+                                            "ReturnValue":  2,
+                                            "uValue":  null
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.8256859Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry64",
+                             "key":  "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                             "method":  "EnumKey",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+                                                           "InprocServer32"
+                                                       ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.8513377Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry64",
+                             "key":  "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+
+                                                       ],
+                                            "Types":  [
+
+                                                      ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.8756852Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry64",
+                             "key":  "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                             "method":  "EnumKey",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+
+                                                       ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.9039237Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry64",
+                             "key":  "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+                                                           "",
+                                                           "ThreadingModel"
+                                                       ],
+                                            "Types":  [
+                                                          1,
+                                                          1
+                                                      ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.9282250Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry64",
+                             "key":  "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                             "method":  "EnumKey",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+                                                           "Category",
+                                                           "LanguageProfile"
+                                                       ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.9540180Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry64",
+                             "key":  "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+
+                                                       ],
+                                            "Types":  [
+
+                                                      ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:48.9773334Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry64",
+                             "key":  "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                             "method":  "EnumKey",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+
+                                                       ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:49.0048735Z",
+                             "hive":  "LocalMachine",
+                             "view":  "Registry64",
+                             "key":  "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  0,
+                                            "sNames":  [
+                                                           "Description",
+                                                           "IconFile",
+                                                           "IconIndex",
+                                                           "Enable"
+                                                       ],
+                                            "Types":  [
+                                                          1,
+                                                          1,
+                                                          4,
+                                                          4
+                                                      ]
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:49.0295514Z",
+                             "hive":  "Users",
+                             "view":  "Registry64",
+                             "key":  "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                             "method":  "EnumKey",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  2,
+                                            "sNames":  null
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:49.0539455Z",
+                             "hive":  "Users",
+                             "view":  "Registry64",
+                             "key":  "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  2,
+                                            "sNames":  null,
+                                            "Types":  null
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:49.0773789Z",
+                             "hive":  "Users",
+                             "view":  "Registry64",
+                             "key":  "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                             "method":  "EnumKey",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  2,
+                                            "sNames":  null
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:49.1027533Z",
+                             "hive":  "Users",
+                             "view":  "Registry64",
+                             "key":  "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                             "method":  "EnumValues",
+                             "arguments":  {
+
+                                           },
+                             "result":  {
+                                            "ReturnValue":  2,
+                                            "sNames":  null,
+                                            "Types":  null
+                                        },
+                             "error":  null
+                         },
+                         {
+                             "utc":  "2026-09-12T00:25:49.1270275Z",
+                             "hive":  "Users",
+                             "view":  "Registry64",
+                             "key":  "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                             "method":  "GetDWORDValue",
+                             "arguments":  {
+                                               "sValueName":  "Enable"
+                                           },
+                             "result":  {
+                                            "ReturnValue":  2,
+                                            "uValue":  null
+                                        },
+                             "error":  null
+                         }
+                     ]
+}

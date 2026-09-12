@@ -1,0 +1,22 @@
+{
+  "assembled_utc": "2026-09-12T00:25:49.1280696Z",
+  "observation_count": 31,
+  "provider_exception_count": 0,
+  "unexpected_return_codes": [],
+  "return_code_0_count": 21,
+  "return_code_2_count": 10,
+  "reference_candidates": [
+    {
+      "key": "<initiating-SID>\\Control Panel\\International\\User Profile\\zh-Hans-CN",
+      "name": "0804:{35F67E9D-A54D-4177-9697-8B0AB71A9E04}{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}",
+      "type": 4,
+      "contains_yimecore_clsid": false
+    }
+  ],
+  "yimecore_machine_keys_present_both_views": true,
+  "yimecore_user_tip_missing_both_views": true,
+  "user_enable_missing_not_zero": true,
+  "physical_yimecore_input": "not tested",
+  "product_mutation_executed": false,
+  "recovery_passed": false
+}

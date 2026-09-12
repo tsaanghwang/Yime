@@ -1,0 +1,41 @@
+{
+  "collection_utc": "2026-09-12T00:25:49.1280696Z",
+  "files": [
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\current-peer-bb515e4fe04f493e82d220c5ca8f5300\\current-private.json",
+      "bytes": 32366,
+      "sha256": "08e95c34c15d769a5a560aceb3730f3281c5f82686f6107a744041423b4e27af",
+      "last_write_utc": "2026-09-12T00:25:49.158751+00:00"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\current-peer-bb515e4fe04f493e82d220c5ca8f5300\\current-redacted.json",
+      "bytes": 31886,
+      "sha256": "63edead3b505ee12adef23c72b0d057d8f87725ce96ed3e8d99692a3876ea0be",
+      "last_write_utc": "2026-09-12T00:25:49.163166+00:00"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\current-peer-bb515e4fe04f493e82d220c5ca8f5300\\index.json",
+      "bytes": 344,
+      "sha256": "e145d0d9c277af2168a5a66d47a6a81dced296302fe993d7fde00fbfacb71efe",
+      "last_write_utc": "2026-09-12T00:25:49.246832+00:00"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\current-peer-console-edcf7997d60f4e2786ee7e0bdcfaa51c\\execution.json",
+      "bytes": 143,
+      "sha256": "f67c4ca3ec810669729b10458d1bfe1afae5513a323fab24b065d27fcbca664e",
+      "last_write_utc": "2026-09-12T00:25:49.295889+00:00"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\current-peer-console-edcf7997d60f4e2786ee7e0bdcfaa51c\\stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "last_write_utc": "2026-09-12T00:25:44.987918+00:00"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\current-peer-console-edcf7997d60f4e2786ee7e0bdcfaa51c\\stdout.log",
+      "bytes": 192,
+      "sha256": "961b71b02769eb455659355a2b0b63b8a14d89c4405269fd245baeeb8e47e875",
+      "last_write_utc": "2026-09-12T00:25:49.250842+00:00"
+    }
+  ]
+}
