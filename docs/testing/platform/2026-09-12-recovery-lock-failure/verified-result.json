@@ -1,0 +1,14 @@
+{
+  "source_commit": "04a46d6178005f65a767dcd558770591b8864e0b",
+  "transaction_id": "9fe7f28d-0889-4828-85b5-1f481431b43a",
+  "validation_passed": true,
+  "apply_attempts": 1,
+  "apply_returncode": 1,
+  "worker_pid": 29076,
+  "controller_pid": 26544,
+  "worker_error": "IOException opening install transaction.lock",
+  "recovery_passed": false,
+  "tip_repair_reached": false,
+  "lock_owner_directly_observed": false,
+  "terminal_state_recollected": false
+}

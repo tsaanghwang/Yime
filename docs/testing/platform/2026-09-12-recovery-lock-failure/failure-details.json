@@ -1,0 +1,38 @@
+[
+  {
+    "schema_version": "yime-maintenance-failure-v1",
+    "utc": "2026-09-12T03:18:59.0657109Z",
+    "pid": 29076,
+    "phase": "worker-original-Remove",
+    "exception_type": "System.Management.Automation.MethodInvocationException",
+    "message": "使用“1”个参数调用“Invoke”时发生异常:“文件“%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-9fe7f28d-0889-4828-85b5-1f481431b43a\\install-9fe7f28d-0889-4828-85b5-1f481431b43a\\transaction.lock”正由另一进程使用，因此该进程无法访问此文件。”",
+    "exception": "System.Management.Automation.MethodInvocationException: 使用“1”个参数调用“Invoke”时发生异常:“文件“%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-9fe7f28d-0889-4828-85b5-1f481431b43a\\install-9fe7f28d-0889-4828-85b5-1f481431b43a\\transaction.lock”正由另一进程使用，因此该进程无法访问此文件。” ---> System.IO.IOException: 文件“%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-9fe7f28d-0889-4828-85b5-1f481431b43a\\install-9fe7f28d-0889-4828-85b5-1f481431b43a\\transaction.lock”正由另一进程使用，因此该进程无法访问此文件。\r\n   在 System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)\r\n   在 System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)\r\n   在 System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)\r\n   在 Yime.Candidate_15f50f3130d444bf81c4f279a803be18.TransactionStore..ctor(String root, Boolean create)\r\n   --- 内部异常堆栈跟踪的结尾 ---\r\n   在 System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)\r\n   在 System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)\r\n   在 System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)\r\n   在 System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)",
+    "script_stack": "在 Open-CandidateJournal、C:\\dev\\Yime-localtest\\tools\\dual-product\\rime-pime-executable-candidate.psm1 中: 第 229 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\dual-product\\rime-pime-candidate-maintenance.psm1 中: 第 254 行\r\n在 Read-MaintenancePreparedPlan、C:\\dev\\Yime-localtest\\tools\\dual-product\\rime-pime-candidate-maintenance.psm1 中: 第 254 行\r\n在 Invoke-RimePimeCandidateWorker、C:\\dev\\Yime-localtest\\tools\\dual-product\\rime-pime-candidate-maintenance.psm1 中: 第 513 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\dual-product\\recover-defaultstring-transaction.ps1 中: 第 52 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\dual-product\\recover-defaultstring-transaction.ps1 中: 第 41 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\powershell\\preflight.ps1 中: 第 68 行",
+    "error_id": "IOException",
+    "installed_acceptance_passed": false
+  },
+  {
+    "schema_version": "yime-maintenance-failure-v1",
+    "utc": "2026-09-12T03:19:03.9627038Z",
+    "pid": 29076,
+    "phase": "defaultstring-recovery-worker",
+    "exception_type": "System.Management.Automation.MethodInvocationException",
+    "message": "使用“1”个参数调用“Invoke”时发生异常:“文件“%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-9fe7f28d-0889-4828-85b5-1f481431b43a\\install-9fe7f28d-0889-4828-85b5-1f481431b43a\\transaction.lock”正由另一进程使用，因此该进程无法访问此文件。”",
+    "exception": "System.Management.Automation.MethodInvocationException: 使用“1”个参数调用“Invoke”时发生异常:“文件“%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-9fe7f28d-0889-4828-85b5-1f481431b43a\\install-9fe7f28d-0889-4828-85b5-1f481431b43a\\transaction.lock”正由另一进程使用，因此该进程无法访问此文件。” ---> System.IO.IOException: 文件“%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-9fe7f28d-0889-4828-85b5-1f481431b43a\\install-9fe7f28d-0889-4828-85b5-1f481431b43a\\transaction.lock”正由另一进程使用，因此该进程无法访问此文件。\r\n   在 System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)\r\n   在 System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)\r\n   在 System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)\r\n   在 Yime.Candidate_15f50f3130d444bf81c4f279a803be18.TransactionStore..ctor(String root, Boolean create)\r\n   --- 内部异常堆栈跟踪的结尾 ---\r\n   在 System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)\r\n   在 System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)\r\n   在 System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)\r\n   在 System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)",
+    "script_stack": "在 Open-CandidateJournal、C:\\dev\\Yime-localtest\\tools\\dual-product\\rime-pime-executable-candidate.psm1 中: 第 229 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\dual-product\\rime-pime-candidate-maintenance.psm1 中: 第 254 行\r\n在 Read-MaintenancePreparedPlan、C:\\dev\\Yime-localtest\\tools\\dual-product\\rime-pime-candidate-maintenance.psm1 中: 第 254 行\r\n在 Invoke-RimePimeCandidateWorker、C:\\dev\\Yime-localtest\\tools\\dual-product\\rime-pime-candidate-maintenance.psm1 中: 第 513 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\dual-product\\recover-defaultstring-transaction.ps1 中: 第 52 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\dual-product\\recover-defaultstring-transaction.ps1 中: 第 41 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\powershell\\preflight.ps1 中: 第 68 行",
+    "error_id": "IOException",
+    "installed_acceptance_passed": false
+  },
+  {
+    "schema_version": "yime-maintenance-failure-v1",
+    "utc": "2026-09-12T03:19:04.0280491Z",
+    "pid": 26544,
+    "phase": "defaultstring-recovery",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "message": "Recovery worker failed: 1",
+    "exception": "System.Management.Automation.RuntimeException: Recovery worker failed: 1",
+    "script_stack": "在 Invoke-MaintenanceWorker、C:\\dev\\Yime-localtest\\tools\\dual-product\\defaultstring-recovery-adapter.ps1 中: 第 39 行\r\n在 Complete-MaintenanceRemoval、C:\\dev\\Yime-localtest\\tools\\dual-product\\rime-pime-candidate-maintenance.psm1 中: 第 362 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\dual-product\\recover-defaultstring-transaction.ps1 中: 第 83 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\dual-product\\recover-defaultstring-transaction.ps1 中: 第 41 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\powershell\\preflight.ps1 中: 第 68 行",
+    "error_id": "Recovery worker failed: 1",
+    "installed_acceptance_passed": false
+  }
+]

@@ -1,0 +1,50 @@
+{
+  "indexed_utc": "2026-09-12T03:20:44.580238+00:00",
+  "files": [
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\diagnostics\\failure-33c10c3c1bc04e1caa06ebdd960c63f6.json",
+      "bytes": 3295,
+      "sha256": "24c1b5de203ecf5f48dbc73635360f88269bec5b09894f5ef18953320ed67a61"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\diagnostics\\failure-ebee678450024080b48a213925c9877c.json",
+      "bytes": 3302,
+      "sha256": "da373146b23cee4e1b281530985134673dae673d030ebc4bb1213596d4d457df"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\diagnostics\\failure-f0c4586d164b4aabaafb77e2c2cd20ae.json",
+      "bytes": 1133,
+      "sha256": "89e1523da8291640c8991c29aee40620d9779f4f4053349e2a9d5039a54b1bca"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-pythonfix-04a46d61-once\\apply-process.json",
+      "bytes": 143,
+      "sha256": "9af16c7d788f2705b84ebaeb26470a706aeed6936013fcf351ea227202fe07d5"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-pythonfix-04a46d61-once\\apply.stderr.log",
+      "bytes": 27,
+      "sha256": "1d19f0b5def5e6aa7178b99d5b905200eb7094e49237bb0ea63e40a8455016e5"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-pythonfix-04a46d61-once\\apply.stdout.log",
+      "bytes": 132,
+      "sha256": "bdd33416d5f63f9af33886cd01faea18a7f86bc116b4091130bcbaaa504a8568"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-pythonfix-04a46d61-once\\validate-process.json",
+      "bytes": 143,
+      "sha256": "b9a2aa2daf86c82211603b2776b027d41a33b16df63efeb639d7b2fabb279e65"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-pythonfix-04a46d61-once\\validate.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-pythonfix-04a46d61-once\\validate.stdout.log",
+      "bytes": 86,
+      "sha256": "dd0ff32e59828424808a581b301d201cc0afc18876cb85a9d4c577e939c7214f"
+    }
+  ]
+}
