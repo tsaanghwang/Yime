@@ -1,0 +1,1304 @@
+{
+  "pid": 5712,
+  "outcomes_available": true,
+  "install_root": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\product-9fe7f28d-0889-4828-85b5-1f481431b43a",
+  "outcomes": [
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\fonts\\YinYuan-Regular.ttf",
+      "status": "preserved-error",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 5
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\luna_pinyin.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\luna_pinyin.schema.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\hk2s.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\hk2t.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\HKVariants.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\HKVariantsRev.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\HKVariantsRevPhrases.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\jp2t.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\JPShinjitaiCharacters.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\JPShinjitaiPhrases.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\JPVariants.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\JPVariantsRev.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\s2hk.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\s2t.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\s2tw.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\s2twp.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\STCharacters.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\STPhrases.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\t2hk.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\t2jp.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\t2s.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\t2tw.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\TSCharacters.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\TSPhrases.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\tw2s.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\tw2sp.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\tw2t.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\TWPhrases.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\TWPhrasesRev.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\TWVariants.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\TWVariantsRev.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\opencc\\TWVariantsRevPhrases.ocd2",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\pinyin_normalized.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\symbols.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\trainer\\curriculum.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\trainer\\foundation.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\trainer\\README.md",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\trainer\\yinyuan_catalog.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\trainer\\yinyuan_groups.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_core_source_manifest.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_full.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_full.schema.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_manifest.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_sentence_full.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_sentence_shorthand.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_sentence_variable.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_shorthand.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_shorthand.schema.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_variable.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_variable.schema.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_erhua_reverse_source.tsv",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_full.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_full.schema.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_lexicon_manifest.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_particle_a_stage6d_full.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_particle_a_stage6d_manifest.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_particle_a_stage6d_shorthand.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_particle_a_stage6d_variable.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_pinyin_codes.tsv",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_pinyin_reverse_source.tsv",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_full.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_full.schema.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_manifest.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_sentence_full.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_sentence_shorthand.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_sentence_variable.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_shorthand.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_shorthand.schema.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_variable.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_variable.schema.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_pua_pinyin.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_runtime_profile.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_sentence_full.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_sentence_shorthand.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_sentence_variable.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_shorthand.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_shorthand.schema.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_syllable_decomposition.tsv",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_syllable_inventory_manifest.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_system_candidate_exclusions.tsv",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_third_tone_stage5c_full.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_third_tone_stage5c_manifest.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_third_tone_stage5c_shorthand.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_third_tone_stage5c_variable.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_variable.dict.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_variable.schema.yaml",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\data\\yime_yinyuan_layout.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\help\\diagnostics.html",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\help\\diagnostics.md",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\help\\README.html",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\help\\README.md",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\help\\settings-and-data.html",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\help\\settings-and-data.md",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\help\\trial-feedback.html",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\help\\trial-feedback.md",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icon.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\chi.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\chi_full_capsoff.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\chi_full_capson.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\chi_half_capsoff.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\chi_half_capson.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\config.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\eng.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\eng_full_capsoff.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\eng_full_capson.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\eng_half_capsoff.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\eng_half_capson.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\full.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\half.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\layout_horizontal.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\layout_vertical.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\lexicon.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\punct_chi.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\punct_eng.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\reverse-lookup.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\tools.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\yime_qin_seal_yin.ico",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\yime_qin_seal_yin.png",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\icons\\yin.png",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\ime.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\layoutdesigner\\README.md",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\lexiconpromotion\\README.md",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\rime.dll",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\rime_deployer.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\rime_dict_manager.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\rime_runtime.lock.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\yimecore\\testdata\\dynamic_sentence_cases.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\yimecore\\testdata\\e1_probes.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\yimecore\\testdata\\e2_sentence_probes.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\yimecore\\testdata\\e2b_segment_probes.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input_methods\\yime\\yimecore\\testdata\\e4_reviewed_alias_probes.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\input-toolbar.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\lexicon-manager.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\lexicon-promotion-scan.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\reverse-lookup.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\server.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\settings-tool.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\system-lexicon-audit.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\tool-hub.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\yime-layout-designer.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "go-backend\\yime-trainer.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "licenses\\APACHE-2.0.txt",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "licenses\\AUTHORS.txt",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "licenses\\LGPL-2.0.txt",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "licenses\\LICENSE.txt",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "licenses\\NLOHMANN-JSON-MIT.txt",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "licenses\\NOTICE.md",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "licenses\\PIME-UPSTREAM-LICENSE.txt",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "licenses\\RIME-BSD-3-Clause.txt",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "licenses\\RIME-FROST-GPL-3.0.txt",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "licenses\\RUST-DEPENDENCIES.md",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "licenses\\SIL-OFL-1.1.txt",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "licenses\\THIRD_PARTY_NOTICES.md",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "licenses\\UNICODE-3.0.txt",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\invoke-rime-pime-candidate.ps1",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\invoke-rime-pime-candidate-request.ps1",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-candidate-coordinator.cs",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-candidate-coordinator.psm1",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-candidate-maintenance.psm1",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-directed-stop-contract.ps1",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-dp1u-candidate-registration.psm1",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-dp1u-candidate-registration-child.cs",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-dp1u-candidate-runtime.cs",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-dp1u-candidate-runtime.psm1",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-dp1u-exact-file-removal.cs",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-dp1u-isolated-preflight.schema.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-dp1u-native-facts.cs",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-dp1u-native-probe.psm1",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-dp1u-native-transaction.cs",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-executable-candidate.psm1",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-executable-receipt.psm1",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-ownership.ps1",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-peer-protection.psm1",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance\\rime-pime-target-user.ps1",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "PIMELauncher.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "source-payload-inventory.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "version.txt",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "x64\\PIMERegistrationStatus.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "x64\\PIMETextService.dll",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "x86\\PIMERegistrationStatus.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "x86\\PIMETextService.dll",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "candidate.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "rime-pime-candidate-state.json",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    },
+    {
+      "path": "maintenance-candidate.exe",
+      "status": "not-attempted",
+      "marked_for_deletion": false,
+      "removed": false,
+      "native_error": 0
+    }
+  ],
+  "utc": "2026-09-12T05:08:13.3415907Z",
+  "initially_absent_count": 7
+}

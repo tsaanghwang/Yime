@@ -1,0 +1,12 @@
+{
+  "schema_version": "yime-maintenance-failure-v1",
+  "utc": "2026-09-12T05:08:13.3813840Z",
+  "pid": 5712,
+  "phase": "defaultstring-recovery",
+  "exception_type": "System.Management.Automation.RuntimeException",
+  "message": "Exact removal is pending or incomplete; no completion decision published. Evidence: %USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-fae6c1d4-ca01-4b6e-b3f7-7b430b20cd76\\exact-removal-2316d4a452724ae4b9f0a07186ed46b6.json",
+  "exception": "System.Management.Automation.RuntimeException: Exact removal is pending or incomplete; no completion decision published. Evidence: %USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-fae6c1d4-ca01-4b6e-b3f7-7b430b20cd76\\exact-removal-2316d4a452724ae4b9f0a07186ed46b6.json",
+  "script_stack": "在 Remove-MaintenanceInstalledFiles、C:\\dev\\Yime-localtest\\tools\\dual-product\\rime-pime-candidate-maintenance.psm1 中: 第 411 行\r\n在 Complete-MaintenanceRemoval、C:\\dev\\Yime-localtest\\tools\\dual-product\\rime-pime-candidate-maintenance.psm1 中: 第 367 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\dual-product\\recover-defaultstring-transaction.ps1 中: 第 85 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\dual-product\\recover-defaultstring-transaction.ps1 中: 第 41 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\powershell\\preflight.ps1 中: 第 68 行",
+  "error_id": "Exact removal is pending or incomplete; no completion decision published. Evidence: %USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-fae6c1d4-ca01-4b6e-b3f7-7b430b20cd76\\exact-removal-2316d4a452724ae4b9f0a07186ed46b6.json",
+  "installed_acceptance_passed": false
+}

@@ -1,0 +1,34 @@
+{
+  "files": [
+    {
+      "path": "apply-process.json",
+      "bytes": 145,
+      "sha256": "fc6c10dd1fbfd4e73b05d680a6a0d76ffedf5b485e80004755138db7393187ad"
+    },
+    {
+      "path": "exact-removal-redacted.json",
+      "bytes": 39212,
+      "sha256": "fce0c0631333d81927976ce81813e3b2337c4cea14119a9f9868066a8c1fdc90"
+    },
+    {
+      "path": "external-index.json",
+      "bytes": 2008,
+      "sha256": "630b3b3edb563a875ac7d0a0a0913ab903b793760447eadb0d5ac0836fb52cb6"
+    },
+    {
+      "path": "failure-redacted.json",
+      "bytes": 1690,
+      "sha256": "d2bc939d95774a25025fe32b42ac6a7225d8cc76a8896dfe6f0f18e6ff51396d"
+    },
+    {
+      "path": "validate-process.json",
+      "bytes": 145,
+      "sha256": "a99d820934e3ffce0c3a1f23d8ec04cf686381c76f3abbb2fcef405f2e169b8f"
+    },
+    {
+      "path": "verified-result.json",
+      "bytes": 643,
+      "sha256": "02cecc87d1c5a93c2d94b57a4c67715209ac2ba2dd71a52e0f3be5ec17bbedfc"
+    }
+  ]
+}
