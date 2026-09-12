@@ -1,0 +1,12 @@
+{
+  "source_commit": "88dc856a0ea749ee9e35ea28f86ff9c742a791fc",
+  "transaction_id": "9fe7f28d-0889-4828-85b5-1f481431b43a",
+  "validation_passed": true,
+  "apply_invoked_once": true,
+  "apply_passed": false,
+  "worker_launch_failed_before_start": true,
+  "worker_execution_observed": false,
+  "tip_repair_reached": false,
+  "recovery_passed": false,
+  "terminal_state_not_recollected": true
+}
