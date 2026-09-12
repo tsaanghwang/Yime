@@ -1,0 +1,3025 @@
+{
+  "run_id": "9fe7f28d-0889-4828-85b5-1f481431b43a",
+  "assembled_at_utc": "2026-09-12T00:04:32.824381+00:00",
+  "pairs": [
+    {
+      "group": "09f2d928840c4d5184b140ac2ea1c252",
+      "inferred_phase": "controller-Install",
+      "inferred_pid": 21372,
+      "phase_pid_explicit_in_snapshot": false,
+      "association_basis": "File last-write UTC sequence, failure JSON UTC/PID/phase, and Start/Complete-MaintenancePeerProtection call scope; inference, not embedded event identity",
+      "snapshots": {
+        "before": {
+          "file": "peer-9fe7f28d-0889-4828-85b5-1f481431b43a-09f2d928840c4d5184b140ac2ea1c252-before.json",
+          "file_last_write_utc": "2026-09-11T23:39:59.551816+00:00",
+          "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+          "tip": [
+            {
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "machine_registry": [
+            {
+              "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [
+                    {
+                      "name": "",
+                      "kind": "String",
+                      "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll"
+                    },
+                    {
+                      "name": "ThreadingModel",
+                      "kind": "String",
+                      "value": "Apartment"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Description",
+                              "kind": "String",
+                              "value": "音元拼音"
+                            },
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            },
+                            {
+                              "name": "IconFile",
+                              "kind": "String",
+                              "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\profile-icon.ico"
+                            },
+                            {
+                              "name": "IconIndex",
+                              "kind": "DWord",
+                              "value": "0"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial",
+              "view": "Registry32",
+              "exists": false,
+              "values": [],
+              "children": []
+            },
+            {
+              "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [
+                    {
+                      "name": "",
+                      "kind": "String",
+                      "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x64\\YimeTextServiceExperiment.dll"
+                    },
+                    {
+                      "name": "ThreadingModel",
+                      "kind": "String",
+                      "value": "Apartment"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Description",
+                              "kind": "String",
+                              "value": "音元拼音"
+                            },
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            },
+                            {
+                              "name": "IconFile",
+                              "kind": "String",
+                              "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\profile-icon.ico"
+                            },
+                            {
+                              "name": "IconIndex",
+                              "kind": "DWord",
+                              "value": "0"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial",
+              "view": "Registry64",
+              "exists": false,
+              "values": [],
+              "children": []
+            }
+          ]
+        },
+        "after": {
+          "file": "peer-9fe7f28d-0889-4828-85b5-1f481431b43a-09f2d928840c4d5184b140ac2ea1c252-after.json",
+          "file_last_write_utc": "2026-09-11T23:42:32.851793+00:00",
+          "sha256": "e91c56d9dc461c593739b3a45d780c171374341024ff73ad7e247d751fcecbd6",
+          "tip": [
+            {
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": false,
+              "values": [],
+              "children": []
+            },
+            {
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": false,
+              "values": [],
+              "children": []
+            }
+          ],
+          "machine_registry": [
+            {
+              "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [
+                    {
+                      "name": "",
+                      "kind": "String",
+                      "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll"
+                    },
+                    {
+                      "name": "ThreadingModel",
+                      "kind": "String",
+                      "value": "Apartment"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Description",
+                              "kind": "String",
+                              "value": "音元拼音"
+                            },
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            },
+                            {
+                              "name": "IconFile",
+                              "kind": "String",
+                              "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\profile-icon.ico"
+                            },
+                            {
+                              "name": "IconIndex",
+                              "kind": "DWord",
+                              "value": "0"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial",
+              "view": "Registry32",
+              "exists": false,
+              "values": [],
+              "children": []
+            },
+            {
+              "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [
+                    {
+                      "name": "",
+                      "kind": "String",
+                      "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x64\\YimeTextServiceExperiment.dll"
+                    },
+                    {
+                      "name": "ThreadingModel",
+                      "kind": "String",
+                      "value": "Apartment"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Description",
+                              "kind": "String",
+                              "value": "音元拼音"
+                            },
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            },
+                            {
+                              "name": "IconFile",
+                              "kind": "String",
+                              "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\profile-icon.ico"
+                            },
+                            {
+                              "name": "IconIndex",
+                              "kind": "DWord",
+                              "value": "0"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial",
+              "view": "Registry64",
+              "exists": false,
+              "values": [],
+              "children": []
+            }
+          ]
+        }
+      },
+      "result_present": false
+    },
+    {
+      "group": "8a0baff9adf54d12a7d1a961730eb97a",
+      "inferred_phase": "elevated-Register",
+      "inferred_pid": 6756,
+      "phase_pid_explicit_in_snapshot": false,
+      "association_basis": "File last-write UTC sequence, failure JSON UTC/PID/phase, and Start/Complete-MaintenancePeerProtection call scope; inference, not embedded event identity",
+      "snapshots": {
+        "before": {
+          "file": "peer-9fe7f28d-0889-4828-85b5-1f481431b43a-8a0baff9adf54d12a7d1a961730eb97a-before.json",
+          "file_last_write_utc": "2026-09-11T23:40:24.500208+00:00",
+          "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+          "tip": [
+            {
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "machine_registry": [
+            {
+              "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [
+                    {
+                      "name": "",
+                      "kind": "String",
+                      "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll"
+                    },
+                    {
+                      "name": "ThreadingModel",
+                      "kind": "String",
+                      "value": "Apartment"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Description",
+                              "kind": "String",
+                              "value": "音元拼音"
+                            },
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            },
+                            {
+                              "name": "IconFile",
+                              "kind": "String",
+                              "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\profile-icon.ico"
+                            },
+                            {
+                              "name": "IconIndex",
+                              "kind": "DWord",
+                              "value": "0"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial",
+              "view": "Registry32",
+              "exists": false,
+              "values": [],
+              "children": []
+            },
+            {
+              "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [
+                    {
+                      "name": "",
+                      "kind": "String",
+                      "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x64\\YimeTextServiceExperiment.dll"
+                    },
+                    {
+                      "name": "ThreadingModel",
+                      "kind": "String",
+                      "value": "Apartment"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Description",
+                              "kind": "String",
+                              "value": "音元拼音"
+                            },
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            },
+                            {
+                              "name": "IconFile",
+                              "kind": "String",
+                              "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\profile-icon.ico"
+                            },
+                            {
+                              "name": "IconIndex",
+                              "kind": "DWord",
+                              "value": "0"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial",
+              "view": "Registry64",
+              "exists": false,
+              "values": [],
+              "children": []
+            }
+          ]
+        },
+        "after": {
+          "file": "peer-9fe7f28d-0889-4828-85b5-1f481431b43a-8a0baff9adf54d12a7d1a961730eb97a-after.json",
+          "file_last_write_utc": "2026-09-11T23:41:40.057172+00:00",
+          "sha256": "e91c56d9dc461c593739b3a45d780c171374341024ff73ad7e247d751fcecbd6",
+          "tip": [
+            {
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": false,
+              "values": [],
+              "children": []
+            },
+            {
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": false,
+              "values": [],
+              "children": []
+            }
+          ],
+          "machine_registry": [
+            {
+              "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [
+                    {
+                      "name": "",
+                      "kind": "String",
+                      "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll"
+                    },
+                    {
+                      "name": "ThreadingModel",
+                      "kind": "String",
+                      "value": "Apartment"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Description",
+                              "kind": "String",
+                              "value": "音元拼音"
+                            },
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            },
+                            {
+                              "name": "IconFile",
+                              "kind": "String",
+                              "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\profile-icon.ico"
+                            },
+                            {
+                              "name": "IconIndex",
+                              "kind": "DWord",
+                              "value": "0"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial",
+              "view": "Registry32",
+              "exists": false,
+              "values": [],
+              "children": []
+            },
+            {
+              "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [
+                    {
+                      "name": "",
+                      "kind": "String",
+                      "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x64\\YimeTextServiceExperiment.dll"
+                    },
+                    {
+                      "name": "ThreadingModel",
+                      "kind": "String",
+                      "value": "Apartment"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Description",
+                              "kind": "String",
+                              "value": "音元拼音"
+                            },
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            },
+                            {
+                              "name": "IconFile",
+                              "kind": "String",
+                              "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\profile-icon.ico"
+                            },
+                            {
+                              "name": "IconIndex",
+                              "kind": "DWord",
+                              "value": "0"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial",
+              "view": "Registry64",
+              "exists": false,
+              "values": [],
+              "children": []
+            }
+          ]
+        }
+      },
+      "result_present": false
+    },
+    {
+      "group": "356684410cbf4981954df0761816b54a",
+      "inferred_phase": "elevated-Remove",
+      "inferred_pid": 43720,
+      "phase_pid_explicit_in_snapshot": false,
+      "association_basis": "File last-write UTC sequence, failure JSON UTC/PID/phase, and Start/Complete-MaintenancePeerProtection call scope; inference, not embedded event identity",
+      "snapshots": {
+        "before": {
+          "file": "peer-9fe7f28d-0889-4828-85b5-1f481431b43a-356684410cbf4981954df0761816b54a-before.json",
+          "file_last_write_utc": "2026-09-11T23:41:57.838636+00:00",
+          "sha256": "e91c56d9dc461c593739b3a45d780c171374341024ff73ad7e247d751fcecbd6",
+          "tip": [
+            {
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": false,
+              "values": [],
+              "children": []
+            },
+            {
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": false,
+              "values": [],
+              "children": []
+            }
+          ],
+          "machine_registry": [
+            {
+              "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [
+                    {
+                      "name": "",
+                      "kind": "String",
+                      "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll"
+                    },
+                    {
+                      "name": "ThreadingModel",
+                      "kind": "String",
+                      "value": "Apartment"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Description",
+                              "kind": "String",
+                              "value": "音元拼音"
+                            },
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            },
+                            {
+                              "name": "IconFile",
+                              "kind": "String",
+                              "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\profile-icon.ico"
+                            },
+                            {
+                              "name": "IconIndex",
+                              "kind": "DWord",
+                              "value": "0"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial",
+              "view": "Registry32",
+              "exists": false,
+              "values": [],
+              "children": []
+            },
+            {
+              "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [
+                    {
+                      "name": "",
+                      "kind": "String",
+                      "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x64\\YimeTextServiceExperiment.dll"
+                    },
+                    {
+                      "name": "ThreadingModel",
+                      "kind": "String",
+                      "value": "Apartment"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Description",
+                              "kind": "String",
+                              "value": "音元拼音"
+                            },
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            },
+                            {
+                              "name": "IconFile",
+                              "kind": "String",
+                              "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\profile-icon.ico"
+                            },
+                            {
+                              "name": "IconIndex",
+                              "kind": "DWord",
+                              "value": "0"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial",
+              "view": "Registry64",
+              "exists": false,
+              "values": [],
+              "children": []
+            }
+          ]
+        },
+        "after": {
+          "file": "peer-9fe7f28d-0889-4828-85b5-1f481431b43a-356684410cbf4981954df0761816b54a-after.json",
+          "file_last_write_utc": "2026-09-11T23:42:24.899942+00:00",
+          "sha256": "e91c56d9dc461c593739b3a45d780c171374341024ff73ad7e247d751fcecbd6",
+          "tip": [
+            {
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": false,
+              "values": [],
+              "children": []
+            },
+            {
+              "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": false,
+              "values": [],
+              "children": []
+            }
+          ],
+          "machine_registry": [
+            {
+              "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [
+                    {
+                      "name": "",
+                      "kind": "String",
+                      "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll"
+                    },
+                    {
+                      "name": "ThreadingModel",
+                      "kind": "String",
+                      "value": "Apartment"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry32",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                              "view": "Registry32",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry32",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry32",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry32",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Description",
+                              "kind": "String",
+                              "value": "音元拼音"
+                            },
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            },
+                            {
+                              "name": "IconFile",
+                              "kind": "String",
+                              "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\profile-icon.ico"
+                            },
+                            {
+                              "name": "IconIndex",
+                              "kind": "DWord",
+                              "value": "0"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial",
+              "view": "Registry32",
+              "exists": false,
+              "values": [],
+              "children": []
+            },
+            {
+              "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [
+                    {
+                      "name": "",
+                      "kind": "String",
+                      "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x64\\YimeTextServiceExperiment.dll"
+                    },
+                    {
+                      "name": "ThreadingModel",
+                      "kind": "String",
+                      "value": "Apartment"
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+              "view": "Registry64",
+              "exists": true,
+              "values": [],
+              "children": [
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [],
+                          "children": [
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            },
+                            {
+                              "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\Category\\Item\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                              "view": "Registry64",
+                              "exists": true,
+                              "values": [],
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile",
+                  "view": "Registry64",
+                  "exists": true,
+                  "values": [],
+                  "children": [
+                    {
+                      "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804",
+                      "view": "Registry64",
+                      "exists": true,
+                      "values": [],
+                      "children": [
+                        {
+                          "key": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\LanguageProfile\\0x00000804\\{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                          "view": "Registry64",
+                          "exists": true,
+                          "values": [
+                            {
+                              "name": "Description",
+                              "kind": "String",
+                              "value": "音元拼音"
+                            },
+                            {
+                              "name": "Enable",
+                              "kind": "DWord",
+                              "value": "1"
+                            },
+                            {
+                              "name": "IconFile",
+                              "kind": "String",
+                              "value": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\profile-icon.ico"
+                            },
+                            {
+                              "name": "IconIndex",
+                              "kind": "DWord",
+                              "value": "0"
+                            }
+                          ],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeCoreExperimentalTrial",
+              "view": "Registry64",
+              "exists": false,
+              "values": [],
+              "children": []
+            }
+          ]
+        }
+      },
+      "result_present": true,
+      "result": {
+        "schema_version": "yime-rime-pime-peer-comparison-v1",
+        "unchanged": true,
+        "before_sha256": "e91c56d9dc461c593739b3a45d780c171374341024ff73ad7e247d751fcecbd6",
+        "after_sha256": "e91c56d9dc461c593739b3a45d780c171374341024ff73ad7e247d751fcecbd6",
+        "installed_acceptance_passed": false
+      }
+    }
+  ]
+}

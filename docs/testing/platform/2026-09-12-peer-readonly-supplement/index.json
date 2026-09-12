@@ -1,0 +1,25 @@
+{
+  "assembled_at_utc": "2026-09-12T00:04:32.824381+00:00",
+  "files": [
+    {
+      "path": "external-index.json",
+      "bytes": 4820,
+      "sha256": "a6ffe1a9ea4d059807bb33e8da2137a89990837bc77cb91a4e2d2f303d2f9aeb"
+    },
+    {
+      "path": "gaps.json",
+      "bytes": 578,
+      "sha256": "71d00aaf252956126fd2e2500542d4d2fc917e24971beef4ccdc1cd0a5c4c1e0"
+    },
+    {
+      "path": "peer-stage-observations.json",
+      "bytes": 154405,
+      "sha256": "2c63a7bb2c44969f655a43b0f388acbb16d5e27bc7ef016bd07d97bcb357afa8"
+    },
+    {
+      "path": "retained-errors.json",
+      "bytes": 7223,
+      "sha256": "99afea8feb13ca21757f4ee5e8d3be0ada5a9c1ba8b280b5e4f8bf147640326d"
+    }
+  ]
+}

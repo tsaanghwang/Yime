@@ -1,0 +1,89 @@
+{
+  "indexed_at_utc": "2026-09-12T00:04:32.824381+00:00",
+  "files": [
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-9fe7f28d-0889-4828-85b5-1f481431b43a\\peer-9fe7f28d-0889-4828-85b5-1f481431b43a-09f2d928840c4d5184b140ac2ea1c252-after.json",
+      "bytes": 38974,
+      "sha256": "e91c56d9dc461c593739b3a45d780c171374341024ff73ad7e247d751fcecbd6",
+      "file_last_write_utc": "2026-09-11T23:42:32.851793+00:00",
+      "collection_time_embedded": false
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-9fe7f28d-0889-4828-85b5-1f481431b43a\\peer-9fe7f28d-0889-4828-85b5-1f481431b43a-09f2d928840c4d5184b140ac2ea1c252-before.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "file_last_write_utc": "2026-09-11T23:39:59.551816+00:00",
+      "collection_time_embedded": false
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-9fe7f28d-0889-4828-85b5-1f481431b43a\\peer-9fe7f28d-0889-4828-85b5-1f481431b43a-356684410cbf4981954df0761816b54a-after.json",
+      "bytes": 38974,
+      "sha256": "e91c56d9dc461c593739b3a45d780c171374341024ff73ad7e247d751fcecbd6",
+      "file_last_write_utc": "2026-09-11T23:42:24.899942+00:00",
+      "collection_time_embedded": false
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-9fe7f28d-0889-4828-85b5-1f481431b43a\\peer-9fe7f28d-0889-4828-85b5-1f481431b43a-356684410cbf4981954df0761816b54a-before.json",
+      "bytes": 38974,
+      "sha256": "e91c56d9dc461c593739b3a45d780c171374341024ff73ad7e247d751fcecbd6",
+      "file_last_write_utc": "2026-09-11T23:41:57.838636+00:00",
+      "collection_time_embedded": false
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-9fe7f28d-0889-4828-85b5-1f481431b43a\\peer-9fe7f28d-0889-4828-85b5-1f481431b43a-356684410cbf4981954df0761816b54a-result.json",
+      "bytes": 272,
+      "sha256": "0f9f57e5eafcec2b1009b35609dfaf311a081bdb2d22a6085c1f9c09efd8161c",
+      "file_last_write_utc": "2026-09-11T23:42:24.959549+00:00",
+      "collection_time_embedded": false
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-9fe7f28d-0889-4828-85b5-1f481431b43a\\peer-9fe7f28d-0889-4828-85b5-1f481431b43a-8a0baff9adf54d12a7d1a961730eb97a-after.json",
+      "bytes": 38974,
+      "sha256": "e91c56d9dc461c593739b3a45d780c171374341024ff73ad7e247d751fcecbd6",
+      "file_last_write_utc": "2026-09-11T23:41:40.057172+00:00",
+      "collection_time_embedded": false
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-9fe7f28d-0889-4828-85b5-1f481431b43a\\peer-9fe7f28d-0889-4828-85b5-1f481431b43a-8a0baff9adf54d12a7d1a961730eb97a-before.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447",
+      "file_last_write_utc": "2026-09-11T23:40:24.500208+00:00",
+      "collection_time_embedded": false
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\diagnostics\\failure-59175547925a4615a782eb9495d3f998.json",
+      "bytes": 1450,
+      "sha256": "712042a987627d41009477ae74ac166bbb01db2369aa40afcc70c691234f218d",
+      "file_last_write_utc": "2026-09-11T23:42:25.124006+00:00",
+      "collection_time_embedded": false
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\diagnostics\\failure-5e6bacadb0984140819f398e6384ad3c.json",
+      "bytes": 1419,
+      "sha256": "72c4d838fba36e2f2f5febcaad9a32cbe874c74708fb9091d7c96c5420e8478f",
+      "file_last_write_utc": "2026-09-11T23:41:40.111718+00:00",
+      "collection_time_embedded": false
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\diagnostics\\failure-93380ccfb3ac459badd319f91e5b865f.json",
+      "bytes": 1293,
+      "sha256": "f0981e264c78aead879a771165a53fa1c56a8b2f811c90d38c7a5336829489cd",
+      "file_last_write_utc": "2026-09-11T23:41:40.268370+00:00",
+      "collection_time_embedded": false
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\diagnostics\\failure-9c3c3f047bc841538ee99507a0b82e44.json",
+      "bytes": 1672,
+      "sha256": "5f416c56f8880d62a0c2774cc0a021e13449f3430aa82cc46be3c6cd01b623bc",
+      "file_last_write_utc": "2026-09-11T23:42:32.885813+00:00",
+      "collection_time_embedded": false
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\diagnostics\\failure-dffd040f6cc44a188a533091bc732481.json",
+      "bytes": 1534,
+      "sha256": "1825044c9b7f425b64dbe0b12f957f91c79f7451f98fa4a3f9cb6e2492feca6d",
+      "file_last_write_utc": "2026-09-11T23:42:25.001002+00:00",
+      "collection_time_embedded": false
+    }
+  ]
+}
