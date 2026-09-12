@@ -1,5 +1,7 @@
 # 给“计算机”AI：事务锁交接修复后继续恢复
 
+> 已进入载荷移除，但部分文件未完成。下一步按 [部分载荷续接交接](YIME_RIME_PIME_RECOVERY_PARTIAL_HANDOFF_2026-09-12.md) 操作，不再执行本页旧参数。
+
 影响产品：Rime/PIME 限定回滚、YimeCore TIP 恢复。已接收 `be63ab95`，5 个证据副本核对通过。上一轮 worker 已启动，但打开安装 journal 时失败，尚未进入注册移除及 TIP 修复。
 
 ## 修复与验证

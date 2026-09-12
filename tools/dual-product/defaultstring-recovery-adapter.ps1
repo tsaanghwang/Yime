@@ -1,4 +1,13 @@
 # Reviewed recovery providers operate on the immutable original payload.
+function Assert-RecoveryRemainingPayload($Context,$Ticket,[string]$Bundle){
+    $remaining=Test-MaintenanceInstalledFiles $Ticket.plan -AllowAbsent
+    if($remaining.Count -lt @($Ticket.plan.files).Count){
+        # Partial deletion is admitted only after fresh, independent full
+        # registration absence. A registrar cannot depend on missing DLLs.
+        $null=Get-MaintenanceRegistration $Context $Ticket.plan $Bundle 'Absent'
+    }
+    return $remaining.Count
+}
 function Release-RecoveryJournalForWorker($Ticket){
     # The controller retains the product coordinator, authenticated inputs and
     # plan. The worker must independently acquire and verify the install journal.

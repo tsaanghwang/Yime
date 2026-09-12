@@ -74,8 +74,9 @@ try{
             Assert-MaintenanceDefaultInput $ticket.plan.default_input
             $peerReference=Get-DefaultstringPeerControlPanel $old.initiating_sid
             $null=Get-MaintenanceRegistration $context $ticket.plan $bundle 'Partial'
+            $remainingCount=Assert-RecoveryRemainingPayload $context $ticket $bundle
+            Write-Host ('Verified remaining payload members: '+$remainingCount)
             if(-not $apply){
-                $null=Test-MaintenanceInstalledFiles $ticket.plan
                 Write-Host 'VALIDATED: fixed recovery inputs; no product mutation. Apply must repeat every check.'
                 return
             }

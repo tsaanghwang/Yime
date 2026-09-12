@@ -364,7 +364,7 @@ function Complete-MaintenanceRemoval($Context,$Ticket,[hashtable]$WorkerArgument
     Assert-MaintenancePeerProtection $Context.peer_protection
     Assert-MaintenanceDefaultInput $Ticket.plan.default_input
     if($InstalledLease){Close-MaintenanceCandidate $InstalledLease}
-    Remove-MaintenanceInstalledFiles $Ticket.plan
+    Remove-MaintenanceInstalledFiles $Ticket.plan -EvidenceRoot ([IO.Path]::GetDirectoryName($Context.authorization_path))
     Assert-MaintenancePeerProtection $Context.peer_protection
     $removal=Open-MaintenanceRemoval $Ticket
     try{if(-not $removal.terminal){Publish-MaintenanceDecision $removal.store 'terminal.bin' $removal.hash 'remove-complete'}}
@@ -391,12 +391,24 @@ function Test-MaintenanceInstalledFiles($Plan,[switch]$AllowAbsent){
     }
     return ,$present
 }
-function Remove-MaintenanceInstalledFiles($Plan){
+function Remove-MaintenanceInstalledFiles($Plan,[string]$EvidenceRoot){
+    if(-not $EvidenceRoot){$EvidenceRoot=$Plan.recovery_root}
     $present=Test-MaintenanceInstalledFiles $Plan -AllowAbsent
+    $evidencePath=Join-Path $EvidenceRoot ('exact-removal-'+[guid]::NewGuid().ToString('N')+'.json')
+    $outcomes=@()
     if($present.Count){
-        $outcomes=@(& $script:CandidatePackageModule {param($r,$f) Remove-CandidateExactFiles $r $f} $Plan.install_root $present)
-        if(@($outcomes|Where-Object{-not $_.Removed}).Count){throw 'Exact removal is pending or incomplete; no completion decision published.'}
+        try{$outcomes=@(& $script:CandidatePackageModule {param($r,$f) Remove-CandidateExactFiles $r $f} $Plan.install_root $present)}
+        catch{
+            Write-MaintenancePeerEvidence $evidencePath @{install_root=$Plan.install_root;utc=[DateTime]::UtcNow.ToString('o');pid=$PID;attempted_members=$present;error=$_.Exception.ToString();outcomes_available=$false}
+            Write-Host ('Exact removal evidence: '+$evidencePath)
+            throw
+        }
     }
+    # Persist the native outcomes before asserting completion. Later members can
+    # be not-attempted after a single blocked leaf; never infer their cause.
+    Write-MaintenancePeerEvidence $evidencePath @{install_root=$Plan.install_root;utc=[DateTime]::UtcNow.ToString('o');pid=$PID;initially_absent_count=(@($Plan.files).Count-$present.Count);outcomes_available=$true;outcomes=@($outcomes|ForEach-Object{[ordered]@{path=$_.Path;status=$_.Status;marked_for_deletion=$_.MarkedForDeletion;removed=$_.Removed;native_error=$_.ErrorCode}})}
+    Write-Host ('Exact removal evidence: '+$evidencePath)
+    if(@($outcomes|Where-Object{-not $_.Removed}).Count){throw ('Exact removal is pending or incomplete; no completion decision published. Evidence: '+$evidencePath)}
     $remaining=Test-MaintenanceInstalledFiles $Plan -AllowAbsent
     if($remaining.Count){throw 'Installed desired absence was not observed.'}
     # User learning/state, unlisted files, directories and durable recovery remain.

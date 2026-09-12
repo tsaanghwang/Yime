@@ -695,6 +695,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Fixed recovery adapter failed' }
           python tools/powershell/run_checked.py --script tools/dual-product/test-defaultstring-journal-handoff.ps1 --edition ps5
           if ($LASTEXITCODE -ne 0) { throw 'Fixed recovery cross-process journal handoff failed' }
+          python tools/powershell/run_checked.py --script tools/dual-product/test-defaultstring-partial-removal.ps1 --edition ps5
+          if ($LASTEXITCODE -ne 0) { throw 'Fixed recovery partial removal failed' }
           python tools/dual-product/test_defaultstring_recovery_stage.py
           if ($LASTEXITCODE -ne 0) { throw 'Fixed recovery staging failed' }
       - name: Test guarded candidate registration provider
