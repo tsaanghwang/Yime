@@ -689,6 +689,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'PS5 exact profile reference failed' }
           python tools/powershell/run_checked.py --script tools/dual-product/test-rime-pime-exact-profile-reference.ps1 --edition ps7
           if ($LASTEXITCODE -ne 0) { throw 'PS7 exact profile reference failed' }
+          python tools/powershell/run_checked.py --script tools/dual-product/test-defaultstring-peer-repair.ps1 --edition ps5
+          if ($LASTEXITCODE -ne 0) { throw 'Fixed peer repair scope failed' }
+          python tools/powershell/run_checked.py --script tools/dual-product/test-defaultstring-recovery-adapter.ps1 --edition ps5
+          if ($LASTEXITCODE -ne 0) { throw 'Fixed recovery adapter failed' }
+          python tools/dual-product/test_defaultstring_recovery_stage.py
+          if ($LASTEXITCODE -ne 0) { throw 'Fixed recovery staging failed' }
       - name: Test guarded candidate registration provider
         if: matrix.lane == 'maintenance'
         shell: pwsh

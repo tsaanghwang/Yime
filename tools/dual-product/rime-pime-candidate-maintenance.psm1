@@ -525,7 +525,12 @@ function Invoke-RimePimeCandidateWorker {
                 $null=Test-MaintenanceInstalledFiles $ticket.plan
                 $installed=Open-MaintenanceCandidate -PackageRoot $ticket.plan.install_root -ExpectedManifestSha256 $ExpectedManifestSha256 -InstalledGeneratedFiles $ticket.plan.generated_files
                 foreach($step in @('DisableTip','UnregisterWow64','UnregisterNative','RemoveMarkers','VerifyAbsent')){
+                    Assert-MaintenancePeerProtection $protection
+                    Write-MaintenancePeerEvidence ($protection.prefix+'-'+$step+'-started.json') @{step=$step;utc=[DateTime]::UtcNow.ToString('o');pid=$PID}
                     & $script:CandidateRegistrationModule {param($p,$s) Invoke-RimePimeDp1UCandidateRegistration @p -Action $s} $parameters $step | Out-Null
+                    $stepPeer=& $protection.module {param($b,$s) Get-RimePimePeerProtectionSnapshot $b $s} $protection.boundary $protection.sid
+                    Write-MaintenancePeerEvidence ($protection.prefix+'-'+$step+'-after.json') $stepPeer
+                    & $protection.module {param($b,$a) Assert-RimePimePeerProtectionUnchanged $b $a} $protection.before $stepPeer
                 }
             }
         }else{
@@ -536,6 +541,10 @@ function Invoke-RimePimeCandidateWorker {
         }
         Assert-MaintenancePeerProtection $protection
         Assert-MaintenanceDefaultInput $ticket.plan.default_input
+    }catch{
+        # Preserve the original error even when the final peer assertion also fails.
+        Save-RimePimeMaintenanceFailure -Failure $_ -Phase ('worker-original-'+$Action)
+        throw
     }finally{
         try{if($protection){Complete-MaintenancePeerProtection $protection}}finally{
         if($installed){Close-MaintenanceCandidate $installed}
