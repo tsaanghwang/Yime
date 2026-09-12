@@ -35,7 +35,8 @@ function Assert-DefaultstringPeerDifference($Baseline,$Current,[string]$Sid) {
             $now[0].exists=$true;$now[0].values=$old[0].values;$now[0].children=$old[0].children
         }
     }
-    if(($Baseline|ConvertTo-Json -Depth 90 -Compress) -cne ($copy|ConvertTo-Json -Depth 90 -Compress)){throw 'Peer changes extend beyond the admitted missing TIP; stop recovery.'}
+    $peer=Import-Module (Join-Path $PSScriptRoot 'rime-pime-peer-protection.psm1') -PassThru -Scope Local
+    & $peer {param($b,$c) Assert-RimePimePeerProtectionUnchanged $b $c} $Baseline $copy
 }
 function Assert-DefaultstringTipShape($Tree,[string]$Sid){
     $key=$Sid+'\SOFTWARE\Microsoft\CTF\TIP\{E40FA752-BB96-461D-A51D-F40EB437EC65}'

@@ -106,8 +106,20 @@ function Get-RimePimePeerProtectionSnapshot($Boundary,[string]$Sid) {
         registry=$registry;run=$runs;payload=$install;state=(Get-PeerFileTree $Boundary.peer_state_root -State);
         recovery=(Get-PeerFileTree $Boundary.peer_recovery_root);processes=(Get-PeerProcesses $Boundary.peer_install_root $Sid)}
 }
+function ConvertTo-PeerComparisonJson($Snapshot) {
+    # Keep raw snapshots intact. This exact file is append-only diagnostic output
+    # from RecordLanguageBarHostResult, not settings or learning. Its presence,
+    # path and all other fields remain protected; only content metadata is live.
+    $copy=$Snapshot|ConvertTo-Json -Depth 90 -Compress|ConvertFrom-Json
+    if($copy.PSObject.Properties['state'] -and $copy.state.PSObject.Properties['files']){
+        $logs=@($copy.state.files|Where-Object {$_.path -ceq 'evidence/language-bar-host.log'})
+        if($logs.Count -gt 1){throw 'Duplicate language-bar diagnostic entry.'}
+        foreach($log in $logs){$log.bytes=0;$log.sha256='runtime-diagnostic-content'}
+    }
+    return ($copy|ConvertTo-Json -Depth 90 -Compress)
+}
 function Assert-RimePimePeerProtectionUnchanged($Before,$After) {
-    if(($Before|ConvertTo-Json -Depth 90 -Compress) -cne ($After|ConvertTo-Json -Depth 90 -Compress)){
+    if((ConvertTo-PeerComparisonJson $Before) -cne (ConvertTo-PeerComparisonJson $After)){
         throw 'Protected YimeCore peer changed; preserve both observations and do not report completion.'
     }
 }
