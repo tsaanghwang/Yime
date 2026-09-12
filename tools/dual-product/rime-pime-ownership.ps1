@@ -478,6 +478,9 @@ function Test-YimePimeProfileRegistryReference {
     $exactTokens=@(
         $script:YimePimeTextServiceClsid,
         ($script:YimePimeTextServiceClsid+$script:YimePimeProfileGuid),
+        # Observed Windows User Profile DWORD value name (2026-09-12 test PC).
+        # Admit only the complete owned pair; do not trim/split mixed references.
+        ('0804:'+$script:YimePimeTextServiceClsid+$script:YimePimeProfileGuid),
         ('0x0804:'+$script:YimePimeTextServiceClsid),
         ('0x0804:'+$script:YimePimeTextServiceClsid+$script:YimePimeProfileGuid)
     )
