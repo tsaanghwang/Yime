@@ -1,0 +1,12 @@
+{
+  "schema_version": "yime-maintenance-failure-v1",
+  "utc": "2026-09-12T01:48:34.2487378Z",
+  "pid": 30500,
+  "phase": "defaultstring-recovery",
+  "exception_type": "System.Management.Automation.RuntimeException",
+  "message": "Peer changes extend beyond the admitted missing TIP; stop recovery.",
+  "exception": "System.Management.Automation.RuntimeException: Peer changes extend beyond the admitted missing TIP; stop recovery.",
+  "script_stack": "在 Assert-DefaultstringPeerDifference、C:\\dev\\Yime-localtest\\tools\\dual-product\\defaultstring-peer-repair.ps1 中: 第 38 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\dual-product\\recover-defaultstring-transaction.ps1 中: 第 72 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\dual-product\\recover-defaultstring-transaction.ps1 中: 第 41 行\r\n在 <ScriptBlock>、C:\\dev\\Yime-localtest\\tools\\powershell\\preflight.ps1 中: 第 68 行",
+  "error_id": "Peer changes extend beyond the admitted missing TIP; stop recovery.",
+  "installed_acceptance_passed": false
+}

@@ -1,0 +1,35 @@
+{
+  "transaction_id": "9fe7f28d-0889-4828-85b5-1f481431b43a",
+  "recovery_authorization_id": "fae6c1d4-ca01-4b6e-b3f7-7b430b20cd76",
+  "prepare": {
+    "start_utc": "2026-09-12T01:48:09.011796+00:00",
+    "end_utc": "2026-09-12T01:48:21.626750+00:00",
+    "returncode": 0,
+    "attempts": 1
+  },
+  "validate": {
+    "start_utc": "2026-09-12T01:48:21.629099+00:00",
+    "end_utc": "2026-09-12T01:48:34.335203+00:00",
+    "returncode": 1,
+    "attempts": 1
+  },
+  "apply_executed": false,
+  "recovery_passed": false,
+  "extra_state_difference": [
+    {
+      "before": {
+        "path": "evidence/language-bar-host.log",
+        "bytes": 13119,
+        "sha256": "798c6f380dfbcb340a7dd2c08296a5d6a6ab5641eed8b7af2e0b8130616d37ac"
+      },
+      "after": {
+        "path": "evidence/language-bar-host.log",
+        "bytes": 13252,
+        "sha256": "2d1f97dd3570b95b526ecdd4a5544576a5ac325205ed1d632700682f6ab2d694"
+      }
+    }
+  ],
+  "new_preparation_and_validation_peer_snapshots_equal": true,
+  "log_content_not_read": true,
+  "old_transaction_termination_not_reobserved": true
+}
