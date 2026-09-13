@@ -1,0 +1,72 @@
+{
+  "processes": {
+    "before": [
+      {
+        "pid": 27144,
+        "image": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\bin\\YimeCoreTrialRuntime.exe",
+        "sid": "<initiating-SID>",
+        "creation_utc": "2026-09-11T05:25:55.1527780Z"
+      },
+      {
+        "pid": 28104,
+        "image": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\bin\\YimeBroker.exe",
+        "sid": "<initiating-SID>",
+        "creation_utc": "2026-09-11T05:25:56.6010150Z"
+      }
+    ],
+    "current": [
+      {
+        "pid": 1328,
+        "image": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\bin\\YimeCoreTrialRuntime.exe",
+        "sid": "<initiating-SID>",
+        "creation_utc": "2026-09-13T12:07:08.4837980Z"
+      },
+      {
+        "pid": 12696,
+        "image": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\bin\\YimeBroker.exe",
+        "sid": "<initiating-SID>",
+        "creation_utc": "2026-09-13T12:07:09.7647030Z"
+      }
+    ]
+  },
+  "state_files": [
+    {
+      "before": {
+        "path": "evidence/language-bar-host.log",
+        "bytes": 13119,
+        "sha256": "798c6f380dfbcb340a7dd2c08296a5d6a6ab5641eed8b7af2e0b8130616d37ac"
+      },
+      "current": {
+        "path": "evidence/language-bar-host.log",
+        "bytes": 13786,
+        "sha256": "d4c40de891125a96bda3c780b67e673a067ed7750c4f925b29bc10344fecab70"
+      }
+    },
+    {
+      "before": {
+        "path": "index-control/status.json",
+        "bytes": 1569,
+        "sha256": "c468ec930a39ae891bbbb3201b6e442b1916ab54f93133c96f3ed3dd39402efd"
+      },
+      "current": {
+        "path": "index-control/status.json",
+        "bytes": 1569,
+        "sha256": "93d2fdbb8cc45784f7baee475cb6cd667eb7a21a297d6cfd8c90003f118f6242"
+      }
+    }
+  ],
+  "registry": [
+    {
+      "view": "Registry32",
+      "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "before_exists": true,
+      "current_exists": false
+    },
+    {
+      "view": "Registry64",
+      "key": "<initiating-SID>\\SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "before_exists": true,
+      "current_exists": false
+    }
+  ]
+}

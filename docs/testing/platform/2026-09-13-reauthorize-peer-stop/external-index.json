@@ -1,0 +1,65 @@
+{
+  "indexed_utc": "2026-09-13T14:01:08.806875+00:00",
+  "files": [
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\diagnostics\\failure-4ce09a343ddd4b3197e3cc1655eabd58.json",
+      "bytes": 1460,
+      "sha256": "9952521f6b3d3dce7386195814fb97d3cb9fa7371247d6b6eb0b228a2395af8e"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-2576a4fe-5203-4eb2-82be-e2503a5ddc4a\\peer-2576a4fe-5203-4eb2-82be-e2503a5ddc4a-c863c43f6c0a44fc93fc6edf565373e6-before.json",
+      "bytes": 38973,
+      "sha256": "0d2321343da063aa57f79a24973187d69d89e63ef6b5ccb733eb970c20b0e23a"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-2576a4fe-5203-4eb2-82be-e2503a5ddc4a\\peer-preflight.json",
+      "bytes": 38973,
+      "sha256": "0d2321343da063aa57f79a24973187d69d89e63ef6b5ccb733eb970c20b0e23a"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\approval-9fe7f28d-0889-4828-85b5-1f481431b43a\\peer-preflight.json",
+      "bytes": 41070,
+      "sha256": "9fbcf26fc7b557f6393b4a8ae890048e0231a708591ad66fa044cf7e5f12b447"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-applications-reauthorize-a3f25e7d-once\\new-authorization-summary.json",
+      "bytes": 280,
+      "sha256": "2c54848094ffe8e7d14e1144bb4bee83e37306d5154c2264e5fc6980dac6afb6"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-applications-reauthorize-a3f25e7d-once\\prepare-parameters.json",
+      "bytes": 409,
+      "sha256": "8c9199078a09b0a2135d18437a28e931b9b202cd09fa4c9f33fb7aa87ff4121f"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-applications-reauthorize-a3f25e7d-once\\prepare-process.json",
+      "bytes": 143,
+      "sha256": "a3b179298830cbe81797d5d4155dad863e0f0e954642c477fb6d7bd220754e99"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-applications-reauthorize-a3f25e7d-once\\prepare.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-applications-reauthorize-a3f25e7d-once\\prepare.stdout.log",
+      "bytes": 379,
+      "sha256": "fd6dad0b3fd9ccc41583f8f66cf18a334631bfac2d4184743aa082221f9afdfb"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-applications-reauthorize-a3f25e7d-once\\validate-process.json",
+      "bytes": 143,
+      "sha256": "f6640347280452bdf2043004cd6685c6960e15ba0fddc37c2c41ed92e31ab0dc"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-applications-reauthorize-a3f25e7d-once\\validate.stderr.log",
+      "bytes": 91,
+      "sha256": "9b08249b2ec40154699d370976a7d04251a187cab7175f586f3b5c4879f7db0a"
+    },
+    {
+      "path": "%USERPROFILE%\\Yime Rime-PIME Test Archives\\recovery-applications-reauthorize-a3f25e7d-once\\validate.stdout.log",
+      "bytes": 132,
+      "sha256": "1d71f0691a4904e9a8fe6be69be318fab67240c10b1a5fa8f1065b514d5b2f93"
+    }
+  ]
+}
