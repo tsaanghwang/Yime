@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param([Parameter(Mandatory)][string]$PolicyPath,[Parameter(Mandatory)][string]$ExpectedPolicySha256,
-    [string]$ExecutionParametersPath,[string]$PackageRoot,[switch]$Apply,[string]$WorkerParametersPath)
+    [string]$ExecutionParametersPath,[string]$PackageRoot,[switch]$Apply,[string]$WorkerParametersPath,[switch]$Interactive)
 $ErrorActionPreference='Stop';Set-StrictMode -Version 2.0
 if([Environment]::MachineName -cne (-join @([char]0x8ba1,[char]0x7b97,[char]0x673a))){throw 'Fixed test PC only.'}
 if($PSVersionTable.PSVersion.Major -ne 5){throw 'Native PS5 required.'}
@@ -39,7 +39,7 @@ try{
     if($old.initiating_sid -cne [Security.Principal.WindowsIdentity]::GetCurrent().User.Value){throw 'Wrong initiating SID.'}
     $module=Import-Module (Join-Path $PSScriptRoot 'rime-pime-candidate-maintenance.psm1') -PassThru
     & $module {
-        param($pPath,$bundle,$apply,$workerPath,$policyPath,$policyHash,$old,$original,$baseline)
+        param($pPath,$bundle,$apply,$workerPath,$policyPath,$policyHash,$old,$original,$baseline,$interactive)
         . (Join-Path $PSScriptRoot 'defaultstring-recovery-adapter.ps1')
         . (Join-Path $PSScriptRoot 'defaultstring-peer-repair.ps1')
         $script:RecoveryPolicyPath=$policyPath;$script:RecoveryPolicyHash=$policyHash
@@ -76,6 +76,18 @@ try{
             $null=Get-MaintenanceRegistration $context $ticket.plan $bundle 'Partial'
             $remainingCount=Assert-RecoveryRemainingPayload $context $ticket $bundle
             Write-Host ('Verified remaining payload members: '+$remainingCount)
+            Import-Module (Join-Path $PSScriptRoot 'maintenance-application-use.psm1')
+            Wait-MaintenanceApplicationRelease -Interactive:$interactive -EvidenceRoot ([IO.Path]::GetDirectoryName($p.AuthorizationPath)) -Check {
+                # Missing members retain the original registration-absence gate.
+                $null=Assert-RecoveryRemainingPayload $context $ticket $bundle
+                $present=Test-MaintenanceInstalledFiles $ticket.plan -AllowAbsent
+                Get-MaintenanceApplicationUse -InstallRoot $ticket.plan.install_root -RelativePaths @($present|ForEach-Object {$_.path})
+            }
+            # Time spent waiting is not permission to reuse stale admission.
+            Assert-MaintenancePeerProtection $context.peer_protection
+            Assert-MaintenanceDefaultInput $ticket.plan.default_input
+            $null=Get-MaintenanceRegistration $context $ticket.plan $bundle 'Partial'
+            $null=Assert-RecoveryRemainingPayload $context $ticket $bundle
             if(-not $apply){
                 Write-Host 'VALIDATED: fixed recovery inputs; no product mutation. Apply must repeat every check.'
                 return
@@ -97,5 +109,5 @@ try{
             if($ticket -and $ticket.store){$ticket.store.Dispose()};if($package){Close-MaintenanceCandidate $package};if($context){Close-MaintenanceAuthorization $context}
             if($coordinator){& $script:CandidateCoordinatorModule {param($c) Close-RimePimeCandidateCoordinator -Context $c} $coordinator}
         }
-    } $ExecutionParametersPath $PackageRoot ([bool]$Apply) $WorkerParametersPath $PolicyPath $ExpectedPolicySha256 $old $original $baseline
+    } $ExecutionParametersPath $PackageRoot ([bool]$Apply) $WorkerParametersPath $PolicyPath $ExpectedPolicySha256 $old $original $baseline ([bool]$Interactive)
 }finally{foreach($stream in $leases){$stream.Dispose()}}

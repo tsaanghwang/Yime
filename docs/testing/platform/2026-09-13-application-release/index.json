@@ -1,0 +1,11 @@
+{
+  "kind": "development-isolated-test",
+  "source_commit_before_changes": "104758c14950f093ee108a4719af8a5c7adf50fb",
+  "files": [
+    {
+      "path": "result.json",
+      "bytes": 1304,
+      "sha256": "6d5d4cbfcf6cdb6d5271a1b31ec1aa269d5a94fe0756c828fea6d51653ed1ab2"
+    }
+  ]
+}

@@ -272,3 +272,4 @@ $receipt.maintenance_scope='directed-source-wired-synthetic-only-installed-live-
 $receipt | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $output 'result.json') -Encoding UTF8
 Write-Output "DP1 Rime maintenance fixtures: $($checks.Count) checks; $($failed.Count) failed; evidence $output"
 if($failed.Count){exit 1}
+exit 0 # Expected native-failure fixtures must not leak their LASTEXITCODE.
