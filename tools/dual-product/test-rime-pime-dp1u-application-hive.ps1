@@ -222,7 +222,8 @@ Check 'rollback-restores-original-types-order-empty-elements-and-raw-terminators
 }
 Check 'expected-before-conflict-rejects-without-new-write' {
     $c=New-Case;$ctx=Open-RimePimeDp1UApplicationHive $c.path
-    try{$before=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Native-Value $ctx $names[0] 1 ([Text.Encoding]::Unicode.GetBytes('external'));$changed=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Reject {Set-RimePimeDp1UApplicationHiveValues $ctx $before (New-Values)} '*conflict*';Require (Same-Snapshot $changed (Get-RimePimeDp1UApplicationHiveSnapshot $ctx)) 'Conflict overwrote values.'}finally{Release $ctx}
+    # Conflict fixtures must be valid REG_SZ bytes; malformed strings are tested separately.
+    try{$before=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Native-Value $ctx $names[0] 1 ([Text.Encoding]::Unicode.GetBytes("external`0"));$changed=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Reject {Set-RimePimeDp1UApplicationHiveValues $ctx $before (New-Values)} '*conflict*';Require (Same-Snapshot $changed (Get-RimePimeDp1UApplicationHiveSnapshot $ctx)) 'Conflict overwrote values.'}finally{Release $ctx}
 }
 Check 'mid-apply-native-step-error-is-recorded-and-original-snapshot-rolls-back' {
     $c=New-Case;$ctx=Open-RimePimeDp1UApplicationHive $c.path
@@ -240,7 +241,7 @@ Check 'mid-apply-native-step-error-is-recorded-and-original-snapshot-rolls-back'
 }
 Check 'rollback-conflict-does-not-overwrite-newer-values' {
     $c=New-Case;$ctx=Open-RimePimeDp1UApplicationHive $c.path
-    try{$before=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Require (Set-RimePimeDp1UApplicationHiveValues $ctx $before (New-Values)).passed 'Apply failed.';$after=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Native-Value $ctx $names[0] 1 ([Text.Encoding]::Unicode.GetBytes('newer'));$newer=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Reject {Restore-RimePimeDp1UApplicationHive $ctx $before $after} '*conflict*';Require (Same-Snapshot $newer (Get-RimePimeDp1UApplicationHiveSnapshot $ctx)) 'Conflict rollback overwrote newer data.'}finally{Release $ctx}
+    try{$before=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Require (Set-RimePimeDp1UApplicationHiveValues $ctx $before (New-Values)).passed 'Apply failed.';$after=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Native-Value $ctx $names[0] 1 ([Text.Encoding]::Unicode.GetBytes("newer`0"));$newer=Get-RimePimeDp1UApplicationHiveSnapshot $ctx;Reject {Restore-RimePimeDp1UApplicationHive $ctx $before $after} '*conflict*';Require (Same-Snapshot $newer (Get-RimePimeDp1UApplicationHiveSnapshot $ctx)) 'Conflict rollback overwrote newer data.'}finally{Release $ctx}
 }
 Check 'same-bytes-different-native-kind-conflicts' {
     $c=New-Case;$ctx=Open-RimePimeDp1UApplicationHive $c.path
