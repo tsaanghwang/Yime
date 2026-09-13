@@ -6,7 +6,15 @@ $root=Join-Path $repo ('.tmp\dual-product\application-use-test-'+[guid]::NewGuid
 $null=[IO.Directory]::CreateDirectory($root)
 $font=Join-Path $root 'font.ttf';$peer=Join-Path $root 'peer.ttf'
 [IO.File]::Copy($SourceFont,$font);[IO.File]::Copy($SourceFont,$peer)
-$hash=(Get-FileHash -LiteralPath $font).Hash
+function Get-FixtureSha256([string]$Path){
+    # PS5 launched by CI may not discover Get-FileHash. Hash the real fixture
+    # bytes directly, independently of optional command/module auto-loading.
+    $stream=[IO.File]::OpenRead($Path)
+    $sha=[Security.Cryptography.SHA256]::Create()
+    try{return [BitConverter]::ToString($sha.ComputeHash($stream))}
+    finally{$sha.Dispose();$stream.Dispose()}
+}
+$hash=Get-FixtureSha256 $font
 Add-Type @'
 using System;
 using System.Runtime.InteropServices;
@@ -41,7 +49,7 @@ try{
         try{Wait-MaintenanceApplicationRelease -Check {Get-MaintenanceApplicationUse $root @('font.ttf')} -Interactive -EvidenceRoot $root;return $false}
         catch [OperationCanceledException]{return $true}
     } $root
-    if(-not $cancelled -or (Get-FileHash -LiteralPath $font).Hash -cne $hash){throw 'Cancel did not preserve the font'}
+    if(-not $cancelled -or (Get-FixtureSha256 $font) -cne $hash){throw 'Cancel did not preserve the font'}
     $silentRejected=$false
     try{Wait-MaintenanceApplicationRelease -Check {Get-MaintenanceApplicationUse $root @('font.ttf')} -EvidenceRoot $root}catch{
         if($_.Exception.Message -notlike 'Maintenance resources are unavailable*'){throw};$silentRejected=$true
@@ -65,7 +73,7 @@ try{
     $loaded=$false
     $after=Get-MaintenanceApplicationUse $root @('font.ttf')
     if(-not $after.clear){throw 'Released font not admitted'}
-    if((Get-MaintenanceApplicationUse $root @('peer.ttf')).clear -or (Get-FileHash -LiteralPath $peer).Hash -cne $hash){throw 'Peer font was released or changed'}
+    if((Get-MaintenanceApplicationUse $root @('peer.ttf')).clear -or (Get-FixtureSha256 $peer) -cne $hash){throw 'Peer font was released or changed'}
     $package=Import-Module (Join-Path $PSScriptRoot 'rime-pime-executable-candidate.psm1') -PassThru
     $outcomes=@(& $package {
         param($root,$font)
