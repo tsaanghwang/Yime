@@ -310,6 +310,9 @@ jobs:
       - name: Test single and both product maintenance selection
         shell: powershell
         run: .\installer\simple\Test-Manage.ps1
+      - name: Test persistent setup error logs
+        shell: powershell
+        run: .\installer\simple\Test-Logging.ps1
 
   core-build:
     name: core-build

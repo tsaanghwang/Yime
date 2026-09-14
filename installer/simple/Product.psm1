@@ -75,6 +75,7 @@ function Wait-ProductFiles([string]$Root,[switch]$Silent){
             catch{$file.Name}
         })
         if(-not $busy.Count){return}
+        Write-Output ('Files unavailable under '+$Root+': '+($busy -join ', '))
         if($Silent){throw ('Files unavailable: '+($busy -join ', '))}
         Add-Type -AssemblyName System.Windows.Forms
         $text="请保存工作并退出正在使用本输入法的应用，再选择重试。`r`n仍被占用或不可写：`r`n"+($busy -join "`r`n")+"`r`n无法释放时可以取消，正常重启后再运行。不会强制关闭文档应用。"

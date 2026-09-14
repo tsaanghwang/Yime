@@ -8,7 +8,7 @@ function Invoke-Setup($Item,[string]$Operation){
     $arguments=@('-NoProfile','-ExecutionPolicy','Bypass','-File',$Item.entry,'-Action',$Operation)
     if($ResetData -and $Operation -ne 'Check'){$arguments+='-ResetData'}
     & (Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe') @arguments
-    if($LASTEXITCODE -ne 0){throw ($Operation+' failed for '+$Item.product+' (exit '+$LASTEXITCODE+'); remaining products were not attempted')}
+    if($LASTEXITCODE -ne 0){throw ($Operation+' failed for '+$Item.product+' (exit '+$LASTEXITCODE+'); remaining products were not attempted. Full setup logs: '+(Join-Path ([Environment]::GetFolderPath('UserProfile')) 'Yime Setup Logs'))}
 }
 $selected=if($Product -eq 'both'){@('rime-pime','yimecore')}else{@($Product)}
 $entries=@()
