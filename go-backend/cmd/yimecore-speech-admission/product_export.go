@@ -84,6 +84,7 @@ func exportArtifactPaths() map[string]bool {
 var exportFixedSources = []string{
 	"AGENTS.md", "go-backend/go.mod", "docs/project/MANDARIN_CONNECTED_SPEECH_PLAN.md",
 	"tools/yimecore/development-scope.json", "tools/yimecore/development-scope.ps1",
+	"tools/yimecore/build-system-observation.ps1",
 	"tools/yimecore/run-connected-speech-reconnect.ps1",
 	"tools/yimecore/run-connected-speech-admission.ps1",
 	"tools/lexicon/validate_connected_speech_forward.py", "tools/lexicon/tests/test_validate_connected_speech_forward.py",

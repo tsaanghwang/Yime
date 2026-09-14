@@ -1,0 +1,32 @@
+[
+  {
+    "path": "raw/ec0a768f8e8d44529ea60d8f1045ab65.admin.log",
+    "bytes": 2196,
+    "sha256": "d4ad0885183c277cace38ca3b932958acf037d49b5c04965833e728d511033f9"
+  },
+  {
+    "path": "raw/c8638b77e7704e80aa30aac6113531f1.admin.log",
+    "bytes": 3479,
+    "sha256": "da0c11a45d60457b12f1ddf7af35223787697ecc52d069902a80fddf15334835"
+  },
+  {
+    "path": "raw/c03f030672724eea94f2c85e9b83b47b.admin.log",
+    "bytes": 1286,
+    "sha256": "19db38d5752c3b669404031e27dab5a543c4baf74973aee5e2e8a4f091ecc9b5"
+  },
+  {
+    "path": "raw/installed-verification.json",
+    "bytes": 827,
+    "sha256": "f240aa4c64bc4c23689b68236da4649b70d5222e209a04828733559a23b99039"
+  },
+  {
+    "path": "raw/installed-verification.log",
+    "bytes": 1481,
+    "sha256": "3599bb48a2ea1bac0aa198ff380603663a83181d94f782a2f6a200fb85d964e8"
+  },
+  {
+    "path": "raw/summary.json",
+    "bytes": 577,
+    "sha256": "11d5b01349ff52cc08ca9d4d3cef0a15cb469ffb974ceb9846cdb22cb8bb0297"
+  }
+]

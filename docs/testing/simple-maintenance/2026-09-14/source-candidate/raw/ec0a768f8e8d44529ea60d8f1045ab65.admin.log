@@ -1,0 +1,57 @@
+﻿**********************
+Windows PowerShell 脚本开始
+开始时间: 20260914221105
+用户名: MYCOMPUTER\tsaan
+RunAs 用户: MYCOMPUTER\tsaan
+配置名称: 
+计算机: MYCOMPUTER (Microsoft Windows NT 10.0.26200.0)
+主机应用程序: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime\.tmp\fresh-products-20260914\candidate\rime-pime\Setup.ps1 -Action Install -InitiatingSid S-1-5-21-2783006668-770716121-2150155084-1001 -LogId ec0a768f8e8d44529ea60d8f1045ab65
+进程 ID: 22184
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\ec0a768f8e8d44529ea60d8f1045ab65.admin.log
+Action: Install; package: C:\dev\Yime\.tmp\fresh-products-20260914\candidate\rime-pime
+schema_version=yime-rime-pime-registration-status-v1
+architecture=x86
+architecture_bits=32
+service_profiles_registered_count=1
+exact_profile_registered_count=1
+profile_description_matches=true
+profile_enabled_for_current_user=true
+categories_registered_count=6
+expected_categories_registered_count=6
+category_set_exact=true
+categories_expected_count=6
+profile_query_hresult=0x0
+description_query_hresult=0x0
+enabled_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+schema_version=yime-rime-pime-registration-status-v1
+architecture=x64
+architecture_bits=64
+service_profiles_registered_count=1
+exact_profile_registered_count=1
+profile_description_matches=true
+profile_enabled_for_current_user=true
+categories_registered_count=6
+expected_categories_registered_count=6
+category_set_exact=true
+categories_expected_count=6
+profile_query_hresult=0x0
+description_query_hresult=0x0
+enabled_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+Installed: Yime Rime-PIME. Select it from the Windows input-method menu.
+**********************
+Windows PowerShell 脚本结束
+结束时间: 20260914221116
+**********************

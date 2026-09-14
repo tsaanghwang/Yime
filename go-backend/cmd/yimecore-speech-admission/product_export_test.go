@@ -7,6 +7,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/internal/symlinkfixture"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -20,6 +21,46 @@ type exportFixture struct {
 	config  productExportConfig
 	summary map[string]any
 	forward speechruntime.ForwardReceipt
+}
+
+func TestSpeechProductExportRunnerSourceInventoryMatches(t *testing.T) {
+	data, err := os.ReadFile("../../../tools/yimecore/run-connected-speech-admission.ps1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, body, ok := strings.Cut(string(data), "function Get-AdmissionSourceRecords")
+	if !ok {
+		t.Fatal("runner inventory function missing")
+	}
+	body, _, ok = strings.Cut(body, "# File-name inventory")
+	if !ok {
+		t.Fatal("runner explicit inventory boundary missing")
+	}
+	want := map[string]bool{}
+	for _, path := range exportFixedSources {
+		want[path] = true
+	}
+	for _, path := range packageFixtureSources {
+		// These Python inputs are included by the runner's recursive code trees.
+		if strings.HasSuffix(path, ".py") && (strings.HasPrefix(path, "syllable/") || strings.HasPrefix(path, "yime/")) {
+			continue
+		}
+		want[path] = true
+	}
+	actual := map[string]bool{}
+	for _, match := range regexp.MustCompile(`'([^']+)'`).FindAllStringSubmatch(body, -1) {
+		actual[match[1]] = true
+	}
+	for path := range actual {
+		if !want[path] {
+			t.Errorf("runner source absent from exporter: %s", path)
+		}
+	}
+	for path := range want {
+		if !actual[path] {
+			t.Errorf("exporter source absent from runner: %s", path)
+		}
+	}
 }
 
 func newProductExportFixture(t *testing.T) *exportFixture {

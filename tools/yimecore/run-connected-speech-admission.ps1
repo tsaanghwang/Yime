@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
     [string]$InstallRoot,
     [ValidatePattern('^[a-fA-F0-9]{64}$')][string]$ExpectedManifestSha256,
@@ -20,8 +20,7 @@ $helperTokens = $null; $helperErrors = $null
 $helperAst = [Management.Automation.Language.Parser]::ParseFile($helperPath, [ref]$helperTokens, [ref]$helperErrors)
 if (@($helperErrors).Count) { throw 'Speech helper parse failed; no trial started.' }
 $helperAllowlist = @('Assert-SpeechPlainPath','Resolve-SpeechChild','Write-SpeechJson','Set-SpeechEnvironmentValue',
-    'Get-SpeechRecord','Assert-SpeechSameRecords','Assert-SpeechBaseline','Get-SpeechBaselineIdentity',
-    'Assert-SpeechBaselineUnchanged','Get-SpeechDefinitions','Get-SpeechLockedInputs')
+    'Get-SpeechRecord','Assert-SpeechSameRecords','Get-SpeechDefinitions','Get-SpeechLockedInputs')
 foreach ($helperName in $helperAllowlist) {
     $helperMatches = @($helperAst.FindAll({ param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] }, $false) | Where-Object Name -CEQ $helperName)
     if ($helperMatches.Count -ne 1) { throw 'Speech helper allowlist is ambiguous or incomplete.' }
@@ -83,6 +82,9 @@ function Get-AdmissionLegacyRecords {
         @{path='x86/YimeTextServiceExperiment.dll';sha256='0dfe2bb5617c65bd1e94c62ff9ee8cb23eb912fa68ca21a7705083022f2a8f95';bytes=578560},
         @{path='x86/YimeTextServiceRegistration.exe';sha256='ccd08ef8270893fbf136f38c2891353900a9dd12b1476a15e2858fb1c4127024';bytes=228352}
     )
+    if (-not (Test-Path -LiteralPath $root)) {
+        return [ordered]@{path=$root;exists=$false}
+    }
     foreach ($pin in $pins) {
         $record = Get-SpeechRecord $root $pin.path
         if ($record.sha256 -cne $pin.sha256 -or ($null -ne $pin.bytes -and $record.bytes -ne $pin.bytes)) { throw 'Retained payload static integrity failed.' }
@@ -160,16 +162,23 @@ function Get-PlatformAdmissionProtectionSnapshot($Scope) {
         target=$Scope.target;computer_name=$Scope.computer_name;roots=$records}
 }
 
+function Get-LocalAdmissionProtectionSnapshot {
+    & {
+        . (Join-Path $PSScriptRoot 'build-system-observation.ps1')
+        . (Join-Path $PSScriptRoot 'local-product-build-common.ps1')
+        Get-LocalProductProtectionEvidence -HashesOnly
+    }
+}
+
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..')).TrimEnd('\')
 $platformAdmission=[bool]$ExperimentTarget
 if($platformAdmission){
     if($InstallRoot -or $ExpectedManifestSha256){throw 'Platform admission uses clean-target absence, not a local installed-package baseline.'}
     $install=$null;$scope=Get-YimeCoreExperimentBuildScope $ExperimentTarget
 }else{
-    if(-not $InstallRoot -or $ExpectedManifestSha256 -notmatch '^[a-fA-F0-9]{64}$'){throw 'Local admission requires an explicit installed root and manifest SHA256.'}
-    $install=[IO.Path]::GetFullPath($InstallRoot).TrimEnd('\');$scope=Get-YimeCoreDevelopmentScope
+    if($InstallRoot -or $ExpectedManifestSha256){throw 'Source admission no longer consumes an installed package. Omit InstallRoot and ExpectedManifestSha256.'}
+    $install=$null;$scope=Get-YimeCoreDevelopmentScope
     if($scope.computer_name -cne 'MYCOMPUTER'){throw 'This local admission lane is pinned to MYCOMPUTER.'}
-    Assert-SpeechPlainPath $install
 }
 Assert-SpeechPlainPath $Python
 if (-not [IO.Path]::IsPathRooted($Python) -or -not (Test-Path -LiteralPath $Python -PathType Leaf)) { throw 'An explicit installed Python executable is required.' }
@@ -181,7 +190,7 @@ $runID = (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString
 $out = Join-Path $outParent ('speech-admission-' + $runID)
 Assert-SpeechPlainPath $out
 if (Test-Path -LiteralPath $out) { throw 'Preserve existing evidence; fresh output is required.' }
-$baselineScript = Join-Path $PSScriptRoot $before=$null; $after=$null; $inputsBefore=@(); $sourcesBefore=@(); $legacyBefore=@()
+$before=$null; $after=$null; $inputsBefore=@(); $sourcesBefore=@(); $legacyBefore=@()
 $inputsUnchanged=$false; $sourcesUnchanged=$false; $legacyUnchanged=$false; $baselineUnchanged=$false
 $completed=$false; $failure=$null; $stage='baseline'; $tests=@(); $toolRecords=@(); $dependencyRecords=@(); $goVersion=$null
 $preparePassed=$false; $processPassed=$false; $forwardPassed=$false; $dependencyPassed=$false; $processSummary=$null
@@ -200,7 +209,7 @@ $original = @{}; foreach ($name in $environment.Keys) { $original[$name] = [Envi
 $restoreFailures=@(); $environmentRestored=$false; $pythonOutput=@()
 try {
     if($platformAdmission){$before=Get-PlatformAdmissionProtectionSnapshot $scope}
-    else{$before=& $baselineScript -InstallRoot $install -ExpectedManifestSha256 $ExpectedManifestSha256.ToLowerInvariant()|ConvertFrom-Json;Assert-SpeechBaseline $before $install $ExpectedManifestSha256}
+    else{$before=Get-LocalAdmissionProtectionSnapshot}
     $stage='input-snapshots'
     $inputsBefore = @(Get-SpeechLockedInputs $repo)
     $sourcesBefore = @(Get-AdmissionSourceRecords $repo)
@@ -309,12 +318,12 @@ finally {
                     $value=if($platformAdmission){@((Get-PlatformAdmissionProtectionSnapshot $scope).roots)}else{@(Get-AdmissionLegacyRecords)}
                     Write-SpeechJson $value (Join-Path $evidenceRoot 'legacy-static-after.json')
                     if($platformAdmission){if(($legacyBefore|ConvertTo-Json -Depth 8 -Compress)-cne($value|ConvertTo-Json -Depth 8 -Compress)){throw 'Clean-target roots changed.'}}
-                    else{if($legacyBefore.Count -ne 7){throw 'No complete retained payload snapshot.'};Assert-SpeechSameRecords $legacyBefore $value}
+                    else{if(($legacyBefore|ConvertTo-Json -Depth 8 -Compress)-cne($value|ConvertTo-Json -Depth 8 -Compress)){throw 'Historical payload presence or hashes changed.'}}
                     $legacyUnchanged=$true
                 }
                 'baseline' {
                     if($platformAdmission){$after=Get-PlatformAdmissionProtectionSnapshot $scope;if(($before|ConvertTo-Json -Depth 8 -Compress)-cne($after|ConvertTo-Json -Depth 8 -Compress)){throw 'Platform protection baseline changed.'}}
-                    else{$after=& $baselineScript -InstallRoot $install -ExpectedManifestSha256 $ExpectedManifestSha256.ToLowerInvariant()|ConvertFrom-Json;Assert-SpeechBaseline $after $install $ExpectedManifestSha256;if($null -eq $before){throw 'No initial installed baseline.'};Assert-SpeechBaselineUnchanged $before $after}
+                    else{$after=Get-LocalAdmissionProtectionSnapshot;if($null -eq $before -or ($before|ConvertTo-Json -Depth 30 -Compress)-cne($after|ConvertTo-Json -Depth 30 -Compress)){throw 'System registration changed during source admission.'}}
                     Write-SpeechJson $after (Join-Path $evidenceRoot 'installed-after.json');$baselineUnchanged=$true
                 }
             }
@@ -339,7 +348,7 @@ finally {
         source_inventory=$sourceInventory;
         source_inventory_before=$sourceInventoryBefore;admission_artifacts=$artifactRecords;
         development_scope=$scope;trial_root=$out;install_root=$install;installed_manifest_sha256=$(if($ExpectedManifestSha256){$ExpectedManifestSha256.ToLowerInvariant()}else{$null});
-        protection_baseline_mode=$(if($platformAdmission){'clean-target-absence'}else{'installed-local-product'});
+        protection_baseline_mode=$(if($platformAdmission){'clean-target-absence'}else{'system-registration-readonly'});
         module='third-tone-stage5c';reviewed_records=24;mode_alias_rows=72;forward_source_passed=$forwardPassed;admission_prepare_passed=$preparePassed;owned_process_acceptance_passed=$processPassed;
         dependency_boundary_passed=$dependencyPassed;dependencies=$dependencyRecords;directed_tests=$tests;tools=$toolRecords;go_toolchain=$go;go_version=$goVersion;python=$Python;
         python_contracts_passed=$pythonTestsPassed;
