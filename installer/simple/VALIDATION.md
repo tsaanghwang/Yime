@@ -1,5 +1,9 @@
 # 简版维护验证记录（2026-09-14）
 
+## 清理后源码新版验收
+
+`a4fa6f76` 对应 CI 成功后，已验收完整源码候选包通过 GitHub Release 交付“计算机”。测试端两套安装日志均成功，用户确认在 Codex 与 Notepad（记事本）重启前后输入正常；Word 未报告结果，不计为通过。开发端已核对包身份及 10 个原始证据文件哈希，见 [本轮复核](../../docs/testing/simple-maintenance/2026-09-14/source-candidate-test/REVIEW.md)。本轮结束保留两套安装，不重复下述历史维护测试。开发机首次注册冲突仍保留在 [开发验收记录](../../docs/testing/simple-maintenance/2026-09-14/source-candidate/DEVELOPMENT.md)。
+
 ## 开发端
 
 MYCOMPUTER 已完成两套卸载、重装、载荷哈希、x64/x86 注册及运行路径检查；用户确认两套重启前后输入正常。维护包运行载荷沿用已验收 dev4，不能宣称是全部清理后源码的重新构建。
