@@ -640,24 +640,26 @@ cmd /c build.bat
 本地 ad-hoc 构建落在 `go-backend/*.exe` 时已被 `.gitignore` 忽略。
 
 
-NSIS 安装包只包含 PIMELauncher、`backends.json`、完整 `go-backend` 包和三架构 TSF DLL，不再提供组件选择页或旧 Python/Node 输入法。读取新旧安装注册表时先写入临时寄存器，不能用空值覆盖 `InstallDir "$PROGRAMFILES32\YIME"`。
+构包统一使用 [installer/simple](../installer/simple/README.md)。Rime/PIME 包携带自己的 PIMELauncher、`backends.json`、Go 后端及 x64/x86 TSF；YimeCore 包携带自己的 Runtime、Broker、数据和 TSF。当前通用包不包含已验收的 ARM64 安装支持。
 
 ### 4.3 CI 流水线
 
 `.github/workflows/ci.yaml`：push 触发 `main`、`yime-stable`、`codex/**` 和 `v*` 标签；PR 触发 `main`、`yime-stable`。
 
 ```
-`build-contract`、`rust-i686-host`、`native-build`、`go-tests`、`real-rime-tests`、`go-race-msys2` 并行执行 → `installer-package` 消费已验证原生产物 → `core-build` 聚合全部结果
+build-contract → lexicon-offline-tooling / rust-i686-host / native-build / go-tests / real-rime-tests / go-race-msys2 / simple-installer
+real-rime-tests → shard-coverage
+全部保留任务 → core-build 聚合成功状态
 ```
 
 关键步骤：
 - `windows-2022` 运行器
-- **活动子模块必须先推到 fork remote**（当前为 `libIME2`），否则 checkout 失败；退役的 Python/Node/McBopomofo/libchewing 历史源码不参与产品构建和安装
+- `libIME2` 直接纳入本仓库，遵守组件独立提交边界；退役的 Python/Node/McBopomofo/libchewing 历史源码不参与产品构建和安装
 - 内联 vswhere + VsDevCmd 设置（非 ilammy/msvc-dev-cmd）
 - CMake 构建用 `shell: cmd` 确保 VsDevCmd 环境持久
 - 仓库内固定 Rime 共享数据及 librime 版本、哈希门禁
 - Go 纯逻辑包、原生工具布局及关键语言栏/Rime 回归测试
-- NSIS 打包用 `pwsh` + `Set-Location`
+- 简版安装器执行启动项、产品调度、日志和进程等待回归；完整包按交接文档单独交付
 
 ---
 

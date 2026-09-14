@@ -11,10 +11,10 @@ Windows 文本服务框架接入、按键转发、预编辑写入、候选呈现
 
 ## 构建
 
-顶层 CMake 已包含本目录；也可单独配置：
+当前产品使用 `tools/yimecore/build-local-product.ps1` 构建 x64/x86 表面；ARM64 使用独立平台入口。单独编译时必须显式选择当前产品身份：
 
 ```powershell
-cmake -S YimeTextServiceExperiment -B build_yts -G "Visual Studio 17 2022" -A x64
+cmake -S YimeTextServiceExperiment -B build_yts -G "Visual Studio 17 2022" -A x64 -DYIME_LOCAL_PRODUCT=ON
 cmake --build build_yts --config Release
 ```
 
@@ -23,7 +23,7 @@ cmake --build build_yts --config Release
 - `YimeTextServiceExperiment.dll` — TSF 文本服务（静态 CRT `/MT`）。
 - `YimeTextServiceContractTests.exe` — 契约测试宿主（`ctest` 注册，参数为 DLL 路径）。
 
-试用安装需要 x64、x86 与 ARM64 三种架构各构建一份（见
+当前通用包包含 x64/x86 表面；ARM64 构建和实机验收另行记录。安装维护见[简版安装器](../installer/simple/README.md)。
 
 ## 源码结构
 

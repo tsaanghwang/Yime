@@ -8,7 +8,7 @@
 
 本次远端提交包含源码与 Markdown 报告，没有提交报告所指的原始 package、working-tree.patch、source-snapshot.zip 或注册宿主结果 JSON。因此安装与宿主结论注明为测试机报告，接收端未独立重算这些远端工件。报告中“尚未执行安装/注册宿主”的过时条目已修正；历史安装命令标为已完成，无需重装。
 
-后续用户反馈已重启登录且入口仍在，记录为入口保留；当前开机 Runtime/Broker 和 Shell 登录事件尚待补齐。[只读复核交接](../../TEST-PC-YIMECORE-REBOOT-FOLLOWUP.md)给出精确包身份、观察范围和证据回传方式。
+后续用户反馈已重启登录且入口仍在，记录为入口保留；当前开机 Runtime/Broker 和 Shell 登录事件尚待补齐。[当时的只读复核交接](https://github.com/tsaanghwang/Yime/blob/80888e50/TEST-PC-YIMECORE-REBOOT-FOLLOWUP.md)给出精确包身份、观察范围和证据回传方式。该交接已退役，当前任务以 [HANDOFF](../../installer/simple/HANDOFF.md) 为准。
 
 ## 合入及本机检查
 
