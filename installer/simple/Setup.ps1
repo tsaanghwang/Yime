@@ -3,6 +3,14 @@ param([ValidateSet('Install','Uninstall','Check')][string]$Action='Install',
     [switch]$ResetData,[switch]$Silent,[string]$InitiatingSid,
     [ValidatePattern('^[a-f0-9]{32}$')][string]$LogId)
 $ErrorActionPreference='Stop';Set-StrictMode -Version 2.0
+function Wait-SetupExit([Diagnostics.Process]$Process){
+    # Hold the process handle while waiting for this process, not its descendants.
+    $null=$Process.Handle
+    $Process.WaitForExit()
+    $code=$Process.ExitCode
+    if($null -eq $code){throw 'Elevated setup exited without a readable exit code'}
+    return [int]$code
+}
 $administrator=([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if(-not $LogId){$LogId=[guid]::NewGuid().ToString('N')}
 $logRoot=Join-Path ([Environment]::GetFolderPath('UserProfile')) 'Yime Setup Logs'
@@ -31,9 +39,10 @@ if(-not $administrator){
     Write-Output ('Elevated setup log: '+(Join-Path $logRoot ($LogId+'.admin.log')))
     $args='-NoProfile -ExecutionPolicy Bypass -File "{0}" -Action {1} -InitiatingSid "{2}" -LogId {3}' -f $PSCommandPath,$Action,$sid,$LogId
     if($ResetData){$args+=' -ResetData'};if($Silent){$args+=' -Silent'}
-    $p=Start-Process -FilePath (Join-Path $PSHOME 'powershell.exe') -ArgumentList $args -Verb RunAs -Wait -PassThru -WindowStyle Hidden
-    Write-Output ('Elevated setup exit code: '+$p.ExitCode)
-    exit $p.ExitCode
+    $p=Start-Process -FilePath (Join-Path $PSHOME 'powershell.exe') -ArgumentList $args -Verb RunAs -PassThru -WindowStyle Hidden
+    $code=Wait-SetupExit $p
+    Write-Output ('Elevated setup exit code: '+$code)
+    exit $code
 }
 $stage='installed product ownership check'
 $root=Join-Path $env:ProgramFiles $product.directory

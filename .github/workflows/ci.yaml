@@ -313,6 +313,9 @@ jobs:
       - name: Test persistent setup error logs
         shell: powershell
         run: .\installer\simple\Test-Logging.ps1
+      - name: Test installer wait with a surviving child process
+        shell: powershell
+        run: .\installer\simple\Test-ProcessWait.ps1
 
   core-build:
     name: core-build
