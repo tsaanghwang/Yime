@@ -56,8 +56,4 @@ fn main() {
             _ => {}
         }
     }
-
-    if scenario == "eof-fail" {
-        std::process::exit(7);
-    }
 }

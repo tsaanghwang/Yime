@@ -21,7 +21,7 @@ func fixturePackage(t *testing.T) (string, string, manifest) {
 		t.Fatal(err)
 	}
 	m := manifest{Contract: "yimecore-local-product-package-v1", Tool: "yimecore-local-builder-v1"}
-	for _, rel := range []string{"bin/YimeCoreIndependenceAudit.exe", "bin/YimeCoreTrialRuntime.exe", "bin/YimeBroker.exe", "bin/YimeCoreRecoveryProbe.exe", "speech-capability.json", "speech/product.json", "speech/admitted-records.json", "indexes/full.yidx", "indexes/variable.yidx", "indexes/shorthand.yidx"} {
+	for _, rel := range []string{"bin/YimeCoreIndependenceAudit.exe", "bin/YimeCoreTrialRuntime.exe", "bin/YimeBroker.exe", "speech-capability.json", "speech/product.json", "speech/admitted-records.json", "indexes/full.yidx", "indexes/variable.yidx", "indexes/shorthand.yidx"} {
 		path := filepath.Join(root, filepath.FromSlash(rel))
 		if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
 			t.Fatal(err)

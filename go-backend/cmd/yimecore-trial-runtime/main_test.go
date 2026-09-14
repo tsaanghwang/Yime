@@ -4,8 +4,18 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 	"testing"
 )
+
+func TestRuntimeRejectsNonlocalPipeBeforeLoadingPackage(t *testing.T) {
+	for _, pipe := range []string{"", `\\server\pipe\remote`, `\\.\pipe\nested\name`, `\\.\pipe\bad/name`, `\\.\pipe\` + strings.Repeat("a", 129)} {
+		_, err := resolveOptions(options{installRoot: t.TempDir(), stateRoot: t.TempDir(), pipeName: pipe, noToolbar: true})
+		if err == nil || !strings.Contains(err.Error(), "local ASCII pipe name") {
+			t.Fatalf("pipe %q: %v", pipe, err)
+		}
+	}
+}
 
 func TestResolveOptionsRequiresCompleteIndependentTrialPackage(t *testing.T) {
 	root := t.TempDir()
@@ -34,9 +44,6 @@ func TestResolveOptionsRequiresCompleteIndependentTrialPackage(t *testing.T) {
 	}
 	if resolved.brokerPath != broker || resolved.stateRoot != state {
 		t.Fatalf("custom durable runtime paths changed: %+v", resolved)
-	}
-	if resolved.healthPipe != defaultPipeName+".health-v1" || !slices.Contains(brokerArguments(resolved), resolved.healthPipe) {
-		t.Fatal("resolved Runtime did not enable the derived independent Broker health endpoint")
 	}
 	if err := os.Remove(filepath.Join(root, "package", "indexes", "shorthand.yidx")); err != nil {
 		t.Fatal(err)

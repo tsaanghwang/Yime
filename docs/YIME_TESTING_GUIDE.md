@@ -249,32 +249,11 @@ Stage 6D 语气词“啊”还应单独闭合安装数据与用户态缓存链�
 
 真实 32 位宿主使用 `C:\Windows\SysWOW64\charmap.exe`。在 64 位 Windows 上，`SysWOW64` 中该文件的 PE machine 应为 `0x014C`；不要用 `System32\charmap.exe` 代替 x86 验证。发布烟雾测试需在该进程中实际激活 YIME，并完成组字、候选和上屏。
 
-### 8.3 YimeCore trial 本地构建、事务升级与宿主验证
+### 8.3 双独立产品安装与宿主验证
 
-已安装过受清单验证的 YimeCore trial 后，可在仓库根目录运行：
+使用 [简版安装维护入口](../installer/simple/README.md) 制作完整独立产品包，从 Explorer 运行包内 `Install-Uninstall.cmd`。保存文档并退出使用目标输入法的应用；仍占用时取消，正常重启后不切换到待维护输入法再操作。每套只维护自己的文件、注册和用户状态，失败后使用完整包重新安装。
 
-```cmd
-Upgrade-YimeCore-Trial.cmd
-```
-
-人工验证时建议从当前用户的普通（非预先提权）终端运行以下命令，并在安装阶段接受一次 UAC；这样升级器会保留
-发起用户 SID。运行前先保存工作并关闭所有 Word 窗口：
-
-```cmd
-C:\dev\Yime\Upgrade-YimeCore-Trial.cmd /norestart
-```
-
-`/norestart` 会跳过脚本末尾的 Windows 重启询问；完成后仍应在方便时重启，再检查任务栏语言项。规范升级入口从
-`%LOCALAPPDATA%\YimeCore Experimental Trial\runtime-config.json` 解析当前安装根，逐文件校验其
-`package-manifest.json`，再以该安装包为 base 重建当前工作树；安装目录额外生成的
-`install-metadata.json` 不属于包清单，也不得被复制到新 staged package。
-
-流程固定为：构建 x64/x86/ARM64 表层并完成隔离包验证、完整 staging 后事务升级、修复并读取真实 Run 值、验证安装态
-三模式和 Broker 恢复、运行当前机器可执行架构的 `YimeRegisteredHostTests.exe`。非 ARM64 主机必须编译并校验 ARM64 PE，
-但不得把跳过真实 ARM64 宿主执行描述为已经通过 ARM64 桌面验收。运行前必须关闭 Word；安装阶段会
-请求一次 UAC。若新版本注册或启动失败，旧版本目录、COM/Profile、TIP、runtime 配置、Run、卸载项
-和升级前运行状态必须自动恢复。不能把该流程简化为先删除旧版本再复制，也不能用源码目录中的 DLL
-contract 代替注册宿主测试。
+本轮支持 x64 Windows 与 WOW64 应用；ARM64 源码实验不是已交付的 ARM64 安装包。先在开发端验证，再提交推送；CI 成功后按 [分支交接](../installer/simple/HANDOFF.md) 向测试端交付。当前实机记录见 [简版维护验收](../installer/simple/VALIDATION.md)。源码 DLL 测试不能代替安装态宿主输入。
 
 > **宿主激活与自动化告警：** 新打开 Word 或其他宿主并不等于已经激活 Yime 试验版；只有 Windows 默认输入法明确设为
 > Yime 时才可能自动进入。当前 x64 本机产品验收前应先通过任务栏输入法切换按钮（例如当前“拼”图标）选择 **音元拼音**，不要把冻结旧 Profile 的 **Yime 自研栈试验版** 当作当前产品；或使用
@@ -288,7 +267,7 @@ contract 代替注册宿主测试。
 
 - 可信签名安装包：签名证书正在申请，等候审批，暂缓相关事项。此项不得以未签名试验包、测试证书或关闭 Windows 安全策略代替。
 - 2026-09-02：完成 [YimeCore 试验版安装态验收](YIMECORE_TRIAL_ACCEPTANCE_2026-09-02.md)。当前用户升级、Word x64 新会话、安装态 x64/x86 注册宿主、64 个 Shift 组合及 `Shift+1` 至 `Shift+9` 契约通过；最终 Rime 对照正确性通过但相对延迟/内存失败，真实 ARM64 桌面宿主仍待外部机器执行。E7 不启动。
-- 2026-09-01：YimeCore 分支综合审查的 7 项高危与 26 项中危修复完成。Go 全量 test/vet/build 与 `go test -race -count=1 ./...` 通过；x64/x86 DLL contract 和真实 TSF composition 宿主通过；ARM64 表层完成编译及 `0xAA64` PE 校验；E6-C 安装契约通过 staging 后复核、预卸载中途失败回滚、同 SID 每用户卸载项和三架构清单门禁。真实 ARM64 桌面宿主仍需在 ARM64 Windows 上执行。
+- 2026-09-01：YimeCore 分支综合审查的 7 项高危与 26 项中危修复完成。Go 全量 test/vet/build 与 `go test -race -count=1 ./...` 通过；x64/x86 DLL contract 和真实 TSF composition 宿主通过；ARM64 表层完成编译及 `0xAA64` PE 校验。真实 ARM64 桌面宿主仍需在 ARM64 Windows 上执行。
 - 2026-07-11：未签名开发包真实安装验证，输入响应正常，用户词“云笺试码”“笺砚验码”应用后活动会话直接出词。
 - 2026-07-12：完整安装态清单逐项跑完并留痕（[YIME_INSTALL_VERIFICATION_2026-07-12.md](YIME_INSTALL_VERIFICATION_2026-07-12.md)）——重启后干净全量重装、三件哈希构建↔安装全一致、重启自启动实测（开机 27 秒内自动拉起）、7 工具入口不崩、TIP 注册与真实组词日志、CodeIntegrity 核查、runtimechange 协议 `-race` 全绿。签名完成后须以该文档为模板复跑留新档。
 - 2026-07-15：真实 32 位宿主 `C:\Windows\SysWOW64\charmap.exe` 人工烟雾测试完成，暂未发现激活、组字、候选或上屏问题；签名产物仍须重复验证。

@@ -66,6 +66,7 @@ go-backend/build/
 go-backend/.gotmp/
 go-backend/*.exe
 installer/*.exe
+# Retired installer outputs retained locally; never include them in new handoffs.
 /installer/build-manifest.json
 /installer/package-plan.json
 /installer/package-plan.json.sha256

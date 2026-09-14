@@ -23,6 +23,7 @@ import (
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/connectedspeech"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/speechruntime"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker"
 )
 
 const normalNamespace = "yimecore-e6c-three-mode-trial-v1:installed-v1"
@@ -212,7 +213,7 @@ func readManifest(root, expected string) (manifest, error) {
 	if err = readJSON(filepath.Join(root, "package-manifest.json"), 4<<20, &m); err != nil {
 		return m, err
 	}
-	if m.Contract != "yimecore-local-product-package-v1" || m.Tool != "yimecore-local-builder-v1" || len(m.Files) < 10 || len(m.Files) > 512 {
+	if m.Contract != "yimecore-local-product-package-v1" || m.Tool != "yimecore-local-builder-v1" || len(m.Files) < 9 || len(m.Files) > 512 {
 		return m, errors.New("not a bounded normal product package")
 	}
 	if err = verifyFiles(root, m); err != nil {
@@ -232,7 +233,7 @@ func verifyFiles(root string, m manifest) error {
 		}
 		expected[key] = r
 	}
-	for _, required := range []string{"bin/YimeCoreIndependenceAudit.exe", "bin/YimeCoreTrialRuntime.exe", "bin/YimeBroker.exe", "bin/YimeCoreRecoveryProbe.exe", "speech-capability.json", "speech/product.json", "speech/admitted-records.json"} {
+	for _, required := range []string{"bin/YimeCoreIndependenceAudit.exe", "bin/YimeCoreTrialRuntime.exe", "bin/YimeBroker.exe", "speech-capability.json", "speech/product.json", "speech/admitted-records.json"} {
 		if _, ok := expected[strings.ToLower(required)]; !ok {
 			return errors.New("normal speech package missing required file")
 		}
@@ -414,7 +415,7 @@ func exercise(root, expected, out string) (resultErr error) {
 	}
 	r := report{Schema: "yimecore-speech-normal-process-v1", PackageSHA: expected, Source: root, Output: out, SID: sid,
 		PrivatePackage: filepath.Join(out, "package"), Environment: "explicit Windows paths plus fresh private APPDATA/LOCALAPPDATA/TEMP/TMP/USERPROFILE; no inherited secrets or opt-ins",
-		Transport: "normal Runtime/Broker; unique authenticated named pipe; server PID checked", Recovery: "offline fresh-clone probe only; runtime stop is not claimed graceful; no installed backup/restore"}
+		Transport: "normal Runtime/Broker; unique authenticated named pipe; server PID checked", Recovery: "in-process journal replay on a fresh clone only; runtime stop is not claimed graceful; no installed backup/restore"}
 	defer func() {
 		_, sourceErr := readManifest(root, expected)
 		r.SourceUnchanged = sourceErr == nil
@@ -604,7 +605,7 @@ func sameRecords(a, b []fileRecord) bool {
 	bb, _ := json.Marshal(b)
 	return bytes.Equal(aa, bb)
 }
-func generationClone(root, state, stage string, env []string) (uint64, error) {
+func generationClone(state, stage string) (uint64, error) {
 	model := filepath.Join(state, "user-model", "installed-v1")
 	before, err := stateHashes(model)
 	if err != nil {
@@ -625,31 +626,27 @@ func generationClone(root, state, stage string, env []string) (uint64, error) {
 			return 0, err
 		}
 	}
-	marker, err := os.OpenFile(filepath.Join(clone, ".yime-recovery-clone"), os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
+	// Reopen only the disposable clone with the normal journal implementation.
+	// This is an in-process fixture check, not package recovery-tool acceptance.
+	recovered, err := yimebroker.OpenDurableUserModel(yimebroker.DurableUserModelConfig{
+		SnapshotPath: filepath.Join(clone, "user-model.json"),
+		JournalPath:  filepath.Join(clone, "user-model.journal"), SourceID: normalNamespace,
+	})
 	if err != nil {
 		return 0, err
 	}
-	marker.Close()
-	result := filepath.Join(stage, "recovery.json")
-	if err = runTool(filepath.Join(root, "bin", "YimeCoreRecoveryProbe.exe"), stage, env, "-clone", clone, "-source-id", normalNamespace, "-output", result); err != nil {
-		return 0, err
-	}
-	var recovered struct {
-		Passed     bool   `json:"passed"`
-		Generation uint64 `json:"generation"`
-		Source     string `json:"source_id"`
-	}
-	if err = readJSON(result, 128<<10, &recovered); err != nil {
+	generation := recovered.Model().Generation()
+	if err = recovered.Close(); err != nil {
 		return 0, err
 	}
 	after, err := stateHashes(model)
 	if err != nil {
 		return 0, err
 	}
-	if !recovered.Passed || recovered.Source != normalNamespace || !sameRecords(before, after) {
+	if !sameRecords(before, after) {
 		return 0, errors.New("clone recovery changed origin or namespace")
 	}
-	return recovered.Generation, nil
+	return generation, nil
 }
 
 type runningRuntime struct {
@@ -728,7 +725,7 @@ func normalStage(root, state, out string, env []string, sid string, records []co
 	run.runtime.close()
 	run.broker.close()
 	run = nil
-	entry.Generation, err = generationClone(root, state, dir, env)
+	entry.Generation, err = generationClone(state, dir)
 	if err != nil {
 		return entry, err
 	}
