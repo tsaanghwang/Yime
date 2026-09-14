@@ -1,0 +1,31 @@
+{
+  "candidate": "simple-source-20260914",
+  "base_commit": "58e360a52e83549a124ede2d5ab288281843b03e",
+  "source_state": "working tree; exact core sources captured by source-manifest and build source snapshot",
+  "core_source_manifest_sha256": "ab5148c4fe6915f71aa45be7f668e0d6e3cbbbe5bf17ff4bb9be5d388708d1e6",
+  "core_source_archive_sha256": "bade7ab5924ce0935a03554f506a8d47aa341b04637308921bac0ba07f801aa2",
+  "core_build_passed": true,
+  "rime_build": "Build.ps1: native x86/x64 PIME, pinned i686 Rust launcher, Go application/tools; pinned Rime dependencies bundled",
+  "old_installed_runtime_used_as_build_input": false,
+  "isolated_package_maintenance_passed": true,
+  "development_installation": "pending",
+  "development_input_and_reboot": "pending",
+  "ci_for_candidate_changes": "pending",
+  "test_machine_delivery": "not released",
+  "products": [
+    {
+      "product": "yimecore",
+      "version": "simple-source-20260914",
+      "manifest_sha256": "61396ab2d4d968842a778d8cd3f3b6692c04bf1a33f74e5c3c4e21b1e4938f2c",
+      "files": 65,
+      "bytes": 425307471
+    },
+    {
+      "product": "rime-pime",
+      "version": "1.4.0-dev.1",
+      "manifest_sha256": "b6e54a9bd8a5bcfafc055c3bb1705276f942bb4ec8b938664a3b2f3cfdf01f73",
+      "files": 160,
+      "bytes": 159908450
+    }
+  ]
+}
