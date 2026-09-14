@@ -12,9 +12,7 @@
 | 原执行位置 | 耗时 |
 | --- | ---: |
 | `native-build` 全 job | 106 分 18 秒 |
-| 其中 DP1-N installer/receipt transaction，PS5 后 PS7 | 55 分 18 秒 |
 | retained receipt publication/crash recovery，PS5 后 PS7 | 15 分 09 秒 |
-| DP1-Q evidence archive，PS5 后 PS7 | 13 分 34 秒 |
 | Win32 + x64 编译步骤 | 2 分 55 秒 |
 
 三个长回归合计 84 分 01 秒，是原生 job 的约 79%。不能把这些完整性、
@@ -29,9 +27,7 @@
    [固定 7-Zip 准备](CI_PINNED_SEVENZIP_FIX_2026-09-09.md)在独立目录提供原锁定解压器，避免 runner 预装版本变化使 NSIS 前置检查失败；相关回归也在这一步完成。
    `native-build` 保留真实 PE 依赖的 staged-installer-build 回归，并立即保存
    `yime-native-<SHA>` 工件。
-3. 上述检查全部成功后，普通 `contract-tests` 与 `dp1-long-contracts` 并行。
    长回归为三个完整套件乘两个真实 PowerShell host，共六个 job，最多同时运行两个。
-   DP1-N 两个 host 优先排入矩阵；不会用 `CheckPattern` 切掉用例。
 4. 全部回归成功后才生成、验证和上传 installer payload，随后编译禁用执行的测试安装包。
    打包 runner 再次验证自己的固定 NSIS 分发；不复用另一个 runner 的可变工具目录。
 5. `core-build` 明确要求新增 job 和原有检查全部 `success`。
@@ -62,7 +58,6 @@ GitHub job 日志保留实际步骤输出，不上传庞大的合成安装树。
 
 ```powershell
 python tools/ci/test_workflow_contract.py
-python -m unittest discover -s tools/dual-product -p test_baseline.py
 python tools/verify_toolchain_lock.py
 .\tools\validate-build-contract.ps1
 git diff --check
@@ -70,7 +65,6 @@ git diff --check
 
 涉及工作流结构时，还应使用 actionlint 校验 GitHub YAML/表达式。本次使用官方
 actionlint 1.7.7 发布包，并核对官方 SHA-256。已有原生构建产物时，在 PS5 和 PS7
-分别运行 `tools/test-build-guards.ps1 -SkipPackagedRime`；该检查有真实 PE 输入依赖，
 不应为了执行它重新安装产品。长套件调用仅改变调度时，不在本地和云端重复全跑；
 首次新工作流的云端运行负责确认新 runner 分配和实际耗时。
 

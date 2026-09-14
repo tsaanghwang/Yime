@@ -22,6 +22,5 @@ Runtime 只在监管主循环刷新 Broker PID、创建时间与单调时间戳�
 
 互通脚本的后续审查补齐了子进程提前登记、异常路径输出读取收尾和就绪文件完整写入等待。首次环境恢复复跑中，PS7 的线协议通过，但外层断言发现 `GOCACHE` 未恢复原状；该失败单独保留。脚本现按环境变量原存在性明确删除或恢复，最终两版 PowerShell 另行验证环境还原，旧成功线协议记录不被重写为整条验证通过。
 
-客户端只提升 `health_service_responsive`、`nonce_verified`、`pipe_server_identity_bound` 和保留进程复核等窄范围结果。`runtime_ready_verified`、`runtime_consumed_config_verified`、`startup_path_verified`、E7、真实回退/恢复/卸载、L6、local/public 和执行授权保持 false。健康协议不承担 Rime/PIME DP1-U、DP2/DP3 的验收，既有 DP1 诚实关闭字段不变。
 
 后续先从审查过的源码重新构建独立候选并封存，再把精确候选身份接入维护编排。采集 v2 仍绑定此前不含健康服务的固定候选，因此本轮没有静默插入探测或把旧候选标成支持新协议。新候选的实际 Runtime/Broker 组合、引擎响应、配置采用及完整原生维护、恢复、卸载重装、重启登录和宿主验收仍需各自证据；普通 local.12 日用与用户已经确认的 L5 不重做。

@@ -1,14 +1,11 @@
-"""Require all nine source-bound real-Rime/transaction shards; fail on any gap."""
+"""Require all three source-bound real-Rime shards; fail on any gap."""
 import argparse
 import hashlib
 import json
 from pathlib import Path
 
-SCRIPTS = {'real-rime': 'tools/test-real-rime.ps1',
-           'installer-transaction': 'tools/dual-product/test-rime-pime-installer-receipt-transaction.ps1'}
-EXPECTED = {(suite, shell, index) for suite, shells in
-            [('real-rime', ['pwsh']), ('installer-transaction', ['powershell', 'pwsh'])]
-            for shell in shells for index in range(3)}
+SCRIPTS = {'real-rime': 'tools/test-real-rime.ps1'}
+EXPECTED = {('real-rime', 'pwsh', index) for index in range(3)}
 
 
 def verify(records, commit, source_hashes):
@@ -55,8 +52,6 @@ def main():
     for path in args.root.rglob('*.json'):
         if path.name.startswith('real-rime-shard-'):
             records.append(json.loads(path.read_text(encoding='utf-8-sig')))
-        elif path.name == 'transaction-result.json':
-            records.append(json.loads(path.read_text(encoding='utf-8-sig'))['ci_shard'])
     print(json.dumps(verify(records, args.commit, hashes)))
 
 

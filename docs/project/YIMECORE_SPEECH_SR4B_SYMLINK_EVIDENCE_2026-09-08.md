@@ -24,8 +24,6 @@
 从仓库根分别运行（默认允许真实权限 SKIP）：
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\yimecore\test-speech-symlink-evidence.ps1
-pwsh.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\yimecore\test-speech-symlink-evidence.ps1
 ```
 
 补齐 OS 证据的前置条件是**单独授权且已具备文件／目录符号链接创建能力的 Windows 测试进程**，例如具备适当链接权限的进程，或已经允许非提升创建的开发者环境。入口不自动提升、不修改策略／Developer Mode、不启用权限、不安装产品、不预制外部链接。“管理员账户”不能替代实际创建成功证据。

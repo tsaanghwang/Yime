@@ -411,9 +411,7 @@ E6-C 在不切换生产输入法的前提下增加搜索排列、显示设置和
 - 默认编码模式改为“变长”。工具栏“模式”按“变长、等长、省键”循环，但内部协议继续使用稳定值 `variable/full/shorthand`；已有 composition 不在中途换索引，空闲后的新会话才采用新模式。
 - 候选字号提供“小、中、大”三档，分别为 10/12/16 points，其中“中”为常规默认值。工具栏“音码”提供“键位、音元、拼音、隐藏”四项，默认显示键位序列；“拼音”显示带调标准拼音。“音元”和“拼音”只从当前仓库受审的规范记录解析，压缩码不唯一时不猜测注释。
 - 默认安装和登录自启动均使用 `-no-toolbar`，不启动独立输入法工具栏；与微软拼音相同的 Windows 原生 TSF 语言栏是唯一默认控制入口。按钮和菜单内容仍由 Yime 自己实现；注册流程从 PIME 宿主完整继承 Windows 8+ 的 `GUID_TFCAT_TIPCAP_SYSTRAYSUPPORT` 与 `GUID_TFCAT_TIPCAP_IMMERSIVESUPPORT` 接入条件。输入模式项复用 Windows 保留的 `GUID_LBI_INPUTMODE`，并采用 PIME 已验证的 `TF_LBI_STYLE_BTN_BUTTON` 样式（不设置 Windows 已不支持的 `TF_LBI_STYLE_SHOWNINTRAY`）：浮动桌面语言栏显示文字“中/英”，停靠任务栏时按中西文和全半角返回四态“中/英”图标；左击切换中英文，右击提供“默认语言”、全半角、中英标点、候选排列、基本设置、候选设置和工具入口共十二项。输入方案、候选字号、显示编码和候选字体只由“候选设置”管理。右键菜单显式打开的 `YimeCoreInputToolbar.exe` 复用“音”版 Go/Win32 输入法工具栏的按钮、布局、统一字体、方向和定制菜单，同时写入试验版独立状态；工具中心从设置菜单进入。试验 profile 使用独立图标替代任务栏的“简体”文字槽。封装不再保留旧名 `YimeCoreToolbar.exe` 或 `YimeCoreDesktopTools.exe`，也不通过 PowerShell 承载工具栏 UI。
-- `manage-e6c-trial-install.ps1` 先在试验 Program Files 根内完整复制并写好新版本 staging，再停止旧 runtime、清理试验 CLSID/Profile/两套 COM 视图并切换注册。新注册、配置和 runtime 启动全部成功前必须保留旧版本目录；任一步失败都恢复旧注册、TIP、runtime 配置、Run 值、卸载项及原运行状态。默认保留学习快照和 journal。它在 Windows“已安装的应用”登记“Yime 自研栈试验版”及独立卸载命令，锁定 DLL 只登记重启后删除，不强杀 Explorer 或宿主应用。清理路径必须是试验 Program Files 根的带标记子目录，不能越界到正式 PIME/Rime。
 
-E6-C 的多索引限制现已关闭：三种模式共用一个显式稳定命名空间的 E5-C 快照/哈希链日志，每次已确认选择仍在 commit 响应前同步；每种模式分别复用 E5-D 的代际租约和事务控制，错误哈希不会改变 active，显式回滚只影响后续新会话。工具栏模式变化继续采用“当前 composition 保持在原引擎、空闲后的新会话才采用新模式”的安全策略。新表层用 GUID 级 mutation ID 防止多个宿主会话互相误判重放；Broker 还只针对已安装的旧 `e6b2a-surface-*` ID 加会话作用域，使旧试验 DLL 与新持久模型组合时仍能逐会话学习，不改变其它调用方的跨会话幂等语义。`YimeCoreTrialRuntime.exe` 以管道作用域的单实例监督独立 Broker 和工具栏，把快照、journal 与索引控制文件固定在 `%LOCALAPPDATA%\YimeCore Experimental Trial`，Broker 异常退出后原地恢复；`deploy-e6c-trial-runtime.ps1` 只启用独立试验 TIP 并建立当前用户登录自启动，现有中文输入法条目保持不变，启停可由配套脚本逆转。`run-e6c-package-experiment.ps1` 从经哈希交接的试验包生成自包含 E6-C staged package；提升后的 `run-e6b7-parallel-package-experiment.ps1` 还会从独立 Program Files 试验安装树运行同一验证器。两者都在三模式逐一证明学习重启后提升、错误切换保持 v1、既有 composition 保持 v1、有效 v2 会话在回滚后继续可用及回滚后的新会话重取 v1；包门禁还强制终止受监督 Broker 并核验 PID 更换、重启计数递增和路径不漂移。这些路径不注册或启动生产 Rime/PIME，也不改变裸数字键规则。
 
 #### 2026-08-31 稳定性修复的不可回退约束
 
@@ -424,7 +422,6 @@ E6-C 的多索引限制现已关闭：三种模式共用一个显式稳定命名
 - 自有候选窗 HWND 可能被宿主或系统从外部销毁。使用前必须检查 `IsWindow`，并在 `WM_NCDESTROY` 清空内部句柄；不得把缓存的非空 HWND 当作仍有效。
 - trial 升级必须“完整 staging -> 保留 staging 和旧版本 -> 清理旧注册 -> 提升 staging -> 注册并启动新版本 -> 删除旧版本”。staging 不能被旧版本扫描清理；失败回滚必须保留注册表 value kind，并恢复 COM/Profile、TIP、配置、Run、卸载项及升级前运行状态。
 - 提权后的安装/卸载必须仍由发起操作的同一 Windows SID 执行；不得把当前用户配置、Run 项或 TIP 静默写入另一个管理员账户。卸载命令必须携带目标 SID 和 state root。
-- `repair-e6c-trial-autostart.ps1 -ValidateOnly` 必须读取并严格比较真实 Run 值；missing 或 wrong value 都必须失败，不能用期望值替代实际读取结果。
 
 这些约束的最低门禁是：相关 Go 回归、x64/x86 DLL contract、x64/x86 registered-host 测试、安装 staging/rollback 故障注入、Run missing/wrong 负向验证，以及安装态三模式和 Broker supervisor 恢复。不得只靠源码单元测试宣称安装或 TSF 生命周期修复仍然有效。
 
@@ -535,7 +532,6 @@ E6-C 的多索引限制现已关闭：三种模式共用一个显式稳定命名
 
 - 新增 `YimeCoreIndependenceAudit.exe`，对 staged 或已安装活动包逐项重算 manifest 大小和 SHA-256，并拒绝重复、越界、遗漏或未列入清单的载荷。
 - 审计 x64、x86、ARM64 的试验 TextService 与注册工具 PE machine；枚举全部 EXE/DLL 的真实导入表，拒绝 `rime`、`librime`、`PIME` 或 `Weasel` 构件和导入。
-- `run-e6d-independence-readiness.ps1` 只从活动 runtime config 解析包路径，不按目录修改时间猜测版本；它同时执行 Go 源码依赖边界测试、核对 runtime/Broker 与活动包收敛、核对试验 COM x64/x86 指向活动包，并在审计前后快照生产 PIME x64/x86 注册。
 - `45b389e5` 活动安装的 manifest 62 个文件、29 个 PE 文件通过；试验 COM 指向独立 Program Files 根，生产 PIME 两个注册视图保持不变。审计是只读的，不运行安装、注销或注册命令。
 - Run 自启动必须在审计前后以 `-ValidateOnly` 读取实际路径和注册表类型；新进程正在运行不代表下次登录会启动新包。E7 必须复核这份证据的 SHA-256、只读标志、包身份与实际 runtime 命令，不接受仅有 `passed=true` 的摘要。
 - Program Files 中可以存在升级留下的非活动版本，不能把“修改时间最新的目录”当成活动版本。只有 runtime config 指向的目录可用于安装态验收；非活动目录不在本门禁中自动删除。
@@ -547,8 +543,6 @@ E6-D 证明当前包、源码运行依赖和注册边界已经为最终独立做
 - 只有 E0 至 E6 全部门禁通过，并完成签名安装包真实宿主验收，才提交默认切换提案。
 - 默认切换不是独立产品发布的自动附带操作，也不授权删除另一产品。原先稳定周期后的退役路线已由 2026-09-05 双产品决定替代；用户另行要求卸载或退役时，才审查精确目标与数据保留范围。
 - Rime/PIME 持续作为独立可选维护产品，保留其适配器、安装器和可校验的发布/回退载荷；YimeCore 的运行与维护不得依赖它存在。分别验证“仅 Rime/PIME、仅 YimeCore、两者共存”，以及升级/卸载一方不影响另一方；这些新增组合目标尚不能标为通过。
-- [首次独立发布保留与回退方案](YIMECORE_INDEPENDENT_RELEASE_RETENTION_PLAN.md) 的发布审批与对应真实发布路径演练仍分别受门禁约束；已通过的本机事务回退不重标为未通过，也不扩展成发布回退通过。开发方向批准不改变 `first_release_retention_plan_approved=false` 或其他缺证据的外部字段。
-- `run-e7-cutover-readiness.ps1` 是只读提案预检：必须显式传入当前干净 E6-C staging、E6-D 活动安装和双档性能证据，验证内部审计哈希、当前提交、仅含主流/超前活动性能档、活动包与 staged 包一致、全部 PE 可信签名，以及外部 ARM64、主流/超前实体机、第三方宿主矩阵和回退演练记录。它只生成 blockers，不注册、不切换、不卸载。
 - 外部验收记录使用 `e7-external-evidence.template.json` 的稳定字段；布尔值只能由对应实体机/宿主或回退演练证据支持，不能把本机模拟、静态 ARM64 PE 检查或自动化可访问性限制填成通过。签名包的全部 PE 必须为 `Valid`、使用同一证书，并与审定的发布者证书 thumbprint 一致。
 
 以上 E7 工具与模板保留其既有切换方案语义；不是三个安装选择共用的现成发布入口。双产品 DP1 将分别定义独立产品发布与可选跨产品切换的证据适用范围。YimeCore 单独安装后的自身恢复不得以安装 Rime/PIME 为前提；本次既不执行旧 E7，也不改其门限或填补尚缺的结果。

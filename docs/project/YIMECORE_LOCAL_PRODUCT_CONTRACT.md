@@ -1,79 +1,9 @@
-# 本机独立产品契约与功能保留清单
+# YimeCore 产品构包约定
 
-更新：2026-09-05。规范入口是 `tools/yimecore/local-product.json`；`0.1.0-local.12` 已合并 D2 失焦取消及设置候选数回读修复，完成隔离构包及用户原生安装，14:01 安装文件/进程身份核对通过；14:25 当前包 x64/x86 三模式真实注册宿主 6/6 自动复验通过，前后保护、标准用户令牌和隔离清理检查通过。随后用户设置/重开/实际均为 7，Word/Notepad++ 未提交切换人工复验完成、未见异常；14:59 当前包与宿主 DLL 元数据核对正常。15:07 电脑重启后，用户确认候选数保持 7；15:17～15:22 的较新开机、真实进程、独立完整 Run、匹配 Shell-Core 9708、包及注册保护组合证据通过，本次登录自启动门槛完成。当前留样 `(1/7)` 与用户说明的退出前其他候选连续两次提交、升至 `(1/1)` 后挤动原 `(1/6)` 的过程一致，未确认回归；有中途调频，不能冒称无干预留样严格对照通过。最终日用确认仍待用户给出。活动范围是 MYCOMPUTER 原生 x64 Runtime/Broker 及本机 x64、WOW64 x86 TSF 表面。local.3/local.4 等记录保留为历史证据。包内 Verify 的候选文本记录不适用于本次隐私约束，本次采用独立安全测试入口，见 `docs/YIMECORE_LOCAL12_UPGRADE_HANDOFF_2026-09-05.md`。
+当前安装协议由 [installer/simple](../../installer/simple/README.md) 定义。每包携带自己的运行文件、字典、语流音变资产、私有字体、x64/x86 TSF 和所需注册工具。
 
-## 双产品独立性契约（2026-09-05 用户决策）
+源码描述由 `tools/yimecore/local-product.json` 定义；源码构建保持原生产品身份和文件完整性检查。源码包清单与安装包 `product-package.json` 各自描述其实际文件，不能将旧事务或恢复目录作为新包依赖。
 
-按[双独立产品开发计划](YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)，共存仅指 Rime/PIME 版与 YimeCore 版两个完整输入法可同时安装，各自独立、互不依赖；也必须支持仅安装任一版。这不是同一输入法的双内核切换，也不要求两版同时处理一次输入。
+安装目录、运行端点、注册标识和可写数据归本产品独有。卸载不删除另一产品或系统字体。显式数据重置仅作用于本产品，正常重装默认保留数据。
 
-- 任一版在另一版不存在、停止或卸载后，仍能独立安装、运行、升级、备份和恢复；禁止跨产品调用、隐式回退或绑定升级。
-- 两版分别拥有产品身份、注册项、安装文件、端点、自启动和可写设置／学习／词库。升级、卸载或恢复只能操作本版所属资源，不得停止另一版进程、清理另一版注册或共享覆盖用户学习。
-- 允许共享规范源、离线生成器和合成测试规格，但包内静态产物与维护依赖必须各自完整；不得读取另一版安装目录充当构包输入或运行依赖。既有“共享事务器”指代码复用和本版新旧包兼容，不表示两个产品需要互相安装。
-- 产品候选版本和验收分别固定；两种单装、两种安装顺序、共存时的双向升级／卸载／恢复须另有证据。目前的共存状态、local.12 已有验收与方向批准均不能代替这份完整矩阵。
-
-本次契约调整不改变下面的活动 GUID、显示名称、安装目录或数据格式，不授权生产写入、默认输入法切换或用户数据迁移。Rime/PIME 继续稳定维护，不自动退役；YimeCore 继续作为主要开发线。
-
-## 身份和兼容边界
-
-2026-09-03 的 `local.9` 已通过重启后 x64 宿主三项人工确认。2026-09-04 用户批准解冻本机 WOW64 x86 应用宿主；`local.11` 双架构包随后完成干净源码构包、真实安装和 x64/x86 三模式 registered-host，并在 Firefox/Notepad++ 32 位进程中确认加载当前 x86 DLL 及三项输入行为。x86 分支已通过，但 x64 L5 日常使用及 L6 合并封存仍待完成。
-
-活动产品使用独立 CLSID/Profile，显示名为“音元拼音”。旧 CLSID/Profile 只归历史封存试验；旧 x86 文件不得因本机 x86 解冻而执行或改称当前产品。
-
-新构包的 x64 与 Win32 TSF 均使用 `YIME_LOCAL_PRODUCT=ON`，从唯一描述生成显示名与 CLSID/Profile 头文件；未启用此开关的旧 Trial 构建保持旧名称和旧 GUID。维护器从经清单验证的描述读取显示名，并注册当前身份的 x64/x86 COM 表面。语言栏菜单和按键契约不变。
-
-| 身份 | 保持的值 | 当前消费者与后续接线位置 |
-| --- | --- | --- |
-| 活动 x64/x86 COM CLSID | `{E40FA752-BB96-461D-A51D-F40EB437EC65}` | `local-product.json` 生成当前身份；维护器按包声明写入 x64 与 WOW64 COM 视图 |
-| 活动输入法 Profile | `{126F54C6-E9B1-4E22-8652-03224CBD49F9}`；语言 `0804` | 两种进程位数共享“音元拼音”输入法条目 |
-| 冻结旧身份 | CLSID `{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}`；Profile `{607895A8-9504-4A2E-9BB1-2C159E3A1757}` | 历史构建与 WOW64 静态注册；迁移前后均须逐值保持，不执行冻结二进制 |
-| 安装/状态目录 | `YimeCore Experimental Trial` | runtime 的 `resolveOptions`、`ExperimentSettings`、安装器、工具启动参数；目录内 Trial 不表示依赖 Rime |
-| Run/卸载产品键 | `YimeCoreExperimentalTrial` | `manage-e6c-trial-install.ps1`、autostart/system-uninstall 修复器 |
-| 日常管道 | `\\.\pipe\YimeBroker.YimeCoreTrial.v1` | runtime 和 TSF Broker endpoint；隔离测试使用另一个唯一管道 |
-| 学习 source ID | `yimecore-e6c-three-mode-trial-v1` | runtime、Broker durable store、备份/恢复探针；不因改名重置学习 |
-| 数据格式 | model v1–v4、journal v1–v2 兼容读取 | 现有 Go 恢复实现；本次不新增格式迁移 |
-
-`test-local-product-build.ps1` 直接核对 TSF GUID 与 runtime 兼容常量；拒绝身份改变、范围越界和不规范路径。当前生产 GUID、生产文件、默认输入法不属于可写目标。旧身份 x86 注册引用根继续保护；只有从当前源码和身份新构建并由描述符声明活动的 x86 工具可以进入事务。
-
-## 不悄悄删减的功能
-
-2026-09-05 用户针对 L5 `D2-F-01` 明确选择失焦取消策略：未确认组合在切换应用/输入文档时取消，只移除原组合的预编辑范围；既不把 ASCII 编码直接固化为正文，也不自动选择汉字。已提交正文必须保留。实现使用内部取消路径，不向新焦点应用发送 Esc；延迟取消须绑定原组合身份，宿主外部终止使用回调写入锁，不能清除已经确认的提交。local.11 的缺陷记录保留；修复现已安装为 local.12，六组注册宿主复验通过，用户另报 Word/Notepad++ 未提交切换已测、未见异常。源码、自动及用户所报人工覆盖仍分开记录，不把这些结果扩大为最终日用或重启验收。
-
-| 能力 | 本批保留载荷/验证 | 晋级时的限制 |
-| --- | --- | --- |
-| 全码、变码、简码与整句组合 | 三个新建 `.yidx`；Broker、TSF、整句回归工具 | 词典是静态构包数据，读取 YAML 不等于运行 Rime |
-| 裸数字输入、Shift+1…9 选词、⇧ 标签 | 原有 TSF 按键/候选契约，直接 TSF 回归 | 不引入数字选词开关，不改候选所有权 |
-| 中英模式、英文 Shift、语言栏菜单、标点 | 原有 TSF 实现与回归 | 直接隔离测试不是物理任务栏验收；改显示/安装后仍需新 RC 的真实宿主复核 |
-| 自学习、恢复、索引事务 | 原有 Broker/core；包内预编译 RecoveryProbe | 探针只运行于带标记的临时克隆；包内安全恢复仍需新候选原生维护验收 |
-| 用户词库、学习管理、黑名单、专业词库 | LexiconManager、LearningManager、BlocklistManager、ProfessionalLexicon、catalog | 保留原试验状态目录；不写生产 Rime 用户目录 |
-| 系统词库审查、高频新词扫描 | SystemLexiconAudit、PromotionScan | 不把工具界面内容当成正式新包实机验收 |
-| 布局、反查、训练、候选设置 | LayoutDesigner、ReverseLookup、Trainer、SettingsTool；字体/训练素材 | 从明确仓内来源复制，记录哈希；不读取兄弟仓库 |
-| 工具中心、词库中心、诊断和帮助 | ToolCenter、LexiconCenter、Diagnostics、4 个原有帮助页面及本机产品指南 | 保留内部 Trial 文件名及部分历史帮助说明；自有 Win32 UI 只允许工具使用，核心仍禁止 UI 依赖 |
-| 安装、升级、卸载、完整备份与安全恢复 | 包内 Install/Maintain CMD、共享事务器、恢复/验证/标准用户启动依赖 | Restore 是新鲜归档安全恢复演练，数据改变即拒绝覆盖；任意历史灾难恢复与真实新包安装不能由夹具通过代替 |
-| 同步和新增音变规则 | 不增加、不扩展 | 联网自动同步及额外离线同步功能后续排期；备份不等于同步 |
-
-## 构包契约
-
-新入口为 `tools/yimecore/build-local-product.ps1`。从空目录构建，既不接受旧 BasePackageRoot，也不从 AppData 的 `runtime-config.json` 隐式寻找旧安装。
-
-新候选契约为 `yimecore-local-product-package-v1`，`installable=true`；`local.11` 清单包含 74 个运行、TSF、数据及维护文件。这里的 installable 仅指可安装包类型；`local_product_ready=false`，直至真实安装、普通权限、回退和 x64/x86 宿主使用验收完成。旧 `yimecore-local-runtime-bundle-v1` 继续要求 `installable=false`，不接受维护入口，也不可被安装器接收。
-
-- descriptor 的 Go/native/assets/maintenance_assets 列表驱动构包；审计器独立固定必需集合并拒绝额外载荷，测试确认集合一致，不能通过删减清单同时漏掉工具。
-- `bin/`、维护器和 `x64/` PE 必须为 AMD64；只有 `x86/` 下三个 TSF PE 必须为 I386。新候选拒绝 ARM64 目录；旧 E6-C 的多架构必需文件要求保持，不借修改新契约削弱历史审计。
-- 清单拒绝未知契约、缺文件、漏列文件、重复路径、越界/ADS/非规范路径、间接路径、哈希和架构错误。静态 PE 导入及所有 Go 命令依赖都排除 Rime/PIME。
-- 保存 commit、dirty 状态、643 项首批源码/数据内容记录（以后数量随源码变化）、完整源码 ZIP、二进制 Git diff、Go/MSVC/CMake 版本和参数。包里保存来源清单；完整源码 ZIP 在构建证据目录，不作为运行依赖。
-- 新索引从仓内字典构建两次并逐字节哈希比较。源码在构包后逐文件复查，新增/删除文件也使本次构建失败。
-- 不声称所有 PE、ZIP 和证据 JSON 都逐字节可复现：时间戳、绝对构建路径和运行证据独立列明。未提交修复不会被仅记录 HEAD 隐去。
-- 首批自动验证在仓库外的唯一临时目录、唯一管道和全新模型运行；不注册候选 DLL，不启动 registered-host 测试，不要求打开 Word，不改默认输入法。运行前后独立 StdRegProv/HKU 系统视图比较生产/试验 COM/TIP、用户 TIP、Run、卸载和默认语言设置。
-
-当前可执行的开发命令（不是安装命令）：
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\dev\Yime\tools\yimecore\test-local-product-build.ps1"
-pwsh -NoProfile -File "C:\dev\Yime\tools\yimecore\build-local-product.ps1"
-```
-
-L2 运行包完整构包已在 PowerShell 7 验证；新候选增加 Windows PowerShell 5.1 完整构包及 PS5/PS7 入口回归。证据序列化规范化为纯文本，避免 PS5 展开 Get-Content 的 Provider 对象图。CMD 使用子进程限定的 Windows 原生模块目录，避免继承 PS7 的不兼容模块搜索路径。构包需要 Go、MSVC/CMake；包内只读 Plan 和隔离运行不需要它们。真实安装/恢复/标准用户启动仍待 L4，不能用只读 Plan 代替。
-
-普通维护须由资源管理器启动的独立 Windows PowerShell 执行；不会从 Codex 自动逃逸上下文。备份保存在用户目录的 `YimeCore Recovery Archives`，恢复前校验精确文件集、路径、哈希以及完整学习/词库/设置清单；原件保留。新旧两个维护流程共享同一事务器，不复制长期分叉的安装器。
-
-签名证书正在申请，等候审批，暂缓相关事项。
+通过源码构包或隔离检查不等于安装验收。完整验收包含安装、输入、卸载、重装以及重启后的实际输入，按 [双产品计划](YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md) 执行。

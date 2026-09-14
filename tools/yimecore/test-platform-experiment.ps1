@@ -30,17 +30,6 @@ Check ($text -match "mx64-package-" -and $text -match "Output name must identify
 Check ($text -match 'Get-LocalProductProtectionEvidence' -and $text -match 'protected_registration_unchanged') 'registration comparison'
 Check ($text -notmatch 'Start-Process|Stop-Process|register-com|regsvr32|ctest') 'build entry cannot execute target or maintenance'
 Check ($text -match '0xaa64' -and $text -match '0x8664') 'both PE machines verified'
-$managerText=Get-Content (Join-Path $PSScriptRoot 'manage-local-product.ps1') -Raw
-Check ($managerText -match 'Get-YimeCoreExperimentBuildScope \$experimentTarget' -and
-    $managerText.IndexOf("if (`$Action -ne 'Plan') { Assert-YimeCoreUnpackagedDataMaintenance }") -lt
-        $managerText.IndexOf('$package=Assert-LocalProductPackage')) `
-    'experiment package uses its physical-host scope after the unpackaged mutation guard'
-$trialManagerText=Get-Content (Join-Path $PSScriptRoot 'manage-e6c-trial-install.ps1') -Raw
-Check ($trialManagerText -match '\$scopePackage=Assert-Package \$PackageRoot' -and
-    $trialManagerText -match 'Get-YimeCoreExperimentBuildScope \$experimentTarget' -and
-    $trialManagerText.IndexOf('$scopePackage=Assert-Package $PackageRoot') -lt
-        $trialManagerText.IndexOf("if (`$Action -ne 'Plan' -and -not (Test-Administrator))")) `
-    'shared transaction manager validates the package and exact experiment host before elevation'
 $isolationText=Get-Content (Join-Path $PSScriptRoot 'local-product-test-isolation.ps1') -Raw
 Check ($isolationText -match '\$fixture = Join-Path \$build \(''t\\''' -and
     $isolationText -match '\$fixtureTemp\.Length -gt 120') `

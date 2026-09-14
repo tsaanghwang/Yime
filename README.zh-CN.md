@@ -6,13 +6,9 @@
 
 按照 [2026-09-05 双产品开发计划](docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)，YimeCore 为主要功能开发方向，Rime/PIME 持续稳定维护。用户可只装任一方，也可同时安装；各自必须独立运行、升级、卸载和维护可写数据，不依赖对方存在。三种安装组合仍需各自验收，统一的“三选一”安装入口尚未实现。
 
-当前 [DP1-H 证据](docs/project/YIME_DUAL_PRODUCT_DP1_H_CANONICAL_V2_NSIS_INPUT_BOUNDARY_2026-09-06.md)已把一个 x86/x64 Rime/PIME 禁用候选、精确 stage、生成 include、构建结果和静态归档核对绑定进 canonical v2 receipt。固定 NSIS 分发树覆盖 17 个目录中的 303 个已知文件，但同一 SID 进程仍能在两次快照之间瞬时增删未列插件，因此完整工具链闭包明确为 false。候选仍未签名、默认禁用、从未执行、不可交付并依赖非耐久证据；v2 后续封存、持久事务与 installed/live 验收仍待完成。
 
-当前 [DP1-I 证据](docs/project/YIME_DUAL_PRODUCT_DP1_I_FIXTURE_TRANSACTION_JOURNAL_2026-09-06.md)新增了仅限夹具的哈希链 journal、幂等 replay 判定、类型化合成注册快照和 manifest-driven leaf-first removal。PowerShell 5.1／7 的 journal 各 114/114，replay model 各 16/16；原 24 阶段、96 故障例矩阵仍各 9/9。实际创建和删除的只有仓内全新 `.tmp` 夹具；`Resume` 不执行 rollback／cleanup adapter，模块重载不是真实进程崩溃，跨进程 replay／lock、断电／目录耐久、真实注册表恢复及并发替换安全均未证明。当前没有接入 engine／installer；安装、发布、DP1–DP3、L5、L6 门禁全部保持阻断。
 
-当前 [DP1-J 证据](docs/project/YIME_DUAL_PRODUCT_DP1_J_ISOLATED_MEMBERSHIP_AND_SUPERSESSION_2026-09-06.md)新增两套仅限夹具的协议：连续 NSIS tree-membership monitor 在 PowerShell 5.1／7 各 15/15，内容寻址 generation、原子 head 与密封 journal supersession 模型各 16/16。监测尚未包围真实 `makensis`；supersession 未调用严格 receipt-v2 reader、迁移耐久 evidence 或修改 canonical receipt。跨进程崩溃／replay、目录耐久、hardlink、并发替换、真实事务 adapter 及全部 installed/live 门禁仍待办。
 
-当前 [DP1-Q 证据](docs/project/YIME_DUAL_PRODUCT_DP1_Q_CANDIDATE_EVIDENCE_ARCHIVE_AND_ACTUAL_MIGRATION_REVIEW_2026-09-07.md)新增候选证据归档夹具（PowerShell 5.1／7 各 24/24）和 pure-data actual migration review 合同（各 23/23）。归档夹具仍在仓库 `.tmp`，DP1-P 证据尚未真实归档到仓外；合成 `review_ready=true` 不等于实际审查或授权。actual archive、review、migration、adapter、DP1-N actual transaction、安装、签名、交付和 ARM64 原生验证均未执行或未准入。后续顺序是 DP1-R 完整 payload／non-OS／NSIS／generated-uninstaller trust，DP1-S 真实仓外归档＋目录／断电／same-SID，DP1-T 真实 adapter／授权／migration，DP1-U 注册／回滚／removal／Runtime。
 
 下方功能、构建、安装、首次运行和调试说明均针对 **Rime/PIME 产品**。YimeCore 使用独立的[开发与维护入口](tools/yimecore/README.md)，不能套用下方 PIME 重装或注册命令。
 
@@ -111,7 +107,6 @@ VERSIONINFO 不能保证通过 Smart App Control。
 只安装已有构建物时，在管理员提示符下运行：
 
 ```powershell
-.\Reinstall-PIME-Test.cmd
 ```
 
 此脚本包含预检、DLL 锁检测和自动原位安装回退，但不会替你重建缺失或过期的
@@ -119,7 +114,6 @@ VERSIONINFO 不能保证通过 Smart App Control。
 完整闭环时，运行：
 
 ```powershell
-.\tools\dev-build-install-verify.ps1
 ```
 
 安装完成后也可单独运行 `tools\verify-installed-runtime.ps1`。结果为 `complete`
@@ -149,8 +143,6 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 
 - [ ] 克隆仓库，初始化子模块，确认工具链已安装
 - [ ] 若整理后的核心真源有变更，运行 `tools\deploy-yime-rime-data.ps1 -InputPath <two_level_full.dict.yaml> -EvidenceManifest <dictionary.manifest.json> -PronunciationEntries <entries.tsv> -SourceRevision <提交>`（参见 [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md)）
-- [ ] 运行 `.\tools\dev-build-install-verify.ps1`，一次完成“构建 → 重装 → 安装态核验”闭环
-- [ ] 如需分步执行，依次运行 `cmd /c build.bat`、管理员提示符下的 `.\Reinstall-PIME-Test.cmd`，再运行 `tools\verify-installed-runtime.ps1 -RequireRunningLauncher`
 - [ ] 在文本应用中切换到音元输入法，验证：激活、候选窗、设置、反查
 - [ ] 发布后端变更前运行 `.\tools\test-go.ps1`；按影响层补跑 `.\tools\test-real-rime.ps1` 和 `.\tools\test-go-race.ps1`
 
@@ -205,8 +197,6 @@ PIMELauncher.exe /console
 | 文档 | 说明 |
 |------|------|
 | [双产品开发计划](docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md) | 独立产品、可选共存、开发优先级与剩余验收门禁 |
-| [DP1-J 隔离成员监测与 supersession](docs/project/YIME_DUAL_PRODUCT_DP1_J_ISOLATED_MEMBERSHIP_AND_SUPERSESSION_2026-09-06.md) | fixture-only 连续成员监测、supersession 协议证据及明确非声明 |
-| [DP1-Q 候选证据归档与 actual migration review](docs/project/YIME_DUAL_PRODUCT_DP1_Q_CANDIDATE_EVIDENCE_ARCHIVE_AND_ACTUAL_MIGRATION_REVIEW_2026-09-07.md) | 仅限仓内 `.tmp` 归档夹具和纯数据审查合同；不表示真实归档、授权或迁移 |
 | [YimeCore 开发入口](tools/yimecore/README.md) | 自研产品独立构包、试验与维护边界 |
 | [项目综合评估](docs/YIME_PROJECT_ASSESSMENT.md) | 两轮全面评估结论、已完成修复、验证证据和剩余风险 |
 | [架构文档](docs/YIME_ARCHITECTURE.md) | 系统架构、关键机制、数据文件 |

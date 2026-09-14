@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add DP1-Q fixture-only candidate-evidence archival (PowerShell 5.1/7, 24/24 each) and pure-data actual-migration review (23/23 each), while keeping the DP1-P evidence inside repository `.tmp` and treating synthetic `review_ready` as neither actual review nor authorization; actual archival, review, migration, adapter/DP1-N execution, installation, signing, delivery, and ARM64-native validation remain unperformed or unadmitted, with DP1-R through DP1-U retaining those ordered gates
 - Split GitHub Actions into independently rerunnable Rust, native, Go, real-Rime, race, and installer jobs; retain commit-addressed native and installer artifacts for rollback
 - Add machine-readable installed-runtime hash verification, unsigned installer smoke testing, and commit-addressed build manifests
 - Pin go-winres v0.3.3 in installer CI so test packages retain required Windows VERSIONINFO instead of silently degrading
@@ -46,7 +45,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Advance the unreleased `v1.4.0` development identity from `1.4.0-dev` to `1.4.0-dev.1`, reserve a distinct versioned leaf, and subsequently build the unsigned, disabled x86/x64 DP1-P successor from exact HEAD with its static gates passing and `identity_transition_admitted=true`; the fixed PE version remains `1.4.0.0`, while actual canonical migration, installation, signing, delivery, and ARM64-native validation remain unadmitted or unperformed
 - Make the repository, installer, build, and CI product path YIME-only; permanently remove the retired Python, Node, McBopomofoWeb, libchewing backends and their submodule records
 - Remove the obsolete root-level Rime/Brise/OpenCC data mirror, retired AppVeyor pipeline, Python/Node hacking guide, embedded-Python license, and root libchewing test fixtures after confirming that the YIME build and installer have no dependency on them
 - Reuse message windows within the same TSF owner, keep candidate/message UI anchored after composition changes, replace duplicate language-bar button registrations, cache IME configuration metadata, and localize the missing-config-tool prompt
@@ -100,7 +98,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reverse lookup window marked as "not responding" during data loading
 - Result count not displayed in reverse lookup (PowerShell single-element array unwrapping)
 - Detail label content silently lost when phrase contains curly braces breaking -f formatting
-- dev-install.ps1 UnauthorizedAccessException on existing HKLM Run registry key
 - refresh-dev-test-cmds.ps1 preserving template timestamps instead of showing fresh timestamps
 - build.bat Rime data directory cleanup failure when directory is locked
 - Duplicate key-down suppression swallowing legitimate rapid same-key presses

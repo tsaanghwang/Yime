@@ -29,24 +29,6 @@ func localDescriptorFixture(t *testing.T) []byte {
 	descriptor["installable"] = false
 	descriptor["version"] = "0.1.0-local.12"
 	delete(descriptor, "speech")
-	delete(descriptor, "maintenance_health")
-	// Reconstruct the historical catalog rather than relabeling the current
-	// health-capable descriptor as a local.12 maintenance package.
-	maintenance := descriptor["maintenance_assets"].([]any)
-	legacyMaintenance := make([]any, 0, len(maintenance))
-	for _, asset := range maintenance {
-		path := asset.(map[string]any)["path"].(string)
-		healthOnly := false
-		for _, required := range requiredLocalMaintenanceHealthFiles {
-			if required != "maintenance/local-product-runtime.ps1" && path == required {
-				healthOnly = true
-			}
-		}
-		if !healthOnly {
-			legacyMaintenance = append(legacyMaintenance, asset)
-		}
-	}
-	descriptor["maintenance_assets"] = legacyMaintenance
 	data, err = json.Marshal(descriptor)
 	if err != nil {
 		t.Fatal(err)
@@ -84,7 +66,6 @@ func TestLocalRequiredFilesMatchCanonicalBuildCatalog(t *testing.T) {
 		GoBinaries     []struct{ Path string } `json:"go_binaries"`
 		NativeBinaries []string                `json:"native_binaries"`
 		Assets         []struct{ Path string } `json:"assets"`
-		Maintenance    []struct{ Path string } `json:"maintenance_assets"`
 	}
 	if err := json.Unmarshal(localDescriptorFixture(t), &descriptor); err != nil {
 		t.Fatal(err)
@@ -107,72 +88,7 @@ func TestLocalRequiredFilesMatchCanonicalBuildCatalog(t *testing.T) {
 	if !reflect.DeepEqual(want, got) {
 		t.Fatalf("auditor/build catalog drift:\nwant=%v\ngot=%v", want, got)
 	}
-	want = nil
-	for _, item := range descriptor.Maintenance {
-		want = append(want, item.Path)
-	}
-	got = append([]string(nil), requiredLocalMaintenanceFiles...)
-	sort.Strings(want)
-	sort.Strings(got)
-	if !reflect.DeepEqual(want, got) {
-		t.Fatalf("maintenance catalog drift: want=%v got=%v", want, got)
-	}
-}
 
-func TestInstallableContractRequiredMaintenanceAndIdentity(t *testing.T) {
-	root := writeLocalFixture(t)
-	// Reconstruct the static fixture as the new contract, retaining complete
-	// mandatory runtime and maintenance sets. No maintenance scripts are run.
-	for _, path := range requiredLocalMaintenanceFiles {
-		full := filepath.Join(root, filepath.FromSlash(path))
-		if err := os.MkdirAll(filepath.Dir(full), 0700); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(full, []byte("fixture"), 0600); err != nil {
-			t.Fatal(err)
-		}
-	}
-	var legacy map[string]any
-	if err := json.Unmarshal(localDescriptorFixture(t), &legacy); err != nil {
-		t.Fatal(err)
-	}
-	legacy["package_contract"], legacy["installable"] = localInstallableContract, true
-	data, err := json.Marshal(legacy)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(root, "local-product.json"), data, 0600); err != nil {
-		t.Fatal(err)
-	}
-	mutateLocalManifest(t, root, func(m *packageManifest) {
-		m.PackageContract = localInstallableContract
-		m.Files = nil
-		for _, path := range append(append([]string(nil), requiredLocalRuntimeFiles...), requiredLocalMaintenanceFiles...) {
-			data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(path)))
-			if err != nil {
-				t.Fatal(err)
-			}
-			hash := sha256.Sum256(data)
-			m.Files = append(m.Files, manifestFile{Path: path, Bytes: int64(len(data)), SHA256: hex.EncodeToString(hash[:])})
-		}
-	})
-	if report, err := auditPackage(root); err != nil || !report.Passed {
-		t.Fatalf("installable candidate rejected: %+v %v", report, err)
-	}
-	mutateLocalManifest(t, root, func(m *packageManifest) {
-		for i, item := range m.Files {
-			if item.Path == "maintenance/local-runtime-launcher.cs" {
-				m.Files = append(m.Files[:i], m.Files[i+1:]...)
-				break
-			}
-		}
-	})
-	if err := os.Remove(filepath.Join(root, "maintenance", "local-runtime-launcher.cs")); err != nil {
-		t.Fatal(err)
-	}
-	if report, err := auditPackage(root); err == nil || report.RequiredComponentsPassed {
-		t.Fatalf("missing privilege helper passed: %+v", report)
-	}
 }
 
 func writeLocalFixture(t *testing.T) string {

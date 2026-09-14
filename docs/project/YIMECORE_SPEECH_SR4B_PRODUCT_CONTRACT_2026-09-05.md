@@ -71,11 +71,8 @@
 | `build-local-product.ps1` | 正常三个索引双写确定性验证后、外层清单生成前，增加显式 opt-in 的 build-only 导出阶段；不默认扫描 trial 根 |
 | `cmd/yimecore-speech-admission` | 可提取现有校验逻辑给独立 build-only stage 工具使用；不调用整个 69 文件 SR4-A 克隆，不把 stage 工具加入 `go_binaries`。仅建议，尚未实现 |
 | `cmd/yimecore-independence-audit/local_contract.go` | 现有 installable 包白名单会拒绝 `speech/`。按可选能力条件增加恰好 11 个路径并调用产品资源验证；旧包原集合继续通过，未声明能力却带语流载荷必须拒绝 |
-| `local-package-contract.ps1` 与包测试 | 继续外层全文件 SHA／大小审计、独立 auditor、重解析拒绝及安装身份检查；不能删除白名单来容纳新文件 |
 | 正常 Runtime／Broker／Settings | 使用正常具名管道、注释、用户词库、屏蔽、学习与模型命名空间；显式启停只改变模块选择。不使用 fixture trusted-client 或试验状态根 |
-| `manage-e6c-trial-install.ps1::Write-RuntimeConfiguration` 及启动／恢复入口 | 这是当前正常维护事务的配置写入点。后续按已审计能力描述派生路径并保持设置／回退语义；不要新增第二套部署器。本轮不执行或修改安装事务 |
 
-仓内没有 `build-e6c-trial-runtime.ps1`。名称相近的 `deploy-e6c-trial-runtime.ps1` 硬编码旧 CLSID／Profile，并有语言列表、Run 和启动修改，不是本轮扩展或执行入口。`local-product-runtime.ps1` 是正常维护启动／校验 helper，本身不是配置生成器。
 
 ## 5. B1 可执行验证范围与不能外推的门槛
 

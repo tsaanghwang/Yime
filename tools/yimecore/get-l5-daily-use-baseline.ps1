@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [Parameter(Mandatory)][string]$InstallRoot,
     [Parameter(Mandatory)][string]$ExpectedManifestSha256,
@@ -8,7 +8,7 @@ param(
 # user settings, learning files, event payloads, or screenshots are read.
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
-. (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
+. (Join-Path $PSScriptRoot 'build-system-observation.ps1')
 $scope = Get-YimeCoreDevelopmentScope
 $root = [IO.Path]::GetFullPath($InstallRoot)
 $manifestPath = Join-Path $root 'package-manifest.json'

@@ -12,7 +12,7 @@ class CoverageTests(unittest.TestCase):
                 for suite, shell, index in sorted(EXPECTED)]
 
     def check(self, records):
-        return verify(records, 'source', {'real-rime': 'hash', 'installer-transaction': 'hash'})
+        return verify(records, 'source', {'real-rime': 'hash'})
 
     def test_complete_union_passes_without_installed_acceptance(self):
         result = self.check(self.records())

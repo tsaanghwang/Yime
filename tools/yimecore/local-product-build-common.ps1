@@ -1,4 +1,4 @@
-# Build-only helpers. No installation, registry writes, or live AppData access.
+﻿# Build-only helpers. No installation, registry writes, or live AppData access.
 Set-StrictMode -Version Latest
 
 function Write-LocalProductJson($Value, [string]$Path) {
@@ -82,16 +82,14 @@ function Get-LocalProductDescriptor([string]$Path) {
         }
     }
     $seen = @{}
-    $maintenance = if ($value.PSObject.Properties['maintenance_assets']) { @($value.maintenance_assets) } else { @() }
-    foreach ($entry in @($value.go_binaries) + @($value.assets) + @($maintenance)) {
+    foreach ($entry in @($value.go_binaries) + @($value.assets)) {
         $null = Resolve-LocalProductChild $PSScriptRoot $entry.path
         if ($seen.ContainsKey($entry.path)) { throw "Duplicate payload: $($entry.path)" }
         $seen[$entry.path] = $true
     }
     foreach ($entry in $value.go_binaries) {
         if ($entry.path -notmatch '^bin/[A-Za-z0-9]+\.exe$' -or
-            ($entry.source -notmatch '^\./cmd/[a-z0-9-]+$' -and
-             $entry.source -ne '../tools/yimecore/model-recovery-probe.go')) {
+            $entry.source -notmatch '^\./cmd/[a-z0-9-]+$') {
             throw "Unsupported Go build input: $($entry.source)"
         }
     }
@@ -141,9 +139,8 @@ function Get-LocalProductSourcePaths([string]$RepoRoot, $Product) {
         go-backend YimeTextServiceExperiment json tools/yimecore internal_data/manual_key_layout.json AGENTS.md)
     if ($LASTEXITCODE -ne 0) { throw 'Cannot enumerate source' }
     $paths += @($Product.assets | ForEach-Object { $_.source })
-    if ($Product.PSObject.Properties['maintenance_assets']) { $paths += @($Product.maintenance_assets | ForEach-Object { $_.source }) }
     $paths += @('json/single_include/nlohmann/json.hpp', 'tools/assert-data-source-boundary.ps1',
-        'Install-YimeCore-Local-Dev.cmd', 'Test-YimeCore-Standard-Launch.cmd')
+        'installer/simple/Build-Package.ps1', 'installer/simple/Setup.ps1')
     @($paths | Sort-Object -Unique | Where-Object {
         Test-Path -LiteralPath (Resolve-LocalProductChild $RepoRoot $_) -PathType Leaf
     })

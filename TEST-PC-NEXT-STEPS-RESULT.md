@@ -5,7 +5,6 @@
 ## 已完成
 
 - 在独立检出 `C:\dev\Yime-localtest` 的 `perf/i7-7820x-local` 分支工作，未合并或覆盖共享目录中的其他修改。
-- 新增条件式只读采集器 `tools/yimecore/capture-installed-readonly-evidence.ps1`。它一次执行各项探针，每项输出 `pass`、`fail` 或 `unavailable`，并在缺少安装状态的夹具中继续生成有效 JSON；PS5/PS7 合同测试均通过。
 - 当前安装清单、90 个载荷、Runtime/Broker、进程外 Run/卸载/COM 记录以及 Shell-Core 9708 均已核对通过。脱敏结果位于 `docs/testing/platform/2026-09-10-mainstream-x64-reboot.json`。
 - 用户反馈“重启后还能输入”继续单独标记为用户观察；未把它扩展成所有真实宿主或位数均通过。
 - 六份基准证据均已获得路径专用 `-text` 属性，避免 JSON 规则或 `core.autocrlf` 改写 Git blob；暂存区逐份 SHA-256 与既有 `SHA256SUMS` 相符。既有摘要不重算、不覆盖失败结果。

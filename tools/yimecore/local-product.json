@@ -4,10 +4,6 @@
   "display_name": "音元拼音",
   "package_contract": "yimecore-local-product-package-v1",
   "installable": true,
-  "maintenance_health": {
-    "protocol": "yimecore-maintenance-health-v1",
-    "required_on_start": true
-  },
   "speech": {
     "capability_path": "speech-capability.json",
     "default_enabled": false
@@ -148,11 +144,6 @@
       "path": "bin/YimeCoreSettingsTool.exe",
       "source": "./cmd/settings-tool",
       "gui": true
-    },
-    {
-      "path": "bin/YimeCoreRecoveryProbe.exe",
-      "source": "../tools/yimecore/model-recovery-probe.go",
-      "gui": false
     }
   ],
   "native_binaries": [
@@ -262,94 +253,8 @@
       "path": "help/trial-feedback.html"
     }
   ],
-  "maintenance_assets": [
-    {
-      "source": "tools/yimecore/local-product/Install-YimeCore-Local.cmd",
-      "path": "Install-YimeCore-Local.cmd"
-    },
-    {
-      "source": "tools/yimecore/local-product/Maintain-YimeCore-Local.cmd",
-      "path": "Maintain-YimeCore-Local.cmd"
-    },
-    {
-      "source": "tools/yimecore/manage-e6c-trial-install.ps1",
-      "path": "maintenance/Manage-YimeCoreTrial.ps1"
-    },
-    {
-      "source": "tools/yimecore/manage-local-product.ps1",
-      "path": "maintenance/manage-local-product.ps1"
-    },
-    {
-      "source": "tools/yimecore/local-package-contract.ps1",
-      "path": "maintenance/local-package-contract.ps1"
-    },
-    {
-      "source": "tools/yimecore/local-product-runtime.ps1",
-      "path": "maintenance/local-product-runtime.ps1"
-    },
-    {
-      "source": "tools/yimecore/native-maintenance-processes.psm1",
-      "path": "maintenance/native-maintenance-processes.psm1"
-    },
-    {
-      "source": "tools/yimecore/native-maintenance-process-facts.cs",
-      "path": "maintenance/native-maintenance-process-facts.cs"
-    },
-    {
-      "source": "tools/dual-product/rime-pime-dp1u-native-facts.cs",
-      "path": "dual-product/rime-pime-dp1u-native-facts.cs"
-    },
-    {
-      "source": "tools/yimecore/native-maintenance-health.psm1",
-      "path": "maintenance/native-maintenance-health.psm1"
-    },
-    {
-      "source": "tools/yimecore/native-maintenance-health-client.cs",
-      "path": "maintenance/native-maintenance-health-client.cs"
-    },
-    {
-      "source": "tools/yimecore/local-runtime-launcher.cs",
-      "path": "maintenance/local-runtime-launcher.cs"
-    },
-    {
-      "source": "tools/yimecore/development-scope.ps1",
-      "path": "maintenance/development-scope.ps1"
-    },
-    {
-      "source": "tools/yimecore/development-scope.json",
-      "path": "maintenance/development-scope.json"
-    },
-    {
-      "source": "tools/yimecore/local-maintenance-safety.ps1",
-      "path": "maintenance/local-maintenance-safety.ps1"
-    },
-    {
-      "source": "tools/yimecore/backup-local-trial-state.ps1",
-      "path": "maintenance/backup-local-trial-state.ps1"
-    },
-    {
-      "source": "tools/yimecore/restore-local-trial-state.ps1",
-      "path": "maintenance/restore-local-trial-state.ps1"
-    },
-    {
-      "source": "tools/yimecore/start-e6c-trial-runtime.ps1",
-      "path": "maintenance/start-e6c-trial-runtime.ps1"
-    },
-    {
-      "source": "tools/yimecore/stop-e6c-trial-runtime.ps1",
-      "path": "maintenance/stop-e6c-trial-runtime.ps1"
-    },
-    {
-      "source": "tools/yimecore/verify-e6c-trial-runtime.ps1",
-      "path": "maintenance/verify-e6c-trial-runtime.ps1"
-    },
-    {
-      "source": "tools/yimecore/local-product/LOCAL-PRODUCT.md",
-      "path": "LOCAL-PRODUCT.md"
-    }
-  ],
   "deferred": {
-    "maintenance": "Packaged maintenance is implemented; native installed acceptance and privilege transition remain required before local-product readiness",
+    "maintenance": "Simple independent install/uninstall/reinstall; user data reset is explicit.",
     "signing": "签名证书正在申请，等候审批，暂缓相关事项",
     "network_sync": "deferred",
     "new_connected_speech_rules": "deferred"

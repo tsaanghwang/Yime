@@ -1,4 +1,4 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
 
@@ -46,24 +46,16 @@ Require-Text '.github/workflows/ci.yaml' @(
     'Run native C++ regression tests'
     'Run Go regression tests'
     '.\tools\test-go-race.ps1 -GccPath $gcc -TimeoutSeconds 300'
-    '.\tools\test-build-guards.ps1'
-    'Build the installer'
     'if-no-files-found: error'
     'native-build:'
     'rust-i686-host:'
     'go-tests:'
     'go-race-msys2:'
-    'installer-package:'
-    'nsis-preflight:'
-    'contract-tests:'
-    'dp1-long-contracts:'
     'python .\tools\ci\test_workflow_contract.py'
-    'python .\tools\dual-product\baseline.py --output'
 )
 
 Require-Text 'AGENTS.md' @(
     'nativeBackend.UsesBackendCandidatePaging()` must keep returning `true`'
-    'Do not simplify `Reinstall-PIME-Test.cmd`'
     'stable-i686-pc-windows-msvc'
     'Do not assume a source fix is live until you verify the installed `server.exe`'
 )
@@ -75,7 +67,6 @@ Require-Text '.github/CODEOWNERS' @(
     '/build.bat'
     '/CMakeLists.txt'
     '/.cargo/'
-    '/tools/test-build-guards.ps1'
     '/tools/validate-build-contract.ps1'
     '/tools/verify_psc_outline_snapshot.py'
     '/tools/verify_vendored_build_dependencies.py'
@@ -136,11 +127,6 @@ Require-Text 'go-backend/build.bat' @(
 )
 Require-Text 'tools/test-go-race.ps1' @(
     'go test -race ./...'
-)
-Require-Text 'tools/test-build-guards.ps1' @(
-    'CI MSYS2 Go race guard test passed.'
-    'CI cross-repository reusable-workflow rejection test passed.'
-    'YIME-only build and installer guard test passed.'
 )
 Require-Text 'tools/verify-pe-architectures.ps1' @(
     'PE architecture verification passed.'

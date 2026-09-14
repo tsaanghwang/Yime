@@ -24,7 +24,6 @@ cmake --build build_yts --config Release
 - `YimeTextServiceContractTests.exe` — 契约测试宿主（`ctest` 注册，参数为 DLL 路径）。
 
 试用安装需要 x64、x86 与 ARM64 三种架构各构建一份（见
-[tools/yimecore/run-e6c-package-experiment.ps1](../tools/yimecore/run-e6c-package-experiment.ps1)）。
 
 ## 源码结构
 

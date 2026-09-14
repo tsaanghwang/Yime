@@ -17,46 +17,8 @@ import (
 
 const localRuntimeContract = "yimecore-local-runtime-bundle-v1"
 const localInstallableContract = "yimecore-local-product-package-v1"
-const localMaintenanceHealthProtocol = "yimecore-maintenance-health-v1"
 
-// Optional maintenance health is a fixed package-owned source set. The facts
-// helper stays at the process observer's existing ../dual-product path; this
-// refers only to this package, never an installed Rime/PIME product.
-var requiredLocalMaintenanceHealthFiles = []string{
-	"maintenance/local-product-runtime.ps1",
-	"maintenance/native-maintenance-processes.psm1",
-	"maintenance/native-maintenance-process-facts.cs",
-	"dual-product/rime-pime-dp1u-native-facts.cs",
-	"maintenance/native-maintenance-health.psm1",
-	"maintenance/native-maintenance-health-client.cs",
-}
-
-type localMaintenanceHealthDescriptor struct {
-	Protocol        string `json:"protocol"`
-	RequiredOnStart *bool  `json:"required_on_start"`
-}
-
-var requiredLocalMaintenanceFiles = []string{
-	"Install-YimeCore-Local.cmd",
-	"Maintain-YimeCore-Local.cmd",
-	"maintenance/Manage-YimeCoreTrial.ps1",
-	"maintenance/manage-local-product.ps1",
-	"maintenance/local-package-contract.ps1",
-	"maintenance/local-product-runtime.ps1",
-	"maintenance/local-runtime-launcher.cs",
-	"maintenance/development-scope.ps1",
-	"maintenance/development-scope.json",
-	"maintenance/local-maintenance-safety.ps1",
-	"maintenance/backup-local-trial-state.ps1",
-	"maintenance/restore-local-trial-state.ps1",
-	"maintenance/start-e6c-trial-runtime.ps1",
-	"maintenance/stop-e6c-trial-runtime.ps1",
-	"maintenance/verify-e6c-trial-runtime.ps1",
-	"LOCAL-PRODUCT.md",
-}
-
-// This is deliberately distinct from the legacy multi-architecture E6-C gate.
-// A runtime bundle is NOT an installable local product. L3 needs a new contract.
+// Required independently packaged runtime assets.
 var requiredLocalRuntimeFiles = []string{
 	"bin/YimeBroker.exe",
 	"bin/YimeCoreExplain.exe",
@@ -77,7 +39,6 @@ var requiredLocalRuntimeFiles = []string{
 	"bin/YimeCoreLayoutDesigner.exe",
 	"bin/YimeCoreDiagnostics.exe",
 	"bin/YimeCoreSettingsTool.exe",
-	"bin/YimeCoreRecoveryProbe.exe",
 	"x64/YimeTextServiceExperiment.dll",
 	"x64/YimeTextServiceRegistration.exe",
 	"x64/YimeRegisteredHostTests.exe",
@@ -155,7 +116,7 @@ func requiredFilesForContract(manifest packageManifest) ([]string, error) {
 		if manifest.ToolVersion != "yimecore-local-builder-v1" {
 			return nil, errors.New("unexpected local builder identity")
 		}
-		return append(append([]string(nil), requiredLocalRuntimeFiles...), requiredLocalMaintenanceFiles...), nil
+		return requiredLocalRuntimeFiles, nil
 	default:
 		return nil, fmt.Errorf("unknown contract %q", manifest.PackageContract)
 	}
@@ -202,24 +163,12 @@ func validateLocalContract(root string, entries map[string]manifestFile, contrac
 	if err != nil {
 		return err
 	}
-	health, err := decodeLocalMaintenanceHealthDescriptor(data)
-	if err != nil {
-		return err
-	}
-	if health != nil && !installable {
-		return errors.New("maintenance health requires the installable local product contract")
-	}
 	allowed := map[string]bool{}
-	for _, path := range append(append([]string(nil), requiredLocalRuntimeFiles...), requiredLocalMaintenanceFiles...) {
+	for _, path := range requiredLocalRuntimeFiles {
 		allowed[strings.ToLower(path)] = true
 	}
 	if speech != nil {
 		for _, path := range requiredLocalSpeechFiles {
-			allowed[path] = true
-		}
-	}
-	if health != nil {
-		for _, path := range requiredLocalMaintenanceHealthFiles {
 			allowed[path] = true
 		}
 	}
@@ -254,63 +203,7 @@ func validateLocalContract(root string, entries map[string]manifestFile, contrac
 		id.ModelSourceID != "yimecore-e6c-three-mode-trial-v1" {
 		return errors.New("local product changes a stable compatibility identity")
 	}
-	if err := validateLocalMaintenanceHealthContract(root, entries, health); err != nil {
-		return err
-	}
 	return validateLocalSpeechContract(root, entries, speech)
-}
-
-func decodeLocalMaintenanceHealthDescriptor(data []byte) (*localMaintenanceHealthDescriptor, error) {
-	outer, err := localJSONObject(data)
-	if err != nil {
-		return nil, err
-	}
-	for name := range outer {
-		if strings.EqualFold(name, "maintenance_health") && name != "maintenance_health" {
-			return nil, errors.New("maintenance health declaration must use its canonical field name")
-		}
-	}
-	raw := outer["maintenance_health"]
-	if len(raw) == 0 {
-		return nil, nil // Historical descriptors have no new prerequisite.
-	}
-	fields, err := localJSONObject(raw)
-	if err != nil || len(fields) != 2 || fields["protocol"] == nil || fields["required_on_start"] == nil {
-		return nil, errors.New("maintenance health requires exactly protocol and required_on_start")
-	}
-	var result localMaintenanceHealthDescriptor
-	if err := json.Unmarshal(raw, &result); err != nil {
-		return nil, err
-	}
-	if result.Protocol != localMaintenanceHealthProtocol || result.RequiredOnStart == nil || !*result.RequiredOnStart {
-		return nil, errors.New("maintenance health requires its fixed protocol and literal required_on_start true")
-	}
-	return &result, nil
-}
-
-func validateLocalMaintenanceHealthContract(root string, entries map[string]manifestFile, descriptor *localMaintenanceHealthDescriptor) error {
-	if descriptor == nil {
-		return nil
-	}
-	for _, path := range requiredLocalMaintenanceHealthFiles {
-		item, exists := entries[strings.ToLower(path)]
-		if !exists || item.Path != path {
-			return fmt.Errorf("maintenance health helper is missing from canonical manifest paths: %s", path)
-		}
-		if err := rejectIndirectPath(root, path); err != nil {
-			return err
-		}
-		full := filepath.Join(root, filepath.FromSlash(path))
-		info, err := os.Stat(full)
-		if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() != item.Bytes {
-			return fmt.Errorf("maintenance health helper is absent, irregular or size-mismatched: %s", path)
-		}
-		digest, err := hashFile(full)
-		if err != nil || !strings.EqualFold(digest, item.SHA256) {
-			return fmt.Errorf("maintenance health helper manifest hash mismatch: %s", path)
-		}
-	}
-	return nil
 }
 
 func isLocalSpeechPath(path string) bool {

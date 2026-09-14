@@ -3,8 +3,6 @@
 入口：`python tools/powershell/run_checked.py`。默认 PS7；兼容性测试显式选择 `--edition ps5`。预检和执行在同一次目标 PowerShell 进程中完成，不调用模型，不加载用户 profile，不重试、不安装依赖。
 
 ```text
-python tools/powershell/run_checked.py --script tools/yimecore/test-local13-maintenance-preparation.ps1 --edition ps5
-python tools/powershell/run_checked.py --script tools/yimecore/test-local-startup-health.ps1 --params-file .tmp/health-params.json
 python tools/powershell/run_checked.py --command "Get-Date" --check-only
 ```
 

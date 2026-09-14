@@ -33,7 +33,6 @@
 | `tools/test-real-rime.ps1` | PASS，约 448 秒；`TestRealRimeParticleAStage6DDualTrackAcrossAllThreeSchemas` 在变长、等长、省键三方案均通过 |
 | PIMELauncher Rust 测试 | PASS；固定 `stable-i686-pc-windows-msvc`，11 个单元测试 + 2 个集成测试 |
 | `tools/test-rime-cache-freshness.ps1` | PASS |
-| `tools/test-build-guards.ps1` | PASS |
 | `git diff --check` | PASS |
 
 `build.bat` 的默认目标不生成 CTest 的辅助测试可执行文件，因此另行完成 Win32、x64 的完整
@@ -41,7 +40,6 @@ Release target 构建后执行 CTest；最终两套 CTest 均为 4 / 4，通过�
 
 ## 部署与已安装文件身份
 
-完整构建后执行 `tools/dev-build-install-verify.ps1 -SkipBuild -RimeCacheWaitSeconds 120`，完成
 开发安装、PIME 进程重启和已安装状态验收。机器报告结论为 `complete`：注册表路径正确，
 PIMELauncher 已重启运行，没有退休运行目录泄漏，受检源码/构建文件与安装文件 SHA-256 全部一致。
 

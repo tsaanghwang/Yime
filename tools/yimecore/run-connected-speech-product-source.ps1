@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [Parameter(Mandatory)][string]$InstallRoot,
     [Parameter(Mandatory)][ValidatePattern('^[a-fA-F0-9]{64}$')][string]$ExpectedManifestSha256
@@ -40,8 +40,7 @@ $out=Join-Path $repo ('.tmp\yimecore-experiment\speech-product-source-'+(Get-Dat
 Assert-SpeechPlainPath $out
 if (Test-Path -LiteralPath $out) { throw 'Preserve prior evidence.' }
 New-Item -ItemType Directory -Path $out,(Join-Path $out 'logs'),(Join-Path $out 'bin') | Out-Null
-$baselineScript=Join-Path $PSScriptRoot 'get-l5-daily-use-baseline.ps1'
-$environment=[ordered]@{
+$baselineScript=Join-Path $PSScriptRoot $environment=[ordered]@{
     TEMP=(Join-Path $out 'private\temp');TMP=(Join-Path $out 'private\tmp');APPDATA=(Join-Path $out 'private\appdata');LOCALAPPDATA=(Join-Path $out 'private\localappdata');
     GOCACHE=(Join-Path $out 'private\gocache');GOMODCACHE=(Join-Path $out 'private\gomodcache');GOPATH=(Join-Path $out 'private\gopath');
     GOOS='windows';GOARCH='amd64';CGO_ENABLED='0';GOTOOLCHAIN='local';GOPROXY='off';GOSUMDB='off';GOWORK='off';GOENV='off';GOTELEMETRY='off';

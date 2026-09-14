@@ -1,9 +1,9 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param([string]$OutputRoot)
 
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
-. (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
+. (Join-Path $PSScriptRoot 'build-system-observation.ps1')
 . (Join-Path $PSScriptRoot 'local-product-build-common.ps1')
 $scope = Get-YimeCoreDevelopmentScope
 if (@($scope.active_architectures) -notcontains 'x86' -or @($scope.frozen_targets) -contains 'x86') {

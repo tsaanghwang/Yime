@@ -123,7 +123,6 @@ python tools/validate_bcc_composition_paths.py `
 持续抽样检查使用独立的日报脚本。它默认以 UTC 日期作为确定性 seed，随机抽取未编码 BCC 目标，先生成离线路径，再用 full、variable、shorthand 三个 compact index 启动无用户模型的 YimeCore 实例逐路径回放。运行时成功要求独立句子状态等于目标并能精确提交；普通候选列表可见性仅作为诊断字段，不替代提交验证。
 
 ```powershell
-.\tools\yimecore\run-daily-bcc-validation.ps1 `
   -IndexRoot C:\path\to\indexes
 ```
 
@@ -134,11 +133,9 @@ python tools/validate_bcc_composition_paths.py `
 Windows 每日任务的注册脚本默认只打印计划，不修改 Task Scheduler：
 
 ```powershell
-.\tools\yimecore\register-daily-bcc-validation-task.ps1 `
   -IndexRoot C:\path\to\indexes
 
 # 审阅计划后才执行注册或替换，默认每天本地时间 03:00 运行。
-.\tools\yimecore\register-daily-bcc-validation-task.ps1 `
   -IndexRoot C:\path\to\indexes `
   -Apply
 ```

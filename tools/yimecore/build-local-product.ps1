@@ -1,46 +1,10 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param([string]$OutputRoot,[string]$SpeechAdmissionRoot,[string]$ExpectedSpeechAdmissionSummarySha256,[string]$ExpectedSpeechSourceInventorySha256,
     [ValidateSet('mainstream_x64')][string]$ExperimentTarget)
 
 $ErrorActionPreference = 'Stop'
-function Assert-LocalProductMaintenanceHealthBuildInputs($Product) {
-    $declarations=@($Product.PSObject.Properties|Where-Object {$_.Name -ieq 'maintenance_health'})
-    if($declarations.Count -eq 0){return $false} # Existing descriptors keep their original catalog.
-    if($declarations.Count -ne 1 -or $declarations[0].Name -cne 'maintenance_health'){
-        throw 'Maintenance health declaration must use its canonical field name.'
-    }
-    $health=$declarations[0].Value
-    if($health -isnot [pscustomobject] -or @($health.PSObject.Properties).Count -ne 2 -or
-        @($health.PSObject.Properties.Name) -cnotcontains 'protocol' -or
-        @($health.PSObject.Properties.Name) -cnotcontains 'required_on_start' -or
-        $health.protocol -isnot [string] -or $health.protocol -cne 'yimecore-maintenance-health-v1' -or
-        $health.required_on_start -isnot [bool] -or -not $health.required_on_start -or
-        $Product.package_contract -cne 'yimecore-local-product-package-v1' -or
-        $Product.installable -isnot [bool] -or -not $Product.installable){
-        throw 'Declared maintenance health requires the fixed protocol and literal required_on_start true in an installable package.'
-    }
-    # Preserve the process observer's existing relative source path and bytes.
-    # This is a repository source copied inside this package, not an installed
-    # Rime/PIME dependency or a lookup outside the candidate.
-    $required=[ordered]@{
-        'maintenance/local-product-runtime.ps1'='tools/yimecore/local-product-runtime.ps1'
-        'maintenance/native-maintenance-processes.psm1'='tools/yimecore/native-maintenance-processes.psm1'
-        'maintenance/native-maintenance-process-facts.cs'='tools/yimecore/native-maintenance-process-facts.cs'
-        'dual-product/rime-pime-dp1u-native-facts.cs'='tools/dual-product/rime-pime-dp1u-native-facts.cs'
-        'maintenance/native-maintenance-health.psm1'='tools/yimecore/native-maintenance-health.psm1'
-        'maintenance/native-maintenance-health-client.cs'='tools/yimecore/native-maintenance-health-client.cs'
-    }
-    if($Product.maintenance_assets -isnot [array]){throw 'Declared health requires an explicit maintenance asset array.'}
-    foreach($path in $required.Keys){
-        $matches=@($Product.maintenance_assets|Where-Object {$_.path -is [string] -and $_.path -ceq $path})
-        if($matches.Count -ne 1 -or $matches[0].source -isnot [string] -or $matches[0].source -cne $required[$path]){
-            throw "Declared health lacks its exact self-contained helper source: $path"
-        }
-    }
-    return $true
-}
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
-. (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
+. (Join-Path $PSScriptRoot 'build-system-observation.ps1')
 . (Join-Path $PSScriptRoot 'local-product-build-common.ps1')
 . (Join-Path $PSScriptRoot 'local-product-speech-build.ps1')
 . (Join-Path $PSScriptRoot 'local-product-test-isolation.ps1')
@@ -49,7 +13,6 @@ Assert-YimeCoreNativeGo
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $descriptorPath = Join-Path $PSScriptRoot 'local-product.json'
 $product = Get-LocalProductDescriptor $descriptorPath
-$maintenanceHealthRequested = Assert-LocalProductMaintenanceHealthBuildInputs $product
 $speechRequested = Assert-LocalProductSpeechBuildInputs $product $SpeechAdmissionRoot $ExpectedSpeechAdmissionSummarySha256 $ExpectedSpeechSourceInventorySha256
 $nativeGenerator = if ($ExperimentTarget) { 'Visual Studio 18 2026' } else { 'Visual Studio 17 2022' }
 if (-not $OutputRoot) {
@@ -63,8 +26,6 @@ $before = $null
 try {
     $before = Get-LocalProductProtectionEvidence -HashesOnly
     Write-LocalProductJson $before (Join-Path $out 'protection-before.json')
-    & (Join-Path $PSScriptRoot 'test-local-registry-preservation.ps1') 2>&1 |
-        Tee-Object -LiteralPath (Join-Path $out 'registry-preservation.txt')
     $package = Join-Path $out 'package'
     foreach ($directory in @('bin', 'x64', 'x86', 'indexes', 'data', 'build')) {
         New-Item -ItemType Directory -Path (Join-Path $package $directory) -Force | Out-Null
@@ -103,7 +64,7 @@ try {
         }
     } finally { $zip.Dispose() }
 
-    foreach ($asset in @($product.assets) + @($product.maintenance_assets)) {
+    foreach ($asset in @($product.assets)) {
         $source = Resolve-LocalProductChild $repoRoot $asset.source
         # The existing data-boundary policy is mandatory for each data input.
         & {
@@ -241,12 +202,6 @@ try {
     Write-LocalProductJson $manifest (Join-Path $package 'package-manifest.json')
     & (Join-Path $package 'bin\YimeCoreIndependenceAudit.exe') -package $package -output (Join-Path $out 'independence-audit.json')
     if ($LASTEXITCODE -ne 0) { throw 'New local runtime bundle independence/contract audit failed' }
-    & (Join-Path $PSScriptRoot 'test-local-product-package.ps1') -PackageRoot $package -OutputRoot (Join-Path $out 'package-verification')
-    & (Join-Path $PSScriptRoot 'test-local-product-runtime.ps1') -PackageRoot $package -OutputRoot (Join-Path $out 'runtime-verification') -BuildRoot $out `
-        -MultimodeVerifier (Join-Path $buildTools 'MultimodeVerifier.exe') -TsfTests @{
-            x64=(Join-Path $nativeReleases['x64'] 'YimeTsfCompositionTests.exe')
-            x86=(Join-Path $nativeReleases['x86'] 'YimeTsfCompositionTests.exe')
-        } -ExperimentTarget $ExperimentTarget
     Assert-LocalProductSourceUnchanged $repoRoot $sourceRecords
     Assert-LocalProductSourceSet $paths @(Get-LocalProductSourcePaths $repoRoot $product)
     # Re-audit after execution: runtime/test output must not mutate package payload.
@@ -272,7 +227,7 @@ try {
                 'Source-built x64 runtime plus x64/x86 TSF candidate and isolated tests, not installed host acceptance'
             } else { 'Build or protection gates incomplete; no installable candidate claimed' }
             next_step = if ($artifactInstallable) {
-                'Native same-user dual-architecture install, medium-token runtime, data restore, rollback and x64/x86 host acceptance'
+                'Package with installer/simple/Build-Package.ps1; verify install, input, uninstall and reinstall'
             } elseif ($resultPassed) { 'Review the verified runtime bundle; this output is not an installable product' }
             else { 'Review failure evidence, correct the build issue and rebuild into fresh output; do not install this output' }
         }) (Join-Path $out 'summary.json')

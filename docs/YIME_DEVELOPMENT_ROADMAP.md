@@ -207,7 +207,6 @@ A2 已完成。证据脚本继续保持只读；后续每个发行候选和签�
 - 使用可信 CA、Microsoft Artifact Signing 或符合条件的开源签名服务；
 - 校验证书私钥、有效期、RSA、代码签名 EKU 和签名者指纹；
 - 对安装器及所有要求签名的 PE 文件执行 Authenticode 签名和时间戳；
-- 运行 `tools/verify-release-signatures.ps1 -IncludeInstaller`；
 - CI 在正式标签缺少签名条件时必须失败，不得静默发布未签名正式包。
 
 #### B3. 签名后全量复验

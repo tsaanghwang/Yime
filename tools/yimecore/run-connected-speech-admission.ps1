@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$InstallRoot,
     [ValidatePattern('^[a-fA-F0-9]{64}$')][string]$ExpectedManifestSha256,
@@ -32,16 +32,16 @@ if ((Get-FileHash -LiteralPath $helperPath -Algorithm SHA256).Hash.ToLowerInvari
 
 function Get-AdmissionSourceRecords([string]$Repo) {
     $paths = @('AGENTS.md','go-backend/go.mod','docs/project/MANDARIN_CONNECTED_SPEECH_PLAN.md',
-        'tools/yimecore/development-scope.json','tools/yimecore/development-scope.ps1','tools/yimecore/local-maintenance-safety.ps1',
-        'tools/yimecore/get-l5-daily-use-baseline.ps1','tools/yimecore/run-connected-speech-reconnect.ps1',
-        'tools/yimecore/run-connected-speech-admission.ps1','tools/yimecore/run-connected-speech-package.ps1',
-        'tools/yimecore/test-connected-speech-package.ps1','tools/lexicon/validate_connected_speech_forward.py',
+        'tools/yimecore/development-scope.json','tools/yimecore/development-scope.ps1','tools/yimecore/build-system-observation.ps1',
+        'tools/yimecore/run-connected-speech-reconnect.ps1',
+        'tools/yimecore/run-connected-speech-admission.ps1',
+        'tools/lexicon/validate_connected_speech_forward.py',
         'tools/yimecore/local-product.json','tools/yimecore/local-product-build-common.ps1',
         'tools/yimecore/build-local-product.ps1','tools/yimecore/local-product-speech-build.ps1',
-        'tools/yimecore/test-local-product-speech-build.ps1','tools/yimecore/test-speech-maintenance-data.ps1',
-        'tools/yimecore/test-local-maintenance-config-data.ps1',
-        'tools/yimecore/test-speech-symlink-evidence.ps1',
-        'tools/yimecore/run-connected-speech-product-package.ps1','tools/yimecore/speech-product-contract.json',
+        'tools/yimecore/test-local-product-speech-build.ps1',
+
+
+        'tools/yimecore/speech-product-contract.json',
         'tools/yimecore/run-connected-speech-product-source.ps1',
         'go-backend/input_methods/yime/data/yime_full.dict.yaml','go-backend/input_methods/yime/data/yime_variable.dict.yaml',
         'go-backend/input_methods/yime/data/yime_shorthand.dict.yaml','tools/lexicon/data/yime_core_target.lock.json',
@@ -181,8 +181,7 @@ $runID = (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString
 $out = Join-Path $outParent ('speech-admission-' + $runID)
 Assert-SpeechPlainPath $out
 if (Test-Path -LiteralPath $out) { throw 'Preserve existing evidence; fresh output is required.' }
-$baselineScript = Join-Path $PSScriptRoot 'get-l5-daily-use-baseline.ps1'
-$before=$null; $after=$null; $inputsBefore=@(); $sourcesBefore=@(); $legacyBefore=@()
+$baselineScript = Join-Path $PSScriptRoot $before=$null; $after=$null; $inputsBefore=@(); $sourcesBefore=@(); $legacyBefore=@()
 $inputsUnchanged=$false; $sourcesUnchanged=$false; $legacyUnchanged=$false; $baselineUnchanged=$false
 $completed=$false; $failure=$null; $stage='baseline'; $tests=@(); $toolRecords=@(); $dependencyRecords=@(); $goVersion=$null
 $preparePassed=$false; $processPassed=$false; $forwardPassed=$false; $dependencyPassed=$false; $processSummary=$null

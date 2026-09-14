@@ -82,9 +82,6 @@ popd
 echo "Verify complete installer payload PE architectures"
 powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\tools\verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" %ARM64_PE_ARGS% || exit /b 1
 
-echo "Refresh test install command files"
-powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\tools\refresh-dev-test-cmds.ps1" -RepoRoot "%ROOT_DIR%" || exit /b 1
-
 goto :eof
 
 :detect_arm64_toolchain

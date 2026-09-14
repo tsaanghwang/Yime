@@ -160,9 +160,7 @@ C++ 侧（`PIMETextService.dll` 等组件）用 `cppvsdbg`（由 `ms-vscode.cppt
 - **不用 notepad**：Win11 的 `C:\Windows\System32\notepad.exe` 是重定向存根，启动后转交 Store 版记事本并自身秒退（exit 0），vsdbg 附到存根会随之结束、断点不可能命中。改用 `charmap.exe`（字符映射表，含“搜索”文本框，常驻）。需要真实记事本大文本区时，从开始菜单打开 Store 记事本，再用 attach 配置附加。
 - **Cursor 里 attach 失败**：cpptools 1.33.4 的 `pickNativeProcess`（`${command:pickProcess}`）与 Cursor QuickPick API 不兼容，会抛 `TypeError: Cannot read properties of undefined (reading 'id')` → `Process not selected`。两个 attach 配置在 Cursor 里都会失败；**需要 attach 请用 VS Code**（同一份 `launch.json`/`tasks.json`，VS Code 的 cpptools pickProcess 正常）。Cursor 里 launch 配置不受影响。
 - **cpptools 装进 Cursor**：Cursor 的 Open VSX 市场没有 `ms-vscode.cpptools`，需从 VS Code Marketplace 下载 **win32-x64** 平台 VSIX（带 `?targetPlatform=win32-x64`）后 `cursor --install-extension <vsix>` 离线安装。下错成 universal/Linux 包会报「Incompatible or Mismatched C/C++ Extension Binaries」。
-- **前置**：先用 `.\Reinstall-PIME-Test.cmd` 安装与 `build64` 同位、带 PDB 的开发包，确保宿主加载的 `C:\Program Files (x86)\YIME\x64\PIMETextService.dll` 与源 PDB 一致。
 - **断点建议**（`PIMETextService/PIMETextService.cpp`）：`onLangProfileActivated`（切音元时建 Client 连接）验证激活；`filterKeyDown`/`onKeyDown` 验证按键路径。
-- **源码改动后**：`requireExactSource` 默认为 true，改 C++ 源后 PDB 校验和对不上、断点绑不上；必须 重建 x64 `PIMETextService` → `Reinstall-PIME-Test.cmd` → 再 F5。
 
 ## 7. 构建验证
 
@@ -178,12 +176,10 @@ cmd /c build.bat
 标准重装：
 
 ```powershell
-.\Reinstall-PIME-Test.cmd
 ```
 
 ### 8.1 Win32（`build/`）重建前置
 
-`dev-install.ps1` 硬性要求 `build/PIMELauncher/PIMELauncher.exe` 和 `build/PIMETextService/Release/PIMETextService.dll` 存在，缺失会在早期断言处中止重装。重建 Win32 树的前置与命令：
 
 ```powershell
 # 一次性前置：i686 host 工具链（CMakeLists.txt 已固定 Rust_TOOLCHAIN 指向它）
@@ -201,7 +197,6 @@ GitHub 或 crates.io。`PIMELauncher/.cargo/config.toml` 强制 Cargo 离线解�
 构建完成后必须运行架构门禁：
 
 ```powershell
-.\tools\test-build-guards.ps1
 ```
 
 期望结果为 Win32 `PIMETextService.dll` 和 `PIMELauncher.exe` 均为 `0x014C`、x64 DLL 为 `0x8664`；存在 ARM64 DLL 时必须为 `0xAA64`。`build.bat` 不再仅凭空的 `CMAKE_GENERATOR_PLATFORM` 判断旧缓存为 Win32：只有解决方案明确包含 Win32 平台才允许复用，否则必须移走旧 `build/` 后以 `-A Win32` 重建。
@@ -213,10 +208,8 @@ GitHub 或 crates.io。`PIMELauncher/.cargo/config.toml` 强制 Cargo 离线解�
 需要完整闭环时，在管理员 PowerShell 中运行：
 
 ```powershell
-.\tools\dev-build-install-verify.ps1
 ```
 
-该入口依次执行现有 `build.bat`、规范的 `Reinstall-PIME-Test.cmd`（保留
 DLL 锁定时的就地安装路径），最后核对安装文件哈希、注册表和运行中的
 PIMELauncher。若 `build/` 或 Go backend 制品被清理，安装会在写系统目录前
 明确失败并要求重建。
@@ -241,7 +234,6 @@ PIMELauncher。若 `build/` 或 Go backend 制品被清理，安装会在写系�
   -RequireFreshRimeCache
 ```
 
-`complete` 表示文件哈希、安装状态和三套 Rime 编译缓存均一致。非严格模式下，被宿主锁定的 TSF DLL 暂未替换，或 Rime 后台尚未完成 table/reverse/prism 重建，都可能得到 `partial`；使用 `-RequireFreshRimeCache` 时任何缓存缺失或过期均为 `failed`。其它文件缺失或不一致始终为 `failed`。`dev-install.ps1` 会自动把最近一次报告写到 `.tmp\last-dev-install-verification.json`。
 
 Stage 6D 语气词“啊”还应单独闭合安装数据与用户态缓存链：
 
@@ -251,7 +243,6 @@ Stage 6D 语气词“啊”还应单独闭合安装数据与用户态缓存链�
 
 该脚本逐模式核对安装清单、Program Files 词典和 `%APPDATA%\PIME\Rime` 已部署词典的 SHA-256
 及 5,618 行全量别名，确认三个主句子词典仍导入对应别名表，并要求 table/reverse/prism 与编译
-schema 缓存全部新鲜。`dev-build-install-verify.ps1` 已把这项检查纳入完整闭环；脚本自身的夹具回归为
 `.\tools\test-installed-particle-a-stage6d-verifier.ps1`。
 
 语言栏或 TSF 问题必须在安装态至少复现一次；不能用源码目录中的临时 EXE 代替。

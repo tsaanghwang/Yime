@@ -19,7 +19,6 @@
 /libIME2/** @tsaanghwang
 /go-backend/build.bat @tsaanghwang
 
-/tools/test-build-guards.ps1 @tsaanghwang
 /tools/validate-build-contract.ps1 @tsaanghwang
 /tools/ci/** @tsaanghwang
 /tools/verify_psc_outline_snapshot.py @tsaanghwang

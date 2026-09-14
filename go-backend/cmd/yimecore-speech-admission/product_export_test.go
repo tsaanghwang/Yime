@@ -429,21 +429,15 @@ func TestSpeechProductExportFixedCollectionContainsNoExecutableOrState(t *testin
 	}
 }
 
-func TestSpeechProductExportFixedSourcesIncludeMaintenanceConfigContract(t *testing.T) {
-	wanted := "tools/yimecore/test-local-maintenance-config-data.ps1"
+func TestSpeechProductExportFixedSourcesExist(t *testing.T) {
 	for _, path := range exportFixedSources {
-		if path == wanted {
-			return
+		info, err := os.Stat(filepath.Join("../../..", filepath.FromSlash(path)))
+		if err != nil {
+			t.Errorf("fixed product source %s: %v", path, err)
+			continue
+		}
+		if !info.Mode().IsRegular() {
+			t.Errorf("fixed product source is not a regular file: %s", path)
 		}
 	}
-	t.Fatal("maintenance config contract is outside fixed product source evidence")
-}
-
-func TestSpeechProductExportFixedSourcesIncludeSymlinkContract(t *testing.T) {
-	for _, path := range exportFixedSources {
-		if path == "tools/yimecore/test-speech-symlink-evidence.ps1" {
-			return
-		}
-	}
-	t.Fatal("symlink evidence runner is outside fixed product source evidence")
 }

@@ -27,7 +27,6 @@
 
 ### 条件式只读复核（2026-09-10 19:23）
 
-新增 `tools/yimecore/capture-installed-readonly-evidence.ps1`，将每项观察独立标记为 `pass`、`fail` 或 `unavailable`；某个 PowerShell 提供程序、日志或文件不可用时，其余只读证据仍会保留，不再依赖反复执行零散命令。Windows PowerShell 5.1 与 PowerShell 7 的降级合同测试均通过。
 
 本机实跑生成 `docs/testing/platform/2026-09-10-mainstream-x64-reboot.json`，结果为 `complete=true`、`passed=true`：
 
@@ -103,7 +102,6 @@
 
 ```powershell
 Set-Location 'C:\Program Files\YimeCore Experimental Trial\yimecore-e6c-e346a1dad76d-133c91fe'
-.\Maintain-YimeCore-Local.cmd -Action Verify
 ```
 
 不要绕过同账户、非打包祖先进程等保护，不要手工调用 `regsvr32`，也不要把 YimeCore 设为默认输入法来强行通过验收。

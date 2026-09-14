@@ -83,19 +83,18 @@ func exportArtifactPaths() map[string]bool {
 // code trees add newly created source files as well as detecting removed files.
 var exportFixedSources = []string{
 	"AGENTS.md", "go-backend/go.mod", "docs/project/MANDARIN_CONNECTED_SPEECH_PLAN.md",
-	"tools/yimecore/development-scope.json", "tools/yimecore/development-scope.ps1", "tools/yimecore/local-maintenance-safety.ps1",
-	"tools/yimecore/get-l5-daily-use-baseline.ps1", "tools/yimecore/run-connected-speech-reconnect.ps1",
-	"tools/yimecore/run-connected-speech-admission.ps1", "tools/yimecore/run-connected-speech-package.ps1", "tools/yimecore/test-connected-speech-package.ps1",
+	"tools/yimecore/development-scope.json", "tools/yimecore/development-scope.ps1",
+	"tools/yimecore/run-connected-speech-reconnect.ps1",
+	"tools/yimecore/run-connected-speech-admission.ps1",
 	"tools/lexicon/validate_connected_speech_forward.py", "tools/lexicon/tests/test_validate_connected_speech_forward.py",
 	"docs/testing/connected-speech/2026-09-05-isolated-reconnect.json",
 	"tools/yimecore/local-product.json", "tools/yimecore/local-product-build-common.ps1", "tools/yimecore/build-local-product.ps1",
-	"tools/yimecore/local-product-speech-build.ps1", "tools/yimecore/test-local-product-speech-build.ps1", "tools/yimecore/test-speech-maintenance-data.ps1",
-	"tools/yimecore/test-local-maintenance-config-data.ps1",
-	"tools/yimecore/run-connected-speech-product-package.ps1", "tools/yimecore/speech-product-contract.json",
+	"tools/yimecore/local-product-speech-build.ps1", "tools/yimecore/test-local-product-speech-build.ps1",
+
+	"tools/yimecore/speech-product-contract.json",
 	"go-backend/input_methods/yime/data/yime_full.dict.yaml", "go-backend/input_methods/yime/data/yime_variable.dict.yaml",
 	"go-backend/input_methods/yime/data/yime_shorthand.dict.yaml", "tools/lexicon/data/yime_core_target.lock.json",
 	"tools/yimecore/run-connected-speech-product-source.ps1",
-	"tools/yimecore/test-speech-symlink-evidence.ps1",
 }
 
 func hexDigest(data []byte) string { sum := sha256.Sum256(data); return hex.EncodeToString(sum[:]) }

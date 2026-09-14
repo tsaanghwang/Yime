@@ -205,7 +205,7 @@ func newLocalSpeechFixture(t *testing.T, root string) *localSpeechFixture {
 		root = t.TempDir()
 	}
 	f := &localSpeechFixture{root: root, entries: map[string]manifestFile{}, admitted: reviewedLocalSpeechFixture(t)}
-	for _, path := range append(append([]string(nil), requiredLocalRuntimeFiles...), requiredLocalMaintenanceFiles...) {
+	for _, path := range requiredLocalRuntimeFiles {
 		f.entries[strings.ToLower(path)] = manifestFile{Path: path}
 	}
 	var descriptor map[string]any
@@ -451,18 +451,10 @@ func TestLocalSpeechContractRejectsIndirectResources(t *testing.T) {
 
 func TestLocalSpeechAuditorPreservesOuterIntegrityAndLegacyScope(t *testing.T) {
 	root := writeLocalFixture(t)
-	for _, path := range requiredLocalMaintenanceFiles {
-		full := filepath.Join(root, filepath.FromSlash(path))
-		if err := os.MkdirAll(filepath.Dir(full), 0700); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(full, []byte("nonexecuted maintenance fixture"), 0600); err != nil {
-			t.Fatal(err)
-		}
-	}
+
 	f := newLocalSpeechFixture(t, root)
 	manifest := packageManifest{PackageContract: localInstallableContract, ToolVersion: "yimecore-local-builder-v1", GitCommit: "synthetic-auditor-fixture", Scope: "static synthetic package only"}
-	for _, path := range append(append(append([]string(nil), requiredLocalRuntimeFiles...), requiredLocalMaintenanceFiles...), requiredLocalSpeechFiles...) {
+	for _, path := range append(requiredLocalRuntimeFiles, requiredLocalSpeechFiles...) {
 		data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(path)))
 		if err != nil {
 			t.Fatal(err)

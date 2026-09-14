@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$OutputRoot,
     [ValidateSet('full','variable','shorthand')][string[]]$Modes = @('full','variable','shorthand')
@@ -6,7 +6,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
-. (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
+. (Join-Path $PSScriptRoot 'build-system-observation.ps1')
 . (Join-Path $PSScriptRoot 'local-product-build-common.ps1')
 $scope = Get-YimeCoreDevelopmentScope
 Assert-YimeCoreNativeGo

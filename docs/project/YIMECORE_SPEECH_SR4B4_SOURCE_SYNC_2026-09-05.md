@@ -27,7 +27,6 @@
 | `.tmp/yimecore-local-product/speech-20260905-234758-b7db9c9f/summary.json` | 构包通过；SHA-256 `478ad1ce5b3665fcb62140de1998c4036a7d18954d8ab91670375cc8358aca1f` |
 | `C:\Users\tsaan\YimeCore Isolated Fixtures\SR4B2\speech-product-test-20260905-2349-directed-exit-a1\summary.json` | 私有七阶段通过；SHA-256 `75288cee59b323a4b4ff4b241cde5292bdfa51755fa43621092fcef3ee79b14b` |
 
-包内与源码的 `maintenance/local-maintenance-safety.ps1` SHA-256 均为 `e3796a834c4dd6638b6cd588d6ea43ba8db3808b838a67a37736e83a2ba88790`。准入前后现用 local.12 的安装 manifest、系统注册与进程基线保持不变。
 
 ## 证据边界
 

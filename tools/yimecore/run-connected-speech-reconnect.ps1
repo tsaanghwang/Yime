@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [Parameter(Mandatory)][string]$InstallRoot,
     [Parameter(Mandatory)][ValidatePattern('^[a-fA-F0-9]{64}$')][string]$ExpectedManifestSha256,
@@ -146,7 +146,7 @@ function Get-SpeechLockedInputs([string]$Repo) {
 }
 function Get-SpeechSourceRecords([string]$Repo) {
     $paths = @('go-backend/go.mod','docs/project/MANDARIN_CONNECTED_SPEECH_PLAN.md','tools/yimecore/development-scope.json',
-        'tools/yimecore/development-scope.ps1','tools/yimecore/local-maintenance-safety.ps1','tools/yimecore/get-l5-daily-use-baseline.ps1',
+        'tools/yimecore/development-scope.ps1','tools/yimecore/build-system-observation.ps1',
         'tools/yimecore/run-connected-speech-reconnect.ps1','tools/yimecore/test-connected-speech-reconnect.ps1')
     foreach ($relative in @('go-backend/input_methods/yime/engineapi','go-backend/input_methods/yime/yimecore',
         'go-backend/input_methods/yime/yimebroker','go-backend/cmd/yimebroker','go-backend/cmd/yimecore-trial-runtime',

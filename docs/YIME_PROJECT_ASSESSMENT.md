@@ -4,9 +4,7 @@
 >
 > 适用基线：`1.4.0-dev`，含 2026-07-22 的拆分 CI、布局设计器和安装态复核
 >
-> 2026-09-07 当前源码身份已推进到 `1.4.0-dev.1`，并已从 exact HEAD 构建一个未签名、禁用且未执行的隔离 successor candidate，静态门禁通过，且 `identity_transition_admitted=true`；下列 `1.4.0-dev` 安装态结论保持历史原义，新身份没有安装、签名、交付或 ARM64 原生验收，`actual_canonical_migration_admitted=false` 且未执行。详见 [DP1-P 记录](project/YIME_DUAL_PRODUCT_DP1_P_VERSIONED_SUCCESSOR_CANDIDATE_2026-09-07.md)。
 >
-> [DP1-Q](project/YIME_DUAL_PRODUCT_DP1_Q_CANDIDATE_EVIDENCE_ARCHIVE_AND_ACTUAL_MIGRATION_REVIEW_2026-09-07.md)仅新增仓库 `.tmp` 内的归档夹具（PS5／PS7 各 24/24）和 pure-data migration review 合同（各 23/23）。DP1-P 证据尚未真实仓外归档，合成 `review_ready=true` 不是实际审查或授权；actual archive／review／migration／adapter／DP1-N、安装、签名、交付及 ARM64 原生验证仍未执行或未准入。
 >
 > 相关文档：[架构](YIME_ARCHITECTURE.md) | [测试](YIME_TESTING_GUIDE.md) | [发布与签名](YIME_RELEASE_AND_SIGNING.md) | [原生 UI](YIME_NATIVE_UI_GUIDELINES.md)
 
@@ -26,7 +24,6 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 | 语言栏 | 已清理 | 保留静态标签和稳定命令 ID；高风险点击路径有回归测试 |
 | 构建与打包 | 稳定 | 9 个 Go EXE 可复现、统一图标和 VERSIONINFO、包内不携带 Go 源码 |
 | CI 与测试 | 完整度较高 | 构建契约、Rust、原生构建、Go、真实 Rime、MSYS2 race 和安装器已拆分；`core-build` 是聚合 required check |
-| 正式签名发布 | 仍硬阻断 | `version.txt` 当前为 `1.4.0-dev.1`；DP1-Q 只通过归档夹具和纯数据审查合同，DP1-P 证据仍未真实仓外归档，actual canonical 未迁移，tag 构包与签名门禁均未解除；正式目标仍是尚未发布的 `v1.4.0` |
 | 安装态验证 | 前一开发身份已复核 | 07-12／07-22 的真实安装结论属于 `1.4.0-dev`；`1.4.0-dev.1` 尚未安装或继承该结论，详见[07-22 安装态复核](YIME_INSTALL_VERIFICATION_2026-07-22.md) |
 
 ## 2. 两轮评估已处理事项
@@ -70,7 +67,6 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 - 配置本机 MSYS2 UCRT64 GCC 16.1.0（`go env CC` 持久化），`go test -race ./...` 全量通过，补齐此前缺失的竞态检测完成证明。
 - 修复 Win32 `PIMELauncher` 重建链路：Corrosion 升级到 v0.6.1 并在根 `CMakeLists.txt` 固定 `Rust_TOOLCHAIN=stable-i686-pc-windows-msvc`（host==target==i686，消除跨编译时 build-script 被链 i686 库导致的 LNK4272/145 个未解析符号）；前置为 `rustup toolchain install stable-i686-pc-windows-msvc`。
 - 2026-07-14 复评收口：Win32 回调地址改用显式结构体复制，`go vet ./...` 恢复绿色；CI 固定 Go 1.26.4，并在执行关键测试前逐项确认测试名存在；新增 `tools/test-go-race.ps1` 固化 CGO/GCC/PATH/缓存环境；开发包版本从历史 `1.3.0-beta2` 调整为 `1.4.0-dev`。
-- 2026-07-14 安装复核发现旧 `build/` 实为 x64，却因空的 `CMAKE_GENERATOR_PLATFORM` 被误判为 Win32。现已重建显式 Win32 树，并新增 `tools/test-build-guards.ps1`：本地构建、开发安装和 CI 均强制核对 x86/x64/ARM64 PE machine type。后续安装复核又确认旧版 `meow`/`simple_pinyin`/`fcitx5` 演示包已无 `ime.json` 且不可激活，现已删除源码、生产注册和默认回退；协议测试改用测试专用假服务，Go 打包只复制带 `ime.json` 的运行时目录，NSIS 升级以非递归方式清理三个旧空目录。其中 ARM64 只取得 PE machine type 等交叉构建静态检查，不是 ARM64 原生执行、安装或宿主证据。
 - 2026-07-15 当日曾将版本切到 `1.4.0` 并以旧聚合作业名 `build` 做发布演练；后续开发先恢复 `1.4.0-dev`，2026-09-07 再推进到 `1.4.0-dev.1`，当前聚合门禁名为 `core-build`。当日 32 位 `SysWOW64\\charmap.exe` 宿主人工烟雾测试仍作为历史验证记录保留。
 - 2026-07-15 未签名发布演练发现并修复标准安装器的锁定 DLL 升级缺陷：旧逻辑会递归删除后以退出码 2 中止，留下部分安装；新逻辑使用 `.new` 暂存和 `/REBOOTOK` 原位替换。修复后安装器返回 0，YIME-only 目录、版本、许可证、注册表和启动项均通过核对；当时被占用的 x64 DLL 进入重启替换队列。该历史待办已由 2026-07-22 安装态复核关闭：安装树无 `.new` 文件，x86/x64 DLL 均与当前构建物一致。详见[1.4.0 发布演练](YIME_RELEASE_REHEARSAL_2026-07-15.md)和[7 月 22 日安装态复核](YIME_INSTALL_VERIFICATION_2026-07-22.md)。
 
@@ -116,12 +112,10 @@ git diff --check
 - NSIS 开发安装包构建成功，包内未发现 `.go` 源码。
 - 上一轮远端 GitHub Actions 构建成功。
 - 2026-07-11 使用未签名开发包完成真实安装；Go + Win32 输入路径响应流畅，新增“云笺试码”“笺砚验码”后可在活动会话直接出词。
-- 2026-07-12 C++/TSF DLL 调试链路就绪：CMake 新增 `PIME_RELEASE_DEBUG_INFO` 选项（默认 `ON`）持久化 Release PDB 生成（`/Zi` + 链接器 `/DEBUG`，去重追加、重复 configure 不累积）；`go test -race ./...` 复跑全绿；`.vscode/launch.json` 提供 `Debug PMERpcResponseTests`、`Debug IME in charmap (x64)` launch 配置，已用 `Reinstall-PIME-Test.cmd` 安装带符号开发包。Win11 `notepad.exe` 为重定向存根，调试改用 `charmap.exe`；cpptools 1.33.4 的 `pickProcess` 在 Cursor 里 attach 失败，需 attach 时用 VS Code。详见 [测试指南 §6.1](YIME_TESTING_GUIDE.md)。
 - 2026-07-12 安装态验证清单逐项跑完并留痕（[验证留痕](YIME_INSTALL_VERIFICATION_2026-07-12.md)）：重启后干净全量重装通过，`PIMELauncher.exe`/x86 DLL/x64 DLL 构建↔安装哈希全一致；重启自启动实测（开机 27 秒内 PIMELauncher 自动拉起）；7 个工具入口启动不崩且 SAC 强制模式未阻止；TSF TIP 注册指向安装 DLL，`go_backend.log` 有真实组词/选词/上屏与语言栏模式按钮更新记录；CodeIntegrity 无 3118，历史 3033/3077 为未签名 `server.exe` 的 SAC 审计（当前已放行、14h+ 无新增）；runtimechange 与全 yime 包 `-race -count=1` 全绿。
 
 发行状态补充清单：
 
-- **已完成——1.4.0 发布身份与 Changelog 内容**：2026-07-15 已完成 `1.4.0` 发布演练并确定该发布身份；后续开发先恢复 `1.4.0-dev`，2026-09-07 又推进到 `1.4.0-dev.1` 并仅形成 DP1-P 隔离 successor candidate。只有创建正式标签时才把 `version.txt` 切换为 `1.4.0`，历史标签和版本身份不得复用。
 - **待办——可信签名**：证书正在办理，尚未生成和验证公开受信任的完整签名安装包。
 - **待办——签名后验收**：受签名事项阻塞；签名完成后必须重建、重装并重新执行 TSF、工具入口、语言栏菜单和 CodeIntegrity 清单。
 - **已完成——真实 x86 宿主烟雾测试**：2026-07-15 已在 `C:\Windows\SysWOW64\charmap.exe` 中完成用户人工验证，暂未发现激活、组字、候选或上屏问题；签名产物仍须按同一清单复跑。
@@ -144,12 +138,9 @@ git diff --check
 
 ### 发布前必须完成
 
-- 按 DP1-R → DP1-S → DP1-T → DP1-U 顺序完成 full payload／non-OS／NSIS／generated-uninstaller trust、真实仓外归档＋目录／断电／same-SID、真实 adapter／授权／migration，以及注册／回滚／removal／Runtime；在此之前不得把合成 `review_ready` 视为实际审查或执行准入，也不得执行 actual DP1-N transaction、安装、签名、交付或 ARM64 原生验收。
 - 将当前 `1.4.0-dev.1` 更新为实际发布版本并核对 `CHANGELOG.md`；只有准备创建正式标签时才切换为 `1.4.0`。
 - ~~执行一次未签名标准安装器发布演练。~~ 2026-07-15 已完成构建、连续哈希、标准安装器和原位升级验证；当时锁定的 x64 DLL 已在后续重启中完成替换，并于 2026-07-22 确认最终哈希一致且无待替换 `.new` 文件。
-- 使用可信签名服务或证书生成一次完整签名安装包，并运行 `tools/verify-release-signatures.ps1 -IncludeInstaller`。
 - 对最终版本和签名后的新二进制重新执行安装态 TSF、工具入口、语言栏菜单及 CodeIntegrity 清单。
-- ~~通过标准 `Reinstall-PIME-Test.cmd` 安装，核对构建与安装文件哈希。~~ 2026-07-12 完成：干净全量重装，三件哈希构建↔安装全一致。
 - ~~在真实 TSF 宿主中验证激活、组字、选词、语言栏按钮和当时全部工具入口。~~ 2026-07-12 完成：`go_backend.log` 真实组词/上屏证据 + 当时 7 个工具入口启动验证；07-22 又完成含布局设计器的 9 个 Go EXE 安装态复核。
 - ~~检查 CodeIntegrity 日志没有新增 3033、3077 或 3118 阻止事件。~~ 2026-07-12 完成：无 3118；3033/3077 为未签名开发包的 SAC 审计（签名后应复查归零）。
 - ~~验证设置“应用并重建”和用户词库应用后，已有输入会话无需注销即可刷新。~~ 2026-07-12 完成：runtimechange 协议 `-race -count=1` 全绿（协议层）；2026-07-11 已有活动会话直接出词的安装态实证。
@@ -160,7 +151,6 @@ git diff --check
 ### 可接受的开发期限制
 
 - 未签名开发包可能被 Smart App Control 或企业 Application Control 阻止。
-- Go race detector 依赖 MSYS2 UCRT64 GCC；本机由 `tools/test-go-race.ps1` 固化环境，CI 通过 `msys2/setup-msys2` 安装 GCC 并执行同一脚本。`tools/test-build-guards.ps1` 会在 race 步骤或 GCC 安装被删除时失败。
 - 真实 Rime 集成测试继续显式启用，避免普通测试共享本机 librime 全局状态。
 - C++ 调试在 Cursor 里仅 launch 可用；cpptools 1.33.4 的 `pickProcess` 与 Cursor QuickPick 不兼容，attach 配置需在 VS Code 里运行。`ms-vscode.cpptools` 不在 Cursor 的 Open VSX 市场，需从 VS Code Marketplace 下载 win32-x64 VSIX 离线安装。
 - Win32 `build/` 树重建依赖 `rustup toolchain install stable-i686-pc-windows-msvc`（`CMakeLists.txt` 已固定 `Rust_TOOLCHAIN`）；Corrosion v0.6.1 与锁定 crates 已纳入仓库，configure/build 不再要求 GitHub 或 crates.io 网络访问。

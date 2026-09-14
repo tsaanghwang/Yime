@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [Parameter(Mandatory)][ValidateSet('mainstream_x64','arm64')][string]$Target,
     [ValidateSet('Plan','Build','Package')][string]$Action='Plan',
@@ -9,7 +9,7 @@ param(
 )
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
-. (Join-Path $PSScriptRoot 'local-maintenance-safety.ps1')
+. (Join-Path $PSScriptRoot 'build-system-observation.ps1')
 . (Join-Path $PSScriptRoot 'local-product-build-common.ps1')
 $targetConfig=Get-YimeCoreExperimentTarget $Target
 $repo=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
