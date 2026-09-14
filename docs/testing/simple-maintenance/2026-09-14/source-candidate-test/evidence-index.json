@@ -1,0 +1,22 @@
+[
+  {
+    "path": "raw/6fb2bbd6dec64a1290df10d31840f638.user.log",
+    "bytes": 1104,
+    "sha256": "82e6b1a977255ef03656ff8871cb2fece8dbc637fe28eaf9f9f41dd68279d736"
+  },
+  {
+    "path": "raw/BUILD-PROVENANCE.json",
+    "bytes": 1333,
+    "sha256": "e09f3c4d4a0fcb71b77441e18875e5bd9312798365ba5ca729dc25a3b3564d22"
+  },
+  {
+    "path": "raw/dce542064f2949c08a7b956e9f9755b6.user.log",
+    "bytes": 1102,
+    "sha256": "5d46ff81346814a780d5fb9f6281115f9ebcd809310f69c80f7e282e8d39f450"
+  },
+  {
+    "path": "raw/preinstall-observation.json",
+    "bytes": 297,
+    "sha256": "cafae83b267247f0f0258bc1b6b25bb594a0c1c723ef582174b54338c5802ae1"
+  }
+]
