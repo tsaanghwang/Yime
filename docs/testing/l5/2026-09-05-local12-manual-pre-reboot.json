@@ -1,0 +1,174 @@
+{
+  "schema_version": "yimecore-l5-local12-manual-pre-reboot-v1",
+  "recorded_at": "2026-09-05T14:59:33.8745552+08:00",
+  "source": "User manual outcome reports in this task; independent read-only package/process/module/registry metadata capture.",
+  "user_report": {
+    "settings_display": 7,
+    "settings_reopened_display": 7,
+    "actual_candidates_per_page": 7,
+    "retained_sample": {
+      "page": 1,
+      "ordinal": 6,
+      "absolute_rank": 6,
+      "not_committed": true,
+      "converted_position_consistency": "confirmed_by_user"
+    },
+    "candidate_count_consistency": "confirmed_by_user",
+    "uncommitted_focus_switch": {
+      "applications": [
+        "Word",
+        "Notepad++"
+      ],
+      "tested": true,
+      "unexpected_anomaly_reported": false,
+      "mode": "not_re_stated",
+      "repeat_count": "not_reported",
+      "individual_behavior_booleans": "not_separately_reported"
+    },
+    "new_confirmed_regressions": []
+  },
+  "historical_reference": {
+    "actual_candidates_per_page": 6,
+    "sample_page": 1,
+    "sample_ordinal": 6,
+    "absolute_rank": 6,
+    "note": "Preserve prior evidence. The user additionally confirms consistency after conversion without submitting the sample. Both recorded first-page sixth positions map to absolute rank 6; no setting-change timing, same-mode evidence or reboot result is invented."
+  },
+  "current_installed": {
+    "schema_version": "yimecore-l5-metadata-v1",
+    "generated_at": "2026-09-05T14:59:33.8745552+08:00",
+    "computer": "MYCOMPUTER",
+    "development_scope": "mainstream-x64-arm64-resumed-2026-09-04",
+    "package_version": "0.1.0-local.12",
+    "install_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-62af8b507c91-9b3366b3",
+    "manifest_sha256": "9b3366b350ef2b23fd285fc9d97d876bf1ae6e2fc0f8613c647640f01184502e",
+    "package_file_count": 74,
+    "package_mismatches": [],
+    "package_integrity_passed": true,
+    "boot_at": "2026-09-05T07:34:00.5000000+08:00",
+    "processes": [
+      {
+        "name": "YimeCoreTrialRuntime.exe",
+        "pid": 8844,
+        "image": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-62af8b507c91-9b3366b3\\bin\\YimeCoreTrialRuntime.exe",
+        "started_at": "2026-09-05T13:58:55.8641260+08:00",
+        "current_package": true,
+        "after_boot": true
+      },
+      {
+        "name": "YimeBroker.exe",
+        "pid": 38052,
+        "image": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-62af8b507c91-9b3366b3\\bin\\YimeBroker.exe",
+        "started_at": "2026-09-05T13:58:56.0112720+08:00",
+        "current_package": true,
+        "after_boot": true
+      }
+    ],
+    "runtime_identity_passed": true,
+    "registered_x64_dll": [
+      "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-62af8b507c91-9b3366b3\\x64\\YimeTextServiceExperiment.dll"
+    ],
+    "registered_x64_matches": true,
+    "protected_registry_provider": "out-of-process StdRegProv; no process-view fallback",
+    "protected_registry_sha256": {
+      "SOFTWARE\\Classes\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "c155612c1f530895365b0853f483c7741ad225c0b7af12292e5d9830b94e3278",
+      "SOFTWARE\\Classes\\WOW6432Node\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "79222059bf3f60e1a5d2990b3722224d68b1cc55acc16eda25238ea05dff1c59",
+      "SOFTWARE\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "641c99dd3f8d3bd98beb9945bf1c9b46ca1c0e9e4fee92e63def44b692b4139a",
+      "SOFTWARE\\WOW6432Node\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "641c99dd3f8d3bd98beb9945bf1c9b46ca1c0e9e4fee92e63def44b692b4139a",
+      "user/Software\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "e39f603a5ebcff23859d200f9c9dc20f6c19d48aa185d09445bd42e31abcc3ff",
+      "SOFTWARE\\Classes\\CLSID\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "e39f603a5ebcff23859d200f9c9dc20f6c19d48aa185d09445bd42e31abcc3ff",
+      "SOFTWARE\\Classes\\WOW6432Node\\CLSID\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "cc12f6b74672f85fa166a5dc195f2695a81355c947ab08c7fec53af5d3c677c6",
+      "SOFTWARE\\Microsoft\\CTF\\TIP\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "a623f0671e15f5eff35385563ec23451f930e53969d5b1869246b8a08d90977f",
+      "SOFTWARE\\WOW6432Node\\Microsoft\\CTF\\TIP\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "a623f0671e15f5eff35385563ec23451f930e53969d5b1869246b8a08d90977f",
+      "user/Software\\Microsoft\\CTF\\TIP\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "141e5f7734d60b4b7a8150f4730180d678a56b48d868b2e780c8f11482ebf6d3",
+      "user/Control Panel\\International\\User Profile": "e0ebcad9414a4fa51ae57fd1a1386fd688e1c4c29acbed38b2edb51bc4053bcf",
+      "user/Keyboard Layout\\Preload": "079bb037883fad5ce2d4a922ef13ead05ef10f23f6b72ee9103f011d26ec44c3"
+    },
+    "hosts": [],
+    "user_text_read": false,
+    "learning_data_read": false,
+    "frozen_targets_executed": false,
+    "writes_to_product": false,
+    "manual_daily_use_passed": null,
+    "logon_autostart_verified": null
+  },
+  "host_modules": {
+    "captured_at": "2026-09-05T14:59:27.7496538+08:00",
+    "hosts": [
+      {
+        "name": "WINWORD.EXE",
+        "pid": 38760,
+        "image": "C:\\Program Files\\Microsoft Office\\Root\\Office16\\WINWORD.EXE",
+        "started_at": "2026-09-05T14:45:15.8351780+08:00",
+        "yime_modules": [
+          {
+            "path": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-62af8b507c91-9b3366b3\\x64\\YimeTextServiceExperiment.dll",
+            "sha256": "a22b5212596b0e6d1bfeada33c5362133b2eecb6a5cbf74eabd650a6e16e6d76"
+          }
+        ]
+      },
+      {
+        "name": "notepad++.exe",
+        "pid": 39160,
+        "image": "C:\\Users\\tsaan\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Notepad++.Notepad++_Microsoft.Winget.Source_8wekyb3d8bbwe\\notepad++.exe",
+        "started_at": "2026-09-05T14:46:46.7492170+08:00",
+        "yime_modules": [
+          {
+            "path": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-62af8b507c91-9b3366b3\\x86\\YimeTextServiceExperiment.dll",
+            "sha256": "f5727bfe5c322ef9ceeb1d04c4232b81957d01911e889b770dcbe59c402f7699"
+          }
+        ]
+      }
+    ],
+    "note": "Loaded DLL metadata is not proof of the currently active input profile; no window titles, command lines, user text or user state read."
+  },
+  "comparison_with": "docs/testing/l5/2026-09-05-local12-registered-postcheck.json",
+  "comparison": {
+    "protected_keys_rechecked": 12,
+    "changed_protected_keys": [],
+    "runtime_process_identity_unchanged": true,
+    "same_boot": true
+  },
+  "regression_status": {
+    "D2-S-UI-01": "manual_retest_passed_user_report_in_reported_scope",
+    "D2-F-01": "manual_retest_passed_user_report_for_reported_Word_Notepadpp_switching"
+  },
+  "pre_reboot_reference": {
+    "actual_candidates_per_page": 7,
+    "settings_display": 7,
+    "settings_reopened_display": 7,
+    "sample_page": 1,
+    "sample_ordinal": 6,
+    "absolute_rank": 6,
+    "preserve_mode_input_context": true,
+    "no_new_sample_selection_training_or_forgetting_before_check": true
+  },
+  "gates": {
+    "post_upgrade_windows_reboot_confirmed": false,
+    "post_reboot_settings_sample_retention_confirmed": false,
+    "matching_new_logon_autostart_evidence_verified": false,
+    "D2_daily_use_final_confirmed": false,
+    "L5_final_user_confirmation": false,
+    "L6_sealed": false
+  },
+  "privacy": {
+    "user_documents_read": false,
+    "private_observations_read": false,
+    "learning_data_read": false,
+    "user_text_recorded": false,
+    "window_titles_read": false,
+    "clipboard_read": false,
+    "user_settings_file_read": false,
+    "raw_log_read": false,
+    "product_mutation_performed": false,
+    "default_input_method_changed": false,
+    "production_rime_pime_touched": false,
+    "frozen_payload_executed": false
+  },
+  "limitations": [
+    "User report is manual evidence, not an assistant UI observation.",
+    "Loaded module metadata associates hosts with the current package but alone does not prove active profile.",
+    "No expanded all-mode or repeated-cycle manual coverage is inferred.",
+    "This pre-reboot record does not close reboot, fresh native recovery, full-day acceptance or final daily-use gates."
+  ]
+}

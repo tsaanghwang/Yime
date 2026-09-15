@@ -1,0 +1,22 @@
+{
+  "schema_version": "yimecore-manual-observation-v1",
+  "generated_at": "2026-09-10T14:38:19.9546407Z",
+  "host": "Windows Notepad",
+  "architecture": "x64",
+  "user_report": "三模式各三轮  失焦取消和文本保护 测试正常。",
+  "modes": [
+    "full",
+    "shorthand",
+    "variable"
+  ],
+  "rounds_per_mode": 3,
+  "outcomes": {
+    "confirmed_text_preserved": "pass",
+    "focus_loss_cancels_unconfirmed_composition": "pass",
+    "fresh_input_and_commit_after_focus_return": "pass",
+    "no_automatic_commit_on_focus_loss": "pass"
+  },
+  "evidence_basis": "User physical test report responding to the four-step focus-loss, text-protection and recovery procedure.",
+  "metadata_evidence": "notepad-post-manual-20260910-221037.json",
+  "complete": false
+}

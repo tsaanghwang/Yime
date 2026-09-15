@@ -203,6 +203,7 @@ type appState struct {
 	itemStarted                  time.Time
 	lastDiagnosis                trainer.Diagnosis
 	hintLevel                    int
+	experimental                 bool
 }
 
 func main() {
@@ -210,6 +211,7 @@ func main() {
 	userDir := flag.String("UserDir", "", "Yime user data directory")
 	mode := flag.String("Mode", "variable", "Yime mode: variable, full, shorthand")
 	lessonPath := flag.String("LessonPath", "", "Optional Yime trainer lesson JSON")
+	experimental := flag.Bool("Experimental", false, "Run the independent YimeCore trial trainer")
 	flag.Parse()
 
 	if strings.TrimSpace(*sharedDir) == "" {
@@ -235,7 +237,7 @@ func main() {
 		showError("无法读取当前 Yime 编码：" + err.Error())
 		os.Exit(1)
 	}
-	preferencesDir := trainer.PreferencesDirectoryFromRimeUserDir(strings.TrimSpace(*userDir))
+	preferencesDir := trainerPreferencesDirectory(strings.TrimSpace(*userDir), *experimental)
 	preferences, err := trainer.LoadPreferences(preferencesDir)
 	if err != nil {
 		preferences = trainer.DefaultPreferences()
@@ -256,6 +258,7 @@ func main() {
 		preferences:    preferences,
 		progressData:   progressData,
 		reviewFilter:   preferences.ReviewFilter,
+		experimental:   *experimental,
 		modeOptions: []modeOption{
 			{label: "变长", value: reverselookup.ModeVariable},
 			{label: "等长", value: reverselookup.ModeFull},
@@ -299,6 +302,16 @@ func normalizedMode(value string) reverselookup.Mode {
 	default:
 		return reverselookup.ModeVariable
 	}
+}
+
+func trainerPreferencesDirectory(userDir string, experimental bool) string {
+	if experimental {
+		if strings.TrimSpace(userDir) == "" {
+			return ""
+		}
+		return filepath.Join(userDir, "trainer")
+	}
+	return trainer.PreferencesDirectoryFromRimeUserDir(userDir)
 }
 
 func (state *appState) resolveExercises() error {
@@ -376,14 +389,15 @@ func runApp(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	if win32ui.ActivateExistingWindow("YimeTrainer") {
+	windowClass := trainerWindowClass(state.experimental)
+	if win32ui.ActivateExistingWindow(windowClass) {
 		return nil
 	}
 	icc := initCommonControlsEx{Size: uint32(unsafe.Sizeof(initCommonControlsEx{})), ICC: 0x000000FF}
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
 
 	instance, _, _ := procGetModuleHandleW.Call(0)
-	className, _ := syscall.UTF16PtrFromString("YimeTrainer")
+	className, _ := syscall.UTF16PtrFromString(windowClass)
 	cursor, _, _ := procLoadCursorW.Call(0, uintptr(32512))
 	icon := win32ui.LoadYimeIcon(instance)
 	wndProcCallback = syscall.NewCallback(func(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
@@ -408,7 +422,7 @@ func runApp(state *appState) error {
 	winW, winH := windowSizeForClient(clientW, clientH)
 	screenW, _, _ := procGetSystemMetrics.Call(0)
 	screenH, _, _ := procGetSystemMetrics.Call(1)
-	title, _ := syscall.UTF16PtrFromString("Yime 音元指法练习")
+	title, _ := syscall.UTF16PtrFromString(trainerWindowTitle(state.experimental))
 	hwnd, _, _ := procCreateWindowExW.Call(
 		uintptr(wsExControlparent|wsExAppwindow),
 		uintptr(unsafe.Pointer(className)),
@@ -448,6 +462,20 @@ func runApp(state *appState) error {
 		procDispatchMessageW.Call(uintptr(unsafe.Pointer(&message)))
 	}
 	return nil
+}
+
+func trainerWindowClass(experimental bool) string {
+	if experimental {
+		return "YimeCoreTrialTrainer"
+	}
+	return "YimeTrainer"
+}
+
+func trainerWindowTitle(experimental bool) string {
+	if experimental {
+		return "Yime 试验版音元指法练习"
+	}
+	return "Yime 音元指法练习"
 }
 
 func (state *appState) createControls() {

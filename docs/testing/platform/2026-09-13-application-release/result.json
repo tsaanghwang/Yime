@@ -1,0 +1,36 @@
+{
+    "passed":  true,
+    "private_font_blocked":  true,
+    "cancel_preserved":  true,
+    "silent_rejected":  true,
+    "retry_observed_release":  true,
+    "exact_removal":  true,
+    "peer_font_preserved":  true,
+    "ui_smoke":  true,
+    "during":  {
+                   "clear":  false,
+                   "applications":  [
+                                        {
+                                            "Pid":  4,
+                                            "StartFileTime":  134337741909327689,
+                                            "Name":  "System",
+                                            "Type":  1000
+                                        }
+                                    ],
+                   "resources":  [
+                                     {
+                                         "path":  "C:\\dev\\Yime\\.tmp\\dual-product\\application-use-test-8789f8d16fd242048bd516265cade77c\\font.ttf",
+                                         "native_error":  32
+                                     }
+                                 ]
+               },
+    "after":  {
+                  "clear":  true,
+                  "applications":  [
+
+                                   ],
+                  "resources":  [
+
+                                ]
+              }
+}

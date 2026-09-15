@@ -1,9 +1,13 @@
 param(
     [string]$RepoRoot = (Split-Path -Parent $PSScriptRoot),
-    [int]$TimeoutMinutes = 20
+    [int]$TimeoutMinutes = 20,
+    [ValidateSet(1,3)][int]$ShardCount=1,
+    [ValidateRange(0,2)][int]$ShardIndex=0
 )
 
 $ErrorActionPreference = 'Stop'
+Import-Module (Join-Path $PSScriptRoot 'ci\test-shards.psm1') -Scope Local
+if($ShardIndex -ge $ShardCount){throw 'Invalid real-Rime shard coordinate.'}
 
 if ($env:OS -ne 'Windows_NT') {
     throw 'Real Rime integration tests require Windows.'
@@ -56,10 +60,18 @@ try {
     }
     Write-Host "Running real librime integration tests (verbose; timeout ${TimeoutMinutes}m)..."
     $startedAt = Get-Date
-    & go test -v ./input_methods/yime -run '^TestRealRime' -count=1 -timeout "${TimeoutMinutes}m"
+    [string[]]$allNames=@($listedTests|Where-Object{$_ -cmatch '^TestRealRime[A-Za-z0-9_]+$'})
+    [Array]::Sort($allNames,[StringComparer]::Ordinal)
+    $selected=Get-CIShardNames $allNames $ShardIndex $ShardCount
+    $pattern='^('+(@($selected|ForEach-Object{[regex]::Escape($_)}) -join '|')+')$'
+    $log=Join-Path $repoRoot ".tmp\real-rime-shard-$ShardIndex.jsonl"
+    & go test -json ./input_methods/yime -run $pattern -count=1 -timeout "${TimeoutMinutes}m" | Tee-Object -FilePath $log
     if ($LASTEXITCODE -ne 0) {
         throw "Real Rime integration tests failed with exit code $LASTEXITCODE"
     }
+    $passed=@(Get-Content -LiteralPath $log|ForEach-Object{ConvertFrom-Json $_}|Where-Object{$_.Action -ceq 'pass' -and $_.Test -cin $selected}|ForEach-Object{$_.Test})
+    $result=New-CIShardResult 'real-rime' $allNames $passed $ShardIndex $ShardCount $true $PSCommandPath
+    $result|ConvertTo-Json -Depth 8|Set-Content -LiteralPath (Join-Path $repoRoot ".tmp\real-rime-shard-$ShardIndex.json") -Encoding UTF8
     Write-Host ("Real librime tests elapsed: {0:n1}s" -f ((Get-Date) - $startedAt).TotalSeconds)
 } finally {
     Pop-Location

@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-09-04T21:06:02.7560434+08:00",
+  "installed_manifest_sha256": "5a3f847a3136fd2198f7dc9aba22dc017ed7439d8447435e8752eb379a4a5cd8",
+  "package_integrity_passed": true,
+  "runtime_identity_passed": true,
+  "changed_protected_keys": [],
+  "scope_changed_by_user_request": true,
+  "installed_product_changed": false,
+  "default_or_production_writes_requested": false
+}

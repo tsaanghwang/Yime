@@ -98,7 +98,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reverse lookup window marked as "not responding" during data loading
 - Result count not displayed in reverse lookup (PowerShell single-element array unwrapping)
 - Detail label content silently lost when phrase contains curly braces breaking -f formatting
-- dev-install.ps1 UnauthorizedAccessException on existing HKLM Run registry key
 - refresh-dev-test-cmds.ps1 preserving template timestamps instead of showing fresh timestamps
 - build.bat Rime data directory cleanup failure when directory is locked
 - Duplicate key-down suppression swallowing legitimate rapid same-key presses

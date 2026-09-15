@@ -177,6 +177,7 @@ private:
 	std::unique_ptr<Ime::MessageWindow> messageWindow_;
 	UINT messageTimerId_;
 	HFONT font_;
+	std::wstring privateFontPath_;
 	bool updateFont_;
 	int candPerRow_;
 	std::wstring selKeys_;

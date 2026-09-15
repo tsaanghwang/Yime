@@ -168,6 +168,7 @@ type blocklistLayout struct {
 type appState struct {
 	userDir         string
 	sourcePath      string
+	experimental    bool
 	visibleEntries  []userblocklist.Entry
 	lastUndoEntries []userblocklist.Entry
 	lastUndoLabel   string
@@ -221,14 +222,16 @@ func buildLayout(clientW, clientH int32) blocklistLayout {
 
 func main() {
 	userDir := flag.String("UserDir", "", "Yime user data directory")
+	experimental := flag.Bool("Experimental", false, "Run against independent YimeCore Trial data")
 	flag.Parse()
 	if strings.TrimSpace(*userDir) == "" {
 		showMessageBox("缺少 UserDir 参数。", 0x10)
 		os.Exit(1)
 	}
 	state := &appState{
-		userDir:    strings.TrimSpace(*userDir),
-		sourcePath: userblocklist.SourcePath(strings.TrimSpace(*userDir)),
+		userDir:      strings.TrimSpace(*userDir),
+		sourcePath:   userblocklist.SourcePath(strings.TrimSpace(*userDir)),
+		experimental: *experimental,
 	}
 	if err := runApp(state); err != nil {
 		showMessageBox(err.Error(), 0x10)
@@ -240,7 +243,8 @@ func runApp(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	if win32ui.ActivateExistingWindow("YimeUserBlocklistManager") {
+	windowClass := blocklistWindowClass(state.experimental)
+	if win32ui.ActivateExistingWindow(windowClass) {
 		return nil
 	}
 
@@ -251,7 +255,7 @@ func runApp(state *appState) error {
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
 
 	instance, _, _ := procGetModuleHandleW.Call(0)
-	className, _ := syscall.UTF16PtrFromString("YimeUserBlocklistManager")
+	className, _ := syscall.UTF16PtrFromString(windowClass)
 	cursor, _, _ := procLoadCursorW.Call(0, uintptr(32512))
 	icon := win32ui.LoadYimeIcon(instance)
 	wndProcCallback = syscall.NewCallback(func(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
@@ -273,7 +277,7 @@ func runApp(state *appState) error {
 		return fmt.Errorf("RegisterClassEx failed")
 	}
 
-	title, _ := syscall.UTF16PtrFromString("用户屏蔽词表")
+	title, _ := syscall.UTF16PtrFromString(blocklistWindowTitle(state.experimental))
 	winW, winH := windowSizeForClient(state.clientW, state.clientH)
 	screenWidth, _, _ := procGetSystemMetrics.Call(0)
 	screenHeight, _, _ := procGetSystemMetrics.Call(1)
@@ -308,6 +312,20 @@ func runApp(state *appState) error {
 		}
 	}
 	return nil
+}
+
+func blocklistWindowClass(experimental bool) string {
+	if experimental {
+		return "YimeCoreTrialBlocklistManager"
+	}
+	return "YimeUserBlocklistManager"
+}
+
+func blocklistWindowTitle(experimental bool) string {
+	if experimental {
+		return "Yime 试验版用户屏蔽词语"
+	}
+	return "用户屏蔽词表"
 }
 
 func (state *appState) createControls() {

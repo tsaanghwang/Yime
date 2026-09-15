@@ -1,0 +1,57 @@
+﻿**********************
+Windows PowerShell 脚本开始
+开始时间: 20260914150800
+用户名: 计算机\Golde
+RunAs 用户: 计算机\Golde
+配置名称: 
+计算机: 计算机 (Microsoft Windows NT 10.0.26300.0)
+主机应用程序: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Users\Golde\Yime Simple Test Archives\simple-delivery-20260914\maintenance-5c9a5d77\Yime-Maintenance\rime-pime\Setup.ps1 -Action Install -InitiatingSid S-1-5-21-2077926464-2168481927-1091126771-1001 -LogId 5bbbc027c8af4ba6aa8ce41f3f8e011b
+进程 ID: 29144
+PSVersion: 5.1.26100.9539
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9539
+BuildVersion: 10.0.26100.9539
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\Golde\Yime Setup Logs\5bbbc027c8af4ba6aa8ce41f3f8e011b.admin.log
+Action: Install; package: C:\Users\Golde\Yime Simple Test Archives\simple-delivery-20260914\maintenance-5c9a5d77\Yime-Maintenance\rime-pime
+schema_version=yime-rime-pime-registration-status-v1
+architecture=x86
+architecture_bits=32
+service_profiles_registered_count=1
+exact_profile_registered_count=1
+profile_description_matches=true
+profile_enabled_for_current_user=true
+categories_registered_count=6
+expected_categories_registered_count=6
+category_set_exact=true
+categories_expected_count=6
+profile_query_hresult=0x0
+description_query_hresult=0x0
+enabled_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+schema_version=yime-rime-pime-registration-status-v1
+architecture=x64
+architecture_bits=64
+service_profiles_registered_count=1
+exact_profile_registered_count=1
+profile_description_matches=true
+profile_enabled_for_current_user=true
+categories_registered_count=6
+expected_categories_registered_count=6
+category_set_exact=true
+categories_expected_count=6
+profile_query_hresult=0x0
+description_query_hresult=0x0
+enabled_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+Installed: Yime Rime-PIME. Select it from the Windows input-method menu.
+**********************
+Windows PowerShell 脚本结束
+结束时间: 20260914150809
+**********************

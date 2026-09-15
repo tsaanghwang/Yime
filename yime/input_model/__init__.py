@@ -1,6 +1,11 @@
 """Candidate organization and dynamic composition overlay for Yime."""
 
 from .builder import BuildResult, build_input_model
+from .bcc_composition_validation import (
+    BccCompositionValidationConfig,
+    BccCompositionValidationResult,
+    validate_bcc_composition_paths,
+)
 from .classifier import PolicyClassifier
 from .composer import CompositionPolicy, DynamicComposer, FrequencyCompositionScorer
 from .core_trial_export import (
@@ -79,6 +84,8 @@ from .types import (
 )
 
 __all__ = [
+    "BccCompositionValidationConfig",
+    "BccCompositionValidationResult",
     "BuildResult",
     "CandidateAssessment",
     "CandidateClassifier",
@@ -122,6 +129,7 @@ __all__ = [
     "audit_long_form_core_migration",
     "audit_runtime_ranking_evidence",
     "build_input_model",
+    "validate_bcc_composition_paths",
     "build_ranking_calibration",
     "build_recursive_composition_model",
     "build_static_capacity_model",

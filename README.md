@@ -1,14 +1,18 @@
 # Yime for Windows
 
-**音元拼音** — A Windows Chinese phonetic input method built on [PIME](https://github.com/EasyIME/PIME) and powered by the [Rime](https://rime.im) engine.
+**音元拼音** — A Windows Chinese phonetic input method developed as two independent products: the [Rime](https://rime.im)/[PIME](https://github.com/EasyIME/PIME) edition and the self-contained YimeCore edition.
 
 [中文文档](README.zh-CN.md)
+
+Under the [2026-09-05 dual-product plan](docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md), YimeCore is the main feature-development track and Rime/PIME remains a stable, maintained option. Either product may be installed alone, or both may coexist; each must run, upgrade, uninstall, and maintain its writable data independently, without requiring the other. The single-product and both-product installer is implemented. The current source candidate completed acceptance within the reported scope; see the [validation record](installer/simple/VALIDATION.md).
+
+The feature list and build, first-run, and debugging instructions below describe the **Rime/PIME product**, not YimeCore. For YimeCore's separate development and maintenance entry points, use [tools/yimecore](tools/yimecore/README.md); both products use the [simple installer](installer/simple/README.md) for maintenance.
 
 Yime maps pinyin syllables to a structured keyboard encoding where shouyin units follow memorable patterns (zh/ch/sh → 7/8/9, j/q/x → 3/2/1, z/c/s → 6/5/4). The installed runtime provides variable-length, fixed-length, and shorthand modes, all deterministically derived from one curated core candidate set.
 
 In fixed-length mode, each syllable consists of one *shouyin* followed by a *ganyin*. The ganyin always contains three yinyuan: *huyin*, *zhuyin*, and *moyin*. Variable-length mode preserves the real or virtual shouyin and merges adjacent identical yinyuan that compose the ganyin: ABC stays ABC, AAC becomes AC, ABB becomes AB, and AAA becomes A. Shorthand mode then omits an eligible middle-tone yinyuan from the variable-length result. See the [data format reference](docs/YIME_DATA_FORMAT_REFERENCE.md#首音干音与三模式派生) for the structural rules.
 
-## Features
+## Features (Rime/PIME)
 
 - **Dynamic sentence composition** — a 1,166,753-entry encoded runtime dictionary includes all 46,095 encoded characters plus short components; Rime composes missing longer phrases and learns corrections
 - **Evidence-locked core** — ranking uses BCC first, RIME-LMDG as fallback, and a separate structural floor
@@ -31,7 +35,7 @@ go-backend/              Go backend: Yime IME logic, Rime integration, standalon
     help/                User-facing help documents
 PIMETextService/         TSF text service host (C++/COM)
 PIMELauncher/            Process launcher and monitor (Rust)
-installer/               NSIS installer assets
+installer/simple/       Independent product packaging and maintenance
 libIME2/                 In-tree TSF integration component
 docs/                    Development documentation
 ```
@@ -48,10 +52,10 @@ Yime owns its encoding, lexicon, layout, and offline evaluation sources. The ret
 prototype is a detached maintenance/cleanup workspace: Yime never reads it or any sibling Git
 repository by default. See [Repository Data Boundary](docs/project/YIME_REPOSITORY_DATA_BOUNDARY.md).
 
-The current runtime architecture and its qualification evidence are documented in
+The Rime/PIME runtime architecture and its qualification evidence are documented in
 [Default Dynamic Lexicon Runtime](docs/DEFAULT_DYNAMIC_LEXICON_RUNTIME.md).
 
-## Build Requirements
+## Build Requirements (Rime/PIME)
 
 - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) with C++ desktop workload
 - [CMake](https://cmake.org/) 3.5+
@@ -59,7 +63,7 @@ The current runtime architecture and its qualification evidence are documented i
 - [Go](https://go.dev/) 1.26.4 for reproducible/CI builds (`go.mod` keeps the 1.21 language compatibility floor)
 - [Git](https://git-scm.com/)
 
-## Build
+## Build (Rime/PIME)
 
 ### Clone
 
@@ -107,42 +111,16 @@ launcher builds.
 `go-backend\build.bat` remains available for focused backend work. Go tool versions
 come from `version.txt`, and reproducible flags keep hashes stable across unrelated commits.
 
-## Install
+## Install and Uninstall (Both Products)
 
-### Development reinstall
+Run `Install-Uninstall.cmd` from a complete package and choose the action and product: YimeCore, Rime/PIME, or both. Use the package and hash in the [current handoff](installer/simple/HANDOFF.md).
 
-From an elevated prompt:
+The [simple installer guide](installer/simple/README.md) owns the installation steps, file-lock handling, logs, and explicit test-data reset instructions. Production data migration and backup/restore are deferred.
 
-```powershell
-.\Reinstall-PIME-Test.cmd
-```
-
-This script includes pre-flight checks, DLL-lock detection, and automatic fallback. Do not simplify it — see `AGENTS.md` for constraints.
-
-### Distribution
-
-Ship `installer\YIME-*-setup.exe` after verifying the NSIS package includes the Go backend. See [docs/dev-build-reinstall.html](docs/dev-build-reinstall.html).
-
-### Manual registration
-
-```powershell
-regsvr32 "C:\Program Files (x86)\YIME\x86\PIMETextService.dll"
-regsvr32 "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
-```
-
-To unregister:
-
-```powershell
-regsvr32 /u "C:\Program Files (x86)\YIME\x86\PIMETextService.dll"
-regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
-```
-
-## First-Run Checklist
+## First-Run Checklist (Rime/PIME)
 
 - [ ] Clone the repository and confirm the toolchain is installed
 - [ ] If the curated core changed, run `tools\deploy-yime-rime-data.ps1 -InputPath <two_level_full.dict.yaml> -EvidenceManifest <dictionary.manifest.json> -PronunciationEntries <entries.tsv> -SourceRevision <commit>` (see [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md))
-- [ ] Run `.\tools\dev-build-install-verify.ps1` for the complete build → reinstall → installed-runtime verification loop
-- [ ] For a split workflow, run `cmd /c build.bat`, then `.\Reinstall-PIME-Test.cmd` from an elevated prompt, then `tools\verify-installed-runtime.ps1 -RequireRunningLauncher -RequireFreshRimeCache`
 - [ ] Switch to Yime in a text application and verify: activation, candidates, settings, reverse lookup
 - [ ] Run `.\tools\test-go.ps1`; use `.\tools\test-real-rime.ps1` and `.\tools\test-go-race.ps1` when the affected layer requires them
 
@@ -183,7 +161,7 @@ are carried by virtual shouyin in Yime. A virtual shouyin also marks an explicit
 
 The candidate window does not use punctuation keycaps as ordinal labels because they scan poorly. Unlike mainstream Pinyin IMEs, Yime deliberately does not use bare digits for candidate selection: all ten Base-layer digits, `0`…`9`, always remain composition input even while candidates are visible. Ordinal selection uses Shift+1…Shift+9; Shift+0 does not select a candidate.
 
-## Debugging
+## Debugging (Rime/PIME)
 
 Run the launcher with a console window:
 
@@ -197,6 +175,8 @@ Check logs at `%LOCALAPPDATA%\PIME\Logs\go_backend.log`.
 
 | Document | Description |
 |----------|-------------|
+| [Dual-Product Development Plan](docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md) | Independent products, optional coexistence, development priorities, and remaining acceptance gates |
+| [YimeCore Development Entry Points](tools/yimecore/README.md) | Separate YimeCore build, trial, and maintenance boundaries |
 | [Project Assessment](docs/YIME_PROJECT_ASSESSMENT.md) | Consolidated review findings, completed fixes, verification evidence, and remaining risks |
 | [Architecture](docs/YIME_ARCHITECTURE.md) | System architecture, key mechanisms, data files |
 | [Usability Assessment](docs/YIME_USABILITY_ASSESSMENT.md) | Current usability issues and priorities |
@@ -211,6 +191,7 @@ Check logs at `%LOCALAPPDATA%\PIME\Logs\go_backend.log`.
 | [Data Format Reference](docs/YIME_DATA_FORMAT_REFERENCE.md) | TSV/JSON/YAML data file format specifications |
 | [Single-Source Lexicon Refactor](docs/project/SINGLE_SOURCE_LEXICON_REFACTOR.md) | Why and how three maintained code tables became one fixed-length source |
 | [Prototype Retirement Migration Plan](docs/project/PROTOTYPE_RETIREMENT_MIGRATION_PLAN.md) | Phased plan and inventory for moving useful offline tooling into Yime and retiring the Python prototype |
+| [YimeCore Independent-Stack Experiment](docs/project/YIMECORE_REPLACEMENT_EXPERIMENT.md) | Current dual-product direction and historical gated engine, broker, and TSF evidence |
 | [User Install Guide](docs/YIME_USER_INSTALL_GUIDE.md) | Installation and usage instructions for end users |
 | [Troubleshooting](docs/YIME_TROUBLESHOOTING.md) | Common issues and solutions |
 | [Changelog](CHANGELOG.md) | Version change history |
@@ -224,7 +205,7 @@ Report issues in this repository. Framework-level issues that also affect upstre
 
 ## Relationship to PIME
 
-Yime for Windows is an independently maintained downstream derivative of
+The Rime/PIME edition of Yime for Windows is an independently maintained downstream derivative of
 [EasyIME/PIME](https://github.com/EasyIME/PIME). It reuses and modifies PIME's
 Windows TSF text-service host, process launcher, backend protocol, and
 installation/registration infrastructure, while preserving the relevant

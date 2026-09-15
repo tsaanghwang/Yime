@@ -1,0 +1,128 @@
+{
+    "schema_version":  "yimecore-installed-readonly-evidence-v1",
+    "generated_at":  "2026-09-10T11:25:04.5284437Z",
+    "observer":  {
+                     "powershell":  "5.1.26100.9444",
+                     "process_64bit":  true
+                 },
+    "host":  {
+                 "computer_name":  "计算机",
+                 "os_caption":  "Microsoft Windows 11 家庭版",
+                 "os_version":  "10.0.26300",
+                 "os_architecture":  "64-bit",
+                 "boot_time_utc":  "2026-09-10T10:02:18.5000000Z",
+                 "cpu":  "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+                 "cores":  8,
+                 "logical_processors":  16
+             },
+    "package":  {
+                    "product_version":  "0.1.0-local.13",
+                    "git_commit":  "e346a1dad76d58f50652a2dd665c64ec8aeef49e",
+                    "install_root":  "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe",
+                    "installed_at":  "2026-09-10T07:17:28.3514653Z",
+                    "manifest_sha256":  "133c91fe205fcae911fa701a278465dad040e7dadce006b541697b656e50405a",
+                    "payload_count":  90,
+                    "payload_mismatches":  [
+
+                                           ]
+                },
+    "runtime":  {
+                    "state":  "running",
+                    "status_updated_at":  "2026-09-10T10:03:55.0090367Z",
+                    "restarts":  0,
+                    "runtime":  {
+                                    "pid":  28436,
+                                    "parent_pid":  17384,
+                                    "image":  "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\bin\\YimeCoreTrialRuntime.exe",
+                                    "started_at":  "2026-09-10T10:03:53.5885650Z"
+                                },
+                    "broker":  {
+                                   "pid":  9360,
+                                   "parent_pid":  28436,
+                                   "image":  "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\bin\\YimeBroker.exe",
+                                   "started_at":  "2026-09-10T10:03:54.9467020Z"
+                               },
+                    "owner_sid_sha256":  "33a1719ce3a2b1e3f339d7c56b29c488022c49816d99d001b79e5e5c72ba939f",
+                    "owners_match_current_user":  true,
+                    "identity_passed":  true
+                },
+    "registry":  {
+                     "provider":  "StdRegProv/HKEY_USERS and HKEY_LOCAL_MACHINE",
+                     "run_matches":  true,
+                     "uninstall_matches":  true,
+                     "com_x64_matches":  true,
+                     "com_x86_matches":  true
+                 },
+    "shell_logon":  {
+                        "log_enabled":  true,
+                        "matching_event_count":  1,
+                        "events":  [
+                                       {
+                                           "time":  "2026-09-10T10:03:59.1708905Z",
+                                           "pid":  28436,
+                                           "image":  "YimeCoreTrialRuntime.exe"
+                                       }
+                                   ]
+                    },
+    "current_default_input_method":  {
+                                         "override_present":  false,
+                                         "tip":  null
+                                     },
+    "checks":  [
+                   {
+                       "name":  "expected_computer",
+                       "status":  "pass",
+                       "reason":  "Computer name matches."
+                   },
+                   {
+                       "name":  "expected_manifest",
+                       "status":  "pass",
+                       "reason":  "Manifest hash matches."
+                   },
+                   {
+                       "name":  "package_state_binding",
+                       "status":  "pass",
+                       "reason":  "Manifest, install metadata, runtime config, and status agree."
+                   },
+                   {
+                       "name":  "payload_integrity",
+                       "status":  "pass",
+                       "reason":  "All 90 payloads match."
+                   },
+                   {
+                       "name":  "live_runtime_identity",
+                       "status":  "pass",
+                       "reason":  "Runtime and Broker match this boot, package, parent, status, and owner."
+                   },
+                   {
+                       "name":  "system_registry_binding",
+                       "status":  "pass",
+                       "reason":  "Run, uninstall, and x64/x86 COM records match."
+                   },
+                   {
+                       "name":  "shell_logon_event_9708",
+                       "status":  "pass",
+                       "reason":  "A matching Runtime PID and SID event was found."
+                   },
+                   {
+                       "name":  "current_default_input_method_observed",
+                       "status":  "pass",
+                       "reason":  "Current override presence/value recorded without claiming an unchanged baseline."
+                   }
+               ],
+    "complete":  true,
+    "passed":  true,
+    "privacy":  {
+                    "full_sid_emitted":  false,
+                    "learning_data_read":  false,
+                    "user_text_read":  false,
+                    "private_command_line_emitted":  false
+                },
+    "side_effects":  {
+                         "registry_mutated":  false,
+                         "product_state_written":  false,
+                         "maintenance_executed":  false,
+                         "installer_executed":  false,
+                         "process_started_or_stopped":  false
+                     }
+}

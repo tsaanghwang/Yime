@@ -1,0 +1,44 @@
+{
+  "generated_at": "2026-09-05T08:12:05.2778292+08:00",
+  "reference": "2026-09-04-session-close.json",
+  "current": "2026-09-05-baseline.json",
+  "same_package_version": true,
+  "same_install_root": true,
+  "same_manifest": true,
+  "protected_key_count_before": 12,
+  "protected_key_count_after": 12,
+  "protected_keys_changed": [],
+  "protected_registry_unchanged": true,
+  "d1_boot_at": "2026-09-04T12:41:10.499783+08:00",
+  "d2_boot_at": "2026-09-05T07:34:00.5+08:00",
+  "boot_later_than_d1": true,
+  "sample_preserved_user_report_at": "2026-09-04T20:20:00+08:00",
+  "sample_report_time_precision": "minute; not measured training completion",
+  "boot_after_sample_preservation_report": true,
+  "process_restart_checks": [
+    {
+      "name": "YimeCoreTrialRuntime.exe",
+      "previous_pid": 31460,
+      "current_pid": 8796,
+      "started_later_than_d1": true,
+      "current_package": true,
+      "after_boot": true
+    },
+    {
+      "name": "YimeBroker.exe",
+      "previous_pid": 31488,
+      "current_pid": 20188,
+      "started_later_than_d1": true,
+      "current_package": true,
+      "after_boot": true
+    }
+  ],
+  "development_scope_changed_by_approved_platform_resumption": true,
+  "learning_persistence_manually_confirmed": null,
+  "page_size_six_manually_confirmed": null,
+  "page_size_five_restored": null,
+  "logon_autostart_verified": null,
+  "user_text_read": false,
+  "learning_data_read": false,
+  "product_writes": false
+}

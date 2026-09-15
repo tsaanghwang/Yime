@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"sort"
@@ -139,7 +140,7 @@ var keyboardRows = [][]keySpec{
 type guiState struct {
 	dataDir, draftPath       string
 	sharedDir, userDir       string
-	userMode                 bool
+	userMode, experimental   bool
 	source, draft            layoutdesigner.Profile
 	sourceDigest             string
 	hwnd                     syscall.Handle
@@ -171,6 +172,7 @@ func runGraphical(args []string) error {
 	flags := flag.NewFlagSet("yime-layout-designer-gui", flag.ContinueOnError)
 	sharedFlag := flags.String("SharedDir", "", "Yime shared Rime data directory")
 	userFlag := flags.String("UserDir", "", "Yime user Rime data directory")
+	experimentalFlag := flags.Bool("Experimental", false, "use the isolated YimeCore Trial layout")
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
@@ -181,7 +183,17 @@ func runGraphical(args []string) error {
 		if strings.TrimSpace(*sharedFlag) == "" || strings.TrimSpace(*userFlag) == "" {
 			return fmt.Errorf("SharedDir 和 UserDir 必须同时指定")
 		}
-		dataDir, err = layoutdesigner.EffectiveDataDir(*sharedFlag, *userFlag)
+		if *experimentalFlag {
+			if generation, loadErr := layoutdesigner.LoadTrialLayoutGeneration(*userFlag); loadErr == nil {
+				dataDir = generation.DataDir
+			} else if os.IsNotExist(loadErr) {
+				dataDir = *sharedFlag
+			} else {
+				return loadErr
+			}
+		} else {
+			dataDir, err = layoutdesigner.EffectiveDataDir(*sharedFlag, *userFlag)
+		}
 	} else {
 		dataDir, err = resolveDataDir("")
 	}
@@ -199,7 +211,11 @@ func runGraphical(args []string) error {
 	}
 	draftPath := filepath.Join(local, "Yime", "layout-designer-draft.json")
 	if userMode {
-		draftPath = filepath.Join(layoutdesigner.UserLayoutDirectory(*userFlag), "auto-draft.json")
+		if *experimentalFlag {
+			draftPath = filepath.Join(trialLayoutRoot(*userFlag), "drafts", "auto-draft.json")
+		} else {
+			draftPath = filepath.Join(layoutdesigner.UserLayoutDirectory(*userFlag), "auto-draft.json")
+		}
 	}
 	draft := cloneGUIProfile(source)
 	draft.BasedOnDigest = digest
@@ -208,7 +224,7 @@ func runGraphical(args []string) error {
 	}
 	state := &guiState{
 		dataDir: dataDir, draftPath: draftPath, source: source, draft: draft,
-		sharedDir: *sharedFlag, userDir: *userFlag, userMode: userMode,
+		sharedDir: *sharedFlag, userDir: *userFlag, userMode: userMode, experimental: *experimentalFlag,
 		sourceDigest: digest, selected: -1,
 	}
 	return runGUIWindow(state)
@@ -226,14 +242,14 @@ func cloneGUIProfile(p layoutdesigner.Profile) layoutdesigner.Profile {
 func runGUIWindow(state *guiState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if win32ui.ActivateExistingWindow("YimeLayoutDesigner") {
+	if win32ui.ActivateExistingWindow(layoutWindowClass(state.experimental)) {
 		return nil
 	}
 	activeGUI = state
 	icc := commonControls{Size: uint32(unsafe.Sizeof(commonControls{})), ICC: 0xFFFF}
 	initCommonControl.Call(uintptr(unsafe.Pointer(&icc)))
 	instance, _, _ := getModuleHandle.Call(0)
-	className, _ := syscall.UTF16PtrFromString("YimeLayoutDesigner")
+	className, _ := syscall.UTF16PtrFromString(layoutWindowClass(state.experimental))
 	cursor, _, _ := loadCursor.Call(0, 32512)
 	icon := win32ui.LoadYimeIcon(instance)
 	guiCallback = syscall.NewCallback(guiWndProc)
@@ -245,7 +261,7 @@ func runGUIWindow(state *guiState) error {
 	if atom, _, callErr := registerClassEx.Call(uintptr(unsafe.Pointer(&wc))); atom == 0 {
 		return fmt.Errorf("register window class: %v", callErr)
 	}
-	title, _ := syscall.UTF16PtrFromString(uiWindowTitle)
+	title, _ := syscall.UTF16PtrFromString(layoutWindowTitle(state.experimental))
 	hwnd, _, callErr := createWindowEx.Call(
 		wsAppWindow, uintptr(unsafe.Pointer(className)), uintptr(unsafe.Pointer(title)), wsFixedWindow,
 		80, 60, 1190, 720, 0, 0, instance, 0,
@@ -521,7 +537,11 @@ func (s *guiState) apply() {
 		showMessage(s.hwnd, "\u8349\u6848\u4e0e\u6b63\u5f0f\u5e03\u5c40\u76f8\u540c\uff0c\u65e0\u9700\u5e94\u7528\u3002", mbIconInfo)
 		return
 	}
-	question := fmt.Sprintf("重建 %d 条词典记录和三套输入方案？\r\n学习记录会按字词迁移到新编码。\r\n\r\n应用布局 %s？", plan.DictionaryEntries, plan.TargetDigest[:12])
+	detail := "学习记录会按字词迁移到新编码。"
+	if s.experimental {
+		detail = "试验版会生成三套独立索引并重启 Trial runtime；正式版 Rime 数据不会改变。"
+	}
+	question := fmt.Sprintf("重建 %d 条词典记录和三套输入方案？\r\n%s\r\n\r\n应用布局 %s？", plan.DictionaryEntries, detail, plan.TargetDigest[:12])
 	if showMessage(s.hwnd, question, mbYesNo|mbIconQuestion) != idYes {
 		return
 	}
@@ -530,7 +550,15 @@ func (s *guiState) apply() {
 	updateWindow.Call(uintptr(s.hwnd))
 	var applied layoutdesigner.Plan
 	var migrationCount int
-	if s.userMode {
+	var restartErr error
+	if s.experimental {
+		result, applyErr := layoutdesigner.BuildTrialLayoutGeneration(s.sharedDir, s.userDir, s.draft)
+		applied, err = result.Plan, applyErr
+		if err == nil {
+			s.dataDir = result.DataDir
+			restartErr = restartTrialRuntime(s.sharedDir, s.userDir)
+		}
+	} else if s.userMode {
 		result, applyErr := layoutdesigner.ApplyUser(s.sharedDir, s.userDir, s.draft)
 		applied, migrationCount, err = result.Plan, len(result.Migrations), applyErr
 	} else {
@@ -542,7 +570,7 @@ func (s *guiState) apply() {
 		s.refresh()
 		return
 	}
-	if s.userMode {
+	if s.userMode && !s.experimental {
 		s.dataDir, _ = layoutdesigner.EffectiveDataDir(s.sharedDir, s.userDir)
 	}
 	s.source, _ = layoutdesigner.LoadProfile(filepath.Join(s.dataDir, layoutdesigner.ProfileFileName))
@@ -551,11 +579,54 @@ func (s *guiState) apply() {
 	s.draft.BasedOnDigest = s.sourceDigest
 	_ = os.Remove(s.draftPath)
 	s.refresh()
-	if s.userMode {
+	if s.experimental {
+		message := fmt.Sprintf("试验版布局 %s 已应用。\r\n三套 YimeCore 索引已经校验。", applied.TargetDigest[:12])
+		if restartErr != nil {
+			message += "\r\n布局已发布，但 Trial runtime 重启失败；下次启动时会采用新布局：\r\n" + restartErr.Error()
+			showMessage(s.hwnd, message, mbIconError)
+		} else {
+			showMessage(s.hwnd, message+"\r\nTrial runtime 已重启。", mbIconInfo)
+		}
+	} else if s.userMode {
 		showMessage(s.hwnd, fmt.Sprintf("布局 %s 已应用。\r\n已迁移 %d 个学习词库；输入法会在下一次输入时安全刷新。", applied.TargetDigest[:12], migrationCount), mbIconInfo)
 	} else {
 		showMessage(s.hwnd, fmt.Sprintf("Layout %s was generated.\r\nBuild and deploy Yime next.", applied.TargetDigest[:12]), mbIconInfo)
 	}
+}
+
+func layoutWindowClass(experimental bool) string {
+	if experimental {
+		return "YimeCoreTrialLayoutDesigner"
+	}
+	return "YimeLayoutDesigner"
+}
+
+func layoutWindowTitle(experimental bool) string {
+	if experimental {
+		return "Yime 试验版键盘布局"
+	}
+	return uiWindowTitle
+}
+
+func trialLayoutRoot(stateRoot string) string {
+	return layoutdesigner.TrialLayoutRoot(stateRoot)
+}
+
+func restartTrialRuntime(sharedDir, stateRoot string) error {
+	installRoot := filepath.Dir(filepath.Clean(sharedDir))
+	runtimePath := filepath.Join(installRoot, "bin", "YimeCoreTrialRuntime.exe")
+	common := trialRuntimeArguments(installRoot, stateRoot)
+	if err := exec.Command(runtimePath, append(common, "-stop")...).Run(); err != nil {
+		return fmt.Errorf("停止 Trial runtime: %w", err)
+	}
+	if err := win32ui.StartDetachedGUIExecutable(runtimePath, common...); err != nil {
+		return fmt.Errorf("启动 Trial runtime: %w", err)
+	}
+	return nil
+}
+
+func trialRuntimeArguments(installRoot, stateRoot string) []string {
+	return []string{"-install-root", installRoot, "-state-root", stateRoot, "-no-toolbar"}
 }
 
 func (s *guiState) setStatus(text string) { setText(s.status, text) }

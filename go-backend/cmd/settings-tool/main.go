@@ -16,6 +16,7 @@ import (
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimechange"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/settings"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolbarstate"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolhub"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userbackup"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/win32ui"
@@ -42,6 +43,12 @@ const (
 	idBtnBackup     = 202
 	idBtnRestore    = 203
 	idBtnOpenHelp   = 204
+
+	cbGetCount     = 0x0146
+	cbGetCurSel    = 0x0147
+	cbGetLBText    = 0x0148
+	cbGetLBTextLen = 0x0149
+	cbSetCurSel    = 0x014E
 )
 
 var (
@@ -110,13 +117,21 @@ type settingsUILayout struct {
 	pageLabel, pageCombo                                     rect
 	reverseLabel, reverseCombo                               rect
 	layoutLabel, layoutCombo                                 rect
+	fontLabel, fontCombo                                     rect
+	familyLabel, familyCombo                                 rect
+	speechLabel, speechCombo, speechApplyButton, speechHint  rect
 	applyButton, backupButton, restoreButton, openHelpButton rect
 }
 
 type appState struct {
 	userDir, sharedDir, helpDir, backupRoot string
+	statePath                               string
+	installRoot                             string
+	experimental                            bool
 
 	mainHWND, schemaHWND, pageHWND, reverseHWND, layoutHWND syscall.Handle
+	fontHWND, familyHWND                                    syscall.Handle
+	speechHWND, speechApplyHWND, speechHintHWND             syscall.Handle
 	schemaOptions                                           []settings.SchemaOption
 	layout                                                  settingsUILayout
 
@@ -133,26 +148,95 @@ type applyRequest struct {
 	layout      string
 }
 
+type trialApplyRequest struct {
+	mode       string
+	pageSize   int
+	layout     string
+	font       string
+	fontFamily string
+	annotation string
+}
+
 var applySettings = settings.Apply
 var notifyRuntimeChange = runtimechange.Notify
 var invokeRimeBuild = settings.InvokeRimeBuild
+
+func trialAnnotationOptions() []settings.ComboOption {
+	return []settings.ComboOption{
+		{Label: "键位序列", Value: toolbarstate.AnnotationKeySequence},
+		{Label: "音元拼音", Value: toolbarstate.AnnotationYinyuan},
+		{Label: "标准拼音", Value: toolbarstate.AnnotationStandardPinyin},
+		{Label: "隐藏", Value: toolbarstate.AnnotationHidden},
+	}
+}
+
+func trialFontPresetOptions() []settings.ComboOption {
+	return []settings.ComboOption{
+		{Label: "小（10 磅）", Value: toolbarstate.CandidateFontSmall},
+		{Label: "中（12 磅）", Value: toolbarstate.CandidateFontMedium},
+		{Label: "大（16 磅）", Value: toolbarstate.CandidateFontLarge},
+	}
+}
+
+func trialFontFamilyOptions() []settings.ComboOption {
+	return []settings.ComboOption{
+		{Label: "微软雅黑 UI（当前）", Value: toolbarstate.CandidateFontMicrosoftYaHeiUI},
+		{Label: "系统界面字体", Value: toolbarstate.CandidateFontSystemUI},
+		{Label: "音元自制字体（音元拼音时强制）", Value: toolbarstate.CandidateFontYinyuan},
+	}
+}
+
+func executeTrialApply(path string, request trialApplyRequest) error {
+	_, err := toolbarstate.Update(path, "yimecore-settings-tool", func(state *toolbarstate.State) bool {
+		toolbarstate.NormalizeExperiment(state)
+		changed := state.ExperimentMode != request.mode ||
+			state.CandidatePageSize != request.pageSize || state.CandidateLayout != request.layout ||
+			state.CandidateFontPreset != request.font ||
+			state.CandidateFontFamily != request.fontFamily ||
+			state.CandidateAnnotation != request.annotation
+		state.ExperimentMode = request.mode
+		state.CandidatePageSize = request.pageSize
+		state.CandidateLayout = request.layout
+		state.CandidateFontPreset = request.font
+		state.CandidateFontFamily = request.fontFamily
+		state.CandidateAnnotation = request.annotation
+		return changed
+	})
+	return err
+}
 
 func main() {
 	userDir := flag.String("UserDir", "", "Yime user data directory")
 	sharedDir := flag.String("SharedDir", "", "Yime shared runtime data directory")
 	helpDir := flag.String("HelpDir", "", "Yime help directory")
+	statePath := flag.String("StatePath", "", "YimeCore trial settings path")
+	experimental := flag.Bool("Experimental", false, "use isolated YimeCore trial settings")
 	_ = flag.String("LogDir", "", "PIME log directory")
 	flag.Parse()
 	if strings.TrimSpace(*userDir) == "" || strings.TrimSpace(*sharedDir) == "" {
 		showError("缺少 UserDir 或 SharedDir 参数。")
 		os.Exit(1)
 	}
+	if *experimental && strings.TrimSpace(*statePath) == "" {
+		showError("试验设置工具缺少 StatePath 参数。")
+		os.Exit(1)
+	}
+	schemaOptions := settings.AvailableSchemaOptions(strings.TrimSpace(*sharedDir))
+	if *experimental {
+		schemaOptions = []settings.SchemaOption{
+			{ID: toolbarstate.ExperimentModeVariable, Label: "变长模式", Enabled: true},
+			{ID: toolbarstate.ExperimentModeFull, Label: "等长模式", Enabled: true},
+			{ID: toolbarstate.ExperimentModeShorthand, Label: "省键模式", Enabled: true},
+		}
+	}
 	state := &appState{
 		userDir:       strings.TrimSpace(*userDir),
 		sharedDir:     strings.TrimSpace(*sharedDir),
 		helpDir:       strings.TrimSpace(*helpDir),
-		backupRoot:    defaultBackupRoot(),
-		schemaOptions: settings.AvailableSchemaOptions(strings.TrimSpace(*sharedDir)),
+		backupRoot:    defaultBackupRoot(*experimental),
+		statePath:     strings.TrimSpace(*statePath),
+		experimental:  *experimental,
+		schemaOptions: schemaOptions,
 	}
 	if err := runApp(state); err != nil {
 		showError(err.Error())
@@ -164,15 +248,26 @@ func runApp(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	if win32ui.ActivateExistingWindow("YimeSettingsTool") {
+	windowClass := "YimeSettingsTool"
+	windowTitle := "Yime 设置"
+	if state.experimental {
+		executable, err := os.Executable()
+		if err != nil {
+			return err
+		}
+		state.installRoot = filepath.Dir(filepath.Dir(executable))
+		windowClass = "YimeCoreTrialSettingsTool"
+		windowTitle = "Yime 试验版设置"
+	}
+	if win32ui.ActivateExistingWindow(windowClass) {
 		return nil
 	}
-	state.layout = buildSettingsUILayout(state.helpDir != "")
+	state.layout = buildSettingsUILayout(state.helpDir != "", state.experimental)
 
 	icc := initCommonControlsEx{Size: uint32(unsafe.Sizeof(initCommonControlsEx{})), ICC: 0x000000FF}
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
 	instance, _, _ := procGetModuleHandleW.Call(0)
-	className, _ := syscall.UTF16PtrFromString("YimeSettingsTool")
+	className, _ := syscall.UTF16PtrFromString(windowClass)
 	cursor, _, _ := procLoadCursorW.Call(0, uintptr(32512))
 	icon := win32ui.LoadYimeIcon(instance)
 	wndProcCallback = syscall.NewCallback(func(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
@@ -192,7 +287,7 @@ func runApp(state *appState) error {
 	if ret, _, _ := procRegisterClassExW.Call(uintptr(unsafe.Pointer(&wndClass))); ret == 0 {
 		return fmt.Errorf("RegisterClassEx failed")
 	}
-	title, _ := syscall.UTF16PtrFromString("Yime 设置")
+	title, _ := syscall.UTF16PtrFromString(windowTitle)
 	winW, winH := windowSizeForClient(state.layout.clientW, state.layout.clientH)
 	screenWidth, _, _ := procGetSystemMetrics.Call(0)
 	screenHeight, _, _ := procGetSystemMetrics.Call(1)
@@ -237,21 +332,48 @@ func (state *appState) createControls() {
 	}
 	createStatic(state.mainHWND, "候选项数", l.pageLabel, 0)
 	state.pageHWND = createCombo(state.mainHWND, l.pageCombo, idPageSizeCombo)
-	for size := 5; size <= 9; size++ {
-		text, _ := syscall.UTF16PtrFromString(fmt.Sprintf("%d", size))
+	pageOptions := []string{"5", "6", "7", "8", "9"}
+	for _, option := range pageOptions {
+		text, _ := syscall.UTF16PtrFromString(option)
 		procSendMessageW.Call(uintptr(state.pageHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 	}
 	createStatic(state.mainHWND, "显示编码", l.reverseLabel, 0)
 	state.reverseHWND = createCombo(state.mainHWND, l.reverseCombo, idReverseCombo)
-	for _, option := range settings.ReverseLookupOptions() {
+	reverseOptions := settings.ReverseLookupOptions()
+	if state.experimental {
+		reverseOptions = trialAnnotationOptions()
+	}
+	for _, option := range reverseOptions {
 		text, _ := syscall.UTF16PtrFromString(option.Label)
 		procSendMessageW.Call(uintptr(state.reverseHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 	}
 	createStatic(state.mainHWND, "候选排列", l.layoutLabel, 0)
 	state.layoutHWND = createCombo(state.mainHWND, l.layoutCombo, idLayoutCombo)
-	for _, option := range settings.CandidateLayoutOptions() {
+	layoutOptions := settings.CandidateLayoutOptions()
+	if state.experimental {
+		layoutOptions = []settings.ComboOption{
+			{Label: "竖排", Value: toolbarstate.CandidateLayoutVertical},
+			{Label: "横排", Value: toolbarstate.CandidateLayoutHorizontal},
+		}
+	}
+	for _, option := range layoutOptions {
 		text, _ := syscall.UTF16PtrFromString(option.Label)
 		procSendMessageW.Call(uintptr(state.layoutHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
+	}
+	if state.experimental {
+		createStatic(state.mainHWND, "候选字号", l.fontLabel, 0)
+		state.fontHWND = createCombo(state.mainHWND, l.fontCombo, idPageSizeCombo+10)
+		for _, option := range trialFontPresetOptions() {
+			text, _ := syscall.UTF16PtrFromString(option.Label)
+			procSendMessageW.Call(uintptr(state.fontHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
+		}
+		createStatic(state.mainHWND, "候选字体", l.familyLabel, 0)
+		state.familyHWND = createCombo(state.mainHWND, l.familyCombo, idLayoutCombo+10)
+		for _, option := range trialFontFamilyOptions() {
+			text, _ := syscall.UTF16PtrFromString(option.Label)
+			procSendMessageW.Call(uintptr(state.familyHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
+		}
+		state.createSpeechControls()
 	}
 	// The selected controls already show the current configuration; do not
 	// duplicate it in a developer-oriented "current configuration" summary.
@@ -263,7 +385,7 @@ func (state *appState) createControls() {
 	}
 }
 
-func buildSettingsUILayout(withHelp bool) settingsUILayout {
+func buildSettingsUILayout(withHelp, experimental bool) settingsUILayout {
 	const (
 		margin     = int32(16)
 		labelW     = int32(96)
@@ -285,22 +407,28 @@ func buildSettingsUILayout(withHelp bool) settingsUILayout {
 	l.pageLabel, l.pageCombo = row(1)
 	l.reverseLabel, l.reverseCombo = row(2)
 	l.layoutLabel, l.layoutCombo = row(3)
-
-	buttonY := margin + 4*(rowH+rowGap) + 8
-	buttons := []*rect{&l.applyButton, &l.backupButton, &l.restoreButton}
-	if withHelp {
-		buttons = append(buttons, &l.openHelpButton)
+	rowCount := int32(4)
+	if experimental {
+		l.fontLabel, l.fontCombo = row(4)
+		l.familyLabel, l.familyCombo = row(5)
+		l.speechLabel, l.speechCombo = row(6)
+		l.speechApplyButton = rect{l.speechCombo.Right - 104, l.speechCombo.Top, l.speechCombo.Right, l.speechCombo.Top + rowH}
+		l.speechCombo.Right = l.speechApplyButton.Left - controlGap
+		l.speechHint = rect{margin, l.speechLabel.Bottom + 8, l.layoutCombo.Right, l.speechLabel.Bottom + 36}
+		rowCount = 8
 	}
+
+	buttonY := margin + rowCount*(rowH+rowGap) + 8
 	contentRight := l.layoutCombo.Right
-	buttonW := (contentRight - margin - buttonGap*int32(len(buttons)-1)) / int32(len(buttons))
-	x := margin
-	for index, button := range buttons {
-		right := x + buttonW
-		if index == len(buttons)-1 {
-			right = contentRight
-		}
-		*button = rect{x, buttonY, right, buttonY + buttonH}
-		x = right + buttonGap
+	const buttonW = int32(72)
+	l.applyButton = rect{margin, buttonY, margin + buttonW, buttonY + buttonH}
+	pairW := buttonW*2 + buttonGap
+	pairLeft := margin + (contentRight-margin-pairW)/2
+	l.backupButton = rect{pairLeft, buttonY, pairLeft + buttonW, buttonY + buttonH}
+	l.restoreButton = rect{pairLeft + buttonW + buttonGap, buttonY,
+		pairLeft + buttonW*2 + buttonGap, buttonY + buttonH}
+	if withHelp {
+		l.openHelpButton = rect{contentRight - buttonW, buttonY, contentRight, buttonY + buttonH}
 	}
 	l.clientW = contentRight + margin
 	l.clientH = l.applyButton.Bottom + margin
@@ -308,6 +436,24 @@ func buildSettingsUILayout(withHelp bool) settingsUILayout {
 }
 
 func (state *appState) refreshView() {
+	if state.experimental {
+		snapshot, err := toolbarstate.Read(state.statePath)
+		if err != nil {
+			snapshot = toolbarstate.State{Version: toolbarstate.FormatVersion}
+			toolbarstate.NormalizeExperiment(&snapshot)
+		}
+		setComboBySchema(state.schemaHWND, state.schemaOptions, snapshot.ExperimentMode)
+		setComboByText(state.pageHWND, fmt.Sprintf("%d", snapshot.CandidatePageSize))
+		setComboByValue(state.layoutHWND, []settings.ComboOption{
+			{Label: "竖排", Value: toolbarstate.CandidateLayoutVertical},
+			{Label: "横排", Value: toolbarstate.CandidateLayoutHorizontal},
+		}, snapshot.CandidateLayout)
+		setComboByValue(state.fontHWND, trialFontPresetOptions(), snapshot.CandidateFontPreset)
+		setComboByValue(state.familyHWND, trialFontFamilyOptions(), snapshot.CandidateFontFamily)
+		setComboByValue(state.reverseHWND, trialAnnotationOptions(), snapshot.CandidateAnnotation)
+		state.refreshSpeechView()
+		return
+	}
 	snapshot := settings.LoadSnapshot(state.userDir, state.sharedDir)
 	setComboBySchema(state.schemaHWND, state.schemaOptions, snapshot.SchemaID)
 	setComboByText(state.pageHWND, fmt.Sprintf("%d", settings.NormalizePageSizeValue(snapshot.PageSize)))
@@ -331,6 +477,9 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 		return 0
 	case wmAppRestoreDone:
 		state.finishRestore()
+		return 0
+	case wmAppSpeechDone:
+		state.finishSpeechApply()
 		return 0
 	case win32ui.WmDeferredPresent:
 		win32ui.PresentMainWindow(state.mainHWND)
@@ -366,6 +515,8 @@ func (state *appState) handleCommand(wParam uintptr) {
 	switch int(wParam & 0xffff) {
 	case idBtnApply:
 		state.startApply()
+	case idBtnSpeechApply:
+		state.startSpeechApply()
 	case idBtnBackup:
 		state.startBackup()
 	case idBtnRestore:
@@ -382,6 +533,28 @@ func (state *appState) startApply() {
 		return
 	}
 
+	if state.experimental {
+		request := trialApplyRequest{
+			mode: selectedSchemaID(state.schemaHWND, state.schemaOptions),
+			pageSize: settings.NormalizePageSizeValue(
+				atoiDefault(selectedComboText(state.pageHWND), 5)),
+			layout: selectedComboValue(state.layoutHWND, []settings.ComboOption{
+				{Label: "竖排", Value: toolbarstate.CandidateLayoutVertical},
+				{Label: "横排", Value: toolbarstate.CandidateLayoutHorizontal},
+			}),
+			font:       selectedComboValue(state.fontHWND, trialFontPresetOptions()),
+			fontFamily: selectedComboValue(state.familyHWND, trialFontFamilyOptions()),
+			annotation: selectedComboValue(state.reverseHWND, trialAnnotationOptions()),
+		}
+		go func() {
+			err := executeTrialApply(state.statePath, request)
+			state.applyMu.Lock()
+			state.applyErr = err
+			state.applyMu.Unlock()
+			procPostMessageW.Call(uintptr(state.mainHWND), wmAppApplyDone, 0, 0)
+		}()
+		return
+	}
 	request := applyRequest{
 		schemaID:    selectedSchemaID(state.schemaHWND, state.schemaOptions),
 		pageSize:    settings.NormalizePageSizeValue(atoiDefault(selectedComboText(state.pageHWND), 5)),
@@ -446,10 +619,11 @@ func (state *appState) finishBackup() {
 		showError("备份失败：" + err.Error())
 		return
 	}
-	showInfo(fmt.Sprintf(
-		"可移植用户数据备份已经创建。\n\n备份包括设置、用户词库、屏蔽词表和 Rime 同步数据。\n如需保留自动学习词频，请先在语言栏执行“设置 → 数据维护 → 同步数据…”。\n\n运行中被锁定的 *.userdb 数据库不会直接复制。\n\n位置：%s",
-		path,
-	))
+	if state.experimental {
+		showInfo(fmt.Sprintf("元试验版用户数据备份已经创建。\n\n备份与音试产版数据完全分离。\n\n位置：%s", path))
+		return
+	}
+	showInfo(fmt.Sprintf("可移植用户数据备份已经创建。\n\n备份包括设置、用户词库、屏蔽词表和 Rime 同步数据。\n如需保留自动学习词频，请先在语言栏执行“设置 → 数据维护 → 同步数据…”。\n\n运行中被锁定的 *.userdb 数据库不会直接复制。\n\n位置：%s", path))
 }
 
 func (state *appState) startRestore() {
@@ -462,17 +636,24 @@ func (state *appState) startRestore() {
 		showError(err.Error())
 		return
 	}
-	if !showConfirm(fmt.Sprintf(
-		"将恢复最近一次完整备份：\n%s\n\n恢复前会自动备份当前用户数据，随后重新构建 Rime。是否继续？",
-		snapshot.Path,
-	)) {
+	confirmation := fmt.Sprintf("将恢复最近一次完整备份：\n%s\n\n恢复前会自动备份当前用户数据，随后重新构建 Rime。是否继续？", snapshot.Path)
+	if state.experimental {
+		confirmation = fmt.Sprintf("将恢复最近一次元试验版备份：\n%s\n\n恢复前会自动备份当前 Trial 数据。是否继续？", snapshot.Path)
+	}
+	if !showConfirm(confirmation) {
 		return
 	}
 	if !state.beginOperation("Yime 设置（正在恢复……）") {
 		return
 	}
 	go func() {
-		safety, restoreErr := executeRestore(state.userDir, state.sharedDir, state.backupRoot, snapshot, time.Now())
+		var safety userbackup.Snapshot
+		var restoreErr error
+		if state.experimental {
+			safety, restoreErr = executeTrialRestore(state.userDir, state.backupRoot, snapshot, time.Now())
+		} else {
+			safety, restoreErr = executeRestore(state.userDir, state.sharedDir, state.backupRoot, snapshot, time.Now())
+		}
 		state.applyMu.Lock()
 		state.applyErr = restoreErr
 		if safety.Path != "" {
@@ -481,6 +662,20 @@ func (state *appState) startRestore() {
 		state.applyMu.Unlock()
 		procPostMessageW.Call(uintptr(state.mainHWND), wmAppRestoreDone, 0, 0)
 	}()
+}
+
+func executeTrialRestore(userDir, backupRoot string, snapshot userbackup.Snapshot, now time.Time) (userbackup.Snapshot, error) {
+	if err := userbackup.Validate(snapshot); err != nil {
+		return userbackup.Snapshot{}, err
+	}
+	safety, err := userbackup.Create(userDir, backupRoot, "恢复前", now)
+	if err != nil {
+		return userbackup.Snapshot{}, fmt.Errorf("创建恢复前安全备份失败：%w", err)
+	}
+	if err := userbackup.Restore(snapshot, userDir); err != nil {
+		return safety, err
+	}
+	return safety, nil
 }
 
 func executeRestore(userDir, sharedDir, backupRoot string, snapshot userbackup.Snapshot, now time.Time) (userbackup.Snapshot, error) {
@@ -509,6 +704,9 @@ func executeRestore(userDir, sharedDir, backupRoot string, snapshot userbackup.S
 func (state *appState) finishRestore() {
 	err, info := state.finishOperation()
 	if err != nil {
+		if state.experimental {
+			state.refreshSpeechView()
+		}
 		message := "恢复未能完整完成：" + err.Error()
 		if info != "" {
 			message += "\n\n" + info
@@ -517,6 +715,10 @@ func (state *appState) finishRestore() {
 		return
 	}
 	state.refreshView()
+	if state.experimental {
+		showInfo("本版用户数据已经恢复；语流设置是否可用请查看语流行提示。\n\n" + info)
+		return
+	}
 	showInfo("可移植用户数据已经恢复，Rime 已重新构建并通知 YIME 重新加载。\n\n" + info)
 }
 
@@ -541,7 +743,11 @@ func (state *appState) finishOperation() (error, string) {
 	state.applyErr = nil
 	state.operationInfo = ""
 	state.applyRunning = false
-	setWindowText(state.mainHWND, "Yime 设置")
+	windowTitle := "Yime 设置"
+	if state.experimental {
+		windowTitle = "Yime 试验版设置"
+	}
+	setWindowText(state.mainHWND, windowTitle)
 	return err, info
 }
 
@@ -602,26 +808,39 @@ func setComboByValue(hwnd syscall.Handle, options []settings.ComboOption, value 
 }
 
 func setComboByText(hwnd syscall.Handle, text string) {
-	length, _, _ := procSendMessageW.Call(uintptr(hwnd), 0x0146, 0, 0)
-	for i := 0; i < int(length); i++ {
-		buf := make([]uint16, 256)
-		procSendMessageW.Call(uintptr(hwnd), 0x0149, uintptr(i), uintptr(unsafe.Pointer(&buf[0])))
-		if syscall.UTF16ToString(buf) == text {
-			procSendMessageW.Call(uintptr(hwnd), 0x014E, uintptr(i), 0)
+	count, _, _ := procSendMessageW.Call(uintptr(hwnd), cbGetCount, 0, 0)
+	for i := 0; i < int(int32(count)); i++ {
+		item, ok := comboItemText(hwnd, uintptr(i))
+		if ok && item == text {
+			procSendMessageW.Call(uintptr(hwnd), cbSetCurSel, uintptr(i), 0)
 			return
 		}
 	}
-	procSendMessageW.Call(uintptr(hwnd), 0x014E, 0, 0)
+	procSendMessageW.Call(uintptr(hwnd), cbSetCurSel, 0, 0)
 }
 
 func selectedComboText(hwnd syscall.Handle) string {
-	index, _, _ := procSendMessageW.Call(uintptr(hwnd), 0x0147, 0, 0)
+	index, _, _ := procSendMessageW.Call(uintptr(hwnd), cbGetCurSel, 0, 0)
 	if int32(index) < 0 {
 		return ""
 	}
-	buf := make([]uint16, 256)
-	procSendMessageW.Call(uintptr(hwnd), 0x0148, index, uintptr(unsafe.Pointer(&buf[0])))
-	return syscall.UTF16ToString(buf)
+	text, _ := comboItemText(hwnd, index)
+	return text
+}
+
+func comboItemText(hwnd syscall.Handle, index uintptr) (string, bool) {
+	// These string ComboBoxes are read on their owning UI thread. The length
+	// message does not write text; get the item separately with room for NUL.
+	length, _, _ := procSendMessageW.Call(uintptr(hwnd), cbGetLBTextLen, index, 0)
+	if int32(length) < 0 || length >= uintptr(^uint(0)>>1) {
+		return "", false
+	}
+	buf := make([]uint16, int(length)+1)
+	copied, _, _ := procSendMessageW.Call(uintptr(hwnd), cbGetLBText, index, uintptr(unsafe.Pointer(&buf[0])))
+	if int32(copied) < 0 || copied > length {
+		return "", false
+	}
+	return syscall.UTF16ToString(buf[:int(copied)]), true
 }
 
 func createStatic(parent syscall.Handle, text string, box rect, id int) syscall.Handle {

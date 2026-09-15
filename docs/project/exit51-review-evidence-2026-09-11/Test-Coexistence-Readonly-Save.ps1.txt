@@ -1,0 +1,21 @@
+REVIEW ONLY - NOT AN EXECUTION ENTRY. Paths are placeholders.
+Original script body follows unchanged except path redaction.
+
+[CmdletBinding()]
+param()
+$ErrorActionPreference='Stop'
+$tokens=$null;$parseErrors=$null
+$ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD '.tmp\Collect-Coexistence-Readonly.ps1'),[ref]$tokens,[ref]$parseErrors)
+if($parseErrors.Count){throw 'Collector syntax errors.'}
+$function=$ast.Find({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Save'},$true)
+. ([scriptblock]::Create($function.Extent.Text))
+$output=Join-Path $PWD ('.tmp\readonly-save-test-'+[guid]::NewGuid().ToString('N'))
+[void][IO.Directory]::CreateDirectory($output)
+Save 'empty.json' @()
+Save 'null.json' $null
+Save 'one.json' @([pscustomobject]@{pid=123})
+if((Get-Content -LiteralPath (Join-Path $output 'empty.json') -Raw).Trim() -cne '[]'){throw 'Empty array was not preserved.'}
+if((Get-Content -LiteralPath (Join-Path $output 'null.json') -Raw).Trim() -cne 'null'){throw 'Null was not preserved.'}
+$one=Get-Content -LiteralPath (Join-Path $output 'one.json') -Raw
+if(-not $one.Trim().StartsWith('[') -or ($one|ConvertFrom-Json)[0].pid -ne 123){throw 'Singleton array was not preserved.'}
+Write-Output 'PASS: collector Save preserves empty, null and singleton values; collection was not executed.'

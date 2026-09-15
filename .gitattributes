@@ -28,3 +28,17 @@ libIME2/** -text -whitespace
 PIMELauncher/vendor/** -text -whitespace
 third_party/corrosion/** -text -whitespace
 third_party/go-winres/** -text -whitespace
+
+# L6 references these historical raw JSON files and their reviewed index by
+# SHA-256. Preserve original bytes when moving between Windows checkouts.
+docs/testing/l6/local12-evidence-20260908/*.json -text !eol whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/testing/l6/2026-09-08-local12-readiness-v2-*.json -text !eol whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Physical benchmark summaries are retained evidence whose SHA-256 values bind
+# the original Windows bytes. Preserve both JSON and concise CPU text exports;
+# core.autocrlf would otherwise normalize the text files even without a matching
+# extension rule.
+docs/testing/yimecore/native-core/2026-09-09-i7-7820x/*.json -text !eol whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/testing/yimecore/native-core/2026-09-09-i7-7820x/cpu-profile-share-*.txt -text !eol whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+# Original test reports/logs are hashed; preserve bytes across branch checkouts.
+docs/testing/simple-maintenance/**/raw/** -text !eol -whitespace

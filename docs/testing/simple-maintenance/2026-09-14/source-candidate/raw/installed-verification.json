@@ -1,0 +1,19 @@
+{
+    "passed":  true,
+    "products":  [
+                     {
+                         "product":  "yimecore",
+                         "root":  "C:\\Program Files\\YimeCore",
+                         "files_verified":  65,
+                         "package_manifest_sha256":  "61396ab2d4d968842a778d8cd3f3b6692c04bf1a33f74e5c3c4e21b1e4938f2c"
+                     },
+                     {
+                         "product":  "rime-pime",
+                         "root":  "C:\\Program Files\\Yime Rime-PIME",
+                         "files_verified":  160,
+                         "package_manifest_sha256":  "b6e54a9bd8a5bcfafc055c3bb1705276f942bb4ec8b938664a3b2f3cfdf01f73"
+                     }
+                 ],
+    "live_input_confirmation":  "pending",
+    "reboot_confirmation":  "pending"
+}

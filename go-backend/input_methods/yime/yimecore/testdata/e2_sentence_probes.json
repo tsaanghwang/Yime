@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "source": "curated from current generated Yime runtime dictionaries and existing real-Rime sentence tests; no prototype repository",
+  "modes": {
+    "full": [
+      {"text": "幅幅", "code": "bjjjbjjj", "generated": true},
+      {"text": "幅啊", "code": "bjjj'fff", "generated": true},
+      {"text": "中国你好", "code": "7ur;goernlllhsso", "generated": true},
+      {"text": "桌子电脑", "code": "7urr6KKK]jdznsso", "generated": true},
+      {"text": "语言输入法", "code": "`...ylda9uuu0uio[sss", "generated": true}
+    ],
+    "variable": [
+      {"text": "幅幅", "code": "bjbj", "generated": true},
+      {"text": "幅啊", "code": "bj'f", "generated": true},
+      {"text": "中国你好", "code": "7ur;goernlhso", "generated": true},
+      {"text": "桌子电脑", "code": "7ur6K]jdznso", "generated": true},
+      {"text": "语言输入法", "code": "`.ylda9u0uio[s", "generated": true}
+    ],
+    "shorthand": [
+      {"text": "幅幅", "code": "bjbj", "generated": true},
+      {"text": "幅啊", "code": "bj'f", "generated": true},
+      {"text": "中国你好", "code": "7ur;goernlhso", "generated": true},
+      {"text": "桌子电脑", "code": "7ur6K]jdznso", "generated": true},
+      {"text": "语言输入法", "code": "`.ylda9u0uo[s", "generated": true}
+    ]
+  }
+}

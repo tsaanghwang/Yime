@@ -1,0 +1,12 @@
+{
+  "schema_version": "yimecore-local-build-result-v1",
+  "passed": true,
+  "registration_and_default_preserved": true,
+  "output_root": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\fresh-20260914-r2",
+  "requested_installable": true,
+  "installable": true,
+  "local_product_ready": false,
+  "public_release_ready": false,
+  "completed_scope": "Source-built x64 runtime plus x64/x86 TSF candidate and isolated tests, not installed host acceptance",
+  "next_step": "Package with installer/simple/Build-Package.ps1; verify install, input, uninstall and reinstall"
+}

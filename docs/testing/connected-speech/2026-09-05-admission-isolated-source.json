@@ -1,0 +1,329 @@
+{
+  "schema_version": "yimecore-speech-admission-report-v1",
+  "completed_at": "2026-09-05T17:14:19+08:00",
+  "admission_and_isolated_source_passed": true,
+  "scope": "MYCOMPUTER native x64, 24 reviewed Stage5C records only",
+  "module": "third-tone-stage5c",
+  "canonical_records": 24,
+  "required_syllables": 50,
+  "forward_input_files": 56,
+  "mode_alias_rows": 72,
+  "source_files_hashed": 534,
+  "broker_dependencies": 126,
+  "tests": [
+    {
+      "package": "./input_methods/yime/connectedspeech",
+      "selector": "^TestStage5CAdmission",
+      "passed_count": 45,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./input_methods/yime/layoutdesigner",
+      "selector": "^Test(ProjectIDRecord|ReencodeUsesYinyuanIDsAndSemanticShorthand$|ReencodePreservesVirtualShouyinAsSyllableBoundary$|DescribeIDDistinguishesRealAndVirtualShouyin$|ValidateRejectsReservedCandidateKey$)",
+      "passed_count": 6,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./input_methods/yime/yimecore",
+      "selector": "^Test",
+      "passed_count": 181,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./input_methods/yime/yimebroker",
+      "selector": "^Test(BundleGenerationManager|ConnectedSpeechReconnectBrokerBundleDurableLifecycle|ServeLines|ConnectionLimiter)",
+      "passed_count": 33,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./input_methods/yime/speechruntime",
+      "selector": "^TestSpeech(Manifest|Forward)",
+      "passed_count": 123,
+      "failed_count": 0,
+      "skipped_count": 1,
+      "skipped_tests": [
+        "TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink"
+      ],
+      "passed": true
+    },
+    {
+      "package": "./cmd/yimebroker",
+      "selector": "^Test(SpeechExperiment|EnabledUserModelHonorsLearningConfigWithoutDeletingModel$)",
+      "passed_count": 3,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./cmd/yimecore-speech-admission",
+      "selector": "^TestSpeechExercise",
+      "passed_count": 11,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    }
+  ],
+  "python_tests": {
+    "failed": 0,
+    "passed": 11
+  },
+  "tools": [
+    {
+      "path": "bin/YimeBroker-speech.exe",
+      "bytes": 5073920,
+      "sha256": "1091783c55f5f1f4ba190119a6099eb5b36d63487be79ced8a14221af163accd"
+    },
+    {
+      "path": "bin/YimeSpeechAdmission.exe",
+      "bytes": 4926976,
+      "sha256": "4c37fb9baaebf79efb5cd509d6ad270c148f342869f37df26530dfb85645e1f2"
+    }
+  ],
+  "process_stages": [
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": false,
+      "exit_code": 0,
+      "learning_generation": 0,
+      "modes_passed": 3,
+      "name": "disabled-before",
+      "passed": true,
+      "pid": 9260
+    },
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": true,
+      "exit_code": 0,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "enabled-train",
+      "passed": true,
+      "pid": 12680
+    },
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": true,
+      "exit_code": 0,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "enabled-restart",
+      "passed": true,
+      "pid": 36352
+    },
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": false,
+      "exit_code": 0,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "disabled-after",
+      "passed": true,
+      "pid": 27556
+    },
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": true,
+      "exit_code": 0,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "reenabled",
+      "passed": true,
+      "pid": 36188
+    },
+    {
+      "exit_code": 42,
+      "name": "invalid-generation-rejected",
+      "passed": true,
+      "pid": 21404,
+      "state_unchanged": true
+    },
+    {
+      "canonical_checks": 3,
+      "exit_code": 0,
+      "learned_alias_checks": 3,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "valid-generation-recovery",
+      "passed": true,
+      "pid": 36784
+    }
+  ],
+  "guards": {
+    "environment_restored": true,
+    "legacy_static_unchanged": true,
+    "locked_inputs_unchanged": true,
+    "installed_baseline_unchanged": true,
+    "source_set_unchanged": true
+  },
+  "regressions": [],
+  "corrected_preexisting_bottleneck": {
+    "route": "alias",
+    "mode": "full",
+    "before_ms_max": 78.04,
+    "prefix_length": 8,
+    "deadline_ms": 50,
+    "after_over_50ms": 0,
+    "measured_samples": 8480,
+    "after_ms_max": 4.1711,
+    "before_ms_min": 76.51,
+    "case_id": "T3-5B-003",
+    "after_ms_min": 2.09,
+    "change": "Equivalent bounded worst-root TopK heap only for prefix limit greater than 64; ranking comparator unchanged",
+    "installed_fix_live": false
+  },
+  "excluded": {
+    "installed_candidate_changed": false,
+    "l5_final_confirmation_inferred": false,
+    "default_ime_changed": false,
+    "windows_reboot_tested": false,
+    "registered_or_live_host_tested": false,
+    "user_text_recorded": false,
+    "legacy_payload_executed": false,
+    "production_mutated": false,
+    "rime_executed": false,
+    "l6_sealed": false,
+    "arm64_native_tested": false,
+    "user_learning_read": false
+  },
+  "evidence": [
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/summary.json",
+      "sha256": "c5915fc23239b77a468582924d84c5aa3b7dce7b599dbba4ec32302f83f84946"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/forward-source.json",
+      "sha256": "96293d0d6f6dce025428dfe14034e08a5781cbb5a649404b3aed90797d4ffdbd"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/admission.json",
+      "sha256": "c328e121f8b64bf0f858a389c6bfd26d5f0678866abcb158f4570765bf971fd3"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/admitted-records.json",
+      "sha256": "66a2ab07caaabead77ba1a84c26e747eff6b7959e641286e57c58e4e612b8733"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/prepare-outcome.json",
+      "sha256": "62f8d75badd04c50718b8e690c979455627c46e3b26fb493632b756de38f7abc"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/process-outcome.json",
+      "sha256": "76291182781c84f77485943714c5073f55af53420fa8a431f5dcad88ec7dd436"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/installed-before.json",
+      "sha256": "8d2da619713b4128e97afbb1e6f06ee425e9bde83d0132efd89e2b4af9535eed"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/installed-after.json",
+      "sha256": "ddbbc7eabb1db3b053399df4277ff250ae2229b4fd8b5af16be0069a8b9560ea"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/locked-inputs-before.json",
+      "sha256": "d49be19519255883708f4db4c820d1d7afb510906fa289ea3bf53cf3b57ca124"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/locked-inputs-after.json",
+      "sha256": "d49be19519255883708f4db4c820d1d7afb510906fa289ea3bf53cf3b57ca124"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/source-hashes-before.json",
+      "sha256": "54ab71ae78a0ba7bcbe2686657b9b798ab329b14a4f3c2f34b99909c0858d0dd"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/source-hashes-after.json",
+      "sha256": "54ab71ae78a0ba7bcbe2686657b9b798ab329b14a4f3c2f34b99909c0858d0dd"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/legacy-static-before.json",
+      "sha256": "b465dfa48cea445afeded9047346a3e8f37f7a5ac1a54993acee032ebe3ebde4"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/legacy-static-after.json",
+      "sha256": "b465dfa48cea445afeded9047346a3e8f37f7a5ac1a54993acee032ebe3ebde4"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/logs/python-contracts.log",
+      "sha256": "849cb7556b562dea8e0d433dab2e1423332e9b12e033ac61f6d72f925b4ff75b"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/logs/admission.jsonl",
+      "sha256": "f7715b8c020f0e515d824255c73196cd150e2d0f03b7ddddeca37f70045c2ee3"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/logs/projection.jsonl",
+      "sha256": "04be7c349ee46e8494a9792480574a4d2a7382b09a1a0b682c62bf4a97dcc047"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/logs/core.jsonl",
+      "sha256": "fca82eb658c0265feca0071c53de0f7436510f5f071c079fdbb4f16e21f2228e"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/logs/broker.jsonl",
+      "sha256": "967bea1c2661cada6d53728698e734bb4c671f71a80244e6ca32438dade00de5"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/logs/manifest.jsonl",
+      "sha256": "0be19412ae86bb4d28beaa732b9c7413504ce2397e88456ae5a81e978211128f"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/logs/broker-flags.jsonl",
+      "sha256": "315b56503d51e9b4a707c1b2cbb9b69e101ce106e0ffb046020fc8c263932ce2"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-171349-4a0ea896cbe745d8a42de42ac6cba8c4/logs/exercise-contract.jsonl",
+      "sha256": "75bb175424ddd1e232e5ceabc79eca19abeb6e17da6d14d5c67eece576d324d1"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-165731-5139b9187a2f4bd6aa7502de04a419a9/summary.json",
+      "sha256": "21f7868e99510a2cf4fbe6615e80d0fd255af60d24c9a3f8b6a286f794b3bb6f"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-165731-5139b9187a2f4bd6aa7502de04a419a9/process-outcome.json",
+      "sha256": "69018bdcbb32918c2e98b1bc3adba123cf1488c4c4fedc4cc9a7812183e752d3"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-165951-ca1b3add29cf4da8a6ed8cde66f19d50/summary.json",
+      "sha256": "187aad48ca1f0492e69673a3fa1dd99f9ab97e7f01aea217d991558cbaf7b2a2"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-admission-20260905-165951-ca1b3add29cf4da8a6ed8cde66f19d50/process-outcome.json",
+      "sha256": "2dbca68dd724115ff4ab37c130e3ee6675bb1290a7dc8bb30653bb793a5860d0"
+    },
+    {
+      "path": ".tmp/speech-latency-unit-20260905-8446e1d9/latency-outcome.json",
+      "sha256": "2e007d757c2aa2b77b8d995a2196caeedd217f0f36f04a5718e69b155f0871a6"
+    },
+    {
+      "path": ".tmp/speech-latency-after-20260905-85fc3602/latency-outcome.json",
+      "sha256": "0613dd94412d689e3ddf1e292883f8385a06b95236d2721f545e03926e9fd442"
+    },
+    {
+      "path": ".tmp/speech-latency-profile-20260905-f51d479c/profile-apply.txt",
+      "sha256": "63d759750abcc2e8ac04565089dd86cec5fa55e779b296340e368787866537f6"
+    },
+    {
+      "path": ".tmp/speech-latency-cache-20260905-354ac9e2/cache-outcome.json",
+      "sha256": "01113e904adaa26c662c1c1433c09e64dcb459843e831e98e0b3ff5eae1c6a3a"
+    }
+  ]
+}

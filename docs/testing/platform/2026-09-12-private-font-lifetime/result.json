@@ -1,0 +1,23 @@
+{
+    "private_font_count":  2,
+    "during_private_load":  [
+                                {
+                                    "Path":  "YinYuan-Regular.ttf",
+                                    "Status":  "preserved-error",
+                                    "MarkedForDeletion":  false,
+                                    "Removed":  false,
+                                    "ErrorCode":  5
+                                }
+                            ],
+    "after_private_unload":  [
+                                 {
+                                     "Path":  "YinYuan-Regular.ttf",
+                                     "Status":  "removed",
+                                     "MarkedForDeletion":  true,
+                                     "Removed":  true,
+                                     "ErrorCode":  2
+                                 }
+                             ],
+    "system_font_installation_changed":  false,
+    "registered_product_changed":  false
+}

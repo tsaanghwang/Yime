@@ -1,0 +1,11 @@
+{
+  "schema_version": "yimecore-browser-module-assessment-v1",
+  "raw_evidence": "firefox-pre-manual-20260910-235901.json",
+  "loaded_current_product_process_ids": [
+    42672
+  ],
+  "current_x86_package_module_verified": true,
+  "raw_all_processes_passed": false,
+  "interpretation": "All Firefox processes were inventoried; absence of the TIP DLL in other processes is not sufficient evidence of an input-method failure. PID 42672 loads the expected current x86 DLL with the baseline hash. No active input surface or manual behavior is inferred from this inventory.",
+  "manual_acceptance_complete": false
+}

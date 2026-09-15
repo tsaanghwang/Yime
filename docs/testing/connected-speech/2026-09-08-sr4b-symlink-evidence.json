@@ -1,0 +1,939 @@
+{
+  "schema_version": "yimecore-sr4b-symlink-supplement-v1",
+  "generated_at": "2026-09-08T08:46:03.411202+08:00",
+  "affected_product": "YimeCore local.13 uninstalled source/package-flow tests",
+  "source_identity": "working-tree; pre-existing unrelated edits preserved",
+  "head": "bb214e0de6fdcf9e68c0f99a9e983754f1295d0d",
+  "historical_package_id": "yimecore-local-0.1.0-local.13-dbfab0b45dd2",
+  "historical_package_revalidated": false,
+  "package_rebuilt": false,
+  "evidence_reporting_contracts_passed": true,
+  "all_four_windows_rejections_exercised": false,
+  "distinct_os_rejection_gaps_remaining": 4,
+  "reason": "All four os.Symlink fixtures return Windows ERROR_PRIVILEGE_NOT_HELD (1314).",
+  "runs": [
+    {
+      "shell": "ps5",
+      "mode": "reviewed",
+      "expected_exit_code": 0,
+      "receipt": {
+        "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\result.json",
+        "bytes": 9692,
+        "sha256": "aa3a5817e9915cb3cd4bc833c49277e2cb549253126333f486aa49f2668ffaa3"
+      },
+      "result": {
+        "schema_version": "yimecore-sr4b-symlink-evidence-v1",
+        "generated_at": "2026-09-08T08:43:04.6098757+08:00",
+        "powershell_version": "5.1.26100.9278",
+        "require_fixtures": false,
+        "passed": true,
+        "checks_count": 5,
+        "failed_count": 0,
+        "skipped_count": 4,
+        "exercised_rejection_count": 0,
+        "all_four_rejections_exercised": false,
+        "failure": null,
+        "tests": [
+          {
+            "output": "=== RUN   TestSpeechPackageRejectsSymlinkPayload\n    package_test.go:451: SYMLINK_FIXTURE_UNAVAILABLE windows_error=1314 rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\temp\\TestSpeechPackageRejectsSymlinkPayload232731319\\002\\fixture-records.json C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\temp\\TestSpeechPackageRejectsSymlinkPayload232731319\\001\\speech-admission-package-fixture\\admitted-records.json: A required privilege is not held by the client.\n--- SKIP: TestSpeechPackageRejectsSymlinkPayload (0.29s)\n",
+            "test": "TestSpeechPackageRejectsSymlinkPayload",
+            "rejection_exercised": false,
+            "kind": "os-negative-test",
+            "package": "./cmd/yimecore-speech-admission",
+            "status": "SKIP"
+          },
+          {
+            "output": "=== RUN   TestSpeechProductExportRejectsIndirectSources\n    product_export_test.go:415: SYMLINK_FIXTURE_UNAVAILABLE windows_error=1314 rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\temp\\TestSpeechProductExportRejectsIndirectSources41307306\\001\\source-repository\\AGENTS.md C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\temp\\TestSpeechProductExportRejectsIndirectSources41307306\\001\\source-repository\\go-backend\\cmd\\indirect.go: A required privilege is not held by the client.\n--- SKIP: TestSpeechProductExportRejectsIndirectSources (0.23s)\n",
+            "test": "TestSpeechProductExportRejectsIndirectSources",
+            "rejection_exercised": false,
+            "kind": "os-negative-test",
+            "package": "./cmd/yimecore-speech-admission",
+            "status": "SKIP"
+          },
+          {
+            "output": "=== RUN   TestLocalSpeechContractRejectsIndirectResources\n    local_speech_contract_test.go:448: SYMLINK_FIXTURE_UNAVAILABLE windows_error=1314 rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\temp\\TestLocalSpeechContractRejectsIndirectResources3177012085\\002\\synthetic-capability.json C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\temp\\TestLocalSpeechContractRejectsIndirectResources3177012085\\001\\speech-capability.json: A required privilege is not held by the client.\n--- SKIP: TestLocalSpeechContractRejectsIndirectResources (0.06s)\n",
+            "test": "TestLocalSpeechContractRejectsIndirectResources",
+            "rejection_exercised": false,
+            "kind": "os-negative-test",
+            "package": "./cmd/yimecore-independence-audit",
+            "status": "SKIP"
+          },
+          {
+            "output": "=== RUN   TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink\n    manifest_test.go:459: SYMLINK_FIXTURE_UNAVAILABLE windows_error=1314 rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\temp\\TestSpeechManifestRejectsOutsideAndIndirectPathssymlink2932428836\\001 C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\temp\\TestSpeechManifestRejectsOutsideAndIndirectPaths4237546010\\001\\speech-admission-synthetic\\indirect: A required privilege is not held by the client.\n--- SKIP: TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink (0.00s)\n",
+            "test": "TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink",
+            "rejection_exercised": false,
+            "kind": "os-negative-test",
+            "package": "./input_methods/yime/speechruntime",
+            "status": "SKIP"
+          },
+          {
+            "output": "=== RUN   TestUnavailableClassification\n--- PASS: TestUnavailableClassification (0.00s)\n",
+            "test": "TestUnavailableClassification",
+            "rejection_exercised": false,
+            "kind": "classification-contract",
+            "package": "./internal/symlinkfixture",
+            "status": "PASS"
+          }
+        ],
+        "logs": [
+          {
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\go-1.jsonl",
+            "sha256": "a147745177b857562dd414c1583b8ceb31a48e573292a5fe28a873e82ceede42",
+            "exit_code": 0
+          },
+          {
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\go-2.jsonl",
+            "sha256": "6a42697e633e7ccc53391a93e7b723752c2e85c02a07b103b13e242cab9f09e6",
+            "exit_code": 0
+          },
+          {
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\go-3.jsonl",
+            "sha256": "95e8273eec0b478ead0d666d80bb0873e7820b55ddb0ab313897b469817024c8",
+            "exit_code": 0
+          },
+          {
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\go-4.jsonl",
+            "sha256": "bf3654e373f6f3bcaae90197ef849beafcb504f57ba5ff7cb7b26f43f9a2d0b5",
+            "exit_code": 0
+          }
+        ],
+        "synthetic_reporting_contracts": [
+          {
+            "expected": "PASS",
+            "synthetic": true,
+            "name": "exercised",
+            "actual": "PASS",
+            "passed": true
+          },
+          {
+            "expected": "SKIP",
+            "synthetic": true,
+            "name": "unavailable",
+            "actual": "SKIP",
+            "passed": true
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "name": "required-unavailable",
+            "actual": "FAIL",
+            "passed": true
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "name": "unexplained-skip",
+            "actual": "FAIL",
+            "passed": true
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "name": "unexercised-pass",
+            "actual": "FAIL",
+            "passed": true
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "name": "missing-test",
+            "actual": "FAIL",
+            "passed": true
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "name": "duplicate-terminal",
+            "actual": "FAIL",
+            "passed": true
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "name": "failed-after-ready",
+            "actual": "FAIL",
+            "passed": true
+          }
+        ],
+        "fixture_root": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed",
+        "installed_package_accessed": false,
+        "maintenance_executed": false,
+        "user_data_accessed": false,
+        "default_input_method_changed": false,
+        "package_rebuilt": false,
+        "product_process_executed": false
+      }
+    },
+    {
+      "shell": "ps5",
+      "mode": "required",
+      "expected_exit_code": 1,
+      "receipt": {
+        "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\result.json",
+        "bytes": 9682,
+        "sha256": "c71cbe50ceaf4985b6d4b3b126149ad4171b8edf7f3d29cb5fde3dd7d089752b"
+      },
+      "result": {
+        "schema_version": "yimecore-sr4b-symlink-evidence-v1",
+        "generated_at": "2026-09-08T08:43:27.3048356+08:00",
+        "powershell_version": "5.1.26100.9278",
+        "require_fixtures": true,
+        "passed": false,
+        "checks_count": 5,
+        "failed_count": 4,
+        "skipped_count": 0,
+        "exercised_rejection_count": 0,
+        "all_four_rejections_exercised": false,
+        "failure": "One or more Go invocations failed; inspect preserved logs.",
+        "tests": [
+          {
+            "output": "=== RUN   TestSpeechPackageRejectsSymlinkPayload\n    package_test.go:451: SYMLINK_FIXTURE_SETUP_FAILED rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\temp\\TestSpeechPackageRejectsSymlinkPayload1961885042\\002\\fixture-records.json C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\temp\\TestSpeechPackageRejectsSymlinkPayload1961885042\\001\\speech-admission-package-fixture\\admitted-records.json: A required privilege is not held by the client.\n--- FAIL: TestSpeechPackageRejectsSymlinkPayload (0.30s)\n",
+            "test": "TestSpeechPackageRejectsSymlinkPayload",
+            "rejection_exercised": false,
+            "kind": "os-negative-test",
+            "package": "./cmd/yimecore-speech-admission",
+            "status": "FAIL"
+          },
+          {
+            "output": "=== RUN   TestSpeechProductExportRejectsIndirectSources\n    product_export_test.go:415: SYMLINK_FIXTURE_SETUP_FAILED rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\temp\\TestSpeechProductExportRejectsIndirectSources1447544333\\001\\source-repository\\AGENTS.md C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\temp\\TestSpeechProductExportRejectsIndirectSources1447544333\\001\\source-repository\\go-backend\\cmd\\indirect.go: A required privilege is not held by the client.\n--- FAIL: TestSpeechProductExportRejectsIndirectSources (0.23s)\n",
+            "test": "TestSpeechProductExportRejectsIndirectSources",
+            "rejection_exercised": false,
+            "kind": "os-negative-test",
+            "package": "./cmd/yimecore-speech-admission",
+            "status": "FAIL"
+          },
+          {
+            "output": "=== RUN   TestLocalSpeechContractRejectsIndirectResources\n    local_speech_contract_test.go:448: SYMLINK_FIXTURE_SETUP_FAILED rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\temp\\TestLocalSpeechContractRejectsIndirectResources2418077719\\002\\synthetic-capability.json C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\temp\\TestLocalSpeechContractRejectsIndirectResources2418077719\\001\\speech-capability.json: A required privilege is not held by the client.\n--- FAIL: TestLocalSpeechContractRejectsIndirectResources (0.33s)\n",
+            "test": "TestLocalSpeechContractRejectsIndirectResources",
+            "rejection_exercised": false,
+            "kind": "os-negative-test",
+            "package": "./cmd/yimecore-independence-audit",
+            "status": "FAIL"
+          },
+          {
+            "output": "=== RUN   TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink\n    manifest_test.go:459: SYMLINK_FIXTURE_SETUP_FAILED rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\temp\\TestSpeechManifestRejectsOutsideAndIndirectPathssymlink1668850600\\001 C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\temp\\TestSpeechManifestRejectsOutsideAndIndirectPaths4258783699\\001\\speech-admission-synthetic\\indirect: A required privilege is not held by the client.\n--- FAIL: TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink (0.00s)\n",
+            "test": "TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink",
+            "rejection_exercised": false,
+            "kind": "os-negative-test",
+            "package": "./input_methods/yime/speechruntime",
+            "status": "FAIL"
+          },
+          {
+            "output": "=== RUN   TestUnavailableClassification\n--- PASS: TestUnavailableClassification (0.00s)\n",
+            "test": "TestUnavailableClassification",
+            "rejection_exercised": false,
+            "kind": "classification-contract",
+            "package": "./internal/symlinkfixture",
+            "status": "PASS"
+          }
+        ],
+        "logs": [
+          {
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\go-1.jsonl",
+            "sha256": "f0b272adbec148f99a7e7c47a94edac8ebe33512ae660ecd298d42f2635d5b0c",
+            "exit_code": 1
+          },
+          {
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\go-2.jsonl",
+            "sha256": "32c84bbf11b68918f0fe54c238c61faad497543fd06f86bb306a3c065fc48e5c",
+            "exit_code": 1
+          },
+          {
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\go-3.jsonl",
+            "sha256": "4349529773122225973567a434740183809a0f564ab3926b783637149d1be2e4",
+            "exit_code": 1
+          },
+          {
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\go-4.jsonl",
+            "sha256": "8576ccaa0ea13b221b44f1128eec6e3630ec66571165f6c319507b6ad3e81a30",
+            "exit_code": 0
+          }
+        ],
+        "synthetic_reporting_contracts": [
+          {
+            "expected": "PASS",
+            "synthetic": true,
+            "name": "exercised",
+            "actual": "PASS",
+            "passed": true
+          },
+          {
+            "expected": "SKIP",
+            "synthetic": true,
+            "name": "unavailable",
+            "actual": "SKIP",
+            "passed": true
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "name": "required-unavailable",
+            "actual": "FAIL",
+            "passed": true
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "name": "unexplained-skip",
+            "actual": "FAIL",
+            "passed": true
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "name": "unexercised-pass",
+            "actual": "FAIL",
+            "passed": true
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "name": "missing-test",
+            "actual": "FAIL",
+            "passed": true
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "name": "duplicate-terminal",
+            "actual": "FAIL",
+            "passed": true
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "name": "failed-after-ready",
+            "actual": "FAIL",
+            "passed": true
+          }
+        ],
+        "fixture_root": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required",
+        "installed_package_accessed": false,
+        "maintenance_executed": false,
+        "user_data_accessed": false,
+        "default_input_method_changed": false,
+        "package_rebuilt": false,
+        "product_process_executed": false
+      }
+    },
+    {
+      "shell": "ps7",
+      "mode": "reviewed",
+      "expected_exit_code": 0,
+      "receipt": {
+        "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\result.json",
+        "bytes": 6369,
+        "sha256": "38bb6630288c99cf116dd136ca79d904d92c53af43ee29b094b5071de31feb1c"
+      },
+      "result": {
+        "schema_version": "yimecore-sr4b-symlink-evidence-v1",
+        "generated_at": "2026-09-08T08:43:03.7596886+08:00",
+        "powershell_version": "7.6.5",
+        "require_fixtures": false,
+        "passed": true,
+        "checks_count": 5,
+        "failed_count": 0,
+        "skipped_count": 4,
+        "exercised_rejection_count": 0,
+        "all_four_rejections_exercised": false,
+        "failure": null,
+        "tests": [
+          {
+            "rejection_exercised": false,
+            "test": "TestSpeechPackageRejectsSymlinkPayload",
+            "output": "=== RUN   TestSpeechPackageRejectsSymlinkPayload\n    package_test.go:451: SYMLINK_FIXTURE_UNAVAILABLE windows_error=1314 rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\temp\\TestSpeechPackageRejectsSymlinkPayload2508353088\\002\\fixture-records.json C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\temp\\TestSpeechPackageRejectsSymlinkPayload2508353088\\001\\speech-admission-package-fixture\\admitted-records.json: A required privilege is not held by the client.\n--- SKIP: TestSpeechPackageRejectsSymlinkPayload (0.31s)\n",
+            "package": "./cmd/yimecore-speech-admission",
+            "kind": "os-negative-test",
+            "status": "SKIP"
+          },
+          {
+            "rejection_exercised": false,
+            "test": "TestSpeechProductExportRejectsIndirectSources",
+            "output": "=== RUN   TestSpeechProductExportRejectsIndirectSources\n    product_export_test.go:415: SYMLINK_FIXTURE_UNAVAILABLE windows_error=1314 rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\temp\\TestSpeechProductExportRejectsIndirectSources1897746738\\001\\source-repository\\AGENTS.md C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\temp\\TestSpeechProductExportRejectsIndirectSources1897746738\\001\\source-repository\\go-backend\\cmd\\indirect.go: A required privilege is not held by the client.\n--- SKIP: TestSpeechProductExportRejectsIndirectSources (0.23s)\n",
+            "package": "./cmd/yimecore-speech-admission",
+            "kind": "os-negative-test",
+            "status": "SKIP"
+          },
+          {
+            "rejection_exercised": false,
+            "test": "TestLocalSpeechContractRejectsIndirectResources",
+            "output": "=== RUN   TestLocalSpeechContractRejectsIndirectResources\n    local_speech_contract_test.go:448: SYMLINK_FIXTURE_UNAVAILABLE windows_error=1314 rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\temp\\TestLocalSpeechContractRejectsIndirectResources2870406953\\002\\synthetic-capability.json C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\temp\\TestLocalSpeechContractRejectsIndirectResources2870406953\\001\\speech-capability.json: A required privilege is not held by the client.\n--- SKIP: TestLocalSpeechContractRejectsIndirectResources (0.07s)\n",
+            "package": "./cmd/yimecore-independence-audit",
+            "kind": "os-negative-test",
+            "status": "SKIP"
+          },
+          {
+            "rejection_exercised": false,
+            "test": "TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink",
+            "output": "=== RUN   TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink\n    manifest_test.go:459: SYMLINK_FIXTURE_UNAVAILABLE windows_error=1314 rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\temp\\TestSpeechManifestRejectsOutsideAndIndirectPathssymlink3654756877\\001 C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\temp\\TestSpeechManifestRejectsOutsideAndIndirectPaths673530330\\001\\speech-admission-synthetic\\indirect: A required privilege is not held by the client.\n--- SKIP: TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink (0.00s)\n",
+            "package": "./input_methods/yime/speechruntime",
+            "kind": "os-negative-test",
+            "status": "SKIP"
+          },
+          {
+            "rejection_exercised": false,
+            "test": "TestUnavailableClassification",
+            "output": "=== RUN   TestUnavailableClassification\n--- PASS: TestUnavailableClassification (0.00s)\n",
+            "package": "./internal/symlinkfixture",
+            "kind": "classification-contract",
+            "status": "PASS"
+          }
+        ],
+        "logs": [
+          {
+            "exit_code": 0,
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\go-1.jsonl",
+            "sha256": "8157f3cc1eb86dc6995efbf49f57900ecdbfbebfd94b57068f2c369d7f02ca8a"
+          },
+          {
+            "exit_code": 0,
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\go-2.jsonl",
+            "sha256": "12206ea969f812dd8c959c8c00cc567a7b83eb787b6fef923615a082f3edc225"
+          },
+          {
+            "exit_code": 0,
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\go-3.jsonl",
+            "sha256": "961ec781c7cca0fecff5537b2b291c9e6e1e80b3ec38722d1a4146d508877287"
+          },
+          {
+            "exit_code": 0,
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\go-4.jsonl",
+            "sha256": "b1765cf35c7b99d4c833d31d923761001a667a7705c8790080346c6296fcb7a9"
+          }
+        ],
+        "synthetic_reporting_contracts": [
+          {
+            "expected": "PASS",
+            "synthetic": true,
+            "passed": true,
+            "actual": "PASS",
+            "name": "exercised"
+          },
+          {
+            "expected": "SKIP",
+            "synthetic": true,
+            "passed": true,
+            "actual": "SKIP",
+            "name": "unavailable"
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "passed": true,
+            "actual": "FAIL",
+            "name": "required-unavailable"
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "passed": true,
+            "actual": "FAIL",
+            "name": "unexplained-skip"
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "passed": true,
+            "actual": "FAIL",
+            "name": "unexercised-pass"
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "passed": true,
+            "actual": "FAIL",
+            "name": "missing-test"
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "passed": true,
+            "actual": "FAIL",
+            "name": "duplicate-terminal"
+          },
+          {
+            "expected": "FAIL",
+            "synthetic": true,
+            "passed": true,
+            "actual": "FAIL",
+            "name": "failed-after-ready"
+          }
+        ],
+        "fixture_root": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed",
+        "installed_package_accessed": false,
+        "maintenance_executed": false,
+        "user_data_accessed": false,
+        "default_input_method_changed": false,
+        "package_rebuilt": false,
+        "product_process_executed": false
+      }
+    },
+    {
+      "shell": "ps7",
+      "mode": "required",
+      "expected_exit_code": 1,
+      "receipt": {
+        "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\result.json",
+        "bytes": 6352,
+        "sha256": "01e581d96c9dd6a0f14f5484631168a676f540a586904ffadb13d29cb857cbda"
+      },
+      "result": {
+        "schema_version": "yimecore-sr4b-symlink-evidence-v1",
+        "generated_at": "2026-09-08T08:43:26.3007553+08:00",
+        "powershell_version": "7.6.5",
+        "require_fixtures": true,
+        "passed": false,
+        "checks_count": 5,
+        "failed_count": 4,
+        "skipped_count": 0,
+        "exercised_rejection_count": 0,
+        "all_four_rejections_exercised": false,
+        "failure": "One or more Go invocations failed; inspect preserved logs.",
+        "tests": [
+          {
+            "package": "./cmd/yimecore-speech-admission",
+            "kind": "os-negative-test",
+            "test": "TestSpeechPackageRejectsSymlinkPayload",
+            "output": "=== RUN   TestSpeechPackageRejectsSymlinkPayload\n    package_test.go:451: SYMLINK_FIXTURE_SETUP_FAILED rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\temp\\TestSpeechPackageRejectsSymlinkPayload2470828824\\002\\fixture-records.json C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\temp\\TestSpeechPackageRejectsSymlinkPayload2470828824\\001\\speech-admission-package-fixture\\admitted-records.json: A required privilege is not held by the client.\n--- FAIL: TestSpeechPackageRejectsSymlinkPayload (0.34s)\n",
+            "rejection_exercised": false,
+            "status": "FAIL"
+          },
+          {
+            "package": "./cmd/yimecore-speech-admission",
+            "kind": "os-negative-test",
+            "test": "TestSpeechProductExportRejectsIndirectSources",
+            "output": "=== RUN   TestSpeechProductExportRejectsIndirectSources\n    product_export_test.go:415: SYMLINK_FIXTURE_SETUP_FAILED rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\temp\\TestSpeechProductExportRejectsIndirectSources118846316\\001\\source-repository\\AGENTS.md C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\temp\\TestSpeechProductExportRejectsIndirectSources118846316\\001\\source-repository\\go-backend\\cmd\\indirect.go: A required privilege is not held by the client.\n--- FAIL: TestSpeechProductExportRejectsIndirectSources (0.23s)\n",
+            "rejection_exercised": false,
+            "status": "FAIL"
+          },
+          {
+            "package": "./cmd/yimecore-independence-audit",
+            "kind": "os-negative-test",
+            "test": "TestLocalSpeechContractRejectsIndirectResources",
+            "output": "=== RUN   TestLocalSpeechContractRejectsIndirectResources\n    local_speech_contract_test.go:448: SYMLINK_FIXTURE_SETUP_FAILED rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\temp\\TestLocalSpeechContractRejectsIndirectResources1806048938\\002\\synthetic-capability.json C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\temp\\TestLocalSpeechContractRejectsIndirectResources1806048938\\001\\speech-capability.json: A required privilege is not held by the client.\n--- FAIL: TestLocalSpeechContractRejectsIndirectResources (0.06s)\n",
+            "rejection_exercised": false,
+            "status": "FAIL"
+          },
+          {
+            "package": "./input_methods/yime/speechruntime",
+            "kind": "os-negative-test",
+            "test": "TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink",
+            "output": "=== RUN   TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink\n    manifest_test.go:459: SYMLINK_FIXTURE_SETUP_FAILED rejection_exercised=false: symlink C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\temp\\TestSpeechManifestRejectsOutsideAndIndirectPathssymlink2651930430\\001 C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\temp\\TestSpeechManifestRejectsOutsideAndIndirectPaths2870231004\\001\\speech-admission-synthetic\\indirect: A required privilege is not held by the client.\n--- FAIL: TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink (0.00s)\n",
+            "rejection_exercised": false,
+            "status": "FAIL"
+          },
+          {
+            "package": "./internal/symlinkfixture",
+            "kind": "classification-contract",
+            "test": "TestUnavailableClassification",
+            "output": "=== RUN   TestUnavailableClassification\n--- PASS: TestUnavailableClassification (0.00s)\n",
+            "rejection_exercised": false,
+            "status": "PASS"
+          }
+        ],
+        "logs": [
+          {
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\go-1.jsonl",
+            "exit_code": 1,
+            "sha256": "bee192851443bfe068b89b234ea41ab0d5a10d1f8b484d97d8525eaf41187920"
+          },
+          {
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\go-2.jsonl",
+            "exit_code": 1,
+            "sha256": "f16155d9e536350e740d154b42a1e541f269abfda1109f3845725b56ee781237"
+          },
+          {
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\go-3.jsonl",
+            "exit_code": 1,
+            "sha256": "dae37c545ca68d8c8391801d554dd8b17badb302229eeed1b5153b66b8b52ab4"
+          },
+          {
+            "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\go-4.jsonl",
+            "exit_code": 0,
+            "sha256": "be483636d8bfcdc707fb776deef43e27309a695f5a1b4b73caaab600c7f218db"
+          }
+        ],
+        "synthetic_reporting_contracts": [
+          {
+            "name": "exercised",
+            "expected": "PASS",
+            "actual": "PASS",
+            "synthetic": true,
+            "passed": true
+          },
+          {
+            "name": "unavailable",
+            "expected": "SKIP",
+            "actual": "SKIP",
+            "synthetic": true,
+            "passed": true
+          },
+          {
+            "name": "required-unavailable",
+            "expected": "FAIL",
+            "actual": "FAIL",
+            "synthetic": true,
+            "passed": true
+          },
+          {
+            "name": "unexplained-skip",
+            "expected": "FAIL",
+            "actual": "FAIL",
+            "synthetic": true,
+            "passed": true
+          },
+          {
+            "name": "unexercised-pass",
+            "expected": "FAIL",
+            "actual": "FAIL",
+            "synthetic": true,
+            "passed": true
+          },
+          {
+            "name": "missing-test",
+            "expected": "FAIL",
+            "actual": "FAIL",
+            "synthetic": true,
+            "passed": true
+          },
+          {
+            "name": "duplicate-terminal",
+            "expected": "FAIL",
+            "actual": "FAIL",
+            "synthetic": true,
+            "passed": true
+          },
+          {
+            "name": "failed-after-ready",
+            "expected": "FAIL",
+            "actual": "FAIL",
+            "synthetic": true,
+            "passed": true
+          }
+        ],
+        "fixture_root": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required",
+        "installed_package_accessed": false,
+        "maintenance_executed": false,
+        "user_data_accessed": false,
+        "default_input_method_changed": false,
+        "package_rebuilt": false,
+        "product_process_executed": false
+      }
+    }
+  ],
+  "source_regression": {
+    "exit_code": 0,
+    "counts": {
+      "pass": 260,
+      "skip": 4,
+      "fail": 0
+    },
+    "skipped_tests": [
+      "TestLocalSpeechContractRejectsIndirectResources",
+      "TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink",
+      "TestSpeechPackageRejectsSymlinkPayload",
+      "TestSpeechProductExportRejectsIndirectSources"
+    ],
+    "log": {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-regression\\go.jsonl",
+      "bytes": 290579,
+      "sha256": "0c1e5573e7949e200cbf70b52bc0228376ef0682c025fea640ebfb1ff732ecbc"
+    },
+    "stderr": {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-regression\\stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "source_files": [
+    {
+      "path": "C:\\dev\\Yime\\go-backend\\internal\\symlinkfixture\\fixture.go",
+      "bytes": 1634,
+      "sha256": "f3add42354eede94438a4cb2b3898c73142d1e1d067e62b3983ee7e6b67ed033"
+    },
+    {
+      "path": "C:\\dev\\Yime\\go-backend\\internal\\symlinkfixture\\fixture_test.go",
+      "bytes": 767,
+      "sha256": "e173a1cea83da0c8d1620f00b25801d210066f672ecf61835a35a4897edb2cea"
+    },
+    {
+      "path": "C:\\dev\\Yime\\go-backend\\cmd\\yimecore-speech-admission\\package_test.go",
+      "bytes": 25702,
+      "sha256": "7fcd2783960ddd4da8ab98c0a40e8408ad37f1af44c2c6b87dab8e65741a1ebc"
+    },
+    {
+      "path": "C:\\dev\\Yime\\go-backend\\cmd\\yimecore-speech-admission\\product_export.go",
+      "bytes": 29009,
+      "sha256": "ef297a08647dff4b445d9406341f75396c598752dd770eae5e503dd7add2a57f"
+    },
+    {
+      "path": "C:\\dev\\Yime\\go-backend\\cmd\\yimecore-speech-admission\\product_export_test.go",
+      "bytes": 22864,
+      "sha256": "e5f2f51b58461a958b28ba47b7095720ef553ca1da6a8e439daba3a7b7026b81"
+    },
+    {
+      "path": "C:\\dev\\Yime\\go-backend\\cmd\\yimecore-independence-audit\\local_speech_contract_test.go",
+      "bytes": 22891,
+      "sha256": "5c8fe04ea7e85f16a78b374f8f3ef66c9e6d0202ee3b010b0c788499826e6d0c"
+    },
+    {
+      "path": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\speechruntime\\manifest_test.go",
+      "bytes": 18510,
+      "sha256": "d460e5f3d9e0bec38324018822942fb40750a26b8c0acc0e55c810e9cf8d31b5"
+    },
+    {
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\test-speech-symlink-evidence.ps1",
+      "bytes": 7087,
+      "sha256": "adfc37527e7e23cbc7c6f595ed8b799396620996f5ed794fc7aef1ddc4f3a654"
+    },
+    {
+      "path": "C:\\dev\\Yime\\tools\\yimecore\\run-connected-speech-product-package.ps1",
+      "bytes": 18658,
+      "sha256": "20e801d067ddd3d7b087b0e63263755d04227f56fceeb2a8975068607b7a130b"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\result.json",
+      "bytes": 9692,
+      "sha256": "aa3a5817e9915cb3cd4bc833c49277e2cb549253126333f486aa49f2668ffaa3"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\go-1.jsonl",
+      "bytes": 7818,
+      "sha256": "a147745177b857562dd414c1583b8ceb31a48e573292a5fe28a873e82ceede42"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\go-1.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\go-2.jsonl",
+      "bytes": 4732,
+      "sha256": "6a42697e633e7ccc53391a93e7b723752c2e85c02a07b103b13e242cab9f09e6"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\go-2.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\go-3.jsonl",
+      "bytes": 6810,
+      "sha256": "95e8273eec0b478ead0d666d80bb0873e7820b55ddb0ab313897b469817024c8"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\go-3.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\go-4.jsonl",
+      "bytes": 15616,
+      "sha256": "bf3654e373f6f3bcaae90197ef849beafcb504f57ba5ff7cb7b26f43f9a2d0b5"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-reviewed\\go-4.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\result.json",
+      "bytes": 9682,
+      "sha256": "c71cbe50ceaf4985b6d4b3b126149ad4171b8edf7f3d29cb5fde3dd7d089752b"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\go-1.jsonl",
+      "bytes": 7766,
+      "sha256": "f0b272adbec148f99a7e7c47a94edac8ebe33512ae660ecd298d42f2635d5b0c"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\go-1.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\go-2.jsonl",
+      "bytes": 4694,
+      "sha256": "32c84bbf11b68918f0fe54c238c61faad497543fd06f86bb306a3c065fc48e5c"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\go-2.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\go-3.jsonl",
+      "bytes": 6770,
+      "sha256": "4349529773122225973567a434740183809a0f564ab3926b783637149d1be2e4"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\go-3.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\go-4.jsonl",
+      "bytes": 15620,
+      "sha256": "8576ccaa0ea13b221b44f1128eec6e3630ec66571165f6c319507b6ad3e81a30"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps5-required\\go-4.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\result.json",
+      "bytes": 6369,
+      "sha256": "38bb6630288c99cf116dd136ca79d904d92c53af43ee29b094b5071de31feb1c"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\go-1.jsonl",
+      "bytes": 3902,
+      "sha256": "8157f3cc1eb86dc6995efbf49f57900ecdbfbebfd94b57068f2c369d7f02ca8a"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\go-1.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\go-2.jsonl",
+      "bytes": 2353,
+      "sha256": "12206ea969f812dd8c959c8c00cc567a7b83eb787b6fef923615a082f3edc225"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\go-2.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\go-3.jsonl",
+      "bytes": 3389,
+      "sha256": "961ec781c7cca0fecff5537b2b291c9e6e1e80b3ec38722d1a4146d508877287"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\go-3.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\go-4.jsonl",
+      "bytes": 7738,
+      "sha256": "b1765cf35c7b99d4c833d31d923761001a667a7705c8790080346c6296fcb7a9"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-reviewed\\go-4.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\result.json",
+      "bytes": 6352,
+      "sha256": "01e581d96c9dd6a0f14f5484631168a676f540a586904ffadb13d29cb857cbda"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\go-1.jsonl",
+      "bytes": 3866,
+      "sha256": "bee192851443bfe068b89b234ea41ab0d5a10d1f8b484d97d8525eaf41187920"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\go-1.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\go-2.jsonl",
+      "bytes": 2336,
+      "sha256": "f16155d9e536350e740d154b42a1e541f269abfda1109f3845725b56ee781237"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\go-2.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\go-3.jsonl",
+      "bytes": 3371,
+      "sha256": "dae37c545ca68d8c8391801d554dd8b17badb302229eeed1b5153b66b8b52ab4"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\go-3.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\go-4.jsonl",
+      "bytes": 7773,
+      "sha256": "be483636d8bfcdc707fb776deef43e27309a695f5a1b4b73caaab600c7f218db"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-ps7-required\\go-4.jsonl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "boundaries": {
+    "installed_local12_accessed": false,
+    "user_data_accessed": false,
+    "maintenance_executed": false,
+    "installation_executed": false,
+    "default_input_method_changed": false,
+    "registry_accessed": false,
+    "product_process_executed": false,
+    "privilege_or_developer_mode_changed": false,
+    "historical_payload_accessed": false
+  },
+  "remaining_limits": [
+    "Run both shells with -RequireFixtures in a separately authorized Windows process capable of creating file and directory symbolic links; current result is 0/4 exercised, not closure.",
+    "Full package-runner integration was not executed; it accesses installed baseline and starts product processes.",
+    "Changed source closure requires fresh admission and package rebuild; historical B4 hashes are not current-source evidence.",
+    "Static payload integrity and production-registration preservation were not revalidated in this no-installed-access run; remain required for future package acceptance.",
+    "No installed maintenance, registered/live hosts, reboot, ARM64 native, SR4, DP1, L5 or L6 completion inferred."
+  ],
+  "powershell_syntax_checks": [
+    {
+      "result": {
+        "files": [
+          {
+            "parse_errors": 0,
+            "file": "tools/yimecore/test-speech-symlink-evidence.ps1"
+          },
+          {
+            "parse_errors": 0,
+            "file": "tools/yimecore/run-connected-speech-product-package.ps1"
+          }
+        ],
+        "powershell_version": "5.1.26100.9278",
+        "passed": true
+      },
+      "evidence": {
+        "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-parse-ps5.json",
+        "bytes": 451,
+        "sha256": "c91afae82ccb4880f6ee54f46584e7e4075ec5e5d46e0da877fca57db13425e9"
+      }
+    },
+    {
+      "result": {
+        "files": [
+          {
+            "parse_errors": 0,
+            "file": "tools/yimecore/test-speech-symlink-evidence.ps1"
+          },
+          {
+            "parse_errors": 0,
+            "file": "tools/yimecore/run-connected-speech-product-package.ps1"
+          }
+        ],
+        "passed": true,
+        "powershell_version": "7.6.5"
+      },
+      "evidence": {
+        "path": "C:\\dev\\Yime\\.tmp\\sr4b-symlink-parse-ps7.json",
+        "bytes": 297,
+        "sha256": "ed344faa15f9677005f5ca289d5543a93b323afdf092c41daabb666eef565ecd"
+      }
+    }
+  ]
+}

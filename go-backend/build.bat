@@ -473,6 +473,19 @@ for /d %%D in ("%ROOT_DIR%\input_methods\*") do (
         )
     )
 )
+rem xcopy preserves Mark-of-the-Web streams from repository media. Those
+rem streams are not NSIS payload bytes and make the package source ambiguous.
+rem Remove only Zone.Identifier from the disposable build copy; the sealed
+rem package staging gate still rejects every alternate stream that remains.
+set "YIME_PACKAGE_INPUT_METHODS=%PACKAGE_DIR%\input_methods"
+powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; Get-ChildItem -LiteralPath $env:YIME_PACKAGE_INPUT_METHODS -Recurse -File -Force | Unblock-File -ErrorAction Stop"
+if errorlevel 1 (
+    set "YIME_PACKAGE_INPUT_METHODS="
+    echo [ERROR] Failed to remove Zone.Identifier metadata from packaged input methods
+    popd
+    exit /b 1
+)
+set "YIME_PACKAGE_INPUT_METHODS="
 if not exist "%PACKAGE_DIR%\input_methods\yime\ime.json" (
     echo [ERROR] Packaged Yime ime.json is missing
     popd

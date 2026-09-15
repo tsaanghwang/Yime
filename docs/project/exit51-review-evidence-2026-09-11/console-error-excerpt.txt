@@ -1,0 +1,16 @@
+REVIEW ONLY: excerpt from existing transcript; personal archive path redacted.
+
+Read-only collection completed. No installation or recovery was executed.
+Evidence directory: <TEST_ARCHIVES>\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-f6aa3e4970664795a9fff8f4c2e64641
+Prepared only. Execution parameters: <TEST_ARCHIVES>\approval-fa4e23d2-e352-4e44-ad7c-b96162f91e67\execute-parameters.json
+Retain this directory outside Git. Product mutation has not been performed.
+{"integrity_passed": true, "artifact_count": 6, "product_version": "1.4.0-dev.1", "execution_authorized": false, "installed_acceptance_passed": false}
+Prepared only. Execution parameters: <TEST_ARCHIVES>\approval-fa4e23d2-e352-4e44-ad7c-b96162f91e67\execute-parameters.json
+Retain this directory outside Git. Product mutation has not been performed.
+All preconditions passed. Executing the authorized original-package Resume ONCE.
+PS>TerminatingError():“Candidate failed with exit code 51; retain all evidence and recovery tickets.”
+Recovery failed: Candidate failed with exit code 51; retain all evidence and recovery tickets.
+Read-only collection completed. No installation or recovery was executed.
+Evidence directory: <TEST_ARCHIVES>\readonly-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-8848c54e5746489390c27a2876951f74
+Recovery attempt finished. Completion criteria still require evidence review. Do not rerun.
+Recovery evidence: <TEST_ARCHIVES>\resume-attempt-84ccacac-c115-4c2d-8d7a-47df8e0ea4a0-preflight2

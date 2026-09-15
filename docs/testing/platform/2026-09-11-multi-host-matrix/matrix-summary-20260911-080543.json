@@ -1,0 +1,41 @@
+{
+  "schema_version": "yimecore-live-host-local-summary-v1",
+  "generated_at": "2026-09-11T00:05:43.3869841Z",
+  "installed_version": "0.1.0-local.13",
+  "manifest_sha256": "133c91fe205fcae911fa701a278465dad040e7dadce006b541697b656e50405a",
+  "hosts": [
+    {
+      "evidence": "notepad-acceptance-20260910-224402.json",
+      "behavior_acceptance": "pass",
+      "host": "Windows Notepad",
+      "architecture": "x64"
+    },
+    {
+      "evidence": "word-acceptance-20260910-235453.json",
+      "behavior_acceptance": "pass",
+      "host": "Microsoft Word",
+      "architecture": "x64"
+    },
+    {
+      "evidence": "firefox-acceptance-20260911-074134.json",
+      "behavior_acceptance": "pass",
+      "host": "Mozilla Firefox",
+      "architecture": "x86"
+    },
+    {
+      "evidence": "notepadpp-acceptance-20260911-080027.json",
+      "behavior_acceptance": "pass",
+      "host": "Notepad++",
+      "architecture": "x86"
+    }
+  ],
+  "four_host_three_mode_behavior_acceptance_passed": true,
+  "rounds_per_mode": 3,
+  "entire_matrix_sealed": false,
+  "protected_registration_and_default_before_after": "deferred_pending_development_side_request; historical comparison unavailable",
+  "new_invalid_code_fix_installed_validation": false,
+  "committed": false,
+  "pushed": false,
+  "remaining": "No further protection comparison work now per user decision. Four-host behavior results remain passed; historical preservation comparison is not claimed.",
+  "user_disposition_evidence": "protection-disposition-20260911-080543.json"
+}

@@ -1,0 +1,4 @@
+LIBRARY "YimeTextServiceExperiment"
+EXPORTS
+    DllCanUnloadNow PRIVATE
+    DllGetClassObject PRIVATE

@@ -1,0 +1,57 @@
+{
+    "schema_version":  "yimecore-native-cpu-diagnostic-run-v1",
+    "diagnostic_only":  true,
+    "eligible_for_acceptance":  false,
+    "diagnostic_complete":  true,
+    "failure":  null,
+    "git_commit":  "222f2d5f6411df1a942b12d0a11735a7205fe7df",
+    "package_manifest_sha256":  "086172b22c94933b727e8afebd156b29a581312bbeb61e5b78047518a1c1d842",
+    "go_version":  "go version go1.27.1 windows/amd64",
+    "diagnostic_tool_sha256":  "c913a0cfd56b1d2c75033aa9ad3fe4404188194a4fdb78db8f468ccaf0f1bb91",
+    "executable_sha256":  "bdf19e3f75397d90f1672c9c48670afde1e7f8ba3e3f8720c0bf006736461634",
+    "derived_entrypoint_files":  [
+                                     {
+                                         "path":  "go-backend/cmd/yimecore-native-profile/main.go",
+                                         "bytes":  9461,
+                                         "sha256":  "bf41a851f2057dcf6697ded521020540db0b60d13e84d8497ebb5ebe5884aac7"
+                                     },
+                                     {
+                                         "path":  "go-backend/cmd/yimecore-native-profile/native_cpu.go",
+                                         "bytes":  2986,
+                                         "sha256":  "ac66b1da0949ed005dee2ae03626c48d2d478b0a6b38b064f727053b6d4d49bf"
+                                     }
+                                 ],
+    "rows":  [
+                 {
+                     "mode":  "full",
+                     "diagnostic_complete":  true,
+                     "profile_sha256":  "06d54af2bc6bd676055d7a2c7b88089c663746ea6d21329b99910d0be95464c3",
+                     "replays_per_engine":  1000000,
+                     "share_report":  "C:\\YimeBench\\profiles\\learning-20260909-181159-beab7e3d\\share-full.txt"
+                 },
+                 {
+                     "mode":  "variable",
+                     "diagnostic_complete":  true,
+                     "profile_sha256":  "f608c7008ba96dcb1a2469029eb3b451afe5912d456a3717718afb03d4ef5834",
+                     "replays_per_engine":  1000000,
+                     "share_report":  "C:\\YimeBench\\profiles\\learning-20260909-181159-beab7e3d\\share-variable.txt"
+                 },
+                 {
+                     "mode":  "shorthand",
+                     "diagnostic_complete":  true,
+                     "profile_sha256":  "3aeecf83b2e7dd44ea73fd001eb126f38c672de695d3c84d31072b0ca9ed182d",
+                     "replays_per_engine":  1000000,
+                     "share_report":  "C:\\YimeBench\\profiles\\learning-20260909-181159-beab7e3d\\share-shorthand.txt"
+                 }
+             ],
+    "package_unchanged":  true,
+    "source_unchanged":  true,
+    "protected_registration_unchanged":  true,
+    "replays_per_engine":  1000000,
+    "notes":  [
+                  "Profiles include instrumentation overhead; no p95/p99 gate is evaluated.",
+                  "Tagged reports cover tagged execution. Untagged runtime work remains in all-engine reports.",
+                  "Model preparation and warmup precede CPU capture. Synthetic files remain in this result directory.",
+                  "No files are uploaded; no production installation, default-input or hardware setting is changed."
+              ]
+}

@@ -1,0 +1,705 @@
+{
+  "schema_version": "yimecore-connected-speech-isolated-acceptance-v1",
+  "generated_at": "2026-09-05T15:58:51.8350901+08:00",
+  "user_request": "继续推进后续试验，以便重新接入预留语流音变组件",
+  "terminology": "语流音变",
+  "scope": {
+    "host": "MYCOMPUTER",
+    "executed_architecture": "x64",
+    "installed_version": "0.1.0-local.12",
+    "other_physical_hosts_executed": false,
+    "scope_id": "mainstream-x64-arm64-resumed-2026-09-04"
+  },
+  "completed_stage_only": true,
+  "confirmed_product_regressions": [],
+  "sr0": {
+    "passed": true,
+    "generated_at": "2026-09-05T15:53:56.700569+08:00",
+    "index_build_count": 15,
+    "go_version": "go version go1.26.4 windows/amd64",
+    "locked_input_count": 30,
+    "hashed_source_count": 69,
+    "locked_inputs_unchanged": true,
+    "source_set_unchanged": true,
+    "installed_baseline_unchanged": true,
+    "environment_restored": true,
+    "mode_results": [
+      {
+        "mode": "full",
+        "core_indexed_records": 1166753,
+        "bundle_source_id": "yime-bundle-v1:full:cb54ede09375f6056ea9436631e2ec4e4ff0e91e9dee4952e59471b541423b5e",
+        "probe_count": 5,
+        "all_probe_checks_passed": true,
+        "module_coverage": [
+          {
+            "module_id": "explicit-erhua",
+            "indexed_records": 131,
+            "reachable_records": 131,
+            "direct_first_page_records": 131,
+            "direct_later_page_records": 0,
+            "passed": true
+          },
+          {
+            "module_id": "particle-a-stage6d",
+            "indexed_records": 5618,
+            "reachable_records": 5618,
+            "direct_first_page_records": 5618,
+            "direct_later_page_records": 0,
+            "passed": true
+          },
+          {
+            "module_id": "psc-peripheral",
+            "indexed_records": 101,
+            "reachable_records": 101,
+            "direct_first_page_records": 101,
+            "direct_later_page_records": 0,
+            "passed": true
+          },
+          {
+            "module_id": "third-tone-stage5c",
+            "indexed_records": 24,
+            "reachable_records": 24,
+            "direct_first_page_records": 24,
+            "direct_later_page_records": 0,
+            "passed": true
+          }
+        ]
+      },
+      {
+        "mode": "variable",
+        "core_indexed_records": 1166753,
+        "bundle_source_id": "yime-bundle-v1:variable:e2ca38eb1879be906d4064950022d56d9cf08a9a1349c786eaeac64c5aa74496",
+        "probe_count": 5,
+        "all_probe_checks_passed": true,
+        "module_coverage": [
+          {
+            "module_id": "explicit-erhua",
+            "indexed_records": 131,
+            "reachable_records": 131,
+            "direct_first_page_records": 131,
+            "direct_later_page_records": 0,
+            "passed": true
+          },
+          {
+            "module_id": "particle-a-stage6d",
+            "indexed_records": 5618,
+            "reachable_records": 5618,
+            "direct_first_page_records": 5618,
+            "direct_later_page_records": 0,
+            "passed": true
+          },
+          {
+            "module_id": "psc-peripheral",
+            "indexed_records": 101,
+            "reachable_records": 101,
+            "direct_first_page_records": 101,
+            "direct_later_page_records": 0,
+            "passed": true
+          },
+          {
+            "module_id": "third-tone-stage5c",
+            "indexed_records": 24,
+            "reachable_records": 24,
+            "direct_first_page_records": 24,
+            "direct_later_page_records": 0,
+            "passed": true
+          }
+        ]
+      },
+      {
+        "mode": "shorthand",
+        "core_indexed_records": 1166753,
+        "bundle_source_id": "yime-bundle-v1:shorthand:9fd49b683b3f76d9881c6f5385d289cbc53e71a6538fc9a5ecc3c66c3eecd54d",
+        "probe_count": 5,
+        "all_probe_checks_passed": true,
+        "module_coverage": [
+          {
+            "module_id": "explicit-erhua",
+            "indexed_records": 131,
+            "reachable_records": 131,
+            "direct_first_page_records": 131,
+            "direct_later_page_records": 0,
+            "passed": true
+          },
+          {
+            "module_id": "particle-a-stage6d",
+            "indexed_records": 5618,
+            "reachable_records": 5618,
+            "direct_first_page_records": 5618,
+            "direct_later_page_records": 0,
+            "passed": true
+          },
+          {
+            "module_id": "psc-peripheral",
+            "indexed_records": 101,
+            "reachable_records": 101,
+            "direct_first_page_records": 101,
+            "direct_later_page_records": 0,
+            "passed": true
+          },
+          {
+            "module_id": "third-tone-stage5c",
+            "indexed_records": 24,
+            "reachable_records": 24,
+            "direct_first_page_records": 24,
+            "direct_later_page_records": 0,
+            "passed": true
+          }
+        ]
+      }
+    ],
+    "module_records_per_mode": 5874,
+    "total_mode_module_records": 17622,
+    "coverage_limit": "Full indexed-source reachability; five reviewed canonical/alias/disable probes per mode. Not an exhaustive per-record disable/linguistic-admission test.",
+    "performance_gate_run": false
+  },
+  "sr1_synthetic_broker": {
+    "generated_at": "2026-09-05T15:52:12.7083905+08:00",
+    "command": "go test -json ./input_methods/yime/yimebroker -run '^TestConnectedSpeechReconnectBrokerBundleDurableLifecycle$' -count=1",
+    "go_version": "go version go1.26.4 windows/amd64",
+    "test": "TestConnectedSpeechReconnectBrokerBundleDurableLifecycle",
+    "subtests": [
+      {
+        "mode": "full",
+        "test": "TestConnectedSpeechReconnectBrokerBundleDurableLifecycle/full",
+        "run_observed": true,
+        "passed": true,
+        "elapsed_seconds": 0.05
+      },
+      {
+        "mode": "variable",
+        "test": "TestConnectedSpeechReconnectBrokerBundleDurableLifecycle/variable",
+        "run_observed": true,
+        "passed": true,
+        "elapsed_seconds": 0.03
+      },
+      {
+        "mode": "shorthand",
+        "test": "TestConnectedSpeechReconnectBrokerBundleDurableLifecycle/shorthand",
+        "run_observed": true,
+        "passed": true,
+        "elapsed_seconds": 0.03
+      }
+    ],
+    "exit_code": 0,
+    "passed": true,
+    "covered": [
+      "strict JSON Dispatcher requests",
+      "low-weight alias on later page",
+      "cancel without commit or learning",
+      "two explicit selections create two durable mutations",
+      "same-process DurableUserModel Close/Open preserves learned records and rank",
+      "immutable module removal drops module provenance without deleting user learning",
+      "reenable restores bundle source identity without duplicate code/text"
+    ],
+    "process_restart_tested": false,
+    "installed_broker_or_named_pipe_tested": false,
+    "new_live_module_setting_implemented": false
+  },
+  "reference_real_rime": {
+    "generated_at": "2026-09-05T15:50:54.5932422+08:00",
+    "selection": "^(TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas|TestRealRimeParticleAStage6DDualTrackAcrossAllThreeSchemas|TestRealRimePSCPeripheralAcrossAllThreeSchemas)$",
+    "tests": [
+      {
+        "test": "TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas/variable",
+        "action": "pass",
+        "elapsed": 0.17
+      },
+      {
+        "test": "TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas/full",
+        "action": "pass",
+        "elapsed": 0.17
+      },
+      {
+        "test": "TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas/shorthand",
+        "action": "pass",
+        "elapsed": 0.22
+      },
+      {
+        "test": "TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas",
+        "action": "pass",
+        "elapsed": 10.77
+      },
+      {
+        "test": "TestRealRimeParticleAStage6DDualTrackAcrossAllThreeSchemas/variable",
+        "action": "pass",
+        "elapsed": 0.15
+      },
+      {
+        "test": "TestRealRimeParticleAStage6DDualTrackAcrossAllThreeSchemas/full",
+        "action": "pass",
+        "elapsed": 0.17
+      },
+      {
+        "test": "TestRealRimeParticleAStage6DDualTrackAcrossAllThreeSchemas/shorthand",
+        "action": "pass",
+        "elapsed": 0.19
+      },
+      {
+        "test": "TestRealRimeParticleAStage6DDualTrackAcrossAllThreeSchemas",
+        "action": "pass",
+        "elapsed": 10.49
+      },
+      {
+        "test": "TestRealRimePSCPeripheralAcrossAllThreeSchemas/variable",
+        "action": "pass",
+        "elapsed": 0.01
+      },
+      {
+        "test": "TestRealRimePSCPeripheralAcrossAllThreeSchemas/full",
+        "action": "pass",
+        "elapsed": 0.03
+      },
+      {
+        "test": "TestRealRimePSCPeripheralAcrossAllThreeSchemas/shorthand",
+        "action": "pass",
+        "elapsed": 0.04
+      },
+      {
+        "test": "TestRealRimePSCPeripheralAcrossAllThreeSchemas",
+        "action": "pass",
+        "elapsed": 10.19
+      }
+    ],
+    "exit_code": 0,
+    "environment_restored": true,
+    "canonical_and_fixture_sources_unchanged": true,
+    "protected_registration_unchanged": true,
+    "installed_runtime_unchanged": true,
+    "installed_package_valid": true,
+    "passed": true,
+    "runtime": "repository-pinned librime 1.17.0 (33e7814), Windows-msvc-x64",
+    "subtest_count": 9,
+    "parent_test_count": 3,
+    "stage5c_covered_within_explicit_erhua_test": true,
+    "production_rime_used": false,
+    "installed_yimecore_dependency_inferred": false
+  },
+  "runner_contracts": {
+    "powershell_7_version": "7.6.5",
+    "powershell_7_pass_count": 63,
+    "powershell_5_1_pass_count": 63,
+    "full_sr0_requires": "PowerShell Core 7.5+",
+    "ps5_limit": "Pure checks pass including rejection of exact empty-string environment assignment; full SR0 is rejected before baseline or writes.",
+    "null_and_empty_preserved_distinctly": true
+  },
+  "legacy_static": {
+    "schema_version": "yimecore-legacy-payload-static-outcomes-v1",
+    "checked_at": "2026-09-05T15:56:35.1583086+08:00",
+    "legacy_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-45b389e530c0-8d48953a",
+    "manifest_target": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-45b389e530c0-8d48953a\\package-manifest.json",
+    "expected_manifest_sha256": "8d48953ac0b5017b725272ee6300d0b988e99a0d25b9e035216f6c90b774fb64",
+    "actual_manifest_sha256": "8d48953ac0b5017b725272ee6300d0b988e99a0d25b9e035216f6c90b774fb64",
+    "manifest_hash_match": true,
+    "expected_payload_count": 6,
+    "payloads": [
+      {
+        "relative_path": "x86/YimeRegisteredHostTests.exe",
+        "target": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-45b389e530c0-8d48953a\\x86\\YimeRegisteredHostTests.exe",
+        "expected_sha256": "5edb34d7b3c75cf24dec7dae65e01aa9c4e02a29aa66d5be1b304a0ddb455e18",
+        "actual_sha256": "5edb34d7b3c75cf24dec7dae65e01aa9c4e02a29aa66d5be1b304a0ddb455e18",
+        "expected_bytes": 371712,
+        "actual_bytes": 371712,
+        "exists": true,
+        "hash_match": true,
+        "bytes_match": true,
+        "executed": false
+      },
+      {
+        "relative_path": "arm64/YimeRegisteredHostTests.exe",
+        "target": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-45b389e530c0-8d48953a\\arm64\\YimeRegisteredHostTests.exe",
+        "expected_sha256": "ec6bc1dd792301c8778db6881ee49d3193509baf711bdbbfc2dc44ad9ee16ca2",
+        "actual_sha256": "ec6bc1dd792301c8778db6881ee49d3193509baf711bdbbfc2dc44ad9ee16ca2",
+        "expected_bytes": 437248,
+        "actual_bytes": 437248,
+        "exists": true,
+        "hash_match": true,
+        "bytes_match": true,
+        "executed": false
+      },
+      {
+        "relative_path": "arm64/YimeTextServiceExperiment.dll",
+        "target": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-45b389e530c0-8d48953a\\arm64\\YimeTextServiceExperiment.dll",
+        "expected_sha256": "d5dc84c87dae608e0ff1e65b5d98fb1a33ab6424da91da2263636e1efbd1b18e",
+        "actual_sha256": "d5dc84c87dae608e0ff1e65b5d98fb1a33ab6424da91da2263636e1efbd1b18e",
+        "expected_bytes": 654336,
+        "actual_bytes": 654336,
+        "exists": true,
+        "hash_match": true,
+        "bytes_match": true,
+        "executed": false
+      },
+      {
+        "relative_path": "arm64/YimeTextServiceRegistration.exe",
+        "target": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-45b389e530c0-8d48953a\\arm64\\YimeTextServiceRegistration.exe",
+        "expected_sha256": "6683e3ff27eaa0379604fc7263d9b46e7457b8ebd7d29b2848a637d7cbbb675a",
+        "actual_sha256": "6683e3ff27eaa0379604fc7263d9b46e7457b8ebd7d29b2848a637d7cbbb675a",
+        "expected_bytes": 268800,
+        "actual_bytes": 268800,
+        "exists": true,
+        "hash_match": true,
+        "bytes_match": true,
+        "executed": false
+      },
+      {
+        "relative_path": "x86/YimeTextServiceExperiment.dll",
+        "target": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-45b389e530c0-8d48953a\\x86\\YimeTextServiceExperiment.dll",
+        "expected_sha256": "0dfe2bb5617c65bd1e94c62ff9ee8cb23eb912fa68ca21a7705083022f2a8f95",
+        "actual_sha256": "0dfe2bb5617c65bd1e94c62ff9ee8cb23eb912fa68ca21a7705083022f2a8f95",
+        "expected_bytes": 578560,
+        "actual_bytes": 578560,
+        "exists": true,
+        "hash_match": true,
+        "bytes_match": true,
+        "executed": false
+      },
+      {
+        "relative_path": "x86/YimeTextServiceRegistration.exe",
+        "target": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-45b389e530c0-8d48953a\\x86\\YimeTextServiceRegistration.exe",
+        "expected_sha256": "ccd08ef8270893fbf136f38c2891353900a9dd12b1476a15e2858fb1c4127024",
+        "actual_sha256": "ccd08ef8270893fbf136f38c2891353900a9dd12b1476a15e2858fb1c4127024",
+        "expected_bytes": 228352,
+        "actual_bytes": 228352,
+        "exists": true,
+        "hash_match": true,
+        "bytes_match": true,
+        "executed": false
+      }
+    ],
+    "all_payload_hashes_and_sizes_match": true,
+    "optional_current_legacy_com_reference_check": {
+      "attempted": true,
+      "provider": "out-of-process StdRegProv",
+      "result": "access_denied",
+      "process_view_fallback_used": false,
+      "passed": null,
+      "note": "Supplemental query failed with provider access denied; static payload result does not depend on current COM readback."
+    },
+    "current_scope_sha256": "b0c03152c2d27706e5abc895e48db6c18e3f81a0b6beadf2113f5f4b03c80ff3",
+    "retention_source": "docs/project/YIMECORE_LOCAL_PRODUCT_IMPLEMENTATION_PLAN.md:32",
+    "manifest_pin_source": "docs/YIMECORE_LOCAL_CLOSURE_2026-09-02.md:29-30",
+    "frozen_targets_executed": false,
+    "state_read": false,
+    "user_data_read": false,
+    "user_text_read": false,
+    "registry_writes": false,
+    "product_writes": false,
+    "compatibility_acceptance_inferred": false,
+    "limitations": [
+      "Exactly the six x86/ARM64 frozen entries in one independently pinned retained manifest were hashed; no claim covers unrelated archival copies.",
+      "File integrity is not executable compatibility, native execution, or current-product acceptance.",
+      "Current product and restored target source outputs are not relabelled as this legacy payload."
+    ]
+  },
+  "installed_metadata": {
+    "package_version": "0.1.0-local.12",
+    "manifest_sha256": "9b3366b350ef2b23fd285fc9d97d876bf1ae6e2fc0f8613c647640f01184502e",
+    "package_file_count": 74,
+    "boot_at": "2026-09-05T15:07:41.5+08:00",
+    "processes": [
+      {
+        "name": "YimeCoreTrialRuntime.exe",
+        "pid": 31596,
+        "image": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-62af8b507c91-9b3366b3\\bin\\YimeCoreTrialRuntime.exe",
+        "started_at": "2026-09-05T15:08:18.977474+08:00",
+        "current_package": true,
+        "after_boot": true
+      },
+      {
+        "name": "YimeBroker.exe",
+        "pid": 31672,
+        "image": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-62af8b507c91-9b3366b3\\bin\\YimeBroker.exe",
+        "started_at": "2026-09-05T15:08:19.089404+08:00",
+        "current_package": true,
+        "after_boot": true
+      }
+    ],
+    "protected_registry_sha256": {
+      "SOFTWARE\\Classes\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "c155612c1f530895365b0853f483c7741ad225c0b7af12292e5d9830b94e3278",
+      "SOFTWARE\\Classes\\WOW6432Node\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "79222059bf3f60e1a5d2990b3722224d68b1cc55acc16eda25238ea05dff1c59",
+      "SOFTWARE\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "641c99dd3f8d3bd98beb9945bf1c9b46ca1c0e9e4fee92e63def44b692b4139a",
+      "SOFTWARE\\WOW6432Node\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "641c99dd3f8d3bd98beb9945bf1c9b46ca1c0e9e4fee92e63def44b692b4139a",
+      "user/Software\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "e39f603a5ebcff23859d200f9c9dc20f6c19d48aa185d09445bd42e31abcc3ff",
+      "SOFTWARE\\Classes\\CLSID\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "e39f603a5ebcff23859d200f9c9dc20f6c19d48aa185d09445bd42e31abcc3ff",
+      "SOFTWARE\\Classes\\WOW6432Node\\CLSID\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "cc12f6b74672f85fa166a5dc195f2695a81355c947ab08c7fec53af5d3c677c6",
+      "SOFTWARE\\Microsoft\\CTF\\TIP\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "a623f0671e15f5eff35385563ec23451f930e53969d5b1869246b8a08d90977f",
+      "SOFTWARE\\WOW6432Node\\Microsoft\\CTF\\TIP\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "a623f0671e15f5eff35385563ec23451f930e53969d5b1869246b8a08d90977f",
+      "user/Software\\Microsoft\\CTF\\TIP\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "141e5f7734d60b4b7a8150f4730180d678a56b48d868b2e780c8f11482ebf6d3",
+      "user/Control Panel\\International\\User Profile": "e0ebcad9414a4fa51ae57fd1a1386fd688e1c4c29acbed38b2edb51bc4053bcf",
+      "user/Keyboard Layout\\Preload": "079bb037883fad5ce2d4a922ef13ead05ef10f23f6b72ee9103f011d26ec44c3"
+    }
+  },
+  "admission_gaps": [
+    {
+      "id": "SR2-FORWARD-SOURCE",
+      "status": "not_passed",
+      "evidence": "Historical Stage6D builds an inverse map from canonical codes and scans the generated full Rime dictionary to reconstruct upstream tuples. It was reviewed, not rerun. Reconnection needs explicit canonical pronunciation/construction records and forward derivation.",
+      "source": "go-backend/input_methods/yime/connectedspeech/particle_a_stage6d.go:143"
+    },
+    {
+      "id": "SR2-NONLENGTHENING",
+      "status": "not_passed",
+      "evidence": "modeLengthProjectionValid checks valid position/mode shapes, not alias <= canonical; its historical test intentionally allows variable/shorthand growth. Neither this audit flag nor SR0 reachability certifies current strict runtime admission.",
+      "source": "go-backend/input_methods/yime/connectedspeech/report.go:423"
+    },
+    {
+      "id": "SR3-ATOMIC-BUNDLE-GENERATION",
+      "status": "not_implemented",
+      "evidence": "Current multi-mode Broker builder assembles professional modules; speech module manifest loading and atomic core+module generation binding are not wired by these tests.",
+      "source": "go-backend/cmd/yimebroker/main.go:300"
+    }
+  ],
+  "required_future_gates": [
+    "Forward canonical-record provenance and reviewed scope/exclusions",
+    "Fresh stable four-yinyuan positional projection with independently recomputed non-lengthening in all three modes",
+    "Atomic core/module manifest-generation loader, default off, failure and old-session retention contracts",
+    "Isolated real Broker process restart and configuration persistence",
+    "Fresh current-identity package and affected installed x64/x86 host/manual/recovery acceptance"
+  ],
+  "readiness": {
+    "speech_modules_enabled_in_installed_product": false,
+    "source_wiring_complete": false,
+    "installed_speech_acceptance_passed": null,
+    "L5_final_user_confirmation": null,
+    "L6_sealed": false,
+    "local_product_ready": false,
+    "public_release_ready": false
+  },
+  "privacy": {
+    "user_text_recorded": false,
+    "user_documents_or_private_notes_read": false,
+    "real_learning_store_read": false,
+    "live_configuration_read": false,
+    "daily_broker_connected": false,
+    "default_input_method_changed": false,
+    "production_rime_pime_changed": false,
+    "legacy_payload_executed": false,
+    "automatic_reboot_or_install": false,
+    "raw_logs": "Only owned synthetic tests or repository fixtures; no product/user runtime logs."
+  },
+  "prior_harness_attempts": [
+    {
+      "root": ".tmp/yimecore-experiment/speech-rime-20260905-1538-92acd941",
+      "outcome": "Go tests passed; result parser failed on package-level JSON with no Test property; not counted as complete evidence."
+    },
+    {
+      "root": ".tmp/yimecore-experiment/speech-rime-20260905-1538-92acd941-retry-c01c",
+      "outcome": "Go tests passed and product/source protections passed; environment-restoration gate failed because absent variables became empty strings; summary.passed remains false."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".tmp/yimecore-experiment/speech-reconnect-20260905-155345-bf5cafdc9f0c41cf9e33048356c99e0e/summary.json",
+      "sha256": "6c99ef5182bc6c01484433371722cf9d4b087e8a187db403ac326e5a55edb094"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-rime-20260905-final-89d2/summary.json",
+      "sha256": "d410bb521e12d60442791e17a767bccad8eb49d0f37dea17ecfec5c2577fc136"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-rime-20260905-final-89d2/go-test.jsonl",
+      "sha256": "9e9f79d970d1e2d92b0a6c6512816dbc2210f27260fb7b404802e5ded8a7ba1f"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-broker-contract-20260905-155208-c50db45e/summary.json",
+      "sha256": "bfe47a526a070ac7e800c86501526fb4499dd61f0ae4e86eddc9ff9789b1ca25"
+    },
+    {
+      "path": ".tmp/yimecore-experiment/speech-broker-contract-20260905-155208-c50db45e/go-test.jsonl",
+      "sha256": "7436e33ec6599c0578b173920d7d0bbd50579776b939af365fa0c94dba21e5ad"
+    },
+    {
+      "path": "tools/yimecore/run-connected-speech-reconnect.ps1",
+      "sha256": "87e76e5d009d333f5cedccb3f2168c6750ca098eb692604d47e479211fdd01d3"
+    },
+    {
+      "path": "tools/yimecore/test-connected-speech-reconnect.ps1",
+      "sha256": "d4fc7c4d8962448b4f1eef14f980da651cd4b28a27c2302ae69253e8abaf6350"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/connected_speech_reconnect_test.go",
+      "sha256": "417b8910ec3674036afbc64781d34cd4347d6102756911d41951757e57fc216a"
+    },
+    {
+      "sha256": "c8b60b7b1762637b918a4416eb5c9a784f0cba9cda2fec21941017c2cf31f617",
+      "path": ".tmp/yimecore-experiment/legacy-payload-static-20260905155635-5eaef1cb/outcome.json"
+    }
+  ],
+  "locked_input_hashes": [
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_full.dict.yaml",
+      "bytes": 4710,
+      "sha256": "8b65157cbdc489d97faa4a769972a2d74c5878c1bb5bdbcf4a537e7460fcf36a"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_manifest.json",
+      "bytes": 4044,
+      "sha256": "0a1f89dc4df28682924a62f62f2cc224bcf97ca09443ea4e6ee659acbe16091c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_full.dict.yaml",
+      "bytes": 3181,
+      "sha256": "b67f2cee5e3d9f7dbf2ba471d4bde890239902143d00eb27f91c8437991bc0c1"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_shorthand.dict.yaml",
+      "bytes": 3046,
+      "sha256": "b84bf88ac11a8b4539f0dcd978f676b874c8efac52b5fa12ab88cad872020705"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_variable.dict.yaml",
+      "bytes": 3072,
+      "sha256": "aec8483fa49c159007b564b264c2a1f9e3755fbb9be1c91e6626f6258fba8d76"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.dict.yaml",
+      "bytes": 4373,
+      "sha256": "eee94ba46bed6495477f45d7d5b7deabf4be0041197d3a0128a90d6072c6b570"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_variable.dict.yaml",
+      "bytes": 4411,
+      "sha256": "011448c018f309303af488fa143c31e82803f76a3734ca301c3b73a9599ca51d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_reverse_source.tsv",
+      "bytes": 40241,
+      "sha256": "896d69089125826e4d2d83601ad4ee60d23ba2f556a9888551097546bc0f3f05"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+      "bytes": 31621303,
+      "sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_full.dict.yaml",
+      "bytes": 150994,
+      "sha256": "e570b452543845542f0dc0e04233e44aa0ab9cfab12d655d9e811019fbc8064b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_manifest.json",
+      "bytes": 2549,
+      "sha256": "e176793b2359b3d32cef397a8d20a7fc24c24f9c52cf98e381ce240c4b2bba11"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_shorthand.dict.yaml",
+      "bytes": 132044,
+      "sha256": "e8e34cd76847bfb2cc2b6a3df4f5a76641a40f402fb818a099e06dec24e86b7d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_variable.dict.yaml",
+      "bytes": 134218,
+      "sha256": "1b80e35ea9c04a3600fd0a5e60cdba3a2cd6b5743c6c376ddfcfbb478cd53cd0"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_full.dict.yaml",
+      "bytes": 2842,
+      "sha256": "339caa6828e0ce569bd81a1f93d3a1b3b4c9e69c468f65108690fbee9e83cf15"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_manifest.json",
+      "bytes": 2073,
+      "sha256": "2e4a3ac0dba4bf497519dc2f60f89ae899f2e34d1bdecbe776490b2273052807"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_full.dict.yaml",
+      "bytes": 3038,
+      "sha256": "1dac84cb9de9565d54768688fec9f712279a6e8e78801c1f511e74f56d18622d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_shorthand.dict.yaml",
+      "bytes": 2734,
+      "sha256": "41c39164c0a8cbc2a038d08dbaef4d14d2002a03efd60accc7316dc332e56f78"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_variable.dict.yaml",
+      "bytes": 2759,
+      "sha256": "22929e9c35a0daf6918ede8fe2de4b800ba78154bc195eaa2e22ecaf3362c22d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_shorthand.dict.yaml",
+      "bytes": 2538,
+      "sha256": "1ff18ea29b4be8b9a9979941018042d4a1b333be8e4a5a43aaa4fd312eb7fa73"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_variable.dict.yaml",
+      "bytes": 2563,
+      "sha256": "96850c6e75d07250fcf0aba1bed685c13592556ee4742a61a929254212ae9026"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_sentence_full.dict.yaml",
+      "bytes": 368,
+      "sha256": "bdcc06ecb949eb589884f2de1f0d591ac42b331b9327b8a9f2424f5a9375603e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_sentence_shorthand.dict.yaml",
+      "bytes": 398,
+      "sha256": "ca26b480507b90b6be0d47e0138ad463d0b367cc5fa1bdbb9b6ef47c232243ab"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_sentence_variable.dict.yaml",
+      "bytes": 392,
+      "sha256": "3a1569ec196835195a13ea2ccb55f719faf08a4ccb3b8cb82506e1b7bd921e57"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_shorthand.dict.yaml",
+      "bytes": 29563931,
+      "sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_full.dict.yaml",
+      "bytes": 694,
+      "sha256": "e6a478b4d8fc0474ae02b13dc6a5cffaf62ff7ca3ad1ba0f75b937cf75854f89"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_manifest.json",
+      "bytes": 1551,
+      "sha256": "b53b46ef49da894d019b5db4dc281b19aaceec9fe9ec570b26653b8e0c54d82e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_shorthand.dict.yaml",
+      "bytes": 676,
+      "sha256": "4b9e428a09b8f5be8478a6d7d947f54760c2e395eeb1117b8a3702d04c840253"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_variable.dict.yaml",
+      "bytes": 675,
+      "sha256": "052b5b75cc0c8e1d5deae9f3c05a1ed45d36b02339630f130860a1204f011f84"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_variable.dict.yaml",
+      "bytes": 30155261,
+      "sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b"
+    },
+    {
+      "path": "tools/lexicon/data/yime_core_target.lock.json",
+      "bytes": 4784,
+      "sha256": "7a2d2a845e59d63112507cd071de336898e9da1a024051e156555be251c6a845"
+    }
+  ],
+  "code_review_hashes": [
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/report.go",
+      "sha256": "c57c78e01de47cfbbece4eea09d9ad6e483e3c388b4ca73fb5822c1c954514af"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/report_test.go",
+      "sha256": "4fa8172b76e79dc138acc60b1f7bccd1b7cd097d040852ef1a08c512f9338df5"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/particle_a_stage6d.go",
+      "sha256": "de8f510ec9db2b032b7507b5e57fa4e38b612238db2a0022c2c1510d594e263e"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker/main.go",
+      "sha256": "c007e17dfdebf5045cfa473a8bc535bce3f20bd7aff0652f4d9311458f8b4909"
+    }
+  ],
+  "limits": [
+    "PSC peripheral is a reviewed lexical neutral-tone/erhua auxiliary layer, not newly inferred contextual neutral-tone.",
+    "Existing reviewed files remain read-only; no new sound-change rules, character insertion/deletion, pinyin rewrite or key-layout changes.",
+    "Counts refer to mode/module index records, not distinct lexical items across modes.",
+    "Module disable must remove module provenance, not erase independently learned user entries.",
+    "No main-stream x64 external PC or ARM64 native execution/compatibility is inferred."
+  ]
+}

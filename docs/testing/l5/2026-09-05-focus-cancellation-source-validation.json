@@ -1,0 +1,585 @@
+{
+  "schema_version": "yimecore-l5-d2-focus-cancellation-source-evidence-v1",
+  "generated_at": "2026-09-05T12:51:15.1127825+08:00",
+  "issue": "D2-F-01",
+  "decision": "Cancel unconfirmed composition on focus loss; neither commit raw ASCII nor automatically choose Chinese; preserve confirmed text.",
+  "installed_candidate_version": "0.1.0-local.11",
+  "source_fix_implemented": true,
+  "source_validation_completed": true,
+  "installed_fix_verified": false,
+  "daily_use_accepted": false,
+  "public_release_ready": false,
+  "scope": "Current-product-identity x64 and x86 WOW64 source tests on MYCOMPUTER only; no registered/live host execution.",
+  "run_root": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc",
+  "final_run": {
+    "schema_version": "yimecore-focus-cancellation-source-validation-v1",
+    "generated_at": "2026-09-05T04:50:25.3389874Z",
+    "passed": true,
+    "failure": null,
+    "protection_error": null,
+    "development_scope": {
+      "id": "mainstream-x64-arm64-resumed-2026-09-04",
+      "computer_name": "MYCOMPUTER",
+      "native_architecture": "AMD64",
+      "active_architectures": [
+        "x64",
+        "x86"
+      ],
+      "performance_profile": "development_host_x64",
+      "frozen_targets": [
+        "forward_physical_pcs",
+        "simulated_hardware_tiers"
+      ],
+      "experiment_targets": [
+        {
+          "id": "mainstream_x64",
+          "architecture": "x64",
+          "go_arch": "amd64",
+          "cmake_platform": "x64",
+          "status": "active",
+          "physical_host": null
+        },
+        {
+          "id": "arm64",
+          "architecture": "arm64",
+          "go_arch": "arm64",
+          "cmake_platform": "ARM64",
+          "status": "active",
+          "physical_host": null
+        }
+      ],
+      "policy_sha256": "b0c03152c2d27706e5abc895e48db6c18e3f81a0b6beadf2113f5f4b03c80ff3"
+    },
+    "current_product_identity": {
+      "product_key": "YimeCoreExperimentalTrial",
+      "clsid": "{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "profile": "{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+      "language_id": "0804",
+      "state_directory": "YimeCore Experimental Trial",
+      "install_directory": "YimeCore Experimental Trial",
+      "pipe": "\\\\.\\pipe\\YimeBroker.YimeCoreTrial.v1",
+      "model_source_id": "yimecore-e6c-three-mode-trial-v1",
+      "legacy_display_name": "Yime 自研栈试验版",
+      "legacy_clsid": "{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}",
+      "legacy_profile": "{607895A8-9504-4A2E-9BB1-2C159E3A1757}",
+      "display_name_activation": "local x64 runtime with current-identity x64 and x86 TSF surfaces; frozen legacy profile and build labels unchanged"
+    },
+    "modes": [
+      "full",
+      "variable",
+      "shorthand"
+    ],
+    "runs": [
+      {
+        "mode": "full",
+        "architecture": "x64",
+        "passed": true,
+        "elapsed_ms": 24895.7207
+      },
+      {
+        "mode": "full",
+        "architecture": "x86",
+        "passed": true,
+        "elapsed_ms": 24966.0148
+      },
+      {
+        "mode": "variable",
+        "architecture": "x64",
+        "passed": true,
+        "elapsed_ms": 24718.4853
+      },
+      {
+        "mode": "variable",
+        "architecture": "x86",
+        "passed": true,
+        "elapsed_ms": 24776.3328
+      },
+      {
+        "mode": "shorthand",
+        "architecture": "x64",
+        "passed": true,
+        "elapsed_ms": 24815.789
+      },
+      {
+        "mode": "shorthand",
+        "architecture": "x86",
+        "passed": true,
+        "elapsed_ms": 24850.6373
+      }
+    ],
+    "protection_provider": "StdRegProv",
+    "protected_before_sha256": "e51bcdcd6942271b2abbf030536e0f1e3b6844321a7b47788375a47b0c4a818b",
+    "protected_after_sha256": "e51bcdcd6942271b2abbf030536e0f1e3b6844321a7b47788375a47b0c4a818b",
+    "protected_registration_and_default_unchanged": true,
+    "broker_processes": [
+      {
+        "mode": "full",
+        "pid": 37472,
+        "image": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\bin\\YimeBroker.exe",
+        "started_at": "2026-09-05T04:47:49.6519548Z",
+        "pipe": "\\\\.\\pipe\\YimeBroker.FocusCancellation.c4f43fed8cc244938349f382af5cb505",
+        "stopped": true
+      },
+      {
+        "mode": "variable",
+        "pid": 31840,
+        "image": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\bin\\YimeBroker.exe",
+        "started_at": "2026-09-05T04:48:40.4725472Z",
+        "pipe": "\\\\.\\pipe\\YimeBroker.FocusCancellation.cb6feb90fee24bbeb8df65c8681ae445",
+        "stopped": true
+      },
+      {
+        "mode": "shorthand",
+        "pid": 7200,
+        "image": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\bin\\YimeBroker.exe",
+        "started_at": "2026-09-05T04:49:30.9104637Z",
+        "pipe": "\\\\.\\pipe\\YimeBroker.FocusCancellation.846faa9dd1d740689c0076593c934d59",
+        "stopped": true
+      }
+    ],
+    "source_hashes": "source-hashes.json",
+    "artifact_hashes": "artifact-hashes.json",
+    "test_fixture_evidence": "test-fixtures.json",
+    "test_executable_environment_isolation": "per-invocation TEMP/TMP/LOCALAPPDATA under fresh output root, restored in finally",
+    "direct_test_language_bar_launchers": "injected no-launch callbacks; not runtime autostart or tool-launch acceptance",
+    "source_validation_only": true,
+    "direct_tsf_test_executed": true,
+    "cancellation_mock_test_executed": true,
+    "native_architectures_built": [
+      "x64",
+      "x86"
+    ],
+    "registered_host_test_executed": false,
+    "registered_host_executable_build_only": true,
+    "installed_candidate_changed": false,
+    "live_host_acceptance_passed": null,
+    "daily_use_accepted": false,
+    "public_release_ready": false,
+    "durable_user_model_used": false,
+    "installed_config_read": false,
+    "user_text_recorded": false,
+    "note": "Fresh current-identity x64/x86 source and direct in-process TSF tests with approved dictionaries and disposable in-memory Broker only. No registration, install, default-input change or production/user data mutation. Registered/live-host acceptance remains pending."
+  },
+  "mock_checks_per_architecture": {
+    "x64": 32,
+    "x86": 32
+  },
+  "mock_scenarios": [
+    "deferred and immediate cancellation",
+    "duplicate cancellation",
+    "new-composition identity guard",
+    "failed write and retry",
+    "external termination without recursive EndComposition",
+    "confirmed commit precedes stale cancellation",
+    "null range and rejected edit request"
+  ],
+  "final_test_fixtures": [
+    {
+      "executable": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\native-x64\\Release\\YimeTextServiceContractTests.exe",
+      "fixture_root": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\872bf305d17d47f1be77c81939dd40d0",
+      "environment": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\872bf305d17d47f1be77c81939dd40d0\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\872bf305d17d47f1be77c81939dd40d0\\temp",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\872bf305d17d47f1be77c81939dd40d0\\local-app-data"
+      },
+      "environment_isolated": true,
+      "environment_restored": true,
+      "executed": true,
+      "exit_code": 0,
+      "passed": true,
+      "log": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\contract-x64.txt",
+      "scope": "Fresh per-invocation TEMP/TMP/LOCALAPPDATA; no live settings or earlier PID fixture reuse."
+    },
+    {
+      "executable": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\native-x64\\Release\\YimeFocusCancellationTests.exe",
+      "fixture_root": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\98632c248a9a4785b4521e7b1878de0d",
+      "environment": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\98632c248a9a4785b4521e7b1878de0d\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\98632c248a9a4785b4521e7b1878de0d\\temp",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\98632c248a9a4785b4521e7b1878de0d\\local-app-data"
+      },
+      "environment_isolated": true,
+      "environment_restored": true,
+      "executed": true,
+      "exit_code": 0,
+      "passed": true,
+      "log": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\focus-cancellation-mock-x64.txt",
+      "scope": "Fresh per-invocation TEMP/TMP/LOCALAPPDATA; no live settings or earlier PID fixture reuse."
+    },
+    {
+      "executable": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\native-x86\\Release\\YimeTextServiceContractTests.exe",
+      "fixture_root": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\92438e8390e04668920109a70be8680d",
+      "environment": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\92438e8390e04668920109a70be8680d\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\92438e8390e04668920109a70be8680d\\temp",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\92438e8390e04668920109a70be8680d\\local-app-data"
+      },
+      "environment_isolated": true,
+      "environment_restored": true,
+      "executed": true,
+      "exit_code": 0,
+      "passed": true,
+      "log": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\contract-x86.txt",
+      "scope": "Fresh per-invocation TEMP/TMP/LOCALAPPDATA; no live settings or earlier PID fixture reuse."
+    },
+    {
+      "executable": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\native-x86\\Release\\YimeFocusCancellationTests.exe",
+      "fixture_root": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\d46373f20a234a5a87f86b2a9e9f2c87",
+      "environment": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\d46373f20a234a5a87f86b2a9e9f2c87\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\d46373f20a234a5a87f86b2a9e9f2c87\\temp",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\d46373f20a234a5a87f86b2a9e9f2c87\\local-app-data"
+      },
+      "environment_isolated": true,
+      "environment_restored": true,
+      "executed": true,
+      "exit_code": 0,
+      "passed": true,
+      "log": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\focus-cancellation-mock-x86.txt",
+      "scope": "Fresh per-invocation TEMP/TMP/LOCALAPPDATA; no live settings or earlier PID fixture reuse."
+    },
+    {
+      "executable": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\native-x64\\Release\\YimeTsfCompositionTests.exe",
+      "fixture_root": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\b4d8901d39db4038aeb67bdc33abb307",
+      "environment": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\b4d8901d39db4038aeb67bdc33abb307\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\b4d8901d39db4038aeb67bdc33abb307\\temp",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\b4d8901d39db4038aeb67bdc33abb307\\local-app-data"
+      },
+      "environment_isolated": true,
+      "environment_restored": true,
+      "executed": true,
+      "exit_code": 0,
+      "passed": true,
+      "log": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\full\\tsf-x64.txt",
+      "scope": "Fresh per-invocation TEMP/TMP/LOCALAPPDATA; no live settings or earlier PID fixture reuse."
+    },
+    {
+      "executable": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\native-x86\\Release\\YimeTsfCompositionTests.exe",
+      "fixture_root": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\756b60e683244a559c1bd28c88aceac2",
+      "environment": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\756b60e683244a559c1bd28c88aceac2\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\756b60e683244a559c1bd28c88aceac2\\temp",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\756b60e683244a559c1bd28c88aceac2\\local-app-data"
+      },
+      "environment_isolated": true,
+      "environment_restored": true,
+      "executed": true,
+      "exit_code": 0,
+      "passed": true,
+      "log": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\full\\tsf-x86.txt",
+      "scope": "Fresh per-invocation TEMP/TMP/LOCALAPPDATA; no live settings or earlier PID fixture reuse."
+    },
+    {
+      "executable": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\native-x64\\Release\\YimeTsfCompositionTests.exe",
+      "fixture_root": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\f0c647dc43cd4f82b568d14471887175",
+      "environment": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\f0c647dc43cd4f82b568d14471887175\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\f0c647dc43cd4f82b568d14471887175\\temp",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\f0c647dc43cd4f82b568d14471887175\\local-app-data"
+      },
+      "environment_isolated": true,
+      "environment_restored": true,
+      "executed": true,
+      "exit_code": 0,
+      "passed": true,
+      "log": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\variable\\tsf-x64.txt",
+      "scope": "Fresh per-invocation TEMP/TMP/LOCALAPPDATA; no live settings or earlier PID fixture reuse."
+    },
+    {
+      "executable": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\native-x86\\Release\\YimeTsfCompositionTests.exe",
+      "fixture_root": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\bc4b94c4e0384ec384d7c26f4e3d4947",
+      "environment": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\bc4b94c4e0384ec384d7c26f4e3d4947\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\bc4b94c4e0384ec384d7c26f4e3d4947\\temp",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\bc4b94c4e0384ec384d7c26f4e3d4947\\local-app-data"
+      },
+      "environment_isolated": true,
+      "environment_restored": true,
+      "executed": true,
+      "exit_code": 0,
+      "passed": true,
+      "log": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\variable\\tsf-x86.txt",
+      "scope": "Fresh per-invocation TEMP/TMP/LOCALAPPDATA; no live settings or earlier PID fixture reuse."
+    },
+    {
+      "executable": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\native-x64\\Release\\YimeTsfCompositionTests.exe",
+      "fixture_root": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\f0cf2115061649f796d1561483afdb56",
+      "environment": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\f0cf2115061649f796d1561483afdb56\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\f0cf2115061649f796d1561483afdb56\\temp",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\f0cf2115061649f796d1561483afdb56\\local-app-data"
+      },
+      "environment_isolated": true,
+      "environment_restored": true,
+      "executed": true,
+      "exit_code": 0,
+      "passed": true,
+      "log": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\shorthand\\tsf-x64.txt",
+      "scope": "Fresh per-invocation TEMP/TMP/LOCALAPPDATA; no live settings or earlier PID fixture reuse."
+    },
+    {
+      "executable": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\native-x86\\Release\\YimeTsfCompositionTests.exe",
+      "fixture_root": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\d8f7b28c0f90479792bec4be0ce8a1ba",
+      "environment": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\d8f7b28c0f90479792bec4be0ce8a1ba\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\d8f7b28c0f90479792bec4be0ce8a1ba\\temp",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\fixtures\\d8f7b28c0f90479792bec4be0ce8a1ba\\local-app-data"
+      },
+      "environment_isolated": true,
+      "environment_restored": true,
+      "executed": true,
+      "exit_code": 0,
+      "passed": true,
+      "log": "C:\\dev\\Yime\\.tmp\\yimecore-focus-cancellation\\20260905-124645-53fb0adc\\shorthand\\tsf-x86.txt",
+      "scope": "Fresh per-invocation TEMP/TMP/LOCALAPPDATA; no live settings or earlier PID fixture reuse."
+    }
+  ],
+  "source_file_count": 698,
+  "relevant_source_hashes": [
+    {
+      "path": "tools/yimecore/test-focus-cancellation.ps1",
+      "bytes": 16209,
+      "sha256": "39d9527e9bc3d8347a51ca132040d015e2a12f6bdd82abbcf4e55f16bc7916bd"
+    },
+    {
+      "path": "YimeTextServiceExperiment/CMakeLists.txt",
+      "bytes": 7537,
+      "sha256": "5a76bf466155cd40fa2453b14331f2f2c54301758dd0d87d51d93956f947187a"
+    },
+    {
+      "path": "YimeTextServiceExperiment/CompositionEditSession.cpp",
+      "bytes": 12816,
+      "sha256": "193ac25669f496d6eded6fedcdc2cb650012d37859bd6cf3775b9a1739920d78"
+    },
+    {
+      "path": "YimeTextServiceExperiment/CompositionEditSession.h",
+      "bytes": 1864,
+      "sha256": "9c1c9afa301d9c9d7b126e717d178798f0c301da5709b40736eb81bf0ddbfa3e"
+    },
+    {
+      "path": "YimeTextServiceExperiment/tests/FocusCancellationTests.cpp",
+      "bytes": 16576,
+      "sha256": "bcc92890d03336dbd96db0ca34a66588c1a68be522bbf850b6516dab8cebefb2"
+    },
+    {
+      "path": "YimeTextServiceExperiment/tests/RegisteredHostTests.cpp",
+      "bytes": 59690,
+      "sha256": "b0a13666fc93d2db2ab6e19b7a51b21791954c5ecdec07d19bb3d62d3f5cce3b"
+    },
+    {
+      "path": "YimeTextServiceExperiment/tests/TsfCompositionTests.cpp",
+      "bytes": 68374,
+      "sha256": "8dc46525cc6d8bc90873193f5be06de84af7bef3cba4522d226627b860ea8ad9"
+    },
+    {
+      "path": "YimeTextServiceExperiment/TextService.cpp",
+      "bytes": 53667,
+      "sha256": "4437011a29dedc2753d79cccc977ec9d02d4e845a340df0bd9d4d8737676c7a0"
+    },
+    {
+      "path": "YimeTextServiceExperiment/TextService.h",
+      "bytes": 5841,
+      "sha256": "4fa923d18e70ac834213d48357be91f7669946538eee11511204eb2a6ee217a0"
+    }
+  ],
+  "artifact_hashes": [
+    {
+      "path": "bin/YimeBroker.exe",
+      "bytes": 4884480,
+      "sha256": "c97a1a21f4443fb80c56d739729ebdfe06acae7635068a7641e76daa4d1ce95b"
+    },
+    {
+      "path": "bin/YimeCoreIndex.exe",
+      "bytes": 3566080,
+      "sha256": "f4cfa05ab144b6b28746317d818a82a58248000f5a495a7e60ec2e114cfbe517"
+    },
+    {
+      "path": "full/index.yidx",
+      "bytes": 40267102,
+      "sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1"
+    },
+    {
+      "path": "native-x64/CMakeFiles/4.3.1/CompilerIdCXX/CompilerIdCXX.exe",
+      "bytes": 15360,
+      "sha256": "3ce2d258af8bde533d7820541eb01293f18a5f9868c55bb50a6708efdcdd7ac6"
+    },
+    {
+      "path": "native-x64/Release/YimeFocusCancellationTests.exe",
+      "bytes": 297984,
+      "sha256": "f903264d3cca55a7f26b1706a3607ee46e5eb7850ff4fce27b67705f2db7a18d"
+    },
+    {
+      "path": "native-x64/Release/YimeRegisteredHostTests.exe",
+      "bytes": 458240,
+      "sha256": "d4c50492c0014759a9a159a39fdb00bbd260e47b45e7eff437b967df1ddd21dd"
+    },
+    {
+      "path": "native-x64/Release/YimeTextServiceContractTests.exe",
+      "bytes": 726528,
+      "sha256": "39825483b4e10eacb4440276ac0f1ff1e6ac697dfc42939e0f98411386c478a3"
+    },
+    {
+      "path": "native-x64/Release/YimeTextServiceExperiment.dll",
+      "bytes": 669184,
+      "sha256": "90ddfb886cbe960229fd6b6c8be75cc29f8b9b644f550af712cd26357b26a318"
+    },
+    {
+      "path": "native-x64/Release/YimeTsfCompositionTests.exe",
+      "bytes": 468992,
+      "sha256": "ef605cdad36861ffe96bd0a12c343310df50a6ed3cb8206364c73caa3ef58ff0"
+    },
+    {
+      "path": "native-x86/CMakeFiles/4.3.1/CompilerIdCXX/CompilerIdCXX.exe",
+      "bytes": 12800,
+      "sha256": "865b5525a9a0156b908c6e41b664e083eb12525bd2865d10ab4a7f9edd52bbce"
+    },
+    {
+      "path": "native-x86/Release/YimeFocusCancellationTests.exe",
+      "bytes": 236544,
+      "sha256": "3cd2ea496093d09d4c6649713bd73f7b40b9a26e8ef3f4d0e5616c679031713e"
+    },
+    {
+      "path": "native-x86/Release/YimeRegisteredHostTests.exe",
+      "bytes": 384000,
+      "sha256": "d1a82ff1e7ac0eeaea7f881b4892dfafdbeaebe946b3044aaa0c1238a1f17829"
+    },
+    {
+      "path": "native-x86/Release/YimeTextServiceContractTests.exe",
+      "bytes": 633856,
+      "sha256": "95f70f103959a6576c5ffaf3013b90d86fa68061937f81c61a47f2a7dd279151"
+    },
+    {
+      "path": "native-x86/Release/YimeTextServiceExperiment.dll",
+      "bytes": 580608,
+      "sha256": "f0aaf012373fa680bb3db5a26cf350884eabef76a7c0da94ccd7f0837e5e0301"
+    },
+    {
+      "path": "native-x86/Release/YimeTsfCompositionTests.exe",
+      "bytes": 395264,
+      "sha256": "2cc34325dfa8056ccc47df6e4c5e94fd7b407e1f41dde336dd01c81b2a34170e"
+    },
+    {
+      "path": "shorthand/index.yidx",
+      "bytes": 38209725,
+      "sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec"
+    },
+    {
+      "path": "variable/index.yidx",
+      "bytes": 38801056,
+      "sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada"
+    }
+  ],
+  "evidence_hashes": [
+    {
+      "path": "artifact-hashes.json",
+      "sha256": "fc0c9af9d5c44c74f1033b2ae5b11f22cece74d424dc490f34f9944b54580aa9"
+    },
+    {
+      "path": "contract-x64.txt",
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8"
+    },
+    {
+      "path": "contract-x86.txt",
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8"
+    },
+    {
+      "path": "focus-cancellation-mock-x64.txt",
+      "sha256": "c181518da6a5945f42345daeeac5830b742f09b5025bcd4daaeb00628d14137d"
+    },
+    {
+      "path": "focus-cancellation-mock-x86.txt",
+      "sha256": "c181518da6a5945f42345daeeac5830b742f09b5025bcd4daaeb00628d14137d"
+    },
+    {
+      "path": "source-hashes.json",
+      "sha256": "2f9f7471eead5d6a8c2be6efc9e59c8b890eba7e5eeea8a1c3310b431c45cddd"
+    },
+    {
+      "path": "summary.json",
+      "sha256": "60bb1cdea390212c559d8d4c9d500f729c7b20b60e609addf00e904932da0da7"
+    },
+    {
+      "path": "test-fixtures.json",
+      "sha256": "67c6772636de3b9bf7f97eae29fded22b2c978938923b5ae1c30979621c8ec5b"
+    },
+    {
+      "path": "full\\tsf-x64.txt",
+      "sha256": "c33fd9bb0bfeefafd0592482726a95838bfbf21fd868320d7a9ff32ca5e78ea1"
+    },
+    {
+      "path": "full\\tsf-x86.txt",
+      "sha256": "593406f84a69c561d5751eba7e898f25bf1893af5b75d33b8d0f921160cfc306"
+    },
+    {
+      "path": "shorthand\\tsf-x64.txt",
+      "sha256": "c33fd9bb0bfeefafd0592482726a95838bfbf21fd868320d7a9ff32ca5e78ea1"
+    },
+    {
+      "path": "shorthand\\tsf-x86.txt",
+      "sha256": "593406f84a69c561d5751eba7e898f25bf1893af5b75d33b8d0f921160cfc306"
+    },
+    {
+      "path": "variable\\tsf-x64.txt",
+      "sha256": "c33fd9bb0bfeefafd0592482726a95838bfbf21fd868320d7a9ff32ca5e78ea1"
+    },
+    {
+      "path": "variable\\tsf-x86.txt",
+      "sha256": "593406f84a69c561d5751eba7e898f25bf1893af5b75d33b8d0f921160cfc306"
+    }
+  ],
+  "protections": {
+    "preflight": "2026-09-05-focus-fix-preflight.json",
+    "interim": "2026-09-05-focus-fix-interim.json",
+    "postcheck": "2026-09-05-focus-fix-postcheck.json",
+    "registration_audit": "2026-09-05-focus-fix-registration-audit.json",
+    "package_files_matched": 74,
+    "protected_legacy_production_default_hashes_compared": 12,
+    "all_12_unchanged": true,
+    "installed_runtime_and_broker_identity_unchanged": true,
+    "timestamp_comparison": "ISO fractional seconds padded to 7 digits, preserving full recorded precision.",
+    "final_run_system_registry_aggregate_unchanged": true
+  },
+  "earlier_attempts": [
+    {
+      "run": ".tmp/yimecore-focus-cancel-compile-check-20260905",
+      "status": "compile setup failed",
+      "reason": "MSBuild duplicate Path/PATH inherited process environment; process-only normalization used in later builds."
+    },
+    {
+      "run": ".tmp/yimecore-focus-cancellation/20260905-122512-be854d9e",
+      "status": "failed; original evidence preserved",
+      "reason": "Direct no-host document-focus callback was not delivered; explicit callback added to direct contract, actual registered routing remains pending.",
+      "isolation_assurance": "Not fully isolated: Contract could read live settings; prehardening direct helpers had global popup lookup and installed Runtime launcher paths. This first failed direct test stopped before popup clicks or language-bar runtime launch, but later scratch diagnostics reached those sections. Its installed_config_read=false and broad no-mutation statement are not sufficient assurance for all early attempts."
+    },
+    {
+      "run": ".tmp/yimecore-focus-cancel-compile-check2-20260905",
+      "status": "scratch diagnostic, not final acceptance",
+      "reason": "Before isolation hardening, used directly loaded test DLL and disposable Broker. Global popup lookup, PID-only fixture and language-bar Runtime fallback were subsequently corrected; lack of direct evidence of user text impact is not proof of full isolation."
+    },
+    {
+      "run": ".tmp/yimecore-focus-cancellation/20260905-123457-a385c978",
+      "status": "interrupted during native x86 builds; no final summary",
+      "reason": "Stopped for safety audit before Broker/direct execution; x64 Contract and mock had run. Raw logs preserved, not a product FAIL or full PASS."
+    },
+    {
+      "run": ".tmp/yimecore-focus-cancellation/20260905-124219-a915d5f9",
+      "status": "partial: full x64/x86 passed; runner failed before variable direct test",
+      "reason": "Start-Process object image identity check rejected startup; refreshed exact PID/start/image reads added with bounded retry only for unavailable image. Owned Broker cleanup passed; no path mismatch is accepted. Raw failed summary preserved."
+    }
+  ],
+  "evidence_limits": [
+    "Direct document-focus events are explicitly invoked by the test; this is not proof of real TSF callback delivery.",
+    "Registered x64/x86 focus/delayed-lock/failed-write regressions were compiled only and were not executed.",
+    "Final direct-test language-bar runtime/tool launch callbacks are injected no-ops; no autostart or tool-launch acceptance is claimed.",
+    "The final run uses fresh per-test TEMP/TMP/LOCALAPPDATA, process/thread-owned popup guards, current-source DLLs and disposable in-memory Brokers. These safeguards must not be retroactively attributed to earlier runs.",
+    "Early and later aggregate registry hashes differ across runs; each retained complete run is internally unchanged. Cross-run difference alone has no identified cause and is not proof of mutation; see exact product-value/12-key comparisons in the independent audit.",
+    "No private observation file, Word document body, real candidate/code text or learning database was read or recorded for this acceptance evidence."
+  ],
+  "remaining_acceptance": [
+    "New package build and separately authorized install before testing the installed fix.",
+    "Actual registered x64/x86 focus routing, delayed locks and failed writes against the new package.",
+    "Minimal synthetic Word/Notepad++ switch-away and return check: no raw or automatic Chinese commit, confirmed text preserved, fresh input works; user does not need five repetitions.",
+    "D2-S-UI-01 remains unfixed and separate; full L5 daily-use confirmation remains the user's decision."
+  ]
+}

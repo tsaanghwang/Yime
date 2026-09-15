@@ -1,5 +1,11 @@
 # Yime 测试与验证指南
 
+> 适用范围更新（2026-09-05）：先按 [Yime 双独立产品开发计划](project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)标明共同源、Rime/PIME 版、YimeCore 版或共存安装影响面，再选择对应测试。本文现有 PIME 构建、注册、重装及进程操作不是所有 YimeCore 任务的通用前置条件。
+
+YimeCore 是主要开发线，使用[本机实施计划](project/YIMECORE_LOCAL_PRODUCT_IMPLEMENTATION_PLAN.md)和[独立工具入口](../tools/yimecore/README.md)完成本版核心、Broker、TSF 及无 Rime 运行验收。Rime/PIME 版继续稳定维护；两版按可单装或同装、运行维护与可写数据独立的契约分别验证。执行一版测试不授权安装、停止、重启或改写另一版，尤其不得自动操作生产 PIME 或用户默认输入法。
+
+共享纯逻辑测试可以复用。受影响的 Rime 适配及共同语流音变产物仍须通过必要的三模式真实 Rime 回归，并在隔离 Rime 链中执行；该结果证明 Rime 产物兼容性，不代替 YimeCore 无 Rime 独立验收。额外 Rime 行为对照是显式可选的排查手段，不能与上述必需回归混淆。以下历史验证记录保留原日期与证据级别，不据此推定两版独立或共存安装已通过。
+
 本文档说明 Yime 的测试分层、CI 稳定集、真实 Rime 测试和安装态验证。测试强度应随修改风险增加，TSF/语言栏、候选分页和部署路径不能只依赖单元测试。
 
 ## 1. 测试层级
@@ -34,7 +40,7 @@ CI 当前重点保护：
 - 反查顶部单排布局与内容尺寸
 - 可复现构建和签名入口
 
-CI 使用 `actions/setup-go` 固定 Go 1.26.4；`go.mod` 的 `go 1.21` 是源码语言兼容下限，不是发布构建器版本。升级构建器时必须在同一变更中复跑 `go vet`、全量测试、race 和连续构建哈希验证。
+CI 使用 `actions/setup-go` 固定 Go 1.26.4；`go.mod` 的 `go 1.25` 是模块和 Windows Broker/runtime 的最低工具链版本，不得在未重跑 x86/x64 命名管道与进程生命周期门禁时降低。升级构建器时必须在同一变更中复跑 `go vet`、全量测试、race 和连续构建哈希验证。
 
 ## 3. 全量根包门禁
 
@@ -51,13 +57,13 @@ CI 使用 `actions/setup-go` 固定 Go 1.26.4；`go.mod` 的 `go 1.21` 是源码
 `go test -race ./... -timeout 300s` 是验证基线的一部分，必须在具备 C 工具链的环境运行。Windows Go race 构建依赖 GCC，本机已配置 MSYS2 UCRT64：
 
 ```powershell
-go env -w CC=C:\msys64\ucrt64\bin\gcc.exe
 $env:CGO_ENABLED = "1"
 $env:PATH = "C:\msys64\ucrt64\bin;" + $env:PATH
+$env:CC = "gcc"
 go test -race ./... -timeout 300s
 ```
 
-仓库根目录提供可重复入口，显式设置 CGO、GCC、PATH 和工作区缓存，不依赖当前 shell 的 `go env CGO_ENABLED`：
+仓库根目录提供可重复入口，显式设置 CGO、GCC、PATH 和工作区缓存，不依赖当前 shell 的 `go env CGO_ENABLED`。Windows 上应让 `CC=gcc` 通过已加入的 UCRT64 `PATH` 解析；不要把绝对 GCC 路径直接传给 Go 1.26 的 `cgo`：
 
 ```powershell
 .\tools\test-go-race.ps1
@@ -107,7 +113,7 @@ CI 必须先构建 x64 `PIMERpcResponseTests` 目标并实际运行，不能只�
 
 UI 修改还必须构建对应 EXE，并在安装目录中实际打开一次；源码测试通过不代表 Smart App Control、焦点和模态行为正常。
 
-NSIS 守卫还必须确认默认安装目录不会被空注册表值覆盖、必装主组件包含 `go-backend`、安装器不再出现旧 Python/Node 后端路径或组件选择页，以及开发卸载会删除新旧卸载项。
+安装维护回归以 [installer/simple](../installer/simple/README.md) 为准，覆盖所选产品的文件归属、私有字体、启动项、单套/双套调度、错误日志和进程等待。实机结果及未测范围见[验证记录](../installer/simple/VALIDATION.md)，不再使用退役的 NSIS 守卫。
 
 ## 6. TSF 与语言栏高风险测试
 
@@ -154,9 +160,7 @@ C++ 侧（`PIMETextService.dll` 等组件）用 `cppvsdbg`（由 `ms-vscode.cppt
 - **不用 notepad**：Win11 的 `C:\Windows\System32\notepad.exe` 是重定向存根，启动后转交 Store 版记事本并自身秒退（exit 0），vsdbg 附到存根会随之结束、断点不可能命中。改用 `charmap.exe`（字符映射表，含“搜索”文本框，常驻）。需要真实记事本大文本区时，从开始菜单打开 Store 记事本，再用 attach 配置附加。
 - **Cursor 里 attach 失败**：cpptools 1.33.4 的 `pickNativeProcess`（`${command:pickProcess}`）与 Cursor QuickPick API 不兼容，会抛 `TypeError: Cannot read properties of undefined (reading 'id')` → `Process not selected`。两个 attach 配置在 Cursor 里都会失败；**需要 attach 请用 VS Code**（同一份 `launch.json`/`tasks.json`，VS Code 的 cpptools pickProcess 正常）。Cursor 里 launch 配置不受影响。
 - **cpptools 装进 Cursor**：Cursor 的 Open VSX 市场没有 `ms-vscode.cpptools`，需从 VS Code Marketplace 下载 **win32-x64** 平台 VSIX（带 `?targetPlatform=win32-x64`）后 `cursor --install-extension <vsix>` 离线安装。下错成 universal/Linux 包会报「Incompatible or Mismatched C/C++ Extension Binaries」。
-- **前置**：先用 `.\Reinstall-PIME-Test.cmd` 安装与 `build64` 同位、带 PDB 的开发包，确保宿主加载的 `C:\Program Files (x86)\YIME\x64\PIMETextService.dll` 与源 PDB 一致。
 - **断点建议**（`PIMETextService/PIMETextService.cpp`）：`onLangProfileActivated`（切音元时建 Client 连接）验证激活；`filterKeyDown`/`onKeyDown` 验证按键路径。
-- **源码改动后**：`requireExactSource` 默认为 true，改 C++ 源后 PDB 校验和对不上、断点绑不上；必须 重建 x64 `PIMETextService` → `Reinstall-PIME-Test.cmd` → 再 F5。
 
 ## 7. 构建验证
 
@@ -172,12 +176,10 @@ cmd /c build.bat
 标准重装：
 
 ```powershell
-.\Reinstall-PIME-Test.cmd
 ```
 
 ### 8.1 Win32（`build/`）重建前置
 
-`dev-install.ps1` 硬性要求 `build/PIMELauncher/PIMELauncher.exe` 和 `build/PIMETextService/Release/PIMETextService.dll` 存在，缺失会在早期断言处中止重装。重建 Win32 树的前置与命令：
 
 ```powershell
 # 一次性前置：i686 host 工具链（CMakeLists.txt 已固定 Rust_TOOLCHAIN 指向它）
@@ -195,7 +197,6 @@ GitHub 或 crates.io。`PIMELauncher/.cargo/config.toml` 强制 Cargo 离线解�
 构建完成后必须运行架构门禁：
 
 ```powershell
-.\tools\test-build-guards.ps1
 ```
 
 期望结果为 Win32 `PIMETextService.dll` 和 `PIMELauncher.exe` 均为 `0x014C`、x64 DLL 为 `0x8664`；存在 ARM64 DLL 时必须为 `0xAA64`。`build.bat` 不再仅凭空的 `CMAKE_GENERATOR_PLATFORM` 判断旧缓存为 Win32：只有解决方案明确包含 Win32 平台才允许复用，否则必须移走旧 `build/` 后以 `-A Win32` 重建。
@@ -207,10 +208,8 @@ GitHub 或 crates.io。`PIMELauncher/.cargo/config.toml` 强制 Cargo 离线解�
 需要完整闭环时，在管理员 PowerShell 中运行：
 
 ```powershell
-.\tools\dev-build-install-verify.ps1
 ```
 
-该入口依次执行现有 `build.bat`、规范的 `Reinstall-PIME-Test.cmd`（保留
 DLL 锁定时的就地安装路径），最后核对安装文件哈希、注册表和运行中的
 PIMELauncher。若 `build/` 或 Go backend 制品被清理，安装会在写系统目录前
 明确失败并要求重建。
@@ -235,7 +234,6 @@ PIMELauncher。若 `build/` 或 Go backend 制品被清理，安装会在写系�
   -RequireFreshRimeCache
 ```
 
-`complete` 表示文件哈希、安装状态和三套 Rime 编译缓存均一致。非严格模式下，被宿主锁定的 TSF DLL 暂未替换，或 Rime 后台尚未完成 table/reverse/prism 重建，都可能得到 `partial`；使用 `-RequireFreshRimeCache` 时任何缓存缺失或过期均为 `failed`。其它文件缺失或不一致始终为 `failed`。`dev-install.ps1` 会自动把最近一次报告写到 `.tmp\last-dev-install-verification.json`。
 
 Stage 6D 语气词“啊”还应单独闭合安装数据与用户态缓存链：
 
@@ -245,15 +243,31 @@ Stage 6D 语气词“啊”还应单独闭合安装数据与用户态缓存链�
 
 该脚本逐模式核对安装清单、Program Files 词典和 `%APPDATA%\PIME\Rime` 已部署词典的 SHA-256
 及 5,618 行全量别名，确认三个主句子词典仍导入对应别名表，并要求 table/reverse/prism 与编译
-schema 缓存全部新鲜。`dev-build-install-verify.ps1` 已把这项检查纳入完整闭环；脚本自身的夹具回归为
 `.\tools\test-installed-particle-a-stage6d-verifier.ps1`。
 
 语言栏或 TSF 问题必须在安装态至少复现一次；不能用源码目录中的临时 EXE 代替。
 
 真实 32 位宿主使用 `C:\Windows\SysWOW64\charmap.exe`。在 64 位 Windows 上，`SysWOW64` 中该文件的 PE machine 应为 `0x014C`；不要用 `System32\charmap.exe` 代替 x86 验证。发布烟雾测试需在该进程中实际激活 YIME，并完成组字、候选和上屏。
 
-### 8.3 已完成的验证记录
+### 8.3 双独立产品安装与宿主验证
 
+使用 [简版安装维护入口](../installer/simple/README.md) 制作完整独立产品包，从 Explorer 运行包内 `Install-Uninstall.cmd`。保存文档并退出使用目标输入法的应用；仍占用时取消，正常重启后不切换到待维护输入法再操作。每套只维护自己的文件、注册和用户状态，失败后使用完整包重新安装。
+
+本轮支持 x64 Windows 与 WOW64 应用；ARM64 源码实验不是已交付的 ARM64 安装包。先在开发端验证，再提交推送；CI 成功后按 [分支交接](../installer/simple/HANDOFF.md) 向测试端交付。当前实机记录见 [简版维护验收](../installer/simple/VALIDATION.md)。源码 DLL 测试不能代替安装态宿主输入。
+
+> **宿主激活与自动化告警：** 新打开 Word 或其他宿主并不等于已经激活 Yime 试验版；只有 Windows 默认输入法明确设为
+> Yime 时才可能自动进入。当前 x64 本机产品验收前应先通过任务栏输入法切换按钮（例如当前“拼”图标）选择 **音元拼音**，不要把冻结旧 Profile 的 **Yime 自研栈试验版** 当作当前产品；或使用
+> 本机已经物理确认有效的切换快捷键，再以活动 Profile、宿主实际加载的试验 DLL 或裸数字进入 Yime 组合等证据确认激活。
+> 不得为了让自动化通过而修改用户默认输入法。Computer Use 把 `Alt+Space` 解释为 Word 窗口菜单，或只能在 Word 的辅助功能树中
+> 看见任务栏但不能操作独立任务栏界面，属于自动化输入/界面附着差异；若物理操作正常且安装态 x64/x86 注册宿主回归通过，
+> 必须单列为工具限制，不得误报为 Yime 或 Word 阻塞。Word 未关闭时并发注册宿主还可能报告
+> `registered TIP did not become foreground`；保存并关闭 Word 后必须重跑，重跑结果才用于判断安装态。
+
+### 8.4 已完成的验证记录
+
+- 可信签名安装包：签名证书正在申请，等候审批，暂缓相关事项。此项不得以未签名试验包、测试证书或关闭 Windows 安全策略代替。
+- 2026-09-02：完成 [YimeCore 试验版安装态验收](YIMECORE_TRIAL_ACCEPTANCE_2026-09-02.md)。当前用户升级、Word x64 新会话、安装态 x64/x86 注册宿主、64 个 Shift 组合及 `Shift+1` 至 `Shift+9` 契约通过；最终 Rime 对照正确性通过但相对延迟/内存失败，真实 ARM64 桌面宿主仍待外部机器执行。E7 不启动。
+- 2026-09-01：YimeCore 分支综合审查的 7 项高危与 26 项中危修复完成。Go 全量 test/vet/build 与 `go test -race -count=1 ./...` 通过；x64/x86 DLL contract 和真实 TSF composition 宿主通过；ARM64 表层完成编译及 `0xAA64` PE 校验。真实 ARM64 桌面宿主仍需在 ARM64 Windows 上执行。
 - 2026-07-11：未签名开发包真实安装验证，输入响应正常，用户词“云笺试码”“笺砚验码”应用后活动会话直接出词。
 - 2026-07-12：完整安装态清单逐项跑完并留痕（[YIME_INSTALL_VERIFICATION_2026-07-12.md](YIME_INSTALL_VERIFICATION_2026-07-12.md)）——重启后干净全量重装、三件哈希构建↔安装全一致、重启自启动实测（开机 27 秒内自动拉起）、7 工具入口不崩、TIP 注册与真实组词日志、CodeIntegrity 核查、runtimechange 协议 `-race` 全绿。签名完成后须以该文档为模板复跑留新档。
 - 2026-07-15：真实 32 位宿主 `C:\Windows\SysWOW64\charmap.exe` 人工烟雾测试完成，暂未发现激活、组字、候选或上屏问题；签名产物仍须重复验证。
@@ -261,7 +275,7 @@ schema 缓存全部新鲜。`dev-build-install-verify.ps1` 已把这项检查纳
 - 2026-07-22：完成 [YIME 1.4.0-dev 安装态复核](YIME_INSTALL_VERIFICATION_2026-07-22.md)；启动器、x86/x64 TSF DLL、Go 后端、全部原生工具、Rime 运行库与部署器均和当前构建物哈希一致，注册表安装根、自启动项及运行进程正常，无待重启的 `.new` 文件；同轮补齐并实装验证布局设计器 VERSIONINFO 与卸载项 `InstallLocation`。该轮是安装完整性复核，不替代签名发行包的宿主输入烟雾测试。
 - 2026-07-24：候选窗独立组句分段条完成安装和重启验证；已安装 `server.exe` 与构建物 SHA-256 一致，x86/x64 `PIMETextService.dll` 也分别一致。Notepad、Codex IDE 已完成初步试用，确认功能可见并有实际作用；由于鼠标分段改选需要长期使用评价，本轮记录为“进入观察期”。真实 x86 宿主基础链路曾于 2026-07-15 初步测试通过；Phase 5.6 的 x86 复测安排在取得代码签名后，随签名产物重复第一/中间/末段切换和发行验收。
 
-### 8.4 独立组句分段条
+### 8.5 独立组句分段条
 
 鼠标组句纠错必须点击 Yime 自有候选窗中的分段条，不得点击宿主编辑区中的
 composition 文字。源码测试需覆盖：

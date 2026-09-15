@@ -1,0 +1,40 @@
+{
+  "schema_version": "yimecore-live-host-local-summary-v1",
+  "generated_at": "2026-09-10T23:41:51.5579562Z",
+  "installed_version": "0.1.0-local.13",
+  "hosts": [
+    {
+      "architecture": "x64",
+      "evidence": "notepad-acceptance-20260910-224402.json",
+      "host": "Windows Notepad",
+      "behavior_acceptance": "pass"
+    },
+    {
+      "architecture": "x64",
+      "evidence": "word-acceptance-20260910-235453.json",
+      "host": "Microsoft Word",
+      "behavior_acceptance": "pass"
+    },
+    {
+      "architecture": "x86",
+      "evidence": "firefox-acceptance-20260911-074134.json",
+      "host": "Mozilla Firefox",
+      "behavior_acceptance": "pass"
+    },
+    {
+      "behavior_acceptance": "historical_three_mode_pass_report",
+      "architecture": "x86",
+      "note": "Historical report retained; full per-check coverage requires reconciliation before closing the complete matrix.",
+      "host": "Notepad++",
+      "evidence": "docs/testing/platform/2026-09-10-real-host-matrix.json (repository-relative)"
+    }
+  ],
+  "entire_matrix_complete": false,
+  "remaining": [
+    "Reconcile historical Notepad++ per-check coverage",
+    "Independent final protected-registration/default preservation evidence"
+  ],
+  "new_invalid_code_fix_installed_validation": false,
+  "committed": false,
+  "pushed": false
+}

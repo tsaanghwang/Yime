@@ -19,8 +19,8 @@
 /libIME2/** @tsaanghwang
 /go-backend/build.bat @tsaanghwang
 
-/tools/test-build-guards.ps1 @tsaanghwang
 /tools/validate-build-contract.ps1 @tsaanghwang
+/tools/ci/** @tsaanghwang
 /tools/verify_psc_outline_snapshot.py @tsaanghwang
 /tools/verify_vendored_build_dependencies.py @tsaanghwang
 /tools/toolchain.lock.json @tsaanghwang
@@ -41,6 +41,8 @@
 /tools/evaluation/** @tsaanghwang
 /internal_data/psc_outline/** @tsaanghwang
 /tools/test-installer-smoke.ps1 @tsaanghwang
+/tools/build-rime-pime-installer.ps1 @tsaanghwang
+/tools/dual-product/rime-pime-package-plan.ps1 @tsaanghwang
 /tools/assert-win32-build-prerequisites.ps1 @tsaanghwang
 /tools/initialize-dev-environment.ps1 @tsaanghwang
 /tools/invoke-build-environment.ps1 @tsaanghwang

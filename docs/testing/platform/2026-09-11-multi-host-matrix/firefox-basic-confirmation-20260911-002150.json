@@ -1,0 +1,45 @@
+{
+  "schema_version": "yimecore-manual-observation-v1",
+  "generated_at": "2026-09-10T16:21:50.2095456Z",
+  "host": "Mozilla Firefox",
+  "architecture": "x86",
+  "user_report": "等长：9。省键：5。变长：6。结果无异常。",
+  "observations": [
+    {
+      "candidates_per_page_reported": 9,
+      "rounds": 3,
+      "mode": "full"
+    },
+    {
+      "candidates_per_page_reported": 5,
+      "rounds": 3,
+      "mode": "shorthand"
+    },
+    {
+      "candidates_per_page_reported": 6,
+      "rounds": 3,
+      "mode": "variable"
+    }
+  ],
+  "passed_checks": [
+    "space_commit",
+    "shift_valid_ordinal_commit",
+    "shift_candidate_labels",
+    "bare_digit_composition",
+    "backspace_last_code_element",
+    "escape_cancel",
+    "candidate_page_forward_and_back",
+    "arrow_candidate_selection_and_commit"
+  ],
+  "evidence_basis": "User reports no abnormalities in response to the three-mode, three-round basic input procedure.",
+  "metadata_evidence": "firefox-pre-manual-20260910-235901.json",
+  "metadata_assessment": "firefox-pre-manual-assessment-20260910-235901.json",
+  "remaining_checks": [
+    "focus_loss_cancel_without_commit",
+    "confirmed_text_protection",
+    "focus_return_recovery",
+    "language_bar_mode_switch_and_menu",
+    "host_reopen_recovery"
+  ],
+  "complete": false
+}

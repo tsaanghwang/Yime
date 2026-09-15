@@ -9,12 +9,13 @@ use tracing::{error, info, warn};
 /// Spawns and monitors the worker process, restarting it if it exits.
 async fn run_watchdog(original_args: &[String]) {
     let exe = std::env::current_exe().expect("Failed to get current exe");
-
-    // Prepare worker arguments: keep original args and add /worker
-    let mut worker_args: Vec<String> = original_args.iter().skip(1).cloned().collect();
-    if !worker_args.iter().any(|arg| arg == "/worker") {
-        worker_args.push("/worker".to_string());
-    }
+    let mut worker_args: Vec<String> = original_args
+        .iter()
+        .skip(1)
+        .filter(|arg| arg.as_str() != "/worker")
+        .cloned()
+        .collect();
+    worker_args.push("/worker".to_string());
 
     info!("Watchdog started. Monitoring worker...");
 

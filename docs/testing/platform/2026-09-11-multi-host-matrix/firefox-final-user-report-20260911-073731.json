@@ -1,0 +1,23 @@
+{
+  "schema_version": "yimecore-manual-observation-v1",
+  "generated_at": "2026-09-10T23:37:32.1354120Z",
+  "host": "Mozilla Firefox",
+  "architecture": "x86",
+  "user_report": "firefox 失焦等三轮已测试。",
+  "execution_reported": true,
+  "requested_checks": [
+    "three_modes_three_rounds_focus_loss_and_text_protection",
+    "language_bar",
+    "host_reopen_recovery"
+  ],
+  "manual_outcomes": null,
+  "metadata_evidence": "firefox-post-manual-20260911-073731.json",
+  "loaded_current_product_process_ids": [
+    29708
+  ],
+  "current_package_and_x86_dll_verified": true,
+  "new_loaded_process_observed": true,
+  "raw_all_processes_passed": false,
+  "complete": false,
+  "limitation": "All-process inventory includes Firefox processes without TIP DLL; no product failure is inferred from that alone. User reported execution but not explicit behavior outcomes."
+}

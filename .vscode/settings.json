@@ -143,5 +143,13 @@
     ],
     "cSpell.useCustomDecorations": false,
     "cSpell.diagnosticLevel": "Hint",
-    "terminal.integrated.fontFamily": "monospace"
+    "terminal.integrated.fontFamily": "monospace",
+    "chat.agent.maxRequests": 500,
+    "python-envs.pythonProjects": [
+        {
+            "path": ".",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ]
 }

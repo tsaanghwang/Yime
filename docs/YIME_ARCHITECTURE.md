@@ -1,5 +1,11 @@
 # 音元输入法架构文档
 
+> 适用范围更新（2026-09-05）：本文现有进程图、PIME 协议、Rime 会话与部署描述属于 **Rime/PIME 版架构**，不是整个 Yime 项目的唯一运行架构。原图和历史技术记录保留，不改作 YimeCore 已实现能力的证据。
+
+当前关系见 [Yime 双独立产品开发计划](project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)：YimeCore 是主要开发线，Rime/PIME 版持续稳定维护；两版按可单独安装或同时安装、各自完整运行和维护、可写数据互不依赖的契约开发。YimeCore 的 TSF、Runtime、Broker 与静态数据边界见[本机产品契约](project/YIMECORE_LOCAL_PRODUCT_CONTRACT.md)，开发入口见[本机实施计划](project/YIMECORE_LOCAL_PRODUCT_IMPLEMENTATION_PLAN.md)。
+
+源码与离线规范源可以共享，但本版不能借用另一版的已安装组件、可写目录或维护进程。不得依据本文旧的 PIME 构建、安装或重启说明自动操作生产 Rime/PIME 来完成 YimeCore 工作；真实 Rime 回归、可选行为对照与自研版无 Rime 独立验收按[测试指南的作用域](YIME_TESTING_GUIDE.md)分别执行和记证。
+
 > 版本：2026-07-22
 > 配套文档：[项目综合评估](YIME_PROJECT_ASSESSMENT.md) | [可用性评估](YIME_USABILITY_ASSESSMENT.md) | [开发路线图](YIME_DEVELOPMENT_ROADMAP.md)
 
@@ -449,7 +455,6 @@ userblocklist.LoadSet(yime_blocklist.txt)
 
 ### 2.16 安装与 profile 维护
 
-开发/重装脚本共享 `tools/pime-registry-cleanup.ps1`：
 
 - 清理 CTF TIP 与用户 profile 残留
 - `Unregister-PIMETextServiceDlls` / `Remove-PIMETextServiceRegistry`
@@ -634,26 +639,27 @@ cmd /c build.bat
 
 本地 ad-hoc 构建落在 `go-backend/*.exe` 时已被 `.gitignore` 忽略。
 
-Go 可执行文件版本取自仓库根目录 `version.txt`，并统一使用 `-trimpath -buildvcs=false`，避免无关提交改变未修改工具的文件哈希。10 个 Go EXE 统一嵌入 Yime 图标和 VERSIONINFO；打包脚本递归删除复制到输出目录的 `.go` 源码。发布流水线通过 `tools/sign-release.ps1`、NSIS `!finalize`/`!uninstfinalize` 和 `tools/verify-release-signatures.ps1` 覆盖内部二进制、安装器及卸载器；Smart App Control 的稳定发布必须使用受信任提供商签发的 RSA 证书，VERSIONINFO 不能替代签名。
 
-NSIS 安装包只包含 PIMELauncher、`backends.json`、完整 `go-backend` 包和三架构 TSF DLL，不再提供组件选择页或旧 Python/Node 输入法。读取新旧安装注册表时先写入临时寄存器，不能用空值覆盖 `InstallDir "$PROGRAMFILES32\YIME"`。
+构包统一使用 [installer/simple](../installer/simple/README.md)。Rime/PIME 包携带自己的 PIMELauncher、`backends.json`、Go 后端及 x64/x86 TSF；YimeCore 包携带自己的 Runtime、Broker、数据和 TSF。当前通用包不包含已验收的 ARM64 安装支持。
 
 ### 4.3 CI 流水线
 
 `.github/workflows/ci.yaml`：push 触发 `main`、`yime-stable`、`codex/**` 和 `v*` 标签；PR 触发 `main`、`yime-stable`。
 
 ```
-`build-contract`、`rust-i686-host`、`native-build`、`go-tests`、`real-rime-tests`、`go-race-msys2` 并行执行 → `installer-package` 消费已验证原生产物 → `core-build` 聚合全部结果
+build-contract → lexicon-offline-tooling / rust-i686-host / native-build / go-tests / real-rime-tests / go-race-msys2 / simple-installer
+real-rime-tests → shard-coverage
+全部保留任务 → core-build 聚合成功状态
 ```
 
 关键步骤：
 - `windows-2022` 运行器
-- **活动子模块必须先推到 fork remote**（当前为 `libIME2`），否则 checkout 失败；退役的 Python/Node/McBopomofo/libchewing 历史源码不参与产品构建和安装
+- `libIME2` 直接纳入本仓库，遵守组件独立提交边界；退役的 Python/Node/McBopomofo/libchewing 历史源码不参与产品构建和安装
 - 内联 vswhere + VsDevCmd 设置（非 ilammy/msvc-dev-cmd）
 - CMake 构建用 `shell: cmd` 确保 VsDevCmd 环境持久
 - 仓库内固定 Rime 共享数据及 librime 版本、哈希门禁
 - Go 纯逻辑包、原生工具布局及关键语言栏/Rime 回归测试
-- NSIS 打包用 `pwsh` + `Set-Location`
+- 简版安装器执行启动项、产品调度、日志和进程等待回归；完整包按交接文档单独交付
 
 ---
 
@@ -698,7 +704,7 @@ go test ./input_methods/yime -run 'Test(NativeBackendKeepsRimeOwnedCandidatePagi
 | `TestJoinRuneLookupPartialMissing` | 反查缺失字符占位符 |
 | `TestApplyUserLexiconWritesAllThreeModes` | 用户词库跨方案同步 |
 | `TestSyncRimeSchemasRefreshesAllModes` | 升级后的三套用户 schema 指向各自词库 |
-| `TestReleasePipelineSignsPayloadInstallerAndUninstaller` | 安装路径兜底、Go 后端打包、标准组件和签名链 |
+| `TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease` | 安装路径兜底、Go 后端打包、签名钩子，以及未封口卸载器的标签发布硬阻断 |
 
 ### 5.2 边界场景测试
 

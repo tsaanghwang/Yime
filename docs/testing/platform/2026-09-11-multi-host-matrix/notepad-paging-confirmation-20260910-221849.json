@@ -1,0 +1,25 @@
+{
+  "schema_version": "yimecore-manual-observation-v1",
+  "generated_at": "2026-09-10T14:18:49.1948037Z",
+  "host": "Windows Notepad",
+  "architecture": "x64",
+  "user_reports": [
+    "翻页是方向键选定上屏正常。",
+    "各三轮，候选标签无异常且能上屏"
+  ],
+  "modes": [
+    "full",
+    "shorthand",
+    "variable"
+  ],
+  "rounds_per_mode": 3,
+  "outcomes": {
+    "selected_candidate_commit": "pass",
+    "arrow_candidate_selection": "pass",
+    "candidate_page_forward_and_back": "pass",
+    "shift_candidate_labels": "pass"
+  },
+  "evidence_basis": "user physical test report in response to three-mode three-round paging and Shift label confirmation",
+  "metadata_evidence": "notepad-post-manual-20260910-221037.json",
+  "complete": false
+}

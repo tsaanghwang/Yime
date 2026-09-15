@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
+func TestSourceBuildKeepsRuntimeAssetsAndArchitectures(t *testing.T) {
 	read := func(path string) string {
 		data, err := os.ReadFile(path)
 		if err != nil {
@@ -26,20 +26,9 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 		read(filepath.Join(root, "go-backend", "input_methods", "yime", "diagnostics", "collect.go")),
 		read(filepath.Join(root, "go-backend", "input_methods", "yime", "learningmigration", "migration.go")),
 	}
-	installer := read(filepath.Join(root, "installer", "installer.nsi"))
-	installer = strings.ReplaceAll(installer, "\r\n", "\n")
-	devUninstaller := read(filepath.Join(root, "tools", "dev-uninstall.ps1"))
-	devStop := read(filepath.Join(root, "tools", "dev-stop-pime.ps1"))
-	signer := read(filepath.Join(root, "tools", "sign-release.ps1"))
-	verifier := read(filepath.Join(root, "tools", "verify-release-signatures.ps1"))
+	textService := read(filepath.Join(root, "PIMETextService", "PIMETextService.cpp"))
 	signFile := read(filepath.Join(root, "tools", "sign-file.ps1"))
 	certificateImporter := read(filepath.Join(root, "tools", "import-release-signing-certificate.ps1"))
-
-	for _, fragment := range []string{"tags: ['v*']", "environment: release-signing", "Checkout trusted signing implementation", ".trusted-signing\\tools\\sign-release.ps1", ".trusted-signing\\tools\\verify-release-signatures.ps1", "YIME-unsigned-test-installer", "installer/YIME-*-setup.exe"} {
-		if !strings.Contains(ci, fragment) {
-			t.Fatalf("CI release signing chain is missing %q", fragment)
-		}
-	}
 	for _, fragment := range []string{
 		"actions/setup-go@v6",
 		"go-version: '1.26.4'",
@@ -62,41 +51,13 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	if strings.Contains(ci, "TestDeployCommandRedeploysCurrentSchema") || strings.Contains(goTestScript, "TestDeployCommandRedeploysCurrentSchema") {
 		t.Fatal("CI must not retain the removed synchronous native-redeploy test name")
 	}
-	for _, fragment := range []string{"!finalize", "!uninstfinalize", "sign-file.ps1"} {
-		if !strings.Contains(installer, fragment) {
-			t.Fatalf("NSIS signing hooks are missing %q", fragment)
-		}
-	}
 	for _, fragment := range []string{
-		`InstallDir "$PROGRAMFILES32\YIME"`,
-		`ReadRegStr $R1 HKLM "${PRODUCT_INSTALL_KEY}" ""`,
-		`StrCpy $INSTDIR $R1`,
-		`StrCpy $INSTDIR "$PROGRAMFILES32\YIME"`,
-		`File /r "..\go-backend\build\go-backend\*.*"`,
-		`SetOutPath "$INSTDIR\licenses"`,
-		`File "..\LICENSE.txt"`,
-		`File "..\NOTICE.md"`,
-		`File "..\THIRD_PARTY_NOTICES.md"`,
-		`File "..\LICENSES\PIME-UPSTREAM-LICENSE.txt"`,
-		`File "..\LICENSES\RIME-FROST-GPL-3.0.txt"`,
-		`File "..\LICENSES\RUST-DEPENDENCIES.md"`,
-		`WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"`,
-		`RMDir /REBOOTOK /r "$INSTDIR\licenses"`,
-		`RMDir "$INSTDIR\go-backend\input_methods\fcitx5"`,
-		`RMDir "$INSTDIR\go-backend\input_methods\meow"`,
-		`RMDir "$INSTDIR\go-backend\input_methods\simple_pinyin"`,
-		`File /oname=YinYuan-Regular.ttf "..\go-backend\input_methods\yime\data\fonts\YinYuan-Regular.ttf"`,
-		`AddFontResource`,
-		`YinYuan Regular (TrueType)`,
-		`Function stopRunningBackend`,
-		`Call stopRunningBackend`,
-		`ExecWait '"$INSTDIR\PIMELauncher.exe" /quit'`,
-		`taskkill.exe" /F /T /IM PIMELauncher.exe`,
-		`input.dll::InstallLayoutOrTip`,
-		`0x0804:{35F67E9D-A54D-4177-9697-8B0AB71A9E04}{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}`,
+		`\\go-backend\\input_methods\\yime\\data\\fonts\\YinYuan-Regular.ttf`,
+		`AddFontResourceExW(privateFontPath_.c_str(), FR_PRIVATE, nullptr)`,
+		`RemoveFontResourceExW(privateFontPath_.c_str(), FR_PRIVATE, nullptr)`,
 	} {
-		if !strings.Contains(installer, fragment) {
-			t.Fatalf("NSIS installer is missing install-path or Yime payload guard %q", fragment)
+		if !strings.Contains(textService, fragment) {
+			t.Fatalf("text service private-font lifecycle is missing %q", fragment)
 		}
 	}
 	for _, path := range []string{
@@ -115,49 +76,6 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 			t.Fatalf("required release asset is missing or empty: %s (%v)", path, err)
 		}
 	}
-	if strings.Contains(installer, `ReadRegStr $INSTDIR`) {
-		t.Fatal("NSIS registry probing must not clear the default installation directory")
-	}
-	if strings.Contains(installer, "Section $(CHEWING) chewing\n\t\t\tSectionIn 1 2") {
-		t.Fatal("standard Yime installation must not select the legacy Python Chewing backend")
-	}
-	for _, fragment := range []string{
-		`Microsoft\Windows\CurrentVersion\Uninstall\YIME`,
-		`Microsoft\Windows\CurrentVersion\Uninstall\PIME`,
-	} {
-		if !strings.Contains(devUninstaller, fragment) {
-			t.Fatalf("developer uninstall must remove stale uninstall registration %q", fragment)
-		}
-	}
-	for _, fragment := range []string{"PIMELauncher.exe", "PIMETextService.dll", "rime_deployer.exe", "rime_dict_manager.exe", "rime.dll"} {
-		if !strings.Contains(signer, fragment) {
-			t.Fatalf("release payload signer is missing %q", fragment)
-		}
-	}
-	for _, fragment := range []string{
-		`Stop-ProcessByPathPrefix -Name "input-toolbar"`,
-		`[IO.Path]::GetFullPath($path).StartsWith($normalizedPrefix`,
-	} {
-		if !strings.Contains(devStop, fragment) {
-			t.Fatalf("developer stop flow must release the persistent toolbar executable: missing %q", fragment)
-		}
-	}
-	if strings.Contains(devStop, `Stop-ProcessByName`) {
-		t.Fatal("developer stop flow must not terminate generic process names outside an explicit YIME/PIME install root")
-	}
-	for _, tool := range []string{"input-toolbar.exe", "yime-trainer.exe", "yime-layout-designer.exe"} {
-		if !strings.Contains(signer, tool) {
-			t.Fatalf("release payload signer is missing %s", tool)
-		}
-	}
-	if !strings.Contains(verifier, "Get-AuthenticodeSignature") || !strings.Contains(verifier, "Valid") {
-		t.Fatal("release signature verifier must reject non-valid signatures")
-	}
-	for _, fragment := range []string{"SignerCertificate.Thumbprint", "TimeStamperCertificate", "YIME_SIGN_CERT_SHA1"} {
-		if !strings.Contains(verifier, fragment) {
-			t.Fatalf("release signature verifier is missing %q", fragment)
-		}
-	}
 	if count := strings.Count(buildScript, "--icon input_methods\\yime\\icon.ico"); count != 11 {
 		t.Fatalf("expected all 11 Go executables to embed the Yime icon, got %d", count)
 	}
@@ -168,10 +86,24 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 		`set "WIN32_CMAKE_PLATFORM=-A Win32"`,
 		`/c:"CMAKE_GENERATOR_PLATFORM:INTERNAL="`,
 		`%WIN32_CMAKE_PLATFORM% -DCMAKE_POLICY_VERSION_MINIMUM=3.5`,
+		`--build build --config Release --target PIMETextService PIMERegistrationStatus`,
+		`--build build64 --config Release --target PIMETextService PIMERegistrationStatus`,
+		`--build build_arm64 --config Release --target PIMETextService PIMERegistrationStatus`,
+		`set "ARM64_PE_ARGS="`,
+		`set "ARM64_PE_ARGS=-Arm64TextService "%ROOT_DIR%\build_arm64\PIMETextService\Release\PIMETextService.dll" -Arm64RegistrationStatus "%ROOT_DIR%\build_arm64\PIMETextService\Release\PIMERegistrationStatus.exe""`,
+		`verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" -SkipPackagedRime`,
 	} {
 		if !strings.Contains(rootBuildScript, fragment) {
 			t.Fatalf("root build script is missing legacy Win32 CMake-cache compatibility %q", fragment)
 		}
+	}
+	goPackageBuild := strings.Index(rootBuildScript, "cmd /C build.bat")
+	fullPayloadGate := strings.LastIndex(rootBuildScript, `verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" %ARM64_PE_ARGS% || exit /b 1`)
+	armBuild := strings.Index(rootBuildScript, `--build build_arm64 --config Release --target PIMETextService PIMERegistrationStatus`)
+	armArgs := strings.Index(rootBuildScript, `set "ARM64_PE_ARGS=-Arm64TextService`)
+	if goPackageBuild < 0 || fullPayloadGate <= goPackageBuild || armBuild < 0 || armArgs <= armBuild ||
+		strings.Count(rootBuildScript, "%ARM64_PE_ARGS%") != 2 || strings.Count(rootBuildScript, "verify-pe-architectures.ps1") != 2 {
+		t.Fatal("root build must run the complete PE gate only after the Go package exists")
 	}
 	if !strings.Contains(buildScript, `for /r "%PACKAGE_DIR%\input_methods" %%F in (*.go)`) {
 		t.Fatal("package build must recursively remove copied Go source files")

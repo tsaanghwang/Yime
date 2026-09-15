@@ -1,0 +1,58 @@
+{
+  "schema_version": "yimecore-l5-metadata-v1",
+  "generated_at": "2026-09-05T08:12:05.2778292+08:00",
+  "computer": "MYCOMPUTER",
+  "development_scope": "mainstream-x64-arm64-resumed-2026-09-04",
+  "package_version": "0.1.0-local.11",
+  "install_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a",
+  "manifest_sha256": "5a3f847a3136fd2198f7dc9aba22dc017ed7439d8447435e8752eb379a4a5cd8",
+  "package_file_count": 74,
+  "package_mismatches": [],
+  "package_integrity_passed": true,
+  "boot_at": "2026-09-05T07:34:00.5+08:00",
+  "processes": [
+    {
+      "name": "YimeCoreTrialRuntime.exe",
+      "pid": 8796,
+      "image": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\bin\\YimeCoreTrialRuntime.exe",
+      "started_at": "2026-09-05T07:34:34.594242+08:00",
+      "current_package": true,
+      "after_boot": true
+    },
+    {
+      "name": "YimeBroker.exe",
+      "pid": 20188,
+      "image": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\bin\\YimeBroker.exe",
+      "started_at": "2026-09-05T07:34:34.684855+08:00",
+      "current_package": true,
+      "after_boot": true
+    }
+  ],
+  "runtime_identity_passed": true,
+  "registered_x64_dll": [
+    "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-f435f463bfd0-5a3f847a\\x64\\YimeTextServiceExperiment.dll"
+  ],
+  "registered_x64_matches": true,
+  "protected_registry_provider": "out-of-process StdRegProv; no process-view fallback",
+  "protected_registry_sha256": {
+    "SOFTWARE\\Classes\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "c155612c1f530895365b0853f483c7741ad225c0b7af12292e5d9830b94e3278",
+    "SOFTWARE\\Classes\\WOW6432Node\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "79222059bf3f60e1a5d2990b3722224d68b1cc55acc16eda25238ea05dff1c59",
+    "SOFTWARE\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "641c99dd3f8d3bd98beb9945bf1c9b46ca1c0e9e4fee92e63def44b692b4139a",
+    "SOFTWARE\\WOW6432Node\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "641c99dd3f8d3bd98beb9945bf1c9b46ca1c0e9e4fee92e63def44b692b4139a",
+    "user/Software\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": "e39f603a5ebcff23859d200f9c9dc20f6c19d48aa185d09445bd42e31abcc3ff",
+    "SOFTWARE\\Classes\\CLSID\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "e39f603a5ebcff23859d200f9c9dc20f6c19d48aa185d09445bd42e31abcc3ff",
+    "SOFTWARE\\Classes\\WOW6432Node\\CLSID\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "cc12f6b74672f85fa166a5dc195f2695a81355c947ab08c7fec53af5d3c677c6",
+    "SOFTWARE\\Microsoft\\CTF\\TIP\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "a623f0671e15f5eff35385563ec23451f930e53969d5b1869246b8a08d90977f",
+    "SOFTWARE\\WOW6432Node\\Microsoft\\CTF\\TIP\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "a623f0671e15f5eff35385563ec23451f930e53969d5b1869246b8a08d90977f",
+    "user/Software\\Microsoft\\CTF\\TIP\\{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}": "141e5f7734d60b4b7a8150f4730180d678a56b48d868b2e780c8f11482ebf6d3",
+    "user/Control Panel\\International\\User Profile": "e0ebcad9414a4fa51ae57fd1a1386fd688e1c4c29acbed38b2edb51bc4053bcf",
+    "user/Keyboard Layout\\Preload": "079bb037883fad5ce2d4a922ef13ead05ef10f23f6b72ee9103f011d26ec44c3"
+  },
+  "hosts": [],
+  "user_text_read": false,
+  "learning_data_read": false,
+  "frozen_targets_executed": false,
+  "writes_to_product": false,
+  "manual_daily_use_passed": null,
+  "logon_autostart_verified": null
+}

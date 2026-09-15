@@ -16,6 +16,15 @@ using json = nlohmann::json;
 
 PIME::ImeModule* g_imeModule = NULL;
 
+// CTF\TIP Profile/categories are shared across WOW64 registry views. On the
+// supported x64/ARM64 + x86 product layouts, the native DLL owns that single
+// shared set while the x86 DLL owns only its redirected COM server entry.
+#if defined(_WIN64)
+constexpr bool kOwnsSharedTsfRegistration = true;
+#else
+constexpr bool kOwnsSharedTsfRegistration = false;
+#endif
+
 static int langProfilePriority(const Ime::LangProfileInfo& profile) {
 	if (profile.name == L"中州韻輸入法 (PIME)") {
 		return 0;
@@ -49,10 +58,10 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, void **ppvObj) {
 }
 
 STDAPI DllUnregisterServer(void) {
-	return g_imeModule->unregisterServer();
+	return g_imeModule->unregisterServer(kOwnsSharedTsfRegistration);
 }
 
-static inline Ime::LangProfileInfo langProfileFromJson(std::wstring file, std::string& guid) {
+static inline Ime::LangProfileInfo langProfileFromJson(std::wstring file, std::string& guid, int iconIndex) {
 	// load the json file to get the info of input method
 	std::ifstream fp(file, std::ifstream::binary);
 	if(fp) {
@@ -84,7 +93,8 @@ static inline Ime::LangProfileInfo langProfileFromJson(std::wstring file, std::s
 			clsidGuid,
 			locale,
 			fallbackLocale,
-			iconFile
+			iconFile,
+			iconIndex
 		};
 		return langProfile;
 	}
@@ -120,7 +130,7 @@ STDAPI DllRegisterServer(void) {
 						if (fileAttrib != INVALID_FILE_ATTRIBUTES) {
 							// load the json file to get the info of input method
 							std::string guid;
-							langProfiles.push_back(std::move(langProfileFromJson(imejson, guid)));
+							langProfiles.push_back(std::move(langProfileFromJson(imejson, guid, iconIndex)));
 						}
 					}
 				}
@@ -139,5 +149,6 @@ STDAPI DllRegisterServer(void) {
 		}
 		return lhs.name < rhs.name;
 	});
-	return g_imeModule->registerServer(L"PIMETextService", langProfiles.data(), static_cast<int>(langProfiles.size()));
+	return g_imeModule->registerServer(L"PIMETextService", langProfiles.data(),
+		static_cast<int>(langProfiles.size()), kOwnsSharedTsfRegistration);
 }

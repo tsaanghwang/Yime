@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yime 试验版诊断说明</title>
+  <style>
+    :root { color-scheme: light; --ink: #17201d; --muted: #52615b; --line: #cad5cf; --accent: #006c59; --paper: #f6f8f6; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.7 "Microsoft YaHei UI", sans-serif; }
+    main { max-width: 860px; margin: 0 auto; padding: 48px 28px 72px; }
+    h1 { font-size: 30px; margin: 0 0 8px; letter-spacing: 0; }
+    h2 { font-size: 20px; margin: 34px 0 8px; padding-top: 18px; border-top: 1px solid var(--line); letter-spacing: 0; }
+    p, li { color: var(--muted); }
+  </style>
+</head>
+<body><main>
+  <h1>诊断工具说明</h1>
+  <p>试验版诊断工具只检查当前 Trial 安装包、YimeCore runtime、Broker、个人状态文件和 Trial 日志，不读取正式版 PIME/Rime 日志。</p>
+
+  <h2>报告选项</h2>
+  <ul>
+    <li>“包含环境摘要”记录 Trial 路径与进程快照。</li>
+    <li>“包含建议操作”根据近期 Trial 日志给出下一步。</li>
+    <li>“匿名化报告”默认开启，会隐藏用户路径中的账户名。</li>
+    <li>“包含原始日志摘录”默认关闭；匿名化开启时仍不会输出原始日志内容。</li>
+  </ul>
+
+  <h2>常见检查</h2>
+  <p>若 runtime 或 Broker 显示停止，先关闭正在输入的应用，再重新启动“元”试验版。若布局 generation 或索引状态无效，打开“键盘布局”重新应用已保存方案。</p>
+  <p>复制报告后请人工检查，再按“用户反馈”的说明提交。</p>
+</main></body>
+</html>

@@ -2,7 +2,26 @@
 
 package main
 
-import "testing"
+import (
+	"path/filepath"
+	"testing"
+)
+
+func TestExperimentalDiagnosticsUsesIndependentIdentityAndLogs(t *testing.T) {
+	if got := diagnosticsWindowClass(false); got != "YimeDiagnosticsTool" {
+		t.Fatalf("production diagnostics class=%q", got)
+	}
+	if got := diagnosticsWindowClass(true); got != "YimeCoreTrialDiagnosticsTool" {
+		t.Fatalf("Trial diagnostics class=%q", got)
+	}
+	if got := diagnosticsWindowTitle(true); got != "Yime 试验版诊断" {
+		t.Fatalf("Trial diagnostics title=%q", got)
+	}
+	stateRoot := filepath.Join(`C:\Users\tester`, "AppData", "Local", "YimeCore Experimental Trial")
+	if got := diagnosticsLogDirectory(stateRoot, true); got != filepath.Join(stateRoot, "logs") {
+		t.Fatalf("Trial diagnostics log dir=%q", got)
+	}
+}
 
 func TestDiagnosticsUILayoutUsesEqualCenteredRows(t *testing.T) {
 	l := buildDiagnosticsUILayout()

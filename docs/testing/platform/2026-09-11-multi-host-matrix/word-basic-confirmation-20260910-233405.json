@@ -1,0 +1,47 @@
+{
+  "schema_version": "yimecore-manual-observation-v1",
+  "generated_at": "2026-09-10T15:34:05.7396686Z",
+  "host": "Microsoft Word",
+  "architecture": "x64",
+  "user_report": "等长：9。省键：5。变长：7。三轮基本输入和其余三项测试正常。",
+  "observations": [
+    {
+      "mode": "full",
+      "rounds": 3,
+      "display_name": "等长",
+      "candidates_per_page_reported": 9
+    },
+    {
+      "mode": "shorthand",
+      "rounds": 3,
+      "display_name": "省键",
+      "candidates_per_page_reported": 5
+    },
+    {
+      "mode": "variable",
+      "rounds": 3,
+      "display_name": "变长",
+      "candidates_per_page_reported": 7
+    }
+  ],
+  "passed_checks": [
+    "space_commit",
+    "shift_valid_ordinal_commit",
+    "shift_candidate_labels",
+    "bare_digit_composition",
+    "backspace_last_code_element",
+    "escape_cancel",
+    "candidate_page_forward_and_back",
+    "arrow_candidate_selection_and_commit"
+  ],
+  "evidence_basis": "User physical test report responding to the three-step basic input, digit editing and paging procedure for three modes, three rounds each.",
+  "metadata_evidence": "word-pre-manual-20260910-225904.json",
+  "remaining_checks": [
+    "focus_loss_cancel_without_commit",
+    "confirmed_text_protection",
+    "focus_return_recovery",
+    "language_bar_mode_switch_and_menu",
+    "host_reopen_recovery"
+  ],
+  "complete": false
+}

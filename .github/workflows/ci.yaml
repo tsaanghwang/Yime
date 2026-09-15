@@ -11,12 +11,21 @@ on:
 permissions:
   contents: read
 
+# Superseded automatic branch/PR runs stop spending runner minutes. Manual runs
+# and tags have unique groups so a push cannot cancel an intentional validation.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')) && github.run_id || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/tags/') }}
+
 jobs:
   build-contract:
     name: build-contract / validate-build-contract
     runs-on: windows-2022
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: Reject weakened YIME build pipelines
         shell: pwsh
         run: .\tools\validate-build-contract.ps1
@@ -24,10 +33,37 @@ jobs:
         run: python .\tools\verify_toolchain_lock.py
       - name: Verify detached lexicon archive identity
         run: python .\tools\lexicon\verify_external_archive_lock.py
+      - name: Test CI scheduling and failure propagation
+        run: python .\tools\ci\test_workflow_contract.py
+      - name: Test shard coverage rejection paths
+        run: python -m unittest discover -s tools/ci -p test_shard_coverage.py
+      - name: Guard and track libIME2 component commits
+        shell: pwsh
+        env:
+          LIBIME2_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          $report = Join-Path $env:RUNNER_TEMP 'libime2-change-report.tsv'
+          .\tools\check-libime2-change-boundary.ps1 `
+            -BaseRef $env:LIBIME2_BASE_SHA `
+            -HeadRef '${{ github.sha }}' `
+            -ReportPath $report
+      - name: Upload libIME2 change report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: libime2-change-report-${{ github.sha }}
+          path: ${{ runner.temp }}/libime2-change-report.tsv
+          if-no-files-found: error
+          retention-days: 30
+      - name: Test libIME2 gate rejection paths
+        shell: pwsh
+        run: .\tools\test-libime2-change-boundary.ps1
 
   lexicon-offline-tooling:
     name: lexicon-offline-tooling
     runs-on: windows-2022
+    timeout-minutes: 30
+    needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
       - name: Use current stable Python 3.14 series
@@ -66,10 +102,20 @@ jobs:
   rust-i686-host:
     name: rust-i686-host
     runs-on: windows-2022
+    timeout-minutes: 20
+    needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
       - name: Install pinned i686 host toolchain
-        run: rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
+        run: |
+          $installHelp = rustup toolchain install --help | Out-String
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect rustup toolchain install options.' }
+          $nonHostArgs = @()
+          if ($installHelp.Contains('--force-non-host')) { $nonHostArgs = @('--force-non-host') }
+          rustup toolchain install stable-i686-pc-windows-msvc --profile minimal @nonHostArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain installation failed.' }
+          rustup run stable-i686-pc-windows-msvc cargo --version
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain cannot execute.' }
       - name: Run Rust checks
         shell: pwsh
         run: |
@@ -80,6 +126,8 @@ jobs:
   go-tests:
     name: go-tests
     runs-on: windows-2022
+    timeout-minutes: 20
+    needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
       - name: Use Go 1.26.4
@@ -93,6 +141,9 @@ jobs:
       - name: Run PSC Python tooling regression tests
         shell: pwsh
         run: python -m unittest discover -s tools -p "test_*.py" -v
+      - name: Validate checked PowerShell entry
+        shell: pwsh
+        run: python -m unittest discover -s tools/powershell -p "test_run_checked.py" -v
       - name: Run Rime compiled-cache freshness regression tests
         shell: pwsh
         run: .\tools\test-rime-cache-freshness.ps1
@@ -101,9 +152,15 @@ jobs:
         run: .\tools\test-installed-particle-a-stage6d-verifier.ps1
 
   real-rime-tests:
-    name: real-rime-tests
+    name: real-rime-tests / ${{ matrix.shard }}
     runs-on: windows-2022
     timeout-minutes: 30
+    needs: [build-contract]
+    strategy:
+      fail-fast: true
+      max-parallel: 3
+      matrix:
+        shard: [0, 1, 2]
     steps:
       - uses: actions/checkout@v6
       - name: Use Go 1.26.4
@@ -113,11 +170,23 @@ jobs:
           cache-dependency-path: go-backend/go.sum
       - name: Run real Rime integration tests
         shell: pwsh
-        run: .\tools\test-real-rime.ps1
+        run: .\tools\test-real-rime.ps1 -ShardCount 3 -ShardIndex ${{ matrix.shard }}
+
+      - name: Retain real Rime shard evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: real-rime-${{ matrix.shard }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: .tmp/real-rime-shard-*.json*
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
 
   go-race-msys2:
     name: go-race-msys2
     runs-on: windows-2022
+    timeout-minutes: 20
+    needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
       - name: Use Go 1.26.4
@@ -141,31 +210,10 @@ jobs:
   native-build:
     name: native-build
     runs-on: windows-2022
+    timeout-minutes: 20
+    needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Guard and track libIME2 component commits
-        shell: pwsh
-        env:
-          LIBIME2_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
-        run: |
-          $report = Join-Path $env:RUNNER_TEMP 'libime2-change-report.tsv'
-          .\tools\check-libime2-change-boundary.ps1 `
-            -BaseRef $env:LIBIME2_BASE_SHA `
-            -HeadRef '${{ github.sha }}' `
-            -ReportPath $report
-      - name: Upload libIME2 change report
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v6
-        with:
-          name: libime2-change-report-${{ github.sha }}
-          path: ${{ runner.temp }}/libime2-change-report.tsv
-          if-no-files-found: error
-          retention-days: 30
-      - name: Test libIME2 gate rejection paths
-        shell: pwsh
-        run: .\tools\test-libime2-change-boundary.ps1
       - name: Set up MSVC developer environment
         shell: pwsh
         run: |
@@ -184,7 +232,15 @@ jobs:
             }
           }
       - name: Install pinned i686 host toolchain
-        run: rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
+        run: |
+          $installHelp = rustup toolchain install --help | Out-String
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect rustup toolchain install options.' }
+          $nonHostArgs = @()
+          if ($installHelp.Contains('--force-non-host')) { $nonHostArgs = @('--force-non-host') }
+          rustup toolchain install stable-i686-pc-windows-msvc --profile minimal @nonHostArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain installation failed.' }
+          rustup run stable-i686-pc-windows-msvc cargo --version
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain cannot execute.' }
       - name: Verify vendored Win32 build dependencies
         run: python .\tools\verify_vendored_build_dependencies.py
       - name: Verify Win32 Rust and offline dependency pins
@@ -201,19 +257,13 @@ jobs:
         run: |
           call "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64 >nul
           cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-          cmake --build build64 --config Release --target PIMETextService PIMERpcResponseTests
+          cmake --build build64 --config Release --target PIMETextService PIMERpcResponseTests PIMERegistrationStatus
       - name: Run native C++ regression tests (Win32)
         shell: pwsh
         run: ctest --test-dir build -C Release --output-on-failure
       - name: Run x64 PIME RPC regression tests
         shell: pwsh
         run: ctest --test-dir build64 -C Release -R "^PIMERpcResponseTests$" --output-on-failure
-      - name: Verify native build outputs
-        shell: pwsh
-        run: .\tools\test-build-guards.ps1
-      - name: Test installed-runtime evidence capture
-        shell: pwsh
-        run: .\tools\test-sentence-segment-evidence.ps1
       - name: Stage native installer inputs
         shell: pwsh
         run: |
@@ -221,7 +271,9 @@ jobs:
           New-Item -ItemType Directory -Path "$stage\build\PIMELauncher", "$stage\build\PIMETextService\Release", "$stage\build64\PIMETextService\Release" -Force | Out-Null
           Copy-Item build\PIMELauncher\PIMELauncher.exe "$stage\build\PIMELauncher\PIMELauncher.exe"
           Copy-Item build\PIMETextService\Release\PIMETextService.dll "$stage\build\PIMETextService\Release\PIMETextService.dll"
+          Copy-Item build\PIMETextService\Release\PIMERegistrationStatus.exe "$stage\build\PIMETextService\Release\PIMERegistrationStatus.exe"
           Copy-Item build64\PIMETextService\Release\PIMETextService.dll "$stage\build64\PIMETextService\Release\PIMETextService.dll"
+          Copy-Item build64\PIMETextService\Release\PIMERegistrationStatus.exe "$stage\build64\PIMETextService\Release\PIMERegistrationStatus.exe"
       - uses: actions/upload-artifact@v6
         with:
           name: yime-native-${{ github.sha }}
@@ -229,264 +281,50 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  installer-payload:
-    name: installer-payload
+  shard-coverage:
+    name: shard-coverage
     runs-on: windows-2022
-    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2]
+    timeout-minutes: 5
+    needs: [real-rime-tests]
     steps:
       - uses: actions/checkout@v6
-      - name: Restore native installer inputs
-        uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v6
         with:
-          name: yime-native-${{ github.sha }}
-          path: .
-      - name: Use Go 1.26.4
-        uses: actions/setup-go@v6
-        with:
-          go-version: '1.26.4'
-          cache-dependency-path: go-backend/go.sum
-      - name: Use Python 3.14 for package handoff verification
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.14'
-      - name: Build Go backend package
+          pattern: real-rime-*-${{ github.sha }}-${{ github.run_attempt }}
+          path: .tmp/shard-evidence/real-rime
+      - name: Require exact complete shard coverage
         shell: pwsh
         run: |
-          Push-Location go-backend
-          cmd /C build.bat
-          if ($LASTEXITCODE -ne 0) { throw "go-backend build failed with exit code $LASTEXITCODE" }
-          Pop-Location
-      - name: Verify packaged dictionaries, manifests, layout and help
-        shell: pwsh
-        run: |
-          python .\tools\lexicon\verify_package_handoff.py `
-            --package-root .\go-backend\build\go-backend\input_methods\yime `
-            --output (Join-Path $env:RUNNER_TEMP 'package-handoff.json')
-      - name: Upload unsigned installer payload
-        uses: actions/upload-artifact@v6
-        with:
-          name: yime-unsigned-payload-${{ github.sha }}
-          path: |
-            build/PIMELauncher/PIMELauncher.exe
-            build/PIMETextService/Release/PIMETextService.dll
-            build64/PIMETextService/Release/PIMETextService.dll
-            go-backend/build/go-backend
-          if-no-files-found: error
-          retention-days: 14
+          python tools/ci/verify_shard_coverage.py .tmp/shard-evidence --commit ${{ github.sha }}
+          if ($LASTEXITCODE -ne 0) { throw 'Required shard coverage did not pass' }
 
-  release-sign-payload:
-    name: release-sign-payload
-    if: startsWith(github.ref, 'refs/tags/v')
+  simple-installer:
     runs-on: windows-2022
-    environment: release-signing
-    needs: [installer-payload]
+    timeout-minutes: 10
+    needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
-      - name: Checkout trusted signing implementation
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-          path: .trusted-signing
-          sparse-checkout: tools
-          persist-credentials: false
-      - name: Restore unsigned installer payload
-        uses: actions/download-artifact@v7
-        with:
-          name: yime-unsigned-payload-${{ github.sha }}
-          path: .
-      - name: Import release signing certificate
-        shell: pwsh
-        env:
-          YIME_SIGN_CERT_BASE64: ${{ secrets.YIME_SIGN_CERT_BASE64 }}
-          YIME_SIGN_CERT_PASSWORD: ${{ secrets.YIME_SIGN_CERT_PASSWORD }}
-        run: .\.trusted-signing\tools\import-release-signing-certificate.ps1
-      - name: Sign release payload
-        shell: pwsh
-        run: .\.trusted-signing\tools\sign-release.ps1 -Root $env:GITHUB_WORKSPACE -RequireComplete
-      - name: Verify signed release payload
-        shell: pwsh
-        run: .\.trusted-signing\tools\verify-release-signatures.ps1 -Root $env:GITHUB_WORKSPACE
-      - name: Upload signed installer payload
-        uses: actions/upload-artifact@v6
-        with:
-          name: yime-signed-payload-${{ github.sha }}
-          path: |
-            build/PIMELauncher/PIMELauncher.exe
-            build/PIMETextService/Release/PIMETextService.dll
-            build64/PIMETextService/Release/PIMETextService.dll
-            go-backend/build/go-backend
-          if-no-files-found: error
-          retention-days: 14
-
-  unsigned-installer-package:
-    name: unsigned-installer-package
-    if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
-    runs-on: windows-2022
-    needs: [installer-payload]
-    steps:
-      - uses: actions/checkout@v6
-      - name: Restore unsigned installer payload
-        uses: actions/download-artifact@v7
-        with:
-          name: yime-unsigned-payload-${{ github.sha }}
-          path: .
-      - name: Install NSIS in non-secret packaging job
-        uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
-        with:
-          nsis-version: 3.08
-      - name: Build the installer
-        shell: pwsh
-        run: |
-          Set-Location installer
-          & 'C:\Program Files (x86)\NSIS\Bin\makensis.exe' installer.nsi
-          if ($LASTEXITCODE -ne 0) { throw "makensis failed with exit code $LASTEXITCODE" }
-      - name: Write commit-addressed build manifest
-        shell: pwsh
-        run: .\tools\write-build-manifest.ps1
-      - name: Smoke-test unsigned installer on ephemeral runner
-        shell: pwsh
-        run: |
-          $installer = Get-ChildItem installer\YIME-*-setup.exe | Select-Object -First 1
-          if (-not $installer) { throw 'Unsigned installer was not found.' }
-          .\tools\test-installer-smoke.ps1 -InstallerPath $installer.FullName
-      - uses: actions/upload-artifact@v6
-        with:
-          name: YIME-unsigned-test-installer-${{ github.sha }}
-          path: |
-            installer/YIME-*-setup.exe
-            installer/build-manifest.json
-          if-no-files-found: error
-          retention-days: 30
-
-  release-installer-package:
-    name: release-installer-package
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: windows-2022
-    needs: [release-sign-payload]
-    steps:
-      - uses: actions/checkout@v6
-      - name: Restore signed installer payload
-        uses: actions/download-artifact@v7
-        with:
-          name: yime-signed-payload-${{ github.sha }}
-          path: .
-      - name: Install NSIS in non-secret packaging job
-        uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
-        with:
-          nsis-version: 3.08
-      - name: Build unsigned outer installer
-        shell: pwsh
-        run: |
-          Set-Location installer
-          & 'C:\Program Files (x86)\NSIS\Bin\makensis.exe' installer.nsi
-          if ($LASTEXITCODE -ne 0) { throw "makensis failed with exit code $LASTEXITCODE" }
-      - name: Upload unsigned outer installer
-        uses: actions/upload-artifact@v6
-        with:
-          name: yime-unsigned-outer-installer-${{ github.sha }}
-          path: installer/YIME-*-setup.exe
-          if-no-files-found: error
-          retention-days: 14
-
-  release-sign-installer:
-    name: release-sign-installer
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: windows-2022
-    environment: release-signing
-    needs: [release-sign-payload, release-installer-package]
-    steps:
-      - uses: actions/checkout@v6
-      - name: Checkout trusted signing implementation
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-          path: .trusted-signing
-          sparse-checkout: tools
-          persist-credentials: false
-      - name: Restore signed installer payload
-        uses: actions/download-artifact@v7
-        with:
-          name: yime-signed-payload-${{ github.sha }}
-          path: .
-      - name: Restore unsigned outer installer
-        uses: actions/download-artifact@v7
-        with:
-          name: yime-unsigned-outer-installer-${{ github.sha }}
-          path: installer
-      - name: Import release signing certificate
-        shell: pwsh
-        env:
-          YIME_SIGN_CERT_BASE64: ${{ secrets.YIME_SIGN_CERT_BASE64 }}
-          YIME_SIGN_CERT_PASSWORD: ${{ secrets.YIME_SIGN_CERT_PASSWORD }}
-        run: .\.trusted-signing\tools\import-release-signing-certificate.ps1
-      - name: Sign outer installer
-        shell: pwsh
-        run: |
-          $installer = Get-ChildItem installer\YIME-*-setup.exe | Select-Object -First 1
-          if (-not $installer) { throw 'Unsigned outer installer was not found.' }
-          .\.trusted-signing\tools\sign-file.ps1 -Path $installer.FullName
-      - name: Verify complete tagged release signatures
-        shell: pwsh
-        run: .\.trusted-signing\tools\verify-release-signatures.ps1 -Root $env:GITHUB_WORKSPACE -IncludeInstaller
-      - name: Write commit-addressed signed build manifest
-        shell: pwsh
-        run: .\.trusted-signing\tools\write-build-manifest.ps1 -RepoRoot $env:GITHUB_WORKSPACE
-      - name: Upload signed installer
-        uses: actions/upload-artifact@v6
-        with:
-          name: YIME-signed-installer
-          path: |
-            installer/YIME-*-setup.exe
-            installer/build-manifest.json
-          if-no-files-found: error
-          retention-days: 30
-
-  installer-package:
-    name: installer-package
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    needs: [installer-payload, unsigned-installer-package, release-sign-installer]
-    steps:
-      - name: Preserve protected installer-package contract
-        shell: bash
-        env:
-          IS_TAG: ${{ startsWith(github.ref, 'refs/tags/v') }}
-          PAYLOAD_RESULT: ${{ needs['installer-payload'].result }}
-          UNSIGNED_RESULT: ${{ needs['unsigned-installer-package'].result }}
-          SIGNED_RESULT: ${{ needs['release-sign-installer'].result }}
-        run: |
-          test "$PAYLOAD_RESULT" = success
-          if test "$IS_TAG" = true; then
-            test "$UNSIGNED_RESULT" = skipped
-            test "$SIGNED_RESULT" = success
-          else
-            test "$UNSIGNED_RESULT" = success
-            test "$SIGNED_RESULT" = skipped
-          fi
+      - name: Test real system startup values in isolated test keys
+        shell: powershell
+        run: .\installer\simple\Test-Startup.ps1
+      - name: Test single and both product maintenance selection
+        shell: powershell
+        run: .\installer\simple\Test-Manage.ps1
+      - name: Test persistent setup error logs
+        shell: powershell
+        run: .\installer\simple\Test-Logging.ps1
+      - name: Test installer wait with a surviving child process
+        shell: powershell
+        run: .\installer\simple\Test-ProcessWait.ps1
 
   core-build:
     name: core-build
     if: ${{ always() }}
     runs-on: ubuntu-latest
-    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, installer-package]
+    timeout-minutes: 5
+    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, go-tests, real-rime-tests, go-race-msys2, native-build, shard-coverage, simple-installer]
     steps:
-      - name: Preserve legacy aggregate build contract
-        shell: bash
+      - name: Require every retained build and test job
         env:
-          CONTRACT_RESULT: ${{ needs['build-contract'].result }}
-          LEXICON_RESULT: ${{ needs['lexicon-offline-tooling'].result }}
-          RUST_RESULT: ${{ needs['rust-i686-host'].result }}
-          NATIVE_RESULT: ${{ needs['native-build'].result }}
-          GO_RESULT: ${{ needs['go-tests'].result }}
-          REAL_RIME_RESULT: ${{ needs['real-rime-tests'].result }}
-          RACE_RESULT: ${{ needs['go-race-msys2'].result }}
-          INSTALLER_RESULT: ${{ needs['installer-package'].result }}
-        run: |
-          test "$CONTRACT_RESULT" = success
-          test "$LEXICON_RESULT" = success
-          test "$RUST_RESULT" = success
-          test "$NATIVE_RESULT" = success
-          test "$GO_RESULT" = success
-          test "$REAL_RIME_RESULT" = success
-          test "$RACE_RESULT" = success
-          test "$INSTALLER_RESULT" = success
+          RESULTS: ${{ toJSON(needs) }}
+        run: python -c "import json,os; assert all(v['result']=='success' for v in json.loads(os.environ['RESULTS']).values())"

@@ -19,6 +19,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolhub"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userlexicon"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/win32ui"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore"
 )
 
 var invokeRimeBuild = settings.InvokeRimeBuild
@@ -167,6 +168,23 @@ func (state *appState) loadSystemLexicon() error {
 		return state.systemLexiconErr
 	}
 	state.systemLexiconOnce = true
+
+	if state.experimental && state.indexRoot != "" {
+		index, err := yimecore.OpenFileIndex(filepath.Join(state.indexRoot, string(state.mode)+".yidx"))
+		if err != nil {
+			state.systemLexiconErr = err
+			return err
+		}
+		defer index.Close()
+		state.systemLexicon = make(map[string]struct{}, index.RecordCount())
+		state.systemLexiconErr = index.VisitEntries(func(entry yimecore.Entry) bool {
+			if phrase := strings.TrimSpace(entry.Text); phrase != "" {
+				state.systemLexicon[phrase] = struct{}{}
+			}
+			return true
+		})
+		return state.systemLexiconErr
+	}
 
 	path := systemlexicon.DictPath(state.sharedDir, state.userDir, state.mode)
 	entries, err := systemlexicon.LoadDictFile(path)
@@ -394,9 +412,9 @@ func (state *appState) finishApplyLexicon() {
 	state.dirty = false
 	state.refreshList()
 	state.addOperationHistory("应用用户词库并重建三种模式")
-	setWindowText(state.statusHWND, "已重建三套用户词库；活动输入会话将在下一次操作前刷新。")
+	setWindowText(state.statusHWND, "已重建三套用户词库；活动输入会话将在下一次空闲输入时采用。")
 	state.updateToolbarState()
-	showNoticeDialog(state.mainHWND, "应用完成", "用户词库格式校验通过，已重建 variable / full / shorthand 三套用户词库。活动输入会话将在下一次操作前刷新。")
+	showNoticeDialog(state.mainHWND, "应用完成", "用户词库格式校验通过，已重建 variable / full / shorthand 三套用户词库。活动输入会话将在下一次空闲输入时采用。")
 }
 
 func (state *appState) rebuildAllLexicons() error {
@@ -416,6 +434,11 @@ func (state *appState) rebuildAllLexicons() error {
 func (state *appState) rebuildAndDeployAllLexicons() error {
 	if err := state.rebuildAllLexicons(); err != nil {
 		return err
+	}
+	if state.experimental {
+		// The trial Broker reads these generated overlays when it opens a new
+		// session. Existing compositions retain the overlay they started with.
+		return nil
 	}
 	if err := userlexicon.SyncRimeSchemas(state.sharedDir, state.userDir); err != nil {
 		return err

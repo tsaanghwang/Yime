@@ -1,0 +1,26 @@
+﻿**********************
+Windows PowerShell 脚本开始
+开始时间: 20260914180408
+用户名: 计算机\Golde
+RunAs 用户: 计算机\Golde
+配置名称: 
+计算机: 计算机 (Microsoft Windows NT 10.0.26300.0)
+主机应用程序: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Users\Golde\Yime Simple Test Archives\simple-delivery-20260914\maintenance-5c9a5d77\Yime-Maintenance\yimecore\Setup.ps1 -Action Install
+进程 ID: 11892
+PSVersion: 5.1.26100.9539
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9539
+BuildVersion: 10.0.26100.9539
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\Golde\Yime Setup Logs\cdae51515ce340e9bce7e0d7306b1948.user.log
+Action: Install; package: C:\Users\Golde\Yime Simple Test Archives\simple-delivery-20260914\maintenance-5c9a5d77\Yime-Maintenance\yimecore
+Elevated setup log: C:\Users\Golde\Yime Setup Logs\cdae51515ce340e9bce7e0d7306b1948.admin.log
+Elevated setup exit code: 0
+**********************
+Windows PowerShell 脚本结束
+结束时间: 20260914180418
+**********************

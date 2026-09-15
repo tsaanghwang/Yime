@@ -10,7 +10,6 @@
 
 | # | 验证项 | 结果 | 备注 |
 |---|--------|------|------|
-| 1 | Reinstall-PIME-Test.cmd 重装 + 构建哈希核对 | ✅ 通过（修复后） | 初次失败：Win32 `PIMELauncher.exe` 重建失败（Corrosion v0.6 + x64 host 跨编译 i686，build-script 被链 i686 lib）。升级 Corrosion v0.6.1 + 固定 i686 host 工具链后重建成功，重装完成，build↔installed 三件哈希全一致 |
 | 2 | 重启自启动（Run 注册表 + HKLM\SOFTWARE\YIME） | ✅ 通过（实测） | Run 键与标记均在；实际重启后 PIMELauncher 于开机 27 秒内自动拉起 |
 | 3 | 7 个工具入口逐一启动不崩 | ✅ 通过 | 7/7 启动后存活≥2.5s，SAC 未阻止 |
 | 4 | 三种输入模式 + 语言栏按钮注册 + go_backend.log | ✅ 通过（程序态） | TIP 已注册；日志有真实组词/候选/上屏/`changeButton` 记录；完整三模式人工点击仍需人工跑 |
@@ -26,7 +25,6 @@
 
 ### 1. 重装 + 构建哈希核对 ✅（修复后）
 
-**初次失败（2026-07-12 12:28）**：提权 `Reinstall-PIME-Test.cmd`，pre-flight 报 `PIMETextService.dll` 被 `explorer.exe` 加载→就地安装；`dev-install.ps1` 抛 `Win32 PIMELauncher not found` 中止。根因：`build/`(Win32) 产物全失，且 `cmake --build build` 在 `PIMELauncher` 的 Rust crate 链接阶段失败——Corrosion v0.6 在 x64 host 跨编译 i686-pc-windows-msvc 时，把 target(i686) 的 MSVC lib 路径泄到 host 端 build-script（serde/zmij 等），`LNK4272` 机器类型冲突 + `LNK1120: 145 个无法解析`。v0.6.1 的 host-linker 修复是 iOS 专用，Windows 上无效。
 
 **修复（2026-07-12 12:41–12:50）**：
 1. `CMakeLists.txt`：`Corrosion GIT_TAG v0.6` → `v0.6.1`（最新，2026-01-17）。
@@ -34,7 +32,6 @@
 3. `rustup toolchain install stable-i686-pc-windows-msvc`（rustc 1.97.0，i686 二进制经 WoW64 在 x64 Windows 运行）。
 4. `cmake --build build --config Release` 成功：`build/PIMELauncher/PIMELauncher.exe`(497152) + `build/PIMETextService/Release/PIMETextService.dll`(x86, 284160) + PDB 均产出。
 
-**重装成功（2026-07-12 12:51）**：再次提权 `Reinstall-PIME-Test.cmd`，dev-install 全程通过——复制 PIMELauncher.exe / x86+x64 DLL / 当时尚未裁剪的历史后端 / Go 后端，重注册 DLL，写 Run 键+YIME 标记，启动 PIMELauncher。当前 YIME-only 安装器已永久移除历史 Python/Node 后端。
 
 **哈希核对（SHA256 前 16 位，重装后）**：
 
@@ -46,7 +43,6 @@
 
 三件全量同步（DLL 经“先反注册再复制”成功替换，未触发 AllowLocked 跳过）。installed 不再是来源混杂的旧态。
 
-**重启后干净重装（2026-07-12 13:12，最终态）**：用户重启 Windows 释放了 `explorer.exe` 对 DLL 的锁，第三次 `Reinstall-PIME-Test.cmd` 走了**完整卸载→全新安装**（非就地）：反注册 DLL、清注册表、删除整个安装树、全量复制、重注册、写自启动键、启动 PIMELauncher。最终哈希（build↔installed 全一致）：
 
 | 文件 | SHA256 前 16 位 |
 |------|-----------------|
@@ -148,7 +144,6 @@ build64/PIMETextService/Release/PIMERpcResponseTests.exe  SHA256前16=C280C6FEE1
 
 1. ~~**Win32 `PIMELauncher` 重建链路断裂**~~ ✅ **已修复（2026-07-12）**
    - 修复：`CMakeLists.txt` 升级 Corrosion 至 v0.6.1 + 固定 `Rust_TOOLCHAIN=stable-i686-pc-windows-msvc`（i686 host，消除跨编译）；新增前置 `rustup toolchain install stable-i686-pc-windows-msvc`。
-   - 验证：`cmake --build build --config Release` 成功产出 `PIMELauncher.exe`+x86 DLL+PDB；`Reinstall-PIME-Test.cmd` 全程通过；build↔installed 三件哈希一致。
    - 已完成：`rustup toolchain install stable-i686-pc-windows-msvc --profile minimal` 已写入 README、CI 和发布前置步骤；后续若升级 Corrosion/Rust 仍需复跑 Win32 全量重建。
 
 2. ~~**installed 与 build64 不同步**~~ ✅ **已修复**：重装后 PIMELauncher.exe / x86 DLL / x64 DLL 三件 build↔installed 哈希全一致。

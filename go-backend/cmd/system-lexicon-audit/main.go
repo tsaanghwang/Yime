@@ -198,6 +198,8 @@ type uiLayout struct {
 type appState struct {
 	sharedDir          string
 	userDir            string
+	indexRoot          string
+	experimental       bool
 	mode               reverselookup.Mode
 	dictPath           string
 	loading            bool
@@ -228,7 +230,9 @@ type appState struct {
 func main() {
 	sharedDir := flag.String("SharedDir", "", "Yime shared runtime data directory")
 	userDir := flag.String("UserDir", "", "Yime user data directory")
+	indexRoot := flag.String("IndexRoot", "", "YimeCore Trial index directory")
 	mode := flag.String("Mode", "variable", "Yime schema mode: variable, full, shorthand")
+	experimental := flag.Bool("Experimental", false, "Read the independent YimeCore Trial index")
 	flag.Parse()
 
 	if strings.TrimSpace(*sharedDir) == "" {
@@ -237,9 +241,11 @@ func main() {
 	}
 
 	state := &appState{
-		sharedDir: strings.TrimSpace(*sharedDir),
-		userDir:   strings.TrimSpace(*userDir),
-		mode:      reverselookup.Mode(strings.TrimSpace(*mode)),
+		sharedDir:    strings.TrimSpace(*sharedDir),
+		userDir:      strings.TrimSpace(*userDir),
+		indexRoot:    strings.TrimSpace(*indexRoot),
+		experimental: *experimental,
+		mode:         reverselookup.Mode(strings.TrimSpace(*mode)),
 		modeOptions: []modeOption{
 			{Label: "变长", Value: reverselookup.ModeVariable},
 			{Label: "等长", Value: reverselookup.ModeFull},
@@ -302,7 +308,8 @@ func runWin32App(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	if win32ui.ActivateExistingWindow("YimeSystemLexiconAudit") {
+	windowClass := auditWindowClass(state.experimental)
+	if win32ui.ActivateExistingWindow(windowClass) {
 		return nil
 	}
 
@@ -312,7 +319,7 @@ func runWin32App(state *appState) error {
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
 
 	instance, _, _ := procGetModuleHandleW.Call(0)
-	className, _ := syscall.UTF16PtrFromString("YimeSystemLexiconAudit")
+	className, _ := syscall.UTF16PtrFromString(windowClass)
 	cursor, _, _ := procLoadCursorW.Call(0, uintptr(32512))
 	icon := win32ui.LoadYimeIcon(instance)
 
@@ -335,7 +342,7 @@ func runWin32App(state *appState) error {
 		return fmt.Errorf("RegisterClassEx failed")
 	}
 
-	title, _ := syscall.UTF16PtrFromString("Yime 系统词库审查")
+	title, _ := syscall.UTF16PtrFromString(auditWindowTitle(state.experimental))
 	screenWidth, _, _ := procGetSystemMetrics.Call(0)
 	screenHeight, _, _ := procGetSystemMetrics.Call(1)
 	winW, winH := windowSizeForClient(state.layout.clientW, state.layout.clientH)
@@ -371,6 +378,20 @@ func runWin32App(state *appState) error {
 		}
 	}
 	return nil
+}
+
+func auditWindowClass(experimental bool) string {
+	if experimental {
+		return "YimeCoreTrialSystemLexiconAudit"
+	}
+	return "YimeSystemLexiconAudit"
+}
+
+func auditWindowTitle(experimental bool) string {
+	if experimental {
+		return "Yime 试验版内置词库审查"
+	}
+	return "Yime 系统词库审查"
 }
 
 func (state *appState) createChildControls() {

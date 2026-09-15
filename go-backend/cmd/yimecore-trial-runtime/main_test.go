@@ -1,0 +1,147 @@
+package main
+
+import (
+	"os"
+	"path/filepath"
+	"slices"
+	"strings"
+	"testing"
+)
+
+func TestRuntimeRejectsNonlocalPipeBeforeLoadingPackage(t *testing.T) {
+	for _, pipe := range []string{"", `\\server\pipe\remote`, `\\.\pipe\nested\name`, `\\.\pipe\bad/name`, `\\.\pipe\` + strings.Repeat("a", 129)} {
+		_, err := resolveOptions(options{installRoot: t.TempDir(), stateRoot: t.TempDir(), pipeName: pipe, noToolbar: true})
+		if err == nil || !strings.Contains(err.Error(), "local ASCII pipe name") {
+			t.Fatalf("pipe %q: %v", pipe, err)
+		}
+	}
+}
+
+func TestResolveOptionsRequiresCompleteIndependentTrialPackage(t *testing.T) {
+	root := t.TempDir()
+	broker := filepath.Join(root, "runtime", "YimeBroker.exe")
+	state := filepath.Join(root, "state")
+	for _, path := range []string{
+		broker,
+		filepath.Join(root, "package", "indexes", "full.yidx"),
+		filepath.Join(root, "package", "indexes", "variable.yidx"),
+		filepath.Join(root, "package", "indexes", "shorthand.yidx"),
+		filepath.Join(root, "package", "data", "yime_pinyin_codes.tsv"),
+	} {
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, []byte("test"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	resolved, err := resolveOptions(options{
+		installRoot: filepath.Join(root, "package"), brokerPath: broker,
+		stateRoot: state, pipeName: defaultPipeName, noToolbar: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resolved.brokerPath != broker || resolved.stateRoot != state {
+		t.Fatalf("custom durable runtime paths changed: %+v", resolved)
+	}
+	if err := os.Remove(filepath.Join(root, "package", "indexes", "shorthand.yidx")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := resolveOptions(resolved); err == nil {
+		t.Fatal("incomplete three-mode package was accepted")
+	}
+}
+
+func TestInputToolbarUsesDedicatedNativeWindowsExecutable(t *testing.T) {
+	root := filepath.Join(`C:\trial package`)
+	if got := inputToolbarPath(root); got != filepath.Join(root, "bin", "YimeCoreInputToolbar.exe") {
+		t.Fatalf("input toolbar path=%q", got)
+	}
+	if got := settingsToolPath(root); got != filepath.Join(root, "bin", "YimeCoreSettingsTool.exe") {
+		t.Fatalf("settings tool path=%q", got)
+	}
+	if got := trainerPath(root); got != filepath.Join(root, "bin", "YimeCoreTrainer.exe") {
+		t.Fatalf("trainer path=%q", got)
+	}
+	if got := toolCenterPath(root); got != filepath.Join(root, "bin", "YimeCoreToolCenter.exe") {
+		t.Fatalf("Tool Center path=%q", got)
+	}
+	config := options{installRoot: root, stateRoot: `C:\trial state`}
+	arguments := inputToolbarArguments(config)
+	for _, expected := range []string{
+		settingsToolPath(root), trainerPath(root), toolCenterPath(root), filepath.Join(root, "data"),
+		filepath.Join(root, "help"), filepath.Join(config.stateRoot, "logs"), config.stateRoot, "-Experimental",
+	} {
+		if !slices.Contains(arguments, expected) {
+			t.Fatalf("input toolbar arguments lack %q: %v", expected, arguments)
+		}
+	}
+}
+
+func TestOptionalToolbarFailureIsVisibleInRuntimeStatus(t *testing.T) {
+	status := withToolbarStatus(runtimeStatus{State: "running", BrokerPID: 42},
+		"unavailable", "start toolbar: access denied")
+	if status.State != "running" || status.BrokerPID != 42 ||
+		status.ToolbarState != "unavailable" || status.ToolbarError == "" {
+		t.Fatalf("optional toolbar health was not reported without failing Broker: %+v", status)
+	}
+}
+
+func TestBrokerArgumentsPinMultiIndexDurabilityAndTransactionalControl(t *testing.T) {
+	config := options{
+		installRoot: `C:\trial package`, brokerPath: `C:\runtime\YimeBroker.exe`,
+		stateRoot: `C:\user state`, pipeName: defaultPipeName,
+	}
+	arguments := brokerArguments(config)
+	modelRoot := filepath.Join(config.stateRoot, "user-model", "installed-v1")
+	for _, expected := range []string{
+		"-index-root", filepath.Join(config.installRoot, "indexes"),
+		"-default-mode", "variable",
+		"-named-pipe", defaultPipeName,
+		"-user-model-snapshot", filepath.Join(modelRoot, "user-model.json"),
+		"-user-model-journal", filepath.Join(modelRoot, "user-model.journal"),
+		"-user-model-source-id", modelSourceID + ":installed-v1",
+		"-user-blocklist", filepath.Join(config.stateRoot, "yime_blocklist.txt"),
+		"-learning-config", filepath.Join(config.stateRoot, "learning.json"),
+		"-professional-root", filepath.Join(config.installRoot, "professional-lexicons"),
+		"-professional-state", filepath.Join(config.stateRoot, "professional-lexicons.json"),
+		"-index-control-manifest", filepath.Join(config.stateRoot, "index-control", "request.json"),
+		"-index-control-status", filepath.Join(config.stateRoot, "index-control", "status.json"),
+	} {
+		if !slices.Contains(arguments, expected) {
+			t.Fatalf("Broker arguments lack %q: %v", expected, arguments)
+		}
+	}
+}
+
+func TestBrokerArgumentsAdoptPublishedTrialLayoutGeneration(t *testing.T) {
+	config := options{
+		installRoot: `C:\trial package`, stateRoot: `C:\user state`, pipeName: defaultPipeName,
+		indexRoot: `C:\user state\layout\generations\layout-123\indexes`,
+		dataDir:   `C:\user state\layout\generations\layout-123\data`, indexVersion: "layout-123",
+	}
+	arguments := brokerArguments(config)
+	for _, expected := range []string{
+		config.indexRoot, config.dataDir, "layout-123",
+		filepath.Join(config.stateRoot, "user-model", "layout-123", "user-model.json"),
+		modelSourceID + ":layout-123",
+	} {
+		if !slices.Contains(arguments, expected) {
+			t.Fatalf("generation Broker arguments lack %q: %v", expected, arguments)
+		}
+	}
+}
+
+func TestRuntimeStatusRoundTrip(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "runtime-status.json")
+	want := runtimeStatus{SchemaVersion: statusSchema, State: "running", RuntimePID: 11, BrokerPID: 22, Restarts: 3}
+	writeRuntimeStatus(path, want)
+	got, err := readRuntimeStatus(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != want {
+		t.Fatalf("status mismatch: got %+v want %+v", got, want)
+	}
+}

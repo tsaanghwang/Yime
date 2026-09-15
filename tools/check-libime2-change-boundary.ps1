@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$RepoRoot = (Split-Path -Parent $PSScriptRoot),
     [string]$BaseRef,
     [string]$HeadRef = 'HEAD',
@@ -17,7 +17,7 @@ $transitionCompanionPaths = @(
     'CMakeLists.txt',
     'README.md',
     'docs/project/LIBIME2_COMPONENT_BOUNDARY.md',
-    'tools/test-build-guards.ps1'
+    'tools/validate-build-contract.ps1'
 )
 
 function Invoke-RepoGit {

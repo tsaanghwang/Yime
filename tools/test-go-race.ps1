@@ -17,11 +17,13 @@ if (-not (Test-Path -LiteralPath $GccPath -PathType Leaf)) {
 
 New-Item -ItemType Directory -Force -Path $cache, $temp | Out-Null
 $env:CGO_ENABLED = '1'
-$env:CC = $GccPath
 $gccDir = Split-Path -Parent $GccPath
 if (($env:PATH -split ';') -notcontains $gccDir) {
     $env:PATH = "$gccDir;$env:PATH"
 }
+# Go 1.26 on Windows may reject an absolute CC command before it reaches GCC.
+# Resolve the executable through the PATH entry above instead.
+$env:CC = [IO.Path]::GetFileNameWithoutExtension($GccPath)
 $env:GOCACHE = $cache
 $env:GOTMPDIR = $temp
 

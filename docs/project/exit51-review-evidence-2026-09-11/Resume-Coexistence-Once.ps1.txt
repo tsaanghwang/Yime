@@ -1,0 +1,69 @@
+REVIEW ONLY - NOT AN EXECUTION ENTRY. Paths are placeholders.
+Original script body follows unchanged except path redaction.
+
+[CmdletBinding()]
+param()
+$ErrorActionPreference='Stop'
+Set-Location -LiteralPath '<TEST_REPO>'
+$run='84ccacac-c115-4c2d-8d7a-47df8e0ea4a0'
+$base=Join-Path $env:USERPROFILE 'Yime Rime-PIME Test Archives'
+$previous=Join-Path $base ('resume-attempt-'+$run)
+foreach($name in @('resume-started.txt','execute-parameters-path.txt','execution-result.json')){
+    if(Test-Path -LiteralPath (Join-Path $previous $name)){throw 'Previous attempt reached preparation/execution. Stop; no retry.'}
+}
+$attempt=Join-Path $base ('resume-attempt-'+$run+'-preflight2')
+if(Test-Path -LiteralPath $attempt){throw 'A recovery attempt directory already exists. Stop; no automatic retry.'}
+[void][IO.Directory]::CreateDirectory($attempt)
+Start-Transcript -LiteralPath (Join-Path $attempt 'console.txt') -NoClobber|Out-Null
+function ReadJson($path){Get-Content -LiteralPath $path -Raw -Encoding UTF8|ConvertFrom-Json}
+function Hash($path){(Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()}
+try{
+    $oldRoot=Join-Path $base ('approval-'+$run)
+    $ticketPath=Join-Path $oldRoot ('candidate-recovery-'+$run+'.json')
+    if((Hash $ticketPath) -cne '05352e3da345967e3e71fb5b6551f1db5739473f46a36ce3b311c46313d2b039'){throw 'Original recovery ticket hash mismatch.'}
+    if((Hash (Join-Path $oldRoot 'authorization.json')) -cne '89359001856f4d875dcb109c1b148b655be56fb8e1d4fa5728705fd4c117cfab'){throw 'Original approval hash mismatch.'}
+    $ticket=ReadJson $ticketPath;$old=ReadJson (Join-Path $oldRoot 'authorization.json')
+    & python tools/dual-product/verify_delivery.py test-delivery/rime-pime-coexistence-20260911-empty --expected-index-sha256 b45f350998f85bfd19b1c450ae2e7aa9ca630fcd89325771ad4baa2389e7cf63
+    if($LASTEXITCODE -ne 0){throw 'Delivery verification failed.'}
+    $backup=Join-Path $attempt 'original-approval-backup';[void][IO.Directory]::CreateDirectory($backup)
+    foreach($name in @('authorization.json','boundary.json','execute-parameters.json',('candidate-recovery-'+$run+'.json'))){
+        $src=Join-Path $oldRoot $name;$dst=Join-Path $backup $name
+        [IO.File]::Copy($src,$dst,$false)
+        if((Hash $src) -cne (Hash $dst)){throw 'Original approval backup mismatch.'}
+    }
+    $beforePointer=Join-Path $attempt 'before-evidence.txt'
+    & ./.tmp/Collect-Coexistence-Readonly.ps1 -ResultPath $beforePointer
+    $before=[IO.File]::ReadAllText($beforePointer)
+    $s=ReadJson (Join-Path $before 'summary.json');$d=ReadJson (Join-Path $before 'decisions.json')
+    if(-not $s.collection_completed -or -not $s.original_evidence_unchanged -or $s.payload_count -ne 191 -or $s.payload_errors -ne 0 -or $s.payload_mismatches -ne 0 -or $s.registry_errors -ne 0 -or $s.registry_present -ne 0 -or -not $s.default_matches -or $s.process_count -ne 0){throw 'Recovery preconditions changed. Stop.'}
+    $reg=ReadJson (Join-Path $before 'registry-observations-private.json')
+    if($reg -isnot [array] -or $reg.Count -ne 37 -or @($reg.id|Select-Object -Unique).Count -ne 37 -or @($reg|Where-Object {$_.error -or $_.observation.exists}).Count){throw 'Incomplete or changed registry observation.'}
+    if(-not $d.prepared_binding_valid -or $null -ne $d.install_commit -or $null -ne $d.install_terminal -or $d.removal_commit.disposition -cne 'remove-requested' -or $null -ne $d.removal_terminal){throw 'Recovery decisions changed. Stop.'}
+    $params=ReadJson './docs/testing/platform/2026-09-11-exit51-readonly/resume-preparation.json'
+    $messages=@(& ./tools/dual-product/prepare-rime-pime-coexistence-test.ps1 -DeliveryRoot $params.DeliveryRoot -ExpectedIndexSha256 $params.ExpectedIndexSha256 -Mode Resume -RecoveryTicketPath $ticketPath 6>&1)
+    $messages|ForEach-Object {Write-Host ([string]$_)}
+    $lines=@($messages|ForEach-Object {[string]$_}|Where-Object {$_ -like 'Prepared only. Execution parameters: *'})
+    if($lines.Count -ne 1){throw 'Preparation did not return exactly one execution parameter path.'}
+    $executePath=$lines[0].Substring('Prepared only. Execution parameters: '.Length)
+    $p=ReadJson $executePath;$a=ReadJson $p.AuthorizationPath;$b=ReadJson $p.BoundaryPath
+    if($p.Mode -cne 'Resume' -or $p.ExpectedInstallerSha256 -cne '0276245dff5aa5e6441a829152eb178471b8cba0a21314e15ba04a9e5ff83617' -or $p.PreparedSha256 -cne $ticket.prepared_sha256){throw 'New execution parameters differ from original recovery binding.'}
+    foreach($field in @('install_root','state_root','recovery_root')){if($a.$field -cne $old.$field -or $b.$field -cne $old.$field){throw ('New recovery root differs: '+$field)}}
+    if($a.run_id -ceq $run -or $a.package_sha256 -cne $ticket.package_sha256){throw 'New authorization identity is invalid.'}
+    [IO.File]::WriteAllText((Join-Path $attempt 'execute-parameters-path.txt'),$executePath,[Text.UTF8Encoding]::new($false))
+    $guard=[IO.File]::Open((Join-Path $attempt 'resume-started.txt'),'CreateNew','Write','None');$guard.Dispose()
+    Write-Host 'All preconditions passed. Executing the authorized original-package Resume ONCE.'
+    $executionError=$null
+    try{
+        & ./tools/dual-product/execute-rime-pime-coexistence-test.ps1 -Mode Resume -InstallerPath $p.InstallerPath -ExpectedInstallerSha256 $p.ExpectedInstallerSha256 -AuthorizationPath $p.AuthorizationPath -TrustedApprovalSha256 $p.TrustedApprovalSha256 -BoundaryPath $p.BoundaryPath -ReceiptPath $p.ReceiptPath -PreparedSha256 $p.PreparedSha256
+    }catch{$executionError=$_.Exception.Message;Write-Host ('Recovery failed: '+$executionError)}
+    [IO.File]::WriteAllText((Join-Path $attempt 'execution-result.json'),(ConvertTo-Json -InputObject @{returned_success=($null -eq $executionError);error=$executionError;retries=0}),[Text.UTF8Encoding]::new($false))
+    & ./.tmp/Collect-Coexistence-Readonly.ps1 -ResultPath (Join-Path $attempt 'after-evidence.txt')
+    Write-Host 'Recovery attempt finished. Completion criteria still require evidence review. Do not rerun.'
+}catch{
+    $err=[ordered]@{type=$_.Exception.GetType().FullName;message=$_.Exception.Message;stack=$_.ScriptStackTrace}
+    [IO.File]::WriteAllText((Join-Path $attempt 'attempt-error.json'),($err|ConvertTo-Json -Depth 6),[Text.UTF8Encoding]::new($false))
+    Write-Host ('Stopped: '+$_.Exception.Message)
+}finally{
+    Write-Host ('Recovery evidence: '+$attempt)
+    Stop-Transcript|Out-Null
+}

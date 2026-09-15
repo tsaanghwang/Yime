@@ -1,0 +1,52 @@
+﻿**********************
+Windows PowerShell 脚本开始
+开始时间: 20260914170918
+用户名: 计算机\Golde
+RunAs 用户: 计算机\Golde
+配置名称: 
+计算机: 计算机 (Microsoft Windows NT 10.0.26300.0)
+主机应用程序: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Users\Golde\Yime Simple Test Archives\simple-delivery-20260914\maintenance-5c9a5d77\Yime-Maintenance\yimecore\Setup.ps1 -Action Uninstall -InitiatingSid S-1-5-21-2077926464-2168481927-1091126771-1001 -LogId c8ff4ac7d74f48f78227c9c003c1aca0
+进程 ID: 31116
+PSVersion: 5.1.26100.9539
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9539
+BuildVersion: 10.0.26100.9539
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\Golde\Yime Setup Logs\c8ff4ac7d74f48f78227c9c003c1aca0.admin.log
+Action: Uninstall; package: C:\Users\Golde\Yime Simple Test Archives\simple-delivery-20260914\maintenance-5c9a5d77\Yime-Maintenance\yimecore
+Files unavailable under C:\Program Files\YimeCore: YimeTextServiceExperiment.dll
+PS>TerminatingError():“Cancelled”
+FAILED stage: wait for installed files to be released
+
+
+PSMessageDetails      : 
+Exception             : System.OperationCanceledException: Cancelled
+TargetObject          : 
+CategoryInfo          : OperationStopped: (:) [], OperationCanceledException
+FullyQualifiedErrorId : Cancelled
+ErrorDetails          : 
+InvocationInfo        : System.Management.Automation.InvocationInfo
+ScriptStackTrace      : 在 Wait-ProductFiles、C:\Users\Golde\Yime Simple Test Archives\simple-delivery-20260914\maintenan
+                        ce-5c9a5d77\Yime-Maintenance\yimecore\Product.psm1 中: 第 82 行
+                        在 <ScriptBlock>、C:\Users\Golde\Yime Simple Test Archives\simple-delivery-20260914\maintenance-5
+                        c9a5d77\Yime-Maintenance\yimecore\Setup.ps1 中: 第 137 行
+PipelineIterationInfo : {}
+Exception: System.OperationCanceledException: Cancelled
+C:\Users\Golde\Yime Simple Test Archives\simple-delivery-20260914\maintenance-5c9a5d77\Yime-Maintenance\yimecore\Setup.p
+s1 : Setup stopped: Cancelled Log: C:\Users\Golde\Yime Setup Logs\c8ff4ac7d74f48f78227c9c003c1aca0.admin.log
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,Setup.ps1
+C:\Users\Golde\Yime Simple Test Archives\simple-delivery-20260914\maintenance-5c9a5d77\Yime-Maintenance\yimecore\Setup.
+ps1 : Setup stopped: Cancelled Log: C:\Users\Golde\Yime Setup Logs\c8ff4ac7d74f48f78227c9c003c1aca0.admin.log
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,Setup.ps1
+
+Setup exit code: 2
+**********************
+Windows PowerShell 脚本结束
+结束时间: 20260914170934
+**********************

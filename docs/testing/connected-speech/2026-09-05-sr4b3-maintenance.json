@@ -1,0 +1,71 @@
+{
+  "schema_version": "yimecore-speech-sr4b3-maintenance-record-v1",
+  "date": "2026-09-05",
+  "passed": true,
+  "current_uninstalled_candidate": false,
+  "superseded_by": {
+    "record": "docs/testing/connected-speech/2026-09-05-sr4b4-source-sync.json",
+    "package_id": "yimecore-local-0.1.0-local.13-dbfab0b45dd2",
+    "package_manifest_sha256": "70ec357cb1d7137096798d8b70e66351af34c57186b53fb59462b82149130c97"
+  },
+  "scope": "YimeCore maintenance config closure and uninstalled local.13 rebuild",
+  "regressions": [
+    {
+      "id": "learning-config-omitted-from-maintenance-data-records",
+      "status": "fixed",
+      "red_ps5_failed": 5,
+      "red_ps7_failed": 5,
+      "green_ps5_passed": 12,
+      "green_ps7_passed": 12
+    },
+    {
+      "id": "product-export-fixed-source-set-not-synchronized",
+      "status": "fixed",
+      "rejected_stage": "fresh-normal-package-build",
+      "installable_package_created_before_rejection": false
+    }
+  ],
+  "admission": {
+    "root": "C:/dev/Yime/.tmp/yimecore-experiment/speech-admission-20260905-225516-a17fab5a356e44849a6c7b6be36a2145",
+    "summary_sha256": "eb221adf33590b4210f6dd9ce61640e6c03d75c7e4b21ba51e244b75472407b6",
+    "source_inventory_sha256": "d8e02df89f8273fcfac9da39cd3895d3d155aed4cc5ab1696b479b4ef015d4a5",
+    "passed_tests": 498,
+    "failed_tests": 0,
+    "skipped_tests": 3
+  },
+  "candidate": {
+    "version": "0.1.0-local.13",
+    "package_id": "yimecore-local-0.1.0-local.13-6fa24332928d",
+    "build_root": "C:/dev/Yime/.tmp/yimecore-local-product/speech-20260905-225637-c9c9c11d",
+    "package_manifest_sha256": "f785acad59ab63c7a44dca3280416bee021a4ffd015f066611953abca856cf03",
+    "files": 85,
+    "default_speech_enabled": false,
+    "installed": false
+  },
+  "product_package": {
+    "root": "C:/dev/Yime/.tmp/yimecore-experiment/speech-product-package-20260905-225637-2cd3e95381d74c7a99fa4716b12ac99d",
+    "summary_sha256": "b6f0e16ff20a7e7d61153188f33accc4ca9892d7c9c0a6e7e29f3a2fd2223c26",
+    "passed_tests": 478,
+    "failed_tests": 0,
+    "skipped_tests": 4,
+    "powershell_checks_per_shell": 38,
+    "normal_process_lifecycle_passed": true
+  },
+  "process_fixture": {
+    "root": "C:/Users/tsaan/YimeCore Isolated Fixtures/SR4B2/speech-product-test-20260905-2257-maintenance-a2",
+    "summary_sha256": "9568c54b98252b6ddaf1ac5da2c196000f0548db1dd597948f5b73c01bd78494",
+    "stages": 7,
+    "user_data_read": false,
+    "rime_executed": false
+  },
+  "installed_local12_unchanged": true,
+  "default_input_method_changed": false,
+  "production_rime_pime_touched": false,
+  "frozen_targets_executed": false,
+  "installed_acceptance_passed": false,
+  "registered_host_passed": false,
+  "windows_reboot_passed": false,
+  "l5_final_confirmation_passed": false,
+  "l6_passed": false,
+  "remaining_skips": 4
+}

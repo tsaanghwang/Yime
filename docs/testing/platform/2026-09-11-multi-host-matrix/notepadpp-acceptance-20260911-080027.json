@@ -1,0 +1,116 @@
+{
+  "schema_version": "yimecore-notepadpp-manual-acceptance-v1",
+  "generated_at": "2026-09-11T00:00:27.5420909Z",
+  "host": "Notepad++",
+  "architecture": "x86",
+  "package": {
+    "status": "pass",
+    "version": "0.1.0-local.13",
+    "git_commit": "e346a1dad76d58f50652a2dd665c64ec8aeef49e",
+    "install_root": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe",
+    "manifest_sha256": "133c91fe205fcae911fa701a278465dad040e7dadce006b541697b656e50405a",
+    "expected_modules": {
+      "x64": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x64\\YimeTextServiceExperiment.dll",
+      "x86": "C:\\Program Files\\YimeCore Experimental Trial\\yimecore-e6c-e346a1dad76d-133c91fe\\x86\\YimeTextServiceExperiment.dll"
+    }
+  },
+  "manual_result": "pass",
+  "modes": [
+    {
+      "mode": "full",
+      "rounds": 3
+    },
+    {
+      "mode": "shorthand",
+      "rounds": 3
+    },
+    {
+      "mode": "variable",
+      "rounds": 3
+    }
+  ],
+  "historical_manual_results": [
+    {
+      "host": "Notepad++ 32-bit",
+      "architecture": "x86",
+      "mode": "variable",
+      "mode_display_name_reported_by_user": "变长码",
+      "mode_inherited_from_previous_setting": true,
+      "repetitions": 3,
+      "execution_reported_complete": true,
+      "candidates_per_page": 9,
+      "individual_behavior_outcomes": {
+        "composition_and_space_commit": "pass",
+        "shift_candidate_labels": "pass",
+        "shift_1_selects_first_candidate": "pass",
+        "bare_digits_remain_composition": "pass",
+        "candidate_page_forward_and_back": "pass",
+        "language_bar_right_click": "pass"
+      },
+      "result_source": "User physical confirmation: three repetitions were completely normal.",
+      "status": "pass"
+    },
+    {
+      "host": "Notepad++ 32-bit",
+      "architecture": "x86",
+      "mode": "full",
+      "mode_display_name_reported_by_user": "等长码",
+      "repetitions": 3,
+      "execution_reported_complete": true,
+      "candidates_per_page": 9,
+      "individual_behavior_outcomes": {
+        "candidate_page_forward_and_back": "pass",
+        "arrow_candidate_selection": "pass",
+        "shift_ordinal_commit": "pass",
+        "bare_digits_remain_composition": "pass",
+        "interactive_prompt": "pass",
+        "escape_cancellation": "pass"
+      },
+      "result_source": "User physical confirmation: three repetitions and all stated interactions were normal.",
+      "status": "pass"
+    },
+    {
+      "host": "Notepad++ 32-bit",
+      "architecture": "x86",
+      "mode": "shorthand",
+      "mode_display_name_reported_by_user": "省键码",
+      "repetitions": 3,
+      "execution_reported_complete": true,
+      "candidates_per_page": 7,
+      "individual_behavior_outcomes": {
+        "candidate_page_forward_and_back": "pass",
+        "arrow_candidate_selection": "pass",
+        "shift_ordinal_commit": "pass",
+        "bare_digits_remain_composition": "pass",
+        "interactive_prompt": "pass",
+        "escape_cancellation": "pass"
+      },
+      "result_source": "User physical confirmation: three repetitions and all stated interactions were normal.",
+      "status": "pass"
+    }
+  ],
+  "supplement_passed_checks": [
+    "full_and_shorthand_space_commit",
+    "full_and_shorthand_shift_labels",
+    "three_mode_focus_cancel_without_commit",
+    "three_mode_confirmed_text_and_focus_return_recovery",
+    "three_mode_language_bar_left_click",
+    "full_and_shorthand_language_bar_right_click",
+    "three_mode_reopen_recovery"
+  ],
+  "final_user_report": "未见异常。",
+  "final_report_context": "Confirmation that the missing Notepad++ checks passed three rounds each, following explicit outcome question.",
+  "manual_evidence": [
+    "docs/testing/platform/2026-09-10-real-host-matrix.json",
+    "notepadpp-supplement-report-20260911-075856.json"
+  ],
+  "module_evidence": [
+    "docs/testing/platform/2026-09-10-notepadpp-x86-live-metadata.json",
+    "docs/testing/platform/2026-09-10-notepadpp-x86-post-manual-20260910-203029.json",
+    "notepadpp-supplement-metadata-20260911-075856.json"
+  ],
+  "current_package_and_x86_dll_verified": true,
+  "host_behavior_acceptance_passed": true,
+  "entire_matrix_sealed": false,
+  "limitation": "Manual results combine historical operator reports and explicit supplement confirmation. Independent pre/post protected-registration/default snapshot comparison remains unavailable; installed local.13 results do not verify installation of the newer invalid-code fix."
+}

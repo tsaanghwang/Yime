@@ -102,151 +102,48 @@ HRESULT ImeModule::getClassObject(REFCLSID rclsid, REFIID riid, void **ppvObj) {
     return CLASS_E_CLASSNOTAVAILABLE;
 }
 
-#ifndef _WIN64  // only do this for the 32-bit version dll
-static void loadDefaultUserRegistry(const wchar_t* defaultUserRegKey) {
-    // The registry settings of all newly created users are based on the content of 
-    // "C:\Users\Default User\ntuser.dat", so we need to write our settings to this file so 
-    // the HKEY_CURRENT_USER key of newly created users can also contain our settings.
-    // In order to do this, we need to load the default "hive" to registry first.
-    // Reference: https://msdn.microsoft.com/zh-tw/library/windows/desktop/ms724889(v=vs.85).aspx
-    wchar_t *userProfilesDir = nullptr;
-    if (SUCCEEDED(::SHGetKnownFolderPath(FOLDERID_UserProfiles, 0, NULL, &userProfilesDir))) {
-        // get the path of the default ntuser.dat file
-        std::wstring defaultRegFile = userProfilesDir;
-        ::CoTaskMemFree(userProfilesDir);
-        defaultRegFile += L"\\Default User\\ntuser.dat";
-
-        // loading registry file requires special privileges SE_RESTORE_NAME and SE_BACKUP_NAME.
-        // So let's do privilege elevation for our process.
-        HANDLE processToken = NULL;
-        ::OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &processToken);
-        DWORD bufLen = sizeof(TOKEN_PRIVILEGES) + sizeof(LUID_AND_ATTRIBUTES);
-        std::unique_ptr<char> buf(new char[bufLen]);
-        TOKEN_PRIVILEGES* privileges = reinterpret_cast<TOKEN_PRIVILEGES*>(buf.get());
-        privileges->PrivilegeCount = 2;
-        ::LookupPrivilegeValue(NULL, SE_RESTORE_NAME, &privileges->Privileges[0].Luid);
-        privileges->Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-        ::LookupPrivilegeValue(NULL, SE_BACKUP_NAME, &privileges->Privileges[1].Luid);
-        privileges->Privileges[1].Attributes = SE_PRIVILEGE_ENABLED;
-        ::AdjustTokenPrivileges(processToken, FALSE, privileges, bufLen, NULL, NULL);
-        ::CloseHandle(processToken);
-
-        // load the default registry hive under the specified key name
-        ::RegLoadKeyW(HKEY_USERS, defaultUserRegKey, defaultRegFile.c_str());
-    }
-}
-#endif  // #ifndef _WIN64
-
 HRESULT ImeModule::registerLangProfiles(LangProfileInfo* langs, int langsCount) {
     // register the language profile
     ComPtr<ITfInputProcessorProfiles> inputProcessProfiles;
-    if(CoCreateInstance(CLSID_TF_InputProcessorProfiles, NULL, CLSCTX_INPROC_SERVER, IID_ITfInputProcessorProfiles, (void**)&inputProcessProfiles) == S_OK) {
-        for(int i = 0; i < langsCount; ++i) {
-            LangProfileInfo& lang = langs[i];
-            if(inputProcessProfiles->Register(textServiceClsid_) == S_OK) {
-                LCID lcid = LocaleNameToLCID(lang.locale.c_str(), 0);
-                if (lcid == 0 && !lang.fallbackLocale.empty()) { // the conversion fails
-                    // The new RFC4646 locale names are not well-supported in Windows 7/Vista, so
-                    // here we provide a fallback locale which uses the deprecated RFC 1766 format instead.
-                    lcid = LocaleNameToLCID(lang.fallbackLocale.c_str(), 0);
-                }
-                if (lcid != 0) {
-                    LANGID langId = LANGIDFROMLCID(lcid);
-                    // Remove any stale profile first so re-registering picks up
-                    // updated display names from ime.json without a full uninstall.
-                    inputProcessProfiles->RemoveLanguageProfile(textServiceClsid_, langId, lang.profileGuid);
-                    if (inputProcessProfiles->AddLanguageProfile(textServiceClsid_, langId, lang.profileGuid,
-                        lang.name.c_str(), lang.name.length(), lang.iconFile.empty() ? NULL : lang.iconFile.c_str(),
-                        lang.iconFile.length(), lang.iconIndex) != S_OK) {
-                        return E_FAIL;
-                    }
-                }
-                else {
-                    return E_FAIL;
-                }
+    if (CoCreateInstance(CLSID_TF_InputProcessorProfiles, NULL, CLSCTX_INPROC_SERVER,
+        IID_ITfInputProcessorProfiles, (void**)&inputProcessProfiles) != S_OK) {
+        return E_FAIL;
+    }
+    if (inputProcessProfiles->Register(textServiceClsid_) != S_OK) {
+        return E_FAIL;
+    }
+    for(int i = 0; i < langsCount; ++i) {
+        LangProfileInfo& lang = langs[i];
+        LCID lcid = LocaleNameToLCID(lang.locale.c_str(), 0);
+        if (lcid == 0 && !lang.fallbackLocale.empty()) { // the conversion fails
+            // The new RFC4646 locale names are not well-supported in Windows 7/Vista, so
+            // here we provide a fallback locale which uses the deprecated RFC 1766 format instead.
+            lcid = LocaleNameToLCID(lang.fallbackLocale.c_str(), 0);
+        }
+        if (lcid != 0) {
+            LANGID langId = LANGIDFROMLCID(lcid);
+            // Remove any stale profile first so re-registering picks up
+            // updated display names from ime.json without a full uninstall.
+            inputProcessProfiles->RemoveLanguageProfile(textServiceClsid_, langId, lang.profileGuid);
+            if (inputProcessProfiles->AddLanguageProfile(textServiceClsid_, langId, lang.profileGuid,
+                lang.name.c_str(), lang.name.length(), lang.iconFile.empty() ? NULL : lang.iconFile.c_str(),
+                lang.iconFile.length(), lang.iconIndex) != S_OK) {
+                return E_FAIL;
             }
+        }
+        else {
+            return E_FAIL;
         }
     }
 
-    // NOTE: For Windows newer than Windows 8, we have to manually write some settings
-    //       to the registry so the input methods can appear in the Windows control panel.
-    //
-    //       Registry path: "HKEY_CURRENT_USER\Control Panel\International\User Profile\<locale_name>"
-    //       Sub key: "<lang ID>:{text service GUID}{input module GUID}"
-    //
-    //       Unfortunately, this is not documented officially by Microsoft.
-    //       We found the values with some registry monitor tools:
-    //       These settings are user-specific so they should be written to HKEY_CURRENT_USER of all users.
-    //       This might be achieved by Microsoft Acitve Setup, yet another undocumented feature.
-    //       https://helgeklein.com/blog/2010/04/active-setup-explained/
-    //
-    //       However, there is no way to uninstall keys installed with Active Setup. So let's avoid it.
-    //       References: https://support.microsoft.com/en-us/kb/284193
-    //                   https://blogs.technet.microsoft.com/deploymentguys/2009/10/29/configuring-default-user-settings-full-update-for-windows-7-and-windows-server-2008-r2/
-#ifndef _WIN64  // only do this for the 32-bit version dll
-    // The keys under HKCU\Control Panel\ is shared between the x86 and x64 versions and 
-    // are not affected by WOW64 redirection. So doing this inside the 32-bit version is enough.
-
-    if (::IsWindows8OrGreater()) {
-        DWORD sidCount = 0;
-        if (::RegQueryInfoKeyW(HKEY_USERS, NULL, NULL, NULL, &sidCount, NULL, NULL, NULL, NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
-            return E_FAIL;
-        wchar_t* textServiceClsIdStr = nullptr;
-        if (FAILED(::StringFromCLSID(textServiceClsid_, &textServiceClsIdStr)))
-            return E_FAIL;
-
-        const wchar_t* defaultUserRegKey = L"__PIME_Default_user__";
-        loadDefaultUserRegistry(defaultUserRegKey);
-
-        // write the language settings to user-specific registry.
-        wchar_t sid[256];
-        for (DWORD iSid = 0; iSid < sidCount; ++iSid) {
-            DWORD sidLen = sizeof(sid) / sizeof(wchar_t);
-            if (::RegEnumKeyExW(HKEY_USERS, iSid, sid, &sidLen, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
-                // write settings of each input module to the user's registry
-                for (int i = 0; i < langsCount; ++i) {
-                    auto& lang = langs[i];
-                    std::wstring localeRegPath = sid;
-                    localeRegPath += L"\\Control Panel\\International\\User Profile\\";
-                    localeRegPath += lang.locale;
-                    HKEY localeRegKey = NULL;
-                    DWORD err = ::RegCreateKeyExW(HKEY_USERS, localeRegPath.c_str(), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &localeRegKey, NULL);
-                    if (err == ERROR_SUCCESS) {
-                        LCID lcid = LocaleNameToLCID(lang.locale.c_str(), 0);
-                        if (lcid == 0 && !lang.fallbackLocale.empty()) { // the conversion fails
-                            lcid = LocaleNameToLCID(lang.fallbackLocale.c_str(), 0);  // try the fallback locale name
-                        }
-                        wchar_t lcid_hex[16];
-                        wsprintf(lcid_hex, L"%04x", lcid);
-                        std::wstring valueName = lcid_hex;
-                        valueName += L":";
-                        valueName += textServiceClsIdStr;
-                        wchar_t* profileClsIdStr = nullptr;
-                        if (SUCCEEDED(::StringFromCLSID(lang.profileGuid, &profileClsIdStr))) {
-                            valueName += profileClsIdStr;
-                            ::CoTaskMemFree(profileClsIdStr);
-                            DWORD profileCount = 1;
-                            if (::RegQueryInfoKeyW(localeRegKey, NULL, NULL, NULL, NULL, NULL, NULL, &profileCount, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
-                                // ::MessageBoxW(0, std::to_wstring(profileCount).c_str(), 0, 0);
-                                ++profileCount;
-                            }
-                            ::RegSetKeyValueW(localeRegKey, NULL, valueName.c_str(), REG_DWORD, &profileCount, sizeof(DWORD));
-                        }
-                        ::RegCloseKey(localeRegKey);
-                    }
-                }
-            }
-        }
-        ::CoTaskMemFree(textServiceClsIdStr);
-
-        // unload the default user registry hive
-        ::RegUnLoadKeyW(HKEY_USERS, defaultUserRegKey);
-    }
-#endif  // #ifndef _WIN64
+    // Per-user language-list enablement is owned by the installer transaction
+    // for its explicit TargetUserSid. Native COM/profile registration must not
+    // enumerate other users or seed the Default User hive.
     return S_OK;
 }
 
-HRESULT ImeModule::registerServer(wchar_t* imeName, LangProfileInfo* langs, int count) {
+HRESULT ImeModule::registerServer(wchar_t* imeName, LangProfileInfo* langs, int count,
+    bool ownsSharedTsfRegistration) {
     // write info of our COM text service component to the registry
     // path: HKEY_CLASS_ROOT\\CLSID\\{xxxx-xxxx-xxxx-xx....}
     // This reguires Administrator permimssion to write to the registery
@@ -261,8 +158,14 @@ HRESULT ImeModule::registerServer(wchar_t* imeName, LangProfileInfo* langs, int 
     // get path of our module
     wchar_t modulePath[MAX_PATH];
     DWORD modulePathLen = GetModuleFileNameW(hInstance_, modulePath, MAX_PATH);
+    if(modulePathLen == 0 || modulePathLen >= MAX_PATH) {
+        return E_FAIL;
+    }
 
-    wstring regPath = L"CLSID\\";
+    // Never register through HKEY_CLASSES_ROOT: it is a merged HKLM/HKCU view,
+    // so a per-user shadow can redirect writes away from machine ownership.
+    // Process architecture still selects the corresponding COM registry view.
+    wstring regPath = L"SOFTWARE\\Classes\\CLSID\\";
     LPOLESTR clsidStr = NULL;
     if(StringFromCLSID(textServiceClsid_, &clsidStr) != ERROR_SUCCESS)
         return E_FAIL;
@@ -270,17 +173,26 @@ HRESULT ImeModule::registerServer(wchar_t* imeName, LangProfileInfo* langs, int 
     CoTaskMemFree(clsidStr);
 
     HKEY hkey = NULL;
-    if(::RegCreateKeyExW(HKEY_CLASSES_ROOT, regPath.c_str(), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hkey, NULL) == ERROR_SUCCESS) {
+    if(::RegCreateKeyExW(HKEY_LOCAL_MACHINE, regPath.c_str(), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hkey, NULL) == ERROR_SUCCESS) {
         // write name of our IME
-        ::RegSetValueExW(hkey, NULL, 0, REG_SZ, (BYTE*)imeName, sizeof(wchar_t) * (wcslen(imeName) + 1));
+        if(::RegSetValueExW(hkey, NULL, 0, REG_SZ, (BYTE*)imeName,
+            sizeof(wchar_t) * (wcslen(imeName) + 1)) != ERROR_SUCCESS) {
+            result = E_FAIL;
+        }
 
         HKEY inProcServer32Key;
         if(::RegCreateKeyExW(hkey, L"InprocServer32", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &inProcServer32Key, NULL) == ERROR_SUCCESS) {
             // store the path of our dll module in the registry
-            ::RegSetValueExW(inProcServer32Key, NULL, 0, REG_SZ, (BYTE*)modulePath, (modulePathLen + 1) * sizeof(wchar_t));
+            if(::RegSetValueExW(inProcServer32Key, NULL, 0, REG_SZ, (BYTE*)modulePath,
+                (modulePathLen + 1) * sizeof(wchar_t)) != ERROR_SUCCESS) {
+                result = E_FAIL;
+            }
             // write threading model
             wchar_t apartmentStr[] = L"Apartment";
-            ::RegSetValueExW(inProcServer32Key, L"ThreadingModel", 0, REG_SZ, (BYTE*)apartmentStr, 10 * sizeof(wchar_t));
+            if(::RegSetValueExW(inProcServer32Key, L"ThreadingModel", 0, REG_SZ,
+                (BYTE*)apartmentStr, 10 * sizeof(wchar_t)) != ERROR_SUCCESS) {
+                result = E_FAIL;
+            }
             ::RegCloseKey(inProcServer32Key);
         }
         else
@@ -291,12 +203,12 @@ HRESULT ImeModule::registerServer(wchar_t* imeName, LangProfileInfo* langs, int 
         result = E_FAIL;
 
     // register language profiles
-    if(result == S_OK) {
+    if(result == S_OK && ownsSharedTsfRegistration) {
         result = registerLangProfiles(langs, count);
     }
 
     // register category
-    if(result == S_OK) {
+    if(result == S_OK && ownsSharedTsfRegistration) {
         ITfCategoryMgr *categoryMgr = NULL;
         if(CoCreateInstance(CLSID_TF_CategoryMgr, NULL, CLSCTX_INPROC_SERVER, IID_ITfCategoryMgr, (void**)&categoryMgr) == S_OK) {
             if(categoryMgr->RegisterCategory(textServiceClsid_, GUID_TFCAT_TIP_KEYBOARD, textServiceClsid_) != S_OK) {
@@ -335,112 +247,81 @@ HRESULT ImeModule::registerServer(wchar_t* imeName, LangProfileInfo* langs, int 
 
             categoryMgr->Release();
         }
+        else {
+            result = E_FAIL;
+        }
     }
     return result;
 }
 
-HRESULT ImeModule::unregisterServer() {
-    // unregister the language profile
-    ITfInputProcessorProfiles *inputProcessProfiles = NULL;
-    if(CoCreateInstance(CLSID_TF_InputProcessorProfiles, NULL, CLSCTX_INPROC_SERVER, IID_ITfInputProcessorProfiles, (void**)&inputProcessProfiles) == S_OK) {
-        inputProcessProfiles->Unregister(textServiceClsid_);
-        inputProcessProfiles->Release();
-    }
+HRESULT ImeModule::unregisterServer(bool ownsSharedTsfRegistration) {
+    HRESULT result = S_OK;
 
-    // unregister categories
-    ITfCategoryMgr *categoryMgr = NULL;
-    if(CoCreateInstance(CLSID_TF_CategoryMgr, NULL, CLSCTX_INPROC_SERVER, IID_ITfCategoryMgr, (void**)&categoryMgr) == S_OK) {
-        categoryMgr->UnregisterCategory(textServiceClsid_, GUID_TFCAT_TIP_KEYBOARD, textServiceClsid_);
-        categoryMgr->UnregisterCategory(textServiceClsid_, GUID_TFCAT_DISPLAYATTRIBUTEPROVIDER, textServiceClsid_);
-        // UI less mode
-        categoryMgr->UnregisterCategory(textServiceClsid_, GUID_TFCAT_TIPCAP_INPUTMODECOMPARTMENT, textServiceClsid_);
-
-        if(::IsWindows8OrGreater()) {
-            // Windows 8 support
-            categoryMgr->UnregisterCategory(textServiceClsid_, GUID_TFCAT_TIPCAP_IMMERSIVESUPPORT, textServiceClsid_);
-            categoryMgr->RegisterCategory(textServiceClsid_, GUID_TFCAT_TIPCAP_SYSTRAYSUPPORT, textServiceClsid_);
+    // HKLM\SOFTWARE\Microsoft\CTF\TIP is shared across WOW64 views. Only the
+    // native x64/ARM64 DLL owns Profile/categories; the x86 DLL removes only its
+    // redirected COM registration. Remove categories before the profile, as in
+    // the Microsoft TSF registration sample, so category cleanup still has its
+    // registered item to address.
+    if(ownsSharedTsfRegistration) {
+        ITfCategoryMgr *categoryMgr = NULL;
+        if(CoCreateInstance(CLSID_TF_CategoryMgr, NULL, CLSCTX_INPROC_SERVER, IID_ITfCategoryMgr, (void**)&categoryMgr) == S_OK) {
+            if(categoryMgr->UnregisterCategory(textServiceClsid_, GUID_TFCAT_TIP_KEYBOARD, textServiceClsid_) != S_OK) {
+                result = E_FAIL;
+            }
+            if(categoryMgr->UnregisterCategory(textServiceClsid_, GUID_TFCAT_DISPLAYATTRIBUTEPROVIDER, textServiceClsid_) != S_OK) {
+                result = E_FAIL;
+            }
+            if(categoryMgr->UnregisterCategory(textServiceClsid_, GUID_TFCAT_TIPCAP_INPUTMODECOMPARTMENT, textServiceClsid_) != S_OK) {
+                result = E_FAIL;
+            }
+            if(categoryMgr->UnregisterCategory(textServiceClsid_, GUID_TFCAT_TIPCAP_UIELEMENTENABLED, textServiceClsid_) != S_OK) {
+                result = E_FAIL;
+            }
+            if(::IsWindows8OrGreater()) {
+                if(categoryMgr->UnregisterCategory(textServiceClsid_, GUID_TFCAT_TIPCAP_IMMERSIVESUPPORT, textServiceClsid_) != S_OK) {
+                    result = E_FAIL;
+                }
+                if(categoryMgr->UnregisterCategory(textServiceClsid_, GUID_TFCAT_TIPCAP_SYSTRAYSUPPORT, textServiceClsid_) != S_OK) {
+                    result = E_FAIL;
+                }
+            }
+            categoryMgr->Release();
         }
-
-        categoryMgr->Release();
+        else {
+            result = E_FAIL;
+        }
+        ITfInputProcessorProfiles *inputProcessProfiles = NULL;
+        if(CoCreateInstance(CLSID_TF_InputProcessorProfiles, NULL, CLSCTX_INPROC_SERVER,
+            IID_ITfInputProcessorProfiles, (void**)&inputProcessProfiles) == S_OK) {
+            if(inputProcessProfiles->Unregister(textServiceClsid_) != S_OK) {
+                result = E_FAIL;
+            }
+            inputProcessProfiles->Release();
+        }
+        else {
+            result = E_FAIL;
+        }
     }
 
     // delete the registry key
-    wstring regPath = L"CLSID\\";
+    // Delete only the machine COM registration written by registerServer().
+    // A user-level shadow is foreign state and is rejected by installer guards.
+    wstring regPath = L"SOFTWARE\\Classes\\CLSID\\";
     LPOLESTR clsidStr = NULL;
     if(StringFromCLSID(textServiceClsid_, &clsidStr) == ERROR_SUCCESS) {
         regPath += clsidStr;
         CoTaskMemFree(clsidStr);
-        ::SHDeleteKey(HKEY_CLASSES_ROOT, regPath.c_str());
-    }
-
-#ifndef _WIN64  // only do this for the 32-bit version dll
-    // The keys under HKCU\Control Panel\ is shared between the x86 and x64 versions and 
-    // are not affected by WOW64 redirection. So doing this inside the 32-bit version is enough.
-
-    // delete settings under "HKEY_CURRENT_USER\Control Panel\International\User Profile\<locale_name>" for all users
-    if (::IsWindows8OrGreater()) {
-        DWORD sidCount = 0;
-        if (::RegQueryInfoKeyW(HKEY_USERS, NULL, NULL, NULL, &sidCount, NULL, NULL, NULL, NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
-            return E_FAIL;
-        wchar_t* textServiceClsIdStr = nullptr;
-        if (FAILED(::StringFromCLSID(textServiceClsid_, &textServiceClsIdStr)))
-            return E_FAIL;
-
-        const wchar_t* defaultUserRegKey = L"__PIME_Default_user__";
-        loadDefaultUserRegistry(defaultUserRegKey);
-
-        // delete the language settings from user-specific registry.
-        wchar_t sid[256];
-        for (DWORD iSid = 0; iSid < sidCount; ++iSid) {
-            DWORD sidLen = sizeof(sid) / sizeof(wchar_t);
-            if (::RegEnumKeyExW(HKEY_USERS, iSid, sid, &sidLen, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
-                // remove settings of each input module to the user's registry
-                std::wstring userRegPath = sid;
-                userRegPath += L"\\Control Panel\\International\\User Profile";
-                HKEY userKey = NULL;
-                if (::RegOpenKeyExW(HKEY_USERS, userRegPath.c_str(), 0, KEY_READ, &userKey) == ERROR_SUCCESS) {
-                    DWORD localeCount = 0;
-                    if (::RegQueryInfoKeyW(userKey, NULL, NULL, NULL, &localeCount, NULL, NULL, NULL, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
-                        // list all locales under this user
-                        wchar_t locale[100];
-                        for (DWORD iLocale = 0; iLocale < localeCount; ++iLocale) {
-                            DWORD localeLen = sizeof(locale) / sizeof(wchar_t);
-                            if (::RegEnumKeyExW(userKey, iLocale, locale, &localeLen, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
-                                HKEY localeKey = NULL;
-                                if (::RegOpenKeyExW(userKey, locale, 0, KEY_ALL_ACCESS | KEY_READ, &localeKey) == ERROR_SUCCESS) {
-                                    DWORD profileCount = 0;
-                                    ::RegQueryInfoKeyW(localeKey, NULL, NULL, NULL, NULL, NULL, NULL, &profileCount, NULL, NULL, NULL, NULL);
-                                    // list all language profiles under this locale
-                                    std::vector<std::wstring> profiles;
-                                    for (DWORD iProfile = 0; iProfile < profileCount; ++iProfile) {
-                                        wchar_t profile[128];
-                                        DWORD profileLen = sizeof(profile) / sizeof(wchar_t);
-                                        if (::RegEnumValueW(localeKey, iProfile, profile, &profileLen, 0, NULL, NULL, NULL) == ERROR_SUCCESS) {
-                                            if (wcsstr(profile, textServiceClsIdStr)) {  // this profile is registered by us
-                                                profiles.push_back(profile);
-                                            }
-                                        }
-                                    }
-                                    // delete these language profiles beloning to us
-                                    for (const auto& profile : profiles) {
-                                        ::RegDeleteValueW(localeKey, profile.c_str());
-                                    }
-                                    ::RegCloseKey(localeKey);
-                                }
-                            }
-                        }
-                    }
-                    ::RegCloseKey(userKey);
-                }
-            }
+        const LSTATUS deleteResult = ::SHDeleteKey(HKEY_LOCAL_MACHINE, regPath.c_str());
+        if(deleteResult != ERROR_SUCCESS && deleteResult != ERROR_FILE_NOT_FOUND &&
+            deleteResult != ERROR_PATH_NOT_FOUND) {
+            result = E_FAIL;
         }
-        ::CoTaskMemFree(textServiceClsIdStr);
-
-        // unload the default user registry hive
-        ::RegUnLoadKeyW(HKEY_USERS, defaultUserRegKey);
     }
-#endif // #ifndef _WIN64
-    return S_OK;
+    else {
+        result = E_FAIL;
+    }
+
+    return result;
 }
 
 

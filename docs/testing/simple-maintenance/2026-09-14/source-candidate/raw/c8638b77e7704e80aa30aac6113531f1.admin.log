@@ -1,0 +1,63 @@
+﻿**********************
+Windows PowerShell 脚本开始
+开始时间: 20260914221120
+用户名: MYCOMPUTER\tsaan
+RunAs 用户: MYCOMPUTER\tsaan
+配置名称: 
+计算机: MYCOMPUTER (Microsoft Windows NT 10.0.26200.0)
+主机应用程序: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime\.tmp\fresh-products-20260914\candidate\yimecore\Setup.ps1 -Action Install -InitiatingSid S-1-5-21-2783006668-770716121-2150155084-1001 -LogId c8638b77e7704e80aa30aac6113531f1
+进程 ID: 2228
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\c8638b77e7704e80aa30aac6113531f1.admin.log
+Action: Install; package: C:\dev\Yime\.tmp\fresh-products-20260914\candidate\yimecore
+operation=unregister
+hresult=0x0
+succeeded=true
+operation=unregister
+hresult=0x0
+succeeded=true
+operation=register
+hresult=0x800700B7
+succeeded=false
+PS>TerminatingError():“Native operation failed: YimeTextServiceRegistration.exe (5)”
+>> TerminatingError():“Native operation failed: YimeTextServiceRegistration.exe (5)”
+FAILED stage: register new product
+
+
+PSMessageDetails      : 
+Exception             : System.Management.Automation.RuntimeException: Native operation failed: YimeTextServiceRegistra
+                        tion.exe (5)
+TargetObject          : Native operation failed: YimeTextServiceRegistration.exe (5)
+CategoryInfo          : OperationStopped: (Native operatio...tration.exe (5):String) [], RuntimeException
+FullyQualifiedErrorId : Native operation failed: YimeTextServiceRegistration.exe (5)
+ErrorDetails          : 
+InvocationInfo        : System.Management.Automation.InvocationInfo
+ScriptStackTrace      : 在 Run-Native、C:\dev\Yime\.tmp\fresh-products-20260914\candidate\yimecore\Setup.ps1 中: 第 64 行
+                        在 Set-Registration、C:\dev\Yime\.tmp\fresh-products-20260914\candidate\yimecore\Setup.ps1 中: 第 6
+                        9 行
+                        在 <ScriptBlock>、C:\dev\Yime\.tmp\fresh-products-20260914\candidate\yimecore\Setup.ps1 中: 第 165 
+                        行
+PipelineIterationInfo : {}
+Exception: System.Management.Automation.RuntimeException: Native operation failed: YimeTextServiceRegistration.exe (5)
+C:\dev\Yime\.tmp\fresh-products-20260914\candidate\yimecore\Setup.ps1 : Setup stopped: Native operation failed: YimeText
+ServiceRegistration.exe (5) Log: C:\Users\tsaan\Yime Setup Logs\c8638b77e7704e80aa30aac6113531f1.admin.log
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,Setup.ps1
+C:\dev\Yime\.tmp\fresh-products-20260914\candidate\yimecore\Setup.ps1 : Setup stopped: Native operation failed: YimeTex
+tServiceRegistration.exe (5) Log: C:\Users\tsaan\Yime Setup Logs\c8638b77e7704e80aa30aac6113531f1.admin.log
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,Setup.ps1
+
+Setup exit code: 1
+**********************
+Windows PowerShell 脚本结束
+结束时间: 20260914221126
+**********************

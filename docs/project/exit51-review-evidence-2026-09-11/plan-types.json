@@ -1,0 +1,119 @@
+{
+    "parser_source":  "6321067de503463a71262a84239b8f5c3064f10d",
+    "powershell_version":  "5.1.26100.9539",
+    "source":  "archived install-journal-copy/prepared.bin",
+    "opened_original_transaction_lock":  false,
+    "top_level_fields":  [
+                             {
+                                 "name":  "schema_version",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "run_id",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "install_root",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "state_root",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "recovery_root",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "install_directory_id",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "state_directory_id",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "initiating_sid",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "target_machine_id",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "target_name",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "manifest_sha256",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "package_sha256",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "product_version",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "original_approval_sha256",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "default_input",
+                                 "type":  "System.Management.Automation.PSCustomObject"
+                             },
+                             {
+                                 "name":  "files",
+                                 "type":  "System.Object[]"
+                             },
+                             {
+                                 "name":  "generated_files",
+                                 "type":  "System.Object[]"
+                             },
+                             {
+                                 "name":  "recovery_executable",
+                                 "type":  "System.Management.Automation.PSCustomObject"
+                             }
+                         ],
+    "files_type":  "System.Object[]",
+    "files_count":  191,
+    "generated_files_type":  "System.Object[]",
+    "generated_files_count":  2,
+    "file_field_types":  [
+                             {
+                                 "name":  "path",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "bytes",
+                                 "type":  "System.Int32"
+                             },
+                             {
+                                 "name":  "sha256",
+                                 "type":  "System.String"
+                             },
+                             {
+                                 "name":  "file_id",
+                                 "type":  "System.String"
+                             }
+                         ],
+    "default_field_types":  [
+                                {
+                                    "name":  "override",
+                                    "type":  "System.String"
+                                },
+                                {
+                                    "name":  "first_language",
+                                    "type":  "System.String"
+                                },
+                                {
+                                    "name":  "first_tip",
+                                    "type":  "System.String"
+                                }
+                            ],
+    "product_version":  "1.4.0-dev.1",
+    "install_state_directory_identity_verified":  false,
+    "recovery_executable_identity_verified":  false
+}

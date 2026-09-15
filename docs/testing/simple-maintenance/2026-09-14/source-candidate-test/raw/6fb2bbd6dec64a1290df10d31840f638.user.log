@@ -1,0 +1,25 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260914225346
+Username: 计算机\Golde
+RunAs User: 计算机\Golde
+Configuration Name: 
+Machine: 计算机 (Microsoft Windows NT 10.0.26300.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Users\Golde\Yime Simple Test Archives\source-candidate-a4fa6f76\extracted\rime-pime\Setup.ps1 -Action Check
+Process ID: 14180
+PSVersion: 5.1.26100.9539
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9539
+BuildVersion: 10.0.26100.9539
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\Golde\Yime Setup Logs\6fb2bbd6dec64a1290df10d31840f638.user.log
+Action: Check; package: C:\Users\Golde\Yime Simple Test Archives\source-candidate-a4fa6f76\extracted\rime-pime
+PASS: package files and required binaries
+**********************
+Windows PowerShell transcript end
+End time: 20260914225349
+**********************

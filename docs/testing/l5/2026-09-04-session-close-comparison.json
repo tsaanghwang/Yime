@@ -1,0 +1,9 @@
+{
+  "compared_at": "2026-09-04T20:31:15.1877150+08:00",
+  "baseline": "2026-09-04-baseline.json",
+  "checked_keys": 12,
+  "changed_keys": [],
+  "package_unchanged": true,
+  "runtime_restart_observed": false,
+  "manual_day_duration": null
+}

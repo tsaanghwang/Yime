@@ -1,0 +1,62 @@
+{
+  "files": [
+    {
+      "source_label": ".tmp/Collect-Coexistence-Readonly.ps1",
+      "original_sha256": "1685a02c86b4266aa4d87bbffc02f62aa341564957baa9bc7c733d6d494bfe17",
+      "review_copy": "Collect-Coexistence-Readonly.ps1.txt",
+      "review_sha256": "d02f9fad99f53131eada8644e2405edc005f4edcb7cf899b12ed0034ba7418fe"
+    },
+    {
+      "source_label": ".tmp/Collect-Coexistence-Readonly.cmd",
+      "original_sha256": "786491c62bbbb5595759566ef79a9e85bbca87333bee85f456e1bc5aa3dec0a8",
+      "review_copy": "Collect-Coexistence-Readonly.cmd.txt",
+      "review_sha256": "d9e4c30349ab5c563dca9cee16d10072def8474978233a9974f1b8568a327d35"
+    },
+    {
+      "source_label": ".tmp/Resume-Coexistence-Once.ps1",
+      "original_sha256": "43259a8605529789c5cc164f6bc9559fd9de9ab27e730d4b44613058f36b4f3f",
+      "review_copy": "Resume-Coexistence-Once.ps1.txt",
+      "review_sha256": "e9ea0fecfb6619dfd01481320701de066b062d1bc6a6cd421a705f24ce4cc767"
+    },
+    {
+      "source_label": ".tmp/Resume-Coexistence-Once.cmd",
+      "original_sha256": "4fa1a22289eae3ae99a65d9cf49db2f9a363b7935de9cda5aef168abf1c9b9c2",
+      "review_copy": "Resume-Coexistence-Once.cmd.txt",
+      "review_sha256": "f8aa9a8a761ff5778e149d30bf798355da829f2aa6f2ae8ba4257bc87ee1749a"
+    },
+    {
+      "source_label": ".tmp/Test-Resume-Registry-Shape.ps1",
+      "original_sha256": "9c3d4f42f20172cc007b6a66fb67ac695ffffc8741534b44f66d741b6838a804",
+      "review_copy": "Test-Resume-Registry-Shape.ps1.txt",
+      "review_sha256": "e8c965880cc9dfb93f4b29d3574afe6ebcfacb141363e768e03357306e4c911b"
+    },
+    {
+      "source_label": ".tmp/Test-Coexistence-Readonly-Save.ps1",
+      "original_sha256": "b4c7d5c226efabf51899b28b261bb29d37f04ed239a8e0006c9a0106638807b4",
+      "review_copy": "Test-Coexistence-Readonly-Save.ps1.txt",
+      "review_sha256": "3020f79b1bb521d02ec681ab1e473c7c921188e9ed8482765d464d633e9ff306"
+    },
+    {
+      "source_label": ".tmp/Inspect-Archived-Plan-Types.ps1",
+      "original_sha256": "0e999d0b0017ccb394e026417dab458f3e083dadf11d57cf3d13e89522fae92d",
+      "review_copy": "Inspect-Archived-Plan-Types.ps1.txt",
+      "review_sha256": "5483ffbf779fa36e21d0fd1378e8174b97d02fa98fdfdf489aef14cda84b2748"
+    },
+    {
+      "source_label": "resume-attempt-ORIGINAL-RUN-preflight2/console.txt",
+      "original_sha256": "32524e595978608c9bca6009ec2ada18fb0259af41775bc53938771fe8c50c1e",
+      "review_copy": "console-error-excerpt.txt",
+      "review_sha256": "ca53ae779e3e049f22aeb6e9563ee78db39cc95a103c1e29533ce5eaf6893259"
+    },
+    {
+      "review_copy": "plan-types.json",
+      "review_sha256": "3a1e99b4f5748aa25bf7abd9827217afbb8565d6a222c132bb3a0c743eeb2545"
+    }
+  ],
+  "redactions": {
+    "<TEST_ARCHIVES>": "original external archive root",
+    "<TEST_REPO>": "original local test checkout",
+    "<TEST_USER>": "original user profile"
+  },
+  "note": "Original scripts remain local. Review copies are text, not executable entry points."
+}

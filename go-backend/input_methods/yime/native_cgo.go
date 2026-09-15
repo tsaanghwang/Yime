@@ -68,11 +68,15 @@ func (b *nativeBackend) EnsureSession() bool {
 	return ok
 }
 
-func (b *nativeBackend) DestroySession() {
-	if b.sessionID != 0 {
-		EndSession(b.sessionID)
-		b.sessionID = 0
+func (b *nativeBackend) DestroySession() bool {
+	if b.sessionID == 0 {
+		return true
 	}
+	if !EndSession(b.sessionID) {
+		return false
+	}
+	b.sessionID = 0
+	return true
 }
 
 func (b *nativeBackend) ClearComposition() {
@@ -198,7 +202,9 @@ func (b *nativeBackend) Redeploy() bool {
 	if !rimeInitOK {
 		return false
 	}
-	b.DestroySession()
+	if !b.DestroySession() {
+		return false
+	}
 	if !RimeRedeploy() {
 		log.Println("RIME 重新部署失败")
 		return false

@@ -1,0 +1,47 @@
+{
+  "schema_version": "yimecore-manual-observation-v1",
+  "generated_at": "2026-09-10T14:14:54.6408981Z",
+  "host": "Windows Notepad",
+  "architecture": "x64",
+  "user_report": "各提交三轮，三模式测试shift+1\\~9上屏，等长候选数：7，省键候选数：9，变长候选数：5",
+  "metadata_evidence": "notepad-post-manual-20260910-221037.json",
+  "observations": [
+    {
+      "mode": "full",
+      "candidates_per_page_reported": 7,
+      "display_name": "等长",
+      "submission_rounds": 3,
+      "shift_ordinal_commit_reported": "pass"
+    },
+    {
+      "mode": "shorthand",
+      "candidates_per_page_reported": 9,
+      "display_name": "省键",
+      "submission_rounds": 3,
+      "shift_ordinal_commit_reported": "pass"
+    },
+    {
+      "mode": "variable",
+      "candidates_per_page_reported": 5,
+      "display_name": "变长",
+      "submission_rounds": 3,
+      "shift_ordinal_commit_reported": "pass"
+    }
+  ],
+  "shift_key_range_reported": "Shift+1 through Shift+9",
+  "individual_key_results": null,
+  "unoccupied_ordinals_behavior": null,
+  "remaining_checks": [
+    "space_commit",
+    "shift_candidate_labels",
+    "bare_digits_remain_composition",
+    "candidate_page_forward_and_back",
+    "focus_loss_cancellation",
+    "confirmed_text_preserved",
+    "focus_return_recovery",
+    "language_bar",
+    "host_reopen_recovery"
+  ],
+  "complete": false,
+  "note": "Three submission rounds and Shift ordinal commits are user-reported. Do not infer all behavior checks passed or infer behavior for ordinals beyond the visible candidate count."
+}

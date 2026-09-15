@@ -1,0 +1,21 @@
+{
+  "schema_version": "yimecore-manual-observation-v1",
+  "generated_at": "2026-09-10T14:10:55.0542224Z",
+  "host": "Windows Notepad",
+  "architecture": "x64",
+  "user_report": "记事本三模式已测，请核验。",
+  "modes_reported_tested": [
+    "full",
+    "variable",
+    "shorthand"
+  ],
+  "full_mode_candidates_reported": 7,
+  "repetitions": null,
+  "individual_behavior_outcomes": null,
+  "manual_pass_confirmed": null,
+  "metadata_evidence": "notepad-post-manual-20260910-221037.json",
+  "metadata_passed": true,
+  "matches_recorded_package_and_x64_dll": true,
+  "acceptance_complete": false,
+  "remaining_confirmation": "Confirm whether all three modes passed three rounds, including commit, Shift selection/labels, bare digits, paging, focus cancellation/text protection/recovery, language bar and reopen."
+}

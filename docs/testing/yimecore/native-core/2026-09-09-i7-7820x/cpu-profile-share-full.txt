@@ -1,0 +1,140 @@
+CPU diagnostic only; source commit 222f2d5f6411df1a942b12d0a11735a7205fe7df; mode full; replays per engine 1000000
+Rows show sampled CPU time, not benchmark latency or acceptance.
+
+static / flat
+flat flat% sum% cum cum% function
+    1320ms  2.10%  2.10%     2940ms  4.68%  runtime.concatstrings
+    1200ms  1.91%  4.01%     1200ms  1.91%  runtime.memmove
+    1190ms  1.89%  5.90%    17130ms 27.24%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).refresh
+    1120ms  1.78%  7.68%     1120ms  1.78%  runtime.memclrNoHeapPointers
+     790ms  1.26%  8.94%     9380ms 14.92%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).bestSentence
+     700ms  1.11% 10.05%     1810ms  2.88%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.cloneCandidates (inline)
+     490ms  0.78% 10.83%     7640ms 12.15%  runtime.mallocgc
+     450ms  0.72% 11.55%      450ms  0.72%  runtime.nextFreeFast (inline)
+     420ms  0.67% 12.21%      740ms  1.18%  runtime.mallocgcSmallScanNoHeaderSC6
+     410ms  0.65% 12.87%     1210ms  1.92%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.singleCharacterRecords (inline)
+     370ms  0.59% 13.45%      450ms  0.72%  runtime.tryDeferToSpanScan
+     350ms  0.56% 14.01%     2710ms  4.31%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).snapshot
+     350ms  0.56% 14.57%     3800ms  6.04%  runtime.growslice
+     320ms  0.51% 15.08%      320ms  0.51%  runtime.(*mspan).init
+     310ms  0.49% 15.57%     4190ms  6.66%  runtime.mallocgcSmallScanHeader
+     280ms  0.45% 16.01%      350ms  0.56%  runtime.(*spanSet).push
+     280ms  0.45% 16.46%      390ms  0.62%  runtime.mallocgcTinySC2
+     270ms  0.43% 16.89%      490ms  0.78%  runtime.mallocgcSmallNoScanSC4
+     240ms  0.38% 17.27%      240ms  0.38%  runtime.(*fixalloc).alloc
+     230ms  0.37% 17.64%      260ms  0.41%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.rankCandidates.func1
+
+static / cum
+flat flat% sum% cum cum% function
+      40ms 0.064% 0.064%    20270ms 32.24%  main.applyCode
+         0     0% 0.064%    20270ms 32.24%  main.collectNativeCPU
+         0     0% 0.064%    20270ms 32.24%  main.collectNativeCPU.func2 (inline)
+         0     0% 0.064%    20270ms 32.24%  main.collectNativeCPU.func2.func1
+         0     0% 0.064%    20270ms 32.24%  main.main
+         0     0% 0.064%    20270ms 32.24%  runtime.main
+         0     0% 0.064%    20270ms 32.24%  runtime/pprof.Do
+      80ms  0.13%  0.19%    20160ms 32.06%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).Apply
+    1190ms  1.89%  2.08%    17130ms 27.24%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).refresh
+     790ms  1.26%  3.34%     9380ms 14.92%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).bestSentence
+     490ms  0.78%  4.12%     7640ms 12.15%  runtime.mallocgc
+     310ms  0.49%  4.61%     4190ms  6.66%  runtime.mallocgcSmallScanHeader
+     350ms  0.56%  5.17%     3800ms  6.04%  runtime.growslice
+      60ms 0.095%  5.26%     3000ms  4.77%  runtime.(*mcache).nextFree
+    1320ms  2.10%  7.36%     2940ms  4.68%  runtime.concatstrings
+     210ms  0.33%  7.70%     2900ms  4.61%  runtime.(*mcache).refill
+     350ms  0.56%  8.25%     2710ms  4.31%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).snapshot
+      60ms 0.095%  8.35%     2680ms  4.26%  runtime.systemstack
+     110ms  0.17%  8.52%     2160ms  3.44%  runtime.makeslice
+      70ms  0.11%  8.64%     2000ms  3.18%  runtime.(*mcentral).cacheSpan
+
+learned / flat
+flat flat% sum% cum cum% function
+    1510ms  2.40%  2.40%     1510ms  2.40%  runtime.memclrNoHeapPointers
+    1330ms  2.12%  4.52%     1330ms  2.12%  runtime.memmove
+    1230ms  1.96%  6.47%     3010ms  4.79%  runtime.concatstrings
+    1080ms  1.72%  8.19%    19740ms 31.39%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).refresh
+     880ms  1.40%  9.59%    10420ms 16.57%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).bestSentence
+     880ms  1.40% 10.99%      880ms  1.40%  internal/runtime/maps.memHashAES
+     720ms  1.15% 12.13%     1700ms  2.70%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.cloneCandidates (inline)
+     650ms  1.03% 13.17%      650ms  1.03%  runtime.nextFreeFast (inline)
+     520ms  0.83% 13.99%     8110ms 12.90%  runtime.mallocgc
+     460ms  0.73% 14.73%      830ms  1.32%  runtime.mallocgcSmallScanNoHeaderSC6
+     440ms   0.7% 15.43%     4100ms  6.52%  runtime.growslice
+     410ms  0.65% 16.08%      630ms  1.00%  runtime.mallocgcTinySC2
+     390ms  0.62% 16.70%     2400ms  3.82%  runtime.mapaccess2
+     320ms  0.51% 17.21%     1220ms  1.94%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.singleCharacterRecords (inline)
+     290ms  0.46% 17.67%      370ms  0.59%  runtime.tryDeferToSpanScan
+     280ms  0.45% 18.11%      280ms  0.45%  runtime.(*mspan).init
+     270ms  0.43% 18.54%      270ms  0.43%  internal/runtime/maps.ctrlGroup.matchH2 (inline)
+     240ms  0.38% 18.92%     4440ms  7.06%  runtime.mallocgcSmallScanHeader
+     240ms  0.38% 19.31%      240ms  0.38%  sync/atomic.(*Int32).Add (inline)
+     230ms  0.37% 19.67%     2540ms  4.04%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).snapshot
+
+learned / cum
+flat flat% sum% cum cum% function
+      40ms 0.064% 0.064%    22660ms 36.04%  main.applyCode
+         0     0% 0.064%    22660ms 36.04%  main.collectNativeCPU
+         0     0% 0.064%    22660ms 36.04%  main.collectNativeCPU.func2 (inline)
+         0     0% 0.064%    22660ms 36.04%  main.collectNativeCPU.func2.func1
+         0     0% 0.064%    22660ms 36.04%  main.main
+         0     0% 0.064%    22660ms 36.04%  runtime.main
+         0     0% 0.064%    22660ms 36.04%  runtime/pprof.Do
+      60ms 0.095%  0.16%    22580ms 35.91%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).Apply
+    1080ms  1.72%  1.88%    19740ms 31.39%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).refresh
+     880ms  1.40%  3.28%    10420ms 16.57%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).bestSentence
+     520ms  0.83%  4.10%     8110ms 12.90%  runtime.mallocgc
+     240ms  0.38%  4.48%     4440ms  7.06%  runtime.mallocgcSmallScanHeader
+     440ms   0.7%  5.18%     4100ms  6.52%  runtime.growslice
+    1230ms  1.96%  7.14%     3010ms  4.79%  runtime.concatstrings
+      50ms  0.08%  7.22%     2710ms  4.31%  runtime.(*mcache).nextFree
+     160ms  0.25%  7.47%     2550ms  4.06%  runtime.(*mcache).refill
+     230ms  0.37%  7.84%     2540ms  4.04%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).snapshot
+     390ms  0.62%  8.46%     2400ms  3.82%  runtime.mapaccess2
+     130ms  0.21%  8.67%     2390ms  3.80%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).scoreCandidateWithContext
+      70ms  0.11%  8.78%     2290ms  3.64%  runtime.systemstack
+
+all / flat
+flat flat% sum% cum cum% function
+    2630ms  4.18%  4.18%     2630ms  4.18%  runtime.memclrNoHeapPointers
+    2550ms  4.06%  8.24%     5950ms  9.46%  runtime.concatstrings
+    2530ms  4.02% 12.26%     2530ms  4.02%  runtime.memmove
+    2270ms  3.61% 15.87%    36870ms 58.64%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).refresh
+    2150ms  3.42% 19.29%     2800ms  4.45%  runtime.tryDeferToSpanScan
+    1830ms  2.91% 22.20%     2080ms  3.31%  runtime.typePointers.next
+    1790ms  2.85% 25.05%     1790ms  2.85%  runtime.semasleep
+    1670ms  2.66% 27.70%    19800ms 31.49%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).bestSentence
+    1610ms  2.56% 30.26%     5340ms  8.49%  runtime.scanObject
+    1460ms  2.32% 32.59%     1710ms  2.72%  runtime.preemptM
+    1420ms  2.26% 34.84%     3510ms  5.58%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.cloneCandidates
+    1100ms  1.75% 36.59%     1100ms  1.75%  runtime.nextFreeFast (inline)
+    1020ms  1.62% 38.22%     1020ms  1.62%  internal/runtime/maps.memHashAES
+    1010ms  1.61% 39.82%    15750ms 25.05%  runtime.mallocgc
+     880ms  1.40% 41.22%     1570ms  2.50%  runtime.mallocgcSmallScanNoHeaderSC6
+     790ms  1.26% 42.48%      790ms  1.26%  internal/runtime/atomic.(*Uint32).Add (inline)
+     790ms  1.26% 43.73%     7900ms 12.56%  runtime.growslice
+     730ms  1.16% 44.90%     2430ms  3.86%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.singleCharacterRecords (inline)
+     730ms  1.16% 46.06%      730ms  1.16%  runtime.semawakeup
+     690ms  1.10% 47.15%     1020ms  1.62%  runtime.mallocgcTinySC2
+
+all / cum
+flat flat% sum% cum cum% function
+      80ms  0.13%  0.13%    42930ms 68.27%  main.applyCode
+         0     0%  0.13%    42930ms 68.27%  main.collectNativeCPU
+         0     0%  0.13%    42930ms 68.27%  main.collectNativeCPU.func2 (inline)
+         0     0%  0.13%    42930ms 68.27%  main.collectNativeCPU.func2.func1
+         0     0%  0.13%    42930ms 68.27%  main.main
+         0     0%  0.13%    42930ms 68.27%  runtime.main
+         0     0%  0.13%    42930ms 68.27%  runtime/pprof.Do
+     140ms  0.22%  0.35%    42740ms 67.97%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).Apply
+    2270ms  3.61%  3.96%    36870ms 58.64%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).refresh
+    1670ms  2.66%  6.62%    19800ms 31.49%  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore.(*Engine).bestSentence
+     220ms  0.35%  6.97%    18130ms 28.83%  runtime.systemstack
+    1010ms  1.61%  8.57%    15750ms 25.05%  runtime.mallocgc
+         0     0%  8.57%     9420ms 14.98%  runtime.gcBgMarkWorker.func2
+      90ms  0.14%  8.72%     9360ms 14.89%  runtime.gcDrain
+         0     0%  8.72%     8640ms 13.74%  runtime.gcBgMarkWorker
+     550ms  0.87%  9.59%     8630ms 13.72%  runtime.mallocgcSmallScanHeader
+     790ms  1.26% 10.85%     7900ms 12.56%  runtime.growslice
+      10ms 0.016% 10.86%     7670ms 12.20%  runtime.gcDrainMarkWorkerDedicated (inline)
+    2550ms  4.06% 14.92%     5950ms  9.46%  runtime.concatstrings
+      20ms 0.032% 14.95%     5750ms  9.14%  runtime.bgsweep

@@ -1,0 +1,120 @@
+{
+  "schema_version": "yimecore-evidence-export-v1",
+  "exported_at": "2026-09-11T00:09:04.8587217Z",
+  "affected_product": "YimeCore",
+  "source_branch": "perf/i7-7820x-local",
+  "source_head": "c9f4c0ea4645f32b925b335b356938255096927a",
+  "latest_summary": "matrix-summary-20260911-080543.json",
+  "records": [
+    {
+      "path": "firefox-acceptance-20260911-074134.json",
+      "sha256": "d787ad1f8ecc8735a9a327ed950acac2124f3fd043ddb24236a87d20001565f6"
+    },
+    {
+      "path": "firefox-basic-confirmation-20260911-002150.json",
+      "sha256": "8cb1b6e0beea2659d6108407d613da365ecb214fe51d178220df8c8ccc4ed823"
+    },
+    {
+      "path": "firefox-final-user-report-20260911-073731.json",
+      "sha256": "2bb65e0599e863c0b4695b8d1384f5485154b805b57a35c3a738b677c38cf629"
+    },
+    {
+      "path": "firefox-post-manual-20260911-073731.json",
+      "sha256": "33bb9fc698a42e6afa981427bce7080782ef4ea7723fb58c7484dc717ee8dadc"
+    },
+    {
+      "path": "firefox-pre-manual-20260910-235901.json",
+      "sha256": "6574d67095aeb289726e82e9843275cb62300710e320e0c1449025c639e864b5"
+    },
+    {
+      "path": "firefox-pre-manual-assessment-20260910-235901.json",
+      "sha256": "793509cf8998b2dee726cc59836688005fc8d59abad1ef59f1a62ecc3107f364"
+    },
+    {
+      "path": "matrix-summary-20260911-074134.json",
+      "sha256": "dc017bd704f0a9b399cb8de8d35bcfcc24829648e213264f870ffaa622bd0c48"
+    },
+    {
+      "path": "matrix-summary-20260911-080027.json",
+      "sha256": "9466d7d20faf71ce0b03ed5b2eb2a1ebb18a5bbc881472984391655326538dc1"
+    },
+    {
+      "path": "matrix-summary-20260911-080543.json",
+      "sha256": "5b6769e2da593b0e3e39e3d795a8955ce0e3bd313a29c522a82cf194fedc5443"
+    },
+    {
+      "path": "notepad-acceptance-20260910-224402.json",
+      "sha256": "4b31e8e65ff0c409d5463a618326ef1b3e963ff51c239243f76e40dd908d20aa"
+    },
+    {
+      "path": "notepad-commit-confirmation-20260910-221454.json",
+      "sha256": "e4cf255087acbb5e220e523a7b1042e090f6679c85c653559008c839adbcf44e"
+    },
+    {
+      "path": "notepad-digit-edit-confirmation-20260910-221653.json",
+      "sha256": "f01591b1c8fd140ea2ce19e5914653d61eca96e4026a3657485cfba153d8277c"
+    },
+    {
+      "path": "notepad-final-metadata-20260910-224402.json",
+      "sha256": "f8a62ce747487ede8f7a7aabe2e16f0e1c7242e285a4b166d98893a3663d6c1e"
+    },
+    {
+      "path": "notepad-focus-confirmation-20260910-223819.json",
+      "sha256": "4a2ad5d7be208c13f74c4dfecf48022ba9bc1dc87e7fdc1bbe433dc8f35486ef"
+    },
+    {
+      "path": "notepad-paging-confirmation-20260910-221849.json",
+      "sha256": "6a19371d6166d2e5891306e86c23e094532fcd4597886aa160b44a6c2bed9a4c"
+    },
+    {
+      "path": "notepad-post-manual-20260910-221037.json",
+      "sha256": "8f6b7eeea8aebe9647a45d48e6d3cb313427c07e9dbeaace6641d31102d6de61"
+    },
+    {
+      "path": "notepad-user-report-20260910-221037.json",
+      "sha256": "705360c7c7a61d279aa12a03f8cf51ae6db90379c974816524a8989644f90a92"
+    },
+    {
+      "path": "notepadpp-acceptance-20260911-080027.json",
+      "sha256": "49407afe27551db5d77ddf98e0cb2dc5a392ed2195b8bf4fdeea884cfdd1ccbe"
+    },
+    {
+      "path": "notepadpp-supplement-metadata-20260911-075856.json",
+      "sha256": "bde37a130a3596a4440fffe2ddd70928cab53844b340eae904956f5888ae2df1"
+    },
+    {
+      "path": "notepadpp-supplement-report-20260911-075856.json",
+      "sha256": "30475e2ecb48455dffa29ddc4685fcdfd322b465072ad75f37091cb948b3a54c"
+    },
+    {
+      "path": "protection-disposition-20260911-080543.json",
+      "sha256": "0a4c7ee242c09584836fc25fad544a4550583f8e09319552eec5b405a19442ec"
+    },
+    {
+      "path": "word-acceptance-20260910-235453.json",
+      "sha256": "907c4a7d98c59ff4035ac20c419e1ff1d464101fc2d51e9caaa1b14303ffa4a3"
+    },
+    {
+      "path": "word-basic-confirmation-20260910-233405.json",
+      "sha256": "add8f1e8a8948f5d166f7920ea5e8aa33c321ab26629a63b6a307373e613c50f"
+    },
+    {
+      "path": "word-final-user-report-20260910-235342.json",
+      "sha256": "c8d4f7b3247be5ac5866e4ad0b84a621af87c39909d576bf89452bae88c0d5f3"
+    },
+    {
+      "path": "word-post-manual-20260910-235342.json",
+      "sha256": "b9c41fdf40636f3f7d889ea70b8cc181436d96ff2d5f4476b5e534a948669874"
+    },
+    {
+      "path": "word-pre-manual-20260910-225904.json",
+      "sha256": "e75de9ca2b925b9f84b8f09a05f42c8fa9da6678fe070d26cf7aa5afb76d8395"
+    }
+  ],
+  "historical_repository_dependencies": [
+    "docs/testing/platform/2026-09-10-real-host-matrix.json",
+    "docs/testing/platform/2026-09-10-notepadpp-x86-live-metadata.json",
+    "docs/testing/platform/2026-09-10-notepadpp-x86-post-manual-20260910-203029.json"
+  ],
+  "notes": "Raw JSON copied byte-for-byte. Earlier pending states and committed/pushed=false fields describe their original capture time, not export status. Bare evidence filenames resolve in this directory; docs/testing/... references resolve from repository root."
+}

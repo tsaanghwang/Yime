@@ -1,0 +1,52 @@
+{
+  "schema_version": "yimecore-performance-tiers-v1",
+  "profiles": [
+    {
+      "id": "development_host_x64",
+      "label": "本开发机原生 x64",
+      "reference": "MYCOMPUTER; natural scheduler, no CPU quota, no fixed affinity or simulated hardware tier",
+      "private_memory_budget_mb": 1536
+    }
+  ],
+  "experiment_profiles": [
+    {
+      "id": "mainstream",
+      "label": "流行主流",
+      "reference": "Windows 11 office PC, 6-12 cores, 16 GB RAM, NVMe SSD",
+      "architecture": "x64",
+      "measurement": "native physical host; no CPU quota or affinity override",
+      "private_memory_budget_mb": 1024
+    },
+    {
+      "id": "arm64",
+      "label": "Windows ARM64 实机",
+      "architecture": "arm64",
+      "reference": "Identified Windows ARM64 physical desktop host; specifications recorded with each run",
+      "measurement": "native physical host; no x64 emulation substituted for ARM64 evidence",
+      "private_memory_budget_mb": 1024
+    }
+  ],
+  "frozen_profiles": [
+    {
+      "id": "forward_looking",
+      "label": "超前",
+      "reference": "Recent high-end Windows 11 PC, 16+ cores, 32 GB+ RAM, fast NVMe SSD",
+      "single_core_percent": 100,
+      "priority": "normal",
+      "private_memory_budget_mb": 1536
+    }
+  ],
+  "provisional_interaction_budgets_ms": {
+    "e1_complete_9_probe_set_p95": 50,
+    "e2_complete_5_probe_set_p95": 100,
+    "learning_p95_overhead_ratio": 1.10,
+    "learning_p99_overhead_ratio": 1.20
+  },
+  "limitations": [
+    "The default local runner measures only the development host. Separate active experiment profiles require identified physical hosts and their own evidence.",
+    "The memory budget is per-process private bytes; physical RAM is not removed from Windows.",
+    "The harness does not emulate another CPU microarchitecture, cache hierarchy, storage latency, GPU, firmware or background software mix.",
+    "E3 static-versus-learned relative cost is measured on the native host with interleaved samples because Job Object quota waits cannot be attributed fairly to one half of a paired microbenchmark.",
+    "The x86 WOW64 surface is not a separate hardware tier. Mainstream x64 and ARM64 experiments are active; source builds and local measurements do not imply physical compatibility."
+  ]
+}

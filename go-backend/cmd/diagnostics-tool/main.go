@@ -137,22 +137,26 @@ func main() {
 	sharedDir := flag.String("SharedDir", "", "Yime shared runtime data directory")
 	helpDir := flag.String("HelpDir", "", "Yime help directory")
 	logDir := flag.String("LogDir", "", "PIME log directory")
+	installRoot := flag.String("InstallRoot", "", "optional installed package root")
+	experimental := flag.Bool("Experimental", false, "use isolated YimeCore Trial diagnostics")
 	flag.Parse()
 	if strings.TrimSpace(*userDir) == "" || strings.TrimSpace(*sharedDir) == "" {
 		showError("缺少 UserDir 或 SharedDir 参数。")
 		os.Exit(1)
 	}
 	state := &appState{ctx: diagnostics.Context{
-		UserDir:   strings.TrimSpace(*userDir),
-		SharedDir: strings.TrimSpace(*sharedDir),
-		HelpDir:   strings.TrimSpace(*helpDir),
-		LogDir:    strings.TrimSpace(*logDir),
+		UserDir:      strings.TrimSpace(*userDir),
+		SharedDir:    strings.TrimSpace(*sharedDir),
+		HelpDir:      strings.TrimSpace(*helpDir),
+		LogDir:       strings.TrimSpace(*logDir),
+		InstallRoot:  strings.TrimSpace(*installRoot),
+		Experimental: *experimental,
 	}}
 	if state.ctx.LogDir == "" {
-		state.ctx.LogDir = strings.TrimSpace(os.Getenv("LOCALAPPDATA"))
-		if state.ctx.LogDir != "" {
-			state.ctx.LogDir = state.ctx.LogDir + `\PIME\Logs`
-		}
+		state.ctx.LogDir = diagnosticsLogDirectory(state.ctx.UserDir, state.ctx.Experimental)
+	}
+	if state.ctx.InstallRoot == "" && state.ctx.Experimental {
+		state.ctx.InstallRoot = filepath.Dir(filepath.Clean(state.ctx.SharedDir))
 	}
 	if err := runApp(state); err != nil {
 		showError(err.Error())
@@ -164,7 +168,7 @@ func runApp(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	if win32ui.ActivateExistingWindow("YimeDiagnosticsTool") {
+	if win32ui.ActivateExistingWindow(diagnosticsWindowClass(state.ctx.Experimental)) {
 		return nil
 	}
 	state.layout = buildDiagnosticsUILayout()
@@ -172,7 +176,7 @@ func runApp(state *appState) error {
 	icc := initCommonControlsEx{Size: uint32(unsafe.Sizeof(initCommonControlsEx{})), ICC: 0x000000FF}
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
 	instance, _, _ := procGetModuleHandleW.Call(0)
-	className, _ := syscall.UTF16PtrFromString("YimeDiagnosticsTool")
+	className, _ := syscall.UTF16PtrFromString(diagnosticsWindowClass(state.ctx.Experimental))
 	cursor, _, _ := procLoadCursorW.Call(0, uintptr(32512))
 	icon := win32ui.LoadYimeIcon(instance)
 	wndProcCallback = syscall.NewCallback(func(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
@@ -190,7 +194,7 @@ func runApp(state *appState) error {
 		ClassName:  className,
 	}
 	procRegisterClassExW.Call(uintptr(unsafe.Pointer(&wndClass)))
-	title, _ := syscall.UTF16PtrFromString("Yime 诊断")
+	title, _ := syscall.UTF16PtrFromString(diagnosticsWindowTitle(state.ctx.Experimental))
 	winW, winH := windowSizeForClient(state.layout.clientW, state.layout.clientH)
 	screenWidth, _, _ := procGetSystemMetrics.Call(0)
 	screenHeight, _, _ := procGetSystemMetrics.Call(1)
@@ -222,7 +226,11 @@ func runApp(state *appState) error {
 
 func (state *appState) createControls() {
 	l := state.layout
-	createStatic(state.mainHWND, "这个工具检查路径、已安装二进制、运行进程、用户 Rime 文件和当前日志。", l.description, 0)
+	description := "这个工具检查路径、已安装二进制、运行进程、用户 Rime 文件和当前日志。"
+	if state.ctx.Experimental {
+		description = "这个工具检查试验版安装包、YimeCore runtime、Broker、用户状态和 Trial 日志。"
+	}
+	createStatic(state.mainHWND, description, l.description, 0)
 	detailStyle := int32(0x50200000 | 0x10000000 | 0x00800000 | 0x00200000 | 0x00010000 | 0x0800 | 0x0004 | 0x0040)
 	state.statusHWND = createControl("EDIT", "", detailStyle, l.statusView, state.mainHWND, idStatusView)
 	state.envHWND = createCheck(state.mainHWND, "包含环境摘要", l.optionBoxes[0], idIncludeEnv)
@@ -239,6 +247,31 @@ func (state *appState) createControls() {
 	createButton(state.mainHWND, "复制结构化报告", l.buttons[1], idBtnCopy)
 	createButton(state.mainHWND, "诊断说明", l.buttons[2], idBtnGuide)
 	createButton(state.mainHWND, "日志目录", l.buttons[3], idBtnLogs)
+}
+
+func diagnosticsWindowClass(experimental bool) string {
+	if experimental {
+		return "YimeCoreTrialDiagnosticsTool"
+	}
+	return "YimeDiagnosticsTool"
+}
+
+func diagnosticsWindowTitle(experimental bool) string {
+	if experimental {
+		return "Yime 试验版诊断"
+	}
+	return "Yime 诊断"
+}
+
+func diagnosticsLogDirectory(stateRoot string, experimental bool) string {
+	if experimental {
+		return filepath.Join(stateRoot, "logs")
+	}
+	local := strings.TrimSpace(os.Getenv("LOCALAPPDATA"))
+	if local == "" {
+		return ""
+	}
+	return filepath.Join(local, "PIME", "Logs")
 }
 
 func buildDiagnosticsUILayout() diagnosticsUILayout {

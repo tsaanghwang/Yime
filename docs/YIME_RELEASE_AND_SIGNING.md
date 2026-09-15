@@ -1,173 +1,29 @@
-# Yime 发布与代码签名指南
+# Yime 构建、交付与签名
 
-本文档定义 Windows 发布物从版本确认、构建、测试、签名、打包到安装验证的标准流程。开发测试包可以不签名，但对外发布包必须使用受信任的 RSA 代码签名证书。
+当前安装工程是 [installer/simple](../installer/simple/README.md)。YimeCore 与 Rime/PIME 各自完整制包；可单选，也可用共同菜单选择两套。简版工程没有正式签名发布流水线，CI 绿色不表示签名发行包已经生成。
 
-## 1. 发布前条件
+## 开发构建
 
-- 工作区干净，发布目标提交已合入并推送到 `main`；`yime-stable` 仅作为保留的集成分支
-- 子模块提交已先推送到各自 remote，主仓库不引用远端不存在的提交
-- `version.txt` 与构建身份一致；当前未发布开发线使用 `1.4.0-dev`，只有创建正式 `v1.4.0` 标签前才改为 `1.4.0`
-- 不得重新使用已经存在的历史标签。仓库已有 `v1.0.0`、`v1.1.0` 和 `v1.3.0-*`；即使 Yime 作为独立产品首次公开发布，也不能再次创建同名 `v1.0.0` 标签
-- `CHANGELOG.md` 的 `[Unreleased]` 已核对
-- Visual Studio、Windows SDK、CMake、Rust、Go、Python 和 NSIS 符合 `tools/toolchain.lock.json`；`python tools/verify_toolchain_lock.py` 通过
-- `go-winres` 从 `third_party/go-winres` 的哈希锁定源码与 vendor 依赖离线构建，不从 PATH 或网络获取
-- Rust 已安装 i686 host 工具链：`rustup toolchain install stable-i686-pc-windows-msvc`。Win32 `PIMELauncher` 构建由根 `CMakeLists.txt` 固定 `Rust_TOOLCHAIN` 指向它（Corrosion v0.6.1），x64 host 工具链会因跨编译 build-script 链接错误而失败
-- 发布签名机器已安装受信任提供商签发的 RSA 代码签名证书
+按 `tools/toolchain.lock.json` 准备工具链，执行 `python tools/verify_toolchain_lock.py`。Win32 PIMELauncher 使用固定的 `stable-i686-pc-windows-msvc` host 工具链与 Corrosion v0.6.1。Go EXE 版本来自 `version.txt`，构建保持 `-trimpath -buildvcs=false`；依赖来源及资源哈希按现有构建入口验证。
 
-## 2. 版本与可复现构建
+Rime/PIME 从根目录 `Build.ps1` 构建并制包；YimeCore 先用 `tools/yimecore/build-local-product.ps1` 构建独立载荷，再交给 `installer/simple/Build-Package.ps1`。仓库内 PowerShell 均通过 `tools/powershell/run_checked.py` 执行。包清单是各产品的 `product-package.json`，不能继续使用已退役的 NSIS 清单或事务收据。
 
-Go 工具的文件版本和 `main.version` 均取自仓库根目录 `version.txt`。不要恢复使用 `git describe` 作为每次构建的文件版本；提交哈希变化会使所有 EXE 产生新哈希并丢失 Smart App Control 信誉。
+每套包应包含自己的运行程序、所需依赖、字典、语流资产、私有字体和 x64/x86 注册组件。不得从另一套已安装产品取文件。安装根分别为 `C:\Program Files\YimeCore` 和 `C:\Program Files\Yime Rime-PIME`。
 
-发布构建器与 CI 固定为 Go 1.26.4；`go.mod` 中的 `go 1.21` 仅表示源码语言兼容下限。调整发布构建器版本会改变二进制哈希，必须连同 `go vet`、全量测试、race 和连续构建哈希一起重新验证。
+## 分支交付
 
-日常开发包必须使用带 `-dev` 的版本，避免与历史正式标签或公开测试版混淆。创建发布标签前，先按语义化版本确定 beta/rc/正式版本，更新 `version.txt` 和 `CHANGELOG.md`，完成干净构建后再签名；不得直接给 `*-dev` 安装包创建公开发布标签。
+开发端构建、验证后推送；对应 CI 成功再通知测试端。说明、测试数据和报告通过 [分支交接](../installer/simple/HANDOFF.md) 提交。完整安装包使用 GitHub Actions artifact 或 Release asset，分支内记录真实下载地址、文件名、大小、SHA-256、安装脚本提交和运行载荷来源。不要把仅有源码或只有单产品的 CI 制品称为完整双产品包。
 
-`go-backend/build.bat` 必须为全部 Go EXE 使用：
+开发包使用明确的 `-dev` 标识。复用已验收载荷时逐项说明来源，不能以新的安装脚本提交冒充全部程序的构建来源。产物失效或尚未上传时明确标记未交付，由开发端补发，测试端不自行制包。
 
-```text
--trimpath -buildvcs=false
-```
+## 正式签名发行
 
-同一源码、依赖、Go 版本和 `version.txt` 下连续构建两次，文件哈希应一致：
+公开发行前需要受 Windows 信任的代码签名，覆盖实际启动和加载的内部 EXE/DLL。现有 Go 构建保留 `YIME_SIGN_CERT_SHA1`、`YIME_SIGNTOOL_EXE`、`YIME_TIMESTAMP_URL` 及 `YIME_RELEASE_SIGNING_REQUIRED` 支持；这不等于完整简版包已签名。正式发布前应实现并验证整包签名流程，记录验证结果；不要宣称 `v*` 标签现已自动完成该流程。
 
-```powershell
-cd go-backend
-cmd /c build.bat
-Get-FileHash .\build\go-backend\settings-tool.exe -Algorithm SHA256
-cmd /c build.bat
-Get-FileHash .\build\go-backend\settings-tool.exe -Algorithm SHA256
-```
+未签名包限当前开发与受控测试使用。版本资源和自签名证书不能替代公开发行所需的信任。保管签名凭据，不提交私钥、PFX 或密码。
 
-对应自动守卫为 `TestBuildScriptKeepsGoExecutableHashesStableAndSupportsSigning`。
+## 安装验收与维护
 
-## 2.1 Windows 工具链恢复
+依据 [测试指南](YIME_TESTING_GUIDE.md) 检查构建和安装文件一致、原生注册、实际组字/候选/上屏及重启后输入。单套维护时确认另一套仍可输入；两套选择应分别报告完成与失败。
 
-`tools/toolchain.lock.json` 记录工具版本、官方 URL、安装/验证命令，以及存在单一不可变安装制品时的大小和 SHA-256。Visual Studio Build Tools、Windows SDK、GitHub runner 和 MSYS2 属于组件化环境，清单明确记录组件/通道及不能用单一文件哈希表示的原因，不以空哈希伪装完整锁定。
-
-Git 仓库不保存整套编译器和 SDK。维护发布环境时可按清单预下载已哈希制品，并为 Visual Studio 2022 创建包含所列组件的离线 layout。必要时可以制作一份可离线恢复的 Windows 构建环境包或 VM 镜像。环境包或镜像必须同时保存清单、VS layout catalog、各制品哈希和制作日期，并在隔离机器上执行清单验证、vendored 依赖验证和完整构建后才可作为恢复介质。
-
-## 3. 发布签名
-
-Smart App Control 对未知且未签名的新文件哈希可能直接阻止执行。VERSIONINFO 只提供文件身份信息，不能替代可信签名；自签名证书也不适用于公开发布。
-
-构建前设置：
-
-```powershell
-$env:YIME_SIGN_CERT_SHA1 = "<受信任 RSA 代码签名证书指纹>"
-$env:YIME_SIGNTOOL_EXE = "C:\Program Files (x86)\Windows Kits\10\bin\<version>\x64\signtool.exe"
-$env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
-```
-
-`YIME_SIGNTOOL_EXE` 和 `YIME_TIMESTAMP_URL` 可省略；脚本会尝试从 `PATH` 查找 `signtool.exe`，并使用默认时间戳服务。正式发布还要设置 `YIME_RELEASE_SIGNING_REQUIRED=1`，缺少证书或任一签名失败都会中止构建。签名前会验证证书带可访问私钥、位于有效期、使用 RSA 公钥，并包含代码签名 EKU（`1.3.6.1.5.5.7.3.3`）。
-
-需要签名的 Go 文件：
-
-- `server.exe`
-- `tool-hub.exe`
-- `settings-tool.exe`
-- `diagnostics-tool.exe`
-- `yime-layout-designer.exe`
-- `lexicon-manager.exe`
-- `reverse-lookup.exe`
-- `system-lexicon-audit.exe`
-- `blocklist-manager.exe`
-
-统一签名入口：
-
-```powershell
-.\tools\sign-release.ps1 -RequireComplete
-```
-
-该脚本覆盖 Go EXE、`rime.dll`、`rime_deployer.exe`、PIMELauncher 和各架构 TSF DLL。NSIS 的 `!uninstfinalize` 与 `!finalize` 会分别签名卸载程序和最终安装包。
-
-验证：
-
-```powershell
-.\tools\verify-release-signatures.ps1 -IncludeInstaller
-```
-
-`Status` 必须为 `Valid`；验证脚本还会要求签名者指纹等于 `YIME_SIGN_CERT_SHA1`，并确认每个文件都有时间戳证书。
-
-标签 `v*` 会触发正式发布签名门禁。仓库必须建立名为 `release-signing` 的 GitHub Environment，并把 `YIME_SIGN_CERT_BASE64`（PFX 的 Base64）和 `YIME_SIGN_CERT_PASSWORD` 设为该 Environment 的 secrets，而不是仓库级 secrets。该 Environment 必须配置至少一名独立 required reviewer，且禁止发起工作流的人自行批准；`v*` 标签还必须通过 ruleset 限制为受保护发布维护者才能创建或更新。缺少密钥或人工批准时，签名任务会直接停住或失败。
-
-签名 job 会把待签名的标签产物与签名实现分开：产物来自标签构建，证书导入、签名、验证和 manifest 脚本则从仓库默认分支独立检出到 `.trusted-signing`，并在证书进入 runner 后只执行这一份受保护实现。`.github/workflows/ci.yaml`、`tools/sign-*.ps1`、`tools/import-release-signing-certificate.ps1`、`tools/verify-*.ps1` 和 `installer/**` 都是 CODEOWNERS 保护面；分支保护必须要求 Code Owner 审批后才能合入默认分支。标签产物名为 `YIME-signed-installer`；PR 与普通分支产物名为 `YIME-unsigned-test-installer-{sha}`，不得作为公开发布包。
-
-安装器仅在系统缺少 VC++ Runtime 时下载 Microsoft redistributable。下载落在 NSIS 随机私有的 `$PLUGINSDIR`，执行前由 `tools/verify-microsoft-authenticode.ps1` 验证 Windows 信任链、Microsoft Corporation 签名者和代码签名 EKU；任何下载或签名异常都会删除文件并中止安装，不能退回共享 `$TEMP` 路径或跳过验证。
-
-### 3.1 开发包与证书选择
-
-签名不是本地编译的前置条件。开发者本机和受控测试机可以使用未签名开发包；CI 普通分支也允许产出明确标记的未签名测试安装包。不要为了开发便利移除正式标签的签名门禁。
-
-| 使用场景 | 建议 |
-|----------|------|
-| 本机开发 | 未签名构建即可；只运行自己核对过的源码产物 |
-| 受控团队测试 | 使用内部 PKI、自签名测试证书或设备策略部署信任 |
-| 公开开源发布 | 优先评估 SignPath Foundation 开源签名或 Microsoft Artifact Signing |
-| 商业/组织发布 | 使用受信任 CA 或托管签名服务，并保护私钥/HSM 凭据 |
-
-自签名证书不会被普通用户的 Windows 默认信任，只适合开发和受控环境。公开发行时，签名必须覆盖安装器及其实际启动、加载和安装的内部 EXE/DLL；只签最外层安装包仍可能在安装过程中被 Application Control 阻止。
-
-## 4. 构建与测试
-
-```powershell
-# 根入口串联 Win32/x64、Go 后端和架构门禁
-cmd /c build.bat
-
-# 防止 x64 DLL 被误装进 x86 槽位
-.\tools\test-build-guards.ps1
-```
-
-发布前运行 [测试与验证指南](YIME_TESTING_GUIDE.md) 中的 CI 稳定集、真实 Rime 集成测试和安装态烟雾测试。不得只依据 CI 构建绿色判断功能完整。
-
-## 5. 安装包检查
-
-- 安装包版本与 `version.txt` 一致
-- `go-backend/build/go-backend/` 中 9 个 Go EXE 全部存在且带 VERSIONINFO：`server.exe`、`tool-hub.exe`、`settings-tool.exe`、`diagnostics-tool.exe`、`yime-layout-designer.exe`、`lexicon-manager.exe`、`reverse-lookup.exe`、`system-lexicon-audit.exe`、`blocklist-manager.exe`
-- NSIS 必装主组件递归包含 `go-backend/build/go-backend/`，安装包中不存在旧 Python/Node 输入法及其组件选择逻辑
-- `input_methods/yime/data/`、`rime.dll`、`rime_deployer.exe` 已打包
-- 打包目录 `input_methods/` 下没有 `.go` 源码或测试文件
-- x86/x64 `PIMETextService.dll` 均存在，并通过 `tools/test-build-guards.ps1` 验证 PE machine type；仅检查文件名或存在性不算通过
-- `go-backend/build/go-backend/input_methods/` 只包含带 `ime.json` 的运行时输入法目录
-- 安装包和内部二进制签名有效
-- 安装包 SHA-256 已记录在发布说明中
-- `installer/build-manifest.json` 记录版本、提交、分支、签名状态及关键产物 SHA-256；回退时按该清单选择上一提交制品
-- 全新安装、开发卸载后安装和已有版本升级三种情况下，目标目录都保持为 `C:\Program Files (x86)\YIME`
-
-```powershell
-Get-FileHash .\installer\YIME-*-setup.exe -Algorithm SHA256
-```
-
-## 6. 安装态验证
-
-使用标准流程，不得简化 `Reinstall-PIME-Test.cmd`：
-
-```powershell
-.\Reinstall-PIME-Test.cmd
-```
-
-验证构建与安装文件一致：
-
-```powershell
-$built = Get-FileHash .\go-backend\build\go-backend\settings-tool.exe
-$installed = Get-FileHash 'C:\Program Files (x86)\YIME\go-backend\settings-tool.exe'
-$built.Hash -eq $installed.Hash
-```
-
-至少验证：
-
-1. PIMELauncher 和 `server.exe` 能启动
-2. 音元输入法能激活、组字和选词
-3. 桌面语言栏三个双字切换按钮不消失、不换位，“用户词库”“反查编码”“工具中心”按钮可用
-4. 语言栏停靠在任务栏时，“中 → 设置”内的“用户词库”“反查编码”“指法练习”“工具中心”四个叶子命令均可打开对应窗口
-5. 工具箱、高级布局、设置、反查和词库管理可以打开
-6. 设置工具“应用”、备份和恢复流程不闪控制台
-7. 用户词库应用后在三种方案中可用
-8. CodeIntegrity 日志没有新产生的 3033、3077 或 3118 阻止事件
-
-## 7. 回滚
-
-- 保留上一版安装包及 SHA-256
-- CI 未签名测试包按提交 SHA 命名并保留 30 天；回退前先核对 `build-manifest.json` 的提交与文件哈希
-- 回滚优先使用独立提交或发布标签，不使用 `git reset --hard`
-- 若 DLL 被宿主锁定，标准重装流程会自动采用就地安装；只有确需替换被锁 DLL 时才重启 Windows
-- 回滚后重新核对安装文件哈希和运行进程时间，不要只检查源码分支
+文件占用时让用户保存并退出应用、重试或取消；必要时正常重启后维护。更换版本使用所需完整包重新安装。默认保留本产品用户数据，显式 `-ResetData` 可清空测试数据；生产数据迁移与自动备份恢复另行规划。

@@ -431,10 +431,12 @@ func FindSession(sessionId RimeSessionId) bool {
 	return boolResult(r1)
 }
 
-func EndSession(sessionId RimeSessionId) {
-	if sessionId != 0 {
-		rimeProcs.destroySession.Call(uintptr(sessionId))
+func EndSession(sessionId RimeSessionId) bool {
+	if sessionId == 0 {
+		return true
 	}
+	r1, _, _ := rimeProcs.destroySession.Call(uintptr(sessionId))
+	return boolResult(r1)
 }
 
 func ProcessKey(sessionId RimeSessionId, keyCode, modifiers int) bool {
