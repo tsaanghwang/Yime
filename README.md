@@ -4,21 +4,9 @@
 
 [中文文档](README.zh-CN.md)
 
-Under the [2026-09-05 dual-product plan](docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md), YimeCore is the main feature-development track and Rime/PIME remains a stable, maintained option. Either product may be installed alone, or both may coexist; each must run, upgrade, uninstall, and maintain its writable data independently, without requiring the other. The installation combinations still need their own acceptance evidence; a unified three-choice installer is not yet implemented.
+Under the [2026-09-05 dual-product plan](docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md), YimeCore is the main feature-development track and Rime/PIME remains a stable, maintained option. Either product may be installed alone, or both may coexist; each must run, upgrade, uninstall, and maintain its writable data independently, without requiring the other. The single-product and both-product installer is implemented. The current source candidate completed acceptance within the reported scope; see the [validation record](installer/simple/VALIDATION.md).
 
-
-
-
-
-
-
-
-
-
-
-
-
-The feature list and build, install, first-run, and debugging instructions below describe the **Rime/PIME product**, not YimeCore. For YimeCore's separate development and maintenance entry points, use [tools/yimecore](tools/yimecore/README.md); do not apply the PIME reinstall or registration commands to it.
+The feature list and build, first-run, and debugging instructions below describe the **Rime/PIME product**, not YimeCore. For YimeCore's separate development and maintenance entry points, use [tools/yimecore](tools/yimecore/README.md); both products use the [simple installer](installer/simple/README.md) for maintenance.
 
 Yime maps pinyin syllables to a structured keyboard encoding where shouyin units follow memorable patterns (zh/ch/sh → 7/8/9, j/q/x → 3/2/1, z/c/s → 6/5/4). The installed runtime provides variable-length, fixed-length, and shorthand modes, all deterministically derived from one curated core candidate set.
 
@@ -47,7 +35,7 @@ go-backend/              Go backend: Yime IME logic, Rime integration, standalon
     help/                User-facing help documents
 PIMETextService/         TSF text service host (C++/COM)
 PIMELauncher/            Process launcher and monitor (Rust)
-installer/               NSIS installer assets
+installer/simple/       Independent product packaging and maintenance
 libIME2/                 In-tree TSF integration component
 docs/                    Development documentation
 ```
@@ -123,34 +111,11 @@ launcher builds.
 `go-backend\build.bat` remains available for focused backend work. Go tool versions
 come from `version.txt`, and reproducible flags keep hashes stable across unrelated commits.
 
-## Install (Rime/PIME)
+## Install and Uninstall (Both Products)
 
-### Development reinstall
+Run `Install-Uninstall.cmd` from a complete package and choose the action and product: YimeCore, Rime/PIME, or both. Use the package and hash in the [current handoff](installer/simple/HANDOFF.md).
 
-From an elevated prompt:
-
-```powershell
-```
-
-This script includes pre-flight checks, DLL-lock detection, and automatic fallback. Do not simplify it — see `AGENTS.md` for constraints.
-
-### Distribution
-
-Ship `installer\YIME-*-setup.exe` after verifying the NSIS package includes the Go backend. See [docs/dev-build-reinstall.html](docs/dev-build-reinstall.html).
-
-### Manual registration
-
-```powershell
-regsvr32 "C:\Program Files (x86)\YIME\x86\PIMETextService.dll"
-regsvr32 "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
-```
-
-To unregister:
-
-```powershell
-regsvr32 /u "C:\Program Files (x86)\YIME\x86\PIMETextService.dll"
-regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
-```
+The [simple installer guide](installer/simple/README.md) owns the installation steps, file-lock handling, logs, and explicit test-data reset instructions. Production data migration and backup/restore are deferred.
 
 ## First-Run Checklist (Rime/PIME)
 

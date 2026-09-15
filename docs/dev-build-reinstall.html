@@ -1,155 +1,17 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Yime 本地编译与重装</title>
-  <style>
-    :root {
-      color-scheme: light dark;
-      --bg: #f6f7f9;
-      --card: #ffffff;
-      --text: #1a1d21;
-      --muted: #5c6570;
-      --border: #d8dee6;
-      --accent: #0b5fff;
-      --code-bg: #eef1f5;
-      --warn-bg: #fff8e6;
-      --warn-border: #f0c36d;
-      --ok-bg: #edf9f0;
-      --ok-border: #7bc48a;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #111418;
-        --card: #1a1f26;
-        --text: #e8edf3;
-        --muted: #9aa6b2;
-        --border: #2d3640;
-        --accent: #5b9bff;
-        --code-bg: #0f141a;
-        --warn-bg: #2a2418;
-        --warn-border: #8a6d2f;
-        --ok-bg: #14241a;
-        --ok-border: #3f8f57;
-      }
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font: 16px/1.6 "Segoe UI", system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-    main {
-      max-width: 52rem;
-      margin: 0 auto;
-      padding: 2rem 1.25rem 3rem;
-    }
-    h1 {
-      margin: 0 0 0.5rem;
-      font-size: 1.75rem;
-      line-height: 1.25;
-    }
-    .lede {
-      margin: 0 0 1.5rem;
-      color: var(--muted);
-    }
-    section {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem 1.35rem;
-      margin-bottom: 1rem;
-    }
-    h2 {
-      margin: 0 0 0.75rem;
-      font-size: 1.15rem;
-    }
-    h3 {
-      margin: 1rem 0 0.5rem;
-      font-size: 1rem;
-    }
-    p { margin: 0 0 0.75rem; }
-    p:last-child { margin-bottom: 0; }
-    pre {
-      margin: 0.75rem 0;
-      padding: 0.9rem 1rem;
-      overflow-x: auto;
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font: 0.92rem/1.5 Consolas, "Cascadia Mono", monospace;
-      -webkit-user-select: all;
-      user-select: all;
-    }
-    code {
-      font: 0.92em Consolas, "Cascadia Mono", monospace;
-      background: var(--code-bg);
-      padding: 0.1em 0.35em;
-      border-radius: 4px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 0.75rem 0 0;
-      font-size: 0.95rem;
-    }
-    th, td {
-      border: 1px solid var(--border);
-      padding: 0.55rem 0.65rem;
-      text-align: left;
-      vertical-align: top;
-    }
-    th { background: var(--code-bg); }
-    ul, ol {
-      margin: 0.5rem 0 0;
-      padding-left: 1.25rem;
-    }
-    li + li { margin-top: 0.35rem; }
-    .note {
-      border-radius: 8px;
-      padding: 0.85rem 1rem;
-      margin-top: 0.75rem;
-    }
-    .note.ok {
-      background: var(--ok-bg);
-      border: 1px solid var(--ok-border);
-    }
-    .note.warn {
-      background: var(--warn-bg);
-      border: 1px solid var(--warn-border);
-    }
-    .path {
-      color: var(--accent);
-      word-break: break-all;
-    }
-    .action {
-      display: inline-block;
-      margin: 0.4rem 0 0.75rem;
-      padding: 0.7rem 1rem;
-      border-radius: 8px;
-      background: var(--accent);
-      color: white;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    footer {
-      margin-top: 1.25rem;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-  </style>
-</head>
-<body>
-  <main>
-    <h1>Yime 开发构建与安装</h1>
-    <section>
-      <p>当前使用双独立产品简版安装器，支持 YimeCore、Rime/PIME 单选或两套同选。</p>
-      <p>开发构建、完整包使用方法见 <a href="../installer/simple/README.md">安装维护说明</a>。</p>
-      <p>说明与测试结果通过 Git 分支交接，见 <a href="../installer/simple/HANDOFF.md">当前交接</a>；已完成的验收见 <a href="../installer/simple/VALIDATION.md">验证记录</a>。</p>
-      <p>使用端下载完整包，解压后从资源管理器打开 Install-Uninstall.cmd。维护前保存文档并退出使用目标输入法的应用，按提示重试或取消；必要时正常重启后再操作。</p>
-    </section>
-  </main>
-</body>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yime 开发与安装入口</title>
+<style>body{max-width:48rem;margin:3rem auto;padding:0 1rem;font:17px/1.7 system-ui}li{margin:.6rem 0}</style>
+<h1>Yime 开发与安装入口</h1>
+<p>YimeCore 与 Rime/PIME 是两个独立产品，可单独或同时安装。</p>
+<ul>
+<li><a href="../installer/simple/README.md">安装、卸载与开发构包</a></li>
+<li><a href="../installer/simple/HANDOFF.md">当前交付包、校验值和分支交接</a></li>
+<li><a href="../installer/simple/VALIDATION.md">实机验证范围与已知限制</a></li>
+<li><a href="../tools/yimecore/README.md">YimeCore 源码构建与平台实验</a></li>
+<li><a href="../README.zh-CN.md">Rime/PIME 构建与项目说明</a></li>
+</ul>
+<p>本页仅提供导航；安装步骤以简版安装器文档为准。</p>
 </html>

@@ -1,55 +1,10 @@
-# Yime 用户安装指南
+# Yime 用户安装与使用指南
 
-本文档面向最终用户，说明如何安装和使用 Yime（音元拼音）输入法。
+安装、卸载、重装及数据重置统一见[双产品安装指南](../installer/simple/README.md)。当前候选包、SHA-256 和实测范围见[交接](../installer/simple/HANDOFF.md)与[验证记录](../installer/simple/VALIDATION.md)。当前通用包面向 x64 Windows 和 WOW64 应用；ARM64 安装包尚未交付。
 
-## 系统要求
+以下输入与工具说明针对 **Rime/PIME 产品**；YimeCore 的功能与菜单以其随包帮助为准。
 
-- Windows 10 1903 或更高版本
-- 管理员权限（安装时需要）
-
-## 获取并核验安装包
-
-仅从项目的 [GitHub Releases](https://github.com/tsaanghwang/Yime/releases)
-获取公开发行安装包，并将文件名、版本和 SHA-256 与对应发布说明逐项核对：
-
-```powershell
-Get-FileHash .\YIME-<版本>-setup.exe -Algorithm SHA256
-```
-
-公开发行包还应具有有效的 Authenticode 签名。可在文件“属性 → 数字签名”中检查，
-或在 PowerShell 中运行：
-
-```powershell
-Get-AuthenticodeSignature .\YIME-<版本>-setup.exe |
-    Format-List Status,SignerCertificate,TimeStamperCertificate
-```
-
-`Status` 应为 `Valid`，签名者证书指纹应与对应发布说明一致。分支或 PR 产生的
-`YIME-unsigned-test-installer-{sha}` 是未签名开发测试包，只能用于受控测试，
-不得当作面向普通用户的正式发行包。如果 Releases 尚未提供同时满足哈希与可信签名
-要求的产物，表示公开发行验收尚未完成。
-
-## 安装步骤
-
-### 1. 运行安装程序
-
-双击 `YIME-<版本>-setup.exe` 启动安装向导。安装包为 YIME-only，直接安装 Yime Go 后端、原生工具和所需 TSF 组件，不再提供旧 PIME Python/Node 输入法或组件选择页。
-
-### 2. 切换到 Yime 输入法
-
-安装完成后：
-
-1. 点击任务栏右下角的语言指示器（如"中"或"ENG"）
-2. 选择 **Yime 音元拼音**
-3. 或按 `Win + 空格` 循环切换输入法
-
-### 3. 首次使用检查
-
-切换到 Yime 后，如果候选窗口没有出现：
-
-1. 在任意文本框中输入字母（如 `f`），应出现候选词
-2. 如果无反应，等待 10-30 秒（首次加载需要初始化 Rime 引擎）
-3. 仍无反应，参见[故障排除指南](YIME_TROUBLESHOOTING.md)
+开发候选包不等于正式公开发行；正式发行的签名与验证要求见[发布与签名指南](YIME_RELEASE_AND_SIGNING.md)。
 
 ## 基本使用
 
@@ -145,6 +100,4 @@ Yime 使用 27 个首音类和 33 个乐音类 Yinyuan ID。当前试验布局�
 
 ## 卸载
 
-通过 Windows 设置 → 应用 → 已安装的应用 → YIME → 卸载。
-
-用户数据（`%APPDATA%\PIME\Rime\`）不会随卸载删除，如需清除请手动删除。
+使用完整包的 `Install-Uninstall.cmd`，或 Windows 应用列表中的对应产品卸载项。默认保留该产品用户数据；显式重置方式见[安装指南](../installer/simple/README.md)。

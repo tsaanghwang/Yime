@@ -14,6 +14,58 @@ import (
 
 // All tests are pure source contracts or disposable filesystem fixtures.
 // No executable, pipe server, Runtime, auditor or recovery process is started.
+func TestReadJSONAcceptsPowerShellUTF8BOM(t *testing.T) {
+	for _, input := range []string{`{"value":1}`, "\xef\xbb\xbf" + `{"value":1}`} {
+		path := filepath.Join(t.TempDir(), "ps5.json")
+		if err := os.WriteFile(path, []byte(input), 0600); err != nil {
+			t.Fatal(err)
+		}
+		var got struct {
+			Value int `json:"value"`
+		}
+		if err := readJSON(path, int64(len(input)), &got); err != nil || got.Value != 1 {
+			t.Fatalf("read: %+v, %v", got, err)
+		}
+		if err := readJSON(path, int64(len(input)-1), &got); err == nil {
+			t.Fatal("BOM support bypassed size limit")
+		}
+	}
+	path := filepath.Join(t.TempDir(), "invalid.json")
+	if err := os.WriteFile(path, []byte("\xef\xbb\xbf{}{}"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	var got any
+	if err := readJSON(path, 100, &got); err == nil {
+		t.Fatal("multiple JSON values accepted")
+	}
+}
+
+func TestReadManifestBOMKeepsOriginalBytePin(t *testing.T) {
+	root, originalSHA, _ := fixturePackage(t)
+	path := filepath.Join(root, "package-manifest.json")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data = append([]byte{0xef, 0xbb, 0xbf}, data...)
+	if err := os.WriteFile(path, data, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readManifest(root, originalSHA); err == nil {
+		t.Fatal("BOM-prefixed manifest accepted with non-BOM pin")
+	}
+	bomSHA, err := hashFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readManifest(root, bomSHA); err != nil {
+		t.Fatal(err)
+	}
+	if afterSHA, err := hashFile(path); err != nil || afterSHA != bomSHA {
+		t.Fatal("parsing changed manifest bytes")
+	}
+}
+
 func fixturePackage(t *testing.T) (string, string, manifest) {
 	t.Helper()
 	root := filepath.Join(t.TempDir(), ".tmp", "yimecore-local-product", "new-build-fixture", "package")

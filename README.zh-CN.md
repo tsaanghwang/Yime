@@ -4,13 +4,9 @@
 
 [English](README.md)
 
-按照 [2026-09-05 双产品开发计划](docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)，YimeCore 为主要功能开发方向，Rime/PIME 持续稳定维护。用户可只装任一方，也可同时安装；各自必须独立运行、升级、卸载和维护可写数据，不依赖对方存在。三种安装组合仍需各自验收，统一的“三选一”安装入口尚未实现。
+按照 [2026-09-05 双产品开发计划](docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)，YimeCore 为主要功能开发方向，Rime/PIME 持续稳定维护。用户可只装任一方，也可同时安装；各自必须独立运行、升级、卸载和维护可写数据，不依赖对方存在。单套与双套安装入口已实现，本轮源码候选包已完成已报告范围内的实机验收，详见[简版安装器验证记录](installer/simple/VALIDATION.md)。
 
-
-
-
-
-下方功能、构建、安装、首次运行和调试说明均针对 **Rime/PIME 产品**。YimeCore 使用独立的[开发与维护入口](tools/yimecore/README.md)，不能套用下方 PIME 重装或注册命令。
+下方功能、构建、首次运行和调试说明针对 **Rime/PIME 产品**。YimeCore 使用独立的[开发与维护入口](tools/yimecore/README.md)，两套安装维护统一使用[简版入口](installer/simple/README.md)。
 
 音元输入法将拼音音节映射到结构化的键盘编码，首音遵循易记的规律（zh/ch/sh → 7/8/9，j/q/x → 3/2/1，z/c/s → 6/5/4）。正式安装提供变长、等长和省键三种模式，三者都从同一份整理后的核心候选集确定性派生。
 
@@ -38,7 +34,7 @@ go-backend/              Go 后端：Yime 输入法逻辑、Rime 集成、独立
     help/                用户帮助文档
 PIMETextService/         TSF 文本服务宿主（C++/COM）
 PIMELauncher/            进程启动器和监控（Rust）
-installer/               NSIS 安装程序资源
+installer/simple/       两套独立产品的构包与安装维护
 libIME2/                 上游 IME 库
 docs/                    开发文档
 ```
@@ -71,10 +67,9 @@ Yime 默认禁止读取它或任何其它 Git 仓库。具体门禁见[仓库数
 ```powershell
 git clone git@github.com:tsaanghwang/Yime.git
 cd Yime
-git submodule update --init libIME2
 ```
 
-活动子模块 `libIME2` 指向 `tsaanghwang/libIME2` fork。若在主仓库中更新了子模块指针，请**先**将对应 commit 推送到子模块 remote，再推送 Yime，否则 CI checkout 会失败。
+`libIME2` 已直接纳入本仓库。源码修改遵守组件独立提交边界，检出和构建不需要初始化子模块。
 
 ### 安装 Rust 目标
 
@@ -100,48 +95,15 @@ Go 后端，并执行 PE 架构门禁。无需再单独进入 `go-backend` 重�
 `YIME_SIGN_CERT_SHA1`，使用受信任提供商签发的 RSA 代码签名证书；仅有
 VERSIONINFO 不能保证通过 Smart App Control。
 
-## 安装（Rime/PIME）
+## 安装与卸载（两套产品）
 
-### 开发重装
+使用完整包中的 `Install-Uninstall.cmd`，选择操作和产品；可选择 YimeCore、Rime/PIME 或两套。完整包及校验信息以[当前交接](installer/simple/HANDOFF.md)为准。
 
-只安装已有构建物时，在管理员提示符下运行：
-
-```powershell
-```
-
-此脚本包含预检、DLL 锁检测和自动原位安装回退，但不会替你重建缺失或过期的
-`build/`、`build64/` 和 Go 后端制品。需要“构建 → 重装 → 哈希/注册表/进程核验”
-完整闭环时，运行：
-
-```powershell
-```
-
-安装完成后也可单独运行 `tools\verify-installed-runtime.ps1`。结果为 `complete`
-才表示安装文件与当前构建物全部一致；`partial` 表示只有被宿主持有的 TSF DLL
-尚未替换，需要重启 Windows 后重装并复核。不要简化规范重装脚本——参见
-`AGENTS.md` 中的约束。
-
-### 分发
-
-验证 NSIS 安装包包含 Go 后端后，分发 `installer\YIME-*-setup.exe`。参见 [docs/dev-build-reinstall.html](docs/dev-build-reinstall.html)。
-
-### 手动注册
-
-```powershell
-regsvr32 "C:\Program Files (x86)\YIME\x86\PIMETextService.dll"
-regsvr32 "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
-```
-
-注销：
-
-```powershell
-regsvr32 /u "C:\Program Files (x86)\YIME\x86\PIMETextService.dll"
-regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
-```
+详细步骤、文件占用处理、日志位置及显式测试数据重置均见[简版安装器](installer/simple/README.md)。生产数据迁移与备份恢复另行安排。
 
 ## 首次运行检查清单（Rime/PIME）
 
-- [ ] 克隆仓库，初始化子模块，确认工具链已安装
+- [ ] 克隆仓库，确认工具链已安装
 - [ ] 若整理后的核心真源有变更，运行 `tools\deploy-yime-rime-data.ps1 -InputPath <two_level_full.dict.yaml> -EvidenceManifest <dictionary.manifest.json> -PronunciationEntries <entries.tsv> -SourceRevision <提交>`（参见 [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md)）
 - [ ] 在文本应用中切换到音元输入法，验证：激活、候选窗、设置、反查
 - [ ] 发布后端变更前运行 `.\tools\test-go.ps1`；按影响层补跑 `.\tools\test-real-rime.ps1` 和 `.\tools\test-go-race.ps1`

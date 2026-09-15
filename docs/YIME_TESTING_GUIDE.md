@@ -113,7 +113,7 @@ CI 必须先构建 x64 `PIMERpcResponseTests` 目标并实际运行，不能只�
 
 UI 修改还必须构建对应 EXE，并在安装目录中实际打开一次；源码测试通过不代表 Smart App Control、焦点和模态行为正常。
 
-NSIS 守卫还必须确认默认安装目录不会被空注册表值覆盖、必装主组件包含 `go-backend`、安装器不再出现旧 Python/Node 后端路径或组件选择页，以及开发卸载会删除新旧卸载项。
+安装维护回归以 [installer/simple](../installer/simple/README.md) 为准，覆盖所选产品的文件归属、私有字体、启动项、单套/双套调度、错误日志和进程等待。实机结果及未测范围见[验证记录](../installer/simple/VALIDATION.md)，不再使用退役的 NSIS 守卫。
 
 ## 6. TSF 与语言栏高风险测试
 

@@ -107,7 +107,7 @@ func main() {
 		os.Exit(2)
 	}
 	if err := exercise(*root, *sha, *out); err != nil {
-		fmt.Fprintln(os.Stderr, "normal-product private acceptance failed; retain the fixture result")
+		fmt.Fprintf(os.Stderr, "normal-product private acceptance failed: %v; retain any fixture result\n", err)
 		os.Exit(1)
 	}
 	fmt.Println("PASS: normal Runtime private seven-stage fixture; no install, registered host or reboot acceptance inferred.")
@@ -129,7 +129,9 @@ func readJSON(path string, limit int64, value any) error {
 	if int64(len(data)) > limit {
 		return errors.New("fixture JSON exceeds limit")
 	}
-	return json.Unmarshal(data, value)
+	// Windows PowerShell 5.1 emits UTF-8 BOMs in package JSON. Integrity is
+	// checked over the original bytes; tolerate the encoding marker at parsing.
+	return json.Unmarshal(bytes.TrimPrefix(data, []byte{0xef, 0xbb, 0xbf}), value)
 }
 func writeNewJSON(path string, value any) error {
 	if err := plainPath(path); err != nil {

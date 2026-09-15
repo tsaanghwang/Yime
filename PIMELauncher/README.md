@@ -36,7 +36,7 @@ PIMELauncher is integrated into YIME's build through **CMake** and **Corrosion**
 .\build.bat
 ```
 
-The compiled binary will be automatically placed at `build\PIMELauncher\PIMELauncher.exe`, which is the location expected by the NSIS installer.
+The compiled binary will be automatically placed at `build\PIMELauncher\PIMELauncher.exe`, which is consumed by `installer/simple/Build-RimePackage.ps1`.
 
 Corrosion v0.6.1 and every crate resolved by `Cargo.lock` are committed in the
 Yime repository. Cargo is configured for offline resolution, so this build does
