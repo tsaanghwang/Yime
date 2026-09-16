@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "tools/yimecore/run-connected-speech-admission.ps1",
+    "--edition",
+    "ps7",
+    "--params-file",
+    ".tmp/pr57-dual-product-20260916/admission-params.json"
+  ],
+  "started_utc": "2026-09-16T09:10:34.408094+00:00",
+  "completed_utc": "2026-09-16T09:11:30.005101+00:00",
+  "exit_code": 0,
+  "log": "speech-admission.log"
+}

@@ -1,0 +1,25 @@
+{
+  "test": "Test-ProcessWait",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "installer/simple/Test-ProcessWait.ps1",
+    "--edition",
+    "ps5"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "edition": "ps5",
+  "edition_reason": "Match Windows PowerShell 5.1 used by simple-installer CI",
+  "environment_overrides": {
+    "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-ProcessWait\\temp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-ProcessWait\\tmp",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-ProcessWait\\appdata",
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-ProcessWait\\localappdata"
+  },
+  "started_utc": "2026-09-16T09:10:51.772547+00:00",
+  "finished_utc": "2026-09-16T09:10:53.184841+00:00",
+  "exit_code": 0,
+  "stdout": "Test-ProcessWait.stdout.log",
+  "stderr": "Test-ProcessWait.stderr.log"
+}

@@ -1,0 +1,161 @@
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+-- The CXX compiler identification is MSVC 19.44.35225.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (1.8s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/dev/Yime/.tmp/yimecore-local-product/pr57-20260916/native-x64
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  BrokerBridgeTests.cpp
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  RegisteredHostTests.cpp
+  FocusCancellationTests.cpp
+  RegistrationTool.cpp
+  BrokerClient.cpp
+  CompositionEditSession.cpp
+  ExperimentSettings.cpp
+  BrokerEndpoint.cpp
+  正在生成代码...
+  BrokerClient.cpp
+  YimeTextServiceRegistration.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x64\Release\YimeTextServiceRegistration.exe
+  TsfCompositionTests.cpp
+  ContractTests.cpp
+  YimeFocusCancellationTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x64\Release\YimeFocusCancellationTests.exe
+  ExperimentSettings.cpp
+  正在生成代码...
+  ExperimentSettings.cpp
+  BrokerClient.cpp
+  CandidateListUIElement.cpp
+  CandidatePopup.cpp
+  KeyContract.cpp
+  SurfaceSession.cpp
+  正在生成代码...
+  CompositionEditSession.cpp
+  BrokerEndpoint.cpp
+  正在生成代码...
+  DllEntry.cpp
+  CandidateListUIElement.cpp
+  YimeRegisteredHostTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x64\Release\YimeRegisteredHostTests.exe
+  ExperimentSettings.cpp
+  CandidatePopup.cpp
+  CompositionEditSession.cpp
+  ExperimentSettings.cpp
+  KeyContract.cpp
+  YimeTsfCompositionTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x64\Release\YimeTsfCompositionTests.exe
+  LanguageBarItem.cpp
+  YimeBrokerBridgeTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x64\Release\YimeBrokerBridgeTests.exe
+  OutputTransform.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  PunctuationPalette.cpp
+  SurfaceSession.cpp
+  OutputTransform.cpp
+  TextService.cpp
+  PunctuationPalette.cpp
+  正在生成代码...
+  正在生成代码...
+    正在创建库 C:/dev/Yime/.tmp/yimecore-local-product/pr57-20260916/native-x64/Release/YimeTextServiceExperiment.lib 和对象 C:/dev/Yime/.tmp/yimecore-local-product/pr57-20260916/native-x64/Release/YimeTextServiceExperiment.exp
+  YimeTextServiceExperiment.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x64\Release\YimeTextServiceExperiment.dll
+  YimeTextServiceContractTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x64\Release\YimeTextServiceContractTests.exe
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+YimeTextService E6-B1 contracts passed
+focus cancellation isolated mock checks=32 failures=0
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+-- The CXX compiler identification is MSVC 19.44.35225.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x86/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (1.4s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/dev/Yime/.tmp/yimecore-local-product/pr57-20260916/native-x86
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  RegisteredHostTests.cpp
+  ContractTests.cpp
+  BrokerEndpoint.cpp
+  FocusCancellationTests.cpp
+  BrokerBridgeTests.cpp
+  BrokerClient.cpp
+  BrokerClient.cpp
+  CompositionEditSession.cpp
+  ExperimentSettings.cpp
+  RegistrationTool.cpp
+  BrokerClient.cpp
+  正在生成代码...
+  TsfCompositionTests.cpp
+  YimeFocusCancellationTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x86\Release\YimeFocusCancellationTests.exe
+  CandidateListUIElement.cpp
+  ExperimentSettings.cpp
+  YimeTextServiceRegistration.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x86\Release\YimeTextServiceRegistration.exe
+  正在生成代码...
+  ExperimentSettings.cpp
+  CandidatePopup.cpp
+  BrokerEndpoint.cpp
+  CandidateListUIElement.cpp
+  CompositionEditSession.cpp
+  CandidatePopup.cpp
+  DllEntry.cpp
+  KeyContract.cpp
+  正在生成代码...
+  SurfaceSession.cpp
+  ExperimentSettings.cpp
+  YimeRegisteredHostTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x86\Release\YimeRegisteredHostTests.exe
+  CompositionEditSession.cpp
+  正在生成代码...
+  ExperimentSettings.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  YimeTsfCompositionTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x86\Release\YimeTsfCompositionTests.exe
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  OutputTransform.cpp
+  YimeBrokerBridgeTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x86\Release\YimeBrokerBridgeTests.exe
+  PunctuationPalette.cpp
+  OutputTransform.cpp
+  SurfaceSession.cpp
+  PunctuationPalette.cpp
+  正在生成代码...
+  TextService.cpp
+  正在生成代码...
+  YimeTextServiceContractTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x86\Release\YimeTextServiceContractTests.exe
+    正在创建库 C:/dev/Yime/.tmp/yimecore-local-product/pr57-20260916/native-x86/Release/YimeTextServiceExperiment.lib 和对象 C:/dev/Yime/.tmp/yimecore-local-product/pr57-20260916/native-x86/Release/YimeTextServiceExperiment.exp
+  YimeTextServiceExperiment.vcxproj -> C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\native-x86\Release\YimeTextServiceExperiment.dll
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+YimeTextService E6-B1 contracts passed
+focus cancellation isolated mock checks=32 failures=0
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/settings-tool	0.790s
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-independence-audit	3.476s
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-trial-runtime	0.483s
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore	1.203s
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker	3.104s
+YimeCore E1 index: mode=full records=1166753 verified=true sha256=81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1
+YimeCore E1 index: mode=full records=1166753 verified=true sha256=81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1
+YimeCore E1 index: mode=variable records=1166753 verified=true sha256=159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada
+YimeCore E1 index: mode=variable records=1166753 verified=true sha256=159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada
+YimeCore E1 index: mode=shorthand records=1166753 verified=true sha256=b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec
+YimeCore E1 index: mode=shorthand records=1166753 verified=true sha256=b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec
+PASS: isolated speech export-product only; no installed or daily-use acceptance inferred.
+YimeCore independence audit passed: C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\independence-audit.json
+YimeCore independence audit passed: C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916\independence-after-tests.json
+PASS: source-built x64 runtime plus x64/x86 TSF local product candidate (installed acceptance pending). Evidence: C:\dev\Yime\.tmp\yimecore-local-product\pr57-20260916

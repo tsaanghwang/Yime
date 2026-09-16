@@ -1,0 +1,348 @@
+Using enabled WinINET proxy for git/cmake: http://localhost:1081
+cargo 1.97.0 (c980f4866 2026-06-30)
+Win32 build prerequisites passed.
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+CMake Deprecation Warning at libIME2/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+CMake Warning at libIME2/lib/googletest-release-1.10.0/googletest/cmake/internal_utils.cmake:243 (find_package):
+  By not providing "FindPythonInterp.cmake" in CMAKE_MODULE_PATH this project
+  has asked CMake to find a package configuration file provided by
+  "PythonInterp", but CMake did not find one.
+
+  Could not find a package configuration file provided by "PythonInterp" with
+  any of the following names:
+
+    PythonInterp.cps
+    pythoninterp.cps
+    PythonInterpConfig.cmake
+    pythoninterp-config.cmake
+
+  Add the installation prefix of "PythonInterp" to CMAKE_PREFIX_PATH or set
+  "PythonInterp_DIR" to a directory containing one of the above files.  If
+  "PythonInterp" provides a separate development package or SDK, be sure it
+  has been installed.
+Call Stack (most recent call first):
+  libIME2/lib/googletest-release-1.10.0/googletest/CMakeLists.txt:91 (include)
+
+
+-- Rust Toolchain: stable-i686-pc-windows-msvc
+-- Rust Target: i686-pc-windows-msvc
+-- Configuring done (1.8s)
+-- Generating done (1.1s)
+-- Build files have been written to: C:/dev/Yime/build
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  DisplayAttributeInfoEnum.cpp
+  DisplayAttributeProvider.cpp
+  ImeModule.cpp
+  LangBarButton.cpp
+  TextService.cpp
+  正在生成代码...
+  libIME2_static.vcxproj -> C:\dev\Yime\build\libIME2\src\Release\libIME2_static.lib
+  DllEntry.cpp
+  PIMEClient.cpp
+  PIMEImeModule.cpp
+  PIMELangBarButton.cpp
+  PIMETextService.cpp
+  正在生成代码...
+    正在创建库 C:/dev/Yime/build/PIMETextService/Release/PIMETextService.lib 和对象 C:/dev/Yime/build/PIMETextService/Release/PIMETextService.exp
+  PIMETextService.vcxproj -> C:\dev\Yime\build\PIMETextService\Release\PIMETextService.dll
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  RegistrationStatus.cpp
+  PIMERegistrationStatus.vcxproj -> C:\dev\Yime\build\PIMETextService\Release\PIMERegistrationStatus.exe
+"Start building PIMELauncher"
+   Compiling pimelauncher v0.1.0 (C:\dev\Yime\PIMELauncher)
+    Finished `release` profile [optimized] target(s) in 9.36s
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+CMake Deprecation Warning at libIME2/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+CMake Warning at libIME2/lib/googletest-release-1.10.0/googletest/cmake/internal_utils.cmake:243 (find_package):
+  By not providing "FindPythonInterp.cmake" in CMAKE_MODULE_PATH this project
+  has asked CMake to find a package configuration file provided by
+  "PythonInterp", but CMake did not find one.
+
+  Could not find a package configuration file provided by "PythonInterp" with
+  any of the following names:
+
+    PythonInterp.cps
+    pythoninterp.cps
+    PythonInterpConfig.cmake
+    pythoninterp-config.cmake
+
+  Add the installation prefix of "PythonInterp" to CMAKE_PREFIX_PATH or set
+  "PythonInterp_DIR" to a directory containing one of the above files.  If
+  "PythonInterp" provides a separate development package or SDK, be sure it
+  has been installed.
+Call Stack (most recent call first):
+  libIME2/lib/googletest-release-1.10.0/googletest/CMakeLists.txt:91 (include)
+
+
+-- Configuring done (0.2s)
+-- Generating done (0.7s)
+-- Build files have been written to: C:/dev/Yime/build64
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  DisplayAttributeInfoEnum.cpp
+  DisplayAttributeProvider.cpp
+  ImeModule.cpp
+  LangBarButton.cpp
+  TextService.cpp
+C:\dev\Yime\libIME2\src\LangBarButton.cpp(155,70): warning C4312: “类型强制转换”: 从“UINT”转换到更大的“LPCTSTR” [C:\dev\Yime\build64\libIME2\src\libIME2_static.vcxproj]
+  正在生成代码...
+  libIME2_static.vcxproj -> C:\dev\Yime\build64\libIME2\src\Release\libIME2_static.lib
+  DllEntry.cpp
+  PIMEClient.cpp
+  PIMEImeModule.cpp
+  PIMELangBarButton.cpp
+  PIMETextService.cpp
+  正在生成代码...
+    正在创建库 C:/dev/Yime/build64/PIMETextService/Release/PIMETextService.lib 和对象 C:/dev/Yime/build64/PIMETextService/Release/PIMETextService.exp
+  PIMETextService.vcxproj -> C:\dev\Yime\build64\PIMETextService\Release\PIMETextService.dll
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  RegistrationStatus.cpp
+  PIMERegistrationStatus.vcxproj -> C:\dev\Yime\build64\PIMETextService\Release\PIMERegistrationStatus.exe
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+CMake Deprecation Warning at libIME2/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+CMake Warning at libIME2/lib/googletest-release-1.10.0/googletest/cmake/internal_utils.cmake:243 (find_package):
+  By not providing "FindPythonInterp.cmake" in CMAKE_MODULE_PATH this project
+  has asked CMake to find a package configuration file provided by
+  "PythonInterp", but CMake did not find one.
+
+  Could not find a package configuration file provided by "PythonInterp" with
+  any of the following names:
+
+    PythonInterp.cps
+    pythoninterp.cps
+    PythonInterpConfig.cmake
+    pythoninterp-config.cmake
+
+  Add the installation prefix of "PythonInterp" to CMAKE_PREFIX_PATH or set
+  "PythonInterp_DIR" to a directory containing one of the above files.  If
+  "PythonInterp" provides a separate development package or SDK, be sure it
+  has been installed.
+Call Stack (most recent call first):
+  libIME2/lib/googletest-release-1.10.0/googletest/CMakeLists.txt:91 (include)
+
+
+-- Configuring done (0.2s)
+-- Generating done (0.7s)
+-- Build files have been written to: C:/dev/Yime/build_arm64
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  DisplayAttributeInfoEnum.cpp
+  DisplayAttributeProvider.cpp
+  ImeModule.cpp
+  LangBarButton.cpp
+C:\dev\Yime\libIME2\src\LangBarButton.cpp(155,70): warning C4312: “类型强制转换”: 从“UINT”转换到更大的“LPCTSTR” [C:\dev\Yime\build_arm64\libIME2\src\libIME2_static.vcxproj]
+  TextService.cpp
+  正在生成代码...
+  libIME2_static.vcxproj -> C:\dev\Yime\build_arm64\libIME2\src\Release\libIME2_static.lib
+  DllEntry.cpp
+  PIMEClient.cpp
+  PIMEImeModule.cpp
+  PIMELangBarButton.cpp
+  PIMETextService.cpp
+  正在生成代码...
+    正在创建库 C:/dev/Yime/build_arm64/PIMETextService/Release/PIMETextService.lib 和对象 C:/dev/Yime/build_arm64/PIMETextService/Release/PIMETextService.exp
+  PIMETextService.vcxproj -> C:\dev\Yime\build_arm64\PIMETextService\Release\PIMETextService.dll
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  RegistrationStatus.cpp
+  PIMERegistrationStatus.vcxproj -> C:\dev\Yime\build_arm64\PIMETextService\Release\PIMERegistrationStatus.exe
+"Verify native PE architectures"
+Win32 PIMETextService.dll: 0x014C (C:\dev\Yime\build\PIMETextService\Release\PIMETextService.dll)
+Win32 PIMETextService.dll imports: ADVAPI32.dll, GDI32.dll, KERNEL32.dll, ole32.dll, OLEAUT32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll
+x64 PIMETextService.dll: 0x8664 (C:\dev\Yime\build64\PIMETextService\Release\PIMETextService.dll)
+x64 PIMETextService.dll imports: ADVAPI32.dll, GDI32.dll, KERNEL32.dll, ole32.dll, OLEAUT32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll
+Win32 PIMELauncher.exe: 0x014C (C:\dev\Yime\build\PIMELauncher\PIMELauncher.exe)
+Win32 PIMELauncher.exe imports: advapi32.dll, api-ms-win-core-synch-l1-2-0.dll, bcryptprimitives.dll, kernel32.dll, ntdll.dll, oleaut32.dll
+Win32 PIMERegistrationStatus.exe: 0x014C (C:\dev\Yime\build\PIMETextService\Release\PIMERegistrationStatus.exe)
+Win32 PIMERegistrationStatus.exe imports: KERNEL32.dll, ole32.dll, OLEAUT32.dll
+x64 PIMERegistrationStatus.exe: 0x8664 (C:\dev\Yime\build64\PIMETextService\Release\PIMERegistrationStatus.exe)
+x64 PIMERegistrationStatus.exe imports: KERNEL32.dll, ole32.dll, OLEAUT32.dll
+ARM64 PIMETextService.dll: 0xAA64 (C:\dev\Yime\build_arm64\PIMETextService\Release\PIMETextService.dll)
+ARM64 PIMETextService.dll imports: ADVAPI32.dll, GDI32.dll, KERNEL32.dll, ole32.dll, OLEAUT32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll
+ARM64 PIMERegistrationStatus.exe: 0xAA64 (C:\dev\Yime\build_arm64\PIMETextService\Release\PIMERegistrationStatus.exe)
+ARM64 PIMERegistrationStatus.exe imports: KERNEL32.dll, ole32.dll, OLEAUT32.dll
+PE architecture verification passed.
+"Start building go-backend"
+============================================
+ YIME Go Backend Build Script
+============================================
+
+[INFO] Go cache: "C:\dev\Yime\.tmp\gocache"
+[INFO] Go temp:  "C:\dev\Yime\.tmp\go-tmp"
+[INFO] Go version: go1.26.4
+
+============================================
+Step 1: Prepare output directory
+============================================
+
+[INFO] Removing old build output: "C:\dev\Yime\go-backend\build\go-backend"
+[INFO] Output directory: "C:\dev\Yime\go-backend\build\go-backend"
+Verified librime 1.17.0 (33e7814) for Windows-msvc-x64.
+Runtime source: https://github.com/rime/librime/releases/tag/1.17.0
+
+============================================
+Step 2: Sync Go dependencies
+============================================
+
+
+============================================
+Step 3: Build go-backend server
+============================================
+
+[INFO] App version: 1.4.0-dev.1
+[INFO] Vendored go-winres: "C:\dev\Yime\go-backend\build\tools\go-winres.exe"
+[INFO] Generating Windows VERSIONINFO resources ...
+[INFO] Building server.exe with dynamic DLL loading ...
+[INFO] Built: "C:\dev\Yime\go-backend\build\go-backend\server.exe"
+[INFO] Generating Windows VERSIONINFO resources for reverse-lookup ...
+[INFO] Building reverse-lookup.exe ...
+[INFO] Built: "C:\dev\Yime\go-backend\build\go-backend\reverse-lookup.exe"
+[INFO] Generating Windows VERSIONINFO resources for tool-hub ...
+[INFO] Building tool-hub.exe ...
+[INFO] Built: "C:\dev\Yime\go-backend\build\go-backend\tool-hub.exe"
+[INFO] Generating Windows VERSIONINFO resources for yime-trainer ...
+[INFO] Building yime-trainer.exe ...
+[INFO] Built: "C:\dev\Yime\go-backend\build\go-backend\yime-trainer.exe"
+[INFO] Generating Windows VERSIONINFO resources for input-toolbar ...
+[INFO] Building input-toolbar.exe ...
+[INFO] Built: "C:\dev\Yime\go-backend\build\go-backend\input-toolbar.exe"
+[INFO] Generating Windows VERSIONINFO resources for lexicon-manager ...
+[INFO] Building lexicon-manager.exe ...
+[INFO] Built: "C:\dev\Yime\go-backend\build\go-backend\lexicon-manager.exe"
+[INFO] Generating Windows VERSIONINFO resources for system-lexicon-audit ...
+[INFO] Building system-lexicon-audit.exe ...
+[INFO] Built: "C:\dev\Yime\go-backend\build\go-backend\system-lexicon-audit.exe"
+[INFO] Building lexicon-promotion-scan.exe ...
+[INFO] Built: "C:\dev\Yime\go-backend\build\go-backend\lexicon-promotion-scan.exe"
+[INFO] Generating Windows VERSIONINFO resources for blocklist-manager ...
+[INFO] Building blocklist-manager.exe ...
+[INFO] Built: "C:\dev\Yime\go-backend\build\go-backend\blocklist-manager.exe"
+[INFO] Generating Windows VERSIONINFO resources for settings-tool ...
+[INFO] Building settings-tool.exe ...
+[INFO] Built: "C:\dev\Yime\go-backend\build\go-backend\settings-tool.exe"
+[INFO] Generating Windows VERSIONINFO resources for diagnostics-tool ...
+[INFO] Building diagnostics-tool.exe ...
+[INFO] Built: "C:\dev\Yime\go-backend\build\go-backend\diagnostics-tool.exe"
+[INFO] Generating Windows VERSIONINFO resources for yime-layout-designer ...
+[INFO] Building yime-layout-designer.exe (graphical and console maintenance tool) ...
+[INFO] Built: "C:\dev\Yime\go-backend\build\go-backend\yime-layout-designer.exe"
+[WARN] Go executables are unsigned. Smart App Control may block new or unknown builds.
+[WARN] Set YIME_SIGN_CERT_SHA1 to a trusted RSA code-signing certificate thumbprint for release builds.
+
+============================================
+Step 4: Copy input_methods
+============================================
+
+[INFO] input_methods copied
+
+============================================
+Step 5: Prepare packaged Rime shared data
+============================================
+
+[INFO] Copying pinned bundled Rime shared data ...
+[INFO] Removing retired single-mode trial artifacts from the runtime package ...
+[INFO] Packaged Rime shared data prepared at "C:\dev\Yime\go-backend\build\go-backend\input_methods\yime\data"
+[INFO] Removed packaged Go source files recursively
+[INFO] Copied rime.dll into package output
+[INFO] Copied rime_deployer.exe into package output
+[INFO] Copied rime_dict_manager.exe into package output
+
+============================================
+Step 6: Generate backends.json snippet
+============================================
+
+[INFO] Generated: "C:\dev\Yime\go-backend\build\backends.go-backend.json"
+
+============================================
+Build completed
+============================================
+
+Output directory:
+  "C:\dev\Yime\go-backend\build\go-backend"
+
+Install target:
+  C:\Program Files (x86)\YIME\go-backend
+
+Notes:
+1. backends.json in this repo uses a top-level array.
+2. Ensure C:\Program Files (x86)\YIME\backends.json includes go-backend.
+3. Ensure C:\Program Files (x86)\YIME\go-backend\input_methods\*\ime.json exists.
+4. Re-register both PIMETextService.dll files after copying.
+5. Ensure C:\Program Files (x86)\YIME\go-backend\input_methods\yime contains rime.dll.
+6. Start or restart PIMELauncher.exe after install.
+
+"Verify complete installer payload PE architectures"
+Win32 PIMETextService.dll: 0x014C (C:\dev\Yime\build\PIMETextService\Release\PIMETextService.dll)
+Win32 PIMETextService.dll imports: ADVAPI32.dll, GDI32.dll, KERNEL32.dll, ole32.dll, OLEAUT32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll
+x64 PIMETextService.dll: 0x8664 (C:\dev\Yime\build64\PIMETextService\Release\PIMETextService.dll)
+x64 PIMETextService.dll imports: ADVAPI32.dll, GDI32.dll, KERNEL32.dll, ole32.dll, OLEAUT32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll
+Win32 PIMELauncher.exe: 0x014C (C:\dev\Yime\build\PIMELauncher\PIMELauncher.exe)
+Win32 PIMELauncher.exe imports: advapi32.dll, api-ms-win-core-synch-l1-2-0.dll, bcryptprimitives.dll, kernel32.dll, ntdll.dll, oleaut32.dll
+Win32 PIMERegistrationStatus.exe: 0x014C (C:\dev\Yime\build\PIMETextService\Release\PIMERegistrationStatus.exe)
+Win32 PIMERegistrationStatus.exe imports: KERNEL32.dll, ole32.dll, OLEAUT32.dll
+x64 PIMERegistrationStatus.exe: 0x8664 (C:\dev\Yime\build64\PIMETextService\Release\PIMERegistrationStatus.exe)
+x64 PIMERegistrationStatus.exe imports: KERNEL32.dll, ole32.dll, OLEAUT32.dll
+x64 packaged rime.dll: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\input_methods\yime\rime.dll)
+x64 packaged rime.dll imports: dbghelp.dll, KERNEL32.dll, USER32.dll
+x64 packaged rime_deployer.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\input_methods\yime\rime_deployer.exe)
+x64 packaged rime_deployer.exe imports: dbghelp.dll, KERNEL32.dll, rime.dll
+x64 packaged rime_dict_manager.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\input_methods\yime\rime_dict_manager.exe)
+x64 packaged rime_dict_manager.exe imports: KERNEL32.dll, rime.dll
+x64 packaged Go server.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\server.exe)
+x64 packaged Go server.exe imports: kernel32.dll
+x64 packaged Go tool-hub.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\tool-hub.exe)
+x64 packaged Go tool-hub.exe imports: kernel32.dll
+x64 packaged Go yime-trainer.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\yime-trainer.exe)
+x64 packaged Go yime-trainer.exe imports: kernel32.dll
+x64 packaged Go input-toolbar.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\input-toolbar.exe)
+x64 packaged Go input-toolbar.exe imports: kernel32.dll
+x64 packaged Go settings-tool.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\settings-tool.exe)
+x64 packaged Go settings-tool.exe imports: kernel32.dll
+x64 packaged Go diagnostics-tool.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\diagnostics-tool.exe)
+x64 packaged Go diagnostics-tool.exe imports: kernel32.dll
+x64 packaged Go yime-layout-designer.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\yime-layout-designer.exe)
+x64 packaged Go yime-layout-designer.exe imports: kernel32.dll
+x64 packaged Go lexicon-manager.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\lexicon-manager.exe)
+x64 packaged Go lexicon-manager.exe imports: kernel32.dll
+x64 packaged Go reverse-lookup.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\reverse-lookup.exe)
+x64 packaged Go reverse-lookup.exe imports: kernel32.dll
+x64 packaged Go system-lexicon-audit.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\system-lexicon-audit.exe)
+x64 packaged Go system-lexicon-audit.exe imports: kernel32.dll
+x64 packaged Go lexicon-promotion-scan.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\lexicon-promotion-scan.exe)
+x64 packaged Go lexicon-promotion-scan.exe imports: kernel32.dll
+x64 packaged Go blocklist-manager.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\blocklist-manager.exe)
+x64 packaged Go blocklist-manager.exe imports: kernel32.dll
+ARM64 PIMETextService.dll: 0xAA64 (C:\dev\Yime\build_arm64\PIMETextService\Release\PIMETextService.dll)
+ARM64 PIMETextService.dll imports: ADVAPI32.dll, GDI32.dll, KERNEL32.dll, ole32.dll, OLEAUT32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll
+ARM64 PIMERegistrationStatus.exe: 0xAA64 (C:\dev\Yime\build_arm64\PIMETextService\Release\PIMERegistrationStatus.exe)
+ARM64 PIMERegistrationStatus.exe imports: KERNEL32.dll, ole32.dll, OLEAUT32.dll
+PE architecture verification passed.
+Package ready: C:\dev\Yime\.tmp\pr57-dual-product-20260916\rime-build\rime-pime
+PASS: Rime source build and simple package only; no installed maintenance invoked.

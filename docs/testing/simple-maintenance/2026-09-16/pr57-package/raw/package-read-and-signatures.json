@@ -1,0 +1,245 @@
+{
+    "passed":  true,
+    "scope":  "Read-Package and static signature inspection only; Setup was not executed",
+    "products":  [
+                     {
+                         "product":  "yimecore",
+                         "files":  65,
+                         "read_package_passed":  true,
+                         "signatures":  [
+                                            {
+                                                "path":  "payload/x86/YimeRegisteredHostTests.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/x86/YimeTextServiceExperiment.dll",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/x86/YimeTextServiceRegistration.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/x64/YimeRegisteredHostTests.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/x64/YimeTextServiceExperiment.dll",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/x64/YimeTextServiceRegistration.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeBroker.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreBlocklistManager.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreDiagnostics.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreExplain.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreIndependenceAudit.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreInputToolbar.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreLayoutDesigner.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreLearningManager.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreLexiconCenter.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreLexiconManager.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreProfessionalLexicon.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCorePromotionScan.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreReverseLookup.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreSentenceRegression.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreSettingsTool.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreSystemLexiconAudit.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreToolCenter.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreTrainer.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/bin/YimeCoreTrialRuntime.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            }
+                                        ]
+                     },
+                     {
+                         "product":  "rime-pime",
+                         "files":  160,
+                         "read_package_passed":  true,
+                         "signatures":  [
+                                            {
+                                                "path":  "payload/PIMELauncher.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/x86/PIMERegistrationStatus.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/x86/PIMETextService.dll",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/x64/PIMERegistrationStatus.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/x64/PIMETextService.dll",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/blocklist-manager.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/diagnostics-tool.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/input-toolbar.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/lexicon-manager.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/lexicon-promotion-scan.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/reverse-lookup.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/server.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/settings-tool.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/system-lexicon-audit.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/tool-hub.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/yime-layout-designer.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/yime-trainer.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/input_methods/yime/rime.dll",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/input_methods/yime/rime_deployer.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            },
+                                            {
+                                                "path":  "payload/go-backend/input_methods/yime/rime_dict_manager.exe",
+                                                "status":  "NotSigned",
+                                                "signer":  null
+                                            }
+                                        ]
+                     }
+                 ]
+}

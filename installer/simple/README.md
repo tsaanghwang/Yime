@@ -29,7 +29,7 @@ Codex 安装版本的进程名可能是 `ChatGPT.exe`，应根据实际进程路
 
 `Test-PackageValidation.ps1` 检查必需载荷和包入口；`Test-ProfileRemoval.ps1` 检查用户配置移除失败后停止清理；`Test-Manage.ps1` 检查单套/双套选择和失败停止；`Test-Startup.ps1` 检查临时系统启动项；日志与进程等待分别由 `Test-Logging.ps1`、`Test-ProcessWait.ps1` 覆盖。上述六组进入 CI。`Test-Product.ps1` 另需真实包，在隔离目录检查文件归属、私有字体占用和重装；它不是当前 CI 的自动制包或实机安装步骤。
 
-这些检查不代替真实安装、输入和重启验收。PR #57 修复已合入并通过 CI，但包含该修复的新完整包尚未交付，不能将旧包通过记录当作新包验收。
+这些检查不代替真实安装、输入和重启验收。包含 PR #57 的完整双产品包、来源证明和本地验证范围见 [HANDOFF](HANDOFF.md)；本轮仅交付，不发起安装或维护，不能将旧包通过记录当作新包验收。
 
 ## 交付顺序
 

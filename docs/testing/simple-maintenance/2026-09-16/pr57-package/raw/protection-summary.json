@@ -1,0 +1,6 @@
+{
+  "passed": true,
+  "registration_and_default_preserved": true,
+  "registry_key_count": 19,
+  "scope": "Read-only out-of-process StdRegProv hashed comparison around both source builds and local package tests; no user content captured"
+}

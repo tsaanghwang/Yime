@@ -1,0 +1,102 @@
+[
+  {
+    "test": "Test-PackageValidation",
+    "command": [
+      "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "tools/powershell/run_checked.py",
+      "--script",
+      "installer/simple/Test-PackageValidation.ps1",
+      "--edition",
+      "ps5"
+    ],
+    "cwd": "C:\\dev\\Yime",
+    "edition": "ps5",
+    "edition_reason": "Match Windows PowerShell 5.1 used by simple-installer CI",
+    "environment_overrides": {
+      "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-PackageValidation\\temp",
+      "TMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-PackageValidation\\tmp",
+      "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-PackageValidation\\appdata",
+      "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-PackageValidation\\localappdata"
+    },
+    "started_utc": "2026-09-16T09:10:51.772514+00:00",
+    "finished_utc": "2026-09-16T09:10:52.892839+00:00",
+    "exit_code": 0,
+    "stdout": "Test-PackageValidation.stdout.log",
+    "stderr": "Test-PackageValidation.stderr.log"
+  },
+  {
+    "test": "Test-ProfileRemoval",
+    "command": [
+      "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "tools/powershell/run_checked.py",
+      "--script",
+      "installer/simple/Test-ProfileRemoval.ps1",
+      "--edition",
+      "ps5"
+    ],
+    "cwd": "C:\\dev\\Yime",
+    "edition": "ps5",
+    "edition_reason": "Match Windows PowerShell 5.1 used by simple-installer CI",
+    "environment_overrides": {
+      "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-ProfileRemoval\\temp",
+      "TMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-ProfileRemoval\\tmp",
+      "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-ProfileRemoval\\appdata",
+      "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-ProfileRemoval\\localappdata"
+    },
+    "started_utc": "2026-09-16T09:10:51.772284+00:00",
+    "finished_utc": "2026-09-16T09:10:52.405560+00:00",
+    "exit_code": 0,
+    "stdout": "Test-ProfileRemoval.stdout.log",
+    "stderr": "Test-ProfileRemoval.stderr.log"
+  },
+  {
+    "test": "Test-Manage",
+    "command": [
+      "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "tools/powershell/run_checked.py",
+      "--script",
+      "installer/simple/Test-Manage.ps1",
+      "--edition",
+      "ps5"
+    ],
+    "cwd": "C:\\dev\\Yime",
+    "edition": "ps5",
+    "edition_reason": "Match Windows PowerShell 5.1 used by simple-installer CI",
+    "environment_overrides": {
+      "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Manage\\temp",
+      "TMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Manage\\tmp",
+      "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Manage\\appdata",
+      "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Manage\\localappdata"
+    },
+    "started_utc": "2026-09-16T09:10:51.772345+00:00",
+    "finished_utc": "2026-09-16T09:10:55.909354+00:00",
+    "exit_code": 0,
+    "stdout": "Test-Manage.stdout.log",
+    "stderr": "Test-Manage.stderr.log"
+  },
+  {
+    "test": "Test-ProcessWait",
+    "command": [
+      "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "tools/powershell/run_checked.py",
+      "--script",
+      "installer/simple/Test-ProcessWait.ps1",
+      "--edition",
+      "ps5"
+    ],
+    "cwd": "C:\\dev\\Yime",
+    "edition": "ps5",
+    "edition_reason": "Match Windows PowerShell 5.1 used by simple-installer CI",
+    "environment_overrides": {
+      "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-ProcessWait\\temp",
+      "TMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-ProcessWait\\tmp",
+      "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-ProcessWait\\appdata",
+      "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-ProcessWait\\localappdata"
+    },
+    "started_utc": "2026-09-16T09:10:51.772547+00:00",
+    "finished_utc": "2026-09-16T09:10:53.184841+00:00",
+    "exit_code": 0,
+    "stdout": "Test-ProcessWait.stdout.log",
+    "stderr": "Test-ProcessWait.stderr.log"
+  }
+]
