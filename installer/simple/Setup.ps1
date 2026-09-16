@@ -140,8 +140,9 @@ $stage='stop selected product background programs'
     }
     # Registration tools run from the new package even after an interrupted copy.
     $stage='unregister selected product'
+    # Remove the user profile before its COM server; refusal must keep both files and registration.
+    if(-not [SimpleInputProfile]::InstallLayoutOrTip($tip,1)){throw 'Could not remove the input profile; product files and COM registration were kept'}
     if($hasRegistration){Set-Registration $false (Join-Path $package.root $(if($installedEntry){'native'}else{'payload'}))}
-    $null=[SimpleInputProfile]::InstallLayoutOrTip($tip,1)
     Set-UserStartup ''
     $stage='remove selected product files'
     Remove-ProductDirectory $root $product.id

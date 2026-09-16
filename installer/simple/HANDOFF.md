@@ -4,6 +4,12 @@
 
 ## 当前任务
 
+**2026-09-16：PR #55 审查问题修复。** 开发分支 `codex/simple-installer-pr55-fixes` 从收尾后的主线创建，涉及 YimeCore 包资源校验及两套产品的卸载失败处理：补齐图标和三个必需工具的校验；Windows 拒绝移除用户输入配置时，在 COM 注销、启动项清理和文件删除之前停止。新增 `Test-PackageValidation.ps1`、`Test-ProfileRemoval.ps1`，纳入 `simple-installer` CI 门禁。
+
+开发端已用 Windows PowerShell 5.1 隔离回归复现并验证修复，维护分发和日志回归通过；这不是实机安装或输入验收。本轮尚未交付包含修复的新安装包，测试端当前无新增执行任务。下方历史 ZIP 不包含本次修复，后续实机测试须另行发布通过 CI 的完整包及哈希。
+
+## 已完成阶段记录
+
 **2026-09-15 本阶段已完成。** PR #55 的主线代码及 CI 已通过；测试端已同步主线 `86005b58`，回传 `1509b860` 已收取，见[同步报告](../../docs/testing/simple-maintenance/2026-09-15/main-sync/TEST-RESULT.md)和[阶段收尾复核](../../docs/testing/simple-maintenance/2026-09-15/main-sync/REVIEW.md)。测试端当前无待执行任务。同步执行单和下方安装步骤仅作历史记录，不因收尾文档合并再要求测试机同步、安装或重测。下一阶段另建开发分支并发布新的具体任务。
 
 **本轮验收已完成，测试端无需再次安装或重测。** 已收取安装/重启报告 `85aec9c4` 和应用补充 `7ab9566f`，并补齐收包记录 `50f70a9c`。两套产品在“计算机”的 Codex 与记事本中重启前后均可输入，原始日志和 10 个证据文件校验通过，见 [开发端复核](../../docs/testing/simple-maintenance/2026-09-14/source-candidate-test/REVIEW.md)。保留两套安装，正常使用；下方下载和操作步骤作为本轮已执行记录，不是新任务。

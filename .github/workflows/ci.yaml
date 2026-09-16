@@ -304,6 +304,12 @@ jobs:
     needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
+      - name: Test required package resources without installed products
+        shell: powershell
+        run: .\installer\simple\Test-PackageValidation.ps1
+      - name: Test profile removal failure preserves installed files and COM
+        shell: powershell
+        run: .\installer\simple\Test-ProfileRemoval.ps1
       - name: Test real system startup values in isolated test keys
         shell: powershell
         run: .\installer\simple\Test-Startup.ps1
