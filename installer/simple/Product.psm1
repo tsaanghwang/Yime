@@ -51,7 +51,7 @@ function Read-Package([string]$Root){
         if($product.id -eq 'rime-pime' -and -not $seen.Contains($arch+'/PIMERegistrationStatus.exe')){throw 'Missing native registration verifier'}
     }
     if(-not $seen.Contains($product.exe.Replace('\','/'))){throw 'Missing runtime'}
-    $required=if($product.id -eq 'yimecore'){@('bin/YimeBroker.exe','indexes/full.yidx','indexes/variable.yidx','indexes/shorthand.yidx','data/yime_pinyin_codes.tsv','data/fonts/YinYuan-Regular.ttf')}else{@('backends.json','go-backend/server.exe','go-backend/input_methods/yime/ime.json','go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf')}
+    $required=if($product.id -eq 'yimecore'){@('bin/YimeBroker.exe','bin/YimeCoreInputToolbar.exe','bin/YimeCoreTrainer.exe','bin/YimeCoreToolCenter.exe','profile-icon.ico','indexes/full.yidx','indexes/variable.yidx','indexes/shorthand.yidx','data/yime_pinyin_codes.tsv','data/fonts/YinYuan-Regular.ttf')}else{@('backends.json','go-backend/server.exe','go-backend/input_methods/yime/ime.json','go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf')}
     foreach($name in $required){if(-not $seen.Contains($name)){throw ('Missing product resource: '+$name)}}
     return [pscustomobject]@{root=$root;manifest=$manifest;product=$product}
 }
