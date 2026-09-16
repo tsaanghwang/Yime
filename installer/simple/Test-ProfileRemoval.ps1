@@ -26,10 +26,19 @@ public static class SimpleInputProfile {
 function Set-Registration([bool]$Install,[string]$Payload){
     if([SimpleInputProfile]::Calls -ne 1){throw 'COM unregistered before profile removal'}
     if($Install){throw 'Unexpected registration'}
+    if($Payload -cne $expectedPayload){throw ('Wrong maintenance resource path: '+$Payload)}
     $script:events.Add('unregister')
 }
-function Set-UserStartup([string]$Value){$script:events.Add('startup')}
-function Remove-ProductDirectory([string]$Root,[string]$Product){$script:events.Add('files')}
+function Set-UserStartup([string]$Value){
+    if([SimpleInputProfile]::Calls -ne 1 -or -not [SimpleInputProfile]::Result){throw 'Startup cleared before successful profile removal'}
+    if($Value){throw 'Unexpected startup write'}
+    $script:events.Add('startup')
+}
+function Remove-ProductDirectory([string]$Root,[string]$Product){
+    if([SimpleInputProfile]::Calls -ne 1 -or -not [SimpleInputProfile]::Result){throw 'Files removed before successful profile removal'}
+    if($Root -cne 'C:\synthetic-product' -or $Product -cne $productId){throw 'Wrong product directory selected'}
+    $script:events.Add('files')
+}
 function Remove-Item {throw 'Unexpected data deletion'}
 $Action='Install';$ResetData=$false
 $package=[pscustomobject]@{root='C:\synthetic-package'}
@@ -38,6 +47,7 @@ foreach($productId in @('yimecore','rime-pime')){
     $product=[pscustomobject]@{id=$productId}
     $tip='synthetic-'+$productId
     foreach($installedEntry in @($false,$true)){
+        $expectedPayload=Join-Path $package.root $(if($installedEntry){'native'}else{'payload'})
         foreach($hasRegistration in @($false,$true)){
             foreach($success in @($false,$true)){
                 $script:events=[Collections.Generic.List[string]]::new()
