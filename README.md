@@ -35,6 +35,33 @@ Save work and close applications using the selected input method before maintena
 
 Full mode retains the four-Yinyuan syllable structure. Variable mode merges eligible adjacent equal units within the syllable stem; shorthand mode further omits eligible middle-tone stem units. Initial and zero-initial boundaries remain explicit. See the [data and encoding reference](docs/YIME_DATA_FORMAT_REFERENCE.md#首音干音与三模式派生).
 
+### Shouyin → key mapping
+
+In Yime, shouyin are divided into real and virtual classes. In phonetic terms, a real shouyin corresponds to a
+traditional non-zero initial, while a virtual shouyin corresponds to a zero initial; Yime's actual encoding differs
+from mainstream Pinyin input methods and is listed below. Under the Chinese-phonology convention used by this
+project, zero initials are represented in *Hanyu Pinyin* by the separator `'` and by initial `y` or `w`; all three
+are carried by virtual shouyin in Yime. A virtual shouyin also marks an explicit syllable boundary in continuous input.
+
+| Shouyin | Key | Shouyin | Key |
+|---------|-----|---------|-----|
+| b | `b` | p | `p` |
+| m | `-` | f | `[` |
+| d | `]` | t | `t` |
+| n | `n` | l | `\` |
+| g | `g` | k | `q` |
+| h | `h` | zh | `7` |
+| ch | `8` | sh | `9` |
+| r | `0` | z | `6` |
+| c | `5` | s | `4` |
+| j | `3` | q | `2` |
+| x | `1` | y (virtual shouyin) | `y` |
+| w (virtual shouyin) | `=` | `'` (virtual shouyin; separator) | `'` |
+| ɥ (virtual shouyin before ü) | `` ` `` | ŋ (contextual shouyin of 啊) | `'` |
+| ɹ (contextual shouyin of 啊; not Pinyin initial z) | `` ` `` |  |  |
+
+### Candidate selection keys
+
 - Bare `0`–`9` always enter composition codes, including while candidates are visible.
 - Ordinal candidate selection uses `Shift+1`–`Shift+9`, displayed as `⇧1`–`⇧9`. `Shift+0` does not select a candidate.
 - Menus and tools depend on the selected product. The detailed tool descriptions in the [user guide](docs/YIME_USER_INSTALL_GUIDE.md) apply to Rime/PIME; they are not a claim of complete feature parity.
