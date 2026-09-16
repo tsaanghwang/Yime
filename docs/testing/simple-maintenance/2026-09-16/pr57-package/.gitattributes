@@ -1,0 +1,5 @@
+# These files are exact copies of immutable package/release metadata.
+# Preserve uploaded bytes rather than normalizing Windows line endings.
+BUILD-PROVENANCE.json -text !eol -whitespace
+release-artifacts.json -text !eol -whitespace
+SHA256SUMS.txt -text !eol -whitespace
