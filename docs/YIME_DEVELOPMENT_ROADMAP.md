@@ -13,6 +13,7 @@
 | 基线 | 已完成范围 | 证据 |
 |---|---|---|
 | 双产品边界 | 独立运行、文件与用户状态归属；允许单装和同装，不要求功能或版本同步 | [产品计划](project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)、[架构](YIME_ARCHITECTURE.md) |
+| 候选池动态覆盖 | 2026-07-28 的覆盖分层与长串迁移闭环已完成；残差是持续改进队列，不重开删除式整理 | [完成记录](DYNAMIC_CANDIDATE_COVERAGE.md) |
 | 离线数据归仓 | 编码和生成工具由本仓维护，外部大输入通过内容锁归档提供 | [离线入口](../tools/lexicon/README.md)、[数据边界](project/YIME_REPOSITORY_DATA_BOUNDARY.md) |
 | 简版维护 | 单套/双套安装、卸载、重装与显式测试数据重置；维护与重启结果已收取 | [维护验收](../installer/simple/VALIDATION.md) |
 | 源码候选包交付 | 两套清理后源码构建；开发机及测试机所报告应用的重启前后输入通过 | [候选包复核](testing/simple-maintenance/2026-09-14/source-candidate-test/REVIEW.md) |
