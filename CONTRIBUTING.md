@@ -11,15 +11,16 @@
 ## 提交 Issue
 
 - 描述问题时请包含：目标产品、Windows 版本、产品版本／包身份、宿主位数、脱敏复现步骤、预期行为与实际行为。
-- Rime/PIME 问题可在获得用户许可后检查其 `%APPDATA%\PIME\Rime\go_backend.log`；这不是 YimeCore 日志入口。不要直接上传完整日志、用户正文、编码、候选或学习内容，优先记录合成夹具结果和必要的脱敏错误字段。
+- Rime/PIME 问题可在获得用户许可后检查其 `%LOCALAPPDATA%\PIME\Logs\go_backend.log`；这不是 YimeCore 日志入口。不要直接上传完整日志、用户正文、编码、候选或学习内容，优先记录合成夹具结果和必要的脱敏错误字段。
 
 ## 开发环境
 
-详见 [README.zh-CN.md](README.zh-CN.md) 的"构建要求"章节。核心依赖：
+详见 [README.zh-CN.md](README.zh-CN.md#开发与验证) 和 [工具链锁](tools/toolchain.lock.json)。核心依赖：
 
 - Visual Studio 2022（CMake + C++ TSF）
-- Go 1.26.4（CI 和可复现构建版本；`go.mod` 的 1.21 是语言兼容下限）
-- Rust（PIMELauncher）
+- Go 1.26.4（CI 和可复现构建版本；`go-backend/go.mod` 的最低版本为 1.25）
+- Rust 的完整 `stable-i686-pc-windows-msvc` 主机工具链（PIMELauncher）
+- Python 3.14 离线工具环境；PowerShell 工作统一通过 [checked 入口](tools/powershell/README.md)，默认 PS7，兼容检查明确 PS5
 
 上述 PIMELauncher／根构建入口属于 Rime/PIME 产品。YimeCore 构包与隔离测试入口见 [tools/yimecore](tools/yimecore/README.md)，从当前源码和显式数据构建，不依赖已安装 Rime/PIME 或 PIMELauncher；具体工具链和目标范围由各自构包描述约束。
 
@@ -68,13 +69,14 @@
 - `main`：Yime 稳定主分支和发布基线
 - `yime-stable`：持续维护的集成分支
 - `codex/**`：任务分支命名空间，push 时同样触发 CI
+- `perf/i7-7820x-local`：测试端报告分支，按 [HANDOFF](installer/simple/HANDOFF.md) 回传，不能整分支回灌旧源码
 - `upstream` remote：EasyIME/PIME 上游历史，仅用于来源追踪和选择性同步
 
 ## Pull Request 流程
 
-1. 从适用基线创建 `codex/**` 特性分支
+1. 从最新 `main` 创建目标明确的 `codex/*` 分支，不接续已结束的旧实验分支
 2. 按影响范围选择 [测试与验证指南](docs/YIME_TESTING_GUIDE.md) 或 [YimeCore 测试入口](tools/yimecore/README.md)，保留 Go 稳定集 `go vet ./...` 和 `go test ./...` 等适用门禁；共同源变更覆盖两版受影响的产物，测试环境不得使用生产用户数据。
-3. Rime/PIME 构包使用仓库根 `build.bat` 及其 Win32/x64、Go、PE 门禁；YimeCore 使用当前范围允许的 `tools/yimecore/build-local-product.ps1` 和对应隔离验证，不通过构建或启动另一产品来证明本版可用。仅文档调整执行链接、差异与一致性检查，不为此构建或安装产品。
+3. Rime/PIME 构包使用仓库根 `Build.ps1`，串联 Win32/x64、Go、PE 门禁及简版制包；YimeCore 使用当前范围允许的 `tools/yimecore/build-local-product.ps1` 和对应隔离验证，再交给简版制包入口，不通过构建或启动另一产品来证明本版可用。仅文档调整执行链接、差异与一致性检查，不为此构建或安装产品。
 4. 提交 PR，标题使用 Conventional Commits 格式
 5. 等待 `core-build` 聚合门禁和 review 通过后合并
 
@@ -90,7 +92,7 @@
 
 源码验证不等于已安装生效。需要宣称修复在安装版生效时，必须针对目标产品取得构包、安装和受影响宿主的证据；真实安装、停进程、默认切换和数据操作只在已获授权的范围执行：
 
-- Rime/PIME 修复：依 [AGENTS.md](AGENTS.md) 核对安装版 `C:\Program Files (x86)\YIME\go-backend\server.exe` 等受影响二进制确已更新，以及本版 PIMELauncher／server 已按批准流程重启；不得凭源码测试推断旧安装已修复。
+- Rime/PIME 修复：依 [AGENTS.md](AGENTS.md) 核对实际安装根中的 `go-backend\server.exe` 等受影响二进制确已更新，以及本版 PIMELauncher／server 已按批准流程重启。简版当前安装根是 `C:\Program Files\Yime Rime-PIME`，旧 `C:\Program Files (x86)\YIME` 只适用于相应历史安装；不得凭源码测试推断旧安装已修复。
 - YimeCore 修复：核对本版 manifest、安装根、Runtime／Broker 和实际宿主加载的当前身份 TSF DLL，按变更范围完成注册／人工宿主及必要重启验收；不启动、停止、重新安装或改写生产 Rime/PIME 来验证自研版。
 - 未获安装授权时停在隔离验证和交接，明确“未安装／待实机验证”，不自行扩大任务。维护一版必须保护另一版和默认输入法，卸载也只能清理本版拥有的资源。
 

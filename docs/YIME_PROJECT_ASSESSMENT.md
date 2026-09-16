@@ -1,166 +1,61 @@
-# Yime 项目综合评估与收口报告
+# Yime 项目现状与验证边界
 
-> 评估日期：2026-07-22；文档状态复核：2026-07-28
->
-> 适用基线：`1.4.0-dev`，含 2026-07-22 的拆分 CI、布局设计器和安装态复核
->
->
->
-> 相关文档：[架构](YIME_ARCHITECTURE.md) | [测试](YIME_TESTING_GUIDE.md) | [发布与签名](YIME_RELEASE_AND_SIGNING.md) | [原生 UI](YIME_NATIVE_UI_GUIDELINES.md)
+更新：2026-09-16。核对基线：`main` 的 `76376080`（PR #57 合并后）。影响范围：YimeCore、Rime/PIME 及共同离线数据工程。
 
-本文汇总近期两轮全面评估及连续修复的结果，用于回答三个问题：当前项目是否完整、已处理哪些系统性风险、正式发布前还缺少哪些验证。专题实现细节仍以各专项文档为准，本报告只维护结论、证据和未闭环事项。
+本文回答当前实现、交付与验证分别到了哪一步。具体实现见[架构](YIME_ARCHITECTURE.md)，后续顺序见[路线图](YIME_DEVELOPMENT_ROADMAP.md)，测试方法见[测试指南](YIME_TESTING_GUIDE.md)。带日期的报告只证明对应源码、包和机器上的结果。
 
-## 1. 总体结论
+## 当前结论
 
-Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入“开发版可持续验证、正式版具备明确发布门禁”的阶段。输入法核心、原生工具、用户词库、反查、语言栏命令、异步部署、构建和 CI 均已有回归保护。
+Yime 已形成两个可独立构建、安装和运行的 Windows 输入法产品。YimeCore 是主要开发线，Rime/PIME 持续稳定维护；两套可单装或同装，各自拥有运行程序、注册身份、安装目录和用户数据。共同部分是规范源数据、离线生成工具及适用的测试规范，不是已安装的服务或学习库。
 
-当前不应把“CI 绿色”等同于“正式发布完成”。开发包允许未签名；公开发行仍必须完成可信签名和安装态 TSF 冒烟测试。
+简版安装器及清理后源码候选包已完成所报告范围内的开发机和测试机验收。项目当前仍处于开发与受控测试阶段：已有输入成功记录，不等于所有平台、性能门槛或公开发行条件全部通过。
 
-| 领域 | 当前状态 | 结论 |
-|------|----------|------|
-| 输入法核心与 Rime | 稳定 | 原生分页权、候选数回读、方案切换和用户词库链路有守卫 |
-| Win32 工具 UI | 完整度较高 | 高级布局、设置、反查、词库、审查、屏蔽、诊断和工具箱均为原生窗口，主要列表与缩放布局已统一 |
-| 活动会话刷新 | 已完成 | 设置、词库和 redeploy 使用独立累积修订号，不再互相覆盖 |
-| 语言栏 | 已清理 | 保留静态标签和稳定命令 ID；高风险点击路径有回归测试 |
-| 构建与打包 | 稳定 | 9 个 Go EXE 可复现、统一图标和 VERSIONINFO、包内不携带 Go 源码 |
-| CI 与测试 | 完整度较高 | 构建契约、Rust、原生构建、Go、真实 Rime、MSYS2 race 和安装器已拆分；`core-build` 是聚合 required check |
-| 安装态验证 | 前一开发身份已复核 | 07-12／07-22 的真实安装结论属于 `1.4.0-dev`；`1.4.0-dev.1` 尚未安装或继承该结论，详见[07-22 安装态复核](YIME_INSTALL_VERIFICATION_2026-07-22.md) |
+| 领域 | 已有事实 | 适用边界 |
+|---|---|---|
+| YimeCore | 独立 Runtime、Broker、x64/x86 TSF、三模式索引及配套工具进入源码构建链 | x86 指 x64 Windows 下的 WOW64 应用；不代表独立 32 位 Windows 产品 |
+| Rime/PIME | Go 产品逻辑、librime、Rust Launcher、x64/x86 TSF 和原生工具持续维护 | 原生 Rime 拥有候选分页，不能用 YimeCore 或纯 Go 结果替代其回归 |
+| 离线数据 | 规范读音、正式音节编码、唯一布局投影和三模式生成在本仓维护 | 大型外部输入通过内容锁归档提供，不读取其他 Git 工作树 |
+| 安装维护 | `installer/simple/` 支持单套/双套安装、卸载、重装及显式测试数据重置 | 生产数据迁移、自动备份恢复尚未纳入简版工程 |
+| 最新源码 | PR #57 的包完整性和卸载失败处理修复已合入主线 | 对应 CI 通过；包含该修复的新完整包尚未交付，不能继承旧包实机结果 |
+| 平台 | 通用安装包面向 x64 Windows 和 WOW64 应用；ARM64 有独立源码实验入口 | ARM64 原生 Runtime/Broker、完整包及真实宿主验收未完成 |
+| 正式发行 | 开发构建、清单及 CI 检查存在 | 简版工程尚无完成的可信签名发行流水线与最终签名包验收 |
 
-## 2. 两轮评估已处理事项
+## 最近完成的工程进展
 
-### 2.1 工具与用户体验
+| 日期 / 基线 | 完成内容 | 证据 |
+|---|---|---|
+| 2026-09-14，`5c9a5d77` | 简版入口等待管理员安装进程正常结束；单套、双套及交叉维护已记录成功结果 | [维护验证汇总](../installer/simple/VALIDATION.md)、[原始报告索引](testing/simple-maintenance/2026-09-14/README.md) |
+| 2026-09-14，`a4fa6f76` 对应源码候选包 | 清理后两套程序重新构建、交付；测试机在 Codex 和记事本重启前后输入正常 | [开发端验收](testing/simple-maintenance/2026-09-14/source-candidate/DEVELOPMENT.md)、[测试端复核](testing/simple-maintenance/2026-09-14/source-candidate-test/REVIEW.md) |
+| 2026-09-15，PR #55 / #56 | 双产品阶段合入主线；测试分支同步与回传收尾；旧实验编排退役 | [阶段收尾](testing/simple-maintenance/2026-09-15/main-sync/REVIEW.md)、[工程清理记录](project/ENGINEERING_SLIMMING_2026-09-15.md) |
+| 2026-09-16，PR #57 | 拒绝缺少图标或必需工具的 YimeCore 包；输入配置移除失败时，在 COM 注销、启动项清理和文件删除前停止 | [PR #57](https://github.com/tsaanghwang/Yime/pull/57)、[主线 CI](https://github.com/tsaanghwang/Yime/actions/runs/35041052421) |
 
-- 词库管理补齐连续添加、编辑、删除、权重步进、系统词重复拒绝和用户词库应用链路。
-- 统一原生对话框中文按钮和居中布局，消除残留的 `OK`、`Yes/No`。
-- 反查工具重新排列查询控件，统一横排宽度并让内部布局撑开主窗体。
-- 设置、词库和反查等工具改为 Go + Win32；PowerShell 只保留在开发、测试、构建、安装和维护路径。
-- 词库、反查、系统词库审查和屏蔽词表使用带表头的 ListView；工具箱和主要子工具支持内容适配或响应式布局。
-- 设置工具提供带清单与 SHA-256 校验的可移植用户数据备份/恢复，恢复前自动创建安全快照并在完成后重建、通知运行会话。
-- 设置和词库部署移到后台 goroutine，通过 `WM_APP` 回到 UI 线程，避免窗口卡顿和控制台闪烁。
-- 语言栏“同步/重新部署”收进受保护的“数据维护”子菜单并二次确认；显式重新部署改为外部后台构建、当前方案校验和安全边界会话重建，重复点击被拦截，不再在宿主回调中全局重启 librime。
+最新主线的 `core-build` 聚合检查已成功。CI 包含构建契约、离线词库、Rust、Go、真实 Rime 三分片及覆盖核验、race、原生 PIME 构建和简版安装器隔离回归；它不自动产出已验收的完整双产品安装包，也不等同于 YimeCore 安装态宿主验收。
 
-### 2.2 输入法与宿主集成
+## 实机结果应如何使用
 
-- 用户词库重新接入三种 Rime 方案，并在应用后通知已存在的输入会话。
-- `yime_runtime_change.json` 从单一 scope 改为设置、词库和 redeploy 的独立累积修订号。
-- 通知写入增加跨进程锁、旧格式迁移、损坏文件备份、Windows 文件替换重试和多会话独立消费。
-- 语言栏实验性动态移动、排序和固定 GUID 逻辑已清理；命令解析继续兼容宿主通过 `data.id` 上报子菜单点击。
-- 保持 Rime 拥有原生候选分页，不使用 Go 侧切片绕过候选数配置。
-- `IME.processKey` 与 `onCommand` 入口加互斥锁串行化，消除并发按键与命令访问共享状态的数据竞争；生产 TSF 公寓线程本就串行，该锁为无竞争零开销，但使 race 检测器认可的并发场景也安全。
+当前已交付并验收的源码候选包身份在 [HANDOFF](../installer/simple/HANDOFF.md) 中记录。两套产品在开发机完成安装文件哈希、x64/x86 注册和运行路径检查，用户确认重启前后输入正常；测试机确认的应用为 Codex 与记事本，Word 未报告结果。不能将该记录扩大为全部应用通过。
 
-### 2.3 构建、CI 与发布
+开发机曾在 YimeCore 首次注册时遇到 `0x800700B7`，随后重试成功。原始失败保留，原因尚未定论。文件占用导致取消后正常重启再维护成功也是实际条件，不能写成始终支持不重启替换。
 
-- Go 构建默认使用仓库内 `GOCACHE`/`GOTMPDIR`，降低临时目录被策略阻止或无权限的概率。
-- 9 个 Go EXE 使用稳定版本、`-trimpath -buildvcs=false`、统一 Yime 图标和 VERSIONINFO；连续构建哈希一致。
-- 打包脚本递归清理复制目录中的 `.go` 文件，避免发布包泄露源码并防止 `go test ./...` 重复执行打包副本。
-- CI 增加反查测试、根包测试、Rust 格式检查和 CTest 实际执行。
-- 受保护标签发布流程设计为强制导入可信签名证书；临时 PFX 在导入后删除。当前 tag 构包仍硬阻断，尚未生成签名发布物。
-- 签名前检查私钥、有效期、RSA 和代码签名 EKU；签名后检查签名者指纹及时间戳。
-- CI 明确区分带提交 SHA 的 `YIME-unsigned-test-installer-{sha}` 和 `YIME-signed-installer`。
-- CI 已拆为可独立重跑的并行作业，`installer-package` 只消费全部前置门禁通过的原生制品，`core-build` 聚合最终结论；普通分支制品名为 `YIME-unsigned-test-installer-{sha}`。
-- 新增“高级布局”原生工具，可复制、试打、保存并原子应用个人布局；布局应用同步重建三套系统/用户词典并迁移学习记录。
-- 修复 Win32 剪贴板写入失败路径中的 `HGLOBAL` 泄漏，以及 Rust 集成测试临时目录泄漏。
-- 修复开发卸载残留卸载项导致 `$INSTDIR` 变空、文件误写盘符根目录的问题；安装初始化保留默认路径并增加二次兜底。
-- Yime Go 后端进入 NSIS 必装主组件；安装器、日常构建和 CI 均不再构建或交付旧 Python、Node、McBopomofo、libchewing 输入法。
-- 应用用户词库前同步三套共享 schema 到用户目录，升级遗留的 `custom_phrase` 引用不会再阻断 full/shorthand 用户词。
-- 修复反查加载测试 fixture：单一等长真源重构后 `full` 列需为 4 的倍数，旧 `b`/`zh` 短码改为 `~~dd`/`zzzz` 等合规等长码。
-- 配置本机 MSYS2 UCRT64 GCC 16.1.0（`go env CC` 持久化），`go test -race ./...` 全量通过，补齐此前缺失的竞态检测完成证明。
-- 修复 Win32 `PIMELauncher` 重建链路：Corrosion 升级到 v0.6.1 并在根 `CMakeLists.txt` 固定 `Rust_TOOLCHAIN=stable-i686-pc-windows-msvc`（host==target==i686，消除跨编译时 build-script 被链 i686 库导致的 LNK4272/145 个未解析符号）；前置为 `rustup toolchain install stable-i686-pc-windows-msvc`。
-- 2026-07-14 复评收口：Win32 回调地址改用显式结构体复制，`go vet ./...` 恢复绿色；CI 固定 Go 1.26.4，并在执行关键测试前逐项确认测试名存在；新增 `tools/test-go-race.ps1` 固化 CGO/GCC/PATH/缓存环境；开发包版本从历史 `1.3.0-beta2` 调整为 `1.4.0-dev`。
-- 2026-07-15 当日曾将版本切到 `1.4.0` 并以旧聚合作业名 `build` 做发布演练；后续开发先恢复 `1.4.0-dev`，2026-09-07 再推进到 `1.4.0-dev.1`，当前聚合门禁名为 `core-build`。当日 32 位 `SysWOW64\\charmap.exe` 宿主人工烟雾测试仍作为历史验证记录保留。
-- 2026-07-15 未签名发布演练发现并修复标准安装器的锁定 DLL 升级缺陷：旧逻辑会递归删除后以退出码 2 中止，留下部分安装；新逻辑使用 `.new` 暂存和 `/REBOOTOK` 原位替换。修复后安装器返回 0，YIME-only 目录、版本、许可证、注册表和启动项均通过核对；当时被占用的 x64 DLL 进入重启替换队列。该历史待办已由 2026-07-22 安装态复核关闭：安装树无 `.new` 文件，x86/x64 DLL 均与当前构建物一致。详见[1.4.0 发布演练](YIME_RELEASE_REHEARSAL_2026-07-15.md)和[7 月 22 日安装态复核](YIME_INSTALL_VERIFICATION_2026-07-22.md)。
+更早的专项报告继续保留自己的结论：
 
-## 3. 固化的架构约束
+- [local.13 多宿主矩阵](project/YIMECORE_TEST_PC_MULTI_HOST_REPORT_2026-09-11.md)：记事本、Word、Firefox x86、Notepad++ x86 的三模式行为通过；保护对照暂缓、整体未封存，不证明新包 L6 完成。
+- [i7-7820X 性能报告](project/YIMECORE_I7_7820X_NATIVE_BENCHMARK_RESULT_2026-09-09.md)：E1/E2 通过，E3 学习开销门槛未稳定通过；后续安装输入成功没有改变这一性能结果。
+- 7 月的 Rime/PIME 安装、签名演练和宿主报告属于各自旧版本；不作为当前简版包、当前产品身份或正式签名发行的通过证明。
 
-以下约束不得为了局部问题而绕开：
+## 尚未完成与后续边界
 
-1. 真实 Rime 会话继续拥有候选分页权，`nativeBackend.UsesBackendCandidatePaging()` 保持为 `true`。
-2. Go 的 `candidatePageSize` 必须通过 `rimeState.PageSize` 与 Rime `menu.page_size` 回读同步。
-3. 语言栏菜单 ID、反查 ID 或宿主点击解析发生变化前，先增加具体点击路径的回归测试。
-4. 用户工具运行时不得调用 PowerShell；耗时工作不得阻塞 Win32 UI 线程。
-5. 活动会话通知是广播状态，不是单消费者队列；每个 IME 会话独立记录已处理修订号。
-6. 开发包和发行包必须明确区分，未签名开发包不得作为公开正式版本上传。
-7. 源码修复只有在重新构建、安装并重启相关进程后，才算完成安装态验证。
+| 事项 | 当前状态 | 后续完成条件 |
+|---|---|---|
+| PR #57 修复的包交付与安装验证 | 源码及 CI 通过，未交付新完整包 | 按新交接指定包来源、SHA-256 和实际验证范围；旧 ZIP 不作替代 |
+| YimeCore 性能与封存 | 保留 E3 失败及多宿主未封存的历史结论 | 针对明确的新基线改进并重新记录相关结果，不能改写旧门槛或旧证据 |
+| 更广泛 x64 / ARM64 兼容性 | 已识别 x64 测试机；ARM64 没有已识别原生验收机器 | 使用批准目标及当前身份的新产物，分别取得原生执行与宿主证据 |
+| 正式签名发行 | 未完成 | 实现可信签名制包与验证，对最终产物重新进行安装、输入和维护验收 |
+| 生产用户数据维护 | 简版默认保留本产品数据，显式重置限所选产品 | 单独设计并验证迁移、备份和恢复，不作为当前开发测试重装的前置条件 |
+| 读音审查与候选质量 | 来源、编码与回放工具存在，内容维护长期进行 | 有来源的裁决与可撤销修改，按受影响产品验证；不凭词条数量宣布全部完成 |
 
-## 4. 验证基线
+## 文档与交接规则
 
-本轮已通过：
+后续从最新 `main` 建立目标明确的 `codex/*` 分支。测试报告继续通过 `perf/i7-7820x-local` 和 `docs/testing/` 回传；大包经明确的 GitHub artifact/Release URL 交付。当前任务、包身份和是否需要测试机操作只在 [HANDOFF](../installer/simple/HANDOFF.md) 维护。
 
-```powershell
-cd go-backend
-go vet ./...
-go test ./... -shuffle=on -count=2 -timeout 120s
-go test -race ./... -timeout 300s
-# 或从仓库根目录运行：.\tools\test-go-race.ps1
-
-cd ..\PIMELauncher
-cargo fmt --check
-cargo test --verbose
-
-cd ..
-ctest --test-dir build -C Release --output-on-failure
-git diff --check
-```
-
-验证结果：
-
-- Go 全量测试通过，运行时通知并发压力测试连续 20 轮通过。
-- Go 竞态检测全量通过：本机 MSYS2 UCRT64 GCC 16.1.0 已配置（`go env CC`），`go test -race ./...` 全部通过；并发按键与命令测试 `TestConcurrentKeyAndCommandNoDataRace` 不再报告数据竞争。
-- Rust 11 个单元测试和 2 个集成测试通过。
-- CTest 3/3 通过。
-- 9 个 Go EXE 连续两次构建 SHA-256 一致。
-- NSIS 开发安装包构建成功，包内未发现 `.go` 源码。
-- 上一轮远端 GitHub Actions 构建成功。
-- 2026-07-11 使用未签名开发包完成真实安装；Go + Win32 输入路径响应流畅，新增“云笺试码”“笺砚验码”后可在活动会话直接出词。
-- 2026-07-12 安装态验证清单逐项跑完并留痕（[验证留痕](YIME_INSTALL_VERIFICATION_2026-07-12.md)）：重启后干净全量重装通过，`PIMELauncher.exe`/x86 DLL/x64 DLL 构建↔安装哈希全一致；重启自启动实测（开机 27 秒内 PIMELauncher 自动拉起）；7 个工具入口启动不崩且 SAC 强制模式未阻止；TSF TIP 注册指向安装 DLL，`go_backend.log` 有真实组词/选词/上屏与语言栏模式按钮更新记录；CodeIntegrity 无 3118，历史 3033/3077 为未签名 `server.exe` 的 SAC 审计（当前已放行、14h+ 无新增）；runtimechange 与全 yime 包 `-race -count=1` 全绿。
-
-发行状态补充清单：
-
-- **待办——可信签名**：证书正在办理，尚未生成和验证公开受信任的完整签名安装包。
-- **待办——签名后验收**：受签名事项阻塞；签名完成后必须重建、重装并重新执行 TSF、工具入口、语言栏菜单和 CodeIntegrity 清单。
-- **已完成——真实 x86 宿主烟雾测试**：2026-07-15 已在 `C:\Windows\SysWOW64\charmap.exe` 中完成用户人工验证，暂未发现激活、组字、候选或上屏问题；签名产物仍须按同一清单复跑。
-- **已完成——x64 charmap 宿主烟雾测试**：2026-07-15 已在 `C:\Windows\System32\charmap.exe` 的搜索框和复制框完成组词与上屏；当前进程路径表明这是 x64 宿主，不能替代上一项 x86 验证。
-- ~~**仓库物理裁剪**：~~ 2026-07-15 已获明确授权并完成；旧 Python、Node、McBopomofoWeb、libchewing 目录及对应子模块记录已永久删除。
-
-## 5. 开发版与发行版边界
-
-| 场景 | 是否必须购买/使用公开受信任证书 | 要求 |
-|------|----------------------------------|------|
-| 开发者本机源码构建 | 否 | 标记为开发包，不公开发布 |
-| 受控测试机 | 否 | 可使用未签名包、内部 PKI 或显式部署的测试信任 |
-| GitHub 分支/PR 构建 | 否 | 产物名保持 `YIME-unsigned-test-installer-{sha}` |
-| 面向普通用户公开发布 | 是 | RSA Authenticode、时间戳、全文件签名验证 |
-| GitHub `v*` 标签发布 | 是 | 缺少证书时 CI 必须失败 |
-
-公开发布可选择受信任 CA 证书、Microsoft Artifact Signing，或在满足条件时申请 SignPath Foundation 开源签名。自签名证书只适用于开发和受控环境，不能作为公开分发方案。
-
-## 6. 剩余风险和下一步
-
-### 发布前必须完成
-
-- 将当前 `1.4.0-dev.1` 更新为实际发布版本并核对 `CHANGELOG.md`；只有准备创建正式标签时才切换为 `1.4.0`。
-- ~~执行一次未签名标准安装器发布演练。~~ 2026-07-15 已完成构建、连续哈希、标准安装器和原位升级验证；当时锁定的 x64 DLL 已在后续重启中完成替换，并于 2026-07-22 确认最终哈希一致且无待替换 `.new` 文件。
-- 对最终版本和签名后的新二进制重新执行安装态 TSF、工具入口、语言栏菜单及 CodeIntegrity 清单。
-- ~~在真实 TSF 宿主中验证激活、组字、选词、语言栏按钮和当时全部工具入口。~~ 2026-07-12 完成：`go_backend.log` 真实组词/上屏证据 + 当时 7 个工具入口启动验证；07-22 又完成含布局设计器的 9 个 Go EXE 安装态复核。
-- ~~检查 CodeIntegrity 日志没有新增 3033、3077 或 3118 阻止事件。~~ 2026-07-12 完成：无 3118；3033/3077 为未签名开发包的 SAC 审计（签名后应复查归零）。
-- ~~验证设置“应用并重建”和用户词库应用后，已有输入会话无需注销即可刷新。~~ 2026-07-12 完成：runtimechange 协议 `-race -count=1` 全绿（协议层）；2026-07-11 已有活动会话直接出词的安装态实证。
-- ~~验证“数据维护”全部可点击路径不会使宿主退出或静默无响应。~~ 2026-07-14 完成：重建安装后逐项点击同步、重新部署和目录入口，未发现异常；构建/安装 `server.exe`、`rime_deployer.exe` 和 x64 TSF DLL 哈希一致，相关进程已重启。
-
-签名完成后需复跑一次上述清单（签名会改变全部二进制哈希与 SAC 信誉状态），以[验证留痕](YIME_INSTALL_VERIFICATION_2026-07-12.md)为模板留新档。
-
-### 可接受的开发期限制
-
-- 未签名开发包可能被 Smart App Control 或企业 Application Control 阻止。
-- 真实 Rime 集成测试继续显式启用，避免普通测试共享本机 librime 全局状态。
-- C++ 调试在 Cursor 里仅 launch 可用；cpptools 1.33.4 的 `pickProcess` 与 Cursor QuickPick 不兼容，attach 配置需在 VS Code 里运行。`ms-vscode.cpptools` 不在 Cursor 的 Open VSX 市场，需从 VS Code Marketplace 下载 win32-x64 VSIX 离线安装。
-- Win32 `build/` 树重建依赖 `rustup toolchain install stable-i686-pc-windows-msvc`（`CMakeLists.txt` 已固定 `Rust_TOOLCHAIN`）；Corrosion v0.6.1 与锁定 crates 已纳入仓库，configure/build 不再要求 GitHub 或 crates.io 网络访问。
-- 本机 Smart App Control 为强制模式；未签名 `server.exe` 会产生 CodeIntegrity 3033/3077 审计事件（当前已放行）。在其它 SAC/WDAC 强制机上未签名开发包可能被直接阻止。
-
-## 7. 文档维护规则
-
-- 行为和进程边界变化：更新 [架构文档](YIME_ARCHITECTURE.md)。
-- 新增或调整测试门禁：更新 [测试指南](YIME_TESTING_GUIDE.md)。
-- Win32 布局、按钮或模态行为变化：更新 [原生 UI 规范](YIME_NATIVE_UI_GUIDELINES.md)。
-- 打包、签名或 CI 产物变化：更新 [发布与签名指南](YIME_RELEASE_AND_SIGNING.md)。
-- 用户数据格式变化：更新 [数据格式参考](YIME_DATA_FORMAT_REFERENCE.md)，并说明迁移兼容性。
-- 本报告只更新结论、验证状态和剩余风险，不复制专题文档的实现细节。
+文档更新、旧阶段合并或 CI 成功不会自动要求重装。新的安装态结论必须同时注明产品、源码/包身份、机器与实际应用；原始日志、哈希和失败结果保持原样。已完成阶段不恢复为历史补证或恢复链任务。
