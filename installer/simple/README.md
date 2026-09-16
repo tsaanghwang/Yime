@@ -25,12 +25,14 @@ Codex 安装版本的进程名可能是 `ChatGPT.exe`，应根据实际进程路
 
 `Build-Package.ps1` 接收 `Product`、`PayloadRoot`、全新的 `OutputRoot` 和 `Version`，只从产品载荷生成完整包；`Build-RimePackage.ps1` 从本仓库构建输出制作 Rime/PIME 包。根目录 `Build.ps1` 先构建再制 Rime/PIME 包。YimeCore 源码构建入口为 `tools/yimecore/build-local-product.ps1`，其输出再交给 `Build-Package.ps1`。
 
-仓库内 PowerShell 操作通过 `python tools/powershell/run_checked.py --script <脚本> --edition ps5 --params-file <UTF-8参数JSON>` 执行。
+仓库内 PowerShell 操作通过 `python tools/powershell/run_checked.py --script <脚本> --edition ps7 --params-file <UTF-8参数JSON>` 执行；简版安装器的 Windows PowerShell 5.1 兼容检查明确使用 `--edition ps5`。使用端运行完整包内的 CMD 入口，不需要 Python。
 
-`Test-Manage.ps1` 检查单套/双套选择和失败停止；`Test-Startup.ps1` 检查临时系统启动项；`Test-Product.ps1` 使用真实包在隔离目录检查文件归属、私有字体占用和重装。它们不代替真实安装、输入和重启验收。
+`Test-PackageValidation.ps1` 检查必需载荷和包入口；`Test-ProfileRemoval.ps1` 检查用户配置移除失败后停止清理；`Test-Manage.ps1` 检查单套/双套选择和失败停止；`Test-Startup.ps1` 检查临时系统启动项；日志与进程等待分别由 `Test-Logging.ps1`、`Test-ProcessWait.ps1` 覆盖。上述六组进入 CI。`Test-Product.ps1` 另需真实包，在隔离目录检查文件归属、私有字体占用和重装；它不是当前 CI 的自动制包或实机安装步骤。
+
+这些检查不代替真实安装、输入和重启验收。PR #57 修复已合入并通过 CI，但包含该修复的新完整包尚未交付，不能将旧包通过记录当作新包验收。
 
 ## 交付顺序
 
-开发端本地检查、卸载重装及实际输入验收 → 提交推送 → 对应 CI 成功 → 测试端独立环境安装和卸载验收。使用端只接受完整包，失败由开发端修复后重新交付。生产数据迁移和自动备份恢复留待后续，不作为当前安装前置条件。
+新运行载荷的交付顺序：开发端本地构建、制包及相应维护/输入验收 → 提交推送 → 对应 CI 成功 → 完整包交付 → 测试端按新交接执行独立环境验收。纯文档更新不启动安装或重复历史矩阵。使用端只接受完整包，失败由开发端修复后重新交付。生产数据迁移和自动备份恢复留待后续，不作为当前安装前置条件。
 
 本机已通过两套卸载、重装、文件哈希、x64/x86 注册及运行路径检查；用户已确认重启前后两套输入正常。测试端已完成单套、双套和交叉维护，保留占用后重启处理条件，详见 [验证记录](VALIDATION.md)。详见 [本轮交接](HANDOFF.md)。

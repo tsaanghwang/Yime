@@ -1,6 +1,6 @@
 # Yime 用户安装与使用指南
 
-安装、卸载、重装及数据重置统一见[双产品安装指南](../installer/simple/README.md)。当前候选包、SHA-256 和实测范围见[交接](../installer/simple/HANDOFF.md)与[验证记录](../installer/simple/VALIDATION.md)。当前通用包面向 x64 Windows 和 WOW64 应用；ARM64 安装包尚未交付。
+安装、卸载、重装及数据重置统一见[双产品安装指南](../installer/simple/README.md)。已交付候选包、SHA-256 和实测范围见[交接](../installer/simple/HANDOFF.md)与[验证记录](../installer/simple/VALIDATION.md)；已验收包可能早于最新源码，以交接标明的身份为准。当前通用包面向 x64 Windows 和 WOW64 应用；ARM64 安装包尚未交付。
 
 以下输入与工具说明针对 **Rime/PIME 产品**；YimeCore 的功能与菜单以其随包帮助为准。
 

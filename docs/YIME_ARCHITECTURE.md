@@ -1,812 +1,202 @@
-# 音元输入法架构文档
+# Yime 工程架构
 
-> 适用范围更新（2026-09-05）：本文现有进程图、PIME 协议、Rime 会话与部署描述属于 **Rime/PIME 版架构**，不是整个 Yime 项目的唯一运行架构。原图和历史技术记录保留，不改作 YimeCore 已实现能力的证据。
+本文按 2026-09-16 的当前源码、产品清单和简版安装协议整理。Yime 包含两套可独立安装、运行和维护的 Windows 输入法：**YimeCore 是主要开发线，Rime/PIME 是独立维护的稳定产品线**。它们共享规范源和离线工具，各自携带运行组件与生成资产，各自保存用户状态。
 
-当前关系见 [Yime 双独立产品开发计划](project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)：YimeCore 是主要开发线，Rime/PIME 版持续稳定维护；两版按可单独安装或同时安装、各自完整运行和维护、可写数据互不依赖的契约开发。YimeCore 的 TSF、Runtime、Broker 与静态数据边界见[本机产品契约](project/YIMECORE_LOCAL_PRODUCT_CONTRACT.md)，开发入口见[本机实施计划](project/YIMECORE_LOCAL_PRODUCT_IMPLEMENTATION_PLAN.md)。
+当前通用安装包面向 x64 Windows，并包含 x64 与 x86 TSF，后者用于 WOW64 应用。ARM64 使用独立源码实验入口，仍缺少原生目标验收和通用安装包交付。开发包已有实机记录，正式签名发布尚未完成；具体结论以[安装验证记录](../installer/simple/VALIDATION.md)和[当前交接](../installer/simple/HANDOFF.md)为准。
 
-源码与离线规范源可以共享，但本版不能借用另一版的已安装组件、可写目录或维护进程。不得依据本文旧的 PIME 构建、安装或重启说明自动操作生产 Rime/PIME 来完成 YimeCore 工作；真实 Rime 回归、可选行为对照与自研版无 Rime 独立验收按[测试指南的作用域](YIME_TESTING_GUIDE.md)分别执行和记证。
+## 1. 总体边界
 
-> 版本：2026-07-22
-> 配套文档：[项目综合评估](YIME_PROJECT_ASSESSMENT.md) | [可用性评估](YIME_USABILITY_ASSESSMENT.md) | [开发路线图](YIME_DEVELOPMENT_ROADMAP.md)
-
----
-
-## 1. 系统架构
-
-### 1.1 进程模型
-
-```
-┌──────────────────────────────────────────────────────────┐
-│  Windows TSF (Text Services Framework)                   │
-│    └── PIMETextService.dll (C++/COM, 32-bit)             │
-│          └── 通过 stdin/stdout JSON 协议与 server.exe 通信 │
-├──────────────────────────────────────────────────────────┤
-│  PIMELauncher.exe (Rust, 32-bit)                         │
-│    └── 启动并监控 server.exe 进程                         │
-├──────────────────────────────────────────────────────────┤
-│  server.exe (Go, 64-bit)                                 │
-│    ├── pime.Server (stdin/stdout 事件循环)                │
-│    ├── ServiceManager (client → IME 实例映射)             │
-│    ├── yime.IME (输入法核心逻辑)                          │
-│    │     ├── nativeBackend (librime cgo 封装)             │
-│    │     ├── testBackend (测试用模拟后端)                  │
-│    │     └── 独立工具调度器                                │
-│    └── rime.dll (librime, 动态加载 via syscall.NewLazyDLL)│
-├──────────────────────────────────────────────────────────┤
-│  独立工具进程 (Go 编译的 Win32 GUI)                       │
-│    ├── server.exe 同目录下的工具可执行文件                 │
-│    │     ├── settings-tool.exe      设置工具              │
-│    │     ├── diagnostics-tool.exe   诊断工具              │
-│    │     ├── yime-layout-designer.exe 高级布局            │
-│    │     ├── lexicon-manager.exe    词库管理              │
-│    │     ├── reverse-lookup.exe     反查编码              │
-│    │     ├── tool-hub.exe           工具箱                │
-│    │     ├── system-lexicon-audit.exe  系统词库审查       │
-│    │     └── blocklist-manager.exe  用户屏蔽词表         │
-│    └── 语言栏/工具箱通过 manifest 以 run_executable 启动   │
-└──────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    S[规范读音、审定音节与来源证据] --> O[离线正式编码与布局投影]
+    O --> G[三模式词典、注释与审定语流资产]
+    G --> C[YimeCore 独立包]
+    G --> R[Rime/PIME 独立包]
+    C --> CT[x64 / x86 Yime TSF]
+    CT <--> B[YimeBroker + YimeCore 引擎]
+    CR[YimeCore Runtime] --> B
+    B <--> CU[YimeCore 用户状态]
+    R --> RT[x64 / x86 PIME TSF]
+    RT <--> L[PIMELauncher]
+    L <--> GS[Go server + librime]
+    GS <--> RU[Rime/PIME 用户状态]
 ```
 
-### 1.2 通信协议
+两条链路之间没有运行时调用或自动回退。任一产品均不要求另一产品已安装、正在运行、可升级或可用于恢复；同时安装也不意味着共用引擎进程、用户词库或学习数据库。
 
-**PIME TSF → Go server**：`<client_id>|<JSON>`
+开发契约见[双独立产品计划](project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)。两产品可以共享合成测试规范、编码派生和通用工具源码，但受影响产品仍须分别验证；Rime 行为对照不能替代 YimeCore 独立测试。
 
-请求方法：
-- `init` / `destroy` — 会话生命周期
-- `filterKeyDown` / `filterKeyUp` — 按键过滤
-- `onKeyDown` / `onKeyUp` — 按键处理
-- `onCommand` — 语言栏命令
-- `onCompositionTerminated` — 组字终止
-- `onActivate` / `onDeactivate` — 激活/停用
-- `selectCandidate` — 候选选择
+## 2. YimeCore：Runtime、Broker 与 TSF
 
-**Go server → PIME TSF**：`PIME_MSG|<client_id>|<JSON>`
+### 运行职责
 
-响应字段：
-- `compositionString` — 组字区文本
-- `candidateList` — 候选列表
-- `showCandidates` — 是否显示候选窗
-- `candidatePageSize` — 候选页大小
-- `candidatePageStart` — 当前页起始位置
-- `langBarButtons` — 语言栏按钮定义
-- `commitString` — 上屏文本
+| 组件 | 当前源码入口 | 职责 |
+| --- | --- | --- |
+| Runtime | `go-backend/cmd/yimecore-trial-runtime/` | 定位本包资产和本产品状态目录；维持 Broker，管理子进程及可选桌面工具，记录运行诊断 |
+| Broker | `go-backend/cmd/yimebroker/`、`go-backend/input_methods/yime/yimebroker/` | 命名管道接入、认证后的会话与配额、请求分发、索引代际管理、用户模型持久化 |
+| 引擎 | `go-backend/input_methods/yime/yimecore/` | 编码检索、候选排序、句子组合、分段纠正、用户词库覆盖及学习 |
+| 引擎接口 | `go-backend/input_methods/yime/engineapi/` | 会话、按键、候选、句段和提交结果的数据契约 |
+| TSF 表层 | `YimeTextServiceExperiment/` | Windows COM/TSF 接入、按键转发、预编辑与提交、候选窗口和语言栏 |
 
----
+文件名中的 `Trial`、`Experiment` 保留了开发阶段命名；当前产品身份由 [local-product.json](../tools/yimecore/local-product.json) 指定，不能据文件名选择旧 CLSID/Profile 构件。
 
-## 2. 关键机制
+Runtime 与 Broker 在当前 x64 包中为原生 x64 进程。x64、x86 应用分别加载对应架构的 TSF DLL，均通过本产品命名管道连接 Broker；x86 工作流不要求 32 位 Windows，也不把引擎复制进每个应用。
 
-### 2.1 按键状态追踪（keysDown）
+### 数据与会话
 
-替代旧的 `lastKeyDownCode`+`lastKeySkip` 计数器方案，解决重复按键抑制吞键问题。
+构建生成 `indexes/full.yidx`、`variable.yidx`、`shorthand.yidx`。引擎读取经过验证的不可变索引，Windows 实现支持文件映射；用户学习、用户词库和屏蔽记录作为独立状态参与候选计算，不回写系统索引。
 
-```
-onKeyDown(keyCode)
-    │
-    ├── keysDown[keyCode] 已存在？
-    │     ├── 是 → 忽略（重复 key-down，不传给 Rime）
-    │     └── 否 → keysDown[keyCode] = true，传给 Rime
-    │
-onKeyUp(keyCode)
-    │
-    └── keysDown[keyCode] = false（清除追踪）
-```
+Broker 按会话和递增序列校验请求，响应向 TSF 提供完整状态快照。会话绑定打开时的模式和索引代际；表层不得把旧候选或旧句子状态拼回新响应。索引切换、语流资产更新和断线重连由各自的管理器处理。
 
-**设计要点**：
-- 基于 key-down/key-up 配对追踪，而非计数器
-- 避免快速连打同一键时丢失有效按键
-- `keysDown map[int]bool` 在 `IME` 结构体中定义
+命名管道连接只拥有自己创建的会话。连接结束时释放其会话和配额，不能清理同一客户端进程的其他活动连接。学习写入采用快照与日志；同一 mutation ID 的重试还须匹配上下文和有序 observation 集合，否则构成冲突。
 
-### 2.2 回车键原始编码上屏（pendingRawCommit）
+Runtime 的 `runtime-status.json` 是诊断快照。证明启动和输入成功仍需核对实时进程、已加载的当前产品 DLL、实际宿主与用户输入结果。
 
-解决组字时回车键被静默吞掉的问题。
+### Windows 文本与界面
 
-```
-onKeyDown(VK_RETURN) during composition
-    │
-    ├── Rime 接受回车 → 正常提交流程
-    │
-    └── Rime 拒绝回车 (backendRet == false)
-          │
-          ├── 旧行为: handled=true，静默吞掉
-          │
-          └── 新行为: pendingRawCommit = compositionString
-                      handled=true
-                      随后的 onKey 响应阶段 commit pendingRawCommit
+TSF 通过 `CompositionEditSession` 修改宿主文档。`TF_S_ASYNC` 只表示请求已排队，界面和状态必须以实际 `DoEditSession` 完成结果为准；写入失败时关闭候选 UI 并断开表层，不能假装提交成功。
+
+焦点离开时取消尚未确认的 composition，只移除原预编辑范围。已确认的提交应保留，延迟取消必须匹配原 composition 身份，不能擦除新输入或已提交文本。语言栏回调在服务释放前解除，候选窗口也须容忍宿主从外部销毁 HWND。
+
+主实现分别位于 `TextService.cpp`、`SurfaceSession.cpp`、`CompositionEditSession.cpp`、`CandidatePopup.cpp` 和 `LanguageBarItem.cpp`；详细接口见 [TSF 组件说明](../YimeTextServiceExperiment/README.md)，阶段实验设计与原始证据见 [YimeCore 替换实验](project/YIMECORE_REPLACEMENT_EXPERIMENT.md)。
+
+## 3. Rime/PIME：独立宿主链路
+
+```text
+Windows 应用
+  → PIMETextService.dll（与应用匹配的 x64 / x86 COM/TSF）
+  → PIMELauncher.exe（Rust，Win32）
+  → go-backend/server.exe（Go）
+  → nativeBackend / librime（本包的 rime.dll）
+  → 本产品 Rime 配置、编译缓存与学习数据
 ```
 
-**设计要点**：
-- `pendingRawCommit string` 字段存储待上屏的原始编码
-- `filterKeyDown` 只记录待提交内容；同一次请求随后进入 `onKey` 时检查并提交，避免在过滤阶段直接构造两次响应
-- 非组字状态下回车正常穿透（`handled=false`）
+PIME TSF 经命名管道连接启动器，启动器按包内 `backends.json` 启动并转发到 Go 后端。Go 层承接 PIME 协议、Yime 菜单和工具、注释与设置，把原生候选和组合状态交给 librime 会话处理。
 
-### 2.3 组字状态保存与重放
+Rime/PIME 包携带自己的启动器、Go 后端、x64/x86 TSF、注册验证工具、Rime 运行文件及三模式资产。运行文件版本与哈希由 [rime_runtime.lock.json](../go-backend/input_methods/yime/rime_runtime.lock.json) 约束，部署与词库维护使用本包的工具。
 
-解决候选项数变更/方案切换时丢失当前输入的问题。
+原生 Rime 会话始终拥有候选分页：`nativeBackend.UsesBackendCandidatePaging()` 返回 `true`。Go 侧不通过切片代替原生翻页；候选数设置经配置、部署/重载和 `rimeState.PageSize` 回读同步到 `candidatePageSize`。
 
-```
-reloadBackendSessionForSchema()
-    │
-    ├── 1. 保存当前组字内容
-    │     savedComposition = ime.getCompositionString()
-    │
-    ├── 2. DestroySession + ClearComposition
-    │
-    ├── 3. 重建会话 (CreateSession + ApplySchema)
-    │
-    └── 4. 逐字重放组字内容
-          for _, ch := range savedComposition {
-              ProcessKey(ch)
-          }
-```
+语言栏菜单命令须兼容宿主通过 `data.id` 报告子项的路径。修改菜单 ID、激活或点击处理时，应先覆盖具体宿主故障；源码单测通过不能代替已安装二进制与真实点击的核对。
 
-**设计要点**：
-- 重放使用 `ProcessKey` 逐字符输入，确保 Rime 状态一致
-- 重放失败时静默处理（不阻断主流程）
-- 仅在组字状态非空时执行重放
+主要实现位于 `PIMETextService/`、`libIME2/`、`PIMELauncher/`、`go-backend/input_methods/yime/yime.go`、`native_cgo.go` 与 `librime.go`。生产路径保持 Rime 所有权，不自动切换到 YimeCore。
 
-### 2.4 Rime 初始化重试机制
+## 4. 产品身份、安装目录与用户状态
 
-替代 `sync.Once`，解决初始化失败后不可恢复的问题。
+安装身份和目录以 [installer/simple/Product.psm1](../installer/simple/Product.psm1) 与 `Setup.ps1` 为准：
 
-```
-ensureRimeInitialized()
-    │
-    ├── rimeInitMu.Lock()
-    │
-    ├── rimeInitDone == true && rimeInitOK == true?
-    │     └── 是 → 直接返回（成功初始化过）
-    │
-    ├── rimeInitDone == true && rimeInitOK == false?
-    │     └── 重新尝试初始化（允许重试）
-    │
-    └── rimeInitDone == false?
-          └── 首次初始化
-                │
-                ├── Initialize(traits)
-                │
-                ├── 成功 → rimeInitOK = true
-                └── 失败 → rimeInitOK = false
-                │
-                └── rimeInitDone = true
-                      （无论成功失败都标记 done，
-                        允许下次重试）
+| 项目 | YimeCore | Rime/PIME |
+| --- | --- | --- |
+| 安装器产品 ID | `yimecore` | `rime-pime` |
+| 当前安装目录 | `%ProgramFiles%\YimeCore` | `%ProgramFiles%\Yime Rime-PIME` |
+| 主程序 | `bin\YimeCoreTrialRuntime.exe` | `PIMELauncher.exe` |
+| 用户状态根 | `%LOCALAPPDATA%\YimeCore Experimental Trial` | `%APPDATA%\PIME\Rime` |
+| TSF DLL | `YimeTextServiceExperiment.dll` | `PIMETextService.dll` |
+| CLSID | `{E40FA752-BB96-461D-A51D-F40EB437EC65}` | `{35F67E9D-A54D-4177-9697-8B0AB71A9E04}` |
+| Profile | `{126F54C6-E9B1-4E22-8652-03224CBD49F9}` | `{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}` |
+
+YimeCore 端点为 `\\.\pipe\YimeBroker.YimeCoreTrial.v1`；PIME 启动器使用其独立的用户命名管道。YimeCore 状态目录中的 `Experimental Trial` 保留兼容命名，不代表使用旧产品身份。源码描述中的旧目录字段也不能替代当前简版安装器的目录契约。
+
+系统词典、语流资产、私有字体、工具和帮助随各自产品包交付。YimeCore 的设置、学习模型、用户词库、屏蔽词、布局代际、专业词库选择及日志归自身状态目录；Rime/PIME 的用户配置、编译缓存、学习及词库归自己的目录。
+
+共用工具源码在构包和启动时接收本产品的资产/状态路径，不能从另一套已安装目录补齐文件，也不能自动迁移另一套学习数据。私有字体不等于系统字体；维护本产品不得清理其他产品或系统资源。
+
+简版包用 `product-package.json` 列出文件大小和 SHA-256，安装目录以 `.yime-product.json` 标记所有权。包校验涵盖所需运行程序、图标、工具、字体和两种架构的 TSF，发现缺失或归属不符即停止。
+
+## 5. 共享离线数据：规范真源到产品资产
+
+```text
+有来源的带调拼音实例
+  → 审定 canonical 音节库存
+  → SyllableEncodingPipeline / YinjieEncoder
+  → 四个稳定音元 ID 与规范语义编码
+  → internal_data/manual_key_layout.json 的唯一键位投影
+  → Go codemode 派生等长、变长、省键
+  → 各产品的词典 / 索引 / 注释 / 帮助资产
 ```
 
-**设计要点**：
-- `rimeInitMu sync.Mutex` — 保护初始化过程
-- `rimeInitDone bool` — 是否已尝试过初始化
-- `rimeInitOK bool` — 初始化是否成功
-- 移除了 `IME.Init` 中的用户目录预检（该预检导致用户目录不存在时跳过 `Initialize`）
+规范词典读音及其来源记录是读音真源。音节准入基于实际材料或明确审定实例，不补造五调组合，也不因某个音节暂时不能编码而手写音元 ID 或物理键。
 
-### 2.5 候选项数同步链
+`syllable/`、`yime/` 与 `tools/lexicon/` 是仓内离线工具链。它们负责来源整理、正式编码、词库生成、审查和可重现验证，不进入 Windows 安装包，也不是另一套 Python 输入运行时。
 
-AGENTS.md 重点保护的机制，三层状态必须保持一致：
+`internal_data/manual_key_layout.json` 是可编辑布局源；`data/yime_yinyuan_layout.json` 和模式词典是生成投影。`yime_pinyin_codes.tsv` 表达规范音节编码，不能由生成的 Rime 词典反推或修补上游拼音语义。
 
-```
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────────────┐
-│  Rime 引擎       │     │  Go 运行时        │     │  配置文件            │
-│  rimeState.      │     │  ime.             │     │  default.custom.yaml│
-│  PageSize        │────▶│  candidatePageSize│────▶│  menu/page_size     │
-│                  │     │                   │     │  schema.custom.yaml │
-│  (权威来源)       │◀────│  (中间缓存)       │◀────│  (持久化)           │
-└─────────────────┘     └──────────────────┘     └─────────────────────┘
-        ▲                        │
-        │                        ▼
-        │              ┌──────────────────┐
-        └──────────────│  applyStateTo    │
-                       │  Response()      │
-                       │  (每次按键回写)   │
-                       └──────────────────┘
-```
+`tools/lexicon/handoff/yime_core_fixed.dict.yaml` 是已批准的等长交接产物，用于锁定身份和单仓重放；它不是规范拼音来源的替代品。交接 evidence、目标锁和 `yime_core_source_manifest.json` 记录来源、selection、派生哈希及排序证据，数量应从当前清单读取。
 
-**同步时机**：
+大型外部输入通过内容锁放在所有 Git 工作树之外，仅以 `YIME_LEXICON_EXTERNAL_ROOT` 显式提供。正常工具不读取原型仓或其他 Git 仓库，不搜索父目录，也不设兄弟仓回退。来源完整重建与已批准交接重放有不同前提，见[离线词库工具](../tools/lexicon/README.md)和[仓库数据边界](project/YIME_REPOSITORY_DATA_BOUNDARY.md)。
 
-| 时机 | 方向 | 函数 |
-|------|------|------|
-| Init | 文件 → Go | `readPageSizeFromCustomConfig` |
-| 每次按键 | Rime → Go | `applyStateToResponse` 中 `state.PageSize → ime.candidatePageSize` |
-| 候选项数变更 | Go → 文件 → Rime | `setCandidatePageSize` 写 YAML → 部署 → 会话重建 |
-| 会话重建后 | Rime → Go | `backend.State().PageSize` 读回确认 |
+## 6. 三模式、候选与语流输入
 
-**已知限制**：
-- 无候选时 `State().PageSize` 返回 0，读回失败（仅记录日志，不阻断）
-- YAML key 必须同时支持引号和非引号形式（`menu/page_size` 和 `"menu/page_size"`）
+### 统一编码契约
 
-### 2.6 候选分页权
+| 模式 | 标识 | 派生关系 |
+| --- | --- | --- |
+| 等长 | `full` / `yime_full` | 每音节保留四位置完整编码 |
+| 变长 | `variable` / `yime_variable` | 从同一完整编码按 `codemode` 规则派生；当前默认模式 |
+| 省键 | `shorthand` / `yime_shorthand` | 从同一完整编码继续按确定性省键规则派生 |
 
-```
-                    UsesBackendCandidatePaging()
-                           │
-              ┌────────────┴────────────┐
-              ▼                         ▼
-        nativeBackend                testBackend
-        返回 true                    返回 false
-              │                         │
-              ▼                         ▼
-     Rime 引擎拥有分页权         Go 侧自行分页
-     候选列表完整返回           按 candidatePageSize 切片
-     翻页由 Rime 处理           翻页由 Go 处理
-```
+两产品都保留裸数字用于组码，即使候选窗已显示也不改作选择键。序号选择为 `Shift+1` 至 `Shift+9`，候选标签显示 `⇧1` 至 `⇧9`；PIME 使用 `setSelLabels`，`SetSelKeys` 只保留旧宿主兼容职责。
 
-**约束**：`nativeBackend` 必须返回 `true`，Go 侧不可对原生 Rime 会话做候选切片。
+候选来源可包含系统核心、审定外围条目、用户学习、自定义词库与受控语流别名，并接受屏蔽过滤。来源准入、编码一致性和文字身份共享规范；检索、句子组合及学习实现分别归 YimeCore 和 Rime。不能以一套运行时的候选位置认定另一套必然正确。
 
-### 2.7 candidatePageStart 重置策略
+标准拼音注释保持规范读音，音元拼音和键位序列反映实际命中的编码；同码歧义需使用来源旁表，不能把确定性回退解释成唯一读音。详见[反查拼音来源映射](project/REVERSE_PINYIN_SOURCE_MAPPING.md)。
 
-```
-processKey()
-    │
-    ├── backendRet == true（Rime 接受按键）
-    │     └── ime.candidatePageStart = 0（重置翻页位置）
-    │
-    └── backendRet == false（Rime 拒绝按键）
-          └── 不重置 candidatePageStart（保留翻页位置）
+### 语流资产
+
+语流支持是有来源、可移除的词或短语级附加输入路径。它不修改规范读音、单音节基础码、标准拼音注释或候选文字，不根据相邻发音自动增删“儿”或把“啊”替换为另一汉字。
+
+规则在稳定音元 ID 和属性上进行四位置内的等位替换，然后投影布局并共同派生三模式。运行准入须遵守当前码长门禁：别名在任何模式下均不得长于对应规范码；研究记录、待审记录和未通过准入的投影不随运行包启用。
+
+语流别名变更须保留等长、变长、省键的真实 Rime 回归，并独立覆盖受影响的 YimeCore 路径。词汇固有轻声不能推广成任意语境弱化，能产儿化、跨词界音变及其他新规则仍须明确审定范围和排除项。
+
+现有源码包括经审定的儿化、上声及“啊”条件读法等资产和试验模块，模块存在不等于任意规则已获运行批准。Rime/PIME 的实际资产由 `yime_runtime_profile.json` 及各专项 manifest 描述。
+
+YimeCore 通过独立语流准入、产品导出、包摘要和能力声明接入；`local-product.json` 将语流默认启用值设为 `false`。构建是否携带能力、设置是否启用及当前会话是否使用资产应分别核查，不能从 Rime/PIME 的通过记录推断 YimeCore 已启用。
+
+总体模型和历次阶段证据见[语流音变计划](project/MANDARIN_CONNECTED_SPEECH_PLAN.md)与[审定记录目录](project/connected_speech/README.md)；当前 YimeCore 产品约束见 [speech-product-contract.json](../tools/yimecore/speech-product-contract.json)。历史阶段结论只适用于所记载的范围。
+
+## 7. 构建、制包与交付
+
+| 任务 | 当前入口 |
+| --- | --- |
+| YimeCore 当前身份的源码包 | `tools/yimecore/build-local-product.ps1` |
+| 独立构建 WOW64 TSF | `tools/yimecore/build-local-x86-surface.ps1` |
+| 已批准平台的隔离实验 | `tools/yimecore/run-platform-experiment.ps1` |
+| YimeCore 语流准入与导出 | `run-connected-speech-admission.ps1`、`run-connected-speech-product-source.ps1`，位于 `tools/yimecore/` |
+| Rime/PIME 构建并制包 | 根目录 `Build.ps1` |
+| 从产品载荷制作简版包 | `installer/simple/Build-Package.ps1` |
+| 从仓内 Rime/PIME 构建输出制包 | `installer/simple/Build-RimePackage.ps1` |
+| 普通用户安装/卸载选择 | 完整交付目录中的 `Install-Uninstall.cmd` |
+
+仓库 PowerShell 操作统一通过 checked 入口，复杂参数写入 UTF-8 JSON，并使用完整参数名。例如源码构建：
+
+```text
+python -X utf8 tools/powershell/run_checked.py --script tools/yimecore/build-local-product.ps1 --edition ps7 --params-file <参数.json>
 ```
 
-**设计要点**：
-- 旧逻辑在 `processKey` 中无条件重置，导致无效按键丢失翻页位置
-- `applyStateToResponse` 在候选列表为空时仍会重置（这是合理的）
+该入口在选定 PowerShell 进程中先检查再执行。PS5 兼容性检查应明确选择 `--edition ps5`；语法通过不等于运行成功。源码工具应输出到全新隔离目录，维护测试另行记录。
 
-### 2.8 语言栏命令分发
+PIMELauncher 的 Win32 构建保持 `stable-i686-pc-windows-msvc` **主机工具链**与 Corrosion 固定依赖；只在默认 x64 Rust 工具链添加 i686 target 不能替代它。当前依赖版本以仓库构建配置和工具链锁为准。
 
-```
-TSF 语言栏点击
-    │
-    ▼
-onCommand(req)
-    │
-    ├── req.ID (整数) ──→ commandIDFromRequest(req)
-    │     └── 回退链: req.ID → req.Data.commandId → req.Data.id
-    │
-    ▼
-命令 ID 路由
-    │
-    ├── 3200-3222: Yime 专有命令 (方案/反查/词库/帮助)
-    ├── 70-79: 候选设置 (排列/项数)
-    ├── 80-89: 宿主集成 (中西文/简繁/标点/全半角)
-    └── 90+: 维护命令 (重新部署/同步/打开目录)
-    │
-    ▼
-commandShouldRefreshState(ID)?
-    │
-    ├── 在黑名单中 → 跳过状态刷新
-    │     (避免 TSF 回调中触发 Rime 操作)
-    │
-    └── 不在黑名单中 → 刷新 Rime 状态到响应
-```
+简版安装支持任一单产品或同时选择两套；双套先校验全部所选包，再顺序执行，失败时停止并报告。默认保留本产品用户数据，显式 `-ResetData` 才重置；维护过程中不强关文档应用，不改变默认输入法。
 
-**命令 ID 分配**：
+生产用户数据迁移和自动备份恢复仍在后续范围。旧事务票据、历史 PID 或失败现场恢复不是新包安装前置；当前使用说明见[简版安装器](../installer/simple/README.md)。
 
-Yime 命令统一以 `yimeCommandBase=3200` 为基数。下表记录当前绝对 ID；
-新增或排查命令时仍以 `go-backend/input_methods/yime/yime.go` 中的常量定义为权威来源，
-不得把偏移量误当成宿主实际收到的命令 ID。
+开发先完成本地验证，再提交推送并通过对应 CI。测试端使用完整交付包开展独立验收。分支交接见 `installer/simple/HANDOFF.md`；大型包的 GitHub artifact/release URL 与 SHA-256 应写入分支，源码 checkout 本身不是包交付。
 
-| 绝对范围 | 用途 | 示例 |
-|---------|------|------|
-| 3201-3205 | 宿主状态 | `ID_MODE_ICON=3201`、`ID_ASCII_MODE=3202`、`ID_FULL_SHAPE=3203`、`ID_ASCII_PUNCT=3204`、`ID_TRADITIONALIZATION=3205` |
-| 3210-3214、3216 | 数据维护与目录 | `ID_DEPLOY=3210`、`ID_SYNC=3211`、`ID_LOG_DIR=3216`；3215 当前未分配 |
-| 3220-3223 | 方案切换 | `ID_YIME_VARIABLE=3220`、`ID_YIME_FULL=3221`、`ID_YIME_SHORTHAND=3222`、`ID_YIME_CORE_TRIAL=3223` |
-| 3230-3236 | 用户词库 | `ID_USER_LEXICON_ADD=3230` 至 `ID_USER_LEXICON_MANAGER=3236` |
-| 3240-3245 | 反查显示 | `ID_REVERSE_LOOKUP_DEFAULT=3240` 至 `ID_REVERSE_LOOKUP_KEY_SEQUENCE=3245` |
-| 3260-3264 | 帮助与工具入口 | `ID_HELP_VIEW=3260` 至 `ID_REVERSE_LOOKUP_TOOL=3264` |
-| 3270-3274 | 候选项数 | `ID_CANDIDATE_PAGE_SIZE_5=3270` 至 `ID_CANDIDATE_PAGE_SIZE_9=3274` |
-| 3275 | 候选排列 | `ID_CANDIDATE_LAYOUT_TOGGLE=3275` |
+## 8. 验证层次与证据
 
-**黑名单设计**：
-- 旧方案使用白名单（列出所有不需要刷新的命令），维护负担大
-- 新方案改为黑名单，只列出 11 个需要刷新状态的命令
-- 新增命令默认不刷新，需显式加入黑名单才刷新
+| 层次 | 入口或证据 | 能证明的范围 |
+| --- | --- | --- |
+| 离线真源与派生 | `tools/lexicon/test.ps1`、目标锁、交接重放及数据边界检查 | 来源和派生可验证；不证明已安装输入 |
+| Go 单元与契约 | `tools/test-go.ps1`、相关 `yimecore` / `yimebroker` 测试 | 引擎、会话、学习、工具与数据契约 |
+| 真实 Rime | `tools/test-real-rime.ps1` | 隔离 librime 的实际三模式、语流和候选行为 |
+| 原生 TSF | `YimeTextServiceExperiment/tests/`、PIME 原生测试与构建入口 | 按具体用例区分隔离契约、composition 与已注册宿主 |
+| 安装器 | `installer/simple/Test-*.ps1` | 包完整性、归属、启动项、失败停止、日志与进程等待等 |
+| 实机产品 | `installer/simple/VALIDATION.md` 及其链接的原始报告 | 对应包、机器、应用、维护动作和重启后输入结果 |
 
-### 2.9 用户消息反馈（showUserMessage）
+CI 定义位于 [.github/workflows/ci.yaml](../.github/workflows/ci.yaml)，覆盖构建契约、离线工具、Rust、Go、真实 Rime、race、原生 PIME 和简版安装器；CI 通过不自动补齐全部 YimeCore 安装宿主或 ARM64 验收。
 
-为关键操作提供用户可见的反馈。
+Windows 已注册宿主和实际应用必须确认当前产品已激活。旧的“Yime 自研栈试验版”条目不能作为当前身份的证据；跨编译、静态 PE 检查、隔离文件测试和持久化状态文件也不能替代实际输入。
 
-```
-操作执行
-    │
-    ├── 成功 → showUserMessage("音元输入法", "操作成功提示")
-    │
-    └── 失败 → showUserMessage("音元输入法", "操作失败提示")
-    │
-showUserMessage(title, message)
-    │
-    ├── Windows: MessageBoxW (MB_ICONINFORMATION / MB_ICONERROR)
-    └── Stub: log.Printf (测试环境)
-```
-
-**覆盖的操作**：
-- `openPath` — 打开目录/文件
-- `copyTextToClipboard` — 复制到剪贴板
-- `startSafeRimeRedeploy` — 确认后排队外部后台构建，校验当前方案并发送纯 redeploy 通知
-- `syncBackendUserData` — 同步用户数据
-- `selectSchema` — 切换方案
-- `setCandidatePageSize` — 设置候选项数
-
-**panic recover 保护**：所有调用 `showUserMessage` 的函数都包裹在 `defer recover()` 中，防止消息弹窗本身崩溃导致整个输入法进程退出。
-
-### 2.10 反查注释占位符
-
-```
-joinRuneLookup(runes)
-    │
-    ├── 每个字符查找编码
-    │     ├── 找到 → 拼接编码
-    │     └── 未找到 → 拼接 "?" 占位符
-    │
-    └── 返回完整注释字符串
-
-lookupStandardPinyin(codes)
-    │
-    ├── codes 含 "?" ?
-    │     └── 是 → 逐字符拆分查找拼音
-    │           （避免整串查找失败导致整行注释消失）
-    │
-    └── 否 → 整串查找拼音
-```
-
-### 2.11 用户词库跨方案同步
-
-```
-applyUserLexicon()
-    │
-    ├── 读取 yime_user_phrases.txt
-    │
-    ├── 为每种模式生成独立词库文件
-    │     ├── custom_phrase_variable.txt  → yime_variable.schema.yaml 引用
-    │     ├── custom_phrase_full.txt      → yime_full.schema.yaml 引用
-    │     └── custom_phrase_shorthand.txt → yime_shorthand.schema.yaml 引用
-    │
-    └── 每种 schema 使用独立的 user_dict
-          ├── yime_variable.schema.yaml → user_dict: custom_phrase_variable
-          ├── yime_full.schema.yaml     → user_dict: custom_phrase_full
-          └── yime_shorthand.schema.yaml → user_dict: custom_phrase_shorthand
-```
-
-**设计要点**：
-- 旧方案只重建当前方案的词库，切换方案后用户词丢失
-- 新方案为三种模式各生成独立的 `custom_phrase_{mode}.txt`
-- 三种 schema 各自引用对应的 `user_dict`，互不干扰
-- 每次应用词库都从安装目录同步三套 `yime_{mode}.schema.yaml` 到用户目录，再运行 Rime build；升级遗留 schema 不会继续引用旧 `custom_phrase`
-- 数字标调拼音是用户词编码真源。多音字的逐字拼接可能列出多个编码，只有与用户填写拼音对应的编码会命中该用户词
-
-### 2.12 Rime 部署流程
-
-```
-rimeDeploy(traits, datadir, userdir, appname, fullcheck)
-    │
-    ├── 1. Init(traits) — 初始化 Rime 运行时
-    │      ⚠️ 不能把 DeployConfigFile 移到 initialize 之前
-    │
-    ├── 2. startMaintenance(fullcheck) — Rime 内置部署
-    │      └── joinMaintenanceThread() — 等待完成
-    │
-    ├── 3. 部署配置文件 (DeployConfigFile, key="config_version")
-    │      ├── <datadir>/<appname>.yaml
-    │      ├── <userdir>/<appname>.yaml
-    │      └── <userdir>/default.custom.yaml
-    │
-    └── 4. 部署方案自定义文件 (DeployConfigFile, key="schema")
-           └── <userdir>/*.custom.yaml (排除 default.custom.yaml)
-```
-
-### 2.13 独立工具调度
-
-```
-onCommand / 语言栏按钮或设置菜单叶子命令
-    │
-    ├── 桌面语言栏直接按钮（用户词库、反查编码、工具中心）
-    │     └── startDetached(同目录 .exe, 参数)
-    │
-    ├── 任务栏停靠时“设置”根级叶子（相同三个数字命令 ID）
-    │     └── startDetached(同目录 .exe, 参数)
-    │
-    └── 工具箱 (tool-hub.exe)
-          ├── Go 生成 toolHubManifest JSON
-          ├── 用户点击条目 → run_executable / open_path
-          └── 子工具保持 hub 窗口不关闭，便于连续操作
-```
-
-**当前工具箱条目**（`yime_tool_catalog.go`）：
-
-| ID | 标签 | 动作 |
-|----|------|------|
-| advanced-layout-designer | 高级布局 | `yime-layout-designer.exe` |
-| lexicon-manager | 词库管理 | `lexicon-manager.exe` |
-| reverse-lookup-tool | 反查编码 | `reverse-lookup.exe` |
-| system-lexicon-audit | 系统词库审查 | `system-lexicon-audit.exe` |
-| user-blocklist-manager | 用户屏蔽词表 | `blocklist-manager.exe` |
-| settings-tool | 设置工具 | `settings-tool.exe` |
-| diagnostics-tool | 诊断工具 | `diagnostics-tool.exe` |
-| settings-data / shared-data / help-* | 打开目录或帮助 HTML | `open_path` |
-
-**设计要点**：
-- 重 UI 不在 TSF/PIME 回调线程内绘制；语言栏只做轻量分发
-- 桌面语言栏和任务栏“设置”入口复用现有数字命令 ID；不增加子菜单深度，也不维护第二套工具生命周期
-- `go-backend/build.bat` 与安装包一并产出上述 `.exe`
-- 反查工具保留多音字、即时搜索、加载进度与结果截断提示
-- 设置和词库部署在后台 goroutine 执行，通过 `WM_APP` 回到 UI 线程
-- 设置工具通过 `userbackup` 创建带版本清单和 SHA-256 校验的可移植快照；恢复前先生成安全快照，再调用部署器并分别通知设置与词库修订
-- 成功后在跨进程锁保护下更新 `yime_runtime_change.json`；文件保存设置、词库和 redeploy 的独立累积修订号，连续通知不会互相覆盖；显式维护使用 `ScopeRedeploy`，不会伪称设置或词库已改变
-- 每个活动 IME 会话独立记录已处理修订号，在下一次安全宿主请求前同步设置、清理词库缓存，并对已经由外部部署器构建的数据执行轻量会话重建；语言栏回调不再调用全局 `RimeFinalize/RimeRedeploy`。方案重选失败时销毁会话，避免静默停留在其他兜底方案
-
-### 2.14 语言栏切换按钮
-
-IME 列表显示名为「音元」。语言栏三个切换按钮使用**静态标签**，避免 Win10/11 上动态改文字引发按钮闪烁或错位：
-
-| 按钮 ID | 标签 | 切换时行为 |
-|---------|------|------------|
-| switch-lang | 中西 | 仅更新图标（中文/西文） |
-| switch-shape | 全半 | 仅更新图标（半宽/全宽） |
-| candidate-layout | 横竖 | 仅更新图标（竖排/横排） |
-
-`updateLangBarToggleButtons` 通过 `ChangeButton` 只下发 `Icon` 字段；`libIME2`/`PIMETextService` 侧批量 `refreshAppearance`，并按 remove → change → add 顺序应用按钮更新。
-
-三个切换按钮不覆盖 `TF_LANGBARITEMINFO.ulSort`，也不使用实验性固定 GUID；排序和普通按钮身份由 TSF 宿主管理。仅 `windows-mode-icon` 保留 Windows 系统输入模式 GUID。
-
-### 2.15 用户屏蔽词表
-
-```
-userblocklist.LoadSet(yime_blocklist.txt)
-    │
-    └── applyStateToResponse 过滤候选文本命中屏蔽词的条目
-```
-
-- 源文件由 `blocklist-manager.exe` 维护
-- 过滤在组字有候选时生效；与 Rime 分页权无冲突
-
-### 2.16 安装与 profile 维护
-
-
-- 清理 CTF TIP 与用户 profile 残留
-- `Unregister-PIMETextServiceDlls` / `Remove-PIMETextServiceRegistry`
-- `Refresh-IME-Profiles.cmd` 用于 IME 显示名等 profile 变更后的刷新
-
-`libIME2` 在 `AddLanguageProfile` 前先 `RemoveLanguageProfile`，使 `ime.json` 名称更新在 `regsvr32` 重注册后即可生效。
-
-**反查工具实现**：
-- `reverselookup.Load` 加载并缓存系统词库、用户词库、拼音映射和三种模式编码
-- `loadDictLookupMulti` 保留同一词条的全部读音编码；`joinCharCodeLookupMulti` 支持逐字笛卡尔积
-- `Index.SetMode` 切换当前编码列，`Index.Search` 同时支持精确匹配和包含匹配，最多返回 200 条
-- Win32 顶部控件按“查询词条 / 输入框 / 包含匹配 / 方案 / 下拉框 / 查询”单排布局；结果、详情和状态区等宽，客户区由内容边界计算
-
----
-
-## 3. 数据管线与文件
-
-### 3.1 词典生成管线
-
-词典由 Yime 仓内离线工具链生成，经统一来源、候选整理和编码管线到达 Go 后端。大型原始证据只
-通过 `YIME_LEXICON_EXTERNAL_ROOT` 指向的内容锁定目录提供，不读取旧原型或其它 Git 工作树：
-
-```
-真实本地上游
-    ├── Unihan 单字读音
-    ├── pypinyin 词语读音
-    ├── 万象字词读音及来源权重
-    └── BCC 各原始分域字频/词频
-          │
-          └── build_lexicon_source_bundle.py
-                └── source_lexicon.sqlite3
-                      ├── 合规读音与来源/拒绝证据
-                      ├── BCC 各分域原始计数及汇总频次
-                      └── 万象权重（与 BCC 频次分列，不互相替代）
-
-Yime 仓内规范导入与编码工具
-    │
-    └── pinyin_hanzi.db
-          ├── 单字频率：BCC 原始计数；未命中才使用 Unihan 合成阶梯
-          └── 词语频率：BCC 原始计数；未命中保持 0，不伪造语料计数
-
-输入候选整理覆盖层
-    ├── BCC 频次只安排审查顺序
-    ├── 词汇性、候选价值和动态可恢复性另行判定
-    ├── 助词及所字/的字等构式先取得有类型的组件证据
-    ├── 全部已编码字串进入 R0–R5 动态覆盖分层
-    │     ├── R0：确定性无效或来源对齐错误，修复/隔离
-    │     ├── R1–R3：不可达、部分可达或搜索风险，反向提升最小动态核心
-    │     ├── R4：可靠动态恢复
-    │     └── R5：基础字符、受保护类别或有证据静态缓存
-    └── 不用万象权重、“已收录”或 R 分层反写 BCC 频次
-
-迁移时已对 2,441,908 个已编码字串完成全量分层，R0 为 0，覆盖门禁通过。R1–R3
-保留为动态核心的持续改进队列，不再作为待完成的删除式整理任务；低频、古旧、构式部件和暂时
-不能动态恢复都不能单独构成删除依据。
-
-runtime_codes_refresh.py --apply
-    │
-    ├── 重建 char_usage_profile (5档分层: common_high/low, special_high/low, rare)
-    ├── 重建 char_modern_common_profile (BCC单字序位加成)
-    ├── 重建 char_reading_prior (词语频率累积的字-读音先验)
-    ├── 重建 runtime_candidates_materialized
-    └── JSON 导出 → .generated/runtime_candidates.json
-
-Windows 默认运行交接
-    │
-    ├── build_two_level_runtime_trial.py
-    ├── runtime_lexicon_filter_policy.json
-    ├── dynamic_candidate_coverage_policy.json（构建时强制 R0–R5 完成门禁）
-    ├── two_level_full.dict.yaml（1,166,753 条运行映射）
-    └── dictionary.manifest.json（来源、筛选、排序证据与输出 SHA-256）
-          │
-          └── import-yime-core-lexicon.ps1
-                ├── yime_full.dict.yaml
-                ├── yime_variable.dict.yaml
-                └── yime_shorthand.dict.yaml
-```
-
-**核心排序证据策略**：
-
-| 场景 | 策略 | 说明 |
-|------|------|------|
-| 核心文本有 BCC 证据 | `2000 + bcc_frequency` | 第一优先级，保留 BCC 内部顺序 |
-| BCC 无命中、RIME-LMDG 有证据 | 归一化到 `1000..1999` | 第二优先级，不与 BCC 原始计数相加 |
-| 两者均无命中、结构判定通过 | 归一化到 `1..999` | 第三优先级，保留待补语料标记 |
-
-Yime 证据清单记录三类不同文本数、策略哈希和 `raw_bcc_and_lmdg_values_added=false`。运行时不重新
-计算频率，只验证证据与核心真源哈希一致并原样派生三种编码。
-
-**项目分离现状**：Yime 负责候选池、编码证据、两级筛选策略、排序证据、候选评测、三模式派生、
-Windows 运行、打包和用户数据。旧原型仅可清理自身历史数据，不是 Yime 的输入或回退。已批准的
-固定交接与目标锁保存在 Yime；从原始证据重建时另行要求工作树外的内容锁定来源目录。
-`import-yime-core-lexicon.ps1` 在导入前核对证据清单与核心词典 SHA-256；
-`verify-installed-runtime.ps1` 核对三模式安装文件、哈希、启动器身份及已退役方案泄漏。
-
-### 3.2 共享数据目录
-
-`go-backend/input_methods/yime/data/`
-
-Rime 共享数据（包括 `default.yaml`、基础方案、词典、`essay.txt` 和
-`opencc/`）是仓库内固定的发布资产。构建与 CI 只复制这份快照，不从
-Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
-
-| 文件 | 类型 | 说明 |
-|------|------|------|
-| `default.yaml` | Rime 配置 | 基础 schema_list、page_size、按键绑定、标点 |
-| `yime_variable/full/shorthand.schema.yaml` | 三模式 Rime 方案 | 动态组句、整句学习、模式专属 userdb 和自定义词 |
-| `yime_variable/full/shorthand.dict.yaml` | 三模式系统词典 | 同一1,166,753条运行映射的三种编码投影，含全部46,095个已编码单字 |
-| `yime_core_source_manifest.json` | 来源证据 | Yime 来源修订、输入/筛选哈希和三类排序证据计数 |
-| `yime_lexicon_manifest.json` | 派生清单 | 转换规则、条目数和三模式输出哈希 |
-| `yime_runtime_profile.json` | 发布配置 | 默认方案、三模式文件和四层候选链 |
-| `yime_pinyin_codes.tsv` | 编码映射 | 数字标调拼音→等长码，当前 1733 条；其余模式运行时推导 |
-| `yime_syllable_inventory_manifest.json` | 音节集合门禁 | 固定来源物化音节数、集合哈希、来源修订和 canonical-only 清单 |
-| `yime_pua_pinyin.json` | PUA 显示映射 | 候选注释的数字标调拼音→PUA 音元序列 |
-| `fonts/YinYuan-Regular.ttf` | 候选字体 | 音元拼音模式使用的 PUA 字形 |
-| `pinyin_normalized.json` | 拼音归一化 | 数字标调→带调拼音，当前审计库存 1737 条 |
-| `essay.txt` | 词频表 | 八股文 |
-| `rime.dll` | 动态库 | librime 运行时 |
-| `rime_deployer.exe` | 可执行文件 | 外部部署工具 |
-| `rime_runtime.lock.json` | 运行时锁 | 固定 librime 版本、提交、插件版本及三个运行文件的 SHA-256 |
-
-`build.bat` 要求三模式 dict、schema 和两个 manifest 同时存在，缺一即失败。反查和系统词库审计
-按当前模式读取共享核心词典，不能被用户目录中的过期副本覆盖。
-
-### 3.3 用户数据目录
-
-`%APPDATA%\PIME\Rime\`
-
-| 文件 | 格式 | 说明 |
-|------|------|------|
-| `default.custom.yaml` | YAML | 用户方案选择 + page_size 覆盖 |
-| `yime_variable_core_7edf12291392_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 变长模式排序和整句学习数据 |
-| `yime_full_core_7edf12291392_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 等长模式排序和整句学习数据 |
-| `yime_shorthand_core_7edf12291392_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 省键模式排序和整句学习数据 |
-| `yime_variable.custom.yaml` | YAML | 变长方案自定义（如 page_size） |
-| `yime_full.custom.yaml` | YAML | 等长方案自定义 |
-| `yime_shorthand.custom.yaml` | YAML | 省键方案自定义 |
-| `user.yaml` | YAML | Rime 用户状态（previously_selected_schema） |
-| `yime_user_phrases.txt` | TSV | 用户词库源文件（词条\t数字标调拼音\t权重） |
-| `custom_phrase_variable.txt` | TSV | 变长模式 Rime 格式用户词库 |
-| `custom_phrase_full.txt` | TSV | 等长模式 Rime 格式用户词库 |
-| `custom_phrase_shorthand.txt` | TSV | 省键模式 Rime 格式用户词库 |
-| `yime_settings_state.json` | JSON | 独立 UI 偏好（反查模式、候选排列） |
-| `yime_blocklist.txt` | 文本 | 用户屏蔽词表源文件 |
-| `build/` | 目录 | Rime 编译缓存 |
-
-`core_<摘要>` 取自 `yime_core_source_manifest.json` 中核心词典 SHA-256 的前 12 位；条目数只作为
-manifest 校验值，不再充当版本身份。这样即使两个核心恰有相同条目数，也不会误用同一份学习库。
-升级时会把可映射的历史学习记录迁移到新的核心命名空间；核心中不存在的历史候选会被过滤。旧的
-过渡方案选择改写为 `yime_variable`，对应生成文件和编译缓存随后删除。冷启动测试仍需备份并
-清空整个用户数据目录，不能只删除其中一份词典文件。
-
-### 3.4 日志
-
-`%LOCALAPPDATA%\PIME\Logs\`
-
-- `go_backend.log` — Go 后端主日志
-- `go_backend.log.1` 至 `go_backend.log.5` — 自动轮转的历史日志；当前日志达到 10 MiB 时轮转，最多保留 5 份
-- 命令 ID 解读、部署/重载信号、错误行
-
----
-
-## 4. 构建系统
-
-### 4.1 C++/Rust 构建
-
-```powershell
-# 需要 VS 2022 + Rust i686-pc-windows-msvc
-cmd /c build.bat
-```
-
-产物：`build/PIMELauncher/PIMELauncher.exe`、`build/PIMETextService/Release/PIMETextService.dll`
-
-### 4.2 Go 后端构建
-
-```powershell
-cd go-backend
-cmd /c build.bat
-```
-
-产物：`build/go-backend/server.exe`、`build/go-backend/*.exe`（工具链）、`build/go-backend/input_methods/`
-
-本地 ad-hoc 构建落在 `go-backend/*.exe` 时已被 `.gitignore` 忽略。
-
-
-构包统一使用 [installer/simple](../installer/simple/README.md)。Rime/PIME 包携带自己的 PIMELauncher、`backends.json`、Go 后端及 x64/x86 TSF；YimeCore 包携带自己的 Runtime、Broker、数据和 TSF。当前通用包不包含已验收的 ARM64 安装支持。
-
-### 4.3 CI 流水线
-
-`.github/workflows/ci.yaml`：push 触发 `main`、`yime-stable`、`codex/**` 和 `v*` 标签；PR 触发 `main`、`yime-stable`。
-
-```
-build-contract → lexicon-offline-tooling / rust-i686-host / native-build / go-tests / real-rime-tests / go-race-msys2 / simple-installer
-real-rime-tests → shard-coverage
-全部保留任务 → core-build 聚合成功状态
-```
-
-关键步骤：
-- `windows-2022` 运行器
-- `libIME2` 直接纳入本仓库，遵守组件独立提交边界；退役的 Python/Node/McBopomofo/libchewing 历史源码不参与产品构建和安装
-- 内联 vswhere + VsDevCmd 设置（非 ilammy/msvc-dev-cmd）
-- CMake 构建用 `shell: cmd` 确保 VsDevCmd 环境持久
-- 仓库内固定 Rime 共享数据及 librime 版本、哈希门禁
-- Go 纯逻辑包、原生工具布局及关键语言栏/Rime 回归测试
-- 简版安装器执行启动项、产品调度、日志和进程等待回归；完整包按交接文档单独交付
-
----
-
-## 5. 测试体系
-
-### 5.1 单元测试
-
-```powershell
-cd go-backend
-go vet ./...
-go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./cmd/settings-tool ./cmd/tool-hub ./input_methods/yime/reverselookup ./input_methods/yime/runtimechange ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/toolhub ./input_methods/yime/userbackup ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
-go test ./input_methods/yime -timeout 60s
-# CI 先用 go test -list 枚举并逐项确认关键测试名存在，再按同一名单执行。
-go test ./input_methods/yime -run 'Test(NativeBackendKeepsRimeOwnedCandidatePaging|LanguageBarToggleButtonsUseStableTwoCharacterLabels|DeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy|ApplyUserLexiconWritesAllThreeModes|ApplyUserLexiconRunsExternalBuildAndSchedulesReload)$'
-```
-
-分支保护应要求聚合作业 `core-build`，而不是已不存在的旧 `build` 作业。CI 将稳定回归集、CTest、Rust、race、真实 Rime 和安装器拆为独立作业。定向回归在执行前必须逐项校验测试名，避免重命名后 `go test -run` 因仍有其它匹配项而静默少跑。真实 Rime 作业通过 `tools/test-real-rime.ps1` 显式设置 `YIME_RUN_REAL_RIME_TESTS=1`，仍与普通单元测试隔离，避免共享 librime 全局状态。
-
-关键守卫测试：
-
-| 测试 | 保护目标 |
-|------|----------|
-| `TestNativeBackendKeepsRimeOwnedCandidatePaging` | 候选分页权 |
-| `TestOnCommandAcceptsSubmenuItemIDForReverseLookupYimePinyin` | 子菜单命令解析 |
-| `TestOnCommandIgnoresLegacyLowIDCollisionForReverseLookupYimePinyin` | 低 ID 碰撞忽略 |
-| `TestSetCandidatePageSizeDoesNotRedeploy` | page_size 变更不触发完整 redeploy |
-| `TestUpdateDefaultCustomPageSizeReplacesQuotedKey` | YAML 引号 key 兼容 |
-| `TestLanguageBarToggleButtonsUseStableTwoCharacterLabels` | 语言栏稳定的双字静态切换标签 |
-| `TestOnMenuReturnsSettingsMenu` | “设置”根级工具入口及“数据维护”分组 |
-| `TestValidateEntryForAddRejectsSystemPhraseBeforePinyinValidation` | 添加时优先拒绝系统词库已有词条 |
-| `TestAdjustWeightValue` | 权重步进、非法输入及整数边界 |
-| `TestCenteredButtonRectsCentersGroupAndPreservesGaps` | 词库对话框按钮组居中与间距 |
-| `TestNoticeTitleForFlags` | 词库提示统一使用中文标题和“确认”按钮 |
-| `TestBuildUILayoutPlacesSearchControlsInOneRow` | 反查顶部控件顺序与无重叠 |
-| `TestBuildUILayoutUsesEqualRowWidthsAndContentSizedWindow` | 反查各排等宽及内容决定窗体尺寸 |
-| `TestBuildScriptKeepsGoExecutableHashesStableAndSupportsSigning` | 可复现 Go 构建与可信签名入口 |
-| `TestBlockedCandidatesHiddenFromResponse` | 用户屏蔽词表过滤 |
-| `TestBuildToolHubManifest*` | 工具箱 manifest 与可执行路径 |
-| `TestReturnKeyCommitsRawInputDuringComposition` | 回车键原始编码上屏 |
-| `TestRapidSameKey*` / `TestDuplicateKeyDown*` / `TestKeyUpClears*` | 重复按键抑制 |
-| `TestSetCandidatePageSizePreservesComposition` | 候选项数变更保存组字状态 |
-| `TestJoinRuneLookupPartialMissing` | 反查缺失字符占位符 |
-| `TestApplyUserLexiconWritesAllThreeModes` | 用户词库跨方案同步 |
-| `TestSyncRimeSchemasRefreshesAllModes` | 升级后的三套用户 schema 指向各自词库 |
-| `TestReleasePipelineKeepsSigningHooksAndBlocksUnsealedRelease` | 安装路径兜底、Go 后端打包、签名钩子，以及未封口卸载器的标签发布硬阻断 |
-
-### 5.2 边界场景测试
-
-| 场景 | 测试 |
-|------|------|
-| 并发按键/语言栏点击 | `TestConcurrentKeyAndCommandNoDataRace` |
-| 大候选列表 Go 侧分页 | `TestLargeCandidateListGoSidePaging` |
-| Unicode 边界（emoji、扩展汉字、代理对） | `TestUnicodeBoundaryEmojiAndExtendedHan` |
-| 组字中切换方案失败 | `TestSchemaSwitchFailureDuringComposition` |
-| 超长用户词组 | `TestLongUserPhraseLexiconBuild` |
-| `onCompositionTerminated` 非强制/强制终止 | `TestCompositionTerminatedNonForced` / `Forced` |
-
-### 5.3 运行时集成测试
-
-`rime_runtime_test.go` — 需要真实 Rime 运行时
-
-```powershell
-# 需要真实 Rime 运行时；部分场景可能需要管理员权限
-$env:YIME_RUN_REAL_RIME_TESTS = "1"
-go test ./input_methods/yime/ -run TestReal -v -count=1
-```
-
-| 测试 | 验证内容 |
-|------|----------|
-| `TestRealRimeRedeployAppliesPageSize` | redeploy 使 page_size 生效 |
-| `TestRealRimeExternalBuildAppliesPageSize` | 外部构建路径验证 |
-
-`core_runtime_data_test.go` 锁定核心来源、排序证据、三模式派生哈希和四层候选链；
-`TestRealRimeAllSchemasComposeSentence` 对三种模式执行同一条真实 librime 组句验收。
-
-早期 202,290、全量 pypinyin、A/B 和 B-lite 容量档仍保留为离线研究记录，但已经退出默认运行
-基线。当前发布档为两级筛选后的1,166,753条运行映射。验收必须区分三类证据：
-
-| 证据 | 当前结果 | 能证明什么 |
-|------|----------|------------|
-| 固定生产范围回放 | 2,440/2,449 冷启动首选，99.6325%；95% Wilson 下界 99.3030% | 在既定语料范围内超过99%目标 |
-| 加速学习漂移 | 540,000 次事件；重复输入首选率均高于99.97%；全部验收项通过 | 学习、重启、同码干扰和用户库收敛机制 |
-| 纯净用户态人工闭环 | 5/5 压力句可构造；3/3 一次纠正后首选；重启后3/3保持 | 安装态冷启动、人工选择和持久学习链真实可用 |
-
-五条人工压力句是机制验证，不是总体首选率估计；总体99%结论仍以固定回放与加速模拟为依据。
-“逼尿肌反射亢进”不在核心系统词库，却由已编码部件直接首选，证明未预装完整词条不再等同于
-未编码或不可输入。只有组成材料中的字符或实际读音本身未通过正式编码门禁，才属于编码缺口。
-
-### 5.4 候选排序证据与长尾保底
-
-Yime 离线构建把候选排序分成互不混算的四层：有 BCC 时使用 `2000 + bcc_frequency`；
-无 BCC 而有 RIME-LMDG（万象）权重时，按相同字长桶的百分位映射到 1000–1999；两者都没有时，
-仅用静态容量模型的 `utility_score` 百分位映射到 1–999；连结构证据也没有才保持 0。
-
-结构保底不是频次，只用于消除无语料长尾全部同权的坍缩。导出同时保存 BCC 原值、万象原值、
-两种百分位、证据来源、临时状态和 `requires_independent_corpus`；不相加不同量纲的原值，也不把
-万象或结构分反写为 BCC。全量两级词库构建执行 `structural < RIME-LMDG < BCC` 门禁，未来新的
-独立语料可以替换临时层而不改动接口。
-
-### 5.5 本地管理员测试
-
-```powershell
-go-backend\run_admin_yime_tests.cmd
-```
-
----
-
-## 6. 编码体系参考
-
-### 6.1 首音→键盘映射
-
-首音分为实首音和虚首音：实首音对应非零声母，虚首音对应零声母。在《汉语拼音方案》的书写中，
-零声母包括隔音符号 `'` 以及 `y`、`w` 三类起首形式，因此下表把三者都列为虚首音。
-
-| 首音 | 键 | 首音 | 键 | 首音 | 键 | 首音 | 键 |
-|------|-----|------|-----|------|-----|------|-----|
-| b | b | p | p | m | - | f | [ |
-| d | ] | t | t | n | n | l | \ |
-| g | g | k | q | h | h | | |
-| zh | 7 | ch | 8 | sh | 9 | r | 0 |
-| z | 6 | c | 5 | s | 4 | | |
-| j | 3 | q | 2 | x | 1 | | |
-| w（虚） | = | y（虚） | y | `'`（虚） | ' | | |
-
-### 6.2 候选选择键
-
-| 键 | 选择 | 说明 |
-|----|------|------|
-| Space / Enter / Shift+1 | 第1个 | 三种等价首选操作 |
-| Shift+2 | 第2个 | 候选窗标签显示为 `⇧2` |
-| … | … | … |
-| Shift+9 | 第9个 | 候选窗标签显示为 `⇧9` |
-
-候选窗通过扩展协议 `setSelLabels` 显示 `⇧1`…`⇧9`，避免旧的裸数字标签误导用户直接按 Base 数字键。`setSelKeys` 仍作为旧宿主的兼容字段，实际选词由 Yime 的 Shift+数字按键处理完成。物理键盘 Shift 层对应的键面为 `! @ # $ % ^ & * (`；帮助和布局图应标明这些键面，但不宜直接把标点作为候选窗序号，因为连续标点的可读性和序号感较差。
-
-与流行拼音输入法不同，Yime 不采用裸数字键选词：Base 层 `0`—`9` 十个数字键始终是音元编码的一部分，候选窗出现时也不改变含义。项目不规划“数字键在编码和选词之间切换”的可配置模式，以避免编码被候选状态截断；需要按序号选词时统一使用 Shift+1…Shift+9，Shift+0 不选词。
-
-候选窗可见时，四方向键和 Enter 由 PIME C++ 客户端先行处理，不进入普通 Go `onKeyDown` 分支。`CandidateWindow::filterKeyEvent` 用方向键维护 `currentSel`，Enter/Space 设置选择结果；`PIMEClient::onKeyDown` 随后读取 `currentSel` 并通过 `selectCandidate(index)` 通知 Go 后端。因此方向键移动后的 Enter 确认按当前高亮索引生效，与 Go 层用于直接首选的 Enter 路径不冲突。
-
-### 6.3 alphabet 字符集
-
-```
-Full:      1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ
-Variable:  1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ
-Shorthand: 1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ
-```
-
-三种 schema 使用同一套 72 字符白名单；其中新增的大写字符是显式儿化试点的 Shift 层输入动作，
-现行基础目录包含 60 个音元；`N12/N26` 与 `N25/N27` 分别受控共享物理键，但语义 ID 独立。码表导入器还会通过 `codemode.LayoutAlphabet`
-拒绝布局外字符，避免出现“导入成功但无法击键输入”的词典。
+完整测试组织与故障定位见[测试指南](YIME_TESTING_GUIDE.md)。本文描述组件关系和当前入口，历史报告保留原有结果；新源码、新包或新平台的通过范围需有各自证据。

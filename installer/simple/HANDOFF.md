@@ -4,9 +4,11 @@
 
 ## 当前任务
 
-**2026-09-16：PR #55 审查问题修复。** 开发分支 `codex/simple-installer-pr55-fixes` 从收尾后的主线创建，涉及 YimeCore 包资源校验及两套产品的卸载失败处理：补齐图标和三个必需工具的校验；Windows 拒绝移除用户输入配置时，在 COM 注销、启动项清理和文件删除之前停止。新增 `Test-PackageValidation.ps1`、`Test-ProfileRemoval.ps1`，纳入 `simple-installer` CI 门禁。
+**2026-09-16：工程文档更新，测试端无新增执行任务。** 开发分支 `codex/project-docs-refresh` 从当前主线 `76376080` 创建，统一项目首页、现状、架构、路线图、测试及工具说明。本轮只改文档，不制作安装包，不要求测试端同步、安装或重测。当前概览见[项目现状](../../docs/YIME_PROJECT_ASSESSMENT.md)与[文档导航](../../docs/README.md)。
 
-开发端已用 Windows PowerShell 5.1 隔离回归复现并验证修复，维护分发和日志回归通过；这不是实机安装或输入验收。本轮尚未交付包含修复的新安装包，测试端当前无新增执行任务。下方历史 ZIP 不包含本次修复，后续实机测试须另行发布通过 CI 的完整包及哈希。
+此前的安装器修复已通过 [PR #57](https://github.com/tsaanghwang/Yime/pull/57) 合入主线 `76376080`，[合并后 CI 35041052421](https://github.com/tsaanghwang/Yime/actions/runs/35041052421) 成功。修复补齐 YimeCore 图标和三个必需工具的包校验；Windows 拒绝移除用户输入配置时，在 COM 注销、启动项清理和文件删除之前停止。新增的包完整性与配置移除失败隔离回归已纳入 `simple-installer` CI。
+
+**包含 PR #57 修复的新完整包尚未交付，也没有该新包的实机安装或输入验收。** 下方已验收 ZIP 不包含这些修复。下一次需要实机测试时，另行发布具体范围、通过 CI 的源码提交、完整包 URL 与 SHA-256；不能因本轮文档更新重复执行历史步骤。
 
 ## 已完成阶段记录
 
@@ -18,7 +20,7 @@
 
 本轮代码提交 `a4fa6f7616b41658361a9f5b14ea3c96311ed8b0` 的 [CI 34856928836](https://github.com/tsaanghwang/Yime/actions/runs/34856928836) 已成功。当时交付的完整包及安装、两套输入和重启确认现已完成。不重复历史维护矩阵。`5c9a5d77` 的已完成维护结果仍见 [验收汇总](VALIDATION.md) 与 [原始报告索引](../../docs/testing/simple-maintenance/2026-09-14/README.md)。
 
-## 完整包与本轮已完成操作
+## 历史完整包与已完成操作（2026-09-14）
 
 - [候选包发布页](https://github.com/tsaanghwang/Yime/releases/tag/test-simple-source-a4fa6f76)
 - [下载完整安装包](https://github.com/tsaanghwang/Yime/releases/download/test-simple-source-a4fa6f76/Yime-Source-Candidate-20260914.zip)
