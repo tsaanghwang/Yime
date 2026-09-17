@@ -64,7 +64,7 @@ go-backend/build/
 
 ### 2. 配置 PIME
 
-产品包通过 `backends.go-backend.json` 提供以下配置。开发或审查配置时以此结构为准；安装到系统请使用完整包，不手工拼装正在运行的 PIME 目录。
+`go-backend/build/backends.go-backend.json` 是单独构建 Go 后端时生成的中间配置片段；制包入口会把最终配置写为产品包根目录的 `backends.json`，PIMELauncher 也只读取这个文件名。开发或审查配置时以下列结构为准；安装到系统请使用完整包，不手工拼装正在运行的 PIME 目录。
 
 注意：这个仓库里的 `backends.json` 顶层是数组，不是 `{ "backends": [...] }`。
 

@@ -92,7 +92,7 @@ Yime 使用 27 个首音类和 33 个乐音类 Yinyuan ID。当前试验布局�
 | 目录 | 路径 | 说明 |
 |------|------|------|
 | 用户数据 | `%APPDATA%\PIME\Rime\` | 用户词库、设置、屏蔽词和 Rime 用户数据 |
-| 共享数据 | `C:\Program Files (x86)\YIME\go-backend\input_methods\yime\data\` | 系统词库、编码表 |
+| 共享数据 | `C:\Program Files\Yime Rime-PIME\go-backend\input_methods\yime\data\` | 系统词库、编码表 |
 | 日志 | `%LOCALAPPDATA%\PIME\Logs\` | 后端运行日志 |
 | 备份 | `%USERPROFILE%\Documents\YIME 备份\` | 设置工具创建的可移植用户数据快照 |
 
