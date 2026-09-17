@@ -24,11 +24,19 @@ This branch prepares PIME to consume Yime through the upstream Go Rime backend.
 
 ## Prepare local data
 
-For the repository-only handoff replay, use a new output directory:
+For the repository-only handoff replay, use a new output directory. Save the following as
+`.tmp/lexicon-replay-params.json`:
 
-```powershell
-.\tools\lexicon\replay-approved-handoff.ps1 `
-  -OutputDir .\.generated\approved_core_handoff_replay
+```json
+{
+  "OutputDir": ".generated/approved_core_handoff_replay"
+}
+```
+
+Then run the script through the checked PowerShell entry:
+
+```text
+python -X utf8 tools/powershell/run_checked.py --script tools/lexicon/replay-approved-handoff.ps1 --edition ps7 --params-file .tmp/lexicon-replay-params.json
 ```
 
 This proves that the committed production handoff can regenerate all packaged dictionary modes.
@@ -39,24 +47,27 @@ external corpus and restore evidence; see
 [repository data boundary](project/YIME_REPOSITORY_DATA_BOUNDARY.md).
 
 When importing a newly reviewed Yime-local candidate, treat the fixed-length dictionary and its
-evidence manifest as an atomic pair. Do not combine files from different builds:
+evidence manifest as an atomic pair. Do not combine files from different builds. Save the named
+arguments as `.tmp/deploy-yime-rime-data-params.json`:
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1 `
-  -InputPath C:\path\to\two_level_full.dict.yaml `
-  -EvidenceManifest C:\path\to\dictionary.manifest.json `
-  -PronunciationEntries C:\path\to\lexicon_source_bundle\entries.tsv `
-  -SourceRevision <yime-source-revision>
+```json
+{
+  "InputPath": "C:/path/to/two_level_full.dict.yaml",
+  "EvidenceManifest": "C:/path/to/dictionary.manifest.json",
+  "PronunciationEntries": "C:/path/to/lexicon_source_bundle/entries.tsv",
+  "SourceRevision": "<yime-source-revision>"
+}
 ```
 
-To generate the three dictionaries without deploying them:
+```text
+python -X utf8 tools/powershell/run_checked.py --script tools/deploy-yime-rime-data.ps1 --edition ps7 --params-file .tmp/deploy-yime-rime-data-params.json
+```
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\import-yime-core-lexicon.ps1 `
-  -InputPath C:\path\to\two_level_full.dict.yaml `
-  -EvidenceManifest C:\path\to\dictionary.manifest.json `
-  -PronunciationEntries C:\path\to\lexicon_source_bundle\entries.tsv `
-  -SourceRevision <yime-source-revision>
+To generate the three dictionaries without deploying them, save the same named arguments as
+`.tmp/import-yime-core-lexicon-params.json`, then run:
+
+```text
+python -X utf8 tools/powershell/run_checked.py --script tools/import-yime-core-lexicon.ps1 --edition ps7 --params-file .tmp/import-yime-core-lexicon-params.json
 ```
 
 There is no variable-mode or shorthand-mode import switch. Those files are
