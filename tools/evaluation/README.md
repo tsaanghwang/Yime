@@ -2,17 +2,34 @@
 
 本目录替代原型中依赖可变 `pinyin_hanzi.db`、数 GB 候选快照、Tk 候选窗和键盘钩子的评估路径。所有评估首先验证 `tools/lexicon/data/yime_core_target.lock.json`，并记录当前批准的 1,166,753 条词库身份和唯一布局摘要。
 
-三模式静态效率：
+三模式静态效率：先将以下参数保存为 `.tmp/evaluate-modes-params.json`：
 
-```powershell
-.\tools\lexicon\invoke-python.ps1 tools\evaluation\evaluate_modes.py
+```json
+{
+  "ToolArguments": ["tools/evaluation/evaluate_modes.py"]
+}
 ```
 
-布局草案比较：先复制 `internal_data/manual_key_layout.json` 到生成目录，只修改副本中的 `yinyuan_id` 分配，再运行：
+再通过受检 PowerShell 入口运行：
 
-```powershell
-.\tools\lexicon\invoke-python.ps1 tools\evaluation\compare_layout.py `
-  --candidate-layout .\.generated\evaluation\candidate-layout.json
+```text
+python -X utf8 tools/powershell/run_checked.py --script tools/lexicon/invoke-python.ps1 --edition ps7 --params-file .tmp/evaluate-modes-params.json
+```
+
+布局草案比较：先复制 `internal_data/manual_key_layout.json` 到生成目录，只修改副本中的 `yinyuan_id` 分配，再将以下参数保存为 `.tmp/compare-layout-params.json`：
+
+```json
+{
+  "ToolArguments": [
+    "tools/evaluation/compare_layout.py",
+    "--candidate-layout",
+    ".generated/evaluation/candidate-layout.json"
+  ]
+}
+```
+
+```text
+python -X utf8 tools/powershell/run_checked.py --script tools/lexicon/invoke-python.ps1 --edition ps7 --params-file .tmp/compare-layout-params.json
 ```
 
 比较器只输出 `report.json` 与 `candidate.patch.json`，没有应用 patch 或写回真源的入口。正式采用布局时仍须人工审查后只修改 `internal_data/manual_key_layout.json`，并运行布局锁及完整交接门禁。
