@@ -4,11 +4,29 @@
 
 ## 当前任务
 
-**2026-09-16：工程文档更新，测试端无新增执行任务。** 开发分支 `codex/project-docs-refresh` 从当前主线 `76376080` 创建，统一项目首页、现状、架构、路线图、测试及工具说明。本轮只改文档，不制作安装包，不要求测试端同步、安装或重测。当前概览见[项目现状](../../docs/YIME_PROJECT_ASSESSMENT.md)与[文档导航](../../docs/README.md)。
+**2026-09-19：复核并接续 PR #57 双产品包交付记录；测试端无新增执行任务。** 当前开发分支 `codex/pr57-delivery-main-alignment` 从最新 `main` 的 `d8776121`（PR #61 合并后）创建，接入 `codex/pr57-dual-product-delivery` 的最终记录 `c178f9cf9cab90922fd552081a761d3092138f6b`，保留主线 PR #59–#61 的文档与路径提示修订。本轮仅复核现有附件、运行非变更/隔离验证并更新交接，不重新构建或替换安装包。复核证据与复现方式见[本轮报告](../../docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md)。
 
-此前的安装器修复已通过 [PR #57](https://github.com/tsaanghwang/Yime/pull/57) 合入主线 `76376080`，[合并后 CI 35041052421](https://github.com/tsaanghwang/Yime/actions/runs/35041052421) 成功。修复补齐 YimeCore 图标和三个必需工具的包校验；Windows 拒绝移除用户输入配置时，在 COM 注销、启动项清理和文件删除之前停止。新增的包完整性与配置移除失败隔离回归已纳入 `simple-installer` CI。
+包的安装器、YimeCore 与 Rime/PIME 应用仍对应 2026-09-16 的干净源码 `c52168611bbf62653d21357f15c52d230c5588c4`；[源码 CI 35052224041](https://github.com/tsaanghwang/Yime/actions/runs/35052224041) 成功，包含 [PR #57](https://github.com/tsaanghwang/Yime/pull/57) 合并提交 `76376080`。包来源提交与本轮文档基线分开记录，不将旧包标为从 `d8776121` 重建。
 
-**包含 PR #57 修复的新完整包尚未交付，也没有该新包的实机安装或输入验收。** 下方已验收 ZIP 不包含这些修复。下一次需要实机测试时，另行发布具体范围、通过 CI 的源码提交、完整包 URL 与 SHA-256；不能因本轮文档更新重复执行历史步骤。
+**不安装、不卸载、不重启产品进程、不改变默认输入法、不修改用户数据，也不要求测试端执行这些操作。本包尚无实机安装、输入或重启验收。** 下方历史包与历史操作记录保持原身份，不能作为本包验收或当前执行指令。
+
+### 本轮复核的已交付完整包
+
+预发布已于 **2026-09-16 09:34:46 UTC** 公开；此前交付提交 `c178f9cf` 的 [CI 35079492080](https://github.com/tsaanghwang/Yime/actions/runs/35079492080) 已成功。固定下载地址见下方；上传阶段的草稿收据原样保留，公开结果见[发布收据](https://github.com/tsaanghwang/Yime/releases/download/test-simple-pr57-c5216861/release-publication.json)。本轮核验五个发布附件的实际下载字节、大小和 SHA-256，以及 tag、源码和交付 CI；记录见[本轮报告](../../docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md)。
+
+- [测试预发布页](https://github.com/tsaanghwang/Yime/releases/tag/test-simple-pr57-c5216861)
+- [下载完整双产品包](https://github.com/tsaanghwang/Yime/releases/download/test-simple-pr57-c5216861/Yime-Dual-Product-PR57-20260916.zip)：`Yime-Dual-Product-PR57-20260916.zip`，**256620137 字节**。
+- SHA-256：`b1e56c1963bae4c9fbc20471ffac524c7ecb9a7ad001ec4db67de937265a74bd`。
+- [构建及验证证据](https://github.com/tsaanghwang/Yime/releases/download/test-simple-pr57-c5216861/Yime-PR57-Build-Evidence-20260916.zip)：54364633 字节，SHA-256 `6354dbdf886279ab4b87a9b7f63df950826f40915ac0dad2c4173e7b1f7961cc`。
+- 分支内的[制品元数据](../../docs/testing/simple-maintenance/2026-09-16/pr57-package/release-artifacts.json)、[来源证明](../../docs/testing/simple-maintenance/2026-09-16/pr57-package/BUILD-PROVENANCE.json)与[本地验证报告](../../docs/testing/simple-maintenance/2026-09-16/pr57-package/DEVELOPMENT.md)记录两个产品清单、来源哈希和验证边界。Git 源码检出或共享 `.tmp` 路径不作为收包方式。
+
+包内含共同选择入口 `Install-Uninstall.cmd`，以及独立的 `yimecore/`、`rime-pime/` 完整目录。目标为 x64 Windows 和 x86 WOW64 应用；不是 ARM64 安装包。YimeCore 65 个载荷文件，Rime/PIME 160 个；两套各自携带维护脚本、词库、语流资源、私有字体与工具。固定 librime 依赖按仓库 lock 携带并校验，本轮未重新编译 librime。45 个 PE 文件均未签名，属于开发测试预发布，不代表生产发布就绪。
+
+### 2026-09-16 构建验证与后续边界
+
+PR #57 两项回归、单套/双套合成调度、测试子进程等待及真实载荷隔离文件维护均通过 PS5。直接 `Read-Package` 与独立核验通过全部载荷大小/SHA-256/集合、45 个 PE 架构、当前产品身份、必需图标/三个工具、源码快照及语流绑定；YimeCore 三模式索引各生成两次且字节一致。构建前后的系统注册、启动项和默认输入法只读快照一致。
+
+该次本地跳过会写真实用户注册表的 `Test-Startup`，以及会在用户主目录写日志的 `Test-Logging` 和 `Setup -Action Check`，使用直接包读取验证。源码 CI 中这些测试在独立 runner 执行，不能把它们写成本机执行结果。本轮复核同样保留这些边界，具体重跑项目见本轮报告；历史构建、索引二次生成和系统保护快照不冒充本轮重跑。后续若需要实机测试，再单独明确范围，不重复历史维护矩阵。
 
 ## 已完成阶段记录
 

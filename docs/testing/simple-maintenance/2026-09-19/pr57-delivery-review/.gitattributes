@@ -1,0 +1,2 @@
+# Preserve the exact helper bytes recorded by Read-Package.result.json.
+read_packages.ps1 -text !eol -whitespace

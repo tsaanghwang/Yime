@@ -1,0 +1,25 @@
+{
+  "test": "Test-Manage",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "installer/simple/Test-Manage.ps1",
+    "--edition",
+    "ps5"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "edition": "ps5",
+  "edition_reason": "Match Windows PowerShell 5.1 used by simple-installer CI",
+  "environment_overrides": {
+    "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Manage\\temp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Manage\\tmp",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Manage\\appdata",
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Manage\\localappdata"
+  },
+  "started_utc": "2026-09-16T09:10:51.772345+00:00",
+  "finished_utc": "2026-09-16T09:10:55.909354+00:00",
+  "exit_code": 0,
+  "stdout": "Test-Manage.stdout.log",
+  "stderr": "Test-Manage.stderr.log"
+}

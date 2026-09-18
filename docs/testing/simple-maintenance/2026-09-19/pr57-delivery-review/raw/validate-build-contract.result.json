@@ -1,0 +1,32 @@
+{
+  "name": "validate-build-contract",
+  "source_head": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+  "script": "tools/validate-build-contract.ps1",
+  "script_sha256": "ce8710f31b84f16bb92ffce247d52bcbfbfc998da0202e54b5ca70a70c432f95",
+  "edition": "ps7",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "tools/validate-build-contract.ps1",
+    "--edition",
+    "ps7"
+  ],
+  "working_directory": "C:\\dev\\Yime",
+  "environment_isolation": {
+    "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\validate-build-contract\\temp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\validate-build-contract\\tmp",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\validate-build-contract\\appdata",
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\validate-build-contract\\localappdata"
+  },
+  "started_at": "2026-09-18T23:21:09.771545+00:00",
+  "finished_at": "2026-09-18T23:21:10.583287+00:00",
+  "duration_seconds": 0.812,
+  "exit_code": 0,
+  "stdout": "raw/validate-build-contract.stdout.log",
+  "stdout_sha256": "fca1ff0be84456c099f51fd704581543d96905035a9c48a990b13ca71158eabc",
+  "stderr": "raw/validate-build-contract.stderr.log",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

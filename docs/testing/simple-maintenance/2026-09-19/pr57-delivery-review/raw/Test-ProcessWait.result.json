@@ -1,0 +1,32 @@
+{
+  "name": "Test-ProcessWait",
+  "source_head": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+  "script": "installer/simple/Test-ProcessWait.ps1",
+  "script_sha256": "7909ea07f58f7fd65d92a371bfe0f87e5ee666f62831c301423c3936c328df50",
+  "edition": "ps5",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "installer/simple/Test-ProcessWait.ps1",
+    "--edition",
+    "ps5"
+  ],
+  "working_directory": "C:\\dev\\Yime",
+  "environment_isolation": {
+    "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-ProcessWait\\temp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-ProcessWait\\tmp",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-ProcessWait\\appdata",
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-ProcessWait\\localappdata"
+  },
+  "started_at": "2026-09-18T23:21:08.342572+00:00",
+  "finished_at": "2026-09-18T23:21:09.769520+00:00",
+  "duration_seconds": 1.427,
+  "exit_code": 0,
+  "stdout": "raw/Test-ProcessWait.stdout.log",
+  "stdout_sha256": "dca731c39f6479ecde19644d49188714a80c4215dc14581b08ff2cb83ebc2959",
+  "stderr": "raw/Test-ProcessWait.stderr.log",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

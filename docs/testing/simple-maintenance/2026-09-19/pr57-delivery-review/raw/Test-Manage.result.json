@@ -1,0 +1,32 @@
+{
+  "name": "Test-Manage",
+  "source_head": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+  "script": "installer/simple/Test-Manage.ps1",
+  "script_sha256": "8bba5721054b74cfab96a32c734d78a233ad5da6bfe22f8bf6570edbc1be8da0",
+  "edition": "ps5",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "installer/simple/Test-Manage.ps1",
+    "--edition",
+    "ps5"
+  ],
+  "working_directory": "C:\\dev\\Yime",
+  "environment_isolation": {
+    "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-Manage\\temp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-Manage\\tmp",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-Manage\\appdata",
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-Manage\\localappdata"
+  },
+  "started_at": "2026-09-18T23:21:04.398481+00:00",
+  "finished_at": "2026-09-18T23:21:08.341385+00:00",
+  "duration_seconds": 3.943,
+  "exit_code": 0,
+  "stdout": "raw/Test-Manage.stdout.log",
+  "stdout_sha256": "0632cd1f4eec2a4db83832d0327eabd14c7eb78281016fc840aae4b29adc1c5a",
+  "stderr": "raw/Test-Manage.stderr.log",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

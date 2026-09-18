@@ -1,0 +1,39 @@
+{
+  "test": "Test-Product",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "installer/simple/Test-Product.ps1",
+    "--edition",
+    "ps5",
+    "--params-file",
+    "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation\\Test-Product.params.json"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "edition": "ps5",
+  "edition_reason": "Match Windows PowerShell 5.1 used by simple-installer CI",
+  "parameters": {
+    "CorePackage": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\bundle\\yimecore",
+    "RimePackage": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\bundle\\rime-pime"
+  },
+  "precheck": {
+    "passed": true,
+    "root": "C:\\dev\\Yime\\.tmp",
+    "source_work_path": ".tmp/simple-install-test-<new GUID>",
+    "root_and_ancestors_have_reparse_points": false,
+    "products_are_not_executed": true,
+    "font_loading_scope": "FR_PRIVATE (16), same process only"
+  },
+  "environment_overrides": {
+    "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Product\\temp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Product\\tmp",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Product\\appdata",
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Product\\localappdata"
+  },
+  "started_utc": "2026-09-16T09:15:26.356610+00:00",
+  "finished_utc": "2026-09-16T09:15:31.457211+00:00",
+  "exit_code": 0,
+  "stdout": "Test-Product.stdout.log",
+  "stderr": "Test-Product.stderr.log"
+}

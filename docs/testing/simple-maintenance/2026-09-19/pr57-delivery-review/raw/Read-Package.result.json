@@ -1,0 +1,29 @@
+{
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "C:\\dev\\Yime\\tools\\powershell\\run_checked.py",
+    "--script",
+    "C:\\dev\\Yime\\docs\\testing\\simple-maintenance\\2026-09-19\\pr57-delivery-review\\read_packages.ps1",
+    "--edition",
+    "ps5",
+    "--params-file",
+    "C:\\dev\\Yime\\docs\\testing\\simple-maintenance\\2026-09-19\\pr57-delivery-review\\raw\\Read-Package.params.json"
+  ],
+  "edition": "ps5",
+  "exit_code": 0,
+  "started_utc": "2026-09-18T23:41:51.895726+00:00",
+  "completed_utc": "2026-09-18T23:42:00.170567+00:00",
+  "script_sha256": "9de12eeb584df0f7bb30d2ba9063aa043fac4548c584f50aea759871cc6c6866",
+  "environment_isolation": {
+    "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\package-read\\temp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\package-read\\tmp",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\package-read\\appdata",
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\package-read\\localappdata"
+  },
+  "stdout_sha256": "b114938a201467923a6ac5aec684fc1ad42e1687c4cef18f614f3e3136a9d3d1",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "extracted_zip_members": 238,
+  "setup_or_product_executables_executed": false
+}

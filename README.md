@@ -15,11 +15,11 @@ Install either product or both. Each owns its installation directory, runtime en
 
 ## Current status
 
-Reviewed on September 16, 2026 against `main` at `76376080`:
+Reviewed on September 19, 2026 against `main` at `d8776121`; the delivered package remains built from `c5216861`:
 
 - `installer/simple/` supports installing, uninstalling and reinstalling either or both products, with explicit test-data reset.
-- The rebuilt source candidate completed acceptance within the reported scope on the development and test PCs. Both products worked in Codex and Notepad before and after reboot on the test PC; Word was not reported. See [validation](installer/simple/VALIDATION.md).
-- PR #57 added package completeness checks and stopped destructive cleanup when profile removal fails. It is merged and CI passed; a complete package containing these fixes has not yet been delivered. The previous ZIP is not acceptance evidence for the latest source.
+- The September 14, 2026 source candidate completed acceptance within the reported scope on the development and test PCs. Both products worked in Codex and Notepad before and after reboot on the test PC; Word was not reported. These results belong to that historical package. See [validation](installer/simple/VALIDATION.md).
+- PR #57 added package completeness checks and stopped destructive cleanup when profile removal fails. A complete dual-product package from `c5216861`, its provenance and local validation scope are recorded in [HANDOFF](installer/simple/HANDOFF.md). This delivery does not include new installed/input acceptance or request installation; the previous ZIP is not acceptance evidence for this package.
 - The current general package targets x64 Windows and WOW64 applications. ARM64 remains a separate source experiment without a delivered complete installer or native-host acceptance.
 - Trusted signed distribution, outstanding YimeCore performance gates and production data migration remain unfinished. See [project status](docs/YIME_PROJECT_ASSESSMENT.md) for the exact boundaries.
 

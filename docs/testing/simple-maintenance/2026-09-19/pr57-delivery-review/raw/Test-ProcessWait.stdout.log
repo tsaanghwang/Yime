@@ -1,0 +1,1 @@
+PASS: installer-only wait returns while child lives; success and nonzero exit preserved. Synthetic processes only.

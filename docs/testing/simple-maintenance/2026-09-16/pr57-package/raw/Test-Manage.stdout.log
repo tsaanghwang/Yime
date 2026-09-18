@@ -1,0 +1,9 @@
+Install completed: rime-pime
+Install completed: yimecore
+Install completed: yimecore
+Install completed: rime-pime
+Uninstall completed: rime-pime
+Uninstall completed: yimecore
+Uninstall completed: yimecore
+Uninstall completed: rime-pime
+PASS: single/both install/uninstall dispatch, all-package precheck, stop on failure. Synthetic packages only.

@@ -1,0 +1,32 @@
+{
+  "name": "Test-PackageValidation",
+  "source_head": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+  "script": "installer/simple/Test-PackageValidation.ps1",
+  "script_sha256": "e9c71f5790cf1f8c39854c4d6673b532d7065d79d2c6e34dc53ebf1d4c836f7b",
+  "edition": "ps5",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "installer/simple/Test-PackageValidation.ps1",
+    "--edition",
+    "ps5"
+  ],
+  "working_directory": "C:\\dev\\Yime",
+  "environment_isolation": {
+    "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\temp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\tmp",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\appdata",
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\localappdata"
+  },
+  "started_at": "2026-09-18T23:21:02.830026+00:00",
+  "finished_at": "2026-09-18T23:21:03.866214+00:00",
+  "duration_seconds": 1.036,
+  "exit_code": 0,
+  "stdout": "raw/Test-PackageValidation.stdout.log",
+  "stdout_sha256": "08950ff5ebe7af3252cd7ca6214f5b6e9e0e95f58765cfafed34df3d890c6518",
+  "stderr": "raw/Test-PackageValidation.stderr.log",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

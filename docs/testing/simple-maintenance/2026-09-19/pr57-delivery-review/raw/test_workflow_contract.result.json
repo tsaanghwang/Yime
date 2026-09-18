@@ -1,0 +1,28 @@
+{
+  "name": "test_workflow_contract",
+  "source_head": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+  "script": "tools/ci/test_workflow_contract.py",
+  "script_sha256": "4003ac648960a6ab4c658da443c336c492ea223ae0c432367b9f56c9bae9b5ee",
+  "edition": null,
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "tools/ci/test_workflow_contract.py"
+  ],
+  "working_directory": "C:\\dev\\Yime",
+  "environment_isolation": {
+    "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\test_workflow_contract\\temp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\test_workflow_contract\\tmp",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\test_workflow_contract\\appdata",
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\test_workflow_contract\\localappdata"
+  },
+  "started_at": "2026-09-18T23:21:10.584356+00:00",
+  "finished_at": "2026-09-18T23:21:10.679114+00:00",
+  "duration_seconds": 0.095,
+  "exit_code": 0,
+  "stdout": "raw/test_workflow_contract.stdout.log",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr": "raw/test_workflow_contract.stderr.log",
+  "stderr_sha256": "6db5414056f12ab722eda33f0dbe6e60d33e9778d8f882a7dfcf8ecfb9e4c93b"
+}

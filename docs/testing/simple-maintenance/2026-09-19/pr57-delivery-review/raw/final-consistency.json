@@ -1,0 +1,403 @@
+{
+  "passed": true,
+  "created_utc": "2026-09-18T23:44:48.693649+00:00",
+  "base_commit": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+  "delivery_checks": 10,
+  "source_validation_groups": 6,
+  "direct_package_read_passed": true,
+  "original_delivery_tree_identical_in_index": true,
+  "main_followup_files_preserved": [
+    "docs/DEFAULT_DYNAMIC_LEXICON_RUNTIME.md",
+    "docs/YIME_DATA_FORMAT_REFERENCE.md",
+    "docs/YIME_RIME_INTEGRATION.md",
+    "docs/YIME_TROUBLESHOOTING.md",
+    "docs/YIME_USER_INSTALL_GUIDE.md",
+    "go-backend/README.md",
+    "go-backend/build.bat",
+    "tools/evaluation/README.md"
+  ],
+  "local_document_links_checked": 94,
+  "links": [
+    {
+      "document": "README.md",
+      "target": "README.zh-CN.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/YIME_PROJECT_ASSESSMENT.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/YIME_DEVELOPMENT_ROADMAP.md"
+    },
+    {
+      "document": "README.md",
+      "target": "tools/yimecore/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "go-backend/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/YIME_RIME_INTEGRATION.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/YIME_ARCHITECTURE.md"
+    },
+    {
+      "document": "README.md",
+      "target": "installer/simple/VALIDATION.md"
+    },
+    {
+      "document": "README.md",
+      "target": "installer/simple/HANDOFF.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/YIME_PROJECT_ASSESSMENT.md"
+    },
+    {
+      "document": "README.md",
+      "target": "installer/simple/HANDOFF.md"
+    },
+    {
+      "document": "README.md",
+      "target": "installer/simple/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/YIME_DATA_FORMAT_REFERENCE.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/YIME_USER_INSTALL_GUIDE.md"
+    },
+    {
+      "document": "README.md",
+      "target": "tools/toolchain.lock.json"
+    },
+    {
+      "document": "README.md",
+      "target": ".github/workflows/ci.yaml"
+    },
+    {
+      "document": "README.md",
+      "target": "tools/powershell/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "tools/yimecore/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/YIME_TESTING_GUIDE.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/project/YIME_REPOSITORY_DATA_BOUNDARY.md"
+    },
+    {
+      "document": "README.md",
+      "target": "CONTRIBUTING.md"
+    },
+    {
+      "document": "README.md",
+      "target": "AGENTS.md"
+    },
+    {
+      "document": "README.md",
+      "target": "docs/YIME_RELEASE_AND_SIGNING.md"
+    },
+    {
+      "document": "README.md",
+      "target": "SECURITY.md"
+    },
+    {
+      "document": "README.md",
+      "target": "CHANGELOG.md"
+    },
+    {
+      "document": "README.md",
+      "target": "NOTICE.md"
+    },
+    {
+      "document": "README.md",
+      "target": "LICENSE.txt"
+    },
+    {
+      "document": "README.md",
+      "target": "THIRD_PARTY_NOTICES.md"
+    },
+    {
+      "document": "README.md",
+      "target": "LICENSES"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "YIME_PROJECT_ASSESSMENT.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "../installer/simple/HANDOFF.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "YIME_ARCHITECTURE.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "DYNAMIC_CANDIDATE_COVERAGE.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "../tools/lexicon/README.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "project/YIME_REPOSITORY_DATA_BOUNDARY.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "../installer/simple/VALIDATION.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "testing/simple-maintenance/2026-09-14/source-candidate-test/REVIEW.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "testing/simple-maintenance/2026-09-15/main-sync/REVIEW.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "project/YIMECORE_I7_7820X_NATIVE_BENCHMARK_RESULT_2026-09-09.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "project/MANDARIN_CONNECTED_SPEECH_PLAN.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "../tools/yimecore/development-scope.json"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "YIME_RELEASE_AND_SIGNING.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "../installer/simple/HANDOFF.md"
+    },
+    {
+      "document": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "target": "../AGENTS.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "YIME_ARCHITECTURE.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "YIME_DEVELOPMENT_ROADMAP.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "YIME_TESTING_GUIDE.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "../installer/simple/HANDOFF.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "../installer/simple/VALIDATION.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "testing/simple-maintenance/2026-09-14/README.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "testing/simple-maintenance/2026-09-14/source-candidate/DEVELOPMENT.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "testing/simple-maintenance/2026-09-14/source-candidate-test/REVIEW.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "testing/simple-maintenance/2026-09-15/main-sync/REVIEW.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "project/ENGINEERING_SLIMMING_2026-09-15.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "../installer/simple/HANDOFF.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "project/YIMECORE_TEST_PC_MULTI_HOST_REPORT_2026-09-11.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "project/YIMECORE_I7_7820X_NATIVE_BENCHMARK_RESULT_2026-09-09.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "../installer/simple/HANDOFF.md"
+    },
+    {
+      "document": "docs/YIME_PROJECT_ASSESSMENT.md",
+      "target": "../installer/simple/HANDOFF.md"
+    },
+    {
+      "document": "installer/simple/HANDOFF.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md"
+    },
+    {
+      "document": "installer/simple/HANDOFF.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md"
+    },
+    {
+      "document": "installer/simple/HANDOFF.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-16/pr57-package/release-artifacts.json"
+    },
+    {
+      "document": "installer/simple/HANDOFF.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-16/pr57-package/BUILD-PROVENANCE.json"
+    },
+    {
+      "document": "installer/simple/HANDOFF.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-16/pr57-package/DEVELOPMENT.md"
+    },
+    {
+      "document": "installer/simple/HANDOFF.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-15/main-sync/TEST-RESULT.md"
+    },
+    {
+      "document": "installer/simple/HANDOFF.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-15/main-sync/REVIEW.md"
+    },
+    {
+      "document": "installer/simple/HANDOFF.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-14/source-candidate-test/REVIEW.md"
+    },
+    {
+      "document": "installer/simple/HANDOFF.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-14/source-candidate/DEVELOPMENT.md"
+    },
+    {
+      "document": "installer/simple/HANDOFF.md",
+      "target": "VALIDATION.md"
+    },
+    {
+      "document": "installer/simple/HANDOFF.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-14/README.md"
+    },
+    {
+      "document": "installer/simple/README.md",
+      "target": "HANDOFF.md"
+    },
+    {
+      "document": "installer/simple/README.md",
+      "target": "VALIDATION.md"
+    },
+    {
+      "document": "installer/simple/README.md",
+      "target": "HANDOFF.md"
+    },
+    {
+      "document": "installer/simple/VALIDATION.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md"
+    },
+    {
+      "document": "installer/simple/VALIDATION.md",
+      "target": "HANDOFF.md"
+    },
+    {
+      "document": "installer/simple/VALIDATION.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-16/pr57-package/DEVELOPMENT.md"
+    },
+    {
+      "document": "installer/simple/VALIDATION.md",
+      "target": "HANDOFF.md"
+    },
+    {
+      "document": "installer/simple/VALIDATION.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-14/source-candidate-test/REVIEW.md"
+    },
+    {
+      "document": "installer/simple/VALIDATION.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-14/source-candidate/DEVELOPMENT.md"
+    },
+    {
+      "document": "installer/simple/VALIDATION.md",
+      "target": "../../docs/testing/simple-maintenance/2026-09-14/README.md"
+    },
+    {
+      "document": "installer/simple/VALIDATION.md",
+      "target": "HANDOFF.md"
+    },
+    {
+      "document": "docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md",
+      "target": "raw/delivery-verification.json"
+    },
+    {
+      "document": "docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md",
+      "target": "verify_delivery.py"
+    },
+    {
+      "document": "docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md",
+      "target": "raw/delivery-verification-initial.json"
+    },
+    {
+      "document": "docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md",
+      "target": "raw/local-validation-summary.json"
+    },
+    {
+      "document": "docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md",
+      "target": "run_validations.py"
+    },
+    {
+      "document": "docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md",
+      "target": "read_packages.ps1"
+    },
+    {
+      "document": "docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md",
+      "target": "raw/Read-Package.result.json"
+    },
+    {
+      "document": "docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md",
+      "target": "raw/Read-Package.stdout.log"
+    },
+    {
+      "document": "docs/testing/simple-maintenance/2026-09-19/pr57-delivery-review/REVIEW.md",
+      "target": "../../../../../installer/simple/HANDOFF.md"
+    }
+  ],
+  "review_helper_sha256": {
+    "verify_delivery.py": "9dc3d350cb5b671aad0a1d18990879d37f50ee1d396cd9763623614e02776939",
+    "run_validations.py": "d2e5b11aa9264425ab5605690d83ed633759ac5f000260ff50f52226143db2c5",
+    "read_packages.ps1": "9de12eeb584df0f7bb30d2ba9063aa043fac4548c584f50aea759871cc6c6866"
+  }
+}

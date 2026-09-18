@@ -1,0 +1,92 @@
+{
+  "schema_version": "yime-dual-product-delivery-v1",
+  "candidate": "simple-pr57-20260916-c5216861",
+  "source_commit": "c52168611bbf62653d21357f15c52d230c5588c4",
+  "installer_source_commit": "c52168611bbf62653d21357f15c52d230c5588c4",
+  "source_state": "Clean current-main checkout at build time; subsequent delivery changes are documentation/evidence only.",
+  "includes_pull_request": {
+    "number": 57,
+    "url": "https://github.com/tsaanghwang/Yime/pull/57",
+    "merge_commit": "76376080df7e58c1fde9f8bb3275f51ddabf20b7",
+    "ancestry_verified": true
+  },
+  "source_ci": {
+    "conclusion": "success",
+    "databaseId": 35052224041,
+    "headSha": "c52168611bbf62653d21357f15c52d230c5588c4",
+    "status": "completed",
+    "url": "https://github.com/tsaanghwang/Yime/actions/runs/35052224041"
+  },
+  "products": {
+    "yimecore": {
+      "version": "simple-pr57-20260916-c5216861",
+      "manifest_sha256": "00661b3e51a30109beadfef3c1b04b6d04730a6749602b2ea06baec0bf256d1c",
+      "file_count": 65,
+      "total_bytes": 425307314,
+      "all_payload_sizes_and_sha256_verified": true,
+      "no_unlisted_payload": true
+    },
+    "rime-pime": {
+      "version": "1.4.0-dev.1",
+      "manifest_sha256": "bb130a4978f8591b053456bfdc6294e3784a6190b89f8e7fe0b2bd3875758fd3",
+      "file_count": 160,
+      "total_bytes": 159908450,
+      "all_payload_sizes_and_sha256_verified": true,
+      "no_unlisted_payload": true
+    }
+  },
+  "core": {
+    "source_manifest_sha256": "6e230a96aa5b239f29446298392ba2022965936c8a0dccf17be8923868bf39ea",
+    "source_archive_sha256": "df40d49258ac97cc988a18ce0325f51465ef1ddaf5fd027a1ca51e6f2b6f7910",
+    "build_inputs_sha256": "ce73b586549917d108cf60b5ef32efddcd07707421efc8e85dcc26ad9c21ca83",
+    "speech_binding": {
+      "schema_version": "yimecore-speech-build-binding-v1",
+      "admission_summary_sha256": "84b3e327e4d2c5c2db5a227e2a2d1c97193450628c47e1cc865ac10e5e780f5c",
+      "source_inventory_sha256": "af92f5412161b0b61adc276b48e8a09e7ae15380fef7f4e9f647ed8bfb16058b",
+      "export_receipt_sha256": "d8056c0868148ffde07fdd72751f11b7fcdda0ad4900da856cc6afd104872d3b",
+      "capability_sha256": "0151c87d446fc9bd540526c9da645346eaa764d485c3e8fe6c7f578619b4ec79",
+      "product_manifest_sha256": "cc368f0d3d6539a00e546edd8267c72c795831a82a3d09e7667faa928a36a0da"
+    },
+    "indexes_rebuilt_byte_identical": true
+  },
+  "rime": {
+    "applications": "Current-source Build.ps1: x86/x64 PIME, pinned i686 Rust launcher, x64 Go application/tools.",
+    "dependencies": "librime 1.17.0 binaries supplied from the repository lock and verified, not recompiled for this delivery.",
+    "runtime_lock_sha256": "548d7fd41af93dcd438f194877cfbc4fd326454a4251f55dfdfe74efe87df637"
+  },
+  "source_inputs_sha256": "f28c2d7efe084d6c68fa17b18bfec70376b76488dbb0d63450cfce7a5a574574",
+  "independent_verification_sha256": "3a788910cc63e6e8c823add33a09320e03d2a426ef8fedc6d7226b089d5202b4",
+  "installed_runtime_used_as_build_input": false,
+  "platform": "x64 Windows; x64/x86 WOW64 TSF surfaces; no ARM64 package",
+  "validation": {
+    "local_package_passed": true,
+    "registration_and_default_preserved": true,
+    "source_tests_ps5": [
+      "Test-PackageValidation",
+      "Test-ProfileRemoval",
+      "Test-Manage",
+      "Test-ProcessWait"
+    ],
+    "isolated_real_payload_test_ps5": "Test-Product",
+    "read_package_ps5": true,
+    "pe_files_checked": 45,
+    "signature_status": "45 PE files NotSigned",
+    "skipped_local_tests": {
+      "Test-Startup": "Writes real temporary user registry keys",
+      "Test-Logging": "Writes user profile log directory",
+      "Setup-Action-Check": "Writes user profile log directory; direct Read-Package used instead"
+    }
+  },
+  "acceptance": {
+    "new_package_installed": false,
+    "uninstall_performed": false,
+    "installed_processes_restarted": false,
+    "default_input_method_changed": false,
+    "user_data_modified": false,
+    "real_host_input_tested": false,
+    "reboot_tested": false,
+    "public_release_ready": false,
+    "test_pc_execution_requested": false
+  },
+  "evidence_asset_url": "https://github.com/tsaanghwang/Yime/releases/download/test-simple-pr57-c5216861/Yime-PR57-Build-Evidence-20260916.zip"
+}

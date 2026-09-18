@@ -1,0 +1,194 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "name": "Test-PackageValidation",
+      "source_head": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+      "script": "installer/simple/Test-PackageValidation.ps1",
+      "script_sha256": "e9c71f5790cf1f8c39854c4d6673b532d7065d79d2c6e34dc53ebf1d4c836f7b",
+      "edition": "ps5",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-PackageValidation.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "working_directory": "C:\\dev\\Yime",
+      "environment_isolation": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\tmp",
+        "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\appdata",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\localappdata"
+      },
+      "started_at": "2026-09-18T23:21:02.830026+00:00",
+      "finished_at": "2026-09-18T23:21:03.866214+00:00",
+      "duration_seconds": 1.036,
+      "exit_code": 0,
+      "stdout": "raw/Test-PackageValidation.stdout.log",
+      "stdout_sha256": "08950ff5ebe7af3252cd7ca6214f5b6e9e0e95f58765cfafed34df3d890c6518",
+      "stderr": "raw/Test-PackageValidation.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "Test-ProfileRemoval",
+      "source_head": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+      "script": "installer/simple/Test-ProfileRemoval.ps1",
+      "script_sha256": "4a2b00285b1aa86d10dbc83e6cc0bcd9869df572382d97a207bbb5d33580b9ee",
+      "edition": "ps5",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-ProfileRemoval.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "working_directory": "C:\\dev\\Yime",
+      "environment_isolation": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-ProfileRemoval\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-ProfileRemoval\\tmp",
+        "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-ProfileRemoval\\appdata",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-ProfileRemoval\\localappdata"
+      },
+      "started_at": "2026-09-18T23:21:03.867321+00:00",
+      "finished_at": "2026-09-18T23:21:04.397374+00:00",
+      "duration_seconds": 0.53,
+      "exit_code": 0,
+      "stdout": "raw/Test-ProfileRemoval.stdout.log",
+      "stdout_sha256": "53f80d08356ae9c828d79b3b4315037eee104973ebc52afcdefd564cd5331c48",
+      "stderr": "raw/Test-ProfileRemoval.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "Test-Manage",
+      "source_head": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+      "script": "installer/simple/Test-Manage.ps1",
+      "script_sha256": "8bba5721054b74cfab96a32c734d78a233ad5da6bfe22f8bf6570edbc1be8da0",
+      "edition": "ps5",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-Manage.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "working_directory": "C:\\dev\\Yime",
+      "environment_isolation": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-Manage\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-Manage\\tmp",
+        "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-Manage\\appdata",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-Manage\\localappdata"
+      },
+      "started_at": "2026-09-18T23:21:04.398481+00:00",
+      "finished_at": "2026-09-18T23:21:08.341385+00:00",
+      "duration_seconds": 3.943,
+      "exit_code": 0,
+      "stdout": "raw/Test-Manage.stdout.log",
+      "stdout_sha256": "0632cd1f4eec2a4db83832d0327eabd14c7eb78281016fc840aae4b29adc1c5a",
+      "stderr": "raw/Test-Manage.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "Test-ProcessWait",
+      "source_head": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+      "script": "installer/simple/Test-ProcessWait.ps1",
+      "script_sha256": "7909ea07f58f7fd65d92a371bfe0f87e5ee666f62831c301423c3936c328df50",
+      "edition": "ps5",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-ProcessWait.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "working_directory": "C:\\dev\\Yime",
+      "environment_isolation": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-ProcessWait\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-ProcessWait\\tmp",
+        "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-ProcessWait\\appdata",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\Test-ProcessWait\\localappdata"
+      },
+      "started_at": "2026-09-18T23:21:08.342572+00:00",
+      "finished_at": "2026-09-18T23:21:09.769520+00:00",
+      "duration_seconds": 1.427,
+      "exit_code": 0,
+      "stdout": "raw/Test-ProcessWait.stdout.log",
+      "stdout_sha256": "dca731c39f6479ecde19644d49188714a80c4215dc14581b08ff2cb83ebc2959",
+      "stderr": "raw/Test-ProcessWait.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "validate-build-contract",
+      "source_head": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+      "script": "tools/validate-build-contract.ps1",
+      "script_sha256": "ce8710f31b84f16bb92ffce247d52bcbfbfc998da0202e54b5ca70a70c432f95",
+      "edition": "ps7",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "tools/validate-build-contract.ps1",
+        "--edition",
+        "ps7"
+      ],
+      "working_directory": "C:\\dev\\Yime",
+      "environment_isolation": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\validate-build-contract\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\validate-build-contract\\tmp",
+        "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\validate-build-contract\\appdata",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\validate-build-contract\\localappdata"
+      },
+      "started_at": "2026-09-18T23:21:09.771545+00:00",
+      "finished_at": "2026-09-18T23:21:10.583287+00:00",
+      "duration_seconds": 0.812,
+      "exit_code": 0,
+      "stdout": "raw/validate-build-contract.stdout.log",
+      "stdout_sha256": "fca1ff0be84456c099f51fd704581543d96905035a9c48a990b13ca71158eabc",
+      "stderr": "raw/validate-build-contract.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "test_workflow_contract",
+      "source_head": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+      "script": "tools/ci/test_workflow_contract.py",
+      "script_sha256": "4003ac648960a6ab4c658da443c336c492ea223ae0c432367b9f56c9bae9b5ee",
+      "edition": null,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/ci/test_workflow_contract.py"
+      ],
+      "working_directory": "C:\\dev\\Yime",
+      "environment_isolation": {
+        "TEMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\test_workflow_contract\\temp",
+        "TMP": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\test_workflow_contract\\tmp",
+        "APPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\test_workflow_contract\\appdata",
+        "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\tests\\test_workflow_contract\\localappdata"
+      },
+      "started_at": "2026-09-18T23:21:10.584356+00:00",
+      "finished_at": "2026-09-18T23:21:10.679114+00:00",
+      "duration_seconds": 0.095,
+      "exit_code": 0,
+      "stdout": "raw/test_workflow_contract.stdout.log",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "raw/test_workflow_contract.stderr.log",
+      "stderr_sha256": "6db5414056f12ab722eda33f0dbe6e60d33e9778d8f882a7dfcf8ecfb9e4c93b"
+    }
+  ],
+  "boundary": "Synthetic fixtures/processes and read-only source checks only; no real Setup, product processes, registration, default input method or user data operations."
+}

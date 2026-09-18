@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "tools/powershell/run_checked.py",
+    "--script",
+    ".tmp/pr57-dual-product-20260916/build-rime.ps1",
+    "--edition",
+    "ps7"
+  ],
+  "started_utc": "2026-09-16T09:08:44.578020+00:00",
+  "completed_utc": "2026-09-16T09:09:55.943517+00:00",
+  "exit_code": 0,
+  "log": "rime-build.log"
+}

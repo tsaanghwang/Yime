@@ -1,0 +1,20 @@
+{
+    "passed":  true,
+    "products":  [
+                     {
+                         "product":  "yimecore",
+                         "version":  "simple-pr57-20260916-c5216861",
+                         "file_count":  65,
+                         "passed":  true
+                     },
+                     {
+                         "product":  "rime-pime",
+                         "version":  "1.4.0-dev.1",
+                         "file_count":  160,
+                         "passed":  true
+                     }
+                 ],
+    "setup_executed":  false,
+    "product_executables_executed":  false,
+    "registry_or_user_data_modified":  false
+}

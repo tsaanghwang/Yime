@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "tools/yimecore/build-local-product.ps1",
+    "--edition",
+    "ps7",
+    "--params-file",
+    ".tmp/pr57-dual-product-20260916/core-build-params.json"
+  ],
+  "started_utc": "2026-09-16T09:12:15.970596+00:00",
+  "completed_utc": "2026-09-16T09:13:34.194109+00:00",
+  "exit_code": 0,
+  "log": "core-build.log"
+}

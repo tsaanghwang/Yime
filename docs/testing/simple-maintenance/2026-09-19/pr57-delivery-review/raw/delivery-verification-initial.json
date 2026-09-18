@@ -1,0 +1,520 @@
+{
+  "schema_version": "yime-pr57-delivery-readonly-review-v1",
+  "created_utc": "2026-09-18T23:41:51.962272+00:00",
+  "source_commit": "c52168611bbf62653d21357f15c52d230c5588c4",
+  "historical_delivery_commit": "c178f9cf9cab90922fd552081a761d3092138f6b",
+  "main_base_commit": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+  "scope": "Downloaded release bytes, archived provenance, source Git objects and saved GitHub API replies",
+  "product_executables_executed": false,
+  "historical_builds_or_tests_rerun": false,
+  "historical_verify_package_py_rerun": false,
+  "authenticode_verified": false,
+  "installation_or_registry_modified": false,
+  "product_processes_restarted": false,
+  "default_input_method_changed": false,
+  "live_user_data_read_or_modified": false,
+  "installed_input_acceptance_claimed": false,
+  "checks": [
+    {
+      "name": "release_assets_and_publication_receipt",
+      "passed": true,
+      "detail": {
+        "release_id": 389780039,
+        "published_at": "2026-09-16T09:34:46Z",
+        "assets": [
+          {
+            "name": "SHA256SUMS.txt",
+            "id": 567614349,
+            "bytes": 208,
+            "sha256": "5522fe7db7f7f3bbeeaf9c547d4fd7ba7c63423374780f7b7323a21bdf06c90d",
+            "download_url": "https://github.com/tsaanghwang/Yime/releases/download/test-simple-pr57-c5216861/SHA256SUMS.txt"
+          },
+          {
+            "name": "Yime-Dual-Product-PR57-20260916.zip",
+            "id": 567614357,
+            "bytes": 256620137,
+            "sha256": "b1e56c1963bae4c9fbc20471ffac524c7ecb9a7ad001ec4db67de937265a74bd",
+            "download_url": "https://github.com/tsaanghwang/Yime/releases/download/test-simple-pr57-c5216861/Yime-Dual-Product-PR57-20260916.zip"
+          },
+          {
+            "name": "Yime-PR57-Build-Evidence-20260916.zip",
+            "id": 567614351,
+            "bytes": 54364633,
+            "sha256": "6354dbdf886279ab4b87a9b7f63df950826f40915ac0dad2c4173e7b1f7961cc",
+            "download_url": "https://github.com/tsaanghwang/Yime/releases/download/test-simple-pr57-c5216861/Yime-PR57-Build-Evidence-20260916.zip"
+          },
+          {
+            "name": "release-artifacts.json",
+            "id": 567614350,
+            "bytes": 1759,
+            "sha256": "f3363d2bab015457f8f177f119664b54a6e04dc9d9f857473b9b75daef1c8e69",
+            "download_url": "https://github.com/tsaanghwang/Yime/releases/download/test-simple-pr57-c5216861/release-artifacts.json"
+          },
+          {
+            "name": "release-publication.json",
+            "id": 567639536,
+            "bytes": 2451,
+            "sha256": "d138c04de47b6d8c16fddc5902126a17616c605dd418042d711aad699cb17c7d",
+            "download_url": "https://github.com/tsaanghwang/Yime/releases/download/test-simple-pr57-c5216861/release-publication.json"
+          }
+        ],
+        "release_publication_receipt_has_no_self_digest": true
+      }
+    },
+    {
+      "name": "source_tag_pr57_ancestry_and_ci",
+      "passed": true,
+      "detail": {
+        "source_contains_pr57": true,
+        "source_is_ancestor_of_current_main": true,
+        "source_is_ancestor_of_delivery_commit": true,
+        "ci": [
+          {
+            "headSha": "c52168611bbf62653d21357f15c52d230c5588c4",
+            "run": 35052224041,
+            "url": "https://github.com/tsaanghwang/Yime/actions/runs/35052224041",
+            "successful_jobs_in_snapshot": 12
+          },
+          {
+            "headSha": "c178f9cf9cab90922fd552081a761d3092138f6b",
+            "run": 35079492080,
+            "url": "https://github.com/tsaanghwang/Yime/actions/runs/35079492080",
+            "successful_jobs_in_snapshot": 12
+          },
+          {
+            "headSha": "d8776121ce90456c2cb8bda6e51b0795364392bd",
+            "run": 35294563072,
+            "url": "https://github.com/tsaanghwang/Yime/actions/runs/35294563072",
+            "successful_jobs_in_snapshot": 0
+          }
+        ],
+        "changed_paths_source_to_main": [
+          "docs/DEFAULT_DYNAMIC_LEXICON_RUNTIME.md",
+          "docs/YIME_DATA_FORMAT_REFERENCE.md",
+          "docs/YIME_RIME_INTEGRATION.md",
+          "docs/YIME_TROUBLESHOOTING.md",
+          "docs/YIME_USER_INSTALL_GUIDE.md",
+          "go-backend/README.md",
+          "go-backend/build.bat",
+          "tools/evaluation/README.md"
+        ],
+        "package_relabelled_as_main": false
+      }
+    },
+    {
+      "name": "release_archives_crc_and_member_safety",
+      "passed": true,
+      "detail": {
+        "Yime-Dual-Product-PR57-20260916.zip": {
+          "members": 238,
+          "uncompressed_bytes": 585307475,
+          "crc_passed": true,
+          "safe_regular_member_paths": true,
+          "extracted": false
+        },
+        "Yime-PR57-Build-Evidence-20260916.zip": {
+          "members": 69,
+          "uncompressed_bytes": 56504029,
+          "crc_passed": true,
+          "safe_regular_member_paths": true,
+          "extracted": false
+        }
+      }
+    },
+    {
+      "name": "historical_git_evidence_and_independent_report",
+      "passed": true,
+      "detail": {
+        "historical_git_files": 37,
+        "historical_git_byte_relations": {
+          "git_text_with_crlf_checkout": 1,
+          "exact_git_bytes": 36
+        },
+        "historical_index_files": 29,
+        "evidence_zip_index_files": 68,
+        "historical_independent_checks": 7,
+        "independent_report_sha256": "3a788910cc63e6e8c823add33a09320e03d2a426ef8fedc6d7226b089d5202b4",
+        "historical_verifier_executed": false
+      }
+    },
+    {
+      "name": "source_inventories_and_snapshot_bound_to_git",
+      "passed": true,
+      "detail": {
+        "source_inputs_files": 8930,
+        "source_input_byte_relations": {
+          "git_text_with_crlf_checkout": 147,
+          "exact_git_bytes": 8773,
+          "recorded_raw_bytes_verified_crlf_lf_only": 10
+        },
+        "core_snapshot": {
+          "members": 660,
+          "uncompressed_bytes": 127597402,
+          "crc_passed": true,
+          "safe_regular_member_paths": true,
+          "extracted": false
+        },
+        "core_source_byte_relations": {
+          "exact_git_bytes": 551,
+          "git_text_with_crlf_checkout": 107,
+          "recorded_raw_bytes_verified_crlf_lf_only": 2
+        },
+        "matching_source_inventory_overlap": 615,
+        "speech_source_files": 575,
+        "speech_source_byte_relations": {
+          "exact_git_bytes": 545,
+          "git_text_with_crlf_checkout": 30
+        },
+        "speech_forward_inputs": 56,
+        "all_records_bound_to_exact_source_commit": "c52168611bbf62653d21357f15c52d230c5588c4",
+        "line_ending_policy": "Exact Git blob; explicit CRLF checkout; or actual raw bytes matching recorded SHA256/size with only CRLF/LF differences"
+      }
+    },
+    {
+      "name": "complete_product_payload_manifest_hashes",
+      "passed": false
+    },
+    {
+      "name": "installer_entrypoints_source_main_and_worktree",
+      "passed": false
+    },
+    {
+      "name": "independent_required_resources_and_source_assets",
+      "passed": true,
+      "detail": {
+        "core_complete_required_files": 65,
+        "core_source_assets": 25,
+        "core_speech_payloads": 11,
+        "rime_historical_required_files": 86,
+        "rime_source_assets_bound_to_source_commit": 136,
+        "locked_runtime_files": 3
+      }
+    },
+    {
+      "name": "core_build_and_speech_provenance_bindings",
+      "passed": true,
+      "detail": {
+        "source_commit": "c52168611bbf62653d21357f15c52d230c5588c4",
+        "normal_index_bindings": 3,
+        "speech_payload_bindings": 11,
+        "source_manifest_sha256": "6e230a96aa5b239f29446298392ba2022965936c8a0dccf17be8923868bf39ea",
+        "source_archive_sha256": "df40d49258ac97cc988a18ce0325f51465ef1ddaf5fd027a1ca51e6f2b6f7910",
+        "build_inputs_sha256": "ce73b586549917d108cf60b5ef32efddcd07707421efc8e85dcc26ad9c21ca83",
+        "historical_build_success_and_index_rebuild_claims_rehashed_not_rerun": true
+      }
+    },
+    {
+      "name": "independent_pe_architecture_headers",
+      "passed": true,
+      "detail": {
+        "count": 45,
+        "architectures": {
+          "x64": 39,
+          "x86": 6
+        },
+        "files": [
+          {
+            "product": "yimecore",
+            "path": "bin/YimeBroker.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreBlocklistManager.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreDiagnostics.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreExplain.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreIndependenceAudit.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreInputToolbar.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreLayoutDesigner.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreLearningManager.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreLexiconCenter.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreLexiconManager.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreProfessionalLexicon.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCorePromotionScan.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreReverseLookup.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreSentenceRegression.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreSettingsTool.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreSystemLexiconAudit.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreToolCenter.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreTrainer.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "bin/YimeCoreTrialRuntime.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "x64/YimeRegisteredHostTests.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "x64/YimeTextServiceExperiment.dll",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "x64/YimeTextServiceRegistration.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "yimecore",
+            "path": "x86/YimeRegisteredHostTests.exe",
+            "machine": "0x014c",
+            "architecture": "x86"
+          },
+          {
+            "product": "yimecore",
+            "path": "x86/YimeTextServiceExperiment.dll",
+            "machine": "0x014c",
+            "architecture": "x86"
+          },
+          {
+            "product": "yimecore",
+            "path": "x86/YimeTextServiceRegistration.exe",
+            "machine": "0x014c",
+            "architecture": "x86"
+          },
+          {
+            "product": "rime-pime",
+            "path": "PIMELauncher.exe",
+            "machine": "0x014c",
+            "architecture": "x86"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/blocklist-manager.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/diagnostics-tool.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/input-toolbar.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/input_methods/yime/rime.dll",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/input_methods/yime/rime_deployer.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/input_methods/yime/rime_dict_manager.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/lexicon-manager.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/lexicon-promotion-scan.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/reverse-lookup.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/server.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/settings-tool.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/system-lexicon-audit.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/tool-hub.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/yime-layout-designer.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "go-backend/yime-trainer.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "x64/PIMERegistrationStatus.exe",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "x64/PIMETextService.dll",
+            "machine": "0x8664",
+            "architecture": "x64"
+          },
+          {
+            "product": "rime-pime",
+            "path": "x86/PIMERegistrationStatus.exe",
+            "machine": "0x014c",
+            "architecture": "x86"
+          },
+          {
+            "product": "rime-pime",
+            "path": "x86/PIMETextService.dll",
+            "machine": "0x014c",
+            "architecture": "x86"
+          }
+        ],
+        "authenticode_check_performed": false,
+        "native_execution_performed": false
+      }
+    }
+  ],
+  "errors": [
+    {
+      "check": "complete_product_payload_manifest_hashes",
+      "type": "ValueError",
+      "error": "Unexpected bundle files"
+    },
+    {
+      "check": "installer_entrypoints_source_main_and_worktree",
+      "type": "ValueError",
+      "error": "Bytes differ from source Git object, including explicit CRLF checkout"
+    }
+  ],
+  "inputs": {
+    "repo": "C:\\dev\\Yime",
+    "assets": "C:\\dev\\Yime\\.tmp\\pr57-delivery-review-20260919\\downloads",
+    "review": "C:\\dev\\Yime\\docs\\testing\\simple-maintenance\\2026-09-19\\pr57-delivery-review"
+  },
+  "verifier_sha256": "45f9140c02b661f1377b29cb579ad6ea1496b65d7b6eb4e8ee895aad8d5a2fa6",
+  "input_api_snapshot_hashes": {
+    "release.json": "587e521dfbfb665f5434328411536e971f0342a5af1100cdad586884693c67fd",
+    "tag-ref.json": "10f62fc7075b5c3a06aecc218e3d0782b2162eb2b22f31f57fe544a51e075f93",
+    "pr57.json": "004ae057ace14d363985909c9271271e53d34016ee27bce472ae8ef65d932f2a",
+    "source-ci.json": "688d99b452ba5b43ebd68616ae097d9d746e2f3ff247b1da6b1622e775db84a1",
+    "delivery-ci.json": "45c000709a5fdb40ccc4788c8d3cc593d043b15d604f5ce57ba186f8ff847abf",
+    "main-ci.json": "c2f8bd691dc2dc239f26d23a0686fa7bbf4aec582f165bc11a1b83e8f50ceef4",
+    "release-publication.json": "d138c04de47b6d8c16fddc5902126a17616c605dd418042d711aad699cb17c7d"
+  },
+  "passed": false
+}

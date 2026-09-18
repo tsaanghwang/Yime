@@ -1,0 +1,44 @@
+{
+  "verified_utc": "2026-09-16T09:23:36.920762+00:00",
+  "release_id": 389780039,
+  "tag_name": "test-simple-pr57-c5216861",
+  "target_commitish": "c52168611bbf62653d21357f15c52d230c5588c4",
+  "draft_at_verification": true,
+  "prerelease": true,
+  "published_at": null,
+  "assets": [
+    {
+      "id": 567614357,
+      "name": "Yime-Dual-Product-PR57-20260916.zip",
+      "size": 256620137,
+      "digest": "sha256:b1e56c1963bae4c9fbc20471ffac524c7ecb9a7ad001ec4db67de937265a74bd",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/tsaanghwang/Yime/releases/download/untagged-c98d2c8c4a2eebba3866/Yime-Dual-Product-PR57-20260916.zip"
+    },
+    {
+      "id": 567614351,
+      "name": "Yime-PR57-Build-Evidence-20260916.zip",
+      "size": 54364633,
+      "digest": "sha256:6354dbdf886279ab4b87a9b7f63df950826f40915ac0dad2c4173e7b1f7961cc",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/tsaanghwang/Yime/releases/download/untagged-c98d2c8c4a2eebba3866/Yime-PR57-Build-Evidence-20260916.zip"
+    },
+    {
+      "id": 567614350,
+      "name": "release-artifacts.json",
+      "size": 1759,
+      "digest": "sha256:f3363d2bab015457f8f177f119664b54a6e04dc9d9f857473b9b75daef1c8e69",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/tsaanghwang/Yime/releases/download/untagged-c98d2c8c4a2eebba3866/release-artifacts.json"
+    },
+    {
+      "id": 567614349,
+      "name": "SHA256SUMS.txt",
+      "size": 208,
+      "digest": "sha256:5522fe7db7f7f3bbeeaf9c547d4fd7ba7c63423374780f7b7323a21bdf06c90d",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/tsaanghwang/Yime/releases/download/untagged-c98d2c8c4a2eebba3866/SHA256SUMS.txt"
+    }
+  ],
+  "all_server_sizes_and_sha256_match_local": true
+}
