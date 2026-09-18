@@ -23,7 +23,7 @@
 
 1. 确认 `server.exe` 正在运行（任务管理器）
 2. 结束 `server.exe`，重新切换到 Yime
-3. 如果重装后出现此问题，确认安装路径正确（`C:\Program Files (x86)\YIME\`）
+3. 如果重装后出现此问题，确认安装路径正确（`C:\Program Files\Yime Rime-PIME\`）
 4. Windows Smart App Control 可能阻止了 server.exe，见下方"Smart App Control 问题"
 
 ## 候选窗口不显示
@@ -84,7 +84,8 @@
 
 ## 安装器尝试写入盘符根目录
 
-**症状**：安装时提示无法写入 `\go-backend\...`，安装进度页的输出目录也从反斜杠开始，没有 `C:\Program Files (x86)\YIME` 前缀。
+**症状**：安装时提示无法写入 `\go-backend\...`，安装进度页的输出目录也从反斜杠开始，
+没有 `C:\Program Files\Yime Rime-PIME` 前缀。
 
 **原因**：旧开发卸载留下 Add/Remove Programs 卸载项、却删除了安装目录注册项；旧安装器直接把空注册表值写入 `$INSTDIR`。
 
@@ -106,7 +107,7 @@
 如果 server.exe 无法自动重启：
 
 1. 在任务管理器中找到并结束 `PIMELauncher.exe`
-2. 手动运行 `C:\Program Files (x86)\YIME\PIMELauncher.exe`
+2. 手动运行 `C:\Program Files\Yime Rime-PIME\PIMELauncher.exe`
 3. 切换到 Yime
 
 ## 收集诊断信息
