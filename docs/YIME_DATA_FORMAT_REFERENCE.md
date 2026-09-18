@@ -4,7 +4,8 @@
 
 ## 共享数据文件
 
-共享数据位于 `<install-dir>\input_methods\yime\data\`（如 `C:\Program Files (x86)\YIME\go-backend\input_methods\yime\data\`）。
+共享数据位于 `<install-dir>\go-backend\input_methods\yime\data\`。当前 Rime/PIME 产品的默认位置为
+`C:\Program Files\Yime Rime-PIME\go-backend\input_methods\yime\data\`。
 
 ### yime_pinyin_codes.tsv
 

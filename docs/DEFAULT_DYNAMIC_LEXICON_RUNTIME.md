@@ -29,15 +29,26 @@ BCC 频次，也不把两个语料库的原始计数直接相加。
 
 ## 导入与验证
 
-```powershell
-powershell -ExecutionPolicy Bypass -File tools/import-yime-core-lexicon.ps1 `
-  -InputPath <prototype>\two_level_full.dict.yaml `
-  -EvidenceManifest <prototype>\dictionary.manifest.json `
-  -PronunciationEntries <prototype>\lexicon_source_bundle\entries.tsv `
-  -SourceRevision <prototype-commit>
+先将导入参数保存为 UTF-8 编码的 `.tmp/import-yime-core-lexicon-params.json`：
 
-cd go-backend
-go test ./input_methods/yime/...
+```json
+{
+  "InputPath": "<content-locked-external-root>\\two_level_full.dict.yaml",
+  "EvidenceManifest": "<content-locked-external-root>\\dictionary.manifest.json",
+  "PronunciationEntries": "<content-locked-external-root>\\lexicon_source_bundle\\entries.tsv",
+  "SourceRevision": "<source-revision>",
+  "RepositoryImportApproval": "tools\\data_import_approvals\\<approval>.json"
+}
+```
+
+再从仓库根目录通过受检 PowerShell 入口导入，并运行 Go 回归：
+
+```powershell
+python -X utf8 tools/powershell/run_checked.py `
+  --script tools/import-yime-core-lexicon.ps1 `
+  --edition ps7 `
+  --params-file .tmp/import-yime-core-lexicon-params.json
+go test -C go-backend ./input_methods/yime/...
 ```
 
 导入脚本先校验原型证据清单和输入 SHA-256，再一次性重建三模式词典。构建门禁验证三套词典、
