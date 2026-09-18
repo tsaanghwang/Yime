@@ -47,7 +47,7 @@ BCC 频次，也不把两个语料库的原始计数直接相加。
 python -X utf8 tools/powershell/run_checked.py `
   --script tools/import-yime-core-lexicon.ps1 `
   --edition ps7 `
-  --params-file .tmp/import-yime-core-lexicon-params.json
+  --params-file .tmp/import-yime-core-lexicon-params.json &&
 go test -C go-backend ./input_methods/yime/...
 ```
 
