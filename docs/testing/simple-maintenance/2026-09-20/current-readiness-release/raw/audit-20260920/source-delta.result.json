@@ -1,0 +1,12 @@
+{
+  "command": [
+    "git",
+    "diff",
+    "--name-status",
+    "53b409d7713ad47e0ae1039e060462012614d7b2",
+    "0ab8631266736775bf1386f456d4a1d53e8e2eb3"
+  ],
+  "exit_code": 0,
+  "stdout_sha256": "d2b537c3503cad09378109c5fd7bd7baf3149a1e25bf900c28f475132410a476",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

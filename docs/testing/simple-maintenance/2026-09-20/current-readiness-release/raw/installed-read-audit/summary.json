@@ -1,0 +1,39 @@
+{
+  "schema_version": "yime-installed-static-read-audit-v1",
+  "completed_at_utc": "2026-09-19T23:32:42.847326+00:00",
+  "script_sha256": "8091beef046f5221fd180ffd9894b593bdab216cde9669043e427c19344bc7f8",
+  "error": null,
+  "product_mutation_performed": false,
+  "product_binary_executed": false,
+  "user_state_read": false,
+  "registry_mutation_performed": false,
+  "registration_roots_present_and_readable": true,
+  "registration_snapshot_unchanged": true,
+  "registration_before_sha256": "4505540a5402112ba7199b4813246db4a9b93f74ce725224660e92a9e59f9103",
+  "registration_after_sha256": "4505540a5402112ba7199b4813246db4a9b93f74ce725224660e92a9e59f9103",
+  "products": [
+    {
+      "product": "yimecore",
+      "historical_manifest_sha256": "67cbdf516ae8e4348f47ffa5bc7d94d1468d200c320b66b4a1d73ce649facf8d",
+      "historical_manifest_hash_matches": true,
+      "safe_unique_paths": true,
+      "expected_files": 65,
+      "matched_files": 65,
+      "mismatch_count": 0,
+      "go_binaries": 19,
+      "go_vcs_revision_embedded": []
+    },
+    {
+      "product": "rime-pime",
+      "historical_manifest_sha256": "2996982b88c70b251124847fd6fa37ada185a6c173de1139cbb32afda8324d38",
+      "historical_manifest_hash_matches": true,
+      "safe_unique_paths": true,
+      "expected_files": 160,
+      "matched_files": 160,
+      "mismatch_count": 0,
+      "go_binaries": 12,
+      "go_vcs_revision_embedded": []
+    }
+  ],
+  "boundary": "Installed expected-payload static consistency and selected HKLM registration preservation only. Does not recover the original package or prove build reproducibility, activation, running processes, startup, live input, or a clean source checkout. No user-state paths were enumerated. Native binaries are not assigned Go VCS metadata."
+}

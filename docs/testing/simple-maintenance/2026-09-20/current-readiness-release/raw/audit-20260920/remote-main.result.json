@@ -1,0 +1,11 @@
+{
+  "command": [
+    "git",
+    "ls-remote",
+    "origin",
+    "refs/heads/main"
+  ],
+  "exit_code": 0,
+  "stdout_sha256": "03cd57818e6cfa317ddb37b439a43d60f6b55a3ae17dd9e9b18661e45312c3b5",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

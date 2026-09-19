@@ -1,0 +1,10 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/tsaanghwang/Yime/actions/runs/35411599859/artifacts"
+  ],
+  "exit_code": 0,
+  "stdout_sha256": "d50640129b6c3bc0f7a7029775501ffc52fd190bf321040303d9c5e2c361bc0d",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

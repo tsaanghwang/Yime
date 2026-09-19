@@ -1,0 +1,332 @@
+{
+  "format": "yime-simple-package-1",
+  "product": "yimecore",
+  "version": "0.1.0-local.13",
+  "files": [
+    {
+      "path": "local-product.json",
+      "bytes": 7832,
+      "sha256": "91baa22049b493f637107467686f541e0f45c1088b71c5eb792054d5ed10ee31"
+    },
+    {
+      "path": "profile-icon.ico",
+      "bytes": 19067,
+      "sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e"
+    },
+    {
+      "path": "speech-capability.json",
+      "bytes": 220,
+      "sha256": "7c7ec05a237d371c92d8659d431d9b8dfd74418f1c9a484936645ad214ddc7f7"
+    },
+    {
+      "path": "x86/YimeRegisteredHostTests.exe",
+      "bytes": 384512,
+      "sha256": "51150b9a93421d2730c6526640af0c8243f8af450ed3bb128d48acc69570fdb0"
+    },
+    {
+      "path": "x86/YimeTextServiceExperiment.dll",
+      "bytes": 582144,
+      "sha256": "ca808e8d6d2959f9cf673b78714c624d3fcaa16b3d9a15de02cdb2aac10fba5d"
+    },
+    {
+      "path": "x86/YimeTextServiceRegistration.exe",
+      "bytes": 228352,
+      "sha256": "3acbe4e0d5062a3f1f1c3ad89382d8b5f32b58bce888532fe7c0f7b1db8654cb"
+    },
+    {
+      "path": "x64/YimeRegisteredHostTests.exe",
+      "bytes": 459264,
+      "sha256": "5c3b88b0a7ea5bebcf18d60ff43fa6c6802fffe84a57b427a01c4fa1e0abd121"
+    },
+    {
+      "path": "x64/YimeTextServiceExperiment.dll",
+      "bytes": 670720,
+      "sha256": "78934d34796be54e12735b3c97d2fe15dd147bf7069c3c797d44f6cfa7b80feb"
+    },
+    {
+      "path": "x64/YimeTextServiceRegistration.exe",
+      "bytes": 285696,
+      "sha256": "a58e71fcb5d2118f0d1f0e10e88d24be76b72e20f169336135b3b9f8328344b9"
+    },
+    {
+      "path": "speech/admission.json",
+      "bytes": 1295,
+      "sha256": "cd8f510bf4122ab48d6c260c62c2d53363121d59488395fcc1366a1df62c914c"
+    },
+    {
+      "path": "speech/admitted-records.json",
+      "bytes": 62558,
+      "sha256": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d"
+    },
+    {
+      "path": "speech/forward-source.json",
+      "bytes": 17920,
+      "sha256": "73e2ec162b0bc3a114a5a9de902b14b68c505d736502d2940d6e29297ace56c2"
+    },
+    {
+      "path": "speech/product.json",
+      "bytes": 2501,
+      "sha256": "9d56bbac5342a565913ca54b372263d5bb71d767079ee6b9dbd195eb6f4b7f2b"
+    },
+    {
+      "path": "speech/indexes/full-core.yidx",
+      "bytes": 40267102,
+      "sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1"
+    },
+    {
+      "path": "speech/indexes/full-stage5c.yidx",
+      "bytes": 848,
+      "sha256": "470ef8e58a0f61bde3e7437097b1c480be4962d3e9a4680984567d53e3a427b9"
+    },
+    {
+      "path": "speech/indexes/shorthand-core.yidx",
+      "bytes": 38209725,
+      "sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec"
+    },
+    {
+      "path": "speech/indexes/shorthand-stage5c.yidx",
+      "bytes": 825,
+      "sha256": "15929d0e62a882a4ce640b50d19e6a8af5ad5d1840b0f89e0e8a95ec0d8bc764"
+    },
+    {
+      "path": "speech/indexes/variable-core.yidx",
+      "bytes": 38801056,
+      "sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada"
+    },
+    {
+      "path": "speech/indexes/variable-stage5c.yidx",
+      "bytes": 825,
+      "sha256": "dd27f391102382a2ec2a5313d3cc7eaebb7ff6bd671e73623857ddb04ddc6371"
+    },
+    {
+      "path": "professional-lexicons/catalog.json",
+      "bytes": 74,
+      "sha256": "81fb1d223b5dca05cd968fd4c117dbc0cee83865e2088d545fdb1fdcd03b3c2e"
+    },
+    {
+      "path": "indexes/full.yidx",
+      "bytes": 40267102,
+      "sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1"
+    },
+    {
+      "path": "indexes/shorthand.yidx",
+      "bytes": 38209725,
+      "sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec"
+    },
+    {
+      "path": "indexes/variable.yidx",
+      "bytes": 38801056,
+      "sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada"
+    },
+    {
+      "path": "help/diagnostics.html",
+      "bytes": 1735,
+      "sha256": "1d7c33f93d70b8f2f9c04dff80b1d4eb4a0244576327664843b5477873759afd"
+    },
+    {
+      "path": "help/README.html",
+      "bytes": 2421,
+      "sha256": "9481a48b12a6d26af7bd42adaff2cda533f4a4107b249441866522e59eb9e5a2"
+    },
+    {
+      "path": "help/settings-and-data.html",
+      "bytes": 1894,
+      "sha256": "511fe388c648e4ecd878a37f14b27e9afb1e3e80ddcc7b83fc3cb6f78362b130"
+    },
+    {
+      "path": "help/trial-feedback.html",
+      "bytes": 1950,
+      "sha256": "0147684c7c812a5b677db12c8a8c1042618b845867f8357cb123c1a3903ccd40"
+    },
+    {
+      "path": "data/dynamic_sentence_cases.json",
+      "bytes": 5338,
+      "sha256": "8193a4096f4af139ce64b6f853ec4f33952f366e282fd365bb8ac3be5b524412"
+    },
+    {
+      "path": "data/pinyin_normalized.json",
+      "bytes": 31697,
+      "sha256": "01bb8e95f124b42c3b1187cfe3872940ab73ebf83a6fe4bebfeac4139bc38422"
+    },
+    {
+      "path": "data/yime_core_source_manifest.json",
+      "bytes": 1842,
+      "sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97"
+    },
+    {
+      "path": "data/yime_full.dict.yaml",
+      "bytes": 31621303,
+      "sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f"
+    },
+    {
+      "path": "data/yime_full.schema.yaml",
+      "bytes": 1959,
+      "sha256": "5889514c808199a00c1c1618a4f940c71acd1e69eb8dc9592788e67a346114c0"
+    },
+    {
+      "path": "data/yime_lexicon_manifest.json",
+      "bytes": 667,
+      "sha256": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8"
+    },
+    {
+      "path": "data/yime_pinyin_codes.tsv",
+      "bytes": 19448,
+      "sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071"
+    },
+    {
+      "path": "data/yime_pua_pinyin.json",
+      "bytes": 62686,
+      "sha256": "c60f4acc864e2c699eefcf796feaf855e2c19770191d8417fb7d51d17ceb3699"
+    },
+    {
+      "path": "data/yime_shorthand.dict.yaml",
+      "bytes": 29563931,
+      "sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c"
+    },
+    {
+      "path": "data/yime_shorthand.schema.yaml",
+      "bytes": 1996,
+      "sha256": "d3b2fb6b39e958f30a0479de411ea65c6b4578b2548da106d1b23fda89910eaf"
+    },
+    {
+      "path": "data/yime_syllable_decomposition.tsv",
+      "bytes": 177143,
+      "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7"
+    },
+    {
+      "path": "data/yime_variable.dict.yaml",
+      "bytes": 30155261,
+      "sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b"
+    },
+    {
+      "path": "data/yime_variable.schema.yaml",
+      "bytes": 2067,
+      "sha256": "2a0d05769a3aee860ed14b503a24d295749f3f788cecf2fd792018094cd0f330"
+    },
+    {
+      "path": "data/yime_yinyuan_layout.json",
+      "bytes": 1023,
+      "sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0"
+    },
+    {
+      "path": "data/trainer/curriculum.json",
+      "bytes": 994,
+      "sha256": "6b57e56d91686fdf244b9df273477b73c53f19558fa4c40fc164b01bbec1ca51"
+    },
+    {
+      "path": "data/trainer/foundation.json",
+      "bytes": 2015,
+      "sha256": "94c110348e6c6eb081b1b24707d3024d8bf199dbde6f7f5ff484176a5b581555"
+    },
+    {
+      "path": "data/trainer/yinyuan_catalog.json",
+      "bytes": 8358,
+      "sha256": "adcbbca053785bf189c6ca834aef27fadb9c4ccf3a55c0acfeb352a5743ea5c3"
+    },
+    {
+      "path": "data/trainer/yinyuan_groups.json",
+      "bytes": 3093,
+      "sha256": "0821ce4e8da0149af75ae8e78e0ed579d15f3c04039f1de3acf5c3e717f8ab0c"
+    },
+    {
+      "path": "data/fonts/YinYuan-Regular.ttf",
+      "bytes": 16024176,
+      "sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d"
+    },
+    {
+      "path": "bin/YimeBroker.exe",
+      "bytes": 5465600,
+      "sha256": "5dadb24ff6c54784d2325833d4355a1ab1c0763ed8231bbaec63ed9d6a10b730"
+    },
+    {
+      "path": "bin/YimeCoreBlocklistManager.exe",
+      "bytes": 3174400,
+      "sha256": "8f7582cc4198e071b7bd066ac2619d4e0d60456e8f52354c8c5cd49c893fd1e8"
+    },
+    {
+      "path": "bin/YimeCoreDiagnostics.exe",
+      "bytes": 3639296,
+      "sha256": "9260d50f1791416305600a4ff9b3a8abbcece34dc24eb86992dee319f2c40ebf"
+    },
+    {
+      "path": "bin/YimeCoreExplain.exe",
+      "bytes": 3812864,
+      "sha256": "f9ac771f5ec155bfd65de70c4a4897c4aa8f8039911c08edd3ea63afaf491cd0"
+    },
+    {
+      "path": "bin/YimeCoreIndependenceAudit.exe",
+      "bytes": 4619264,
+      "sha256": "62f241d3bc5b10f888c1bc3b9c27ba23575335854e6baa8914e404ea7f5d522e"
+    },
+    {
+      "path": "bin/YimeCoreInputToolbar.exe",
+      "bytes": 3801600,
+      "sha256": "35e22b86bb5a902801c036b8af02d87e6860601086f3cb7c90bbd23dd1d05f8a"
+    },
+    {
+      "path": "bin/YimeCoreLayoutDesigner.exe",
+      "bytes": 5091840,
+      "sha256": "73f09854321e6acfc7008bb71f01b8d6f93dcfc30451051b45ebf6433189a24a"
+    },
+    {
+      "path": "bin/YimeCoreLearningManager.exe",
+      "bytes": 4003328,
+      "sha256": "81a27ba7711c51a649c60d5862bda8692d40e61fbfde794aafcc880caa108e79"
+    },
+    {
+      "path": "bin/YimeCoreLexiconCenter.exe",
+      "bytes": 4068864,
+      "sha256": "5d7a0e7f4fe72d370376c82189dc71fb53f9fb91ea9a31f81e8e7a4875c8c03a"
+    },
+    {
+      "path": "bin/YimeCoreLexiconManager.exe",
+      "bytes": 4406784,
+      "sha256": "53a8d09476ab3bf6d07c47b34b37f7dcce02e604cdd64e6d12ca8f265927fdd4"
+    },
+    {
+      "path": "bin/YimeCoreProfessionalLexicon.exe",
+      "bytes": 3928064,
+      "sha256": "ca4364d46795597e39acddb71e1b0198eaad8e2ce1d6fdca8423afb82c3770c2"
+    },
+    {
+      "path": "bin/YimeCorePromotionScan.exe",
+      "bytes": 4114432,
+      "sha256": "ca7c37094370c1d014190518eed39a031c337171512ebc94498725debc254f0a"
+    },
+    {
+      "path": "bin/YimeCoreReverseLookup.exe",
+      "bytes": 4435968,
+      "sha256": "7609b328e5dfebf8673ef67076ed684e8350e21d3260d888ca9102edd34d1501"
+    },
+    {
+      "path": "bin/YimeCoreSentenceRegression.exe",
+      "bytes": 4045312,
+      "sha256": "098fcf62e4eed8e43d24bf753cccb132b3b7dabf1017e6f4673518b48ab68cfc"
+    },
+    {
+      "path": "bin/YimeCoreSettingsTool.exe",
+      "bytes": 4904448,
+      "sha256": "074a26965df215e28317b5a26a852179bc6a6d8275ff86047809fa58eb53164d"
+    },
+    {
+      "path": "bin/YimeCoreSystemLexiconAudit.exe",
+      "bytes": 3719168,
+      "sha256": "983e772a1cbe7f1077d242e0dbf62b23a1e9cb2589657d8fa06856409dfd2ffb"
+    },
+    {
+      "path": "bin/YimeCoreToolCenter.exe",
+      "bytes": 4068864,
+      "sha256": "5d7a0e7f4fe72d370376c82189dc71fb53f9fb91ea9a31f81e8e7a4875c8c03a"
+    },
+    {
+      "path": "bin/YimeCoreTrainer.exe",
+      "bytes": 4696064,
+      "sha256": "6f924ac55e844f2f88aaf7a8f3d8fe976a8ae4174dc9bd8c8e3c151272b764aa"
+    },
+    {
+      "path": "bin/YimeCoreTrialRuntime.exe",
+      "bytes": 4371456,
+      "sha256": "bf9fbc5029aa40d5890a503c2e28e87bdad096f686191978079767e58ed6a6e8"
+    }
+  ]
+}

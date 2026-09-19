@@ -1,0 +1,386 @@
+{
+  "observed_at_utc": "2026-09-19T23:27:31.923012+00:00",
+  "base_main": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+  "source_candidate_from_report_not_package_attestation": "53b409d7713ad47e0ae1039e060462012614d7b2",
+  "original_paths": [
+    {
+      "path": "C:\\dev\\Yime.worktrees\\current-readiness-gates",
+      "exists": false
+    },
+    {
+      "path": "C:\\dev\\Yime.worktrees\\current-readiness-gates\\.tmp\\dual-package\\r1-complete",
+      "exists": false
+    },
+    {
+      "path": "C:\\dev\\Yime.worktrees\\current-readiness-gates\\.tmp\\yimecore-experiment\\speech-admission-20260919-090936-2aeb909bb94a41c9b1ed6f61186c0a58",
+      "exists": false
+    },
+    {
+      "path": "C:\\dev\\Yime.worktrees\\current-readiness-gates\\.tmp\\installed-audit-pre-reboot.json",
+      "exists": false
+    }
+  ],
+  "historical_reports": [
+    {
+      "path": "docs\\testing\\simple-maintenance\\2026-09-19\\current-readiness\\DEVELOPMENT.md",
+      "bytes": 8263,
+      "sha256": "98e37be82fae5b89270c5389d907823520577be4f7fca498dcf2e6cbb11a2e92"
+    },
+    {
+      "path": "docs\\testing\\simple-maintenance\\2026-09-19\\current-readiness\\post-reboot.json",
+      "bytes": 2806,
+      "sha256": "b0d0f9ddb37a8f30a6aded8bc89e3509d2a53a46228f780eaa29c5ada84907a1"
+    }
+  ],
+  "ci": [
+    {
+      "run": 35410109813,
+      "head_sha": "d228aaae49d13b383d0f1b478b75b860df4c5a13",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/35410109813",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "build-contract / validate-build-contract",
+          "conclusion": "success"
+        },
+        {
+          "name": "native-build",
+          "conclusion": "success"
+        },
+        {
+          "name": "lexicon-offline-tooling",
+          "conclusion": "success"
+        },
+        {
+          "name": "go-tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "rust-i686-host",
+          "conclusion": "success"
+        },
+        {
+          "name": "simple-installer",
+          "conclusion": "success"
+        },
+        {
+          "name": "go-race-msys2",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 0",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 1",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 2",
+          "conclusion": "success"
+        },
+        {
+          "name": "shard-coverage",
+          "conclusion": "success"
+        },
+        {
+          "name": "core-build",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run": 35410743586,
+      "head_sha": "e2569762b5bb6ed9cab41b0e26c2219660c67179",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/35410743586",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "build-contract / validate-build-contract",
+          "conclusion": "success"
+        },
+        {
+          "name": "lexicon-offline-tooling",
+          "conclusion": "success"
+        },
+        {
+          "name": "simple-installer",
+          "conclusion": "success"
+        },
+        {
+          "name": "go-race-msys2",
+          "conclusion": "success"
+        },
+        {
+          "name": "go-tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "rust-i686-host",
+          "conclusion": "success"
+        },
+        {
+          "name": "native-build",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 2",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 1",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 0",
+          "conclusion": "success"
+        },
+        {
+          "name": "shard-coverage",
+          "conclusion": "success"
+        },
+        {
+          "name": "core-build",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run": 35411599859,
+      "head_sha": "53b409d7713ad47e0ae1039e060462012614d7b2",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/35411599859",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "build-contract / validate-build-contract",
+          "conclusion": "success"
+        },
+        {
+          "name": "go-race-msys2",
+          "conclusion": "success"
+        },
+        {
+          "name": "go-tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "lexicon-offline-tooling",
+          "conclusion": "success"
+        },
+        {
+          "name": "rust-i686-host",
+          "conclusion": "success"
+        },
+        {
+          "name": "simple-installer",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 0",
+          "conclusion": "success"
+        },
+        {
+          "name": "native-build",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 1",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 2",
+          "conclusion": "success"
+        },
+        {
+          "name": "shard-coverage",
+          "conclusion": "success"
+        },
+        {
+          "name": "core-build",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run": 35413263479,
+      "head_sha": "9f569649531ac02b19379fd8b0c11245f00f4146",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/35413263479",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "build-contract / validate-build-contract",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 0",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 2",
+          "conclusion": "success"
+        },
+        {
+          "name": "native-build",
+          "conclusion": "success"
+        },
+        {
+          "name": "simple-installer",
+          "conclusion": "success"
+        },
+        {
+          "name": "lexicon-offline-tooling",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 1",
+          "conclusion": "success"
+        },
+        {
+          "name": "rust-i686-host",
+          "conclusion": "success"
+        },
+        {
+          "name": "go-tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "go-race-msys2",
+          "conclusion": "success"
+        },
+        {
+          "name": "shard-coverage",
+          "conclusion": "success"
+        },
+        {
+          "name": "core-build",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run": 35415060417,
+      "head_sha": "2c8ebd5e4bac5f17ba632b72b3fe4bb158312110",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/35415060417",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "build-contract / validate-build-contract",
+          "conclusion": "success"
+        },
+        {
+          "name": "simple-installer",
+          "conclusion": "success"
+        },
+        {
+          "name": "native-build",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 0",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 1",
+          "conclusion": "success"
+        },
+        {
+          "name": "rust-i686-host",
+          "conclusion": "success"
+        },
+        {
+          "name": "lexicon-offline-tooling",
+          "conclusion": "success"
+        },
+        {
+          "name": "go-race-msys2",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 2",
+          "conclusion": "success"
+        },
+        {
+          "name": "go-tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "shard-coverage",
+          "conclusion": "success"
+        },
+        {
+          "name": "core-build",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run": 35418522827,
+      "head_sha": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/35418522827",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "build-contract / validate-build-contract",
+          "conclusion": "success"
+        },
+        {
+          "name": "lexicon-offline-tooling",
+          "conclusion": "success"
+        },
+        {
+          "name": "rust-i686-host",
+          "conclusion": "success"
+        },
+        {
+          "name": "simple-installer",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 0",
+          "conclusion": "success"
+        },
+        {
+          "name": "go-race-msys2",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 2",
+          "conclusion": "success"
+        },
+        {
+          "name": "go-tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "real-rime-tests / 1",
+          "conclusion": "success"
+        },
+        {
+          "name": "native-build",
+          "conclusion": "success"
+        },
+        {
+          "name": "shard-coverage",
+          "conclusion": "success"
+        },
+        {
+          "name": "core-build",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "boundaries": {
+    "product_execution": false,
+    "installed_payload_read": false,
+    "installation_mutation": false,
+    "user_data_mutation": false,
+    "release_created": false
+  }
+}

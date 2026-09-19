@@ -1,0 +1,43 @@
+{
+  "schema_version": "yime-current-readiness-delivery-plan-v1",
+  "status": "blocked_missing_original_package_and_build_evidence",
+  "prepared_asset": false,
+  "release_created": false,
+  "release_url": null,
+  "asset_url": null,
+  "asset_bytes": null,
+  "asset_sha256": null,
+  "proposed_asset_name_if_original_recovered": "Yime-Dual-Product-Current-Readiness-20260919.zip",
+  "source_candidate_from_report": "53b409d7713ad47e0ae1039e060462012614d7b2",
+  "package_build_commit_attested": false,
+  "main_baseline": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+  "source_ci_url": "https://github.com/tsaanghwang/Yime/actions/runs/35411599859",
+  "main_ci_url": "https://github.com/tsaanghwang/Yime/actions/runs/35418522827",
+  "expected_product_manifests": [
+    {
+      "product": "yimecore",
+      "file_count": 65,
+      "sha256": "67cbdf516ae8e4348f47ffa5bc7d94d1468d200c320b66b4a1d73ce649facf8d",
+      "retained_copy": "raw/retained-metadata/yimecore-manifest.json"
+    },
+    {
+      "product": "rime-pime",
+      "file_count": 160,
+      "sha256": "2996982b88c70b251124847fd6fa37ada185a6c173de1139cbb32afda8324d38",
+      "retained_copy": "raw/retained-metadata/rime-pime-manifest.json"
+    }
+  ],
+  "expected_missing_admission": {
+    "summary_sha256": "a08430e0a59030cdc4b4c749dd2dc7aa7044ea393c7b6e80cab737ebda6d478d",
+    "inventory_sha256": "9dfd92d65181a940263d61fe008d8c39fe799ef5d2f4a3a769db1dbe053379e2"
+  },
+  "required_before_asset_delivery": [
+    "Recover the original complete package and original build/admission evidence, or identify a separate new source build without inheriting old acceptance",
+    "Verify full ordered manifests, payload hashes, source provenance, required resources and independent product ownership",
+    "Pass applicable nonmutating package checks and isolated Test-Product validation",
+    "Record the actual archive byte count and SHA-256; verify uploaded asset by download",
+    "Record source and delivery commit CI and replace HANDOFF availability fields with verified URLs"
+  ],
+  "test_side_task": "none",
+  "current_handoff": "installer/simple/HANDOFF.md"
+}

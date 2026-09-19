@@ -1,0 +1,477 @@
+{
+  "schema": "yime-current-readiness-release-local-checks-v1",
+  "commit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+  "branch": "codex/current-readiness-release-delivery",
+  "source_files": [
+    {
+      "path": ".github/workflows/ci.yaml",
+      "sha256": "2e27eeea507a7d8888bec46970be338b31aa2514dec871c49f910c9257043b71"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "0ba31a1c29e38420ecf7d68c2dee607453652cc0d774e61a12cff76e4f160073"
+    },
+    {
+      "path": "installer/simple/Manage-Products.ps1",
+      "sha256": "4e89e133e4e2555789cea9148ea6459b5be625a6f04ca09ba4802682d77235e4"
+    },
+    {
+      "path": "installer/simple/Product.psm1",
+      "sha256": "74049e5b16806180302c52e5bc11b70e4005bd72367c048a5fbf2559b67d94fb"
+    },
+    {
+      "path": "installer/simple/Setup.ps1",
+      "sha256": "4908881133def21e0eecec28baf7e873333572bd625509c5dfcbd808bc0bb6c8"
+    },
+    {
+      "path": "installer/simple/Test-Manage.ps1",
+      "sha256": "8bba5721054b74cfab96a32c734d78a233ad5da6bfe22f8bf6570edbc1be8da0"
+    },
+    {
+      "path": "installer/simple/Test-PackageValidation.ps1",
+      "sha256": "e9c71f5790cf1f8c39854c4d6673b532d7065d79d2c6e34dc53ebf1d4c836f7b"
+    },
+    {
+      "path": "installer/simple/Test-ProfileRemoval.ps1",
+      "sha256": "4a2b00285b1aa86d10dbc83e6cc0bcd9869df572382d97a207bbb5d33580b9ee"
+    },
+    {
+      "path": "tools/ci/test_shard_coverage.py",
+      "sha256": "0a03d4aec2770dcafb5282d1570f9b2e2158702f86a0d93cd2a6f48ea0589536"
+    },
+    {
+      "path": "tools/ci/test_workflow_contract.py",
+      "sha256": "4003ac648960a6ab4c658da443c336c492ea223ae0c432367b9f56c9bae9b5ee"
+    },
+    {
+      "path": "tools/ci/verify_shard_coverage.py",
+      "sha256": "40ffa012752af4d6b15f5a0799160111155b173028c74e8f195043a2185a3c86"
+    },
+    {
+      "path": "tools/lexicon/check_repository_data_boundary.py",
+      "sha256": "3ae8a8276671f370c1b2740b53922cbce8ec3072c4a111b225fecd544ffabdf4"
+    },
+    {
+      "path": "tools/lexicon/verify_external_archive_lock.py",
+      "sha256": "4a596a256cfadccc9d321542014de590ff431be49e2e948ee3e3ecfb0a53aa76"
+    },
+    {
+      "path": "tools/powershell/run_checked.py",
+      "sha256": "09ed4b1cc4e6c05b90019bd69f12a0cb68b9ac825dc8f47dfcbfcff4a3d6d261"
+    },
+    {
+      "path": "tools/powershell/test_run_checked.py",
+      "sha256": "2027557deae66ef43afd599e592633ddf26f83bddab484e2e6daaed449c3e3c6"
+    },
+    {
+      "path": "tools/validate-build-contract.ps1",
+      "sha256": "ce8710f31b84f16bb92ffce247d52bcbfbfc998da0202e54b5ca70a70c432f95"
+    },
+    {
+      "path": "tools/verify_psc_outline_snapshot.py",
+      "sha256": "f5ff9bed0c09d5dd5a864f40700fe7e8de36928a6ecc549e11c8d127cd150308"
+    },
+    {
+      "path": "tools/verify_toolchain_lock.py",
+      "sha256": "77f0785f3309d67f5a965b4e53af7b6bdf112bbc447f4ccb4396aa03ca3e51d8"
+    },
+    {
+      "path": "tools/verify_vendored_build_dependencies.py",
+      "sha256": "23171bf9335c7afb0faf6ac8d38e6aa791e2e1b7434570899f932196e48d9943"
+    },
+    {
+      "path": "tools/yimecore/development-scope.ps1",
+      "sha256": "6a261eae84a7c0977efba25a01751251587f2a8cde5a0509feea13b5c1d18a34"
+    },
+    {
+      "path": "tools/yimecore/retire-legacy-entry.ps1",
+      "sha256": "e9133a0b7ac4c5c02d70b9ce978155d3dea4fd877d1bbb9f646a60a38a3d9c40"
+    },
+    {
+      "path": "tools/yimecore/test-retire-legacy-entry.ps1",
+      "sha256": "304b0d795ef273205257109c0b2e8ebcbcd21f73ab24e728e624b4f967606053"
+    }
+  ],
+  "checks": [
+    {
+      "name": "package-validation-ps5",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-PackageValidation.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "started_utc": "2026-09-19T23:29:49.381258+00:00",
+      "finished_utc": "2026-09-19T23:29:50.515243+00:00",
+      "elapsed_seconds": 1.134,
+      "exit_code": 0,
+      "stdout": {
+        "path": "package-validation-ps5.stdout.txt",
+        "bytes": 157,
+        "sha256": "08950ff5ebe7af3252cd7ca6214f5b6e9e0e95f58765cfafed34df3d890c6518"
+      },
+      "stderr": {
+        "path": "package-validation-ps5.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "profile-removal-mocks-ps5",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-ProfileRemoval.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "started_utc": "2026-09-19T23:29:49.381445+00:00",
+      "finished_utc": "2026-09-19T23:29:50.057321+00:00",
+      "elapsed_seconds": 0.676,
+      "exit_code": 0,
+      "stdout": {
+        "path": "profile-removal-mocks-ps5.stdout.txt",
+        "bytes": 161,
+        "sha256": "53f80d08356ae9c828d79b3b4315037eee104973ebc52afcdefd564cd5331c48"
+      },
+      "stderr": {
+        "path": "profile-removal-mocks-ps5.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "manage-synthetic-packages-ps5",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-Manage.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "started_utc": "2026-09-19T23:29:49.381698+00:00",
+      "finished_utc": "2026-09-19T23:29:53.641087+00:00",
+      "elapsed_seconds": 4.259,
+      "exit_code": 0,
+      "stdout": {
+        "path": "manage-synthetic-packages-ps5.stdout.txt",
+        "bytes": 355,
+        "sha256": "0632cd1f4eec2a4db83832d0327eabd14c7eb78281016fc840aae4b29adc1c5a"
+      },
+      "stderr": {
+        "path": "manage-synthetic-packages-ps5.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "legacy-retirement-mocks-ps5",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "tools/yimecore/test-retire-legacy-entry.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "started_utc": "2026-09-19T23:29:49.381872+00:00",
+      "finished_utc": "2026-09-19T23:29:50.007068+00:00",
+      "elapsed_seconds": 0.625,
+      "exit_code": 0,
+      "stdout": {
+        "path": "legacy-retirement-mocks-ps5.stdout.txt",
+        "bytes": 79,
+        "sha256": "7d8832804055580f20dcfa140d6adf49a2508d91b34370145e6ef642d24e7ec6"
+      },
+      "stderr": {
+        "path": "legacy-retirement-mocks-ps5.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "build-contract-ps7",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "tools/validate-build-contract.ps1",
+        "--edition",
+        "ps7"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "started_utc": "2026-09-19T23:29:50.011447+00:00",
+      "finished_utc": "2026-09-19T23:29:50.818988+00:00",
+      "elapsed_seconds": 0.808,
+      "exit_code": 0,
+      "stdout": {
+        "path": "build-contract-ps7.stdout.txt",
+        "bytes": 43,
+        "sha256": "fca1ff0be84456c099f51fd704581543d96905035a9c48a990b13ca71158eabc"
+      },
+      "stderr": {
+        "path": "build-contract-ps7.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "powershell-wrapper-tests",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/powershell",
+        "-p",
+        "test_run_checked.py",
+        "-v"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "started_utc": "2026-09-19T23:29:50.062991+00:00",
+      "finished_utc": "2026-09-19T23:29:57.539636+00:00",
+      "elapsed_seconds": 7.477,
+      "exit_code": 0,
+      "stdout": {
+        "path": "powershell-wrapper-tests.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "powershell-wrapper-tests.stderr.txt",
+        "bytes": 395,
+        "sha256": "c26f58f812f2b979ed5ca9d27e4495c4cc7af6f5c91e45df2ffee96d30f909ce"
+      }
+    },
+    {
+      "name": "workflow-contract",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/ci/test_workflow_contract.py"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "started_utc": "2026-09-19T23:29:50.519999+00:00",
+      "finished_utc": "2026-09-19T23:29:50.616248+00:00",
+      "elapsed_seconds": 0.096,
+      "exit_code": 0,
+      "stdout": {
+        "path": "workflow-contract.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "workflow-contract.stderr.txt",
+        "bytes": 105,
+        "sha256": "354c3d828acda6a2a7353175af6f47b9a6ade35a84756ca5433e46f76b8d8b55"
+      }
+    },
+    {
+      "name": "shard-coverage-tests",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/ci",
+        "-p",
+        "test_shard_coverage.py",
+        "-v"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "started_utc": "2026-09-19T23:29:50.620098+00:00",
+      "finished_utc": "2026-09-19T23:29:50.729883+00:00",
+      "elapsed_seconds": 0.11,
+      "exit_code": 0,
+      "stdout": {
+        "path": "shard-coverage-tests.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "shard-coverage-tests.stderr.txt",
+        "bytes": 593,
+        "sha256": "e68b38b9899ab5f8e811101d978f0ca48b9cd70468672891fe1b277fb3224f4f"
+      }
+    },
+    {
+      "name": "repository-data-boundary",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/lexicon/check_repository_data_boundary.py"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "started_utc": "2026-09-19T23:29:50.735208+00:00",
+      "finished_utc": "2026-09-19T23:30:30.553944+00:00",
+      "elapsed_seconds": 39.819,
+      "exit_code": 0,
+      "stdout": {
+        "path": "repository-data-boundary.stdout.txt",
+        "bytes": 76,
+        "sha256": "f9feb8577ecff1f2ed9f9d49280eb4ddfc369d95f66bd5a546cd7635cedbef98"
+      },
+      "stderr": {
+        "path": "repository-data-boundary.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "toolchain-lock",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/verify_toolchain_lock.py"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "started_utc": "2026-09-19T23:29:50.824381+00:00",
+      "finished_utc": "2026-09-19T23:29:50.881026+00:00",
+      "elapsed_seconds": 0.057,
+      "exit_code": 0,
+      "stdout": {
+        "path": "toolchain-lock.stdout.txt",
+        "bytes": 134,
+        "sha256": "96800c9062da2401c78d9c7e05a2148be427556546e91c7601490c2c3d005df2"
+      },
+      "stderr": {
+        "path": "toolchain-lock.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "external-archive-lock-metadata",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/lexicon/verify_external_archive_lock.py"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "started_utc": "2026-09-19T23:29:50.887250+00:00",
+      "finished_utc": "2026-09-19T23:29:51.159538+00:00",
+      "elapsed_seconds": 0.272,
+      "exit_code": 0,
+      "stdout": {
+        "path": "external-archive-lock-metadata.stdout.txt",
+        "bytes": 416,
+        "sha256": "b9e01b13a1cba90fcd265781449480956062a89d13ce688cd7c483f0ddde89fc"
+      },
+      "stderr": {
+        "path": "external-archive-lock-metadata.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "vendored-dependencies",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/verify_vendored_build_dependencies.py"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "started_utc": "2026-09-19T23:29:51.163721+00:00",
+      "finished_utc": "2026-09-19T23:30:26.779143+00:00",
+      "elapsed_seconds": 35.615,
+      "exit_code": 0,
+      "stdout": {
+        "path": "vendored-dependencies.stdout.txt",
+        "bytes": 219,
+        "sha256": "248cb1c5f7933ddfe9c2ba6fa933de1c210f6e93bb725d4d584933d3c861104a"
+      },
+      "stderr": {
+        "path": "vendored-dependencies.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "psc-outline-snapshot",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/verify_psc_outline_snapshot.py"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "started_utc": "2026-09-19T23:29:53.645893+00:00",
+      "finished_utc": "2026-09-19T23:29:54.418487+00:00",
+      "elapsed_seconds": 0.773,
+      "exit_code": 0,
+      "stdout": {
+        "path": "psc-outline-snapshot.stdout.txt",
+        "bytes": 121,
+        "sha256": "41578bf1fa1c34f8a033e4ed8eab021a7d7ce8f742414851ba024a38efc78ab3"
+      },
+      "stderr": {
+        "path": "psc-outline-snapshot.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "passed": true,
+  "boundaries": {
+    "real_package_validated": false,
+    "historical_package_rebuilt": false,
+    "installed_acceptance": false,
+    "real_setup_install_uninstall_executed": false,
+    "product_processes_started_stopped_or_restarted": false,
+    "registry_default_input_method_or_user_data_changed": false,
+    "allowed_test_writes": "Synthetic temporary fixtures and this evidence directory only.",
+    "manage_test": "Only generated temp Setup.ps1 log fixtures run in child PowerShell processes.",
+    "wrapper_test_editions": "The wrapper's own compatibility contract tests ps5 and ps7; installer tests use ps5, build contract uses ps7."
+  },
+  "not_run": [
+    {
+      "test": "Test-Product.ps1",
+      "reason": "No actual historical packages available; cannot substitute synthetic packages for this test."
+    },
+    {
+      "test": "Test-Startup.ps1",
+      "reason": "Writes isolated real registry test keys; excluded from this strictly non-system-mutating local run."
+    },
+    {
+      "test": "Test-Logging.ps1",
+      "reason": "Uses real setup logging under the user profile; excluded."
+    },
+    {
+      "test": "Test-ProcessWait.ps1",
+      "reason": "Creates a standalone surviving child process; excluded."
+    },
+    {
+      "test": "Native registered/live host acceptance",
+      "reason": "Not authorized for this source/package audit."
+    }
+  ]
+}

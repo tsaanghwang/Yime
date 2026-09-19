@@ -1,0 +1,8 @@
+test_complete_union_passes_without_installed_acceptance (test_shard_coverage.CoverageTests.test_complete_union_passes_without_installed_acceptance) ... ok
+test_individually_valid_but_different_inventories_are_rejected (test_shard_coverage.CoverageTests.test_individually_valid_but_different_inventories_are_rejected) ... ok
+test_missing_duplicate_failed_and_stale_shards_are_rejected (test_shard_coverage.CoverageTests.test_missing_duplicate_failed_and_stale_shards_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK

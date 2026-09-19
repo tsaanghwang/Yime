@@ -1,0 +1,26 @@
+[
+  {
+    "path": "C:\\Users\\tsaan\\Yime Setup Logs\\37498156b3a9436a93470e231eaac5c.user.log",
+    "reported_run_id_length": 31,
+    "exists": false
+  },
+  {
+    "path": "C:\\Users\\tsaan\\Yime Setup Logs\\37498156b3a9436a93470e231eaac5c.admin.log",
+    "reported_run_id_length": 31,
+    "exists": false
+  },
+  {
+    "path": "C:\\Users\\tsaan\\Yime Setup Logs\\a111aff33e8640a0b93470e231eaac5c.user.log",
+    "reported_run_id_length": 32,
+    "exists": true,
+    "bytes": 1188,
+    "sha256": "dc92bd080c5f44503b6c57e4ef38aa85e7f49b6e3a3e43ec79f7dd8bab82720a"
+  },
+  {
+    "path": "C:\\Users\\tsaan\\Yime Setup Logs\\a111aff33e8640a0b93470e231eaac5c.admin.log",
+    "reported_run_id_length": 32,
+    "exists": true,
+    "bytes": 1335,
+    "sha256": "2f0402bc6879e1cc1afca7e9c95b2b661dae286503459c3cbc1ef66f1d30505d"
+  }
+]

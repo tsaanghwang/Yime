@@ -1,0 +1,28 @@
+{
+  "name": "manage-synthetic-packages-ps5",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "installer/simple/Test-Manage.ps1",
+    "--edition",
+    "ps5"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "started_utc": "2026-09-19T23:29:49.381698+00:00",
+  "finished_utc": "2026-09-19T23:29:53.641087+00:00",
+  "elapsed_seconds": 4.259,
+  "exit_code": 0,
+  "stdout": {
+    "path": "manage-synthetic-packages-ps5.stdout.txt",
+    "bytes": 355,
+    "sha256": "0632cd1f4eec2a4db83832d0327eabd14c7eb78281016fc840aae4b29adc1c5a"
+  },
+  "stderr": {
+    "path": "manage-synthetic-packages-ps5.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "vendored-dependencies",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "tools/verify_vendored_build_dependencies.py"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "started_utc": "2026-09-19T23:29:51.163721+00:00",
+  "finished_utc": "2026-09-19T23:30:26.779143+00:00",
+  "elapsed_seconds": 35.615,
+  "exit_code": 0,
+  "stdout": {
+    "path": "vendored-dependencies.stdout.txt",
+    "bytes": 219,
+    "sha256": "248cb1c5f7933ddfe9c2ba6fa933de1c210f6e93bb725d4d584933d3c861104a"
+  },
+  "stderr": {
+    "path": "vendored-dependencies.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

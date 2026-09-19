@@ -1,0 +1,14 @@
+{
+  "decision": "pass",
+  "archive_id": "yime-lexicon-external-inputs-20260821",
+  "bundle": {
+    "filename": "yime-lexicon-external-inputs-20260821.zip",
+    "format": "zip",
+    "size": 54261822,
+    "sha256": "febf16107068e1434f40a13aef3c326fe6a2e63fb1375520895ee3253c3d9b0d"
+  },
+  "restore_policy": {
+    "maximum_evidence_age_days": 90,
+    "archive_and_restore_must_be_outside_git": true
+  }
+}

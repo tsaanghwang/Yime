@@ -1,8 +1,16 @@
 # 简版安装器验证范围
 
-更新：2026-09-16。本文汇总各次验证，不把源码/隔离检查、已交付包和实机输入合并为一个状态；原始报告与日志保留原始日期和字节。
+更新：2026-09-20。本文汇总各次验证，不把源码/隔离检查、已交付包和实机输入合并为一个状态；原始报告与日志保留原始日期和字节。
 
-## 最新源码修复（已合入，未交付新包）
+## current-readiness 交付核验（2026-09-20）
+
+2026-09-19 的 [开发机报告](../../docs/testing/simple-maintenance/2026-09-19/current-readiness/DEVELOPMENT.md) 和 [重启后摘要](../../docs/testing/simple-maintenance/2026-09-19/current-readiness/post-reboot.json) 已通过 PR #62 合入主线，记录 MYCOMPUTER 上双产品 x64 Word / x86 Notepad++ 重启前后输入。YimeCore 首次注册失败、同路径包重试成功的区别保留，不扩大为 ARM64、正式签名或测试端验收。
+
+本轮从 `main` 的 `0ab86312` 核验交付：6 次相关 CI 的 12 个作业均成功，13 项本地合成/静态检查通过；只读取回的两份安装维护清单与历史 SHA-256 一致，225 个现有安装载荷文件全部匹配，两次定点注册快照一致。原完整包及 admission 原始文件未找回，不能完成原包检查、可复现性或 ZIP SHA-256 核验，也未创建 current-readiness Release asset。31 个 Go 二进制均未嵌入 VCS revision，来源提交仍需构建 provenance 支持。详见[本轮核验报告](../../docs/testing/simple-maintenance/2026-09-20/current-readiness-release/REVIEW.md)。
+
+本轮未安装、卸载、操作产品进程、修改默认输入法或用户数据，未重复实机输入验收；测试端无任务。当前可用 URL、哈希状态、边界和后续动作仅以 [HANDOFF](HANDOFF.md) 为准。
+
+## PR #57 源码修复记录（2026-09-16）
 
 PR #57 已合入 `main` 的 `76376080`，[合并后 CI](https://github.com/tsaanghwang/Yime/actions/runs/35041052421) 成功。
 
@@ -10,7 +18,7 @@ PR #57 已合入 `main` 的 `76376080`，[合并后 CI](https://github.com/tsaan
 - `Test-ProfileRemoval.ps1`：用户输入配置移除失败时，阻止后续 COM 注销、启动项清理和安装文件删除，覆盖两产品维护路径与清理顺序。
 - 两组检查与启动项、单套/双套调度、日志、进程等待回归一起纳入 `simple-installer` CI，使用 Windows PowerShell 5.1 的隔离测试。
 
-本节证明源码修复及相应自动回归通过，不证明新安装包已实机验收。包含修复的新完整包尚未交付；下列源码候选包和维护包结果保持各自身份，不自动升级为 PR #57 的安装结论。当前测试端没有新增任务，见 [HANDOFF](HANDOFF.md)。
+本节证明当时源码修复及相应自动回归通过。后续 current-readiness 开发机历史验收及当前交付缺口见上节；下列旧源码候选包和维护包结果保持各自身份。当前交付状态及测试任务见 [HANDOFF](HANDOFF.md)。
 
 ## 清理后源码候选包验收（2026-09-14）
 

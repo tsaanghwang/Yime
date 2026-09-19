@@ -1,0 +1,12 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/tsaanghwang/Yime/releases",
+    "--paginate",
+    "--slurp"
+  ],
+  "exit_code": 0,
+  "stdout_sha256": "1ca5bc2ba7e432bb144377c539200f3f4d924dddbae2258886e69074e67cb666",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

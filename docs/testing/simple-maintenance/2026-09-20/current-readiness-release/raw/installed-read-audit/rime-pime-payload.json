@@ -1,0 +1,1903 @@
+{
+  "product": "rime-pime",
+  "install_root": "C:\\Program Files\\Yime Rime-PIME",
+  "historical_manifest_sha256": "2996982b88c70b251124847fd6fa37ada185a6c173de1139cbb32afda8324d38",
+  "historical_manifest_hash_matches": true,
+  "safe_unique_paths": true,
+  "expected_files": 160,
+  "matched_files": 160,
+  "mismatch_count": 0,
+  "unlisted_installed_files_enumerated": false,
+  "expected_file_checks": [
+    {
+      "path": "backends.json",
+      "expected_bytes": 96,
+      "expected_sha256": "c9faa92215ec045d3cee49d8899ece872f315d51befeec63beebf131619b33f1",
+      "actual_bytes": 96,
+      "actual_sha256": "c9faa92215ec045d3cee49d8899ece872f315d51befeec63beebf131619b33f1",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "PIMELauncher.exe",
+      "expected_bytes": 611840,
+      "expected_sha256": "3d78aafb4b215d29ff61307f844ed40ba6669a93ad8c7fd399d6f527999c1231",
+      "actual_bytes": 611840,
+      "actual_sha256": "3d78aafb4b215d29ff61307f844ed40ba6669a93ad8c7fd399d6f527999c1231",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "x86/PIMERegistrationStatus.exe",
+      "expected_bytes": 213504,
+      "expected_sha256": "5980ae67faf2605e83d86f51570281aa5f11847e16f06a9b0c492adcc083f5bd",
+      "actual_bytes": 213504,
+      "actual_sha256": "5980ae67faf2605e83d86f51570281aa5f11847e16f06a9b0c492adcc083f5bd",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "x86/PIMETextService.dll",
+      "expected_bytes": 484352,
+      "expected_sha256": "251b375cffc26d07521555fd72b605e36c245c54807b691a060f0cbc3538343a",
+      "actual_bytes": 484352,
+      "actual_sha256": "251b375cffc26d07521555fd72b605e36c245c54807b691a060f0cbc3538343a",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "x64/PIMERegistrationStatus.exe",
+      "expected_bytes": 268800,
+      "expected_sha256": "782c062ead97048d0d8ab161f75c74d67e6ec0c14423a9f736f940b4ab7cdd60",
+      "actual_bytes": 268800,
+      "actual_sha256": "782c062ead97048d0d8ab161f75c74d67e6ec0c14423a9f736f940b4ab7cdd60",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "x64/PIMETextService.dll",
+      "expected_bytes": 580608,
+      "expected_sha256": "fcf4c12690b4153538353c257d508f960149cd1957343ee708a05df8cc781794",
+      "actual_bytes": 580608,
+      "actual_sha256": "fcf4c12690b4153538353c257d508f960149cd1957343ee708a05df8cc781794",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "licenses/PIME-UPSTREAM-LICENSE.txt",
+      "expected_bytes": 1578,
+      "expected_sha256": "16484810b635e209f3d1615e4a7a27d752dd3702a0bb0a4b93ecd6c96ceb5bb7",
+      "actual_bytes": 1578,
+      "actual_sha256": "16484810b635e209f3d1615e4a7a27d752dd3702a0bb0a4b93ecd6c96ceb5bb7",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "licenses/RIME-BSD-3-Clause.txt",
+      "expected_bytes": 1543,
+      "expected_sha256": "44c39955377bb15d825f8142de500ed832309178ce34624c5d1a1f00761bb1ee",
+      "actual_bytes": 1543,
+      "actual_sha256": "44c39955377bb15d825f8142de500ed832309178ce34624c5d1a1f00761bb1ee",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "licenses/RIME-FROST-GPL-3.0.txt",
+      "expected_bytes": 35823,
+      "expected_sha256": "230184f60bae2feaf244f10a8bac053c8ff33a183bcc365b4d8b876d2b7f4809",
+      "actual_bytes": 35823,
+      "actual_sha256": "230184f60bae2feaf244f10a8bac053c8ff33a183bcc365b4d8b876d2b7f4809",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "licenses/RUST-DEPENDENCIES.md",
+      "expected_bytes": 10928,
+      "expected_sha256": "40099e7c6f18fb8de662ce15c83b89274d60c9a59255b70601a21f1f89d16041",
+      "actual_bytes": 10928,
+      "actual_sha256": "40099e7c6f18fb8de662ce15c83b89274d60c9a59255b70601a21f1f89d16041",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "licenses/SIL-OFL-1.1.txt",
+      "expected_bytes": 4559,
+      "expected_sha256": "1953855bf1927e7214385bbdd8adb04cc5e8a0ecd0e6eaedeb1bdc281b009481",
+      "actual_bytes": 4559,
+      "actual_sha256": "1953855bf1927e7214385bbdd8adb04cc5e8a0ecd0e6eaedeb1bdc281b009481",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "licenses/UNICODE-3.0.txt",
+      "expected_bytes": 2074,
+      "expected_sha256": "6b01fcc8d6b15bf5fe6799d7889d38c92307becae6a4b28cd32808d71741890f",
+      "actual_bytes": 2074,
+      "actual_sha256": "6b01fcc8d6b15bf5fe6799d7889d38c92307becae6a4b28cd32808d71741890f",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/blocklist-manager.exe",
+      "expected_bytes": 2228224,
+      "expected_sha256": "291d38080d2b8c8c038ce636b05225a4a1cfe3cf33b43a721141ab1fe4b6a263",
+      "actual_bytes": 2228224,
+      "actual_sha256": "291d38080d2b8c8c038ce636b05225a4a1cfe3cf33b43a721141ab1fe4b6a263",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/diagnostics-tool.exe",
+      "expected_bytes": 2576896,
+      "expected_sha256": "129e7ed12e8f401f5a23bc352d42330f5305118e8fffe6c800f965b700aa40e5",
+      "actual_bytes": 2576896,
+      "actual_sha256": "129e7ed12e8f401f5a23bc352d42330f5305118e8fffe6c800f965b700aa40e5",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input-toolbar.exe",
+      "expected_bytes": 2670592,
+      "expected_sha256": "bfe4a32038555b116a48c2604cc3f5be43da8c4754f7f7b388112b73c6b75000",
+      "actual_bytes": 2670592,
+      "actual_sha256": "bfe4a32038555b116a48c2604cc3f5be43da8c4754f7f7b388112b73c6b75000",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/lexicon-manager.exe",
+      "expected_bytes": 3101696,
+      "expected_sha256": "bc4fd752eec3aeb874b8f7210ff6161e8fb8e05b6630311248a68af146f5c6c6",
+      "actual_bytes": 3101696,
+      "actual_sha256": "bc4fd752eec3aeb874b8f7210ff6161e8fb8e05b6630311248a68af146f5c6c6",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/lexicon-promotion-scan.exe",
+      "expected_bytes": 2835968,
+      "expected_sha256": "f0717e79532208b1a8818dd217a05e6e26efdbbc5f5312e12fc44608f845b03b",
+      "actual_bytes": 2835968,
+      "actual_sha256": "f0717e79532208b1a8818dd217a05e6e26efdbbc5f5312e12fc44608f845b03b",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/reverse-lookup.exe",
+      "expected_bytes": 3136000,
+      "expected_sha256": "71718b1b089f66fe8bbe4f698d021f38d0547266cb280e7889d1502e834d8007",
+      "actual_bytes": 3136000,
+      "actual_sha256": "71718b1b089f66fe8bbe4f698d021f38d0547266cb280e7889d1502e834d8007",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/server.exe",
+      "expected_bytes": 3792384,
+      "expected_sha256": "2b940d7c17167e2c9dd66299c0923303a1fec3b3d96dfed4961c3ae1b42cb561",
+      "actual_bytes": 3792384,
+      "actual_sha256": "2b940d7c17167e2c9dd66299c0923303a1fec3b3d96dfed4961c3ae1b42cb561",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/settings-tool.exe",
+      "expected_bytes": 3467264,
+      "expected_sha256": "1400e4e9ebe1000fb28ea46e9e66fe2de980c43ce64094f9d712ff7d119a1e31",
+      "actual_bytes": 3467264,
+      "actual_sha256": "1400e4e9ebe1000fb28ea46e9e66fe2de980c43ce64094f9d712ff7d119a1e31",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/system-lexicon-audit.exe",
+      "expected_bytes": 2632704,
+      "expected_sha256": "7c57677ae43d5c81f71c9b5b604857c6900315881338288dc65e3f2ccf263e92",
+      "actual_bytes": 2632704,
+      "actual_sha256": "7c57677ae43d5c81f71c9b5b604857c6900315881338288dc65e3f2ccf263e92",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/tool-hub.exe",
+      "expected_bytes": 2889216,
+      "expected_sha256": "f14b2766562193be3058f26b1ed17a7f646e20cc9eb06b091aeae9fc53d99fce",
+      "actual_bytes": 2889216,
+      "actual_sha256": "f14b2766562193be3058f26b1ed17a7f646e20cc9eb06b091aeae9fc53d99fce",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/yime-layout-designer.exe",
+      "expected_bytes": 3609600,
+      "expected_sha256": "4399d4d1f6ffb91fdfee4d3c27500ec4b2f09ba1c1842ac66d3cf473a99a0214",
+      "actual_bytes": 3609600,
+      "actual_sha256": "4399d4d1f6ffb91fdfee4d3c27500ec4b2f09ba1c1842ac66d3cf473a99a0214",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/yime-trainer.exe",
+      "expected_bytes": 3359232,
+      "expected_sha256": "26f9881b9aeb4bf03634934e7ff42b4df16615985a3085dfb05f041e0075adc2",
+      "actual_bytes": 3359232,
+      "actual_sha256": "26f9881b9aeb4bf03634934e7ff42b4df16615985a3085dfb05f041e0075adc2",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icon.ico",
+      "expected_bytes": 62966,
+      "expected_sha256": "d7700838dc9a00524e0d7d1d11be069fbf8f16b922ee94c8935d57204a5af77a",
+      "actual_bytes": 62966,
+      "actual_sha256": "d7700838dc9a00524e0d7d1d11be069fbf8f16b922ee94c8935d57204a5af77a",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/ime.json",
+      "expected_bytes": 319,
+      "expected_sha256": "ea07f281bc8633cafa0b6c58c7fd0b14d25b4e801d49c692a1f9ce77459b07e3",
+      "actual_bytes": 319,
+      "actual_sha256": "ea07f281bc8633cafa0b6c58c7fd0b14d25b4e801d49c692a1f9ce77459b07e3",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_deployer.exe",
+      "expected_bytes": 459776,
+      "expected_sha256": "3abb72b5bb56fcafcfe925d533ae5f832c68d5a0bc9952fd0eea0682fb1ab071",
+      "actual_bytes": 459776,
+      "actual_sha256": "3abb72b5bb56fcafcfe925d533ae5f832c68d5a0bc9952fd0eea0682fb1ab071",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_dict_manager.exe",
+      "expected_bytes": 278016,
+      "expected_sha256": "1c1eb1f84f98704161efbf3315a16e3456f5989efa56f340d7e9e3e5f8bf9e1b",
+      "actual_bytes": 278016,
+      "actual_sha256": "1c1eb1f84f98704161efbf3315a16e3456f5989efa56f340d7e9e3e5f8bf9e1b",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_runtime.lock.json",
+      "expected_bytes": 618,
+      "expected_sha256": "548d7fd41af93dcd438f194877cfbc4fd326454a4251f55dfdfe74efe87df637",
+      "actual_bytes": 618,
+      "actual_sha256": "548d7fd41af93dcd438f194877cfbc4fd326454a4251f55dfdfe74efe87df637",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime.dll",
+      "expected_bytes": 3739136,
+      "expected_sha256": "86b4c7357d4c6d293ce5589b234d8859ca2ac30923a03bedfa3926eeaf97fb0b",
+      "actual_bytes": 3739136,
+      "actual_sha256": "86b4c7357d4c6d293ce5589b234d8859ca2ac30923a03bedfa3926eeaf97fb0b",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/testdata/dynamic_sentence_cases.json",
+      "expected_bytes": 5338,
+      "expected_sha256": "8193a4096f4af139ce64b6f853ec4f33952f366e282fd365bb8ac3be5b524412",
+      "actual_bytes": 5338,
+      "actual_sha256": "8193a4096f4af139ce64b6f853ec4f33952f366e282fd365bb8ac3be5b524412",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/testdata/e1_probes.json",
+      "expected_bytes": 1432,
+      "expected_sha256": "da497c555c9f65c0275eaecdc08e7bcd111a79ae1e0b79be025192c0666de162",
+      "actual_bytes": 1432,
+      "actual_sha256": "da497c555c9f65c0275eaecdc08e7bcd111a79ae1e0b79be025192c0666de162",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/testdata/e2_sentence_probes.json",
+      "expected_bytes": 1319,
+      "expected_sha256": "2a47352fe13f8a47b7cc7a36e6f5e20c36432e66b977220aa75a60d989879d3f",
+      "actual_bytes": 1319,
+      "actual_sha256": "2a47352fe13f8a47b7cc7a36e6f5e20c36432e66b977220aa75a60d989879d3f",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/testdata/e2b_segment_probes.json",
+      "expected_bytes": 341,
+      "expected_sha256": "808f2616e345227876bb33bf6049d1bd8fbbfcc6875347e916ae9b4dc114d7b2",
+      "actual_bytes": 341,
+      "actual_sha256": "808f2616e345227876bb33bf6049d1bd8fbbfcc6875347e916ae9b4dc114d7b2",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/testdata/e4_reviewed_alias_probes.json",
+      "expected_bytes": 2533,
+      "expected_sha256": "5f928fefd8da28f9130b6be3001e1ee9041986477389ffb652c225b1ce405442",
+      "actual_bytes": 2533,
+      "actual_sha256": "5f928fefd8da28f9130b6be3001e1ee9041986477389ffb652c225b1ce405442",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/lexiconpromotion/README.md",
+      "expected_bytes": 1189,
+      "expected_sha256": "92630ce3b92299a17f46f11b7084bf1c72dde22aa3050dc5d0bde5cd973fde9f",
+      "actual_bytes": 1189,
+      "actual_sha256": "92630ce3b92299a17f46f11b7084bf1c72dde22aa3050dc5d0bde5cd973fde9f",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/layoutdesigner/README.md",
+      "expected_bytes": 3596,
+      "expected_sha256": "32f958b7d8f1550f4843f77cdbe876dadea1cbd550cc74d14c4b1207113e97d4",
+      "actual_bytes": 3596,
+      "actual_sha256": "32f958b7d8f1550f4843f77cdbe876dadea1cbd550cc74d14c4b1207113e97d4",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/chi_full_capsoff.ico",
+      "expected_bytes": 17542,
+      "expected_sha256": "5670ea56fc3885a23cc1eab8394318762c1e2aa8f0391a265554c235c470b628",
+      "actual_bytes": 17542,
+      "actual_sha256": "5670ea56fc3885a23cc1eab8394318762c1e2aa8f0391a265554c235c470b628",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/chi_full_capson.ico",
+      "expected_bytes": 17542,
+      "expected_sha256": "9fc3598031aa6ef83dd197d9b109e78f0e755cbbd3a45862aa0202851fdbb132",
+      "actual_bytes": 17542,
+      "actual_sha256": "9fc3598031aa6ef83dd197d9b109e78f0e755cbbd3a45862aa0202851fdbb132",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/chi_half_capsoff.ico",
+      "expected_bytes": 17542,
+      "expected_sha256": "359bd741a89bee4fc0147f741de78b00cf5e469d63e6f3b56a5a92b239ea2721",
+      "actual_bytes": 17542,
+      "actual_sha256": "359bd741a89bee4fc0147f741de78b00cf5e469d63e6f3b56a5a92b239ea2721",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/chi_half_capson.ico",
+      "expected_bytes": 17542,
+      "expected_sha256": "f18bd377d148dcf98f41ec6d4705ddafc1194e0e2c95a3734c4bdce0f9211880",
+      "actual_bytes": 17542,
+      "actual_sha256": "f18bd377d148dcf98f41ec6d4705ddafc1194e0e2c95a3734c4bdce0f9211880",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/chi.ico",
+      "expected_bytes": 17542,
+      "expected_sha256": "d15134b92044f5d461ef5f0004166c8892ae2f1c2469d6fba3b3612dc5434f39",
+      "actual_bytes": 17542,
+      "actual_sha256": "d15134b92044f5d461ef5f0004166c8892ae2f1c2469d6fba3b3612dc5434f39",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/config.ico",
+      "expected_bytes": 1406,
+      "expected_sha256": "e4b92538f15a2456f03b7138d22708c939a2977e739850cbec0f8d1641461d0d",
+      "actual_bytes": 1406,
+      "actual_sha256": "e4b92538f15a2456f03b7138d22708c939a2977e739850cbec0f8d1641461d0d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/eng_full_capsoff.ico",
+      "expected_bytes": 17542,
+      "expected_sha256": "d9904b84b8effde669be732f9b38cc06caba9f362985bcc0d24c5d186002c60e",
+      "actual_bytes": 17542,
+      "actual_sha256": "d9904b84b8effde669be732f9b38cc06caba9f362985bcc0d24c5d186002c60e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/eng_full_capson.ico",
+      "expected_bytes": 17542,
+      "expected_sha256": "672c7e5d5894fb014278adf0e787e1eec60f04b93b625f1dd76670e431a35d3d",
+      "actual_bytes": 17542,
+      "actual_sha256": "672c7e5d5894fb014278adf0e787e1eec60f04b93b625f1dd76670e431a35d3d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/eng_half_capsoff.ico",
+      "expected_bytes": 17542,
+      "expected_sha256": "f03896add520532ae4d903a6d8c328dddfca2c3a2ba21d9d523c1d0f06fdeee2",
+      "actual_bytes": 17542,
+      "actual_sha256": "f03896add520532ae4d903a6d8c328dddfca2c3a2ba21d9d523c1d0f06fdeee2",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/eng_half_capson.ico",
+      "expected_bytes": 17542,
+      "expected_sha256": "543e8df861da6bb109b3f214709f49847d8ddf76c3d7e8fa7ed40b7557536f29",
+      "actual_bytes": 17542,
+      "actual_sha256": "543e8df861da6bb109b3f214709f49847d8ddf76c3d7e8fa7ed40b7557536f29",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/eng.ico",
+      "expected_bytes": 1406,
+      "expected_sha256": "43644407945e044ad3ec50d172eafb9c80f09027750506fc8ca7dcac85151e86",
+      "actual_bytes": 1406,
+      "actual_sha256": "43644407945e044ad3ec50d172eafb9c80f09027750506fc8ca7dcac85151e86",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/full.ico",
+      "expected_bytes": 894,
+      "expected_sha256": "905e7ece5468265b5cbc43bd3a85518ba76a8dd1b680361f78afc1670327ff41",
+      "actual_bytes": 894,
+      "actual_sha256": "905e7ece5468265b5cbc43bd3a85518ba76a8dd1b680361f78afc1670327ff41",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/half.ico",
+      "expected_bytes": 1406,
+      "expected_sha256": "8126e19feb23ba0f5aa05e1293a175d1db6b0e95a1c54a5535d15608acf2859c",
+      "actual_bytes": 1406,
+      "actual_sha256": "8126e19feb23ba0f5aa05e1293a175d1db6b0e95a1c54a5535d15608acf2859c",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/layout_horizontal.ico",
+      "expected_bytes": 655,
+      "expected_sha256": "36e4d276ce7ca755203131211bee03fd744cf3854bade79efd0c39338bd65aca",
+      "actual_bytes": 655,
+      "actual_sha256": "36e4d276ce7ca755203131211bee03fd744cf3854bade79efd0c39338bd65aca",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/layout_vertical.ico",
+      "expected_bytes": 690,
+      "expected_sha256": "4bfce90dd2af785d8bfce644c08e5a1bcec8531a15c69bd34919791a4a5b10b3",
+      "actual_bytes": 690,
+      "actual_sha256": "4bfce90dd2af785d8bfce644c08e5a1bcec8531a15c69bd34919791a4a5b10b3",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/lexicon.ico",
+      "expected_bytes": 2141,
+      "expected_sha256": "6ee1ef6ad89381a8b5a2df70fcdbdc8adb2d77aa5f63fd121e100fa67b670275",
+      "actual_bytes": 2141,
+      "actual_sha256": "6ee1ef6ad89381a8b5a2df70fcdbdc8adb2d77aa5f63fd121e100fa67b670275",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/punct_chi.ico",
+      "expected_bytes": 5430,
+      "expected_sha256": "eb382e466a064fc431e2e8ee3ea9d56384a7f135f8ef9ac46e6d25cf02b51060",
+      "actual_bytes": 5430,
+      "actual_sha256": "eb382e466a064fc431e2e8ee3ea9d56384a7f135f8ef9ac46e6d25cf02b51060",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/punct_eng.ico",
+      "expected_bytes": 5430,
+      "expected_sha256": "206de2fabff086533b9d0db51bdfd2f8ae7d59ea96d568992b39313a716e9162",
+      "actual_bytes": 5430,
+      "actual_sha256": "206de2fabff086533b9d0db51bdfd2f8ae7d59ea96d568992b39313a716e9162",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/reverse-lookup.ico",
+      "expected_bytes": 669,
+      "expected_sha256": "c7f20db9831c64ea75525f126ffc59dd33f514fa46616c1ad388be556655c99f",
+      "actual_bytes": 669,
+      "actual_sha256": "c7f20db9831c64ea75525f126ffc59dd33f514fa46616c1ad388be556655c99f",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/tools.ico",
+      "expected_bytes": 2334,
+      "expected_sha256": "80207f517c706e4eb861e9b35d6b509fe82c45e9ef5ce20757c7415cb48a1c4e",
+      "actual_bytes": 2334,
+      "actual_sha256": "80207f517c706e4eb861e9b35d6b509fe82c45e9ef5ce20757c7415cb48a1c4e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/yime_qin_seal_yin.ico",
+      "expected_bytes": 19067,
+      "expected_sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+      "actual_bytes": 19067,
+      "actual_sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/yime_qin_seal_yin.png",
+      "expected_bytes": 14334,
+      "expected_sha256": "4930a312b6e9b1852da8a16431217fc99dab9d5f6a36924adfe01beef82f325d",
+      "actual_bytes": 14334,
+      "actual_sha256": "4930a312b6e9b1852da8a16431217fc99dab9d5f6a36924adfe01beef82f325d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/yin.png",
+      "expected_bytes": 1196,
+      "expected_sha256": "ca61581f0d13d0a4e1281dbe602ad55a02697d52318a541cc6f492ab05d2b275",
+      "actual_bytes": 1196,
+      "actual_sha256": "ca61581f0d13d0a4e1281dbe602ad55a02697d52318a541cc6f492ab05d2b275",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/diagnostics.html",
+      "expected_bytes": 3546,
+      "expected_sha256": "397d79c461a105f01d5a6864ea4ec4bd60291a57f543f42aafba5bfb57102a0e",
+      "actual_bytes": 3546,
+      "actual_sha256": "397d79c461a105f01d5a6864ea4ec4bd60291a57f543f42aafba5bfb57102a0e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/diagnostics.md",
+      "expected_bytes": 4985,
+      "expected_sha256": "8ae36fb4774e3b3924b5f8de9cc2c82b3d096f9b99db8f1c9e6555f445d5b370",
+      "actual_bytes": 4985,
+      "actual_sha256": "8ae36fb4774e3b3924b5f8de9cc2c82b3d096f9b99db8f1c9e6555f445d5b370",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/README.html",
+      "expected_bytes": 7437,
+      "expected_sha256": "e3b1b537915b2fa2c587f40c046e6fb348f66ed5678a44eca960e8c94a16bbae",
+      "actual_bytes": 7437,
+      "actual_sha256": "e3b1b537915b2fa2c587f40c046e6fb348f66ed5678a44eca960e8c94a16bbae",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/README.md",
+      "expected_bytes": 5824,
+      "expected_sha256": "1e4ae85cecf3c686d161591b4880b98816d8b065ba6ae6d10e9ddc01033b4d7f",
+      "actual_bytes": 5824,
+      "actual_sha256": "1e4ae85cecf3c686d161591b4880b98816d8b065ba6ae6d10e9ddc01033b4d7f",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/settings-and-data.html",
+      "expected_bytes": 10982,
+      "expected_sha256": "5f44cd6168479dbfa8d33444a3418d44bbd852899b64b622db36c7bb0d1dbe27",
+      "actual_bytes": 10982,
+      "actual_sha256": "5f44cd6168479dbfa8d33444a3418d44bbd852899b64b622db36c7bb0d1dbe27",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/settings-and-data.md",
+      "expected_bytes": 11848,
+      "expected_sha256": "9a176509a71c811fd8c58b897f41bd27b7988b16e94f7cf2d33ef3e67b8c0868",
+      "actual_bytes": 11848,
+      "actual_sha256": "9a176509a71c811fd8c58b897f41bd27b7988b16e94f7cf2d33ef3e67b8c0868",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/trial-feedback.html",
+      "expected_bytes": 2456,
+      "expected_sha256": "a6611e47481f2eebcfb673fd261de0cf5c23dd05a4fde0e330d441bad9dee059",
+      "actual_bytes": 2456,
+      "actual_sha256": "a6611e47481f2eebcfb673fd261de0cf5c23dd05a4fde0e330d441bad9dee059",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/trial-feedback.md",
+      "expected_bytes": 882,
+      "expected_sha256": "56b2157af3a8575b658dbf80e4ebb2871033286d0091f88d6a5b751ea550e915",
+      "actual_bytes": 882,
+      "actual_sha256": "56b2157af3a8575b658dbf80e4ebb2871033286d0091f88d6a5b751ea550e915",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/cangjie5.dict.yaml",
+      "expected_bytes": 789090,
+      "expected_sha256": "2dbc120d838ea1e30286f565060d6f84c11623ff1798fd52c97d50e370b833dd",
+      "actual_bytes": 789090,
+      "actual_sha256": "2dbc120d838ea1e30286f565060d6f84c11623ff1798fd52c97d50e370b833dd",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/cangjie5.schema.yaml",
+      "expected_bytes": 2357,
+      "expected_sha256": "e112cc9624923befde28be408222d3bc3ca95df7c270c508d735570403e8b272",
+      "actual_bytes": 2357,
+      "actual_sha256": "e112cc9624923befde28be408222d3bc3ca95df7c270c508d735570403e8b272",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/default.yaml",
+      "expected_bytes": 4299,
+      "expected_sha256": "1fc2111f23ebbdadd9527214a80daf1b5f738ac00b6f62a421a587fe1ead3f99",
+      "actual_bytes": 4299,
+      "actual_sha256": "1fc2111f23ebbdadd9527214a80daf1b5f738ac00b6f62a421a587fe1ead3f99",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/essay.txt",
+      "expected_bytes": 4096600,
+      "expected_sha256": "1d66c47e76009aed63ce50de2b8fb8c7d54fc2de8f4e9b4336a6bc5bf014402b",
+      "actual_bytes": 4096600,
+      "actual_sha256": "1d66c47e76009aed63ce50de2b8fb8c7d54fc2de8f4e9b4336a6bc5bf014402b",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/luna_pinyin.dict.yaml",
+      "expected_bytes": 282450,
+      "expected_sha256": "971baa1f38a42d3d82f858b5bbdcad6482371f8d93a2f5d5c4ab341046419e3b",
+      "actual_bytes": 282450,
+      "actual_sha256": "971baa1f38a42d3d82f858b5bbdcad6482371f8d93a2f5d5c4ab341046419e3b",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/luna_pinyin.schema.yaml",
+      "expected_bytes": 3585,
+      "expected_sha256": "f08549cd3275da3889cea302c6ec3ecc99346d5dae2a79b65e83d37f2c04d0a7",
+      "actual_bytes": 3585,
+      "actual_sha256": "f08549cd3275da3889cea302c6ec3ecc99346d5dae2a79b65e83d37f2c04d0a7",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/pinyin_normalized.json",
+      "expected_bytes": 31697,
+      "expected_sha256": "01bb8e95f124b42c3b1187cfe3872940ab73ebf83a6fe4bebfeac4139bc38422",
+      "actual_bytes": 31697,
+      "actual_sha256": "01bb8e95f124b42c3b1187cfe3872940ab73ebf83a6fe4bebfeac4139bc38422",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/symbols.yaml",
+      "expected_bytes": 24410,
+      "expected_sha256": "e4cda5663039e284ce62d7febe207bf6b788df6a9705ca174fabd7f8c140ed30",
+      "actual_bytes": 24410,
+      "actual_sha256": "e4cda5663039e284ce62d7febe207bf6b788df6a9705ca174fabd7f8c140ed30",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_core_source_manifest.json",
+      "expected_bytes": 1842,
+      "expected_sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97",
+      "actual_bytes": 1842,
+      "actual_sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_full.dict.yaml",
+      "expected_bytes": 4710,
+      "expected_sha256": "8b65157cbdc489d97faa4a769972a2d74c5878c1bb5bdbcf4a537e7460fcf36a",
+      "actual_bytes": 4710,
+      "actual_sha256": "8b65157cbdc489d97faa4a769972a2d74c5878c1bb5bdbcf4a537e7460fcf36a",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_full.schema.yaml",
+      "expected_bytes": 357,
+      "expected_sha256": "d1e00c4187a3241952636cc7d92867a8bdc885e2642507d3da8ebab3c071dc0e",
+      "actual_bytes": 357,
+      "actual_sha256": "d1e00c4187a3241952636cc7d92867a8bdc885e2642507d3da8ebab3c071dc0e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_manifest.json",
+      "expected_bytes": 4044,
+      "expected_sha256": "0a1f89dc4df28682924a62f62f2cc224bcf97ca09443ea4e6ee659acbe16091c",
+      "actual_bytes": 4044,
+      "actual_sha256": "0a1f89dc4df28682924a62f62f2cc224bcf97ca09443ea4e6ee659acbe16091c",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_full.dict.yaml",
+      "expected_bytes": 3181,
+      "expected_sha256": "b67f2cee5e3d9f7dbf2ba471d4bde890239902143d00eb27f91c8437991bc0c1",
+      "actual_bytes": 3181,
+      "actual_sha256": "b67f2cee5e3d9f7dbf2ba471d4bde890239902143d00eb27f91c8437991bc0c1",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_shorthand.dict.yaml",
+      "expected_bytes": 3046,
+      "expected_sha256": "b84bf88ac11a8b4539f0dcd978f676b874c8efac52b5fa12ab88cad872020705",
+      "actual_bytes": 3046,
+      "actual_sha256": "b84bf88ac11a8b4539f0dcd978f676b874c8efac52b5fa12ab88cad872020705",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_variable.dict.yaml",
+      "expected_bytes": 3072,
+      "expected_sha256": "aec8483fa49c159007b564b264c2a1f9e3755fbb9be1c91e6626f6258fba8d76",
+      "actual_bytes": 3072,
+      "actual_sha256": "aec8483fa49c159007b564b264c2a1f9e3755fbb9be1c91e6626f6258fba8d76",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.dict.yaml",
+      "expected_bytes": 4373,
+      "expected_sha256": "eee94ba46bed6495477f45d7d5b7deabf4be0041197d3a0128a90d6072c6b570",
+      "actual_bytes": 4373,
+      "actual_sha256": "eee94ba46bed6495477f45d7d5b7deabf4be0041197d3a0128a90d6072c6b570",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.schema.yaml",
+      "expected_bytes": 372,
+      "expected_sha256": "ca22d7d16b6bedff767972329ef53bb880c187ce5b821ebf57022d4f165a8bbb",
+      "actual_bytes": 372,
+      "actual_sha256": "ca22d7d16b6bedff767972329ef53bb880c187ce5b821ebf57022d4f165a8bbb",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_variable.dict.yaml",
+      "expected_bytes": 4411,
+      "expected_sha256": "011448c018f309303af488fa143c31e82803f76a3734ca301c3b73a9599ca51d",
+      "actual_bytes": 4411,
+      "actual_sha256": "011448c018f309303af488fa143c31e82803f76a3734ca301c3b73a9599ca51d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_variable.schema.yaml",
+      "expected_bytes": 369,
+      "expected_sha256": "aed6d0a4953b6a7fc55054b1d0711088f9dffce49f961972913bdf59914babbc",
+      "actual_bytes": 369,
+      "actual_sha256": "aed6d0a4953b6a7fc55054b1d0711088f9dffce49f961972913bdf59914babbc",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_reverse_source.tsv",
+      "expected_bytes": 40241,
+      "expected_sha256": "896d69089125826e4d2d83601ad4ee60d23ba2f556a9888551097546bc0f3f05",
+      "actual_bytes": 40241,
+      "actual_sha256": "896d69089125826e4d2d83601ad4ee60d23ba2f556a9888551097546bc0f3f05",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+      "expected_bytes": 31621303,
+      "expected_sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+      "actual_bytes": 31621303,
+      "actual_sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_full.schema.yaml",
+      "expected_bytes": 1959,
+      "expected_sha256": "5889514c808199a00c1c1618a4f940c71acd1e69eb8dc9592788e67a346114c0",
+      "actual_bytes": 1959,
+      "actual_sha256": "5889514c808199a00c1c1618a4f940c71acd1e69eb8dc9592788e67a346114c0",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_lexicon_manifest.json",
+      "expected_bytes": 667,
+      "expected_sha256": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8",
+      "actual_bytes": 667,
+      "actual_sha256": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_full.dict.yaml",
+      "expected_bytes": 150994,
+      "expected_sha256": "e570b452543845542f0dc0e04233e44aa0ab9cfab12d655d9e811019fbc8064b",
+      "actual_bytes": 150994,
+      "actual_sha256": "e570b452543845542f0dc0e04233e44aa0ab9cfab12d655d9e811019fbc8064b",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_manifest.json",
+      "expected_bytes": 2549,
+      "expected_sha256": "e176793b2359b3d32cef397a8d20a7fc24c24f9c52cf98e381ce240c4b2bba11",
+      "actual_bytes": 2549,
+      "actual_sha256": "e176793b2359b3d32cef397a8d20a7fc24c24f9c52cf98e381ce240c4b2bba11",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_shorthand.dict.yaml",
+      "expected_bytes": 132044,
+      "expected_sha256": "e8e34cd76847bfb2cc2b6a3df4f5a76641a40f402fb818a099e06dec24e86b7d",
+      "actual_bytes": 132044,
+      "actual_sha256": "e8e34cd76847bfb2cc2b6a3df4f5a76641a40f402fb818a099e06dec24e86b7d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_variable.dict.yaml",
+      "expected_bytes": 134218,
+      "expected_sha256": "1b80e35ea9c04a3600fd0a5e60cdba3a2cd6b5743c6c376ddfcfbb478cd53cd0",
+      "actual_bytes": 134218,
+      "actual_sha256": "1b80e35ea9c04a3600fd0a5e60cdba3a2cd6b5743c6c376ddfcfbb478cd53cd0",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_pinyin_codes.tsv",
+      "expected_bytes": 19448,
+      "expected_sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+      "actual_bytes": 19448,
+      "actual_sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_pinyin_reverse_source.tsv",
+      "expected_bytes": 2039059,
+      "expected_sha256": "85c9b28b2e46752d56d84fcd924160d260cc9e5cfcbc3c5606d0f4d47c6a319a",
+      "actual_bytes": 2039059,
+      "actual_sha256": "85c9b28b2e46752d56d84fcd924160d260cc9e5cfcbc3c5606d0f4d47c6a319a",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_full.dict.yaml",
+      "expected_bytes": 2842,
+      "expected_sha256": "339caa6828e0ce569bd81a1f93d3a1b3b4c9e69c468f65108690fbee9e83cf15",
+      "actual_bytes": 2842,
+      "actual_sha256": "339caa6828e0ce569bd81a1f93d3a1b3b4c9e69c468f65108690fbee9e83cf15",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_full.schema.yaml",
+      "expected_bytes": 367,
+      "expected_sha256": "53134bf8ee5134f3e2615a53c794b162e8a249520a52937a4145ae5c47daed0e",
+      "actual_bytes": 367,
+      "actual_sha256": "53134bf8ee5134f3e2615a53c794b162e8a249520a52937a4145ae5c47daed0e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_manifest.json",
+      "expected_bytes": 2073,
+      "expected_sha256": "2e4a3ac0dba4bf497519dc2f60f89ae899f2e34d1bdecbe776490b2273052807",
+      "actual_bytes": 2073,
+      "actual_sha256": "2e4a3ac0dba4bf497519dc2f60f89ae899f2e34d1bdecbe776490b2273052807",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_full.dict.yaml",
+      "expected_bytes": 3038,
+      "expected_sha256": "1dac84cb9de9565d54768688fec9f712279a6e8e78801c1f511e74f56d18622d",
+      "actual_bytes": 3038,
+      "actual_sha256": "1dac84cb9de9565d54768688fec9f712279a6e8e78801c1f511e74f56d18622d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_shorthand.dict.yaml",
+      "expected_bytes": 2734,
+      "expected_sha256": "41c39164c0a8cbc2a038d08dbaef4d14d2002a03efd60accc7316dc332e56f78",
+      "actual_bytes": 2734,
+      "actual_sha256": "41c39164c0a8cbc2a038d08dbaef4d14d2002a03efd60accc7316dc332e56f78",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_variable.dict.yaml",
+      "expected_bytes": 2759,
+      "expected_sha256": "22929e9c35a0daf6918ede8fe2de4b800ba78154bc195eaa2e22ecaf3362c22d",
+      "actual_bytes": 2759,
+      "actual_sha256": "22929e9c35a0daf6918ede8fe2de4b800ba78154bc195eaa2e22ecaf3362c22d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_shorthand.dict.yaml",
+      "expected_bytes": 2538,
+      "expected_sha256": "1ff18ea29b4be8b9a9979941018042d4a1b333be8e4a5a43aaa4fd312eb7fa73",
+      "actual_bytes": 2538,
+      "actual_sha256": "1ff18ea29b4be8b9a9979941018042d4a1b333be8e4a5a43aaa4fd312eb7fa73",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_shorthand.schema.yaml",
+      "expected_bytes": 377,
+      "expected_sha256": "bbd7176d482772f6655d153752892b0cf539ab0979f7a6ad4aad49db7261104c",
+      "actual_bytes": 377,
+      "actual_sha256": "bbd7176d482772f6655d153752892b0cf539ab0979f7a6ad4aad49db7261104c",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_variable.dict.yaml",
+      "expected_bytes": 2563,
+      "expected_sha256": "96850c6e75d07250fcf0aba1bed685c13592556ee4742a61a929254212ae9026",
+      "actual_bytes": 2563,
+      "actual_sha256": "96850c6e75d07250fcf0aba1bed685c13592556ee4742a61a929254212ae9026",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_variable.schema.yaml",
+      "expected_bytes": 375,
+      "expected_sha256": "515abf7f3c4e92aefa67764bd25a51b077d5a8dee72908d5d8c72173cd521279",
+      "actual_bytes": 375,
+      "actual_sha256": "515abf7f3c4e92aefa67764bd25a51b077d5a8dee72908d5d8c72173cd521279",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_pua_pinyin.json",
+      "expected_bytes": 62686,
+      "expected_sha256": "c60f4acc864e2c699eefcf796feaf855e2c19770191d8417fb7d51d17ceb3699",
+      "actual_bytes": 62686,
+      "actual_sha256": "c60f4acc864e2c699eefcf796feaf855e2c19770191d8417fb7d51d17ceb3699",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_runtime_profile.json",
+      "expected_bytes": 3764,
+      "expected_sha256": "f40b40e001bea799a45877f524d380e229d1c0499c3ba50a16c5d8ef19091741",
+      "actual_bytes": 3764,
+      "actual_sha256": "f40b40e001bea799a45877f524d380e229d1c0499c3ba50a16c5d8ef19091741",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_sentence_full.dict.yaml",
+      "expected_bytes": 368,
+      "expected_sha256": "bdcc06ecb949eb589884f2de1f0d591ac42b331b9327b8a9f2424f5a9375603e",
+      "actual_bytes": 368,
+      "actual_sha256": "bdcc06ecb949eb589884f2de1f0d591ac42b331b9327b8a9f2424f5a9375603e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_sentence_shorthand.dict.yaml",
+      "expected_bytes": 398,
+      "expected_sha256": "ca26b480507b90b6be0d47e0138ad463d0b367cc5fa1bdbb9b6ef47c232243ab",
+      "actual_bytes": 398,
+      "actual_sha256": "ca26b480507b90b6be0d47e0138ad463d0b367cc5fa1bdbb9b6ef47c232243ab",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_sentence_variable.dict.yaml",
+      "expected_bytes": 392,
+      "expected_sha256": "3a1569ec196835195a13ea2ccb55f719faf08a4ccb3b8cb82506e1b7bd921e57",
+      "actual_bytes": 392,
+      "actual_sha256": "3a1569ec196835195a13ea2ccb55f719faf08a4ccb3b8cb82506e1b7bd921e57",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_shorthand.dict.yaml",
+      "expected_bytes": 29563931,
+      "expected_sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+      "actual_bytes": 29563931,
+      "actual_sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_shorthand.schema.yaml",
+      "expected_bytes": 1996,
+      "expected_sha256": "d3b2fb6b39e958f30a0479de411ea65c6b4578b2548da106d1b23fda89910eaf",
+      "actual_bytes": 1996,
+      "actual_sha256": "d3b2fb6b39e958f30a0479de411ea65c6b4578b2548da106d1b23fda89910eaf",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_syllable_decomposition.tsv",
+      "expected_bytes": 177143,
+      "expected_sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+      "actual_bytes": 177143,
+      "actual_sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_syllable_inventory_manifest.json",
+      "expected_bytes": 557,
+      "expected_sha256": "516a4e3c993845875e3b59856835425b6456f2e771cd2a89e4168cf4981f7617",
+      "actual_bytes": 557,
+      "actual_sha256": "516a4e3c993845875e3b59856835425b6456f2e771cd2a89e4168cf4981f7617",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_system_candidate_exclusions.tsv",
+      "expected_bytes": 6051,
+      "expected_sha256": "a8ea7cb186ce8e27ba4848e608fdedf260e8d4b2010a38ce8aabc893bc1f22b2",
+      "actual_bytes": 6051,
+      "actual_sha256": "a8ea7cb186ce8e27ba4848e608fdedf260e8d4b2010a38ce8aabc893bc1f22b2",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_full.dict.yaml",
+      "expected_bytes": 694,
+      "expected_sha256": "e6a478b4d8fc0474ae02b13dc6a5cffaf62ff7ca3ad1ba0f75b937cf75854f89",
+      "actual_bytes": 694,
+      "actual_sha256": "e6a478b4d8fc0474ae02b13dc6a5cffaf62ff7ca3ad1ba0f75b937cf75854f89",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_manifest.json",
+      "expected_bytes": 1551,
+      "expected_sha256": "b53b46ef49da894d019b5db4dc281b19aaceec9fe9ec570b26653b8e0c54d82e",
+      "actual_bytes": 1551,
+      "actual_sha256": "b53b46ef49da894d019b5db4dc281b19aaceec9fe9ec570b26653b8e0c54d82e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_shorthand.dict.yaml",
+      "expected_bytes": 676,
+      "expected_sha256": "4b9e428a09b8f5be8478a6d7d947f54760c2e395eeb1117b8a3702d04c840253",
+      "actual_bytes": 676,
+      "actual_sha256": "4b9e428a09b8f5be8478a6d7d947f54760c2e395eeb1117b8a3702d04c840253",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_variable.dict.yaml",
+      "expected_bytes": 675,
+      "expected_sha256": "052b5b75cc0c8e1d5deae9f3c05a1ed45d36b02339630f130860a1204f011f84",
+      "actual_bytes": 675,
+      "actual_sha256": "052b5b75cc0c8e1d5deae9f3c05a1ed45d36b02339630f130860a1204f011f84",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_variable.dict.yaml",
+      "expected_bytes": 30155261,
+      "expected_sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+      "actual_bytes": 30155261,
+      "actual_sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_variable.schema.yaml",
+      "expected_bytes": 2067,
+      "expected_sha256": "2a0d05769a3aee860ed14b503a24d295749f3f788cecf2fd792018094cd0f330",
+      "actual_bytes": 2067,
+      "actual_sha256": "2a0d05769a3aee860ed14b503a24d295749f3f788cecf2fd792018094cd0f330",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_yinyuan_layout.json",
+      "expected_bytes": 1023,
+      "expected_sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+      "actual_bytes": 1023,
+      "actual_sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/trainer/curriculum.json",
+      "expected_bytes": 994,
+      "expected_sha256": "6b57e56d91686fdf244b9df273477b73c53f19558fa4c40fc164b01bbec1ca51",
+      "actual_bytes": 994,
+      "actual_sha256": "6b57e56d91686fdf244b9df273477b73c53f19558fa4c40fc164b01bbec1ca51",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/trainer/foundation.json",
+      "expected_bytes": 2015,
+      "expected_sha256": "94c110348e6c6eb081b1b24707d3024d8bf199dbde6f7f5ff484176a5b581555",
+      "actual_bytes": 2015,
+      "actual_sha256": "94c110348e6c6eb081b1b24707d3024d8bf199dbde6f7f5ff484176a5b581555",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/trainer/README.md",
+      "expected_bytes": 4659,
+      "expected_sha256": "6eedbe4730d28d9a6b43cb70a7ae041ecf0f59da0a8c9f6280b17f97723a729a",
+      "actual_bytes": 4659,
+      "actual_sha256": "6eedbe4730d28d9a6b43cb70a7ae041ecf0f59da0a8c9f6280b17f97723a729a",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/trainer/yinyuan_catalog.json",
+      "expected_bytes": 8358,
+      "expected_sha256": "adcbbca053785bf189c6ca834aef27fadb9c4ccf3a55c0acfeb352a5743ea5c3",
+      "actual_bytes": 8358,
+      "actual_sha256": "adcbbca053785bf189c6ca834aef27fadb9c4ccf3a55c0acfeb352a5743ea5c3",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/trainer/yinyuan_groups.json",
+      "expected_bytes": 3093,
+      "expected_sha256": "0821ce4e8da0149af75ae8e78e0ed579d15f3c04039f1de3acf5c3e717f8ab0c",
+      "actual_bytes": 3093,
+      "actual_sha256": "0821ce4e8da0149af75ae8e78e0ed579d15f3c04039f1de3acf5c3e717f8ab0c",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/hk2s.json",
+      "expected_bytes": 643,
+      "expected_sha256": "71d5f687e1ca78d3af0e64850e84000555848744e41a09f98d33849a7f126be3",
+      "actual_bytes": 643,
+      "actual_sha256": "71d5f687e1ca78d3af0e64850e84000555848744e41a09f98d33849a7f126be3",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/hk2t.json",
+      "expected_bytes": 450,
+      "expected_sha256": "2a3456a87414f2995fd3f9aefd0e089f5be8f80be53259e07246815bcf7334eb",
+      "actual_bytes": 450,
+      "actual_sha256": "2a3456a87414f2995fd3f9aefd0e089f5be8f80be53259e07246815bcf7334eb",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/HKVariants.ocd2",
+      "expected_bytes": 4893,
+      "expected_sha256": "1b71281a9a093619eda66c3d65ddedbe8f9be5383bb02cd1c2ebadee320f179a",
+      "actual_bytes": 4893,
+      "actual_sha256": "1b71281a9a093619eda66c3d65ddedbe8f9be5383bb02cd1c2ebadee320f179a",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/HKVariantsRev.ocd2",
+      "expected_bytes": 4923,
+      "expected_sha256": "b879b0a7f7d2f6031b38523cd6430440e32e9b819ca052e4c7d156ad5b0c099b",
+      "actual_bytes": 4923,
+      "actual_sha256": "b879b0a7f7d2f6031b38523cd6430440e32e9b819ca052e4c7d156ad5b0c099b",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/HKVariantsRevPhrases.ocd2",
+      "expected_bytes": 7030,
+      "expected_sha256": "a6b0675755b1df44b2af090c6e15672b7184c03f74b3c226e57f94391b4d0ec1",
+      "actual_bytes": 7030,
+      "actual_sha256": "a6b0675755b1df44b2af090c6e15672b7184c03f74b3c226e57f94391b4d0ec1",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/jp2t.json",
+      "expected_bytes": 540,
+      "expected_sha256": "3f9b091520ba0d55ecfe6fca719a672bb2691b1eb9b0c0a43a4aa4326b15fd9e",
+      "actual_bytes": 540,
+      "actual_sha256": "3f9b091520ba0d55ecfe6fca719a672bb2691b1eb9b0c0a43a4aa4326b15fd9e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/JPShinjitaiCharacters.ocd2",
+      "expected_bytes": 4263,
+      "expected_sha256": "6c97633ec8a1087a4041a8677cbc3c872b68804ebace6c4b30aa2d02c484b8d1",
+      "actual_bytes": 4263,
+      "actual_sha256": "6c97633ec8a1087a4041a8677cbc3c872b68804ebace6c4b30aa2d02c484b8d1",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/JPShinjitaiPhrases.ocd2",
+      "expected_bytes": 7462,
+      "expected_sha256": "6caef7c983668e43799498104062ede559033ca759665600f5be18ede4821016",
+      "actual_bytes": 7462,
+      "actual_sha256": "6caef7c983668e43799498104062ede559033ca759665600f5be18ede4821016",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/JPVariants.ocd2",
+      "expected_bytes": 7993,
+      "expected_sha256": "14f32b4906b1fe22d3a4f96c6cb5c64c39a8726a73df556570ff7653fb9ce732",
+      "actual_bytes": 7993,
+      "actual_sha256": "14f32b4906b1fe22d3a4f96c6cb5c64c39a8726a73df556570ff7653fb9ce732",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/JPVariantsRev.ocd2",
+      "expected_bytes": 7991,
+      "expected_sha256": "3aa7d165035e584b701487c6512866425d1c711ba3afb91ab0c9c109f5d3c15d",
+      "actual_bytes": 7991,
+      "actual_sha256": "3aa7d165035e584b701487c6512866425d1c711ba3afb91ab0c9c109f5d3c15d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/s2hk.json",
+      "expected_bytes": 507,
+      "expected_sha256": "3708e756ea01783e9cf6b3cce527580810b3d539b8c7fcc3594dd1517aa05bff",
+      "actual_bytes": 507,
+      "actual_sha256": "3708e756ea01783e9cf6b3cce527580810b3d539b8c7fcc3594dd1517aa05bff",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/s2t.json",
+      "expected_bytes": 406,
+      "expected_sha256": "710bb970e406d9c0a3dd33c609248686cf1c5578d064b7b7fc89e70fbb9ea75d",
+      "actual_bytes": 406,
+      "actual_sha256": "710bb970e406d9c0a3dd33c609248686cf1c5578d064b7b7fc89e70fbb9ea75d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/s2tw.json",
+      "expected_bytes": 505,
+      "expected_sha256": "67ce1f5aa3d6b21ebb523084b40e66f80bec27bb2dc6b540d44dac2e27f7194e",
+      "actual_bytes": 505,
+      "actual_sha256": "67ce1f5aa3d6b21ebb523084b40e66f80bec27bb2dc6b540d44dac2e27f7194e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/s2twp.json",
+      "expected_bytes": 599,
+      "expected_sha256": "72d187574510542be608c862d5359d29480ee61f137082df8a06d74f7bcfc79c",
+      "actual_bytes": 599,
+      "actual_sha256": "72d187574510542be608c862d5359d29480ee61f137082df8a06d74f7bcfc79c",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/STCharacters.ocd2",
+      "expected_bytes": 45310,
+      "expected_sha256": "e2bcc2f3b6a552abf2c21f1e9d4bc232ea57e9836151fb381eff703d88c12425",
+      "actual_bytes": 45310,
+      "actual_sha256": "e2bcc2f3b6a552abf2c21f1e9d4bc232ea57e9836151fb381eff703d88c12425",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/STPhrases.ocd2",
+      "expected_bytes": 925143,
+      "expected_sha256": "5e8d8289beacc7d4ab7baa7193ebb589f3d5a956449ed9c81ccff431ae503f6e",
+      "actual_bytes": 925143,
+      "actual_sha256": "5e8d8289beacc7d4ab7baa7193ebb589f3d5a956449ed9c81ccff431ae503f6e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/t2hk.json",
+      "expected_bytes": 304,
+      "expected_sha256": "a8531beb7430fe1afed0294a893af529c7b7fd2ad41567b5daccb8399c8ef2f0",
+      "actual_bytes": 304,
+      "actual_sha256": "a8531beb7430fe1afed0294a893af529c7b7fd2ad41567b5daccb8399c8ef2f0",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/t2jp.json",
+      "expected_bytes": 318,
+      "expected_sha256": "4fb22429d63173715fec30524111ec141c0577b66c9f090513ea8bac4741ad77",
+      "actual_bytes": 318,
+      "actual_sha256": "4fb22429d63173715fec30524111ec141c0577b66c9f090513ea8bac4741ad77",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/t2s.json",
+      "expected_bytes": 406,
+      "expected_sha256": "b818534194f27c2d95f01001edb0a5ec49b9050119892cb30a0504bb202cc07c",
+      "actual_bytes": 406,
+      "actual_sha256": "b818534194f27c2d95f01001edb0a5ec49b9050119892cb30a0504bb202cc07c",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/t2tw.json",
+      "expected_bytes": 302,
+      "expected_sha256": "11495bf144cd932a9568810822a5af0fbba2db9c2e06a2bb2871583423fac24a",
+      "actual_bytes": 302,
+      "actual_sha256": "11495bf144cd932a9568810822a5af0fbba2db9c2e06a2bb2871583423fac24a",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TSCharacters.ocd2",
+      "expected_bytes": 46126,
+      "expected_sha256": "64aee2ead703e0734525decf0a11891f3dad07930433c8b1672274a9b22963bc",
+      "actual_bytes": 46126,
+      "actual_sha256": "64aee2ead703e0734525decf0a11891f3dad07930433c8b1672274a9b22963bc",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TSPhrases.ocd2",
+      "expected_bytes": 9776,
+      "expected_sha256": "edafc46f5c3eca61a754c78e47117e7c73995cacd6c99aadcb8a219d7ae3e53d",
+      "actual_bytes": 9776,
+      "actual_sha256": "edafc46f5c3eca61a754c78e47117e7c73995cacd6c99aadcb8a219d7ae3e53d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/tw2s.json",
+      "expected_bytes": 641,
+      "expected_sha256": "05ac8731e870babac8118d9a79ebf06c616576bf4c8b378cf36d0359b5d9ebe5",
+      "actual_bytes": 641,
+      "actual_sha256": "05ac8731e870babac8118d9a79ebf06c616576bf4c8b378cf36d0359b5d9ebe5",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/tw2sp.json",
+      "expected_bytes": 727,
+      "expected_sha256": "8bb1ce11c560f623a7d07593affe575ee936be0fe63cda0983a672000adf68ec",
+      "actual_bytes": 727,
+      "actual_sha256": "8bb1ce11c560f623a7d07593affe575ee936be0fe63cda0983a672000adf68ec",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/tw2t.json",
+      "expected_bytes": 448,
+      "expected_sha256": "3ca6a912f9da989ce3e83dab11084f2473af2a1ea6f9e67675ba48ad2f3c3e51",
+      "actual_bytes": 448,
+      "actual_sha256": "3ca6a912f9da989ce3e83dab11084f2473af2a1ea6f9e67675ba48ad2f3c3e51",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TWPhrases.ocd2",
+      "expected_bytes": 15610,
+      "expected_sha256": "14ce3a5beded4e387f571ff6aa0473d631c02b6e9af019960c87e1cd278640c5",
+      "actual_bytes": 15610,
+      "actual_sha256": "14ce3a5beded4e387f571ff6aa0473d631c02b6e9af019960c87e1cd278640c5",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TWPhrasesRev.ocd2",
+      "expected_bytes": 15597,
+      "expected_sha256": "966115eab0dc898754e25acb55590d55346e126c5325c12e3a44b5d8c183319d",
+      "actual_bytes": 15597,
+      "actual_sha256": "966115eab0dc898754e25acb55590d55346e126c5325c12e3a44b5d8c183319d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TWVariants.ocd2",
+      "expected_bytes": 4595,
+      "expected_sha256": "4845dffeeb7efe1ba46e655b80580edd73191cd33cc8ade20451047cb398702a",
+      "actual_bytes": 4595,
+      "actual_sha256": "4845dffeeb7efe1ba46e655b80580edd73191cd33cc8ade20451047cb398702a",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TWVariantsRev.ocd2",
+      "expected_bytes": 4627,
+      "expected_sha256": "60f6b6bf9aa17756356a0f6fbb4299cce774431ea84d7eeb767e7a0411494485",
+      "actual_bytes": 4627,
+      "actual_sha256": "60f6b6bf9aa17756356a0f6fbb4299cce774431ea84d7eeb767e7a0411494485",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TWVariantsRevPhrases.ocd2",
+      "expected_bytes": 5333,
+      "expected_sha256": "8cfd338887d3b6b3e035f1cccf3821bf2b2581c6024a530c6c1b243a189d06f8",
+      "actual_bytes": 5333,
+      "actual_sha256": "8cfd338887d3b6b3e035f1cccf3821bf2b2581c6024a530c6c1b243a189d06f8",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf",
+      "expected_bytes": 16024176,
+      "expected_sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d",
+      "actual_bytes": 16024176,
+      "actual_sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d",
+      "stable_while_read": true,
+      "match": true
+    }
+  ],
+  "executable_build_info": [
+    {
+      "path": "PIMELauncher.exe",
+      "file_sha256": "3d78aafb4b215d29ff61307f844ed40ba6669a93ad8c7fd399d6f527999c1231",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe: could not read Go build info from C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe: not a Go executable\n",
+      "go_metadata_present": false,
+      "module_path": null,
+      "settings": {},
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "x86/PIMERegistrationStatus.exe",
+      "file_sha256": "5980ae67faf2605e83d86f51570281aa5f11847e16f06a9b0c492adcc083f5bd",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\x86\\PIMERegistrationStatus.exe"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "C:\\Program Files\\Yime Rime-PIME\\x86\\PIMERegistrationStatus.exe: could not read Go build info from C:\\Program Files\\Yime Rime-PIME\\x86\\PIMERegistrationStatus.exe: not a Go executable\n",
+      "go_metadata_present": false,
+      "module_path": null,
+      "settings": {},
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "x64/PIMERegistrationStatus.exe",
+      "file_sha256": "782c062ead97048d0d8ab161f75c74d67e6ec0c14423a9f736f940b4ab7cdd60",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\x64\\PIMERegistrationStatus.exe"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "C:\\Program Files\\Yime Rime-PIME\\x64\\PIMERegistrationStatus.exe: could not read Go build info from C:\\Program Files\\Yime Rime-PIME\\x64\\PIMERegistrationStatus.exe: not a Go executable\n",
+      "go_metadata_present": false,
+      "module_path": null,
+      "settings": {},
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/blocklist-manager.exe",
+      "file_sha256": "291d38080d2b8c8c038ce636b05225a4a1cfe3cf33b43a721141ab1fe4b6a263",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\blocklist-manager.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\blocklist-manager.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/blocklist-manager\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/blocklist-manager",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/diagnostics-tool.exe",
+      "file_sha256": "129e7ed12e8f401f5a23bc352d42330f5305118e8fffe6c800f965b700aa40e5",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\diagnostics-tool.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\diagnostics-tool.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/diagnostics-tool\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/diagnostics-tool",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/input-toolbar.exe",
+      "file_sha256": "bfe4a32038555b116a48c2604cc3f5be43da8c4754f7f7b388112b73c6b75000",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\input-toolbar.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\input-toolbar.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/input-toolbar\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/input-toolbar",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/lexicon-manager.exe",
+      "file_sha256": "bc4fd752eec3aeb874b8f7210ff6161e8fb8e05b6630311248a68af146f5c6c6",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\lexicon-manager.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\lexicon-manager.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/lexicon-manager\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/lexicon-manager",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/lexicon-promotion-scan.exe",
+      "file_sha256": "f0717e79532208b1a8818dd217a05e6e26efdbbc5f5312e12fc44608f845b03b",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\lexicon-promotion-scan.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\lexicon-promotion-scan.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/lexicon-promotion-scan\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/lexicon-promotion-scan",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/reverse-lookup.exe",
+      "file_sha256": "71718b1b089f66fe8bbe4f698d021f38d0547266cb280e7889d1502e834d8007",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\reverse-lookup.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\reverse-lookup.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/reverse-lookup-tool\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/reverse-lookup-tool",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/server.exe",
+      "file_sha256": "2b940d7c17167e2c9dd66299c0923303a1fec3b3d96dfed4961c3ae1b42cb561",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\server.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\server.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/settings-tool.exe",
+      "file_sha256": "1400e4e9ebe1000fb28ea46e9e66fe2de980c43ce64094f9d712ff7d119a1e31",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\settings-tool.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\settings-tool.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/settings-tool\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/settings-tool",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/system-lexicon-audit.exe",
+      "file_sha256": "7c57677ae43d5c81f71c9b5b604857c6900315881338288dc65e3f2ccf263e92",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\system-lexicon-audit.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\system-lexicon-audit.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/system-lexicon-audit\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/system-lexicon-audit",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/tool-hub.exe",
+      "file_sha256": "f14b2766562193be3058f26b1ed17a7f646e20cc9eb06b091aeae9fc53d99fce",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\tool-hub.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\tool-hub.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/tool-hub\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/tool-hub",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/yime-layout-designer.exe",
+      "file_sha256": "4399d4d1f6ffb91fdfee4d3c27500ec4b2f09ba1c1842ac66d3cf473a99a0214",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\yime-layout-designer.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\yime-layout-designer.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/yime-layout-designer\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-layout-designer",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/yime-trainer.exe",
+      "file_sha256": "26f9881b9aeb4bf03634934e7ff42b4df16615985a3085dfb05f041e0075adc2",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\yime-trainer.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\yime-trainer.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/yime-trainer\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-trainer",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_deployer.exe",
+      "file_sha256": "3abb72b5bb56fcafcfe925d533ae5f832c68d5a0bc9952fd0eea0682fb1ab071",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\input_methods\\yime\\rime_deployer.exe"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\input_methods\\yime\\rime_deployer.exe: could not read Go build info from C:\\Program Files\\Yime Rime-PIME\\go-backend\\input_methods\\yime\\rime_deployer.exe: not a Go executable\n",
+      "go_metadata_present": false,
+      "module_path": null,
+      "settings": {},
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_dict_manager.exe",
+      "file_sha256": "1c1eb1f84f98704161efbf3315a16e3456f5989efa56f340d7e9e3e5f8bf9e1b",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\input_methods\\yime\\rime_dict_manager.exe"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\input_methods\\yime\\rime_dict_manager.exe: could not read Go build info from C:\\Program Files\\Yime Rime-PIME\\go-backend\\input_methods\\yime\\rime_dict_manager.exe: not a Go executable\n",
+      "go_metadata_present": false,
+      "module_path": null,
+      "settings": {},
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    }
+  ]
+}

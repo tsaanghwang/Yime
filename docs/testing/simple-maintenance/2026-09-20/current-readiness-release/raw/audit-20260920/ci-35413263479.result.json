@@ -1,0 +1,15 @@
+{
+  "command": [
+    "gh",
+    "run",
+    "view",
+    "35413263479",
+    "--repo",
+    "tsaanghwang/Yime",
+    "--json",
+    "headSha,status,conclusion,url,jobs,event,createdAt,updatedAt"
+  ],
+  "exit_code": 0,
+  "stdout_sha256": "5dd84ee1aefffcbc138a994cc7b24a36437c70a1eca4322f0ccd34b6a929c9e8",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

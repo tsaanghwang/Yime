@@ -1,0 +1,24 @@
+{
+  "name": "repository-data-boundary",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "tools/lexicon/check_repository_data_boundary.py"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "started_utc": "2026-09-19T23:29:50.735208+00:00",
+  "finished_utc": "2026-09-19T23:30:30.553944+00:00",
+  "elapsed_seconds": 39.819,
+  "exit_code": 0,
+  "stdout": {
+    "path": "repository-data-boundary.stdout.txt",
+    "bytes": 76,
+    "sha256": "f9feb8577ecff1f2ed9f9d49280eb4ddfc369d95f66bd5a546cd7635cedbef98"
+  },
+  "stderr": {
+    "path": "repository-data-boundary.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

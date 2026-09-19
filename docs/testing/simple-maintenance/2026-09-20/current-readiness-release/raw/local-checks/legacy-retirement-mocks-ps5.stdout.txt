@@ -1,0 +1,1 @@
+PASS: 22 retirement checks; synthetic language lists only, no system mutation.

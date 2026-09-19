@@ -1,0 +1,54 @@
+{
+  "purpose": "read-only retained install-time metadata and historical logs; not recovered original package or current input acceptance",
+  "files": [
+    {
+      "source": "C:\\Program Files\\YimeCore\\.setup\\product-package.json",
+      "exists": true,
+      "copy": "yimecore-manifest.json",
+      "bytes": 11165,
+      "sha256": "67cbdf516ae8e4348f47ffa5bc7d94d1468d200c320b66b4a1d73ce649facf8d"
+    },
+    {
+      "source": "C:\\Program Files\\Yime Rime-PIME\\.setup\\product-package.json",
+      "exists": true,
+      "copy": "rime-pime-manifest.json",
+      "bytes": 31324,
+      "sha256": "2996982b88c70b251124847fd6fa37ada185a6c173de1139cbb32afda8324d38"
+    },
+    {
+      "source": "C:\\Program Files\\YimeCore\\local-product.json",
+      "exists": true,
+      "copy": "yimecore-local-product.json",
+      "bytes": 7832,
+      "sha256": "91baa22049b493f637107467686f541e0f45c1088b71c5eb792054d5ed10ee31"
+    },
+    {
+      "source": "C:\\Users\\tsaan\\Yime Setup Logs\\37498156b3a9436a934ee3af2a1f5706.admin.log",
+      "exists": true,
+      "copy": "37498156b3a9436a934ee3af2a1f5706.admin.log",
+      "bytes": 3683,
+      "sha256": "7c46c56930fff97bee509295e0f65b62546288e994fc9c091e1e7e682615946f"
+    },
+    {
+      "source": "C:\\Users\\tsaan\\Yime Setup Logs\\37498156b3a9436a934ee3af2a1f5706.user.log",
+      "exists": true,
+      "copy": "37498156b3a9436a934ee3af2a1f5706.user.log",
+      "bytes": 1187,
+      "sha256": "22f5532633139e4f184e121bd8fe787cf1704f5da6def889445706a517fd1d84"
+    },
+    {
+      "source": "C:\\Users\\tsaan\\Yime Setup Logs\\a111aff33e8640a0b93470e231eaac5c.admin.log",
+      "exists": true,
+      "copy": "a111aff33e8640a0b93470e231eaac5c.admin.log",
+      "bytes": 1335,
+      "sha256": "2f0402bc6879e1cc1afca7e9c95b2b661dae286503459c3cbc1ef66f1d30505d"
+    },
+    {
+      "source": "C:\\Users\\tsaan\\Yime Setup Logs\\a111aff33e8640a0b93470e231eaac5c.user.log",
+      "exists": true,
+      "copy": "a111aff33e8640a0b93470e231eaac5c.user.log",
+      "bytes": 1188,
+      "sha256": "dc92bd080c5f44503b6c57e4ef38aa85e7f49b6e3a3e43ec79f7dd8bab82720a"
+    }
+  ]
+}

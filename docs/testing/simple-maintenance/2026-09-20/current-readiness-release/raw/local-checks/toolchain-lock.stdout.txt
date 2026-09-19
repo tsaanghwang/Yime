@@ -1,0 +1,6 @@
+{
+  "decision": "pass",
+  "lock_id": "yime-windows-build-toolchain-20260822",
+  "tool_count": 9,
+  "hashed_artifact_count": 4
+}

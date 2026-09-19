@@ -1,0 +1,31 @@
+{
+  "name": "powershell-wrapper-tests",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/powershell",
+    "-p",
+    "test_run_checked.py",
+    "-v"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "started_utc": "2026-09-19T23:29:50.062991+00:00",
+  "finished_utc": "2026-09-19T23:29:57.539636+00:00",
+  "elapsed_seconds": 7.477,
+  "exit_code": 0,
+  "stdout": {
+    "path": "powershell-wrapper-tests.stdout.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "path": "powershell-wrapper-tests.stderr.txt",
+    "bytes": 395,
+    "sha256": "c26f58f812f2b979ed5ca9d27e4495c4cc7af6f5c91e45df2ffee96d30f909ce"
+  }
+}

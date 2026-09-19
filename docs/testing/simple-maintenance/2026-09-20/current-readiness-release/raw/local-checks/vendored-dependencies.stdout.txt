@@ -1,0 +1,1 @@
+PASS vendored build dependencies: Corrosion v0.6.1 commit 1499b14e4906a2890f5cee1547c8848db261753d (263 files, 401447 bytes); 108 Cargo crates (7310 files, 302124915 bytes); go-winres v0.3.3 (135 files, 1516781 bytes)

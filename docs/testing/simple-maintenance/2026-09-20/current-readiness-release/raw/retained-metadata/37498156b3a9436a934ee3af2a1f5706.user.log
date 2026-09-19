@@ -1,0 +1,26 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260919091801
+Username: MYCOMPUTER\tsaan
+RunAs User: MYCOMPUTER\tsaan
+Configuration Name: 
+Machine: MYCOMPUTER (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime.worktrees\current-readiness-gates\.tmp\dual-package\r1-complete\yimecore\Setup.ps1 -Action Install
+Process ID: 7208
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\37498156b3a9436a934ee3af2a1f5706.user.log
+Action: Install; package: C:\dev\Yime.worktrees\current-readiness-gates\.tmp\dual-package\r1-complete\yimecore
+Elevated setup log: C:\Users\tsaan\Yime Setup Logs\37498156b3a9436a934ee3af2a1f5706.admin.log
+Elevated setup exit code: 1
+**********************
+Windows PowerShell transcript end
+End time: 20260919091810
+**********************

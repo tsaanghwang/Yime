@@ -1,0 +1,163 @@
+{
+  "scope": "C:/dev/Yime/.tmp; product-package.json only; installed roots not searched",
+  "expected_sha256": [
+    "2996982b88c70b251124847fd6fa37ada185a6c173de1139cbb32afda8324d38",
+    "67cbdf516ae8e4348f47ffa5bc7d94d1468d200c320b66b4a1d73ce649facf8d"
+  ],
+  "rg_exit_code": 0,
+  "manifests": [
+    {
+      "path": ".tmp\\fresh-products-20260914\\rime-build\\rime-pime\\product-package.json",
+      "sha256": "b6e54a9bd8a5bcfafc055c3bb1705276f942bb4ec8b938664a3b2f3cfdf01f73"
+    },
+    {
+      "path": ".tmp\\fresh-products-20260914\\candidate\\yimecore\\product-package.json",
+      "sha256": "61396ab2d4d968842a778d8cd3f3b6692c04bf1a33f74e5c3c4e21b1e4938f2c"
+    },
+    {
+      "path": ".tmp\\fresh-products-20260914\\candidate\\rime-pime\\product-package.json",
+      "sha256": "b6e54a9bd8a5bcfafc055c3bb1705276f942bb4ec8b938664a3b2f3cfdf01f73"
+    },
+    {
+      "path": ".tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-PackageValidation\\tmp\\yime-package-validation-65cd2d0be780436b904f446a742df008\\f7b45c169ad24435aa52fea6358724f3\\product-package.json",
+      "sha256": "c217373a8638b7c9a80c8744ebd582070c7d93db6ea79b3b56bfccbfae288da0"
+    },
+    {
+      "path": ".tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-PackageValidation\\tmp\\yime-package-validation-65cd2d0be780436b904f446a742df008\\d67b449152dd4b65a6c55a5900f7ecfb\\product-package.json",
+      "sha256": "1b6950ecf11cdf8bd47fdd510d0d09eb446ed9de6eacf72caefcb11f16aa01e2"
+    },
+    {
+      "path": ".tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-PackageValidation\\tmp\\yime-package-validation-65cd2d0be780436b904f446a742df008\\d1ede72695ba414b96da2ac9feb415bb\\product-package.json",
+      "sha256": "afc67adaf3b70a1909d9716340a271184545818fac1abc2b92c61f006edf08e7"
+    },
+    {
+      "path": ".tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-PackageValidation\\tmp\\yime-package-validation-65cd2d0be780436b904f446a742df008\\54c98b4d73c04bd98e66c007d319de02\\product-package.json",
+      "sha256": "d56cb2de8d4e32f4308f76429ee945ddaf6ad578b4dafdd173b1eb489ba6a4b3"
+    },
+    {
+      "path": ".tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-PackageValidation\\tmp\\yime-package-validation-65cd2d0be780436b904f446a742df008\\36d29d5342fd45d3afbd50fb02757e49\\product-package.json",
+      "sha256": "0c935e564a1fc8f44f33d37d18c6269039fee23243f465328d40abdc929ca7e0"
+    },
+    {
+      "path": ".tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-PackageValidation\\tmp\\yime-package-validation-65cd2d0be780436b904f446a742df008\\21dd0eafc0304d69a4ac48ec821258e1\\product-package.json",
+      "sha256": "528a000179e16d641e23b1314401d6772ed4b8a0b94e81ae05db34383059373d"
+    },
+    {
+      "path": ".tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Manage\\tmp\\yime-manage-35e096304fab4fb5990958aa9a4a1051\\yimecore\\product-package.json",
+      "sha256": "db7aea6a6659a694ff99d18e28ec77df01041ba3f1c475a9e1459f94b0864aa7"
+    },
+    {
+      "path": ".tmp\\pr57-dual-product-20260916\\validation-fixtures\\Test-Manage\\tmp\\yime-manage-35e096304fab4fb5990958aa9a4a1051\\rime-pime\\product-package.json",
+      "sha256": "d122b26e8a92c1dd914304c15ae79dc606a8ceb08da8c5f7c5233de964bccea8"
+    },
+    {
+      "path": ".tmp\\pr57-dual-product-20260916\\rime-build\\rime-pime\\product-package.json",
+      "sha256": "bb130a4978f8591b053456bfdc6294e3784a6190b89f8e7fe0b2bd3875758fd3"
+    },
+    {
+      "path": ".tmp\\pr57-dual-product-20260916\\bundle\\yimecore\\product-package.json",
+      "sha256": "00661b3e51a30109beadfef3c1b04b6d04730a6749602b2ea06baec0bf256d1c"
+    },
+    {
+      "path": ".tmp\\pr57-dual-product-20260916\\bundle\\rime-pime\\product-package.json",
+      "sha256": "bb130a4978f8591b053456bfdc6294e3784a6190b89f8e7fe0b2bd3875758fd3"
+    },
+    {
+      "path": ".tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\tmp\\yime-package-validation-14b19ccdc5b844efad9e37247d10a1ef\\e6d0f4d4a12a4f80aed63304a378cca5\\product-package.json",
+      "sha256": "0c935e564a1fc8f44f33d37d18c6269039fee23243f465328d40abdc929ca7e0"
+    },
+    {
+      "path": ".tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\tmp\\yime-package-validation-14b19ccdc5b844efad9e37247d10a1ef\\cb168e651a55425caca14b6558436f42\\product-package.json",
+      "sha256": "528a000179e16d641e23b1314401d6772ed4b8a0b94e81ae05db34383059373d"
+    },
+    {
+      "path": ".tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\tmp\\yime-package-validation-14b19ccdc5b844efad9e37247d10a1ef\\6b0ee9410d5a45f69ccc47a9b1c07300\\product-package.json",
+      "sha256": "1b6950ecf11cdf8bd47fdd510d0d09eb446ed9de6eacf72caefcb11f16aa01e2"
+    },
+    {
+      "path": ".tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\tmp\\yime-package-validation-14b19ccdc5b844efad9e37247d10a1ef\\506ae4f56a304918ab47ed79f5328458\\product-package.json",
+      "sha256": "c217373a8638b7c9a80c8744ebd582070c7d93db6ea79b3b56bfccbfae288da0"
+    },
+    {
+      "path": ".tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\tmp\\yime-package-validation-14b19ccdc5b844efad9e37247d10a1ef\\366d8133a56a4ee5ad70ffa07b735a22\\product-package.json",
+      "sha256": "d56cb2de8d4e32f4308f76429ee945ddaf6ad578b4dafdd173b1eb489ba6a4b3"
+    },
+    {
+      "path": ".tmp\\pr57-delivery-review-20260919\\tests\\Test-PackageValidation\\tmp\\yime-package-validation-14b19ccdc5b844efad9e37247d10a1ef\\010dba3f9131437981569a3637b7d06a\\product-package.json",
+      "sha256": "afc67adaf3b70a1909d9716340a271184545818fac1abc2b92c61f006edf08e7"
+    },
+    {
+      "path": ".tmp\\pr57-delivery-review-20260919\\tests\\Test-Manage\\tmp\\yime-manage-d458665ac7544e32add4bc1ed304af56\\yimecore\\product-package.json",
+      "sha256": "db7aea6a6659a694ff99d18e28ec77df01041ba3f1c475a9e1459f94b0864aa7"
+    },
+    {
+      "path": ".tmp\\pr57-delivery-review-20260919\\tests\\Test-Manage\\tmp\\yime-manage-d458665ac7544e32add4bc1ed304af56\\rime-pime\\product-package.json",
+      "sha256": "d122b26e8a92c1dd914304c15ae79dc606a8ceb08da8c5f7c5233de964bccea8"
+    },
+    {
+      "path": ".tmp\\pr57-delivery-review-20260919\\package-read\\bundle\\yimecore\\product-package.json",
+      "sha256": "00661b3e51a30109beadfef3c1b04b6d04730a6749602b2ea06baec0bf256d1c"
+    },
+    {
+      "path": ".tmp\\pr57-delivery-review-20260919\\package-read\\bundle\\rime-pime\\product-package.json",
+      "sha256": "bb130a4978f8591b053456bfdc6294e3784a6190b89f8e7fe0b2bd3875758fd3"
+    },
+    {
+      "path": ".tmp\\simple-wait-candidate-20260914-145112\\yimecore\\product-package.json",
+      "sha256": "ac64bf6c8ae81173f9f4d9823deff9d73ab322f07d339f2a11bb872dbd11be47"
+    },
+    {
+      "path": ".tmp\\simple-wait-candidate-20260914-145112\\rime-pime\\product-package.json",
+      "sha256": "5c45e59dccae3feac46f331e6394c39f01e5dd2f8962f829b54cc807beaca583"
+    },
+    {
+      "path": ".tmp\\simple-packages\\yimecore-dev4\\product-package.json",
+      "sha256": "749050ac7576ee27a102f2af24e5f7280f1712cf29e882b1fc2048e56ccd1195"
+    },
+    {
+      "path": ".tmp\\simple-packages\\yimecore-dev3\\product-package.json",
+      "sha256": "b58bcc6820f2dc3f5666f918fbd2df0b0c4e973124249fdb8b8a4d8ea575ff16"
+    },
+    {
+      "path": ".tmp\\simple-packages\\yimecore-dev2\\product-package.json",
+      "sha256": "b2e31f26ad856090026a9eda27bdbd041f82a4ff692befb37c290de94441bac7"
+    },
+    {
+      "path": ".tmp\\simple-packages\\yimecore-dev1\\product-package.json",
+      "sha256": "b2e31f26ad856090026a9eda27bdbd041f82a4ff692befb37c290de94441bac7"
+    },
+    {
+      "path": ".tmp\\simple-packages\\rime-dev4\\product-package.json",
+      "sha256": "f047f17dd16a1d4ff0db231a24ac2bf2865e2c3d4e16e4458eee12cefecdae88"
+    },
+    {
+      "path": ".tmp\\simple-packages\\rime-dev3\\product-package.json",
+      "sha256": "bda37e56e4597aca060dc132c957692c2cb217094bf954f43dc6d5969ff76795"
+    },
+    {
+      "path": ".tmp\\simple-packages\\rime-dev2\\product-package.json",
+      "sha256": "005a21063a0d170a6d47e568822506c09a0700a6539fcfdf67535c5c73ee77a0"
+    },
+    {
+      "path": ".tmp\\simple-packages\\rime-dev1\\product-package.json",
+      "sha256": "005a21063a0d170a6d47e568822506c09a0700a6539fcfdf67535c5c73ee77a0"
+    },
+    {
+      "path": ".tmp\\simple-maintenance-20260914-121659\\yimecore\\product-package.json",
+      "sha256": "052abdb72f198c4ed57e6366b955e83eb6f990631b1635a102c052b2d88ed841"
+    },
+    {
+      "path": ".tmp\\simple-maintenance-20260914-121659\\rime-pime\\product-package.json",
+      "sha256": "3a11fec0036f583d2c138156133caf16c86e93b993b1e2004a09c6717aab29b9"
+    },
+    {
+      "path": ".tmp\\simple-logging-candidate-20260914-135119\\yimecore\\product-package.json",
+      "sha256": "79195bea06913bf7cc5b8a0cccc9ea7c1344234bc7a5718132f789f112527fc5"
+    },
+    {
+      "path": ".tmp\\simple-logging-candidate-20260914-135119\\rime-pime\\product-package.json",
+      "sha256": "1b194a4b0eec60af5b59fda606f9fdf1a023e4c1f0794976790c1bb3ef54a82e"
+    }
+  ],
+  "matches": []
+}

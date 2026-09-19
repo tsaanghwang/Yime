@@ -1,0 +1,31 @@
+{
+  "name": "shard-coverage-tests",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/ci",
+    "-p",
+    "test_shard_coverage.py",
+    "-v"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "started_utc": "2026-09-19T23:29:50.620098+00:00",
+  "finished_utc": "2026-09-19T23:29:50.729883+00:00",
+  "elapsed_seconds": 0.11,
+  "exit_code": 0,
+  "stdout": {
+    "path": "shard-coverage-tests.stdout.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "path": "shard-coverage-tests.stderr.txt",
+    "bytes": 593,
+    "sha256": "e68b38b9899ab5f8e811101d978f0ca48b9cd70468672891fe1b277fb3224f4f"
+  }
+}

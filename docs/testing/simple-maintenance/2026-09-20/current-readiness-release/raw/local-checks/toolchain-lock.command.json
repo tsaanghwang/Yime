@@ -1,0 +1,24 @@
+{
+  "name": "toolchain-lock",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "tools/verify_toolchain_lock.py"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "started_utc": "2026-09-19T23:29:50.824381+00:00",
+  "finished_utc": "2026-09-19T23:29:50.881026+00:00",
+  "elapsed_seconds": 0.057,
+  "exit_code": 0,
+  "stdout": {
+    "path": "toolchain-lock.stdout.txt",
+    "bytes": 134,
+    "sha256": "96800c9062da2401c78d9c7e05a2148be427556546e91c7601490c2c3d005df2"
+  },
+  "stderr": {
+    "path": "toolchain-lock.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

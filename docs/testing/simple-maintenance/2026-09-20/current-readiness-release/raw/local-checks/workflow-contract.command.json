@@ -1,0 +1,24 @@
+{
+  "name": "workflow-contract",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "tools/ci/test_workflow_contract.py"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "started_utc": "2026-09-19T23:29:50.519999+00:00",
+  "finished_utc": "2026-09-19T23:29:50.616248+00:00",
+  "elapsed_seconds": 0.096,
+  "exit_code": 0,
+  "stdout": {
+    "path": "workflow-contract.stdout.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "path": "workflow-contract.stderr.txt",
+    "bytes": 105,
+    "sha256": "354c3d828acda6a2a7353175af6f47b9a6ade35a84756ca5433e46f76b8d8b55"
+  }
+}

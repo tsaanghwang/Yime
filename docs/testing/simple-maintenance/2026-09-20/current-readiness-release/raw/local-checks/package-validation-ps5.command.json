@@ -1,0 +1,28 @@
+{
+  "name": "package-validation-ps5",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "installer/simple/Test-PackageValidation.ps1",
+    "--edition",
+    "ps5"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "started_utc": "2026-09-19T23:29:49.381258+00:00",
+  "finished_utc": "2026-09-19T23:29:50.515243+00:00",
+  "elapsed_seconds": 1.134,
+  "exit_code": 0,
+  "stdout": {
+    "path": "package-validation-ps5.stdout.txt",
+    "bytes": 157,
+    "sha256": "08950ff5ebe7af3252cd7ca6214f5b6e9e0e95f58765cfafed34df3d890c6518"
+  },
+  "stderr": {
+    "path": "package-validation-ps5.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

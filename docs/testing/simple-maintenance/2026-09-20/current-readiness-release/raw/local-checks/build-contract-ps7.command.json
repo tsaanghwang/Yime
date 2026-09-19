@@ -1,0 +1,28 @@
+{
+  "name": "build-contract-ps7",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "tools/validate-build-contract.ps1",
+    "--edition",
+    "ps7"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "started_utc": "2026-09-19T23:29:50.011447+00:00",
+  "finished_utc": "2026-09-19T23:29:50.818988+00:00",
+  "elapsed_seconds": 0.808,
+  "exit_code": 0,
+  "stdout": {
+    "path": "build-contract-ps7.stdout.txt",
+    "bytes": 43,
+    "sha256": "fca1ff0be84456c099f51fd704581543d96905035a9c48a990b13ca71158eabc"
+  },
+  "stderr": {
+    "path": "build-contract-ps7.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

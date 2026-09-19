@@ -1,0 +1,1231 @@
+{
+  "product": "yimecore",
+  "install_root": "C:\\Program Files\\YimeCore",
+  "historical_manifest_sha256": "67cbdf516ae8e4348f47ffa5bc7d94d1468d200c320b66b4a1d73ce649facf8d",
+  "historical_manifest_hash_matches": true,
+  "safe_unique_paths": true,
+  "expected_files": 65,
+  "matched_files": 65,
+  "mismatch_count": 0,
+  "unlisted_installed_files_enumerated": false,
+  "expected_file_checks": [
+    {
+      "path": "local-product.json",
+      "expected_bytes": 7832,
+      "expected_sha256": "91baa22049b493f637107467686f541e0f45c1088b71c5eb792054d5ed10ee31",
+      "actual_bytes": 7832,
+      "actual_sha256": "91baa22049b493f637107467686f541e0f45c1088b71c5eb792054d5ed10ee31",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "profile-icon.ico",
+      "expected_bytes": 19067,
+      "expected_sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+      "actual_bytes": 19067,
+      "actual_sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "speech-capability.json",
+      "expected_bytes": 220,
+      "expected_sha256": "7c7ec05a237d371c92d8659d431d9b8dfd74418f1c9a484936645ad214ddc7f7",
+      "actual_bytes": 220,
+      "actual_sha256": "7c7ec05a237d371c92d8659d431d9b8dfd74418f1c9a484936645ad214ddc7f7",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "x86/YimeRegisteredHostTests.exe",
+      "expected_bytes": 384512,
+      "expected_sha256": "51150b9a93421d2730c6526640af0c8243f8af450ed3bb128d48acc69570fdb0",
+      "actual_bytes": 384512,
+      "actual_sha256": "51150b9a93421d2730c6526640af0c8243f8af450ed3bb128d48acc69570fdb0",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "x86/YimeTextServiceExperiment.dll",
+      "expected_bytes": 582144,
+      "expected_sha256": "ca808e8d6d2959f9cf673b78714c624d3fcaa16b3d9a15de02cdb2aac10fba5d",
+      "actual_bytes": 582144,
+      "actual_sha256": "ca808e8d6d2959f9cf673b78714c624d3fcaa16b3d9a15de02cdb2aac10fba5d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "x86/YimeTextServiceRegistration.exe",
+      "expected_bytes": 228352,
+      "expected_sha256": "3acbe4e0d5062a3f1f1c3ad89382d8b5f32b58bce888532fe7c0f7b1db8654cb",
+      "actual_bytes": 228352,
+      "actual_sha256": "3acbe4e0d5062a3f1f1c3ad89382d8b5f32b58bce888532fe7c0f7b1db8654cb",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "x64/YimeRegisteredHostTests.exe",
+      "expected_bytes": 459264,
+      "expected_sha256": "5c3b88b0a7ea5bebcf18d60ff43fa6c6802fffe84a57b427a01c4fa1e0abd121",
+      "actual_bytes": 459264,
+      "actual_sha256": "5c3b88b0a7ea5bebcf18d60ff43fa6c6802fffe84a57b427a01c4fa1e0abd121",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "x64/YimeTextServiceExperiment.dll",
+      "expected_bytes": 670720,
+      "expected_sha256": "78934d34796be54e12735b3c97d2fe15dd147bf7069c3c797d44f6cfa7b80feb",
+      "actual_bytes": 670720,
+      "actual_sha256": "78934d34796be54e12735b3c97d2fe15dd147bf7069c3c797d44f6cfa7b80feb",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "x64/YimeTextServiceRegistration.exe",
+      "expected_bytes": 285696,
+      "expected_sha256": "a58e71fcb5d2118f0d1f0e10e88d24be76b72e20f169336135b3b9f8328344b9",
+      "actual_bytes": 285696,
+      "actual_sha256": "a58e71fcb5d2118f0d1f0e10e88d24be76b72e20f169336135b3b9f8328344b9",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "speech/admission.json",
+      "expected_bytes": 1295,
+      "expected_sha256": "cd8f510bf4122ab48d6c260c62c2d53363121d59488395fcc1366a1df62c914c",
+      "actual_bytes": 1295,
+      "actual_sha256": "cd8f510bf4122ab48d6c260c62c2d53363121d59488395fcc1366a1df62c914c",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "speech/admitted-records.json",
+      "expected_bytes": 62558,
+      "expected_sha256": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d",
+      "actual_bytes": 62558,
+      "actual_sha256": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "speech/forward-source.json",
+      "expected_bytes": 17920,
+      "expected_sha256": "73e2ec162b0bc3a114a5a9de902b14b68c505d736502d2940d6e29297ace56c2",
+      "actual_bytes": 17920,
+      "actual_sha256": "73e2ec162b0bc3a114a5a9de902b14b68c505d736502d2940d6e29297ace56c2",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "speech/product.json",
+      "expected_bytes": 2501,
+      "expected_sha256": "9d56bbac5342a565913ca54b372263d5bb71d767079ee6b9dbd195eb6f4b7f2b",
+      "actual_bytes": 2501,
+      "actual_sha256": "9d56bbac5342a565913ca54b372263d5bb71d767079ee6b9dbd195eb6f4b7f2b",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "speech/indexes/full-core.yidx",
+      "expected_bytes": 40267102,
+      "expected_sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+      "actual_bytes": 40267102,
+      "actual_sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "speech/indexes/full-stage5c.yidx",
+      "expected_bytes": 848,
+      "expected_sha256": "470ef8e58a0f61bde3e7437097b1c480be4962d3e9a4680984567d53e3a427b9",
+      "actual_bytes": 848,
+      "actual_sha256": "470ef8e58a0f61bde3e7437097b1c480be4962d3e9a4680984567d53e3a427b9",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "speech/indexes/shorthand-core.yidx",
+      "expected_bytes": 38209725,
+      "expected_sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+      "actual_bytes": 38209725,
+      "actual_sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "speech/indexes/shorthand-stage5c.yidx",
+      "expected_bytes": 825,
+      "expected_sha256": "15929d0e62a882a4ce640b50d19e6a8af5ad5d1840b0f89e0e8a95ec0d8bc764",
+      "actual_bytes": 825,
+      "actual_sha256": "15929d0e62a882a4ce640b50d19e6a8af5ad5d1840b0f89e0e8a95ec0d8bc764",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "speech/indexes/variable-core.yidx",
+      "expected_bytes": 38801056,
+      "expected_sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+      "actual_bytes": 38801056,
+      "actual_sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "speech/indexes/variable-stage5c.yidx",
+      "expected_bytes": 825,
+      "expected_sha256": "dd27f391102382a2ec2a5313d3cc7eaebb7ff6bd671e73623857ddb04ddc6371",
+      "actual_bytes": 825,
+      "actual_sha256": "dd27f391102382a2ec2a5313d3cc7eaebb7ff6bd671e73623857ddb04ddc6371",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "professional-lexicons/catalog.json",
+      "expected_bytes": 74,
+      "expected_sha256": "81fb1d223b5dca05cd968fd4c117dbc0cee83865e2088d545fdb1fdcd03b3c2e",
+      "actual_bytes": 74,
+      "actual_sha256": "81fb1d223b5dca05cd968fd4c117dbc0cee83865e2088d545fdb1fdcd03b3c2e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "indexes/full.yidx",
+      "expected_bytes": 40267102,
+      "expected_sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+      "actual_bytes": 40267102,
+      "actual_sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "indexes/shorthand.yidx",
+      "expected_bytes": 38209725,
+      "expected_sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+      "actual_bytes": 38209725,
+      "actual_sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "indexes/variable.yidx",
+      "expected_bytes": 38801056,
+      "expected_sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+      "actual_bytes": 38801056,
+      "actual_sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "help/diagnostics.html",
+      "expected_bytes": 1735,
+      "expected_sha256": "1d7c33f93d70b8f2f9c04dff80b1d4eb4a0244576327664843b5477873759afd",
+      "actual_bytes": 1735,
+      "actual_sha256": "1d7c33f93d70b8f2f9c04dff80b1d4eb4a0244576327664843b5477873759afd",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "help/README.html",
+      "expected_bytes": 2421,
+      "expected_sha256": "9481a48b12a6d26af7bd42adaff2cda533f4a4107b249441866522e59eb9e5a2",
+      "actual_bytes": 2421,
+      "actual_sha256": "9481a48b12a6d26af7bd42adaff2cda533f4a4107b249441866522e59eb9e5a2",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "help/settings-and-data.html",
+      "expected_bytes": 1894,
+      "expected_sha256": "511fe388c648e4ecd878a37f14b27e9afb1e3e80ddcc7b83fc3cb6f78362b130",
+      "actual_bytes": 1894,
+      "actual_sha256": "511fe388c648e4ecd878a37f14b27e9afb1e3e80ddcc7b83fc3cb6f78362b130",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "help/trial-feedback.html",
+      "expected_bytes": 1950,
+      "expected_sha256": "0147684c7c812a5b677db12c8a8c1042618b845867f8357cb123c1a3903ccd40",
+      "actual_bytes": 1950,
+      "actual_sha256": "0147684c7c812a5b677db12c8a8c1042618b845867f8357cb123c1a3903ccd40",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/dynamic_sentence_cases.json",
+      "expected_bytes": 5338,
+      "expected_sha256": "8193a4096f4af139ce64b6f853ec4f33952f366e282fd365bb8ac3be5b524412",
+      "actual_bytes": 5338,
+      "actual_sha256": "8193a4096f4af139ce64b6f853ec4f33952f366e282fd365bb8ac3be5b524412",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/pinyin_normalized.json",
+      "expected_bytes": 31697,
+      "expected_sha256": "01bb8e95f124b42c3b1187cfe3872940ab73ebf83a6fe4bebfeac4139bc38422",
+      "actual_bytes": 31697,
+      "actual_sha256": "01bb8e95f124b42c3b1187cfe3872940ab73ebf83a6fe4bebfeac4139bc38422",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/yime_core_source_manifest.json",
+      "expected_bytes": 1842,
+      "expected_sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97",
+      "actual_bytes": 1842,
+      "actual_sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/yime_full.dict.yaml",
+      "expected_bytes": 31621303,
+      "expected_sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+      "actual_bytes": 31621303,
+      "actual_sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/yime_full.schema.yaml",
+      "expected_bytes": 1959,
+      "expected_sha256": "5889514c808199a00c1c1618a4f940c71acd1e69eb8dc9592788e67a346114c0",
+      "actual_bytes": 1959,
+      "actual_sha256": "5889514c808199a00c1c1618a4f940c71acd1e69eb8dc9592788e67a346114c0",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/yime_lexicon_manifest.json",
+      "expected_bytes": 667,
+      "expected_sha256": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8",
+      "actual_bytes": 667,
+      "actual_sha256": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/yime_pinyin_codes.tsv",
+      "expected_bytes": 19448,
+      "expected_sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+      "actual_bytes": 19448,
+      "actual_sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/yime_pua_pinyin.json",
+      "expected_bytes": 62686,
+      "expected_sha256": "c60f4acc864e2c699eefcf796feaf855e2c19770191d8417fb7d51d17ceb3699",
+      "actual_bytes": 62686,
+      "actual_sha256": "c60f4acc864e2c699eefcf796feaf855e2c19770191d8417fb7d51d17ceb3699",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/yime_shorthand.dict.yaml",
+      "expected_bytes": 29563931,
+      "expected_sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+      "actual_bytes": 29563931,
+      "actual_sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/yime_shorthand.schema.yaml",
+      "expected_bytes": 1996,
+      "expected_sha256": "d3b2fb6b39e958f30a0479de411ea65c6b4578b2548da106d1b23fda89910eaf",
+      "actual_bytes": 1996,
+      "actual_sha256": "d3b2fb6b39e958f30a0479de411ea65c6b4578b2548da106d1b23fda89910eaf",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/yime_syllable_decomposition.tsv",
+      "expected_bytes": 177143,
+      "expected_sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+      "actual_bytes": 177143,
+      "actual_sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/yime_variable.dict.yaml",
+      "expected_bytes": 30155261,
+      "expected_sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+      "actual_bytes": 30155261,
+      "actual_sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/yime_variable.schema.yaml",
+      "expected_bytes": 2067,
+      "expected_sha256": "2a0d05769a3aee860ed14b503a24d295749f3f788cecf2fd792018094cd0f330",
+      "actual_bytes": 2067,
+      "actual_sha256": "2a0d05769a3aee860ed14b503a24d295749f3f788cecf2fd792018094cd0f330",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/yime_yinyuan_layout.json",
+      "expected_bytes": 1023,
+      "expected_sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+      "actual_bytes": 1023,
+      "actual_sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/trainer/curriculum.json",
+      "expected_bytes": 994,
+      "expected_sha256": "6b57e56d91686fdf244b9df273477b73c53f19558fa4c40fc164b01bbec1ca51",
+      "actual_bytes": 994,
+      "actual_sha256": "6b57e56d91686fdf244b9df273477b73c53f19558fa4c40fc164b01bbec1ca51",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/trainer/foundation.json",
+      "expected_bytes": 2015,
+      "expected_sha256": "94c110348e6c6eb081b1b24707d3024d8bf199dbde6f7f5ff484176a5b581555",
+      "actual_bytes": 2015,
+      "actual_sha256": "94c110348e6c6eb081b1b24707d3024d8bf199dbde6f7f5ff484176a5b581555",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/trainer/yinyuan_catalog.json",
+      "expected_bytes": 8358,
+      "expected_sha256": "adcbbca053785bf189c6ca834aef27fadb9c4ccf3a55c0acfeb352a5743ea5c3",
+      "actual_bytes": 8358,
+      "actual_sha256": "adcbbca053785bf189c6ca834aef27fadb9c4ccf3a55c0acfeb352a5743ea5c3",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/trainer/yinyuan_groups.json",
+      "expected_bytes": 3093,
+      "expected_sha256": "0821ce4e8da0149af75ae8e78e0ed579d15f3c04039f1de3acf5c3e717f8ab0c",
+      "actual_bytes": 3093,
+      "actual_sha256": "0821ce4e8da0149af75ae8e78e0ed579d15f3c04039f1de3acf5c3e717f8ab0c",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "data/fonts/YinYuan-Regular.ttf",
+      "expected_bytes": 16024176,
+      "expected_sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d",
+      "actual_bytes": 16024176,
+      "actual_sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeBroker.exe",
+      "expected_bytes": 5465600,
+      "expected_sha256": "5dadb24ff6c54784d2325833d4355a1ab1c0763ed8231bbaec63ed9d6a10b730",
+      "actual_bytes": 5465600,
+      "actual_sha256": "5dadb24ff6c54784d2325833d4355a1ab1c0763ed8231bbaec63ed9d6a10b730",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreBlocklistManager.exe",
+      "expected_bytes": 3174400,
+      "expected_sha256": "8f7582cc4198e071b7bd066ac2619d4e0d60456e8f52354c8c5cd49c893fd1e8",
+      "actual_bytes": 3174400,
+      "actual_sha256": "8f7582cc4198e071b7bd066ac2619d4e0d60456e8f52354c8c5cd49c893fd1e8",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreDiagnostics.exe",
+      "expected_bytes": 3639296,
+      "expected_sha256": "9260d50f1791416305600a4ff9b3a8abbcece34dc24eb86992dee319f2c40ebf",
+      "actual_bytes": 3639296,
+      "actual_sha256": "9260d50f1791416305600a4ff9b3a8abbcece34dc24eb86992dee319f2c40ebf",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreExplain.exe",
+      "expected_bytes": 3812864,
+      "expected_sha256": "f9ac771f5ec155bfd65de70c4a4897c4aa8f8039911c08edd3ea63afaf491cd0",
+      "actual_bytes": 3812864,
+      "actual_sha256": "f9ac771f5ec155bfd65de70c4a4897c4aa8f8039911c08edd3ea63afaf491cd0",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreIndependenceAudit.exe",
+      "expected_bytes": 4619264,
+      "expected_sha256": "62f241d3bc5b10f888c1bc3b9c27ba23575335854e6baa8914e404ea7f5d522e",
+      "actual_bytes": 4619264,
+      "actual_sha256": "62f241d3bc5b10f888c1bc3b9c27ba23575335854e6baa8914e404ea7f5d522e",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreInputToolbar.exe",
+      "expected_bytes": 3801600,
+      "expected_sha256": "35e22b86bb5a902801c036b8af02d87e6860601086f3cb7c90bbd23dd1d05f8a",
+      "actual_bytes": 3801600,
+      "actual_sha256": "35e22b86bb5a902801c036b8af02d87e6860601086f3cb7c90bbd23dd1d05f8a",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreLayoutDesigner.exe",
+      "expected_bytes": 5091840,
+      "expected_sha256": "73f09854321e6acfc7008bb71f01b8d6f93dcfc30451051b45ebf6433189a24a",
+      "actual_bytes": 5091840,
+      "actual_sha256": "73f09854321e6acfc7008bb71f01b8d6f93dcfc30451051b45ebf6433189a24a",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreLearningManager.exe",
+      "expected_bytes": 4003328,
+      "expected_sha256": "81a27ba7711c51a649c60d5862bda8692d40e61fbfde794aafcc880caa108e79",
+      "actual_bytes": 4003328,
+      "actual_sha256": "81a27ba7711c51a649c60d5862bda8692d40e61fbfde794aafcc880caa108e79",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreLexiconCenter.exe",
+      "expected_bytes": 4068864,
+      "expected_sha256": "5d7a0e7f4fe72d370376c82189dc71fb53f9fb91ea9a31f81e8e7a4875c8c03a",
+      "actual_bytes": 4068864,
+      "actual_sha256": "5d7a0e7f4fe72d370376c82189dc71fb53f9fb91ea9a31f81e8e7a4875c8c03a",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreLexiconManager.exe",
+      "expected_bytes": 4406784,
+      "expected_sha256": "53a8d09476ab3bf6d07c47b34b37f7dcce02e604cdd64e6d12ca8f265927fdd4",
+      "actual_bytes": 4406784,
+      "actual_sha256": "53a8d09476ab3bf6d07c47b34b37f7dcce02e604cdd64e6d12ca8f265927fdd4",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreProfessionalLexicon.exe",
+      "expected_bytes": 3928064,
+      "expected_sha256": "ca4364d46795597e39acddb71e1b0198eaad8e2ce1d6fdca8423afb82c3770c2",
+      "actual_bytes": 3928064,
+      "actual_sha256": "ca4364d46795597e39acddb71e1b0198eaad8e2ce1d6fdca8423afb82c3770c2",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCorePromotionScan.exe",
+      "expected_bytes": 4114432,
+      "expected_sha256": "ca7c37094370c1d014190518eed39a031c337171512ebc94498725debc254f0a",
+      "actual_bytes": 4114432,
+      "actual_sha256": "ca7c37094370c1d014190518eed39a031c337171512ebc94498725debc254f0a",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreReverseLookup.exe",
+      "expected_bytes": 4435968,
+      "expected_sha256": "7609b328e5dfebf8673ef67076ed684e8350e21d3260d888ca9102edd34d1501",
+      "actual_bytes": 4435968,
+      "actual_sha256": "7609b328e5dfebf8673ef67076ed684e8350e21d3260d888ca9102edd34d1501",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreSentenceRegression.exe",
+      "expected_bytes": 4045312,
+      "expected_sha256": "098fcf62e4eed8e43d24bf753cccb132b3b7dabf1017e6f4673518b48ab68cfc",
+      "actual_bytes": 4045312,
+      "actual_sha256": "098fcf62e4eed8e43d24bf753cccb132b3b7dabf1017e6f4673518b48ab68cfc",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreSettingsTool.exe",
+      "expected_bytes": 4904448,
+      "expected_sha256": "074a26965df215e28317b5a26a852179bc6a6d8275ff86047809fa58eb53164d",
+      "actual_bytes": 4904448,
+      "actual_sha256": "074a26965df215e28317b5a26a852179bc6a6d8275ff86047809fa58eb53164d",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreSystemLexiconAudit.exe",
+      "expected_bytes": 3719168,
+      "expected_sha256": "983e772a1cbe7f1077d242e0dbf62b23a1e9cb2589657d8fa06856409dfd2ffb",
+      "actual_bytes": 3719168,
+      "actual_sha256": "983e772a1cbe7f1077d242e0dbf62b23a1e9cb2589657d8fa06856409dfd2ffb",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreToolCenter.exe",
+      "expected_bytes": 4068864,
+      "expected_sha256": "5d7a0e7f4fe72d370376c82189dc71fb53f9fb91ea9a31f81e8e7a4875c8c03a",
+      "actual_bytes": 4068864,
+      "actual_sha256": "5d7a0e7f4fe72d370376c82189dc71fb53f9fb91ea9a31f81e8e7a4875c8c03a",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreTrainer.exe",
+      "expected_bytes": 4696064,
+      "expected_sha256": "6f924ac55e844f2f88aaf7a8f3d8fe976a8ae4174dc9bd8c8e3c151272b764aa",
+      "actual_bytes": 4696064,
+      "actual_sha256": "6f924ac55e844f2f88aaf7a8f3d8fe976a8ae4174dc9bd8c8e3c151272b764aa",
+      "stable_while_read": true,
+      "match": true
+    },
+    {
+      "path": "bin/YimeCoreTrialRuntime.exe",
+      "expected_bytes": 4371456,
+      "expected_sha256": "bf9fbc5029aa40d5890a503c2e28e87bdad096f686191978079767e58ed6a6e8",
+      "actual_bytes": 4371456,
+      "actual_sha256": "bf9fbc5029aa40d5890a503c2e28e87bdad096f686191978079767e58ed6a6e8",
+      "stable_while_read": true,
+      "match": true
+    }
+  ],
+  "executable_build_info": [
+    {
+      "path": "x86/YimeRegisteredHostTests.exe",
+      "file_sha256": "51150b9a93421d2730c6526640af0c8243f8af450ed3bb128d48acc69570fdb0",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe: could not read Go build info from C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe: not a Go executable\n",
+      "go_metadata_present": false,
+      "module_path": null,
+      "settings": {},
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "x86/YimeTextServiceRegistration.exe",
+      "file_sha256": "3acbe4e0d5062a3f1f1c3ad89382d8b5f32b58bce888532fe7c0f7b1db8654cb",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceRegistration.exe"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceRegistration.exe: could not read Go build info from C:\\Program Files\\YimeCore\\x86\\YimeTextServiceRegistration.exe: not a Go executable\n",
+      "go_metadata_present": false,
+      "module_path": null,
+      "settings": {},
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "x64/YimeRegisteredHostTests.exe",
+      "file_sha256": "5c3b88b0a7ea5bebcf18d60ff43fa6c6802fffe84a57b427a01c4fa1e0abd121",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\x64\\YimeRegisteredHostTests.exe"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "C:\\Program Files\\YimeCore\\x64\\YimeRegisteredHostTests.exe: could not read Go build info from C:\\Program Files\\YimeCore\\x64\\YimeRegisteredHostTests.exe: not a Go executable\n",
+      "go_metadata_present": false,
+      "module_path": null,
+      "settings": {},
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "x64/YimeTextServiceRegistration.exe",
+      "file_sha256": "a58e71fcb5d2118f0d1f0e10e88d24be76b72e20f169336135b3b9f8328344b9",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\x64\\YimeTextServiceRegistration.exe"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "C:\\Program Files\\YimeCore\\x64\\YimeTextServiceRegistration.exe: could not read Go build info from C:\\Program Files\\YimeCore\\x64\\YimeTextServiceRegistration.exe: not a Go executable\n",
+      "go_metadata_present": false,
+      "module_path": null,
+      "settings": {},
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeBroker.exe",
+      "file_sha256": "5dadb24ff6c54784d2325833d4355a1ab1c0763ed8231bbaec63ed9d6a10b730",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/yimebroker\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/yimebroker",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreBlocklistManager.exe",
+      "file_sha256": "8f7582cc4198e071b7bd066ac2619d4e0d60456e8f52354c8c5cd49c893fd1e8",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreBlocklistManager.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreBlocklistManager.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/blocklist-manager\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/blocklist-manager",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreDiagnostics.exe",
+      "file_sha256": "9260d50f1791416305600a4ff9b3a8abbcece34dc24eb86992dee319f2c40ebf",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreDiagnostics.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreDiagnostics.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/diagnostics-tool\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/diagnostics-tool",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreExplain.exe",
+      "file_sha256": "f9ac771f5ec155bfd65de70c4a4897c4aa8f8039911c08edd3ea63afaf491cd0",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreExplain.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreExplain.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/yimecore-explain\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-explain",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreIndependenceAudit.exe",
+      "file_sha256": "62f241d3bc5b10f888c1bc3b9c27ba23575335854e6baa8914e404ea7f5d522e",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreIndependenceAudit.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreIndependenceAudit.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/yimecore-independence-audit\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-independence-audit",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreInputToolbar.exe",
+      "file_sha256": "35e22b86bb5a902801c036b8af02d87e6860601086f3cb7c90bbd23dd1d05f8a",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreInputToolbar.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreInputToolbar.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/input-toolbar\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/input-toolbar",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreLayoutDesigner.exe",
+      "file_sha256": "73f09854321e6acfc7008bb71f01b8d6f93dcfc30451051b45ebf6433189a24a",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreLayoutDesigner.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreLayoutDesigner.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/yime-layout-designer\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-layout-designer",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreLearningManager.exe",
+      "file_sha256": "81a27ba7711c51a649c60d5862bda8692d40e61fbfde794aafcc880caa108e79",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreLearningManager.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreLearningManager.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/learning-manager\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/learning-manager",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreLexiconCenter.exe",
+      "file_sha256": "5d7a0e7f4fe72d370376c82189dc71fb53f9fb91ea9a31f81e8e7a4875c8c03a",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreLexiconCenter.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreLexiconCenter.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/tool-hub\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/tool-hub",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreLexiconManager.exe",
+      "file_sha256": "53a8d09476ab3bf6d07c47b34b37f7dcce02e604cdd64e6d12ca8f265927fdd4",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreLexiconManager.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreLexiconManager.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/lexicon-manager\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/lexicon-manager",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreProfessionalLexicon.exe",
+      "file_sha256": "ca4364d46795597e39acddb71e1b0198eaad8e2ce1d6fdca8423afb82c3770c2",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreProfessionalLexicon.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreProfessionalLexicon.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/professional-lexicon-manager\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/professional-lexicon-manager",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCorePromotionScan.exe",
+      "file_sha256": "ca7c37094370c1d014190518eed39a031c337171512ebc94498725debc254f0a",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCorePromotionScan.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCorePromotionScan.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/lexicon-promotion-scan\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/lexicon-promotion-scan",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreReverseLookup.exe",
+      "file_sha256": "7609b328e5dfebf8673ef67076ed684e8350e21d3260d888ca9102edd34d1501",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreReverseLookup.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreReverseLookup.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/reverse-lookup-tool\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/reverse-lookup-tool",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreSentenceRegression.exe",
+      "file_sha256": "098fcf62e4eed8e43d24bf753cccb132b3b7dabf1017e6f4673518b48ab68cfc",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreSentenceRegression.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreSentenceRegression.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/yimecore-sentence-regression\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-sentence-regression",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreSettingsTool.exe",
+      "file_sha256": "074a26965df215e28317b5a26a852179bc6a6d8275ff86047809fa58eb53164d",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreSettingsTool.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreSettingsTool.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/settings-tool\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/settings-tool",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreSystemLexiconAudit.exe",
+      "file_sha256": "983e772a1cbe7f1077d242e0dbf62b23a1e9cb2589657d8fa06856409dfd2ffb",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreSystemLexiconAudit.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreSystemLexiconAudit.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/system-lexicon-audit\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/system-lexicon-audit",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreToolCenter.exe",
+      "file_sha256": "5d7a0e7f4fe72d370376c82189dc71fb53f9fb91ea9a31f81e8e7a4875c8c03a",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreToolCenter.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreToolCenter.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/tool-hub\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/tool-hub",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreTrainer.exe",
+      "file_sha256": "6f924ac55e844f2f88aaf7a8f3d8fe976a8ae4174dc9bd8c8e3c151272b764aa",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrainer.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrainer.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/yime-trainer\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-trainer",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    },
+    {
+      "path": "bin/YimeCoreTrialRuntime.exe",
+      "file_sha256": "bf9fbc5029aa40d5890a503c2e28e87bdad096f686191978079767e58ed6a6e8",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.EXE",
+        "version",
+        "-m",
+        "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe: go1.26.4\n\tpath\tgithub.com/tsaanghwang/Yime/go-backend/cmd/yimecore-trial-runtime\n\tmod\tgithub.com/tsaanghwang/Yime/go-backend\t(devel)\t\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n",
+      "stderr": "",
+      "go_metadata_present": true,
+      "module_path": "github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-trial-runtime",
+      "settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "DefaultGODEBUG": "cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "windows",
+        "GOAMD64": "v1"
+      },
+      "vcs_revision": null,
+      "vcs_modified": null,
+      "vcs_status": "not embedded",
+      "product_binary_executed": false
+    }
+  ]
+}

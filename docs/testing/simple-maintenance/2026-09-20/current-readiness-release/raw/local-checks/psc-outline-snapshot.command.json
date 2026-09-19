@@ -1,0 +1,24 @@
+{
+  "name": "psc-outline-snapshot",
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "tools/verify_psc_outline_snapshot.py"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "started_utc": "2026-09-19T23:29:53.645893+00:00",
+  "finished_utc": "2026-09-19T23:29:54.418487+00:00",
+  "elapsed_seconds": 0.773,
+  "exit_code": 0,
+  "stdout": {
+    "path": "psc-outline-snapshot.stdout.txt",
+    "bytes": 121,
+    "sha256": "41578bf1fa1c34f8a033e4ed8eab021a7d7ce8f742414851ba024a38efc78ab3"
+  },
+  "stderr": {
+    "path": "psc-outline-snapshot.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

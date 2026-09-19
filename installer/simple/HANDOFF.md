@@ -1,55 +1,38 @@
-# 开发与测试分支交接
+# 当前开发与测试交接
 
-2026-09-14 起恢复 Git 分支交接。本阶段开发分支 `codex/yimecore-replacement-experiment` 收尾后退役；后续从最新 `main` 创建按目标命名的 `codex/*` 开发分支；“计算机”测试分支：`perf/i7-7820x-local`。当前文档是唯一接续入口，共享目录中的旧指令停用。
+更新：2026-09-20。影响产品：YimeCore、Rime/PIME。本文件是唯一当前交接入口；历史报告、旧执行单和本地临时目录不产生新的测试任务。
 
-## 当前任务
+## 当前结论
 
-**2026-09-16：工程文档更新，测试端无新增执行任务。** 开发分支 `codex/project-docs-refresh` 从当前主线 `76376080` 创建，统一项目首页、现状、架构、路线图、测试及工具说明。本轮只改文档，不制作安装包，不要求测试端同步、安装或重测。当前概览见[项目现状](../../docs/YIME_PROJECT_ASSESSMENT.md)与[文档导航](../../docs/README.md)。
+本轮分支 `codex/current-readiness-release-delivery` 从当前 `main` 的 `0ab8631266736775bf1386f456d4a1d53e8e2eb3`（PR #62 合并后）创建，只核验 2026-09-19 current-readiness 的包身份、来源和交付条件。
 
-此前的安装器修复已通过 [PR #57](https://github.com/tsaanghwang/Yime/pull/57) 合入主线 `76376080`，[合并后 CI 35041052421](https://github.com/tsaanghwang/Yime/actions/runs/35041052421) 成功。修复补齐 YimeCore 图标和三个必需工具的包校验；Windows 拒绝移除用户输入配置时，在 COM 注销、启动项清理和文件删除之前停止。新增的包完整性与配置移除失败隔离回归已纳入 `simple-installer` CI。
+**当前未满足 Release asset 交付条件；测试端无任务。** 原完整包及 admission 原始证据所在目录已不存在，在限定的本地清单搜索和 GitHub Release/相关 CI 附件中未找到同一个完整包。已从安装时保留的维护副本只读取回两份清单，SHA-256 与历史报告完全一致；这补全了 225 个载荷文件的清单，但不能恢复原完整包、构建日志或 ZIP SHA-256。详见[本轮核验报告](../../docs/testing/simple-maintenance/2026-09-20/current-readiness-release/REVIEW.md)及[交付准备状态](../../docs/testing/simple-maintenance/2026-09-20/current-readiness-release/RELEASE-PLAN.json)。
 
-**包含 PR #57 修复的新完整包尚未交付，也没有该新包的实机安装或输入验收。** 下方已验收 ZIP 不包含这些修复。下一次需要实机测试时，另行发布具体范围、通过 CI 的源码提交、完整包 URL 与 SHA-256；不能因本轮文档更新重复执行历史步骤。
+## 包身份与来源
 
-## 已完成阶段记录
+| 项目 | 核验结果 |
+| --- | --- |
+| current-readiness 完整包 Release/asset URL | **无**；未创建 Release 或上传完整包 |
+| 完整包 ZIP 字节数 / SHA-256 | **未知**；原报告未记录，原包未找回 |
+| YimeCore 清单 | 65 文件；`67cbdf516ae8e4348f47ffa5bc7d94d1468d200c320b66b4a1d73ce649facf8d` |
+| Rime/PIME 清单 | 160 文件；`2996982b88c70b251124847fd6fa37ada185a6c173de1139cbb32afda8324d38` |
+| 原报告关联源码 | `53b409d7713ad47e0ae1039e060462012614d7b2`；[源码 CI](https://github.com/tsaanghwang/Yime/actions/runs/35411599859) 12/12 作业成功 |
+| 本轮 main 基线 | `0ab8631266736775bf1386f456d4a1d53e8e2eb3`；[主线 CI](https://github.com/tsaanghwang/Yime/actions/runs/35418522827) 12/12 作业成功 |
+| 原包实际来源提交 | 尚未由完整构建 provenance 证实；上述两个提交之间仅两份验收报告不同，不能据此推定当时构建工作区干净 |
 
-**2026-09-15 本阶段已完成。** PR #55 的主线代码及 CI 已通过；测试端已同步主线 `86005b58`，回传 `1509b860` 已收取，见[同步报告](../../docs/testing/simple-maintenance/2026-09-15/main-sync/TEST-RESULT.md)和[阶段收尾复核](../../docs/testing/simple-maintenance/2026-09-15/main-sync/REVIEW.md)。测试端当前无待执行任务。同步执行单和下方安装步骤仅作历史记录，不因收尾文档合并再要求测试机同步、安装或重测。下一阶段另建开发分支并发布新的具体任务。
+两份清单是各产品的 `product-package.json` 哈希，**不是 ZIP 哈希**。源码检出和 `yime-native-*` CI 附件均不是完整双产品包。旧 [PR #57 测试预发布](https://github.com/tsaanghwang/Yime/releases/tag/test-simple-pr57-c5216861) 身份保持不变，不能替代 current-readiness 包。
 
-**本轮验收已完成，测试端无需再次安装或重测。** 已收取安装/重启报告 `85aec9c4` 和应用补充 `7ab9566f`，并补齐收包记录 `50f70a9c`。两套产品在“计算机”的 Codex 与记事本中重启前后均可输入，原始日志和 10 个证据文件校验通过，见 [开发端复核](../../docs/testing/simple-maintenance/2026-09-14/source-candidate-test/REVIEW.md)。保留两套安装，正常使用；下方下载和操作步骤作为本轮已执行记录，不是新任务。
+## 验证边界
 
-清理后的两套程序现已从源码构建并在开发机替换安装，用户确认重启前后均可正常输入，见 [本轮源码候选包验收](../../docs/testing/simple-maintenance/2026-09-14/source-candidate/DEVELOPMENT.md)。YimeCore 首次注册遇到 `0x800700B7`，稍后重试成功，原始失败和重启处理建议保留在报告中。
+- 2026-09-19 在 MYCOMPUTER 的历史开发机验收见 [DEVELOPMENT.md](../../docs/testing/simple-maintenance/2026-09-19/current-readiness/DEVELOPMENT.md) 和 [post-reboot.json](../../docs/testing/simple-maintenance/2026-09-19/current-readiness/post-reboot.json)。它记录 x64 Word、x86 Notepad++ 两产品重启前后输入；原始报告字节保持不变。
+- YimeCore 首次注册 `0x800700B7` 失败，随后同路径包重试成功；本轮保留实际失败与成功日志，并在核验报告校正原文的失败日志编号笔误。首次失败不计为成功。
+- 本轮只做源码/CI/清单/现有安装载荷的静态读取及合成回归。没有安装、卸载、注册、重启产品进程、输入验收、修改默认输入法或用户数据；不将静态结果认作新的实机输入通过。
+- 原包检查、原包 `Test-Product`、admission 两项原始文件复核和完整包重现仍未完成。ARM64 实机、正式签名、正式公开发行状态均不变。
 
-本轮代码提交 `a4fa6f7616b41658361a9f5b14ea3c96311ed8b0` 的 [CI 34856928836](https://github.com/tsaanghwang/Yime/actions/runs/34856928836) 已成功。当时交付的完整包及安装、两套输入和重启确认现已完成。不重复历史维护矩阵。`5c9a5d77` 的已完成维护结果仍见 [验收汇总](VALIDATION.md) 与 [原始报告索引](../../docs/testing/simple-maintenance/2026-09-14/README.md)。
+## 开发端下一步与测试端状态
 
-## 历史完整包与已完成操作（2026-09-14）
+开发端需找回原完整包和构建/admission 证据，或在明确的新构建身份下重新制包，再完成所有适用包验证。满足条件后，才在本文件记录真实 GitHub Release asset URL、字节数、ZIP SHA-256、已核实来源提交和相应 CI。不能从已安装载荷反向拼包并称为 9 月 19 日原包，也不能沿用历史实机验收作为新构建的验收。
 
-- [候选包发布页](https://github.com/tsaanghwang/Yime/releases/tag/test-simple-source-a4fa6f76)
-- [下载完整安装包](https://github.com/tsaanghwang/Yime/releases/download/test-simple-source-a4fa6f76/Yime-Source-Candidate-20260914.zip)
-- 文件：`Yime-Source-Candidate-20260914.zip`，256617810 字节。
-- SHA-256：`8474875273b42404e8d1e6a29206216a329aca44e6b01499a0e749170ae3021d`。
-- 安装器及应用源码均对应本轮已验收内容。包在提交前从工作区构建，包内 `BUILD-PROVENANCE.json` 保留当时基础提交 `58e360a5`、源码快照和两套产品清单哈希；构包时的 `pending` 不是当前验收状态，后续结果见本轮开发验收报告。此处交接更新仅为文档，不更换已验收 ZIP。
+**`perf/i7-7820x-local` 测试端当前无需同步、下载、安装、卸载、重启或重测。** 包交付不自动发起测试；以后只有本文件新增明确任务才开始接收。大包通过明确 GitHub artifact/Release asset 交付，报告通过 Git 分支交回，不使用共享临时目录。
 
-1. 按下节同步分支。下载上述 ZIP，核对文件大小和 SHA-256，完整解压至测试机本地新目录。不要使用 GitHub 自动生成的 Source code 压缩包，也不要从共享 `.tmp` 取包。
-2. 保存工作，退出 Word 等输入法宿主，切换到英文键盘。运行解压目录中的 `Install-Uninstall.cmd`，Action 选 `1`，Product 选 `3`，允许 UAC，完成两套安装。无需预先手工删除目录、注册项或用户数据；如仍有旧安装，由包自身处理。
-3. 分别选择两套输入法，在 Word 和测试机可用的另一常用应用输入并上屏。记录实际测试的应用；不为本轮专门安装额外宿主。
-4. 保存工作、正常重启并登录，再分别确认两套输入法仍可输入。本轮结束保留两套安装，不再做最终卸载。
-5. 在 `docs/testing/simple-maintenance/2026-09-14/source-candidate-test/TEST-RESULT.md` 记录包哈希、安装前状态、各步骤结果及真实应用名称，附本次安装父子日志，通过 `perf/i7-7820x-local` 提交推送。不要只回传“成功”而缺少包身份。
-
-若显示文件占用，退出相关应用后重试，不能释放就取消并正常重启后重试。若发生与开发机相同的注册 `0x800700B7`，保留本次日志，正常重启后再运行同一完整包一次；不能把重试成功记成首次成功。重启后仍失败或出现其他错误，回传本次失败与日志，由开发端处理；不接续旧恢复脚本，不反复尝试。
-
-## 下一阶段测试端接收
-
-当前无需执行接收操作。下一阶段按新任务明确指定的主线或开发提交同步到 `perf/i7-7820x-local`；保留本地报告，普通合并后推送测试分支。具体分支、提交和测试范围由新交接给出，不继续拉取已结束的旧开发分支。出现分歧或冲突时保留现场并回报，不强制重置。
-
-下一次需要实机验证时，开发端先完成本地构建、制包及相应验收，再推送并等待该提交 CI 成功；随后在本文件提供明确执行范围和包清单。完整包经 GitHub artifact/Release asset 下载，分支记录下载地址、大小、SHA-256、安装脚本提交和各运行载荷来源。拉取源码不等于收到安装包；缺包时反馈一次，由开发端补齐。
-
-## 测试端回传
-
-在 `docs/testing/simple-maintenance/<日期>/<本轮名称>/` 新建 `TEST-RESULT.md`，写明开发提交、包 SHA-256、机器/Windows、操作、实际结果和未测项。附本轮相关 `.user.log`、`.admin.log` 或小型 JSON 数据；不要提交用户词库、学习库、密码或无关应用数据。保持原报告不变，补充结论另写新报告。原始文件须按字节保留，参照已有 `raw` 目录属性和 SHA-256 索引。
-
-只暂存本轮报告目录，提交并推送到 `perf/i7-7820x-local`，回报提交号。文档和测试结果不通过共享 `.tmp` 目录交回，也不在测试端改写安装器。
-
-## 开发端收取
-
-执行 `git fetch origin perf/i7-7820x-local`，先检查 `git log HEAD..origin/perf/i7-7820x-local` 及报告差异，再挑选报告提交合入当前开发分支。若报告与源码混在一个提交，按路径提取并注明来源，避免整分支回灌旧代码。将审阅结论写入同轮目录，更新本文的当前任务。
-
-安装受阻时保留本次错误和父子日志即可；由开发端修复、验证、CI 成功后重新交付。测试端不接续历史恢复链。
+已完成的历史阶段保留：[2026-09-14 测试端验收](../../docs/testing/simple-maintenance/2026-09-14/source-candidate-test/REVIEW.md)、[2026-09-15 主线同步](../../docs/testing/simple-maintenance/2026-09-15/main-sync/REVIEW.md)、[验证范围汇总](VALIDATION.md)。这些记录均不要求重复执行。

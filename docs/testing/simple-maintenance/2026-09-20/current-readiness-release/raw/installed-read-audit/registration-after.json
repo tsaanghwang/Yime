@@ -1,0 +1,895 @@
+{
+  "collected_at_utc": "2026-09-19T23:32:42.846815+00:00",
+  "mutation_performed": false,
+  "entries_sha256": "4505540a5402112ba7199b4813246db4a9b93f74ce725224660e92a9e59f9103",
+  "entries": [
+    {
+      "product": "yimecore",
+      "architecture": "x64",
+      "kind": "CLSID",
+      "hive": "HKEY_LOCAL_MACHINE",
+      "path": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "tree": {
+        "present": true,
+        "last_write_100ns_since_1601": 134342543360219319,
+        "values": [],
+        "subkeys": {
+          "InprocServer32": {
+            "present": true,
+            "last_write_100ns_since_1601": 134342543360219319,
+            "values": [
+              {
+                "name": "",
+                "type": 1,
+                "data": "C:\\Program Files\\YimeCore\\x64\\YimeTextServiceExperiment.dll"
+              },
+              {
+                "name": "ThreadingModel",
+                "type": 1,
+                "data": "Apartment"
+              }
+            ],
+            "subkeys": {}
+          }
+        }
+      }
+    },
+    {
+      "product": "yimecore",
+      "architecture": "x64",
+      "kind": "TIP",
+      "hive": "HKEY_LOCAL_MACHINE",
+      "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "tree": {
+        "present": true,
+        "last_write_100ns_since_1601": 134328744754338109,
+        "values": [],
+        "subkeys": {
+          "Category": {
+            "present": true,
+            "last_write_100ns_since_1601": 134328744754328115,
+            "values": [],
+            "subkeys": {
+              "Category": {
+                "present": true,
+                "last_write_100ns_since_1601": 134328744754318116,
+                "values": [],
+                "subkeys": {
+                  "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [],
+                    "subkeys": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [],
+                    "subkeys": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [],
+                    "subkeys": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [],
+                    "subkeys": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [],
+                    "subkeys": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  }
+                }
+              },
+              "Item": {
+                "present": true,
+                "last_write_100ns_since_1601": 134328744754328115,
+                "values": [],
+                "subkeys": {
+                  "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [],
+                    "subkeys": {
+                      "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "LanguageProfile": {
+            "present": true,
+            "last_write_100ns_since_1601": 134328744754338109,
+            "values": [],
+            "subkeys": {
+              "0x00000804": {
+                "present": true,
+                "last_write_100ns_since_1601": 134342543360229320,
+                "values": [],
+                "subkeys": {
+                  "{126F54C6-E9B1-4E22-8652-03224CBD49F9}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [
+                      {
+                        "name": "Description",
+                        "type": 1,
+                        "data": "音元拼音"
+                      },
+                      {
+                        "name": "Enable",
+                        "type": 4,
+                        "data": 1
+                      },
+                      {
+                        "name": "IconFile",
+                        "type": 1,
+                        "data": "C:\\Program Files\\YimeCore\\profile-icon.ico"
+                      },
+                      {
+                        "name": "IconIndex",
+                        "type": 4,
+                        "data": 0
+                      }
+                    ],
+                    "subkeys": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "product": "yimecore",
+      "architecture": "x86",
+      "kind": "CLSID",
+      "hive": "HKEY_LOCAL_MACHINE",
+      "path": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "tree": {
+        "present": true,
+        "last_write_100ns_since_1601": 134342543361088328,
+        "values": [],
+        "subkeys": {
+          "InprocServer32": {
+            "present": true,
+            "last_write_100ns_since_1601": 134342543361088328,
+            "values": [
+              {
+                "name": "",
+                "type": 1,
+                "data": "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll"
+              },
+              {
+                "name": "ThreadingModel",
+                "type": 1,
+                "data": "Apartment"
+              }
+            ],
+            "subkeys": {}
+          }
+        }
+      }
+    },
+    {
+      "product": "yimecore",
+      "architecture": "x86",
+      "kind": "TIP",
+      "hive": "HKEY_LOCAL_MACHINE",
+      "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "tree": {
+        "present": true,
+        "last_write_100ns_since_1601": 134328744754338109,
+        "values": [],
+        "subkeys": {
+          "Category": {
+            "present": true,
+            "last_write_100ns_since_1601": 134328744754328115,
+            "values": [],
+            "subkeys": {
+              "Category": {
+                "present": true,
+                "last_write_100ns_since_1601": 134328744754318116,
+                "values": [],
+                "subkeys": {
+                  "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [],
+                    "subkeys": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [],
+                    "subkeys": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [],
+                    "subkeys": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [],
+                    "subkeys": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [],
+                    "subkeys": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  }
+                }
+              },
+              "Item": {
+                "present": true,
+                "last_write_100ns_since_1601": 134328744754328115,
+                "values": [],
+                "subkeys": {
+                  "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [],
+                    "subkeys": {
+                      "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342543360229320,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "LanguageProfile": {
+            "present": true,
+            "last_write_100ns_since_1601": 134328744754338109,
+            "values": [],
+            "subkeys": {
+              "0x00000804": {
+                "present": true,
+                "last_write_100ns_since_1601": 134342543360229320,
+                "values": [],
+                "subkeys": {
+                  "{126F54C6-E9B1-4E22-8652-03224CBD49F9}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342543360229320,
+                    "values": [
+                      {
+                        "name": "Description",
+                        "type": 1,
+                        "data": "音元拼音"
+                      },
+                      {
+                        "name": "Enable",
+                        "type": 4,
+                        "data": 1
+                      },
+                      {
+                        "name": "IconFile",
+                        "type": 1,
+                        "data": "C:\\Program Files\\YimeCore\\profile-icon.ico"
+                      },
+                      {
+                        "name": "IconIndex",
+                        "type": 4,
+                        "data": 0
+                      }
+                    ],
+                    "subkeys": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "product": "rime-pime",
+      "architecture": "x64",
+      "kind": "CLSID",
+      "hive": "HKEY_LOCAL_MACHINE",
+      "path": "SOFTWARE\\Classes\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}",
+      "tree": {
+        "present": true,
+        "last_write_100ns_since_1601": 134342542793088046,
+        "values": [
+          {
+            "name": "",
+            "type": 1,
+            "data": "PIMETextService"
+          }
+        ],
+        "subkeys": {
+          "InprocServer32": {
+            "present": true,
+            "last_write_100ns_since_1601": 134342542793088046,
+            "values": [
+              {
+                "name": "",
+                "type": 1,
+                "data": "C:\\Program Files\\Yime Rime-PIME\\x64\\PIMETextService.dll"
+              },
+              {
+                "name": "ThreadingModel",
+                "type": 1,
+                "data": "Apartment"
+              }
+            ],
+            "subkeys": {}
+          }
+        }
+      }
+    },
+    {
+      "product": "rime-pime",
+      "architecture": "x64",
+      "kind": "TIP",
+      "hive": "HKEY_LOCAL_MACHINE",
+      "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}",
+      "tree": {
+        "present": true,
+        "last_write_100ns_since_1601": 134342542793098046,
+        "values": [
+          {
+            "name": "Enable",
+            "type": 1,
+            "data": "1"
+          }
+        ],
+        "subkeys": {
+          "Category": {
+            "present": true,
+            "last_write_100ns_since_1601": 134342542793098046,
+            "values": [],
+            "subkeys": {
+              "Category": {
+                "present": true,
+                "last_write_100ns_since_1601": 134342542793098046,
+                "values": [],
+                "subkeys": {
+                  "{046B8C80-1647-40F7-9B21-B93B81AABC1B}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  }
+                }
+              },
+              "Item": {
+                "present": true,
+                "last_write_100ns_since_1601": 134342542793098046,
+                "values": [],
+                "subkeys": {
+                  "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{046B8C80-1647-40F7-9B21-B93B81AABC1B}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "LanguageProfile": {
+            "present": true,
+            "last_write_100ns_since_1601": 134342542793088046,
+            "values": [],
+            "subkeys": {
+              "0x00000804": {
+                "present": true,
+                "last_write_100ns_since_1601": 134342542793088046,
+                "values": [],
+                "subkeys": {
+                  "{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793088046,
+                    "values": [
+                      {
+                        "name": "Description",
+                        "type": 1,
+                        "data": "音元"
+                      },
+                      {
+                        "name": "IconFile",
+                        "type": 1,
+                        "data": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\input_methods\\yime\\icon.ico"
+                      },
+                      {
+                        "name": "IconIndex",
+                        "type": 4,
+                        "data": 1
+                      }
+                    ],
+                    "subkeys": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "product": "rime-pime",
+      "architecture": "x86",
+      "kind": "CLSID",
+      "hive": "HKEY_LOCAL_MACHINE",
+      "path": "SOFTWARE\\Classes\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}",
+      "tree": {
+        "present": true,
+        "last_write_100ns_since_1601": 134342542783018467,
+        "values": [
+          {
+            "name": "",
+            "type": 1,
+            "data": "PIMETextService"
+          }
+        ],
+        "subkeys": {
+          "InprocServer32": {
+            "present": true,
+            "last_write_100ns_since_1601": 134342542783018467,
+            "values": [
+              {
+                "name": "",
+                "type": 1,
+                "data": "C:\\Program Files\\Yime Rime-PIME\\x86\\PIMETextService.dll"
+              },
+              {
+                "name": "ThreadingModel",
+                "type": 1,
+                "data": "Apartment"
+              }
+            ],
+            "subkeys": {}
+          }
+        }
+      }
+    },
+    {
+      "product": "rime-pime",
+      "architecture": "x86",
+      "kind": "TIP",
+      "hive": "HKEY_LOCAL_MACHINE",
+      "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}",
+      "tree": {
+        "present": true,
+        "last_write_100ns_since_1601": 134342542793098046,
+        "values": [
+          {
+            "name": "Enable",
+            "type": 1,
+            "data": "1"
+          }
+        ],
+        "subkeys": {
+          "Category": {
+            "present": true,
+            "last_write_100ns_since_1601": 134342542793098046,
+            "values": [],
+            "subkeys": {
+              "Category": {
+                "present": true,
+                "last_write_100ns_since_1601": 134342542793098046,
+                "values": [],
+                "subkeys": {
+                  "{046B8C80-1647-40F7-9B21-B93B81AABC1B}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  },
+                  "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  }
+                }
+              },
+              "Item": {
+                "present": true,
+                "last_write_100ns_since_1601": 134342542793098046,
+                "values": [],
+                "subkeys": {
+                  "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793098046,
+                    "values": [],
+                    "subkeys": {
+                      "{046B8C80-1647-40F7-9B21-B93B81AABC1B}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      },
+                      "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                        "present": true,
+                        "last_write_100ns_since_1601": 134342542793098046,
+                        "values": [],
+                        "subkeys": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "LanguageProfile": {
+            "present": true,
+            "last_write_100ns_since_1601": 134342542793088046,
+            "values": [],
+            "subkeys": {
+              "0x00000804": {
+                "present": true,
+                "last_write_100ns_since_1601": 134342542793088046,
+                "values": [],
+                "subkeys": {
+                  "{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}": {
+                    "present": true,
+                    "last_write_100ns_since_1601": 134342542793088046,
+                    "values": [
+                      {
+                        "name": "Description",
+                        "type": 1,
+                        "data": "音元"
+                      },
+                      {
+                        "name": "IconFile",
+                        "type": 1,
+                        "data": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\input_methods\\yime\\icon.ico"
+                      },
+                      {
+                        "name": "IconIndex",
+                        "type": 4,
+                        "data": 1
+                      }
+                    ],
+                    "subkeys": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
