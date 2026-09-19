@@ -1,0 +1,22 @@
+{
+  "schema_version": "legacy-entry-retirement-review-v1",
+  "observed_at": "2026-09-19T00:50:42Z",
+  "source_commit": "d228aaae49d13b383d0f1b478b75b860df4c5a13",
+  "execution_context": "ordinary-user Windows PowerShell 5.1 launched through File Explorer",
+  "target": "0804:{41EC6C9B-E8D2-4E1E-9E7C-5CA3DAF0F66B}{607895A8-9504-4A2E-9BB1-2C159E3A1757}",
+  "legacy_entry_count": 0,
+  "current_yimecore_entry_count": 1,
+  "stable_rime_pime_entry_count": 1,
+  "simple_rime_pime_entry_count": 1,
+  "default_unchanged": true,
+  "historical_payloads_required": false,
+  "file_or_machine_registration_mutation_authorized": false,
+  "already_absent": true,
+  "mutation_performed": false,
+  "recovery_archive_created": false,
+  "result": "pass_noop",
+  "notes": [
+    "The packaged Codex process observed a stale or virtualized language list and was not accepted as execution evidence.",
+    "The Explorer-launched standalone process agreed with the independent system registry view and performed no write."
+  ]
+}

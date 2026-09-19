@@ -310,6 +310,8 @@ jobs:
       - name: Test profile removal failure preserves installed files and COM
         shell: powershell
         run: .\installer\simple\Test-ProfileRemoval.ps1
+      - name: Test legacy user-entry retirement safety
+        run: python tools/powershell/run_checked.py --script tools/yimecore/test-retire-legacy-entry.ps1 --edition ps5
       - name: Test real system startup values in isolated test keys
         shell: powershell
         run: .\installer\simple\Test-Startup.ps1
