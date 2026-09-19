@@ -1,0 +1,82 @@
+{
+  "schema_version": "yime-current-readiness-post-reboot-v1",
+  "verified_at": "2026-09-19T10:13:09+08:00",
+  "boot": {
+    "pre_reboot_local": "2026-09-19T06:39:49+08:00",
+    "post_reboot_local": "2026-09-19T09:52:08+08:00",
+    "reboot_confirmed": true
+  },
+  "installed_payloads": [
+    {
+      "product": "yimecore",
+      "install_root": "C:\\Program Files\\YimeCore",
+      "expected_files": 65,
+      "mismatch_count": 0,
+      "package_manifest_sha256": "67cbdf516ae8e4348f47ffa5bc7d94d1468d200c320b66b4a1d73ce649facf8d"
+    },
+    {
+      "product": "rime-pime",
+      "install_root": "C:\\Program Files\\Yime Rime-PIME",
+      "expected_files": 160,
+      "mismatch_count": 0,
+      "package_manifest_sha256": "2996982b88c70b251124847fd6fa37ada185a6c173de1139cbb32afda8324d38"
+    }
+  ],
+  "registration": {
+    "rime_pime_x64": {
+      "exact_profile_count": 1,
+      "enabled_for_current_user": true,
+      "category_set_exact": true,
+      "expected_categories": 6,
+      "mutation_performed": false,
+      "exit_code": 0
+    },
+    "rime_pime_x86": {
+      "exact_profile_count": 1,
+      "enabled_for_current_user": true,
+      "category_set_exact": true,
+      "expected_categories": 6,
+      "mutation_performed": false,
+      "exit_code": 0
+    },
+    "yimecore_x64_proven_by_live_word": true,
+    "yimecore_x86_proven_by_live_notepad_plus_plus": true
+  },
+  "runtime_after_logon": {
+    "yimecore_runtime_root": "C:\\Program Files\\YimeCore\\bin",
+    "yimecore_runtime_running": true,
+    "yimecore_broker_running": true,
+    "rime_pime_launcher_root": "C:\\Program Files\\Yime Rime-PIME",
+    "rime_pime_launcher_running": true,
+    "rime_pime_backend_running": true
+  },
+  "live_hosts": [
+    {
+      "host": "Notepad++ 32-bit",
+      "architecture": "x86",
+      "yimecore_candidate_displayed": true,
+      "yimecore_candidate_committed": true,
+      "rime_pime_candidate_displayed": true,
+      "rime_pime_candidate_committed": true,
+      "loaded_yimecore_dll": "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll",
+      "loaded_rime_pime_dll": "C:\\Program Files\\Yime Rime-PIME\\x86\\PIMETextService.dll",
+      "test_text_removed": true,
+      "temporary_tab_closed": true,
+      "pre_existing_unsaved_document_preserved": true
+    },
+    {
+      "host": "Microsoft Word 64-bit",
+      "architecture": "x64",
+      "yimecore_candidate_displayed": true,
+      "yimecore_candidate_committed": true,
+      "rime_pime_candidate_displayed": true,
+      "rime_pime_candidate_committed": true,
+      "test_text_removed": true,
+      "temporary_document_closed_without_saving": true
+    }
+  ],
+  "persistent_default_input_changed": false,
+  "arm64_real_machine_gate_changed": false,
+  "formal_signing_gate_changed": false,
+  "available_host_acceptance_complete": true
+}

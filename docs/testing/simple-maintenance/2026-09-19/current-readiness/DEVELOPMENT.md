@@ -1,10 +1,10 @@
 # Current readiness development validation (2026-09-19)
 
-Status: **reboot pending**. The legacy-entry retirement gate and E3 performance
-work are complete. The current x64/x86 dual-product package has passed build,
-package, installation, payload, registration, and pre-reboot real-application
-input checks. Reboot was deliberately not started because an unrelated
-Notepad++ document was already open with unsaved user edits.
+Status: **complete for the available x64/x86 development host**. The
+legacy-entry retirement gate and E3 performance work are complete. The current
+x64/x86 dual-product package has passed build, package, installation, payload,
+registration, and real-application input checks before and after a normal
+reboot. ARM64 real-machine and formal-signing gates remain frozen as scoped.
 
 ## Scope and frozen gates
 
@@ -121,7 +121,43 @@ changing the persistent default input method.
   Both insertions were undone, the document returned to empty, and Word was
   closed without saving.
 
-The Notepad++ document was already unsaved before validation and remains open in
-that state. Its contents were neither saved nor discarded. A normal reboot and
-post-login installed-payload, registration, and real-input repeat are the only
-remaining actions in this run.
+The Notepad++ document was already unsaved before validation and remained open
+in that state. Its contents were neither saved nor discarded. Reboot was held
+until the application had been closed, then started only after explicit user
+authorization.
+
+## Post-reboot validation
+
+The normal reboot completed with Windows boot time `2026-09-19 09:52:08
++08:00`, replacing the pre-reboot boot time `2026-09-19 06:39:49 +08:00`.
+Machine-readable results are in `post-reboot.json`.
+
+- YimeCore: all 65 package-manifest files matched the installed files; package
+  manifest SHA-256 remained
+  `67cbdf516ae8e4348f47ffa5bc7d94d1468d200c320b66b4a1d73ce649facf8d`.
+- Rime/PIME: all 160 package-manifest files matched the installed files; package
+  manifest SHA-256 remained
+  `2996982b88c70b251124847fd6fa37ada185a6c173de1139cbb32afda8324d38`.
+- Rime/PIME x64 and x86 registration checks each reported exactly one expected
+  profile, an enabled current-user profile, the exact six-category set, no
+  mutation, and exit code 0.
+- The installed YimeCore Runtime and Broker restarted from
+  `C:\Program Files\YimeCore`; Rime/PIME Launcher and backend started from
+  `C:\Program Files\Yime Rime-PIME`.
+- Notepad++ 32-bit displayed and committed candidates from both current
+  YimeCore and Rime/PIME. The process mechanically loaded the installed x86
+  `YimeTextServiceExperiment.dll` and `PIMETextService.dll` from their respective
+  product roots.
+- Microsoft Word 64-bit displayed and committed candidates from both current
+  Rime/PIME and YimeCore. The temporary text was undone, the document returned
+  to empty, and Word was closed without saving.
+- Notepad++ restored the user's pre-existing unsaved document after reboot. All
+  validation used a separate temporary blank tab; that tab was undone and
+  closed, while the restored user document remained unsaved and unmodified by
+  the validation.
+- Exact profiles were selected with the architecture-matched session-only TSF
+  activator. No persistent default-input setting was changed.
+
+GitHub Actions run
+<https://github.com/tsaanghwang/Yime/actions/runs/35413263479> for the prior
+report commit completed successfully across all 12 jobs.
