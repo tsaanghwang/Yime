@@ -103,6 +103,14 @@ $profile=Read-YimeCoreSystemKey 2147483651 "$sid\Control Panel\International\Use
 $default=@($profile.values|Where-Object {$_.name -eq 'InputMethodOverride'})
 if($default.Count -ne 1 -or $default[0].value -eq $legacyTip){throw 'Cannot retire a default legacy profile or an ambiguous default.'}
 
+# Both Plan and Apply require Explorer ancestry. Packaged application processes
+# can observe a virtualized/stale language list that differs from StdRegProv and
+# from the standalone process which would perform the actual write.
+Assert-YimeCoreUnpackagedDataMaintenance
+if($PSVersionTable.PSVersion.Major -ne 5){throw 'Use standalone Windows PowerShell 5.1.'}
+$principal=New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if($principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){throw 'Use ordinary same-user PowerShell, not an administrator window.'}
+
 $original=Get-WinUserLanguageList
 $originalRecord=Get-LanguageListRecord $original
 $desired=Get-WinUserLanguageList
@@ -127,15 +135,11 @@ $plan=[ordered]@{
     historical_payloads_required=$false
     file_or_machine_registration_mutation_authorized=$false
     scope_id=$scope.id
+    observation_context='unpackaged-explorer-powershell-5.1'
     mutation_performed=$false
 }
 if($Action -eq 'Plan'){$plan|ConvertTo-Json -Depth 5;return}
 if($removed -eq 0){$plan.action='Apply';$plan.already_absent=$true;$plan|ConvertTo-Json -Depth 5;return}
-
-Assert-YimeCoreUnpackagedDataMaintenance
-if($PSVersionTable.PSVersion.Major -ne 5){throw 'Use standalone Windows PowerShell 5.1.'}
-$principal=New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-if($principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){throw 'Use ordinary same-user PowerShell, not an administrator window.'}
 
 $archive=Join-Path $env:USERPROFILE ('YimeCore Recovery Archives\legacy-entry-retirement-'+(Get-Date -Format 'yyyyMMdd-HHmmss')+'-'+[guid]::NewGuid().ToString('N').Substring(0,8))
 Assert-YimeCorePlainPath $archive

@@ -3,16 +3,20 @@
 该工具只移除当前开发机、当前用户语言列表中的固定旧 YimeCore TIP。它不卸载产品，
 不注销机器级 COM/TIP，不删除历史目录、恢复档案或用户数据，也不修改默认输入法。
 
-先运行只读计划：
+先从文件资源管理器双击运行只读计划：
 
 ```text
-python tools/powershell/run_checked.py --script tools/yimecore/retire-legacy-entry.ps1 --edition ps5
+Plan-Legacy-YimeCore-Entry.cmd
 ```
 
 计划会确认默认输入法不是旧入口，当前 YimeCore 与现有稳定 Rime/PIME 入口各保留一次；
 新简版安装器的 Rime/PIME 身份若已存在也必须保持唯一，并记录
 `historical_payloads_required=false`。旧安装目录的 `package-manifest.json` 不再是入口退役
 的前置条件，因为本操作不读取、删除或重标记历史载荷。
+
+Plan 和 Apply 都要求 Explorer 启动的普通用户 Windows PowerShell 5.1。Codex 等打包
+应用的后代进程可能读到虚拟化或缓存的语言列表，因此仓库 runner 只用于静态检查和
+合成测试，不能作为本机 Plan 的真实系统视图。
 
 实际执行必须由普通用户从文件资源管理器双击
 `Retire-Legacy-YimeCore-Entry.cmd`。Apply 在写入前保存语言列表、相关用户注册表导出及
@@ -22,3 +26,7 @@ python tools/powershell/run_checked.py --script tools/yimecore/retire-legacy-ent
 
 恢复属于有验证的补偿流程，不是原子事务。只有 `result.json` 中 `passed=true` 才能
 宣称入口退役完成；源码测试或只读 Plan 不能替代实际执行结果。
+
+2026-09-19 的 Explorer 上下文复核显示旧入口已经不存在，当前 YimeCore、稳定
+Rime/PIME 和新简版 Rime/PIME 各存在一次；Apply 返回 `already_absent=true`、
+`mutation_performed=false`，因此未创建恢复档案或重复写入语言列表。

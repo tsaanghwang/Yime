@@ -34,9 +34,11 @@ if($parameter.DefaultValue.SafeGetValue() -cne 'Plan'){throw 'Default action mus
 $planReturn=$text.IndexOf("if(`$Action -eq 'Plan')")
 $contextGuard=$text.IndexOf('Assert-YimeCoreUnpackagedDataMaintenance')
 $languageWrite=$text.IndexOf('Set-WinUserLanguageList -LanguageList $desired -Force')
-if($planReturn -lt 0 -or $contextGuard -lt $planReturn -or $languageWrite -lt $contextGuard){throw 'Plan/Apply boundary moved.'};$checks++
+if($planReturn -lt 0 -or $contextGuard -lt 0 -or $contextGuard -gt $planReturn -or $languageWrite -lt $planReturn){throw 'Plan/Apply boundary moved.'};$checks++
 $launcher=Get-Content -LiteralPath (Join-Path $PSScriptRoot '..\..\Retire-Legacy-YimeCore-Entry.cmd') -Raw
 if(-not $launcher.Contains('-Action Apply') -or -not $launcher.Contains('WindowsPowerShell\v1.0\powershell.exe')){throw 'Launcher action or edition changed.'};$checks++
+$planLauncher=Get-Content -LiteralPath (Join-Path $PSScriptRoot '..\..\Plan-Legacy-YimeCore-Entry.cmd') -Raw
+if(-not $planLauncher.Contains('-Action Plan') -or -not $planLauncher.Contains('WindowsPowerShell\v1.0\powershell.exe')){throw 'Plan launcher action or edition changed.'};$checks++
 
 $guardPath=Join-Path $PSScriptRoot 'development-scope.ps1'
 $guardAst=[Management.Automation.Language.Parser]::ParseFile($guardPath,[ref]$tokens,[ref]$errors)
