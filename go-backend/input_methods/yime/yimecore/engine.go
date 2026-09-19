@@ -13,36 +13,43 @@ const defaultCandidateLimit = 9
 // Engine is the E0 Go session implementation. It intentionally implements
 // only deterministic code input and indexed candidate lookup.
 type Engine struct {
-	index             lookupIndex
-	userLexiconBase   lookupIndex
-	userLexiconPath   string
-	userLexiconFile   lexiconFileSignature
-	limit             int
-	rawInput          string
-	candidates        []engineapi.Candidate
-	sentence          *engineapi.Candidate
-	exactCache        map[string][]record
-	sentenceInput     string
-	sentenceStates    [][]sentencePath
-	userModel         *UserModel
-	modelGeneration   uint64
-	modelGenerationOK bool
-	modelCandidate    map[candidateIdentity]int64
-	modelContext      map[contextIdentity]int64
-	modelScoreContext string
-	modelScore        map[candidateIdentity]candidateModelScore
-	modelLearned      map[prefixCacheKey][]candidateIdentity
-	linearReranker    bool
-	previousCommit    string
-	pageNumber        int
-	hasNextPage       bool
-	activeSegment     *engineapi.Segment
-	focusedSentence   *engineapi.Candidate
-	publishedSentence *engineapi.Candidate
-	rejectedCandidate *engineapi.Candidate
-	segmentChoices    map[segmentSpan]record
-	recalledChoices   map[segmentSpan]struct{}
-	expandedParents   map[segmentSpan]record
+	index              lookupIndex
+	userLexiconBase    lookupIndex
+	userLexiconPath    string
+	userLexiconFile    lexiconFileSignature
+	limit              int
+	rawInput           string
+	candidates         []engineapi.Candidate
+	sentence           *engineapi.Candidate
+	exactCache         map[string][]record
+	sentenceInput      string
+	sentenceStates     [][]sentencePath
+	userModel          *UserModel
+	modelGeneration    uint64
+	modelGenerationOK  bool
+	modelCandidate     map[candidateIdentity]int64
+	modelContext       map[contextIdentity]int64
+	modelScoreContext  string
+	modelScore         map[candidateIdentity]candidateModelScore
+	modelSequences     map[modelScoreSequenceKey][]candidateModelScoreEntry
+	modelSequenceKey   modelScoreSequenceKey
+	modelSequence      []candidateModelScoreEntry
+	modelSequenceAt    int
+	modelSequenceItems int
+	modelSequenceNew   bool
+	modelSequenceLive  bool
+	modelLearned       map[prefixCacheKey][]candidateIdentity
+	linearReranker     bool
+	previousCommit     string
+	pageNumber         int
+	hasNextPage        bool
+	activeSegment      *engineapi.Segment
+	focusedSentence    *engineapi.Candidate
+	publishedSentence  *engineapi.Candidate
+	rejectedCandidate  *engineapi.Candidate
+	segmentChoices     map[segmentSpan]record
+	recalledChoices    map[segmentSpan]struct{}
+	expandedParents    map[segmentSpan]record
 }
 
 type segmentSpan struct {
@@ -755,8 +762,14 @@ func (e *Engine) refresh() {
 		return
 	}
 	if e.activeSegment != nil {
+		if e.beginUserModelScoreSequence() {
+			defer e.endUserModelScoreSequence()
+		}
 		e.refreshSegmentCandidates()
 		return
+	}
+	if e.beginUserModelScoreSequence() {
+		defer e.endUserModelScoreSequence()
 	}
 	fetchLimit := (e.pageNumber+1)*e.limit + 1
 	exactRecords, restrictToSingleCharacter := e.firstSyllableExactRecords(e.rawInput, fetchLimit)
