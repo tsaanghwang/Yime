@@ -4,6 +4,8 @@
 
 ## 当前任务
 
+**2026-09-22：隔离触摸终端原型，测试端无安装任务。** 开发分支 `codex/touch-terminal-prototype` 从最新主线 `0ab86312` 创建；影响范围仅共享源数据的浏览器原型与独立验证，不连接或修改任何已安装输入法。入口为 [运行说明](../../prototypes/touch-terminal/README.md)，另见 [验证记录](../../prototypes/touch-terminal/VALIDATION.md)、[适配协议](../../prototypes/touch-terminal/PROTOCOL.md) 和 [硬件可行性](../../prototypes/touch-terminal/HARDWARE.md)。本轮无需实体终端即可试用，不制作输入法安装包，不要求测试 PC 同步、重装或重复历史验收；真实触屏误触率和端到端延迟尚未验收。以下既有交付记录继续作为历史记录保留。
+
 **2026-09-16：工程文档更新，测试端无新增执行任务。** 开发分支 `codex/project-docs-refresh` 从当前主线 `76376080` 创建，统一项目首页、现状、架构、路线图、测试及工具说明。本轮只改文档，不制作安装包，不要求测试端同步、安装或重测。当前概览见[项目现状](../../docs/YIME_PROJECT_ASSESSMENT.md)与[文档导航](../../docs/README.md)。
 
 此前的安装器修复已通过 [PR #57](https://github.com/tsaanghwang/Yime/pull/57) 合入主线 `76376080`，[合并后 CI 35041052421](https://github.com/tsaanghwang/Yime/actions/runs/35041052421) 成功。修复补齐 YimeCore 图标和三个必需工具的包校验；Windows 拒绝移除用户输入配置时，在 COM 注销、启动项清理和文件删除之前停止。新增的包完整性与配置移除失败隔离回归已纳入 `simple-installer` CI。
