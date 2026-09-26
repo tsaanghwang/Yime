@@ -1,0 +1,82 @@
+{
+  "format": "yime-current-readiness-safe-validation-1",
+  "started_utc": "2026-09-26T23:41:04.530764+00:00",
+  "source_commit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+  "powershell_edition": "ps5",
+  "fixture_root": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\validation-evidence\\synthetic-fixtures",
+  "boundary": "Synthetic package files, API mocks, and test-owned hidden processes only. No live installation, registry/startup writes, product process actions, default input method changes, or user data changes.",
+  "checks": [
+    {
+      "name": "Test-PackageValidation.ps1",
+      "command": "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe tools/powershell/run_checked.py --script C:\\dev\\Yime\\installer\\simple\\Test-PackageValidation.ps1 --edition ps5",
+      "working_directory": "C:\\dev\\Yime",
+      "environment_overrides": {
+        "TEMP": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\validation-evidence\\synthetic-fixtures",
+        "TMP": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\validation-evidence\\synthetic-fixtures"
+      },
+      "source_sha256": "e9c71f5790cf1f8c39854c4d6673b532d7065d79d2c6e34dc53ebf1d4c836f7b",
+      "started_utc": "2026-09-26T23:41:04.558683+00:00",
+      "finished_utc": "2026-09-26T23:41:05.544194+00:00",
+      "exit_code": 0,
+      "log": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\validation-evidence\\Test-PackageValidation.log",
+      "log_sha256": "08950ff5ebe7af3252cd7ca6214f5b6e9e0e95f58765cfafed34df3d890c6518"
+    },
+    {
+      "name": "Test-ProfileRemoval.ps1",
+      "command": "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe tools/powershell/run_checked.py --script C:\\dev\\Yime\\installer\\simple\\Test-ProfileRemoval.ps1 --edition ps5",
+      "working_directory": "C:\\dev\\Yime",
+      "environment_overrides": {
+        "TEMP": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\validation-evidence\\synthetic-fixtures",
+        "TMP": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\validation-evidence\\synthetic-fixtures"
+      },
+      "source_sha256": "4a2b00285b1aa86d10dbc83e6cc0bcd9869df572382d97a207bbb5d33580b9ee",
+      "started_utc": "2026-09-26T23:41:05.544785+00:00",
+      "finished_utc": "2026-09-26T23:41:06.076097+00:00",
+      "exit_code": 0,
+      "log": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\validation-evidence\\Test-ProfileRemoval.log",
+      "log_sha256": "53f80d08356ae9c828d79b3b4315037eee104973ebc52afcdefd564cd5331c48"
+    },
+    {
+      "name": "Test-Manage.ps1",
+      "command": "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe tools/powershell/run_checked.py --script C:\\dev\\Yime\\installer\\simple\\Test-Manage.ps1 --edition ps5",
+      "working_directory": "C:\\dev\\Yime",
+      "environment_overrides": {
+        "TEMP": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\validation-evidence\\synthetic-fixtures",
+        "TMP": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\validation-evidence\\synthetic-fixtures"
+      },
+      "source_sha256": "8bba5721054b74cfab96a32c734d78a233ad5da6bfe22f8bf6570edbc1be8da0",
+      "started_utc": "2026-09-26T23:41:06.076501+00:00",
+      "finished_utc": "2026-09-26T23:41:10.140403+00:00",
+      "exit_code": 0,
+      "log": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\validation-evidence\\Test-Manage.log",
+      "log_sha256": "0632cd1f4eec2a4db83832d0327eabd14c7eb78281016fc840aae4b29adc1c5a"
+    },
+    {
+      "name": "Test-ProcessWait.ps1",
+      "command": "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe tools/powershell/run_checked.py --script C:\\dev\\Yime\\installer\\simple\\Test-ProcessWait.ps1 --edition ps5",
+      "working_directory": "C:\\dev\\Yime",
+      "environment_overrides": {
+        "TEMP": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\validation-evidence\\synthetic-fixtures",
+        "TMP": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\validation-evidence\\synthetic-fixtures"
+      },
+      "source_sha256": "7909ea07f58f7fd65d92a371bfe0f87e5ee666f62831c301423c3936c328df50",
+      "started_utc": "2026-09-26T23:41:10.140720+00:00",
+      "finished_utc": "2026-09-26T23:41:11.429721+00:00",
+      "exit_code": 0,
+      "log": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\validation-evidence\\Test-ProcessWait.log",
+      "log_sha256": "dca731c39f6479ecde19644d49188714a80c4215dc14581b08ff2cb83ebc2959"
+    }
+  ],
+  "skipped": [
+    {
+      "name": "Test-Startup.ps1",
+      "reason": "Writes real initiating-user startup values; excluded from non-mutating validation."
+    },
+    {
+      "name": "Test-Logging.ps1",
+      "reason": "Writes and removes transcripts beneath Environment.GetFolderPath(UserProfile)/Yime Setup Logs and invokes a copied Setup.ps1 -Action Install; excluded rather than changing test source."
+    }
+  ],
+  "finished_utc": "2026-09-26T23:41:11.430008+00:00",
+  "passed": true
+}

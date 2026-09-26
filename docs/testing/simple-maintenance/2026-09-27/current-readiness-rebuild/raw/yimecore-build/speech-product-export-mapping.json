@@ -1,0 +1,190 @@
+{
+  "schema_version": "yimecore-speech-product-export-v1",
+  "passed": true,
+  "default_enabled": false,
+  "payload_files": 11,
+  "admission_summary": {
+    "path": "summary.json",
+    "bytes": 21809,
+    "sha256": "56729cf37d0f19eb0e9492187be0ad3a7b2349722ff6bc3ba79fac3be02ef541"
+  },
+  "source_inventory": {
+    "path": "source-hashes-after.json",
+    "bytes": 104614,
+    "sha256": "8c88fffad35ae279fabb6018125df63b69440bdbb9b4209dee852421ccca64b7"
+  },
+  "source_inventory_before": {
+    "path": "source-hashes-before.json",
+    "bytes": 104614,
+    "sha256": "8c88fffad35ae279fabb6018125df63b69440bdbb9b4209dee852421ccca64b7"
+  },
+  "source_files": 576,
+  "forward_source_files": 56,
+  "admission_artifacts": [
+    {
+      "path": "admission.json",
+      "bytes": 1295,
+      "sha256": "50c28aa2e14e1a3e1202f78d6de3f0f52041082db919eb1707dd31732378f146"
+    },
+    {
+      "path": "admitted-records.json",
+      "bytes": 62558,
+      "sha256": "66a2ab07caaabead77ba1a84c26e747eff6b7959e641286e57c58e4e612b8733"
+    },
+    {
+      "path": "bundle-off.json",
+      "bytes": 2377,
+      "sha256": "1c4667e91bb52402d30bd07c237a947d7933112df8fa9701acbbccc79471149b"
+    },
+    {
+      "path": "bundle-on.json",
+      "bytes": 2376,
+      "sha256": "e1962165752a4748837e34a8ccfc0ab954e8b22e8c050c845ea3477296b13023"
+    },
+    {
+      "path": "forward-source.json",
+      "bytes": 17920,
+      "sha256": "4fc3c3abf8be4209efa803b2e1ae747ac8bab5e5ab05c13daafe80035dde38b1"
+    },
+    {
+      "path": "indexes/full-core.yidx",
+      "bytes": 40267102,
+      "sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1"
+    },
+    {
+      "path": "indexes/full-stage5c.yidx",
+      "bytes": 848,
+      "sha256": "761531b175f9984eb48066759e7acad30405e27261d0e46e561ae12bd83f52cf"
+    },
+    {
+      "path": "indexes/shorthand-core.yidx",
+      "bytes": 38209725,
+      "sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec"
+    },
+    {
+      "path": "indexes/shorthand-stage5c.yidx",
+      "bytes": 825,
+      "sha256": "f1b7cb449c151e9cce6b21b65317ca47daf6fdc4cb80c62515d1b14287c8376d"
+    },
+    {
+      "path": "indexes/variable-core.yidx",
+      "bytes": 38801056,
+      "sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada"
+    },
+    {
+      "path": "indexes/variable-stage5c.yidx",
+      "bytes": 825,
+      "sha256": "d19d552f890733e0b731d50501cf64f0a3c6ee2278924fef3aba6f19524d0e52"
+    },
+    {
+      "path": "prepare-outcome.json",
+      "bytes": 5958,
+      "sha256": "f779df9c82ce1d9210f3635ffe7aceaff3daeb448695cc0354cb6d3549680e08"
+    },
+    {
+      "path": "process-outcome.json",
+      "bytes": 2131,
+      "sha256": "c30dbff9ddabc62bb4fbd7e0f0fad6f80ddbae18b4778c1e8d313c2fb7427182"
+    }
+  ],
+  "admission_tools": [
+    {
+      "path": "bin/YimeBroker-speech.exe",
+      "bytes": 5465600,
+      "sha256": "5dadb24ff6c54784d2325833d4355a1ab1c0763ed8231bbaec63ed9d6a10b730"
+    },
+    {
+      "path": "bin/YimeSpeechAdmission.exe",
+      "bytes": 5402112,
+      "sha256": "710c86830ff661f560d07b217299ed701ab9643e4f928fd1210f031807cf6790"
+    }
+  ],
+  "skipped_tests": [
+    "./input_methods/yime/speechruntime:TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink",
+    "./cmd/yimecore-speech-admission:TestSpeechPackageRejectsSymlinkPayload",
+    "./cmd/yimecore-speech-admission:TestSpeechProductExportRejectsIndirectSources"
+  ],
+  "layout_sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+  "product_sha256": "cc368f0d3d6539a00e546edd8267c72c795831a82a3d09e7667faa928a36a0da",
+  "files": [
+    {
+      "product_path": "speech-capability.json",
+      "sha256": "0151c87d446fc9bd540526c9da645346eaa764d485c3e8fe6c7f578619b4ec79",
+      "bytes": 220,
+      "generated": true
+    },
+    {
+      "source_path": "admission.json",
+      "product_path": "speech/admission.json",
+      "sha256": "50c28aa2e14e1a3e1202f78d6de3f0f52041082db919eb1707dd31732378f146",
+      "bytes": 1295,
+      "generated": false
+    },
+    {
+      "source_path": "admitted-records.json",
+      "product_path": "speech/admitted-records.json",
+      "sha256": "66a2ab07caaabead77ba1a84c26e747eff6b7959e641286e57c58e4e612b8733",
+      "bytes": 62558,
+      "generated": false
+    },
+    {
+      "source_path": "forward-source.json",
+      "product_path": "speech/forward-source.json",
+      "sha256": "4fc3c3abf8be4209efa803b2e1ae747ac8bab5e5ab05c13daafe80035dde38b1",
+      "bytes": 17920,
+      "generated": false
+    },
+    {
+      "source_path": "indexes/full-core.yidx",
+      "product_path": "speech/indexes/full-core.yidx",
+      "sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+      "bytes": 40267102,
+      "generated": false
+    },
+    {
+      "source_path": "indexes/full-stage5c.yidx",
+      "product_path": "speech/indexes/full-stage5c.yidx",
+      "sha256": "761531b175f9984eb48066759e7acad30405e27261d0e46e561ae12bd83f52cf",
+      "bytes": 848,
+      "generated": false
+    },
+    {
+      "source_path": "indexes/shorthand-core.yidx",
+      "product_path": "speech/indexes/shorthand-core.yidx",
+      "sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+      "bytes": 38209725,
+      "generated": false
+    },
+    {
+      "source_path": "indexes/shorthand-stage5c.yidx",
+      "product_path": "speech/indexes/shorthand-stage5c.yidx",
+      "sha256": "f1b7cb449c151e9cce6b21b65317ca47daf6fdc4cb80c62515d1b14287c8376d",
+      "bytes": 825,
+      "generated": false
+    },
+    {
+      "source_path": "indexes/variable-core.yidx",
+      "product_path": "speech/indexes/variable-core.yidx",
+      "sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+      "bytes": 38801056,
+      "generated": false
+    },
+    {
+      "source_path": "indexes/variable-stage5c.yidx",
+      "product_path": "speech/indexes/variable-stage5c.yidx",
+      "sha256": "d19d552f890733e0b731d50501cf64f0a3c6ee2278924fef3aba6f19524d0e52",
+      "bytes": 825,
+      "generated": false
+    },
+    {
+      "product_path": "speech/product.json",
+      "sha256": "cc368f0d3d6539a00e546edd8267c72c795831a82a3d09e7667faa928a36a0da",
+      "bytes": 2501,
+      "generated": true
+    }
+  ],
+  "inputs_unchanged": true,
+  "product_verified": true,
+  "runtime_executed": false,
+  "installed": false
+}

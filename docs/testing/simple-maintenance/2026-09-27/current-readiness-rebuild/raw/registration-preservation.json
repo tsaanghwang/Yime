@@ -1,0 +1,5 @@
+{
+  "passed": true,
+  "scope": "Out-of-process machine/user TSF/COM registrations, user language/default/startup values; read-only hash comparison after all package tests",
+  "live_installation_executed": false
+}

@@ -1,0 +1,1602 @@
+[
+  {
+    "packagePath": "backends.json",
+    "sourcePath": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\rime-build\\source-payload\\backends.json",
+    "origin": "generated-product-backend-descriptor",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "c9faa92215ec045d3cee49d8899ece872f315d51befeec63beebf131619b33f1",
+    "bytes": 96,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:43:02.627073+00:00"
+  },
+  {
+    "packagePath": "PIMELauncher.exe",
+    "sourcePath": "C:\\dev\\Yime\\PIMELauncher\\target\\i686-pc-windows-msvc\\release\\PIMELauncher.exe",
+    "origin": "rebuilt-pinned-i686-rust-package",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "2da83bc8190394d6e451899669e96ca5ca3887354a759b1a7cd87f577faa7277",
+    "bytes": 608768,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:46.554480+00:00"
+  },
+  {
+    "packagePath": "x86/PIMERegistrationStatus.exe",
+    "sourcePath": "C:\\dev\\Yime\\.tmp\\current-readiness-delivery-20260927\\rime\\native-x86\\PIMETextService\\Release\\PIMERegistrationStatus.exe",
+    "origin": "new-isolated-native-build",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "275d36a8e7c8a3d7a220ab7a0434d6e32b02b8ada4d2224bd54a191c1ee87e09",
+    "bytes": 213504,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:13.706020+00:00"
+  },
+  {
+    "packagePath": "x86/PIMETextService.dll",
+    "sourcePath": "C:\\dev\\Yime\\.tmp\\current-readiness-delivery-20260927\\rime\\native-x86\\PIMETextService\\Release\\PIMETextService.dll",
+    "origin": "new-isolated-native-build",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "f18dc31fd0cb94e7827b7c6333ee503d2a9a090ef7bb9edda76507bd2808a806",
+    "bytes": 484352,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:12.518469+00:00"
+  },
+  {
+    "packagePath": "x64/PIMERegistrationStatus.exe",
+    "sourcePath": "C:\\dev\\Yime\\.tmp\\current-readiness-delivery-20260927\\rime\\native-x64\\PIMETextService\\Release\\PIMERegistrationStatus.exe",
+    "origin": "new-isolated-native-build",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "91a11ee8062c39d8cb64c203f6bf833ff81cee73a6fb5963e78c54a208e3655a",
+    "bytes": 268800,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:35.670643+00:00"
+  },
+  {
+    "packagePath": "x64/PIMETextService.dll",
+    "sourcePath": "C:\\dev\\Yime\\.tmp\\current-readiness-delivery-20260927\\rime\\native-x64\\PIMETextService\\Release\\PIMETextService.dll",
+    "origin": "new-isolated-native-build",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "5f4cb2afb7b79773a2c3ca4d2748f613ad5bec33a0fb966cafc3d284e20699f0",
+    "bytes": 580608,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:34.430566+00:00"
+  },
+  {
+    "packagePath": "licenses/PIME-UPSTREAM-LICENSE.txt",
+    "sourcePath": "C:\\dev\\Yime\\licenses\\PIME-UPSTREAM-LICENSE.txt",
+    "origin": "bundled-license",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "8ab82ae7eb8b31884ec0160ebd3a1c455a584e88e4aa86c020b48b8e85aca720",
+    "bytes": 1532,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-07-15T05:24:35.053837+00:00"
+  },
+  {
+    "packagePath": "licenses/RIME-BSD-3-Clause.txt",
+    "sourcePath": "C:\\dev\\Yime\\licenses\\RIME-BSD-3-Clause.txt",
+    "origin": "bundled-license",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "f67d27a6d2d586fcfed4b4c886a83747095396a39b6641e18e855086be2ec400",
+    "bytes": 1513,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-07-15T03:53:22.676302+00:00"
+  },
+  {
+    "packagePath": "licenses/RIME-FROST-GPL-3.0.txt",
+    "sourcePath": "C:\\dev\\Yime\\licenses\\RIME-FROST-GPL-3.0.txt",
+    "origin": "bundled-license",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+    "bytes": 35149,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-07-15T03:53:23.887222+00:00"
+  },
+  {
+    "packagePath": "licenses/RUST-DEPENDENCIES.md",
+    "sourcePath": "C:\\dev\\Yime\\licenses\\RUST-DEPENDENCIES.md",
+    "origin": "bundled-license",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "40099e7c6f18fb8de662ce15c83b89274d60c9a59255b70601a21f1f89d16041",
+    "bytes": 10928,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-07-15T05:24:35.739941+00:00"
+  },
+  {
+    "packagePath": "licenses/SIL-OFL-1.1.txt",
+    "sourcePath": "C:\\dev\\Yime\\licenses\\SIL-OFL-1.1.txt",
+    "origin": "bundled-license",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "fcac737e761ec63dbfbdce11030a1780161920d80315edba9c8beff1c2bac5a2",
+    "bytes": 4463,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-07-15T03:53:24.565102+00:00"
+  },
+  {
+    "packagePath": "licenses/UNICODE-3.0.txt",
+    "sourcePath": "C:\\dev\\Yime\\licenses\\UNICODE-3.0.txt",
+    "origin": "bundled-license",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "cbdf187491780d89a65ce1e61fd73017afda3b4b13552d8a09c415d29041a343",
+    "bytes": 2033,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-07-15T03:53:25.231678+00:00"
+  },
+  {
+    "packagePath": "go-backend/blocklist-manager.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\blocklist-manager.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "291d38080d2b8c8c038ce636b05225a4a1cfe3cf33b43a721141ab1fe4b6a263",
+    "bytes": 2228224,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:58.527740+00:00"
+  },
+  {
+    "packagePath": "go-backend/diagnostics-tool.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\diagnostics-tool.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "129e7ed12e8f401f5a23bc352d42330f5305118e8fffe6c800f965b700aa40e5",
+    "bytes": 2576896,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:43:00.103900+00:00"
+  },
+  {
+    "packagePath": "go-backend/input-toolbar.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\input-toolbar.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "bfe4a32038555b116a48c2604cc3f5be43da8c4754f7f7b388112b73c6b75000",
+    "bytes": 2670592,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:56.325214+00:00"
+  },
+  {
+    "packagePath": "go-backend/lexicon-manager.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\lexicon-manager.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "bc4fd752eec3aeb874b8f7210ff6161e8fb8e05b6630311248a68af146f5c6c6",
+    "bytes": 3101696,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:56.922694+00:00"
+  },
+  {
+    "packagePath": "go-backend/lexicon-promotion-scan.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\lexicon-promotion-scan.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "f0717e79532208b1a8818dd217a05e6e26efdbbc5f5312e12fc44608f845b03b",
+    "bytes": 2835968,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:58.007114+00:00"
+  },
+  {
+    "packagePath": "go-backend/reverse-lookup.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\reverse-lookup.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "71718b1b089f66fe8bbe4f698d021f38d0547266cb280e7889d1502e834d8007",
+    "bytes": 3136000,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:54.330359+00:00"
+  },
+  {
+    "packagePath": "go-backend/server.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\server.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "2b940d7c17167e2c9dd66299c0923303a1fec3b3d96dfed4961c3ae1b42cb561",
+    "bytes": 3792384,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:53.776629+00:00"
+  },
+  {
+    "packagePath": "go-backend/settings-tool.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\settings-tool.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "1400e4e9ebe1000fb28ea46e9e66fe2de980c43ce64094f9d712ff7d119a1e31",
+    "bytes": 3467264,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:59.544425+00:00"
+  },
+  {
+    "packagePath": "go-backend/system-lexicon-audit.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\system-lexicon-audit.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "7c57677ae43d5c81f71c9b5b604857c6900315881338288dc65e3f2ccf263e92",
+    "bytes": 2632704,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:57.420812+00:00"
+  },
+  {
+    "packagePath": "go-backend/tool-hub.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\tool-hub.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "f14b2766562193be3058f26b1ed17a7f646e20cc9eb06b091aeae9fc53d99fce",
+    "bytes": 2889216,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:54.904353+00:00"
+  },
+  {
+    "packagePath": "go-backend/yime-layout-designer.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\yime-layout-designer.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "4399d4d1f6ffb91fdfee4d3c27500ec4b2f09ba1c1842ac66d3cf473a99a0214",
+    "bytes": 3609600,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:43:00.734965+00:00"
+  },
+  {
+    "packagePath": "go-backend/yime-trainer.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\yime-trainer.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "26f9881b9aeb4bf03634934e7ff42b4df16615985a3085dfb05f041e0075adc2",
+    "bytes": 3359232,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:55.787096+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icon.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icon.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "d7700838dc9a00524e0d7d1d11be069fbf8f16b922ee94c8935d57204a5af77a",
+    "bytes": 62966,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-13T01:43:11.879892+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/ime.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\ime.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "498ba087c2765d57630964cac10e9764e25f046a56ea95143cf05d9e9338ef3b",
+    "bytes": 330,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-11T13:24:28.680175+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/rime_deployer.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\rime_deployer.exe",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "3abb72b5bb56fcafcfe925d533ae5f832c68d5a0bc9952fd0eea0682fb1ab071",
+    "bytes": 459776,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-23T12:27:25.527722+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/rime_dict_manager.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\rime_dict_manager.exe",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "1c1eb1f84f98704161efbf3315a16e3456f5989efa56f340d7e9e3e5f8bf9e1b",
+    "bytes": 278016,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-23T12:27:25.529723+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/rime_runtime.lock.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\rime_runtime.lock.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "548d7fd41af93dcd438f194877cfbc4fd326454a4251f55dfdfe74efe87df637",
+    "bytes": 618,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-23T12:27:25.530724+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/rime.dll",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\rime.dll",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "86b4c7357d4c6d293ce5589b234d8859ca2ac30923a03bedfa3926eeaf97fb0b",
+    "bytes": 3739136,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-23T12:27:25.524724+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/yimecore/testdata/dynamic_sentence_cases.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimecore\\testdata\\dynamic_sentence_cases.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "8193a4096f4af139ce64b6f853ec4f33952f366e282fd365bb8ac3be5b524412",
+    "bytes": 5338,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-09-15T00:18:51.349728+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/yimecore/testdata/e1_probes.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimecore\\testdata\\e1_probes.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "da497c555c9f65c0275eaecdc08e7bcd111a79ae1e0b79be025192c0666de162",
+    "bytes": 1432,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-09-15T00:18:51.350728+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/yimecore/testdata/e2_sentence_probes.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimecore\\testdata\\e2_sentence_probes.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "2a47352fe13f8a47b7cc7a36e6f5e20c36432e66b977220aa75a60d989879d3f",
+    "bytes": 1319,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-09-15T00:18:51.350728+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/yimecore/testdata/e2b_segment_probes.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimecore\\testdata\\e2b_segment_probes.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "808f2616e345227876bb33bf6049d1bd8fbbfcc6875347e916ae9b4dc114d7b2",
+    "bytes": 341,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-09-15T00:18:51.350728+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/yimecore/testdata/e4_reviewed_alias_probes.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\yimecore\\testdata\\e4_reviewed_alias_probes.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "5f928fefd8da28f9130b6be3001e1ee9041986477389ffb652c225b1ce405442",
+    "bytes": 2533,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-09-15T00:18:51.351727+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/lexiconpromotion/README.md",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\lexiconpromotion\\README.md",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "92630ce3b92299a17f46f11b7084bf1c72dde22aa3050dc5d0bde5cd973fde9f",
+    "bytes": 1189,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-27T17:12:55.566194+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/layoutdesigner/README.md",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\layoutdesigner\\README.md",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "32f958b7d8f1550f4843f77cdbe876dadea1cbd550cc74d14c4b1207113e97d4",
+    "bytes": 3596,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-22T13:49:52.500347+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/chi_full_capsoff.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\chi_full_capsoff.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "5670ea56fc3885a23cc1eab8394318762c1e2aa8f0391a265554c235c470b628",
+    "bytes": 17542,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-15T04:47:23.418712+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/chi_full_capson.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\chi_full_capson.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "9fc3598031aa6ef83dd197d9b109e78f0e755cbbd3a45862aa0202851fdbb132",
+    "bytes": 17542,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-15T04:47:23.418712+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/chi_half_capsoff.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\chi_half_capsoff.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "359bd741a89bee4fc0147f741de78b00cf5e469d63e6f3b56a5a92b239ea2721",
+    "bytes": 17542,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-15T04:47:23.419712+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/chi_half_capson.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\chi_half_capson.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "f18bd377d148dcf98f41ec6d4705ddafc1194e0e2c95a3734c4bdce0f9211880",
+    "bytes": 17542,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-15T04:47:23.419712+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/chi.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\chi.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "d15134b92044f5d461ef5f0004166c8892ae2f1c2469d6fba3b3612dc5434f39",
+    "bytes": 17542,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-06-30T12:17:56.780053+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/config.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\config.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "e4b92538f15a2456f03b7138d22708c939a2977e739850cbec0f8d1641461d0d",
+    "bytes": 1406,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-06-30T12:17:56.781053+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/eng_full_capsoff.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\eng_full_capsoff.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "d9904b84b8effde669be732f9b38cc06caba9f362985bcc0d24c5d186002c60e",
+    "bytes": 17542,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-15T04:47:23.419712+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/eng_full_capson.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\eng_full_capson.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "672c7e5d5894fb014278adf0e787e1eec60f04b93b625f1dd76670e431a35d3d",
+    "bytes": 17542,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-15T04:47:23.420712+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/eng_half_capsoff.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\eng_half_capsoff.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "f03896add520532ae4d903a6d8c328dddfca2c3a2ba21d9d523c1d0f06fdeee2",
+    "bytes": 17542,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-15T04:47:23.420712+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/eng_half_capson.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\eng_half_capson.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "543e8df861da6bb109b3f214709f49847d8ddf76c3d7e8fa7ed40b7557536f29",
+    "bytes": 17542,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-15T04:47:23.420712+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/eng.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\eng.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "43644407945e044ad3ec50d172eafb9c80f09027750506fc8ca7dcac85151e86",
+    "bytes": 1406,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-06-30T12:17:56.781053+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/full.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\full.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "905e7ece5468265b5cbc43bd3a85518ba76a8dd1b680361f78afc1670327ff41",
+    "bytes": 894,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-06-30T12:17:56.782053+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/half.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\half.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "8126e19feb23ba0f5aa05e1293a175d1db6b0e95a1c54a5535d15608acf2859c",
+    "bytes": 1406,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-06-30T12:17:56.783051+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/layout_horizontal.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\layout_horizontal.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "36e4d276ce7ca755203131211bee03fd744cf3854bade79efd0c39338bd65aca",
+    "bytes": 655,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-04T04:19:14.045686+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/layout_vertical.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\layout_vertical.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "4bfce90dd2af785d8bfce644c08e5a1bcec8531a15c69bd34919791a4a5b10b3",
+    "bytes": 690,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-04T04:19:14.052661+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/lexicon.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\lexicon.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "6ee1ef6ad89381a8b5a2df70fcdbdc8adb2d77aa5f63fd121e100fa67b670275",
+    "bytes": 2141,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-05T17:26:09.775349+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/punct_chi.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\punct_chi.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "eb382e466a064fc431e2e8ee3ea9d56384a7f135f8ef9ac46e6d25cf02b51060",
+    "bytes": 5430,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-28T08:21:13.570535+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/punct_eng.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\punct_eng.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "206de2fabff086533b9d0db51bdfd2f8ae7d59ea96d568992b39313a716e9162",
+    "bytes": 5430,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-28T08:21:13.570535+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/reverse-lookup.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\reverse-lookup.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "c7f20db9831c64ea75525f126ffc59dd33f514fa46616c1ad388be556655c99f",
+    "bytes": 669,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-09T03:11:15.102220+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/tools.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\tools.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "80207f517c706e4eb861e9b35d6b509fe82c45e9ef5ce20757c7415cb48a1c4e",
+    "bytes": 2334,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-05T17:26:09.777354+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/yime_qin_seal_yin.ico",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\yime_qin_seal_yin.ico",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+    "bytes": 19067,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-09-15T00:18:51.324378+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/yime_qin_seal_yin.png",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\yime_qin_seal_yin.png",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "4930a312b6e9b1852da8a16431217fc99dab9d5f6a36924adfe01beef82f325d",
+    "bytes": 14334,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-09-15T00:18:51.324378+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/icons/yin.png",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\icons\\yin.png",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "ca61581f0d13d0a4e1281dbe602ad55a02697d52318a541cc6f492ab05d2b275",
+    "bytes": 1196,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-09-15T00:18:51.324378+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/help/diagnostics.html",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\help\\diagnostics.html",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "48dcd41ea1d7df858846e35ecdcde46b4aefd994df2c81e3aca7d648bd8b4da5",
+    "bytes": 3460,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-05T10:00:38.720119+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/help/diagnostics.md",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\help\\diagnostics.md",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "8ae36fb4774e3b3924b5f8de9cc2c82b3d096f9b99db8f1c9e6555f445d5b370",
+    "bytes": 4985,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-09T20:09:05.541840+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/help/README.html",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\help\\README.html",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "e3b1b537915b2fa2c587f40c046e6fb348f66ed5678a44eca960e8c94a16bbae",
+    "bytes": 7437,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-09-15T00:18:51.323378+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/help/README.md",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\help\\README.md",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "1e4ae85cecf3c686d161591b4880b98816d8b065ba6ae6d10e9ddc01033b4d7f",
+    "bytes": 5824,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-01T01:23:48.287830+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/help/settings-and-data.html",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\help\\settings-and-data.html",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "5f44cd6168479dbfa8d33444a3418d44bbd852899b64b622db36c7bb0d1dbe27",
+    "bytes": 10982,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-09-15T00:18:51.323378+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/help/settings-and-data.md",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\help\\settings-and-data.md",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "9a176509a71c811fd8c58b897f41bd27b7988b16e94f7cf2d33ef3e67b8c0868",
+    "bytes": 11848,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-09-15T00:18:51.324378+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/help/trial-feedback.html",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\help\\trial-feedback.html",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "ddae8166d6a9be3db8eebce603d293a328a8b572cd15a98cbdd1a60be0c83608",
+    "bytes": 2381,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-17T03:19:28.322302+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/help/trial-feedback.md",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\help\\trial-feedback.md",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "56b2157af3a8575b658dbf80e4ebb2871033286d0091f88d6a5b751ea550e915",
+    "bytes": 882,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-07-17T03:19:27.625978+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/cangjie5.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\cangjie5.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "2dbc120d838ea1e30286f565060d6f84c11623ff1798fd52c97d50e370b833dd",
+    "bytes": 789090,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.056248+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/cangjie5.schema.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\cangjie5.schema.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "e112cc9624923befde28be408222d3bc3ca95df7c270c508d735570403e8b272",
+    "bytes": 2357,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.061261+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/default.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\default.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "1fc2111f23ebbdadd9527214a80daf1b5f738ac00b6f62a421a587fe1ead3f99",
+    "bytes": 4299,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.075247+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/essay.txt",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\essay.txt",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "1d66c47e76009aed63ce50de2b8fb8c7d54fc2de8f4e9b4336a6bc5bf014402b",
+    "bytes": 4096600,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.083247+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/luna_pinyin.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\luna_pinyin.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "971baa1f38a42d3d82f858b5bbdcad6482371f8d93a2f5d5c4ab341046419e3b",
+    "bytes": 282450,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.101247+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/luna_pinyin.schema.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\luna_pinyin.schema.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "f08549cd3275da3889cea302c6ec3ecc99346d5dae2a79b65e83d37f2c04d0a7",
+    "bytes": 3585,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.102247+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/pinyin_normalized.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\pinyin_normalized.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "535df5b54fc615b548fe51a1f354c118cd0deef3abcfcb093f3c29d98110805b",
+    "bytes": 33435,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.227598+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/symbols.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\symbols.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "e4cda5663039e284ce62d7febe207bf6b788df6a9705ca174fabd7f8c140ed30",
+    "bytes": 24410,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.237606+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_core_source_manifest.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_core_source_manifest.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97",
+    "bytes": 1842,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:32.919485+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_erhua_mixed_full.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_full.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "8b65157cbdc489d97faa4a769972a2d74c5878c1bb5bdbcf4a537e7460fcf36a",
+    "bytes": 4710,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:32.919485+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_erhua_mixed_full.schema.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_full.schema.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "d1e00c4187a3241952636cc7d92867a8bdc885e2642507d3da8ebab3c071dc0e",
+    "bytes": 357,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.265599+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_erhua_mixed_manifest.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_manifest.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "0a1f89dc4df28682924a62f62f2cc224bcf97ca09443ea4e6ee659acbe16091c",
+    "bytes": 4044,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:32.920469+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_full.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_sentence_full.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "b67f2cee5e3d9f7dbf2ba471d4bde890239902143d00eb27f91c8437991bc0c1",
+    "bytes": 3181,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:13:17.555896+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_shorthand.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_sentence_shorthand.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "b84bf88ac11a8b4539f0dcd978f676b874c8efac52b5fa12ab88cad872020705",
+    "bytes": 3046,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:13:17.556896+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_variable.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_sentence_variable.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "aec8483fa49c159007b564b264c2a1f9e3755fbb9be1c91e6626f6258fba8d76",
+    "bytes": 3072,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:13:17.555896+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_shorthand.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "eee94ba46bed6495477f45d7d5b7deabf4be0041197d3a0128a90d6072c6b570",
+    "bytes": 4373,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:32.920469+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.schema.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_shorthand.schema.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "ca22d7d16b6bedff767972329ef53bb880c187ce5b821ebf57022d4f165a8bbb",
+    "bytes": 372,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.271601+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_erhua_mixed_variable.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_variable.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "011448c018f309303af488fa143c31e82803f76a3734ca301c3b73a9599ca51d",
+    "bytes": 4411,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:32.920469+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_erhua_mixed_variable.schema.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_erhua_mixed_variable.schema.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "aed6d0a4953b6a7fc55054b1d0711088f9dffce49f961972913bdf59914babbc",
+    "bytes": 369,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.272599+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_erhua_reverse_source.tsv",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_erhua_reverse_source.tsv",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "896d69089125826e4d2d83601ad4ee60d23ba2f556a9888551097546bc0f3f05",
+    "bytes": 40241,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:13:17.556896+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_full.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+    "bytes": 31621303,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.032468+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_full.schema.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_full.schema.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "5889514c808199a00c1c1618a4f940c71acd1e69eb8dc9592788e67a346114c0",
+    "bytes": 1959,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.033469+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_lexicon_manifest.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_lexicon_manifest.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8",
+    "bytes": 667,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.034469+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_full.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_particle_a_stage6d_full.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "e570b452543845542f0dc0e04233e44aa0ab9cfab12d655d9e811019fbc8064b",
+    "bytes": 150994,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:13:16.231197+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_manifest.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_particle_a_stage6d_manifest.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "e176793b2359b3d32cef397a8d20a7fc24c24f9c52cf98e381ce240c4b2bba11",
+    "bytes": 2549,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.034469+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_shorthand.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_particle_a_stage6d_shorthand.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "e8e34cd76847bfb2cc2b6a3df4f5a76641a40f402fb818a099e06dec24e86b7d",
+    "bytes": 132044,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:13:16.234198+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_variable.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_particle_a_stage6d_variable.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "1b80e35ea9c04a3600fd0a5e60cdba3a2cd6b5743c6c376ddfcfbb478cd53cd0",
+    "bytes": 134218,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:13:16.233197+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_pinyin_codes.tsv",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_pinyin_codes.tsv",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+    "bytes": 19448,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.293600+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_pinyin_reverse_source.tsv",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_pinyin_reverse_source.tsv",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "85c9b28b2e46752d56d84fcd924160d260cc9e5cfcbc3c5606d0f4d47c6a319a",
+    "bytes": 2039059,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.041469+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_psc_peripheral_full.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_full.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "339caa6828e0ce569bd81a1f93d3a1b3b4c9e69c468f65108690fbee9e83cf15",
+    "bytes": 2842,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.042476+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_psc_peripheral_full.schema.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_full.schema.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "53134bf8ee5134f3e2615a53c794b162e8a249520a52937a4145ae5c47daed0e",
+    "bytes": 367,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.300607+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_psc_peripheral_manifest.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_manifest.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "2e4a3ac0dba4bf497519dc2f60f89ae899f2e34d1bdecbe776490b2273052807",
+    "bytes": 2073,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.042476+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_full.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_sentence_full.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "1dac84cb9de9565d54768688fec9f712279a6e8e78801c1f511e74f56d18622d",
+    "bytes": 3038,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.042476+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_shorthand.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_sentence_shorthand.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "41c39164c0a8cbc2a038d08dbaef4d14d2002a03efd60accc7316dc332e56f78",
+    "bytes": 2734,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.043469+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_variable.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_sentence_variable.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "22929e9c35a0daf6918ede8fe2de4b800ba78154bc195eaa2e22ecaf3362c22d",
+    "bytes": 2759,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.043469+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_psc_peripheral_shorthand.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_shorthand.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "1ff18ea29b4be8b9a9979941018042d4a1b333be8e4a5a43aaa4fd312eb7fa73",
+    "bytes": 2538,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.043469+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_psc_peripheral_shorthand.schema.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_shorthand.schema.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "bbd7176d482772f6655d153752892b0cf539ab0979f7a6ad4aad49db7261104c",
+    "bytes": 377,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.310601+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_psc_peripheral_variable.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_variable.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "96850c6e75d07250fcf0aba1bed685c13592556ee4742a61a929254212ae9026",
+    "bytes": 2563,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.044468+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_psc_peripheral_variable.schema.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_psc_peripheral_variable.schema.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "515abf7f3c4e92aefa67764bd25a51b077d5a8dee72908d5d8c72173cd521279",
+    "bytes": 375,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.312601+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_pua_pinyin.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_pua_pinyin.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "aca1a72283e74368ff95be27b60c3ce7a733366759f9d1bd8d2b2886b031d196",
+    "bytes": 67880,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.317601+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_runtime_profile.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_runtime_profile.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "f40b40e001bea799a45877f524d380e229d1c0499c3ba50a16c5d8ef19091741",
+    "bytes": 3764,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.044468+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_sentence_full.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_sentence_full.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "bdcc06ecb949eb589884f2de1f0d591ac42b331b9327b8a9f2424f5a9375603e",
+    "bytes": 368,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:13:17.555896+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_sentence_shorthand.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_sentence_shorthand.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "ca26b480507b90b6be0d47e0138ad463d0b367cc5fa1bdbb9b6ef47c232243ab",
+    "bytes": 398,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:13:17.556896+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_sentence_variable.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_sentence_variable.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "3a1569ec196835195a13ea2ccb55f719faf08a4ccb3b8cb82506e1b7bd921e57",
+    "bytes": 392,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:13:17.555896+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_shorthand.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_shorthand.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+    "bytes": 29563931,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.154787+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_shorthand.schema.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_shorthand.schema.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "d3b2fb6b39e958f30a0479de411ea65c6b4578b2548da106d1b23fda89910eaf",
+    "bytes": 1996,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.155787+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_syllable_decomposition.tsv",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_syllable_decomposition.tsv",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "ad4beb24cef782e0d4b8ce5767b45bfdb7e76ec7ea0456f3605405cc897f3f94",
+    "bytes": 175405,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.334599+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_syllable_inventory_manifest.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_syllable_inventory_manifest.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "516a4e3c993845875e3b59856835425b6456f2e771cd2a89e4168cf4981f7617",
+    "bytes": 557,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.340599+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_system_candidate_exclusions.tsv",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_system_candidate_exclusions.tsv",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "a8ea7cb186ce8e27ba4848e608fdedf260e8d4b2010a38ce8aabc893bc1f22b2",
+    "bytes": 6051,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.345601+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_full.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_third_tone_stage5c_full.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "e6a478b4d8fc0474ae02b13dc6a5cffaf62ff7ca3ad1ba0f75b937cf75854f89",
+    "bytes": 694,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:13:14.036988+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_manifest.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_third_tone_stage5c_manifest.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "b53b46ef49da894d019b5db4dc281b19aaceec9fe9ec570b26653b8e0c54d82e",
+    "bytes": 1551,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.156787+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_shorthand.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_third_tone_stage5c_shorthand.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "4b9e428a09b8f5be8478a6d7d947f54760c2e395eeb1117b8a3702d04c840253",
+    "bytes": 676,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:13:14.036988+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_variable.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_third_tone_stage5c_variable.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "052b5b75cc0c8e1d5deae9f3c05a1ed45d36b02339630f130860a1204f011f84",
+    "bytes": 675,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:13:14.036988+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_variable.dict.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_variable.dict.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+    "bytes": 30155261,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.268796+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_variable.schema.yaml",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_variable.schema.yaml",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "2a0d05769a3aee860ed14b503a24d295749f3f788cecf2fd792018094cd0f330",
+    "bytes": 2067,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T18:29:33.270788+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/yime_yinyuan_layout.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\yime_yinyuan_layout.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+    "bytes": 1023,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.362602+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/trainer/curriculum.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\trainer\\curriculum.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "6b57e56d91686fdf244b9df273477b73c53f19558fa4c40fc164b01bbec1ca51",
+    "bytes": 994,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.238600+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/trainer/foundation.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\trainer\\foundation.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "94c110348e6c6eb081b1b24707d3024d8bf199dbde6f7f5ff484176a5b581555",
+    "bytes": 2015,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.243601+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/trainer/README.md",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\trainer\\README.md",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "6eedbe4730d28d9a6b43cb70a7ae041ecf0f59da0a8c9f6280b17f97723a729a",
+    "bytes": 4659,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.248599+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/trainer/yinyuan_catalog.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\trainer\\yinyuan_catalog.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "adcbbca053785bf189c6ca834aef27fadb9c4ccf3a55c0acfeb352a5743ea5c3",
+    "bytes": 8358,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.253600+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/trainer/yinyuan_groups.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\trainer\\yinyuan_groups.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "0821ce4e8da0149af75ae8e78e0ed579d15f3c04039f1de3acf5c3e717f8ab0c",
+    "bytes": 3093,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.258600+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/hk2s.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\hk2s.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "71d5f687e1ca78d3af0e64850e84000555848744e41a09f98d33849a7f126be3",
+    "bytes": 643,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.107248+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/hk2t.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\hk2t.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "2a3456a87414f2995fd3f9aefd0e089f5be8f80be53259e07246815bcf7334eb",
+    "bytes": 450,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.113246+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/HKVariants.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\HKVariants.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "1b71281a9a093619eda66c3d65ddedbe8f9be5383bb02cd1c2ebadee320f179a",
+    "bytes": 4893,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.116247+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/HKVariantsRev.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\HKVariantsRev.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "b879b0a7f7d2f6031b38523cd6430440e32e9b819ca052e4c7d156ad5b0c099b",
+    "bytes": 4923,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.117247+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/HKVariantsRevPhrases.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\HKVariantsRevPhrases.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "a6b0675755b1df44b2af090c6e15672b7184c03f74b3c226e57f94391b4d0ec1",
+    "bytes": 7030,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.119248+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/jp2t.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\jp2t.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "3f9b091520ba0d55ecfe6fca719a672bb2691b1eb9b0c0a43a4aa4326b15fd9e",
+    "bytes": 540,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.131247+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/JPShinjitaiCharacters.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\JPShinjitaiCharacters.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "6c97633ec8a1087a4041a8677cbc3c872b68804ebace6c4b30aa2d02c484b8d1",
+    "bytes": 4263,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.133247+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/JPShinjitaiPhrases.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\JPShinjitaiPhrases.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "6caef7c983668e43799498104062ede559033ca759665600f5be18ede4821016",
+    "bytes": 7462,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.136255+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/JPVariants.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\JPVariants.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "14f32b4906b1fe22d3a4f96c6cb5c64c39a8726a73df556570ff7653fb9ce732",
+    "bytes": 7993,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.137248+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/JPVariantsRev.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\JPVariantsRev.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "3aa7d165035e584b701487c6512866425d1c711ba3afb91ab0c9c109f5d3c15d",
+    "bytes": 7991,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.138247+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/s2hk.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\s2hk.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "3708e756ea01783e9cf6b3cce527580810b3d539b8c7fcc3594dd1517aa05bff",
+    "bytes": 507,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.143246+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/s2t.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\s2t.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "710bb970e406d9c0a3dd33c609248686cf1c5578d064b7b7fc89e70fbb9ea75d",
+    "bytes": 406,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.145248+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/s2tw.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\s2tw.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "67ce1f5aa3d6b21ebb523084b40e66f80bec27bb2dc6b540d44dac2e27f7194e",
+    "bytes": 505,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.150255+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/s2twp.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\s2twp.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "72d187574510542be608c862d5359d29480ee61f137082df8a06d74f7bcfc79c",
+    "bytes": 599,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.152249+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/STCharacters.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\STCharacters.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "e2bcc2f3b6a552abf2c21f1e9d4bc232ea57e9836151fb381eff703d88c12425",
+    "bytes": 45310,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.157599+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/STPhrases.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\STPhrases.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "5e8d8289beacc7d4ab7baa7193ebb589f3d5a956449ed9c81ccff431ae503f6e",
+    "bytes": 925143,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.162599+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/t2hk.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\t2hk.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "a8531beb7430fe1afed0294a893af529c7b7fd2ad41567b5daccb8399c8ef2f0",
+    "bytes": 304,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.167600+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/t2jp.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\t2jp.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "4fb22429d63173715fec30524111ec141c0577b66c9f090513ea8bac4741ad77",
+    "bytes": 318,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.172600+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/t2s.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\t2s.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "b818534194f27c2d95f01001edb0a5ec49b9050119892cb30a0504bb202cc07c",
+    "bytes": 406,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.177606+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/t2tw.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\t2tw.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "11495bf144cd932a9568810822a5af0fbba2db9c2e06a2bb2871583423fac24a",
+    "bytes": 302,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.182599+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/TSCharacters.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\TSCharacters.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "64aee2ead703e0734525decf0a11891f3dad07930433c8b1672274a9b22963bc",
+    "bytes": 46126,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.188600+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/TSPhrases.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\TSPhrases.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "edafc46f5c3eca61a754c78e47117e7c73995cacd6c99aadcb8a219d7ae3e53d",
+    "bytes": 9776,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.192601+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/tw2s.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\tw2s.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "05ac8731e870babac8118d9a79ebf06c616576bf4c8b378cf36d0359b5d9ebe5",
+    "bytes": 641,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.193599+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/tw2sp.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\tw2sp.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "8bb1ce11c560f623a7d07593affe575ee936be0fe63cda0983a672000adf68ec",
+    "bytes": 727,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.195599+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/tw2t.json",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\tw2t.json",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "3ca6a912f9da989ce3e83dab11084f2473af2a1ea6f9e67675ba48ad2f3c3e51",
+    "bytes": 448,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.202600+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/TWPhrases.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\TWPhrases.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "14ce3a5beded4e387f571ff6aa0473d631c02b6e9af019960c87e1cd278640c5",
+    "bytes": 15610,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.208606+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/TWPhrasesRev.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\TWPhrasesRev.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "966115eab0dc898754e25acb55590d55346e126c5325c12e3a44b5d8c183319d",
+    "bytes": 15597,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.215601+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/TWVariants.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\TWVariants.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "4845dffeeb7efe1ba46e655b80580edd73191cd33cc8ade20451047cb398702a",
+    "bytes": 4595,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.217600+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/TWVariantsRev.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\TWVariantsRev.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "60f6b6bf9aa17756356a0f6fbb4299cce774431ea84d7eeb767e7a0411494485",
+    "bytes": 4627,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.218599+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/opencc/TWVariantsRevPhrases.ocd2",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\opencc\\TWVariantsRevPhrases.ocd2",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "8cfd338887d3b6b3e035f1cccf3821bf2b2581c6024a530c6c1b243a189d06f8",
+    "bytes": 5333,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.219600+00:00"
+  },
+  {
+    "packagePath": "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\input_methods\\yime\\data\\fonts\\YinYuan-Regular.ttf",
+    "origin": "bundled-source-resource",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d",
+    "bytes": 16024176,
+    "sourceTracked": true,
+    "sourceLastWriteUtc": "2026-08-21T17:10:07.094246+00:00"
+  }
+]

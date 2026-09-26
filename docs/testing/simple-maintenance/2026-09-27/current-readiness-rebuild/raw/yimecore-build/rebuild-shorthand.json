@@ -1,0 +1,22 @@
+{
+  "tool_version": "yimecore-index-e1-v1",
+  "generated_at": "2026-09-26T23:45:05.2688927Z",
+  "build": {
+    "format_version": 1,
+    "mode": "shorthand",
+    "source_path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\package\\data\\yime_shorthand.dict.yaml",
+    "source_sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+    "source_bytes": 29563931,
+    "parsed_records": 1166753,
+    "indexed_records": 1166753,
+    "duplicate_records": 0,
+    "index_path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\rebuild-shorthand.yidx",
+    "index_bytes": 38209725,
+    "record_payload_sha256": "caff26eefc0970dc7f8f240b7cc41bb11f6d6a449b256eb5dac037e79134f22b",
+    "index_sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+    "build_elapsed_ns": 723090300,
+    "peak_observed_heap_bytes": 251009080
+  },
+  "verified": true,
+  "open_elapsed_ns": 99075200
+}

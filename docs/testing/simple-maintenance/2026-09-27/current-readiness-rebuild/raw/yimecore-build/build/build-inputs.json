@@ -1,0 +1,124 @@
+{
+  "schema_version": "yimecore-local-build-inputs-v1",
+  "product_version": "0.1.0-local.13",
+  "source_manifest_sha256": "e0cd6a1838fe3a579b9d8baa41857fca87b9669c2006f90ff41327f6f07b6f27",
+  "go_version": "go version go1.26.4 windows/amd64",
+  "go_environment": {
+    "CGO_ENABLED": "0",
+    "GOAMD64": "v1",
+    "GOARCH": "amd64",
+    "GOFLAGS": "",
+    "GOOS": "windows",
+    "GOTOOLCHAIN": "auto",
+    "GOVERSION": "go1.26.4",
+    "GOWORK": ""
+  },
+  "go_flags": [
+    "-trimpath",
+    "-buildvcs=false"
+  ],
+  "cmake_version": "cmake version 4.3.1",
+  "native_generator": "Visual Studio 17 2022",
+  "native_platforms": [
+    {
+      "name": "x64",
+      "cmake_platform": "x64",
+      "compiler": [
+        "set(CMAKE_CXX_COMPILER \"C:/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe\")",
+        "set(CMAKE_CXX_COMPILER_ID \"MSVC\")",
+        "set(CMAKE_CXX_COMPILER_VERSION \"19.44.35225.0\")",
+        "set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID \"x64\")"
+      ]
+    },
+    {
+      "name": "x86",
+      "cmake_platform": "Win32",
+      "compiler": [
+        "set(CMAKE_CXX_COMPILER \"C:/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x86/cl.exe\")",
+        "set(CMAKE_CXX_COMPILER_ID \"MSVC\")",
+        "set(CMAKE_CXX_COMPILER_VERSION \"19.44.35225.0\")",
+        "set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID \"X86\")"
+      ]
+    }
+  ],
+  "index_builds": [
+    {
+      "tool_version": "yimecore-index-e1-v1",
+      "generated_at": "2026-09-26T23:45:00.7494104Z",
+      "build": {
+        "format_version": 1,
+        "mode": "full",
+        "source_path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\package\\data\\yime_full.dict.yaml",
+        "source_sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+        "source_bytes": 31621303,
+        "parsed_records": 1166753,
+        "indexed_records": 1166753,
+        "duplicate_records": 0,
+        "index_path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\package\\indexes\\full.yidx",
+        "index_bytes": 40267102,
+        "record_payload_sha256": "20fdd4a5715cd20c048ce4ca764a16f95ebf19fa3eaca0d123571c87e219ae34",
+        "index_sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+        "build_elapsed_ns": 728187200,
+        "peak_observed_heap_bytes": 258079792
+      },
+      "verified": true,
+      "open_elapsed_ns": 99472600
+    },
+    {
+      "tool_version": "yimecore-index-e1-v1",
+      "generated_at": "2026-09-26T23:45:02.5875115Z",
+      "build": {
+        "format_version": 1,
+        "mode": "variable",
+        "source_path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\package\\data\\yime_variable.dict.yaml",
+        "source_sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+        "source_bytes": 30155261,
+        "parsed_records": 1166753,
+        "indexed_records": 1166753,
+        "duplicate_records": 0,
+        "index_path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\package\\indexes\\variable.yidx",
+        "index_bytes": 38801056,
+        "record_payload_sha256": "65a95490eec66e9416f636081deae9d1dc2942e27d51dbbdbb7891d2f496e103",
+        "index_sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+        "build_elapsed_ns": 743700300,
+        "peak_observed_heap_bytes": 253320016
+      },
+      "verified": true,
+      "open_elapsed_ns": 102636600
+    },
+    {
+      "tool_version": "yimecore-index-e1-v1",
+      "generated_at": "2026-09-26T23:45:04.4207928Z",
+      "build": {
+        "format_version": 1,
+        "mode": "shorthand",
+        "source_path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\package\\data\\yime_shorthand.dict.yaml",
+        "source_sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+        "source_bytes": 29563931,
+        "parsed_records": 1166753,
+        "indexed_records": 1166753,
+        "duplicate_records": 0,
+        "index_path": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\package\\indexes\\shorthand.yidx",
+        "index_bytes": 38209725,
+        "record_payload_sha256": "caff26eefc0970dc7f8f240b7cc41bb11f6d6a449b256eb5dac037e79134f22b",
+        "index_sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+        "build_elapsed_ns": 741379400,
+        "peak_observed_heap_bytes": 251014080
+      },
+      "verified": true,
+      "open_elapsed_ns": 100783100
+    }
+  ],
+  "indexes_rebuilt_byte_identical": true,
+  "source_archive_sha256": "00f6d8408e5f2fab129e1cdaee7e59e0d9d3a5632968c4d0ec3529c44146524a",
+  "reproducibility": "Go trimpath and explicit source content; indexes verified twice. PE/linker timestamps, archive timestamps, generated metadata and absolute build evidence are not claimed byte reproducible.",
+  "installed_package_used_as_input": false,
+  "speech": {
+    "schema_version": "yimecore-speech-build-binding-v1",
+    "admission_summary_sha256": "56729cf37d0f19eb0e9492187be0ad3a7b2349722ff6bc3ba79fac3be02ef541",
+    "source_inventory_sha256": "8c88fffad35ae279fabb6018125df63b69440bdbb9b4209dee852421ccca64b7",
+    "export_receipt_sha256": "2ae0a6ed0d6d7da1ef61f50b56f57dd5829c31b7758cded67ee89886f0707bdd",
+    "capability_sha256": "0151c87d446fc9bd540526c9da645346eaa764d485c3e8fe6c7f578619b4ec79",
+    "product_manifest_sha256": "cc368f0d3d6539a00e546edd8267c72c795831a82a3d09e7667faa928a36a0da"
+  }
+}

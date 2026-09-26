@@ -1,0 +1,18 @@
+{
+    "edition":  "Desktop",
+    "version":  "5.1.26100.9444",
+    "passed":  true,
+    "checks":  [
+                   {
+                       "product":  "yimecore",
+                       "files":  65,
+                       "passed":  true
+                   },
+                   {
+                       "product":  "rime-pime",
+                       "files":  160,
+                       "passed":  true
+                   }
+               ],
+    "installed_products_changed":  false
+}

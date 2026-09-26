@@ -1,0 +1,16 @@
+{
+  "executable": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\native-x86\\Release\\YimeTextServiceContractTests.exe",
+  "fixture_root": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\t\\ee3f00270d7e42df",
+  "environment": {
+    "TEMP": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\t\\ee3f00270d7e42df\\tmp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\t\\ee3f00270d7e42df\\tmp",
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\t\\ee3f00270d7e42df\\local",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\t\\ee3f00270d7e42df\\roaming"
+  },
+  "environment_isolated": true,
+  "environment_restored": true,
+  "executed": true,
+  "exit_code": 0,
+  "passed": true,
+  "scope": "Fresh per-invocation TEMP/TMP/LOCALAPPDATA/APPDATA; retain synthetic state, never record previous environment values."
+}

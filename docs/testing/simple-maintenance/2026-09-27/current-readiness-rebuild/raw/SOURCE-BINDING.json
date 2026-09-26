@@ -1,0 +1,15 @@
+{
+  "source_commit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+  "source_tree": "3a34c6e0f16f2748c03f9390faaf62aa6c313d27",
+  "all_tracked_source_files_unchanged": true,
+  "tracked_source_files": 9895,
+  "core_simple_payload_matches_original_build_manifest": true,
+  "core_assets_match_source": true,
+  "all_packaged_installer_scripts_match_source": true,
+  "package_archive": {
+    "path": "Yime-Current-Readiness-20260927.zip",
+    "bytes": 256650784,
+    "sha256": "45c4a0d93f8a40a4c26bebf934efb10c876f1305732c1e95a2e43547f2ddd341"
+  },
+  "historical_installed_acceptance_reused_for_this_package": false
+}

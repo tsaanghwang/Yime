@@ -1,0 +1,29 @@
+{
+  "decision": "pass",
+  "lock_id": "yime-core-1166753-layout-58f69f370aea",
+  "entry_count": 1166753,
+  "package_root": "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\rime-build\\rime-pime\\payload\\go-backend\\input_methods\\yime",
+  "locked_runtime_artifacts": {
+    "yime_full.dict.yaml": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+    "yime_variable.dict.yaml": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+    "yime_shorthand.dict.yaml": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+    "yime_yinyuan_layout.json": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+    "yime_pinyin_codes.tsv": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+    "yime_pinyin_reverse_source.tsv": "85c9b28b2e46752d56d84fcd924160d260cc9e5cfcbc3c5606d0f4d47c6a319a",
+    "yime_core_source_manifest.json": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97",
+    "yime_lexicon_manifest.json": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8",
+    "yime_runtime_profile.json": "f40b40e001bea799a45877f524d380e229d1c0499c3ba50a16c5d8ef19091741",
+    "yime_psc_peripheral_manifest.json": "2e4a3ac0dba4bf497519dc2f60f89ae899f2e34d1bdecbe776490b2273052807",
+    "yime_erhua_mixed_manifest.json": "0a1f89dc4df28682924a62f62f2cc224bcf97ca09443ea4e6ee659acbe16091c",
+    "yime_third_tone_stage5c_manifest.json": "b53b46ef49da894d019b5db4dc281b19aaceec9fe9ec570b26653b8e0c54d82e",
+    "yime_particle_a_stage6d_manifest.json": "e176793b2359b3d32cef397a8d20a7fc24c24f9c52cf98e381ce240c4b2bba11"
+  },
+  "help_files": {
+    "README.md": "1e4ae85cecf3c686d161591b4880b98816d8b065ba6ae6d10e9ddc01033b4d7f",
+    "README.html": "e3b1b537915b2fa2c587f40c046e6fb348f66ed5678a44eca960e8c94a16bbae",
+    "settings-and-data.md": "9a176509a71c811fd8c58b897f41bd27b7988b16e94f7cf2d33ef3e67b8c0868",
+    "settings-and-data.html": "5f44cd6168479dbfa8d33444a3418d44bbd852899b64b622db36c7bb0d1dbe27"
+  },
+  "python_runtime_packaged": false,
+  "prototype_database_packaged": false
+}
