@@ -4,9 +4,9 @@
 
 ## 当前任务
 
-**2026-09-27：current-readiness 双产品完整包已在本地重建，远端尚未上传；测试端无安装任务。** 目标分支 `codex/current-readiness-delivery-20260927` 从当前 main `0ab86312` 创建，两套运行源码和安装器均固定于完整提交 `0ab8631266736775bf1386f456d4a1d53e8e2eb3`。来源提交 [CI 35418522827](https://github.com/tsaanghwang/Yime/actions/runs/35418522827) 成功；本分支提交与 CI 完成后再交付远端资产。
+**2026-09-27：current-readiness 双产品完整包已重建并发布为开发预发布；测试端无安装任务。** 目标分支 `codex/current-readiness-delivery-20260927` 从当前 main `0ab86312` 创建，两套运行源码和安装器均固定于完整提交 `0ab8631266736775bf1386f456d4a1d53e8e2eb3`。来源提交 [CI 35418522827](https://github.com/tsaanghwang/Yime/actions/runs/35418522827) 成功；交付记录提交 `a274730fd3230ff22c04632be62ffe18397555ec` 的 [CI](https://github.com/tsaanghwang/Yime/actions/runs/36280832479) 全部成功后，发布固定资产；远端 size 与 SHA-256 digest 已逐项匹配本地。
 
-完整包 `Yime-Current-Readiness-20260927.zip`：**256650784 字节**，SHA-256：`45c4a0d93f8a40a4c26bebf934efb10c876f1305732c1e95a2e43547f2ddd341`。本地目录：`C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312`。远端 URL 尚未生成，不把该本地目录或 Git 源码 checkout 当成测试端收包。
+完整包 `Yime-Current-Readiness-20260927.zip`：**256650784 字节**，SHA-256：`45c4a0d93f8a40a4c26bebf934efb10c876f1305732c1e95a2e43547f2ddd341`。本地目录：`C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312`。[Release 页面](https://github.com/tsaanghwang/Yime/releases/tag/test-current-readiness-20260927-0ab86312)；下载：[Yime-Current-Readiness-20260927.zip](https://github.com/tsaanghwang/Yime/releases/download/test-current-readiness-20260927-0ab86312/Yime-Current-Readiness-20260927.zip)、[Yime-Current-Readiness-20260927-Evidence.zip](https://github.com/tsaanghwang/Yime/releases/download/test-current-readiness-20260927-0ab86312/Yime-Current-Readiness-20260927-Evidence.zip)、[SHA256SUMS.txt](https://github.com/tsaanghwang/Yime/releases/download/test-current-readiness-20260927-0ab86312/SHA256SUMS.txt)。Git 源码 checkout 和自动 Source code ZIP 不等于收到完整包。
 
 已通过来源/清单/逐载荷哈希、PE 架构、PS5 包检查、隔离维护模拟和 ZIP 逐成员验证；YimeCore 65 文件、Rime/PIME 160 文件。来源证据与工具链保存在独立 Evidence ZIP。详见 [交付记录](../../docs/testing/simple-maintenance/2026-09-27/current-readiness-rebuild/DELIVERY.md)、[固定上传清单](../../docs/testing/simple-maintenance/2026-09-27/current-readiness-rebuild/UPLOAD.md) 和 [机器可读包身份](../../docs/testing/simple-maintenance/2026-09-27/current-readiness-rebuild/delivery.json)。
 

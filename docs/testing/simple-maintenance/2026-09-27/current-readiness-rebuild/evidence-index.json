@@ -9,6 +9,11 @@
       "sha256": "b5534720150de246093259aae75e36cd32011c08d933b92bccc8ec0e1f867a6b"
     },
     {
+      "path": "raw/delivery-ci.json",
+      "bytes": 33476,
+      "sha256": "43184e1f73a04ed5e843b3a593c3ab18098d2de2ee0b74f2c20f4a533eef8a98"
+    },
+    {
       "path": "raw/DELIVERY-MANIFEST.json",
       "bytes": 48478,
       "sha256": "91a133e1c484b6256a2340e05bd6c1b203c6e4054e7168eabd8d53ed9bc96ea4"
@@ -44,6 +49,11 @@
       "sha256": "0d5d3fd8777624ab24ae6b6fc20add1f88be2943769319400e4f72b09e99c6e0"
     },
     {
+      "path": "raw/publication-verification.json",
+      "bytes": 2042,
+      "sha256": "8b28b3253a62939c96d3eab6f8a2d41b7a4030fb302513581b6883549b819b79"
+    },
+    {
       "path": "raw/read-package-ps5.command.json",
       "bytes": 443,
       "sha256": "c7fdb3572d4365dd2cf10a35c54c3e15044f8cfd7e7d51f151190b0e18bb1494"
@@ -62,6 +72,11 @@
       "path": "raw/registration-preservation.json",
       "bytes": 218,
       "sha256": "e1e57a2e73eb41d556f9f39a6e151496e6a54a51031039b3d270e3565eb41c6c"
+    },
+    {
+      "path": "raw/release-remote.json",
+      "bytes": 9094,
+      "sha256": "70e92191d395b4351d58fd5b8a91d6802884c122e1e2c998070f57fc14e17fcc"
     },
     {
       "path": "raw/rime-evidence/build-rime.ps1",

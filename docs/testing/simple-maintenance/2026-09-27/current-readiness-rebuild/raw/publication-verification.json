@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "release_url": "https://github.com/tsaanghwang/Yime/releases/tag/test-current-readiness-20260927-0ab86312",
+  "release_id": 397438954,
+  "tag": "test-current-readiness-20260927-0ab86312",
+  "published_at": "2026-09-27T00:01:52Z",
+  "delivery_commit": "a274730fd3230ff22c04632be62ffe18397555ec",
+  "delivery_ci": "https://github.com/tsaanghwang/Yime/actions/runs/36280832479",
+  "assets": [
+    {
+      "path": "Yime-Current-Readiness-20260927.zip",
+      "bytes": 256650784,
+      "sha256": "45c4a0d93f8a40a4c26bebf934efb10c876f1305732c1e95a2e43547f2ddd341",
+      "asset_id": 591712948,
+      "download_url": "https://github.com/tsaanghwang/Yime/releases/download/test-current-readiness-20260927-0ab86312/Yime-Current-Readiness-20260927.zip",
+      "remote_digest": "sha256:45c4a0d93f8a40a4c26bebf934efb10c876f1305732c1e95a2e43547f2ddd341",
+      "verification_method": "GitHub API SHA-256 digest",
+      "passed": true
+    },
+    {
+      "path": "Yime-Current-Readiness-20260927-Evidence.zip",
+      "bytes": 108540211,
+      "sha256": "4755456e9c5eb0813a6c647d1d6953b9560bc7602a5800cb11a8bcfd504d576d",
+      "asset_id": 591712953,
+      "download_url": "https://github.com/tsaanghwang/Yime/releases/download/test-current-readiness-20260927-0ab86312/Yime-Current-Readiness-20260927-Evidence.zip",
+      "remote_digest": "sha256:4755456e9c5eb0813a6c647d1d6953b9560bc7602a5800cb11a8bcfd504d576d",
+      "verification_method": "GitHub API SHA-256 digest",
+      "passed": true
+    },
+    {
+      "path": "SHA256SUMS.txt",
+      "bytes": 215,
+      "sha256": "af016db10889109065d77427c9c47e5809b9ad781dad57b6f52bbbfb101c8534",
+      "asset_id": 591712951,
+      "download_url": "https://github.com/tsaanghwang/Yime/releases/download/test-current-readiness-20260927-0ab86312/SHA256SUMS.txt",
+      "remote_digest": "sha256:af016db10889109065d77427c9c47e5809b9ad781dad57b6f52bbbfb101c8534",
+      "verification_method": "GitHub API SHA-256 digest",
+      "passed": true
+    }
+  ]
+}
