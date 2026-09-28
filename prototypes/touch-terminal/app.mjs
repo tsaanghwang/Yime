@@ -4,6 +4,7 @@ import {geometry, missProbability, percentile} from './geometry.mjs';
 const $ = id => document.getElementById(id);
 const text = (tag, value, className) => { const el = document.createElement(tag); el.textContent = value; if (className) el.className = className; return el; };
 let layout, demo, session, trace = [], latencies = [], touches = [], active = null, drill = null, guided = null;
+const drills = [];
 let counter = 0;
 const keyButtons = new Map();
 
@@ -29,26 +30,50 @@ function dispatch(type, payload = {}, message = '') {
   return result;
 }
 
-function pressSound(id, pointerType = 'keyboard') {
-  const intended = drill && drill.attempts < drill.targets.length ? drill.targets[drill.attempts] : null;
-  if (intended) {
+function pressSound(id, pointerType = 'keyboard', pointer = null) {
+  let intended = null, drillResult = null;
+  if (drill?.kind === 'coverage-all-keys-any-order' && drill.unique < drill.targets.length) {
     drill.attempts++;
-    if (intended === id) drill.correct++; else drill.wrong++;
+    if (drill.seen.includes(id)) {
+      drill.duplicate++;
+      drillResult = 'duplicate';
+    } else {
+      drill.seen.push(id);
+      drill.unique++;
+      drillResult = 'new-key';
+    }
+  } else if (drill?.kind === 'prompted-targets' && drill.attempts < drill.targets.length) {
+    intended = drill.targets[drill.attempts];
+    drill.attempts++;
+    if (intended === id) { drill.correct++; drillResult = 'correct'; }
+    else { drill.wrong++; drillResult = 'wrong-key'; }
   }
-  touches.push({id, intended, pointerType, cancelled:false, timeMs:Math.round(performance.now())});
+  touches.push({id, intended, drillKind:drill?.kind || null, drillResult, pointerType, cancelled:false, timeMs:Math.round(performance.now()), ...(pointer ? {pointer} : {})});
   if (touches.length > 1000) touches.shift();
   dispatch('input', {yinyuanId:id});
   renderDrill();
 }
 
-function cancelPointer(reason) {
+function pointerSample(event, rect) {
+  return {
+    clientCssPx:{x:event.clientX,y:event.clientY},
+    contactCssPx:{width:event.width,height:event.height},
+    pressure:event.pressure,
+    keyRectCssPx:{left:rect.left,top:rect.top,width:rect.width,height:rect.height},
+    keyLocal:{x:(event.clientX-rect.left)/rect.width,y:(event.clientY-rect.top)/rect.height}
+  };
+}
+
+function cancelPointer(reason, event = null) {
   if (!active) return;
   const previous = active;
   active = null;
   previous.button.classList.remove('pressed');
-  touches.push({id:previous.id, pointerType:previous.pointerType, cancelled:true, reason, timeMs:Math.round(performance.now())});
+  const rect = previous.button.getBoundingClientRect();
+  const up = event ? pointerSample(event,rect) : null;
+  touches.push({id:previous.id, intended:drill?.kind === 'prompted-targets' ? drill.targets[drill.attempts] || null : null, drillKind:drill?.kind || null, drillResult:'cancelled', pointerType:previous.pointerType, cancelled:true, reason, timeMs:Math.round(performance.now()), pointer:{down:previous.down, ...(up ? {up} : {}), holdMs:Math.round(performance.now()-previous.startedAt)}});
   if (touches.length > 1000) touches.shift();
-  if (drill && drill.attempts < drill.targets.length) drill.cancelled++;
+  if (drill && ((drill.kind === 'coverage-all-keys-any-order' && drill.unique < drill.targets.length) || (drill.kind === 'prompted-targets' && drill.attempts < drill.targets.length))) drill.cancelled++;
   renderDrill();
   status('本次触摸已取消，没有输入音元。');
 }
@@ -79,7 +104,8 @@ function buildKeyboard() {
       if (event.button !== 0 || !event.isPrimary || active) return;
       event.preventDefault();
       $('keyboard').focus({preventScroll:true});
-      active = {pointerId:event.pointerId, id:key.id, button, pointerType:event.pointerType, left:false};
+      const rect = button.getBoundingClientRect();
+      active = {pointerId:event.pointerId, id:key.id, button, pointerType:event.pointerType, left:false, startedAt:performance.now(), down:pointerSample(event,rect)};
       button.classList.add('pressed');
       button.setPointerCapture(event.pointerId);
     });
@@ -94,13 +120,14 @@ function buildKeyboard() {
     button.addEventListener('pointerup', event => {
       if (active?.pointerId !== event.pointerId) return;
       const r = button.getBoundingClientRect();
-      if (active.left || event.clientX < r.left || event.clientX >= r.right || event.clientY < r.top || event.clientY >= r.bottom) { cancelPointer('left-key'); return; }
+      if (active.left || event.clientX < r.left || event.clientX >= r.right || event.clientY < r.top || event.clientY >= r.bottom) { cancelPointer('left-key',event); return; }
+      const completed = active;
       active = null;
       button.classList.remove('pressed');
-      pressSound(key.id, event.pointerType);
+      pressSound(key.id, event.pointerType, {down:completed.down,up:pointerSample(event,r),holdMs:Math.round(performance.now()-completed.startedAt)});
     });
-    button.addEventListener('pointercancel', event => { if (active?.pointerId === event.pointerId) cancelPointer('pointercancel'); });
-    button.addEventListener('lostpointercapture', event => { if (active?.pointerId === event.pointerId) cancelPointer('lostpointercapture'); });
+    button.addEventListener('pointercancel', event => { if (active?.pointerId === event.pointerId) cancelPointer('pointercancel',event); });
+    button.addEventListener('lostpointercapture', event => { if (active?.pointerId === event.pointerId) cancelPointer('lostpointercapture',event); });
     // Pointer path already dispatched on release; only native keyboard/AT click remains.
     button.addEventListener('click', event => { if (event.detail === 0 && !event.pointerType) pressSound(key.id); });
     board.append(button);
@@ -175,10 +202,27 @@ function render() {
 }
 
 function renderDrill() {
-  const target = drill && drill.attempts < drill.targets.length ? drill.targets[drill.attempts] : null;
-  for (const [id,button] of keyButtons) button.classList.toggle('target', id === target);
-  if (!drill) return;
-  $('drill-status').textContent = `${target ? `请点 ${target} · ` : '本轮完成 · '}已点 ${drill.attempts}/${drill.targets.length}，命中 ${drill.correct}，错键 ${drill.wrong}，取消 ${drill.cancelled}。${drill.attempts ? `错键率 ${(100 * drill.wrong / drill.attempts).toFixed(1)}%（仅本轮输入设备）` : ''}`;
+  const target = drill?.kind === 'prompted-targets' && drill.attempts < drill.targets.length ? drill.targets[drill.attempts] : null;
+  const seen = new Set(drill?.seen || []);
+  for (const [id,button] of keyButtons) {
+    button.classList.toggle('target', id === target);
+    button.classList.toggle('visited', drill?.kind === 'coverage-all-keys-any-order' && seen.has(id));
+  }
+  if (!drill) { $('drill-target').textContent = '尚未开始'; return; }
+  if (drill.kind === 'coverage-all-keys-any-order') {
+    $('drill-target').textContent = drill.unique === drill.targets.length ? '覆盖完成' : '任意顺序：点尚未变暗的键';
+    $('drill-status').textContent = `已覆盖 ${drill.unique}/${drill.targets.length}，总点按 ${drill.attempts}，重复 ${drill.duplicate}，取消 ${drill.cancelled}。`;
+  } else {
+    $('drill-target').textContent = target ? `当前目标：${target}` : '目标准确度完成';
+    $('drill-status').textContent = `${target ? '请只点橙框目标 · ' : '本轮完成 · '}已点 ${drill.attempts}/${drill.targets.length}，命中 ${drill.correct}，错键 ${drill.wrong}，取消 ${drill.cancelled}。${drill.attempts ? `错键率 ${(100 * drill.wrong / drill.attempts).toFixed(1)}%（仅本轮输入设备）` : ''}`;
+  }
+}
+
+function startDrill(next) {
+  dispatch('clear');
+  drill = next;
+  drills.push(drill);
+  renderDrill();
 }
 
 function updateGeometry() {
@@ -223,14 +267,13 @@ async function init() {
   window.addEventListener('blur', () => { cancelPointer('window-blur'); if (session.state.ids.length) dispatch('clear',{},'页面失焦：未确认组合已取消，已确认预览保留。'); });
   document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelPointer('page-hidden'); if (session.state.ids.length) dispatch('clear'); } });
   $('drill').addEventListener('click', () => {
-    dispatch('clear');
-    drill = {kind:'single-pass-all-keys',targets:Array.from({length:layout.keys.length},(_,i) => layout.keys[(i * 17 + 3) % layout.keys.length].id),attempts:0,correct:0,wrong:0,cancelled:0};
-    renderDrill();
+    startDrill({kind:'coverage-all-keys-any-order',targets:layout.keys.map(key => key.id),attempts:0,unique:0,duplicate:0,cancelled:0,seen:[]});
   });
+  $('target-drill').addEventListener('click', () => startDrill({kind:'prompted-targets',targets:Array.from({length:layout.keys.length},(_,i) => layout.keys[(i * 17 + 3) % layout.keys.length].id),attempts:0,correct:0,wrong:0,cancelled:0}));
   $('export').addEventListener('click', () => {
     const environment = screenEnvironment();
     const bounds = layout.touchTemplate.bounds;
-    const report = {formatVersion:2,mode:'offline-touch-baseline',createdAt:new Date().toISOString(),layoutId:layout.layoutId,touchTemplateId:layout.touchTemplate.id,touchTemplate:layout.touchTemplate,sources:[...layout.sources,...demo.sources],screenAssumption:{diagonalInches:Number($('diagonal').value),...geometry(Number($('diagonal').value),2,environment.screenCssPx.width,environment.screenCssPx.height,bounds.width,bounds.height)},environment,drill,touches,handlerToNextFrameMs:latencies,trace,limits:{trace:100,touches:1000,latency:1000},hardwareAcceptance:false,note:'真实 pointerType 与页面处理代理值；未尺测、未高速相机测量时，不是触控误触率、contact-to-photon 或输入法验收。'};
+    const report = {formatVersion:3,mode:'offline-touch-baseline',createdAt:new Date().toISOString(),layoutId:layout.layoutId,touchTemplateId:layout.touchTemplate.id,touchTemplate:layout.touchTemplate,sources:[...layout.sources,...demo.sources],screenAssumption:{diagonalInches:Number($('diagonal').value),...geometry(Number($('diagonal').value),2,environment.screenCssPx.width,environment.screenCssPx.height,bounds.width,bounds.height)},environment,drills,drill,touches,handlerToNextFrameMs:latencies,trace,limits:{trace:100,touches:1000,latency:1000},hardwareAcceptance:false,note:'真实 pointerType、浏览器触点坐标/接触面积与页面处理代理值；未尺测、未高速相机测量时，不是触控误触率、contact-to-photon 或输入法验收。'};
     const url = URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
     const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'yime-touch-session.json'; anchor.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);

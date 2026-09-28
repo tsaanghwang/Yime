@@ -35,7 +35,7 @@
           <div class="metrics"><div><strong id="key-size">—</strong><span>KLE 1u 宽 × 高 / mm</span></div><div><strong id="miss-model">—</strong><span>模型落点越界 / σ = 2 mm</span></div></div>
           <p id="size-advice"></p><p class="hint">按浏览器检测到的屏幕宽高比试算，假设键区占屏宽 90%、屏高 65%、间隙 2 mm。复制显示、系统缩放和浏览器工具栏会影响结果；必须用尺核对实际键面。</p><p class="hint" id="environment"></p><p class="hint" id="actual-size"></p>
         </section>
-        <section class="panel"><div class="section-title"><h2>实屏点按基线</h2><span class="tag">本机记录</span></div><p>按提示遍历全部 60 键一次，记录命中、错键、取消及真实 pointerType。这是工程基线，不是用户研究或通过结论。</p><button id="drill">开始 60 键基线</button><p id="drill-status">尚未开始</p><p id="latency">事件处理 → 下一帧：尚无样本</p><button id="export">导出本次 JSON 记录</button></section>
+        <section class="panel"><div class="section-title"><h2>实屏点按基线</h2><span class="tag">本机记录</span></div><p>先任意顺序点遍 60 键验证覆盖，再按橙框做随机目标准确度。两轮分开计数，并记录真实 pointerType、触点位置、接触面积与取消事件。</p><button id="drill">开始 60 键覆盖（任意顺序）</button><button id="target-drill">开始随机目标准确度</button><strong id="drill-target">尚未开始</strong><p id="drill-status">尚未开始</p><p id="latency">事件处理 → 下一帧：尚无样本</p><button id="export">导出本次 JSON 记录</button></section>
       </aside>
     </div>
     <details class="panel provenance"><summary>数据溯源与最小事件协议</summary><p id="layout-id"></p><ul id="sources"></ul><p>稳定音元 ID 是事件主键。物理键投影可能多对一，不能反推音元语义。下方为内存模拟器最近的请求与响应。</p><pre id="trace">[]</pre><p><a href="PROTOCOL.md">事件协议</a> · <a href="HARDWARE.md">硬件可行性与测量边界</a> · <a href="README.md">运行与验证说明</a></p></details>
