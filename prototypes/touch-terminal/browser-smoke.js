@@ -84,6 +84,8 @@ async (page) => {
   assert(await page.locator('.sound-key.target').getAttribute('data-id') === firstTarget, 'wrong key keeps the current target');
   for (let i=0;i<60;i++) await page.locator('.sound-key.target').click();
   assert((await page.locator('#drill-status').innerText()).includes('已完成 60/60 个目标，总点按 61，错键 1'), 'prompted target drill');
+  await page.locator('[data-id="N01"]').click();
+  await clear();
   const downloadEvent = page.waitForEvent('download');
   await page.locator('#export').click();
   const download = await downloadEvent;
@@ -98,6 +100,7 @@ async (page) => {
   assert(report.drills[0].unique === 60 && report.drills[0].duplicate === 0, 'coverage summary retained');
   assert(report.drills[1].kind === 'prompted-targets-retry-until-correct' && report.drills[1].advanceOn === 'correct', 'target retry semantics retained');
   assert(report.drills[1].correct === 60 && report.drills[1].wrong === 1 && report.drills[1].attempts === 61, 'target summary retained');
+  assert(report.touches.at(-1).id === 'N01' && report.touches.at(-1).drillKind === null && report.touches.at(-1).drillResult === null, 'post-drill input is not attributed to completed evidence');
   assert(report.touches.some(touch => Number.isFinite(touch.pointer?.up?.keyLocal?.x)), 'pointer coordinates retained');
   checks.push('separate coverage/target drills, pointer geometry and JSON v3 export');
   await clear();

@@ -161,8 +161,8 @@ def parse_kle(template: Any, expected_ids: Iterable[str]) -> dict[str, Any]:
 def load_kle(path: Path, expected_ids: Iterable[str]) -> tuple[dict[str, Any], str]:
     text = path.read_text(encoding="utf-8-sig").replace("\r\n", "\n").replace("\r", "\n")
     try:
-        source = json.loads(text, object_pairs_hook=_unique_object)
-    except json.JSONDecodeError as error:
+        source = json.loads(text, object_pairs_hook=_unique_object, parse_constant=_reject_json_constant)
+    except (json.JSONDecodeError, ValueError) as error:
         raise ValueError(f"KLE download must be strict JSON: {error}") from error
     parsed = parse_kle(source, expected_ids)
     return parsed, hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -175,6 +175,10 @@ def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
             raise ValueError(f"Duplicate JSON member in KLE template: {key}")
         result[key] = value
     return result
+
+
+def _reject_json_constant(value: str) -> Any:
+    raise ValueError(f"non-standard JSON constant: {value}")
 
 
 def main() -> int:

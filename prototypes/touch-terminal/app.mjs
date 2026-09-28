@@ -30,25 +30,32 @@ function dispatch(type, payload = {}, message = '') {
   return result;
 }
 
+function isDrillActive(value = drill) {
+  if (value?.kind === 'coverage-all-keys-any-order') return value.unique < value.targets.length;
+  if (value?.kind === 'prompted-targets-retry-until-correct') return value.correct < value.targets.length;
+  return false;
+}
+
 function pressSound(id, pointerType = 'keyboard', pointer = null) {
+  const activeDrill = isDrillActive() ? drill : null;
   let intended = null, drillResult = null;
-  if (drill?.kind === 'coverage-all-keys-any-order' && drill.unique < drill.targets.length) {
-    drill.attempts++;
-    if (drill.seen.includes(id)) {
-      drill.duplicate++;
+  if (activeDrill?.kind === 'coverage-all-keys-any-order') {
+    activeDrill.attempts++;
+    if (activeDrill.seen.includes(id)) {
+      activeDrill.duplicate++;
       drillResult = 'duplicate';
     } else {
-      drill.seen.push(id);
-      drill.unique++;
+      activeDrill.seen.push(id);
+      activeDrill.unique++;
       drillResult = 'new-key';
     }
-  } else if (drill?.kind === 'prompted-targets-retry-until-correct' && drill.correct < drill.targets.length) {
-    intended = drill.targets[drill.correct];
-    drill.attempts++;
-    if (intended === id) { drill.correct++; drillResult = 'correct'; }
-    else { drill.wrong++; drillResult = 'wrong-key'; }
+  } else if (activeDrill?.kind === 'prompted-targets-retry-until-correct') {
+    intended = activeDrill.targets[activeDrill.correct];
+    activeDrill.attempts++;
+    if (intended === id) { activeDrill.correct++; drillResult = 'correct'; }
+    else { activeDrill.wrong++; drillResult = 'wrong-key'; }
   }
-  touches.push({id, intended, drillKind:drill?.kind || null, drillResult, pointerType, cancelled:false, timeMs:Math.round(performance.now()), ...(pointer ? {pointer} : {})});
+  touches.push({id, intended, drillKind:activeDrill?.kind || null, drillResult, pointerType, cancelled:false, timeMs:Math.round(performance.now()), ...(pointer ? {pointer} : {})});
   if (touches.length > 1000) touches.shift();
   dispatch('input', {yinyuanId:id});
   renderDrill();
@@ -71,9 +78,10 @@ function cancelPointer(reason, event = null) {
   previous.button.classList.remove('pressed');
   const rect = previous.button.getBoundingClientRect();
   const up = event ? pointerSample(event,rect) : null;
-  touches.push({id:previous.id, intended:drill?.kind === 'prompted-targets-retry-until-correct' ? drill.targets[drill.correct] || null : null, drillKind:drill?.kind || null, drillResult:'cancelled', pointerType:previous.pointerType, cancelled:true, reason, timeMs:Math.round(performance.now()), pointer:{down:previous.down, ...(up ? {up} : {}), holdMs:Math.round(performance.now()-previous.startedAt)}});
+  const activeDrill = isDrillActive() ? drill : null;
+  touches.push({id:previous.id, intended:activeDrill?.kind === 'prompted-targets-retry-until-correct' ? activeDrill.targets[activeDrill.correct] || null : null, drillKind:activeDrill?.kind || null, drillResult:activeDrill ? 'cancelled' : null, pointerType:previous.pointerType, cancelled:true, reason, timeMs:Math.round(performance.now()), pointer:{down:previous.down, ...(up ? {up} : {}), holdMs:Math.round(performance.now()-previous.startedAt)}});
   if (touches.length > 1000) touches.shift();
-  if (drill && ((drill.kind === 'coverage-all-keys-any-order' && drill.unique < drill.targets.length) || (drill.kind === 'prompted-targets-retry-until-correct' && drill.correct < drill.targets.length))) drill.cancelled++;
+  if (activeDrill) activeDrill.cancelled++;
   renderDrill();
   status('本次触摸已取消，没有输入音元。');
 }

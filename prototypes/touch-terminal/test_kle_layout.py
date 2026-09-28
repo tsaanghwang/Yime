@@ -59,9 +59,16 @@ class KLELayoutTests(unittest.TestCase):
     def test_download_must_be_strict_json(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "raw-data.txt"
-            path.write_text('[{name:"relaxed raw data"},["N01"]]', encoding="utf-8")
-            with self.assertRaisesRegex(ValueError, "strict JSON"):
-                load_kle(path, IDS)
+            for name, source in {
+                "relaxed-members": '[{name:"relaxed raw data"},["N01"]]',
+                "nan": '[{"ignored":NaN},["N01"]]',
+                "positive-infinity": '[{"ignored":Infinity},["N01"]]',
+                "negative-infinity": '[{"ignored":-Infinity},["N01"]]',
+            }.items():
+                with self.subTest(name=name):
+                    path.write_text(source, encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, "strict JSON"):
+                        load_kle(path, IDS)
 
 
 if __name__ == "__main__":
