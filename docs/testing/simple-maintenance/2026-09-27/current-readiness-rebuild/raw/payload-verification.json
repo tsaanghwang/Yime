@@ -1,0 +1,265 @@
+{
+  "schema_version": "yime-current-readiness-payload-check-v1",
+  "products": [
+    {
+      "product": "yimecore",
+      "version": "0.1.0-local.13",
+      "manifest": {
+        "path": "yimecore/product-package.json",
+        "bytes": 11165,
+        "sha256": "9910c77d96db2e3cd8cedf7ca22f426d097b332ff51873f2bef79e0886d9f89f"
+      },
+      "file_count": 65,
+      "payload_bytes": 425346226,
+      "pe_files": [
+        {
+          "path": "x86/YimeRegisteredHostTests.exe",
+          "architecture": "x86",
+          "machine": "0x14c"
+        },
+        {
+          "path": "x86/YimeTextServiceExperiment.dll",
+          "architecture": "x86",
+          "machine": "0x14c"
+        },
+        {
+          "path": "x86/YimeTextServiceRegistration.exe",
+          "architecture": "x86",
+          "machine": "0x14c"
+        },
+        {
+          "path": "x64/YimeRegisteredHostTests.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "x64/YimeTextServiceExperiment.dll",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "x64/YimeTextServiceRegistration.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeBroker.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreBlocklistManager.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreDiagnostics.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreExplain.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreIndependenceAudit.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreInputToolbar.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreLayoutDesigner.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreLearningManager.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreLexiconCenter.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreLexiconManager.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreProfessionalLexicon.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCorePromotionScan.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreReverseLookup.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreSentenceRegression.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreSettingsTool.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreSystemLexiconAudit.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreToolCenter.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreTrainer.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "bin/YimeCoreTrialRuntime.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        }
+      ],
+      "missing_files": [],
+      "extra_files": [],
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "product": "rime-pime",
+      "version": "1.4.0-dev.1",
+      "manifest": {
+        "path": "rime-pime/product-package.json",
+        "bytes": 31324,
+        "sha256": "dea5cac4065d7c9b36442603660ec7bd178eb514c65e199c28ce8bbf26c99da3"
+      },
+      "file_count": 160,
+      "payload_bytes": 159908450,
+      "pe_files": [
+        {
+          "path": "PIMELauncher.exe",
+          "architecture": "x86",
+          "machine": "0x14c"
+        },
+        {
+          "path": "x86/PIMERegistrationStatus.exe",
+          "architecture": "x86",
+          "machine": "0x14c"
+        },
+        {
+          "path": "x86/PIMETextService.dll",
+          "architecture": "x86",
+          "machine": "0x14c"
+        },
+        {
+          "path": "x64/PIMERegistrationStatus.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "x64/PIMETextService.dll",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/blocklist-manager.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/diagnostics-tool.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/input-toolbar.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/lexicon-manager.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/lexicon-promotion-scan.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/reverse-lookup.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/server.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/settings-tool.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/system-lexicon-audit.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/tool-hub.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/yime-layout-designer.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/yime-trainer.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/input_methods/yime/rime_deployer.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/input_methods/yime/rime_dict_manager.exe",
+          "architecture": "x64",
+          "machine": "0x8664"
+        },
+        {
+          "path": "go-backend/input_methods/yime/rime.dll",
+          "architecture": "x64",
+          "machine": "0x8664"
+        }
+      ],
+      "missing_files": [],
+      "extra_files": [],
+      "mismatches": [],
+      "passed": true
+    }
+  ],
+  "passed": true
+}

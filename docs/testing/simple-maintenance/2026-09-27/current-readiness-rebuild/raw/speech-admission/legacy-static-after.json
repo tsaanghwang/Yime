@@ -1,0 +1,37 @@
+[
+  {
+    "path": "package-manifest.json",
+    "bytes": 12938,
+    "sha256": "8d48953ac0b5017b725272ee6300d0b988e99a0d25b9e035216f6c90b774fb64"
+  },
+  {
+    "path": "x86/YimeRegisteredHostTests.exe",
+    "bytes": 371712,
+    "sha256": "5edb34d7b3c75cf24dec7dae65e01aa9c4e02a29aa66d5be1b304a0ddb455e18"
+  },
+  {
+    "path": "arm64/YimeRegisteredHostTests.exe",
+    "bytes": 437248,
+    "sha256": "ec6bc1dd792301c8778db6881ee49d3193509baf711bdbbfc2dc44ad9ee16ca2"
+  },
+  {
+    "path": "arm64/YimeTextServiceExperiment.dll",
+    "bytes": 654336,
+    "sha256": "d5dc84c87dae608e0ff1e65b5d98fb1a33ab6424da91da2263636e1efbd1b18e"
+  },
+  {
+    "path": "arm64/YimeTextServiceRegistration.exe",
+    "bytes": 268800,
+    "sha256": "6683e3ff27eaa0379604fc7263d9b46e7457b8ebd7d29b2848a637d7cbbb675a"
+  },
+  {
+    "path": "x86/YimeTextServiceExperiment.dll",
+    "bytes": 578560,
+    "sha256": "0dfe2bb5617c65bd1e94c62ff9ee8cb23eb912fa68ca21a7705083022f2a8f95"
+  },
+  {
+    "path": "x86/YimeTextServiceRegistration.exe",
+    "bytes": 228352,
+    "sha256": "ccd08ef8270893fbf136f38c2891353900a9dd12b1476a15e2858fb1c4127024"
+  }
+]

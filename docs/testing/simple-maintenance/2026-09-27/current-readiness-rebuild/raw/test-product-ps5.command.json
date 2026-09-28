@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "installer/simple/Test-Product.ps1",
+    "--edition",
+    "ps5",
+    "--params-file",
+    ".tmp/current-readiness-delivery-20260927/test-product-params.json"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "started_at": "2026-09-26T23:46:24.915909+00:00",
+  "finished_at": "2026-09-26T23:46:31.507428+00:00",
+  "exit_code": 0
+}

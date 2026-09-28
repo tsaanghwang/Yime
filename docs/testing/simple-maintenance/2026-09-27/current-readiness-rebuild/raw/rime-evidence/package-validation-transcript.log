@@ -1,0 +1,71 @@
+**********************
+PowerShell transcript start
+Start time: 20260927074508
+Username: MYCOMPUTER\tsaan
+RunAs User: MYCOMPUTER\tsaan
+Configuration Name: 
+Machine: MYCOMPUTER (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\tsaan\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\dev\Yime\tools\powershell\preflight.ps1
+Process ID: 40148
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-evidence\package-validation-transcript.log
+Read-Package passed: rime-pime files=160
+Win32 PIMETextService.dll: 0x014C (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\x86\PIMETextService.dll)
+Win32 PIMETextService.dll imports: ADVAPI32.dll, GDI32.dll, KERNEL32.dll, ole32.dll, OLEAUT32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll
+x64 PIMETextService.dll: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\x64\PIMETextService.dll)
+x64 PIMETextService.dll imports: ADVAPI32.dll, GDI32.dll, KERNEL32.dll, ole32.dll, OLEAUT32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll
+Win32 PIMELauncher.exe: 0x014C (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\PIMELauncher.exe)
+Win32 PIMELauncher.exe imports: advapi32.dll, api-ms-win-core-synch-l1-2-0.dll, bcryptprimitives.dll, kernel32.dll, ntdll.dll, oleaut32.dll
+Win32 PIMERegistrationStatus.exe: 0x014C (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\x86\PIMERegistrationStatus.exe)
+Win32 PIMERegistrationStatus.exe imports: KERNEL32.dll, ole32.dll, OLEAUT32.dll
+x64 PIMERegistrationStatus.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\x64\PIMERegistrationStatus.exe)
+x64 PIMERegistrationStatus.exe imports: KERNEL32.dll, ole32.dll, OLEAUT32.dll
+x64 packaged rime.dll: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\input_methods\yime\rime.dll)
+x64 packaged rime.dll imports: dbghelp.dll, KERNEL32.dll, USER32.dll
+x64 packaged rime_deployer.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\input_methods\yime\rime_deployer.exe)
+x64 packaged rime_deployer.exe imports: dbghelp.dll, KERNEL32.dll, rime.dll
+x64 packaged rime_dict_manager.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\input_methods\yime\rime_dict_manager.exe)
+x64 packaged rime_dict_manager.exe imports: KERNEL32.dll, rime.dll
+x64 packaged Go server.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\server.exe)
+x64 packaged Go server.exe imports: kernel32.dll
+x64 packaged Go tool-hub.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\tool-hub.exe)
+x64 packaged Go tool-hub.exe imports: kernel32.dll
+x64 packaged Go yime-trainer.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\yime-trainer.exe)
+x64 packaged Go yime-trainer.exe imports: kernel32.dll
+x64 packaged Go input-toolbar.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\input-toolbar.exe)
+x64 packaged Go input-toolbar.exe imports: kernel32.dll
+x64 packaged Go settings-tool.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\settings-tool.exe)
+x64 packaged Go settings-tool.exe imports: kernel32.dll
+x64 packaged Go diagnostics-tool.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\diagnostics-tool.exe)
+x64 packaged Go diagnostics-tool.exe imports: kernel32.dll
+x64 packaged Go yime-layout-designer.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\yime-layout-designer.exe)
+x64 packaged Go yime-layout-designer.exe imports: kernel32.dll
+x64 packaged Go lexicon-manager.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\lexicon-manager.exe)
+x64 packaged Go lexicon-manager.exe imports: kernel32.dll
+x64 packaged Go reverse-lookup.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\reverse-lookup.exe)
+x64 packaged Go reverse-lookup.exe imports: kernel32.dll
+x64 packaged Go system-lexicon-audit.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\system-lexicon-audit.exe)
+x64 packaged Go system-lexicon-audit.exe imports: kernel32.dll
+x64 packaged Go lexicon-promotion-scan.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\lexicon-promotion-scan.exe)
+x64 packaged Go lexicon-promotion-scan.exe imports: kernel32.dll
+x64 packaged Go blocklist-manager.exe: 0x8664 (C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime\payload\go-backend\blocklist-manager.exe)
+x64 packaged Go blocklist-manager.exe imports: kernel32.dll
+PE architecture verification passed.
+Verified librime 1.17.0 (33e7814) for Windows-msvc-x64.
+Runtime source: https://github.com/rime/librime/releases/tag/1.17.0
+
+
+RIME_PACKAGE_VALIDATION_SUCCESS
+**********************
+PowerShell transcript end
+End time: 20260927074510
+**********************

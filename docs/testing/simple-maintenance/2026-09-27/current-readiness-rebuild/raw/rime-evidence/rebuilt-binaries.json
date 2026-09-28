@@ -1,0 +1,172 @@
+[
+  {
+    "packagePath": "PIMELauncher.exe",
+    "sourcePath": "C:\\dev\\Yime\\PIMELauncher\\target\\i686-pc-windows-msvc\\release\\PIMELauncher.exe",
+    "origin": "rebuilt-pinned-i686-rust-package",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "2da83bc8190394d6e451899669e96ca5ca3887354a759b1a7cd87f577faa7277",
+    "bytes": 608768,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:46.554480+00:00"
+  },
+  {
+    "packagePath": "x86/PIMERegistrationStatus.exe",
+    "sourcePath": "C:\\dev\\Yime\\.tmp\\current-readiness-delivery-20260927\\rime\\native-x86\\PIMETextService\\Release\\PIMERegistrationStatus.exe",
+    "origin": "new-isolated-native-build",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "275d36a8e7c8a3d7a220ab7a0434d6e32b02b8ada4d2224bd54a191c1ee87e09",
+    "bytes": 213504,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:13.706020+00:00"
+  },
+  {
+    "packagePath": "x86/PIMETextService.dll",
+    "sourcePath": "C:\\dev\\Yime\\.tmp\\current-readiness-delivery-20260927\\rime\\native-x86\\PIMETextService\\Release\\PIMETextService.dll",
+    "origin": "new-isolated-native-build",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "f18dc31fd0cb94e7827b7c6333ee503d2a9a090ef7bb9edda76507bd2808a806",
+    "bytes": 484352,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:12.518469+00:00"
+  },
+  {
+    "packagePath": "x64/PIMERegistrationStatus.exe",
+    "sourcePath": "C:\\dev\\Yime\\.tmp\\current-readiness-delivery-20260927\\rime\\native-x64\\PIMETextService\\Release\\PIMERegistrationStatus.exe",
+    "origin": "new-isolated-native-build",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "91a11ee8062c39d8cb64c203f6bf833ff81cee73a6fb5963e78c54a208e3655a",
+    "bytes": 268800,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:35.670643+00:00"
+  },
+  {
+    "packagePath": "x64/PIMETextService.dll",
+    "sourcePath": "C:\\dev\\Yime\\.tmp\\current-readiness-delivery-20260927\\rime\\native-x64\\PIMETextService\\Release\\PIMETextService.dll",
+    "origin": "new-isolated-native-build",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "5f4cb2afb7b79773a2c3ca4d2748f613ad5bec33a0fb966cafc3d284e20699f0",
+    "bytes": 580608,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:34.430566+00:00"
+  },
+  {
+    "packagePath": "go-backend/blocklist-manager.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\blocklist-manager.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "291d38080d2b8c8c038ce636b05225a4a1cfe3cf33b43a721141ab1fe4b6a263",
+    "bytes": 2228224,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:58.527740+00:00"
+  },
+  {
+    "packagePath": "go-backend/diagnostics-tool.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\diagnostics-tool.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "129e7ed12e8f401f5a23bc352d42330f5305118e8fffe6c800f965b700aa40e5",
+    "bytes": 2576896,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:43:00.103900+00:00"
+  },
+  {
+    "packagePath": "go-backend/input-toolbar.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\input-toolbar.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "bfe4a32038555b116a48c2604cc3f5be43da8c4754f7f7b388112b73c6b75000",
+    "bytes": 2670592,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:56.325214+00:00"
+  },
+  {
+    "packagePath": "go-backend/lexicon-manager.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\lexicon-manager.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "bc4fd752eec3aeb874b8f7210ff6161e8fb8e05b6630311248a68af146f5c6c6",
+    "bytes": 3101696,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:56.922694+00:00"
+  },
+  {
+    "packagePath": "go-backend/lexicon-promotion-scan.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\lexicon-promotion-scan.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "f0717e79532208b1a8818dd217a05e6e26efdbbc5f5312e12fc44608f845b03b",
+    "bytes": 2835968,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:58.007114+00:00"
+  },
+  {
+    "packagePath": "go-backend/reverse-lookup.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\reverse-lookup.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "71718b1b089f66fe8bbe4f698d021f38d0547266cb280e7889d1502e834d8007",
+    "bytes": 3136000,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:54.330359+00:00"
+  },
+  {
+    "packagePath": "go-backend/server.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\server.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "2b940d7c17167e2c9dd66299c0923303a1fec3b3d96dfed4961c3ae1b42cb561",
+    "bytes": 3792384,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:53.776629+00:00"
+  },
+  {
+    "packagePath": "go-backend/settings-tool.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\settings-tool.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "1400e4e9ebe1000fb28ea46e9e66fe2de980c43ce64094f9d712ff7d119a1e31",
+    "bytes": 3467264,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:59.544425+00:00"
+  },
+  {
+    "packagePath": "go-backend/system-lexicon-audit.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\system-lexicon-audit.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "7c57677ae43d5c81f71c9b5b604857c6900315881338288dc65e3f2ccf263e92",
+    "bytes": 2632704,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:57.420812+00:00"
+  },
+  {
+    "packagePath": "go-backend/tool-hub.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\tool-hub.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "f14b2766562193be3058f26b1ed17a7f646e20cc9eb06b091aeae9fc53d99fce",
+    "bytes": 2889216,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:54.904353+00:00"
+  },
+  {
+    "packagePath": "go-backend/yime-layout-designer.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\yime-layout-designer.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "4399d4d1f6ffb91fdfee4d3c27500ec4b2f09ba1c1842ac66d3cf473a99a0214",
+    "bytes": 3609600,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:43:00.734965+00:00"
+  },
+  {
+    "packagePath": "go-backend/yime-trainer.exe",
+    "sourcePath": "C:\\dev\\Yime\\go-backend\\build\\go-backend\\yime-trainer.exe",
+    "origin": "rebuilt-go-amd64-executable",
+    "sourceCommit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "26f9881b9aeb4bf03634934e7ff42b4df16615985a3085dfb05f041e0075adc2",
+    "bytes": 3359232,
+    "sourceTracked": false,
+    "sourceLastWriteUtc": "2026-09-26T23:42:55.787096+00:00"
+  }
+]

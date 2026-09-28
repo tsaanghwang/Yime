@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "installer/simple/Build-Package.ps1",
+    "--edition",
+    "ps7",
+    "--params-file",
+    ".tmp/current-readiness-delivery-20260927/simple-core-params.json"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "started_at": "2026-09-26T23:45:56.753681+00:00",
+  "finished_at": "2026-09-26T23:46:01.938783+00:00",
+  "exit_code": 0
+}

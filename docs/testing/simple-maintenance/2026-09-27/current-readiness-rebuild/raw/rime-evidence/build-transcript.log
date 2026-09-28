@@ -1,0 +1,254 @@
+**********************
+PowerShell transcript start
+Start time: 20260927074142
+Username: MYCOMPUTER\tsaan
+RunAs User: MYCOMPUTER\tsaan
+Configuration Name: 
+Machine: MYCOMPUTER (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\tsaan\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\dev\Yime\tools\powershell\preflight.ps1
+Process ID: 17896
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-evidence\build-transcript.log
+
+Win32 build prerequisites passed.
+COMMAND: cmake.exe --version
+cmake version 4.3.1
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+COMMAND: go.exe version
+go version go1.26.4 windows/amd64
+COMMAND: rustup.exe run stable-i686-pc-windows-msvc rustc -vV
+rustc 1.97.0 (2d8144b78 2026-07-07)
+binary: rustc
+commit-hash: 2d8144b7880597b6e6d3dfd63a9a9efae3f533d3
+commit-date: 2026-07-07
+host: i686-pc-windows-msvc
+release: 1.97.0
+LLVM version: 22.1.6
+COMMAND: python.exe tools/verify_vendored_build_dependencies.py
+PASS vendored build dependencies: Corrosion v0.6.1 commit 1499b14e4906a2890f5cee1547c8848db261753d (263 files, 401447 bytes); 108 Cargo crates (7310 files, 302124915 bytes); go-winres v0.3.3 (135 files, 1516781 bytes)
+COMMAND: cmake.exe -S C:\dev\Yime -B C:\dev\Yime\.tmp\current-readiness-delivery-20260927\rime\native-x86 -G Visual Studio 17 2022 -A Win32 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+-- The C compiler identification is MSVC 19.44.35225.0
+-- The CXX compiler identification is MSVC 19.44.35225.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x86/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x86/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - not found
+-- Found Threads: TRUE
+-- Rust Toolchain: stable-i686-pc-windows-msvc
+-- Rust Target: i686-pc-windows-msvc
+-- Determining required link libraries for target i686-pc-windows-msvc
+-- Required static libs for target i686-pc-windows-msvc: kernel32;ntdll;userenv;ws2_32;dbghelp
+-- Required link flags for target i686-pc-windows-msvc:
+-- Found Rust: C:/Users/tsaan/.rustup/toolchains/stable-i686-pc-windows-msvc/bin/rustc.exe (found version "1.97.0")
+-- Configuring done (8.6s)
+-- Generating done (0.8s)
+-- Build files have been written to: C:/dev/Yime/.tmp/current-readiness-delivery-20260927/rime/native-x86
+COMMAND: cmake.exe --build C:\dev\Yime\.tmp\current-readiness-delivery-20260927\rime\native-x86 --config Release --target PIMETextService PIMERegistrationStatus --parallel 8
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/libIME2/src/CMakeLists.txt
+  ImeModule.cpp
+  libIME.cpp
+  TextService.cpp
+  KeyEvent.cpp
+  EditSession.cpp
+  DisplayAttributeInfo.cpp
+  DisplayAttributeInfoEnum.cpp
+  DisplayAttributeProvider.cpp
+  LangBarButton.cpp
+  Utils.cpp
+  DrawUtils.cpp
+  Window.cpp
+  ImeWindow.cpp
+  MessageWindow.cpp
+  CandidateWindow.cpp
+  正在生成代码...
+  libIME2_static.vcxproj -> C:\dev\Yime\.tmp\current-readiness-delivery-20260927\rime\native-x86\libIME2\src\Release\libIME2_static.lib
+  Building Custom Rule C:/dev/Yime/PIMETextService/CMakeLists.txt
+  PIMEImeModule.cpp
+  PIMETextService.cpp
+  PIMEClient.cpp
+  PIMELangBarButton.cpp
+  DllEntry.cpp
+  正在生成代码...
+    正在创建库 C:/dev/Yime/.tmp/current-readiness-delivery-20260927/rime/native-x86/PIMETextService/Release/PIMETextService.lib 和对象 C:/dev/Yime/.tmp/current-readiness-delivery-20260927/rime/native-x86/PIMETextService/Release/PIMETextService.exp
+  PIMETextService.vcxproj -> C:\dev\Yime\.tmp\current-readiness-delivery-20260927\rime\native-x86\PIMETextService\Release\PIMETextService.dll
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  Building Custom Rule C:/dev/Yime/PIMETextService/CMakeLists.txt
+  RegistrationStatus.cpp
+  PIMERegistrationStatus.vcxproj -> C:\dev\Yime\.tmp\current-readiness-delivery-20260927\rime\native-x86\PIMETextService\Release\PIMERegistrationStatus.exe
+COMMAND: cmake.exe -S C:\dev\Yime -B C:\dev\Yime\.tmp\current-readiness-delivery-20260927\rime\native-x64 -G Visual Studio 17 2022 -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+-- The C compiler identification is MSVC 19.44.35225.0
+-- The CXX compiler identification is MSVC 19.44.35225.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - not found
+-- Found Threads: TRUE
+-- Configuring done (5.4s)
+-- Generating done (0.5s)
+-- Build files have been written to: C:/dev/Yime/.tmp/current-readiness-delivery-20260927/rime/native-x64
+COMMAND: cmake.exe --build C:\dev\Yime\.tmp\current-readiness-delivery-20260927\rime\native-x64 --config Release --target PIMETextService PIMERegistrationStatus --parallel 8
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/libIME2/src/CMakeLists.txt
+  ImeModule.cpp
+  libIME.cpp
+  TextService.cpp
+  KeyEvent.cpp
+  EditSession.cpp
+  DisplayAttributeInfo.cpp
+  DisplayAttributeInfoEnum.cpp
+  DisplayAttributeProvider.cpp
+  LangBarButton.cpp
+C:\dev\Yime\libIME2\src\LangBarButton.cpp(155,70): warning C4312: “类型强制转换”: 从“UINT”转换到更大的“LPCTSTR” [C:\dev\Yime\.tmp\current-readiness-delivery-20260927\rime\native-x64\libIME2\src\libIME2_static.vcxproj]
+  Utils.cpp
+  DrawUtils.cpp
+  Window.cpp
+  ImeWindow.cpp
+  MessageWindow.cpp
+  CandidateWindow.cpp
+  正在生成代码...
+  libIME2_static.vcxproj -> C:\dev\Yime\.tmp\current-readiness-delivery-20260927\rime\native-x64\libIME2\src\Release\libIME2_static.lib
+  Building Custom Rule C:/dev/Yime/PIMETextService/CMakeLists.txt
+  PIMEImeModule.cpp
+  PIMETextService.cpp
+  PIMEClient.cpp
+  PIMELangBarButton.cpp
+  DllEntry.cpp
+  正在生成代码...
+    正在创建库 C:/dev/Yime/.tmp/current-readiness-delivery-20260927/rime/native-x64/PIMETextService/Release/PIMETextService.lib 和对象 C:/dev/Yime/.tmp/current-readiness-delivery-20260927/rime/native-x64/PIMETextService/Release/PIMETextService.exp
+  PIMETextService.vcxproj -> C:\dev\Yime\.tmp\current-readiness-delivery-20260927\rime\native-x64\PIMETextService\Release\PIMETextService.dll
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  Building Custom Rule C:/dev/Yime/PIMETextService/CMakeLists.txt
+  RegistrationStatus.cpp
+  PIMERegistrationStatus.vcxproj -> C:\dev\Yime\.tmp\current-readiness-delivery-20260927\rime\native-x64\PIMETextService\Release\PIMERegistrationStatus.exe
+COMMAND: rustup.exe run stable-i686-pc-windows-msvc cargo clean --release --target i686-pc-windows-msvc --package pimelauncher
+COMMAND: rustup.exe run stable-i686-pc-windows-msvc cargo build --locked --release --target i686-pc-windows-msvc
+Win32 PIMETextService.dll: 0x014C (C:\dev\Yime\build\PIMETextService\Release\PIMETextService.dll)
+Win32 PIMETextService.dll imports: ADVAPI32.dll, GDI32.dll, KERNEL32.dll, ole32.dll, OLEAUT32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll
+x64 PIMETextService.dll: 0x8664 (C:\dev\Yime\build64\PIMETextService\Release\PIMETextService.dll)
+x64 PIMETextService.dll imports: ADVAPI32.dll, GDI32.dll, KERNEL32.dll, ole32.dll, OLEAUT32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll
+Win32 PIMELauncher.exe: 0x014C (C:\dev\Yime\build\PIMELauncher\PIMELauncher.exe)
+Win32 PIMELauncher.exe imports: advapi32.dll, api-ms-win-core-synch-l1-2-0.dll, bcryptprimitives.dll, kernel32.dll, ntdll.dll, oleaut32.dll
+Win32 PIMERegistrationStatus.exe: 0x014C (C:\dev\Yime\build\PIMETextService\Release\PIMERegistrationStatus.exe)
+Win32 PIMERegistrationStatus.exe imports: KERNEL32.dll, ole32.dll, OLEAUT32.dll
+x64 PIMERegistrationStatus.exe: 0x8664 (C:\dev\Yime\build64\PIMETextService\Release\PIMERegistrationStatus.exe)
+x64 PIMERegistrationStatus.exe imports: KERNEL32.dll, ole32.dll, OLEAUT32.dll
+PE architecture verification passed.
+Verified librime 1.17.0 (33e7814) for Windows-msvc-x64.
+Runtime source: https://github.com/rime/librime/releases/tag/1.17.0
+REMOVE VERIFIED BUILD OUTPUT: C:\dev\Yime\go-backend\build\go-backend
+COMMAND: go.exe build -mod=vendor -trimpath -buildvcs=false -o C:\dev\Yime\go-backend\build\tools\go-winres.exe .
+COMMAND: C:\dev\Yime\go-backend\build\tools\go-winres.exe simply --arch amd64 --product-version 1.4.0-dev.1 --file-version 1.4.0-dev.1 --product-name YIME --copyright Copyright (C) 2026 Yime contributors --file-description YIME Go Backend Server --original-filename server.exe --icon input_methods\yime\icon.ico --manifest cli --out rsrc_server
+COMMAND: go.exe build -mod=readonly -trimpath -buildvcs=false -ldflags -s -w -X main.version=1.4.0-dev.1 -o C:\dev\Yime\go-backend\build\go-backend\server.exe .
+COMMAND: C:\dev\Yime\go-backend\build\tools\go-winres.exe simply --arch amd64 --product-version 1.4.0-dev.1 --file-version 1.4.0-dev.1 --product-name YIME --copyright Copyright (C) 2026 Yime contributors --file-description Yime Reverse Lookup Tool --original-filename reverse-lookup.exe --icon input_methods\yime\icon.ico --manifest gui --out cmd\reverse-lookup-tool\rsrc_reverse
+COMMAND: go.exe build -mod=readonly -trimpath -buildvcs=false -ldflags -s -w -H=windowsgui -X main.version=1.4.0-dev.1 -o C:\dev\Yime\go-backend\build\go-backend\reverse-lookup.exe .\cmd\reverse-lookup-tool
+COMMAND: C:\dev\Yime\go-backend\build\tools\go-winres.exe simply --arch amd64 --product-version 1.4.0-dev.1 --file-version 1.4.0-dev.1 --product-name YIME --copyright Copyright (C) 2026 Yime contributors --file-description Yime Tool Hub --original-filename tool-hub.exe --icon input_methods\yime\icon.ico --manifest gui --out cmd\tool-hub\rsrc_hub
+COMMAND: go.exe build -mod=readonly -trimpath -buildvcs=false -ldflags -s -w -H=windowsgui -X main.version=1.4.0-dev.1 -o C:\dev\Yime\go-backend\build\go-backend\tool-hub.exe .\cmd\tool-hub
+COMMAND: C:\dev\Yime\go-backend\build\tools\go-winres.exe simply --arch amd64 --product-version 1.4.0-dev.1 --file-version 1.4.0-dev.1 --product-name YIME --copyright Copyright (C) 2026 Yime contributors --file-description Yime Typing Trainer --original-filename yime-trainer.exe --icon input_methods\yime\icon.ico --manifest gui --out cmd\yime-trainer\rsrc_trainer
+COMMAND: go.exe build -mod=readonly -trimpath -buildvcs=false -ldflags -s -w -H=windowsgui -X main.version=1.4.0-dev.1 -o C:\dev\Yime\go-backend\build\go-backend\yime-trainer.exe .\cmd\yime-trainer
+COMMAND: C:\dev\Yime\go-backend\build\tools\go-winres.exe simply --arch amd64 --product-version 1.4.0-dev.1 --file-version 1.4.0-dev.1 --product-name YIME --copyright Copyright (C) 2026 Yime contributors --file-description Yime Input Method Toolbar --original-filename input-toolbar.exe --icon input_methods\yime\icon.ico --manifest gui --out cmd\input-toolbar\rsrc_input_toolbar
+COMMAND: go.exe build -mod=readonly -trimpath -buildvcs=false -ldflags -s -w -H=windowsgui -X main.version=1.4.0-dev.1 -o C:\dev\Yime\go-backend\build\go-backend\input-toolbar.exe .\cmd\input-toolbar
+COMMAND: C:\dev\Yime\go-backend\build\tools\go-winres.exe simply --arch amd64 --product-version 1.4.0-dev.1 --file-version 1.4.0-dev.1 --product-name YIME --copyright Copyright (C) 2026 Yime contributors --file-description Yime Lexicon Manager --original-filename lexicon-manager.exe --icon input_methods\yime\icon.ico --manifest gui --out cmd\lexicon-manager\rsrc_lexicon
+COMMAND: go.exe build -mod=readonly -trimpath -buildvcs=false -ldflags -s -w -H=windowsgui -X main.version=1.4.0-dev.1 -o C:\dev\Yime\go-backend\build\go-backend\lexicon-manager.exe .\cmd\lexicon-manager
+COMMAND: C:\dev\Yime\go-backend\build\tools\go-winres.exe simply --arch amd64 --product-version 1.4.0-dev.1 --file-version 1.4.0-dev.1 --product-name YIME --copyright Copyright (C) 2026 Yime contributors --file-description Yime System Lexicon Audit --original-filename system-lexicon-audit.exe --icon input_methods\yime\icon.ico --manifest gui --out cmd\system-lexicon-audit\rsrc_audit
+COMMAND: go.exe build -mod=readonly -trimpath -buildvcs=false -ldflags -s -w -H=windowsgui -X main.version=1.4.0-dev.1 -o C:\dev\Yime\go-backend\build\go-backend\system-lexicon-audit.exe .\cmd\system-lexicon-audit
+COMMAND: go.exe build -mod=readonly -trimpath -buildvcs=false -ldflags -s -w -X main.version=1.4.0-dev.1 -o C:\dev\Yime\go-backend\build\go-backend\lexicon-promotion-scan.exe .\cmd\lexicon-promotion-scan
+COMMAND: C:\dev\Yime\go-backend\build\tools\go-winres.exe simply --arch amd64 --product-version 1.4.0-dev.1 --file-version 1.4.0-dev.1 --product-name YIME --copyright Copyright (C) 2026 Yime contributors --file-description Yime User Blocklist Manager --original-filename blocklist-manager.exe --icon input_methods\yime\icon.ico --manifest gui --out cmd\blocklist-manager\rsrc_blocklist
+COMMAND: go.exe build -mod=readonly -trimpath -buildvcs=false -ldflags -s -w -H=windowsgui -X main.version=1.4.0-dev.1 -o C:\dev\Yime\go-backend\build\go-backend\blocklist-manager.exe .\cmd\blocklist-manager
+COMMAND: C:\dev\Yime\go-backend\build\tools\go-winres.exe simply --arch amd64 --product-version 1.4.0-dev.1 --file-version 1.4.0-dev.1 --product-name YIME --copyright Copyright (C) 2026 Yime contributors --file-description Yime Settings Tool --original-filename settings-tool.exe --icon input_methods\yime\icon.ico --manifest gui --out cmd\settings-tool\rsrc_settings
+COMMAND: go.exe build -mod=readonly -trimpath -buildvcs=false -ldflags -s -w -H=windowsgui -X main.version=1.4.0-dev.1 -o C:\dev\Yime\go-backend\build\go-backend\settings-tool.exe .\cmd\settings-tool
+COMMAND: C:\dev\Yime\go-backend\build\tools\go-winres.exe simply --arch amd64 --product-version 1.4.0-dev.1 --file-version 1.4.0-dev.1 --product-name YIME --copyright Copyright (C) 2026 Yime contributors --file-description Yime Diagnostics Tool --original-filename diagnostics-tool.exe --icon input_methods\yime\icon.ico --manifest gui --out cmd\diagnostics-tool\rsrc_diagnostics
+COMMAND: go.exe build -mod=readonly -trimpath -buildvcs=false -ldflags -s -w -H=windowsgui -X main.version=1.4.0-dev.1 -o C:\dev\Yime\go-backend\build\go-backend\diagnostics-tool.exe .\cmd\diagnostics-tool
+COMMAND: C:\dev\Yime\go-backend\build\tools\go-winres.exe simply --arch amd64 --product-version 1.4.0-dev.1 --file-version 1.4.0-dev.1 --product-name YIME --copyright Copyright (C) 2026 Yime contributors --file-description Yime Layout Designer --original-filename yime-layout-designer.exe --icon input_methods\yime\icon.ico --manifest gui --out cmd\yime-layout-designer\rsrc_layout_designer
+COMMAND: go.exe build -mod=readonly -trimpath -buildvcs=false -ldflags -s -w -X main.version=1.4.0-dev.1 -o C:\dev\Yime\go-backend\build\go-backend\yime-layout-designer.exe .\cmd\yime-layout-designer
+Verified librime 1.17.0 (33e7814) for Windows-msvc-x64.
+Runtime source: https://github.com/rime/librime/releases/tag/1.17.0
+Win32 PIMETextService.dll: 0x014C (C:\dev\Yime\build\PIMETextService\Release\PIMETextService.dll)
+Win32 PIMETextService.dll imports: ADVAPI32.dll, GDI32.dll, KERNEL32.dll, ole32.dll, OLEAUT32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll
+x64 PIMETextService.dll: 0x8664 (C:\dev\Yime\build64\PIMETextService\Release\PIMETextService.dll)
+x64 PIMETextService.dll imports: ADVAPI32.dll, GDI32.dll, KERNEL32.dll, ole32.dll, OLEAUT32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll
+Win32 PIMELauncher.exe: 0x014C (C:\dev\Yime\build\PIMELauncher\PIMELauncher.exe)
+Win32 PIMELauncher.exe imports: advapi32.dll, api-ms-win-core-synch-l1-2-0.dll, bcryptprimitives.dll, kernel32.dll, ntdll.dll, oleaut32.dll
+Win32 PIMERegistrationStatus.exe: 0x014C (C:\dev\Yime\build\PIMETextService\Release\PIMERegistrationStatus.exe)
+Win32 PIMERegistrationStatus.exe imports: KERNEL32.dll, ole32.dll, OLEAUT32.dll
+x64 PIMERegistrationStatus.exe: 0x8664 (C:\dev\Yime\build64\PIMETextService\Release\PIMERegistrationStatus.exe)
+x64 PIMERegistrationStatus.exe imports: KERNEL32.dll, ole32.dll, OLEAUT32.dll
+x64 packaged rime.dll: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\input_methods\yime\rime.dll)
+x64 packaged rime.dll imports: dbghelp.dll, KERNEL32.dll, USER32.dll
+x64 packaged rime_deployer.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\input_methods\yime\rime_deployer.exe)
+x64 packaged rime_deployer.exe imports: dbghelp.dll, KERNEL32.dll, rime.dll
+x64 packaged rime_dict_manager.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\input_methods\yime\rime_dict_manager.exe)
+x64 packaged rime_dict_manager.exe imports: KERNEL32.dll, rime.dll
+x64 packaged Go server.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\server.exe)
+x64 packaged Go server.exe imports: kernel32.dll
+x64 packaged Go tool-hub.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\tool-hub.exe)
+x64 packaged Go tool-hub.exe imports: kernel32.dll
+x64 packaged Go yime-trainer.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\yime-trainer.exe)
+x64 packaged Go yime-trainer.exe imports: kernel32.dll
+x64 packaged Go input-toolbar.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\input-toolbar.exe)
+x64 packaged Go input-toolbar.exe imports: kernel32.dll
+x64 packaged Go settings-tool.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\settings-tool.exe)
+x64 packaged Go settings-tool.exe imports: kernel32.dll
+x64 packaged Go diagnostics-tool.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\diagnostics-tool.exe)
+x64 packaged Go diagnostics-tool.exe imports: kernel32.dll
+x64 packaged Go yime-layout-designer.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\yime-layout-designer.exe)
+x64 packaged Go yime-layout-designer.exe imports: kernel32.dll
+x64 packaged Go lexicon-manager.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\lexicon-manager.exe)
+x64 packaged Go lexicon-manager.exe imports: kernel32.dll
+x64 packaged Go reverse-lookup.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\reverse-lookup.exe)
+x64 packaged Go reverse-lookup.exe imports: kernel32.dll
+x64 packaged Go system-lexicon-audit.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\system-lexicon-audit.exe)
+x64 packaged Go system-lexicon-audit.exe imports: kernel32.dll
+x64 packaged Go lexicon-promotion-scan.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\lexicon-promotion-scan.exe)
+x64 packaged Go lexicon-promotion-scan.exe imports: kernel32.dll
+x64 packaged Go blocklist-manager.exe: 0x8664 (C:\dev\Yime\go-backend\build\go-backend\blocklist-manager.exe)
+x64 packaged Go blocklist-manager.exe imports: kernel32.dll
+PE architecture verification passed.
+Package ready: C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\rime-build\rime-pime
+RIME_BUILD_SUCCESS
+**********************
+PowerShell transcript end
+End time: 20260927074307
+**********************

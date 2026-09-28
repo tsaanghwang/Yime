@@ -1,0 +1,635 @@
+{
+  "schema_version": "yime-delivery-zip-verification-v1",
+  "passed": true,
+  "archive": {
+    "path": "Yime-Current-Readiness-20260927-Evidence.zip",
+    "bytes": 108540211,
+    "sha256": "4755456e9c5eb0813a6c647d1d6953b9560bc7602a5800cb11a8bcfd504d576d"
+  },
+  "file_count": 124,
+  "crc_passed": true,
+  "exact_file_set": true,
+  "every_member_sha256_matches": true,
+  "files": [
+    {
+      "path": "delivery/package-zip-verification.json",
+      "bytes": 48884,
+      "sha256": "dee198a92cdb81c6025efc67c92ebb285503e0e255768f994ddd3086c5a239b4"
+    },
+    {
+      "path": "delivery/payload-verification.json",
+      "bytes": 7386,
+      "sha256": "de4fbc8572b75c6da987d171e6bea5d7c934ef3bba3b34cf00493b1e66a10c7a"
+    },
+    {
+      "path": "delivery/protection-final.command.json",
+      "bytes": 349,
+      "sha256": "233b97e8ca14b25a451f03f7d1002a34d3e2540b74c0d8339266afd6e22ef570"
+    },
+    {
+      "path": "delivery/protection-final.json",
+      "bytes": 2975,
+      "sha256": "44bcd740b554e6101a48f1744b607df54d261deebd9314d0be591c11167ab04d"
+    },
+    {
+      "path": "delivery/protection-final.log",
+      "bytes": 86,
+      "sha256": "0d5d3fd8777624ab24ae6b6fc20add1f88be2943769319400e4f72b09e99c6e0"
+    },
+    {
+      "path": "delivery/read-package-ps5.command.json",
+      "bytes": 443,
+      "sha256": "c7fdb3572d4365dd2cf10a35c54c3e15044f8cfd7e7d51f151190b0e18bb1494"
+    },
+    {
+      "path": "delivery/read-package-ps5.json",
+      "bytes": 511,
+      "sha256": "57a42d0f8898bb56f29d497cc657f4f7d659cc7430127b305a8cd028aee886c5"
+    },
+    {
+      "path": "delivery/read-package-ps5.log",
+      "bytes": 66,
+      "sha256": "cd78ea5ccbba016d2e2c2c680cb7a666eba602ba1b049af50e8c9ef4101b9f1b"
+    },
+    {
+      "path": "delivery/registration-preservation.json",
+      "bytes": 218,
+      "sha256": "e1e57a2e73eb41d556f9f39a6e151496e6a54a51031039b3d270e3565eb41c6c"
+    },
+    {
+      "path": "delivery/source-after.json",
+      "bytes": 1964552,
+      "sha256": "1e0a848ccbc2b64e0f8f2c36c12c0b9e9e854ff0c9f18fe2224694c2b45c5a29"
+    },
+    {
+      "path": "delivery/source-before.json",
+      "bytes": 1964552,
+      "sha256": "1e0a848ccbc2b64e0f8f2c36c12c0b9e9e854ff0c9f18fe2224694c2b45c5a29"
+    },
+    {
+      "path": "delivery/source-ci.json",
+      "bytes": 21683,
+      "sha256": "93537f8ed7e82e6391f7e5ac4635b0491cf6a0aa5b36840c764411b956f96762"
+    },
+    {
+      "path": "delivery/speech-admission.command.json",
+      "bytes": 337,
+      "sha256": "6e6947526e95cb46189afe36cff209b0258b4c70e07e039c9c52f18b4a5c89a4"
+    },
+    {
+      "path": "delivery/speech-admission.log",
+      "bytes": 179,
+      "sha256": "64d71954e3baf41f78b99958be30c4e01c0362c98fff74e95b1bf892e42f938d"
+    },
+    {
+      "path": "delivery/test-product-ps5.command.json",
+      "bytes": 417,
+      "sha256": "5a546566f4e974a6bd7896e5297b4df5d384301239075c8ceee48570bd3c1b30"
+    },
+    {
+      "path": "delivery/test-product-ps5.log",
+      "bytes": 253,
+      "sha256": "9978f951e1104adfb6753db2379a60bf71cacacc3c756d862d5485d7da57381c"
+    },
+    {
+      "path": "delivery/yimecore-build.command.json",
+      "bytes": 414,
+      "sha256": "8f9eb3b5098dbc600886b294b15683bed035929112dd2f318e970ec129858285"
+    },
+    {
+      "path": "delivery/yimecore-build.log",
+      "bytes": 9180,
+      "sha256": "a907b9a999a8e37a1d20658a39c0f14f8ac8f6a94923c9de06bb268e55ad5781"
+    },
+    {
+      "path": "delivery/yimecore-package.command.json",
+      "bytes": 417,
+      "sha256": "9afc27b60bbd3f6ab9a635ba37dd68561b373a4c52220ad1e98cd0dcbccc41e4"
+    },
+    {
+      "path": "delivery/yimecore-package.log",
+      "bytes": 116,
+      "sha256": "654439bed39aa1375728f84bb95c0b85908e3114fe5a444e080a3e1e2100b052"
+    },
+    {
+      "path": "drivers/archive_tools.py",
+      "bytes": 2022,
+      "sha256": "c01f795ea3aeba8b6e5d719a505f804b5e981f7c8463dd4fe21426e4b9e46c5c"
+    },
+    {
+      "path": "drivers/core-params.json",
+      "bytes": 453,
+      "sha256": "6e666cc8d5fecbd05d16e210d4507929fbf37ba46f7614c50b9076b70fa4a2a2"
+    },
+    {
+      "path": "drivers/finalize_local.py",
+      "bytes": 8294,
+      "sha256": "d17634ed31a82481e8ab997057e390dfdc99db62b722782a62f2e0a97bad2cb3"
+    },
+    {
+      "path": "drivers/package-check-params.json",
+      "bytes": 215,
+      "sha256": "0b6633eca6ecdfaa63ed69987a7d71215d2ad351bbd614ffae3b856a7f16fed9"
+    },
+    {
+      "path": "drivers/package-check.ps1",
+      "bytes": 754,
+      "sha256": "3a689750fe965f47f1c9e724b540960f526f73bb486a0774ae1f0f4506761f1e"
+    },
+    {
+      "path": "drivers/protection-check.ps1",
+      "bytes": 1131,
+      "sha256": "b806bb03a836729e1a389fbf566f893d2bf490ad94c47071bc35f9b496a5f940"
+    },
+    {
+      "path": "drivers/run_step.py",
+      "bytes": 1060,
+      "sha256": "e9095bec0e7f03fb9a8068eb3f8b620b86dc5d5eb7f6848c7e3c6ad7e88e1215"
+    },
+    {
+      "path": "drivers/simple-core-params.json",
+      "bytes": 288,
+      "sha256": "9750a20141490f7b3edefd75c532f6a797613f89ade1c8fab9dcaac2fdc44fe0"
+    },
+    {
+      "path": "drivers/snapshot.py",
+      "bytes": 1233,
+      "sha256": "230a5c6a2b1a2a5f41545b2b581845db70741c341d27116847f6c01efecf19cb"
+    },
+    {
+      "path": "drivers/test-product-params.json",
+      "bytes": 247,
+      "sha256": "2503fae7c3594e1c00204f780befbae9446edb9cb54288c08953c375b3f8c9b4"
+    },
+    {
+      "path": "drivers/verify_payloads.py",
+      "bytes": 4203,
+      "sha256": "d5fbd80b7f8c3d2d4df3cf6d9866f16af67965dd39753187624cdc5cd61e12aa"
+    },
+    {
+      "path": "EVIDENCE-MANIFEST.json",
+      "bytes": 21796,
+      "sha256": "877c0f1c8f25f20d5fc6c9a74ee3f738e8cebb0caf6d5c52a7945877082f98f4"
+    },
+    {
+      "path": "package/BUILD-PROVENANCE.json",
+      "bytes": 40115,
+      "sha256": "b5534720150de246093259aae75e36cd32011c08d933b92bccc8ec0e1f867a6b"
+    },
+    {
+      "path": "package/DELIVERY-MANIFEST.json",
+      "bytes": 48478,
+      "sha256": "91a133e1c484b6256a2340e05bd6c1b203c6e4054e7168eabd8d53ed9bc96ea4"
+    },
+    {
+      "path": "package/rime-pime/product-package.json",
+      "bytes": 31324,
+      "sha256": "dea5cac4065d7c9b36442603660ec7bd178eb514c65e199c28ce8bbf26c99da3"
+    },
+    {
+      "path": "package/yimecore/product-package.json",
+      "bytes": 11165,
+      "sha256": "9910c77d96db2e3cd8cedf7ca22f426d097b332ff51873f2bef79e0886d9f89f"
+    },
+    {
+      "path": "rime-evidence/build-rime.ps1",
+      "bytes": 10994,
+      "sha256": "cc392af440152d4be5ac2c305a645ecd368171bc9788c03d06aa4a876431dc2c"
+    },
+    {
+      "path": "rime-evidence/build-transcript.log",
+      "bytes": 20627,
+      "sha256": "69ad698562b75e345dfedfed0e38d832ec4562916795cabf6746fb70fb79522c"
+    },
+    {
+      "path": "rime-evidence/commands.json",
+      "bytes": 19559,
+      "sha256": "4710a802f963b2e33ac3035e8e101642eccd67d91c0b6d03fa19716796a6ea39"
+    },
+    {
+      "path": "rime-evidence/package-handoff.json",
+      "bytes": 2129,
+      "sha256": "9a48972febdff473191350e37a345554450bf1a879f14dd019de0833892b0b21"
+    },
+    {
+      "path": "rime-evidence/package-validation-transcript.log",
+      "bytes": 5990,
+      "sha256": "7d97056e6ec73e45ce6888630ace72376faf3deb263b73605d106eaa657ce7c2"
+    },
+    {
+      "path": "rime-evidence/package-verification.json",
+      "bytes": 1920,
+      "sha256": "21c9bb028b806b612db2024e7519a4b38705c9801f9a88a0d071162ccf9e3fac"
+    },
+    {
+      "path": "rime-evidence/payload-source-map.json",
+      "bytes": 78566,
+      "sha256": "8428ca16eb0c9d0fb52fa8b15a61ed69a4230a39d10580e86bf260cd840a5add"
+    },
+    {
+      "path": "rime-evidence/rebuilt-binaries.json",
+      "bytes": 8055,
+      "sha256": "6c4051cb9067ffbcfe904eb947861ad2cc3980cf9cf8dc95da4aa938a646bdbd"
+    },
+    {
+      "path": "rime-evidence/rime_runtime.lock.json",
+      "bytes": 618,
+      "sha256": "548d7fd41af93dcd438f194877cfbc4fd326454a4251f55dfdfe74efe87df637"
+    },
+    {
+      "path": "rime-evidence/source-commit.txt",
+      "bytes": 41,
+      "sha256": "2a81e9865bedfb5955fac29a78ed28b1ad29e460fe019a22d770576e8211bdbd"
+    },
+    {
+      "path": "rime-evidence/tracked-status-after.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rime-evidence/verify-package.ps1",
+      "bytes": 2000,
+      "sha256": "b73a77bff056885916f8ef53df624f4c56738b81f98f8bc06703d85bc34f3961"
+    },
+    {
+      "path": "rime-evidence/verify-rime.py",
+      "bytes": 7040,
+      "sha256": "cb4abb1736b5da0c5c48fcad07def53abc7b3a3a04e714d8c1919f2e49808ee4"
+    },
+    {
+      "path": "rime-evidence/x64-CMakeCache.txt",
+      "bytes": 21405,
+      "sha256": "674bd92b045fab5964942e97b900cf71b78c1052d29ad42b45c9ad4be86b338d"
+    },
+    {
+      "path": "rime-evidence/x86-CMakeCache.txt",
+      "bytes": 27513,
+      "sha256": "b42909d3bd55d54f75ddc89ed9329a9b4c5d5db4ac7bc8fdfbf5ad93a380fb3b"
+    },
+    {
+      "path": "SOURCE-BINDING.json",
+      "bytes": 626,
+      "sha256": "813f47f80c7f96eeced3e3edfa2bc320b08cddad2efe6cbf3f1f5285aecfef73"
+    },
+    {
+      "path": "speech-admission/admission.json",
+      "bytes": 1295,
+      "sha256": "50c28aa2e14e1a3e1202f78d6de3f0f52041082db919eb1707dd31732378f146"
+    },
+    {
+      "path": "speech-admission/admitted-records.json",
+      "bytes": 62558,
+      "sha256": "66a2ab07caaabead77ba1a84c26e747eff6b7959e641286e57c58e4e612b8733"
+    },
+    {
+      "path": "speech-admission/bin/YimeBroker-speech.exe",
+      "bytes": 5465600,
+      "sha256": "5dadb24ff6c54784d2325833d4355a1ab1c0763ed8231bbaec63ed9d6a10b730"
+    },
+    {
+      "path": "speech-admission/bin/YimeSpeechAdmission.exe",
+      "bytes": 5402112,
+      "sha256": "710c86830ff661f560d07b217299ed701ab9643e4f928fd1210f031807cf6790"
+    },
+    {
+      "path": "speech-admission/bundle-off.json",
+      "bytes": 2377,
+      "sha256": "1c4667e91bb52402d30bd07c237a947d7933112df8fa9701acbbccc79471149b"
+    },
+    {
+      "path": "speech-admission/bundle-on.json",
+      "bytes": 2376,
+      "sha256": "e1962165752a4748837e34a8ccfc0ab954e8b22e8c050c845ea3477296b13023"
+    },
+    {
+      "path": "speech-admission/bundle-rejected.json",
+      "bytes": 2376,
+      "sha256": "b228278a78a8b515c9ea4bce3c88838ccb563c5060dbbf35a72b887a817bca84"
+    },
+    {
+      "path": "speech-admission/forward-source.json",
+      "bytes": 17920,
+      "sha256": "4fc3c3abf8be4209efa803b2e1ae747ac8bab5e5ab05c13daafe80035dde38b1"
+    },
+    {
+      "path": "speech-admission/forward-tool.log",
+      "bytes": 30,
+      "sha256": "0d597fe612ebf8aff8b8cda41b1071c370d4961a45d5efedcb18754c482f0509"
+    },
+    {
+      "path": "speech-admission/indexes/full-core.yidx",
+      "bytes": 40267102,
+      "sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1"
+    },
+    {
+      "path": "speech-admission/indexes/full-stage5c.yidx",
+      "bytes": 848,
+      "sha256": "761531b175f9984eb48066759e7acad30405e27261d0e46e561ae12bd83f52cf"
+    },
+    {
+      "path": "speech-admission/indexes/shorthand-core.yidx",
+      "bytes": 38209725,
+      "sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec"
+    },
+    {
+      "path": "speech-admission/indexes/shorthand-stage5c.yidx",
+      "bytes": 825,
+      "sha256": "f1b7cb449c151e9cce6b21b65317ca47daf6fdc4cb80c62515d1b14287c8376d"
+    },
+    {
+      "path": "speech-admission/indexes/variable-core.yidx",
+      "bytes": 38801056,
+      "sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada"
+    },
+    {
+      "path": "speech-admission/indexes/variable-stage5c.yidx",
+      "bytes": 825,
+      "sha256": "d19d552f890733e0b731d50501cf64f0a3c6ee2278924fef3aba6f19524d0e52"
+    },
+    {
+      "path": "speech-admission/installed-after.json",
+      "bytes": 2975,
+      "sha256": "44bcd740b554e6101a48f1744b607df54d261deebd9314d0be591c11167ab04d"
+    },
+    {
+      "path": "speech-admission/installed-before.json",
+      "bytes": 2975,
+      "sha256": "44bcd740b554e6101a48f1744b607df54d261deebd9314d0be591c11167ab04d"
+    },
+    {
+      "path": "speech-admission/legacy-static-after.json",
+      "bytes": 1153,
+      "sha256": "b465dfa48cea445afeded9047346a3e8f37f7a5ac1a54993acee032ebe3ebde4"
+    },
+    {
+      "path": "speech-admission/legacy-static-before.json",
+      "bytes": 1153,
+      "sha256": "b465dfa48cea445afeded9047346a3e8f37f7a5ac1a54993acee032ebe3ebde4"
+    },
+    {
+      "path": "speech-admission/locked-inputs-after.json",
+      "bytes": 6029,
+      "sha256": "d49be19519255883708f4db4c820d1d7afb510906fa289ea3bf53cf3b57ca124"
+    },
+    {
+      "path": "speech-admission/locked-inputs-before.json",
+      "bytes": 6029,
+      "sha256": "d49be19519255883708f4db4c820d1d7afb510906fa289ea3bf53cf3b57ca124"
+    },
+    {
+      "path": "speech-admission/logs/admission.jsonl",
+      "bytes": 51001,
+      "sha256": "3e3b20cab19d8ea66a04d76e1c9690a1b5e72528dda60fdeade4f189fe6c5217"
+    },
+    {
+      "path": "speech-admission/logs/broker-dependencies.log",
+      "bytes": 3777,
+      "sha256": "46223d1f1d353011490f4393c620fc691bf98463716a6a5b21cf5172570ee4da"
+    },
+    {
+      "path": "speech-admission/logs/broker-flags.jsonl",
+      "bytes": 3434,
+      "sha256": "23a92139f4d2a5f9962af301fe7c3b4917ce96e054566b1b1f92d11aa9c3e83f"
+    },
+    {
+      "path": "speech-admission/logs/broker.jsonl",
+      "bytes": 37182,
+      "sha256": "e1f51443629bd48cdf78f5e0fea62bdd080a014248d9f051a1553a8435a57bc1"
+    },
+    {
+      "path": "speech-admission/logs/core.jsonl",
+      "bytes": 189385,
+      "sha256": "c19b3ca238e859ee81c314f79f5d1d4c36d784707eeb4626db0f727d3652d2f6"
+    },
+    {
+      "path": "speech-admission/logs/exercise-contract.jsonl",
+      "bytes": 119502,
+      "sha256": "e85d16241d0ea4668f471526a851c8143df38637da7777a07eab64ab8aa834ba"
+    },
+    {
+      "path": "speech-admission/logs/exercise.log",
+      "bytes": 85,
+      "sha256": "82b377f1a06cf5acda3a1cc210d23e45221d11880f56c73d127f348be0583e6a"
+    },
+    {
+      "path": "speech-admission/logs/manifest.jsonl",
+      "bytes": 140753,
+      "sha256": "3c685e7d02b603606a1d3be5c80e4dc26b584948317c55dde85645cb6bd14bf6"
+    },
+    {
+      "path": "speech-admission/logs/prepare.log",
+      "bytes": 84,
+      "sha256": "b2f4edb5b46c834c13c705744186fa9df2075a3a3e221cae7fcce01290adf2b3"
+    },
+    {
+      "path": "speech-admission/logs/projection.jsonl",
+      "bytes": 6735,
+      "sha256": "ed0ab62d67004bf9745704fb93a932ef0355ef79ee24e7d29ed658b39f607f9b"
+    },
+    {
+      "path": "speech-admission/logs/python-contracts.log",
+      "bytes": 2277,
+      "sha256": "9733e5384ea2e497146e036535719cfd9a14c1dff1ea67d21173baaa70bb1e47"
+    },
+    {
+      "path": "speech-admission/prepare-outcome.json",
+      "bytes": 5958,
+      "sha256": "f779df9c82ce1d9210f3635ffe7aceaff3daeb448695cc0354cb6d3549680e08"
+    },
+    {
+      "path": "speech-admission/process-outcome.json",
+      "bytes": 2131,
+      "sha256": "c30dbff9ddabc62bb4fbd7e0f0fad6f80ddbae18b4778c1e8d313c2fb7427182"
+    },
+    {
+      "path": "speech-admission/source-hashes-after.json",
+      "bytes": 104614,
+      "sha256": "8c88fffad35ae279fabb6018125df63b69440bdbb9b4209dee852421ccca64b7"
+    },
+    {
+      "path": "speech-admission/source-hashes-before.json",
+      "bytes": 104614,
+      "sha256": "8c88fffad35ae279fabb6018125df63b69440bdbb9b4209dee852421ccca64b7"
+    },
+    {
+      "path": "speech-admission/summary.json",
+      "bytes": 21809,
+      "sha256": "56729cf37d0f19eb0e9492187be0ad3a7b2349722ff6bc3ba79fac3be02ef541"
+    },
+    {
+      "path": "validation-evidence/safe-validation-results.json",
+      "bytes": 5222,
+      "sha256": "72ddf6aa59b8b2151839e5f6fe4d22350dbb5433219d654acaa964e6aceebec4"
+    },
+    {
+      "path": "validation-evidence/Test-Manage.log",
+      "bytes": 355,
+      "sha256": "0632cd1f4eec2a4db83832d0327eabd14c7eb78281016fc840aae4b29adc1c5a"
+    },
+    {
+      "path": "validation-evidence/Test-PackageValidation.log",
+      "bytes": 157,
+      "sha256": "08950ff5ebe7af3252cd7ca6214f5b6e9e0e95f58765cfafed34df3d890c6518"
+    },
+    {
+      "path": "validation-evidence/Test-ProcessWait.log",
+      "bytes": 116,
+      "sha256": "dca731c39f6479ecde19644d49188714a80c4215dc14581b08ff2cb83ebc2959"
+    },
+    {
+      "path": "validation-evidence/Test-ProfileRemoval.log",
+      "bytes": 161,
+      "sha256": "53f80d08356ae9c828d79b3b4315037eee104973ebc52afcdefd564cd5331c48"
+    },
+    {
+      "path": "yimecore-build/build/build-inputs.json",
+      "bytes": 5644,
+      "sha256": "afbf88d1de61be22dfeb1e982eddc60fb13fd591239628128c6638ac8a27aae7"
+    },
+    {
+      "path": "yimecore-build/build/go-runtime-dependencies.txt",
+      "bytes": 5393,
+      "sha256": "dfc672129f3ead1cca86c4491f98543098bfa7e4ea15994a2f43612b79be7b67"
+    },
+    {
+      "path": "yimecore-build/build/source-manifest.json",
+      "bytes": 129941,
+      "sha256": "e0cd6a1838fe3a579b9d8baa41857fca87b9669c2006f90ff41327f6f07b6f27"
+    },
+    {
+      "path": "yimecore-build/core-dependencies.txt",
+      "bytes": 3661,
+      "sha256": "291f0c0de7fc0475a0f0ef93bd1dfc348a193cf07820ecc2778e0bae2ccc4fcd"
+    },
+    {
+      "path": "yimecore-build/go-tests.txt",
+      "bytes": 395,
+      "sha256": "feafe3c4d006c7fe12f23368933ad832bb14f0093a72e7eb12637ed3238261ab"
+    },
+    {
+      "path": "yimecore-build/go-tests.txt.fixture.json",
+      "bytes": 930,
+      "sha256": "6c380f8fb5346c1b7bcf8d8a69469bc6ddede7f76ed0648f6a819bbb68421851"
+    },
+    {
+      "path": "yimecore-build/independence-after-tests.json",
+      "bytes": 5027,
+      "sha256": "5cec9323bfeea9adce3be937754c4c8cb72f75f60f35538496a2e727b83c58c8"
+    },
+    {
+      "path": "yimecore-build/independence-audit.json",
+      "bytes": 5027,
+      "sha256": "51c70f52fe931bca0e2b6b57e2f92b518d362b8a1ea26024ef50f5347dacafca"
+    },
+    {
+      "path": "yimecore-build/index-full.json",
+      "bytes": 962,
+      "sha256": "de79f9761aa47a25a6f908a94f7df71e7ee4672b0c333aedf9d3b9bf4ed09a5d"
+    },
+    {
+      "path": "yimecore-build/index-shorthand.json",
+      "bytes": 978,
+      "sha256": "19d62a22f1dcd4f0ba4d25e4ce8121b866ac80714ba9a54ddcb9a3ea97cd8fe7"
+    },
+    {
+      "path": "yimecore-build/index-variable.json",
+      "bytes": 975,
+      "sha256": "a53c0028b8d928f456e0d5177612cbc0aa57305d4096ff3e7f52655dedb36949"
+    },
+    {
+      "path": "yimecore-build/native-contract-x64.txt",
+      "bytes": 40,
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8"
+    },
+    {
+      "path": "yimecore-build/native-contract-x64.txt.fixture.json",
+      "bytes": 1022,
+      "sha256": "604e701ddf2cd0218aabfbd4eb0283a335cf5e201df601ad6a492bac8ed88b07"
+    },
+    {
+      "path": "yimecore-build/native-contract-x86.txt",
+      "bytes": 40,
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8"
+    },
+    {
+      "path": "yimecore-build/native-contract-x86.txt.fixture.json",
+      "bytes": 1022,
+      "sha256": "dd252ff65b26bfe71a23c17d817c3ca90369bde485054c4ffb09b79baa359f40"
+    },
+    {
+      "path": "yimecore-build/native-focus-cancellation-x64.txt",
+      "bytes": 55,
+      "sha256": "c181518da6a5945f42345daeeac5830b742f09b5025bcd4daaeb00628d14137d"
+    },
+    {
+      "path": "yimecore-build/native-focus-cancellation-x64.txt.fixture.json",
+      "bytes": 1020,
+      "sha256": "b5c1616fe9bb6353f5c3bb8f578e3fc159367b214ed87176d0dc14899d9a77bc"
+    },
+    {
+      "path": "yimecore-build/native-focus-cancellation-x86.txt",
+      "bytes": 55,
+      "sha256": "c181518da6a5945f42345daeeac5830b742f09b5025bcd4daaeb00628d14137d"
+    },
+    {
+      "path": "yimecore-build/native-focus-cancellation-x86.txt.fixture.json",
+      "bytes": 1020,
+      "sha256": "cb668252f560b1bfff8adc39fab49cba0013d29f18ed97fa18b2447363acc66c"
+    },
+    {
+      "path": "yimecore-build/package-manifest.json",
+      "bytes": 13360,
+      "sha256": "404f15447994b593b38e9aa05dd5e5faa1d4ccd3285fd318d1a6f9b4fa17f37b"
+    },
+    {
+      "path": "yimecore-build/protection-after.json",
+      "bytes": 2975,
+      "sha256": "44bcd740b554e6101a48f1744b607df54d261deebd9314d0be591c11167ab04d"
+    },
+    {
+      "path": "yimecore-build/protection-before.json",
+      "bytes": 2975,
+      "sha256": "44bcd740b554e6101a48f1744b607df54d261deebd9314d0be591c11167ab04d"
+    },
+    {
+      "path": "yimecore-build/rebuild-full.json",
+      "bytes": 952,
+      "sha256": "8520e92085be8145624fa416956c00a45406df9fdf0dc868087aa2fb73ed6905"
+    },
+    {
+      "path": "yimecore-build/rebuild-shorthand.json",
+      "bytes": 967,
+      "sha256": "18bc06f62c9277ac95cd5dd82b2d5c263693e10d98be826c6963380ebaf13db6"
+    },
+    {
+      "path": "yimecore-build/rebuild-variable.json",
+      "bytes": 964,
+      "sha256": "a4ae6a478d78aa5ccc4d3dda8d85940b84b67a5380e37fba6d87f923539079b9"
+    },
+    {
+      "path": "yimecore-build/source-snapshot.zip",
+      "bytes": 53588195,
+      "sha256": "00f6d8408e5f2fab129e1cdaee7e59e0d9d3a5632968c4d0ec3529c44146524a"
+    },
+    {
+      "path": "yimecore-build/speech-product-export-mapping.json",
+      "bytes": 6333,
+      "sha256": "2ae0a6ed0d6d7da1ef61f50b56f57dd5829c31b7758cded67ee89886f0707bdd"
+    },
+    {
+      "path": "yimecore-build/summary.json",
+      "bytes": 586,
+      "sha256": "051cd4e0d6cbbd526047f67138c5ea9d66674881b5f6ba16717ad10204f89147"
+    },
+    {
+      "path": "yimecore-build/transcript.txt",
+      "bytes": 1591,
+      "sha256": "2687f7c9255c7eb9fd8a2ec0673670dfd4b69724cc8b2e45e6c64ea292faac53"
+    },
+    {
+      "path": "yimecore-build/working-tree.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

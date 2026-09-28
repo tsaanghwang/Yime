@@ -1,0 +1,215 @@
+{
+  "schema_version": "yimecore-independence-audit-v1",
+  "generated_at": "2026-09-26T23:45:20.5360046Z",
+  "package_root": "C:\\dev\\Yime\\.tmp\\yimecore-local-product\\delivery-20260927-0ab86312\\package",
+  "manifest_sha256": "404f15447994b593b38e9aa05dd5e5faa1d4ccd3285fd318d1a6f9b4fa17f37b",
+  "manifest_tool_version": "yimecore-local-builder-v1",
+  "manifest_git_commit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+  "manifest_scope": "MYCOMPUTER native x64 runtime with current-identity x64 and x86 TSF surfaces; installed acceptance pending; frozen targets untouched",
+  "manifest_file_count": 68,
+  "manifest_integrity_passed": true,
+  "install_metadata_passed": true,
+  "required_components_passed": true,
+  "pe_architecture_passed": true,
+  "forbidden_artifacts_absent": true,
+  "forbidden_pe_imports_absent": true,
+  "pe_files": [
+    {
+      "path": "bin/YimeBroker.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreBlocklistManager.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreDiagnostics.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreExplain.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreIndependenceAudit.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreInputToolbar.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreLayoutDesigner.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreLearningManager.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreLexiconCenter.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreLexiconManager.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreProfessionalLexicon.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCorePromotionScan.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreReverseLookup.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreSentenceRegression.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreSettingsTool.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreSystemLexiconAudit.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreToolCenter.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreTrainer.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "bin/YimeCoreTrialRuntime.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll"
+      ]
+    },
+    {
+      "path": "x64/YimeRegisteredHostTests.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "kernel32.dll",
+        "ole32.dll",
+        "oleaut32.dll",
+        "user32.dll"
+      ]
+    },
+    {
+      "path": "x64/YimeTextServiceExperiment.dll",
+      "machine": "amd64",
+      "imported_libraries": [
+        "advapi32.dll",
+        "gdi32.dll",
+        "kernel32.dll",
+        "ole32.dll",
+        "oleaut32.dll",
+        "user32.dll"
+      ]
+    },
+    {
+      "path": "x64/YimeTextServiceRegistration.exe",
+      "machine": "amd64",
+      "imported_libraries": [
+        "advapi32.dll",
+        "kernel32.dll",
+        "ole32.dll"
+      ]
+    },
+    {
+      "path": "x86/YimeRegisteredHostTests.exe",
+      "machine": "i386",
+      "imported_libraries": [
+        "kernel32.dll",
+        "ole32.dll",
+        "oleaut32.dll",
+        "user32.dll"
+      ]
+    },
+    {
+      "path": "x86/YimeTextServiceExperiment.dll",
+      "machine": "i386",
+      "imported_libraries": [
+        "advapi32.dll",
+        "gdi32.dll",
+        "kernel32.dll",
+        "ole32.dll",
+        "oleaut32.dll",
+        "user32.dll"
+      ]
+    },
+    {
+      "path": "x86/YimeTextServiceRegistration.exe",
+      "machine": "i386",
+      "imported_libraries": [
+        "advapi32.dll",
+        "kernel32.dll",
+        "ole32.dll"
+      ]
+    }
+  ],
+  "failures": null,
+  "passed": true
+}
