@@ -1,0 +1,361 @@
+{
+  "formatVersion": 1,
+  "layoutId": "58f69f370aea49e03a48414dcaaf0ebdaef88be0e4fee37e2c4e1497b14976dd",
+  "mode": "demo-fixture-only",
+  "description": "三个经来源核对的演示候选子集，不是真实后端、完整词库或真实候选排序；不学习、不联网。",
+  "sources": [
+    {
+      "path": "internal_data/yime_syllable_decomposition.tsv",
+      "sha256": "ad4beb24cef782e0d4b8ce5767b45bfdb7e76ec7ea0456f3605405cc897f3f94",
+      "hashMode": "utf8-lf-no-bom"
+    },
+    {
+      "path": "internal_data/hanzi_pinyin/pinyin.txt",
+      "sha256": "dc0c7a5a15016dd821cd3b855b1477ee8c1ed3205784cea924a7bee951360b95",
+      "hashMode": "utf8-lf-no-bom"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+      "sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+      "hashMode": "utf8-lf-no-bom"
+    }
+  ],
+  "examples": [
+    {
+      "id": "ni3",
+      "label": "你 · nǐ",
+      "ids": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "code": "nlll",
+      "text": "你",
+      "pinyin": "ni3",
+      "markedPinyin": "nǐ",
+      "candidates": [
+        {
+          "id": "ni3-U4F60",
+          "text": "你",
+          "sourceWeight": 105516875,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 23790
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 9583
+            }
+          ]
+        },
+        {
+          "id": "ni3-U62DF",
+          "text": "拟",
+          "sourceWeight": 100559300,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 28778
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 17405
+            }
+          ]
+        },
+        {
+          "id": "ni3-U59B3",
+          "text": "妳",
+          "sourceWeight": 100008075,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 26430
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 13917
+            }
+          ]
+        }
+      ],
+      "provenance": [
+        {
+          "path": "internal_data/yime_syllable_decomposition.tsv",
+          "line": 926
+        }
+      ]
+    },
+    {
+      "id": "hao3",
+      "label": "好 · hǎo",
+      "ids": [
+        "N11",
+        "M12",
+        "M12",
+        "M06"
+      ],
+      "code": "hsso",
+      "text": "好",
+      "pinyin": "hao3",
+      "markedPinyin": "hǎo",
+      "candidates": [
+        {
+          "id": "hao3-U597D",
+          "text": "好",
+          "sourceWeight": 103628487,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 26376
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 13840
+            }
+          ]
+        },
+        {
+          "id": "hao3-U90DD",
+          "text": "郝",
+          "sourceWeight": 100030532,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 40545
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 34975
+            }
+          ]
+        }
+      ],
+      "provenance": [
+        {
+          "path": "internal_data/yime_syllable_decomposition.tsv",
+          "line": 494
+        }
+      ]
+    },
+    {
+      "id": "shi4",
+      "label": "是 · shì",
+      "ids": [
+        "N18",
+        "M19",
+        "M20",
+        "M21"
+      ],
+      "code": "9JKL",
+      "text": "是",
+      "pinyin": "shi4",
+      "markedPinyin": "shì",
+      "candidates": [
+        {
+          "id": "shi4-U662F",
+          "text": "是",
+          "sourceWeight": 112119028,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 29626
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 18870
+            }
+          ]
+        },
+        {
+          "id": "shi4-U4E8B",
+          "text": "事",
+          "sourceWeight": 104424403,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 23577
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 9220
+            }
+          ]
+        },
+        {
+          "id": "shi4-U5E02",
+          "text": "市",
+          "sourceWeight": 103919944,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 27533
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 15495
+            }
+          ]
+        },
+        {
+          "id": "shi4-U4E16",
+          "text": "世",
+          "sourceWeight": 102362342,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 23460
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 9036
+            }
+          ]
+        },
+        {
+          "id": "shi4-U58EB",
+          "text": "士",
+          "sourceWeight": 102058182,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 26230
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 13596
+            }
+          ]
+        },
+        {
+          "id": "shi4-U6C0F",
+          "text": "氏",
+          "sourceWeight": 101807279,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 31129
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 21143
+            }
+          ]
+        },
+        {
+          "id": "shi4-U5F0F",
+          "text": "式",
+          "sourceWeight": 101494921,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 27802
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 15880
+            }
+          ]
+        },
+        {
+          "id": "shi4-U793A",
+          "text": "示",
+          "sourceWeight": 101489814,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 34494
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 26141
+            }
+          ]
+        },
+        {
+          "id": "shi4-U52BF",
+          "text": "势",
+          "sourceWeight": 101032652,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 24651
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 10885
+            }
+          ]
+        },
+        {
+          "id": "shi4-U89C6",
+          "text": "视",
+          "sourceWeight": 101000380,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 38730
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 32296
+            }
+          ]
+        },
+        {
+          "id": "shi4-U4F8D",
+          "text": "侍",
+          "sourceWeight": 100765143,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 23835
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 9653
+            }
+          ]
+        },
+        {
+          "id": "shi4-U8BD5",
+          "text": "试",
+          "sourceWeight": 100724062,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 39257
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 33064
+            }
+          ]
+        },
+        {
+          "id": "shi4-U5BA4",
+          "text": "室",
+          "sourceWeight": 100521169,
+          "provenance": [
+            {
+              "path": "internal_data/hanzi_pinyin/pinyin.txt",
+              "line": 26927
+            },
+            {
+              "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+              "line": 14649
+            }
+          ]
+        }
+      ],
+      "provenance": [
+        {
+          "path": "internal_data/yime_syllable_decomposition.tsv",
+          "line": 1248
+        }
+      ]
+    }
+  ]
+}

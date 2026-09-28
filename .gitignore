@@ -78,5 +78,7 @@ installer/*.exe
 /tmp/
 /.generated/
 **/__pycache__/
+.playwright-cli/
+/output/playwright/
 *.py[cod]
 PIMELauncher/target/
