@@ -78,8 +78,12 @@ async (page) => {
   for (const key of data.layout.keys) await page.locator(`[data-id="${key.id}"]`).click();
   assert((await page.locator('#drill-status').innerText()).includes('已覆盖 60/60，总点按 60，重复 0'), '60-key coverage drill');
   await page.locator('#target-drill').click();
+  const firstTarget = await page.locator('.sound-key.target').getAttribute('data-id');
+  const deliberateWrong = data.layout.keys.find(key => key.id !== firstTarget).id;
+  await page.locator(`[data-id="${deliberateWrong}"]`).click();
+  assert(await page.locator('.sound-key.target').getAttribute('data-id') === firstTarget, 'wrong key keeps the current target');
   for (let i=0;i<60;i++) await page.locator('.sound-key.target').click();
-  assert((await page.locator('#drill-status').innerText()).includes('命中 60，错键 0'), 'prompted target drill');
+  assert((await page.locator('#drill-status').innerText()).includes('已完成 60/60 个目标，总点按 61，错键 1'), 'prompted target drill');
   const downloadEvent = page.waitForEvent('download');
   await page.locator('#export').click();
   const download = await downloadEvent;
@@ -92,7 +96,8 @@ async (page) => {
   assert(report.formatVersion === 3, 'baseline report v3');
   assert(report.drills.length === 2, 'coverage and target drills retained');
   assert(report.drills[0].unique === 60 && report.drills[0].duplicate === 0, 'coverage summary retained');
-  assert(report.drills[1].correct === 60 && report.drills[1].wrong === 0, 'target summary retained');
+  assert(report.drills[1].kind === 'prompted-targets-retry-until-correct' && report.drills[1].advanceOn === 'correct', 'target retry semantics retained');
+  assert(report.drills[1].correct === 60 && report.drills[1].wrong === 1 && report.drills[1].attempts === 61, 'target summary retained');
   assert(report.touches.some(touch => Number.isFinite(touch.pointer?.up?.keyLocal?.x)), 'pointer coordinates retained');
   checks.push('separate coverage/target drills, pointer geometry and JSON v3 export');
   await clear();

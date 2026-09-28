@@ -42,8 +42,8 @@ function pressSound(id, pointerType = 'keyboard', pointer = null) {
       drill.unique++;
       drillResult = 'new-key';
     }
-  } else if (drill?.kind === 'prompted-targets' && drill.attempts < drill.targets.length) {
-    intended = drill.targets[drill.attempts];
+  } else if (drill?.kind === 'prompted-targets-retry-until-correct' && drill.correct < drill.targets.length) {
+    intended = drill.targets[drill.correct];
     drill.attempts++;
     if (intended === id) { drill.correct++; drillResult = 'correct'; }
     else { drill.wrong++; drillResult = 'wrong-key'; }
@@ -71,9 +71,9 @@ function cancelPointer(reason, event = null) {
   previous.button.classList.remove('pressed');
   const rect = previous.button.getBoundingClientRect();
   const up = event ? pointerSample(event,rect) : null;
-  touches.push({id:previous.id, intended:drill?.kind === 'prompted-targets' ? drill.targets[drill.attempts] || null : null, drillKind:drill?.kind || null, drillResult:'cancelled', pointerType:previous.pointerType, cancelled:true, reason, timeMs:Math.round(performance.now()), pointer:{down:previous.down, ...(up ? {up} : {}), holdMs:Math.round(performance.now()-previous.startedAt)}});
+  touches.push({id:previous.id, intended:drill?.kind === 'prompted-targets-retry-until-correct' ? drill.targets[drill.correct] || null : null, drillKind:drill?.kind || null, drillResult:'cancelled', pointerType:previous.pointerType, cancelled:true, reason, timeMs:Math.round(performance.now()), pointer:{down:previous.down, ...(up ? {up} : {}), holdMs:Math.round(performance.now()-previous.startedAt)}});
   if (touches.length > 1000) touches.shift();
-  if (drill && ((drill.kind === 'coverage-all-keys-any-order' && drill.unique < drill.targets.length) || (drill.kind === 'prompted-targets' && drill.attempts < drill.targets.length))) drill.cancelled++;
+  if (drill && ((drill.kind === 'coverage-all-keys-any-order' && drill.unique < drill.targets.length) || (drill.kind === 'prompted-targets-retry-until-correct' && drill.correct < drill.targets.length))) drill.cancelled++;
   renderDrill();
   status('本次触摸已取消，没有输入音元。');
 }
@@ -202,7 +202,7 @@ function render() {
 }
 
 function renderDrill() {
-  const target = drill?.kind === 'prompted-targets' && drill.attempts < drill.targets.length ? drill.targets[drill.attempts] : null;
+  const target = drill?.kind === 'prompted-targets-retry-until-correct' && drill.correct < drill.targets.length ? drill.targets[drill.correct] : null;
   const seen = new Set(drill?.seen || []);
   for (const [id,button] of keyButtons) {
     button.classList.toggle('target', id === target);
@@ -214,7 +214,7 @@ function renderDrill() {
     $('drill-status').textContent = `已覆盖 ${drill.unique}/${drill.targets.length}，总点按 ${drill.attempts}，重复 ${drill.duplicate}，取消 ${drill.cancelled}。`;
   } else {
     $('drill-target').textContent = target ? `当前目标：${target}` : '目标准确度完成';
-    $('drill-status').textContent = `${target ? '请只点橙框目标 · ' : '本轮完成 · '}已点 ${drill.attempts}/${drill.targets.length}，命中 ${drill.correct}，错键 ${drill.wrong}，取消 ${drill.cancelled}。${drill.attempts ? `错键率 ${(100 * drill.wrong / drill.attempts).toFixed(1)}%（仅本轮输入设备）` : ''}`;
+    $('drill-status').textContent = `${target ? '请只点橙框目标；错键后目标保持不变 · ' : '本轮完成 · '}已完成 ${drill.correct}/${drill.targets.length} 个目标，总点按 ${drill.attempts}，错键 ${drill.wrong}，取消 ${drill.cancelled}。${drill.attempts ? `错键率 ${(100 * drill.wrong / drill.attempts).toFixed(1)}%（仅本轮输入设备）` : ''}`;
   }
 }
 
@@ -269,7 +269,7 @@ async function init() {
   $('drill').addEventListener('click', () => {
     startDrill({kind:'coverage-all-keys-any-order',targets:layout.keys.map(key => key.id),attempts:0,unique:0,duplicate:0,cancelled:0,seen:[]});
   });
-  $('target-drill').addEventListener('click', () => startDrill({kind:'prompted-targets',targets:Array.from({length:layout.keys.length},(_,i) => layout.keys[(i * 17 + 3) % layout.keys.length].id),attempts:0,correct:0,wrong:0,cancelled:0}));
+  $('target-drill').addEventListener('click', () => startDrill({kind:'prompted-targets-retry-until-correct',advanceOn:'correct',targets:Array.from({length:layout.keys.length},(_,i) => layout.keys[(i * 17 + 3) % layout.keys.length].id),attempts:0,correct:0,wrong:0,cancelled:0}));
   $('export').addEventListener('click', () => {
     const environment = screenEnvironment();
     const bounds = layout.touchTemplate.bounds;
