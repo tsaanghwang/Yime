@@ -13,6 +13,16 @@ async (page) => {
   assert(await page.locator('.sound-key').count() === 60, '60 independent keys');
   assert(await page.locator('#load-error').isHidden(), 'data loads');
   const data = await page.evaluate(async () => ({layout:await (await fetch('./data/layout.json')).json(),demo:await (await fetch('./data/demo.json')).json()}));
+  assert(data.layout.touchTemplate.format === 'keyboard-layout-editor.com', 'KLE format recorded');
+  assert(data.layout.touchTemplate.bounds.width === 10 && data.layout.touchTemplate.bounds.height === 6, 'KLE bounds recorded');
+  assert(data.layout.sources.some(source => source.path.endsWith('.kle.json')), 'KLE source provenance recorded');
+  const firstBox = await page.locator('[data-id="N01"]').boundingBox();
+  const rowEndBox = await page.locator('[data-id="N10"]').boundingBox();
+  const nextRowBox = await page.locator('[data-id="N11"]').boundingBox();
+  assert(Math.abs(firstBox.y - rowEndBox.y) < 1, 'KLE first row geometry');
+  assert(nextRowBox.y > firstBox.y + firstBox.height, 'KLE row separation');
+  assert((await page.locator('#touch-template-label').innerText()).includes('10 × 6 KLE u'), 'KLE identity visible');
+  checks.push('strict KLE geometry and source identity rendered');
   const clear = async () => { if (await page.locator('#clear').isEnabled()) await page.locator('#clear').click(); };
   // Each release must append exactly one ID, including IDs with a shared key.
   for (const key of data.layout.keys) {
@@ -65,14 +75,14 @@ async (page) => {
   assert(await page.locator('#code').innerText() === '—', 'blur cancels unconfirmed composition');
   checks.push('drag cancellation, keyboard activation, synthetic blur preserves confirmed text');
   await page.locator('#drill').click();
-  for (let i=0;i<20;i++) await page.locator('.sound-key.target').click();
-  assert((await page.locator('#drill-status').innerText()).includes('命中 20，错键 0'), '20-target drill');
+  for (let i=0;i<60;i++) await page.locator('.sound-key.target').click();
+  assert((await page.locator('#drill-status').innerText()).includes('命中 60，错键 0'), '60-key baseline drill');
   const downloadEvent = page.waitForEvent('download');
   await page.locator('#export').click();
   const download = await downloadEvent;
   await download.saveAs('output/playwright/touch-terminal-session.json');
   assert(await download.failure() === null, 'JSON download succeeds');
-  checks.push('deterministic 20-target mouse drill and JSON export');
+  checks.push('deterministic all-60-key mouse drill and JSON export');
   await clear();
   await page.locator('[data-example-id="ni3"]').click();
   await page.screenshot({path:'output/playwright/touch-terminal-desktop.png',fullPage:true});

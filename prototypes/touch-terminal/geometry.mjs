@@ -1,9 +1,10 @@
 // Planning model only: no CSS-pixel-to-millimetre or measured error claims.
-export function geometry(diagonal, gap = 2) {
-  if (!Number.isFinite(diagonal) || diagonal < 5 || diagonal > 20 || !Number.isFinite(gap) || gap < 0 || gap > 4) throw new RangeError('invalid screen assumptions');
-  const width = diagonal * 25.4 * 16 / Math.hypot(16, 10);
-  const height = diagonal * 25.4 * 10 / Math.hypot(16, 10);
-  return { width, height, keyWidth: (width * .9 - gap * 9) / 10, keyHeight: (height * .65 - gap * 5) / 6, gap };
+export function geometry(diagonal, gap = 2, aspectWidth = 16, aspectHeight = 10, columns = 10, rows = 6) {
+  const positive = [aspectWidth, aspectHeight, columns, rows].every(value => Number.isFinite(value) && value > 0);
+  if (!Number.isFinite(diagonal) || diagonal < 5 || diagonal > 80 || !Number.isFinite(gap) || gap < 0 || gap > 4 || !positive) throw new RangeError('invalid screen assumptions');
+  const width = diagonal * 25.4 * aspectWidth / Math.hypot(aspectWidth, aspectHeight);
+  const height = diagonal * 25.4 * aspectHeight / Math.hypot(aspectWidth, aspectHeight);
+  return { width, height, keyWidth: (width * .9 - gap * (columns - 1)) / columns, keyHeight: (height * .65 - gap * (rows - 1)) / rows, gap, aspectWidth, aspectHeight, columns, rows };
 }
 
 // Abramowitz-Stegun approximation; independent centred Gaussian x/y errors.

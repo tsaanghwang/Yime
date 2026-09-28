@@ -30,7 +30,7 @@ function dispatch(type, payload = {}, message = '') {
 }
 
 function pressSound(id, pointerType = 'keyboard') {
-  const intended = drill && drill.attempts < 20 ? drill.targets[drill.attempts] : null;
+  const intended = drill && drill.attempts < drill.targets.length ? drill.targets[drill.attempts] : null;
   if (intended) {
     drill.attempts++;
     if (intended === id) drill.correct++; else drill.wrong++;
@@ -48,16 +48,30 @@ function cancelPointer(reason) {
   previous.button.classList.remove('pressed');
   touches.push({id:previous.id, pointerType:previous.pointerType, cancelled:true, reason, timeMs:Math.round(performance.now())});
   if (touches.length > 1000) touches.shift();
-  if (drill && drill.attempts < 20) drill.cancelled++;
+  if (drill && drill.attempts < drill.targets.length) drill.cancelled++;
   renderDrill();
   status('本次触摸已取消，没有输入音元。');
 }
 
 function buildKeyboard() {
+  const board = $('keyboard');
+  const bounds = layout.touchTemplate.bounds;
+  board.style.setProperty('--touch-aspect', `${bounds.width}/${bounds.height}`);
   for (const key of layout.keys) {
     const button = document.createElement('button');
     button.className = `sound-key${key.id.startsWith('M') ? ' musical' : ''}`;
     button.dataset.id = key.id;
+    const touch = key.touch;
+    const left = 100 * touch.x / bounds.width;
+    const top = 100 * touch.y / bounds.height;
+    const width = 100 * touch.width / bounds.width;
+    const height = 100 * touch.height / bounds.height;
+    button.style.left = `calc(${left}% + 3px)`;
+    button.style.top = `calc(${top}% + 3px)`;
+    button.style.width = `calc(${width}% - 6px)`;
+    button.style.height = `calc(${height}% - 6px)`;
+    button.style.setProperty('--touch-key-color', touch.color);
+    button.style.setProperty('--touch-text-color', touch.textColor);
     button.setAttribute('aria-label', `${key.id} ${key.name}，物理键 ${key.key}`);
     button.title = `${key.name} · ${key.group}${key.sharedWith?.length ? ` · 与 ${key.sharedWith.join('、')} 共享物理投影` : ''}`;
     button.append(text('span',key.id,'key-id'),text('span',key.label,'key-label'),text('span',`${key.shift ? '⇧ ' : ''}${key.physicalKey}`,'key-meta'));
@@ -89,7 +103,7 @@ function buildKeyboard() {
     button.addEventListener('lostpointercapture', event => { if (active?.pointerId === event.pointerId) cancelPointer('lostpointercapture'); });
     // Pointer path already dispatched on release; only native keyboard/AT click remains.
     button.addEventListener('click', event => { if (event.detail === 0 && !event.pointerType) pressSound(key.id); });
-    $('keyboard').append(button);
+    board.append(button);
     keyButtons.set(key.id, button);
   }
   $('keyboard').addEventListener('keydown', event => {
@@ -114,6 +128,19 @@ function buildKeyboard() {
       if (mapped.sharedWith?.length) status(`物理键采用主 ID ${mapped.id}；独立音元请点击其触摸键。`);
     }
   });
+}
+
+function screenEnvironment() {
+  const orientation = screen.orientation ? {type:screen.orientation.type, angle:screen.orientation.angle} : null;
+  return {
+    screenCssPx:{width:screen.width,height:screen.height,availWidth:screen.availWidth,availHeight:screen.availHeight},
+    viewportCssPx:{width:innerWidth,height:innerHeight},
+    devicePixelRatio,
+    maxTouchPoints:navigator.maxTouchPoints || 0,
+    coarsePointer:matchMedia('(pointer: coarse)').matches,
+    anyCoarsePointer:matchMedia('(any-pointer: coarse)').matches,
+    orientation
+  };
 }
 
 function render() {
@@ -148,20 +175,23 @@ function render() {
 }
 
 function renderDrill() {
-  const target = drill && drill.attempts < 20 ? drill.targets[drill.attempts] : null;
+  const target = drill && drill.attempts < drill.targets.length ? drill.targets[drill.attempts] : null;
   for (const [id,button] of keyButtons) button.classList.toggle('target', id === target);
   if (!drill) return;
-  $('drill-status').textContent = `${target ? `请点 ${target} · ` : '本轮完成 · '}已点 ${drill.attempts}/20，命中 ${drill.correct}，错键 ${drill.wrong}，取消 ${drill.cancelled}。${drill.attempts ? `错键率 ${(100 * drill.wrong / drill.attempts).toFixed(1)}%（仅本轮输入设备）` : ''}`;
+  $('drill-status').textContent = `${target ? `请点 ${target} · ` : '本轮完成 · '}已点 ${drill.attempts}/${drill.targets.length}，命中 ${drill.correct}，错键 ${drill.wrong}，取消 ${drill.cancelled}。${drill.attempts ? `错键率 ${(100 * drill.wrong / drill.attempts).toFixed(1)}%（仅本轮输入设备）` : ''}`;
 }
 
 function updateGeometry() {
-  const diagonal = Number($('diagonal').value), g = geometry(diagonal);
+  const diagonal = Number($('diagonal').value), environment = screenEnvironment();
+  const bounds = layout.touchTemplate.bounds;
+  const g = geometry(diagonal, 2, environment.screenCssPx.width, environment.screenCssPx.height, bounds.width, bounds.height);
   $('diagonal-value').textContent = `${diagonal.toFixed(1)}″`;
   $('key-size').textContent = `${g.keyWidth.toFixed(1)} × ${g.keyHeight.toFixed(1)}`;
   $('miss-model').textContent = `${(100 * missProbability(g.keyWidth,g.keyHeight,2)).toFixed(2)}%`;
   $('size-advice').textContent = Math.min(g.keyWidth,g.keyHeight) < 9 ? '短边低于 9 mm 假设目标：优先验证窄键误触。' : '达到短边 ≥9 mm 的试制假设；仍需真人触屏验证。';
   const rect = keyButtons.values().next().value?.getBoundingClientRect();
-  if (rect) $('actual-size').textContent = `当前浏览器实际键面约 ${rect.width.toFixed(0)} × ${rect.height.toFixed(0)} CSS px。窗口窄时横向滚动，保持 60 键排列。`;
+  $('environment').textContent = `浏览器检测：screen ${environment.screenCssPx.width} × ${environment.screenCssPx.height} CSS px，DPR ${environment.devicePixelRatio}，maxTouchPoints ${environment.maxTouchPoints}，coarse pointer ${environment.anyCoarsePointer ? '是' : '否'}。复制显示模式无法由页面独立核实。`;
+  if (rect) $('actual-size').textContent = `当前第一个 KLE 1u 键面约 ${rect.width.toFixed(0)} × ${rect.height.toFixed(0)} CSS px。窗口窄时横向滚动，保持模板几何。`;
 }
 
 async function init() {
@@ -194,17 +224,21 @@ async function init() {
   document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelPointer('page-hidden'); if (session.state.ids.length) dispatch('clear'); } });
   $('drill').addEventListener('click', () => {
     dispatch('clear');
-    drill = {targets:Array.from({length:20},(_,i) => layout.keys[(i * 17 + 3) % layout.keys.length].id),attempts:0,correct:0,wrong:0,cancelled:0};
+    drill = {kind:'single-pass-all-keys',targets:Array.from({length:layout.keys.length},(_,i) => layout.keys[(i * 17 + 3) % layout.keys.length].id),attempts:0,correct:0,wrong:0,cancelled:0};
     renderDrill();
   });
   $('export').addEventListener('click', () => {
-    const report = {formatVersion:1,mode:'offline-mock',createdAt:new Date().toISOString(),layoutId:layout.layoutId,sources:[...layout.sources,...demo.sources],screenAssumption:{diagonalInches:Number($('diagonal').value),...geometry(Number($('diagonal').value))},viewport:{width:innerWidth,height:innerHeight,devicePixelRatio},drill,touches,handlerToNextFrameMs:latencies,trace,limits:{trace:100,touches:1000,latency:1000},note:'仅本页记录；非真实输入法、触控误触率或contact-to-photon验收。'};
+    const environment = screenEnvironment();
+    const bounds = layout.touchTemplate.bounds;
+    const report = {formatVersion:2,mode:'offline-touch-baseline',createdAt:new Date().toISOString(),layoutId:layout.layoutId,touchTemplateId:layout.touchTemplate.id,touchTemplate:layout.touchTemplate,sources:[...layout.sources,...demo.sources],screenAssumption:{diagonalInches:Number($('diagonal').value),...geometry(Number($('diagonal').value),2,environment.screenCssPx.width,environment.screenCssPx.height,bounds.width,bounds.height)},environment,drill,touches,handlerToNextFrameMs:latencies,trace,limits:{trace:100,touches:1000,latency:1000},hardwareAcceptance:false,note:'真实 pointerType 与页面处理代理值；未尺测、未高速相机测量时，不是触控误触率、contact-to-photon 或输入法验收。'};
     const url = URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
     const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'yime-touch-session.json'; anchor.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     status('已导出本页记录；未读取系统或输入法用户数据。');
   });
-  $('layout-id').textContent = `layoutId：${layout.layoutId} · ${layout.keys.length} 独立音元 / ${new Set(layout.keys.map(k=>k.key)).size} 物理投影字符`;
+  const bounds = layout.touchTemplate.bounds;
+  $('touch-template-label').textContent = `${bounds.width} × ${bounds.height} KLE u`;
+  $('layout-id').textContent = `layoutId：${layout.layoutId} · touchTemplateId：${layout.touchTemplate.id} · ${layout.keys.length} 独立音元 / ${new Set(layout.keys.map(k=>k.key)).size} 桌面投影字符`;
   for (const source of [...layout.sources,...demo.sources]) $('sources').append(text('li',`${source.path} · SHA-256（${source.hashMode}）${source.sha256}`));
   render(); updateGeometry(); status('就绪。可逐键输入右侧引导样例，或点击“载入”。');
 }

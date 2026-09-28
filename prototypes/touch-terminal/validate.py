@@ -9,6 +9,7 @@ node = shutil.which('node')
 if not node:
     raise SystemExit('Node.js 20+ is required for the pure JavaScript checks.')
 commands = [
+    [sys.executable, '-X', 'utf8', 'kle_layout.py', 'design/touch-terminal-60.kle.json'],
     [sys.executable, '-X', 'utf8', 'generate_data.py', '--check'],
     [sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', '.', '-p', 'test_*.py', '-v'],
     [node, '--test', 'core.test.mjs', 'geometry.test.mjs'],
@@ -18,4 +19,4 @@ commands = [
 for command in commands:
     print('RUN ' + ' '.join(command), flush=True)
     subprocess.run(command, cwd=HERE, check=True)
-print('PASS: source provenance, offline protocol, geometry and syntax. Physical touch/IME acceptance not run.')
+print('PASS: KLE template, source provenance, offline protocol, geometry and syntax. Physical touch/IME acceptance not run.')

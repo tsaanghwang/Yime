@@ -1,8 +1,29 @@
 {
   "formatVersion": 1,
   "layoutId": "58f69f370aea49e03a48414dcaaf0ebdaef88be0e4fee37e2c4e1497b14976dd",
-  "description": "生成的触摸呈现：60 个独立音元 ID，沿用当前 58 个大小写敏感键码投影。",
+  "touchTemplate": {
+    "source": "prototypes/touch-terminal/design/touch-terminal-60.kle.json",
+    "id": "2ef41332cbca43ec1455ae9efa3d0c41b87297f320fc9543425801109453561c",
+    "sourceSha256": "021b9bded45f13b84c01bc06d53a34d2046e037bcf227de4a99bdf08d46f1860",
+    "format": "keyboard-layout-editor.com",
+    "unit": "kle-u",
+    "metadata": {
+      "name": "Yime touch terminal 60-ID baseline",
+      "author": "Yime project",
+      "notes": "Touch presentation geometry only. Each key contains one stable Yinyuan ID. This file does not define desktop key codes or Yinyuan semantics."
+    },
+    "bounds": {
+      "width": 10.0,
+      "height": 6.0
+    }
+  },
+  "description": "KLE 触摸几何与规范语义合并生成：60 个独立音元 ID；桌面键码仍沿用唯一规范真源的 58 个大小写敏感投影。",
   "sources": [
+    {
+      "path": "prototypes/touch-terminal/design/touch-terminal-60.kle.json",
+      "sha256": "021b9bded45f13b84c01bc06d53a34d2046e037bcf227de4a99bdf08d46f1860",
+      "hashMode": "utf8-lf-no-bom"
+    },
     {
       "path": "internal_data/manual_key_layout.json",
       "sha256": "fdc73667015d97d9173d11f2ad3d56a5dba6f95feee4802ed67821d8ad68094a",
@@ -41,7 +62,19 @@
       "sharedWith": [],
       "group": "zaoyin-labial",
       "symbol": "􀀀",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N01"
+        ],
+        "row": 0
+      }
     },
     {
       "id": "N02",
@@ -54,7 +87,19 @@
       "sharedWith": [],
       "group": "zaoyin-labial",
       "symbol": "􀀁",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 1.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N02"
+        ],
+        "row": 0
+      }
     },
     {
       "id": "N03",
@@ -67,7 +112,19 @@
       "sharedWith": [],
       "group": "zaoyin-labial",
       "symbol": "􀀂",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 2.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N03"
+        ],
+        "row": 0
+      }
     },
     {
       "id": "N04",
@@ -80,7 +137,19 @@
       "sharedWith": [],
       "group": "zaoyin-labial",
       "symbol": "􀀃",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 3.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N04"
+        ],
+        "row": 0
+      }
     },
     {
       "id": "N05",
@@ -93,7 +162,19 @@
       "sharedWith": [],
       "group": "zaoyin-alveolar",
       "symbol": "􀀄",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 4.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N05"
+        ],
+        "row": 0
+      }
     },
     {
       "id": "N06",
@@ -106,7 +187,19 @@
       "sharedWith": [],
       "group": "zaoyin-alveolar",
       "symbol": "􀀅",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 5.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N06"
+        ],
+        "row": 0
+      }
     },
     {
       "id": "N07",
@@ -119,7 +212,19 @@
       "sharedWith": [],
       "group": "zaoyin-alveolar",
       "symbol": "􀀆",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 6.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N07"
+        ],
+        "row": 0
+      }
     },
     {
       "id": "N08",
@@ -132,7 +237,19 @@
       "sharedWith": [],
       "group": "zaoyin-alveolar",
       "symbol": "􀀇",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 7.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N08"
+        ],
+        "row": 0
+      }
     },
     {
       "id": "N09",
@@ -145,7 +262,19 @@
       "sharedWith": [],
       "group": "zaoyin-velar",
       "symbol": "􀀈",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 8.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N09"
+        ],
+        "row": 0
+      }
     },
     {
       "id": "N10",
@@ -158,7 +287,19 @@
       "sharedWith": [],
       "group": "zaoyin-velar",
       "symbol": "􀀉",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 9.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N10"
+        ],
+        "row": 0
+      }
     },
     {
       "id": "N11",
@@ -171,7 +312,19 @@
       "sharedWith": [],
       "group": "zaoyin-velar",
       "symbol": "􀀊",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 0.0,
+        "y": 1.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N11"
+        ],
+        "row": 1
+      }
     },
     {
       "id": "N12",
@@ -186,7 +339,19 @@
       ],
       "group": "zaoyin-velar",
       "symbol": "􀀋",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 1.0,
+        "y": 1.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N12"
+        ],
+        "row": 1
+      }
     },
     {
       "id": "N13",
@@ -199,7 +364,19 @@
       "sharedWith": [],
       "group": "zaoyin-dental",
       "symbol": "􀀌",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 2.0,
+        "y": 1.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N13"
+        ],
+        "row": 1
+      }
     },
     {
       "id": "N14",
@@ -212,7 +389,19 @@
       "sharedWith": [],
       "group": "zaoyin-dental",
       "symbol": "􀀍",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 3.0,
+        "y": 1.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N14"
+        ],
+        "row": 1
+      }
     },
     {
       "id": "N15",
@@ -225,7 +414,19 @@
       "sharedWith": [],
       "group": "zaoyin-dental",
       "symbol": "􀀎",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 4.0,
+        "y": 1.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N15"
+        ],
+        "row": 1
+      }
     },
     {
       "id": "N16",
@@ -238,7 +439,19 @@
       "sharedWith": [],
       "group": "zaoyin-retroflex",
       "symbol": "􀀏",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 5.0,
+        "y": 1.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N16"
+        ],
+        "row": 1
+      }
     },
     {
       "id": "N17",
@@ -251,7 +464,19 @@
       "sharedWith": [],
       "group": "zaoyin-retroflex",
       "symbol": "􀀐",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 6.0,
+        "y": 1.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N17"
+        ],
+        "row": 1
+      }
     },
     {
       "id": "N18",
@@ -264,7 +489,19 @@
       "sharedWith": [],
       "group": "zaoyin-retroflex",
       "symbol": "􀀑",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 7.0,
+        "y": 1.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N18"
+        ],
+        "row": 1
+      }
     },
     {
       "id": "N19",
@@ -277,7 +514,19 @@
       "sharedWith": [],
       "group": "zaoyin-retroflex",
       "symbol": "􀀒",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 8.0,
+        "y": 1.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N19"
+        ],
+        "row": 1
+      }
     },
     {
       "id": "N20",
@@ -290,7 +539,19 @@
       "sharedWith": [],
       "group": "zaoyin-palatal",
       "symbol": "􀀓",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 9.0,
+        "y": 1.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N20"
+        ],
+        "row": 1
+      }
     },
     {
       "id": "N21",
@@ -303,7 +564,19 @@
       "sharedWith": [],
       "group": "zaoyin-palatal",
       "symbol": "􀀔",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 0.0,
+        "y": 2.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N21"
+        ],
+        "row": 2
+      }
     },
     {
       "id": "N22",
@@ -316,7 +589,19 @@
       "sharedWith": [],
       "group": "zaoyin-palatal",
       "symbol": "􀀕",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 1.0,
+        "y": 2.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N22"
+        ],
+        "row": 2
+      }
     },
     {
       "id": "N23",
@@ -329,7 +614,19 @@
       "sharedWith": [],
       "group": "zaoyin-palatal",
       "symbol": "􀀖",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 2.0,
+        "y": 2.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N23"
+        ],
+        "row": 2
+      }
     },
     {
       "id": "N24",
@@ -342,7 +639,19 @@
       "sharedWith": [],
       "group": "zaoyin-dental",
       "symbol": "􀀗",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 3.0,
+        "y": 2.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N24"
+        ],
+        "row": 2
+      }
     },
     {
       "id": "N25",
@@ -357,7 +666,19 @@
       ],
       "group": "zaoyin-contextual",
       "symbol": "􀀘",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 4.0,
+        "y": 2.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N25"
+        ],
+        "row": 2
+      }
     },
     {
       "id": "N26",
@@ -372,7 +693,19 @@
       ],
       "group": "zaoyin-contextual",
       "symbol": "􀀙",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 5.0,
+        "y": 2.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N26"
+        ],
+        "row": 2
+      }
     },
     {
       "id": "N27",
@@ -387,7 +720,19 @@
       ],
       "group": "zaoyin-contextual",
       "symbol": "􀀚",
-      "toneGrade": ""
+      "toneGrade": "",
+      "touch": {
+        "x": 6.0,
+        "y": 2.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#e4eee7",
+        "textColor": "#172c30",
+        "legends": [
+          "N27"
+        ],
+        "row": 2
+      }
     },
     {
       "id": "M01",
@@ -400,7 +745,19 @@
       "sharedWith": [],
       "group": "yueyin-i",
       "symbol": "􀀠",
-      "toneGrade": "high"
+      "toneGrade": "high",
+      "touch": {
+        "x": 7.0,
+        "y": 2.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M01"
+        ],
+        "row": 2
+      }
     },
     {
       "id": "M02",
@@ -413,7 +770,19 @@
       "sharedWith": [],
       "group": "yueyin-i",
       "symbol": "􀀡",
-      "toneGrade": "mid"
+      "toneGrade": "mid",
+      "touch": {
+        "x": 8.0,
+        "y": 2.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M02"
+        ],
+        "row": 2
+      }
     },
     {
       "id": "M03",
@@ -426,7 +795,19 @@
       "sharedWith": [],
       "group": "yueyin-i",
       "symbol": "􀀢",
-      "toneGrade": "low"
+      "toneGrade": "low",
+      "touch": {
+        "x": 9.0,
+        "y": 2.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M03"
+        ],
+        "row": 2
+      }
     },
     {
       "id": "M04",
@@ -439,7 +820,19 @@
       "sharedWith": [],
       "group": "yueyin-u",
       "symbol": "􀀣",
-      "toneGrade": "high"
+      "toneGrade": "high",
+      "touch": {
+        "x": 0.0,
+        "y": 3.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M04"
+        ],
+        "row": 3
+      }
     },
     {
       "id": "M05",
@@ -452,7 +845,19 @@
       "sharedWith": [],
       "group": "yueyin-u",
       "symbol": "􀀤",
-      "toneGrade": "mid"
+      "toneGrade": "mid",
+      "touch": {
+        "x": 1.0,
+        "y": 3.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M05"
+        ],
+        "row": 3
+      }
     },
     {
       "id": "M06",
@@ -465,7 +870,19 @@
       "sharedWith": [],
       "group": "yueyin-u",
       "symbol": "􀀥",
-      "toneGrade": "low"
+      "toneGrade": "low",
+      "touch": {
+        "x": 2.0,
+        "y": 3.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M06"
+        ],
+        "row": 3
+      }
     },
     {
       "id": "M07",
@@ -478,7 +895,19 @@
       "sharedWith": [],
       "group": "yueyin-v",
       "symbol": "􀀦",
-      "toneGrade": "high"
+      "toneGrade": "high",
+      "touch": {
+        "x": 3.0,
+        "y": 3.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M07"
+        ],
+        "row": 3
+      }
     },
     {
       "id": "M08",
@@ -491,7 +920,19 @@
       "sharedWith": [],
       "group": "yueyin-v",
       "symbol": "􀀧",
-      "toneGrade": "mid"
+      "toneGrade": "mid",
+      "touch": {
+        "x": 4.0,
+        "y": 3.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M08"
+        ],
+        "row": 3
+      }
     },
     {
       "id": "M09",
@@ -504,7 +945,19 @@
       "sharedWith": [],
       "group": "yueyin-v",
       "symbol": "􀀨",
-      "toneGrade": "low"
+      "toneGrade": "low",
+      "touch": {
+        "x": 5.0,
+        "y": 3.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M09"
+        ],
+        "row": 3
+      }
     },
     {
       "id": "M10",
@@ -517,7 +970,19 @@
       "sharedWith": [],
       "group": "yueyin-a",
       "symbol": "􀀩",
-      "toneGrade": "high"
+      "toneGrade": "high",
+      "touch": {
+        "x": 6.0,
+        "y": 3.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M10"
+        ],
+        "row": 3
+      }
     },
     {
       "id": "M11",
@@ -530,7 +995,19 @@
       "sharedWith": [],
       "group": "yueyin-a",
       "symbol": "􀀪",
-      "toneGrade": "mid"
+      "toneGrade": "mid",
+      "touch": {
+        "x": 7.0,
+        "y": 3.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M11"
+        ],
+        "row": 3
+      }
     },
     {
       "id": "M12",
@@ -543,7 +1020,19 @@
       "sharedWith": [],
       "group": "yueyin-a",
       "symbol": "􀀫",
-      "toneGrade": "low"
+      "toneGrade": "low",
+      "touch": {
+        "x": 8.0,
+        "y": 3.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M12"
+        ],
+        "row": 3
+      }
     },
     {
       "id": "M13",
@@ -556,7 +1045,19 @@
       "sharedWith": [],
       "group": "yueyin-o",
       "symbol": "􀀬",
-      "toneGrade": "high"
+      "toneGrade": "high",
+      "touch": {
+        "x": 9.0,
+        "y": 3.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M13"
+        ],
+        "row": 3
+      }
     },
     {
       "id": "M14",
@@ -569,7 +1070,19 @@
       "sharedWith": [],
       "group": "yueyin-o",
       "symbol": "􀀭",
-      "toneGrade": "mid"
+      "toneGrade": "mid",
+      "touch": {
+        "x": 0.0,
+        "y": 4.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M14"
+        ],
+        "row": 4
+      }
     },
     {
       "id": "M15",
@@ -582,7 +1095,19 @@
       "sharedWith": [],
       "group": "yueyin-o",
       "symbol": "􀀮",
-      "toneGrade": "low"
+      "toneGrade": "low",
+      "touch": {
+        "x": 1.0,
+        "y": 4.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M15"
+        ],
+        "row": 4
+      }
     },
     {
       "id": "M16",
@@ -595,7 +1120,19 @@
       "sharedWith": [],
       "group": "yueyin-e",
       "symbol": "􀀯",
-      "toneGrade": "high"
+      "toneGrade": "high",
+      "touch": {
+        "x": 2.0,
+        "y": 4.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M16"
+        ],
+        "row": 4
+      }
     },
     {
       "id": "M17",
@@ -608,7 +1145,19 @@
       "sharedWith": [],
       "group": "yueyin-e",
       "symbol": "􀀰",
-      "toneGrade": "mid"
+      "toneGrade": "mid",
+      "touch": {
+        "x": 3.0,
+        "y": 4.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M17"
+        ],
+        "row": 4
+      }
     },
     {
       "id": "M18",
@@ -621,7 +1170,19 @@
       "sharedWith": [],
       "group": "yueyin-e",
       "symbol": "􀀱",
-      "toneGrade": "low"
+      "toneGrade": "low",
+      "touch": {
+        "x": 4.0,
+        "y": 4.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M18"
+        ],
+        "row": 4
+      }
     },
     {
       "id": "M19",
@@ -634,7 +1195,19 @@
       "sharedWith": [],
       "group": "yueyin-apical-i",
       "symbol": "􀀲",
-      "toneGrade": "high"
+      "toneGrade": "high",
+      "touch": {
+        "x": 5.0,
+        "y": 4.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M19"
+        ],
+        "row": 4
+      }
     },
     {
       "id": "M20",
@@ -647,7 +1220,19 @@
       "sharedWith": [],
       "group": "yueyin-apical-i",
       "symbol": "􀀳",
-      "toneGrade": "mid"
+      "toneGrade": "mid",
+      "touch": {
+        "x": 6.0,
+        "y": 4.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M20"
+        ],
+        "row": 4
+      }
     },
     {
       "id": "M21",
@@ -660,7 +1245,19 @@
       "sharedWith": [],
       "group": "yueyin-apical-i",
       "symbol": "􀀴",
-      "toneGrade": "low"
+      "toneGrade": "low",
+      "touch": {
+        "x": 7.0,
+        "y": 4.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M21"
+        ],
+        "row": 4
+      }
     },
     {
       "id": "M22",
@@ -673,7 +1270,19 @@
       "sharedWith": [],
       "group": "yueyin-er",
       "symbol": "􀀵",
-      "toneGrade": "high"
+      "toneGrade": "high",
+      "touch": {
+        "x": 8.0,
+        "y": 4.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M22"
+        ],
+        "row": 4
+      }
     },
     {
       "id": "M23",
@@ -686,7 +1295,19 @@
       "sharedWith": [],
       "group": "yueyin-er",
       "symbol": "􀀶",
-      "toneGrade": "mid"
+      "toneGrade": "mid",
+      "touch": {
+        "x": 9.0,
+        "y": 4.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M23"
+        ],
+        "row": 4
+      }
     },
     {
       "id": "M24",
@@ -699,7 +1320,19 @@
       "sharedWith": [],
       "group": "yueyin-er",
       "symbol": "􀀷",
-      "toneGrade": "low"
+      "toneGrade": "low",
+      "touch": {
+        "x": 0.0,
+        "y": 5.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M24"
+        ],
+        "row": 5
+      }
     },
     {
       "id": "M25",
@@ -712,7 +1345,19 @@
       "sharedWith": [],
       "group": "yueyin-m",
       "symbol": "􀀸",
-      "toneGrade": "high"
+      "toneGrade": "high",
+      "touch": {
+        "x": 1.0,
+        "y": 5.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M25"
+        ],
+        "row": 5
+      }
     },
     {
       "id": "M26",
@@ -725,7 +1370,19 @@
       "sharedWith": [],
       "group": "yueyin-m",
       "symbol": "􀀹",
-      "toneGrade": "mid"
+      "toneGrade": "mid",
+      "touch": {
+        "x": 2.0,
+        "y": 5.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M26"
+        ],
+        "row": 5
+      }
     },
     {
       "id": "M27",
@@ -738,7 +1395,19 @@
       "sharedWith": [],
       "group": "yueyin-m",
       "symbol": "􀀺",
-      "toneGrade": "low"
+      "toneGrade": "low",
+      "touch": {
+        "x": 3.0,
+        "y": 5.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M27"
+        ],
+        "row": 5
+      }
     },
     {
       "id": "M28",
@@ -751,7 +1420,19 @@
       "sharedWith": [],
       "group": "yueyin-n",
       "symbol": "􀀻",
-      "toneGrade": "high"
+      "toneGrade": "high",
+      "touch": {
+        "x": 4.0,
+        "y": 5.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M28"
+        ],
+        "row": 5
+      }
     },
     {
       "id": "M29",
@@ -764,7 +1445,19 @@
       "sharedWith": [],
       "group": "yueyin-n",
       "symbol": "􀀼",
-      "toneGrade": "mid"
+      "toneGrade": "mid",
+      "touch": {
+        "x": 5.0,
+        "y": 5.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M29"
+        ],
+        "row": 5
+      }
     },
     {
       "id": "M30",
@@ -777,7 +1470,19 @@
       "sharedWith": [],
       "group": "yueyin-n",
       "symbol": "􀀽",
-      "toneGrade": "low"
+      "toneGrade": "low",
+      "touch": {
+        "x": 6.0,
+        "y": 5.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M30"
+        ],
+        "row": 5
+      }
     },
     {
       "id": "M31",
@@ -790,7 +1495,19 @@
       "sharedWith": [],
       "group": "yueyin-ng",
       "symbol": "􀀾",
-      "toneGrade": "high"
+      "toneGrade": "high",
+      "touch": {
+        "x": 7.0,
+        "y": 5.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M31"
+        ],
+        "row": 5
+      }
     },
     {
       "id": "M32",
@@ -803,7 +1520,19 @@
       "sharedWith": [],
       "group": "yueyin-ng",
       "symbol": "􀀿",
-      "toneGrade": "mid"
+      "toneGrade": "mid",
+      "touch": {
+        "x": 8.0,
+        "y": 5.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M32"
+        ],
+        "row": 5
+      }
     },
     {
       "id": "M33",
@@ -816,7 +1545,19 @@
       "sharedWith": [],
       "group": "yueyin-ng",
       "symbol": "􀁀",
-      "toneGrade": "low"
+      "toneGrade": "low",
+      "touch": {
+        "x": 9.0,
+        "y": 5.0,
+        "width": 1.0,
+        "height": 1.0,
+        "color": "#f4e4cf",
+        "textColor": "#3a2b20",
+        "legends": [
+          "M33"
+        ],
+        "row": 5
+      }
     }
   ],
   "categories": [

@@ -30,6 +30,12 @@ class TouchDataTests(unittest.TestCase):
         self.assertEqual(keys["N12"]["key"], keys["N26"]["key"])
         self.assertNotEqual(keys["N12"]["symbol"], keys["N26"]["symbol"])
         self.assertEqual(keys["N25"]["sharedWith"], ["N27"])
+        self.assertEqual(self.layout["touchTemplate"]["format"], "keyboard-layout-editor.com")
+        self.assertEqual(self.layout["touchTemplate"]["bounds"], {"width": 10.0, "height": 6.0})
+        self.assertEqual(len(self.layout["touchTemplate"]["id"]), 64)
+        self.assertEqual(len(self.layout["touchTemplate"]["sourceSha256"]), 64)
+        self.assertEqual(keys["N01"]["touch"]["x"], 0.0)
+        self.assertEqual(keys["M33"]["touch"]["y"], 5.0)
 
     def test_demo_ids_are_upstream_and_candidates_are_attested(self) -> None:
         mapping = {entry["id"]: entry["key"] for entry in self.layout["keys"]}
@@ -102,6 +108,26 @@ class TouchDataTests(unittest.TestCase):
                 (root / path).write_bytes(content.replace("\n", "\r\n").encode("utf-8"))
             self.assertEqual(data.source_records(root, data.LAYOUT_SOURCES), expected)
             self.assertEqual(data.build_layout(root), self.layout)
+
+    def test_kle_formatting_does_not_change_touch_geometry_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = self.fixture_root(temporary)
+            source = data.read_json(root / data.KLE)
+            (root / data.KLE).write_text(json.dumps(source, ensure_ascii=False), encoding="utf-8")
+            changed = data.build_layout(root)
+            self.assertEqual(changed["touchTemplate"]["id"], self.layout["touchTemplate"]["id"])
+            self.assertNotEqual(changed["touchTemplate"]["sourceSha256"], self.layout["touchTemplate"]["sourceSha256"])
+
+    def test_touch_geometry_identity_changes_without_changing_desktop_projection(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = self.fixture_root(temporary)
+            source = data.read_json(root / data.KLE)
+            source[1].insert(1, {"x": 0.25})
+            (root / data.KLE).write_text(json.dumps(source), encoding="utf-8")
+            changed = data.build_layout(root)
+            self.assertEqual(changed["layoutId"], self.layout["layoutId"])
+            self.assertNotEqual(changed["touchTemplate"]["id"], self.layout["touchTemplate"]["id"])
+            self.assertEqual(changed["keys"][0]["touch"]["x"], 0.25)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@
 
 ## 事件与状态
 
-通过 `createSession(layout, demo, sessionId)` 建立会话，使用 `session.dispatch(event)`，从 `session.state` 读取副本。`layoutId` 必须采用生成数据中的精确值；布局变化时创建新会话。
+通过 `createSession(layout, demo, sessionId)` 建立会话，使用 `session.dispatch(event)`，从 `session.state` 读取副本。`layoutId` 必须采用生成数据中的精确桌面投影值；投影变化时创建新会话。KLE 触摸几何另以 `touchTemplateId` 记录在实屏报告中，几何变化不伪装成桌面编码变化。
 
 ```json
 {

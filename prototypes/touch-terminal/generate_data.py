@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Generate traceable, offline-only touch-terminal fixtures from repository data.
 
-The keyboard source is always internal_data/manual_key_layout.json. Generated
-Rime dictionaries validate demo candidates; they never supply semantic IDs.
+KLE owns touch presentation geometry; internal_data/manual_key_layout.json
+remains the only Yinyuan-to-desktop-key source. Generated Rime dictionaries
+validate demo candidates; they never supply semantic IDs.
 Text-source SHA-256 values cover UTF-8 content normalized to LF (without a BOM),
 so Windows and Unix checkouts produce identical artifacts. No external source,
 installed input method, user-data directory or network is accessed.
@@ -24,6 +25,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from tools.resolve_manual_key_layout import build_resolved_layout  # noqa: E402
+from kle_layout import load_kle  # noqa: E402
 from yime.utils.yinyuan_id_chain import (  # noqa: E402
     expected_yinyuan_ids,
     layout_projection_digest,
@@ -32,6 +34,7 @@ from yime.utils.yinyuan_id_chain import (  # noqa: E402
 )
 
 MANUAL = "internal_data/manual_key_layout.json"
+KLE = "prototypes/touch-terminal/design/touch-terminal-60.kle.json"
 SYMBOLS = "internal_data/key_to_symbol.json"
 PACKAGED = "go-backend/input_methods/yime/data/yime_yinyuan_layout.json"
 CATALOG = "go-backend/input_methods/yime/data/trainer/yinyuan_catalog.json"
@@ -39,7 +42,7 @@ GROUPS = "go-backend/input_methods/yime/data/trainer/yinyuan_groups.json"
 DECOMPOSITION = "internal_data/yime_syllable_decomposition.tsv"
 PINYIN = "internal_data/hanzi_pinyin/pinyin.txt"
 DICTIONARY = "go-backend/input_methods/yime/data/yime_full.dict.yaml"
-LAYOUT_SOURCES = (MANUAL, SYMBOLS, PACKAGED, CATALOG, GROUPS)
+LAYOUT_SOURCES = (KLE, MANUAL, SYMBOLS, PACKAGED, CATALOG, GROUPS)
 DEMO_SOURCES = (DECOMPOSITION, PINYIN, DICTIONARY)
 ID_ORDER = [*(f"N{i:02d}" for i in range(1, 28)), *(f"M{i:02d}" for i in range(1, 34))]
 # These select attested records, not hand-authored encodings or candidate ranks.
@@ -68,6 +71,10 @@ def source_records(root: Path, paths: tuple[str, ...]) -> list[dict[str, str]]:
 
 
 def build_layout(root: Path = ROOT) -> dict[str, Any]:
+    touch_template, touch_source_digest = load_kle(root / KLE, ID_ORDER)
+    touch_template_id = hashlib.sha256(json.dumps(
+        touch_template, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")).hexdigest()
     manual = read_json(root / MANUAL)
     symbols = read_json(root / SYMBOLS)
     if set(symbols) != expected_yinyuan_ids() or any(
@@ -110,7 +117,8 @@ def build_layout(root: Path = ROOT) -> dict[str, Any]:
             shared[member] = [other for other in members if other != member]
     keys = []
     grade_labels = {"high": "高", "mid": "中", "low": "低"}
-    for yinyuan_id in ID_ORDER:
+    for touch in touch_template["keys"]:
+        yinyuan_id = touch["id"]
         entry, slot = catalog[yinyuan_id], slots[yinyuan_id]
         grade = entry.get("tone_grade", "")
         if entry["category"] == "shouyin":
@@ -123,9 +131,15 @@ def build_layout(root: Path = ROOT) -> dict[str, Any]:
                      "category": entry["category"], "key": mapping[yinyuan_id],
                      "physicalKey": slot["physical_key"], "shift": slot["output_layer"] == "shift",
                      "sharedWith": shared.get(yinyuan_id, []), "group": memberships[yinyuan_id],
-                     "symbol": symbols[yinyuan_id], "toneGrade": grade})
+                     "symbol": symbols[yinyuan_id], "toneGrade": grade,
+                     "touch": {name: touch[name] for name in
+                               ("x", "y", "width", "height", "color", "textColor", "legends", "row")}})
     return {"formatVersion": 1, "layoutId": layout_projection_digest(root),
-            "description": "生成的触摸呈现：60 个独立音元 ID，沿用当前 58 个大小写敏感键码投影。",
+            "touchTemplate": {"source": KLE, "id": touch_template_id,
+                              "sourceSha256": touch_source_digest,
+                              "format": touch_template["format"], "unit": touch_template["unit"],
+                              "metadata": touch_template["metadata"], "bounds": touch_template["bounds"]},
+            "description": "KLE 触摸几何与规范语义合并生成：60 个独立音元 ID；桌面键码仍沿用唯一规范真源的 58 个大小写敏感投影。",
             "sources": source_records(root, LAYOUT_SOURCES), "keys": keys,
             "categories": group_source["categories"], "groups": groups}
 
