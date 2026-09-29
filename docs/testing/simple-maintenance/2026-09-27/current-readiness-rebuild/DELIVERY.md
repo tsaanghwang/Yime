@@ -7,6 +7,7 @@
 - 开发分支：`codex/current-readiness-delivery-20260927`，从刷新后的 `origin/main` 创建。
 - 两产品运行源码及安装器来源提交：`0ab8631266736775bf1386f456d4a1d53e8e2eb3`；来源树见 `raw/BUILD-PROVENANCE.json`。
 - 仓库中的公开证据副本已移除发起用户 SID 与用户专属注册表快照哈希；`evidence-index.json` 的字节数和 SHA-256 对应脱敏后的公开文件，未脱敏副本不纳入版本控制。
+- `raw/rime-evidence` 下的原始执行脚本保持逐字节不变；新增的 `post-run-source-commit-guard.ps1` 与 `post_run_source_commit_guard.py` 是审查后的完整 SHA 防护工具，未参与原始构建或验证。
 - 来源提交 [CI 35418522827](https://github.com/tsaanghwang/Yime/actions/runs/35418522827) 全部成功。交付记录提交 `a274730fd3230ff22c04632be62ffe18397555ec` 的 [CI](https://github.com/tsaanghwang/Yime/actions/runs/36280832479) 也全部成功后才上传；后续发布回执提交仅记录真实 URL 与远端验证。
 - 9895 个跟踪源码文件构建前后按字节一致；两份完整源清单在 Evidence ZIP 的 `delivery/source-before.json` 和 `source-after.json`，SHA-256 同为 `1e0a848ccbc2b64e0f8f2c36c12c0b9e9e854ff0c9f18fe2224694c2b45c5a29`。
 - 切换 main 后显露的 6 个旧触摸原型 `.playwright-cli` / `output/playwright` 未跟踪输出原样保留，未作为构建输入或入包。原始 YimeCore source-manifest 因这些无关输出保留 `dirty=true`，不将其改写为 clean；跟踪源码差异为空。
@@ -45,7 +46,7 @@ Rime 驱动保持原 build.bat 的工具、资源与标志，使用 `-mod=readon
 - PS5 下 `Test-PackageValidation`、`Test-ProfileRemoval`、`Test-Manage`、`Test-ProcessWait` 通过。日志中的 Install/Uninstall 是 synthetic Setup fixture 调度，不是真实安装器调用。
 - PS5 `Test-Product` 对实际包的隔离副本执行归属拒绝、私有字体占用、损坏载荷替换、另一产品保持和中断复制清理模拟，通过；不是安装/卸载验收。
 - 完整包和 Evidence ZIP 均重新打开，对 CRC、重复成员、精确文件集合、大小及每个解压成员 SHA-256 复核通过，详见两份 `*-zip-verification.json`。
-- 构建与包验证前后，经进程外系统视图读取的注册、语言/默认输入及启动项哈希一致。原始证据按字节保留，[evidence-index.json](evidence-index.json) 可逐项复核。
+- 构建与包验证前后，经进程外系统视图读取的注册、语言/默认输入及启动项哈希一致。Release Evidence ZIP 仍按原始字节保留；仓库中的五份注册表快照为脱敏副本，其余归档文件保持原始字节，[evidence-index.json](evidence-index.json) 可逐项复核当前仓库副本。
 
 本机未执行 `Test-Startup`（会写真实启动项）、`Test-Logging`（会写用户目录并运行复制的 Setup Install）、真实 Setup Check（会写用户日志）、安装/卸载、已安装产品进程重启、注册宿主/实机输入/系统重启验收。未修改默认输入法或用户数据。9 月 19 日旧包的本机验收保留在历史报告，不能继承为本次重建包的实机结果。
 

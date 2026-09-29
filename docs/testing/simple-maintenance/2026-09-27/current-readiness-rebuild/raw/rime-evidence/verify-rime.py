@@ -9,7 +9,6 @@ delivery = pathlib.Path(r'C:\dev\Yime-deliveries\current-readiness-20260927-0ab8
 package = delivery / 'rime-build' / 'rime-pime'
 evidence = delivery / 'rime-evidence'
 temporary = repo / '.tmp' / 'current-readiness-delivery-20260927' / 'rime'
-expected_source_commit = '0ab8631266736775bf1386f456d4a1d53e8e2eb3'
 
 def digest(path):
     with path.open('rb') as stream:
@@ -19,7 +18,6 @@ def git(*args):
     return subprocess.check_output(['git', *args], cwd=repo).decode('utf-8').strip()
 
 commit = git('rev-parse', 'HEAD')
-assert commit == expected_source_commit, f'Unexpected source {commit}'
 manifest_path = package / 'product-package.json'
 manifest = json.loads(manifest_path.read_text(encoding='utf-8-sig'))
 assert manifest['product'] == 'rime-pime'

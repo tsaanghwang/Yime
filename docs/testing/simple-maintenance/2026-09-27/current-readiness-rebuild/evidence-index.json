@@ -88,8 +88,8 @@
     },
     {
       "path": "raw/rime-evidence/build-rime.ps1",
-      "bytes": 11014,
-      "sha256": "ba65af62ecaaa07487851499eb8726126f15d34dda86c8e7837c9786bb7d2efd"
+      "bytes": 10994,
+      "sha256": "cc392af440152d4be5ac2c305a645ecd368171bc9788c03d06aa4a876431dc2c"
     },
     {
       "path": "raw/rime-evidence/build-transcript.log",
@@ -148,8 +148,8 @@
     },
     {
       "path": "raw/rime-evidence/verify-rime.py",
-      "bytes": 7181,
-      "sha256": "757f1bf83dfd0606ca15a0516e1f837c7e2db059d171138607c43103453a4b6b"
+      "bytes": 7040,
+      "sha256": "cb4abb1736b5da0c5c48fcad07def53abc7b3a3a04e714d8c1919f2e49808ee4"
     },
     {
       "path": "raw/rime-evidence/x64-CMakeCache.txt",
