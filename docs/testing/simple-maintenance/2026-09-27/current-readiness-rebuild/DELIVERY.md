@@ -6,6 +6,7 @@
 
 - 开发分支：`codex/current-readiness-delivery-20260927`，从刷新后的 `origin/main` 创建。
 - 两产品运行源码及安装器来源提交：`0ab8631266736775bf1386f456d4a1d53e8e2eb3`；来源树见 `raw/BUILD-PROVENANCE.json`。
+- 仓库中的公开证据副本已移除发起用户 SID 与用户专属注册表快照哈希；`evidence-index.json` 的字节数和 SHA-256 对应脱敏后的公开文件，未脱敏副本不纳入版本控制。
 - 来源提交 [CI 35418522827](https://github.com/tsaanghwang/Yime/actions/runs/35418522827) 全部成功。交付记录提交 `a274730fd3230ff22c04632be62ffe18397555ec` 的 [CI](https://github.com/tsaanghwang/Yime/actions/runs/36280832479) 也全部成功后才上传；后续发布回执提交仅记录真实 URL 与远端验证。
 - 9895 个跟踪源码文件构建前后按字节一致；两份完整源清单在 Evidence ZIP 的 `delivery/source-before.json` 和 `source-after.json`，SHA-256 同为 `1e0a848ccbc2b64e0f8f2c36c12c0b9e9e854ff0c9f18fe2224694c2b45c5a29`。
 - 切换 main 后显露的 6 个旧触摸原型 `.playwright-cli` / `output/playwright` 未跟踪输出原样保留，未作为构建输入或入包。原始 YimeCore source-manifest 因这些无关输出保留 `dirty=true`，不将其改写为 clean；跟踪源码差异为空。

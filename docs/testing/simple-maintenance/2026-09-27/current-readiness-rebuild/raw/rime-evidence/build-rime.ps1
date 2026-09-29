@@ -35,7 +35,7 @@ function Remove-OutputTree {
 try {
     Set-Location -LiteralPath $repo
     $commit=(& git rev-parse HEAD).Trim()
-    if (-not $commit.StartsWith('0ab86312')) { throw "Unexpected source $commit" }
+    if ($commit -cne '0ab8631266736775bf1386f456d4a1d53e8e2eb3') { throw "Unexpected source $commit" }
     $dirty=@(& git status --porcelain --untracked-files=no)
     if ($LASTEXITCODE -ne 0 -or $dirty.Count -ne 0) { throw "Tracked source is not clean: $dirty" }
     [IO.File]::WriteAllText((Join-Path $evidence 'source-commit.txt'),$commit+"`n",[Text.UTF8Encoding]::new($false))
