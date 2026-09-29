@@ -1,0 +1,70 @@
+**********************
+PowerShell transcript start
+Start time: 20260929083223
+Username: MYCOMPUTER\tsaan
+RunAs User: MYCOMPUTER\tsaan
+Configuration Name: 
+Machine: MYCOMPUTER (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\tsaan\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\tools\powershell\preflight.ps1
+Process ID: 22564
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+
+
+
+YimeTextService E6-B1 contracts passed
+focus cancellation isolated mock checks=32 failures=0
+PASS: architecture_bits=64; exact machine profile; disabled/new profile; neighboring identities; immediate removal/recreation; null output; explicit WOW64 view; registry error propagation
+
+
+YimeTextService E6-B1 contracts passed
+focus cancellation isolated mock checks=32 failures=0
+PASS: architecture_bits=32; exact machine profile; disabled/new profile; neighboring identities; immediate removal/recreation; null output; explicit WOW64 view; registry error propagation
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/settings-tool	0.822s
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-independence-audit	3.456s
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-trial-runtime	0.529s
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore	1.363s
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker	3.197s
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PASS: isolated speech export-product only; no installed or daily-use acceptance inferred.
+
+
+**********************
+PowerShell transcript end
+End time: 20260929083352
+**********************

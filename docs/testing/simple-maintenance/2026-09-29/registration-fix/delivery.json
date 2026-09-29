@@ -1,0 +1,50 @@
+{
+  "schema_version": "yimecore-registration-fix-delivery-v1",
+  "branch": "codex/yimecore-registration-fix-20260929",
+  "base_main": "7ae18035a7bde9e2cb23e7eeaaaf94fdfd4c2948",
+  "source_commit": "2ffee43242af9981c462aeabb0d5b26c4f99286c",
+  "installer_commit": "2ffee43242af9981c462aeabb0d5b26c4f99286c",
+  "ci": {
+    "conclusion": "success",
+    "headSha": "2ffee43242af9981c462aeabb0d5b26c4f99286c",
+    "status": "completed",
+    "url": "https://github.com/tsaanghwang/Yime/actions/runs/36503447392"
+  },
+  "release_url": "https://github.com/tsaanghwang/Yime/releases/tag/test-yimecore-registration-20260929-2ffee432",
+  "assets": [
+    {
+      "path": "YimeCore-Registration-Fix-20260929.zip",
+      "bytes": 187973541,
+      "sha256": "849bfc21fa9222dec3948f88c5652bcf404960f82e84f72175865293e7a3c073",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-yimecore-registration-20260929-2ffee432/YimeCore-Registration-Fix-20260929.zip",
+      "remote_asset_id": 596797056,
+      "remote_digest": "sha256:849bfc21fa9222dec3948f88c5652bcf404960f82e84f72175865293e7a3c073",
+      "passed": true
+    },
+    {
+      "path": "YimeCore-Registration-Fix-20260929-Evidence.zip",
+      "bytes": 107938755,
+      "sha256": "8c2a9abfb2c3ea89c1017be2e53a04397d1e9d6ed9f09c04d0a66c5bb3d845ec",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-yimecore-registration-20260929-2ffee432/YimeCore-Registration-Fix-20260929-Evidence.zip",
+      "remote_asset_id": 596797055,
+      "remote_digest": "sha256:8c2a9abfb2c3ea89c1017be2e53a04397d1e9d6ed9f09c04d0a66c5bb3d845ec",
+      "passed": true
+    },
+    {
+      "path": "SHA256SUMS.txt",
+      "bytes": 219,
+      "sha256": "c1f28d201da3dfcc929b7e26d0964da016ec0aa5a6e88686e748f2c8ac7ec10a",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-yimecore-registration-20260929-2ffee432/SHA256SUMS.txt",
+      "remote_asset_id": 596797062,
+      "remote_digest": "sha256:c1f28d201da3dfcc929b7e26d0964da016ec0aa5a6e88686e748f2c8ac7ec10a",
+      "passed": true
+    }
+  ],
+  "payload_file_count": 65,
+  "pe_count": 25,
+  "complete_zip_members": 71,
+  "new_package_installed": false,
+  "development_installed_products_changed": false,
+  "old_package_contains_fix": false,
+  "local_root": "C:\\dev\\Yime-deliveries\\registration-fix-20260929"
+}

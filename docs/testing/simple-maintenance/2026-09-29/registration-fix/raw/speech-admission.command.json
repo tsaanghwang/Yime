@@ -1,0 +1,20 @@
+{
+  "command": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "tools/yimecore/run-connected-speech-admission.ps1",
+    "--edition",
+    "ps7"
+  ],
+  "working_directory": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime",
+  "started_utc": "2026-09-29T00:26:05.308936+00:00",
+  "source_commit": "7ae18035a7bde9e2cb23e7eeaaaf94fdfd4c2948",
+  "scope": "Current-source Stage5C admission, owned fixture processes and private state only; no installation or registered hosts.",
+  "exit_code": 0,
+  "finished_utc": "2026-09-29T00:27:15.627600+00:00",
+  "log_sha256": "de0e52a608cb2de5058acee231eb4bde85b8119a87a2f742dc87c175236d6799",
+  "admission_root": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260929-082605-4c81784ac4a94b7faf5e0219a88b87c9",
+  "summary_sha256": "f77fc49edceef740862a9412734b7f79e0d53c9e1423e661cb4d7b16a8633978",
+  "source_inventory_sha256": "0deeb551296ee73a60b23f9cd66e9df2e7acb636e509ab36ba82d38922874a46"
+}

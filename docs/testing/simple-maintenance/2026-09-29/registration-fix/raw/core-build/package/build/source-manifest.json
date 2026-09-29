@@ -1,0 +1,3339 @@
+{
+  "schema_version": "yimecore-local-source-v1",
+  "git_commit": "2ffee43242af9981c462aeabb0d5b26c4f99286c",
+  "dirty": false,
+  "git_status": [],
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 22768,
+      "sha256": "0ba31a1c29e38420ecf7d68c2dee607453652cc0d774e61a12cff76e4f160073"
+    },
+    {
+      "path": "go-backend/build_script_test.go",
+      "bytes": 4370,
+      "sha256": "22f817d64fb11e809272e57544c6a9468a422d6db26bd8be9166784df08e6798"
+    },
+    {
+      "path": "go-backend/build.bat",
+      "bytes": 31108,
+      "sha256": "d9d9b53f7592b68dbc792185bd61edf0884f3cd10c1ca2859c2acba1e7420377"
+    },
+    {
+      "path": "go-backend/cmd/blocklist-manager/actions.go",
+      "bytes": 6181,
+      "sha256": "27e5649da07f68700ed3de0c6abb57921a441f90b5b0d10e84e7df93043d3586"
+    },
+    {
+      "path": "go-backend/cmd/blocklist-manager/dialogs.go",
+      "bytes": 6250,
+      "sha256": "1aa879de121afa66644960458c6f044a0940031ecb26037b5f21dd7d1059b115"
+    },
+    {
+      "path": "go-backend/cmd/blocklist-manager/main_test.go",
+      "bytes": 1841,
+      "sha256": "9ffccf569cf2c3b6e13fead487eeecdb3080970af25a56dcca6df0d0348311a5"
+    },
+    {
+      "path": "go-backend/cmd/blocklist-manager/main.go",
+      "bytes": 18564,
+      "sha256": "9423f5ba371ff94e2e0d4725cca9fdea6e80273ea65245b10ed37924f535cca0"
+    },
+    {
+      "path": "go-backend/cmd/diagnostics-tool/main_test.go",
+      "bytes": 2067,
+      "sha256": "68f9def62a7ef98417a6993f65ea5b0b215ea20d29c8c6f5317376d096a1967d"
+    },
+    {
+      "path": "go-backend/cmd/diagnostics-tool/main.go",
+      "bytes": 16908,
+      "sha256": "0cc8191c367081893ae9da17a49145611fc0653388dc6625b42c3e03dc6d8615"
+    },
+    {
+      "path": "go-backend/cmd/input-toolbar/main_test.go",
+      "bytes": 31004,
+      "sha256": "fc5d71b9df1bf9ac8df09072da65d0f433f3062cf6d8968c4d414b4e320ec316"
+    },
+    {
+      "path": "go-backend/cmd/input-toolbar/main.go",
+      "bytes": 50734,
+      "sha256": "3d0ad22fd9b67877d85c68e9cbcbd5d10bdde18b085facbd070c3a61ce1bfcaf"
+    },
+    {
+      "path": "go-backend/cmd/learning-manager/main.go",
+      "bytes": 14506,
+      "sha256": "891a043e98c6d9efbbee2f45f8bd9223f6c42045022daa2983b5dd176b879f43"
+    },
+    {
+      "path": "go-backend/cmd/lexicon-manager/actions_test.go",
+      "bytes": 7007,
+      "sha256": "f71ba8566a155ee526ee9c116612b83693799a2a58892788865316e08a2e59cf"
+    },
+    {
+      "path": "go-backend/cmd/lexicon-manager/actions.go",
+      "bytes": 23013,
+      "sha256": "e8e9b8bedefdfd0e086bf6ecb08e0e8e60f787a45b6e907fd53322b959ba3e44"
+    },
+    {
+      "path": "go-backend/cmd/lexicon-manager/dialogs_test.go",
+      "bytes": 9360,
+      "sha256": "74140431c993a711a55bc07ee7c2d80bdf3c27448796c5dfd14f2a2fe6d9fc63"
+    },
+    {
+      "path": "go-backend/cmd/lexicon-manager/dialogs.go",
+      "bytes": 20100,
+      "sha256": "bdf74de20e5ef9f4f58f937b1f21805843449fe8f157afff5916d3ba57bc4b45"
+    },
+    {
+      "path": "go-backend/cmd/lexicon-manager/main.go",
+      "bytes": 31920,
+      "sha256": "f4112d1fc5b2e469e6a197988e28f9e860571d47b7b7034027d32c2411fc1a53"
+    },
+    {
+      "path": "go-backend/cmd/lexicon-promotion-scan/main.go",
+      "bytes": 5805,
+      "sha256": "36600a2832ee0a1b327d840ef5f40e057ce07c3752c2fd96e7198e48b4763f92"
+    },
+    {
+      "path": "go-backend/cmd/professional-lexicon-manager/main.go",
+      "bytes": 11579,
+      "sha256": "8f20c91a94a5c9b1a5903fafaf34dc3fdc922044a31ad1199493cf19c565d5ae"
+    },
+    {
+      "path": "go-backend/cmd/reverse-lookup-tool/main_test.go",
+      "bytes": 5658,
+      "sha256": "cabf89f47f4bf26e16fc509dba425dea3d12d09839adb509bdd49f7d109b166e"
+    },
+    {
+      "path": "go-backend/cmd/reverse-lookup-tool/main.go",
+      "bytes": 30682,
+      "sha256": "eb9ef704a764552c8a56c14e42bb3f011b981bb67f32c6d58d3619fbe47bf783"
+    },
+    {
+      "path": "go-backend/cmd/settings-tool/combo_windows_test.go",
+      "bytes": 8584,
+      "sha256": "4e0f82ac57b80f7edb433643b8e50b0e19c30e7a013803b4f8f4a3aabe321564"
+    },
+    {
+      "path": "go-backend/cmd/settings-tool/documents_windows.go",
+      "bytes": 1687,
+      "sha256": "df92313eb98347a01d3d5c9dac63a6c9cfc9d74746858ad8f7287a7325afed6d"
+    },
+    {
+      "path": "go-backend/cmd/settings-tool/main_test.go",
+      "bytes": 13937,
+      "sha256": "263631ab1da350761243be56fa846e2826784ffcc40f87bf43b6b9133bdfb96c"
+    },
+    {
+      "path": "go-backend/cmd/settings-tool/main.go",
+      "bytes": 32563,
+      "sha256": "1ca679eba4c0fe6034f8e4aa9dc657122eb478132fdd60109bbd5feff8f1e5c7"
+    },
+    {
+      "path": "go-backend/cmd/settings-tool/speech_windows_test.go",
+      "bytes": 6186,
+      "sha256": "0490140925f1a1037da8e9d5c3d0d757130cfc38d3270e242037447e081f2ef6"
+    },
+    {
+      "path": "go-backend/cmd/settings-tool/speech_windows.go",
+      "bytes": 5273,
+      "sha256": "f85c91976d64ab9a178252235773743096100792f0ce95e469c1282132ade24d"
+    },
+    {
+      "path": "go-backend/cmd/system-lexicon-audit/actions.go",
+      "bytes": 9457,
+      "sha256": "cbb8f4a621d61a32ac1cd73536808b591d3181a724a3a356ddf8b50c921c5bfc"
+    },
+    {
+      "path": "go-backend/cmd/system-lexicon-audit/main_test.go",
+      "bytes": 3431,
+      "sha256": "783df2ad3152693e5bba614704e1b3406babe44125f8e901d65303f3a1ef5b0f"
+    },
+    {
+      "path": "go-backend/cmd/system-lexicon-audit/main.go",
+      "bytes": 19395,
+      "sha256": "b9a923b77bb70f2302ca3358225440227ab68c3c8a332e0f9013f51c1272062c"
+    },
+    {
+      "path": "go-backend/cmd/tool-hub/main_test.go",
+      "bytes": 8406,
+      "sha256": "7b61a3f9df3d22c92c2e9a42966ae9f0a19a7427e1c915ecdb9b28cab8a6155f"
+    },
+    {
+      "path": "go-backend/cmd/tool-hub/main.go",
+      "bytes": 20473,
+      "sha256": "aed9889f6f7e7c2313654ae7ab02f68161e449fb3d7e5739ce0482feb04c10b7"
+    },
+    {
+      "path": "go-backend/cmd/yime-erhua-mixed-derive/main.go",
+      "bytes": 1520,
+      "sha256": "bfc0a7d0a412fe98afeb5bae56fe6864eab650cd0736ddaed5ca2785bc895ec4"
+    },
+    {
+      "path": "go-backend/cmd/yime-layout-designer/gui_stub.go",
+      "bytes": 174,
+      "sha256": "0f561aad318d9fe9a484095e1696dcf07790fea9650d03101f4d15943991f7b8"
+    },
+    {
+      "path": "go-backend/cmd/yime-layout-designer/gui_windows.go",
+      "bytes": 25099,
+      "sha256": "e1d2e92b8580e32321d493d039102aca5802574df8463939119ded477b8c7e51"
+    },
+    {
+      "path": "go-backend/cmd/yime-layout-designer/main.go",
+      "bytes": 6389,
+      "sha256": "98cec41ebaea4854babeaf043b793143a7b5b528437bf73d81a8790e67404900"
+    },
+    {
+      "path": "go-backend/cmd/yime-layout-designer/syllable_inspector_windows.go",
+      "bytes": 6863,
+      "sha256": "40d9552c35f46d9249a6c343400e3dad4bd963c69c5fbdca420302a7779949a7"
+    },
+    {
+      "path": "go-backend/cmd/yime-layout-designer/trial_windows_test.go",
+      "bytes": 960,
+      "sha256": "a77a24570b40a450ae3519747c64c970db72ff9b9cade10690c6f405f033b790"
+    },
+    {
+      "path": "go-backend/cmd/yime-layout-learning-migrate/main.go",
+      "bytes": 1202,
+      "sha256": "83e7c91e7efb91f05a04ddb1e51f284f757158783a7c58ca9cb5e83dd098186e"
+    },
+    {
+      "path": "go-backend/cmd/yime-lexicon-derive/main.go",
+      "bytes": 810,
+      "sha256": "f20c4f799fc8367e5b65ae4d314535f9cb20d9619f5fcb7c5d7b730529b246d7"
+    },
+    {
+      "path": "go-backend/cmd/yime-particle-a-stage6d-derive/main.go",
+      "bytes": 993,
+      "sha256": "6f208d36c0b02d40d0352705281d0c0a60d9caf079d844d68216580ce5d07b88"
+    },
+    {
+      "path": "go-backend/cmd/yime-psc-peripheral-derive/main.go",
+      "bytes": 1338,
+      "sha256": "c2b90c7bedb656e6d14927b5d0ad02b642cd9c613d09e304e3a0ec97f8e882b3"
+    },
+    {
+      "path": "go-backend/cmd/yime-reverse-pinyin-derive/main.go",
+      "bytes": 900,
+      "sha256": "0832a6b8db543aefafd91e4bf012457a0cbba359ca8268808a76decf4f6c6dbc"
+    },
+    {
+      "path": "go-backend/cmd/yime-third-tone-stage5c-derive/main.go",
+      "bytes": 987,
+      "sha256": "af6cd6f877172bc53b4094bf4f4928ac309a7b0cba9606cf2419676fa8f78a51"
+    },
+    {
+      "path": "go-backend/cmd/yime-trainer/display_windows_test.go",
+      "bytes": 9872,
+      "sha256": "f365781179589fd334a1df632160f94029a5adae7c17fa6570fd9882974a2ffd"
+    },
+    {
+      "path": "go-backend/cmd/yime-trainer/display_windows.go",
+      "bytes": 22729,
+      "sha256": "c31a433f0bc61b396e934587c33b8e55e197cbca580013077d49c1d641b0ef7d"
+    },
+    {
+      "path": "go-backend/cmd/yime-trainer/main.go",
+      "bytes": 46656,
+      "sha256": "6fb9e7b4e56b0552e3d16119f2ce39291b2df433c456ea2c88bd06c562a7dcb3"
+    },
+    {
+      "path": "go-backend/cmd/yime-user-lexicon-rebuild/main.go",
+      "bytes": 637,
+      "sha256": "27598c9f03a43d254c5c4ac88cdc0f8bd1447826385efefc816097a39b026a6d"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-compaction-experiment/main.go",
+      "bytes": 11953,
+      "sha256": "284b60c74bd3d5245a86265a5e08c125a26af88b1e7bb452bf3b1da2546b7de9"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-compaction-experiment/process_stub.go",
+      "bytes": 89,
+      "sha256": "2e808dcf78f13b8e084056f47f4afe4239cad9fae29327797d124b4bd0c5bc1b"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-compaction-experiment/process_windows.go",
+      "bytes": 175,
+      "sha256": "683f71bcb28759593434a45556fce612b01149334603c3c1f5a934ea88fd020e"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-experiment/main.go",
+      "bytes": 18955,
+      "sha256": "1369ea9421d32671d7a38361d0511a65f3f4b57f4d8a050dec87c3d566f23d70"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-idempotency-experiment/main.go",
+      "bytes": 10488,
+      "sha256": "590395496717a419281a7e9ce4c6f097975a73d92ff248fed149314e62cd42cd"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-idempotency-experiment/process_stub.go",
+      "bytes": 89,
+      "sha256": "2e808dcf78f13b8e084056f47f4afe4239cad9fae29327797d124b4bd0c5bc1b"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-idempotency-experiment/process_windows.go",
+      "bytes": 175,
+      "sha256": "683f71bcb28759593434a45556fce612b01149334603c3c1f5a934ea88fd020e"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-index-switch-experiment/main.go",
+      "bytes": 12907,
+      "sha256": "0f5a7792bef92f5555d83df833cb7252ed9a323cac58dc1a6b2f8bc2e63b4f7c"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-index-switch-experiment/process_other.go",
+      "bytes": 97,
+      "sha256": "9fa017b71a75d021226070c523a9b01055f04281af64932b7bea4ea214942daa"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-index-switch-experiment/process_windows.go",
+      "bytes": 175,
+      "sha256": "683f71bcb28759593434a45556fce612b01149334603c3c1f5a934ea88fd020e"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-multimode-experiment/main.go",
+      "bytes": 35141,
+      "sha256": "40650a53a7e42e8f0bdea9a2be2af90e2b86308aef88a83bc2aec005771cbb55"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-process-experiment/main.go",
+      "bytes": 16425,
+      "sha256": "72a384808cb4dad9191e9fa398cfd24990c5d96bdec626aea7156fedc1699596"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-process-experiment/process_other.go",
+      "bytes": 97,
+      "sha256": "9fa017b71a75d021226070c523a9b01055f04281af64932b7bea4ea214942daa"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-process-experiment/process_windows.go",
+      "bytes": 175,
+      "sha256": "683f71bcb28759593434a45556fce612b01149334603c3c1f5a934ea88fd020e"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-stress-experiment/main_test.go",
+      "bytes": 1366,
+      "sha256": "f8443a77f9217f0eb4cbaf0aa1812996ceb967e365aaae55fe1d24ed66a6b79b"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-stress-experiment/main.go",
+      "bytes": 24646,
+      "sha256": "0f40aebb5439e1f90c4b9de03692ba57e07fbeb78d9aa82965bdf4ee99127f65"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-stress-experiment/process_stub.go",
+      "bytes": 89,
+      "sha256": "2e808dcf78f13b8e084056f47f4afe4239cad9fae29327797d124b4bd0c5bc1b"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-stress-experiment/process_windows.go",
+      "bytes": 175,
+      "sha256": "683f71bcb28759593434a45556fce612b01149334603c3c1f5a934ea88fd020e"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-user-model-experiment/main.go",
+      "bytes": 14706,
+      "sha256": "5c87eec4fa02271f44e4f34becf4579c494b136077aa947d11517dd7a6a62ab8"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-user-model-experiment/process_other.go",
+      "bytes": 97,
+      "sha256": "9fa017b71a75d021226070c523a9b01055f04281af64932b7bea4ea214942daa"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker-user-model-experiment/process_windows.go",
+      "bytes": 175,
+      "sha256": "683f71bcb28759593434a45556fce612b01149334603c3c1f5a934ea88fd020e"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker/main_test.go",
+      "bytes": 874,
+      "sha256": "80276a6379fca5d4a68d83b20f3a3d2c44d48a4e4118e78eb55eb6869e474f74"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker/main.go",
+      "bytes": 19593,
+      "sha256": "a46209354670c9865ca65b72165bad4894ceab96768f0bd0201f522f438f7fb2"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker/speech_annotation_test.go",
+      "bytes": 12200,
+      "sha256": "0f664de2b27e5a57d1d74cbad514d231e0694de7a4848681b85d79104e68955e"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker/speech_experiment_test.go",
+      "bytes": 2248,
+      "sha256": "6e38e6aeba9e1f81f1419d8324d63c1590d710e3b2d12f4af304b3c1dd43fea0"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker/speech_experiment.go",
+      "bytes": 3345,
+      "sha256": "ffebc498dbfd92ced3a3d77624ff12bbc2e946e6186c62f2d888637a0f9eeaff"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker/speech_product_test.go",
+      "bytes": 24904,
+      "sha256": "28e2192d5fcaa3cda334baf76cbadf1d9908a3835a7971f7811d20398cd7aca0"
+    },
+    {
+      "path": "go-backend/cmd/yimebroker/speech_product.go",
+      "bytes": 6921,
+      "sha256": "772c38db650c68a2ff841ad1ae7d9a7204bf931de75d9b01502e31830cf17df2"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-bcc-replay/main_test.go",
+      "bytes": 3711,
+      "sha256": "9b96c7a09329fefe966229de7bf24c04c9693b3a294788c8110701b532531a08"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-bcc-replay/main.go",
+      "bytes": 10827,
+      "sha256": "7ac42beac969684cac65dd53a0532a977df68f5bbca271d00dd77a7d99bf2689"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-bundle-experiment/main.go",
+      "bytes": 12770,
+      "sha256": "87937d9ab710539b51e104437d788e52d9eec2b1b20d064fb51e33197984ce67"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-experiment/main.go",
+      "bytes": 6959,
+      "sha256": "f7ef72b3abd0f6283c2c97fb6ec38c2a295eda9bd5ab6f9c783cbb5639b93ab6"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-explain/main_test.go",
+      "bytes": 2390,
+      "sha256": "c296532f354e805927c121b4a114ec20d2fa79369ebfd26af21e0a5f4ffa5712"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-explain/main.go",
+      "bytes": 3099,
+      "sha256": "6729cd35dd370c83d9d587bbd2d8d5b190172f41e1335a7c0db1ef6b92904cf0"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-independence-audit/local_contract_test.go",
+      "bytes": 8206,
+      "sha256": "660372629e298a951b7b4c1f3953df37579dfa1dfe62823e1d2a0bfb66f0fc79"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-independence-audit/local_contract.go",
+      "bytes": 14146,
+      "sha256": "cb3181c176f006584c4bee9bfba4d7bd55127f39dfe087a0ff96b745d95f2ace"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-independence-audit/local_speech_contract_test.go",
+      "bytes": 22445,
+      "sha256": "f26c95d2863d23370595fa3fdeaf678787f22b773456ff080166c5f14ea1534d"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-independence-audit/main_test.go",
+      "bytes": 5216,
+      "sha256": "2a1794d1294cae4af832492adfbf1bc163d4c7070c0db54b827b21fdefc918b3"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-independence-audit/main.go",
+      "bytes": 16742,
+      "sha256": "e5e77499e3e94908b1fa48400be37b2ccdc38d12f635f8b8c2e8e9f5c6480fd5"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-index-bench/main.go",
+      "bytes": 8159,
+      "sha256": "0009dd6a3ba021f04a9872b09b33c9767b0dddd5f7df3bc4d0efabfb13cd18e9"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-index/main.go",
+      "bytes": 3416,
+      "sha256": "caf29f1f4c279a022e13b44835285444d3eb54ceb8efbacc35c1134cdcf73bc7"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-learning-experiment/main.go",
+      "bytes": 10744,
+      "sha256": "2a632cd3ff235a8672c53ab189604b5c303b791ee7886e7743b209c19ca39825"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-rime-compare/main_stub.go",
+      "bytes": 120,
+      "sha256": "b417a17294cf1afe24116d7cb47f0240992e767b04ab39155204997720c37597"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-rime-compare/main_windows.go",
+      "bytes": 7495,
+      "sha256": "84f82d2c8b95e0e143504960eafe2493c9e915d215994e2fd88409e7b8945234"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-segment-experiment/main.go",
+      "bytes": 10720,
+      "sha256": "d98f5f25bd2ade1e2f5d034507d830121d7169918fc7da5e4ded8fa9094d8a27"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-sentence-regression/main_test.go",
+      "bytes": 4376,
+      "sha256": "1f4e6a33ccdc4b328fa1691e7b02e82dde955fce70587a4588e261f435299af0"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-sentence-regression/main.go",
+      "bytes": 7274,
+      "sha256": "a2d202269e82b5b64db317f9ac69ef9780095a46044bfa427506bcaacf17e4c5"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-admission/exercise_test.go",
+      "bytes": 3361,
+      "sha256": "dc15a25ab17e09fda184b1dfcf77b6cc4581f289fda9d1b6220e5cb1e87c32ba"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-admission/exercise.go",
+      "bytes": 15413,
+      "sha256": "a75c1876a1599b7fd108e0b9772a683b800c018e1fa1c83708514fdfcd631485"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-admission/latency_probe_test.go",
+      "bytes": 9539,
+      "sha256": "f5ca294ac8dd4ce64198fce0da8c2aefad2fdf7e0ac539823572f6b1db97d458"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-admission/main.go",
+      "bytes": 11268,
+      "sha256": "731f7e59e1162c05fe0571af5e6011d8222b1c374af11a417f4cbc323638e4b0"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-admission/package_path_other.go",
+      "bytes": 199,
+      "sha256": "9b512d244c66da87b333ae9789e0f5dd59767802ae61b6b477f8639142ce9af8"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-admission/package_path_windows.go",
+      "bytes": 677,
+      "sha256": "b61d75e632748f54cdc412f8cf71654868a7c939ed0eaa05147e9ad758471930"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-admission/package_test.go",
+      "bytes": 25702,
+      "sha256": "7fcd2783960ddd4da8ab98c0a40e8408ad37f1af44c2c6b87dab8e65741a1ebc"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-admission/package.go",
+      "bytes": 23534,
+      "sha256": "b24e17be945bfcfd5c41201251c7d7324b44f5161d749d475f51d7005eb7fa92"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-admission/process_other.go",
+      "bytes": 90,
+      "sha256": "48fecd6340dceeddd20187b0ac9a32fc238f0344c874bbff269dfc385b257209"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-admission/process_windows.go",
+      "bytes": 167,
+      "sha256": "8c27b707f0aaab8a2717356fca128e58df1c920358fccc35848f2e92484c2472"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-admission/product_export_test.go",
+      "bytes": 23859,
+      "sha256": "c84479d26c4383402985b86a723e0a520ce7cf506107f497e6a5b47795627b24"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-admission/product_export.go",
+      "bytes": 28640,
+      "sha256": "c3e7c885d4d2f2c275256b8c1576c54e2e1da90e63b759d54229fd5a178d8730"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-product-test/clone_test.go",
+      "bytes": 1764,
+      "sha256": "cf8c7b1ad64912d11a6617106d91b3e9ee57abdbb9bb95a70b063ad7eb025791"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-product-test/main_test.go",
+      "bytes": 12201,
+      "sha256": "3b3b8dbe4cd508e89249bbea1a2d5823de5df1be821f42271c771d30e573c971"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-product-test/main.go",
+      "bytes": 28095,
+      "sha256": "8bfb1d82d420a6ca48c697f5f62c0c99b400d4e4d72f270d40f44524a83392e4"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-product-test/platform_other.go",
+      "bytes": 777,
+      "sha256": "f19317ba0b2a6859277d7753134515479d808ceef820b9f01b87838eab35e606"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-product-test/platform_windows.go",
+      "bytes": 6682,
+      "sha256": "c5e84409b0375035d969ee5a1865e7f843e07267e5ce401a46e6e6ef62243163"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-speech-product-test/protocol.go",
+      "bytes": 8756,
+      "sha256": "803c65ede338cef5f90a14c9dcfdc1349beea608daa6da3bcddce26a1b018376"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-tier-runner/main_stub.go",
+      "bytes": 131,
+      "sha256": "bb9753ab539dc66af425ce5f45b7d52851f1d4ec5356205d154c9e1c7faa4c87"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-tier-runner/main_windows.go",
+      "bytes": 7319,
+      "sha256": "511ece1b87f5f19ea316910f314882c4a62e1c9815fdccf09149cf7448d83647"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/main_test.go",
+      "bytes": 5854,
+      "sha256": "eecd05e9ee0e4cd77c1c36caf27969d6941c3299cc9a553ca8d0180e872d038b"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/main.go",
+      "bytes": 16191,
+      "sha256": "aef31fd6ca85839d149ee20656fa487a76e305d181f33f541167df137ed33bdc"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/runtime_job_386.go",
+      "bytes": 503,
+      "sha256": "0ba665b803dee9000fb52cbf735c4ce7d9b2644b5b8ed1dcf5e17e423c021c20"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/runtime_job_64.go",
+      "bytes": 516,
+      "sha256": "86cb388db86103cc611f165be65b6ca02d2baff98ceab01cbcb7dde1607b6240"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/runtime_stub.go",
+      "bytes": 1113,
+      "sha256": "7ab5f8de2c131608cc007d693178b46a4cc431436a0d86b13857f156deb3f1f8"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/runtime_windows_test.go",
+      "bytes": 1097,
+      "sha256": "3bc8ff1539a83aaf38866115d105bc13ce10aee389e7405dd24ef2b29c16552e"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/runtime_windows.go",
+      "bytes": 9404,
+      "sha256": "9429aa866ace4d3795186a7da801edbb3855a10b11e34dd58286882b8b2f1916"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/speech_test.go",
+      "bytes": 4004,
+      "sha256": "934156c841f5a3b580ece79f41081fbe11ecfe0b38cbe7da6a58a159886d2d2d"
+    },
+    {
+      "path": "go-backend/cmd/yimecore-trial-runtime/speech.go",
+      "bytes": 1291,
+      "sha256": "70f48a500580258ccedd180408dd269b175daa573de596e1dedb3f6e0b224c09"
+    },
+    {
+      "path": "go-backend/go.mod",
+      "bytes": 86,
+      "sha256": "37e625da630796eba3317f0e2e5fc3c08f40e66613de89dfbb34ed048a8f1592"
+    },
+    {
+      "path": "go-backend/input_methods/yime/candidateannotation/annotation_test.go",
+      "bytes": 2403,
+      "sha256": "fd5bca408dcd9cb796641de2e6b596450cb300cea971349fa727bf24edc9bc5f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/candidateannotation/annotation.go",
+      "bytes": 10462,
+      "sha256": "6ef3875b123420a10fa372ce03729bed5dc7818941efcadbb0612364b436a0b9"
+    },
+    {
+      "path": "go-backend/input_methods/yime/candidateannotation/reviewed.go",
+      "bytes": 9202,
+      "sha256": "d535985554422bd91f143c94634407d5c02877aafadf0e837c5ca1153d103dd8"
+    },
+    {
+      "path": "go-backend/input_methods/yime/candidateannotation/stage5c_annotation_test.go",
+      "bytes": 10517,
+      "sha256": "b078c64837d5946e2e68806e44efed6c898b67f32540cb9988668d2f36880434"
+    },
+    {
+      "path": "go-backend/input_methods/yime/candidatefilter/filter_test.go",
+      "bytes": 6091,
+      "sha256": "8e34042152c4717cf3b43cf7bbb6f712d977240ef1ef0339d6be553f6e79ee68"
+    },
+    {
+      "path": "go-backend/input_methods/yime/candidatefilter/filter.go",
+      "bytes": 4569,
+      "sha256": "d2513d38f983e5fd3a6ac7c2521dd7356eab34e73eeea02a09558ca1812c81c9"
+    },
+    {
+      "path": "go-backend/input_methods/yime/codemode/codemode_test.go",
+      "bytes": 3981,
+      "sha256": "dccf67b39234e6a7c19353b73015945e64be3b24c09e6a23f3e4f8f5b72ad4a6"
+    },
+    {
+      "path": "go-backend/input_methods/yime/codemode/codemode.go",
+      "bytes": 8351,
+      "sha256": "cd06c86c2677355c2f01e465ea081c14e7559da725b5c9402bf5a69efacbb364"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/contextual_tone_model_test.go",
+      "bytes": 5306,
+      "sha256": "a4aabb2751fa32966a5a083d8ed760d608e4c30e13b28f8d3cd495199407e949"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/contextual_tone_model.go",
+      "bytes": 22367,
+      "sha256": "83c51bb0546dadd4a54691db09eb6efd8ff518f700a613ad142ca58d56a8ec0b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/erhua_mixed_runtime_test.go",
+      "bytes": 18191,
+      "sha256": "9c0308bcc451f116eed75ba7f2a68639b88b3847072c16e0f6ca40e092422bd7"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/erhua_mixed_runtime.go",
+      "bytes": 31131,
+      "sha256": "0cea0cb967027c60e2f16857add2e02e99dcdc04e7c20a549bdaf495d06da5f8"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/erhua_pending_projection.go",
+      "bytes": 5860,
+      "sha256": "ea3dabb796ae743aaa9c6b12f4f41db5e65c036eb84cbc2d929bc9f38dbf21fc"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/erhua_reverse_source.go",
+      "bytes": 1576,
+      "sha256": "373eee89d9621176aae93a48d6a632562123383404912bca04fbe928ea15061d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/erhua_sound_projection.go",
+      "bytes": 10830,
+      "sha256": "d1e24a61219384681921a255204a8dc0d3a789f38829a99f0f4347848ac42bb8"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/model.go",
+      "bytes": 6837,
+      "sha256": "e5c6c8bb3fcc707ff618553e182ee019da5a35abbf3c33ffe937ad1f317f87de"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/neutral_chain_test.go",
+      "bytes": 3262,
+      "sha256": "a2c72f1f5ccaee08682c735c3834ef00588391ed5a4fa556b8d7921ade9dafb1"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/neutral_chain.go",
+      "bytes": 29828,
+      "sha256": "48440265a18802078922e5dd10598e274e95a88b47951ccaf5b118ad2e074a2b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/neutral_collision_policy.go",
+      "bytes": 2789,
+      "sha256": "b3d9c48f2f49055563ad877607bf1b7bbc6ad33ec69a4995cdeb3ee098581e2f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/neutral_lexicon_impact_test.go",
+      "bytes": 3700,
+      "sha256": "49d5209b008de3257477c832e985b383279ca464ee584adc1125d9c20696f4fe"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/neutral_lexicon_impact.go",
+      "bytes": 24759,
+      "sha256": "ffec65145f115daa2f849cfd08ce28f3e6abe6867478c550ed86edd2cfed3ca5"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/neutral_stage3_full_batch_test.go",
+      "bytes": 2862,
+      "sha256": "c83a3834b14dc1fafe19f9531ffc4345b853b388595e25feb3860f5987f0c7eb"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/neutral_stage3_full_batch.go",
+      "bytes": 30208,
+      "sha256": "2742bfb23cb84d146b46efe7fe2197d711251bfc9b8ef3209f028c90bf9d9fae"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/neutral_stage3_trial_test.go",
+      "bytes": 1636,
+      "sha256": "279516b9304e36e42915ea71c95206a70b164025167d11e97bc06dddb9df1c3e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/neutral_stage3_trial.go",
+      "bytes": 17185,
+      "sha256": "a25823145bf8a634537b17435ab997e16cca24eae94d578becb312b985e9d4d7"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/neutral_surface_test.go",
+      "bytes": 5397,
+      "sha256": "207497e51a34e09b34c070e94b5b6a2814fc0411087a5815494d8fb3d6425dc8"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/neutral_surface.go",
+      "bytes": 20953,
+      "sha256": "cd6c851081e1a29bfe7863a8583f1267bb278c6105e2b3a78f0a51f53b9bd7f9"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/particle_a_stage6a_test.go",
+      "bytes": 4273,
+      "sha256": "cff13223b99effccd04f0ba494cae8b30041031bc74420888842c44823ebe522"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/particle_a_stage6a.go",
+      "bytes": 24389,
+      "sha256": "6c9c5ccd6a8dd178aeca819e66d1dee10e0293759167454f224ef2a17d47b8f1"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/particle_a_stage6b_test.go",
+      "bytes": 5065,
+      "sha256": "624fdfc8dfc942ee8d2e0f488844f3123a66fc592561b3979d922f08760eb189"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/particle_a_stage6b.go",
+      "bytes": 23682,
+      "sha256": "4dce969f9d1baf3db933ec070b2026fcfaf31c555de9272db345229a8fbe03d3"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/particle_a_stage6c_test.go",
+      "bytes": 4940,
+      "sha256": "5c7ea2f23047157d979725cd1ab3370ad3b7abf5d84ade9be5c59ab6058291ac"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/particle_a_stage6c.go",
+      "bytes": 20332,
+      "sha256": "145956b02000bc2de271767adf993a7c19fd9d5ccb22d484a15e6fb4d4b79253"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/particle_a_stage6d_test.go",
+      "bytes": 2304,
+      "sha256": "3a1e351ebf6fbaa284ab4296c75217d30a48523297002ff26e8966f6a5fef449"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/particle_a_stage6d.go",
+      "bytes": 19470,
+      "sha256": "de8f510ec9db2b032b7507b5e57fa4e38b612238db2a0022c2c1510d594e263e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/psc_peripheral_runtime_test.go",
+      "bytes": 4645,
+      "sha256": "75e2383a4a752e424005ddec1b3f016d60312141e3eb4b97378d6870957bf0f6"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/psc_peripheral_runtime.go",
+      "bytes": 18583,
+      "sha256": "533c9992d6dbd4b7da52a5061e393c68b981d61db55818dcc9827f80442f277a"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/report_test.go",
+      "bytes": 9945,
+      "sha256": "4fa8172b76e79dc138acc60b1f7bccd1b7cd097d040852ef1a08c512f9338df5"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/report.go",
+      "bytes": 25133,
+      "sha256": "c57c78e01de47cfbbece4eea09d9ad6e483e3c388b4ca73fb5822c1c954514af"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/runtime_admission_test.go",
+      "bytes": 10811,
+      "sha256": "04459a9f675fe187e3d40e26e48b30f6e2cac400c3c10a4a04cd228a3c6a6d36"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/runtime_admission.go",
+      "bytes": 13355,
+      "sha256": "dd7c3231ab8fc9d4967924848400bf58402e752504642cc3db8948cae602ee60"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/stage2b_trial_test.go",
+      "bytes": 7895,
+      "sha256": "e015bc443897dd1b70b442ad8b070755d6cff1edc48c66a3b7ba447221caa598"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/stage2b_trial.go",
+      "bytes": 14638,
+      "sha256": "3b63d92a58107e3c4786c7362d72eaf1659f2fe99cd98e709b4c91c1189655e8"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/third_tone_stage5a_test.go",
+      "bytes": 5814,
+      "sha256": "2298eaf263aa425c6f0c63926ae0d514dba359358aa23cef449785c3c6a1d387"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/third_tone_stage5a.go",
+      "bytes": 26634,
+      "sha256": "408b119c1cab5f51844f62d4fd772db30072340c9c2a8e260e232d03d08795f2"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/third_tone_stage5b_test.go",
+      "bytes": 6527,
+      "sha256": "3c14a4769071f360444648bd18cc680f40bab6104b6580e81867a87b95c31532"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/third_tone_stage5b.go",
+      "bytes": 23020,
+      "sha256": "1e6be1192995d785409c6a2d8167b3e1e22416153efc3486b4994b335491513d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/third_tone_stage5c.go",
+      "bytes": 6703,
+      "sha256": "51738b92a95ccf3d9072c9c7ad8af3e24a34f843362562a93463264eb889511e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/validate_test.go",
+      "bytes": 6226,
+      "sha256": "552f48e56f850f404b242b2c39f234a4b66942f1228c6ee79de132365bc52b8c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/validate.go",
+      "bytes": 17775,
+      "sha256": "4e354caeb88c61913b0ae0a22609de04c3a7ac3072bbe8bf344491e3b9c5bb79"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/yi_bu_chain_test.go",
+      "bytes": 4069,
+      "sha256": "f5da6e3b3f3cb299d4fe7928109becffe4ffc9e21d05b4b68a85f24b10e1bf31"
+    },
+    {
+      "path": "go-backend/input_methods/yime/connectedspeech/yi_bu_chain.go",
+      "bytes": 13239,
+      "sha256": "e9cc1bc9f1974aba3ff937133bdf55e08d691a633f0df4c8f376785c1a53119d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/core_runtime_data_test.go",
+      "bytes": 16283,
+      "sha256": "e75bd1db257aefd484228f0a0b18b70fcc35e31f2815e6f26dc12d8fafc2d0b1"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/cangjie5.dict.yaml",
+      "bytes": 789090,
+      "sha256": "2dbc120d838ea1e30286f565060d6f84c11623ff1798fd52c97d50e370b833dd"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/cangjie5.schema.yaml",
+      "bytes": 2357,
+      "sha256": "e112cc9624923befde28be408222d3bc3ca95df7c270c508d735570403e8b272"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/default.yaml",
+      "bytes": 4299,
+      "sha256": "1fc2111f23ebbdadd9527214a80daf1b5f738ac00b6f62a421a587fe1ead3f99"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/essay.txt",
+      "bytes": 4096600,
+      "sha256": "1d66c47e76009aed63ce50de2b8fb8c7d54fc2de8f4e9b4336a6bc5bf014402b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf",
+      "bytes": 16024176,
+      "sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/luna_pinyin.dict.yaml",
+      "bytes": 282450,
+      "sha256": "971baa1f38a42d3d82f858b5bbdcad6482371f8d93a2f5d5c4ab341046419e3b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/luna_pinyin.schema.yaml",
+      "bytes": 3585,
+      "sha256": "f08549cd3275da3889cea302c6ec3ecc99346d5dae2a79b65e83d37f2c04d0a7"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/hk2s.json",
+      "bytes": 643,
+      "sha256": "71d5f687e1ca78d3af0e64850e84000555848744e41a09f98d33849a7f126be3"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/hk2t.json",
+      "bytes": 450,
+      "sha256": "2a3456a87414f2995fd3f9aefd0e089f5be8f80be53259e07246815bcf7334eb"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/HKVariants.ocd2",
+      "bytes": 4893,
+      "sha256": "1b71281a9a093619eda66c3d65ddedbe8f9be5383bb02cd1c2ebadee320f179a"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/HKVariantsRev.ocd2",
+      "bytes": 4923,
+      "sha256": "b879b0a7f7d2f6031b38523cd6430440e32e9b819ca052e4c7d156ad5b0c099b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/HKVariantsRevPhrases.ocd2",
+      "bytes": 7030,
+      "sha256": "a6b0675755b1df44b2af090c6e15672b7184c03f74b3c226e57f94391b4d0ec1"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/jp2t.json",
+      "bytes": 540,
+      "sha256": "3f9b091520ba0d55ecfe6fca719a672bb2691b1eb9b0c0a43a4aa4326b15fd9e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/JPShinjitaiCharacters.ocd2",
+      "bytes": 4263,
+      "sha256": "6c97633ec8a1087a4041a8677cbc3c872b68804ebace6c4b30aa2d02c484b8d1"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/JPShinjitaiPhrases.ocd2",
+      "bytes": 7462,
+      "sha256": "6caef7c983668e43799498104062ede559033ca759665600f5be18ede4821016"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/JPVariants.ocd2",
+      "bytes": 7993,
+      "sha256": "14f32b4906b1fe22d3a4f96c6cb5c64c39a8726a73df556570ff7653fb9ce732"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/JPVariantsRev.ocd2",
+      "bytes": 7991,
+      "sha256": "3aa7d165035e584b701487c6512866425d1c711ba3afb91ab0c9c109f5d3c15d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/s2hk.json",
+      "bytes": 507,
+      "sha256": "3708e756ea01783e9cf6b3cce527580810b3d539b8c7fcc3594dd1517aa05bff"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/s2t.json",
+      "bytes": 406,
+      "sha256": "710bb970e406d9c0a3dd33c609248686cf1c5578d064b7b7fc89e70fbb9ea75d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/s2tw.json",
+      "bytes": 505,
+      "sha256": "67ce1f5aa3d6b21ebb523084b40e66f80bec27bb2dc6b540d44dac2e27f7194e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/s2twp.json",
+      "bytes": 599,
+      "sha256": "72d187574510542be608c862d5359d29480ee61f137082df8a06d74f7bcfc79c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/STCharacters.ocd2",
+      "bytes": 45310,
+      "sha256": "e2bcc2f3b6a552abf2c21f1e9d4bc232ea57e9836151fb381eff703d88c12425"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/STPhrases.ocd2",
+      "bytes": 925143,
+      "sha256": "5e8d8289beacc7d4ab7baa7193ebb589f3d5a956449ed9c81ccff431ae503f6e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/t2hk.json",
+      "bytes": 304,
+      "sha256": "a8531beb7430fe1afed0294a893af529c7b7fd2ad41567b5daccb8399c8ef2f0"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/t2jp.json",
+      "bytes": 318,
+      "sha256": "4fb22429d63173715fec30524111ec141c0577b66c9f090513ea8bac4741ad77"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/t2s.json",
+      "bytes": 406,
+      "sha256": "b818534194f27c2d95f01001edb0a5ec49b9050119892cb30a0504bb202cc07c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/t2tw.json",
+      "bytes": 302,
+      "sha256": "11495bf144cd932a9568810822a5af0fbba2db9c2e06a2bb2871583423fac24a"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TSCharacters.ocd2",
+      "bytes": 46126,
+      "sha256": "64aee2ead703e0734525decf0a11891f3dad07930433c8b1672274a9b22963bc"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TSPhrases.ocd2",
+      "bytes": 9776,
+      "sha256": "edafc46f5c3eca61a754c78e47117e7c73995cacd6c99aadcb8a219d7ae3e53d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/tw2s.json",
+      "bytes": 641,
+      "sha256": "05ac8731e870babac8118d9a79ebf06c616576bf4c8b378cf36d0359b5d9ebe5"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/tw2sp.json",
+      "bytes": 727,
+      "sha256": "8bb1ce11c560f623a7d07593affe575ee936be0fe63cda0983a672000adf68ec"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/tw2t.json",
+      "bytes": 448,
+      "sha256": "3ca6a912f9da989ce3e83dab11084f2473af2a1ea6f9e67675ba48ad2f3c3e51"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TWPhrases.ocd2",
+      "bytes": 15610,
+      "sha256": "14ce3a5beded4e387f571ff6aa0473d631c02b6e9af019960c87e1cd278640c5"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TWPhrasesRev.ocd2",
+      "bytes": 15597,
+      "sha256": "966115eab0dc898754e25acb55590d55346e126c5325c12e3a44b5d8c183319d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TWVariants.ocd2",
+      "bytes": 4595,
+      "sha256": "4845dffeeb7efe1ba46e655b80580edd73191cd33cc8ade20451047cb398702a"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TWVariantsRev.ocd2",
+      "bytes": 4627,
+      "sha256": "60f6b6bf9aa17756356a0f6fbb4299cce774431ea84d7eeb767e7a0411494485"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/opencc/TWVariantsRevPhrases.ocd2",
+      "bytes": 5333,
+      "sha256": "8cfd338887d3b6b3e035f1cccf3821bf2b2581c6024a530c6c1b243a189d06f8"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/pinyin_normalized.json",
+      "bytes": 31697,
+      "sha256": "01bb8e95f124b42c3b1187cfe3872940ab73ebf83a6fe4bebfeac4139bc38422"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/symbols.yaml",
+      "bytes": 24410,
+      "sha256": "e4cda5663039e284ce62d7febe207bf6b788df6a9705ca174fabd7f8c140ed30"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/trainer/curriculum.json",
+      "bytes": 994,
+      "sha256": "6b57e56d91686fdf244b9df273477b73c53f19558fa4c40fc164b01bbec1ca51"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/trainer/foundation.json",
+      "bytes": 2015,
+      "sha256": "94c110348e6c6eb081b1b24707d3024d8bf199dbde6f7f5ff484176a5b581555"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/trainer/README.md",
+      "bytes": 4659,
+      "sha256": "6eedbe4730d28d9a6b43cb70a7ae041ecf0f59da0a8c9f6280b17f97723a729a"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/trainer/yinyuan_catalog.json",
+      "bytes": 8358,
+      "sha256": "adcbbca053785bf189c6ca834aef27fadb9c4ccf3a55c0acfeb352a5743ea5c3"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/trainer/yinyuan_groups.json",
+      "bytes": 3093,
+      "sha256": "0821ce4e8da0149af75ae8e78e0ed579d15f3c04039f1de3acf5c3e717f8ab0c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_core_source_manifest.json",
+      "bytes": 1842,
+      "sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_full.dict.yaml",
+      "bytes": 4710,
+      "sha256": "8b65157cbdc489d97faa4a769972a2d74c5878c1bb5bdbcf4a537e7460fcf36a"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_full.schema.yaml",
+      "bytes": 357,
+      "sha256": "d1e00c4187a3241952636cc7d92867a8bdc885e2642507d3da8ebab3c071dc0e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_manifest.json",
+      "bytes": 4044,
+      "sha256": "0a1f89dc4df28682924a62f62f2cc224bcf97ca09443ea4e6ee659acbe16091c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_full.dict.yaml",
+      "bytes": 3181,
+      "sha256": "b67f2cee5e3d9f7dbf2ba471d4bde890239902143d00eb27f91c8437991bc0c1"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_shorthand.dict.yaml",
+      "bytes": 3046,
+      "sha256": "b84bf88ac11a8b4539f0dcd978f676b874c8efac52b5fa12ab88cad872020705"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_variable.dict.yaml",
+      "bytes": 3072,
+      "sha256": "aec8483fa49c159007b564b264c2a1f9e3755fbb9be1c91e6626f6258fba8d76"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.dict.yaml",
+      "bytes": 4373,
+      "sha256": "eee94ba46bed6495477f45d7d5b7deabf4be0041197d3a0128a90d6072c6b570"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.schema.yaml",
+      "bytes": 372,
+      "sha256": "ca22d7d16b6bedff767972329ef53bb880c187ce5b821ebf57022d4f165a8bbb"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_variable.dict.yaml",
+      "bytes": 4411,
+      "sha256": "011448c018f309303af488fa143c31e82803f76a3734ca301c3b73a9599ca51d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_variable.schema.yaml",
+      "bytes": 369,
+      "sha256": "aed6d0a4953b6a7fc55054b1d0711088f9dffce49f961972913bdf59914babbc"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_erhua_reverse_source.tsv",
+      "bytes": 40241,
+      "sha256": "896d69089125826e4d2d83601ad4ee60d23ba2f556a9888551097546bc0f3f05"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+      "bytes": 31621303,
+      "sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_full.schema.yaml",
+      "bytes": 1959,
+      "sha256": "5889514c808199a00c1c1618a4f940c71acd1e69eb8dc9592788e67a346114c0"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_lexicon_manifest.json",
+      "bytes": 667,
+      "sha256": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_full.dict.yaml",
+      "bytes": 150994,
+      "sha256": "e570b452543845542f0dc0e04233e44aa0ab9cfab12d655d9e811019fbc8064b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_manifest.json",
+      "bytes": 2549,
+      "sha256": "e176793b2359b3d32cef397a8d20a7fc24c24f9c52cf98e381ce240c4b2bba11"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_shorthand.dict.yaml",
+      "bytes": 132044,
+      "sha256": "e8e34cd76847bfb2cc2b6a3df4f5a76641a40f402fb818a099e06dec24e86b7d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_variable.dict.yaml",
+      "bytes": 134218,
+      "sha256": "1b80e35ea9c04a3600fd0a5e60cdba3a2cd6b5743c6c376ddfcfbb478cd53cd0"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_pinyin_codes.tsv",
+      "bytes": 19448,
+      "sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_pinyin_reverse_source.tsv",
+      "bytes": 2039059,
+      "sha256": "85c9b28b2e46752d56d84fcd924160d260cc9e5cfcbc3c5606d0f4d47c6a319a"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_full.dict.yaml",
+      "bytes": 2842,
+      "sha256": "339caa6828e0ce569bd81a1f93d3a1b3b4c9e69c468f65108690fbee9e83cf15"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_full.schema.yaml",
+      "bytes": 367,
+      "sha256": "53134bf8ee5134f3e2615a53c794b162e8a249520a52937a4145ae5c47daed0e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_manifest.json",
+      "bytes": 2073,
+      "sha256": "2e4a3ac0dba4bf497519dc2f60f89ae899f2e34d1bdecbe776490b2273052807"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_full.dict.yaml",
+      "bytes": 3038,
+      "sha256": "1dac84cb9de9565d54768688fec9f712279a6e8e78801c1f511e74f56d18622d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_shorthand.dict.yaml",
+      "bytes": 2734,
+      "sha256": "41c39164c0a8cbc2a038d08dbaef4d14d2002a03efd60accc7316dc332e56f78"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_variable.dict.yaml",
+      "bytes": 2759,
+      "sha256": "22929e9c35a0daf6918ede8fe2de4b800ba78154bc195eaa2e22ecaf3362c22d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_shorthand.dict.yaml",
+      "bytes": 2538,
+      "sha256": "1ff18ea29b4be8b9a9979941018042d4a1b333be8e4a5a43aaa4fd312eb7fa73"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_shorthand.schema.yaml",
+      "bytes": 377,
+      "sha256": "bbd7176d482772f6655d153752892b0cf539ab0979f7a6ad4aad49db7261104c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_variable.dict.yaml",
+      "bytes": 2563,
+      "sha256": "96850c6e75d07250fcf0aba1bed685c13592556ee4742a61a929254212ae9026"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_variable.schema.yaml",
+      "bytes": 375,
+      "sha256": "515abf7f3c4e92aefa67764bd25a51b077d5a8dee72908d5d8c72173cd521279"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_pua_pinyin.json",
+      "bytes": 62686,
+      "sha256": "c60f4acc864e2c699eefcf796feaf855e2c19770191d8417fb7d51d17ceb3699"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_runtime_profile.json",
+      "bytes": 3764,
+      "sha256": "f40b40e001bea799a45877f524d380e229d1c0499c3ba50a16c5d8ef19091741"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_sentence_full.dict.yaml",
+      "bytes": 368,
+      "sha256": "bdcc06ecb949eb589884f2de1f0d591ac42b331b9327b8a9f2424f5a9375603e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_sentence_shorthand.dict.yaml",
+      "bytes": 398,
+      "sha256": "ca26b480507b90b6be0d47e0138ad463d0b367cc5fa1bdbb9b6ef47c232243ab"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_sentence_variable.dict.yaml",
+      "bytes": 392,
+      "sha256": "3a1569ec196835195a13ea2ccb55f719faf08a4ccb3b8cb82506e1b7bd921e57"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_shorthand.dict.yaml",
+      "bytes": 29563931,
+      "sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_shorthand.schema.yaml",
+      "bytes": 1996,
+      "sha256": "d3b2fb6b39e958f30a0479de411ea65c6b4578b2548da106d1b23fda89910eaf"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_syllable_decomposition.tsv",
+      "bytes": 177143,
+      "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_syllable_inventory_manifest.json",
+      "bytes": 557,
+      "sha256": "516a4e3c993845875e3b59856835425b6456f2e771cd2a89e4168cf4981f7617"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_system_candidate_exclusions.tsv",
+      "bytes": 6051,
+      "sha256": "a8ea7cb186ce8e27ba4848e608fdedf260e8d4b2010a38ce8aabc893bc1f22b2"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_full.dict.yaml",
+      "bytes": 694,
+      "sha256": "e6a478b4d8fc0474ae02b13dc6a5cffaf62ff7ca3ad1ba0f75b937cf75854f89"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_manifest.json",
+      "bytes": 1551,
+      "sha256": "b53b46ef49da894d019b5db4dc281b19aaceec9fe9ec570b26653b8e0c54d82e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_shorthand.dict.yaml",
+      "bytes": 676,
+      "sha256": "4b9e428a09b8f5be8478a6d7d947f54760c2e395eeb1117b8a3702d04c840253"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_variable.dict.yaml",
+      "bytes": 675,
+      "sha256": "052b5b75cc0c8e1d5deae9f3c05a1ed45d36b02339630f130860a1204f011f84"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_variable.dict.yaml",
+      "bytes": 30155261,
+      "sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_variable.schema.yaml",
+      "bytes": 2067,
+      "sha256": "2a0d05769a3aee860ed14b503a24d295749f3f788cecf2fd792018094cd0f330"
+    },
+    {
+      "path": "go-backend/input_methods/yime/data/yime_yinyuan_layout.json",
+      "bytes": 1023,
+      "sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0"
+    },
+    {
+      "path": "go-backend/input_methods/yime/diagnostics/collect_process_stub.go",
+      "bytes": 108,
+      "sha256": "77e528e1457e3b0848f3c2de8d123ef87730b2115476ec01868aa676a28c3606"
+    },
+    {
+      "path": "go-backend/input_methods/yime/diagnostics/collect_process_windows.go",
+      "bytes": 1570,
+      "sha256": "f7191f38091f2f8dedc528bdb590e730cedf20302d35322a8ba5287191854f7b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/diagnostics/collect_test.go",
+      "bytes": 1969,
+      "sha256": "4bb9edfffbeb96454f1f2a50195b57ce64684542f21c7dd45ba2e95c0ce20fb1"
+    },
+    {
+      "path": "go-backend/input_methods/yime/diagnostics/collect.go",
+      "bytes": 22090,
+      "sha256": "5f47e5bc180c9d1bebf4a0f4b6505154beff253df939ec79041a3ec4b521a4ec"
+    },
+    {
+      "path": "go-backend/input_methods/yime/engineapi/engine.go",
+      "bytes": 4240,
+      "sha256": "047545e9bc452bf2d086d17319dac6940b8ec382790224e17a9d540d7da93d63"
+    },
+    {
+      "path": "go-backend/input_methods/yime/erhua_mixed_runtime_data_test.go",
+      "bytes": 15390,
+      "sha256": "d1b510473f2fecfc936d2b4c3dfcc32a8a54e1877d9fe1fbd4c2a09b6485ac90"
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/diagnostics.html",
+      "bytes": 3546,
+      "sha256": "397d79c461a105f01d5a6864ea4ec4bd60291a57f543f42aafba5bfb57102a0e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/diagnostics.md",
+      "bytes": 4985,
+      "sha256": "8ae36fb4774e3b3924b5f8de9cc2c82b3d096f9b99db8f1c9e6555f445d5b370"
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/README.html",
+      "bytes": 7437,
+      "sha256": "e3b1b537915b2fa2c587f40c046e6fb348f66ed5678a44eca960e8c94a16bbae"
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/README.md",
+      "bytes": 5824,
+      "sha256": "1e4ae85cecf3c686d161591b4880b98816d8b065ba6ae6d10e9ddc01033b4d7f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/settings-and-data.html",
+      "bytes": 10982,
+      "sha256": "5f44cd6168479dbfa8d33444a3418d44bbd852899b64b622db36c7bb0d1dbe27"
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/settings-and-data.md",
+      "bytes": 11848,
+      "sha256": "9a176509a71c811fd8c58b897f41bd27b7988b16e94f7cf2d33ef3e67b8c0868"
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/trial-feedback.html",
+      "bytes": 2456,
+      "sha256": "a6611e47481f2eebcfb673fd261de0cf5c23dd05a4fde0e330d441bad9dee059"
+    },
+    {
+      "path": "go-backend/input_methods/yime/help/trial-feedback.md",
+      "bytes": 882,
+      "sha256": "56b2157af3a8575b658dbf80e4ebb2871033286d0091f88d6a5b751ea550e915"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icon.ico",
+      "bytes": 62966,
+      "sha256": "d7700838dc9a00524e0d7d1d11be069fbf8f16b922ee94c8935d57204a5af77a"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/chi_full_capsoff.ico",
+      "bytes": 17542,
+      "sha256": "5670ea56fc3885a23cc1eab8394318762c1e2aa8f0391a265554c235c470b628"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/chi_full_capson.ico",
+      "bytes": 17542,
+      "sha256": "9fc3598031aa6ef83dd197d9b109e78f0e755cbbd3a45862aa0202851fdbb132"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/chi_half_capsoff.ico",
+      "bytes": 17542,
+      "sha256": "359bd741a89bee4fc0147f741de78b00cf5e469d63e6f3b56a5a92b239ea2721"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/chi_half_capson.ico",
+      "bytes": 17542,
+      "sha256": "f18bd377d148dcf98f41ec6d4705ddafc1194e0e2c95a3734c4bdce0f9211880"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/chi.ico",
+      "bytes": 17542,
+      "sha256": "d15134b92044f5d461ef5f0004166c8892ae2f1c2469d6fba3b3612dc5434f39"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/config.ico",
+      "bytes": 1406,
+      "sha256": "e4b92538f15a2456f03b7138d22708c939a2977e739850cbec0f8d1641461d0d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/eng_full_capsoff.ico",
+      "bytes": 17542,
+      "sha256": "d9904b84b8effde669be732f9b38cc06caba9f362985bcc0d24c5d186002c60e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/eng_full_capson.ico",
+      "bytes": 17542,
+      "sha256": "672c7e5d5894fb014278adf0e787e1eec60f04b93b625f1dd76670e431a35d3d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/eng_half_capsoff.ico",
+      "bytes": 17542,
+      "sha256": "f03896add520532ae4d903a6d8c328dddfca2c3a2ba21d9d523c1d0f06fdeee2"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/eng_half_capson.ico",
+      "bytes": 17542,
+      "sha256": "543e8df861da6bb109b3f214709f49847d8ddf76c3d7e8fa7ed40b7557536f29"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/eng.ico",
+      "bytes": 1406,
+      "sha256": "43644407945e044ad3ec50d172eafb9c80f09027750506fc8ca7dcac85151e86"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/full.ico",
+      "bytes": 894,
+      "sha256": "905e7ece5468265b5cbc43bd3a85518ba76a8dd1b680361f78afc1670327ff41"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/half.ico",
+      "bytes": 1406,
+      "sha256": "8126e19feb23ba0f5aa05e1293a175d1db6b0e95a1c54a5535d15608acf2859c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/layout_horizontal.ico",
+      "bytes": 655,
+      "sha256": "36e4d276ce7ca755203131211bee03fd744cf3854bade79efd0c39338bd65aca"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/layout_vertical.ico",
+      "bytes": 690,
+      "sha256": "4bfce90dd2af785d8bfce644c08e5a1bcec8531a15c69bd34919791a4a5b10b3"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/lexicon.ico",
+      "bytes": 2141,
+      "sha256": "6ee1ef6ad89381a8b5a2df70fcdbdc8adb2d77aa5f63fd121e100fa67b670275"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/punct_chi.ico",
+      "bytes": 5430,
+      "sha256": "eb382e466a064fc431e2e8ee3ea9d56384a7f135f8ef9ac46e6d25cf02b51060"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/punct_eng.ico",
+      "bytes": 5430,
+      "sha256": "206de2fabff086533b9d0db51bdfd2f8ae7d59ea96d568992b39313a716e9162"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/reverse-lookup.ico",
+      "bytes": 669,
+      "sha256": "c7f20db9831c64ea75525f126ffc59dd33f514fa46616c1ad388be556655c99f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/tools.ico",
+      "bytes": 2334,
+      "sha256": "80207f517c706e4eb861e9b35d6b509fe82c45e9ef5ce20757c7415cb48a1c4e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/yime_qin_seal_yin.ico",
+      "bytes": 19067,
+      "sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/yime_qin_seal_yin.png",
+      "bytes": 14334,
+      "sha256": "4930a312b6e9b1852da8a16431217fc99dab9d5f6a36924adfe01beef82f325d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/icons/yin.png",
+      "bytes": 1196,
+      "sha256": "ca61581f0d13d0a4e1281dbe602ad55a02697d52318a541cc6f492ab05d2b275"
+    },
+    {
+      "path": "go-backend/input_methods/yime/ime.json",
+      "bytes": 319,
+      "sha256": "ea07f281bc8633cafa0b6c58c7fd0b14d25b4e801d49c692a1f9ce77459b07e3"
+    },
+    {
+      "path": "go-backend/input_methods/yime/init_schema_refresh_test.go",
+      "bytes": 1171,
+      "sha256": "3552018508d535e20b4033985429073f8b986fed1368dafd137e1f0f87f3b132"
+    },
+    {
+      "path": "go-backend/input_methods/yime/layout_userdb_namespace_test.go",
+      "bytes": 1854,
+      "sha256": "a1bc0e6c2e65bb0ca87756302a4eca33c3cd9a1f647b9451456fe76574b856f5"
+    },
+    {
+      "path": "go-backend/input_methods/yime/layoutdesigner/apply.go",
+      "bytes": 11722,
+      "sha256": "1cbbff24ef14335c69b4e112635bfe1675b3e5d0fb38ee99a37cb56b744b9595"
+    },
+    {
+      "path": "go-backend/input_methods/yime/layoutdesigner/codec.go",
+      "bytes": 6749,
+      "sha256": "8f4fd0ba25c5414fec81192badf9be2d1640ae8fcc092fa39efc217d05106a94"
+    },
+    {
+      "path": "go-backend/input_methods/yime/layoutdesigner/id_record_test.go",
+      "bytes": 2065,
+      "sha256": "32fd96b78d0471f497ebb6c316cf5e25d4f888b8a8cd53bff4b157103f3bf41f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/layoutdesigner/layoutdesigner_test.go",
+      "bytes": 9132,
+      "sha256": "8ef0d87f7c5073827157eb6b096e10405e7918dc1e8504607c6353bf8790a074"
+    },
+    {
+      "path": "go-backend/input_methods/yime/layoutdesigner/library.go",
+      "bytes": 2058,
+      "sha256": "89a9437a42577c16dddfba9e94697c8f1cb16c76b7d6a1ca798fd28b3846b2cf"
+    },
+    {
+      "path": "go-backend/input_methods/yime/layoutdesigner/profile.go",
+      "bytes": 8789,
+      "sha256": "e2065061fd679cc1eed2b664870b46b0d69afd15a7595dfff9cfd9a04f5748d8"
+    },
+    {
+      "path": "go-backend/input_methods/yime/layoutdesigner/README.md",
+      "bytes": 3596,
+      "sha256": "32f958b7d8f1550f4843f77cdbe876dadea1cbd550cc74d14c4b1207113e97d4"
+    },
+    {
+      "path": "go-backend/input_methods/yime/layoutdesigner/trial_apply_test.go",
+      "bytes": 1585,
+      "sha256": "f9be5e8569d949778ef4e1c95cd10b5af4cef15370b2c21f9e27fdb78b7283ab"
+    },
+    {
+      "path": "go-backend/input_methods/yime/layoutdesigner/trial_apply.go",
+      "bytes": 7291,
+      "sha256": "99206b3f75e28d6bb91dc016f40e06f6d2350ebb10808704316a775cc5b7c4cd"
+    },
+    {
+      "path": "go-backend/input_methods/yime/layoutdesigner/trial.go",
+      "bytes": 1635,
+      "sha256": "34f8e79ded0b212f2482d6f769b6255ce0ec8eff5cf5d5c978d82c51f4543150"
+    },
+    {
+      "path": "go-backend/input_methods/yime/layoutdesigner/user_apply_integration_test.go",
+      "bytes": 1872,
+      "sha256": "954dcc01cc97ef6fe3ed6404313332c0b9903798c70040d3c13cf6aabf57436e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/layoutdesigner/user_apply.go",
+      "bytes": 7706,
+      "sha256": "48e1ba44f715f5c5e22eac602f8fa2ba59d112647acf67c626b6fe933e1fce3c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/learningconfig/config_test.go",
+      "bytes": 697,
+      "sha256": "c74ad222c518d26417c46ccfab4566198bbb79bbe48b2fcdfeae70dadf93f552"
+    },
+    {
+      "path": "go-backend/input_methods/yime/learningconfig/config.go",
+      "bytes": 2280,
+      "sha256": "6de7b1117be2cf5d32c393a4c27107e00ea0fb9a35d0475e6002d7b753a067c5"
+    },
+    {
+      "path": "go-backend/input_methods/yime/learningmanager/manager_test.go",
+      "bytes": 2923,
+      "sha256": "ecdd240f2cac19e888939b44a5263ba274faa8cd58f75b502644155ad02bdb82"
+    },
+    {
+      "path": "go-backend/input_methods/yime/learningmanager/manager.go",
+      "bytes": 4647,
+      "sha256": "e3fd4588df38c5ee3cc6aa1e7e3d75644d78318f623295df4fd41704cdf405f9"
+    },
+    {
+      "path": "go-backend/input_methods/yime/learningmigration/migration_test.go",
+      "bytes": 7356,
+      "sha256": "7a1bda23903853a28d578493294688a721507e2a140b753f3bd02dcb328a11af"
+    },
+    {
+      "path": "go-backend/input_methods/yime/learningmigration/migration.go",
+      "bytes": 13233,
+      "sha256": "f926fd3e5a0461577d3fb1c303aaa4174babdba6605b14b318a6a23118ddc5a8"
+    },
+    {
+      "path": "go-backend/input_methods/yime/lexiconpromotion/README.md",
+      "bytes": 1189,
+      "sha256": "92630ce3b92299a17f46f11b7084bf1c72dde22aa3050dc5d0bde5cd973fde9f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/lexiconpromotion/scan_test.go",
+      "bytes": 2420,
+      "sha256": "3fbc284c84b71accd8fbaaa558add8c491988b9a27ddba9095ace2edca46831d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/lexiconpromotion/scan.go",
+      "bytes": 11424,
+      "sha256": "3abecadaba8af94e65a124113d6d6a124719b8708402470041469cf9b932a996"
+    },
+    {
+      "path": "go-backend/input_methods/yime/librime_memory_windows_test.go",
+      "bytes": 1769,
+      "sha256": "06b85b8e2da9fdbf32458f9b643e80b762295be829359e4d57248489ee071599"
+    },
+    {
+      "path": "go-backend/input_methods/yime/librime.go",
+      "bytes": 21115,
+      "sha256": "1a8b528c7f8781af95fb10a40f8d61deac231c9ace479e7178034e35f5d0a8d5"
+    },
+    {
+      "path": "go-backend/input_methods/yime/native_cgo_test.go",
+      "bytes": 801,
+      "sha256": "46732bc7000536e72e901412e42e65ec4d5cfe4396b10ee477482fd97f02da2f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/native_cgo.go",
+      "bytes": 5008,
+      "sha256": "06914922fe21c7c212995b384280365413a22ca4a81f6d0a61fcfcdab313818b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/native_stub.go",
+      "bytes": 87,
+      "sha256": "59f1fcdf9cb150c6b608bd83679514bdb45ad3efc572e923d1e2e87ad0136cff"
+    },
+    {
+      "path": "go-backend/input_methods/yime/particle_a_stage6d_runtime_data_test.go",
+      "bytes": 3634,
+      "sha256": "5089872e26a457b15f8b952c2e951df7de4b8f511195a6d713fd8c254d9ce28b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/process_launch_stub.go",
+      "bytes": 173,
+      "sha256": "ae3e06c20506b9b29893b6f8b6afecc652135ad1ba45251ad25f56b47284766d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/process_launch_windows.go",
+      "bytes": 244,
+      "sha256": "80539188980e7721eb9ebac9698600f591aedcf29bae34c9adf7ee8ae1aec709"
+    },
+    {
+      "path": "go-backend/input_methods/yime/professionallexicon/atomicreplace_other.go",
+      "bytes": 167,
+      "sha256": "551413e00f1bd0b3fbf31bd23e20a2ff4e3473fbc93617bb1e2fd1f4726cc7a5"
+    },
+    {
+      "path": "go-backend/input_methods/yime/professionallexicon/atomicreplace_windows.go",
+      "bytes": 795,
+      "sha256": "61f27a35ee67da2bf78e9a64f2984729038933511435107b2f0429ecf7a17cf4"
+    },
+    {
+      "path": "go-backend/input_methods/yime/professionallexicon/catalog_test.go",
+      "bytes": 3014,
+      "sha256": "62f4249c841b01f83ed0d68ca3664333c3e7981bce309c693a3b010374546f47"
+    },
+    {
+      "path": "go-backend/input_methods/yime/professionallexicon/catalog.go",
+      "bytes": 7160,
+      "sha256": "036feba35e1769ff5862c3cc63f48c0744509a453bf6c1a3c4f6f7502bbbc55b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/psc_peripheral_runtime_data_test.go",
+      "bytes": 7128,
+      "sha256": "fc6cee715ea709d6fe1f5ef479da16da5cb2f3914549f8da8ee4a16e340fd4e8"
+    },
+    {
+      "path": "go-backend/input_methods/yime/readme_shouyin_layout_test.go",
+      "bytes": 3159,
+      "sha256": "858585d43cb88a87592e2e12ff0705358ea52f35918d20bef95df6a9c61cdb76"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/cache.go",
+      "bytes": 3525,
+      "sha256": "13888d629a585fd7b59285a5461c8ed3870f9343b85176734c6013c019200765"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/decode_export_test.go",
+      "bytes": 907,
+      "sha256": "2d5e2777ac2c2f81be9101614d9eb61b8b867b243be3b0c82102ebb75bb0ebb8"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/decode_export.go",
+      "bytes": 579,
+      "sha256": "6080f61cd5ad52410ab806e16791e852a0fc88b3b22f2255d52bd29f18593261"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/encode_export.go",
+      "bytes": 2680,
+      "sha256": "c4126168bce901cfb49c76a96dc16febe9013a68db514be064f5015538f811de"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/erhua_source_test.go",
+      "bytes": 4208,
+      "sha256": "07e8a67b680f8b6453d6857d3c18ad5a792e9ac63362986860b3da102eb8fe7e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/erhua_source.go",
+      "bytes": 4770,
+      "sha256": "801a27c4825f63bab956ef1205525f013d7f53a739979917cae6423cf74b0111"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/index.go",
+      "bytes": 3799,
+      "sha256": "af44158a5759b0e7af2a76cf55c419bc2f4b53302427ae5d6bca6f19ada9e701"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/load.go",
+      "bytes": 6090,
+      "sha256": "982263dfaefc689502b8df42f99c1ebc188b5881c6ccf45a94affd4b6fd97950"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/pinyin.go",
+      "bytes": 5463,
+      "sha256": "3bd22ea1dd89baefaf4b8de00fbe640be2eaa1440b637e44689bbb9af28dd397"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/search_test.go",
+      "bytes": 5689,
+      "sha256": "0fcfc15371033d58b0a3ef9544d3d079e46f79427aa18c169bf27ba22b679729"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/search.go",
+      "bytes": 5961,
+      "sha256": "33bb6e61d805adf4dc1b89ccfe97e1c5d67fdf93099be113528cbf8d3c8284cc"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/single_source_test.go",
+      "bytes": 2458,
+      "sha256": "62a7734331a16d2b619f7ebb65b0ad44ff70057fffccee4b244c6eee95977667"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/source_truth_derive.go",
+      "bytes": 7427,
+      "sha256": "8f719755b1de299cc2e1108abd5d206be6f431391923b6659f9b2b72ced5690d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/source_truth_test.go",
+      "bytes": 7860,
+      "sha256": "7261d129576c5855cadac5b0c8f64f2e75563cef5969762372164056e17aa782"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/source_truth.go",
+      "bytes": 2587,
+      "sha256": "15f76fc0bad363694775ad42a68dcfdbbaaffae75b9bd18f8dcd3e83af676fc4"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/types.go",
+      "bytes": 1327,
+      "sha256": "f13a87f80cf03b2a19a31f7d01ef9c4b25b17038706cdf158406ad9c2e9ca738"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/userphrase_parse_test.go",
+      "bytes": 1607,
+      "sha256": "643017a50bcf22c04b63605d6db3bd70985e1b3995e01636859d464b73d8e213"
+    },
+    {
+      "path": "go-backend/input_methods/yime/reverselookup/userphrase_parse.go",
+      "bytes": 875,
+      "sha256": "0fc57ff6a5c6b119998638b0cfe0dcb0e9ce4e93f1553aa326fb597e1ce2a9d9"
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_deploy_stub.go",
+      "bytes": 281,
+      "sha256": "05c9652e13d8e42697601043bda65beb63de7e8d5e0aedd2a29c0caab6ffcc0a"
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_deploy_windows.go",
+      "bytes": 354,
+      "sha256": "45a4821cb468a9cb90e573c9ad546388280cf0539be9e1b42935c84bc6a53724"
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_deployer.exe",
+      "bytes": 459776,
+      "sha256": "3abb72b5bb56fcafcfe925d533ae5f832c68d5a0bc9952fd0eea0682fb1ab071"
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_dict_manager.exe",
+      "bytes": 278016,
+      "sha256": "1c1eb1f84f98704161efbf3315a16e3456f5989efa56f340d7e9e3e5f8bf9e1b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_key_binding_test.go",
+      "bytes": 812,
+      "sha256": "ef33c0959118def59ac1363c896c566cfc792ad91018d4874d228c697ac68c61"
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_keyevent.go",
+      "bytes": 3627,
+      "sha256": "33aa04f679c117b68d93e17b05e886d042f1a6e05e2be0c46d0a06b01ed295ce"
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_migration_probe_test.go",
+      "bytes": 1393,
+      "sha256": "54c640608eb749af6cb251a5abe2077db49751b921645f258c55e611d8d7be6d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_runtime_guard_test.go",
+      "bytes": 1833,
+      "sha256": "f122f6dae72d59c8b2f739d4d656985ff63ec25bf8c630e49f90002df77c305e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_runtime_guard.go",
+      "bytes": 2455,
+      "sha256": "c707ce061b3496e9331163a7db60c9341d8c092578d7eed632ff057a5803ffb0"
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_runtime_test.go",
+      "bytes": 91309,
+      "sha256": "993c675402bd811183f6c70586e7d77b0dde2d28d58b7163a2febe1ce8329283"
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime_runtime.lock.json",
+      "bytes": 618,
+      "sha256": "548d7fd41af93dcd438f194877cfbc4fd326454a4251f55dfdfe74efe87df637"
+    },
+    {
+      "path": "go-backend/input_methods/yime/rime.dll",
+      "bytes": 3739136,
+      "sha256": "86b4c7357d4c6d293ce5589b234d8859ca2ac30923a03bedfa3926eeaf97fb0b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/runtimechange/change_test.go",
+      "bytes": 3530,
+      "sha256": "18141879e31623ca6d4d87c9283efabd82ac927f6eda3fd673d36fc49a0592bc"
+    },
+    {
+      "path": "go-backend/input_methods/yime/runtimechange/change.go",
+      "bytes": 4959,
+      "sha256": "64853313d84b839a572f3a53d31a73f12e72471a0c5bcd848ac6baefbb3ece00"
+    },
+    {
+      "path": "go-backend/input_methods/yime/runtimechange/release_pipeline_test.go",
+      "bytes": 7596,
+      "sha256": "19cb304e8f23bc0b1d553fe8251df50007a9c052d32ce4081135420d41fe2932"
+    },
+    {
+      "path": "go-backend/input_methods/yime/runtimeidentity/identity_test.go",
+      "bytes": 1060,
+      "sha256": "45ecc976f14526ab069b92cb95c896791aab6f405ddb3dabc970e7e3433e7035"
+    },
+    {
+      "path": "go-backend/input_methods/yime/runtimeidentity/identity.go",
+      "bytes": 2037,
+      "sha256": "05e0ca9a73995f63783aa33336a5275d7d5ab0f8e31dece82bd2c433101ea39c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/schema_completion_test.go",
+      "bytes": 3088,
+      "sha256": "59a4300a364102260e2d1212b2a5ce83fd83de2544d16ad57045fd127b567d2f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/settings/config_test.go",
+      "bytes": 4047,
+      "sha256": "dc22736793915af8cd27958fa66b19aa9e49b3d03d02400dc0883330b0fb5b37"
+    },
+    {
+      "path": "go-backend/input_methods/yime/settings/config.go",
+      "bytes": 12929,
+      "sha256": "9529df37cd889240702cfd8eb6251bbe847a737963be557271244176565beff8"
+    },
+    {
+      "path": "go-backend/input_methods/yime/settings/process_stub.go",
+      "bytes": 100,
+      "sha256": "003a63d6002a19ba068877449fd663df81de6a5ffd6cadd2ff08fd65c7b8365e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/settings/process_windows_test.go",
+      "bytes": 495,
+      "sha256": "0eb03541f666b7105c9c2b3a1b1b0fbfd4a42de9b348c3061b4a16eb430c4e75"
+    },
+    {
+      "path": "go-backend/input_methods/yime/settings/process_windows.go",
+      "bytes": 253,
+      "sha256": "3a3876601a309a1398a18785c88fc451f761f23ab45214f66496ad70ba536dcb"
+    },
+    {
+      "path": "go-backend/input_methods/yime/settings/rime.go",
+      "bytes": 1453,
+      "sha256": "00a5c60f7a04467f7cef4b39ad22f02575cb32d5a0be3f6ccc025cf9d0a63cdf"
+    },
+    {
+      "path": "go-backend/input_methods/yime/speechruntime/forward_inputs.go",
+      "bytes": 5949,
+      "sha256": "8fc41cf0bb1a5861551ccf13a64a376b54354f05723e9e9bb9f47e1894455d5e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/speechruntime/manifest_test.go",
+      "bytes": 18510,
+      "sha256": "d460e5f3d9e0bec38324018822942fb40750a26b8c0acc0e55c810e9cf8d31b5"
+    },
+    {
+      "path": "go-backend/input_methods/yime/speechruntime/manifest.go",
+      "bytes": 11595,
+      "sha256": "d74f572c13f12a8230335d6b7f3ff13c103faef8d11b6e864d0233bc506028b4"
+    },
+    {
+      "path": "go-backend/input_methods/yime/speechruntime/product_path_other.go",
+      "bytes": 233,
+      "sha256": "2843f6106875c4a7882959b16e4318caa3eab4fb92600e1368bd3a6559aeba17"
+    },
+    {
+      "path": "go-backend/input_methods/yime/speechruntime/product_path_windows.go",
+      "bytes": 1249,
+      "sha256": "e5e208687d521849bc6e264b69cc171b43f9023840b229d9e111af0491ab319f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/speechruntime/product_test.go",
+      "bytes": 12879,
+      "sha256": "c7878b18388ec087f5d3dbde710da43e5bd86546587c914f0bcae28aff5f77a4"
+    },
+    {
+      "path": "go-backend/input_methods/yime/speechruntime/product.go",
+      "bytes": 11184,
+      "sha256": "8c8cf369af320f686415d7a9ce81d75ef6ab74320f6f1ee75359233de1a2d662"
+    },
+    {
+      "path": "go-backend/input_methods/yime/speechruntime/settings.go",
+      "bytes": 2578,
+      "sha256": "ce10ca0db834e8ba6e4ce1cfec848a571674b3cf84cb33cf755b793302132b52"
+    },
+    {
+      "path": "go-backend/input_methods/yime/syllableinspector/inventory_manifest_test.go",
+      "bytes": 3872,
+      "sha256": "607dc120383fd2182f192578c52a839ffbe6724e7a40d17fde6e4301f82a5338"
+    },
+    {
+      "path": "go-backend/input_methods/yime/syllableinspector/model_test.go",
+      "bytes": 2541,
+      "sha256": "210106861e0ea2f8a012110a2a4d5f020ad287e0d8bffa21c3df54f53c6ef6a5"
+    },
+    {
+      "path": "go-backend/input_methods/yime/syllableinspector/model.go",
+      "bytes": 5078,
+      "sha256": "5f08b600bf52f819f5724b405af23541df51bd7e1aa34ce117eb01c37dd4183e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/syllableinspector/view.go",
+      "bytes": 2121,
+      "sha256": "332fd60b8e3051d143be394bc6e0514ff93d2fd577318e1895eee88edeca62ea"
+    },
+    {
+      "path": "go-backend/input_methods/yime/systemlexicon/audit_test.go",
+      "bytes": 3565,
+      "sha256": "27a88c41b87f579bbaaebea7b6e0ce6fabb3a5b95ed95e01f0f7383770a60e6d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/systemlexicon/audit.go",
+      "bytes": 3309,
+      "sha256": "14e7cae1d18790447593f2673b4be4c139477bc6220863880219e58b2bd55008"
+    },
+    {
+      "path": "go-backend/input_methods/yime/systemlexicon/derive_test.go",
+      "bytes": 2419,
+      "sha256": "fdee6bd46a45244d1e7de2ef5ecdfec84e8b76d1f7f712a679e0ca95788dd1e9"
+    },
+    {
+      "path": "go-backend/input_methods/yime/systemlexicon/derive.go",
+      "bytes": 6112,
+      "sha256": "b3e31676306dad14bbd36c239c3254b48310528d0afb13b7610f6b1671824a0c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/systemlexicon/export_test.go",
+      "bytes": 1596,
+      "sha256": "5ce09d8dd9518264d302c33d7820d0009abcd12a30691e4d3b3775097faa1a23"
+    },
+    {
+      "path": "go-backend/input_methods/yime/systemlexicon/export.go",
+      "bytes": 1290,
+      "sha256": "08d65cf8c5e7b3b98361e579b3488289b988a269ade32ebdd814685f180a9e65"
+    },
+    {
+      "path": "go-backend/input_methods/yime/systemlexicon/load.go",
+      "bytes": 2297,
+      "sha256": "2e2323b8676265907d517f07ef812ec87955050c1fb1a4e28ba45f273b7d6b32"
+    },
+    {
+      "path": "go-backend/input_methods/yime/third_tone_stage5c_runtime_data_test.go",
+      "bytes": 2286,
+      "sha256": "cacd787ed58e5a41da0f2495de36a83e4a612f81712cbf83ebb0b17d28321b40"
+    },
+    {
+      "path": "go-backend/input_methods/yime/toolbarstate/replace_other.go",
+      "bytes": 140,
+      "sha256": "ca045d4b5e6bc486f93e10fb42d195f78f60f43e59694fd8a6a0012bd6cad2b2"
+    },
+    {
+      "path": "go-backend/input_methods/yime/toolbarstate/replace_windows.go",
+      "bytes": 701,
+      "sha256": "999dd69c573c9ba505828e056c2a9f8d4d3c2372c6521ddb17831ecd5a47c4ad"
+    },
+    {
+      "path": "go-backend/input_methods/yime/toolbarstate/state_test.go",
+      "bytes": 2409,
+      "sha256": "77752d6379debff4604e505a77610bafc9868ecd846bc1c10b4dae661e8683d7"
+    },
+    {
+      "path": "go-backend/input_methods/yime/toolbarstate/state.go",
+      "bytes": 7356,
+      "sha256": "8132b687f438039344790c581f979271f72a6bb75587b299176f72191e6bbf6c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/toolhub/launch_stub.go",
+      "bytes": 193,
+      "sha256": "2ac6c392a1300a0304dcc8983f1e7025137194d3bea95d80a6c6a4c38c13acc6"
+    },
+    {
+      "path": "go-backend/input_methods/yime/toolhub/launch_windows.go",
+      "bytes": 981,
+      "sha256": "8304bac31c28800d2bd973458e5f7fdcfbda42716dec0a00baeab4ff2a60170c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/toolhub/manifest.go",
+      "bytes": 2803,
+      "sha256": "71273a7f5ba4339a60e56e8c0421f5f64a1f19f612abb63653b4e2559fa751ec"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/candidate_simulation_test.go",
+      "bytes": 3326,
+      "sha256": "e9daccd4a7155b55ef671845898689627a25bfe34fbd9e3a98920ca8690dccd2"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/candidate_simulation.go",
+      "bytes": 6067,
+      "sha256": "861f74f48f8c220d3602aa667dbc2c59f1b28dcd977805d538c90fc2ba178790"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/catalog.go",
+      "bytes": 5038,
+      "sha256": "00aeb108d30c2ef58e2013975ee57456ce29876b0d9eb0a3c18b20e1fd568a3d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/composition.go",
+      "bytes": 7767,
+      "sha256": "a5cde619b6ba4e9d466a9992c5022c339991e7aa4e615aab17b038bf840911ff"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/curriculum_test.go",
+      "bytes": 1253,
+      "sha256": "58a2efe1d4ed566a5ddfada8b4e6a3ca8e02988f2e4a50039a85fcf4e2b4d55f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/curriculum.go",
+      "bytes": 3951,
+      "sha256": "232ee0d74a0d1d5ea0fdef2d5c7a944a2c78ccf352f485e43c896cfd97d946db"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/diagnostics_test.go",
+      "bytes": 2926,
+      "sha256": "ed68cf37559da5684f4e16630e23eca957b90740b340dcb458caaa44824a2d95"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/diagnostics.go",
+      "bytes": 4555,
+      "sha256": "0b6b4c1b00f09097094e87b225f5a1fd4b6fabc820c0f94eaacc4329e650244d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/fingering_drills_test.go",
+      "bytes": 774,
+      "sha256": "c2246502bc145abfed40a7a51fc8813dc699114d09d2955a26775166cf8dcb58"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/fingering_drills.go",
+      "bytes": 4729,
+      "sha256": "9b81a9ebe00f681130d643fdaaba4b1c61556826bc19296b380624bded618034"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/fingering.go",
+      "bytes": 1546,
+      "sha256": "ae9b7c48d8bd5455678caf3146285bce0aab20c60fb86f97f5007279123bfb60"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/groups.go",
+      "bytes": 6009,
+      "sha256": "245ed33058712e7ca195fcf752aab90423aade40dea23c8496e9d61eda06c927"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/lesson_test.go",
+      "bytes": 21397,
+      "sha256": "1a50f7d6a075bafd593c75fb3e7755f58f57b8a648373e59d34e564c09add61d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/lesson.go",
+      "bytes": 17335,
+      "sha256": "354539fcf4de0d2cffcb96dcac0dc15a14ac9cb6f45702dedb51f0f597202dff"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/preferences_test.go",
+      "bytes": 2277,
+      "sha256": "0211c5aa6aaa65125dc59e8285a4a07f1ad05e65a1aefe5c9a61689d88dbcd57"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/preferences.go",
+      "bytes": 3351,
+      "sha256": "4a3d09d49120cf77a07dfb3ef9b24c2bb0cdfe7b5fa6f1e2ce7f715637c629a6"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/progress_test.go",
+      "bytes": 4742,
+      "sha256": "9413385e6eb8c0b3e18d1115ed51685f17d1f07a7ca2115fd5db97b5f5ee5449"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/progress.go",
+      "bytes": 11677,
+      "sha256": "fdacd9cfff582cb42dc382d0aab180e5cfb463728541fd5210b09166ffa7d9b0"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/readiness_test.go",
+      "bytes": 610,
+      "sha256": "262792a0194b3c9295c34504832ff5e52ee05d4bc70d23623c7518528a4deefb"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/readiness.go",
+      "bytes": 904,
+      "sha256": "e25c73703b6ee3f0fb56ef9e80eb2d98948b2c700d2d71699ef142cb887fc3f9"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/runtime_practice_test.go",
+      "bytes": 9598,
+      "sha256": "0e878933a40b2b69490b5551b37b6f40ca2f77a0058f385704e204bd4805c970"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/runtime_practice.go",
+      "bytes": 15519,
+      "sha256": "3173f2c0ae3beb8e5fc177674be17ed1b596fd43b230fccae0706bfdc74036ab"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/second_phase_simulation_test.go",
+      "bytes": 4002,
+      "sha256": "0df8577833a0249466b9fbafcf7c18d08eb8e2b145b82e898d5e15f24c6a6d81"
+    },
+    {
+      "path": "go-backend/input_methods/yime/trainer/syllable_practice.go",
+      "bytes": 6691,
+      "sha256": "11da02c3b76be8319da4104501e73b3c7ea136412b36577d5fbc903b128a1db5"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userbackup/backup_test.go",
+      "bytes": 4341,
+      "sha256": "8440f2ba634743234000da9b20cfaa664d975636a5c37c227c5329da64b62d19"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userbackup/backup.go",
+      "bytes": 9725,
+      "sha256": "71253e47eb1df5882c4f5c4a82bb03cc46a8cfc7eaa0b2290faf6b3c829146d1"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userblocklist/blocklist_test.go",
+      "bytes": 2116,
+      "sha256": "b03c2983810301bc51d8524706e1dea8b3e1421981a2d490e04427d0a2c7d1d6"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userblocklist/blocklist.go",
+      "bytes": 4992,
+      "sha256": "f0ebb86ff18d3a7f032ee1a46a0851eb2db2a3cafe5b421ef05fba995069b77e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userlexicon/apply.go",
+      "bytes": 2729,
+      "sha256": "db5a14b2f77a7070d6a54a1c6cbcc6ba2c3a752d5762106128ef89b7ccdfdb13"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userlexicon/entry.go",
+      "bytes": 763,
+      "sha256": "2f53a453584635f5bfc99438bf2681fb5d59eca1612b1857d5f66c894419bcc7"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userlexicon/import.go",
+      "bytes": 2696,
+      "sha256": "f4dd4279622a1fc3feb9f807ceae65d2c7d48a81d6d56b497c74a8fa5972fef3"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userlexicon/rime_import_test.go",
+      "bytes": 1013,
+      "sha256": "90900e02de06c9579b400047e70cd9fb6fbec7daa9080e2486a5ebb45f1a035f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userlexicon/rime_import.go",
+      "bytes": 2617,
+      "sha256": "70682742adc609f476f89600c5baa45265558bb8f0fb99c50cbda7854d5e71a1"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userlexicon/schema_test.go",
+      "bytes": 13614,
+      "sha256": "ebf53e3aaa75e234de6194c6a4485f7d990196220a8dd8a95eb8731015b83c09"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userlexicon/schema.go",
+      "bytes": 11916,
+      "sha256": "ab6ef58045d3b16af36069384bca3959cff4e9e588fd32afcb291fdcf5910dee"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userlexicon/sort.go",
+      "bytes": 2291,
+      "sha256": "eef47b4d6d6a27efa400c1d9ea05e3ac69a027ea4b07d9cecb04761f86182d81"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userlexicon/source_test.go",
+      "bytes": 1639,
+      "sha256": "28dc54afd544a1cb69fb86a3f1baa5a8b4e46a1bf8f610aad1933250b38be2ee"
+    },
+    {
+      "path": "go-backend/input_methods/yime/userlexicon/source.go",
+      "bytes": 7133,
+      "sha256": "217db8454d86420d3674b0e924f36500753f092a41d7b50ec6923064a0a489f7"
+    },
+    {
+      "path": "go-backend/input_methods/yime/win32ui/font_windows.go",
+      "bytes": 3252,
+      "sha256": "aa4553beac354636073ac32bc475d06355382ff10058f8faaee3b2629211f23c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/win32ui/icon_windows_test.go",
+      "bytes": 414,
+      "sha256": "92c0ec51f353a5564f2ce90b12dfa9e654cbe28c8614efbdf77cfde63ef2a4a6"
+    },
+    {
+      "path": "go-backend/input_methods/yime/win32ui/icon_windows.go",
+      "bytes": 1216,
+      "sha256": "c31719f0a39ca605fad8cc5dc30ec6702abc329994777907b97eb54359090bb2"
+    },
+    {
+      "path": "go-backend/input_methods/yime/win32ui/launch_windows.go",
+      "bytes": 1589,
+      "sha256": "e742f9383989d4b0804ab6180efcfd86cca9c7d545c0073eb598e06df9845902"
+    },
+    {
+      "path": "go-backend/input_methods/yime/win32ui/message_memory_windows_test.go",
+      "bytes": 697,
+      "sha256": "c233f04684b1aff090700208ff03bf9b531ea45471ad903b76af5bab2e1f4186"
+    },
+    {
+      "path": "go-backend/input_methods/yime/win32ui/message_memory_windows.go",
+      "bytes": 1018,
+      "sha256": "0875b606d6e5bb396c34fbe33f73261d03f367ef3d80eff2e26fba1882c20773"
+    },
+    {
+      "path": "go-backend/input_methods/yime/win32ui/present_windows.go",
+      "bytes": 5671,
+      "sha256": "e327662eba4d11fe4c34e68747ebedb4c7616c23eb8f5697d3cf69ca816c586f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_blocklist_manager_windows.go",
+      "bytes": 234,
+      "sha256": "0253b5f1a43ba3dbc00fb5ecdd8800840f21cdfb4b22b468781764689ecb9aa4"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_blocklist_test.go",
+      "bytes": 5608,
+      "sha256": "f1f7b07285c0b505b8ed430cd13b44338e35bc40a0a6ba6785c1ad6e5eba563b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_blocklist.go",
+      "bytes": 4398,
+      "sha256": "d8a70ae99a27628b8941c464684df762c27ccee930c6842eef38505381cdb8a0"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_clipboard_windows.go",
+      "bytes": 1474,
+      "sha256": "24eaa9aa20a8d6a8727046ac183adff2d0c4ac74b1b0ab20da0881c2475d4a88"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_diagnostics_tool_stub.go",
+      "bytes": 163,
+      "sha256": "be42744addabe7edd15f07bc869049834db82161cb66402a580eabbb56f201c0"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_diagnostics_tool_windows.go",
+      "bytes": 750,
+      "sha256": "3a3cf94e8520f68671f1ef6768ba9adbc27c681cb16e75d4d589789ebcb8c45b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_input_toolbar_stub.go",
+      "bytes": 154,
+      "sha256": "2d59876370d8a8c221f49aab0c8b18794dbd3d418d5ef9d52652cc565b579c3a"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_input_toolbar_windows.go",
+      "bytes": 1999,
+      "sha256": "fe89dbdb0a778f4dd661915dd1478410e6fd7b41f3835c38225a4323d630fbb6"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_layout_designer_windows.go",
+      "bytes": 235,
+      "sha256": "7395e19850c438efafa11be1da207d102bc8d4294cc8eda7141f9b702a02dee5"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_lexicon_promotion_tool_stub.go",
+      "bytes": 103,
+      "sha256": "09d1598ad12c6a89ea16fcfeb969587388d94858a1dfbd5590c05b247c811ad4"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_lexicon_promotion_tool_windows.go",
+      "bytes": 243,
+      "sha256": "d0431d7bd7ec6a89bef868f58a947c301302296305d1f1e1fe789a48caae9714"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_native_tools_stub.go",
+      "bytes": 404,
+      "sha256": "1a2a3963f128a5bb04b6f18baa5c2bd80d6785f52ffec4b5b200878e6af39e8a"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_reverse_lookup_cache_stub.go",
+      "bytes": 229,
+      "sha256": "3716acc609bb1f2e227a26be647dc85ba9eb8e3a3dda4135200dc7da3ff8906e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_reverse_lookup_tool_windows.go",
+      "bytes": 834,
+      "sha256": "af94b1dc38f30cec556345d9435c138519db1c94b9a094e1bd07620f02a2d960"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_settings_tool_stub.go",
+      "bytes": 157,
+      "sha256": "0b4a42dc1be1dffa5180c267206dfe106b28d319710abbf0bcb6f583bd2e9ed1"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_settings_tool_windows.go",
+      "bytes": 738,
+      "sha256": "8226a50a0a24ff54b74a212061c51d8025b9cfcc071a1a3f59c6c4ab59ec9a8c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_system_lexicon_audit_windows.go",
+      "bytes": 239,
+      "sha256": "0697441ee3729134808d697d14130de0a1a49c3595863dee51832def00082bdf"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_test.go",
+      "bytes": 183778,
+      "sha256": "f6f75091947f0a59a666c3b1ff6d03acc0e51c952e124adcb4cf15d1c8f6f21c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_tool_catalog.go",
+      "bytes": 6500,
+      "sha256": "019e27819ddffad65531134278bf5ebbc76290a7b2c68d5d92cbb810ab397209"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_tool_hub_stub.go",
+      "bytes": 87,
+      "sha256": "417c27919c678329ffe39987103f059c934b399f1a953727bb8317d5e48c8ffd"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_tool_hub_windows.go",
+      "bytes": 2816,
+      "sha256": "6d33bb92cfc012fb43be7713bc663736ae169cf78ea611d96f17e0a9d0f1d0f4"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_trainer_tool_stub.go",
+      "bytes": 91,
+      "sha256": "6442feb95beef45000ae31fc9269ce0ba44d7ab5d6a8c98a1ff36046260b2456"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_trainer_tool_windows.go",
+      "bytes": 492,
+      "sha256": "5fcfaa383c7af379d4debc2356d7b4b3aeebf26cd39efcff205ff5f96efdaefb"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_user_lexicon_manager_windows.go",
+      "bytes": 632,
+      "sha256": "fc46d2ff741c588f7bae982673f7db82e4bc649cab8275866c68d4b9941aca60"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_user_lexicon_stub.go",
+      "bytes": 194,
+      "sha256": "05265b06e44b9625e9a723765d50e91df0e3b66d8a6a202538ef8f780e0ab704"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_user_lexicon_windows.go",
+      "bytes": 459,
+      "sha256": "22db09a39412657dda6866a152897f8c337a0172d0e079a7ee420380830b8738"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_user_message_stub.go",
+      "bytes": 420,
+      "sha256": "52daf378cea9862b681319fa56a3c6b38377d10d85b54ed0bd3b9e2d38fd496d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_user_message_windows_test.go",
+      "bytes": 546,
+      "sha256": "d27839a7f26e1caad8a03f536a695b3c431ddf7e05fb237809a98d8a3427af7b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime_user_message_windows.go",
+      "bytes": 3019,
+      "sha256": "b956a16e78096eb99cd8a75af21e0ed4c7f99752ee3a436df7124228885fc8dd"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yime.go",
+      "bytes": 121060,
+      "sha256": "c2b622e0cdfb7d90eb1ea61ccb4b79b160a3dba8ef3c4ce4816a2b806c0679b8"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/atomicreplace_other.go",
+      "bytes": 161,
+      "sha256": "181c3eb87ee09863a4046ffb01761dc33e564e55ace383385e1589b0d595df33"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/atomicreplace_windows.go",
+      "bytes": 674,
+      "sha256": "658853e2e082ccecf2fba3961ca2b5d20b0d49db23b4d80c73031b89195477fa"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/bundle_generation_manager_test.go",
+      "bytes": 19139,
+      "sha256": "0614c6b67a1b45877980f676e4e5f4dd84b92504fc6e5bc42be91565d99a8b0c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/bundle_generation_manager.go",
+      "bytes": 14762,
+      "sha256": "40ab8a55475d359a3f5a6d60909e4891423473aa04b115ed216e5219f5f70c69"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/connected_speech_reconnect_test.go",
+      "bytes": 15004,
+      "sha256": "4db2f6d4f1cf4509ef9c1feca3aa414b30d8325b69baadb3c592874242e028d2"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/connection_limiter_test.go",
+      "bytes": 753,
+      "sha256": "c76b51c215d058337fa8fc5b14578abee55d19d87aee47b948d612e40f50c737"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/connection_limiter.go",
+      "bytes": 822,
+      "sha256": "4d8c2bb58f903abc89e107fe3cfa654067013dfd3b7c4069b26096b4d05beaaa"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/dispatcher_test.go",
+      "bytes": 24338,
+      "sha256": "a33ac7d5eed97610ddcc3c48a2bbbe5516ce05d2c722090b1b149685aec6eb9c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/dispatcher.go",
+      "bytes": 15259,
+      "sha256": "a134d835aafee9b5e2b09289563941c13c7771c91375968f35d578335eba4326"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/index_control_windows_test.go",
+      "bytes": 2063,
+      "sha256": "53aa0e0a9e92072a2a46931958d4a53105b300be46f626afc203393fcc6a66f2"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/index_control.go",
+      "bytes": 7994,
+      "sha256": "cdc34a58f9024aa939eb06387d2b084e816603858703b588f1e8cd7508337c20"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/index_manager_test.go",
+      "bytes": 7429,
+      "sha256": "17fc29ec823ba0b0e0326fc5f94a16ee1273c130aaa59b0bd615a4146ff169fe"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/index_manager.go",
+      "bytes": 9597,
+      "sha256": "c36dc3dd1a38f4f051187fa6ad336b1614b0a97b5d5127dbadacac1a367fa3ff"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/mode_index_manager_test.go",
+      "bytes": 10857,
+      "sha256": "702216ae87f34b2ce0b923edfa1e152d730d669bdadf9a5f56dbc294d3d15284"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/mode_index_manager.go",
+      "bytes": 3978,
+      "sha256": "5c22c00066662cd550d891a828fb0b01c308dfcc9071e1127110ac55f2912d05"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/named_pipe_stub.go",
+      "bytes": 450,
+      "sha256": "6915ffe4949a0406eccc3bc270e01aa968c7d6caad0eeb8390f39b19507a19aa"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/named_pipe_windows_test.go",
+      "bytes": 6076,
+      "sha256": "8b06947f120003be92ef9475c8b0dc7d5f4804a2accd7dfe5bb3b5619c971277"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/named_pipe_windows.go",
+      "bytes": 12298,
+      "sha256": "faf4310b477820b9675936350084e83b0bff79d1cdf1abadbaff4efcbeb6910c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/protocol.go",
+      "bytes": 6723,
+      "sha256": "c4e782ec68420b9f78e7473e4dc30f4f63c421f47bbd490039cf1ee45668b4ad"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/stdio_test.go",
+      "bytes": 3109,
+      "sha256": "3d582fbdeb09ae5ab3db84bfa9e05948af47f0674e9c39b5ea730b1b526fa505"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/stdio.go",
+      "bytes": 1823,
+      "sha256": "838604b7ffbbcc6fee781944a98bf42c901e3394bdb2e4cb30de9db53b37a5ca"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/usermodel_store_test.go",
+      "bytes": 15375,
+      "sha256": "9b362a8ef01048d5f80bfacba1f45a0ac9a1e5e42f17390a3cbb4b4e5239a94d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimebroker/usermodel_store.go",
+      "bytes": 15133,
+      "sha256": "ad126a533e617bf693ad29cc168f41a7b6d4ea547b5d8dc955955e857835d646"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore_experiment_guard_test.go",
+      "bytes": 597,
+      "sha256": "2a0aaaf005859dbd8c637ca80907c4e4a924b0dbbeec485eacd7f29351340506"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/admitted_index_test.go",
+      "bytes": 2189,
+      "sha256": "14ec99c417110c865698afb5a7c3d17a1099c4c4d1336f6af2e6f988e79787d7"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/atomicreplace_other.go",
+      "bytes": 156,
+      "sha256": "df77a5ff6705ed4b533d3e98b39ae6aa529fdb54d91bef3d1fb90dbb88f27f49"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/atomicreplace_windows.go",
+      "bytes": 755,
+      "sha256": "18bf68399c4a555649535b990cb9894bd6aaf06e3ccde15c42db8aad7a7b4510"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/bundle_test.go",
+      "bytes": 6867,
+      "sha256": "a64eb75bbb87daf98defc76d6e7c81c6319bd6b727418ca5746b52fe4b54532b"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/bundle.go",
+      "bytes": 8933,
+      "sha256": "c73c7130e3288d764e03e890108ab1e7addfb1ae2056bbe6a5836b44d52b3d14"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/construction.go",
+      "bytes": 10989,
+      "sha256": "2c61c49ff318b86249e42568a9bcb970f8cf002b0f5491bcf6928fb727c51503"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/dependency_boundary_test.go",
+      "bytes": 1340,
+      "sha256": "fe33212e2317d43706c9498126c27cc6466075cbe16f3b919464626717fbc35d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/engine_test.go",
+      "bytes": 10957,
+      "sha256": "b6b6ecfd2c7b1a7030732d834d9c1aed61191a6cf573c997eae26320a8f4181d"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/engine.go",
+      "bytes": 32132,
+      "sha256": "20e1bf8607c7b15e6787bbceac99dd8cbd2e8a99210d310d5ed116aa4ef967e7"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/exact_candidate_sentence_test.go",
+      "bytes": 5731,
+      "sha256": "2701e56670f6cf8e9e88ec40cd66c41cbd5478f6efe370502bf7d110e3abdc5c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/explain_test.go",
+      "bytes": 5525,
+      "sha256": "93321e4b023c9ec8eb39128e17d75cda695a521c4faa08d65089d3b766ce5887"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/explain.go",
+      "bytes": 6049,
+      "sha256": "154340fc9a4f944b28adb3c2cb95bdf4478aa34af61bdee0ddad7224d9398a9f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/index.go",
+      "bytes": 4767,
+      "sha256": "3d6b4643be882ec4bdaa61d310fcf5effa01424c1999adbd5dfdf8d4a57d199f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/indexfile_digest_test.go",
+      "bytes": 1266,
+      "sha256": "5bb8c7be68155abf319c660ae6325c67d17ffb667ef0723c73d37e0b8193f9fb"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/indexfile_test.go",
+      "bytes": 10282,
+      "sha256": "aaca2e332b99296b3e0b5da0153eda563f63ea47db4d26dbe7eb47b4908064ca"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/indexfile.go",
+      "bytes": 29123,
+      "sha256": "35d32e40d405dd1b04c6e21555b1fc89c79fe686a719ad5c7d4e48e60236a677"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/mappedfile_other.go",
+      "bytes": 293,
+      "sha256": "b607461d8a10c10b19cc98a9c90a3a3a8f2fd79661c2a3c2910acb2ecb9259f0"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/mappedfile_windows.go",
+      "bytes": 1086,
+      "sha256": "1662cfecb63775507aa546a918f2491c4e00c792b4be60bd13cbcaafcdbd4ed3"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/model_read_cache_test.go",
+      "bytes": 1615,
+      "sha256": "1f9bb0395afac80ca3867d8040f5aef801d1a1df9a83d0bf0e2d81a85981f96e"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/model_read_cache.go",
+      "bytes": 6034,
+      "sha256": "03de722627f4c38733b4e569913334d1779fb4ad3dfc7c42c8f8ddfe6b8fa8f7"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/prefix_heap_test.go",
+      "bytes": 1111,
+      "sha256": "936a8da3200a470efa40b230b155aab970e2ad54b9a2be2d90e5b054cb3b5e01"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/prefix_heap.go",
+      "bytes": 1156,
+      "sha256": "5e6868ce7cf9718860e5fb21c19dbfd4d0e7108bc10e749191b3e45963977c30"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/prefix_topk_test.go",
+      "bytes": 4750,
+      "sha256": "5205686304e2308563229b12a62ec83fddd7fefcb52f0fd903fdb8b9fed80e8c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/reranker_test.go",
+      "bytes": 4012,
+      "sha256": "3323e6716be42c9555c9a1119e03bf8964f7a491abda1a08ab6c812e598f329c"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/reranker.go",
+      "bytes": 2866,
+      "sha256": "e0009b52cb81ba7b29a866f387104ceeef8e2824d05ce1aeec033c042a368879"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/segment_correction_test.go",
+      "bytes": 52253,
+      "sha256": "4288b8dfe1791f882c303a308d29587a8bb2f199baf2582ef80f8a031c597f0f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/sentence_test.go",
+      "bytes": 17071,
+      "sha256": "7e730f3bf3186f6ee3e54ddaa0bb4f20b01924793ed767a8e697ab9869036231"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/sentence.go",
+      "bytes": 22964,
+      "sha256": "7df79199fe302044a9753901c066d9f019ace17ef97685fb2f6fe5ff9d28a3c6"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/testdata/dynamic_sentence_cases.json",
+      "bytes": 5338,
+      "sha256": "8193a4096f4af139ce64b6f853ec4f33952f366e282fd365bb8ac3be5b524412"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/testdata/e1_probes.json",
+      "bytes": 1432,
+      "sha256": "da497c555c9f65c0275eaecdc08e7bcd111a79ae1e0b79be025192c0666de162"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/testdata/e2_sentence_probes.json",
+      "bytes": 1319,
+      "sha256": "2a47352fe13f8a47b7cc7a36e6f5e20c36432e66b977220aa75a60d989879d3f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/testdata/e2b_segment_probes.json",
+      "bytes": 341,
+      "sha256": "808f2616e345227876bb33bf6049d1bd8fbbfcc6875347e916ae9b4dc114d7b2"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/testdata/e4_reviewed_alias_probes.json",
+      "bytes": 2533,
+      "sha256": "5f928fefd8da28f9130b6be3001e1ee9041986477389ffb652c225b1ce405442"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/userlexicon_overlay_test.go",
+      "bytes": 3440,
+      "sha256": "7ae1e8641f87412797e7f021d76f808d7ed1214575e78658fe73b760cef41998"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/userlexicon_overlay.go",
+      "bytes": 6476,
+      "sha256": "bad285acee4e976b0b1ef4254a549550f8aad977690f9056eb5ff3c610d625d3"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/usermodel_test.go",
+      "bytes": 22710,
+      "sha256": "bf47881f38078aaa241f9c61f3ea69063393afdcfe18bc738bb9220c570c921f"
+    },
+    {
+      "path": "go-backend/input_methods/yime/yimecore/usermodel.go",
+      "bytes": 28903,
+      "sha256": "050c56330c2b371c1a605e97a6f0f9c39922e57c46b4753d80e4effbdc99a62c"
+    },
+    {
+      "path": "go-backend/internal/processmemory/processmemory_stub.go",
+      "bytes": 464,
+      "sha256": "4720d8fc51203f91f99f353ea1a59787724e8ebc15aafac95b267440f8ff7a2d"
+    },
+    {
+      "path": "go-backend/internal/processmemory/processmemory_windows.go",
+      "bytes": 1947,
+      "sha256": "ea67eba5d0971819766a948e46f7df3be2ebaa6429289553f3f411ccf0f81dfb"
+    },
+    {
+      "path": "go-backend/internal/symlinkfixture/fixture_test.go",
+      "bytes": 767,
+      "sha256": "e173a1cea83da0c8d1620f00b25801d210066f672ecf61835a35a4897edb2cea"
+    },
+    {
+      "path": "go-backend/internal/symlinkfixture/fixture.go",
+      "bytes": 1634,
+      "sha256": "f3add42354eede94438a4cb2b3898c73142d1e1d067e62b3983ee7e6b67ed033"
+    },
+    {
+      "path": "go-backend/log_rotation_test.go",
+      "bytes": 2729,
+      "sha256": "848a2f14642ccedfbc82ea08e25b6412edfb12655ff704ffea91b09ce9a9a52a"
+    },
+    {
+      "path": "go-backend/log_rotation.go",
+      "bytes": 2804,
+      "sha256": "440a07a1d2072377ffa96a8fb46fc0af56109c2b8b74ef5c9f490b234a4464a8"
+    },
+    {
+      "path": "go-backend/pime/protocol_test.go",
+      "bytes": 4326,
+      "sha256": "9f7e9efc301703043d27df0783ab10dcee6400dfe6d67fa6b8eef5cb8707b289"
+    },
+    {
+      "path": "go-backend/pime/protocol.go",
+      "bytes": 6928,
+      "sha256": "a2fa4522533ee972ee4de07191f839282e272aaad95fea40ce5b46b56df77d09"
+    },
+    {
+      "path": "go-backend/pime/server.go",
+      "bytes": 3863,
+      "sha256": "90a236303ac50ae4d6326c34307589525db7707a89848e9a4eda9ca8a5554b6a"
+    },
+    {
+      "path": "go-backend/pime/service_manager.go",
+      "bytes": 3589,
+      "sha256": "526a446a5be9f2ef4d55edd66d6826df49aa60a20a5d0adf4c3ce43efcda560d"
+    },
+    {
+      "path": "go-backend/pime/service.go",
+      "bytes": 2631,
+      "sha256": "fa7e370c2d8b1e26482fc1644802805794956ddf7230c4a8fac182f84a485268"
+    },
+    {
+      "path": "go-backend/README.md",
+      "bytes": 5694,
+      "sha256": "b8fa539c5e6f40a04dd19db5ccb5f370e638cea4f616a8936c9b57dc80f03a46"
+    },
+    {
+      "path": "go-backend/run_admin_yime_tests.cmd",
+      "bytes": 841,
+      "sha256": "769cb23e3c11d922511599b2b3222b1e703f0a41ea8fcf5ef35a8c4ccfbbb151"
+    },
+    {
+      "path": "go-backend/server_integration_test.go",
+      "bytes": 15273,
+      "sha256": "e05fe5b2d466b624855fd429ddf7873169f436aea1e9ec1417d9e33faac1240d"
+    },
+    {
+      "path": "go-backend/server_shutdown_test.go",
+      "bytes": 3930,
+      "sha256": "38c07c73b83db70b1e52bc3d9179586c1bee47f450d0bd426824b01c32b9f495"
+    },
+    {
+      "path": "go-backend/server_test.go",
+      "bytes": 5765,
+      "sha256": "0c33f17ad831274a69e8098bfb5e1fe85e940a5c3f787fe048f7968c3006487a"
+    },
+    {
+      "path": "go-backend/server.go",
+      "bytes": 15246,
+      "sha256": "fed89dee97392941e89a7052083b2a8bd9cf4dba9aec49bdb7cd3344bf469716"
+    },
+    {
+      "path": "installer/simple/Build-Package.ps1",
+      "bytes": 2329,
+      "sha256": "db0cb78797dbe3d4a3df69485d55a50b5d26d8fd94b52e8ec847fb7ee1647257"
+    },
+    {
+      "path": "installer/simple/Setup.ps1",
+      "bytes": 12994,
+      "sha256": "8a4251407e2873da9b1394f8c2c3ada77a27258a87a5d5ece0cf75cdaaba921d"
+    },
+    {
+      "path": "internal_data/manual_key_layout.json",
+      "bytes": 23749,
+      "sha256": "fdc73667015d97d9173d11f2ad3d56a5dba6f95feee4802ed67821d8ad68094a"
+    },
+    {
+      "path": "json/LICENSE.MIT",
+      "bytes": 1097,
+      "sha256": "b9715282b2f1db1359a919bb3a542dd4362fd9e38ae72d421367eb11abe62eec"
+    },
+    {
+      "path": "json/single_include/nlohmann/json.hpp",
+      "bytes": 978962,
+      "sha256": "5f09d1eebe9b3557f21df155869af13bcde79b74a0748f82ca946e8cc088aaa0"
+    },
+    {
+      "path": "tools/assert-data-source-boundary.ps1",
+      "bytes": 3835,
+      "sha256": "9cb496c4d5e81e6103364119cb9812c1e0b24412a0f37e79659643fb8b9d909c"
+    },
+    {
+      "path": "tools/yimecore/build-local-product.ps1",
+      "bytes": 17120,
+      "sha256": "8c39099bf5866bdf8e64c25833340a0d7f3dceffce8263f63819026f1952363e"
+    },
+    {
+      "path": "tools/yimecore/build-local-x86-surface.ps1",
+      "bytes": 4860,
+      "sha256": "9e11534584cc86af21d7007ce4f037b7304b45a12b39c01bed3b63fdfd79932c"
+    },
+    {
+      "path": "tools/yimecore/build-system-observation.ps1",
+      "bytes": 2954,
+      "sha256": "1eb0bd14ce79bd65d8da10a069923150cd02a89a5bd1cc3a40e58e5cb939c37b"
+    },
+    {
+      "path": "tools/yimecore/development-scope.json",
+      "bytes": 1733,
+      "sha256": "bde9ef78e61ee370b7511fafaf1f44cb300caabfd328da7fc6b1f1cb67f85e33"
+    },
+    {
+      "path": "tools/yimecore/development-scope.ps1",
+      "bytes": 6505,
+      "sha256": "6a261eae84a7c0977efba25a01751251587f2a8cde5a0509feea13b5c1d18a34"
+    },
+    {
+      "path": "tools/yimecore/e6a/CMakeLists.txt",
+      "bytes": 609,
+      "sha256": "b66d72cc24861d3313eed18a472ca3469b88abf29e0c9cab4699c5d0b71b296a"
+    },
+    {
+      "path": "tools/yimecore/e6a/YimeBrokerPipeProbe.cpp",
+      "bytes": 14779,
+      "sha256": "3e5e675d8e50c84b98d5b58658e9a9e777a12776a823ea3c1ec08631b240cc7c"
+    },
+    {
+      "path": "tools/yimecore/get-l5-daily-use-baseline.ps1",
+      "bytes": 5727,
+      "sha256": "c6dab831c8c036dea97c02cfb766c27dc738ca3ce661563a17e6314a87706ad4"
+    },
+    {
+      "path": "tools/yimecore/local-product-build-common.ps1",
+      "bytes": 9731,
+      "sha256": "643b69f6912a238cc8103b07d886a1945d9a52bd39c61065cef0007eb11e80bb"
+    },
+    {
+      "path": "tools/yimecore/local-product-speech-build.ps1",
+      "bytes": 5574,
+      "sha256": "4655bd08402941c411db187e2b558e94041b0e6ad504b757ce072dc59f8e7fd1"
+    },
+    {
+      "path": "tools/yimecore/local-product-test-isolation.ps1",
+      "bytes": 5387,
+      "sha256": "d536c4da119eca2503cda69adee074353c814d67410a4c3c46c3cf82b3a04830"
+    },
+    {
+      "path": "tools/yimecore/local-product.json",
+      "bytes": 7832,
+      "sha256": "91baa22049b493f637107467686f541e0f45c1088b71c5eb792054d5ed10ee31"
+    },
+    {
+      "path": "tools/yimecore/performance-tiers.json",
+      "bytes": 2292,
+      "sha256": "345913b21167f2c320a15a90ec8825fc9c5011369d96d06117dece9beecd109a"
+    },
+    {
+      "path": "tools/yimecore/professional-lexicons/catalog.json",
+      "bytes": 74,
+      "sha256": "81fb1d223b5dca05cd968fd4c117dbc0cee83865e2088d545fdb1fdcd03b3c2e"
+    },
+    {
+      "path": "tools/yimecore/README.md",
+      "bytes": 1708,
+      "sha256": "38cd07e8d3c1c271b4bbc553770fdca1ca63277113d5cd18197948fc90b461e2"
+    },
+    {
+      "path": "tools/yimecore/RETIRE_LEGACY_ENTRY.md",
+      "bytes": 1985,
+      "sha256": "4f699b5396624e90509f3152a408c3aedab760339f6f3ae1c241e9f13e411092"
+    },
+    {
+      "path": "tools/yimecore/retire-legacy-entry.ps1",
+      "bytes": 9870,
+      "sha256": "e9133a0b7ac4c5c02d70b9ce978155d3dea4fd877d1bbb9f646a60a38a3d9c40"
+    },
+    {
+      "path": "tools/yimecore/run-connected-speech-admission.ps1",
+      "bytes": 31018,
+      "sha256": "5126b940f26bd07a66c76a5170cdc602cffe1fc41511e7c12de659b6029b1e4e"
+    },
+    {
+      "path": "tools/yimecore/run-connected-speech-product-source.ps1",
+      "bytes": 11714,
+      "sha256": "e20403d9752dceab00b69409ab1292f4b9b1a304fcd1421d01cfa10c299619fb"
+    },
+    {
+      "path": "tools/yimecore/run-connected-speech-reconnect.ps1",
+      "bytes": 23937,
+      "sha256": "13120832d47bc60da1d0193fcb982768dc71165cba0ddd00704576728b57e360"
+    },
+    {
+      "path": "tools/yimecore/run-e0-experiment.ps1",
+      "bytes": 3321,
+      "sha256": "db03ab0ddaa3bb1d032e9f99bb96c634886fcfe3eedc0e7dfaf8386ea26aa32a"
+    },
+    {
+      "path": "tools/yimecore/run-e1-index-experiment.ps1",
+      "bytes": 12659,
+      "sha256": "006808ac475f7987b892c17bc5d5f401f5ada47cc6f2ca6cd6e79b78a08d75d4"
+    },
+    {
+      "path": "tools/yimecore/run-e2-sentence-experiment.ps1",
+      "bytes": 373,
+      "sha256": "3a8d24dc1fc81798562ef6ce217b443fa92ffb6ced1b623f89194a019eeafaf6"
+    },
+    {
+      "path": "tools/yimecore/run-e2b-segment-correction-experiment.ps1",
+      "bytes": 7454,
+      "sha256": "9739adb53e9a2933c9c929935c360704873dc87e12eb588fa7682a5446af6a3d"
+    },
+    {
+      "path": "tools/yimecore/run-e3-learning-experiment.ps1",
+      "bytes": 7217,
+      "sha256": "cdba4cf6ff2346ad0a76457d282177b80d9f23cb5c9e37fe6ac40e37edcc817f"
+    },
+    {
+      "path": "tools/yimecore/run-e4-connected-speech-experiment.ps1",
+      "bytes": 14443,
+      "sha256": "10425f32d7359918c6f264650b56c9bc691cfea2e816ea15ca9e44f0ec2edf44"
+    },
+    {
+      "path": "tools/yimecore/run-e5a-broker-experiment.ps1",
+      "bytes": 8389,
+      "sha256": "b094ed9cfbe89f869a6ddd66236e69fd06a677985b270f531212e6fd4b78429c"
+    },
+    {
+      "path": "tools/yimecore/run-e5b-broker-process-experiment.ps1",
+      "bytes": 8979,
+      "sha256": "a426f2e20e608a2a837f15933dbf63b17fcab116dc92deaacb7b916f61e3a5e9"
+    },
+    {
+      "path": "tools/yimecore/run-e5c-user-model-durability-experiment.ps1",
+      "bytes": 9417,
+      "sha256": "d5268e6b1d2fd19f1fdf9b6deb8dd5e3c398586e217eab5694c1bc128e538577"
+    },
+    {
+      "path": "tools/yimecore/run-e5d-index-switch-experiment.ps1",
+      "bytes": 10673,
+      "sha256": "875e8c3f64bd784ebc3fcc42d4af388db4d439d91d34c5cca9f9743c7f177ce6"
+    },
+    {
+      "path": "tools/yimecore/run-e5e-concurrent-soak-experiment.ps1",
+      "bytes": 10624,
+      "sha256": "005f255a7da4ba99ea99321dc7f6eea29cc54555f3142c2a4e6744a3457f1690"
+    },
+    {
+      "path": "tools/yimecore/run-e5f-idempotency-experiment.ps1",
+      "bytes": 8632,
+      "sha256": "abbc399ccd3b2705d72ebd0cce7cefbc31ef436f0daf3da1d82389053f0adcc7"
+    },
+    {
+      "path": "tools/yimecore/run-e5g-compaction-experiment.ps1",
+      "bytes": 9044,
+      "sha256": "b008ed7d5797e6b9546c221d37c61220dce6d5f7ac81f1e9781345f0532c6360"
+    },
+    {
+      "path": "tools/yimecore/run-e6a-named-pipe-experiment.ps1",
+      "bytes": 15395,
+      "sha256": "8d83eaf232d2f1cad31d34eccd3d371f3c2a866be9ed0989f2a6dbe114e8eb11"
+    },
+    {
+      "path": "tools/yimecore/run-platform-experiment.ps1",
+      "bytes": 7488,
+      "sha256": "ebd26e5950abe73afe4b828decd9c2360806f8a9f42e043cd06915fb0171d015"
+    },
+    {
+      "path": "tools/yimecore/run-yimecore-tier-performance.ps1",
+      "bytes": 12392,
+      "sha256": "b111ccb7bc51e6d8c690b6accba7443d8160b7e0caa6a8cb39224d3d539620a6"
+    },
+    {
+      "path": "tools/yimecore/speech-product-contract.json",
+      "bytes": 5789,
+      "sha256": "92165eccb2e29f105b56756d57ef951171f9d7bb19fb53214d006ae91f37777c"
+    },
+    {
+      "path": "tools/yimecore/test-connected-speech-reconnect.ps1",
+      "bytes": 10370,
+      "sha256": "181c572edeb12628483efda39069971519de33b20ee99476a9e7680add524752"
+    },
+    {
+      "path": "tools/yimecore/test-development-scope.ps1",
+      "bytes": 4614,
+      "sha256": "34a63141dea8820be67304b3b683492ba8d3f2f9ad2d508967db24fbc35f185c"
+    },
+    {
+      "path": "tools/yimecore/test-focus-cancellation.ps1",
+      "bytes": 16476,
+      "sha256": "c22f3e789de6f8ddff8a8cbade293609515fdf5cea459bb29904790e537bea72"
+    },
+    {
+      "path": "tools/yimecore/test-local-product-speech-build.ps1",
+      "bytes": 11064,
+      "sha256": "caa397c507f9fb4fc4242c42e09b842110f278de16ea047131b4832a4a792849"
+    },
+    {
+      "path": "tools/yimecore/test-platform-experiment.ps1",
+      "bytes": 3366,
+      "sha256": "3ffc1a026d7813784c2f9a18e590d276541a0e2626d0948ef2af4281f5cefbd8"
+    },
+    {
+      "path": "tools/yimecore/test-registration-query.ps1",
+      "bytes": 1628,
+      "sha256": "7334089d391f7f8c710e9ba03d25a041be4874ece239ed9a14b846a225e262f8"
+    },
+    {
+      "path": "tools/yimecore/test-retire-legacy-entry.ps1",
+      "bytes": 5080,
+      "sha256": "304b0d795ef273205257109c0b2e8ebcbcd21f73ab24e728e624b4f967606053"
+    },
+    {
+      "path": "tools/yimecore/trial-help/diagnostics.html",
+      "bytes": 1735,
+      "sha256": "1d7c33f93d70b8f2f9c04dff80b1d4eb4a0244576327664843b5477873759afd"
+    },
+    {
+      "path": "tools/yimecore/trial-help/README.html",
+      "bytes": 2421,
+      "sha256": "9481a48b12a6d26af7bd42adaff2cda533f4a4107b249441866522e59eb9e5a2"
+    },
+    {
+      "path": "tools/yimecore/trial-help/settings-and-data.html",
+      "bytes": 1894,
+      "sha256": "511fe388c648e4ecd878a37f14b27e9afb1e3e80ddcc7b83fc3cb6f78362b130"
+    },
+    {
+      "path": "tools/yimecore/trial-help/trial-feedback.html",
+      "bytes": 1950,
+      "sha256": "0147684c7c812a5b677db12c8a8c1042618b845867f8357cb123c1a3903ccd40"
+    },
+    {
+      "path": "YimeTextServiceExperiment/assets/yimecore-trial-profile.ico",
+      "bytes": 88807,
+      "sha256": "4e9181f9248964708b589d3e4260c8fc846800f77c37dca3b8322b501bfe2262"
+    },
+    {
+      "path": "YimeTextServiceExperiment/assets/yimecore-trial-profile.png",
+      "bytes": 648463,
+      "sha256": "f6bf3c5e16d4cd9c2230cb0a053ab4487b0d8cdc1ad7365070df20fc5b194601"
+    },
+    {
+      "path": "YimeTextServiceExperiment/BrokerClient.cpp",
+      "bytes": 15805,
+      "sha256": "f747715da5f05406267dbd4771b93b571c68de0003aec96039a8251f2913c1c8"
+    },
+    {
+      "path": "YimeTextServiceExperiment/BrokerClient.h",
+      "bytes": 3005,
+      "sha256": "98362b79d0c602e7c0d740fc2d00b742fe410419abdeb67db001169ab2b07fe5"
+    },
+    {
+      "path": "YimeTextServiceExperiment/BrokerEndpoint.cpp",
+      "bytes": 544,
+      "sha256": "349d60ff50bbf498b242115ec709346445b5e57270fa3a8883c4a5c673a33912"
+    },
+    {
+      "path": "YimeTextServiceExperiment/BrokerEndpoint.h",
+      "bytes": 240,
+      "sha256": "52d4371e86a0199e74d3d7dfadac264f244882b8fabbc800a82b86deca53b687"
+    },
+    {
+      "path": "YimeTextServiceExperiment/CandidateListUIElement.cpp",
+      "bytes": 6510,
+      "sha256": "1fa4b24dbd426101cc1da881858ff3a2d7da0fafab1f15b2a816513e9c7396cd"
+    },
+    {
+      "path": "YimeTextServiceExperiment/CandidateListUIElement.h",
+      "bytes": 2554,
+      "sha256": "6fe609bb26a2fa9f007f161b7db3041b3f75b308667f1c99e17ffdaf03c024d3"
+    },
+    {
+      "path": "YimeTextServiceExperiment/CandidatePopup.cpp",
+      "bytes": 25084,
+      "sha256": "1bc83e97019d36c87a6a6ca25043233dc512ecb6695c1115467625a5deaddae6"
+    },
+    {
+      "path": "YimeTextServiceExperiment/CandidatePopup.h",
+      "bytes": 6504,
+      "sha256": "7efe144f016eb38e16ffa73444c787fff1bb6127bd7f33449723f1f447e5db2e"
+    },
+    {
+      "path": "YimeTextServiceExperiment/CMakeLists.txt",
+      "bytes": 8380,
+      "sha256": "0b4b2adfdc8862b606dd82fd5ca85ab4f872dcca4964dbf2311ab4e1e492f4b9"
+    },
+    {
+      "path": "YimeTextServiceExperiment/CompositionEditSession.cpp",
+      "bytes": 13095,
+      "sha256": "d79ce464af1212f2bea9a8246f2bd257c46802f01d99057666676b5563681069"
+    },
+    {
+      "path": "YimeTextServiceExperiment/CompositionEditSession.h",
+      "bytes": 1900,
+      "sha256": "6285c89d5507bbadcccd319a3b3ea2f5afbb258dce065bd4c3be75da120afae9"
+    },
+    {
+      "path": "YimeTextServiceExperiment/DiagnosticPolicy.h",
+      "bytes": 947,
+      "sha256": "cdd95c5c74450ff46f46914510557684725970a912f63a38eedaa5fc680cba06"
+    },
+    {
+      "path": "YimeTextServiceExperiment/DllEntry.cpp",
+      "bytes": 2769,
+      "sha256": "12d7662b6ca32f5024c93300ca3ecffab7378b6ee8c911e0dca1a3a530e7b37a"
+    },
+    {
+      "path": "YimeTextServiceExperiment/ExperimentSettings.cpp",
+      "bytes": 12637,
+      "sha256": "93b2b29929aa04d435c4478c89d7248c851ae8e6832c832b3a90a27ebe28398b"
+    },
+    {
+      "path": "YimeTextServiceExperiment/ExperimentSettings.h",
+      "bytes": 2005,
+      "sha256": "7d0c2b805b565381c4190c962e934e694c5edddb66025739e3876ae371762fb1"
+    },
+    {
+      "path": "YimeTextServiceExperiment/KeyContract.cpp",
+      "bytes": 3335,
+      "sha256": "063ef04b6f6f4fa4227ba0508bbde52aabe6d44a09c0fa5d5d68db31b23ace2f"
+    },
+    {
+      "path": "YimeTextServiceExperiment/KeyContract.h",
+      "bytes": 1093,
+      "sha256": "7c829110d2958c0cc5de16bef090d98415588e0f87f5213447d097aece3c11d8"
+    },
+    {
+      "path": "YimeTextServiceExperiment/LanguageBarItem.cpp",
+      "bytes": 29201,
+      "sha256": "ddc468634a8ea8e5ef172afbe1617b22e8bc090b00fab2c6a51e51c30af08ec0"
+    },
+    {
+      "path": "YimeTextServiceExperiment/LanguageBarItem.h",
+      "bytes": 4674,
+      "sha256": "1f538688c5104cbd9e93feaf7cd2fcbb9737464d8ad91f79b2d5b86dfe46c9c9"
+    },
+    {
+      "path": "YimeTextServiceExperiment/LanguageBarResources.h",
+      "bytes": 176,
+      "sha256": "f46715352c59b2e06d1fe853acaa201f628171f1b77c7a4f08b2c23ecd29625c"
+    },
+    {
+      "path": "YimeTextServiceExperiment/LanguageBarResources.rc",
+      "bytes": 417,
+      "sha256": "467aeef531b7121011db46b5ea5099d288a42416c4f55369b05c20a3f3344028"
+    },
+    {
+      "path": "YimeTextServiceExperiment/LocalProductIdentity.h.in",
+      "bytes": 889,
+      "sha256": "00a0c9d8b3cdba91b765e7494b4d98bea5bc9731acd866a7250484fa5ad9bc76"
+    },
+    {
+      "path": "YimeTextServiceExperiment/ModuleState.h",
+      "bytes": 148,
+      "sha256": "df2b6f09dc711ace7f42eb75ed1ef31b3964c5a875b5fac896b37fa0adb125ce"
+    },
+    {
+      "path": "YimeTextServiceExperiment/OutputTransform.cpp",
+      "bytes": 7406,
+      "sha256": "11fb14daee22336ae76ab2d37a7cdcd8a50a8b069f0120d0883b5a223054f432"
+    },
+    {
+      "path": "YimeTextServiceExperiment/OutputTransform.h",
+      "bytes": 1100,
+      "sha256": "f691dc9de2caf28f47f9c67dc96fb593b1d8ceb2c82483fb3f5c636edc8677fb"
+    },
+    {
+      "path": "YimeTextServiceExperiment/ProductIdentity.h",
+      "bytes": 223,
+      "sha256": "387ae37e14ddd8e1f4944fa4b4a0b83760b26713f4d0ee348436ff232ab7663b"
+    },
+    {
+      "path": "YimeTextServiceExperiment/PunctuationPalette.cpp",
+      "bytes": 8851,
+      "sha256": "b11c7052c086f9e809e15947351a6b722c07102c0a71da58af8b6146654b8b53"
+    },
+    {
+      "path": "YimeTextServiceExperiment/PunctuationPalette.h",
+      "bytes": 1833,
+      "sha256": "a70a99722f9f2f790487dd4f7df66edc951972d5f6fbeba12b44ddd3798a636c"
+    },
+    {
+      "path": "YimeTextServiceExperiment/README.md",
+      "bytes": 4719,
+      "sha256": "e660b7d7a2cbad1e38f1033f0250ac60f28a050645e9ce2f289c32196650bda9"
+    },
+    {
+      "path": "YimeTextServiceExperiment/RegistrationTool.cpp",
+      "bytes": 16356,
+      "sha256": "b8db76a9de8daa268bac3f2f15ae854fc3a15e488e96393416f4b232f301c5cc"
+    },
+    {
+      "path": "YimeTextServiceExperiment/SurfaceSession.cpp",
+      "bytes": 19100,
+      "sha256": "1ebe2ec1cdfa0ac2ac0ac6f02bf7c0a565b5fe8e15be9011b865d787972b8413"
+    },
+    {
+      "path": "YimeTextServiceExperiment/SurfaceSession.h",
+      "bytes": 2124,
+      "sha256": "91858813697b6149243f282c26fa7e90f111c4299d73a6578138b49972fddd3b"
+    },
+    {
+      "path": "YimeTextServiceExperiment/tests/BrokerBridgeTests.cpp",
+      "bytes": 30555,
+      "sha256": "f5e3761bc11699149bac65afb8cbbb07ae7b00c42334572d21d56cd25b334f83"
+    },
+    {
+      "path": "YimeTextServiceExperiment/tests/ContractTests.cpp",
+      "bytes": 85082,
+      "sha256": "cdbb99d2bf8ffbfed4355aac1422323c398ca78b5d4ae7cb9a9d22d8d4cb8f9a"
+    },
+    {
+      "path": "YimeTextServiceExperiment/tests/FocusCancellationTests.cpp",
+      "bytes": 16939,
+      "sha256": "247012f717b8bb3c67c659db96532deccaaafaf5dc5951b82e4b489935ae5307"
+    },
+    {
+      "path": "YimeTextServiceExperiment/tests/RegisteredHostTests.cpp",
+      "bytes": 61284,
+      "sha256": "1cfda77b57a66796667fb9fab9aa587b53b371ecca30038837a0d922dc1ff620"
+    },
+    {
+      "path": "YimeTextServiceExperiment/tests/RegistrationQueryTests.cpp",
+      "bytes": 7234,
+      "sha256": "6582a4039830282f3305a4399bc6739504270dff641c1e8c0d909af00d04479f"
+    },
+    {
+      "path": "YimeTextServiceExperiment/tests/TsfCompositionTests.cpp",
+      "bytes": 70022,
+      "sha256": "85fb9e91d386ff14e4b31306dff4d9c88b49f132f5abf64380a9aee434522e86"
+    },
+    {
+      "path": "YimeTextServiceExperiment/TextService.cpp",
+      "bytes": 54888,
+      "sha256": "68d0c265bf46321535560bf2e86ec40bf8ffece9fac820a97c33bb168903f52b"
+    },
+    {
+      "path": "YimeTextServiceExperiment/TextService.h",
+      "bytes": 5956,
+      "sha256": "0830ac5b4cebbd841411224b78a8d6a899abc9dff2bbeaa1e314b1a2f66eb757"
+    },
+    {
+      "path": "YimeTextServiceExperiment/YimeTextServiceExperiment.def",
+      "bytes": 106,
+      "sha256": "ab592b4d7d7c39c36b6aa2cb68bbbac65e7adf52c66a16dd0c81ecd3261fc146"
+    },
+    {
+      "path": "YimeTextServiceExperiment/YimeTextServiceIds.h",
+      "bytes": 1612,
+      "sha256": "5a05f9601e9e0cf6863c2a392abbc344a68c53fd7ddf1afef389f65d13f0f812"
+    }
+  ],
+  "scope": "Build source plus explicit generated data; deleted paths recorded in git_status. No installed/user data."
+}

@@ -1,0 +1,6 @@
+{
+  "OutputRoot": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r",
+  "SpeechAdmissionRoot": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260929-082605-4c81784ac4a94b7faf5e0219a88b87c9",
+  "ExpectedSpeechAdmissionSummarySha256": "f77fc49edceef740862a9412734b7f79e0d53c9e1423e661cb4d7b16a8633978",
+  "ExpectedSpeechSourceInventorySha256": "0deeb551296ee73a60b23f9cd66e9df2e7acb636e509ab36ba82d38922874a46"
+}

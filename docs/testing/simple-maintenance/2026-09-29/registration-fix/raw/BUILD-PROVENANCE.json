@@ -1,0 +1,34 @@
+{
+  "schema_version": "yimecore-registration-fix-delivery-v1",
+  "product": "yimecore",
+  "version": "0.1.0-local.13-registration-fix-20260929",
+  "source_commit": "2ffee43242af9981c462aeabb0d5b26c4f99286c",
+  "source_tree": "0b1ad77ab44d91caf50a9e2fb0ebd5395af163be",
+  "installer_source_commit": "2ffee43242af9981c462aeabb0d5b26c4f99286c",
+  "source_ci": {
+    "run_id": 36503447392,
+    "url": "https://github.com/tsaanghwang/Yime/actions/runs/36503447392",
+    "head_sha": "2ffee43242af9981c462aeabb0d5b26c4f99286c",
+    "conclusion": "success"
+  },
+  "product_manifest": {
+    "path": "product-package.json",
+    "bytes": 11191,
+    "sha256": "e370a366c6efb2cfa042514ef4ecbefd6684c26eef9d4f59037dfedcf1181d80"
+  },
+  "source_manifest": {
+    "path": "build/source-manifest.json",
+    "bytes": 129978,
+    "sha256": "6698de34499d31802cbecd1dfd04f549ab49b4942b34412ab7d42f29e3ef8760"
+  },
+  "payload_files": 65,
+  "pe_files": 25,
+  "installed_acceptance": false,
+  "source_and_payload_mapping": "See separate Evidence ZIP: payload-verification.json and core-build/package/build/source-manifest.json",
+  "original_unfixed_package": {
+    "name": "Yime-Current-Readiness-20260927.zip",
+    "source_commit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
+    "sha256": "45c4a0d93f8a40a4c26bebf934efb10c876f1305732c1e95a2e43547f2ddd341",
+    "unchanged": true
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "builds": {
+    "full": [
+      {
+        "format_version": 1,
+        "mode": "full",
+        "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\go-backend\\input_methods\\yime\\data\\yime_full.dict.yaml",
+        "source_sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+        "source_bytes": 31621303,
+        "parsed_records": 1166753,
+        "indexed_records": 1166753,
+        "duplicate_records": 0,
+        "index_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260929-082605-4c81784ac4a94b7faf5e0219a88b87c9\\indexes\\full-core.yidx",
+        "index_bytes": 40267102,
+        "record_payload_sha256": "20fdd4a5715cd20c048ce4ca764a16f95ebf19fa3eaca0d123571c87e219ae34",
+        "index_sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+        "build_elapsed_ns": 718556700,
+        "peak_observed_heap_bytes": 258251784
+      },
+      {
+        "format_version": 1,
+        "mode": "full",
+        "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260929-082605-4c81784ac4a94b7faf5e0219a88b87c9\\admitted-records.json",
+        "source_sha256": "4787f4887254215a51e6df39a1bcbc7914ae288ba487626a05179b1817bf0121",
+        "source_bytes": 1286,
+        "parsed_records": 24,
+        "indexed_records": 24,
+        "duplicate_records": 0,
+        "index_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260929-082605-4c81784ac4a94b7faf5e0219a88b87c9\\indexes\\full-stage5c.yidx",
+        "index_bytes": 848,
+        "record_payload_sha256": "9400d56b173bca4a20c6c34b26d6c01cc1c3b1498c1749b9e1b01523837ca32b",
+        "index_sha256": "470ef8e58a0f61bde3e7437097b1c480be4962d3e9a4680984567d53e3a427b9",
+        "build_elapsed_ns": 3015900,
+        "peak_observed_heap_bytes": 16196200,
+        "provenance_sha256": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d"
+      }
+    ],
+    "shorthand": [
+      {
+        "format_version": 1,
+        "mode": "shorthand",
+        "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\go-backend\\input_methods\\yime\\data\\yime_shorthand.dict.yaml",
+        "source_sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+        "source_bytes": 29563931,
+        "parsed_records": 1166753,
+        "indexed_records": 1166753,
+        "duplicate_records": 0,
+        "index_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260929-082605-4c81784ac4a94b7faf5e0219a88b87c9\\indexes\\shorthand-core.yidx",
+        "index_bytes": 38209725,
+        "record_payload_sha256": "caff26eefc0970dc7f8f240b7cc41bb11f6d6a449b256eb5dac037e79134f22b",
+        "index_sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+        "build_elapsed_ns": 707233300,
+        "peak_observed_heap_bytes": 251212536
+      },
+      {
+        "format_version": 1,
+        "mode": "shorthand",
+        "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260929-082605-4c81784ac4a94b7faf5e0219a88b87c9\\admitted-records.json",
+        "source_sha256": "3f20f3dd20444faaa933fdd527805adc52f00236cc7d774e1139f756ba3e3399",
+        "source_bytes": 1268,
+        "parsed_records": 24,
+        "indexed_records": 24,
+        "duplicate_records": 0,
+        "index_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260929-082605-4c81784ac4a94b7faf5e0219a88b87c9\\indexes\\shorthand-stage5c.yidx",
+        "index_bytes": 825,
+        "record_payload_sha256": "3a770a4884d438e5c639598c9ac8c440e76697e82c5719e798051d85179ac9c9",
+        "index_sha256": "15929d0e62a882a4ce640b50d19e6a8af5ad5d1840b0f89e0e8a95ec0d8bc764",
+        "build_elapsed_ns": 2663200,
+        "peak_observed_heap_bytes": 287934552,
+        "provenance_sha256": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d"
+      }
+    ],
+    "variable": [
+      {
+        "format_version": 1,
+        "mode": "variable",
+        "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\go-backend\\input_methods\\yime\\data\\yime_variable.dict.yaml",
+        "source_sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+        "source_bytes": 30155261,
+        "parsed_records": 1166753,
+        "indexed_records": 1166753,
+        "duplicate_records": 0,
+        "index_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260929-082605-4c81784ac4a94b7faf5e0219a88b87c9\\indexes\\variable-core.yidx",
+        "index_bytes": 38801056,
+        "record_payload_sha256": "65a95490eec66e9416f636081deae9d1dc2942e27d51dbbdbb7891d2f496e103",
+        "index_sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+        "build_elapsed_ns": 714063800,
+        "peak_observed_heap_bytes": 253500912
+      },
+      {
+        "format_version": 1,
+        "mode": "variable",
+        "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260929-082605-4c81784ac4a94b7faf5e0219a88b87c9\\admitted-records.json",
+        "source_sha256": "8899f291eda24a538bd422cb3b6a376bc9b531f8e159e9c515ae68ccdc31807c",
+        "source_bytes": 1267,
+        "parsed_records": 24,
+        "indexed_records": 24,
+        "duplicate_records": 0,
+        "index_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20260929-082605-4c81784ac4a94b7faf5e0219a88b87c9\\indexes\\variable-stage5c.yidx",
+        "index_bytes": 825,
+        "record_payload_sha256": "3a770a4884d438e5c639598c9ac8c440e76697e82c5719e798051d85179ac9c9",
+        "index_sha256": "dd27f391102382a2ec2a5313d3cc7eaebb7ff6bd671e73623857ddb04ddc6371",
+        "build_elapsed_ns": 2003100,
+        "peak_observed_heap_bytes": 9644656,
+        "provenance_sha256": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d"
+      }
+    ]
+  },
+  "installed_product_changed": false,
+  "mode_rows": 72,
+  "passed": true,
+  "records": 24,
+  "rime_executed": false,
+  "runtime_rule_inference": false,
+  "schema_version": "yimecore-speech-prepare-v1"
+}

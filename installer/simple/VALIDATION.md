@@ -8,6 +8,8 @@
 
 构建契约、CI 调度契约及 PS5 包完整性、profile 移除失败、单/双产品调度和进程等待隔离回归通过，见 [本地证据](../../docs/testing/simple-maintenance/2026-09-29/registration-fix/local-validation.json)。这些测试没有执行已安装产品的注册、安装、卸载或输入验收。历史真实重复拒绝及枚举失真证据单独见 [原始报告复核](../../docs/testing/simple-maintenance/2026-09-29/registration-fix/REVIEW.md)；旧包恢复成功不等于本修复已安装。新包及 CI 的实际状态以 [HANDOFF](HANDOFF.md) 为准。
 
+新完整 YimeCore 包已从 `2ffee432` 构建并通过全部 CI 后交付；65 载荷、25 PE、PS5 包检查、ZIP 全成员和远端 SHA-256 均通过。详见 [独立交付证据](../../docs/testing/simple-maintenance/2026-09-29/registration-fix/DELIVERY.md)。新包实机安装/输入仍待测试 PC 回传，开发机已安装产品未改动。
+
 ## 2026-09-27 current-readiness 重建包（非变更验证）
 
 从 main `0ab86312` 重建双产品完整包。来源文件前后不变；YimeCore 65 个、Rime/PIME 160 个载荷及全部 PE 架构通过核验；两包 Read-Package、五项适用 PS5 隔离回归/文件模拟与 ZIP 全成员校验通过。原始日志、来源绑定、逐文件清单及未运行项见 [本轮交付记录](../../docs/testing/simple-maintenance/2026-09-27/current-readiness-rebuild/DELIVERY.md)。

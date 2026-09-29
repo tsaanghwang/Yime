@@ -1,0 +1,169 @@
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+-- The CXX compiler identification is MSVC 19.44.35225.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (1.5s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/.tmp/yimecore-local-product/r/native-x64
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  1>Checking Build System
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  BrokerBridgeTests.cpp
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  FocusCancellationTests.cpp
+  RegisteredHostTests.cpp
+  RegistrationQueryTests.cpp
+  TsfCompositionTests.cpp
+  BrokerEndpoint.cpp
+  BrokerClient.cpp
+  BrokerClient.cpp
+  CompositionEditSession.cpp
+  ExperimentSettings.cpp
+  ExperimentSettings.cpp
+  ContractTests.cpp
+  正在生成代码...
+  RegistrationTool.cpp
+  YimeRegistrationQueryTests.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x64\Release\YimeRegistrationQueryTests.exe
+  YimeFocusCancellationTests.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x64\Release\YimeFocusCancellationTests.exe
+  BrokerClient.cpp
+  CandidateListUIElement.cpp
+  ExperimentSettings.cpp
+  正在生成代码...
+  正在生成代码...
+  CandidatePopup.cpp
+  YimeTextServiceRegistration.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x64\Release\YimeTextServiceRegistration.exe
+  CompositionEditSession.cpp
+  BrokerEndpoint.cpp
+  CandidateListUIElement.cpp
+  KeyContract.cpp
+  DllEntry.cpp
+  SurfaceSession.cpp
+  CandidatePopup.cpp
+  ExperimentSettings.cpp
+  正在生成代码...
+  YimeRegisteredHostTests.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x64\Release\YimeRegisteredHostTests.exe
+  CompositionEditSession.cpp
+  YimeTsfCompositionTests.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x64\Release\YimeTsfCompositionTests.exe
+  ExperimentSettings.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  KeyContract.cpp
+  OutputTransform.cpp
+  LanguageBarItem.cpp
+  PunctuationPalette.cpp
+  YimeBrokerBridgeTests.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x64\Release\YimeBrokerBridgeTests.exe
+  SurfaceSession.cpp
+  OutputTransform.cpp
+  TextService.cpp
+  PunctuationPalette.cpp
+  正在生成代码...
+  正在生成代码...
+    正在创建库 C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/.tmp/yimecore-local-product/r/native-x64/Release/YimeTextServiceExperiment.lib 和对象 C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/.tmp/yimecore-local-product/r/native-x64/Release/YimeTextServiceExperiment.exp
+  YimeTextServiceExperiment.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x64\Release\YimeTextServiceExperiment.dll
+  YimeTextServiceContractTests.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x64\Release\YimeTextServiceContractTests.exe
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+YimeTextService E6-B1 contracts passed
+focus cancellation isolated mock checks=32 failures=0
+PASS: architecture_bits=64; exact machine profile; disabled/new profile; neighboring identities; immediate removal/recreation; null output; explicit WOW64 view; registry error propagation
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+-- The CXX compiler identification is MSVC 19.44.35225.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x86/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (1.4s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/.tmp/yimecore-local-product/r/native-x86
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  1>Checking Build System
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  TsfCompositionTests.cpp
+  RegistrationTool.cpp
+  RegisteredHostTests.cpp
+  FocusCancellationTests.cpp
+  RegistrationQueryTests.cpp
+  ContractTests.cpp
+  BrokerBridgeTests.cpp
+  BrokerClient.cpp
+  CompositionEditSession.cpp
+  ExperimentSettings.cpp
+  ExperimentSettings.cpp
+  BrokerEndpoint.cpp
+  BrokerClient.cpp
+  正在生成代码...
+  BrokerClient.cpp
+  YimeTextServiceRegistration.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x86\Release\YimeTextServiceRegistration.exe
+  YimeRegistrationQueryTests.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x86\Release\YimeRegistrationQueryTests.exe
+  YimeFocusCancellationTests.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x86\Release\YimeFocusCancellationTests.exe
+  ExperimentSettings.cpp
+  正在生成代码...
+  正在生成代码...
+  BrokerEndpoint.cpp
+  CandidateListUIElement.cpp
+  CandidateListUIElement.cpp
+  CandidatePopup.cpp
+  CandidatePopup.cpp
+  KeyContract.cpp
+  SurfaceSession.cpp
+  CompositionEditSession.cpp
+  CompositionEditSession.cpp
+  YimeRegisteredHostTests.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x86\Release\YimeRegisteredHostTests.exe
+  YimeTsfCompositionTests.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x86\Release\YimeTsfCompositionTests.exe
+  正在生成代码...
+  DllEntry.cpp
+  ExperimentSettings.cpp
+  ExperimentSettings.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  YimeBrokerBridgeTests.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x86\Release\YimeBrokerBridgeTests.exe
+  OutputTransform.cpp
+  OutputTransform.cpp
+  PunctuationPalette.cpp
+  PunctuationPalette.cpp
+  正在生成代码...
+  SurfaceSession.cpp
+  TextService.cpp
+  正在生成代码...
+  YimeTextServiceContractTests.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x86\Release\YimeTextServiceContractTests.exe
+    正在创建库 C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/.tmp/yimecore-local-product/r/native-x86/Release/YimeTextServiceExperiment.lib 和对象 C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/.tmp/yimecore-local-product/r/native-x86/Release/YimeTextServiceExperiment.exp
+  YimeTextServiceExperiment.vcxproj -> C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\native-x86\Release\YimeTextServiceExperiment.dll
+  Building Custom Rule C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/YimeTextServiceExperiment/CMakeLists.txt
+YimeTextService E6-B1 contracts passed
+focus cancellation isolated mock checks=32 failures=0
+PASS: architecture_bits=32; exact machine profile; disabled/new profile; neighboring identities; immediate removal/recreation; null output; explicit WOW64 view; registry error propagation
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/settings-tool	0.822s
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-independence-audit	3.456s
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-trial-runtime	0.529s
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore	1.363s
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker	3.197s
+YimeCore E1 index: mode=full records=1166753 verified=true sha256=81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1
+YimeCore E1 index: mode=full records=1166753 verified=true sha256=81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1
+YimeCore E1 index: mode=variable records=1166753 verified=true sha256=159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada
+YimeCore E1 index: mode=variable records=1166753 verified=true sha256=159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada
+YimeCore E1 index: mode=shorthand records=1166753 verified=true sha256=b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec
+YimeCore E1 index: mode=shorthand records=1166753 verified=true sha256=b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec
+PASS: isolated speech export-product only; no installed or daily-use acceptance inferred.
+YimeCore independence audit passed: C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\independence-audit.json
+YimeCore independence audit passed: C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r\independence-after-tests.json
+PASS: source-built x64 runtime plus x64/x86 TSF local product candidate (installed acceptance pending). Evidence: C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\.tmp\yimecore-local-product\r

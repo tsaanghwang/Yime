@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "installer/simple/Build-Package.ps1",
+    "--edition",
+    "ps7",
+    "--params-file",
+    ".tmp/registration-delivery/simple-params.json"
+  ],
+  "cwd": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime",
+  "started_at": "2026-09-29T00:34:19.553093+00:00",
+  "finished_at": "2026-09-29T00:34:23.448048+00:00",
+  "exit_code": 0
+}

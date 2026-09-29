@@ -1,0 +1,1 @@
+PASS: architecture_bits=32; exact machine profile; disabled/new profile; neighboring identities; immediate removal/recreation; null output; explicit WOW64 view; registry error propagation

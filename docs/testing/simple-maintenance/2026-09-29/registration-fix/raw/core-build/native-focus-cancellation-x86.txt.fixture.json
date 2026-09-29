@@ -1,0 +1,16 @@
+{
+  "executable": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\native-x86\\Release\\YimeFocusCancellationTests.exe",
+  "fixture_root": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\t\\a1645a95db04496a",
+  "environment": {
+    "TEMP": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\t\\a1645a95db04496a\\tmp",
+    "TMP": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\t\\a1645a95db04496a\\tmp",
+    "LOCALAPPDATA": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\t\\a1645a95db04496a\\local",
+    "APPDATA": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\t\\a1645a95db04496a\\roaming"
+  },
+  "environment_isolated": true,
+  "environment_restored": true,
+  "executed": true,
+  "exit_code": 0,
+  "passed": true,
+  "scope": "Fresh per-invocation TEMP/TMP/LOCALAPPDATA/APPDATA; retain synthetic state, never record previous environment values."
+}

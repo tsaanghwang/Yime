@@ -4,9 +4,24 @@
 
 ## 当前任务
 
-**2026-09-29：YimeCore 首次注册查询冲突修复，独立源码交付准备中；测试端暂无执行安排。** 分支 `codex/yimecore-registration-fix-20260929` 从 main `7ae18035a7bde9e2cb23e7eeaaaf94fdfd4c2948` 创建。原始 [2026-09-28 current-issues 报告](../../docs/testing/simple-maintenance/2026-09-28/current-issues/RESULT.md) 及日志按字节保留，[开发复核](../../docs/testing/simple-maintenance/2026-09-29/registration-fix/REVIEW.md) 区分历史实机诊断与本轮源码回归。本轮不改动或重装开发机上的已安装产品。
+**2026-09-29：YimeCore 首次注册查询修复已完成源码/CI/独立完整包交付；测试 PC 的有限验证待执行。开发机 MYCOMPUTER 不执行安装或重装。** 分支 `codex/yimecore-registration-fix-20260929`；源码及安装器提交 [`2ffee43242af9981c462aeabb0d5b26c4f99286c`](https://github.com/tsaanghwang/Yime/commit/2ffee43242af9981c462aeabb0d5b26c4f99286c)，[全部 CI 通过](https://github.com/tsaanghwang/Yime/actions/runs/36503447392)。本节在完整包上传、远端大小及 SHA-256 核对成功后更新；原始 [current-issues 报告](../../docs/testing/simple-maintenance/2026-09-28/current-issues/RESULT.md) 保持历史原文。
 
-新源码、CI 和完整包尚未全部就绪，不能用下面的旧包测试本修复。仅在修复提交通过 CI、独立完整包可下载且清单/大小/SHA-256 核验后，才在本节给出后续测试安排。旧包及其恢复安装、输入和重启验收保留原有归属，不代表包含本修复。
+- [完整单产品包 `YimeCore-Registration-Fix-20260929.zip`](https://github.com/tsaanghwang/Yime/releases/download/test-yimecore-registration-20260929-2ffee432/YimeCore-Registration-Fix-20260929.zip)：**187973541 字节**，SHA-256 `849bfc21fa9222dec3948f88c5652bcf404960f82e84f72175865293e7a3c073`。
+- [Evidence ZIP](https://github.com/tsaanghwang/Yime/releases/download/test-yimecore-registration-20260929-2ffee432/YimeCore-Registration-Fix-20260929-Evidence.zip)、[SHA256SUMS](https://github.com/tsaanghwang/Yime/releases/download/test-yimecore-registration-20260929-2ffee432/SHA256SUMS.txt)；[Release](https://github.com/tsaanghwang/Yime/releases/tag/test-yimecore-registration-20260929-2ffee432)；[来源、清单与验证记录](../../docs/testing/simple-maintenance/2026-09-29/registration-fix/DELIVERY.md)。Git checkout 和自动 Source code ZIP 不是安装包。
+- 65 个载荷、25 个 PE、PS5 包检查及 71 个完整 ZIP 成员验证通过；新包尚无实机安装/输入结果。**9 月 27 日旧包未变，不能用于验证本修复或标为已修复。**
+
+### 后续测试安排（仅“计算机”测试 PC）
+
+对象为已识别的“计算机”测试 PC，报告分支 `perf/i7-7820x-local`。只维护 YimeCore，保留 Rime/PIME、默认输入法及双方用户数据；不要求重跑历史矩阵，不扩展 ARM64 或新增硬件。不在开发机执行本节。
+
+1. 保留现有报告，通过 Git 获取本目标分支；下载上面的新 ZIP，核对大小和 SHA-256，解压至新的本地目录。记录机器/Windows、当前两产品状态和默认输入法。源码提交固定为 `2ffee43242af9981c462aeabb0d5b26c4f99286c`。
+2. 保存工作、关闭输入法宿主，在新包目录执行 `Setup.cmd -Action Install` **一次**。保留本次 `.user.log`/`.admin.log`；检查注销成功后预检 `com=false; profile=false; categories=0`，首次 `register-profile` 成功。不要用等待、重启或重复点击后的成功替代首次结果。
+3. 用包内 x64/x86 `YimeTextServiceRegistration.exe status` 只读核对两架构 COM/profile 状态。已存在的注册再次请求应拒绝 `0x800700B7`，不得覆盖；该项受控诊断只在测试 PC 进行，记录操作前后状态。安装器设计仍是 x64 完整注册加 x86 COM 注册，不称两次独立完整 RegisterProfile。
+4. 用同一完整包执行一次 `Setup.cmd -Action Uninstall`，用两架构包内工具 `verify-absent` 记录注销后立即 absent，再立即执行 `Setup.cmd -Action Install` 一次。保留首次结果；完成后保留 YimeCore 安装。全程不使用 `-ResetData`，不手工删注册表、不运行历史恢复链、不改 Rime/PIME。
+5. 验证当前产品身份和包内两架构注册宿主检查；真实应用先明确选择当前 **音元拼音**，在可用 x64/x86 宿主中检查候选显示与 Shift+1 上屏，并确认 Rime/PIME仍可独立输入。真实宿主与 synthetic registered-host 分开执行/记录；不要在 Word 正占用前台 TIP 时并行跑 synthetic host。没有执行的模式/宿主就写未测；无需为本轮额外安装宿主或重启系统。
+6. 在 `docs/testing/simple-maintenance/2026-09-29/registration-fix-test/TEST-RESULT.md` 记录源码提交、包哈希、每次首次操作及状态、实际宿主/架构、另一产品与默认输入法保持情况，附本次父子日志和只读状态，通过 `perf/i7-7820x-local` 提交推送。不要修改 9 月 28 日原始报告。
+
+任一步失败即保留本次首次失败日志并回传；不自动重试、不以重启恢复掩盖失败，也不继续旧事务/授权链。上述都是待执行安排，不能写成已完成验收。
 
 ## 其他独立工作与历史交付（2026-09-28 / 2026-09-27）
 
@@ -56,7 +71,7 @@
 
 ## 下一阶段测试端接收
 
-当前无需执行接收操作。下一阶段按新任务明确指定的主线或开发提交同步到 `perf/i7-7820x-local`；保留本地报告，普通合并后推送测试分支。具体分支、提交和测试范围由新交接给出，不继续拉取已结束的旧开发分支。出现分歧或冲突时保留现场并回报，不强制重置。
+本轮仅按上方“当前任务”接收 `codex/yimecore-registration-fix-20260929` 的已交付修复及完整包；保留本地报告，普通合并后推送 `perf/i7-7820x-local`。不继续拉取已结束的旧开发分支。出现分歧或冲突时保留现场并回报，不强制重置。
 
 下一次需要实机验证时，开发端先完成本地构建、制包及相应验收，再推送并等待该提交 CI 成功；随后在本文件提供明确执行范围和包清单。完整包经 GitHub artifact/Release asset 下载，分支记录下载地址、大小、SHA-256、安装脚本提交和各运行载荷来源。拉取源码不等于收到安装包；缺包时反馈一次，由开发端补齐。
 

@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python",
+    ".tmp/registration-delivery/stage_archives.py"
+  ],
+  "cwd": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime",
+  "started_at": "2026-09-29T00:38:42.234571+00:00",
+  "finished_at": "2026-09-29T00:38:58.938468+00:00",
+  "exit_code": 0
+}

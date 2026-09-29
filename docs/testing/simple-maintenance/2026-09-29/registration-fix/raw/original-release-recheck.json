@@ -1,0 +1,40 @@
+{
+  "unchanged": true,
+  "release_url": "https://github.com/tsaanghwang/Yime/releases/tag/test-current-readiness-20260927-0ab86312",
+  "asset": {
+    "url": "https://api.github.com/repos/tsaanghwang/Yime/releases/assets/591712948",
+    "id": 591712948,
+    "node_id": "RA_kwDOTOw_ac4jRNK0",
+    "name": "Yime-Current-Readiness-20260927.zip",
+    "label": "",
+    "uploader": {
+      "login": "tsaanghwang",
+      "id": 207723120,
+      "node_id": "U_kgDODGGacA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/207723120?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/tsaanghwang",
+      "html_url": "https://github.com/tsaanghwang",
+      "followers_url": "https://api.github.com/users/tsaanghwang/followers",
+      "following_url": "https://api.github.com/users/tsaanghwang/following{/other_user}",
+      "gists_url": "https://api.github.com/users/tsaanghwang/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/tsaanghwang/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/tsaanghwang/subscriptions",
+      "organizations_url": "https://api.github.com/users/tsaanghwang/orgs",
+      "repos_url": "https://api.github.com/users/tsaanghwang/repos",
+      "events_url": "https://api.github.com/users/tsaanghwang/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/tsaanghwang/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "content_type": "application/zip",
+    "state": "uploaded",
+    "size": 256650784,
+    "digest": "sha256:45c4a0d93f8a40a4c26bebf934efb10c876f1305732c1e95a2e43547f2ddd341",
+    "download_count": 0,
+    "created_at": "2026-09-27T00:00:41Z",
+    "updated_at": "2026-09-27T00:01:50Z",
+    "browser_download_url": "https://github.com/tsaanghwang/Yime/releases/download/test-current-readiness-20260927-0ab86312/Yime-Current-Readiness-20260927.zip"
+  }
+}

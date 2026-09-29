@@ -1,0 +1,1011 @@
+{
+  "schema_version": "yimecore-registration-fix-package-verification-v1",
+  "verified_utc": "2026-09-29T00:34:38.381201+00:00",
+  "passed": true,
+  "source_commit": "2ffee43242af9981c462aeabb0d5b26c4f99286c",
+  "source_manifest_dirty": false,
+  "source_manifest": {
+    "path": "build/source-manifest.json",
+    "bytes": 129978,
+    "sha256": "6698de34499d31802cbecd1dfd04f549ab49b4942b34412ab7d42f29e3ef8760"
+  },
+  "build_root": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r",
+  "package_root": "C:\\dev\\Yime-deliveries\\registration-fix-20260929\\YimeCore-Registration-Fix-20260929",
+  "product": "yimecore",
+  "package_version": "0.1.0-local.13-registration-fix-20260929",
+  "descriptor_version": "0.1.0-local.13",
+  "payload_files": 65,
+  "payload_bytes": 425364584,
+  "product_manifest": {
+    "path": "product-package.json",
+    "bytes": 11191,
+    "sha256": "e370a366c6efb2cfa042514ef4ecbefd6684c26eef9d4f59037dfedcf1181d80"
+  },
+  "pe_files": [
+    {
+      "path": "x86/YimeRegisteredHostTests.exe",
+      "architecture": "x86",
+      "machine": "0x014c"
+    },
+    {
+      "path": "x86/YimeTextServiceExperiment.dll",
+      "architecture": "x86",
+      "machine": "0x014c"
+    },
+    {
+      "path": "x86/YimeTextServiceRegistration.exe",
+      "architecture": "x86",
+      "machine": "0x014c"
+    },
+    {
+      "path": "x64/YimeRegisteredHostTests.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "x64/YimeTextServiceExperiment.dll",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "x64/YimeTextServiceRegistration.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeBroker.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreBlocklistManager.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreDiagnostics.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreExplain.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreIndependenceAudit.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreInputToolbar.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreLayoutDesigner.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreLearningManager.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreLexiconCenter.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreLexiconManager.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreProfessionalLexicon.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCorePromotionScan.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreReverseLookup.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreSentenceRegression.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreSettingsTool.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreSystemLexiconAudit.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreToolCenter.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreTrainer.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    },
+    {
+      "path": "bin/YimeCoreTrialRuntime.exe",
+      "architecture": "x64",
+      "machine": "0x8664"
+    }
+  ],
+  "native_source_mapping": [
+    {
+      "path": "x64/YimeTextServiceExperiment.dll",
+      "bytes": 670720,
+      "sha256": "d68439becc662cf9ebb49b73b6419b330142d57bed50de8b2465ed5d24c5b7bd",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\native-x64\\Release\\YimeTextServiceExperiment.dll"
+    },
+    {
+      "path": "x64/YimeTextServiceRegistration.exe",
+      "bytes": 299520,
+      "sha256": "96ab837d331efff7c390ecabcfb22ac0364130abd2148c87e9342e0bca6f8fc2",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\native-x64\\Release\\YimeTextServiceRegistration.exe"
+    },
+    {
+      "path": "x64/YimeRegisteredHostTests.exe",
+      "bytes": 459264,
+      "sha256": "459c053c26a0b32334482ef8f3a6bd5541bb99bd6dc6ff5b4220bdfaecb35a56",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\native-x64\\Release\\YimeRegisteredHostTests.exe"
+    },
+    {
+      "path": "x86/YimeTextServiceExperiment.dll",
+      "bytes": 582144,
+      "sha256": "b9c009ec36eaadad259eb09fd2eed890303b14c821dc2038fa7aec5cdb70b840",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\native-x86\\Release\\YimeTextServiceExperiment.dll"
+    },
+    {
+      "path": "x86/YimeTextServiceRegistration.exe",
+      "bytes": 238080,
+      "sha256": "c5bfa4b12b1b6daf931c2ed9b4284fe57c8b2b13de9719e7c9e5b3dc74bf937a",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\native-x86\\Release\\YimeTextServiceRegistration.exe"
+    },
+    {
+      "path": "x86/YimeRegisteredHostTests.exe",
+      "bytes": 384512,
+      "sha256": "685840eec9eaf29a63caaa047964a3ea803baf8a0e81670cb5f65231118e1b6c",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\native-x86\\Release\\YimeRegisteredHostTests.exe"
+    }
+  ],
+  "registration_query_regressions": [
+    {
+      "architecture": "x64",
+      "passed": true,
+      "log": {
+        "path": "native-registration-query-x64.txt",
+        "bytes": 189,
+        "sha256": "59eff303b0e0f063da94ae2a4c29e6b0bd952f6eac5cb53d52b17aacd0605f49"
+      },
+      "fixture": {
+        "path": "native-registration-query-x64.txt.fixture.json",
+        "bytes": 1200,
+        "sha256": "b4870f7ff1361bfea5e78414300bf075aeeaa0ff41c7c0f253bac0f939373e22"
+      },
+      "test_executable": {
+        "path": "native-x64/Release/YimeRegistrationQueryTests.exe",
+        "bytes": 304128,
+        "sha256": "2567a9fff9ac9e45fba579e8f4548e0bf7140422a26c4aff94f97bf2fc5d2e19"
+      }
+    },
+    {
+      "architecture": "x86",
+      "passed": true,
+      "log": {
+        "path": "native-registration-query-x86.txt",
+        "bytes": 189,
+        "sha256": "ab0034717edae30417f9b49f2b5490fb5e2b9ec826ec4a91bad177f2c5559dbe"
+      },
+      "fixture": {
+        "path": "native-registration-query-x86.txt.fixture.json",
+        "bytes": 1200,
+        "sha256": "fc809df880756f1142f2daedbe7820e7d56076563d4ac12cbf34fb55b625cff9"
+      },
+      "test_executable": {
+        "path": "native-x86/Release/YimeRegistrationQueryTests.exe",
+        "bytes": 239616,
+        "sha256": "f2c2a333b072c76284d320badba932e4c1bc9fa428fd48a56d246d2343cb4612"
+      }
+    }
+  ],
+  "installer_sources": [
+    {
+      "path": "Setup.ps1",
+      "bytes": 12994,
+      "sha256": "8a4251407e2873da9b1394f8c2c3ada77a27258a87a5d5ece0cf75cdaaba921d",
+      "source_path": "installer/simple/Setup.ps1",
+      "source_commit": "2ffee43242af9981c462aeabb0d5b26c4f99286c",
+      "git_blob_sha256": "d2f27d37169b3836eb10640920830577272bb94a0ab966eb0a820a2e52bb2dc9",
+      "checkout_projection_sha256": "8a4251407e2873da9b1394f8c2c3ada77a27258a87a5d5ece0cf75cdaaba921d",
+      "projection": "git cat-file --filters applies the repository checkout attributes, including LF-to-CRLF conversion"
+    },
+    {
+      "path": "Setup.cmd",
+      "bytes": 158,
+      "sha256": "f037e8fbad255f8c76d908a00b58500243aa72595d291504604242c8b81b7a97",
+      "source_path": "installer/simple/Setup.cmd",
+      "source_commit": "2ffee43242af9981c462aeabb0d5b26c4f99286c",
+      "git_blob_sha256": "879caaf980cfb91d69bf1251ad4eac7d289d4a737c962328f1246c1c1e672414",
+      "checkout_projection_sha256": "f037e8fbad255f8c76d908a00b58500243aa72595d291504604242c8b81b7a97",
+      "projection": "git cat-file --filters applies the repository checkout attributes, including LF-to-CRLF conversion"
+    },
+    {
+      "path": "Product.psm1",
+      "bytes": 7371,
+      "sha256": "206e7d17513a0ef22e4b96e932e5f6ed81b6fdb4d95a9e9401451254f91a3796",
+      "source_path": "installer/simple/Product.psm1",
+      "source_commit": "2ffee43242af9981c462aeabb0d5b26c4f99286c",
+      "git_blob_sha256": "7bdfc3f52e2e373150329baa0a15d3864460bda39b907274f71a1dc093bce024",
+      "checkout_projection_sha256": "206e7d17513a0ef22e4b96e932e5f6ed81b6fdb4d95a9e9401451254f91a3796",
+      "projection": "git cat-file --filters applies the repository checkout attributes, including LF-to-CRLF conversion"
+    }
+  ],
+  "packager_source": {
+    "source_path": "installer/simple/Build-Package.ps1",
+    "source_commit": "2ffee43242af9981c462aeabb0d5b26c4f99286c",
+    "git_blob_sha256": "03b6e56c7f319bb1dbc4b6531a945ef9325877afbc1957feb750484cc0cdfad7",
+    "checkout_projection_sha256": "db0cb78797dbe3d4a3df69485d55a50b5d26d8fd94b52e8ec847fb7ee1647257",
+    "projection": "git cat-file --filters applies the repository checkout attributes, including LF-to-CRLF conversion"
+  },
+  "payload_source_mapping": [
+    {
+      "path": "local-product.json",
+      "bytes": 7832,
+      "sha256": "91baa22049b493f637107467686f541e0f45c1088b71c5eb792054d5ed10ee31",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\local-product.json"
+    },
+    {
+      "path": "profile-icon.ico",
+      "bytes": 19067,
+      "sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\profile-icon.ico"
+    },
+    {
+      "path": "speech-capability.json",
+      "bytes": 220,
+      "sha256": "7c7ec05a237d371c92d8659d431d9b8dfd74418f1c9a484936645ad214ddc7f7",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\speech-capability.json"
+    },
+    {
+      "path": "x86/YimeRegisteredHostTests.exe",
+      "bytes": 384512,
+      "sha256": "685840eec9eaf29a63caaa047964a3ea803baf8a0e81670cb5f65231118e1b6c",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\x86\\YimeRegisteredHostTests.exe"
+    },
+    {
+      "path": "x86/YimeTextServiceExperiment.dll",
+      "bytes": 582144,
+      "sha256": "b9c009ec36eaadad259eb09fd2eed890303b14c821dc2038fa7aec5cdb70b840",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\x86\\YimeTextServiceExperiment.dll"
+    },
+    {
+      "path": "x86/YimeTextServiceRegistration.exe",
+      "bytes": 238080,
+      "sha256": "c5bfa4b12b1b6daf931c2ed9b4284fe57c8b2b13de9719e7c9e5b3dc74bf937a",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\x86\\YimeTextServiceRegistration.exe"
+    },
+    {
+      "path": "x64/YimeRegisteredHostTests.exe",
+      "bytes": 459264,
+      "sha256": "459c053c26a0b32334482ef8f3a6bd5541bb99bd6dc6ff5b4220bdfaecb35a56",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\x64\\YimeRegisteredHostTests.exe"
+    },
+    {
+      "path": "x64/YimeTextServiceExperiment.dll",
+      "bytes": 670720,
+      "sha256": "d68439becc662cf9ebb49b73b6419b330142d57bed50de8b2465ed5d24c5b7bd",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\x64\\YimeTextServiceExperiment.dll"
+    },
+    {
+      "path": "x64/YimeTextServiceRegistration.exe",
+      "bytes": 299520,
+      "sha256": "96ab837d331efff7c390ecabcfb22ac0364130abd2148c87e9342e0bca6f8fc2",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\x64\\YimeTextServiceRegistration.exe"
+    },
+    {
+      "path": "speech/admission.json",
+      "bytes": 1295,
+      "sha256": "cd8f510bf4122ab48d6c260c62c2d53363121d59488395fcc1366a1df62c914c",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\speech\\admission.json"
+    },
+    {
+      "path": "speech/admitted-records.json",
+      "bytes": 62558,
+      "sha256": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\speech\\admitted-records.json"
+    },
+    {
+      "path": "speech/forward-source.json",
+      "bytes": 17920,
+      "sha256": "73e2ec162b0bc3a114a5a9de902b14b68c505d736502d2940d6e29297ace56c2",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\speech\\forward-source.json"
+    },
+    {
+      "path": "speech/product.json",
+      "bytes": 2501,
+      "sha256": "9d56bbac5342a565913ca54b372263d5bb71d767079ee6b9dbd195eb6f4b7f2b",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\speech\\product.json"
+    },
+    {
+      "path": "speech/indexes/full-core.yidx",
+      "bytes": 40267102,
+      "sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\speech\\indexes\\full-core.yidx"
+    },
+    {
+      "path": "speech/indexes/full-stage5c.yidx",
+      "bytes": 848,
+      "sha256": "470ef8e58a0f61bde3e7437097b1c480be4962d3e9a4680984567d53e3a427b9",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\speech\\indexes\\full-stage5c.yidx"
+    },
+    {
+      "path": "speech/indexes/shorthand-core.yidx",
+      "bytes": 38209725,
+      "sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\speech\\indexes\\shorthand-core.yidx"
+    },
+    {
+      "path": "speech/indexes/shorthand-stage5c.yidx",
+      "bytes": 825,
+      "sha256": "15929d0e62a882a4ce640b50d19e6a8af5ad5d1840b0f89e0e8a95ec0d8bc764",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\speech\\indexes\\shorthand-stage5c.yidx"
+    },
+    {
+      "path": "speech/indexes/variable-core.yidx",
+      "bytes": 38801056,
+      "sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\speech\\indexes\\variable-core.yidx"
+    },
+    {
+      "path": "speech/indexes/variable-stage5c.yidx",
+      "bytes": 825,
+      "sha256": "dd27f391102382a2ec2a5313d3cc7eaebb7ff6bd671e73623857ddb04ddc6371",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\speech\\indexes\\variable-stage5c.yidx"
+    },
+    {
+      "path": "professional-lexicons/catalog.json",
+      "bytes": 74,
+      "sha256": "81fb1d223b5dca05cd968fd4c117dbc0cee83865e2088d545fdb1fdcd03b3c2e",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\professional-lexicons\\catalog.json"
+    },
+    {
+      "path": "indexes/full.yidx",
+      "bytes": 40267102,
+      "sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\indexes\\full.yidx"
+    },
+    {
+      "path": "indexes/shorthand.yidx",
+      "bytes": 38209725,
+      "sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\indexes\\shorthand.yidx"
+    },
+    {
+      "path": "indexes/variable.yidx",
+      "bytes": 38801056,
+      "sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\indexes\\variable.yidx"
+    },
+    {
+      "path": "help/diagnostics.html",
+      "bytes": 1735,
+      "sha256": "1d7c33f93d70b8f2f9c04dff80b1d4eb4a0244576327664843b5477873759afd",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\help\\diagnostics.html"
+    },
+    {
+      "path": "help/README.html",
+      "bytes": 2421,
+      "sha256": "9481a48b12a6d26af7bd42adaff2cda533f4a4107b249441866522e59eb9e5a2",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\help\\README.html"
+    },
+    {
+      "path": "help/settings-and-data.html",
+      "bytes": 1894,
+      "sha256": "511fe388c648e4ecd878a37f14b27e9afb1e3e80ddcc7b83fc3cb6f78362b130",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\help\\settings-and-data.html"
+    },
+    {
+      "path": "help/trial-feedback.html",
+      "bytes": 1950,
+      "sha256": "0147684c7c812a5b677db12c8a8c1042618b845867f8357cb123c1a3903ccd40",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\help\\trial-feedback.html"
+    },
+    {
+      "path": "data/dynamic_sentence_cases.json",
+      "bytes": 5338,
+      "sha256": "8193a4096f4af139ce64b6f853ec4f33952f366e282fd365bb8ac3be5b524412",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\dynamic_sentence_cases.json"
+    },
+    {
+      "path": "data/pinyin_normalized.json",
+      "bytes": 31697,
+      "sha256": "01bb8e95f124b42c3b1187cfe3872940ab73ebf83a6fe4bebfeac4139bc38422",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\pinyin_normalized.json"
+    },
+    {
+      "path": "data/yime_core_source_manifest.json",
+      "bytes": 1842,
+      "sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\yime_core_source_manifest.json"
+    },
+    {
+      "path": "data/yime_full.dict.yaml",
+      "bytes": 31621303,
+      "sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\yime_full.dict.yaml"
+    },
+    {
+      "path": "data/yime_full.schema.yaml",
+      "bytes": 1959,
+      "sha256": "5889514c808199a00c1c1618a4f940c71acd1e69eb8dc9592788e67a346114c0",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\yime_full.schema.yaml"
+    },
+    {
+      "path": "data/yime_lexicon_manifest.json",
+      "bytes": 667,
+      "sha256": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\yime_lexicon_manifest.json"
+    },
+    {
+      "path": "data/yime_pinyin_codes.tsv",
+      "bytes": 19448,
+      "sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\yime_pinyin_codes.tsv"
+    },
+    {
+      "path": "data/yime_pua_pinyin.json",
+      "bytes": 62686,
+      "sha256": "c60f4acc864e2c699eefcf796feaf855e2c19770191d8417fb7d51d17ceb3699",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\yime_pua_pinyin.json"
+    },
+    {
+      "path": "data/yime_shorthand.dict.yaml",
+      "bytes": 29563931,
+      "sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\yime_shorthand.dict.yaml"
+    },
+    {
+      "path": "data/yime_shorthand.schema.yaml",
+      "bytes": 1996,
+      "sha256": "d3b2fb6b39e958f30a0479de411ea65c6b4578b2548da106d1b23fda89910eaf",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\yime_shorthand.schema.yaml"
+    },
+    {
+      "path": "data/yime_syllable_decomposition.tsv",
+      "bytes": 177143,
+      "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\yime_syllable_decomposition.tsv"
+    },
+    {
+      "path": "data/yime_variable.dict.yaml",
+      "bytes": 30155261,
+      "sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\yime_variable.dict.yaml"
+    },
+    {
+      "path": "data/yime_variable.schema.yaml",
+      "bytes": 2067,
+      "sha256": "2a0d05769a3aee860ed14b503a24d295749f3f788cecf2fd792018094cd0f330",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\yime_variable.schema.yaml"
+    },
+    {
+      "path": "data/yime_yinyuan_layout.json",
+      "bytes": 1023,
+      "sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\yime_yinyuan_layout.json"
+    },
+    {
+      "path": "data/trainer/curriculum.json",
+      "bytes": 994,
+      "sha256": "6b57e56d91686fdf244b9df273477b73c53f19558fa4c40fc164b01bbec1ca51",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\trainer\\curriculum.json"
+    },
+    {
+      "path": "data/trainer/foundation.json",
+      "bytes": 2015,
+      "sha256": "94c110348e6c6eb081b1b24707d3024d8bf199dbde6f7f5ff484176a5b581555",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\trainer\\foundation.json"
+    },
+    {
+      "path": "data/trainer/yinyuan_catalog.json",
+      "bytes": 8358,
+      "sha256": "adcbbca053785bf189c6ca834aef27fadb9c4ccf3a55c0acfeb352a5743ea5c3",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\trainer\\yinyuan_catalog.json"
+    },
+    {
+      "path": "data/trainer/yinyuan_groups.json",
+      "bytes": 3093,
+      "sha256": "0821ce4e8da0149af75ae8e78e0ed579d15f3c04039f1de3acf5c3e717f8ab0c",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\trainer\\yinyuan_groups.json"
+    },
+    {
+      "path": "data/fonts/YinYuan-Regular.ttf",
+      "bytes": 16024176,
+      "sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\data\\fonts\\YinYuan-Regular.ttf"
+    },
+    {
+      "path": "bin/YimeBroker.exe",
+      "bytes": 5465600,
+      "sha256": "5dadb24ff6c54784d2325833d4355a1ab1c0763ed8231bbaec63ed9d6a10b730",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeBroker.exe"
+    },
+    {
+      "path": "bin/YimeCoreBlocklistManager.exe",
+      "bytes": 3174400,
+      "sha256": "8f7582cc4198e071b7bd066ac2619d4e0d60456e8f52354c8c5cd49c893fd1e8",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreBlocklistManager.exe"
+    },
+    {
+      "path": "bin/YimeCoreDiagnostics.exe",
+      "bytes": 3639296,
+      "sha256": "9260d50f1791416305600a4ff9b3a8abbcece34dc24eb86992dee319f2c40ebf",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreDiagnostics.exe"
+    },
+    {
+      "path": "bin/YimeCoreExplain.exe",
+      "bytes": 3812864,
+      "sha256": "f9ac771f5ec155bfd65de70c4a4897c4aa8f8039911c08edd3ea63afaf491cd0",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreExplain.exe"
+    },
+    {
+      "path": "bin/YimeCoreIndependenceAudit.exe",
+      "bytes": 4619264,
+      "sha256": "62f241d3bc5b10f888c1bc3b9c27ba23575335854e6baa8914e404ea7f5d522e",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreIndependenceAudit.exe"
+    },
+    {
+      "path": "bin/YimeCoreInputToolbar.exe",
+      "bytes": 3801600,
+      "sha256": "35e22b86bb5a902801c036b8af02d87e6860601086f3cb7c90bbd23dd1d05f8a",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreInputToolbar.exe"
+    },
+    {
+      "path": "bin/YimeCoreLayoutDesigner.exe",
+      "bytes": 5091840,
+      "sha256": "73f09854321e6acfc7008bb71f01b8d6f93dcfc30451051b45ebf6433189a24a",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreLayoutDesigner.exe"
+    },
+    {
+      "path": "bin/YimeCoreLearningManager.exe",
+      "bytes": 4003328,
+      "sha256": "81a27ba7711c51a649c60d5862bda8692d40e61fbfde794aafcc880caa108e79",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreLearningManager.exe"
+    },
+    {
+      "path": "bin/YimeCoreLexiconCenter.exe",
+      "bytes": 4068864,
+      "sha256": "5d7a0e7f4fe72d370376c82189dc71fb53f9fb91ea9a31f81e8e7a4875c8c03a",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreLexiconCenter.exe"
+    },
+    {
+      "path": "bin/YimeCoreLexiconManager.exe",
+      "bytes": 4406784,
+      "sha256": "53a8d09476ab3bf6d07c47b34b37f7dcce02e604cdd64e6d12ca8f265927fdd4",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreLexiconManager.exe"
+    },
+    {
+      "path": "bin/YimeCoreProfessionalLexicon.exe",
+      "bytes": 3928064,
+      "sha256": "ca4364d46795597e39acddb71e1b0198eaad8e2ce1d6fdca8423afb82c3770c2",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreProfessionalLexicon.exe"
+    },
+    {
+      "path": "bin/YimeCorePromotionScan.exe",
+      "bytes": 4114432,
+      "sha256": "ca7c37094370c1d014190518eed39a031c337171512ebc94498725debc254f0a",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCorePromotionScan.exe"
+    },
+    {
+      "path": "bin/YimeCoreReverseLookup.exe",
+      "bytes": 4435968,
+      "sha256": "7609b328e5dfebf8673ef67076ed684e8350e21d3260d888ca9102edd34d1501",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreReverseLookup.exe"
+    },
+    {
+      "path": "bin/YimeCoreSentenceRegression.exe",
+      "bytes": 4045312,
+      "sha256": "098fcf62e4eed8e43d24bf753cccb132b3b7dabf1017e6f4673518b48ab68cfc",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreSentenceRegression.exe"
+    },
+    {
+      "path": "bin/YimeCoreSettingsTool.exe",
+      "bytes": 4904448,
+      "sha256": "074a26965df215e28317b5a26a852179bc6a6d8275ff86047809fa58eb53164d",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreSettingsTool.exe"
+    },
+    {
+      "path": "bin/YimeCoreSystemLexiconAudit.exe",
+      "bytes": 3719168,
+      "sha256": "983e772a1cbe7f1077d242e0dbf62b23a1e9cb2589657d8fa06856409dfd2ffb",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreSystemLexiconAudit.exe"
+    },
+    {
+      "path": "bin/YimeCoreToolCenter.exe",
+      "bytes": 4068864,
+      "sha256": "5d7a0e7f4fe72d370376c82189dc71fb53f9fb91ea9a31f81e8e7a4875c8c03a",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreToolCenter.exe"
+    },
+    {
+      "path": "bin/YimeCoreTrainer.exe",
+      "bytes": 4696064,
+      "sha256": "6f924ac55e844f2f88aaf7a8f3d8fe976a8ae4174dc9bd8c8e3c151272b764aa",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreTrainer.exe"
+    },
+    {
+      "path": "bin/YimeCoreTrialRuntime.exe",
+      "bytes": 4371456,
+      "sha256": "bf9fbc5029aa40d5890a503c2e28e87bdad096f686191978079767e58ed6a6e8",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime\\.tmp\\yimecore-local-product\\r\\package\\bin\\YimeCoreTrialRuntime.exe"
+    }
+  ],
+  "package_files": [
+    {
+      "path": "payload/bin/YimeBroker.exe",
+      "bytes": 5465600,
+      "sha256": "5dadb24ff6c54784d2325833d4355a1ab1c0763ed8231bbaec63ed9d6a10b730"
+    },
+    {
+      "path": "payload/bin/YimeCoreBlocklistManager.exe",
+      "bytes": 3174400,
+      "sha256": "8f7582cc4198e071b7bd066ac2619d4e0d60456e8f52354c8c5cd49c893fd1e8"
+    },
+    {
+      "path": "payload/bin/YimeCoreDiagnostics.exe",
+      "bytes": 3639296,
+      "sha256": "9260d50f1791416305600a4ff9b3a8abbcece34dc24eb86992dee319f2c40ebf"
+    },
+    {
+      "path": "payload/bin/YimeCoreExplain.exe",
+      "bytes": 3812864,
+      "sha256": "f9ac771f5ec155bfd65de70c4a4897c4aa8f8039911c08edd3ea63afaf491cd0"
+    },
+    {
+      "path": "payload/bin/YimeCoreIndependenceAudit.exe",
+      "bytes": 4619264,
+      "sha256": "62f241d3bc5b10f888c1bc3b9c27ba23575335854e6baa8914e404ea7f5d522e"
+    },
+    {
+      "path": "payload/bin/YimeCoreInputToolbar.exe",
+      "bytes": 3801600,
+      "sha256": "35e22b86bb5a902801c036b8af02d87e6860601086f3cb7c90bbd23dd1d05f8a"
+    },
+    {
+      "path": "payload/bin/YimeCoreLayoutDesigner.exe",
+      "bytes": 5091840,
+      "sha256": "73f09854321e6acfc7008bb71f01b8d6f93dcfc30451051b45ebf6433189a24a"
+    },
+    {
+      "path": "payload/bin/YimeCoreLearningManager.exe",
+      "bytes": 4003328,
+      "sha256": "81a27ba7711c51a649c60d5862bda8692d40e61fbfde794aafcc880caa108e79"
+    },
+    {
+      "path": "payload/bin/YimeCoreLexiconCenter.exe",
+      "bytes": 4068864,
+      "sha256": "5d7a0e7f4fe72d370376c82189dc71fb53f9fb91ea9a31f81e8e7a4875c8c03a"
+    },
+    {
+      "path": "payload/bin/YimeCoreLexiconManager.exe",
+      "bytes": 4406784,
+      "sha256": "53a8d09476ab3bf6d07c47b34b37f7dcce02e604cdd64e6d12ca8f265927fdd4"
+    },
+    {
+      "path": "payload/bin/YimeCoreProfessionalLexicon.exe",
+      "bytes": 3928064,
+      "sha256": "ca4364d46795597e39acddb71e1b0198eaad8e2ce1d6fdca8423afb82c3770c2"
+    },
+    {
+      "path": "payload/bin/YimeCorePromotionScan.exe",
+      "bytes": 4114432,
+      "sha256": "ca7c37094370c1d014190518eed39a031c337171512ebc94498725debc254f0a"
+    },
+    {
+      "path": "payload/bin/YimeCoreReverseLookup.exe",
+      "bytes": 4435968,
+      "sha256": "7609b328e5dfebf8673ef67076ed684e8350e21d3260d888ca9102edd34d1501"
+    },
+    {
+      "path": "payload/bin/YimeCoreSentenceRegression.exe",
+      "bytes": 4045312,
+      "sha256": "098fcf62e4eed8e43d24bf753cccb132b3b7dabf1017e6f4673518b48ab68cfc"
+    },
+    {
+      "path": "payload/bin/YimeCoreSettingsTool.exe",
+      "bytes": 4904448,
+      "sha256": "074a26965df215e28317b5a26a852179bc6a6d8275ff86047809fa58eb53164d"
+    },
+    {
+      "path": "payload/bin/YimeCoreSystemLexiconAudit.exe",
+      "bytes": 3719168,
+      "sha256": "983e772a1cbe7f1077d242e0dbf62b23a1e9cb2589657d8fa06856409dfd2ffb"
+    },
+    {
+      "path": "payload/bin/YimeCoreToolCenter.exe",
+      "bytes": 4068864,
+      "sha256": "5d7a0e7f4fe72d370376c82189dc71fb53f9fb91ea9a31f81e8e7a4875c8c03a"
+    },
+    {
+      "path": "payload/bin/YimeCoreTrainer.exe",
+      "bytes": 4696064,
+      "sha256": "6f924ac55e844f2f88aaf7a8f3d8fe976a8ae4174dc9bd8c8e3c151272b764aa"
+    },
+    {
+      "path": "payload/bin/YimeCoreTrialRuntime.exe",
+      "bytes": 4371456,
+      "sha256": "bf9fbc5029aa40d5890a503c2e28e87bdad096f686191978079767e58ed6a6e8"
+    },
+    {
+      "path": "payload/data/dynamic_sentence_cases.json",
+      "bytes": 5338,
+      "sha256": "8193a4096f4af139ce64b6f853ec4f33952f366e282fd365bb8ac3be5b524412"
+    },
+    {
+      "path": "payload/data/fonts/YinYuan-Regular.ttf",
+      "bytes": 16024176,
+      "sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d"
+    },
+    {
+      "path": "payload/data/pinyin_normalized.json",
+      "bytes": 31697,
+      "sha256": "01bb8e95f124b42c3b1187cfe3872940ab73ebf83a6fe4bebfeac4139bc38422"
+    },
+    {
+      "path": "payload/data/trainer/curriculum.json",
+      "bytes": 994,
+      "sha256": "6b57e56d91686fdf244b9df273477b73c53f19558fa4c40fc164b01bbec1ca51"
+    },
+    {
+      "path": "payload/data/trainer/foundation.json",
+      "bytes": 2015,
+      "sha256": "94c110348e6c6eb081b1b24707d3024d8bf199dbde6f7f5ff484176a5b581555"
+    },
+    {
+      "path": "payload/data/trainer/yinyuan_catalog.json",
+      "bytes": 8358,
+      "sha256": "adcbbca053785bf189c6ca834aef27fadb9c4ccf3a55c0acfeb352a5743ea5c3"
+    },
+    {
+      "path": "payload/data/trainer/yinyuan_groups.json",
+      "bytes": 3093,
+      "sha256": "0821ce4e8da0149af75ae8e78e0ed579d15f3c04039f1de3acf5c3e717f8ab0c"
+    },
+    {
+      "path": "payload/data/yime_core_source_manifest.json",
+      "bytes": 1842,
+      "sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97"
+    },
+    {
+      "path": "payload/data/yime_full.dict.yaml",
+      "bytes": 31621303,
+      "sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f"
+    },
+    {
+      "path": "payload/data/yime_full.schema.yaml",
+      "bytes": 1959,
+      "sha256": "5889514c808199a00c1c1618a4f940c71acd1e69eb8dc9592788e67a346114c0"
+    },
+    {
+      "path": "payload/data/yime_lexicon_manifest.json",
+      "bytes": 667,
+      "sha256": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8"
+    },
+    {
+      "path": "payload/data/yime_pinyin_codes.tsv",
+      "bytes": 19448,
+      "sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071"
+    },
+    {
+      "path": "payload/data/yime_pua_pinyin.json",
+      "bytes": 62686,
+      "sha256": "c60f4acc864e2c699eefcf796feaf855e2c19770191d8417fb7d51d17ceb3699"
+    },
+    {
+      "path": "payload/data/yime_shorthand.dict.yaml",
+      "bytes": 29563931,
+      "sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c"
+    },
+    {
+      "path": "payload/data/yime_shorthand.schema.yaml",
+      "bytes": 1996,
+      "sha256": "d3b2fb6b39e958f30a0479de411ea65c6b4578b2548da106d1b23fda89910eaf"
+    },
+    {
+      "path": "payload/data/yime_syllable_decomposition.tsv",
+      "bytes": 177143,
+      "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7"
+    },
+    {
+      "path": "payload/data/yime_variable.dict.yaml",
+      "bytes": 30155261,
+      "sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b"
+    },
+    {
+      "path": "payload/data/yime_variable.schema.yaml",
+      "bytes": 2067,
+      "sha256": "2a0d05769a3aee860ed14b503a24d295749f3f788cecf2fd792018094cd0f330"
+    },
+    {
+      "path": "payload/data/yime_yinyuan_layout.json",
+      "bytes": 1023,
+      "sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0"
+    },
+    {
+      "path": "payload/help/diagnostics.html",
+      "bytes": 1735,
+      "sha256": "1d7c33f93d70b8f2f9c04dff80b1d4eb4a0244576327664843b5477873759afd"
+    },
+    {
+      "path": "payload/help/README.html",
+      "bytes": 2421,
+      "sha256": "9481a48b12a6d26af7bd42adaff2cda533f4a4107b249441866522e59eb9e5a2"
+    },
+    {
+      "path": "payload/help/settings-and-data.html",
+      "bytes": 1894,
+      "sha256": "511fe388c648e4ecd878a37f14b27e9afb1e3e80ddcc7b83fc3cb6f78362b130"
+    },
+    {
+      "path": "payload/help/trial-feedback.html",
+      "bytes": 1950,
+      "sha256": "0147684c7c812a5b677db12c8a8c1042618b845867f8357cb123c1a3903ccd40"
+    },
+    {
+      "path": "payload/indexes/full.yidx",
+      "bytes": 40267102,
+      "sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1"
+    },
+    {
+      "path": "payload/indexes/shorthand.yidx",
+      "bytes": 38209725,
+      "sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec"
+    },
+    {
+      "path": "payload/indexes/variable.yidx",
+      "bytes": 38801056,
+      "sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada"
+    },
+    {
+      "path": "payload/local-product.json",
+      "bytes": 7832,
+      "sha256": "91baa22049b493f637107467686f541e0f45c1088b71c5eb792054d5ed10ee31"
+    },
+    {
+      "path": "payload/professional-lexicons/catalog.json",
+      "bytes": 74,
+      "sha256": "81fb1d223b5dca05cd968fd4c117dbc0cee83865e2088d545fdb1fdcd03b3c2e"
+    },
+    {
+      "path": "payload/profile-icon.ico",
+      "bytes": 19067,
+      "sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e"
+    },
+    {
+      "path": "payload/speech/admission.json",
+      "bytes": 1295,
+      "sha256": "cd8f510bf4122ab48d6c260c62c2d53363121d59488395fcc1366a1df62c914c"
+    },
+    {
+      "path": "payload/speech/admitted-records.json",
+      "bytes": 62558,
+      "sha256": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d"
+    },
+    {
+      "path": "payload/speech/forward-source.json",
+      "bytes": 17920,
+      "sha256": "73e2ec162b0bc3a114a5a9de902b14b68c505d736502d2940d6e29297ace56c2"
+    },
+    {
+      "path": "payload/speech/indexes/full-core.yidx",
+      "bytes": 40267102,
+      "sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1"
+    },
+    {
+      "path": "payload/speech/indexes/full-stage5c.yidx",
+      "bytes": 848,
+      "sha256": "470ef8e58a0f61bde3e7437097b1c480be4962d3e9a4680984567d53e3a427b9"
+    },
+    {
+      "path": "payload/speech/indexes/shorthand-core.yidx",
+      "bytes": 38209725,
+      "sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec"
+    },
+    {
+      "path": "payload/speech/indexes/shorthand-stage5c.yidx",
+      "bytes": 825,
+      "sha256": "15929d0e62a882a4ce640b50d19e6a8af5ad5d1840b0f89e0e8a95ec0d8bc764"
+    },
+    {
+      "path": "payload/speech/indexes/variable-core.yidx",
+      "bytes": 38801056,
+      "sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada"
+    },
+    {
+      "path": "payload/speech/indexes/variable-stage5c.yidx",
+      "bytes": 825,
+      "sha256": "dd27f391102382a2ec2a5313d3cc7eaebb7ff6bd671e73623857ddb04ddc6371"
+    },
+    {
+      "path": "payload/speech/product.json",
+      "bytes": 2501,
+      "sha256": "9d56bbac5342a565913ca54b372263d5bb71d767079ee6b9dbd195eb6f4b7f2b"
+    },
+    {
+      "path": "payload/speech-capability.json",
+      "bytes": 220,
+      "sha256": "7c7ec05a237d371c92d8659d431d9b8dfd74418f1c9a484936645ad214ddc7f7"
+    },
+    {
+      "path": "payload/x64/YimeRegisteredHostTests.exe",
+      "bytes": 459264,
+      "sha256": "459c053c26a0b32334482ef8f3a6bd5541bb99bd6dc6ff5b4220bdfaecb35a56"
+    },
+    {
+      "path": "payload/x64/YimeTextServiceExperiment.dll",
+      "bytes": 670720,
+      "sha256": "d68439becc662cf9ebb49b73b6419b330142d57bed50de8b2465ed5d24c5b7bd"
+    },
+    {
+      "path": "payload/x64/YimeTextServiceRegistration.exe",
+      "bytes": 299520,
+      "sha256": "96ab837d331efff7c390ecabcfb22ac0364130abd2148c87e9342e0bca6f8fc2"
+    },
+    {
+      "path": "payload/x86/YimeRegisteredHostTests.exe",
+      "bytes": 384512,
+      "sha256": "685840eec9eaf29a63caaa047964a3ea803baf8a0e81670cb5f65231118e1b6c"
+    },
+    {
+      "path": "payload/x86/YimeTextServiceExperiment.dll",
+      "bytes": 582144,
+      "sha256": "b9c009ec36eaadad259eb09fd2eed890303b14c821dc2038fa7aec5cdb70b840"
+    },
+    {
+      "path": "payload/x86/YimeTextServiceRegistration.exe",
+      "bytes": 238080,
+      "sha256": "c5bfa4b12b1b6daf931c2ed9b4284fe57c8b2b13de9719e7c9e5b3dc74bf937a"
+    },
+    {
+      "path": "product-package.json",
+      "bytes": 11191,
+      "sha256": "e370a366c6efb2cfa042514ef4ecbefd6684c26eef9d4f59037dfedcf1181d80"
+    },
+    {
+      "path": "Product.psm1",
+      "bytes": 7371,
+      "sha256": "206e7d17513a0ef22e4b96e932e5f6ed81b6fdb4d95a9e9401451254f91a3796"
+    },
+    {
+      "path": "Setup.cmd",
+      "bytes": 158,
+      "sha256": "f037e8fbad255f8c76d908a00b58500243aa72595d291504604242c8b81b7a97"
+    },
+    {
+      "path": "Setup.ps1",
+      "bytes": 12994,
+      "sha256": "8a4251407e2873da9b1394f8c2c3ada77a27258a87a5d5ece0cf75cdaaba921d"
+    }
+  ],
+  "installed_product_used_as_input": false,
+  "installed_product_mutated": false,
+  "registered_host_executed": false,
+  "input_acceptance_claimed": false
+}

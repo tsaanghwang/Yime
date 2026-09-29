@@ -1,0 +1,14 @@
+{
+    "schema_version":  "yimecore-registration-fix-read-package-v1",
+    "passed":  true,
+    "package_root":  "C:\\dev\\Yime-deliveries\\registration-fix-20260929\\YimeCore-Registration-Fix-20260929",
+    "product":  "yimecore",
+    "version":  "0.1.0-local.13-registration-fix-20260929",
+    "payload_files":  65,
+    "product_manifest_sha256":  "e370a366c6efb2cfa042514ef4ecbefd6684c26eef9d4f59037dfedcf1181d80",
+    "powershell_version":  "5.1.26100.9444",
+    "package_only":  true,
+    "setup_executed":  false,
+    "registration_executed":  false,
+    "installed_product_mutated":  false
+}

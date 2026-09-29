@@ -1,0 +1,5 @@
+{
+  "passed": true,
+  "scope": "Out-of-process machine/user TSF/COM registrations, language/default/startup values; read-only comparison after package validation",
+  "live_installation_executed": false
+}

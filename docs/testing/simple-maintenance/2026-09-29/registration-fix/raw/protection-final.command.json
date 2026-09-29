@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python",
+    "tools/powershell/run_checked.py",
+    "--script",
+    ".tmp/registration-delivery/protection-final.ps1",
+    "--edition",
+    "ps7"
+  ],
+  "cwd": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime",
+  "started_at": "2026-09-29T00:35:21.516518+00:00",
+  "finished_at": "2026-09-29T00:35:22.960524+00:00",
+  "exit_code": 0
+}

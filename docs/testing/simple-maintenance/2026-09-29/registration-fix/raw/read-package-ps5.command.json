@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python",
+    "tools/powershell/run_checked.py",
+    "--script",
+    ".tmp/registration-delivery/read-package.ps1",
+    "--edition",
+    "ps5",
+    "--params-file",
+    ".tmp/registration-delivery/read-package-params.json"
+  ],
+  "cwd": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime",
+  "started_at": "2026-09-29T00:34:37.073091+00:00",
+  "finished_at": "2026-09-29T00:34:38.051102+00:00",
+  "exit_code": 0
+}

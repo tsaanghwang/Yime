@@ -1,0 +1,85 @@
+{
+  "broker_sha256": "5dadb24ff6c54784d2325833d4355a1ab1c0763ed8231bbaec63ed9d6a10b730",
+  "installed_broker_connected": false,
+  "passed": true,
+  "registered_or_live_host_tested": false,
+  "rime_executed": false,
+  "schema_version": "yimecore-speech-process-acceptance-v1",
+  "stages": [
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": false,
+      "exit_code": 0,
+      "learning_generation": 0,
+      "modes_passed": 3,
+      "name": "disabled-before",
+      "passed": true,
+      "pid": 36452
+    },
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": true,
+      "exit_code": 0,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "enabled-train",
+      "passed": true,
+      "pid": 36292
+    },
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": true,
+      "exit_code": 0,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "enabled-restart",
+      "passed": true,
+      "pid": 27492
+    },
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": false,
+      "exit_code": 0,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "disabled-after",
+      "passed": true,
+      "pid": 25400
+    },
+    {
+      "alias_or_disabled_source_checks": 72,
+      "canonical_checks": 72,
+      "enabled": true,
+      "exit_code": 0,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "reenabled",
+      "passed": true,
+      "pid": 8828
+    },
+    {
+      "exit_code": 42,
+      "name": "invalid-generation-rejected",
+      "passed": true,
+      "pid": 22344,
+      "state_unchanged": true
+    },
+    {
+      "canonical_checks": 3,
+      "exit_code": 0,
+      "learned_alias_checks": 3,
+      "learning_generation": 6,
+      "modes_passed": 3,
+      "name": "valid-generation-recovery",
+      "passed": true,
+      "pid": 36672
+    }
+  ],
+  "transport": "owned anonymous stdio pipes to newly built YimeBroker",
+  "user_data_read": false,
+  "windows_reboot_tested": false
+}

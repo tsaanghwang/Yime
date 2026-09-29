@@ -1,0 +1,17 @@
+[
+  {
+    "path": "YimeCore-Registration-Fix-20260929.zip",
+    "bytes": 187973541,
+    "sha256": "849bfc21fa9222dec3948f88c5652bcf404960f82e84f72175865293e7a3c073"
+  },
+  {
+    "path": "YimeCore-Registration-Fix-20260929-Evidence.zip",
+    "bytes": 107938755,
+    "sha256": "8c2a9abfb2c3ea89c1017be2e53a04397d1e9d6ed9f09c04d0a66c5bb3d845ec"
+  },
+  {
+    "path": "SHA256SUMS.txt",
+    "bytes": 219,
+    "sha256": "c1f28d201da3dfcc929b7e26d0964da016ec0aa5a6e88686e748f2c8ac7ec10a"
+  }
+]
