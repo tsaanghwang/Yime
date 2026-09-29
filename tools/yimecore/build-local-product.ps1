@@ -98,6 +98,8 @@ try {
             -BuildRoot $out -EvidenceRoot $out -LogName "native-contract-$name.txt"
         Invoke-LocalProductIsolatedTestTool -Tool (Join-Path $release 'YimeFocusCancellationTests.exe') `
             -BuildRoot $out -EvidenceRoot $out -LogName "native-focus-cancellation-$name.txt"
+        Invoke-LocalProductIsolatedTestTool -Tool (Join-Path $release 'YimeRegistrationQueryTests.exe') `
+            -BuildRoot $out -EvidenceRoot $out -LogName "native-registration-query-$name.txt"
         foreach ($file in $product.native_binaries) {
             if ($file -notmatch '^Yime[A-Za-z]+\.(dll|exe)$') { throw "Unexpected native target: $file" }
             Copy-Item -LiteralPath (Join-Path $release $file) -Destination (Join-Path $package "$name\$file")

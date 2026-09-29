@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python",
+    "tools/ci/test_workflow_contract.py"
+  ],
+  "cwd": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime",
+  "started_at": "2026-09-29T00:26:23.485771+00:00",
+  "finished_at": "2026-09-29T00:26:23.574194+00:00",
+  "exit_code": 0
+}

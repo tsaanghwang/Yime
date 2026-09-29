@@ -1,0 +1,330 @@
+﻿**********************
+Windows PowerShell 脚本开始
+开始时间: 20260928003300
+用户名: MYCOMPUTER\tsaan
+RunAs 用户: MYCOMPUTER\tsaan
+配置名称: 
+计算机: MYCOMPUTER (Microsoft Windows NT 10.0.26200.0)
+主机应用程序: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime\.tmp\current-issues-20260928\reproduce-registration.ps1 -DiagnosticChild -VerifyEnumeration -VerifyPersistence
+进程 ID: 29328
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+已启动脚本，输出文件为 C:\dev\Yime\docs\testing\simple-maintenance\2026-09-28\current-issues\raw\registration-persistence-verification-01.log
+
+
+Algorithm : SHA256
+Hash      : EC62685FACBA0E4F5A7897F4C4E5AC86C6D21A7D03BFB2F8054360C29D747C94
+Path      : C:\dev\Yime\.tmp\registration-diagnostics-20260928\x64\Release\YimeTextServiceRegistration.exe
+
+
+
+
+
+Algorithm : SHA256
+Hash      : B3BFCA39CBC36314871D057E49E910244A9C1BC2D2B2D65DBCA8C4BFB40E93D2
+Path      : C:\dev\Yime\.tmp\registration-diagnostics-20260928\x86\Release\YimeTextServiceRegistration.exe
+
+
+
+STEP x86 unregister
+operation=unregister
+hresult=0x0
+succeeded=true
+STEP x64 unregister
+operation=unregister
+hresult=0x0
+succeeded=true
+STEP x64 verify-absent
+tool_version=yime-text-service-registration-v2
+architecture_bits=64
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=false
+profile_registered=false
+categories_registered_count=0
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+STEP x86 verify-absent
+tool_version=yime-text-service-registration-v2
+architecture_bits=32
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=false
+profile_registered=false
+categories_registered_count=0
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+STEP x64 register C:\Program Files\YimeCore\x64\YimeTextServiceExperiment.dll
+registration_step=query-profile; architecture_bits=64; hresult=0x0
+registration_step=query-categories; architecture_bits=64; hresult=0x0
+registration_preflight_com=false; profile=false; categories=0
+registration_step=register-com; architecture_bits=64; hresult=0x0
+registration_step=prepare-unregister-profile; architecture_bits=64; hresult=0x0
+registration_step=register-profile; architecture_bits=64; hresult=0x0
+registration_step=register-category:{34745C63-B2F0-4784-8B67-5E12C8701A31}; architecture_bits=64; hresult=0x0
+registration_step=register-category:{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}; architecture_bits=64; hresult=0x0
+registration_step=register-category:{CCF05DD7-4A87-11D7-A6E2-00065B84435C}; architecture_bits=64; hresult=0x0
+registration_step=register-category:{13A016DF-560B-46CD-947A-4C3AF1E0E35D}; architecture_bits=64; hresult=0x0
+registration_step=register-category:{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}; architecture_bits=64; hresult=0x0
+operation=register
+hresult=0x0
+succeeded=true
+STEP x86 register-com C:\Program Files\YimeCore\x86\YimeTextServiceExperiment.dll
+operation=register-com
+hresult=0x0
+succeeded=true
+tool_version=yime-text-service-registration-v2
+architecture_bits=64
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=true
+profile_registered=true
+categories_registered_count=5
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+tool_version=yime-text-service-registration-v2
+architecture_bits=32
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=true
+profile_registered=true
+categories_registered_count=5
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+registration_step=query-profile; architecture_bits=64; hresult=0x0
+registration_step=query-categories; architecture_bits=64; hresult=0x0
+registration_preflight_com=true; profile=true; categories=5
+registration_step=reject-existing-registration; architecture_bits=64; hresult=0x800700B7
+operation=register
+hresult=0x800700B7
+succeeded=false
+STEP x86 unregister
+operation=unregister
+hresult=0x0
+succeeded=true
+STEP x64 unregister
+operation=unregister
+hresult=0x0
+succeeded=true
+ORIGINAL STATUS x64
+tool_version=yime-text-service-registration-v2
+architecture_bits=64
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=false
+profile_registered=true
+categories_registered_count=0
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+STEP x64 verify-absent
+tool_version=yime-text-service-registration-v2
+architecture_bits=64
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=false
+profile_registered=false
+categories_registered_count=0
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+ORIGINAL STATUS x86
+tool_version=yime-text-service-registration-v2
+architecture_bits=32
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=false
+profile_registered=true
+categories_registered_count=0
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+STEP x86 verify-absent
+tool_version=yime-text-service-registration-v2
+architecture_bits=32
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=false
+profile_registered=false
+categories_registered_count=0
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+STEP x64 register C:\Program Files\YimeCore\x64\YimeTextServiceExperiment.dll
+registration_step=query-profile; architecture_bits=64; hresult=0x0
+registration_step=query-categories; architecture_bits=64; hresult=0x0
+registration_preflight_com=false; profile=false; categories=0
+registration_step=register-com; architecture_bits=64; hresult=0x0
+registration_step=prepare-unregister-profile; architecture_bits=64; hresult=0x0
+registration_step=register-profile; architecture_bits=64; hresult=0x0
+registration_step=register-category:{34745C63-B2F0-4784-8B67-5E12C8701A31}; architecture_bits=64; hresult=0x0
+registration_step=register-category:{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}; architecture_bits=64; hresult=0x0
+registration_step=register-category:{CCF05DD7-4A87-11D7-A6E2-00065B84435C}; architecture_bits=64; hresult=0x0
+registration_step=register-category:{13A016DF-560B-46CD-947A-4C3AF1E0E35D}; architecture_bits=64; hresult=0x0
+registration_step=register-category:{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}; architecture_bits=64; hresult=0x0
+operation=register
+hresult=0x0
+succeeded=true
+STEP x86 register-com C:\Program Files\YimeCore\x86\YimeTextServiceExperiment.dll
+operation=register-com
+hresult=0x0
+succeeded=true
+tool_version=yime-text-service-registration-v2
+architecture_bits=64
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=true
+profile_registered=true
+categories_registered_count=5
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+tool_version=yime-text-service-registration-v2
+architecture_bits=32
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=true
+profile_registered=true
+categories_registered_count=5
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+Bounded diagnostic cycle completed; not package acceptance.
+STEP x86 unregister
+operation=unregister
+hresult=0x0
+succeeded=true
+STEP x64 unregister
+operation=unregister
+hresult=0x0
+succeeded=true
+STEP x64 verify-absent
+tool_version=yime-text-service-registration-v2
+architecture_bits=64
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=false
+profile_registered=false
+categories_registered_count=0
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+STEP x86 verify-absent
+tool_version=yime-text-service-registration-v2
+architecture_bits=32
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=false
+profile_registered=false
+categories_registered_count=0
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+PASS: persisted-state checks; absent state prepared for original-package recovery.
+tool_version=yime-text-service-registration-v2
+architecture_bits=64
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=false
+profile_registered=false
+categories_registered_count=0
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+tool_version=yime-text-service-registration-v2
+architecture_bits=32
+elevated=true
+clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}
+profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}
+language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}
+com_only_registration_supported=true
+profile_icon_registration_supported=true
+taskbar_category_registration_supported=true
+com_registered_current_view=false
+profile_registered=false
+categories_registered_count=0
+profile_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+Default before: 0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}
+Default after: 0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}
+**********************
+Windows PowerShell 脚本结束
+结束时间: 20260928003301
+**********************

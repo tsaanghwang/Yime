@@ -1,0 +1,26 @@
+﻿**********************
+Windows PowerShell 脚本开始
+开始时间: 20260928002054
+用户名: MYCOMPUTER\tsaan
+RunAs 用户: MYCOMPUTER\tsaan
+配置名称: 
+计算机: MYCOMPUTER (Microsoft Windows NT 10.0.26200.0)
+主机应用程序: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\Yime-Current-Readiness-20260927\rime-pime\Setup.ps1 -Action Install
+进程 ID: 6100
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\d35f7ffa50734236beadbb822a2d2772.user.log
+Action: Install; package: C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\Yime-Current-Readiness-20260927\rime-pime
+Elevated setup log: C:\Users\tsaan\Yime Setup Logs\d35f7ffa50734236beadbb822a2d2772.admin.log
+Elevated setup exit code: 0
+**********************
+Windows PowerShell 脚本结束
+结束时间: 20260928002109
+**********************

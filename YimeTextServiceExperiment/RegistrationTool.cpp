@@ -31,6 +31,14 @@ REGSAM registryView() {
     return sizeof(void*) == 8 ? KEY_WOW64_64KEY : KEY_WOW64_32KEY;
 }
 
+HRESULT traceRegistrationStep(std::wstring_view step, HRESULT result) {
+    std::wcout << L"registration_step=" << step
+               << L"; architecture_bits=" << sizeof(void*) * 8
+               << L"; hresult=0x" << std::hex << std::uppercase
+               << static_cast<unsigned long>(result) << std::dec << L"\n";
+    return result;
+}
+
 std::wstring comRegistryPath() {
     return L"SOFTWARE\\Classes\\CLSID\\" + guidText(CLSID_YimeTextServiceExperiment) + L"\\InprocServer32";
 }
@@ -57,25 +65,21 @@ bool comRegistrationExists() {
 HRESULT profileRegistrationExists(bool* exists) {
     if (!exists) return E_POINTER;
     *exists = false;
-    ITfInputProcessorProfileMgr* profiles = nullptr;
-    HRESULT result = CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
-                                      __uuidof(ITfInputProcessorProfileMgr), reinterpret_cast<void**>(&profiles));
-    if (FAILED(result)) return result;
-    IEnumTfInputProcessorProfiles* values = nullptr;
-    result = profiles->EnumProfiles(kLanguageId, &values);
-    profiles->Release();
-    if (FAILED(result)) return result;
-    TF_INPUTPROCESSORPROFILE value{};
-    ULONG fetched = 0;
-    while (values->Next(1, &value, &fetched) == S_OK && fetched == 1) {
-        if (value.dwProfileType == TF_PROFILETYPE_INPUTPROCESSOR &&
-            IsEqualGUID(value.clsid, CLSID_YimeTextServiceExperiment) &&
-            IsEqualGUID(value.guidProfile, GUID_YimeTextServiceExperimentProfile)) {
-            *exists = true;
-            break;
-        }
-    }
-    values->Release();
+    // EnumProfiles reflects TSF's cached/enabled view and can lag immediate
+    // registration changes. Maintenance needs this exact persisted identity,
+    // including disabled profiles, in the registration tool's architecture.
+    wchar_t languageKey[11]{};
+    swprintf_s(languageKey, L"0x%08x", static_cast<unsigned>(kLanguageId));
+    const std::wstring path = L"SOFTWARE\\Microsoft\\CTF\\TIP\\" +
+        guidText(CLSID_YimeTextServiceExperiment) + L"\\LanguageProfile\\" + languageKey +
+        L"\\" + guidText(GUID_YimeTextServiceExperimentProfile);
+    HKEY key = nullptr;
+    const LSTATUS status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, path.c_str(), 0,
+                                        KEY_READ | registryView(), &key);
+    if (key) RegCloseKey(key);
+    if (status == ERROR_FILE_NOT_FOUND || status == ERROR_PATH_NOT_FOUND) return S_OK;
+    if (status != ERROR_SUCCESS) return HRESULT_FROM_WIN32(status);
+    *exists = true;
     return S_OK;
 }
 
@@ -150,14 +154,16 @@ HRESULT registerProfileAndCategories(const wchar_t* dllPath) {
     HRESULT result = CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
                                       __uuidof(ITfInputProcessorProfileMgr), reinterpret_cast<void**>(&profiles));
     if (FAILED(result)) return result;
-    profiles->UnregisterProfile(CLSID_YimeTextServiceExperiment, kLanguageId,
-                                GUID_YimeTextServiceExperimentProfile, 0);
+    traceRegistrationStep(L"prepare-unregister-profile",
+        profiles->UnregisterProfile(CLSID_YimeTextServiceExperiment, kLanguageId,
+                                    GUID_YimeTextServiceExperimentProfile, 0));
     result = profiles->RegisterProfile(
         CLSID_YimeTextServiceExperiment, kLanguageId, GUID_YimeTextServiceExperimentProfile,
         kProfileName, static_cast<ULONG>(std::size(kProfileName) - 1), profileIcon.c_str(),
         static_cast<ULONG>(profileIcon.native().size()), 0,
         nullptr, 0, TRUE, 0);
     profiles->Release();
+    traceRegistrationStep(L"register-profile", result);
     if (FAILED(result)) return result;
 
     ITfCategoryMgr* categories = nullptr;
@@ -167,6 +173,7 @@ HRESULT registerProfileAndCategories(const wchar_t* dllPath) {
     for (const GUID* category : kTipCategories) {
         result = categories->RegisterCategory(CLSID_YimeTextServiceExperiment, *category,
                                               CLSID_YimeTextServiceExperiment);
+        traceRegistrationStep(L"register-category:" + guidText(*category), result);
         if (FAILED(result)) break;
     }
     categories->Release();
@@ -212,14 +219,23 @@ HRESULT registerAll(const wchar_t* dllPath) {
     bool profileExists = false;
     unsigned categoryCount = 0;
     HRESULT result = profileRegistrationExists(&profileExists);
-    if (SUCCEEDED(result)) result = categoryRegistrationCount(&categoryCount);
+    traceRegistrationStep(L"query-profile", result);
+    if (SUCCEEDED(result)) {
+        result = categoryRegistrationCount(&categoryCount);
+        traceRegistrationStep(L"query-categories", result);
+    }
     if (FAILED(result)) return result;
-    if (comRegistrationExists() || profileExists || categoryCount != 0) {
-        return HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS);
+    const bool comExists = comRegistrationExists();
+    std::wcout << L"registration_preflight_com=" << (comExists ? L"true" : L"false")
+               << L"; profile=" << (profileExists ? L"true" : L"false")
+               << L"; categories=" << categoryCount << L"\n";
+    if (comExists || profileExists || categoryCount != 0) {
+        return traceRegistrationStep(L"reject-existing-registration", HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS));
     }
     result = registerComServer(dllPath);
+    traceRegistrationStep(L"register-com", result);
     if (SUCCEEDED(result)) result = registerProfileAndCategories(dllPath);
-    if (FAILED(result)) unregisterAll();
+    if (FAILED(result)) traceRegistrationStep(L"rollback-registration", unregisterAll());
     return result;
 }
 

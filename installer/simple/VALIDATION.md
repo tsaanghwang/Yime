@@ -1,6 +1,12 @@
 # 简版安装器验证范围
 
-更新：2026-09-27。本文汇总各次验证，不把源码/隔离检查、已交付包和实机输入合并为一个状态；原始报告与日志保留原始日期和字节。
+更新：2026-09-29。本文汇总各次验证，不把源码/隔离检查、已交付包和实机输入合并为一个状态；原始报告与日志保留原始日期和字节。
+
+## 2026-09-29 YimeCore 首次注册查询修复
+
+本轮只影响 YimeCore 注册工具及构建回归接线。精确机器级 profile 键代替可能滞后的 TSF 枚举；COM/profile/category 重复拒绝保留，新增分步日志。x64 与 Win32 Release 查询测试均通过：空状态、未启用的已注册 profile、相邻 CLSID/语言/profile 排除、即时删除/重建、空输出参数、显式 HKLM/WOW64 视图、缺失和其他错误传播。CI 与完整产品构建均新增两架构回归入口。
+
+构建契约、CI 调度契约及 PS5 包完整性、profile 移除失败、单/双产品调度和进程等待隔离回归通过，见 [本地证据](../../docs/testing/simple-maintenance/2026-09-29/registration-fix/local-validation.json)。这些测试没有执行已安装产品的注册、安装、卸载或输入验收。历史真实重复拒绝及枚举失真证据单独见 [原始报告复核](../../docs/testing/simple-maintenance/2026-09-29/registration-fix/REVIEW.md)；旧包恢复成功不等于本修复已安装。新包及 CI 的实际状态以 [HANDOFF](HANDOFF.md) 为准。
 
 ## 2026-09-27 current-readiness 重建包（非变更验证）
 

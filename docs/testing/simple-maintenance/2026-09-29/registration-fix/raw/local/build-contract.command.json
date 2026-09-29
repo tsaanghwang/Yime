@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "tools/validate-build-contract.ps1",
+    "--edition",
+    "ps7"
+  ],
+  "cwd": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime",
+  "started_at": "2026-09-29T00:25:53.579618+00:00",
+  "finished_at": "2026-09-29T00:25:54.138159+00:00",
+  "exit_code": 0
+}

@@ -1,0 +1,66 @@
+﻿**********************
+Windows PowerShell 脚本开始
+开始时间: 20260928002200
+用户名: MYCOMPUTER\tsaan
+RunAs 用户: MYCOMPUTER\tsaan
+配置名称: 
+计算机: MYCOMPUTER (Microsoft Windows NT 10.0.26200.0)
+主机应用程序: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\Yime-Current-Readiness-20260927\yimecore\Setup.ps1 -Action Install -InitiatingSid S-1-5-21-2783006668-770716121-2150155084-1001 -LogId 218f9476a0634b6792332b2bc421a3d2
+进程 ID: 37284
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\218f9476a0634b6792332b2bc421a3d2.admin.log
+Action: Install; package: C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\Yime-Current-Readiness-20260927\yimecore
+operation=unregister
+hresult=0x0
+succeeded=true
+operation=unregister
+hresult=0x0
+succeeded=true
+operation=register
+hresult=0x800700B7
+succeeded=false
+PS>TerminatingError():“Native operation failed: YimeTextServiceRegistration.exe (5)”
+>> TerminatingError():“Native operation failed: YimeTextServiceRegistration.exe (5)”
+FAILED stage: register new product
+
+
+PSMessageDetails      : 
+Exception             : System.Management.Automation.RuntimeException: Native operation failed: YimeTextServiceRegistra
+                        tion.exe (5)
+TargetObject          : Native operation failed: YimeTextServiceRegistration.exe (5)
+CategoryInfo          : OperationStopped: (Native operatio...tration.exe (5):String) [], RuntimeException
+FullyQualifiedErrorId : Native operation failed: YimeTextServiceRegistration.exe (5)
+ErrorDetails          : 
+InvocationInfo        : System.Management.Automation.InvocationInfo
+ScriptStackTrace      : 在 Run-Native、C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\Yime-Current-Readiness-
+                        20260927\yimecore\Setup.ps1 中: 第 64 行
+                        在 Set-Registration、C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\Yime-Current-Read
+                        iness-20260927\yimecore\Setup.ps1 中: 第 69 行
+                        在 <ScriptBlock>、C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\Yime-Current-Readine
+                        ss-20260927\yimecore\Setup.ps1 中: 第 166 行
+PipelineIterationInfo : {}
+Exception: System.Management.Automation.RuntimeException: Native operation failed: YimeTextServiceRegistration.exe (5)
+C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\Yime-Current-Readiness-20260927\yimecore\Setup.ps1 : Setup st
+opped: Native operation failed: YimeTextServiceRegistration.exe (5) Log: C:\Users\tsaan\Yime Setup Logs\218f9476a0634b67
+92332b2bc421a3d2.admin.log
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,Setup.ps1
+C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312\Yime-Current-Readiness-20260927\yimecore\Setup.ps1 : Setup s
+topped: Native operation failed: YimeTextServiceRegistration.exe (5) Log: C:\Users\tsaan\Yime Setup Logs\218f9476a0634b
+6792332b2bc421a3d2.admin.log
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,Setup.ps1
+
+Setup exit code: 1
+**********************
+Windows PowerShell 脚本结束
+结束时间: 20260928002207
+**********************

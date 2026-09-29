@@ -264,6 +264,8 @@ jobs:
       - name: Run x64 PIME RPC regression tests
         shell: pwsh
         run: ctest --test-dir build64 -C Release -R "^PIMERpcResponseTests$" --output-on-failure
+      - name: Test current YimeCore registration queries on x64 and x86
+        run: python tools/powershell/run_checked.py --script tools/yimecore/test-registration-query.ps1 --edition ps7
       - name: Stage native installer inputs
         shell: pwsh
         run: |

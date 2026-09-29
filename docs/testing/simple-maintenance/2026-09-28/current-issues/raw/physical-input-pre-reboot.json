@@ -1,0 +1,37 @@
+{
+    "recorded_at":  "2026-09-28T00:47:14.4394719+08:00",
+    "source":  "Explicit user confirmation in this session after original-package recovery",
+    "user_confirmed":  [
+                           "Word x64 YimeCore candidate display and Shift+1 commit",
+                           "Word x64 Rime/PIME candidate display and Shift+1 commit",
+                           "Notepad++ x86 YimeCore candidate display and Shift+1 commit",
+                           "Notepad++ x86 Rime/PIME candidate display and Shift+1 commit"
+                       ],
+    "observed_hosts":  [
+                           {
+                               "id":  51196,
+                               "name":  "notepad++",
+                               "path":  "C:\\Users\\tsaan\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Notepad++.Notepad++_Microsoft.Winget.Source_8wekyb3d8bbwe\\notepad++.exe",
+                               "product_modules":  [
+
+                                                   ],
+                               "inspection_error":  null
+                           },
+                           {
+                               "id":  31296,
+                               "name":  "WINWORD",
+                               "path":  "C:\\Program Files\\Microsoft Office\\Root\\Office16\\WINWORD.EXE",
+                               "product_modules":  [
+                                                       "C:\\Program Files\\YimeCore\\x64\\YimeTextServiceExperiment.dll",
+                                                       "C:\\Program Files\\Yime Rime-PIME\\x64\\PIMETextService.dll"
+                                                   ],
+                               "inspection_error":  null
+                           }
+                       ],
+    "enumeration_limit":  "Inaccessible or already closed processes may not be present; user confirmation is independent of module observation.",
+    "default_input_override":  {
+                                   "InputMethodTip":  "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+                                   "Description":  "简体中文(中国大陆) - 微软拼音"
+                               },
+    "reboot_completed":  false
+}

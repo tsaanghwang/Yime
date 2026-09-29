@@ -1,0 +1,172 @@
+{
+    "recorded_at":  "2026-09-28T00:23:12.8007986+08:00",
+    "rime_pime_install_exit_code":  0,
+    "yimecore_install_exit_code":  1,
+    "yimecore_registration_hresult":  "0x800700B7",
+    "automatic_retry_performed":  false,
+    "new_diagnostic_binary_installed":  false,
+    "raw_logs":  [
+                     {
+                         "file":  "d35f7ffa50734236beadbb822a2d2772.user.log",
+                         "sha256":  "f1302de3afc2bdb218bc228124f52daea16c0e8fb40e68fc18291d59cd84f773"
+                     },
+                     {
+                         "file":  "d35f7ffa50734236beadbb822a2d2772.admin.log",
+                         "sha256":  "9881808a64898e8ef0d67e634d15b3f3d215a15afd615e7667873c2cbd3739dc"
+                     },
+                     {
+                         "file":  "218f9476a0634b6792332b2bc421a3d2.user.log",
+                         "sha256":  "4f22531849415bbbc47540966194ccd3fcae9bbde311ae84ba647012bb3ce349"
+                     },
+                     {
+                         "file":  "218f9476a0634b6792332b2bc421a3d2.admin.log",
+                         "sha256":  "5454b84a5c6624ea4d0a587eb3e4656eb673d56072e647425640f2f2e82aa063"
+                     },
+                     {
+                         "file":  "37498156b3a9436a934ee3af2a1f5706.user.log",
+                         "sha256":  "22f5532633139e4f184e121bd8fe787cf1704f5da6def889445706a517fd1d84"
+                     },
+                     {
+                         "file":  "37498156b3a9436a934ee3af2a1f5706.admin.log",
+                         "sha256":  "7c46c56930fff97bee509295e0f65b62546288e994fc9c091e1e7e682615946f"
+                     }
+                 ],
+    "registration_states":  [
+                                {
+                                    "architecture":  "x64",
+                                    "path":  "C:\\Program Files\\YimeCore\\x64\\YimeTextServiceRegistration.exe",
+                                    "exit_code":  0,
+                                    "status":  [
+                                                   "tool_version=yime-text-service-registration-v2",
+                                                   "architecture_bits=64",
+                                                   "elevated=false",
+                                                   "clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                                                   "profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                                                   "language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}",
+                                                   "com_only_registration_supported=true",
+                                                   "profile_icon_registration_supported=true",
+                                                   "taskbar_category_registration_supported=true",
+                                                   "com_registered_current_view=false",
+                                                   "profile_registered=false",
+                                                   "categories_registered_count=0",
+                                                   "profile_query_hresult=0x0",
+                                                   "category_query_hresult=0x0",
+                                                   "mutation_performed=false"
+                                               ]
+                                },
+                                {
+                                    "architecture":  "x86",
+                                    "path":  "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceRegistration.exe",
+                                    "exit_code":  0,
+                                    "status":  [
+                                                   "tool_version=yime-text-service-registration-v2",
+                                                   "architecture_bits=32",
+                                                   "elevated=false",
+                                                   "clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                                                   "profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                                                   "language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}",
+                                                   "com_only_registration_supported=true",
+                                                   "profile_icon_registration_supported=true",
+                                                   "taskbar_category_registration_supported=true",
+                                                   "com_registered_current_view=false",
+                                                   "profile_registered=false",
+                                                   "categories_registered_count=0",
+                                                   "profile_query_hresult=0x0",
+                                                   "category_query_hresult=0x0",
+                                                   "mutation_performed=false"
+                                               ]
+                                }
+                            ],
+    "process_registry_observations":  [
+                                          {
+                                              "hive":  "LocalMachine",
+                                              "view":  "Registry64",
+                                              "key":  "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                                              "exists":  false,
+                                              "value":  {
+
+                                                        },
+                                              "subkeys":  {
+
+                                                          }
+                                          },
+                                          {
+                                              "hive":  "LocalMachine",
+                                              "view":  "Registry64",
+                                              "key":  "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                                              "exists":  true,
+                                              "value":  null,
+                                              "subkeys":  [
+                                                              "Category",
+                                                              "LanguageProfile"
+                                                          ]
+                                          },
+                                          {
+                                              "hive":  "CurrentUser",
+                                              "view":  "Registry64",
+                                              "key":  "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                                              "exists":  false,
+                                              "value":  {
+
+                                                        },
+                                              "subkeys":  {
+
+                                                          }
+                                          },
+                                          {
+                                              "hive":  "CurrentUser",
+                                              "view":  "Registry64",
+                                              "key":  "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                                              "exists":  true,
+                                              "value":  null,
+                                              "subkeys":  "LanguageProfile"
+                                          },
+                                          {
+                                              "hive":  "LocalMachine",
+                                              "view":  "Registry32",
+                                              "key":  "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                                              "exists":  false,
+                                              "value":  {
+
+                                                        },
+                                              "subkeys":  {
+
+                                                          }
+                                          },
+                                          {
+                                              "hive":  "LocalMachine",
+                                              "view":  "Registry32",
+                                              "key":  "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                                              "exists":  true,
+                                              "value":  null,
+                                              "subkeys":  [
+                                                              "Category",
+                                                              "LanguageProfile"
+                                                          ]
+                                          },
+                                          {
+                                              "hive":  "CurrentUser",
+                                              "view":  "Registry32",
+                                              "key":  "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+                                              "exists":  false,
+                                              "value":  {
+
+                                                        },
+                                              "subkeys":  {
+
+                                                          }
+                                          },
+                                          {
+                                              "hive":  "CurrentUser",
+                                              "view":  "Registry32",
+                                              "key":  "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                                              "exists":  true,
+                                              "value":  null,
+                                              "subkeys":  "LanguageProfile"
+                                          }
+                                      ],
+    "default_input_override":  {
+                                   "InputMethodTip":  "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+                                   "Description":  "简体中文(中国大陆) - 微软拼音"
+                               }
+}

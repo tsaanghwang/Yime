@@ -4,6 +4,12 @@
 
 ## 当前任务
 
+**2026-09-29：YimeCore 首次注册查询冲突修复，独立源码交付准备中；测试端暂无执行安排。** 分支 `codex/yimecore-registration-fix-20260929` 从 main `7ae18035a7bde9e2cb23e7eeaaaf94fdfd4c2948` 创建。原始 [2026-09-28 current-issues 报告](../../docs/testing/simple-maintenance/2026-09-28/current-issues/RESULT.md) 及日志按字节保留，[开发复核](../../docs/testing/simple-maintenance/2026-09-29/registration-fix/REVIEW.md) 区分历史实机诊断与本轮源码回归。本轮不改动或重装开发机上的已安装产品。
+
+新源码、CI 和完整包尚未全部就绪，不能用下面的旧包测试本修复。仅在修复提交通过 CI、独立完整包可下载且清单/大小/SHA-256 核验后，才在本节给出后续测试安排。旧包及其恢复安装、输入和重启验收保留原有归属，不代表包含本修复。
+
+## 其他独立工作与历史交付（2026-09-28 / 2026-09-27）
+
 **2026-09-28：touch-terminal KLE 模板导入与实屏基线开发中；测试端无安装任务。** 目标分支 `codex/touch-terminal-kle-baseline` 从已合并 PR #64 的当前主线 `af8ea73f` 创建，并接续 9 月 22 日隔离浏览器原型。范围仅为 KLE 触摸几何模板、离线生成/校验、浏览器交互与已连接触摸屏的本地基线；不连接或修改已安装输入法，不改变默认输入法、用户词库或桌面键位真源。接续入口为 [运行说明](../../prototypes/touch-terminal/README.md)，另见 [验证记录](../../prototypes/touch-terminal/VALIDATION.md)、[适配协议](../../prototypes/touch-terminal/PROTOCOL.md) 和 [硬件可行性](../../prototypes/touch-terminal/HARDWARE.md)。触摸屏已以复制显示模式连接，但在真实手指测试记录完成前，不宣称误触率、端到端延迟或宿主输入通过。
 
 **2026-09-27：current-readiness 双产品完整包已重建并发布为开发预发布；测试端无安装任务。** 目标分支 `codex/current-readiness-delivery-20260927` 从当前 main `0ab86312` 创建，两套运行源码和安装器均固定于完整提交 `0ab8631266736775bf1386f456d4a1d53e8e2eb3`。来源提交 [CI 35418522827](https://github.com/tsaanghwang/Yime/actions/runs/35418522827) 成功；交付记录提交 `a274730fd3230ff22c04632be62ffe18397555ec` 的 [CI](https://github.com/tsaanghwang/Yime/actions/runs/36280832479) 全部成功后，发布固定资产；远端 size 与 SHA-256 digest 已逐项匹配本地。

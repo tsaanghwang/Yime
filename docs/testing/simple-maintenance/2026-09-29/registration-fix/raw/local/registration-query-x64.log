@@ -1,0 +1,19 @@
+Start testing: Sep 29 08:28 中国标准时间
+----------------------------------------------------------
+3/3 Testing: YimeRegistrationQueryTests
+3/3 Test: YimeRegistrationQueryTests
+Command: "C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/.tmp/registration-query-390db0972c7e42e09505b589966eb9b7/x64/Release/YimeRegistrationQueryTests.exe"
+Directory: C:/Users/tsaan/.codex/worktrees/yimecore-registration-fix/Yime/.tmp/registration-query-390db0972c7e42e09505b589966eb9b7/x64
+"YimeRegistrationQueryTests" start time: Sep 29 08:28 中国标准时间
+Output:
+----------------------------------------------------------
+PASS: architecture_bits=64; exact machine profile; disabled/new profile; neighboring identities; immediate removal/recreation; null output; explicit WOW64 view; registry error propagation
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"YimeRegistrationQueryTests" end time: Sep 29 08:28 中国标准时间
+"YimeRegistrationQueryTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Sep 29 08:28 中国标准时间

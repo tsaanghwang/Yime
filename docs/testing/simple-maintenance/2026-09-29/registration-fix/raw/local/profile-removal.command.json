@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "installer/simple/Test-ProfileRemoval.ps1",
+    "--edition",
+    "ps5"
+  ],
+  "cwd": "C:\\Users\\tsaan\\.codex\\worktrees\\yimecore-registration-fix\\Yime",
+  "started_at": "2026-09-29T00:28:30.754216+00:00",
+  "finished_at": "2026-09-29T00:28:31.312408+00:00",
+  "exit_code": 0
+}

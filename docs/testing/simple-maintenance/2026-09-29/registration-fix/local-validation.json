@@ -1,0 +1,95 @@
+{
+  "scope": "Source regression validation before commit; no installed product changes",
+  "registration_command": [
+    "python",
+    "tools/powershell/run_checked.py",
+    "--script",
+    "tools/yimecore/test-registration-query.ps1",
+    "--edition",
+    "ps7"
+  ],
+  "architectures": [
+    "x64",
+    "x86"
+  ],
+  "passed": true,
+  "installed_acceptance": false,
+  "duplicate_guard": "Unchanged production guard reviewed; September 28 controlled diagnostic is historical evidence, not rerun",
+  "files": [
+    {
+      "path": "raw/local/build-contract.command.json",
+      "bytes": 376,
+      "sha256": "03641631cea6eadb17a6f435716e62f1a5998f17dc74b76a52db4dc9d9f755c0"
+    },
+    {
+      "path": "raw/local/build-contract.log",
+      "bytes": 43,
+      "sha256": "fca1ff0be84456c099f51fd704581543d96905035a9c48a990b13ca71158eabc"
+    },
+    {
+      "path": "raw/local/manage.command.json",
+      "bytes": 375,
+      "sha256": "7c674dad69861144ad6aceeac57bb82a83398918028e50ca2b21d60f500798dc"
+    },
+    {
+      "path": "raw/local/manage.log",
+      "bytes": 355,
+      "sha256": "0632cd1f4eec2a4db83832d0327eabd14c7eb78281016fc840aae4b29adc1c5a"
+    },
+    {
+      "path": "raw/local/package-validation.command.json",
+      "bytes": 386,
+      "sha256": "5363453bbf5a0d7589c6e236c549261fe13881832d36bc9ff6f4a2ba9d3c287d"
+    },
+    {
+      "path": "raw/local/package-validation.log",
+      "bytes": 157,
+      "sha256": "08950ff5ebe7af3252cd7ca6214f5b6e9e0e95f58765cfafed34df3d890c6518"
+    },
+    {
+      "path": "raw/local/process-wait.command.json",
+      "bytes": 380,
+      "sha256": "932688ab5bae88c4cf0aa4b386bdc4b13081719142bc53ef0e3beb18a625eadf"
+    },
+    {
+      "path": "raw/local/process-wait.log",
+      "bytes": 116,
+      "sha256": "dca731c39f6479ecde19644d49188714a80c4215dc14581b08ff2cb83ebc2959"
+    },
+    {
+      "path": "raw/local/profile-removal.command.json",
+      "bytes": 383,
+      "sha256": "e14a0cf90e70fcc521674f7cf14753b9f059efc48360f40f90a28b5fab2a7840"
+    },
+    {
+      "path": "raw/local/profile-removal.log",
+      "bytes": 161,
+      "sha256": "53f80d08356ae9c828d79b3b4315037eee104973ebc52afcdefd564cd5331c48"
+    },
+    {
+      "path": "raw/local/registration-query-transcript.txt",
+      "bytes": 908,
+      "sha256": "91dbd5a81dc27ffb38ab01197b5a193d27f8707166cf28fc6d79466db980014b"
+    },
+    {
+      "path": "raw/local/registration-query-x64.log",
+      "bytes": 1154,
+      "sha256": "de43b6f8ba69f5d36f283acf71696108e65007d1471189a83f44ac14440cf22b"
+    },
+    {
+      "path": "raw/local/registration-query-x86.log",
+      "bytes": 1154,
+      "sha256": "52b021f591e666ce3dba270f87d4ee96f8a424f67e1f4ea910fceef03231c2c0"
+    },
+    {
+      "path": "raw/local/workflow-contract.command.json",
+      "bytes": 290,
+      "sha256": "50629dfc6dd4f2d4e5077da8ba0a9429c093fc9bd30b44e8c2b2426addde11e4"
+    },
+    {
+      "path": "raw/local/workflow-contract.log",
+      "bytes": 105,
+      "sha256": "354c3d828acda6a2a7353175af6f47b9a6ade35a84756ca5433e46f76b8d8b55"
+    }
+  ]
+}

@@ -25,7 +25,7 @@ function Invoke-LocalProductIsolatedTestTool {
         $image = (Get-Command go -CommandType Application -ErrorAction Stop).Source
     } else {
         $image = [IO.Path]::GetFullPath($Tool)
-        $nativeNames = @('YimeTextServiceContractTests.exe', 'YimeFocusCancellationTests.exe', 'YimeTsfCompositionTests.exe')
+        $nativeNames = @('YimeTextServiceContractTests.exe', 'YimeFocusCancellationTests.exe', 'YimeTsfCompositionTests.exe', 'YimeRegistrationQueryTests.exe')
         if ((Split-Path -Leaf $image) -notin $nativeNames -or
             -not $image.StartsWith($build + '\', [StringComparison]::OrdinalIgnoreCase)) {
             throw 'Native validation must use a test executable from this current source build.'

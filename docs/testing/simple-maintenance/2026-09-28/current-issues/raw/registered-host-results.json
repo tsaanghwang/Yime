@@ -1,0 +1,18 @@
+{
+    "recorded_at":  "2026-09-28T00:40:07.0862331+08:00",
+    "results":  [
+                    {
+                        "architecture":  "x64",
+                        "executable":  "C:\\Program Files\\YimeCore\\x64\\YimeRegisteredHostTests.exe",
+                        "exit_code":  0,
+                        "log":  "registered-host-x64.log"
+                    },
+                    {
+                        "architecture":  "x86",
+                        "executable":  "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+                        "exit_code":  0,
+                        "log":  "registered-host-x86.log"
+                    }
+                ],
+    "physical_word_notepad_acceptance":  false
+}

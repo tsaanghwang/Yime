@@ -129,6 +129,15 @@ target_include_directories(YimeTextServiceRegistration PRIVATE ${CMAKE_CURRENT_S
 target_link_libraries(YimeTextServiceRegistration PRIVATE advapi32 ole32)
 set_property(TARGET YimeTextServiceRegistration PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+add_executable(YimeRegistrationQueryTests tests/RegistrationQueryTests.cpp)
+target_compile_features(YimeRegistrationQueryTests PRIVATE cxx_std_17)
+target_compile_definitions(YimeRegistrationQueryTests PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
+target_compile_options(YimeRegistrationQueryTests PRIVATE /utf-8 /W4 /EHsc)
+target_include_directories(YimeRegistrationQueryTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(YimeRegistrationQueryTests PRIVATE advapi32 ole32)
+set_property(TARGET YimeRegistrationQueryTests PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+add_test(NAME YimeRegistrationQueryTests COMMAND YimeRegistrationQueryTests)
+
 add_executable(YimeRegisteredHostTests
     tests/RegisteredHostTests.cpp
     ExperimentSettings.cpp

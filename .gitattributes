@@ -42,3 +42,5 @@ docs/testing/yimecore/native-core/2026-09-09-i7-7820x/*.json -text !eol whitespa
 docs/testing/yimecore/native-core/2026-09-09-i7-7820x/cpu-profile-share-*.txt -text !eol whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 # Original test reports/logs are hashed; preserve bytes across branch checkouts.
 docs/testing/simple-maintenance/**/raw/** -text !eol -whitespace
+# Keep the imported current-issues report byte-identical to its source evidence.
+docs/testing/simple-maintenance/2026-09-28/current-issues/RESULT.md -text !eol -whitespace

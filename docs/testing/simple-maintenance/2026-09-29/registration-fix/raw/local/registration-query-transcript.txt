@@ -1,0 +1,29 @@
+**********************
+PowerShell transcript start
+Start time: 20260929082813
+Username: MYCOMPUTER\tsaan
+RunAs User: MYCOMPUTER\tsaan
+Configuration Name: 
+Machine: MYCOMPUTER (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\tsaan\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\Users\tsaan\.codex\worktrees\yimecore-registration-fix\Yime\tools\powershell\preflight.ps1
+Process ID: 20760
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+
+
+
+
+
+
+**********************
+PowerShell transcript end
+End time: 20260929082824
+**********************

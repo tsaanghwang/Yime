@@ -1,0 +1,1 @@
+PASS: profile removal failure stops before COM/startup/file deletion; success proceeds for both products and package/installed entry paths. Synthetic API only.
