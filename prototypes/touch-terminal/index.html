@@ -20,12 +20,12 @@
       <label class="caption" for="committed">本页可编辑文本</label>
       <textarea id="committed" rows="3" spellcheck="false" placeholder="选词后写入这里；可以移动光标、选择和编辑文本。"></textarea>
       <div class="composition"><div class="code-line">ASCII 组合 <code id="code" aria-live="polite">—</code></div><div id="composition" class="hint">读取布局与引擎…</div></div>
-      <div class="candidate-title"><span>真实引擎候选 · 点击或 ⇧1–⇧9 选词</span><span id="page-label"></span></div>
+      <div class="candidate-title"><span>候选 1–9 · 点击或直接按 1–9 选词；Shift+1–9 恢复标点</span><span id="page-label"></span></div>
       <div id="candidates" aria-label="候选列表" aria-live="polite"></div>
       <div class="actions"><button id="backspace">⌫ 退格</button><button id="clear">取消组合</button><button id="prev">← 上页</button><button id="next">下页 →</button><button id="confirm" class="primary">确认首选 ↵</button></div>
       <div class="board-title"><h2>概念实体键盘</h2><span id="touch-template-label" class="hint">读取 KLE…</span></div>
       <div class="keyboard-scroll"><div id="keyboard" tabindex="0" aria-label="概念实体键盘，支持 ANSI 键盘输入"></div></div>
-      <p class="hint">按草案位置、尺寸与图例绘制。大小写编码键固定输出所标字符；候选键固定执行 ⇧1–⇧9。ANSI 大写用 Shift 或 Caps Lock 输入，裸数字始终进入编码。移出键面后释放会取消本次点按。</p>
+      <p class="hint">按草案位置、尺寸绘制。大小写编码键固定输出所标字符；概念候选键标为 1–9，单键直接选词，无需 Shift。标准 ANSI 主键区也直接按 1–9 选词；Shift+1–9 输出 ! @ # $ % ^ &amp; * (，不再选词。有未确认编码时须先选词或取消，再输入标点。大写用 Shift 或 Caps Lock 输入，0 和小键盘数字保持编码输入。移出键面后释放会取消本次点按。</p>
       <p class="hint">共键中的 <span class="disabled-yinyuan">M25、M26、M27</span> 当前停用；M28、M29、M30 仍正常输入。标有「仅示意」的键不执行系统功能。</p>
       <p id="status" role="status">正在初始化…</p>
     </section>

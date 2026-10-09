@@ -31,7 +31,8 @@ function render(result, event) {
     const button = document.createElement('button');
     button.className = 'candidate';
     button.dataset.candidateId = candidate.id;
-    button.append(node('span',`⇧${index+1}`,'ordinal'),node('span',candidate.text));
+    button.append(node('span',String(index+1),'ordinal'),node('span',candidate.text));
+    button.title = `候选 ${index+1} · ANSI 直接按 ${index+1}`;
     button.addEventListener('click',() => {
       perform({type:'select',candidateId:candidate.id},'candidate');
       focusBoard();
@@ -181,14 +182,15 @@ function buildKeyboard() {
     button.style.height = `calc(${100*key.height/bounds.height}% - 4px)`;
     button.style.setProperty('--key-color',key.color || '#deded7');
     button.style.setProperty('--key-text',key.textColor || '#172c30');
+    const labels = key.displayLabels || key.labels || [];
     const ids = (key.yinyuanIds || []).map(id => (key.disabledYinyuanIds || []).includes(id) ? `${id} 停用` : id).join('，');
     const description = key.action.type === 'input' ? `ASCII ${key.action.ascii}`
-      : key.action.type === 'select' ? `候选 ⇧${key.action.ordinal}`
+      : key.action.type === 'select' ? `候选 ${key.action.ordinal}（直接选择）`
       : key.action.label || key.action.key || key.action.type;
-    button.setAttribute('aria-label',`${key.id} ${ids || key.labels.map(legendText).filter(Boolean).join(' ')}，${description}`);
+    button.setAttribute('aria-label',`${key.id} ${ids || labels.map(legendText).filter(Boolean).join(' ')}，${description}`);
     button.title = `${key.id} · ${description}${ids ? ` · ${ids}` : ''}`;
-    (key.labels || []).forEach((label,index) => addLegend(button,label,index,key));
-    if (!(key.labels || []).some(Boolean)) button.append(node('span','Space','key-space'));
+    labels.forEach((label,index) => addLegend(button,label,index,key));
+    if (!labels.some(Boolean)) button.append(node('span','Space','key-space'));
     if (key.action.type === 'unsupported') button.append(node('span','仅示意','simulation-label'));
     button.addEventListener('pointerdown',event => {
       if (event.button !== 0 || !event.isPrimary || active) return;

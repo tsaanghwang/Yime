@@ -2,7 +2,7 @@
 import json
 import unittest
 
-from physical_layout import SOURCE, key_action, parse_physical_kle, plain
+from physical_layout import SOURCE, build, key_action, parse_physical_kle, plain
 
 
 class PhysicalLayoutTests(unittest.TestCase):
@@ -45,6 +45,19 @@ class PhysicalLayoutTests(unittest.TestCase):
         self.assertEqual({"type": "select", "ordinal": 1}, key_action(candidate, {}, set()))
         candidate["labels"] = ["1", "End"]
         self.assertEqual({"type": "input", "ascii": "1"}, key_action(candidate, {}, set()))
+
+    def test_concept_candidate_labels_are_plain_ordinals_without_changing_actions(self):
+        layout = build()
+        candidates = [key for key in layout["keys"] if key["action"]["type"] == "select"]
+        self.assertEqual(list(range(1, 10)), [key["action"]["ordinal"] for key in candidates])
+        for key in candidates:
+            ordinal = str(key["action"]["ordinal"])
+            self.assertEqual([ordinal], [label for label in key["displayLabels"] if label])
+            self.assertEqual(ordinal, key["displayLabels"][4])
+            self.assertIn("⇧" + ordinal, key["labels"])
+        for key in layout["keys"]:
+            if key["action"]["type"] != "select":
+                self.assertNotIn("displayLabels", key)
 
     def test_noncoding_caps_use_base_legend_and_space_confirms(self):
         keys = parse_physical_kle([["~\n`", ")\n0", "7\nHome", {"a": 7}, "Enter", ""]])["keys"]

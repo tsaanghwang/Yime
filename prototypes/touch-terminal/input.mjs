@@ -1,10 +1,15 @@
 /** Input adapter for the isolated Go engine. No OS keyboard synthesis is used. */
 export const CODE_MODES = Object.freeze(['variable', 'full', 'shorthand']);
+const SHIFT_DIGIT_PUNCTUATION = '!@#$%^&*(';
 
 export function actionFromKeyboard(event) {
   if (event.isComposing || event.ctrlKey || event.altKey || event.metaKey || event.repeat) return null;
-  // Use the physical digit row only for Shift ordinals; numpad digits always compose.
-  if (event.shiftKey && /^Digit[1-9]$/.test(event.code)) return {type:'select', ordinal:Number(event.code.slice(-1))};
+  // Concept experiment: main-row 1–9 select; Shift restores ANSI punctuation.
+  // Neither action falls back to composition; 0 and numpad digits still compose.
+  if (/^Digit[1-9]$/.test(event.code)) {
+    const ordinal = Number(event.code.slice(-1));
+    return event.shiftKey ? {type:'local',key:SHIFT_DIGIT_PUNCTUATION[ordinal-1]} : {type:'select',ordinal};
+  }
   if (!event.shiftKey && ['Minus','Equal'].includes(event.code)) return {type:'page',delta:event.code === 'Minus' ? -1 : 1};
   if (typeof event.key === 'string' && /^[\x21-\x7e]$/.test(event.key)) return {type:'input', ascii:event.key};
   const actions = {
@@ -139,7 +144,8 @@ export function editText(value, start, end, key) {
     cursor = boundaries.filter(index => index <= cursor).at(-1) ?? 0;
   }
   if (cursor !== undefined) return {value,start:cursor,end:cursor};
-  const inserted = key === 'Enter' ? '\n' : key === 'Tab' ? '\t' : key === 'Space' ? ' ' : null;
+  const inserted = key === 'Enter' ? '\n' : key === 'Tab' ? '\t' : key === 'Space' ? ' '
+    : typeof key === 'string' && key.length === 1 && SHIFT_DIGIT_PUNCTUATION.includes(key) ? key : null;
   if (inserted !== null) return {value:selection+inserted+tail,start:start+inserted.length,end:start+inserted.length};
   return null;
 }

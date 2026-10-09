@@ -2,13 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {actionFromKeyboard,protocolAction,createLiveClient,samePointerRelease,editText} from './input.mjs';
 
-test('ANSI keeps ASCII case, punctuation and bare digits distinct from candidate ordinals',() => {
-  for (const key of ['a','A','N','n','[',']',"'",'1','9','0']) {
-    assert.deepEqual(actionFromKeyboard({key,code:key === '1' ? 'Digit1' : 'KeyA'}),{type:'input',ascii:key});
+test('ANSI case-sensitive codes and main-row candidate ordinals have distinct actions',() => {
+  for (const key of ['a','A','N','n','[',']',"'"]) {
+    assert.deepEqual(actionFromKeyboard({key,code:'KeyA'}),{type:'input',ascii:key});
   }
-  assert.deepEqual(actionFromKeyboard({key:'!',code:'Digit1',shiftKey:true}),{type:'select',ordinal:1});
-  assert.deepEqual(actionFromKeyboard({key:'(',code:'Digit9',shiftKey:true}),{type:'select',ordinal:9});
-  assert.deepEqual(actionFromKeyboard({key:'1',code:'Numpad1',shiftKey:true}),{type:'input',ascii:'1'});
+  for (let ordinal = 1; ordinal <= 9; ordinal++) {
+    for (const shiftKey of [false,true]) {
+      const key = shiftKey ? '!@#$%^&*('[ordinal-1] : String(ordinal);
+      assert.deepEqual(actionFromKeyboard({key,code:`Digit${ordinal}`,shiftKey}),shiftKey ? {type:'local',key} : {type:'select',ordinal});
+      assert.deepEqual(actionFromKeyboard({key:String(ordinal),code:`Numpad${ordinal}`,shiftKey}),{type:'input',ascii:String(ordinal)});
+    }
+  }
+  assert.deepEqual(actionFromKeyboard({key:'0',code:'Digit0'}),{type:'input',ascii:'0'});
+  assert.deepEqual(actionFromKeyboard({key:')',code:'Digit0',shiftKey:true}),{type:'input',ascii:')'});
   assert.deepEqual(actionFromKeyboard({key:'-',code:'Minus'}),{type:'page',delta:-1});
   assert.deepEqual(actionFromKeyboard({key:'=',code:'Equal'}),{type:'page',delta:1});
   assert.deepEqual(actionFromKeyboard({key:'-',code:'NumpadSubtract'}),{type:'input',ascii:'-'});
@@ -17,6 +23,33 @@ test('ANSI keeps ASCII case, punctuation and bare digits distinct from candidate
   assert.equal(actionFromKeyboard({key:'a',altKey:true}),null);
   assert.equal(actionFromKeyboard({key:'a',isComposing:true}),null);
   assert.equal(actionFromKeyboard({key:'a',repeat:true}),null);
+  assert.equal(actionFromKeyboard({key:'1',code:'Digit1',ctrlKey:true}),null);
+  assert.equal(actionFromKeyboard({key:'1',code:'Digit1',altKey:true}),null);
+  assert.equal(actionFromKeyboard({key:'1',code:'Digit1',metaKey:true}),null);
+  assert.equal(actionFromKeyboard({key:'1',code:'Digit1',isComposing:true}),null);
+  assert.equal(actionFromKeyboard({key:'1',code:'Digit1',repeat:true}),null);
+});
+
+test('main-row ordinals use stable candidate IDs and never fall back to digit composition',() => {
+  const state = {candidates:Array.from({length:9},(_,i) => ({id:`candidate-${i+1}`}))};
+  for (let ordinal = 1; ordinal <= 9; ordinal++) {
+    const action = actionFromKeyboard({key:String(ordinal),code:`Digit${ordinal}`});
+    assert.deepEqual(protocolAction(action,state),{type:'select',candidateId:`candidate-${ordinal}`});
+    assert.equal(protocolAction(action,{candidates:[]}),null);
+    assert.equal(protocolAction(action,{raw_input:'0',candidates:[]}),null);
+  }
+  assert.equal(protocolAction(actionFromKeyboard({key:'9',code:'Digit9'}),{candidates:[{id:'only'}]}),null);
+});
+
+test('Shift digit punctuation edits text at the selection without an engine selection event',() => {
+  for (let ordinal = 1; ordinal <= 9; ordinal++) {
+    const key = '!@#$%^&*('[ordinal-1];
+    const action = actionFromKeyboard({key,code:`Digit${ordinal}`,shiftKey:true});
+    assert.deepEqual(action,{type:'local',key});
+    assert.equal(protocolAction(action,{candidates:[{id:'never-selected'}]}),null);
+    assert.deepEqual(editText('你好',1,1,action.key),{value:`你${key}好`,start:2,end:2});
+    assert.deepEqual(editText('你好',0,1,action.key),{value:`${key}好`,start:1,end:1});
+  }
 });
 
 test('pointer ASCII and ANSI ASCII produce identical engine events; reserved IDs cannot be sent',() => {

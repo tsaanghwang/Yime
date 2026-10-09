@@ -21,6 +21,11 @@ async (page) => {
   assert(await page.locator('.physical-key .disabled-yinyuan').count() === 3,'three reserved shared legends shown disabled');
   const candidateKeys = layout.keys.filter(key => key.action.type === 'select');
   assert(candidateKeys.length === 9,'nine fixed candidate positions');
+  for (const key of candidateKeys) {
+    const button = page.locator(`[data-id="${key.id}"]`);
+    assert((await button.innerText()).trim() === String(key.action.ordinal),'concept candidate key shows only its plain ordinal');
+    assert(!(await button.getAttribute('aria-label')).includes('⇧'),'concept candidate accessible label does not imply a Shift chord');
+  }
   const board = await page.locator('#keyboard').boundingBox();
   for (const key of layout.keys) {
     const box = await page.locator(`[data-id="${key.id}"]`).boundingBox();
@@ -48,6 +53,8 @@ async (page) => {
     await page.locator('#keyboard').focus();
     await page.keyboard.type(code);
     await waitCode(code);
+    const ordinals = await page.locator('.candidate .ordinal').allTextContents();
+    assert(ordinals.length > 0 && ordinals.every((label,index) => label === String(index+1)),'candidate strip uses matching plain ordinals');
     await page.locator('.candidate').getByText('你',{exact:true}).click();
     await waitCode('');
     assert((await page.locator('#committed').inputValue()).endsWith('你'),`${mode} real engine Chinese commit`);
@@ -66,6 +73,16 @@ async (page) => {
     await page.locator(`[data-id="${physicalCandidate.id}"]`).click();
     await waitCode('');
     assert((await page.locator('#committed').inputValue()).endsWith('好'),`${mode} physical candidate position commits 好`);
+    for (let ordinal = 1; ordinal <= 9; ordinal++) {
+      await page.locator('#keyboard').focus();
+      await page.keyboard.type('n');
+      await waitCode('n');
+      const expected = await page.locator('.candidate span:last-child').nth(ordinal-1).innerText();
+      const before = await page.locator('#committed').inputValue();
+      await page.keyboard.press(`Digit${ordinal}`);
+      await waitCode('');
+      assert(await page.locator('#committed').inputValue() === before+expected,`${mode} bare Digit${ordinal} commits exactly its visible candidate`);
+    }
   }
   checks.push('ANSI typing commits 你 and virtual sequence + fixed candidate key commits 好 through all three real indexes');
   await page.locator('#code-mode').selectOption('variable');
@@ -73,16 +90,30 @@ async (page) => {
   await page.locator('#keyboard').focus();
   await page.keyboard.type('ni');
   await waitCode('ni');
-  const committedBeforeDigit = await page.locator('#committed').inputValue();
-  await page.keyboard.press('Digit1');
-  await waitCode('ni1');
-  assert(await page.locator('#committed').inputValue() === committedBeforeDigit,'bare digit does not select');
-  await page.keyboard.press('Backspace');
-  await waitCode('ni');
-  const firstCandidate = await page.locator('.candidate').first().locator('span').last().innerText();
+  const beforeShift = await page.locator('#committed').inputValue();
   await page.keyboard.press('Shift+Digit1');
-  await waitCode('');
-  assert((await page.locator('#committed').inputValue()).endsWith(firstCandidate),'Shift ordinal commits visible candidate');
+  await page.waitForFunction(() => document.querySelector('#status').textContent.includes('请先选词或取消'));
+  assert(await page.locator('#code').innerText() === 'ni','Shift punctuation preserves unconfirmed composition');
+  assert(await page.locator('#committed').inputValue() === beforeShift,'Shift punctuation never silently selects a candidate');
+  await clear();
+  for (let ordinal = 1; ordinal <= 9; ordinal++) {
+    const before = await page.locator('#committed').inputValue();
+    const expected = before+'!@#$%^&*('[ordinal-1];
+    await page.keyboard.press(`Shift+Digit${ordinal}`);
+    await page.waitForFunction(value => document.querySelector('#committed').value === value,expected);
+    assert(await page.locator('#code').innerText() === '—','Shift punctuation writes text, not composition');
+  }
+  const committedBeforeEmpty = await page.locator('#committed').inputValue();
+  await page.keyboard.press('Digit1');
+  await page.waitForFunction(() => document.querySelector('#status').textContent.includes('当前没有可选候选'));
+  assert(await page.locator('#code').innerText() === '—','empty candidate selection does not become digit input');
+  assert(await page.locator('#committed').inputValue() === committedBeforeEmpty,'empty candidate selection does not commit');
+  await page.keyboard.press('Digit0');
+  await waitCode('0');
+  await page.keyboard.press('Digit9');
+  await page.waitForFunction(() => document.querySelector('#status').textContent.includes('当前没有可选候选'));
+  assert(await page.locator('#code').innerText() === '0','unmatched composition does not fall back to digit input');
+  await clear();
   await page.locator('#keyboard').focus();
   await page.keyboard.type('n');
   await waitCode('n');
@@ -93,7 +124,7 @@ async (page) => {
     await page.waitForFunction(() => document.querySelector('#page-label').textContent === '第 1 页');
   } else throw new Error('Expected a real multi-page n prefix');
   await clear();
-  checks.push('bare-digit composition, Shift ordinal commit and real engine -/= candidate paging');
+  checks.push('all bare 1–9 ordinals in three modes, nine Shift punctuations, preedit preserved, no-candidate no-op, zero input and real engine -/= paging');
   for (const ascii of ['n','N','[',']',"'"]) {
     await page.locator('#keyboard').focus();
     await page.keyboard.type(ascii);

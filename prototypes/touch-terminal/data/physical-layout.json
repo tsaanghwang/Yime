@@ -1,7 +1,7 @@
 {
   "formatVersion": 2,
   "layoutId": "f35fd71838991b49fed13e5f6673b098d230d5f248a00c376c9989e8f7fe2c0b",
-  "touchTemplateId": "1fc4c4855bab2f9ee66fd59236464ec96752fa6d8c57456ca34f6ce32aadb368",
+  "touchTemplateId": "d86e0613c024538c73a1caa7350252c13cacb63632a1d1fe9b331d8f63e243c5",
   "name": "Yime ASCII concept keyboard · 129 keys",
   "bounds": {
     "width": 25.75,
@@ -632,7 +632,21 @@
       "action": {
         "type": "select",
         "ordinal": 1
-      }
+      },
+      "displayLabels": [
+        "",
+        "",
+        "",
+        "",
+        "1",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
     },
     {
       "id": "R02K05",
@@ -663,7 +677,21 @@
       "action": {
         "type": "select",
         "ordinal": 2
-      }
+      },
+      "displayLabels": [
+        "",
+        "",
+        "",
+        "",
+        "2",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
     },
     {
       "id": "R02K06",
@@ -694,7 +722,21 @@
       "action": {
         "type": "select",
         "ordinal": 3
-      }
+      },
+      "displayLabels": [
+        "",
+        "",
+        "",
+        "",
+        "3",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
     },
     {
       "id": "R02K07",
@@ -725,7 +767,21 @@
       "action": {
         "type": "select",
         "ordinal": 4
-      }
+      },
+      "displayLabels": [
+        "",
+        "",
+        "",
+        "",
+        "4",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
     },
     {
       "id": "R02K08",
@@ -756,7 +812,21 @@
       "action": {
         "type": "select",
         "ordinal": 5
-      }
+      },
+      "displayLabels": [
+        "",
+        "",
+        "",
+        "",
+        "5",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
     },
     {
       "id": "R02K09",
@@ -787,7 +857,21 @@
       "action": {
         "type": "select",
         "ordinal": 6
-      }
+      },
+      "displayLabels": [
+        "",
+        "",
+        "",
+        "",
+        "6",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
     },
     {
       "id": "R02K10",
@@ -818,7 +902,21 @@
       "action": {
         "type": "select",
         "ordinal": 7
-      }
+      },
+      "displayLabels": [
+        "",
+        "",
+        "",
+        "",
+        "7",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
     },
     {
       "id": "R02K11",
@@ -849,7 +947,21 @@
       "action": {
         "type": "select",
         "ordinal": 8
-      }
+      },
+      "displayLabels": [
+        "",
+        "",
+        "",
+        "",
+        "8",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
     },
     {
       "id": "R02K12",
@@ -880,7 +992,21 @@
       "action": {
         "type": "select",
         "ordinal": 9
-      }
+      },
+      "displayLabels": [
+        "",
+        "",
+        "",
+        "",
+        "9",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
     },
     {
       "id": "R02K13",

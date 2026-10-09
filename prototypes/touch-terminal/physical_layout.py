@@ -183,6 +183,11 @@ def build(repo_root=ROOT, source_path=None):
     for key in parsed["keys"]:
         key["disabledYinyuanIds"] = sorted(set(key["yinyuanIds"]) & disabled)
         key["action"] = key_action(key, mapping, disabled)
+        if key["action"]["type"] == "select":
+            # Keep the frozen KLE legends as provenance. Dedicated concept keys
+            # show plain ordinals; they do not emulate an ANSI Shift chord.
+            key["displayLabels"] = [""] * 12
+            key["displayLabels"][4] = str(key["action"]["ordinal"])
     candidates = [key["action"]["ordinal"] for key in parsed["keys"] if key["action"]["type"] == "select"]
     if sorted(candidates) != list(range(1, 10)) or len(parsed["keys"]) != 129:
         raise ValueError("Expected full 129-key concept board with nine candidate actions")
