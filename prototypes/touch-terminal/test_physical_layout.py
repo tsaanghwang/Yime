@@ -2,7 +2,7 @@
 import json
 import unittest
 
-from physical_layout import SOURCE, build, key_action, parse_physical_kle, plain
+from physical_layout import SOURCE, SHIFT_SYMBOLS, build, key_action, parse_physical_kle, plain
 
 
 class PhysicalLayoutTests(unittest.TestCase):
@@ -56,8 +56,34 @@ class PhysicalLayoutTests(unittest.TestCase):
             self.assertEqual(ordinal, key["displayLabels"][4])
             self.assertIn("⇧" + ordinal, key["labels"])
         for key in layout["keys"]:
-            if key["action"]["type"] != "select":
+            if key["action"]["type"] != "select" and not any(plain(label) in {"前页", "后页"} for label in key["labels"]):
                 self.assertNotIn("displayLabels", key)
+
+    def test_only_actual_page_keys_page_and_stale_page_legends_are_hidden(self):
+        layout = build()
+        paging = [key for key in layout["keys"] if key["action"]["type"] == "page"]
+        self.assertEqual(2, len(paging))
+        self.assertEqual({-1, 1}, {key["action"]["delta"] for key in paging})
+        for key in paging:
+            self.assertTrue({"PgUp", "PgDn"} & set(key["labels"]))
+        stale = [key for key in layout["keys"] if {"前页", "后页"} & set(key["labels"])]
+        self.assertEqual(2, len(stale))
+        self.assertEqual({"-", "="}, {key["action"]["ascii"] for key in stale})
+        for key in stale:
+            self.assertFalse({"前页", "后页"} & set(key["displayLabels"]))
+
+    def test_one_shot_shift_supports_symbols_without_changing_letter_ids(self):
+        layout = build()
+        shifts = [key for key in layout["keys"] if key["action"]["type"] == "shift"]
+        self.assertEqual(2, len(shifts))
+        for key in layout["keys"]:
+            action = key["action"]
+            base = str(action["ordinal"]) if action["type"] == "select" else action.get("ascii")
+            if base in SHIFT_SYMBOLS:
+                self.assertEqual({"type": "input", "ascii": SHIFT_SYMBOLS[base]}, key["shiftAction"])
+            else:
+                self.assertNotIn("shiftAction", key)
+        self.assertEqual(dict(zip("'[]\\/", '\"{}|?')), {symbol: SHIFT_SYMBOLS[symbol] for symbol in "'[]\\/"})
 
     def test_noncoding_caps_use_base_legend_and_space_confirms(self):
         keys = parse_physical_kle([["~\n`", ")\n0", "7\nHome", {"a": 7}, "Enter", ""]])["keys"]

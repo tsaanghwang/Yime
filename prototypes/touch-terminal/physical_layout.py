@@ -33,6 +33,7 @@ IDS = re.compile(r"[NM]\d{2}(?:\|[NM]\d{2})*")
 HERE = Path(__file__).resolve().parent
 SOURCE = HERE / "design/concept-129.kle.json"
 OUTPUT = HERE / "data/physical-layout.json"
+SHIFT_SYMBOLS = dict(zip("`1234567890-=[]\\;',./", '~!@#$%^&*()_+{}|:\"<>?'))
 
 
 class _Text(HTMLParser):
@@ -139,9 +140,9 @@ def key_action(key, mapping, disabled):
     for label in legends:
         if re.fullmatch("⇧[1-9]", label):
             return dict(type="select", ordinal=int(label[1:]))
-    if "前页" in legends or "PgUp" in legends and "9" not in legends:
+    if "PgUp" in legends and "9" not in legends:
         return dict(type="page", delta=-1)
-    if "后页" in legends or "PgDn" in legends and "3" not in legends:
+    if "PgDn" in legends and "3" not in legends:
         return dict(type="page", delta=1)
     text = next((label for label in legends if label), "Space")
     actions = {"Esc": "clear", "Back Space": "backspace", "Enter": "confirm"}
@@ -149,9 +150,11 @@ def key_action(key, mapping, disabled):
         return dict(type=actions[text], **({"key": "Enter"} if text == "Enter" else {}))
     if text == "Space":
         return dict(type="confirm", key="Space")
+    if text == "Shift":
+        return dict(type="shift")
     names = {"Caps Lock": "CapsLock", "Num Lock": "NumLock", "Ctrl": "Control",
              "←": "ArrowLeft", "→": "ArrowRight", "↑": "ArrowUp", "↓": "ArrowDown"}
-    if text in {"Win", "Menu", "PrtSc", "Scroll Lock", "Pause", "Break", "Shift", "Ctrl", "Alt", "Caps Lock", "Num Lock", "Insert"} or re.fullmatch("F[0-9]+", text):
+    if text in {"Win", "Menu", "PrtSc", "Scroll Lock", "Pause", "Break", "Ctrl", "Alt", "Caps Lock", "Num Lock", "Insert"} or re.fullmatch("F[0-9]+", text):
         return dict(type="unsupported", label=text)
     # Use the base legend on ordinary ANSI number/punctuation caps; keypad
     # navigation legends are not printable, so their top digit remains the base.
@@ -188,6 +191,11 @@ def build(repo_root=ROOT, source_path=None):
             # show plain ordinals; they do not emulate an ANSI Shift chord.
             key["displayLabels"] = [""] * 12
             key["displayLabels"][4] = str(key["action"]["ordinal"])
+        elif any(plain(label) in {"前页", "后页"} for label in key["labels"]):
+            key["displayLabels"] = ["" if plain(label) in {"前页", "后页"} else label for label in key["labels"]]
+        base = str(key["action"]["ordinal"]) if key["action"]["type"] == "select" else key["action"].get("ascii")
+        if base in SHIFT_SYMBOLS:
+            key["shiftAction"] = dict(type="input", ascii=SHIFT_SYMBOLS[base])
     candidates = [key["action"]["ordinal"] for key in parsed["keys"] if key["action"]["type"] == "select"]
     if sorted(candidates) != list(range(1, 10)) or len(parsed["keys"]) != 129:
         raise ValueError("Expected full 129-key concept board with nine candidate actions")
@@ -212,7 +220,7 @@ def main():
             raise SystemExit("FAIL: regenerate physical-layout.json")
     else:
         OUTPUT.write_text(output, encoding="utf-8", newline="\n")
-    print("PASS: 129 physical keys, 60 IDs / 57 active, 9 fixed candidate actions")
+    print("PASS: 129 physical keys, 60 IDs / 57 active, 9 candidate/digit positions and one-shot symbol Shift")
 
 
 if __name__ == "__main__":

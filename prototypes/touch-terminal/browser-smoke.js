@@ -34,6 +34,7 @@ async (page) => {
   }
   checks.push('129-key source geometry, 57 active ASCII keys, 3 disabled shared labels, 9 fixed candidate keys');
   const waitCode = async code => page.waitForFunction(value => document.querySelector('#code').textContent === (value || '—'),code);
+  const waitCommit = async value => page.waitForFunction(expected => document.querySelector('#committed').value === expected,value);
   const clear = async () => {
     await page.locator('#keyboard').focus();
     await page.keyboard.press('Escape');
@@ -91,40 +92,96 @@ async (page) => {
   await page.keyboard.type('ni');
   await waitCode('ni');
   const beforeShift = await page.locator('#committed').inputValue();
+  const firstBeforeShift = await page.locator('.candidate span:last-child').first().innerText();
   await page.keyboard.press('Shift+Digit1');
-  await page.waitForFunction(() => document.querySelector('#status').textContent.includes('请先选词或取消'));
-  assert(await page.locator('#code').innerText() === 'ni','Shift punctuation preserves unconfirmed composition');
-  assert(await page.locator('#committed').inputValue() === beforeShift,'Shift punctuation never silently selects a candidate');
-  await clear();
+  await waitCommit(beforeShift+firstBeforeShift+'!');
+  await waitCode('');
   for (let ordinal = 1; ordinal <= 9; ordinal++) {
     const before = await page.locator('#committed').inputValue();
     const expected = before+'!@#$%^&*('[ordinal-1];
     await page.keyboard.press(`Shift+Digit${ordinal}`);
-    await page.waitForFunction(value => document.querySelector('#committed').value === value,expected);
+    await waitCommit(expected);
     assert(await page.locator('#code').innerText() === '—','Shift punctuation writes text, not composition');
   }
   const committedBeforeEmpty = await page.locator('#committed').inputValue();
   await page.keyboard.press('Digit1');
-  await page.waitForFunction(() => document.querySelector('#status').textContent.includes('当前没有可选候选'));
-  assert(await page.locator('#code').innerText() === '—','empty candidate selection does not become digit input');
-  assert(await page.locator('#committed').inputValue() === committedBeforeEmpty,'empty candidate selection does not commit');
+  await waitCommit(committedBeforeEmpty+'1');
+  assert(await page.locator('#code').innerText() === '—','empty candidate digit commits without composition');
   await page.keyboard.press('Digit0');
-  await waitCode('0');
+  await waitCommit(committedBeforeEmpty+'10');
+  await page.keyboard.type('zzzzzzzzzzzz');
+  await waitCode('zzzzzzzzzzzz');
+  assert(await page.locator('.candidate').count() === 0,'explicit unmatched composition fixture');
   await page.keyboard.press('Digit9');
-  await page.waitForFunction(() => document.querySelector('#status').textContent.includes('当前没有可选候选'));
-  assert(await page.locator('#code').innerText() === '0','unmatched composition does not fall back to digit input');
+  await waitCommit(committedBeforeEmpty+'109');
+  assert(await page.locator('#code').innerText() === 'zzzzzzzzzzzz','literal fallback preserves unmatched composition');
+  await page.keyboard.press('Shift+Digit2');
+  await waitCommit(committedBeforeEmpty+'109@');
+  assert(await page.locator('#code').innerText() === 'zzzzzzzzzzzz','literal symbol preserves unmatched composition');
   await clear();
   await page.locator('#keyboard').focus();
   await page.keyboard.type('n');
   await waitCode('n');
   if (await page.locator('#next').isEnabled()) {
-    await page.keyboard.press('Equal');
+    await page.keyboard.press('PageDown');
     await page.waitForFunction(() => document.querySelector('#page-label').textContent === '第 2 页');
-    await page.keyboard.press('Minus');
+    await page.keyboard.press('PageUp');
     await page.waitForFunction(() => document.querySelector('#page-label').textContent === '第 1 页');
   } else throw new Error('Expected a real multi-page n prefix');
   await clear();
-  checks.push('all bare 1–9 ordinals in three modes, nine Shift punctuations, preedit preserved, no-candidate no-op, zero input and real engine -/= paging');
+  for (const key of ['-','=','_', '+','`','~',';',':',',','<','.', '>','"','{','}','|','?']) {
+    const before = await page.locator('#committed').inputValue();
+    await page.keyboard.type(key);
+    await waitCommit(before+key);
+    assert(await page.locator('#code').innerText() === '—',`noncoding punctuation ${key} directly commits`);
+  }
+  checks.push('all bare 1–9 ordinals in three modes, empty-candidate literal digits, 0 and punctuation commit, unmatched raw preserved, PageUp/PageDown paging');
+  for (const ascii of "'[]\\/") {
+    await page.keyboard.type(ascii);
+    await waitCode(ascii);
+    const candidates = await page.locator('.candidate span:last-child').allTextContents();
+    assert(candidates.at(-1) === ascii,`coding symbol ${ascii} is the last first-page candidate`);
+    assert(candidates.length <= 9,'literal candidate remains within the nine available positions');
+    const before = await page.locator('#committed').inputValue();
+    const key = candidateKeys.find(item => item.action.ordinal === candidates.length);
+    await page.locator(`[data-id="${key.id}"]`).click();
+    await waitCode('');
+    await waitCommit(before+ascii);
+  }
+  checks.push('all five exact-single coding symbols can be committed through the last candidate of page one');
+  const shiftKey = layout.keys.find(key => key.action.type === 'shift');
+  const shiftButton = page.locator(`[data-id="${shiftKey.id}"]`);
+  for (const key of layout.keys.filter(key => key.shiftAction)) {
+    const before = await page.locator('#committed').inputValue();
+    await shiftButton.click();
+    assert(await shiftButton.getAttribute('aria-pressed') === 'true','virtual Shift visibly armed');
+    const button = page.locator(`[data-id="${key.id}"]`);
+    assert((await button.innerText()).trim() === key.shiftAction.ascii,'shifted key shows actual symbol');
+    await button.click();
+    await waitCommit(before+key.shiftAction.ascii);
+    assert(await shiftButton.getAttribute('aria-pressed') === 'false','one printable key consumes Shift');
+  }
+  for (const ascii of ['n','N']) {
+    await shiftButton.click();
+    const key = codingKeys.find(item => item.action.ascii === ascii);
+    await page.locator(`[data-id="${key.id}"]`).click();
+    await waitCode(ascii);
+    assert(await shiftButton.getAttribute('aria-pressed') === 'false','fixed letter input consumes symbol latch');
+    await clear();
+  }
+  await shiftButton.click();
+  await shiftButton.click();
+  assert(await shiftButton.getAttribute('aria-pressed') === 'false','second Shift toggles off');
+  await shiftButton.click();
+  await clear();
+  assert(await shiftButton.getAttribute('aria-pressed') === 'false','Escape resets Shift');
+  await shiftButton.click();
+  await page.locator('#code-mode').selectOption('full');
+  await page.waitForFunction(() => !document.querySelector('#code-mode').disabled);
+  assert(await shiftButton.getAttribute('aria-pressed') === 'false','mode change resets Shift');
+  await page.locator('#code-mode').selectOption('variable');
+  await page.waitForFunction(() => !document.querySelector('#code-mode').disabled);
+  checks.push('virtual one-shot symbol Shift covers every existing shifted cap while fixed letter cases remain unchanged');
   for (const ascii of ['n','N','[',']',"'"]) {
     await page.locator('#keyboard').focus();
     await page.keyboard.type(ascii);
@@ -144,18 +201,23 @@ async (page) => {
   await page.keyboard.press('Space');
   await waitCode('n');
   const textBeforeBlur = await page.locator('#committed').inputValue();
+  await shiftButton.click();
   await page.evaluate(() => window.dispatchEvent(new Event('blur')));
   await waitCode('');
+  assert(await shiftButton.getAttribute('aria-pressed') === 'false','blur resets Shift');
   assert(await page.locator('#committed').inputValue() === textBeforeBlur,'blur preserves confirmed text');
   checks.push('case-sensitive ANSI, drag cancellation, single keyboard activation and blur cancellation');
+  await shiftButton.click();
   await page.locator('#drill').click();
   for (const key of layout.keys) await page.locator(`[data-id="${key.id}"]`).click();
   assert((await page.locator('#drill-status').innerText()).includes('已覆盖 129/129，总点按 129，重复 0'),'all physical key coverage');
+  assert(await shiftButton.getAttribute('aria-pressed') === 'true','coverage records never consume or toggle Shift');
   await page.locator('#target-drill').click();
   const target = await page.locator('.physical-key.target').getAttribute('data-id');
   await page.locator(`[data-id="${layout.keys.find(key => key.id !== target).id}"]`).click();
   assert(await page.locator('.physical-key.target').getAttribute('data-id') === target,'wrong target never advances');
   await page.locator('#stop-drill').click();
+  await shiftButton.click();
   const downloadEvent = page.waitForEvent('download');
   await page.locator('#export').click();
   const download = await downloadEvent;
@@ -163,6 +225,7 @@ async (page) => {
   for await (const chunk of await download.createReadStream()) reportText += chunk;
   const report = JSON.parse(reportText);
   assert(report.formatVersion === 4 && report.touchTemplateId === layout.touchTemplateId,'full keyboard report identity');
+  assert(report.inputPolicy === 'candidate-or-literal-v1','session report identifies the active digit/punctuation policy');
   assert(report.drills[0].seen.length === 129 && report.drills[1].wrong === 1,'separate drill records');
   assert(report.touches.some(touch => Number.isFinite(touch.pointer?.up?.keyLocal?.x)),'pointer coordinates recorded');
   checks.push('129-key coverage, retry target semantics and geometry-aware report export');

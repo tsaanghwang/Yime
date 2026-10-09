@@ -21,6 +21,10 @@ const testOrigin = "http://127.0.0.1:8765"
 // These sessions use the production compact-index loader and engine, with
 // test-only dictionary records chosen to distinguish case, digits and paging.
 func testLab(t *testing.T) *lab {
+	return testLabWithRecords(t, "")
+}
+
+func testLabWithRecords(t *testing.T, extra string) *lab {
 	t.Helper()
 	root := t.TempDir()
 	var dictionary strings.Builder
@@ -28,6 +32,7 @@ func testLab(t *testing.T) *lab {
 	for i := 0; i < 13; i++ {
 		fmt.Fprintf(&dictionary, "测试%d\tp\t%d\n", i, 100-i)
 	}
+	dictionary.WriteString(extra)
 	source := filepath.Join(root, "test.dict.yaml")
 	if err := os.WriteFile(source, []byte(dictionary.String()), 0600); err != nil {
 		t.Fatal(err)
@@ -101,17 +106,18 @@ func TestRealEngineThreeModesCaseDigitsAndSessionIsolation(t *testing.T) {
 				t.Fatalf("case lost: %+v", left.State)
 			}
 			right = event(t, a, right, "digit", "input", "1")
-			if right.State.RawInput != "1" || right.Commit != "" || right.State.Candidates[0].Text != "数字" {
-				t.Fatalf("digit selected or sessions shared: %+v", right)
+			if right.State.RawInput != "" || right.Commit != "1" || len(right.State.Candidates) != 0 {
+				t.Fatalf("idle digit did not commit or sessions shared: %+v", right)
 			}
 			left = event(t, a, left, "reset", "clear", "")
 			left = event(t, a, left, "lowercase", "input", "a")
 			left = event(t, a, left, "digit-after-candidate", "input", "1")
-			if left.State.RawInput != "a1" || left.Commit != "" {
-				t.Fatalf("digit while candidates visible did not compose: %+v", left)
+			if left.State.RawInput != "" || left.Commit != "小写" {
+				t.Fatalf("digit while candidates visible did not select: %+v", left)
 			}
+			left = event(t, a, left, "retype", "input", "a")
 			left = event(t, a, left, "erase", "backspace", "")
-			if left.State.RawInput != "a" {
+			if left.State.RawInput != "" {
 				t.Fatalf("backspace: %+v", left)
 			}
 		})

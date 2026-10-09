@@ -1,7 +1,7 @@
 {
   "formatVersion": 2,
   "layoutId": "f35fd71838991b49fed13e5f6673b098d230d5f248a00c376c9989e8f7fe2c0b",
-  "touchTemplateId": "d86e0613c024538c73a1caa7350252c13cacb63632a1d1fe9b331d8f63e243c5",
+  "touchTemplateId": "05600ec981b24e83805235afc1c3a206e883766e701d6a43059a8bbf0a38b9da",
   "name": "Yime ASCII concept keyboard · 129 keys",
   "bounds": {
     "width": 25.75,
@@ -570,6 +570,10 @@
       "action": {
         "type": "input",
         "ascii": "'"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "\""
       }
     },
     {
@@ -601,6 +605,10 @@
       "action": {
         "type": "input",
         "ascii": "`"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "~"
       }
     },
     {
@@ -646,7 +654,11 @@
         "",
         "",
         ""
-      ]
+      ],
+      "shiftAction": {
+        "type": "input",
+        "ascii": "!"
+      }
     },
     {
       "id": "R02K05",
@@ -691,7 +703,11 @@
         "",
         "",
         ""
-      ]
+      ],
+      "shiftAction": {
+        "type": "input",
+        "ascii": "@"
+      }
     },
     {
       "id": "R02K06",
@@ -736,7 +752,11 @@
         "",
         "",
         ""
-      ]
+      ],
+      "shiftAction": {
+        "type": "input",
+        "ascii": "#"
+      }
     },
     {
       "id": "R02K07",
@@ -781,7 +801,11 @@
         "",
         "",
         ""
-      ]
+      ],
+      "shiftAction": {
+        "type": "input",
+        "ascii": "$"
+      }
     },
     {
       "id": "R02K08",
@@ -826,7 +850,11 @@
         "",
         "",
         ""
-      ]
+      ],
+      "shiftAction": {
+        "type": "input",
+        "ascii": "%"
+      }
     },
     {
       "id": "R02K09",
@@ -871,7 +899,11 @@
         "",
         "",
         ""
-      ]
+      ],
+      "shiftAction": {
+        "type": "input",
+        "ascii": "^"
+      }
     },
     {
       "id": "R02K10",
@@ -916,7 +948,11 @@
         "",
         "",
         ""
-      ]
+      ],
+      "shiftAction": {
+        "type": "input",
+        "ascii": "&"
+      }
     },
     {
       "id": "R02K11",
@@ -961,7 +997,11 @@
         "",
         "",
         ""
-      ]
+      ],
+      "shiftAction": {
+        "type": "input",
+        "ascii": "*"
+      }
     },
     {
       "id": "R02K12",
@@ -1006,7 +1046,11 @@
         "",
         "",
         ""
-      ]
+      ],
+      "shiftAction": {
+        "type": "input",
+        "ascii": "("
+      }
     },
     {
       "id": "R02K13",
@@ -1037,6 +1081,10 @@
       "action": {
         "type": "input",
         "ascii": "0"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ")"
       }
     },
     {
@@ -1066,8 +1114,26 @@
       "yinyuanIds": [],
       "disabledYinyuanIds": [],
       "action": {
-        "type": "page",
-        "delta": -1
+        "type": "input",
+        "ascii": "-"
+      },
+      "displayLabels": [
+        "_",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "-",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "shiftAction": {
+        "type": "input",
+        "ascii": "_"
       }
     },
     {
@@ -1097,8 +1163,26 @@
       "yinyuanIds": [],
       "disabledYinyuanIds": [],
       "action": {
-        "type": "page",
-        "delta": 1
+        "type": "input",
+        "ascii": "="
+      },
+      "displayLabels": [
+        "+",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "=",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "shiftAction": {
+        "type": "input",
+        "ascii": "+"
       }
     },
     {
@@ -1284,6 +1368,10 @@
       "action": {
         "type": "input",
         "ascii": "/"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "?"
       }
     },
     {
@@ -1346,6 +1434,10 @@
       "action": {
         "type": "input",
         "ascii": "-"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "_"
       }
     },
     {
@@ -1998,6 +2090,10 @@
       "action": {
         "type": "input",
         "ascii": "7"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "&"
       }
     },
     {
@@ -2029,6 +2125,10 @@
       "action": {
         "type": "input",
         "ascii": "8"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "*"
       }
     },
     {
@@ -2060,6 +2160,10 @@
       "action": {
         "type": "input",
         "ascii": "9"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "("
       }
     },
     {
@@ -2650,6 +2754,10 @@
       "action": {
         "type": "input",
         "ascii": "4"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "$"
       }
     },
     {
@@ -2681,6 +2789,10 @@
       "action": {
         "type": "input",
         "ascii": "5"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "%"
       }
     },
     {
@@ -2712,6 +2824,10 @@
       "action": {
         "type": "input",
         "ascii": "6"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "^"
       }
     },
     {
@@ -2815,6 +2931,10 @@
       "action": {
         "type": "input",
         "ascii": "["
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "{"
       }
     },
     {
@@ -3112,6 +3232,10 @@
       "action": {
         "type": "input",
         "ascii": "\\"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "|"
       }
     },
     {
@@ -3238,6 +3362,10 @@
       "action": {
         "type": "input",
         "ascii": "1"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "!"
       }
     },
     {
@@ -3269,6 +3397,10 @@
       "action": {
         "type": "input",
         "ascii": "2"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "@"
       }
     },
     {
@@ -3300,6 +3432,10 @@
       "action": {
         "type": "input",
         "ascii": "3"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "#"
       }
     },
     {
@@ -3360,8 +3496,7 @@
       "yinyuanIds": [],
       "disabledYinyuanIds": [],
       "action": {
-        "type": "unsupported",
-        "label": "Shift"
+        "type": "shift"
       }
     },
     {
@@ -3398,6 +3533,10 @@
       "action": {
         "type": "input",
         "ascii": "]"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "}"
       }
     },
     {
@@ -3761,6 +3900,10 @@
       "action": {
         "type": "input",
         "ascii": "/"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "?"
       }
     },
     {
@@ -3790,8 +3933,7 @@
       "yinyuanIds": [],
       "disabledYinyuanIds": [],
       "action": {
-        "type": "unsupported",
-        "label": "Shift"
+        "type": "shift"
       }
     },
     {
@@ -3916,6 +4058,10 @@
       "action": {
         "type": "input",
         "ascii": "0"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ")"
       }
     },
     {
@@ -3947,6 +4093,10 @@
       "action": {
         "type": "input",
         "ascii": "."
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ">"
       }
     },
     {

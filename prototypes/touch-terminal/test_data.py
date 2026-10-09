@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from physical_layout import ROOT, SOURCE, OUTPUT, build
+from physical_layout import ROOT, SOURCE, OUTPUT, build, parse_physical_kle
 
 
 class GeneratedPhysicalDataTests(unittest.TestCase):
@@ -27,6 +27,14 @@ class GeneratedPhysicalDataTests(unittest.TestCase):
         self.assertEqual(57, len(alphabet))
         self.assertTrue(set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") <= alphabet)
         self.assertFalse(set("1234567890") & alphabet)
+
+    def test_input_adaptation_preserves_all_frozen_kle_geometry_and_legends(self):
+        frozen = parse_physical_kle(json.loads(SOURCE.read_text(encoding="utf-8-sig")))
+        layout = build()
+        self.assertEqual(frozen["bounds"], layout["bounds"])
+        self.assertEqual(len(frozen["keys"]), len(layout["keys"]))
+        for original, generated in zip(frozen["keys"], layout["keys"]):
+            self.assertEqual(original, {field: generated[field] for field in original})
 
     def test_changed_ascii_annotation_fails_instead_of_becoming_a_second_source(self):
         with tempfile.TemporaryDirectory() as directory:

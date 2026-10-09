@@ -1,4 +1,4 @@
-import {actionFromKeyboard,createLiveClient,editText,samePointerRelease} from './input.mjs';
+import {actionFromKeyboard,createLiveClient,editText,samePointerRelease,virtualKeyAction} from './input.mjs';
 import {percentile} from './geometry.mjs';
 
 const $ = id => document.getElementById(id);
@@ -9,6 +9,7 @@ const node = (tag,value,className) => {
   return element;
 };
 let layout, client, active = null, trace = [], touches = [], latencies = [], drill = null;
+let shiftArmed = false;
 const keyButtons = new Map(), drills = [];
 const status = message => { $('status').textContent = message; };
 const focusBoard = () => $('keyboard').focus({preventScroll:true});
@@ -40,7 +41,7 @@ function render(result, event) {
     $('candidates').append(button);
   });
   $('confirm').disabled = !candidates.length;
-  $('clear').disabled = !state.raw_input;
+  $('clear').disabled = !state.raw_input && !shiftArmed;
   $('prev').disabled = !state.has_previous;
   $('next').disabled = !state.has_next;
   $('page-label').textContent = candidates.length ? `第 ${(state.page_number || 0)+1} 页` : '';
@@ -69,6 +70,7 @@ function localEdit(key) {
 
 let actions = Promise.resolve();
 function perform(action,source='virtual') {
+  if (action?.type === 'clear' && source !== 'drill') setVirtualShift(false);
   // Serialize the entire action, including local text edits, so a quick sequence
   // cannot inspect composition state before the preceding input response arrives.
   actions = actions.then(() => performOne(action,source)).catch(error => status(`操作未完成：${error.message}`));
@@ -127,12 +129,18 @@ function recordKey(key,pointerType,pointer,cancelled=false,reason=null) {
       }
     }
   }
-  touches.push({physicalKeyId:key.id,yinyuanIds:key.yinyuanIds,action:key.action,pointerType,pointer,cancelled,reason,
+  const shifted = shiftArmed;
+  const resolved = !cancelled && !running ? virtualKeyAction(key,shiftArmed) : {action:key.action,armed:shiftArmed};
+  touches.push({physicalKeyId:key.id,yinyuanIds:key.yinyuanIds,action:resolved.action,baseAction:key.action,shiftArmed:shifted,pointerType,pointer,cancelled,reason,
     drillKind:running ? drill.kind : null,drillResult:outcome,intended,timeMs:Math.round(performance.now())});
   if (touches.length > 1000) touches.shift();
   renderDrill();
   // Coverage drills test geometry without altering the local test document.
-  if (!cancelled && !running) perform(key.action);
+  if (!cancelled && !running) {
+    setVirtualShift(resolved.armed);
+    if (resolved.action) perform(resolved.action);
+    else status(shiftArmed ? '符号 Shift 已启用一次；字母音元键仍保持固定大小写。' : '符号 Shift 已关闭。');
+  }
 }
 function cancelPointer(reason,event=null) {
   if (!active) return;
@@ -141,6 +149,7 @@ function cancelPointer(reason,event=null) {
   previous.button.classList.remove('pressed');
   const rect = previous.button.getBoundingClientRect();
   recordKey(previous.key,previous.pointerType,{down:previous.down,...(event ? {up:pointerSample(event,rect)} : {}),holdMs:Math.round(performance.now()-previous.startedAt)},true,reason);
+  if (!drillActive() && reason !== 'drill-start') setVirtualShift(false);
   status('点按已取消，没有发送按键动作。');
 }
 
@@ -164,6 +173,36 @@ function addLegend(button,value,index,key) {
   }
   button.append(span);
 }
+function renderVirtualKey(key,button) {
+  const shifted = shiftArmed && key.shiftAction;
+  const action = shifted ? key.shiftAction : key.action;
+  const labels = shifted ? Array.from({length:12},(_,i) => i === 4 ? action.ascii : '') : key.displayLabels || key.labels || [];
+  const ids = (key.yinyuanIds || []).map(id => (key.disabledYinyuanIds || []).includes(id) ? `${id} 停用` : id).join('，');
+  const description = action.type === 'input' ? `ASCII ${action.ascii}${shifted ? '（一次符号 Shift）' : ''}`
+    : action.type === 'select' ? `数字 ${action.ordinal}（有候选时选词，否则输入数字）`
+    : action.type === 'shift' ? `一次符号 Shift（${shiftArmed ? '已启用' : '未启用'}）`
+    : action.label || action.key || action.type;
+  button.setAttribute('aria-label',`${key.id} ${ids || labels.map(legendText).filter(Boolean).join(' ')}，${description}`);
+  button.title = `${key.id} · ${description}${ids ? ` · ${ids}` : ''}`;
+  button.dataset.activeAscii = action.ascii || (action.type === 'select' ? String(action.ordinal) : '');
+  if (key.action.type === 'shift') {
+    button.setAttribute('aria-pressed',String(shiftArmed));
+    button.classList.toggle('shift-armed',shiftArmed);
+  }
+  button.replaceChildren();
+  labels.forEach((label,index) => addLegend(button,label,index,key));
+  if (!labels.some(Boolean)) button.append(node('span','Space','key-space'));
+  if (action.type === 'unsupported') button.append(node('span','仅示意','simulation-label'));
+}
+function setVirtualShift(value) {
+  if (shiftArmed === value) return;
+  shiftArmed = value;
+  $('clear').disabled = !currentState().raw_input && !shiftArmed;
+  for (const key of layout?.keys || []) {
+    const button = keyButtons.get(key.id);
+    if (button && (key.shiftAction || key.action.type === 'shift')) renderVirtualKey(key,button);
+  }
+}
 function buildKeyboard() {
   const board = $('keyboard'), bounds = layout.bounds;
   board.style.setProperty('--keyboard-ratio',`${bounds.width}/${bounds.height}`);
@@ -182,16 +221,7 @@ function buildKeyboard() {
     button.style.height = `calc(${100*key.height/bounds.height}% - 4px)`;
     button.style.setProperty('--key-color',key.color || '#deded7');
     button.style.setProperty('--key-text',key.textColor || '#172c30');
-    const labels = key.displayLabels || key.labels || [];
-    const ids = (key.yinyuanIds || []).map(id => (key.disabledYinyuanIds || []).includes(id) ? `${id} 停用` : id).join('，');
-    const description = key.action.type === 'input' ? `ASCII ${key.action.ascii}`
-      : key.action.type === 'select' ? `候选 ${key.action.ordinal}（直接选择）`
-      : key.action.label || key.action.key || key.action.type;
-    button.setAttribute('aria-label',`${key.id} ${ids || labels.map(legendText).filter(Boolean).join(' ')}，${description}`);
-    button.title = `${key.id} · ${description}${ids ? ` · ${ids}` : ''}`;
-    labels.forEach((label,index) => addLegend(button,label,index,key));
-    if (!labels.some(Boolean)) button.append(node('span','Space','key-space'));
-    if (key.action.type === 'unsupported') button.append(node('span','仅示意','simulation-label'));
+    renderVirtualKey(key,button);
     button.addEventListener('pointerdown',event => {
       if (event.button !== 0 || !event.isPrimary || active) return;
       event.preventDefault();
@@ -255,7 +285,7 @@ function renderDrill() {
 }
 function startDrill(kind) {
   cancelPointer('drill-start');
-  perform({type:'clear'});
+  perform({type:'clear'},'drill');
   const targets = kind === 'targets'
     ? layout.keys.map((_,i) => layout.keys[(i*17+3)%layout.keys.length].id)
     : layout.keys.map(key => key.id);
@@ -274,7 +304,7 @@ function updateEnvironment() {
 }
 function exportReport() {
   const report = {formatVersion:4,mode:'ascii-physical-keyboard',createdAt:new Date().toISOString(),layoutId:layout.layoutId,touchTemplateId:layout.touchTemplateId,
-    sources:layout.sources,environment:environment(),disabledYinyuanIds:layout.disabledYinyuanIds,drills,touches,trace,handlerToNextFrameMs:latencies,
+    inputPolicy:client.info.inputPolicy,sources:layout.sources,environment:environment(),disabledYinyuanIds:layout.disabledYinyuanIds,drills,touches,trace,handlerToNextFrameMs:latencies,
     hardwareAcceptance:false,note:'本页 Go 引擎与浏览器事件记录；不证明 Windows 注册宿主、实体键盘或真实触屏验收。'};
   const url = URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
   const anchor = document.createElement('a');
@@ -296,6 +326,7 @@ async function init() {
   }
   $('code-mode').addEventListener('change',event => {
     cancelPointer('mode-change');
+    setVirtualShift(false);
     event.target.disabled = true;
     actions = actions.then(async () => {
       try { await client.changeMode(event.target.value); status('已切换码制，未确认组合已取消。'); }

@@ -93,7 +93,7 @@ func (a *lab) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.URL.Path == "/api/info" && r.Method == http.MethodGet {
-		writeJSON(w, http.StatusOK, map[string]any{"version": 1, "layoutId": a.layoutID, "token": a.token, "modes": modes, "scope": "isolated-yimecore-page-only", "indexes": a.builds})
+		writeJSON(w, http.StatusOK, map[string]any{"version": 1, "inputPolicy": "candidate-or-literal-v1", "layoutId": a.layoutID, "token": a.token, "modes": modes, "scope": "isolated-yimecore-page-only", "indexes": a.builds})
 		return
 	}
 	if strings.HasPrefix(r.URL.Path, "/api/") {
@@ -158,6 +158,7 @@ func (a *lab) open(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusInternalServerError, "engine session could not be created")
 		return
 	}
+	engine = &keyboardEngine{base: engine}
 	session := &labSession{id: randomID(), engine: engine, state: engine.Reset().State, cached: make(map[string]cachedResponse), lastUsed: time.Now()}
 	a.sessions[session.id] = session
 	writeJSON(w, http.StatusOK, response{OK: true, SessionID: session.id, State: session.state})
@@ -225,9 +226,6 @@ func (a *lab) event(w http.ResponseWriter, r *http.Request) {
 func (s *labSession) apply(r eventRequest) (engineapi.Result, error) {
 	switch r.Type {
 	case "input":
-		if len(s.state.RawInput) >= maxInput {
-			return engineapi.Result{}, errors.New("composition limit reached")
-		}
 		return s.engine.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: r.Code})
 	case "backspace":
 		return s.engine.Apply(engineapi.Event{Operation: engineapi.Backspace})

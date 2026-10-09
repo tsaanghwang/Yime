@@ -165,7 +165,8 @@ func TestCanonicalCorpusHTTP(t *testing.T) {
 			}
 			t.Logf("%s %s: source IDs -> %q -> real candidate -> commit %q", mode, item.pinyin, code, s.Commit)
 		}
-		// Page through the actual corpus prefix; the API never slices candidates.
+		// Ordinary prefixes retain native engine paging. The single-symbol
+		// candidate overlay is exercised separately below.
 		mutate("input", cases[0].record.Full[:1], "", 0)
 		if !s.State.HasNext {
 			t.Fatalf("%s expected multi-page corpus prefix", mode)
@@ -178,6 +179,43 @@ func TestCanonicalCorpusHTTP(t *testing.T) {
 		mutate("page", "", "", -1)
 		if s.State.PageNumber != 0 || s.State.Candidates[0].ID != first {
 			t.Fatalf("%s page round trip: %+v", mode, s.State)
+		}
+		mutate("clear", "", "", 0)
+		for _, symbol := range []string{"'", "[", "]", "\\", "/"} {
+			mutate("input", symbol, "", 0)
+			last := s.State.Candidates[len(s.State.Candidates)-1]
+			if last.Text != symbol || last.SourceID != literalSource || len(s.State.Candidates) > 9 {
+				t.Fatalf("%s %q first-page literal missing: %+v", mode, symbol, s.State)
+			}
+			if s.State.HasNext {
+				mutate("page", "", "", 1)
+				if s.State.PageNumber != 1 || len(s.State.Candidates) == 0 {
+					t.Fatalf("%s %q offset page empty: %+v", mode, symbol, s.State)
+				}
+				want := s.State.Candidates[0].Text
+				mutate("input", "1", "", 0)
+				if s.Commit != want || s.State.RawInput != "" {
+					t.Fatalf("%s %q offset candidate selection failed: %+v", mode, symbol, s)
+				}
+				mutate("input", symbol, "", 0)
+			}
+			mutate("select", "", last.ID, 0)
+			if s.Commit != symbol || s.State.RawInput != "" {
+				t.Fatalf("%s literal commit: %+v", mode, s)
+			}
+		}
+		mutate("input", "7", "", 0)
+		if s.Commit != "7" || s.State.RawInput != "" {
+			t.Fatalf("%s idle digit: %+v", mode, s)
+		}
+		code := map[string]string{"variable": cases[0].record.Variable, "full": cases[0].record.Full, "shorthand": cases[0].record.Shorthand}[mode]
+		for _, key := range code {
+			mutate("input", string(key), "", 0)
+		}
+		want := s.State.Candidates[0].Text + "!"
+		mutate("input", "!", "", 0)
+		if s.Commit != want || s.State.RawInput != "" {
+			t.Fatalf("%s automatic first-candidate plus punctuation: %+v", mode, s)
 		}
 		mutate("close", "", "", 0)
 	}
