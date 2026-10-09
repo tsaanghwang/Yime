@@ -1,5 +1,12 @@
 # Agent Constraints
 
+## Two keyboard-layout branches (user decision, 2026-10-09)
+
+- Preserve both layout versions. The existing standard-keyboard layout remains on `codex/current-readiness-delivery-20260927` in `C:\dev\Yime`; its unrelated uncommitted work must remain untouched. The new concept-keyboard layout is developed independently on `codex/ascii-physical-layout-experiment`.
+- For the new layout, standard ANSI input is a functional compatibility path only. Validate correct and complete input, selection, editing, and cancellation; do not impose typing-speed, Shift-count, ergonomic, or efficiency targets on this path, or redesign the new mapping to satisfy them. Efficiency and physical usability work belongs to the concept physical/virtual keyboard; the old layout retains the standard-keyboard route.
+- Each branch keeps its own version of the sole editable `internal_data/manual_key_layout.json`, with matching generated layouts, dictionaries, identities, and evidence. Do not mix cross-layout generated artifacts or automatically merge the new layout over the old one. Shared fixes may be ported deliberately with each layout's own regressions.
+- This is a layout-version split, not a change to the independent YimeCore and Rime/PIME product boundaries. Neither branch preservation nor page testing authorizes changing installed input methods, default input selection, or user data.
+
 ## Simple development installer rewrite (user decision, 2026-09-14)
 
 - The active installer rewrite is `installer/simple/`. Do not extend the historical fixed-transaction recovery chain or request more evidence/authorization renewals for it. Retired source belongs in Git history; preserve original evidence without making it an installation prerequisite.
