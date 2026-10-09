@@ -54,8 +54,11 @@ def _layout_projection_digest(layout_path: Path) -> str:
         raise VerificationError(
             f"layout has no yinyuan_id_to_key mapping: {layout_path}"
         )
+    projected = sorted((str(key), str(value)) for key, value in mapping.items())
+    identity = ({"mapping": projected, "disabled_yinyuan_ids": sorted(payload["disabled_yinyuan_ids"])}
+                if "disabled_yinyuan_ids" in payload else projected)
     normalized = json.dumps(
-        sorted((str(key), str(value)) for key, value in mapping.items()),
+        identity,
         ensure_ascii=False,
         separators=(",", ":"),
     ).encode("utf-8")

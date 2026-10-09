@@ -9,6 +9,9 @@ on:
       - '.github/workflows/touch-terminal.yml'
       - 'internal_data/**'
       - 'go-backend/input_methods/yime/data/**'
+      - 'go-backend/input_methods/yime/codemode/**'
+      - 'go-backend/cmd/yime-keyboard-lab/**'
+      - 'tools/generate_ascii_layout.py'
       - 'tools/resolve_manual_key_layout.py'
       - 'yime/utils/yinyuan_id_chain.py'
       - 'syllable/**'
@@ -19,6 +22,9 @@ on:
       - '.github/workflows/touch-terminal.yml'
       - 'internal_data/**'
       - 'go-backend/input_methods/yime/data/**'
+      - 'go-backend/input_methods/yime/codemode/**'
+      - 'go-backend/cmd/yime-keyboard-lab/**'
+      - 'tools/generate_ascii_layout.py'
       - 'tools/resolve_manual_key_layout.py'
       - 'yime/utils/yinyuan_id_chain.py'
       - 'syllable/**'
@@ -38,5 +44,13 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go-backend/go.mod
       - name: Validate isolated source data and interaction contracts
         run: python -X utf8 prototypes/touch-terminal/validate.py
+      - name: Validate canonical ASCII projection metadata
+        run: python -X utf8 tools/generate_ascii_layout.py --check
+      - name: Validate real engine loopback session boundary
+        working-directory: go-backend
+        run: go test ./cmd/yime-keyboard-lab ./input_methods/yime/codemode

@@ -22,8 +22,9 @@ YUEYIN_SOURCE = Path("syllable/yinyuan/yueyin_yinyuan_enhanced.json")
 CANONICAL_SYMBOL_SOURCE = Path("internal_data/key_to_symbol.json")
 CANONICAL_LAYOUT_SOURCE = Path("internal_data/manual_key_layout.json")
 CONTROLLED_SHARED_LAYOUT_GROUPS = {
-    frozenset(("N12", "N26")),
-    frozenset(("N25", "N27")),
+    frozenset(("M28", "M25")),
+    frozenset(("M29", "M26")),
+    frozenset(("M30", "M27")),
 }
 
 
@@ -35,7 +36,7 @@ def expected_yinyuan_ids() -> set[str]:
 
 
 def load_shared_layout_groups(layout: dict[str, Any]) -> dict[str, tuple[str, ...]]:
-    """Return owner -> members for the two reviewed many-ID-to-one-key groups."""
+    """Return owner -> members for the reviewed many-ID-to-one-key groups."""
     raw_groups = layout.get("shared_yinyuan_key_groups", [])
     if not isinstance(raw_groups, list):
         raise ValueError("shared_yinyuan_key_groups must be an array")
@@ -62,8 +63,46 @@ def load_shared_layout_groups(layout: dict[str, Any]) -> dict[str, tuple[str, ..
         actual_sets.add(member_set)
         groups[owner] = members
     if actual_sets != CONTROLLED_SHARED_LAYOUT_GROUPS:
-        raise ValueError("canonical layout must declare both controlled shared-key groups")
+        raise ValueError("canonical layout must declare the reviewed shared-key groups")
     return groups
+
+
+class DisabledYinyuanError(ValueError):
+    """A complete semantic input contains an explicitly disabled layout ID."""
+
+
+def load_disabled_yinyuan_ids(repo_root: Path = REPO_ROOT) -> frozenset[str]:
+    layout = _load_json(repo_root / CANONICAL_LAYOUT_SOURCE)
+    raw = layout.get("disabled_yinyuan_ids", [])
+    if not isinstance(raw, list) or any(not isinstance(item, str) for item in raw):
+        raise ValueError("disabled_yinyuan_ids must be an array of stable IDs")
+    if len(set(raw)) != len(raw) or set(raw) - expected_yinyuan_ids():
+        raise ValueError("disabled_yinyuan_ids contains duplicate or unknown IDs")
+    disabled = frozenset(raw)
+    for owner in load_shared_layout_groups(layout):
+        if owner in disabled:
+            raise ValueError(f"shared-key owner cannot be disabled: {owner}")
+    return disabled
+
+
+def require_enabled_yinyuan_ids(
+    yinyuan_ids: Iterable[str], *, repo_root: Path = REPO_ROOT,
+) -> tuple[str, ...]:
+    """Gate a FULL semantic tuple before any variable/shorthand shortening."""
+    ids = tuple(yinyuan_ids)
+    unknown = set(ids) - expected_yinyuan_ids()
+    if unknown:
+        raise ValueError(f"Unknown Yinyuan IDs: {sorted(unknown)}")
+    disabled = set(ids) & load_disabled_yinyuan_ids(repo_root)
+    if disabled:
+        raise DisabledYinyuanError(f"Disabled Yinyuan IDs: {sorted(disabled)}")
+    return ids
+
+
+def load_active_yinyuan_id_to_layout_key(repo_root: Path = REPO_ROOT) -> dict[str, str]:
+    disabled = load_disabled_yinyuan_ids(repo_root)
+    return {key: value for key, value in load_yinyuan_id_to_layout_key(repo_root).items()
+            if key not in disabled}
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -196,8 +235,10 @@ def load_yinyuan_id_to_layout_key(
         key = str(entry.get("display_label") or "")
         if layer not in {"base", "shift"}:
             raise ValueError(f"Yinyuan ID must use base/shift, got {layer}: {yinyuan_id}")
-        if len(key) != 1:
+        if len(key) != 1 or not (0x21 <= ord(key) <= 0x7e):
             raise ValueError(f"Yinyuan ID has no single printable key token: {yinyuan_id}")
+        if key in "!@#$%^&*(":
+            raise ValueError(f"Candidate action cannot be an encoding key: {yinyuan_id} -> {key}")
         if yinyuan_id in mapping:
             raise ValueError(f"Duplicate Yinyuan ID assignment: {yinyuan_id}")
         if key in occupied:
@@ -228,7 +269,8 @@ def layout_projection_digest(repo_root: Path = REPO_ROOT) -> str:
     """Identify one physical layout without a hand-maintained version name."""
     mapping = load_yinyuan_id_to_layout_key(repo_root)
     serialized = json.dumps(
-        sorted(mapping.items()),
+        {"mapping": sorted(mapping.items()),
+         "disabled_yinyuan_ids": sorted(load_disabled_yinyuan_ids(repo_root))},
         ensure_ascii=False,
         separators=(",", ":"),
     ).encode("utf-8")
@@ -244,7 +286,7 @@ def yinyuan_ids_to_layout_keys(
     """Apply the final physical-key projection to an ID sequence."""
     layout = load_yinyuan_id_to_layout_key(repo_root, layout_path)
     result: list[str] = []
-    for yinyuan_id in yinyuan_ids:
+    for yinyuan_id in require_enabled_yinyuan_ids(yinyuan_ids, repo_root=repo_root):
         try:
             result.append(layout[yinyuan_id])
         except KeyError as exc:

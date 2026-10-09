@@ -20,11 +20,11 @@ def _sha256(path: Path) -> str:
 
 
 class VerifyTargetLockTests(unittest.TestCase):
-    def test_repository_target_lock_passes(self) -> None:
-        report = verify()
-        self.assertEqual(report["decision"], "pass")
-        self.assertEqual(report["target"]["entry_count"], 1166753)
-        self.assertEqual(len(report["verified_artifacts"]), 15)
+    def test_repository_target_lock_rejects_unpromoted_ascii_layout(self) -> None:
+        # The experiment has new runtime metadata but no newly reviewed
+        # production selection. Keep normal package/release admission closed.
+        with self.assertRaisesRegex(VerificationError, "canonical_layout_projection"):
+            verify()
 
     def test_hash_drift_fails_before_semantic_acceptance(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

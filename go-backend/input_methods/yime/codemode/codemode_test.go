@@ -9,14 +9,14 @@ func TestBuildRecordDerivesAllModes(t *testing.T) {
 	tests := []struct {
 		full, variable, shorthand string
 	}{
-		{"'fff", "'f", "'f"},
-		{"ffff", "ff", "ff"},
-		{"'sdf", "'sdf", "'sf"},
-		{"qfff", "qf", "qf"},
-		{"qsdf", "qsdf", "qsf"},
-		{"'ffj", "'fj", "'fj"},
-		{"qffjqfds", "qfjqfds", "qfjqfs"},
-		{"qfff'sdf", "qf'sdf", "qf'sf"},
+		{"'AAA", "'A", "'A"},
+		{"AAAA", "AA", "AA"},
+		{"'aDA", "'aDA", "'aA"},
+		{"kAAA", "kA", "kA"},
+		{"kaDA", "kaDA", "kaA"},
+		{"'AAI", "'AI", "'AI"},
+		{"kAAIkADa", "kAIkADa", "kAIkAa"},
+		{"kAAA'aDA", "kA'aDA", "kA'aA"},
 	}
 	for _, test := range tests {
 		got, err := BuildRecord(test.full)
@@ -37,7 +37,7 @@ func TestBuildRecordDerivesAllModes(t *testing.T) {
 }
 
 func TestProjectAlignedUsesTheSameModeSpecificPositionMasks(t *testing.T) {
-	got, err := ProjectAligned("'fff qsdf", "ABCDWXYZ")
+	got, err := ProjectAligned("'AAA kaDA", "ABCDWXYZ")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -53,7 +53,7 @@ func TestProjectAlignedUsesTheSameModeSpecificPositionMasks(t *testing.T) {
 }
 
 func TestProjectAlignedRejectsMismatchedValueLength(t *testing.T) {
-	if _, err := ProjectAligned("'fff", "ABC"); err == nil {
+	if _, err := ProjectAligned("'AAA", "ABC"); err == nil {
 		t.Fatal("expected an aligned value with the wrong length to fail")
 	}
 }
@@ -62,10 +62,10 @@ func TestBuildRecordCoversFourThreeYinyuanGanyinStructures(t *testing.T) {
 	tests := []struct {
 		name, full, variable string
 	}{
-		{"all different", "qjkm", "qjkm"},
-		{"first two equal", "qjjm", "qjm"},
-		{"last two equal", "qjmm", "qjm"},
-		{"all equal", "qjjj", "qj"},
+		{"all different", "kIBV", "kIBV"},
+		{"first two equal", "kIIV", "kIV"},
+		{"last two equal", "kIVV", "kIV"},
+		{"all equal", "kIII", "kI"},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -96,17 +96,17 @@ func TestBuildRecordRejectsIncompleteSyllable(t *testing.T) {
 }
 
 func TestBuildRecordAcceptsScriptDictionarySyllableSpaces(t *testing.T) {
-	got, err := BuildRecord("qffj qfds")
+	got, err := BuildRecord("kAAI kADa")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.Full != "qffjqfds" || got.FullSpelling != "qffj qfds" || got.VariableSpelling != "qfj qfds" {
+	if got.Full != "kAAIkADa" || got.FullSpelling != "kAAI kADa" || got.VariableSpelling != "kAI kADa" {
 		t.Fatalf("unexpected record: %#v", got)
 	}
 }
 
 func TestValidateContinuousInputRecordRejectsLostApostropheVirtualShouyin(t *testing.T) {
-	record, err := BuildRecord("'sdf qffj")
+	record, err := BuildRecord("'aDA kAAI")
 	if err != nil {
 		t.Fatal(err)
 	}

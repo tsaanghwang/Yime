@@ -4,6 +4,23 @@
 
 ## 当前任务
 
+**2026-10-09：新 ASCII 概念实体键盘实验；本交接没有安装任务。**
+分支 `codex/ascii-physical-layout-experiment` 基于 `26578669`，已重建唯一键位源，
+标准 ANSI 浏览器输入和 129 键虚拟盘面连接真实 YimeCore 三模式实验词库。
+参见 [实施计划与验收边界](../../docs/project/ASCII_PHYSICAL_LAYOUT_PLAN.md)及
+[启动说明](../../prototypes/touch-terminal/README.md)。M25–M27 暂停用，其语义仍保留。
+本机实验服务只提交到页面文本框，不等于 Windows 已注册宿主验收。
+
+用户已明确选择本轮先完成基础键盘实验，融合儿化的15个冲突大写载体另行设计，
+暂不替换正式输入法。保留原儿化规则与资料，不擅自关闭已安装模块或重分配载体。
+
+本分支新布局尚未晋升生产精选词库/安装包目标；不得绕过 target lock、
+混用旧生产词典与新映射，或使用下文旧包验证新布局。源代码提交、CI、完整包交付后
+才可以安排另行交接的真实宿主/实体按键/手指触屏验收。
+原安装、默认输入法、用户词库和学习数据保持不变。
+
+## 历史交接（不作为本次安装指令）
+
 **2026-09-28：touch-terminal KLE 模板导入与实屏基线开发中；测试端无安装任务。** 目标分支 `codex/touch-terminal-kle-baseline` 从已合并 PR #64 的当前主线 `af8ea73f` 创建，并接续 9 月 22 日隔离浏览器原型。范围仅为 KLE 触摸几何模板、离线生成/校验、浏览器交互与已连接触摸屏的本地基线；不连接或修改已安装输入法，不改变默认输入法、用户词库或桌面键位真源。接续入口为 [运行说明](../../prototypes/touch-terminal/README.md)，另见 [验证记录](../../prototypes/touch-terminal/VALIDATION.md)、[适配协议](../../prototypes/touch-terminal/PROTOCOL.md) 和 [硬件可行性](../../prototypes/touch-terminal/HARDWARE.md)。触摸屏已以复制显示模式连接，但在真实手指测试记录完成前，不宣称误触率、端到端延迟或宿主输入通过。
 
 **2026-09-27：current-readiness 双产品完整包已重建并发布为开发预发布；测试端无安装任务。** 目标分支 `codex/current-readiness-delivery-20260927` 从当前 main `0ab86312` 创建，两套运行源码和安装器均固定于完整提交 `0ab8631266736775bf1386f456d4a1d53e8e2eb3`。来源提交 [CI 35418522827](https://github.com/tsaanghwang/Yime/actions/runs/35418522827) 成功；交付记录提交 `a274730fd3230ff22c04632be62ffe18397555ec` 的 [CI](https://github.com/tsaanghwang/Yime/actions/runs/36280832479) 全部成功后，发布固定资产；远端 size 与 SHA-256 digest 已逐项匹配本地。

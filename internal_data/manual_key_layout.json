@@ -1,29 +1,48 @@
 {
   "metadata": {
-    "name": "Yime manual key layout",
-    "version": "2026-08-17",
-    "layout_status": "canonical_yinyuan_vk_layout_v1",
+    "name": "Yime ASCII concept keyboard projection",
+    "version": "2026-10-09",
+    "layout_status": "ascii_physical_layout_experiment",
     "symbol_source": "internal_data/key_to_symbol.json",
-    "ergonomic_strategy": "Yinyuan semantics are encoded upstream; this file is the sole final Yinyuan-ID-to-physical-key projection.",
-    "design_warning": "Canonical final projection. Do not create a parallel compact layout or a direct Pinyin-to-key map; regenerate all layout artifacts through the layout change lock.",
+    "ergonomic_strategy": "Case-sensitive ASCII projection; concept keyboard uses independent physical buttons, while ANSI keyboards use base/Shift.",
+    "design_warning": "Sole editable Yinyuan-to-ASCII projection. KLE supplies physical geometry only. Regenerate dependent assets before running this layout.",
     "yinyuan_id_format": {
       "noise": "N01-N27",
       "musical": "M01-M33"
     },
-    "notes": "yinyuan_id stores the primary stable Nxx/Mxx Yinyuan ID for one physical slot. shared_yinyuan_key_groups is the only allowed representation of controlled many-ID-to-one-key projection. literal_char is allowed only for a key's native ASCII output. Yinyuan IDs use only base and shift; retained AltGr slots are intentionally empty.",
-    "template_scope": "94 printable ASCII key slots in keyboard order plus optional space and selected AltGr slots",
-    "total_slots": 104
+    "notes": "All 60 semantic IDs are retained. M25-M27 are reserved, disabled shared members. A full canonical tuple containing any disabled ID is excluded before shortening. Bare digit events never select candidates.",
+    "template_scope": "94 printable ANSI key/layer slots plus space",
+    "total_slots": 95
   },
+  "disabled_yinyuan_ids": [
+    "M25",
+    "M26",
+    "M27"
+  ],
   "shared_yinyuan_key_groups": [
     {
-      "owner_yinyuan_id": "N12",
-      "member_yinyuan_ids": ["N12", "N26"],
-      "reason": "非高呼音前虚首音与语气词啊的 [ŋ] 条件首音共享撇号键。"
+      "owner_yinyuan_id": "M28",
+      "member_yinyuan_ids": [
+        "M28",
+        "M25"
+      ],
+      "reason": "Reserved shared ASCII projection; low-frequency member remains disabled during the layout experiment."
     },
     {
-      "owner_yinyuan_id": "N25",
-      "member_yinyuan_ids": ["N25", "N27"],
-      "reason": "ü 前虚首音 [ɥ] 与语气词啊的舌尖前 [z]/[ɹ] 条件首音共享反引号键。"
+      "owner_yinyuan_id": "M29",
+      "member_yinyuan_ids": [
+        "M29",
+        "M26"
+      ],
+      "reason": "Reserved shared ASCII projection; low-frequency member remains disabled during the layout experiment."
+    },
+    {
+      "owner_yinyuan_id": "M30",
+      "member_yinyuan_ids": [
+        "M30",
+        "M27"
+      ],
+      "reason": "Reserved shared ASCII projection; low-frequency member remains disabled during the layout experiment."
     }
   ],
   "layers": [
@@ -33,9 +52,9 @@
       "physical_key": "`",
       "output_layer": "base",
       "display_label": "`",
-      "yinyuan_id": "N25",
-      "literal_char": null,
-      "notes": "N25 owner; N27 shares this key through shared_yinyuan_key_groups"
+      "yinyuan_id": null,
+      "literal_char": "`",
+      "notes": ""
     },
     {
       "order": 2,
@@ -53,8 +72,8 @@
       "physical_key": "1",
       "output_layer": "base",
       "display_label": "1",
-      "yinyuan_id": "N22",
-      "literal_char": null,
+      "yinyuan_id": null,
+      "literal_char": "1",
       "notes": ""
     },
     {
@@ -65,7 +84,7 @@
       "display_label": "!",
       "yinyuan_id": null,
       "literal_char": null,
-      "notes": ""
+      "notes": "Reserved Shift+digit candidate action"
     },
     {
       "order": 5,
@@ -73,8 +92,8 @@
       "physical_key": "2",
       "output_layer": "base",
       "display_label": "2",
-      "yinyuan_id": "N21",
-      "literal_char": null,
+      "yinyuan_id": null,
+      "literal_char": "2",
       "notes": ""
     },
     {
@@ -85,7 +104,7 @@
       "display_label": "@",
       "yinyuan_id": null,
       "literal_char": null,
-      "notes": ""
+      "notes": "Reserved Shift+digit candidate action"
     },
     {
       "order": 7,
@@ -93,8 +112,8 @@
       "physical_key": "3",
       "output_layer": "base",
       "display_label": "3",
-      "yinyuan_id": "N20",
-      "literal_char": null,
+      "yinyuan_id": null,
+      "literal_char": "3",
       "notes": ""
     },
     {
@@ -105,7 +124,7 @@
       "display_label": "#",
       "yinyuan_id": null,
       "literal_char": null,
-      "notes": ""
+      "notes": "Reserved Shift+digit candidate action"
     },
     {
       "order": 9,
@@ -113,8 +132,8 @@
       "physical_key": "4",
       "output_layer": "base",
       "display_label": "4",
-      "yinyuan_id": "N15",
-      "literal_char": null,
+      "yinyuan_id": null,
+      "literal_char": "4",
       "notes": ""
     },
     {
@@ -125,7 +144,7 @@
       "display_label": "$",
       "yinyuan_id": null,
       "literal_char": null,
-      "notes": ""
+      "notes": "Reserved Shift+digit candidate action"
     },
     {
       "order": 11,
@@ -133,8 +152,8 @@
       "physical_key": "5",
       "output_layer": "base",
       "display_label": "5",
-      "yinyuan_id": "N14",
-      "literal_char": null,
+      "yinyuan_id": null,
+      "literal_char": "5",
       "notes": ""
     },
     {
@@ -145,7 +164,7 @@
       "display_label": "%",
       "yinyuan_id": null,
       "literal_char": null,
-      "notes": ""
+      "notes": "Reserved Shift+digit candidate action"
     },
     {
       "order": 13,
@@ -153,8 +172,8 @@
       "physical_key": "6",
       "output_layer": "base",
       "display_label": "6",
-      "yinyuan_id": "N13",
-      "literal_char": null,
+      "yinyuan_id": null,
+      "literal_char": "6",
       "notes": ""
     },
     {
@@ -164,8 +183,8 @@
       "output_layer": "shift",
       "display_label": "^",
       "yinyuan_id": null,
-      "literal_char": "^",
-      "notes": ""
+      "literal_char": null,
+      "notes": "Reserved Shift+digit candidate action"
     },
     {
       "order": 15,
@@ -173,8 +192,8 @@
       "physical_key": "7",
       "output_layer": "base",
       "display_label": "7",
-      "yinyuan_id": "N16",
-      "literal_char": null,
+      "yinyuan_id": null,
+      "literal_char": "7",
       "notes": ""
     },
     {
@@ -184,8 +203,8 @@
       "output_layer": "shift",
       "display_label": "&",
       "yinyuan_id": null,
-      "literal_char": "&",
-      "notes": ""
+      "literal_char": null,
+      "notes": "Reserved Shift+digit candidate action"
     },
     {
       "order": 17,
@@ -193,8 +212,8 @@
       "physical_key": "8",
       "output_layer": "base",
       "display_label": "8",
-      "yinyuan_id": "N17",
-      "literal_char": null,
+      "yinyuan_id": null,
+      "literal_char": "8",
       "notes": ""
     },
     {
@@ -204,8 +223,8 @@
       "output_layer": "shift",
       "display_label": "*",
       "yinyuan_id": null,
-      "literal_char": "*",
-      "notes": ""
+      "literal_char": null,
+      "notes": "Reserved Shift+digit candidate action"
     },
     {
       "order": 19,
@@ -213,8 +232,8 @@
       "physical_key": "9",
       "output_layer": "base",
       "display_label": "9",
-      "yinyuan_id": "N18",
-      "literal_char": null,
+      "yinyuan_id": null,
+      "literal_char": "9",
       "notes": ""
     },
     {
@@ -224,8 +243,8 @@
       "output_layer": "shift",
       "display_label": "(",
       "yinyuan_id": null,
-      "literal_char": "(",
-      "notes": ""
+      "literal_char": null,
+      "notes": "Reserved Shift+digit candidate action"
     },
     {
       "order": 21,
@@ -233,8 +252,8 @@
       "physical_key": "0",
       "output_layer": "base",
       "display_label": "0",
-      "yinyuan_id": "N19",
-      "literal_char": null,
+      "yinyuan_id": null,
+      "literal_char": "0",
       "notes": ""
     },
     {
@@ -253,8 +272,8 @@
       "physical_key": "-",
       "output_layer": "base",
       "display_label": "-",
-      "yinyuan_id": "N04",
-      "literal_char": null,
+      "yinyuan_id": null,
+      "literal_char": "-",
       "notes": ""
     },
     {
@@ -273,8 +292,8 @@
       "physical_key": "=",
       "output_layer": "base",
       "display_label": "=",
-      "yinyuan_id": "N24",
-      "literal_char": null,
+      "yinyuan_id": null,
+      "literal_char": "=",
       "notes": ""
     },
     {
@@ -289,87 +308,87 @@
     },
     {
       "order": 27,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "q",
       "output_layer": "base",
       "display_label": "q",
-      "yinyuan_id": "N10",
+      "yinyuan_id": "N21",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 28,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "q",
       "output_layer": "shift",
       "display_label": "Q",
-      "yinyuan_id": null,
+      "yinyuan_id": "N26",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 29,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "w",
       "output_layer": "base",
       "display_label": "w",
-      "yinyuan_id": "M15",
+      "yinyuan_id": "N24",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 30,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "w",
       "output_layer": "shift",
       "display_label": "W",
-      "yinyuan_id": null,
+      "yinyuan_id": "M24",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 31,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "e",
       "output_layer": "base",
       "display_label": "e",
-      "yinyuan_id": "M14",
+      "yinyuan_id": "M18",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 32,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "e",
       "output_layer": "shift",
       "display_label": "E",
-      "yinyuan_id": null,
+      "yinyuan_id": "M16",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 33,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "r",
       "output_layer": "base",
       "display_label": "r",
-      "yinyuan_id": "M13",
+      "yinyuan_id": "N19",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 34,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "r",
       "output_layer": "shift",
       "display_label": "R",
-      "yinyuan_id": null,
+      "yinyuan_id": "N27",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 35,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "t",
       "output_layer": "base",
       "display_label": "t",
@@ -379,97 +398,97 @@
     },
     {
       "order": 36,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "t",
       "output_layer": "shift",
       "display_label": "T",
-      "yinyuan_id": null,
+      "yinyuan_id": "M14",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 37,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "y",
       "output_layer": "base",
       "display_label": "y",
-      "yinyuan_id": "N23",
+      "yinyuan_id": "N25",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 38,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "y",
       "output_layer": "shift",
       "display_label": "Y",
-      "yinyuan_id": null,
+      "yinyuan_id": "M08",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 39,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "u",
       "output_layer": "base",
       "display_label": "u",
-      "yinyuan_id": "M04",
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 40,
-      "row": "top",
-      "physical_key": "u",
-      "output_layer": "shift",
-      "display_label": "U",
-      "yinyuan_id": "M22",
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 41,
-      "row": "top",
-      "physical_key": "i",
-      "output_layer": "base",
-      "display_label": "i",
-      "yinyuan_id": "M05",
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 42,
-      "row": "top",
-      "physical_key": "i",
-      "output_layer": "shift",
-      "display_label": "I",
-      "yinyuan_id": "M23",
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 43,
-      "row": "top",
-      "physical_key": "o",
-      "output_layer": "base",
-      "display_label": "o",
       "yinyuan_id": "M06",
       "literal_char": null,
       "notes": ""
     },
     {
+      "order": 40,
+      "row": "qwerty",
+      "physical_key": "u",
+      "output_layer": "shift",
+      "display_label": "U",
+      "yinyuan_id": "M04",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 41,
+      "row": "qwerty",
+      "physical_key": "i",
+      "output_layer": "base",
+      "display_label": "i",
+      "yinyuan_id": "M03",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 42,
+      "row": "qwerty",
+      "physical_key": "i",
+      "output_layer": "shift",
+      "display_label": "I",
+      "yinyuan_id": "M01",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 43,
+      "row": "qwerty",
+      "physical_key": "o",
+      "output_layer": "base",
+      "display_label": "o",
+      "yinyuan_id": "M15",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
       "order": 44,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "o",
       "output_layer": "shift",
       "display_label": "O",
-      "yinyuan_id": "M24",
+      "yinyuan_id": "M13",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 45,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "p",
       "output_layer": "base",
       "display_label": "p",
@@ -479,27 +498,27 @@
     },
     {
       "order": 46,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "p",
       "output_layer": "shift",
       "display_label": "P",
-      "yinyuan_id": null,
+      "yinyuan_id": "M19",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 47,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "[",
       "output_layer": "base",
       "display_label": "[",
-      "yinyuan_id": "N03",
+      "yinyuan_id": "M28",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 48,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "[",
       "output_layer": "shift",
       "display_label": "{",
@@ -509,17 +528,17 @@
     },
     {
       "order": 49,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "]",
       "output_layer": "base",
       "display_label": "]",
-      "yinyuan_id": "N05",
+      "yinyuan_id": "M30",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 50,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "]",
       "output_layer": "shift",
       "display_label": "}",
@@ -529,17 +548,17 @@
     },
     {
       "order": 51,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "\\",
       "output_layer": "base",
       "display_label": "\\",
-      "yinyuan_id": "N07",
+      "yinyuan_id": "M31",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 52,
-      "row": "top",
+      "row": "qwerty",
       "physical_key": "\\",
       "output_layer": "shift",
       "display_label": "|",
@@ -553,7 +572,7 @@
       "physical_key": "a",
       "output_layer": "base",
       "display_label": "a",
-      "yinyuan_id": "M28",
+      "yinyuan_id": "M12",
       "literal_char": null,
       "notes": ""
     },
@@ -563,7 +582,7 @@
       "physical_key": "a",
       "output_layer": "shift",
       "display_label": "A",
-      "yinyuan_id": null,
+      "yinyuan_id": "M10",
       "literal_char": null,
       "notes": ""
     },
@@ -573,7 +592,7 @@
       "physical_key": "s",
       "output_layer": "base",
       "display_label": "s",
-      "yinyuan_id": "M12",
+      "yinyuan_id": "N15",
       "literal_char": null,
       "notes": ""
     },
@@ -583,7 +602,7 @@
       "physical_key": "s",
       "output_layer": "shift",
       "display_label": "S",
-      "yinyuan_id": null,
+      "yinyuan_id": "N18",
       "literal_char": null,
       "notes": ""
     },
@@ -593,7 +612,7 @@
       "physical_key": "d",
       "output_layer": "base",
       "display_label": "d",
-      "yinyuan_id": "M11",
+      "yinyuan_id": "N05",
       "literal_char": null,
       "notes": ""
     },
@@ -603,7 +622,7 @@
       "physical_key": "d",
       "output_layer": "shift",
       "display_label": "D",
-      "yinyuan_id": null,
+      "yinyuan_id": "M11",
       "literal_char": null,
       "notes": ""
     },
@@ -613,7 +632,7 @@
       "physical_key": "f",
       "output_layer": "base",
       "display_label": "f",
-      "yinyuan_id": "M10",
+      "yinyuan_id": "N03",
       "literal_char": null,
       "notes": ""
     },
@@ -623,7 +642,7 @@
       "physical_key": "f",
       "output_layer": "shift",
       "display_label": "F",
-      "yinyuan_id": null,
+      "yinyuan_id": "M05",
       "literal_char": null,
       "notes": ""
     },
@@ -663,7 +682,7 @@
       "physical_key": "h",
       "output_layer": "shift",
       "display_label": "H",
-      "yinyuan_id": null,
+      "yinyuan_id": "M17",
       "literal_char": null,
       "notes": ""
     },
@@ -673,7 +692,7 @@
       "physical_key": "j",
       "output_layer": "base",
       "display_label": "j",
-      "yinyuan_id": "M01",
+      "yinyuan_id": "N23",
       "literal_char": null,
       "notes": ""
     },
@@ -683,32 +702,22 @@
       "physical_key": "j",
       "output_layer": "shift",
       "display_label": "J",
-      "yinyuan_id": "M19",
+      "yinyuan_id": "N20",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 67,
       "row": "home",
-      "physical_key": "j",
-      "output_layer": "altgr",
-      "display_label": "AltGr+J",
-      "yinyuan_id": null,
+      "physical_key": "k",
+      "output_layer": "base",
+      "display_label": "k",
+      "yinyuan_id": "N10",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 68,
-      "row": "home",
-      "physical_key": "k",
-      "output_layer": "base",
-      "display_label": "k",
-      "yinyuan_id": "M02",
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 69,
       "row": "home",
       "physical_key": "k",
       "output_layer": "shift",
@@ -718,27 +727,17 @@
       "notes": ""
     },
     {
-      "order": 70,
-      "row": "home",
-      "physical_key": "k",
-      "output_layer": "altgr",
-      "display_label": "AltGr+K",
-      "yinyuan_id": null,
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 71,
+      "order": 69,
       "row": "home",
       "physical_key": "l",
       "output_layer": "base",
       "display_label": "l",
-      "yinyuan_id": "M03",
+      "yinyuan_id": "N07",
       "literal_char": null,
       "notes": ""
     },
     {
-      "order": 72,
+      "order": 70,
       "row": "home",
       "physical_key": "l",
       "output_layer": "shift",
@@ -748,27 +747,17 @@
       "notes": ""
     },
     {
-      "order": 73,
-      "row": "home",
-      "physical_key": "l",
-      "output_layer": "altgr",
-      "display_label": "AltGr+L",
-      "yinyuan_id": null,
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 74,
+      "order": 71,
       "row": "home",
       "physical_key": ";",
       "output_layer": "base",
       "display_label": ";",
-      "yinyuan_id": "M31",
-      "literal_char": null,
+      "yinyuan_id": null,
+      "literal_char": ";",
       "notes": ""
     },
     {
-      "order": 75,
+      "order": 72,
       "row": "home",
       "physical_key": ";",
       "output_layer": "shift",
@@ -778,7 +767,7 @@
       "notes": ""
     },
     {
-      "order": 76,
+      "order": 73,
       "row": "home",
       "physical_key": "'",
       "output_layer": "base",
@@ -788,7 +777,7 @@
       "notes": ""
     },
     {
-      "order": 77,
+      "order": 74,
       "row": "home",
       "physical_key": "'",
       "output_layer": "shift",
@@ -798,87 +787,87 @@
       "notes": ""
     },
     {
-      "order": 78,
+      "order": 75,
       "row": "bottom",
       "physical_key": "z",
       "output_layer": "base",
       "display_label": "z",
-      "yinyuan_id": "M30",
+      "yinyuan_id": "N13",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 76,
+      "row": "bottom",
+      "physical_key": "z",
+      "output_layer": "shift",
+      "display_label": "Z",
+      "yinyuan_id": "N16",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 77,
+      "row": "bottom",
+      "physical_key": "x",
+      "output_layer": "base",
+      "display_label": "x",
+      "yinyuan_id": "N22",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 78,
+      "row": "bottom",
+      "physical_key": "x",
+      "output_layer": "shift",
+      "display_label": "X",
+      "yinyuan_id": "M23",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 79,
       "row": "bottom",
-      "physical_key": "z",
-      "output_layer": "shift",
-      "display_label": "Z",
-      "yinyuan_id": null,
+      "physical_key": "c",
+      "output_layer": "base",
+      "display_label": "c",
+      "yinyuan_id": "N14",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 80,
       "row": "bottom",
-      "physical_key": "x",
-      "output_layer": "base",
-      "display_label": "x",
-      "yinyuan_id": "M18",
+      "physical_key": "c",
+      "output_layer": "shift",
+      "display_label": "C",
+      "yinyuan_id": "N17",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 81,
       "row": "bottom",
-      "physical_key": "x",
-      "output_layer": "shift",
-      "display_label": "X",
-      "yinyuan_id": null,
+      "physical_key": "v",
+      "output_layer": "base",
+      "display_label": "v",
+      "yinyuan_id": "M09",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 82,
       "row": "bottom",
-      "physical_key": "c",
-      "output_layer": "base",
-      "display_label": "c",
-      "yinyuan_id": "M17",
+      "physical_key": "v",
+      "output_layer": "shift",
+      "display_label": "V",
+      "yinyuan_id": "M07",
       "literal_char": null,
       "notes": ""
     },
     {
       "order": 83,
-      "row": "bottom",
-      "physical_key": "c",
-      "output_layer": "shift",
-      "display_label": "C",
-      "yinyuan_id": null,
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 84,
-      "row": "bottom",
-      "physical_key": "v",
-      "output_layer": "base",
-      "display_label": "v",
-      "yinyuan_id": "M16",
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 85,
-      "row": "bottom",
-      "physical_key": "v",
-      "output_layer": "shift",
-      "display_label": "V",
-      "yinyuan_id": null,
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 86,
       "row": "bottom",
       "physical_key": "b",
       "output_layer": "base",
@@ -888,17 +877,17 @@
       "notes": ""
     },
     {
-      "order": 87,
+      "order": 84,
       "row": "bottom",
       "physical_key": "b",
       "output_layer": "shift",
       "display_label": "B",
-      "yinyuan_id": null,
+      "yinyuan_id": "M02",
       "literal_char": null,
       "notes": ""
     },
     {
-      "order": 88,
+      "order": 85,
       "row": "bottom",
       "physical_key": "n",
       "output_layer": "base",
@@ -908,7 +897,7 @@
       "notes": ""
     },
     {
-      "order": 89,
+      "order": 86,
       "row": "bottom",
       "physical_key": "n",
       "output_layer": "shift",
@@ -918,67 +907,67 @@
       "notes": ""
     },
     {
-      "order": 90,
+      "order": 87,
       "row": "bottom",
       "physical_key": "m",
       "output_layer": "base",
       "display_label": "m",
-      "yinyuan_id": "M07",
+      "yinyuan_id": "N04",
       "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 88,
+      "row": "bottom",
+      "physical_key": "m",
+      "output_layer": "shift",
+      "display_label": "M",
+      "yinyuan_id": "M22",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 89,
+      "row": "bottom",
+      "physical_key": ",",
+      "output_layer": "base",
+      "display_label": ",",
+      "yinyuan_id": null,
+      "literal_char": ",",
+      "notes": ""
+    },
+    {
+      "order": 90,
+      "row": "bottom",
+      "physical_key": ",",
+      "output_layer": "shift",
+      "display_label": "<",
+      "yinyuan_id": null,
+      "literal_char": "<",
       "notes": ""
     },
     {
       "order": 91,
       "row": "bottom",
-      "physical_key": "m",
-      "output_layer": "shift",
-      "display_label": "M",
-      "yinyuan_id": "M25",
-      "literal_char": null,
+      "physical_key": ".",
+      "output_layer": "base",
+      "display_label": ".",
+      "yinyuan_id": null,
+      "literal_char": ".",
       "notes": ""
     },
     {
       "order": 92,
       "row": "bottom",
-      "physical_key": ",",
-      "output_layer": "base",
-      "display_label": ",",
-      "yinyuan_id": "M08",
-      "literal_char": null,
+      "physical_key": ".",
+      "output_layer": "shift",
+      "display_label": ">",
+      "yinyuan_id": null,
+      "literal_char": ">",
       "notes": ""
     },
     {
       "order": 93,
-      "row": "bottom",
-      "physical_key": ",",
-      "output_layer": "shift",
-      "display_label": "<",
-      "yinyuan_id": "M26",
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 94,
-      "row": "bottom",
-      "physical_key": ".",
-      "output_layer": "base",
-      "display_label": ".",
-      "yinyuan_id": "M09",
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 95,
-      "row": "bottom",
-      "physical_key": ".",
-      "output_layer": "shift",
-      "display_label": ">",
-      "yinyuan_id": "M27",
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 96,
       "row": "bottom",
       "physical_key": "/",
       "output_layer": "base",
@@ -988,7 +977,7 @@
       "notes": ""
     },
     {
-      "order": 97,
+      "order": 94,
       "row": "bottom",
       "physical_key": "/",
       "output_layer": "shift",
@@ -998,73 +987,13 @@
       "notes": ""
     },
     {
-      "order": 98,
+      "order": 95,
       "row": "space",
       "physical_key": "space",
       "output_layer": "base",
-      "display_label": "Space",
+      "display_label": " ",
       "yinyuan_id": null,
       "literal_char": " ",
-      "notes": "可选；如不参与布局可保留为空"
-    },
-    {
-      "order": 99,
-      "row": "space",
-      "physical_key": "space",
-      "output_layer": "shift",
-      "display_label": "Shift+Space",
-      "yinyuan_id": null,
-      "literal_char": " ",
-      "notes": "与生成的 KLC 保持一致"
-    },
-    {
-      "order": 100,
-      "row": "top",
-      "physical_key": "p",
-      "output_layer": "altgr",
-      "display_label": "AltGr+P",
-      "yinyuan_id": null,
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 101,
-      "row": "top",
-      "physical_key": "[",
-      "output_layer": "altgr",
-      "display_label": "AltGr+[",
-      "yinyuan_id": null,
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 102,
-      "row": "top",
-      "physical_key": "]",
-      "output_layer": "altgr",
-      "display_label": "AltGr+]",
-      "yinyuan_id": null,
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 103,
-      "row": "top",
-      "physical_key": "y",
-      "output_layer": "altgr",
-      "display_label": "AltGr+Y",
-      "yinyuan_id": null,
-      "literal_char": null,
-      "notes": ""
-    },
-    {
-      "order": 104,
-      "row": "top",
-      "physical_key": "u",
-      "output_layer": "altgr",
-      "display_label": "AltGr+U",
-      "yinyuan_id": null,
-      "literal_char": null,
       "notes": ""
     }
   ]

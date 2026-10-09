@@ -1,296 +1,328 @@
-import {createSession} from './core.mjs';
-import {geometry, missProbability, percentile} from './geometry.mjs';
+import {actionFromKeyboard,createLiveClient,editText,samePointerRelease} from './input.mjs';
+import {percentile} from './geometry.mjs';
 
 const $ = id => document.getElementById(id);
-const text = (tag, value, className) => { const el = document.createElement(tag); el.textContent = value; if (className) el.className = className; return el; };
-let layout, demo, session, trace = [], latencies = [], touches = [], active = null, drill = null, guided = null;
-const drills = [];
-let counter = 0;
-const keyButtons = new Map();
+const node = (tag,value,className) => {
+  const element = document.createElement(tag);
+  element.textContent = value;
+  if (className) element.className = className;
+  return element;
+};
+let layout, client, active = null, trace = [], touches = [], latencies = [], drill = null;
+const keyButtons = new Map(), drills = [];
+const status = message => { $('status').textContent = message; };
+const focusBoard = () => $('keyboard').focus({preventScroll:true});
+const currentState = () => client?.snapshot?.state || {raw_input:'',candidates:[],page_number:0};
 
-function status(message) { $('status').textContent = message; }
-function focusBoard() { $('keyboard').focus({preventScroll:true}); }
-function dispatch(type, payload = {}, message = '') {
-  const start = performance.now();
-  const state = session.state;
-  const event = {version:1, sessionId:state.sessionId, eventId:`event-${++counter}`, seq:state.nextSeq, layoutId:layout.layoutId, baseRevision:state.revision, type, payload};
-  const result = session.dispatch(event);
-  trace.push({event, result});
-  if (trace.length > 100) trace.shift();
-  render();
-  if (!result.ok) status(`操作未执行：${JSON.stringify(result.error)}`);
-  else if (message) status(message);
-  else if (result.commit) status(`已确认「${result.commit.text}」，仅写入本页预览。`);
-  else status(`已处理 ${type} · 组合修订 ${result.state.revision}`);
-  requestAnimationFrame(() => {
-    latencies.push(performance.now() - start);
-    if (latencies.length > 1000) latencies.shift();
-    $('latency').textContent = `事件处理 → 下一帧：p50 ${percentile(latencies,.5).toFixed(1)} / p95 ${percentile(latencies,.95).toFixed(1)} ms（最近 ${latencies.length} 次；非触控端到端延迟）`;
+function appendCommit(value) {
+  const surface = $('committed');
+  surface.setRangeText(value,surface.selectionStart,surface.selectionEnd,'end');
+  surface.dispatchEvent(new Event('input',{bubbles:true}));
+}
+
+function render(result, event) {
+  if (result.commit) appendCommit(result.commit);
+  const state = result.state, candidates = state.candidates || [];
+  $('code').textContent = state.raw_input || '—';
+  $('composition').textContent = state.raw_input ? '正在组合；候选来自当前码制的 Go 引擎。' : '点按编码键，或在这里使用 ANSI 键盘。';
+  $('candidates').replaceChildren();
+  if (!candidates.length) $('candidates').append(node('p',state.raw_input ? '当前编码暂无候选，可继续输入、退格或取消。' : '候选将显示在这里。','hint'));
+  candidates.forEach((candidate,index) => {
+    const button = document.createElement('button');
+    button.className = 'candidate';
+    button.dataset.candidateId = candidate.id;
+    button.append(node('span',`⇧${index+1}`,'ordinal'),node('span',candidate.text));
+    button.addEventListener('click',() => {
+      perform({type:'select',candidateId:candidate.id},'candidate');
+      focusBoard();
+    });
+    $('candidates').append(button);
   });
-  return result;
-}
-
-function isDrillActive(value = drill) {
-  if (value?.kind === 'coverage-all-keys-any-order') return value.unique < value.targets.length;
-  if (value?.kind === 'prompted-targets-retry-until-correct') return value.correct < value.targets.length;
-  return false;
-}
-
-function pressSound(id, pointerType = 'keyboard', pointer = null) {
-  const activeDrill = isDrillActive() ? drill : null;
-  let intended = null, drillResult = null;
-  if (activeDrill?.kind === 'coverage-all-keys-any-order') {
-    activeDrill.attempts++;
-    if (activeDrill.seen.includes(id)) {
-      activeDrill.duplicate++;
-      drillResult = 'duplicate';
-    } else {
-      activeDrill.seen.push(id);
-      activeDrill.unique++;
-      drillResult = 'new-key';
-    }
-  } else if (activeDrill?.kind === 'prompted-targets-retry-until-correct') {
-    intended = activeDrill.targets[activeDrill.correct];
-    activeDrill.attempts++;
-    if (intended === id) { activeDrill.correct++; drillResult = 'correct'; }
-    else { activeDrill.wrong++; drillResult = 'wrong-key'; }
+  $('confirm').disabled = !candidates.length;
+  $('clear').disabled = !state.raw_input;
+  $('prev').disabled = !state.has_previous;
+  $('next').disabled = !state.has_next;
+  $('page-label').textContent = candidates.length ? `第 ${(state.page_number || 0)+1} 页` : '';
+  $('connection').textContent = 'Go 引擎已连接 · 仅本页文本';
+  $('connection').classList.add('connected');
+  if (event) {
+    trace.push({event,result});
+    if (trace.length > 100) trace.shift();
+    $('trace').textContent = JSON.stringify(trace.slice(-2),null,2);
   }
-  touches.push({id, intended, drillKind:activeDrill?.kind || null, drillResult, pointerType, cancelled:false, timeMs:Math.round(performance.now()), ...(pointer ? {pointer} : {})});
-  if (touches.length > 1000) touches.shift();
-  dispatch('input', {yinyuanId:id});
-  renderDrill();
 }
 
-function pointerSample(event, rect) {
-  return {
-    clientCssPx:{x:event.clientX,y:event.clientY},
-    contactCssPx:{width:event.width,height:event.height},
-    pressure:event.pressure,
+function localEdit(key) {
+  if (currentState().raw_input) {
+    status('请先选词或取消当前组合，再编辑已确认文本。');
+    return;
+  }
+  const surface = $('committed');
+  const next = editText(surface.value,surface.selectionStart,surface.selectionEnd,key);
+  if (next) {
+    surface.value = next.value;
+    surface.setSelectionRange(next.start,next.end);
+    status(`已在本页文本中处理 ${key}。`);
+  } else status(`${key} 仅保留实体键位：当前页面不模拟这个系统功能。`);
+}
+
+let actions = Promise.resolve();
+function perform(action,source='virtual') {
+  // Serialize the entire action, including local text edits, so a quick sequence
+  // cannot inspect composition state before the preceding input response arrives.
+  actions = actions.then(() => performOne(action,source)).catch(error => status(`操作未完成：${error.message}`));
+  return actions;
+}
+async function performOne(action,source) {
+  if (!action) return;
+  if (action.type === 'unsupported') {
+    status(`${action.label || '此键'} 仅保留实体键位；没有发送系统快捷键。`);
+    return;
+  }
+  if (action.type === 'local') { localEdit(action.key); return; }
+  if (!client.connected) { status('引擎未连接，请使用项目的本地服务并刷新页面。'); return; }
+  if (action.type === 'confirm' && !currentState().raw_input) { localEdit(action.key || 'Space'); return; }
+  if (action.type === 'backspace' && !currentState().raw_input) { localEdit('Backspace'); return; }
+  const start = performance.now();
+  try {
+    const result = await client.dispatch(action);
+    if (!result) status('当前没有可选候选，或已到候选页边界。');
+    else if (result.commit) status(`已确认「${result.commit}」，写入本页文本。`);
+    else status(`${source === 'ansi' ? 'ANSI' : '虚拟键'} · ${action.type === 'input' ? `输入 ${JSON.stringify(action.ascii)}` : '操作完成'}`);
+    requestAnimationFrame(() => {
+      latencies.push(performance.now()-start);
+      if (latencies.length > 1000) latencies.shift();
+      $('latency').textContent = `请求 → 下一帧 p50 ${percentile(latencies,.5).toFixed(1)} / p95 ${percentile(latencies,.95).toFixed(1)} ms（非端到端触控延迟）`;
+    });
+  } catch (error) {
+    status(`操作未完成：${error.message}`);
+    $('connection').textContent = '连接中断 · 请刷新重新连接';
+    $('connection').classList.remove('connected');
+  }
+}
+
+function pointerSample(event,rect) {
+  return {clientCssPx:{x:event.clientX,y:event.clientY},contactCssPx:{width:event.width,height:event.height},pressure:event.pressure,
     keyRectCssPx:{left:rect.left,top:rect.top,width:rect.width,height:rect.height},
-    keyLocal:{x:(event.clientX-rect.left)/rect.width,y:(event.clientY-rect.top)/rect.height}
-  };
+    keyLocal:{x:(event.clientX-rect.left)/rect.width,y:(event.clientY-rect.top)/rect.height}};
 }
-
-function cancelPointer(reason, event = null) {
+function drillActive() {
+  return drill && (drill.kind === 'coverage' ? drill.seen.length < drill.targets.length : drill.correct < drill.targets.length);
+}
+function recordKey(key,pointerType,pointer,cancelled=false,reason=null) {
+  const running = drillActive();
+  let outcome = null, intended = null;
+  if (running) {
+    if (cancelled) { drill.cancelled++; outcome = 'cancelled'; }
+    else {
+      drill.attempts++;
+      if (drill.kind === 'coverage') {
+        outcome = drill.seen.includes(key.id) ? 'duplicate' : 'new-key';
+        if (outcome === 'duplicate') drill.duplicate++; else drill.seen.push(key.id);
+      } else {
+        intended = drill.targets[drill.correct];
+        outcome = intended === key.id ? 'correct' : 'wrong-key';
+        if (outcome === 'correct') drill.correct++; else drill.wrong++;
+      }
+    }
+  }
+  touches.push({physicalKeyId:key.id,yinyuanIds:key.yinyuanIds,action:key.action,pointerType,pointer,cancelled,reason,
+    drillKind:running ? drill.kind : null,drillResult:outcome,intended,timeMs:Math.round(performance.now())});
+  if (touches.length > 1000) touches.shift();
+  renderDrill();
+  // Coverage drills test geometry without altering the local test document.
+  if (!cancelled && !running) perform(key.action);
+}
+function cancelPointer(reason,event=null) {
   if (!active) return;
   const previous = active;
   active = null;
   previous.button.classList.remove('pressed');
   const rect = previous.button.getBoundingClientRect();
-  const up = event ? pointerSample(event,rect) : null;
-  const activeDrill = isDrillActive() ? drill : null;
-  touches.push({id:previous.id, intended:activeDrill?.kind === 'prompted-targets-retry-until-correct' ? activeDrill.targets[activeDrill.correct] || null : null, drillKind:activeDrill?.kind || null, drillResult:activeDrill ? 'cancelled' : null, pointerType:previous.pointerType, cancelled:true, reason, timeMs:Math.round(performance.now()), pointer:{down:previous.down, ...(up ? {up} : {}), holdMs:Math.round(performance.now()-previous.startedAt)}});
-  if (touches.length > 1000) touches.shift();
-  if (activeDrill) activeDrill.cancelled++;
-  renderDrill();
-  status('本次触摸已取消，没有输入音元。');
+  recordKey(previous.key,previous.pointerType,{down:previous.down,...(event ? {up:pointerSample(event,rect)} : {}),holdMs:Math.round(performance.now()-previous.startedAt)},true,reason);
+  status('点按已取消，没有发送按键动作。');
 }
 
+// Decode entities as textarea text after removing markup. An inert HTML document
+// could still fetch an embedded image; no source tags are parsed into elements.
+function legendText(value) {
+  const decoder = document.createElement('textarea');
+  decoder.innerHTML = String(value).replace(/<[^>]*>/g,'');
+  return decoder.value;
+}
+function addLegend(button,value,index,key) {
+  if (!value) return;
+  const span = document.createElement('span');
+  span.className = `key-legend legend-${index}`;
+  const disabled = new Set(key.disabledYinyuanIds || []);
+  const label = legendText(value);
+  if (/^[MN]\d{2}(?:\|[MN]\d{2})+$/.test(label)) span.classList.add('shared-legend');
+  for (const part of label.split(/([MN]\d{2})/g)) {
+    if (disabled.has(part)) span.append(node('span',part,'disabled-yinyuan'));
+    else span.append(document.createTextNode(part));
+  }
+  button.append(span);
+}
 function buildKeyboard() {
-  const board = $('keyboard');
-  const bounds = layout.touchTemplate.bounds;
-  board.style.setProperty('--touch-aspect', `${bounds.width}/${bounds.height}`);
+  const board = $('keyboard'), bounds = layout.bounds;
+  board.style.setProperty('--keyboard-ratio',`${bounds.width}/${bounds.height}`);
+  board.style.setProperty('--keyboard-min-width',`${Math.ceil(bounds.width*54)}px`);
   for (const key of layout.keys) {
     const button = document.createElement('button');
-    button.className = `sound-key${key.id.startsWith('M') ? ' musical' : ''}`;
+    button.type = 'button';
+    button.className = `physical-key role-${key.action.type}`;
     button.dataset.id = key.id;
-    const touch = key.touch;
-    const left = 100 * touch.x / bounds.width;
-    const top = 100 * touch.y / bounds.height;
-    const width = 100 * touch.width / bounds.width;
-    const height = 100 * touch.height / bounds.height;
-    button.style.left = `calc(${left}% + 3px)`;
-    button.style.top = `calc(${top}% + 3px)`;
-    button.style.width = `calc(${width}% - 6px)`;
-    button.style.height = `calc(${height}% - 6px)`;
-    button.style.setProperty('--touch-key-color', touch.color);
-    button.style.setProperty('--touch-text-color', touch.textColor);
-    button.setAttribute('aria-label', `${key.id} ${key.name}，物理键 ${key.key}`);
-    button.title = `${key.name} · ${key.group}${key.sharedWith?.length ? ` · 与 ${key.sharedWith.join('、')} 共享物理投影` : ''}`;
-    button.append(text('span',key.id,'key-id'),text('span',key.label,'key-label'),text('span',`${key.shift ? '⇧ ' : ''}${key.physicalKey}`,'key-meta'));
-    button.addEventListener('pointerdown', event => {
+    button.dataset.ascii = key.action.ascii || '';
+    button.dataset.action = key.action.type;
+    button.dataset.yinyuanIds = (key.yinyuanIds || []).join(',');
+    button.style.left = `calc(${100*key.x/bounds.width}% + 2px)`;
+    button.style.top = `calc(${100*key.y/bounds.height}% + 2px)`;
+    button.style.width = `calc(${100*key.width/bounds.width}% - 4px)`;
+    button.style.height = `calc(${100*key.height/bounds.height}% - 4px)`;
+    button.style.setProperty('--key-color',key.color || '#deded7');
+    button.style.setProperty('--key-text',key.textColor || '#172c30');
+    const ids = (key.yinyuanIds || []).map(id => (key.disabledYinyuanIds || []).includes(id) ? `${id} 停用` : id).join('，');
+    const description = key.action.type === 'input' ? `ASCII ${key.action.ascii}`
+      : key.action.type === 'select' ? `候选 ⇧${key.action.ordinal}`
+      : key.action.label || key.action.key || key.action.type;
+    button.setAttribute('aria-label',`${key.id} ${ids || key.labels.map(legendText).filter(Boolean).join(' ')}，${description}`);
+    button.title = `${key.id} · ${description}${ids ? ` · ${ids}` : ''}`;
+    (key.labels || []).forEach((label,index) => addLegend(button,label,index,key));
+    if (!(key.labels || []).some(Boolean)) button.append(node('span','Space','key-space'));
+    if (key.action.type === 'unsupported') button.append(node('span','仅示意','simulation-label'));
+    button.addEventListener('pointerdown',event => {
       if (event.button !== 0 || !event.isPrimary || active) return;
       event.preventDefault();
-      $('keyboard').focus({preventScroll:true});
-      const rect = button.getBoundingClientRect();
-      active = {pointerId:event.pointerId, id:key.id, button, pointerType:event.pointerType, left:false, startedAt:performance.now(), down:pointerSample(event,rect)};
+      focusBoard();
+      active = {pointerId:event.pointerId,key,button,pointerType:event.pointerType,left:false,startedAt:performance.now(),down:pointerSample(event,button.getBoundingClientRect())};
       button.classList.add('pressed');
       button.setPointerCapture(event.pointerId);
     });
-    button.addEventListener('pointermove', event => {
+    button.addEventListener('pointermove',event => {
       if (active?.pointerId !== event.pointerId) return;
-      const r = button.getBoundingClientRect();
-      if (event.clientX < r.left || event.clientX >= r.right || event.clientY < r.top || event.clientY >= r.bottom) {
+      if (!samePointerRelease(active,event,button.getBoundingClientRect())) {
         active.left = true;
         button.classList.remove('pressed');
       }
     });
-    button.addEventListener('pointerup', event => {
+    button.addEventListener('pointerup',event => {
       if (active?.pointerId !== event.pointerId) return;
-      const r = button.getBoundingClientRect();
-      if (active.left || event.clientX < r.left || event.clientX >= r.right || event.clientY < r.top || event.clientY >= r.bottom) { cancelPointer('left-key',event); return; }
+      const rect = button.getBoundingClientRect();
+      if (!samePointerRelease(active,event,rect)) { cancelPointer('left-key',event); return; }
       const completed = active;
       active = null;
       button.classList.remove('pressed');
-      pressSound(key.id, event.pointerType, {down:completed.down,up:pointerSample(event,r),holdMs:Math.round(performance.now()-completed.startedAt)});
+      recordKey(key,event.pointerType,{down:completed.down,up:pointerSample(event,rect),holdMs:Math.round(performance.now()-completed.startedAt)});
     });
-    button.addEventListener('pointercancel', event => { if (active?.pointerId === event.pointerId) cancelPointer('pointercancel',event); });
-    button.addEventListener('lostpointercapture', event => { if (active?.pointerId === event.pointerId) cancelPointer('lostpointercapture',event); });
-    // Pointer path already dispatched on release; only native keyboard/AT click remains.
-    button.addEventListener('click', event => { if (event.detail === 0 && !event.pointerType) pressSound(key.id); });
+    button.addEventListener('pointercancel',event => { if (active?.pointerId === event.pointerId) cancelPointer('pointercancel',event); });
+    button.addEventListener('lostpointercapture',event => { if (active?.pointerId === event.pointerId) cancelPointer('lostpointercapture',event); });
+    button.addEventListener('click',event => {
+      if (event.detail === 0 && !event.pointerType) recordKey(key,'keyboard',null);
+    });
     board.append(button);
-    keyButtons.set(key.id, button);
+    keyButtons.set(key.id,button);
   }
-  $('keyboard').addEventListener('keydown', event => {
-    if (event.ctrlKey || event.altKey || event.metaKey || event.isComposing) return;
-    // Preserve native Enter/Space activation when a specific key has keyboard focus.
-    if (event.target.matches('button') && ['Enter',' '].includes(event.key)) return;
-    const ordinal = event.shiftKey && /^Digit[1-9]$/.test(event.code) ? Number(event.code.slice(-1)) - 1 : -1;
-    const mapped = layout.keys.find(key => key.key === event.key);
-    if (ordinal < 0 && !mapped && !['Backspace','Enter','Escape','PageUp','PageDown'].includes(event.key)) return;
+  $('touch-template-label').textContent = `${layout.keys.length} 键 · ${bounds.width} × ${bounds.height} KLE u`;
+}
+
+function keyboardInput(event) {
+  if (event.target.matches('button') && ['Enter',' '].includes(event.key)) return;
+  if (event.repeat && actionFromKeyboard({key:event.key,code:event.code,shiftKey:event.shiftKey,ctrlKey:event.ctrlKey,altKey:event.altKey,metaKey:event.metaKey,isComposing:event.isComposing})) {
     event.preventDefault();
-    if (event.repeat) return;
-    if (ordinal >= 0) {
-      const candidate = session.state.candidates[ordinal];
-      if (candidate) dispatch('select',{candidateId:candidate.id}, '候选已选中；按确认写入本页。');
-    } else if (event.key === 'Backspace') dispatch('backspace');
-    else if (event.key === 'Enter') dispatch('confirm');
-    else if (event.key === 'Escape') dispatch('clear');
-    else if (event.key === 'PageUp') dispatch('page',{delta:-1});
-    else if (event.key === 'PageDown') dispatch('page',{delta:1});
-    else if (mapped) {
-      pressSound(mapped.id);
-      if (mapped.sharedWith?.length) status(`物理键采用主 ID ${mapped.id}；独立音元请点击其触摸键。`);
-    }
-  });
-}
-
-function screenEnvironment() {
-  const orientation = screen.orientation ? {type:screen.orientation.type, angle:screen.orientation.angle} : null;
-  return {
-    screenCssPx:{width:screen.width,height:screen.height,availWidth:screen.availWidth,availHeight:screen.availHeight},
-    viewportCssPx:{width:innerWidth,height:innerHeight},
-    devicePixelRatio,
-    maxTouchPoints:navigator.maxTouchPoints || 0,
-    coarsePointer:matchMedia('(pointer: coarse)').matches,
-    anyCoarsePointer:matchMedia('(any-pointer: coarse)').matches,
-    orientation
-  };
-}
-
-function render() {
-  const state = session.state;
-  $('committed').textContent = state.committed.map(c => c.text).join('') || '等待第一次确认';
-  $('composition').textContent = state.ids.map(id => `${id} ${layout.keys.find(k => k.id === id).label}`).join(' · ') || '点击下方音元开始';
-  $('code').textContent = state.code || '—';
-  $('candidates').replaceChildren();
-  if (!state.candidates.length) $('candidates').append(text('p', state.ids.length ? '没有匹配的固定样例；可继续输入、退格或清空。' : '输入完整样例后展示候选。','hint'));
-  state.candidates.forEach((candidate, index) => {
-    const button = document.createElement('button');
-    button.className = `candidate${candidate.id === state.selectedId ? ' selected' : ''}`;
-    button.dataset.candidateId = candidate.id;
-    button.setAttribute('aria-pressed', String(candidate.id === state.selectedId));
-    button.append(text('span',`⇧${index+1}`,'ordinal'), text('span',candidate.text));
-    button.addEventListener('click', () => { dispatch('select',{candidateId:candidate.id}, '候选已选中；按确认写入本页。'); focusBoard(); });
-    $('candidates').append(button);
-  });
-  $('confirm').disabled = !state.selectedId;
-  $('backspace').disabled = !state.ids.length;
-  $('clear').disabled = !state.ids.length;
-  $('prev').disabled = state.page <= 0;
-  $('next').disabled = state.page + 1 >= state.pageCount;
-  $('page-label').textContent = state.pageCount ? `${state.page + 1} / ${state.pageCount} 页` : '等待组合';
-  $('trace').textContent = JSON.stringify(trace.slice(-2), null, 2);
-  if (guided) {
-    const matches = state.ids.every((id,i) => guided.ids[i] === id);
-    const next = matches ? guided.ids[state.ids.length] : null;
-    $('guide').textContent = `「${guided.label}」顺序：${guided.ids.join(' → ')}。${next ? `下一键：${next}` : matches ? '音元已齐，可选择候选并确认。' : '当前组合不同，可退格或重新载入。'}`;
+    return;
   }
-  renderDrill();
+  const action = actionFromKeyboard(event);
+  if (!action) return;
+  // Tab preserves board navigation, but can edit a tab in the local textarea.
+  if (event.key === 'Tab' && event.target !== $('committed')) return;
+  event.preventDefault();
+  if (action.type === 'confirm') action.key = event.key === 'Enter' ? 'Enter' : 'Space';
+  perform(action,'ansi');
 }
-
 function renderDrill() {
-  const target = drill?.kind === 'prompted-targets-retry-until-correct' && drill.correct < drill.targets.length ? drill.targets[drill.correct] : null;
-  const seen = new Set(drill?.seen || []);
+  const running = drillActive(), target = running && drill.kind === 'targets' ? drill.targets[drill.correct] : null;
   for (const [id,button] of keyButtons) {
-    button.classList.toggle('target', id === target);
-    button.classList.toggle('visited', drill?.kind === 'coverage-all-keys-any-order' && seen.has(id));
+    button.classList.toggle('target',id === target);
+    button.classList.toggle('visited',Boolean(running && drill.kind === 'coverage' && drill.seen.includes(id)));
   }
   if (!drill) { $('drill-target').textContent = '尚未开始'; return; }
-  if (drill.kind === 'coverage-all-keys-any-order') {
-    $('drill-target').textContent = drill.unique === drill.targets.length ? '覆盖完成' : '任意顺序：点尚未变暗的键';
-    $('drill-status').textContent = `已覆盖 ${drill.unique}/${drill.targets.length}，总点按 ${drill.attempts}，重复 ${drill.duplicate}，取消 ${drill.cancelled}。`;
-  } else {
-    $('drill-target').textContent = target ? `当前目标：${target}` : '目标准确度完成';
-    $('drill-status').textContent = `${target ? '请只点橙框目标；错键后目标保持不变 · ' : '本轮完成 · '}已完成 ${drill.correct}/${drill.targets.length} 个目标，总点按 ${drill.attempts}，错键 ${drill.wrong}，取消 ${drill.cancelled}。${drill.attempts ? `错键率 ${(100 * drill.wrong / drill.attempts).toFixed(1)}%（仅本轮输入设备）` : ''}`;
-  }
+  $('drill-target').textContent = !running ? '本轮完成' : target ? `当前目标：${target}` : '任意顺序点未变暗的键';
+  $('drill-status').textContent = drill.kind === 'coverage'
+    ? `已覆盖 ${drill.seen.length}/${drill.targets.length}，总点按 ${drill.attempts}，重复 ${drill.duplicate}，取消 ${drill.cancelled}。`
+    : `完成 ${drill.correct}/${drill.targets.length}，总点按 ${drill.attempts}，错键 ${drill.wrong}，取消 ${drill.cancelled}。`;
 }
-
-function startDrill(next) {
-  dispatch('clear');
-  drill = next;
+function startDrill(kind) {
+  cancelPointer('drill-start');
+  perform({type:'clear'});
+  const targets = kind === 'targets'
+    ? layout.keys.map((_,i) => layout.keys[(i*17+3)%layout.keys.length].id)
+    : layout.keys.map(key => key.id);
+  drill = {kind,targets,seen:[],correct:0,attempts:0,wrong:0,duplicate:0,cancelled:0};
   drills.push(drill);
   renderDrill();
+  status('点按测量期间仅记录命中，不发送编码或控制动作；完成本轮后自动恢复输入。');
 }
-
-function updateGeometry() {
-  const diagonal = Number($('diagonal').value), environment = screenEnvironment();
-  const bounds = layout.touchTemplate.bounds;
-  const g = geometry(diagonal, 2, environment.screenCssPx.width, environment.screenCssPx.height, bounds.width, bounds.height);
-  $('diagonal-value').textContent = `${diagonal.toFixed(1)}″`;
-  $('key-size').textContent = `${g.keyWidth.toFixed(1)} × ${g.keyHeight.toFixed(1)}`;
-  $('miss-model').textContent = `${(100 * missProbability(g.keyWidth,g.keyHeight,2)).toFixed(2)}%`;
-  $('size-advice').textContent = Math.min(g.keyWidth,g.keyHeight) < 9 ? '短边低于 9 mm 假设目标：优先验证窄键误触。' : '达到短边 ≥9 mm 的试制假设；仍需真人触屏验证。';
-  const rect = keyButtons.values().next().value?.getBoundingClientRect();
-  $('environment').textContent = `浏览器检测：screen ${environment.screenCssPx.width} × ${environment.screenCssPx.height} CSS px，DPR ${environment.devicePixelRatio}，maxTouchPoints ${environment.maxTouchPoints}，coarse pointer ${environment.anyCoarsePointer ? '是' : '否'}。复制显示模式无法由页面独立核实。`;
-  if (rect) $('actual-size').textContent = `当前第一个 KLE 1u 键面约 ${rect.width.toFixed(0)} × ${rect.height.toFixed(0)} CSS px。窗口窄时横向滚动，保持模板几何。`;
+function environment() {
+  return {screenCssPx:{width:screen.width,height:screen.height},viewportCssPx:{width:innerWidth,height:innerHeight},
+    devicePixelRatio,maxTouchPoints:navigator.maxTouchPoints || 0,anyCoarsePointer:matchMedia('(any-pointer: coarse)').matches};
+}
+function updateEnvironment() {
+  const env = environment();
+  $('environment').textContent = `屏幕 ${env.screenCssPx.width} × ${env.screenCssPx.height}；视口 ${env.viewportCssPx.width} × ${env.viewportCssPx.height} CSS px · DPR ${env.devicePixelRatio.toFixed(2)} · 最大触点 ${env.maxTouchPoints}。`;
+}
+function exportReport() {
+  const report = {formatVersion:4,mode:'ascii-physical-keyboard',createdAt:new Date().toISOString(),layoutId:layout.layoutId,touchTemplateId:layout.touchTemplateId,
+    sources:layout.sources,environment:environment(),disabledYinyuanIds:layout.disabledYinyuanIds,drills,touches,trace,handlerToNextFrameMs:latencies,
+    hardwareAcceptance:false,note:'本页 Go 引擎与浏览器事件记录；不证明 Windows 注册宿主、实体键盘或真实触屏验收。'};
+  const url = URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
+  const anchor = document.createElement('a');
+  anchor.href = url; anchor.download = 'yime-keyboard-session.json'; anchor.click();
+  setTimeout(() => URL.revokeObjectURL(url),1000);
 }
 
 async function init() {
-  [layout, demo] = await Promise.all(['layout','demo'].map(async file => {
-    const response = await fetch(`./data/${file}.json`);
-    if (!response.ok) throw new Error(`${file}: HTTP ${response.status}`);
-    return response.json();
-  }));
-  session = createSession(layout, demo, crypto.randomUUID());
+  if (location.protocol === 'file:') throw new Error('此版本需要本地 Go 服务。请按 README 启动服务后打开 http://127.0.0.1 对应地址；文件页面不能运行真实候选引擎。');
+  const response = await fetch('./data/physical-layout.json',{cache:'no-store'});
+  if (!response.ok) throw new Error(`布局读取失败：HTTP ${response.status}`);
+  layout = await response.json();
   buildKeyboard();
-  for (const example of demo.examples) {
-    const button = text('button',`载入 ${example.label}`);
-    button.dataset.exampleId = example.id;
-    button.addEventListener('click', () => {
-      guided = example;
-      dispatch('clear');
-      for (const id of example.ids) dispatch('input',{yinyuanId:id});
-      status('已载入固定样例；点击候选，再按确认。');
-      focusBoard();
+  client = createLiveClient({onResult:render});
+  $('keyboard').addEventListener('keydown',keyboardInput);
+  $('committed').addEventListener('keydown',keyboardInput);
+  for (const [id,action] of Object.entries({backspace:{type:'backspace'},clear:{type:'clear'},confirm:{type:'confirm'},prev:{type:'page',delta:-1},next:{type:'page',delta:1}})) {
+    $(id).addEventListener('click',() => { perform(action); focusBoard(); });
+  }
+  $('code-mode').addEventListener('change',event => {
+    cancelPointer('mode-change');
+    event.target.disabled = true;
+    actions = actions.then(async () => {
+      try { await client.changeMode(event.target.value); status('已切换码制，未确认组合已取消。'); }
+      catch (error) { status(`切换失败：${error.message}`); }
+      finally { event.target.disabled = false; focusBoard(); }
     });
-    $('examples').append(button);
-  }
-  guided = demo.examples[0];
-  for (const [id,type,payload] of [['backspace','backspace',{}],['clear','clear',{}],['confirm','confirm',{}],['prev','page',{delta:-1}],['next','page',{delta:1}]]) {
-    $(id).addEventListener('click', () => { dispatch(type,payload); focusBoard(); });
-  }
-  $('diagonal').addEventListener('input', updateGeometry);
-  window.addEventListener('resize', updateGeometry);
-  window.addEventListener('blur', () => { cancelPointer('window-blur'); if (session.state.ids.length) dispatch('clear',{},'页面失焦：未确认组合已取消，已确认预览保留。'); });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelPointer('page-hidden'); if (session.state.ids.length) dispatch('clear'); } });
-  $('drill').addEventListener('click', () => {
-    startDrill({kind:'coverage-all-keys-any-order',targets:layout.keys.map(key => key.id),attempts:0,unique:0,duplicate:0,cancelled:0,seen:[]});
   });
-  $('target-drill').addEventListener('click', () => startDrill({kind:'prompted-targets-retry-until-correct',advanceOn:'correct',targets:Array.from({length:layout.keys.length},(_,i) => layout.keys[(i * 17 + 3) % layout.keys.length].id),attempts:0,correct:0,wrong:0,cancelled:0}));
-  $('export').addEventListener('click', () => {
-    const environment = screenEnvironment();
-    const bounds = layout.touchTemplate.bounds;
-    const report = {formatVersion:3,mode:'offline-touch-baseline',createdAt:new Date().toISOString(),layoutId:layout.layoutId,touchTemplateId:layout.touchTemplate.id,touchTemplate:layout.touchTemplate,sources:[...layout.sources,...demo.sources],screenAssumption:{diagonalInches:Number($('diagonal').value),...geometry(Number($('diagonal').value),2,environment.screenCssPx.width,environment.screenCssPx.height,bounds.width,bounds.height)},environment,drills,drill,touches,handlerToNextFrameMs:latencies,trace,limits:{trace:100,touches:1000,latency:1000},hardwareAcceptance:false,note:'真实 pointerType、浏览器触点坐标/接触面积与页面处理代理值；未尺测、未高速相机测量时，不是触控误触率、contact-to-photon 或输入法验收。'};
-    const url = URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
-    const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'yime-touch-session.json'; anchor.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    status('已导出本页记录；未读取系统或输入法用户数据。');
-  });
-  const bounds = layout.touchTemplate.bounds;
-  $('touch-template-label').textContent = `${bounds.width} × ${bounds.height} KLE u`;
-  $('layout-id').textContent = `layoutId：${layout.layoutId} · touchTemplateId：${layout.touchTemplate.id} · ${layout.keys.length} 独立音元 / ${new Set(layout.keys.map(k=>k.key)).size} 桌面投影字符`;
-  for (const source of [...layout.sources,...demo.sources]) $('sources').append(text('li',`${source.path} · SHA-256（${source.hashMode}）${source.sha256}`));
-  render(); updateGeometry(); status('就绪。可逐键输入右侧引导样例，或点击“载入”。');
+  const cancelComposition = reason => {
+    cancelPointer(reason);
+    // Always enqueue after pending input, even before its response is visible.
+    perform({type:'clear'});
+  };
+  window.addEventListener('blur',() => cancelComposition('window-blur'));
+  document.addEventListener('visibilitychange',() => { if (document.hidden) cancelComposition('page-hidden'); });
+  $('drill').addEventListener('click',() => startDrill('coverage'));
+  $('target-drill').addEventListener('click',() => startDrill('targets'));
+  $('stop-drill').addEventListener('click',() => { drill = null; renderDrill(); status('点按测量已停止，恢复正常输入。'); });
+  $('export').addEventListener('click',exportReport);
+  $('layout-id').textContent = layout.layoutId;
+  for (const source of layout.sources || []) $('sources').append(node('li',typeof source === 'string' ? source : `${source.path} · ${source.sha256 || ''}`));
+  updateEnvironment();
+  window.addEventListener('resize',updateEnvironment);
+  await client.connect(layout.layoutId,$('code-mode').value);
+  $('engine-scope').textContent = typeof client.info.scope === 'string' ? client.info.scope : '独立 Go 会话 · 共享源生成的三种码制索引';
+  status('已就绪。点击编码键，或聚焦键盘后使用 ANSI 键盘；候选选择后直接写入本页文本。');
 }
-init().catch(error => { $('load-error').hidden = false; $('load-error').textContent = `原型未就绪：${error.message}。请通过 serve.py 打开本地 HTTP 地址，并运行数据校验。`; status('加载失败，输入不可用。'); console.error(error); });
+init().catch(error => {
+  $('load-error').hidden = false;
+  $('load-error').textContent = error.message;
+  $('connection').textContent = '未连接';
+  status('初始化未完成，当前页面不能输入。');
+});

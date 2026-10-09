@@ -10,8 +10,6 @@ import (
 const (
 	SyllableCodeLength       = 4
 	ApostropheVirtualShouyin = '\''
-	LayoutVersion            = "rime-layout-key-trial-v1-2026-07-18"
-	LayoutAlphabet           = "`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ"
 )
 
 // Record contains all runtime representations derived from one canonical code.
@@ -42,30 +40,15 @@ type musicalMetadata struct {
 	tone    int
 }
 
-// Each triple is high, middle, low for one musical-quality group. These are
-// Rime layout-key projections of M01-M33, not a second lexicon source.
-var musicalGroups = []string{
-	"jkl", "uio", "m,.", "fds", "rew", "vcx", "JKL", "UIO", "M<>", "aNz", ";G/",
-}
-
-var musicalByKey = buildMusicalMetadata()
+// The metadata is generated from stable IDs and the sole canonical layout.
+// Disabled shared members must never overwrite the active owner's quality.
+var musicalByKey = generatedMusicalMetadata
 var layoutKeySet = buildLayoutKeySet()
 
 func buildLayoutKeySet() map[rune]bool {
 	result := make(map[rune]bool, len([]rune(LayoutAlphabet)))
 	for _, key := range LayoutAlphabet {
 		result[key] = true
-	}
-	return result
-}
-
-func buildMusicalMetadata() map[rune]musicalMetadata {
-	result := make(map[rune]musicalMetadata, len(musicalGroups)*3)
-	for quality, group := range musicalGroups {
-		keys := []rune(group)
-		for tone, key := range keys {
-			result[key] = musicalMetadata{quality: quality, tone: tone}
-		}
 	}
 	return result
 }

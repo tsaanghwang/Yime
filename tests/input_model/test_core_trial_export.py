@@ -159,6 +159,36 @@ def test_default_tiers_include_replay_discrimination_band() -> None:
     )
 
 
+def test_disabled_readings_do_not_reduce_source_selection_or_remove_other_readings(tmp_path: Path) -> None:
+    source = _source_database(tmp_path / "source.sqlite3")
+    with sqlite3.connect(source) as connection:
+        connection.executemany("""
+            INSERT INTO canonical_readings VALUES (
+                ?, ?, ?, ?, 2, 0, 1, 1, 'test', 'standalone', 'none', ''
+            )
+        """, [(8, "呣", "m̄", "m1"), (9, "中", "ḿ", "m2")])
+    capacity = build_static_capacity_model(
+        source_database=source, output_dir=tmp_path / "capacity",
+        config=StaticCapacityConfig(target_capacity=6),
+    )
+    result = export_core_trial_lexicons(
+        source_database=source, capacity_database=capacity.database,
+        output_dir=tmp_path / "core", capacities=(6,),
+        repo_root=Path(__file__).resolve().parents[2],
+    )
+    tier = result.tiers[0]
+    manifest = json.loads(tier.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["base_capacity"] == 6
+    assert manifest["selected_texts"] == 5
+    assert manifest["excluded_disabled_reading_count"] == 2
+    assert manifest["excluded_disabled_only_text_count"] == 1
+    dictionary = tier.dictionary_path.read_text(encoding="utf-8")
+    assert "\n呣\t" not in dictionary
+    assert dictionary.count("\n中\t") == 1
+    with sqlite3.connect(source) as connection:
+        assert connection.execute("SELECT count(*) FROM canonical_readings WHERE numeric_pinyin IN ('m1', 'm2')").fetchone()[0] == 2
+
+
 def test_export_can_union_full_gated_pinyin_source(
     tmp_path: Path,
 ) -> None:

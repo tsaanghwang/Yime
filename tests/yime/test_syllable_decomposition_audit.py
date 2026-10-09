@@ -52,6 +52,21 @@ def test_checked_in_audit_matches_the_complete_current_encoder_chain() -> None:
     assert actual == expected
 
 
+def test_disabled_layout_retains_semantic_decomposition_without_input_code() -> None:
+    inventory_path = Path("internal_data/pinyin_source_db/lexicon_exports/pinyin_normalized.json")
+    inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+    rows = build_syllable_decomposition_rows(inventory)
+    disabled = [row for row in rows if row.status == "disabled_by_layout"]
+    assert {row.pinyin_tone for row in disabled} == {"hm5", "m1", "m2", "m4"}
+    for row in disabled:
+        assert row.layout_code == ""
+        assert all((row.shouyin_symbol, row.huyin_symbol, row.zhuyin_symbol, row.moyin_symbol))
+        assert all((row.shouyin_id, row.huyin_id, row.zhuyin_id, row.moyin_id))
+        assert {row.huyin_id, row.zhuyin_id, row.moyin_id} & {"M25", "M26", "M27"}
+        assert row.rule_id and row.aliases and row.normalized
+    assert all(len(row.layout_code) == 4 for row in rows if row.status == "ok")
+
+
 def test_encoder_failure_points_to_the_failed_semantic_stage() -> None:
     class FailingEncoder:
         def encode_yinjie_structured(self, _candidate: str) -> None:

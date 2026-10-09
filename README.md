@@ -1,5 +1,12 @@
 # Yime for Windows
 
+> This branch is the ASCII physical-keyboard experiment. See the
+> [implementation plan](docs/project/ASCII_PHYSICAL_LAYOUT_PLAN.md) and
+> [runnable keyboard lab](prototypes/touch-terminal/README.md).
+> Its new layout has not been promoted to the production package target.
+> Do not combine old packaged dictionaries with the new projection or bypass
+> production identity checks to install it.
+
 **Yime (音元拼音)** maps attested Pinyin syllables through a formal syllable encoder into Yinyuan input codes. It provides variable, full and shorthand modes derived from the same canonical records and keyboard layout.
 
 [简体中文](README.zh-CN.md) · [Documentation](docs/README.md) · [Project status](docs/YIME_PROJECT_ASSESSMENT.md) · [Roadmap](docs/YIME_DEVELOPMENT_ROADMAP.md)

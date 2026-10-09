@@ -88,6 +88,7 @@ def prepare(
     expected_runtime_sha256: str,
     source_date_epoch: int,
     repository_import_approval: Path | None = None,
+    candidate_only: bool = False,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     for input_id, path in (
         ("handoff_source_a", source_a),
@@ -177,7 +178,7 @@ def prepare(
 
     evidence = {
         "schema_version": "yime-approved-core-evidence-v2",
-        "status": "approved_windows_handoff_target",
+        "status": "prepared_handoff_candidate" if candidate_only else "approved_windows_handoff_target",
         "source_dictionary": "yime_core_fixed.dict.yaml",
         "output_sha256": dictionary_hash,
         "selection_tsv_sha256": selection_hash,
@@ -206,6 +207,9 @@ def prepare(
             },
             "source_artifacts": source_artifacts,
             "note": (
+                "Two independent clean rebuilds establish this candidate identity; "
+                "release approval and target promotion remain separate."
+                if candidate_only else
                 "The current formal process result is the approved Windows "
                 "handoff identity; no historical entry-count adjustment was applied."
             ),
@@ -241,6 +245,8 @@ def main() -> int:
     parser.add_argument("--source-date-epoch", type=int, required=True)
     parser.add_argument("--output-evidence", type=Path, required=True)
     parser.add_argument("--output-report", type=Path, required=True)
+    parser.add_argument("--candidate-only", action="store_true",
+                        help="Prepare verified evidence without claiming release approval")
     args = parser.parse_args()
     try:
         evidence, report = prepare(
@@ -251,6 +257,7 @@ def main() -> int:
             runtime_database=args.runtime_database.resolve(),
             expected_runtime_sha256=args.expected_runtime_sha256,
             source_date_epoch=args.source_date_epoch,
+            candidate_only=args.candidate_only,
             repository_import_approval=(
                 args.repository_import_approval.resolve()
                 if args.repository_import_approval

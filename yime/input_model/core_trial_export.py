@@ -32,7 +32,9 @@ from yime.utils.rime_export import (
     load_runtime_symbol_to_layout_key,
 )
 from yime.utils.reproducible_build import build_date_text
-from yime.utils.yinyuan_id_chain import layout_projection_digest
+from yime.utils.yinyuan_id_chain import (
+    layout_projection_digest, load_disabled_yinyuan_ids, load_symbol_to_yinyuan_id,
+)
 
 
 SCHEMA_VERSION = "yime-core-trial-lexicon-v1"
@@ -412,6 +414,8 @@ def export_core_trial_lexicons(
     )
     pinyin_to_runtime_code = load_canonical_code_map(repo_root)
     symbol_to_key = load_runtime_symbol_to_layout_key(repo_root)
+    symbol_to_id = load_symbol_to_yinyuan_id(repo_root)
+    disabled_ids = load_disabled_yinyuan_ids(repo_root)
     layout_digest = layout_projection_digest(repo_root)
     results: list[CoreTrialTierResult] = []
 
@@ -441,6 +445,8 @@ def export_core_trial_lexicons(
 
         entries: list[tuple[str, str, int]] = []
         selected_texts: set[str] = set()
+        excluded_disabled_texts: set[str] = set()
+        excluded_disabled_readings = 0
         ranking_evidence_readings: Counter[str] = Counter()
         ranking_evidence_texts: dict[str, set[str]] = {}
         with selection_path.open(
@@ -486,6 +492,10 @@ def export_core_trial_lexicons(
                         "Accepted reading cannot be encoded by the formal "
                         f"syllable chain: {row['text']} / {numeric_pinyin}"
                     )
+                if any(symbol_to_id[symbol] in disabled_ids for symbol in runtime_code):
+                    excluded_disabled_texts.add(str(row["text"]))
+                    excluded_disabled_readings += 1
+                    continue
                 full_layout_code = convert_runtime_code_to_layout_keys(
                     runtime_code,
                     symbol_to_key,
@@ -575,13 +585,13 @@ def export_core_trial_lexicons(
             not included_sources
             and not included_lengths
             and not included_wanxiang_categories
-            and len(selected_texts) != capacity
+            and len(selected_texts | excluded_disabled_texts) != capacity
         ):
             raise ValueError(
                 f"Capacity selection mismatch: expected {capacity} texts, "
                 f"got {len(selected_texts)}"
             )
-        if len(selected_texts) < capacity:
+        if len(selected_texts | excluded_disabled_texts) < capacity:
             raise ValueError(
                 f"Expanded selection lost base capacity: expected at least "
                 f"{capacity} texts, got {len(selected_texts)}"
@@ -603,6 +613,9 @@ def export_core_trial_lexicons(
             "base_capacity": capacity,
             "selected_texts": len(selected_texts),
             "reading_entries": len(entries),
+            "disabled_yinyuan_ids": sorted(disabled_ids),
+            "excluded_disabled_reading_count": excluded_disabled_readings,
+            "excluded_disabled_only_text_count": len(excluded_disabled_texts - selected_texts),
             "mandatory_static_texts": mandatory,
             "selected_optional_texts": capacity - mandatory,
             "included_pinyin_sources": list(included_sources),

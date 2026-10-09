@@ -41,8 +41,11 @@ def test_middle_entry_is_rejected() -> None:
     assert "N10" in message
 
 
-def test_repository_layout_change_lock_is_closed() -> None:
-    assert check_layout_change_lock(ROOT) == []
+def test_experiment_semantics_pass_but_unpromoted_production_layout_fails_closed() -> None:
+    assert check_layout_change_lock(ROOT, include_derived_artifacts=False) == []
+    issues = check_layout_change_lock(ROOT)
+    assert len(issues) == 1
+    assert issues[0].startswith("canonical layout digest does not match the approved Windows target:")
 
 
 def test_clean_checkout_uses_locked_provenance_audit(
@@ -59,4 +62,7 @@ def test_clean_checkout_uses_locked_provenance_audit(
     lock = json.loads((ROOT / "internal_data" / "layout_change_lock.json").read_text(encoding="utf-8"))
     assert not missing_source_db.exists()
     assert syllable_provenance_digest(ROOT) == lock["syllable_provenance_sha256"]
-    assert check_layout_change_lock(ROOT) == []
+    assert check_layout_change_lock(ROOT, include_derived_artifacts=False) == []
+    issues = check_layout_change_lock(ROOT)
+    assert len(issues) == 1
+    assert issues[0].startswith("canonical layout digest does not match the approved Windows target:")

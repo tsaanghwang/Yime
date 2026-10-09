@@ -133,6 +133,7 @@ def build_resolved_layout(layout_data: dict[str, Any], key_to_symbol: dict[str, 
             ),
         },
         "shared_yinyuan_key_groups": layout_data.get("shared_yinyuan_key_groups", []),
+        "disabled_yinyuan_ids": layout_data.get("disabled_yinyuan_ids", []),
         "layers": resolved_layers,
     }
 

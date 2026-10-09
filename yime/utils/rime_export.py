@@ -17,6 +17,7 @@ from yime.utils.yinyuan_id_chain import (
     layout_projection_digest,
     load_symbol_to_yinyuan_id,
     load_yinyuan_id_to_layout_key,
+    load_disabled_yinyuan_ids,
 )
 
 
@@ -103,7 +104,9 @@ def load_runtime_symbol_to_layout_key(
 ) -> dict[str, str]:
     symbol_to_id = load_symbol_to_yinyuan_id(repo_root)
     id_to_key = load_yinyuan_id_to_layout_key(repo_root, layout_path)
-    return {symbol: id_to_key[yinyuan_id] for symbol, yinyuan_id in symbol_to_id.items()}
+    disabled = load_disabled_yinyuan_ids(repo_root)
+    return {symbol: id_to_key[yinyuan_id] for symbol, yinyuan_id in symbol_to_id.items()
+            if yinyuan_id not in disabled}
 
 
 def convert_runtime_code_to_layout_keys(code: str, symbol_to_key: Mapping[str, str]) -> str:
@@ -125,6 +128,8 @@ def export_pinyin_codes_tsv(
     inventory_path: Path | None = None,
 ) -> int:
     symbol_to_key = load_runtime_symbol_to_layout_key(repo_root, layout_path)
+    symbol_to_id = load_symbol_to_yinyuan_id(repo_root)
+    disabled = load_disabled_yinyuan_ids(repo_root)
     if inventory_path:
         canonical_by_pinyin = load_canonical_code_map(repo_root)
         inventory_lines = inventory_path.read_text(encoding="utf-8-sig").splitlines()
@@ -145,6 +150,8 @@ def export_pinyin_codes_tsv(
         canonical_code = canonical_by_pinyin.get(pinyin_tone)
         if not canonical_code:
             raise ValueError(f"Pinyin inventory entry has no canonical Yime code: {pinyin_tone}")
+        if any(symbol_to_id[symbol] in disabled for symbol in canonical_code):
+            continue
         code = convert_runtime_code_to_layout_keys(canonical_code, symbol_to_key)
         lines.append(f"{pinyin_tone}\t{code}")
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -163,6 +170,8 @@ def _select_export_rows(
     limit: int = 0,
 ) -> list[sqlite3.Row]:
     columns = _table_columns(conn, "runtime_candidates_materialized")
+    if "full_yime_code" not in columns:
+        raise ValueError("Runtime candidate export requires full_yime_code; shortened codes cannot prove disabled-ID exclusion")
     preferred_column = lookup_code_column(mode)
     if preferred_column in columns:
         code_expr = preferred_column
@@ -180,6 +189,7 @@ def _select_export_rows(
         SELECT
             text,
             {code_expr} AS lookup_code,
+            full_yime_code AS full_semantic_code,
             pinyin_tone,
             entry_type,
             sort_weight,
@@ -356,7 +366,18 @@ def export_rime_files(
         conn.close()
 
     entries: list[tuple[str, str, int]] = []
+    symbol_to_id = load_symbol_to_yinyuan_id(repo_root)
+    disabled = load_disabled_yinyuan_ids(repo_root)
+    excluded_disabled = 0
     for row in rows:
+        # Inspect complete semantics even when a shorthand erased the disabled
+        # middle tone. Filtering the shortened code would leak candidates.
+        full_semantic_code = str(row["full_semantic_code"] or "")
+        if not full_semantic_code:
+            raise ValueError("Runtime candidate has no complete semantic code")
+        if any(symbol_to_id[symbol] in disabled for symbol in full_semantic_code):
+            excluded_disabled += 1
+            continue
         raw_code = str(row["lookup_code"] or "").strip()
         if not raw_code:
             continue
@@ -404,6 +425,8 @@ def export_rime_files(
         "db_path": str(db_path),
         "schema_id": resolved_schema_id,
         "row_count": len(entries),
+        "excluded_disabled_reading_count": excluded_disabled,
+        "disabled_yinyuan_ids": sorted(disabled),
         "code_count": len({code for _, code, _ in entries}),
         "alphabet": alphabet,
         "layout_projection_sha256": layout_digest,

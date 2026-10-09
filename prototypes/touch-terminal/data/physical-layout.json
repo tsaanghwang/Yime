@@ -1,0 +1,4148 @@
+{
+  "formatVersion": 2,
+  "layoutId": "f35fd71838991b49fed13e5f6673b098d230d5f248a00c376c9989e8f7fe2c0b",
+  "touchTemplateId": "1fc4c4855bab2f9ee66fd59236464ec96752fa6d8c57456ca34f6ce32aadb368",
+  "name": "Yime ASCII concept keyboard · 129 keys",
+  "bounds": {
+    "width": 25.75,
+    "height": 7.25
+  },
+  "disabledYinyuanIds": [
+    "M25",
+    "M26",
+    "M27"
+  ],
+  "keys": [
+    {
+      "id": "R01K01",
+      "x": 0.0,
+      "y": 0.0,
+      "width": 3.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Esc",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "clear"
+      }
+    },
+    {
+      "id": "R01K02",
+      "x": 3.0,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "F1",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F1"
+      }
+    },
+    {
+      "id": "R01K03",
+      "x": 4.0,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "F2",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F2"
+      }
+    },
+    {
+      "id": "R01K04",
+      "x": 5.0,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "F3",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F3"
+      }
+    },
+    {
+      "id": "R01K05",
+      "x": 6.0,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "F4",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F4"
+      }
+    },
+    {
+      "id": "R01K06",
+      "x": 7.0,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "F5",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F5"
+      }
+    },
+    {
+      "id": "R01K07",
+      "x": 8.0,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "F6",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F6"
+      }
+    },
+    {
+      "id": "R01K08",
+      "x": 9.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "F7",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F7"
+      }
+    },
+    {
+      "id": "R01K09",
+      "x": 10.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "F8",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F8"
+      }
+    },
+    {
+      "id": "R01K10",
+      "x": 11.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "F9",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F9"
+      }
+    },
+    {
+      "id": "R01K11",
+      "x": 12.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "F10",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F10"
+      }
+    },
+    {
+      "id": "R01K12",
+      "x": 13.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "F11",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F11"
+      }
+    },
+    {
+      "id": "R01K13",
+      "x": 14.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "F12",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F12"
+      }
+    },
+    {
+      "id": "R01K14",
+      "x": 15.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "PrtSc",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "PrtSc"
+      }
+    },
+    {
+      "id": "R01K15",
+      "x": 16.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Scroll Lock",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Scroll Lock"
+      }
+    },
+    {
+      "id": "R01K16",
+      "x": 17.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Pause",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Break",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Pause"
+      }
+    },
+    {
+      "id": "R02K01",
+      "x": 0.0,
+      "y": 1.25,
+      "width": 2.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "Tab",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "local",
+        "key": "Tab"
+      }
+    },
+    {
+      "id": "R02K02",
+      "x": 2.0,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "\"",
+        "",
+        "",
+        "",
+        "N12",
+        "",
+        "'",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "N12"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "'"
+      }
+    },
+    {
+      "id": "R02K03",
+      "x": 3.0,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#cccccc",
+      "textColor": "#000000",
+      "labels": [
+        "~",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "`",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "`"
+      }
+    },
+    {
+      "id": "R02K04",
+      "x": 4.0,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#c7a5dd",
+      "textColor": "#000000",
+      "labels": [
+        "!",
+        "",
+        "",
+        "",
+        "⇧1",
+        "",
+        "1",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "select",
+        "ordinal": 1
+      }
+    },
+    {
+      "id": "R02K05",
+      "x": 5.0,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#c7a5dd",
+      "textColor": "#000000",
+      "labels": [
+        "@",
+        "",
+        "",
+        "",
+        "⇧2",
+        "",
+        "2",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "select",
+        "ordinal": 2
+      }
+    },
+    {
+      "id": "R02K06",
+      "x": 6.0,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#c7a5dd",
+      "textColor": "#000000",
+      "labels": [
+        "#",
+        "",
+        "",
+        "",
+        "⇧3",
+        "",
+        "3",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "select",
+        "ordinal": 3
+      }
+    },
+    {
+      "id": "R02K07",
+      "x": 7.0,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#c7a5dd",
+      "textColor": "#000000",
+      "labels": [
+        "$",
+        "",
+        "",
+        "",
+        "⇧4",
+        "",
+        "4",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "select",
+        "ordinal": 4
+      }
+    },
+    {
+      "id": "R02K08",
+      "x": 8.0,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#c7a5dd",
+      "textColor": "#000000",
+      "labels": [
+        "%",
+        "",
+        "",
+        "",
+        "⇧5",
+        "",
+        "5",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "select",
+        "ordinal": 5
+      }
+    },
+    {
+      "id": "R02K09",
+      "x": 9.25,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#c7a5dd",
+      "textColor": "#000000",
+      "labels": [
+        "^",
+        "",
+        "",
+        "",
+        "⇧6",
+        "",
+        "6",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "select",
+        "ordinal": 6
+      }
+    },
+    {
+      "id": "R02K10",
+      "x": 10.25,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#c7a5dd",
+      "textColor": "#000000",
+      "labels": [
+        "&",
+        "",
+        "",
+        "",
+        "⇧7",
+        "",
+        "7",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "select",
+        "ordinal": 7
+      }
+    },
+    {
+      "id": "R02K11",
+      "x": 11.25,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#c7a5dd",
+      "textColor": "#000000",
+      "labels": [
+        "*",
+        "",
+        "",
+        "",
+        "⇧8",
+        "",
+        "8",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "select",
+        "ordinal": 8
+      }
+    },
+    {
+      "id": "R02K12",
+      "x": 12.25,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#c7a5dd",
+      "textColor": "#000000",
+      "labels": [
+        "(",
+        "",
+        "",
+        "",
+        "⇧9",
+        "",
+        "9",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "select",
+        "ordinal": 9
+      }
+    },
+    {
+      "id": "R02K13",
+      "x": 13.25,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#cccccc",
+      "textColor": "#000000",
+      "labels": [
+        ")",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "0",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "0"
+      }
+    },
+    {
+      "id": "R02K14",
+      "x": 14.25,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#cccccc",
+      "textColor": "#000000",
+      "labels": [
+        "_",
+        "",
+        "",
+        "",
+        "前页",
+        "",
+        "-",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "page",
+        "delta": -1
+      }
+    },
+    {
+      "id": "R02K15",
+      "x": 15.25,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#cccccc",
+      "textColor": "#000000",
+      "labels": [
+        "+",
+        "",
+        "",
+        "",
+        "后页",
+        "",
+        "=",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "page",
+        "delta": 1
+      }
+    },
+    {
+      "id": "R02K16",
+      "x": 16.25,
+      "y": 1.25,
+      "width": 2.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "Back Space",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "backspace"
+      }
+    },
+    {
+      "id": "R02K17",
+      "x": 18.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Insert",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Insert"
+      }
+    },
+    {
+      "id": "R02K18",
+      "x": 19.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Home",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "local",
+        "key": "Home"
+      }
+    },
+    {
+      "id": "R02K19",
+      "x": 20.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "PgUp",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "page",
+        "delta": -1
+      }
+    },
+    {
+      "id": "R02K20",
+      "x": 21.75,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Num Lock",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Num Lock"
+      }
+    },
+    {
+      "id": "R02K21",
+      "x": 22.75,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "/",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "/"
+      }
+    },
+    {
+      "id": "R02K22",
+      "x": 23.75,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "*",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "*"
+      }
+    },
+    {
+      "id": "R02K23",
+      "x": 24.75,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "-",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "-"
+      }
+    },
+    {
+      "id": "R03K01",
+      "x": 0.0,
+      "y": 2.25,
+      "width": 1.75,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "R",
+        "",
+        "",
+        "N27",
+        "ɹ",
+        "",
+        "R",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "N27"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "R"
+      }
+    },
+    {
+      "id": "R03K02",
+      "x": 1.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "s",
+        "",
+        "",
+        "N15",
+        "",
+        "",
+        "s",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N15"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "s"
+      }
+    },
+    {
+      "id": "R03K03",
+      "x": 2.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "c",
+        "",
+        "",
+        "N14",
+        "",
+        "",
+        "c",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N14"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "c"
+      }
+    },
+    {
+      "id": "R03K04",
+      "x": 3.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "z",
+        "",
+        "",
+        "N13",
+        "",
+        "",
+        "z",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N13"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "z"
+      }
+    },
+    {
+      "id": "R03K05",
+      "x": 4.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "W",
+        "",
+        "",
+        "M24",
+        "󰎈",
+        "",
+        "W",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M24"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "W"
+      }
+    },
+    {
+      "id": "R03K06",
+      "x": 5.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "X",
+        "",
+        "",
+        "M23",
+        "󰎅",
+        "",
+        "X",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M23"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "X"
+      }
+    },
+    {
+      "id": "R03K07",
+      "x": 6.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "M",
+        "",
+        "",
+        "M22",
+        "󰎄",
+        "",
+        "M",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M22"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "M"
+      }
+    },
+    {
+      "id": "R03K08",
+      "x": 7.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "n",
+        "",
+        "",
+        "N08",
+        "",
+        "",
+        "n",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N08"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "n"
+      }
+    },
+    {
+      "id": "R03K09",
+      "x": 9.5,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "l",
+        "",
+        "",
+        "N07",
+        "",
+        "",
+        "l",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N07"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "l"
+      }
+    },
+    {
+      "id": "R03K10",
+      "x": 10.5,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "P",
+        "",
+        "",
+        "M19",
+        "󰍵",
+        "",
+        "P",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M19"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "P"
+      }
+    },
+    {
+      "id": "R03K11",
+      "x": 11.5,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "K",
+        "",
+        "",
+        "M20",
+        "󰍶",
+        "",
+        "K",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M20"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "K"
+      }
+    },
+    {
+      "id": "R03K12",
+      "x": 12.5,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "L",
+        "",
+        "",
+        "M21",
+        "󰍹",
+        "",
+        "L",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M21"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "L"
+      }
+    },
+    {
+      "id": "R03K13",
+      "x": 13.5,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "Z",
+        "",
+        "",
+        "N16",
+        "ẑ",
+        "",
+        "Z",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "N16"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "Z"
+      }
+    },
+    {
+      "id": "R03K14",
+      "x": 14.5,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "C",
+        "",
+        "",
+        "N17",
+        "&ccirc;",
+        "",
+        "C",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "N17"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "C"
+      }
+    },
+    {
+      "id": "R03K15",
+      "x": 15.5,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "S",
+        "",
+        "",
+        "N18",
+        "&scirc;",
+        "",
+        "S",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "N18"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "S"
+      }
+    },
+    {
+      "id": "R03K16",
+      "x": 16.5,
+      "y": 2.25,
+      "width": 1.75,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "r",
+        "",
+        "",
+        "N19",
+        "",
+        "",
+        "r",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N19"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "r"
+      }
+    },
+    {
+      "id": "R03K17",
+      "x": 18.5,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Delete",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "local",
+        "key": "Delete"
+      }
+    },
+    {
+      "id": "R03K18",
+      "x": 19.5,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "End",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "local",
+        "key": "End"
+      }
+    },
+    {
+      "id": "R03K19",
+      "x": 20.5,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "PgDn",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "page",
+        "delta": 1
+      }
+    },
+    {
+      "id": "R03K20",
+      "x": 21.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "7",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Home",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "7"
+      }
+    },
+    {
+      "id": "R03K21",
+      "x": 22.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "8",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "↑",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "8"
+      }
+    },
+    {
+      "id": "R03K22",
+      "x": 23.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "9",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "PgUp",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "9"
+      }
+    },
+    {
+      "id": "R03K23",
+      "x": 24.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 2.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "+",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "+"
+      }
+    },
+    {
+      "id": "R04K01",
+      "x": 0.0,
+      "y": 3.25,
+      "width": 1.5,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "y",
+        "",
+        "",
+        "N25",
+        "ɥ",
+        "",
+        "y",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "N25"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "y"
+      }
+    },
+    {
+      "id": "R04K02",
+      "x": 1.5,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "x",
+        "",
+        "",
+        "N22",
+        "",
+        "",
+        "x",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N22"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "x"
+      }
+    },
+    {
+      "id": "R04K03",
+      "x": 2.5,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "q",
+        "",
+        "",
+        "N21",
+        "",
+        "",
+        "q",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N21"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "q"
+      }
+    },
+    {
+      "id": "R04K04",
+      "x": 3.5,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "J",
+        "",
+        "",
+        "N20",
+        "j",
+        "",
+        "J",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "N20"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "J"
+      }
+    },
+    {
+      "id": "R04K05",
+      "x": 4.5,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "o",
+        "",
+        "",
+        "M15",
+        "&ograve;",
+        "",
+        "o",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M15"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "o"
+      }
+    },
+    {
+      "id": "R04K06",
+      "x": 5.5,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "T",
+        "",
+        "",
+        "M14",
+        "<span class='cd'>o&#773;</span>",
+        "",
+        "T",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M14"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "T"
+      }
+    },
+    {
+      "id": "R04K07",
+      "x": 6.5,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "O",
+        "",
+        "",
+        "M13",
+        "&oacute;",
+        "",
+        "O",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M13"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "O"
+      }
+    },
+    {
+      "id": "R04K08",
+      "x": 7.5,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "t",
+        "",
+        "",
+        "N06",
+        "",
+        "",
+        "t",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N06"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "t"
+      }
+    },
+    {
+      "id": "R04K09",
+      "x": 9.75,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "p",
+        "",
+        "",
+        "N02",
+        "",
+        "",
+        "p",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N02"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "p"
+      }
+    },
+    {
+      "id": "R04K10",
+      "x": 10.75,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "U",
+        "",
+        "",
+        "M04",
+        "&ugrave;",
+        "",
+        "U",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M04"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "U"
+      }
+    },
+    {
+      "id": "R04K11",
+      "x": 11.75,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "F",
+        "",
+        "",
+        "M05",
+        "ū",
+        "",
+        "F",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M05"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "F"
+      }
+    },
+    {
+      "id": "R04K12",
+      "x": 12.75,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "u",
+        "",
+        "",
+        "M06",
+        "&uacute;",
+        "",
+        "u",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M06"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "u"
+      }
+    },
+    {
+      "id": "R04K13",
+      "x": 13.75,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "g",
+        "",
+        "",
+        "N09",
+        "",
+        "",
+        "g",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N09"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "g"
+      }
+    },
+    {
+      "id": "R04K14",
+      "x": 14.75,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "k",
+        "",
+        "",
+        "N10",
+        "",
+        "",
+        "k",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N10"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "k"
+      }
+    },
+    {
+      "id": "R04K15",
+      "x": 15.75,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "h",
+        "",
+        "",
+        "N11",
+        "",
+        "",
+        "h",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N11"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "h"
+      }
+    },
+    {
+      "id": "R04K16",
+      "x": 16.75,
+      "y": 3.25,
+      "width": 1.5,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "Q",
+        "",
+        "",
+        "N26",
+        "ŋ",
+        "",
+        "Q",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "N26"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "Q"
+      }
+    },
+    {
+      "id": "R04K17",
+      "x": 21.75,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "4",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "←",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "4"
+      }
+    },
+    {
+      "id": "R04K18",
+      "x": 22.75,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "5",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "5"
+      }
+    },
+    {
+      "id": "R04K19",
+      "x": 23.75,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "6",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "→",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "6"
+      }
+    },
+    {
+      "id": "R05K01",
+      "x": 0.0,
+      "y": 4.25,
+      "width": 2.25,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "Caps Lock",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Caps Lock"
+      }
+    },
+    {
+      "id": "R05K02",
+      "x": 2.25,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "N",
+        "",
+        "",
+        "M29|M26",
+        "",
+        "",
+        "N",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "M29",
+        "M26"
+      ],
+      "disabledYinyuanIds": [
+        "M26"
+      ],
+      "action": {
+        "type": "input",
+        "ascii": "N"
+      }
+    },
+    {
+      "id": "R05K03",
+      "x": 3.25,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "[",
+        "",
+        "",
+        "M28|M25",
+        "",
+        "",
+        "[",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "M28",
+        "M25"
+      ],
+      "disabledYinyuanIds": [
+        "M25"
+      ],
+      "action": {
+        "type": "input",
+        "ascii": "["
+      }
+    },
+    {
+      "id": "R05K04",
+      "x": 4.25,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "a",
+        "",
+        "",
+        "M12",
+        "<span class='cd'>a&#776&#768;</span>",
+        "",
+        "a",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M12"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "a"
+      }
+    },
+    {
+      "id": "R05K05",
+      "x": 5.25,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "D",
+        "",
+        "",
+        "M11",
+        "<span class='cd'>a&#776&#773;</span>",
+        "",
+        "D",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M11"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "D"
+      }
+    },
+    {
+      "id": "R05K06",
+      "x": 6.25,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "A",
+        "",
+        "",
+        "M10",
+        "<span class='cd'>a&#776&#769;</span>",
+        "",
+        "A",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M10"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "A"
+      }
+    },
+    {
+      "id": "R05K07",
+      "x": 7.25,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "f",
+        "",
+        "",
+        "N03",
+        "",
+        "",
+        "f",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N03"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "f"
+      }
+    },
+    {
+      "id": "R05K08",
+      "x": 10.0,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "m",
+        "",
+        "",
+        "N04",
+        "",
+        "",
+        "m",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N04"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "m"
+      }
+    },
+    {
+      "id": "R05K09",
+      "x": 11.0,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "I",
+        "",
+        "",
+        "M01",
+        "&iacute;",
+        "",
+        "I",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M01"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "I"
+      }
+    },
+    {
+      "id": "R05K10",
+      "x": 12.0,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "B",
+        "",
+        "",
+        "M02",
+        "ī",
+        "",
+        "B",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M02"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "B"
+      }
+    },
+    {
+      "id": "R05K11",
+      "x": 13.0,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "i",
+        "",
+        "",
+        "M03",
+        "&igrave;",
+        "",
+        "i",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M03"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "i"
+      }
+    },
+    {
+      "id": "R05K12",
+      "x": 14.0,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "\\",
+        "",
+        "",
+        "M31",
+        "<span class='cd'>ŋ&#769;</span>",
+        "",
+        "\\",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M31"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "\\"
+      }
+    },
+    {
+      "id": "R05K13",
+      "x": 15.0,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "G",
+        "",
+        "",
+        "M32",
+        "<span class='cd'>ŋ&#773;</span>",
+        "",
+        "G",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M32"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "G"
+      }
+    },
+    {
+      "id": "R05K14",
+      "x": 16.0,
+      "y": 4.25,
+      "width": 2.25,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "Enter",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "confirm",
+        "key": "Enter"
+      }
+    },
+    {
+      "id": "R05K15",
+      "x": 19.5,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "↑",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "local",
+        "key": "ArrowUp"
+      }
+    },
+    {
+      "id": "R05K16",
+      "x": 21.75,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "1",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "End",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "1"
+      }
+    },
+    {
+      "id": "R05K17",
+      "x": 22.75,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "2",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "↓",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "2"
+      }
+    },
+    {
+      "id": "R05K18",
+      "x": 23.75,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "3",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "PgDn",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "3"
+      }
+    },
+    {
+      "id": "R05K19",
+      "x": 24.75,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 2.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Enter",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "confirm",
+        "key": "Enter"
+      }
+    },
+    {
+      "id": "R06K01",
+      "x": 0.0,
+      "y": 5.25,
+      "width": 2.75,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "Shift",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Shift"
+      }
+    },
+    {
+      "id": "R06K02",
+      "x": 2.75,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "]",
+        "",
+        "",
+        "M30|M27",
+        "",
+        "",
+        "]",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "M30",
+        "M27"
+      ],
+      "disabledYinyuanIds": [
+        "M27"
+      ],
+      "action": {
+        "type": "input",
+        "ascii": "]"
+      }
+    },
+    {
+      "id": "R06K03",
+      "x": 3.75,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "e",
+        "",
+        "",
+        "M18",
+        "&eacute;",
+        "",
+        "e",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M18"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "e"
+      }
+    },
+    {
+      "id": "R06K04",
+      "x": 4.75,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "H",
+        "",
+        "",
+        "M17",
+        "<span class='cd'>e&#773;</span>",
+        "",
+        "H",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M17"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "H"
+      }
+    },
+    {
+      "id": "R06K05",
+      "x": 5.75,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "E",
+        "",
+        "",
+        "M16",
+        "&eacute;",
+        "",
+        "E",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M16"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "E"
+      }
+    },
+    {
+      "id": "R06K06",
+      "x": 6.75,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "w",
+        "",
+        "",
+        "N24",
+        "",
+        "",
+        "w",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N24"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "w"
+      }
+    },
+    {
+      "id": "R06K07",
+      "x": 7.75,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "b",
+        "",
+        "",
+        "N01",
+        "",
+        "",
+        "b",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N01"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "b"
+      }
+    },
+    {
+      "id": "R06K08",
+      "x": 9.5,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "d",
+        "",
+        "",
+        "N05",
+        "",
+        "",
+        "d",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N05"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "d"
+      }
+    },
+    {
+      "id": "R06K09",
+      "x": 10.5,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "j",
+        "",
+        "",
+        "N23",
+        "",
+        "",
+        "j",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [
+        "N23"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "j"
+      }
+    },
+    {
+      "id": "R06K10",
+      "x": 11.5,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "V",
+        "",
+        "",
+        "M07",
+        "<span class='cd'>ʏ&#768;</span>",
+        "",
+        "V",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M07"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "V"
+      }
+    },
+    {
+      "id": "R06K11",
+      "x": 12.5,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "Y",
+        "",
+        "",
+        "M08",
+        "<span class='cd'>ʏ&#773;</span>",
+        "",
+        "Y",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M08"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "Y"
+      }
+    },
+    {
+      "id": "R06K12",
+      "x": 13.5,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "v",
+        "",
+        "",
+        "M09",
+        "<span class='cd'>ʏ&#769;</span>",
+        "",
+        "v",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M09"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "v"
+      }
+    },
+    {
+      "id": "R06K13",
+      "x": 14.5,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "/",
+        "",
+        "",
+        "M33",
+        "<span class='cd'>ŋ&#768;</span>",
+        "",
+        "/",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M33"
+      ],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "/"
+      }
+    },
+    {
+      "id": "R06K14",
+      "x": 15.5,
+      "y": 5.25,
+      "width": 2.75,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "Shift",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Shift"
+      }
+    },
+    {
+      "id": "R06K15",
+      "x": 18.5,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "←",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "local",
+        "key": "ArrowLeft"
+      }
+    },
+    {
+      "id": "R06K16",
+      "x": 19.5,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "↓",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "local",
+        "key": "ArrowDown"
+      }
+    },
+    {
+      "id": "R06K17",
+      "x": 20.5,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "→",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "local",
+        "key": "ArrowRight"
+      }
+    },
+    {
+      "id": "R06K18",
+      "x": 21.75,
+      "y": 5.25,
+      "width": 2.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "0",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Ins",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "0"
+      }
+    },
+    {
+      "id": "R06K19",
+      "x": 23.75,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        ".",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Del",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "."
+      }
+    },
+    {
+      "id": "R07K01",
+      "x": 0.0,
+      "y": 6.25,
+      "width": 1.25,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Ctrl",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Ctrl"
+      }
+    },
+    {
+      "id": "R07K02",
+      "x": 1.25,
+      "y": 6.25,
+      "width": 1.25,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Menu",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Menu"
+      }
+    },
+    {
+      "id": "R07K03",
+      "x": 2.5,
+      "y": 6.25,
+      "width": 1.25,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Win",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Win"
+      }
+    },
+    {
+      "id": "R07K04",
+      "x": 3.75,
+      "y": 6.25,
+      "width": 1.25,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Alt",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Alt"
+      }
+    },
+    {
+      "id": "R07K05",
+      "x": 5.0,
+      "y": 6.25,
+      "width": 4.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "confirm",
+        "key": "Space"
+      }
+    },
+    {
+      "id": "R07K06",
+      "x": 9.25,
+      "y": 6.25,
+      "width": 4.0,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "confirm",
+        "key": "Space"
+      }
+    },
+    {
+      "id": "R07K07",
+      "x": 13.25,
+      "y": 6.25,
+      "width": 1.25,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Alt",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Alt"
+      }
+    },
+    {
+      "id": "R07K08",
+      "x": 14.5,
+      "y": 6.25,
+      "width": 1.25,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Win",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Win"
+      }
+    },
+    {
+      "id": "R07K09",
+      "x": 15.75,
+      "y": 6.25,
+      "width": 1.25,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Menu",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Menu"
+      }
+    },
+    {
+      "id": "R07K10",
+      "x": 17.0,
+      "y": 6.25,
+      "width": 1.25,
+      "height": 1.0,
+      "color": "#a09494",
+      "textColor": "#000000",
+      "labels": [
+        "Ctrl",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [],
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "Ctrl"
+      }
+    }
+  ],
+  "policyNote": "M25、M26、M27 为未来预留音元，当前停用，不参与编码和候选输出。",
+  "sources": [
+    {
+      "path": "prototypes/touch-terminal/design/concept-129.kle.json",
+      "sha256": "9a0c113a4fe517541925a05abd85423c867671b9063897f9584f9976e8a85278"
+    },
+    {
+      "path": "internal_data/manual_key_layout.json",
+      "sha256": "51bfa7ebdfb11cc04e3f1fefd77b25b484329902ba9a3daa278465722044c59d"
+    }
+  ]
+}
