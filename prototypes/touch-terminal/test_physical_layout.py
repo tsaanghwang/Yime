@@ -8,7 +8,7 @@ from physical_layout import SOURCE, build, parse_physical_kle, plain, absolute_r
 class PhysicalLayoutTests(unittest.TestCase):
     def test_board_inventory_and_union_geometry(self):
         board = parse_physical_kle(json.loads(SOURCE.read_text(encoding="utf-8-sig")))
-        self.assertEqual(138, len(board["keys"]))
+        self.assertEqual(134, len(board["keys"]))
         self.assertEqual({"width": 24.75, "height": 7.25}, board["bounds"])
         ids = [identifier for key in board["keys"] for identifier in key["yinyuanIds"]]
         self.assertEqual(75, len(ids))
@@ -65,33 +65,42 @@ class PhysicalLayoutTests(unittest.TestCase):
         for char in "<>&":
             self.assertEqual(char, plain(char))
 
-    def test_explicit_layers_never_infer_ansi_shift(self):
-        keys = build()["keys"]
-        ids = {identifier: key for key in keys for identifier in key["yinyuanIds"]}
-        for base, shifted, ascii_base, ascii_shift in (
-            ("M28", "M25", "[", "{"), ("M29", "M26", "\\", "|"),
-            ("M30", "M27", "]", "}"), ("M16", "R04", "E", "@"),
-            ("M10", "R10", "A", "Q"), ("M31", "R07", "<", "("),
-        ):
-            key = ids[base]
-            self.assertIs(key, ids[shifted])
-            self.assertEqual({"type": "input", "ascii": ascii_base}, key["action"])
-            self.assertEqual({"type": "input", "ascii": ascii_shift}, key["shiftAction"])
-            self.assertEqual([base], key["baseYinyuanIds"])
-            self.assertEqual([shifted], key["shiftYinyuanIds"])
-        self.assertNotIn("shiftAction", ids["N12"])
-        self.assertNotIn("shiftAction", ids["M01"])
-        for key in keys:
-            if key["zone"] == "main" and key["action"].get("ascii", "") in "1234567890" and key["action"].get("ascii"):
-                self.assertNotIn("shiftAction", key)
-                self.assertEqual("input", key["action"]["type"])
+    def test_explicit_cn_layers_keep_coding_and_literal_entrances_separate(self):
+        board = build()
+        ids = {identifier:key for key in board["keys"] for identifier in key["yinyuanIds"]}
+        for base, upper, low, high in (("M15","R15","o","/"),("M14","R14","Q",";"),
+                                       ("M13","R13","O","#"),("M04","R16","U","*"),
+                                       ("M01","R07","I",","),("M16","R04","E","{")):
+            self.assertIs(ids[base],ids[upper])
+            self.assertEqual({"type":"input","ascii":low},ids[base]["action"])
+            self.assertEqual({"type":"input","ascii":high},ids[base]["shiftAction"])
+        for identifier, char in (("M25","B"),("M26","M"),("M27","P")):
+            self.assertEqual(char,ids[identifier]["action"]["ascii"])
+            self.assertNotIn("literalEntry",ids[identifier]["action"])
+        entrances = {action["ascii"] for key in board["keys"] for name in ("action","shiftAction")
+                     if (action := key.get(name,{})).get("literalEntry")}
+        self.assertEqual({chr(c) for c in range(33,127) if not chr(c).isalnum()},entrances)
+        symbols = {key["shiftAction"]["ascii"] for key in board["keys"]
+                   if key.get("shiftAction",{}).get("type") == "symbol"}
+        self.assertEqual(set("·、—×√÷"),symbols)
+
+    def test_english_overlay_and_disabled_keys_are_explicit_not_color_based(self):
+        board = build()
+        self.assertEqual(23,sum(key["english"].get("disabled",False) for key in board["keys"]))
+        letters = {key["english"]["action"]["ascii"]:key["english"] for key in board["keys"]
+                   if key["english"]["action"].get("ascii","") in list("abcdefghijklmnopqrstuvwxyz")}
+        self.assertEqual(set("abcdefghijklmnopqrstuvwxyz"),set(letters))
+        for char,key in letters.items():
+            self.assertEqual(char.upper(),key["shiftAction"]["ascii"])
+        self.assertTrue(all("color" not in key["english"] for key in board["keys"]))
+        self.assertEqual(2,sum(key["english"]["action"] == {"type":"confirm","key":"Space"} for key in board["keys"]))
 
     def test_two_independent_numeric_zones_and_ten_edit_actions(self):
         board = build()
         sides = {}
         for zone in ("left", "right"):
             keys = [key for key in board["keys"] if key["zone"] == zone]
-            self.assertEqual(18, len(keys))
+            self.assertEqual(17, len(keys))
             self.assertEqual(1, sum(key["action"]["type"] == "toggle-number" for key in keys))
             literal = {key["action"]["ascii"]: key for key in keys if key["action"]["type"] == "literal"}
             self.assertEqual(set("0123456789./*-+"), set(literal))
@@ -100,21 +109,21 @@ class PhysicalLayoutTests(unittest.TestCase):
             self.assertEqual({"Home", "End", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
                               "PageUp", "PageDown", "Insert", "Delete"}, edit)
             self.assertEqual(1, sum(key["action"] == {"type": "confirm", "key": "Enter"} for key in keys))
-            self.assertEqual(1, sum(key["action"] == {"type": "backspace"} for key in keys))
+            self.assertEqual(0, sum(key["action"] == {"type": "backspace"} for key in keys))
             sides[zone] = [(key["y"], key["width"], key["height"], key["action"], key.get("editAction")) for key in keys]
-        self.assertEqual(sides["left"], sides["right"])
+        self.assertEqual(sorted(sides["left"],key=repr), sorted(sides["right"],key=repr))
 
     def test_space_modes_caps_and_reused_erhua_aliases(self):
         layout = build()
         actions = [key["action"] for key in layout["keys"]]
         self.assertEqual(2, actions.count({"type": "confirm", "key": "Space"}))
         self.assertEqual(1, actions.count({"type": "toggle-language"}))
-        self.assertEqual(1, actions.count({"type": "toggle-punctuation"}))
+        self.assertEqual(1, actions.count({"type": "toggle-layout"}))
         self.assertEqual(1, actions.count({"type": "unsupported", "label": "Caps Lock"}))
         self.assertEqual({"R01": "M22", "R02": "M23", "R03": "M24"}, layout["inputIdAliases"])
         for key in layout["keys"]:
             if key.get("inputIdAliases"):
-                self.assertTrue(any("/R0" in label for label in key["displayLabels"]))
+                self.assertTrue(set(key["inputIdAliases"]).issubset({"R01","R02","R03"}))
 
 
 if __name__ == "__main__":

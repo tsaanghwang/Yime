@@ -1,14 +1,14 @@
 # 实体键盘虚拟样机的隔离 YimeCore 服务
 
 这个开发命令把 ANSI 实体键盘和概念键盘的浏览器点击接入同一个真实
-YimeCore 引擎。138 键概念布局有 75 个独立 ASCII 载体（52 字母与 23 符号），
+YimeCore 引擎。134 键概念布局有 75 个独立 ASCII 载体（52 字母与 23 符号），
 输入保留 ASCII 大小写；中文模式主区 `1–9` 有候选时选词，无候选时直接输出数字。
 侧数字区始终直输 ASCII，不选词、不编码、不转换标点，也不清除或确认现有组成。
 候选来自实验布局
 重新生成的完整三模式词典，提交结果只进入页面内的文本框。
 
 启动前生成 `prototypes/touch-terminal/data/physical-layout.json` 和
-`.generated/ascii-keyboard-138/data/yime_{variable,full,shorthand}.dict.yaml`。
+`.generated/ascii-keyboard-134/data/yime_{variable,full,shorthand}.dict.yaml`。
 同目录的 `ascii_keyboard_manifest.json` 必须绑定当前完整 75 载体布局摘要、空停用集合和
 三份词典的 SHA-256 与 `input_policy: concept-keyboard-modes-v2`；启动时逐项核验，
 布局摘要还必须等于编译时生成的完整 `codemode.LayoutProjectionSHA256`，防止读取旧布局词典或旧二进制。
@@ -40,7 +40,7 @@ Python 工具只用于离线数据生成，运行服务和解码不依赖 Python
 
 返回 `{ok, sessionId, revision, state, modes}`。`modes` 是服务器权威的
 `{input:"chinese"|"english",punctuation:"chinese"|"english"}`，新会话默认中文输入、英文标点。
-两项独立切换；不存在 Caps 模式。`state` 使用真实引擎格式：
+API 允许分别设置；134 键页面的 CN EN 同时设置两项，页面初始化为中文输入／中文标点。不存在 Caps 模式。`state` 使用真实引擎格式：
 `raw_input`、`candidates`（稳定 `id`、`text`、`code` 等）、`page_number`、
 `has_previous`、`has_next`。空数组、零页码和 false 布尔值可能被 JSON 省略。
 
@@ -54,6 +54,7 @@ Python 工具只用于离线数据生成，运行服务和解码不依赖 Python
 | --- | --- | --- |
 | `input` | `code`：恰好一个非空格可打印 ASCII 字符 | 服务端按当前候选和生成的编码字母表决定编码、选词或直输 |
 | `literal` | `code`：单个可打印 ASCII（含空格），或 LF/TAB | 侧区直输；完全绕过编码、选词、标点转换和自动确认，保留组成 |
+| `symbol` | `code`：单个 ASCII 标点或已审定的 ·、—×√÷ | 显式主区字面入口，按当前标点模式输出并保留组合；与侧区 literal 分开 |
 | `setModes` | `inputMode`/`punctuationMode`：至少一项，值为 `chinese` 或 `english` | 保留未确认组成、候选 ID 和页码，不隐式提交或取消 |
 | `backspace` | 无 | 删除最后一个编码字符 |
 | `clear` | 无 | 取消本会话组合 |
@@ -62,7 +63,7 @@ Python 工具只用于离线数据生成，运行服务和解码不依赖 Python
 | `close` | 无 | 取消组合并关闭会话，供切换模式使用 |
 
 成功返回 `{ok:true,sessionId,revision,state,modes,commit?}`；`commit` 是提交文本字符串，
-可以由 `select`、`input` 或 `literal` 产生。ANSI 和虚拟键盘都把
+可以由 `select`、`input`、`literal` 或 `symbol` 产生。ANSI 和虚拟键盘都把
 字符交给本实验服务统一处理，浏览器不自行提交标点：
 
 - 中文输入的编码字母表来自 `codemode.LayoutAlphabet`，当前为 52 个大小写字母与 23 个符号。
@@ -94,7 +95,7 @@ Python 工具只用于离线数据生成，运行服务和解码不依赖 Python
 切换标点模式只改变字面候选显示，不改变其稳定 ID、原 ASCII 编码和页码。
 
 此分页视图仅位于 `cmd/yime-keyboard-lab`；真实候选选择时仍定位到所属引擎页再提交，
-不改变共享 YimeCore 引擎或原生 Rime 分页。页面高亮本身不用调用 `select`。
+不改变共享 YimeCore 引擎或原生 Rime 分页。Layout 仅是页面内的英文视图选择，不向服务请求切换词典或会话。页面高亮本身不用调用 `select`。
 
 同会话事件串行执行。重复 eventId 的相同请求返回原结果；不同内容返回 409。
 客户端必须依据原事件 ID 只消费一次 commit；不可自动重播结果未知的操作。

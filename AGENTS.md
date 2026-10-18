@@ -7,6 +7,14 @@
 - Each branch keeps its own version of the sole editable `internal_data/manual_key_layout.json`, with matching generated layouts, dictionaries, identities, and evidence. Do not mix cross-layout generated artifacts or automatically merge the new layout over the old one. Shared fixes may be ported deliberately with each layout's own regressions.
 - This is a layout-version split, not a change to the independent YimeCore and Rime/PIME product boundaries. Neither branch preservation nor page testing authorizes changing installed input methods, default input selection, or user data.
 
+## Current CN/EN134 keyboard lab (user decisions, 2026-10-18)
+
+- The active virtual prototype reads `prototypes/touch-terminal/design/yime-cn-134k-24u-keyboard-layout.json` and its `yime-en-134k-24u-keyboard-layout.json` pair. Earlier 138-key instructions below describe the preserved checkpoint, not the current key inventory.
+- Keep the branch-local manual projection as the only editable encoding source; CN134 changes 36 ASCII assignments and requires regenerated metadata and isolated three-mode dictionaries. Never mix those dictionaries with the standard-layout branch or installed products.
+- CN EN couples page input language and punctuation. In English input, Layout toggles the original/English view persistently; Chinese input always shows CN and retains the English preference. EN base letters are lowercase with explicit uppercase Shift. Exactly 23 empty EN keys are disabled independently of color. Reuse physical and legend nodes and keep their geometry/colors during switching.
+- The existing contextual main-digit experiment exception remains scoped to this lab. Side numeric zones retain their literal bypass. Reserved unlabelled main punctuation entrances have an explicit software switch, off by default; coding-ID layers remain coding. Unicode symbol input is limited to the six reviewed keycaps. No product runtime change is authorized by this experiment.
+- The user reports the touch display is available. Actual finger/pen acceptance must be observed and recorded separately from mouse or simulated-touch checks; no old hardware result is inherited by CN/EN134.
+
 ## Simple development installer rewrite (user decision, 2026-09-14)
 
 - The active installer rewrite is `installer/simple/`. Do not extend the historical fixed-transaction recovery chain or request more evidence/authorization renewals for it. Retired source belongs in Git history; preserve original evidence without making it an installation prerequisite.

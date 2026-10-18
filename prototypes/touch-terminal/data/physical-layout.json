@@ -1,8 +1,8 @@
 {
-  "formatVersion": 3,
-  "layoutId": "5634db1c61fe211560b669a7f7a85b2b27b007a34658086b8eeddf655e4dff4d",
-  "touchTemplateId": "eca8f9609041d188a376902cd94e7d4ec4aaba036719b1d4bf14995d74bb416c",
-  "name": "Yime ASCII concept keyboard · 138 keys",
+  "formatVersion": 4,
+  "layoutId": "995f1a74f129249febbd09ca11a8266f6e0c94bac8c05c57754859fc3be3349c",
+  "touchTemplateId": "5b353af6151796ff1a5c5b8637b5d298080749d01772950ec0dd8637e2c4f18d",
+  "name": "Yime ASCII concept keyboard · CN/EN 134 keys",
   "bounds": {
     "width": 24.75,
     "height": 7.25
@@ -18,17 +18,17 @@
       "id": "R01K01",
       "x": 0.0,
       "y": 0.0,
-      "width": 1.0,
+      "width": 3.0,
       "height": 1.0,
       "rectangles": [
         {
           "x": 0.0,
           "y": 0.0,
-          "width": 1.0,
+          "width": 3.0,
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
@@ -51,11 +51,30 @@
       "disabledYinyuanIds": [],
       "action": {
         "type": "toggle-number"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Num Lock",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "toggle-number"
+        }
       }
     },
     {
       "id": "R01K02",
-      "x": 1.0,
+      "x": 3.25,
       "y": 0.0,
       "width": 2.0,
       "height": 1.0,
@@ -67,46 +86,7 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "",
-        "",
-        "",
-        "",
-        "Back Space",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 7,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "left",
-      "disabledYinyuanIds": [],
-      "action": {
-        "type": "backspace"
-      }
-    },
-    {
-      "id": "R01K03",
-      "x": 3.25,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
@@ -129,11 +109,30 @@
       "disabledYinyuanIds": [],
       "action": {
         "type": "clear"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Esc",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "clear"
+        }
       }
     },
     {
-      "id": "R01K04",
-      "x": 4.25,
+      "id": "R01K03",
+      "x": 5.25,
       "y": 0.0,
       "width": 1.0,
       "height": 1.0,
@@ -145,14 +144,14 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
         "",
         "",
         "",
-        "中英文切换",
+        "CN EN",
         "",
         "",
         "",
@@ -168,11 +167,30 @@
       "disabledYinyuanIds": [],
       "action": {
         "type": "toggle-language"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "CN EN",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "toggle-language"
+        }
       }
     },
     {
-      "id": "R01K05",
-      "x": 5.25,
+      "id": "R01K04",
+      "x": 6.25,
       "y": 0.0,
       "width": 1.0,
       "height": 1.0,
@@ -184,14 +202,758 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
         "",
         "",
         "",
-        "中英标点切换",
+        "F1",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F1"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "F1",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "F1"
+        }
+      }
+    },
+    {
+      "id": "R01K05",
+      "x": 7.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "F2",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F2"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "F2",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "F2"
+        }
+      }
+    },
+    {
+      "id": "R01K06",
+      "x": 8.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "F3",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F3"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "F3",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "F3"
+        }
+      }
+    },
+    {
+      "id": "R01K07",
+      "x": 9.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "F4",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F4"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "F4",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "F4"
+        }
+      }
+    },
+    {
+      "id": "R01K08",
+      "x": 10.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "F5",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F5"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "F5",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "F5"
+        }
+      }
+    },
+    {
+      "id": "R01K09",
+      "x": 11.25,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "F6",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F6"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "F6",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "F6"
+        }
+      }
+    },
+    {
+      "id": "R01K10",
+      "x": 12.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "F7",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F7"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "F7",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "F7"
+        }
+      }
+    },
+    {
+      "id": "R01K11",
+      "x": 13.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "F8",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F8"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "F8",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "F8"
+        }
+      }
+    },
+    {
+      "id": "R01K12",
+      "x": 14.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "F9",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F9"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "F9",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "F9"
+        }
+      }
+    },
+    {
+      "id": "R01K13",
+      "x": 15.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "F10",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F10"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "F10",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "F10"
+        }
+      }
+    },
+    {
+      "id": "R01K14",
+      "x": 16.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "F11",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F11"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "F11",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "F11"
+        }
+      }
+    },
+    {
+      "id": "R01K15",
+      "x": 17.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "F12",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "F12"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "F12",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "F12"
+        }
+      }
+    },
+    {
+      "id": "R01K16",
+      "x": 18.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "Layout",
         "",
         "",
         "",
@@ -206,614 +968,46 @@
       "zone": "main",
       "disabledYinyuanIds": [],
       "action": {
-        "type": "toggle-punctuation"
-      }
-    },
-    {
-      "id": "R01K06",
-      "x": 6.25,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
+        "type": "toggle-layout"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Layout",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "toggle-layout"
         }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "F1",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "F1"
-      }
-    },
-    {
-      "id": "R01K07",
-      "x": 7.25,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "F2",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "F2"
-      }
-    },
-    {
-      "id": "R01K08",
-      "x": 8.25,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "F3",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "F3"
-      }
-    },
-    {
-      "id": "R01K09",
-      "x": 9.25,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "F4",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "F4"
-      }
-    },
-    {
-      "id": "R01K10",
-      "x": 10.25,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "F5",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "F5"
-      }
-    },
-    {
-      "id": "R01K11",
-      "x": 11.25,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "F6",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "F6"
-      }
-    },
-    {
-      "id": "R01K12",
-      "x": 12.5,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "F7",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "F7"
-      }
-    },
-    {
-      "id": "R01K13",
-      "x": 13.5,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "F8",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "F8"
-      }
-    },
-    {
-      "id": "R01K14",
-      "x": 14.5,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "F9",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "F9"
-      }
-    },
-    {
-      "id": "R01K15",
-      "x": 15.5,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "F10",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "F10"
-      }
-    },
-    {
-      "id": "R01K16",
-      "x": 16.5,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "F11",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "F11"
       }
     },
     {
       "id": "R01K17",
-      "x": 17.5,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "F12",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "F12"
-      }
-    },
-    {
-      "id": "R01K18",
-      "x": 18.5,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "PrtSc",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "PrtSc"
-      }
-    },
-    {
-      "id": "R01K19",
       "x": 19.5,
       "y": 0.0,
-      "width": 1.0,
+      "width": 2.0,
       "height": 1.0,
       "rectangles": [
         {
           "x": 0.0,
           "y": 0.0,
-          "width": 1.0,
+          "width": 2.0,
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "Scroll Lock",
         "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "Scroll Lock"
-      }
-    },
-    {
-      "id": "R01K20",
-      "x": 20.5,
-      "y": 0.0,
-      "width": 1.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.0,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
         "Pause",
         "",
         "",
@@ -824,10 +1018,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "main",
@@ -837,23 +1030,43 @@
       "action": {
         "type": "unsupported",
         "label": "Pause"
+      },
+      "english": {
+        "labels": [
+          "",
+          "Pause",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Break",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "Pause"
+        }
       }
     },
     {
-      "id": "R01K21",
+      "id": "R01K18",
       "x": 21.75,
       "y": 0.0,
-      "width": 1.0,
+      "width": 3.0,
       "height": 1.0,
       "rectangles": [
         {
           "x": 0.0,
           "y": 0.0,
-          "width": 1.0,
+          "width": 3.0,
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
@@ -876,45 +1089,25 @@
       "disabledYinyuanIds": [],
       "action": {
         "type": "toggle-number"
-      }
-    },
-    {
-      "id": "R01K22",
-      "x": 22.75,
-      "y": 0.0,
-      "width": 2.0,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 2.0,
-          "height": 1.0
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Num Lock",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "toggle-number"
         }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "",
-        "",
-        "",
-        "",
-        "Back Space",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 7,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "right",
-      "disabledYinyuanIds": [],
-      "action": {
-        "type": "backspace"
       }
     },
     {
@@ -931,11 +1124,11 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "/",
         "",
+        "-",
         "",
         "",
         "",
@@ -947,18 +1140,42 @@
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
       "disabledYinyuanIds": [],
       "action": {
         "type": "literal",
-        "ascii": "/"
+        "ascii": "-"
       },
       "editAction": {
         "type": "literal",
-        "ascii": "/"
+        "ascii": "-"
+      },
+      "english": {
+        "labels": [
+          "",
+          "-",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "-"
+        },
+        "editAction": {
+          "type": "literal",
+          "ascii": "-"
+        }
       }
     },
     {
@@ -975,11 +1192,11 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "*",
         "",
+        "*",
         "",
         "",
         "",
@@ -991,7 +1208,7 @@
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
@@ -1003,6 +1220,30 @@
       "editAction": {
         "type": "literal",
         "ascii": "*"
+      },
+      "english": {
+        "labels": [
+          "",
+          "*",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "*"
+        },
+        "editAction": {
+          "type": "literal",
+          "ascii": "*"
+        }
       }
     },
     {
@@ -1019,11 +1260,11 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "-",
         "",
+        "/",
         "",
         "",
         "",
@@ -1035,41 +1276,65 @@
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
       "disabledYinyuanIds": [],
       "action": {
         "type": "literal",
-        "ascii": "-"
+        "ascii": "/"
       },
       "editAction": {
         "type": "literal",
-        "ascii": "-"
+        "ascii": "/"
+      },
+      "english": {
+        "labels": [
+          "",
+          "/",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "/"
+        },
+        "editAction": {
+          "type": "literal",
+          "ascii": "/"
+        }
       }
     },
     {
       "id": "R02K04",
       "x": 3.25,
       "y": 1.25,
-      "width": 1.75,
+      "width": 1.0,
       "height": 2.0,
       "rectangles": [
         {
           "x": 0.0,
           "y": 0.0,
-          "width": 1.75,
+          "width": 1.0,
           "height": 2.0
         },
         {
           "x": 0.0,
-          "y": 0.0,
-          "width": 2.0,
+          "y": 1.0,
+          "width": 1.75,
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
@@ -1095,11 +1360,31 @@
       "action": {
         "type": "local",
         "key": "Tab"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Tab",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "local",
+          "key": "Tab"
+        }
       }
     },
     {
       "id": "R02K05",
-      "x": 5.25,
+      "x": 4.25,
       "y": 1.25,
       "width": 1.0,
       "height": 1.0,
@@ -1114,7 +1399,7 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "",
+        "~",
         "",
         "",
         "",
@@ -1122,7 +1407,7 @@
         "",
         "N26",
         "",
-        "~",
+        "`",
         "",
         "",
         ""
@@ -1140,12 +1425,37 @@
       "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "~"
+        "ascii": "`"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "~",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
       "id": "R02K06",
-      "x": 6.25,
+      "x": 5.25,
       "y": 1.25,
       "width": 1.0,
       "height": 1.0,
@@ -1160,7 +1470,7 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "",
+        "!",
         "",
         "",
         "",
@@ -1187,10 +1497,106 @@
       "action": {
         "type": "input",
         "ascii": "'"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "!",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
       "id": "R02K07",
+      "x": 6.25,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        "\"",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "M25",
+        "",
+        "B",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M25"
+      ],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [
+        "M25"
+      ],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "B"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "\"",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
+      }
+    },
+    {
+      "id": "R02K08",
       "x": 7.25,
       "y": 1.25,
       "width": 1.0,
@@ -1203,10 +1609,10 @@
           "height": 1.0
         }
       ],
-      "color": "#c7a5dd",
+      "color": "#d0b2e2",
       "textColor": "#000000",
       "labels": [
-        "",
+        "#",
         "",
         "",
         "",
@@ -1229,10 +1635,35 @@
       "action": {
         "type": "input",
         "ascii": "1"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "#",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
-      "id": "R02K08",
+      "id": "R02K09",
       "x": 8.25,
       "y": 1.25,
       "width": 1.0,
@@ -1245,10 +1676,10 @@
           "height": 1.0
         }
       ],
-      "color": "#c7a5dd",
+      "color": "#d0b2e2",
       "textColor": "#000000",
       "labels": [
-        "",
+        "$",
         "",
         "",
         "",
@@ -1271,10 +1702,35 @@
       "action": {
         "type": "input",
         "ascii": "2"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "$",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
-      "id": "R02K09",
+      "id": "R02K10",
       "x": 9.25,
       "y": 1.25,
       "width": 1.0,
@@ -1287,10 +1743,10 @@
           "height": 1.0
         }
       ],
-      "color": "#c7a5dd",
+      "color": "#d0b2e2",
       "textColor": "#000000",
       "labels": [
-        "",
+        "%",
         "",
         "",
         "",
@@ -1313,10 +1769,35 @@
       "action": {
         "type": "input",
         "ascii": "3"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "%",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
-      "id": "R02K10",
+      "id": "R02K11",
       "x": 10.25,
       "y": 1.25,
       "width": 1.0,
@@ -1329,10 +1810,10 @@
           "height": 1.0
         }
       ],
-      "color": "#c7a5dd",
+      "color": "#d0b2e2",
       "textColor": "#000000",
       "labels": [
-        "",
+        "&",
         "",
         "",
         "",
@@ -1355,10 +1836,35 @@
       "action": {
         "type": "input",
         "ascii": "4"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "&",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
-      "id": "R02K11",
+      "id": "R02K12",
       "x": 11.25,
       "y": 1.25,
       "width": 1.0,
@@ -1371,10 +1877,10 @@
           "height": 1.0
         }
       ],
-      "color": "#c7a5dd",
+      "color": "#d0b2e2",
       "textColor": "#000000",
       "labels": [
-        "",
+        "'",
         "",
         "",
         "",
@@ -1397,10 +1903,35 @@
       "action": {
         "type": "input",
         "ascii": "5"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "'",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
-      "id": "R02K12",
+      "id": "R02K13",
       "x": 12.5,
       "y": 1.25,
       "width": 1.0,
@@ -1413,10 +1944,10 @@
           "height": 1.0
         }
       ],
-      "color": "#c7a5dd",
+      "color": "#d0b2e2",
       "textColor": "#000000",
       "labels": [
-        "",
+        "(",
         "",
         "",
         "",
@@ -1439,10 +1970,35 @@
       "action": {
         "type": "input",
         "ascii": "6"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "(",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
-      "id": "R02K13",
+      "id": "R02K14",
       "x": 13.5,
       "y": 1.25,
       "width": 1.0,
@@ -1455,10 +2011,10 @@
           "height": 1.0
         }
       ],
-      "color": "#c7a5dd",
+      "color": "#d0b2e2",
       "textColor": "#000000",
       "labels": [
-        "",
+        ")",
         "",
         "",
         "",
@@ -1481,10 +2037,35 @@
       "action": {
         "type": "input",
         "ascii": "7"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ")",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
-      "id": "R02K14",
+      "id": "R02K15",
       "x": 14.5,
       "y": 1.25,
       "width": 1.0,
@@ -1497,10 +2078,10 @@
           "height": 1.0
         }
       ],
-      "color": "#c7a5dd",
+      "color": "#d0b2e2",
       "textColor": "#000000",
       "labels": [
-        "",
+        "*",
         "",
         "",
         "",
@@ -1523,10 +2104,35 @@
       "action": {
         "type": "input",
         "ascii": "8"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "*",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
-      "id": "R02K15",
+      "id": "R02K16",
       "x": 15.5,
       "y": 1.25,
       "width": 1.0,
@@ -1539,10 +2145,10 @@
           "height": 1.0
         }
       ],
-      "color": "#c7a5dd",
+      "color": "#d0b2e2",
       "textColor": "#000000",
       "labels": [
-        "",
+        "+",
         "",
         "",
         "",
@@ -1565,10 +2171,35 @@
       "action": {
         "type": "input",
         "ascii": "9"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "+",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
-      "id": "R02K16",
+      "id": "R02K17",
       "x": 16.5,
       "y": 1.25,
       "width": 1.0,
@@ -1581,10 +2212,10 @@
           "height": 1.0
         }
       ],
-      "color": "#cccccc",
+      "color": "#d0b2e2",
       "textColor": "#000000",
       "labels": [
-        "",
+        ",",
         "",
         "",
         "",
@@ -1607,10 +2238,35 @@
       "action": {
         "type": "input",
         "ascii": "0"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ",",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
-      "id": "R02K17",
+      "id": "R02K18",
       "x": 17.5,
       "y": 1.25,
       "width": 1.0,
@@ -1623,37 +2279,137 @@
           "height": 1.0
         }
       ],
-      "color": "#cccccc",
+      "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
+        "-",
         "",
         "",
         "",
         "",
         "",
+        "M26",
         "",
-        "\"",
-        "",
-        "\"",
+        "M",
         "",
         "",
         ""
       ],
       "alignment": 4,
       "homing": false,
-      "yinyuanIds": [],
+      "yinyuanIds": [
+        "M26"
+      ],
       "zone": "main",
       "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
+      "baseYinyuanIds": [
+        "M26"
+      ],
       "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "\""
+        "ascii": "M"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "-",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
-      "id": "R02K18",
+      "id": "R02K19",
       "x": 18.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#f4e4cf",
+      "textColor": "#000000",
+      "labels": [
+        ".",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "M27",
+        "",
+        "P",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "M27"
+      ],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [
+        "M27"
+      ],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "P"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ".",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
+      }
+    },
+    {
+      "id": "R02K20",
+      "x": 19.5,
       "y": 1.25,
       "width": 1.0,
       "height": 1.0,
@@ -1668,9 +2424,9 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "`",
+        "/",
         "",
-        "`",
+        "",
         "",
         "",
         "",
@@ -1698,30 +2454,51 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "`"
+        "ascii": "/",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
-      "id": "R02K19",
-      "x": 19.75,
+      "id": "R02K21",
+      "x": 20.5,
       "y": 1.25,
-      "width": 1.75,
+      "width": 1.0,
       "height": 2.0,
       "rectangles": [
         {
           "x": 0.0,
           "y": 0.0,
-          "width": 1.75,
+          "width": 1.0,
           "height": 2.0
         },
         {
-          "x": -0.25,
-          "y": 0.0,
-          "width": 2.0,
+          "x": -0.75,
+          "y": 1.0,
+          "width": 1.75,
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
@@ -1744,10 +2521,29 @@
       "disabledYinyuanIds": [],
       "action": {
         "type": "backspace"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Back Space",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "backspace"
+        }
       }
     },
     {
-      "id": "R02K20",
+      "id": "R02K22",
       "x": 21.75,
       "y": 1.25,
       "width": 1.0,
@@ -1760,11 +2556,11 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "/",
         "",
+        "/",
         "",
         "",
         "",
@@ -1776,7 +2572,7 @@
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -1788,10 +2584,34 @@
       "editAction": {
         "type": "literal",
         "ascii": "/"
+      },
+      "english": {
+        "labels": [
+          "",
+          "/",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "/"
+        },
+        "editAction": {
+          "type": "literal",
+          "ascii": "/"
+        }
       }
     },
     {
-      "id": "R02K21",
+      "id": "R02K23",
       "x": 22.75,
       "y": 1.25,
       "width": 1.0,
@@ -1804,11 +2624,11 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "*",
         "",
+        "*",
         "",
         "",
         "",
@@ -1820,7 +2640,7 @@
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -1832,10 +2652,34 @@
       "editAction": {
         "type": "literal",
         "ascii": "*"
+      },
+      "english": {
+        "labels": [
+          "",
+          "*",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "*"
+        },
+        "editAction": {
+          "type": "literal",
+          "ascii": "*"
+        }
       }
     },
     {
-      "id": "R02K22",
+      "id": "R02K24",
       "x": 23.75,
       "y": 1.25,
       "width": 1.0,
@@ -1848,11 +2692,11 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "-",
         "",
+        "-",
         "",
         "",
         "",
@@ -1864,7 +2708,7 @@
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -1876,6 +2720,30 @@
       "editAction": {
         "type": "literal",
         "ascii": "-"
+      },
+      "english": {
+        "labels": [
+          "",
+          "-",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "-"
+        },
+        "editAction": {
+          "type": "literal",
+          "ascii": "-"
+        }
       }
     },
     {
@@ -1892,34 +2760,58 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "7",
+        "",
+        "9",
         "",
         "",
         "",
         "",
         "",
-        "Home",
-        "",
+        "PgUp",
         "",
         "",
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
       "disabledYinyuanIds": [],
       "action": {
         "type": "literal",
-        "ascii": "7"
+        "ascii": "9"
       },
       "editAction": {
         "type": "local",
-        "key": "Home"
+        "key": "PageUp"
+      },
+      "english": {
+        "labels": [
+          "",
+          "9",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "PgUp",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "9"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "PageUp"
+        }
       }
     },
     {
@@ -1936,9 +2828,10 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
         "8",
         "",
         "",
@@ -1949,10 +2842,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
@@ -1964,6 +2856,30 @@
       "editAction": {
         "type": "local",
         "key": "ArrowUp"
+      },
+      "english": {
+        "labels": [
+          "",
+          "8",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "↑",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "8"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "ArrowUp"
+        }
       }
     },
     {
@@ -1980,34 +2896,58 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "9",
+        "",
+        "7",
         "",
         "",
         "",
         "",
         "",
-        "PgUp",
-        "",
+        "Home",
         "",
         "",
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
       "disabledYinyuanIds": [],
       "action": {
         "type": "literal",
-        "ascii": "9"
+        "ascii": "7"
       },
       "editAction": {
         "type": "local",
-        "key": "PageUp"
+        "key": "Home"
+      },
+      "english": {
+        "labels": [
+          "",
+          "7",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Home",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "7"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "Home"
+        }
       }
     },
     {
@@ -2027,7 +2967,7 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "",
+        "\"",
         "",
         "",
         "",
@@ -2054,6 +2994,31 @@
       "action": {
         "type": "input",
         "ascii": "h"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "\"",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
@@ -2073,7 +3038,7 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "",
+        "~",
         "",
         "",
         "",
@@ -2100,6 +3065,35 @@
       "action": {
         "type": "input",
         "ascii": "k"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "~",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "~",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "`",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "`"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "~"
+        }
       }
     },
     {
@@ -2119,7 +3113,7 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "",
+        "!",
         "",
         "",
         "",
@@ -2146,6 +3140,35 @@
       "action": {
         "type": "input",
         "ascii": "g"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "!",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "!",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "1",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "1"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "!"
+        }
       }
     },
     {
@@ -2165,7 +3188,7 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "",
+        "@",
         "",
         "",
         "",
@@ -2173,7 +3196,7 @@
         "",
         "M24",
         "",
-        "P",
+        "?",
         "",
         "",
         ""
@@ -2191,25 +3214,40 @@
       "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "P"
+        "ascii": "?"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "@",
+        "literalEntry": true
       },
       "inputIdAliases": {
         "R03": "M24"
       },
-      "displayLabels": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "M24/R03",
-        "",
-        "P",
-        "",
-        "",
-        ""
-      ]
+      "english": {
+        "labels": [
+          "",
+          "@",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "2",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "2"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "@"
+        }
+      }
     },
     {
       "id": "R03K08",
@@ -2228,7 +3266,7 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "",
+        "#",
         "",
         "",
         "",
@@ -2236,7 +3274,7 @@
         "",
         "M23",
         "",
-        "N",
+        ":",
         "",
         "",
         ""
@@ -2254,25 +3292,40 @@
       "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "N"
+        "ascii": ":"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "#",
+        "literalEntry": true
       },
       "inputIdAliases": {
         "R02": "M23"
       },
-      "displayLabels": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "M23/R02",
-        "",
-        "N",
-        "",
-        "",
-        ""
-      ]
+      "english": {
+        "labels": [
+          "",
+          "#",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "3",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "3"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "#"
+        }
+      }
     },
     {
       "id": "R03K09",
@@ -2291,7 +3344,7 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "",
+        "$",
         "",
         "",
         "",
@@ -2299,7 +3352,7 @@
         "",
         "M22",
         "",
-        "M",
+        "!",
         "",
         "",
         ""
@@ -2317,25 +3370,40 @@
       "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "M"
+        "ascii": "!"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "$",
+        "literalEntry": true
       },
       "inputIdAliases": {
         "R01": "M22"
       },
-      "displayLabels": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "M22/R01",
-        "",
-        "M",
-        "",
-        "",
-        ""
-      ]
+      "english": {
+        "labels": [
+          "",
+          "$",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "4",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "4"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "$"
+        }
+      }
     },
     {
       "id": "R03K10",
@@ -2354,7 +3422,7 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "",
+        "%",
         "",
         "",
         "",
@@ -2381,6 +3449,35 @@
       "action": {
         "type": "input",
         "ascii": "m"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "%",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "%",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "5",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "5"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "%"
+        }
       }
     },
     {
@@ -2400,15 +3497,15 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
+        "^",
         "",
         "",
         "",
         "",
         "",
+        "N05",
         "",
-        "N08",
-        "",
-        "n",
+        "d",
         "",
         "",
         ""
@@ -2416,17 +3513,46 @@
       "alignment": 4,
       "homing": false,
       "yinyuanIds": [
-        "N08"
+        "N05"
       ],
       "zone": "main",
       "disabledYinyuanIds": [],
       "baseYinyuanIds": [
-        "N08"
+        "N05"
       ],
       "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "n"
+        "ascii": "d"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "^",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "^",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "6",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "6"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "^"
+        }
       }
     },
     {
@@ -2446,7 +3572,7 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "",
+        "&",
         "",
         "",
         "",
@@ -2454,7 +3580,7 @@
         "",
         "M19",
         "",
-        "G",
+        "<",
         "",
         "",
         ""
@@ -2472,7 +3598,36 @@
       "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "G"
+        "ascii": "<"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "&",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "&",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "7",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "7"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "&"
+        }
       }
     },
     {
@@ -2492,7 +3647,7 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "",
+        "*",
         "",
         "",
         "",
@@ -2500,7 +3655,7 @@
         "",
         "M20",
         "",
-        "H",
+        "=",
         "",
         "",
         ""
@@ -2518,7 +3673,36 @@
       "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "H"
+        "ascii": "="
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "*",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "*",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "8",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "8"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "*"
+        }
       }
     },
     {
@@ -2538,7 +3722,7 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "",
+        "(",
         "",
         "",
         "",
@@ -2546,7 +3730,7 @@
         "",
         "M21",
         "",
-        "L",
+        ">",
         "",
         "",
         ""
@@ -2564,7 +3748,36 @@
       "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "L"
+        "ascii": ">"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "(",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "(",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "9",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "9"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "("
+        }
       }
     },
     {
@@ -2584,9 +3797,9 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "!",
+        ")",
         "",
-        "!",
+        "",
         "",
         "",
         "",
@@ -2614,7 +3827,32 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "!"
+        "ascii": ")",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          ")",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "0",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "0"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": ")"
+        }
       }
     },
     {
@@ -2636,7 +3874,7 @@
       "labels": [
         "_",
         "",
-        "_",
+        "",
         "",
         "",
         "",
@@ -2664,7 +3902,32 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "_"
+        "ascii": "_",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "_",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "-",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "-"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "_"
+        }
       }
     },
     {
@@ -2684,9 +3947,9 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "?",
+        "+",
         "",
-        "?",
+        "",
         "",
         "",
         "",
@@ -2714,7 +3977,32 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "?"
+        "ascii": "+",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "+",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "=",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "="
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "+"
+        }
       }
     },
     {
@@ -2731,9 +4019,10 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
         "7",
         "",
         "",
@@ -2744,10 +4033,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -2759,6 +4047,30 @@
       "editAction": {
         "type": "local",
         "key": "Home"
+      },
+      "english": {
+        "labels": [
+          "",
+          "7",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Home",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "7"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "Home"
+        }
       }
     },
     {
@@ -2775,9 +4087,10 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
         "8",
         "",
         "",
@@ -2788,10 +4101,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -2803,6 +4115,30 @@
       "editAction": {
         "type": "local",
         "key": "ArrowUp"
+      },
+      "english": {
+        "labels": [
+          "",
+          "8",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "↑",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "8"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "ArrowUp"
+        }
       }
     },
     {
@@ -2819,9 +4155,10 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
         "9",
         "",
         "",
@@ -2832,10 +4169,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -2847,6 +4183,30 @@
       "editAction": {
         "type": "local",
         "key": "PageUp"
+      },
+      "english": {
+        "labels": [
+          "",
+          "9",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "PgUp",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "9"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "PageUp"
+        }
       }
     },
     {
@@ -2863,34 +4223,58 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "4",
+        "",
+        "6",
         "",
         "",
         "",
         "",
         "",
-        "←",
-        "",
+        "→",
         "",
         "",
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
       "disabledYinyuanIds": [],
       "action": {
         "type": "literal",
-        "ascii": "4"
+        "ascii": "6"
       },
       "editAction": {
         "type": "local",
-        "key": "ArrowLeft"
+        "key": "ArrowRight"
+      },
+      "english": {
+        "labels": [
+          "",
+          "6",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "→",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "6"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "ArrowRight"
+        }
       }
     },
     {
@@ -2907,11 +4291,11 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "5",
         "",
+        "5",
         "",
         "",
         "",
@@ -2923,7 +4307,7 @@
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": true,
       "yinyuanIds": [],
       "zone": "left",
@@ -2934,6 +4318,29 @@
       },
       "editAction": {
         "type": "noop"
+      },
+      "english": {
+        "labels": [
+          "",
+          "5",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "5"
+        },
+        "editAction": {
+          "type": "noop"
+        }
       }
     },
     {
@@ -2950,34 +4357,58 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "6",
+        "",
+        "4",
         "",
         "",
         "",
         "",
         "",
-        "→",
-        "",
+        "←",
         "",
         "",
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
       "disabledYinyuanIds": [],
       "action": {
         "type": "literal",
-        "ascii": "6"
+        "ascii": "4"
       },
       "editAction": {
         "type": "local",
-        "key": "ArrowRight"
+        "key": "ArrowLeft"
+      },
+      "english": {
+        "labels": [
+          "",
+          "4",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "←",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "4"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "ArrowLeft"
+        }
       }
     },
     {
@@ -2997,7 +4428,7 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "",
+        "·",
         "",
         "",
         "",
@@ -3024,6 +4455,30 @@
       "action": {
         "type": "input",
         "ascii": "Y"
+      },
+      "shiftAction": {
+        "type": "symbol",
+        "ascii": "·"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
@@ -3043,7 +4498,7 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "",
+        "、",
         "",
         "",
         "",
@@ -3070,6 +4525,30 @@
       "action": {
         "type": "input",
         "ascii": "x"
+      },
+      "shiftAction": {
+        "type": "symbol",
+        "ascii": "、"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
@@ -3089,7 +4568,7 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "",
+        "—",
         "",
         "",
         "",
@@ -3116,6 +4595,30 @@
       "action": {
         "type": "input",
         "ascii": "q"
+      },
+      "shiftAction": {
+        "type": "symbol",
+        "ascii": "—"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
@@ -3135,7 +4638,7 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "",
+        "&times;",
         "",
         "",
         "",
@@ -3162,6 +4665,34 @@
       "action": {
         "type": "input",
         "ascii": "j"
+      },
+      "shiftAction": {
+        "type": "symbol",
+        "ascii": "×"
+      },
+      "english": {
+        "labels": [
+          "",
+          "Q",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "q",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "q"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "Q"
+        }
       }
     },
     {
@@ -3183,7 +4714,7 @@
       "labels": [
         "R15",
         "",
-        "#",
+        "/",
         "",
         "",
         "",
@@ -3214,7 +4745,31 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "#"
+        "ascii": "/"
+      },
+      "english": {
+        "labels": [
+          "",
+          "W",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "w",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "w"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "W"
+        }
       }
     },
     {
@@ -3236,13 +4791,13 @@
       "labels": [
         "R14",
         "",
-        "$",
+        ";",
         "",
         "",
         "",
         "M14",
         "",
-        "D",
+        "Q",
         "",
         "",
         ""
@@ -3263,11 +4818,35 @@
       ],
       "action": {
         "type": "input",
-        "ascii": "D"
+        "ascii": "Q"
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "$"
+        "ascii": ";"
+      },
+      "english": {
+        "labels": [
+          "",
+          "E",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "e",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "e"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "E"
+        }
       }
     },
     {
@@ -3289,7 +4868,7 @@
       "labels": [
         "R13",
         "",
-        "%",
+        "#",
         "",
         "",
         "",
@@ -3320,7 +4899,31 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "%"
+        "ascii": "#"
+      },
+      "english": {
+        "labels": [
+          "",
+          "R",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "r",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "r"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "R"
+        }
       }
     },
     {
@@ -3340,7 +4943,7 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "",
+        "'",
         "",
         "",
         "",
@@ -3367,6 +4970,35 @@
       "action": {
         "type": "input",
         "ascii": "f"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "'",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "T",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "t",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "t"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "T"
+        }
       }
     },
     {
@@ -3386,15 +5018,15 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
+        "-",
         "",
         "",
         "",
         "",
         "",
+        "N06",
         "",
-        "N07",
-        "",
-        "l",
+        "t",
         "",
         "",
         ""
@@ -3402,17 +5034,46 @@
       "alignment": 4,
       "homing": false,
       "yinyuanIds": [
-        "N07"
+        "N06"
       ],
       "zone": "main",
       "disabledYinyuanIds": [],
       "baseYinyuanIds": [
-        "N07"
+        "N06"
       ],
       "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "l"
+        "ascii": "t"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "-",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "Y",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "y",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "y"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "Y"
+        }
       }
     },
     {
@@ -3434,7 +5095,7 @@
       "labels": [
         "R16",
         "",
-        "+",
+        "*",
         "",
         "",
         "",
@@ -3465,7 +5126,31 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "+"
+        "ascii": "*"
+      },
+      "english": {
+        "labels": [
+          "",
+          "U",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "u",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "u"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "U"
+        }
       }
     },
     {
@@ -3487,13 +5172,13 @@
       "labels": [
         "R17",
         "",
-        "-",
+        "^",
         "",
         "",
         "",
         "M05",
         "",
-        "X",
+        "W",
         "",
         "",
         ""
@@ -3514,11 +5199,35 @@
       ],
       "action": {
         "type": "input",
-        "ascii": "X"
+        "ascii": "W"
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "-"
+        "ascii": "^"
+      },
+      "english": {
+        "labels": [
+          "",
+          "I",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "i",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "i"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "I"
+        }
       }
     },
     {
@@ -3540,7 +5249,7 @@
       "labels": [
         "R18",
         "",
-        "/",
+        "+",
         "",
         "",
         "",
@@ -3571,7 +5280,31 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "/"
+        "ascii": "+"
+      },
+      "english": {
+        "labels": [
+          "",
+          "O",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "o",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "o"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "O"
+        }
       }
     },
     {
@@ -3591,9 +5324,9 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        ":",
+        ";",
         "",
-        ":",
+        "",
         "",
         "",
         "",
@@ -3621,7 +5354,32 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": ":"
+        "ascii": ";",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "P",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "p",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "p"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "P"
+        }
       }
     },
     {
@@ -3641,9 +5399,9 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        ";",
+        "{",
         "",
-        ";",
+        "",
         "",
         "",
         "",
@@ -3671,7 +5429,32 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": ";"
+        "ascii": "{",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "{",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "[",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "["
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "{"
+        }
       }
     },
     {
@@ -3691,9 +5474,9 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        ",",
+        "}",
         "",
-        ",",
+        "",
         "",
         "",
         "",
@@ -3721,7 +5504,32 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": ","
+        "ascii": "}",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "}",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "]",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "]"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "}"
+        }
       }
     },
     {
@@ -3741,9 +5549,9 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        ".",
+        "|",
         "",
-        ".",
+        "",
         "",
         "",
         "",
@@ -3771,7 +5579,32 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "."
+        "ascii": "|",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "|",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "\\",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "\\"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "|"
+        }
       }
     },
     {
@@ -3788,9 +5621,10 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
         "4",
         "",
         "",
@@ -3801,10 +5635,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -3816,6 +5649,30 @@
       "editAction": {
         "type": "local",
         "key": "ArrowLeft"
+      },
+      "english": {
+        "labels": [
+          "",
+          "4",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "←",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "4"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "ArrowLeft"
+        }
       }
     },
     {
@@ -3832,11 +5689,11 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "5",
         "",
+        "5",
         "",
         "",
         "",
@@ -3848,7 +5705,7 @@
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": true,
       "yinyuanIds": [],
       "zone": "right",
@@ -3859,6 +5716,29 @@
       },
       "editAction": {
         "type": "noop"
+      },
+      "english": {
+        "labels": [
+          "",
+          "5",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "5"
+        },
+        "editAction": {
+          "type": "noop"
+        }
       }
     },
     {
@@ -3875,9 +5755,10 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
         "6",
         "",
         "",
@@ -3888,10 +5769,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -3903,6 +5783,30 @@
       "editAction": {
         "type": "local",
         "key": "ArrowRight"
+      },
+      "english": {
+        "labels": [
+          "",
+          "6",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "→",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "6"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "ArrowRight"
+        }
       }
     },
     {
@@ -3919,34 +5823,58 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "1",
+        "",
+        "3",
         "",
         "",
         "",
         "",
         "",
-        "End",
-        "",
+        "PgDn",
         "",
         "",
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
       "disabledYinyuanIds": [],
       "action": {
         "type": "literal",
-        "ascii": "1"
+        "ascii": "3"
       },
       "editAction": {
         "type": "local",
-        "key": "End"
+        "key": "PageDown"
+      },
+      "english": {
+        "labels": [
+          "",
+          "3",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "PgDn",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "3"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "PageDown"
+        }
       }
     },
     {
@@ -3963,9 +5891,10 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
         "2",
         "",
         "",
@@ -3976,10 +5905,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
@@ -3991,6 +5919,30 @@
       "editAction": {
         "type": "local",
         "key": "ArrowDown"
+      },
+      "english": {
+        "labels": [
+          "",
+          "2",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "↓",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "2"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "ArrowDown"
+        }
       }
     },
     {
@@ -4007,34 +5959,58 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "3",
+        "",
+        "1",
         "",
         "",
         "",
         "",
         "",
-        "PgDn",
-        "",
+        "End",
         "",
         "",
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
       "disabledYinyuanIds": [],
       "action": {
         "type": "literal",
-        "ascii": "3"
+        "ascii": "1"
       },
       "editAction": {
         "type": "local",
-        "key": "PageDown"
+        "key": "End"
+      },
+      "english": {
+        "labels": [
+          "",
+          "1",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "End",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "1"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "End"
+        }
       }
     },
     {
@@ -4051,7 +6027,7 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
@@ -4077,6 +6053,26 @@
       "action": {
         "type": "unsupported",
         "label": "Caps Lock"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Caps Lock",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "Caps Lock"
+        }
       }
     },
     {
@@ -4096,15 +6092,15 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "M26",
+        "&radic;",
         "",
-        "|",
+        "",
         "",
         "",
         "",
         "M29",
         "",
-        "\\",
+        "L",
         "",
         "",
         ""
@@ -4112,7 +6108,6 @@
       "alignment": 4,
       "homing": false,
       "yinyuanIds": [
-        "M26",
         "M29"
       ],
       "zone": "main",
@@ -4120,16 +6115,34 @@
       "baseYinyuanIds": [
         "M29"
       ],
-      "shiftYinyuanIds": [
-        "M26"
-      ],
+      "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "\\"
+        "ascii": "L"
       },
       "shiftAction": {
-        "type": "input",
-        "ascii": "|"
+        "type": "symbol",
+        "ascii": "√"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
@@ -4149,15 +6162,15 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "M25",
+        "&divide;",
         "",
-        "{",
+        "",
         "",
         "",
         "",
         "M28",
         "",
-        "[",
+        "T",
         "",
         "",
         ""
@@ -4165,7 +6178,6 @@
       "alignment": 4,
       "homing": false,
       "yinyuanIds": [
-        "M25",
         "M28"
       ],
       "zone": "main",
@@ -4173,16 +6185,38 @@
       "baseYinyuanIds": [
         "M28"
       ],
-      "shiftYinyuanIds": [
-        "M25"
-      ],
+      "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "["
+        "ascii": "T"
       },
       "shiftAction": {
-        "type": "input",
-        "ascii": "{"
+        "type": "symbol",
+        "ascii": "÷"
+      },
+      "english": {
+        "labels": [
+          "",
+          "A",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "a",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "a"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "A"
+        }
       }
     },
     {
@@ -4204,7 +6238,7 @@
       "labels": [
         "R12",
         "",
-        "J",
+        "]",
         "",
         "",
         "",
@@ -4235,7 +6269,31 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "J"
+        "ascii": "]"
+      },
+      "english": {
+        "labels": [
+          "",
+          "S",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "s",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "s"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "S"
+        }
       }
     },
     {
@@ -4257,13 +6315,13 @@
       "labels": [
         "R11",
         "",
-        "T",
+        "\\",
         "",
         "",
         "",
         "M11",
         "",
-        "B",
+        "D",
         "",
         "",
         ""
@@ -4284,11 +6342,35 @@
       ],
       "action": {
         "type": "input",
-        "ascii": "B"
+        "ascii": "D"
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "T"
+        "ascii": "\\"
+      },
+      "english": {
+        "labels": [
+          "",
+          "D",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "d",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "d"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "D"
+        }
       }
     },
     {
@@ -4310,7 +6392,7 @@
       "labels": [
         "R10",
         "",
-        "Q",
+        "[",
         "",
         "",
         "",
@@ -4341,7 +6423,31 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "Q"
+        "ascii": "["
+      },
+      "english": {
+        "labels": [
+          "",
+          "F",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "f",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "f"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "F"
+        }
       }
     },
     {
@@ -4361,7 +6467,7 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "",
+        "`",
         "",
         "",
         "",
@@ -4388,6 +6494,35 @@
       "action": {
         "type": "input",
         "ascii": "p"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "`",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "G",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "g",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "g"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "G"
+        }
       }
     },
     {
@@ -4407,15 +6542,15 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
+        "=",
         "",
         "",
         "",
         "",
         "",
+        "N07",
         "",
-        "N06",
-        "",
-        "t",
+        "l",
         "",
         "",
         ""
@@ -4423,17 +6558,46 @@
       "alignment": 4,
       "homing": false,
       "yinyuanIds": [
-        "N06"
+        "N07"
       ],
       "zone": "main",
       "disabledYinyuanIds": [],
       "baseYinyuanIds": [
-        "N06"
+        "N07"
       ],
       "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "t"
+        "ascii": "l"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "=",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "H",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "h",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "h"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "H"
+        }
       }
     },
     {
@@ -4453,9 +6617,9 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
+        "R07",
         "",
-        "",
-        "",
+        ",",
         "",
         "",
         "",
@@ -4469,6 +6633,7 @@
       "alignment": 4,
       "homing": true,
       "yinyuanIds": [
+        "R07",
         "M01"
       ],
       "zone": "main",
@@ -4476,10 +6641,40 @@
       "baseYinyuanIds": [
         "M01"
       ],
-      "shiftYinyuanIds": [],
+      "shiftYinyuanIds": [
+        "R07"
+      ],
       "action": {
         "type": "input",
         "ascii": "I"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ","
+      },
+      "english": {
+        "labels": [
+          "",
+          "J",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "j",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "j"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "J"
+        }
       }
     },
     {
@@ -4499,15 +6694,15 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
+        "R08",
         "",
-        "",
-        "",
+        "-",
         "",
         "",
         "",
         "M02",
         "",
-        "K",
+        "J",
         "",
         "",
         ""
@@ -4515,6 +6710,7 @@
       "alignment": 4,
       "homing": false,
       "yinyuanIds": [
+        "R08",
         "M02"
       ],
       "zone": "main",
@@ -4522,10 +6718,40 @@
       "baseYinyuanIds": [
         "M02"
       ],
-      "shiftYinyuanIds": [],
+      "shiftYinyuanIds": [
+        "R08"
+      ],
       "action": {
         "type": "input",
-        "ascii": "K"
+        "ascii": "J"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "-"
+      },
+      "english": {
+        "labels": [
+          "",
+          "K",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "k",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "k"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "K"
+        }
       }
     },
     {
@@ -4545,9 +6771,9 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
+        "R09",
         "",
-        "",
-        "",
+        ".",
         "",
         "",
         "",
@@ -4561,6 +6787,7 @@
       "alignment": 4,
       "homing": false,
       "yinyuanIds": [
+        "R09",
         "M03"
       ],
       "zone": "main",
@@ -4568,10 +6795,40 @@
       "baseYinyuanIds": [
         "M03"
       ],
-      "shiftYinyuanIds": [],
+      "shiftYinyuanIds": [
+        "R09"
+      ],
       "action": {
         "type": "input",
         "ascii": "i"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "."
+      },
+      "english": {
+        "labels": [
+          "",
+          "L",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "l",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "l"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "L"
+        }
       }
     },
     {
@@ -4591,15 +6848,15 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "R07",
+        ":",
         "",
-        "(",
+        "",
         "",
         "",
         "",
         "M31",
         "",
-        "<",
+        "G",
         "",
         "",
         ""
@@ -4607,7 +6864,6 @@
       "alignment": 4,
       "homing": false,
       "yinyuanIds": [
-        "R07",
         "M31"
       ],
       "zone": "main",
@@ -4615,16 +6871,39 @@
       "baseYinyuanIds": [
         "M31"
       ],
-      "shiftYinyuanIds": [
-        "R07"
-      ],
+      "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "<"
+        "ascii": "G"
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "("
+        "ascii": ":",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          ":",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ";",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": ";"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": ":"
+        }
       }
     },
     {
@@ -4644,15 +6923,15 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "R08",
+        "\"",
         "",
-        "^",
+        "",
         "",
         "",
         "",
         "M32",
         "",
-        "=",
+        "K",
         "",
         "",
         ""
@@ -4660,7 +6939,6 @@
       "alignment": 4,
       "homing": false,
       "yinyuanIds": [
-        "R08",
         "M32"
       ],
       "zone": "main",
@@ -4668,16 +6946,39 @@
       "baseYinyuanIds": [
         "M32"
       ],
-      "shiftYinyuanIds": [
-        "R08"
-      ],
+      "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "="
+        "ascii": "K"
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "^"
+        "ascii": "\"",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "\"",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "'",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "'"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "\""
+        }
       }
     },
     {
@@ -4694,7 +6995,7 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
@@ -4718,6 +7019,26 @@
       "action": {
         "type": "confirm",
         "key": "Enter"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Enter",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "confirm",
+          "key": "Enter"
+        }
       }
     },
     {
@@ -4734,9 +7055,10 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
         "1",
         "",
         "",
@@ -4747,10 +7069,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -4762,6 +7083,30 @@
       "editAction": {
         "type": "local",
         "key": "End"
+      },
+      "english": {
+        "labels": [
+          "",
+          "1",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "End",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "1"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "End"
+        }
       }
     },
     {
@@ -4778,9 +7123,10 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
         "2",
         "",
         "",
@@ -4791,10 +7137,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -4806,6 +7151,30 @@
       "editAction": {
         "type": "local",
         "key": "ArrowDown"
+      },
+      "english": {
+        "labels": [
+          "",
+          "2",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "↓",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "2"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "ArrowDown"
+        }
       }
     },
     {
@@ -4822,9 +7191,10 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
         "3",
         "",
         "",
@@ -4835,10 +7205,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -4850,6 +7219,30 @@
       "editAction": {
         "type": "local",
         "key": "PageDown"
+      },
+      "english": {
+        "labels": [
+          "",
+          "3",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "PgDn",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "3"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "PageDown"
+        }
       }
     },
     {
@@ -4866,34 +7259,58 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "0",
+        "",
+        "+",
         "",
         "",
         "",
         "",
         "",
-        "Ins",
         "",
         "",
         "",
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
       "disabledYinyuanIds": [],
       "action": {
         "type": "literal",
-        "ascii": "0"
+        "ascii": "+"
       },
       "editAction": {
-        "type": "local",
-        "key": "Insert"
+        "type": "literal",
+        "ascii": "+"
+      },
+      "english": {
+        "labels": [
+          "",
+          "+",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "+"
+        },
+        "editAction": {
+          "type": "literal",
+          "ascii": "+"
+        }
       }
     },
     {
@@ -4910,9 +7327,10 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
         ".",
         "",
         "",
@@ -4923,10 +7341,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
@@ -4938,6 +7355,30 @@
       "editAction": {
         "type": "local",
         "key": "Delete"
+      },
+      "english": {
+        "labels": [
+          "",
+          ".",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Del",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "."
+        },
+        "editAction": {
+          "type": "local",
+          "key": "Delete"
+        }
       }
     },
     {
@@ -4954,34 +7395,58 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "+",
+        "",
+        "0",
         "",
         "",
         "",
         "",
         "",
-        "",
-        "",
+        "Ins",
         "",
         "",
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "left",
       "disabledYinyuanIds": [],
       "action": {
         "type": "literal",
-        "ascii": "+"
+        "ascii": "0"
       },
       "editAction": {
-        "type": "literal",
-        "ascii": "+"
+        "type": "local",
+        "key": "Insert"
+      },
+      "english": {
+        "labels": [
+          "",
+          "0",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Ins",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "0"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "Insert"
+        }
       }
     },
     {
@@ -4998,7 +7463,7 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
@@ -5021,6 +7486,25 @@
       "disabledYinyuanIds": [],
       "action": {
         "type": "shift"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Shift",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "shift"
+        }
       }
     },
     {
@@ -5040,15 +7524,15 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "M27",
         "",
-        "}",
+        "",
+        "[",
         "",
         "",
         "",
         "M30",
         "",
-        "]",
+        "N",
         "",
         "",
         ""
@@ -5056,7 +7540,6 @@
       "alignment": 4,
       "homing": false,
       "yinyuanIds": [
-        "M27",
         "M30"
       ],
       "zone": "main",
@@ -5064,16 +7547,39 @@
       "baseYinyuanIds": [
         "M30"
       ],
-      "shiftYinyuanIds": [
-        "M27"
-      ],
+      "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "]"
+        "ascii": "N"
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "}"
+        "ascii": "[",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "Z",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "z",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "z"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "Z"
+        }
       }
     },
     {
@@ -5095,7 +7601,7 @@
       "labels": [
         "R06",
         "",
-        "&",
+        "}",
         "",
         "",
         "",
@@ -5126,7 +7632,31 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "&"
+        "ascii": "}"
+      },
+      "english": {
+        "labels": [
+          "",
+          "X",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "x",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "x"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "X"
+        }
       }
     },
     {
@@ -5148,7 +7678,7 @@
       "labels": [
         "R05",
         "",
-        "*",
+        "|",
         "",
         "",
         "",
@@ -5179,7 +7709,31 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "*"
+        "ascii": "|"
+      },
+      "english": {
+        "labels": [
+          "",
+          "C",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "c",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "c"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "C"
+        }
       }
     },
     {
@@ -5201,7 +7755,7 @@
       "labels": [
         "R04",
         "",
-        "@",
+        "{",
         "",
         "",
         "",
@@ -5232,7 +7786,31 @@
       },
       "shiftAction": {
         "type": "input",
-        "ascii": "@"
+        "ascii": "{"
+      },
+      "english": {
+        "labels": [
+          "",
+          "V",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "v",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "v"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "V"
+        }
       }
     },
     {
@@ -5254,7 +7832,7 @@
       "labels": [
         "",
         "",
-        "",
+        "\\",
         "",
         "",
         "",
@@ -5279,6 +7857,35 @@
       "action": {
         "type": "input",
         "ascii": "b"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "\\",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "B",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "b",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "b"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "B"
+        }
       }
     },
     {
@@ -5300,7 +7907,7 @@
       "labels": [
         "",
         "",
-        "",
+        "]",
         "",
         "",
         "",
@@ -5325,6 +7932,31 @@
       "action": {
         "type": "input",
         "ascii": "w"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "]",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
@@ -5344,7 +7976,7 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
-        "",
+        ",",
         "",
         "",
         "",
@@ -5371,6 +8003,31 @@
       "action": {
         "type": "input",
         "ascii": "y"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ",",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
       }
     },
     {
@@ -5390,15 +8047,15 @@
       "color": "#b5ecc6",
       "textColor": "#000000",
       "labels": [
+        ".",
         "",
         "",
         "",
         "",
         "",
+        "N08",
         "",
-        "N05",
-        "",
-        "d",
+        "n",
         "",
         "",
         ""
@@ -5406,17 +8063,46 @@
       "alignment": 4,
       "homing": false,
       "yinyuanIds": [
-        "N05"
+        "N08"
       ],
       "zone": "main",
       "disabledYinyuanIds": [],
       "baseYinyuanIds": [
-        "N05"
+        "N08"
       ],
       "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "d"
+        "ascii": "n"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ".",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "N",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "n",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "n"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "N"
+        }
       }
     },
     {
@@ -5436,7 +8122,7 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "",
+        "/",
         "",
         "",
         "",
@@ -5463,6 +8149,35 @@
       "action": {
         "type": "input",
         "ascii": "V"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "/",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "M",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "m",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "m"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "M"
+        }
       }
     },
     {
@@ -5482,7 +8197,7 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "",
+        "<",
         "",
         "",
         "",
@@ -5490,7 +8205,7 @@
         "",
         "M08",
         "",
-        "W",
+        "X",
         "",
         "",
         ""
@@ -5508,7 +8223,36 @@
       "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": "W"
+        "ascii": "X"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "<",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "<",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ",",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": ","
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "<"
+        }
       }
     },
     {
@@ -5528,7 +8272,7 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "",
+        ">",
         "",
         "",
         "",
@@ -5555,6 +8299,35 @@
       "action": {
         "type": "input",
         "ascii": "v"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ">",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          ">",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ".",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "."
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": ">"
+        }
       }
     },
     {
@@ -5574,15 +8347,15 @@
       "color": "#f4e4cf",
       "textColor": "#000000",
       "labels": [
-        "R09",
+        "?",
         "",
-        ")",
+        "",
         "",
         "",
         "",
         "M33",
         "",
-        ">",
+        "H",
         "",
         "",
         ""
@@ -5590,7 +8363,6 @@
       "alignment": 4,
       "homing": false,
       "yinyuanIds": [
-        "R09",
         "M33"
       ],
       "zone": "main",
@@ -5598,16 +8370,39 @@
       "baseYinyuanIds": [
         "M33"
       ],
-      "shiftYinyuanIds": [
-        "R09"
-      ],
+      "shiftYinyuanIds": [],
       "action": {
         "type": "input",
-        "ascii": ">"
+        "ascii": "H"
       },
       "shiftAction": {
         "type": "input",
-        "ascii": ")"
+        "ascii": "?",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "?",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "/",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "/"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "?"
+        }
       }
     },
     {
@@ -5624,7 +8419,7 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
@@ -5647,6 +8442,25 @@
       "disabledYinyuanIds": [],
       "action": {
         "type": "shift"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Shift",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "shift"
+        }
       }
     },
     {
@@ -5663,9 +8477,10 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
         "0",
         "",
         "",
@@ -5676,10 +8491,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -5691,6 +8505,30 @@
       "editAction": {
         "type": "local",
         "key": "Insert"
+      },
+      "english": {
+        "labels": [
+          "",
+          "0",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Ins",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "0"
+        },
+        "editAction": {
+          "type": "local",
+          "key": "Insert"
+        }
       }
     },
     {
@@ -5707,9 +8545,10 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
         ".",
         "",
         "",
@@ -5720,10 +8559,9 @@
         "",
         "",
         "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -5735,6 +8573,30 @@
       "editAction": {
         "type": "local",
         "key": "Delete"
+      },
+      "english": {
+        "labels": [
+          "",
+          ".",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Del",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "."
+        },
+        "editAction": {
+          "type": "local",
+          "key": "Delete"
+        }
       }
     },
     {
@@ -5751,11 +8613,11 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "+",
         "",
+        "+",
         "",
         "",
         "",
@@ -5767,7 +8629,7 @@
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -5779,6 +8641,30 @@
       "editAction": {
         "type": "literal",
         "ascii": "+"
+      },
+      "english": {
+        "labels": [
+          "",
+          "+",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "literal",
+          "ascii": "+"
+        },
+        "editAction": {
+          "type": "literal",
+          "ascii": "+"
+        }
       }
     },
     {
@@ -5795,14 +8681,74 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "=",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Enter",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 5,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "left",
+      "disabledYinyuanIds": [],
+      "action": {
+        "type": "confirm",
+        "key": "Enter"
+      },
+      "english": {
+        "labels": [
+          "",
+          "=",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Enter",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "confirm",
+          "key": "Enter"
+        }
+      }
+    },
+    {
+      "id": "R07K02",
+      "x": 3.25,
+      "y": 6.25,
+      "width": 1.75,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.75,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
         "",
         "",
         "",
-        "Enter",
+        "Ctrl",
         "",
         "",
         "",
@@ -5814,46 +8760,6 @@
       "alignment": 7,
       "homing": false,
       "yinyuanIds": [],
-      "zone": "left",
-      "disabledYinyuanIds": [],
-      "action": {
-        "type": "confirm",
-        "key": "Enter"
-      }
-    },
-    {
-      "id": "R07K02",
-      "x": 3.25,
-      "y": 6.25,
-      "width": 1.25,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.25,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "Ctrl",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
       "zone": "main",
       "disabledYinyuanIds": [],
       "baseYinyuanIds": [],
@@ -5861,30 +8767,50 @@
       "action": {
         "type": "unsupported",
         "label": "Ctrl"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Ctrl",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "Ctrl"
+        }
       }
     },
     {
       "id": "R07K03",
-      "x": 4.5,
+      "x": 5.0,
       "y": 6.25,
-      "width": 1.25,
+      "width": 1.5,
       "height": 1.0,
       "rectangles": [
         {
           "x": 0.0,
           "y": 0.0,
-          "width": 1.25,
+          "width": 1.5,
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "Menu",
         "",
         "",
         "",
         "",
+        "<i class='kb kb-logo-windows-7'></i>",
         "",
         "",
         "",
@@ -5893,7 +8819,7 @@
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 7,
       "homing": false,
       "yinyuanIds": [],
       "zone": "main",
@@ -5902,68 +8828,50 @@
       "shiftYinyuanIds": [],
       "action": {
         "type": "unsupported",
-        "label": "Menu"
+        "label": "System key"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "<i class='kb kb-logo-windows-7'></i>",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "System key"
+        }
       }
     },
     {
       "id": "R07K04",
-      "x": 5.75,
+      "x": 6.5,
       "y": 6.25,
-      "width": 1.25,
+      "width": 1.75,
       "height": 1.0,
       "rectangles": [
         {
           "x": 0.0,
           "y": 0.0,
-          "width": 1.25,
+          "width": 1.75,
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "Win",
         "",
         "",
         "",
         "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "Win"
-      }
-    },
-    {
-      "id": "R07K05",
-      "x": 7.0,
-      "y": 6.25,
-      "width": 1.25,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.25,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
         "Alt",
         "",
         "",
@@ -5971,13 +8879,9 @@
         "",
         "",
         "",
-        "",
-        "",
-        "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 7,
       "homing": false,
       "yinyuanIds": [],
       "zone": "main",
@@ -5987,10 +8891,30 @@
       "action": {
         "type": "unsupported",
         "label": "Alt"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Alt",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "Alt"
+        }
       }
     },
     {
-      "id": "R07K06",
+      "id": "R07K05",
       "x": 8.25,
       "y": 6.25,
       "width": 4.0,
@@ -6003,14 +8927,14 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
         "",
         "",
         "",
-        "",
+        "Space",
         "",
         "",
         "",
@@ -6027,10 +8951,30 @@
       "action": {
         "type": "confirm",
         "key": "Space"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Space",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "confirm",
+          "key": "Space"
+        }
       }
     },
     {
-      "id": "R07K07",
+      "id": "R07K06",
       "x": 12.5,
       "y": 6.25,
       "width": 4.0,
@@ -6043,14 +8987,14 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
         "",
         "",
         "",
         "",
-        "",
+        "Space",
         "",
         "",
         "",
@@ -6067,30 +9011,50 @@
       "action": {
         "type": "confirm",
         "key": "Space"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Space",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "confirm",
+          "key": "Space"
+        }
       }
     },
     {
-      "id": "R07K08",
+      "id": "R07K07",
       "x": 16.5,
       "y": 6.25,
-      "width": 1.25,
+      "width": 1.75,
       "height": 1.0,
       "rectangles": [
         {
           "x": 0.0,
           "y": 0.0,
-          "width": 1.25,
+          "width": 1.75,
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
+        "",
+        "",
+        "",
         "Alt",
-        "",
-        "",
-        "",
-        "",
         "",
         "",
         "",
@@ -6099,7 +9063,7 @@
         "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 7,
       "homing": false,
       "yinyuanIds": [],
       "zone": "main",
@@ -6109,109 +9073,111 @@
       "action": {
         "type": "unsupported",
         "label": "Alt"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Alt",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "Alt"
+        }
+      }
+    },
+    {
+      "id": "R07K08",
+      "x": 18.25,
+      "y": 6.25,
+      "width": 1.5,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.5,
+          "height": 1.0
+        }
+      ],
+      "color": "#cbacac",
+      "textColor": "#000000",
+      "labels": [
+        "",
+        "",
+        "",
+        "",
+        "<i class='kb kb-Hamburger-Menu'></i>",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 7,
+      "homing": false,
+      "yinyuanIds": [],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "unsupported",
+        "label": "System key"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "<i class='kb kb-Hamburger-Menu'></i>",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "System key"
+        }
       }
     },
     {
       "id": "R07K09",
-      "x": 17.75,
+      "x": 19.75,
       "y": 6.25,
-      "width": 1.25,
+      "width": 1.75,
       "height": 1.0,
       "rectangles": [
         {
           "x": 0.0,
           "y": 0.0,
-          "width": 1.25,
+          "width": 1.75,
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
-        "Win",
         "",
         "",
         "",
         "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "Win"
-      }
-    },
-    {
-      "id": "R07K10",
-      "x": 19.0,
-      "y": 6.25,
-      "width": 1.25,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.25,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
-        "Menu",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "alignment": 4,
-      "homing": false,
-      "yinyuanIds": [],
-      "zone": "main",
-      "disabledYinyuanIds": [],
-      "baseYinyuanIds": [],
-      "shiftYinyuanIds": [],
-      "action": {
-        "type": "unsupported",
-        "label": "Menu"
-      }
-    },
-    {
-      "id": "R07K11",
-      "x": 20.25,
-      "y": 6.25,
-      "width": 1.25,
-      "height": 1.0,
-      "rectangles": [
-        {
-          "x": 0.0,
-          "y": 0.0,
-          "width": 1.25,
-          "height": 1.0
-        }
-      ],
-      "color": "#a09494",
-      "textColor": "#000000",
-      "labels": [
         "Ctrl",
         "",
         "",
@@ -6219,13 +9185,9 @@
         "",
         "",
         "",
-        "",
-        "",
-        "",
-        "",
         ""
       ],
-      "alignment": 4,
+      "alignment": 7,
       "homing": false,
       "yinyuanIds": [],
       "zone": "main",
@@ -6235,10 +9197,30 @@
       "action": {
         "type": "unsupported",
         "label": "Ctrl"
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "Ctrl",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "unsupported",
+          "label": "Ctrl"
+        }
       }
     },
     {
-      "id": "R07K12",
+      "id": "R07K10",
       "x": 21.75,
       "y": 6.25,
       "width": 3.0,
@@ -6251,9 +9233,12 @@
           "height": 1.0
         }
       ],
-      "color": "#a09494",
+      "color": "#cbacac",
       "textColor": "#000000",
       "labels": [
+        "",
+        "=",
+        "",
         "",
         "",
         "",
@@ -6262,12 +9247,9 @@
         "",
         "",
         "",
-        "",
-        "",
-        "",
         ""
       ],
-      "alignment": 7,
+      "alignment": 5,
       "homing": false,
       "yinyuanIds": [],
       "zone": "right",
@@ -6275,18 +9257,43 @@
       "action": {
         "type": "confirm",
         "key": "Enter"
+      },
+      "english": {
+        "labels": [
+          "",
+          "=",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Enter",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "confirm",
+          "key": "Enter"
+        }
       }
     }
   ],
-  "policyNote": "1.两个 Num Lock 左右独立，各自切换“数字／编辑”，并显示状态；编辑模式下 5 不执行动作。\n2.数字区与音元编码的关系: 数字模式直输数字和运算符，不触发音元或选词。左右数字区在数字模式下优先直输 ASCII 数字和运算符，不受中文编码、选词及中文标点转换影响。\n3.中英文、标点及 Caps Lock: 中文模式触发编码输入，英文模式输入英文字符。标点切换开关只对标点符号生效：中文标点模式输入中文标点，英文标点模式转换成英文标点。本轮 Caps Lock 不启用，不改变各键固定输出。\n4.启用 M25–M27，改用上档键输入。\n5.中英文标点模式只影响字面标点候选的显示与最终输出，不改变内部 ASCII 编码、音元映射或正在编辑的编码串。中文输入时，编码符号仍参与编码；选择标点候选后，才按当前标点模式转换并输出。\n",
+  "policyNote": "1.两个 Num Lock 左右独立，各自切换“数字／编辑”，并显示状态；在编辑模式下 5 不执行动作。\n2.左右数字区在数字模式下直输 ASCII 数字和运算符，不受中文编码、选词及中文标点转换影响。\n3.用 CN EN 键切换中文/英文模式并显示状态。中文模式输入中文编码，英文模式输入英文字符（包含标点和数字）。\n4.标点模式随 CN EN 自动切换：中文模式使用中文标点，英文模式使用英文标点。暂不设置独立的标点模式切换键。标点模式只影响字面标点候选的显示与最终输出，不改变内部 ASCII 编码、音元映射或正在编辑的编码串。已分配音元的标点在编码入口参与编码。字面标点候选按当前标点模式显示，但显示候选不提交文字；只有选定标点候选或通过直输标点入口输入时，才按当前标点模式输出。\n5.启用 M25–M27，分别用大写字母 B、M、P 编码，保留所选同部位辅音字母的联想关系。标准 ANSI 键盘通过 Shift 加对应字母键输入；概念键盘通过对应下档键直接输入。\n6.在不改变既定音元及功能分配的前提下，为全部 32 个 ASCII 标点预留独立的字面输入入口。“独立入口启停开关”放在软件设置中，不占用盘面键位。独立入口功能默认关闭：关闭时，预留入口按该 ASCII 字符的常规编码规则处理；开启时，仅这些预留入口绕过音元编码，按当前标点模式输出。带音元 ID 的编码入口保持不变。\n7.连续两个字面字符 — 组成中文破折号 ——。每连续输入三个字面字符 ·，合并为一个 …，因此六次输入得到 ……。上述处理仅作用于字面标点输出，不处理音元编码串。",
+  "englishPolicyNote": "1.主键盘区新增23键暂时全部禁用。目前用 #d0b2e2 标记，定型后两套布局统一着色。\n2.复用原有键位和界面节点，同步切换键面字符、输入映射，以及必要的启用状态。",
   "sources": [
     {
-      "path": "prototypes/touch-terminal/design/keyboard-layout.json",
-      "sha256": "22dbe2883a4179aef0177e79d0bbc847401f8499abf615500ed196d91a7d602c"
+      "path": "prototypes/touch-terminal/design/yime-cn-134k-24u-keyboard-layout.json",
+      "sha256": "8651383a85e34688e424235acdcc21420ec6078969d1637098c046072dde4a01"
+    },
+    {
+      "path": "prototypes/touch-terminal/design/yime-en-134k-24u-keyboard-layout.json",
+      "sha256": "06e361a5f687de06c3a8b623cf8df485b4769804bb24c300a12df01a6a929c37"
     },
     {
       "path": "internal_data/manual_key_layout.json",
-      "sha256": "b77c53e33ffbad6cbe9307c8b0a5d4858cba38073aa3b980fdac4fbe3ea94a12"
+      "sha256": "2f7cc8c00321540beb0f00413c9fdea44f6d6a62c4fa7ed413b3a4440200dbce"
     }
   ]
 }

@@ -3,15 +3,15 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {actionFromKeyboard,protocolAction,virtualKeyAction,createLiveClient,samePointerRelease,editText,INPUT_POLICY} from './input.mjs';
 
-test('generated 138-key layered board reaches every printable ASCII and each of its 75 semantic IDs',() => {
+test('generated 134-key layered board reaches every printable ASCII and each of its 75 semantic IDs',() => {
   const layout = JSON.parse(readFileSync(new URL('./data/physical-layout.json',import.meta.url),'utf8'));
   const characters = new Set(), ids=[];
-  assert.equal(layout.formatVersion,3);
-  assert.equal(layout.keys.length,138);
+  assert.equal(layout.formatVersion,4);
+  assert.equal(layout.keys.length,134);
   for (const key of layout.keys) {
     for (const shifted of [false,true]) {
       const action = virtualKeyAction(key,shifted,true).action;
-      if (action?.ascii) characters.add(action.ascii);
+      if (action?.ascii && /^[\x20-\x7e]$/.test(action.ascii)) characters.add(action.ascii);
       if (action?.type === 'confirm' && action.key === 'Space') characters.add(' ');
     }
     for (const [field,shifted] of [['baseYinyuanIds',false],['shiftYinyuanIds',true]]) for (const id of key[field] || []) {
@@ -111,9 +111,9 @@ test('numeric side keys bypass composition and side edit 5 is a no-op',() => {
   assert.deepEqual(virtualKeyAction({action:{type:'literal',ascii:'/'},zone:'left'},true,false),{action:{type:'literal',ascii:'/'},armed:false});
 });
 
-test('language and punctuation switches are independent and English Space never selects paused Chinese',() => {
+test('language toggle couples punctuation and English Space never selects paused Chinese',() => {
   const state = {raw_input:'ni',candidates:[{id:'first'}]};
-  assert.deepEqual(protocolAction({type:'toggle-language'},state,{input:'chinese',punctuation:'english'}),{type:'setModes',inputMode:'english'});
+  assert.deepEqual(protocolAction({type:'toggle-language'},state,{input:'chinese',punctuation:'english'}),{type:'setModes',inputMode:'english',punctuationMode:'english'});
   assert.deepEqual(protocolAction({type:'toggle-punctuation'},state,{input:'english',punctuation:'english'}),{type:'setModes',punctuationMode:'chinese'});
   assert.deepEqual(protocolAction({type:'confirm',key:'Space'},state,{input:'english'}),{type:'literal',code:' '});
   assert.deepEqual(protocolAction({type:'confirm',key:'Enter'},state,{input:'english'}),{type:'literal',code:'\n'});
@@ -188,7 +188,7 @@ test('mode switch closes old session before creating a new one',async () => {
   assert.equal(requests[3].mode,'full');
 });
 
-test('queued language toggles read authoritative prior response and retain independent punctuation mode',async () => {
+test('queued language toggles read authoritative prior response and couple punctuation',async () => {
   let revision = 0, modes = {input:'chinese',punctuation:'chinese'};
   const events = [];
   const client = createLiveClient({fetcher:async (url,options) => {

@@ -108,11 +108,11 @@ def test_load_runtime_symbol_to_layout_key_uses_two_layer_manual_layout(tmp_path
     )
     assert symbol_to_key[symbols["N01"]] == "b"
     assert symbol_to_key[symbols["M01"]] == "I"
-    assert symbol_to_key[symbols["M25"]] == "{"
+    assert symbol_to_key[symbols["M25"]] == "B"
     assert convert_runtime_code_to_layout_keys(
         symbols["N01"] + symbols["M01"] + symbols["M28"], symbol_to_key
-    ) == "bI["
-    assert convert_runtime_code_to_layout_keys(symbols["M25"], symbol_to_key) == "{"
+    ) == "bIT"
+    assert convert_runtime_code_to_layout_keys(symbols["M25"], symbol_to_key) == "B"
 
 
 def test_load_runtime_symbol_to_layout_key_rejects_altgr_yinyuan_id(tmp_path: Path) -> None:
@@ -165,7 +165,7 @@ def test_repo_layout_matches_windows_yime_two_layer_keys() -> None:
         "N01": ("b", "base", "b"),
         "N10": ("k", "base", "k"),
         "M01": ("i", "shift", "I"),
-        "M28": ("[", "base", "["),
+        "M28": ("t", "shift", "T"),
         "N23": ("y", "base", "y"),
         "N24": ("w", "base", "w"),
     }

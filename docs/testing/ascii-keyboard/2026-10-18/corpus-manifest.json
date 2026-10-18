@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "scope": "immutable_source_runtime_experiment",
+  "production_handoff_promoted": false,
+  "layout_projection_sha256": "995f1a74f129249febbd09ca11a8266f6e0c94bac8c05c57754859fc3be3349c",
+  "disabled_yinyuan_ids": [],
+  "source_database": {
+    "bytes": 5491941376,
+    "sha256": "694a5c984c3784dd2a07f49db454e69d01e08b24ce7de14b45ac10b70e315379"
+  },
+  "source_reading_count": 2457474,
+  "exported_reading_count": 2457474,
+  "excluded_disabled_reading_count": 0,
+  "excluded_id_counts": {},
+  "excluded_disabled_readings": [],
+  "limit": 0,
+  "reviewed_overlays": {
+    "scope": "reviewed_explicit_erhua_and_psc_only",
+    "base_manifest": {
+      "path": "base_yime_lexicon_manifest.json",
+      "scope": "canonical_base_before_reviewed_overlays",
+      "sha256": "533df8fbfea69e4de6f6d4127ef007f2c7c32c8ea8f9d6548a74b583da8f7a8c"
+    },
+    "erhua_summary": {
+      "tool_version": "explicit-erhua-yinyuan-feature-runtime-v8",
+      "explicit_record_count": 131,
+      "dual_route_ready_count": 131,
+      "feature_projected_count": 131,
+      "pending_fusion_count": 0,
+      "inherited_weight_record_count": 131,
+      "fixed_runtime_weight": 1,
+      "core_weight_record_count": 131,
+      "psc_peripheral_weight_record_count": 0,
+      "deferred_missing_weight_count": 0,
+      "routes_per_mode": 262,
+      "runtime_alias_rows": 786,
+      "sentence_alias_rows": 393,
+      "sentence_dictionary_count": 3,
+      "declared_sound_unit_count": 18,
+      "pilot_sound_unit_count": 18,
+      "research_sound_unit_count": 0,
+      "shared_key_class_count": 3,
+      "dedicated_key_class_count": 15,
+      "feature_rule_count": 15,
+      "projected_ready_record_count": 131,
+      "canonical_route_refresh_count": 131,
+      "reverse_lookup_row_count": 131,
+      "gates": {
+        "all_source_weights_resolved": true,
+        "candidate_text_unchanged": true,
+        "canonical_routes_refreshed": true,
+        "explicit_authorization_complete": true,
+        "feature_projection_complete": true,
+        "layout_codes_recomputed_from_ids": true,
+        "many_to_one_shared_key_projection": true,
+        "productive_inference_forbidden": true,
+        "psc_suffix_routes_not_duplicated": true,
+        "psc_weights_match_existing_suffixes": true,
+        "ready_fused_routes_sound_projected": true,
+        "research_only_sounds_not_exported": true,
+        "reverse_lookup_explanations_complete": true,
+        "runtime_alias_weight_fixed_low": true,
+        "sentence_dictionary_imports_complete": true,
+        "sentence_spelling_boundaries_complete": true,
+        "sound_units_separate_from_keys": true,
+        "source_bundles_are_offline_only": true,
+        "three_mode_routes_complete": true,
+        "unresolved_pending_not_exported": true
+      },
+      "passed": true
+    },
+    "mode_merge_audit": {
+      "full": {
+        "proposed_pairs": 262,
+        "already_in_core": 131,
+        "appended_pairs": 131,
+        "core_collision_buckets": {},
+        "overlay_collision_buckets": {}
+      },
+      "variable": {
+        "proposed_pairs": 262,
+        "already_in_core": 131,
+        "appended_pairs": 131,
+        "core_collision_buckets": {},
+        "overlay_collision_buckets": {}
+      },
+      "shorthand": {
+        "proposed_pairs": 262,
+        "already_in_core": 131,
+        "appended_pairs": 131,
+        "core_collision_buckets": {},
+        "overlay_collision_buckets": {}
+      }
+    }
+  },
+  "input_policy": "concept-keyboard-modes-v2",
+  "dictionary_sha256": {
+    "yime_full.dict.yaml": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+    "yime_variable.dict.yaml": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+    "yime_shorthand.dict.yaml": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49"
+  }
+}

@@ -27,7 +27,8 @@ LABEL_MAP = (
 )
 IDS = re.compile(r"[NMR]\d{2}")
 HERE = Path(__file__).resolve().parent
-SOURCE = HERE / "design/keyboard-layout.json"
+SOURCE = HERE / "design/yime-cn-134k-24u-keyboard-layout.json"
+ENGLISH_SOURCE = HERE / "design/yime-en-134k-24u-keyboard-layout.json"
 OUTPUT = HERE / "data/physical-layout.json"
 
 
@@ -169,13 +170,17 @@ def _layer_action(identifier, annotation, mapping):
 
 def _actions(key, mapping):
     labels = [plain(label) for label in key["labels"]]
-    text = next((label for label in labels if label), "Space")
+    text = next((label for label in labels if label), "")
     controls = {
         "Esc": dict(type="clear"), "Back Space": dict(type="backspace"),
         "Enter": dict(type="confirm", key="Enter"), "Space": dict(type="confirm", key="Space"),
-        "Shift": dict(type="shift"), "中英文切换": dict(type="toggle-language"),
-        "中英标点切换": dict(type="toggle-punctuation"),
+        "Shift": dict(type="shift"), "CN EN": dict(type="toggle-language"),
+        "Layout": dict(type="toggle-layout"),
     }
+    # Numeric Enter has a lower 'Enter' legend and an upper '=' legend.
+    if key["zone"] != "main" and "Enter" in labels:
+        key["action"] = dict(type="confirm", key="Enter")
+        return
     if text in controls:
         key["action"] = controls[text]
         return
@@ -186,78 +191,113 @@ def _actions(key, mapping):
         if not _ascii(text) or text not in "0123456789./*-+":
             raise ValueError(f"Unsupported side-zone legend: {text}")
         key["action"] = dict(type="literal", ascii=text)
-        edit = {"Home": "Home", "↑": "ArrowUp", "PgUp": "PageUp",
-                "←": "ArrowLeft", "→": "ArrowRight", "End": "End",
-                "↓": "ArrowDown", "PgDn": "PageDown", "Ins": "Insert", "Del": "Delete"}
-        if labels[6] in edit:
-            key["editAction"] = dict(type="local", key=edit[labels[6]])
+        edit = {"Home":"Home", "↑":"ArrowUp", "PgUp":"PageUp", "←":"ArrowLeft",
+                "→":"ArrowRight", "End":"End", "↓":"ArrowDown", "PgDn":"PageDown",
+                "Ins":"Insert", "Del":"Delete"}
+        secondary = labels[7] or labels[6]
+        if secondary in edit:
+            key["editAction"] = dict(type="local", key=edit[secondary])
         elif text == "5":
             key["editAction"] = dict(type="noop")
-        elif text in "/-*+" and not labels[6]:
+        elif text in "/-*+" and not secondary:
             key["editAction"] = dict(key["action"])
         else:
-            raise ValueError(f"Missing or unknown numeric editing legend: {key['id']}")
+            raise ValueError(f"Missing numeric editing legend: {key['id']}")
         return
     base = _layer_action(labels[6], labels[8], mapping)
     shifted = _layer_action(labels[0], labels[2], mapping)
+    # Reviewed CN literal-only upper positions include six Unicode symbols.
+    upper = labels[2] or labels[0]
+    if not shifted and upper in {"·", "、", "—", "×", "√", "÷"}:
+        shifted = dict(type="symbol", ascii=upper)
     key["baseYinyuanIds"] = [labels[6]] if IDS.fullmatch(labels[6]) else []
     key["shiftYinyuanIds"] = [labels[0]] if IDS.fullmatch(labels[0]) else []
     if base:
         key["action"] = base
         if shifted:
             key["shiftAction"] = shifted
+        # Unlabelled ASCII punctuation layers are the reserved optional literal
+        # entrances. Coding-ID layers always retain their encoding action.
+        for field, id_field in (("action","baseYinyuanIds"),("shiftAction","shiftYinyuanIds")):
+            action = key.get(field, {})
+            char = action.get("ascii", "")
+            if not key[id_field] and len(char) == 1 and not char.isalnum() and _ascii(char):
+                action["literalEntry"] = True
         return
-    # No inferred ANSI upper layer: centered characters are single actions.
-    if _ascii(text):
-        key["action"] = dict(type="input", ascii=text)
-    elif text == "Tab":
+    if text == "Tab":
         key["action"] = dict(type="local", key="Tab")
     else:
-        key["action"] = dict(type="unsupported", label=text)
+        key["action"] = dict(type="unsupported", label=text or "System key")
+
+
+def _english_action(key):
+    labels = [plain(label) for label in key["labels"]]
+    # Only truly empty KLE strings are disabled. Icon-only system keys retain
+    # their schematic control identity and never become spaces.
+    if not any(key["labels"]):
+        return dict(labels=key["labels"], action=dict(type="disabled"), disabled=True)
+    if key["zone"] != "main" or any(label in {"Esc","Back Space","Enter","Space","Shift","CN EN","Layout","Tab"} for label in labels):
+        _actions(key, {})
+        return {field:key[field] for field in ("labels","action","editAction") if field in key}
+    base, upper = labels[7], labels[1]
+    if _ascii(base):
+        result = dict(labels=key["labels"], action=dict(type="input", ascii=base))
+        if _ascii(upper):
+            result["shiftAction"] = dict(type="input", ascii=upper)
+        return result
+    _actions(key, {})
+    return dict(labels=key["labels"],action=key["action"])
 
 
 def build(repo_root=ROOT, source_path=None):
     from yime.utils.yinyuan_id_chain import load_input_id_to_layout_key, layout_projection_digest
     source_path = source_path or repo_root / SOURCE.relative_to(ROOT)
+    english_path = repo_root / ENGLISH_SOURCE.relative_to(ROOT)
     mapping = load_input_id_to_layout_key(repo_root)
     manual_path = repo_root / "internal_data/manual_key_layout.json"
     manual = json.loads(manual_path.read_text(encoding="utf-8-sig"))
     if manual.get("disabled_yinyuan_ids") or manual.get("shared_yinyuan_key_groups"):
-        raise ValueError("The reviewed 138-key layout requires all 75 carriers independent and enabled")
-    raw = source_path.read_text(encoding="utf-8-sig").replace("\r\n", "\n").replace("\r", "\n")
-    parsed = parse_physical_kle(json.loads(raw, object_pairs_hook=_unique_object, parse_constant=_reject_json_constant))
+        raise ValueError("CN134 requires all 75 carriers independent and enabled")
+    def read(path):
+        raw = path.read_text(encoding="utf-8-sig").replace("\r\n","\n").replace("\r","\n")
+        return raw, parse_physical_kle(json.loads(raw,object_pairs_hook=_unique_object,parse_constant=_reject_json_constant))
+    raw, parsed = read(source_path)
+    english_raw, english = read(english_path)
     seen = [identifier for key in parsed["keys"] for identifier in key["yinyuanIds"]]
     if len(seen) != len(set(seen)) or set(seen) != set(mapping):
         raise ValueError("Physical board must show every input ID exactly once")
-    locks = sorted(key["x"] for key in parsed["keys"] if "Num Lock" in map(plain, key["labels"]))
-    if len(locks) != 2 or locks[0] != 0 or locks[1] + 3 != parsed["bounds"]["width"]:
+    locks = sorted(key["x"] for key in parsed["keys"] if "Num Lock" in map(plain,key["labels"]))
+    if len(locks) != 2 or locks[0] != 0 or locks[1]+3 != parsed["bounds"]["width"]:
         raise ValueError("Expected independent left/right three-column numeric zones")
-    aliases = manual.get("input_id_aliases", {})
-    for key in parsed["keys"]:
-        key["zone"] = "left" if key["x"] < 3 else "right" if key["x"] >= locks[1] else "main"
+    if len(parsed["keys"]) != 134 or len(english["keys"]) != 134:
+        raise ValueError("Expected two full 134-key concept boards")
+    geometry_fields = ("id","x","y","width","height","rectangles","homing")
+    aliases = manual.get("input_id_aliases",{})
+    for key, en in zip(parsed["keys"],english["keys"]):
+        if any(key[field] != en[field] for field in geometry_fields):
+            raise ValueError("CN/EN geometry must match for node reuse")
+        key["zone"] = en["zone"] = "left" if key["x"] < 3 else "right" if key["x"] >= locks[1] else "main"
         key["disabledYinyuanIds"] = []
-        _actions(key, mapping)
-        key_aliases = {alias: target for alias, target in aliases.items() if target in key["yinyuanIds"]}
+        _actions(key,mapping)
+        key_aliases = {a:t for a,t in aliases.items() if t in key["yinyuanIds"]}
         if key_aliases:
             key["inputIdAliases"] = key_aliases
-            key["displayLabels"] = [
-                label + "/" + "/".join(alias for alias, target in key_aliases.items() if target == plain(label))
-                if plain(label) in key_aliases.values() else label for label in key["labels"]]
-    if len(parsed["keys"]) != 138:
-        raise ValueError("Expected full 138-key concept board")
-    reachable = {action["ascii"] for key in parsed["keys"] for name in ("action", "shiftAction")
-                 if (action := key.get(name, {})).get("type") == "input"}
-    if reachable != {chr(value) for value in range(33, 127)}:
-        raise ValueError("Main keyboard must explicitly reach every printable non-space ASCII character")
-    geometry = json.dumps(parsed, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-    manual_text = manual_path.read_text(encoding="utf-8-sig").replace("\r\n", "\n").replace("\r", "\n")
-    return dict(formatVersion=3, layoutId=layout_projection_digest(repo_root),
+        key["english"] = _english_action(en)
+    if sum(key["english"].get("disabled",False) for key in parsed["keys"]) != 23:
+        raise ValueError("EN134 must explicitly disable exactly 23 blank keys")
+    for variant in (None,"english"):
+        reachable = {action["ascii"] for key in parsed["keys"] for name in ("action","shiftAction")
+                     if (action := (key[variant] if variant else key).get(name,{})).get("type") == "input"}
+        if not {chr(value) for value in range(33,127)} <= reachable:
+            raise ValueError("Each main keyboard must reach all non-space ASCII")
+    geometry = json.dumps(parsed,ensure_ascii=False,sort_keys=True,separators=(",",":"))
+    sources = [dict(path=path.relative_to(repo_root).as_posix(),sha256=hashlib.sha256(content.encode()).hexdigest())
+               for path,content in ((source_path,raw),(english_path,english_raw),(manual_path,manual_path.read_text(encoding="utf-8-sig").replace("\r\n","\n")))]
+    return dict(formatVersion=4,layoutId=layout_projection_digest(repo_root),
                 touchTemplateId=hashlib.sha256(geometry.encode()).hexdigest(),
-                name="Yime ASCII concept keyboard · 138 keys", bounds=parsed["bounds"],
-                disabledYinyuanIds=[], inputIdAliases=aliases, keys=parsed["keys"],
-                policyNote=parsed["metadata"].get("notes", ""),
-                sources=[dict(path=source_path.relative_to(repo_root).as_posix(), sha256=hashlib.sha256(raw.encode()).hexdigest()),
-                         dict(path=manual_path.relative_to(repo_root).as_posix(), sha256=hashlib.sha256(manual_text.encode()).hexdigest())])
+                name="Yime ASCII concept keyboard · CN/EN 134 keys",bounds=parsed["bounds"],
+                disabledYinyuanIds=[],inputIdAliases=aliases,keys=parsed["keys"],
+                policyNote=parsed["metadata"].get("notes",""),englishPolicyNote=english["metadata"].get("notes",""),sources=sources)
 
 
 def main():
@@ -270,7 +310,7 @@ def main():
             raise SystemExit("FAIL: regenerate physical-layout.json")
     else:
         OUTPUT.write_text(output, encoding="utf-8", newline="\n")
-    print("PASS: 138 physical keys, 75 independent input IDs, explicit layers and dual numeric zones")
+    print("PASS: CN/EN 134 physical keys, 75 input IDs, 23 disabled English keys and identical geometry")
 
 
 if __name__ == "__main__":

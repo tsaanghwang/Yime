@@ -28,7 +28,7 @@ func TestCanonicalCorpusHTTP(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	dataDir := filepath.Join(root, ".generated", "ascii-keyboard-138", "data")
+	dataDir := filepath.Join(root, ".generated", "ascii-keyboard-134", "data")
 	data, err := os.ReadFile(filepath.Join(root, "prototypes", "touch-terminal", "data", "physical-layout.json"))
 	if err != nil {
 		t.Fatal(err)
@@ -36,9 +36,14 @@ func TestCanonicalCorpusHTTP(t *testing.T) {
 	var layout struct {
 		LayoutID string `json:"layoutId"`
 		Keys     []struct {
-			YinyuanIDs []string `json:"yinyuanIds"`
-			Disabled   []string `json:"disabledYinyuanIds"`
-			Action     struct {
+			YinyuanIDs      []string `json:"baseYinyuanIds"`
+			ShiftYinyuanIDs []string `json:"shiftYinyuanIds"`
+			ShiftAction     struct {
+				Type  string `json:"type"`
+				ASCII string `json:"ascii"`
+			} `json:"shiftAction"`
+			Disabled []string `json:"disabledYinyuanIds"`
+			Action   struct {
 				Type  string `json:"type"`
 				ASCII string `json:"ascii"`
 			} `json:"action"`
@@ -59,6 +64,11 @@ func TestCanonicalCorpusHTTP(t *testing.T) {
 		disabled := map[string]bool{}
 		for _, id := range key.Disabled {
 			disabled[id] = true
+		}
+		for _, id := range key.ShiftYinyuanIDs {
+			if !disabled[id] {
+				projection[id] = key.ShiftAction.ASCII
+			}
 		}
 		for _, id := range key.YinyuanIDs {
 			if !disabled[id] {

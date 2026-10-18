@@ -1,5 +1,15 @@
 # 新 ASCII 实体键盘布局：计划、实施细则与验收
 
+## 2026-10-18：当前 134 键 CN/EN 双布局
+
+现已转用明确选定的 CN134/EN134 文件。运行与当前检查见
+[样机说明](../../prototypes/touch-terminal/README.md)和
+[本轮交接](../../prototypes/touch-terminal/HANDOFF.md)。旧 138 键章节保留历史范围。
+36 个 ASCII 赋值从唯一 manual 源迁移；75 个载体、规范音节和审定别名的语义不变。
+新完整词典位于 `.generated/ascii-keyboard-134/data`。
+触屏设备已到位，当前真人 134 键试用尚未记录通过。
+
+
 ## 2026-10-11：138 键上下档模型实施基线
 
 本轮仍仅适用于 `codex/ascii-physical-layout-experiment`。以下旧版 129 键记录保留为历史，

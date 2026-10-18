@@ -233,6 +233,8 @@ func (s *labSession) apply(r eventRequest) (engineapi.Result, error) {
 		return s.engine.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: r.Code})
 	case "literal":
 		return s.engine.DirectLiteral(r.Code), nil
+	case "symbol":
+		return s.engine.DirectSymbol(r.Code), nil
 	case "setModes":
 		return s.engine.SetModes(r.InputMode, r.PunctuationMode), nil
 	case "backspace":
@@ -279,6 +281,15 @@ func validateEvent(r eventRequest) error {
 		if r.Code == "" && r.Delta == 0 && r.CandidateID == "" && (r.InputMode != "" || r.PunctuationMode != "") && validMode(r.InputMode) && validMode(r.PunctuationMode) {
 			return nil
 		}
+	case "symbol":
+		valid := len(r.Code) == 1 && isASCIIPunctuation(r.Code[0])
+		switch r.Code {
+		case "·", "、", "—", "×", "√", "÷":
+			valid = true
+		}
+		if valid && r.Delta == 0 && r.CandidateID == "" {
+			return nil
+		}
 	case "literal":
 		if len(r.Code) == 1 && (r.Code[0] >= 0x20 && r.Code[0] <= 0x7e || r.Code == "\n" || r.Code == "\t") && r.Delta == 0 && r.CandidateID == "" {
 			return nil
@@ -319,7 +330,7 @@ func (a *lab) static(w http.ResponseWriter, r *http.Request) {
 	// This service exposes only the physical-model entrypoint. Historical demo
 	// data and implementation files must not be mistaken for the live backend.
 	switch relative {
-	case "index.html", "app.mjs", "input.mjs", "geometry.mjs", "style.css", "data/physical-layout.json", "README.md", "PROTOCOL.md", "HARDWARE.md":
+	case "index.html", "app.mjs", "input.mjs", "keyboard-layout.mjs", "geometry.mjs", "style.css", "data/physical-layout.json", "README.md", "PROTOCOL.md", "HARDWARE.md":
 	default:
 		http.NotFound(w, r)
 		return

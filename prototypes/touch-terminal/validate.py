@@ -11,11 +11,11 @@ if not node:
 commands = [
     [sys.executable, '-X', 'utf8', 'generate_data.py', '--check'],
     [sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', '.', '-p', 'test_*.py', '-v'],
-    [node, '--test', 'core.test.mjs', 'geometry.test.mjs', 'input.test.mjs'],
+    [node, '--test', 'core.test.mjs', 'geometry.test.mjs', 'input.test.mjs', 'keyboard-layout.test.mjs'],
     [node, '--check', 'app.mjs'],
     [node, '--check', 'browser-smoke.js'],
 ]
 for command in commands:
     print('RUN ' + ' '.join(command), flush=True)
     subprocess.run(command, cwd=HERE, check=True)
-print('PASS: 138-key KLE, source projection, input routing, geometry and syntax. Run Go lab tests separately; native IME and physical touch acceptance not implied.')
+print('PASS: 134-key dual KLE, source projection, input routing, geometry and syntax. Run Go lab tests separately; native IME and physical touch acceptance not implied.')

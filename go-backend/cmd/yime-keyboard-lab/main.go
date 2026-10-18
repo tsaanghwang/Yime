@@ -45,7 +45,7 @@ func run(root, dataDir string, port int) error {
 		return err
 	}
 	if dataDir == "" {
-		dataDir = filepath.Join(root, ".generated", "ascii-keyboard-138", "data")
+		dataDir = filepath.Join(root, ".generated", "ascii-keyboard-134", "data")
 	}
 	staticRoot := filepath.Join(root, "prototypes", "touch-terminal")
 	data, err := os.ReadFile(filepath.Join(staticRoot, "data", "physical-layout.json"))

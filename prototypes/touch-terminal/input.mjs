@@ -27,6 +27,10 @@ export function protocolAction(action, state, modes=DEFAULT_MODES) {
     if (typeof action.ascii !== 'string' || action.ascii.length !== 1 || !/^[\x21-\x7e]$/.test(action.ascii)) throw new Error('输入必须是单个非空白 ASCII 字符。');
     return {type:'input',code:action.ascii};
   }
+  if (action.type === 'symbol') {
+    if (typeof action.ascii !== 'string' || !/^[!-/:-@[-`{-~·、—×√÷]$/.test(action.ascii)) throw new Error('无效的字面符号。');
+    return {type:'symbol',code:action.ascii};
+  }
   if (action.type === 'literal') {
     if (typeof action.ascii !== 'string' || action.ascii.length !== 1 || !/^[\x20-\x7e\n\t]$/.test(action.ascii)) throw new Error('直输必须是单个 ASCII 字符、换行或制表符。');
     return {type:'literal',code:action.ascii};
@@ -42,7 +46,10 @@ export function protocolAction(action, state, modes=DEFAULT_MODES) {
     if (Object.keys(result).length === 1) throw new Error('必须指定输入或标点模式。');
     return result;
   }
-  if (action.type === 'toggle-language') return {type:'setModes',inputMode:modes.input === 'english' ? 'chinese' : 'english'};
+  if (action.type === 'toggle-language') {
+    const inputMode = modes.input === 'english' ? 'chinese' : 'english';
+    return {type:'setModes',inputMode,punctuationMode:inputMode};
+  }
   if (action.type === 'toggle-punctuation') return {type:'setModes',punctuationMode:modes.punctuation === 'english' ? 'chinese' : 'english'};
   if (action.type === 'select' && !action.candidateId) {
     if (!Number.isInteger(action.ordinal) || action.ordinal < 1 || action.ordinal > 9) throw new Error('无效的候选序号。');
@@ -66,12 +73,15 @@ export function protocolAction(action, state, modes=DEFAULT_MODES) {
 }
 
 /** Explicit layers belong to the concept layout, not ANSI casing heuristics. */
-export function virtualKeyAction(key, armed=false, numeric=true) {
+export function virtualKeyAction(key, armed=false, numeric=true, literalEntries=false) {
   if (key.action.type === 'shift') return {action:null,armed:!armed};
   const action = !numeric && key.editAction ? key.editAction : armed && key.shiftAction ? key.shiftAction : key.action;
-  const printable = ['input','select','literal'].includes(action.type);
+  const resolved = {...action};
+  if (resolved.literalEntry && literalEntries) resolved.type = 'symbol';
+  delete resolved.literalEntry;
+  const printable = ['input','select','literal','symbol'].includes(resolved.type);
   return {
-    action:{...action},
+    action:resolved,
     armed:printable || action.type === 'clear' ? false : armed,
   };
 }

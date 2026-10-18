@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from physical_layout import ROOT, SOURCE, OUTPUT, build, parse_physical_kle
+from physical_layout import ROOT, SOURCE, ENGLISH_SOURCE, OUTPUT, build, parse_physical_kle
 
 
 class GeneratedPhysicalDataTests(unittest.TestCase):
@@ -19,11 +19,10 @@ class GeneratedPhysicalDataTests(unittest.TestCase):
         self.assertEqual("I", ids["M01"]["action"]["ascii"])
         self.assertEqual("i", ids["M03"]["action"]["ascii"])
         self.assertEqual("'", ids["N12"]["action"]["ascii"])
-        self.assertEqual("~", ids["N26"]["action"]["ascii"])
-        for base, upper in [("M28", "M25"), ("M29", "M26"), ("M30", "M27")]:
-            self.assertIs(ids[base], ids[upper])
-            self.assertEqual([], ids[base]["disabledYinyuanIds"])
-            self.assertNotEqual(ids[base]["action"], ids[base]["shiftAction"])
+        self.assertEqual("`", ids["N26"]["action"]["ascii"])
+        for identifier,char in (("M25","B"),("M26","M"),("M27","P")):
+            self.assertEqual(char,ids[identifier]["action"]["ascii"])
+            self.assertEqual([],ids[identifier]["disabledYinyuanIds"])
         alphabet = {key[action]["ascii"] for key in layout["keys"]
                     for action, identifiers in (("action", "baseYinyuanIds"), ("shiftAction", "shiftYinyuanIds"))
                     if key.get(identifiers)}
@@ -42,7 +41,7 @@ class GeneratedPhysicalDataTests(unittest.TestCase):
     def test_changed_ascii_annotation_fails_instead_of_becoming_a_second_source(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            for relative in ("internal_data/manual_key_layout.json", str(SOURCE.relative_to(ROOT)),
+            for relative in ("internal_data/manual_key_layout.json", str(SOURCE.relative_to(ROOT)), str(ENGLISH_SOURCE.relative_to(ROOT)),
                              "docs/project/connected_speech/erhua_sound_key_projection.json"):
                 target = root / relative
                 target.parent.mkdir(parents=True, exist_ok=True)

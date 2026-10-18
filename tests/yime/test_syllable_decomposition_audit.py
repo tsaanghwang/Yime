@@ -61,7 +61,7 @@ def test_reenabled_m25_m27_retain_semantics_and_have_independent_input_codes() -
     assert len(restored) == 4
     for row in restored:
         assert len(row.layout_code) == 4
-        assert set(row.layout_code) & set("{|}")
+        assert set(row.layout_code) & set("BMP")
         assert all((row.shouyin_symbol, row.huyin_symbol, row.zhuyin_symbol, row.moyin_symbol))
         assert all((row.shouyin_id, row.huyin_id, row.zhuyin_id, row.moyin_id))
         assert {row.huyin_id, row.zhuyin_id, row.moyin_id} & {"M25", "M26", "M27"}

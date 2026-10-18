@@ -179,3 +179,39 @@ func TestModeRequestsAreValidatedAndIdempotent(t *testing.T) {
 		t.Fatal("stale mode mutation accepted")
 	}
 }
+
+func TestExplicitSymbolEntrancesPreserveCompositionAndRetry(t *testing.T) {
+	a := testLab(t)
+	s := event(t, a, openSession(t, a, "variable"), "compose", "input", "p")
+	s = setModes(t, a, s, "zh", "chinese", "chinese")
+	before := s.State
+	for i, symbol := range []string{"!", ",", "·", "、", "—", "×", "√", "÷"} {
+		want := symbol
+		if value, ok := chinesePunctuation[symbol]; ok {
+			want = value
+		}
+		s = event(t, a, s, fmt.Sprintf("symbol-%d", i), "symbol", symbol)
+		if s.Commit != want || !reflect.DeepEqual(s.State, before) {
+			t.Fatalf("symbol mutated composition: %+v", s)
+		}
+	}
+	envelope := eventRequest{SessionID: s.SessionID, EventID: "symbol-quote", BaseRevision: s.Revision, Type: "symbol", Code: "'"}
+	first, retry := request(t, a, "/api/event", envelope), request(t, a, "/api/event", envelope)
+	if first.Code != 200 || !bytes.Equal(first.Body.Bytes(), retry.Body.Bytes()) {
+		t.Fatal("symbol retry not idempotent")
+	}
+	s = decodeResponse(t, first)
+	if s.Commit != "‘" || !reflect.DeepEqual(s.State, before) {
+		t.Fatal("symbol quote commit/state")
+	}
+	s = event(t, a, s, "symbol-closing", "symbol", "'")
+	if s.Commit != "’" {
+		t.Fatal("retry advanced quote state twice")
+	}
+	for i, code := range []string{"a", "汉", "", "!!", "\n"} {
+		bad := eventRequest{SessionID: s.SessionID, EventID: fmt.Sprintf("bad-symbol-%d", i), BaseRevision: s.Revision, Type: "symbol", Code: code}
+		if w := request(t, a, "/api/event", bad); w.Code != 400 {
+			t.Fatalf("invalid symbol accepted: %q %d", code, w.Code)
+		}
+	}
+}

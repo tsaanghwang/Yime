@@ -1,3 +1,4 @@
+import {viewKey,useEnglishLayout} from './keyboard-layout.mjs';
 import {actionFromKeyboard,createLiveClient,editText,virtualKeyAction,DEFAULT_MODES} from './input.mjs';
 import {percentile,keyShape,keyContainsPoint} from './geometry.mjs';
 
@@ -9,7 +10,27 @@ const node = (tag,value,className) => {
   return element;
 };
 let layout, client, active = null, trace = [], touches = [], latencies = [], drill = null;
-let shiftArmed = false;
+let shiftArmed = false, layoutPreference = 'original', literalEntries = false;
+const layoutLatencies = [];
+let lastLiteral = null;
+try { if (localStorage.getItem('yime-lab-english-layout') === 'english') layoutPreference = 'english'; } catch {}
+const englishLayout = () => useEnglishLayout(currentModes().input,layoutPreference);
+const displayedKey = key => viewKey(key,englishLayout());
+function toggleLayout() {
+  if (currentModes().input !== 'english') { status('布局开关用于英文输入。'); return; }
+  const started = performance.now();
+  cancelPointer('layout-change'); cancelShifts('layout-change');
+  drill = null;
+  layoutPreference = layoutPreference === 'english' ? 'original' : 'english';
+  try { localStorage.setItem('yime-lab-english-layout',layoutPreference); } catch {}
+  refreshKeyboard(); renderDrill();
+  status(`英文布局：${englishLayout() ? '标准英文' : '原盘面'}。`);
+  requestAnimationFrame(() => {
+    layoutLatencies.push(performance.now()-started);
+    if (layoutLatencies.length > 1000) layoutLatencies.shift();
+    $('layout-latency').textContent = `布局切换 → 下一帧 p50 ${percentile(layoutLatencies,.5).toFixed(1)} / p95 ${percentile(layoutLatencies,.95).toFixed(1)} ms（浏览器代理指标）`;
+  });
+}
 const shiftPointers = new Map(), ansiShift = new Set(), numLocks = {left:true,right:true};
 let overwrite = false;
 const keyButtons = new Map(), drills = [];
@@ -19,8 +40,21 @@ const currentState = () => client?.snapshot?.state || {raw_input:'',candidates:[
 const currentModes = () => client?.snapshot?.modes || DEFAULT_MODES;
 const effectiveShift = () => shiftArmed || ansiShift.size > 0 || [...shiftPointers.values()].some(p => !p.left);
 
-function appendCommit(value) {
+function appendCommit(value, event) {
   const surface = $('committed');
+  const symbol = event?.type === 'symbol' ? event.code : null;
+  // Consolidate only consecutive explicit symbol commits at the same cursor.
+  // Editing, another action, or moving the cursor breaks the run.
+  if (symbol && ['—','·'].includes(symbol) && lastLiteral?.symbol === symbol &&
+      surface.selectionStart === surface.selectionEnd && surface.selectionStart === lastLiteral.end) {
+    const count = lastLiteral.count + 1;
+    const width = symbol === '—' ? 2 : 3;
+    if (count === width && surface.value.slice(surface.selectionStart-width+1,surface.selectionStart) === symbol.repeat(width-1)) {
+      surface.setSelectionRange(surface.selectionStart-width+1,surface.selectionEnd);
+      value = symbol === '—' ? '——' : '…';
+      lastLiteral = null;
+    } else lastLiteral = {symbol,count,end:surface.selectionStart+value.length};
+  } else lastLiteral = symbol && ['—','·'].includes(symbol) ? {symbol,count:1,end:surface.selectionStart+value.length} : null;
   if (overwrite && !currentState().raw_input && surface.selectionStart === surface.selectionEnd) {
     const length = Array.from(value).length;
     const tail = Array.from(new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(surface.value.slice(surface.selectionEnd))).slice(0,length).map(part => part.segment).join('');
@@ -31,11 +65,11 @@ function appendCommit(value) {
 }
 
 function render(result, event) {
-  if (result.commit) appendCommit(result.commit);
+  if (result.commit) appendCommit(result.commit,event);
   const state = result.state, candidates = state.candidates || [];
   const paused = currentModes().input === 'english';
   $('code').textContent = state.raw_input || '—';
-  $('composition').textContent = state.raw_input ? paused ? '中文组合已暂停并保留；当前英文字符直接写入正文。切回中文可继续。' : '正在组合；候选来自当前码制的 Go 引擎。' : paused ? '英文直输：按键保持固定大小写；标点模式独立。' : '点按编码键，或在这里使用 ANSI 键盘。';
+  $('composition').textContent = state.raw_input ? paused ? '中文组合已暂停并保留；当前英文字符直接写入正文。切回中文可继续。' : '正在组合；候选来自当前码制的 Go 引擎。' : paused ? '英文直输：Layout 切换原盘面／标准英文，选择保持至再次切换。' : '点按编码键，或在这里使用 ANSI 键盘。';
   $('candidates').replaceChildren();
   if (!candidates.length) $('candidates').append(node('p',state.raw_input ? '当前编码暂无候选，可继续输入、退格或取消。' : '候选将显示在这里。','hint'));
   candidates.forEach((candidate,index) => {
@@ -87,6 +121,8 @@ function localEdit(key) {
 
 let actions = Promise.resolve();
 function perform(action,source='virtual') {
+  if (action?.type === 'toggle-layout') { toggleLayout(); return Promise.resolve(); }
+  if (action?.type !== 'symbol') lastLiteral = null;
   if ((action?.type === 'clear' && source !== 'drill') || ['toggle-language','toggle-punctuation','setModes'].includes(action?.type)) {
     cancelPointer('input-boundary');
     cancelShifts('input-boundary');
@@ -97,7 +133,8 @@ function perform(action,source='virtual') {
   return actions;
 }
 async function performOne(action,source) {
-  if (!action) return;
+  if (action?.type !== 'symbol') lastLiteral = null;
+  if (!action || action.type === 'disabled') return;
   if (action.type === 'noop') { status('编辑模式下 5 不执行动作。'); return; }
   if (action.type === 'unsupported') {
     status(`${action.label || '此键'} 仅保留实体键位；没有发送系统快捷键。`);
@@ -151,11 +188,12 @@ function recordKey(key,pointerType,pointer,cancelled=false,reason=null,layer=nul
     }
   }
   const shifted = layer?.shifted ?? effectiveShift(), numeric = layer?.numeric ?? (numLocks[key.zone] ?? true);
-  const resolved = !cancelled && !running ? virtualKeyAction(key,shifted,numeric) : {action:key.action,armed:shiftArmed};
+  const resolved = !cancelled && !running ? virtualKeyAction(key,shifted,numeric,literalEntries) : {action:key.action,armed:shiftArmed};
   touches.push({physicalKeyId:key.id,yinyuanIds:key.yinyuanIds,action:resolved.action,baseAction:key.action,shiftArmed:shifted,zone:key.zone,numeric,pointerType,pointer,cancelled,reason,
     drillKind:running ? drill.kind : null,drillResult:outcome,intended,timeMs:Math.round(performance.now())});
   if (touches.length > 1000) touches.shift();
   renderDrill();
+  if (running && !drillActive()) refreshKeyboard();
   // Coverage drills test geometry without altering the local test document.
   if (!cancelled && !running) {
     if (key.action.type === 'toggle-number') {
@@ -166,7 +204,7 @@ function recordKey(key,pointerType,pointer,cancelled=false,reason=null,layer=nul
       setVirtualShift(!shiftArmed);
       status(shiftArmed ? '一次 Shift 已启用；上档输出严格遵循键帽。' : '一次 Shift 已关闭。');
     } else {
-      if (['input','literal','select'].includes(resolved.action?.type)) {
+      if (['input','literal','select','symbol'].includes(resolved.action?.type)) {
         for (const press of shiftPointers.values()) press.used = true;
         setVirtualShift(false);
       }
@@ -217,13 +255,22 @@ function addLegend(button,value,index,key) {
   button.append(span);
 }
 function renderVirtualKey(key,button) {
+  button.disabled = Boolean(key.disabled);
+  button.dataset.action = key.action.type;
+  button.dataset.ascii = key.action.ascii || '';
+  button.dataset.layout = englishLayout() ? 'english' : 'original';
+  button.dataset.yinyuanIds = (key.yinyuanIds || []).join(',');
+  if (key.action.type === 'toggle-layout') {
+    button.setAttribute('aria-pressed',String(englishLayout()));
+    button.setAttribute('aria-disabled',String(currentModes().input !== 'english' && !drillActive()));
+  }
   const shifted = effectiveShift() && key.shiftAction;
   const editing = key.editAction && !numLocks[key.zone];
-  const action = virtualKeyAction(key,effectiveShift(),numLocks[key.zone] ?? true).action || key.action;
+  const action = virtualKeyAction(key,effectiveShift(),numLocks[key.zone] ?? true,literalEntries).action || key.action;
   const activeLabel = editing ? action.key || '—' : shifted ? action.ascii : null;
   const labels = activeLabel ? Array.from({length:12},(_,i) => i === 4 ? activeLabel : '') : key.displayLabels || key.labels || [];
   const ids = (key.yinyuanIds || []).map(id => (key.disabledYinyuanIds || []).includes(id) ? `${id} 停用` : id).join('，');
-  const description = ['input','literal'].includes(action.type) ? `ASCII ${action.ascii}${action.type === 'literal' ? '（侧区直输）' : ''}${shifted ? '（上档）' : ''}`
+  const description = ['input','literal','symbol'].includes(action.type) ? `ASCII ${action.ascii}${action.type === 'literal' ? '（侧区直输）' : ''}${shifted ? '（上档）' : ''}`
     : action.type === 'select' ? `数字 ${action.ordinal}（有候选时选词，否则输入数字）`
     : action.type === 'shift' ? `Shift（${effectiveShift() ? '已启用' : '未启用'}，支持点按或按住）`
     : action.type === 'toggle-number' ? `${key.zone === 'left' ? '左' : '右'} Num Lock（${numLocks[key.zone] ? '数字' : '编辑'}）`
@@ -240,19 +287,32 @@ function renderVirtualKey(key,button) {
   if (key.action.type === 'toggle-number') button.setAttribute('aria-pressed',String(numLocks[key.zone]));
   if (key.action.type === 'toggle-language') button.setAttribute('aria-pressed',String(currentModes().input === 'english'));
   if (key.action.type === 'toggle-punctuation') button.setAttribute('aria-pressed',String(currentModes().punctuation === 'chinese'));
-  button.replaceChildren();
-  labels.forEach((label,index) => addLegend(button,label,index,key));
-  if (!labels.some(Boolean)) button.append(node('span','Space','key-space'));
+  // Reuse legend nodes; normal input does not rebuild the key face.
+  const signature = JSON.stringify(labels);
+  if (button.dataset.legendSignature !== signature) {
+    if (!button._legends) {
+      button._legends = Array.from({length:12},(_,index) => {
+        const span = document.createElement('span'); span.className = `key-legend legend-${index}`;
+        button.append(span); return span;
+      });
+    }
+    labels.forEach((label,index) => { button._legends[index].textContent = legendText(label || ''); });
+    button.dataset.legendSignature = signature;
+  }
+  for (const old of button.querySelectorAll('.key-state,.simulation-label,.key-space')) old.remove();
+  if (action.type === 'disabled') button.title = `${key.id} · 暂时禁用`;
   if (action.type === 'unsupported') button.append(node('span','仅示意','simulation-label'));
   if (action.type === 'toggle-number') button.append(node('span',numLocks[key.zone] ? '数字' : '编辑','key-state'));
   if (action.type === 'toggle-language') button.append(node('span',currentModes().input === 'chinese' ? '中文' : '英文','key-state'));
+  if (action.type === 'toggle-layout') button.append(node('span',englishLayout() ? '英' : '原','key-state'));
   if (action.type === 'toggle-punctuation') button.append(node('span',currentModes().punctuation === 'chinese' ? '中文' : '英文','key-state'));
 }
 function refreshKeyboard() {
   for (const key of layout?.keys || []) {
     const button = keyButtons.get(key.id);
-    if (button) renderVirtualKey(key,button);
+    if (button) renderVirtualKey(displayedKey(key),button);
   }
+  if ($('layout-mode')) $('layout-mode').textContent = `布局：${englishLayout() ? '标准英文' : '原盘面'}`;
   if ($('number-modes')) $('number-modes').textContent = `左数字区：${numLocks.left ? '数字' : '编辑'} · 右数字区：${numLocks.right ? '数字' : '编辑'}`;
 }
 function setVirtualShift(value) {
@@ -282,14 +342,16 @@ function buildKeyboard() {
     button.style.clipPath = `polygon(${shape.polygon})`;
     button.style.setProperty('--key-color',key.color || '#deded7');
     button.style.setProperty('--key-text',key.textColor || '#172c30');
-    renderVirtualKey(key,button);
+    renderVirtualKey(displayedKey(key),button);
     button.addEventListener('pointerdown',event => {
+      const current = displayedKey(key);
+      if (current.disabled) return;
       if (event.button !== 0 || !keyContainsPoint(key,event,button.getBoundingClientRect())) return;
-      const shift = key.action.type === 'shift' && !drillActive();
+      const shift = current.action.type === 'shift' && !drillActive();
       if (!shift && active) return;
       event.preventDefault();
       focusBoard();
-      const press = {pointerId:event.pointerId,key,button,pointerType:event.pointerType,left:false,used:false,startedAt:performance.now(),down:pointerSample(event,button.getBoundingClientRect()),layer:{shifted:effectiveShift(),numeric:numLocks[key.zone] ?? true}};
+      const press = {pointerId:event.pointerId,key:current,button,pointerType:event.pointerType,left:false,used:false,startedAt:performance.now(),down:pointerSample(event,button.getBoundingClientRect()),layer:{shifted:effectiveShift(),numeric:numLocks[key.zone] ?? true}};
       if (shift) shiftPointers.set(event.pointerId,press);
       else {
         active = press;
@@ -326,14 +388,14 @@ function buildKeyboard() {
       const completed = active;
       active = null;
       button.classList.remove('pressed');
-      recordKey(key,event.pointerType,{down:completed.down,up:pointerSample(event,rect),holdMs:Math.round(performance.now()-completed.startedAt)},false,null,completed.layer);
+      recordKey(completed.key,event.pointerType,{down:completed.down,up:pointerSample(event,rect),holdMs:Math.round(performance.now()-completed.startedAt)},false,null,completed.layer);
     });
     for (const type of ['pointercancel','lostpointercapture']) button.addEventListener(type,event => {
       if (shiftPointers.has(event.pointerId)) cancelShifts(type);
       if (active?.pointerId === event.pointerId) cancelPointer(type,event);
     });
     button.addEventListener('click',event => {
-      if (event.detail === 0 && !event.pointerType) recordKey(key,'keyboard',null);
+      if (event.detail === 0 && !event.pointerType) recordKey(displayedKey(key),'keyboard',null);
     });
     board.append(button);
     keyButtons.set(key.id,button);
@@ -348,7 +410,7 @@ function keyboardInput(event) {
     return;
   }
   const action = actionFromKeyboard(event);
-  if (!action) return;
+  if (!action || action.type === 'disabled') return;
   // Tab preserves board navigation, but can edit a tab in the local textarea.
   if (event.key === 'Tab' && event.target !== $('committed')) return;
   event.preventDefault();
@@ -371,12 +433,14 @@ function startDrill(kind) {
   cancelPointer('drill-start');
   cancelShifts('drill-start');
   perform({type:'clear'},'drill');
+  const enabled = layout.keys.filter(key => !displayedKey(key).disabled);
   const targets = kind === 'targets'
-    ? layout.keys.map((_,i) => layout.keys[(i*17+3)%layout.keys.length].id)
-    : layout.keys.map(key => key.id);
+    ? enabled.map((_,i) => enabled[(i*17+3)%enabled.length].id)
+    : enabled.map(key => key.id);
   drill = {kind,targets,seen:[],correct:0,attempts:0,wrong:0,duplicate:0,cancelled:0};
   drills.push(drill);
   renderDrill();
+  refreshKeyboard();
   status('点按测量期间仅记录命中，不发送编码或控制动作；完成本轮后自动恢复输入。');
 }
 function environment() {
@@ -388,7 +452,7 @@ function updateEnvironment() {
   $('environment').textContent = `屏幕 ${env.screenCssPx.width} × ${env.screenCssPx.height}；视口 ${env.viewportCssPx.width} × ${env.viewportCssPx.height} CSS px · DPR ${env.devicePixelRatio.toFixed(2)} · 最大触点 ${env.maxTouchPoints}。`;
 }
 function exportReport() {
-  const report = {formatVersion:5,mode:'ascii-physical-keyboard',createdAt:new Date().toISOString(),layoutId:layout.layoutId,touchTemplateId:layout.touchTemplateId,
+  const report = {formatVersion:6,displayedLayout:englishLayout() ? 'english' : 'original',englishLayoutPreference:layoutPreference,literalEntries,layoutSwitchHandlerToFrameMs:layoutLatencies,mode:'ascii-physical-keyboard',createdAt:new Date().toISOString(),layoutId:layout.layoutId,touchTemplateId:layout.touchTemplateId,
     inputPolicy:client.info.inputPolicy,inputModes:currentModes(),numberModes:{...numLocks},sources:layout.sources,environment:environment(),disabledYinyuanIds:layout.disabledYinyuanIds,drills,touches,trace,handlerToNextFrameMs:latencies,
     hardwareAcceptance:false,note:'本页 Go 引擎与浏览器事件记录；不证明 Windows 注册宿主、实体键盘或真实触屏验收。'};
   const url = URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
@@ -402,7 +466,7 @@ async function init() {
   const response = await fetch('./data/physical-layout.json',{cache:'no-store'});
   if (!response.ok) throw new Error(`布局读取失败：HTTP ${response.status}`);
   layout = await response.json();
-  if (layout.formatVersion !== 3) throw new Error('页面需要当前138键分层布局，请重新生成数据并刷新。');
+  if (layout.formatVersion !== 4) throw new Error('页面需要当前134键双布局，请重新生成数据并刷新。');
   buildKeyboard();
   client = createLiveClient({onResult:render});
   $('keyboard').addEventListener('keydown',keyboardInput);
@@ -417,7 +481,13 @@ async function init() {
     $(id).addEventListener('click',() => { perform(action); focusBoard(); });
   }
   $('input-mode').addEventListener('click',() => { perform({type:'toggle-language'}); focusBoard(); });
-  $('punctuation-mode').addEventListener('click',() => { perform({type:'toggle-punctuation'}); focusBoard(); });
+  $('literal-entries').addEventListener('click',() => {
+    cancelPointer('literal-entry-change'); cancelShifts('literal-entry-change');
+    literalEntries = !literalEntries;
+    $('literal-entries').setAttribute('aria-pressed',String(literalEntries));
+    $('literal-entries').textContent = `字面符号入口：${literalEntries ? '开' : '关'}`;
+    refreshKeyboard(); focusBoard();
+  });
   $('code-mode').addEventListener('change',event => {
     cancelPointer('mode-change');
     cancelShifts('mode-change');
@@ -439,12 +509,14 @@ async function init() {
   $('drill').addEventListener('click',() => startDrill('coverage'));
   $('target-drill').addEventListener('click',() => startDrill('targets'));
   $('stop-drill').addEventListener('click',() => { drill = null; renderDrill(); status('点按测量已停止，恢复正常输入。'); });
+  $('committed').addEventListener('pointerdown',() => { lastLiteral = null; });
   $('export').addEventListener('click',exportReport);
   $('layout-id').textContent = layout.layoutId;
   for (const source of layout.sources || []) $('sources').append(node('li',typeof source === 'string' ? source : `${source.path} · ${source.sha256 || ''}`));
   updateEnvironment();
   window.addEventListener('resize',updateEnvironment);
   await client.connect(layout.layoutId,$('code-mode').value);
+  await client.dispatch({type:'setModes',inputMode:'chinese',punctuationMode:'chinese'});
   $('engine-scope').textContent = typeof client.info.scope === 'string' ? client.info.scope : '独立 Go 会话 · 共享源生成的三种码制索引';
   status('已就绪。点击编码键，或聚焦键盘后使用 ANSI 键盘；候选选择后直接写入本页文本。');
 }

@@ -43,7 +43,7 @@ func TestGeneratedProjectionMatchesSemanticSyllables(t *testing.T) {
 		}
 	}
 	// The former shared groups now have independent active carriers.
-	for _, key := range "[\\]" {
+	for _, key := range "TLN" {
 		if musicalByKey[key].quality != 9 {
 			t.Fatalf("wrong quality for independent carrier %q", key)
 		}

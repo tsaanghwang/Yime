@@ -126,7 +126,7 @@ def build(source_database: Path, output: Path, *, limit: int = 0) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-database", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, default=ROOT / ".generated/ascii-keyboard-138")
+    parser.add_argument("--output-dir", type=Path, default=ROOT / ".generated/ascii-keyboard-134")
     parser.add_argument("--limit", type=int, default=0)
     args = parser.parse_args()
     if args.limit < 0:

@@ -21,9 +21,9 @@ def test_canonical_60_and_input_75_are_separate_unique_inventories():
     assert len(base) == len(active) == len(set(base.values())) == 60
     assert len(inputs) == len(set(inputs.values())) == 75
     assert load_disabled_yinyuan_ids(ROOT) == set()
-    for owner, enabled, key, upper in (("M28", "M25", "[", "{"), ("M29", "M26", "\\", "|"), ("M30", "M27", "]", "}")):
+    for owner, enabled, key, upper in (("M28", "M25", "T", "B"), ("M29", "M26", "L", "M"), ("M30", "M27", "N", "P")):
         assert base[owner] == key and base[enabled] == upper
-    assert base["N12"] == "'" and base["N26"] == "~"
+    assert base["N12"] == "'" and base["N26"] == "`"
     assert not set("0123456789") & set(inputs.values())
 
 
@@ -43,8 +43,8 @@ def test_erhua_projection_joins_reviewed_sound_metadata_not_base_catalog():
     for identifier, unit in registry.items():
         assert classes[unit["key_class_id"]] == mapping[identifier]
         assert unit["tone_grade"] in ("high", "mid", "low")
-    assert classes["ERHUA-KEY-HIGH"] == "M"
-    assert mapping["R04"] == "@" and mapping["R10"] == "Q"
+    assert classes["ERHUA-KEY-HIGH"] == "!"
+    assert mapping["R04"] == "{" and mapping["R10"] == "["
     assert not set(registry) & set(load_yinyuan_id_to_layout_key(ROOT))
 
 

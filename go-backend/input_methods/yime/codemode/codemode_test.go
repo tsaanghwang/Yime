@@ -11,12 +11,12 @@ func TestBuildRecordDerivesAllModes(t *testing.T) {
 	}{
 		{"'AAA", "'A", "'A"},
 		{"AAAA", "AA", "AA"},
-		{"'aBA", "'aBA", "'aA"},
+		{"'aDA", "'aDA", "'aA"},
 		{"kAAA", "kA", "kA"},
-		{"kaBA", "kaBA", "kaA"},
+		{"kaDA", "kaDA", "kaA"},
 		{"'AAI", "'AI", "'AI"},
-		{"kAAIkABa", "kAIkABa", "kAIkAa"},
-		{"kAAA'aBA", "kA'aBA", "kA'aA"},
+		{"kAAIkADa", "kAIkADa", "kAIkAa"},
+		{"kAAA'aDA", "kA'aDA", "kA'aA"},
 	}
 	for _, test := range tests {
 		got, err := BuildRecord(test.full)
@@ -37,7 +37,7 @@ func TestBuildRecordDerivesAllModes(t *testing.T) {
 }
 
 func TestProjectAlignedUsesTheSameModeSpecificPositionMasks(t *testing.T) {
-	got, err := ProjectAligned("'AAA kaBA", "ABCDWXYZ")
+	got, err := ProjectAligned("'AAA kaDA", "ABCDWXYZ")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,7 +62,7 @@ func TestBuildRecordCoversFourThreeYinyuanGanyinStructures(t *testing.T) {
 	tests := []struct {
 		name, full, variable string
 	}{
-		{"all different", "kIBV", "kIBV"},
+		{"all different", "kIDV", "kIDV"},
 		{"first two equal", "kIIV", "kIV"},
 		{"last two equal", "kIVV", "kIV"},
 		{"all equal", "kIII", "kI"},
@@ -96,17 +96,17 @@ func TestBuildRecordRejectsIncompleteSyllable(t *testing.T) {
 }
 
 func TestBuildRecordAcceptsScriptDictionarySyllableSpaces(t *testing.T) {
-	got, err := BuildRecord("kAAI kABa")
+	got, err := BuildRecord("kAAI kADa")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.Full != "kAAIkABa" || got.FullSpelling != "kAAI kABa" || got.VariableSpelling != "kAI kABa" {
+	if got.Full != "kAAIkADa" || got.FullSpelling != "kAAI kADa" || got.VariableSpelling != "kAI kADa" {
 		t.Fatalf("unexpected record: %#v", got)
 	}
 }
 
 func TestValidateContinuousInputRecordRejectsLostApostropheVirtualShouyin(t *testing.T) {
-	record, err := BuildRecord("'aBA kAAI")
+	record, err := BuildRecord("'aDA kAAI")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -123,7 +123,7 @@ func TestBuildRecordAcceptsEveryLayoutKeyAndRejectsUnknownCharacters(t *testing.
 			t.Fatalf("layout key %q rejected: %v", key, err)
 		}
 	}
-	if _, err := BuildRecord("!!!!"); err == nil {
+	if _, err := BuildRecord("$$$$"); err == nil {
 		t.Fatal("expected characters outside LayoutAlphabet to be rejected")
 	}
 }

@@ -1,101 +1,73 @@
-# Yime 概念实体键盘实验
+# Yime 134 键双布局虚拟样机
 
-这是新布局的 **138 键实体盘面虚拟模型**。标准 ANSI 键盘输入和屏幕点按都通过
-同一 ASCII/控制动作接口，进入真实 Go YimeCore 引擎；候选只提交到本页文本框。
-不是系统输入法安装，也不使用原来的三个固定候选演示。
+影响范围：隔离的 ASCII 概念键盘实验，分支 `codex/ascii-physical-layout-experiment`。
+候选来自真实 Go YimeCore 的实验词典，提交只进入本页文本框。
 
-本轮在隔离实验中启用全部 60 个基础音元及 15 个独立儿化载体，复用既有审定儿化记录，
-不扩展音变规则。服务不加载个人词库或学习数据，不替换当前正式输入法。
+## 当前盘面与输入
 
-两套布局分支并行保留：旧布局继续位于 `codex/current-readiness-delivery-20260927`，
-本样机位于 `codex/ascii-physical-layout-experiment`。本样机的标准ANSI通道只要求功能正确、能输入，
-不考核输入速度、Shift次数或手感；新布局的效率和实用性设计面向概念实体键盘及其虚拟盘面。
-各分支使用自身的键位源和配套生成词库，不混用，也不自动用新布局覆盖旧布局。
+- CN 来源：`design/yime-cn-134k-24u-keyboard-layout.json`；EN 来源：
+  `design/yime-en-134k-24u-keyboard-layout.json`。两者均为 134 键，
+  24.75 × 7.25 KLE u，位置、尺寸和 ISO 矩形并集完全相同。
+- `CN EN` 同时切换输入语言与标点模式。切到英文时保留、暂停中文组合，回中文可继续。
+- 英文模式下 `Layout` 在原盘面与标准英文盘面之间切换，记住选择；回中文显示 CN，
+  再进入英文恢复上次选择。选择也保存在本浏览器的 localStorage。
+- EN 字母下档为小写，上档为大写。新增的 23 个空白键暂时禁用；图标系统键继续仅示意。
+  禁用状态是生成数据中的明确字段，与 `#d0b2e2` 颜色无关。
+- 切换复用键节点及图例节点，只更新图例、动作和启用状态；不读取布局文件、不重建会话、
+  不改变颜色。当前保留 CN 草案的底色；两套设计定型后再统一修改颜色。
+- 主区数字 1–9 有候选时选择当前页对应项，无候选时直输；非空页缺少该序号则无操作。
+  侧数字区直输 ASCII 数字和运算符，不编码、不选词、不转换标点。左右 Num Lock 独立，
+  编辑态 5 无操作。该实验例外不改变正式产品的 Shift+1–9 规则。
+- 虚拟 Shift 可点按一次或按住再点另一键；按下时捕获字符层。切换布局会取消未完成触点、
+  清除 Shift；ANSI 兼容通道始终按 event.key 输入，不随虚拟盘面再映射。
+- 75 个输入 ID 全部启用。M25/M26/M27 的编码分别是 B/M/P；R01–R03 仍复用 M22–M24。
+  大小写与音元编码保持区分，Caps Lock 仅示意。
+- 软件的“字面符号入口”开关默认关闭。关闭时预留 ASCII 标点入口按普通编码规则处理；
+  开启时仅不带 ID 的 32 种预留标点入口直输，按当前标点模式输出，保留中文组合。
+  带 ID 的编码入口不受此开关影响。六个明确的 Unicode 符号入口为 ·、—×√÷。
+  连续两个字面 — 得到 ——，连续三个字面 · 得到 …，六次得到 ……；只合并同一光标位置的连续显式符号提交。
 
-## 运行
+## 运行与检查
 
-在此分支仓库根目录执行（Python 仅用于离线生成）：
+在本实验分支根目录执行：
 
 ```text
 python -X utf8 tools/generate_ascii_layout.py
 python -X utf8 prototypes/touch-terminal/generate_data.py
-python -X utf8 tools/build_ascii_keyboard_experiment.py --source-database C:/YimeData/runtime-input-v1/pinyin_hanzi.db --output-dir .generated/ascii-keyboard-138
-go -C go-backend run ./cmd/yime-keyboard-lab --root .. --port 8765
+python -X utf8 tools/build_ascii_keyboard_experiment.py --source-database C:/YimeData/runtime-input-v1/pinyin_hanzi.db --output-dir .generated/ascii-keyboard-134
+go -C go-backend run ./cmd/yime-keyboard-lab --root .. --port 8766
 ```
 
-生成命令读取已授权的独立内容锁定数据库并校验其 SHA-256，不读取其他 Git 仓库。
-实验词典位于忽略目录 `.generated/ascii-keyboard-138/data`。若采用另一个输出目录，
-生成时传 `--output-dir`，启动时传 `--data-dir` 指向其中的 `data`。
-服务启动时核对布局摘要、停用集合及三份词典摘要，随后打印本机打开地址。
-初次启动会编译三份索引，需要等待服务提示 ready。
-
-打开 [本地键盘实验](http://127.0.0.1:8765/)。
-直接双击 HTML 或旧的 Python 静态服务不能运行真实输入引擎。
-
-## 怎样试用
-
-1. 先把 Windows 系统输入法切到英文直输（避免另一输入法截获），再在实验页面选可变码、全码或简码。
-   页面初始为“中文输入／英文标点”，与系统输入法的模式无关。
-2. ANSI 键盘按其标准方式输入 ASCII；虚拟键盘按各键明确标注的下档/上档输出，字母也可有不同上档。
-3. 候选列表和虚拟盘面的九个紫色数字/候选键均标为 **1–9**，不需要 Shift。
-   此规则只适用于中文模式主键区；ANSI 小键盘数字和概念侧数字区走字面旁路。
-4. Enter/Space 在有候选时确认首选；空组合时在本页插入换行/空格。
-   Backspace、Escape用于退格和取消；PageUp/PageDown及页面按钮翻页。标点不充当翻页快捷键。
-5. 失去窗口焦点取消未确认组合。切换码制也取消旧组合。没有全局按键注入。
-6. 虚拟 Shift 支持点按一次性上档，也支持按住并点击另一键；ANSI Shift 只点亮层，输入仍按 event.key。
-   无上档定义的键保持固定字符。概念 Caps Lock 不启用；Ctrl/Alt、系统键和功能键仅示意，不注入系统快捷键。
-7. 「全键覆盖」「随机目标」只测键位命中，不向引擎输入。
-   导出记录区分浏览器事件与真实触屏验收，不能把鼠标/自动化冒充手指测试。
-8. 左右 Num Lock 各自切换数字／编辑并显示状态。数字模式直输 ASCII 数字及运算符，
-   保留未确认编码、不选词、不转换中文标点；编辑模式 5 无动作，编辑只作用于本页文本。
-9. 页面中英文输入和中英文标点可独立切换。转英文时未确认中文编码暂停保留，回中文后可继续。
-   英文状态按盘面固定大小写直输；标点模式只改变字面输出，不改变内部编码。
-
-### 数字、符号与候选
-
-| 输入 | 处理规则 |
-| --- | --- |
-| 中文主区数字1–9 | 当前页有候选时选择对应项；没有任何候选时直接输出数字。页内有候选但该序号不存在时不做操作。 |
-| 数字0、非编码ASCII符号 | 直接输出；若当前页有候选，先确认当前页首个候选，再与字符合成一次提交。无候选的未确认编码保留，不删除或偷偷上屏。 |
-| 单独一个编码符号（当前23种） | 正常查询音元编码，另将字面符号放在首页实际末项；首页满时保留8个词典候选加1个符号候选，其余词典候选顺延，不丢失、不重复。无汉字候选也不自动提交该符号。 |
-| 含字母或多个字符的音元编码 | 只查询正常音元候选，不把编码串误作符号候选。 |
-
-非编码符号为感叹号、双引号、逗号、句点、冒号、分号、问号、下划线、反引号。
-其余 23 种 ASCII 标点都是编码载体，上档也不能绕过编码。要连续直输标点，可切页面英文输入。
-中文标点转换的实验默认表及配对引号规则见 `go-backend/cmd/yime-keyboard-lab/README.md`；
-未定义的转换保留原 ASCII，并非把所有字符全角化。
-这些规则由独立Go实验会话统一处理，使用版本号、稳定候选ID和事件重试缓存；不是修改正式词典或原生Rime分页。
-
-## 唯一真源与派生物
-
-- `internal_data/manual_key_layout.json`：唯一可编辑的音元 ID→ASCII 投影和停用策略。
-- `design/keyboard-layout.json`：用户当前草案；拥有物理位置、尺寸、颜色及上下档图例。
-  图例中的字符须与唯一真源一致，导入器发现冲突就失败，不反向覆盖投影。
-- `data/physical-layout.json`：上述两者生成的完整盘面，禁止单独维护映射。
-- 60 个基础 ID 全部启用，加 R04–R18 共 75 个独立 ASCII 载体；R01–R03 复用 M22–M24。
-  M25/M26/M27 使用 `{ | }`，与同键下档 M28/M29/M30 的 `[ \\ ]` 独立。
-- `layoutId` 标识 ASCII 投影和停用策略；`touchTemplateId` 标识具体虚拟盘面。
-  ISO 键按两个矩形的并集显示及命中，缺角不属于可点击区域；KLE 的 y 偏移与 a 对齐按上游格式解析。
-
-## 验证
+打开 <http://127.0.0.1:8766/>。Python 只用于离线生成；运行输入由 Go 引擎负责。
+完整词典从已授权、内容锁定的独立数据库重投影，不读取其他 Git 仓库，不替代生产词库。
+75 个 ID 的唯一可编辑编码投影仍是 `internal_data/manual_key_layout.json`；
+导入器核对 KLE 标注，不会反向覆盖投影。生成盘面与 Go 索引均核对布局摘要和词典 SHA-256。
 
 ```text
 python -X utf8 tools/generate_ascii_layout.py --check
 python -X utf8 prototypes/touch-terminal/validate.py
-go -C go-backend test ./cmd/yime-keyboard-lab
+python -X utf8 -m pytest tests/yime/test_ascii_layout.py tests/tools/test_resolve_manual_key_layout.py tools/test_ascii_keyboard_overlays.py -q
+go -C go-backend test ./cmd/yime-keyboard-lab ./input_methods/yime/codemode ./input_methods/yime/systemlexicon
 ```
 
-真实全词库 HTTP 验证见服务的 `README.md`。浏览器回归脚本是
-`browser-smoke.js`；必须连接当前 Go 服务，不得使用旧 fixture 代替。
-源码自测、浏览器键盘事件、真实 ANSI 按键、手指触屏、Windows 注册宿主分别记录。
-触摸显示器维修期间，只执行代码、鼠标和浏览器模拟验证；真实手指、多点触摸和触控笔验收待设备返回。
+真实完整词典的 HTTP 验证使用 `-keyboard-lab-integration-root` 指定本 checkout 的绝对路径。
+浏览器回归为 `browser-smoke.js`，必须连接当前 Go 服务。软件证据见 [本轮交接](HANDOFF.md)。
 
-## 范围与历史
+## 实屏记录
 
-详细实施顺序见 `../../docs/project/ASCII_PHYSICAL_LAYOUT_PLAN.md`。
-本分支先验证共享离线源和 YimeCore 独立实验窗口；未变更默认输入法、安装目录、
-Rime/PIME 用户数据或系统级输入行为。正式交付仍需生产精选词库重投影、完整包、
-CI 和各产品独立宿主验收，不可将实验词库的 manifest 冒充生产 target lock。
+触摸屏已由用户确认到位。可分别在 CN 盘面覆盖 134 键、EN 盘面覆盖 111 个启用键，
+并检查双指 Shift、快速切换后的首键、拖出取消以及连续中英文输入。
+导出格式 6 记录盘面身份、英文偏好、字面入口状态、触点和切换计时。
+“布局切换 → 下一帧”是浏览器处理至 requestAnimationFrame 的代理指标，
+不是手指接触到屏幕发光的端到端延迟。
 
-旧 `design/concept-129.kle.json`、`core.mjs`、60 键模板、`data/layout.json`、`data/demo.json` 及既有实屏报告
-仅保留为历史原型/测试证据，当前页面和服务不读取它们。
+鼠标、CDP 模拟触摸、真人手指/触控笔分别记录。自动化导出始终标为
+`hardwareAcceptance:false`，真人试用结论须依据实际设备与用户确认补充。
+本轮不安装输入法、不更改系统默认输入法、不注入全局按键或读取个人学习数据。
+
+## 历史
+
+`design/keyboard-layout.json` 等 132/134 草案保留为历史设计；当前运行只使用上述两份已选定文件。
+既有 60/129/138 键测试和旧 `.generated/ascii-keyboard*` 目录保留自己的日期与范围，
+不作为当前 134 键真人触屏验收。检查不一致的原始积压状态见
+[基线保存说明](CHECKPOINT_2026-10-18.md)。
