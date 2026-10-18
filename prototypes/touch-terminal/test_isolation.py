@@ -26,3 +26,19 @@ class ProductIsolationTests(unittest.TestCase):
             self.assertTrue(relative.as_posix().startswith((
                 "prototypes/touch-terminal/encoding/", "go-backend/internal/asciicodemode/")))
             self.assertEqual(content, (ROOT / relative).read_text(encoding="utf-8"))
+
+    def test_codegen_works_with_windows_legacy_pipe_encoding(self):
+        # Reproduce an English Windows subprocess locale independently of the
+        # machine running this test. Without explicit UTF-8, the stdin writer
+        # raises UnicodeEncodeError and gofmt waits forever for EOF.
+        import subprocess
+        script = """
+from unittest.mock import patch
+from tools.generate_ascii_layout import generated_payloads
+with patch('locale.getencoding', return_value='cp1252'):
+    assert generated_payloads()
+print('PASS explicit UTF-8 code generation under legacy locale')
+"""
+        result = subprocess.run([sys.executable, "-X", "utf8=0", "-c", script],
+                                cwd=ROOT, capture_output=True, encoding="utf-8", timeout=40)
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
