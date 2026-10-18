@@ -1,103 +1,120 @@
-"""Physical board import contracts, independent from historical 60-button demo."""
+"""Physical geometry and explicit action contracts for the approved concept."""
 import json
 import unittest
 
-from physical_layout import SOURCE, SHIFT_SYMBOLS, build, key_action, parse_physical_kle, plain
+from physical_layout import SOURCE, build, parse_physical_kle, plain, absolute_rectangles, keys_overlap
 
 
 class PhysicalLayoutTests(unittest.TestCase):
-    def test_supplied_board_geometry_and_inventory(self):
-        layout = parse_physical_kle(json.loads(SOURCE.read_text(encoding="utf-8-sig")))
-        self.assertEqual(129, len(layout["keys"]))
-        self.assertEqual({"width": 25.75, "height": 7.25}, layout["bounds"])
-        ids = [item for key in layout["keys"] for item in key["yinyuanIds"]]
-        self.assertEqual(60, len(ids))
-        self.assertEqual(60, len(set(ids)))
-        shared = [k["yinyuanIds"] for k in layout["keys"] if len(k["yinyuanIds"]) > 1]
-        self.assertCountEqual(shared, [["M29", "M26"], ["M28", "M25"], ["M30", "M27"]])
+    def test_board_inventory_and_union_geometry(self):
+        board = parse_physical_kle(json.loads(SOURCE.read_text(encoding="utf-8-sig")))
+        self.assertEqual(138, len(board["keys"]))
+        self.assertEqual({"width": 24.75, "height": 7.25}, board["bounds"])
+        ids = [identifier for key in board["keys"] for identifier in key["yinyuanIds"]]
+        self.assertEqual(75, len(ids))
+        self.assertEqual(75, len(set(ids)))
+        for index, key in enumerate(board["keys"]):
+            self.assertFalse(any(keys_overlap(key, other) for other in board["keys"][index + 1:]))
 
-    def test_kle_row_offsets_persist(self):
-        keys = parse_physical_kle([["a"], [{"y": .25}, "b"], ["c"]])["keys"]
-        self.assertEqual([0, 1.25, 2.25], [k["y"] for k in keys])
+    def test_iso_union_not_bounding_box_and_cursor_primary_width(self):
+        # The lower neighbor occupies the notch, touching but not overlapping.
+        board = parse_physical_kle([[{"w": 1, "h": 2, "w2": 2, "h2": 1}, "ISO",
+                                     {"x": 1}, "next"], [{"x": 1}, "notch"]])
+        self.assertEqual(2, board["keys"][1]["x"])
+        self.assertEqual(1, board["keys"][2]["x"])
+        self.assertEqual(2, len(board["keys"][0]["rectangles"]))
+        with self.assertRaisesRegex(ValueError, "Overlapping"):
+            parse_physical_kle([[{"w": 1, "h": 2, "w2": 2, "h2": 1}, "ISO", "collision"]])
+        with self.assertRaisesRegex(ValueError, "Overlapping"):
+            parse_physical_kle([[{"w": 1, "h": 2, "w2": 2, "h2": 1}, "ISO"],
+                                [{"x": .75}, "collision"]])
 
-    def test_alignment_7_and_5(self):
-        keys = parse_physical_kle([[{"a": 7, "w": 2}, "Tab", {"a": 5}, "N\nN\n\n\n\n\nM29|M26"]])["keys"]
+    def test_secondary_bounds_negative_offsets_and_reset(self):
+        board = parse_physical_kle([[{"x": .25, "w": 1, "h": 2, "x2": -.25, "w2": 1.25, "h2": 1},
+                                     "ISO", {"x": .25}, "normal"]])
+        self.assertEqual(0, min(r["x"] for r in absolute_rectangles(board["keys"][0])))
+        self.assertEqual([{"x": 0, "y": 0, "width": 1, "height": 1}], board["keys"][1]["rectangles"])
+        with self.assertRaisesRegex(ValueError, "Negative"):
+            parse_physical_kle([[{"x2": -.25}, "bad"]])
+        self.assertEqual(3, parse_physical_kle([[{"w2": 3}, "wide"]])["bounds"]["width"])
+
+    def test_mirrored_iso_keys(self):
+        keys = build()["keys"]
+        tab = next(key for key in keys if "Tab" in key["labels"])
+        back = next(key for key in keys if key["zone"] == "main" and key["action"]["type"] == "backspace")
+        mirror = sorted((24.75 - rect["x"] - rect["width"], rect["y"], rect["width"], rect["height"])
+                        for rect in absolute_rectangles(tab))
+        actual = sorted((rect["x"], rect["y"], rect["width"], rect["height"]) for rect in absolute_rectangles(back))
+        self.assertEqual(mirror, actual)
+
+    def test_kle_offsets_and_alignment(self):
+        keys = parse_physical_kle([[{"a": 7}, "Tab"], [{"y": .25}, "b"], ["c"]])["keys"]
+        self.assertEqual([0, 1.25, 2.25], [key["y"] for key in keys])
         self.assertEqual("Tab", keys[0]["labels"][4])
-        self.assertEqual("M29|M26", keys[1]["labels"][4])
-        self.assertEqual("N", keys[1]["labels"][1])
-        self.assertEqual("N", keys[1]["labels"][7])
-        self.assertEqual(1, keys[1]["width"])
-
-    def test_empty_metadata(self):
         self.assertEqual(1, len(parse_physical_kle([{}, ["x"]])["keys"]))
 
-    def test_rejects_overlap_rotation_and_invisible_labels(self):
-        for source in ([["a", {"x": -.5}, "b"]], [[{"r": 10}, "a"]], [[{"a": 7}, "a\nb"]]):
+    def test_fail_closed_for_unsupported_or_invalid_geometry(self):
+        for source in ([["a", {"x": -.5}, "b"]], [[{"r": 10}, "a"]],
+                       [[{"a": 7}, "a\nb"]], [[{"w2": 0}, "a"]], [[{"h2": -1}, "a"]]):
             with self.assertRaises(ValueError):
                 parse_physical_kle(source)
 
-    def test_html_legend_is_annotation_not_code(self):
+    def test_html_annotations_do_not_eat_literal_ascii(self):
         self.assertEqual("ĉ", plain("c&#770;"))
         self.assertEqual("o\u0305", plain("<span class='cd'>o&#773;</span>"))
+        for char in "<>&":
+            self.assertEqual(char, plain(char))
 
-    def test_only_explicit_shift_label_is_candidate_action(self):
-        candidate = dict(id="test", yinyuanIds=[], labels=["!", "1", "⇧1"])
-        self.assertEqual({"type": "select", "ordinal": 1}, key_action(candidate, {}, set()))
-        candidate["labels"] = ["1", "End"]
-        self.assertEqual({"type": "input", "ascii": "1"}, key_action(candidate, {}, set()))
-
-    def test_concept_candidate_labels_are_plain_ordinals_without_changing_actions(self):
-        layout = build()
-        candidates = [key for key in layout["keys"] if key["action"]["type"] == "select"]
-        self.assertEqual(list(range(1, 10)), [key["action"]["ordinal"] for key in candidates])
-        for key in candidates:
-            ordinal = str(key["action"]["ordinal"])
-            self.assertEqual([ordinal], [label for label in key["displayLabels"] if label])
-            self.assertEqual(ordinal, key["displayLabels"][4])
-            self.assertIn("⇧" + ordinal, key["labels"])
-        for key in layout["keys"]:
-            if key["action"]["type"] != "select" and not any(plain(label) in {"前页", "后页"} for label in key["labels"]):
-                self.assertNotIn("displayLabels", key)
-
-    def test_only_actual_page_keys_page_and_stale_page_legends_are_hidden(self):
-        layout = build()
-        paging = [key for key in layout["keys"] if key["action"]["type"] == "page"]
-        self.assertEqual(2, len(paging))
-        self.assertEqual({-1, 1}, {key["action"]["delta"] for key in paging})
-        for key in paging:
-            self.assertTrue({"PgUp", "PgDn"} & set(key["labels"]))
-        stale = [key for key in layout["keys"] if {"前页", "后页"} & set(key["labels"])]
-        self.assertEqual(2, len(stale))
-        self.assertEqual({"-", "="}, {key["action"]["ascii"] for key in stale})
-        for key in stale:
-            self.assertFalse({"前页", "后页"} & set(key["displayLabels"]))
-
-    def test_one_shot_shift_supports_symbols_without_changing_letter_ids(self):
-        layout = build()
-        shifts = [key for key in layout["keys"] if key["action"]["type"] == "shift"]
-        self.assertEqual(2, len(shifts))
-        for key in layout["keys"]:
-            action = key["action"]
-            base = str(action["ordinal"]) if action["type"] == "select" else action.get("ascii")
-            if base in SHIFT_SYMBOLS:
-                self.assertEqual({"type": "input", "ascii": SHIFT_SYMBOLS[base]}, key["shiftAction"])
-            else:
+    def test_explicit_layers_never_infer_ansi_shift(self):
+        keys = build()["keys"]
+        ids = {identifier: key for key in keys for identifier in key["yinyuanIds"]}
+        for base, shifted, ascii_base, ascii_shift in (
+            ("M28", "M25", "[", "{"), ("M29", "M26", "\\", "|"),
+            ("M30", "M27", "]", "}"), ("M16", "R04", "E", "@"),
+            ("M10", "R10", "A", "Q"), ("M31", "R07", "<", "("),
+        ):
+            key = ids[base]
+            self.assertIs(key, ids[shifted])
+            self.assertEqual({"type": "input", "ascii": ascii_base}, key["action"])
+            self.assertEqual({"type": "input", "ascii": ascii_shift}, key["shiftAction"])
+            self.assertEqual([base], key["baseYinyuanIds"])
+            self.assertEqual([shifted], key["shiftYinyuanIds"])
+        self.assertNotIn("shiftAction", ids["N12"])
+        self.assertNotIn("shiftAction", ids["M01"])
+        for key in keys:
+            if key["zone"] == "main" and key["action"].get("ascii", "") in "1234567890" and key["action"].get("ascii"):
                 self.assertNotIn("shiftAction", key)
-        self.assertEqual(dict(zip("'[]\\/", '\"{}|?')), {symbol: SHIFT_SYMBOLS[symbol] for symbol in "'[]\\/"})
+                self.assertEqual("input", key["action"]["type"])
 
-    def test_noncoding_caps_use_base_legend_and_space_confirms(self):
-        keys = parse_physical_kle([["~\n`", ")\n0", "7\nHome", {"a": 7}, "Enter", ""]])["keys"]
-        self.assertEqual([{"type": "input", "ascii": "`"}, {"type": "input", "ascii": "0"},
-                          {"type": "input", "ascii": "7"}, {"type": "confirm", "key": "Enter"},
-                          {"type": "confirm", "key": "Space"}],
-                         [key_action(key, {}, set()) for key in keys])
+    def test_two_independent_numeric_zones_and_ten_edit_actions(self):
+        board = build()
+        sides = {}
+        for zone in ("left", "right"):
+            keys = [key for key in board["keys"] if key["zone"] == zone]
+            self.assertEqual(18, len(keys))
+            self.assertEqual(1, sum(key["action"]["type"] == "toggle-number" for key in keys))
+            literal = {key["action"]["ascii"]: key for key in keys if key["action"]["type"] == "literal"}
+            self.assertEqual(set("0123456789./*-+"), set(literal))
+            self.assertEqual({"type": "noop"}, literal["5"]["editAction"])
+            edit = {key["editAction"]["key"] for key in literal.values() if key["editAction"]["type"] == "local"}
+            self.assertEqual({"Home", "End", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
+                              "PageUp", "PageDown", "Insert", "Delete"}, edit)
+            self.assertEqual(1, sum(key["action"] == {"type": "confirm", "key": "Enter"} for key in keys))
+            self.assertEqual(1, sum(key["action"] == {"type": "backspace"} for key in keys))
+            sides[zone] = [(key["y"], key["width"], key["height"], key["action"], key.get("editAction")) for key in keys]
+        self.assertEqual(sides["left"], sides["right"])
 
-    def test_disabled_shared_owner_is_not_a_second_input(self):
-        key = dict(id="test", yinyuanIds=["M28", "M25"], labels=["[", "M28|M25"])
-        self.assertEqual({"type": "input", "ascii": "["},
-                         key_action(key, {"M28": "[", "M25": "["}, {"M25"}))
-        with self.assertRaises(ValueError):
-            key_action(key, {"M28": "]", "M25": "]"}, {"M25"})
+    def test_space_modes_caps_and_reused_erhua_aliases(self):
+        layout = build()
+        actions = [key["action"] for key in layout["keys"]]
+        self.assertEqual(2, actions.count({"type": "confirm", "key": "Space"}))
+        self.assertEqual(1, actions.count({"type": "toggle-language"}))
+        self.assertEqual(1, actions.count({"type": "toggle-punctuation"}))
+        self.assertEqual(1, actions.count({"type": "unsupported", "label": "Caps Lock"}))
+        self.assertEqual({"R01": "M22", "R02": "M23", "R03": "M24"}, layout["inputIdAliases"])
+        for key in layout["keys"]:
+            if key.get("inputIdAliases"):
+                self.assertTrue(any("/R0" in label for label in key["displayLabels"]))
 
 
 if __name__ == "__main__":

@@ -17,10 +17,49 @@ const literalSource = "keyboard-lab:literal"
 // inserts one literal candidate into the view for a single coding symbol.
 // The underlying engine still owns all dictionary candidates and their IDs.
 type keyboardEngine struct {
-	base      engineapi.Engine
-	baseState engineapi.State
-	state     engineapi.State
-	owners    map[string]int // visible dictionary candidate ID -> engine page
+	base             engineapi.Engine
+	baseState        engineapi.State
+	state            engineapi.State
+	owners           map[string]int // visible dictionary candidate ID -> engine page
+	modes            keyboardModes
+	closeSingleQuote bool
+	closeDoubleQuote bool
+}
+
+type keyboardModes struct {
+	Input       string `json:"input"`
+	Punctuation string `json:"punctuation"`
+}
+
+func (e *keyboardEngine) Modes() keyboardModes {
+	if e.modes.Input == "" {
+		e.modes.Input = "chinese"
+	}
+	if e.modes.Punctuation == "" {
+		e.modes.Punctuation = "english"
+	}
+	return e.modes
+}
+
+// SetModes changes interpretation, never the underlying ASCII composition.
+// A paused Chinese composition remains visible while English input is active.
+func (e *keyboardEngine) SetModes(input, punctuation string) engineapi.Result {
+	e.Modes()
+	if input != "" {
+		e.modes.Input = input
+	}
+	if punctuation != "" {
+		e.modes.Punctuation = punctuation
+	}
+	e.refreshLiteralDisplay()
+	return engineapi.Result{State: e.state}
+}
+
+// DirectLiteral is the side numeric area's bypass, also used for explicit
+// Space/Enter text insertion in English mode. It cannot select, translate,
+// append code, reset composition, or advance punctuation-pair state.
+func (e *keyboardEngine) DirectLiteral(text string) engineapi.Result {
+	return engineapi.Result{State: e.state, Commit: text}
 }
 
 func (e *keyboardEngine) Reset() engineapi.Result {
@@ -30,7 +69,11 @@ func (e *keyboardEngine) Reset() engineapi.Result {
 }
 
 func isCodingSymbol(raw string) bool {
-	return len(raw) == 1 && strings.ContainsRune("'[]\\/", rune(raw[0])) && strings.Contains(codemode.LayoutAlphabet, raw)
+	return len(raw) == 1 && isASCIIPunctuation(raw[0]) && strings.Contains(codemode.LayoutAlphabet, raw)
+}
+
+func isASCIIPunctuation(c byte) bool {
+	return c >= '!' && c <= '/' || c >= ':' && c <= '@' || c >= '[' && c <= '`' || c >= '{' && c <= '~'
 }
 
 func (e *keyboardEngine) Apply(event engineapi.Event) (engineapi.Result, error) {
@@ -40,6 +83,11 @@ func (e *keyboardEngine) Apply(event engineapi.Event) (engineapi.Result, error) 
 			return engineapi.Result{}, engineapi.ErrInvalidEvent
 		}
 		character := event.Code[0]
+		if e.Modes().Input == "english" {
+			commit := e.punctuation(event.Code, true)
+			e.refreshLiteralDisplay()
+			return engineapi.Result{State: e.state, Commit: commit}, nil
+		}
 		if character >= '1' && character <= '9' && len(e.state.Candidates) > 0 {
 			ordinal := int(character - '1')
 			if ordinal >= len(e.state.Candidates) {
@@ -81,13 +129,13 @@ func (e *keyboardEngine) Apply(event engineapi.Event) (engineapi.Result, error) 
 // newly typed literal. Never silently submit or discard unmatched raw ASCII.
 func (e *keyboardEngine) literal(text string) (engineapi.Result, error) {
 	if len(e.state.Candidates) == 0 {
-		return engineapi.Result{State: e.state, Commit: text}, nil
+		return engineapi.Result{State: e.state, Commit: e.punctuation(text, true)}, nil
 	}
 	result, err := e.Select(e.state.Candidates[0].ID)
 	if err != nil {
 		return engineapi.Result{}, err
 	}
-	result.Commit += text
+	result.Commit += e.punctuation(text, true)
 	return result, nil
 }
 
@@ -103,7 +151,7 @@ func (e *keyboardEngine) Select(id string) (engineapi.Result, error) {
 		return engineapi.Result{}, engineapi.ErrUnknownCandidate
 	}
 	if selected.SourceID == literalSource && selected.ID == literalID(e.state.RawInput) {
-		text := selected.Text
+		text := e.punctuation(e.state.RawInput, true)
 		result := e.Reset()
 		result.Commit = text
 		return result, nil
@@ -121,6 +169,50 @@ func (e *keyboardEngine) Select(id string) (engineapi.Result, error) {
 }
 
 func literalID(raw string) string { return fmt.Sprintf("%s:%x", literalSource, raw) }
+
+// This is an explicit experimental punctuation table, not a full-width mode.
+// Unknown ASCII symbols stay unchanged. Pair state advances only on a commit,
+// never on displaying, paging, switching modes, cancelling, or replaying one.
+var chinesePunctuation = map[string]string{
+	",": "，", ".": "。", ";": "；", ":": "：", "?": "？", "!": "！",
+	"(": "（", ")": "）", "[": "【", "]": "】", "<": "《", ">": "》",
+	"{": "『", "}": "』", "/": "、", "\\": "、", "^": "……", "_": "——",
+}
+
+func (e *keyboardEngine) punctuation(text string, commit bool) string {
+	if e.Modes().Punctuation != "chinese" {
+		return text
+	}
+	if text == "'" || text == "\"" {
+		closing, opening, ending := &e.closeSingleQuote, "‘", "’"
+		if text == "\"" {
+			closing, opening, ending = &e.closeDoubleQuote, "“", "”"
+		}
+		result := opening
+		if *closing {
+			result = ending
+		}
+		if commit {
+			*closing = !*closing
+		}
+		return result
+	}
+	if value, exists := chinesePunctuation[text]; exists {
+		return value
+	}
+	return text
+}
+
+func (e *keyboardEngine) refreshLiteralDisplay() {
+	// Copy before editing: prior response snapshots must remain immutable.
+	e.state.Candidates = append([]engineapi.Candidate(nil), e.state.Candidates...)
+	for index := range e.state.Candidates {
+		candidate := &e.state.Candidates[index]
+		if candidate.SourceID == literalSource {
+			candidate.Text = e.punctuation(candidate.Code, false)
+		}
+	}
+}
 
 // enginePage moves only through native YimeCore pages. At most two adjacent
 // pages are needed for a literal-augmented view; no full result set is loaded.
@@ -160,7 +252,7 @@ func (e *keyboardEngine) literalPage(page int) (engineapi.Result, error) {
 			owners[candidate.ID] = 0
 		}
 		state.Candidates = append(state.Candidates, engineapi.Candidate{
-			ID: literalID(base.RawInput), Text: base.RawInput, Code: base.RawInput,
+			ID: literalID(base.RawInput), Text: e.punctuation(base.RawInput, false), Code: base.RawInput,
 			SourceID: literalSource, Exact: true,
 			Annotations: engineapi.CandidateAnnotations{KeySequence: base.RawInput},
 		})

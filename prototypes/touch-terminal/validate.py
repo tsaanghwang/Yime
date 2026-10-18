@@ -18,4 +18,4 @@ commands = [
 for command in commands:
     print('RUN ' + ' '.join(command), flush=True)
     subprocess.run(command, cwd=HERE, check=True)
-print('PASS: 129-key KLE, source projection, input routing, geometry and syntax. Run Go lab tests separately; native IME and physical touch acceptance not implied.')
+print('PASS: 138-key KLE, source projection, input routing, geometry and syntax. Run Go lab tests separately; native IME and physical touch acceptance not implied.')

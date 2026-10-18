@@ -1,12 +1,17 @@
 /** Input adapter for the isolated Go engine. No OS keyboard synthesis is used. */
 export const CODE_MODES = Object.freeze(['variable', 'full', 'shorthand']);
-export const INPUT_POLICY = 'candidate-or-literal-v1';
+export const INPUT_POLICY = 'concept-keyboard-modes-v2';
+export const DEFAULT_MODES = Object.freeze({input:'chinese',punctuation:'english'});
 
 export function actionFromKeyboard(event) {
   if (event.isComposing || event.ctrlKey || event.altKey || event.metaKey || event.repeat) return null;
-  // All printable ASCII uses the same engine decision, including number-pad
-  // input. Candidate availability is evaluated after earlier queued events.
-  if (typeof event.key === 'string' && /^[\x21-\x7e]$/.test(event.key)) return {type:'input', ascii:event.key};
+  // Main-key ASCII uses engine coding, selection and literal fallback. Number-
+  // pad characters explicitly bypass those rules through the literal channel.
+  if (typeof event.key === 'string' && event.key.length === 1 && /^[\x21-\x7e]$/.test(event.key)) return {type:event.code?.startsWith('Numpad') ? 'literal' : 'input', ascii:event.key};
+  if (event.code?.startsWith('Numpad')) {
+    if (event.key === 'Clear') return {type:'noop'};
+    if (['Insert','PageUp','PageDown','Home','End','Delete','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)) return {type:'local',key:event.key};
+  }
   const actions = {
     Backspace:{type:'backspace'}, Escape:{type:'clear'},
     Enter:{type:'confirm'}, ' ':{type:'confirm'},
@@ -17,16 +22,34 @@ export function actionFromKeyboard(event) {
   return null;
 }
 
-export function protocolAction(action, state) {
+export function protocolAction(action, state, modes=DEFAULT_MODES) {
   if (action.type === 'input') {
-    if (typeof action.ascii !== 'string' || !/^[\x21-\x7e]$/.test(action.ascii)) throw new Error('输入必须是单个非空白 ASCII 字符。');
+    if (typeof action.ascii !== 'string' || action.ascii.length !== 1 || !/^[\x21-\x7e]$/.test(action.ascii)) throw new Error('输入必须是单个非空白 ASCII 字符。');
     return {type:'input',code:action.ascii};
   }
+  if (action.type === 'literal') {
+    if (typeof action.ascii !== 'string' || action.ascii.length !== 1 || !/^[\x20-\x7e\n\t]$/.test(action.ascii)) throw new Error('直输必须是单个 ASCII 字符、换行或制表符。');
+    return {type:'literal',code:action.ascii};
+  }
+  if (action.type === 'setModes') {
+    const result = {type:'setModes'};
+    for (const field of ['inputMode','punctuationMode']) {
+      if (action[field] !== undefined) {
+        if (!['chinese','english'].includes(action[field])) throw new Error('无效的输入或标点模式。');
+        result[field] = action[field];
+      }
+    }
+    if (Object.keys(result).length === 1) throw new Error('必须指定输入或标点模式。');
+    return result;
+  }
+  if (action.type === 'toggle-language') return {type:'setModes',inputMode:modes.input === 'english' ? 'chinese' : 'english'};
+  if (action.type === 'toggle-punctuation') return {type:'setModes',punctuationMode:modes.punctuation === 'english' ? 'chinese' : 'english'};
   if (action.type === 'select' && !action.candidateId) {
     if (!Number.isInteger(action.ordinal) || action.ordinal < 1 || action.ordinal > 9) throw new Error('无效的候选序号。');
     return {type:'input',code:String(action.ordinal)};
   }
   if (action.type === 'select' || action.type === 'confirm') {
+    if (action.type === 'confirm' && modes.input === 'english') return {type:'literal',code:action.key === 'Enter' ? '\n' : ' '};
     const candidates = state.candidates || [];
     const candidate = action.candidateId ? candidates.find(item => item.id === action.candidateId)
       : candidates[(action.ordinal || 1) - 1];
@@ -42,13 +65,14 @@ export function protocolAction(action, state) {
   return null;
 }
 
-/** One-shot virtual Shift never changes fixed letter/audio-ID key case. */
-export function virtualKeyAction(key, armed=false) {
+/** Explicit layers belong to the concept layout, not ANSI casing heuristics. */
+export function virtualKeyAction(key, armed=false, numeric=true) {
   if (key.action.type === 'shift') return {action:null,armed:!armed};
-  const printable = key.action.type === 'input' || key.action.type === 'select';
+  const action = !numeric && key.editAction ? key.editAction : armed && key.shiftAction ? key.shiftAction : key.action;
+  const printable = ['input','select','literal'].includes(action.type);
   return {
-    action:armed && key.shiftAction ? {...key.shiftAction} : {...key.action},
-    armed:printable || key.action.type === 'clear' ? false : armed,
+    action:{...action},
+    armed:printable || action.type === 'clear' ? false : armed,
   };
 }
 
@@ -99,6 +123,9 @@ export function createLiveClient({fetcher=fetch, idFactory=() => crypto.randomUU
         await request('./api/event',{sessionId:previous.sessionId,eventId:idFactory(),baseRevision:previous.revision,type:'close'});
         snapshot = null;
         snapshot = await request('./api/session',{layoutId:info.layoutId,mode});
+        if (previous.modes && (previous.modes.input !== DEFAULT_MODES.input || previous.modes.punctuation !== DEFAULT_MODES.punctuation)) {
+          snapshot = await request('./api/event',{sessionId:snapshot.sessionId,eventId:idFactory(),baseRevision:snapshot.revision,type:'setModes',inputMode:previous.modes.input,punctuationMode:previous.modes.punctuation});
+        }
         onResult(snapshot);
         return snapshot;
       });
@@ -106,7 +133,7 @@ export function createLiveClient({fetcher=fetch, idFactory=() => crypto.randomUU
     dispatch(action) {
       return enqueue(async () => {
         if (!snapshot || broken) throw new Error('引擎未连接。请刷新页面重新建立会话。');
-        const payload = protocolAction(action,snapshot.state);
+        const payload = protocolAction(action,snapshot.state,snapshot.modes || DEFAULT_MODES);
         if (!payload) return null;
         const event = {sessionId:snapshot.sessionId,eventId:idFactory(),baseRevision:snapshot.revision,...payload};
         let result;
@@ -153,6 +180,8 @@ export function editText(value, start, end, key) {
     }
     cursor = boundaries.filter(index => index <= cursor).at(-1) ?? 0;
   }
+  else if (key === 'PageUp') cursor = 0;
+  else if (key === 'PageDown') cursor = value.length;
   if (cursor !== undefined) return {value,start:cursor,end:cursor};
   // Printable digits/punctuation belong to the engine, never local text edits.
   const inserted = key === 'Enter' ? '\n' : key === 'Tab' ? '\t' : key === 'Space' ? ' ' : null;

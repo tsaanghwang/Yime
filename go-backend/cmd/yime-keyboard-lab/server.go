@@ -25,6 +25,7 @@ const (
 	maxEvents   = 4096
 	maxInput    = 128
 	maxBody     = 8192
+	inputPolicy = "concept-keyboard-modes-v2"
 )
 
 type engineFactory func(string) (engineapi.Engine, error)
@@ -39,7 +40,7 @@ type lab struct {
 type labSession struct {
 	mu       sync.Mutex
 	id       string
-	engine   engineapi.Engine
+	engine   *keyboardEngine
 	revision uint64
 	state    engineapi.State
 	cached   map[string]cachedResponse
@@ -52,13 +53,15 @@ type cachedResponse struct {
 	body        []byte
 }
 type eventRequest struct {
-	SessionID    string `json:"sessionId"`
-	EventID      string `json:"eventId"`
-	BaseRevision uint64 `json:"baseRevision"`
-	Type         string `json:"type"`
-	Code         string `json:"code,omitempty"`
-	Delta        int    `json:"delta,omitempty"`
-	CandidateID  string `json:"candidateId,omitempty"`
+	SessionID       string `json:"sessionId"`
+	EventID         string `json:"eventId"`
+	BaseRevision    uint64 `json:"baseRevision"`
+	Type            string `json:"type"`
+	Code            string `json:"code,omitempty"`
+	Delta           int    `json:"delta,omitempty"`
+	CandidateID     string `json:"candidateId,omitempty"`
+	InputMode       string `json:"inputMode,omitempty"`
+	PunctuationMode string `json:"punctuationMode,omitempty"`
 }
 type response struct {
 	OK        bool            `json:"ok"`
@@ -67,6 +70,7 @@ type response struct {
 	State     engineapi.State `json:"state"`
 	Commit    string          `json:"commit,omitempty"`
 	Error     string          `json:"error,omitempty"`
+	Modes     keyboardModes   `json:"modes"`
 }
 
 func newLab(staticRoot, layoutID, origin string, factory engineFactory) *lab {
@@ -93,7 +97,7 @@ func (a *lab) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.URL.Path == "/api/info" && r.Method == http.MethodGet {
-		writeJSON(w, http.StatusOK, map[string]any{"version": 1, "inputPolicy": "candidate-or-literal-v1", "layoutId": a.layoutID, "token": a.token, "modes": modes, "scope": "isolated-yimecore-page-only", "indexes": a.builds})
+		writeJSON(w, http.StatusOK, map[string]any{"version": 1, "inputPolicy": inputPolicy, "layoutId": a.layoutID, "token": a.token, "modes": modes, "scope": "isolated-yimecore-page-only", "indexes": a.builds})
 		return
 	}
 	if strings.HasPrefix(r.URL.Path, "/api/") {
@@ -158,10 +162,10 @@ func (a *lab) open(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusInternalServerError, "engine session could not be created")
 		return
 	}
-	engine = &keyboardEngine{base: engine}
-	session := &labSession{id: randomID(), engine: engine, state: engine.Reset().State, cached: make(map[string]cachedResponse), lastUsed: time.Now()}
+	adapter := &keyboardEngine{base: engine}
+	session := &labSession{id: randomID(), engine: adapter, state: adapter.Reset().State, cached: make(map[string]cachedResponse), lastUsed: time.Now()}
 	a.sessions[session.id] = session
-	writeJSON(w, http.StatusOK, response{OK: true, SessionID: session.id, State: session.state})
+	writeJSON(w, http.StatusOK, response{OK: true, SessionID: session.id, State: session.state, Modes: adapter.Modes()})
 }
 
 func (a *lab) event(w http.ResponseWriter, r *http.Request) {
@@ -205,7 +209,7 @@ func (a *lab) event(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	status := http.StatusOK
-	result := response{OK: false, SessionID: session.id, Revision: session.revision, State: session.state}
+	result := response{OK: false, SessionID: session.id, Revision: session.revision, State: session.state, Modes: session.engine.Modes()}
 	if request.BaseRevision != session.revision {
 		status, result.Error = http.StatusConflict, "stale revision; synchronize before another event"
 	} else {
@@ -215,7 +219,7 @@ func (a *lab) event(w http.ResponseWriter, r *http.Request) {
 		} else {
 			session.revision++
 			session.state = applied.State
-			result = response{OK: true, SessionID: session.id, Revision: session.revision, State: session.state, Commit: applied.Commit}
+			result = response{OK: true, SessionID: session.id, Revision: session.revision, State: session.state, Commit: applied.Commit, Modes: session.engine.Modes()}
 		}
 	}
 	body, _ := json.Marshal(result)
@@ -227,6 +231,10 @@ func (s *labSession) apply(r eventRequest) (engineapi.Result, error) {
 	switch r.Type {
 	case "input":
 		return s.engine.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: r.Code})
+	case "literal":
+		return s.engine.DirectLiteral(r.Code), nil
+	case "setModes":
+		return s.engine.SetModes(r.InputMode, r.PunctuationMode), nil
 	case "backspace":
 		return s.engine.Apply(engineapi.Event{Operation: engineapi.Backspace})
 	case "clear":
@@ -262,7 +270,19 @@ func validateEvent(r eventRequest) error {
 			return errors.New("event ID must be printable ASCII")
 		}
 	}
+	if r.Type != "setModes" && (r.InputMode != "" || r.PunctuationMode != "") {
+		return errors.New("mode fields require setModes")
+	}
 	switch r.Type {
+	case "setModes":
+		validMode := func(value string) bool { return value == "" || value == "chinese" || value == "english" }
+		if r.Code == "" && r.Delta == 0 && r.CandidateID == "" && (r.InputMode != "" || r.PunctuationMode != "") && validMode(r.InputMode) && validMode(r.PunctuationMode) {
+			return nil
+		}
+	case "literal":
+		if len(r.Code) == 1 && (r.Code[0] >= 0x20 && r.Code[0] <= 0x7e || r.Code == "\n" || r.Code == "\t") && r.Delta == 0 && r.CandidateID == "" {
+			return nil
+		}
 	case "input":
 		if len(r.Code) == 1 && r.Code[0] >= 0x21 && r.Code[0] <= 0x7e && r.Delta == 0 && r.CandidateID == "" {
 			return nil

@@ -12,17 +12,23 @@ from yime.utils.rime_export import (
 )
 
 
-def _write_minimal_mapping_files(repo_root: Path) -> None:
+def _write_minimal_mapping_files(repo_root: Path, *, disabled: bool = False) -> None:
     source_root = Path(__file__).resolve().parents[2]
     for relative in (
         Path("internal_data/key_to_symbol.json"),
         Path("internal_data/manual_key_layout.json"),
         Path("syllable/yinyuan/zaoyin_yinyuan_enhanced.json"),
         Path("syllable/yinyuan/yueyin_yinyuan_enhanced.json"),
+        Path("docs/project/connected_speech/erhua_sound_key_projection.json"),
     ):
         destination = repo_root / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source_root / relative, destination)
+    if disabled:
+        path = repo_root / "internal_data/manual_key_layout.json"
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload["disabled_yinyuan_ids"] = ["M25", "M26", "M27"]
+        path.write_text(json.dumps(payload), encoding="utf-8")
 
 
 def _create_runtime_db(path: Path, repo_root: Path) -> None:
@@ -102,12 +108,11 @@ def test_load_runtime_symbol_to_layout_key_uses_two_layer_manual_layout(tmp_path
     )
     assert symbol_to_key[symbols["N01"]] == "b"
     assert symbol_to_key[symbols["M01"]] == "I"
-    assert symbols["M25"] not in symbol_to_key
+    assert symbol_to_key[symbols["M25"]] == "{"
     assert convert_runtime_code_to_layout_keys(
         symbols["N01"] + symbols["M01"] + symbols["M28"], symbol_to_key
     ) == "bI["
-    with pytest.raises(ValueError, match="no Rime layout-key mapping"):
-        convert_runtime_code_to_layout_keys(symbols["M25"], symbol_to_key)
+    assert convert_runtime_code_to_layout_keys(symbols["M25"], symbol_to_key) == "{"
 
 
 def test_load_runtime_symbol_to_layout_key_rejects_altgr_yinyuan_id(tmp_path: Path) -> None:
@@ -161,7 +166,7 @@ def test_repo_layout_matches_windows_yime_two_layer_keys() -> None:
         "N10": ("k", "base", "k"),
         "M01": ("i", "shift", "I"),
         "M28": ("[", "base", "["),
-        "N23": ("j", "base", "j"),
+        "N23": ("y", "base", "y"),
         "N24": ("w", "base", "w"),
     }
     for yinyuan_id, (physical_key, output_layer, display_label) in expected.items():
@@ -239,7 +244,7 @@ def test_explicit_pinyin_inventory_uses_codebook_not_stale_runtime_db(
 def test_export_rime_files_writes_schema_dict_and_metadata(tmp_path: Path) -> None:
     repo_root = tmp_path / "repo"
     repo_root.mkdir()
-    _write_minimal_mapping_files(repo_root)
+    _write_minimal_mapping_files(repo_root, disabled=True)
     db_path = tmp_path / "runtime.db"
     output_dir = tmp_path / "rime"
     _create_runtime_db(db_path, repo_root)
@@ -277,7 +282,7 @@ def test_export_rime_files_writes_schema_dict_and_metadata(tmp_path: Path) -> No
 def test_disabled_complete_semantics_cannot_leak_through_shortened_code(tmp_path: Path, mode: str) -> None:
     repo_root = tmp_path / "repo"
     repo_root.mkdir()
-    _write_minimal_mapping_files(repo_root)
+    _write_minimal_mapping_files(repo_root, disabled=True)
     database = tmp_path / "runtime.db"
     _create_runtime_db(database, repo_root)
     result = export_rime_files(db_path=database, output_dir=tmp_path / mode,

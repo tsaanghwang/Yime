@@ -16,9 +16,9 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"slices"
 	"time"
 
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore"
 )
@@ -27,7 +27,7 @@ var modes = []string{"variable", "full", "shorthand"}
 
 func main() {
 	root := flag.String("root", "..", "source checkout root (default: parent of go-backend)")
-	dataDir := flag.String("data-dir", "", "experimental generated data directory; default: <root>/.generated/ascii-keyboard/data")
+	dataDir := flag.String("data-dir", "", "experimental generated data directory; default: <root>/.generated/ascii-keyboard-138/data")
 	port := flag.Int("port", 8765, "loopback HTTP port; 0 chooses an available port")
 	flag.Parse()
 	if err := run(*root, *dataDir, *port); err != nil {
@@ -45,7 +45,7 @@ func run(root, dataDir string, port int) error {
 		return err
 	}
 	if dataDir == "" {
-		dataDir = filepath.Join(root, ".generated", "ascii-keyboard", "data")
+		dataDir = filepath.Join(root, ".generated", "ascii-keyboard-138", "data")
 	}
 	staticRoot := filepath.Join(root, "prototypes", "touch-terminal")
 	data, err := os.ReadFile(filepath.Join(staticRoot, "data", "physical-layout.json"))
@@ -142,6 +142,7 @@ type dataManifest struct {
 	DictionarySHA256       map[string]string `json:"dictionary_sha256"`
 	Scope                  string            `json:"scope"`
 	Limit                  int               `json:"limit"`
+	InputPolicy            string            `json:"input_policy"`
 }
 
 func loadManifest(dataDir, layoutID string) (dataManifest, error) {
@@ -153,12 +154,11 @@ func loadManifest(dataDir, layoutID string) (dataManifest, error) {
 	if err := json.Unmarshal(data, &result); err != nil {
 		return result, fmt.Errorf("experimental manifest: %w", err)
 	}
-	if result.SchemaVersion != 1 || result.Scope != "immutable_source_runtime_experiment" || result.LayoutProjectionSHA256 != layoutID || result.Limit != 0 {
+	if result.SchemaVersion != 1 || result.Scope != "immutable_source_runtime_experiment" || result.InputPolicy != inputPolicy || result.LayoutProjectionSHA256 != layoutID || layoutID != codemode.LayoutProjectionSHA256 || result.Limit != 0 {
 		return result, errors.New("experimental manifest does not match this physical layout; regenerate data")
 	}
-	slices.Sort(result.DisabledYinyuanIDs)
-	if !slices.Equal(result.DisabledYinyuanIDs, []string{"M25", "M26", "M27"}) {
-		return result, errors.New("experimental manifest must disable M25, M26 and M27")
+	if len(result.DisabledYinyuanIDs) != 0 || len(codemode.LayoutAlphabet) != 75 {
+		return result, errors.New("concept keyboard requires 75 active ASCII carriers and no disabled Yinyuan IDs")
 	}
 	for _, mode := range modes {
 		value := result.DictionarySHA256["yime_"+mode+".dict.yaml"]

@@ -1,4 +1,4 @@
-"""Current generator entry point: complete 129-key concept physical model.
+"""Current generator entry point: complete 138-key concept physical model.
 
 The old three-fixture ID-button simulator has been superseded. Physical geometry
 is joined to the sole manual projection; engine dictionaries are built separately.

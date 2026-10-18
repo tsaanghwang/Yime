@@ -6,11 +6,13 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
 )
 
 func TestManifestRequiresCurrentLayoutAllModesAndDisabledIDs(t *testing.T) {
 	root := t.TempDir()
-	valid := dataManifest{SchemaVersion: 1, LayoutProjectionSHA256: "current", DisabledYinyuanIDs: []string{"M27", "M25", "M26"}, Scope: "immutable_source_runtime_experiment", DictionarySHA256: map[string]string{}}
+	valid := dataManifest{SchemaVersion: 1, LayoutProjectionSHA256: codemode.LayoutProjectionSHA256, InputPolicy: inputPolicy, DisabledYinyuanIDs: []string{}, Scope: "immutable_source_runtime_experiment", DictionarySHA256: map[string]string{}}
 	for _, mode := range modes {
 		valid.DictionarySHA256["yime_"+mode+".dict.yaml"] = strings.Repeat("a", 64)
 	}
@@ -21,7 +23,8 @@ func TestManifestRequiresCurrentLayoutAllModesAndDisabledIDs(t *testing.T) {
 	}{
 		{"matching", func(*dataManifest) {}, false},
 		{"old-layout", func(m *dataManifest) { m.LayoutProjectionSHA256 = "old" }, true},
-		{"enabled-reserved-id", func(m *dataManifest) { m.DisabledYinyuanIDs = []string{"M25", "M26"} }, true},
+		{"old-input-policy", func(m *dataManifest) { m.InputPolicy = "candidate-or-literal-v1" }, true},
+		{"historical-disabled-ids", func(m *dataManifest) { m.DisabledYinyuanIDs = []string{"M25", "M26", "M27"} }, true},
 		{"incomplete-mode", func(m *dataManifest) { delete(m.DictionarySHA256, "yime_full.dict.yaml") }, true},
 		{"old-manifest-version", func(m *dataManifest) { m.SchemaVersion = 0 }, true},
 		{"limited-preview-corpus", func(m *dataManifest) { m.Limit = 100 }, true},
@@ -38,10 +41,20 @@ func TestManifestRequiresCurrentLayoutAllModesAndDisabledIDs(t *testing.T) {
 			if err := os.WriteFile(filepath.Join(root, "ascii_keyboard_manifest.json"), data, 0600); err != nil {
 				t.Fatal(err)
 			}
-			_, err := loadManifest(root, "current")
+			_, err := loadManifest(root, codemode.LayoutProjectionSHA256)
 			if (err != nil) != tc.wantError {
 				t.Fatalf("error %v wantError %v", err, tc.wantError)
 			}
 		})
+	}
+	// Even a manifest and physical file agreeing with each other cannot start a
+	// binary compiled for a different projection.
+	valid.LayoutProjectionSHA256 = strings.Repeat("b", 64)
+	data, _ := json.Marshal(valid)
+	if err := os.WriteFile(filepath.Join(root, "ascii_keyboard_manifest.json"), data, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := loadManifest(root, valid.LayoutProjectionSHA256); err == nil {
+		t.Fatal("foreign layout matching manifest bypassed binary binding")
 	}
 }

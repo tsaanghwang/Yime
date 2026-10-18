@@ -52,14 +52,16 @@ def test_checked_in_audit_matches_the_complete_current_encoder_chain() -> None:
     assert actual == expected
 
 
-def test_disabled_layout_retains_semantic_decomposition_without_input_code() -> None:
+def test_reenabled_m25_m27_retain_semantics_and_have_independent_input_codes() -> None:
     inventory_path = Path("internal_data/pinyin_source_db/lexicon_exports/pinyin_normalized.json")
     inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
     rows = build_syllable_decomposition_rows(inventory)
-    disabled = [row for row in rows if row.status == "disabled_by_layout"]
-    assert {row.pinyin_tone for row in disabled} == {"hm5", "m1", "m2", "m4"}
-    for row in disabled:
-        assert row.layout_code == ""
+    assert not any(row.status == "disabled_by_layout" for row in rows)
+    restored = [row for row in rows if row.pinyin_tone in {"hm5", "m1", "m2", "m4"}]
+    assert len(restored) == 4
+    for row in restored:
+        assert len(row.layout_code) == 4
+        assert set(row.layout_code) & set("{|}")
         assert all((row.shouyin_symbol, row.huyin_symbol, row.zhuyin_symbol, row.moyin_symbol))
         assert all((row.shouyin_id, row.huyin_id, row.zhuyin_id, row.moyin_id))
         assert {row.huyin_id, row.zhuyin_id, row.moyin_id} & {"M25", "M26", "M27"}

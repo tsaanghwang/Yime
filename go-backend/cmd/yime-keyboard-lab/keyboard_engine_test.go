@@ -19,6 +19,27 @@ func pageEvent(t *testing.T, a *lab, s response, id string, delta int) response 
 	return decodeResponse(t, w)
 }
 
+func codingSymbols() []string {
+	var symbols []string
+	for _, c := range codemode.LayoutAlphabet {
+		if isASCIIPunctuation(byte(c)) {
+			symbols = append(symbols, string(c))
+		}
+	}
+	return symbols
+}
+
+func nonCodingSymbol(t *testing.T) string {
+	t.Helper()
+	for c := byte('!'); c <= '~'; c++ {
+		if isASCIIPunctuation(c) && !strings.ContainsRune(codemode.LayoutAlphabet, rune(c)) {
+			return string(c)
+		}
+	}
+	t.Fatal("fixture requires at least one non-coding ASCII symbol")
+	return ""
+}
+
 func TestPrintableCharactersClassifiedAtServer(t *testing.T) {
 	for _, mode := range modes {
 		t.Run(mode, func(t *testing.T) {
@@ -68,7 +89,7 @@ func TestPrintableCharactersClassifiedAtServer(t *testing.T) {
 }
 
 func TestLiteralSymbolCandidatesKeepAllDictionaryCandidatesAndStablePages(t *testing.T) {
-	for _, symbol := range []string{"'", "[", "]", "\\", "/"} {
+	for _, symbol := range codingSymbols() {
 		for _, count := range []int{0, 1, 8, 9, 10, 18, 19, 27} {
 			t.Run(fmt.Sprintf("%x/%d", symbol, count), func(t *testing.T) {
 				var records strings.Builder
@@ -129,7 +150,7 @@ func TestLiteralSymbolCandidatesKeepAllDictionaryCandidatesAndStablePages(t *tes
 func TestLiteralSymbolOverlayOnlyForExactlyOneCodeCharacter(t *testing.T) {
 	for _, mode := range modes {
 		a := testLab(t)
-		for _, symbol := range []string{"'", "[", "]", "\\", "/"} {
+		for _, symbol := range codingSymbols() {
 			s := event(t, a, openSession(t, a, mode), "symbol", "input", symbol)
 			if len(s.State.Candidates) != 1 || s.State.Candidates[0].Text != symbol {
 				t.Fatalf("single symbol missing: %+v", s)
@@ -146,11 +167,13 @@ func TestLiteralSymbolOverlayOnlyForExactlyOneCodeCharacter(t *testing.T) {
 			if len(s.State.Candidates) != 0 {
 				t.Fatalf("literal leaked into symbol sequence: %+v", s)
 			}
+			event(t, a, s, "close", "close", "")
 		}
 	}
 }
 
 func TestOffsetCandidateSelectionAndLiteralRetriesAreAtomic(t *testing.T) {
+	punct := nonCodingSymbol(t)
 	var records strings.Builder
 	for i := 0; i < 18; i++ {
 		fmt.Fprintf(&records, "候选%d\t[\t%d\n", i, 100-i)
@@ -171,8 +194,8 @@ func TestOffsetCandidateSelectionAndLiteralRetriesAreAtomic(t *testing.T) {
 	}
 	s := event(t, a, openSession(t, a, "full"), "raw", "input", "[")
 	s = pageEvent(t, a, s, "next", 1)
-	want := s.State.Candidates[0].Text + "!"
-	s = event(t, a, s, "punctuation", "input", "!")
+	want := s.State.Candidates[0].Text + punct
+	s = event(t, a, s, "punctuation", "input", punct)
 	if s.Commit != want || s.State.RawInput != "" {
 		t.Fatalf("offset visible first candidate plus punctuation: %+v", s)
 	}
@@ -191,7 +214,7 @@ func TestOffsetCandidateSelectionAndLiteralRetriesAreAtomic(t *testing.T) {
 	if s.Commit != want || s.State.RawInput != "" {
 		t.Fatalf("stale offset owner after input reset: %+v", s)
 	}
-	for _, tc := range []struct{ raw, input, want string }{{"a", "!", "小写!"}, {"[", "9", "["}, {"q", "1", "1"}, {"a", "9", ""}} {
+	for _, tc := range []struct{ raw, input, want string }{{"a", punct, "小写" + punct}, {"[", "9", "["}, {"q", "1", "1"}, {"a", "9", ""}} {
 		s := event(t, a, openSession(t, a, "shorthand"), "raw", "input", tc.raw)
 		req := eventRequest{SessionID: s.SessionID, EventID: "literal", BaseRevision: s.Revision, Type: "input", Code: tc.input}
 		first, retry := request(t, a, "/api/event", req), request(t, a, "/api/event", req)
@@ -215,10 +238,11 @@ func TestOffsetCandidateSelectionAndLiteralRetriesAreAtomic(t *testing.T) {
 }
 
 func TestCompositionLimitDoesNotBlockSelectionOrLiterals(t *testing.T) {
+	punct := nonCodingSymbol(t)
 	a := testLabWithRecords(t, "长码\t"+strings.Repeat("a", maxInput)+"\t100\n")
 	for _, tc := range []struct{ code, input, want string }{
-		{"q", "0", "0"}, {"q", "1", "1"}, {"q", "!", "!"},
-		{"a", "0", "长码0"}, {"a", "1", "长码"}, {"a", "!", "长码!"},
+		{"q", "0", "0"}, {"q", "1", "1"}, {"q", punct, punct},
+		{"a", "0", "长码0"}, {"a", "1", "长码"}, {"a", punct, "长码" + punct},
 	} {
 		code := tc.code
 		s := openSession(t, a, "full")

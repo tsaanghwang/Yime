@@ -24,6 +24,7 @@ from yime.utils.yinyuan_id_chain import (
     load_semantic_yinyuan_registry,
     load_symbol_to_yinyuan_id,
     load_yinyuan_id_to_layout_key,
+    load_input_id_to_layout_key,
     load_disabled_yinyuan_ids,
     layout_projection_digest,
     symbol_code_to_yinyuan_ids,
@@ -230,15 +231,11 @@ def _check_single_layout_source(repo_root: Path, lock: dict[str, Any], issues: l
         return
     if mapping.get("N12") != "'":
         issues.append("N12 must retain the apostrophe projection during this experiment")
-    if load_disabled_yinyuan_ids(repo_root) != frozenset(("M25", "M26", "M27")):
-        issues.append("ASCII keyboard experiment must disable exactly M25-M27")
-    candidate_tokens = set("!@#$%^&*(")
-    occupied_candidates = sorted(candidate_tokens & set(mapping.values()))
-    if occupied_candidates:
-        issues.append(
-            "Shift+1 through Shift+9 are candidate actions, not Yinyuan keys: "
-            + ", ".join(occupied_candidates)
-        )
+    if load_disabled_yinyuan_ids(repo_root):
+        issues.append("The reviewed 138-key experiment enables every canonical Yinyuan ID")
+    inputs = load_input_id_to_layout_key(repo_root)
+    if len(inputs) != 75 or len(set(inputs.values())) != 75:
+        issues.append("The reviewed concept requires 75 independent ASCII input carriers")
 
 
 def _check_resolved_layout(repo_root: Path, issues: list[str]) -> None:
@@ -270,6 +267,10 @@ def _check_packaged_layout_projection(
         return
     packaged = _load_json(packaged_path)
     actual = cast(dict[str, str], packaged.get("yinyuan_id_to_key") or {})
+    if packaged.get("input_id_to_key") != load_input_id_to_layout_key(repo_root):
+        issues.append("packaged complete input projection is stale")
+    if packaged.get("layout_projection_sha256") != layout_projection_digest(repo_root):
+        issues.append("packaged complete input projection digest is stale")
     if packaged.get("disabled_yinyuan_ids") != sorted(load_disabled_yinyuan_ids(repo_root)):
         issues.append("packaged disabled Yinyuan state is stale")
     if actual != expected:

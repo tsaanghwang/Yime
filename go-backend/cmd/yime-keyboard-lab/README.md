@@ -1,15 +1,17 @@
 # 实体键盘虚拟样机的隔离 YimeCore 服务
 
 这个开发命令把 ANSI 实体键盘和概念键盘的浏览器点击接入同一个真实
-YimeCore 引擎。输入保留 ASCII 大小写；`1–9` 有候选时选词，无候选时直接输出数字，
-`0` 和未参与编码的上下档 ASCII 标点直接输出。主键区与小键盘使用相同字符规则。
+YimeCore 引擎。138 键概念布局有 75 个独立 ASCII 载体（52 字母与 23 符号），
+输入保留 ASCII 大小写；中文模式主区 `1–9` 有候选时选词，无候选时直接输出数字。
+侧数字区始终直输 ASCII，不选词、不编码、不转换标点，也不清除或确认现有组成。
 候选来自实验布局
 重新生成的完整三模式词典，提交结果只进入页面内的文本框。
 
 启动前生成 `prototypes/touch-terminal/data/physical-layout.json` 和
-`.generated/ascii-keyboard/data/yime_{variable,full,shorthand}.dict.yaml`。
-同目录的 `ascii_keyboard_manifest.json` 必须绑定当前布局摘要、M25–M27 停用集合和
-三份词典的 SHA-256；启动时逐项核验，防止读取旧布局词典。
+`.generated/ascii-keyboard-138/data/yime_{variable,full,shorthand}.dict.yaml`。
+同目录的 `ascii_keyboard_manifest.json` 必须绑定当前完整 75 载体布局摘要、空停用集合和
+三份词典的 SHA-256 与 `input_policy: concept-keyboard-modes-v2`；启动时逐项核验，
+布局摘要还必须等于编译时生成的完整 `codemode.LayoutProjectionSHA256`，防止读取旧布局词典或旧二进制。
 在 `go-backend` 目录执行：
 
 ```text
@@ -27,7 +29,7 @@ Python 工具只用于离线数据生成，运行服务和解码不依赖 Python
 ## 浏览器 API
 
 `GET /api/info` 返回 `version`、`inputPolicy`、`layoutId`、`token`、`modes`、`indexes` 和范围说明。
-当前 `inputPolicy` 为 `candidate-or-literal-v1`；前端必须核对，避免连接到旧字符策略的服务。
+当前 `inputPolicy` 为 `concept-keyboard-modes-v2`；前端必须核对，避免连接到旧字符策略的服务。
 后续 POST 带 `Content-Type: application/json` 和 `X-Yime-Lab-Token`。
 
 `POST /api/session`：
@@ -36,7 +38,9 @@ Python 工具只用于离线数据生成，运行服务和解码不依赖 Python
 {"mode":"variable","layoutId":"生成布局的摘要"}
 ```
 
-返回 `{ok, sessionId, revision, state}`。`state` 使用真实引擎格式：
+返回 `{ok, sessionId, revision, state, modes}`。`modes` 是服务器权威的
+`{input:"chinese"|"english",punctuation:"chinese"|"english"}`，新会话默认中文输入、英文标点。
+两项独立切换；不存在 Caps 模式。`state` 使用真实引擎格式：
 `raw_input`、`candidates`（稳定 `id`、`text`、`code` 等）、`page_number`、
 `has_previous`、`has_next`。空数组、零页码和 false 布尔值可能被 JSON 省略。
 
@@ -49,26 +53,45 @@ Python 工具只用于离线数据生成，运行服务和解码不依赖 Python
 | type | 附加字段 | 行为 |
 | --- | --- | --- |
 | `input` | `code`：恰好一个非空格可打印 ASCII 字符 | 服务端按当前候选和生成的编码字母表决定编码、选词或直输 |
+| `literal` | `code`：单个可打印 ASCII（含空格），或 LF/TAB | 侧区直输；完全绕过编码、选词、标点转换和自动确认，保留组成 |
+| `setModes` | `inputMode`/`punctuationMode`：至少一项，值为 `chinese` 或 `english` | 保留未确认组成、候选 ID 和页码，不隐式提交或取消 |
 | `backspace` | 无 | 删除最后一个编码字符 |
 | `clear` | 无 | 取消本会话组合 |
 | `page` | `delta`：`1` 或 `-1` | 下一页或上一页；单编码符号采用下述实验候选视图 |
 | `select` | `candidateId` | 校验当前页稳定 ID 后提交引擎候选或实验符号候选 |
 | `close` | 无 | 取消组合并关闭会话，供切换模式使用 |
 
-成功返回 `{ok:true,sessionId,revision,state,commit?}`；`commit` 是提交文本字符串，
-可以由 `select` 或 `input` 产生。按 2026-10-09 用户最新决定，ANSI 和虚拟键盘都把
+成功返回 `{ok:true,sessionId,revision,state,modes,commit?}`；`commit` 是提交文本字符串，
+可以由 `select`、`input` 或 `literal` 产生。ANSI 和虚拟键盘都把
 字符交给本实验服务统一处理，浏览器不自行提交标点：
 
-- 编码字母表来自 `codemode.LayoutAlphabet`，当前为 52 个大小写字母与 `' [ ] \\ /`。
+- 中文输入的编码字母表来自 `codemode.LayoutAlphabet`，当前为 52 个大小写字母与 23 个符号。
+  编码串始终为 ASCII，不受中英标点模式影响；包括 R15 的所有符号载体均由该表动态判定。
+- 英文输入直接输出按键固定大小写，不编码、不数字选词；只在独立中文标点模式启用时转换标点。
+  切换到英文时，原中文组成暂停保留；空格/回车用 `literal` 插入，不确认暂停的候选。
 - `1–9` 在当前页有候选时按序号选择；该页不足该序号时不动作，不把数字直输。
   当前没有候选时只输出数字；`0` 总是走直输规则。
-- 不在编码字母表内的 ASCII 标点直接输出，包括 `Shift+1–9` 的原符号。
+- 中文模式不在编码字母表内的 ASCII 标点直接输出；在字母表内则优先编码，不能凭 Shift 绕过。
   有候选时先确认当前页首项，再把符号或 `0` 合并到同一个响应的 `commit`。
   有未匹配编码、但没有候选时，只输出新字符，原 `raw_input` 保持不变，不提交或丢弃原编码。
-- 当前编码恰好是一个 `' [ ] \\ /` 时，把符号本身作为首页末项：不足 9 项则追加在实际末项，
+- 当前编码恰好是一个编码符号时，把该符号的字面候选作为首页末项：不足 9 项则追加在实际末项，
   已满则显示前 8 个原候选与符号，第 9 个原候选顺延到次页。后续页仍至多 9 项，
   原候选顺序、稳定 ID 保持不变，无丢失或重复。继续输入后不再附加符号候选。
   该候选的 `source_id` 是 `keyboard-lab:literal`，只存在于实验适配层，不写入任何词典。
+
+字面候选和普通直输字符按独立标点模式显示/提交；数字侧区 `literal` 不受它影响。
+中文标点的实验默认表如下，未列出的 ASCII 原样输出，**不是全角转换**：
+
+| ASCII | 中文输出 |
+| --- | --- |
+| `, . ; : ? !` | `， 。 ； ： ？ ！` |
+| `( ) [ ] < > { }` | `（ ） 【 】 《 》 『 』` |
+| `/` 与 `\` | `、` |
+| `^` 与 `_` | `……` 与 `——` |
+| 单引号、双引号 | 依各自提交次数交替 `‘ ’`、`“ ”` |
+
+引号状态只在实际提交时推进，显示候选、翻页、切换模式、取消以及同一事件重试均不会推进。
+切换标点模式只改变字面候选显示，不改变其稳定 ID、原 ASCII 编码和页码。
 
 此分页视图仅位于 `cmd/yime-keyboard-lab`；真实候选选择时仍定位到所属引擎页再提交，
 不改变共享 YimeCore 引擎或原生 Rime 分页。页面高亮本身不用调用 `select`。
@@ -102,7 +125,8 @@ go test ./cmd/yime-keyboard-lab -run TestCanonicalCorpusHTTP -v -args -keyboard-
 不会手填旧键码，也不从已生成词典倒推上游音元。
 
 测试使用真实词典编译、只读索引和 YimeCore 会话，覆盖三模式大小写、候选可见时
-数字状态复用、全 ASCII 标点、五种编码符号候选、完整分页序列、无候选原编码保留、
-原子首选加标点、会话隔离、并发版本争用、分页稳定 ID、提交重试去重、关闭回收，以及
+数字状态复用、全 ASCII 标点、23 种编码符号候选、完整分页序列、无候选原编码保留、
+独立中英/标点模式、侧区旁路、配对引号幂等、原子首选加标点、会话隔离、并发版本争用、
+分页稳定 ID、提交重试去重、关闭回收，以及
 本地 HTTP 和静态文件边界。测试的小词典是明确的测试夹具；交互服务读取上述
 实验完整词典，不使用三个固定候选演示样例。

@@ -49,7 +49,7 @@ def _expect(actual: object, expected: object, label: str) -> None:
 
 def _layout_projection_digest(layout_path: Path) -> str:
     payload = _load_json(layout_path)
-    mapping = payload.get("yinyuan_id_to_key")
+    mapping = payload.get("input_id_to_key", payload.get("yinyuan_id_to_key"))
     if not isinstance(mapping, dict) or not mapping:
         raise VerificationError(
             f"layout has no yinyuan_id_to_key mapping: {layout_path}"

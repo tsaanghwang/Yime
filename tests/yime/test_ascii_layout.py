@@ -5,31 +5,47 @@ import pytest
 
 from tools.generate_ascii_layout import generated_payloads
 from yime.utils.yinyuan_id_chain import (
-    DisabledYinyuanError, encode_numeric_pinyin_to_yinyuan_ids,
-    load_active_yinyuan_id_to_layout_key, load_disabled_yinyuan_ids,
-    load_yinyuan_id_to_layout_key, yinyuan_ids_to_layout_keys,
+    encode_numeric_pinyin_to_yinyuan_ids, load_active_yinyuan_id_to_layout_key,
+    load_disabled_yinyuan_ids, load_yinyuan_id_to_layout_key, yinyuan_ids_to_layout_keys,
+    load_input_id_to_layout_key, load_erhua_id_to_layout_key, load_erhua_input_registry,
+    load_erhua_key_class_to_layout_key,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_inventory_active_projection_and_shared_reservations():
-    all_ids = load_yinyuan_id_to_layout_key(ROOT)
+def test_canonical_60_and_input_75_are_separate_unique_inventories():
+    base = load_yinyuan_id_to_layout_key(ROOT)
     active = load_active_yinyuan_id_to_layout_key(ROOT)
-    assert len(all_ids) == 60 and len(active) == len(set(active.values())) == 57
-    assert load_disabled_yinyuan_ids(ROOT) == {"M25", "M26", "M27"}
-    for owner, reserved, key in (("M28", "M25", "["), ("M29", "M26", "N"), ("M30", "M27", "]")):
-        assert all_ids[owner] == all_ids[reserved] == key
-        assert reserved not in active
-    assert active["N12"] == "'" and active["N26"] == "Q"
-    assert not set("123456789!@#$%^&*(") & set(active.values())
+    inputs = load_input_id_to_layout_key(ROOT)
+    assert len(base) == len(active) == len(set(base.values())) == 60
+    assert len(inputs) == len(set(inputs.values())) == 75
+    assert load_disabled_yinyuan_ids(ROOT) == set()
+    for owner, enabled, key, upper in (("M28", "M25", "[", "{"), ("M29", "M26", "\\", "|"), ("M30", "M27", "]", "}")):
+        assert base[owner] == key and base[enabled] == upper
+    assert base["N12"] == "'" and base["N26"] == "~"
+    assert not set("0123456789") & set(inputs.values())
 
 
 @pytest.mark.parametrize("pinyin", ["hm5", "m1", "m2", "m4"])
-def test_disabled_semantic_syllables_fail_before_projection(pinyin):
+def test_previously_disabled_canonical_syllables_are_enabled(pinyin):
     ids = encode_numeric_pinyin_to_yinyuan_ids(pinyin)
-    with pytest.raises(DisabledYinyuanError):
-        yinyuan_ids_to_layout_keys(ids)
+    assert len(yinyuan_ids_to_layout_keys(ids)) == 4
+    assert set(ids) & {"M25", "M26", "M27"}
+
+
+def test_erhua_projection_joins_reviewed_sound_metadata_not_base_catalog():
+    registry = load_erhua_input_registry(ROOT)
+    mapping = load_erhua_id_to_layout_key(ROOT)
+    classes = load_erhua_key_class_to_layout_key(ROOT)
+    assert len(registry) == len(mapping) == 15
+    assert len(classes) == 18
+    for identifier, unit in registry.items():
+        assert classes[unit["key_class_id"]] == mapping[identifier]
+        assert unit["tone_grade"] in ("high", "mid", "low")
+    assert classes["ERHUA-KEY-HIGH"] == "M"
+    assert mapping["R04"] == "@" and mapping["R10"] == "Q"
+    assert not set(registry) & set(load_yinyuan_id_to_layout_key(ROOT))
 
 
 def test_case_sensitive_ansi_projection():
@@ -40,3 +56,17 @@ def test_case_sensitive_ansi_projection():
 def test_generated_runtime_projection_is_current():
     for path, content in generated_payloads(ROOT).items():
         assert (ROOT / path).read_text(encoding="utf-8") == content, str(path)
+
+
+def test_handoff_digest_includes_derived_carriers_without_changing_legacy_shape(tmp_path):
+    from tools.lexicon.promote_handoff_target import _layout_digest
+    from tools.lexicon.verify_target_lock import _layout_projection_digest
+    from yime.utils.yinyuan_id_chain import layout_projection_digest
+    payload = json.loads((ROOT / "go-backend/input_methods/yime/data/yime_yinyuan_layout.json").read_text(encoding="utf-8"))
+    target = tmp_path / "layout.json"
+    target.write_text(json.dumps(payload), encoding="utf-8")
+    digest = layout_projection_digest(ROOT)
+    assert _layout_digest(target) == _layout_projection_digest(target) == digest
+    payload["input_id_to_key"]["R04"], payload["input_id_to_key"]["R05"] = payload["input_id_to_key"]["R05"], payload["input_id_to_key"]["R04"]
+    target.write_text(json.dumps(payload), encoding="utf-8")
+    assert _layout_digest(target) == _layout_projection_digest(target) != digest

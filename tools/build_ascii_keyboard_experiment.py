@@ -28,6 +28,7 @@ from yime.utils.yinyuan_id_chain import (
     layout_projection_digest, load_disabled_yinyuan_ids,
     load_symbol_to_yinyuan_id, load_yinyuan_id_to_layout_key,
 )
+from tools.ascii_keyboard_overlays import build_reviewed_overlays
 
 
 def sha256(path: Path) -> str:
@@ -39,6 +40,11 @@ def sha256(path: Path) -> str:
 
 
 def build(source_database: Path, output: Path, *, limit: int = 0) -> dict:
+    # Refuse stale manual/Go/physical projections before consuming the corpus.
+    # These are read-only checks, not automatic edits to the user's layout.
+    for generator in ("tools/generate_ascii_layout.py", "prototypes/touch-terminal/generate_data.py"):
+        subprocess.run([sys.executable, "-X", "utf8", str(ROOT / generator), "--check"],
+                       cwd=ROOT, check=True)
     source_database = assert_data_source_allowed(source_database, input_id="ascii_keyboard_runtime_source")
     evidence = json.loads((ROOT / "tools/lexicon/handoff/yime_core_fixed.evidence.json").read_text(encoding="utf-8"))
     expected = evidence["provenance"]["runtime_database"]
@@ -88,9 +94,12 @@ def build(source_database: Path, output: Path, *, limit: int = 0) -> dict:
     finally:
         connection.close()
     subprocess.run([
-        "go", "-C", str(ROOT / "go-backend"), "run", "./cmd/yime-lexicon-derive",
+        "go", "run", "./cmd/yime-lexicon-derive",
         "-input", str(fixed), "-output-dir", str(data),
-    ], check=True)
+    ], cwd=ROOT / "go-backend", check=True)
+    # Partial corpus probes are not deployable and cannot prove all reviewed
+    # aliases belong to the source. Only complete builds add the reviewed layer.
+    overlays = build_reviewed_overlays(ROOT, data, output) if limit == 0 else None
     manifest = {
         "schema_version": 1,
         "scope": "immutable_source_runtime_experiment",
@@ -104,6 +113,8 @@ def build(source_database: Path, output: Path, *, limit: int = 0) -> dict:
         "excluded_id_counts": dict(disabled_syllables),
         "excluded_disabled_readings": excluded_readings,
         "limit": limit,
+        "reviewed_overlays": overlays,
+        "input_policy": "concept-keyboard-modes-v2",
         "dictionary_sha256": {name: sha256(data / name) for name in (
             "yime_full.dict.yaml", "yime_variable.dict.yaml", "yime_shorthand.dict.yaml")},
     }
@@ -115,7 +126,7 @@ def build(source_database: Path, output: Path, *, limit: int = 0) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-database", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, default=ROOT / ".generated/ascii-keyboard")
+    parser.add_argument("--output-dir", type=Path, default=ROOT / ".generated/ascii-keyboard-138")
     parser.add_argument("--limit", type=int, default=0)
     args = parser.parse_args()
     if args.limit < 0:

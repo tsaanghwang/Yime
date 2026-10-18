@@ -13,18 +13,21 @@ class GeneratedPhysicalDataTests(unittest.TestCase):
         expected = json.dumps(build(), ensure_ascii=False, indent=2) + "\n"
         self.assertEqual(expected, OUTPUT.read_text(encoding="utf-8"))
 
-    def test_projection_is_case_sensitive_and_disabled_is_explicit(self):
+    def test_projection_is_case_sensitive_and_all_75_are_enabled(self):
         layout = build()
         ids = {identifier: key for key in layout["keys"] for identifier in key["yinyuanIds"]}
         self.assertEqual("I", ids["M01"]["action"]["ascii"])
         self.assertEqual("i", ids["M03"]["action"]["ascii"])
         self.assertEqual("'", ids["N12"]["action"]["ascii"])
-        self.assertEqual("Q", ids["N26"]["action"]["ascii"])
-        for active, disabled in [("M28", "M25"), ("M29", "M26"), ("M30", "M27")]:
-            self.assertIs(ids[active], ids[disabled])
-            self.assertEqual([disabled], ids[active]["disabledYinyuanIds"])
-        alphabet = {key["action"]["ascii"] for key in layout["keys"] if key["yinyuanIds"]}
-        self.assertEqual(57, len(alphabet))
+        self.assertEqual("~", ids["N26"]["action"]["ascii"])
+        for base, upper in [("M28", "M25"), ("M29", "M26"), ("M30", "M27")]:
+            self.assertIs(ids[base], ids[upper])
+            self.assertEqual([], ids[base]["disabledYinyuanIds"])
+            self.assertNotEqual(ids[base]["action"], ids[base]["shiftAction"])
+        alphabet = {key[action]["ascii"] for key in layout["keys"]
+                    for action, identifiers in (("action", "baseYinyuanIds"), ("shiftAction", "shiftYinyuanIds"))
+                    if key.get(identifiers)}
+        self.assertEqual(75, len(alphabet))
         self.assertTrue(set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") <= alphabet)
         self.assertFalse(set("1234567890") & alphabet)
 
@@ -39,7 +42,8 @@ class GeneratedPhysicalDataTests(unittest.TestCase):
     def test_changed_ascii_annotation_fails_instead_of_becoming_a_second_source(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            for relative in ("internal_data/manual_key_layout.json", str(SOURCE.relative_to(ROOT))):
+            for relative in ("internal_data/manual_key_layout.json", str(SOURCE.relative_to(ROOT)),
+                             "docs/project/connected_speech/erhua_sound_key_projection.json"):
                 target = root / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(ROOT / relative, target)

@@ -11,12 +11,13 @@
 <body>
   <main>
     <header>
-      <div><div class="eyebrow">YIME / KEYBOARD LAB</div><h1>让新键盘，先在屏幕上工作。</h1><p>完整实体盘面 · 大小写 ASCII 独立键 · ANSI 兼容输入</p></div>
+      <div><div class="eyebrow">YIME / KEYBOARD LAB</div><h1>让新键盘，先在屏幕上工作。</h1><p>138 键概念盘面 · 显式上下档 · 双独立数字区 · ANSI 兼容输入</p></div>
       <span class="badge" id="connection">连接 Go 引擎…</span>
     </header>
     <div id="load-error" role="alert" hidden></div>
     <section class="panel terminal" aria-label="键盘输入工作台">
       <div class="section-title"><h2>输入工作台</h2><label for="code-mode">码制 <select id="code-mode"><option value="variable">可变码</option><option value="full">全码</option><option value="shorthand">简码</option></select></label></div>
+      <div class="mode-actions"><button id="input-mode" aria-pressed="false">输入：中文编码</button><button id="punctuation-mode" aria-pressed="false">标点：英文</button><span id="number-modes" class="hint">左数字区：数字 · 右数字区：数字</span></div>
       <label class="caption" for="committed">本页可编辑文本</label>
       <textarea id="committed" rows="3" spellcheck="false" placeholder="选词后写入这里；可以移动光标、选择和编辑文本。"></textarea>
       <div class="composition"><div class="code-line">ASCII 组合 <code id="code" aria-live="polite">—</code></div><div id="composition" class="hint">读取布局与引擎…</div></div>
@@ -25,16 +26,16 @@
       <div class="actions"><button id="backspace">⌫ 退格</button><button id="clear">取消组合</button><button id="prev">← 上页</button><button id="next">下页 →</button><button id="confirm" class="primary">确认首选 ↵</button></div>
       <div class="board-title"><h2>概念实体键盘</h2><span id="touch-template-label" class="hint">读取 KLE…</span></div>
       <div class="keyboard-scroll"><div id="keyboard" tabindex="0" aria-label="概念实体键盘，支持 ANSI 键盘输入"></div></div>
-      <p class="hint">1–9 在有候选时选词、无候选时输入数字；0 与非编码符号直接输出。已有候选时，直接符号先确认当前页首选再输出；无候选的未确认编码保留。单独输入编码符号 ' [ ] \ /，可在首页末项选择符号本身。翻页用 PageUp/PageDown 或页面按钮，- 和 = 恢复符号输入。</p>
-      <p class="hint">大小写音元键固定输出所标字符。虚拟 Shift 为一次性符号上档：点 Shift 再点数字/符号键；不改变独立字母键的音元映射。ANSI 大写用 Shift 或 Caps Lock。移出键面后释放会取消本次点按。</p>
-      <p class="hint">共键中的 <span class="disabled-yinyuan">M25、M26、M27</span> 当前停用；M28、M29、M30 仍正常输入。标有「仅示意」的键不执行系统功能。</p>
+      <p class="hint">中文模式下，主区 1–9 有候选时选词、无候选时输入数字；编码标点仍参与编码，符号自身在首页末项。切换英文会保留并暂停中文组合，字母按键帽固定大小写直输。标点模式独立切换，不改内部 ASCII 编码。</p>
+      <p class="hint">虚拟 Shift 可点按启用一次，也可按住再点另一键；只执行键帽明确标出的上档。真实 ANSI 键盘按实际字符输入；其 Shift 只同步亮起上档，不做第二次映射。概念 Caps Lock 本轮仅示意，不更改系统状态。移出键面（包括 ISO 缺角）后释放会取消点按。</p>
+      <p class="hint">左右 Num Lock 分别切换各自数字／编辑状态，编辑态 5 无动作。两侧数字和运算符与 ANSI 小键盘在数字态直接输出 ASCII，不选词、不编码、不转换中文标点。编辑仅作用于本页；标有「仅示意」的键不执行系统功能。</p>
       <p id="status" role="status">正在初始化…</p>
     </section>
     <aside>
       <section class="panel"><h2>两种输入，共用同一引擎</h2><p>标准 ANSI 键盘和虚拟按键共用 ASCII 输入规则。汉字候选来自项目生成索引；符号直输与符号候选仅作用于本实验页面。</p><p id="engine-scope"></p><p class="hint">此实验不安装输入法，不向其他窗口发送按键。注册宿主验收需另行运行。</p></section>
       <section class="panel"><h2>实屏点按记录</h2><p>测量时只记录键位命中；覆盖全部键后恢复输入。随机目标点错时保持原目标。</p><div class="drill-actions"><button id="drill">全键覆盖</button><button id="target-drill">随机目标</button><button id="stop-drill">停止测量</button></div><strong id="drill-target">尚未开始</strong><p id="drill-status"></p><p class="hint" id="environment"></p><p class="hint" id="latency">请求 → 下一帧：尚无样本</p><button id="export">导出本次记录</button></section>
     </aside>
-    <details class="panel provenance"><summary>布局溯源与引擎事件</summary><p id="layout-id"></p><ul id="sources"></ul><p>请求提交 ASCII；稳定音元 ID 用于布局溯源。灰色预留 ID 不参与当前编码。最近请求与响应：</p><pre id="trace">[]</pre><p><a href="README.md">运行说明</a> · <a href="PROTOCOL.md">协议</a> · <a href="HARDWARE.md">硬件测量说明</a></p></details>
+    <details class="panel provenance"><summary>布局溯源与引擎事件</summary><p id="layout-id"></p><ul id="sources"></ul><p>请求提交 ASCII；稳定 N/M/R ID 与显式上下档用于布局溯源。M25–M27 位于上档。最近请求与响应：</p><pre id="trace">[]</pre><p><a href="README.md">运行说明</a> · <a href="PROTOCOL.md">协议</a> · <a href="HARDWARE.md">硬件测量说明</a></p></details>
     <footer>共享源 / 独立键盘实验 <span>无安装 · 无注册 · 本页文本</span></footer>
   </main>
 </body>

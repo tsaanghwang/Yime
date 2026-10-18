@@ -11,12 +11,12 @@ func TestBuildRecordDerivesAllModes(t *testing.T) {
 	}{
 		{"'AAA", "'A", "'A"},
 		{"AAAA", "AA", "AA"},
-		{"'aDA", "'aDA", "'aA"},
+		{"'aBA", "'aBA", "'aA"},
 		{"kAAA", "kA", "kA"},
-		{"kaDA", "kaDA", "kaA"},
+		{"kaBA", "kaBA", "kaA"},
 		{"'AAI", "'AI", "'AI"},
-		{"kAAIkADa", "kAIkADa", "kAIkAa"},
-		{"kAAA'aDA", "kA'aDA", "kA'aA"},
+		{"kAAIkABa", "kAIkABa", "kAIkAa"},
+		{"kAAA'aBA", "kA'aBA", "kA'aA"},
 	}
 	for _, test := range tests {
 		got, err := BuildRecord(test.full)
@@ -37,7 +37,7 @@ func TestBuildRecordDerivesAllModes(t *testing.T) {
 }
 
 func TestProjectAlignedUsesTheSameModeSpecificPositionMasks(t *testing.T) {
-	got, err := ProjectAligned("'AAA kaDA", "ABCDWXYZ")
+	got, err := ProjectAligned("'AAA kaBA", "ABCDWXYZ")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -96,17 +96,17 @@ func TestBuildRecordRejectsIncompleteSyllable(t *testing.T) {
 }
 
 func TestBuildRecordAcceptsScriptDictionarySyllableSpaces(t *testing.T) {
-	got, err := BuildRecord("kAAI kADa")
+	got, err := BuildRecord("kAAI kABa")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.Full != "kAAIkADa" || got.FullSpelling != "kAAI kADa" || got.VariableSpelling != "kAI kADa" {
+	if got.Full != "kAAIkABa" || got.FullSpelling != "kAAI kABa" || got.VariableSpelling != "kAI kABa" {
 		t.Fatalf("unexpected record: %#v", got)
 	}
 }
 
 func TestValidateContinuousInputRecordRejectsLostApostropheVirtualShouyin(t *testing.T) {
-	record, err := BuildRecord("'aDA kAAI")
+	record, err := BuildRecord("'aBA kAAI")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -123,7 +123,7 @@ func TestBuildRecordAcceptsEveryLayoutKeyAndRejectsUnknownCharacters(t *testing.
 			t.Fatalf("layout key %q rejected: %v", key, err)
 		}
 	}
-	if _, err := BuildRecord("~~~~"); err == nil {
+	if _, err := BuildRecord("!!!!"); err == nil {
 		t.Fatal("expected characters outside LayoutAlphabet to be rejected")
 	}
 }

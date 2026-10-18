@@ -28,7 +28,7 @@ func TestCanonicalCorpusHTTP(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	dataDir := filepath.Join(root, ".generated", "ascii-keyboard", "data")
+	dataDir := filepath.Join(root, ".generated", "ascii-keyboard-138", "data")
 	data, err := os.ReadFile(filepath.Join(root, "prototypes", "touch-terminal", "data", "physical-layout.json"))
 	if err != nil {
 		t.Fatal(err)
@@ -181,7 +181,7 @@ func TestCanonicalCorpusHTTP(t *testing.T) {
 			t.Fatalf("%s page round trip: %+v", mode, s.State)
 		}
 		mutate("clear", "", "", 0)
-		for _, symbol := range []string{"'", "[", "]", "\\", "/"} {
+		for _, symbol := range codingSymbols() {
 			mutate("input", symbol, "", 0)
 			last := s.State.Candidates[len(s.State.Candidates)-1]
 			if last.Text != symbol || last.SourceID != literalSource || len(s.State.Candidates) > 9 {
@@ -212,8 +212,9 @@ func TestCanonicalCorpusHTTP(t *testing.T) {
 		for _, key := range code {
 			mutate("input", string(key), "", 0)
 		}
-		want := s.State.Candidates[0].Text + "!"
-		mutate("input", "!", "", 0)
+		punct := nonCodingSymbol(t)
+		want := s.State.Candidates[0].Text + punct
+		mutate("input", punct, "", 0)
 		if s.Commit != want || s.State.RawInput != "" {
 			t.Fatalf("%s automatic first-candidate plus punctuation: %+v", mode, s)
 		}

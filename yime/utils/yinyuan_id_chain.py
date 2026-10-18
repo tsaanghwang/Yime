@@ -21,11 +21,8 @@ SHOUYIN_SOURCE = Path("syllable/yinyuan/zaoyin_yinyuan_enhanced.json")
 YUEYIN_SOURCE = Path("syllable/yinyuan/yueyin_yinyuan_enhanced.json")
 CANONICAL_SYMBOL_SOURCE = Path("internal_data/key_to_symbol.json")
 CANONICAL_LAYOUT_SOURCE = Path("internal_data/manual_key_layout.json")
-CONTROLLED_SHARED_LAYOUT_GROUPS = {
-    frozenset(("M28", "M25")),
-    frozenset(("M29", "M26")),
-    frozenset(("M30", "M27")),
-}
+CONTROLLED_SHARED_LAYOUT_GROUPS: set[frozenset[str]] = set()
+ERHUA_SOUND_SOURCE = Path("docs/project/connected_speech/erhua_sound_key_projection.json")
 
 
 def expected_yinyuan_ids() -> set[str]:
@@ -33,6 +30,16 @@ def expected_yinyuan_ids() -> set[str]:
         *(f"N{index:02d}" for index in range(1, 28)),
         *(f"M{index:02d}" for index in range(1, 34)),
     }
+
+
+def load_erhua_input_registry(repo_root: Path = REPO_ROOT) -> dict[str, dict[str, Any]]:
+    """Existing reviewed derived units, not additions to the canonical 60 IDs."""
+    payload = _load_json(repo_root / ERHUA_SOUND_SOURCE)
+    registry = {str(unit["sound_unit_id"]): unit for unit in payload["sound_units"]
+                if str(unit["sound_unit_id"]).startswith("R")}
+    if set(registry) != {f"R{index:02d}" for index in range(4, 19)}:
+        raise ValueError("Reviewed derived Erhua registry must cover R04-R18")
+    return registry
 
 
 def load_shared_layout_groups(layout: dict[str, Any]) -> dict[str, tuple[str, ...]]:
@@ -202,11 +209,11 @@ def encode_numeric_pinyin_to_yinyuan_ids(
     return cast(tuple[str, str, str, str], ids)
 
 
-def load_yinyuan_id_to_layout_key(
+def load_input_id_to_layout_key(
     repo_root: Path = REPO_ROOT,
     layout_path: Path | None = None,
 ) -> dict[str, str]:
-    """Load the sole canonical final projection from Yinyuan ID to key token."""
+    """Load all 75 input carriers from the sole editable layout projection."""
     canonical_path = (repo_root / CANONICAL_LAYOUT_SOURCE).resolve()
     resolved_path = (layout_path or canonical_path).resolve()
     if resolved_path != canonical_path:
@@ -218,6 +225,8 @@ def load_yinyuan_id_to_layout_key(
     layout = _load_json(canonical_path)
     if "yinyuan_id_to_key" in layout:
         raise ValueError("Compact Yinyuan-ID maps are forbidden in the canonical layout source")
+    if layout.get("input_id_aliases") != {"R01": "M22", "R02": "M23", "R03": "M24"}:
+        raise ValueError("R01-R03 must remain display aliases of M22-M24, not independent sound units")
 
     mapping: dict[str, str] = {}
     occupied: dict[str, str] = {}
@@ -237,8 +246,6 @@ def load_yinyuan_id_to_layout_key(
             raise ValueError(f"Yinyuan ID must use base/shift, got {layer}: {yinyuan_id}")
         if len(key) != 1 or not (0x21 <= ord(key) <= 0x7e):
             raise ValueError(f"Yinyuan ID has no single printable key token: {yinyuan_id}")
-        if key in "!@#$%^&*(":
-            raise ValueError(f"Candidate action cannot be an encoding key: {yinyuan_id} -> {key}")
         if yinyuan_id in mapping:
             raise ValueError(f"Duplicate Yinyuan ID assignment: {yinyuan_id}")
         if key in occupied:
@@ -257,7 +264,7 @@ def load_yinyuan_id_to_layout_key(
                 raise ValueError(f"shared-key member also has an independent slot: {member}")
             mapping[member] = key
 
-    expected = expected_yinyuan_ids()
+    expected = expected_yinyuan_ids() | set(load_erhua_input_registry(repo_root))
     if set(mapping) != expected:
         missing = sorted(expected - set(mapping))
         extra = sorted(set(mapping) - expected)
@@ -265,9 +272,31 @@ def load_yinyuan_id_to_layout_key(
     return mapping
 
 
+def load_yinyuan_id_to_layout_key(
+    repo_root: Path = REPO_ROOT, layout_path: Path | None = None,
+) -> dict[str, str]:
+    """Project only the unchanged 60-ID canonical syllable inventory."""
+    return {identifier: key for identifier, key in
+            load_input_id_to_layout_key(repo_root, layout_path).items()
+            if identifier in expected_yinyuan_ids()}
+
+
+def load_erhua_id_to_layout_key(repo_root: Path = REPO_ROOT) -> dict[str, str]:
+    registry = load_erhua_input_registry(repo_root)
+    return {identifier: key for identifier, key in load_input_id_to_layout_key(repo_root).items()
+            if identifier in registry}
+
+
+def load_erhua_key_class_to_layout_key(repo_root: Path = REPO_ROOT) -> dict[str, str]:
+    """All 18 reviewed classes, including the existing M22-M24 carriers."""
+    mapping = load_input_id_to_layout_key(repo_root)
+    units = _load_json(repo_root / ERHUA_SOUND_SOURCE)["sound_units"]
+    return {str(unit["key_class_id"]): mapping[str(unit["sound_unit_id"])] for unit in units}
+
+
 def layout_projection_digest(repo_root: Path = REPO_ROOT) -> str:
     """Identify one physical layout without a hand-maintained version name."""
-    mapping = load_yinyuan_id_to_layout_key(repo_root)
+    mapping = load_input_id_to_layout_key(repo_root)
     serialized = json.dumps(
         {"mapping": sorted(mapping.items()),
          "disabled_yinyuan_ids": sorted(load_disabled_yinyuan_ids(repo_root))},

@@ -1,5 +1,93 @@
 # 新 ASCII 实体键盘布局：计划、实施细则与验收
 
+## 2026-10-11：138 键上下档模型实施基线
+
+本轮仍仅适用于 `codex/ascii-physical-layout-experiment`。以下旧版 129 键记录保留为历史，
+不再是本轮实现约束；旧布局分支、已安装 YimeCore/Rime 和正式发布锁均不改动。
+
+- 盘面采用 `prototypes/touch-terminal/design/keyboard-layout.json`，保留用户原文件；
+  138 个物理键，24.75 × 7.25u，Tab/主 Backspace 为镜像双矩形 ISO 键。
+- 编码投影仍以 `internal_data/manual_key_layout.json` 为唯一真源；KLE 提供几何和图例校验。
+  基础 N01–N27/M01–M33 全部启用，新增独立 R04–R18 载体；R01–R03 复用 M22–M24。
+  75 个独立编码载体由 52 个大小写字母和 23 个 ASCII 符号组成。
+- 每键下档/上档显式定义，不套用标准 ANSI 字符配对；标准 ANSI 只验功能可达，不考核效率。
+- 主键区中文编码保留原始 ASCII；单个编码符号提供首页末项的字面标点候选。
+  中英文标点开关只作用于字面显示/输出，不改变编码串、音元身份或字典。
+- 英文模式直输固定字符；概念 Caps Lock 不启用。左右数字/编辑模式各自独立并显示状态，
+  编辑 5 无动作；数字区直输 ASCII 数字和运算符，旁路编码、选词及中文标点转换。
+- 儿化只重新投影既有审定记录；不扩展词条、音变规则或改写规范读音。
+- 实施顺序：唯一映射及生成器 → ANSI/后端 → 虚拟盘面 → 三模式与浏览器回归。
+  触摸显示器暂缺，手指/触控笔、真实触屏多点与可达性验收延期；鼠标自动化不能代替它们。
+
+### 当前生成与运行方式
+
+从试验分支根目录运行，仍遵守仓库 PowerShell 预检规则：
+
+```text
+python -X utf8 tools/generate_ascii_layout.py
+python -X utf8 prototypes/touch-terminal/generate_data.py
+python -X utf8 tools/build_ascii_keyboard_experiment.py --source-database C:/YimeData/runtime-input-v1/pinyin_hanzi.db
+python -X utf8 tools/generate_ascii_layout.py --check
+python -X utf8 tools/check_layout_change_lock.py --preflight
+python -X utf8 prototypes/touch-terminal/validate.py
+```
+
+完整词库在 `.generated/ascii-keyboard-138/data`，不会覆盖旧 `.generated/ascii-keyboard`。
+在 `go-backend` 目录运行 `go run ./cmd/yime-keyboard-lab --root .. --port 8768`，
+打开 `http://127.0.0.1:8768/`。它只修改页面文本，不是 Windows 输入法安装。
+新协议 `concept-keyboard-modes-v2` 同时校验前端、物理布局、编译时布局摘要和词典 manifest，拒绝新旧混用。
+
+### 2026-10-11 新证据
+
+- 布局身份（75 个活动载体）：
+  `5634db1c61fe211560b669a7f7a85b2b27b007a34658086b8eeddf655e4dff4d`。
+- 从同一只读、内容锁定数据库重新投影 2,457,474 条规范读音，停用排除数为 0。
+  既有 315 条 PSC 路径已在核心集合内；131 条审定融合儿化路径另行加入，
+  每模式最终索引 2,457,604 个唯一候选/编码对。
+- 儿化仍由既有语义规则派生，3 个共享载体和 15 个专用载体都来自同一手工映射源。
+  131 条融合路径在三模式中均无新增异文同码桶；这个结论不代表整个基础词库没有重码。
+  131 条儿缀兼容路径去重，保留原词库权重；融合旁表权重固定为 1。
+- 新词典 SHA-256：
+  全码 `a965ce8c87132facc54919ce4a1c54e8f9a681f3b83c8b7480db5f9983abfa55`；
+  可变码 `a535e9464e4840f1f4e3203d34300091ba39bdae9be1384567e9872df0f5d358`；
+  简码 `459f0837214cd1c6b2da068dda0327ed62eae2f6e327a2289ed2e8ba76ce0c7a`。
+  完整构建与碰撞审计分别见上述 data 目录的 `ascii_keyboard_manifest.json` 和上级 `overlay_audit.json`。
+  基底生成器的原始摘要已单独保留为 `base_yime_lexicon_manifest.json`，不再以最终词典身份留在 data 目录。
+  两次全量构建的最终三份字典 SHA-256 完全一致；manifest 的构建时间可以不同。
+- 全量词库 HTTP 回归通过，覆盖三模式真实候选查询、选择提交及全部 23 个编码符号的字面候选路径。
+- 隔离真实 librime 1.17.0 三模式 × 儿化旁表启停通过：每模式使用实际词库导出的
+  265 条完整竞争桶夹具；131 条融合路径启用可提交、停用消失、131 条儿缀路径仍保留。
+  六个临时 schema 另执行 450 次大小写/符号载体探针。未操作已安装 Rime 用户目录。
+- 1737 个规范音节和 135 个独立派生的儿化收缩对照通过；原型校验含 20 项 Python、
+  36 项 JavaScript 测试（包括保留的历史协议测试）。
+- `tests/yime` 加手工布局解析器共 105 通过、4 跳过；旁表合并/基底身份隔离单测 4 通过。
+  Go 的 lab、codemode、yimecore、systemlexicon 四个包通过。
+  checked-in 儿化别名文件仅刷新 393 个布局编码字段，其余语义、词条、来源与原时间不变。
+- Playwright 实际浏览器联测通过：英文/英文标点下 ANSI 与虚拟键均可输出全部 95 个可打印 ASCII；
+  75 个 ID 的上下档入口、三模式选词、侧数字区旁路、独立模式切换、双 Num Lock、
+  ISO 缺角拒绝命中与拖出取消、138 键覆盖及格式 5 记录导出均通过。
+  模拟双指按住 Shift 后先松 Shift、再松字母键仍按按下时的上档处理；390px 窄屏无整页横向溢出。
+  `errors=[]`、`external=[]`、`hardwareAcceptance=false`；模拟触摸不算真实触屏验收。
+  截图 `output/playwright/concept-138-desktop.png`、`concept-138-narrow.png` 已目视检查。
+
+真实 Rime 回归从 `go-backend` 执行：
+
+```text
+go test ./input_methods/yime -run TestRealRimeASCIIConceptErhuaThreeModesAndRollback -count=1 -v -args -ascii-concept-rime
+go test ./cmd/yime-keyboard-lab -run TestCanonicalCorpusHTTP -v -args -keyboard-lab-integration-root C:/Users/tsaan/.codex/worktrees/ascii-keyboard-model/Yime
+```
+
+正式 target lock 保持原样，普通发布门禁仍应拒绝把新布局当成旧的已批准交付。
+本轮实际复查得到预期的 approved Windows target 摘要不匹配；语义 preflight 则通过。
+广域 `go test ./input_methods/yime/connectedspeech` 仍失败：历史离线审核器固化了旧布局的
+数字载体、Shift 符号禁用与 N12/N26、N25/N27 共享约束，部分测试读取旧生产 ASCII 表。
+这些非儿化语流工具并未接入本次样机，未通过改写规范读音、更新生产锁或删除断言来掩盖失败。
+如要让试验分支覆盖全部旧生产语流功能，需要另行迁移这些审核器及其夹具，并逐模块验证。
+不能把本轮定向测试描述成全仓库 CI、正式包或已安装 Windows 宿主验收通过。
+标准 ANSI 真人复核、真实触屏/触控笔、多点触控手感和实体键盘固件仍是独立后续验收。
+
+## 历史：2026-10-09 的 129 键阶段（不作为当前约束）
+
 日期：2026-10-09。分支：`codex/ascii-physical-layout-experiment`。
 基线：主线 `26578669`。影响范围：共享离线键位源，以及独立 YimeCore 键盘实验窗口。
 原主目录的未提交修改与已安装产品保持不动。
