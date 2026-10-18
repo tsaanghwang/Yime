@@ -1,5 +1,10 @@
 # KLE 触摸模板工作流
 
+> 以下正文保留旧 60 音元独立按钮基线。当前入口是
+> `design/concept-129.kle.json` → `physical_layout.py` → `data/physical-layout.json`，
+> 允许无音元的控制键和三个受控共享键，不再要求每个实体键恰好一个音元。
+> 当前唯一编码源及校验命令见 [README](README.md)。
+
 [Keyboard Layout Editor](https://www.keyboard-layout-editor.com/#/) 只用于编辑触摸键面的几何与外观。仓库保存 KLE 下载得到的严格 JSON；不要把网页“Raw data”标签中省略引号和顶层方括号的宽松文本直接提交。
 
 当前模板：`design/touch-terminal-60.kle.json`。

@@ -1,145 +1,146 @@
-// Run with playwright-cli run-code --filename=prototypes/touch-terminal/browser-smoke.js
-// Existing isolated page must point to serve.py. No installed IME is accessed.
+// playwright-cli run-code --filename=prototypes/touch-terminal/browser-smoke.js
+// Real local Go engine; all browser/touch automation remains hardwareAcceptance=false.
 async (page) => {
-  const base = page.url().split('/').slice(0,3).join('/');
-  if (!/^http:\/\/127\.0\.0\.1:\d+$/.test(base)) throw new Error('Use the loopback prototype server');
-  const checks = [], errors = [], external = [];
-  const assert = (condition, message) => { if (!condition) throw new Error(message); };
-  page.on('pageerror', error => errors.push(String(error)));
-  page.on('request', request => { if (!request.url().startsWith(base + '/')) external.push(request.url()); });
-  await page.setViewportSize({width:1440,height:1100});
-  await page.goto(base);
-  await page.locator('.sound-key').last().waitFor();
-  assert(await page.locator('.sound-key').count() === 60, '60 independent keys');
-  assert(await page.locator('#load-error').isHidden(), 'data loads');
-  const data = await page.evaluate(async () => ({layout:await (await fetch('./data/layout.json')).json(),demo:await (await fetch('./data/demo.json')).json()}));
-  assert(data.layout.touchTemplate.format === 'keyboard-layout-editor.com', 'KLE format recorded');
-  assert(data.layout.touchTemplate.bounds.width === 10 && data.layout.touchTemplate.bounds.height === 6, 'KLE bounds recorded');
-  assert(data.layout.sources.some(source => source.path.endsWith('.kle.json')), 'KLE source provenance recorded');
-  const firstBox = await page.locator('[data-id="N01"]').boundingBox();
-  const rowEndBox = await page.locator('[data-id="N10"]').boundingBox();
-  const nextRowBox = await page.locator('[data-id="N11"]').boundingBox();
-  assert(Math.abs(firstBox.y - rowEndBox.y) < 1, 'KLE first row geometry');
-  assert(nextRowBox.y > firstBox.y + firstBox.height, 'KLE row separation');
-  assert((await page.locator('#touch-template-label').innerText()).includes('10 × 6 KLE u'), 'KLE identity visible');
-  checks.push('strict KLE geometry and source identity rendered');
-  const clear = async () => { if (await page.locator('#clear').isEnabled()) await page.locator('#clear').click(); };
-  // Each release must append exactly one ID, including IDs with a shared key.
-  for (const key of data.layout.keys) {
-    await page.locator(`[data-id="${key.id}"]`).click();
-    assert(await page.locator('#composition').innerText() === `${key.id} ${key.label}`, `single release ${key.id}`);
-    assert(await page.locator('#code').innerText() === key.key, `projection ${key.id}`);
-    await clear();
+  const base=new URL(page.url()).origin;
+  if(!/^http:\/\/127\.0\.0\.1:\d+$/.test(base))throw new Error('Use the isolated loopback Go service');
+  const checks=[],errors=[],external=[],requests=[];
+  const assert=(condition,message)=>{if(!condition)throw new Error(message);};
+  page.on('pageerror',error=>errors.push(String(error)));
+  page.on('request',request=>{requests.push(request.url());if(!request.url().startsWith(base+'/'))external.push(request.url());});
+  await page.setViewportSize({width:1800,height:1180});await page.goto(base);
+  await page.locator('#connection.connected').waitFor();
+  await page.waitForFunction(()=>document.querySelector('#punctuation-mode').textContent==='标点：中文');
+  const layout=await page.evaluate(async()=>(await fetch('./data/physical-layout.json')).json());
+  assert(layout.formatVersion===4&&layout.keys.length===134,'CN/EN134 generated layout');
+  assert(await page.locator('.physical-key').count()===134,'134 rendered physical nodes');
+  const button=key=>page.locator(`[data-id="${key.id}"]`);
+  const find=predicate=>{const key=layout.keys.find(predicate);assert(key,'required key');return key;};
+  const shift=find(k=>k.action.type==='shift'),toggle=find(k=>k.action.type==='toggle-layout');
+  const waitCode=code=>page.waitForFunction(v=>document.querySelector('#code').textContent===(v||'—'),code);
+  const text=()=>page.locator('#committed').inputValue();
+  const waitText=value=>page.waitForFunction(v=>document.querySelector('#committed').value===v,value);
+  const clear=async()=>{await page.locator('#keyboard').focus();await page.keyboard.press('Escape');await waitCode('');};
+  const setInput=async english=>{
+    if(await page.locator('#input-mode').getAttribute('aria-pressed')!==String(english))await page.locator('#input-mode').click();
+    await page.waitForFunction(v=>document.querySelector('#input-mode').getAttribute('aria-pressed')===String(v),english);
+  };
+  const setLayout=async english=>{
+    if(await button(toggle).getAttribute('aria-pressed')!==String(english))await button(toggle).click();
+    await page.waitForFunction(({id,v})=>document.querySelector(`[data-id="${id}"]`).getAttribute('aria-pressed')===String(v),{id:toggle.id,v:english});
+  };
+  const pathFor=(ascii,english=false)=>{
+    if(ascii===' ')return{key:find(k=>k.action.type==='confirm'&&k.action.key==='Space'),shifted:false};
+    for(const zone of ['main','left','right'])for(const baseKey of layout.keys.filter(k=>k.zone===zone)){
+      const key=english?baseKey.english:baseKey;
+      if(key.action.ascii===ascii)return{key:baseKey,shifted:false};
+      if(key.shiftAction?.ascii===ascii)return{key:baseKey,shifted:true};
+    }
+    throw new Error('No virtual path '+JSON.stringify(ascii));
+  };
+  const tap=async path=>{if(path.shifted)await button(shift).click();await button(path.key).click();};
+  const snapshot=()=>page.evaluate(()=>{
+    window.__keyNodes??=Array.from(document.querySelectorAll('.physical-key'));
+    window.__legendNodes??=window.__keyNodes.map(k=>Array.from(k.querySelectorAll('.key-legend')));
+    window.__keyColors??=window.__keyNodes.map(k=>getComputedStyle(k).backgroundColor);
+    return window.__keyNodes.length;
+  });
+  await snapshot();await page.screenshot({path:'output/playwright/concept-134-cn.png',fullPage:true});
+  await setInput(true);await setLayout(true);
+  assert(await page.locator('.physical-key:disabled').count()===23,'23 EN keys disabled');
+  assert(await page.evaluate(()=>window.__keyNodes.every((node,i)=>node===document.querySelectorAll('.physical-key')[i]&&window.__legendNodes[i].every((span,j)=>span===node.querySelectorAll('.key-legend')[j])&&window.__keyColors[i]===getComputedStyle(node).backgroundColor)),'key/legend nodes and colors reused');
+  let expected=await text();
+  for(const ascii of Array.from({length:95},(_,i)=>String.fromCharCode(32+i))){await tap(pathFor(ascii,true));expected+=ascii;await waitText(expected);}
+  await page.locator('#keyboard').focus();await page.keyboard.type(' aAzZ0123!?');expected+=' aAzZ0123!?';await waitText(expected);
+  checks.push('all95 printable ASCII through EN virtual layers; ANSI event.key unchanged;23 disabled keys;node/color reuse');
+  await page.screenshot({path:'output/playwright/concept-134-en.png',fullPage:true});
+  await setLayout(false);
+  const beforeRequests=requests.length;
+  for(let i=0;i<200;i++)await button(toggle).click();
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  assert(requests.length===beforeRequests,'layout switching performs no HTTP requests');
+  assert(await button(toggle).getAttribute('aria-pressed')==='false','200 toggles return original');
+  await setLayout(true);
+  const first=pathFor('q',true);await tap(first);expected+='q';await waitText(expected);
+  await setInput(false);assert(await button(toggle).getAttribute('aria-pressed')==='false','Chinese always uses CN');
+  await setInput(true);assert(await button(toggle).getAttribute('aria-pressed')==='true','English preference restored');
+  checks.push('200 repeated local layout switches without requests;first-key mapping;English preference restored across language changes');
+  await setInput(false);
+  const semantic=[];
+  for(const key of layout.keys)for(const [field,shifted,name]of [['baseYinyuanIds',false,'action'],['shiftYinyuanIds',true,'shiftAction']])for(const id of key[field]||[])semantic.push({id,key,shifted,ascii:key[name].ascii});
+  assert(semantic.length===75,'75 independent semantic entrances');
+  for(const path of semantic){await tap(path);await waitCode(path.ascii);await clear();}
+  for(const [mode,code]of Object.entries({variable:'ni',full:'niii',shorthand:'ni'})){
+    await page.locator('#code-mode').selectOption(mode);await page.waitForFunction(()=>!document.querySelector('#code-mode').disabled);
+    await page.locator('#keyboard').focus();await page.keyboard.type(code);await waitCode(code);
+    await page.locator('.candidate').getByText('你',{exact:true}).click();await waitCode('');
+    assert((await text()).endsWith('你'),mode+' real engine commit');
   }
-  checks.push('all 60 mouse releases dispatch once; shared IDs remain independent');
-  const ni = data.demo.examples.find(e => e.id === 'ni3');
-  for (const id of ni.ids) await page.locator(`[data-id="${id}"]`).click();
-  assert(await page.locator('.candidate').count() === ni.candidates.length, 'manual composition candidates');
-  await page.locator('#backspace').click();
-  assert(await page.locator('.candidate').count() === 0, 'backspace recomputes candidates');
-  await page.locator(`[data-id="${ni.ids.at(-1)}"]`).click();
-  await page.keyboard.press('Shift+Digit2');
-  assert(await page.locator('.candidate[aria-pressed="true"]').getAttribute('data-candidate-id') === ni.candidates[1].id, 'Shift ordinal selects');
-  assert(await page.locator('#committed').innerText() === '等待第一次确认', 'selection does not commit');
-  await page.keyboard.press('Enter');
-  assert(await page.locator('#committed').innerText() === ni.candidates[1].text, 'explicit confirm');
-  await page.keyboard.press('Backspace');
-  assert(await page.locator('#committed').innerText() === ni.candidates[1].text, 'empty backspace preserves committed text');
-  await page.locator('[data-example-id="ni3"]').click();
-  await page.keyboard.press('1');
-  assert(await page.locator('#code').innerText() === ni.code + '1', 'bare digit composes while candidates visible');
-  assert(await page.locator('#confirm').isDisabled(), 'unmatched composition cannot confirm');
-  checks.push('manual composition, backspace, Shift selection, explicit confirmation, bare digits');
-  await page.locator('[data-example-id="shi4"]').click();
-  assert(await page.locator('.candidate').count() === 9, 'first candidate page');
-  await page.locator('#next').click();
-  assert(await page.locator('.candidate').count() === 4, 'second candidate page');
-  const selected = await page.locator('.candidate').nth(2).getAttribute('data-candidate-id');
-  await page.locator('.candidate').nth(2).click();
-  assert(await page.evaluate(() => document.activeElement.id) === 'keyboard', 'candidate restores keyboard focus');
-  await page.keyboard.press('Enter');
-  const shi = data.demo.examples.find(e => e.id === 'shi4');
-  assert((await page.locator('#committed').innerText()).endsWith(shi.candidates.find(c => c.id === selected).text), 'page candidate commit');
-  checks.push('13-candidate pagination, tap selects only, focus retained');
-  const box = await page.locator('[data-id="N01"]').boundingBox();
-  await page.mouse.move(box.x + box.width/2,box.y + box.height/2);
-  await page.mouse.down();
-  await page.mouse.move(box.x + box.width + 12,box.y + box.height/2);
-  await page.mouse.move(box.x + box.width/2,box.y + box.height/2);
-  await page.mouse.up();
-  assert(await page.locator('#code').innerText() === '—', 'drag outside then return must cancel');
-  await page.locator('[data-id="N01"]').focus();
-  await page.keyboard.press('Space');
-  assert(await page.locator('#code').innerText() === 'b', 'keyboard/AT activation once');
-  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
-  assert(await page.locator('#code').innerText() === '—', 'blur cancels unconfirmed composition');
-  checks.push('drag cancellation, keyboard activation, synthetic blur preserves confirmed text');
-  await page.locator('#drill').click();
-  for (const key of data.layout.keys) await page.locator(`[data-id="${key.id}"]`).click();
-  assert((await page.locator('#drill-status').innerText()).includes('已覆盖 60/60，总点按 60，重复 0'), '60-key coverage drill');
-  await page.locator('#target-drill').click();
-  const firstTarget = await page.locator('.sound-key.target').getAttribute('data-id');
-  const deliberateWrong = data.layout.keys.find(key => key.id !== firstTarget).id;
-  await page.locator(`[data-id="${deliberateWrong}"]`).click();
-  assert(await page.locator('.sound-key.target').getAttribute('data-id') === firstTarget, 'wrong key keeps the current target');
-  for (let i=0;i<60;i++) await page.locator('.sound-key.target').click();
-  assert((await page.locator('#drill-status').innerText()).includes('已完成 60/60 个目标，总点按 61，错键 1'), 'prompted target drill');
-  await page.locator('[data-id="N01"]').click();
-  await clear();
-  const downloadEvent = page.waitForEvent('download');
-  await page.locator('#export').click();
-  const download = await downloadEvent;
-  const reportStream = await download.createReadStream();
-  let reportText = '';
-  for await (const chunk of reportStream) reportText += chunk;
-  const report = JSON.parse(reportText);
-  await download.saveAs('output/playwright/touch-terminal-session.json');
-  assert(await download.failure() === null, 'JSON download succeeds');
-  assert(report.formatVersion === 3, 'baseline report v3');
-  assert(report.drills.length === 2, 'coverage and target drills retained');
-  assert(report.drills[0].unique === 60 && report.drills[0].duplicate === 0, 'coverage summary retained');
-  assert(report.drills[1].kind === 'prompted-targets-retry-until-correct' && report.drills[1].advanceOn === 'correct', 'target retry semantics retained');
-  assert(report.drills[1].correct === 60 && report.drills[1].wrong === 1 && report.drills[1].attempts === 61, 'target summary retained');
-  assert(report.touches.at(-1).id === 'N01' && report.touches.at(-1).drillKind === null && report.touches.at(-1).drillResult === null, 'post-drill input is not attributed to completed evidence');
-  assert(report.touches.some(touch => Number.isFinite(touch.pointer?.up?.keyLocal?.x)), 'pointer coordinates retained');
-  checks.push('separate coverage/target drills, pointer geometry and JSON v3 export');
-  await clear();
-  await page.locator('[data-example-id="ni3"]').click();
-  await page.screenshot({path:'output/playwright/touch-terminal-desktop.png',fullPage:true});
-
-  // Browser-emulated touch verifies pointer dispatch; it is not physical evidence.
-  const context = await page.context().browser().newContext({viewport:{width:800,height:1100},hasTouch:true,isMobile:true,deviceScaleFactor:1});
-  try {
-    const touchPage = await context.newPage();
-    touchPage.on('pageerror', error => errors.push(String(error)));
-    touchPage.on('request', request => { if (!request.url().startsWith(base + '/')) external.push(request.url()); });
-    await touchPage.goto(base);
-    await touchPage.locator('.sound-key').last().waitFor();
-    await touchPage.locator('[data-id="N26"]').tap();
-    assert((await touchPage.locator('#composition').innerText()).startsWith('N26 '), 'touch preserves shared ID');
-    assert(await touchPage.locator('#code').innerText() === "'", 'touch release no duplicate');
-    await touchPage.locator('#clear').tap();
-    await touchPage.locator('[data-id="N01"]').scrollIntoViewIfNeeded();
-    const touchBox = await touchPage.locator('[data-id="N01"]').boundingBox();
-    const cdp = await context.newCDPSession(touchPage);
-    await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:touchBox.x+20,y:touchBox.y+25}]});
-    await cdp.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});
-    assert(await touchPage.locator('#code').innerText() === '—', 'touchCancel does not input');
-    checks.push('emulated touch tap exactly once and CDP touchCancel');
-    await touchPage.setViewportSize({width:390,height:844});
-    await touchPage.locator('[data-id="N01"]').scrollIntoViewIfNeeded();
-    const b = await touchPage.locator('[data-id="N03"]').boundingBox();
-    const scrollBefore = await touchPage.locator('.keyboard-scroll').evaluate(el => el.scrollLeft);
-    await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:b.x+b.width/2,y:b.y+b.height/2}]});
-    for (const offset of [30,70,110]) await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:b.x+b.width/2-offset,y:b.y+b.height/2}]});
-    await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
-    await touchPage.waitForFunction(old => document.querySelector('.keyboard-scroll').scrollLeft > old,scrollBefore);
-    assert(await touchPage.locator('#code').innerText() === '—', 'touch scroll cancels key activation');
-    assert(await touchPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'narrow page has no document-wide overflow');
-    await touchPage.screenshot({path:'output/playwright/touch-terminal-narrow.png',fullPage:true});
-    checks.push('390px emulated touch scroll, cancellation, no page overflow');
-  } finally { await context.close(); }
-  assert(errors.length === 0, `browser errors: ${errors.join('; ')}`);
-  assert(external.length === 0, `unexpected external requests: ${external.join('; ')}`);
-  return {ok:true,checks,errors,external,hardwareAcceptance:false};
+  await page.locator('#code-mode').selectOption('variable');await page.waitForFunction(()=>!document.querySelector('#code-mode').disabled);
+  await page.locator('#keyboard').focus();await page.keyboard.type('ni');await waitCode('ni');
+  let before=await text();await setInput(true);await setLayout(true);await tap(pathFor('q',true));await waitText(before+'q');await waitCode('ni');
+  await setInput(false);const candidate=await page.locator('.candidate span:last-child').first().innerText();
+  before=await text();await tap(pathFor('1'));await waitText(before+candidate);await waitCode('');
+  checks.push('75 semantic layer paths;three real engine modes;paused Chinese survives layouts;main digit selects current candidate');
+  // Optional entrances cannot alter an ID-bearing key, and preserve pending code.
+  const entrance=find(k=>k.shiftAction?.literalEntry&&k.shiftAction.ascii==='!');
+  await tap({key:entrance,shifted:true});await waitCode('!');await clear();
+  await page.locator('#literal-entries').click();
+  await page.locator('#keyboard').focus();await page.keyboard.type('ni');await waitCode('ni');
+  before=await text();await tap({key:entrance,shifted:true});await waitText(before+'！');await waitCode('ni');await clear();
+  before=await text();
+  for(const char of '——······')await tap(pathFor(char));
+  await waitText(before+'——……');
+  await page.locator('#literal-entries').click();
+  checks.push('32 reserved literal entrances toggle;coding layers protected;Chinese punctuation and explicit dash/ellipsis consolidation');
+  const left=find(k=>k.zone==='left'&&k.action.type==='toggle-number'),right=find(k=>k.zone==='right'&&k.action.type==='toggle-number');
+  await button(left).click();assert(await button(left).getAttribute('aria-pressed')==='false'&&await button(right).getAttribute('aria-pressed')==='true','independent Num Lock');
+  before=await text();await button(find(k=>k.zone==='left'&&k.action.ascii==='5')).click();assert(await text()===before,'edit5 noop');await button(left).click();
+  // Drag cancellation against actual rendered ISO missing corners.
+  for(const key of layout.keys.filter(k=>k.rectangles.length>1)){
+    await button(key).scrollIntoViewIfNeeded();const box=await button(key).boundingBox();
+    const shape=await page.evaluate(async k=>(await import('./geometry.mjs')).keyShape(k),key);
+    const points=[];
+    for(const x of [.05,.5,.95])for(const y of [.05,.5,.95]){
+      const ux=shape.left+x*shape.width,uy=shape.top+y*shape.height;
+      points.push({x,y,inside:shape.rectangles.some(r=>ux>=r.x&&ux<r.x+r.width&&uy>=r.y&&uy<r.y+r.height)});
+    }
+    const inside=points.find(p=>p.inside),hole=points.find(p=>!p.inside);assert(inside&&hole,'ISO has actual missing corner');
+    before=await text();await page.mouse.move(box.x+box.width*inside.x,box.y+box.height*inside.y);await page.mouse.down();
+    await page.mouse.move(box.x+box.width*hole.x,box.y+box.height*hole.y);await page.mouse.up();assert(await text()===before,'ISO notch drag cancels');
+  }
+  await clear();await page.locator('#drill').click();for(const key of layout.keys)await button(key).click();
+  assert((await page.locator('#drill-status').innerText()).includes('134/134'),'CN134 coverage');
+  await setInput(true);await setLayout(true);await page.locator('#drill').click();for(const key of layout.keys.filter(k=>!k.english.disabled))await button(key).click();
+  assert((await page.locator('#drill-status').innerText()).includes('111/111'),'EN111 enabled coverage');
+  checks.push('independent Num Lock;edit5;ISO notch cancellation;CN134 and EN111 enabled-key drills');
+  // CDP produces browser touch events, not real fingers or hardware acceptance.
+  const cdp=await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:10});
+  const centre=async key=>{await button(key).scrollIntoViewIfNeeded();const box=await button(key).boundingBox();return{x:box.x+box.width/2,y:box.y+box.height/2};};
+  const p1={id:1,...await centre(shift)},p2={id:2,...await centre(first.key)};
+  before=await text();
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[p1]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[p1,p2]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[p2]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await waitText(before+'Q');
+  assert(await button(shift).getAttribute('aria-pressed')==='false','held Shift consumed without latching');
+  await button(shift).click();await setLayout(false);
+  assert(await button(shift).getAttribute('aria-pressed')==='false','layout change clears one-shot Shift');
+  await setLayout(true);await tap(first);await waitText(before+'Qq');
+  await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:false});await cdp.detach();
+  checks.push('browser-simulated two-finger Shift release ordering;layout boundary clears Shift');
+  const downloading=page.waitForEvent('download');await page.locator('#export').click();const download=await downloading;
+  let reportText='';for await(const chunk of await download.createReadStream())reportText+=chunk;
+  const report=JSON.parse(reportText);assert(report.formatVersion===6&&report.touchTemplateId===layout.touchTemplateId,'report layout provenance');
+  assert(report.layoutSwitchHandlerToFrameMs.length>=200,'layout timing samples');
+  assert(report.hardwareAcceptance===false,'automation is not physical acceptance');
+  const samples=report.layoutSwitchHandlerToFrameMs.slice(2,202).sort((a,b)=>a-b),p=q=>samples[Math.ceil(samples.length*q)-1];
+  await page.reload();await page.locator('#connection.connected').waitFor();await setInput(true);assert(await button(toggle).getAttribute('aria-pressed')==='true','preference persists on reload');
+  await page.setViewportSize({width:390,height:900});await page.screenshot({path:'output/playwright/concept-134-narrow.png',fullPage:true});
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'narrow page does not overflow horizontally');
+  assert(errors.length===0&&external.length===0,'no page errors or external requests');
+  return {passed:true,checks,errors,external,layoutId:layout.layoutId,touchTemplateId:layout.touchTemplateId,
+    layoutSwitch:{samples:samples.length,p50:p(.5),p95:p(.95),max:samples.at(-1),metric:'handler-to-requestAnimationFrame;not end-to-end touch'},
+    hardwareAcceptance:false};
 }

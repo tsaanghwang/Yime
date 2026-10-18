@@ -31,7 +31,7 @@ class ServerBoundaryTest(unittest.TestCase):
     def test_loopback_static_content_and_no_external_script_policy(self):
         status, headers, body = self.request('/')
         self.assertEqual(status, 200)
-        self.assertIn(b'60', body)
+        self.assertIn(b'KEYBOARD LAB', body)
         self.assertIn("connect-src 'self'", headers['Content-Security-Policy'])
         status, headers, _ = self.request('/app.mjs')
         self.assertEqual(status, 200)

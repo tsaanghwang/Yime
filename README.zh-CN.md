@@ -1,5 +1,11 @@
 # 音元输入法 Windows 版
 
+> 本分支用于新 ASCII 实体键盘布局实验。参见
+> [实施计划](docs/project/ASCII_PHYSICAL_LAYOUT_PLAN.md)和
+> [可运行键盘实验](prototypes/touch-terminal/README.md)。
+> 新布局尚未晋升为生产安装包目标；不得混用旧生产词典与新投影，
+> 也不得绕过生产身份校验安装。
+
 > 2026-10-18: The dated status below is a historical delivery snapshot. See [workspace reconciliation](docs/project/WORKSPACE_RECONCILIATION_2026-10-18.md) for the later registration fix and preserved evidence.
 
 **音元拼音（Yime）**将有来源的拼音音节经正式音节分析映射为音元编码，提供变长、等长和省键三种输入模式。

@@ -1,64 +1,73 @@
-# Yime 音元触摸终端原型
+# Yime 134 键双布局虚拟样机
 
-本目录提供一个完全在浏览器内运行的交互原型：60 个稳定音元 ID 各有独立按键，支持从 Keyboard Layout Editor（KLE）严格 JSON 导入触摸几何、组合预览、退格、清空、候选选择/翻页、明确确认、实屏环境记录和点按基线。鼠标、键盘、浏览器模拟触摸继续验证软件行为；已连接触摸屏上的真实手指数据必须单独标记，不能由自动化结果替代。
+影响范围：隔离的 ASCII 概念键盘实验，分支 `codex/ascii-physical-layout-experiment`。
+候选来自真实 Go YimeCore 的实验词典，提交只进入本页文本框。
 
-影响范围：**共享源数据 / 隔离原型**。没有修改 Go、Broker、TSF、安装器或规范布局；没有连接已安装输入法、命名管道、用户词库或学习库。确认只写到当前页面内存，刷新会重置全部预览和记录。本目录不进入输入法安装包。
+## 当前盘面与输入
 
-## 本地运行
+- CN 来源：`design/yime-cn-134k-24u-keyboard-layout.json`；EN 来源：
+  `design/yime-en-134k-24u-keyboard-layout.json`。两者均为 134 键，
+  24.75 × 7.25 KLE u，位置、尺寸和 ISO 矩形并集完全相同。
+- `CN EN` 同时切换输入语言与标点模式。切到英文时保留、暂停中文组合，回中文可继续。
+- 英文模式下 `Layout` 在原盘面与标准英文盘面之间切换，记住选择；回中文显示 CN，
+  再进入英文恢复上次选择。选择也保存在本浏览器的 localStorage。
+- EN 字母下档为小写，上档为大写。新增的 23 个空白键暂时禁用；图标系统键继续仅示意。
+  禁用状态是生成数据中的明确字段，与 `#d0b2e2` 颜色无关。
+- 切换复用键节点及图例节点，只更新图例、动作和启用状态；不读取布局文件、不重建会话、
+  不改变颜色。当前保留 CN 草案的底色；两套设计定型后再统一修改颜色。
+- 主区数字 1–9 有候选时选择当前页对应项，无候选时直输；非空页缺少该序号则无操作。
+  侧数字区直输 ASCII 数字和运算符，不编码、不选词、不转换标点。左右 Num Lock 独立，
+  编辑态 5 无操作。该实验例外不改变正式产品的 Shift+1–9 规则。
+- 虚拟 Shift 可点按一次或按住再点另一键；按下时捕获字符层。切换布局会取消未完成触点、
+  清除 Shift；ANSI 兼容通道始终按 event.key 输入，不随虚拟盘面再映射。
+- 75 个输入 ID 全部启用。M25/M26/M27 的编码分别是 B/M/P；R01–R03 仍复用 M22–M24。
+  大小写与音元编码保持区分，Caps Lock 仅示意。
+- 软件的“字面符号入口”开关默认关闭。关闭时预留 ASCII 标点入口按普通编码规则处理；
+  开启时仅不带 ID 的 32 种预留标点入口直输，按当前标点模式输出，保留中文组合。
+  带 ID 的编码入口不受此开关影响。六个明确的 Unicode 符号入口为 ·、—×√÷。
+  连续两个字面 — 得到 ——，连续三个字面 · 得到 …，六次得到 ……；只合并同一光标位置的连续显式符号提交。
 
-在仓库根目录执行（已有 Python 即可，无 npm 安装或前端构建）：
+## 运行与检查
 
-```text
-python -X utf8 prototypes/touch-terminal/serve.py
-```
-
-打开 [本地原型](http://127.0.0.1:8765)。端口占用时可加 `--port 8766`；按 Ctrl+C 关闭。服务只监听 `127.0.0.1`、只提供本目录静态文件，不提供写入 API、目录浏览或仓库根目录访问。直接双击 HTML 不适用，因为浏览器需要通过 HTTP 加载模块和数据。加载后输入处理不访问网络。
-
-建议首先按页面引导点 `N08 → M03 → M03 → M03`，得到“你”的固定候选；点候选只是高亮，再点“确认”。右侧“载入”可直接重放三组有来源的音元序列；“是”的样例含 13 个候选，可试第二页。
-
-- 60 键的位置、尺寸、顺序和颜色来自 `design/touch-terminal-60.kle.json`；初始模板按 N01–N27、M01–M33 排列为 10×6。KLE 几何不是新物理键盘编码。键面语义仍使用已有教学标签、稳定音元 ID 和原物理键提示，不要求安装私有字体。
-- 同一键内抬起才输入；拖出再返回、系统取消、失焦均不输入未完成触摸。窄窗口支持在键区横向滑动，仍保留完整 60 键。
-- 点击键盘/载入样例后，原物理键也可输入。裸数字始终组合；`Shift+1`…`Shift+9` 选择候选，`Enter` 明确确认，`Backspace` 退格，`Escape` 清空，`PageUp/Down` 翻页。Tab 焦点落在单个音元键时，Space/Enter 使用普通按钮激活语义。
-- N12/N26、N25/N27 共享现有物理投影，但独立触摸 ID 不合并。物理键快捷输入采用主 ID N12/N25并提示；要表达另一个 ID，应点击独立触摸键。
-- 候选只覆盖三个规范全码样例，不是完整输入引擎。任意组合可以预览；没有样例候选时确认禁用，不自动提交编码。没有改变三种输入模式、语流别名或候选分页所有权。
-- 实屏点按先做“任意顺序覆盖全部 60 键”，再另做互质步长的随机目标准确度；两轮分开统计，避免把自然逐键覆盖误报成 60 次错键。随机目标只有正确命中才推进，错键和取消保留当前目标供重试，避免一次失误造成连锁错判。格式 3 导出 JSON 标记实际 `pointerType`、浏览器触点坐标/接触面积、键内归一化位置、按住时间、命中/重复/错键/取消、KLE 模板、屏幕环境、尺寸假设和前端计时。记录只在内存，用户点“导出”才下载；不是学习数据。事件记录保留最近 100 条、触摸与计时各最近 1000 条。会话达到协议上限后刷新重新开始。
-
-## 数据如何追溯
-
-`generate_data.py` 复用仓库现有布局解析/校验链，并合并 KLE 触摸几何：
-
-1. KLE 模板只拥有触摸位置、矩形尺寸、顺序、颜色和 legend；每键必须有且只有一个精确的 Nxx/Mxx ID。严格解析器拒绝缺失、重复、未知、重叠、负坐标和当前渲染器不支持的旋转/异形属性。
-2. 唯一桌面键位源 `internal_data/manual_key_layout.json` → 已有受控共享映射 → 核对已生成的 `yime_yinyuan_layout.json`。KLE 不定义第二套 ID 到 ASCII/物理键映射。
-3. 标签和分组来自现有 `trainer/yinyuan_catalog.json`、`yinyuan_groups.json`；符号来自 `key_to_symbol.json`。60 ID 对应 58 个大小写敏感投影。`layoutId` 标识桌面投影，独立的 `touchTemplateId` 标识 KLE 几何。
-4. 样例四音元 ID 来自 `internal_data/yime_syllable_decomposition.tsv` 的规范分解，再投影为全码；候选另以 `hanzi_pinyin/pinyin.txt` 和 `yime_full.dict.yaml` 核对。绝不从词典键码反推音元，也不手填音元编码来修复词典。
-
-两个生成 JSON 内含来源相对路径、SHA-256，样例还含来源行号。文本摘要统一使用 **UTF-8、LF、无 BOM**（`hashMode=utf8-lf-no-bom`），可跨 CRLF/LF checkout 重现。源数据变化后执行下列命令重新生成；生成数据不是第二份可编辑布局源：
+在本实验分支根目录执行：
 
 ```text
+python -X utf8 tools/generate_ascii_layout.py
 python -X utf8 prototypes/touch-terminal/generate_data.py
-python -X utf8 prototypes/touch-terminal/generate_data.py --check
+python -X utf8 tools/build_ascii_keyboard_experiment.py --source-database C:/YimeData/runtime-input-v1/pinyin_hanzi.db --output-dir .generated/ascii-keyboard-134
+go -C go-backend run ./cmd/yime-keyboard-lab --root .. --port 8766
 ```
 
-KLE 编辑、下载和导入边界见 [KLE 工作流](KLE.md)。可先对任意下载文件执行 `python -X utf8 prototypes/touch-terminal/kle_layout.py <file.json>`，验证器不会写入仓库或安装目录。
-
-## 可重复验证
-
-仓库 Python 3.14、Node.js 24 已验证；运行以下一条命令可执行不依赖浏览器的本地检查：
+打开 <http://127.0.0.1:8766/>。Python 只用于离线生成；运行输入由 Go 引擎负责。
+完整词典从已授权、内容锁定的独立数据库重投影，不读取其他 Git 仓库，不替代生产词库。
+75 个 ID 的唯一可编辑编码投影仍是 `prototypes/touch-terminal/encoding/manual_key_layout.json`；
+导入器核对 KLE 标注，不会反向覆盖投影。生成盘面与 Go 索引均核对布局摘要和词典 SHA-256。
 
 ```text
+python -X utf8 tools/generate_ascii_layout.py --check
 python -X utf8 prototypes/touch-terminal/validate.py
+python -X utf8 -m pytest tests/yime/test_ascii_layout.py tests/tools/test_resolve_manual_key_layout.py tools/test_ascii_keyboard_overlays.py -q
+go -C go-backend test ./cmd/yime-keyboard-lab ./input_methods/yime/codemode ./input_methods/yime/systemlexicon
 ```
 
-涵盖 KLE 严格 JSON、60 ID 完整唯一、矩形几何、源摘要/生成漂移、共享键、非法投影拒绝、样例来源、严格事件/幂等/陈旧候选、确认边界、会话上限、屏幕几何模型、静态服务目录隔离与 JS 语法。独立 CI 工作流 `touch-terminal.yml` 重复同一入口，不运行安装、实屏或宿主测试。
+真实完整词典的 HTTP 验证使用 `-keyboard-lab-integration-root` 指定本 checkout 的绝对路径。
+浏览器回归为 `browser-smoke.js`，必须连接当前 Go 服务。软件证据见 [本轮交接](HANDOFF.md)。
 
-浏览器复验使用 Playwright CLI 0.1.21。先启动上述服务器，在仓库根目录执行；首次 npx 会下载测试工具，需要网络及本机 Chrome。运行页面本身不需要这些依赖：
+## 实屏记录
 
-```text
-npx --yes --package @playwright/cli@0.1.21 playwright-cli -s=yime-touch open http://127.0.0.1:8765 --headed
-npx --yes --package @playwright/cli@0.1.21 playwright-cli -s=yime-touch run-code --filename=prototypes/touch-terminal/browser-smoke.js
-npx --yes --package @playwright/cli@0.1.21 playwright-cli -s=yime-touch close
-```
+触摸屏已由用户确认到位。可分别在 CN 盘面覆盖 134 键、EN 盘面覆盖 111 个启用键，
+并检查双指 Shift、快速切换后的首键、拖出取消以及连续中英文输入。
+导出格式 6 记录盘面身份、英文偏好、字面入口状态、触点和切换计时。
+“布局切换 → 下一帧”是浏览器处理至 requestAnimationFrame 的代理指标，
+不是手指接触到屏幕发光的端到端延迟。
 
-脚本逐个检查 60 键，验证 KLE 几何、数字/Shift候选、拖出取消、确认/退格、13 候选翻页、焦点返回、全键覆盖与随机目标准确度两轮、格式 3 JSON 及指针几何，并在浏览器模拟触摸模式下验证 tap、`touchCancel` 和 390px 窗口横滚。截图和导出写入忽略目录 `output/playwright/`；CLI 临时状态位于 `.playwright-cli/`。这些窄视口是浏览器响应式测试，不新增手机/其他硬件目标。现有 Go 与原生 Rime 行为没有变化，因此本次不运行安装、真实 Rime 或注册宿主验收。
+鼠标、CDP 模拟触摸、真人手指/触控笔分别记录。自动化导出始终标为
+`hardwareAcceptance:false`，真人试用结论须依据实际设备与用户确认补充。
+本轮不安装输入法、不更改系统默认输入法、不注入全局按键或读取个人学习数据。
 
-[KLE 模板工作流](KLE.md) · [本轮验证记录](VALIDATION.md) · [最小事件协议与 Go/Broker 适配设计](PROTOCOL.md) · [硬件尺寸、误触和延迟说明](HARDWARE.md)
+## 历史
+
+`design/keyboard-layout.json` 等 132/134 草案保留为历史设计；当前运行只使用上述两份已选定文件。
+既有 60/129/138 键测试和旧 `.generated/ascii-keyboard*` 目录保留自己的日期与范围，
+不作为当前 134 键真人触屏验收。检查不一致的原始积压状态见
+[基线保存说明](CHECKPOINT_2026-10-18.md)。
