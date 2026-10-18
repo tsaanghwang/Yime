@@ -64,7 +64,9 @@ func (e *keyboardEngine) DirectLiteral(text string) engineapi.Result {
 
 // DirectSymbol is a reviewed main-key literal entrance, preserving composition.
 func (e *keyboardEngine) DirectSymbol(text string) engineapi.Result {
-	return engineapi.Result{State: e.state, Commit: e.punctuation(text, true)}
+	commit := e.punctuation(text, true)
+	e.refreshLiteralDisplay()
+	return engineapi.Result{State: e.state, Commit: commit}
 }
 
 func (e *keyboardEngine) Reset() engineapi.Result {

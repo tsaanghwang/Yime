@@ -17,7 +17,7 @@ installed products' Shift+1–9 policy. No installer or registered host was run.
 Checks: 21 Python prototype tests; 40 JavaScript tests; 34 projection/tool/syllable-audit/Rime-export tests passed; one pre-existing
 omission-audit test skipped because its separate unified source_lexicon.sqlite3
 is unavailable (no source-boundary fallback was added);
-Go keyboard-lab/codemode/systemlexicon tests; all 1,737 canonical semantic
+Go keyboard-lab/codemode/systemlexicon tests (including explicit-symbol retry and pending-quote preview refresh); all 1,737 canonical semantic
 syllables and 135 derived-contraction fixtures; complete 2,457,474-reading source
 projection and three-mode dictionaries; full-corpus-index HTTP checks for
 source-ID-derived 你/好, paging and all coding-symbol candidates. The corpus

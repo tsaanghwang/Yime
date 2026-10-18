@@ -215,3 +215,25 @@ func TestExplicitSymbolEntrancesPreserveCompositionAndRetry(t *testing.T) {
 		}
 	}
 }
+
+func TestExplicitSymbolRefreshesPendingQuoteCandidate(t *testing.T) {
+	a := testLab(t)
+	s := event(t, a, openSession(t, a, "variable"), "quote-input", "input", "'")
+	s = setModes(t, a, s, "zh", "chinese", "chinese")
+	before := s.State
+	id := before.Candidates[0].ID
+	if before.Candidates[0].Text != "‘" {
+		t.Fatal("opening quote preview")
+	}
+	s = event(t, a, s, "explicit-quote", "symbol", "'")
+	if s.Commit != "‘" || s.State.RawInput != "'" || s.State.Candidates[0].ID != id || s.State.Candidates[0].Text != "’" {
+		t.Fatalf("explicit quote left a stale pending preview: %+v", s)
+	}
+	if before.Candidates[0].Text != "‘" {
+		t.Fatal("historical response mutated")
+	}
+	s = event(t, a, s, "choose-refreshed", "input", "1")
+	if s.Commit != "’" || s.State.RawInput != "" {
+		t.Fatalf("preview and commit diverged: %+v", s)
+	}
+}
