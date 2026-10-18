@@ -1,0 +1,42 @@
+name: Touch terminal prototype
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, 'codex/**']
+    paths:
+      - 'prototypes/touch-terminal/**'
+      - '.github/workflows/touch-terminal.yml'
+      - 'internal_data/**'
+      - 'go-backend/input_methods/yime/data/**'
+      - 'tools/resolve_manual_key_layout.py'
+      - 'yime/utils/yinyuan_id_chain.py'
+      - 'syllable/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'prototypes/touch-terminal/**'
+      - '.github/workflows/touch-terminal.yml'
+      - 'internal_data/**'
+      - 'go-backend/input_methods/yime/data/**'
+      - 'tools/resolve_manual_key_layout.py'
+      - 'yime/utils/yinyuan_id_chain.py'
+      - 'syllable/**'
+
+permissions:
+  contents: read
+
+jobs:
+  offline-prototype:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Validate isolated source data and interaction contracts
+        run: python -X utf8 prototypes/touch-terminal/validate.py

@@ -1,7 +1,15 @@
 {
   "schema_version": "yime-current-readiness-delivery-evidence-index-v1",
   "source_commit": "0ab8631266736775bf1386f456d4a1d53e8e2eb3",
-  "raw_bytes_preserved": true,
+  "raw_bytes_preserved": false,
+  "sanitization": {
+    "scope": "public repository copy",
+    "removed": [
+      "initiating user SID",
+      "user-specific registry snapshot hashes"
+    ],
+    "unsanitized_copy": "not tracked"
+  },
   "files": [
     {
       "path": "raw/BUILD-PROVENANCE.json",
@@ -40,8 +48,8 @@
     },
     {
       "path": "raw/protection-final.json",
-      "bytes": 2975,
-      "sha256": "44bcd740b554e6101a48f1744b607df54d261deebd9314d0be591c11167ab04d"
+      "bytes": 1961,
+      "sha256": "705aa4fbd382233ffa565085cfcdc2e1e8b3605956440fada79d6a1c8611248c"
     },
     {
       "path": "raw/protection-final.log",
@@ -170,13 +178,13 @@
     },
     {
       "path": "raw/speech-admission/installed-after.json",
-      "bytes": 2975,
-      "sha256": "44bcd740b554e6101a48f1744b607df54d261deebd9314d0be591c11167ab04d"
+      "bytes": 1961,
+      "sha256": "705aa4fbd382233ffa565085cfcdc2e1e8b3605956440fada79d6a1c8611248c"
     },
     {
       "path": "raw/speech-admission/installed-before.json",
-      "bytes": 2975,
-      "sha256": "44bcd740b554e6101a48f1744b607df54d261deebd9314d0be591c11167ab04d"
+      "bytes": 1961,
+      "sha256": "705aa4fbd382233ffa565085cfcdc2e1e8b3605956440fada79d6a1c8611248c"
     },
     {
       "path": "raw/speech-admission/legacy-static-after.json",
@@ -350,13 +358,13 @@
     },
     {
       "path": "raw/yimecore-build/protection-after.json",
-      "bytes": 2975,
-      "sha256": "44bcd740b554e6101a48f1744b607df54d261deebd9314d0be591c11167ab04d"
+      "bytes": 1961,
+      "sha256": "705aa4fbd382233ffa565085cfcdc2e1e8b3605956440fada79d6a1c8611248c"
     },
     {
       "path": "raw/yimecore-build/protection-before.json",
-      "bytes": 2975,
-      "sha256": "44bcd740b554e6101a48f1744b607df54d261deebd9314d0be591c11167ab04d"
+      "bytes": 1961,
+      "sha256": "705aa4fbd382233ffa565085cfcdc2e1e8b3605956440fada79d6a1c8611248c"
     },
     {
       "path": "raw/yimecore-build/rebuild-full.json",
