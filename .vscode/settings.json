@@ -1,6 +1,7 @@
 {
     "files.exclude": {
         "**/.vs": true,
+        "**/.tmp": true,
         "**/build": true,
         "**/build64": true,
         "**/build_arm64": true,
@@ -10,6 +11,7 @@
         "**/.git/objects/**": true,
         "**/.git/subtree-cache/**": true,
         "**/.vs/**": true,
+        "**/.tmp/**": true,
         "**/build/**": true,
         "**/build64/**": true,
         "**/build_arm64/**": true,
@@ -22,6 +24,7 @@
     },
     "search.exclude": {
         "**/.vs": true,
+        "**/.tmp": true,
         "**/build": true,
         "**/build64": true,
         "**/build_arm64": true,
@@ -43,6 +46,7 @@
     "cmake.generator": "Visual Studio 17 2022",
     "cmake.sourceDirectory": "${workspaceFolder}",
     "cmake.buildDirectory": "${workspaceFolder}/build64",
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
     "terminal.integrated.env.windows": {
         "PATH": "${env:PATH};C:\\Program Files (x86)\\NSIS"
     },

@@ -7,6 +7,8 @@
 > Do not combine old packaged dictionaries with the new projection or bypass
 > production identity checks to install it.
 
+> 2026-10-18: The dated status below is a historical delivery snapshot. See [workspace reconciliation](docs/project/WORKSPACE_RECONCILIATION_2026-10-18.md) for the later registration fix and preserved evidence.
+
 **Yime (音元拼音)** maps attested Pinyin syllables through a formal syllable encoder into Yinyuan input codes. It provides variable, full and shorthand modes derived from the same canonical records and keyboard layout.
 
 [简体中文](README.zh-CN.md) · [Documentation](docs/README.md) · [Project status](docs/YIME_PROJECT_ASSESSMENT.md) · [Roadmap](docs/YIME_DEVELOPMENT_ROADMAP.md)
@@ -22,13 +24,14 @@ Install either product or both. Each owns its installation directory, runtime en
 
 ## Current status
 
-Reviewed on September 16, 2026 against `main` at `76376080`:
+Reviewed on September 27, 2026: runtime source `0ab86312` (main after PR #62), delivery record `448245ff`:
 
 - `installer/simple/` supports installing, uninstalling and reinstalling either or both products, with explicit test-data reset.
-- The rebuilt source candidate completed acceptance within the reported scope on the development and test PCs. Both products worked in Codex and Notepad before and after reboot on the test PC; Word was not reported. See [validation](installer/simple/VALIDATION.md).
-- PR #57 added package completeness checks and stopped destructive cleanup when profile removal fails. It is merged and CI passed; a complete package containing these fixes has not yet been delivered. The previous ZIP is not acceptance evidence for the latest source.
+- The September 19 development package passed both-product input checks in Word x64 and Notepad++ x86 before and after reboot on the development PC. The September 14 test-PC results cover Codex and Notepad only; these are distinct package-specific records. See [development acceptance](docs/testing/simple-maintenance/2026-09-19/current-readiness/DEVELOPMENT.md) and [validation](installer/simple/VALIDATION.md).
+- The September 27 complete dual-product rebuild includes the installer and subsequent readiness fixes. Source/delivery CI, package integrity and isolated checks passed, and the development prerelease is published. This new package has not undergone live installation or input acceptance; there is no current test-PC installation task. See [delivery](docs/testing/simple-maintenance/2026-09-27/current-readiness-rebuild/DELIVERY.md).
+- The September 19 learned-score cache optimization passed E3 p95/p99 gates in all three modes on that development host. It does not supersede the historical i7-7820X failure or prove all-platform performance. The recurring first-registration `0x800700B7` conflict remains unexplained despite a successful retry.
 - The current general package targets x64 Windows and WOW64 applications. ARM64 remains a separate source experiment without a delivered complete installer or native-host acceptance.
-- Trusted signed distribution, outstanding YimeCore performance gates and production data migration remain unfinished. See [project status](docs/YIME_PROJECT_ASSESSMENT.md) for the exact boundaries.
+- Trusted signing and ARM64 native acceptance remain frozen without a production signing identity or an available ARM64 host. Final-release validation and production data migration remain unfinished. See [project status](docs/YIME_PROJECT_ASSESSMENT.md) for the exact boundaries.
 
 ## Install and use
 

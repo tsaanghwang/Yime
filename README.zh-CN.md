@@ -6,6 +6,8 @@
 > 新布局尚未晋升为生产安装包目标；不得混用旧生产词典与新投影，
 > 也不得绕过生产身份校验安装。
 
+> 2026-10-18: The dated status below is a historical delivery snapshot. See [workspace reconciliation](docs/project/WORKSPACE_RECONCILIATION_2026-10-18.md) for the later registration fix and preserved evidence.
+
 **音元拼音（Yime）**将有来源的拼音音节经正式音节分析映射为音元编码，提供变长、等长和省键三种输入模式。
 
 [English](README.md) · [文档导航](docs/README.md) · [项目现状](docs/YIME_PROJECT_ASSESSMENT.md) · [开发路线图](docs/YIME_DEVELOPMENT_ROADMAP.md)
@@ -21,13 +23,14 @@
 
 ## 当前进展
 
-截至 2026-09-16，核对主线 `76376080`：
+截至 2026-09-27，运行源码基线为 PR #62 合并后的 `0ab86312`，交付记录为 `448245ff`：
 
 - `installer/simple/` 已实现单套/双套安装、卸载、重装和显式测试数据重置。
-- 清理后源码候选包已完成开发机与“计算机”测试机所报告范围的验收；测试端两套产品在 Codex 和记事本重启前后输入正常，Word 未报告结果。见[验证记录](installer/simple/VALIDATION.md)。
-- PR #57 的包完整性与卸载失败处理修复已合入并通过 CI；包含该修复的新完整包尚未交付，旧 ZIP 不代表最新源码已完成实机验收。
+- 9 月 19 日开发包在开发机的 Word x64 与 Notepad++ x86 中，两套产品重启前后均通过输入检查；9 月 14 日测试机记录仅覆盖 Codex 与记事本。两者属于不同包的验收，见[开发验收](docs/testing/simple-maintenance/2026-09-19/current-readiness/DEVELOPMENT.md)和[验证记录](installer/simple/VALIDATION.md)。
+- 9 月 27 日完整双产品重建包已包含安装器及后续就绪修复，来源/交付记录 CI、包完整性及隔离检查通过，并已发布开发预发布；新包尚未实机安装或输入验收，当前测试端无安装任务。见[交付记录](docs/testing/simple-maintenance/2026-09-27/current-readiness-rebuild/DELIVERY.md)。
+- 9 月 19 日学习评分缓存优化后，三模式 E3 在当次开发机均通过 p95/p99 门槛；不改写旧 i7-7820X 失败记录，也不代表全平台性能通过。首次注册 `0x800700B7` 再次出现后重试成功，原因仍未定论。
 - 当前通用包面向 x64 Windows 与 WOW64 应用。ARM64 保持独立源码实验，尚无已交付的完整安装包和原生宿主验收。
-- 正式可信签名发行、YimeCore 尚未通过的性能门槛及生产数据迁移等工作仍未完成，见[项目现状](docs/YIME_PROJECT_ASSESSMENT.md)。
+- 缺少生产签名身份与可用 ARM64 机器，正式签名和 ARM64 实机门槛仍冻结；最终发行验收及生产数据迁移未完成，见[项目现状](docs/YIME_PROJECT_ASSESSMENT.md)。
 
 ## 安装与使用
 
