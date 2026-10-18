@@ -35,7 +35,7 @@ type conceptErhuaCase struct {
 // including competing texts; only code syllable spaces are flattened, as in
 // the Go index, for this table-translator fixture. The only synthetic records are explicitly named
 // ASCII transport probes, not invented pronunciations or Yinyuan encodings.
-func TestRealRimeASCIIConceptErhuaThreeModesAndRollback(t *testing.T) {
+func TestASCIIConceptErhuaThreeModesAndRollback(t *testing.T) {
 	if !*runASCIIConceptRime {
 		t.Skip("set -ascii-concept-rime to run the isolated 134-key real Rime test")
 	}

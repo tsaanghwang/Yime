@@ -83,7 +83,7 @@ python -X utf8 prototypes/touch-terminal/validate.py
 真实 Rime 回归从 `go-backend` 执行：
 
 ```text
-go test ./input_methods/yime -run TestRealRimeASCIIConceptErhuaThreeModesAndRollback -count=1 -v -args -ascii-concept-rime
+go test ./input_methods/yime -run TestASCIIConceptErhuaThreeModesAndRollback -count=1 -v -args -ascii-concept-rime
 go test ./cmd/yime-keyboard-lab -run TestCanonicalCorpusHTTP -v -args -keyboard-lab-integration-root C:/Users/tsaan/.codex/worktrees/ascii-keyboard-model/Yime
 ```
 

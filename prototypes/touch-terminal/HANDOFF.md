@@ -60,3 +60,5 @@ dictionary hashes exactly match the original 134-key evidence above. The
 running browser service and its existing dictionary data therefore remain valid.
 
 Local repair validation: complete Go package suite passed; Python tests: 420 passed, 15 environment/optional skips, 11,161 subtests passed; 41 offline lexicon unittests passed; prototype now has 23 Python and 40 JavaScript tests. Product target lock and repository data boundary both pass unchanged. Real-Rime and GitHub CI results are reported separately after completion.
+
+All production real-Rime cases passed locally (406.5 s). The first wrapper run then rejected shard coverage because the optional lab-only corpus test shared the automatic TestRealRime prefix and intentionally skipped without its external corpus flag. The optional test is now named TestASCIIConceptErhuaThreeModesAndRollback; the production shard selector and coverage verifier are unchanged.
