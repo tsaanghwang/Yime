@@ -1,0 +1,81 @@
+{
+    "recorded_at":  "2026-09-28T00:17:56.7161388+08:00",
+    "computer":  "MYCOMPUTER",
+    "elevated":  false,
+    "package_path":  "C:\\dev\\Yime-deliveries\\current-readiness-20260927-0ab86312\\Yime-Current-Readiness-20260927.zip",
+    "package_bytes":  256650784,
+    "package_sha256":  "45c4a0d93f8a40a4c26bebf934efb10c876f1305732c1e95a2e43547f2ddd341",
+    "registration_status":  [
+                                "tool_version=yime-text-service-registration-v2",
+                                "architecture_bits=64",
+                                "elevated=false",
+                                "clsid={E40FA752-BB96-461D-A51D-F40EB437EC65}",
+                                "profile_guid={126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                                "language_bar_guid={2C77A81E-41CC-4178-A3A7-5F8A987568E6}",
+                                "com_only_registration_supported=true",
+                                "profile_icon_registration_supported=true",
+                                "taskbar_category_registration_supported=true",
+                                "com_registered_current_view=true",
+                                "profile_registered=true",
+                                "categories_registered_count=5",
+                                "profile_query_hresult=0x0",
+                                "category_query_hresult=0x0",
+                                "mutation_performed=false"
+                            ],
+    "product_processes_and_hosts":  [
+                                        {
+                                            "id":  29212,
+                                            "name":  "PIMELauncher",
+                                            "path":  "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe",
+                                            "product_modules":  [
+                                                                    "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe"
+                                                                ]
+                                        },
+                                        {
+                                            "id":  29360,
+                                            "name":  "PIMELauncher",
+                                            "path":  "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe",
+                                            "product_modules":  [
+                                                                    "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe"
+                                                                ]
+                                        },
+                                        {
+                                            "id":  29648,
+                                            "name":  "YimeBroker",
+                                            "path":  "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+                                            "product_modules":  [
+                                                                    "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe"
+                                                                ]
+                                        },
+                                        {
+                                            "id":  29524,
+                                            "name":  "YimeCoreTrialRuntime",
+                                            "path":  "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+                                            "product_modules":  [
+                                                                    "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe"
+                                                                ]
+                                        }
+                                    ],
+    "enumeration_limit":  "Processes inaccessible to the current token may not be listed.",
+    "default_input_override":  {
+                                   "InputMethodTip":  "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+                                   "Description":  "简体中文(中国大陆) - 微软拼音"
+                               },
+    "languages":  [
+                      {
+                          "language_tag":  [
+                                               "zh-Hans-CN",
+                                               "en-US"
+                                           ],
+                          "input_method_tips":  [
+                                                    "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+                                                    "0804:{35F67E9D-A54D-4177-9697-8B0AB71A9E04}{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}",
+                                                    "0804:{E40FA752-BB96-461D-A51D-F40EB437EC65}{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+                                                    "0409:00000409"
+                                                ]
+                      }
+                  ],
+    "live_installation_performed":  false,
+    "default_input_changed":  false,
+    "user_data_reset":  false
+}
