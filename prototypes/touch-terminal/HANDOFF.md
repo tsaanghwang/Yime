@@ -36,3 +36,27 @@ measured on the now-available display. Automation is not hardware acceptance.
 Earlier checkpoint `56ed04b2` intentionally preserves the mismatched historical
 138-key runtime and later design drafts, with its failing geometry check noted.
 The current generation/tests must pass before using this 134-key handoff.
+
+## CI isolation repair
+
+Build runs 39089360667 and 39089358021 exposed experimental projection data in
+product-default paths. The fix preserves the CN/EN134 page and moves its sole
+editable layout to `encoding/manual_key_layout.json`, its generated sidecars
+to `encoding/`, and generated Go metadata to `go-backend/internal/asciicodemode/`.
+Product manual/projection/semantic records, locks, shared code-mode defaults and
+existing regression tests are restored to mainline. No lock is repinned and no
+CI job or assertion is disabled. Earlier experiment tools/checkpoints remain in
+Git history; they are not current instructions for modifying product paths.
+
+The lab copy of the code-mode algorithm is generated from the standard source;
+only its layout metadata is substituted. Offline Go dictionary compilers use an
+explicit `-overlay` for this one file in their own process. Product compilation,
+test execution and installed services never use this overlay. Semantic encoding
+still comes from the shared formal Pinyin -> four Yinyuan IDs pipeline.
+
+A complete independent rebuild into `.generated/ascii-keyboard-134-ci-fix`
+exports all 2,457,474 source readings and 131 reviewed erhua records. All three
+dictionary hashes exactly match the original 134-key evidence above. The
+running browser service and its existing dictionary data therefore remain valid.
+
+Local repair validation: complete Go package suite passed; Python tests: 420 passed, 15 environment/optional skips, 11,161 subtests passed; 41 offline lexicon unittests passed; prototype now has 23 Python and 40 JavaScript tests. Product target lock and repository data boundary both pass unchanged. Real-Rime and GitHub CI results are reported separately after completion.

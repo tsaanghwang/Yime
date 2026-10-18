@@ -40,7 +40,7 @@ go -C go-backend run ./cmd/yime-keyboard-lab --root .. --port 8766
 
 打开 <http://127.0.0.1:8766/>。Python 只用于离线生成；运行输入由 Go 引擎负责。
 完整词典从已授权、内容锁定的独立数据库重投影，不读取其他 Git 仓库，不替代生产词库。
-75 个 ID 的唯一可编辑编码投影仍是 `internal_data/manual_key_layout.json`；
+75 个 ID 的唯一可编辑编码投影仍是 `prototypes/touch-terminal/encoding/manual_key_layout.json`；
 导入器核对 KLE 标注，不会反向覆盖投影。生成盘面与 Go 索引均核对布局摘要和词典 SHA-256。
 
 ```text

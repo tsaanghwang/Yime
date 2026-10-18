@@ -4,7 +4,7 @@ import sqlite3
 
 import pytest
 
-from tools.build_two_level_runtime_trial import (
+from tools.ascii_keyboard.coverage import (
     _assert_character_boundary,
     active_character_boundary,
 )
@@ -28,7 +28,10 @@ def source_database(tmp_path):
     return path
 
 
-def test_disabled_reading_boundary_preserves_original_source_gate(tmp_path):
+def test_disabled_reading_boundary_preserves_original_source_gate(tmp_path, monkeypatch):
+    # An explicit synthetic disabled-layout fixture; the current 134-key board
+    # enables all canonical IDs and must not be changed by this test.
+    monkeypatch.setattr("tools.ascii_keyboard.coverage.load_disabled_yinyuan_ids", lambda root: {"M25"})
     policy = {
         "maximum_tier": 8,
         "expected_distinct_characters": 2,

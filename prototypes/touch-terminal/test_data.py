@@ -41,7 +41,7 @@ class GeneratedPhysicalDataTests(unittest.TestCase):
     def test_changed_ascii_annotation_fails_instead_of_becoming_a_second_source(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            for relative in ("internal_data/manual_key_layout.json", str(SOURCE.relative_to(ROOT)), str(ENGLISH_SOURCE.relative_to(ROOT)),
+            for relative in ("prototypes/touch-terminal/encoding/manual_key_layout.json", str(SOURCE.relative_to(ROOT)), str(ENGLISH_SOURCE.relative_to(ROOT)),
                              "docs/project/connected_speech/erhua_sound_key_projection.json"):
                 target = root / relative
                 target.parent.mkdir(parents=True, exist_ok=True)

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
+	"github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode"
 )
 
 func TestManifestRequiresCurrentLayoutAllModesAndDisabledIDs(t *testing.T) {

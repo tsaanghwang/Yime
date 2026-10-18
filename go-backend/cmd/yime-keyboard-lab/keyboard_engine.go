@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
+	"github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 )
 

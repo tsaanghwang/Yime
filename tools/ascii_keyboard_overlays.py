@@ -13,10 +13,20 @@ import shutil
 import subprocess
 
 
+def go_overlay(repo_root: Path, output: Path) -> Path:
+    path = output / "ascii-go-overlay.json"
+    output.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"Replace": {
+        str((repo_root / "go-backend/input_methods/yime/codemode/codemode.go").resolve()):
+        str((repo_root / "go-backend/internal/asciicodemode/codemode_generated.go").resolve())
+    }}), encoding="utf-8")
+    return path
+
+
 def prepare_inputs(repo_root: Path, output: Path) -> Path:
     from yime.canonical_yime_mapping import load_canonical_code_map
-    from yime.utils.syllable_decomposition_audit import export_syllable_decomposition_tsv
-    from yime.utils.yinyuan_id_chain import (
+    from tools.ascii_keyboard.syllable_audit import export_syllable_decomposition_tsv
+    from tools.ascii_keyboard.layout_chain import (
         load_erhua_key_class_to_layout_key, load_symbol_to_yinyuan_id,
         load_yinyuan_id_to_layout_key,
     )
@@ -30,7 +40,7 @@ def prepare_inputs(repo_root: Path, output: Path) -> Path:
         for pinyin, code in sorted(load_canonical_code_map(repo_root).items()):
             stream.write(pinyin + "\t" + "".join(mapping[symbols[c]] for c in code) + "\n")
     export_syllable_decomposition_tsv(output / "yime_syllable_decomposition.tsv")
-    shutil.copyfile(repo_root / "go-backend/input_methods/yime/data/yime_yinyuan_layout.json",
+    shutil.copyfile(repo_root / "prototypes/touch-terminal/encoding/yime_yinyuan_layout.json",
                     output / "yime_yinyuan_layout.json")
     source = repo_root / "docs/project/connected_speech/erhua_sound_key_projection.json"
     projection = json.loads(source.read_text(encoding="utf-8"))
@@ -45,7 +55,7 @@ def prepare_inputs(repo_root: Path, output: Path) -> Path:
             item["layout_key"] = classes[item["key_class_id"]]
             item["purpose"] = "Generated experimental carrier from manual_key_layout.json"
     projection["generated_from"] = [source.relative_to(repo_root).as_posix(),
-                                     "internal_data/manual_key_layout.json"]
+                                     "prototypes/touch-terminal/encoding/manual_key_layout.json"]
     path = output / "erhua_sound_key_projection.json"
     path.write_text(json.dumps(projection, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return path
@@ -125,7 +135,7 @@ def build_reviewed_overlays(repo_root: Path, data: Path, output: Path) -> dict:
     projection = prepare_inputs(repo_root, data)
     source_dir = repo_root / "docs/project/connected_speech"
     def run(command, *args):
-        subprocess.run(["go", "run", command, *map(str, args)],
+        subprocess.run(["go", "run", "-overlay", str(go_overlay(repo_root, output)), command, *map(str, args)],
                        cwd=repo_root / "go-backend", check=True)
 
     run("./cmd/yime-psc-peripheral-derive", "-repo-root", repo_root,

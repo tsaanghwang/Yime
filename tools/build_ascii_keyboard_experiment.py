@@ -24,11 +24,11 @@ if str(ROOT) not in sys.path:
 from yime.canonical_yime_mapping import load_canonical_code_map
 from yime.repository_boundary import assert_data_source_allowed
 from yime.utils.numeric_pinyin_code import resolve_canonical_code_from_numeric_pinyin
-from yime.utils.yinyuan_id_chain import (
+from tools.ascii_keyboard.layout_chain import (
     layout_projection_digest, load_disabled_yinyuan_ids,
     load_symbol_to_yinyuan_id, load_yinyuan_id_to_layout_key,
 )
-from tools.ascii_keyboard_overlays import build_reviewed_overlays
+from tools.ascii_keyboard_overlays import build_reviewed_overlays, go_overlay
 
 
 def sha256(path: Path) -> str:
@@ -94,7 +94,7 @@ def build(source_database: Path, output: Path, *, limit: int = 0) -> dict:
     finally:
         connection.close()
     subprocess.run([
-        "go", "run", "./cmd/yime-lexicon-derive",
+        "go", "run", "-overlay", str(go_overlay(ROOT, output)), "./cmd/yime-lexicon-derive",
         "-input", str(fixed), "-output-dir", str(data),
     ], cwd=ROOT / "go-backend", check=True)
     # Partial corpus probes are not deployable and cannot prove all reviewed

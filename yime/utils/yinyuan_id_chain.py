@@ -21,8 +21,10 @@ SHOUYIN_SOURCE = Path("syllable/yinyuan/zaoyin_yinyuan_enhanced.json")
 YUEYIN_SOURCE = Path("syllable/yinyuan/yueyin_yinyuan_enhanced.json")
 CANONICAL_SYMBOL_SOURCE = Path("internal_data/key_to_symbol.json")
 CANONICAL_LAYOUT_SOURCE = Path("internal_data/manual_key_layout.json")
-CONTROLLED_SHARED_LAYOUT_GROUPS: set[frozenset[str]] = set()
-ERHUA_SOUND_SOURCE = Path("docs/project/connected_speech/erhua_sound_key_projection.json")
+CONTROLLED_SHARED_LAYOUT_GROUPS = {
+    frozenset(("N12", "N26")),
+    frozenset(("N25", "N27")),
+}
 
 
 def expected_yinyuan_ids() -> set[str]:
@@ -32,18 +34,8 @@ def expected_yinyuan_ids() -> set[str]:
     }
 
 
-def load_erhua_input_registry(repo_root: Path = REPO_ROOT) -> dict[str, dict[str, Any]]:
-    """Existing reviewed derived units, not additions to the canonical 60 IDs."""
-    payload = _load_json(repo_root / ERHUA_SOUND_SOURCE)
-    registry = {str(unit["sound_unit_id"]): unit for unit in payload["sound_units"]
-                if str(unit["sound_unit_id"]).startswith("R")}
-    if set(registry) != {f"R{index:02d}" for index in range(4, 19)}:
-        raise ValueError("Reviewed derived Erhua registry must cover R04-R18")
-    return registry
-
-
 def load_shared_layout_groups(layout: dict[str, Any]) -> dict[str, tuple[str, ...]]:
-    """Return owner -> members for the reviewed many-ID-to-one-key groups."""
+    """Return owner -> members for the two reviewed many-ID-to-one-key groups."""
     raw_groups = layout.get("shared_yinyuan_key_groups", [])
     if not isinstance(raw_groups, list):
         raise ValueError("shared_yinyuan_key_groups must be an array")
@@ -70,46 +62,8 @@ def load_shared_layout_groups(layout: dict[str, Any]) -> dict[str, tuple[str, ..
         actual_sets.add(member_set)
         groups[owner] = members
     if actual_sets != CONTROLLED_SHARED_LAYOUT_GROUPS:
-        raise ValueError("canonical layout must declare the reviewed shared-key groups")
+        raise ValueError("canonical layout must declare both controlled shared-key groups")
     return groups
-
-
-class DisabledYinyuanError(ValueError):
-    """A complete semantic input contains an explicitly disabled layout ID."""
-
-
-def load_disabled_yinyuan_ids(repo_root: Path = REPO_ROOT) -> frozenset[str]:
-    layout = _load_json(repo_root / CANONICAL_LAYOUT_SOURCE)
-    raw = layout.get("disabled_yinyuan_ids", [])
-    if not isinstance(raw, list) or any(not isinstance(item, str) for item in raw):
-        raise ValueError("disabled_yinyuan_ids must be an array of stable IDs")
-    if len(set(raw)) != len(raw) or set(raw) - expected_yinyuan_ids():
-        raise ValueError("disabled_yinyuan_ids contains duplicate or unknown IDs")
-    disabled = frozenset(raw)
-    for owner in load_shared_layout_groups(layout):
-        if owner in disabled:
-            raise ValueError(f"shared-key owner cannot be disabled: {owner}")
-    return disabled
-
-
-def require_enabled_yinyuan_ids(
-    yinyuan_ids: Iterable[str], *, repo_root: Path = REPO_ROOT,
-) -> tuple[str, ...]:
-    """Gate a FULL semantic tuple before any variable/shorthand shortening."""
-    ids = tuple(yinyuan_ids)
-    unknown = set(ids) - expected_yinyuan_ids()
-    if unknown:
-        raise ValueError(f"Unknown Yinyuan IDs: {sorted(unknown)}")
-    disabled = set(ids) & load_disabled_yinyuan_ids(repo_root)
-    if disabled:
-        raise DisabledYinyuanError(f"Disabled Yinyuan IDs: {sorted(disabled)}")
-    return ids
-
-
-def load_active_yinyuan_id_to_layout_key(repo_root: Path = REPO_ROOT) -> dict[str, str]:
-    disabled = load_disabled_yinyuan_ids(repo_root)
-    return {key: value for key, value in load_yinyuan_id_to_layout_key(repo_root).items()
-            if key not in disabled}
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -209,11 +163,11 @@ def encode_numeric_pinyin_to_yinyuan_ids(
     return cast(tuple[str, str, str, str], ids)
 
 
-def load_input_id_to_layout_key(
+def load_yinyuan_id_to_layout_key(
     repo_root: Path = REPO_ROOT,
     layout_path: Path | None = None,
 ) -> dict[str, str]:
-    """Load all 75 input carriers from the sole editable layout projection."""
+    """Load the sole canonical final projection from Yinyuan ID to key token."""
     canonical_path = (repo_root / CANONICAL_LAYOUT_SOURCE).resolve()
     resolved_path = (layout_path or canonical_path).resolve()
     if resolved_path != canonical_path:
@@ -225,8 +179,6 @@ def load_input_id_to_layout_key(
     layout = _load_json(canonical_path)
     if "yinyuan_id_to_key" in layout:
         raise ValueError("Compact Yinyuan-ID maps are forbidden in the canonical layout source")
-    if layout.get("input_id_aliases") != {"R01": "M22", "R02": "M23", "R03": "M24"}:
-        raise ValueError("R01-R03 must remain display aliases of M22-M24, not independent sound units")
 
     mapping: dict[str, str] = {}
     occupied: dict[str, str] = {}
@@ -244,7 +196,7 @@ def load_input_id_to_layout_key(
         key = str(entry.get("display_label") or "")
         if layer not in {"base", "shift"}:
             raise ValueError(f"Yinyuan ID must use base/shift, got {layer}: {yinyuan_id}")
-        if len(key) != 1 or not (0x21 <= ord(key) <= 0x7e):
+        if len(key) != 1:
             raise ValueError(f"Yinyuan ID has no single printable key token: {yinyuan_id}")
         if yinyuan_id in mapping:
             raise ValueError(f"Duplicate Yinyuan ID assignment: {yinyuan_id}")
@@ -264,7 +216,7 @@ def load_input_id_to_layout_key(
                 raise ValueError(f"shared-key member also has an independent slot: {member}")
             mapping[member] = key
 
-    expected = expected_yinyuan_ids() | set(load_erhua_input_registry(repo_root))
+    expected = expected_yinyuan_ids()
     if set(mapping) != expected:
         missing = sorted(expected - set(mapping))
         extra = sorted(set(mapping) - expected)
@@ -272,34 +224,11 @@ def load_input_id_to_layout_key(
     return mapping
 
 
-def load_yinyuan_id_to_layout_key(
-    repo_root: Path = REPO_ROOT, layout_path: Path | None = None,
-) -> dict[str, str]:
-    """Project only the unchanged 60-ID canonical syllable inventory."""
-    return {identifier: key for identifier, key in
-            load_input_id_to_layout_key(repo_root, layout_path).items()
-            if identifier in expected_yinyuan_ids()}
-
-
-def load_erhua_id_to_layout_key(repo_root: Path = REPO_ROOT) -> dict[str, str]:
-    registry = load_erhua_input_registry(repo_root)
-    return {identifier: key for identifier, key in load_input_id_to_layout_key(repo_root).items()
-            if identifier in registry}
-
-
-def load_erhua_key_class_to_layout_key(repo_root: Path = REPO_ROOT) -> dict[str, str]:
-    """All 18 reviewed classes, including the existing M22-M24 carriers."""
-    mapping = load_input_id_to_layout_key(repo_root)
-    units = _load_json(repo_root / ERHUA_SOUND_SOURCE)["sound_units"]
-    return {str(unit["key_class_id"]): mapping[str(unit["sound_unit_id"])] for unit in units}
-
-
 def layout_projection_digest(repo_root: Path = REPO_ROOT) -> str:
     """Identify one physical layout without a hand-maintained version name."""
-    mapping = load_input_id_to_layout_key(repo_root)
+    mapping = load_yinyuan_id_to_layout_key(repo_root)
     serialized = json.dumps(
-        {"mapping": sorted(mapping.items()),
-         "disabled_yinyuan_ids": sorted(load_disabled_yinyuan_ids(repo_root))},
+        sorted(mapping.items()),
         ensure_ascii=False,
         separators=(",", ":"),
     ).encode("utf-8")
@@ -315,7 +244,7 @@ def yinyuan_ids_to_layout_keys(
     """Apply the final physical-key projection to an ID sequence."""
     layout = load_yinyuan_id_to_layout_key(repo_root, layout_path)
     result: list[str] = []
-    for yinyuan_id in require_enabled_yinyuan_ids(yinyuan_ids, repo_root=repo_root):
+    for yinyuan_id in yinyuan_ids:
         try:
             result.append(layout[yinyuan_id])
         except KeyError as exc:

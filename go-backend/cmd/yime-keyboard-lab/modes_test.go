@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
+	"github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode"
 )
 
 func setModes(t *testing.T, a *lab, s response, id, input, punctuation string) response {

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
+	"github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode"
 )
 
 func pageEvent(t *testing.T, a *lab, s response, id string, delta int) response {

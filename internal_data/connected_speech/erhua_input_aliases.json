@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "generated_utc": "2026-10-09T12:48:05.917446Z",
+  "generated_utc": "2026-08-17T13:21:50.827211Z",
   "source_catalog": "internal_data/pinyin_source_db/psc_candidate_readings.json",
   "erhua_yinyuan_feature_source": "external_data/erhua_yinyuan_feature_rules.json",
   "admission_policy": {
@@ -72,7 +72,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "yIIIZEF]'NNN",
+              "layout_key_code": "yjjj7vcz'III",
               "length": 12
             },
             "variable": {
@@ -87,7 +87,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yIZEF]'N",
+              "layout_key_code": "yj7vcz'I",
               "length": 8
             },
             "shorthand": {
@@ -102,7 +102,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yIZEF]'N",
+              "layout_key_code": "yj7vcz'I",
               "length": 8
             }
           }
@@ -192,7 +192,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "gODotoDU'NNN",
+              "layout_key_code": "grewtweu'III",
               "length": 12
             },
             "variable": {
@@ -209,7 +209,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "gODotoDU'N",
+              "layout_key_code": "grewtweu'I",
               "length": 10
             },
             "shorthand": {
@@ -225,7 +225,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "gOotoDU'N",
+              "layout_key_code": "grwtweu'I",
               "length": 9
             }
           }
@@ -306,7 +306,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "ZuuujvFE'NNN",
+              "layout_key_code": "7ooo3.cv'III",
               "length": 12
             },
             "variable": {
@@ -321,7 +321,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "ZujvFE'N",
+              "layout_key_code": "7o3.cv'I",
               "length": 8
             },
             "shorthand": {
@@ -336,7 +336,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "ZujvFE'N",
+              "layout_key_code": "7o3.cv'I",
               "length": 8
             }
           }
@@ -417,7 +417,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "reF[yio>'NNN",
+              "layout_key_code": "0xcaylw/'III",
               "length": 12
             },
             "variable": {
@@ -434,7 +434,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "reF[yio>'N",
+              "layout_key_code": "0xcaylw/'I",
               "length": 10
             },
             "shorthand": {
@@ -451,7 +451,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "reF[yio>'N",
+              "layout_key_code": "0xcaylw/'I",
               "length": 10
             }
           }
@@ -532,7 +532,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "gUA<gUF]'NNN",
+              "layout_key_code": "guf;gucz'III",
               "length": 12
             },
             "variable": {
@@ -549,7 +549,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "gUA<gUF]'N",
+              "layout_key_code": "guf;gucz'I",
               "length": 10
             },
             "shorthand": {
@@ -566,7 +566,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "gUA<gUF]'N",
+              "layout_key_code": "guf;gucz'I",
               "length": 10
             }
           }
@@ -647,7 +647,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "mABujIA['NNN",
+              "layout_key_code": "-fdo3jfa'III",
               "length": 12
             },
             "variable": {
@@ -664,7 +664,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "mABujIA['N",
+              "layout_key_code": "-fdo3jfa'I",
               "length": 10
             },
             "shorthand": {
@@ -681,7 +681,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "mABujIA['N",
+              "layout_key_code": "-fdo3jfa'I",
               "length": 10
             }
           }
@@ -762,7 +762,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "bIO<gUF]'NNN",
+              "layout_key_code": "bjr;gucz'III",
               "length": 12
             },
             "variable": {
@@ -779,7 +779,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "bIO<gUF]'N",
+              "layout_key_code": "bjr;gucz'I",
               "length": 10
             },
             "shorthand": {
@@ -796,7 +796,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "bIO<gUF]'N",
+              "layout_key_code": "bjr;gucz'I",
               "length": 10
             }
           }
@@ -877,7 +877,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "CUUUqVA['NNN",
+              "layout_key_code": "8uuu2mfa'III",
               "length": 12
             },
             "variable": {
@@ -892,7 +892,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "CUqVA['N",
+              "layout_key_code": "8u2mfa'I",
               "length": 8
             },
             "shorthand": {
@@ -907,7 +907,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "CUqVA['N",
+              "layout_key_code": "8u2mfa'I",
               "length": 8
             }
           }
@@ -988,7 +988,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dAAUrEF]'NNN",
+              "layout_key_code": "]ffu0vcz'III",
               "length": 12
             },
             "variable": {
@@ -1004,7 +1004,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dAUrEF]'N",
+              "layout_key_code": "]fu0vcz'I",
               "length": 9
             },
             "shorthand": {
@@ -1020,7 +1020,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dAUrEF]'N",
+              "layout_key_code": "]fu0vcz'I",
               "length": 9
             }
           }
@@ -1110,7 +1110,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dAAUbEFi'NNN",
+              "layout_key_code": "]ffubvcl'III",
               "length": 12
             },
             "variable": {
@@ -1126,7 +1126,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dAUbEFi'N",
+              "layout_key_code": "]fubvcl'I",
               "length": 9
             },
             "shorthand": {
@@ -1142,7 +1142,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dAUbEFi'N",
+              "layout_key_code": "]fubvcl'I",
               "length": 9
             }
           }
@@ -1232,7 +1232,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "biFEZEE['NNN",
+              "layout_key_code": "blcv7vva'III",
               "length": 12
             },
             "variable": {
@@ -1248,7 +1248,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "biFEZE['N",
+              "layout_key_code": "blcv7va'I",
               "length": 9
             },
             "shorthand": {
@@ -1264,7 +1264,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "biFEZE['N",
+              "layout_key_code": "blcv7va'I",
               "length": 9
             }
           }
@@ -1354,7 +1354,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "jIAAsAAI'NNN",
+              "layout_key_code": "3jff4ffj'III",
               "length": 12
             },
             "variable": {
@@ -1369,7 +1369,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jIAsAI'N",
+              "layout_key_code": "3jf4fj'I",
               "length": 8
             },
             "shorthand": {
@@ -1384,7 +1384,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jIAsAI'N",
+              "layout_key_code": "3jf4fj'I",
               "length": 8
             }
           }
@@ -1465,7 +1465,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "jIAAyiDU'NNN",
+              "layout_key_code": "3jffyleu'III",
               "length": 12
             },
             "variable": {
@@ -1481,7 +1481,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jIAyiDU'N",
+              "layout_key_code": "3jfyleu'I",
               "length": 9
             },
             "shorthand": {
@@ -1497,7 +1497,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jIAyiDU'N",
+              "layout_key_code": "3jfyleu'I",
               "length": 9
             }
           }
@@ -1578,7 +1578,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "bAAUgAA['NNN",
+              "layout_key_code": "bffugffa'III",
               "length": 12
             },
             "variable": {
@@ -1593,7 +1593,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "bAUgA['N",
+              "layout_key_code": "bfugfa'I",
               "length": 8
             },
             "shorthand": {
@@ -1608,7 +1608,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "bAUgA['N",
+              "layout_key_code": "bfugfa'I",
               "length": 8
             }
           }
@@ -1689,7 +1689,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "bAB]jiFE'NNN",
+              "layout_key_code": "bfdz3lcv'III",
               "length": 12
             },
             "variable": {
@@ -1706,7 +1706,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "bAB]jiFE'N",
+              "layout_key_code": "bfdz3lcv'I",
               "length": 10
             },
             "shorthand": {
@@ -1723,7 +1723,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "bAB]jiFE'N",
+              "layout_key_code": "bfdz3lcv'I",
               "length": 10
             }
           }
@@ -1804,7 +1804,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dAA[gODo'NNN",
+              "layout_key_code": "]ffagrew'III",
               "length": 12
             },
             "variable": {
@@ -1820,7 +1820,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dA[gODo'N",
+              "layout_key_code": "]fagrew'I",
               "length": 9
             },
             "shorthand": {
@@ -1835,7 +1835,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dA[gOo'N",
+              "layout_key_code": "]fagrw'I",
               "length": 8
             }
           }
@@ -1916,7 +1916,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "yIBagEE['NNN",
+              "layout_key_code": "yjdsgvva'III",
               "length": 12
             },
             "variable": {
@@ -1932,7 +1932,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yIBagE['N",
+              "layout_key_code": "yjdsgva'I",
               "length": 9
             },
             "shorthand": {
@@ -1948,7 +1948,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yIBagE['N",
+              "layout_key_code": "yjdsgva'I",
               "length": 9
             }
           }
@@ -2038,7 +2038,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "koouSABu'NNN",
+              "layout_key_code": "qwwo9fdo'III",
               "length": 12
             },
             "variable": {
@@ -2054,7 +2054,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "kouSABu'N",
+              "layout_key_code": "qwo9fdo'I",
               "length": 9
             },
             "shorthand": {
@@ -2070,7 +2070,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "kouSABu'N",
+              "layout_key_code": "qwo9fdo'I",
               "length": 9
             }
           }
@@ -2151,7 +2151,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "koouZABu'NNN",
+              "layout_key_code": "qwwo7fdo'III",
               "length": 12
             },
             "variable": {
@@ -2167,7 +2167,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "kouZABu'N",
+              "layout_key_code": "qwo7fdo'I",
               "length": 9
             },
             "shorthand": {
@@ -2183,7 +2183,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "kouZABu'N",
+              "layout_key_code": "qwo7fdo'I",
               "length": 9
             }
           }
@@ -2264,7 +2264,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "jIBuhaau'NNN",
+              "layout_key_code": "3jdohsso'III",
               "length": 12
             },
             "variable": {
@@ -2280,7 +2280,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jIBuhau'N",
+              "layout_key_code": "3jdohso'I",
               "length": 9
             },
             "shorthand": {
@@ -2296,7 +2296,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jIBuhau'N",
+              "layout_key_code": "3jdohso'I",
               "length": 9
             }
           }
@@ -2377,7 +2377,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "hABumaaa'NNN",
+              "layout_key_code": "hfdo-sss'III",
               "length": 12
             },
             "variable": {
@@ -2392,7 +2392,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hABuma'N",
+              "layout_key_code": "hfdo-s'I",
               "length": 8
             },
             "shorthand": {
@@ -2407,7 +2407,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hABuma'N",
+              "layout_key_code": "hfdo-s'I",
               "length": 8
             }
           }
@@ -2488,7 +2488,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "hoDOqvF['NNN",
+              "layout_key_code": "hwer2.ca'III",
               "length": 12
             },
             "variable": {
@@ -2505,7 +2505,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hoDOqvF['N",
+              "layout_key_code": "hwer2.ca'I",
               "length": 10
             },
             "shorthand": {
@@ -2521,7 +2521,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hoOqvF['N",
+              "layout_key_code": "hwr2.ca'I",
               "length": 9
             }
           }
@@ -2602,7 +2602,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "miD<paBI'NNN",
+              "layout_key_code": "-le;psdj'III",
               "length": 12
             },
             "variable": {
@@ -2619,7 +2619,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "miD<paBI'N",
+              "layout_key_code": "-le;psdj'I",
               "length": 10
             },
             "shorthand": {
@@ -2636,7 +2636,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "miD<paBI'N",
+              "layout_key_code": "-le;psdj'I",
               "length": 10
             }
           }
@@ -2717,7 +2717,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "hODugEE['NNN",
+              "layout_key_code": "hreogvva'III",
               "length": 12
             },
             "variable": {
@@ -2733,7 +2733,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hODugE['N",
+              "layout_key_code": "hreogva'I",
               "length": 9
             },
             "shorthand": {
@@ -2749,7 +2749,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hODugE['N",
+              "layout_key_code": "hreogva'I",
               "length": 9
             }
           }
@@ -2839,7 +2839,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "wuFIzuei'NNN",
+              "layout_key_code": "=ocj6oxl'III",
               "length": 12
             },
             "variable": {
@@ -2856,7 +2856,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "wuFIzuei'N",
+              "layout_key_code": "=ocj6oxl'I",
               "length": 10
             },
             "shorthand": {
@@ -2873,7 +2873,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "wuFIzuei'N",
+              "layout_key_code": "=ocj6oxl'I",
               "length": 10
             }
           }
@@ -2954,7 +2954,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "tuXUdIO<'NNN",
+              "layout_key_code": "toiu]jr;'III",
               "length": 12
             },
             "variable": {
@@ -2971,7 +2971,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "tuXUdIO<'N",
+              "layout_key_code": "toiu]jr;'I",
               "length": 10
             },
             "shorthand": {
@@ -2987,7 +2987,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "tuUdIO<'N",
+              "layout_key_code": "tou]jr;'I",
               "length": 9
             }
           }
@@ -3068,7 +3068,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dIB]diii'NNN",
+              "layout_key_code": "]jdz]lll'III",
               "length": 12
             },
             "variable": {
@@ -3083,7 +3083,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dIB]di'N",
+              "layout_key_code": "]jdz]l'I",
               "length": 8
             },
             "shorthand": {
@@ -3098,7 +3098,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dIB]di'N",
+              "layout_key_code": "]jdz]l'I",
               "length": 8
             }
           }
@@ -3179,7 +3179,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "mODoZGGG'NNN",
+              "layout_key_code": "-rew7JJJ'III",
               "length": 12
             },
             "variable": {
@@ -3194,7 +3194,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "mODoZG'N",
+              "layout_key_code": "-rew7J'I",
               "length": 8
             },
             "shorthand": {
@@ -3208,7 +3208,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "mOoZG'N",
+              "layout_key_code": "-rw7J'I",
               "length": 7
             }
           }
@@ -3298,7 +3298,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "huXUgABi'NNN",
+              "layout_key_code": "hoiugfdl'III",
               "length": 12
             },
             "variable": {
@@ -3315,7 +3315,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "huXUgABi'N",
+              "layout_key_code": "hoiugfdl'I",
               "length": 10
             },
             "shorthand": {
@@ -3331,7 +3331,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "huUgABi'N",
+              "layout_key_code": "hougfdl'I",
               "length": 9
             }
           }
@@ -3412,7 +3412,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dABaSee]'NNN",
+              "layout_key_code": "]fds9xxz'III",
               "length": 12
             },
             "variable": {
@@ -3428,7 +3428,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dABaSe]'N",
+              "layout_key_code": "]fds9xz'I",
               "length": 9
             },
             "shorthand": {
@@ -3443,7 +3443,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dAaSe]'N",
+              "layout_key_code": "]fs9xz'I",
               "length": 8
             }
           }
@@ -3533,7 +3533,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dABagUBa'NNN",
+              "layout_key_code": "]fdsguds'III",
               "length": 12
             },
             "variable": {
@@ -3550,7 +3550,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dABagUBa'N",
+              "layout_key_code": "]fdsguds'I",
               "length": 10
             },
             "shorthand": {
@@ -3566,7 +3566,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dAagUBa'N",
+              "layout_key_code": "]fsguds'I",
               "length": 9
             }
           }
@@ -3647,7 +3647,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "tIA[CUA<'NNN",
+              "layout_key_code": "tjfa8uf;'III",
               "length": 12
             },
             "variable": {
@@ -3664,7 +3664,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "tIA[CUA<'N",
+              "layout_key_code": "tjfa8uf;'I",
               "length": 10
             },
             "shorthand": {
@@ -3681,7 +3681,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "tIA[CUA<'N",
+              "layout_key_code": "tjfa8uf;'I",
               "length": 10
             }
           }
@@ -3762,7 +3762,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "jIAAfOD>'NNN",
+              "layout_key_code": "3jff[re/'III",
               "length": 12
             },
             "variable": {
@@ -3778,7 +3778,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jIAfOD>'N",
+              "layout_key_code": "3jf[re/'I",
               "length": 9
             },
             "shorthand": {
@@ -3794,7 +3794,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jIAfOD>'N",
+              "layout_key_code": "3jf[re/'I",
               "length": 9
             }
           }
@@ -3875,7 +3875,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "haauwuB['NNN",
+              "layout_key_code": "hsso=oda'III",
               "length": 12
             },
             "variable": {
@@ -3891,7 +3891,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hauwuB['N",
+              "layout_key_code": "hso=oda'I",
               "length": 9
             },
             "shorthand": {
@@ -3907,7 +3907,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hauwuB['N",
+              "layout_key_code": "hso=oda'I",
               "length": 9
             }
           }
@@ -3988,7 +3988,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xiKIfXXX'NNN",
+              "layout_key_code": "1lkj[iii'III",
               "length": 12
             },
             "variable": {
@@ -4003,7 +4003,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiKIfX'N",
+              "layout_key_code": "1lkj[i'I",
               "length": 8
             },
             "shorthand": {
@@ -4017,7 +4017,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiIfX'N",
+              "layout_key_code": "1lj[i'I",
               "length": 7
             }
           }
@@ -4098,7 +4098,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xiauCoou'NNN",
+              "layout_key_code": "1lso8wwo'III",
               "length": 12
             },
             "variable": {
@@ -4114,7 +4114,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiauCou'N",
+              "layout_key_code": "1lso8wo'I",
               "length": 9
             },
             "shorthand": {
@@ -4130,7 +4130,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiauCou'N",
+              "layout_key_code": "1lso8wo'I",
               "length": 9
             }
           }
@@ -4211,7 +4211,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xiautOOU'NNN",
+              "layout_key_code": "1lsotrru'III",
               "length": 12
             },
             "variable": {
@@ -4227,7 +4227,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiautOU'N",
+              "layout_key_code": "1lsotru'I",
               "length": 9
             },
             "shorthand": {
@@ -4243,7 +4243,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiautOU'N",
+              "layout_key_code": "1lsotru'I",
               "length": 9
             }
           }
@@ -4324,7 +4324,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xiauqvvv'NNN",
+              "layout_key_code": "1lso2...'III",
               "length": 12
             },
             "variable": {
@@ -4339,7 +4339,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiauqv'N",
+              "layout_key_code": "1lso2.'I",
               "length": 8
             },
             "shorthand": {
@@ -4354,7 +4354,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiauqv'N",
+              "layout_key_code": "1lso2.'I",
               "length": 8
             }
           }
@@ -4435,7 +4435,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xiauxvD<'NNN",
+              "layout_key_code": "1lso1.e;'III",
               "length": 12
             },
             "variable": {
@@ -4452,7 +4452,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiauxvD<'N",
+              "layout_key_code": "1lso1.e;'I",
               "length": 10
             },
             "shorthand": {
@@ -4469,7 +4469,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiauxvD<'N",
+              "layout_key_code": "1lso1.e;'I",
               "length": 10
             }
           }
@@ -4550,7 +4550,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xiauwUD>'NNN",
+              "layout_key_code": "1lso=ue/'III",
               "length": 12
             },
             "variable": {
@@ -4567,7 +4567,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiauwUD>'N",
+              "layout_key_code": "1lso=ue/'I",
               "length": 10
             },
             "shorthand": {
@@ -4584,7 +4584,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiauwUD>'N",
+              "layout_key_code": "1lso=ue/'I",
               "length": 10
             }
           }
@@ -4665,7 +4665,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xiaucUO<'NNN",
+              "layout_key_code": "1lso5ur;'III",
               "length": 12
             },
             "variable": {
@@ -4682,7 +4682,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiaucUO<'N",
+              "layout_key_code": "1lso5ur;'I",
               "length": 10
             },
             "shorthand": {
@@ -4699,7 +4699,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiaucUO<'N",
+              "layout_key_code": "1lso5ur;'I",
               "length": 10
             }
           }
@@ -4780,7 +4780,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xiaugUBa'NNN",
+              "layout_key_code": "1lsoguds'III",
               "length": 12
             },
             "variable": {
@@ -4797,7 +4797,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiaugUBa'N",
+              "layout_key_code": "1lsoguds'I",
               "length": 10
             },
             "shorthand": {
@@ -4814,7 +4814,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiaugUBa'N",
+              "layout_key_code": "1lsoguds'I",
               "length": 10
             }
           }
@@ -4895,7 +4895,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xiauSUOO'NNN",
+              "layout_key_code": "1lso9urr'III",
               "length": 12
             },
             "variable": {
@@ -4911,7 +4911,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiauSUO'N",
+              "layout_key_code": "1lso9ur'I",
               "length": 9
             },
             "shorthand": {
@@ -4927,7 +4927,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiauSUO'N",
+              "layout_key_code": "1lso9ur'I",
               "length": 9
             }
           }
@@ -5008,7 +5008,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xiauxiFE'NNN",
+              "layout_key_code": "1lso1lcv'III",
               "length": 12
             },
             "variable": {
@@ -5025,7 +5025,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiauxiFE'N",
+              "layout_key_code": "1lso1lcv'I",
               "length": 10
             },
             "shorthand": {
@@ -5042,7 +5042,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiauxiFE'N",
+              "layout_key_code": "1lso1lcv'I",
               "length": 10
             }
           }
@@ -5123,7 +5123,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "kAAICUE['NNN",
+              "layout_key_code": "qffj8uva'III",
               "length": 12
             },
             "variable": {
@@ -5139,7 +5139,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "kAICUE['N",
+              "layout_key_code": "qfj8uva'I",
               "length": 9
             },
             "shorthand": {
@@ -5155,7 +5155,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "kAICUE['N",
+              "layout_key_code": "qfj8uva'I",
               "length": 9
             }
           }
@@ -5236,7 +5236,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "kAAIqIBu'NNN",
+              "layout_key_code": "qffj2jdo'III",
               "length": 12
             },
             "variable": {
@@ -5252,7 +5252,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "kAIqIBu'N",
+              "layout_key_code": "qfj2jdo'I",
               "length": 9
             },
             "shorthand": {
@@ -5268,7 +5268,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "kAIqIBu'N",
+              "layout_key_code": "qfj2jdo'I",
               "length": 9
             }
           }
@@ -5349,7 +5349,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xIKifaaa'NNN",
+              "layout_key_code": "1jkl[sss'III",
               "length": 12
             },
             "variable": {
@@ -5364,7 +5364,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xIKifa'N",
+              "layout_key_code": "1jkl[s'I",
               "length": 8
             },
             "shorthand": {
@@ -5378,7 +5378,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xIifa'N",
+              "layout_key_code": "1jl[s'I",
               "length": 7
             }
           }
@@ -5459,7 +5459,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "SAB]mIB]'NNN",
+              "layout_key_code": "9fdz-jdz'III",
               "length": 12
             },
             "variable": {
@@ -5476,7 +5476,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "SAB]mIB]'N",
+              "layout_key_code": "9fdz-jdz'I",
               "length": 10
             },
             "shorthand": {
@@ -5493,7 +5493,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "SAB]mIB]'N",
+              "layout_key_code": "9fdz-jdz'I",
               "length": 10
             }
           }
@@ -5574,7 +5574,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "SooutABu'NNN",
+              "layout_key_code": "9wwotfdo'III",
               "length": 12
             },
             "variable": {
@@ -5590,7 +5590,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "SoutABu'N",
+              "layout_key_code": "9wotfdo'I",
               "length": 9
             },
             "shorthand": {
@@ -5606,7 +5606,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "SoutABu'N",
+              "layout_key_code": "9wotfdo'I",
               "length": 9
             }
           }
@@ -5687,7 +5687,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "SooujVB]'NNN",
+              "layout_key_code": "9wwo3mdz'III",
               "length": 12
             },
             "variable": {
@@ -5703,7 +5703,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "SoujVB]'N",
+              "layout_key_code": "9wo3mdz'I",
               "length": 9
             },
             "shorthand": {
@@ -5719,7 +5719,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "SoujVB]'N",
+              "layout_key_code": "9wo3mdz'I",
               "length": 9
             }
           }
@@ -5800,7 +5800,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "daaahUB>'NNN",
+              "layout_key_code": "]ssshud/'III",
               "length": 12
             },
             "variable": {
@@ -5815,7 +5815,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dahUB>'N",
+              "layout_key_code": "]shud/'I",
               "length": 8
             },
             "shorthand": {
@@ -5830,7 +5830,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dahUB>'N",
+              "layout_key_code": "]shud/'I",
               "length": 8
             }
           }
@@ -5911,7 +5911,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "daaaZUB]'NNN",
+              "layout_key_code": "]sss7udz'III",
               "length": 12
             },
             "variable": {
@@ -5926,7 +5926,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "daZUB]'N",
+              "layout_key_code": "]s7udz'I",
               "length": 8
             },
             "shorthand": {
@@ -5941,7 +5941,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "daZUB]'N",
+              "layout_key_code": "]s7udz'I",
               "length": 8
             }
           }
@@ -6022,7 +6022,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "daaamiD<'NNN",
+              "layout_key_code": "]sss-le;'III",
               "length": 12
             },
             "variable": {
@@ -6037,7 +6037,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "damiD<'N",
+              "layout_key_code": "]s-le;'I",
               "length": 8
             },
             "shorthand": {
@@ -6052,7 +6052,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "damiD<'N",
+              "layout_key_code": "]s-le;'I",
               "length": 8
             }
           }
@@ -6133,7 +6133,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "ZaauCaBA'NNN",
+              "layout_key_code": "7sso8sdf'III",
               "length": 12
             },
             "variable": {
@@ -6149,7 +6149,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "ZauCaBA'N",
+              "layout_key_code": "7so8sdf'I",
               "length": 9
             },
             "shorthand": {
@@ -6164,7 +6164,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "ZauCaA'N",
+              "layout_key_code": "7so8sf'I",
               "length": 8
             }
           }
@@ -6245,7 +6245,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "baaameF['NNN",
+              "layout_key_code": "bsss-xca'III",
               "length": 12
             },
             "variable": {
@@ -6260,7 +6260,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "bameF['N",
+              "layout_key_code": "bs-xca'I",
               "length": 8
             },
             "shorthand": {
@@ -6275,7 +6275,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "bameF['N",
+              "layout_key_code": "bs-xca'I",
               "length": 8
             }
           }
@@ -6365,7 +6365,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "ZUAAjIOU'NNN",
+              "layout_key_code": "7uff3jru'III",
               "length": 12
             },
             "variable": {
@@ -6381,7 +6381,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "ZUAjIOU'N",
+              "layout_key_code": "7uf3jru'I",
               "length": 9
             },
             "shorthand": {
@@ -6397,7 +6397,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "ZUAjIOU'N",
+              "layout_key_code": "7uf3jru'I",
               "length": 9
             }
           }
@@ -6478,7 +6478,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "COOUkUD>'NNN",
+              "layout_key_code": "8rruque/'III",
               "length": 12
             },
             "variable": {
@@ -6494,7 +6494,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "COUkUD>'N",
+              "layout_key_code": "8ruque/'I",
               "length": 9
             },
             "shorthand": {
@@ -6510,7 +6510,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "COUkUD>'N",
+              "layout_key_code": "8ruque/'I",
               "length": 9
             }
           }
@@ -6591,7 +6591,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "lAAAlIB]'NNN",
+              "layout_key_code": "\\fff\\jdz'III",
               "length": 12
             },
             "variable": {
@@ -6606,7 +6606,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "lAlIB]'N",
+              "layout_key_code": "\\f\\jdz'I",
               "length": 8
             },
             "shorthand": {
@@ -6621,7 +6621,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "lAlIB]'N",
+              "layout_key_code": "\\f\\jdz'I",
               "length": 8
             }
           }
@@ -6702,7 +6702,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "tiKICoD<'NNN",
+              "layout_key_code": "tlkj8we;'III",
               "length": 12
             },
             "variable": {
@@ -6719,7 +6719,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "tiKICoD<'N",
+              "layout_key_code": "tlkj8we;'I",
               "length": 10
             },
             "shorthand": {
@@ -6735,7 +6735,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "tiICoD<'N",
+              "layout_key_code": "tlj8we;'I",
               "length": 9
             }
           }
@@ -6816,7 +6816,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dAB]jvFE'NNN",
+              "layout_key_code": "]fdz3.cv'III",
               "length": 12
             },
             "variable": {
@@ -6833,7 +6833,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dAB]jvFE'N",
+              "layout_key_code": "]fdz3.cv'I",
               "length": 10
             },
             "shorthand": {
@@ -6850,7 +6850,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dAB]jvFE'N",
+              "layout_key_code": "]fdz3.cv'I",
               "length": 10
             }
           }
@@ -6931,7 +6931,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "yiouSUXu'NNN",
+              "layout_key_code": "ylwo9uio'III",
               "length": 12
             },
             "variable": {
@@ -6948,7 +6948,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yiouSUXu'N",
+              "layout_key_code": "ylwo9uio'I",
               "length": 10
             },
             "shorthand": {
@@ -6964,7 +6964,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yiouSUu'N",
+              "layout_key_code": "ylwo9uo'I",
               "length": 9
             }
           }
@@ -7045,7 +7045,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "guoodUD>'NNN",
+              "layout_key_code": "goww]ue/'III",
               "length": 12
             },
             "variable": {
@@ -7061,7 +7061,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "guodUD>'N",
+              "layout_key_code": "gow]ue/'I",
               "length": 9
             },
             "shorthand": {
@@ -7077,7 +7077,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "guodUD>'N",
+              "layout_key_code": "gow]ue/'I",
               "length": 9
             }
           }
@@ -7158,7 +7158,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "ZABalBB\\'NNN",
+              "layout_key_code": "7fds\\ddN'III",
               "length": 12
             },
             "variable": {
@@ -7174,7 +7174,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "ZABalB\\'N",
+              "layout_key_code": "7fds\\dN'I",
               "length": 9
             },
             "shorthand": {
@@ -7189,7 +7189,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "ZAalB\\'N",
+              "layout_key_code": "7fs\\dN'I",
               "length": 8
             }
           }
@@ -7270,7 +7270,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "liKIhuXU'NNN",
+              "layout_key_code": "\\lkjhoiu'III",
               "length": 12
             },
             "variable": {
@@ -7287,7 +7287,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "liKIhuXU'N",
+              "layout_key_code": "\\lkjhoiu'I",
               "length": 10
             },
             "shorthand": {
@@ -7302,7 +7302,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "liIhuU'N",
+              "layout_key_code": "\\ljhou'I",
               "length": 8
             }
           }
@@ -7383,7 +7383,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "miB[qiDU'NNN",
+              "layout_key_code": "-lda2leu'III",
               "length": 12
             },
             "variable": {
@@ -7400,7 +7400,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "miB[qiDU'N",
+              "layout_key_code": "-lda2leu'I",
               "length": 10
             },
             "shorthand": {
@@ -7417,7 +7417,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "miB[qiDU'N",
+              "layout_key_code": "-lda2leu'I",
               "length": 10
             }
           }
@@ -7498,7 +7498,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "moDOtODo'NNN",
+              "layout_key_code": "-wertrew'III",
               "length": 12
             },
             "variable": {
@@ -7515,7 +7515,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "moDOtODo'N",
+              "layout_key_code": "-wertrew'I",
               "length": 10
             },
             "shorthand": {
@@ -7530,7 +7530,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "moOtOo'N",
+              "layout_key_code": "-wrtrw'I",
               "length": 8
             }
           }
@@ -7611,7 +7611,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "maBUlvWV'NNN",
+              "layout_key_code": "-sdu\\.,m'III",
               "length": 12
             },
             "variable": {
@@ -7628,7 +7628,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "maBUlvWV'N",
+              "layout_key_code": "-sdu\\.,m'I",
               "length": 10
             },
             "shorthand": {
@@ -7644,7 +7644,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "maBUlvV'N",
+              "layout_key_code": "-sdu\\.m'I",
               "length": 9
             }
           }
@@ -7725,7 +7725,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "meFIfaaa'NNN",
+              "layout_key_code": "-xcj[sss'III",
               "length": 12
             },
             "variable": {
@@ -7740,7 +7740,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "meFIfa'N",
+              "layout_key_code": "-xcj[s'I",
               "length": 8
             },
             "shorthand": {
@@ -7755,7 +7755,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "meFIfa'N",
+              "layout_key_code": "-xcj[s'I",
               "length": 8
             }
           }
@@ -7836,7 +7836,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "meFIcLHG'NNN",
+              "layout_key_code": "-xcj5LKJ'III",
               "length": 12
             },
             "variable": {
@@ -7853,7 +7853,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "meFIcLHG'N",
+              "layout_key_code": "-xcj5LKJ'I",
               "length": 10
             },
             "shorthand": {
@@ -7869,7 +7869,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "meFIcLG'N",
+              "layout_key_code": "-xcj5LJ'I",
               "length": 9
             }
           }
@@ -7959,7 +7959,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "lEFiZUUU'NNN",
+              "layout_key_code": "\\vcl7uuu'III",
               "length": 12
             },
             "variable": {
@@ -7974,7 +7974,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "lEFiZU'N",
+              "layout_key_code": "\\vcl7u'I",
               "length": 8
             },
             "shorthand": {
@@ -7989,7 +7989,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "lEFiZU'N",
+              "layout_key_code": "\\vcl7u'I",
               "length": 8
             }
           }
@@ -8070,7 +8070,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "huooxIO<'NNN",
+              "layout_key_code": "howw1jr;'III",
               "length": 12
             },
             "variable": {
@@ -8086,7 +8086,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "huoxIO<'N",
+              "layout_key_code": "how1jr;'I",
               "length": 9
             },
             "shorthand": {
@@ -8102,7 +8102,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "huoxIO<'N",
+              "layout_key_code": "how1jr;'I",
               "length": 9
             }
           }
@@ -8183,7 +8183,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "huoomiBU'NNN",
+              "layout_key_code": "howw-ldu'III",
               "length": 12
             },
             "variable": {
@@ -8199,7 +8199,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "huomiBU'N",
+              "layout_key_code": "how-ldu'I",
               "length": 9
             },
             "shorthand": {
@@ -8215,7 +8215,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "huomiBU'N",
+              "layout_key_code": "how-ldu'I",
               "length": 9
             }
           }
@@ -8296,7 +8296,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "huoogUOO'NNN",
+              "layout_key_code": "howwgurr'III",
               "length": 12
             },
             "variable": {
@@ -8311,7 +8311,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "huogUO'N",
+              "layout_key_code": "howgur'I",
               "length": 8
             },
             "shorthand": {
@@ -8326,7 +8326,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "huogUO'N",
+              "layout_key_code": "howgur'I",
               "length": 8
             }
           }
@@ -8407,7 +8407,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dOO<pABu'NNN",
+              "layout_key_code": "]rr;pfdo'III",
               "length": 12
             },
             "variable": {
@@ -8423,7 +8423,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dO<pABu'N",
+              "layout_key_code": "]r;pfdo'I",
               "length": 9
             },
             "shorthand": {
@@ -8439,7 +8439,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dO<pABu'N",
+              "layout_key_code": "]r;pfdo'I",
               "length": 9
             }
           }
@@ -8520,7 +8520,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "yIA[jva]'NNN",
+              "layout_key_code": "yjfa3.sz'III",
               "length": 12
             },
             "variable": {
@@ -8537,7 +8537,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yIA[jva]'N",
+              "layout_key_code": "yjfa3.sz'I",
               "length": 10
             },
             "shorthand": {
@@ -8554,7 +8554,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yIA[jva]'N",
+              "layout_key_code": "yjfa3.sz'I",
               "length": 10
             }
           }
@@ -8635,7 +8635,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "yiBASUAA'NNN",
+              "layout_key_code": "yldf9uff'III",
               "length": 12
             },
             "variable": {
@@ -8651,7 +8651,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yiBASUA'N",
+              "layout_key_code": "yldf9uf'I",
               "length": 9
             },
             "shorthand": {
@@ -8667,7 +8667,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yiBASUA'N",
+              "layout_key_code": "yldf9uf'I",
               "length": 9
             }
           }
@@ -8748,7 +8748,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "yiBAqIA['NNN",
+              "layout_key_code": "yldf2jfa'III",
               "length": 12
             },
             "variable": {
@@ -8765,7 +8765,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yiBAqIA['N",
+              "layout_key_code": "yldf2jfa'I",
               "length": 10
             },
             "shorthand": {
@@ -8782,7 +8782,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yiBAqIA['N",
+              "layout_key_code": "yldf2jfa'I",
               "length": 10
             }
           }
@@ -8863,7 +8863,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "gUAAzLLL'NNN",
+              "layout_key_code": "guff6LLL'III",
               "length": 12
             },
             "variable": {
@@ -8877,7 +8877,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "gUAzL'N",
+              "layout_key_code": "guf6L'I",
               "length": 7
             },
             "shorthand": {
@@ -8891,7 +8891,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "gUAzL'N",
+              "layout_key_code": "guf6L'I",
               "length": 7
             }
           }
@@ -8981,7 +8981,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "gUAAraB<'NNN",
+              "layout_key_code": "guff0sd;'III",
               "length": 12
             },
             "variable": {
@@ -8997,7 +8997,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "gUAraB<'N",
+              "layout_key_code": "guf0sd;'I",
               "length": 9
             },
             "shorthand": {
@@ -9013,7 +9013,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "gUAraB<'N",
+              "layout_key_code": "guf0sd;'I",
               "length": 9
             }
           }
@@ -9094,7 +9094,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "yia]jID>'NNN",
+              "layout_key_code": "ylsz3je/'III",
               "length": 12
             },
             "variable": {
@@ -9111,7 +9111,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yia]jID>'N",
+              "layout_key_code": "ylsz3je/'I",
               "length": 10
             },
             "shorthand": {
@@ -9128,7 +9128,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yia]jID>'N",
+              "layout_key_code": "ylsz3je/'I",
               "length": 10
             }
           }
@@ -9209,7 +9209,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "SAAAluF['NNN",
+              "layout_key_code": "9fff\\oca'III",
               "length": 12
             },
             "variable": {
@@ -9224,7 +9224,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "SAluF['N",
+              "layout_key_code": "9f\\oca'I",
               "length": 8
             },
             "shorthand": {
@@ -9239,7 +9239,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "SAluF['N",
+              "layout_key_code": "9f\\oca'I",
               "length": 8
             }
           }
@@ -9320,7 +9320,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "sUFibUXu'NNN",
+              "layout_key_code": "4uclbuio'III",
               "length": 12
             },
             "variable": {
@@ -9337,7 +9337,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "sUFibUXu'N",
+              "layout_key_code": "4uclbuio'I",
               "length": 10
             },
             "shorthand": {
@@ -9353,7 +9353,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "sUFibUu'N",
+              "layout_key_code": "4uclbuo'I",
               "length": 9
             }
           }
@@ -9434,7 +9434,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xIBuhXBB'NNN",
+              "layout_key_code": "1jdohidd'III",
               "length": 12
             },
             "variable": {
@@ -9450,7 +9450,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xIBuhXB'N",
+              "layout_key_code": "1jdohid'I",
               "length": 9
             },
             "shorthand": {
@@ -9466,7 +9466,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xIBuhXB'N",
+              "layout_key_code": "1jdohid'I",
               "length": 9
             }
           }
@@ -9547,7 +9547,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "biiigaa]'NNN",
+              "layout_key_code": "blllgssz'III",
               "length": 12
             },
             "variable": {
@@ -9561,7 +9561,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "biga]'N",
+              "layout_key_code": "blgsz'I",
               "length": 7
             },
             "shorthand": {
@@ -9575,7 +9575,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "biga]'N",
+              "layout_key_code": "blgsz'I",
               "length": 7
             }
           }
@@ -9656,7 +9656,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "fee]mODo'NNN",
+              "layout_key_code": "[xxz-rew'III",
               "length": 12
             },
             "variable": {
@@ -9672,7 +9672,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "fe]mODo'N",
+              "layout_key_code": "[xz-rew'I",
               "length": 9
             },
             "shorthand": {
@@ -9687,7 +9687,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "fe]mOo'N",
+              "layout_key_code": "[xz-rw'I",
               "length": 8
             }
           }
@@ -9768,7 +9768,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "huD<bAAU'NNN",
+              "layout_key_code": "hoe;bffu'III",
               "length": 12
             },
             "variable": {
@@ -9784,7 +9784,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "huD<bAU'N",
+              "layout_key_code": "hoe;bfu'I",
               "length": 9
             },
             "shorthand": {
@@ -9800,7 +9800,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "huD<bAU'N",
+              "layout_key_code": "hoe;bfu'I",
               "length": 9
             }
           }
@@ -9881,7 +9881,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "nABamEF]'NNN",
+              "layout_key_code": "nfds-vcz'III",
               "length": 12
             },
             "variable": {
@@ -9898,7 +9898,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "nABamEF]'N",
+              "layout_key_code": "nfds-vcz'I",
               "length": 10
             },
             "shorthand": {
@@ -9914,7 +9914,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "nAamEF]'N",
+              "layout_key_code": "nfs-vcz'I",
               "length": 9
             }
           }
@@ -10004,7 +10004,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "nioukODu'NNN",
+              "layout_key_code": "nlwoqreo'III",
               "length": 12
             },
             "variable": {
@@ -10021,7 +10021,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "nioukODu'N",
+              "layout_key_code": "nlwoqreo'I",
               "length": 10
             },
             "shorthand": {
@@ -10038,7 +10038,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "nioukODu'N",
+              "layout_key_code": "nlwoqreo'I",
               "length": 10
             }
           }
@@ -10119,7 +10119,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xIB]ZoDU'NNN",
+              "layout_key_code": "1jdz7weu'III",
               "length": 12
             },
             "variable": {
@@ -10136,7 +10136,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xIB]ZoDU'N",
+              "layout_key_code": "1jdz7weu'I",
               "length": 10
             },
             "shorthand": {
@@ -10153,7 +10153,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xIB]ZoDU'N",
+              "layout_key_code": "1jdz7weu'I",
               "length": 10
             }
           }
@@ -10234,7 +10234,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "rABuYva]'NNN",
+              "layout_key_code": "0fdo`.sz'III",
               "length": 12
             },
             "variable": {
@@ -10251,7 +10251,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "rABuYva]'N",
+              "layout_key_code": "0fdo`.sz'I",
               "length": 10
             },
             "shorthand": {
@@ -10268,7 +10268,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "rABuYva]'N",
+              "layout_key_code": "0fdo`.sz'I",
               "length": 10
             }
           }
@@ -10349,7 +10349,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "jvFEZAAU'NNN",
+              "layout_key_code": "3.cv7ffu'III",
               "length": 12
             },
             "variable": {
@@ -10365,7 +10365,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jvFEZAU'N",
+              "layout_key_code": "3.cv7fu'I",
               "length": 9
             },
             "shorthand": {
@@ -10381,7 +10381,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jvFEZAU'N",
+              "layout_key_code": "3.cv7fu'I",
               "length": 9
             }
           }
@@ -10462,7 +10462,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "laautoDU'NNN",
+              "layout_key_code": "\\ssotweu'III",
               "length": 12
             },
             "variable": {
@@ -10478,7 +10478,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "lautoDU'N",
+              "layout_key_code": "\\sotweu'I",
               "length": 9
             },
             "shorthand": {
@@ -10494,7 +10494,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "lautoDU'N",
+              "layout_key_code": "\\sotweu'I",
               "length": 9
             }
           }
@@ -10575,7 +10575,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "'PPPCuFI'NNN",
+              "layout_key_code": "'OOO8ocj'III",
               "length": 12
             },
             "variable": {
@@ -10590,7 +10590,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "'PCuFI'N",
+              "layout_key_code": "'O8ocj'I",
               "length": 8
             },
             "shorthand": {
@@ -10605,7 +10605,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "'PCuFI'N",
+              "layout_key_code": "'O8ocj'I",
               "length": 8
             }
           }
@@ -10686,7 +10686,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "'PPPmoDO'NNN",
+              "layout_key_code": "'OOO-wer'III",
               "length": 12
             },
             "variable": {
@@ -10701,7 +10701,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "'PmoDO'N",
+              "layout_key_code": "'O-wer'I",
               "length": 8
             },
             "shorthand": {
@@ -10715,7 +10715,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "'PmoO'N",
+              "layout_key_code": "'O-wr'I",
               "length": 7
             }
           }
@@ -10796,7 +10796,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dUXuqiKI'NNN",
+              "layout_key_code": "]uio2lkj'III",
               "length": 12
             },
             "variable": {
@@ -10813,7 +10813,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dUXuqiKI'N",
+              "layout_key_code": "]uio2lkj'I",
               "length": 10
             },
             "shorthand": {
@@ -10828,7 +10828,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dUuqiI'N",
+              "layout_key_code": "]uo2lj'I",
               "length": 8
             }
           }
@@ -10909,7 +10909,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "huXUtUD>'NNN",
+              "layout_key_code": "hoiutue/'III",
               "length": 12
             },
             "variable": {
@@ -10926,7 +10926,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "huXUtUD>'N",
+              "layout_key_code": "hoiutue/'I",
               "length": 10
             },
             "shorthand": {
@@ -10942,7 +10942,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "huUtUD>'N",
+              "layout_key_code": "houtue/'I",
               "length": 9
             }
           }
@@ -11023,7 +11023,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "jiauyIF]'NNN",
+              "layout_key_code": "3lsoyjcz'III",
               "length": 12
             },
             "variable": {
@@ -11040,7 +11040,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jiauyIF]'N",
+              "layout_key_code": "3lsoyjcz'I",
               "length": 10
             },
             "shorthand": {
@@ -11057,7 +11057,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jiauyIF]'N",
+              "layout_key_code": "3lsoyjcz'I",
               "length": 10
             }
           }
@@ -11138,7 +11138,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "hUAAyIB>'NNN",
+              "layout_key_code": "huffyjd/'III",
               "length": 12
             },
             "variable": {
@@ -11154,7 +11154,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hUAyIB>'N",
+              "layout_key_code": "hufyjd/'I",
               "length": 9
             },
             "shorthand": {
@@ -11170,7 +11170,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hUAyIB>'N",
+              "layout_key_code": "hufyjd/'I",
               "length": 9
             }
           }
@@ -11251,7 +11251,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "hUAApiD<'NNN",
+              "layout_key_code": "huffple;'III",
               "length": 12
             },
             "variable": {
@@ -11267,7 +11267,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hUApiD<'N",
+              "layout_key_code": "hufple;'I",
               "length": 9
             },
             "shorthand": {
@@ -11283,7 +11283,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hUApiD<'N",
+              "layout_key_code": "hufple;'I",
               "length": 9
             }
           }
@@ -11364,7 +11364,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "hUAApeF['NNN",
+              "layout_key_code": "huffpxca'III",
               "length": 12
             },
             "variable": {
@@ -11380,7 +11380,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hUApeF['N",
+              "layout_key_code": "hufpxca'I",
               "length": 9
             },
             "shorthand": {
@@ -11396,7 +11396,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "hUApeF['N",
+              "layout_key_code": "hufpxca'I",
               "length": 9
             }
           }
@@ -11486,7 +11486,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "lUDokua]'NNN",
+              "layout_key_code": "\\uewqosz'III",
               "length": 12
             },
             "variable": {
@@ -11503,7 +11503,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "lUDokua]'N",
+              "layout_key_code": "\\uewqosz'I",
               "length": 10
             },
             "shorthand": {
@@ -11520,7 +11520,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "lUDokua]'N",
+              "layout_key_code": "\\uewqosz'I",
               "length": 10
             }
           }
@@ -11601,7 +11601,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dAB]qIO<'NNN",
+              "layout_key_code": "]fdz2jr;'III",
               "length": 12
             },
             "variable": {
@@ -11618,7 +11618,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dAB]qIO<'N",
+              "layout_key_code": "]fdz2jr;'I",
               "length": 10
             },
             "shorthand": {
@@ -11635,7 +11635,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dAB]qIO<'N",
+              "layout_key_code": "]fdz2jr;'I",
               "length": 10
             }
           }
@@ -11716,7 +11716,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dAB]huB<'NNN",
+              "layout_key_code": "]fdzhod;'III",
               "length": 12
             },
             "variable": {
@@ -11733,7 +11733,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dAB]huB<'N",
+              "layout_key_code": "]fdzhod;'I",
               "length": 10
             },
             "shorthand": {
@@ -11750,7 +11750,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dAB]huB<'N",
+              "layout_key_code": "]fdzhod;'I",
               "length": 10
             }
           }
@@ -11831,7 +11831,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "mIKizaau'NNN",
+              "layout_key_code": "-jkl6sso'III",
               "length": 12
             },
             "variable": {
@@ -11847,7 +11847,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "mIKizau'N",
+              "layout_key_code": "-jkl6so'I",
               "length": 9
             },
             "shorthand": {
@@ -11862,7 +11862,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "mIizau'N",
+              "layout_key_code": "-jl6so'I",
               "length": 8
             }
           }
@@ -11943,7 +11943,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "yIIIdOOU'NNN",
+              "layout_key_code": "yjjj]rru'III",
               "length": 12
             },
             "variable": {
@@ -11957,7 +11957,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yIdOU'N",
+              "layout_key_code": "yj]ru'I",
               "length": 7
             },
             "shorthand": {
@@ -11971,7 +11971,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yIdOU'N",
+              "layout_key_code": "yj]ru'I",
               "length": 7
             }
           }
@@ -12052,7 +12052,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "bEFiwUOO'NNN",
+              "layout_key_code": "bvcl=urr'III",
               "length": 12
             },
             "variable": {
@@ -12068,7 +12068,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "bEFiwUO'N",
+              "layout_key_code": "bvcl=ur'I",
               "length": 9
             },
             "shorthand": {
@@ -12084,7 +12084,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "bEFiwUO'N",
+              "layout_key_code": "bvcl=ur'I",
               "length": 9
             }
           }
@@ -12165,7 +12165,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dODuyiBA'NNN",
+              "layout_key_code": "]reoyldf'III",
               "length": 12
             },
             "variable": {
@@ -12182,7 +12182,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dODuyiBA'N",
+              "layout_key_code": "]reoyldf'I",
               "length": 10
             },
             "shorthand": {
@@ -12199,7 +12199,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dODuyiBA'N",
+              "layout_key_code": "]reoyldf'I",
               "length": 10
             }
           }
@@ -12280,7 +12280,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dODujiau'NNN",
+              "layout_key_code": "]reo3lso'III",
               "length": 12
             },
             "variable": {
@@ -12297,7 +12297,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dODujiau'N",
+              "layout_key_code": "]reo3lso'I",
               "length": 10
             },
             "shorthand": {
@@ -12314,7 +12314,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dODujiau'N",
+              "layout_key_code": "]reo3lso'I",
               "length": 10
             }
           }
@@ -12395,7 +12395,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "gaa]tAB>'NNN",
+              "layout_key_code": "gssztfd/'III",
               "length": 12
             },
             "variable": {
@@ -12411,7 +12411,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "ga]tAB>'N",
+              "layout_key_code": "gsztfd/'I",
               "length": 9
             },
             "shorthand": {
@@ -12427,7 +12427,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "ga]tAB>'N",
+              "layout_key_code": "gsztfd/'I",
               "length": 9
             }
           }
@@ -12508,7 +12508,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "paautuei'NNN",
+              "layout_key_code": "pssotoxl'III",
               "length": 12
             },
             "variable": {
@@ -12524,7 +12524,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "pautuei'N",
+              "layout_key_code": "psotoxl'I",
               "length": 9
             },
             "shorthand": {
@@ -12540,7 +12540,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "pautuei'N",
+              "layout_key_code": "psotoxl'I",
               "length": 9
             }
           }
@@ -12621,7 +12621,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "paaudIBu'NNN",
+              "layout_key_code": "psso]jdo'III",
               "length": 12
             },
             "variable": {
@@ -12637,7 +12637,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "paudIBu'N",
+              "layout_key_code": "pso]jdo'I",
               "length": 9
             },
             "shorthand": {
@@ -12653,7 +12653,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "paudIBu'N",
+              "layout_key_code": "pso]jdo'I",
               "length": 9
             }
           }
@@ -12734,7 +12734,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "tIBugAAU'NNN",
+              "layout_key_code": "tjdogffu'III",
               "length": 12
             },
             "variable": {
@@ -12750,7 +12750,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "tIBugAU'N",
+              "layout_key_code": "tjdogfu'I",
               "length": 9
             },
             "shorthand": {
@@ -12766,7 +12766,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "tIBugAU'N",
+              "layout_key_code": "tjdogfu'I",
               "length": 9
             }
           }
@@ -12847,7 +12847,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "sUD>xIF]'NNN",
+              "layout_key_code": "4ue/1jcz'III",
               "length": 12
             },
             "variable": {
@@ -12864,7 +12864,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "sUD>xIF]'N",
+              "layout_key_code": "4ue/1jcz'I",
               "length": 10
             },
             "shorthand": {
@@ -12881,7 +12881,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "sUD>xIF]'N",
+              "layout_key_code": "4ue/1jcz'I",
               "length": 10
             }
           }
@@ -12962,7 +12962,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "tODulIB>'NNN",
+              "layout_key_code": "treo\\jd/'III",
               "length": 12
             },
             "variable": {
@@ -12979,7 +12979,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "tODulIB>'N",
+              "layout_key_code": "treo\\jd/'I",
               "length": 10
             },
             "shorthand": {
@@ -12996,7 +12996,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "tODulIB>'N",
+              "layout_key_code": "treo\\jd/'I",
               "length": 10
             }
           }
@@ -13077,7 +13077,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "dODulODo'NNN",
+              "layout_key_code": "]reo\\rew'III",
               "length": 12
             },
             "variable": {
@@ -13094,7 +13094,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dODulODo'N",
+              "layout_key_code": "]reo\\rew'I",
               "length": 10
             },
             "shorthand": {
@@ -13110,7 +13110,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "dODulOo'N",
+              "layout_key_code": "]reo\\rw'I",
               "length": 9
             }
           }
@@ -13191,7 +13191,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "yiDUCUOO'NNN",
+              "layout_key_code": "yleu8urr'III",
               "length": 12
             },
             "variable": {
@@ -13207,7 +13207,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yiDUCUO'N",
+              "layout_key_code": "yleu8ur'I",
               "length": 9
             },
             "shorthand": {
@@ -13223,7 +13223,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "yiDUCUO'N",
+              "layout_key_code": "yleu8ur'I",
               "length": 9
             }
           }
@@ -13304,7 +13304,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "jiouZUO<'NNN",
+              "layout_key_code": "3lwo7ur;'III",
               "length": 12
             },
             "variable": {
@@ -13321,7 +13321,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jiouZUO<'N",
+              "layout_key_code": "3lwo7ur;'I",
               "length": 10
             },
             "shorthand": {
@@ -13338,7 +13338,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jiouZUO<'N",
+              "layout_key_code": "3lwo7ur;'I",
               "length": 10
             }
           }
@@ -13419,7 +13419,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "ZEE[biKI'NNN",
+              "layout_key_code": "7vvablkj'III",
               "length": 12
             },
             "variable": {
@@ -13435,7 +13435,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "ZE[biKI'N",
+              "layout_key_code": "7vablkj'I",
               "length": 9
             },
             "shorthand": {
@@ -13450,7 +13450,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "ZE[biI'N",
+              "layout_key_code": "7vablj'I",
               "length": 8
             }
           }
@@ -13531,7 +13531,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "jVWvCLLL'NNN",
+              "layout_key_code": "3m,.8LLL'III",
               "length": 12
             },
             "variable": {
@@ -13546,7 +13546,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jVWvCL'N",
+              "layout_key_code": "3m,.8L'I",
               "length": 8
             },
             "shorthand": {
@@ -13560,7 +13560,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "jVvCL'N",
+              "layout_key_code": "3m.8L'I",
               "length": 7
             }
           }
@@ -13650,7 +13650,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "meF[koou'NNN",
+              "layout_key_code": "-xcaqwwo'III",
               "length": 12
             },
             "variable": {
@@ -13666,7 +13666,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "meF[kou'N",
+              "layout_key_code": "-xcaqwo'I",
               "length": 9
             },
             "shorthand": {
@@ -13682,7 +13682,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "meF[kou'N",
+              "layout_key_code": "-xcaqwo'I",
               "length": 9
             }
           }
@@ -13763,7 +13763,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "meF[kaa]'NNN",
+              "layout_key_code": "-xcaqssz'III",
               "length": 12
             },
             "variable": {
@@ -13779,7 +13779,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "meF[ka]'N",
+              "layout_key_code": "-xcaqsz'I",
               "length": 9
             },
             "shorthand": {
@@ -13795,7 +13795,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "meF[ka]'N",
+              "layout_key_code": "-xcaqsz'I",
               "length": 9
             }
           }
@@ -13876,7 +13876,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "meF[dUD>'NNN",
+              "layout_key_code": "-xca]ue/'III",
               "length": 12
             },
             "variable": {
@@ -13893,7 +13893,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "meF[dUD>'N",
+              "layout_key_code": "-xca]ue/'I",
               "length": 10
             },
             "shorthand": {
@@ -13910,7 +13910,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "meF[dUD>'N",
+              "layout_key_code": "-xca]ue/'I",
               "length": 10
             }
           }
@@ -13991,7 +13991,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "meF[lKD='NNN",
+              "layout_key_code": "-xca\\keG'III",
               "length": 12
             },
             "variable": {
@@ -14008,7 +14008,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "meF[lKD='N",
+              "layout_key_code": "-xca\\keG'I",
               "length": 10
             },
             "shorthand": {
@@ -14025,7 +14025,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "meF[lKD='N",
+              "layout_key_code": "-xca\\keG'I",
               "length": 10
             }
           }
@@ -14106,7 +14106,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "Yvvvdia]'NNN",
+              "layout_key_code": "`...]lsz'III",
               "length": 12
             },
             "variable": {
@@ -14121,7 +14121,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "Yvdia]'N",
+              "layout_key_code": "`.]lsz'I",
               "length": 8
             },
             "shorthand": {
@@ -14136,7 +14136,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "Yvdia]'N",
+              "layout_key_code": "`.]lsz'I",
               "length": 8
             }
           }
@@ -14217,7 +14217,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "lODuxIB]'NNN",
+              "layout_key_code": "\\reo1jdz'III",
               "length": 12
             },
             "variable": {
@@ -14234,7 +14234,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "lODuxIB]'N",
+              "layout_key_code": "\\reo1jdz'I",
               "length": 10
             },
             "shorthand": {
@@ -14251,7 +14251,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "lODuxIB]'N",
+              "layout_key_code": "\\reo1jdz'I",
               "length": 10
             }
           }
@@ -14332,7 +14332,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xiFEdABi'NNN",
+              "layout_key_code": "1lcv]fdl'III",
               "length": 12
             },
             "variable": {
@@ -14349,7 +14349,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiFEdABi'N",
+              "layout_key_code": "1lcv]fdl'I",
               "length": 10
             },
             "shorthand": {
@@ -14366,7 +14366,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xiFEdABi'N",
+              "layout_key_code": "1lcv]fdl'I",
               "length": 10
             }
           }
@@ -14447,7 +14447,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "fAB]hoDO'NNN",
+              "layout_key_code": "[fdzhwer'III",
               "length": 12
             },
             "variable": {
@@ -14464,7 +14464,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "fAB]hoDO'N",
+              "layout_key_code": "[fdzhwer'I",
               "length": 10
             },
             "shorthand": {
@@ -14480,7 +14480,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "fAB]hoO'N",
+              "layout_key_code": "[fdzhwr'I",
               "length": 9
             }
           }
@@ -14561,7 +14561,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "xIA<CaB<'NNN",
+              "layout_key_code": "1jf;8sd;'III",
               "length": 12
             },
             "variable": {
@@ -14578,7 +14578,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xIA<CaB<'N",
+              "layout_key_code": "1jf;8sd;'I",
               "length": 10
             },
             "shorthand": {
@@ -14595,7 +14595,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "xIA<CaB<'N",
+              "layout_key_code": "1jf;8sd;'I",
               "length": 10
             }
           }
@@ -14676,7 +14676,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "maaagUBa'NNN",
+              "layout_key_code": "-sssguds'III",
               "length": 12
             },
             "variable": {
@@ -14691,7 +14691,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "magUBa'N",
+              "layout_key_code": "-sguds'I",
               "length": 8
             },
             "shorthand": {
@@ -14706,7 +14706,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "magUBa'N",
+              "layout_key_code": "-sguds'I",
               "length": 8
             }
           }
@@ -14787,7 +14787,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "YvWVpIAU'NNN",
+              "layout_key_code": "`.,mpjfu'III",
               "length": 12
             },
             "variable": {
@@ -14804,7 +14804,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "YvWVpIAU'N",
+              "layout_key_code": "`.,mpjfu'I",
               "length": 10
             },
             "shorthand": {
@@ -14820,7 +14820,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "YvVpIAU'N",
+              "layout_key_code": "`.mpjfu'I",
               "length": 9
             }
           }
@@ -14901,7 +14901,7 @@
                 "M23",
                 "M23"
               ],
-              "layout_key_code": "biKIliB<'NNN",
+              "layout_key_code": "blkj\\ld;'III",
               "length": 12
             },
             "variable": {
@@ -14918,7 +14918,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "biKIliB<'N",
+              "layout_key_code": "blkj\\ld;'I",
               "length": 10
             },
             "shorthand": {
@@ -14934,7 +14934,7 @@
                 "N12",
                 "M23"
               ],
-              "layout_key_code": "biIliB<'N",
+              "layout_key_code": "blj\\ld;'I",
               "length": 9
             }
           }

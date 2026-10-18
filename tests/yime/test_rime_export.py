@@ -1,7 +1,6 @@
 import json
 import shutil
 import sqlite3
-import pytest
 from pathlib import Path
 
 from yime.utils.rime_export import (
@@ -12,31 +11,25 @@ from yime.utils.rime_export import (
 )
 
 
-def _write_minimal_mapping_files(repo_root: Path, *, disabled: bool = False) -> None:
+def _write_minimal_mapping_files(repo_root: Path) -> None:
     source_root = Path(__file__).resolve().parents[2]
     for relative in (
         Path("internal_data/key_to_symbol.json"),
         Path("internal_data/manual_key_layout.json"),
         Path("syllable/yinyuan/zaoyin_yinyuan_enhanced.json"),
         Path("syllable/yinyuan/yueyin_yinyuan_enhanced.json"),
-        Path("docs/project/connected_speech/erhua_sound_key_projection.json"),
     ):
         destination = repo_root / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source_root / relative, destination)
-    if disabled:
-        path = repo_root / "internal_data/manual_key_layout.json"
-        payload = json.loads(path.read_text(encoding="utf-8"))
-        payload["disabled_yinyuan_ids"] = ["M25", "M26", "M27"]
-        path.write_text(json.dumps(payload), encoding="utf-8")
 
 
 def _create_runtime_db(path: Path, repo_root: Path) -> None:
     symbols = json.loads(
         (repo_root / "internal_data" / "key_to_symbol.json").read_text(encoding="utf-8")
     )
-    first_code = symbols["N01"] + symbols["M01"] * 3
-    phrase_code = first_code + symbols["N12"] + symbols["M25"] * 3
+    first_code = symbols["N01"] + symbols["M01"]
+    phrase_code = first_code + symbols["M25"]
     conn = sqlite3.connect(path)
     try:
         conn.executescript(
@@ -107,19 +100,18 @@ def test_load_runtime_symbol_to_layout_key_uses_two_layer_manual_layout(tmp_path
         (tmp_path / "internal_data" / "key_to_symbol.json").read_text(encoding="utf-8")
     )
     assert symbol_to_key[symbols["N01"]] == "b"
-    assert symbol_to_key[symbols["M01"]] == "I"
-    assert symbol_to_key[symbols["M25"]] == "B"
+    assert symbol_to_key[symbols["M01"]] == "j"
+    assert symbol_to_key[symbols["M25"]] == "M"
     assert convert_runtime_code_to_layout_keys(
-        symbols["N01"] + symbols["M01"] + symbols["M28"], symbol_to_key
-    ) == "bIT"
-    assert convert_runtime_code_to_layout_keys(symbols["M25"], symbol_to_key) == "B"
+        symbols["N01"] + symbols["M01"] + symbols["M25"], symbol_to_key
+    ) == "bjM"
 
 
 def test_load_runtime_symbol_to_layout_key_rejects_altgr_yinyuan_id(tmp_path: Path) -> None:
     _write_minimal_mapping_files(tmp_path)
     layout_path = tmp_path / "internal_data" / "manual_key_layout.json"
     layout = json.loads(layout_path.read_text(encoding="utf-8"))
-    m25_entry = next(entry for entry in layout["layers"] if entry.get("yinyuan_id") == "M28")
+    m25_entry = next(entry for entry in layout["layers"] if entry.get("yinyuan_id") == "M25")
     m25_entry.update(
         physical_key="j",
         output_layer="altgr",
@@ -130,7 +122,7 @@ def test_load_runtime_symbol_to_layout_key_rejects_altgr_yinyuan_id(tmp_path: Pa
     try:
         load_runtime_symbol_to_layout_key(tmp_path)
     except ValueError as exc:
-        assert "Yinyuan ID must use base/shift, got altgr: M28" in str(exc)
+        assert "Yinyuan ID must use base/shift, got altgr: M25" in str(exc)
     else:
         raise AssertionError("AltGr Yinyuan ID assignment should be rejected")
 
@@ -163,11 +155,11 @@ def test_repo_layout_matches_windows_yime_two_layer_keys() -> None:
 
     expected = {
         "N01": ("b", "base", "b"),
-        "N10": ("k", "base", "k"),
-        "M01": ("i", "shift", "I"),
-        "M28": ("t", "shift", "T"),
+        "N10": ("q", "base", "q"),
+        "M01": ("j", "base", "j"),
+        "M25": ("m", "shift", "M"),
         "N23": ("y", "base", "y"),
-        "N24": ("w", "base", "w"),
+        "N24": ("=", "base", "="),
     }
     for yinyuan_id, (physical_key, output_layer, display_label) in expected.items():
         entry = assigned[yinyuan_id]
@@ -244,7 +236,7 @@ def test_explicit_pinyin_inventory_uses_codebook_not_stale_runtime_db(
 def test_export_rime_files_writes_schema_dict_and_metadata(tmp_path: Path) -> None:
     repo_root = tmp_path / "repo"
     repo_root.mkdir()
-    _write_minimal_mapping_files(repo_root, disabled=True)
+    _write_minimal_mapping_files(repo_root)
     db_path = tmp_path / "runtime.db"
     output_dir = tmp_path / "rime"
     _create_runtime_db(db_path, repo_root)
@@ -258,52 +250,21 @@ def test_export_rime_files_writes_schema_dict_and_metadata(tmp_path: Path) -> No
         repo_root=repo_root,
     )
 
-    assert result.row_count == 1
-    assert result.code_count == 1
+    assert result.row_count == 3
+    assert result.code_count == 2
     dict_text = result.paths.dict_path.read_text(encoding="utf-8")
     schema_text = result.paths.schema_path.read_text(encoding="utf-8")
     metadata = json.loads(result.paths.metadata_path.read_text(encoding="utf-8"))
 
     assert "name: yime_variable_test" in dict_text
-    assert "一\tbIII\t120" in dict_text
-    assert "一二\t" not in dict_text
-    assert "一三\t" not in dict_text
+    assert "一\tbj\t120" in dict_text
+    assert "一二\tbjM\t80" in dict_text
+    assert "一三\tbjM\t0" in dict_text
     assert "schema_id: yime_variable_test" in schema_text
     assert 'dictionary: yime_variable_test' in schema_text
-    assert "user_dict: yime_variable_test_layout_" + metadata["layout_projection_sha256"][:12] in schema_text
+    assert "user_dict: yime_variable_test_layout_58f69f370aea" in schema_text
     assert metadata["mode"] == "variable"
     assert metadata["code_form"] == "layout-key"
-    assert metadata["row_count"] == 1
-    assert metadata["excluded_disabled_reading_count"] == 2
-    assert metadata["user_dict_name"] == "yime_variable_test_layout_" + metadata["layout_projection_sha256"][:12]
-
-
-@pytest.mark.parametrize("mode", ["full", "variable", "shorthand"])
-def test_disabled_complete_semantics_cannot_leak_through_shortened_code(tmp_path: Path, mode: str) -> None:
-    repo_root = tmp_path / "repo"
-    repo_root.mkdir()
-    _write_minimal_mapping_files(repo_root, disabled=True)
-    database = tmp_path / "runtime.db"
-    _create_runtime_db(database, repo_root)
-    result = export_rime_files(db_path=database, output_dir=tmp_path / mode,
-                               repo_root=repo_root, mode=mode)
-    dictionary = result.paths.dict_path.read_text(encoding="utf-8")
-    assert result.row_count == 1
-    assert "一二\t" not in dictionary and "一三\t" not in dictionary
-
-
-def test_export_rejects_legacy_shortened_code_without_complete_semantics(tmp_path: Path) -> None:
-    repo_root = tmp_path / "repo"
-    repo_root.mkdir()
-    _write_minimal_mapping_files(repo_root)
-    database = tmp_path / "runtime.db"
-    _create_runtime_db(database, repo_root)
-    symbols = json.loads((repo_root / "internal_data/key_to_symbol.json").read_text(encoding="utf-8"))
-    # The legacy yime_code value has already lost a middle M26. Neither the
-    # remaining active IDs nor a plausible length establishes full semantics.
-    shortened = symbols["N12"] + symbols["M28"] + symbols["M30"]
-    with sqlite3.connect(database) as connection:
-        connection.execute("UPDATE runtime_candidates_materialized SET yime_code = ?, input_shorthand_code = ?", (shortened, shortened))
-        connection.execute("ALTER TABLE runtime_candidates_materialized DROP COLUMN full_yime_code")
-    with pytest.raises(ValueError, match="requires full_yime_code"):
-        export_rime_files(db_path=database, output_dir=tmp_path / "rime", repo_root=repo_root, mode="shorthand")
+    assert metadata["row_count"] == 3
+    assert metadata["layout_projection_sha256"].startswith("58f69f370aea")
+    assert metadata["user_dict_name"] == "yime_variable_test_layout_58f69f370aea"

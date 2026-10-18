@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from tools.generate_ascii_layout import generated_payloads
-from yime.utils.yinyuan_id_chain import (
+from tools.ascii_keyboard.layout_chain import (
     encode_numeric_pinyin_to_yinyuan_ids, load_active_yinyuan_id_to_layout_key,
     load_disabled_yinyuan_ids, load_yinyuan_id_to_layout_key, yinyuan_ids_to_layout_keys,
     load_input_id_to_layout_key, load_erhua_id_to_layout_key, load_erhua_input_registry,
@@ -58,15 +58,24 @@ def test_generated_runtime_projection_is_current():
         assert (ROOT / path).read_text(encoding="utf-8") == content, str(path)
 
 
-def test_handoff_digest_includes_derived_carriers_without_changing_legacy_shape(tmp_path):
-    from tools.lexicon.promote_handoff_target import _layout_digest
-    from tools.lexicon.verify_target_lock import _layout_projection_digest
-    from yime.utils.yinyuan_id_chain import layout_projection_digest
-    payload = json.loads((ROOT / "go-backend/input_methods/yime/data/yime_yinyuan_layout.json").read_text(encoding="utf-8"))
-    target = tmp_path / "layout.json"
-    target.write_text(json.dumps(payload), encoding="utf-8")
-    digest = layout_projection_digest(ROOT)
-    assert _layout_digest(target) == _layout_projection_digest(target) == digest
-    payload["input_id_to_key"]["R04"], payload["input_id_to_key"]["R05"] = payload["input_id_to_key"]["R05"], payload["input_id_to_key"]["R04"]
-    target.write_text(json.dumps(payload), encoding="utf-8")
-    assert _layout_digest(target) == _layout_projection_digest(target) != digest
+def test_product_defaults_and_experiment_are_separate():
+    from yime.utils.yinyuan_id_chain import load_yinyuan_id_to_layout_key as product_mapping
+    from yime.utils.yinyuan_id_chain import layout_projection_digest as product_digest
+    from tools.ascii_keyboard.layout_chain import layout_projection_digest
+    product = product_mapping(ROOT)
+    experiment = load_input_id_to_layout_key(ROOT)
+    assert product["N12"] == product["N26"] == "'"
+    assert product["N25"] == product["N27"] == "`"
+    assert not set("!@#$%^&*(") & set(product.values())
+    assert experiment["N12"] != experiment["N26"]
+    assert experiment["M22"] == "!"
+    assert product_digest(ROOT) != layout_projection_digest(ROOT)
+    # The product's immutable lock continues to validate unchanged resources.
+    # Full contract replay is exercised by its existing test suite in CI.
+
+
+def test_lab_generator_cannot_write_product_paths():
+    targets = generated_payloads(ROOT)
+    assert all(str(path).replace("\\", "/").startswith((
+        "prototypes/touch-terminal/encoding/", "go-backend/internal/asciicodemode/"
+    )) for path in targets)

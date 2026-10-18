@@ -11,7 +11,7 @@ YimeCore 引擎。134 键概念布局有 75 个独立 ASCII 载体（52 字母�
 `.generated/ascii-keyboard-134/data/yime_{variable,full,shorthand}.dict.yaml`。
 同目录的 `ascii_keyboard_manifest.json` 必须绑定当前完整 75 载体布局摘要、空停用集合和
 三份词典的 SHA-256 与 `input_policy: concept-keyboard-modes-v2`；启动时逐项核验，
-布局摘要还必须等于编译时生成的完整 `codemode.LayoutProjectionSHA256`，防止读取旧布局词典或旧二进制。
+布局摘要还必须等于编译时生成的完整 `asciicodemode.LayoutProjectionSHA256`，防止读取旧布局词典或旧二进制。
 在 `go-backend` 目录执行：
 
 ```text
@@ -66,7 +66,7 @@ API 允许分别设置；134 键页面的 CN EN 同时设置两项，页面初�
 可以由 `select`、`input`、`literal` 或 `symbol` 产生。ANSI 和虚拟键盘都把
 字符交给本实验服务统一处理，浏览器不自行提交标点：
 
-- 中文输入的编码字母表来自 `codemode.LayoutAlphabet`，当前为 52 个大小写字母与 23 个符号。
+- 中文输入的编码字母表来自 `asciicodemode.LayoutAlphabet`，当前为 52 个大小写字母与 23 个符号。
   编码串始终为 ASCII，不受中英标点模式影响；包括 R15 的所有符号载体均由该表动态判定。
 - 英文输入直接输出按键固定大小写，不编码、不数字选词；只在独立中文标点模式启用时转换标点。
   切换到英文时，原中文组成暂停保留；空格/回车用 `literal` 插入，不确认暂停的候选。

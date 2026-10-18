@@ -14,8 +14,8 @@
     "notes": "Reviewed CN134 projection. All 60 canonical IDs and 15 reviewed derived erhua IDs have distinct ASCII carriers. M25/M26/M27 use B/M/P. R01-R03 remain aliases of M22-M24. Geometry and explicit layers live in the selected CN134 KLE; EN134 is a page-local English overlay only.",
     "template_scope": "94 printable ANSI key/layer slots plus space",
     "total_slots": 95,
-    "resolved_from": "internal_data/manual_key_layout.json + internal_data/key_to_symbol.json",
-    "resolved_output": "internal_data/manual_key_layout.resolved.json"
+    "resolved_from": "prototypes/touch-terminal/encoding/manual_key_layout.json + internal_data/key_to_symbol.json",
+    "resolved_output": "prototypes/touch-terminal/encoding/manual_key_layout.resolved.json"
   },
   "stats": {
     "total_slots": 95,

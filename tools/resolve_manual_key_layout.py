@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from yime.utils.yinyuan_id_chain import load_shared_layout_groups, load_erhua_input_registry  # noqa: E402
+from yime.utils.yinyuan_id_chain import load_shared_layout_groups  # noqa: E402
 
 
 DEFAULT_LAYOUT = ROOT / "internal_data" / "manual_key_layout.json"
@@ -54,7 +54,7 @@ def validate_layers(layers: list[dict[str, Any]], key_to_symbol: dict[str, str])
             resolved_item["symbol_codepoint"] = None
             resolved_item["symbol_category"] = None
         else:
-            if yinyuan_id not in key_to_symbol and yinyuan_id not in load_erhua_input_registry():
+            if yinyuan_id not in key_to_symbol:
                 raise ValueError(f"Unknown yinyuan_id: {yinyuan_id}")
             if yinyuan_id in seen_yinyuan_ids:
                 previous_slot = seen_yinyuan_ids[yinyuan_id]
@@ -67,11 +67,10 @@ def validate_layers(layers: list[dict[str, Any]], key_to_symbol: dict[str, str])
                 "physical_key": physical_key,
                 "output_layer": output_layer,
             }
-            symbol_char = key_to_symbol.get(yinyuan_id)
+            symbol_char = key_to_symbol[yinyuan_id]
             resolved_item["symbol_char"] = symbol_char
-            resolved_item["symbol_codepoint"] = f"U+{ord(symbol_char):06X}" if symbol_char else None
-            resolved_item["symbol_category"] = ("derived-erhua" if yinyuan_id.startswith("R")
-                                                else "noise" if yinyuan_id.startswith("N") else "musical")
+            resolved_item["symbol_codepoint"] = f"U+{ord(symbol_char):06X}"
+            resolved_item["symbol_category"] = "noise" if yinyuan_id.startswith("N") else "musical"
 
         if literal_char is None:
             resolved_item["literal_codepoint"] = None
@@ -82,7 +81,7 @@ def validate_layers(layers: list[dict[str, Any]], key_to_symbol: dict[str, str])
         if resolved_char is None:
             resolved_item["resolved_char"] = None
             resolved_item["resolved_codepoint"] = None
-            resolved_item["resolved_category"] = resolved_item["symbol_category"]
+            resolved_item["resolved_category"] = None
         else:
             resolved_item["resolved_char"] = resolved_char
             resolved_item["resolved_codepoint"] = f"U+{ord(resolved_char):06X}" if ord(resolved_char) > 0xFFFF else f"U+{ord(resolved_char):04X}"
@@ -134,8 +133,6 @@ def build_resolved_layout(layout_data: dict[str, Any], key_to_symbol: dict[str, 
             ),
         },
         "shared_yinyuan_key_groups": layout_data.get("shared_yinyuan_key_groups", []),
-        "disabled_yinyuan_ids": layout_data.get("disabled_yinyuan_ids", []),
-        "input_id_aliases": layout_data.get("input_id_aliases", {}),
         "layers": resolved_layers,
     }
 

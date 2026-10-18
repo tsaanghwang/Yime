@@ -11,6 +11,8 @@ on:
       - 'go-backend/input_methods/yime/data/**'
       - 'go-backend/input_methods/yime/codemode/**'
       - 'go-backend/cmd/yime-keyboard-lab/**'
+      - 'go-backend/internal/asciicodemode/**'
+      - 'tools/ascii_keyboard/**'
       - 'tools/generate_ascii_layout.py'
       - 'tools/resolve_manual_key_layout.py'
       - 'yime/utils/yinyuan_id_chain.py'
@@ -24,6 +26,8 @@ on:
       - 'go-backend/input_methods/yime/data/**'
       - 'go-backend/input_methods/yime/codemode/**'
       - 'go-backend/cmd/yime-keyboard-lab/**'
+      - 'go-backend/internal/asciicodemode/**'
+      - 'tools/ascii_keyboard/**'
       - 'tools/generate_ascii_layout.py'
       - 'tools/resolve_manual_key_layout.py'
       - 'yime/utils/yinyuan_id_chain.py'
@@ -53,4 +57,4 @@ jobs:
         run: python -X utf8 tools/generate_ascii_layout.py --check
       - name: Validate real engine loopback session boundary
         working-directory: go-backend
-        run: go test ./cmd/yime-keyboard-lab ./input_methods/yime/codemode
+        run: go test ./cmd/yime-keyboard-lab ./internal/asciicodemode ./input_methods/yime/codemode

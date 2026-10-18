@@ -4,16 +4,22 @@
 
 - Preserve both layout versions. The existing standard-keyboard layout remains on `codex/current-readiness-delivery-20260927` in `C:\dev\Yime`; its unrelated uncommitted work must remain untouched. The new concept-keyboard layout is developed independently on `codex/ascii-physical-layout-experiment`.
 - For the new layout, standard ANSI input is a functional compatibility path only. Validate correct and complete input, selection, editing, and cancellation; do not impose typing-speed, Shift-count, ergonomic, or efficiency targets on this path, or redesign the new mapping to satisfy them. Efficiency and physical usability work belongs to the concept physical/virtual keyboard; the old layout retains the standard-keyboard route.
-- Each branch keeps its own version of the sole editable `internal_data/manual_key_layout.json`, with matching generated layouts, dictionaries, identities, and evidence. Do not mix cross-layout generated artifacts or automatically merge the new layout over the old one. Shared fixes may be ported deliberately with each layout's own regressions.
+- Historical branch checkpoints used a branch-local `internal_data/manual_key_layout.json`. The current isolated lab instead keeps its sole editable projection at `prototypes/touch-terminal/encoding/manual_key_layout.json`; the root manual file and product artifacts retain the standard layout. Keep each projection with matching generated layouts, dictionaries, identities, and evidence. Do not mix cross-layout generated artifacts or automatically merge the new layout over the old one. Shared fixes may be ported deliberately with each layout's own regressions.
 - This is a layout-version split, not a change to the independent YimeCore and Rime/PIME product boundaries. Neither branch preservation nor page testing authorizes changing installed input methods, default input selection, or user data.
 
 ## Current CN/EN134 keyboard lab (user decisions, 2026-10-18)
 
 - The active virtual prototype reads `prototypes/touch-terminal/design/yime-cn-134k-24u-keyboard-layout.json` and its `yime-en-134k-24u-keyboard-layout.json` pair. Earlier 138-key instructions below describe the preserved checkpoint, not the current key inventory.
-- Keep the branch-local manual projection as the only editable encoding source; CN134 changes 36 ASCII assignments and requires regenerated metadata and isolated three-mode dictionaries. Never mix those dictionaries with the standard-layout branch or installed products.
+- Keep `prototypes/touch-terminal/encoding/manual_key_layout.json` as the only editable lab encoding source; CN134 changes 36 ASCII assignments and requires regenerated metadata and isolated three-mode dictionaries. Never mix those dictionaries with the standard-layout branch or installed products.
 - CN EN couples page input language and punctuation. In English input, Layout toggles the original/English view persistently; Chinese input always shows CN and retains the English preference. EN base letters are lowercase with explicit uppercase Shift. Exactly 23 empty EN keys are disabled independently of color. Reuse physical and legend nodes and keep their geometry/colors during switching.
 - The existing contextual main-digit experiment exception remains scoped to this lab. Side numeric zones retain their literal bypass. Reserved unlabelled main punctuation entrances have an explicit software switch, off by default; coding-ID layers remain coding. Unicode symbol input is limited to the six reviewed keycaps. No product runtime change is authorized by this experiment.
 - The user reports the touch display is available. Actual finger/pen acceptance must be observed and recorded separately from mouse or simulated-touch checks; no old hardware result is inherited by CN/EN134.
+
+## Product/lab isolation repair (2026-10-18)
+
+- Product `internal_data/`, packaged layouts/dictionaries, layout lock checks, standard codemode, and connected-speech semantic records retain mainline behavior. Do not reproject them to repair a keyboard-lab test or update product locks to bless experimental data.
+- Lab generated metadata lives under `prototypes/touch-terminal/encoding/` and `go-backend/internal/asciicodemode/`. The experimental Go code-mode implementation is generated from the shared algorithm with only lab layout metadata substituted; do not hand-maintain a second algorithm.
+- Offline experimental derivation supplies an explicit process-local Go `-overlay` for that one code-mode source. Normal product builds/tests never use it. No global `GOFLAGS`, installed products, or product defaults may be changed by this tooling.
 
 ## Simple development installer rewrite (user decision, 2026-09-14)
 

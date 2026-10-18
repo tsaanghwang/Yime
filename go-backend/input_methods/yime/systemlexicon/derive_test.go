@@ -1,8 +1,6 @@
 package systemlexicon
 
 import (
-	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -10,30 +8,8 @@ import (
 )
 
 func TestDeriveFromFullDictionaryGeneratesThreeModes(t *testing.T) {
-	// The fixture is generated independently by the canonical Python semantic
-	// pipeline, so this tests current projection without deriving expectations
-	// through the same Go implementation under test.
-	data, err := os.ReadFile("../codemode/testdata/canonical_syllables.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-	type syllable struct{ Pinyin, Full, Variable, Shorthand string }
-	var fixture struct {
-		Syllables []syllable `json:"syllables"`
-	}
-	if err := json.Unmarshal(data, &fixture); err != nil {
-		t.Fatal(err)
-	}
-	byPinyin := map[string]syllable{}
-	for _, row := range fixture.Syllables {
-		byPinyin[row.Pinyin] = row
-	}
-	a, ba := byPinyin["a2"], byPinyin["ba1"]
-	if len(a.Full) != 4 || len(ba.Full) != 4 || a.Variable == "" || a.Shorthand == "" || ba.Variable == "" || ba.Shorthand == "" {
-		t.Fatal("canonical syllable fixture is missing a2/ba1")
-	}
 	input := filepath.Join(t.TempDir(), "source.yaml")
-	content := fmt.Sprintf("# source\n---\nname: imported\nversion: \"1\"\nsort: by_weight\n...\n阿\t%s\t100\n吧\t%s\t90\n阿吧\t%s%s\t80\n", a.Full, ba.Full, a.Full, ba.Full)
+	content := "# source\n---\nname: imported\nversion: \"1\"\nsort: by_weight\n...\n阿\t'sdf\t100\n吧\tqfff\t90\n阿吧\t'sdfqfff\t80\n"
 	if err := os.WriteFile(input, []byte(content), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -46,9 +22,9 @@ func TestDeriveFromFullDictionaryGeneratesThreeModes(t *testing.T) {
 		t.Fatalf("unexpected manifest: %#v", manifest)
 	}
 	checks := map[string][]string{
-		"yime_full.dict.yaml":      {"阿\t" + a.Full + "\t100", "阿吧\t" + a.Full + " " + ba.Full + "\t80"},
-		"yime_variable.dict.yaml":  {"阿\t" + a.Variable + "\t100", "阿吧\t" + a.Variable + " " + ba.Variable + "\t80"},
-		"yime_shorthand.dict.yaml": {"阿\t" + a.Shorthand + "\t100", "阿吧\t" + a.Shorthand + " " + ba.Shorthand + "\t80"},
+		"yime_full.dict.yaml":      {"阿\t'sdf\t100", "阿吧\t'sdf qfff\t80"},
+		"yime_variable.dict.yaml":  {"阿\t'sdf\t100", "阿吧\t'sdf qf\t80"},
+		"yime_shorthand.dict.yaml": {"阿\t'sf\t100", "阿吧\t'sf qf\t80"},
 	}
 	for name, fragments := range checks {
 		data, err := os.ReadFile(filepath.Join(out, name))

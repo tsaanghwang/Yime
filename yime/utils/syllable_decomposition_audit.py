@@ -16,7 +16,6 @@ from typing import Iterable
 from syllable.codec.yinjie_encoder import YinjieEncoder, YinjieEncodingError
 from yime.utils.yinyuan_id_chain import (
     REPO_ROOT,
-    load_disabled_yinyuan_ids,
     load_semantic_yinyuan_registry,
     load_symbol_to_yinyuan_id,
     load_yinyuan_id_to_layout_key,
@@ -107,7 +106,6 @@ def build_syllable_decomposition_rows(
     symbol_to_id = load_symbol_to_yinyuan_id(repo_root)
     registry = load_semantic_yinyuan_registry(repo_root)
     layout = load_yinyuan_id_to_layout_key(repo_root)
-    disabled_ids = load_disabled_yinyuan_ids(repo_root)
 
     staged: list[tuple[str, str, object, tuple[str, str, str, str]]] = []
     aliases_by_ids: dict[tuple[str, str, str, str], list[str]] = {}
@@ -139,7 +137,6 @@ def build_syllable_decomposition_rows(
             result.ganyin_slots.moyin,
         )
         names = tuple(registry[yinyuan_id]["label"] for yinyuan_id in ids)
-        disabled_by_layout = bool(disabled_ids.intersection(ids))
         rows.append(
             SyllableDecompositionRow(
                 pinyin_tone=pinyin_tone,
@@ -160,9 +157,9 @@ def build_syllable_decomposition_rows(
                 huyin_name=names[1],
                 zhuyin_name=names[2],
                 moyin_name=names[3],
-                layout_code="" if disabled_by_layout else "".join(layout[yinyuan_id] for yinyuan_id in ids),
+                layout_code="".join(layout[yinyuan_id] for yinyuan_id in ids),
                 aliases=" ".join(aliases_by_ids[ids]),
-                status="disabled_by_layout" if disabled_by_layout else "ok",
+                status="ok",
             )
         )
     return rows

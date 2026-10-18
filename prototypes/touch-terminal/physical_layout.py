@@ -250,11 +250,11 @@ def _english_action(key):
 
 
 def build(repo_root=ROOT, source_path=None):
-    from yime.utils.yinyuan_id_chain import load_input_id_to_layout_key, layout_projection_digest
+    from tools.ascii_keyboard.layout_chain import load_input_id_to_layout_key, layout_projection_digest
     source_path = source_path or repo_root / SOURCE.relative_to(ROOT)
     english_path = repo_root / ENGLISH_SOURCE.relative_to(ROOT)
     mapping = load_input_id_to_layout_key(repo_root)
-    manual_path = repo_root / "internal_data/manual_key_layout.json"
+    manual_path = repo_root / "prototypes/touch-terminal/encoding/manual_key_layout.json"
     manual = json.loads(manual_path.read_text(encoding="utf-8-sig"))
     if manual.get("disabled_yinyuan_ids") or manual.get("shared_yinyuan_key_groups"):
         raise ValueError("CN134 requires all 75 carriers independent and enabled")

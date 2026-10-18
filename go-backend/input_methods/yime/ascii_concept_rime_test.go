@@ -18,11 +18,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup"
+	"github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode"
 )
 
-var runASCIIConceptRime = flag.Bool("ascii-concept-rime", false, "run isolated real librime acceptance for the generated 138-key experiment")
+var runASCIIConceptRime = flag.Bool("ascii-concept-rime", false, "run isolated real librime acceptance for the generated 134-key experiment")
 
 type conceptErhuaCase struct {
 	text, pinyin string
@@ -37,14 +37,14 @@ type conceptErhuaCase struct {
 // ASCII transport probes, not invented pronunciations or Yinyuan encodings.
 func TestRealRimeASCIIConceptErhuaThreeModesAndRollback(t *testing.T) {
 	if !*runASCIIConceptRime {
-		t.Skip("set -ascii-concept-rime to run the isolated 138-key real Rime test")
+		t.Skip("set -ascii-concept-rime to run the isolated 134-key real Rime test")
 	}
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
 		t.Fatal("cannot locate checkout")
 	}
 	repo := filepath.Clean(filepath.Join(filepath.Dir(filename), "..", "..", ".."))
-	dataDir := filepath.Join(repo, ".generated", "ascii-keyboard-138", "data")
+	dataDir := filepath.Join(repo, ".generated", "ascii-keyboard-134", "data")
 	manifestBytes, err := os.ReadFile(filepath.Join(dataDir, "ascii_keyboard_manifest.json"))
 	if err != nil {
 		t.Fatal(err)
@@ -72,10 +72,7 @@ func TestRealRimeASCIIConceptErhuaThreeModesAndRollback(t *testing.T) {
 		t.Fatal("expected 75 ASCII carriers")
 	}
 	cases := readConceptErhuaCases(t, filepath.Join(dataDir, "yime_erhua_reverse_source.tsv"))
-	codeMap, err := reverselookup.LoadSharedCodeMap(dataDir)
-	if err != nil {
-		t.Fatal(err)
-	}
+	codeMap := readConceptCodeMap(t, filepath.Join(dataDir, "yime_pinyin_codes.tsv"))
 	tempRoot := t.TempDir()
 	shared, user := filepath.Join(tempRoot, "shared"), filepath.Join(tempRoot, "user")
 	for _, path := range []string{shared, user} {
@@ -341,4 +338,36 @@ func findConceptRimeCandidate(t *testing.T, session RimeSessionId, input, text s
 	}
 	t.Fatalf("candidate paging exceeded 100 pages for %q after %q", text, input)
 	return -1, false
+}
+
+// The opt-in experiment must not derive codes with the product default layout.
+func readConceptCodeMap(t *testing.T, path string) map[string]reverselookup.CodeRecord {
+	t.Helper()
+	stream, err := os.Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stream.Close()
+	reader := csv.NewReader(stream)
+	reader.Comma = '\t'
+	if _, err := reader.Read(); err != nil {
+		t.Fatal(err)
+	}
+	result := map[string]reverselookup.CodeRecord{}
+	for {
+		row, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil || len(row) != 2 {
+			t.Fatalf("invalid experimental pinyin row: %v", err)
+		}
+		record, err := codemode.BuildRecord(row[1])
+		if err != nil {
+			t.Fatal(err)
+		}
+		key := strings.NewReplacer("u:", "ü", "v", "ü").Replace(strings.ToLower(row[0]))
+		result[key] = reverselookup.CodeRecord{Full: record.Full, Variable: record.Variable, Shorthand: record.Shorthand}
+	}
+	return result
 }

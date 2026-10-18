@@ -1,11 +1,8 @@
 from __future__ import annotations
 
 import json
-from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
-
-from yime.connected_speech import erhua_lexicon
 
 from yime.connected_speech.erhua_lexicon import (
     DEFAULT_ALIASES,
@@ -124,34 +121,3 @@ def test_checked_in_bundles_are_complete_and_current() -> None:
         payload["generated_utc"] = "2026-08-15T00:00:00Z"
     assert actual_annotations == expected_annotations
     assert actual_aliases == expected_aliases
-
-
-def test_three_mode_semantics_survive_a_complete_ascii_projection_change(monkeypatch) -> None:
-    """Layout changes must not alter identities, shortening or feature rewrites."""
-    timestamp = datetime(2026, 8, 15, tzinfo=timezone.utc)
-    original_annotations, original = build_explicit_erhua_bundles(
-        repo_root=ROOT, generated_at=timestamp,
-    )
-    context = erhua_lexicon._build_context(ROOT, ROOT / erhua_lexicon.DEFAULT_FEATURE_RULES)
-    keys = sorted(set(context.layout_key_by_id.values()))
-    permutation = dict(zip(keys, keys[1:] + keys[:1]))
-    alternative = replace(context, layout_key_by_id={
-        yinyuan_id: permutation[key]
-        for yinyuan_id, key in context.layout_key_by_id.items()
-    })
-    monkeypatch.setattr(erhua_lexicon, "_build_context", lambda *_: alternative)
-    moved_annotations, moved = build_explicit_erhua_bundles(
-        repo_root=ROOT, generated_at=timestamp,
-    )
-    assert moved_annotations == original_annotations
-    assert moved["counts"] == original["counts"]
-    for before, after in zip(original["records"], moved["records"], strict=True):
-        assert before["record_id"] == after["record_id"]
-        assert before["routes"]["fused_erhua"] == after["routes"]["fused_erhua"]
-        for mode in ("full", "variable", "shorthand"):
-            old = before["routes"]["suffix_compatibility"]["codes"][mode]
-            new = after["routes"]["suffix_compatibility"]["codes"][mode]
-            assert new["yinyuan_ids"] == old["yinyuan_ids"]
-            assert new["runtime_symbol_code"] == old["runtime_symbol_code"]
-            assert new["length"] == old["length"]
-            assert new["layout_key_code"] == "".join(permutation[key] for key in old["layout_key_code"])

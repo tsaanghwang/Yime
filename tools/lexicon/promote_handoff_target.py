@@ -47,15 +47,11 @@ def _expect(actual: object, expected: object, label: str) -> None:
 
 
 def _layout_digest(path: Path) -> str:
-    payload = _read_json(path)
-    mapping = payload.get("input_id_to_key", payload.get("yinyuan_id_to_key"))
+    mapping = _read_json(path).get("yinyuan_id_to_key")
     if not isinstance(mapping, dict) or not mapping:
         raise PromotionError(f"layout has no yinyuan_id_to_key mapping: {path}")
-    projected = sorted((str(key), str(value)) for key, value in mapping.items())
-    identity = ({"mapping": projected, "disabled_yinyuan_ids": sorted(payload["disabled_yinyuan_ids"])}
-                if "disabled_yinyuan_ids" in payload else projected)
     normalized = json.dumps(
-        identity,
+        sorted((str(key), str(value)) for key, value in mapping.items()),
         ensure_ascii=False,
         separators=(",", ":"),
     ).encode("utf-8")

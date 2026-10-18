@@ -43,25 +43,3 @@ def test_repo_layout_has_no_relocated_literals() -> None:
             continue
         native_literal = " " if entry["physical_key"] == "space" else entry["display_label"]
         assert literal_char == native_literal
-
-
-def test_derived_erhua_id_is_not_assigned_a_canonical_pua_symbol() -> None:
-    entry = _entry(display_label="@", literal_char=None)
-    entry["yinyuan_id"] = "R04"
-    resolved = validate_layers([entry], {})[0]
-    assert resolved["yinyuan_id"] == "R04"
-    assert resolved["symbol_char"] is None
-    assert resolved["symbol_codepoint"] is None
-    assert resolved["resolved_char"] is None
-    assert resolved["resolved_category"] == "derived-erhua"
-
-
-def test_unreviewed_erhua_id_cannot_create_a_parallel_sound_inventory() -> None:
-    entry = _entry(display_label="@", literal_char=None)
-    entry["yinyuan_id"] = "R19"
-    try:
-        validate_layers([entry], {})
-    except ValueError as exc:
-        assert "Unknown yinyuan_id" in str(exc)
-    else:
-        raise AssertionError("unreviewed derived sound must be rejected")

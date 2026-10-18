@@ -9292,7 +9292,7 @@
       "sha256": "06e361a5f687de06c3a8b623cf8df485b4769804bb24c300a12df01a6a929c37"
     },
     {
-      "path": "internal_data/manual_key_layout.json",
+      "path": "prototypes/touch-terminal/encoding/manual_key_layout.json",
       "sha256": "2f7cc8c00321540beb0f00413c9fdea44f6d6a62c4fa7ed413b3a4440200dbce"
     }
   ]
