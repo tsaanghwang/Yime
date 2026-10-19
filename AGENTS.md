@@ -1,5 +1,10 @@
 # Agent Constraints
 
+## Closed storage-cost follow-up (user decision, 2026-10-19)
+
+- The user has confirmed that the large-file/storage-cost issue is resolved. Treat that follow-up as closed; do not reopen an LFS ticket or repeat billing, storage, or LFS-cost investigations in morning reports, recurring checks, or routine project work unless the user explicitly requests a new investigation.
+- Preserve existing historical evidence and ordinary repository/data integrity checks. This closure is not authorization to delete large files, rewrite Git history, or change LFS tracking.
+
 ## Two keyboard-layout branches (user decision, 2026-10-09)
 
 - Preserve both layout versions. The existing standard-keyboard layout remains on `codex/current-readiness-delivery-20260927` in `C:\dev\Yime`; its unrelated uncommitted work must remain untouched. The new concept-keyboard layout is developed independently on `codex/ascii-physical-layout-experiment`.
