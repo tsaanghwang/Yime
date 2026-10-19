@@ -11,7 +11,7 @@ if not node:
 commands = [
     [sys.executable, '-X', 'utf8', 'generate_data.py', '--check'],
     [sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', '.', '-p', 'test_*.py', '-v'],
-    [node, '--test', 'core.test.mjs', 'geometry.test.mjs', 'input.test.mjs', 'keyboard-layout.test.mjs'],
+    [node, '--test', 'core.test.mjs', 'geometry.test.mjs', 'sizing.test.mjs', 'input.test.mjs', 'keyboard-layout.test.mjs'],
     [node, '--check', 'app.mjs'],
     [node, '--check', 'browser-smoke.js'],
 ]

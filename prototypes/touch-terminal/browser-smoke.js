@@ -132,7 +132,7 @@ async (page) => {
   checks.push('browser-simulated two-finger Shift release ordering;layout boundary clears Shift');
   const downloading=page.waitForEvent('download');await page.locator('#export').click();const download=await downloading;
   let reportText='';for await(const chunk of await download.createReadStream())reportText+=chunk;
-  const report=JSON.parse(reportText);assert(report.formatVersion===6&&report.touchTemplateId===layout.touchTemplateId,'report layout provenance');
+  const report=JSON.parse(reportText);assert(report.formatVersion===7&&report.touchTemplateId===layout.touchTemplateId,'report layout provenance');
   assert(report.layoutSwitchHandlerToFrameMs.length>=200,'layout timing samples');
   assert(report.hardwareAcceptance===false,'automation is not physical acceptance');
   const samples=report.layoutSwitchHandlerToFrameMs.slice(2,202).sort((a,b)=>a-b),p=q=>samples[Math.ceil(samples.length*q)-1];

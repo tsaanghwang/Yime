@@ -12,6 +12,9 @@ on:
       - 'go-backend/input_methods/yime/codemode/**'
       - 'go-backend/cmd/yime-keyboard-lab/**'
       - 'go-backend/internal/asciicodemode/**'
+      - 'go-backend/internal/touchkeyboard/**'
+      - 'go-backend/cmd/yime-touch-keyboard/**'
+      - 'tools/build_touch_keyboard_desktop.py'
       - 'tools/ascii_keyboard/**'
       - 'tools/generate_ascii_layout.py'
       - 'tools/resolve_manual_key_layout.py'
@@ -27,6 +30,9 @@ on:
       - 'go-backend/input_methods/yime/codemode/**'
       - 'go-backend/cmd/yime-keyboard-lab/**'
       - 'go-backend/internal/asciicodemode/**'
+      - 'go-backend/internal/touchkeyboard/**'
+      - 'go-backend/cmd/yime-touch-keyboard/**'
+      - 'tools/build_touch_keyboard_desktop.py'
       - 'tools/ascii_keyboard/**'
       - 'tools/generate_ascii_layout.py'
       - 'tools/resolve_manual_key_layout.py'
@@ -57,4 +63,22 @@ jobs:
         run: python -X utf8 tools/generate_ascii_layout.py --check
       - name: Validate real engine loopback session boundary
         working-directory: go-backend
-        run: go test ./cmd/yime-keyboard-lab ./internal/asciicodemode ./input_methods/yime/codemode
+        run: go test ./cmd/yime-keyboard-lab ./cmd/yime-touch-keyboard ./internal/touchkeyboard ./internal/asciicodemode ./input_methods/yime/codemode
+      - name: Build isolated x64 desktop trial package
+        run: python -X utf8 tools/build_touch_keyboard_desktop.py
+      - name: Cross-build isolated ARM64 desktop trial package (not native acceptance)
+        run: python -X utf8 tools/build_touch_keyboard_desktop.py --arch arm64 --output-dir .generated/touch-keyboard-desktop-arm64
+      - uses: actions/upload-artifact@v6
+        with:
+          name: touch-keyboard-windows-amd64-${{ github.sha }}
+          path: .generated/touch-keyboard-desktop/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@v6
+        with:
+          name: touch-keyboard-windows-arm64-${{ github.sha }}
+          path: .generated/touch-keyboard-desktop-arm64/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

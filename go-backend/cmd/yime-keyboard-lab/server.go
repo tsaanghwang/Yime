@@ -330,7 +330,7 @@ func (a *lab) static(w http.ResponseWriter, r *http.Request) {
 	// This service exposes only the physical-model entrypoint. Historical demo
 	// data and implementation files must not be mistaken for the live backend.
 	switch relative {
-	case "index.html", "app.mjs", "input.mjs", "keyboard-layout.mjs", "geometry.mjs", "style.css", "data/physical-layout.json", "README.md", "PROTOCOL.md", "HARDWARE.md":
+	case "index.html", "app.mjs", "input.mjs", "keyboard-layout.mjs", "geometry.mjs", "sizing.mjs", "style.css", "data/physical-layout.json", "README.md", "PROTOCOL.md", "HARDWARE.md":
 	default:
 		http.NotFound(w, r)
 		return

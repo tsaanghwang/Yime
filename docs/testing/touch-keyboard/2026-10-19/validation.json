@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-19",
+  "scope": "isolated-desktop-english-keyboard-and-web-physical-sizing",
+  "unitMM": 19.05,
+  "fullWidthMM": 471.4875,
+  "checks": {
+    "goFocusedPackages": "passed: touchkeyboard, desktop command, keyboard lab, asciicodemode",
+    "prototypeValidation": "passed: 24 Python and 42 JavaScript tests",
+    "browserInputRegression": "passed: ASCII, three modes, ISO cancellation, simulated multitouch, 200 layout switches",
+    "browserSizingRegression": {
+      "passed": true,
+      "rulerCorrection": 1.25,
+      "localHorizontalScroll": true,
+      "nodeIdentityPreserved": true,
+      "calibrationPersisted": true
+    },
+    "nativeConsoleSelfTestWithPortableAssets": "passed: disposable EDIT Unicode text, case, punctuation, editing, Ctrl/Shift selection, gesture routing, changed-focus cancellation",
+    "guiBackgroundSelfTest": "safely rejected when Windows disallowed temporary target foreground activation; no input sent",
+    "x64PortableBuild": "passed",
+    "arm64CrossBuild": "passed; not native execution",
+    "targetLock": "passed",
+    "productSourceDiff": "empty: internal_data, product data, installer, lexicon tooling"
+  },
+  "evidenceLimits": {
+    "physicalTouch": "user-reported baseline archived separately; new desktop not yet tested by user",
+    "rulerRecheck": "pending physical measurement of new 100mm ruler",
+    "notepadWordAcceptance": false,
+    "armNativeAcceptance": false,
+    "chineseDesktopComposition": "not connected",
+    "main17Geometry": "interface reserved; reviewed geometry not yet supplied"
+  }
+}
