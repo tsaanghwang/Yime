@@ -263,4 +263,64 @@ test('local text edits preserve graphemes and only change the selected page rang
   assert.deepEqual(editText('你好',1,1,'PageDown'),{value:'你好',start:2,end:2});
 });
 
-function response(value) { return {ok:true,status:200,json:async () => value}; }
+test('confirmed composition rejection keeps queued Backspace, selection and Clear usable without replay',async () => {
+  for (const status of [400,409]) {
+    let raw = 'n'.repeat(128), revision = 7, ids = 0;
+    const events = [], rendered = [];
+    const modes = {input:'chinese',punctuation:'chinese'};
+    const state = () => ({raw_input:raw,candidates:[{id:'candidate-1',text:'你'}]});
+    const client = createLiveClient({idFactory:() => `event-${++ids}`,onResult:r => rendered.push(r),fetcher:async (url,options) => {
+      if (url.endsWith('/info')) return response({layoutId:'layout',token:'t',inputPolicy:INPUT_POLICY});
+      if (url.endsWith('/session')) return response({ok:true,sessionId:'s',revision:status === 400 ? revision : 0,state:state(),modes});
+      const event = JSON.parse(options.body); events.push(event);
+      if (event.type === 'input') return response({ok:false,error:status === 400 ? 'composition limit reached' : 'stale revision',sessionId:'s',revision,state:state(),modes},status);
+      assert.equal(event.baseRevision,revision);
+      if (event.type === 'backspace') raw = raw.slice(0,-1);
+      if (event.type === 'clear' || event.type === 'select') raw = '';
+      return response({ok:true,sessionId:'s',revision:++revision,state:state(),modes,commit:event.type === 'select' ? '你' : undefined});
+    }});
+    await client.connect('layout');
+    const rejected = assert.rejects(client.dispatch({type:'input',ascii:'n'}),/composition limit|stale revision/);
+    const backspace = client.dispatch({type:'backspace'});
+    await rejected;
+    await backspace;
+    assert.equal(client.connected,true);
+    assert.equal(client.snapshot.state.raw_input.length,127);
+    assert.equal(rendered[1].state.raw_input.length,128); // synchronized rejection is rendered
+    assert.deepEqual(client.snapshot.modes,modes);
+    assert.equal((await client.dispatch({type:'select',candidateId:'candidate-1'})).commit,'你');
+    await assert.rejects(client.dispatch({type:'input',ascii:'n'}));
+    assert.equal(rendered.filter(r => r.commit).length,1); // resync must not re-emit a previous commit
+    await client.dispatch({type:'clear'});
+    assert.equal(client.snapshot.state.raw_input,'');
+    assert.deepEqual(events.map(e => e.type),['input','backspace','select','input','clear']);
+    assert.equal(new Set(events.map(e => e.eventId)).size,5);
+  }
+});
+
+test('terminal and untrusted API failures remain disconnected without replaying input',async () => {
+  const valid = {ok:false,error:'rejected',sessionId:'s',revision:0,state:{raw_input:'n'},modes:{input:'chinese',punctuation:'english'}};
+  const failures = [
+    [400,{...valid,sessionId:'other'}], [400,{...valid,revision:-1}],
+    [400,{...valid,state:null}], [400,{...valid,modes:null}],
+    [400,{...valid,commit:'你'}], [400,{ok:false,error:'bad request'}],
+    [403,valid], [404,valid], [410,valid], [429,valid], [500,valid],
+    [400,null], [400,{...valid,ok:true}],
+  ];
+  for (const [status,body] of failures) {
+    let posts = 0;
+    const client = createLiveClient({fetcher:async url => {
+      if (url.endsWith('/info')) return response({layoutId:'layout',token:'t',inputPolicy:INPUT_POLICY});
+      if (url.endsWith('/session')) return response({sessionId:'s',revision:0,state:{raw_input:'n'}});
+      posts++;
+      return response(body,status);
+    }});
+    await client.connect('layout');
+    await assert.rejects(client.dispatch({type:'input',ascii:'n'}));
+    assert.equal(client.connected,false);
+    await assert.rejects(client.dispatch({type:'clear'}),/未连接/);
+    assert.equal(posts,1);
+  }
+});
+
+function response(value,status=200) { return {ok:status>=200 && status<300,status,json:async () => value}; }
