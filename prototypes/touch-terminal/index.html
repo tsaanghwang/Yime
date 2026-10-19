@@ -25,6 +25,13 @@
       <div id="candidates" aria-label="候选列表" aria-live="polite"></div>
       <div class="actions"><button id="backspace">⌫ 退格</button><button id="clear">取消组合</button><button id="prev">← 上页</button><button id="next">下页 →</button><button id="confirm" class="primary">确认首选 ↵</button></div>
       <div class="board-title"><h2>概念实体键盘</h2><span id="touch-template-label" class="hint">读取 KLE…</span></div>
+      <details class="sizing-controls"><summary>全尺寸键距与卷尺校准：1u＝19.05毫米</summary>
+        <p>19.05毫米是相邻1u键的中心距。键帽之间保留缝隙。浏览器缩放百分比不能代替物理校准。</p>
+        <label>屏幕有效显示宽度（毫米）<input id="screen-width-mm" type="number" min="100" max="3000" step="0.1" value="597.73"></label><button id="apply-screen-size">应用屏幕宽度</button>
+        <p class="hint">默认597.73毫米由你当前27英寸、16:9屏幕估算；换设备需重新填写有效显示宽度。</p>
+        <div class="ruler-scroll"><div id="ruler-line" aria-label="100毫米校准线"></div></div><p>上方参考线目标100毫米。用卷尺量线段两端，填写实际长度：</p>
+        <label>实际长度（毫米）<input id="ruler-observed-mm" type="number" min="20" max="500" step="0.1" value="100"></label><button id="calibrate-ruler">按卷尺读数校准</button>
+      </details><p id="physical-size-status" class="hint"></p>
       <div class="keyboard-scroll"><div id="keyboard" tabindex="0" aria-label="概念实体键盘，支持 ANSI 键盘输入"></div></div>
       <p class="hint">中文模式下，主区 1–9 有候选时选词、无候选时输入数字；编码标点仍参与编码，符号自身在首页末项。切换英文会保留并暂停中文组合，Layout 切换并记住英文盘面；标准英文布局 base 小写、Shift 大写。标点随 CN EN 切换。预留字面符号入口默认关闭，可在上方开启。</p>
       <p class="hint">虚拟 Shift 可点按启用一次，也可按住再点另一键；只执行键帽明确标出的上档。真实 ANSI 键盘按实际字符输入；其 Shift 只同步亮起上档，不做第二次映射。概念 Caps Lock 本轮仅示意，不更改系统状态。移出键面（包括 ISO 缺角）后释放会取消点按。</p>
@@ -32,7 +39,7 @@
       <p id="status" role="status">正在初始化…</p>
     </section>
     <aside>
-      <section class="panel"><h2>两种输入，共用同一引擎</h2><p>标准 ANSI 键盘和虚拟按键共用 ASCII 输入规则。汉字候选来自项目生成索引；符号直输与符号候选仅作用于本实验页面。</p><p id="engine-scope"></p><p class="hint">此实验不安装输入法，不向其他窗口发送按键。注册宿主验收需另行运行。</p></section>
+      <section class="panel"><h2>两种输入，共用同一引擎</h2><p>标准 ANSI 键盘和虚拟按键共用 ASCII 输入规则。汉字候选来自项目生成索引；符号直输与符号候选仅作用于本实验页面。</p><p id="engine-scope"></p><p class="hint">此网页继续仅编辑本页文本。跨应用输入请使用独立桌面触摸键盘试用包；桌面版当前先验证英文和编辑键。</p></section>
       <section class="panel"><h2>实屏点按记录</h2><p>测量时只记录键位命中；覆盖全部键后恢复输入。随机目标点错时保持原目标。</p><div class="drill-actions"><button id="drill">全键覆盖</button><button id="target-drill">随机目标</button><button id="stop-drill">停止测量</button></div><strong id="drill-target">尚未开始</strong><p id="drill-status"></p><p class="hint" id="environment"></p><p class="hint" id="latency">请求 → 下一帧：尚无样本</p><p class="hint" id="layout-latency">布局切换 → 下一帧：尚无样本</p><button id="export">导出本次记录</button></section>
     </aside>
     <details class="panel provenance"><summary>布局溯源与引擎事件</summary><p id="layout-id"></p><ul id="sources"></ul><p>请求提交 ASCII；稳定 N/M/R ID 与显式上下档用于布局溯源。M25–M27 使用 B/M/P，位于原盘面下档。最近请求与响应：</p><pre id="trace">[]</pre><p><a href="README.md">运行说明</a> · <a href="PROTOCOL.md">协议</a> · <a href="HARDWARE.md">硬件测量说明</a></p></details>
