@@ -114,7 +114,10 @@ export function createLiveClient({fetcher=fetch, idFactory=() => crypto.randomUU
         && Number.isSafeInteger(result.revision) && result.revision >= snapshot.revision
         && (response.status !== 400 || result.revision === body.baseRevision)
         && typeof result.state?.raw_input === 'string'
-        && (result.state.candidates === undefined || Array.isArray(result.state.candidates))
+        && (result.state.candidates === undefined || (Array.isArray(result.state.candidates)
+          && result.state.candidates.every(candidate => candidate !== null
+            && typeof candidate === 'object' && typeof candidate.id === 'string'
+            && typeof candidate.text === 'string')))
         && ['chinese','english'].includes(result.modes?.input)
         && ['chinese','english'].includes(result.modes?.punctuation));
       if (recoverable) snapshot = {...snapshot,state:result.state,revision:result.revision,modes:result.modes,commit:''};

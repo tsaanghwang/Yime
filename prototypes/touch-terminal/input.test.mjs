@@ -303,6 +303,8 @@ test('terminal and untrusted API failures remain disconnected without replaying 
   const failures = [
     [400,{...valid,sessionId:'other'}], [400,{...valid,revision:-1}],
     [400,{...valid,state:null}], [400,{...valid,modes:null}],
+    ...[null,1,'candidate',{}, {id:'c'}, {id:1,text:'你'}, {id:'c',text:null}]
+      .map(candidate => [400,{...valid,state:{raw_input:'n',candidates:[candidate]}}]),
     [400,{...valid,commit:'你'}], [400,{ok:false,error:'bad request'}],
     [403,valid], [404,valid], [410,valid], [429,valid], [500,valid],
     [400,null], [400,{...valid,ok:true}],
