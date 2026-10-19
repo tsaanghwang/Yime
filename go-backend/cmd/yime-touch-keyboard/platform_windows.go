@@ -96,10 +96,57 @@ type ui struct {
 	monitorName      string
 	lastTarget       target
 	releasingCapture bool
+	focusStarted     uint32
+	touchReader      func(uintptr, uintptr) ([]touch, error)
 }
 
 var active *ui
 var callback = syscall.NewCallback(windowProc)
+
+const wmTouch = 0x0240
+const drawTextNoPrefix = 0x0800
+
+var focusCallback = syscall.NewCallback(func(hook, event, hwnd, object, child, thread, tick uintptr) uintptr {
+	a := active
+	if a != nil && a.lastTarget.Window != 0 && int32(uint32(tick)-a.focusStarted) >= 0 {
+		a.cancel()
+		a.lastTarget = target{}
+		a.status = "Focus changed: gestures and one-shot modifiers cancelled."
+		a.invalidate()
+	}
+	return 0
+})
+
+type toolButton struct {
+	l, r          int32
+	action, label string
+}
+
+var toolButtons = []toolButton{
+	{8, 73, "smaller", "Ruler -1%"}, {78, 148, "larger", "Ruler +1%"},
+	{155, 265, "layout", ""}, {275, 345, "hide", "Hide"},
+	{355, 425, "close", "Close"}, {435, 515, "help", "Help / 帮助"},
+}
+
+func toolbarAction(x, y int32) string {
+	if y < 28 || y >= 72 {
+		return ""
+	}
+	for _, b := range toolButtons {
+		if x >= b.l && x < b.r {
+			return b.action
+		}
+	}
+	return ""
+}
+func touchPromotedMouse(extra uintptr) bool {
+	return uint32(extra)&0xffffff80 == 0xff515780
+}
+func clampWindow(current, work rect, width, height int32) rect {
+	x := max(work.L, min(current.L, work.R-width))
+	y := max(work.T, min(current.T, work.B-height))
+	return rect{x, y, x + width, y + height}
+}
 
 const top = 110
 const border = 10
@@ -114,6 +161,9 @@ func run(o options) error {
 	if e != nil {
 		return e
 	}
+	if o.KeyView != "" && o.KeyView != "english" && o.KeyView != "original" {
+		return errors.New("unknown key-view")
+	}
 	m := currentMonitor(0)
 	ppm, e := tk.PixelsPerMM(int(m.Monitor.R-m.Monitor.L), o.ScreenMM)
 	if e != nil {
@@ -124,6 +174,7 @@ func run(o options) error {
 		return e
 	}
 	a := &ui{s: tk.NewState(b), ppm: ppm, o: o, owners: map[uint32]target{}, top: top, border: border, status: "English text / Ctrl Alt shortcuts. Chinese composition is not connected in this milestone.", monitorName: syscall.UTF16ToString(m.Device[:])}
+	a.s.Original = o.KeyView == "original"
 	active = a
 	instance, _, _ := k32.NewProc("GetModuleHandleW").Call(0)
 	c := wc{Proc: callback, Instance: instance, Name: str("YimeTouchKeyboardLab")}
@@ -158,6 +209,21 @@ func run(o options) error {
 	if o.Shot != "" {
 		drain(100 * time.Millisecond)
 		return a.screenshot(o.Shot)
+	}
+	// Out-of-context hooks observe transitions, including away-and-back between
+	// DOWN and UP. They neither inject code into hosts nor change focus.
+	var hooks []uintptr
+	defer func() {
+		for _, hook := range hooks {
+			U("UnhookWinEvent").Call(hook)
+		}
+	}()
+	for _, event := range []uintptr{3, 0x8005} {
+		hook, _, err := U("SetWinEventHook").Call(event, event, 0, focusCallback, 0, 0, 0)
+		if hook == 0 {
+			return fmt.Errorf("focus monitor unavailable: %v", err)
+		}
+		hooks = append(hooks, hook)
 	}
 	if o.Smoke {
 		return a.smoke(instance)
@@ -221,6 +287,8 @@ func (a *ui) down(id uint32, x, y int32) {
 	if a.lastTarget != t {
 		a.cancel()
 		a.lastTarget = t
+		tick, _, _ := k32.NewProc("GetTickCount").Call()
+		a.focusStarted = uint32(tick)
 	}
 	a.owners[id] = t
 	a.s.Down(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
@@ -254,30 +322,31 @@ func (a *ui) up(id uint32, x, y int32) {
 	a.invalidate()
 }
 func (a *ui) toolbar(x, y int32) {
-	// Top strip is a native caption for moving the keyboard; toolbar actions do
-	// not activate the window and never send keystrokes to the target.
-	if y < 26 {
+	action := toolbarAction(x, y)
+	if action == "" {
 		return
 	}
 	a.cancel()
-	switch {
-	case x < 75:
+	switch action {
+	case "smaller":
 		a.ppm /= 1.01
 		if !a.resize() {
 			a.ppm *= 1.01
 		}
-	case x < 150:
+	case "larger":
 		a.ppm *= 1.01
 		if !a.resize() {
 			a.ppm /= 1.01
 		}
-	case x < 270:
+	case "layout":
 		a.s.Original = !a.s.Original
-	case x < 350:
+	case "hide":
 		a.hidden = true
 		U("ShowWindow").Call(a.h, 0)
-	case x < 430:
+	case "close":
 		U("DestroyWindow").Call(a.h)
+	case "help":
+		U("MessageBoxW").Call(a.h, ptr(str(desktopHelp)), ptr(str("Yime 桌面键盘使用帮助")), 0x00040040)
 	}
 	a.invalidate()
 }
@@ -289,7 +358,13 @@ func (a *ui) resize() bool {
 		a.status = "Calibration exceeds monitor; keyboard is not fitted/scaled automatically."
 		return false
 	}
-	U("SetWindowPos").Call(a.h, 0, 0, 0, uintptr(w), uintptr(h), 0x0016)
+	current := rect{}
+	U("GetWindowRect").Call(a.h, uintptr(unsafe.Pointer(&current)))
+	position := clampWindow(current, m.Work, int32(w), int32(h))
+	if ok, _, _ := U("SetWindowPos").Call(a.h, 0, uintptr(position.L), uintptr(position.T), uintptr(w), uintptr(h), 0x0014); ok == 0 {
+		a.status = "Could not resize keyboard."
+		return false
+	}
 	a.status = "Ruler calibration changed; measure the 100mm line. Unit pitch remains 19.05mm."
 	return true
 }
@@ -337,12 +412,12 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 		}
 		U("ShowWindow").Call(h, v)
 		return 0
-	case 0x02C0:
+	case wmTouch:
 		a.touch(w, l)
 		return 0
 	case 0x0201, 0x0200, 0x0202:
 		extra, _, _ := U("GetMessageExtraInfo").Call()
-		if uint32(extra)&0xFFFFFF00 == 0xFF515700 {
+		if touchPromotedMouse(extra) {
 			return 0
 		}
 		x, y := int32(int16(l&0xffff)), int32(int16(l>>16))
@@ -374,15 +449,25 @@ func def(h uintptr, m uint32, w, l uintptr) uintptr {
 	v, _, _ := U("DefWindowProcW").Call(h, uintptr(m), w, l)
 	return v
 }
-func (a *ui) touch(w, l uintptr) {
+func readNativeTouches(w, l uintptr) ([]touch, error) {
 	defer U("CloseTouchInputHandle").Call(l)
 	n := int(w & 0xffff)
 	if n < 1 || n > 32 {
-		a.cancel()
-		return
+		return nil, errors.New("invalid touch frame")
 	}
 	v := make([]touch, n)
-	if ok, _, _ := U("GetTouchInputInfo").Call(l, uintptr(n), uintptr(unsafe.Pointer(&v[0])), unsafe.Sizeof(v[0])); ok == 0 {
+	if ok, _, err := U("GetTouchInputInfo").Call(l, uintptr(n), uintptr(unsafe.Pointer(&v[0])), unsafe.Sizeof(v[0])); ok == 0 {
+		return nil, err
+	}
+	return v, nil
+}
+func (a *ui) touch(w, l uintptr) {
+	reader := a.touchReader
+	if reader == nil {
+		reader = readNativeTouches
+	}
+	v, err := reader(w, l)
+	if err != nil {
 		a.cancel()
 		return
 	}
@@ -430,7 +515,22 @@ func keyInput(vk, scan uint16, flags uint32) input {
 
 var virtualKeys = map[string]uint16{"Backspace": 8, "Tab": 9, "Enter": 13, "Escape": 27, "Space": 32, "PageUp": 33, "PageDown": 34, "End": 35, "Home": 36, "ArrowLeft": 37, "ArrowUp": 38, "ArrowRight": 39, "ArrowDown": 40, "Insert": 45, "Delete": 46}
 
+func targetKeyboardLayout(t target) (uintptr, error) {
+	thread, _, _ := U("GetWindowThreadProcessId").Call(t.Focus, 0)
+	if thread == 0 {
+		return 0, errors.New("target input thread unavailable")
+	}
+	layout, _, _ := U("GetKeyboardLayout").Call(thread)
+	if layout == 0 {
+		return 0, errors.New("target keyboard layout unavailable")
+	}
+	return layout, nil
+}
 func sendOutput(o tk.Output) error {
+	destination := foreground()
+	if !valid(destination, 0) {
+		return errors.New("target focus unavailable")
+	}
 	// Do not disturb actual physical modifiers. In particular, never synthesize
 	// releases for keys this process did not press.
 	for _, v := range []uintptr{0x10, 0x11, 0x12, 0x5B, 0x5C} {
@@ -466,7 +566,11 @@ func sendOutput(o tk.Output) error {
 				return errors.New("shortcut requires one key")
 			}
 			c := []rune(o.Text)[0]
-			v, _, _ := U("VkKeyScanW").Call(uintptr(c))
+			layout, err := targetKeyboardLayout(destination)
+			if err != nil {
+				return err
+			}
+			v, _, _ := U("VkKeyScanExW").Call(uintptr(c), layout)
 			if int16(v) == -1 {
 				return errors.New("shortcut key unavailable in target keyboard layout")
 			}
@@ -494,6 +598,9 @@ func sendOutput(o tk.Output) error {
 		for i := len(modifiers) - 1; i >= 0; i-- {
 			appendVK(modifiers[i], 2)
 		}
+	}
+	if foreground() != destination {
+		return errors.New("target focus changed before input")
 	}
 	n, _, err := U("SendInput").Call(uintptr(len(events)), uintptr(unsafe.Pointer(&events[0])), unsafe.Sizeof(events[0]))
 	if int(n) != len(events) {
@@ -532,7 +639,7 @@ func text(dc uintptr, s string, r rect, flags uintptr) {
 	if len(v) == 0 {
 		return
 	}
-	U("DrawTextW").Call(dc, uintptr(unsafe.Pointer(&v[0])), uintptr(len(v)), uintptr(unsafe.Pointer(&r)), flags)
+	U("DrawTextW").Call(dc, uintptr(unsafe.Pointer(&v[0])), uintptr(len(v)), uintptr(unsafe.Pointer(&r)), flags|drawTextNoPrefix)
 }
 func (a *ui) paint() {
 	p := paint{}
@@ -559,15 +666,16 @@ func (a *ui) draw(dc uintptr, r rect) {
 	G("SetBkMode").Call(dc, 1)
 	G("SetTextColor").Call(dc, 0x302C17)
 	text(dc, fmt.Sprintf("Yime desktop keyboard - ENGLISH TEXT | 1u = 19.05 mm | %.2f mm wide | Ctrl+Alt+K: hide/show", a.s.Board.Bounds.Width*tk.UnitMM), rect{10, 3, r.R - 10, 25}, 0x24)
-	for _, b := range []struct {
-		l, rr int32
-		s     string
-	}{{8, 73, "Ruler -1%"}, {78, 148, "Ruler +1%"}, {155, 265, "Layout: " + map[bool]string{true: "original", false: "English"}[a.s.Original]}, {275, 345, "Hide"}, {355, 425, "Close"}} {
-		fill(dc, rect{b.l, 28, b.rr, 72}, 0xE5EBE2)
-		text(dc, b.s, rect{b.l, 29, b.rr, 71}, 0x25)
+	for _, b := range toolButtons {
+		title := b.label
+		if b.action == "layout" {
+			title = "Keys: " + map[bool]string{true: "original", false: "English"}[a.s.Original]
+		}
+		fill(dc, rect{b.l, 28, b.r, 72}, 0xE5EBE2)
+		text(dc, title, rect{b.l, 29, b.r, 71}, 0x25)
 	}
 	// Ruler is in physical-coordinate pixels, independent of Windows DPI scale.
-	x := int32(450)
+	x := int32(550)
 	rr := x + int32(math.Round(100*a.ppm))
 	fill(dc, rect{x, 62, rr, 64}, 0x306020)
 	text(dc, "100 mm - measure this line", rect{x, 30, rr, 56}, 0x25)
@@ -614,7 +722,7 @@ func (a *ui) draw(dc uintptr, r rect) {
 			G("SetTextColor").Call(dc, 0x888888)
 		}
 		if v.Action.Type == "toggle-language" {
-			text(dc, "EN text", rect{int32(minx + 3), int32(miny + 3), int32(maxx - 3), int32(maxy - 3)}, 0x25)
+			text(dc, "中文未接入", rect{int32(minx + 3), int32(miny + 3), int32(maxx - 3), int32(maxy - 3)}, 0x25)
 			continue
 		}
 		for j, s := range v.Labels {
@@ -768,6 +876,24 @@ func (a *ui) smoke(instance uintptr) error {
 			break
 		}
 	}
+	for _, k := range a.s.Board.Keys {
+		if k.English.Action.ASCII != "a" {
+			continue
+		}
+		x := int32(float64(a.border) + (k.X+.5)*tk.UnitMM*a.ppm)
+		y := int32(float64(a.top) + (k.Y+.5)*tk.UnitMM*a.ppm)
+		a.down(903, x, y)
+		U("SetFocus").Call(h)
+		U("SetFocus").Call(edit)
+		drain(40 * time.Millisecond)
+		a.up(903, x, y)
+		drain(20 * time.Millisecond)
+		U("GetWindowTextW").Call(edit, uintptr(unsafe.Pointer(&buf[0])), uintptr(len(buf)))
+		if syscall.UTF16ToString(buf) != "aBXc\r\nza" {
+			return errors.New("focus away-and-back did not cancel gesture")
+		}
+		break
+	}
 	// Exercise the actual mouse message path, including the synchronous
 	// WM_CAPTURECHANGED caused by ReleaseCapture after Shift UP.
 	for _, k := range a.s.Board.Keys {
@@ -798,7 +924,7 @@ func (a *ui) smoke(instance uintptr) error {
 	if syscall.UTF16ToString(buf) != "q\r\nza" {
 		return fmt.Errorf("Ctrl/Shift editing mismatch: %q", syscall.UTF16ToString(buf))
 	}
-	fmt.Println("PASS: isolated native EDIT received Unicode text, uppercase, punctuation, Backspace, caret editing and Enter; Ctrl/Shift selection, native gesture routing, mouse Shift capture and changed-focus cancellation passed; target foreground/focus retained. Not physical touch or Notepad/Word acceptance.")
+	fmt.Println("PASS: isolated native EDIT received Unicode text, uppercase, punctuation, Backspace, caret editing and Enter; Ctrl/Shift selection, native gesture routing, mouse Shift capture and observed focus away-and-back cancellation passed; target foreground/focus retained. Not physical touch or Notepad/Word acceptance.")
 	return nil
 }
 

@@ -1,0 +1,1407 @@
+{
+  "numericZones": "both",
+  "removeGutters": true,
+  "mainWidthU": 17,
+  "mainGeometry": {
+    "R01K02": {
+      "x": 0.0,
+      "y": 0.0,
+      "width": 1.5,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.5,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K03": {
+      "x": 1.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K04": {
+      "x": 2.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K05": {
+      "x": 3.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K06": {
+      "x": 4.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K07": {
+      "x": 5.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K08": {
+      "x": 6.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K09": {
+      "x": 7.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K10": {
+      "x": 8.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K11": {
+      "x": 9.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K12": {
+      "x": 10.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K13": {
+      "x": 11.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K14": {
+      "x": 12.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K15": {
+      "x": 13.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K16": {
+      "x": 14.5,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R01K17": {
+      "x": 15.5,
+      "y": 0.0,
+      "width": 1.5,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.5,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K04": {
+      "x": 0.0,
+      "y": 1.25,
+      "width": 1.5,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.5,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K06": {
+      "x": 1.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K07": {
+      "x": 2.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K08": {
+      "x": 3.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K09": {
+      "x": 4.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K10": {
+      "x": 5.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K11": {
+      "x": 6.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K12": {
+      "x": 7.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K13": {
+      "x": 8.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K14": {
+      "x": 9.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K15": {
+      "x": 10.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K16": {
+      "x": 11.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K17": {
+      "x": 12.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K18": {
+      "x": 13.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K19": {
+      "x": 14.5,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K21": {
+      "x": 15.5,
+      "y": 1.25,
+      "width": 1.5,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.5,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K05": {
+      "x": 0.0,
+      "y": 2.25,
+      "width": 1.25,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.25,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K04": {
+      "x": 1.25,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K05": {
+      "x": 2.25,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K06": {
+      "x": 3.25,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K07": {
+      "x": 4.25,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K08": {
+      "x": 5.25,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K09": {
+      "x": 6.25,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K10": {
+      "x": 7.25,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K11": {
+      "x": 8.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K12": {
+      "x": 9.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K13": {
+      "x": 10.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K14": {
+      "x": 11.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K15": {
+      "x": 12.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K16": {
+      "x": 13.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R03K17": {
+      "x": 14.75,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R02K20": {
+      "x": 15.75,
+      "y": 2.25,
+      "width": 1.25,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.25,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K04": {
+      "x": 0.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K05": {
+      "x": 1.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K06": {
+      "x": 2.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K07": {
+      "x": 3.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K08": {
+      "x": 4.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K09": {
+      "x": 5.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K10": {
+      "x": 6.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K11": {
+      "x": 7.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K12": {
+      "x": 9.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K13": {
+      "x": 10.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K14": {
+      "x": 11.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K15": {
+      "x": 12.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K16": {
+      "x": 13.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K17": {
+      "x": 14.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K18": {
+      "x": 15.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R04K19": {
+      "x": 16.0,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K04": {
+      "x": 0.0,
+      "y": 4.25,
+      "width": 1.75,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.75,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K05": {
+      "x": 1.75,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K06": {
+      "x": 2.75,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K07": {
+      "x": 3.75,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K08": {
+      "x": 4.75,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K09": {
+      "x": 5.75,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K10": {
+      "x": 6.75,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K11": {
+      "x": 9.25,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K12": {
+      "x": 10.25,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K13": {
+      "x": 11.25,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K14": {
+      "x": 12.25,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K15": {
+      "x": 13.25,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K16": {
+      "x": 14.25,
+      "y": 4.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R05K17": {
+      "x": 15.25,
+      "y": 4.25,
+      "width": 1.75,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.75,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K04": {
+      "x": 0.0,
+      "y": 5.25,
+      "width": 2.25,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 2.25,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K05": {
+      "x": 2.25,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K06": {
+      "x": 3.25,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K07": {
+      "x": 4.25,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K08": {
+      "x": 5.25,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K09": {
+      "x": 6.25,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K10": {
+      "x": 7.25,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K11": {
+      "x": 8.75,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K12": {
+      "x": 9.75,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K13": {
+      "x": 10.75,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K14": {
+      "x": 11.75,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K15": {
+      "x": 12.75,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K16": {
+      "x": 13.75,
+      "y": 5.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R06K17": {
+      "x": 14.75,
+      "y": 5.25,
+      "width": 2.25,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 2.25,
+          "height": 1.0
+        }
+      ]
+    },
+    "R07K02": {
+      "x": 0.0,
+      "y": 6.25,
+      "width": 1.75,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.75,
+          "height": 1.0
+        }
+      ]
+    },
+    "R07K03": {
+      "x": 1.75,
+      "y": 6.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R07K04": {
+      "x": 2.75,
+      "y": 6.25,
+      "width": 1.75,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.75,
+          "height": 1.0
+        }
+      ]
+    },
+    "R07K05": {
+      "x": 4.5,
+      "y": 6.25,
+      "width": 4.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 4.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R07K06": {
+      "x": 8.5,
+      "y": 6.25,
+      "width": 4.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 4.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R07K07": {
+      "x": 12.5,
+      "y": 6.25,
+      "width": 1.75,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.75,
+          "height": 1.0
+        }
+      ]
+    },
+    "R07K08": {
+      "x": 14.25,
+      "y": 6.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ]
+    },
+    "R07K09": {
+      "x": 15.25,
+      "y": 6.25,
+      "width": 1.75,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.75,
+          "height": 1.0
+        }
+      ]
+    }
+  }
+}

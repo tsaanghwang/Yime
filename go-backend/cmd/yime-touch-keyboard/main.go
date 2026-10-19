@@ -13,14 +13,15 @@ import (
 )
 
 type options struct {
-	Root, Profile, Zones, Shot string
-	ScreenMM, ObservedMM       float64
-	Gutters, Smoke             bool
+	Root, Profile, Zones, Shot, KeyView string
+	ScreenMM, ObservedMM                float64
+	Gutters, Smoke                      bool
 }
 
 func main() {
 	var o options
 	flag.StringVar(&o.Root, "root", "..", "checkout root")
+	flag.StringVar(&o.KeyView, "key-view", "english", "english/original keycaps; both currently send English text")
 	flag.StringVar(&o.Profile, "profile", "", "optional geometry profile JSON")
 	flag.StringVar(&o.Zones, "numeric-zones", "both", "both/left/right/none")
 	flag.BoolVar(&o.Gutters, "remove-gutters", false, "remove reviewed central and side gutters without scaling keys")

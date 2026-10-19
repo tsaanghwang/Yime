@@ -150,7 +150,7 @@ func (s *State) Up(id uint32, x, y float64) *Output {
 	case "clear":
 		return s.output(Output{Key: "Escape", Shift: p.shift, Ctrl: p.ctrl, Alt: p.alt})
 	case "backspace":
-		return s.output(Output{Key: "Backspace", Ctrl: p.ctrl, Alt: p.alt})
+		return s.output(Output{Key: "Backspace", Shift: p.shift, Ctrl: p.ctrl, Alt: p.alt})
 	case "confirm":
 		return s.output(Output{Key: a.Key, Shift: p.shift, Ctrl: p.ctrl, Alt: p.alt})
 	case "local":

@@ -1,7 +1,9 @@
 package touchkeyboard
 
 import (
+	"encoding/json"
 	"math"
+	"os"
 	"path/filepath"
 	"testing"
 )
@@ -145,5 +147,57 @@ func TestISONotchNeverHitsAndNumericEditFiveIsNoop(t *testing.T) {
 				t.Fatal("numeric edit 5 must remain no-op")
 			}
 		}
+	}
+}
+
+func TestUser17UProfilePreservesMappingsAndFullSizedKeys(t *testing.T) {
+	b := board(t)
+	for _, sample := range []struct {
+		name  string
+		width float64
+		count int
+	}{{"main-17u.json", 17, 100}, {"full-23u.json", 23, 134}} {
+		raw, e := os.ReadFile(filepath.Join("..", "..", "..", "prototypes", "touch-terminal", "desktop", "profiles", sample.name))
+		if e != nil {
+			t.Fatal(e)
+		}
+		var profile Profile
+		if e = json.Unmarshal(raw, &profile); e != nil {
+			t.Fatal(e)
+		}
+		got, e := Arrange(b, profile)
+		if e != nil {
+			t.Fatal(e)
+		}
+		if got.Bounds.Width != sample.width || len(got.Keys) != sample.count {
+			t.Fatal("compact width or identity inventory")
+		}
+		for _, k := range got.Keys {
+			for _, old := range b.Keys {
+				if k.ID == old.ID {
+					if k.Action != old.Action || k.ShiftAction != old.ShiftAction || k.English.Action != old.English.Action || k.Width < 1 {
+						t.Fatal("compact geometry changed mapping or shrank key below 1u")
+					}
+				}
+			}
+		}
+	}
+}
+func TestCtrlShiftBackspacePreservesAllModifiers(t *testing.T) {
+	s := NewState(board(t))
+	var back Key
+	for _, k := range s.Board.Keys {
+		a := s.View(k).Action
+		if a.Type == "shift" || (a.Type == "unsupported" && a.Label == "Ctrl") {
+			s.Down(uint32(len(s.presses)+1), k.X+.5, k.Y+.5)
+		}
+		if a.Type == "backspace" {
+			back = k
+		}
+	}
+	s.Down(99, back.X+.5, back.Y+.5)
+	o := s.Up(99, back.X+.5, back.Y+.5)
+	if o == nil || o.Key != "Backspace" || !o.Shift || !o.Ctrl {
+		t.Fatalf("lost shortcut modifier: %+v", o)
 	}
 }

@@ -1,0 +1,28 @@
+{
+  "source": "prototypes/touch-terminal/design/yime-cn-134k-23u-keyboard-layout.json",
+  "sourceSHA256": "5d6dd59cf3da819bd1750b81fb49feb63c61635c375d6981624cc73523137e9b",
+  "baseSHA256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+  "sourceWidthWithGuttersU": 23.75,
+  "mainWidthWithoutGutterU": 17,
+  "ordinaryKeysRemain1U": true,
+  "keysMovedBetweenRows": [
+    {
+      "keyId": "R02K05",
+      "yinyuanIds": [
+        "N26"
+      ],
+      "oldY": 1.25,
+      "newY": 2.25
+    },
+    {
+      "keyId": "R02K20",
+      "yinyuanIds": [
+        "N27"
+      ],
+      "oldY": 1.25,
+      "newY": 2.25
+    }
+  ],
+  "englishView": "Existing per-key English actions and legends follow the stable key identity; no new English mapping is invented.",
+  "hardwareAcceptance": false
+}
