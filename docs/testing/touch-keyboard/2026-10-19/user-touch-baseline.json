@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-19",
+  "evidenceKind": "user-reported-physical-touch",
+  "device": {
+    "diagonalInches": 27,
+    "resolution": [
+      2560,
+      1440
+    ],
+    "windowsScalingPercent": 100,
+    "tiltFromDeskDegreesApprox": 30,
+    "oldMeasuredBoardWidthMMApprox": 376
+  },
+  "reports": [
+    {
+      "path": "docs/testing/touch-keyboard/2026-10-19/raw/yime-keyboard-session-1.json",
+      "sha256": "ab263ca5de13bffeb072ce0de60ddc912ed8747cb1d48df221a85e5f95db149b",
+      "originalHardwareAcceptance": false,
+      "drills": [
+        {
+          "kind": "coverage",
+          "targets": 134,
+          "seen": 134,
+          "correct": 0,
+          "attempts": 135,
+          "wrong": 0,
+          "duplicate": 1,
+          "cancelled": 1
+        }
+      ]
+    },
+    {
+      "path": "docs/testing/touch-keyboard/2026-10-19/raw/yime-keyboard-session-2.json",
+      "sha256": "5b6058808038cecd19562a572e1bb664ae068124fcfaa1fe880712e07d84098c",
+      "originalHardwareAcceptance": false,
+      "drills": [
+        {
+          "kind": "coverage",
+          "targets": 134,
+          "seen": 134,
+          "correct": 0,
+          "attempts": 135,
+          "wrong": 0,
+          "duplicate": 1,
+          "cancelled": 1
+        },
+        {
+          "kind": "targets",
+          "targets": 134,
+          "seen": 0,
+          "correct": 134,
+          "attempts": 140,
+          "wrong": 6,
+          "duplicate": 0,
+          "cancelled": 0
+        }
+      ]
+    }
+  ],
+  "desktopHostAcceptance": false,
+  "armNativeAcceptance": false
+}

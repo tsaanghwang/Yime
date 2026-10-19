@@ -1,3 +1,4 @@
+import {UNIT_MM,physicalSize,estimatedPixelsPerMM,rulerCorrection,displayFingerprint} from './sizing.mjs';
 import {viewKey,useEnglishLayout} from './keyboard-layout.mjs';
 import {actionFromKeyboard,createLiveClient,editText,virtualKeyAction,DEFAULT_MODES} from './input.mjs';
 import {percentile,keyShape,keyContainsPoint} from './geometry.mjs';
@@ -321,6 +322,24 @@ function setVirtualShift(value) {
   $('clear').disabled = !currentState().raw_input && !shiftArmed;
   refreshKeyboard();
 }
+let calibration = null;
+const calibrationFingerprint = () => displayFingerprint(screen.width,screen.height,devicePixelRatio);
+function applyPhysicalSize() {
+  if (!calibration || calibration.display !== calibrationFingerprint()) {
+    calibration = {pixelsPerMM:estimatedPixelsPerMM(screen.width,Number($('screen-width-mm').value)),display:calibrationFingerprint(),rulerCorrectionApplied:false,screenWidthMM:Number($('screen-width-mm').value),basis:'screen-width-estimate'};
+  }
+  const size=physicalSize(layout.bounds,calibration.pixelsPerMM),board=$('keyboard');
+  board.style.width=`${size.widthPx}px`;board.style.minWidth=`${size.widthPx}px`;board.style.height=`${size.heightPx}px`;
+  $('ruler-line').style.width=`${100*calibration.pixelsPerMM}px`;
+  $('physical-size-status').textContent=`1u = ${UNIT_MM} mm 键距 · 整盘 ${size.widthMM.toFixed(2)} × ${size.heightMM.toFixed(2)} mm · ${calibration.rulerCorrectionApplied ? '已按你输入的卷尺读数校准' : '尺寸估算，请测量下方100mm参考线校准'}。空间不足时局部滚动，保持键距。`;
+}
+function initPhysicalSize() {
+  try {const stored=JSON.parse(localStorage.getItem('yime-keyboard-mm-v1'));if(stored?.display===calibrationFingerprint()&&Number.isFinite(stored.pixelsPerMM)&&stored.pixelsPerMM>0)calibration=stored;} catch {}
+  $('apply-screen-size').addEventListener('click',()=>{try{calibration={pixelsPerMM:estimatedPixelsPerMM(screen.width,Number($('screen-width-mm').value)),display:calibrationFingerprint(),rulerCorrectionApplied:false,screenWidthMM:Number($('screen-width-mm').value),basis:'screen-width-estimate'};applyPhysicalSize();localStorage.setItem('yime-keyboard-mm-v1',JSON.stringify(calibration));}catch(e){status(e.message);}});
+  $('calibrate-ruler').addEventListener('click',()=>{try{calibration={...calibration,pixelsPerMM:rulerCorrection(calibration.pixelsPerMM,Number($('ruler-observed-mm').value)),rulerCorrectionApplied:true,observedMM:Number($('ruler-observed-mm').value)};applyPhysicalSize();localStorage.setItem('yime-keyboard-mm-v1',JSON.stringify(calibration));}catch(e){status(e.message);}});
+  window.addEventListener('resize',()=>{if(calibration?.display!==calibrationFingerprint())applyPhysicalSize();});
+  applyPhysicalSize();
+}
 function buildKeyboard() {
   const board = $('keyboard'), bounds = layout.bounds;
   board.style.setProperty('--keyboard-ratio',`${bounds.width}/${bounds.height}`);
@@ -452,7 +471,7 @@ function updateEnvironment() {
   $('environment').textContent = `屏幕 ${env.screenCssPx.width} × ${env.screenCssPx.height}；视口 ${env.viewportCssPx.width} × ${env.viewportCssPx.height} CSS px · DPR ${env.devicePixelRatio.toFixed(2)} · 最大触点 ${env.maxTouchPoints}。`;
 }
 function exportReport() {
-  const report = {formatVersion:6,displayedLayout:englishLayout() ? 'english' : 'original',englishLayoutPreference:layoutPreference,literalEntries,layoutSwitchHandlerToFrameMs:layoutLatencies,mode:'ascii-physical-keyboard',createdAt:new Date().toISOString(),layoutId:layout.layoutId,touchTemplateId:layout.touchTemplateId,
+  const report = {formatVersion:7,physicalSizing:{unitMM:UNIT_MM,...calibration,...physicalSize(layout.bounds,calibration.pixelsPerMM)},displayedLayout:englishLayout() ? 'english' : 'original',englishLayoutPreference:layoutPreference,literalEntries,layoutSwitchHandlerToFrameMs:layoutLatencies,mode:'ascii-physical-keyboard',createdAt:new Date().toISOString(),layoutId:layout.layoutId,touchTemplateId:layout.touchTemplateId,
     inputPolicy:client.info.inputPolicy,inputModes:currentModes(),numberModes:{...numLocks},sources:layout.sources,environment:environment(),disabledYinyuanIds:layout.disabledYinyuanIds,drills,touches,trace,handlerToNextFrameMs:latencies,
     hardwareAcceptance:false,note:'本页 Go 引擎与浏览器事件记录；不证明 Windows 注册宿主、实体键盘或真实触屏验收。'};
   const url = URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
@@ -468,6 +487,7 @@ async function init() {
   layout = await response.json();
   if (layout.formatVersion !== 4) throw new Error('页面需要当前134键双布局，请重新生成数据并刷新。');
   buildKeyboard();
+  initPhysicalSize();
   client = createLiveClient({onResult:render});
   $('keyboard').addEventListener('keydown',keyboardInput);
   $('committed').addEventListener('keydown',keyboardInput);

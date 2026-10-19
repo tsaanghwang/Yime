@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-19",
+  "scope": "desktop-followup-17u-and-rendering",
+  "userReport": {
+    "default100mmRulerMatchesPhysicalRuler": true,
+    "device": "same user 27-inch 2560x1440 monitor",
+    "calibrationButtonsUsed": false
+  },
+  "defaultCalibrationChanged": false,
+  "unitMM": 19.05,
+  "main17WidthMM": 323.85,
+  "full23WidthMM": 438.15,
+  "geometry": "user-provided compact KLE, semantic key identity preserved; only N26/N27 move between rows",
+  "checks": [
+    "literal ampersand memory-bitmap raster test",
+    "WM_TOUCH native window-procedure route",
+    "pen/touch mouse promotion filter",
+    "painted toolbar hit bounds",
+    "calibration position clamp",
+    "Ctrl+Shift+Backspace preservation",
+    "17u/23u geometry and input-map preservation",
+    "isolated EDIT native text/edit/selection and observed away-and-back focus cancellation"
+  ],
+  "desktopChineseComposition": "not connected; explicitly labelled in UI and help",
+  "physicalTouchAcceptance": false,
+  "penAcceptance": false,
+  "armNativeAcceptance": false
+}

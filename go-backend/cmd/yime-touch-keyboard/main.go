@@ -1,0 +1,67 @@
+// Command yime-touch-keyboard is an opt-in, uninstalled desktop keyboard lab.
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"flag"
+	"fmt"
+	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
+	"io"
+	"os"
+	"path/filepath"
+)
+
+type options struct {
+	Root, Profile, Zones, Shot, KeyView string
+	ScreenMM, ObservedMM                float64
+	Gutters, Smoke                      bool
+}
+
+func main() {
+	var o options
+	flag.StringVar(&o.Root, "root", "..", "checkout root")
+	flag.StringVar(&o.KeyView, "key-view", "english", "english/original keycaps; both currently send English text")
+	flag.StringVar(&o.Profile, "profile", "", "optional geometry profile JSON")
+	flag.StringVar(&o.Zones, "numeric-zones", "both", "both/left/right/none")
+	flag.BoolVar(&o.Gutters, "remove-gutters", false, "remove reviewed central and side gutters without scaling keys")
+	flag.Float64Var(&o.ScreenMM, "screen-width-mm", 597.73, "monitor physical width in mm (27-inch 16:9 estimate; ruler calibration required)")
+	flag.Float64Var(&o.ObservedMM, "ruler-observed-mm", 100, "actual measured length of the previous 100mm reference")
+	flag.StringVar(&o.Shot, "screenshot", "", "render this keyboard to PNG and exit")
+	flag.BoolVar(&o.Smoke, "self-test", false, "run isolated Win32 target-window input/focus checks and exit")
+	flag.Parse()
+	if e := run(o); e != nil {
+		if o.Smoke || o.Shot != "" {
+			fmt.Fprintln(os.Stderr, e)
+		} else {
+			showError(e)
+		}
+		os.Exit(1)
+	}
+}
+func load(o options) (tk.Board, error) {
+	p := tk.Profile{NumericZones: o.Zones, RemoveGutters: o.Gutters}
+	if o.Profile != "" {
+		raw, e := os.ReadFile(o.Profile)
+		if e != nil {
+			return tk.Board{}, e
+		}
+		decoder := json.NewDecoder(bytes.NewReader(raw))
+		decoder.DisallowUnknownFields()
+		if e = decoder.Decode(&p); e != nil {
+			return tk.Board{}, e
+		}
+		if e = decoder.Decode(new(any)); e != io.EOF {
+			return tk.Board{}, fmt.Errorf("profile must contain one JSON object")
+		}
+	}
+	root, e := filepath.Abs(o.Root)
+	if e != nil {
+		return tk.Board{}, e
+	}
+	b, e := tk.Load(filepath.Join(root, "prototypes", "touch-terminal", "data", "physical-layout.json"))
+	if e != nil {
+		return b, e
+	}
+	return tk.Arrange(b, p)
+}
