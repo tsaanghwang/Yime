@@ -1,0 +1,2 @@
+# Preserve original validation bytes used by recorded SHA-256 identities.
+* -text !eol -whitespace

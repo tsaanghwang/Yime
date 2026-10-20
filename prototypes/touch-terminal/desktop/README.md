@@ -4,7 +4,25 @@
 
 这是独立、无需安装输入法的桌面实验程序。它读取现有 CN/EN134 盘面，
 以不激活窗口承接触摸，向当前目标输入框发送英文文本、编辑键和快捷键。
-显式 `--preview` 入口则使用共用中文引擎，组合和候选确认只写入本窗口文本区。中文跨应用提交待 P4，完整中文便携包待 P5。
+显式 `--preview` 入口使用共用中文引擎，组合和候选确认只写入本窗口文本区。P4 的 `--host-input` 已增加显式目标绑定后的宿主发送；完整中文便携包待 P5。
+
+## P4 中文宿主输入（源码开发入口）
+
+P4 从已合并的 #72 继续。完整隔离词典准备好后，在仓库根目录执行：
+
+```text
+go -C go-backend run ./cmd/yime-touch-keyboard --root .. --numeric-zones none --remove-gutters --host-input --data-dir ../.generated/ascii-keyboard-134/data
+```
+
+先在目标文本区点好光标，再点“绑定目标”。组合仍只在键盘内；候选或确认动作才发送文本。失焦、隐藏或异常后需重新绑定；这个按钮取消未确认组合，**不清空宿主正文**。发生失败/部分发送时先核对正文，程序不重放、不自动补发或回滚。完整步骤见[中文指南](USER_GUIDE.zh-CN.md)。
+
+`--host-input` 与 `--preview`、`--self-test`、`--check-data`、截图互斥。受控原生测试使用专门入口：
+
+```text
+go -C go-backend run ./cmd/yime-touch-keyboard --root .. --numeric-zones none --remove-gutters --host-input --host-self-test --data-dir ../.generated/ascii-keyboard-134/data
+```
+
+此检查只创建本进程临时 EDIT；无法取得该窗口前台则失败且不发送。它需要源码的 canonical 分解表派生测试编码；不是独立便携包入口，也不是 Word、手指/笔或 ARM64 原生验收。SendInput 无法原子绑定目标 HWND，实际宿主接收和发送瞬间的焦点竞态仍需观察。P5 完整资源包尚待开发，默认包启动器仍走英文路线。
 
 ## P3 中文受控预览（源码开发入口）
 

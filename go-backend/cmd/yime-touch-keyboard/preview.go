@@ -13,9 +13,9 @@ type previewSessions interface {
 	Dispatch(keyboardlab.Event) keyboardlab.Reply
 }
 
-// preview is owned by the UI thread. It has no host HWND, SendInput function,
-// clipboard or persistent user-state dependency. Commit is consumed exactly
-// once, synchronously; errors are never retried with an unknown outcome.
+// preview is the UI-thread session controller. P3 uses its in-memory sink; P4
+// supplies an epoch-bound emitter, without putting host HWND/SendInput into the
+// engine. Commits are consumed once; unknown outcomes are never retried.
 type preview struct {
 	sessions                    previewSessions
 	layout, mode                string
@@ -24,6 +24,7 @@ type preview struct {
 	fault                       bool
 	englishView, literalEntries bool
 	editor                      previewEditor
+	emit                        func(string, tk.Output) error // nil keeps P3's in-memory sink.
 }
 
 type previewStamp struct {
@@ -54,8 +55,17 @@ func (p *preview) dispatch(e keyboardlab.Event) error {
 	valid := err == nil && s.SessionID == e.SessionID && (s.Modes.Input == "chinese" || s.Modes.Input == "english") && (s.Modes.Punctuation == "chinese" || s.Modes.Punctuation == "english")
 	if valid && r.Status == 200 && s.OK && s.Error == "" && s.Revision == e.BaseRevision+1 {
 		p.snapshot = s
-		p.editor.insert(s.Commit)
 		p.snapshot.Commit = "" // Ephemeral output is never available for another consumer.
+		if s.Commit != "" {
+			if p.emit != nil {
+				if err := p.emit(e.SessionID+"/"+e.EventID, tk.Output{Text: s.Commit}); err != nil {
+					p.fault = true
+					return err
+				}
+			} else {
+				p.editor.insert(s.Commit)
+			}
+		}
 		return nil
 	}
 	if valid && !s.OK && s.Commit == "" && s.Error != "" && ((r.Status == 400 && s.Revision == e.BaseRevision) || (r.Status == 409 && s.Revision >= e.BaseRevision)) {
@@ -116,6 +126,25 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 	if p.fault {
 		return fmt.Errorf("会话已断开；请重新启动预览")
 	}
+	if p.emit != nil && (o.Ctrl || o.Alt) {
+		if p.snapshot.State.RawInput != "" {
+			return fmt.Errorf("请先确认或取消组合，再发送宿主快捷键")
+		}
+		if a.Type == "input" || a.Type == "literal" {
+			if a.Type == "literal" && a.ASCII == "\n" {
+				return p.emitEdit(tk.Output{Key: "Enter", Shift: o.Shift, Ctrl: o.Ctrl, Alt: o.Alt})
+			}
+			return p.emitEdit(tk.Output{Text: a.ASCII, Shift: o.Shift, Ctrl: o.Ctrl, Alt: o.Alt})
+		}
+		if a.Type == "local" || a.Type == "backspace" || a.Type == "confirm" {
+			key := a.Key
+			if a.Type == "backspace" {
+				key = "Backspace"
+			}
+			return p.emitEdit(tk.Output{Key: key, Shift: o.Shift, Ctrl: o.Ctrl, Alt: o.Alt})
+		}
+		return fmt.Errorf("此组合键不支持宿主提交")
+	}
 	if o.Alt {
 		return fmt.Errorf("预览不执行 Alt 快捷键")
 	}
@@ -137,6 +166,11 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 		}
 		return p.dispatch(keyboardlab.Event{Type: "setModes", InputMode: mode, PunctuationMode: mode})
 	case "input", "literal", "symbol":
+		// Side Enter bypasses composition. Preserve its modifiers rather than
+		// round-tripping a newline through a text-only engine commit.
+		if p.emit != nil && a.Type == "literal" && a.ASCII == "\n" {
+			return p.emitEdit(tk.Output{Key: "Enter", Shift: o.Shift})
+		}
 		// A digit may have meant candidate selection at DOWN. Never reinterpret
 		// that gesture as a new-page ordinal or a literal after the snapshot changes.
 		if a.Type == "input" && len(a.ASCII) == 1 && a.ASCII[0] >= '1' && a.ASCII[0] <= '9' && down != p.stamp() {
@@ -154,6 +188,9 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 		if p.snapshot.Modes.Input == "english" {
 			code := " "
 			if a.Key == "Enter" {
+				if p.emit != nil {
+					return p.emitEdit(tk.Output{Key: "Enter", Shift: o.Shift})
+				}
 				code = "\n"
 			}
 			return p.dispatch(keyboardlab.Event{Type: "literal", Code: code})
@@ -168,6 +205,9 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 		if o.Zone != "left" && o.Zone != "right" && p.snapshot.State.RawInput != "" && p.snapshot.Modes.Input == "chinese" {
 			return p.dispatch(keyboardlab.Event{Type: "backspace"})
 		}
+		if p.emit != nil {
+			return p.emitEdit(tk.Output{Key: "Backspace", Shift: o.Shift})
+		}
 		p.editor.edit("Backspace", o.Shift)
 		return nil
 	case "local":
@@ -181,12 +221,38 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 			return fmt.Errorf("请先确认或取消组合，再编辑本地输出")
 		}
 		if a.Key == "Tab" {
+			if p.emit != nil {
+				return p.emitEdit(tk.Output{Key: "Tab", Shift: o.Shift})
+			}
 			p.editor.insert("\t")
 			return nil
+		}
+		if p.emit != nil {
+			return p.emitEdit(tk.Output{Key: a.Key, Shift: o.Shift})
 		}
 		p.editor.edit(a.Key, o.Shift)
 	}
 	return nil
+}
+
+func (p *preview) emitEdit(o tk.Output) error {
+	p.sequence++
+	err := p.emit(fmt.Sprintf("%s/edit-%d", p.snapshot.SessionID, p.sequence), o)
+	if err != nil {
+		p.fault = true
+	}
+	return err
+}
+
+// Retire without consuming any reply output, including when the display was
+// invalidated while a response was pending. The service owns final cleanup.
+func (p *preview) retire() {
+	if p.snapshot.SessionID == "" {
+		return
+	}
+	p.sequence++
+	p.sessions.Dispatch(keyboardlab.Event{SessionID: p.snapshot.SessionID, EventID: fmt.Sprintf("retire-%d", p.sequence), BaseRevision: p.snapshot.Revision, Type: "close"})
+	p.fault = true
 }
 
 // The controlled text sink edits Unicode code points (not UTF-16 halves).

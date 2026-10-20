@@ -21,6 +21,7 @@ type previewGesture struct {
 	action    string
 	stamp     previewStamp
 	candidate candidatePress
+	delivery  deliveryTicket
 }
 
 func inside(r rect, x, y int32) bool { return x >= r.L && x < r.R && y >= r.T && y < r.B }
@@ -39,6 +40,9 @@ func (a *ui) candidateRect(i int) rect {
 	return rect{10 + int32(i)*w, 184, 10 + int32(i+1)*w - 3, 234}
 }
 func (a *ui) previewDown(id uint32, x, y int32) {
+	if a.hostBusy {
+		return
+	}
 	if _, exists := a.previewTouches[id]; exists {
 		return
 	}
@@ -70,17 +74,50 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 		}
 	}
 	if g.action != "" {
+		if a.host != nil && g.action != "reset" {
+			g.delivery = a.host.ticket()
+			if !a.host.valid(g.delivery) {
+				a.loseHostFocus("请先在目标文本区放置光标，再点绑定目标")
+				return
+			}
+		}
 		a.previewTouches[id] = g
 	}
 	a.invalidate()
 }
 func (a *ui) previewUp(id uint32, x, y int32) {
+	if a.hostBusy {
+		a.cancel()
+		return
+	}
 	g := a.previewTouches[id]
 	if g == nil {
 		return
 	}
 	a.move(id, x, y)
 	delete(a.previewTouches, id) // A duplicate UP has no action or commit.
+	if a.host != nil {
+		if g.action == "reset" {
+			if !g.left {
+				if err := a.bindHost(); err != nil {
+					a.status = err.Error()
+				}
+			}
+			a.invalidate()
+			return
+		}
+		a.hostBusy = true
+		defer func() { a.hostBusy = false }()
+		if !pumpHostMessages() {
+			a.loseHostFocus("消息队列未稳定；动作取消")
+			return
+		}
+		if !a.host.valid(g.delivery) {
+			a.loseHostFocus("目标已变化；本次动作取消，请重新绑定")
+			return
+		}
+		a.hostSink(g.delivery)
+	}
 	var err error
 	if g.action == "key" {
 		out := a.s.Up(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
@@ -123,10 +160,16 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 		}
 	}
 	a.s.Original = a.preview.original()
+	if a.host != nil && a.preview.fault {
+		a.loseHostFocus("会话/发送已停止；请核对正文后重新绑定")
+	}
 	if err != nil {
 		a.status = err.Error()
 	} else {
 		a.status = "预览输出只在本窗口；真实手指/触控笔验收未记录。"
+		if a.host != nil {
+			a.status = a.host.last
+		}
 	}
 	a.invalidate()
 }
@@ -145,6 +188,10 @@ func (a *ui) drawPreview(dc uintptr, r rect) {
 			title = map[bool]string{true: "标点入口：开", false: "标点入口：关"}[p.literalEntries]
 		case "glyphs":
 			title = map[bool]string{true: "字形 → ID", false: "ID → 字形"}[a.showGlyphs]
+		case "reset":
+			if a.host != nil {
+				title = "绑定目标"
+			}
 		}
 		fill(dc, rect{b.l, 110, b.r, 150}, c)
 		text(dc, title, rect{b.l, 111, b.r, 149}, 0x25)
@@ -163,7 +210,11 @@ func (a *ui) drawPreview(dc uintptr, r rect) {
 		text(dc, fmt.Sprintf("%d  %s", i+1, c.Text), box, 0x11) // wrap long candidates inside their own target
 	}
 	fill(dc, rect{10, 240, r.R - 10, 290}, 0xFFFFFF)
-	text(dc, "本地输出："+strings.ReplaceAll(p.editor.display(), "\t", "⇥"), rect{14, 242, r.R - 14, 288}, 0x10)
+	output := "本地输出：" + strings.ReplaceAll(p.editor.display(), "\t", "⇥")
+	if a.host != nil {
+		output = fmt.Sprintf("目标 HWND %d / 焦点 %d / 世代 %d：%s", a.host.target.Window, a.host.target.Focus, a.host.epoch, a.host.last)
+	}
+	text(dc, output, rect{14, 242, r.R - 14, 288}, 0x10)
 }
 
 func loadPreviewGlyphs(root string) (map[string]string, error) {

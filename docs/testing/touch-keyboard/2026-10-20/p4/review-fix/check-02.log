@@ -1,0 +1,7 @@
+=== RUN   TestPreviewCompleteCorpus
+    preview_corpus_windows_test.go:99: variable: 2457604 indexed records; selected 你好; cancelled pending code and edited local output
+    preview_corpus_windows_test.go:99: full: 2457604 indexed records; selected 你好; cancelled pending code and edited local output
+    preview_corpus_windows_test.go:99: shorthand: 2457604 indexed records; selected 你好; cancelled pending code and edited local output
+--- PASS: TestPreviewCompleteCorpus (5.76s)
+PASS
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard	6.393s

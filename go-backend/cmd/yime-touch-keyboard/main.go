@@ -18,6 +18,7 @@ type options struct {
 	ScreenMM, ObservedMM                float64
 	Gutters, Smoke, CheckData           bool
 	Preview                             bool
+	Host, HostSmoke                     bool
 }
 
 func main() {
@@ -33,11 +34,13 @@ func main() {
 	flag.BoolVar(&o.Smoke, "self-test", false, "run isolated Win32 target-window input/focus checks and exit")
 	flag.BoolVar(&o.CheckData, "check-data", false, "validate isolated Chinese dictionaries and in-process sessions, without a window or OS input")
 	flag.BoolVar(&o.Preview, "preview", false, "Chinese desktop preview; output stays in this window, never sends OS input")
-	flag.StringVar(&o.DataDir, "data-dir", "", "explicit experimental dictionary directory for --check-data or --preview")
+	flag.BoolVar(&o.Host, "host-input", false, "Chinese host-input lab; explicitly bind target before sending confirmed text")
+	flag.BoolVar(&o.HostSmoke, "host-self-test", false, "with --host-input, test only disposable own EDIT windows and exit")
+	flag.StringVar(&o.DataDir, "data-dir", "", "explicit experimental dictionary directory for --check-data, --preview or --host-input")
 	flag.StringVar(&o.DataReport, "data-report", "", "optional JSON result file for --check-data")
 	flag.Parse()
 	if e := execute(o); e != nil {
-		if o.Smoke || o.Shot != "" || o.CheckData {
+		if o.Smoke || o.HostSmoke || o.Shot != "" || o.CheckData {
 			fmt.Fprintln(os.Stderr, e)
 		} else {
 			showError(e)
@@ -47,14 +50,20 @@ func main() {
 }
 
 func execute(o options) error {
+	if o.HostSmoke && !o.Host {
+		return fmt.Errorf("--host-self-test requires --host-input")
+	}
+	if o.Host && (o.Preview || o.CheckData || o.Smoke || o.Shot != "" || o.DataReport != "" || o.DataDir == "") {
+		return fmt.Errorf("--host-input requires explicit --data-dir; incompatible with preview/check-data/self-test/screenshot/data-report")
+	}
 	if o.Preview && (o.CheckData || o.Smoke || o.DataReport != "" || o.DataDir == "") {
 		return fmt.Errorf("--preview requires explicit --data-dir and cannot combine with --check-data, --self-test or --data-report")
 	}
 	if o.CheckData {
 		return checkData(o)
 	}
-	if !o.Preview && (o.DataDir != "" || o.DataReport != "") {
-		return fmt.Errorf("data options require --check-data or --preview")
+	if !o.Preview && !o.Host && (o.DataDir != "" || o.DataReport != "") {
+		return fmt.Errorf("data options require --check-data, --preview or --host-input")
 	}
 	return run(o)
 }

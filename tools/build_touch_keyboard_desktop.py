@@ -55,8 +55,9 @@ Developer data check: --check-data --data-dir <isolated-complete-dictionaries>
 opening a window or sending input. This English package does not bundle those
 dictionaries. Chinese composition/candidate preview is a separate source-only
 developer entry (--preview with explicit data-dir and a complete checkout root).
-It writes only to its own in-memory text area; this package is not the P5
-complete Chinese delivery and its launchers still use the English route.
+P4 adds --host-input with explicit target binding and fail-stop delivery.
+Neither source entry is enabled by these launchers. This package is not the P5
+complete Chinese delivery; launchers still use the English route.
 ''',encoding='utf-8')
     shutil.copyfile(ROOT/'prototypes/touch-terminal/desktop/USER_GUIDE.zh-CN.md',output/'USER_GUIDE.zh-CN.md')
     head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True,encoding='utf-8').strip()

@@ -4,9 +4,35 @@ package main
 
 import (
 	"encoding/binary"
+	"errors"
 	"testing"
 	"unsafe"
 )
+
+func TestSendBatchShortInsertOnlyReleasesPrefixNeverReplays(t *testing.T) {
+	events := []input{keyInput(17, 0, 0), keyInput(0, '中', 4), keyInput(0, '中', 6), keyInput(17, 0, 2)}
+	for prefix := 0; prefix < len(events); prefix++ {
+		calls := 0
+		err := sendBatch(events, func(batch []input) (int, error) {
+			calls++
+			if calls == 1 {
+				return prefix, errors.New("injected short insert")
+			}
+			if calls != 2 {
+				t.Fatal("repeated cleanup")
+			}
+			for _, e := range batch {
+				if binary.LittleEndian.Uint32(e.Data[4:8])&2 == 0 {
+					t.Fatal("replayed key down/text")
+				}
+			}
+			return 0, errors.New("cleanup also fails")
+		})
+		if err == nil || calls > 2 {
+			t.Fatal("partial insert accepted or retried")
+		}
+	}
+}
 
 func TestWin32StructSizes(t *testing.T) {
 	if unsafe.Sizeof(input{}) != 40 || unsafe.Sizeof(touch{}) != 48 || unsafe.Sizeof(guiInfo{}) != 72 || unsafe.Sizeof(message{}) != 48 {
