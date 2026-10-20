@@ -1,0 +1,193 @@
+//go:build windows && (amd64 || arm64)
+
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"math"
+	"os"
+	"path/filepath"
+	"strings"
+
+	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
+)
+
+const previewHelp = "P3 中文受控预览\n\n所有确认只写入本窗口内存文本，不调用系统输入，不写剪贴板或用户数据。\n变码/全码/简码切换会取消旧组合；CN EN 同时切换输入与标点，保留原始组合。\n中文始终显示 CN；英文时 Layout 切换 CN/EN 键帽，偏好在本次运行内保留。\n点候选、空格/Enter 确认，Esc 取消，退格编辑组合；翻页后旧触点取消。\n没有组合时 Left/Right、Home/End、Backspace/Delete 编辑本地文本，Shift 选择，Ctrl+A 全选。编辑按 Unicode 码点；Home/End 是全文边界。\n侧数字区保持 literal 旁路。未标注标点入口开关默认关闭。\n音元字形来自实验解析文件，字体只在本进程加载；ID 按钮可恢复 ID 键帽。\n关闭即丢弃本地文本。不能将鼠标或模拟触摸记录为真实手指/触控笔验收。"
+
+type previewGesture struct {
+	area      rect
+	left      bool
+	action    string
+	stamp     previewStamp
+	candidate candidatePress
+}
+
+func inside(r rect, x, y int32) bool { return x >= r.L && x < r.R && y >= r.T && y < r.B }
+
+var previewButtons = []toolButton{
+	{8, 90, "variable", "变码"}, {95, 177, "full", "全码"}, {182, 264, "shorthand", "简码"},
+	{275, 350, "language", ""}, {360, 485, "literal", ""}, {495, 610, "glyphs", ""},
+	{620, 690, "previous", "上一页"}, {695, 765, "next", "下一页"}, {775, 865, "reset", "清空输出"},
+}
+
+func (a *ui) previewWidth() int32 {
+	return int32(math.Ceil(a.s.Board.Bounds.Width*tk.UnitMM*a.ppm)) + int32(a.border*2)
+}
+func (a *ui) candidateRect(i int) rect {
+	w := (a.previewWidth() - 20) / 9
+	return rect{10 + int32(i)*w, 184, 10 + int32(i+1)*w - 3, 234}
+}
+func (a *ui) previewDown(id uint32, x, y int32) {
+	if _, exists := a.previewTouches[id]; exists {
+		return
+	}
+	if y < 104 {
+		a.toolbar(x, y)
+		return
+	}
+	g := &previewGesture{stamp: a.preview.stamp()}
+	if int(y) >= a.top {
+		g.action = "key"
+		g.area = rect{0, int32(a.top), a.previewWidth(), 1 << 30}
+		a.s.Down(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
+	} else {
+		for _, b := range previewButtons {
+			r := rect{b.l, 110, b.r, 150}
+			if inside(r, x, y) {
+				g.action, g.area = b.action, r
+				break
+			}
+		}
+		if g.action == "" {
+			for i := range a.preview.snapshot.State.Candidates {
+				r := a.candidateRect(i)
+				if inside(r, x, y) {
+					g.action, g.area, g.candidate = "candidate", r, a.preview.candidate(i)
+					break
+				}
+			}
+		}
+	}
+	if g.action != "" {
+		a.previewTouches[id] = g
+	}
+	a.invalidate()
+}
+func (a *ui) previewUp(id uint32, x, y int32) {
+	g := a.previewTouches[id]
+	if g == nil {
+		return
+	}
+	a.move(id, x, y)
+	delete(a.previewTouches, id) // A duplicate UP has no action or commit.
+	var err error
+	if g.action == "key" {
+		out := a.s.Up(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
+		if out != nil && !g.left {
+			err = a.preview.apply(*out, g.stamp)
+			if out.Action.Type == "toggle-language" || out.Action.Type == "toggle-layout" {
+				a.cancel()
+			}
+		}
+	} else if !g.left {
+		if g.stamp != a.preview.stamp() {
+			err = fmt.Errorf("状态已更新；本次触点取消")
+		} else {
+			switch g.action {
+			case "candidate":
+				err = a.preview.selectCandidate(g.candidate)
+			case "previous":
+				err = a.preview.page(-1)
+			case "next":
+				err = a.preview.page(1)
+			case "variable", "full", "shorthand":
+				a.cancel()
+				err = a.preview.switchMode(g.action)
+			case "language":
+				a.cancel()
+				err = a.preview.apply(tk.Output{Action: tk.Action{Type: "toggle-language"}}, g.stamp)
+			case "literal":
+				a.cancel()
+				a.preview.literalEntries = !a.preview.literalEntries
+			case "glyphs":
+				a.cancel()
+				a.showGlyphs = !a.showGlyphs
+			case "reset":
+				a.cancel()
+				err = a.preview.apply(tk.Output{Action: tk.Action{Type: "clear"}}, g.stamp)
+				if err == nil {
+					a.preview.editor = previewEditor{}
+				}
+			}
+		}
+	}
+	a.s.Original = a.preview.original()
+	if err != nil {
+		a.status = err.Error()
+	} else {
+		a.status = "预览输出只在本窗口；真实手指/触控笔验收未记录。"
+	}
+	a.invalidate()
+}
+func (a *ui) drawPreview(dc uintptr, r rect) {
+	p := a.preview
+	for _, b := range previewButtons {
+		title := b.label
+		c := uintptr(0xE5EBE2)
+		if b.action == p.mode {
+			c = 0xB3DDC5
+		}
+		switch b.action {
+		case "language":
+			title = map[bool]string{true: "CN 中文", false: "EN 英文"}[p.snapshot.Modes.Input == "chinese"]
+		case "literal":
+			title = map[bool]string{true: "标点入口：开", false: "标点入口：关"}[p.literalEntries]
+		case "glyphs":
+			title = map[bool]string{true: "字形 → ID", false: "ID → 字形"}[a.showGlyphs]
+		}
+		fill(dc, rect{b.l, 110, b.r, 150}, c)
+		text(dc, title, rect{b.l, 111, b.r, 149}, 0x25)
+	}
+	raw := p.snapshot.State.RawInput
+	if raw == "" {
+		raw = "（空）"
+	}
+	if p.snapshot.Modes.Input == "english" && p.snapshot.State.RawInput != "" {
+		raw = "[中文组合暂停] " + raw
+	}
+	text(dc, fmt.Sprintf("组合：%s    第 %d 页    rev %d", raw, p.snapshot.State.PageNumber+1, p.snapshot.Revision), rect{10, 155, r.R - 10, 181}, 0x24)
+	for i, c := range p.snapshot.State.Candidates {
+		box := a.candidateRect(i)
+		fill(dc, box, 0xFFFFFF)
+		text(dc, fmt.Sprintf("%d  %s", i+1, c.Text), box, 0x11) // wrap long candidates inside their own target
+	}
+	fill(dc, rect{10, 240, r.R - 10, 290}, 0xFFFFFF)
+	text(dc, "本地输出："+strings.ReplaceAll(p.editor.display(), "\t", "⇥"), rect{14, 242, r.R - 14, 288}, 0x10)
+}
+
+func loadPreviewGlyphs(root string) (map[string]string, error) {
+	data, err := os.ReadFile(filepath.Join(root, "prototypes/touch-terminal/encoding/manual_key_layout.resolved.json"))
+	if err != nil {
+		return nil, err
+	}
+	var source struct {
+		Layers []struct {
+			ID     string `json:"yinyuan_id"`
+			Symbol string `json:"symbol_char"`
+		} `json:"layers"`
+	}
+	if err = json.Unmarshal(data, &source); err != nil {
+		return nil, err
+	}
+	glyphs := map[string]string{}
+	for _, layer := range source.Layers {
+		if layer.ID != "" && layer.Symbol != "" {
+			glyphs[layer.ID] = layer.Symbol
+		}
+	}
+	if len(glyphs) != 60 {
+		return nil, fmt.Errorf("实验解析文件应包含 60 个基础音元字形，实际 %d", len(glyphs))
+	}
+	return glyphs, nil
+}

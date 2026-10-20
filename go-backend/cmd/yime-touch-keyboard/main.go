@@ -17,12 +17,13 @@ type options struct {
 	DataDir, DataReport                 string
 	ScreenMM, ObservedMM                float64
 	Gutters, Smoke, CheckData           bool
+	Preview                             bool
 }
 
 func main() {
 	var o options
 	flag.StringVar(&o.Root, "root", "..", "checkout root")
-	flag.StringVar(&o.KeyView, "key-view", "english", "english/original keycaps; both currently send English text")
+	flag.StringVar(&o.KeyView, "key-view", "english", "english/original keycaps; in --preview this sets the English-input view preference")
 	flag.StringVar(&o.Profile, "profile", "", "optional geometry profile JSON")
 	flag.StringVar(&o.Zones, "numeric-zones", "both", "both/left/right/none")
 	flag.BoolVar(&o.Gutters, "remove-gutters", false, "remove reviewed central and side gutters without scaling keys")
@@ -31,7 +32,8 @@ func main() {
 	flag.StringVar(&o.Shot, "screenshot", "", "render this keyboard to PNG and exit")
 	flag.BoolVar(&o.Smoke, "self-test", false, "run isolated Win32 target-window input/focus checks and exit")
 	flag.BoolVar(&o.CheckData, "check-data", false, "validate isolated Chinese dictionaries and in-process sessions, without a window or OS input")
-	flag.StringVar(&o.DataDir, "data-dir", "", "explicit experimental dictionary directory for --check-data")
+	flag.BoolVar(&o.Preview, "preview", false, "Chinese desktop preview; output stays in this window, never sends OS input")
+	flag.StringVar(&o.DataDir, "data-dir", "", "explicit experimental dictionary directory for --check-data or --preview")
 	flag.StringVar(&o.DataReport, "data-report", "", "optional JSON result file for --check-data")
 	flag.Parse()
 	if e := execute(o); e != nil {
@@ -45,11 +47,14 @@ func main() {
 }
 
 func execute(o options) error {
+	if o.Preview && (o.CheckData || o.Smoke || o.DataReport != "" || o.DataDir == "") {
+		return fmt.Errorf("--preview requires explicit --data-dir and cannot combine with --check-data, --self-test or --data-report")
+	}
 	if o.CheckData {
 		return checkData(o)
 	}
-	if o.DataDir != "" || o.DataReport != "" {
-		return fmt.Errorf("data options currently require --check-data; desktop Chinese UI is not connected yet")
+	if !o.Preview && (o.DataDir != "" || o.DataReport != "") {
+		return fmt.Errorf("data options require --check-data or --preview")
 	}
 	return run(o)
 }

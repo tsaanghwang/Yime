@@ -13,6 +13,10 @@ func TestDataCheckCannotOpenWindowOrUseImplicitData(t *testing.T) {
 		{CheckData: true, DataDir: "unused", Smoke: true},
 		{CheckData: true, DataDir: "unused", Shot: "unused.png"},
 		{DataDir: "unused"},
+		{Preview: true},
+		{Preview: true, DataDir: "unused", CheckData: true},
+		{Preview: true, DataDir: "unused", Smoke: true},
+		{Preview: true, DataDir: "unused", DataReport: "unused.json"},
 	} {
 		if err := execute(o); err == nil {
 			t.Fatal("ambiguous data/UI invocation accepted")

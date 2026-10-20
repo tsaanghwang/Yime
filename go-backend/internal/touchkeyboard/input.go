@@ -3,6 +3,8 @@ package touchkeyboard
 type Output struct {
 	Text, Key        string
 	Shift, Ctrl, Alt bool
+	Action           Action // Captured semantic action for the controlled Chinese preview.
+	Zone             string
 }
 type press struct {
 	index                        int
@@ -15,6 +17,7 @@ type press struct {
 type State struct {
 	Board            Board
 	Original         bool
+	Semantic         bool // Return actions without applying language/layout switches locally.
 	Shift, Ctrl, Alt bool
 	Number           map[string]bool
 	presses          map[uint32]*press
@@ -132,6 +135,12 @@ func (s *State) Up(id uint32, x, y float64) *Output {
 	}
 	a := p.action
 	k := s.Board.Keys[p.index]
+	if s.Semantic && a.Type != "toggle-number" {
+		if k.Zone != "main" && a.Type == "confirm" && a.Key == "Enter" {
+			a = Action{Type: "literal", ASCII: "\n"}
+		}
+		return s.output(Output{Action: a, Zone: k.Zone, Shift: p.shift, Ctrl: p.ctrl, Alt: p.alt})
+	}
 	switch a.Type {
 	case "toggle-layout":
 		s.Original = !s.Original
