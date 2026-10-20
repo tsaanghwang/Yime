@@ -105,6 +105,8 @@ type ui struct {
 	glyphFont        uintptr
 	glyphs           map[string]string
 	showGlyphs       bool
+	host             *deliveryGate
+	hostBusy         bool
 }
 
 var active *ui
@@ -115,6 +117,12 @@ const drawTextNoPrefix = 0x0800
 
 var focusCallback = syscall.NewCallback(func(hook, event, hwnd, object, child, thread, tick uintptr) uintptr {
 	a := active
+	if a != nil && a.host != nil {
+		if a.host.target.Window != 0 && int32(uint32(tick)-a.focusStarted) >= 0 {
+			a.loseHostFocus("焦点已变化；未确认组合已取消，请重新绑定目标")
+		}
+		return 0
+	}
 	if a != nil && a.lastTarget.Window != 0 && int32(uint32(tick)-a.focusStarted) >= 0 {
 		a.cancel()
 		a.lastTarget = target{}
@@ -182,7 +190,7 @@ func run(o options) error {
 	}
 	a := &ui{s: tk.NewState(b), ppm: ppm, o: o, owners: map[uint32]target{}, top: top, border: border, status: "English text / Ctrl Alt shortcuts. Chinese composition is not connected in this milestone.", monitorName: syscall.UTF16ToString(m.Device[:])}
 	a.s.Original = o.KeyView == "original"
-	if o.Preview {
+	if o.Preview || o.Host {
 		r, err := keyboardlab.OpenRuntime(o.Root, o.DataDir)
 		if err != nil {
 			return err
@@ -210,6 +218,9 @@ func run(o options) error {
 			return err
 		}
 		a.showGlyphs = true
+		if o.Host {
+			a.initHost()
+		}
 	}
 	active = a
 	defer func() { active = nil }()
@@ -225,6 +236,9 @@ func run(o options) error {
 	title := "Yime desktop touch keyboard - English milestone"
 	if o.Preview {
 		title = "Yime 18u 中文受控预览（不向其他应用输入）"
+	}
+	if o.Host {
+		title = "Yime 18u 中文宿主输入实验"
 	}
 	h, _, err := U("CreateWindowExW").Call(0x08000088, ptr(c.Name), ptr(str(title)), 0x80000000, uintptr(m.Work.L+(m.Work.R-m.Work.L-int32(width))/2), uintptr(m.Work.B-int32(height)-8), uintptr(width), uintptr(height), 0, 0, instance, 0)
 	if h == 0 {
@@ -248,7 +262,7 @@ func run(o options) error {
 	fontHeight := int32(-15)
 	f, _, _ := G("CreateFontW").Call(uintptr(fontHeight), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
 	a.font = f
-	if o.Preview {
+	if o.Preview || o.Host {
 		glyphHeight := int32(-19)
 		a.glyphFont, _, _ = G("CreateFontW").Call(uintptr(glyphHeight), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("YinYuan")))
 		if a.glyphFont == 0 {
@@ -281,6 +295,9 @@ func run(o options) error {
 	}
 	if o.Smoke {
 		return a.smoke(instance)
+	}
+	if o.HostSmoke {
+		return a.hostSmoke(instance)
 	}
 	if ok, _, _ := U("RegisterHotKey").Call(h, 1, 0x4003, 'K'); ok == 0 {
 		a.status = "Ctrl+Alt+K unavailable; use Hide/Close on this window."
@@ -419,6 +436,9 @@ func (a *ui) toolbar(x, y int32) {
 			a.s.Original = !a.s.Original
 		}
 	case "hide":
+		if a.host != nil {
+			a.loseHostFocus("键盘已隐藏；再次输入前请重新绑定")
+		}
 		a.hidden = true
 		U("ShowWindow").Call(a.h, 0)
 	case "close":
@@ -427,6 +447,10 @@ func (a *ui) toolbar(x, y int32) {
 		help := desktopHelp
 		if a.preview != nil {
 			help = previewHelp
+		}
+		if a.host != nil {
+			a.loseHostFocus("帮助已打开；请重新绑定目标")
+			help = hostHelp
 		}
 		U("MessageBoxW").Call(a.h, ptr(str(help)), ptr(str("Yime 桌面键盘使用帮助")), 0x00040040)
 	}
@@ -457,6 +481,9 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 	}
 	switch msg {
 	case 0x0002:
+		if a.host != nil {
+			a.loseHostFocus("键盘已关闭")
+		}
 		a.cancel()
 		U("PostQuitMessage").Call(0)
 		return 0
@@ -481,11 +508,17 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 		a.paint()
 		return 0
 	case 0x007E, 0x02E0:
+		if a.host != nil {
+			a.loseHostFocus("显示环境已变化；请复核后重新绑定")
+		}
 		a.cancel()
 		a.status = "Display changed. Recheck monitor width and ruler calibration before use."
 		a.invalidate()
 		return 0
 	case 0x0312:
+		if a.host != nil {
+			a.loseHostFocus("键盘显示状态变化；请重新绑定")
+		}
 		a.cancel()
 		a.hidden = !a.hidden
 		v := uintptr(4)
@@ -613,6 +646,15 @@ func sendOutput(o tk.Output) error {
 		return errors.New("controlled preview cannot send OS input")
 	}
 	destination := foreground()
+	return sendOutputTo(o, destination)
+}
+
+// Only the host delivery adapter supplies a previously captured destination.
+// The legacy English route captures it immediately above; P3 remains blocked.
+func sendOutputTo(o tk.Output, destination target) error {
+	if active != nil && active.preview != nil && active.host == nil {
+		return errors.New("controlled preview cannot send OS input")
+	}
 	if !valid(destination, 0) {
 		return errors.New("target focus unavailable")
 	}
@@ -687,11 +729,20 @@ func sendOutput(o tk.Output) error {
 	if foreground() != destination {
 		return errors.New("target focus changed before input")
 	}
-	n, _, err := U("SendInput").Call(uintptr(len(events)), uintptr(unsafe.Pointer(&events[0])), unsafe.Sizeof(events[0]))
-	if int(n) != len(events) {
+	return sendBatch(events, func(batch []input) (int, error) {
+		n, _, err := U("SendInput").Call(uintptr(len(batch)), uintptr(unsafe.Pointer(&batch[0])), unsafe.Sizeof(batch[0]))
+		return int(n), err
+	})
+}
+func sendBatch(events []input, insert func([]input) (int, error)) error {
+	if len(events) == 0 {
+		return errors.New("empty input batch")
+	}
+	n, err := insert(events)
+	if n != len(events) {
 		// Release only our own modifiers if Windows inserted only a prefix.
-		if releases := cleanupPrefix(events, int(n)); len(releases) > 0 {
-			U("SendInput").Call(uintptr(len(releases)), uintptr(unsafe.Pointer(&releases[0])), unsafe.Sizeof(releases[0]))
+		if releases := cleanupPrefix(events, n); len(releases) > 0 {
+			_, _ = insert(releases)
 		}
 
 		return fmt.Errorf("SendInput inserted %d/%d events (target privileges or focus may prevent input): %v", n, len(events), err)
@@ -753,6 +804,9 @@ func (a *ui) draw(dc uintptr, r rect) {
 	title := "Yime desktop keyboard - ENGLISH TEXT"
 	if a.preview != nil {
 		title = "Yime 中文受控预览（不向其他应用输入）"
+	}
+	if a.host != nil {
+		title = "Yime 中文宿主输入实验（先绑定目标）"
 	}
 	text(dc, fmt.Sprintf("%s | 1u = 19.05 mm | %.2f mm | Ctrl+Alt+K", title, a.s.Board.Bounds.Width*tk.UnitMM), rect{10, 3, r.R - 10, 25}, 0x24)
 	for _, b := range toolButtons {

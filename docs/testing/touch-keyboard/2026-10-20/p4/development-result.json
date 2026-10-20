@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-20T10:24:27+08:00",
+  "scope": "P4 isolated desktop host binding and controlled native EDIT delivery",
+  "source": {
+    "baseCommit": "05af1d8bca1d23b23ad7759ad2da366fc30ea372",
+    "branch": "codex/touch-keyboard-p4-host",
+    "workingTreeChanges": true,
+    "changedSourceSHA256": {
+      "go-backend/cmd/yime-touch-keyboard/data_test.go": "a6fb44ab9563a9b243e680b389c96bbc108276c92f5dd71ab5d10e1386917a1f",
+      "go-backend/cmd/yime-touch-keyboard/delivery.go": "4e6fd86451703599b8bdec0d2a644a3d17fdeed03311eb474935c0a77c8d0e68",
+      "go-backend/cmd/yime-touch-keyboard/delivery_test.go": "40977294c9b72a6ce6e58dbce3162b3bfa2bf994afc2df0334cf9cda98000d9d",
+      "go-backend/cmd/yime-touch-keyboard/host_smoke_windows.go": "f7ed4f1f44e20a43e8618c3cdbe81b2e2c25b877747e4117730b7fb4643c7b31",
+      "go-backend/cmd/yime-touch-keyboard/host_windows.go": "3b4e3fd39ad1a7f569fdb0d85b443699fb249b140edd8f08517d170a4caf4c50",
+      "go-backend/cmd/yime-touch-keyboard/input_windows_test.go": "d2dafacefa8a84cb8e6fb3d40f450c4e3afc703a7b37a731bda9a0d30e356458",
+      "go-backend/cmd/yime-touch-keyboard/main.go": "b27653d08e6517cbd34185eeea9320e3517fbe549c0b05aea8c86b5a549410e4",
+      "go-backend/cmd/yime-touch-keyboard/platform_windows.go": "424b4fd1e32eeb488d7d47533ddbdaa6f0e6910822e89485dda3347a68dadf59",
+      "go-backend/cmd/yime-touch-keyboard/preview.go": "5db9a8eb6f4d4cc41788c1b2c6b95079cbd147926b45b0bc0fd4065061903afa",
+      "go-backend/cmd/yime-touch-keyboard/preview_windows.go": "936077a19c814b4c844866bdfd0c3a5b92436b8a66c0db3fad79b2139fd9f0e5",
+      "prototypes/touch-terminal/desktop/DEVELOPMENT_PLAN_18U.md": "305878e28b1e5a80430d3996c5e66bc41bb3a07735334c3accc33cb641a06fa5",
+      "prototypes/touch-terminal/desktop/HANDOFF.md": "8e6b548c122b40596be90aee29f6d7868ec713fb2fd1c583471288477d1b51b6",
+      "prototypes/touch-terminal/desktop/README.md": "7ee9903a72daf3c270947965654bc25cb2158da1aba8e443f20609700ef43be6",
+      "prototypes/touch-terminal/desktop/USER_GUIDE.zh-CN.md": "dd0eb3fb60aaba5997195fd039183be50230f43e90bc2856322c66e850d7ac67",
+      "tools/build_touch_keyboard_desktop.py": "45b58e923b159071044e1d7652ea4a4704a7cc1a294da82086114ad3a72a2b5b"
+    },
+    "note": "Local precommit checks; packages retain dirty-source identity, not clean-commit CI or full Chinese delivery.",
+    "documentationNote": "Final documentation-only clarification after checks; tested implementation unchanged."
+  },
+  "baseline": {
+    "widthU": 18,
+    "unitMM": 19.05,
+    "widthMM": 342.9,
+    "keys": 100,
+    "main17": "frozen-optional-candidate",
+    "full23": "frozen-optional-candidate"
+  },
+  "checks": [
+    {
+      "command": [
+        "go",
+        "-C",
+        "go-backend",
+        "test",
+        "./cmd/yime-touch-keyboard",
+        "./internal/touchkeyboard",
+        "./internal/keyboardlab",
+        "./cmd/yime-keyboard-lab",
+        "./internal/asciicodemode",
+        "./input_methods/yime/codemode"
+      ],
+      "exitCode": 0,
+      "log": "check-01.log"
+    },
+    {
+      "command": [
+        "go",
+        "-C",
+        "go-backend",
+        "test",
+        "./cmd/yime-touch-keyboard",
+        "-run",
+        "TestPreviewCompleteCorpus",
+        "-count=1",
+        "-v",
+        "-args",
+        "-desktop-preview-integration-root",
+        "C:\\dev\\Yime"
+      ],
+      "exitCode": 0,
+      "log": "check-02.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/check_layout_change_lock.py"
+      ],
+      "exitCode": 0,
+      "log": "check-03.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/lexicon/check_repository_data_boundary.py"
+      ],
+      "exitCode": 0,
+      "log": "check-04.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/build_touch_keyboard_desktop.py",
+        "--output-dir",
+        ".generated/touch-keyboard-p4"
+      ],
+      "exitCode": 0,
+      "log": "check-05.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/build_touch_keyboard_desktop.py",
+        "--arch",
+        "arm64",
+        "--output-dir",
+        ".generated/touch-keyboard-p4-arm64"
+      ],
+      "exitCode": 0,
+      "log": "check-06.log"
+    },
+    {
+      "command": [
+        "C:\\dev\\Yime\\.generated\\touch-keyboard-p4\\YimeTouchKeyboard.exe",
+        "--root",
+        "C:\\dev\\Yime",
+        "--numeric-zones",
+        "none",
+        "--remove-gutters",
+        "--host-input",
+        "--host-self-test",
+        "--data-dir",
+        "C:\\dev\\Yime\\.generated\\ascii-keyboard-134\\data"
+      ],
+      "exitCode": 0,
+      "log": "check-07.log"
+    }
+  ],
+  "packages": {
+    "amd64": {
+      "manifest": "package-amd64-manifest.json",
+      "executableSHA256": "da0ac3ab4b80bd9769c2efb19e7322b464bc39ffaa2c11afc9345eed5e84e0fa",
+      "nativeControlledEDITTest": true,
+      "scope": "default English developer package; Chinese host route still requires explicit checkout resources; ARM64 cross-build only"
+    },
+    "arm64": {
+      "manifest": "package-arm64-manifest.json",
+      "executableSHA256": "5cbcdc174c2568ef3949bb59e6c4a5ea11121aaae1bd75d0e1d9687954c5b8ba",
+      "nativeControlledEDITTest": false,
+      "scope": "default English developer package; Chinese host route still requires explicit checkout resources; ARM64 cross-build only"
+    }
+  },
+  "results": {
+    "threeModesNativeChinese": "pass: canonical-ID-derived ni3 selected 你 in own EDIT",
+    "compositionNeverSent": "pass",
+    "candidateUpAndDuplicateUp": "pass",
+    "nativeEditing": "pass: Ctrl+Home/Shift+End replacement, Backspace, cancel, English and literal Enter",
+    "focusAwayAndBack": "pass: own two EDIT windows, both texts unchanged",
+    "delayedReply": "pass: real response delayed by injected focus switch before return, no text sent",
+    "zeroSend": "injected failure, one attempt only",
+    "partialUnknown": "one actual Unicode prefix then injected error, no replay; explicit rebind preserved prefix",
+    "sendBatchPartialCount": "unit injected counts, release only pressed prefix, never retry text",
+    "P3CompleteCorpusRegression": "pass: 2457604 indexed records per mode"
+  },
+  "limitations": [
+    "SendInput cannot atomically address a HWND; pre/post checks and observed WinEvent notifications do not exclude every last-instant focus race. Event count is not host acceptance.",
+    "Fault injections are controlled tests, not naturally observed OS failures.",
+    "The classic EDIT fixture did not respond to Ctrl+A; native selection uses supported Ctrl+Home/Shift+End without changing key mappings.",
+    "Initial arbitrary one-character probe had no complete-dictionary candidate; final probe derives admitted ni3 from canonical IDs and lab projection.",
+    "No physical finger/pen, Word/Notepad, elevated-host or native ARM64 acceptance.",
+    "No installed/default input-method, user-data or system-font changes."
+  ],
+  "stages": {
+    "P4": "local-pass-with-documented-SendInput-limits",
+    "P5": "pending",
+    "P6": "deferred"
+  },
+  "pendingRecords": [
+    "P5 complete independent Chinese package, exact source SHA, CI/artifact URL and SHA-256",
+    "P6 separate real host, finger/pen, ruler and ARM64 native observations"
+  ],
+  "evidenceSHA256": {
+    ".gitattributes": "de5eec4f512ebaaad540f25e3b37b610dd304fbcc7da85dacf12913364687da9",
+    "check-01.log": "4ceee84788ca2b307c21d376450b3c476574443ce738ac1f6624d6b43c2a7f41",
+    "check-02.log": "a484e95ccaa42f95206f2c15bdae13d383213f09cb011ac758ca0ca237bf796b",
+    "check-03.log": "629a6a3b6eea6fdf77b4b5153337198bb348e519d92a7a989ef6e9ff64239d07",
+    "check-04.log": "f9feb8577ecff1f2ed9f9d49280eb4ddfc369d95f66bd5a546cd7635cedbef98",
+    "check-05.log": "734aa1f0d135566570a7402f38e2824f1469b1a811ee732ced2e9ac0788c94a6",
+    "check-06.log": "96fad0bbb1dd92f68f8f7d123d472671c99c533efbb9e480361ef161ec3072cc",
+    "check-07.log": "0b273b7c22318e28d1b173313b3a177746f96a1cb6601641309508b0e0ecd2f2",
+    "corpus-manifest.json": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843",
+    "package-amd64-manifest.json": "2c750d17bfc536739122d382feb9afe478c6cd3f0f82f626b83b6508e24579e1",
+    "package-arm64-manifest.json": "e14ae7f97e456720a932001fc35867252db2ec4b00ce09b13a90e2e1d5f7deee"
+  }
+}
