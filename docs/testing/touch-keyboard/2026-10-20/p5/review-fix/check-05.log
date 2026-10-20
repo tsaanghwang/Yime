@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\dev\Yime\tools\check_touch_keyboard_package.py", line 110, in <module>
+    check(args.package,args.report,args.render,args.native_edit)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\dev\Yime\tools\check_touch_keyboard_package.py", line 59, in check
+    raise RuntimeError('Package own EDIT check failed: '+native.stderr.decode('utf-8',errors='replace'))
+RuntimeError: Package own EDIT check failed: own target did not acquire foreground; no input sent
+

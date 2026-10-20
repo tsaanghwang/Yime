@@ -109,7 +109,7 @@ func preparePortable(o *options, root, expected string) error {
 		}
 		o.DataDir = data
 	}
-	if o.Profile == "" && o.Zones == "both" && !o.Gutters {
+	if o.Profile == "" && !o.GeometryExplicit && o.Zones == "both" && !o.Gutters {
 		o.Profile = "prototypes/touch-terminal/desktop/profiles/main-only.json"
 	}
 	if o.Profile != "" {

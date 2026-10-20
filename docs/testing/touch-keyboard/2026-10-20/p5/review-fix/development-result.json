@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-20T11:29:30+08:00",
+  "scope": "P5 review fix: preserve explicitly supplied geometry; relocated data and rendering verified; own EDIT attempt blocked",
+  "source": {
+    "baseCommit": "b950b501bda3fda8ddede58f43b08f561150f70f",
+    "branch": "codex/touch-keyboard-p5-portable",
+    "workingTreeChanges": true,
+    "changedSourceSHA256": {
+      "go-backend/cmd/yime-touch-keyboard/main.go": "30ba29165674461b1277037d61a29ab1fdda545b2b2a096246b444c5e6def237",
+      "go-backend/cmd/yime-touch-keyboard/portable.go": "70f57d47643e00ed27b2c92ed3d8c44029181da95b9dbeff2f3d9be440ea8a0a",
+      "go-backend/cmd/yime-touch-keyboard/portable_test.go": "96fd4578617ce6d322ea2ce981e1bb5c832fd1f88ebe095ad4de45ba0aa2f6a5",
+      "prototypes/touch-terminal/desktop/HANDOFF.md": "e81b72a73635f378403f091cc1e3f08e9f5a2f7b639eb4e147ab3375510fde28",
+      "tools/check_touch_keyboard_package.py": "7f0ad3507d8e94af047a0c4a200602fb07412403a6dfbf11f9c3ee528f3382f6"
+    },
+    "documentationNote": "Handoff clarified after checks; implementation unchanged."
+  },
+  "unchangedEarlierChecks": "../development-result.json at b950b501; original raw evidence retained",
+  "checks": [
+    {
+      "log": "check-01.log",
+      "exitCode": 0,
+      "scope": "Go affected regressions"
+    },
+    {
+      "log": "check-02.log",
+      "exitCode": 0,
+      "scope": "Portable resource/geometry regressions"
+    },
+    {
+      "log": "check-03.log",
+      "exitCode": 0,
+      "scope": "x64 complete build"
+    },
+    {
+      "log": "check-04.log",
+      "exitCode": 0,
+      "scope": "ARM64 cross-build"
+    },
+    {
+      "log": "check-05.log",
+      "exitCode": 1,
+      "scope": "relocated package with rendering and own EDIT attempt",
+      "classification": "own target did not acquire foreground; no input sent; not passed"
+    },
+    {
+      "log": "check-06.log",
+      "exitCode": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/check_touch_keyboard_package.py",
+        "--package",
+        ".generated/touch-keyboard-p5-review",
+        "--report",
+        "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-20\\p5\\review-fix\\package-check.json",
+        "--render"
+      ],
+      "scope": "independent package/resource/geometry/render checks without foreground/input requirement"
+    }
+  ],
+  "packages": {
+    "amd64": {
+      "manifest": "amd64-manifest.json",
+      "resources": "amd64-resources.json",
+      "executableSHA256": "dc143f032fedc080aed21a6389bbd9ac91ea1f64dbab88380ca84108bb5501a0",
+      "nativeDataExecution": true,
+      "nativeEDITPass": false
+    },
+    "arm64": {
+      "manifest": "arm64-manifest.json",
+      "resources": "arm64-resources.json",
+      "executableSHA256": "6a97a4be89c397045e5b92ebda29e2db1575a29792576c57e1c4e5f8a6e7ef1b",
+      "nativeDataExecution": false,
+      "nativeEDITPass": false
+    }
+  },
+  "results": {
+    "defaultGeometry": "18u / 100 keys",
+    "explicitBothGeometry": "24.75u / 134 keys",
+    "explicitFalseGutters": "24.75u / 134 keys; unit regression",
+    "explicitBothWithGuttersRemoved": "24u / 134 keys; unit regression",
+    "relocatedPackage": "three modes, resource rejection and private-font render pass",
+    "ownEDIT": "foreground activation unavailable, no input sent; original P5 package pass not inherited"
+  },
+  "limitations": [
+    "No physical finger/pen, real applications or native ARM64 acceptance.",
+    "SendInput cannot atomically bind an HWND.",
+    "Local precommit packages retain dirty source identity; final CI delivery recorded in PR #74."
+  ],
+  "evidenceSHA256": {
+    "amd64-manifest.json": "a352cb674762d44332b18e0cd92aa8a6e5805694ab21ee6a8012eeadcaec025b",
+    "amd64-resources.json": "99b7a72e346b752cb382528cf90e0f03a4f3a45c476b68788133d26e61f2f520",
+    "arm64-manifest.json": "313956bf887138d4e88cfd7040144f4c08f09d38b524f8d5a7020b73352c125d",
+    "arm64-resources.json": "06c8a1af131f88fdc3cb3a5902207a2ca039fedde0a1bbfef1d908eba7f9f011",
+    "check-01.log": "adcf210e9d829b646cebf5e1c62e6e25e7a70980307f0c6fac40e4315b42749c",
+    "check-02.log": "2807053180ba4bcc54a4dc5e189b5c28ab0324984b397aabb8c2858ba5920df6",
+    "check-03.log": "87f5cb4c517cbfeadf0285274d4d45ce80ddc3410fbbdbbc1278de8d03f03185",
+    "check-04.log": "13a89e8ddcb87ca5fd725f5080c474a44b33793b054c1d5a618c3a2e4bf36231",
+    "check-05.log": "856737f1d01a2dfaef5ad19cad6243548dd1739832da2b4892353a6047e2bd74",
+    "check-06.log": "42522edd8bd05373373a48223d09f4eba0a3e7d11a02c6c0975694d3067df211",
+    "package-check.json": "3a14d02b1df84e5dbd434b89e5dfcf768763243c0ee7bbde1af86677288bbe0c",
+    "portable-native-edit.log": "ba4198716a906c98207e5c1c5fdfb8ef95f22830cc2a8c4a6e740f57303ab35f",
+    "portable-preview.png": "2b645cb7e166869cb4841ec96da0bc9ceec6b0f8f95b0f31398c75b3dbdfded2"
+  }
+}

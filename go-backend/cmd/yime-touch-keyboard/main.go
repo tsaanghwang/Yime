@@ -20,6 +20,7 @@ type options struct {
 	Preview                             bool
 	Host, HostSmoke                     bool
 	EnglishOnly, CheckPackage           bool
+	GeometryExplicit                    bool
 }
 
 func main() {
@@ -42,6 +43,7 @@ func main() {
 	flag.StringVar(&o.DataDir, "data-dir", "", "explicit experimental dictionary directory for --check-data, --preview or --host-input")
 	flag.StringVar(&o.DataReport, "data-report", "", "optional JSON result file for --check-data")
 	flag.Parse()
+	o.GeometryExplicit = hasGeometryOptions(flag.CommandLine)
 	if e := execute(o); e != nil {
 		if o.Smoke || o.HostSmoke || o.Shot != "" || o.CheckData || o.CheckPackage {
 			fmt.Fprintln(os.Stderr, e)
@@ -50,6 +52,16 @@ func main() {
 		}
 		os.Exit(1)
 	}
+}
+
+func hasGeometryOptions(flags *flag.FlagSet) bool {
+	explicit := false
+	flags.Visit(func(f *flag.Flag) {
+		if f.Name == "profile" || f.Name == "numeric-zones" || f.Name == "remove-gutters" {
+			explicit = true
+		}
+	})
+	return explicit
 }
 
 func execute(o options) error {

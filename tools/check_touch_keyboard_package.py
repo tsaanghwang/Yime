@@ -38,6 +38,13 @@ def check(package, report_path, render=False, native_edit=False):
         if (result['confirmedChineseInMemory'] != dict.fromkeys(('variable','full','shorthand'),'你')
             or result['boardWidthU']!=18 or result['keyCount']!=100 or result['hostInputSent']):
             raise ValueError('Relocated package diagnostic did not confirm all modes/geometry')
+        full_file=temp/'full-board-result.json'
+        full_run=subprocess.run([str(exe),'--check-package','--numeric-zones','both','--data-report',str(full_file)],cwd=cwd,env=env,capture_output=True,timeout=240)
+        if full_run.returncode:
+            raise RuntimeError(full_run.stderr.decode('utf-8',errors='replace'))
+        full=json.loads(full_file.read_text(encoding='utf-8'))
+        if full['boardWidthU']!=24.75 or full['keyCount']!=134:
+            raise ValueError('Explicit both geometry was overridden by the portable default')
         report_path.parent.mkdir(parents=True,exist_ok=True)
         if render:
             shot=temp/'portable-preview.png'
@@ -81,6 +88,7 @@ def check(package, report_path, render=False, native_edit=False):
               'manifestSHA256':digest(package/'manifest.json'),'architecture':manifest['architecture'],
               'resourceArchiveSHA256':manifest['resourceArchiveSHA256'],
               'relocatedOutsideCheckout':True,'emptyWorkingDirectory':True,'runtime':result,
+              'explicitBothGeometry':{'boardWidthU':full['boardWidthU'],'keyCount':full['keyCount']},
               'negativeChecks':checks,'hostInputSent':False,'hardwareAcceptance':False,
               'renderedPreview':render,'controlledOwnEDIT':native_edit,
               'arm64NativeAcceptance':False}
