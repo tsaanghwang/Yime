@@ -1,0 +1,2 @@
+# Local reports and manifests are bound by byte-level SHA-256 in this directory.
+* -text !eol -whitespace

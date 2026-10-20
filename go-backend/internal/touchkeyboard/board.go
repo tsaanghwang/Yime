@@ -13,10 +13,11 @@ import (
 const UnitMM = 19.05 // Common full-size MX centre-to-centre pitch, not cap width.
 type Rect struct{ X, Y, Width, Height float64 }
 type Action struct {
-	Type  string `json:"type"`
-	ASCII string `json:"ascii"`
-	Key   string `json:"key"`
-	Label string `json:"label"`
+	Type         string `json:"type"`
+	ASCII        string `json:"ascii"`
+	Key          string `json:"key"`
+	Label        string `json:"label"`
+	LiteralEntry bool   `json:"literalEntry,omitempty"`
 }
 type View struct {
 	Labels      []string `json:"labels"`

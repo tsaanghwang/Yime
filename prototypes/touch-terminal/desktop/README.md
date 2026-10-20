@@ -1,12 +1,34 @@
-# Windows 桌面触摸键盘：第一阶段
+# Windows 桌面触摸键盘：18u 开发基线
 
-2026-10-20：以 #70 合并后的 **18u 主区**为后续样机基准。P1 新包的 `Start Keyboard.cmd` 与 `Start Main Area.cmd` 均打开 18u，原全盘改用 `Start Full Keyboard.cmd`；旧包入口不追溯改写。17u / 23u 派生配置冻结为候选。按[18u 开发计划](DEVELOPMENT_PLAN_18U.md)推进，手指/触控笔验收准备暂缓；桌面功能仍为英文阶段。
+2026-10-20：以 **18u 主区**为样机基准，P1/P2 随 #71 合并，P3 已完成本地中文受控预览。新包的 `Start Keyboard.cmd` 与 `Start Main Area.cmd` 均打开 18u，原全盘用 `Start Full Keyboard.cmd`；旧包入口不追溯改写。17u / 23u 派生配置冻结为候选。按[18u 开发计划](DEVELOPMENT_PLAN_18U.md)推进，手指/触控笔验收准备暂缓。
 
 这是独立、无需安装输入法的桌面实验程序。它读取现有 CN/EN134 盘面，
 以不激活窗口承接触摸，向当前目标输入框发送英文文本、编辑键和快捷键。
-网页样机继续承担中文引擎、布局与触点实验；桌面程序本阶段尚未接中文组合。
+显式 `--preview` 入口则使用共用中文引擎，组合和候选确认只写入本窗口文本区。中文跨应用提交待 P4，完整中文便携包待 P5。
 
-## 当前可用
+## P3 中文受控预览（源码开发入口）
+
+完整实验词典已按原型 README 生成时，在仓库根目录执行：
+
+```text
+go -C go-backend run ./cmd/yime-touch-keyboard --root .. --numeric-zones none --remove-gutters --preview --data-dir ../.generated/ascii-keyboard-134/data
+```
+
+初次加载会校验完整词典哈希并生成临时索引，退出即清理。缺少资源或身份不符时失败，不查找已安装输入法。现有英文便携包没有这些词典和预览字体资源，不能把上述源码入口视为 P5 交付。
+
+预览支持三编码模式、CN EN、候选点击/分页、原始组合显示和本地文本编辑。CN EN 同时切换标点；中文始终显示 CN，英文时 Layout 可切换 CN/EN 键帽，偏好在本次运行内保留。字形/ID 按钮切换基础音元字形显示，私有字体不安装到系统。更多步骤与编辑范围见[中文使用帮助](USER_GUIDE.zh-CN.md)。
+
+预览不会向其他应用输入，输出只在内存中，关闭即丢弃；不能与 `--self-test` 或 `--check-data` 混用。移出候选/按键再返回仍取消；候选版本变化后的旧触点和重复抬手均不提交。
+
+可重复运行完整语料检查（不是手指/笔验收）：
+
+```text
+go -C go-backend test ./cmd/yime-touch-keyboard -run TestPreviewCompleteCorpus -count=1 -v -args -desktop-preview-integration-root C:/dev/Yime
+```
+
+路径需换成实际检出目录。可选 `-desktop-preview-evidence-dir <新目录>` 导出受控候选截图和 JSON，不覆盖历史证据。
+
+## 默认英文跨应用入口
 
 - 默认主区18u、100键、342.90毫米；可选全盘24.75u、134键、471.4875毫米。每u为19.05毫米中心距。
   这是键距，键帽边缘保留间隙。默认597.73毫米屏幕有效宽度来自当前27英寸16:9估算。
@@ -89,7 +111,7 @@ P2 新增桌面进程内数据检查入口，复用网页的 `internal/keyboardl
 go -C go-backend run ./cmd/yime-touch-keyboard --root .. --numeric-zones none --remove-gutters --check-data --data-dir ../.generated/ascii-keyboard-134/data --data-report ../.generated/touch-keyboard-data-check.json
 ```
 
-包内 exe 也支持同样的检查选项；GUI 子系统下应给 `--data-report` 指定报告文件。当前英文包不附带完整中文词典，不能仅凭该包执行成功的数据检查。无清单、错误投影、哈希不匹配或不完整词典均失败，不回退到已安装产品。`--data-dir` 目前只用于 `--check-data`，不会暗中开启中文输入。
+包内 exe 也支持同样的检查选项；GUI 子系统下应给 `--data-report` 指定报告文件。当前英文包不附带完整中文词典，不能仅凭该包执行成功的数据检查。无清单、错误投影、哈希不匹配或不完整词典均失败，不回退到已安装产品。`--data-dir` 必须与 `--check-data` 或 `--preview` 显式组合，不会暗中开启中文跨应用输入。
 
 Windows接口依据：[不激活窗口](https://learn.microsoft.com/en-us/windows/win32/winmsg/extended-window-styles)、
 [WM_TOUCH](https://learn.microsoft.com/en-us/windows/win32/wintouch/wm-touchdown)、

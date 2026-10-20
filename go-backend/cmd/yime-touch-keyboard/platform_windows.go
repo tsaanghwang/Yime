@@ -6,12 +6,14 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 	"html"
 	"image"
 	"image/png"
 	"math"
 	"os"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"strconv"
@@ -98,6 +100,11 @@ type ui struct {
 	releasingCapture bool
 	focusStarted     uint32
 	touchReader      func(uintptr, uintptr) ([]touch, error)
+	preview          *preview
+	previewTouches   map[uint32]*previewGesture
+	glyphFont        uintptr
+	glyphs           map[string]string
+	showGlyphs       bool
 }
 
 var active *ui
@@ -175,17 +182,51 @@ func run(o options) error {
 	}
 	a := &ui{s: tk.NewState(b), ppm: ppm, o: o, owners: map[uint32]target{}, top: top, border: border, status: "English text / Ctrl Alt shortcuts. Chinese composition is not connected in this milestone.", monitorName: syscall.UTF16ToString(m.Device[:])}
 	a.s.Original = o.KeyView == "original"
+	if o.Preview {
+		r, err := keyboardlab.OpenRuntime(o.Root, o.DataDir)
+		if err != nil {
+			return err
+		}
+		defer r.Close()
+		a.preview, err = newPreview(r.Sessions, b.LayoutID, o.KeyView != "original")
+		if err != nil {
+			return err
+		}
+		a.s.Semantic = true
+		a.s.Original = a.preview.original()
+		a.top = 300
+		a.previewTouches = map[uint32]*previewGesture{}
+		a.status = "中文预览：输出仅在下方文本区；无系统输入。鼠标/模拟检查不代表手指或笔验收。"
+		fontPath, err := filepath.Abs(filepath.Join(o.Root, "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf"))
+		if err != nil {
+			return err
+		}
+		if n, _, _ := G("AddFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0); n == 0 {
+			return fmt.Errorf("无法加载进程私有 YinYuan 字体")
+		}
+		defer G("RemoveFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0)
+		a.glyphs, err = loadPreviewGlyphs(o.Root)
+		if err != nil {
+			return err
+		}
+		a.showGlyphs = true
+	}
 	active = a
+	defer func() { active = nil }()
 	instance, _, _ := k32.NewProc("GetModuleHandleW").Call(0)
 	c := wc{Proc: callback, Instance: instance, Name: str("YimeTouchKeyboardLab")}
 	c.Size = uint32(unsafe.Sizeof(c))
 	U("RegisterClassExW").Call(uintptr(unsafe.Pointer(&c)))
 	width := int(math.Ceil(b.Bounds.Width*tk.UnitMM*ppm)) + border*2
-	height := int(math.Ceil(b.Bounds.Height*tk.UnitMM*ppm)) + top + border
+	height := int(math.Ceil(b.Bounds.Height*tk.UnitMM*ppm)) + a.top + border
 	if width > int(m.Work.R-m.Work.L) || height > int(m.Work.B-m.Work.T) {
 		return fmt.Errorf("%.2f x %.2f mm keyboard does not fit this monitor at 19.05mm/u; choose a numeric-zone profile or calibrate the monitor; no automatic shrinking", b.Bounds.Width*tk.UnitMM, b.Bounds.Height*tk.UnitMM)
 	}
-	h, _, err := U("CreateWindowExW").Call(0x08000088, ptr(c.Name), ptr(str("Yime desktop touch keyboard - English milestone")), 0x80000000, uintptr(m.Work.L+(m.Work.R-m.Work.L-int32(width))/2), uintptr(m.Work.B-int32(height)-8), uintptr(width), uintptr(height), 0, 0, instance, 0)
+	title := "Yime desktop touch keyboard - English milestone"
+	if o.Preview {
+		title = "Yime 18u 中文受控预览（不向其他应用输入）"
+	}
+	h, _, err := U("CreateWindowExW").Call(0x08000088, ptr(c.Name), ptr(str(title)), 0x80000000, uintptr(m.Work.L+(m.Work.R-m.Work.L-int32(width))/2), uintptr(m.Work.B-int32(height)-8), uintptr(width), uintptr(height), 0, 0, instance, 0)
 	if h == 0 {
 		return fmt.Errorf("CreateWindow: %w", err)
 	}
@@ -194,6 +235,9 @@ func run(o options) error {
 		U("DestroyWindow").Call(h)
 		if a.font != 0 {
 			G("DeleteObject").Call(a.font)
+		}
+		if a.glyphFont != 0 {
+			G("DeleteObject").Call(a.glyphFont)
 		}
 	}()
 	if ok, _, err := U("RegisterTouchWindow").Call(h, 1); ok == 0 {
@@ -204,6 +248,13 @@ func run(o options) error {
 	fontHeight := int32(-15)
 	f, _, _ := G("CreateFontW").Call(uintptr(fontHeight), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
 	a.font = f
+	if o.Preview {
+		glyphHeight := int32(-19)
+		a.glyphFont, _, _ = G("CreateFontW").Call(uintptr(glyphHeight), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("YinYuan")))
+		if a.glyphFont == 0 {
+			return fmt.Errorf("无法创建 YinYuan 私有字体")
+		}
+	}
 	U("ShowWindow").Call(h, 4)
 	U("UpdateWindow").Call(h)
 	if o.Shot != "" {
@@ -219,6 +270,9 @@ func run(o options) error {
 		}
 	}()
 	for _, event := range []uintptr{3, 0x8005} {
+		if o.Preview {
+			break
+		} // Controlled output has no external focus owner.
 		hook, _, err := U("SetWinEventHook").Call(event, event, 0, focusCallback, 0, 0, 0)
 		if hook == 0 {
 			return fmt.Errorf("focus monitor unavailable: %v", err)
@@ -271,9 +325,21 @@ func valid(t target, own uintptr) bool {
 	v, _, _ := U("IsWindow").Call(t.Window)
 	return v != 0
 }
-func (a *ui) invalidate() { U("InvalidateRect").Call(a.h, 0, 0) }
-func (a *ui) cancel()     { a.s.Cancel(); a.owners = map[uint32]target{} }
+func (a *ui) invalidate() {
+	if a.h != 0 {
+		U("InvalidateRect").Call(a.h, 0, 0)
+	}
+}
+func (a *ui) cancel() {
+	a.s.Cancel()
+	a.owners = map[uint32]target{}
+	a.previewTouches = map[uint32]*previewGesture{}
+}
 func (a *ui) down(id uint32, x, y int32) {
+	if a.preview != nil {
+		a.previewDown(id, x, y)
+		return
+	}
 	if int(y) < a.top {
 		a.toolbar(x, y)
 		return
@@ -295,9 +361,16 @@ func (a *ui) down(id uint32, x, y int32) {
 	a.invalidate()
 }
 func (a *ui) move(id uint32, x, y int32) {
+	if p := a.previewTouches[id]; p != nil && !inside(p.area, x, y) {
+		p.left = true
+	}
 	a.s.Move(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
 }
 func (a *ui) up(id uint32, x, y int32) {
+	if a.preview != nil {
+		a.previewUp(id, x, y)
+		return
+	}
 	if owner, exists := a.owners[id]; exists && !valid(owner, a.h) {
 		a.cancel()
 		a.status = "Target focus changed: gesture and modifiers cancelled."
@@ -339,14 +412,23 @@ func (a *ui) toolbar(x, y int32) {
 			a.ppm /= 1.01
 		}
 	case "layout":
-		a.s.Original = !a.s.Original
+		if a.preview != nil {
+			a.preview.toggleLayout()
+			a.s.Original = a.preview.original()
+		} else {
+			a.s.Original = !a.s.Original
+		}
 	case "hide":
 		a.hidden = true
 		U("ShowWindow").Call(a.h, 0)
 	case "close":
 		U("DestroyWindow").Call(a.h)
 	case "help":
-		U("MessageBoxW").Call(a.h, ptr(str(desktopHelp)), ptr(str("Yime 桌面键盘使用帮助")), 0x00040040)
+		help := desktopHelp
+		if a.preview != nil {
+			help = previewHelp
+		}
+		U("MessageBoxW").Call(a.h, ptr(str(help)), ptr(str("Yime 桌面键盘使用帮助")), 0x00040040)
 	}
 	a.invalidate()
 }
@@ -527,6 +609,9 @@ func targetKeyboardLayout(t target) (uintptr, error) {
 	return layout, nil
 }
 func sendOutput(o tk.Output) error {
+	if active != nil && active.preview != nil {
+		return errors.New("controlled preview cannot send OS input")
+	}
 	destination := foreground()
 	if !valid(destination, 0) {
 		return errors.New("target focus unavailable")
@@ -665,7 +750,11 @@ func (a *ui) draw(dc uintptr, r rect) {
 	defer G("SelectObject").Call(dc, old)
 	G("SetBkMode").Call(dc, 1)
 	G("SetTextColor").Call(dc, 0x302C17)
-	text(dc, fmt.Sprintf("Yime desktop keyboard - ENGLISH TEXT | 1u = 19.05 mm | %.2f mm wide | Ctrl+Alt+K: hide/show", a.s.Board.Bounds.Width*tk.UnitMM), rect{10, 3, r.R - 10, 25}, 0x24)
+	title := "Yime desktop keyboard - ENGLISH TEXT"
+	if a.preview != nil {
+		title = "Yime 中文受控预览（不向其他应用输入）"
+	}
+	text(dc, fmt.Sprintf("%s | 1u = 19.05 mm | %.2f mm | Ctrl+Alt+K", title, a.s.Board.Bounds.Width*tk.UnitMM), rect{10, 3, r.R - 10, 25}, 0x24)
 	for _, b := range toolButtons {
 		title := b.label
 		if b.action == "layout" {
@@ -680,11 +769,14 @@ func (a *ui) draw(dc uintptr, r rect) {
 	fill(dc, rect{x, 62, rr, 64}, 0x306020)
 	text(dc, "100 mm - measure this line", rect{x, 30, rr, 56}, 0x25)
 	text(dc, a.status, rect{10, 80, r.R - 10, 104}, 0x24)
+	if a.preview != nil {
+		a.drawPreview(dc, r)
+	}
 	unit := tk.UnitMM * a.ppm
 	for i, k := range a.s.Board.Keys {
 		v := a.s.View(k)
 		c := color(k.Color)
-		if !nativeEnabled(v) {
+		if a.preview == nil && !nativeEnabled(v) {
 			c = 0xE5E5E5
 		}
 		if a.s.Pressed(i) || modifierHeld(a.s, v.Action) {
@@ -716,17 +808,25 @@ func (a *ui) draw(dc uintptr, r rect) {
 			continue
 		}
 		// English legends use the same 12 normalized KLE positions as the browser.
-		if nativeEnabled(v) {
+		if a.preview != nil || nativeEnabled(v) {
 			G("SetTextColor").Call(dc, 0x302C17)
 		} else {
 			G("SetTextColor").Call(dc, 0x888888)
 		}
-		if v.Action.Type == "toggle-language" {
+		if a.preview == nil && v.Action.Type == "toggle-language" {
 			text(dc, "中文未接入", rect{int32(minx + 3), int32(miny + 3), int32(maxx - 3), int32(maxy - 3)}, 0x25)
 			continue
 		}
 		for j, s := range v.Labels {
 			s = label(s)
+			if a.preview != nil && a.showGlyphs {
+				if glyph, ok := a.glyphs[s]; ok {
+					s = glyph
+					G("SelectObject").Call(dc, a.glyphFont)
+				} else {
+					G("SelectObject").Call(dc, a.font)
+				}
+			}
 			if s == "" {
 				continue
 			}

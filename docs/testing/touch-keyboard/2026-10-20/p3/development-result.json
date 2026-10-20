@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-20T09:31:07+08:00",
+  "scope": "P3 isolated desktop Chinese controlled preview",
+  "source": {
+    "baseCommit": "11bbb6866b9cf6f2de6ceb376651d3b338fe3335",
+    "branch": "codex/touch-keyboard-p3-preview",
+    "workingTreeChanges": true,
+    "changedSourceSHA256": {
+      "go-backend/cmd/yime-touch-keyboard/data_test.go": "a58bc90ba827e5e56c5aec6c2e8af1d9a65c1a6772d5c0b9ddcc60fc90c9f8f1",
+      "go-backend/cmd/yime-touch-keyboard/main.go": "b37982043825533fe77ce05fd66ab5769c9508da7da706b98326598f1d2f23b6",
+      "go-backend/cmd/yime-touch-keyboard/platform_windows.go": "de52ad20da169f25e1abeee510b9753324346dd86f88504af94747cab0172cbb",
+      "go-backend/cmd/yime-touch-keyboard/preview.go": "c463bf60ff07ebdfd62172344cd03c291b27d89a68e2aecdb7e89c146ce52d27",
+      "go-backend/cmd/yime-touch-keyboard/preview_corpus_windows_test.go": "58234f727a0c7cc8df620b6d7d9f9e1015bf52edf0ef24e39105f5dd96ab4204",
+      "go-backend/cmd/yime-touch-keyboard/preview_test.go": "94fb71d7a3f3cccb401369adb76520ecdbce763dc00f6c8a0fdd32f20e593cd0",
+      "go-backend/cmd/yime-touch-keyboard/preview_windows.go": "1ac96008c1a733eb851463afcb52e3d5d2ee9bcf984543c51a9f7079072de2d5",
+      "go-backend/cmd/yime-touch-keyboard/preview_windows_test.go": "d2c2da0b4a5ec634845385b7258697b65c8bc46df94db6cf851affff92ec95c9",
+      "go-backend/internal/touchkeyboard/board.go": "fb6a975315f63d76db7b717e75cab5d4ff7f2f84e34a3a3443a48069755c1486",
+      "go-backend/internal/touchkeyboard/board_test.go": "e1d737e0c0b815144d62289658cea5cea66caaceff74645ce24229e1e76fe009",
+      "go-backend/internal/touchkeyboard/input.go": "32bf56aed1b9091f5a19f8cbb3196eb1dbed5266698698eaff513026d2fe5e05",
+      "prototypes/touch-terminal/desktop/DEVELOPMENT_PLAN_18U.md": "5c022fee86535abc976f89059096a3d83a3f0955c5e0d6e974539cd6c6393ac7",
+      "prototypes/touch-terminal/desktop/HANDOFF.md": "5e5e3ebc88f2a1b6dafb74066a7fb24ece1dcb9178001453967a3e91d9dc09cc",
+      "prototypes/touch-terminal/desktop/README.md": "b3e194f8839424f946fd9a8285919ecc0a233a61be3306254b2f27ec889d2fd0",
+      "prototypes/touch-terminal/desktop/USER_GUIDE.zh-CN.md": "3b8a2ece9d72c24ab02b5810b4a67dc608bf773ab9be8137cd2575b2ed87be93",
+      "tools/build_touch_keyboard_desktop.py": "438f19840ed2f101dcb05fcf09d20fb51745fe94b80c32a11c298444077b2eee"
+    },
+    "note": "Local precommit evidence; not a clean-commit CI or full Chinese portable delivery."
+  },
+  "baseline": {
+    "widthU": 18,
+    "unitMM": 19.05,
+    "widthMM": 342.9,
+    "keys": 100,
+    "main17": "frozen-optional-candidate",
+    "full23": "frozen-optional-candidate",
+    "oneMillimetreReductionImplemented": false
+  },
+  "stages": {
+    "P3": "local-pass",
+    "P4": "pending",
+    "P5": "pending",
+    "P6": "deferred"
+  },
+  "checks": [
+    {
+      "command": [
+        "go",
+        "-C",
+        "go-backend",
+        "test",
+        "./cmd/yime-touch-keyboard",
+        "./internal/touchkeyboard",
+        "./internal/keyboardlab",
+        "./cmd/yime-keyboard-lab",
+        "./internal/asciicodemode",
+        "./input_methods/yime/codemode"
+      ],
+      "exitCode": 0,
+      "log": "check-01.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "prototypes/touch-terminal/validate.py"
+      ],
+      "exitCode": 0,
+      "log": "check-02.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/generate_ascii_layout.py",
+        "--check"
+      ],
+      "exitCode": 0,
+      "log": "check-03.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/generate_touch_keyboard_profiles.py",
+        "--check"
+      ],
+      "exitCode": 0,
+      "log": "check-04.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/check_layout_change_lock.py"
+      ],
+      "exitCode": 0,
+      "log": "check-05.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/lexicon/check_repository_data_boundary.py"
+      ],
+      "exitCode": 0,
+      "log": "check-06.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/build_touch_keyboard_desktop.py",
+        "--output-dir",
+        ".generated/touch-keyboard-p3"
+      ],
+      "exitCode": 0,
+      "log": "check-07.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/build_touch_keyboard_desktop.py",
+        "--arch",
+        "arm64",
+        "--output-dir",
+        ".generated/touch-keyboard-p3-arm64"
+      ],
+      "exitCode": 0,
+      "log": "check-08.log"
+    }
+  ],
+  "completeCorpus": {
+    "command": "go -C go-backend test ./cmd/yime-touch-keyboard -run TestPreviewCompleteCorpus -count=1 -v -args -desktop-preview-integration-root C:/dev/Yime -desktop-preview-evidence-dir C:/dev/Yime/docs/testing/touch-keyboard/2026-10-20/p3",
+    "result": "pass",
+    "report": "complete-corpus-preview.json",
+    "indexedRecordsPerMode": 2457604,
+    "scope": "canonical-ID-derived ni3/hao3, selection, cancel and local Unicode editing"
+  },
+  "rendering": {
+    "command": "go -C go-backend run ./cmd/yime-touch-keyboard --root .. --numeric-zones none --remove-gutters --preview --data-dir ../.generated/ascii-keyboard-134/data --screenshot ../.generated/touch-keyboard-p3-preview.png",
+    "result": "pass",
+    "scope": "actual x64 preview startup plus GDI memory rendering; populated screenshots from controlled complete-corpus test",
+    "packagedX64Command": ".generated/touch-keyboard-p3/YimeTouchKeyboard.exe --root C:/dev/Yime --numeric-zones none --remove-gutters --preview --data-dir C:/dev/Yime/.generated/ascii-keyboard-134/data --screenshot C:/dev/Yime/docs/testing/touch-keyboard/2026-10-20/p3/x64-preview-startup.png",
+    "packagedX64Result": "pass"
+  },
+  "packages": {
+    "amd64": {
+      "manifest": "package-amd64-manifest.json",
+      "executableSHA256": "7d3db05f6f13d199f730c6e421edd3115a2b3d37a9e95468daf87789c6283bcd",
+      "nativeExecution": true,
+      "note": "English portable package; preview requires explicit complete checkout resources. ARM64 is cross-build only."
+    },
+    "arm64": {
+      "manifest": "package-arm64-manifest.json",
+      "executableSHA256": "cc3105d5d85144b60fa182ba76c05e174582547c0bec85ebc7a4111e41edde40",
+      "nativeExecution": false,
+      "note": "English portable package; preview requires explicit complete checkout resources. ARM64 is cross-build only."
+    }
+  },
+  "evidenceSHA256": {
+    "check-01.log": "abf792de99986c160afa30fa0d6f31353f815d7d82aecaecae89c0e605be8e4e",
+    "check-02.log": "74a82a22c8838ff6dfc9744d7d20492c63213618674f66851ae5ad1c247e75f5",
+    "check-03.log": "37c82c4920477f665346a1b7f1f6bfd9cf6d1408625ad88d3dcf75c2ee7a4b6b",
+    "check-04.log": "73ebd092b65c342d659cd1d4520512d82256932f73fa47e3bd6f59e753063cc9",
+    "check-05.log": "629a6a3b6eea6fdf77b4b5153337198bb348e519d92a7a989ef6e9ff64239d07",
+    "check-06.log": "f9feb8577ecff1f2ed9f9d49280eb4ddfc369d95f66bd5a546cd7635cedbef98",
+    "check-07.log": "2839307bc9ff6c71d5a9885f6519f53f143ae4012570570b11a2388a3a1d29ea",
+    "check-08.log": "5475d88c5f177134546d0403bdd917cb8a614aab8897127c06c5fd3a9cecc63d",
+    "complete-corpus-preview.json": "40d7e45429bf3ca7e324e07ae3715e70fc90e3f7c51276400e8a2f389ee36666",
+    "full-preview.png": "126b12702cad228b0a2d6da0b9030c2e43c5702dbfa756c3ee8e695d088c84db",
+    "package-amd64-manifest.json": "fba6e3602e7de8e1620cc351382338cb3e3877f9511116a57b6fcab2b5971bb6",
+    "package-arm64-manifest.json": "1f6db17ef4e91757a6b11afd40eebf905b05c5b6c30c8cddce55833db80008b4",
+    "shorthand-preview.png": "caab3dae16ddf5906a2c6a35b55839f56ef9301bb51064c30f093dc68c48e311",
+    "variable-preview.png": "05dcfba78bad324737b4928c534db63484537eaa14a04bd36fb85b6078436c76",
+    "x64-preview-startup.png": "2b645cb7e166869cb4841ec96da0bc9ceec6b0f8f95b0f31398c75b3dbdfded2"
+  },
+  "limitations": [
+    "Initial sandbox tests were blocked by temporary-file rename or loopback permissions; unchanged checks passed outside sandbox.",
+    "Controlled editor uses Unicode code points, not grapheme-cluster semantics; navigation is limited to documented keys.",
+    "English view preference and text are process-local; no persistence.",
+    "No SendInput in preview, no cross-application Chinese acceptance.",
+    "No native ARM64 execution, finger or pen acceptance.",
+    "No installed-input-method, default-input-method, user-data or system-font changes."
+  ],
+  "pendingRecords": [
+    "P4 target/focus binding, leave-return, delayed responses, failure/partial send and deduplication",
+    "P5 complete independent Chinese package, final source SHA, CI run/artifact URL and SHA-256",
+    "P6 separate physical finger, pen, ruler and real-host observations"
+  ]
+}

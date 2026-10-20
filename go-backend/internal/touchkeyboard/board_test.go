@@ -16,6 +16,45 @@ func board(t *testing.T) Board {
 	}
 	return b
 }
+
+func TestSemanticLayersPreserveGeometryAndSideBypass(t *testing.T) {
+	b := board(t)
+	s := NewState(b)
+	s.Semantic = true
+	s.Original = true
+	tap := func(k Key) *Output { s.Down(1, k.X+.25, k.Y+.25); return s.Up(1, k.X+.25, k.Y+.25) }
+	for _, k := range b.Keys {
+		if k.Zone != "main" && k.Action.Type == "confirm" {
+			o := tap(k)
+			if o == nil || o.Action.Type != "literal" || o.Action.ASCII != "\n" || o.Zone != k.Zone {
+				t.Fatal("side Enter selected a candidate")
+			}
+		}
+		if k.ShiftAction.LiteralEntry {
+			s.Shift = true
+			o := tap(k)
+			if o == nil || o.Action != k.ShiftAction {
+				t.Fatal("explicit reserved layer lost")
+			}
+		}
+	}
+	s.Original = false
+	disabled := 0
+	for i, k := range b.Keys {
+		if s.View(k).Disabled {
+			disabled++
+			if tap(k) != nil {
+				t.Fatal("disabled EN key emitted")
+			}
+		}
+		if &s.Board.Keys[i] != &b.Keys[i] || s.Board.Keys[i].Color != k.Color {
+			t.Fatal("view rebuilt physical keys")
+		}
+	}
+	if disabled != 23 {
+		t.Fatalf("disabled EN inventory %d", disabled)
+	}
+}
 func TestFullSizeAndIndependentZones(t *testing.T) {
 	b := board(t)
 	for _, v := range []struct {
