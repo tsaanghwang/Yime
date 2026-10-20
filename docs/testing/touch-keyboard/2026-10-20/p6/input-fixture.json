@@ -1,0 +1,55 @@
+{
+  "canonicalIDs": [
+    "N08",
+    "M03",
+    "M03",
+    "M03"
+  ],
+  "codes": {
+    "full": "niii",
+    "shorthand": "ni",
+    "variable": "ni"
+  },
+  "derivation": "admitted canonical row -> packaged lab projection -> shared asciicodemode.BuildRecord; geometry: touchkeyboard.Arrange",
+  "pinyin": "ni3",
+  "packageSourceCommit": "9d0a02e7ad936ee9a471cd118421f209b8972b33",
+  "physicalCarriers": {
+    "i": [
+      {
+        "physicalKeyID": "R05K14",
+        "layer": "base",
+        "labels": [
+          "R09",
+          ".",
+          "M03",
+          "i"
+        ],
+        "positionU": {
+          "x": 12.75,
+          "y": 4.25
+        }
+      }
+    ],
+    "n": [
+      {
+        "physicalKeyID": "R06K12",
+        "layer": "base",
+        "labels": [
+          ".",
+          "N08",
+          "n"
+        ],
+        "positionU": {
+          "x": 10.25,
+          "y": 5.25
+        }
+      }
+    ]
+  },
+  "expectedCandidate": "你",
+  "evidenceScope": "offline derivation only; no physical input",
+  "sourceSHA256": {
+    "go-backend/internal/asciicodemode/codemode_generated.go": "7717a1028c06619050f9cfca1fe52bf9804687d2f05ef715ac7af761eefc5cb5",
+    "go-backend/internal/touchkeyboard/board.go": "fb6a975315f63d76db7b717e75cab5d4ff7f2f84e34a3a3443a48069755c1486"
+  }
+}
