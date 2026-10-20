@@ -94,7 +94,7 @@ API 允许分别设置；134 键页面的 CN EN 同时设置两项，页面初�
 引号状态只在实际提交时推进，显示候选、翻页、切换模式、取消以及同一事件重试均不会推进。
 切换标点模式只改变字面候选显示，不改变其稳定 ID、原 ASCII 编码和页码。
 
-此分页视图仅位于 `cmd/yime-keyboard-lab`；真实候选选择时仍定位到所属引擎页再提交，
+此分页视图位于共用实验包 `internal/keyboardlab`；真实候选选择时仍定位到所属引擎页再提交，
 不改变共享 YimeCore 引擎或原生 Rime 分页。Layout 仅是页面内的英文视图选择，不向服务请求切换词典或会话。页面高亮本身不用调用 `select`。
 
 同会话事件串行执行。重复 eventId 的相同请求返回原结果；不同内容返回 409。
@@ -110,14 +110,21 @@ PUA 音元图例；不开放字体目录，不复制或安装系统字体。
 
 ## 验证
 
+2026-10-20：引擎适配、清单校验、临时索引生命周期及会话处理已提取到
+`internal/keyboardlab`。本命令保留原 CLI 和 loopback HTTP API；桌面实验可通过
+`OpenRuntime` / `Sessions.Open` / `Sessions.Dispatch` 在进程内复用同一套规则。
+`Reply.Body` 是调用方独占的快照；同一 eventId 的重试仍返回原响应，消费方须按事件去重提交。
+`Runtime.Close` 先等待会话操作结束，再关闭并清理本次运行创建的索引。
+这不接入产品安装服务，也不将网页提交写入系统应用。
+
 ```text
-go test ./cmd/yime-keyboard-lab
+go test ./internal/keyboardlab
 ```
 
 全量词典生成后另执行（把路径替换为本分支的绝对 checkout 路径）：
 
 ```text
-go test ./cmd/yime-keyboard-lab -run TestCanonicalCorpusHTTP -v -args -keyboard-lab-integration-root C:/path/to/Yime
+go test ./internal/keyboardlab -run TestCanonicalCorpusHTTP -v -args -keyboard-lab-integration-root C:/path/to/Yime
 ```
 
 该检查实际编译三份完整词典，启动 loopback HTTP 测试服务器。从规范音节分解

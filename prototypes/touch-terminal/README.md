@@ -47,7 +47,7 @@ go -C go-backend run ./cmd/yime-keyboard-lab --root .. --port 8766
 python -X utf8 tools/generate_ascii_layout.py --check
 python -X utf8 prototypes/touch-terminal/validate.py
 python -X utf8 -m pytest tests/yime/test_ascii_layout.py tests/tools/test_resolve_manual_key_layout.py tools/test_ascii_keyboard_overlays.py -q
-go -C go-backend test ./cmd/yime-keyboard-lab ./input_methods/yime/codemode ./input_methods/yime/systemlexicon
+go -C go-backend test ./cmd/yime-keyboard-lab ./internal/keyboardlab ./input_methods/yime/codemode ./input_methods/yime/systemlexicon
 ```
 
 真实完整词典的 HTTP 验证使用 `-keyboard-lab-integration-root` 指定本 checkout 的绝对路径。
