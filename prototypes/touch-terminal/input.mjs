@@ -93,6 +93,9 @@ export function samePointerRelease(active, event, rect) {
 }
 
 /** Serialized requests calculate their revision only after earlier input completes. */
+class APIRejection extends Error {
+  constructor(message,recoverable) { super(message); this.recoverable = recoverable; }
+}
 export function createLiveClient({fetcher=fetch, idFactory=() => crypto.randomUUID(), onResult=() => {}}={}) {
   let info = null, snapshot = null, queue = Promise.resolve(), broken = false;
   async function request(path, body) {
@@ -100,9 +103,25 @@ export function createLiveClient({fetcher=fetch, idFactory=() => crypto.randomUU
       method:'POST', headers:{'Content-Type':'application/json','X-Yime-Lab-Token':info.token}, body:JSON.stringify(body),
     } : {cache:'no-store'});
     const result = await response.json();
-    if (!response.ok || result.ok === false) {
-      if (snapshot && result.state && Number.isInteger(result.revision)) snapshot = {...snapshot,state:result.state,revision:result.revision};
-      throw new Error(typeof result.error === 'string' ? result.error : `HTTP ${response.status}`);
+    if (!response.ok || !result || result.ok === false) {
+      // Only the lab's confirmed, non-committing event rejection can resync a
+      // live session. Authentication/expiry, malformed bodies and transport
+      // uncertainty still require reconnection. Never replay a rejected event.
+      const recoverable = Boolean(path === './api/event' && snapshot
+        && [400,409].includes(response.status) && result?.ok === false
+        && typeof result.error === 'string' && !result.commit
+        && result.sessionId === snapshot.sessionId && body.sessionId === snapshot.sessionId
+        && Number.isSafeInteger(result.revision) && result.revision >= snapshot.revision
+        && (response.status !== 400 || result.revision === body.baseRevision)
+        && typeof result.state?.raw_input === 'string'
+        && (result.state.candidates === undefined || (Array.isArray(result.state.candidates)
+          && result.state.candidates.every(candidate => candidate !== null
+            && typeof candidate === 'object' && typeof candidate.id === 'string'
+            && typeof candidate.text === 'string')))
+        && ['chinese','english'].includes(result.modes?.input)
+        && ['chinese','english'].includes(result.modes?.punctuation));
+      if (recoverable) snapshot = {...snapshot,state:result.state,revision:result.revision,modes:result.modes,commit:''};
+      throw new APIRejection(typeof result?.error === 'string' ? result.error : `HTTP ${response.status}`,recoverable);
     }
     return result;
   }
@@ -150,7 +169,8 @@ export function createLiveClient({fetcher=fetch, idFactory=() => crypto.randomUU
         try { result = await request('./api/event',event); }
         catch (error) {
           // An unknown network outcome must not be silently replayed with a new ID.
-          broken = true;
+          broken = !(error instanceof APIRejection && error.recoverable);
+          if (!broken) onResult(snapshot);
           throw error;
         }
         snapshot = result;

@@ -158,8 +158,12 @@ async function performOne(action,source) {
     });
   } catch (error) {
     status(`操作未完成：${error.message}`);
-    $('connection').textContent = '连接中断 · 请刷新重新连接';
-    $('connection').classList.remove('connected');
+    if (client.connected) {
+      $('connection').textContent = 'Go 引擎已连接 · 本次操作被拒绝，可继续退格或清空';
+    } else {
+      $('connection').textContent = '连接中断 · 请刷新重新连接';
+    }
+    $('connection').classList.toggle('connected',client.connected);
   }
 }
 

@@ -264,6 +264,8 @@ jobs:
       - name: Run x64 PIME RPC regression tests
         shell: pwsh
         run: ctest --test-dir build64 -C Release -R "^PIMERpcResponseTests$" --output-on-failure
+      - name: Build and run isolated registration query regressions (x64 and Win32)
+        run: python -X utf8 tools/ci/test_registration_query.py
       - name: Stage native installer inputs
         shell: pwsh
         run: |

@@ -19,6 +19,8 @@ def validate(text):
     if "all(v['result']=='success'" not in jobs['core-build'] or 'toJSON(needs)' not in jobs['core-build']: raise ValueError('Aggregate permits failures')
     if 'cancel-in-progress:' not in text: raise ValueError('Superseded runs are not cancelled')
     if re.search(r'uses:\s+[^\s]+/\.github/workflows/', text): raise ValueError('External reusable workflow')
+    if 'run: python -X utf8 tools/ci/test_registration_query.py' not in jobs['native-build']:
+        raise ValueError('Standalone registration-query regression is not covered')
 
 class WorkflowTests(unittest.TestCase):
     def test_current(self): validate((ROOT/'.github/workflows/ci.yaml').read_text())
@@ -26,5 +28,9 @@ class WorkflowTests(unittest.TestCase):
         text=(ROOT/'.github/workflows/ci.yaml').read_text()
         for changed in [text.replace('native-build, ', ''), text.replace("=='success'", "!='failure'")]:
             with self.assertRaises(ValueError): validate(changed)
+    def test_registration_query_regression_cannot_be_omitted(self):
+        text=(ROOT/'.github/workflows/ci.yaml').read_text()
+        with self.assertRaises(ValueError):
+            validate(text.replace('run: python -X utf8 tools/ci/test_registration_query.py', 'run: echo omitted'))
 
 if __name__ == '__main__': unittest.main()

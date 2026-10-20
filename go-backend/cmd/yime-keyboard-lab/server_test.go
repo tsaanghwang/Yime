@@ -188,6 +188,27 @@ func TestConcurrentEventsCannotShareARevision(t *testing.T) {
 	}
 }
 
+func TestCompositionLimitRejectionAllowsBackspaceAndClear(t *testing.T) {
+	a := testLabWithRecords(t, "长码\t"+strings.Repeat("a", 128)+"\t100\n")
+	s := openSession(t, a, "full")
+	for i := 0; i < 128; i++ {
+		s = event(t, a, s, fmt.Sprintf("fill-%d", i), "input", "a")
+	}
+	w := request(t, a, "/api/event", eventRequest{SessionID: s.SessionID, EventID: "overflow", BaseRevision: s.Revision, Type: "input", Code: "a"})
+	rejected := decodeResponse(t, w)
+	if w.Code != 400 || rejected.OK || rejected.Error != "composition limit reached" || rejected.Commit != "" || rejected.SessionID != s.SessionID || rejected.Revision != s.Revision || rejected.State.RawInput != s.State.RawInput || rejected.Modes != s.Modes {
+		t.Fatalf("unexpected limit response: %d %+v", w.Code, rejected)
+	}
+	s = event(t, a, rejected, "shorten", "backspace", "")
+	if len(s.State.RawInput) != 127 {
+		t.Fatalf("cannot shorten after rejection: %+v", s)
+	}
+	s = event(t, a, s, "cancel", "clear", "")
+	if s.State.RawInput != "" || s.Commit != "" {
+		t.Fatalf("cannot cancel after rejection: %+v", s)
+	}
+}
+
 func TestCloseReclaimsCapacityAndPreventsFurtherMutation(t *testing.T) {
 	a := testLab(t)
 	first := openSession(t, a, "variable")
