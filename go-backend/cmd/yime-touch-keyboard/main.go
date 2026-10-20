@@ -19,11 +19,12 @@ type options struct {
 	Gutters, Smoke, CheckData           bool
 	Preview                             bool
 	Host, HostSmoke                     bool
+	EnglishOnly, CheckPackage           bool
 }
 
 func main() {
 	var o options
-	flag.StringVar(&o.Root, "root", "..", "checkout root")
+	flag.StringVar(&o.Root, "root", "", "source root (source builds); portable builds use the executable directory")
 	flag.StringVar(&o.KeyView, "key-view", "english", "english/original keycaps; in --preview this sets the English-input view preference")
 	flag.StringVar(&o.Profile, "profile", "", "optional geometry profile JSON")
 	flag.StringVar(&o.Zones, "numeric-zones", "both", "both/left/right/none")
@@ -36,11 +37,13 @@ func main() {
 	flag.BoolVar(&o.Preview, "preview", false, "Chinese desktop preview; output stays in this window, never sends OS input")
 	flag.BoolVar(&o.Host, "host-input", false, "Chinese host-input lab; explicitly bind target before sending confirmed text")
 	flag.BoolVar(&o.HostSmoke, "host-self-test", false, "with --host-input, test only disposable own EDIT windows and exit")
+	flag.BoolVar(&o.EnglishOnly, "english-only", false, "use the legacy English route instead of the portable Chinese default")
+	flag.BoolVar(&o.CheckPackage, "check-package", false, "verify complete portable resources and Chinese sessions without a window or OS input")
 	flag.StringVar(&o.DataDir, "data-dir", "", "explicit experimental dictionary directory for --check-data, --preview or --host-input")
 	flag.StringVar(&o.DataReport, "data-report", "", "optional JSON result file for --check-data")
 	flag.Parse()
 	if e := execute(o); e != nil {
-		if o.Smoke || o.HostSmoke || o.Shot != "" || o.CheckData {
+		if o.Smoke || o.HostSmoke || o.Shot != "" || o.CheckData || o.CheckPackage {
 			fmt.Fprintln(os.Stderr, e)
 		} else {
 			showError(e)
@@ -50,6 +53,16 @@ func main() {
 }
 
 func execute(o options) error {
+	exe, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	if err := preparePortable(&o, filepath.Dir(exe), portableResourcesSHA256); err != nil {
+		return err
+	}
+	if o.EnglishOnly && (o.Host || o.Preview || o.CheckData || o.HostSmoke) {
+		return fmt.Errorf("--english-only cannot combine with Chinese session options")
+	}
 	if o.HostSmoke && !o.Host {
 		return fmt.Errorf("--host-self-test requires --host-input")
 	}

@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-20T11:14:30+08:00",
+  "scope": "P5 complete Chinese portable package; isolated development evidence",
+  "source": {
+    "baseCommit": "e4ce7971543d72ad6d1da15499fe9bec89c58fd8",
+    "branch": "codex/touch-keyboard-p5-portable",
+    "workingTreeChanges": true,
+    "changedSourceSHA256": {
+      ".github/workflows/touch-terminal.yml": "4eb206cb053d49a2f0ff881b0eaff11e5021d55ba7d719db36922eb309bf07b0",
+      "go-backend/cmd/yime-touch-keyboard/data.go": "efaaa0467973f8ca1f9adfc8e5e3edb0a6dcec2c9c6c0614c55a8c494e3245c3",
+      "go-backend/cmd/yime-touch-keyboard/host_smoke_windows.go": "fd5a2dd21b4b5515719108d833bb0c69211dbddc3d0923cfe047f2145ce8f539",
+      "go-backend/cmd/yime-touch-keyboard/main.go": "76fb51ef436c7c859705c9f199322bfc0088e0fc1a3e4a2e66fb6344b0513fc8",
+      "go-backend/cmd/yime-touch-keyboard/portable.go": "7effffd141d2004535d9fff23aa958a178879f010dbeace9c6b5edd4fd315e16",
+      "go-backend/cmd/yime-touch-keyboard/portable_test.go": "ccdfe3d1dc5e249f28a39caa00df036368280f8c9068e6a86bd971a0e80f828e",
+      "go-backend/cmd/yime-touch-keyboard/probe.go": "5b1551c023869e655a930756aa4ebe0083a297afc38b77f1826b6b40f099d756",
+      "prototypes/touch-terminal/desktop/DEVELOPMENT_PLAN_18U.md": "2efded9f32a9dbe520a85a9201510c78ff81ba5ac9b34ad5b9656695e528f260",
+      "prototypes/touch-terminal/desktop/HANDOFF.md": "bcc2d31f9594e12fd76a5497c9ba5c671febc438ad14de35c3e949251c2eec1a",
+      "prototypes/touch-terminal/desktop/README.md": "93bfeb245d4cc518ace2a9179a9a1560f2c82897442e5b5930b5dcdf61f07cdd",
+      "prototypes/touch-terminal/desktop/USER_GUIDE.zh-CN.md": "38d7ee2983f3490e7fa2a4afb72dafb32fd303912bb0cc4421eb2d3a7884dce5",
+      "prototypes/touch-terminal/desktop/resources.lock.json": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313",
+      "prototypes/touch-terminal/test_portable_resources.py": "004b8a5a58c2b66f8e0aa481558f1f0eef14c1897678041530d5229cacaea7f2",
+      "tools/build_touch_keyboard_desktop.py": "650a9b82b74b30a827e3741a47c74dbcc2eb78585c4225933dd7812adc859ad1",
+      "tools/check_touch_keyboard_package.py": "dbdedb0927cd537e3c124e85cbaf2002bc210466ec0c12cf209b7ce314dfd673",
+      "tools/touch_keyboard_resources.py": "895bae3a98617c7eb4495343559ab8ccda6bca9d0132d3ebd45e75262e507df0"
+    }
+  },
+  "checks": [
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "prototypes/touch-terminal/validate.py"
+      ],
+      "exitCode": 0,
+      "log": "check-01.log"
+    },
+    {
+      "command": [
+        "go",
+        "-C",
+        "go-backend",
+        "test",
+        "./cmd/yime-touch-keyboard",
+        "./internal/touchkeyboard",
+        "./internal/keyboardlab",
+        "./cmd/yime-keyboard-lab",
+        "./internal/asciicodemode",
+        "./input_methods/yime/codemode"
+      ],
+      "exitCode": 0,
+      "log": "check-02.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/check_layout_change_lock.py"
+      ],
+      "exitCode": 0,
+      "log": "check-03.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/lexicon/check_repository_data_boundary.py"
+      ],
+      "exitCode": 0,
+      "log": "check-04.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/generate_ascii_layout.py",
+        "--check"
+      ],
+      "exitCode": 0,
+      "log": "check-05.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/generate_touch_keyboard_profiles.py",
+        "--check"
+      ],
+      "exitCode": 0,
+      "log": "check-06.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/build_touch_keyboard_desktop.py",
+        "--output-dir",
+        ".generated/touch-keyboard-p5-final"
+      ],
+      "exitCode": 0,
+      "log": "check-07.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/build_touch_keyboard_desktop.py",
+        "--arch",
+        "arm64",
+        "--output-dir",
+        ".generated/touch-keyboard-p5-final-arm64"
+      ],
+      "exitCode": 0,
+      "log": "check-08.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/check_touch_keyboard_package.py",
+        "--package",
+        ".generated/touch-keyboard-p5-final",
+        "--report",
+        "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-20\\p5\\package-check.json",
+        "--render",
+        "--native-edit"
+      ],
+      "exitCode": 0,
+      "log": "check-09.log"
+    }
+  ],
+  "packages": {
+    "amd64": {
+      "manifest": "amd64-manifest.json",
+      "resources": "amd64-resources.json",
+      "executableSHA256": "3231994f35ef7d178b7c5c04e38598fd4483686a562b687f815f45e68308e614",
+      "nativeExecution": true
+    },
+    "arm64": {
+      "manifest": "arm64-manifest.json",
+      "resources": "arm64-resources.json",
+      "executableSHA256": "00fb5787f8e3d3fae62a4396e4023be097abee5dec4ef7a6df27a9535eb50a42",
+      "nativeExecution": false
+    }
+  },
+  "baseline": {
+    "widthU": 18,
+    "unitMM": 19.05,
+    "widthMM": 342.9,
+    "keys": 100,
+    "main17": "frozen-optional-candidate",
+    "full23": "frozen-optional-candidate"
+  },
+  "resourceRelease": {
+    "schemaVersion": 1,
+    "scope": "isolated-cn134-complete-derived-runtime",
+    "repository": "tsaanghwang/Yime",
+    "releaseTag": "touch-keyboard-cn134-data-20261020",
+    "asset": "cn134-runtime-995f1a74.zip",
+    "url": "https://github.com/tsaanghwang/Yime/releases/download/touch-keyboard-cn134-data-20261020/cn134-runtime-995f1a74.zip",
+    "archiveSHA256": "9f01dc384aa2a52281a882a7fc5f675a0282bf073f9033610a3b0681b32b14bd",
+    "archiveBytes": 85390528,
+    "sourceCommit": "e4ce7971543d72ad6d1da15499fe9bec89c58fd8",
+    "layoutProjectionSHA256": "995f1a74f129249febbd09ca11a8266f6e0c94bac8c05c57754859fc3be3349c",
+    "sourceReadingCount": 2457474,
+    "files": {
+      "ascii_keyboard_manifest.json": {
+        "bytes": 3927,
+        "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843"
+      },
+      "yime_full.dict.yaml": {
+        "bytes": 81236859,
+        "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790"
+      },
+      "yime_variable.dict.yaml": {
+        "bytes": 77254107,
+        "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353"
+      },
+      "yime_shorthand.dict.yaml": {
+        "bytes": 75381670,
+        "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49"
+      }
+    }
+  },
+  "results": {
+    "relocatedOutsideCheckout": true,
+    "emptyCWD": true,
+    "fullThreeModeChineseInMemory": "你 in each mode",
+    "resourceRejection": "corrupt inventory/font/layout/dictionary manifest/dictionary; missing font; external root/data rejected",
+    "privateFontPreview": "rendered from relocated package",
+    "controlledOwnEDIT": "three-mode Chinese, editing, cancellation, focus epochs and injected failure recovery pass",
+    "arm64": "cross-build only",
+    "remoteResourceRestore": "pass: fresh GitHub release download and all locked hashes verified; existing localhost proxy used only in download child environment after slow direct connection was stopped"
+  },
+  "limitations": [
+    "No physical finger/pen or real application acceptance.",
+    "No native ARM64 execution.",
+    "SendInput cannot atomically bind an HWND; sent event counts are not host acceptance.",
+    "First sandboxed Python suite was blocked by temp-file and loopback socket permissions; unchanged suite passed with local permissions.",
+    "Local precommit packages carry dirty source identity; final CI artifact URL/source/ZIP SHA-256 is recorded separately in the P5 PR.",
+    "Forced process termination may leave its disposable temporary indexes; no crash-cleanup claim."
+  ],
+  "pendingRecords": [
+    "P6 exact CI package selection, device/ruler, physical finger and pen observations, real hosts and permission levels"
+  ],
+  "evidenceSHA256": {
+    ".gitattributes": "95ad2e76dedfe548184ad395c1fc3ebcf04c92a963ebda221e3667a2f633b615",
+    "amd64-manifest.json": "f2175576d50cc2a391ebe45845b73bc54f7efa019a7c0684623837fe215a747a",
+    "amd64-resources.json": "b4615578462e24cd87a19d4cd24e771ae7f15a4a36884d262bf7d7a23f0f0140",
+    "arm64-manifest.json": "19eb7ef6e88b486c7b0e146cabb1fd068ec9d11db50df18ba78405b95cb7dc17",
+    "arm64-resources.json": "d4c0aeb720e48db0bd05c04279d67a93c6e27ed8ef11806e23ea7024c1c81d45",
+    "check-01.log": "b898233627c94912485a50807c00b33752a9a736474b78eee3979633f6a99584",
+    "check-02.log": "1b5818c3b9898b9bfb819a0b700f8f0b760ad316bbf56b67acd81d3d796ad201",
+    "check-03.log": "629a6a3b6eea6fdf77b4b5153337198bb348e519d92a7a989ef6e9ff64239d07",
+    "check-04.log": "f9feb8577ecff1f2ed9f9d49280eb4ddfc369d95f66bd5a546cd7635cedbef98",
+    "check-05.log": "37c82c4920477f665346a1b7f1f6bfd9cf6d1408625ad88d3dcf75c2ee7a4b6b",
+    "check-06.log": "73ebd092b65c342d659cd1d4520512d82256932f73fa47e3bd6f59e753063cc9",
+    "check-07.log": "5aa76c998ffa79a51f694c9c1f23cf984ad279d00e9fae217f47f3935cdb3e79",
+    "check-08.log": "a862f8ddc554e457cbecac75d8c8c92f5c8a1343000b34a315db8d486accf2da",
+    "check-09.log": "016220abbb46a196384b2779d2f4c54e7689fa14deaecdcc0c504238bfd9bdbe",
+    "package-check.json": "3e716183fe4eee979e88d9bd9a775e74ffcbd20309c9a38c81a28bf561f8b266",
+    "portable-native-edit.log": "0b273b7c22318e28d1b173313b3a177746f96a1cb6601641309508b0e0ecd2f2",
+    "portable-preview.png": "2b645cb7e166869cb4841ec96da0bc9ceec6b0f8f95b0f31398c75b3dbdfded2"
+  }
+}
