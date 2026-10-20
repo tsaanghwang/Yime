@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-20T08:47:16+08:00",
+  "scope": "isolated-desktop-touch-keyboard-18u-p1-p2-development",
+  "source": {
+    "baseCommit": "100c734b94e580e81cf2030f293cb0d722ec0756",
+    "branch": "codex/touch-keyboard-18u-plan",
+    "workingTreeChanges": true,
+    "changedSourceSHA256": {
+      ".github/workflows/touch-terminal.yml": "d7cf70ca6ba3c8dfdd35fb2f33742ce5d015f4cd106ae26ce4abd6b0e4292155",
+      "go-backend/cmd/yime-keyboard-lab/font_test.go": null,
+      "go-backend/cmd/yime-keyboard-lab/integration_test.go": null,
+      "go-backend/cmd/yime-keyboard-lab/keyboard_engine.go": null,
+      "go-backend/cmd/yime-keyboard-lab/keyboard_engine_test.go": null,
+      "go-backend/cmd/yime-keyboard-lab/main.go": "40b1b726e242f3a6df0606afecd51be3e131adbd23a1492e6d285dd69c7e108b",
+      "go-backend/cmd/yime-keyboard-lab/manifest_test.go": null,
+      "go-backend/cmd/yime-keyboard-lab/modes_test.go": null,
+      "go-backend/cmd/yime-keyboard-lab/server.go": null,
+      "go-backend/cmd/yime-keyboard-lab/server_test.go": null,
+      "go-backend/cmd/yime-touch-keyboard/data.go": "8d8670045fbc269cf3d38a6072fb5f6883c42091096ba1e2ee6df045d5abffd0",
+      "go-backend/cmd/yime-touch-keyboard/data_test.go": "43bee11c1c9f943e6f09e6fadab4d341ad2336a7f1c926cf30b3a832a84f9260",
+      "go-backend/cmd/yime-touch-keyboard/help.go": "734646807a605ab56f67e6e6e09bed57092e56597b1b871e6d1aa75db6cd3c38",
+      "go-backend/cmd/yime-touch-keyboard/main.go": "867b943923a069bf53f01bdc59e5860b831f234d732dd3f50a9197c1cc52a0f3",
+      "go-backend/internal/keyboardlab/font_test.go": "a099fd8104948a3a9ab6b2085e5eb2a9c74bf6651be15202e3638ba2675bd5c2",
+      "go-backend/internal/keyboardlab/http.go": "420e11fcdbc712351cb8c4ac9bf53c11ab8730af9ff92ffc3a34f96eb313442b",
+      "go-backend/internal/keyboardlab/integration_test.go": "6025a7753a58b164d974dec152f1cc5683b6f482e1cbfa60e49d0e657ce8cc74",
+      "go-backend/internal/keyboardlab/keyboard_engine.go": "46dccb1fa134f10b8bdd4958d990367edbe310f853b8ff1e2ca50bc2c6d79d75",
+      "go-backend/internal/keyboardlab/keyboard_engine_test.go": "ab7c61b8e0f117c6e868b54fc6ed42e7d196d160e2146c5b39d275c750e27ca9",
+      "go-backend/internal/keyboardlab/manifest.go": "2026b826edddbe800e44934f24a436d3388ea7d04046bc124e8624faab37241d",
+      "go-backend/internal/keyboardlab/manifest_test.go": "b90cb1fb1153a5b8d6d6a3bf52f5784e8421ea10add77638a6d4412e799fae0f",
+      "go-backend/internal/keyboardlab/modes_test.go": "e4add843b58326e38d40ff9d22335e2da11ed9114d6928665e657051bfa7d356",
+      "go-backend/internal/keyboardlab/runtime.go": "b9614a7e990b8c5b08010ba3f7a54d7912b6e5f2a1774b3a249b420a323ab88a",
+      "go-backend/internal/keyboardlab/runtime_test.go": "2964f208119a6391cdae990ced187a5208bcb1e246d2a0fe8542872a9b74cac0",
+      "go-backend/internal/keyboardlab/serve.go": "eb66bba4cb9fe7f8cff37bc690706ff37e5ee106adba749b4d8c47953a271434",
+      "go-backend/internal/keyboardlab/server_test.go": "dfe51145bbb0e4e199234061b9c2d4f3f37e082963d3c577ec1cc379a7c7c838",
+      "go-backend/internal/keyboardlab/session.go": "194c73701eeaa95175dcb97674be9e23362ab3da0588240aceba46e8ae14261d",
+      "go-backend/internal/keyboardlab/session_test.go": "c6e25cda4aa2c9d4e5deef8fb826248463c34a50d251e1f2f6e5c7233d092052",
+      "tools/build_touch_keyboard_desktop.py": "6b142e3381c21fe0a608af375560703e69dd05c0e14de8f163bc1bb316f82a16"
+    },
+    "note": "Local working-tree validation; package manifests retain sourceTrackedChanges=true. This is not a clean-commit CI delivery."
+  },
+  "stages": {
+    "P1": "local-pass",
+    "P2": "local-pass",
+    "P3": "pending",
+    "P4": "pending",
+    "P5": "pending",
+    "P6": "deferred"
+  },
+  "baseline": {
+    "profile": "prototypes/touch-terminal/desktop/profiles/main-only.json",
+    "widthU": 18,
+    "unitMM": 19.05,
+    "widthMM": 342.9,
+    "keys": 100,
+    "main17": "frozen-optional-candidate",
+    "full23": "frozen-optional-candidate",
+    "oneMillimetreReductionImplemented": false
+  },
+  "checks": [
+    {
+      "command": "go -C go-backend test ./internal/keyboardlab ./cmd/yime-keyboard-lab ./cmd/yime-touch-keyboard ./internal/touchkeyboard ./internal/asciicodemode ./input_methods/yime/codemode",
+      "result": "pass",
+      "scope": "real-engine explicit small fixtures; session/HTTP/geometry/desktop contracts"
+    },
+    {
+      "command": "python -X utf8 prototypes/touch-terminal/validate.py",
+      "result": "pass",
+      "pythonTests": 24,
+      "javascriptTests": 44
+    },
+    {
+      "command": "python -X utf8 tools/generate_ascii_layout.py --check",
+      "result": "pass"
+    },
+    {
+      "command": "python -X utf8 tools/generate_touch_keyboard_profiles.py --check",
+      "result": "pass",
+      "scope": "retained frozen 17u/23u source integrity"
+    },
+    {
+      "command": "python -X utf8 tools/build_ascii_keyboard_experiment.py --source-database C:/YimeData/runtime-input-v1/pinyin_hanzi.db --output-dir .generated/ascii-keyboard-134",
+      "result": "pass",
+      "sourceReadings": 2457474,
+      "manifest": "corpus-manifest.json"
+    },
+    {
+      "command": "go -C go-backend test ./internal/keyboardlab -run TestCanonicalCorpusHTTP -count=1 -v -args -keyboard-lab-integration-root C:/dev/Yime",
+      "result": "pass",
+      "indexedRecordsPerMode": 2457604,
+      "scope": "complete corpus load; canonical-ID-derived ni3/hao3, paging, coding-symbol candidates in all three modes"
+    },
+    {
+      "command": "YimeTouchKeyboard.exe --root C:/dev/Yime --profile C:/dev/Yime/prototypes/touch-terminal/desktop/profiles/main-only.json --check-data --data-dir C:/dev/Yime/.generated/ascii-keyboard-134/data --data-report C:/dev/Yime/.generated/touch-keyboard-18u-p2-data-check.json",
+      "result": "pass",
+      "report": "p2-desktop-data-check.json",
+      "temporaryIndexesRemoved": true
+    },
+    {
+      "command": "python -X utf8 tools/check_layout_change_lock.py",
+      "result": "pass"
+    },
+    {
+      "command": "python -X utf8 tools/lexicon/check_repository_data_boundary.py --help",
+      "result": "pass",
+      "note": "This script ignores CLI arguments and executes the full guard."
+    },
+    {
+      "check": "original six Go test files and keyboard engine migration",
+      "result": "pass",
+      "scope": "gofmt comparison against base commit; package/import formatting only"
+    },
+    {
+      "check": "built package file hashes, launcher/profile consistency and PE architecture",
+      "result": "pass"
+    }
+  ],
+  "environmentNotes": [
+    "Sandbox temp-file rename/access and loopback restrictions prevented initial test execution; unchanged validation commands passed outside the sandbox. No test assertion was weakened."
+  ],
+  "packages": {
+    "amd64": {
+      "localDirectory": ".generated/touch-keyboard-18u-p2",
+      "executableSHA256": "46a2ba15a8b1d4e08c213875eb68b874b3f2e27adb36bb03a21189a12cd6389d",
+      "manifest": "package-amd64-manifest.json",
+      "nativeExecution": true,
+      "executionScope": "check-data only",
+      "ciRunURL": null,
+      "artifactURL": null
+    },
+    "arm64": {
+      "localDirectory": ".generated/touch-keyboard-18u-p2-arm64",
+      "executableSHA256": "dccafd680cd433e22cc20d9b0c4bbfb5f5ee6a6f20327cb56e3ef2eaa3fa4ba4",
+      "manifest": "package-arm64-manifest.json",
+      "nativeExecution": false,
+      "executionScope": "cross-build only",
+      "ciRunURL": null,
+      "artifactURL": null
+    }
+  },
+  "desktopChineseUI": false,
+  "hostInputSent": false,
+  "hardwareAcceptance": false,
+  "installedProductsChanged": false,
+  "defaultInputMethodChanged": false,
+  "userDataChanged": false,
+  "notRun": [
+    "native EDIT self-test",
+    "physical finger acceptance",
+    "physical pen acceptance",
+    "real Notepad/Word host acceptance",
+    "ARM64 native execution",
+    "new GitHub CI/package delivery"
+  ],
+  "next": "P3 desktop composition/candidate UI, language/view state and controlled-output tests; no installed-product changes"
+}

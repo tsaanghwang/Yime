@@ -3,6 +3,10 @@ package main
 const desktopHelp = `桌面版当前支持英文、标点、编辑键及 Ctrl/Alt 组合；中文组合和候选尚未接入。
 Keys / Layout 只切换英文标准键面与原盘面，不切换输入语言。灰色“中文未接入”不是可用的中文开关。
 
+开发基准为 18u 主区（342.90 毫米）：Start Keyboard.cmd / Start Main Area.cmd。
+原全盘请用 Start Full Keyboard.cmd；17u / 23u 配置冻结保留为候选，不作为本轮验收基准。
+未实施缩短 1 毫米方案。手指／触控笔验收准备暂缓，自动化检查不是实机验收。
+
 1. 先在记事本等应用点好输入光标，再点本键盘。输入目标保持为该应用。
 2. Shift 点一次作用于下一键；也可按住 Shift 再点字符。Ctrl/Alt 同理；再次点同一修饰键可取消。
 3. 左右 Num Lock 独立切换数字／编辑，编辑态的 5 无动作。

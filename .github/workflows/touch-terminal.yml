@@ -11,6 +11,7 @@ on:
       - 'go-backend/input_methods/yime/data/**'
       - 'go-backend/input_methods/yime/codemode/**'
       - 'go-backend/cmd/yime-keyboard-lab/**'
+      - 'go-backend/internal/keyboardlab/**'
       - 'go-backend/internal/asciicodemode/**'
       - 'go-backend/internal/touchkeyboard/**'
       - 'go-backend/cmd/yime-touch-keyboard/**'
@@ -30,6 +31,7 @@ on:
       - 'go-backend/input_methods/yime/data/**'
       - 'go-backend/input_methods/yime/codemode/**'
       - 'go-backend/cmd/yime-keyboard-lab/**'
+      - 'go-backend/internal/keyboardlab/**'
       - 'go-backend/internal/asciicodemode/**'
       - 'go-backend/internal/touchkeyboard/**'
       - 'go-backend/cmd/yime-touch-keyboard/**'
@@ -65,7 +67,7 @@ jobs:
         run: python -X utf8 tools/generate_ascii_layout.py --check
       - name: Validate real engine loopback session boundary
         working-directory: go-backend
-        run: go test ./cmd/yime-keyboard-lab ./cmd/yime-touch-keyboard ./internal/touchkeyboard ./internal/asciicodemode ./input_methods/yime/codemode
+        run: go test ./cmd/yime-keyboard-lab ./internal/keyboardlab ./cmd/yime-touch-keyboard ./internal/touchkeyboard ./internal/asciicodemode ./input_methods/yime/codemode
       - name: Check user compact geometry profiles
         run: python -X utf8 tools/generate_touch_keyboard_profiles.py --check
       - name: Build isolated x64 desktop trial package

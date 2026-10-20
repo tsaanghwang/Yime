@@ -1,4 +1,4 @@
-package main
+package keyboardlab
 
 import (
 	"bytes"
@@ -13,9 +13,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore"
+	"github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode"
 )
 
 var integrationRoot = flag.String("keyboard-lab-integration-root", "", "optional checkout root for full generated-corpus HTTP acceptance")

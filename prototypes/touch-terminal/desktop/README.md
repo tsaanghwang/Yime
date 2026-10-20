@@ -1,12 +1,14 @@
 # Windows 桌面触摸键盘：第一阶段
 
+2026-10-20：以 #70 合并后的 **18u 主区**为后续样机基准。P1 新包的 `Start Keyboard.cmd` 与 `Start Main Area.cmd` 均打开 18u，原全盘改用 `Start Full Keyboard.cmd`；旧包入口不追溯改写。17u / 23u 派生配置冻结为候选。按[18u 开发计划](DEVELOPMENT_PLAN_18U.md)推进，手指/触控笔验收准备暂缓；桌面功能仍为英文阶段。
+
 这是独立、无需安装输入法的桌面实验程序。它读取现有 CN/EN134 盘面，
 以不激活窗口承接触摸，向当前目标输入框发送英文文本、编辑键和快捷键。
 网页样机继续承担中文引擎、布局与触点实验；桌面程序本阶段尚未接中文组合。
 
 ## 当前可用
 
-- 全盘24.75u，每u为常见全尺寸键盘的19.05毫米中心距，整盘471.4875毫米。
+- 默认主区18u、100键、342.90毫米；可选全盘24.75u、134键、471.4875毫米。每u为19.05毫米中心距。
   这是键距，键帽边缘保留间隙。默认597.73毫米屏幕有效宽度来自当前27英寸16:9估算。
 - 100毫米参考线与卷尺校准；不根据Windows缩放百分比推定真实尺寸，也不随窗口变窄缩键。
 - 英文小写/大写、标点，单次或双指Shift，Ctrl/Alt组合，退格、回车、空格、Tab、F1–F12。
@@ -47,7 +49,7 @@ YimeTouchKeyboard.exe --root . --screen-width-mm 597.73 --ruler-observed-mm 98.5
 ```
 
 同一可执行文件可隐藏任一侧或两侧数字/编辑区，并移除左右区缝与中间共同的0.25u空带。
-生成目录内的四个CMD分别提供全盘、仅主区、保留左区、保留右区入口。
+新包默认及仅主区CMD共用 `profiles/main-only.json`；另提供原全盘、保留左区、保留右区及冻结候选入口。直接运行 exe 的命令行默认仍为原全盘，需主区时显式传 `--numeric-zones none --remove-gutters` 或主区 profile。
 所有接口只改变物理几何，不修改按键身份、ASCII编码或字典。
 
 | 配置 | 宽度u | 按19.05毫米/u的宽度 |
@@ -60,7 +62,7 @@ YimeTouchKeyboard.exe --root . --screen-width-mm 597.73 --ruler-observed-mm 98.5
 
 当前原主区去缝后仍为18u。用户提供的 `design/yime-cn-134k-23u-keyboard-layout.json` 另生成了可用的17u主区（323.85毫米）和23u全盘（438.15毫米）配置；生成器按完整键面和区域匹配稳定键身份，不按发生变化的KLE行号硬配。
 
-启动包中的 `Start 17u Main Area.cmd` 或 `Start 23u Keyboard.cmd` 可试用。普通键最小1u，仅N26、N27移到下一行两端，其余音元保持原行与左右顺序。英文视图沿用原键身份的映射；未新增音元编码或臆造英文映射。
+冻结候选的启动入口 `Start 17u Main Area.cmd` 和 `Start 23u Keyboard.cmd` 保留，不作为本轮开发或验收基准。普通键最小1u，仅N26、N27移到下一行两端，其余音元保持原行与左右顺序。英文视图沿用原键身份的映射；未新增音元编码或臆造英文映射。
 
 **详细操作见[中文使用帮助](USER_GUIDE.zh-CN.md)**，程序顶部也有Help按钮。原盘面视图和英文视图当前均只输出英文；灰色“中文未接入”不是可用的中文开关。截图或启动时可用 `--key-view original` 预览原盘面。
 
@@ -69,13 +71,25 @@ YimeTouchKeyboard.exe --root . --screen-width-mm 597.73 --ruler-observed-mm 98.5
 ## 验证入口与范围
 
 ```text
-go -C go-backend test ./internal/touchkeyboard ./cmd/yime-touch-keyboard ./cmd/yime-keyboard-lab
+go -C go-backend test ./internal/touchkeyboard ./cmd/yime-touch-keyboard ./cmd/yime-keyboard-lab ./internal/keyboardlab
 YimeTouchKeyboard.exe --root . --self-test
 ```
 
 self-test只创建本进程的临时原生EDIT目标，检查真实SendInput和前台焦点，不操作现有文档。
 它不是记事本/Word实测，也不是手指、触控笔或ARM原生硬件验收。后台自动启动自检时，Windows可能不允许临时测试窗口取得前台，此时程序退出且不发送输入；正常试用应由你先在目标应用点好光标。
 ARM64包只交叉构建，待相应真实机器到位后再做原生验证。
+
+## 中文会话开发检查
+
+P2 新增桌面进程内数据检查入口，复用网页的 `internal/keyboardlab`。检查要求显式指定独立实验词典目录，核对投影与三份词典哈希、构建临时索引，并分别打开、清空、关闭三模式会话；退出时释放会话和索引。不打开键盘窗口，不向应用发送输入，也不表示桌面中文界面已经接通。
+
+在仓库根目录、完整实验词典已按原型 README 生成后运行：
+
+```text
+go -C go-backend run ./cmd/yime-touch-keyboard --root .. --numeric-zones none --remove-gutters --check-data --data-dir ../.generated/ascii-keyboard-134/data --data-report ../.generated/touch-keyboard-data-check.json
+```
+
+包内 exe 也支持同样的检查选项；GUI 子系统下应给 `--data-report` 指定报告文件。当前英文包不附带完整中文词典，不能仅凭该包执行成功的数据检查。无清单、错误投影、哈希不匹配或不完整词典均失败，不回退到已安装产品。`--data-dir` 目前只用于 `--check-data`，不会暗中开启中文输入。
 
 Windows接口依据：[不激活窗口](https://learn.microsoft.com/en-us/windows/win32/winmsg/extended-window-styles)、
 [WM_TOUCH](https://learn.microsoft.com/en-us/windows/win32/wintouch/wm-touchdown)、

@@ -1,12 +1,12 @@
-package main
+package keyboardlab
 
 import (
 	"errors"
 	"fmt"
 	"strings"
 
-	"github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
+	"github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode"
 )
 
 const labPageSize = 9

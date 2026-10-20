@@ -1,5 +1,11 @@
 # Agent Constraints
 
+## Desktop virtual prototype baseline (user decision, 2026-10-20)
+
+- Continue from merged PR #70 with the 18u main-area geometry as the active desktop prototype development baseline. Follow `prototypes/touch-terminal/desktop/DEVELOPMENT_PLAN_18U.md` and its handoff; first develop the prototype, then resume physical finger/pen acceptance preparation.
+- Freeze the 17u geometry and its 23u full-board derivative as optional candidates. Preserve sources, profiles, existing regression checks and historical evidence; do not pursue a separate 17u development or acceptance lane. A future compact variant may derive from the 18u geometry by a 1 mm reduction, but the exact dimensional parameter must be defined before implementation; it is not yet an approved geometry change.
+- The earlier PR #69/17u finger/pen acceptance-preparation request is deferred. Mouse, simulated touch and controlled EDIT tests remain development evidence, not physical acceptance. No installation, installed input-method/default changes or user-data changes are authorized by this plan.
+
 ## Closed storage-cost follow-up (user decision, 2026-10-19)
 
 - The user has confirmed that the large-file/storage-cost issue is resolved. Treat that follow-up as closed; do not reopen an LFS ticket or repeat billing, storage, or LFS-cost investigations in morning reports, recurring checks, or routine project work unless the user explicitly requests a new investigation.

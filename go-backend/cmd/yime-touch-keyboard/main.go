@@ -14,8 +14,9 @@ import (
 
 type options struct {
 	Root, Profile, Zones, Shot, KeyView string
+	DataDir, DataReport                 string
 	ScreenMM, ObservedMM                float64
-	Gutters, Smoke                      bool
+	Gutters, Smoke, CheckData           bool
 }
 
 func main() {
@@ -29,15 +30,28 @@ func main() {
 	flag.Float64Var(&o.ObservedMM, "ruler-observed-mm", 100, "actual measured length of the previous 100mm reference")
 	flag.StringVar(&o.Shot, "screenshot", "", "render this keyboard to PNG and exit")
 	flag.BoolVar(&o.Smoke, "self-test", false, "run isolated Win32 target-window input/focus checks and exit")
+	flag.BoolVar(&o.CheckData, "check-data", false, "validate isolated Chinese dictionaries and in-process sessions, without a window or OS input")
+	flag.StringVar(&o.DataDir, "data-dir", "", "explicit experimental dictionary directory for --check-data")
+	flag.StringVar(&o.DataReport, "data-report", "", "optional JSON result file for --check-data")
 	flag.Parse()
-	if e := run(o); e != nil {
-		if o.Smoke || o.Shot != "" {
+	if e := execute(o); e != nil {
+		if o.Smoke || o.Shot != "" || o.CheckData {
 			fmt.Fprintln(os.Stderr, e)
 		} else {
 			showError(e)
 		}
 		os.Exit(1)
 	}
+}
+
+func execute(o options) error {
+	if o.CheckData {
+		return checkData(o)
+	}
+	if o.DataDir != "" || o.DataReport != "" {
+		return fmt.Errorf("data options currently require --check-data; desktop Chinese UI is not connected yet")
+	}
+	return run(o)
 }
 func load(o options) (tk.Board, error) {
 	p := tk.Profile{NumericZones: o.Zones, RemoveGutters: o.Gutters}
