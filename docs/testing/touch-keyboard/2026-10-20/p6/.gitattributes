@@ -1,0 +1,2 @@
+*.json -text !eol -whitespace
+*.csv -text !eol -whitespace

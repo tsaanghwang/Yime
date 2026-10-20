@@ -1,0 +1,44 @@
+{
+  "scope": "P6 acceptance preparation static verification",
+  "checkedAt": "2026-10-20T04:08:03.192530+00:00",
+  "packageSourceCommit": "9d0a02e7ad936ee9a471cd118421f209b8972b33",
+  "archiveSHA256": "0338af545b7f49ac2e01893f3e62e9b76ca8b9e1fed8f43d4ad77eb7eb2b6d67",
+  "verifiedPayloadCount": 29,
+  "verifiedManifestSHA256": "180f4786a9960f6e9527e23b3ae35be058008e31c9f4081545d13d74734e6ec2",
+  "keyCoverageRows": 100,
+  "englishDisabledKeys": 23,
+  "fixtureCodes": {
+    "full": "niii",
+    "shorthand": "ni",
+    "variable": "ni"
+  },
+  "physicalFingerExecuted": false,
+  "physicalPenExecuted": false,
+  "realApplicationExecuted": false,
+  "OSInputSent": false,
+  "installedProductChanged": false,
+  "hardwareAcceptance": false,
+  "historicalEvidenceReclassified": false,
+  "validation": [
+    {
+      "check": "document links, JSON, case/template correspondence",
+      "result": "pass",
+      "cases": 17
+    },
+    {
+      "check": "100 unique key rows with pending finger and pen status",
+      "result": "pass"
+    },
+    {
+      "check": "generate_touch_keyboard_profiles.py --check",
+      "result": "pass; frozen geometry preserved"
+    },
+    {
+      "check": "prototypes/touch-terminal/validate.py",
+      "result": "pass",
+      "pythonTests": 27,
+      "javascriptTests": 44,
+      "sandboxAttempt": "blocked by temp-file/loopback permissions; unchanged command passed outside sandbox"
+    }
+  ]
+}
