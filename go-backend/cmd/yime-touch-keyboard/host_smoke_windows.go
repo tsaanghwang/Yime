@@ -45,6 +45,11 @@ func (a *ui) hostSmoke(instance uintptr) error {
 	if foreground() != (target{h, edit}) {
 		return errors.New("own target did not acquire foreground; no input sent")
 	}
+	fixture := currentHostTarget(a.h)
+	if fixture.Window != h || fixture.Focus != edit {
+		return errors.New("own target identity changed before diagnostic binding; no input sent")
+	}
+	a.host.restrictTarget(fixture)
 	read := func(w uintptr) string {
 		buf := make([]uint16, 4096)
 		U("GetWindowTextW").Call(w, uintptr(unsafe.Pointer(&buf[0])), uintptr(len(buf)))

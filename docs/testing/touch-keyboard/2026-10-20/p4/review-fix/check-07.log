@@ -1,0 +1,7 @@
+PASS native EDIT variable: actual candidate "你"; composed only in keyboard, candidate UP/dedup, Ctrl+Home/Shift+End replacement, Backspace and cancel
+PASS native EDIT full: actual candidate "你"; composed only in keyboard, candidate UP/dedup, Ctrl+Home/Shift+End replacement, Backspace and cancel
+PASS native EDIT shorthand: actual candidate "你"; composed only in keyboard, candidate UP/dedup, Ctrl+Home/Shift+End replacement, Backspace and cancel
+PASS native English switch and literal Enter: own EDIT received a CRLF b; returned to Chinese without changing system input method
+PASS native focus notification: away/back and delayed response dropped; both own EDIT texts unchanged
+PASS controlled fault injection: zero-send and uncertain-prefix stop future sends; explicit rebind preserves prefix; no replay. Injected faults are not naturally observed OS failures.
+PASS P4 controlled native EDIT; NOT physical finger/pen, real app or ARM64 native acceptance. No installed/default input-method or user-data changes.

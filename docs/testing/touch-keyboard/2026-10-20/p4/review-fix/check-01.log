@@ -1,0 +1,6 @@
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard	0.988s
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard	(cached)
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab	(cached)
+?   	github.com/tsaanghwang/Yime/go-backend/cmd/yime-keyboard-lab	[no test files]
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode	(cached)
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode	(cached)

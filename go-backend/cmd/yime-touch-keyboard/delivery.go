@@ -25,6 +25,18 @@ type deliveryGate struct {
 	last    string
 }
 
+// Diagnostics pin their target provider for the entire run, including recovery
+// binds. A foreign foreground window must never become an authorized fixture.
+func (g *deliveryGate) restrictTarget(allowed hostTarget) {
+	current := g.current
+	g.current = func() hostTarget {
+		if t := current(); t == allowed {
+			return t
+		}
+		return hostTarget{}
+	}
+}
+
 func (g *deliveryGate) bind(t hostTarget) error {
 	if t.Window == 0 || t.Focus == 0 || t.Process == 0 || t.Thread == 0 || t != g.current() {
 		return fmt.Errorf("请先在目标应用文本区放置光标")

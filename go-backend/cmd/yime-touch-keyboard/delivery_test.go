@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 	"testing"
 )
@@ -35,6 +36,75 @@ func TestDeliveryBindsIdentityEpochAndConsumesOnce(t *testing.T) {
 	}
 	if err := g.deliver(g.ticket(), "fresh", tk.Output{Text: "新"}); err != nil || calls != 2 {
 		t.Fatal("explicit fresh binding failed")
+	}
+}
+
+func TestDiagnosticRejectsForeignTargetOnEveryRebind(t *testing.T) {
+	fixture := hostTarget{1, 2, 3, 4}
+	foreign := hostTarget{5, 6, 7, 8}
+	current := fixture
+	calls := 0
+	g := &deliveryGate{current: func() hostTarget { return current }, send: func(hostTarget, tk.Output) error { calls++; return nil }}
+	g.restrictTarget(fixture)
+	for i := 0; i < 2; i++ {
+		current = fixture
+		if err := g.bind(current); err != nil {
+			t.Fatal(err)
+		}
+		old := g.ticket()
+		current = foreign // e.g. another application becomes foreground in drain.
+		if err := g.bind(current); err == nil {
+			t.Fatal("diagnostic authorized foreign target")
+		}
+		if err := g.deliver(old, "probe", tk.Output{Text: "must not send"}); err == nil || calls != 0 {
+			t.Fatal("diagnostic emitted against foreign foreground")
+		}
+		g.invalidate("prepare another recovery bind")
+	}
+}
+
+func TestHostEnterPreservesShiftAndConfirmationPolicy(t *testing.T) {
+	for _, zone := range []string{"main", "left", "right"} {
+		for _, shift := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/shift=%t", zone, shift), func(t *testing.T) {
+				p := previewFixture(t)
+				previewAction(t, p, "input", "a", "")
+				if zone == "main" {
+					previewAction(t, p, "toggle-language", "", "")
+				}
+				raw := p.snapshot.State.RawInput
+				var outputs []tk.Output
+				p.emit = func(_ string, o tk.Output) error { outputs = append(outputs, o); return nil }
+				action := tk.Action{Type: "literal", ASCII: "\n"}
+				if zone == "main" {
+					action = tk.Action{Type: "confirm", Key: "Enter"}
+				}
+				out := tk.Output{Action: action, Zone: zone, Shift: shift}
+				if zone == "main" {
+					stale := p.stamp()
+					stale.revision--
+					if err := p.apply(out, stale); err == nil || len(outputs) != 0 {
+						t.Fatal("stale Enter sent")
+					}
+				}
+				if err := p.apply(out, p.stamp()); err != nil {
+					t.Fatal(err)
+				}
+				if len(outputs) != 1 || outputs[0].Key != "Enter" || outputs[0].Text != "" || outputs[0].Shift != shift || p.snapshot.State.RawInput != raw {
+					t.Fatalf("Enter lost modifiers or consumed composition: %+v", outputs)
+				}
+			})
+		}
+	}
+	p := previewFixture(t)
+	previewAction(t, p, "input", "a", "")
+	var outputs []tk.Output
+	p.emit = func(_ string, o tk.Output) error { outputs = append(outputs, o); return nil }
+	if err := p.apply(tk.Output{Action: tk.Action{Type: "confirm", Key: "Enter"}, Shift: true}, p.stamp()); err != nil {
+		t.Fatal(err)
+	}
+	if len(outputs) != 1 || outputs[0].Text != "中文𠀀" || outputs[0].Key != "" || outputs[0].Shift {
+		t.Fatalf("Chinese Shift+Enter stopped confirming candidate: %+v", outputs)
 	}
 }
 func TestDeliveryFailureAndFocusDuringSendBlockUntilExplicitBind(t *testing.T) {

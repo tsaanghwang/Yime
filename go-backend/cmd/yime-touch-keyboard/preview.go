@@ -131,6 +131,9 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 			return fmt.Errorf("请先确认或取消组合，再发送宿主快捷键")
 		}
 		if a.Type == "input" || a.Type == "literal" {
+			if a.Type == "literal" && a.ASCII == "\n" {
+				return p.emitEdit(tk.Output{Key: "Enter", Shift: o.Shift, Ctrl: o.Ctrl, Alt: o.Alt})
+			}
 			return p.emitEdit(tk.Output{Text: a.ASCII, Shift: o.Shift, Ctrl: o.Ctrl, Alt: o.Alt})
 		}
 		if a.Type == "local" || a.Type == "backspace" || a.Type == "confirm" {
@@ -163,6 +166,11 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 		}
 		return p.dispatch(keyboardlab.Event{Type: "setModes", InputMode: mode, PunctuationMode: mode})
 	case "input", "literal", "symbol":
+		// Side Enter bypasses composition. Preserve its modifiers rather than
+		// round-tripping a newline through a text-only engine commit.
+		if p.emit != nil && a.Type == "literal" && a.ASCII == "\n" {
+			return p.emitEdit(tk.Output{Key: "Enter", Shift: o.Shift})
+		}
 		// A digit may have meant candidate selection at DOWN. Never reinterpret
 		// that gesture as a new-page ordinal or a literal after the snapshot changes.
 		if a.Type == "input" && len(a.ASCII) == 1 && a.ASCII[0] >= '1' && a.ASCII[0] <= '9' && down != p.stamp() {
@@ -180,6 +188,9 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 		if p.snapshot.Modes.Input == "english" {
 			code := " "
 			if a.Key == "Enter" {
+				if p.emit != nil {
+					return p.emitEdit(tk.Output{Key: "Enter", Shift: o.Shift})
+				}
 				code = "\n"
 			}
 			return p.dispatch(keyboardlab.Event{Type: "literal", Code: code})

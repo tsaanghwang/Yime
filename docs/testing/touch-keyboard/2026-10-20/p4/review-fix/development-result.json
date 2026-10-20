@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-20T10:38:53+08:00",
+  "scope": "P4 review fix: fixture-only rebinding and modifier-preserving Enter; repeated controlled EDIT delivery",
+  "source": {
+    "baseCommit": "ec1f3416279919eb3bce8281c71e67efab4f3ad6",
+    "branch": "codex/touch-keyboard-p4-host",
+    "workingTreeChanges": true,
+    "changedSourceSHA256": {
+      "go-backend/cmd/yime-touch-keyboard/delivery.go": "da30419ff746db68a93a08ddbbbb625ce1d352b6bb3952b7b13b5aa5d0798eaf",
+      "go-backend/cmd/yime-touch-keyboard/delivery_test.go": "dfd8e1df3a5b1e1ea41f9ef28640a668cec83de948837811359051d01c004c60",
+      "go-backend/cmd/yime-touch-keyboard/host_smoke_windows.go": "afc28e4587d12d4aef9d0f4bc1d4f302d9bb214ba0a3f24f79782f4d92abbae9",
+      "go-backend/cmd/yime-touch-keyboard/preview.go": "99e2cf59ffaa3bc52bc043ce487d795f5910d40e884ec2749e373fbc95edb860",
+      "prototypes/touch-terminal/desktop/HANDOFF.md": "18795246ab50a637dd2edb545167a342d640f6378a65d849fd7c5f6472dae97c",
+      "prototypes/touch-terminal/desktop/USER_GUIDE.zh-CN.md": "33d55c37297b90215579fdbee0af5d0a0537c90430072c9ba2e9b3fa8c2fed24"
+    },
+    "note": "Local precommit checks; packages retain dirty-source identity, not clean-commit CI or full Chinese delivery."
+  },
+  "baseline": {
+    "widthU": 18,
+    "unitMM": 19.05,
+    "widthMM": 342.9,
+    "keys": 100,
+    "main17": "frozen-optional-candidate",
+    "full23": "frozen-optional-candidate"
+  },
+  "checks": [
+    {
+      "command": [
+        "go",
+        "-C",
+        "go-backend",
+        "test",
+        "./cmd/yime-touch-keyboard",
+        "./internal/touchkeyboard",
+        "./internal/keyboardlab",
+        "./cmd/yime-keyboard-lab",
+        "./internal/asciicodemode",
+        "./input_methods/yime/codemode"
+      ],
+      "exitCode": 0,
+      "log": "check-01.log"
+    },
+    {
+      "command": [
+        "go",
+        "-C",
+        "go-backend",
+        "test",
+        "./cmd/yime-touch-keyboard",
+        "-run",
+        "TestPreviewCompleteCorpus",
+        "-count=1",
+        "-v",
+        "-args",
+        "-desktop-preview-integration-root",
+        "C:\\dev\\Yime"
+      ],
+      "exitCode": 0,
+      "log": "check-02.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/check_layout_change_lock.py"
+      ],
+      "exitCode": 0,
+      "log": "check-03.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/lexicon/check_repository_data_boundary.py"
+      ],
+      "exitCode": 0,
+      "log": "check-04.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/build_touch_keyboard_desktop.py",
+        "--output-dir",
+        ".generated/touch-keyboard-p4"
+      ],
+      "exitCode": 0,
+      "log": "check-05.log"
+    },
+    {
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/build_touch_keyboard_desktop.py",
+        "--arch",
+        "arm64",
+        "--output-dir",
+        ".generated/touch-keyboard-p4-arm64"
+      ],
+      "exitCode": 0,
+      "log": "check-06.log"
+    },
+    {
+      "command": [
+        "C:\\dev\\Yime\\.generated\\touch-keyboard-p4\\YimeTouchKeyboard.exe",
+        "--root",
+        "C:\\dev\\Yime",
+        "--numeric-zones",
+        "none",
+        "--remove-gutters",
+        "--host-input",
+        "--host-self-test",
+        "--data-dir",
+        "C:\\dev\\Yime\\.generated\\ascii-keyboard-134\\data"
+      ],
+      "exitCode": 0,
+      "log": "check-07.log"
+    },
+    {
+      "command": [
+        "go",
+        "-C",
+        "go-backend",
+        "test",
+        "./cmd/yime-touch-keyboard",
+        "-run",
+        "TestDiagnosticRejectsForeignTargetOnEveryRebind|TestHostEnterPreservesShiftAndConfirmationPolicy",
+        "-count=1",
+        "-v"
+      ],
+      "exitCode": 0,
+      "log": "review-regressions.log"
+    }
+  ],
+  "packages": {
+    "amd64": {
+      "manifest": "package-amd64-manifest.json",
+      "executableSHA256": "4e487f2ca2f41697c96bbecb2b58a9950d6447076e3ce039af12f41562392993",
+      "nativeControlledEDITTest": true,
+      "scope": "default English developer package; Chinese host route still requires explicit checkout resources; ARM64 cross-build only"
+    },
+    "arm64": {
+      "manifest": "package-arm64-manifest.json",
+      "executableSHA256": "81946a91ec3ae365f29faf563c1be9beb8dcea8b9bbed1a42ffdd93eefdc7719",
+      "nativeControlledEDITTest": false,
+      "scope": "default English developer package; Chinese host route still requires explicit checkout resources; ARM64 cross-build only"
+    }
+  },
+  "results": {
+    "threeModesNativeChinese": "pass: canonical-ID-derived ni3 selected 你 in own EDIT",
+    "compositionNeverSent": "pass",
+    "candidateUpAndDuplicateUp": "pass",
+    "nativeEditing": "pass: Ctrl+Home/Shift+End replacement, Backspace, cancel, English and literal Enter",
+    "focusAwayAndBack": "pass: own two EDIT windows, both texts unchanged",
+    "delayedReply": "pass: real response delayed by injected focus switch before return, no text sent",
+    "zeroSend": "injected failure, one attempt only",
+    "partialUnknown": "one actual Unicode prefix then injected error, no replay; explicit rebind preserved prefix",
+    "sendBatchPartialCount": "unit injected counts, release only pressed prefix, never retry text",
+    "P3CompleteCorpusRegression": "pass: 2457604 indexed records per mode",
+    "reviewFixtureTarget": "pass: every diagnostic rebind rejects non-fixture target; zero sends",
+    "reviewShiftEnter": "pass: main English and both side Enter preserve Shift; Chinese confirmation and stale-confirm rejection preserved"
+  },
+  "limitations": [
+    "SendInput cannot atomically address a HWND; pre/post checks and observed WinEvent notifications do not exclude every last-instant focus race. Event count is not host acceptance.",
+    "Fault injections are controlled tests, not naturally observed OS failures.",
+    "The classic EDIT fixture did not respond to Ctrl+A; native selection uses supported Ctrl+Home/Shift+End without changing key mappings.",
+    "Initial arbitrary one-character probe had no complete-dictionary candidate; final probe derives admitted ni3 from canonical IDs and lab projection.",
+    "No physical finger/pen, Word/Notepad, elevated-host or native ARM64 acceptance.",
+    "No installed/default input-method, user-data or system-font changes."
+  ],
+  "stages": {
+    "P4": "local-pass-with-documented-SendInput-limits",
+    "P5": "pending",
+    "P6": "deferred"
+  },
+  "pendingRecords": [
+    "P5 complete independent Chinese package, exact source SHA, CI/artifact URL and SHA-256",
+    "P6 separate real host, finger/pen, ruler and ARM64 native observations"
+  ],
+  "evidenceSHA256": {
+    "check-01.log": "46daad965aa3d28b5c40a10fd1645bc1efad8c72d5aa78865bc6f7fdc401cc27",
+    "check-02.log": "b0b69b6c326e6db1dc0cb72ddde5d8fae3e30a22fbea2e4439951b24f633b132",
+    "check-03.log": "629a6a3b6eea6fdf77b4b5153337198bb348e519d92a7a989ef6e9ff64239d07",
+    "check-04.log": "f9feb8577ecff1f2ed9f9d49280eb4ddfc369d95f66bd5a546cd7635cedbef98",
+    "check-05.log": "9f1a93deddb5c1b7ad265464e4e1b05392567b86e6bf85d6a5f6a4f6d06d7f56",
+    "check-06.log": "2656b56ff4ecbd31b85b51b751e0937ec6e201a48fbbcb7ff7750e286f01a83a",
+    "check-07.log": "0b273b7c22318e28d1b173313b3a177746f96a1cb6601641309508b0e0ecd2f2",
+    "corpus-manifest.json": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843",
+    "package-amd64-manifest.json": "510e2925b85757f52337908b5d4b08e8394337e484ed3d0527d87ddc1bd16195",
+    "package-arm64-manifest.json": "ac06b044943d3fa1ca72fc8e1f876f80b8c9f89c1bdce70cf3526828ded02a55",
+    "review-regressions.log": "5826591da11d7aff5e15a1a8a734d5a3ba0532e8f6795f7730e776e0455a094e"
+  }
+}
