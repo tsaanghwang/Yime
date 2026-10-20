@@ -1,136 +1,61 @@
-# Windows 桌面触摸键盘：18u 开发基线
+# Windows 桌面触摸键盘：18u 完整中文便携包
 
-2026-10-20：以 **18u 主区**为样机基准，P1/P2 随 #71 合并，P3 已完成本地中文受控预览。新包的 `Start Keyboard.cmd` 与 `Start Main Area.cmd` 均打开 18u，原全盘用 `Start Full Keyboard.cmd`；旧包入口不追溯改写。17u / 23u 派生配置冻结为候选。按[18u 开发计划](DEVELOPMENT_PLAN_18U.md)推进，手指/触控笔验收准备暂缓。
+P1–P4 已随 #71–#73 合并。P5 提供包内完整三模式词典、私有字体、盘面、默认中文启动入口和资源身份校验。18u 主区为唯一主动开发基准，17u / 23u 仍冻结。安装、默认输入法和用户词库不属于此实验的修改范围。
 
-这是独立、无需安装输入法的桌面实验程序。它读取现有 CN/EN134 盘面，
-以不激活窗口承接触摸，向当前目标输入框发送英文文本、编辑键和快捷键。
-显式 `--preview` 入口使用共用中文引擎，组合和候选确认只写入本窗口文本区。P4 的 `--host-input` 已增加显式目标绑定后的宿主发送；完整中文便携包待 P5。
+## 使用
 
-## P4 中文宿主输入（源码开发入口）
+完整解压匹配架构的 CI 包，双击 `Start Keyboard.cmd` 或 exe。默认 18u、100 键、342.90 mm，先在目标文本区放置光标，再点“绑定目标”。完整步骤见[中文指南](USER_GUIDE.zh-CN.md)。
 
-P4 从已合并的 #72 继续。完整隔离词典准备好后，在仓库根目录执行：
+`Start Preview.cmd` 只写窗口内文本；`Start English Only.cmd` 保留旧英文入口。原全盘和左右区域提供同源中文入口，冻结的 17u / 23u 启动器保持旧英文行为。旧 CI 英文包不追溯升级。
 
-```text
-go -C go-backend run ./cmd/yime-touch-keyboard --root .. --numeric-zones none --remove-gutters --host-input --data-dir ../.generated/ascii-keyboard-134/data
-```
-
-先在目标文本区点好光标，再点“绑定目标”。组合仍只在键盘内；候选或确认动作才发送文本。失焦、隐藏或异常后需重新绑定；这个按钮取消未确认组合，**不清空宿主正文**。发生失败/部分发送时先核对正文，程序不重放、不自动补发或回滚。完整步骤见[中文指南](USER_GUIDE.zh-CN.md)。
-
-`--host-input` 与 `--preview`、`--self-test`、`--check-data`、截图互斥。受控原生测试使用专门入口：
+程序从自身目录解析全部资源，与当前工作目录无关，不需要源码 checkout、开发工具、网络或已安装产品。启动时验证编译绑定的 `resources.json` 与资源 SHA-256；词典还由共享 `keyboardlab` 验证投影和模式身份。缺失、篡改、混包或指定外部 root/data 时直接失败，不搜索其他目录。哈希只用于身份和完整性，不等于签名。
 
 ```text
-go -C go-backend run ./cmd/yime-touch-keyboard --root .. --numeric-zones none --remove-gutters --host-input --host-self-test --data-dir ../.generated/ascii-keyboard-134/data
+YimeTouchKeyboard.exe --check-package --data-report package-check.json
+YimeTouchKeyboard.exe --preview
+YimeTouchKeyboard.exe --english-only
+YimeTouchKeyboard.exe --screen-width-mm 597.73 --ruler-observed-mm 98.5
 ```
 
-此检查只创建本进程临时 EDIT；无法取得该窗口前台则失败且不发送。它需要源码的 canonical 分解表派生测试编码；不是独立便携包入口，也不是 Word、手指/笔或 ARM64 原生验收。SendInput 无法原子绑定目标 HWND，实际宿主接收和发送瞬间的焦点竞态仍需观察。P5 完整资源包尚待开发，默认包启动器仍走英文路线。
+`--check-package` 不开窗口、不发送 OS 输入：验证所有资源并在三模式内存会话中，从包内 canonical ID 表和实验投影派生 ni3，再确认“你”。正常退出清理临时索引；强制终止可能留下本程序临时目录，不宣称崩溃清理已完成。
 
-## P3 中文受控预览（源码开发入口）
+所有中文宿主发送沿用 P4 显式绑定、世代失效和失败停止规则。SendInput 不能原子绑定 HWND；发送计数不是实际宿主接受。手指、笔、真实应用和 ARM64 原生结果须分别观察。
 
-完整实验词典已按原型 README 生成时，在仓库根目录执行：
+## 构建与 CI 输入
+
+唯一可编辑编码源仍为实验室 `encoding/manual_key_layout.json`。词典来自既有完整隔离派生数据，不修改或借用产品字典。`resources.lock.json` 固定一个本仓库 prerelease 的派生词典 ZIP：归档大小/哈希、每文件大小/哈希、原始数据身份、投影和来源提交均可追踪。CI 不读取外部原始数据库，也不导入其他 Git 仓库数据。
+
+```text
+python -X utf8 tools/touch_keyboard_resources.py fetch --output-dir .generated/touch-keyboard-resources
+python -X utf8 tools/build_touch_keyboard_desktop.py --output-dir .generated/touch-keyboard-new
+python -X utf8 tools/check_touch_keyboard_package.py --package .generated/touch-keyboard-new --report .generated/touch-keyboard-check/package-check.json
+python -X utf8 tools/build_touch_keyboard_desktop.py --arch arm64 --output-dir .generated/touch-keyboard-new-arm64
+```
+
+构建输出必须是 `.generated/` 下的新空目录，避免混入旧包。资源恢复可重复执行，但发现旧文件哈希不同会拒绝覆盖。离线时可给 fetch 加 `--archive <已核对的 ZIP>`。只有构建机下载资源需要 GitHub CLI，最终包不需要。
+
+资源更新需按既有 canonical 链重新派生、验证并创建新 tag/asset/锁，不替换当前固定资源。当前归档包含三份完整主词典（已合入既有 reviewed overlays）及原实验清单；不包含原始数据库或用户词库。
+
+`.github/workflows/touch-terminal.yml` 获取并验证锁定资源，构建 x64，复制到仓库外含中文/空格的临时路径，从空 cwd 执行三模式及损坏/缺失/外部资源拒绝检查，再交叉构建 ARM64。CI 上传两个完整包和独立验证报告。
+
+`manifest.json` 记录源码、dirty 状态、架构、CI run、资源归档和包内文件 SHA-256；GitHub artifact ZIP 哈希以对应 PR 交付记录为准。ARM64 的构建成功不得标作原生执行或硬件验收。
+
+## 本地受控原生检查
+
+```text
+python -X utf8 tools/check_touch_keyboard_package.py --package .generated/touch-keyboard-new --report .generated/touch-keyboard-check/package-check.json --render --native-edit
+```
+
+这会在临时副本中渲染预览并运行自有 EDIT 测试。目标提供器在全部恢复绑定期间限制为该测试自己的窗口；若未取得前台则失败，不给其他应用发送。结果是开发证据，不是手指、笔或 Word/记事本验收。CI 默认不运行有输入的自检。
+
+## 源码开发入口
+
+源码构建仍要求显式 root 和完整实验 data-dir，与便携构建的自身目录默认行为不同：
 
 ```text
 go -C go-backend run ./cmd/yime-touch-keyboard --root .. --numeric-zones none --remove-gutters --preview --data-dir ../.generated/ascii-keyboard-134/data
+go -C go-backend run ./cmd/yime-touch-keyboard --root .. --numeric-zones none --remove-gutters --host-input --data-dir ../.generated/ascii-keyboard-134/data
+go -C go-backend test ./cmd/yime-touch-keyboard ./internal/touchkeyboard ./internal/keyboardlab ./cmd/yime-keyboard-lab ./internal/asciicodemode ./input_methods/yime/codemode
 ```
 
-初次加载会校验完整词典哈希并生成临时索引，退出即清理。缺少资源或身份不符时失败，不查找已安装输入法。现有英文便携包没有这些词典和预览字体资源，不能把上述源码入口视为 P5 交付。
-
-预览支持三编码模式、CN EN、候选点击/分页、原始组合显示和本地文本编辑。CN EN 同时切换标点；中文始终显示 CN，英文时 Layout 可切换 CN/EN 键帽，偏好在本次运行内保留。字形/ID 按钮切换基础音元字形显示，私有字体不安装到系统。更多步骤与编辑范围见[中文使用帮助](USER_GUIDE.zh-CN.md)。
-
-预览不会向其他应用输入，输出只在内存中，关闭即丢弃；不能与 `--self-test` 或 `--check-data` 混用。移出候选/按键再返回仍取消；候选版本变化后的旧触点和重复抬手均不提交。
-
-可重复运行完整语料检查（不是手指/笔验收）：
-
-```text
-go -C go-backend test ./cmd/yime-touch-keyboard -run TestPreviewCompleteCorpus -count=1 -v -args -desktop-preview-integration-root C:/dev/Yime
-```
-
-路径需换成实际检出目录。可选 `-desktop-preview-evidence-dir <新目录>` 导出受控候选截图和 JSON，不覆盖历史证据。
-
-## 默认英文跨应用入口
-
-- 默认主区18u、100键、342.90毫米；可选全盘24.75u、134键、471.4875毫米。每u为19.05毫米中心距。
-  这是键距，键帽边缘保留间隙。默认597.73毫米屏幕有效宽度来自当前27英寸16:9估算。
-- 100毫米参考线与卷尺校准；不根据Windows缩放百分比推定真实尺寸，也不随窗口变窄缩键。
-- 英文小写/大写、标点，单次或双指Shift，Ctrl/Alt组合，退格、回车、空格、Tab、F1–F12。
-- 左右数字/编辑区独立切换，方向、Home/End、PgUp/PgDn、Insert/Delete；编辑态5无操作。
-- 目标窗口及焦点在按下到释放之间变化时取消本次输入。移出键面再返回仍取消。
-  ISO缺角不作为可命中区域。修饰键按需成批发送，窗口关闭不遗留系统按键状态。
-- Ctrl+Alt+K呼出/隐藏；窗口顶部可移动。Caps、系统键、Pause和CN EN暂未接入并作示意。
-
-## 本机试用
-
-源码根目录执行：
-
-```text
-python -X utf8 tools/build_touch_keyboard_desktop.py
-```
-
-打开生成目录 `.generated/touch-keyboard-desktop/`，双击 `Start Keyboard.cmd`。
-在记事本等应用中先点好文本光标，再触摸键盘。程序不更改当前默认输入法或已安装产品。
-英文字符通过Unicode键盘事件提交，编辑与快捷键通过虚拟键事件提交；必须分别观察真实应用接受情况。
-受Windows输入完整性级别约束，不能据此声称所有应用或管理员窗口兼容。
-
-**先量100毫米线段。** Ruler −1%/+1%调整的是像素到毫米的换算，u仍为19.05毫米。
-需要精确换算可重启时给出此前参考线的实际长度，例如：
-
-```text
-YimeTouchKeyboard.exe --root . --screen-width-mm 597.73 --ruler-observed-mm 98.5
-```
-
-校准目前在当前进程有效，重启后需使用相应参数。换屏、旋转或缩放后重新复核。
-另一台16英寸机器应填写其有效显示宽度，不能沿用27英寸估算。
-
-## 便携形态接口
-
-```text
---numeric-zones both|left|right|none
---remove-gutters
---profile <JSON>
-```
-
-同一可执行文件可隐藏任一侧或两侧数字/编辑区，并移除左右区缝与中间共同的0.25u空带。
-新包默认及仅主区CMD共用 `profiles/main-only.json`；另提供原全盘、保留左区、保留右区及冻结候选入口。直接运行 exe 的命令行默认仍为原全盘，需主区时显式传 `--numeric-zones none --remove-gutters` 或主区 profile。
-所有接口只改变物理几何，不修改按键身份、ASCII编码或字典。
-
-| 配置 | 宽度u | 按19.05毫米/u的宽度 |
-|---|---:|---:|
-| 当前完整134键 | 24.75 | 471.49毫米 |
-| 去三条共同中缝、保留两侧 | 24 | 457.20毫米 |
-| 去中缝、仅保留一侧 | 21 | 400.05毫米 |
-| 去中缝、不保留两侧 | 18 | 342.90毫米 |
-| 便携目标主区 | 17 | 323.85毫米 |
-
-当前原主区去缝后仍为18u。用户提供的 `design/yime-cn-134k-23u-keyboard-layout.json` 另生成了可用的17u主区（323.85毫米）和23u全盘（438.15毫米）配置；生成器按完整键面和区域匹配稳定键身份，不按发生变化的KLE行号硬配。
-
-冻结候选的启动入口 `Start 17u Main Area.cmd` 和 `Start 23u Keyboard.cmd` 保留，不作为本轮开发或验收基准。普通键最小1u，仅N26、N27移到下一行两端，其余音元保持原行与左右顺序。英文视图沿用原键身份的映射；未新增音元编码或臆造英文映射。
-
-**详细操作见[中文使用帮助](USER_GUIDE.zh-CN.md)**，程序顶部也有Help按钮。原盘面视图和英文视图当前均只输出英文；灰色“中文未接入”不是可用的中文开关。截图或启动时可用 `--key-view original` 预览原盘面。
-
-2026-10-19 用户报告当前27英寸屏未按缩放按钮时100毫米标尺与实体尺一致。保留默认换算，不把这一次量尺结果推广为其他屏幕校准或触摸接受。
-
-## 验证入口与范围
-
-```text
-go -C go-backend test ./internal/touchkeyboard ./cmd/yime-touch-keyboard ./cmd/yime-keyboard-lab ./internal/keyboardlab
-YimeTouchKeyboard.exe --root . --self-test
-```
-
-self-test只创建本进程的临时原生EDIT目标，检查真实SendInput和前台焦点，不操作现有文档。
-它不是记事本/Word实测，也不是手指、触控笔或ARM原生硬件验收。后台自动启动自检时，Windows可能不允许临时测试窗口取得前台，此时程序退出且不发送输入；正常试用应由你先在目标应用点好光标。
-ARM64包只交叉构建，待相应真实机器到位后再做原生验证。
-
-## 中文会话开发检查
-
-P2 新增桌面进程内数据检查入口，复用网页的 `internal/keyboardlab`。检查要求显式指定独立实验词典目录，核对投影与三份词典哈希、构建临时索引，并分别打开、清空、关闭三模式会话；退出时释放会话和索引。不打开键盘窗口，不向应用发送输入，也不表示桌面中文界面已经接通。
-
-在仓库根目录、完整实验词典已按原型 README 生成后运行：
-
-```text
-go -C go-backend run ./cmd/yime-touch-keyboard --root .. --numeric-zones none --remove-gutters --check-data --data-dir ../.generated/ascii-keyboard-134/data --data-report ../.generated/touch-keyboard-data-check.json
-```
-
-包内 exe 也支持同样的检查选项；GUI 子系统下应给 `--data-report` 指定报告文件。当前英文包不附带完整中文词典，不能仅凭该包执行成功的数据检查。无清单、错误投影、哈希不匹配或不完整词典均失败，不回退到已安装产品。`--data-dir` 必须与 `--check-data` 或 `--preview` 显式组合，不会暗中开启中文跨应用输入。
-
-Windows接口依据：[不激活窗口](https://learn.microsoft.com/en-us/windows/win32/winmsg/extended-window-styles)、
-[WM_TOUCH](https://learn.microsoft.com/en-us/windows/win32/wintouch/wm-touchdown)、
-[SendInput](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput)。
+主区固定 18u；原全盘 24.75u，保留一侧 21u。显示换算与几何分别处理，不自动缩键。17u/23u 来源、配置和回归保持原样；没有实施未定义的“缩短 1 毫米”。详细阶段和待记录项见[计划](DEVELOPMENT_PLAN_18U.md)与[交接](HANDOFF.md)。

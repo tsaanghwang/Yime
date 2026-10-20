@@ -1,0 +1,14 @@
+=== RUN   TestPortableDefaultDoesNotOverrideExplicitGeometry
+--- PASS: TestPortableDefaultDoesNotOverrideExplicitGeometry (0.03s)
+=== RUN   TestPortableRejectsMissingChangedAndRewrittenInventory
+=== RUN   TestPortableRejectsMissingChangedAndRewrittenInventory/missing
+=== RUN   TestPortableRejectsMissingChangedAndRewrittenInventory/changed
+=== RUN   TestPortableRejectsMissingChangedAndRewrittenInventory/inventory
+--- PASS: TestPortableRejectsMissingChangedAndRewrittenInventory (0.02s)
+    --- PASS: TestPortableRejectsMissingChangedAndRewrittenInventory/missing (0.01s)
+    --- PASS: TestPortableRejectsMissingChangedAndRewrittenInventory/changed (0.01s)
+    --- PASS: TestPortableRejectsMissingChangedAndRewrittenInventory/inventory (0.01s)
+=== RUN   TestPortableDefaultsAndNoExternalResourceFallback
+--- PASS: TestPortableDefaultsAndNoExternalResourceFallback (0.02s)
+PASS
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard	0.725s

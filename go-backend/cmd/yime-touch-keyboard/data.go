@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab"
+	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 )
 
 // checkData exercises the same runtime that serves the browser, inside this
@@ -24,6 +25,36 @@ func checkData(o options) (err error) {
 		return err
 	}
 	defer func() { err = errors.Join(err, runtime.Close()) }()
+	confirmed := map[string]string{}
+	if o.CheckPackage {
+		probes, err := hostProbeCodes(o.Root)
+		if err != nil {
+			return err
+		}
+		p, err := newPreview(runtime.Sessions, runtime.LayoutID, true)
+		if err != nil {
+			return err
+		}
+		for _, mode := range keyboardlab.Modes() {
+			if err := p.switchMode(mode); err != nil {
+				return err
+			}
+			p.editor = previewEditor{}
+			for _, c := range probes[mode] {
+				if err := p.apply(tk.Output{Action: tk.Action{Type: "input", ASCII: string(c)}}, p.stamp()); err != nil {
+					return err
+				}
+			}
+			if err := p.selectCandidate(p.candidate(0)); err != nil {
+				return err
+			}
+			confirmed[mode] = string(p.editor.text)
+			if confirmed[mode] != "你" || p.snapshot.State.RawInput != "" {
+				return fmt.Errorf("%s 包内规范 ni3 选词失败: %q", mode, confirmed[mode])
+			}
+		}
+		p.retire()
+	}
 	for _, mode := range keyboardlab.Modes() {
 		reply := runtime.Sessions.Open(mode, runtime.LayoutID)
 		state, decodeErr := reply.Decode()
@@ -47,6 +78,7 @@ func checkData(o options) (err error) {
 		"inputPolicy": keyboardlab.InputPolicy, "indexes": runtime.Builds,
 		"boardWidthU": board.Bounds.Width, "keyCount": len(board.Keys),
 		"desktopChineseUI": false, "hostInputSent": false, "hardwareAcceptance": false,
+		"portablePackageCheck": o.CheckPackage, "confirmedChineseInMemory": confirmed,
 	}
 	body, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {

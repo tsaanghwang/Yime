@@ -1,67 +1,129 @@
-"""Build an isolated, portable English desktop touch-keyboard experiment."""
+"""Build the complete isolated CN134 Chinese desktop portable package (18u)."""
 from pathlib import Path
 import argparse
-import hashlib
 import json
 import os
 import shutil
 import subprocess
 
-ROOT=Path(__file__).resolve().parents[1]
-def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
-def build(output: Path,arch: str):
-    output=output.resolve()
-    # Disposable packages cannot be staged into either product's source/data.
-    if not output.is_relative_to(ROOT/'.generated'):
-        raise ValueError('Desktop trial packages must stay under this checkout .generated/')
-    output.mkdir(parents=True,exist_ok=True)
-    env=dict(os.environ,GOOS='windows',GOARCH=arch,CGO_ENABLED='0')
-    exe=output/'YimeTouchKeyboard.exe'
-    subprocess.run(['go','build','-trimpath','-ldflags=-H=windowsgui','-o',str(exe),'./cmd/yime-touch-keyboard'],cwd=ROOT/'go-backend',env=env,check=True)
-    layout=Path('prototypes/touch-terminal/data/physical-layout.json')
-    (output/layout).parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(ROOT/layout,output/layout)
-    profiles=Path('prototypes/touch-terminal/desktop/profiles');shutil.copytree(ROOT/profiles,output/profiles,dirs_exist_ok=True)
-    for name,args in [('Start Keyboard.cmd',' --profile prototypes/touch-terminal/desktop/profiles/main-only.json'),('Start Full Keyboard.cmd',' --profile prototypes/touch-terminal/desktop/profiles/full-size.json'),('Start 17u Main Area.cmd',' --profile prototypes/touch-terminal/desktop/profiles/main-17u.json'),('Start 23u Keyboard.cmd',' --profile prototypes/touch-terminal/desktop/profiles/full-23u.json'),('Start Main Area.cmd',' --profile prototypes/touch-terminal/desktop/profiles/main-only.json'),('Start Left Area.cmd',' --numeric-zones left --remove-gutters'),('Start Right Area.cmd',' --numeric-zones right --remove-gutters')]:
-        body='@echo off\r\nstart "" /d "%~dp0" "%~dp0YimeTouchKeyboard.exe" --root "%~dp0."'+args+'\r\n'
+from touch_keyboard_resources import ROOT, LOCK, NAMES, digest, generated, verify
+
+ASSETS = (
+    'prototypes/touch-terminal/data/physical-layout.json',
+    'prototypes/touch-terminal/encoding/manual_key_layout.resolved.json',
+    'prototypes/touch-terminal/encoding/yime_yinyuan_layout.json',
+    'go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf',
+    'internal_data/yime_syllable_decomposition.tsv',
+)
+PROFILE = 'prototypes/touch-terminal/desktop/profiles/'
+LAUNCHERS = {
+    'Start Keyboard.cmd': '',
+    'Start Main Area.cmd': '',
+    'Start Preview.cmd': ' --preview',
+    'Start English Only.cmd': ' --english-only',
+    'Start Full Keyboard.cmd': ' --profile '+PROFILE+'full-size.json',
+    'Start Left Area.cmd': ' --numeric-zones left --remove-gutters',
+    'Start Right Area.cmd': ' --numeric-zones right --remove-gutters',
+    # Frozen candidates retain their existing English-only behavior.
+    'Start 17u Main Area.cmd': ' --english-only --profile '+PROFILE+'main-17u.json',
+    'Start 23u Keyboard.cmd': ' --english-only --profile '+PROFILE+'full-23u.json',
+}
+
+
+def stage_resources(output, data):
+    verify(data)
+    for name in ASSETS:
+        dest = output / name
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ROOT / name, dest)
+    shutil.copytree(ROOT / PROFILE, output / PROFILE)
+    (output / 'data').mkdir()
+    for name in NAMES:
+        shutil.copyfile(data / name, output / 'data' / name)
+    shutil.copyfile(LOCK, output / 'resources.lock.json')
+    shutil.copyfile(ROOT / 'prototypes/touch-terminal/desktop/USER_GUIDE.zh-CN.md', output / 'USER_GUIDE.zh-CN.md')
+    for name, args in LAUNCHERS.items():
+        body = '@echo off\r\nstart "" /d "%~dp0" "%~dp0YimeTouchKeyboard.exe"'+args+'\r\n'
         (output/name).write_bytes(body.encode('ascii'))
-    (output/'README.txt').write_text('''Yime desktop touch keyboard - 18u development baseline / English milestone
+    (output/'Check Package.cmd').write_bytes(b'@echo off\r\n"%~dp0YimeTouchKeyboard.exe" --check-package --data-report "%~dp0package-check.json"\r\nif errorlevel 1 (echo Package check FAILED) else (echo Package check PASSED - see package-check.json)\r\npause\r\n')
+    (output/'README.txt').write_text('''音元桌面触摸键盘：18u 完整中文便携实验包
 
-Double-click Start Keyboard.cmd (same 18u profile as Start Main Area.cmd).
-The main area is 342.90mm wide at 19.05mm/u, with 100 keys and no side zones.
-Start Full Keyboard.cmd preserves the original 24.75u / 134-key full board.
-Left/Right Area launchers retain one numeric zone (21u).
-Start 17u Main Area.cmd and Start 23u Keyboard.cmd are frozen optional candidates,
-not the active development or physical-acceptance baseline.
-No 1mm pitch/width reduction is implemented.
+完整解压后双击 Start Keyboard.cmd（或 YimeTouchKeyboard.exe）。
+主区为 18u / 100 键 / 342.90 mm。先在目标文本区放置光标，
+再点键盘“绑定目标”。组合只在键盘内显示，明确确认后才发送。
+先阅读 USER_GUIDE.zh-CN.md。无需源码、Go、Python、网络或已安装输入法。
 
-Click a target application text field, then touch/type on the keyboard.
-Ctrl+Alt+K hides/shows it. The top strip can move the window.
-Read USER_GUIDE.zh-CN.md for Chinese instructions.
+Start Preview.cmd：只写窗口内文本，不向宿主发送。
+Start English Only.cmd：保留旧版英文输入路径。
+Start Full Keyboard.cmd：原 24.75u 全盘；Left/Right 保留一侧数字区。
+17u / 23u 为冻结候选，仍为旧英文路径，不开展另一条开发或验收路线。
+未实施“缩短 1 毫米”。
 
-1u = 19.05mm. Default monitor width 597.73mm is a 27-inch 16:9 estimate.
-Measure the 100mm ruler; use Ruler +/-1% only to correct pixels per millimetre.
-Calibration never changes the key-unit geometry and is session-local.
-For an exact observed ruler length, relaunch with --ruler-observed-mm VALUE.
-Keys do not automatically shrink to fit the screen.
+Check Package.cmd：检查资源及三模式中文内存选词，生成 package-check.json。
+该检查不打开键盘窗口、不向应用发送输入；失败时不得沿用旧报告。
+程序启动时核对编译绑定的 resources.json 及所有资源 SHA-256。
+资源缺失/修改/混包时失败，请完整解压同一包到新目录。
+不要手工编辑包内 profile、字体或词典；可用命令行调整屏幕毫米和标尺校准。
+manifest.json 记录源码、架构、资源与文件身份；SHA-256 不是数字签名。
 
-This milestone sends English literal characters and editing/shortcut keys.
-Chinese composition, Caps Lock, Windows/Menu and Pause are not connected.
-Disabled keys are gray. Installed products and default input-method selection
-are unchanged. Physical finger/pen acceptance preparation is deferred;
-mouse/simulated-touch/controlled EDIT results are development evidence only.
+完整词典每次启动生成独立临时索引，正常关闭后清理。没有用户词库、学习
+迁移或已安装产品回退。字体仅在本进程私有加载，不安装到系统。
+首次加载需等待，不要连续重复启动。Ctrl+Alt+K 隐藏/显示。
 
-Developer data check: --check-data --data-dir <isolated-complete-dictionaries>
---data-report <report.json> validates the shared Chinese session runtime without
-opening a window or sending input. This English package does not bundle those
-dictionaries. Chinese composition/candidate preview is a separate source-only
-developer entry (--preview with explicit data-dir and a complete checkout root).
-P4 adds --host-input with explicit target binding and fail-stop delivery.
-Neither source entry is enabled by these launchers. This package is not the P5
-complete Chinese delivery; launchers still use the English route.
-''',encoding='utf-8')
-    shutil.copyfile(ROOT/'prototypes/touch-terminal/desktop/USER_GUIDE.zh-CN.md',output/'USER_GUIDE.zh-CN.md')
-    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True,encoding='utf-8').strip()
-    manifest={'schemaVersion':1,'scope':'uninstalled-desktop-touch-keyboard-english-experiment','architecture':'windows-'+arch,'goVersion':subprocess.check_output(['go','version'],cwd=ROOT,text=True,encoding='utf-8').strip(),'sourceCommit':head,'sourceTrackedChanges':bool(subprocess.check_output(['git','status','--porcelain','-uno'],cwd=ROOT,text=True,encoding='utf-8').strip()),'unitMM':19.05,'defaultLauncher':'Start Keyboard.cmd','defaultProfile':'prototypes/touch-terminal/desktop/profiles/main-only.json','developmentBaseline':'main-18u','mainWidthU':18,'mainWidthMM':18*19.05,'fullWidthMM':24.75*19.05,'main17WidthMM':17*19.05,'main17Status':'frozen-optional-candidate','full23Status':'frozen-optional-candidate','physicalAcceptancePreparation':'deferred','calibration':'27-inch-16:9-estimate-ruler-required','installedProductAcceptance':False,'hardwareAcceptance':False,'files':{str(p.relative_to(output)).replace('\\','/'):digest(p) for p in output.rglob('*') if p.is_file() and p.name!='manifest.json'}}
-    (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8');print(output);print('Executable SHA-256:',digest(exe))
-if __name__=='__main__':
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output-dir',type=Path,default=ROOT/'.generated/touch-keyboard-desktop');parser.add_argument('--arch',choices=['amd64','arm64'],default='amd64');args=parser.parse_args();build(args.output_dir,args.arch)
+失焦、隐藏、帮助或发送结果不明后停止，核对正文后重新绑定；不自动重放。
+SendInput 不能原子绑定窗口，发送计数不是宿主接受结论。
+手指、触控笔、真实应用与 ARM64 原生验收均须另行观察。
+ARM64 包仅交叉构建。未修改已安装输入法、默认输入法或用户数据。
+''', encoding='utf-8', newline='\n')
+
+
+def build(output: Path, arch: str, data: Path):
+    output = generated(output)
+    if output == ROOT/'.generated' or output.exists() and any(output.iterdir()):
+        raise ValueError('Choose a new empty package directory under .generated/; existing packages are preserved')
+    verify(data)
+    output.mkdir(parents=True, exist_ok=True)
+    stage_resources(output, data)
+    git = ['git', '-c', 'core.fsmonitor=false']
+    head = subprocess.check_output(git+['rev-parse','HEAD'], cwd=ROOT, text=True).strip()
+    dirty = bool(subprocess.check_output(git+['status','--porcelain'], cwd=ROOT, text=True).strip())
+    if os.environ.get('GITHUB_ACTIONS') == 'true' and dirty:
+        raise ValueError('CI package requires a clean source checkout')
+    resources = {'schemaVersion': 1, 'scope': 'isolated-cn134-portable-resources',
+                 'sourceCommit': head, 'sourceChanges': dirty, 'architecture': 'windows-'+arch,
+                 'files': {p.relative_to(output).as_posix(): digest(p) for p in sorted(output.rglob('*')) if p.is_file()}}
+    resource_file = output/'resources.json'
+    resource_file.write_text(json.dumps(resources, ensure_ascii=False, indent=2)+'\n', encoding='utf-8', newline='\n')
+    env = dict(os.environ, GOOS='windows', GOARCH=arch, CGO_ENABLED='0')
+    exe = output/'YimeTouchKeyboard.exe'
+    subprocess.run(['go','build','-trimpath',f'-ldflags=-H=windowsgui -X main.portableResourcesSHA256={digest(resource_file)}',
+                    '-o',str(exe),'./cmd/yime-touch-keyboard'], cwd=ROOT/'go-backend', env=env, check=True)
+    manifest = {'schemaVersion': 2, 'scope': 'uninstalled-desktop-touch-keyboard-chinese-experiment',
+                'architecture': 'windows-'+arch, 'sourceCommit': head, 'sourceChanges': dirty,
+                'goVersion': subprocess.check_output(['go','version'],text=True).strip(),
+                'developmentBaseline': 'main-18u', 'defaultLauncher': 'Start Keyboard.cmd',
+                'defaultMode': 'chinese-host-explicit-target-binding', 'defaultProfile': PROFILE+'main-only.json',
+                'unitMM': 19.05, 'mainWidthU': 18, 'mainWidthMM': 342.9, 'mainKeyCount': 100,
+                'main17Status': 'frozen-optional-candidate', 'full23Status': 'frozen-optional-candidate',
+                'resourceArchiveSHA256': json.loads(LOCK.read_text())['archiveSHA256'],
+                'portableResourcesSHA256': digest(resource_file), 'completeChineseResources': True,
+                'hardwareAcceptance': False, 'installedProductAcceptance': False,
+                'arm64NativeAcceptance': False,
+                'files': {p.relative_to(output).as_posix(): digest(p) for p in sorted(output.rglob('*')) if p.is_file()}}
+    if os.environ.get('GITHUB_ACTIONS') == 'true':
+        manifest['ci'] = {'runURL': f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+                          'event': os.environ.get('GITHUB_EVENT_NAME'),
+                          'attempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
+                          'checkoutCommit': head}
+    (output/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+    print(output)
+    print('Executable SHA-256:',digest(exe))
+
+
+if __name__ == '__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output-dir',type=Path,default=ROOT/'.generated/touch-keyboard-desktop')
+    parser.add_argument('--arch',choices=['amd64','arm64'],default='amd64')
+    parser.add_argument('--data-dir',type=Path,default=ROOT/'.generated/touch-keyboard-resources')
+    args=parser.parse_args()
+    build(args.output_dir,args.arch,args.data_dir)
