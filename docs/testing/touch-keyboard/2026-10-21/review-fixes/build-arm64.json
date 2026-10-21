@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "tools/build_touch_keyboard_desktop.py",
+    "--arch",
+    "arm64",
+    "--output-dir",
+    ".generated/touch-keyboard-review-20261021-arm64"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 2.36,
+  "log": "build-arm64.log"
+}

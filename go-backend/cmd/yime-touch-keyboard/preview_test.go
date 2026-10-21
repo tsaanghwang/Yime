@@ -9,6 +9,7 @@ import (
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore"
+	cm "github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode"
 	"github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 )
@@ -197,5 +198,188 @@ func TestPreviewRefusesReplayedCommitAndRecoversCompositionLimit(t *testing.T) {
 	}
 	if string(p.editor.text) != "x" {
 		t.Fatal("commit duplicated")
+	}
+}
+
+func TestPreviewPausedCandidatesCannotCommit(t *testing.T) {
+	p := previewFixture(t)
+	previewAction(t, p, "input", "a", "")
+	old := p.candidate(0)
+	previewAction(t, p, "toggle-language", "", "")
+	for _, c := range []candidatePress{old, p.candidate(0)} {
+		if err := p.selectCandidate(c); err == nil {
+			t.Fatal("English candidate consumed paused composition")
+		}
+	}
+	if p.snapshot.State.RawInput != "a" || len(p.editor.text) != 0 {
+		t.Fatal("paused composition or output changed")
+	}
+	previewAction(t, p, "toggle-language", "", "")
+	if err := p.selectCandidate(p.candidate(0)); err != nil || string(p.editor.text) != "中文𠀀" {
+		t.Fatal("Chinese candidate did not resume", err)
+	}
+}
+
+func TestPreviewStaleMainNoncodingInputCannotConfirmNewPage(t *testing.T) {
+	for c := rune(32); c <= 126; c++ {
+		if strings.ContainsRune(cm.LayoutAlphabet, c) {
+			continue
+		}
+		t.Run(fmt.Sprintf("U%04X", c), func(t *testing.T) {
+			p := previewFixture(t)
+			previewAction(t, p, "input", "p", "")
+			down := p.stamp()
+			if err := p.page(1); err != nil {
+				t.Fatal(err)
+			}
+			current := p.stamp()
+			if err := p.apply(tk.Output{Action: tk.Action{Type: "input", ASCII: string(c)}}, down); err == nil {
+				t.Fatal("old contact selected a new-page candidate", c)
+			}
+			if p.stamp() != current || p.snapshot.State.RawInput != "p" || len(p.editor.text) != 0 {
+				t.Fatal("stale input mutated state")
+			}
+		})
+	}
+}
+
+func TestPreviewCodingOverlapAndExplicitBypassesSurviveRevision(t *testing.T) {
+	p := previewFixture(t)
+	down := p.stamp()
+	previewAction(t, p, "input", "a", "")
+	if err := p.apply(tk.Output{Action: tk.Action{Type: "input", ASCII: "a"}}, down); err != nil || p.snapshot.State.RawInput != "aa" {
+		t.Fatal("coding overlap lost", err)
+	}
+	previewAction(t, p, "clear", "", "")
+	previewAction(t, p, "input", "p", "")
+	down = p.stamp()
+	if err := p.page(1); err != nil {
+		t.Fatal(err)
+	}
+	for _, a := range []tk.Action{{Type: "literal", ASCII: "0"}, {Type: "symbol", ASCII: "·"}, {Type: "input", ASCII: "!", LiteralEntry: true}} {
+		p.literalEntries = true
+		if err := p.apply(tk.Output{Action: a}, down); err != nil {
+			t.Fatal(err)
+		}
+		if p.snapshot.State.RawInput != "p" {
+			t.Fatal("explicit bypass consumed composition")
+		}
+	}
+}
+
+func TestPreviewEnglishOverlapAndRetiredSession(t *testing.T) {
+	for _, a := range []tk.Action{{Type: "input", ASCII: "1"}, {Type: "confirm", Key: "Space"}, {Type: "confirm", Key: "Enter"}} {
+		t.Run(a.ASCII+a.Key, func(t *testing.T) {
+			p := previewFixture(t)
+			previewAction(t, p, "input", "p", "")
+			previewAction(t, p, "toggle-language", "", "")
+			down := p.stamp()
+			previewAction(t, p, "input", "a", "")
+			if err := p.apply(tk.Output{Action: a}, down); err != nil {
+				t.Fatal("English overlapping contact lost", err)
+			}
+			want := "a" + a.ASCII
+			if a.Key == "Space" {
+				want = "a "
+			}
+			if a.Key == "Enter" {
+				want = "a\n"
+			}
+			if string(p.editor.text) != want || p.snapshot.State.RawInput != "p" {
+				t.Fatal("English overlap changed paused composition/output", string(p.editor.text))
+			}
+			down = p.stamp()
+			if err := p.switchMode("full"); err != nil {
+				t.Fatal(err)
+			}
+			if err := p.apply(tk.Output{Action: a}, down); err == nil {
+				t.Fatal("retired session contact accepted")
+			}
+			if string(p.editor.text) != want {
+				t.Fatal("retired contact wrote text")
+			}
+		})
+	}
+}
+
+func TestPreviewChineseEmptyConfirmAndUnmatchedComposition(t *testing.T) {
+	for _, key := range []string{"Space", "Enter"} {
+		for _, host := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/host=%v", key, host), func(t *testing.T) {
+				p := previewFixture(t)
+				var sent []tk.Output
+				if host {
+					p.emit = func(_ string, o tk.Output) error { sent = append(sent, o); return nil }
+				}
+				previewAction(t, p, "input", "a", "")
+				previewAction(t, p, "confirm", "", key)
+				if p.snapshot.State.RawInput != "" {
+					t.Fatal("candidate not confirmed")
+				}
+				if err := p.apply(tk.Output{Action: tk.Action{Type: "confirm", Key: key}, Shift: true}, p.stamp()); err != nil {
+					t.Fatal(err)
+				}
+				if host {
+					if len(sent) != 2 || sent[0].Text != "中文𠀀" {
+						t.Fatal("host confirm missing", sent)
+					}
+					if key == "Enter" && (sent[1].Key != "Enter" || !sent[1].Shift) || key == "Space" && sent[1].Text != " " {
+						t.Fatal("empty host confirm lost literal/modifier", sent)
+					}
+				} else {
+					want := "中文𠀀 "
+					if key == "Enter" {
+						want = "中文𠀀\n"
+					}
+					if string(p.editor.text) != want {
+						t.Fatal("empty confirm lost literal", string(p.editor.text))
+					}
+				}
+				previewAction(t, p, "input", "z", "")
+				before, count := string(p.editor.text), len(sent)
+				previewAction(t, p, "confirm", "", key)
+				if p.snapshot.State.RawInput != "z" || string(p.editor.text) != before || len(sent) != count {
+					t.Fatal("unmatched composition submitted")
+				}
+			})
+		}
+	}
+}
+
+func TestPreviewMultilineDisplayKeepsCaretAndEditsVisible(t *testing.T) {
+	p := previewFixture(t)
+	previewAction(t, p, "toggle-language", "", "")
+	for _, s := range []string{"a", "b", "c", "d"} {
+		previewAction(t, p, "input", s, "")
+		previewAction(t, p, "confirm", "", "Enter")
+	}
+	e := &p.editor
+	check := func() {
+		t.Helper()
+		s := e.display()
+		if strings.ContainsAny(s, "\r\n\t") || !strings.Contains(s, "│") {
+			t.Fatal("multiline display hides caret", s)
+		}
+	}
+	check()
+	e.edit("ArrowLeft", false)
+	e.insert("你")
+	check()
+	if string(e.text) != "a\nb\nc\nd你\n" {
+		t.Fatal(string(e.text))
+	}
+	e.edit("Backspace", false)
+	e.edit("Home", false)
+	check()
+	e.edit("Delete", false)
+	check()
+	if string(e.text) != "\nb\nc\nd\n" {
+		t.Fatal("display escaping changed stored text", string(e.text))
+	}
+	e.insert(strings.Repeat("𠀀\n", 200))
+	e.anchor = 0
+	check()
+	if !strings.Contains(e.display(), "↵") {
+		t.Fatal("line breaks not visible")
 	}
 }

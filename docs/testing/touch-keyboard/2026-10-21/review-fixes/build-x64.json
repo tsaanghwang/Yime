@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "tools/build_touch_keyboard_desktop.py",
+    "--output-dir",
+    ".generated/touch-keyboard-review-20261021-amd64"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 2.72,
+  "log": "build-x64.log"
+}

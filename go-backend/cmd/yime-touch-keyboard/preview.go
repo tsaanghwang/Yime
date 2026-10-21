@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	cm "github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode"
 	"github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 )
@@ -98,12 +99,18 @@ func (p *preview) switchMode(mode string) error {
 	return p.dispatch(keyboardlab.Event{Type: "setModes", InputMode: input, PunctuationMode: input})
 }
 func (p *preview) candidate(index int) candidatePress {
-	if index < 0 || index >= len(p.snapshot.State.Candidates) {
+	if !p.candidatesEnabled() || index < 0 || index >= len(p.snapshot.State.Candidates) {
 		return candidatePress{}
 	}
 	return candidatePress{p.stamp(), p.snapshot.State.Candidates[index].ID}
 }
+func (p *preview) candidatesEnabled() bool {
+	return !p.fault && p.snapshot.Modes.Input == "chinese"
+}
 func (p *preview) selectCandidate(c candidatePress) error {
+	if !p.candidatesEnabled() {
+		return fmt.Errorf("中文组合已暂停；请切回中文后选择候选")
+	}
 	if c.id == "" || c.stamp != p.stamp() {
 		return fmt.Errorf("候选已更新；本次触点取消")
 	}
@@ -125,6 +132,9 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 	a := o.Action
 	if p.fault {
 		return fmt.Errorf("会话已断开；请重新启动预览")
+	}
+	if down.session != p.snapshot.SessionID {
+		return fmt.Errorf("会话已更换；本次触点取消")
 	}
 	if p.emit != nil && (o.Ctrl || o.Alt) {
 		if p.snapshot.State.RawInput != "" {
@@ -171,21 +181,22 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 		if p.emit != nil && a.Type == "literal" && a.ASCII == "\n" {
 			return p.emitEdit(tk.Output{Key: "Enter", Shift: o.Shift})
 		}
-		// A digit may have meant candidate selection at DOWN. Never reinterpret
-		// that gesture as a new-page ordinal or a literal after the snapshot changes.
-		if a.Type == "input" && len(a.ASCII) == 1 && a.ASCII[0] >= '1' && a.ASCII[0] <= '9' && down != p.stamp() {
-			return fmt.Errorf("数字动作的候选状态已更新；本次触点取消")
-		}
 		kind := a.Type
 		if a.LiteralEntry && p.literalEntries {
 			kind = "symbol"
 		}
+		// In CN every noncoding main input may confirm a candidate (ordinals,
+		// zero and other literal ASCII). Coding overlap and explicit bypasses
+		// remain independent; EN input never consumes the paused candidates.
+		if kind == "input" && p.snapshot.Modes.Input == "chinese" && len(a.ASCII) == 1 && !strings.ContainsRune(cm.LayoutAlphabet, rune(a.ASCII[0])) && down != p.stamp() {
+			return fmt.Errorf("输入动作的候选状态已更新；本次触点取消")
+		}
 		return p.dispatch(keyboardlab.Event{Type: kind, Code: a.ASCII})
 	case "confirm":
-		if down != p.stamp() {
+		if p.snapshot.Modes.Input == "chinese" && down != p.stamp() {
 			return fmt.Errorf("确认前候选已更新；本次触点取消")
 		}
-		if p.snapshot.Modes.Input == "english" {
+		if p.snapshot.Modes.Input == "english" || p.snapshot.State.RawInput == "" {
 			code := " "
 			if a.Key == "Enter" {
 				if p.emit != nil {
@@ -310,15 +321,54 @@ func (e *previewEditor) edit(key string, shift bool) {
 	}
 }
 func (e *previewEditor) display() string {
+	return e.displaySpan(40)
+}
+
+// Show escaped controls on one line, centered on the active caret rather than
+// the lower selection boundary. The stored transcript keeps its real newlines.
+func (e *previewEditor) displaySpan(span int) string {
 	l, r := e.bounds()
-	// Keep the caret/selection visible even with a long in-memory transcript.
-	start, end := max(0, l-80), min(len(e.text), r+80)
-	if r-l > 160 {
-		r = l + 160
-		end = r
+	start, end := max(0, e.cursor-span), min(len(e.text), e.cursor+span)
+	var b strings.Builder
+	if start > 0 {
+		b.WriteRune('…')
 	}
-	if l == r {
-		return string(e.text[start:l]) + "│" + string(e.text[r:end])
+	for i := start; i <= end; i++ {
+		if l != r && i == max(l, start) && i < r {
+			b.WriteRune('⟦')
+		}
+		if i == e.cursor {
+			b.WriteRune('│')
+		}
+		if l != r && i == min(r, end) && i > l {
+			b.WriteRune('⟧')
+		}
+		if i == end {
+			break
+		}
+		switch e.text[i] {
+		case '\n':
+			b.WriteRune('↵')
+		case '\r':
+			b.WriteRune('␍')
+		case '\t':
+			b.WriteRune('⇥')
+		default:
+			b.WriteRune(e.text[i])
+		}
 	}
-	return string(e.text[start:l]) + "⟦" + string(e.text[l:r]) + "⟧" + string(e.text[r:end])
+	if end < len(e.text) {
+		b.WriteRune('…')
+	}
+	return b.String()
+}
+
+func (e *previewEditor) fittedDisplay(fits func(string) bool) string {
+	for span := 80; span >= 0; span-- {
+		s := "本地输出：" + e.displaySpan(span)
+		if fits(s) {
+			return s
+		}
+	}
+	return "│" // Even a narrow/error surface keeps the active caret visible.
 }

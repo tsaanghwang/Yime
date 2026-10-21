@@ -1,0 +1,19 @@
+{
+  "command": [
+    "go",
+    "-C",
+    "go-backend",
+    "test",
+    "./cmd/yime-touch-keyboard",
+    "-run",
+    "TestPreviewCompleteCorpus",
+    "-count=1",
+    "-desktop-preview-integration-root",
+    "C:/dev/Yime",
+    "-desktop-preview-evidence-dir",
+    "C:/dev/Yime/docs/testing/touch-keyboard/2026-10-21/review-fixes"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 9.53,
+  "log": "complete-corpus.log"
+}

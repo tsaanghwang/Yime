@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "tools/generate_ascii_layout.py",
+    "--check"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 0.35,
+  "log": "layout-check.log"
+}

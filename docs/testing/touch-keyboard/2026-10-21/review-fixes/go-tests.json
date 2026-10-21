@@ -1,0 +1,17 @@
+{
+  "command": [
+    "go",
+    "-C",
+    "go-backend",
+    "test",
+    "./cmd/yime-touch-keyboard",
+    "./internal/touchkeyboard",
+    "./internal/keyboardlab",
+    "./internal/asciicodemode",
+    "./input_methods/yime/codemode",
+    "-count=1"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 14.44,
+  "log": "go-tests.log"
+}

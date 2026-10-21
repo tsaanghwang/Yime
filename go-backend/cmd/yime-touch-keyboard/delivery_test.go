@@ -82,12 +82,16 @@ func TestHostEnterPreservesShiftAndConfirmationPolicy(t *testing.T) {
 				out := tk.Output{Action: action, Zone: zone, Shift: shift}
 				if zone == "main" {
 					stale := p.stamp()
-					stale.revision--
+					stale.session += "/retired"
 					if err := p.apply(out, stale); err == nil || len(outputs) != 0 {
-						t.Fatal("stale Enter sent")
+						t.Fatal("retired-session Enter sent")
 					}
 				}
-				if err := p.apply(out, p.stamp()); err != nil {
+				down := p.stamp()
+				if zone == "main" {
+					down.revision--
+				} // EN overlap is literal, not candidate selection.
+				if err := p.apply(out, down); err != nil {
 					t.Fatal(err)
 				}
 				if len(outputs) != 1 || outputs[0].Key != "Enter" || outputs[0].Text != "" || outputs[0].Shift != shift || p.snapshot.State.RawInput != raw {
@@ -100,6 +104,11 @@ func TestHostEnterPreservesShiftAndConfirmationPolicy(t *testing.T) {
 	previewAction(t, p, "input", "a", "")
 	var outputs []tk.Output
 	p.emit = func(_ string, o tk.Output) error { outputs = append(outputs, o); return nil }
+	stale := p.stamp()
+	stale.revision--
+	if err := p.apply(tk.Output{Action: tk.Action{Type: "confirm", Key: "Enter"}}, stale); err == nil || len(outputs) != 0 {
+		t.Fatal("stale Chinese Enter sent")
+	}
 	if err := p.apply(tk.Output{Action: tk.Action{Type: "confirm", Key: "Enter"}, Shift: true}, p.stamp()); err != nil {
 		t.Fatal(err)
 	}

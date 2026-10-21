@@ -1,6 +1,14 @@
 # 桌面触摸键盘阶段交接
 
-## 当前接续决定 2026-10-20
+## 当前接续决定 2026-10-21
+
+从 #75 合并提交 `85a5cabafac4f7d96586ee6662f17e5d66181a27` 处理今日晨报与跟进监控的七项审阅问题。五类运行时缺陷均已用测试复现并修复，P07/P08 与 H02 的可执行步骤已修正；详见[逐项处理记录](../../../docs/testing/touch-keyboard/2026-10-21/review-fixes/REVIEW_RESOLUTION.zh-CN.md)。18u 几何、映射及 17u/23u 冻结状态保持不变。
+
+新修复包的完整 CI 身份待交付后固定；在此之前暂停旧 #74 包后续验收。旧包不覆盖、不重新标成修复通过；下方 2026-10-20 的包和证据仅作为历史。当前执行说明见[验收步骤](ACCEPTANCE_18U.zh-CN.md)，使用[修复包空模板](../../../docs/testing/touch-keyboard/2026-10-21/review-fixes/RESULT_TEMPLATE.zh-CN.md)。H02 导航/选区因 18u 没有 Left/Home/End 单列阻塞，不能用物理键盘或全盘补成主区纯触摸通过。
+
+本轮开发检查：Go 单元/指针处理/GDI 宽度、完整词典三模式预览、Python/JavaScript、布局/冻结 profile、独立 x64 包仓库外检查及字体渲染通过，ARM64 仅交叉构建。程序化指针、内存输出和发送替身不等于真人输入；未发送 OS 宿主输入，未安装或改动默认输入法、用户数据。手指、纯笔、每个真实应用、自然异常恢复及 ARM64 原生验收仍待记录。
+
+## 2026-10-20 历史交接（#74 包，不含本轮修复）
 
 PR #70–#74 已合并；当前基线是 #74 合并提交 `afee5382957948ce35d8825889ebf43d038fdf46`，仍以 **18u 主区**为开发基准。执行顺序见[18u 开发方案与实施计划](DEVELOPMENT_PLAN_18U.md)。P6 验收准备现已完成：[本机执行步骤](ACCEPTANCE_18U.zh-CN.md)、[结果模板](../../../docs/testing/touch-keyboard/2026-10-20/p6/RESULT_TEMPLATE.zh-CN.md)、[100 键覆盖表](../../../docs/testing/touch-keyboard/2026-10-20/p6/key-coverage-template.csv)。真人执行及验收结论仍待记录。
 

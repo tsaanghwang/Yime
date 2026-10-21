@@ -1,0 +1,514 @@
+{
+  "fingerAcceptance": false,
+  "layoutId": "995f1a74f129249febbd09ca11a8266f6e0c94bac8c05c57754859fc3be3349c",
+  "modes": {
+    "full": {
+      "composition": {
+        "raw_input": "niii",
+        "candidates": [
+          {
+            "id": "niii\u001f你",
+            "text": "你",
+            "code": "niii",
+            "weight": 485515428,
+            "exact": true,
+            "score": {
+              "static": 485515428,
+              "context": 0,
+              "user": 0,
+              "total": 485515428
+            },
+            "annotations": {}
+          },
+          {
+            "id": "niii\u001f尼",
+            "text": "尼",
+            "code": "niii",
+            "weight": 480755537,
+            "exact": true,
+            "score": {
+              "static": 480755537,
+              "context": 0,
+              "user": 0,
+              "total": 480755537
+            },
+            "annotations": {}
+          },
+          {
+            "id": "niii\u001f呢",
+            "text": "呢",
+            "code": "niii",
+            "weight": 480655755,
+            "exact": true,
+            "score": {
+              "static": 480655755,
+              "context": 0,
+              "user": 0,
+              "total": 480655755
+            },
+            "annotations": {}
+          },
+          {
+            "id": "niii\u001f拟",
+            "text": "拟",
+            "code": "niii",
+            "weight": 480557870,
+            "exact": true,
+            "score": {
+              "static": 480557870,
+              "context": 0,
+              "user": 0,
+              "total": 480557870
+            },
+            "annotations": {}
+          },
+          {
+            "id": "niii\u001f疑",
+            "text": "疑",
+            "code": "niii",
+            "weight": 480529709,
+            "exact": true,
+            "score": {
+              "static": 480529709,
+              "context": 0,
+              "user": 0,
+              "total": 480529709
+            },
+            "annotations": {}
+          },
+          {
+            "id": "niii\u001f泥",
+            "text": "泥",
+            "code": "niii",
+            "weight": 480176588,
+            "exact": true,
+            "score": {
+              "static": 480176588,
+              "context": 0,
+              "user": 0,
+              "total": 480176588
+            },
+            "annotations": {}
+          },
+          {
+            "id": "niii\u001f祢",
+            "text": "祢",
+            "code": "niii",
+            "weight": 420018229,
+            "exact": true,
+            "score": {
+              "static": 420018229,
+              "context": 0,
+              "user": 0,
+              "total": 420018229
+            },
+            "annotations": {}
+          },
+          {
+            "id": "niii\u001f昵",
+            "text": "昵",
+            "code": "niii",
+            "weight": 420012773,
+            "exact": true,
+            "score": {
+              "static": 420012773,
+              "context": 0,
+              "user": 0,
+              "total": 420012773
+            },
+            "annotations": {}
+          },
+          {
+            "id": "niii\u001f旎",
+            "text": "旎",
+            "code": "niii",
+            "weight": 420003504,
+            "exact": true,
+            "score": {
+              "static": 420003504,
+              "context": 0,
+              "user": 0,
+              "total": 420003504
+            },
+            "annotations": {}
+          }
+        ],
+        "sentence": {
+          "id": "niii\u001f你",
+          "text": "你",
+          "code": "niii",
+          "weight": 485515428,
+          "exact": true,
+          "score": {
+            "static": 485515428,
+            "context": 0,
+            "user": 0,
+            "total": 485515428
+          },
+          "annotations": {}
+        },
+        "has_next": true
+      },
+      "hao3_code": "haau",
+      "index": {
+        "format_version": 1,
+        "mode": "full",
+        "source_path": "C:\\dev\\Yime\\.generated\\ascii-keyboard-134\\data\\yime_full.dict.yaml",
+        "source_sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+        "source_bytes": 81236859,
+        "parsed_records": 2457605,
+        "indexed_records": 2457604,
+        "duplicate_records": 1,
+        "index_path": "C:\\Users\\tsaan\\AppData\\Local\\Temp\\yime-keyboard-lab-1396965090\\full.yidx",
+        "index_bytes": 103010423,
+        "record_payload_sha256": "c6964b464a1300fbfab9168200668848d37f4b8ff14cb049b82bb01fdab98c1e",
+        "index_sha256": "3f70b035a475b4bd3ac13516fdde84a7094ca90c5891cd12b6f9a647351ec0fb",
+        "build_elapsed_ns": 2399219000,
+        "peak_observed_heap_bytes": 679174296
+      },
+      "ni3_code": "niii",
+      "output": "你好"
+    },
+    "shorthand": {
+      "composition": {
+        "raw_input": "ni",
+        "candidates": [
+          {
+            "id": "ni\u001f你",
+            "text": "你",
+            "code": "ni",
+            "weight": 485515428,
+            "exact": true,
+            "score": {
+              "static": 485515428,
+              "context": 0,
+              "user": 0,
+              "total": 485515428
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f尼",
+            "text": "尼",
+            "code": "ni",
+            "weight": 480755537,
+            "exact": true,
+            "score": {
+              "static": 480755537,
+              "context": 0,
+              "user": 0,
+              "total": 480755537
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f呢",
+            "text": "呢",
+            "code": "ni",
+            "weight": 480655755,
+            "exact": true,
+            "score": {
+              "static": 480655755,
+              "context": 0,
+              "user": 0,
+              "total": 480655755
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f拟",
+            "text": "拟",
+            "code": "ni",
+            "weight": 480557870,
+            "exact": true,
+            "score": {
+              "static": 480557870,
+              "context": 0,
+              "user": 0,
+              "total": 480557870
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f疑",
+            "text": "疑",
+            "code": "ni",
+            "weight": 480529709,
+            "exact": true,
+            "score": {
+              "static": 480529709,
+              "context": 0,
+              "user": 0,
+              "total": 480529709
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f泥",
+            "text": "泥",
+            "code": "ni",
+            "weight": 480176588,
+            "exact": true,
+            "score": {
+              "static": 480176588,
+              "context": 0,
+              "user": 0,
+              "total": 480176588
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f祢",
+            "text": "祢",
+            "code": "ni",
+            "weight": 420018229,
+            "exact": true,
+            "score": {
+              "static": 420018229,
+              "context": 0,
+              "user": 0,
+              "total": 420018229
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f昵",
+            "text": "昵",
+            "code": "ni",
+            "weight": 420012773,
+            "exact": true,
+            "score": {
+              "static": 420012773,
+              "context": 0,
+              "user": 0,
+              "total": 420012773
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f旎",
+            "text": "旎",
+            "code": "ni",
+            "weight": 420003504,
+            "exact": true,
+            "score": {
+              "static": 420003504,
+              "context": 0,
+              "user": 0,
+              "total": 420003504
+            },
+            "annotations": {}
+          }
+        ],
+        "sentence": {
+          "id": "ni\u001f你",
+          "text": "你",
+          "code": "ni",
+          "weight": 485515428,
+          "exact": true,
+          "score": {
+            "static": 485515428,
+            "context": 0,
+            "user": 0,
+            "total": 485515428
+          },
+          "annotations": {}
+        },
+        "has_next": true
+      },
+      "hao3_code": "hau",
+      "index": {
+        "format_version": 1,
+        "mode": "shorthand",
+        "source_path": "C:\\dev\\Yime\\.generated\\ascii-keyboard-134\\data\\yime_shorthand.dict.yaml",
+        "source_sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49",
+        "source_bytes": 75381670,
+        "parsed_records": 2457605,
+        "indexed_records": 2457604,
+        "duplicate_records": 1,
+        "index_path": "C:\\Users\\tsaan\\AppData\\Local\\Temp\\yime-keyboard-lab-1396965090\\shorthand.yidx",
+        "index_bytes": 97155230,
+        "record_payload_sha256": "40d43c7072e2db331de6c30a8e7e62280e8e3bcf8e8b81b840d92a269d9241a3",
+        "index_sha256": "57789ef2f31d581c98daa4cfbdc4ea6cc712c759c31a99cd0c445493a196faf7",
+        "build_elapsed_ns": 2736317700,
+        "peak_observed_heap_bytes": 990387936
+      },
+      "ni3_code": "ni",
+      "output": "你好"
+    },
+    "variable": {
+      "composition": {
+        "raw_input": "ni",
+        "candidates": [
+          {
+            "id": "ni\u001f你",
+            "text": "你",
+            "code": "ni",
+            "weight": 485515428,
+            "exact": true,
+            "score": {
+              "static": 485515428,
+              "context": 0,
+              "user": 0,
+              "total": 485515428
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f尼",
+            "text": "尼",
+            "code": "ni",
+            "weight": 480755537,
+            "exact": true,
+            "score": {
+              "static": 480755537,
+              "context": 0,
+              "user": 0,
+              "total": 480755537
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f呢",
+            "text": "呢",
+            "code": "ni",
+            "weight": 480655755,
+            "exact": true,
+            "score": {
+              "static": 480655755,
+              "context": 0,
+              "user": 0,
+              "total": 480655755
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f拟",
+            "text": "拟",
+            "code": "ni",
+            "weight": 480557870,
+            "exact": true,
+            "score": {
+              "static": 480557870,
+              "context": 0,
+              "user": 0,
+              "total": 480557870
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f疑",
+            "text": "疑",
+            "code": "ni",
+            "weight": 480529709,
+            "exact": true,
+            "score": {
+              "static": 480529709,
+              "context": 0,
+              "user": 0,
+              "total": 480529709
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f泥",
+            "text": "泥",
+            "code": "ni",
+            "weight": 480176588,
+            "exact": true,
+            "score": {
+              "static": 480176588,
+              "context": 0,
+              "user": 0,
+              "total": 480176588
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f祢",
+            "text": "祢",
+            "code": "ni",
+            "weight": 420018229,
+            "exact": true,
+            "score": {
+              "static": 420018229,
+              "context": 0,
+              "user": 0,
+              "total": 420018229
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f昵",
+            "text": "昵",
+            "code": "ni",
+            "weight": 420012773,
+            "exact": true,
+            "score": {
+              "static": 420012773,
+              "context": 0,
+              "user": 0,
+              "total": 420012773
+            },
+            "annotations": {}
+          },
+          {
+            "id": "ni\u001f旎",
+            "text": "旎",
+            "code": "ni",
+            "weight": 420003504,
+            "exact": true,
+            "score": {
+              "static": 420003504,
+              "context": 0,
+              "user": 0,
+              "total": 420003504
+            },
+            "annotations": {}
+          }
+        ],
+        "sentence": {
+          "id": "ni\u001f你",
+          "text": "你",
+          "code": "ni",
+          "weight": 485515428,
+          "exact": true,
+          "score": {
+            "static": 485515428,
+            "context": 0,
+            "user": 0,
+            "total": 485515428
+          },
+          "annotations": {}
+        },
+        "has_next": true
+      },
+      "hao3_code": "hau",
+      "index": {
+        "format_version": 1,
+        "mode": "variable",
+        "source_path": "C:\\dev\\Yime\\.generated\\ascii-keyboard-134\\data\\yime_variable.dict.yaml",
+        "source_sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+        "source_bytes": 77254107,
+        "parsed_records": 2457605,
+        "indexed_records": 2457604,
+        "duplicate_records": 1,
+        "index_path": "C:\\Users\\tsaan\\AppData\\Local\\Temp\\yime-keyboard-lab-1396965090\\variable.yidx",
+        "index_bytes": 99027667,
+        "record_payload_sha256": "622471d1a6e2c39efdd69a114f007b451e499aa5715980261ae0c36928610ab6",
+        "index_sha256": "c4fee8dd6d31b455bb2479801cc62168bfeb1076e8d695e9d50f471102c78c25",
+        "build_elapsed_ns": 1718523400,
+        "peak_observed_heap_bytes": 609468640
+      },
+      "ni3_code": "ni",
+      "output": "你好"
+    }
+  },
+  "osInputSent": false,
+  "penAcceptance": false,
+  "realHostAcceptance": false,
+  "recordedAtUTC": "2026-10-21T02:49:14Z",
+  "rendering": "GDI memory bitmap from hidden own window; no physical touch",
+  "schemaVersion": 1,
+  "scope": "P3 controlled desktop preview, complete isolated corpus"
+}
