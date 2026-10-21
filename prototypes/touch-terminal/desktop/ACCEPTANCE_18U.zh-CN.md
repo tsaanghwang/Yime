@@ -4,15 +4,17 @@
 
 ## 1. 固定交付物
 
-本轮须使用审阅修复后的新包，交付身份将在修复 CI 完成后固定。当前先暂停 #74 包的后续验收；它包含已确认的五项运行时问题，不能标成已修复。旧 #74 身份只供识别历史包，新交付身份见本轮修复交接。
+使用 [PR #76 的固定 x64 修复包](https://github.com/tsaanghwang/Yime/actions/runs/39535478116/artifacts/12317273550)，对应 [CI run 39535478116](https://github.com/tsaanghwang/Yime/actions/runs/39535478116)。ZIP 和全部 29 个载荷已重新下载核验。#74 包包含已确认的五项运行时问题，只保留为历史，不继续作为当前验收对象。
 
 | 身份 | 修复包固定值 |
 |---|---|
-| 修复 PR / head / CI 测试合并提交 | CI 完成后填写；未固定前不执行验收 |
-| x64 artifact URL / ZIP SHA-256 / exe SHA-256 | 待交付 |
-| 基准 | main-only.json；18u、100 键、19.05 mm/u、342.90 mm |
+| 运行时修复 head | `f204fd50812e9e09e800ed979a70e0ca2964b9b8` |
+| CI 包源码（PR 测试合并提交） | `25e8906dd28f777e855eb1fce09ec7e387865bc3` |
+| x64 ZIP SHA-256 | `693f8dfe55c27e8e83a1d4cb2826c3ea2683328e9355a779f8a26e7f81db6eb1` |
+| exe SHA-256 | `683688ff00e22c95be69419267d276d0bc7b7b5094e2951cb0349da9aa12b6e7` |
+| 基准 | `main-only.json`；18u、100 键、19.05 mm/u、342.90 mm |
 
-旧包完整 manifest 和资源哈希见[历史包身份记录](../../../docs/testing/touch-keyboard/2026-10-20/p6/package-identity.json)，保留原始记录。PR head、CI 测试合并和最终合并是不同提交，不应互换填写。ARM64 目前只有交叉构建身份；没有已确认的原生目标，不纳入本机 x64 结论。
+修复包完整 manifest、资源哈希和 ARM64 交付身份见[固定包记录](../../../docs/testing/touch-keyboard/2026-10-21/review-fixes/package-identity.json)。本 PR 后续只补交付文档，不用文档构建的另一个 artifact 静默替换此包。旧包完整 manifest 和资源哈希见[历史包身份记录](../../../docs/testing/touch-keyboard/2026-10-20/p6/package-identity.json)，保留原始记录。PR head、CI 测试合并和最终合并是不同提交，不应互换填写。ARM64 目前只有交叉构建身份；没有已确认的原生目标，不纳入本机 x64 结论。
 
 1. 将 ZIP 完整解压到一个新目录，保留原 ZIP。在命令提示符中执行 `certutil -hashfile "实际下载的ZIP完整路径" SHA256`，将结果与上表比较。再对解压后的 `YimeTouchKeyboard.exe` 同样校验。不要在 ZIP 中启动。
 2. 双击 `Check Package.cmd`，保留本次控制台结果、时间和新生成的 `package-check.json`。失败立即停止，旧报告不能证明本次通过。该项是资源/内存检查，不发送输入、不属于手指或笔验收。
