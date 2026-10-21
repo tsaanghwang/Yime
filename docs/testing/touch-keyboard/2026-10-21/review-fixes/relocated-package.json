@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "tools/check_touch_keyboard_package.py",
+    "--package",
+    ".generated/touch-keyboard-review-20261021-amd64",
+    "--report",
+    "docs/testing/touch-keyboard/2026-10-21/review-fixes/package-check.json",
+    "--render"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 25.39,
+  "log": "relocated-package.log"
+}

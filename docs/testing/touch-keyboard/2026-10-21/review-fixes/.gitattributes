@@ -1,0 +1,2 @@
+*.json -text !eol -whitespace
+*.log -text !eol -whitespace

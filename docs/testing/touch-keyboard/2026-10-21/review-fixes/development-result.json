@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-21",
+  "scope": "seven review findings; desktop prototype only",
+  "sourceBaseCommit": "85a5cabafac4f7d96586ee6662f17e5d66181a27",
+  "sourceChanges": true,
+  "changedSourceSHA256": {
+    "go-backend/cmd/yime-touch-keyboard/delivery_test.go": "6171a24cc5554f99deba3274eadc1b3263407525b92a121df3ecacfd80bfed36",
+    "go-backend/cmd/yime-touch-keyboard/preview.go": "f99fe063d17e036338f09b11aa4fd8ebee1d7717d66c892f5a35b9958d0f8b43",
+    "go-backend/cmd/yime-touch-keyboard/preview_test.go": "48a20b2cca56b67d499d014c7b4627d125c56383b7fc40d280d53f10fdaafda5",
+    "go-backend/cmd/yime-touch-keyboard/preview_windows.go": "0427babc24a0c9cc5d324cd50f0ee499d51e886a6f1161706a08a4f9456ad6b5",
+    "go-backend/cmd/yime-touch-keyboard/preview_windows_test.go": "4694dbe4d56b27ee290540989bcfa9aa41c4d1436578c2c7758040b029a5f502",
+    "prototypes/touch-terminal/desktop/USER_GUIDE.zh-CN.md": "477319bbfe9fa37826cf6779928b74af1f4c48d8a06fa3d437dc54d21896793b"
+  },
+  "checks": [
+    {
+      "command": [
+        "go",
+        "-C",
+        "go-backend",
+        "test",
+        "./cmd/yime-touch-keyboard",
+        "./internal/touchkeyboard",
+        "./internal/keyboardlab",
+        "./internal/asciicodemode",
+        "./input_methods/yime/codemode",
+        "-count=1"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 14.44,
+      "log": "go-tests.log"
+    },
+    {
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "prototypes/touch-terminal/validate.py"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 2.31,
+      "log": "prototype-check.log"
+    },
+    {
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "tools/generate_ascii_layout.py",
+        "--check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.35,
+      "log": "layout-check.log"
+    },
+    {
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "tools/generate_touch_keyboard_profiles.py",
+        "--check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.16,
+      "log": "profile-check.log"
+    },
+    {
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "tools/build_touch_keyboard_desktop.py",
+        "--output-dir",
+        ".generated/touch-keyboard-review-20261021-amd64"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 2.72,
+      "log": "build-x64.log"
+    },
+    {
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "tools/build_touch_keyboard_desktop.py",
+        "--arch",
+        "arm64",
+        "--output-dir",
+        ".generated/touch-keyboard-review-20261021-arm64"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 2.36,
+      "log": "build-arm64.log"
+    },
+    {
+      "command": [
+        "go",
+        "-C",
+        "go-backend",
+        "test",
+        "./cmd/yime-touch-keyboard",
+        "-run",
+        "TestPreviewCompleteCorpus",
+        "-count=1",
+        "-desktop-preview-integration-root",
+        "C:/dev/Yime",
+        "-desktop-preview-evidence-dir",
+        "C:/dev/Yime/docs/testing/touch-keyboard/2026-10-21/review-fixes"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 9.53,
+      "log": "complete-corpus.log"
+    },
+    {
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "tools/check_touch_keyboard_package.py",
+        "--package",
+        ".generated/touch-keyboard-review-20261021-amd64",
+        "--report",
+        "docs/testing/touch-keyboard/2026-10-21/review-fixes/package-check.json",
+        "--render"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 25.39,
+      "log": "relocated-package.log"
+    }
+  ],
+  "beforeFix": {
+    "failedRegressionGroups": [
+      "paused candidates",
+      "stale noncoding main input",
+      "overlapping English literal input",
+      "empty Chinese Space/Enter",
+      "multiline caret display"
+    ],
+    "normalCodingAndExplicitBypasses": "passed"
+  },
+  "afterFix": "all applicable checks passed",
+  "physicalFingerAcceptance": false,
+  "physicalPenAcceptance": false,
+  "realApplicationAcceptance": false,
+  "OSHostInputSent": false,
+  "arm64NativeAcceptance": false,
+  "installedProductChanged": false,
+  "defaultInputMethodChanged": false,
+  "userDataChanged": false,
+  "limitations": [
+    "native EDIT not run; emit adapter tested with a fake sink",
+    "original package and evidence preserved; CI delivery identity will be separate",
+    "18u navigation/selection physical cases blocked by missing virtual keys"
+  ]
+}

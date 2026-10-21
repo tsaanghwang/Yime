@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "tools/generate_touch_keyboard_profiles.py",
+    "--check"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 0.16,
+  "log": "profile-check.log"
+}

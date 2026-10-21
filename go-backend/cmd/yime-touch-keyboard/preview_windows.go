@@ -8,12 +8,13 @@ import (
 	"math"
 	"os"
 	"path/filepath"
-	"strings"
+	"unicode/utf16"
+	"unsafe"
 
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 )
 
-const previewHelp = "P3 中文受控预览\n\n所有确认只写入本窗口内存文本，不调用系统输入，不写剪贴板或用户数据。\n变码/全码/简码切换会取消旧组合；CN EN 同时切换输入与标点，保留原始组合。\n中文始终显示 CN；英文时 Layout 切换 CN/EN 键帽，偏好在本次运行内保留。\n点候选、空格/Enter 确认，Esc 取消，退格编辑组合；翻页后旧触点取消。\n没有组合时 Left/Right、Home/End、Backspace/Delete 编辑本地文本，Shift 选择，Ctrl+A 全选。编辑按 Unicode 码点；Home/End 是全文边界。\n侧数字区保持 literal 旁路。未标注标点入口开关默认关闭。\n音元字形来自实验解析文件，字体只在本进程加载；ID 按钮可恢复 ID 键帽。\n关闭即丢弃本地文本。不能将鼠标或模拟触摸记录为真实手指/触控笔验收。"
+const previewHelp = "中文受控预览\n\n所有确认只写入本窗口内存文本，不调用系统输入，不写剪贴板或用户数据。\n变码/全码/简码切换会取消旧组合；CN EN 同时切换输入与标点，保留原始组合；英文暂停的候选不可选择。\n中文始终显示 CN；英文时 Layout 切换 CN/EN 键帽，偏好在本次运行内保留。\n点候选、空格/Enter 确认；空组合时空格/Enter 直接输出，非空无候选不提交。Esc 取消，退格编辑组合；翻页后旧候选及非编码主区输入触点取消。\n18u 主区没有 Left/Home/End 等侧区导航键，可用退格和无组合时 Ctrl+A。侧区可提供导航/删除。编辑按 Unicode 码点；本地输出用 ↵/⇥ 显示换行/Tab，单行随光标截取。\n侧数字区保持 literal 旁路。未标注标点入口开关默认关闭。\n音元字形来自实验解析文件，字体只在本进程加载；ID 按钮可恢复 ID 键帽。\n关闭即丢弃本地文本。不能将鼠标或模拟触摸记录为真实手指/触控笔验收。"
 
 type previewGesture struct {
 	area      rect
@@ -63,7 +64,7 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 				break
 			}
 		}
-		if g.action == "" {
+		if g.action == "" && a.preview.candidatesEnabled() {
 			for i := range a.preview.snapshot.State.Candidates {
 				r := a.candidateRect(i)
 				if inside(r, x, y) {
@@ -206,15 +207,35 @@ func (a *ui) drawPreview(dc uintptr, r rect) {
 	text(dc, fmt.Sprintf("组合：%s    第 %d 页    rev %d", raw, p.snapshot.State.PageNumber+1, p.snapshot.Revision), rect{10, 155, r.R - 10, 181}, 0x24)
 	for i, c := range p.snapshot.State.Candidates {
 		box := a.candidateRect(i)
-		fill(dc, box, 0xFFFFFF)
-		text(dc, fmt.Sprintf("%d  %s", i+1, c.Text), box, 0x11) // wrap long candidates inside their own target
+		color, label := uintptr(0xFFFFFF), fmt.Sprintf("%d  %s", i+1, c.Text)
+		if !p.candidatesEnabled() {
+			color, label = 0xDDDDDD, label+"（暂停）"
+		}
+		fill(dc, box, color)
+		text(dc, label, box, 0x11) // wrap long candidates inside their own target
 	}
 	fill(dc, rect{10, 240, r.R - 10, 290}, 0xFFFFFF)
-	output := "本地输出：" + strings.ReplaceAll(p.editor.display(), "\t", "⇥")
+	output := ""
 	if a.host != nil {
 		output = fmt.Sprintf("目标 HWND %d / 焦点 %d / 世代 %d：%s", a.host.target.Window, a.host.target.Focus, a.host.epoch, a.host.last)
+		text(dc, output, rect{14, 242, r.R - 14, 288}, 0x10)
+	} else {
+		output = p.editor.fittedDisplay(func(s string) bool { return previewTextWidth(dc, s) <= r.R-28 })
+		text(dc, output, rect{14, 242, r.R - 14, 288}, 0x24) // single line, vertically centered
 	}
-	text(dc, output, rect{14, 242, r.R - 14, 288}, 0x10)
+}
+
+func previewTextWidth(dc uintptr, s string) int32 {
+	v := utf16.Encode([]rune(s))
+	if len(v) == 0 {
+		return 0
+	}
+	size := point{}
+	ok, _, _ := G("GetTextExtentPoint32W").Call(dc, uintptr(unsafe.Pointer(&v[0])), uintptr(len(v)), uintptr(unsafe.Pointer(&size)))
+	if ok == 0 {
+		return math.MaxInt32
+	}
+	return size.X
 }
 
 func loadPreviewGlyphs(root string) (map[string]string, error) {

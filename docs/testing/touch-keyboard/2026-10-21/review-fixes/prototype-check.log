@@ -1,0 +1,105 @@
+RUN C:\Users\tsaan\AppData\Local\Programs\Python\Python314\python.exe -X utf8 generate_data.py --check
+PASS: CN/EN 134 physical keys, 75 input IDs, 23 disabled English keys and identical geometry
+RUN C:\Users\tsaan\AppData\Local\Programs\Python\Python314\python.exe -X utf8 -m unittest discover -s . -p test_*.py -v
+test_changed_ascii_annotation_fails_instead_of_becoming_a_second_source (test_data.GeneratedPhysicalDataTests.test_changed_ascii_annotation_fails_instead_of_becoming_a_second_source) ... ok
+test_generated_matches_current_sources (test_data.GeneratedPhysicalDataTests.test_generated_matches_current_sources) ... ok
+test_input_adaptation_preserves_all_frozen_kle_geometry_and_legends (test_data.GeneratedPhysicalDataTests.test_input_adaptation_preserves_all_frozen_kle_geometry_and_legends) ... ok
+test_projection_is_case_sensitive_and_all_75_are_enabled (test_data.GeneratedPhysicalDataTests.test_projection_is_case_sensitive_and_all_75_are_enabled) ... ok
+test_codegen_works_with_windows_legacy_pipe_encoding (test_isolation.ProductIsolationTests.test_codegen_works_with_windows_legacy_pipe_encoding) ... ok
+test_generator_has_only_lab_destinations_and_current_shared_algorithm (test_isolation.ProductIsolationTests.test_generator_has_only_lab_destinations_and_current_shared_algorithm) ... ok
+test_product_and_lab_keep_distinct_projections (test_isolation.ProductIsolationTests.test_product_and_lab_keep_distinct_projections) ... ok
+test_checked_in_template_has_exact_identity_and_geometry (test_kle_layout.KLELayoutTests.test_checked_in_template_has_exact_identity_and_geometry) ... ok
+test_download_must_be_strict_json (test_kle_layout.KLELayoutTests.test_download_must_be_strict_json) ... ok
+test_offsets_and_rectangular_sizes_are_preserved (test_kle_layout.KLELayoutTests.test_offsets_and_rectangular_sizes_are_preserved) ... ok
+test_rejects_missing_duplicate_unknown_overlap_and_rotation (test_kle_layout.KLELayoutTests.test_rejects_missing_duplicate_unknown_overlap_and_rotation) ... ok
+test_board_inventory_and_union_geometry (test_physical_layout.PhysicalLayoutTests.test_board_inventory_and_union_geometry) ... ok
+test_english_overlay_and_disabled_keys_are_explicit_not_color_based (test_physical_layout.PhysicalLayoutTests.test_english_overlay_and_disabled_keys_are_explicit_not_color_based) ... ok
+test_explicit_cn_layers_keep_coding_and_literal_entrances_separate (test_physical_layout.PhysicalLayoutTests.test_explicit_cn_layers_keep_coding_and_literal_entrances_separate) ... ok
+test_fail_closed_for_unsupported_or_invalid_geometry (test_physical_layout.PhysicalLayoutTests.test_fail_closed_for_unsupported_or_invalid_geometry) ... ok
+test_html_annotations_do_not_eat_literal_ascii (test_physical_layout.PhysicalLayoutTests.test_html_annotations_do_not_eat_literal_ascii) ... ok
+test_iso_union_not_bounding_box_and_cursor_primary_width (test_physical_layout.PhysicalLayoutTests.test_iso_union_not_bounding_box_and_cursor_primary_width) ... ok
+test_kle_offsets_and_alignment (test_physical_layout.PhysicalLayoutTests.test_kle_offsets_and_alignment) ... ok
+test_mirrored_iso_keys (test_physical_layout.PhysicalLayoutTests.test_mirrored_iso_keys) ... ok
+test_secondary_bounds_negative_offsets_and_reset (test_physical_layout.PhysicalLayoutTests.test_secondary_bounds_negative_offsets_and_reset) ... ok
+test_space_modes_caps_and_reused_erhua_aliases (test_physical_layout.PhysicalLayoutTests.test_space_modes_caps_and_reused_erhua_aliases) ... ok
+test_two_independent_numeric_zones_and_ten_edit_actions (test_physical_layout.PhysicalLayoutTests.test_two_independent_numeric_zones_and_ten_edit_actions) ... ok
+test_checked_in_lock_matches_current_physical_projection (test_portable_resources.ResourceArchiveBoundary.test_checked_in_lock_matches_current_physical_projection) ... ok
+test_digest_and_traversal_archives_fail_closed (test_portable_resources.ResourceArchiveBoundary.test_digest_and_traversal_archives_fail_closed) ... ok
+test_exact_inventory_extracts_and_detects_existing_corruption (test_portable_resources.ResourceArchiveBoundary.test_exact_inventory_extracts_and_detects_existing_corruption) ... ok
+test_loopback_static_content_and_no_external_script_policy (test_serve.ServerBoundaryTest.test_loopback_static_content_and_no_external_script_policy) ... 127.0.0.1 - - [21/Oct/2026 10:48:17] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [21/Oct/2026 10:48:17] "GET /app.mjs HTTP/1.1" 200 -
+ok
+test_no_repository_escape_directory_listing_or_write_endpoint (test_serve.ServerBoundaryTest.test_no_repository_escape_directory_listing_or_write_endpoint) ... 127.0.0.1 - - [21/Oct/2026 10:48:17] code 404, message Not Found
+127.0.0.1 - - [21/Oct/2026 10:48:17] "GET /../AGENTS.md HTTP/1.1" 404 -
+127.0.0.1 - - [21/Oct/2026 10:48:17] code 404, message Not Found
+127.0.0.1 - - [21/Oct/2026 10:48:17] "GET /%2e%2e/%2e%2e/AGENTS.md HTTP/1.1" 404 -
+127.0.0.1 - - [21/Oct/2026 10:48:17] code 404, message Not Found
+127.0.0.1 - - [21/Oct/2026 10:48:17] "GET /data/ HTTP/1.1" 404 -
+127.0.0.1 - - [21/Oct/2026 10:48:17] code 404, message Not Found
+127.0.0.1 - - [21/Oct/2026 10:48:17] "GET /serve.py HTTP/1.1" 404 -
+127.0.0.1 - - [21/Oct/2026 10:48:17] code 404, message Not Found
+127.0.0.1 - - [21/Oct/2026 10:48:17] "GET /C:/Windows/win.ini HTTP/1.1" 404 -
+127.0.0.1 - - [21/Oct/2026 10:48:17] code 501, message Unsupported method ('POST')
+127.0.0.1 - - [21/Oct/2026 10:48:17] "POST /data/layout.json HTTP/1.1" 501 -
+ok
+
+----------------------------------------------------------------------
+Ran 27 tests in 1.177s
+
+OK
+RUN C:\Program Files\nodejs\node.EXE --test core.test.mjs geometry.test.mjs sizing.test.mjs input.test.mjs keyboard-layout.test.mjs
+✔ sound IDs sharing a physical key remain separate semantic inputs (6.9888ms)
+✔ candidate matches require the complete ordered fixture ID sequence (0.3418ms)
+✔ candidate selection and paging never commit until explicit confirm (0.3485ms)
+✔ backspace or clear on an empty composition never deletes committed preview text (0.2136ms)
+✔ exact retry returns the historical response without repeating commit (0.215ms)
+✔ changed duplicate envelope is a conflict even after state advances (0.6278ms)
+✔ stale candidate click and out-of-order messages do not mutate state (0.2035ms)
+✔ well-formed rejection retry stays idempotent and requires a new event ID to correct (0.1506ms)
+✔ strict schema rejects unknown fields, implicit key selection and malformed payloads (0.1971ms)
+✔ session, layout and unknown sound IDs are rejected without consuming sequence (0.1961ms)
+✔ external mutation of configuration or returned snapshots cannot mutate session (2.0634ms)
+✔ composition bounds fail closed and can be recovered by clear (2.7768ms)
+✔ event cache has a hard bound and keeps the earliest retry safe (33.8683ms)
+✔ preview commit limit never silently discards older text (38.5286ms)
+✔ fixture data cannot repair or invent an unmatched semantic projection (0.4593ms)
+✔ fixture identity must match the complete loaded layout snapshot (0.1163ms)
+✔ 60-key 10x6 geometry accounts for all gaps and reserved screen area (2.2378ms)
+✔ mirrored ISO keys retain their two-rectangle union and reject the empty lower corner (1.1219ms)
+✔ Gaussian sensitivity is not an observed wrong-key rate (0.1759ms)
+✔ generated 134-key layered board reaches every printable ASCII and each of its 75 semantic IDs (2.8258ms)
+✔ ANSI letters, digits and symbols all defer classification to the engine (0.3645ms)
+✔ main-row and virtual digit positions send input regardless of stale visible candidate state (0.4279ms)
+✔ every printable ASCII character takes the engine path, never local punctuation edits (14.154ms)
+✔ virtual Shift uses only explicit upper actions including letter carriers (0.1914ms)
+✔ numeric side keys bypass composition and side edit 5 is a no-op (0.2236ms)
+✔ language toggle couples punctuation and English Space never selects paused Chinese (0.2465ms)
+✔ pointer ASCII and ANSI ASCII produce identical engine events; reserved IDs cannot be sent (0.1127ms)
+✔ invalid ASCII rejects whole tokens and non-ASCII instead of inferring an音元 (0.1389ms)
+✔ release outside, cancelled drag return and another pointer never activate (0.1405ms)
+✔ queued input derives each revision from prior result, then blur clears pending input (24.2761ms)
+✔ mode switch closes old session before creating a new one (0.326ms)
+✔ queued language toggles read authoritative prior response and couple punctuation (0.2321ms)
+✔ code-mode replacement restores independent input and punctuation modes on the new session (0.1528ms)
+✔ network uncertainty blocks later events instead of replaying potential commits (0.3324ms)
+✔ stale input policy blocks session creation and asks for a service restart (0.1162ms)
+✔ local text edits preserve graphemes and only change the selected page range (0.1789ms)
+✔ confirmed composition rejection keeps queued Backspace, selection and Clear usable without replay (0.5973ms)
+✔ terminal and untrusted API failures remain disconnected without replaying input (4.2409ms)
+✔ English view preserves geometry, clears inherited CN layers, and never uses color as enablement (1.9666ms)
+✔ all English letters output base lowercase and Shift uppercase (2.3516ms)
+✔ a retained English preference applies only in English mode (0.0996ms)
+✔ literal entrance switch never bypasses ID-bearing coding layers (0.5963ms)
+✔ full-size and reserved 17u dimensions retain the same physical pitch (0.4998ms)
+✔ a ruler measurement corrects physical size without using Windows scale or DPR (0.2365ms)
+ℹ tests 44
+ℹ suites 0
+ℹ pass 44
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 159.7764
+RUN C:\Program Files\nodejs\node.EXE --check app.mjs
+RUN C:\Program Files\nodejs\node.EXE --check browser-smoke.js
+PASS: 134-key dual KLE, source projection, input routing, geometry and syntax. Run Go lab tests separately; native IME and physical touch acceptance not implied.
