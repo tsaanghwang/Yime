@@ -64,10 +64,14 @@ func (a *ui) loseHostFocus(reason string) {
 	a.invalidate()
 }
 func (a *ui) hostSink(ticket deliveryTicket) {
+	generation := a.cancelGeneration
 	a.preview.emit = func(id string, o tk.Output) error {
 		if !pumpHostMessages() {
 			a.loseHostFocus("消息队列未稳定；提交取消")
 			return fmt.Errorf("消息队列未稳定，不发送")
+		}
+		if generation != a.cancelGeneration {
+			return fmt.Errorf("动作已取消；不发送旧输出")
 		}
 		// Standalone whitespace commits are editing keys at a Windows host;
 		// Unicode LF is not equivalent to Return in every native EDIT control.

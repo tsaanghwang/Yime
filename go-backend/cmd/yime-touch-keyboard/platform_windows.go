@@ -108,6 +108,7 @@ type ui struct {
 	host             *deliveryGate
 	hostBusy         bool
 	navSelecting     bool // Applies only to auxiliary navigation, never character keys.
+	cancelGeneration uint64
 }
 
 var active *ui
@@ -349,6 +350,7 @@ func (a *ui) invalidate() {
 	}
 }
 func (a *ui) cancel() {
+	a.cancelGeneration++
 	a.s.Cancel()
 	a.navSelecting = false
 	a.owners = map[uint32]target{}

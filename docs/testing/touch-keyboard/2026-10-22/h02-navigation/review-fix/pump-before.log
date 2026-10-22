@@ -1,0 +1,16 @@
+--- FAIL: TestNavigationCancellationDuringHostMessagePumps (0.18s)
+    --- FAIL: TestNavigationCancellationDuringHostMessagePumps/1f/up/Home (0.04s)
+        navigation_windows_test.go:75: stage=up message=1f key=Home: cancelled action survived (sends=1 selection=false)
+    --- FAIL: TestNavigationCancellationDuringHostMessagePumps/1f/up/select (0.03s)
+        navigation_windows_test.go:75: stage=up message=1f key=select: cancelled action survived (sends=0 selection=true)
+    --- FAIL: TestNavigationCancellationDuringHostMessagePumps/1f/sink/Home (0.03s)
+        navigation_windows_test.go:72: sink accepted cancelled navigation
+    --- FAIL: TestNavigationCancellationDuringHostMessagePumps/215/up/Home (0.02s)
+        navigation_windows_test.go:75: stage=up message=215 key=Home: cancelled action survived (sends=1 selection=false)
+    --- FAIL: TestNavigationCancellationDuringHostMessagePumps/215/up/select (0.03s)
+        navigation_windows_test.go:75: stage=up message=215 key=select: cancelled action survived (sends=0 selection=true)
+    --- FAIL: TestNavigationCancellationDuringHostMessagePumps/215/sink/Home (0.03s)
+        navigation_windows_test.go:72: sink accepted cancelled navigation
+FAIL
+FAIL	github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard	0.808s
+FAIL

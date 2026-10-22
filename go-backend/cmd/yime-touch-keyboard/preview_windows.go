@@ -17,13 +17,14 @@ import (
 const previewHelp = "中文受控预览\n\n所有确认只写入本窗口内存文本，不调用系统输入，不写剪贴板或用户数据。\n变码/全码/简码切换会取消旧组合；CN EN 同时切换输入与标点，保留原始组合；英文暂停的候选不可选择。\n中文始终显示 CN；英文时 Layout 切换 CN/EN 键帽，偏好在本次运行内保留。\n点候选、空格/Enter 确认；空组合时空格/Enter 直接输出，非空无候选不提交。Esc 取消，退格编辑组合；翻页后旧候选及非编码主区输入触点取消。\n输出栏右侧提供左/右、Home/End 和选区开关；单指/单笔依次点按可选择，再输入替换或退格删除。辅助导航不继承盘面修饰键；其他操作关闭选区开关。有中文组合（含暂停组合）时不可用。Home/End 在预览到全文首尾。编辑按 Unicode 码点；本地输出用 ↵/⇥ 显示换行/Tab，单行随光标截取。\n侧数字区保持 literal 旁路。未标注标点入口开关默认关闭。\n音元字形来自实验解析文件，字体只在本进程加载；ID 按钮可恢复 ID 键帽。\n关闭即丢弃本地文本。不能将鼠标或模拟触摸记录为真实手指/触控笔验收。"
 
 type previewGesture struct {
-	area       rect
-	left       bool
-	action     string
-	stamp      previewStamp
-	candidate  candidatePress
-	delivery   deliveryTicket
-	navigation string
+	area             rect
+	left             bool
+	action           string
+	stamp            previewStamp
+	candidate        candidatePress
+	delivery         deliveryTicket
+	navigation       string
+	cancelGeneration uint64
 }
 
 func inside(r rect, x, y int32) bool { return x >= r.L && x < r.R && y >= r.T && y < r.B }
@@ -100,6 +101,7 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 				return
 			}
 		}
+		g.cancelGeneration = a.cancelGeneration
 		a.previewTouches[id] = g
 	}
 	a.invalidate()
@@ -129,6 +131,11 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 		defer func() { a.hostBusy = false }()
 		if !pumpHostMessages() {
 			a.loseHostFocus("消息队列未稳定；动作取消")
+			return
+		}
+		if g.cancelGeneration != a.cancelGeneration {
+			a.status = "动作已取消；不执行旧触点"
+			a.invalidate()
 			return
 		}
 		if !a.host.valid(g.delivery) {

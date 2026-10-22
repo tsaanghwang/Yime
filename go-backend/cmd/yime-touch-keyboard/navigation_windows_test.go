@@ -4,7 +4,9 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
+	"runtime"
 	"testing"
 	"unsafe"
 
@@ -21,6 +23,61 @@ func navigationPoint(t *testing.T, a *ui, key string) (int32, int32) {
 	}
 	t.Fatal("unknown auxiliary button", key)
 	return 0, 0
+}
+
+func TestNavigationCancellationDuringHostMessagePumps(t *testing.T) {
+	for _, message := range []uint32{0x001F, 0x0215} { // WM_CANCELMODE, unexpected WM_CAPTURECHANGED
+		for _, stage := range []string{"up", "sink"} {
+			for _, key := range []string{"Home", "select"} {
+				if stage == "sink" && key == "select" {
+					continue
+				} // toggle never emits
+				t.Run(fmt.Sprintf("%x/%s/%s", message, stage, key), func(t *testing.T) {
+					runtime.LockOSThread()
+					defer runtime.UnlockOSThread()
+					a := previewUI(t)
+					h, _, _ := U("CreateWindowExW").Call(0, ptr(str("STATIC")), 0, 0, 0, 0, 1, 1, 0, 0, 0, 0)
+					if h == 0 {
+						t.Fatal("create message-pump fixture")
+					}
+					defer U("DestroyWindow").Call(h)
+					// Route queued native cancellation messages through the real window proc.
+					index := int32(-4) // GWLP_WNDPROC
+					oldProc, _, _ := U("SetWindowLongPtrW").Call(h, uintptr(index), callback)
+					if oldProc == 0 {
+						t.Fatal("subclass fixture")
+					}
+					previous := active
+					defer func() { U("SetWindowLongPtrW").Call(h, uintptr(index), oldProc); active = previous }()
+					a.h, active = h, a
+					current := hostTarget{1, 2, 3, 4}
+					calls := 0
+					a.host = &deliveryGate{current: func() hostTarget { return current }, send: func(hostTarget, tk.Output) error { calls++; return nil }}
+					if err := a.host.bind(current); err != nil {
+						t.Fatal(err)
+					}
+					a.navSelecting = true
+					x, y := navigationPoint(t, a, key)
+					if stage == "up" {
+						a.down(1, x, y)
+					} else {
+						a.hostSink(a.host.ticket())
+					}
+					if ok, _, _ := U("PostMessageW").Call(h, uintptr(message), 0, 0); ok == 0 {
+						t.Fatal("queue cancellation")
+					}
+					if stage == "up" {
+						a.up(1, x, y)
+					} else if err := a.preview.navigate("Home", true, a.preview.stamp()); err == nil {
+						t.Fatal("sink accepted cancelled navigation")
+					}
+					if calls != 0 || a.navSelecting || len(a.previewTouches) != 0 {
+						t.Fatalf("stage=%s message=%x key=%s: cancelled action survived (sends=%d selection=%v)", stage, message, key, calls, a.navSelecting)
+					}
+				})
+			}
+		}
+	}
 }
 
 func tapNavigation(t *testing.T, a *ui, key string) {
