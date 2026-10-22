@@ -63,8 +63,7 @@ func (a *ui) loseHostFocus(reason string) {
 	a.status = reason
 	a.invalidate()
 }
-func (a *ui) hostSink(ticket deliveryTicket) {
-	generation := a.cancelGeneration
+func (a *ui) hostSink(ticket deliveryTicket, generation uint64) {
 	a.preview.emit = func(id string, o tk.Output) error {
 		if !pumpHostMessages() {
 			a.loseHostFocus("消息队列未稳定；提交取消")
@@ -124,7 +123,7 @@ func (a *ui) bindHost() error {
 		}
 	}
 	a.preview = p
-	a.hostSink(a.host.ticket())
+	a.hostSink(a.host.ticket(), a.cancelGeneration)
 	a.s.Original = p.original()
 	a.status = a.host.last
 	return nil

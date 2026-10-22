@@ -142,7 +142,7 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 			a.loseHostFocus("目标已变化；本次动作取消，请重新绑定")
 			return
 		}
-		a.hostSink(g.delivery)
+		a.hostSink(g.delivery, g.cancelGeneration)
 	}
 	var err error
 	if g.action == "key" {
