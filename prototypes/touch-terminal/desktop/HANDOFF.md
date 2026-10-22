@@ -6,7 +6,7 @@
 
 控件复用 DOWN/MOVE/UP、会话版本、目标世代及唯一发送路径。有活动或英文暂停组合时拒绝导航；不自动确认或取消。辅助导航清除盘面修饰状态并取消重叠触点；其他操作、失焦/重绑、捕获丢失和失败关闭选区开关。它只给单次导航附带 Shift，不留下系统按键。预览沿用全文 Home/End，宿主使用原生 Home/End，按宿主实际行为验收。
 
-本地 x64 完整包与 ARM64 交叉构建身份见[本次包记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/package-identity.json)。两者为 `sourceChanges:true` 的开发快照，尚无新 CI 发布身份；后续 CI 包必须另记身份，不能沿用 #76 的 URL/哈希。本轮检查及限制见[开发记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/DEVELOPMENT_RESULT.zh-CN.md)。新增回归、相关 Go 测试、27 项 Python/44 项 JavaScript、生成校验和 x64 独立包三模式/资源拒绝/渲染通过；未发送 OS 宿主输入，未执行真人或自有 EDIT 验收。
+固定交付现为 [PR #77 x64 CI 包](https://github.com/tsaanghwang/Yime/actions/runs/39749274057/artifacts/12412164789)，桌面 CI 已通过，包源码 `ef3e231793c1b45e89ae9202bbc5245592d99e06`，运行时 head `df70abc60ce466b2ab40c2b813d8ce89a9fc1946`；ZIP SHA-256 为 `1038e8fa39aca95d5f3b4856ae40b570ab3137dd87bbd617ab00f7e9d2fd8188`。x64/ARM64 ZIP 和各 29 个载荷均重新下载核验；完整身份及三模式报告见[CI 交付记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/CI_DELIVERY.zh-CN.md)。后续文档提交不自动替换此包。首次 `sourceChanges:true` 的[本地开发包身份](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/package-identity.json)仍保留。本轮开发检查及限制见[开发记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/DEVELOPMENT_RESULT.zh-CN.md)。新增回归、相关 Go 测试、27 项 Python/44 项 JavaScript、生成校验和 x64 独立包三模式/资源拒绝/渲染通过；未发送 OS 宿主输入，未执行真人或自有 EDIT 验收。
 
 执行新版[验收步骤](ACCEPTANCE_18U.zh-CN.md)及[本次空模板](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/RESULT_TEMPLATE.zh-CN.md)，逐项记录 P11、H02-N1–N5。纯手指/纯笔可覆盖辅助导航和选区；物理键盘、鼠标、全盘/侧区及笔加手指辅助单列。历史包和失败/阻塞记录原样保留；未安装输入法、修改默认输入法或用户数据。17u/23u 保持冻结。
 

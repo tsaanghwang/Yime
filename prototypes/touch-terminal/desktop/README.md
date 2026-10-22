@@ -4,7 +4,7 @@ P1–P4 已随 #71–#73 合并。P5 提供包内完整三模式词典、私有�
 
 ## 使用
 
-2026-10-22：基于 PR #76 合并后的 18u 增加输出栏辅助导航（左/右、Home/End、选区开关），支持单指或单笔依次选择、替换及删除，不改 100 键盘面。使用[本次本地开发包身份](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/package-identity.json)及[新版验收步骤](ACCEPTANCE_18U.zh-CN.md)；新 CI 交付身份待建立。旧 #76 包不含此栏，其导航阻塞和历史证据保持原样。
+2026-10-22：基于 PR #76 合并后的 18u 增加输出栏辅助导航（左/右、Home/End、选区开关），支持单指或单笔依次选择、替换及删除，不改 100 键盘面。使用 [PR #77 固定 x64 CI 包](https://github.com/tsaanghwang/Yime/actions/runs/39749274057/artifacts/12412164789)、[CI 交付身份](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/CI_DELIVERY.zh-CN.md)及[新版验收步骤](ACCEPTANCE_18U.zh-CN.md)。首次本地包仍保留开发身份。旧 #76 包不含此栏，其导航阻塞和历史证据保持原样。
 
 2026-10-21 已处理晨报的七项审阅问题，见[逐项记录](../../../docs/testing/touch-keyboard/2026-10-21/review-fixes/REVIEW_RESOLUTION.zh-CN.md)。#74/#76 包均保留历史身份。真人手指、触控笔和真实应用结果仍待分别记录。
 

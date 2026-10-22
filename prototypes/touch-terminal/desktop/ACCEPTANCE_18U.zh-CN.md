@@ -4,7 +4,9 @@
 
 ## 1. 固定交付物
 
-本次 H02 步骤要求有输出栏辅助按钮的**新包**。本地开发包为 `C:\dev\Yime\.generated\touch-keyboard-h02-20261022-amd64`，身份见[本次包记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/package-identity.json)。它标记 `sourceChanges:true`，即 PR #76 合并基线加本次未提交开发修改；不是新的 CI 发布包。外部交付时须另记新 CI run/artifact、源码 SHA 与 ZIP SHA-256，不能冒用下表旧身份。
+本次 H02 步骤使用 [PR #77 固定 x64 CI 包](https://github.com/tsaanghwang/Yime/actions/runs/39749274057/artifacts/12412164789)，来自[已通过的桌面 CI run 39749274057](https://github.com/tsaanghwang/Yime/actions/runs/39749274057)。运行时 head 为 `df70abc60ce466b2ab40c2b813d8ce89a9fc1946`，包源码为 PR 测试合并提交 `ef3e231793c1b45e89ae9202bbc5245592d99e06`，`sourceChanges:false`。ZIP SHA-256 为 `1038e8fa39aca95d5f3b4856ae40b570ab3137dd87bbd617ab00f7e9d2fd8188`，exe SHA-256 为 `3f3e7e5a991068fb4f69d41b94415d156369e797cf110f500ebf5e57eaceb66e`。实际下载 ZIP 和全部 29 个载荷已核验，完整身份见[本次 CI 包记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/ci-package-identity.json)。后续文档提交产生的新 artifact 不自动替换此固定包。
+
+首次本地开发包 `C:\dev\Yime\.generated\touch-keyboard-h02-20261022-amd64` 及其 `sourceChanges:true` [身份记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/package-identity.json)保留为开发证据，不与上述 CI 包混用。
 
 以下 [PR #76 的固定 x64 修复包](https://github.com/tsaanghwang/Yime/actions/runs/39535478116/artifacts/12317273550)及 [CI run 39535478116](https://github.com/tsaanghwang/Yime/actions/runs/39535478116)仅作为历史保留；它没有辅助导航控件，不能执行本次 P11/H02-N。旧 ZIP 和全部 29 个载荷的既有核验结果不改写。#74 包同样保留为历史。
 
@@ -18,7 +20,7 @@
 
 PR #76 完整 manifest、资源哈希和 ARM64 交付身份见[历史修复包记录](../../../docs/testing/touch-keyboard/2026-10-21/review-fixes/package-identity.json)，不静默替换此包。#74 完整 manifest 和资源哈希见[历史包身份记录](../../../docs/testing/touch-keyboard/2026-10-20/p6/package-identity.json)，保留原始记录。PR head、CI 测试合并和最终合并是不同提交，不应互换填写。ARM64 目前只有交叉构建身份；没有已确认的原生目标，不纳入本机 x64 结论。
 
-1. 使用上列本次本地开发包的新目录，对 `YimeTouchKeyboard.exe` 执行 `certutil -hashfile "实际exe完整路径" SHA256`，与本次包记录比较。后续若交付 ZIP，先独立登记/核验新 ZIP 身份并完整解压到新目录，保留 ZIP；不要与历史包混放或在 ZIP 中启动。
+1. 下载上述固定 x64 ZIP，以 `certutil -hashfile "实际ZIP完整路径" SHA256` 核对本次 ZIP 哈希；完整解压到新目录，保留 ZIP，再同样核对 exe 哈希。不要与历史包混放或在 ZIP 中启动。
 2. 双击 `Check Package.cmd`，保留本次控制台结果、时间和新生成的 `package-check.json`。失败立即停止，旧报告不能证明本次通过。该项是资源/内存检查，不发送输入、不属于手指或笔验收。
 3. 把[本次导航结果模板](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/RESULT_TEMPLATE.zh-CN.md)和[100 键覆盖模板](../../../docs/testing/touch-keyboard/2026-10-20/p6/key-coverage-template.csv)复制到包外的本次测试记录目录。几何、映射未改，覆盖表可复用，但所有实际结果必须重新填写。不要修改包内 profile、指南、字体、清单或词典；它们与程序绑定。
 4. 本次包目录不可用、缺少辅助控件、下载链接失效或哈希不符时记“阻塞”，由后续交付恢复同一身份或建立新包记录，不能自行换包并沿用本结果。
@@ -97,4 +99,4 @@ SendInput 无法原子绑定 HWND，前后焦点检查不能证明最后瞬间�
 
 正常 Close，关闭临时文档且不保存正文，保留本次结果/照片/录像/日志路径。不要清理历史证据或已安装产品；强制退出的临时索引残留不在本轮自动清理。几何/手势问题回到 P1/P2，中文语义问题回到 P3，目标/发送问题回到 P4，缺包/哈希问题回到 P5。修复后建立新包身份和新记录，不覆盖失败行。
 
-当前状态：触屏辅助入口及本地开发验证完成；P01–P11、H01–H07（含 H02-N1–N5）均待真人记录。新 CI 发布身份尚未建立，当前包为上述本地开发快照。17u/23u 冻结，不增加验收分支；“18u 缩短 1 mm”未定义参数，不实施。
+当前状态：触屏辅助入口、本地开发验证及固定 CI 包交付完成；P01–P11、H01–H07（含 H02-N1–N5）均待真人记录。17u/23u 冻结，不增加验收分支；“18u 缩短 1 mm”未定义参数，不实施。

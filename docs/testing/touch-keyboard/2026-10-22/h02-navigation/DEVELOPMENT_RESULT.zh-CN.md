@@ -2,6 +2,8 @@
 
 2026-10-22。受影响范围：独立桌面键盘实验；产品 YimeCore / Rime/PIME 运行时均未改动。基线是 PR #76 的 main 合并提交 `3cae8c6b6f8a0af25285cfd8116cb7a19e9c43bd`，工作分支 `codex/touch-keyboard-h02-navigation`。
 
+下文记录首次本地开发验证时的快照。后续已提交/推送 `df70abc6` 并创建 PR #77；固定 CI 包及核验结果另见 [CI 交付记录](CI_DELIVERY.zh-CN.md)，不改写下文本地包当时的 dirty 身份。
+
 ## 检查结论与实现
 
 现有 18u 主区 100 键没有 Left/Home/End，但 `preview.apply(local)`、`emitEdit`、目标世代/事件去重及 Windows 虚拟键发送已经支持导航与 Shift 选区。现有预览编辑器具备 Unicode 码点、选区替换/删除、全文 Home/End。故只补桌面辅助控件，不修改键盘 JSON、编码源、键身份、几何、颜色、profile 或产品协议。
