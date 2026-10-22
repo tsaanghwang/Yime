@@ -128,6 +128,26 @@ func (p *preview) toggleLayout() {
 		p.englishView = !p.englishView
 	}
 }
+
+func (p *preview) navigationEnabled() bool {
+	// A paused Chinese composition still owns its candidate context.
+	return !p.fault && p.snapshot.State.RawInput == ""
+}
+
+func (p *preview) navigate(key string, extend bool, down previewStamp) error {
+	if !p.navigationEnabled() {
+		return fmt.Errorf("请先确认或取消中文组合（含暂停组合），再使用辅助导航")
+	}
+	if down != p.stamp() {
+		return fmt.Errorf("状态已更新；本次导航取消")
+	}
+	switch key {
+	case "ArrowLeft", "ArrowRight", "Home", "End":
+		return p.apply(tk.Output{Action: tk.Action{Type: "local", Key: key}, Shift: extend}, down)
+	default:
+		return fmt.Errorf("未知辅助导航动作")
+	}
+}
 func (p *preview) apply(o tk.Output, down previewStamp) error {
 	a := o.Action
 	if p.fault {

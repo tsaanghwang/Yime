@@ -56,7 +56,7 @@ func (a *ui) hostSmoke(instance uintptr) error {
 		}
 		a.hostBusy = true
 		defer func() { a.hostBusy = false }()
-		a.hostSink(ticket)
+		a.hostSink(ticket, a.cancelGeneration)
 		return a.preview.apply(o, a.preview.stamp())
 	}
 	input := func(kind, code, key string) error {

@@ -209,7 +209,7 @@ func TestPreview18uAcceptanceCaseKeys(t *testing.T) {
 	for _, k := range a.s.Board.Keys {
 		for _, action := range []tk.Action{k.Action, k.ShiftAction, k.English.Action, k.English.ShiftAction} {
 			if action.Key == "ArrowLeft" || action.Key == "Home" || action.Key == "End" {
-				t.Fatal("update blocked navigation case for changed inventory", k.ID)
+				t.Fatal("navigation must remain auxiliary, not change the 18u key inventory", k.ID)
 			}
 		}
 	}

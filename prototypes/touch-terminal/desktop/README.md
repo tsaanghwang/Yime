@@ -4,7 +4,11 @@ P1–P4 已随 #71–#73 合并。P5 提供包内完整三模式词典、私有�
 
 ## 使用
 
-2026-10-21 已处理晨报的七项审阅问题，见[逐项记录](../../../docs/testing/touch-keyboard/2026-10-21/review-fixes/REVIEW_RESOLUTION.zh-CN.md)。后续须按[18u 本机执行说明](ACCEPTANCE_18U.zh-CN.md)使用新修复包；#74 包保留为历史，不含本轮修复。真人手指、触控笔和真实应用结果仍待分别记录。
+审阅跟进：初版 PR #77 包的消息泵内取消问题已修复并通过六项反例回归；下方链接现指向固定修复包。初版包保留历史且不再用于真人验收，见[处理记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/review-fix/REVIEW_RESOLUTION.zh-CN.md)。
+
+2026-10-22：基于 PR #76 合并后的 18u 增加输出栏辅助导航（左/右、Home/End、选区开关），支持单指或单笔依次选择、替换及删除，不改 100 键盘面。使用 [PR #77 固定 x64 CI 包](https://github.com/tsaanghwang/Yime/actions/runs/39751192421/artifacts/12413647726)、[CI 交付身份](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/review-fix/CI_DELIVERY.zh-CN.md)及[新版验收步骤](ACCEPTANCE_18U.zh-CN.md)。首次本地包仍保留开发身份。旧 #76 包不含此栏，其导航阻塞和历史证据保持原样。
+
+2026-10-21 已处理晨报的七项审阅问题，见[逐项记录](../../../docs/testing/touch-keyboard/2026-10-21/review-fixes/REVIEW_RESOLUTION.zh-CN.md)。#74/#76 包均保留历史身份。真人手指、触控笔和真实应用结果仍待分别记录。
 
 完整解压匹配架构的 CI 包，双击 `Start Keyboard.cmd` 或 exe。默认 18u、100 键、342.90 mm，先在目标文本区放置光标，再点“绑定目标”。完整步骤见[中文指南](USER_GUIDE.zh-CN.md)。
 
