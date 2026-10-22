@@ -107,6 +107,7 @@ type ui struct {
 	showGlyphs       bool
 	host             *deliveryGate
 	hostBusy         bool
+	navSelecting     bool // Applies only to auxiliary navigation, never character keys.
 }
 
 var active *ui
@@ -349,6 +350,7 @@ func (a *ui) invalidate() {
 }
 func (a *ui) cancel() {
 	a.s.Cancel()
+	a.navSelecting = false
 	a.owners = map[uint32]target{}
 	a.previewTouches = map[uint32]*previewGesture{}
 }

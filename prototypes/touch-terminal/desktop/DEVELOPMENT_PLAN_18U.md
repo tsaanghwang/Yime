@@ -7,6 +7,8 @@
 
 ## 当前基线与目标
 
+2026-10-22 接续：已在 PR #76 合并基线加入 H02 辅助导航与选区入口；只占现有输出栏右侧，不改几何或稳定键数据。新包开发检查与交付状态见[本轮记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/DEVELOPMENT_RESULT.zh-CN.md)。P6 新增 P11/H02-N 子项，真人手指/笔及宿主结果仍待记录，旧包的无入口阻塞不追溯改写。
+
 | 项目 | 已有基线 | 本计划目标 |
 | --- | --- | --- |
 | 主区 | 原 CN/EN134 去三条共同中缝后的 18u，19.05 mm/u，宽 342.90 mm | 保持稳定键身份、相对排布与编码，作为开发入口 |
@@ -42,7 +44,7 @@ P1 已落实推荐入口：新包的 `Start Keyboard.cmd` 与 `Start Main Area.c
 | P5 完整便携交付 | 完整三模式资源、身份校验、中文指南、CI artifact 及 SHA-256 清单 | 从交付包独立启动，不依赖源码目录/已安装产品；记录源码 SHA、CI run/artifact URL、架构、资源哈希和适用范围；ARM64 仅标交叉构建 | 本地完整包检查通过；CI 精确交付见本阶段 PR |
 | P6 恢复真人验收准备 | 按 P5 精确提交和包制定手指/笔执行步骤与结果表，更新待记录项 | 手指、触控笔、真实应用各有独立记录，失败进入对应阶段修复；只有实际执行后才能给出验收结论 | #75 完成准备；10-21 审阅问题已回流修复，切换新包后按修订步骤执行；真人结果待记录 |
 
-P5 已随 [PR #74](https://github.com/tsaanghwang/Yime/pull/74) 合并，P6 准备随 #75 合并。2026-10-21 晨报发现五项运行时交互问题与两项步骤错误，已回流修复并补回归，见[逐项记录](../../../docs/testing/touch-keyboard/2026-10-21/review-fixes/REVIEW_RESOLUTION.zh-CN.md)。后续验收须使用新修复包；原源码 `9d0a02e7ad936ee9a471cd118421f209b8972b33` 的 #74 包保持[历史身份](../../../docs/testing/touch-keyboard/2026-10-20/p6/package-identity.json)，不能改写为已修复。当前入口见[18u 本机验收步骤](ACCEPTANCE_18U.zh-CN.md)。真人手指、笔及真实宿主仍待实际记录；18u 缺少的导航/选区入口单列阻塞。
+P5 已随 [PR #74](https://github.com/tsaanghwang/Yime/pull/74) 合并，P6 准备随 #75 合并。2026-10-21 晨报发现五项运行时交互问题与两项步骤错误，已随 #76 回流修复并补回归，见[逐项记录](../../../docs/testing/touch-keyboard/2026-10-21/review-fixes/REVIEW_RESOLUTION.zh-CN.md)。原源码 `9d0a02e7ad936ee9a471cd118421f209b8972b33` 的 #74 包保持[历史身份](../../../docs/testing/touch-keyboard/2026-10-20/p6/package-identity.json)，不能改写为已修复。当前入口见[18u 本机验收步骤](ACCEPTANCE_18U.zh-CN.md)。真人手指、笔及真实宿主仍待实际记录；#76 旧包导航/选区仍为无入口阻塞，本次新包按 P11/H02-N 重新记录。
 
 P1/P2 已随 PR #71 合并。P3 在 `--preview` 显式入口完成中文组合、候选与本地受控输出，完整隔离词典三模式均验证“你好”选词及取消/编辑；候选按下身份、旧页/旧会话、重复抬手和重复响应均有回归。见 [P3 记录](../../../docs/testing/touch-keyboard/2026-10-20/p3/development-result.json)。P3 已随 PR #72 合并。P4 新增显式目标绑定、焦点世代、唯一发送适配器和失败停止；受控原生 EDIT 三模式确认、编辑、失焦离开再返回、迟到回包，以及注入零发送/未知前缀结果均通过。下一项是 P5：完整独立中文便携交付。P4 的 SendInput 不能原子绑定 HWND，检查不能证明发送瞬间的全部焦点竞态都被排除；实际宿主接受仍待独立观察。精确范围见 [P4 证据](../../../docs/testing/touch-keyboard/2026-10-20/p4/development-result.json)。P4 历史英文包不包含完整中文资源。P5 已增加完整独立中文包、编译绑定资源校验和仓库外运行检查，见 [P5 记录](../../../docs/testing/touch-keyboard/2026-10-20/p5/development-result.json)；CI 交付身份见本阶段 PR。真人验收尚未执行。P1/P2 历史结果见[原开发记录](../../../docs/testing/touch-keyboard/2026-10-20/development-result.json)，不重新标记为 P3 证据。
 

@@ -14,15 +14,16 @@ import (
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 )
 
-const previewHelp = "中文受控预览\n\n所有确认只写入本窗口内存文本，不调用系统输入，不写剪贴板或用户数据。\n变码/全码/简码切换会取消旧组合；CN EN 同时切换输入与标点，保留原始组合；英文暂停的候选不可选择。\n中文始终显示 CN；英文时 Layout 切换 CN/EN 键帽，偏好在本次运行内保留。\n点候选、空格/Enter 确认；空组合时空格/Enter 直接输出，非空无候选不提交。Esc 取消，退格编辑组合；翻页后旧候选及非编码主区输入触点取消。\n18u 主区没有 Left/Home/End 等侧区导航键，可用退格和无组合时 Ctrl+A。侧区可提供导航/删除。编辑按 Unicode 码点；本地输出用 ↵/⇥ 显示换行/Tab，单行随光标截取。\n侧数字区保持 literal 旁路。未标注标点入口开关默认关闭。\n音元字形来自实验解析文件，字体只在本进程加载；ID 按钮可恢复 ID 键帽。\n关闭即丢弃本地文本。不能将鼠标或模拟触摸记录为真实手指/触控笔验收。"
+const previewHelp = "中文受控预览\n\n所有确认只写入本窗口内存文本，不调用系统输入，不写剪贴板或用户数据。\n变码/全码/简码切换会取消旧组合；CN EN 同时切换输入与标点，保留原始组合；英文暂停的候选不可选择。\n中文始终显示 CN；英文时 Layout 切换 CN/EN 键帽，偏好在本次运行内保留。\n点候选、空格/Enter 确认；空组合时空格/Enter 直接输出，非空无候选不提交。Esc 取消，退格编辑组合；翻页后旧候选及非编码主区输入触点取消。\n输出栏右侧提供左/右、Home/End 和选区开关；单指/单笔依次点按可选择，再输入替换或退格删除。辅助导航不继承盘面修饰键；其他操作关闭选区开关。有中文组合（含暂停组合）时不可用。Home/End 在预览到全文首尾。编辑按 Unicode 码点；本地输出用 ↵/⇥ 显示换行/Tab，单行随光标截取。\n侧数字区保持 literal 旁路。未标注标点入口开关默认关闭。\n音元字形来自实验解析文件，字体只在本进程加载；ID 按钮可恢复 ID 键帽。\n关闭即丢弃本地文本。不能将鼠标或模拟触摸记录为真实手指/触控笔验收。"
 
 type previewGesture struct {
-	area      rect
-	left      bool
-	action    string
-	stamp     previewStamp
-	candidate candidatePress
-	delivery  deliveryTicket
+	area       rect
+	left       bool
+	action     string
+	stamp      previewStamp
+	candidate  candidatePress
+	delivery   deliveryTicket
+	navigation string
 }
 
 func inside(r rect, x, y int32) bool { return x >= r.L && x < r.R && y >= r.T && y < r.B }
@@ -52,24 +53,41 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 		return
 	}
 	g := &previewGesture{stamp: a.preview.stamp()}
-	if int(y) >= a.top {
-		g.action = "key"
-		g.area = rect{0, int32(a.top), a.previewWidth(), 1 << 30}
-		a.s.Down(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
-	} else {
-		for _, b := range previewButtons {
-			r := rect{b.l, 110, b.r, 150}
-			if inside(r, x, y) {
-				g.action, g.area = b.action, r
-				break
-			}
+	if key, area := a.navigationAt(x, y); key != "" {
+		// Serialize navigation against other contacts and clear virtual modifiers.
+		// The selection latch is independent of Shift and supports a single pen.
+		extend := a.navSelecting
+		a.cancel()
+		if !a.preview.navigationEnabled() {
+			a.status = "请先确认或取消中文组合（含暂停组合），再使用辅助导航"
+			a.invalidate()
+			return
 		}
-		if g.action == "" && a.preview.candidatesEnabled() {
-			for i := range a.preview.snapshot.State.Candidates {
-				r := a.candidateRect(i)
+		a.navSelecting = extend
+		g.action, g.navigation, g.area = "navigation", key, area
+	} else {
+		if a.navSelecting || a.navigationPending() {
+			a.cancel()
+		}
+		if int(y) >= a.top {
+			g.action = "key"
+			g.area = rect{0, int32(a.top), a.previewWidth(), 1 << 30}
+			a.s.Down(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
+		} else {
+			for _, b := range previewButtons {
+				r := rect{b.l, 110, b.r, 150}
 				if inside(r, x, y) {
-					g.action, g.area, g.candidate = "candidate", r, a.preview.candidate(i)
+					g.action, g.area = b.action, r
 					break
+				}
+			}
+			if g.action == "" && a.preview.candidatesEnabled() {
+				for i := range a.preview.snapshot.State.Candidates {
+					r := a.candidateRect(i)
+					if inside(r, x, y) {
+						g.action, g.area, g.candidate = "candidate", r, a.preview.candidate(i)
+						break
+					}
 				}
 			}
 		}
@@ -133,6 +151,12 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 			err = fmt.Errorf("状态已更新；本次触点取消")
 		} else {
 			switch g.action {
+			case "navigation":
+				if g.navigation == "select" {
+					a.navSelecting = !a.navSelecting
+				} else {
+					err = a.preview.navigate(g.navigation, a.navSelecting, g.stamp)
+				}
 			case "candidate":
 				err = a.preview.selectCandidate(g.candidate)
 			case "previous":
@@ -165,6 +189,7 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 		a.loseHostFocus("会话/发送已停止；请核对正文后重新绑定")
 	}
 	if err != nil {
+		a.navSelecting = false
 		a.status = err.Error()
 	} else {
 		a.status = "预览输出只在本窗口；真实手指/触控笔验收未记录。"
@@ -214,15 +239,17 @@ func (a *ui) drawPreview(dc uintptr, r rect) {
 		fill(dc, box, color)
 		text(dc, label, box, 0x11) // wrap long candidates inside their own target
 	}
-	fill(dc, rect{10, 240, r.R - 10, 290}, 0xFFFFFF)
+	outputRight := a.navigationRect(navigationButtons[0]).L - 8
+	fill(dc, rect{10, 240, outputRight, 290}, 0xFFFFFF)
 	output := ""
 	if a.host != nil {
 		output = fmt.Sprintf("目标 HWND %d / 焦点 %d / 世代 %d：%s", a.host.target.Window, a.host.target.Focus, a.host.epoch, a.host.last)
-		text(dc, output, rect{14, 242, r.R - 14, 288}, 0x10)
+		text(dc, output, rect{14, 242, outputRight - 4, 288}, 0x10)
 	} else {
-		output = p.editor.fittedDisplay(func(s string) bool { return previewTextWidth(dc, s) <= r.R-28 })
-		text(dc, output, rect{14, 242, r.R - 14, 288}, 0x24) // single line, vertically centered
+		output = p.editor.fittedDisplay(func(s string) bool { return previewTextWidth(dc, s) <= outputRight-18 })
+		text(dc, output, rect{14, 242, outputRight - 4, 288}, 0x24) // single line, vertically centered
 	}
+	a.drawNavigation(dc)
 }
 
 func previewTextWidth(dc uintptr, s string) int32 {

@@ -1,0 +1,153 @@
+{
+  "command": "go -C go-backend test -json ./cmd/yime-touch-keyboard ./internal/touchkeyboard ./internal/keyboardlab ./cmd/yime-keyboard-lab ./internal/asciicodemode ./input_methods/yime/codemode",
+  "temporaryDirectoryOverride": "process-local TEMP/TMP=C:/dev/Yime/.tmp/h02-navigation-tests",
+  "passedTestAndSubtestEvents": 343,
+  "failedTestEvents": [],
+  "packageResults": [
+    {
+      "Time": "2026-10-22T16:13:19.9059951+08:00",
+      "Action": "skip",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-keyboard-lab",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:13:20.1692577+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard",
+      "Elapsed": 0.32
+    },
+    {
+      "Time": "2026-10-22T16:13:20.1744727+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode",
+      "Elapsed": 0.268
+    },
+    {
+      "Time": "2026-10-22T16:13:20.2044378+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode",
+      "Elapsed": 0.298
+    },
+    {
+      "Time": "2026-10-22T16:13:23.0021051+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Elapsed": 3.154
+    },
+    {
+      "Time": "2026-10-22T16:13:29.9408726+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab",
+      "Elapsed": 10.035
+    }
+  ],
+  "skippedTests": [
+    {
+      "Time": "2026-10-22T16:13:20.9505449+08:00",
+      "Action": "skip",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab",
+      "Test": "TestFontRouteRejectsSymlinkOutsideRepository",
+      "Elapsed": 0.03
+    },
+    {
+      "Time": "2026-10-22T16:13:20.9505449+08:00",
+      "Action": "skip",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab",
+      "Test": "TestCanonicalCorpusHTTP",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:13:21.1607321+08:00",
+      "Action": "skip",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Test": "TestPreviewCompleteCorpus",
+      "Elapsed": 0
+    }
+  ],
+  "navigationResults": [
+    {
+      "Time": "2026-10-22T16:13:20.782062+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Test": "TestNavigationSequentialSelectionAndReplacement",
+      "Elapsed": 0.03
+    },
+    {
+      "Time": "2026-10-22T16:13:20.809464+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Test": "TestNavigationNativeTouchAndPenCompatibleMouseRouting",
+      "Elapsed": 0.03
+    },
+    {
+      "Time": "2026-10-22T16:13:20.8338412+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Test": "TestNavigationContactCancellationAndModifiers/ArrowLeft",
+      "Elapsed": 0.02
+    },
+    {
+      "Time": "2026-10-22T16:13:20.8577312+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Test": "TestNavigationContactCancellationAndModifiers/ArrowRight",
+      "Elapsed": 0.02
+    },
+    {
+      "Time": "2026-10-22T16:13:20.8890279+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Test": "TestNavigationContactCancellationAndModifiers/Home",
+      "Elapsed": 0.03
+    },
+    {
+      "Time": "2026-10-22T16:13:20.9147279+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Test": "TestNavigationContactCancellationAndModifiers/End",
+      "Elapsed": 0.03
+    },
+    {
+      "Time": "2026-10-22T16:13:20.9407351+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Test": "TestNavigationContactCancellationAndModifiers/select",
+      "Elapsed": 0.03
+    },
+    {
+      "Time": "2026-10-22T16:13:20.9407351+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Test": "TestNavigationContactCancellationAndModifiers",
+      "Elapsed": 0.13
+    },
+    {
+      "Time": "2026-10-22T16:13:20.9706264+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Test": "TestNavigationRejectsCompositionStaleStateAndOverlap",
+      "Elapsed": 0.03
+    },
+    {
+      "Time": "2026-10-22T16:13:20.999693+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Test": "TestNavigationHostDeliveryUsesExistingGate",
+      "Elapsed": 0.03
+    },
+    {
+      "Time": "2026-10-22T16:13:21.02871+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Test": "TestNavigationHostFailedSendStopsWithoutReplay",
+      "Elapsed": 0.03
+    },
+    {
+      "Time": "2026-10-22T16:13:21.0576043+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard",
+      "Test": "TestNavigationHitRegionsStayOutsideBoardAndOutput",
+      "Elapsed": 0.03
+    }
+  ]
+}

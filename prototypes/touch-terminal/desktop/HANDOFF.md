@@ -1,6 +1,16 @@
 # 桌面触摸键盘阶段交接
 
-## 当前接续决定 2026-10-21
+## 当前接续决定 2026-10-22：H02 辅助导航
+
+基于 main 的 PR #76 合并提交 `3cae8c6b6f8a0af25285cfd8116cb7a19e9c43bd`，在 `codex/touch-keyboard-h02-navigation` 实现触屏辅助导航。输出栏右侧提供左/右、Home/End 和独立选区开关，单指/单笔可依次完成扩展、缩小、替换和删除；无须改变 18u 盘面或借用侧区。稳定键 ID、颜色、字体、编码、生成数据、profile 与产品运行时不变。
+
+控件复用 DOWN/MOVE/UP、会话版本、目标世代及唯一发送路径。有活动或英文暂停组合时拒绝导航；不自动确认或取消。辅助导航清除盘面修饰状态并取消重叠触点；其他操作、失焦/重绑、捕获丢失和失败关闭选区开关。它只给单次导航附带 Shift，不留下系统按键。预览沿用全文 Home/End，宿主使用原生 Home/End，按宿主实际行为验收。
+
+本地 x64 完整包与 ARM64 交叉构建身份见[本次包记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/package-identity.json)。两者为 `sourceChanges:true` 的开发快照，尚无新 CI 发布身份；后续 CI 包必须另记身份，不能沿用 #76 的 URL/哈希。本轮检查及限制见[开发记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/DEVELOPMENT_RESULT.zh-CN.md)。新增回归、相关 Go 测试、27 项 Python/44 项 JavaScript、生成校验和 x64 独立包三模式/资源拒绝/渲染通过；未发送 OS 宿主输入，未执行真人或自有 EDIT 验收。
+
+执行新版[验收步骤](ACCEPTANCE_18U.zh-CN.md)及[本次空模板](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/RESULT_TEMPLATE.zh-CN.md)，逐项记录 P11、H02-N1–N5。纯手指/纯笔可覆盖辅助导航和选区；物理键盘、鼠标、全盘/侧区及笔加手指辅助单列。历史包和失败/阻塞记录原样保留；未安装输入法、修改默认输入法或用户数据。17u/23u 保持冻结。
+
+## 2026-10-21 历史交接（PR #76，不含本次辅助导航）
 
 从 #75 合并提交 `85a5cabafac4f7d96586ee6662f17e5d66181a27` 处理今日晨报与跟进监控的七项审阅问题。五类运行时缺陷均已用测试复现并修复，P07/P08 与 H02 的可执行步骤已修正；详见[逐项处理记录](../../../docs/testing/touch-keyboard/2026-10-21/review-fixes/REVIEW_RESOLUTION.zh-CN.md)。18u 几何、映射及 17u/23u 冻结状态保持不变。
 
