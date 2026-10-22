@@ -4,9 +4,9 @@
 
 ## 1. 固定交付物
 
-**交付暂停：初版 PR #77 包存在消息泵内取消缺陷，已补修复和六项回归，待新 CI 修复包身份固定后执行以下步骤。** 下述初版包和校验值仅保留历史，不用于真人验收；修复证据见[审阅处理记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/review-fix/REVIEW_RESOLUTION.zh-CN.md)。
+**使用下述修复包：消息泵内取消问题已修复并补六项回归。** 初版 PR #77 包只保留[历史身份](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/CI_DELIVERY.zh-CN.md)，不再用于真人验收；修复证据见[审阅处理记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/review-fix/REVIEW_RESOLUTION.zh-CN.md)。
 
-本次 H02 步骤使用 [PR #77 固定 x64 CI 包](https://github.com/tsaanghwang/Yime/actions/runs/39749274057/artifacts/12412164789)，来自[已通过的桌面 CI run 39749274057](https://github.com/tsaanghwang/Yime/actions/runs/39749274057)。运行时 head 为 `df70abc60ce466b2ab40c2b813d8ce89a9fc1946`，包源码为 PR 测试合并提交 `ef3e231793c1b45e89ae9202bbc5245592d99e06`，`sourceChanges:false`。ZIP SHA-256 为 `1038e8fa39aca95d5f3b4856ae40b570ab3137dd87bbd617ab00f7e9d2fd8188`，exe SHA-256 为 `3f3e7e5a991068fb4f69d41b94415d156369e797cf110f500ebf5e57eaceb66e`。实际下载 ZIP 和全部 29 个载荷已核验，完整身份见[本次 CI 包记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/ci-package-identity.json)。后续文档提交产生的新 artifact 不自动替换此固定包。
+本次 H02 步骤使用 [PR #77 固定 x64 CI 包](https://github.com/tsaanghwang/Yime/actions/runs/39751192421/artifacts/12413647726)，来自[已通过的桌面 CI run 39751192421](https://github.com/tsaanghwang/Yime/actions/runs/39751192421)。运行时 head 为 `ceed533ff98796deb4003e2020aa8cf1ee23dd2b`，包源码为 PR 测试合并提交 `f2e1a03659bc6b90b9bcc8ec1acba4c5ba63cf6c`，`sourceChanges:false`。ZIP SHA-256 为 `ba9a5f4c1fb638fe40700dd008bd2b6ae2ae7eb65c338bc859c2ee3b684da74c`，exe SHA-256 为 `e01cef476b93aee09e1f96214f289dbc1a33c10ebcbcf916045723711dcaacf9`。实际下载 ZIP 和全部 29 个载荷已核验，完整身份见[本次 CI 包记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/review-fix/ci-package-identity.json)。后续文档提交产生的新 artifact 不自动替换此固定包。
 
 首次本地开发包 `C:\dev\Yime\.generated\touch-keyboard-h02-20261022-amd64` 及其 `sourceChanges:true` [身份记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/package-identity.json)保留为开发证据，不与上述 CI 包混用。
 

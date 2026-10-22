@@ -8,4 +8,4 @@
 
 使用进程局部 Go `-overlay` 替换回修复前 `84ac0d24` 的三个桌面 UI 源文件，保留新测试，六个场景全部复现失败，见 [pump-before.log](pump-before.log)。当前代码的桌面/几何完整测试通过，见 [pump-after.log](pump-after.log)。该 overlay 仅用于桌面测试的反例验证，没有全局 GOFLAGS 或产品覆盖。
 
-初版 `df70abc6` 的 CI run 39749274057、ZIP 与包记录保留为历史，不再作为真人验收对象；修复包须建立新 CI 身份后接续。真人手指、笔、真实应用及 ARM64 原生结果仍待记录。
+初版 `df70abc6` 的 CI run 39749274057、ZIP 与包记录保留为历史，不再作为真人验收对象；修复提交 `ceed533f` 的新 CI 包已核验，见[固定交付](CI_DELIVERY.zh-CN.md)。真人手指、笔、真实应用及 ARM64 原生结果仍待记录。

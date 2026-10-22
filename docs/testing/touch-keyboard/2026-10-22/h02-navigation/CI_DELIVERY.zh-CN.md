@@ -1,6 +1,6 @@
 # PR #77 固定 CI 包交付
 
-**历史初版包：发现消息泵内取消缺陷后停止用于真人验收。** 修复与反例证据见 [review-fix/REVIEW_RESOLUTION.zh-CN.md](review-fix/REVIEW_RESOLUTION.zh-CN.md)。下列已通过的 CI/哈希事实保留原样，不提升为修复后结论；后续固定修复包另建身份。
+**历史初版包：发现消息泵内取消缺陷后停止用于真人验收。** 修复与反例证据见 [review-fix/REVIEW_RESOLUTION.zh-CN.md](review-fix/REVIEW_RESOLUTION.zh-CN.md)。下列已通过的 CI/哈希事实保留原样，不提升为修复后结论；当前固定修复包见 [review-fix/CI_DELIVERY.zh-CN.md](review-fix/CI_DELIVERY.zh-CN.md)。
 
 2026-10-22。[PR #77](https://github.com/tsaanghwang/Yime/pull/77) 运行时提交 `df70abc60ce466b2ab40c2b813d8ce89a9fc1946` 已推送；[桌面 CI run 39749274057](https://github.com/tsaanghwang/Yime/actions/runs/39749274057) 全部通过。包的源码是 PR 测试合并提交 `ef3e231793c1b45e89ae9202bbc5245592d99e06`，不是运行时 head 或未来最终合并提交。两个包都为 `sourceChanges:false`。
 
