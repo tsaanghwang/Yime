@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-26T02:05:43.417Z",
+  "source": "user report in chat: 正常, following Word A-B-A binding steps",
+  "case": "H06-Word-cross-target-rebind",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "initialText": {
+    "A": "你你你",
+    "B": ""
+  },
+  "checks": [
+    {
+      "action": "click end of A, rebind, confirm 你",
+      "expectedText": {
+        "A": "你你你你",
+        "B": ""
+      },
+      "result": "passed per user report"
+    },
+    {
+      "action": "switch B, click caret, bind, confirm 你",
+      "expectedText": {
+        "A": "你你你你",
+        "B": "你"
+      },
+      "result": "passed per user report"
+    },
+    {
+      "action": "switch A, click end, rebind, confirm 你",
+      "expectedText": {
+        "A": "你你你你你",
+        "B": "你"
+      },
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "scope": "two Word documents in one application",
+  "limitations": [
+    "does not prove second application compatibility",
+    "no independent observation or pen acceptance"
+  ]
+}

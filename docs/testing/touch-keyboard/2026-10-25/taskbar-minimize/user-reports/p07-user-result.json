@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-25T12:20:01.266Z",
+  "source": "user report in chat: 正常",
+  "case": "P07",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "scope": "local preview",
+  "checks": [
+    {
+      "procedure": "clear output, Chinese variable ni, switch CN EN to English",
+      "result": "normal per user report"
+    },
+    {
+      "procedure": "EN view R05K06 a/A; tap a, Shift, a",
+      "expectedOutput": "aA",
+      "result": "passed per user report"
+    },
+    {
+      "procedure": "tap paused Chinese candidate; return to Chinese",
+      "expected": "candidate not committed; ni retained",
+      "result": "passed per user report"
+    },
+    {
+      "procedure": "English Layout original, Chinese then English",
+      "expected": "original-view preference retained, geometry/colors unchanged",
+      "result": "passed per user report"
+    },
+    {
+      "procedure": "restore EN view at end",
+      "result": "normal per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "independent imagery not supplied",
+    "does not cover pen or real-host input"
+  ]
+}

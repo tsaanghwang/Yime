@@ -1,0 +1,50 @@
+{
+  "schema_version": "yimecore-pr78-review-tool-output-transcript-v1",
+  "recorded_at": "2026-10-26T15:48:17.119Z",
+  "source_kind": "peer-agent-relayed-tool-output-summary",
+  "source_agent": "/root/arm64_audit",
+  "original_logs_saved": false,
+  "observed_working_directory": "C:/dev/Yime",
+  "native_go_toolchain": "Go 1.25.14 Windows ARM64 as reported by the reviewing agent",
+  "go_checks": [
+    {
+      "command": "go test -count=1 ./cmd/yimecore-independence-audit",
+      "exit_code": 0,
+      "reported_duration_seconds": 4.103
+    },
+    {
+      "command": "go test -count=1 -run ^TestSpeechProductExport ./cmd/yimecore-speech-admission",
+      "exit_code": 0,
+      "reported_duration_seconds": 13.96
+    }
+  ],
+  "checked_ps7_checks": [
+    {
+      "label": "platform entry",
+      "passed": 24
+    },
+    {
+      "label": "development scope",
+      "passed": 21
+    },
+    {
+      "label": "speech admission",
+      "passed": 22
+    }
+  ],
+  "pre_fix_guard_observation": {
+    "location": "managed review worktree",
+    "helper_and_builder_baseline": "2b256afdeb45795aafcf11641ba04cba149acb46",
+    "added_regression_test": true,
+    "ordinary_x64_valid_pins_accepted": true,
+    "arm_rejection_assertion": "ARM64 speech admission regression: ARM package rejects correctly pinned x64 admission",
+    "exit_code": 1,
+    "meaning": "The new ARM rejection regression failed before the helper/builder fix. Exact saved rerun logs will be archived separately when available."
+  },
+  "environment_failure_observation": "An earlier sandbox attempt could not create .tmp (AccessDenied); the agent reported this as an environment failure, not a product result.",
+  "limits": [
+    "This receipt transcribes the peer review report; original stdout/stderr were not saved for these early invocations.",
+    "No exact source-file hashes or event timestamps were supplied for those early tests.",
+    "This receipt does not replace the forthcoming saved red/green guard logs."
+  ]
+}

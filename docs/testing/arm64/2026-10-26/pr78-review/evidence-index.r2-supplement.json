@@ -1,0 +1,23 @@
+{
+  "schema_version": "yimecore-pr78-review-r2-supplement-v1",
+  "prior_index": {
+    "path": "evidence-index.json",
+    "sha256": "6e43b6e21d499310f8c8c837274fd425723fc7cda189276140c4bb246c33183f"
+  },
+  "passed": true,
+  "scope": "Read-only new gate against fixed R2 admission; not a rebuild or validation of historical source hashes against current source",
+  "artifacts": [
+    {
+      "path": "fixed-r2-preflight/check-r2-admission-readonly.ps1",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\check-r2-admission-readonly.ps1",
+      "bytes": 1537,
+      "sha256": "0dbd4a83df45e8b4b086b30686ff9b71bbcd409b5064c9031a976c775d7f5ebb"
+    },
+    {
+      "path": "fixed-r2-preflight/pr78-r2-admission-readonly.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-r2-admission-readonly.json",
+      "bytes": 716,
+      "sha256": "fba56cda6f79624e4d1f9518a3f48358e1c416248e25e0e0646a4c5f6a41a9b5"
+    }
+  ]
+}

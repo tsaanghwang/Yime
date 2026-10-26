@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-10-25T12:07:14.596Z",
+  "source": "user report in chat: 暂时没有发现问题",
+  "case": "P06",
+  "requestedChecks": [
+    "ni next page then previous page without output",
+    "hold old candidate while another finger turns page; release old candidate without commit",
+    "hold main 0 while another finger turns page; release without candidate or 0 output"
+  ],
+  "observation": "user reports no issues found so far; individual observations and availability of next page/concurrent contacts not explicitly described",
+  "status": "provisional no-issue report; detailed case completion pending",
+  "inputMethod": "finger procedure requested; not independently observed",
+  "attemptCounts": null,
+  "actualOutput": null,
+  "scope": "preview only"
+}

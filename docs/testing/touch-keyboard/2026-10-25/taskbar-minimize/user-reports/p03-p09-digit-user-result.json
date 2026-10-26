@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-25T12:44:54.243Z",
+  "source": "user report: 第一二项正常。第三项只能针对用作候选选择键的数字。0除外。",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "scope": "local keyboard lab preview only",
+  "checks": [
+    {
+      "case": "P09-empty-composition-digit",
+      "procedure": "Chinese variable, base layer, clear output, main 1",
+      "expected": "literal 1",
+      "result": "passed per user report"
+    },
+    {
+      "case": "P03-P09-ordinal-selection",
+      "procedure": "clear output, ni, identify candidate 你 ordinal, tap corresponding main digit",
+      "expected": "confirm 你 only, no added digit",
+      "result": "passed per user report",
+      "actualOrdinal": null
+    },
+    {
+      "case": "missing-ordinal",
+      "eligibleDigits": "1 through 9 only",
+      "excludedDigit": "0",
+      "result": "pending; user clarified rule, did not report executing a missing-ordinal case"
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "does not change installed products digit behavior",
+    "no independent observation",
+    "P09 punctuation entrance switch remains untested"
+  ]
+}

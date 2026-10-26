@@ -1,0 +1,3 @@
+Package ready: C:\dev\Yime\.tmp\pr78-installer-review-8e5f2887\temp\yime-arm64-package-4fee5df31b664d4ca3dc824cdc124135\built
+Read-only native host probe: nativeMachine=0xaa64; processMachine=0x0000; is64BitProcess=True
+PASS: 37 ARM64 package/PE/host/registration/maintenance checks. Read-only native OS query, byte fixtures and mocked maintenance calls; no product binary executed, no installed product, registry, UI or user data changed. C:\dev\Yime\.tmp\pr78-installer-review-8e5f2887\temp\yime-arm64-package-4fee5df31b664d4ca3dc824cdc124135

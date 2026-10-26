@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-26",
+  "userQuote": "正常",
+  "context": "Reply after test-file links supplied for preceding requested Edge two-pen input test",
+  "scope": "Current MSI 16-inch panel; local Edge InPrivate textarea; fixed keyboard package",
+  "packageDirectory": ".generated/touch-pen-shift-fix-20261026-amd64",
+  "executableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "hostLauncher": "Start Browser Test.cmd",
+  "keyboardLauncher": "Start Pen Fixed Keyboard.cmd",
+  "instructedInputs": [
+    "MSI original supplied pen",
+    "Acer PE272XT supplied pen"
+  ],
+  "instructedSteps": [
+    "Use pen to place caret in local test textarea",
+    "Explicitly bind keyboard target",
+    "English Aa",
+    "Chinese 你; expected total Aa你"
+  ],
+  "result": "normal-user-reported-as-group",
+  "limitations": [
+    "Interpreted as feedback to the preceding requested input test; user did not restate each substep",
+    "No separate output transcription, per-pen result, attempt counts or quantitative latency",
+    "Not independently observed; no host trace enabled",
+    "Does not cover cancellation, recovery, full three-mode or full-key acceptance"
+  ]
+}

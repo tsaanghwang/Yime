@@ -1,0 +1,10 @@
+candidate_popup_ownership_guard_verified=true
+change_language_hresult=0x0
+enable_profile_hresult=0x0
+activate_profile_hresult=0x0
+activate_process_profile_hresult=0x0
+current_language_hresult=0x0
+current_language=0x804
+active_profile_hresult=0x0
+active_profile_language=0x804
+registered_english_shift_passthrough_verified=true

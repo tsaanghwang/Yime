@@ -1,0 +1,46 @@
+{
+  "recordedAt": "2026-10-26T02:47:28.548Z",
+  "source": "user report in chat: 正常, following five Edge Enter/navigation-protection steps",
+  "case": "H03-and-H02-N5-Edge-partial",
+  "host": "Edge InPrivate local textarea",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "checks": [
+    {
+      "case": "H03-English-Enter",
+      "action": "a, Enter, b",
+      "expected": "two lines",
+      "result": "passed per user report"
+    },
+    {
+      "case": "H03-English-ShiftEnter",
+      "action": "clear with Backspace three times; a, Shift+Enter, b",
+      "expected": "two lines in textarea",
+      "result": "passed per user report"
+    },
+    {
+      "case": "N5-active-paused",
+      "action": "clear, Chinese variable ni; attempt Left/Right/Home/End/selection; pause in English and repeat",
+      "expected": "navigation/confirmation rejected; ni retained",
+      "result": "passed per user report"
+    },
+    {
+      "case": "N5-resume",
+      "action": "Esc; abc, Home, x",
+      "expected": "xabc",
+      "result": "passed per user report"
+    },
+    {
+      "case": "H03-Chinese-Enter-ShiftEnter",
+      "action": "End, Chinese ni+Enter, ni+ShiftEnter",
+      "expected": "one current-first-candidate confirmation per action, no newline",
+      "actualCommittedChinese": null,
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "specific committed Chinese characters not supplied",
+    "N5 focus-loss selection-latch reset pending",
+    "no independent observation or pen acceptance"
+  ]
+}

@@ -1,0 +1,42 @@
+﻿**********************
+Windows PowerShell 脚本开始
+开始时间: 20261026215107
+用户名: HUASHUONOTEBOOK\tsaan
+RunAs 用户: HUASHUONOTEBOOK\tsaan
+配置名称: 
+计算机: HUASHUONOTEBOOK (Microsoft Windows NT 10.0.28000.0)
+主机应用程序: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-deliveries\arm64-proart-20261026-r2\YimeCore-ARM64\Setup.ps1 -Action Install -InitiatingSid S-1-5-21-2466658430-60932705-3086004269-1001 -LogId e3d2f95ca1274c46ba7f8496dc9da645
+进程 ID: 4864
+PSVersion: 5.1.28000.3231
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.28000.3231
+BuildVersion: 10.0.28000.3231
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\e3d2f95ca1274c46ba7f8496dc9da645.admin.log
+Action: Install; package: C:\dev\Yime-deliveries\arm64-proart-20261026-r2\YimeCore-ARM64
+registration_step=query-profile; architecture_bits=64; hresult=0x0
+registration_step=query-categories; architecture_bits=64; hresult=0x0
+registration_preflight_com=false; profile=false; categories=0
+registration_step=register-com; architecture_bits=64; hresult=0x0
+registration_step=prepare-unregister-profile; architecture_bits=64; hresult=0x80004005
+registration_step=register-profile; architecture_bits=64; hresult=0x0
+registration_step=register-category:{34745C63-B2F0-4784-8B67-5E12C8701A31}; architecture_bits=64; hresult=0x0
+registration_step=register-category:{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}; architecture_bits=64; hresult=0x0
+registration_step=register-category:{CCF05DD7-4A87-11D7-A6E2-00065B84435C}; architecture_bits=64; hresult=0x0
+registration_step=register-category:{13A016DF-560B-46CD-947A-4C3AF1E0E35D}; architecture_bits=64; hresult=0x0
+registration_step=register-category:{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}; architecture_bits=64; hresult=0x0
+operation=register
+hresult=0x0
+succeeded=true
+operation=register-com
+hresult=0x0
+succeeded=true
+Installed: YimeCore. Select it from the Windows input-method menu.
+**********************
+Windows PowerShell 脚本结束
+结束时间: 20261026215117
+**********************

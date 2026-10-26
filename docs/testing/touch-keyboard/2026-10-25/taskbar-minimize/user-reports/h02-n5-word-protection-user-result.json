@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-26T02:19:21.478Z",
+  "source": "user report in chat: 正常, following Word navigation-protection steps",
+  "case": "H02-N5-Word",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "hosts": {
+    "C": "new unsaved Word test document used for Enter checks",
+    "B": "previous Word test document B"
+  },
+  "checks": [
+    {
+      "action": "click end of C, rebind, Chinese variable ni, attempt Left/Right/Home/End/selection",
+      "expected": "no navigation or commit; raw ni and preexisting document text retained",
+      "result": "passed per user report"
+    },
+    {
+      "action": "switch English to pause ni; attempt same controls",
+      "expected": "no navigation or commit; ni retained",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Esc, English EN, abc, selection on, lift contacts, switch B then back C",
+      "expected": "C gains only abc; B unchanged; old selection latch/binding invalidated",
+      "result": "passed per user report"
+    },
+    {
+      "action": "click end of C, rebind, Left",
+      "expected": "normal left movement with no selection extension",
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "preexistingCText": null,
+  "limitations": [
+    "prior exact Chinese text in C unspecified",
+    "no independent observation or pen acceptance",
+    "not second-application compatibility"
+  ]
+}

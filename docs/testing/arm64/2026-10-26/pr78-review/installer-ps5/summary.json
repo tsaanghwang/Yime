@@ -1,0 +1,37 @@
+{
+  "reviewed_pr_head": "934126ff03c3583f9a119a17c10cd43eb16e8b56",
+  "reviewed_main": "9adc3cdd9634e0258b58c9a8945b3497fc8777ad",
+  "edition": "ps5",
+  "root": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887",
+  "inputs": {
+    "Product.psm1": "b29211a17f353946f01d9eeac1ac1671ac7b4320c05065d857669797d8d871d7",
+    "Setup.ps1": "36b5c0a4ca56020dd3502c46c4423ed1b491762425fbf0dff187922902066b07",
+    "Build-Package.ps1": "cbafb3a1ff457f2be108b6ac4ecf1208303f03bfd22f904d209ac6533831dbb8",
+    "Manage-Products.ps1": "8680aff1e2c44c687da082c02e18d70e43f5e28783acb3915891b4a493c3304e",
+    "Test-Arm64Package.ps1": "e55879c6652757018ad269c7fcdfad07239ce752c229e88128905c38b815425b",
+    "Test-Manage.ps1": "6bb9720c941b34a051cede67c3ebfb6e4c052fbae95ac2eb73decc1a6ff616b0",
+    "Test-PackageValidation.ps1": "8b9f55264bab1638653b7dc773b0bb9f1afafee06dee2cdad66bfa2743138c6e"
+  },
+  "tests": [
+    {
+      "script": "Test-Arm64Package.ps1",
+      "exit_code": 0,
+      "stdout": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887\\Test-Arm64Package.ps1.stdout.txt",
+      "stderr": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887\\Test-Arm64Package.ps1.stderr.txt"
+    },
+    {
+      "script": "Test-Manage.ps1",
+      "exit_code": 0,
+      "stdout": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887\\Test-Manage.ps1.stdout.txt",
+      "stderr": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887\\Test-Manage.ps1.stderr.txt"
+    },
+    {
+      "script": "Test-PackageValidation.ps1",
+      "exit_code": 0,
+      "stdout": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887\\Test-PackageValidation.ps1.stdout.txt",
+      "stderr": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887\\Test-PackageValidation.ps1.stderr.txt"
+    }
+  ],
+  "live_product_or_user_data_operations": false,
+  "passed": true
+}

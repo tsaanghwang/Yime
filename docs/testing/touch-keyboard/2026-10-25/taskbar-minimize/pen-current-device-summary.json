@@ -1,0 +1,28 @@
+{
+  "initialReport": "pen-two-devices-initial-user-result.json",
+  "clarificationReport": "pen-surface-highlight-clarification-user-result.json",
+  "testSurface": "current MSI Prestige 16 Flip AI+ C3MTG 16-inch panel, as understood from user clarification",
+  "records": [
+    {
+      "id": "msi-bundled-pen",
+      "identification": "original pen supplied with user-described MSI Prestige 16 flip+",
+      "exactModel": null,
+      "protocol": null,
+      "testSurface": "current MSI 16-inch panel",
+      "functionalResult": "normal per user group feedback once contact responds",
+      "responsivenessObservation": "pen-down highlight slower than Acer; cause unverified",
+      "latencyMS": null
+    },
+    {
+      "id": "acer-pe272xt-bundled-pen",
+      "identification": "pen supplied with Acer PE272XT display",
+      "exactModel": null,
+      "protocol": null,
+      "testSurface": "current MSI 16-inch panel",
+      "functionalResult": "normal per user group feedback",
+      "responsivenessObservation": "no separate latency complaint reported",
+      "latencyMS": null
+    }
+  ],
+  "initialFunctionalGroupResult": "both pens reported normal; hover, three modes and N08 move-out-return per preceding requested group"
+}

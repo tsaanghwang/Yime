@@ -1,0 +1,16 @@
+{
+  "ascii_mode": false,
+  "ascii_punctuation": true,
+  "candidate_annotation": "key_sequence",
+  "candidate_font_family": "Microsoft YaHei UI",
+  "candidate_font_preset": "medium",
+  "candidate_layout": "vertical",
+  "candidate_page_size": 5,
+  "experiment_mode": "variable",
+  "full_shape": true,
+  "revision": 1793023674722883900,
+  "source": "yimecore-language-bar",
+  "traditionalization": false,
+  "updated_at": "2026-10-26T14:07:54.722Z",
+  "version": 1
+}

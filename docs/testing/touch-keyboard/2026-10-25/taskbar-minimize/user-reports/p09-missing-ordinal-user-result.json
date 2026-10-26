@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-10-25T12:46:16.790Z",
+  "source": [
+    "user: 第三项已测",
+    "assistant asked whether nonexistent 1–9 ordinal produced no output and left composition unchanged",
+    "user: zhengchang"
+  ],
+  "interpretedResponse": "正常",
+  "case": "P09-missing-ordinal",
+  "eligibleDigits": "1 through 9 only; zero excluded",
+  "expected": "no output; composition unchanged",
+  "result": "passed per user report",
+  "actualMissingOrdinal": null,
+  "actualCandidateCount": null,
+  "attemptCounts": null,
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "scope": "local preview"
+}

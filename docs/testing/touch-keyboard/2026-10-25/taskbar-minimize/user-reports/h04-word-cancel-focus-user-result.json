@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-26T01:36:55.455Z",
+  "source": "user report in chat: 正常, following four Word Esc/focus/rebind steps",
+  "case": "H04-Word-Esc-focus-and-rebind",
+  "hosts": {
+    "A": "original new unsaved Word test document",
+    "B": "second new blank Word document"
+  },
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "setup": "A initially empty, caret clicked and target rebound, Chinese variable",
+  "checks": [
+    {
+      "action": "confirm one 你, enter unconfirmed ni, Esc",
+      "expected": "A contains 你 only; composition empty",
+      "result": "passed per user report"
+    },
+    {
+      "action": "enter ni, lift all contacts, switch to B then back to A",
+      "expected": "composition cancelled, A remains 你, B remains empty",
+      "result": "passed per user report"
+    },
+    {
+      "action": "without rebinding, try input and confirmation",
+      "expected": "neither document receives new text",
+      "result": "passed per user report"
+    },
+    {
+      "action": "click caret in A and rebind, confirm another 你",
+      "expected": "A contains 你你",
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "not initial fresh-process unbound test",
+    "not cross-application host comparison: both documents are Word",
+    "no independent observation or pen acceptance"
+  ]
+}

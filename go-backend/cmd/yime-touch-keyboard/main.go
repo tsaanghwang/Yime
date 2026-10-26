@@ -15,6 +15,7 @@ import (
 type options struct {
 	Root, Profile, Zones, Shot, KeyView string
 	DataDir, DataReport                 string
+	InputTrace                          string
 	ScreenMM, ObservedMM                float64
 	Gutters, Smoke, CheckData           bool
 	Preview                             bool
@@ -42,6 +43,7 @@ func main() {
 	flag.BoolVar(&o.CheckPackage, "check-package", false, "verify complete portable resources and Chinese sessions without a window or OS input")
 	flag.StringVar(&o.DataDir, "data-dir", "", "explicit experimental dictionary directory for --check-data, --preview or --host-input")
 	flag.StringVar(&o.DataReport, "data-report", "", "optional JSON result file for --check-data")
+	flag.StringVar(&o.InputTrace, "input-trace", "", "preview-only input diagnostics to a new JSONL file; no document text")
 	flag.Parse()
 	o.GeometryExplicit = hasGeometryOptions(flag.CommandLine)
 	if e := execute(o); e != nil {
@@ -65,6 +67,9 @@ func hasGeometryOptions(flags *flag.FlagSet) bool {
 }
 
 func execute(o options) error {
+	if o.InputTrace != "" && (!o.Preview || o.Host || o.HostSmoke || o.EnglishOnly || o.CheckData || o.CheckPackage || o.Smoke || o.Shot != "") {
+		return fmt.Errorf("--input-trace requires interactive --preview only")
+	}
 	exe, err := os.Executable()
 	if err != nil {
 		return err

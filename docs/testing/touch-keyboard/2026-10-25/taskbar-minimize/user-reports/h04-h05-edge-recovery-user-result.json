@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-26T02:57:06.054Z",
+  "source": "user report in chat: 正常, following Edge Esc/focus/help/minimize checks",
+  "cases": [
+    "H04-Edge",
+    "H05-Edge"
+  ],
+  "host": "Edge InPrivate local textarea",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "setup": "clear test text with page reset, click textarea and rebind, Chinese variable, confirm one 你",
+  "checks": [
+    {
+      "action": "ni, Esc",
+      "expected": "composition cancelled; textarea remains 你",
+      "result": "passed per user report"
+    },
+    {
+      "action": "ni, lift all contacts, switch to existing Word test document then back Edge; attempt without rebind",
+      "expected": "composition cancelled; both app texts unchanged; no write without rebind",
+      "result": "passed per user report"
+    },
+    {
+      "action": "rebind, ni, Help open/close",
+      "expected": "composition cancelled; confirmed text preserved; old binding invalid",
+      "result": "passed per user report"
+    },
+    {
+      "action": "rebind, ni, minimize, taskbar restore; rebind then confirm 你",
+      "expected": "composition cancelled and confirmed text preserved; after rebind textarea becomes 你你",
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "not cross-application bound commits in both directions; H06 still pending",
+    "no independent observation or pen acceptance"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "script": "C:\\dev\\Yime\\.tmp\\registered-host-arm64-r2-20261026.ps1",
+  "script_sha256": "f5220667af8b660fddfe030e2d0896fea0352555e840e8f846e48506a2bd9fca",
+  "edition": "ps7",
+  "version": "7.6.5",
+  "check_only": true,
+  "script_executed": false,
+  "exit_code": 0,
+  "output": "PASS: PowerShell 7.6.5 static preflight; script not executed.",
+  "readonly_observation_evidence": "C:\\dev\\Yime\\.tmp\\arm64-r2-runtime-observer-only.json"
+}

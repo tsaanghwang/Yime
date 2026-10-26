@@ -1,0 +1,340 @@
+{
+  "date": "2026-10-26",
+  "scope": "Evidence consolidation; integrity/reference audit, not a new runtime or physical acceptance run",
+  "branch": "codex/touch-keyboard-taskbar-20261025",
+  "head": "f488ce25ce72decfdca159d2a223ab3f7387d3d0",
+  "sourceChanges": true,
+  "checks": [
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/main.go",
+      "expected": "930f04fdbd336f65d9174fd4ec2f82ffe00e2349398febde64e3990d2f65adbd",
+      "role": "fixed-package-source",
+      "actual": "930f04fdbd336f65d9174fd4ec2f82ffe00e2349398febde64e3990d2f65adbd",
+      "bytes": 5368,
+      "match": true
+    },
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/platform_windows.go",
+      "expected": "92e38b821d723c5778cf8bc59fe0c4d38bd643779195b4853a7d56140e14d024",
+      "role": "fixed-package-source",
+      "actual": "92e38b821d723c5778cf8bc59fe0c4d38bd643779195b4853a7d56140e14d024",
+      "bytes": 37681,
+      "match": true
+    },
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/input_trace_windows.go",
+      "expected": "a279d388a4f94ca9417835424e8b3541af6166f223e6c91ed1edaaed774215ae",
+      "role": "fixed-package-source",
+      "actual": "a279d388a4f94ca9417835424e8b3541af6166f223e6c91ed1edaaed774215ae",
+      "bytes": 2544,
+      "match": true
+    },
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/input_trace_windows_test.go",
+      "expected": "752a5c3738b0849e8adc285d741b6e4bad3a3ab6f0eaf5429653ac5b131b8f57",
+      "role": "fixed-package-source",
+      "actual": "752a5c3738b0849e8adc285d741b6e4bad3a3ab6f0eaf5429653ac5b131b8f57",
+      "bytes": 3452,
+      "match": true
+    },
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/pen_compat_windows_test.go",
+      "expected": "cfd58a3892d9a667c77c49b268b63b40198525db64a10d47a630817e2c96024f",
+      "role": "fixed-package-source",
+      "actual": "cfd58a3892d9a667c77c49b268b63b40198525db64a10d47a630817e2c96024f",
+      "bytes": 4063,
+      "match": true
+    },
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/taskbar_windows_test.go",
+      "expected": "ec1dae0a62148a0eb4ed675f2b52d125abf6f0ba1b7b005609dbd37bba0b97e2",
+      "role": "fixed-package-source",
+      "actual": "ec1dae0a62148a0eb4ed675f2b52d125abf6f0ba1b7b005609dbd37bba0b97e2",
+      "bytes": 3121,
+      "match": true
+    },
+    {
+      "path": ".generated/touch-pen-shift-fix-20261026-amd64/YimeTouchKeyboard.exe",
+      "expected": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+      "role": "current-fixed-executable",
+      "actual": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+      "bytes": 7371264,
+      "match": true
+    },
+    {
+      "path": ".generated/touch-taskbar-development-20261025-amd64-r1/YimeTouchKeyboard.exe",
+      "expected": "db77b54e9b76307a3b4fefb3edfb5e02d48576ca840eaf65adeebe1acf05f3e3",
+      "role": "earlier-finger-executable",
+      "actual": "db77b54e9b76307a3b4fefb3edfb5e02d48576ca840eaf65adeebe1acf05f3e3",
+      "bytes": 7360000,
+      "match": true
+    },
+    {
+      "path": "docs/testing/touch-keyboard/2026-10-26/pen-shift/pen-shift-original.jsonl",
+      "expected": "dfdfc8ab2284a1a2894972d5b735145ab685dfd27105324ca64dfcaefbb70168",
+      "role": "original-failure-log",
+      "actual": "dfdfc8ab2284a1a2894972d5b735145ab685dfd27105324ca64dfcaefbb70168",
+      "bytes": 6839823,
+      "match": true
+    },
+    {
+      "path": "docs/testing/touch-keyboard/2026-10-26/pen-shift/pen-shift-fixed-retest.jsonl",
+      "expected": "edb2debd3a23ddd0ef80f98ad66d1ca933a2f8fb3854282b3b1ecac8823f75dd",
+      "role": "fixed-retest-log",
+      "actual": "edb2debd3a23ddd0ef80f98ad66d1ca933a2f8fb3854282b3b1ecac8823f75dd",
+      "bytes": 399003,
+      "match": true
+    }
+  ],
+  "allIdentityChecksMatch": true,
+  "userReportCount": 45,
+  "userReports": [
+    {
+      "file": "user-reports/calibration-initial.json",
+      "bytes": 482,
+      "sha256": "717eb24550464fd6c465f0c86cbc8fa6931bcb6cc2f0e70cd23859ffd89f9ae9"
+    },
+    {
+      "file": "user-reports/calibration-second.json",
+      "bytes": 413,
+      "sha256": "a24b6f10611d9c29014f5e72a63093ae2103bffce54138aec2444c6140d87457"
+    },
+    {
+      "file": "user-reports/calibration-third.json",
+      "bytes": 578,
+      "sha256": "8a0e963288babd3da36307522bbe5f81c5b1ca030b55563efed6d0493d83b66b"
+    },
+    {
+      "file": "user-reports/edge-pen-recovery-acer-pass-msi-unavailable-user-result.json",
+      "bytes": 1357,
+      "sha256": "d6e088286bf9af74ab7abc4a09dae9a1713a105388e1f6d564fa459eeb1de368"
+    },
+    {
+      "file": "user-reports/edge-pen-recovery-msi-retest-pass-user-result.json",
+      "bytes": 1556,
+      "sha256": "def416925c2111cbf2b9c35700524d911c9408e031735af8ac115cb565c668c0"
+    },
+    {
+      "file": "user-reports/edge-two-pens-input-user-result.json",
+      "bytes": 1189,
+      "sha256": "50faa95740bf0a4b7815be46b2f3b99e7e2fbf87b6bea5fde875f020a129d7f0"
+    },
+    {
+      "file": "user-reports/h01-edge-three-modes-user-result.json",
+      "bytes": 1370,
+      "sha256": "5d93509804fba0a6ed4532031edfe13b80c17c98e06528643c92339a061a7a8d"
+    },
+    {
+      "file": "user-reports/h01-fresh-unbound-ruler-user-result.json",
+      "bytes": 1123,
+      "sha256": "9aca4a353c7638040218d5ec6132c7b717eb110a06ed7a58ec98192fdba71981"
+    },
+    {
+      "file": "user-reports/h01-n2-n5-edge-boundaries-user-result.json",
+      "bytes": 1236,
+      "sha256": "eda55da9c0f6208e979bc6a2a35e9779d5e34a1d54277600c90ab0a41fa0a498"
+    },
+    {
+      "file": "user-reports/h01-word-binding-user-result.json",
+      "bytes": 754,
+      "sha256": "1a772ebba45d70c4f8d6f9f92836b095202207cf64240e24c830e289879c21a2"
+    },
+    {
+      "file": "user-reports/h01-word-three-modes-user-result.json",
+      "bytes": 1373,
+      "sha256": "7bc0473fda58f119ab158244013d161cf4943b16e6e35bceb4fb3dad0ab247db"
+    },
+    {
+      "file": "user-reports/h02-edge-editing-navigation-user-result.json",
+      "bytes": 1311,
+      "sha256": "0b5ecf160ccec5cc6ebc47e449c8705ee713cd13a5b0ecd930efeddc945699a0"
+    },
+    {
+      "file": "user-reports/h02-n5-word-protection-user-result.json",
+      "bytes": 1449,
+      "sha256": "0ca5f809472327ed2e853ff728372028bad8ae3de00d34decc6b6a9d89395490"
+    },
+    {
+      "file": "user-reports/h02-word-english-editing-user-result.json",
+      "bytes": 1208,
+      "sha256": "39bd16b9d6b8f84e9256c7bf159a198450ce27388fb1ae1abda94dab50176080"
+    },
+    {
+      "file": "user-reports/h02-word-navigation-user-result.json",
+      "bytes": 1354,
+      "sha256": "2c9ad058ec86e0314c20113c3dc37ed72320e84f688f561a0145e0d63dda248a"
+    },
+    {
+      "file": "user-reports/h03-edge-enter-protection-user-result.json",
+      "bytes": 1596,
+      "sha256": "b3b14956915bd77719c8bb18dfdee7c18d3205cf9c7d1063570ebd0a71a2deb0"
+    },
+    {
+      "file": "user-reports/h03-word-enter-user-result.json",
+      "bytes": 1309,
+      "sha256": "50f4cff0f2eac574c879e72f761a0a9d8b1aaa394dc50760eea147f9e2c5880f"
+    },
+    {
+      "file": "user-reports/h04-h05-edge-recovery-user-result.json",
+      "bytes": 1475,
+      "sha256": "622553555ffe68b5d316325a594f11a5ef958eda3512f86534b960631f5f20ab"
+    },
+    {
+      "file": "user-reports/h04-word-cancel-focus-user-result.json",
+      "bytes": 1412,
+      "sha256": "13c0d03e46678789411e9973278ca7007369bc74806b0a9af5241d4d30c9881d"
+    },
+    {
+      "file": "user-reports/h05-word-help-minimize-user-result.json",
+      "bytes": 1202,
+      "sha256": "6e34a4e3fd0f63bb9e03eaa7656e7ff8df74d31030be420f9408ae7502cda7a1"
+    },
+    {
+      "file": "user-reports/h06-word-edge-isolation-user-result.json",
+      "bytes": 1157,
+      "sha256": "6f937778af901e3f51522c85256e2ca85c21a06f74f0fdfa15c3b68aeac4627a"
+    },
+    {
+      "file": "user-reports/h06-word-rebind-user-result.json",
+      "bytes": 1120,
+      "sha256": "710442a7da5eec30d133f4b49aecb49ea1fc9364d588b1a24fc45ed0d31bcb18"
+    },
+    {
+      "file": "user-reports/p02-full-shorthand-user-result.json",
+      "bytes": 789,
+      "sha256": "7f9a1d7a8701daac2604075b089eb8351f63d24af5c64d839821bc6e55a923cc"
+    },
+    {
+      "file": "user-reports/p02-variable-user-result.json",
+      "bytes": 667,
+      "sha256": "341ae0cd17cf34ee46e91d3e9416b6bab8d49a4067c9655d020adeb01d9eefd0"
+    },
+    {
+      "file": "user-reports/p03-no-candidate-user-result.json",
+      "bytes": 559,
+      "sha256": "6064c479c5ec61602139432dcc54a98e6fb0d6f7be0e152b59953b05f4fa0a5a"
+    },
+    {
+      "file": "user-reports/p03-p04-user-result.json",
+      "bytes": 1560,
+      "sha256": "7652f26ac639e7f9b0ec2286eea8acd9c37d0a2f5889357fb728cff17047c977"
+    },
+    {
+      "file": "user-reports/p03-p09-digit-user-result.json",
+      "bytes": 1207,
+      "sha256": "fde0c663121b6b02762b5b86e68f0b2728dd29feca7b9b5083c68f8b7e990199"
+    },
+    {
+      "file": "user-reports/p03-whitespace-p11-multiline-user-result.json",
+      "bytes": 1305,
+      "sha256": "9d6c185ee9bb4b3145229eef2ba654d31de027f40ae476f1c6b033a1daf05e2d"
+    },
+    {
+      "file": "user-reports/p05-taskbar-user-result.json",
+      "bytes": 1314,
+      "sha256": "e3a23096da522126f72cc13e4a9658f253bb80ad8a945ad5dcb6a0a17c74b375"
+    },
+    {
+      "file": "user-reports/p06-provisional-user-result.json",
+      "bytes": 776,
+      "sha256": "bd8c8da9f6345d5123bea434fc5fc9be596b1f8d065b9de0a654acfcad112bfb"
+    },
+    {
+      "file": "user-reports/p07-user-result.json",
+      "bytes": 1137,
+      "sha256": "13abcd46f221f0d9d65e15a890d6eabc9f0c6515329e2dd54c8bdbb9d4d3fa48"
+    },
+    {
+      "file": "user-reports/p08-pen-small-a-clarification-user-result.json",
+      "bytes": 305,
+      "sha256": "d29aab2483373dff6244235ccfde72971ff42d4c7f64c50ebaa2e0b6802e0118"
+    },
+    {
+      "file": "user-reports/p08-pen-uppercase-failure-user-result.json",
+      "bytes": 1301,
+      "sha256": "047ae99d3816b4fe306ebc7f78dc493b695c2344355f26fb62905e5ffa4664f9"
+    },
+    {
+      "file": "user-reports/p08-user-result.json",
+      "bytes": 1444,
+      "sha256": "435bc5fb4d7b2947502a82fc0401962d29628e97f524a7445068d8661344bfde"
+    },
+    {
+      "file": "user-reports/p09-missing-ordinal-user-result.json",
+      "bytes": 642,
+      "sha256": "0aa37a9c94f5a30271e91f480cf3a18fae814451a64f96e45fd960c6dac21bd6"
+    },
+    {
+      "file": "user-reports/p09-punctuation-user-result.json",
+      "bytes": 1357,
+      "sha256": "8973cd6fbd00dbc22a11599225caf125451a005462c38d84f82e0a5a20742c2f"
+    },
+    {
+      "file": "user-reports/p11-navigation-user-result.json",
+      "bytes": 1285,
+      "sha256": "862984c48177d744a07ba7c046fa33d22c7eba041d337688e60eeccefb367661"
+    },
+    {
+      "file": "user-reports/p11-protection-user-result.json",
+      "bytes": 1067,
+      "sha256": "07365f978808805cb8f73fbff0ede9f835b7e9764ffde46cf7325dcb380905a4"
+    },
+    {
+      "file": "user-reports/p11-selection-user-result.json",
+      "bytes": 1305,
+      "sha256": "d15f542591ae4856b2a82b05cf6da44558da1be5b79d0a98df4106e3f322cc71"
+    },
+    {
+      "file": "user-reports/pen-availability-user-result.json",
+      "bytes": 377,
+      "sha256": "938b57f214df5662b6a0ed9c212d6152b7530311d80cff4e7c0dca7349ccde9c"
+    },
+    {
+      "file": "user-reports/pen-surface-highlight-clarification-user-result.json",
+      "bytes": 805,
+      "sha256": "3d203cf1803749242158e4ea95d4d3825f9630aacdb5de29aa015c15c362bd42"
+    },
+    {
+      "file": "user-reports/pen-two-devices-initial-user-result.json",
+      "bytes": 1915,
+      "sha256": "7d882fccd0dde715e1a0ead13d4f98a296eeca7da63545b25e2882e1bda62dc0"
+    },
+    {
+      "file": "user-reports/word-pen-caret-mouse-assisted-user-result.json",
+      "bytes": 1642,
+      "sha256": "11783483d4eeffbc3431afe53485e38bedbf1dc99b65bd6e240139be475b06c0"
+    },
+    {
+      "file": "user-reports/word-pen-caret-selection-resolved-user-result.json",
+      "bytes": 1005,
+      "sha256": "5ffe4d377ab254d03a73d811dbbc8c28e66a611a743a6fd95346f4d820c67a13"
+    },
+    {
+      "file": "user-reports/word-two-pens-input-user-result.json",
+      "bytes": 1595,
+      "sha256": "a0f07fbdf8e9eee8919f7628780fdbbb380ef7a1eede9e20584043aeba13e537"
+    }
+  ],
+  "preConsolidationSummary": {
+    "file": "history/STAGE_RESULT_before_consolidation_2026-10-26.zh-CN.md",
+    "sha256": "082883a2a68df489e6280f1670e07e62db0efa4c59434898eb3714bbee344aef"
+  },
+  "historicalIdentitySnapshots": "Original package identities and root-cause records preserved; pending fields describe original snapshot dates, current targeted results are indexed by the consolidated summary",
+  "documentationReferences": {
+    "documents": 10,
+    "checkedLocalReferences": 64,
+    "brokenReferences": []
+  },
+  "diffCheck": "passed: git diff --check after consolidation",
+  "jsonReadability": {
+    "userReportsParsed": 45,
+    "status": "passed"
+  },
+  "commitPreparation": {
+    "scope": "Commit desktop prototype fixes, regressions and this round of evidence; no generated package binaries or .generated directory included",
+    "sourceIdentity": "Recorded HEAD and sourceChanges describe the package build baseline, not the final commit containing this document",
+    "goFormatting": "gofmt -l on the six changed/new desktop Go files returned no paths",
+    "bytePreservation": "Scoped .gitattributes rules preserve the two raw JSONL logs and original CRLF environment capture",
+    "runtimeValidation": "Existing completed Go and package checks remain applicable; no runtime code change since physical retest"
+  }
+}

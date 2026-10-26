@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-26",
+  "userQuote": "这样可以定位。看来是我不会用笔。",
+  "scope": "Word pen caret placement after preceding guidance to switch drawing/selection mode",
+  "result": "passed-user-reported",
+  "actual": "Pen can now place the Word text caret",
+  "mode": "Preceding guidance: Draw > Select; optional default pen select/interact setting. User did not distinguish which route or confirm a persistent setting change.",
+  "perPenBreakdown": "Not separately provided; do not infer individual new tests for both pens.",
+  "interpretation": "Word pen mode/usage issue resolved by user selection workflow; no keyboard source change required for this observation.",
+  "packageDirectory": ".generated/touch-pen-shift-fix-20261026-amd64",
+  "acceptanceBoundary": "Caret placement only. Prior mouse-assisted cancellation/recovery steps remain mixed-input historical results; no retroactive pure-pen relabeling. Original Shift software defect and its fix evidence remain separate."
+}

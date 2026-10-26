@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-26T03:51:03.745Z",
+  "source": "user reply: 1。2，高亮较慢，比宏碁（大笔（大显示器用））较慢，可能是功率低。",
+  "surfaceInterpretation": "both pens tested on current MSI 16-inch touch convertible panel, per response to question 1",
+  "pens": [
+    "MSI original bundled pen",
+    "Acer PE272XT display bundled larger pen"
+  ],
+  "latencyPhase": "pen-down to visual key highlight",
+  "relativeObservation": "MSI highlight slower than Acer",
+  "postLiftTextLatency": "not reported as delayed",
+  "userHypothesis": "possibly lower power",
+  "causeStatus": "unverified; no power/battery/protocol measurement and no causal claim",
+  "nextObservation": "natural individual taps to compare missing/duplicate input without imposing a timing threshold"
+}

@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-26T03:47:23.735Z",
+  "source": "user report: 笔型号：微星尊爵 16 flip+ 自带 和 宏碁 PE272XT 显示器自带。微星尊爵 16 flip+ 自带（原装）似乎反应稍显迟钝（很少使用手写笔不知何为正常）。不过，等触点有反应后能正常输入。两支同为正常。",
+  "requestedChecks": [
+    "pen hover over N08 without contact does not input",
+    "Chinese variable ni/full niii/shorthand ni, select 你 after clearing each time",
+    "N08 down, move out, return, lift cancels"
+  ],
+  "overallFunctionalFeedback": "both pens reported normal for preceding test group; no independent observation",
+  "pens": [
+    {
+      "id": "msi-bundled-pen",
+      "identification": "original pen supplied with user-described MSI Prestige 16 flip+",
+      "exactModel": null,
+      "protocol": null,
+      "testSurface": null,
+      "functionalResult": "normal per user group feedback once contact responds",
+      "responsivenessObservation": "user feels response is slightly sluggish; limited prior pen experience; onset, frequency and phase not specified",
+      "latencyMS": null
+    },
+    {
+      "id": "acer-pe272xt-bundled-pen",
+      "identification": "pen supplied with Acer PE272XT display",
+      "exactModel": null,
+      "protocol": null,
+      "testSurface": null,
+      "functionalResult": "normal per user group feedback",
+      "responsivenessObservation": "no separate latency complaint reported",
+      "latencyMS": null
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "test surface for each pen not explicit: current 16-inch panel versus Acer display needs clarification",
+    "do not infer MSI Pen 2, Acer pen model, protocol or hardware failure from supplied-device names",
+    "no quantified latency or typing-speed threshold",
+    "do not inherit finger results or assign a screen-specific physical pass prematurely"
+  ]
+}

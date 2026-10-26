@@ -1,0 +1,102 @@
+{
+  "schema_version": "yimecore-pr78-review-final-v1",
+  "archive_status": "COMPLETE_FOR_CURRENT_REVIEW_BATCH",
+  "prior_stage_summary": "review-observations.stage1.json",
+  "prior_stage_index": "evidence-index.draft.json",
+  "reviewed_pr_head": "934126ff03c3583f9a119a17c10cd43eb16e8b56",
+  "reviewed_main": "9adc3cdd9634e0258b58c9a8945b3497fc8777ad",
+  "managed_merge_commit": "2b256afdeb45795aafcf11641ba04cba149acb46",
+  "original_guard_regression": {
+    "result": "FAILED_BEFORE_FIX",
+    "evidence": "admission-guard/original-red-tool-transcript.json",
+    "evidence_kind": "tool-output transcription only"
+  },
+  "first_saved_guard_run": {
+    "summary": "admission-guard/first-saved-run/summary.json",
+    "arm_guard_exit_code": 1,
+    "stderr_verbatim": "ARM64 speech admission regression: ARM package rejects incomplete admission active_architectures\r\n",
+    "interpretation": "The added guard still failed the incomplete active_architectures regression before the explicit null handling fix.",
+    "legacy_ps5_exit_code": 0,
+    "legacy_checks_passed": 21,
+    "passed": false
+  },
+  "other_review_evidence": {
+    "installer_ps5_scripts_passed": 3,
+    "merged_native_go_test_pass_events": 106,
+    "merged_native_go_test_skip_events": 1,
+    "independent_go_ps_review": "Earlier tool-output transcript retained in independent-review/tool-output-transcript.json; no original logs for those early invocations."
+  },
+  "source_hash_interpretation": "The installer Test-Arm64Package.ps1 raw hash differs only by checkout LF/CRLF, with matching tracked Git blob; stage1 preserves exact raw hash values and the diagnostic comparison.",
+  "scope": "Synthetic admission envelopes, isolated staging/installer fixtures and merged native source regressions. No product build, registration, installation, live application or physical input acceptance in this review task.",
+  "r2_existing_admission_preflight": {
+    "status": "PENDING_SEPARATE_SUPPLEMENT",
+    "passed": null,
+    "boundary": "A later read-only check may be archived separately without rewriting this final batch index."
+  },
+  "excluded_directories": [
+    "appdata",
+    "localappdata",
+    "temp",
+    "tmp",
+    "Go caches",
+    "legacy fixture payload directories"
+  ],
+  "boundaries": [
+    "The original rejection failure, first saved incomplete-architecture failure, intermediate 43-check passing run, and final 47-check passing run are all retained.",
+    "Only six explicitly named files per saved guard run plus the review runner are copied.",
+    "Legacy 21-check results are evidenced by their preserved stdout and process summaries; complete synthetic fixture trees are not copied.",
+    "Earlier installed-validation evidence, source files, Git refs and published branch are not changed by this archive operation."
+  ],
+  "intermediate_guard_run": {
+    "summary": "admission-guard/fixed-run/summary.json",
+    "arm_guard_ps7_exit_code": 0,
+    "arm_guard_contract_checks_passed": 43,
+    "legacy_ps5_exit_code": 0,
+    "legacy_checks_passed": 21,
+    "passed": true,
+    "working_patch_inputs": {
+      "build-arm64-product.ps1": "6494fea1239dae4277ced7d5ed939009f8ecc4a0a5a455016c159c6e2525876c",
+      "local-product-speech-build.ps1": "a9a3ad40ce9b3eb21c33930ca7965c6ea341d0a839658783b8e6b52dd86aa75f",
+      "test-arm64-speech-admission.ps1": "ecff4c58cfcea8b8f32e86d1a3158a462e759b3692de75bb5f9497f7e1bc0124"
+    },
+    "status": "HISTORICAL_BEFORE_CASE_INSENSITIVE_TARGET_FIX",
+    "is_final_source_validation": false,
+    "interpretation": "These 43 checks passed before the later direct ExpectedTarget case-variant issue was found. The saved summary retains the old helper/test hashes and is not validation of the final patch."
+  },
+  "final_guard_run": {
+    "summary": "admission-guard/case-insensitive-final-run/summary.json",
+    "arm_guard_ps7_exit_code": 0,
+    "arm_guard_contract_checks_passed": 47,
+    "legacy_ps5_exit_code": 0,
+    "legacy_checks_passed": 21,
+    "passed": true,
+    "working_patch_inputs": {
+      "build-arm64-product.ps1": "6494fea1239dae4277ced7d5ed939009f8ecc4a0a5a455016c159c6e2525876c",
+      "local-product-speech-build.ps1": "72d9db35594b79c61d0e818f236146e79d4af7121a7fa7e8be5181441a695a4f",
+      "test-arm64-speech-admission.ps1": "50241cda7bc9d51045e0890a2fc27fe4e7d232801ea6c52598e4a501e5ed6416"
+    },
+    "source_hash_comparison": [
+      {
+        "path": "tools/yimecore/build-arm64-product.ps1",
+        "recorded_sha256": "6494fea1239dae4277ced7d5ed939009f8ecc4a0a5a455016c159c6e2525876c",
+        "current_sha256": "6494fea1239dae4277ced7d5ed939009f8ecc4a0a5a455016c159c6e2525876c",
+        "match": true
+      },
+      {
+        "path": "tools/yimecore/local-product-speech-build.ps1",
+        "recorded_sha256": "72d9db35594b79c61d0e818f236146e79d4af7121a7fa7e8be5181441a695a4f",
+        "current_sha256": "72d9db35594b79c61d0e818f236146e79d4af7121a7fa7e8be5181441a695a4f",
+        "match": true
+      },
+      {
+        "path": "tools/yimecore/test-arm64-speech-admission.ps1",
+        "recorded_sha256": "50241cda7bc9d51045e0890a2fc27fe4e7d232801ea6c52598e4a501e5ed6416",
+        "current_sha256": "50241cda7bc9d51045e0890a2fc27fe4e7d232801ea6c52598e4a501e5ed6416",
+        "match": true
+      }
+    ],
+    "all_three_input_raw_hashes_match_current_managed_sources": true,
+    "new_regression_scope": "Four direct ExpectedTarget ARM64/Arm64 cases reject correctly pinned x64 admission and accept native ARM admission.",
+    "case_handling_repair": "The helper uses case-insensitive target comparison so that its guard matches PowerShell ValidateSet target-case acceptance."
+  }
+}

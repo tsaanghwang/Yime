@@ -21,7 +21,7 @@ $generator=Resolve-YimeCorePlatformGenerator arm64 $scope $NativeGenerator
 Assert-YimeCoreNativeGo -ExperimentTarget arm64 -GoExecutable $GoExecutable
 $repo=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $product=Get-LocalProductDescriptor (Join-Path $PSScriptRoot 'local-product.json')
-$null=Assert-LocalProductSpeechBuildInputs $product $SpeechAdmissionRoot $ExpectedSpeechAdmissionSummarySha256 $ExpectedSpeechSourceInventorySha256
+$null=Assert-LocalProductSpeechBuildInputs $product $SpeechAdmissionRoot $ExpectedSpeechAdmissionSummarySha256 $ExpectedSpeechSourceInventorySha256 -ExpectedTarget arm64
 if(-not $OutputRoot){$OutputRoot=Join-Path $repo ('.tmp\yimecore-platform-experiments\arm64-package-'+(Get-Date -Format 'yyyyMMdd-HHmmss')+'-'+[guid]::NewGuid().ToString('N').Substring(0,8))}
 $out=New-LocalProductBuildRoot $repo $OutputRoot arm64
 $envNames=@('PATH','GOOS','GOARCH','CGO_ENABLED','GOFLAGS','GOWORK','GOTOOLCHAIN','GOCACHE','GOTMPDIR')

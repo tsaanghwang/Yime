@@ -1,0 +1,20 @@
+{
+  "schema_version": "yimecore-pr78-original-guard-red-transcript-v1",
+  "recorded_at": "2026-10-26T15:54:42.454Z",
+  "source_kind": "parent-agent-relayed-tool-output-transcription",
+  "source_task": "/root",
+  "tool_chunk_id": "3945f2",
+  "original_stdout_file_available": false,
+  "exit_code": 1,
+  "stdout_verbatim": "ARM64 speech admission regression: ARM package rejects correctly pinned x64 admission\r\n",
+  "source_context": {
+    "base_commit": "2b256afdeb45795aafcf11641ba04cba149acb46",
+    "helper_and_builder": "Unchanged old implementation",
+    "regression_test": "New ARM package rejection regression had been added"
+  },
+  "interpretation": "The original regression failed because the old path accepted correctly pinned x64 admission for the ARM package. Later saved runs and the repair are archived separately.",
+  "limits": [
+    "This JSON transcribes the reported tool output; it is not an original stdout file.",
+    "No full original process log or exact pre-fix worktree source manifest was supplied."
+  ]
+}

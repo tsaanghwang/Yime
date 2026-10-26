@@ -47,3 +47,9 @@ docs/testing/arm64/2026-10-26/*.json -text !eol -whitespace
 docs/testing/arm64/2026-10-26/native-go/** -text !eol -whitespace
 docs/testing/arm64/2026-10-26/native-source/** -text !eol -whitespace
 docs/testing/arm64/2026-10-26/package-validation/** -text !eol -whitespace
+docs/testing/arm64/2026-10-26/installed-validation/** -text !eol -whitespace
+docs/testing/arm64/2026-10-26/pr78-review/** -text !eol -whitespace
+
+# Original pen-event logs are SHA-256-bound physical-test evidence; preserve bytes.
+docs/testing/touch-keyboard/2026-10-26/pen-shift/*.jsonl -text !eol -whitespace
+docs/testing/touch-keyboard/2026-10-25/taskbar-minimize/environment-observed.json -text !eol -whitespace

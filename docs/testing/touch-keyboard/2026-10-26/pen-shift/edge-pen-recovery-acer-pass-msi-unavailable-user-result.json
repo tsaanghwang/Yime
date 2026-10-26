@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-26",
+  "userQuote": "宏碁笔正常。微星自带笔感应点消失，可能是没电了。",
+  "scope": "Edge local textarea; requested three-step cancellation/minimize/restore/rebind follow-up",
+  "packageDirectory": ".generated/touch-pen-shift-fix-20261026-amd64",
+  "executableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "instructedSteps": [
+    "ni -> virtual Esc: candidates close; document unchanged",
+    "ni -> minimize -> taskbar restore: composition cleared; document unchanged",
+    "Pen caret placement and explicit rebind -> ni -> tap 你: document adds one 你"
+  ],
+  "results": [
+    {
+      "input": "Acer PE272XT supplied pen",
+      "status": "passed-user-reported",
+      "actual": "Normal for requested group; exact document text and attempts not separately transcribed"
+    },
+    {
+      "input": "MSI original supplied pen",
+      "status": "blocked-device-not-responding",
+      "actual": "Sensing point disappeared",
+      "cause": "User suspects battery depletion; not confirmed",
+      "retest": "Repeat this three-step group after pen response is restored; do not mark passed or keyboard software failed."
+    }
+  ],
+  "acceptanceBoundary": "Targeted Edge steps only. Prior results retained; no full-key, full-mode, complete H04/H05 or whole pen acceptance implied."
+}

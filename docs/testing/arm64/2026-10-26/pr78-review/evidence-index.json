@@ -1,0 +1,337 @@
+{
+  "schema_version": "yimecore-pr78-review-evidence-index-v1",
+  "draft": false,
+  "created_at": "2026-10-26T15:57:06.527Z",
+  "archive_root": "docs/testing/arm64/2026-10-26/pr78-review",
+  "summary": "review-observations.final.json",
+  "prior_index": {
+    "path": "evidence-index.draft.json",
+    "sha256": "e1add84cb726b01e775f1d9ef0d913bfa4e1b42c06527ffdb279d9b67371e0ba"
+  },
+  "artifact_count": 35,
+  "artifact_bytes": 141197,
+  "verification": {
+    "all_artifact_hashes_and_sizes_checked": true,
+    "new_original_source_bytes_pinned_and_checked": 19,
+    "derived_evidence_links_checked": true,
+    "original_bytes_transcoded": false
+  },
+  "boundaries": [
+    "Only explicit source files from the plan are read; no Go cache or user settings are scanned.",
+    "Transcribed tool-output receipts are labelled and are not original stdout/stderr files.",
+    "Checkout EOL normalization is diagnostic only and never changes archived raw bytes.",
+    "Source regressions do not establish installed or real-application input acceptance."
+  ],
+  "artifacts": [
+    {
+      "path": "admission-guard/case-insensitive-final-run/arm64-package-gate.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-953480f6\\arm64-package-gate.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/case-insensitive-final-run/arm64-package-gate.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-953480f6\\arm64-package-gate.stdout.txt",
+      "bytes": 123,
+      "sha256": "f46aa9f68ec26addc0e7883e7251e65c4339e02c25c4c1c472c1f16ab11f1dc1",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/case-insensitive-final-run/legacy-speech-build.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-953480f6\\legacy-speech-build.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/case-insensitive-final-run/legacy-speech-build.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-953480f6\\legacy-speech-build.stdout.txt",
+      "bytes": 163,
+      "sha256": "96685fe2c034cc3596bdba0fe3f14b27ee8598c3e47b3add1de0901daea37cc7",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/case-insensitive-final-run/legacy.params.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-953480f6\\legacy.params.json",
+      "bytes": 145,
+      "sha256": "ce2737b08d038a8adebe4c142eadfe83263b52c2891eab83212d090ae7221da7",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/case-insensitive-final-run/summary.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-953480f6\\summary.json",
+      "bytes": 1936,
+      "sha256": "e96bb20d353946eae44feb7b7f2f95b93636418ab5ae609bbb39ca12e81cb0a3",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/first-saved-run/arm64-package-gate.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-9c8afbbd\\arm64-package-gate.stderr.txt",
+      "bytes": 98,
+      "sha256": "2201a64c025c52505d3c449a3bc0ab58affc24cb412acb07fade9a2df21e73a6",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/first-saved-run/arm64-package-gate.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-9c8afbbd\\arm64-package-gate.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/first-saved-run/legacy-speech-build.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-9c8afbbd\\legacy-speech-build.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/first-saved-run/legacy-speech-build.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-9c8afbbd\\legacy-speech-build.stdout.txt",
+      "bytes": 163,
+      "sha256": "c673468feafb6334534d0f5c0678e7a8f9ef2ad077b6b7740f7bf85d613c47dc",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/first-saved-run/legacy.params.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-9c8afbbd\\legacy.params.json",
+      "bytes": 145,
+      "sha256": "f60f84e563fddb5da7a7bbf3abc4306e20c64bdeca111cb7e62424f2e3eca6da",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/first-saved-run/summary.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-9c8afbbd\\summary.json",
+      "bytes": 1937,
+      "sha256": "cc01735dee902eaa44dcacc6f6b62c0108032a16c4e7dff8966c8f7519995794",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/fixed-run/arm64-package-gate.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-6e931f4a\\arm64-package-gate.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/fixed-run/arm64-package-gate.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-6e931f4a\\arm64-package-gate.stdout.txt",
+      "bytes": 123,
+      "sha256": "b3489fc90209a5efc4f0020e2f1b4ef21352fba4c25806cf3a7c3670809ef586",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/fixed-run/legacy-speech-build.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-6e931f4a\\legacy-speech-build.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/fixed-run/legacy-speech-build.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-6e931f4a\\legacy-speech-build.stdout.txt",
+      "bytes": 163,
+      "sha256": "a030b2bf1543ef6f6b43db3590b90eb8da67f64c96b5a717cef3fdea17588dec",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/fixed-run/legacy.params.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-6e931f4a\\legacy.params.json",
+      "bytes": 145,
+      "sha256": "c11ddf4bb7b339ae6663eeb25ed377f7cdcd68955cf29791f601c1a37566fa9f",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/fixed-run/summary.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-6e931f4a\\summary.json",
+      "bytes": 1936,
+      "sha256": "89d06f675c660bf136f5f8803f81502e74bd1e84ab29640b8e0a9fd757b80d24",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "admission-guard/original-red-tool-transcript.json",
+      "bytes": 1033,
+      "sha256": "1b110f322d61cfc4f1302326f32bfb0547a772b2a975679b39161e62acf1b8e9",
+      "category": "relayed-tool-output-transcript",
+      "byte_identical_to_source": null
+    },
+    {
+      "path": "admission-guard/run-admission-final-review.py",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\run-admission-final-review.py",
+      "bytes": 2477,
+      "sha256": "ac223aa1229fbf4f03455a939a76368ddcca434cc8229a45929bcaeed0c08149",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "evidence-index.draft.json",
+      "bytes": 6282,
+      "sha256": "e1add84cb726b01e775f1d9ef0d913bfa4e1b42c06527ffdb279d9b67371e0ba",
+      "category": "preserved-prior-index"
+    },
+    {
+      "path": "independent-review/tool-output-transcript.json",
+      "bytes": 1984,
+      "sha256": "d7cfbb9bfad5af30f01e20b91a96f16a0ee185c1b434ad858e3251ab163adf89",
+      "category": "relayed-tool-output-transcript",
+      "byte_identical_to_source": null
+    },
+    {
+      "path": "installer-ps5/Test-Arm64Package.ps1.stderr.txt",
+      "source_path": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887\\Test-Arm64Package.ps1.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "installer-ps5/Test-Arm64Package.ps1.stdout.txt",
+      "source_path": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887\\Test-Arm64Package.ps1.stdout.txt",
+      "bytes": 548,
+      "sha256": "b6270c6537375ae344481dadf1f9dfc53be08eaa6f606369f297599b7ab9afac",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "installer-ps5/Test-Manage.ps1.stderr.txt",
+      "source_path": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887\\Test-Manage.ps1.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "installer-ps5/Test-Manage.ps1.stdout.txt",
+      "source_path": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887\\Test-Manage.ps1.stdout.txt",
+      "bytes": 452,
+      "sha256": "7b11ff8ee745b694433ea9177787c631c4da5c7e09474fdc447c1a581d182eaa",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "installer-ps5/Test-PackageValidation.ps1.stderr.txt",
+      "source_path": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887\\Test-PackageValidation.ps1.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "installer-ps5/Test-PackageValidation.ps1.stdout.txt",
+      "source_path": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887\\Test-PackageValidation.ps1.stdout.txt",
+      "bytes": 157,
+      "sha256": "08950ff5ebe7af3252cd7ca6214f5b6e9e0e95f58765cfafed34df3d890c6518",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "installer-ps5/summary.json",
+      "source_path": "C:\\dev\\Yime\\.tmp\\pr78-installer-review-8e5f2887\\summary.json",
+      "bytes": 1859,
+      "sha256": "75c4a69cc4ae9dd142abcebe2058a383be69a6dfabbdce3b65e74aef055bb1e8",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "merged-go/go-test.jsonl",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-merged-go-dafbbcd4\\go-test.jsonl",
+      "bytes": 105650,
+      "sha256": "2eb4daccbd3a5de6c865b6471ecc7814e078f5125b46f456ae944cd4e516f41e",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "merged-go/go-test.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-merged-go-dafbbcd4\\go-test.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "merged-go/run-merged-go-review.py",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\run-merged-go-review.py",
+      "bytes": 2294,
+      "sha256": "6d27f3b9d00e490fb4cfda7e86a6edf99be19e9b096d2480d7f4210056599b3a",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "merged-go/summary.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-merged-go-dafbbcd4\\summary.json",
+      "bytes": 689,
+      "sha256": "70429e744c6aebbe016acc2a432263bdb0681b15f7715ddf9840e8b95c9a24fa",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "review-observations.final.json",
+      "bytes": 5629,
+      "sha256": "882b8643ea62efae0651004d8379ab93ec3821442bfcb23501f8277cb0d0c194",
+      "category": "derived-review-summary",
+      "byte_identical_to_source": null,
+      "derived_from": [
+        "admission-guard/first-saved-run/arm64-package-gate.stderr.txt",
+        "admission-guard/first-saved-run/arm64-package-gate.stdout.txt",
+        "admission-guard/first-saved-run/legacy-speech-build.stderr.txt",
+        "admission-guard/first-saved-run/legacy-speech-build.stdout.txt",
+        "admission-guard/first-saved-run/legacy.params.json",
+        "admission-guard/first-saved-run/summary.json",
+        "admission-guard/fixed-run/arm64-package-gate.stderr.txt",
+        "admission-guard/fixed-run/arm64-package-gate.stdout.txt",
+        "admission-guard/fixed-run/legacy-speech-build.stderr.txt",
+        "admission-guard/fixed-run/legacy-speech-build.stdout.txt",
+        "admission-guard/fixed-run/legacy.params.json",
+        "admission-guard/fixed-run/summary.json",
+        "admission-guard/run-admission-final-review.py",
+        "admission-guard/case-insensitive-final-run/arm64-package-gate.stderr.txt",
+        "admission-guard/case-insensitive-final-run/arm64-package-gate.stdout.txt",
+        "admission-guard/case-insensitive-final-run/legacy-speech-build.stderr.txt",
+        "admission-guard/case-insensitive-final-run/legacy-speech-build.stdout.txt",
+        "admission-guard/case-insensitive-final-run/legacy.params.json",
+        "admission-guard/case-insensitive-final-run/summary.json",
+        "admission-guard/original-red-tool-transcript.json"
+      ]
+    },
+    {
+      "path": "review-observations.stage1.json",
+      "bytes": 5066,
+      "sha256": "35306ff2053e17db203cc6256b8eee06b2df95e80e66a04500c415bc51d9e1f5",
+      "category": "derived-review-summary",
+      "byte_identical_to_source": null,
+      "derived_from": [
+        "installer-ps5/summary.json",
+        "installer-ps5/Test-Arm64Package.ps1.stderr.txt",
+        "installer-ps5/Test-Arm64Package.ps1.stdout.txt",
+        "installer-ps5/Test-Manage.ps1.stderr.txt",
+        "installer-ps5/Test-Manage.ps1.stdout.txt",
+        "installer-ps5/Test-PackageValidation.ps1.stderr.txt",
+        "installer-ps5/Test-PackageValidation.ps1.stdout.txt",
+        "merged-go/summary.json",
+        "merged-go/go-test.jsonl",
+        "merged-go/go-test.stderr.txt",
+        "merged-go/run-merged-go-review.py",
+        "independent-review/tool-output-transcript.json"
+      ]
+    }
+  ]
+}

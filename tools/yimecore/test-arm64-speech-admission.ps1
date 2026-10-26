@@ -87,4 +87,71 @@ try {
     if ([IO.File]::Exists($fixture)) { [IO.File]::Delete($fixture) }
     [IO.Directory]::Delete($fixtureRoot,$false)
 }
-Write-Output "PASS: $script:checks ARM64 speech admission host/toolchain contracts; no admission, installation or target process execution."
+# Package preflight must bind the pinned admission to the native ARM lane before
+# creating a build output. These envelopes are synthetic; the Go exporter still
+# independently checks tools, semantics and all exported payloads.
+& {
+    . (Join-Path $PSScriptRoot 'local-product-build-common.ps1')
+    . (Join-Path $PSScriptRoot 'local-product-speech-build.ps1')
+    $admission = Join-Path $repo ('.tmp/arm64-speech-package-'+[guid]::NewGuid().ToString('N')+'/speech-admission-synthetic')
+    Assert-LocalProductPlainPath $admission
+    $null = [IO.Directory]::CreateDirectory($admission)
+    $inventory = Join-Path $admission 'source-hashes-after.json'
+    Write-LocalProductJson @([ordered]@{path='synthetic-source';bytes=1;sha256=('a'*64)}) $inventory
+    $inventorySHA = (Get-FileHash -LiteralPath $inventory -Algorithm SHA256).Hash.ToLowerInvariant()
+    $product = [pscustomobject]@{speech=[pscustomobject]@{capability_path='speech-capability.json';default_enabled=$false}}
+    function New-PackageAdmissionSummary {
+        [ordered]@{schema_version='yimecore-speech-admission-isolated-v1';passed=$true;stage='complete';reviewed_records=24;mode_alias_rows=72
+            source_inventory=[ordered]@{path='source-hashes-after.json';sha256=$inventorySHA;bytes=(Get-Item -LiteralPath $inventory).Length}
+            source_inventory_before=[ordered]@{path='source-hashes-before.json';sha256=$inventorySHA;bytes=(Get-Item -LiteralPath $inventory).Length}}
+    }
+    function Invoke-PinnedPackagePreflight($Summary,[switch]$Arm64,[string]$Target='arm64') {
+        $path = Join-Path $admission 'summary.json'
+        Write-LocalProductJson $Summary $path
+        $summarySHA = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ($Arm64) { Assert-LocalProductSpeechBuildInputs $product $admission $summarySHA $inventorySHA -ExpectedTarget $Target }
+        else { Assert-LocalProductSpeechBuildInputs $product $admission $summarySHA $inventorySHA }
+    }
+    $x64 = New-PackageAdmissionSummary
+    $x64.development_scope = [ordered]@{id='yimecore-current-development-scope-v1';computer_name='MYCOMPUTER';active_architectures=@('x64','x86')}
+    $x64.go_version = 'go version go1.25.14 windows/amd64'
+    Assert-AdmissionCheck (Invoke-PinnedPackagePreflight $x64) 'default legacy x64 admission remains accepted with correct pins'
+    Assert-AdmissionRejected { Invoke-PinnedPackagePreflight $x64 -Arm64 } 'native ARM64 admission' 'ARM package rejects correctly pinned x64 admission'
+    $missing = New-PackageAdmissionSummary
+    Assert-AdmissionCheck (Invoke-PinnedPackagePreflight $missing) 'default historical admission without scope remains accepted'
+    Assert-AdmissionRejected { Invoke-PinnedPackagePreflight $missing -Arm64 } 'native ARM64 admission' 'ARM package rejects missing admission scope'
+    $native = New-PackageAdmissionSummary
+    $native.development_scope = [ordered]@{id='yimecore-arm64-native-source-build-v1';target='arm64';computer_name='HUASHUONOTEBOOK'
+        native_architecture='ARM64';target_architecture='arm64';active_architectures=@('arm64');build_lane='arm64_native_source_build'
+        machine_observation=[ordered]@{source='IsWow64Process2';native_machine='0xaa64';native_architecture='ARM64';process_machine='0x0000'}}
+    $native.go_version = 'go version go1.25.14 windows/arm64'
+    Assert-AdmissionCheck (Invoke-PinnedPackagePreflight $native -Arm64) 'ARM package accepts correctly pinned native ARM admission'
+    foreach ($targetCase in @('ARM64','Arm64')) {
+        Assert-AdmissionRejected { Invoke-PinnedPackagePreflight $x64 -Arm64 -Target $targetCase } 'native ARM64 admission' ("ARM target argument $targetCase still rejects x64 admission")
+        Assert-AdmissionCheck (Invoke-PinnedPackagePreflight $native -Arm64 -Target $targetCase) ("ARM target argument $targetCase accepts native admission")
+    }
+    foreach ($field in @('id','target','computer_name','native_architecture','target_architecture','build_lane','active_architectures','machine_observation')) {
+        $changed = $native | ConvertTo-Json -Depth 12 | ConvertFrom-Json
+        $changed.development_scope.$field = $null
+        Assert-AdmissionRejected { Invoke-PinnedPackagePreflight $changed -Arm64 } 'native ARM64 admission' ("ARM package rejects incomplete admission $field")
+    }
+    foreach ($field in @('source','native_machine','native_architecture')) {
+        $changed = $native | ConvertTo-Json -Depth 12 | ConvertFrom-Json
+        $changed.development_scope.machine_observation.$field = 'unverified'
+        Assert-AdmissionRejected { Invoke-PinnedPackagePreflight $changed -Arm64 } 'native ARM64 admission' ("ARM package rejects unverified admission $field")
+    }
+    $changed = $native | ConvertTo-Json -Depth 12 | ConvertFrom-Json
+    $changed.go_version = 'go version go1.25.14 windows/amd64'
+    Assert-AdmissionRejected { Invoke-PinnedPackagePreflight $changed -Arm64 } 'native ARM64 admission' 'ARM package rejects x64 admission Go identity'
+    $builder = Join-Path $PSScriptRoot 'build-arm64-product.ps1'
+    $tokens = $null; $errors = $null
+    $builderAst = [Management.Automation.Language.Parser]::ParseFile($builder,[ref]$tokens,[ref]$errors)
+    Assert-AdmissionCheck (@($errors).Count -eq 0) 'ARM builder parses'
+    $commands = @($builderAst.FindAll({param($node) $node -is [Management.Automation.Language.CommandAst]},$true))
+    $preflight = @($commands | Where-Object {$_.GetCommandName() -ceq 'Assert-LocalProductSpeechBuildInputs'})
+    Assert-AdmissionCheck ($preflight.Count -eq 1) 'ARM builder has one admission preflight'
+    Assert-AdmissionCheck ($preflight[0].Extent.Text -match '-ExpectedTarget\s+arm64\b') 'ARM builder explicitly requires ARM admission'
+    $effects = @($commands | Where-Object {$_.GetCommandName() -cin @('New-LocalProductBuildRoot','cmake')})
+    Assert-AdmissionCheck ($effects.Count -gt 0 -and @($effects | Where-Object {$_.Extent.StartOffset -lt $preflight[0].Extent.EndOffset}).Count -eq 0) 'ARM admission preflight precedes output creation and compilation'
+}
+Write-Output "PASS: $script:checks ARM64 speech admission host/toolchain/package contracts; no admission, installation or target process execution."
