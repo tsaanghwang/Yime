@@ -173,6 +173,13 @@ func copyPackageFile(source, root string, item packageFile) error {
 }
 
 func requireAMD64Executable(path string) error {
+	return requireProductExecutable(path, pe.IMAGE_FILE_MACHINE_AMD64)
+}
+
+func requireProductExecutable(path string, expectedMachine uint16) error {
+	if expectedMachine != pe.IMAGE_FILE_MACHINE_AMD64 && expectedMachine != pe.IMAGE_FILE_MACHINE_ARM64 {
+		return errors.New("unsupported speech tool PE architecture")
+	}
 	if _, err := packageRegular(path); err != nil {
 		return err
 	}
@@ -181,8 +188,8 @@ func requireAMD64Executable(path string) error {
 		return errors.New("candidate executable is not a valid Windows PE")
 	}
 	defer file.Close()
-	if file.Machine != pe.IMAGE_FILE_MACHINE_AMD64 || file.Characteristics&pe.IMAGE_FILE_EXECUTABLE_IMAGE == 0 || file.Characteristics&pe.IMAGE_FILE_DLL != 0 {
-		return errors.New("candidate package requires native Windows AMD64 executables")
+	if file.Machine != expectedMachine || file.Characteristics&pe.IMAGE_FILE_EXECUTABLE_IMAGE == 0 || file.Characteristics&pe.IMAGE_FILE_DLL != 0 {
+		return fmt.Errorf("speech tool requires an executable with PE machine 0x%04x", expectedMachine)
 	}
 	header, ok := file.OptionalHeader.(*pe.OptionalHeader64)
 	if !ok {

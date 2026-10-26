@@ -1,0 +1,35 @@
+{
+  "schema_version": "yimecore-arm64-admission-archive-summary-v1",
+  "evidence_kind": "derived-summary-of-archived-raw-results",
+  "passed": true,
+  "stage": "complete",
+  "summary_sha256": "b1423ab265d78bcfb2e3b0e366f019381a00245c15d8be1854244fd9d29cff4e",
+  "source_inventory_sha256": "d52f43b5d6ec5a9c088aa616a85e3927dc2f4291dce638e43e91126eaa00709e",
+  "source_records": 624,
+  "source_before_after_byte_identical": true,
+  "current_source_verified_at_completion": true,
+  "current_source_mismatches": [],
+  "directed_passed": 512,
+  "directed_skipped": 3,
+  "skipped_tests": [
+    "TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink",
+    "TestSpeechPackageRejectsSymlinkPayload",
+    "TestSpeechProductExportRejectsIndirectSources"
+  ],
+  "registry_hash_records": 19,
+  "registry_protection_before_after_identical": true,
+  "go_version": "go version go1.25.14 windows/arm64",
+  "tools": [
+    {
+      "path": "bin/YimeBroker-speech.exe",
+      "bytes": 4930560,
+      "sha256": "36fbee46da133524d667374d50bcc2e7e61ae9c7f75625954470cc497923b718"
+    },
+    {
+      "path": "bin/YimeSpeechAdmission.exe",
+      "bytes": 4868096,
+      "sha256": "55c998d0fd6af860959799112bb19ac02084580deb0d3053826162df4448342c"
+    }
+  ],
+  "installed_or_live_host_acceptance": false
+}

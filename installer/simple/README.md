@@ -1,6 +1,6 @@
 # 双独立产品安装与卸载
 
-当前安装入口为本目录。支持 x64 Windows 上的 YimeCore、Rime/PIME 单独安装、单独卸载，以及一次选择安装或卸载两套；x86 指 WOW64 应用支持。ARM64 安装包尚未交付。
+当前安装入口为本目录。支持 x64 Windows 上的 YimeCore、Rime/PIME 单独安装、单独卸载，以及一次选择安装或卸载两套；x86 指 WOW64 应用支持。YimeCore Windows ARM64 包使用原生 Runtime/Broker、共享 ARM64X 文本服务及独立 x86 文本服务，已完成本地完整包验证，安装态与真实应用验收尚待执行，最新状态见 [HANDOFF](HANDOFF.md)。Rime/PIME 不提供 ARM64 包。
 
 ## 使用完整包
 
@@ -24,6 +24,8 @@ Codex 安装版本的进程名可能是 `ChatGPT.exe`，应根据实际进程路
 ## 开发构包
 
 `Build-Package.ps1` 接收 `Product`、`PayloadRoot`、全新的 `OutputRoot` 和 `Version`，只从产品载荷生成完整包；`Build-RimePackage.ps1` 从本仓库构建输出制作 Rime/PIME 包。根目录 `Build.ps1` 先构建再制 Rime/PIME 包。YimeCore 源码构建入口为 `tools/yimecore/build-local-product.ps1`，其输出再交给 `Build-Package.ps1`。
+
+ARM64 另用 `tools/yimecore/run-platform-experiment.ps1 -Target arm64 -Action Package`，显式提供原生工具链和已完成连读准入的双 SHA-256；仅在已登记 ARM64 实机执行。它调用 `build-arm64-product.ps1` 从标准源重新构建、验证并输出完整单产品包。`Build-Package.ps1 -Target windows-arm64` 要求 ARM 平台描述和完整 ARM64X 载荷，不接受旧 x64 产物改名。
 
 仓库内 PowerShell 操作通过 `python tools/powershell/run_checked.py --script <脚本> --edition ps7 --params-file <UTF-8参数JSON>` 执行；简版安装器的 Windows PowerShell 5.1 兼容检查明确使用 `--edition ps5`。使用端运行完整包内的 CMD 入口，不需要 Python。
 

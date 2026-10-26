@@ -1,0 +1,95 @@
+{
+  "schema_version": "yimecore-arm64-product-r2-validation-summary-v1",
+  "evidence_kind": "derived-summary-of-byte-preserved-r2-evidence",
+  "revision": "R2",
+  "readiness": "preinstallation-checks-passed-installed-acceptance-pending",
+  "installation_performed": false,
+  "release_ready": false,
+  "build": {
+    "passed": true,
+    "registration_and_default_preserved": true,
+    "source_files": 741,
+    "source_manifest_sha256": "9283c3f60d2e04b669e27198b98b5381d7470ad1a371d503669ca0f7213ff2e7"
+  },
+  "audits": {
+    "product_passed": true,
+    "payload_passed": true,
+    "product_pe_files": 25,
+    "payload_pe_files": 25
+  },
+  "go_tests": {
+    "passed_packages": 5,
+    "individual_test_counts_not_collected": true,
+    "raw_log": "build/go-tests.txt"
+  },
+  "payload_maintenance": {
+    "passed": true,
+    "checks": 12,
+    "synthetic_fixture_only": true,
+    "registration_executed": false,
+    "raw_report": "build/arm64-payload-maintenance.json"
+  },
+  "isolated_tsf": {
+    "passed": true,
+    "combinations": 9,
+    "all_runs_passed": true,
+    "owned_brokers": 9,
+    "all_owned_brokers_stopped": true,
+    "architectures": [
+      "arm64",
+      "x64 emulated",
+      "x86 under WOW64 on ARM64"
+    ],
+    "modes": [
+      "full",
+      "variable",
+      "shorthand"
+    ],
+    "registered_host_acceptance": null,
+    "physical_acceptance": false,
+    "raw_report": "tsf-platform-modes/summary.json"
+  },
+  "setup_checks": [
+    {
+      "location": "build package",
+      "passed": true,
+      "action": "Check",
+      "powershell_version": "5.1.28000.3231",
+      "edition": "Desktop",
+      "exit_code": 0,
+      "raw_log": "setup-check/build-package-ps5.user.log"
+    },
+    {
+      "location": "external delivered copy",
+      "passed": true,
+      "action": "Check",
+      "powershell_version": "5.1.28000.3231",
+      "edition": "Desktop",
+      "exit_code": 0,
+      "raw_log": "setup-check/delivery-copy-ps5.user.log"
+    }
+  ],
+  "delivery": {
+    "sha256": "2c94d825c59bf768d8a00a13353d38fe65f3b67e2258d3fb9747014229049de1",
+    "bytes": 168171619,
+    "member_count": 73,
+    "original_receipt": "delivery/delivery.json",
+    "zip_not_archived": true,
+    "zip_not_rehashed_by_this_archiving_task": true,
+    "checksum_receipt_and_manifest_bindings_verified": true,
+    "download_url": null,
+    "ci_status_at_delivery": "pending"
+  },
+  "superseded_r1_index": {
+    "path": "../product-r1/evidence-index.json",
+    "sha256": "5603c98749f34e5712b9cc1308552b87a766cc068c4e4d801850d5b05a5f2327",
+    "status": "retained-check-failed-do-not-install"
+  },
+  "scope_boundaries": [
+    "R2 fixes the R1 delivered PS5 Check failure; both raw check contexts are retained.",
+    "Package checks and isolated fixture success do not establish installed or registered/live application acceptance.",
+    "The source manifest records the R2 build snapshot. Subsequent documentation/test-only edits and final source comparison belong to the main task record.",
+    "This archive does not assert source publication, CI completion or a public release.",
+    "No ZIP, EXE, DLL, runtime .yidx, dictionary, private fixture state or user data was copied."
+  ]
+}

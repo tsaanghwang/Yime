@@ -1,0 +1,27 @@
+{
+  "schema_version": "yimecore-arm64x-build-contract-v1",
+  "generated_at": "2026-10-26T11:47:43.3290504Z",
+  "output_root": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64x-20261026-194641-6bb6f5c1",
+  "scope": {
+    "id": "yimecore-arm64-native-source-build-v1",
+    "target": "arm64",
+    "computer_name": "HUASHUONOTEBOOK",
+    "native_architecture": "ARM64",
+    "active_architectures": [
+      "arm64"
+    ],
+    "target_architecture": "arm64",
+    "build_lane": "arm64_native_source_build",
+    "machine_observation": {
+      "source": "IsWow64Process2",
+      "native_architecture": "ARM64",
+      "native_machine": "0xaa64",
+      "process_machine": "0x0000"
+    },
+    "output_policy": "Separate source-build output only; no target execution, installation, registration or default-input mutation."
+  },
+  "passed": true,
+  "failure": null,
+  "protected_registration_unchanged": true,
+  "installed": false
+}

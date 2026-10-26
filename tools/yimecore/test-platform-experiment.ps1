@@ -38,9 +38,15 @@ $cmake=Get-Content (Join-Path $PSScriptRoot '../../YimeTextServiceExperiment/CMa
 Check ($cmake -match 'CMAKE_GENERATOR_PLATFORM STREQUAL "ARM64"' -and $cmake -match 'YIME_LOCAL_PRODUCT') 'ARM64 current-identity CMake lane'
 try {
     & $entry -Target arm64 -Action Package | Out-Null
-    throw 'ARM64 Package unexpectedly accepted'
+    throw 'Unpinned ARM64 Package unexpectedly accepted'
 } catch {
-    Check ($_.Exception.Message -like 'ARM64 Package is not supported*') 'ARM64 packaging rejected before build or output mutation'
+    Check ($_.Exception.Message -like 'Package requires an explicit completed speech admission*') 'ARM64 packaging refuses unpinned input before build or output mutation'
+}
+try {
+    & $entry -Target arm64 -Action Package -SpeechAdmissionRoot 'unused' -ExpectedSpeechAdmissionSummarySha256 ('0'*64) -ExpectedSpeechSourceInventorySha256 ('0'*64) | Out-Null
+    throw 'ARM64 Package unexpectedly accepted an implicit toolchain'
+} catch {
+    Check ($_.Exception.Message -like 'ARM64 Package requires an explicit*') 'ARM64 packaging requires an explicit generator and native Go'
 }
 & (Join-Path $PSScriptRoot 'test-arm64-build-scope.ps1')
 Write-Output "PASS: $count platform experiment contracts; no target binaries executed."

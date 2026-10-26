@@ -1,0 +1,37 @@
+{
+  "schema_version": "yimecore-speech-admission-receipt-v1",
+  "passed": true,
+  "record_count": 24,
+  "forward_sha256": "73e2ec162b0bc3a114a5a9de902b14b68c505d736502d2940d6e29297ace56c2",
+  "records": {
+    "path": "admitted-records.json",
+    "sha256": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d"
+  },
+  "checks": {
+    "canonical_membership": true,
+    "canonical_weights_consistent": true,
+    "forward_source": true,
+    "four_positions": true,
+    "nonlengthening": true
+  },
+  "modes": {
+    "full": {
+      "core_sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+      "module_sha256": "470ef8e58a0f61bde3e7437097b1c480be4962d3e9a4680984567d53e3a427b9",
+      "canonical_count": 24,
+      "alias_count": 24
+    },
+    "shorthand": {
+      "core_sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+      "module_sha256": "15929d0e62a882a4ce640b50d19e6a8af5ad5d1840b0f89e0e8a95ec0d8bc764",
+      "canonical_count": 24,
+      "alias_count": 24
+    },
+    "variable": {
+      "core_sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+      "module_sha256": "dd27f391102382a2ec2a5313d3cc7eaebb7ff6bd671e73623857ddb04ddc6371",
+      "canonical_count": 24,
+      "alias_count": 24
+    }
+  }
+}

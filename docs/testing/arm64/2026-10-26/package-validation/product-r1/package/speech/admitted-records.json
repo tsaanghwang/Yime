@@ -1,0 +1,2029 @@
+{
+  "module_id": "third-tone-stage5c",
+  "input_sha256": {
+    "decisions": "575bd0ed7794c46c8aee53c1560bb0020f9397c06a20bda9ee7e6ad714adb0c8",
+    "inventory": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+    "layout": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+    "review": "484f37fe78a1b6144c0abf5addd55245e1d0517eee21a142e9f735e495aa931b",
+    "sources": "dbba5cc8dc25fcbb70185b70aa3296503100e480c49fd462db76842f21338579"
+  },
+  "layout_digest": "58f69f370aea49e03a48414dcaaf0ebdaef88be0e4fee37e2c4e1497b14976dd",
+  "records": [
+    {
+      "review_id": "T3-5B-001",
+      "text": "领导",
+      "canonical_pinyin": "ling3 dao3",
+      "surface_pinyin": "ling2 dao3",
+      "canonical_ids": [
+        [
+          "N07",
+          "M03",
+          "M15",
+          "M33"
+        ],
+        [
+          "N05",
+          "M12",
+          "M12",
+          "M06"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N07",
+          "M03",
+          "M14",
+          "M31"
+        ],
+        [
+          "N05",
+          "M12",
+          "M12",
+          "M06"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "\\lw/]sso",
+          "alias": "\\le;]sso",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "\\lw/]so",
+          "alias": "\\le;]so",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "\\lw/]so",
+          "alias": "\\le;]so",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；需确认词内韵律域及强调读法边界",
+      "decision_note": "领导在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-002",
+      "text": "影响",
+      "canonical_pinyin": "ying3 xiang3",
+      "surface_pinyin": "ying2 xiang3",
+      "canonical_ids": [
+        [
+          "N23",
+          "M03",
+          "M15",
+          "M33"
+        ],
+        [
+          "N22",
+          "M03",
+          "M12",
+          "M33"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N23",
+          "M03",
+          "M14",
+          "M31"
+        ],
+        [
+          "N22",
+          "M03",
+          "M12",
+          "M33"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "ylw/1ls/",
+          "alias": "yle;1ls/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "ylw/1ls/",
+          "alias": "yle;1ls/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "ylw/1ls/",
+          "alias": "yle;1ls/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "影响在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-003",
+      "text": "友好",
+      "canonical_pinyin": "you3 hao3",
+      "surface_pinyin": "you2 hao3",
+      "canonical_ids": [
+        [
+          "N23",
+          "M03",
+          "M15",
+          "M06"
+        ],
+        [
+          "N11",
+          "M12",
+          "M12",
+          "M06"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N23",
+          "M03",
+          "M14",
+          "M04"
+        ],
+        [
+          "N11",
+          "M12",
+          "M12",
+          "M06"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "ylwohsso",
+          "alias": "yleuhsso",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "ylwohso",
+          "alias": "yleuhso",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "ylwohso",
+          "alias": "yleuhso",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；需确认并列或重读是否阻断",
+      "decision_note": "友好在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-004",
+      "text": "了解",
+      "canonical_pinyin": "liao3 jie3",
+      "surface_pinyin": "liao2 jie3",
+      "canonical_ids": [
+        [
+          "N07",
+          "M03",
+          "M12",
+          "M06"
+        ],
+        [
+          "N20",
+          "M03",
+          "M18",
+          "M18"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N07",
+          "M03",
+          "M11",
+          "M04"
+        ],
+        [
+          "N20",
+          "M03",
+          "M18",
+          "M18"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "\\lso3lxx",
+          "alias": "\\ldu3lxx",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "\\lso3lx",
+          "alias": "\\ldu3lx",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "\\lso3lx",
+          "alias": "\\ldu3lx",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "了解在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-005",
+      "text": "引导",
+      "canonical_pinyin": "yin3 dao3",
+      "surface_pinyin": "yin2 dao3",
+      "canonical_ids": [
+        [
+          "N23",
+          "M03",
+          "M18",
+          "M30"
+        ],
+        [
+          "N05",
+          "M12",
+          "M12",
+          "M06"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N23",
+          "M03",
+          "M17",
+          "M28"
+        ],
+        [
+          "N05",
+          "M12",
+          "M12",
+          "M06"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "ylxz]sso",
+          "alias": "ylca]sso",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "ylxz]so",
+          "alias": "ylca]so",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "ylxz]so",
+          "alias": "ylca]so",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "引导在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-006",
+      "text": "小组",
+      "canonical_pinyin": "xiao3 zu3",
+      "surface_pinyin": "xiao2 zu3",
+      "canonical_ids": [
+        [
+          "N22",
+          "M03",
+          "M12",
+          "M06"
+        ],
+        [
+          "N13",
+          "M06",
+          "M06",
+          "M06"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N22",
+          "M03",
+          "M11",
+          "M04"
+        ],
+        [
+          "N13",
+          "M06",
+          "M06",
+          "M06"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "1lso6ooo",
+          "alias": "1ldu6ooo",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "1lso6o",
+          "alias": "1ldu6o",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "1lso6o",
+          "alias": "1ldu6o",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "小组在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-007",
+      "text": "选举",
+      "canonical_pinyin": "xuan3 ju3",
+      "surface_pinyin": "xuan2 ju3",
+      "canonical_ids": [
+        [
+          "N22",
+          "M09",
+          "M12",
+          "M30"
+        ],
+        [
+          "N20",
+          "M09",
+          "M09",
+          "M09"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N22",
+          "M09",
+          "M11",
+          "M28"
+        ],
+        [
+          "N20",
+          "M09",
+          "M09",
+          "M09"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "1.sz3...",
+          "alias": "1.da3...",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "1.sz3.",
+          "alias": "1.da3.",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "1.sz3.",
+          "alias": "1.da3.",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "选举在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-008",
+      "text": "永远",
+      "canonical_pinyin": "yong3 yuan3",
+      "surface_pinyin": "yong2 yuan3",
+      "canonical_ids": [
+        [
+          "N25",
+          "M09",
+          "M15",
+          "M33"
+        ],
+        [
+          "N25",
+          "M09",
+          "M12",
+          "M30"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N25",
+          "M09",
+          "M14",
+          "M31"
+        ],
+        [
+          "N25",
+          "M09",
+          "M12",
+          "M30"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "`.w/`.sz",
+          "alias": "`.e;`.sz",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "`.w/`.sz",
+          "alias": "`.e;`.sz",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "`.w/`.sz",
+          "alias": "`.e;`.sz",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "永远在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-009",
+      "text": "选手",
+      "canonical_pinyin": "xuan3 shou3",
+      "surface_pinyin": "xuan2 shou3",
+      "canonical_ids": [
+        [
+          "N22",
+          "M09",
+          "M12",
+          "M30"
+        ],
+        [
+          "N18",
+          "M15",
+          "M15",
+          "M06"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N22",
+          "M09",
+          "M11",
+          "M28"
+        ],
+        [
+          "N18",
+          "M15",
+          "M15",
+          "M06"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "1.sz9wwo",
+          "alias": "1.da9wwo",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "1.sz9wo",
+          "alias": "1.da9wo",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "1.sz9wo",
+          "alias": "1.da9wo",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "选手在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-010",
+      "text": "品种",
+      "canonical_pinyin": "pin3 zhong3",
+      "surface_pinyin": "pin2 zhong3",
+      "canonical_ids": [
+        [
+          "N02",
+          "M03",
+          "M18",
+          "M30"
+        ],
+        [
+          "N16",
+          "M06",
+          "M15",
+          "M33"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N02",
+          "M03",
+          "M17",
+          "M28"
+        ],
+        [
+          "N16",
+          "M06",
+          "M15",
+          "M33"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "plxz7ow/",
+          "alias": "plca7ow/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "plxz7ow/",
+          "alias": "plca7ow/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "plxz7ow/",
+          "alias": "plca7ow/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；需核对不同义项是否影响韵律边界",
+      "decision_note": "品种在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-011",
+      "text": "有所",
+      "canonical_pinyin": "you3 suo3",
+      "surface_pinyin": "you2 suo3",
+      "canonical_ids": [
+        [
+          "N23",
+          "M03",
+          "M15",
+          "M06"
+        ],
+        [
+          "N15",
+          "M06",
+          "M15",
+          "M15"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N23",
+          "M03",
+          "M14",
+          "M04"
+        ],
+        [
+          "N15",
+          "M06",
+          "M15",
+          "M15"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "ylwo4oww",
+          "alias": "yleu4oww",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "ylwo4ow",
+          "alias": "yleu4ow",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "ylwo4ow",
+          "alias": "yleu4ow",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "构式性较强；需确认不能仅凭词典成词自动批准",
+      "decision_note": "有所在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-012",
+      "text": "往往",
+      "canonical_pinyin": "wang3 wang3",
+      "surface_pinyin": "wang2 wang3",
+      "canonical_ids": [
+        [
+          "N24",
+          "M06",
+          "M12",
+          "M33"
+        ],
+        [
+          "N24",
+          "M06",
+          "M12",
+          "M33"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N24",
+          "M06",
+          "M11",
+          "M31"
+        ],
+        [
+          "N24",
+          "M06",
+          "M12",
+          "M33"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "=os/=os/",
+          "alias": "=od;=os/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "=os/=os/",
+          "alias": "=od;=os/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "=os/=os/",
+          "alias": "=od;=os/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "重叠形式；需同时核对轻重音边界",
+      "decision_note": "往往在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-013",
+      "text": "表演",
+      "canonical_pinyin": "biao3 yan3",
+      "surface_pinyin": "biao2 yan3",
+      "canonical_ids": [
+        [
+          "N01",
+          "M03",
+          "M12",
+          "M06"
+        ],
+        [
+          "N23",
+          "M03",
+          "M12",
+          "M30"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N01",
+          "M03",
+          "M11",
+          "M04"
+        ],
+        [
+          "N23",
+          "M03",
+          "M12",
+          "M30"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "blsoylsz",
+          "alias": "blduylsz",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "blsoylsz",
+          "alias": "blduylsz",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "blsoylsz",
+          "alias": "blduylsz",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "表演在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-014",
+      "text": "领土",
+      "canonical_pinyin": "ling3 tu3",
+      "surface_pinyin": "ling2 tu3",
+      "canonical_ids": [
+        [
+          "N07",
+          "M03",
+          "M15",
+          "M33"
+        ],
+        [
+          "N06",
+          "M06",
+          "M06",
+          "M06"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N07",
+          "M03",
+          "M14",
+          "M31"
+        ],
+        [
+          "N06",
+          "M06",
+          "M06",
+          "M06"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "\\lw/tooo",
+          "alias": "\\le;tooo",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "\\lw/to",
+          "alias": "\\le;to",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "\\lw/to",
+          "alias": "\\le;to",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "领土在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-015",
+      "text": "养老",
+      "canonical_pinyin": "yang3 lao3",
+      "surface_pinyin": "yang2 lao3",
+      "canonical_ids": [
+        [
+          "N23",
+          "M03",
+          "M12",
+          "M33"
+        ],
+        [
+          "N07",
+          "M12",
+          "M12",
+          "M06"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N23",
+          "M03",
+          "M11",
+          "M31"
+        ],
+        [
+          "N07",
+          "M12",
+          "M12",
+          "M06"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "yls/\\sso",
+          "alias": "yld;\\sso",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "yls/\\so",
+          "alias": "yld;\\so",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "yls/\\so",
+          "alias": "yld;\\so",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "养老在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-016",
+      "text": "引领",
+      "canonical_pinyin": "yin3 ling3",
+      "surface_pinyin": "yin2 ling3",
+      "canonical_ids": [
+        [
+          "N23",
+          "M03",
+          "M18",
+          "M30"
+        ],
+        [
+          "N07",
+          "M03",
+          "M15",
+          "M33"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N23",
+          "M03",
+          "M17",
+          "M28"
+        ],
+        [
+          "N07",
+          "M03",
+          "M15",
+          "M33"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "ylxz\\lw/",
+          "alias": "ylca\\lw/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "ylxz\\lw/",
+          "alias": "ylca\\lw/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "ylxz\\lw/",
+          "alias": "ylca\\lw/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "引领在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-017",
+      "text": "允许",
+      "canonical_pinyin": "yun3 xu3",
+      "surface_pinyin": "yun2 xu3",
+      "canonical_ids": [
+        [
+          "N25",
+          "M09",
+          "M18",
+          "M30"
+        ],
+        [
+          "N22",
+          "M09",
+          "M09",
+          "M09"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N25",
+          "M09",
+          "M17",
+          "M28"
+        ],
+        [
+          "N22",
+          "M09",
+          "M09",
+          "M09"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "`.xz1...",
+          "alias": "`.ca1...",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "`.xz1.",
+          "alias": "`.ca1.",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "`.xz1.",
+          "alias": "`.ca1.",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "允许在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-018",
+      "text": "领取",
+      "canonical_pinyin": "ling3 qu3",
+      "surface_pinyin": "ling2 qu3",
+      "canonical_ids": [
+        [
+          "N07",
+          "M03",
+          "M15",
+          "M33"
+        ],
+        [
+          "N21",
+          "M09",
+          "M09",
+          "M09"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N07",
+          "M03",
+          "M14",
+          "M31"
+        ],
+        [
+          "N21",
+          "M09",
+          "M09",
+          "M09"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "\\lw/2...",
+          "alias": "\\le;2...",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "\\lw/2.",
+          "alias": "\\le;2.",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "\\lw/2.",
+          "alias": "\\le;2.",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "领取在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-019",
+      "text": "演讲",
+      "canonical_pinyin": "yan3 jiang3",
+      "surface_pinyin": "yan2 jiang3",
+      "canonical_ids": [
+        [
+          "N23",
+          "M03",
+          "M12",
+          "M30"
+        ],
+        [
+          "N20",
+          "M03",
+          "M12",
+          "M33"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N23",
+          "M03",
+          "M11",
+          "M28"
+        ],
+        [
+          "N20",
+          "M03",
+          "M12",
+          "M33"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "ylsz3ls/",
+          "alias": "ylda3ls/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "ylsz3ls/",
+          "alias": "ylda3ls/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "ylsz3ls/",
+          "alias": "ylda3ls/",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "演讲在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-020",
+      "text": "想起",
+      "canonical_pinyin": "xiang3 qi3",
+      "surface_pinyin": "xiang2 qi3",
+      "canonical_ids": [
+        [
+          "N22",
+          "M03",
+          "M12",
+          "M33"
+        ],
+        [
+          "N21",
+          "M03",
+          "M03",
+          "M03"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N22",
+          "M03",
+          "M11",
+          "M31"
+        ],
+        [
+          "N21",
+          "M03",
+          "M03",
+          "M03"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "1ls/2lll",
+          "alias": "1ld;2lll",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "1ls/2l",
+          "alias": "1ld;2l",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "1ls/2l",
+          "alias": "1ld;2l",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "想起在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-021",
+      "text": "缓解",
+      "canonical_pinyin": "huan3 jie3",
+      "surface_pinyin": "huan2 jie3",
+      "canonical_ids": [
+        [
+          "N11",
+          "M06",
+          "M12",
+          "M30"
+        ],
+        [
+          "N20",
+          "M03",
+          "M18",
+          "M18"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N11",
+          "M06",
+          "M11",
+          "M28"
+        ],
+        [
+          "N20",
+          "M03",
+          "M18",
+          "M18"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "hosz3lxx",
+          "alias": "hoda3lxx",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "hosz3lx",
+          "alias": "hoda3lx",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "hosz3lx",
+          "alias": "hoda3lx",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "缓解在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-022",
+      "text": "勇敢",
+      "canonical_pinyin": "yong3 gan3",
+      "surface_pinyin": "yong2 gan3",
+      "canonical_ids": [
+        [
+          "N25",
+          "M09",
+          "M15",
+          "M33"
+        ],
+        [
+          "N09",
+          "M12",
+          "M12",
+          "M30"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N25",
+          "M09",
+          "M14",
+          "M31"
+        ],
+        [
+          "N09",
+          "M12",
+          "M12",
+          "M30"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "`.w/gssz",
+          "alias": "`.e;gssz",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "`.w/gsz",
+          "alias": "`.e;gsz",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "`.w/gsz",
+          "alias": "`.e;gsz",
+          "canonical_length": 7,
+          "alias_length": 7,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "勇敢在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-023",
+      "text": "享有",
+      "canonical_pinyin": "xiang3 you3",
+      "surface_pinyin": "xiang2 you3",
+      "canonical_ids": [
+        [
+          "N22",
+          "M03",
+          "M12",
+          "M33"
+        ],
+        [
+          "N23",
+          "M03",
+          "M15",
+          "M06"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N22",
+          "M03",
+          "M11",
+          "M31"
+        ],
+        [
+          "N23",
+          "M03",
+          "M15",
+          "M06"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "1ls/ylwo",
+          "alias": "1ld;ylwo",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "1ls/ylwo",
+          "alias": "1ld;ylwo",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "1ls/ylwo",
+          "alias": "1ld;ylwo",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；未授权运行别名",
+      "decision_note": "享有在通常连续语流中核准阳平加上声",
+      "weight": 1
+    },
+    {
+      "review_id": "T3-5B-024",
+      "text": "水土",
+      "canonical_pinyin": "shui3 tu3",
+      "surface_pinyin": "shui2 tu3",
+      "canonical_ids": [
+        [
+          "N18",
+          "M06",
+          "M18",
+          "M03"
+        ],
+        [
+          "N06",
+          "M06",
+          "M06",
+          "M06"
+        ]
+      ],
+      "surface_ids": [
+        [
+          "N18",
+          "M06",
+          "M17",
+          "M01"
+        ],
+        [
+          "N06",
+          "M06",
+          "M06",
+          "M06"
+        ]
+      ],
+      "codes": {
+        "full": {
+          "canonical": "9oxltooo",
+          "alias": "9ocjtooo",
+          "canonical_length": 8,
+          "alias_length": 8,
+          "delta": 0
+        },
+        "shorthand": {
+          "canonical": "9oxlto",
+          "alias": "9ocjto",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        },
+        "variable": {
+          "canonical": "9oxlto",
+          "alias": "9ocjto",
+          "canonical_length": 6,
+          "alias_length": 6,
+          "delta": 0
+        }
+      },
+      "sources": [
+        {
+          "id": "T3-SRC-ISO7098",
+          "title": "中文书刊名称汉语拼音拼写法（ISO 7098）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_gfbz_gyhypy/20150705/0015-yywz_1998.html",
+          "supports": "变调由后续音节引起且规范拼音仍标原调",
+          "limitation": "不裁决单个词条的韵律域或可选读法"
+        },
+        {
+          "id": "T3-SRC-GBT16159",
+          "title": "汉语拼音正词法基本规则（GB/T 16159-1996）",
+          "authority": "上海市教育委员会规范转载",
+          "url": "https://edu.sh.gov.cn/yywz_zcfg_flfg/20150719/0015-yywz_1992.html",
+          "supports": "以“很好”等说明声调按原调标写、教学时可按变调标写",
+          "limitation": "只提供一般规则背景，不替代逐词审定"
+        }
+      ],
+      "scope": "lexical",
+      "applicable_context": "ordinary_continuous_prosodic_domain",
+      "blocking_context": "internal_emphasis,internal_syllable_boundary_pause,internal_coordination,other_internal_prosodic_constraint",
+      "input_policy": "parallel_alias_keep_canonical",
+      "adjudicator": "project_owner",
+      "adjudicated_on": "2026-08-17",
+      "review_note": "高频机器预选；需核对并列义和词内义的韵律差异",
+      "decision_note": "水土在通常连续语流中核准阳平加上声",
+      "weight": 1
+    }
+  ]
+}

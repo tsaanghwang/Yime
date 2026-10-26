@@ -46,3 +46,4 @@ docs/testing/simple-maintenance/**/raw/** -text !eol -whitespace
 docs/testing/arm64/2026-10-26/*.json -text !eol -whitespace
 docs/testing/arm64/2026-10-26/native-go/** -text !eol -whitespace
 docs/testing/arm64/2026-10-26/native-source/** -text !eol -whitespace
+docs/testing/arm64/2026-10-26/package-validation/** -text !eol -whitespace

@@ -1,0 +1,382 @@
+{
+  "schema_version": "yimecore-speech-forward-source-v1",
+  "passed": true,
+  "record_count": 24,
+  "syllable_count": 50,
+  "checks": {
+    "canonical_phrase_source": true,
+    "canonical_inventory_membership": true,
+    "formal_four_id_decomposition": true,
+    "semantic_tone_substitutions": true,
+    "canonical_layout_projection": true,
+    "inputs_unchanged": true,
+    "rime_executed": false,
+    "aliases_generated": false
+  },
+  "record_ids": [
+    "T3-5B-001",
+    "T3-5B-002",
+    "T3-5B-003",
+    "T3-5B-004",
+    "T3-5B-005",
+    "T3-5B-006",
+    "T3-5B-007",
+    "T3-5B-008",
+    "T3-5B-009",
+    "T3-5B-010",
+    "T3-5B-011",
+    "T3-5B-012",
+    "T3-5B-013",
+    "T3-5B-014",
+    "T3-5B-015",
+    "T3-5B-016",
+    "T3-5B-017",
+    "T3-5B-018",
+    "T3-5B-019",
+    "T3-5B-020",
+    "T3-5B-021",
+    "T3-5B-022",
+    "T3-5B-023",
+    "T3-5B-024"
+  ],
+  "input_sha256": {
+    "internal_data/yime_syllable_decomposition.tsv": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+    "internal_data/pinyin_source_db/lexicon_exports/pinyin_normalized.json": "01bb8e95f124b42c3b1187cfe3872940ab73ebf83a6fe4bebfeac4139bc38422",
+    "internal_data/manual_key_layout.json": "fdc73667015d97d9173d11f2ad3d56a5dba6f95feee4802ed67821d8ad68094a",
+    "internal_data/key_to_symbol.json": "ebd1409e7dcbd4dc79b0754afcb89a4e4b3a4d6020cfb045719bd49c434f4dc0",
+    "docs/project/connected_speech/third_tone_stage5b_decisions.tsv": "575bd0ed7794c46c8aee53c1560bb0020f9397c06a20bda9ee7e6ad714adb0c8",
+    "syllable/codec/yinjie_encoder.py": "6349a040ec0c631437f7b37fd0b4a29777eabe4ccb454ae7d13b2b583533c29a",
+    "yime/utils/yinyuan_id_chain.py": "93bddc2baaa71dec1839a14cbb8e0debb8725693d39d91258f92465a20bf3404",
+    "syllable/__init__.py": "020ad63d75c3bc80e661b59b4d44aa83483c9831c6abe5ce950b25140ff08e09",
+    "syllable/analysis/__init__.py": "39b66a9dd7c374120a68c36c049f604809fc5a8c3ae953a634a8a6566ec70de4",
+    "syllable/analysis/ganyin_categorizer.py": "743cdba1c337b8f5ecb4f3dd5238807700e8b4a8fe1b825c842b59286d32d8ed",
+    "syllable/analysis/ganyin_yinyuan_slots.py": "cb4b8c53fcbb6d0922246c68c96dfc3bbad9c14143aef491921575dc658401da",
+    "syllable/analysis/segment_split.py": "8c08ddd81c6f6e20c60598cbf5d324c858ce72e44b864760c44febc43bc4b238",
+    "syllable/analysis/syllable.py": "b14ac3992edaaea76d7193ca59a93681a2d2ecca3853a27e4e8ef569b5344b45",
+    "syllable/analysis/syllable_analyzer.py": "dd4bb29bfc053fabc7226cbc0c7b8fe3eaab0b501989cfb9dcb1697bd7525e5f",
+    "syllable/analysis/syllable_categorizer.py": "537df16093c54a2dc79496b369481dc757fbf703a4a6f2a6940c6f48a41e2b86",
+    "syllable/codec/__init__.py": "16984dcdb1b70ec55c38a80cabdacb05483e12be33c7f39d9475513e7e858002",
+    "syllable/codec/input_shorthand/__init__.py": "21e43c8c23eb26bdb48c06be426c999eccd61459b022e9665b10bcf919d5259d",
+    "syllable/codec/input_shorthand/tone_omission.py": "da7d4cf542402a60350f70c17339e892e228a2be1f24f11fe8c2d76b44db6a3f",
+    "syllable/codec/model_full_code/__init__.py": "1fb6f10ab1c0fb94fec06a6b02546ef1ac95a8c2c4c45a2f302afb947d1d3190",
+    "syllable/codec/model_full_code/structure.py": "7c19545a33393da4b994d39ed652375562ac917cc683893421a83667b322e972",
+    "syllable/codec/neutral_tone_encoding.py": "078b27d9b71a003d78bc6be0a420f9486973ac10efe58c664ef13e9e7ed8065b",
+    "syllable/codec/paths.py": "7cb5d41af8a0edd621871c741f8201d8420d20041f961dfab998217d37357549",
+    "syllable/codec/variable_length_yinyuan/__init__.py": "288d274b12c73be34ae929d011815aefa93a2f85fc58f10e6767cc354358c5bf",
+    "syllable/codec/variable_length_yinyuan/transform.py": "19fdcb4f1e76029ff642d83dffddb9dcd9b91d9e51da74e1debd6b00c5387452",
+    "syllable/codec/yinjie.py": "81f3097f2353717ef3f0a003e69e9f1d3026a21a633230cf25e7fdc61b51ed26",
+    "syllable/codec/yinjie_api_manifest.py": "1643373dfbef0e1bd969ba81e90cccab09d1fa5d5554281a86ddae734a36cad3",
+    "syllable/codec/yinjie_decoder.py": "44e1fe2f57ed908c3e8d5cee8f3688b8e9d35109e501b8cb5a0305f4d8eb30aa",
+    "yime/__init__.py": "599dd7db0d9cb1cebd7f34cbda127dadce0834b0c46fe0eadb625d146b26b217",
+    "yime/utils/__init__.py": "101ab1d5a888d2f7f1b823b2ef1c31e6c0d69bb3b9cf604926762dac4c5bbc8c",
+    "yime/utils/backup.py": "ad7b404768e17bd4448816fc8363dfdf2dfb2a665bab62e8e93ee264a196d76a",
+    "yime/utils/charfilter.py": "aab47d893d85c73c58248fdc3c8ee9a952e1de7e45b9b6601e8aea28cdca6d85",
+    "yime/utils/marked_pinyin.py": "6fcc38bea5841f38d8ec9cdd9581934d69a2d16cb29594c5552b33d7d120868f",
+    "yime/utils/pinyin_normalizer.py": "113e997f1a3f18570987aa094629b73284e091b8f3be8fe9269d36249a39172c",
+    "yime/utils/pinyin_zhuyin.py": "86625c1ff541fbab6794ad0468a2df852067378ec786c9e080a992a27a534350",
+    "yime/utils/reverse_key_value_pairs.py": "b1ad5deec42abf556eb4da1d043e952d8b1360d7877c5998fbd0a866b6676d29",
+    "syllable/analysis/shouyin_encoder.py": "dfaf0a475dc68b58e7f2077808151dd8db4a2712cbb68ca793f3da8c0058d143",
+    "syllable/analysis/zaoyin_pianyin_source.py": "f8134e93a907ce16efa2100515416079c769660ea3b6c8910499d8a557599869",
+    "syllable/analysis/ganyin_encoder.py": "a65128e5ae5f535cd22d02bb0a12223feb8099fce14771546cbc4c811c3faaa3",
+    "syllable/analysis/yueyin_mapper.py": "5061089fa96ece3c0c9fdc6961f516b6d5f5b21738ca829cda69e1ce9189f1e3",
+    "syllable/analysis/syllable_encoding_pipeline.py": "dfa1bfb3f503a11f1f5b3a80c090c83e4a55a5978ef020d7b325bcd84692a405",
+    "syllable/analysis/syllable_splitter.py": "5dd29304ad0ddcf15f6f1ea52441ad82b958f141753be1694f13f5bb2c032392",
+    "syllable/pianyin/zaoyin_pianyin.json": "747225337e369476e717826333a8bb57934801a17ba42e01de99eec8e47ab4b2",
+    "syllable/yinyuan/shouyin_codepoint.json": "b003fc71736d57635d0762239888071082ab0aa93ffeb8cf579bd47c87cf6027",
+    "syllable/yinyuan/ganyin.json": "915b44a3b397e4b9aaf5fbffb0200c9a68338e4b5f7759f778ce7a3a0731fb5d",
+    "syllable/yinyuan/variables_of_attributes.json": "6a8c9adcb7c16836ddd041caf188a136909441f0ba441d02f3fea5eecb4aa378",
+    "internal_data/pinyin_source_db/neutral_tone_encoding_exceptions.json": "368b448eb605ad6145b94a3133fae0a277a825b51f90a019d6d25f7595e05cb7",
+    "go-backend/input_methods/yime/data/yime_syllable_decomposition.tsv": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+    "go-backend/input_methods/yime/data/yime_yinyuan_layout.json": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+    "internal_data/phrase_pinyin/phrase_pinyin.txt": "cad7d7a4c7aa6a253c09e64a425563f8a954f29fc26f57aa92cc74f8414ac9a3",
+    "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json": "efccbdf7eb02529af6d2762a0ee03d2130f855174a5e04ea54004f7ae211ee2e",
+    "docs/project/connected_speech/third_tone_stage5b_review.tsv": "484f37fe78a1b6144c0abf5addd55245e1d0517eee21a142e9f735e495aa931b",
+    "docs/project/connected_speech/third_tone_stage5b_sources.tsv": "dbba5cc8dc25fcbb70185b70aa3296503100e480c49fd462db76842f21338579",
+    "docs/project/connected_speech/third_tone_sandhi_scope.tsv": "cda354dcff8ceeb5f1261d805633c403d34a752b0926d299146eba84d4a9895c",
+    "syllable/yinyuan/zaoyin_yinyuan_enhanced.json": "ef77e1917d0158b6dc79064618ae637407d865af17e514c900cd22a7cd94185a",
+    "syllable/yinyuan/yueyin_yinyuan_enhanced.json": "da9972c35b250b806070bfdf66d3cb2691437cd3b20c3f729da45d04927aa3e9",
+    "tools/lexicon/validate_connected_speech_forward.py": "f67757cdd54a9e02db025480cfeada296391ac191be905ac8d3ed96e4828c65f"
+  },
+  "inputs": [
+    {
+      "role": "canonical_decomposition",
+      "path": "internal_data/yime_syllable_decomposition.tsv",
+      "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7"
+    },
+    {
+      "role": "canonical_inventory",
+      "path": "internal_data/pinyin_source_db/lexicon_exports/pinyin_normalized.json",
+      "sha256": "01bb8e95f124b42c3b1187cfe3872940ab73ebf83a6fe4bebfeac4139bc38422"
+    },
+    {
+      "role": "canonical_layout",
+      "path": "internal_data/manual_key_layout.json",
+      "sha256": "fdc73667015d97d9173d11f2ad3d56a5dba6f95feee4802ed67821d8ad68094a"
+    },
+    {
+      "role": "canonical_symbols",
+      "path": "internal_data/key_to_symbol.json",
+      "sha256": "ebd1409e7dcbd4dc79b0754afcb89a4e4b3a4d6020cfb045719bd49c434f4dc0"
+    },
+    {
+      "role": "decisions",
+      "path": "docs/project/connected_speech/third_tone_stage5b_decisions.tsv",
+      "sha256": "575bd0ed7794c46c8aee53c1560bb0020f9397c06a20bda9ee7e6ad714adb0c8"
+    },
+    {
+      "role": "formal_encoder",
+      "path": "syllable/codec/yinjie_encoder.py",
+      "sha256": "6349a040ec0c631437f7b37fd0b4a29777eabe4ccb454ae7d13b2b583533c29a"
+    },
+    {
+      "role": "formal_id_chain",
+      "path": "yime/utils/yinyuan_id_chain.py",
+      "sha256": "93bddc2baaa71dec1839a14cbb8e0debb8725693d39d91258f92465a20bf3404"
+    },
+    {
+      "role": "formal_import_01",
+      "path": "syllable/__init__.py",
+      "sha256": "020ad63d75c3bc80e661b59b4d44aa83483c9831c6abe5ce950b25140ff08e09"
+    },
+    {
+      "role": "formal_import_02",
+      "path": "syllable/analysis/__init__.py",
+      "sha256": "39b66a9dd7c374120a68c36c049f604809fc5a8c3ae953a634a8a6566ec70de4"
+    },
+    {
+      "role": "formal_import_03",
+      "path": "syllable/analysis/ganyin_categorizer.py",
+      "sha256": "743cdba1c337b8f5ecb4f3dd5238807700e8b4a8fe1b825c842b59286d32d8ed"
+    },
+    {
+      "role": "formal_import_04",
+      "path": "syllable/analysis/ganyin_yinyuan_slots.py",
+      "sha256": "cb4b8c53fcbb6d0922246c68c96dfc3bbad9c14143aef491921575dc658401da"
+    },
+    {
+      "role": "formal_import_05",
+      "path": "syllable/analysis/segment_split.py",
+      "sha256": "8c08ddd81c6f6e20c60598cbf5d324c858ce72e44b864760c44febc43bc4b238"
+    },
+    {
+      "role": "formal_import_06",
+      "path": "syllable/analysis/syllable.py",
+      "sha256": "b14ac3992edaaea76d7193ca59a93681a2d2ecca3853a27e4e8ef569b5344b45"
+    },
+    {
+      "role": "formal_import_07",
+      "path": "syllable/analysis/syllable_analyzer.py",
+      "sha256": "dd4bb29bfc053fabc7226cbc0c7b8fe3eaab0b501989cfb9dcb1697bd7525e5f"
+    },
+    {
+      "role": "formal_import_08",
+      "path": "syllable/analysis/syllable_categorizer.py",
+      "sha256": "537df16093c54a2dc79496b369481dc757fbf703a4a6f2a6940c6f48a41e2b86"
+    },
+    {
+      "role": "formal_import_09",
+      "path": "syllable/codec/__init__.py",
+      "sha256": "16984dcdb1b70ec55c38a80cabdacb05483e12be33c7f39d9475513e7e858002"
+    },
+    {
+      "role": "formal_import_10",
+      "path": "syllable/codec/input_shorthand/__init__.py",
+      "sha256": "21e43c8c23eb26bdb48c06be426c999eccd61459b022e9665b10bcf919d5259d"
+    },
+    {
+      "role": "formal_import_11",
+      "path": "syllable/codec/input_shorthand/tone_omission.py",
+      "sha256": "da7d4cf542402a60350f70c17339e892e228a2be1f24f11fe8c2d76b44db6a3f"
+    },
+    {
+      "role": "formal_import_12",
+      "path": "syllable/codec/model_full_code/__init__.py",
+      "sha256": "1fb6f10ab1c0fb94fec06a6b02546ef1ac95a8c2c4c45a2f302afb947d1d3190"
+    },
+    {
+      "role": "formal_import_13",
+      "path": "syllable/codec/model_full_code/structure.py",
+      "sha256": "7c19545a33393da4b994d39ed652375562ac917cc683893421a83667b322e972"
+    },
+    {
+      "role": "formal_import_14",
+      "path": "syllable/codec/neutral_tone_encoding.py",
+      "sha256": "078b27d9b71a003d78bc6be0a420f9486973ac10efe58c664ef13e9e7ed8065b"
+    },
+    {
+      "role": "formal_import_15",
+      "path": "syllable/codec/paths.py",
+      "sha256": "7cb5d41af8a0edd621871c741f8201d8420d20041f961dfab998217d37357549"
+    },
+    {
+      "role": "formal_import_16",
+      "path": "syllable/codec/variable_length_yinyuan/__init__.py",
+      "sha256": "288d274b12c73be34ae929d011815aefa93a2f85fc58f10e6767cc354358c5bf"
+    },
+    {
+      "role": "formal_import_17",
+      "path": "syllable/codec/variable_length_yinyuan/transform.py",
+      "sha256": "19fdcb4f1e76029ff642d83dffddb9dcd9b91d9e51da74e1debd6b00c5387452"
+    },
+    {
+      "role": "formal_import_18",
+      "path": "syllable/codec/yinjie.py",
+      "sha256": "81f3097f2353717ef3f0a003e69e9f1d3026a21a633230cf25e7fdc61b51ed26"
+    },
+    {
+      "role": "formal_import_19",
+      "path": "syllable/codec/yinjie_api_manifest.py",
+      "sha256": "1643373dfbef0e1bd969ba81e90cccab09d1fa5d5554281a86ddae734a36cad3"
+    },
+    {
+      "role": "formal_import_20",
+      "path": "syllable/codec/yinjie_decoder.py",
+      "sha256": "44e1fe2f57ed908c3e8d5cee8f3688b8e9d35109e501b8cb5a0305f4d8eb30aa"
+    },
+    {
+      "role": "formal_import_21",
+      "path": "yime/__init__.py",
+      "sha256": "599dd7db0d9cb1cebd7f34cbda127dadce0834b0c46fe0eadb625d146b26b217"
+    },
+    {
+      "role": "formal_import_22",
+      "path": "yime/utils/__init__.py",
+      "sha256": "101ab1d5a888d2f7f1b823b2ef1c31e6c0d69bb3b9cf604926762dac4c5bbc8c"
+    },
+    {
+      "role": "formal_import_23",
+      "path": "yime/utils/backup.py",
+      "sha256": "ad7b404768e17bd4448816fc8363dfdf2dfb2a665bab62e8e93ee264a196d76a"
+    },
+    {
+      "role": "formal_import_24",
+      "path": "yime/utils/charfilter.py",
+      "sha256": "aab47d893d85c73c58248fdc3c8ee9a952e1de7e45b9b6601e8aea28cdca6d85"
+    },
+    {
+      "role": "formal_import_25",
+      "path": "yime/utils/marked_pinyin.py",
+      "sha256": "6fcc38bea5841f38d8ec9cdd9581934d69a2d16cb29594c5552b33d7d120868f"
+    },
+    {
+      "role": "formal_import_26",
+      "path": "yime/utils/pinyin_normalizer.py",
+      "sha256": "113e997f1a3f18570987aa094629b73284e091b8f3be8fe9269d36249a39172c"
+    },
+    {
+      "role": "formal_import_27",
+      "path": "yime/utils/pinyin_zhuyin.py",
+      "sha256": "86625c1ff541fbab6794ad0468a2df852067378ec786c9e080a992a27a534350"
+    },
+    {
+      "role": "formal_import_28",
+      "path": "yime/utils/reverse_key_value_pairs.py",
+      "sha256": "b1ad5deec42abf556eb4da1d043e952d8b1360d7877c5998fbd0a866b6676d29"
+    },
+    {
+      "role": "formal_initial_encoder",
+      "path": "syllable/analysis/shouyin_encoder.py",
+      "sha256": "dfaf0a475dc68b58e7f2077808151dd8db4a2712cbb68ca793f3da8c0058d143"
+    },
+    {
+      "role": "formal_initial_source",
+      "path": "syllable/analysis/zaoyin_pianyin_source.py",
+      "sha256": "f8134e93a907ce16efa2100515416079c769660ea3b6c8910499d8a557599869"
+    },
+    {
+      "role": "formal_musical_encoder",
+      "path": "syllable/analysis/ganyin_encoder.py",
+      "sha256": "a65128e5ae5f535cd22d02bb0a12223feb8099fce14771546cbc4c811c3faaa3"
+    },
+    {
+      "role": "formal_musical_mapper",
+      "path": "syllable/analysis/yueyin_mapper.py",
+      "sha256": "5061089fa96ece3c0c9fdc6961f516b6d5f5b21738ca829cda69e1ce9189f1e3"
+    },
+    {
+      "role": "formal_pipeline",
+      "path": "syllable/analysis/syllable_encoding_pipeline.py",
+      "sha256": "dfa1bfb3f503a11f1f5b3a80c090c83e4a55a5978ef020d7b325bcd84692a405"
+    },
+    {
+      "role": "formal_splitter",
+      "path": "syllable/analysis/syllable_splitter.py",
+      "sha256": "5dd29304ad0ddcf15f6f1ea52441ad82b958f141753be1694f13f5bb2c032392"
+    },
+    {
+      "role": "initial_analysis",
+      "path": "syllable/pianyin/zaoyin_pianyin.json",
+      "sha256": "747225337e369476e717826333a8bb57934801a17ba42e01de99eec8e47ab4b2"
+    },
+    {
+      "role": "initial_codepoints",
+      "path": "syllable/yinyuan/shouyin_codepoint.json",
+      "sha256": "b003fc71736d57635d0762239888071082ab0aa93ffeb8cf579bd47c87cf6027"
+    },
+    {
+      "role": "marked_finals",
+      "path": "syllable/yinyuan/ganyin.json",
+      "sha256": "915b44a3b397e4b9aaf5fbffb0200c9a68338e4b5f7759f778ce7a3a0731fb5d"
+    },
+    {
+      "role": "musical_attributes",
+      "path": "syllable/yinyuan/variables_of_attributes.json",
+      "sha256": "6a8c9adcb7c16836ddd041caf188a136909441f0ba441d02f3fea5eecb4aa378"
+    },
+    {
+      "role": "neutral_exceptions",
+      "path": "internal_data/pinyin_source_db/neutral_tone_encoding_exceptions.json",
+      "sha256": "368b448eb605ad6145b94a3133fae0a277a825b51f90a019d6d25f7595e05cb7"
+    },
+    {
+      "role": "packaged_decomposition",
+      "path": "go-backend/input_methods/yime/data/yime_syllable_decomposition.tsv",
+      "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7"
+    },
+    {
+      "role": "packaged_layout",
+      "path": "go-backend/input_methods/yime/data/yime_yinyuan_layout.json",
+      "sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0"
+    },
+    {
+      "role": "phrase_pronunciations",
+      "path": "internal_data/phrase_pinyin/phrase_pinyin.txt",
+      "sha256": "cad7d7a4c7aa6a253c09e64a425563f8a954f29fc26f57aa92cc74f8414ac9a3"
+    },
+    {
+      "role": "pianyin_sequence",
+      "path": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+      "sha256": "efccbdf7eb02529af6d2762a0ee03d2130f855174a5e04ea54004f7ae211ee2e"
+    },
+    {
+      "role": "review",
+      "path": "docs/project/connected_speech/third_tone_stage5b_review.tsv",
+      "sha256": "484f37fe78a1b6144c0abf5addd55245e1d0517eee21a142e9f735e495aa931b"
+    },
+    {
+      "role": "rule_sources",
+      "path": "docs/project/connected_speech/third_tone_stage5b_sources.tsv",
+      "sha256": "dbba5cc8dc25fcbb70185b70aa3296503100e480c49fd462db76842f21338579"
+    },
+    {
+      "role": "scope",
+      "path": "docs/project/connected_speech/third_tone_sandhi_scope.tsv",
+      "sha256": "cda354dcff8ceeb5f1261d805633c403d34a752b0926d299146eba84d4a9895c"
+    },
+    {
+      "role": "semantic_initials",
+      "path": "syllable/yinyuan/zaoyin_yinyuan_enhanced.json",
+      "sha256": "ef77e1917d0158b6dc79064618ae637407d865af17e514c900cd22a7cd94185a"
+    },
+    {
+      "role": "semantic_musical",
+      "path": "syllable/yinyuan/yueyin_yinyuan_enhanced.json",
+      "sha256": "da9972c35b250b806070bfdf66d3cb2691437cd3b20c3f729da45d04927aa3e9"
+    },
+    {
+      "role": "validator",
+      "path": "tools/lexicon/validate_connected_speech_forward.py",
+      "sha256": "f67757cdd54a9e02db025480cfeada296391ac191be905ac8d3ed96e4828c65f"
+    }
+  ]
+}

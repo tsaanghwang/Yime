@@ -1,0 +1,312 @@
+Microsoft (R) COFF/PE Dumper Version 14.44.35229.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+Dump of file C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64x-20261026-194311-27e9ed1f\ec\Release\YimeTextServiceExperiment.dll
+
+PE signature found
+
+File Type: DLL
+
+FILE HEADER VALUES
+            8664 machine (x64) (ARM64X)
+               9 number of sections
+        6ADF3CF0 time date stamp Mon Oct 26 19:43:44 2026
+               0 file pointer to symbol table
+               0 number of symbols
+              F0 size of optional header
+            2022 characteristics
+                   Executable
+                   Application can handle large (>2GB) addresses
+                   DLL
+
+OPTIONAL HEADER VALUES
+             20B magic # (PE32+)
+           14.44 linker version
+           D9400 size of code
+           60A00 size of initialized data
+               0 size of uninitialized data
+           DB020 entry point (00000001800DB020)
+            1000 base of code
+       180000000 image base (0000000180000000 to 0000000180140FFF)
+            1000 section alignment
+             200 file alignment
+            6.02 operating system version
+            0.00 image version
+            6.02 subsystem version
+               0 Win32 version
+          141000 size of image
+             400 size of headers
+               0 checksum
+               3 subsystem (Windows CUI)
+             160 DLL characteristics
+                   High Entropy Virtual Addresses
+                   Dynamic base
+                   NX compatible
+          100000 size of stack reserve
+            1000 size of stack commit
+          100000 size of heap reserve
+            1000 size of heap commit
+               0 loader flags
+              10 number of directories
+          119810 [      90] RVA [size] of Export Directory
+          119924 [      8C] RVA [size] of Import Directory
+          12D000 [   117D0] RVA [size] of Resource Directory
+          12AB40 [      18] RVA [size] of Exception Directory
+               0 [       0] RVA [size] of Certificates Directory
+          13F000 [    18D0] RVA [size] of Base Relocation Directory
+           FDA20 [      1C] RVA [size] of Debug Directory
+               0 [       0] RVA [size] of Architecture Directory
+               0 [       0] RVA [size] of Global Pointer Directory
+           FDA80 [      28] RVA [size] of Thread Storage Directory
+           FD8E0 [     140] RVA [size] of Load Configuration Directory
+               0 [       0] RVA [size] of Bound Import Directory
+           DC000 [    1000] RVA [size] of Import Address Table Directory
+               0 [       0] RVA [size] of Delay Import Directory
+               0 [       0] RVA [size] of COM Descriptor Directory
+               0 [       0] RVA [size] of Reserved Directory
+
+
+SECTION HEADER #1
+   .text name
+   D9036 virtual size
+    1000 virtual address (0000000180001000 to 00000001800DA035)
+   D9200 size of raw data
+     400 file pointer to raw data (00000400 to 000D95FF)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+60000020 flags
+         Code
+         Execute Read
+
+SECTION HEADER #2
+.hexpthk name
+      30 virtual size
+   DB000 virtual address (00000001800DB000 to 00000001800DB02F)
+     200 size of raw data
+   D9600 file pointer to raw data (000D9600 to 000D97FF)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+60000020 flags
+         Code
+         Execute Read
+
+SECTION HEADER #3
+  .rdata name
+   405D0 virtual size
+   DC000 virtual address (00000001800DC000 to 000000018011C5CF)
+   40600 size of raw data
+   D9800 file pointer to raw data (000D9800 to 00119DFF)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+40000040 flags
+         Initialized Data
+         Read Only
+
+  Debug Directories
+
+        Time Type        Size      RVA  Pointer
+    -------- ------- -------- -------- --------
+    6ADF3CF0 coffgrp      72C 00101FC0    FF7C0
+
+  Section contains the following exports for YimeTextServiceExperiment.dll
+
+    00000000 characteristics
+    FFFFFFFF time date stamp
+        0.00 version
+           1 ordinal base
+           2 number of functions
+           2 number of names
+
+    ordinal hint RVA      name
+
+          1    0 000DB000 DllCanUnloadNow
+          2    1 000DB010 DllGetClassObject
+
+  Section contains the following load config:
+
+            00000140 size
+                   0 time date stamp
+                0.00 Version
+                   0 GlobalFlags Clear
+                   0 GlobalFlags Set
+                   0 Critical Section Default Timeout
+                   0 Decommit Free Block Threshold
+                   0 Decommit Total Free Threshold
+    0000000000000000 Lock Prefix Table
+                   0 Maximum Allocation Size
+                   0 Virtual Memory Threshold
+                   0 Process Affinity Mask
+                   0 Process Heap Flags
+                   0 CSD Version
+                0000 Dependent Load Flag
+    0000000000000000 Edit List
+    000000018011D240 Security Cookie
+    00000001800DD070 Guard CF address of check-function pointer
+    00000001800DD078 Guard CF address of dispatch-function pointer
+    0000000000000000 Guard CF function table
+                   0 Guard CF function count
+            00000100 Guard Flags
+                       CF instrumented
+                0000 Code Integrity Flags
+                0000 Code Integrity Catalog
+            00000000 Code Integrity Catalog Offset
+            00000000 Code Integrity Reserved
+    0000000000000000 Guard CF address taken IAT entry table
+                   0 Guard CF address taken IAT entry count
+    0000000000000000 Guard CF long jump target table
+                   0 Guard CF long jump target count
+    0000000000000000 Dynamic value relocation table
+    00000001800ED0C0 Hybrid metadata pointer
+    0000000000000000 Guard RF address of failure-function
+    0000000000000000 Guard RF address of failure-function pointer
+            00000000 Dynamic value relocation table offset
+                0000 Dynamic value relocation table section
+                0000 Reserved2
+    0000000000000000 Guard RF address of stack pointer verification function pointer
+            00000000 Hot patching table offset
+                0000 Reserved3
+    0000000000000000 Enclave configuration pointer
+    0000000000000000 Volatile metadata pointer
+    0000000000000000 Guard EH continuation table
+                   0 Guard EH continuation count
+    00000001800DD080 Guard XFG address of check-function pointer
+    00000001800DD088 Guard XFG address of dispatch-function pointer
+    00000001800DD090 Guard XFG address of dispatch-table-function pointer
+    00000001800DD098 CastGuard OS determined failure mode
+    00000001800DD0A8 Guard memcpy function pointer
+
+  Section contains the following hybrid metadata:
+
+                   2 Version
+            000DD000 Offset of Arm64X dispatch call function pointer (no redirection)
+            000DD008 Offset of Arm64X dispatch return function pointer
+            000DD010 Offset of Arm64X dispatch indirect call function pointer
+            000DD020 Offset of Arm64X dispatch indirect call function pointer (with CFG check)
+            00000000 Offset of Arm64X alternative entry point
+            0011C000 Offset of Arm64X auxiliary import address table
+            000FDA3C Offset of Arm64X x64 code ranges to entry points table
+                   3  Count of Arm64X x64 code ranges to entry point table entries
+            0012C000 Offset of Arm64X arm64x redirection metadata table
+                   3  Count of Arm64X arm64x redirection metadata table entries
+            00124000 Offset of Arm64X extra RFE table
+                6B40  Count of Arm64X extra RFE table size
+            000DD038 Offset of Arm64X dispatch function pointer
+            0011AC60 Offset of Arm64X copy of auxiliary import address table
+            00000000 Offset of Arm64X auxiliary delayload import address table
+            00000000 Offset of Arm64X auxiliary delayload import address table copy
+                   0  Value of Arm64X hybrid image info bitfield
+
+    0000000180101FA8 Hybrid code address range table
+                   3 Hybrid code address range count
+
+    Hybrid Code Address Range Table
+
+                Address Range
+          ----------------------
+          arm64  0000000180001000 - 000000018006498B (00001000 - 0006498B)
+        arm64ec  0000000180065000 - 00000001800D94EF (00065000 - 000D94EF)
+            x64  00000001800DA000 - 00000001800DB02F (000DA000 - 000DB02F)
+
+SECTION HEADER #4
+   .data name
+    61BC virtual size
+  11D000 virtual address (000000018011D000 to 00000001801231BB)
+    3A00 size of raw data
+  119E00 file pointer to raw data (00119E00 to 0011D7FF)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+C0000040 flags
+         Initialized Data
+         Read Write
+
+SECTION HEADER #5
+  .pdata name
+    6B58 virtual size
+  124000 virtual address (0000000180124000 to 000000018012AB57)
+    6C00 size of raw data
+  11D800 file pointer to raw data (0011D800 to 001243FF)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+40000040 flags
+         Initialized Data
+         Read Only
+
+SECTION HEADER #6
+.fptable name
+     200 virtual size
+  12B000 virtual address (000000018012B000 to 000000018012B1FF)
+     200 size of raw data
+  124400 file pointer to raw data (00124400 to 001245FF)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+C0000040 flags
+         Initialized Data
+         Read Write
+
+SECTION HEADER #7
+ .a64xrm name
+      20 virtual size
+  12C000 virtual address (000000018012C000 to 000000018012C01F)
+     200 size of raw data
+  124600 file pointer to raw data (00124600 to 001247FF)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+40000040 flags
+         Initialized Data
+         Read Only
+
+SECTION HEADER #8
+   .rsrc name
+   117D0 virtual size
+  12D000 virtual address (000000018012D000 to 000000018013E7CF)
+   11800 size of raw data
+  124800 file pointer to raw data (00124800 to 00135FFF)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+40000040 flags
+         Initialized Data
+         Read Only
+
+SECTION HEADER #9
+  .reloc name
+    18D0 virtual size
+  13F000 virtual address (000000018013F000 to 00000001801408CF)
+    1A00 size of raw data
+  136000 file pointer to raw data (00136000 to 001379FF)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+42000040 flags
+         Initialized Data
+         Discardable
+         Read Only
+
+  Summary
+
+        1000 .a64xrm
+        7000 .data
+        1000 .fptable
+        1000 .hexpthk
+        7000 .pdata
+       41000 .rdata
+        2000 .reloc
+       12000 .rsrc
+       DA000 .text
