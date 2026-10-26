@@ -1,0 +1,15 @@
+{
+  "read_only": true,
+  "product_processes_started_or_stopped": false,
+  "powershell": "7.6.5",
+  "default_type": "System.DateTime",
+  "default_kind": "Utc",
+  "default_roundtrip": "2026-10-26T13:51:20.5196831Z",
+  "default_string_cast": "10/26/2026 13:51:20",
+  "old_parse_utc": "2026-10-26T05:51:20.0000000Z",
+  "old_parse_offset": "08:00:00",
+  "datetime_preserving_kind_utc": "2026-10-26T13:51:20.5196831Z",
+  "json_string_type": "System.String",
+  "json_string_value": "2026-10-26T13:51:20.5196831Z",
+  "explicit_roundtrip_utc": "2026-10-26T13:51:20.5196831Z"
+}

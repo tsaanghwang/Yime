@@ -1,0 +1,965 @@
+{
+  "schema_version": "yimecore-arm64-installed-validation-evidence-index-v1",
+  "draft": true,
+  "phase": "registered-host-first-matrix-and-two-single-case-retries",
+  "created_at": "2026-10-26T14:35:15.391Z",
+  "archive_root": "docs/testing/arm64/2026-10-26/installed-validation",
+  "stage_summary": "stage2-observations.json",
+  "prior_stage_index": {
+    "path": "evidence-index.draft.json",
+    "sha256": "71e5af662cb1f2d3d7e305023006de5b7a37c5aed52fa9f2653ca0ddae167b11",
+    "modified": false
+  },
+  "status": {
+    "user_driven_uac_install_completed": true,
+    "first_registered_matrix": {
+      "attempted": 9,
+      "passed": 8,
+      "failed": 1
+    },
+    "x86_shorthand_retries": {
+      "diagnostics_on": "passed",
+      "diagnostics_off": "passed"
+    },
+    "matrix_cells_with_passing_evidence": 9,
+    "matrix_cells_total": 9,
+    "original_failure_root_cause": "unresolved",
+    "focus_attribution_supported": false,
+    "stability_sign_off": false,
+    "real_application_tests_executed": false,
+    "physical_acceptance": false,
+    "reboot_acceptance_passed": null,
+    "final_acceptance_complete": false
+  },
+  "observer_preconditions": {
+    "cim_image_failure_cases_attempted": 0,
+    "datetime_timezone_failure_cases_attempted": 0,
+    "corrected_observer_enabled_actual_host_runs": true,
+    "misclassified_as_product_failure": false
+  },
+  "preservation": {
+    "payload_hashes_before_after_match_for_each_actual_run": true,
+    "payload_files_per_snapshot": 68,
+    "com_paths_before_after_match_for_each_actual_run": true,
+    "runtime_broker_identities_unchanged_for_each_actual_run": true,
+    "original_first_failure_preserved": true,
+    "all_wrapper_snapshot_hashes_match_reports": true,
+    "raw_copies_rehashed": true,
+    "live_learning_or_user_settings_contents_read_or_copied": false
+  },
+  "byte_preserved_originals": 96,
+  "derived_summaries": 2,
+  "artifact_count": 98,
+  "artifact_bytes": 460634,
+  "archival_task_executed_installation_or_hosts": false,
+  "commit_or_push_performed": false,
+  "limitations": [
+    "This remains a draft because real application acceptance and final stability decisions are pending.",
+    "All nine matrix cells have passing evidence across attempts, but the first matrix itself was 8/9, not 9/9.",
+    "The first x86-shorthand error was registered key sink did not claim KeyDown. Its DLL/path/hash were correct; no foreground/key diagnostic sample was collected then.",
+    "Foreground and key logs from later passing retries cannot establish the cause of the earlier failure.",
+    "x64 and x86 cases run through emulation on the identified ARM64 machine; they are not x64 or x86 hardware acceptance.",
+    "The hosts use installed COM/TIP and Broker with synthetic text/input. Legacy flag names containing physical do not establish human physical acceptance.",
+    "The archived settings snapshots are synthetic fixtures under the explicit .tmp roots, not real user AppData.",
+    "The installed Broker may write its own learning from synthetic test input; actual learning/state files are excluded from this archive.",
+    "The raw precondition failures and raw first matrix passed=false remain unchanged.",
+    "Preserve installed-validation/** with -text Git attributes before publication."
+  ],
+  "artifacts": [
+    {
+      "path": "baseline/postinstall-observation.json",
+      "source_path": ".tmp/arm64-r2-postinstall-20261026/preinstall-baseline.json",
+      "source_path_base": "repository root",
+      "bytes": 28468,
+      "sha256": "b292d56ea1cb5434d5528a21288adc7829fb1ec01ddfa22a345b3f3933bba742",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "baseline/preinstall-baseline.json",
+      "source_path": ".tmp/arm64-preinstall-20261026-211112-startup-enumeration/preinstall-baseline.json",
+      "source_path_base": "repository root",
+      "bytes": 13153,
+      "sha256": "af225943bdbb6e13b6a7f2b6cda7e8131ced8a9eeccbfe4f916bb5acd88ffba6",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "install/automatic-uac-cancelled.user.log",
+      "source_path": "C:/Users/tsaan/Yime Setup Logs/71eef12f53dd4168a232eb176582e93d.user.log",
+      "source_path_base": "explicit absolute log path supplied for this task",
+      "bytes": 3638,
+      "sha256": "43be0cb9d382a2b1449c380cc148709d9f1816ece1ca373e26498f0210ba67b6",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "install/manual-uac.admin.log",
+      "source_path": "C:/Users/tsaan/Yime Setup Logs/e3d2f95ca1274c46ba7f8496dc9da645.admin.log",
+      "source_path_base": "explicit absolute log path supplied for this task",
+      "bytes": 2288,
+      "sha256": "61d75206596e0420afcb790541a86dc50ae79ada7924afa20a783ff6c2a99fd4",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "install/manual-uac.user.log",
+      "source_path": "C:/Users/tsaan/Yime Setup Logs/e3d2f95ca1274c46ba7f8496dc9da645.user.log",
+      "source_path_base": "explicit absolute log path supplied for this task",
+      "bytes": 1143,
+      "sha256": "d7b287cf790f43404c3da0347be8313d109ad0ec01068f75b440df6d1b5a4458",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "invocation/initial-cim-failure.params.json",
+      "source_path": ".tmp/registered-host-arm64-r2-run-params.json",
+      "source_path_base": "repository root",
+      "bytes": 191,
+      "sha256": "b067037b3bf7ffae1f849bd6d7240c240eecba4b2a853241b84c93a315306436",
+      "category": "original-run-parameter-file",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "invocation/matrix.params.json",
+      "source_path": ".tmp/registered-host-arm64-r2-timestamp-run-params.json",
+      "source_path_base": "repository root",
+      "bytes": 191,
+      "sha256": "6a3894895dcf3f6c7bd342c5fdc667fe0d3308541bac77a8992d69a68d5fbc62",
+      "category": "original-run-parameter-file",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "invocation/retry-diagnostics-off.params.json",
+      "source_path": ".tmp/registered-host-arm64-r2-x86-normal-params.json",
+      "source_path_base": "repository root",
+      "bytes": 295,
+      "sha256": "e8f9b23278c653df823015149d89212374dbf6371d6fd2465d2660b1ae699721",
+      "category": "original-run-parameter-file",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "invocation/retry-diagnostics-on.params.json",
+      "source_path": ".tmp/registered-host-arm64-r2-x86-shorthand-retry-params.json",
+      "source_path_base": "repository root",
+      "bytes": 329,
+      "sha256": "9ee49223c89183ee433677b44a156cc48cb9cdfa57c5e41cf615fb00782bcf96",
+      "category": "original-run-parameter-file",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "invocation/timezone-failure.params.json",
+      "source_path": ".tmp/registered-host-arm64-r2-querylimited-run-params.json",
+      "source_path_base": "repository root",
+      "bytes": 191,
+      "sha256": "0b16e3b91cfc2d430f4efac9dfba0dfa2c52853b2261801049fc2fafcc597ae8",
+      "category": "original-run-parameter-file",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "observer-diagnostics/arm64-r2-runtime-observer-only.json",
+      "source_path": ".tmp/arm64-r2-runtime-observer-only.json",
+      "source_path_base": "repository root",
+      "bytes": 1576,
+      "sha256": "f93e4855e881d9d91975bf626e0274219286955f084178280559c6812ba9645b",
+      "category": "original-read-only-observer-diagnostic",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "observer-diagnostics/arm64-r2-status-timestamp-diagnostic.json",
+      "source_path": ".tmp/arm64-r2-status-timestamp-diagnostic.json",
+      "source_path_base": "repository root",
+      "bytes": 581,
+      "sha256": "a8fb42877bc578b35322db2e6a6dc7c2fe132c0428795d90d1c6666fc692e045",
+      "category": "original-read-only-observer-diagnostic",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "observer-diagnostics/diagnose-arm64-r2-process-observer.ps1",
+      "source_path": ".tmp/diagnose-arm64-r2-process-observer.ps1",
+      "source_path_base": "repository root",
+      "bytes": 4422,
+      "sha256": "fd9c2493974df9adff478e1f85c5d4fba1befac69ff052380aab93787a3411be",
+      "category": "original-read-only-diagnostic-script",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "observer-diagnostics/diagnose-arm64-r2-status-timestamp.ps1",
+      "source_path": ".tmp/diagnose-arm64-r2-status-timestamp.ps1",
+      "source_path_base": "repository root",
+      "bytes": 1423,
+      "sha256": "10d377c2a7358b0e2d201aca999e64d00c04bce1afff712dec44ad028ceca760",
+      "category": "original-read-only-diagnostic-script",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "observer-diagnostics/verify-arm64-r2-runtime-observer-only.ps1",
+      "source_path": ".tmp/verify-arm64-r2-runtime-observer-only.ps1",
+      "source_path_base": "repository root",
+      "bytes": 3061,
+      "sha256": "b4b9737a194edb64a4d728954acadbc71bccce5bc26139edf2dd57ca4c770e42",
+      "category": "original-read-only-diagnostic-script",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/initial-cim-observer-summary.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-1bc94892/summary.json",
+      "source_path_base": "repository root",
+      "bytes": 17312,
+      "sha256": "a472d390041b497831db49d1a7b97307a8eefced72ea34f09c6b403f63bea0e8",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/limited-query-process-diagnostic.json",
+      "source_path": ".tmp/arm64-r2-process-observer-diagnostic.json",
+      "source_path_base": "repository root",
+      "bytes": 1025,
+      "sha256": "36926009ad57845ed5a8a1a671f6c2f8c3e6a635a6ba59700513cd08b6c9a466",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-full/language-bar-host.log",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-full/t/l/YimeCore Experimental Trial/evidence/language-bar-host.log",
+      "source_path_base": "repository root",
+      "bytes": 134,
+      "sha256": "740c1b7074ded1e37ac1e29fd3a983fe809a82fb76e3e4b345ba78557e1f53fc",
+      "category": "original-synthetic-language-bar-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-full/result.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-full/result.json",
+      "source_path_base": "repository root",
+      "bytes": 3493,
+      "sha256": "7d1dc94a05f29ff2fa0c0a7b70f03ea267517a19dc5fe396ed8889b0e0109826",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-full/settings-after.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-full/settings-after.json",
+      "source_path_base": "repository root",
+      "bytes": 473,
+      "sha256": "8be06526bab5532adb1ce8c5b87d65b4395f2d9c3e5308a0eafe3f24e2a98266",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-full/settings-before.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-full/settings-before.json",
+      "source_path_base": "repository root",
+      "bytes": 373,
+      "sha256": "02deb0cf2a0b27624b03ecb25113de29cb6bcc6cba1e01372fef430a7c28b23d",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-full/stderr.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-full/stderr.txt",
+      "source_path_base": "repository root",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-full/stdout.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-full/stdout.txt",
+      "source_path_base": "repository root",
+      "bytes": 1294,
+      "sha256": "ac4199941e674d5ac58b307c88c8d77c987ee0ea08f33dbd0d35b051addfe4f8",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-shorthand/language-bar-host.log",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-shorthand/t/l/YimeCore Experimental Trial/evidence/language-bar-host.log",
+      "source_path_base": "repository root",
+      "bytes": 134,
+      "sha256": "c7538758cb4b3b655142941959469ee585f1f7f3ee0f1d6694eeade70da5b36b",
+      "category": "original-synthetic-language-bar-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-shorthand/result.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-shorthand/result.json",
+      "source_path_base": "repository root",
+      "bytes": 3548,
+      "sha256": "29681ecc359fafc00ddf3a7209b8400161e8381c3ccbc96f6b678170d217b2b3",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-shorthand/settings-after.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-shorthand/settings-after.json",
+      "source_path_base": "repository root",
+      "bytes": 478,
+      "sha256": "52a9b887783bdc517c31bf2b4376a52fe221259537f32202420cc31002fba7f5",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-shorthand/settings-before.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-shorthand/settings-before.json",
+      "source_path_base": "repository root",
+      "bytes": 378,
+      "sha256": "6078032111fc4ca4a557900e9b01eab81db762f38da76a47edd0896dbfd38cb9",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-shorthand/stderr.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-shorthand/stderr.txt",
+      "source_path_base": "repository root",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-shorthand/stdout.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-shorthand/stdout.txt",
+      "source_path_base": "repository root",
+      "bytes": 1294,
+      "sha256": "ac4199941e674d5ac58b307c88c8d77c987ee0ea08f33dbd0d35b051addfe4f8",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-variable/language-bar-host.log",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-variable/t/l/YimeCore Experimental Trial/evidence/language-bar-host.log",
+      "source_path_base": "repository root",
+      "bytes": 134,
+      "sha256": "247cd2659494cbb572a398480746c12c5575b02b04af97c16db1791dacfa57b8",
+      "category": "original-synthetic-language-bar-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-variable/result.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-variable/result.json",
+      "source_path_base": "repository root",
+      "bytes": 3537,
+      "sha256": "8017718dffe4d3aed1686ff97a31993369a0608f0d675d0f758b37957a731b52",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-variable/settings-after.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-variable/settings-after.json",
+      "source_path_base": "repository root",
+      "bytes": 477,
+      "sha256": "3b6bba85c2d9fea2ca2536fa53ca42d46881b2f6ba0343283e628d7addbc8fce",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-variable/settings-before.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-variable/settings-before.json",
+      "source_path_base": "repository root",
+      "bytes": 377,
+      "sha256": "c4ec4e949d8b01bac892a61a8f64194c67338300c5ba15e68a34f75180efc5b2",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-variable/stderr.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-variable/stderr.txt",
+      "source_path_base": "repository root",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/arm64-variable/stdout.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/arm64-variable/stdout.txt",
+      "source_path_base": "repository root",
+      "bytes": 1294,
+      "sha256": "ac4199941e674d5ac58b307c88c8d77c987ee0ea08f33dbd0d35b051addfe4f8",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/summary.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/summary.json",
+      "source_path_base": "repository root",
+      "bytes": 69870,
+      "sha256": "12aa0fdc10ce2cd7b0e3a5bf6b63d4ef129542fc4827111899c783a0347fd64e",
+      "category": "original-registered-wrapper-summary",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-full/language-bar-host.log",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-full/t/l/YimeCore Experimental Trial/evidence/language-bar-host.log",
+      "source_path_base": "repository root",
+      "bytes": 134,
+      "sha256": "1674f077765a3a33093ed2787014128fc0bb9b0a80a53ea73a0626f240430e45",
+      "category": "original-synthetic-language-bar-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-full/result.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-full/result.json",
+      "source_path_base": "repository root",
+      "bytes": 3551,
+      "sha256": "c87a3021f29d10f8362afa5097afe9faa0f540b93f6aa67f11cae55ba51e6f8b",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-full/settings-after.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-full/settings-after.json",
+      "source_path_base": "repository root",
+      "bytes": 473,
+      "sha256": "fe86b2659279fdce920fddd1b1a6ad65cd3effa3e69b28544f4ce28c29332058",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-full/settings-before.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-full/settings-before.json",
+      "source_path_base": "repository root",
+      "bytes": 373,
+      "sha256": "02deb0cf2a0b27624b03ecb25113de29cb6bcc6cba1e01372fef430a7c28b23d",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-full/stderr.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-full/stderr.txt",
+      "source_path_base": "repository root",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-full/stdout.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-full/stdout.txt",
+      "source_path_base": "repository root",
+      "bytes": 1294,
+      "sha256": "ac4199941e674d5ac58b307c88c8d77c987ee0ea08f33dbd0d35b051addfe4f8",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-shorthand/language-bar-host.log",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-shorthand/t/l/YimeCore Experimental Trial/evidence/language-bar-host.log",
+      "source_path_base": "repository root",
+      "bytes": 134,
+      "sha256": "d1ab609ed5afe7c2d800b8e0c1763d0acd9479a38bc947d106ae7ec0a5c41d1f",
+      "category": "original-synthetic-language-bar-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-shorthand/result.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-shorthand/result.json",
+      "source_path_base": "repository root",
+      "bytes": 3606,
+      "sha256": "f72e3b007f5d1fe1aa585de1e969231e53b3b29bdf54cde2cd63e53f179c1c97",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-shorthand/settings-after.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-shorthand/settings-after.json",
+      "source_path_base": "repository root",
+      "bytes": 478,
+      "sha256": "96bc9ba2e2c9fe0c13e96bec25e098c4a8b5769b390341eeb382547c0151cd3f",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-shorthand/settings-before.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-shorthand/settings-before.json",
+      "source_path_base": "repository root",
+      "bytes": 378,
+      "sha256": "6078032111fc4ca4a557900e9b01eab81db762f38da76a47edd0896dbfd38cb9",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-shorthand/stderr.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-shorthand/stderr.txt",
+      "source_path_base": "repository root",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-shorthand/stdout.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-shorthand/stdout.txt",
+      "source_path_base": "repository root",
+      "bytes": 1294,
+      "sha256": "ac4199941e674d5ac58b307c88c8d77c987ee0ea08f33dbd0d35b051addfe4f8",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-variable/language-bar-host.log",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-variable/t/l/YimeCore Experimental Trial/evidence/language-bar-host.log",
+      "source_path_base": "repository root",
+      "bytes": 134,
+      "sha256": "02fa64edf1298527ad2418fa863698de69cdc3859f102ae24129a87291f85ac6",
+      "category": "original-synthetic-language-bar-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-variable/result.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-variable/result.json",
+      "source_path_base": "repository root",
+      "bytes": 3595,
+      "sha256": "8609998639594fdbe7993130daf39b8a3aba67c59e6a94bb17e7e2e24209405e",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-variable/settings-after.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-variable/settings-after.json",
+      "source_path_base": "repository root",
+      "bytes": 477,
+      "sha256": "0ec0a3512c06fd5efbe823163999a18030e71fcc35f8e747f4e24fe4beb69e42",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-variable/settings-before.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-variable/settings-before.json",
+      "source_path_base": "repository root",
+      "bytes": 377,
+      "sha256": "c4ec4e949d8b01bac892a61a8f64194c67338300c5ba15e68a34f75180efc5b2",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-variable/stderr.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-variable/stderr.txt",
+      "source_path_base": "repository root",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x64-variable/stdout.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x64-variable/stdout.txt",
+      "source_path_base": "repository root",
+      "bytes": 1294,
+      "sha256": "ac4199941e674d5ac58b307c88c8d77c987ee0ea08f33dbd0d35b051addfe4f8",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-full/language-bar-host.log",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-full/t/l/YimeCore Experimental Trial/evidence/language-bar-host.log",
+      "source_path_base": "repository root",
+      "bytes": 134,
+      "sha256": "651b067f3ddcacb45c6f1b6e18381063a3201a5ffe0cf96fdd45df2cc82041fb",
+      "category": "original-synthetic-language-bar-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-full/result.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-full/result.json",
+      "source_path_base": "repository root",
+      "bytes": 3466,
+      "sha256": "97dfbee0c85387ccdb0e171c342e685a39d5a7792d4294090f93712430ab78fd",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-full/settings-after.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-full/settings-after.json",
+      "source_path_base": "repository root",
+      "bytes": 473,
+      "sha256": "51c9f2d906a9027972e120f3989af8b12fa376f7d569fcc1466fb996be25b582",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-full/settings-before.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-full/settings-before.json",
+      "source_path_base": "repository root",
+      "bytes": 373,
+      "sha256": "02deb0cf2a0b27624b03ecb25113de29cb6bcc6cba1e01372fef430a7c28b23d",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-full/stderr.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-full/stderr.txt",
+      "source_path_base": "repository root",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-full/stdout.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-full/stdout.txt",
+      "source_path_base": "repository root",
+      "bytes": 1294,
+      "sha256": "87503dc94334702752c5b60d75990e8f4d116a13f4e4674f6938b6012453b0df",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-shorthand/language-bar-host.log",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-shorthand/t/l/YimeCore Experimental Trial/evidence/language-bar-host.log",
+      "source_path_base": "repository root",
+      "bytes": 134,
+      "sha256": "6243f97ac5f0377479acbcd6e0fb4973e61602c1b448263955a5076539f4a7f7",
+      "category": "original-synthetic-language-bar-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-shorthand/result.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-shorthand/result.json",
+      "source_path_base": "repository root",
+      "bytes": 4503,
+      "sha256": "47820598dc1f6105aeb683a472f65fd456930bac3dd49b20337dca5b4cbf2338",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-shorthand/settings-after.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-shorthand/settings-after.json",
+      "source_path_base": "repository root",
+      "bytes": 479,
+      "sha256": "62ee55ee5639ed50ca93c5daa1129cf46d04da620e7c66e61e4d03221697d927",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-shorthand/settings-before.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-shorthand/settings-before.json",
+      "source_path_base": "repository root",
+      "bytes": 378,
+      "sha256": "6078032111fc4ca4a557900e9b01eab81db762f38da76a47edd0896dbfd38cb9",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-shorthand/stderr.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-shorthand/stderr.txt",
+      "source_path_base": "repository root",
+      "bytes": 43,
+      "sha256": "9ca1c8307a72322e4c8f496e592eee8cec223cb9d455530b19dc0d179973d474",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-shorthand/stdout.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-shorthand/stdout.txt",
+      "source_path_base": "repository root",
+      "bytes": 337,
+      "sha256": "a7c085530b55b8c79cd6fafd6ca9b71ccfbd79062afed68184e4e69eb5bbe316",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-variable/language-bar-host.log",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-variable/t/l/YimeCore Experimental Trial/evidence/language-bar-host.log",
+      "source_path_base": "repository root",
+      "bytes": 133,
+      "sha256": "6eb0de48563cb1fb2687ceb4dda97c1ade895b6b45793994c9bcbb1da156c2fa",
+      "category": "original-synthetic-language-bar-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-variable/result.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-variable/result.json",
+      "source_path_base": "repository root",
+      "bytes": 3509,
+      "sha256": "42c7e9291469e86f754bbc2f77e9d3189cc48fca462c0598ece559d875121261",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-variable/settings-after.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-variable/settings-after.json",
+      "source_path_base": "repository root",
+      "bytes": 477,
+      "sha256": "a42f376d1f07bb210610f26a9789a35ca667686fba0c4541c64e3e743e1472a7",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-variable/settings-before.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-variable/settings-before.json",
+      "source_path_base": "repository root",
+      "bytes": 377,
+      "sha256": "c4ec4e949d8b01bac892a61a8f64194c67338300c5ba15e68a34f75180efc5b2",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-variable/stderr.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-variable/stderr.txt",
+      "source_path_base": "repository root",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/matrix-first-run/x86-variable/stdout.txt",
+      "source_path": ".tmp/arm64-reg-r2-20261026-acc00c7b/x86-variable/stdout.txt",
+      "source_path_base": "repository root",
+      "bytes": 1294,
+      "sha256": "87503dc94334702752c5b60d75990e8f4d116a13f4e4674f6938b6012453b0df",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/observer-timezone-failure/summary.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-6bd9b5ac/summary.json",
+      "source_path_base": "repository root",
+      "bytes": 17321,
+      "sha256": "7662420a95c38f0b6a1059cab03a19fecb0e3c15cdb82a41b042ccc17679671f",
+      "category": "original-registered-wrapper-summary",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-off/summary.json",
+      "source_path": ".tmp/arm64-reg-r2-x86-normal-20261026-bcee5531/summary.json",
+      "source_path_base": "repository root",
+      "bytes": 41315,
+      "sha256": "bd691cda72273ec0a1543d096c45adafe7037fd8e7e370cff76af54367de2fc5",
+      "category": "original-registered-wrapper-summary",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-off/x86-shorthand/language-bar-host.log",
+      "source_path": ".tmp/arm64-reg-r2-x86-normal-20261026-bcee5531/x86-shorthand/t/l/YimeCore Experimental Trial/evidence/language-bar-host.log",
+      "source_path_base": "repository root",
+      "bytes": 134,
+      "sha256": "6b249510d97a077de4cb06207a0129691531db4b64f844b01f4605edfe864eec",
+      "category": "original-synthetic-language-bar-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-off/x86-shorthand/result.json",
+      "source_path": ".tmp/arm64-reg-r2-x86-normal-20261026-bcee5531/x86-shorthand/result.json",
+      "source_path_base": "repository root",
+      "bytes": 6658,
+      "sha256": "376903ed526f6877ce7d237b35d04787f84d7d3388073dea63b813a9ddcdbf0e",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-off/x86-shorthand/settings-after.json",
+      "source_path": ".tmp/arm64-reg-r2-x86-normal-20261026-bcee5531/x86-shorthand/settings-after.json",
+      "source_path_base": "repository root",
+      "bytes": 478,
+      "sha256": "4f517fa9587f16148aed0b0f46193d230af4ad4b0d9d5a3abb3e31214e6f4cde",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-off/x86-shorthand/settings-before.json",
+      "source_path": ".tmp/arm64-reg-r2-x86-normal-20261026-bcee5531/x86-shorthand/settings-before.json",
+      "source_path_base": "repository root",
+      "bytes": 378,
+      "sha256": "6078032111fc4ca4a557900e9b01eab81db762f38da76a47edd0896dbfd38cb9",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-off/x86-shorthand/stderr.txt",
+      "source_path": ".tmp/arm64-reg-r2-x86-normal-20261026-bcee5531/x86-shorthand/stderr.txt",
+      "source_path_base": "repository root",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-off/x86-shorthand/stdout.txt",
+      "source_path": ".tmp/arm64-reg-r2-x86-normal-20261026-bcee5531/x86-shorthand/stdout.txt",
+      "source_path_base": "repository root",
+      "bytes": 1294,
+      "sha256": "87503dc94334702752c5b60d75990e8f4d116a13f4e4674f6938b6012453b0df",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-on/summary.json",
+      "source_path": ".tmp/arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b/summary.json",
+      "source_path_base": "repository root",
+      "bytes": 41719,
+      "sha256": "304beac26f0ca6f6579ab2a9daa558414322e7a1489bcfb58d872cf47b2c5375",
+      "category": "original-registered-wrapper-summary",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-on/x86-shorthand/language-bar-host.log",
+      "source_path": ".tmp/arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b/x86-shorthand/t/l/YimeCore Experimental Trial/evidence/language-bar-host.log",
+      "source_path_base": "repository root",
+      "bytes": 134,
+      "sha256": "14b13900a64255032903a56c64aee10dfd83f6fee3e1d365ebb75ca442b2ebcb",
+      "category": "original-synthetic-language-bar-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-on/x86-shorthand/result.json",
+      "source_path": ".tmp/arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b/x86-shorthand/result.json",
+      "source_path_base": "repository root",
+      "bytes": 7043,
+      "sha256": "972899d33eefa14a7f6336ac9c4af27804c3e3caa3ede61c3bfc6b0c4f85f377",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-on/x86-shorthand/settings-after.json",
+      "source_path": ".tmp/arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b/x86-shorthand/settings-after.json",
+      "source_path_base": "repository root",
+      "bytes": 478,
+      "sha256": "a55f522604d6db61d517fd8752acb8ef583140feec1306a572e727bb81344db6",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-on/x86-shorthand/settings-before.json",
+      "source_path": ".tmp/arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b/x86-shorthand/settings-before.json",
+      "source_path_base": "repository root",
+      "bytes": 378,
+      "sha256": "6078032111fc4ca4a557900e9b01eab81db762f38da76a47edd0896dbfd38cb9",
+      "category": "synthetic-fixture-settings-snapshot",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-on/x86-shorthand/stderr.txt",
+      "source_path": ".tmp/arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b/x86-shorthand/stderr.txt",
+      "source_path_base": "repository root",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-on/x86-shorthand/stdout.txt",
+      "source_path": ".tmp/arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b/x86-shorthand/stdout.txt",
+      "source_path_base": "repository root",
+      "bytes": 1294,
+      "sha256": "87503dc94334702752c5b60d75990e8f4d116a13f4e4674f6938b6012453b0df",
+      "category": "original-registered-host-result-or-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/retry-key-diagnostics-on/x86-shorthand/tsf-key-host.log",
+      "source_path": ".tmp/arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b/x86-shorthand/t/l/YimeCore Experimental Trial/evidence/tsf-key-host.log",
+      "source_path_base": "repository root",
+      "bytes": 6078,
+      "sha256": "d518175fd6983e177c4bc810d5107d8c88393f441b5fcaff088fc863497d5ff9",
+      "category": "original-synthetic-key-diagnostic",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "stage1-observations.json",
+      "bytes": 3370,
+      "sha256": "125f01cf698c134bb9964aebfd9a05b4180b11a20d93192f3e1ef8c1878ffdd9",
+      "category": "derived-stage-summary",
+      "byte_identical_to_source": null,
+      "derived_from": [
+        "baseline/preinstall-baseline.json",
+        "baseline/postinstall-observation.json",
+        "registered-host/initial-cim-observer-summary.json",
+        "registered-host/limited-query-process-diagnostic.json",
+        "install/manual-uac.user.log",
+        "install/manual-uac.admin.log",
+        "install/automatic-uac-cancelled.user.log"
+      ]
+    },
+    {
+      "path": "stage2-observations.json",
+      "bytes": 9165,
+      "sha256": "7f4fa94fab72250e49303c7567998c265a3f3d5f83481c5c31e0ab86a1134e5e",
+      "category": "derived-stage-summary",
+      "byte_identical_to_source": null,
+      "derived_from": [
+        "registered-host/matrix-first-run/summary.json",
+        "registered-host/retry-key-diagnostics-on/summary.json",
+        "registered-host/retry-key-diagnostics-off/summary.json",
+        "registered-host/observer-timezone-failure/summary.json",
+        "observer-diagnostics/arm64-r2-status-timestamp-diagnostic.json",
+        "observer-diagnostics/arm64-r2-runtime-observer-only.json"
+      ]
+    },
+    {
+      "path": "wrappers/before-limited-query.check-only.json",
+      "source_path": ".tmp/registered-host-arm64-r2-check-only.json",
+      "source_path_base": "repository root",
+      "bytes": 361,
+      "sha256": "2b4b4b7149fee3a88bff9d86a044d8f9d0f9916b5bfd918b8c91d74134ca0c75",
+      "category": "original-check-only-result",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "wrappers/before-limited-query.ps1",
+      "source_path": ".tmp/registered-host-arm64-r2-20261026.pre-querylimited.ps1",
+      "source_path_base": "repository root",
+      "bytes": 26381,
+      "sha256": "63225cb0fc93e1947398d933fe303c5fcc634f949b305d46870de1ae39cb5e1b",
+      "category": "original-wrapper-snapshot-bound-to-run",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "wrappers/before-timestamp-normalization.check-only.json",
+      "source_path": ".tmp/registered-host-arm64-r2-querylimited-check-only.json",
+      "source_path_base": "repository root",
+      "bytes": 559,
+      "sha256": "e25a248279b1d834b929d05fe326fdbd553b5b19b2f0a973b12d50c56f6068b2",
+      "category": "original-check-only-result",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "wrappers/before-timestamp-normalization.ps1",
+      "source_path": ".tmp/registered-host-arm64-r2-20261026.pre-timestamp.ps1",
+      "source_path_base": "repository root",
+      "bytes": 29539,
+      "sha256": "cd08178aa6fb73ed21e354c9970e0e2cf487142d1b018c16783f688da78d394d",
+      "category": "original-wrapper-snapshot-bound-to-run",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "wrappers/matrix-after-observer-fixes.check-only.json",
+      "source_path": ".tmp/registered-host-arm64-r2-timestamp-check-only.json",
+      "source_path_base": "repository root",
+      "bytes": 457,
+      "sha256": "da522a3027f36b478285785bc065f2b9df542bf759ec14cfa3cea05943927981",
+      "category": "original-check-only-result",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "wrappers/matrix-after-observer-fixes.ps1",
+      "source_path": ".tmp/registered-host-arm64-r2-20261026.ps1",
+      "source_path_base": "repository root",
+      "bytes": 30844,
+      "sha256": "f5220667af8b660fddfe030e2d0896fea0352555e840e8f846e48506a2bd9fca",
+      "category": "original-wrapper-snapshot-bound-to-run",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "wrappers/single-case-retry.check-only.json",
+      "source_path": ".tmp/registered-host-arm64-r2-x86-shorthand-retry-check-only.json",
+      "source_path_base": "repository root",
+      "bytes": 624,
+      "sha256": "d60145fefb0e2368c22766e9dcf3e4402a30e2d04a016fb5bddb9bde3af4d20a",
+      "category": "original-check-only-result",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "wrappers/single-case-retry.ps1",
+      "source_path": ".tmp/registered-host-arm64-r2-x86-shorthand-retry.ps1",
+      "source_path_base": "repository root",
+      "bytes": 33061,
+      "sha256": "013afae727494b1476a927b51ffb1ad868b98818aa0ccfed7cd076a6c7a2108f",
+      "category": "original-wrapper-snapshot-bound-to-run",
+      "byte_identical_to_source": true
+    }
+  ]
+}

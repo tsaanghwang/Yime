@@ -1,0 +1,63 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261026213702
+Username: HUASHUONOTEBOOK\tsaan
+RunAs User: HUASHUONOTEBOOK\tsaan
+Configuration Name: 
+Machine: HUASHUONOTEBOOK (Microsoft Windows NT 10.0.28000.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\dev\Yime\tools\powershell\preflight.ps1
+Process ID: 30432
+PSVersion: 5.1.28000.3231
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.28000.3231
+BuildVersion: 10.0.28000.3231
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\71eef12f53dd4168a232eb176582e93d.user.log
+Action: Install; package: C:\dev\Yime-deliveries\arm64-proart-20261026-r2\YimeCore-ARM64
+Elevated setup log: C:\Users\tsaan\Yime Setup Logs\71eef12f53dd4168a232eb176582e93d.admin.log
+PS>TerminatingError(Start-Process): "This command cannot be run due to the error: The operation was canceled by the user."
+FAILED stage: UAC elevation
+
+
+PSMessageDetails      : 
+Exception             : System.InvalidOperationException: This command cannot be run due to the error: The operation wa
+                        s canceled by the user.
+                           at System.Management.Automation.MshCommandRuntime.ThrowTerminatingError(ErrorRecord errorRec
+                        ord)
+TargetObject          : 
+CategoryInfo          : InvalidOperation: (:) [Start-Process], InvalidOperationException
+FullyQualifiedErrorId : InvalidOperationException,Microsoft.PowerShell.Commands.StartProcessCommand
+ErrorDetails          : 
+InvocationInfo        : System.Management.Automation.InvocationInfo
+ScriptStackTrace      : at <ScriptBlock>, C:\dev\Yime-deliveries\arm64-proart-20261026-r2\YimeCore-ARM64\Setup.ps1: lin
+                        e 43
+                        at <ScriptBlock>, C:\dev\Yime\tools\powershell\preflight.ps1: line 68
+PipelineIterationInfo : {}
+Exception: System.InvalidOperationException: This command cannot be run due to the error: The operation was canceled by the user.
+   at System.Management.Automation.MshCommandRuntime.ThrowTerminatingError(ErrorRecord errorRecord)
+C:\dev\Yime-deliveries\arm64-proart-20261026-r2\YimeCore-ARM64\Setup.ps1 : Setup stopped: This command cannot be run due
+ to the error: The operation was canceled by the user. Log: C:\Users\tsaan\Yime Setup Logs\71eef12f53dd4168a232eb176582e
+93d.user.log
+At C:\dev\Yime\tools\powershell\preflight.ps1:68 char:28
++     if ($request.script) { & $path @parameters }
++                            ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,Setup.ps1
+C:\dev\Yime-deliveries\arm64-proart-20261026-r2\YimeCore-ARM64\Setup.ps1 : Setup stopped: This command cannot be run du
+e to the error: The operation was canceled by the user. Log: C:\Users\tsaan\Yime Setup Logs\71eef12f53dd4168a232eb17658
+2e93d.user.log
+At C:\dev\Yime\tools\powershell\preflight.ps1:68 char:28
++     if ($request.script) { & $path @parameters }
++                            ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,Setup.ps1
+
+Setup exit code: 1
+**********************
+Windows PowerShell transcript end
+End time: 20261026213909
+**********************

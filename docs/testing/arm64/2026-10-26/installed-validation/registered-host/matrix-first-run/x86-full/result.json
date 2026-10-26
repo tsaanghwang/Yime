@@ -1,0 +1,90 @@
+{
+  "architecture": "x86",
+  "mode": "full",
+  "started_at": "2026-10-26T14:07:56.4464263Z",
+  "completed": true,
+  "image": "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+  "image_record": {
+    "path": "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+    "bytes": 384000,
+    "sha256": "28cdaad8c0dccdd1a8402bdb0e6dda696e4dc525ec6bdcfe8b7da566bf643bfa"
+  },
+  "pe_machine": "0x014c",
+  "pid": 34380,
+  "pid_created_at": "2026-10-26T14:07:58.2162339Z",
+  "observed_process_machine": "0x014c",
+  "observed_native_machine": "0xaa64",
+  "expected_dll": "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll",
+  "expected_dll_sha256": "cb5e0238992e57191936f71773afe64b2bd5bb8c0846cfe532ba0b3eb4f533a0",
+  "module_observation_status": "verified",
+  "module_observations": [
+    {
+      "observed_at": "2026-10-26T14:07:58.4466887Z",
+      "path": "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll",
+      "sha256": "cb5e0238992e57191936f71773afe64b2bd5bb8c0846cfe532ba0b3eb4f533a0",
+      "bytes": 583680,
+      "matches_expected": true
+    }
+  ],
+  "module_observation_errors": [],
+  "module_observation_attempts": 3,
+  "module_verified": true,
+  "child_environment": {
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-full\\t\\l",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-full\\t\\r",
+    "TEMP": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-full\\t\\tmp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-full\\t\\tmp"
+  },
+  "settings_before": {
+    "version": 1,
+    "revision": 1,
+    "experiment_mode": "full",
+    "ascii_mode": false,
+    "full_shape": false,
+    "ascii_punctuation": true,
+    "traditionalization": false,
+    "candidate_page_size": 5,
+    "candidate_layout": "vertical",
+    "candidate_font_preset": "medium",
+    "candidate_font_family": "Microsoft YaHei UI",
+    "candidate_annotation": "key_sequence"
+  },
+  "settings_after": {
+    "ascii_mode": false,
+    "ascii_punctuation": true,
+    "candidate_annotation": "key_sequence",
+    "candidate_font_family": "Microsoft YaHei UI",
+    "candidate_font_preset": "medium",
+    "candidate_layout": "vertical",
+    "candidate_page_size": 5,
+    "experiment_mode": "full",
+    "full_shape": true,
+    "revision": 1793023678979177300,
+    "source": "yimecore-language-bar",
+    "traditionalization": false,
+    "updated_at": "2026-10-26T14:07:58.979Z",
+    "version": 1
+  },
+  "timeout_seconds": 90,
+  "timed_out": false,
+  "owned_process_stopped": false,
+  "exit_code": 0,
+  "stdout": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-full\\stdout.txt",
+  "stderr": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-full\\stderr.txt",
+  "log_capture_complete": true,
+  "missing_or_false_flags": [],
+  "functional_passed": true,
+  "passed": true,
+  "error": null,
+  "stdout_record": {
+    "path": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-full\\stdout.txt",
+    "bytes": 1294,
+    "sha256": "87503dc94334702752c5b60d75990e8f4d116a13f4e4674f6938b6012453b0df"
+  },
+  "stderr_record": {
+    "path": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-full\\stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "finished_at": "2026-10-26T14:07:59.5703547Z"
+}

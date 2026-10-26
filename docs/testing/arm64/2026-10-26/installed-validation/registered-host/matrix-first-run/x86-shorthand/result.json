@@ -1,0 +1,111 @@
+{
+  "architecture": "x86",
+  "mode": "shorthand",
+  "started_at": "2026-10-26T14:08:00.9211875Z",
+  "completed": true,
+  "image": "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+  "image_record": {
+    "path": "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+    "bytes": 384000,
+    "sha256": "28cdaad8c0dccdd1a8402bdb0e6dda696e4dc525ec6bdcfe8b7da566bf643bfa"
+  },
+  "pe_machine": "0x014c",
+  "pid": 33320,
+  "pid_created_at": "2026-10-26T14:08:00.9295429Z",
+  "observed_process_machine": "0x014c",
+  "observed_native_machine": "0xaa64",
+  "expected_dll": "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll",
+  "expected_dll_sha256": "cb5e0238992e57191936f71773afe64b2bd5bb8c0846cfe532ba0b3eb4f533a0",
+  "module_observation_status": "verified",
+  "module_observations": [
+    {
+      "observed_at": "2026-10-26T14:08:01.1521711Z",
+      "path": "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll",
+      "sha256": "cb5e0238992e57191936f71773afe64b2bd5bb8c0846cfe532ba0b3eb4f533a0",
+      "bytes": 583680,
+      "matches_expected": true
+    }
+  ],
+  "module_observation_errors": [],
+  "module_observation_attempts": 3,
+  "module_verified": true,
+  "child_environment": {
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-shorthand\\t\\l",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-shorthand\\t\\r",
+    "TEMP": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-shorthand\\t\\tmp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-shorthand\\t\\tmp"
+  },
+  "settings_before": {
+    "version": 1,
+    "revision": 1,
+    "experiment_mode": "shorthand",
+    "ascii_mode": false,
+    "full_shape": false,
+    "ascii_punctuation": true,
+    "traditionalization": false,
+    "candidate_page_size": 5,
+    "candidate_layout": "vertical",
+    "candidate_font_preset": "medium",
+    "candidate_font_family": "Microsoft YaHei UI",
+    "candidate_annotation": "key_sequence"
+  },
+  "settings_after": {
+    "ascii_mode": false,
+    "ascii_punctuation": true,
+    "candidate_annotation": "key_sequence",
+    "candidate_font_family": "Microsoft YaHei UI",
+    "candidate_font_preset": "medium",
+    "candidate_layout": "vertical",
+    "candidate_page_size": 5,
+    "experiment_mode": "shorthand",
+    "full_shape": false,
+    "revision": 1793023681097818500,
+    "source": "yimecore-language-bar",
+    "traditionalization": false,
+    "updated_at": "2026-10-26T14:08:01.097Z",
+    "version": 1
+  },
+  "timeout_seconds": 90,
+  "timed_out": false,
+  "owned_process_stopped": false,
+  "exit_code": 1,
+  "stdout": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-shorthand\\stdout.txt",
+  "stderr": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-shorthand\\stderr.txt",
+  "log_capture_complete": true,
+  "missing_or_false_flags": [
+    "physical_mouse_candidate_selection_verified",
+    "delayed_async_edit_completion_verified",
+    "punctuation_text_extent_anchor_verified",
+    "registered_key_sink_verified",
+    "registered_language_bar_accepted",
+    "registered_text_extent_anchor",
+    "registered_focus_callbacks_verified",
+    "registered_focus_cancellation_preserves_committed_text_verified",
+    "registered_candidate_commit",
+    "registered_default_candidate_keys_verified",
+    "registered_invalid_initial_code_rejection_verified",
+    "registered_invalid_code_rejection_verified",
+    "registered_invalid_code_backspace_recovery_verified",
+    "registered_direction_and_page_keys_verified",
+    "registered_delayed_focus_cancellation_verified",
+    "failed_async_edit_recovery_verified",
+    "registered_failed_focus_cancellation_text_preservation_verified",
+    "retained_language_bar_after_deactivation_verified",
+    "registered_focus_outcome",
+    "architecture_bits"
+  ],
+  "functional_passed": false,
+  "passed": false,
+  "error": null,
+  "stdout_record": {
+    "path": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-shorthand\\stdout.txt",
+    "bytes": 337,
+    "sha256": "a7c085530b55b8c79cd6fafd6ca9b71ccfbd79062afed68184e4e69eb5bbe316"
+  },
+  "stderr_record": {
+    "path": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-20261026-acc00c7b\\x86-shorthand\\stderr.txt",
+    "bytes": 43,
+    "sha256": "9ca1c8307a72322e4c8f496e592eee8cec223cb9d455530b19dc0d179973d474"
+  },
+  "finished_at": "2026-10-26T14:08:01.3077906Z"
+}

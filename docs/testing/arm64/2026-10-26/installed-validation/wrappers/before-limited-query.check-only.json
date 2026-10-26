@@ -1,0 +1,10 @@
+{
+  "script": "C:\\dev\\Yime\\.tmp\\registered-host-arm64-r2-20261026.ps1",
+  "script_sha256": "63225cb0fc93e1947398d933fe303c5fcc634f949b305d46870de1ae39cb5e1b",
+  "edition": "ps7",
+  "version": "7.6.5",
+  "check_only": true,
+  "script_executed": false,
+  "exit_code": 0,
+  "output": "PASS: PowerShell 7.6.5 static preflight; script not executed."
+}

@@ -1,0 +1,21 @@
+{
+  "captured_at": "2026-10-26T14:43:23.705Z",
+  "windows": [
+    {
+      "app": "process:C:\\Windows\\explorer.exe",
+      "id": 5245140,
+      "title": "主文件夹 - 文件资源管理器"
+    },
+    {
+      "app": "Microsoft.WindowsNotepad_8wekyb3d8bbwe!App",
+      "id": 21235914,
+      "title": "*秋 - Notepad"
+    },
+    {
+      "app": "process:C:\\Windows\\explorer.exe",
+      "id": 198164,
+      "title": "YimeCore-ARM64 - 文件资源管理器"
+    }
+  ],
+  "action": "launched a new Explorer window; no Escape or selection key sent"
+}

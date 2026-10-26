@@ -1,0 +1,122 @@
+{
+  "schema_version": "yimecore-arm64-installed-validation-evidence-index-v1",
+  "draft": true,
+  "phase": "installation-and-observer-diagnosis-before-registered-host-rerun",
+  "created_at": "2026-10-26T14:08:40.394Z",
+  "archive_root": "docs/testing/arm64/2026-10-26/installed-validation",
+  "stage_summary": "stage1-observations.json",
+  "status": {
+    "user_driven_uac_install_completed": true,
+    "installer_elevated_exit_code": 0,
+    "default_input_registry_preserved": true,
+    "rime_product_observation_preserved": true,
+    "installed_payload_hashes_verified": 68,
+    "com_registration_paths_observed": 2,
+    "initial_registered_host_cases_attempted": 0,
+    "initial_observer_blocked_by_missing_cim_image": true,
+    "limited_query_process_diagnostic_corroborated": true,
+    "registered_host_acceptance_passed": null,
+    "real_application_acceptance_passed": null,
+    "reboot_acceptance_passed": null,
+    "final_acceptance_complete": false
+  },
+  "interpretation": "The initial registered wrapper stopped at its process-observer precondition. Its zero-case result is retained as blocked, not interpreted as a product or host-test failure. A corrected observer rerun remains pending.",
+  "byte_preserved_originals": 7,
+  "derived_summaries": 1,
+  "artifact_count": 8,
+  "artifact_bytes": 70397,
+  "raw_copies_rehashed": true,
+  "archival_task_executed_installation_or_hosts": false,
+  "learning_or_user_settings_contents_read_or_copied": false,
+  "commit_or_push_performed": false,
+  "prior_evidence_modified": false,
+  "limitations": [
+    "This is a stage index draft, not final installed acceptance.",
+    "Installation was performed by the user through Setup.cmd and UAC; this archival task only copied supplied evidence.",
+    "The automatic elevation cancellation has no corresponding administrator log and is retained separately.",
+    "Saved baseline observations expose only user-state directory existence, not settings or learning contents.",
+    "Persistent runtime status alone is not treated as proof; the limited-query diagnostic independently reports installed images and the Broker pipe server PID.",
+    "The original wrapper summary remains byte-identical, including its generic stale-runtime error and passed=false value."
+  ],
+  "artifacts": [
+    {
+      "path": "baseline/postinstall-observation.json",
+      "source_path": ".tmp/arm64-r2-postinstall-20261026/preinstall-baseline.json",
+      "source_path_base": "repository root",
+      "bytes": 28468,
+      "sha256": "b292d56ea1cb5434d5528a21288adc7829fb1ec01ddfa22a345b3f3933bba742",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "baseline/preinstall-baseline.json",
+      "source_path": ".tmp/arm64-preinstall-20261026-211112-startup-enumeration/preinstall-baseline.json",
+      "source_path_base": "repository root",
+      "bytes": 13153,
+      "sha256": "af225943bdbb6e13b6a7f2b6cda7e8131ced8a9eeccbfe4f916bb5acd88ffba6",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "install/automatic-uac-cancelled.user.log",
+      "source_path": "C:/Users/tsaan/Yime Setup Logs/71eef12f53dd4168a232eb176582e93d.user.log",
+      "source_path_base": "explicit absolute log path supplied for this task",
+      "bytes": 3638,
+      "sha256": "43be0cb9d382a2b1449c380cc148709d9f1816ece1ca373e26498f0210ba67b6",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "install/manual-uac.admin.log",
+      "source_path": "C:/Users/tsaan/Yime Setup Logs/e3d2f95ca1274c46ba7f8496dc9da645.admin.log",
+      "source_path_base": "explicit absolute log path supplied for this task",
+      "bytes": 2288,
+      "sha256": "61d75206596e0420afcb790541a86dc50ae79ada7924afa20a783ff6c2a99fd4",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "install/manual-uac.user.log",
+      "source_path": "C:/Users/tsaan/Yime Setup Logs/e3d2f95ca1274c46ba7f8496dc9da645.user.log",
+      "source_path_base": "explicit absolute log path supplied for this task",
+      "bytes": 1143,
+      "sha256": "d7b287cf790f43404c3da0347be8313d109ad0ec01068f75b440df6d1b5a4458",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/initial-cim-observer-summary.json",
+      "source_path": ".tmp/arm64-reg-r2-20261026-1bc94892/summary.json",
+      "source_path_base": "repository root",
+      "bytes": 17312,
+      "sha256": "a472d390041b497831db49d1a7b97307a8eefced72ea34f09c6b403f63bea0e8",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "registered-host/limited-query-process-diagnostic.json",
+      "source_path": ".tmp/arm64-r2-process-observer-diagnostic.json",
+      "source_path_base": "repository root",
+      "bytes": 1025,
+      "sha256": "36926009ad57845ed5a8a1a671f6c2f8c3e6a635a6ba59700513cd08b6c9a466",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "stage1-observations.json",
+      "bytes": 3370,
+      "sha256": "125f01cf698c134bb9964aebfd9a05b4180b11a20d93192f3e1ef8c1878ffdd9",
+      "category": "derived-stage-summary",
+      "byte_identical_to_source": null,
+      "derived_from": [
+        "baseline/preinstall-baseline.json",
+        "baseline/postinstall-observation.json",
+        "registered-host/initial-cim-observer-summary.json",
+        "registered-host/limited-query-process-diagnostic.json",
+        "install/manual-uac.user.log",
+        "install/manual-uac.admin.log",
+        "install/automatic-uac-cancelled.user.log"
+      ]
+    }
+  ]
+}

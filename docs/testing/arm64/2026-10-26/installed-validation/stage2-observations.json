@@ -1,0 +1,250 @@
+{
+  "schema_version": "yimecore-arm64-installed-stage2-observation-v1",
+  "evidence_kind": "derived-from-archived-registered-host-results",
+  "draft": true,
+  "real_application_tests_executed": false,
+  "physical_acceptance": false,
+  "stability_sign_off": false,
+  "first_matrix": {
+    "completed": true,
+    "passed": false,
+    "attempted_cases": 9,
+    "passed_cases": 8,
+    "failed_cases": 1,
+    "summary": "registered-host/matrix-first-run/summary.json"
+  },
+  "original_failure": {
+    "architecture": "x86",
+    "mode": "shorthand",
+    "exit_code": 1,
+    "message": "registered key sink did not claim KeyDown",
+    "dll_path_and_hash_verified": true,
+    "foreground_sampled": false,
+    "selection_key_diagnostics_collected": false,
+    "root_cause": "unresolved",
+    "focus_cause_established": false,
+    "original_failure_preserved": true
+  },
+  "retry_outcomes": {
+    "diagnostics_on": {
+      "passed": true,
+      "cases": 1,
+      "key_diagnostics_enabled": true,
+      "summary": "registered-host/retry-key-diagnostics-on/summary.json"
+    },
+    "diagnostics_off": {
+      "passed": true,
+      "cases": 1,
+      "key_diagnostics_enabled": false,
+      "summary": "registered-host/retry-key-diagnostics-off/summary.json"
+    }
+  },
+  "coverage": {
+    "matrix_cells": 9,
+    "cells_with_any_passing_evidence": 9,
+    "total_host_attempts_including_retries": 11,
+    "passed_host_attempts": 10,
+    "failed_host_attempts": 1,
+    "first_pass_was_not_nine_of_nine": true
+  },
+  "matrix_cells": [
+    {
+      "architecture": "arm64",
+      "mode": "full",
+      "first_run_passed": true,
+      "first_run_exit_code": 0,
+      "first_run_dll_verified": true,
+      "first_run_foreground_samples_present": false,
+      "first_run_result": "registered-host/matrix-first-run/arm64-full/result.json",
+      "retries": [],
+      "has_passed_evidence": true
+    },
+    {
+      "architecture": "arm64",
+      "mode": "variable",
+      "first_run_passed": true,
+      "first_run_exit_code": 0,
+      "first_run_dll_verified": true,
+      "first_run_foreground_samples_present": false,
+      "first_run_result": "registered-host/matrix-first-run/arm64-variable/result.json",
+      "retries": [],
+      "has_passed_evidence": true
+    },
+    {
+      "architecture": "arm64",
+      "mode": "shorthand",
+      "first_run_passed": true,
+      "first_run_exit_code": 0,
+      "first_run_dll_verified": true,
+      "first_run_foreground_samples_present": false,
+      "first_run_result": "registered-host/matrix-first-run/arm64-shorthand/result.json",
+      "retries": [],
+      "has_passed_evidence": true
+    },
+    {
+      "architecture": "x64",
+      "mode": "full",
+      "first_run_passed": true,
+      "first_run_exit_code": 0,
+      "first_run_dll_verified": true,
+      "first_run_foreground_samples_present": false,
+      "first_run_result": "registered-host/matrix-first-run/x64-full/result.json",
+      "retries": [],
+      "has_passed_evidence": true
+    },
+    {
+      "architecture": "x64",
+      "mode": "variable",
+      "first_run_passed": true,
+      "first_run_exit_code": 0,
+      "first_run_dll_verified": true,
+      "first_run_foreground_samples_present": false,
+      "first_run_result": "registered-host/matrix-first-run/x64-variable/result.json",
+      "retries": [],
+      "has_passed_evidence": true
+    },
+    {
+      "architecture": "x64",
+      "mode": "shorthand",
+      "first_run_passed": true,
+      "first_run_exit_code": 0,
+      "first_run_dll_verified": true,
+      "first_run_foreground_samples_present": false,
+      "first_run_result": "registered-host/matrix-first-run/x64-shorthand/result.json",
+      "retries": [],
+      "has_passed_evidence": true
+    },
+    {
+      "architecture": "x86",
+      "mode": "full",
+      "first_run_passed": true,
+      "first_run_exit_code": 0,
+      "first_run_dll_verified": true,
+      "first_run_foreground_samples_present": false,
+      "first_run_result": "registered-host/matrix-first-run/x86-full/result.json",
+      "retries": [],
+      "has_passed_evidence": true
+    },
+    {
+      "architecture": "x86",
+      "mode": "variable",
+      "first_run_passed": true,
+      "first_run_exit_code": 0,
+      "first_run_dll_verified": true,
+      "first_run_foreground_samples_present": false,
+      "first_run_result": "registered-host/matrix-first-run/x86-variable/result.json",
+      "retries": [],
+      "has_passed_evidence": true
+    },
+    {
+      "architecture": "x86",
+      "mode": "shorthand",
+      "first_run_passed": false,
+      "first_run_exit_code": 1,
+      "first_run_dll_verified": true,
+      "first_run_foreground_samples_present": false,
+      "first_run_result": "registered-host/matrix-first-run/x86-shorthand/result.json",
+      "retries": [
+        {
+          "run": "retryDiagnostics",
+          "passed": true,
+          "exit_code": 0,
+          "key_diagnostics_enabled": true,
+          "foreground_samples_present": true,
+          "result": "registered-host/retry-key-diagnostics-on/x86-shorthand/result.json"
+        },
+        {
+          "run": "retryNormal",
+          "passed": true,
+          "exit_code": 0,
+          "key_diagnostics_enabled": false,
+          "foreground_samples_present": true,
+          "result": "registered-host/retry-key-diagnostics-off/x86-shorthand/result.json"
+        }
+      ],
+      "has_passed_evidence": true
+    }
+  ],
+  "observer_precondition_failures": [
+    {
+      "summary": "registered-host/initial-cim-observer-summary.json",
+      "attempted_cases": 0,
+      "cause": "CIM image path unavailable for elevated Runtime/Broker; limited-query API diagnostic corroborated their installed images and pipe identity."
+    },
+    {
+      "summary": "registered-host/observer-timezone-failure/summary.json",
+      "attempted_cases": 0,
+      "cause": "PowerShell 7 DateTime normalization lost timezone meaning; archived timestamp diagnostic and corrected read-only observer explain the false stale-status rejection."
+    }
+  ],
+  "runtime_and_payload_observations": {
+    "matrix": {
+      "payload_before_passed": true,
+      "payload_after_passed": true,
+      "payload_records_before": 68,
+      "payload_records_after": 68,
+      "payload_manifest_equal": true,
+      "payload_file_observations_equal": true,
+      "com_registration_paths_equal": true,
+      "runtime_processes_unchanged": true,
+      "child_frontend_settings_isolated": true,
+      "parent_environment_changed": false
+    },
+    "retryDiagnostics": {
+      "payload_before_passed": true,
+      "payload_after_passed": true,
+      "payload_records_before": 68,
+      "payload_records_after": 68,
+      "payload_manifest_equal": true,
+      "payload_file_observations_equal": true,
+      "com_registration_paths_equal": true,
+      "runtime_processes_unchanged": true,
+      "child_frontend_settings_isolated": true,
+      "parent_environment_changed": false
+    },
+    "retryNormal": {
+      "payload_before_passed": true,
+      "payload_after_passed": true,
+      "payload_records_before": 68,
+      "payload_records_after": 68,
+      "payload_manifest_equal": true,
+      "payload_file_observations_equal": true,
+      "com_registration_paths_equal": true,
+      "runtime_processes_unchanged": true,
+      "child_frontend_settings_isolated": true,
+      "parent_environment_changed": false
+    }
+  },
+  "wrapper_snapshots": [
+    {
+      "path": "wrappers/before-limited-query.ps1",
+      "sha256": "63225cb0fc93e1947398d933fe303c5fcc634f949b305d46870de1ae39cb5e1b",
+      "bytes": 26381
+    },
+    {
+      "path": "wrappers/before-timestamp-normalization.ps1",
+      "sha256": "cd08178aa6fb73ed21e354c9970e0e2cf487142d1b018c16783f688da78d394d",
+      "bytes": 29539
+    },
+    {
+      "path": "wrappers/matrix-after-observer-fixes.ps1",
+      "sha256": "f5220667af8b660fddfe030e2d0896fea0352555e840e8f846e48506a2bd9fca",
+      "bytes": 30844
+    },
+    {
+      "path": "wrappers/single-case-retry.ps1",
+      "sha256": "013afae727494b1476a927b51ffb1ad868b98818aa0ccfed7cd076a6c7a2108f",
+      "bytes": 33061
+    }
+  ],
+  "scope_boundaries": [
+    "These are registered COM/TIP tests in controlled synthetic hosts using the installed Broker, not real application or physical input acceptance.",
+    "The first x86-shorthand failure remains unexplained. Later passing diagnostics cannot reconstruct the missing foreground or key sample from the failing run.",
+    "Two single-case retries establish passing observations but do not establish a stability seal or erase the first failure.",
+    "Settings snapshots and diagnostic logs come from fresh per-case fixture directories under the supplied .tmp roots. No real AppData settings or learning content was read or archived.",
+    "The wrappers declare that the installed Broker may write learning from synthetic test input; no unchanged-user-data claim is made.",
+    "Source wrapper snapshots are historical audit evidence, not instructions to re-execute them.",
+    "Preflight check-only success is syntax/invocation evidence; actual host outcomes are recorded separately.",
+    "No installer, host, registration command, commit or push was executed by this archival task."
+  ]
+}

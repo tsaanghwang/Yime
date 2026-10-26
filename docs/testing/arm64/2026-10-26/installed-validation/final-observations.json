@@ -1,0 +1,149 @@
+{
+  "schema_version": "yimecore-arm64-installed-validation-final-observation-v1",
+  "recorded_at": "2026-10-26T15:28:08.423Z",
+  "evidence_archive_status": "COMPLETE_FOR_EXECUTED_SCOPE",
+  "product_acceptance_status": "NOT_SEALED",
+  "archive_completion_is_not_a_product_pass": true,
+  "stage_sources": [
+    "stage1-observations.json",
+    "stage2-observations.json",
+    "stage3-observations.json"
+  ],
+  "installation": {
+    "result": "PASS_OBSERVED",
+    "execution": "User ran delivered Setup.cmd and confirmed UAC; elevated install completed with exit 0.",
+    "logs": [
+      "install/manual-uac.user.log",
+      "install/manual-uac.admin.log"
+    ],
+    "earlier_automatic_uac_attempt": "Cancelled/no administrative log; retained separately.",
+    "before_after_observations": "Default-input registry objects and observed Rime/PIME product records matched in the pre/post installation snapshots. YimeCore startup pointed to the installed Runtime.",
+    "boundary": "These observations do not assert that all user data remained unchanged; the later registered-host tests may write learning through the installed Broker."
+  },
+  "registered_host": {
+    "first_matrix": {
+      "attempted": 9,
+      "passed": 8,
+      "failed": 1,
+      "source": "registered-host/matrix-first-run/summary.json"
+    },
+    "failed_case": "x86-shorthand",
+    "failure_text": "registered key sink did not claim KeyDown",
+    "failure_root_cause": "UNRESOLVED",
+    "initial_foreground_sampling_available": false,
+    "cannot_attribute_initial_failure_to_focus": true,
+    "retries": [
+      {
+        "selection_key_diagnostics": true,
+        "attempted": 1,
+        "passed": 1,
+        "source": "registered-host/retry-key-diagnostics-on/summary.json"
+      },
+      {
+        "selection_key_diagnostics": false,
+        "attempted": 1,
+        "passed": 1,
+        "source": "registered-host/retry-key-diagnostics-off/summary.json"
+      }
+    ],
+    "cells_with_passing_evidence_across_attempts": 9,
+    "total_attempts": 11,
+    "total_passed": 10,
+    "stability_sign_off": false,
+    "observer_setup_failures": [
+      {
+        "source": "registered-host/initial-cim-observer-summary.json",
+        "cases_run": 0,
+        "cause": "CIM could not expose the elevated process image; not an observed product input failure."
+      },
+      {
+        "source": "registered-host/observer-timezone-failure/summary.json",
+        "cases_run": 0,
+        "cause": "PowerShell 7 DateTime timezone normalization error in the observer; not an observed product input failure."
+      }
+    ],
+    "historical_wrapper_reference_resolution": [
+      {
+        "referenced_by": "registered-host/initial-cim-observer-summary.json",
+        "original_execution_path": "C:\\dev\\Yime\\.tmp\\registered-host-arm64-r2-20261026.ps1",
+        "recorded_sha256": "63225cb0fc93e1947398d933fe303c5fcc634f949b305d46870de1ae39cb5e1b",
+        "recorded_bytes": 26381,
+        "archived_snapshot": "wrappers/before-limited-query.ps1",
+        "resolution": "The execution path was reused for later observer fixes. This immutable archived snapshot exactly matches the wrapper hash and byte size recorded by this earlier run."
+      },
+      {
+        "referenced_by": "registered-host/observer-timezone-failure/summary.json",
+        "original_execution_path": "C:\\dev\\Yime\\.tmp\\registered-host-arm64-r2-20261026.ps1",
+        "recorded_sha256": "cd08178aa6fb73ed21e354c9970e0e2cf487142d1b018c16783f688da78d394d",
+        "recorded_bytes": 29539,
+        "archived_snapshot": "wrappers/before-timestamp-normalization.ps1",
+        "resolution": "The execution path was reused for later observer fixes. This immutable archived snapshot exactly matches the wrapper hash and byte size recorded by this earlier run."
+      }
+    ]
+  },
+  "native_notepad": {
+    "application": "Windows Notepad 11.2607.14.0 ARM64",
+    "pid": 29208,
+    "host_identity": "live-host/notepad/host-identity.json",
+    "pe_machine": "0xaa64",
+    "process_machine": "0x0",
+    "native_machine": "0xaa64",
+    "current_installed_dll_independently_observed": true,
+    "automated_checks_passed": 8,
+    "expected_invalid_prefix_rejections_observed": 1,
+    "automated_summary": "live-host/notepad/live-host-summary.json",
+    "automated_input_kind": "Synthetic operating-system keyboard/mouse input in the real installed application.",
+    "final_automated_text": "秋其秋千",
+    "final_automated_character_count": 4,
+    "physical_keyboard_checks_user_confirmed": 2,
+    "physical_keyboard_receipt": "live-host/notepad/physical-keyboard-user-confirmation.json",
+    "physical_keyboard_scope": [
+      "2jru then Shift+1 commits 秋",
+      "2 then Escape cancels only the new composition and retains confirmed text"
+    ],
+    "physical_pending_interpretation": "The immutable live-host-summary.json predates the later user reply. Its PENDING_USER_CONFIRMATION is supplemented by the separate two-check confirmation receipt; the original summary was not rewritten.",
+    "mode_scope": "Only the current active profile mode; not a three-mode live-app matrix.",
+    "final_document_boundary": "The four-character document describes the end of the automated run, before later physical keyboard input."
+  },
+  "notepad_plus_plus": {
+    "preparation_only": true,
+    "preparation_provenance_in_this_archive": false,
+    "x64_launch_attempt_outcome": "UNVERIFIED_AFTER_COMPUTER_USE_STOP",
+    "x64_application_started": null,
+    "x64_live_ui_result": "NOT_TESTED",
+    "x86_live_ui_result": "NOT_TESTED",
+    "passed": null,
+    "clarification_receipt": "conversation-receipts/accidental-escape-and-pr78-followup.json"
+  },
+  "open_findings": [
+    {
+      "finding": "Candidate code annotation ellipsizes (for example 2j... instead of fully visible 2jru).",
+      "status": "OPEN",
+      "evidence": "live-host/notepad/02-four-code-composition.json",
+      "hypothesis": "Outer/client width treatment of WS_BORDER may be involved; geometry was not measured.",
+      "root_cause_established": false,
+      "arm_specificity_established": false
+    },
+    {
+      "finding": "The first registered x86 shorthand KeyDown failure remains unexplained despite two subsequent passing retries.",
+      "status": "ROOT_CAUSE_UNRESOLVED",
+      "evidence": "registered-host/matrix-first-run/summary.json"
+    }
+  ],
+  "not_completed": [
+    "Notepad++ x64 or x86 real-app functional acceptance",
+    "Three-mode live-app acceptance",
+    "Reboot/startup acceptance",
+    "Daily-use stability and final product sealing"
+  ],
+  "next_authorized_direction": "PR #78 conflict resolution and review, after archival completion; no further UI action performed by this archival task.",
+  "preservation": {
+    "stage1_stage2_stage3_indexes_unchanged": true,
+    "all_previous_raw_files_unchanged": true,
+    "original_jpegs_unedited": true,
+    "actual_AppData_learning_and_personal_settings_not_read_or_copied": true,
+    "source_or_installer_files_modified_by_archival_task": false,
+    "commit_or_publish_performed_by_archival_task": false
+  },
+  "capture_boundary": "Screenshot metadata timestamps reflect saving/archiving after capture, not exact input-event times."
+}

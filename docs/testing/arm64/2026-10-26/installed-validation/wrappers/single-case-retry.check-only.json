@@ -1,0 +1,15 @@
+{
+  "script": "C:\\dev\\Yime\\.tmp\\registered-host-arm64-r2-x86-shorthand-retry.ps1",
+  "sha256": "013afae727494b1476a927b51ffb1ad868b98818aa0ccfed7cd076a6c7a2108f",
+  "check_only": true,
+  "script_executed": false,
+  "exit_code": 0,
+  "output": "PASS: PowerShell 7.6.5 static preflight; script not executed.",
+  "selection": {
+    "architecture": "x86",
+    "mode": "shorthand",
+    "expected_cases": 1
+  },
+  "original_matrix_wrapper_sha256": "f5220667af8b660fddfe030e2d0896fea0352555e840e8f846e48506a2bd9fca",
+  "failed_result_sha256": "47820598dc1f6105aeb683a472f65fd456930bac3dd49b20337dca5b4cbf2338"
+}

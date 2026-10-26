@@ -1,6 +1,6 @@
 # 双独立产品安装与卸载
 
-当前安装入口为本目录。支持 x64 Windows 上的 YimeCore、Rime/PIME 单独安装、单独卸载，以及一次选择安装或卸载两套；x86 指 WOW64 应用支持。YimeCore Windows ARM64 包使用原生 Runtime/Broker、共享 ARM64X 文本服务及独立 x86 文本服务，已完成本地完整包验证，安装态与真实应用验收尚待执行，最新状态见 [HANDOFF](HANDOFF.md)。Rime/PIME 不提供 ARM64 包。
+本目录支持 x64 Windows 的 YimeCore、Rime/PIME 独立或双产品安装卸载；Rime/PIME 不提供 ARM64 包。YimeCore ARM64 R2 已安装，原生 Notepad 受控检查及有限范围人工检查通过。registered-host 首轮 8/9，失败单格复测通过但根因未明；候选注释显示问题待修，其他真实应用、重启及日用验收待完成，尚未封版。固定 Release、ZIP SHA-256 见 [HANDOFF](HANDOFF.md)，详细范围见[包与安装记录](../../docs/testing/arm64/2026-10-26/PACKAGE-AND-INSTALL-TEST.md)。
 
 ## 使用完整包
 

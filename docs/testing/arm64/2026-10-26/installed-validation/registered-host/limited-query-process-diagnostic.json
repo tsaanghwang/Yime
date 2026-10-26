@@ -1,0 +1,33 @@
+{
+  "read_only_process_queries": true,
+  "product_processes_started_or_stopped": false,
+  "status_updated_at": "2026-10-26T13:51:20.5196831Z",
+  "observations": [
+    {
+      "pid": 6720,
+      "cim_exists": true,
+      "cim_image": null,
+      "cim_created_at": "2026-10-26T13:51:17.0977030Z",
+      "cim_error": null,
+      "limited_access": "0x1000",
+      "limited_image": "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+      "limited_created_at": "2026-10-26T13:51:17.0977035Z",
+      "exit_code": 259,
+      "limited_error": null
+    },
+    {
+      "pid": 20436,
+      "cim_exists": true,
+      "cim_image": null,
+      "cim_created_at": "2026-10-26T13:51:20.4930590Z",
+      "cim_error": null,
+      "limited_access": "0x1000",
+      "limited_image": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+      "limited_created_at": "2026-10-26T13:51:20.4930590Z",
+      "exit_code": 259,
+      "limited_error": null
+    }
+  ],
+  "pipe_server_pid": 20436,
+  "error": null
+}

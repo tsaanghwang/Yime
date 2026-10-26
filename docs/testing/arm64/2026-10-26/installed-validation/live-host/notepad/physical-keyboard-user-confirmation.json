@@ -1,0 +1,12 @@
+{
+  "schema": "yime.physical-keyboard.user-confirmation.v1",
+  "date": "2026-10-26",
+  "host": "HUASHUONOTEBOOK",
+  "application": "Current ARM64 Notepad window",
+  "source": "Direct user answer in this task, received after the automated live-host run",
+  "question": "自动化实机检查已完成。请用笔记本实体键盘在当前记事本末尾输入 2jru，再按 Shift+1，确认新增“秋”；随后输入 2 并按 Esc，确认仅取消这次编码、已上屏文字仍保留。实际结果如何？（这一步补充人工实键证据，我会继续整理测试报告。）",
+  "answer": "两项均正常",
+  "result": "PASS_USER_CONFIRMED",
+  "scope": ["Physical keyboard 2jru then Shift+1 commits 秋", "Physical keyboard 2 then Escape cancels only the new composition and retains confirmed text"],
+  "limitations": "User-reported confirmation for these two checks only; not a reboot, full physical-keyboard matrix, three-mode live-app test, or daily-use stability seal. The previous live-host-summary.json retains its original pending status; this later receipt supplies the result."
+}

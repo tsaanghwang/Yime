@@ -1,0 +1,43 @@
+{
+  "wrapper_sha256": "f5220667af8b660fddfe030e2d0896fea0352555e840e8f846e48506a2bd9fca",
+  "observation_passed": true,
+  "read_only_functions_only": true,
+  "wrapper_body_executed": false,
+  "product_processes_started_or_stopped": false,
+  "host_tests_started": 0,
+  "observation": {
+    "status_updated_at": "2026-10-26T13:51:20.5196831Z",
+    "pipe": "\\\\.\\pipe\\YimeBroker.YimeCoreTrial.v1",
+    "pipe_server_pid": 20436,
+    "processes": [
+      {
+        "pid": 6720,
+        "image": "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+        "created_at": "2026-10-26T13:51:17.0977035Z",
+        "creation_filetime": 134374962770977035,
+        "exit_code": 259,
+        "query_access": "0x1000",
+        "provider": "QueryFullProcessImageNameW + GetProcessTimes + GetExitCodeProcess"
+      },
+      {
+        "pid": 20436,
+        "image": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+        "created_at": "2026-10-26T13:51:20.4930590Z",
+        "creation_filetime": 134374962804930590,
+        "exit_code": 259,
+        "query_access": "0x1000",
+        "provider": "QueryFullProcessImageNameW + GetProcessTimes + GetExitCodeProcess"
+      }
+    ],
+    "restarts": 0
+  },
+  "normalization": {
+    "parsed_type": "System.DateTime",
+    "parsed_kind": "Utc",
+    "utc": "2026-10-26T13:51:20.5196831Z",
+    "iso_string_utc": "2026-10-26T13:51:20.5196831Z",
+    "offset_string_utc": "2026-10-26T13:51:20.5196831Z",
+    "one_tick_newer_process_rejected": true,
+    "unspecified_timezone_rejected": true
+  }
+}

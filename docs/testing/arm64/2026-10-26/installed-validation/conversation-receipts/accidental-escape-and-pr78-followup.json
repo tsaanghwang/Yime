@@ -1,0 +1,39 @@
+{
+  "schema_version": "yimecore-arm64-conversation-transcript-receipt-v1",
+  "recorded_at": "2026-10-26T15:28:08.423Z",
+  "source_kind": "parent-agent-relayed-main-thread-transcript",
+  "source_task": "/root",
+  "evidence_kind": "transcription; no original standalone tool-response file exists",
+  "original_computer_use_response": {
+    "is_error": true,
+    "verbatim": "Computer Use was stopped by the user with the physical Escape key. Stop your work, do not call further Computer Use tools in this turn, and send a final message noting that the user stopped Computer Use.",
+    "operation_context": "The main thread attempted to launch the verified x64 Notepad++ application.",
+    "launch_outcome": "UNVERIFIED",
+    "application_started": null
+  },
+  "later_user_message": {
+    "verbatim": "取消键是在记事本中输入时，导致的。应该是意外。PR #78 要求解决冲突和复查。",
+    "interpretation": "The user explained that Escape while typing in Notepad caused an accidental stop and requested PR #78 conflict resolution and review."
+  },
+  "current_work_direction": "Finish archiving already executed installed evidence and converge PR #78; do not continue live UI testing in this archival task.",
+  "preservation": {
+    "earlier_stop_response_preserved_in_transcription": true,
+    "earlier_raw_evidence_modified": false,
+    "transcription_is_not_a_byte_copy_of_an_original_file": true,
+    "historical_stop_event_remains_recorded": true,
+    "later_user_message_clarifies_accidental_intent": true
+  },
+  "notepad_plus_plus": {
+    "preparation": "The main thread reports downloaded/prepared x64 and x86 portable packages; preparation provenance remains outside this archive.",
+    "main_thread_x64_launch_attempt": "Computer Use returned the stop error; whether the application actually started was not verified.",
+    "subagent_preparation_launched_application": false,
+    "live_ui_result": "NOT_TESTED",
+    "passed": null
+  },
+  "boundaries": [
+    "The user clarification does not turn the interrupted launch into a successful application test.",
+    "No claim is made that Notepad++ did or did not start.",
+    "The historical tool stop remains recorded; the later user statement explains accidental intent.",
+    "This receipt is a main-thread transcription relayed by the parent task, not a directly exported transcript or original file."
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "schema_version": "yimecore-arm64-installed-stage3-observation-v1",
+  "evidence_kind": "derived-summary-of-original-real-app-captures-and-later-user-receipt",
+  "draft": true,
+  "application": "Windows Notepad 11.2607.14.0 ARM64",
+  "pid": 29208,
+  "architecture": {
+    "pe_machine": "0xaa64",
+    "process_machine": "0x0",
+    "native_machine": "0xaa64",
+    "image_sha256": "229e2d1684e89f054c0907f73028b111819124376a3eb7b87027e996b16747c6",
+    "source": "live-host/notepad/host-identity.json"
+  },
+  "loaded_current_product": {
+    "path": "C:\\Program Files\\YimeCore\\arm64\\YimeTextServiceExperiment.dll",
+    "file_sha256": "f84a30f265e5c4e7d09d7588b06a9d95180e653b44697a23d010931490ab803b",
+    "matching_saved_module_observations": 3,
+    "initial_preselection_empty_module_observation_preserved": true
+  },
+  "automated_real_application_run": {
+    "driver": "Computer Use sky.press_key / sky.click in the real installed Notepad process; synthetic OS keyboard and mouse input, not physical keyboard acceptance",
+    "checks_passed": 8,
+    "expected_invalid_prefix_rejections": 1,
+    "passed_checks": [
+      "composition_and_shift_labels",
+      "shift_ordinal_commit",
+      "escape_cancels_only_preedit",
+      "focus_loss_cancels_only_preedit",
+      "backspace_edits_only_preedit",
+      "mouse_candidate_commit",
+      "bare_digit_with_candidates_extends_valid_code",
+      "word_composition_and_space_commit"
+    ],
+    "expected_rejection": "Bare 22 is not a valid standard dictionary prefix; the existing composition was retained and candidate two was not selected.",
+    "final_automated_text": "秋其秋千",
+    "final_automated_character_count": 4,
+    "mode_scope": "Current active profile mode; no mode change or real user settings read. This is not three-mode live-app acceptance.",
+    "summary": "live-host/notepad/live-host-summary.json"
+  },
+  "later_physical_keyboard_confirmation": {
+    "source": "live-host/notepad/physical-keyboard-user-confirmation.json",
+    "result": "PASS_USER_CONFIRMED",
+    "user_answer": "两项均正常",
+    "confirmed_checks": [
+      "Physical keyboard 2jru then Shift+1 commits 秋",
+      "Physical keyboard 2 then Escape cancels only the new composition and retains confirmed text"
+    ],
+    "scope": "Two limited checks reported by the user in the current native Notepad window.",
+    "resolves_prior_pending_status": true,
+    "original_pending_summary_preserved": true,
+    "does_not_establish_full_physical_matrix_or_reboot_or_daily_stability": true
+  },
+  "focus_observation": {
+    "foreground_pid_during_switch": 6864,
+    "independent_later_identity_image": "C:\\Windows\\explorer.exe",
+    "creation_time_utc": "2026-10-26T06:18:47.079987+00:00",
+    "process_existed_before_test": true,
+    "boundary": "An Explorer window was used for the focus switch; the saved process creation time does not claim that the Explorer process itself was newly created."
+  },
+  "open_findings": [
+    {
+      "kind": "candidate_annotation_display",
+      "status": "OPEN",
+      "observed": "Code annotations displayed ellipses, for example 2j... instead of a fully visible 2jru code.",
+      "source_basis": "CandidateListUIElement.cpp:54-65 retains complete codes; CandidatePopup.cpp:274-311 measures full rows; ContractTests.cpp:963-970 requires long annotations to widen the popup; CandidatePopup.cpp:425-427 uses DT_END_ELLIPSIS",
+      "hypothesis_only": "WS_BORDER width is not visibly added to the measured outer-window width; a client-area width mismatch may clip the longest row. No actual window geometry was measured in this run.",
+      "geometry_measured": false,
+      "arm_specificity_established": false
+    },
+    {
+      "kind": "registered_host_intermittent_failure",
+      "status": "ROOT_CAUSE_UNRESOLVED",
+      "observed": "First registered matrix was 8/9. x86 shorthand had one KeyDown-not-claimed failure; both subsequent single-case retries passed.",
+      "source": "stage2-observations.json",
+      "stability_sign_off": false
+    }
+  ],
+  "capture_scope": {
+    "original_jpeg_count": 24,
+    "original_images_reencoded_or_edited": false,
+    "capture_timestamps_are_archive_times_not_precise_event_times": true,
+    "accessibility_text_available": false,
+    "visual_spot_check": [
+      "live-host/notepad/02-four-code-composition-0.jpg",
+      "live-host/notepad/16-space-word-commit-0.jpg"
+    ]
+  },
+  "pending": [
+    "x64 and x86 real-application evidence is being gathered separately and is not included in this Notepad stage.",
+    "Reboot and daily-use stability acceptance remain outside the completed observations.",
+    "The candidate-code truncation finding and the first registered KeyDown failure remain open."
+  ],
+  "boundaries": [
+    "The original live-host-summary.json still says physical keyboard pending because it predates the user reply; the separate later receipt supplies the two PASS observations.",
+    "The eight automated checks ran in a real installed application via synthetic OS input. They are distinct from the two limited manual physical-keyboard checks.",
+    "The automated final four-character document describes the end of the automated run, not the document after later user input.",
+    "Current active profile mode was exercised; this is not three-mode live-app acceptance.",
+    "No installation, live UI manipulation, host execution, source edit, commit or push was performed by this archival task.",
+    "No actual AppData learning database or personal settings content was read or copied."
+  ]
+}

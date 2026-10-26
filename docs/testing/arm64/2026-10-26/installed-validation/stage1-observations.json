@@ -1,0 +1,72 @@
+{
+  "schema_version": "yimecore-arm64-installed-stage1-observation-v1",
+  "evidence_kind": "derived-stage-observations-awaiting-registered-host-rerun",
+  "draft": true,
+  "final_acceptance_complete": false,
+  "manual_install": {
+    "user_initiated_setup_cmd_and_uac": true,
+    "user_log": "install/manual-uac.user.log",
+    "admin_log": "install/manual-uac.admin.log",
+    "elevated_exit_code": 0,
+    "user_log_contains_exit_zero": true
+  },
+  "earlier_automatic_elevation_attempt": {
+    "result": "cancelled before an administrator run was observed",
+    "user_report": "UAC prompt was not observed during the automated attempt.",
+    "user_log": "install/automatic-uac-cancelled.user.log",
+    "corresponding_admin_log": "C:/Users/tsaan/Yime Setup Logs/71eef12f53dd4168a232eb176582e93d.admin.log",
+    "corresponding_admin_log_exists": false,
+    "classified_as_product_failure": false
+  },
+  "before_after": {
+    "default_input_registry_equal": true,
+    "rime_product_observation_equal": true,
+    "yimecore_startup": {
+      "exists": true,
+      "value": "\"C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe\" -install-root \"C:\\Program Files\\YimeCore\" -state-root \"C:\\Users\\tsaan\\AppData\\Local\\YimeCore Experimental Trial\""
+    },
+    "comparison_method": "Recursive exact object comparison with sorted object keys; arrays retain their observed order.",
+    "user_state_contents_read": false
+  },
+  "initial_registered_wrapper": {
+    "raw_summary_passed": false,
+    "raw_summary_completed": false,
+    "attempted_cases": 0,
+    "passed_cases": 0,
+    "classification": "observer-precondition-blocked-before-any-host-case",
+    "product_or_host_test_failure_demonstrated": false,
+    "payload_hashes_passed": true,
+    "payload_hash_count": 68,
+    "reference_manifest_sha256": "a54c8c323460b8a2644feb24dd7da1d8ad7f87cca87da30089049bf8bc4dd89c",
+    "observed_com_paths": {
+      "Registry64": "C:\\Program Files\\YimeCore\\arm64\\YimeTextServiceExperiment.dll",
+      "Registry32": "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll"
+    },
+    "raw_error": "System.Management.Automation.RuntimeException: Runtime status is stale or its PID does not belong to the installed image."
+  },
+  "limited_query_diagnostic": {
+    "read_only": true,
+    "product_processes_started_or_stopped": false,
+    "cim_images_unavailable": true,
+    "limited_images_available": true,
+    "observed_pids": [
+      6720,
+      20436
+    ],
+    "pipe_server_pid": 20436,
+    "error": null,
+    "scope": "Corroborates installed process image/time and Broker pipe identity; not a substitute for registered or real-application input tests."
+  },
+  "pending": [
+    "Registered-host rerun after the observer correction.",
+    "Real-application and reboot acceptance as coordinated by the main task."
+  ],
+  "boundaries": [
+    "This archival task performed no installation, registration, process launch/stop or host test.",
+    "Only the explicitly supplied logs and saved observations were read.",
+    "No newly created learning database or user settings content was read or copied.",
+    "Rime observation equality is not evidence of both-installed coexistence testing.",
+    "Raw initial observer failure is preserved unchanged and is not relabelled as a passed host run.",
+    "No commit or push is performed before final host results."
+  ]
+}
