@@ -36,7 +36,7 @@ R1 曾完整构包，但实际交付脚本的 PS5 Check 遇到 `[ushort]` 类型
 
 - 文件：`YimeCore-ARM64-20261026-r2.zip`，168,171,619 字节；73 个 ZIP 成员已逐项核对解压内容 SHA-256。
 - SHA-256：`2c94d825c59bf768d8a00a13353d38fe65f3b67e2258d3fb9747014229049de1`。
-- 本地保留：`C:\dev\Yime-deliveries\arm64-proart-20261026-r2`；固定 GitHub artifact/Release 下载 URL 尚待发布，本地文件不算远端交付。
+- 本地保留：`C:\dev\Yime-deliveries\arm64-proart-20261026-r2`；[固定 Release](https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-proart-20261026-r2)、[完整 ZIP](https://github.com/tsaanghwang/Yime/releases/download/test-arm64-proart-20261026-r2/YimeCore-ARM64-20261026-r2.zip) 已发布，服务器 size 与 SHA-256 digest 均和本地一致。
 - 包内 source-manifest SHA-256：`9283c3f60d2e04b669e27198b98b5381d7470ad1a371d503669ca0f7213ff2e7`；product-package SHA-256：`2615facbb83553e5a49cf2d7a6730bb51dc17e25dba9ef8e2d12fe3bec2543d1`。
 - 构建基础提交为 `d6a03c9e31cecb2d973c94252a4171d19755dbb7`，工作区含本轮改动；逐文件来源以包内清单为准。构包后更新 HANDOFF/README 状态，并仅修复 Test-Manage 的临时模块 BOM，checked PS5 重跑通过；运行与安装实现未变。逐文件核对见[构包后来源对照](package-validation/postbuild-source-comparison.json)，不把构建时的基础提交冒充完整来源提交。
 - 连读准入 summary SHA-256：`b1423ab265d78bcfb2e3b0e366f019381a00245c15d8be1854244fd9d29cff4e`；source inventory SHA-256：`d52f43b5d6ec5a9c088aa616a85e3927dc2f4291dce638e43e91126eaa00709e`。
@@ -53,4 +53,6 @@ R1 曾完整构包，但实际交付脚本的 PS5 Check 遇到 `[ushort]` 类型
 
 目前尚未安装、卸载或重启输入法产品，默认输入法和用户数据未变。安装态 registered-host、真实应用输入、候选位置、重启后输入及日用均为待验收；原有源码测试和鼠标/模拟输入不能继承为这些结果。
 
-本地完整包、包检查与隔离维护验证已经完成；本轮提交对应 CI 和固定远端下载交付完成后，继续本机安装及独立验收。当前 GitHub 连接器可发布源码，但没有 Release asset 上传接口，本机尚无可用 CLI 凭据；不得将源码 PR 当作完整包交付，也不据此提前执行安装。
+本地实现提交 `f855867d2cd048de1b74bc97ba92921b481fc82e` 通过相同 Git tree `71fef246d310baf49c7b37f5819aca13c5642811` 发布为 `0d5d7808e47e43d6f13d9232e3427fa747471b22`。[Build CI](https://github.com/tsaanghwang/Yime/actions/runs/40328189798) 与[原型 CI](https://github.com/tsaanghwang/Yime/actions/runs/40328189734) 共 13 项全部通过。
+
+用户完成 GitHub CLI 网页授权后，完整 ZIP 与 SHA256SUMS 已发布并核对远端 digest；[发布与哈希记录](package-validation/publication/release.json)、[CI 检查记录](package-validation/publication/ci-checks.json) 已归档。构包后来源对照对应上述实现提交；本次交付状态更新仅为文档和证据。安装前置交付已完成，下一步为本机安装、三架构 registered-host 和真实应用验收。

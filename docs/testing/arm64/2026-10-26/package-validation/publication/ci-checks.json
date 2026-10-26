@@ -1,0 +1,194 @@
+{
+  "headRevision": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+  "checks": [
+    {
+      "id": 121593376285,
+      "name": "core-build",
+      "head_sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189798/job/121593376285",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 1
+      }
+    },
+    {
+      "id": 121593071544,
+      "name": "shard-coverage",
+      "head_sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189798/job/121593071544",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 1
+      }
+    },
+    {
+      "id": 121590704004,
+      "name": "go-race-msys2",
+      "head_sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189798/job/121590704004",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 1
+      }
+    },
+    {
+      "id": 121590703937,
+      "name": "real-rime-tests / 0",
+      "head_sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189798/job/121590703937",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 1
+      }
+    },
+    {
+      "id": 121590703823,
+      "name": "real-rime-tests / 1",
+      "head_sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189798/job/121590703823",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 1
+      }
+    },
+    {
+      "id": 121590703775,
+      "name": "rust-i686-host",
+      "head_sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189798/job/121590703775",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 0
+      }
+    },
+    {
+      "id": 121590703735,
+      "name": "lexicon-offline-tooling",
+      "head_sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189798/job/121590703735",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 1
+      }
+    },
+    {
+      "id": 121590703734,
+      "name": "simple-installer",
+      "head_sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189798/job/121590703734",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 0
+      }
+    },
+    {
+      "id": 121590703713,
+      "name": "real-rime-tests / 2",
+      "head_sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189798/job/121590703713",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 1
+      }
+    },
+    {
+      "id": 121590703712,
+      "name": "native-build",
+      "head_sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189798/job/121590703712",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 0
+      }
+    },
+    {
+      "id": 121590703695,
+      "name": "go-tests",
+      "head_sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189798/job/121590703695",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 1
+      }
+    },
+    {
+      "id": 121590279498,
+      "name": "build-contract / validate-build-contract",
+      "head_sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189798/job/121590279498",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 0
+      }
+    },
+    {
+      "id": 121590278809,
+      "name": "offline-prototype",
+      "head_sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189734/job/121590278809",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 1
+      }
+    }
+  ],
+  "statuses": [],
+  "annotations": [],
+  "hasMore": false,
+  "job": null,
+  "jobs": [],
+  "log": null,
+  "logTruncated": false
+}
