@@ -1,0 +1,8 @@
+{
+  "name": "go1.25.14.windows-arm64.zip",
+  "source_url": "https://go.dev/dl/go1.25.14.windows-arm64.zip",
+  "sha256": "96fb31ae26b288b5311bd31d8252d4a62c8a661e4dbb64d504cc646e4d10a57f",
+  "bytes": 64735369,
+  "expected_sha256": "96fb31ae26b288b5311bd31d8252d4a62c8a661e4dbb64d504cc646e4d10a57f",
+  "downloaded_only": true
+}

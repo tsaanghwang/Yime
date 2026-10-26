@@ -1,0 +1,16 @@
+{
+  "executable": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-20261026-184609-ce50c301\\tsf-build\\Release\\YimeTsfCompositionTests.exe",
+  "fixture_root": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-20261026-184609-ce50c301\\t\\421dd59111fb4ee6",
+  "environment": {
+    "TEMP": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-20261026-184609-ce50c301\\t\\421dd59111fb4ee6\\tmp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-20261026-184609-ce50c301\\t\\421dd59111fb4ee6\\tmp",
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-20261026-184609-ce50c301\\t\\421dd59111fb4ee6\\local",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-20261026-184609-ce50c301\\t\\421dd59111fb4ee6\\roaming"
+  },
+  "environment_isolated": true,
+  "environment_restored": true,
+  "executed": true,
+  "exit_code": 0,
+  "passed": true,
+  "scope": "Fresh per-invocation TEMP/TMP/LOCALAPPDATA/APPDATA; retain synthetic state, never record previous environment values."
+}

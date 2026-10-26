@@ -1,0 +1,20 @@
+{
+  "scope": "Development compiler/SDK only; no input-method installation",
+  "started_at_utc": "2026-10-26T10:34:24.2486935Z",
+  "finished_at_utc": "2026-10-26T10:45:58.0018628Z",
+  "source_url": "https://aka.ms/vs/17/release/vs_BuildTools.exe",
+  "installer_sha256": "4aad1082e180f558598c346eb105b465b4908148cb9f7f0511aa1105620e0c30",
+  "signer": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+  "bootstrapper_version": "17.14.37824.6",
+  "install_path": "C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools",
+  "components": [
+    "Microsoft.VisualStudio.Workload.VCTools",
+    "Microsoft.VisualStudio.Component.VC.Tools.ARM64",
+    "Microsoft.VisualStudio.Component.Windows11SDK.26100",
+    "Microsoft.VisualStudio.Component.VC.CMake.Project"
+  ],
+  "exit_code": 0,
+  "failure": null,
+  "automatic_restart": false,
+  "restart_required": false
+}

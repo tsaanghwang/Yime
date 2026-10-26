@@ -13,6 +13,7 @@
       "computer_name": "HUASHUONOTEBOOK",
       "manufacturer": "ASUS",
       "model": "ProArt P16 H7607BA",
+      "user_reported_model": "华硕 ProArt 创 16 RTX Spark",
       "native_architecture": "ARM64",
       "identified_on": "2026-10-26",
       "approved_uses": ["host_inventory", "source_build", "isolated_native_contracts"],
