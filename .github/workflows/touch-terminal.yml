@@ -18,6 +18,13 @@ on:
       - 'tools/build_touch_keyboard_desktop.py'
       - 'tools/touch_keyboard_resources.py'
       - 'tools/check_touch_keyboard_package.py'
+      - 'tools/test_check_touch_keyboard_package.py'
+      - 'tools/yimecore/collect_arm64_host.py'
+      - 'tools/yimecore/test_collect_arm64_host.py'
+      - 'tools/yimecore/development-scope.*'
+      - 'tools/yimecore/run-platform-experiment.ps1'
+      - 'tools/yimecore/test-platform-experiment.ps1'
+      - 'tools/yimecore/test-arm64-build-scope.ps1'
       - 'tools/generate_touch_keyboard_profiles.py'
       - 'tools/ascii_keyboard/**'
       - 'tools/generate_ascii_layout.py'
@@ -40,6 +47,13 @@ on:
       - 'tools/build_touch_keyboard_desktop.py'
       - 'tools/touch_keyboard_resources.py'
       - 'tools/check_touch_keyboard_package.py'
+      - 'tools/test_check_touch_keyboard_package.py'
+      - 'tools/yimecore/collect_arm64_host.py'
+      - 'tools/yimecore/test_collect_arm64_host.py'
+      - 'tools/yimecore/development-scope.*'
+      - 'tools/yimecore/run-platform-experiment.ps1'
+      - 'tools/yimecore/test-platform-experiment.ps1'
+      - 'tools/yimecore/test-arm64-build-scope.ps1'
       - 'tools/generate_touch_keyboard_profiles.py'
       - 'tools/ascii_keyboard/**'
       - 'tools/generate_ascii_layout.py'
@@ -67,6 +81,12 @@ jobs:
           go-version-file: go-backend/go.mod
       - name: Validate isolated source data and interaction contracts
         run: python -X utf8 prototypes/touch-terminal/validate.py
+      - name: Check native host architecture detection
+        run: python -X utf8 -m unittest discover -s tools/yimecore -p test_collect_arm64_host.py -v
+      - name: Check portable execution architecture gates
+        run: python -X utf8 -m unittest discover -s tools -p test_check_touch_keyboard_package.py -v
+      - name: Check platform build host and package boundaries
+        run: python -X utf8 tools/powershell/run_checked.py --script tools/yimecore/test-platform-experiment.ps1 --edition ps7
       - name: Validate canonical ASCII projection metadata
         run: python -X utf8 tools/generate_ascii_layout.py --check
       - name: Validate real engine loopback session boundary

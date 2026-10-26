@@ -1,0 +1,40 @@
+{
+  "schema_version": "yimecore-pr78-null-restoration-tool-transcript-v1",
+  "tool_chunk_id": "255330",
+  "exit_code": 0,
+  "original_stdout_stderr_file_available": false,
+  "script": "goenv-isolation/probe-goenv-restoration.ps1",
+  "edition": "ps7",
+  "entry": "tools/powershell/run_checked.py",
+  "observations": [
+    {
+      "requested": null,
+      "before": "",
+      "beforePresent": true,
+      "after": "",
+      "afterPresent": true
+    },
+    {
+      "requested": "",
+      "before": "",
+      "beforePresent": true,
+      "after": "",
+      "afterPresent": true
+    },
+    {
+      "requested": "-tags=synthetic",
+      "before": "-tags=synthetic",
+      "beforePresent": true,
+      "after": "-tags=synthetic",
+      "afterPresent": true
+    },
+    {
+      "requested": "NullString",
+      "before": null,
+      "beforePresent": false,
+      "after": "",
+      "afterPresent": true
+    }
+  ],
+  "boundary": "Transcribed from the original tool response before the final helper repair. This is not a raw stdout file. The probe ran in a separate PowerShell process and did not alter persistent user configuration."
+}

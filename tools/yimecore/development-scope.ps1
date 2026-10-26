@@ -71,10 +71,73 @@ function Get-YimeCoreExperimentTarget([string]$Target) {
     return $match[0]
 }
 
+function Get-YimeCoreNativeMachine {
+    # Environment architecture strings can say AMD64 on an ARM64 Windows host.
+    # Query the OS; missing APIs and failed calls must not fall back to env values.
+    if (-not ('YimeCorePlatform.NativeMachine' -as [type])) {
+        Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+namespace YimeCorePlatform {
+    public static class NativeMachine {
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr GetCurrentProcess();
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsWow64Process2(IntPtr process, out ushort processMachine, out ushort nativeMachine);
+    }
+}
+'@
+    }
+    [ushort]$processMachine = 0
+    [ushort]$nativeMachine = 0
+    if (-not [YimeCorePlatform.NativeMachine]::IsWow64Process2(
+        [YimeCorePlatform.NativeMachine]::GetCurrentProcess(), [ref]$processMachine, [ref]$nativeMachine)) {
+        throw 'IsWow64Process2 failed; platform build host architecture is unverified.'
+    }
+    $architecture = switch ([int]$nativeMachine) {
+        0x8664 { 'AMD64' }
+        0xaa64 { 'ARM64' }
+        default { throw ('Unapproved native build machine: 0x{0:x4}' -f $nativeMachine) }
+    }
+    [ordered]@{
+        source = 'IsWow64Process2'; native_architecture = $architecture
+        native_machine = ('0x{0:x4}' -f $nativeMachine); process_machine = ('0x{0:x4}' -f $processMachine)
+    }
+}
+
+function Assert-YimeCoreArm64BuildHost($TargetConfig, [string]$ComputerName, $Architecture, [bool]$Is64BitProcess) {
+    $physicalHost = $TargetConfig.physical_host
+    if ($TargetConfig.id -cne 'arm64' -or $null -eq $physicalHost -or
+        $physicalHost.computer_name -cne 'HUASHUONOTEBOOK' -or $ComputerName -cne $physicalHost.computer_name -or
+        $physicalHost.native_architecture -cne 'ARM64' -or @($physicalHost.approved_uses) -cnotcontains 'source_build' -or
+        $Architecture.source -cne 'IsWow64Process2' -or $Architecture.native_machine -cne '0xaa64' -or
+        $Architecture.native_architecture -cne 'ARM64' -or -not $Is64BitProcess) {
+        throw 'ARM64 native source builds require the identified HUASHUONOTEBOOK ARM64 host and 64-bit PowerShell.'
+    }
+}
+
 function Get-YimeCoreExperimentBuildScope([string]$Target) {
     $targetConfig = Get-YimeCoreExperimentTarget $Target
-    if ($Target -eq 'arm64') { return Get-YimeCoreDevelopmentScope }
-    $nativeArchitecture = if ($env:PROCESSOR_ARCHITEW6432) { $env:PROCESSOR_ARCHITEW6432 } else { $env:PROCESSOR_ARCHITECTURE }
+    $machine = Get-YimeCoreNativeMachine
+    if ($Target -eq 'arm64') {
+        if ($machine.native_architecture -ceq 'AMD64' -and $machine.native_machine -ceq '0x8664') {
+            # Preserve the original pinned development-host cross-build lane.
+            $scope = Get-YimeCoreDevelopmentScope
+            $scope['build_lane'] = 'arm64_cross_build'
+            $scope['machine_observation'] = $machine
+            return $scope
+        }
+        $computerName = [Environment]::MachineName
+        Assert-YimeCoreArm64BuildHost $targetConfig $computerName $machine ([Environment]::Is64BitProcess)
+        return [ordered]@{
+            id = 'yimecore-arm64-native-source-build-v1'; target = $Target; computer_name = $computerName
+            native_architecture = 'ARM64'; active_architectures = @('arm64'); target_architecture = 'arm64'
+            build_lane = 'arm64_native_source_build'; machine_observation = $machine
+            output_policy = 'Separate source-build output only; no target execution, installation, registration or default-input mutation.'
+        }
+    }
+    $nativeArchitecture = $machine.native_architecture
     $physicalHost = $targetConfig.physical_host
     if ($Target -ne 'mainstream_x64' -or $null -eq $physicalHost -or $physicalHost.computer_name -cne $env:COMPUTERNAME -or
         $physicalHost.owner -cne 'developer' -or @($physicalHost.approved_uses).Count -ne 3 -or
@@ -89,8 +152,64 @@ function Get-YimeCoreExperimentBuildScope([string]$Target) {
     }
 }
 
+function Resolve-YimeCorePlatformGenerator([string]$Target, $Scope, [string]$RequestedGenerator) {
+    $allowed = @('Visual Studio 17 2022', 'Visual Studio 18 2026')
+    if ($RequestedGenerator -and $RequestedGenerator -cnotin $allowed) {
+        throw 'Unsupported platform generator; only Visual Studio 2022 or 2026 is approved.'
+    }
+    if ($Target -ceq 'arm64' -and $Scope.build_lane -ceq 'arm64_native_source_build') {
+        if (-not $RequestedGenerator) {
+            throw 'ARM64 native Build requires an explicit NativeGenerator matching the installed Visual Studio 2022 or 2026 ARM64 toolchain.'
+        }
+        return $RequestedGenerator
+    }
+    $pinned = if ($Target -ceq 'mainstream_x64') { 'Visual Studio 18 2026' } else { 'Visual Studio 17 2022' }
+    if ($RequestedGenerator -and $RequestedGenerator -cne $pinned) {
+        throw 'The existing mainstream and cross-build lanes keep their pinned Visual Studio generator.'
+    }
+    return $pinned
+}
+
 function Assert-YimeCoreNativeGo {
-    $target = @(& go env GOOS GOARCH)
+    param([ValidateSet('mainstream_x64','arm64')][string]$ExperimentTarget, [string]$GoExecutable = 'go')
+    if ($ExperimentTarget -ieq 'arm64') { $ExperimentTarget = 'arm64' }
+    if ($ExperimentTarget) {
+        $scope = Get-YimeCoreExperimentBuildScope $ExperimentTarget
+        if ($ExperimentTarget -ieq 'arm64') {
+            if ($scope.build_lane -cne 'arm64_native_source_build') {
+                throw 'ARM64 Go execution requires the identified native ARM64 host, not the cross-build lane.'
+            }
+            if (-not [IO.Path]::IsPathRooted($GoExecutable) -or -not (Test-Path -LiteralPath $GoExecutable -PathType Leaf)) {
+                throw 'ARM64 Go execution requires an explicit absolute executable path.'
+            }
+            $cursor = [IO.Path]::GetFullPath($GoExecutable)
+            while ($cursor) {
+                if ((Get-Item -LiteralPath $cursor -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) {
+                    throw 'The ARM64 Go executable must not traverse a symlink or junction.'
+                }
+                $cursor = Split-Path -Parent $cursor
+            }
+            # Do not infer the executable architecture from processMachine=0 or inherited environment labels.
+            $stream = [IO.File]::OpenRead($GoExecutable)
+            $reader = [IO.BinaryReader]::new($stream)
+            try {
+                if ($stream.Length -lt 64 -or $reader.ReadUInt16() -ne 0x5a4d) { throw 'Go executable has no valid DOS header.' }
+                $stream.Position = 0x3c
+                $peOffset = $reader.ReadUInt32()
+                if ($peOffset -lt 64 -or [uint64]$peOffset + 6 -gt [uint64]$stream.Length) { throw 'Go executable has no valid PE offset.' }
+                $stream.Position = $peOffset
+                if ($reader.ReadUInt32() -ne 0x00004550 -or $reader.ReadUInt16() -ne 0xaa64) {
+                    throw 'The ARM64 Go executable must have PE machine 0xAA64.'
+                }
+            } finally { $reader.Dispose() }
+            $target = @(& $GoExecutable env GOOS GOARCH GOHOSTOS GOHOSTARCH)
+            if ($LASTEXITCODE -ne 0 -or ($target -join '|') -cne 'windows|arm64|windows|arm64') {
+                throw 'ARM64 admission/build requires native windows/arm64 Go with windows/arm64 target.'
+            }
+            return
+        }
+    }
+    $target = @(& $GoExecutable env GOOS GOARCH)
     if ($LASTEXITCODE -ne 0 -or $target.Count -ne 2 -or $target[0] -ne 'windows' -or $target[1] -ne 'amd64') {
         throw 'The shared YimeCore runtime/Broker must remain windows/amd64. Resumed x86 applies only to the Win32 TSF surface, not a second Go core.'
     }

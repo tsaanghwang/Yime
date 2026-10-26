@@ -1,0 +1,25 @@
+{
+  "schema_version": "yimecore-pr78-ci-workflow-current-hash-v1",
+  "observed_at": "2026-10-26T16:42:04.093Z",
+  "source_path": "C:/Users/tsaan/.codex/worktrees/pr78-conflict-review/Yime/.github/workflows/ci.yaml",
+  "path_in_worktree": ".github/workflows/ci.yaml",
+  "bytes": 15323,
+  "sha256": "8aebc307a12d8a9b29f5925ed66ee327b14e83cc9d8a73841251211eb489f552",
+  "evidence_kind": "Current working-source hash observation; workflow contents not copied into this evidence directory.",
+  "job": "simple-installer",
+  "static_observations": {
+    "uses": "actions/setup-go@v6",
+    "go_version": "1.26.4",
+    "cache": false,
+    "matched_source_lines": [
+      310,
+      312,
+      313
+    ]
+  },
+  "included_in_final_runner_working_patch_inputs": false,
+  "local_runtime_test_validation_for_this_workflow": false,
+  "remote_ci_status": "PENDING",
+  "boundary": "The local source tests used Go 1.25.14 ARM64. This separate workflow hash does not claim that the Go 1.26.4 CI job has executed.",
+  "local_static_contract_test_receipt": "goenv-isolation/workflow-contract-tool-transcript.json"
+}

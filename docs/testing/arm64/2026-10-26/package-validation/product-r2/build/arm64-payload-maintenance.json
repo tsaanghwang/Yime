@@ -1,0 +1,25 @@
+﻿{
+    "schema_version":  "yime-arm64-payload-maintenance-v1",
+    "passed":  true,
+    "failure":  null,
+    "package_manifest_sha256":  "2615facbb83553e5a49cf2d7a6730bb51dc17e25dba9ef8e2d12fe3bec2543d1",
+    "fixture_root":  "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\maintenance-50f4eea0",
+    "checks":  [
+                   "Other product ownership is preserved",
+                   "Unowned directory is preserved",
+                   "Packaged private font loads in this test process",
+                   "Private-font occupancy stops replacement",
+                   "Owned fixture uninstall removes its payload",
+                   "Reinstall restores every declared payload file and hash",
+                   "Peer fixture bytes are unchanged",
+                   "Unowned fixture bytes remain",
+                   "Interrupted copy fails",
+                   "Interrupted copy retains ownership for repair",
+                   "Interrupted fixture can be uninstalled",
+                   "Reinstalled fixture can be uninstalled"
+               ],
+    "installed":  false,
+    "registration_executed":  false,
+    "peer_is_synthetic":  true,
+    "private_font_process_only":  true
+}

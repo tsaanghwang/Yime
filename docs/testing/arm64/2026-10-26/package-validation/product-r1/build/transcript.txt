@@ -1,0 +1,317 @@
+**********************
+PowerShell transcript start
+Start time: 20261026201908
+Username: HUASHUONOTEBOOK\tsaan
+RunAs User: HUASHUONOTEBOOK\tsaan
+Configuration Name: 
+Machine: HUASHUONOTEBOOK (Microsoft Windows NT 10.0.28000.0)
+Host Application: C:\Users\tsaan\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\dev\Yime\tools\powershell\preflight.ps1
+Process ID: 17252
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.28000
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.28000.
+-- The CXX compiler identification is MSVC 19.44.35229.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostarm64/arm64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (3.3s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-package-20261026-201907-1d87e4d7/native-arm64
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  BrokerBridgeTests.cpp
+  RegisteredHostTests.cpp
+  FocusCancellationTests.cpp
+  ContractTests.cpp
+  RegistrationTool.cpp
+  BrokerEndpoint.cpp
+  TsfCompositionTests.cpp
+  BrokerClient.cpp
+  BrokerClient.cpp
+  CompositionEditSession.cpp
+  ExperimentSettings.cpp
+  RegistrationQueryTests.cpp
+  ExperimentSettings.cpp
+  BrokerClient.cpp
+  正在生成代码...
+  YimeTextServiceRegistration.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-arm64\Release\YimeTextServiceRegistration.exe
+  YimeFocusCancellationTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-arm64\Release\YimeFocusCancellationTests.exe
+  ExperimentSettings.cpp
+  CandidateListUIElement.cpp
+  正在生成代码...
+  正在生成代码...
+  YimeRegistrationQueryTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-arm64\Release\YimeRegistrationQueryTests.exe
+  BrokerEndpoint.cpp
+  CandidatePopup.cpp
+  CandidateListUIElement.cpp
+  CompositionEditSession.cpp
+  CandidatePopup.cpp
+  KeyContract.cpp
+  DllEntry.cpp
+  SurfaceSession.cpp
+  CompositionEditSession.cpp
+  ExperimentSettings.cpp
+  正在生成代码...
+  YimeRegisteredHostTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-arm64\Release\YimeRegisteredHostTests.exe
+  ExperimentSettings.cpp
+  YimeTsfCompositionTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-arm64\Release\YimeTsfCompositionTests.exe
+  KeyContract.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  LanguageBarItem.cpp
+  OutputTransform.cpp
+  YimeBrokerBridgeTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-arm64\Release\YimeBrokerBridgeTests.exe
+  OutputTransform.cpp
+  PunctuationPalette.cpp
+  PunctuationPalette.cpp
+  SurfaceSession.cpp
+  正在生成代码...
+  TextService.cpp
+  正在生成代码...
+  YimeTextServiceContractTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-arm64\Release\YimeTextServiceContractTests.exe
+    正在创建库 C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-package-20261026-201907-1d87e4d7/native-arm64/Release/YimeTextServiceExperiment.lib 和对象 C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-package-20261026-201907-1d87e4d7/native-arm64/Release/YimeTextServiceExperiment.exp
+  YimeTextServiceExperiment.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-arm64\Release\YimeTextServiceExperiment.dll
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.28000.
+-- The CXX compiler identification is MSVC 19.44.35229.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostarm64/x86/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (3.5s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-package-20261026-201907-1d87e4d7/native-x86
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  ContractTests.cpp
+  TsfCompositionTests.cpp
+  RegistrationTool.cpp
+  FocusCancellationTests.cpp
+  BrokerEndpoint.cpp
+  RegisteredHostTests.cpp
+  BrokerBridgeTests.cpp
+  BrokerClient.cpp
+  BrokerClient.cpp
+  RegistrationQueryTests.cpp
+  CompositionEditSession.cpp
+  ExperimentSettings.cpp
+  ExperimentSettings.cpp
+  BrokerClient.cpp
+  正在生成代码...
+  YimeTextServiceRegistration.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x86\Release\YimeTextServiceRegistration.exe
+  YimeFocusCancellationTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x86\Release\YimeFocusCancellationTests.exe
+  CandidateListUIElement.cpp
+  YimeRegistrationQueryTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x86\Release\YimeRegistrationQueryTests.exe
+  ExperimentSettings.cpp
+  正在生成代码...
+  正在生成代码...
+  CandidatePopup.cpp
+  BrokerEndpoint.cpp
+  CandidateListUIElement.cpp
+  CompositionEditSession.cpp
+  CandidatePopup.cpp
+  DllEntry.cpp
+  YimeRegisteredHostTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x86\Release\YimeRegisteredHostTests.exe
+  KeyContract.cpp
+  YimeTsfCompositionTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x86\Release\YimeTsfCompositionTests.exe
+  SurfaceSession.cpp
+  ExperimentSettings.cpp
+  CompositionEditSession.cpp
+  正在生成代码...
+  ExperimentSettings.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  YimeBrokerBridgeTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x86\Release\YimeBrokerBridgeTests.exe
+  OutputTransform.cpp
+  PunctuationPalette.cpp
+  OutputTransform.cpp
+  SurfaceSession.cpp
+  PunctuationPalette.cpp
+  正在生成代码...
+  TextService.cpp
+  正在生成代码...
+  YimeTextServiceContractTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x86\Release\YimeTextServiceContractTests.exe
+    正在创建库 C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-package-20261026-201907-1d87e4d7/native-x86/Release/YimeTextServiceExperiment.lib 和对象 C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-package-20261026-201907-1d87e4d7/native-x86/Release/YimeTextServiceExperiment.exp
+  YimeTextServiceExperiment.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x86\Release\YimeTextServiceExperiment.dll
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.28000.
+-- The CXX compiler identification is MSVC 19.44.35229.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostarm64/x64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (2.6s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-package-20261026-201907-1d87e4d7/native-x64-test
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  ContractTests.cpp
+  RegistrationTool.cpp
+  RegisteredHostTests.cpp
+  FocusCancellationTests.cpp
+  BrokerEndpoint.cpp
+  RegistrationQueryTests.cpp
+  TsfCompositionTests.cpp
+  BrokerBridgeTests.cpp
+  BrokerClient.cpp
+  BrokerClient.cpp
+  CompositionEditSession.cpp
+  ExperimentSettings.cpp
+  ExperimentSettings.cpp
+  BrokerClient.cpp
+  正在生成代码...
+  YimeTextServiceRegistration.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x64-test\Release\YimeTextServiceRegistration.exe
+  YimeRegistrationQueryTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x64-test\Release\YimeRegistrationQueryTests.exe
+  YimeFocusCancellationTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x64-test\Release\YimeFocusCancellationTests.exe
+  CandidateListUIElement.cpp
+  ExperimentSettings.cpp
+  正在生成代码...
+  正在生成代码...
+  CandidatePopup.cpp
+  BrokerEndpoint.cpp
+  CandidateListUIElement.cpp
+  CompositionEditSession.cpp
+  CandidatePopup.cpp
+  KeyContract.cpp
+  DllEntry.cpp
+  SurfaceSession.cpp
+  CompositionEditSession.cpp
+  ExperimentSettings.cpp
+  YimeRegisteredHostTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x64-test\Release\YimeRegisteredHostTests.exe
+  正在生成代码...
+  YimeTsfCompositionTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x64-test\Release\YimeTsfCompositionTests.exe
+  ExperimentSettings.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  OutputTransform.cpp
+  YimeBrokerBridgeTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x64-test\Release\YimeBrokerBridgeTests.exe
+  PunctuationPalette.cpp
+  OutputTransform.cpp
+  SurfaceSession.cpp
+  PunctuationPalette.cpp
+  正在生成代码...
+  TextService.cpp
+  正在生成代码...
+  YimeTextServiceContractTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x64-test\Release\YimeTextServiceContractTests.exe
+    正在创建库 C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-package-20261026-201907-1d87e4d7/native-x64-test/Release/YimeTextServiceExperiment.lib 和对象 C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-package-20261026-201907-1d87e4d7/native-x64-test/Release/YimeTextServiceExperiment.exp
+  YimeTextServiceExperiment.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-x64-test\Release\YimeTextServiceExperiment.dll
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.28000.
+-- The CXX compiler identification is MSVC 19.44.35229.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostarm64/arm64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (2.7s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-package-20261026-201907-1d87e4d7/native-arm64ec
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  BrokerEndpoint.cpp
+  BrokerClient.cpp
+  CandidateListUIElement.cpp
+  CandidatePopup.cpp
+  CompositionEditSession.cpp
+  DllEntry.cpp
+  ExperimentSettings.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  OutputTransform.cpp
+  PunctuationPalette.cpp
+  SurfaceSession.cpp
+  TextService.cpp
+  正在生成代码...
+    正在创建库 C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-package-20261026-201907-1d87e4d7/native-arm64ec/Release/YimeTextServiceExperiment.lib 和对象 C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-package-20261026-201907-1d87e4d7/native-arm64ec/Release/YimeTextServiceExperiment.exp
+  YimeTextServiceExperiment.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\native-arm64ec\Release\YimeTextServiceExperiment.dll
+YimeTextService E6-B1 contracts passed
+focus cancellation isolated mock checks=32 failures=0
+YimeTextService E6-B1 contracts passed
+focus cancellation isolated mock checks=32 failures=0
+YimeTextService E6-B1 contracts passed
+focus cancellation isolated mock checks=32 failures=0
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/settings-tool	2.797s
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-independence-audit	4.770s
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-trial-runtime	1.032s
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore	2.599s
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker	4.679s
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PASS: isolated speech export-product only; no installed or daily-use acceptance inferred.
+
+Package ready: C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-201907-1d87e4d7\YimeCore-ARM64
+
+**********************
+PowerShell transcript end
+End time: 20261026202157
+**********************

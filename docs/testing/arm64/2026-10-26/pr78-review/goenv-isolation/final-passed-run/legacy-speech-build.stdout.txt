@@ -1,0 +1,1 @@
+Speech build fixture: 21 checks, 0 failed; C:\Users\tsaan\.codex\worktrees\pr78-conflict-review\Yime\.tmp\yimecore-experiment\speech-build-contract-goenv-4f2faae6

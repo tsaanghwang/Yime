@@ -1,0 +1,6 @@
+{
+  "passed": false,
+  "stage": "protection_baseline",
+  "failure": "Read-YimeCoreSystemKey unavailable because observation helper not imported",
+  "native_executables_started": false
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "yime.arm64.live-host-observation.v1",
+  "date": "2026-10-26",
+  "host": "HUASHUONOTEBOOK",
+  "product": "YimeCore",
+  "delivery": "test-arm64-proart-20261026-r2",
+  "application": "Windows Notepad 11.2607.14.0 ARM64",
+  "pid": 29208,
+  "architecture_evidence": "host-identity.json",
+  "input_driver": "Computer Use sky.press_key / sky.click in the real installed Notepad process; synthetic OS keyboard and mouse input, not physical keyboard acceptance",
+  "profile_selection": "User selected 音元拼音 before testing; the current installed product DLL was independently observed in PID 29208 before input",
+  "loaded_dll": "C:\\Program Files\\YimeCore\\arm64\\YimeTextServiceExperiment.dll",
+  "loaded_dll_sha256": "f84a30f265e5c4e7d09d7588b06a9d95180e653b44697a23d010931490ab803b",
+  "mode_scope": "Current active profile mode; no mode change or real user settings read. This is not three-mode live-app acceptance.",
+  "observation_method": "Native screenshots inspected after each input action. Notepad accessibility text was unavailable. Screenshot metadata captured_at records archive time after capture, not a precise input-event timestamp.",
+  "checks": [
+    {"name": "composition_and_shift_labels", "result": "PASS", "input": "2 then j r u", "observed": "Underlined 2jru preedit with Chinese candidates anchored below it; candidate ordinals carry Shift markers", "evidence": ["01-digit-composition.json", "02-four-code-composition.json"]},
+    {"name": "shift_ordinal_commit", "result": "PASS", "input": "Shift+1", "observed": "秋 committed; popup closed; status showed one character", "evidence": ["03-shift1-commit.json"]},
+    {"name": "escape_cancels_only_preedit", "result": "PASS", "input": "2 then Escape", "observed": "秋2 became 秋; committed text retained and popup closed", "evidence": ["04-before-escape.json", "05-escape-preserved-commit.json"]},
+    {"name": "focus_loss_cancels_only_preedit", "result": "PASS", "input": "2; launch a new Explorer window; return to Notepad without sending Escape or a selection key", "observed": "秋2 became 秋; Explorer was foreground PID 6864 during the switch; committed text retained and popup closed", "evidence": ["07-before-new-window-focus-loss.json", "08-focus-loss-window-observation.json", "09-focus-loss-preserved-commit.json"]},
+    {"name": "invalid_digit_continuation_does_not_select", "result": "OBSERVED_EXPECTED_REJECTION", "input": "2 then another bare 2", "observed": "The preedit remained 2 and candidate two was not committed. Standard dictionaries have no 22 prefix; SurfaceSession.cpp rejects an empty-candidate continuation and retains the old composition", "evidence": ["10-repeated-bare2-no-selection.json"]},
+    {"name": "backspace_edits_only_preedit", "result": "PASS", "input": "Backspace while preedit is 2", "observed": "Preedit and popup cleared; 秋 retained", "evidence": ["11-backspace-preserved-commit.json"]},
+    {"name": "mouse_candidate_commit", "result": "PASS", "input": "2 then click visible first candidate 其", "observed": "Document became 秋其, two characters; popup closed", "evidence": ["12-mouse-candidate-commit.json"]},
+    {"name": "bare_digit_with_candidates_extends_valid_code", "result": "PASS", "input": "2jru then bare 2", "observed": "Preedit extended to 2jru2; no candidate committed; 秋千 appeared among candidates", "evidence": ["13-before-valid-bare-digit.json", "14-bare-digit-extends-composition.json"]},
+    {"name": "word_composition_and_space_commit", "result": "PASS", "input": "Continue j f a, then Space", "observed": "2jru2jfa produced 秋千; Space committed it, leaving 秋其秋千 with four characters and no popup", "evidence": ["15-word-composition.json", "16-space-word-commit.json"]}
+  ],
+  "display_finding": {
+    "status": "OPEN",
+    "observed": "Candidate code annotations displayed ellipses, for example 2j... for a 2jru candidate, despite free screen space",
+    "source_evidence": "CandidateListUIElement.cpp:54-65 retains complete codes; CandidatePopup.cpp:274-311 measures full rows; ContractTests.cpp:963-970 requires long annotations to widen the popup; CandidatePopup.cpp:425-427 uses DT_END_ELLIPSIS",
+    "hypothesis_not_proven": "WS_BORDER width is not visibly added to the measured outer-window width; a client-area width mismatch may clip the longest row. No actual window geometry was measured in this run.",
+    "scope": "The drawing code predates ARM work. This run does not establish an ARM-specific defect or an intentional compact-display policy."
+  },
+  "automation_limitations": [
+    "Attempting to activate the previously minimized Explorer window returned a stale user-input observation error; refreshing it returned a minimized-window error. A new Explorer window was used successfully. This is not counted as a product focus-loss failure.",
+    "Initial packaged Notepad launch did not immediately yield a targetable window; list_windows identified the actual MSIX window. Screenshots were verified as Notepad before every test input."
+  ],
+  "final_automated_document": "秋其秋千",
+  "final_automated_character_count": 4,
+  "physical_keyboard_result": "PENDING_USER_CONFIRMATION",
+  "reboot_acceptance": "NOT_RUN",
+  "other_live_app_architectures": "NOT_RUN",
+  "daily_use_stability": "NOT_SEALED"
+}

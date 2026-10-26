@@ -1,0 +1,166 @@
+{
+  "schema_version": "yimecore-arm64-package-direct-tsf-v1",
+  "passed": true,
+  "failure": null,
+  "protected_registration_unchanged": true,
+  "runs": [
+    {
+      "mode": "full",
+      "architecture": "arm64",
+      "passed": true,
+      "tool_sha256": "c223873ff9310d14144635d08d5360c1c119f6f2ec0bcfcd610ca824904e1564",
+      "dll_sha256": "f84a30f265e5c4e7d09d7588b06a9d95180e653b44697a23d010931490ab803b",
+      "index_sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1"
+    },
+    {
+      "mode": "variable",
+      "architecture": "arm64",
+      "passed": true,
+      "tool_sha256": "c223873ff9310d14144635d08d5360c1c119f6f2ec0bcfcd610ca824904e1564",
+      "dll_sha256": "f84a30f265e5c4e7d09d7588b06a9d95180e653b44697a23d010931490ab803b",
+      "index_sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada"
+    },
+    {
+      "mode": "shorthand",
+      "architecture": "arm64",
+      "passed": true,
+      "tool_sha256": "c223873ff9310d14144635d08d5360c1c119f6f2ec0bcfcd610ca824904e1564",
+      "dll_sha256": "f84a30f265e5c4e7d09d7588b06a9d95180e653b44697a23d010931490ab803b",
+      "index_sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec"
+    },
+    {
+      "mode": "full",
+      "architecture": "x64",
+      "passed": true,
+      "tool_sha256": "5b45f73818d6f007bdf3cca4813ef4d5894bc18e2e1432e8ade7b573f964ae63",
+      "dll_sha256": "f84a30f265e5c4e7d09d7588b06a9d95180e653b44697a23d010931490ab803b",
+      "index_sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1"
+    },
+    {
+      "mode": "variable",
+      "architecture": "x64",
+      "passed": true,
+      "tool_sha256": "5b45f73818d6f007bdf3cca4813ef4d5894bc18e2e1432e8ade7b573f964ae63",
+      "dll_sha256": "f84a30f265e5c4e7d09d7588b06a9d95180e653b44697a23d010931490ab803b",
+      "index_sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada"
+    },
+    {
+      "mode": "shorthand",
+      "architecture": "x64",
+      "passed": true,
+      "tool_sha256": "5b45f73818d6f007bdf3cca4813ef4d5894bc18e2e1432e8ade7b573f964ae63",
+      "dll_sha256": "f84a30f265e5c4e7d09d7588b06a9d95180e653b44697a23d010931490ab803b",
+      "index_sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec"
+    },
+    {
+      "mode": "full",
+      "architecture": "x86",
+      "passed": true,
+      "tool_sha256": "5e4df6260e09f802b6278c10d844878b69bb7b806b712fccae3e9e54ee042ac8",
+      "dll_sha256": "cb5e0238992e57191936f71773afe64b2bd5bb8c0846cfe532ba0b3eb4f533a0",
+      "index_sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1"
+    },
+    {
+      "mode": "variable",
+      "architecture": "x86",
+      "passed": true,
+      "tool_sha256": "5e4df6260e09f802b6278c10d844878b69bb7b806b712fccae3e9e54ee042ac8",
+      "dll_sha256": "cb5e0238992e57191936f71773afe64b2bd5bb8c0846cfe532ba0b3eb4f533a0",
+      "index_sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada"
+    },
+    {
+      "mode": "shorthand",
+      "architecture": "x86",
+      "passed": true,
+      "tool_sha256": "5e4df6260e09f802b6278c10d844878b69bb7b806b712fccae3e9e54ee042ac8",
+      "dll_sha256": "cb5e0238992e57191936f71773afe64b2bd5bb8c0846cfe532ba0b3eb4f533a0",
+      "index_sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec"
+    }
+  ],
+  "brokers": [
+    {
+      "mode": "full",
+      "architecture": "arm64",
+      "pid": 10352,
+      "image": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\YimeCore-ARM64\\payload\\bin\\YimeBroker.exe",
+      "started_at_utc": "2026-10-26T12:43:51.8197669Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.Arm64Package.3c86df6e3f434da79fe96b9d9d083c7b",
+      "stopped": true
+    },
+    {
+      "mode": "variable",
+      "architecture": "arm64",
+      "pid": 10672,
+      "image": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\YimeCore-ARM64\\payload\\bin\\YimeBroker.exe",
+      "started_at_utc": "2026-10-26T12:44:19.1481324Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.Arm64Package.8d88dde0791a4871b1c2c5d85fe1f9f7",
+      "stopped": true
+    },
+    {
+      "mode": "shorthand",
+      "architecture": "arm64",
+      "pid": 1324,
+      "image": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\YimeCore-ARM64\\payload\\bin\\YimeBroker.exe",
+      "started_at_utc": "2026-10-26T12:44:45.2152144Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.Arm64Package.105bce63e8944767812a19dbe1b02882",
+      "stopped": true
+    },
+    {
+      "mode": "full",
+      "architecture": "x64",
+      "pid": 17852,
+      "image": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\YimeCore-ARM64\\payload\\bin\\YimeBroker.exe",
+      "started_at_utc": "2026-10-26T12:45:11.3323404Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.Arm64Package.b8d5d5ba12b54a228e3a2b68484c0b50",
+      "stopped": true
+    },
+    {
+      "mode": "variable",
+      "architecture": "x64",
+      "pid": 14808,
+      "image": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\YimeCore-ARM64\\payload\\bin\\YimeBroker.exe",
+      "started_at_utc": "2026-10-26T12:45:38.8222197Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.Arm64Package.9068d8387cf043bf9819aabb5abcb1c4",
+      "stopped": true
+    },
+    {
+      "mode": "shorthand",
+      "architecture": "x64",
+      "pid": 13328,
+      "image": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\YimeCore-ARM64\\payload\\bin\\YimeBroker.exe",
+      "started_at_utc": "2026-10-26T12:46:05.3522237Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.Arm64Package.cfd36b1685924e8b87176ea408eabea4",
+      "stopped": true
+    },
+    {
+      "mode": "full",
+      "architecture": "x86",
+      "pid": 35900,
+      "image": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\YimeCore-ARM64\\payload\\bin\\YimeBroker.exe",
+      "started_at_utc": "2026-10-26T12:46:32.0289786Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.Arm64Package.03603d31cbc345c7845d85e40ac2f01a",
+      "stopped": true
+    },
+    {
+      "mode": "variable",
+      "architecture": "x86",
+      "pid": 27420,
+      "image": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\YimeCore-ARM64\\payload\\bin\\YimeBroker.exe",
+      "started_at_utc": "2026-10-26T12:47:02.5136530Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.Arm64Package.c761c88b223c4e25a8996648448abbfd",
+      "stopped": true
+    },
+    {
+      "mode": "shorthand",
+      "architecture": "x86",
+      "pid": 32988,
+      "image": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\YimeCore-ARM64\\payload\\bin\\YimeBroker.exe",
+      "started_at_utc": "2026-10-26T12:47:29.8915480Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.Arm64Package.d5288fd1a4a84c0b8c864dbf18c152fd",
+      "stopped": true
+    }
+  ],
+  "installed": false,
+  "registered_host_acceptance": null,
+  "physical_acceptance": false
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": "yimecore-arm64-package-publication-v1",
+  "published_at": "2026-10-26T13:12:46.688Z",
+  "repository": "tsaanghwang/Yime",
+  "pull_request": "https://github.com/tsaanghwang/Yime/pull/78",
+  "branch": "codex/arm64-initial-evidence-20261026",
+  "local_commit": "f855867d2cd048de1b74bc97ba92921b481fc82e",
+  "local_parent": "d6a03c9e31cecb2d973c94252a4171d19755dbb7",
+  "remote_commit": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+  "remote_parent": "5c87f5209e96e104eddd37212e0d22bc0dc6ac76",
+  "tree": "71fef246d310baf49c7b37f5819aca13c5642811",
+  "tree_parity_verified": true,
+  "remote_commit_tree_and_parent_verified": true,
+  "expected_previous_head": "5c87f5209e96e104eddd37212e0d22bc0dc6ac76",
+  "force": false,
+  "changed_paths": 294,
+  "committed_blob_bytes": 2456104,
+  "tree_batches": 9,
+  "blob_sha_and_utf8_roundtrip_verified": true,
+  "local_refs_changed": false,
+  "local_worktree_status_after": "",
+  "pull_request_still_draft": true,
+  "pull_request_body_changed_by_this_publication": false,
+  "merge_performed": false,
+  "commit_metadata_note": "Git data connector assigns new commit metadata; the complete tree is identical to the local implementation commit.",
+  "workflow_runs_at_publication": [
+    {
+      "id": 40328189734,
+      "name": "Touch terminal prototype",
+      "event": "push",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189734"
+    },
+    {
+      "id": 40328189798,
+      "name": "Build",
+      "event": "push",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/40328189798"
+    }
+  ]
+}

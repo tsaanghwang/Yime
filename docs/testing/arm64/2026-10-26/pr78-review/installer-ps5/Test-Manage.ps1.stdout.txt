@@ -1,0 +1,10 @@
+Install completed: rime-pime
+Install completed: yimecore
+Install completed: yimecore
+Install completed: rime-pime
+Uninstall completed: rime-pime
+Uninstall completed: yimecore
+Uninstall completed: yimecore
+Uninstall completed: rime-pime
+Install completed: yimecore
+PASS: single/both dispatch, all-package precheck, stop on failure, architecture mismatch before any setup, ARM64 core-only dispatch. Synthetic packages and mocked OS query only.

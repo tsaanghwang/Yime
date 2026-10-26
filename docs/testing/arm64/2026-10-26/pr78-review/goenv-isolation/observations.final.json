@@ -1,0 +1,144 @@
+{
+  "schema_version": "yimecore-pr78-goenv-isolation-final-observation-v1",
+  "archive_status": "COMPLETE_FOR_CURRENT_GOENV_REVIEW_BATCH",
+  "reproduction_and_r2_evidence_summary": "goenv-isolation/observations.stage1.json",
+  "prior_index": "goenv-isolation/evidence-index.draft.json",
+  "published_base_commit": "35cc358a0fbc9464e72ca0bd8cd2010d20ee1a5d",
+  "local_base_commit": "bb35633e211bfdd2c8a282aec9b19915b4737866",
+  "first_failed_run": {
+    "summary": "goenv-isolation/first-failed-run/summary.json",
+    "passed": false,
+    "preserved_failures": [
+      {
+        "test": "arm64-admission-and-go-environment",
+        "exit_code": 1,
+        "stderr": "ARM64 Go environment regression: actual Go sees GOENV off",
+        "classification": "Incorrect expectation in the newly added GOENV regression, according to the main-thread diagnosis; preserved as a failed test run."
+      },
+      {
+        "test": "development-scope",
+        "exit_code": 1,
+        "classification": "The runner mistakenly selected the fixed AMD64-only development-scope lane on the ARM host. Its host rejection is preserved and is not an ARM product input failure."
+      }
+    ]
+  },
+  "second_failed_run": {
+    "summary": "goenv-isolation/second-failed-run/summary.json",
+    "passed": false,
+    "test": "arm64-admission-and-go-environment",
+    "exit_code": 1,
+    "stderr": "ARM64 Go environment regression: restore absent or nonempty caller flags exactly",
+    "classification": "The new test compared an ordinary PowerShell null input with the resulting empty string. A subsequent separate process-environment probe also confirmed that restoring a genuinely absent variable produced an empty present variable; both the test setup and helper were corrected before the final run.",
+    "followup_probe": "goenv-isolation/null-restoration-probe-transcript.json"
+  },
+  "final_passed_run": {
+    "summary": "goenv-isolation/final-passed-run/summary.json",
+    "passed": true,
+    "all_command_exit_codes_zero": true,
+    "checks": {
+      "go_environment": 35,
+      "arm64_speech_admission": 53,
+      "arm64_build_scope": 21,
+      "platform_contract": 24,
+      "legacy_speech_build": 21
+    },
+    "counting_boundary": "ARM64 scope checks also appear inside the platform invocation; no deduplicated grand total is claimed.",
+    "source_unchanged_during_tests": true,
+    "working_patch_inputs": {
+      "tools/yimecore/arm64-go-environment.ps1": "c177377c78895aa0df845d2ede7e148526c20ce8992b5d2a4f4a74f8d0c62ac1",
+      "tools/yimecore/build-arm64-product.ps1": "468a76a4f295952e4712468ce9be0acf2b1f794ad24929620a4f73f0cf9e626f",
+      "tools/yimecore/development-scope.ps1": "f22791b3eccc8d2820a7c3456c7947ae9a7992d70d60019d254126e2dee83472",
+      "tools/yimecore/test-arm64-build-scope.ps1": "b0c9cf4700fd3a60311abbfd6a2af3f91d1434bd0438be8df97e1db9e8da479e",
+      "tools/yimecore/test-arm64-go-environment.ps1": "e09f531c2ba66dee1c2821cd9549ebbd3af4da0adb0fda7d1736482a34a49415",
+      "tools/yimecore/test-arm64-speech-admission.ps1": "278abffff00d2922486571d6e929cccfee2e194b01f8ba890daa8dfe82134391",
+      "tools/yimecore/test-local-product-speech-build.ps1": "caa397c507f9fb4fc4242c42e09b842110f278de16ea047131b4832a4a792849",
+      "tools/yimecore/test-platform-experiment.ps1": "01c04f555e81e657c9b2ac3895f9e6d13a073aadefcd8a4b7942b70f660163fb"
+    },
+    "source_hashes_match_current_worktree": [
+      {
+        "path": "tools/yimecore/arm64-go-environment.ps1",
+        "recorded_sha256": "c177377c78895aa0df845d2ede7e148526c20ce8992b5d2a4f4a74f8d0c62ac1",
+        "current_sha256": "c177377c78895aa0df845d2ede7e148526c20ce8992b5d2a4f4a74f8d0c62ac1",
+        "match": true
+      },
+      {
+        "path": "tools/yimecore/build-arm64-product.ps1",
+        "recorded_sha256": "468a76a4f295952e4712468ce9be0acf2b1f794ad24929620a4f73f0cf9e626f",
+        "current_sha256": "468a76a4f295952e4712468ce9be0acf2b1f794ad24929620a4f73f0cf9e626f",
+        "match": true
+      },
+      {
+        "path": "tools/yimecore/development-scope.ps1",
+        "recorded_sha256": "f22791b3eccc8d2820a7c3456c7947ae9a7992d70d60019d254126e2dee83472",
+        "current_sha256": "f22791b3eccc8d2820a7c3456c7947ae9a7992d70d60019d254126e2dee83472",
+        "match": true
+      },
+      {
+        "path": "tools/yimecore/test-arm64-build-scope.ps1",
+        "recorded_sha256": "b0c9cf4700fd3a60311abbfd6a2af3f91d1434bd0438be8df97e1db9e8da479e",
+        "current_sha256": "b0c9cf4700fd3a60311abbfd6a2af3f91d1434bd0438be8df97e1db9e8da479e",
+        "match": true
+      },
+      {
+        "path": "tools/yimecore/test-arm64-go-environment.ps1",
+        "recorded_sha256": "e09f531c2ba66dee1c2821cd9549ebbd3af4da0adb0fda7d1736482a34a49415",
+        "current_sha256": "e09f531c2ba66dee1c2821cd9549ebbd3af4da0adb0fda7d1736482a34a49415",
+        "match": true
+      },
+      {
+        "path": "tools/yimecore/test-arm64-speech-admission.ps1",
+        "recorded_sha256": "278abffff00d2922486571d6e929cccfee2e194b01f8ba890daa8dfe82134391",
+        "current_sha256": "278abffff00d2922486571d6e929cccfee2e194b01f8ba890daa8dfe82134391",
+        "match": true
+      },
+      {
+        "path": "tools/yimecore/test-local-product-speech-build.ps1",
+        "recorded_sha256": "caa397c507f9fb4fc4242c42e09b842110f278de16ea047131b4832a4a792849",
+        "current_sha256": "caa397c507f9fb4fc4242c42e09b842110f278de16ea047131b4832a4a792849",
+        "match": true
+      },
+      {
+        "path": "tools/yimecore/test-platform-experiment.ps1",
+        "recorded_sha256": "01c04f555e81e657c9b2ac3895f9e6d13a073aadefcd8a4b7942b70f660163fb",
+        "current_sha256": "01c04f555e81e657c9b2ac3895f9e6d13a073aadefcd8a4b7942b70f660163fb",
+        "match": true
+      }
+    ],
+    "go_version": "go version go1.25.14 windows/arm64",
+    "repair": "The helper restores previously absent variables using PowerShell NullString semantics."
+  },
+  "runner": {
+    "path": "goenv-isolation/final-runner/run-pr78-goenv-review.py",
+    "scope": "Snapshot of the final runner only. Earlier runner versions differed and were subsequently edited; this file is not represented as the exact runner for the earlier failures."
+  },
+  "ci_workflow": {
+    "hash_observation": "goenv-isolation/ci-workflow-current-hash.json",
+    "runner_source_hash_coverage": false,
+    "remote_execution_status": "PENDING",
+    "simple_installer_explicit_go_version": "1.26.4",
+    "setup_action": "actions/setup-go@v6",
+    "cache": false,
+    "local_static_contract_tests": {
+      "exit_code": 0,
+      "tests_passed": 3,
+      "evidence": "goenv-isolation/workflow-contract-tool-transcript.json",
+      "evidence_kind": "tool-output transcription"
+    }
+  },
+  "fixed_r2_package": {
+    "build_inputs": "goenv-isolation/r2/build-inputs.json",
+    "sha256": "520ca8d3fdefd5a4482238b57a01969c3e99cfe4246ba58e0d219930ddf02204",
+    "recorded_effective_GOFLAGS": "",
+    "package_modified": false,
+    "interpretation": "The synthetic persistence counterexample does not show contamination of the pinned R2 delivery, whose effective Go environment was recorded without an overlay flag."
+  },
+  "scope": "Synthetic Go environment/admission/platform contracts; no product build, registration, installation or live input",
+  "boundaries": [
+    "All three run summaries and their explicitly named top-level stdout/stderr/parameter files are retained byte-for-byte.",
+    "No appdata, localappdata, gocache, temp, cache or synthetic fixture subtree from these test runs is copied.",
+    "The earlier minimal reproduction contains only its six expressly selected synthetic files.",
+    "The current CI hash is separate from the eight runtime source hashes recorded by the final runner.",
+    "Existing review and installed-validation indexes are preserved; this is an independent supplemental index.",
+    "No product build, installation, registration, live UI, source edit, commit or publication is performed by the archival task."
+  ]
+}

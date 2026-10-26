@@ -1,0 +1,18 @@
+{
+  "started_utc": "2026-10-26T15:36:15.599359+00:00",
+  "finished_utc": "2026-10-26T15:36:33.757884+00:00",
+  "source_commit": "2b256afdeb45795aafcf11641ba04cba149acb46",
+  "command": [
+    "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+    "test",
+    "-count=1",
+    "-json",
+    "./cmd/yime-touch-keyboard"
+  ],
+  "exit_code": 0,
+  "test_pass_events": 106,
+  "test_skip_events": 1,
+  "failed_tests": [],
+  "go_test_sha256": "2eb4daccbd3a5de6c865b6471ecc7814e078f5125b46f456ae944cd4e516f41e",
+  "scope": "Native ARM64 source regressions after merging main; disposable own-window fixtures, no real application or physical-input acceptance"
+}

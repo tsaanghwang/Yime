@@ -1,6 +1,6 @@
 # 主流 x86-64 / ARM64 平台现状与恢复记录
 
-## 当前范围与证据（2026-09-16）
+## 当前范围与证据（2026-10-26）
 
 已批准目标仍为主流 Windows x86-64、Windows ARM64，以及开发机 `MYCOMPUTER` 的 x64/x86 WOW64 表面。范围真源是 [development-scope.json](../../tools/yimecore/development-scope.json)；未列出的设备类别、云主机和硬件采购不在本轮范围内。
 
@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | 开发机 x64/x86 | `MYCOMPUTER`；当前源码构建与简版维护均有记录 | x86 是 WOW64 应用中的 TSF 表面，Runtime/Broker 为原生 x64；[x86 历史专项](YIMECORE_X86_RESUMPTION_PLAN_2026-09-04.md)与后续包分开记证 |
 | 主流 x64 | 已指定“计算机”，Intel Core i7-7820X；已有独立测试机维护与输入结果 | [简版维护记录](../../installer/simple/VALIDATION.md)覆盖其实际包和场景；源码候选包的两套产品在 Codex、记事本中重启前后输入获确认，Word 未报告，不外推为全部宿主通过 |
-| ARM64 | 尚未指定可用实机；保留当前身份交叉构建证据 | 尚无本轮完整 ARM64 安装包、原生 Runtime/Broker 运行、安装态 registered-host 或实际应用输入验收 |
+| ARM64 | 用户确认“华硕 ProArt 创 16 RTX Spark”；系统型号 ProArt P16 H7607BA，`HUASHUONOTEBOOK`；原生源码构建及隔离 Go/C++/三模式直接 TSF 通过 | [首轮记录](../testing/arm64/2026-10-26/TEST-RESULT.md)和[源码验证](../testing/arm64/2026-10-26/NATIVE-SOURCE-TEST.md)分开记证。完整 ARM64 输入法包、安装态 registered-host 和真实应用输入仍待完成 |
 
 当前安装工程为 [installer/simple](../../installer/simple/README.md)，后续交付按[当前交接](../../installer/simple/HANDOFF.md)指定的提交、通过 CI 的完整包、下载地址和 SHA-256 执行。现有验收不自动覆盖后续源码或新包；已完成阶段不因文档改写而重跑。生产数据迁移与备份恢复仍另行规划。
 
@@ -29,7 +29,7 @@ python -X utf8 tools/powershell/run_checked.py --script tools/yimecore/run-platf
 
 `Target` 可为 `mainstream_x64` 或 `arm64`。`Plan` 输出范围和机器描述，不构建；将 `Action` 改为 `Build` 才会在新的隔离目录构建源码产物，核对 PE 类型和保护快照，不执行目标 EXE、注册或安装。构建使用当前产品身份，不能执行或改名复用旧身份载荷。ARM64 使用 `-A ARM64 -DYIME_LOCAL_PRODUCT=ON` 和 `GOOS=windows GOARCH=arm64`；这些构建结果不等于 ARM64 可安装包。
 
-`Package` 当前仅接入 `mainstream_x64` 的本机产品构建器；语流准入根及摘要参数以[源码工具说明](../../tools/yimecore/README.md)和脚本契约为准。ARM64 不能用独立交叉构建清单替代完整包交付。新目标的实际验证须记录设备、Windows 版本、原生架构、硬件条件、实际宿主及包身份；ARM64 仍需先确定可用实机。
+`Package` 当前仅接入 `mainstream_x64` 的本机产品构建器；语流准入根及摘要参数以[源码工具说明](../../tools/yimecore/README.md)和脚本契约为准。ARM64 `Build` 现支持经原生 API 核验的 `HUASHUONOTEBOOK`，须显式传入 `NativeGenerator`；旧 MYCOMPUTER 交叉构建路径保留。本机已完成 27 个 ARM64 产物及隔离 Go/C++/三模式直接 TSF 验证，见[原生源码测试](../testing/arm64/2026-10-26/NATIVE-SOURCE-TEST.md)。ARM64 `Package` 仍明确拒绝，完整目标包与安装态验收尚待完成。
 
 ## 2026-09-04 恢复阶段快照
 

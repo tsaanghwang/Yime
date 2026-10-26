@@ -1,11 +1,26 @@
 cmake_minimum_required(VERSION 3.20)
 project(YimeTextServiceExperiment LANGUAGES CXX)
 
+set(YIME_ARM64X_STAGE "" CACHE STRING "Opt-in Release ARM64X stage: ARM64 or ARM64EC")
+set_property(CACHE YIME_ARM64X_STAGE PROPERTY STRINGS "" ARM64 ARM64EC)
+if(YIME_ARM64X_STAGE)
+    if(NOT YIME_ARM64X_STAGE STREQUAL "ARM64" AND NOT YIME_ARM64X_STAGE STREQUAL "ARM64EC")
+        message(FATAL_ERROR "YIME_ARM64X_STAGE must be ARM64 or ARM64EC")
+    endif()
+    if(NOT CMAKE_GENERATOR_PLATFORM STREQUAL YIME_ARM64X_STAGE)
+        message(FATAL_ERROR "ARM64X stage must match the generator platform")
+    endif()
+    # A native input response file belongs to one configuration. Do not silently
+    # combine Release native objects with a Debug EC runtime.
+    set(CMAKE_CONFIGURATION_TYPES Release CACHE STRING "ARM64X build configuration" FORCE)
+endif()
+
 option(YIME_LOCAL_PRODUCT "Build the current-PC independent product display identity" OFF)
 if(YIME_LOCAL_PRODUCT)
     if(NOT CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND
        NOT CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" AND
-       NOT CMAKE_GENERATOR_PLATFORM STREQUAL "ARM64")
+       NOT CMAKE_GENERATOR_PLATFORM STREQUAL "ARM64" AND
+       NOT (CMAKE_GENERATOR_PLATFORM STREQUAL "ARM64EC" AND YIME_ARM64X_STAGE STREQUAL "ARM64EC"))
         message(FATAL_ERROR "Current-identity TSF builds support x64, Win32 and ARM64; installation requires target-specific acceptance")
     endif()
     file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../tools/yimecore/local-product.json" YIME_PRODUCT_JSON)
@@ -149,3 +164,7 @@ target_include_directories(YimeRegisteredHostTests PRIVATE ${CMAKE_CURRENT_SOURC
     "${CMAKE_CURRENT_LIST_DIR}/../json/single_include")
 target_link_libraries(YimeRegisteredHostTests PRIVATE ole32 oleaut32 user32)
 set_property(TARGET YimeRegisteredHostTests PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
+if(YIME_ARM64X_STAGE)
+    include("${CMAKE_CURRENT_LIST_DIR}/cmake/Arm64X.cmake")
+endif()

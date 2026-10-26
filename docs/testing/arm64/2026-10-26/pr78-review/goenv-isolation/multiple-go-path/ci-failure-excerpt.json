@@ -1,0 +1,19 @@
+{
+  "schema_version": "yimecore-pr78-multiple-go-ci-failure-v1",
+  "head": "cbdf8266609decded743971bcc8edfa40773cdc0",
+  "job": {
+    "id": 121712308489,
+    "head_sha": "cbdf8266609decded743971bcc8edfa40773cdc0",
+    "name": "simple-installer",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "run_id": 40362619582,
+  "url": "https://github.com/tsaanghwang/Yime/actions/runs/40362619582/job/121712308489",
+  "source": "read_pull_request_check_diagnostics decoded log excerpt; not a complete raw log",
+  "excerpt": [
+    "2026-10-26T16:49:49.1554524Z go version go1.26.4 windows/amd64",
+    "2026-10-26T16:50:05.2839659Z The term 'C:\\hostedtoolcache\\windows\\go\\1.26.4\\x64\\bin\\go.exe C:\\hostedtoolcache\\windows\\go\\1.24.13\\x64\\bin\\go.exe' is not recognized as a name of a cmdlet, function, script file, or executable program.",
+    "2026-10-26T16:50:05.4248822Z ##[error]Process completed with exit code 1."
+  ]
+}

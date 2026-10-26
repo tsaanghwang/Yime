@@ -56,9 +56,10 @@ type installMetadata struct {
 }
 
 type peEvidence struct {
-	Path      string   `json:"path"`
-	Machine   string   `json:"machine"`
-	Libraries []string `json:"imported_libraries"`
+	Path      string          `json:"path"`
+	Machine   string          `json:"machine"`
+	Libraries []string        `json:"imported_libraries"`
+	ARM64X    *arm64xEvidence `json:"arm64x,omitempty"`
 }
 
 type auditReport struct {
@@ -195,7 +196,7 @@ func auditPackage(root string) (auditReport, error) {
 			report.fail("manifest hash mismatch for %s", relative)
 		}
 		if extension := strings.ToLower(filepath.Ext(relative)); extension == ".exe" || extension == ".dll" {
-			peItem, peErr := inspectPE(fullPath, relative)
+			peItem, peErr := inspectProductPE(fullPath, relative, manifest.PackageContract)
 			if peErr != nil {
 				report.PEArchitecturePassed = false
 				report.fail("inspect PE %s: %v", relative, peErr)
@@ -209,6 +210,12 @@ func auditPackage(root string) (auditReport, error) {
 					expected = "i386"
 				} else {
 					expected = "amd64"
+				}
+			}
+			if manifest.PackageContract == arm64InstallableContract {
+				expected = "arm64"
+				if strings.HasPrefix(strings.ToLower(filepath.ToSlash(relative)), "x86/") {
+					expected = "i386"
 				}
 			}
 			if expected != "" && peItem.Machine != expected {
@@ -230,7 +237,7 @@ func auditPackage(root string) (auditReport, error) {
 			report.fail("required independent component missing: %s", required)
 		}
 	}
-	if manifest.PackageContract == localRuntimeContract || manifest.PackageContract == localInstallableContract {
+	if manifest.PackageContract == localRuntimeContract || manifest.PackageContract == localInstallableContract || manifest.PackageContract == arm64InstallableContract {
 		if err := validateLocalContract(absoluteRoot, entries, manifest.PackageContract); err != nil {
 			report.RequiredComponentsPassed = false
 			report.fail("local runtime contract: %v", err)
@@ -386,6 +393,28 @@ func inspectPE(path, relative string) (peEvidence, error) {
 	}
 	sort.Strings(libraries)
 	return peEvidence{Path: filepath.ToSlash(relative), Machine: machineName(file.Machine), Libraries: libraries}, nil
+}
+
+func inspectProductPE(path, relative, contract string) (peEvidence, error) {
+	result, err := inspectPE(path, relative)
+	if err != nil {
+		return result, err
+	}
+	if contract == arm64InstallableContract && strings.EqualFold(filepath.ToSlash(relative), "arm64/YimeTextServiceExperiment.dll") {
+		result.ARM64X, err = inspectARM64X(path)
+		if err == nil {
+			libraries := map[string]bool{}
+			for _, name := range append(result.Libraries, result.ARM64X.ECImportedLibraries...) {
+				libraries[strings.ToLower(name)] = true
+			}
+			result.Libraries = nil
+			for name := range libraries {
+				result.Libraries = append(result.Libraries, name)
+			}
+			sort.Strings(result.Libraries)
+		}
+	}
+	return result, err
 }
 
 func importedLibraries(file *pe.File) ([]string, error) {

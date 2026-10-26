@@ -1,0 +1,792 @@
+{
+  "schema_version": "yime-arm64-postinstall-observation-v1",
+  "captured_at_utc": "2026-10-26T13:57:08.6018139Z",
+  "computer_name": "HUASHUONOTEBOOK",
+  "native_host": {
+    "source": "IsWow64Process2",
+    "nativeMachine": 43620,
+    "processMachine": 0,
+    "is64BitProcess": true
+  },
+  "user_sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+  "session_id": 1,
+  "registry_source": "Out-of-process StdRegProv; provider errors are recorded, not treated as absent",
+  "registry_observation_complete": true,
+  "registry_observation_failures": [],
+  "products": {
+    "yimecore": {
+      "clsid": "{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+      "profile": "{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+      "registry": {
+        "machine64_com": {
+          "hive": "HKLM",
+          "path": "SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+          "observation": {
+            "exists": true,
+            "values": [
+              {
+                "name": "",
+                "kind": 1,
+                "value": "C:\\Program Files\\YimeCore\\arm64\\YimeTextServiceExperiment.dll"
+              },
+              {
+                "name": "ThreadingModel",
+                "kind": 1,
+                "value": "Apartment"
+              }
+            ],
+            "children": {}
+          }
+        },
+        "machine32_com": {
+          "hive": "HKLM",
+          "path": "SOFTWARE\\Classes\\WOW6432Node\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+          "observation": {
+            "exists": true,
+            "values": [
+              {
+                "name": "",
+                "kind": 1,
+                "value": "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll"
+              },
+              {
+                "name": "ThreadingModel",
+                "kind": 1,
+                "value": "Apartment"
+              }
+            ],
+            "children": {}
+          }
+        },
+        "machine64_tip": {
+          "hive": "HKLM",
+          "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+          "observation": {
+            "exists": true,
+            "values": [],
+            "children": {
+              "Category": {
+                "exists": true,
+                "values": [],
+                "children": {
+                  "Category": {
+                    "exists": true,
+                    "values": [],
+                    "children": {
+                      "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                        "exists": true,
+                        "values": [],
+                        "children": {
+                          "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          }
+                        }
+                      },
+                      "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                        "exists": true,
+                        "values": [],
+                        "children": {
+                          "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          }
+                        }
+                      },
+                      "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                        "exists": true,
+                        "values": [],
+                        "children": {
+                          "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          }
+                        }
+                      },
+                      "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                        "exists": true,
+                        "values": [],
+                        "children": {
+                          "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          }
+                        }
+                      },
+                      "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                        "exists": true,
+                        "values": [],
+                        "children": {
+                          "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "Item": {
+                    "exists": true,
+                    "values": [],
+                    "children": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "exists": true,
+                        "values": [],
+                        "children": {
+                          "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          },
+                          "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          },
+                          "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          },
+                          "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          },
+                          "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "LanguageProfile": {
+                "exists": true,
+                "values": [],
+                "children": {
+                  "0x00000804": {
+                    "exists": true,
+                    "values": [],
+                    "children": {
+                      "{126F54C6-E9B1-4E22-8652-03224CBD49F9}": {
+                        "exists": true,
+                        "values": [
+                          {
+                            "name": "Description",
+                            "kind": 1,
+                            "value": "音元拼音"
+                          },
+                          {
+                            "name": "Enable",
+                            "kind": 4,
+                            "value": 1
+                          },
+                          {
+                            "name": "IconFile",
+                            "kind": 1,
+                            "value": "C:\\Program Files\\YimeCore\\profile-icon.ico"
+                          },
+                          {
+                            "name": "IconIndex",
+                            "kind": 4,
+                            "value": 0
+                          }
+                        ],
+                        "children": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "machine32_tip": {
+          "hive": "HKLM",
+          "path": "SOFTWARE\\WOW6432Node\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+          "observation": {
+            "exists": true,
+            "values": [],
+            "children": {
+              "Category": {
+                "exists": true,
+                "values": [],
+                "children": {
+                  "Category": {
+                    "exists": true,
+                    "values": [],
+                    "children": {
+                      "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                        "exists": true,
+                        "values": [],
+                        "children": {
+                          "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          }
+                        }
+                      },
+                      "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                        "exists": true,
+                        "values": [],
+                        "children": {
+                          "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          }
+                        }
+                      },
+                      "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                        "exists": true,
+                        "values": [],
+                        "children": {
+                          "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          }
+                        }
+                      },
+                      "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                        "exists": true,
+                        "values": [],
+                        "children": {
+                          "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          }
+                        }
+                      },
+                      "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                        "exists": true,
+                        "values": [],
+                        "children": {
+                          "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "Item": {
+                    "exists": true,
+                    "values": [],
+                    "children": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "exists": true,
+                        "values": [],
+                        "children": {
+                          "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          },
+                          "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          },
+                          "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          },
+                          "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          },
+                          "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                            "exists": true,
+                            "values": [],
+                            "children": {}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "LanguageProfile": {
+                "exists": true,
+                "values": [],
+                "children": {
+                  "0x00000804": {
+                    "exists": true,
+                    "values": [],
+                    "children": {
+                      "{126F54C6-E9B1-4E22-8652-03224CBD49F9}": {
+                        "exists": true,
+                        "values": [
+                          {
+                            "name": "Description",
+                            "kind": 1,
+                            "value": "音元拼音"
+                          },
+                          {
+                            "name": "Enable",
+                            "kind": 4,
+                            "value": 1
+                          },
+                          {
+                            "name": "IconFile",
+                            "kind": 1,
+                            "value": "C:\\Program Files\\YimeCore\\profile-icon.ico"
+                          },
+                          {
+                            "name": "IconIndex",
+                            "kind": 4,
+                            "value": 0
+                          }
+                        ],
+                        "children": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "machine64_uninstall": {
+          "hive": "HKLM",
+          "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeSimple-yimecore",
+          "observation": {
+            "exists": true,
+            "values": [
+              {
+                "name": "DisplayName",
+                "kind": 1,
+                "value": "YimeCore"
+              },
+              {
+                "name": "DisplayVersion",
+                "kind": 1,
+                "value": "0.1.0-local.13-arm64"
+              },
+              {
+                "name": "InstallLocation",
+                "kind": 1,
+                "value": "C:\\Program Files\\YimeCore"
+              },
+              {
+                "name": "UninstallString",
+                "kind": 1,
+                "value": "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -ExecutionPolicy Bypass -File \"C:\\Program Files\\YimeCore\\.setup\\Setup.ps1\" -Action Uninstall"
+              }
+            ],
+            "children": {}
+          }
+        },
+        "machine32_uninstall": {
+          "hive": "HKLM",
+          "path": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeSimple-yimecore",
+          "observation": {
+            "exists": false
+          }
+        },
+        "user_tip": {
+          "hive": "HKU",
+          "path": "S-1-5-21-2466658430-60932705-3086004269-1001\\Software\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}",
+          "observation": {
+            "exists": false
+          }
+        },
+        "user_com": {
+          "hive": "HKU",
+          "path": "S-1-5-21-2466658430-60932705-3086004269-1001\\Software\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}\\InprocServer32",
+          "observation": {
+            "exists": false
+          }
+        }
+      },
+      "locations": [
+        {
+          "root": "C:\\Program Files\\YimeCore",
+          "exists": true,
+          "ownership_marker": {
+            "target": "windows-arm64",
+            "format": "yime-simple-install-1",
+            "version": "0.1.0-local.13-arm64",
+            "product": "yimecore"
+          },
+          "runtime": {
+            "path": "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+            "exists": true,
+            "bytes": 3956224,
+            "last_write_utc": "2026-10-26T12:41:43.6940999Z"
+          }
+        }
+      ],
+      "startup": {
+        "exists": true,
+        "value": "\"C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe\" -install-root \"C:\\Program Files\\YimeCore\" -state-root \"C:\\Users\\tsaan\\AppData\\Local\\YimeCore Experimental Trial\""
+      },
+      "user_state_directory": {
+        "path": "C:\\Users\\tsaan\\AppData\\Local\\YimeCore Experimental Trial",
+        "exists": true,
+        "contents_read": false
+      }
+    },
+    "rime-pime": {
+      "clsid": "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}",
+      "profile": "{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}",
+      "registry": {
+        "machine64_com": {
+          "hive": "HKLM",
+          "path": "SOFTWARE\\Classes\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}\\InprocServer32",
+          "observation": {
+            "exists": false
+          }
+        },
+        "machine32_com": {
+          "hive": "HKLM",
+          "path": "SOFTWARE\\Classes\\WOW6432Node\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}\\InprocServer32",
+          "observation": {
+            "exists": false
+          }
+        },
+        "machine64_tip": {
+          "hive": "HKLM",
+          "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}",
+          "observation": {
+            "exists": false
+          }
+        },
+        "machine32_tip": {
+          "hive": "HKLM",
+          "path": "SOFTWARE\\WOW6432Node\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}",
+          "observation": {
+            "exists": false
+          }
+        },
+        "machine64_uninstall": {
+          "hive": "HKLM",
+          "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeSimple-rime-pime",
+          "observation": {
+            "exists": false
+          }
+        },
+        "machine32_uninstall": {
+          "hive": "HKLM",
+          "path": "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YimeSimple-rime-pime",
+          "observation": {
+            "exists": false
+          }
+        },
+        "user_tip": {
+          "hive": "HKU",
+          "path": "S-1-5-21-2466658430-60932705-3086004269-1001\\Software\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}",
+          "observation": {
+            "exists": false
+          }
+        },
+        "user_com": {
+          "hive": "HKU",
+          "path": "S-1-5-21-2466658430-60932705-3086004269-1001\\Software\\Classes\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}\\InprocServer32",
+          "observation": {
+            "exists": false
+          }
+        }
+      },
+      "locations": [
+        {
+          "root": "C:\\Program Files\\Yime Rime-PIME",
+          "exists": false,
+          "ownership_marker": null,
+          "runtime": {
+            "path": "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe",
+            "exists": false
+          }
+        },
+        {
+          "root": "C:\\Program Files (x86)\\YIME",
+          "exists": false,
+          "ownership_marker": null,
+          "runtime": {
+            "path": "C:\\Program Files (x86)\\YIME\\PIMELauncher.exe",
+            "exists": false
+          }
+        }
+      ],
+      "startup": {
+        "exists": false
+      },
+      "user_state_directory": {
+        "path": "C:\\Users\\tsaan\\AppData\\Roaming\\PIME\\Rime",
+        "exists": false,
+        "contents_read": false
+      }
+    }
+  },
+  "default_input_registry": {
+    "Control Panel\\International\\User Profile": {
+      "exists": true,
+      "values": [
+        {
+          "name": "Languages",
+          "kind": 7,
+          "value": [
+            "zh-Hans-CN",
+            "en-US",
+            "und-Latn"
+          ]
+        },
+        {
+          "name": "ShowAutoCorrection",
+          "kind": 4,
+          "value": 0
+        },
+        {
+          "name": "ShowCasing",
+          "kind": 4,
+          "value": 1
+        },
+        {
+          "name": "ShowShiftLock",
+          "kind": 4,
+          "value": 1
+        },
+        {
+          "name": "ShowTextPrediction",
+          "kind": 4,
+          "value": 0
+        }
+      ],
+      "children": {
+        "en-US": {
+          "exists": true,
+          "values": [
+            {
+              "name": "CachedLanguageName",
+              "kind": 1,
+              "value": "@Winlangdb.dll,-1121"
+            }
+          ],
+          "children": {}
+        },
+        "und-Latn": {
+          "exists": true,
+          "values": [
+            {
+              "name": "CachedLanguageName",
+              "kind": 1,
+              "value": "Undetermined (und-Latn)"
+            },
+            {
+              "name": "TransientLangId",
+              "kind": 4,
+              "value": 8192
+            }
+          ],
+          "children": {}
+        },
+        "zh-Hans-CN": {
+          "exists": true,
+          "values": [
+            {
+              "name": "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+              "kind": 4,
+              "value": 1
+            },
+            {
+              "name": "CachedLanguageName",
+              "kind": 1,
+              "value": "@Winlangdb.dll,-1650"
+            }
+          ],
+          "children": {}
+        }
+      }
+    },
+    "Keyboard Layout\\Preload": {
+      "exists": true,
+      "values": [
+        {
+          "name": "1",
+          "kind": 1,
+          "value": "00000804"
+        }
+      ],
+      "children": {}
+    },
+    "Keyboard Layout\\Substitutes": {
+      "exists": true,
+      "values": [],
+      "children": {}
+    }
+  },
+  "foreground_input": {
+    "available": true,
+    "process_id": 3740,
+    "thread_id": 9976,
+    "keyboard_layout": "0x0000000008040804",
+    "interpretation": "Foreground thread HKL only when available; unavailable desktop access is not an input selection. Not proof of an active TSF profile or default input override."
+  },
+  "process_inspection": {
+    "scope": "Current interactive session only; names, paths and module names, no window titles/command lines/document content",
+    "processes_inspected": 248,
+    "loaded_tip_processes": [
+      {
+        "process_id": 14156,
+        "name": "explorer",
+        "image": "C:\\Windows\\explorer.exe",
+        "module": "C:\\Program Files\\YimeCore\\arm64\\YimeTextServiceExperiment.dll",
+        "matches_current_product_registration": true,
+        "action_taken": "none"
+      }
+    ],
+    "product_processes": [],
+    "module_inspection_failures": [
+      {
+        "process_id": 36004,
+        "name": "ArmouryCrateProArt.UserSessionHelper",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 17164,
+        "name": "AsusHapticPadAgent",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 16804,
+        "name": "AsusOSD",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 30964,
+        "name": "AsusProArtHost",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 26700,
+        "name": "AsusScreenXpertUI",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 17028,
+        "name": "AsusSoftwareManagerAgent",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 16296,
+        "name": "ChsIME",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 34796,
+        "name": "ChsIME",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 2520,
+        "name": "conhost",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 34864,
+        "name": "conhost",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 36568,
+        "name": "conhost",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 1804,
+        "name": "csrss",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 14588,
+        "name": "ctfmon",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 11200,
+        "name": "DAX3API",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 11260,
+        "name": "DefenderSessionHelper",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 2668,
+        "name": "dwm",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 1356,
+        "name": "fontdrvhost",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 33192,
+        "name": "git",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 11016,
+        "name": "NVDisplay.Container",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 14764,
+        "name": "TabTip",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 27440,
+        "name": "taskhostw",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 1892,
+        "name": "winlogon",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 20436,
+        "name": "YimeBroker",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 31292,
+        "name": "YimeCoreInputToolbar",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      },
+      {
+        "process_id": 6720,
+        "name": "YimeCoreTrialRuntime",
+        "reason": "Module enumeration returned no readable entries; this process cannot be excluded as a TIP holder"
+      }
+    ]
+  },
+  "boundaries": {
+    "read_only": true,
+    "installation_executed": false,
+    "registration_executed": false,
+    "processes_stopped": false,
+    "browser_closed": false,
+    "user_lexicon_contents_read": false,
+    "defaults_changed": false,
+    "requires_ci_and_github_complete_package_before_install": true
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "yimecore-pr78-multiple-go-observation-v1",
+  "passed": true,
+  "checks": {
+    "admission": 53,
+    "go_environment": 35
+  },
+  "scope": "Regression script command resolution only; product builder unchanged",
+  "source_hashes": {
+    "tools/yimecore/arm64-go-environment.ps1": "c177377c78895aa0df845d2ede7e148526c20ce8992b5d2a4f4a74f8d0c62ac1",
+    "tools/yimecore/build-arm64-product.ps1": "468a76a4f295952e4712468ce9be0acf2b1f794ad24929620a4f73f0cf9e626f",
+    "tools/yimecore/development-scope.ps1": "f22791b3eccc8d2820a7c3456c7947ae9a7992d70d60019d254126e2dee83472",
+    "tools/yimecore/test-arm64-go-environment.ps1": "e6528aa6cd8b2f567283c475f17a2ad03acc504f9a935c9d353ba20a3e48c8f1",
+    "tools/yimecore/test-arm64-speech-admission.ps1": "278abffff00d2922486571d6e929cccfee2e194b01f8ba890daa8dfe82134391"
+  },
+  "multiple_path_candidates_observed": true,
+  "shadow_executable_executed": false,
+  "ci_failure_evidence": "ci-failure-excerpt.json",
+  "remote_ci_for_new_commit": "PENDING",
+  "raw_test_logs_preserved": true
+}
