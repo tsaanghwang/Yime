@@ -8,10 +8,44 @@ import subprocess
 import tempfile
 
 from touch_keyboard_resources import digest
+from yimecore.collect_arm64_host import get_machine_architecture, read_pe_machine
+
+
+PE_MACHINES = {'windows-amd64': 0x8664, 'windows-arm64': 0xaa64}
+NATIVE_NAMES = {'windows-amd64': 'x64', 'windows-arm64': 'arm64'}
+
+
+def validate_execution_architecture(package, manifest):
+    """Permit only a native package; environment architecture labels are not proof."""
+    architecture = manifest.get('architecture')
+    if architecture not in PE_MACHINES:
+        raise ValueError('Unsupported Windows package architecture: '+str(architecture))
+    host = get_machine_architecture()
+    if (host.get('source') != 'IsWow64Process2'
+        or host.get('native_architecture') != NATIVE_NAMES[architecture]
+        or host.get('native_machine') != f'0x{PE_MACHINES[architecture]:04x}'):
+        raise ValueError('Package architecture does not match the verified native Windows host')
+    pe = read_pe_machine(package/'YimeTouchKeyboard.exe')
+    if pe['machine'] != f'0x{PE_MACHINES[architecture]:04x}' or pe['architecture'] != NATIVE_NAMES[architecture]:
+        raise ValueError('Executable PE architecture does not match the package manifest')
+    return host, pe['machine']
+
+
+def require_new_output(path):
+    if path.exists() or path.is_symlink():
+        raise FileExistsError('Do not overwrite earlier evidence: '+str(path))
 
 
 def check(package, report_path, render=False, native_edit=False):
     package = package.resolve()
+    report_path = report_path.absolute()
+    require_new_output(report_path)
+    if report_path.resolve().is_relative_to(package):
+        raise ValueError('Write execution evidence outside the original package')
+    if render:
+        require_new_output(report_path.parent/'portable-preview.png')
+    if native_edit:
+        require_new_output(report_path.parent/'portable-native-edit.log')
     manifest = json.loads((package/'manifest.json').read_text(encoding='utf-8'))
     if manifest['scope'] != 'uninstalled-desktop-touch-keyboard-chinese-experiment' or not manifest['completeChineseResources']:
         raise ValueError('Expected complete Chinese package')
@@ -21,15 +55,19 @@ def check(package, report_path, render=False, native_edit=False):
             raise ValueError('Package inventory hash mismatch: '+name)
     if digest(package/'resources.json') != manifest['portableResourcesSHA256']:
         raise ValueError('Resource inventory identity mismatch')
-    if manifest['architecture'] != 'windows-amd64':
-        raise ValueError('This execution check requires the x64 Windows package; ARM64 is cross-build only')
+    host_architecture, executable_machine = validate_execution_architecture(package, manifest)
     with tempfile.TemporaryDirectory(prefix='Yime portable 中文 ') as tmp:
         temp = Path(tmp)
         relocated = temp/'keyboard folder'
         shutil.copytree(package,relocated)
         cwd = temp/'empty cwd'; cwd.mkdir()
         exe = relocated/'YimeTouchKeyboard.exe'
-        env = {k:v for k,v in os.environ.items() if not k.startswith('YIME_') and k not in ('GOFLAGS','GOPATH')}
+        isolated_names = ('GOFLAGS','GOPATH','TEMP','TMP','LOCALAPPDATA','APPDATA')
+        env = {k:v for k,v in os.environ.items() if not k.upper().startswith('YIME_') and k.upper() not in isolated_names}
+        for name, child in [('TEMP','tmp'),('TMP','tmp'),('LOCALAPPDATA','local'),('APPDATA','roaming')]:
+            path = temp/'state'/child
+            path.mkdir(parents=True, exist_ok=True)
+            env[name] = str(path)
         result_file = temp/'result.json'
         run = subprocess.run([str(exe),'--check-package','--data-report',str(result_file)],cwd=cwd,env=env,capture_output=True,timeout=240)
         if run.returncode:
@@ -51,10 +89,12 @@ def check(package, report_path, render=False, native_edit=False):
             rendered=subprocess.run([str(exe),'--preview','--screenshot',str(shot)],cwd=cwd,env=env,capture_output=True,timeout=240)
             if rendered.returncode or not shot.is_file():
                 raise RuntimeError('Package rendering failed: '+rendered.stderr.decode('utf-8',errors='replace'))
-            shutil.copyfile(shot,report_path.parent/'portable-preview.png')
+            with (report_path.parent/'portable-preview.png').open('xb') as output:
+                output.write(shot.read_bytes())
         if native_edit:
             native=subprocess.run([str(exe),'--host-input','--host-self-test'],cwd=cwd,env=env,capture_output=True,timeout=240)
-            (report_path.parent/'portable-native-edit.log').write_bytes(native.stdout+native.stderr)
+            with (report_path.parent/'portable-native-edit.log').open('xb') as output:
+                output.write(native.stdout+native.stderr)
             if native.returncode:
                 raise RuntimeError('Package own EDIT check failed: '+native.stderr.decode('utf-8',errors='replace'))
         checks=[]
@@ -86,6 +126,10 @@ def check(package, report_path, render=False, native_edit=False):
               'ci':manifest.get('ci'),
               'sourceChanges':manifest['sourceChanges'],'executableSHA256':digest(exe),
               'manifestSHA256':digest(package/'manifest.json'),'architecture':manifest['architecture'],
+              'hostArchitecture':host_architecture,
+              'nativeExecution':{'architectureMatched':True,'executableMachine':executable_machine,
+                                 'targetExecuted':True,'packageCheckPassed':True,
+                                 'scope':'portable package diagnostics; no installed-product or physical-input acceptance'},
               'resourceArchiveSHA256':manifest['resourceArchiveSHA256'],
               'relocatedOutsideCheckout':True,'emptyWorkingDirectory':True,'runtime':result,
               'explicitBothGeometry':{'boardWidthU':full['boardWidthU'],'keyCount':full['keyCount']},
@@ -96,7 +140,8 @@ def check(package, report_path, render=False, native_edit=False):
             body['hostInputSent']=True
             body['hostInputScope']='disposable own EDIT only; never physical acceptance'
     report_path.parent.mkdir(parents=True,exist_ok=True)
-    report_path.write_text(json.dumps(body,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+    with report_path.open('x',encoding='utf-8',newline='\n') as output:
+        output.write(json.dumps(body,ensure_ascii=False,indent=2)+'\n')
     print('PASS relocated complete package, three modes and resource rejection checks: '+str(report_path))
 
 

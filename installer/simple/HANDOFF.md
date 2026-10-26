@@ -4,6 +4,8 @@
 
 ## 当前任务
 
+**2026-10-26：华硕 ProArt ARM64 实机测试启动。** 新测试机为 `HUASHUONOTEBOOK` / ASUS ProArt P16 H7607BA，已用 Windows API 确认原生 ARM64。开发与证据分支为 `codex/arm64-native-test-20261026`，任务、阶段结果和下一步见[ARM64 实机报告](../../docs/testing/arm64/2026-10-26/TEST-RESULT.md)。本轮先登记设备并验证现有固定 ARM64 桌面原型便携包；它与 YimeCore/Rime 安装产品分开记证。YimeCore 原生构建入口及工具链、ARM64 包契约和完整包交付尚待完成，当前 x64 安装器不用于此机。旧 `perf/i7-7820x-local` 仍仅作既有 x64 测试报告分支，本轮不向它写入 ARM 结果。
+
 **2026-09-28：touch-terminal KLE 模板导入与实屏基线开发中；测试端无安装任务。** 目标分支 `codex/touch-terminal-kle-baseline` 从已合并 PR #64 的当前主线 `af8ea73f` 创建，并接续 9 月 22 日隔离浏览器原型。范围仅为 KLE 触摸几何模板、离线生成/校验、浏览器交互与已连接触摸屏的本地基线；不连接或修改已安装输入法，不改变默认输入法、用户词库或桌面键位真源。接续入口为 [运行说明](../../prototypes/touch-terminal/README.md)，另见 [验证记录](../../prototypes/touch-terminal/VALIDATION.md)、[适配协议](../../prototypes/touch-terminal/PROTOCOL.md) 和 [硬件可行性](../../prototypes/touch-terminal/HARDWARE.md)。触摸屏已以复制显示模式连接，但在真实手指测试记录完成前，不宣称误触率、端到端延迟或宿主输入通过。
 
 **2026-09-27：current-readiness 双产品完整包已重建并发布为开发预发布；测试端无安装任务。** 目标分支 `codex/current-readiness-delivery-20260927` 从当前 main `0ab86312` 创建，两套运行源码和安装器均固定于完整提交 `0ab8631266736775bf1386f456d4a1d53e8e2eb3`。来源提交 [CI 35418522827](https://github.com/tsaanghwang/Yime/actions/runs/35418522827) 成功；交付记录提交 `a274730fd3230ff22c04632be62ffe18397555ec` 的 [CI](https://github.com/tsaanghwang/Yime/actions/runs/36280832479) 全部成功后，发布固定资产；远端 size 与 SHA-256 digest 已逐项匹配本地。

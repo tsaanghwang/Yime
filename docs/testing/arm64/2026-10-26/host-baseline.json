@@ -1,0 +1,102 @@
+{
+  "schema_version": "yimecore-arm64-host-baseline-v1",
+  "observed_at_utc": "2026-10-26T10:01:22.305237+00:00",
+  "affected_product": "YimeCore",
+  "source_commit_supplied_by_caller": "f488ce25ce72decfdca159d2a223ab3f7387d3d0",
+  "computer_name": "HuashuoNotebook",
+  "architecture": {
+    "source": "IsWow64Process2",
+    "native_machine": "0xaa64",
+    "native_architecture": "arm64",
+    "process_machine": "0x0000",
+    "process_machine_architecture": null,
+    "process_machine_note": "A zero processMachine does not establish the executable's PE architecture."
+  },
+  "process_observations": {
+    "platform_machine": "AMD64",
+    "processor_architecture_environment": "AMD64",
+    "processor_architew6432_environment": null,
+    "python_executable": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "python_pe": {
+      "machine": "0x8664",
+      "architecture": "x64"
+    },
+    "note": "Process observations do not override the nativeMachine API result."
+  },
+  "hardware": {
+    "manufacturer": "ASUS",
+    "model": "ProArt P16 H7607BA",
+    "family": "ProArt P16"
+  },
+  "cpu": {
+    "name": "NVIDIA RTX Spark N1X (6144-core GPU, 20-core CPU)",
+    "identifier": "ARMv8 (64-bit) Family 8 Model D87 Revision   1",
+    "vendor": "NVIDIA",
+    "logical_processor_count": 20
+  },
+  "total_physical_memory_bytes": 58780475392,
+  "windows": {
+    "product_name": "Windows 10 Home China",
+    "display_version": "26H1",
+    "build_number": "28000",
+    "update_build_revision": 3231,
+    "edition": "CoreCountrySpecific",
+    "installation_type": "Client",
+    "getwindowsversion": {
+      "major": 10,
+      "minor": 0,
+      "build": 28000
+    },
+    "note": "Registry product_name may retain a legacy Windows product label; record build separately."
+  },
+  "registry_read_errors": [],
+  "tools": {
+    "discovery_scope": "PATH plus explicit standard install directories; absence is not proof that no custom installation exists.",
+    "executed_tools": [],
+    "commands": {
+      "go": {
+        "path_match": null,
+        "found_paths": []
+      },
+      "cmake": {
+        "path_match": null,
+        "found_paths": []
+      },
+      "git": {
+        "path_match": null,
+        "found_paths": []
+      },
+      "pwsh": {
+        "path_match": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.EXE",
+        "found_paths": [
+          "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.EXE"
+        ]
+      },
+      "vswhere": {
+        "path_match": null,
+        "found_paths": []
+      },
+      "cl": {
+        "path_match": null,
+        "found_paths": []
+      }
+    },
+    "arm64_compiler_paths": [],
+    "windows_sdk_header_paths": []
+  },
+  "evidence": {
+    "arm64_host_identified": true,
+    "current_source_build_passed": null,
+    "native_product_contracts_passed": null,
+    "target_package_passed": null,
+    "installed_registered_host_passed": null,
+    "physical_live_host_passed": null,
+    "daily_use_and_sealing_passed": null,
+    "product_binaries_executed": false,
+    "installation_performed": false,
+    "registration_changed": false,
+    "default_input_changed": false,
+    "user_data_changed": false,
+    "release_ready": false
+  }
+}

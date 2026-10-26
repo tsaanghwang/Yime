@@ -1,0 +1,49 @@
+{
+  "schema_version": "yime-arm64-initial-evidence-v1",
+  "recorded_at_utc": "2026-10-26T10:15:32.846569+00:00",
+  "files": {
+    "host-baseline.json": {
+      "bytes": 3336,
+      "sha256": "8679895ad86d42bd9ab8c87b5dfdc30023a34c45219d9c5ab1bd522562d62d0d"
+    },
+    "portable-package-check.json": {
+      "bytes": 5893,
+      "sha256": "42f1a72353427c23354aa96a49df11258fdf7bb49a8ec3b3b42617b4bc54c803"
+    },
+    "registration-after.json": {
+      "bytes": 2995,
+      "sha256": "1bfa6117edeb0af7190a5990b95f7edfc15f42e382c6477823d2f898da05b240"
+    },
+    "registration-before.json": {
+      "bytes": 2996,
+      "sha256": "0318f525bc1606929f8bf1d0b1c875d0b1852cea300b2a6f0f0cb67bb2936c02"
+    }
+  },
+  "tool_source_sha256": {
+    "tools/yimecore/collect_arm64_host.py": "4b876d6cfc313e893f29b539762e06d6081662f0dfb36951d7b5afe6ae61d041",
+    "tools/check_touch_keyboard_package.py": "f0714bfa0810baae4f312fbda3d694e4c61736c85c6fabcdd19a2c2c9a73339c",
+    "tools/yimecore/test_collect_arm64_host.py": "522ea9042e323279362a59b65ba1362b6c1c89c7abb7b3da9d84dc9053089a00",
+    "tools/test_check_touch_keyboard_package.py": "9ab443139ee95d4ae61fb9b4b32cbe946aaa3dd9b443b6ca19bfda796d2dfee0"
+  },
+  "package_artifact_url": "https://github.com/tsaanghwang/Yime/actions/runs/39751192421/artifacts/12414405688",
+  "archive_sha256": "80d747a55c26ab56c729a7db5b20e7e1ddc6a2ba17ff4f5da931f6d193f21108",
+  "original_package_files_unchanged_after_run": 29,
+  "original_package_manifest_unchanged": true,
+  "protected_registry_digests_unchanged": 19,
+  "sandbox_attempt": {
+    "passed": false,
+    "error": "RuntimeError: Access is denied.",
+    "classification": "sandbox restriction; authorized unsandboxed check subsequently passed"
+  },
+  "authorized_native_portable_check_passed": true,
+  "automated_regressions": {
+    "host_detection": 7,
+    "package_execution_gate": 10,
+    "platform_experiment_contracts": 22,
+    "ci_workflow_contracts": 3
+  },
+  "yimecore_native_product_acceptance": null,
+  "physical_finger_pen_acceptance": null,
+  "installation_performed": false,
+  "host_input_sent": false
+}
