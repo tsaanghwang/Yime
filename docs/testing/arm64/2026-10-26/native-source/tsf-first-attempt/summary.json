@@ -1,0 +1,12 @@
+{
+  "scope": "ARM64 current-source direct TSF documents with private in-memory Broker; standard product dictionaries",
+  "generated_at": "2026-10-26T10:49:35.9625651Z",
+  "passed": false,
+  "failure": "The property 'Parent' cannot be found on this object. Verify that the property exists.",
+  "protected_registration_unchanged": true,
+  "runs": [],
+  "brokers": [],
+  "registered_host_acceptance": null,
+  "physical_acceptance": false,
+  "installation_performed": false
+}

@@ -1,0 +1,70 @@
+{
+  "scope": "YimeCore ARM64 isolated source Go tests; no installed or physical input acceptance",
+  "started_at_utc": "2026-10-26T10:37:01.599424+00:00",
+  "finished_at_utc": "2026-10-26T10:37:43.519368+00:00",
+  "host": {
+    "source": "IsWow64Process2",
+    "native_machine": "0xaa64",
+    "native_architecture": "arm64",
+    "process_machine": "0x0000",
+    "process_machine_architecture": null,
+    "process_machine_note": "A zero processMachine does not establish the executable's PE architecture."
+  },
+  "go_version": "go version go1.25.14 windows/arm64",
+  "packages": [
+    "./input_methods/yime/yimecore",
+    "./input_methods/yime/yimebroker",
+    "./cmd/yimebroker",
+    "./cmd/yimecore-trial-runtime",
+    "./input_methods/yime/codemode",
+    "./input_methods/yime/runtimeidentity"
+  ],
+  "exit_code": 0,
+  "package_results": [
+    {
+      "Time": "2026-10-26T18:37:38.9675534+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode",
+      "Elapsed": 1.283
+    },
+    {
+      "Time": "2026-10-26T18:37:39.3975072+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimeidentity",
+      "Elapsed": 1.709
+    },
+    {
+      "Time": "2026-10-26T18:37:39.7905506+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-trial-runtime",
+      "Elapsed": 2.106
+    },
+    {
+      "Time": "2026-10-26T18:37:40.8431545+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore",
+      "Elapsed": 3.188
+    },
+    {
+      "Time": "2026-10-26T18:37:43.0400552+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker",
+      "Elapsed": 5.381
+    },
+    {
+      "Time": "2026-10-26T18:37:43.2644545+08:00",
+      "Action": "pass",
+      "Package": "github.com/tsaanghwang/Yime/go-backend/cmd/yimebroker",
+      "Elapsed": 5.58
+    }
+  ],
+  "test_events": {
+    "pass": 305,
+    "fail": 0,
+    "skip": 0
+  },
+  "isolated_state_root": "C:\\dev\\Yime\\.tmp\\arm64-go-native-20261026",
+  "log_sha256": "f396bff74eea3c2f2a1f8d5894dd018cabd9c2f7b2756eae7ab7dfdf18cfc05e",
+  "installation_performed": false,
+  "physical_acceptance": false
+}

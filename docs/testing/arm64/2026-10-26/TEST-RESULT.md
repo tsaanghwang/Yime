@@ -4,12 +4,14 @@
 
 开发与证据分支：`codex/arm64-native-test-20261026`，从当前 main `f488ce25ce72decfdca159d2a223ab3f7387d3d0` 建立。此报告不写入既有 x64 测试分支 `perf/i7-7820x-local`。
 
+后续更新：本报告保留首轮快照；同日已完成工具链、ARM64 原生构建及隔离 Go/TSF 测试，见[接续报告](NATIVE-SOURCE-TEST.md)。首轮提交通过 GitHub 连接器以相同 Git tree 发布为 [PR #78](https://github.com/tsaanghwang/Yime/pull/78)，本地 `14cc7519` 对应远端 `c4adcecb`，不再受 CLI 推送失败阻断。
+
 ## 设备与执行环境
 
 | 项目 | 实测 |
 | --- | --- |
 | 计算机 | `HuashuoNotebook`（环境计算机名为 `HUASHUONOTEBOOK`） |
-| 厂商 / 型号 | ASUS / ProArt P16 H7607BA |
+| 厂商 / 型号 | 用户确认：华硕 ProArt 创 16 RTX Spark；系统型号：ASUS / ProArt P16 H7607BA |
 | 处理器 | NVIDIA RTX Spark N1X；系统报告 20 个逻辑处理器 |
 | Windows | 26H1，build `28000.3231`；注册表 ProductName 仍保留旧名称，原值保存在基线 |
 | 可见物理内存 | 58,780,475,392 bytes（约 54.74 GiB），不是安装内存规格断言 |

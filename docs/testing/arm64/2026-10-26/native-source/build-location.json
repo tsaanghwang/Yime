@@ -1,0 +1,5 @@
+{
+  "build_root": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-20261026-184609-ce50c301",
+  "go_version": "go version go1.25.14 windows/arm64",
+  "cmake_version": "cmake version 3.31.6-msvc6  CMake suite maintained and supported by Kitware (kitware.com/cmake)."
+}

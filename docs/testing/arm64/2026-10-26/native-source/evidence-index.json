@@ -1,0 +1,162 @@
+{
+  "schema_version": "yime-arm64-native-source-evidence-v1",
+  "recorded_at_utc": "2026-10-26T10:55:49.098893+00:00",
+  "build_root": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-20261026-184609-ce50c301",
+  "source_commit_at_build": "14cc75190db1e0d64ccfffa3d9c26a86d288728b",
+  "source_was_dirty": true,
+  "files": {
+    "build-location.json": {
+      "bytes": 283,
+      "sha256": "9e6d978741dd66d599e52bbef7ec9ef6aa5250ec6b47e0a69bc09388d25e60d4"
+    },
+    "build.txt": {
+      "bytes": 3433,
+      "sha256": "6c5e49edfa35ba1b87b27e84b2d31dcd81910789433be554a19b88cf30799e65"
+    },
+    "configure.txt": {
+      "bytes": 629,
+      "sha256": "26eae59a5675e5c5800a39255b671364d2d755a980d2b9b6f59e6f2c8034acd0"
+    },
+    "native-contract-arm64.txt": {
+      "bytes": 40,
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8"
+    },
+    "native-contract-arm64.txt.fixture.json": {
+      "bytes": 1087,
+      "sha256": "b593fe8a0cd56575e0eeaf785522cca0bf8400a98e0b8b7bfe4a39d7977d12d7"
+    },
+    "native-contract-summary.json": {
+      "bytes": 430,
+      "sha256": "416ebddc72ad959d5b6d27fb294e9b1cd7ba3b2f2100b246d9500646cf782906"
+    },
+    "native-focus-cancellation-arm64.txt": {
+      "bytes": 55,
+      "sha256": "c181518da6a5945f42345daeeac5830b742f09b5025bcd4daaeb00628d14137d"
+    },
+    "native-focus-cancellation-arm64.txt.fixture.json": {
+      "bytes": 1085,
+      "sha256": "4962ed2ccf10e6f733909f90bea08a9255f273b9914dd1a98d16fecc180ad9a9"
+    },
+    "runner-source/install-arm64-buildtools.ps1": {
+      "bytes": 2280,
+      "sha256": "4adeb70e2d3e7241879f0e7fdf07213d463b9637ada7e78ffdc61a443177034e"
+    },
+    "runner-source/run-arm64-cpp-contracts.ps1": {
+      "bytes": 2930,
+      "sha256": "f3787ef78641bc7a6d6e5fd24eaa40fd6c138d6d7258ddf2b1886f54a4b340b2"
+    },
+    "runner-source/run-arm64-go-tests.py": {
+      "bytes": 2912,
+      "sha256": "2af709d7e2a3fa0f7c24865843ab1bb77c74e71d5bea83a29d721efa3fa2b659"
+    },
+    "runner-source/run-arm64-source-build.ps1": {
+      "bytes": 1818,
+      "sha256": "1b4fba5d1fc7b93bbfbf56a56122510278dfa470a457053bd492da19f2910283"
+    },
+    "runner-source/run-arm64-tsf-three-modes.ps1": {
+      "bytes": 7083,
+      "sha256": "99c44597bdfec2dfa85727b72dc35be83ab9b57c7c76c7bf0bb39b9411be703b"
+    },
+    "source-hashes.json": {
+      "bytes": 131792,
+      "sha256": "b74ae8aadb00e4b07ee760747733e6f4a18d5ab61d56e80b7496876e4b50447b"
+    },
+    "summary.json": {
+      "bytes": 7621,
+      "sha256": "7d9b12df7983b68f541f068d437ae680c0173d848743a7ab31512797b6619a26"
+    },
+    "toolchain/go-download.json": {
+      "bytes": 332,
+      "sha256": "3c40bd5ec491bd44dbe6df75f8619ee78d3930748a42545f5c880c680c2c4a4e"
+    },
+    "tsf-first-attempt/summary.json": {
+      "bytes": 484,
+      "sha256": "9a0107d965987588e36032672f27e684849fea0fcd2393572d0e726b847184d0"
+    },
+    "tsf-three-modes/full/broker-err.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tsf-three-modes/full/broker-out.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tsf-three-modes/full/index-build.json": {
+      "bytes": 954,
+      "sha256": "5c0a11f507e9bd00f87c55fe1c1353965f16cdef216f2f05987ddc4776e7efcf"
+    },
+    "tsf-three-modes/full/index-build.txt": {
+      "bytes": 132,
+      "sha256": "c673e9240bbf0c14742dc733a98626528b0060127b4056ff042b23f61b09693b"
+    },
+    "tsf-three-modes/full/tsf-arm64.txt": {
+      "bytes": 1112,
+      "sha256": "d120aebbe1b513521045a866d716f7193d7313696f2d98a8dcd3329e5dbd684d"
+    },
+    "tsf-three-modes/full/tsf-arm64.txt.fixture.json": {
+      "bytes": 1082,
+      "sha256": "d0aa93674ccf3fe691a0dec6db1f1f379319f9ac0de980ee77f4ef444342294b"
+    },
+    "tsf-three-modes/shorthand/broker-err.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tsf-three-modes/shorthand/broker-out.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tsf-three-modes/shorthand/index-build.json": {
+      "bytes": 969,
+      "sha256": "5da49ab4589a27ff54dd283a09cf9caa0a77437d57fad36482ebef0a35f33463"
+    },
+    "tsf-three-modes/shorthand/index-build.txt": {
+      "bytes": 137,
+      "sha256": "4eeb26a0fb73e7247d5c8aaecc7e666e30d44064bb5d68bddb60c3b4ba647ce4"
+    },
+    "tsf-three-modes/shorthand/tsf-arm64.txt": {
+      "bytes": 1112,
+      "sha256": "d120aebbe1b513521045a866d716f7193d7313696f2d98a8dcd3329e5dbd684d"
+    },
+    "tsf-three-modes/shorthand/tsf-arm64.txt.fixture.json": {
+      "bytes": 1082,
+      "sha256": "cf96a592cbcc4572329c8ffa3cea7da55a3bf3fb08ca3c5fa5ba5a7414e8fdd7"
+    },
+    "tsf-three-modes/summary.json": {
+      "bytes": 1746,
+      "sha256": "91931074b059baa5dc0c46bfe6ba4e53461b71fc66496e3790ea38d7e5640181"
+    },
+    "tsf-three-modes/variable/broker-err.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tsf-three-modes/variable/broker-out.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tsf-three-modes/variable/index-build.json": {
+      "bytes": 966,
+      "sha256": "b918be334d25104d52d9f1b5eea3db808beaf1bb452e343d4970bc5441fe2c58"
+    },
+    "tsf-three-modes/variable/index-build.txt": {
+      "bytes": 136,
+      "sha256": "47994e44cefc419c12206893be0307c2439ae16e1714eced6169e11beb019ced"
+    },
+    "tsf-three-modes/variable/tsf-arm64.txt": {
+      "bytes": 1112,
+      "sha256": "d120aebbe1b513521045a866d716f7193d7313696f2d98a8dcd3329e5dbd684d"
+    },
+    "tsf-three-modes/variable/tsf-arm64.txt.fixture.json": {
+      "bytes": 1082,
+      "sha256": "01aec418e99eda287572b82b2227f2f2ddefceb932f9010066a675b43aad2aed"
+    }
+  },
+  "native_go_summary_sha256": "2deecb03a9fd4ce1b54e1257b105d1066ef64323a520cd5129a0107f7f718057",
+  "indexer": {
+    "path": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-20261026-184609-ce50c301\\bin\\YimeCoreIndexArm64Retry1.exe",
+    "sha256": "7ab11abc30de3b10b7b1d487103b3749a2c88113221d72bec247687c5165da6b"
+  },
+  "runner_source_note": "Exact local runner sources archived for review; their original PSScriptRoot/__file__ location was .tmp. Use the documented checked entrypoints for new runs; never execute archived runners in place.",
+  "product_installation_performed": false,
+  "installed_registered_host_acceptance": null,
+  "physical_acceptance": false
+}
