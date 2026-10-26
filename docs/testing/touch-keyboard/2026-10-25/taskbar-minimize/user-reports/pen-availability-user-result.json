@@ -1,0 +1,9 @@
+{
+  "recordedAt": "2026-10-26T03:17:51.160Z",
+  "source": "user report in chat: 可用, responding to whether pen is physically available and usable",
+  "available": true,
+  "model": null,
+  "protocol": null,
+  "inputAcceptance": "pending independent pen tests",
+  "note": "Do not inherit finger, mouse or simulated-message results; mixed pen+finger paths must be separate."
+}

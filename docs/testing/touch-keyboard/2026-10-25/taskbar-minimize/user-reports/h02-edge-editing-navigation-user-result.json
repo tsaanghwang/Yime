@@ -1,0 +1,36 @@
+{
+  "recordedAt": "2026-10-26T02:35:15.688Z",
+  "source": "user report in chat: 正常, following four Edge editing/navigation steps",
+  "case": "H02-Edge-edit-and-navigation",
+  "host": "Edge InPrivate local textarea",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "setup": "click textarea end, rebind, English EN, initial text 你你你",
+  "checks": [
+    {
+      "action": "Backspace three times; abc; Backspace; Shift+x",
+      "expected": "abX",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Backspace three times; abc; Left; x",
+      "expected": "abxc",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Home; selection on; Right twice; Left once; y",
+      "expectedSelection": "a",
+      "expected": "ybxc",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Home; selection on; End; selection off; Right; selection on; Home; Backspace",
+      "expected": "selection retained when latch off, collapsed, reverse selected, deleted to empty",
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "specific tested sequence differs from full Word N1-N4 fixture; not all substeps inherited",
+    "no independent observation or pen acceptance"
+  ]
+}

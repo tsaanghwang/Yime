@@ -1,0 +1,9 @@
+{
+  "recordedAt": "2026-10-26T04:10:51.402Z",
+  "source": "user async answer a to actual output after pen Shift then a",
+  "case": "P08-pen-uppercase-failure-clarification",
+  "actualOutput": "a",
+  "expectedOutput": "A at start of Aa",
+  "shiftHighlightPersistence": null,
+  "cause": "not established"
+}

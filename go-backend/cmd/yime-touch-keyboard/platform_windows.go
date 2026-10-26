@@ -86,29 +86,30 @@ type input struct {
 	Data [32]byte
 }
 type ui struct {
-	h                uintptr
-	s                *tk.State
-	ppm              float64
-	o                options
-	status           string
-	owners           map[uint32]target
-	top, border      int
-	hidden           bool
-	font             uintptr
-	monitorName      string
-	lastTarget       target
-	releasingCapture bool
-	focusStarted     uint32
-	touchReader      func(uintptr, uintptr) ([]touch, error)
-	preview          *preview
-	previewTouches   map[uint32]*previewGesture
-	glyphFont        uintptr
-	glyphs           map[string]string
-	showGlyphs       bool
-	host             *deliveryGate
-	hostBusy         bool
-	navSelecting     bool // Applies only to auxiliary navigation, never character keys.
-	cancelGeneration uint64
+	h                  uintptr
+	s                  *tk.State
+	ppm                float64
+	o                  options
+	status             string
+	owners             map[uint32]target
+	top, border        int
+	font               uintptr
+	monitorName        string
+	lastTarget         target
+	releasingCapture   bool
+	focusStarted       uint32
+	touchReader        func(uintptr, uintptr) ([]touch, error)
+	preview            *preview
+	previewTouches     map[uint32]*previewGesture
+	glyphFont          uintptr
+	glyphs             map[string]string
+	showGlyphs         bool
+	host               *deliveryGate
+	hostBusy           bool
+	navSelecting       bool // Applies only to auxiliary navigation, never character keys.
+	cancelGeneration   uint64
+	inputTrace         *inputTrace
+	nativePenOwnsMouse bool // Keep ownership through compatibility UP, even after cancellation.
 }
 
 var active *ui
@@ -116,6 +117,10 @@ var callback = syscall.NewCallback(windowProc)
 
 const wmTouch = 0x0240
 const drawTextNoPrefix = 0x0800
+
+// Keep a taskbar entry even though tapping keys must not activate this window.
+const keyboardWindowExStyle = 0x08040008 // NOACTIVATE | APPWINDOW | TOPMOST
+const keyboardWindowStyle = 0x800A0000   // POPUP | SYSMENU | MINIMIZEBOX
 
 var focusCallback = syscall.NewCallback(func(hook, event, hwnd, object, child, thread, tick uintptr) uintptr {
 	a := active
@@ -141,7 +146,7 @@ type toolButton struct {
 
 var toolButtons = []toolButton{
 	{8, 73, "smaller", "Ruler -1%"}, {78, 148, "larger", "Ruler +1%"},
-	{155, 265, "layout", ""}, {275, 345, "hide", "Hide"},
+	{155, 265, "layout", ""}, {275, 345, "minimize", "最小化"},
 	{355, 425, "close", "Close"}, {435, 515, "help", "Help / 帮助"},
 }
 
@@ -158,6 +163,15 @@ func toolbarAction(x, y int32) string {
 }
 func touchPromotedMouse(extra uintptr) bool {
 	return uint32(extra)&0xffffff80 == 0xff515780
+}
+
+func (a *ui) duplicatePromotedMouse(msg uint32, extra uintptr) bool {
+	promoted := uint32(extra)&0xffffff00 == 0xff515700
+	duplicate := touchPromotedMouse(extra) || a.nativePenOwnsMouse && promoted
+	if promoted && msg == 0x0202 {
+		a.nativePenOwnsMouse = false
+	}
+	return duplicate
 }
 func clampWindow(current, work rect, width, height int32) rect {
 	x := max(work.L, min(current.L, work.R-width))
@@ -192,6 +206,15 @@ func run(o options) error {
 	}
 	a := &ui{s: tk.NewState(b), ppm: ppm, o: o, owners: map[uint32]target{}, top: top, border: border, status: "English text / Ctrl Alt shortcuts. Chinese composition is not connected in this milestone.", monitorName: syscall.UTF16ToString(m.Device[:])}
 	a.s.Original = o.KeyView == "original"
+	if o.InputTrace != "" {
+		var err error
+		a.inputTrace, err = openInputTrace(o.InputTrace)
+		if err != nil {
+			return err
+		}
+		defer a.inputTrace.file.Close()
+		a.traceInput("start", 0, 0, 0)
+	}
 	if o.Preview || o.Host {
 		r, err := keyboardlab.OpenRuntime(o.Root, o.DataDir)
 		if err != nil {
@@ -242,7 +265,10 @@ func run(o options) error {
 	if o.Host {
 		title = "Yime 18u 中文宿主输入实验"
 	}
-	h, _, err := U("CreateWindowExW").Call(0x08000088, ptr(c.Name), ptr(str(title)), 0x80000000, uintptr(m.Work.L+(m.Work.R-m.Work.L-int32(width))/2), uintptr(m.Work.B-int32(height)-8), uintptr(width), uintptr(height), 0, 0, instance, 0)
+	if o.InputTrace != "" {
+		title += "（触笔诊断）"
+	}
+	h, _, err := U("CreateWindowExW").Call(keyboardWindowExStyle, ptr(c.Name), ptr(str(title)), keyboardWindowStyle, uintptr(m.Work.L+(m.Work.R-m.Work.L-int32(width))/2), uintptr(m.Work.B-int32(height)-8), uintptr(width), uintptr(height), 0, 0, instance, 0)
 	if h == 0 {
 		return fmt.Errorf("CreateWindow: %w", err)
 	}
@@ -302,11 +328,11 @@ func run(o options) error {
 		return a.hostSmoke(instance)
 	}
 	if ok, _, _ := U("RegisterHotKey").Call(h, 1, 0x4003, 'K'); ok == 0 {
-		a.status = "Ctrl+Alt+K unavailable; use Hide/Close on this window."
+		a.status = "Ctrl+Alt+K unavailable; use Minimize and restore from the taskbar."
 	} else {
 		defer U("UnregisterHotKey").Call(h, 1)
 	}
-	fmt.Printf("Yime desktop keyboard: hwnd=%d, 1u=19.05mm, board=%.2fx%.2fmm, pixels/mm=%.5f (ruler verification required). Ctrl+Alt+K hides/shows.\n", h, b.Bounds.Width*tk.UnitMM, b.Bounds.Height*tk.UnitMM, ppm)
+	fmt.Printf("Yime desktop keyboard: hwnd=%d, 1u=19.05mm, board=%.2fx%.2fmm, pixels/mm=%.5f (ruler verification required). Ctrl+Alt+K minimizes/restores.\n", h, b.Bounds.Width*tk.UnitMM, b.Bounds.Height*tk.UnitMM, ppm)
 	var msg message
 	for {
 		v, _, _ := U("GetMessageW").Call(uintptr(unsafe.Pointer(&msg)), 0, 0, 0)
@@ -350,6 +376,7 @@ func (a *ui) invalidate() {
 	}
 }
 func (a *ui) cancel() {
+	a.traceInput("cancel", 0, 0, 0)
 	a.cancelGeneration++
 	a.s.Cancel()
 	a.navSelecting = false
@@ -439,12 +466,8 @@ func (a *ui) toolbar(x, y int32) {
 		} else {
 			a.s.Original = !a.s.Original
 		}
-	case "hide":
-		if a.host != nil {
-			a.loseHostFocus("键盘已隐藏；再次输入前请重新绑定")
-		}
-		a.hidden = true
-		U("ShowWindow").Call(a.h, 0)
+	case "minimize":
+		a.minimize()
 	case "close":
 		U("DestroyWindow").Call(a.h)
 	case "help":
@@ -460,6 +483,24 @@ func (a *ui) toolbar(x, y int32) {
 	}
 	a.invalidate()
 }
+func (a *ui) suspendForMinimize() {
+	if a.host != nil {
+		a.loseHostFocus("键盘已最小化；恢复后请重新绑定目标")
+	}
+	if a.host == nil && a.preview != nil && !a.preview.fault && a.preview.snapshot.State.RawInput != "" {
+		if err := a.preview.dispatch(keyboardlab.Event{Type: "clear"}); err != nil {
+			a.status = err.Error()
+		}
+	}
+	a.cancel()
+	a.lastTarget = target{}
+}
+
+func (a *ui) minimize() {
+	a.suspendForMinimize()
+	U("ShowWindow").Call(a.h, 7) // SW_SHOWMINNOACTIVE; retain the taskbar entry.
+}
+
 func (a *ui) resize() bool {
 	m := currentMonitor(a.h)
 	w := int(math.Ceil(a.s.Board.Bounds.Width*tk.UnitMM*a.ppm)) + 2*a.border
@@ -483,7 +524,20 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 	if a == nil || a.h != h {
 		return def(h, msg, w, l)
 	}
+	if a.inputTrace != nil && tracedInputMessage(msg, len(a.previewTouches) != 0) {
+		a.traceInput("before", msg, w, l)
+		defer a.traceInput("after", msg, w, l)
+	}
 	switch msg {
+	case 0x0005: // WM_SIZE: also cover taskbar/system-menu minimization.
+		if w == 1 { // SIZE_MINIMIZED
+			a.suspendForMinimize()
+		}
+	case 0x0112: // WM_SYSCOMMAND
+		if w&0xfff0 == 0xf120 { // SC_RESTORE: taskbar click, without taking host focus.
+			U("ShowWindow").Call(h, 4) // SW_SHOWNOACTIVATE
+			return 0
+		}
 	case 0x0002:
 		if a.host != nil {
 			a.loseHostFocus("键盘已关闭")
@@ -520,23 +574,23 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 		a.invalidate()
 		return 0
 	case 0x0312:
-		if a.host != nil {
-			a.loseHostFocus("键盘显示状态变化；请重新绑定")
+		if iconic, _, _ := U("IsIconic").Call(h); iconic != 0 {
+			U("ShowWindow").Call(h, 4) // SW_SHOWNOACTIVATE
+		} else {
+			a.minimize()
 		}
-		a.cancel()
-		a.hidden = !a.hidden
-		v := uintptr(4)
-		if a.hidden {
-			v = 0
-		}
-		U("ShowWindow").Call(h, v)
 		return 0
 	case wmTouch:
 		a.touch(w, l)
 		return 0
+	case 0x0246: // WM_POINTERDOWN: reset before DefWindowProc promotes a new pen contact.
+		var kind uint32
+		if ok, _, _ := U("GetPointerType").Call(w&0xffff, uintptr(unsafe.Pointer(&kind))); ok != 0 && kind == 3 && len(a.previewTouches) == 0 && len(a.owners) == 0 {
+			a.nativePenOwnsMouse = false
+		}
 	case 0x0201, 0x0200, 0x0202:
 		extra, _, _ := U("GetMessageExtraInfo").Call()
-		if touchPromotedMouse(extra) {
+		if a.duplicatePromotedMouse(msg, extra) {
 			return 0
 		}
 		x, y := int32(int16(l&0xffff)), int32(int16(l>>16))
@@ -589,6 +643,19 @@ func (a *ui) touch(w, l uintptr) {
 	if err != nil {
 		a.cancel()
 		return
+	}
+	if a.inputTrace != nil {
+		for _, t := range v {
+			a.inputTrace.write(map[string]any{"stage": "touch-frame", "id": t.ID, "flags": fmt.Sprintf("0x%x", t.Flags), "x100": t.X, "y100": t.Y, "nativeTime": t.Time})
+		}
+	}
+	for _, t := range v {
+		// The primary pen can arrive as both WM_TOUCH (PEN=0x40, PRIMARY=0x10)
+		// and legacy mouse input. The native contact owns this gesture, so its
+		// mouse duplicate must not SetCapture or process the same action twice.
+		if t.Flags&0x52 == 0x52 {
+			a.nativePenOwnsMouse = true
+		}
 	}
 	// DOWNs precede UPs in a batched frame, so a simultaneous Shift+key frame
 	// captures modifiers consistently. Every touch remains identified by dwID.
@@ -811,6 +878,9 @@ func (a *ui) draw(dc uintptr, r rect) {
 	}
 	if a.host != nil {
 		title = "Yime 中文宿主输入实验（先绑定目标）"
+	}
+	if a.inputTrace != nil {
+		title += "（触笔诊断）"
 	}
 	text(dc, fmt.Sprintf("%s | 1u = 19.05 mm | %.2f mm | Ctrl+Alt+K", title, a.s.Board.Bounds.Width*tk.UnitMM), rect{10, 3, r.R - 10, 25}, 0x24)
 	for _, b := range toolButtons {

@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-26T02:11:59.831Z",
+  "source": "user report in chat: 正常, following four Word Enter steps",
+  "case": "H03-Word-Enter-and-ShiftEnter",
+  "host": "new unsaved Word test document C",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "checks": [
+    {
+      "action": "English EN: a, Enter, b",
+      "expectedStructure": "two paragraphs",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Backspace three times to clear; a, Shift+Enter, b",
+      "expectedStructure": "two lines within one paragraph",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Backspace three times to clear; Chinese variable ni then Enter",
+      "expected": "confirm current first candidate, no newline",
+      "actualCommittedText": null,
+      "result": "passed per user report"
+    },
+    {
+      "action": "ni then Shift+Enter",
+      "expected": "confirm current first candidate, no newline",
+      "actualCommittedText": null,
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "specific Chinese committed characters were requested but not supplied; not inferred",
+    "no independent paragraph-mark observation",
+    "not pen or other-application acceptance"
+  ]
+}

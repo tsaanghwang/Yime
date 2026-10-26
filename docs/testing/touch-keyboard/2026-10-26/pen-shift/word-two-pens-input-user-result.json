@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-26",
+  "scope": "Physical pure-pen targeted Word input on current MSI 16-inch x64 panel",
+  "userQuote": "都能正常输入且反应不觉得有问题。",
+  "packageDirectory": ".generated/touch-pen-shift-fix-20261026-amd64",
+  "executableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "launcher": "Start Pen Fixed Keyboard.cmd",
+  "host": "Word; each pen instructed to use a separate new blank temporary document, locate caret and explicitly bind with pen",
+  "steps": [
+    "English Shift -> a -> a; expected Aa",
+    "Chinese variable-code ni; tap candidate 你; expected total Aa你"
+  ],
+  "results": [
+    {
+      "input": "MSI original supplied pen",
+      "status": "passed-user-reported",
+      "actual": "User reports normal input for preceding steps; output not separately transcribed",
+      "responsiveness": "User reports no perceived problem",
+      "attemptCount": "not supplied"
+    },
+    {
+      "input": "Acer PE272XT display supplied pen",
+      "status": "passed-user-reported",
+      "actual": "User reports normal input for preceding steps; output not separately transcribed",
+      "responsiveness": "User reports no perceived problem",
+      "attemptCount": "not supplied"
+    }
+  ],
+  "independentObservation": false,
+  "trace": "Not enabled in host mode; no document text captured",
+  "acceptanceBoundary": "Only explicit binding, English one-shot uppercase/lowercase and Chinese variable-code candidate tap in Word. Not full H01 three-mode, full H02 editing, cancellation/recovery, Edge or 100-key coverage."
+}

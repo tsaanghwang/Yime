@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-26T01:15:03.548Z",
+  "source": "user report in chat on 2026-10-26: 正常",
+  "case": "H02-word-basic-english-editing",
+  "host": "Word 文档1",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "scope": "local development package host-input mode",
+  "checks": [
+    {
+      "action": "click after test text 你你你, rebind, English EN, Backspace three times",
+      "expectedOutput": "empty",
+      "result": "passed per user report"
+    },
+    {
+      "action": "abc",
+      "expectedOutput": "abc",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Backspace",
+      "expectedOutput": "ab",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Shift then English x (R06K06)",
+      "expectedOutput": "abX",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Backspace three times",
+      "expectedOutput": "empty",
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "exact Word version/bitness/privilege pending",
+    "not pen acceptance",
+    "auxiliary host navigation tests pending",
+    "no independent observation"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-10-25T13:51:24.960Z",
+  "source": "user report in chat: 正常, following empty-composition and multiline steps",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "scope": "local preview only",
+  "checks": [
+    {
+      "case": "P03-empty-composition-whitespace",
+      "setup": "Chinese variable; clear output; empty composition",
+      "actions": [
+        "Space",
+        "Enter"
+      ],
+      "expected": "only a space and newline; no Chinese character",
+      "result": "passed per user report"
+    },
+    {
+      "case": "P11-multiline-preview",
+      "setup": "English EN; clear output",
+      "actions": [
+        "a",
+        "Enter",
+        "b",
+        "Home",
+        "x",
+        "End",
+        "y"
+      ],
+      "expectedAfterHomeInsert": "first line xa, second line b",
+      "expectedFinal": "first line xa, second line by",
+      "result": "passed per user report"
+    }
+  ],
+  "requestedPunctuationSwitchState": "off before testing; acknowledged as part of preceding procedure, not independently observed",
+  "attemptCounts": null,
+  "limitations": [
+    "preview Home/End operate on whole text; not a real-host semantic claim",
+    "nonempty/no-candidate confirmation branch pending",
+    "not pen acceptance"
+  ]
+}

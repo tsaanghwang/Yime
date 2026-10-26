@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-25T13:36:17.952Z",
+  "source": "user report in chat: 能按要求输入",
+  "case": "P09-reserved-punctuation-entrance",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "scope": "local preview only",
+  "key": {
+    "id": "R02K06",
+    "baseID": "N12",
+    "shiftASCII": "!"
+  },
+  "checks": [
+    {
+      "setup": "Chinese variable; clear output; punctuation entrance off",
+      "action": "tap Shift then R02K06",
+      "expectedRaw": "!",
+      "expectedOutput": "empty",
+      "result": "passed per user report"
+    },
+    {
+      "setup": "Chinese variable; clear output; punctuation entrance on",
+      "action": "tap Shift then R02K06",
+      "expectedOutput": "！",
+      "expectedRaw": "empty",
+      "result": "passed per user report"
+    },
+    {
+      "setup": "punctuation entrance on; clear output; input ni",
+      "action": "tap Shift then R02K06",
+      "expectedOutput": "！",
+      "expectedRaw": "ni retained; no candidate confirmation",
+      "result": "passed per user report"
+    }
+  ],
+  "postcondition": "restore punctuation entrance off requested; not separately confirmed",
+  "attemptCounts": null,
+  "limitations": [
+    "single reviewed entrance tested; not every reserved key",
+    "not pen or real-host acceptance",
+    "no independent observation"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "recordedAt": "2026-10-25T12:30:52.490Z",
+  "source": "user report in chat: 正常",
+  "case": "P08",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "scope": "local preview",
+  "setup": "English input, EN view, empty composition; clear output before each check; a = R05K06",
+  "checks": [
+    {
+      "action": "tap Shift then a twice",
+      "expectedOutput": "Aa",
+      "result": "passed per user report"
+    },
+    {
+      "action": "hold Shift, tap a with another finger, release Shift",
+      "expectedOutput": "A",
+      "result": "passed per user report"
+    },
+    {
+      "action": "tap Shift twice then a",
+      "expectedOutput": "a",
+      "result": "passed per user report"
+    },
+    {
+      "action": "hold main 1, tap a with another finger, release 1",
+      "expectedOutput": "a1",
+      "result": "passed per user report"
+    },
+    {
+      "action": "hold Space, tap a with another finger, release Space",
+      "expectedOutput": "a ",
+      "result": "passed per user report"
+    },
+    {
+      "action": "hold Enter, tap a with another finger, release Enter",
+      "expectedOutput": "a\n",
+      "result": "passed per user report"
+    }
+  ],
+  "reportedIssues": "none in response to requested missing/duplicate/Shift-latch checks",
+  "attemptCounts": null,
+  "limitations": [
+    "no independent observation or per-attempt log",
+    "not pen or real-host acceptance"
+  ]
+}

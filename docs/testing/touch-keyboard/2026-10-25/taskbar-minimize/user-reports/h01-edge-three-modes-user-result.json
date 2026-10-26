@@ -1,0 +1,40 @@
+{
+  "recordedAt": "2026-10-26T02:29:38.972Z",
+  "source": "user report in chat: 正常, following Edge InPrivate local test-page steps",
+  "case": "H01-Edge-three-modes",
+  "host": {
+    "application": "Microsoft Edge",
+    "mode": "InPrivate per requested setup, acknowledged by overall normal response; not independently inspected",
+    "surface": "local host-browser-test.html textarea"
+  },
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "checks": [
+    {
+      "mode": "variable",
+      "raw": "ni",
+      "expected": "no raw code in textarea before confirmation; selecting 你 adds one 你",
+      "result": "passed per user report"
+    },
+    {
+      "mode": "full",
+      "raw": "niii",
+      "expected": "no raw code in textarea before confirmation; selecting 你 adds one 你",
+      "result": "passed per user report"
+    },
+    {
+      "mode": "shorthand",
+      "raw": "ni",
+      "expected": "no raw code in textarea before confirmation; selecting 你 adds one 你",
+      "result": "passed per user report"
+    }
+  ],
+  "expectedFinalText": "你你你",
+  "result": "passed per user report",
+  "attemptCounts": null,
+  "limitations": [
+    "unbound check in this host not yet reported",
+    "exact browser version and bitness pending",
+    "not every website or browser control",
+    "not pen acceptance"
+  ]
+}

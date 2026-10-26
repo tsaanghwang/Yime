@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-10-26T03:14:01.370Z",
+  "source": [
+    "user: zheng'chang",
+    "user: 正常"
+  ],
+  "cases": [
+    "H02-N2-Edge",
+    "H02-N5-Edge-focus-latch",
+    "H01-Edge-fresh-unbound"
+  ],
+  "host": "Edge InPrivate local textarea",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "checks": [
+    {
+      "action": "click end of 你, rebind, English EN, Home+a, End+b",
+      "expected": "a你b",
+      "result": "passed per user report"
+    },
+    {
+      "action": "selection on, lift contacts, switch Word D and return, click end and rebind, Left",
+      "expected": "plain movement with no selection extension; Edge and Word text unchanged",
+      "result": "passed per user report"
+    },
+    {
+      "action": "close keyboard and launch same entry; click textarea end without binding; Chinese variable N08 M03 Space",
+      "expected": "no new text",
+      "result": "passed per user report"
+    },
+    {
+      "action": "bind, ni, choose 你",
+      "expected": "a你b你",
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "no independent observation or pen acceptance",
+    "single-line navigation fixture only"
+  ]
+}

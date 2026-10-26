@@ -1,0 +1,53 @@
+{
+  "recordedAt": "2026-10-25T14:57:30.585Z",
+  "source": "user report in chat: 正常, following Word three-mode steps",
+  "case": "H01-word-three-modes",
+  "host": "Word 文档1",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "checks": [
+    {
+      "mode": "variable",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "raw": "ni",
+      "preConfirmHost": "no raw encoding text",
+      "confirmation": "tap candidate 你",
+      "result": "passed per user report"
+    },
+    {
+      "mode": "full",
+      "keys": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "raw": "niii",
+      "preConfirmHost": "no raw encoding text",
+      "confirmation": "tap candidate 你",
+      "result": "passed per user report"
+    },
+    {
+      "mode": "shorthand",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "raw": "ni",
+      "preConfirmHost": "no raw encoding text",
+      "confirmation": "tap candidate 你",
+      "result": "passed per user report"
+    }
+  ],
+  "expectedFinalHostText": "你你你",
+  "finalHostText": "你你你 per user normal report to exact expected steps",
+  "attemptCounts": null,
+  "limitations": [
+    "unbound no-write check not reported",
+    "exact Word version/bitness/privilege pending",
+    "no independent observation",
+    "not pen acceptance"
+  ]
+}

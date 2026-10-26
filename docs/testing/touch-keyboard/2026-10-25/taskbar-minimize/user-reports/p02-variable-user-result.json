@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-25T11:40:32.609Z",
+  "source": "user report in chat: 已测。结果正常。",
+  "case": "P02",
+  "subcase": "variable",
+  "inputMethod": "finger, per preceding requested procedure; not independently observed",
+  "procedure": {
+    "reset": "clear local output, Chinese variable mode",
+    "keys": [
+      "N08",
+      "M03"
+    ],
+    "layer": "base",
+    "expectedRaw": "ni",
+    "expectedCandidate": "你",
+    "confirmation": "tap candidate 你",
+    "expectedLocalOutput": "你"
+  },
+  "result": "passed per user report",
+  "attemptCount": null,
+  "otherModes": "pending",
+  "scope": "local preview; no real-host or pen acceptance"
+}
