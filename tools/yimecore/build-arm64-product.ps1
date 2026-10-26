@@ -13,6 +13,9 @@ $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'local-product-build-common.ps1')
 . (Join-Path $PSScriptRoot 'local-product-test-isolation.ps1')
 . (Join-Path $PSScriptRoot 'local-product-speech-build.ps1')
+. (Join-Path $PSScriptRoot 'arm64-go-environment.ps1')
+# Includes preflight failures before a build root/transcript exists.
+Invoke-Arm64ProductGoEnvironment {
 $scope=Get-YimeCoreExperimentBuildScope arm64
 if($scope.build_lane -cne 'arm64_native_source_build'){throw 'ARM64 product packaging requires the identified native ARM64 host.'}
 $target=Get-YimeCoreExperimentTarget arm64
@@ -24,7 +27,7 @@ $product=Get-LocalProductDescriptor (Join-Path $PSScriptRoot 'local-product.json
 $null=Assert-LocalProductSpeechBuildInputs $product $SpeechAdmissionRoot $ExpectedSpeechAdmissionSummarySha256 $ExpectedSpeechSourceInventorySha256 -ExpectedTarget arm64
 if(-not $OutputRoot){$OutputRoot=Join-Path $repo ('.tmp\yimecore-platform-experiments\arm64-package-'+(Get-Date -Format 'yyyyMMdd-HHmmss')+'-'+[guid]::NewGuid().ToString('N').Substring(0,8))}
 $out=New-LocalProductBuildRoot $repo $OutputRoot arm64
-$envNames=@('PATH','GOOS','GOARCH','CGO_ENABLED','GOFLAGS','GOWORK','GOTOOLCHAIN','GOCACHE','GOTMPDIR')
+$envNames=@('PATH','GOOS','GOARCH','CGO_ENABLED','GOCACHE','GOTMPDIR')
 $previous=@{};foreach($name in $envNames){$previous[$name]=[Environment]::GetEnvironmentVariable($name,'Process')}
 $passed=$false;$before=$null;$failure=$null
 Start-Transcript -LiteralPath (Join-Path $out 'transcript.txt')|Out-Null
@@ -32,7 +35,7 @@ try {
     $before=Get-LocalProductProtectionEvidence -HashesOnly
     Write-LocalProductJson $before (Join-Path $out 'protection-before.json')
     $env:PATH=(Split-Path -Parent $GoExecutable)+';'+$env:PATH
-    $env:GOOS='windows';$env:GOARCH='arm64';$env:CGO_ENABLED='0';$env:GOFLAGS='';$env:GOWORK='off';$env:GOTOOLCHAIN='local'
+    $env:GOOS='windows';$env:GOARCH='arm64';$env:CGO_ENABLED='0'
     $env:GOCACHE=Join-Path $out 'go-cache';$env:GOTMPDIR=Join-Path $out 'go-tmp'
     $package=Join-Path $out 'package';$tools=Join-Path $out 'build-tools'
     foreach($path in @($tools,$env:GOCACHE,$env:GOTMPDIR)){New-Item -ItemType Directory -Path $path|Out-Null}
@@ -88,7 +91,7 @@ try {
     Push-Location (Join-Path $repo 'go-backend')
     try {
         $goVersion=(& $GoExecutable version)-join ' '
-        $goEnvironment=(& $GoExecutable env -json GOOS GOARCH GOHOSTOS GOHOSTARCH GOVERSION CGO_ENABLED GOFLAGS GOTOOLCHAIN GOWORK)-join "`n"|ConvertFrom-Json
+        $goEnvironment=(& $GoExecutable env -json GOOS GOARCH GOHOSTOS GOHOSTARCH GOVERSION CGO_ENABLED GOENV GOFLAGS GOTOOLCHAIN GOWORK)-join "`n"|ConvertFrom-Json
         if($LASTEXITCODE -ne 0){throw 'Go toolchain identity unavailable.'}
         $sources=@($product.go_binaries|ForEach-Object{$_.source}|Sort-Object -Unique)
         $dependencies=@(& $GoExecutable list -deps @sources);if($LASTEXITCODE -ne 0){throw 'Runtime dependency enumeration failed.'}
@@ -145,3 +148,4 @@ finally {
     } finally {Stop-Transcript|Out-Null}
 }
 Write-Output ('PASS: complete ARM64 source package; CI, fixed package delivery and installed acceptance still required. '+$out)
+}

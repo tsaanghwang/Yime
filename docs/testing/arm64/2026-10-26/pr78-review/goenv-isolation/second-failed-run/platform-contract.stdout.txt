@@ -1,0 +1,2 @@
+PASS: 21 ARM64 source-build scope contracts; no build, target execution or installation.
+PASS: 24 platform experiment contracts; no target binaries executed.

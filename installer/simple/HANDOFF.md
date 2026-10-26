@@ -4,7 +4,7 @@
 
 ## 当前任务
 
-**PR #78 后续：** 已合入 main 的 `9adc3cdd`，保留双方原始证据规则；复查补强了 ARM 制包的原生 admission 前置并保留旧 x64 兼容。固定 R2 包未重制，详见[冲突与复查记录](../../docs/testing/arm64/2026-10-26/PR78-REVIEW.md)。
+**PR #78 后续：** 已合入 main 的 `9adc3cdd`，保留双方原始证据规则；复查补强了 ARM 制包的原生 admission 前置和 Go 持久配置隔离，并保留旧 x64 兼容。固定 R2 包未重制，详见[冲突与复查记录](../../docs/testing/arm64/2026-10-26/PR78-REVIEW.md)。
 
 **2026-10-26：YimeCore ARM64 R2 已安装，原生 Notepad 受控检查及用户回报的两项物理键盘检查通过，验收尚未封版。** registered-host 首轮 **8/9**，失败单格复测通过，首失败根因仍未知。候选代码注释显示问题待修；其他真实 x64/x86 应用、重启与日用稳定性待验证，不能据此宣称真实应用三模式通过。[固定 Release](https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-proart-20261026-r2) 的[完整 ZIP](https://github.com/tsaanghwang/Yime/releases/download/test-arm64-proart-20261026-r2/YimeCore-ARM64-20261026-r2.zip) SHA-256 为 `2c94d825c59bf768d8a00a13353d38fe65f3b67e2258d3fb9747014229049de1`；安装、来源、CI 与完整测试见[包与安装记录](../../docs/testing/arm64/2026-10-26/PACKAGE-AND-INSTALL-TEST.md)。下方源码阶段段落保留历史状态。
 

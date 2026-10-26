@@ -1,0 +1,13 @@
+{
+  "schema_version": "yimecore-pr78-workflow-contract-tool-transcript-v1",
+  "recorded_at": "2026-10-26T16:42:48.698Z",
+  "source_kind": "parent-agent-relayed-tool-output-summary",
+  "source_task": "/root",
+  "tool_chunk_id": "24f18f",
+  "original_stdout_stderr_file_available": false,
+  "command": "python -X utf8 -m unittest discover -s tools/ci -p test_workflow_contract.py -v",
+  "exit_code": 0,
+  "tests_reported_passed": 3,
+  "evidence_boundary": "Only the tool-result summary was relayed; this receipt is not an original log and does not invent individual test names or full stdout.",
+  "remote_ci_execution": false
+}

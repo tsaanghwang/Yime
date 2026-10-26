@@ -306,6 +306,11 @@ jobs:
     needs: [build-contract]
     steps:
       - uses: actions/checkout@v6
+      - name: Use Go 1.26.4 for ARM build environment contracts
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.4'
+          cache: false
       - name: Test required package resources without installed products
         shell: powershell
         run: .\installer\simple\Test-PackageValidation.ps1

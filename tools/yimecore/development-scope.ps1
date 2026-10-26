@@ -172,9 +172,10 @@ function Resolve-YimeCorePlatformGenerator([string]$Target, $Scope, [string]$Req
 
 function Assert-YimeCoreNativeGo {
     param([ValidateSet('mainstream_x64','arm64')][string]$ExperimentTarget, [string]$GoExecutable = 'go')
+    if ($ExperimentTarget -ieq 'arm64') { $ExperimentTarget = 'arm64' }
     if ($ExperimentTarget) {
         $scope = Get-YimeCoreExperimentBuildScope $ExperimentTarget
-        if ($ExperimentTarget -ceq 'arm64') {
+        if ($ExperimentTarget -ieq 'arm64') {
             if ($scope.build_lane -cne 'arm64_native_source_build') {
                 throw 'ARM64 Go execution requires the identified native ARM64 host, not the cross-build lane.'
             }

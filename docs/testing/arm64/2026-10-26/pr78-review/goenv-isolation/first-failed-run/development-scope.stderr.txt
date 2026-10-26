@@ -1,0 +1,1 @@
+This local-product lane requires the pinned AMD64 development host and 64-bit PowerShell. Use the separate approved platform-experiment lane for resumed targets.

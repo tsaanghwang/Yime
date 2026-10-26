@@ -1,0 +1,96 @@
+{
+  "schema_version": "yimecore-pr78-review-evidence-index-v1",
+  "draft": true,
+  "created_at": "2026-10-26T16:19:04.934Z",
+  "archive_root": "docs/testing/arm64/2026-10-26/pr78-review",
+  "summary": "goenv-isolation/observations.stage1.json",
+  "prior_index": null,
+  "artifact_count": 8,
+  "artifact_bytes": 9194,
+  "verification": {
+    "all_artifact_hashes_and_sizes_checked": true,
+    "new_original_source_bytes_pinned_and_checked": 7,
+    "derived_evidence_links_checked": true,
+    "original_bytes_transcoded": false
+  },
+  "boundaries": [
+    "Only explicit source files from the plan are read; no Go cache or user settings are scanned.",
+    "Transcribed tool-output receipts are labelled and are not original stdout/stderr files.",
+    "Checkout EOL normalization is diagnostic only and never changes archived raw bytes.",
+    "Source regressions do not establish installed or real-application input acceptance."
+  ],
+  "artifacts": [
+    {
+      "path": "goenv-isolation/observations.stage1.json",
+      "bytes": 2893,
+      "sha256": "226ffa909cdccd9e89bafd36004acdca10fd9ba8d1146150d82bfbd13e5b78f2",
+      "category": "derived-review-summary",
+      "byte_identical_to_source": null,
+      "derived_from": [
+        "goenv-isolation/reproduction/result.json",
+        "goenv-isolation/reproduction/go.env",
+        "goenv-isolation/reproduction/overlay.json",
+        "goenv-isolation/reproduction/outside-module.go",
+        "goenv-isolation/reproduction/module/go.mod",
+        "goenv-isolation/reproduction/module/main.go",
+        "goenv-isolation/r2/build-inputs.json"
+      ]
+    },
+    {
+      "path": "goenv-isolation/r2/build-inputs.json",
+      "source_path": "C:\\dev\\Yime-deliveries\\arm64-proart-20261026-r2\\YimeCore-ARM64\\payload\\build\\build-inputs.json",
+      "bytes": 4424,
+      "sha256": "520ca8d3fdefd5a4482238b57a01969c3e99cfe4246ba58e0d219930ddf02204",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/reproduction/go.env",
+      "source_path": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\go.env",
+      "bytes": 80,
+      "sha256": "24c5999392411085662b76470879051c6864c6fcabe2ae778e9759ee373aa61f",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/reproduction/module/go.mod",
+      "source_path": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\module\\go.mod",
+      "bytes": 49,
+      "sha256": "13269fb639e9f4c57f719ed8809a778857bca028230ce37c2fe53cec531f4872",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/reproduction/module/main.go",
+      "source_path": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\module\\main.go",
+      "bytes": 38,
+      "sha256": "b3ced67810543f03e5c99c5fd5ed6e0dee5b4ddfa34c5685293ff98d9c2884a0",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/reproduction/outside-module.go",
+      "source_path": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\outside-module.go",
+      "bytes": 66,
+      "sha256": "d647d3fc45b1675f72e7dbac5115f7db356507202cf4b45cd3136c0465aa688e",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/reproduction/overlay.json",
+      "source_path": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\overlay.json",
+      "bytes": 161,
+      "sha256": "6f7d8ced5c6c06420b5cbe6658398f6129698d3653169884ec48b81fc4dc3f54",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/reproduction/result.json",
+      "source_path": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\result.json",
+      "bytes": 1483,
+      "sha256": "5ebb8ae827b9075df92ee8ced78f91bf6eefae6041bc600b1947d95a00b7842d",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    }
+  ]
+}

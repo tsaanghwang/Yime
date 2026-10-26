@@ -59,6 +59,17 @@ foreach ($response in @(@('windows','amd64'),@('windows','arm64'),@('windows','3
     function Get-YimeCoreExperimentBuildScope { [ordered]@{build_lane='arm64_native_source_build'} }
     Assert-AdmissionRejected { Assert-YimeCoreNativeGo -ExperimentTarget arm64 } 'explicit absolute executable path' 'ARM Go cannot resolve from ambient PATH'
 }
+foreach ($targetCase in @('ARM64','Arm64')) {
+    Assert-AdmissionRejected { Get-YimeCoreExperimentBuildScope $targetCase } 'approved experiment allowlist' ("standalone scope retains strict target spelling: $targetCase")
+    & {
+        function Get-YimeCoreExperimentBuildScope([string]$Target) {
+            Assert-AdmissionCheck ($Target -ceq 'arm64') 'native Go guard normalizes ARM before scope lookup'
+            [ordered]@{build_lane='arm64_native_source_build'}
+        }
+        function go { throw 'Incorrectly reached the AMD64 Go branch' }
+        Assert-AdmissionRejected { Assert-YimeCoreNativeGo -ExperimentTarget $targetCase } 'explicit absolute executable path' ("ARM spelling $targetCase cannot enter the default AMD64 Go branch")
+    }
+}
 
 # Static PE fixtures are never launched. Rejection must occur before invocation.
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
@@ -154,4 +165,5 @@ try {
     $effects = @($commands | Where-Object {$_.GetCommandName() -cin @('New-LocalProductBuildRoot','cmake')})
     Assert-AdmissionCheck ($effects.Count -gt 0 -and @($effects | Where-Object {$_.Extent.StartOffset -lt $preflight[0].Extent.EndOffset}).Count -eq 0) 'ARM admission preflight precedes output creation and compilation'
 }
+& (Join-Path $PSScriptRoot 'test-arm64-go-environment.ps1')
 Write-Output "PASS: $script:checks ARM64 speech admission host/toolchain/package contracts; no admission, installation or target process execution."
