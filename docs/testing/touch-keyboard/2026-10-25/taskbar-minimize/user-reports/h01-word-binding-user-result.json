@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-10-25T14:46:31.888Z",
+  "source": "user report: 这样可以, following move keyboard, click Word caret, bind target procedure",
+  "case": "H01-bind-target",
+  "host": "Word 文档1",
+  "inputMethod": "user-operated; precise touch/mouse method for arranging and binding not explicitly confirmed",
+  "result": "user reports binding works after exposing and clicking document caret",
+  "status": "binding preparation successful per user; actual host text and three-mode confirmation pending",
+  "notEstablished": [
+    "unbound no-write check",
+    "three-mode Word text result",
+    "exact Word version/bitness/privilege",
+    "pure finger path for every setup action"
+  ],
+  "scope": "local development package host-input mode"
+}

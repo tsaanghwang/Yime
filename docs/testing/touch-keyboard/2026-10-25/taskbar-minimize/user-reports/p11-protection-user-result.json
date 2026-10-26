@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-10-25T13:26:29.238Z",
+  "source": "user report in chat: 正常, following three navigation-protection steps",
+  "case": "P11-navigation-cancel-and-composition-protection",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "scope": "local preview",
+  "checks": [
+    {
+      "action": "English EN: abc, End, hold Left, move out and back, release, x",
+      "expectedOutput": "abcx",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Chinese variable ni; attempt Left/Right/Home/End/selection",
+      "expected": "ni unchanged, local output empty; navigation rejected",
+      "result": "passed per user report"
+    },
+    {
+      "action": "pause ni by switching English; attempt navigation; Esc; abc, Home, x",
+      "expected": "paused navigation rejected; after cancel navigation resumes and output xabc",
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "not pen or real-host acceptance",
+    "no independent observation"
+  ]
+}

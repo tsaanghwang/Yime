@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-26",
+  "scope": "Current MSI 16-inch x64 panel; fixed package preview; Shift -> a -> a only",
+  "userQuote": "三项测试正常。可能与笔和功率没关系。重新安装了显示驱动程序。现在反应很灵敏。",
+  "packageDirectory": ".generated/touch-pen-shift-fix-20261026-amd64",
+  "executableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "results": [
+    {
+      "input": "finger",
+      "status": "passed-user-reported",
+      "expected": "Aa",
+      "actual": "用户报告按此前步骤正常；未单独转录三次输出",
+      "attemptCount": "not supplied"
+    },
+    {
+      "input": "MSI supplied pen",
+      "status": "passed-user-reported",
+      "expected": "Aa",
+      "actual": "用户报告按此前步骤正常；未单独转录三次输出",
+      "attemptCount": "not supplied"
+    },
+    {
+      "input": "Acer PE272XT supplied pen",
+      "status": "passed-user-reported",
+      "expected": "Aa",
+      "actual": "用户报告按此前步骤正常；未单独转录三次输出",
+      "attemptCount": "not supplied"
+    }
+  ],
+  "environmentChange": {
+    "actor": "user",
+    "action": "reinstalled display driver",
+    "driverVersion": "not supplied",
+    "response": "user reports now very responsive",
+    "causality": "Not isolated: application fix and driver reinstallation both occurred before this retest. No pen power/battery cause established."
+  },
+  "trace": {
+    "file": "pen-shift-fixed-retest.jsonl",
+    "sha256": "edb2debd3a23ddd0ef80f98ad66d1ca933a2f8fb3854282b3b1ecac8823f75dd",
+    "bytes": 399003,
+    "rows": 1055,
+    "penShiftSequences": [
+      {
+        "shiftLatched": 838,
+        "firstCharacterLength1AndShiftCleared": 908,
+        "secondCharacterLength2": 960,
+        "cancelGeneration": 2
+      },
+      {
+        "shiftLatched": 993,
+        "firstCharacterLength1AndShiftCleared": 1016,
+        "secondCharacterLength2": 1039,
+        "cancelGeneration": 3
+      }
+    ],
+    "penPromotedMouseDownSequences": [
+      828,
+      862,
+      924,
+      983,
+      1009,
+      1032
+    ],
+    "observation": "All six native-pen-owned promoted mouse DOWN after states have exactly one pending gesture. No cancellation within either documented pen Shift/a/a sequence. Trace stores lengths and states, not character text; device names/order supplied by user, not identifiable from event log."
+  },
+  "acceptanceBoundary": "Targeted physical preview retest only; other pure-pen cases and real hosts pending; original failures retained"
+}

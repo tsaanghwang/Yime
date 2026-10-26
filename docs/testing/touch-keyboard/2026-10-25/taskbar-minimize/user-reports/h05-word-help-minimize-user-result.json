@@ -1,0 +1,31 @@
+{
+  "recordedAt": "2026-10-26T01:58:25.821Z",
+  "source": "user report in chat: 正常, following three Word help/minimize steps",
+  "case": "H05-Word-help-minimize-restore",
+  "host": "Word document A",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "initialHostText": "你你",
+  "checks": [
+    {
+      "action": "click A caret, rebind, Chinese variable ni, open Help then close; attempt confirmation without rebinding",
+      "expected": "composition cancelled; A remains 你你; no write before rebind",
+      "result": "passed per user report"
+    },
+    {
+      "action": "click A caret and rebind, enter ni, minimize, restore from taskbar; attempt without rebind",
+      "expected": "composition cancelled; A remains 你你; no write before rebind",
+      "result": "passed per user report"
+    },
+    {
+      "action": "click A caret and rebind; confirm another 你",
+      "expected": "A becomes 你你你",
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "user report without independent imagery",
+    "exact Word environment details still pending",
+    "not pen or other-host acceptance"
+  ]
+}

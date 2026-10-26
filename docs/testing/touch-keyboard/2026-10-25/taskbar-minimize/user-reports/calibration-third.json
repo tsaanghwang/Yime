@@ -1,0 +1,17 @@
+{
+  "recordedAt": "2026-10-25T11:35:10.548Z",
+  "source": "user report in chat",
+  "referenceMM": 100,
+  "observedMM": 97,
+  "measurementQualifier": "approximate",
+  "blankMarginLeftMM": 4,
+  "blankMarginRightMM": 4,
+  "userDecision": "keep current size for now; do not fill remaining width",
+  "launcherObservedArgumentMM": 58.8,
+  "actualMainBoardWidthMM": null,
+  "minimizeButton": "user reports effective",
+  "taskbarRestore": "not explicitly confirmed",
+  "inputMethodForMinimize": "not specified",
+  "fingerInputAcceptance": "pending",
+  "penInputAcceptance": "pending"
+}

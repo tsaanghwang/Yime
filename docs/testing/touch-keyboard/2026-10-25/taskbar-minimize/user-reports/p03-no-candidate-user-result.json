@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-10-25T14:26:33.653Z",
+  "source": "user report in chat: 正常 (repeated acknowledgement)",
+  "case": "P03-nonempty-no-candidate",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "scope": "local preview",
+  "setup": "Chinese full mode, clear output, N08 base five times",
+  "raw": "nnnnn",
+  "checks": [
+    "candidate list empty",
+    "Space and Enter do not confirm or output text; raw stays nnnnn",
+    "Esc clears raw"
+  ],
+  "result": "passed per user report",
+  "attemptCounts": null
+}

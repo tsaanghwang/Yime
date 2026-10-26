@@ -1,0 +1,51 @@
+{
+  "recordedAtUTC": "2026-10-26T03:14:26.168462+00:00",
+  "source": "read-only local diagnostic; helper-process DPI awareness only",
+  "system": {
+    "machine": "AMD64",
+    "windowsVersion": "10.0.26300"
+  },
+  "windows": {
+    "DisplayVersion": "26H2",
+    "CurrentBuildNumber": "26300",
+    "UBR": 9711,
+    "EditionID": "CoreCountrySpecific"
+  },
+  "device": {
+    "SystemManufacturer": "Micro-Star International Co., Ltd.",
+    "SystemProductName": "Prestige 16 Flip AI+ C3MTG",
+    "BaseBoardProduct": "MS-2622"
+  },
+  "display": {
+    "primaryPixelWidth": 2880,
+    "primaryPixelHeight": 1800,
+    "monitorCount": 1,
+    "systemDPI": 192,
+    "systemScalePercent": 200.0,
+    "digitizerCapabilityFlags": 197,
+    "maximumTouchContactsReported": 10,
+    "note": "System DPI and primary display only; driver capability is not physical pen/finger acceptance."
+  },
+  "hosts": {
+    "Word": {
+      "path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
+      "exists": true,
+      "peMachine": "0x8664",
+      "fileVersion": "16.0.20527.20088"
+    },
+    "Edge": {
+      "path": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "exists": true,
+      "peMachine": "0x8664",
+      "fileVersion": "156.0.4314.42"
+    }
+  },
+  "pending": [
+    "physical active-display width",
+    "main-area outer-edge measured width",
+    "screen/hinge angle",
+    "touch driver identity",
+    "pen availability/model/protocol",
+    "per-host elevation context"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-10-26T01:25:29.380Z",
+  "source": "user report in chat: 完全正常",
+  "case": "H02-N1-N4-Word",
+  "host": "Word 文档1",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "setup": "blank test document, caret clicked and target rebound, English EN; sequential operations",
+  "checks": [
+    {
+      "case": "N1",
+      "actions": "abc, Left twice, Right once, x",
+      "expectedOutput": "abxc",
+      "result": "passed per user report"
+    },
+    {
+      "case": "N2",
+      "actions": "Home, a, End, b",
+      "expectedOutput": "aabxcb",
+      "result": "passed per user report"
+    },
+    {
+      "case": "N3",
+      "actions": "Home, selection on, Right twice, Left once, x",
+      "expectedSelection": "first a",
+      "expectedOutput": "xabxcb",
+      "result": "passed per user report"
+    },
+    {
+      "case": "N4",
+      "actions": "Home, selection on, End, selection off, Right, selection on, Home, Backspace",
+      "expected": "forward full selection; off retains selection; collapse; reverse full selection; delete to empty",
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "N5 focus/composition protection pending",
+    "exact host version and bitness not yet recorded",
+    "not pen or independent observation"
+  ]
+}

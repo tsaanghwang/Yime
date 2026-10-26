@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-26T03:03:58.884Z",
+  "source": "user report in chat: 正常, following Word D/Edge/Word D target-binding steps",
+  "case": "H06-Word-Edge-cross-application",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "hosts": {
+    "Word": "new blank unsaved test document D",
+    "Edge": "InPrivate local textarea cleared with page reset"
+  },
+  "checks": [
+    {
+      "action": "click Word D caret, bind, Chinese variable confirm 你",
+      "expected": {
+        "Word": "你",
+        "Edge": ""
+      },
+      "result": "passed per user report"
+    },
+    {
+      "action": "click Edge textarea, bind, confirm 你",
+      "expected": {
+        "Word": "你",
+        "Edge": "你"
+      },
+      "result": "passed per user report"
+    },
+    {
+      "action": "click end of Word D, rebind, confirm 你",
+      "expected": {
+        "Word": "你你",
+        "Edge": "你"
+      },
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "limitations": [
+    "no independent observation",
+    "specific Word and local Edge textarea only",
+    "not pen acceptance"
+  ]
+}

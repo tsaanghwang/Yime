@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-25T11:43:12.932Z",
+  "source": "user report in chat: 正常。",
+  "case": "P02",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "modes": [
+    {
+      "mode": "full",
+      "keys": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "expectedRaw": "niii",
+      "candidate": "你",
+      "expectedLocalOutput": "你",
+      "result": "passed per user report"
+    },
+    {
+      "mode": "shorthand",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedRaw": "ni",
+      "candidate": "你",
+      "expectedLocalOutput": "你",
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "scope": "local preview; real-host and pen acceptance remain pending"
+}

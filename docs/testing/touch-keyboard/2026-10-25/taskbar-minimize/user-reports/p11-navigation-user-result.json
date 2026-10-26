@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-10-25T12:56:43.873Z",
+  "source": "user report in chat: 正常, following four auxiliary navigation steps",
+  "case": "P11-sequential-navigation-replacement-delete",
+  "inputMethod": "single finger per preceding requested procedure; not independently observed",
+  "scope": "local preview only",
+  "setup": "clear output; English input; EN view",
+  "checks": [
+    {
+      "action": "abc, Left, x",
+      "expected": "abxc",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Home, selection on, Right twice",
+      "expectedSelection": "ab",
+      "result": "passed per user report"
+    },
+    {
+      "action": "y replaces selected ab",
+      "expected": "yxc",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Home, selection on, End, Backspace",
+      "expected": "empty output",
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "remaining": [
+    "selection shrink",
+    "selection latch off retains selection",
+    "collapse and reverse selection",
+    "navigation move-out-return",
+    "navigation blocked by active/paused composition",
+    "multiline behavior"
+  ],
+  "limitations": [
+    "not real-host acceptance",
+    "not pen acceptance",
+    "no independent observation"
+  ]
+}

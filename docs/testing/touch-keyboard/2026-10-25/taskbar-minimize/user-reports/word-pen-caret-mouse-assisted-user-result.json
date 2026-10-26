@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-26",
+  "userQuote": "除了用笔定位word' 焦点不能定位似乎变成了描绘铅笔外，用鼠标可以定位，其它正常。",
+  "packageDirectory": ".generated/touch-pen-shift-fix-20261026-amd64",
+  "scope": "Word cancellation/minimize/restore/rebind targeted follow-up",
+  "instructedSteps": [
+    "ni then virtual Esc: candidate closes and document unchanged",
+    "ni then minimize and taskbar restore: composition cleared and document unchanged",
+    "explicitly rebind Word then ni and tap 你: document adds exactly one 你"
+  ],
+  "reportedOutcome": "Other steps normal with mouse caret placement; pen caret placement unavailable and appears to draw ink",
+  "perPenBreakdown": "not provided in this reply",
+  "inputClassification": "pen keyboard operations with mouse-assisted Word caret placement; not end-to-end pure-pen acceptance",
+  "qualificationOfPriorResult": "Prior Word normal input feedback remains valid for text input, but pen-only caret placement/explicit target setup must not be treated as verified. Prior immutable report retained; this clarification qualifies its pure-pen interpretation.",
+  "cause": {
+    "status": "suspected Word automatic inking; not directly observed or confirmed",
+    "officialSource": "https://support.microsoft.com/zh-cn/office/turn-off-automatic-inking",
+    "nextStep": "Use Word Draw > Select, then test pen caret placement. Persistent option is default pen select/interact; not changed by agent."
+  },
+  "acceptanceBoundary": "No full H04 focus-loss or full H05 help/recovery acceptance implied; targeted requested steps only, with mouse assistance."
+}

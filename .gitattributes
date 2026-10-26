@@ -42,3 +42,7 @@ docs/testing/yimecore/native-core/2026-09-09-i7-7820x/*.json -text !eol whitespa
 docs/testing/yimecore/native-core/2026-09-09-i7-7820x/cpu-profile-share-*.txt -text !eol whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 # Original test reports/logs are hashed; preserve bytes across branch checkouts.
 docs/testing/simple-maintenance/**/raw/** -text !eol -whitespace
+
+# Original pen-event logs are SHA-256-bound physical-test evidence; preserve bytes.
+docs/testing/touch-keyboard/2026-10-26/pen-shift/*.jsonl -text !eol -whitespace
+docs/testing/touch-keyboard/2026-10-25/taskbar-minimize/environment-observed.json -text !eol -whitespace

@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-10-26T02:24:42.059Z",
+  "source": [
+    "user: 两次结果正常。97妈妈。",
+    "user correction: 97mm"
+  ],
+  "case": "H01-fresh-unbound-and-P01-restart-ruler",
+  "checks": [
+    {
+      "action": "close keyboard and relaunch same Start Taskbar Keyboard.cmd; click Word C caret without binding; N08, M03, Space",
+      "expected": "no new Word text",
+      "result": "passed per user report"
+    },
+    {
+      "action": "bind target; ni; tap candidate 你",
+      "expected": "exactly one new 你 in Word C",
+      "result": "passed per user report"
+    },
+    {
+      "action": "physical-ruler remeasurement after restart",
+      "referenceMM": 100,
+      "observedMM": 97,
+      "unit": "mm",
+      "result": "user-reported measurement"
+    }
+  ],
+  "calibrationObservedArgumentMM": 58.8,
+  "inputMethod": "finger per requested procedure; not independently observed",
+  "attemptCounts": null,
+  "limitations": [
+    "97 mm is measured against 100 mm reference; no exact-size pass or tolerance inferred",
+    "independent main-area width still not provided",
+    "not pen acceptance"
+  ]
+}

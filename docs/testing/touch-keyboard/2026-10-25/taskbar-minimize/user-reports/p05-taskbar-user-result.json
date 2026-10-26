@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-25T11:55:34.849Z",
+  "source": "user report in chat: 正常。",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "scope": "local preview of taskbar development package",
+  "attemptCounts": null,
+  "checks": [
+    {
+      "case": "P05-key-move-out-return",
+      "setup": "clear output, Chinese variable, base layer",
+      "action": "hold N08, move outside, move back, release",
+      "expected": "no composition or output",
+      "result": "passed per user report"
+    },
+    {
+      "case": "P05-candidate-move-out-return",
+      "setup": "clear output, input ni",
+      "action": "hold candidate 你, move outside candidate, move back, release",
+      "expected": "no confirmation; composition ni retained; output empty",
+      "result": "passed per user report"
+    },
+    {
+      "case": "taskbar-minimize-restore",
+      "setup": "clear output, confirm one 你, then unconfirmed ni",
+      "action": "tap Minimize, restore via taskbar entry",
+      "expected": "same window restored without restarting; confirmed 你 preserved; ni cancelled",
+      "result": "passed per user report"
+    }
+  ],
+  "limitations": [
+    "attempt counts and independent imagery not supplied",
+    "does not cover host bindings, real-host input or pen"
+  ]
+}

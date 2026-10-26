@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-10-25T13:08:31.184Z",
+  "source": "user report in chat: 正常, following five selection steps",
+  "case": "P11-selection-shrink-latch-collapse-reverse",
+  "inputMethod": "single finger per preceding requested procedure; not independently observed",
+  "scope": "local preview; single-line text",
+  "checks": [
+    {
+      "action": "abc; Home; selection on; Right three times",
+      "expectedSelection": "abc",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Left once while selection on",
+      "expectedSelection": "ab",
+      "result": "passed per user report"
+    },
+    {
+      "action": "selection off",
+      "expectedSelection": "ab remains selected",
+      "result": "passed per user report"
+    },
+    {
+      "action": "Right once; x",
+      "expectedOutput": "abxc",
+      "result": "passed per user report"
+    },
+    {
+      "action": "End; selection on; Home; Backspace",
+      "expected": "reverse full selection then empty output",
+      "result": "passed per user report"
+    }
+  ],
+  "attemptCounts": null,
+  "remaining": [
+    "navigation move-out-return",
+    "active/paused composition navigation blocking",
+    "multiline behavior"
+  ],
+  "limitations": [
+    "not pen or real-host acceptance",
+    "no independent observation"
+  ]
+}

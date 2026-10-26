@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-10-26T04:04:37.342Z",
+  "source": "user report: 好像触控笔手写不能输入上档大A。两支都是。是不是转到大屏看看，是不是这块小屏对触控笔反应差。手指正常，能出A。",
+  "case": "P08-pen-one-shot-Shift",
+  "pens": [
+    "MSI bundled original pen",
+    "Acer PE272XT bundled larger pen"
+  ],
+  "surface": "current 16-inch screen per preceding clarification",
+  "requestedProcedure": "preview English EN, clear output, tap virtual Shift then a",
+  "expected": "uppercase A at start of Aa sequence",
+  "actual": "uppercase A not produced by either pen; exact output and Shift latch highlight persistence not yet reported",
+  "fingerComparison": "user reports finger path produces A",
+  "result": "failure reported for uppercase pen path; preserve original evidence",
+  "hypotheses": [
+    "user proposes small-screen pen response problem",
+    "program/driver pen event path also requires examination"
+  ],
+  "cause": "not established",
+  "bigScreenComparison": "proposed by user; not yet executed; requires separate device/display/calibration identity",
+  "limitations": [
+    "phrase 手写 understood in context as pen-tip taps on virtual keys, awaiting detail if needed",
+    "no independent observation or quantified timing"
+  ]
+}

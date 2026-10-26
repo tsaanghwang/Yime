@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-26",
+  "userQuote": "微星自带笔已测，结果正常。确实没电了。",
+  "scope": "MSI supplied pen repeats the pending three Edge cancellation/recovery steps after pen response restored",
+  "packageDirectory": ".generated/touch-pen-shift-fix-20261026-amd64",
+  "executableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "input": "MSI original supplied pen",
+  "result": "passed-user-reported",
+  "instructedSteps": [
+    "ni then virtual Esc: candidates disappear and document unchanged",
+    "ni then minimize/taskbar restore: composition cleared and document unchanged",
+    "Pen caret placement and explicit rebind, ni and tap 你: document adds only one 你"
+  ],
+  "actual": "User reports normal for the requested three-step group; output and attempt counts not separately transcribed",
+  "priorDeviceInterruption": {
+    "observation": "Sensing point disappeared",
+    "cause": "Battery depleted, confirmed by user",
+    "status": "resolved-user-reported",
+    "batteryTelemetry": "not independently measured"
+  },
+  "groupOutcome": "Both Acer and MSI pens now have normal feedback for these targeted Edge steps; Acer passed in prior report",
+  "priorEvidence": "edge-pen-recovery-acer-pass-msi-unavailable-user-result.json",
+  "acceptanceBoundary": "This three-step Edge group only; no retroactive change to earlier mixed-input Word tests, full H04/H05, remaining pure-pen cases or full-key acceptance. Original Shift software defect remains separate from this battery interruption."
+}

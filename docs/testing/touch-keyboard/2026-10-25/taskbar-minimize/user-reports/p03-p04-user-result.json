@@ -1,0 +1,47 @@
+{
+  "recordedAt": "2026-10-25T11:49:33.528Z",
+  "source": "user report in chat: 四项全部通过。",
+  "inputMethod": "finger per preceding requested procedure; not independently observed",
+  "scope": "local preview",
+  "attemptCounts": null,
+  "checks": [
+    {
+      "case": "P03-space",
+      "setup": "clear output, Chinese full mode, base layer, niii",
+      "action": "tap Space",
+      "expected": "confirm the current first candidate exactly once",
+      "result": "passed per user report"
+    },
+    {
+      "case": "P03-enter",
+      "setup": "clear output, Chinese full mode, base layer, niii",
+      "action": "tap Enter",
+      "expected": "confirm the current first candidate exactly once",
+      "result": "passed per user report"
+    },
+    {
+      "case": "P04-backspace-escape",
+      "setup": "clear output, Chinese full mode, base layer, niii",
+      "actions": [
+        "Backspace -> nii",
+        "M03 -> niii",
+        "Esc -> empty composition"
+      ],
+      "expectedOutput": "empty",
+      "result": "passed per user report"
+    },
+    {
+      "case": "P04-mode-switch",
+      "setup": "clear output, Chinese full mode, base layer, niii",
+      "action": "switch to variable",
+      "expected": "composition cancelled, local output remains empty",
+      "result": "passed per user report"
+    }
+  ],
+  "limitations": [
+    "actual first-candidate text not reported",
+    "attempt counts not reported",
+    "P03 ordinals, empty-composition whitespace and no-candidate branches pending",
+    "no pen or real-host acceptance"
+  ]
+}

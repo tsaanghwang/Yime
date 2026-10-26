@@ -1,0 +1,16 @@
+{
+  "time": "2026-10-25T10:58:31.842Z",
+  "source": "user physical-ruler report",
+  "referenceMM": 100,
+  "observedMM": 70,
+  "measurementQualifier": "approximate",
+  "factor": 1.4285714285714286,
+  "baseline": "default launcher; confirm no prior Ruler adjustment",
+  "geometry": {
+    "widthU": 18,
+    "unitMM": 19.05,
+    "widthMM": 342.9
+  },
+  "status": "pending calibrated remeasurement",
+  "startupReport": "user reports preview opened without error, with noticeable delay"
+}

@@ -1,0 +1,11 @@
+{
+  "time": "2026-10-25T11:09:14.047Z",
+  "source": "user physical-ruler report",
+  "previousObservedArgumentMM": 70,
+  "observedAfterCalibrationMM": 84,
+  "measurementQualifier": "approximate",
+  "additionalFactor": 1.1904761904761905,
+  "nextObservedArgumentMM": 58.8,
+  "status": "pending remeasurement",
+  "otherReport": "room to enlarge; Hide makes window difficult to find, user requests taskbar minimize"
+}
