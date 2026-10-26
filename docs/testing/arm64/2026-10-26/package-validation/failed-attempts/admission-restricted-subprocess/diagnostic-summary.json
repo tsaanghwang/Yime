@@ -1,0 +1,13 @@
+{
+  "schema_version": "yimecore-arm64-admission-failed-attempt-note-v1",
+  "evidence_kind": "derived-observation-note",
+  "result": "failed before source build or owned Broker execution",
+  "failure_stage": "baseline",
+  "cause_observed": "StdRegProv access denied in the restricted Node-launched subprocess at Read-YimeCoreSystemKey line 4.",
+  "diagnostic_entry": "baseline-diagnostic.ps1 through tools/powershell/run_checked.py --edition ps7",
+  "original_diagnostic_stdout_bytes_retained": false,
+  "boundary": "The failed run summary and runner output are retained byte-for-byte. This explanatory note is not a raw stderr transcript.",
+  "resolution": "A separately authorized checked PS7 run used a new output directory and passed the unchanged protection baseline; the failed evidence was not overwritten.",
+  "successful_summary": "speech-admission/summary.json",
+  "reference_base": "archive root"
+}

@@ -1,0 +1,621 @@
+{
+  "schema_version": "yimecore-arm64-package-validation-evidence-index-v1",
+  "created_at": "2026-10-26T12:30:33.031Z",
+  "scope": "Identified ARM64 host source admission, static independence audit and isolated ARM64X loader contracts; complete-product packaging/installation is recorded separately by the main task.",
+  "archive_root": "docs/testing/arm64/2026-10-26/package-validation",
+  "path_conventions": {
+    "path": "Relative to this archive directory.",
+    "source_path": "Historical provenance relative to C:/dev/Yime; not an instruction to execute or install these files."
+  },
+  "preservation": {
+    "byte_preserved_source_artifacts": 59,
+    "derived_summaries": 5,
+    "all_copies_rehashed": true,
+    "overwrote_prior_evidence": false,
+    "raw_originals_modified": false,
+    "git_attributes_required": "docs/testing/arm64/2026-10-26/package-validation/** -text !eol -whitespace"
+  },
+  "claims": {
+    "formal_admission": {
+      "passed": true,
+      "summary": "speech-admission/summary.json",
+      "summary_sha256": "b1423ab265d78bcfb2e3b0e366f019381a00245c15d8be1854244fd9d29cff4e",
+      "source_inventory_sha256": "d52f43b5d6ec5a9c088aa616a85e3927dc2f4291dce638e43e91126eaa00709e",
+      "source_records": 624,
+      "directed_test_and_subtest_passes": 512,
+      "directed_test_and_subtest_skips": 3,
+      "reviewed_records": 24,
+      "mode_alias_rows": 72,
+      "private_owned_process_lifecycle": true,
+      "registration_and_default_protection_unchanged": true,
+      "environment_restored": true
+    },
+    "independent_go_audit": {
+      "summary": "go-audit/validation-summary.json",
+      "arm64_native_passed_events": 121,
+      "arm64_native_skipped_events": 5,
+      "amd64_emulated_passed_events": 125,
+      "amd64_emulated_skipped_events": 1,
+      "ec_view_imports_audited": true
+    },
+    "arm64x": {
+      "summary": "cmake-arm64x/success/summary.json",
+      "binary_sha256": "1a8d9f84ab615a60abd775e7e2e2d17177df2f5cffbbc9912a7cb06d6944ef06",
+      "same_dll_native_arm64_contract_passed": true,
+      "same_dll_x64_emulated_contract_passed": true
+    },
+    "complete_product_package_acceptance": null,
+    "installed_or_registered_live_host_acceptance": false
+  },
+  "retained_failed_attempts": [
+    {
+      "path": "failed-attempts/cmake-01-baseline-helper/setup-failure.json",
+      "stage": "baseline helper not imported; no CMake build started"
+    },
+    {
+      "path": "failed-attempts/cmake-02-def-quoting/summary.json",
+      "stage": "ARM64EC configure rejected DEF quoting"
+    },
+    {
+      "path": "failed-attempts/cmake-03-ec-only-native-rejection/summary.json",
+      "stage": "EC-only machine 0x8664 output rejected by native ARM64 loader"
+    },
+    {
+      "path": "failed-attempts/admission-restricted-subprocess/summary.json",
+      "stage": "restricted subprocess could not read StdRegProv protection baseline"
+    }
+  ],
+  "excluded_payloads": [
+    "EXE and DLL bytes; identities are in tool-identities.json.",
+    "Large dictionaries and runtime .yidx indexes; original manifests retain their hashes.",
+    "Private caches, synthetic learning/state directories and installed/user state."
+  ],
+  "limitations": [
+    "Source runner snapshots are retained review evidence, not current handoff instructions.",
+    "x64 results ran through Windows ARM64 emulation and are not x64 hardware acceptance.",
+    "The admission process lifecycle is an isolated anonymous-pipe fixture and does not install or register a text service.",
+    "Skipped tests are retained as skipped; no omitted test or runtime payload is inferred passed.",
+    "The first admission diagnostic raw stderr bytes were not retained; its explanatory note is labelled as derived.",
+    "The archived source inventory covers the admission closure; CMake build inputs have their own archived record."
+  ],
+  "artifact_count": 64,
+  "artifact_bytes": 1064028,
+  "artifacts": [
+    {
+      "path": "cmake-arm64x/inspect-arm64x.py",
+      "source_path": ".tmp/inspect-arm64x.py",
+      "bytes": 2380,
+      "sha256": "cd2e2606f6ed510e6f7fd301e95fe87115d072cb04876185fb8223ce90c3622d",
+      "category": "cmake-arm64x-evidence-inspector-source",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/parser-review.json",
+      "bytes": 1008,
+      "sha256": "8144239efbb2024514bae6213c6c567ef5529f6ea45db1a4e5724281a6a5c910",
+      "category": "derived-evidence-summary",
+      "derived_from": [
+        "speech-admission/source-hashes-after.json",
+        "cmake-arm64x/success/arm64x-pe-metadata.json"
+      ],
+      "byte_identical_to_source": null
+    },
+    {
+      "path": "cmake-arm64x/runner.ps1",
+      "source_path": ".tmp/run-arm64x-native-contracts.ps1",
+      "bytes": 4295,
+      "sha256": "b93c34f0d49df710459b9d3629c8f2bb76c8ab251f9f1af8bece477b693b2f86",
+      "category": "cmake-arm64x-evidence-runner-source",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/arm64-contracts.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/arm64-contracts.txt",
+      "bytes": 40,
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/arm64-contracts.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/arm64-contracts.txt.fixture.json",
+      "bytes": 1090,
+      "sha256": "9f466167fe23ffa0cb726ef8f5dcfa6520f917575a2b73e908dd46536bdcd2bf",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/arm64x-dumpbin.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/arm64x-dumpbin.txt",
+      "bytes": 39824,
+      "sha256": "f35180a27a06b9c67c006f97cfccaf88bea0e3f9abbcdb08d0e6271177825a7c",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/arm64x-pe-metadata.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/arm64x-pe-metadata.json",
+      "bytes": 2549,
+      "sha256": "9ecb9cccc4748be42eb1c21e256395c7d18619536872d69926c201661ec2f6af",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/build-input-hashes.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/build-input-hashes.json",
+      "bytes": 322,
+      "sha256": "8fcf26c87ff2055ae0a3b0268bd744bf77855eccb60d10b9ad18d4d5a919ec5c",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/ec-build.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/ec-build.txt",
+      "bytes": 920,
+      "sha256": "48813b0a19f3585e8354e31cc6ffb6b7ff714fc74c9f0bd548f12b00ad386e39",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/ec-configure.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/ec-configure.txt",
+      "bytes": 622,
+      "sha256": "a7ce48d8288dc09abb27f7235dbfa193b4bb207e1eac92576969a9f35937b8e2",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/native-build.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/native-build.txt",
+      "bytes": 3413,
+      "sha256": "42d0a4808be614ce9c5c1cdb68f821012f40f0860132e0e76d528411d39b084a",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/native-configure.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/native-configure.txt",
+      "bytes": 626,
+      "sha256": "391c478e70aeae8f936617a70a93e260345012c17ea694ed45132b1616195a6b",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/summary.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/summary.json",
+      "bytes": 956,
+      "sha256": "9c87db99b0532f006aa4bfe7bef74366939fb0d928bd76f12484e4c7faf81132",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/x64-build.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/x64-build.txt",
+      "bytes": 3383,
+      "sha256": "a48ee6e82665d746e1b9e3084e6178c323c7aa515ad8982ec4d2d1eb9918fd26",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/x64-configure.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/x64-configure.txt",
+      "bytes": 621,
+      "sha256": "0c4924b43270e688b8e89fc53ec3ba3660c7cad6313edb10a3363a043ec53d27",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/x64-contracts.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/x64-contracts.txt",
+      "bytes": 40,
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "cmake-arm64x/success/x64-contracts.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/x64-contracts.txt.fixture.json",
+      "bytes": 1087,
+      "sha256": "04f46d2f1310f89bbcdf0bf99376cf4a8aaed0de4c845c443920337303996104",
+      "category": "cmake-arm64x-success",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "failed-attempts/admission-restricted-subprocess/baseline-diagnostic.ps1",
+      "source_path": ".tmp/arm64-admission-launch-1e347452-a89f-4aa4-98e7-e6f2e07fdf77/baseline-diagnostic.ps1",
+      "bytes": 365,
+      "sha256": "0a426a17bb9fbe947cddbc9f883f3e0fc00207f1dbfcf4c71252983a3cfba2c8",
+      "category": "failed-admission-diagnostic-source",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "failed-attempts/admission-restricted-subprocess/diagnostic-summary.json",
+      "bytes": 909,
+      "sha256": "64ae8932fcf6f2bf414caa8316f4a12cf5955122357c6b9de1e4d08c5225d4a3",
+      "category": "derived-evidence-summary",
+      "derived_from": [
+        "failed-attempts/admission-restricted-subprocess/summary.json",
+        "failed-attempts/admission-restricted-subprocess/runner.log",
+        "failed-attempts/admission-restricted-subprocess/baseline-diagnostic.ps1"
+      ],
+      "byte_identical_to_source": null
+    },
+    {
+      "path": "failed-attempts/admission-restricted-subprocess/runner.log",
+      "source_path": ".tmp/arm64-admission-launch-1e347452-a89f-4aa4-98e7-e6f2e07fdf77/runner.log",
+      "bytes": 177,
+      "sha256": "aebfc13dc37257db4edabd4afc3eb2c7f8213c36107b16da76a343dbec1d18bc",
+      "category": "failed-admission-baseline",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "failed-attempts/admission-restricted-subprocess/summary.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-runner-failure-20261026-201124-cf1cb9ad93514c4e8e27a31d8cd169ed/summary.json",
+      "bytes": 4897,
+      "sha256": "7e8155c63a229e2e39b2f0d21b7c5cdc633aae3c28bc027c690fa6eb57ec6c78",
+      "category": "failed-admission-baseline",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "failed-attempts/cmake-01-baseline-helper/setup-failure.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194125-d0c757e1/setup-failure.json",
+      "bytes": 190,
+      "sha256": "c65cd99b3032d597d53e6f12d47710bf11630295af1d1e655f36a60d07c5703d",
+      "category": "cmake-arm64x-failed-attempt",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "failed-attempts/cmake-02-def-quoting/ec-configure.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194150-1f8fa755/ec-configure.txt",
+      "bytes": 700,
+      "sha256": "5b87e47b63207fe0179bd220d3736528f8ee0d2d1a87004ab6378cbc9d82e788",
+      "category": "cmake-arm64x-failed-attempt",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "failed-attempts/cmake-02-def-quoting/summary.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194150-1f8fa755/summary.json",
+      "bytes": 991,
+      "sha256": "965db66a8a329c27e64285d23d697004aace6e41802c277c0bceddc4ed630f8d",
+      "category": "cmake-arm64x-failed-attempt",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "failed-attempts/cmake-03-ec-only-native-rejection/arm64-contracts.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194311-27e9ed1f/arm64-contracts.txt",
+      "bytes": 31,
+      "sha256": "24a4ec3feb61b93b97747607ea5746e569f40ab3328f5c00d88eec8974f2e0fb",
+      "category": "cmake-arm64x-failed-attempt",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "failed-attempts/cmake-03-ec-only-native-rejection/arm64-contracts.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194311-27e9ed1f/arm64-contracts.txt.fixture.json",
+      "bytes": 1091,
+      "sha256": "a4722c2f27eff2723abeaa536bf269c945dc8ec3c5613387967ae9b7868d1316",
+      "category": "cmake-arm64x-failed-attempt",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "failed-attempts/cmake-03-ec-only-native-rejection/arm64x-dumpbin.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194311-27e9ed1f/arm64x-dumpbin.txt",
+      "bytes": 11729,
+      "sha256": "7bc3b2c7609f6950f56bfb1b56d68afbe182762825bda44d17f71196bdff8494",
+      "category": "cmake-arm64x-failed-attempt",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "failed-attempts/cmake-03-ec-only-native-rejection/summary.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194311-27e9ed1f/summary.json",
+      "bytes": 1091,
+      "sha256": "cf64f81645427f34c18b14ee7dce8e3a47424b8a1a4e648989265bdef6c6f398",
+      "category": "cmake-arm64x-failed-attempt",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "go-audit/amd64-emulated.log",
+      "source_path": ".tmp/arm64x-audit-x64-emulated-f3bc4d5234974b11977d1d298a5125db/audit-unit.log",
+      "bytes": 20002,
+      "sha256": "52c8fff547c5ade16df20e7eecad6523f44295c681825952b5c056cb6b5a0852",
+      "category": "go-audit-test-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "go-audit/arm64-native.log",
+      "source_path": ".tmp/arm64x-audit-unit-8aa46ebe5bb44caf8d629c6565d9a35e/audit-unit.log",
+      "bytes": 20264,
+      "sha256": "cf384cc6b77dc7dc5bd6a0bb71375fe6f428b340a30ddcffce3f1d4391e5422f",
+      "category": "go-audit-test-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "go-audit/validation-summary.json",
+      "bytes": 2398,
+      "sha256": "b45b28c082dc11626ddc7cdc8d6a087b077930fc269dfe672ae2cdfc57582d70",
+      "category": "derived-evidence-summary",
+      "derived_from": [
+        "go-audit/arm64-native.log",
+        "go-audit/amd64-emulated.log",
+        "speech-admission/source-hashes-after.json"
+      ],
+      "byte_identical_to_source": null
+    },
+    {
+      "path": "speech-admission/admission.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/admission.json",
+      "bytes": 1295,
+      "sha256": "cd8f510bf4122ab48d6c260c62c2d53363121d59488395fcc1366a1df62c914c",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/admitted-records.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/admitted-records.json",
+      "bytes": 62558,
+      "sha256": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/bundle-off.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/bundle-off.json",
+      "bytes": 2377,
+      "sha256": "4f6bced945eb0b5d6b31dae74724afd27bf8edefe091354e1881f91058525c17",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/bundle-on.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/bundle-on.json",
+      "bytes": 2376,
+      "sha256": "a582e1f5822ff4519fb865084f6cf3ebcf927f4db661507444290c85ae841672",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/bundle-rejected.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/bundle-rejected.json",
+      "bytes": 2376,
+      "sha256": "2ad60acd0cefec9ebbc712954c10e276d7a5265865dd774ccd0255694151286b",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/complete-receipt.json",
+      "source_path": ".tmp/arm64-admission-launch-1e347452-a89f-4aa4-98e7-e6f2e07fdf77/complete-receipt.json",
+      "bytes": 1090,
+      "sha256": "9e6e59f5025c63ab616811e1267f43766521b51fa6a57a0dd2007865f132830f",
+      "category": "successful-admission-derived-receipt",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/forward-source.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/forward-source.json",
+      "bytes": 17920,
+      "sha256": "73e2ec162b0bc3a114a5a9de902b14b68c505d736502d2940d6e29297ace56c2",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/forward-tool.log",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/forward-tool.log",
+      "bytes": 30,
+      "sha256": "0d597fe612ebf8aff8b8cda41b1071c370d4961a45d5efedcb18754c482f0509",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/installed-after.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/installed-after.json",
+      "bytes": 3441,
+      "sha256": "e6dc88357fb654095ae7637626c40699e2a4fe13933a6d998cd77d722a963230",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/installed-before.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/installed-before.json",
+      "bytes": 3441,
+      "sha256": "e6dc88357fb654095ae7637626c40699e2a4fe13933a6d998cd77d722a963230",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/launch-params.json",
+      "source_path": ".tmp/arm64-admission-launch-1e347452-a89f-4aa4-98e7-e6f2e07fdf77/params.json",
+      "bytes": 238,
+      "sha256": "1daf85e25f75e81218258ccbdd1a6bf7d00c9c42822057297c5d2507f93d30f2",
+      "category": "successful-admission-invocation",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/legacy-static-after.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/legacy-static-after.json",
+      "bytes": 201,
+      "sha256": "c9792cfb22d70fe27462e20fb59d41a1e8afbc8fabd39e24dc226f7d039ccfcb",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/legacy-static-before.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/legacy-static-before.json",
+      "bytes": 201,
+      "sha256": "c9792cfb22d70fe27462e20fb59d41a1e8afbc8fabd39e24dc226f7d039ccfcb",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/locked-inputs-after.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/locked-inputs-after.json",
+      "bytes": 6029,
+      "sha256": "d49be19519255883708f4db4c820d1d7afb510906fa289ea3bf53cf3b57ca124",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/locked-inputs-before.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/locked-inputs-before.json",
+      "bytes": 6029,
+      "sha256": "d49be19519255883708f4db4c820d1d7afb510906fa289ea3bf53cf3b57ca124",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/logs/admission.jsonl",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/logs/admission.jsonl",
+      "bytes": 50979,
+      "sha256": "ac07ca0babbceea1b1ccc4976e8c9a2856e80743936c290c7b1e625f623f2ded",
+      "category": "successful-admission-test-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/logs/broker-dependencies.log",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/logs/broker-dependencies.log",
+      "bytes": 3589,
+      "sha256": "8fd6e40a4cb5d27e726b70a6a1eef0eb932134dd89d34f19e2134b2cb8172b94",
+      "category": "successful-admission-test-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/logs/broker-flags.jsonl",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/logs/broker-flags.jsonl",
+      "bytes": 3435,
+      "sha256": "d844982df33d75e737ed3e58352aca1bffdfa371a4ea00d393c2ac2db1af71f3",
+      "category": "successful-admission-test-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/logs/broker.jsonl",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/logs/broker.jsonl",
+      "bytes": 37134,
+      "sha256": "c709433f56542488c3cb060d933897b3718eb65917a001176bfd7230443e6369",
+      "category": "successful-admission-test-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/logs/core.jsonl",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/logs/core.jsonl",
+      "bytes": 189384,
+      "sha256": "d0cc92d2936e468b0c8945caeb460ed107ebc88ad82edb51be8546ebd843ca93",
+      "category": "successful-admission-test-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/logs/exercise-contract.jsonl",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/logs/exercise-contract.jsonl",
+      "bytes": 132578,
+      "sha256": "de0734e6b267114508f45d82b04750a8c08db9ff0d9b7deee23d798af13af727",
+      "category": "successful-admission-test-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/logs/exercise.log",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/logs/exercise.log",
+      "bytes": 85,
+      "sha256": "82b377f1a06cf5acda3a1cc210d23e45221d11880f56c73d127f348be0583e6a",
+      "category": "successful-admission-test-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/logs/manifest.jsonl",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/logs/manifest.jsonl",
+      "bytes": 140710,
+      "sha256": "f12bee161e67a85839e952b6a16b30e5cc6dc05a90dbc14fca36eec5b2aa53aa",
+      "category": "successful-admission-test-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/logs/prepare.log",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/logs/prepare.log",
+      "bytes": 84,
+      "sha256": "b2f4edb5b46c834c13c705744186fa9df2075a3a3e221cae7fcce01290adf2b3",
+      "category": "successful-admission-test-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/logs/projection.jsonl",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/logs/projection.jsonl",
+      "bytes": 6739,
+      "sha256": "8170ccf70424e70dd376ecc90698ab4c9c5785795923c459abc50896d4998441",
+      "category": "successful-admission-test-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/logs/python-contracts.log",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/logs/python-contracts.log",
+      "bytes": 2277,
+      "sha256": "1b7f3e4c4c4b54fa495ed4df854a573570b305d92a1935d757c29140f32dcc1a",
+      "category": "successful-admission-test-log",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/prepare-outcome.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/prepare-outcome.json",
+      "bytes": 5961,
+      "sha256": "cc604e38b783a7cc302f3479ee72204a9c6730686ad66c711a621b7046005005",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/process-outcome.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/process-outcome.json",
+      "bytes": 2131,
+      "sha256": "9d4e7aff14edecf3efecc6f06fc547dd8e47f9607ce9d1d1d668c674b3d53c02",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/source-hashes-after.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/source-hashes-after.json",
+      "bytes": 113240,
+      "sha256": "d52f43b5d6ec5a9c088aa616a85e3927dc2f4291dce638e43e91126eaa00709e",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/source-hashes-before.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/source-hashes-before.json",
+      "bytes": 113240,
+      "sha256": "d52f43b5d6ec5a9c088aa616a85e3927dc2f4291dce638e43e91126eaa00709e",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/summary.json",
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/summary.json",
+      "bytes": 20782,
+      "sha256": "b1423ab265d78bcfb2e3b0e366f019381a00245c15d8be1854244fd9d29cff4e",
+      "category": "successful-admission",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-admission/validation-summary.json",
+      "bytes": 1282,
+      "sha256": "081bc243dacaac9fb431104de8cc4be3e27ba66fcdca90ce41ce2cecea255e31",
+      "category": "derived-evidence-summary",
+      "derived_from": [
+        "speech-admission/summary.json",
+        "speech-admission/source-hashes-before.json",
+        "speech-admission/source-hashes-after.json",
+        "speech-admission/complete-receipt.json",
+        "speech-admission/installed-before.json",
+        "speech-admission/installed-after.json"
+      ],
+      "byte_identical_to_source": null
+    },
+    {
+      "path": "tool-identities.json",
+      "bytes": 2785,
+      "sha256": "210a8926d6764015b24820b4055f07a2436624e2331a2290a3b3fc80fd7fc277",
+      "category": "derived-evidence-summary",
+      "derived_from": [
+        "speech-admission/summary.json",
+        "cmake-arm64x/success/arm64x-pe-metadata.json",
+        "cmake-arm64x/success/arm64-contracts.txt.fixture.json",
+        "cmake-arm64x/success/x64-contracts.txt.fixture.json",
+        "failed-attempts/cmake-03-ec-only-native-rejection/summary.json"
+      ],
+      "byte_identical_to_source": null
+    }
+  ]
+}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"debug/pe"
 	"encoding/json"
 	"fmt"
 	"github.com/tsaanghwang/Yime/go-backend/internal/symlinkfixture"
@@ -60,6 +61,99 @@ func TestSpeechProductExportRunnerSourceInventoryMatches(t *testing.T) {
 		if !actual[path] {
 			t.Errorf("exporter source absent from runner: %s", path)
 		}
+	}
+}
+
+func arm64ExportScopeFixture() map[string]any {
+	return map[string]any{
+		"id": "yimecore-arm64-native-source-build-v1", "target": "arm64", "computer_name": "HUASHUONOTEBOOK",
+		"native_architecture": "ARM64", "target_architecture": "arm64", "active_architectures": []string{"arm64"}, "build_lane": "arm64_native_source_build",
+		"machine_observation": map[string]any{"source": "IsWow64Process2", "native_machine": "0xaa64", "native_architecture": "ARM64", "process_machine": "0x0000"},
+	}
+}
+
+func TestSpeechProductExportARM64RequiresIdentifiedNativeScope(t *testing.T) {
+	for _, tc := range []struct {
+		name        string
+		change      func(map[string]any, map[string]any)
+		wantMachine uint16
+		wantError   bool
+	}{
+		{"native_arm64", func(_, _ map[string]any) {}, pe.IMAGE_FILE_MACHINE_ARM64, false},
+		{"legacy_default", func(s, _ map[string]any) { delete(s, "development_scope") }, pe.IMAGE_FILE_MACHINE_AMD64, false},
+		{"mainstream_retains_amd64", func(_, scope map[string]any) { scope["target"] = "mainstream_x64" }, pe.IMAGE_FILE_MACHINE_AMD64, false},
+		{"unlisted_host", func(_, scope map[string]any) { scope["computer_name"] = "OTHER" }, 0, true},
+		{"cross_build", func(_, scope map[string]any) { scope["build_lane"] = "arm64_cross_build" }, 0, true},
+		{"unverified_api", func(_, scope map[string]any) { scope["machine_observation"].(map[string]any)["source"] = "environment" }, 0, true},
+		{"x64_system", func(_, scope map[string]any) {
+			scope["machine_observation"].(map[string]any)["native_machine"] = "0x8664"
+		}, 0, true},
+		{"x64_go", func(s, _ map[string]any) { s["go_version"] = "go version go1.25.14 windows/amd64" }, 0, true},
+		{"extra_architecture", func(_, scope map[string]any) { scope["active_architectures"] = []string{"arm64", "x64"} }, 0, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			scope := arm64ExportScopeFixture()
+			summary := map[string]any{"development_scope": scope, "go_version": "go version go1.25.14 windows/arm64"}
+			tc.change(summary, scope)
+			data, err := json.Marshal(summary)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var raw map[string]json.RawMessage
+			if err = json.Unmarshal(data, &raw); err != nil {
+				t.Fatal(err)
+			}
+			machine, err := exportAdmissionMachine(raw)
+			if (err != nil) != tc.wantError || machine != tc.wantMachine {
+				t.Fatalf("machine=%04x err=%v", machine, err)
+			}
+		})
+	}
+}
+
+func TestSpeechProductExportARM64PEGateDoesNotRelaxLegacyPackages(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "never-executed.exe")
+	packageFixtureWrite(t, path, packageFixturePE(t, pe.IMAGE_FILE_MACHINE_ARM64))
+	if err := requireProductExecutable(path, pe.IMAGE_FILE_MACHINE_ARM64); err != nil {
+		t.Fatal(err)
+	}
+	if err := requireAMD64Executable(path); err == nil {
+		t.Fatal("legacy AMD64 package accepted ARM64 executable")
+	}
+	packageFixtureWrite(t, path, packageFixturePE(t, pe.IMAGE_FILE_MACHINE_AMD64))
+	if err := requireProductExecutable(path, pe.IMAGE_FILE_MACHINE_ARM64); err == nil {
+		t.Fatal("ARM64 admission accepted AMD64 executable")
+	}
+}
+
+func TestSpeechProductExportARM64FullPinnedEvidence(t *testing.T) {
+	f := newProductExportFixture(t)
+	f.summary["development_scope"] = arm64ExportScopeFixture()
+	f.summary["go_version"] = "go version go1.25.14 windows/arm64"
+	var tools []exportSource
+	for _, relative := range []string{"bin/YimeBroker-speech.exe", "bin/YimeSpeechAdmission.exe"} {
+		data := packageFixturePE(t, pe.IMAGE_FILE_MACHINE_ARM64)
+		hash := packageFixtureWrite(t, filepath.Join(f.config.root, filepath.FromSlash(relative)), data)
+		tools = append(tools, exportSource{relative, int64(len(data)), hash})
+	}
+	f.summary["tools"] = tools
+	var process map[string]any
+	if err := readJSON(filepath.Join(f.config.root, "process-outcome.json"), &process); err != nil {
+		t.Fatal(err)
+	}
+	process["broker_sha256"] = tools[0].SHA256
+	packageFixtureJSON(t, filepath.Join(f.config.root, "process-outcome.json"), process)
+	f.refreshArtifacts(t)
+	f.sealSummary(t)
+	report, err := exportValidateSummary(f.config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.ToolArchitecture != "windows-arm64" {
+		t.Fatalf("unreported ARM64 tool architecture: %+v", report)
+	}
+	if err = exportProduct(f.config); err != nil {
+		t.Fatal(err)
 	}
 }
 

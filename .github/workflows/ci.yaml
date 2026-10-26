@@ -309,6 +309,10 @@ jobs:
       - name: Test required package resources without installed products
         shell: powershell
         run: .\installer\simple\Test-PackageValidation.ps1
+      - name: Test ARM64X package architecture and maintenance boundaries
+        run: python -X utf8 tools/powershell/run_checked.py --script installer/simple/Test-Arm64Package.ps1 --edition ps5
+      - name: Test identified ARM64 admission toolchain guards
+        run: python -X utf8 tools/powershell/run_checked.py --script tools/yimecore/test-arm64-speech-admission.ps1 --edition ps7
       - name: Test profile removal failure preserves installed files and COM
         shell: powershell
         run: .\installer\simple\Test-ProfileRemoval.ps1

@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"crypto/sha256"
+	"debug/pe"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -11,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -49,6 +51,7 @@ type productExportReceipt struct {
 	ForwardFiles          int             `json:"forward_source_files"`
 	AdmissionArtifacts    []exportSource  `json:"admission_artifacts"`
 	Tools                 []exportSource  `json:"admission_tools"`
+	ToolArchitecture      string          `json:"admission_tool_architecture"`
 	SkippedTests          []string        `json:"skipped_tests"`
 	LayoutSHA256          string          `json:"layout_sha256"`
 	ProductSHA256         string          `json:"product_sha256"`
@@ -240,6 +243,46 @@ func exportCheckSources(root string, records []exportSource, wanted map[string]b
 	return nil
 }
 
+// ARM64 is an explicit admission lane. Missing historical scope metadata keeps
+// the original AMD64 contract; it must never turn an ARM64 tool into a default.
+func exportAdmissionMachine(summary map[string]json.RawMessage) (uint16, error) {
+	var scope struct {
+		ID                  string   `json:"id"`
+		Target              string   `json:"target"`
+		ComputerName        string   `json:"computer_name"`
+		NativeArchitecture  string   `json:"native_architecture"`
+		TargetArchitecture  string   `json:"target_architecture"`
+		ActiveArchitectures []string `json:"active_architectures"`
+		BuildLane           string   `json:"build_lane"`
+		MachineObservation  struct {
+			Source             string `json:"source"`
+			NativeMachine      string `json:"native_machine"`
+			NativeArchitecture string `json:"native_architecture"`
+		} `json:"machine_observation"`
+	}
+	if raw, present := summary["development_scope"]; present {
+		if err := json.Unmarshal(raw, &scope); err != nil {
+			return 0, errors.New("invalid admission development scope")
+		}
+	}
+	if scope.Target != "arm64" {
+		return pe.IMAGE_FILE_MACHINE_AMD64, nil
+	}
+	var version string
+	if err := exportField(summary, "go_version", &version); err != nil {
+		return 0, err
+	}
+	if scope.ID != "yimecore-arm64-native-source-build-v1" || scope.ComputerName != "HUASHUONOTEBOOK" ||
+		scope.NativeArchitecture != "ARM64" || scope.TargetArchitecture != "arm64" ||
+		!reflect.DeepEqual(scope.ActiveArchitectures, []string{"arm64"}) || scope.BuildLane != "arm64_native_source_build" ||
+		scope.MachineObservation.Source != "IsWow64Process2" || scope.MachineObservation.NativeMachine != "0xaa64" ||
+		scope.MachineObservation.NativeArchitecture != "ARM64" ||
+		!regexp.MustCompile(`^go version go[0-9][A-Za-z0-9.]* windows/arm64$`).MatchString(version) {
+		return 0, errors.New("ARM64 export requires pinned tools from the identified native ARM64 admission scope")
+	}
+	return pe.IMAGE_FILE_MACHINE_ARM64, nil
+}
+
 func exportValidateSummary(config productExportConfig) (productExportReceipt, error) {
 	result := productExportReceipt{SchemaVersion: "yimecore-speech-product-export-v1", PayloadFiles: 11, ForwardFiles: 56}
 	var summary map[string]json.RawMessage
@@ -304,8 +347,16 @@ func exportValidateSummary(config productExportConfig) (productExportReceipt, er
 	if err = exportCheckSources(config.root, result.Tools, map[string]bool{"bin/YimeBroker-speech.exe": true, "bin/YimeSpeechAdmission.exe": true}); err != nil {
 		return result, err
 	}
+	machine, err := exportAdmissionMachine(summary)
+	if err != nil {
+		return result, err
+	}
+	result.ToolArchitecture = "windows-amd64"
+	if machine == pe.IMAGE_FILE_MACHINE_ARM64 {
+		result.ToolArchitecture = "windows-arm64"
+	}
 	for _, tool := range result.Tools {
-		if err = requireAMD64Executable(filepath.Join(config.root, filepath.FromSlash(tool.Path))); err != nil {
+		if err = requireProductExecutable(filepath.Join(config.root, filepath.FromSlash(tool.Path)), machine); err != nil {
 			return result, err
 		}
 	}

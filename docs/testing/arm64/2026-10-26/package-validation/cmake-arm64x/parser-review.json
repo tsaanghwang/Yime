@@ -1,0 +1,22 @@
+{
+  "schema_version": "yimecore-arm64x-static-parser-review-v1",
+  "evidence_kind": "agent-read-only-cross-review-summary",
+  "reviewer": "arm_windows_contract agent",
+  "source": {
+    "path": "go-backend/cmd/yimecore-independence-audit/arm64x_pe.go",
+    "bytes": 12870,
+    "sha256": "07464fe77543eaa7b079f77e978d7e1ec42c41338eacead200357035e8a489ff"
+  },
+  "result": "No material or blocking issue found; no source changes or admission restart required.",
+  "checks": [
+    "DELTA fixup decoding matches the LLVM getValue/validate encoding.",
+    "DVRT v1 header/packed entry sizes and Symbol 6 match the observed build.",
+    "Original file is opened read-only; only an in-memory copy receives fixups.",
+    "Pure ARM64, EC-only, truncation and overlapping-section rejection fit the current build scope."
+  ],
+  "references": [
+    "https://llvm.org/doxygen/COFFObjectFile_8cpp_source.html",
+    "https://llvm.org/doxygen/Object_2COFF_8h_source.html"
+  ],
+  "installed_or_live_host_acceptance": false
+}

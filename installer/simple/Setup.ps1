@@ -26,12 +26,13 @@ Import-Module (Join-Path $PSScriptRoot 'Product.psm1') -Force
 $installedEntry=([IO.Path]::GetFileName($PSScriptRoot) -eq '.setup')
 if($installedEntry){
     if($Action -ne 'Uninstall'){throw 'Use the downloaded package to install or check'}
-    $record=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'product-package.json') -Raw -Encoding UTF8|ConvertFrom-Json
-    $package=[pscustomobject]@{root=$PSScriptRoot;manifest=$record;product=(Get-Product $record.product)}
+    $package=Read-MaintenancePackage $PSScriptRoot
 }else{$package=Read-Package $PSScriptRoot}
 $product=$package.product
-if($Action -eq 'Check'){Write-Output 'PASS: package files and required binaries';exit 0}
-if(-not [Environment]::Is64BitProcess -or $env:PROCESSOR_ARCHITECTURE -ne 'AMD64'){throw 'This package entry currently supports x64 Windows with x86 applications'}
+$contract=$package.contract
+Assert-PackageHost $contract
+if($Action -eq 'Check'){Write-Output ('PASS: package files, required binaries and native host '+$contract.target);exit 0}
+$setupShell=Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
 $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value
 if($InitiatingSid -and $InitiatingSid -cne $sid){throw 'Run with the same Windows account that started setup'}
 if(-not $administrator){
@@ -39,7 +40,7 @@ if(-not $administrator){
     Write-Output ('Elevated setup log: '+(Join-Path $logRoot ($LogId+'.admin.log')))
     $args='-NoProfile -ExecutionPolicy Bypass -File "{0}" -Action {1} -InitiatingSid "{2}" -LogId {3}' -f $PSCommandPath,$Action,$sid,$LogId
     if($ResetData){$args+=' -ResetData'};if($Silent){$args+=' -Silent'}
-    $p=Start-Process -FilePath (Join-Path $PSHOME 'powershell.exe') -ArgumentList $args -Verb RunAs -PassThru -WindowStyle Hidden
+    $p=Start-Process -FilePath $setupShell -ArgumentList $args -Verb RunAs -PassThru -WindowStyle Hidden
     $code=Wait-SetupExit $p
     Write-Output ('Elevated setup exit code: '+$code)
     exit $code
@@ -49,7 +50,7 @@ $root=Join-Path $env:ProgramFiles $product.directory
 $state=if($product.id -eq 'yimecore'){Join-Path $env:LOCALAPPDATA $product.state}else{Join-Path $env:APPDATA $product.state}
 $root=Assert-PlainPath $root;$state=Assert-PlainPath $state
 if($installedEntry -and [IO.Path]::GetDirectoryName($PSScriptRoot) -ine $root){throw 'Uninstaller is outside this product directory'}
-Assert-OwnedDirectory $root $product.id
+Assert-OwnedDirectory $root $product.id $contract.target
 # Never replace a different installation using the same CLSID implicitly.
 $hasRegistration=$false
 foreach($view in @('Registry64','Registry32')){
@@ -66,10 +67,12 @@ function Run-Native([string]$Path,[string[]]$Arguments){
 function Set-Registration([bool]$Install,[string]$Payload){
     if($product.id -eq 'yimecore'){
         if($Install){
-            Run-Native (Join-Path $Payload 'x64\YimeTextServiceRegistration.exe') @('register',(Join-Path $root ('x64\'+$product.dll)))
+            # ARM64 and x64 hosts share Registry64 on Windows ARM. Register the
+            # merged ARM64X DLL once; only x86 has a separate COM view.
+            Run-Native (Join-Path $Payload ($contract.nativeDirectory+'\YimeTextServiceRegistration.exe')) @('register',(Join-Path $root ($contract.nativeDirectory+'\'+$product.dll)))
             Run-Native (Join-Path $Payload 'x86\YimeTextServiceRegistration.exe') @('register-com',(Join-Path $root ('x86\'+$product.dll)))
         }else{
-            foreach($arch in @('x86','x64')){Run-Native (Join-Path $Payload ($arch+'\YimeTextServiceRegistration.exe')) @('unregister')}
+            foreach($arch in @('x86',$contract.nativeDirectory)){Run-Native (Join-Path $Payload ($arch+'\YimeTextServiceRegistration.exe')) @('unregister')}
         }
     }else{
         foreach($arch in @('x86','x64')){
@@ -157,10 +160,10 @@ $stage='stop selected product background programs'
     foreach($name in @('Product.psm1','Setup.ps1','Setup.cmd','product-package.json')){
         [IO.File]::Copy((Join-Path $package.root $name),(Join-Path $maintenance $name),$true)
     }
-    foreach($arch in @('x64','x86')){
-        $dir=Join-Path $maintenance ('native\'+$arch);$null=[IO.Directory]::CreateDirectory($dir)
-        $name=if($product.id -eq 'yimecore'){'YimeTextServiceRegistration.exe'}else{$product.dll}
-        [IO.File]::Copy((Join-Path $root ($arch+'\'+$name)),(Join-Path $dir $name),$true)
+    foreach($member in Get-MaintenanceMembers $product $contract){
+        $destination=Join-Path $maintenance ('native/'+$member)
+        $null=[IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($destination))
+        [IO.File]::Copy((Join-Path $root $member),$destination,$true)
     }
     $stage='register new product'
     Set-Registration $true $root
@@ -178,7 +181,7 @@ $stage='stop selected product background programs'
     try{
         $key.SetValue('DisplayName',$product.name);$key.SetValue('DisplayVersion',$package.manifest.version)
         $key.SetValue('InstallLocation',$root)
-        $key.SetValue('UninstallString',('"'+(Join-Path $PSHOME 'powershell.exe')+'" -NoProfile -ExecutionPolicy Bypass -File "'+(Join-Path $maintenance 'Setup.ps1')+'" -Action Uninstall'))
+        $key.SetValue('UninstallString',('"'+$setupShell+'" -NoProfile -ExecutionPolicy Bypass -File "'+(Join-Path $maintenance 'Setup.ps1')+'" -Action Uninstall'))
     }finally{$key.Dispose()}
     foreach($arch in @('x86','x64')){
         if($product.id -eq 'rime-pime'){Run-Native (Join-Path $root ($arch+'\PIMERegistrationStatus.exe')) @('verify-registered')}

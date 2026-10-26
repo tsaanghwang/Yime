@@ -1,0 +1,15 @@
+{
+  "schema_version": "yimecore-arm64-delivery-v1",
+  "package_path": "C:\\dev\\Yime-deliveries\\arm64-proart-20261026\\YimeCore-ARM64",
+  "zip_path": "C:\\dev\\Yime-deliveries\\arm64-proart-20261026\\YimeCore-ARM64-20261026.zip",
+  "bytes": 168170935,
+  "sha256": "bdc68488b10cebc6ed61dd06909e4bb1e8a845e811a627e9b25e10eb042c07e6",
+  "member_count": 73,
+  "build_root": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-201907-1d87e4d7",
+  "source_manifest_sha256": "21ddd91c92f0beb33b92d2a0bde4be3be029d24859a9c2f499b200d60bbc40c7",
+  "product_manifest_sha256": "c26883885960ef9a617389a04be21f66d93eb369fb1fa05101118bf4bdeb9cc0",
+  "zip_members_verified": true,
+  "download_url": null,
+  "ci_status": "pending",
+  "installation_performed": false
+}

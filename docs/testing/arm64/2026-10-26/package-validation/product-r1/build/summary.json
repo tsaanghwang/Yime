@@ -1,0 +1,12 @@
+{
+  "schema_version": "yimecore-arm64-product-build-v1",
+  "passed": true,
+  "generated_at": "2026-10-26T12:21:57.6578707Z",
+  "failure": null,
+  "output_root": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-201907-1d87e4d7",
+  "registration_and_default_preserved": true,
+  "installed": false,
+  "registered_host_passed": null,
+  "live_host_passed": null,
+  "release_ready": false
+}

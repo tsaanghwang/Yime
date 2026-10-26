@@ -1,0 +1,97 @@
+{
+  "go_version": "go version go1.25.14 windows/arm64",
+  "go_environment": {
+    "CGO_ENABLED": "0",
+    "GOARCH": "arm64",
+    "GOFLAGS": "",
+    "GOHOSTARCH": "arm64",
+    "GOHOSTOS": "windows",
+    "GOOS": "windows",
+    "GOTOOLCHAIN": "local",
+    "GOVERSION": "go1.25.14",
+    "GOWORK": "off"
+  },
+  "generator": "Visual Studio 17 2022",
+  "native_platforms": [
+    "ARM64",
+    "ARM64EC",
+    "Win32"
+  ],
+  "x64_test_host_only": true,
+  "speech": {
+    "schema_version": "yimecore-speech-build-binding-v1",
+    "admission_summary_sha256": "b1423ab265d78bcfb2e3b0e366f019381a00245c15d8be1854244fd9d29cff4e",
+    "source_inventory_sha256": "d52f43b5d6ec5a9c088aa616a85e3927dc2f4291dce638e43e91126eaa00709e",
+    "export_receipt_sha256": "074253f5416ab34b28707fb2880a7bc5340b3cfff0b882ccd245b7987f54a934",
+    "capability_sha256": "7c7ec05a237d371c92d8659d431d9b8dfd74418f1c9a484936645ad214ddc7f7",
+    "product_manifest_sha256": "9d56bbac5342a565913ca54b372263d5bb71d767079ee6b9dbd195eb6f4b7f2b"
+  },
+  "indexes": [
+    {
+      "tool_version": "yimecore-index-e1-v1",
+      "generated_at": "2026-10-26T12:41:56.1390904Z",
+      "build": {
+        "format_version": 1,
+        "mode": "full",
+        "source_path": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\package\\data\\yime_full.dict.yaml",
+        "source_sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+        "source_bytes": 31621303,
+        "parsed_records": 1166753,
+        "indexed_records": 1166753,
+        "duplicate_records": 0,
+        "index_path": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\package\\indexes\\full.yidx",
+        "index_bytes": 40267102,
+        "record_payload_sha256": "20fdd4a5715cd20c048ce4ca764a16f95ebf19fa3eaca0d123571c87e219ae34",
+        "index_sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+        "build_elapsed_ns": 1239029300,
+        "peak_observed_heap_bytes": 257715552
+      },
+      "verified": true,
+      "open_elapsed_ns": 378738000
+    },
+    {
+      "tool_version": "yimecore-index-e1-v1",
+      "generated_at": "2026-10-26T12:41:59.7927804Z",
+      "build": {
+        "format_version": 1,
+        "mode": "variable",
+        "source_path": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\package\\data\\yime_variable.dict.yaml",
+        "source_sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+        "source_bytes": 30155261,
+        "parsed_records": 1166753,
+        "indexed_records": 1166753,
+        "duplicate_records": 0,
+        "index_path": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\package\\indexes\\variable.yidx",
+        "index_bytes": 38801056,
+        "record_payload_sha256": "65a95490eec66e9416f636081deae9d1dc2942e27d51dbbdbb7891d2f496e103",
+        "index_sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+        "build_elapsed_ns": 1305345100,
+        "peak_observed_heap_bytes": 252940280
+      },
+      "verified": true,
+      "open_elapsed_ns": 397084300
+    },
+    {
+      "tool_version": "yimecore-index-e1-v1",
+      "generated_at": "2026-10-26T12:42:03.4707863Z",
+      "build": {
+        "format_version": 1,
+        "mode": "shorthand",
+        "source_path": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\package\\data\\yime_shorthand.dict.yaml",
+        "source_sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+        "source_bytes": 29563931,
+        "parsed_records": 1166753,
+        "indexed_records": 1166753,
+        "duplicate_records": 0,
+        "index_path": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-package-20261026-203953-48f90202\\package\\indexes\\shorthand.yidx",
+        "index_bytes": 38209725,
+        "record_payload_sha256": "caff26eefc0970dc7f8f240b7cc41bb11f6d6a449b256eb5dac037e79134f22b",
+        "index_sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+        "build_elapsed_ns": 1353868600,
+        "peak_observed_heap_bytes": 250649888
+      },
+      "verified": true,
+      "open_elapsed_ns": 376649100
+    }
+  ]
+}

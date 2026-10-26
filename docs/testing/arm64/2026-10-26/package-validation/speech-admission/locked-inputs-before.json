@@ -1,0 +1,152 @@
+[
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_full.dict.yaml",
+    "bytes": 4710,
+    "sha256": "8b65157cbdc489d97faa4a769972a2d74c5878c1bb5bdbcf4a537e7460fcf36a"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_manifest.json",
+    "bytes": 4044,
+    "sha256": "0a1f89dc4df28682924a62f62f2cc224bcf97ca09443ea4e6ee659acbe16091c"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_full.dict.yaml",
+    "bytes": 3181,
+    "sha256": "b67f2cee5e3d9f7dbf2ba471d4bde890239902143d00eb27f91c8437991bc0c1"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_shorthand.dict.yaml",
+    "bytes": 3046,
+    "sha256": "b84bf88ac11a8b4539f0dcd978f676b874c8efac52b5fa12ab88cad872020705"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_variable.dict.yaml",
+    "bytes": 3072,
+    "sha256": "aec8483fa49c159007b564b264c2a1f9e3755fbb9be1c91e6626f6258fba8d76"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.dict.yaml",
+    "bytes": 4373,
+    "sha256": "eee94ba46bed6495477f45d7d5b7deabf4be0041197d3a0128a90d6072c6b570"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_variable.dict.yaml",
+    "bytes": 4411,
+    "sha256": "011448c018f309303af488fa143c31e82803f76a3734ca301c3b73a9599ca51d"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_erhua_reverse_source.tsv",
+    "bytes": 40241,
+    "sha256": "896d69089125826e4d2d83601ad4ee60d23ba2f556a9888551097546bc0f3f05"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+    "bytes": 31621303,
+    "sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_full.dict.yaml",
+    "bytes": 150994,
+    "sha256": "e570b452543845542f0dc0e04233e44aa0ab9cfab12d655d9e811019fbc8064b"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_manifest.json",
+    "bytes": 2549,
+    "sha256": "e176793b2359b3d32cef397a8d20a7fc24c24f9c52cf98e381ce240c4b2bba11"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_shorthand.dict.yaml",
+    "bytes": 132044,
+    "sha256": "e8e34cd76847bfb2cc2b6a3df4f5a76641a40f402fb818a099e06dec24e86b7d"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_variable.dict.yaml",
+    "bytes": 134218,
+    "sha256": "1b80e35ea9c04a3600fd0a5e60cdba3a2cd6b5743c6c376ddfcfbb478cd53cd0"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_full.dict.yaml",
+    "bytes": 2842,
+    "sha256": "339caa6828e0ce569bd81a1f93d3a1b3b4c9e69c468f65108690fbee9e83cf15"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_manifest.json",
+    "bytes": 2073,
+    "sha256": "2e4a3ac0dba4bf497519dc2f60f89ae899f2e34d1bdecbe776490b2273052807"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_full.dict.yaml",
+    "bytes": 3038,
+    "sha256": "1dac84cb9de9565d54768688fec9f712279a6e8e78801c1f511e74f56d18622d"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_shorthand.dict.yaml",
+    "bytes": 2734,
+    "sha256": "41c39164c0a8cbc2a038d08dbaef4d14d2002a03efd60accc7316dc332e56f78"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_variable.dict.yaml",
+    "bytes": 2759,
+    "sha256": "22929e9c35a0daf6918ede8fe2de4b800ba78154bc195eaa2e22ecaf3362c22d"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_shorthand.dict.yaml",
+    "bytes": 2538,
+    "sha256": "1ff18ea29b4be8b9a9979941018042d4a1b333be8e4a5a43aaa4fd312eb7fa73"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_variable.dict.yaml",
+    "bytes": 2563,
+    "sha256": "96850c6e75d07250fcf0aba1bed685c13592556ee4742a61a929254212ae9026"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_sentence_full.dict.yaml",
+    "bytes": 368,
+    "sha256": "bdcc06ecb949eb589884f2de1f0d591ac42b331b9327b8a9f2424f5a9375603e"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_sentence_shorthand.dict.yaml",
+    "bytes": 398,
+    "sha256": "ca26b480507b90b6be0d47e0138ad463d0b367cc5fa1bdbb9b6ef47c232243ab"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_sentence_variable.dict.yaml",
+    "bytes": 392,
+    "sha256": "3a1569ec196835195a13ea2ccb55f719faf08a4ccb3b8cb82506e1b7bd921e57"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_shorthand.dict.yaml",
+    "bytes": 29563931,
+    "sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_full.dict.yaml",
+    "bytes": 694,
+    "sha256": "e6a478b4d8fc0474ae02b13dc6a5cffaf62ff7ca3ad1ba0f75b937cf75854f89"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_manifest.json",
+    "bytes": 1551,
+    "sha256": "b53b46ef49da894d019b5db4dc281b19aaceec9fe9ec570b26653b8e0c54d82e"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_shorthand.dict.yaml",
+    "bytes": 676,
+    "sha256": "4b9e428a09b8f5be8478a6d7d947f54760c2e395eeb1117b8a3702d04c840253"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_variable.dict.yaml",
+    "bytes": 675,
+    "sha256": "052b5b75cc0c8e1d5deae9f3c05a1ed45d36b02339630f130860a1204f011f84"
+  },
+  {
+    "path": "go-backend/input_methods/yime/data/yime_variable.dict.yaml",
+    "bytes": 30155261,
+    "sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b"
+  },
+  {
+    "path": "tools/lexicon/data/yime_core_target.lock.json",
+    "bytes": 4784,
+    "sha256": "7a2d2a845e59d63112507cd071de336898e9da1a024051e156555be251c6a845"
+  }
+]

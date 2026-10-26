@@ -1,0 +1,5 @@
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/settings-tool	2.797s
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-independence-audit	4.770s
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-trial-runtime	1.032s
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore	2.599s
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker	4.679s

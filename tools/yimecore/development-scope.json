@@ -16,7 +16,7 @@
       "user_reported_model": "华硕 ProArt 创 16 RTX Spark",
       "native_architecture": "ARM64",
       "identified_on": "2026-10-26",
-      "approved_uses": ["host_inventory", "source_build", "isolated_native_contracts"],
+      "approved_uses": ["host_inventory", "source_build", "isolated_native_contracts", "target_package_transactions"],
       "evidence": "docs/testing/arm64/2026-10-26/host-baseline.json"
     }}
   ],

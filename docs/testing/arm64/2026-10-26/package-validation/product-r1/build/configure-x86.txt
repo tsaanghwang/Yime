@@ -1,0 +1,10 @@
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.28000.
+-- The CXX compiler identification is MSVC 19.44.35229.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostarm64/x86/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (3.5s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-package-20261026-201907-1d87e4d7/native-x86

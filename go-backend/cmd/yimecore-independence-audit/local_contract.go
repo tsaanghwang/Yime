@@ -17,6 +17,20 @@ import (
 
 const localRuntimeContract = "yimecore-local-runtime-bundle-v1"
 const localInstallableContract = "yimecore-local-product-package-v1"
+const arm64InstallableContract = "yimecore-arm64-product-package-v1"
+
+// The standard product assets remain shared; only its TSF architecture paths
+// change. ARM64X occupies the single shared 64-bit COM view on Windows ARM.
+func requiredARM64ProductFiles() []string {
+	files := make([]string, len(requiredLocalRuntimeFiles))
+	for i, path := range requiredLocalRuntimeFiles {
+		files[i] = path
+		if strings.HasPrefix(path, "x64/") {
+			files[i] = "arm64/" + strings.TrimPrefix(path, "x64/")
+		}
+	}
+	return files
+}
 
 // Required independently packaged runtime assets.
 var requiredLocalRuntimeFiles = []string{
@@ -102,6 +116,11 @@ type localSpeechDescriptor struct {
 
 func requiredFilesForContract(manifest packageManifest) ([]string, error) {
 	switch manifest.PackageContract {
+	case arm64InstallableContract:
+		if manifest.ToolVersion != "yimecore-arm64-builder-v1" {
+			return nil, errors.New("unexpected ARM64 builder identity")
+		}
+		return requiredARM64ProductFiles(), nil
 	case "":
 		if strings.HasPrefix(manifest.ToolVersion, "yimecore-local-") {
 			return nil, errors.New("local package must declare an explicit contract")
@@ -127,7 +146,8 @@ func validateLocalRuntimeContract(root string, entries map[string]manifestFile) 
 }
 
 func validateLocalContract(root string, entries map[string]manifestFile, contract string) error {
-	installable := contract == localInstallableContract
+	arm64 := contract == arm64InstallableContract
+	installable := contract == localInstallableContract || arm64
 	if err := rejectIndirectPath(root, "local-product.json"); err != nil {
 		return err
 	}
@@ -144,6 +164,8 @@ func validateLocalContract(root string, entries map[string]manifestFile, contrac
 		Scope           struct {
 			ComputerName        string   `json:"computer_name"`
 			ActiveArchitectures []string `json:"active_architectures"`
+			Target              string   `json:"target"`
+			TSF64Architecture   string   `json:"tsf64_architecture"`
 		} `json:"scope"`
 		Identity struct {
 			ProductKey     string `json:"product_key"`
@@ -164,7 +186,11 @@ func validateLocalContract(root string, entries map[string]manifestFile, contrac
 		return err
 	}
 	allowed := map[string]bool{}
-	for _, path := range requiredLocalRuntimeFiles {
+	required := requiredLocalRuntimeFiles
+	if arm64 {
+		required = requiredARM64ProductFiles()
+	}
+	for _, path := range required {
 		allowed[strings.ToLower(path)] = true
 	}
 	if speech != nil {
@@ -173,7 +199,7 @@ func validateLocalContract(root string, entries map[string]manifestFile, contrac
 		}
 	}
 	for path := range entries {
-		if strings.HasPrefix(path, "arm64/") {
+		if !arm64 && strings.HasPrefix(path, "arm64/") {
 			return errors.New("ARM64 payload is outside this current-machine runtime bundle; use a target-specific experimental bundle")
 		}
 		if !installable && (strings.HasSuffix(path, ".cmd") || strings.HasPrefix(path, "maintenance/")) {
@@ -183,10 +209,17 @@ func validateLocalContract(root string, entries map[string]manifestFile, contrac
 			return fmt.Errorf("unexpected local product payload: %s", path)
 		}
 	}
+	expectedComputer, expectedNative := "MYCOMPUTER", "x64"
+	if arm64 {
+		expectedComputer, expectedNative = "HUASHUONOTEBOOK", "arm64"
+		if descriptor.Scope.Target != "windows-arm64" || descriptor.Scope.TSF64Architecture != "arm64x" || speech == nil {
+			return errors.New("ARM64 product requires explicit platform, ARM64X TSF and complete speech assets")
+		}
+	}
 	if descriptor.SchemaVersion != "yimecore-local-product-v1" || descriptor.PackageContract != contract ||
 		descriptor.Installable == nil || *descriptor.Installable != installable || descriptor.Version == "" ||
-		descriptor.Scope.ComputerName != "MYCOMPUTER" || len(descriptor.Scope.ActiveArchitectures) != 2 ||
-		descriptor.Scope.ActiveArchitectures[0] != "x64" || descriptor.Scope.ActiveArchitectures[1] != "x86" {
+		descriptor.Scope.ComputerName != expectedComputer || len(descriptor.Scope.ActiveArchitectures) != 2 ||
+		descriptor.Scope.ActiveArchitectures[0] != expectedNative || descriptor.Scope.ActiveArchitectures[1] != "x86" {
 		return errors.New("invalid local product schema, scope or installability")
 	}
 	if installable && descriptor.DisplayName != "音元拼音" {

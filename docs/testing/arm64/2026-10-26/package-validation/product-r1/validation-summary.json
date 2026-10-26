@@ -1,0 +1,80 @@
+{
+  "schema_version": "yimecore-arm64-product-r1-validation-summary-v1",
+  "evidence_kind": "derived-summary-of-byte-preserved-r1-evidence",
+  "revision": "R1",
+  "readiness": "blocked-check-failed-do-not-install",
+  "installation_allowed": false,
+  "installation_performed": false,
+  "build": {
+    "passed": true,
+    "registration_and_default_preserved": true,
+    "source_files": 741,
+    "source_manifest_sha256": "21ddd91c92f0beb33b92d2a0bde4be3be029d24859a9c2f499b200d60bbc40c7"
+  },
+  "audits": {
+    "product_passed": true,
+    "payload_passed": true,
+    "product_pe_files": 25,
+    "payload_pe_files": 25
+  },
+  "go_tests": {
+    "passed_packages": 5,
+    "individual_test_counts_not_collected": true,
+    "raw_log": "build/go-tests.txt"
+  },
+  "payload_maintenance": {
+    "passed": true,
+    "checks": 12,
+    "synthetic_fixture_only": true,
+    "registration_executed": false,
+    "raw_report": "build/arm64-payload-maintenance.json"
+  },
+  "isolated_tsf": {
+    "passed": true,
+    "combinations": 9,
+    "all_runs_passed": true,
+    "architectures": [
+      "arm64",
+      "x64 emulated",
+      "x86 under WOW64 on ARM64"
+    ],
+    "modes": [
+      "full",
+      "variable",
+      "shorthand"
+    ],
+    "registered_host_acceptance": null,
+    "physical_acceptance": false,
+    "raw_report": "tsf-platform-modes/summary.json"
+  },
+  "delivered_setup_check": {
+    "passed": false,
+    "action": "Check",
+    "powershell_version": "5.1.28000.3231",
+    "edition": "Desktop",
+    "failed_stage": "package check",
+    "error": "Unable to find type [ushort].",
+    "error_id": "TypeNotFound",
+    "installed": false,
+    "raw_log": "delivery/failed-ps5-check.user.log",
+    "failing_packaged_sources": "delivery/failing-copy/"
+  },
+  "delivery": {
+    "sha256": "bdc68488b10cebc6ed61dd06909e4bb1e8a845e811a627e9b25e10eb042c07e6",
+    "bytes": 168170935,
+    "member_count": 73,
+    "original_receipt": "delivery/delivery.json",
+    "zip_not_archived": true,
+    "zip_not_rehashed_by_this_archiving_task": true,
+    "checksum_receipt_and_manifest_bindings_verified": true,
+    "download_url": null,
+    "ci_status_at_delivery": "pending"
+  },
+  "prior_admission_index_sha256": "15d95c4d9a3b5bfcc29b25b1e08f99427eb5ea2e239a9abf9dcc6dbd8561e712",
+  "scope_boundaries": [
+    "Build/audit/fixture success does not override the delivered Setup Check failure. R1 is not an install candidate.",
+    "Source repairs and R2 output are outside this archive and were not inspected or modified.",
+    "Archived source hashes describe the R1 build snapshot; they are not asserted equal to subsequently repaired source.",
+    "No ZIP, EXE, DLL, runtime .yidx, dictionary, private fixture state or user data was copied."
+  ]
+}

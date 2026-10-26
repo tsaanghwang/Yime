@@ -3,6 +3,7 @@ param([ValidateSet('Install','Uninstall','Check')][string]$Action='Install',
     [ValidateSet('yimecore','rime-pime','both')][string]$Product='both',
     [string]$CorePackage,[string]$RimePackage,[string]$PackageDirectory=$PSScriptRoot,[switch]$ResetData)
 $ErrorActionPreference='Stop'
+Import-Module (Join-Path $PSScriptRoot 'Product.psm1') -Force
 function Invoke-Setup($Item,[string]$Operation){
     # Each product owns its script scope, native types and exit code.
     $arguments=@('-NoProfile','-ExecutionPolicy','Bypass','-File',$Item.entry,'-Action',$Operation)
@@ -29,6 +30,9 @@ foreach($id in $selected){
     if(-not (Test-Path -LiteralPath $entry -PathType Leaf)){throw ('Missing setup: '+$entry)}
     $record=Get-Content -LiteralPath (Join-Path $package 'product-package.json') -Raw -Encoding UTF8|ConvertFrom-Json
     if($record.product -cne $id){throw ('Wrong product package: '+$package)}
+    # Old packages may contain an older Setup whose Check only verifies files.
+    # Reject every incompatible target before invoking any selected setup.
+    Assert-PackageHost (Get-PackageContract $record)
     $entries+=@([pscustomobject]@{product=$id;entry=$entry})
 }
 # Check every selected package before changing the first product.

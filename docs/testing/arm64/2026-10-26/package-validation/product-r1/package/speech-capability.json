@@ -1,0 +1,8 @@
+{
+  "schema_version": "yimecore-speech-capability-v1",
+  "product": {
+    "path": "speech/product.json",
+    "sha256": "9d56bbac5342a565913ca54b372263d5bb71d767079ee6b9dbd195eb6f4b7f2b"
+  },
+  "default_enabled": false
+}

@@ -102,7 +102,7 @@ function New-LocalProductBuildRoot([string]$RepoRoot, [string]$OutputRoot, [stri
     if (-not $rootPath.StartsWith($allowed + '\', [StringComparison]::OrdinalIgnoreCase)) {
         throw "Output must be a new child of $allowed"
     }
-    $experimentPrefix=if($ExperimentTarget -eq 'mainstream_x64'){'mx64-package'}else{$null}
+    $experimentPrefix=switch($ExperimentTarget){'mainstream_x64'{'mx64-package'};'arm64'{'arm64-package'};default{$null}}
     if ($ExperimentTarget -and ((Split-Path -Leaf $rootPath) -cnotmatch ('^' + [regex]::Escape($experimentPrefix) + '-[0-9]{8}-[0-9]{6}-[a-f0-9]{8}$'))) {
         throw 'Experiment package output must use its fresh target-specific package name.'
     }
@@ -139,6 +139,8 @@ function Get-LocalProductSourcePaths([string]$RepoRoot, $Product) {
         go-backend YimeTextServiceExperiment json tools/yimecore internal_data/manual_key_layout.json AGENTS.md)
     if ($LASTEXITCODE -ne 0) { throw 'Cannot enumerate source' }
     $paths += @($Product.assets | ForEach-Object { $_.source })
+    $paths += @(& git -C $RepoRoot -c core.quotepath=false ls-files --cached --others --exclude-standard -- installer/simple)
+    if ($LASTEXITCODE -ne 0) { throw 'Cannot enumerate installer source' }
     $paths += @('json/single_include/nlohmann/json.hpp', 'tools/assert-data-source-boundary.ps1',
         'installer/simple/Build-Package.ps1', 'installer/simple/Setup.ps1')
     @($paths | Sort-Object -Unique | Where-Object {

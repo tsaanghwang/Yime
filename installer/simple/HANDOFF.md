@@ -4,6 +4,8 @@
 
 ## 当前任务
 
+**2026-10-26 后续：YimeCore ARM64 的 R2 完整包已通过本地检查，待本轮 CI 与远端交付后安装。** 原生 ARM64 Runtime/Broker、ARM64/x64 共用 ARM64X 文本服务及独立 x86 文本服务均已重新构建；实际 PS5 包检查、37 项安装器合同、12 项实际载荷维护及三架构三模式的 9 组直接 TSF 通过。R1 的 PS5 类型别名失败已保留并修复，R2 在新目录构包。`YimeCore-ARM64-20261026-r2.zip` 为 168171619 字节，SHA-256 `2c94d825c59bf768d8a00a13353d38fe65f3b67e2258d3fb9747014229049de1`，本地保留于 `C:\dev\Yime-deliveries\arm64-proart-20261026-r2`；固定 GitHub 下载 URL 尚未发布。来源、证据和构包入口见[包与安装记录](../../docs/testing/arm64/2026-10-26/PACKAGE-AND-INSTALL-TEST.md)。没有执行安装或真实应用输入验收；旧 x64/Rime-PIME 路径保留。
+
 **2026-10-26：华硕 ProArt 创 16 RTX Spark 的 ARM64 原生源码验证。** 系统型号为 `HUASHUONOTEBOOK` / ASUS ProArt P16 H7607BA。设备和固定桌面原型包首轮结果见[实机报告](../../docs/testing/arm64/2026-10-26/TEST-RESULT.md)；已接续完成 ARM64 Go/MSVC 工具链、27 个当前身份产物、305 个 Go test/subtest、DLL/COM、32 项失焦取消及三模式直接 TSF，见[原生源码报告](../../docs/testing/arm64/2026-10-26/NATIVE-SOURCE-TEST.md)。本地分支 `codex/arm64-native-test-20261026` 的证据通过相同 Git tree 的连接器快照发布至 [PR #78](https://github.com/tsaanghwang/Yime/pull/78)。下一步是 ARM64 包契约和完整包交付；当前 x64 安装器不用于此机，尚无安装态 registered-host、真实应用或重启输入结论。旧 `perf/i7-7820x-local` 仍仅作既有 x64 测试报告分支，本轮不向它写入 ARM 结果。
 
 **2026-09-28：touch-terminal KLE 模板导入与实屏基线开发中；测试端无安装任务。** 目标分支 `codex/touch-terminal-kle-baseline` 从已合并 PR #64 的当前主线 `af8ea73f` 创建，并接续 9 月 22 日隔离浏览器原型。范围仅为 KLE 触摸几何模板、离线生成/校验、浏览器交互与已连接触摸屏的本地基线；不连接或修改已安装输入法，不改变默认输入法、用户词库或桌面键位真源。接续入口为 [运行说明](../../prototypes/touch-terminal/README.md)，另见 [验证记录](../../prototypes/touch-terminal/VALIDATION.md)、[适配协议](../../prototypes/touch-terminal/PROTOCOL.md) 和 [硬件可行性](../../prototypes/touch-terminal/HARDWARE.md)。触摸屏已以复制显示模式连接，但在真实手指测试记录完成前，不宣称误触率、端到端延迟或宿主输入通过。

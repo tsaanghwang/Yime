@@ -1,0 +1,27 @@
+{
+  "schema_version": "yimecore-arm64-speech-admission-receipt-v1",
+  "trial_root": "C:/dev/Yime/.tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779",
+  "summary_sha256": "b1423ab265d78bcfb2e3b0e366f019381a00245c15d8be1854244fd9d29cff4e",
+  "source_inventory_sha256": "d52f43b5d6ec5a9c088aa616a85e3927dc2f4291dce638e43e91126eaa00709e",
+  "source_records": 624,
+  "current_source_mismatches": [],
+  "passed": true,
+  "directed_passed": 512,
+  "directed_skipped": 3,
+  "tools": [
+    {
+      "path": "bin/YimeBroker-speech.exe",
+      "sha256": "36fbee46da133524d667374d50bcc2e7e61ae9c7f75625954470cc497923b718",
+      "machine": "0xaa64",
+      "matches": true
+    },
+    {
+      "path": "bin/YimeSpeechAdmission.exe",
+      "sha256": "55c998d0fd6af860959799112bb19ac02084580deb0d3053826162df4448342c",
+      "machine": "0xaa64",
+      "matches": true
+    }
+  ],
+  "earlier_failed_baseline_root": "C:/dev/Yime/.tmp/yimecore-experiment/speech-admission-runner-failure-20261026-201124-cf1cb9ad93514c4e8e27a31d8cd169ed",
+  "installed_acceptance": false
+}

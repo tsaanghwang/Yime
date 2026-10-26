@@ -2,8 +2,9 @@
 param(
     [string]$InstallRoot,
     [ValidatePattern('^[a-fA-F0-9]{64}$')][string]$ExpectedManifestSha256,
-    [ValidateSet('mainstream_x64')][string]$ExperimentTarget,
-    [string]$Python = 'C:\Users\tsaan\AppData\Local\Programs\Python\Python312\python.exe'
+    [ValidateSet('mainstream_x64','arm64')][string]$ExperimentTarget,
+    [string]$Python = 'C:\Users\tsaan\AppData\Local\Programs\Python\Python312\python.exe',
+    [string]$GoExecutable = 'C:\Program Files\Go\bin\go.exe'
 )
 # Current-source, Stage5C-only admission and owned anonymous-stdio Broker trial.
 # No installed binary, TSF host, Rime session, installer or user text is opened.
@@ -157,9 +158,13 @@ function Assert-AdmissionProcessOutcome($Report, [string]$BrokerHash) {
 function Get-PlatformAdmissionProtectionSnapshot($Scope) {
     $roots=@('C:\Program Files\YimeCore Experimental Trial','C:\Program Files (x86)\YimeCore Experimental Trial')
     $records=@($roots|ForEach-Object {[ordered]@{path=$_;exists=[bool](Test-Path -LiteralPath $_)}})
-    if(@($records|Where-Object exists).Count){throw 'The clean mainstream_x64 package host unexpectedly has a YimeCore trial root.'}
-    [ordered]@{schema_version='yimecore-platform-admission-protection-v1';mode='clean-target-absence';
+    if(@($records|Where-Object exists).Count){throw 'The clean platform package host unexpectedly has a YimeCore trial root.'}
+    $snapshot=[ordered]@{schema_version='yimecore-platform-admission-protection-v1';mode='clean-target-absence';
         target=$Scope.target;computer_name=$Scope.computer_name;roots=$records}
+    if ($Scope.target -ceq 'arm64') {
+        $snapshot.registry_protection = Get-LocalAdmissionProtectionSnapshot
+    }
+    $snapshot
 }
 
 function Get-LocalAdmissionProtectionSnapshot {
@@ -168,6 +173,19 @@ function Get-LocalAdmissionProtectionSnapshot {
         . (Join-Path $PSScriptRoot 'local-product-build-common.ps1')
         Get-LocalProductProtectionEvidence -HashesOnly
     }
+}
+
+function Get-SpeechAdmissionGoArchitecture([string]$ExperimentTarget, $Scope) {
+    if ($ExperimentTarget -ceq 'arm64') {
+        if ($Scope.target -cne 'arm64' -or $Scope.build_lane -cne 'arm64_native_source_build' -or
+            $Scope.native_architecture -cne 'ARM64' -or $Scope.computer_name -cne 'HUASHUONOTEBOOK' -or
+            $Scope.machine_observation.source -cne 'IsWow64Process2' -or $Scope.machine_observation.native_machine -cne '0xaa64') {
+            throw 'Speech admission executes only on the identified native ARM64 host; cross-build evidence is insufficient.'
+        }
+        return 'arm64'
+    }
+    if ($ExperimentTarget -and $ExperimentTarget -cne 'mainstream_x64') { throw 'Unapproved speech admission target.' }
+    return 'amd64'
 }
 
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..')).TrimEnd('\')
@@ -180,11 +198,15 @@ if($platformAdmission){
     $install=$null;$scope=Get-YimeCoreDevelopmentScope
     if($scope.computer_name -cne 'MYCOMPUTER'){throw 'This local admission lane is pinned to MYCOMPUTER.'}
 }
+$goArchitecture = Get-SpeechAdmissionGoArchitecture $ExperimentTarget $scope
+if ($ExperimentTarget -ceq 'arm64' -and -not $PSBoundParameters.ContainsKey('GoExecutable')) {
+    throw 'ARM64 admission requires an explicit GoExecutable path.'
+}
 Assert-SpeechPlainPath $Python
 if (-not [IO.Path]::IsPathRooted($Python) -or -not (Test-Path -LiteralPath $Python -PathType Leaf)) { throw 'An explicit installed Python executable is required.' }
-$go = 'C:\Program Files\Go\bin\go.exe'
+$go = $GoExecutable
 Assert-SpeechPlainPath $go
-if (-not (Test-Path -LiteralPath $go -PathType Leaf)) { throw 'Pinned local Go executable is unavailable.' }
+if (-not [IO.Path]::IsPathRooted($go) -or -not (Test-Path -LiteralPath $go -PathType Leaf)) { throw 'An explicit absolute local Go executable is required.' }
 $outParent = Join-Path $repo '.tmp\yimecore-experiment'
 $runID = (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N')
 $out = Join-Path $outParent ('speech-admission-' + $runID)
@@ -198,8 +220,8 @@ $pythonTestsPassed=$false
 $environment = [ordered]@{
     TEMP=(Join-Path $out 'private\temp');TMP=(Join-Path $out 'private\tmp');APPDATA=(Join-Path $out 'private\appdata');LOCALAPPDATA=(Join-Path $out 'private\localappdata');
     GOCACHE=(Join-Path $out 'private\gocache');GOMODCACHE=(Join-Path $out 'private\gomodcache');GOPATH=(Join-Path $out 'private\gopath');
-    GOOS='windows';GOARCH='amd64';CGO_ENABLED='0';GOTOOLCHAIN='local';GOPROXY='off';GOSUMDB='off';GOWORK='off';GOENV='off';GOTELEMETRY='off';
-    GOFLAGS='-mod=readonly -trimpath -buildvcs=false';GOPRIVATE=$null;GONOPROXY='none';GONOSUMDB='none';GOEXPERIMENT=$null;GOAMD64='v1';
+    GOOS='windows';GOARCH=$goArchitecture;CGO_ENABLED='0';GOTOOLCHAIN='local';GOPROXY='off';GOSUMDB='off';GOWORK='off';GOENV='off';GOTELEMETRY='off';
+    GOFLAGS='-mod=readonly -trimpath -buildvcs=false';GOPRIVATE=$null;GONOPROXY='none';GONOSUMDB='none';GOEXPERIMENT=$null;GOAMD64=$(if($goArchitecture -ceq 'amd64'){'v1'}else{$null});
     PYTHONDONTWRITEBYTECODE='1';PYTHONNOUSERSITE='1';PYTHONPATH=$null;PYTHONHOME=$null;
     YIME_RUN_REAL_RIME_TESTS=$null;YIME_TEXTSERVICE_EXPERIMENT_TOOL_MENU_SMOKE=$null;YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST=$null;YIME_TEXTSERVICE_EXPERIMENT_PIPE=$null;
     YIMECORE_TEST_PIPE_NAME=$null;YIMECORE_TEST_STATE_ROOT=$null;YIMECORE_TOOL_SMOKE_TEST=$null;YIME_RUNTIME_JOB_HELPER=$null;
@@ -242,8 +264,10 @@ try {
         Invoke-AdmissionLogged $Python @('-B','-m','unittest','tools.lexicon.tests.test_validate_connected_speech_forward','-v') (Join-Path $logs 'python-contracts.log')
         $pythonTestsPassed=$true
     } finally { Pop-Location }
+    if ($ExperimentTarget) { Assert-YimeCoreNativeGo -ExperimentTarget $ExperimentTarget -GoExecutable $go }
+    else { Assert-YimeCoreNativeGo -GoExecutable $go }
     $versionLines=@(& $go version)
-    if ($LASTEXITCODE -ne 0 -or $versionLines.Count -ne 1 -or [string]$versionLines[0] -notmatch '^go version go[0-9][A-Za-z0-9.]* windows/amd64$') { throw 'Expected a local Windows AMD64 Go toolchain.' }
+    if ($LASTEXITCODE -ne 0 -or $versionLines.Count -ne 1 -or [string]$versionLines[0] -notmatch ('^go version go[0-9][A-Za-z0-9.]* windows/' + [regex]::Escape($goArchitecture) + '$')) { throw 'Expected the matching native Windows Go toolchain.' }
     $goVersion=[string]$versionLines[0]
     Push-Location (Join-Path $repo 'go-backend')
     try {
@@ -362,7 +386,7 @@ finally {
             'Static dictionary syntax may be imported by YimeCore; no Rime library, generator, deployer or runtime is executed.',
             'Process restarts, selection, paging, cancellation and learning use owned anonymous-pipe fixture processes and private state, not installed TSF or live hosts.',
             'Skipped directed tests remain explicitly listed; no skipped path is inferred passed.',
-            'L5 final user confirmation, installed candidate acceptance, L6 sealing and ARM64 native hosts remain separate gates.')}
+            'L5 final user confirmation, installed candidate acceptance, L6 sealing and registered/live ARM64 hosts remain separate gates.')}
     Write-SpeechJson $summary (Join-Path $evidenceRoot 'summary.json')
 }
 if (-not $passed) { throw "Isolated speech admission did not pass. Outcome evidence: $evidenceRoot" }

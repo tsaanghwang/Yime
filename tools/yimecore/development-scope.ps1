@@ -171,7 +171,44 @@ function Resolve-YimeCorePlatformGenerator([string]$Target, $Scope, [string]$Req
 }
 
 function Assert-YimeCoreNativeGo {
-    $target = @(& go env GOOS GOARCH)
+    param([ValidateSet('mainstream_x64','arm64')][string]$ExperimentTarget, [string]$GoExecutable = 'go')
+    if ($ExperimentTarget) {
+        $scope = Get-YimeCoreExperimentBuildScope $ExperimentTarget
+        if ($ExperimentTarget -ceq 'arm64') {
+            if ($scope.build_lane -cne 'arm64_native_source_build') {
+                throw 'ARM64 Go execution requires the identified native ARM64 host, not the cross-build lane.'
+            }
+            if (-not [IO.Path]::IsPathRooted($GoExecutable) -or -not (Test-Path -LiteralPath $GoExecutable -PathType Leaf)) {
+                throw 'ARM64 Go execution requires an explicit absolute executable path.'
+            }
+            $cursor = [IO.Path]::GetFullPath($GoExecutable)
+            while ($cursor) {
+                if ((Get-Item -LiteralPath $cursor -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) {
+                    throw 'The ARM64 Go executable must not traverse a symlink or junction.'
+                }
+                $cursor = Split-Path -Parent $cursor
+            }
+            # Do not infer the executable architecture from processMachine=0 or inherited environment labels.
+            $stream = [IO.File]::OpenRead($GoExecutable)
+            $reader = [IO.BinaryReader]::new($stream)
+            try {
+                if ($stream.Length -lt 64 -or $reader.ReadUInt16() -ne 0x5a4d) { throw 'Go executable has no valid DOS header.' }
+                $stream.Position = 0x3c
+                $peOffset = $reader.ReadUInt32()
+                if ($peOffset -lt 64 -or [uint64]$peOffset + 6 -gt [uint64]$stream.Length) { throw 'Go executable has no valid PE offset.' }
+                $stream.Position = $peOffset
+                if ($reader.ReadUInt32() -ne 0x00004550 -or $reader.ReadUInt16() -ne 0xaa64) {
+                    throw 'The ARM64 Go executable must have PE machine 0xAA64.'
+                }
+            } finally { $reader.Dispose() }
+            $target = @(& $GoExecutable env GOOS GOARCH GOHOSTOS GOHOSTARCH)
+            if ($LASTEXITCODE -ne 0 -or ($target -join '|') -cne 'windows|arm64|windows|arm64') {
+                throw 'ARM64 admission/build requires native windows/arm64 Go with windows/arm64 target.'
+            }
+            return
+        }
+    }
+    $target = @(& $GoExecutable env GOOS GOARCH)
     if ($LASTEXITCODE -ne 0 -or $target.Count -ne 2 -or $target[0] -ne 'windows' -or $target[1] -ne 'amd64') {
         throw 'The shared YimeCore runtime/Broker must remain windows/amd64. Resumed x86 applies only to the Win32 TSF surface, not a second Go core.'
     }

@@ -1,0 +1,25 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261026204331
+Username: HUASHUONOTEBOOK\tsaan
+RunAs User: HUASHUONOTEBOOK\tsaan
+Configuration Name: 
+Machine: HUASHUONOTEBOOK (Microsoft Windows NT 10.0.28000.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\dev\Yime\tools\powershell\preflight.ps1
+Process ID: 22256
+PSVersion: 5.1.28000.3231
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.28000.3231
+BuildVersion: 10.0.28000.3231
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\d1f161d45e9543c6a4d4953eb0da6b9c.user.log
+Action: Check; package: C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-package-20261026-203953-48f90202\YimeCore-ARM64
+PASS: package files, required binaries and native host windows-arm64
+**********************
+Windows PowerShell transcript end
+End time: 20261026204334
+**********************
