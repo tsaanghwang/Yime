@@ -8,7 +8,7 @@ function Check-GoEnvironment([bool]$Passed,[string]$Name) {
     $script:checks++
 }
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
-$go = (Get-Command $GoExecutable -CommandType Application -ErrorAction Stop).Source
+$go = (Get-Command $GoExecutable -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
 $fixture = Join-Path $repo ('.tmp/arm64-goenv-contract-'+[guid]::NewGuid().ToString('N'))
 $module = Join-Path $fixture 'module'
 $null = [IO.Directory]::CreateDirectory($module)

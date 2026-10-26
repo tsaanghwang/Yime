@@ -1,0 +1,2 @@
+C:\dev\Yime\.generated\arm64-toolchain\go1.25.14\go\bin\go.exe
+C:\Users\tsaan\.codex\worktrees\pr78-conflict-review\Yime\.tmp\pr78-multiple-go-7c7856a4\shadow\go.exe

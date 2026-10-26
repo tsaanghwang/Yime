@@ -1,0 +1,531 @@
+{
+  "schema_version": "yimecore-pr78-review-evidence-index-v1",
+  "draft": false,
+  "created_at": "2026-10-26T16:55:00.761665+00:00",
+  "archive_root": "docs/testing/arm64/2026-10-26/pr78-review",
+  "summary": "goenv-isolation/multiple-go-path/observations.json",
+  "prior_index": {
+    "path": "goenv-isolation/evidence-index.json",
+    "sha256": "2856b338f68bbbf7023d06ff711a0fd4da9fbd237496694d70a318aca744e3d3"
+  },
+  "artifact_count": 57,
+  "artifact_bytes": 75364,
+  "verification": {
+    "all_artifact_hashes_and_sizes_checked": true,
+    "new_original_source_bytes_pinned_and_checked": 8,
+    "derived_evidence_links_checked": true,
+    "original_bytes_transcoded": false
+  },
+  "boundaries": [
+    "Only explicit source files from the plan are read; no Go cache or user settings are scanned.",
+    "Transcribed tool-output receipts are labelled and are not original stdout/stderr files.",
+    "Checkout EOL normalization is diagnostic only and never changes archived raw bytes.",
+    "Source regressions do not establish installed or real-application input acceptance."
+  ],
+  "artifacts": [
+    {
+      "path": "goenv-isolation/ci-workflow-current-hash.json",
+      "bytes": 1095,
+      "sha256": "197ee7fbf5f4546c6365a107fd6f57e95d7ba09ccfacd5a887a0a94c1e8c9d38",
+      "category": "current-source-hash-observation",
+      "byte_identical_to_source": null
+    },
+    {
+      "path": "goenv-isolation/evidence-index.draft.json",
+      "bytes": 4162,
+      "sha256": "151fcfcaa444db4ac0557f92e76522ef677159f28a40e8a176c689472e86a1b2",
+      "category": "preserved-prior-index"
+    },
+    {
+      "path": "goenv-isolation/evidence-index.json",
+      "bytes": 23261,
+      "sha256": "2856b338f68bbbf7023d06ff711a0fd4da9fbd237496694d70a318aca744e3d3",
+      "category": "preserved-prior-index"
+    },
+    {
+      "path": "goenv-isolation/final-passed-run/arm64-admission-and-go-environment.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a9dff76d\\arm64-admission-and-go-environment.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/final-passed-run/arm64-admission-and-go-environment.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a9dff76d\\arm64-admission-and-go-environment.stdout.txt",
+      "bytes": 353,
+      "sha256": "1b1ea4992e47bfd0221eb25efcc1f5d89bce99ad257a6497f06f8034ec7c47ab",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/final-passed-run/arm64-build-scope.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a9dff76d\\arm64-build-scope.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/final-passed-run/arm64-build-scope.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a9dff76d\\arm64-build-scope.stdout.txt",
+      "bytes": 90,
+      "sha256": "c8ec28fb1c73f972f994fdcb7d174d6edc83d1bdf1b7728c1ac86e6643cc0d15",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/final-passed-run/legacy-speech-build.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a9dff76d\\legacy-speech-build.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/final-passed-run/legacy-speech-build.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a9dff76d\\legacy-speech-build.stdout.txt",
+      "bytes": 164,
+      "sha256": "96f54646427bb9c876028cd771d19a7f7c1003d40ecd372b4994c76b691a086d",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/final-passed-run/legacy.params.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a9dff76d\\legacy.params.json",
+      "bytes": 146,
+      "sha256": "7180d2185918edfdd04f1a925fd7ccf2fa26c37aff47eac6af84939ef3d2612f",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/final-passed-run/platform-contract.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a9dff76d\\platform-contract.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/final-passed-run/platform-contract.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a9dff76d\\platform-contract.stdout.txt",
+      "bytes": 160,
+      "sha256": "b74e4da9d6c48eb380517130924368dc1e2413b89dd4feaaf29970beebad769f",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/final-passed-run/summary.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a9dff76d\\summary.json",
+      "bytes": 4095,
+      "sha256": "410bb12cd4154225e1df4d2474da85c8c75cfa77c9713f8603f2c9de9623bf10",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/final-runner/run-pr78-goenv-review.py",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\run-pr78-goenv-review.py",
+      "bytes": 4064,
+      "sha256": "d7bd03d85ac2e807f5a1289fc616187f0e3c532287257b708dbe0306a3f2ede7",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/first-failed-run/arm64-admission-and-go-environment.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-489edd96\\arm64-admission-and-go-environment.stderr.txt",
+      "bytes": 59,
+      "sha256": "08e4b7364af554a4c75f27a5952876a75c54dbdae32853b93e4c0fe746c506e5",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/first-failed-run/arm64-admission-and-go-environment.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-489edd96\\arm64-admission-and-go-environment.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/first-failed-run/arm64-build-scope.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-489edd96\\arm64-build-scope.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/first-failed-run/arm64-build-scope.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-489edd96\\arm64-build-scope.stdout.txt",
+      "bytes": 90,
+      "sha256": "c8ec28fb1c73f972f994fdcb7d174d6edc83d1bdf1b7728c1ac86e6643cc0d15",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/first-failed-run/development-scope.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-489edd96\\development-scope.stderr.txt",
+      "bytes": 163,
+      "sha256": "a6484e6bce3fb1d13271f1c3d2ad49589378482d1b740df112e3b8044c5381e7",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/first-failed-run/development-scope.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-489edd96\\development-scope.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/first-failed-run/legacy-speech-build.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-489edd96\\legacy-speech-build.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/first-failed-run/legacy-speech-build.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-489edd96\\legacy-speech-build.stdout.txt",
+      "bytes": 164,
+      "sha256": "73e1ea9129f0ed6026823bda114c75b613131b1e295a6a0879c3ab42b7f5a1ac",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/first-failed-run/legacy.params.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-489edd96\\legacy.params.json",
+      "bytes": 146,
+      "sha256": "8f84df8112b24a3051ddf9ce8a0b7fb4e06dc36d77868f356dbfd41e380d2476",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/first-failed-run/platform-contract.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-489edd96\\platform-contract.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/first-failed-run/platform-contract.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-489edd96\\platform-contract.stdout.txt",
+      "bytes": 160,
+      "sha256": "b74e4da9d6c48eb380517130924368dc1e2413b89dd4feaaf29970beebad769f",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/first-failed-run/summary.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-489edd96\\summary.json",
+      "bytes": 4713,
+      "sha256": "cca32b0297a1d8aca7f5224363d50795e23e5c4963b9a03738500b8b813f03fd",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/multiple-go-path/arm64-admission-and-go-environment.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-multiple-go-7c7856a4\\arm64-admission-and-go-environment.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/multiple-go-path/arm64-admission-and-go-environment.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-multiple-go-7c7856a4\\arm64-admission-and-go-environment.stdout.txt",
+      "bytes": 353,
+      "sha256": "63e9fa2cf4a1d2efaee2caf3fb3120e27c7608485ec88411af97cc49a17f7b6b",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/multiple-go-path/ci-failure-excerpt.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-multiple-go-7c7856a4\\ci-failure-excerpt.json",
+      "bytes": 940,
+      "sha256": "4fe3d0f25e0f22f1eeadf896b37adc9b8ebd1d23520f2918661e9b3331c940c2",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/multiple-go-path/observations.json",
+      "bytes": 1053,
+      "sha256": "87a21cebc97320df41c5e9fb59834ea4cc4beac6282d67c1be44e72d25685324",
+      "category": "derived-review-summary",
+      "byte_identical_to_source": null,
+      "derived_from": [
+        "goenv-isolation/multiple-go-path/arm64-admission-and-go-environment.stderr.txt",
+        "goenv-isolation/multiple-go-path/arm64-admission-and-go-environment.stdout.txt",
+        "goenv-isolation/multiple-go-path/ci-failure-excerpt.json",
+        "goenv-isolation/multiple-go-path/summary.json",
+        "goenv-isolation/multiple-go-path/verify-multiple-path-candidates.stderr.txt",
+        "goenv-isolation/multiple-go-path/verify-multiple-path-candidates.stdout.txt",
+        "goenv-isolation/multiple-go-path/verify-path.ps1",
+        "goenv-isolation/multiple-go-path/run-pr78-multiple-go.py"
+      ]
+    },
+    {
+      "path": "goenv-isolation/multiple-go-path/run-pr78-multiple-go.py",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\run-pr78-multiple-go.py",
+      "bytes": 2763,
+      "sha256": "ba401a2ecd030c12e0ea1dc2e790a801c3b4e8449aaa442680031e55141108c0",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/multiple-go-path/summary.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-multiple-go-7c7856a4\\summary.json",
+      "bytes": 1941,
+      "sha256": "ca3954c23adaad87aa97597c36b51c3f2318e5024786af568bd2374ddf4c04aa",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/multiple-go-path/verify-multiple-path-candidates.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-multiple-go-7c7856a4\\verify-multiple-path-candidates.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/multiple-go-path/verify-multiple-path-candidates.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-multiple-go-7c7856a4\\verify-multiple-path-candidates.stdout.txt",
+      "bytes": 168,
+      "sha256": "8b60509105441c963df28bee4647a6e1fb51337584697556e0389d60b8e645c6",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/multiple-go-path/verify-path.ps1",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-multiple-go-7c7856a4\\verify-path.ps1",
+      "bytes": 219,
+      "sha256": "4fa05a85fe802c8da2789b22ff282ba0118a32cd9bd120d76e388f0388d7ec3c",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/null-restoration-probe-transcript.json",
+      "bytes": 1126,
+      "sha256": "db9b324deeff15678493b3aaf21d0d08ae4f707282cf2c04a9249df6467728db",
+      "category": "tool-output-transcript",
+      "byte_identical_to_source": null
+    },
+    {
+      "path": "goenv-isolation/observations.final.json",
+      "bytes": 7963,
+      "sha256": "99c3a33e8766bc51ca7039c4352bb0fcd637584165e5f74da6ca3189a0d724c3",
+      "category": "derived-review-summary",
+      "byte_identical_to_source": null,
+      "derived_from": [
+        "goenv-isolation/first-failed-run/arm64-admission-and-go-environment.stderr.txt",
+        "goenv-isolation/first-failed-run/arm64-admission-and-go-environment.stdout.txt",
+        "goenv-isolation/first-failed-run/arm64-build-scope.stderr.txt",
+        "goenv-isolation/first-failed-run/arm64-build-scope.stdout.txt",
+        "goenv-isolation/first-failed-run/development-scope.stderr.txt",
+        "goenv-isolation/first-failed-run/development-scope.stdout.txt",
+        "goenv-isolation/first-failed-run/legacy-speech-build.stderr.txt",
+        "goenv-isolation/first-failed-run/legacy-speech-build.stdout.txt",
+        "goenv-isolation/first-failed-run/legacy.params.json",
+        "goenv-isolation/first-failed-run/platform-contract.stderr.txt",
+        "goenv-isolation/first-failed-run/platform-contract.stdout.txt",
+        "goenv-isolation/first-failed-run/summary.json",
+        "goenv-isolation/second-failed-run/arm64-admission-and-go-environment.stderr.txt",
+        "goenv-isolation/second-failed-run/arm64-admission-and-go-environment.stdout.txt",
+        "goenv-isolation/second-failed-run/arm64-build-scope.stderr.txt",
+        "goenv-isolation/second-failed-run/arm64-build-scope.stdout.txt",
+        "goenv-isolation/second-failed-run/legacy-speech-build.stderr.txt",
+        "goenv-isolation/second-failed-run/legacy-speech-build.stdout.txt",
+        "goenv-isolation/second-failed-run/legacy.params.json",
+        "goenv-isolation/second-failed-run/platform-contract.stderr.txt",
+        "goenv-isolation/second-failed-run/platform-contract.stdout.txt",
+        "goenv-isolation/second-failed-run/summary.json",
+        "goenv-isolation/final-passed-run/arm64-admission-and-go-environment.stderr.txt",
+        "goenv-isolation/final-passed-run/arm64-admission-and-go-environment.stdout.txt",
+        "goenv-isolation/final-passed-run/arm64-build-scope.stderr.txt",
+        "goenv-isolation/final-passed-run/arm64-build-scope.stdout.txt",
+        "goenv-isolation/final-passed-run/legacy-speech-build.stderr.txt",
+        "goenv-isolation/final-passed-run/legacy-speech-build.stdout.txt",
+        "goenv-isolation/final-passed-run/legacy.params.json",
+        "goenv-isolation/final-passed-run/platform-contract.stderr.txt",
+        "goenv-isolation/final-passed-run/platform-contract.stdout.txt",
+        "goenv-isolation/final-passed-run/summary.json",
+        "goenv-isolation/final-runner/run-pr78-goenv-review.py",
+        "goenv-isolation/probe-goenv-restoration.ps1",
+        "goenv-isolation/ci-workflow-current-hash.json",
+        "goenv-isolation/workflow-contract-tool-transcript.json",
+        "goenv-isolation/null-restoration-probe-transcript.json"
+      ]
+    },
+    {
+      "path": "goenv-isolation/observations.stage1.json",
+      "bytes": 2893,
+      "sha256": "226ffa909cdccd9e89bafd36004acdca10fd9ba8d1146150d82bfbd13e5b78f2",
+      "category": "derived-review-summary",
+      "byte_identical_to_source": null,
+      "derived_from": [
+        "goenv-isolation/reproduction/result.json",
+        "goenv-isolation/reproduction/go.env",
+        "goenv-isolation/reproduction/overlay.json",
+        "goenv-isolation/reproduction/outside-module.go",
+        "goenv-isolation/reproduction/module/go.mod",
+        "goenv-isolation/reproduction/module/main.go",
+        "goenv-isolation/r2/build-inputs.json"
+      ]
+    },
+    {
+      "path": "goenv-isolation/probe-goenv-restoration.ps1",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\probe-goenv-restoration.ps1",
+      "bytes": 1195,
+      "sha256": "d3b49c664c044b98a77853e4a1dfcebb44e6af2046f484ac929fa1803e2859f2",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/r2/build-inputs.json",
+      "source_path": "C:\\dev\\Yime-deliveries\\arm64-proart-20261026-r2\\YimeCore-ARM64\\payload\\build\\build-inputs.json",
+      "bytes": 4424,
+      "sha256": "520ca8d3fdefd5a4482238b57a01969c3e99cfe4246ba58e0d219930ddf02204",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/reproduction/go.env",
+      "source_path": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\go.env",
+      "bytes": 80,
+      "sha256": "24c5999392411085662b76470879051c6864c6fcabe2ae778e9759ee373aa61f",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/reproduction/module/go.mod",
+      "source_path": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\module\\go.mod",
+      "bytes": 49,
+      "sha256": "13269fb639e9f4c57f719ed8809a778857bca028230ce37c2fe53cec531f4872",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/reproduction/module/main.go",
+      "source_path": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\module\\main.go",
+      "bytes": 38,
+      "sha256": "b3ced67810543f03e5c99c5fd5ed6e0dee5b4ddfa34c5685293ff98d9c2884a0",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/reproduction/outside-module.go",
+      "source_path": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\outside-module.go",
+      "bytes": 66,
+      "sha256": "d647d3fc45b1675f72e7dbac5115f7db356507202cf4b45cd3136c0465aa688e",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/reproduction/overlay.json",
+      "source_path": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\overlay.json",
+      "bytes": 161,
+      "sha256": "6f7d8ced5c6c06420b5cbe6658398f6129698d3653169884ec48b81fc4dc3f54",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/reproduction/result.json",
+      "source_path": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\result.json",
+      "bytes": 1483,
+      "sha256": "5ebb8ae827b9075df92ee8ced78f91bf6eefae6041bc600b1947d95a00b7842d",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/second-failed-run/arm64-admission-and-go-environment.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a7ec1b9c\\arm64-admission-and-go-environment.stderr.txt",
+      "bytes": 82,
+      "sha256": "6441b4d4ff6b39c214f564495de5aa7637f9a0a67949c1b5633cdae13db501ab",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/second-failed-run/arm64-admission-and-go-environment.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a7ec1b9c\\arm64-admission-and-go-environment.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/second-failed-run/arm64-build-scope.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a7ec1b9c\\arm64-build-scope.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/second-failed-run/arm64-build-scope.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a7ec1b9c\\arm64-build-scope.stdout.txt",
+      "bytes": 90,
+      "sha256": "c8ec28fb1c73f972f994fdcb7d174d6edc83d1bdf1b7728c1ac86e6643cc0d15",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/second-failed-run/legacy-speech-build.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a7ec1b9c\\legacy-speech-build.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/second-failed-run/legacy-speech-build.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a7ec1b9c\\legacy-speech-build.stdout.txt",
+      "bytes": 164,
+      "sha256": "9820e1602a5423fa7c60dab9961794ed72a78db9486d44bbfa97420b265e0324",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/second-failed-run/legacy.params.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a7ec1b9c\\legacy.params.json",
+      "bytes": 146,
+      "sha256": "7011a23068c09e612d7982f754fe400b4df66861ff3512293ad8f8501b7935bb",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/second-failed-run/platform-contract.stderr.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a7ec1b9c\\platform-contract.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/second-failed-run/platform-contract.stdout.txt",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a7ec1b9c\\platform-contract.stdout.txt",
+      "bytes": 160,
+      "sha256": "b74e4da9d6c48eb380517130924368dc1e2413b89dd4feaaf29970beebad769f",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/second-failed-run/summary.json",
+      "source_path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-a7ec1b9c\\summary.json",
+      "bytes": 4096,
+      "sha256": "5f87100f8c54ffbfae6f5dc6d69c91497d3d9b82b3f58f3a2adba46adae0ca09",
+      "category": "byte-preserved-original-evidence",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "goenv-isolation/workflow-contract-tool-transcript.json",
+      "bytes": 626,
+      "sha256": "7d6eff76b903ef37b3dec1081652ad11f23dc6dc7c3871e06506ab2c816f468f",
+      "category": "relayed-tool-output-transcript",
+      "byte_identical_to_source": null
+    }
+  ]
+}

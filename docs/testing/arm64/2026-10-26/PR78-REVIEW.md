@@ -22,6 +22,8 @@ ARM builder 现在以可恢复的进程环境作用域执行：在首次 Go 调�
 
 回归真实执行合成模块的 `go env` / `go list`，验证外部替换源码不再被读取、临时配置字节不变、成功和前置失败后的恢复，以及不存在/空/非空三种调用方变量状态。两次中间失败均保留：先修正 Go 在 `GOENV=off` 时返回空配置文件路径的测试预期，再修正 PowerShell 将普通 `$null` 绑定为空字符串的问题；删除原先不存在的变量时现使用 `[NullString]::Value`。最终 35 项通过。新增测试所需 Go 已在安装器 CI 中按仓库现有版本固定为 1.26.4。
 
+随后 CI 的安装器任务发现测试脚本在 PATH 存在两个 Go 版本时，将 `Get-Command` 返回的多个路径拼成一个命令。现仅选择 PATH 中第一个应用路径。本机以真实原生 Go 加未执行的空白第二候选复现多路径环境，53 项 admission 与 35 项环境检查再次通过；[多 Go 路径补充证据](pr78-review/goenv-isolation/multiple-go-path/evidence-index.json)保留 CI 失败摘要与修正后的源哈希。该修改只影响回归脚本的工具查找。
+
 原 R2 包的 `build/build-inputs.json` 记录实际有效 GOFLAGS 为空，文件 SHA-256 为 `520ca8d3fdefd5a4482238b57a01969c3e99cfe4246ba58e0d219930ddf02204`。此次合成 overlay 复现没有推翻该固定包的原有来源记录，也没有重制 R2。
 
 ## 验证
