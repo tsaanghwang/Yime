@@ -1,12 +1,25 @@
 # P6：18u 桌面中文样机本机验收步骤
 
-2026-10-22 修订：在 PR #76 合并后的 18u 基线上增加 H02 触屏辅助导航与选区。**尚未执行本次新包的真人手指、触控笔或真实应用验收**。先做窗口内预览，再做真实应用；手指和笔分别开一份记录，不能互相代替。
+2026-10-27 修订：当前入口为 PR #80 的完整 CI 包，包含 PR #79 的任务栏最小化/恢复与笔事件去重修复；#80 本身只修复 Windows 测试夹具。当前测试机为 `HuashuoNotebook` / ASUS ProArt P16 H7607BA，原生 ARM64。**本机开发检查与真人手指、触控笔、真实应用验收分别记录**。先做窗口内预览，再做真实应用；手指和笔分别开一份记录，不能互相代替。
 
 ## 1. 固定交付物
 
-**使用下述修复包：消息泵内取消问题已修复并补六项回归。** 初版 PR #77 包只保留[历史身份](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/CI_DELIVERY.zh-CN.md)，不再用于真人验收；修复证据见[审阅处理记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/review-fix/REVIEW_RESOLUTION.zh-CN.md)。
+当前固定来源为 [PR #80 桌面 CI run 40425817549](https://github.com/tsaanghwang/Yime/actions/runs/40425817549)。PR head 为 `67f33761bb76f4b3a30e1975f93b7c8ccb3120ff`，包源码为 PR 测试合并提交 `590bf95d8af929bdefdafddf2e34a3a7443200a4`，最终合并提交为 `8845aa3db8f44e227551aa8eea537d456f43b2fb`；三者不得互换填写。
 
-本次 H02 步骤使用 [PR #77 固定 x64 CI 包](https://github.com/tsaanghwang/Yime/actions/runs/39751192421/artifacts/12413647726)，来自[已通过的桌面 CI run 39751192421](https://github.com/tsaanghwang/Yime/actions/runs/39751192421)。运行时 head 为 `ceed533ff98796deb4003e2020aa8cf1ee23dd2b`，包源码为 PR 测试合并提交 `f2e1a03659bc6b90b9bcc8ec1acba4c5ba63cf6c`，`sourceChanges:false`。ZIP SHA-256 为 `ba9a5f4c1fb638fe40700dd008bd2b6ae2ae7eb65c338bc859c2ee3b684da74c`，exe SHA-256 为 `e01cef476b93aee09e1f96214f289dbc1a33c10ebcbcf916045723711dcaacf9`。实际下载 ZIP 和全部 29 个载荷已核验，完整身份见[本次 CI 包记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/review-fix/ci-package-identity.json)。后续文档提交产生的新 artifact 不自动替换此固定包。
+| 架构与用途 | 固定下载 | ZIP SHA-256 |
+|---|---|---|
+| ARM64：当前 ASUS 原生测试机 | [artifact 12698964634](https://github.com/tsaanghwang/Yime/actions/runs/40425817549/artifacts/12698964634) | `60ab4a717e31b3505e240f46a2014658cbc675e71fda01d16bc9b6f9a6b8b85e` |
+| x64：供独立 x64 目标使用 | [artifact 12699094492](https://github.com/tsaanghwang/Yime/actions/runs/40425817549/artifacts/12699094492) | `5d5c74a5a9887ca60e6ed873bf0e4dc380262d82a305978eba6959dec7f2518e` |
+
+两份实际下载 ZIP 及各 29 个载荷已核验通过，见[本次交付记录](../../../docs/testing/touch-keyboard/2026-10-27/ci-delivery/CI_DELIVERY.zh-CN.md)及[包身份](../../../docs/testing/touch-keyboard/2026-10-27/ci-delivery/package-identity.json)。当前机器的 `IsWow64Process2` 原生结果为 ARM64 / `0xaa64`，见[本机身份](../../../docs/testing/touch-keyboard/2026-10-27/ci-delivery/host-baseline.json)。ARM64 包的三模式内存确认、18u/100 键及原全盘几何、8 项资源异常拒绝和预览渲染均通过，见[ARM64 包检查记录](../../../docs/testing/touch-keyboard/2026-10-27/ci-delivery/arm64-package-check.json)。
+
+最终合并提交上的 ARM64 原生 Go 回归通过，包括完整桌面包测试、60 轮乱序及不同 CPU 并发度的任务栏/导航消息泵检查，以及 touchkeyboard/keyboardlab 测试；Go 工具和测试 exe 的 PE 均核实为 ARM64，见[原生开发测试](../../../docs/testing/touch-keyboard/2026-10-27/ci-delivery/arm64-development-tests.json)。本轮未运行自有 EDIT self-test，未向宿主发送输入；这些开发结果不代替真人手指、笔或真实应用验收。后续文档提交产生的新 artifact 不自动替换本次固定包。
+
+### 历史包身份
+
+PR #77 的消息泵内取消问题已修复并补六项回归；初版保留[历史身份](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/CI_DELIVERY.zh-CN.md)，修复证据见[审阅处理记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/review-fix/REVIEW_RESOLUTION.zh-CN.md)。
+
+[PR #77 固定 x64 CI 包](https://github.com/tsaanghwang/Yime/actions/runs/39751192421/artifacts/12413647726)来自[已通过的桌面 CI run 39751192421](https://github.com/tsaanghwang/Yime/actions/runs/39751192421)。运行时 head 为 `ceed533ff98796deb4003e2020aa8cf1ee23dd2b`，包源码为 PR 测试合并提交 `f2e1a03659bc6b90b9bcc8ec1acba4c5ba63cf6c`，`sourceChanges:false`。ZIP SHA-256 为 `ba9a5f4c1fb638fe40700dd008bd2b6ae2ae7eb65c338bc859c2ee3b684da74c`，exe SHA-256 为 `e01cef476b93aee09e1f96214f289dbc1a33c10ebcbcf916045723711dcaacf9`。实际下载 ZIP 和全部 29 个载荷的既有核验结果保留，完整身份见[历史 CI 包记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/review-fix/ci-package-identity.json)。
 
 首次本地开发包 `C:\dev\Yime\.generated\touch-keyboard-h02-20261022-amd64` 及其 `sourceChanges:true` [身份记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/package-identity.json)保留为开发证据，不与上述 CI 包混用。
 
@@ -20,18 +33,22 @@
 | exe SHA-256 | `683688ff00e22c95be69419267d276d0bc7b7b5094e2951cb0349da9aa12b6e7` |
 | 基准 | `main-only.json`；18u、100 键、19.05 mm/u、342.90 mm |
 
-PR #76 完整 manifest、资源哈希和 ARM64 交付身份见[历史修复包记录](../../../docs/testing/touch-keyboard/2026-10-21/review-fixes/package-identity.json)，不静默替换此包。#74 完整 manifest 和资源哈希见[历史包身份记录](../../../docs/testing/touch-keyboard/2026-10-20/p6/package-identity.json)，保留原始记录。PR head、CI 测试合并和最终合并是不同提交，不应互换填写。ARM64 目前只有交叉构建身份；没有已确认的原生目标，不纳入本机 x64 结论。
+PR #76 完整 manifest、资源哈希和 ARM64 交付身份见[历史修复包记录](../../../docs/testing/touch-keyboard/2026-10-21/review-fixes/package-identity.json)，不静默替换此包。#74 完整 manifest 和资源哈希见[历史包身份记录](../../../docs/testing/touch-keyboard/2026-10-20/p6/package-identity.json)，保留原始记录。这些历史 ARM64 包当时只有交叉构建身份，不追溯增加本轮原生执行或物理验收结论。
 
-1. 下载上述固定 x64 ZIP，以 `certutil -hashfile "实际ZIP完整路径" SHA256` 核对本次 ZIP 哈希；完整解压到新目录，保留 ZIP，再同样核对 exe 哈希。不要与历史包混放或在 ZIP 中启动。
-2. 双击 `Check Package.cmd`，保留本次控制台结果、时间和新生成的 `package-check.json`。失败立即停止，旧报告不能证明本次通过。该项是资源/内存检查，不发送输入、不属于手指或笔验收。
-3. 把[本次导航结果模板](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/RESULT_TEMPLATE.zh-CN.md)和[100 键覆盖模板](../../../docs/testing/touch-keyboard/2026-10-20/p6/key-coverage-template.csv)复制到包外的本次测试记录目录。几何、映射未改，覆盖表可复用，但所有实际结果必须重新填写。不要修改包内 profile、指南、字体、清单或词典；它们与程序绑定。
+### 当前包使用准备
+
+1. 按已核实的原生架构选择包；当前 ASUS 使用上表 ARM64 ZIP。以 `certutil -hashfile "实际ZIP完整路径" SHA256` 核对本次 ZIP 哈希；完整解压到新目录，保留 ZIP，再按本次包身份核对 exe 和载荷。不要与历史包混放或在 ZIP 中启动。
+2. 核对本次开发检查记录；需再次检查时运行所选包的 `YimeTouchKeyboard.exe --check-package --data-report "包外新报告路径"`，保留控制台结果、时间和新报告。失败立即停止，旧报告不能证明本次通过。该项是资源/内存检查，不发送输入、不属于手指或笔验收。
+3. 把[本次结果模板](../../../docs/testing/touch-keyboard/2026-10-27/ci-delivery/RESULT_TEMPLATE.zh-CN.md)和[100 键覆盖模板](../../../docs/testing/touch-keyboard/2026-10-20/p6/key-coverage-template.csv)复制到包外的本次测试记录目录。几何、映射未改，覆盖表可复用，但所有实际结果必须重新填写，并绑定本次包和机器身份。不要修改包内 profile、指南、字体、清单或词典；它们与程序绑定。
 4. 本次包目录不可用、缺少辅助控件、下载链接失效或哈希不符时记“阻塞”，由后续交付恢复同一身份或建立新包记录，不能自行换包并沿用本结果。
 
-本文件是本次导航包的外部验收说明。包内中文指南用于操作；旧包中 27 英寸默认标尺一致的叙述是历史用户反馈，本次必须重新测量。历史自动化、原始失败和旧包身份保留，不继承为新包物理结论。
+本文件是当前完整 CI 包的外部验收说明。包内中文指南用于操作；旧包中 27 英寸默认标尺一致的叙述是历史用户反馈。此前 MSI 16 英寸机的约 97 mm 参考尺和 `--ruler-observed-mm 58.8` 仅属于该设备，不带入当前 ASUS；本机尺寸和校准须独立测量。历史自动化、原始失败和旧包身份保留，不继承为新包物理结论。
 
 ## 2. 环境与判定
 
-记录设备型号、Windows 版本/架构、屏幕型号、触控设备及驱动、分辨率、Windows 缩放、发光区宽度、倾角、笔型号/协议和是否有笔。历史记录为 27 英寸、2560×1440、100%、约 30°；这些不是本次已确认值。不要为测试更改系统设置或输入法。没有笔填“阻塞：无可用笔”，不能用鼠标或模拟触摸补齐。
+记录设备型号、Windows 版本/架构、屏幕型号、触控设备及驱动、分辨率、Windows 缩放、发光区宽度、倾角、笔型号/协议和是否有笔。当前机器身份以本轮 `host-baseline.json` 为准；历史 27 英寸屏及 MSI 16 英寸屏的显示、驱动、笔和校准记录均不代填。不要为测试更改系统设置或输入法。没有笔填“阻塞：无可用笔”，不能用鼠标或模拟触摸补齐。
+
+当前 ASUS 的新包物理案例独立记录；先完成 P01 环境与量尺，再安排 P10 四层逐键、P06 翻页/旧触点及其余预览/宿主步骤。此前 MSI 已完成项和剩余项仍以[2026-10-26 汇总](../../../docs/testing/touch-keyboard/2026-10-25/taskbar-minimize/STAGE_RESULT_2026-10-26.zh-CN.md)为准；不因本轮换机重新打开已解决的没电、Word 绘图模式或原 Shift 故障，也不将其通过结果填入 ASUS 新表。
 
 每个案例记录操作前正文、期望、实际正文/组合、每次尝试、时间、观察者及证据路径。状态只用“待记录／通过／失败／阻塞／不适用（说明原因）”。出现额外字符、漏字、错误目标写入或未按规则取消，记失败；不能只凭状态栏“已发送”判通过。测量填写原值、工具精度和偏差，不预设未经用户确认的尺寸公差或速度门槛。
 
@@ -73,7 +90,7 @@ PR #76 完整 manifest、资源哈希和 ARM64 交付身份见[历史修复包�
 | H02 英文/编辑 | 空白 A 绑定后切英文并确认 EN 盘面（`R05K06` 为 `a`/`A`）。输入 `abc`，Backspace 一次，再点 Shift、英文 `x`（`R06K06`），随后退格三次；再执行下方 H02-N1–N5 | 基础编辑正文依次为 `abc`、`ab`、`abX`、空。新辅助入口单列逐项结果；旧 #76 包仍记“阻塞：无虚拟入口”，不能追溯为通过 |
 | H03 Enter | 英文输入 `a`、Enter、`b`；另起空白临时正文做 Shift+Enter；中文有组合时做 Enter/Shift+Enter | 英文换行与软换行由应用解释，记录实际结构；中文确认首选。不能把中文确认当作宿主 Enter，也不要求所有宿主软换行相同 |
 | H04 Esc/失焦 | A 已有一次确认的“你”，再输入未确认 `ni`；Esc。重新输入 `ni`，抬起全部触点后亲自切到 B，再回 A | Esc 不向宿主发 Escape；失焦取消未确认组合，A 已确认正文保留，B 无新增，原绑定失效。重新点 A 光标并绑定后可输入 |
-| H05 帮助/隐藏 | A 有未确认组合时打开 Help，关闭后观察；重新绑定后输入组合再 Hide，Ctrl+Alt+K 显示 | 各次组合取消、旧目标需重新绑定；A 正文不增字。显示热键被占用时不 Hide，记阻塞；热键的物理键盘辅助应注明，不算纯触摸覆盖 |
+| H05 帮助/最小化恢复 | A 有已确认正文和未确认组合时打开 Help，关闭后观察；重新绑定后输入组合，点“最小化”，再点任务栏键盘入口恢复；核对后在 A 放光标并重新绑定，输入新组合并确认一次 | 各次未确认组合取消、旧绑定失效，最小化/恢复不改变 A 已确认正文；任务栏恢复同一窗口，恢复本身不重绑或补发，明确重绑后的新确认只新增一次。任务栏点击须使用本轮输入方式；Ctrl+Alt+K 可另测，物理键盘辅助单列，热键占用不阻塞任务栏恢复路径 |
 | H06 跨目标重绑 | A 确认“你”；在 B 放光标并绑定，确认“你”；回 A 重新绑定后再确认一次 | A 两个“你”，B 一个；每次只写当次绑定目标，不删除旧正文。不要同时按确认和切换焦点 |
 | H07 异常恢复（发生时） | 遇到零发送/部分发送/结果不明，停止点按，记录 A/B 实际全文、状态消息和焦点；人工核对后重绑，仅输入一个新的明确字符 | 不自动重放/回滚、不删除已有前缀；新输入只执行一次。没有自然发生异常填“待记录：未触发”，不能把自有 EDIT 注入结果填进来；不人为提权、结束宿主或制造故障 |
 
@@ -101,4 +118,4 @@ SendInput 无法原子绑定 HWND，前后焦点检查不能证明最后瞬间�
 
 正常 Close，关闭临时文档且不保存正文，保留本次结果/照片/录像/日志路径。不要清理历史证据或已安装产品；强制退出的临时索引残留不在本轮自动清理。几何/手势问题回到 P1/P2，中文语义问题回到 P3，目标/发送问题回到 P4，缺包/哈希问题回到 P5。修复后建立新包身份和新记录，不覆盖失败行。
 
-当前状态：触屏辅助入口、本地开发验证及固定 CI 包交付完成；P01–P11、H01–H07（含 H02-N1–N5）均待真人记录。17u/23u 冻结，不增加验收分支；“18u 缩短 1 mm”未定义参数，不实施。
+当前状态：PR #80 两架构 CI 包身份核验完成，ASUS ARM64 原生包检查、预览渲染和 Go 开发回归通过；本机实体尺寸测量、P01–P11、H01–H07（含 H02-N1–N5）的手指、笔及真实宿主结果仍待记录。此前 MSI 结果按原包、设备和输入方式保留。17u/23u 冻结，不增加验收分支；“18u 缩短 1 mm”未定义参数，不实施。

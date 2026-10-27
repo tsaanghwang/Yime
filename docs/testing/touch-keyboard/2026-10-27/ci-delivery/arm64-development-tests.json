@@ -1,0 +1,119 @@
+{
+  "scope": "native-arm64-touch-keyboard-development-regressions",
+  "sourceCommit": "8845aa3db8f44e227551aa8eea537d456f43b2fb",
+  "hostArchitecture": {
+    "source": "IsWow64Process2",
+    "native_machine": "0xaa64",
+    "native_architecture": "arm64",
+    "process_machine": "0x0000",
+    "process_machine_architecture": null,
+    "process_machine_note": "A zero processMachine does not establish the executable's PE architecture."
+  },
+  "goPE": {
+    "machine": "0xaa64",
+    "architecture": "arm64"
+  },
+  "processLocalEnvironment": {
+    "GOENV": "off",
+    "GOTOOLCHAIN": "local",
+    "GOFLAGS": "",
+    "GOWORK": "off",
+    "GOOS": "windows",
+    "GOARCH": "arm64",
+    "CGO_ENABLED": "0",
+    "GOROOT": "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go",
+    "GOCACHE": "C:\\Users\\tsaan\\.codex\\worktrees\\pr79-taskbar-fixture\\Yime\\.tmp\\touch-keyboard-arm64-native-20261027\\cache",
+    "GOPATH": "C:\\Users\\tsaan\\.codex\\worktrees\\pr79-taskbar-fixture\\Yime\\.tmp\\touch-keyboard-arm64-native-20261027\\gopath"
+  },
+  "commands": [
+    {
+      "label": "native-go-version",
+      "command": [
+        "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+        "version"
+      ],
+      "cwd": "C:\\Users\\tsaan\\.codex\\worktrees\\pr79-taskbar-fixture\\Yime\\go-backend",
+      "startedAtUTC": "2026-10-27T01:01:01.708067+00:00",
+      "finishedAtUTC": "2026-10-27T01:01:01.861613+00:00",
+      "exitCode": 0,
+      "log": "native-go-version.log",
+      "logSHA256": "5abb6eec360652a4b6ba2e92451e90eea7ac75893792569783632a60c029e120"
+    },
+    {
+      "label": "native-test-compile",
+      "command": [
+        "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+        "test",
+        "-c",
+        "-o",
+        "C:\\Users\\tsaan\\.codex\\worktrees\\pr79-taskbar-fixture\\Yime\\.tmp\\touch-keyboard-arm64-native-20261027\\yime-touch-keyboard-arm64.test.exe",
+        "./cmd/yime-touch-keyboard"
+      ],
+      "cwd": "C:\\Users\\tsaan\\.codex\\worktrees\\pr79-taskbar-fixture\\Yime\\go-backend",
+      "startedAtUTC": "2026-10-27T01:01:01.864998+00:00",
+      "finishedAtUTC": "2026-10-27T01:01:34.342213+00:00",
+      "exitCode": 0,
+      "log": "native-test-compile.log",
+      "logSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "native-touch-keyboard-tests",
+      "command": [
+        "C:\\Users\\tsaan\\.codex\\worktrees\\pr79-taskbar-fixture\\Yime\\.tmp\\touch-keyboard-arm64-native-20261027\\yime-touch-keyboard-arm64.test.exe",
+        "-test.count=1",
+        "-test.timeout=120s"
+      ],
+      "cwd": "C:\\Users\\tsaan\\.codex\\worktrees\\pr79-taskbar-fixture\\Yime\\go-backend\\cmd\\yime-touch-keyboard",
+      "startedAtUTC": "2026-10-27T01:01:34.358552+00:00",
+      "finishedAtUTC": "2026-10-27T01:01:40.743395+00:00",
+      "exitCode": 0,
+      "log": "native-touch-keyboard-tests.log",
+      "logSHA256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "label": "native-taskbar-stress",
+      "command": [
+        "C:\\Users\\tsaan\\.codex\\worktrees\\pr79-taskbar-fixture\\Yime\\.tmp\\touch-keyboard-arm64-native-20261027\\yime-touch-keyboard-arm64.test.exe",
+        "-test.run=Test(TaskbarMinimizeRestoreAndCancellation|MinimizeInvalidatesHostTicket|NavigationCancellationDuringHostMessagePumps)$",
+        "-test.count=20",
+        "-test.shuffle=on",
+        "-test.cpu=1,2,4",
+        "-test.timeout=120s"
+      ],
+      "cwd": "C:\\Users\\tsaan\\.codex\\worktrees\\pr79-taskbar-fixture\\Yime\\go-backend\\cmd\\yime-touch-keyboard",
+      "startedAtUTC": "2026-10-27T01:01:40.743395+00:00",
+      "finishedAtUTC": "2026-10-27T01:02:01.910778+00:00",
+      "exitCode": 0,
+      "log": "native-taskbar-stress.log",
+      "logSHA256": "b8c71087125612d8a86ea174405adfd084a5fa20a712d68e06c0c47273b70579"
+    },
+    {
+      "label": "native-shared-tests",
+      "command": [
+        "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+        "test",
+        "./internal/touchkeyboard",
+        "./internal/keyboardlab",
+        "-count=1",
+        "-timeout=120s"
+      ],
+      "cwd": "C:\\Users\\tsaan\\.codex\\worktrees\\pr79-taskbar-fixture\\Yime\\go-backend",
+      "startedAtUTC": "2026-10-27T01:02:01.910778+00:00",
+      "finishedAtUTC": "2026-10-27T01:02:21.187745+00:00",
+      "exitCode": 0,
+      "log": "native-shared-tests.log",
+      "logSHA256": "b2a799540f781345940a59acbdd5ca9c85e0c83fe4bbc3475f76749e6d1a39e8"
+    }
+  ],
+  "passed": true,
+  "physicalAcceptance": false,
+  "hostInputSent": false,
+  "installationPerformed": false,
+  "defaultInputChanged": false,
+  "userDataChanged": false,
+  "testExecutablePE": {
+    "machine": "0xaa64",
+    "architecture": "arm64"
+  },
+  "testExecutableSHA256": "0ed8542c9409f8634238a15880e19b822d1533fdcbbdcd4638743235af97feb2"
+}

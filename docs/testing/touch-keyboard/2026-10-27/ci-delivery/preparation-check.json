@@ -1,0 +1,54 @@
+{
+  "scope": "current-package-physical-record-preparation-only",
+  "createdAtUTC": "2026-10-27T01:06:10.812138+00:00",
+  "sourceCoverageTemplate": "docs/testing/touch-keyboard/2026-10-20/p6/key-coverage-template.csv",
+  "coverageSHA256": "13df9ee7541305b790be464cb0f885fcafc1ecd92ff29e3a6607d08b47bb2e63",
+  "rows": 100,
+  "uniqueKeys": 100,
+  "disabledEnglishKeys": 23,
+  "allPhysicalResultsPending": true,
+  "stableAssetComparison": {
+    "prototypes/touch-terminal/data/physical-layout.json": {
+      "priorSHA256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+      "currentSHA256": {
+        "amd64": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+        "arm64": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a"
+      },
+      "equal": true
+    },
+    "prototypes/touch-terminal/desktop/profiles/main-only.json": {
+      "priorSHA256": "25b76ef50d438c33f0a7551904d4c0c788442849ca010703e8cbc83de16cd55a",
+      "currentSHA256": {
+        "amd64": "25b76ef50d438c33f0a7551904d4c0c788442849ca010703e8cbc83de16cd55a",
+        "arm64": "25b76ef50d438c33f0a7551904d4c0c788442849ca010703e8cbc83de16cd55a"
+      },
+      "equal": true
+    },
+    "prototypes/touch-terminal/encoding/manual_key_layout.resolved.json": {
+      "priorSHA256": "59de8f802289611af47e0063b5124e942a068ce39b76df38085a1fe08b3139fa",
+      "currentSHA256": {
+        "amd64": "59de8f802289611af47e0063b5124e942a068ce39b76df38085a1fe08b3139fa",
+        "arm64": "59de8f802289611af47e0063b5124e942a068ce39b76df38085a1fe08b3139fa"
+      },
+      "equal": true
+    },
+    "prototypes/touch-terminal/encoding/yime_yinyuan_layout.json": {
+      "priorSHA256": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b",
+      "currentSHA256": {
+        "amd64": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b",
+        "arm64": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b"
+      },
+      "equal": true
+    }
+  },
+  "localRecordsDirectory": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr80-20261027\\records",
+  "copiedFiles": {
+    "host-baseline.json": "2eeffc6a49c6c0aaedf381b47dee0344307131e0172f063e3dffd1f138120632",
+    "key-coverage-template.csv": "13df9ee7541305b790be464cb0f885fcafc1ecd92ff29e3a6607d08b47bb2e63",
+    "package-identity.json": "9debda1bce46dd75b48e3273071a7b1eb1fc9482bbcbb7139a070a2f14ebe698",
+    "README.zh-CN.txt": "3278854e2858568423db55952156abfc3f5e5aec6f1ec02cc366bfa592dc0f50",
+    "RESULT_TEMPLATE.zh-CN.md": "91fb4b00d260def74bc3f4adb832109d06fd14de6ea6e3e19c03faa37dc3c473"
+  },
+  "calibrationCopiedFromMSI": false,
+  "physicalAcceptance": false
+}

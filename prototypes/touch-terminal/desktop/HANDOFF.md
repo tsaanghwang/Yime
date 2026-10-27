@@ -1,18 +1,30 @@
 # 桌面触摸键盘阶段交接
 
-## 2026-10-26 当前入口：本轮测试已整理
+## 2026-10-27 当前入口：PR #80 CI 包与 ASUS ARM64 本机开发
 
-以[本轮测试汇总](../../../docs/testing/touch-keyboard/2026-10-25/taskbar-minimize/STAGE_RESULT_2026-10-26.zh-CN.md)为当前结论和待测入口。r1的手指主要流程、修复包的手指/双笔Shift预览及Word/Edge定向反馈分别记录；旧结果不自动继承到新包。两笔Edge取消/最小化恢复/重绑确认均已收到正常反馈；微星笔没电中断已补测关闭，Word笔定位在选择模式操作后恢复。原Shift软件缺陷及失败日志保留。
+当前交付与开发记录见[PR #80 CI 交付](../../../docs/testing/touch-keyboard/2026-10-27/ci-delivery/CI_DELIVERY.zh-CN.md)及[包身份](../../../docs/testing/touch-keyboard/2026-10-27/ci-delivery/package-identity.json)。固定 [CI run 40425817549](https://github.com/tsaanghwang/Yime/actions/runs/40425817549) 的 [ARM64 包](https://github.com/tsaanghwang/Yime/actions/runs/40425817549/artifacts/12698964634)和 [x64 包](https://github.com/tsaanghwang/Yime/actions/runs/40425817549/artifacts/12699094492)；包源码为 PR 测试合并提交 `590bf95d8af929bdefdafddf2e34a3a7443200a4`，PR head 为 `67f33761bb76f4b3a30e1975f93b7c8ccb3120ff`，最终合并为 `8845aa3db8f44e227551aa8eea537d456f43b2fb`。#79 提供任务栏与笔事件运行时修复，#80 只修 Windows 测试夹具；后续文档构建不静默替换本次包身份。
 
-当前后续使用touch-pen-shift-fix-20261026-amd64，本地sourceChanges:true；本轮修复与记录通过当前分支提交交付；新CI包尚未交付。参考尺约97 mm、启动参数58.8按用户决定暂留。下一步按汇总中的待测表继续精确尺寸、100键四层、P06细节与其余纯笔/宿主覆盖；整套物理验收未完成。17u/23u继续冻结。
+本轮机器为 `HuashuoNotebook` / ASUS ProArt P16 H7607BA，`IsWow64Process2` 确认原生 ARM64 / `0xaa64`，见[本机基线](../../../docs/testing/touch-keyboard/2026-10-27/ci-delivery/host-baseline.json)。ARM64/x64 ZIP 及各 29 个载荷均核验通过；本机执行 ARM64 包，三模式各 2,457,604 条索引及内存确认“你”、18u/100 键、原全盘 24.75u/134 键、8 项资源异常拒绝和预览渲染通过，见[ARM64 包检查](../../../docs/testing/touch-keyboard/2026-10-27/ci-delivery/arm64-package-check.json)。x64 包在本机只核验身份，不将其 CI 执行结果代作 ARM64 结果。
 
-以下为各阶段历史接续；其中“待记录”等保留当时状态，不替代上方当前汇总。
+最终合并提交上的[ARM64 原生开发测试](../../../docs/testing/touch-keyboard/2026-10-27/ci-delivery/arm64-development-tests.json)通过：Go 1.25.14 与编译所得测试 exe 的 PE 均为 ARM64；完整 `cmd/yime-touch-keyboard` 测试、60 轮乱序/不同 CPU 并发度的任务栏及导航消息泵压力检查、touchkeyboard/keyboardlab 测试均通过。本轮 `hostInputSent:false`，未执行自有 EDIT self-test 或真人输入，未改变安装、默认输入法或用户数据；开发和渲染结果不计为手指、笔或真实宿主验收。
+
+本机物理准备使用[当前验收步骤](ACCEPTANCE_18U.zh-CN.md)与[本次结果模板](../../../docs/testing/touch-keyboard/2026-10-27/ci-delivery/RESULT_TEMPLATE.zh-CN.md)。先独立记录 ASUS 的显示、触控/笔、尺寸与校准，再安排 100 键四层、P06 细节及其余预览/宿主项目；本机真人结果仍待记录。此前 MSI 的约 97 mm 参考尺和启动参数 58.8 不带入 ASUS。H05 使用最小化/任务栏恢复，并确认旧组合与绑定失效、明确重绑后再确认。18u 基线与 17u/23u 冻结状态保持。
+
+此前 MSI 的手指、双笔和 Word/Edge 结果仍归属原包及原设备；不继承到本轮 CI 包或 ASUS。已完成项和 MSI 剩余待测项见下方 2026-10-26 汇总，没电补测、Word 绘图模式等已关闭问题不重新打开。
+
+## 2026-10-26 MSI x64 阶段记录：本轮测试已整理
+
+以[本轮测试汇总](../../../docs/testing/touch-keyboard/2026-10-25/taskbar-minimize/STAGE_RESULT_2026-10-26.zh-CN.md)为 MSI 16 英寸 x64 设备的阶段结论和待测入口。r1的手指主要流程、修复包的手指/双笔Shift预览及Word/Edge定向反馈分别记录；旧结果不自动继承到新包。两笔Edge取消/最小化恢复/重绑确认均已收到正常反馈；微星笔没电中断已补测关闭，Word笔定位在选择模式操作后恢复。原Shift软件缺陷及失败日志保留。
+
+当时后续入口为 touch-pen-shift-fix-20261026-amd64，本地 sourceChanges:true；修复与记录通过当时分支提交交付，新 CI 包当时尚未交付。本轮固定 CI 包由上方 2026-10-27 记录接续，不改写旧包身份。MSI 的参考尺约 97 mm、启动参数 58.8 按用户决定暂留；该机仍按汇总待测表接续精确尺寸、100 键四层、P06 细节与其余纯笔/宿主覆盖，整套物理验收未完成。
+
+以下为各阶段历史接续；其中“待记录”等保留当时状态，不替代上方当前交付或各设备最新记录。
 
 ## 2026-10-25 本地开发接续：16 英寸校准与任务栏最小化
 
 用户在 x64 16 英寸翻转触屏报告默认标尺约 70 mm，第一轮校准后约 84 mm；下一轮使用 `--ruler-observed-mm 58.8`，实际尺寸与裁切仍待复测。Hide 后无法找回的问题在 `codex/touch-keyboard-taskbar-20261025` 改为任务栏最小化/恢复，并保留不抢输入焦点和旧组合/绑定取消。新增本机窗口回归、相关 Go 测试及独立包三模式/资源拒绝/渲染检查通过。该包为 `sourceChanges:true` 的独立本地开发包，**不替换下方固定 PR #77 CI 包身份**；新包真人手指、笔、任务栏点击恢复和真实宿主均待记录。完整来源、包哈希和接续步骤见[本次开发记录](../../../docs/testing/touch-keyboard/2026-10-25/taskbar-minimize/RESULT.zh-CN.md)。
 
-## 当前接续决定 2026-10-22：H02 辅助导航
+## 2026-10-22 历史接续决定：H02 辅助导航
 
 补充审阅修复：消息泵内取消现在由 UI 取消世代覆盖 UP 与最终发送边界，六个反例已复现并回归通过。初版 CI 包保留历史，不再用于真人验收；下列已固定的修复包接续，见[处理记录](../../../docs/testing/touch-keyboard/2026-10-22/h02-navigation/review-fix/REVIEW_RESOLUTION.zh-CN.md)。
 
