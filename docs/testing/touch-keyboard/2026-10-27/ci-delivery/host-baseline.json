@@ -1,0 +1,63 @@
+{
+  "scope": "uninstalled-touch-keyboard-development-host-observation",
+  "observedAtUTC": "2026-10-27T01:00:03.923474+00:00",
+  "computerName": "HuashuoNotebook",
+  "architecture": {
+    "source": "IsWow64Process2",
+    "native_machine": "0xaa64",
+    "native_architecture": "arm64",
+    "process_machine": "0x0000",
+    "process_machine_architecture": null,
+    "process_machine_note": "A zero processMachine does not establish the executable's PE architecture."
+  },
+  "hardware": {
+    "manufacturer": "ASUS",
+    "model": "ProArt P16 H7607BA",
+    "family": "ProArt P16"
+  },
+  "cpu": {
+    "name": "NVIDIA RTX Spark N1X (6144-core GPU, 20-core CPU)",
+    "identifier": "ARMv8 (64-bit) Family 8 Model D87 Revision   1",
+    "vendor": "NVIDIA"
+  },
+  "windows": {
+    "product_name": "Windows 10 Home China",
+    "display_version": "26H1",
+    "build_number": "28000",
+    "update_build_revision": 3231,
+    "edition": "CoreCountrySpecific",
+    "installation_type": "Client"
+  },
+  "registryReadErrors": [],
+  "collectorExecutable": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+  "collectorPE": {
+    "machine": "0x8664",
+    "architecture": "x64"
+  },
+  "displayObservations": {
+    "systemMetricsPrimaryWidth": 1536,
+    "systemMetricsPrimaryHeight": 960,
+    "digitizerFlags": 197,
+    "maximumTouches": 10,
+    "note": "API observations may be DPI-virtualized; no physical dimensions, calibration or finger/pen acceptance are inferred."
+  },
+  "nativeGo": {
+    "path": "C:/dev/Yime/.generated/arm64-toolchain/go1.25.14/go/bin/go.exe",
+    "pe": {
+      "machine": "0xaa64",
+      "architecture": "arm64"
+    }
+  },
+  "previousPR80LocalGo": {
+    "path": "C:\\Users\\tsaan\\.codex\\worktrees\\pr79-taskbar-fixture\\Yime\\.tmp\\pr79-go\\go\\bin\\go.exe",
+    "pe": {
+      "machine": "0x8664",
+      "architecture": "x64"
+    },
+    "classification": "amd64 executable tests on an ARM64 Windows host; emulated x64, not native ARM64 evidence"
+  },
+  "installationPerformed": false,
+  "defaultInputChanged": false,
+  "userDataChanged": false,
+  "physicalAcceptance": false
+}

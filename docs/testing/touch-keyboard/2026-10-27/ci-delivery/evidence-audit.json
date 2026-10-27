@@ -1,0 +1,45 @@
+{
+  "scope": "delivery-evidence-consistency-and-post-execution-integrity",
+  "verifiedAtUTC": "2026-10-27T01:10:47.067668+00:00",
+  "ciAndMergedSourceTrees": {
+    "590bf95d8af929bdefdafddf2e34a3a7443200a4": "49ced7061e4a22e882419bc316b9667dddd64c82",
+    "8845aa3db8f44e227551aa8eea537d456f43b2fb": "49ced7061e4a22e882419bc316b9667dddd64c82"
+  },
+  "sourceTreesEqual": true,
+  "nativeTestLogsVerified": 5,
+  "originalPackagesUnchangedAfterExecution": true,
+  "originalZIPDigestsMatched": true,
+  "packageOutsideCheckout": true,
+  "physicalRecordCopiesVerified": true,
+  "localMarkdownLinksChecked": 62,
+  "packageCheckCommand": [
+    "python",
+    "-X",
+    "utf8",
+    "tools/check_touch_keyboard_package.py",
+    "--package",
+    "C:\\dev\\Yime-deliveries\\touch-keyboard-pr80-20261027\\arm64",
+    "--report",
+    "docs/testing/touch-keyboard/2026-10-27/ci-delivery/arm64-package-check.json",
+    "--render"
+  ],
+  "packageCheckExitCode": 0,
+  "renderInspection": "Preview image inspected: minimize entry, auxiliary navigation and main-area keyboard visible; no physical-size or touch-usability conclusion.",
+  "evidenceSHA256": {
+    ".gitattributes": "c78f44e46d62c67a89dd0dbff9d401c667eb07c8260c1e26930438e7a560f655",
+    "arm64-development-tests.json": "7199c02c7c654a4b8863ec3cd801609ac87ed6c1476e2bf680ec8c75d89e1333",
+    "arm64-package-check.json": "8c0d22ba44f3eb51b7cf8d0b85009c0288163e44685daed27217250dabddfad2",
+    "ci-amd64-package-check.json": "99e947266ea4c58155c4a5679936f0b6bb007d703b146518f5bee5fac1a977a1",
+    "CI_DELIVERY.zh-CN.md": "caa26db420ec6ba356c5c7c1e49e5951ff75dcc660328dd7d14bad1845ed8f4a",
+    "host-baseline.json": "2eeffc6a49c6c0aaedf381b47dee0344307131e0172f063e3dffd1f138120632",
+    "native-go-version.log": "5abb6eec360652a4b6ba2e92451e90eea7ac75893792569783632a60c029e120",
+    "native-shared-tests.log": "b2a799540f781345940a59acbdd5ca9c85e0c83fe4bbc3475f76749e6d1a39e8",
+    "native-taskbar-stress.log": "b8c71087125612d8a86ea174405adfd084a5fa20a712d68e06c0c47273b70579",
+    "native-test-compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "native-touch-keyboard-tests.log": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431",
+    "package-identity.json": "9debda1bce46dd75b48e3273071a7b1eb1fc9482bbcbb7139a070a2f14ebe698",
+    "portable-preview.png": "44ce6c2f6b0a4140d1baf01db4f2c188404113dd8b5436c07b4155b7dea0b43b",
+    "preparation-check.json": "ed8ae53c3fac3522310e03c1141fd58a5eb22c87fc011e15e5a8aac9d991d8c9",
+    "RESULT_TEMPLATE.zh-CN.md": "91fb4b00d260def74bc3f4adb832109d06fd14de6ea6e3e19c03faa37dc3c473"
+  }
+}
