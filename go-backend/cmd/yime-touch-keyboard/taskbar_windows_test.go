@@ -19,6 +19,9 @@ func TestTaskbarMinimizeRestoreAndCancellation(t *testing.T) {
 	U("RegisterClassExW").Call(uintptr(unsafe.Pointer(&c)))
 	for _, route := range []string{"toolbar", "hotkey", "system-menu"} {
 		t.Run(route, func(t *testing.T) {
+			// t.Run uses its own goroutine; the parent's lock does not pin it.
+			runtime.LockOSThread()
+			defer runtime.UnlockOSThread()
 			a := previewUI(t)
 			h, _, err := U("CreateWindowExW").Call(keyboardWindowExStyle, ptr(c.Name), ptr(str("Disposable taskbar regression")), keyboardWindowStyle, 50, 50, 600, 350, 0, 0, instance, 0)
 			if h == 0 {
@@ -26,7 +29,18 @@ func TestTaskbarMinimizeRestoreAndCancellation(t *testing.T) {
 			}
 			previous := active
 			a.h, active = h, a
-			defer func() { U("DestroyWindow").Call(h); active = previous }()
+			defer func() {
+				// Detach before WM_DESTROY can post the application's quit message.
+				active = previous
+				if ok, _, err := U("DestroyWindow").Call(h); ok == 0 {
+					t.Errorf("destroy taskbar fixture on its owning thread: %v", err)
+				}
+				var m message
+				// Remove a leaked WM_QUIT so a failing regression cannot poison later tests.
+				if quit, _, _ := U("PeekMessageW").Call(uintptr(unsafe.Pointer(&m)), 0, 0x0012, 0x0012, 1); quit != 0 {
+					t.Error("taskbar fixture teardown posted WM_QUIT")
+				}
+			}()
 			U("ShowWindow").Call(h, 4)
 			index := int32(-20) // GWL_EXSTYLE
 			style, _, _ := U("GetWindowLongPtrW").Call(h, uintptr(index))
