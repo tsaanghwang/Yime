@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-27",
+  "scope": "User listening feedback to developer's actual UI simulation of original click trial; not physical finger/pen input coverage",
+  "packageExecutableSHA256": "8581365690d729165823ef9b3d108b915ca1a24312bc50b0d99ea0e2763571cd",
+  "audibilityQuestion": "刚才我在新启动的预览里模拟了切换 EN 和三次 a，正文显示 aaa、声音开关保持“开”。你听到轻敲声了吗？",
+  "audibilityAnswer": "听到了，但很轻",
+  "routeQuestion": "当前工具所在环境只枚举到“SoundWire Speakers”。这轮测试应通过 SoundWire 接收端听声，还是应从微星电脑自己的扬声器听声？",
+  "routeOptionsInOrder": ["微星电脑自身扬声器", "SoundWire 接收端"],
+  "routeAnswer": "应该是2",
+  "routeInterpretation": "Option 2 = SoundWire receiver; user's tentative wording retained",
+  "result": "original playback is audible per user; loudness insufficient",
+  "priorNoSoundReportPreserved": true,
+  "noMissingPhysicalEndpointBlockerInferred": true,
+  "followup": "../key-sound-gain/HANDOFF.zh-CN.md",
+  "P10PassedCountUnchanged": 250
+}

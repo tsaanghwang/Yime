@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-LIFECYCLE-28",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "finger",
+  "setup": "current Audio Startup Fixed Preview, CN, Clear; same geometry/calibration; do not use host entry",
+  "status": "passed-user-reported-group-result",
+  "cases": [
+    {
+      "id": "minimize-active-CN",
+      "steps": [
+        "CN; Clear; input confirmed12",
+        "tap one coding key so unconfirmed composition is visible; do not confirm",
+        "tap Minimize; restore from taskbar",
+        "check confirmed output12, composition empty, CN retained",
+        "tap main digit3"
+      ],
+      "expected": "responsive same preview; output123; no residual composition; resumed click audible",
+      "status": "passed-as-presented-user-reported"
+    },
+    {
+      "id": "minimize-paused-EN",
+      "steps": [
+        "CN; Clear; input confirmed12",
+        "tap one coding key to create unconfirmed composition; switch EN and leave paused composition unconfirmed",
+        "tap Minimize; restore from taskbar",
+        "check output12, paused composition empty, EN retained",
+        "switch CN; tap main digit3"
+      ],
+      "expected": "responsive same preview; output123; paused composition not silently committed; resumed click audible",
+      "status": "passed-as-presented-user-reported"
+    },
+    {
+      "id": "finger-exit-relaunch",
+      "steps": [
+        "using finger tap Exit in current preview",
+        "relaunch same Audio Startup Fixed Preview",
+        "verify old preview exited and fresh local output is empty",
+        "tap main digit1"
+      ],
+      "expected": "no hang; single new preview with output1 and audible click",
+      "status": "passed-as-presented-user-reported"
+    }
+  ],
+  "bodyLayerObservations": 0,
+  "scope": "three defined finger preview lifecycle scenarios; no previous-version passes inherited; Minimize and Exit intentionally silent",
+  "userReport": "正常",
+  "reportScope": "All three user-facing finger preview scenarios reported normal; no per-action transcription or attempt count supplied. Restored click audibility explicitly requested in CN case and fresh relaunch; EN restored sound not separately asked.",
+  "evidence": "user-reports/p10-finger-control-lifecycle-28-user-result.json"
+}

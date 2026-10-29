@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-26",
+  "userQuote": "已测。正常。",
+  "scope": "Targeted language-key legend retest in new preview, finger per preceding instructions",
+  "packageExecutableSHA256": "73c729b2948a37bc461c7cbcc7c3e1277424f9f5874b6d0285b241a02b1b6865",
+  "results": [
+    {
+      "case": "CN -> EN -> CN",
+      "expected": "Only current input-language legend displayed",
+      "actual": "按步骤反馈正常；未独立转录或观察",
+      "status": "passed-user-reported"
+    },
+    {
+      "case": "English Layout change",
+      "expected": "Language key remains EN when English switches between original and EN views",
+      "actual": "按步骤反馈正常；未独立转录或观察",
+      "status": "passed-user-reported"
+    }
+  ],
+  "attemptCounts": "not supplied",
+  "doesNotInheritPriorP10Coverage": true
+}

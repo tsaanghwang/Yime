@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-EN-SHIFT-43",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "MSI supplied pen",
+  "userReport": "四项完全正常",
+  "passedBodyLayers": 4,
+  "result": "both Shift keys one-shot uppercase Ab and double-toggle lowercase ab reported fully normal",
+  "scope": "four presented sequential-tap cases only; no per-action transcript/attempt count, simultaneous hold, host or pen-wide duplicate-free acceptance; earlier recontact observation retained"
+}

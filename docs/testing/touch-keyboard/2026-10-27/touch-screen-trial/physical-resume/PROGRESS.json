@@ -1,0 +1,278 @@
+{
+  "date": "2026-10-27",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "bodyKeysPerMethod": 84,
+  "bodyLayersPerKey": 4,
+  "methods": {
+    "finger": {
+      "passedBodyLayers": 336,
+      "pendingBodyLayers": 0
+    },
+    "MSI supplied pen": {
+      "passedBodyLayers": 188,
+      "pendingBodyLayers": 148,
+      "currentTestPackageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+      "observation": "MSI_PEN_RECONTACT_OBSERVATION.json",
+      "passedScope": "mapping/function observations only; repeated-contact stability unresolved"
+    },
+    "Acer PE272XT supplied pen": {
+      "passedBodyLayers": 336,
+      "pendingBodyLayers": 0,
+      "currentTestPackageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+      "observation": "ACER_PEN_SHIFT_RECONTACT_OBSERVATION.json",
+      "passedScope": "defined mapping/function observations; no confirmed prescribed-workflow Shift failure after user clarification; no blanket repeat-stability claim"
+    }
+  },
+  "controlsChecklist": "CONTROL_CHECKLIST.json",
+  "legacyPassesRetained": 250,
+  "legacyPassesInherited": 0,
+  "currentBatch": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67",
+  "currentBatchStatus": "passed; Acer body336 and defined preview control37 checkpoint complete; next scope in separate plan",
+  "priority": "next three-mode candidate/confirmation contexts, then scoped settings/concurrent-contact and real host testing; retain MSI CN148 and historical method/version scopes",
+  "completedBatches": [
+    "TOUCH-V1-P10-FINGER-CN-CODING-04",
+    "TOUCH-V1-P10-FINGER-CN-CODING-05",
+    "TOUCH-V1-P10-FINGER-CN-SYMBOL-06",
+    "TOUCH-V1-P10-FINGER-CN-ASCII-07",
+    "TOUCH-V1-P10-FINGER-CN-PUNCTUATION-08",
+    "TOUCH-V1-P10-FINGER-CN-DIGITS-09",
+    "TOUCH-V1-P10-FINGER-CN-BACKSPACE-10",
+    "TOUCH-V1-P10-FINGER-CN-CONFIRM-11",
+    "TOUCH-V1-P10-FINGER-CN-TAB-12",
+    "TOUCH-V1-P10-FINGER-CN-INACTIVE-13",
+    "TOUCH-V1-P10-FINGER-CN-CTRL-ALT-14",
+    "TOUCH-V1-P10-FINGER-CN-SHIFT-15",
+    "TOUCH-V1-P10-FINGER-CN-CODING-16",
+    "TOUCH-V1-P10-FINGER-CN-CODING-17",
+    "TOUCH-V1-P10-FINGER-CN-CODING-18",
+    "TOUCH-V1-P10-FINGER-CONTROL-NAV-19",
+    "TOUCH-V1-P10-FINGER-CONTROL-SELECTION-20",
+    "TOUCH-V1-P10-FINGER-CONTROL-CN-GUARD-21",
+    "TOUCH-V1-P10-FINGER-CONTROL-PAUSED-GUARD-22",
+    "TOUCH-V1-P10-FINGER-CONTROL-STATE-23",
+    "TOUCH-V1-P10-FINGER-CONTROL-PANELS-24 (settings 2 only)",
+    "TOUCH-V1-AUDIO-STARTUP-FIX-27 (audibility only)",
+    "TOUCH-V1-FINGER-LIFECYCLE-28",
+    "TOUCH-V1-FINGER-HELP-STATE-29",
+    "TOUCH-V1-FINGER-SELECTION-HOME-END-30",
+    "TOUCH-V1-FINGER-SELECTION-REVERSE-31",
+    "TOUCH-V1-FINGER-EN-LETTERS-32 (user expanded to all47 input keys,94 layers)",
+    "TOUCH-V1-FINGER-EN-DISABLED-33",
+    "TOUCH-V1-FINGER-EN-EDIT-34",
+    "TOUCH-V1-FINGER-EN-INACTIVE-35 (redundant Shift-off instruction corrected)",
+    "TOUCH-V1-FINGER-EN-CTRL-ALT-36",
+    "TOUCH-V1-FINGER-EN-SHIFT-37",
+    "TOUCH-V1-MSI-PEN-EN-ALL47-38 (input correctness; repeated-contact caveat)",
+    "TOUCH-V1-MSI-PEN-EN-DISABLED-39",
+    "TOUCH-V1-MSI-PEN-EN-EDIT-40",
+    "TOUCH-V1-MSI-PEN-EN-INACTIVE-41",
+    "TOUCH-V1-MSI-PEN-EN-CTRL-ALT-42",
+    "TOUCH-V1-MSI-PEN-EN-SHIFT-43",
+    "TOUCH-V1-MSI-PEN-CN-CODING-44 (mapping20 only; frequent lift repeats unresolved)",
+    "TOUCH-V1-MSI-PEN-LIFT-DIAG-45 (trace analyzed, issue open)",
+    "TOUCH-V1-ACER-PEN-BASELINE-REPEAT-46 (ten-tap comparison only,0 body layers)",
+    "TOUCH-V1-ACER-PEN-EN-ALL47-47 (character94; Shift recontact exception retained)",
+    "TOUCH-V1-ACER-PEN-EN-DISABLED-48",
+    "TOUCH-V1-ACER-PEN-EN-EDIT-49",
+    "TOUCH-V1-ACER-PEN-EN-INACTIVE-50",
+    "TOUCH-V1-ACER-PEN-EN-CTRL-ALT-51",
+    "TOUCH-V1-ACER-PEN-EN-SHIFT-52",
+    "TOUCH-V1-ACER-PEN-CN-CODING-53",
+    "TOUCH-V1-ACER-PEN-CN-CODING-54 (expanded all70 character keys,140 total CN layers incl prior20)",
+    "TOUCH-V1-ACER-PEN-CN-EDIT-55",
+    "TOUCH-V1-ACER-PEN-CN-CONFIRM-56",
+    "TOUCH-V1-ACER-PEN-CN-INACTIVE-57",
+    "TOUCH-V1-ACER-PEN-CN-CTRL-ALT-58",
+    "TOUCH-V1-ACER-PEN-CN-SHIFT-59",
+    "TOUCH-V1-ACER-PEN-CONTROL-NAV-60",
+    "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-61",
+    "TOUCH-V1-ACER-PEN-CONTROL-CN-GUARD-62",
+    "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63",
+    "TOUCH-V1-ACER-PEN-CONTROL-STATE-64",
+    "TOUCH-V1-ACER-PEN-CONTROL-PANELS-65",
+    "TOUCH-V1-ACER-PEN-CONTROL-LIFECYCLE-66",
+    "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67"
+  ],
+  "lastUpdatedDate": "2026-10-28",
+  "fingerCNBodyStage": {
+    "passed": 168,
+    "pending": 0,
+    "keysWithBothLayers": 84,
+    "hardwareMethod": "finger",
+    "stageReport": "CN_BODY_STAGE_RESULT.zh-CN.md"
+  },
+  "controlScenarioProgress": {
+    "fingerPassed": 37,
+    "completedBatches": [
+      "TOUCH-V1-P10-FINGER-CONTROL-NAV-19",
+      "TOUCH-V1-P10-FINGER-CONTROL-SELECTION-20",
+      "TOUCH-V1-P10-FINGER-CONTROL-CN-GUARD-21",
+      "TOUCH-V1-P10-FINGER-CONTROL-PAUSED-GUARD-22",
+      "TOUCH-V1-P10-FINGER-CONTROL-STATE-23",
+      "TOUCH-V1-P10-FINGER-CONTROL-PANELS-24 (settings 2 only)",
+      "TOUCH-V1-FINGER-LIFECYCLE-28",
+      "TOUCH-V1-FINGER-HELP-STATE-29",
+      "TOUCH-V1-FINGER-SELECTION-HOME-END-30",
+      "TOUCH-V1-FINGER-SELECTION-REVERSE-31"
+    ],
+    "scope": "defined preview control scenarios split by executable: r3 original28 plus current lifecycle3, Help-state2, Home-End2, selection-reverse2; Help25 and audio27 tracked separately; no blanket current-version/host acceptance",
+    "passedByExecutable": {
+      "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146": 28,
+      "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32": 9
+    },
+    "acerPenPassed": 37,
+    "acerPenPendingCurrentBatch": 0,
+    "acerPenCurrentBatch": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67",
+    "acerPenPackageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+    "acerPenScope": "no inherited finger control passes or credit for setup taps",
+    "acerPenCompletedBatches": [
+      "TOUCH-V1-ACER-PEN-CONTROL-NAV-60",
+      "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-61",
+      "TOUCH-V1-ACER-PEN-CONTROL-CN-GUARD-62",
+      "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63",
+      "TOUCH-V1-ACER-PEN-CONTROL-STATE-64",
+      "TOUCH-V1-ACER-PEN-CONTROL-PANELS-65",
+      "TOUCH-V1-ACER-PEN-CONTROL-LIFECYCLE-66",
+      "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67"
+    ],
+    "acerPenStageReport": "ACER_PEN_CONTROL_STAGE_RESULT.json",
+    "acerPenStatus": "defined preview checkpoint complete"
+  },
+  "helpIssue": "../../../2026-10-28/help-input-fix/ISSUE.json",
+  "helpFixRetest": "../../../2026-10-28/help-input-fix/RETEST-25.json",
+  "helpFixPackage": "50b43e5040ed3a1eb36c8a851bbd11ffafbeaed7323d82c8f45e140407704d5a",
+  "helpFixRetestStatus": "targeted Help retest reported normal; separate minimize hang reported in same response",
+  "minimizeIssue": "../../../2026-10-28/minimize-audio-fix/ISSUE.json",
+  "minimizeFixRetest": "../../../2026-10-28/minimize-audio-fix/RETEST-26.json",
+  "minimizeFixPackage": "211bd619b587a9f845b522ce58a81d016362c438eced63fcf07134c0b0fd9a5c",
+  "audioStartupFixRetest": "../../../2026-10-28/audio-startup-fix/RETEST-27.json",
+  "audioStartupFixPackage": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "audioStartupFixRetestStatus": "both startup/relaunch audibility cases passed-user-reported; input method unspecified",
+  "currentBatchDefinition": "P10-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67.json",
+  "controlStageCheckpoint": "CONTROL_STAGE_RESULT.json",
+  "fingerENBodyStage": {
+    "passed": 168,
+    "pending": 0,
+    "keysWithBothLayers": 84,
+    "hardwareMethod": "finger",
+    "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+    "evidence": "user-reports/p10-finger-en-all47-32-user-result.json",
+    "remaining": "none within defined EN body scenarios",
+    "disabledEvidence": "user-reports/p10-finger-en-disabled-33-user-result.json",
+    "editEvidence": "user-reports/p10-finger-en-edit-34-user-result.json",
+    "inactiveEvidence": "user-reports/p10-finger-en-inactive-35-user-result.json",
+    "ctrlAltEvidence": "user-reports/p10-finger-en-ctrl-alt-36-user-result.json",
+    "shiftEvidence": "user-reports/p10-finger-en-shift-37-user-result.json",
+    "status": "stage complete"
+  },
+  "bodyPassedByExecutable": {
+    "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146": {
+      "CN": 168,
+      "EN": 0
+    },
+    "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32": {
+      "CN": 0,
+      "EN": 168
+    }
+  },
+  "fourLayerAcceptance": "CN and EN observations span different executables; no blanket current-package four-layer acceptance",
+  "fingerBodyStage": "FINGER_BODY_STAGE_RESULT.json",
+  "msiPenENBodyStage": {
+    "passed": 168,
+    "pending": 0,
+    "keysWithBothLayers": 84,
+    "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+    "evidence": "user-reports/p10-msi-pen-en-all47-38-user-result.json",
+    "recontactObservation": "MSI_PEN_RECONTACT_OBSERVATION.json",
+    "disabledEvidence": "user-reports/p10-msi-pen-en-disabled-39-user-result.json",
+    "remaining": "none within EN body; CN168 separate",
+    "editEvidence": "user-reports/p10-msi-pen-en-edit-40-user-result.json",
+    "inactiveEvidence": "user-reports/p10-msi-pen-en-inactive-41-user-result.json",
+    "ctrlAltEvidence": "user-reports/p10-msi-pen-en-ctrl-alt-42-user-result.json",
+    "shiftEvidence": "user-reports/p10-msi-pen-en-shift-43-user-result.json",
+    "status": "stage complete with recontact caveat",
+    "stageReport": "MSI_PEN_EN_STAGE_RESULT.json"
+  },
+  "bodyPassedByExecutableScope": "existing field remains finger-only; see bodyPassedByMethodAndExecutable for independent pen counts",
+  "bodyPassedByMethodAndExecutable": {
+    "finger": {
+      "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146": {
+        "CN": 168,
+        "EN": 0
+      },
+      "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32": {
+        "CN": 0,
+        "EN": 168
+      }
+    },
+    "MSI supplied pen": {
+      "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32": {
+        "CN": 20,
+        "EN": 168
+      }
+    },
+    "Acer PE272XT supplied pen": {
+      "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32": {
+        "CN": 168,
+        "EN": 168
+      }
+    }
+  },
+  "msiPenCNBodyStage": {
+    "passed": 20,
+    "pending": 148,
+    "keysWithBothLayers": 10,
+    "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+    "evidence": "user-reports/p10-msi-pen-cn-coding-44-user-result.json",
+    "scope": "mapping correct only; repeats unresolved"
+  },
+  "penLiftIssue": "../../../2026-10-28/pen-lift-diagnostic/ISSUE.json",
+  "acerAdHocObservation": {
+    "userReport": "微星原装笔太小，不好把控，换成宏碁似乎好些。刚才测了几次，没有重复。",
+    "passedBodyLayersAdded": 0,
+    "trialCount": null
+  },
+  "penRecontactTrial": "../../../2026-10-28/pen-recontact-trial/package-identity.json",
+  "acerBaselineRepeatResult": "../../../2026-10-28/pen-lift-diagnostic/ACER_RESULT-46.json",
+  "acerPenENBodyStage": {
+    "passed": 168,
+    "pending": 0,
+    "keysWithBothLayers": 84,
+    "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+    "filterMS": 0,
+    "evidence": "user-reports/p10-acer-pen-en-all47-47-user-result.json",
+    "shiftObservation": "ACER_PEN_SHIFT_RECONTACT_OBSERVATION.json",
+    "disabledEvidence": "user-reports/p10-acer-pen-en-disabled-48-user-result.json",
+    "remaining": "none within defined EN body scenarios; CN also complete, see independent CN stage report",
+    "shiftObservationStatus": "user clarification: abnormal operation outside procedure; observed26ms cycles preserved, within-protocol failure unestablished",
+    "editEvidence": "user-reports/p10-acer-pen-en-edit-49-user-result.json",
+    "inactiveEvidence": "user-reports/p10-acer-pen-en-inactive-50-user-result.json",
+    "ctrlAltEvidence": "user-reports/p10-acer-pen-en-ctrl-alt-51-user-result.json",
+    "shiftEvidence": "user-reports/p10-acer-pen-en-shift-52-user-result.json",
+    "status": "stage complete",
+    "stageReport": "ACER_PEN_EN_STAGE_RESULT.json"
+  },
+  "acerPenCNBodyStage": {
+    "passed": 168,
+    "pending": 0,
+    "keysWithBothLayers": 84,
+    "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+    "filterMS": 0,
+    "evidence": "user-reports/p10-acer-pen-cn-coding-53-user-result.json",
+    "all70Evidence": "user-reports/p10-acer-pen-cn-all70-54-user-result.json",
+    "remaining": "none within defined CN body scenarios; control/host contexts separate",
+    "gapAudit": "ACER_CN_GAP_AUDIT_54.json",
+    "editEvidence": "user-reports/p10-acer-pen-cn-edit-55-user-result.json",
+    "confirmEvidence": "user-reports/p10-acer-pen-cn-confirm-56-user-result.json",
+    "inactiveEvidence": "user-reports/p10-acer-pen-cn-inactive-57-user-result.json",
+    "ctrlAltEvidence": "user-reports/p10-acer-pen-cn-ctrl-alt-58-user-result.json",
+    "shiftEvidence": "user-reports/p10-acer-pen-cn-shift-59-user-result.json",
+    "status": "stage complete",
+    "stageReport": "ACER_PEN_CN_STAGE_RESULT.json"
+  },
+  "acerPenBodyStage": "ACER_PEN_BODY_STAGE_RESULT.json",
+  "fourLayerAcceptanceScope": "existing fourLayerAcceptance field is finger-only; Acer defined body336 uses single current executable, see acerPenBodyStage",
+  "nextPhasePlan": "NEXT_STAGE_AFTER_ACER_67.json",
+  "acerPenControlStage": "ACER_PEN_CONTROL_STAGE_RESULT.json"
+}

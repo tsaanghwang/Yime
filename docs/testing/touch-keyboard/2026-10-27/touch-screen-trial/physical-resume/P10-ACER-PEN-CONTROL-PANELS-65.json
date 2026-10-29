@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CONTROL-PANELS-65",
+  "continues": "TOUCH-V1-ACER-PEN-CONTROL-STATE-64",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "Current preview CN/variable, ID legends; Acer pen only. Each independent case CN/Clear, selection OFF, modifiers unlit; digits12 and N08. EN cases switch EN before panel. Settings open/Return without changing options; Help uses internal Next/Previous/Return. Check language/raw pause/document preserved; Cancel, restore CN if necessary, then3 yields123.",
+  "cases": [
+    {
+      "caseID": "cn-settings",
+      "controls": [
+        "TU-SETTINGS"
+      ],
+      "setup": [
+        "CN; Clear; selection OFF; modifiers unlit; main digits12; N08 -> raw n"
+      ],
+      "steps": [
+        "open Settings; change no options; top-left Return"
+      ],
+      "expectedAfterReturn": {
+        "inputMode": "CN",
+        "raw": "n",
+        "rawPaused": false,
+        "localOutput": "12",
+        "returnedToKeyboard": true,
+        "noAutomaticCommitOrOtherInput": true
+      },
+      "verification": [
+        "Cancel while still CN",
+        "main digit3"
+      ],
+      "expectedAfterVerification": {
+        "inputMode": "CN",
+        "raw": "",
+        "localOutput": "123"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "cn-help",
+      "controls": [
+        "TU-HELP"
+      ],
+      "setup": [
+        "CN; Clear; selection OFF; modifiers unlit; main digits12; N08 -> raw n"
+      ],
+      "steps": [
+        "Help; Next once; Previous once; Return"
+      ],
+      "expectedAfterReturn": {
+        "inputMode": "CN",
+        "raw": "n",
+        "rawPaused": false,
+        "localOutput": "12",
+        "returnedToKeyboard": true,
+        "noAutomaticCommitOrOtherInput": true
+      },
+      "verification": [
+        "Cancel while still CN",
+        "main digit3"
+      ],
+      "expectedAfterVerification": {
+        "inputMode": "CN",
+        "raw": "",
+        "localOutput": "123"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "en-settings",
+      "controls": [
+        "TU-SETTINGS"
+      ],
+      "setup": [
+        "CN; Clear; selection OFF; modifiers unlit; main digits12; N08 -> raw n",
+        "switch EN, retain paused n"
+      ],
+      "steps": [
+        "open Settings; change no options; top-left Return"
+      ],
+      "expectedAfterReturn": {
+        "inputMode": "EN",
+        "raw": "n",
+        "rawPaused": true,
+        "localOutput": "12",
+        "returnedToKeyboard": true,
+        "noAutomaticCommitOrOtherInput": true
+      },
+      "verification": [
+        "Cancel while still EN",
+        "switch CN",
+        "main digit3"
+      ],
+      "expectedAfterVerification": {
+        "inputMode": "CN",
+        "raw": "",
+        "localOutput": "123"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "en-help",
+      "controls": [
+        "TU-HELP"
+      ],
+      "setup": [
+        "CN; Clear; selection OFF; modifiers unlit; main digits12; N08 -> raw n",
+        "switch EN, retain paused n"
+      ],
+      "steps": [
+        "Help; Next once; Previous once; Return"
+      ],
+      "expectedAfterReturn": {
+        "inputMode": "EN",
+        "raw": "n",
+        "rawPaused": true,
+        "localOutput": "12",
+        "returnedToKeyboard": true,
+        "noAutomaticCommitOrOtherInput": true
+      },
+      "verification": [
+        "Cancel while still EN",
+        "switch CN",
+        "main digit3"
+      ],
+      "expectedAfterVerification": {
+        "inputMode": "CN",
+        "raw": "",
+        "localOutput": "123"
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 4,
+  "bodyLayerObservations": 0,
+  "controlObservations": 4,
+  "coverageScope": "preview settings access and internal Help page/Return with CN and paused EN state preservation; not correctness of setting options, native MessageBox dismissal, real host help or binding",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "P10-FINGER-CONTROL-PANELS-24.json settings expectations only; historical Help MessageBox instructions not reused",
+    "P10-FINGER-CONTROL-HELP-STATE-29.json current internal Help paging/Return and preservation expectations",
+    "preview internal panels preserve engine raw/editor; Cancel clears raw, literal3 inserts at existing caret"
+  ],
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-control-panels-65-user-result.json"
+}

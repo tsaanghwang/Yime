@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-BASELINE-REPEAT-46",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "status": "passed in ten-tap user/native-trace sample",
+  "setup": "same flipped screen at approximately45 degrees; original baseline diagnostic preview EN, English keycaps; all input by Acer pen; no filter",
+  "steps": [
+    "Clear",
+    "naturally and lightly tap a ten times, lifting between intended taps; approximately one second between intended taps",
+    "leave repeats untouched and stop after ten intended taps"
+  ],
+  "expected": "ten intended taps yield ten characters; actual count and native event cycles inspected separately",
+  "bodyLayerObservations": 0,
+  "scope": "short device comparison only, not all47 keys or full pen acceptance; no pressure/speed increase requested",
+  "runID": "20261028T085228Z-2a990e58",
+  "trace": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\raw\\acer-pen-lift-20261028T085228Z-2a990e58.jsonl",
+  "preparation": "new original c35 preview opened, automated setup toggled CN to EN; observed empty output; no pen input synthesized; filter off",
+  "userReports": [
+    "已测",
+    "zheng'chang"
+  ],
+  "result": "ACER_RESULT-46.json"
+}

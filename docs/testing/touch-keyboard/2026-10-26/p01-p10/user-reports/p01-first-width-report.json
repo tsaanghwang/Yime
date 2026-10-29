@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-26",
+  "userQuote": "总长339mm。本窗体左右各有1mm多，大约1.3mm。键盘窗体左右总长还余3mm多。",
+  "source": "User physical-ruler response to P01 request",
+  "reportedTotal": {
+    "valueMM": 339,
+    "span": "pending clarification: key area, window, or active display"
+  },
+  "reportedPerSideMargin": {
+    "approximateMM": 1.3,
+    "scope": "pending clarification"
+  },
+  "reportedRemainingWidth": {
+    "description": "3mm多",
+    "comparison": "greater than approximately 3mm, not an exact value",
+    "scope": "pending clarification: combined external margins or another span"
+  },
+  "angleDegrees": null,
+  "rulerGraduationMM": null,
+  "interpretation": "Raw values retained; do not derive main-area or active-display width until measurement boundaries are confirmed",
+  "status": "partial-measurement-needs-span-clarification"
+}

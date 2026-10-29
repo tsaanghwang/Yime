@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-27",
+  "packageExecutableSHA256": "25d973f80d839f2ef2e9e399d577c3f9adc35b7739afff2374bc832cc37d18a5",
+  "question": "刚才是在真正的键盘窗口中切到 EN、点三次 a（输出 aaa），不是独立试听程序。这三次按键声现在能听清吗？",
+  "answer": "三次都清楚",
+  "scope": "Actual local keyboard preview; developer automated mouse input, user hearing confirmation",
+  "developerObservedOutput": "aaa",
+  "soundUnavailableIndicator": false,
+  "fingerOrPenAcceptance": false,
+  "hostInputSent": false,
+  "laterDeveloperChecks": {
+    "mute": "Sound toggle off; target audio session inactive, then virtual a still inserted in preview",
+    "restore": "Sound toggle on; same target session active with continuous stream again",
+    "userAuditoryConfirmationForMuteOrRestore": "not separately requested",
+    "interveningPreviewEdits": "Additional scratch-preview edits were visible after the original three-click confirmation; not attributed to that automation or counted as extra input coverage."
+  },
+  "P10PassedCountUnchanged": 250
+}

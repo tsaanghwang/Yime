@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-EN-EDIT-40",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "MSI supplied pen",
+  "status": "passed-user-reported-group-result",
+  "setup": "same current EN preview and English keycaps EN; same MSI supplied pen only; each case Clear, selection OFF, modifiers unlit; seed lowercase text; no paused composition",
+  "cases": [
+    {
+      "physicalKeyID": "R02K21",
+      "label": "Back Space",
+      "seed": "ab",
+      "suffix": "",
+      "expectedOutput": "a",
+      "expectedDisplay": "a",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K04",
+      "label": "Tab",
+      "seed": "a",
+      "suffix": "b",
+      "expectedOutput": "a\tb",
+      "expectedDisplay": "a⇥b",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K17",
+      "label": "Enter",
+      "seed": "a",
+      "suffix": "b",
+      "expectedOutput": "a\nb",
+      "expectedDisplay": "a↵b",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R07K05",
+      "label": "左Space",
+      "seed": "a",
+      "suffix": "b",
+      "expectedOutput": "a b",
+      "expectedDisplay": "a b",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R07K06",
+      "label": "右Space",
+      "seed": "a",
+      "suffix": "b",
+      "expectedOutput": "a b",
+      "expectedDisplay": "a b",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    }
+  ],
+  "runs": [
+    {
+      "layer": "EN_base",
+      "steps": "for each case type seed, tap named key, then suffix if present"
+    },
+    {
+      "layer": "EN_shift",
+      "steps": "repeat each independent case; tap Shift immediately before named edit/space key, then suffix lowercase b if present"
+    }
+  ],
+  "bodyLayerObservations": 10,
+  "scope": "five edit/space keys x2 EN layers on MSI pen; case instructions reused from finger test but no physical result inherited; no real host or duplicate-free pen acceptance",
+  "userReport": "正常。",
+  "evidence": "user-reports/p10-msi-pen-en-edit-40-user-result.json"
+}

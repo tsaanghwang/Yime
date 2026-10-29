@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedControlScenarios": 7,
+  "passedBodyLayersAdded": 0,
+  "result": "seven paused EN composition guard cases normal: n/document123/selection-off preserved; Cancel in EN, return CN then9 verifies1923 at original caret",
+  "scope": "grouped human report without per-action transcript/attempt count; language/Cancel verification included, not extra scenario credit; no real host or blanket control acceptance"
+}

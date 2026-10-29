@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-28",
+  "affectedExecutableSHA256": "50b43e5040ed3a1eb36c8a851bbd11ffafbeaed7323d82c8f45e140407704d5a",
+  "userReport": "正常。不过这次修改把“最小化”按钮修死了。点击或触摸该按钮导致本程序锁死。甚至不能退出重启。",
+  "reportedRoutes": [
+    "mouse click",
+    "physical touch"
+  ],
+  "symptom": "minimize hangs application; exit/restart unavailable",
+  "sourceFinding": "window thread waits on waveClickStream.done in synchronous close; done closes only after driver reset/unprepare/close returns",
+  "controlledReproduction": "TestAudioShutdownDoesNotWaitForDriver failed on old source with deliberately blocked reset, passed after repair",
+  "systemDriverCause": "Exact driver call causing the reported live hang has not been captured; no assertion of SoundWire hardware fault.",
+  "fix": "open/playback/cleanup on one pinned background OS thread; close only signals; UI detaches stream before stop; no new stream until retiring worker completes",
+  "recoveryState": "read-only process/window inventory found no remaining keyboard instance; no process was force-terminated"
+}

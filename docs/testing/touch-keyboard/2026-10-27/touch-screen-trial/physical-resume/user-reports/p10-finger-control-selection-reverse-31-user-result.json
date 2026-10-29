@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-SELECTION-REVERSE-31",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "finger",
+  "userReport": "正常",
+  "passedControlScenarios": 2,
+  "bodyLayerObservations": 0,
+  "result": "shrinking selection and crossing original anchor to reverse selection both normal as presented; expected1934 and1294",
+  "limits": "group report only; no per-action transcription, attempt count, pen or real-host acceptance inferred"
+}

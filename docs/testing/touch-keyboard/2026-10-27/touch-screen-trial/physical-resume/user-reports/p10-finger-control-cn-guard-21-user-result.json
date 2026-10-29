@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CONTROL-CN-GUARD-21",
+  "userVerbatim": "正常",
+  "interpretation": "all seven active CN composition editing guards and subsequent Cancel/digit caret verification reported normal",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "passedControlScenarios": 7,
+  "passedBodyLayerObservations": 0,
+  "coverageScope": "active CN composition guard for seven top editing controls plus cancellation verification; English paused composition and real host guards remain separate",
+  "actualTextIndividuallyTranscribed": false,
+  "attemptCountsProvided": false,
+  "pausedEnglishGuardAcceptance": false,
+  "hostAcceptance": false
+}

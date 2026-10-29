@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "scope": "ARM64 native touch-screen-v1 independent physical results",
+  "packageIdentity": {"pullRequest": null, "workflowRun": null, "sourceCommit": null, "artifactURL": null, "zipSHA256": null, "exeSHA256": null, "architecture": "windows-arm64"},
+  "environment": {"machine": null, "windowsVersion": null, "nativeArchitecture": null, "displayResolution": null, "displayScaling": null, "screenMM": null, "rulerObservedMM": null, "screenPosture": null, "penModel": null, "touchAvailable": null},
+  "penRecontactMS": 0,
+  "inheritedX64Passes": 0,
+  "cases": [
+    {"id": "A00", "method": null, "status": "pending", "actual": null, "evidence": []},
+    {"id": "A01", "method": "package check; no physical input", "status": "pending", "actual": null, "evidence": []},
+    {"id": "A02", "method": null, "status": "pending", "actual": null, "evidence": []},
+    {"id": "A03", "method": "finger", "status": "pending", "actual": null, "evidence": []},
+    {"id": "A03", "method": "pen", "status": "pending", "actual": null, "evidence": []},
+    {"id": "A04", "method": "finger", "status": "pending", "actual": null, "evidence": []},
+    {"id": "A04", "method": "pen", "status": "pending", "actual": null, "evidence": []},
+    {"id": "A05", "method": "finger", "status": "pending", "actual": null, "evidence": []},
+    {"id": "A05", "method": "pen", "status": "pending", "actual": null, "evidence": []},
+    {"id": "A06", "method": "finger", "status": "pending", "actual": null, "evidence": []},
+    {"id": "A06", "method": "pen", "status": "pending", "actual": null, "evidence": []},
+    {"id": "A07", "method": "finger", "status": "pending", "actual": null, "evidence": []},
+    {"id": "A07", "method": "pen", "status": "pending", "actual": null, "evidence": []}
+  ],
+  "packageCheckReport": null,
+  "realHostResults": [],
+  "fullPhysicalAcceptance": false
+}

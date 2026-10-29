@@ -1,0 +1,204 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-CTRL-ALT-14",
+  "continues": "TOUCH-V1-P10-FINGER-CN-INACTIVE-13",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Current preview only; CN/variable, literal-entry OFF, ID legends. Every case Clear, no modifiers, type digits 12. Direct Ctrl+M12 sends Ctrl+a and selects 12; Alt+M12 is refused. Shift+either modifier+M12 carries shifted ASCII ], so both Ctrl and Alt paths are refused. Follow with digit 3 to verify selection replacement or modifier consumption. Do not switch EN or use top SelectAll.",
+  "keys": [
+    {
+      "physicalKeyID": "R07K02",
+      "label": "左Ctrl",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "左Ctrl then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": true,
+            "shortcutRefused": false,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "3",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "Shift then 左Ctrl then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": false,
+            "shortcutRefused": true,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "123",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "通过（用户报告）"
+        }
+      ],
+      "status": "通过（用户报告）",
+      "actual": "八项按步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R07K09",
+      "label": "右Ctrl",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "右Ctrl then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": true,
+            "shortcutRefused": false,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "3",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "Shift then 右Ctrl then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": false,
+            "shortcutRefused": true,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "123",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "通过（用户报告）"
+        }
+      ],
+      "status": "通过（用户报告）",
+      "actual": "八项按步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R07K04",
+      "label": "左Alt",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "左Alt then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": false,
+            "shortcutRefused": true,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "123",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "Shift then 左Alt then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": false,
+            "shortcutRefused": true,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "123",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "通过（用户报告）"
+        }
+      ],
+      "status": "通过（用户报告）",
+      "actual": "八项按步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R07K07",
+      "label": "右Alt",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "右Alt then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": false,
+            "shortcutRefused": true,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "123",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "Shift then 右Alt then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": false,
+            "shortcutRefused": true,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "123",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "通过（用户报告）"
+        }
+      ],
+      "status": "通过（用户报告）",
+      "actual": "八项按步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "scenarioCount": 8,
+  "layerObservations": 8,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "canonical M12 base a/shift ] actions",
+    "touchkeyboard modifier toggles retain Shift until nonmodifier output; output consumes one-shot Shift/Ctrl/Alt",
+    "preview.apply supports Ctrl+a only with empty raw, rejects other Ctrl and all Alt shortcuts",
+    "digit 3 with empty raw is literal and replaces selection in previewEditor"
+  ],
+  "hostShortcutAcceptance": false,
+  "userReport": "user-reports/p10-finger-cn-ctrl-alt-14-user-result.json",
+  "resultDate": "2026-10-28"
+}

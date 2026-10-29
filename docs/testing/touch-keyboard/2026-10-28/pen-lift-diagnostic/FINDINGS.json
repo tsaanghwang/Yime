@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-28",
+  "snapshot": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\raw\\msi-through-sequence2990.jsonl",
+  "snapshotSHA256": "0dc1d269bf77a25a03d59a620f72061d37dae4401b571daf3a3632f846cc78c0",
+  "lastSequence": 2990,
+  "nativePenContacts": 84,
+  "characterContactsEachAddingOne": 66,
+  "mouseOutputChanges": [],
+  "sameKeyUnder80msGaps": [
+    42,
+    57,
+    12,
+    42,
+    12,
+    57,
+    41,
+    27,
+    11,
+    12,
+    12,
+    12,
+    56
+  ],
+  "finding": "observed extra output follows additional complete native PEN Down/Up cycles, not extra promoted-mouse output",
+  "limits": "cannot decide physical intent or hand/driver/sensor causality from trace; later two-contact samples include56ms gap, overlapping the short-gap range, so timing-only filtering can merge desired pairs",
+  "runtimeTrial": "../pen-recontact-trial/package-identity.json",
+  "issueResolved": false
+}

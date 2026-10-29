@@ -1,0 +1,1324 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CN-ALL70-54",
+  "parentBatch": "TOUCH-V1-ACER-PEN-CN-CODING-54",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "status": "user-confirmed all70 CN character keys both layers normal",
+  "keys": [
+    {
+      "physicalKeyID": "R02K05",
+      "labels": "~ / N26 / `",
+      "baseAction": {
+        "type": "input",
+        "ascii": "`",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "~",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K06",
+      "labels": "! / N12 / '",
+      "baseAction": {
+        "type": "input",
+        "ascii": "'",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "!",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K07",
+      "labels": "\" / M25 / B",
+      "baseAction": {
+        "type": "input",
+        "ascii": "B",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "\"",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K08",
+      "labels": "# / 1",
+      "baseAction": {
+        "type": "input",
+        "ascii": "1",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "#",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K09",
+      "labels": "$ / 2",
+      "baseAction": {
+        "type": "input",
+        "ascii": "2",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "$",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K10",
+      "labels": "% / 3",
+      "baseAction": {
+        "type": "input",
+        "ascii": "3",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "%",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K11",
+      "labels": "& / 4",
+      "baseAction": {
+        "type": "input",
+        "ascii": "4",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "&",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K12",
+      "labels": "' / 5",
+      "baseAction": {
+        "type": "input",
+        "ascii": "5",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "'",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K13",
+      "labels": "( / 6",
+      "baseAction": {
+        "type": "input",
+        "ascii": "6",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "(",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K14",
+      "labels": ") / 7",
+      "baseAction": {
+        "type": "input",
+        "ascii": "7",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ")",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K15",
+      "labels": "* / 8",
+      "baseAction": {
+        "type": "input",
+        "ascii": "8",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "*",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K16",
+      "labels": "+ / 9",
+      "baseAction": {
+        "type": "input",
+        "ascii": "9",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "+",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K17",
+      "labels": ", / 0",
+      "baseAction": {
+        "type": "input",
+        "ascii": "0",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ",",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K18",
+      "labels": "- / M26 / M",
+      "baseAction": {
+        "type": "input",
+        "ascii": "M",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "-",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K19",
+      "labels": ". / M27 / P",
+      "baseAction": {
+        "type": "input",
+        "ascii": "P",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ".",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K20",
+      "labels": "/ / N27 / R",
+      "baseAction": {
+        "type": "input",
+        "ascii": "R",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "/",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K04",
+      "labels": "\" / N11 / h",
+      "baseAction": {
+        "type": "input",
+        "ascii": "h",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "\"",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K05",
+      "labels": "~ / N10 / k",
+      "baseAction": {
+        "type": "input",
+        "ascii": "k",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "~",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K06",
+      "labels": "! / N09 / g",
+      "baseAction": {
+        "type": "input",
+        "ascii": "g",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "!",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K07",
+      "labels": "@ / M24 / ?",
+      "baseAction": {
+        "type": "input",
+        "ascii": "?",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "@",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K08",
+      "labels": "# / M23 / :",
+      "baseAction": {
+        "type": "input",
+        "ascii": ":",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "#",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K09",
+      "labels": "$ / M22 / !",
+      "baseAction": {
+        "type": "input",
+        "ascii": "!",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "$",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K10",
+      "labels": "% / N04 / m",
+      "baseAction": {
+        "type": "input",
+        "ascii": "m",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "%",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K11",
+      "labels": "^ / N05 / d",
+      "baseAction": {
+        "type": "input",
+        "ascii": "d",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "^",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K12",
+      "labels": "& / M19 / <",
+      "baseAction": {
+        "type": "input",
+        "ascii": "<",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "&",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K13",
+      "labels": "* / M20 / =",
+      "baseAction": {
+        "type": "input",
+        "ascii": "=",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "*",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K14",
+      "labels": "( / M21 / >",
+      "baseAction": {
+        "type": "input",
+        "ascii": ">",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "(",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K15",
+      "labels": ") / N13 / z",
+      "baseAction": {
+        "type": "input",
+        "ascii": "z",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ")",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K16",
+      "labels": "_ / N14 / c",
+      "baseAction": {
+        "type": "input",
+        "ascii": "c",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "_",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K17",
+      "labels": "+ / N15 / s",
+      "baseAction": {
+        "type": "input",
+        "ascii": "s",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "+",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K04",
+      "labels": "· / N25 / Y",
+      "baseAction": {
+        "type": "input",
+        "ascii": "Y",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "symbol",
+        "ascii": "·",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K05",
+      "labels": "、 / N22 / x",
+      "baseAction": {
+        "type": "input",
+        "ascii": "x",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "symbol",
+        "ascii": "、",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K06",
+      "labels": "— / N21 / q",
+      "baseAction": {
+        "type": "input",
+        "ascii": "q",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "symbol",
+        "ascii": "—",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K07",
+      "labels": "&times; / N20 / j",
+      "baseAction": {
+        "type": "input",
+        "ascii": "j",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "symbol",
+        "ascii": "×",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K08",
+      "labels": "R15 / / / M15 / o",
+      "baseAction": {
+        "type": "input",
+        "ascii": "o",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "/",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K09",
+      "labels": "R14 / ; / M14 / Q",
+      "baseAction": {
+        "type": "input",
+        "ascii": "Q",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ";",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K10",
+      "labels": "R13 / # / M13 / O",
+      "baseAction": {
+        "type": "input",
+        "ascii": "O",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "#",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K11",
+      "labels": "' / N03 / f",
+      "baseAction": {
+        "type": "input",
+        "ascii": "f",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "'",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K12",
+      "labels": "- / N06 / t",
+      "baseAction": {
+        "type": "input",
+        "ascii": "t",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "-",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K13",
+      "labels": "R16 / * / M04 / U",
+      "baseAction": {
+        "type": "input",
+        "ascii": "U",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "*",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K14",
+      "labels": "R17 / ^ / M05 / W",
+      "baseAction": {
+        "type": "input",
+        "ascii": "W",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "^",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K15",
+      "labels": "R18 / + / M06 / u",
+      "baseAction": {
+        "type": "input",
+        "ascii": "u",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "+",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K16",
+      "labels": "; / N16 / Z",
+      "baseAction": {
+        "type": "input",
+        "ascii": "Z",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ";",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K17",
+      "labels": "{ / N17 / C",
+      "baseAction": {
+        "type": "input",
+        "ascii": "C",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "{",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K18",
+      "labels": "} / N18 / S",
+      "baseAction": {
+        "type": "input",
+        "ascii": "S",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "}",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K19",
+      "labels": "| / N19 / r",
+      "baseAction": {
+        "type": "input",
+        "ascii": "r",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "|",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K05",
+      "labels": "&radic; / M29 / L",
+      "baseAction": {
+        "type": "input",
+        "ascii": "L",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "symbol",
+        "ascii": "√",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K06",
+      "labels": "&divide; / M28 / T",
+      "baseAction": {
+        "type": "input",
+        "ascii": "T",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "symbol",
+        "ascii": "÷",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K07",
+      "labels": "R12 / ] / M12 / a",
+      "baseAction": {
+        "type": "input",
+        "ascii": "a",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "]",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K08",
+      "labels": "R11 / \\ / M11 / D",
+      "baseAction": {
+        "type": "input",
+        "ascii": "D",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "\\",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K09",
+      "labels": "R10 / [ / M10 / A",
+      "baseAction": {
+        "type": "input",
+        "ascii": "A",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "[",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K10",
+      "labels": "` / N02 / p",
+      "baseAction": {
+        "type": "input",
+        "ascii": "p",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "`",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K11",
+      "labels": "= / N07 / l",
+      "baseAction": {
+        "type": "input",
+        "ascii": "l",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "=",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K12",
+      "labels": "R07 / , / M01 / I",
+      "baseAction": {
+        "type": "input",
+        "ascii": "I",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ",",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K13",
+      "labels": "R08 / - / M02 / J",
+      "baseAction": {
+        "type": "input",
+        "ascii": "J",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "-",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K14",
+      "labels": "R09 / . / M03 / i",
+      "baseAction": {
+        "type": "input",
+        "ascii": "i",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ".",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K15",
+      "labels": ": / M31 / G",
+      "baseAction": {
+        "type": "input",
+        "ascii": "G",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ":",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K16",
+      "labels": "\" / M32 / K",
+      "baseAction": {
+        "type": "input",
+        "ascii": "K",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "\"",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K05",
+      "labels": "[ / M30 / N",
+      "baseAction": {
+        "type": "input",
+        "ascii": "N",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "[",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K06",
+      "labels": "R06 / } / M18 / e",
+      "baseAction": {
+        "type": "input",
+        "ascii": "e",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "}",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K07",
+      "labels": "R05 / | / M17 / F",
+      "baseAction": {
+        "type": "input",
+        "ascii": "F",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "|",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K08",
+      "labels": "R04 / { / M16 / E",
+      "baseAction": {
+        "type": "input",
+        "ascii": "E",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "{",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K09",
+      "labels": "\\ / N01 / b",
+      "baseAction": {
+        "type": "input",
+        "ascii": "b",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "\\",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K10",
+      "labels": "] / N24 / w",
+      "baseAction": {
+        "type": "input",
+        "ascii": "w",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "]",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K11",
+      "labels": ", / N23 / y",
+      "baseAction": {
+        "type": "input",
+        "ascii": "y",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ",",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K12",
+      "labels": ". / N08 / n",
+      "baseAction": {
+        "type": "input",
+        "ascii": "n",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ".",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K13",
+      "labels": "/ / M07 / V",
+      "baseAction": {
+        "type": "input",
+        "ascii": "V",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "/",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K14",
+      "labels": "< / M08 / X",
+      "baseAction": {
+        "type": "input",
+        "ascii": "X",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "<",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K15",
+      "labels": "> / M09 / v",
+      "baseAction": {
+        "type": "input",
+        "ascii": "v",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": ">",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K16",
+      "labels": "? / M33 / H",
+      "baseAction": {
+        "type": "input",
+        "ascii": "H",
+        "key": "",
+        "label": ""
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "?",
+        "key": "",
+        "label": "",
+        "literalEntry": true
+      },
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    }
+  ],
+  "coveredBodyLayers": 140,
+  "newlyCreditedBodyLayers": 120,
+  "evidence": "user-reports/p10-acer-pen-cn-all70-54-user-result.json",
+  "scope": "general per-key character observations; coding ASCII, direct digits/punctuation and six reviewed Unicode symbols have their own routes; detailed candidate/quote context scenarios not silently inferred"
+}

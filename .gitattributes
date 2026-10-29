@@ -46,3 +46,9 @@ docs/testing/simple-maintenance/**/raw/** -text !eol -whitespace
 # Original pen-event logs are SHA-256-bound physical-test evidence; preserve bytes.
 docs/testing/touch-keyboard/2026-10-26/pen-shift/*.jsonl -text !eol -whitespace
 docs/testing/touch-keyboard/2026-10-25/taskbar-minimize/environment-observed.json -text !eol -whitespace
+
+# Keep per-layer acceptance CSV templates stable across checkouts.
+docs/testing/touch-keyboard/2026-10-26/p01-p10/*.csv text eol=lf
+
+# Diagnostic snapshots are hashed original evidence; never normalize their bytes.
+docs/testing/touch-keyboard/**/raw/** -text !eol -whitespace

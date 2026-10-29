@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-28",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "MSI supplied pen",
+  "userReport": "正常。但是，笔提起离开屏幕瞬间可能是屏幕角度旋转摆动和手抬起时自然抖动（抬起并保持不离得太远产生的起伏抖动）导致多数时候会产生重复。不是都有，注意慢一点或调整一下角度会好些。是不是第二次触发反应的时间留得短了一点。",
+  "environment": {
+    "screenToDeskAngleDegreesApprox": 45,
+    "angleClarificationUserAnswer": "屏幕与桌面约45°",
+    "orientationUserReport": "翻转状态下的",
+    "pen": "MSI original supplied pen",
+    "scope": "current lift-repeat diagnostic environment only; do not replace previous flat-screen records or retroactively attribute all prior batches"
+  },
+  "status": "MSI native repeat cycles observed, cause unresolved; Acer isolated Shift exception now qualified by user procedure deviation; no universal keyboard defect established",
+  "severityDescription": "user reports repeats most times at lift; not every tap; slower movement or changed angle helps",
+  "sourceFindings": [
+    "current code has no time-based recontact debounce",
+    "each new complete Down/Up gesture is accepted immediately",
+    "native pen plus promoted mouse dedup already exists; existing targeted regression passes"
+  ],
+  "unknowns": [
+    "whether observed repeats are separate contact cycles or duplicate compatibility delivery",
+    "actual gap and contact durations",
+    "appropriate suppression interval that preserves intended double taps"
+  ],
+  "runtimeChanged": false,
+  "acceptanceImpact": "CN mapping20 and earlier EN inputs may be correct, but pen-wide repeat stability remains unresolved; next ordinary CN group deferred for diagnosis",
+  "findings": "FINDINGS.json",
+  "laterAcerObservation": "微星原装笔太小，不好把控，换成宏碁似乎好些。刚才测了几次，没有重复。",
+  "runtimeTrial": "../pen-recontact-trial/package-identity.json",
+  "acerBaselineResult": "ACER_RESULT-46.json",
+  "comparison": "same unfiltered baseline: current Acer ten taps produce10 increments, MSI earlier sample includes extra rapid native cycles; intent/hand/driver/sensor cause unresolved; not a population or long-run rate comparison",
+  "acerShiftObservation": "../../2026-10-27/touch-screen-trial/physical-resume/ACER_PEN_SHIFT_RECONTACT_OBSERVATION.json",
+  "acerWorkflowClarification": "测了。正常。异常是没按操作流程测。我严重怀疑是微星原装笔反应太快。"
+}

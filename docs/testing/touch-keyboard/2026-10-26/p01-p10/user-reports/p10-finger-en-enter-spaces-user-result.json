@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-ENTER-SPACES",
+  "userQuote": "Ok",
+  "interpretation": "Completion/normal feedback in direct reply to the requested six preview subcases",
+  "inputMethod": "finger",
+  "target": "fixed-package preview only; English EN view, no composition; not Word or Edge",
+  "packageExecutableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "coveredLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "coveredKeyIDs": [
+    "R05K17",
+    "R07K05",
+    "R07K06"
+  ],
+  "coveredLayerObservations": 6,
+  "result": "passed-user-reported",
+  "actual": "按本组预期反馈Ok；未另外转录两行正文或空格字符",
+  "attemptCounts": "not supplied",
+  "independentObservation": false,
+  "exclusions": [
+    "CN layers",
+    "both pen files",
+    "Word paragraph or soft-line semantics",
+    "other controls"
+  ]
+}

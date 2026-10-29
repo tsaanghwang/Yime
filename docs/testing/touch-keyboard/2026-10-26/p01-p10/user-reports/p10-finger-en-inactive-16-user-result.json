@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-INACTIVE-16",
+  "userQuote": "正常。",
+  "inputMethod": "finger",
+  "target": "new language-label package preview only; English EN, no composition",
+  "packageExecutableSHA256": "73c729b2948a37bc461c7cbcc7c3e1277424f9f5874b6d0285b241a02b1b6865",
+  "coveredLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "coveredKeyIDs": [
+    "R01K04",
+    "R01K05",
+    "R01K06",
+    "R01K07",
+    "R01K08",
+    "R01K09",
+    "R01K10",
+    "R01K11",
+    "R01K12",
+    "R01K13",
+    "R01K14",
+    "R01K15",
+    "R01K17",
+    "R05K04",
+    "R07K03",
+    "R07K08"
+  ],
+  "coveredLayerObservations": 32,
+  "result": "passed-user-reported",
+  "actual": "按前述逐键基础/Shift检查反馈正常，ab保持不变、窗口不跳转；未逐键另行转录",
+  "attemptCounts": "not supplied",
+  "independentObservation": false,
+  "exclusions": [
+    "CN layers",
+    "both pen files",
+    "Ctrl or Alt modifier tests",
+    "physical keyboard or host shortcut behavior"
+  ]
+}

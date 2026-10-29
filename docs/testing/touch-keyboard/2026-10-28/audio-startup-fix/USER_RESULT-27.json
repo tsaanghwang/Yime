@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-AUDIO-STARTUP-FIX-27",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "question": "Exit and launch new preview without minimizing, press1/2/3; exit and relaunch, repeat; do both launches have sound?",
+  "userReport": "都有",
+  "result": "audible clicks confirmed for both defined startup/relaunch cases",
+  "inputMethod": "unspecified",
+  "bodyLayerObservations": 0,
+  "limits": "No per-key transcript, attempt count, particular finger/pen method, full lifecycle or host acceptance inferred."
+}

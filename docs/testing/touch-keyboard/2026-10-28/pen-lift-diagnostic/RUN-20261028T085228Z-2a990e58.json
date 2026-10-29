@@ -1,0 +1,24 @@
+{
+  "runID": "20261028T085228Z-2a990e58",
+  "createdUTC": "2026-10-28T08:52:28.735680+00:00",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "processID": 23640,
+  "trace": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\raw\\acer-pen-lift-20261028T085228Z-2a990e58.jsonl",
+  "arguments": [
+    "--preview",
+    "--touch-ui",
+    "--theme",
+    "dark",
+    "--key-sound",
+    "click",
+    "--ruler-observed-mm",
+    "58.8",
+    "--key-view",
+    "english",
+    "--input-trace",
+    "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\raw\\acer-pen-lift-20261028T085228Z-2a990e58.jsonl"
+  ],
+  "scope": "own controlled preview only; no text/audio recording or OS input; unique trace per launch; no installed settings changed"
+}

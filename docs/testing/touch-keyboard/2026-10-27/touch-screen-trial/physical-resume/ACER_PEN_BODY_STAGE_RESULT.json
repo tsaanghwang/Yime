@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-28",
+  "status": "defined Acer pen body four-layer ledger complete on one executable",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "physicalBodyKeys": 84,
+  "passedBodyLayerObservations": 336,
+  "pendingBodyLayerObservations": 0,
+  "passedByExecutable": {
+    "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32": {
+      "CN": 168,
+      "EN": 168
+    }
+  },
+  "singleExecutableBodyFourLayerCoverage": true,
+  "ledger": "acer-pen-key-coverage.csv",
+  "CNStage": "ACER_PEN_CN_STAGE_RESULT.json",
+  "ENStage": "ACER_PEN_EN_STAGE_RESULT.json",
+  "historicalShiftObservation": "ACER_PEN_SHIFT_RECONTACT_OBSERVATION.json",
+  "withinProtocolShiftFailureEstablished": false,
+  "limits": [
+    "defined preview mapping/function scenarios only, not full keyboard or installed-product acceptance",
+    "human grouped reports without inferred attempt count or per-action transcript",
+    "keep recorded26ms contact/toggle evidence and user outside-procedure clarification; no blanket duplicate-free or hardware-cause claim",
+    "finger results stay split by executable; MSI CN148 remains pending with recontact caveat"
+  ],
+  "remaining": [
+    "Acer top control preview scenarios",
+    "candidate paging/contextual digit/quote and settings-specific cases",
+    "concurrent-contact branches",
+    "real Word/Edge host behavior"
+  ],
+  "next": "P10-ACER-PEN-CONTROL-NAV-60.json",
+  "laterControlCheckpoint": "ACER_PEN_CONTROL_STAGE_RESULT.json",
+  "laterScopePlan": "NEXT_STAGE_AFTER_ACER_67.json"
+}

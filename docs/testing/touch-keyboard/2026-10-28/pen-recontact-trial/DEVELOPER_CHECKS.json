@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-28",
+  "relatedGoTests": "go test ./cmd/yime-touch-keyboard ./internal/touchkeyboard ./internal/keyboardlab -timeout90s: PASS",
+  "targetedCNAndFilter": "TestPenRecontact*: PASS after adding actual19ms/12ms/168ms CN sequence replay",
+  "coverage": [
+    "first input immediate",
+    "12ms bounce and quiet-chain suppression",
+    "80ms boundary accepted",
+    "different source/id/key or intervening accepted action accepted",
+    "finger and legacy mouse fallback not filtered",
+    "promoted mouse still deduplicated; suppressed contact emits no extra feedback",
+    "Shift toggles and uppercase preserved; cancellation clears history",
+    "CN composition kept raw and Cancel resets filter"
+  ],
+  "packageCheck": "package-check.json: PASS",
+  "physicalTrials": "not yet run; no duplicate-free or desired rapid-repeat acceptance claimed",
+  "limitation": "80ms can suppress an intentional same-id same-key repeat below80ms; default remains off; preview-only native character contacts"
+}

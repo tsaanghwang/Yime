@@ -54,6 +54,7 @@ func TestNativePenTouchAndPromotedMouseCommitOnlyOnce(t *testing.T) {
 	defer runtime.UnlockOSThread()
 	a, close := penCompatibilityFixture(t)
 	defer close()
+	sounds := countKeyClicks(a, true)
 	sx, sy := previewKeyPoint(t, a, func(_ tk.Key, v tk.View) bool { return v.Action.Type == "shift" })
 	ax, ay := previewKeyPoint(t, a, func(_ tk.Key, v tk.View) bool { return v.Action.Type == "input" && v.Action.ASCII == "a" })
 	// Replay the recorded order: WM_TOUCH with PEN|PRIMARY, followed by a
@@ -77,6 +78,9 @@ func TestNativePenTouchAndPromotedMouseCommitOnlyOnce(t *testing.T) {
 	if string(a.preview.editor.text) != "Aa" {
 		t.Fatal("pen replay must commit exactly Aa", string(a.preview.editor.text))
 	}
+	if *sounds != 3 {
+		t.Fatal("pen compatibility messages duplicated or lost key sounds", *sounds)
+	}
 }
 
 func TestNativePenCancellationStillRejectsLateCompatibilityInput(t *testing.T) {
@@ -84,6 +88,7 @@ func TestNativePenCancellationStillRejectsLateCompatibilityInput(t *testing.T) {
 	defer runtime.UnlockOSThread()
 	a, close := penCompatibilityFixture(t)
 	defer close()
+	sounds := countKeyClicks(a, true)
 	ax, ay := previewKeyPoint(t, a, func(_ tk.Key, v tk.View) bool { return v.Action.Type == "input" && v.Action.ASCII == "a" })
 	nativePenFrame(a, 21, 0x5a, ax, ay)
 	windowProc(a.h, 0x0215, 0, 123) // Genuine unexpected capture loss remains a cancellation.
@@ -92,6 +97,9 @@ func TestNativePenCancellationStillRejectsLateCompatibilityInput(t *testing.T) {
 	promotedPenMouse(a, 0x0202, 0xff515782, ax, ay)
 	if len(a.preview.editor.text) != 0 || len(a.previewTouches) != 0 || a.s.Held("Shift") {
 		t.Fatal("late pen compatibility input revived a cancelled contact")
+	}
+	if *sounds != 0 {
+		t.Fatal("cancelled pen contact sounded", *sounds)
 	}
 }
 

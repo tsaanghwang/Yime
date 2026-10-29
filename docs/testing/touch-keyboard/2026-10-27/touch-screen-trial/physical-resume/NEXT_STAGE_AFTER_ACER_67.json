@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-28",
+  "scope": "remaining testing after Acer body336 and defined preview control37 checkpoint; not yet scheduled as a user-result batch",
+  "nextPriority": "three-mode candidate and confirmation contexts on current Acer preview",
+  "items": [
+    {
+      "scope": "three modes, candidate clicking/ordinal selection/paging, contextual digits and no-candidate behavior",
+      "status": "needs distinct method-specific physical observations; body-key coverage alone insufficient"
+    },
+    {
+      "scope": "quote/symbol context and setting-option correctness",
+      "status": "needs distinct scoped cases"
+    },
+    {
+      "scope": "concurrent contacts, with mixed pen/finger explicitly labelled",
+      "status": "separate from sequential pure-pen results"
+    },
+    {
+      "scope": "real Word/Edge focus, target binding, visible input and host operation space",
+      "status": "separate real-host phase; existing preview does not establish it"
+    },
+    {
+      "scope": "MSI original pen CN148 and repeated-contact stability",
+      "status": "separate deferred lane; not closed by Acer results"
+    }
+  ],
+  "noRetestRequiredWithinCompletedScope": [
+    "Acer84 body keys four layers336 on c35",
+    "Acer defined preview control37 on c35"
+  ],
+  "constraints": "same approved18u geometry; no installation/default input-method/user-data changes, no enabling filter trial by inference"
+}

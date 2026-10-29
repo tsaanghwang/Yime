@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CONTROL-LIFECYCLE-66",
+  "continues": "TOUCH-V1-ACER-PEN-CONTROL-PANELS-65",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "Current Audio Startup Fixed Preview only. Acer pen for own-window Minimize/Exit and numeric input; same geometry/calibration. Each minimize case independently CN/Clear, digits12 and N08; EN case pauses n before minimizing. Minimize cancels unconfirmed composition, unlike settings/Help preservation. Minimize/Exit themselves intentionally silent; test resumed/relaunched numeric click audio.",
+  "relaunchEntry": "C:/dev/Yime/.generated/touch-validation-20261025-x64-16inch/Start Audio Startup Fixed Preview.cmd",
+  "relaunchExecutable": "C:/dev/Yime/.generated/touch-audio-startup-fix-20261028-amd64/YimeTouchKeyboard.exe",
+  "relaunchExecutableHashVerified": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "cases": [
+    {
+      "caseID": "minimize-active-CN",
+      "controls": [
+        "TU-MINIMIZE"
+      ],
+      "setup": [
+        "CN; Clear; selection OFF; modifiers unlit; main digits12; N08 -> raw n"
+      ],
+      "steps": [
+        "tap Minimize with Acer pen; restore same window from taskbar",
+        "check document12, empty composition, original language retained",
+        "tap main digit3 with Acer pen; check click audible"
+      ],
+      "expectedAfterRestore": {
+        "inputMode": "CN",
+        "raw": "",
+        "localOutput": "12",
+        "responsive": true,
+        "noAutomaticCommit": true
+      },
+      "expectedAfterVerification": {
+        "inputMode": "CN",
+        "raw": "",
+        "localOutput": "123",
+        "clickAudible": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "minimize-paused-EN",
+      "controls": [
+        "TU-MINIMIZE"
+      ],
+      "setup": [
+        "CN; Clear; selection OFF; modifiers unlit; main digits12; N08 -> raw n",
+        "switch EN, retain paused n"
+      ],
+      "steps": [
+        "tap Minimize with Acer pen; restore same window from taskbar",
+        "check document12, empty composition, original language retained",
+        "switch CN",
+        "tap main digit3 with Acer pen; check click audible"
+      ],
+      "expectedAfterRestore": {
+        "inputMode": "EN",
+        "raw": "",
+        "localOutput": "12",
+        "responsive": true,
+        "noAutomaticCommit": true
+      },
+      "expectedAfterVerification": {
+        "inputMode": "CN",
+        "raw": "",
+        "localOutput": "123",
+        "clickAudible": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "acer-exit-relaunch",
+      "controls": [
+        "R01K17"
+      ],
+      "steps": [
+        "tap Exit with Acer pen; tested preview closes without hanging",
+        "relaunch same Audio Startup Fixed Preview via verified launcher",
+        "verify fresh local output and composition empty; tap main digit1 with Acer pen"
+      ],
+      "expected": {
+        "oldWindowExited": true,
+        "localOutput": "1",
+        "raw": "",
+        "responsive": true,
+        "clickAudible": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 3,
+  "bodyLayerObservations": 0,
+  "controlObservations": 3,
+  "coverageScope": "defined Acer preview lifecycle, state cancellation and resumed/relaunched click audibility; no installed product or real host acceptance",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "P10-FINGER-CONTROL-LIFECYCLE-28.json same executable expectations, no finger results inherited",
+    "Minimize suspends stream and cancels composition; confirmed editor state/language preserved",
+    "Exit closes owned window and audio worker nonblocking; fresh preview output starts empty"
+  ],
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-control-lifecycle-66-user-result.json"
+}

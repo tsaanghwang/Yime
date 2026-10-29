@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-HELP-FIX-25",
+  "packageExecutableSHA256": "50b43e5040ed3a1eb36c8a851bbd11ffafbeaed7323d82c8f45e140407704d5a",
+  "screenView": "touch-screen-v1",
+  "status": "targeted Help retest reported normal; separate minimize hang reported in same response",
+  "cases": [
+    {
+      "inputMethod": "finger",
+      "setup": "new Help Panel Fixed Preview; CN; Clear; output empty",
+      "steps": [
+        "tap Help; internal help page1 appears",
+        "tap Next twice to page3",
+        "tap Previous twice back to page1",
+        "tap Return at original Help location",
+        "tap main digit1"
+      ],
+      "expected": "keyboard returns and local output is exactly1; no stuck modal or duplicate input",
+      "status": "passed-user-reported-group-result"
+    },
+    {
+      "inputMethod": "same previously failing pen; model unspecified",
+      "setup": "new Help Panel Fixed Preview; CN; Clear; output empty",
+      "steps": [
+        "tap Help; internal help page1 appears",
+        "tap Next twice to page3",
+        "tap Previous twice back to page1",
+        "tap Return at original Help location",
+        "tap main digit1"
+      ],
+      "expected": "keyboard returns and local output is exactly1; no stuck modal or duplicate input",
+      "status": "passed-user-reported-group-result"
+    }
+  ],
+  "bodyLayerObservations": 0,
+  "scope": "targeted Help open/page/Return path only; CN/EN composition preservation may be retested subsequently; no inherited r3 or other key/host acceptance",
+  "userReport": "正常。不过这次修改把“最小化”按钮修死了。点击或触摸该按钮导致本程序锁死。甚至不能退出重启。",
+  "limitations": "Grouped normal response to requested finger and same unspecified-pen Help cases; no per-action transcript, pen model or unrelated-key acceptance inferred.",
+  "newIssue": "../minimize-audio-fix/ISSUE.json"
+}

@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-26",
+  "userQuote": "加上上次5个，47键上下两档全部正常。当前屏幕翻转平放。",
+  "inputMethod": "finger, continued from preceding preview-only finger EN test instructions",
+  "scope": "All 47 input-character keys in current EN view, base and Shift",
+  "interpretation": "Current coverage table has exactly 47 enabled EN input-character keys; map the explicit 47-key report to that set, including the previously reported five keys. No double counting.",
+  "coveredLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "coveredKeyCount": 47,
+  "totalUniqueLayerObservations": 94,
+  "previouslyPassedLayerObservations": 10,
+  "newlyPassedLayerObservations": 84,
+  "result": "passed-user-reported-for-complete-47-character-key-set",
+  "actualText": "用户整体反馈正常；未逐键另行转录输出或次数",
+  "independentObservation": false,
+  "screenPosture": {
+    "userDescription": "当前屏幕翻转平放",
+    "screenAngleFromDeskDegreesApprox": 0,
+    "measurementType": "qualitative posture reported by user, not a measured angle"
+  },
+  "exclusions": [
+    "CN base/Shift layers",
+    "EN 23 disabled keys",
+    "EN control/unsupported keys",
+    "both pen coverage files",
+    "real host acceptance"
+  ],
+  "packageExecutableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f"
+}

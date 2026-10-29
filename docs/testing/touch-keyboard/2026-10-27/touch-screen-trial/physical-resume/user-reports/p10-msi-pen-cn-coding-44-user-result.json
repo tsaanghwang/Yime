@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-CN-CODING-44",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "MSI supplied pen",
+  "userReport": "正常。但是，笔提起离开屏幕瞬间可能是屏幕角度旋转摆动和手抬起时自然抖动（抬起并保持不离得太远产生的起伏抖动）导致多数时候会产生重复。不是都有，注意慢一点或调整一下角度会好些。是不是第二次触发反应的时间留得短了一点。",
+  "passedMappingBodyLayers": 20,
+  "scope": "ten CN key mappings two layers reported normal; frequent repeats at lift are an unresolved usability/stability observation, not duplicate-free acceptance; no raw timing or contact count available yet"
+}

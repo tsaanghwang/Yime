@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-EN-ALL47-38",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "MSI supplied pen",
+  "userReport": "正常。重复属于手抖导致瞬间触及两次。这暂定属于没有完全掌握这支笔的使用情况。",
+  "passedBodyLayers": 94,
+  "result": "all47 EN input carriers both layers reported normal, with repeated contact acknowledged",
+  "limits": "not duplicate-free acceptance; user tentatively attributes repeats to hand tremor/two rapid physical contacts and unfamiliarity; no raw touch trace, attempt count, duplicate count or independent cause verification supplied; not pen firmware/power or runtime-fault diagnosis"
+}

@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MINIMIZE-FIX-26",
+  "packageExecutableSHA256": "211bd619b587a9f845b522ce58a81d016362c438eced63fcf07134c0b0fd9a5c",
+  "status": "partial user observation: initial/relaunch audio fails; after minimize/restore audio works; defined mouse/finger full scenarios not individually confirmed",
+  "cases": [
+    {
+      "inputMethod": "mouse",
+      "steps": [
+        "tap/click main digit1",
+        "minimize",
+        "restore same window from taskbar",
+        "tap/click main digit2",
+        "exit",
+        "reopen same new preview"
+      ],
+      "expected": "no hang; confirmed local output12 before exit; old preview exits and new preview opens empty",
+      "status": "pending"
+    },
+    {
+      "inputMethod": "finger",
+      "steps": [
+        "tap/click main digit1",
+        "minimize",
+        "restore same window from taskbar",
+        "tap/click main digit2",
+        "exit",
+        "reopen same new preview"
+      ],
+      "expected": "no hang; confirmed local output12 before exit; old preview exits and new preview opens empty",
+      "status": "pending"
+    }
+  ],
+  "audibility": "observe whether feedback resumes after restore; do not infer from API success",
+  "bodyLayerObservations": 0,
+  "scope": "targeted lifecycle only; no inherited body/host acceptance",
+  "userReport": "首次启动或重新启动后，任何键没有按键声。最小化并恢复后有按键声（但最小化键似乎没有按键声）。",
+  "followUp": "../audio-startup-fix/RETEST-27.json"
+}

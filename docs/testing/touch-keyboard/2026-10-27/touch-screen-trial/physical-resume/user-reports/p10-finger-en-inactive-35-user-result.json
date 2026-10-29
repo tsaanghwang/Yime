@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-EN-INACTIVE-35",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "finger",
+  "userReport": "都能输出abc。不过，点击shift后再点目标功能键，shift 已经不能 hold （保持不住）了",
+  "passedBodyLayers": 6,
+  "confirmed": "all presented outputs abc; Shift clears after target inactive key",
+  "instructionError": "assistant redundant manual Shift-off step corrected, not a new runtime regression",
+  "sourceEvidence": [
+    "internal/touchkeyboard/input.go State.Down disabled early-return",
+    "internal/touchkeyboard/input.go State.Up semantic output",
+    "internal/touchkeyboard/input.go State.output clears one-shot modifiers"
+  ],
+  "scope": "current preview three inactive keys two-layer context; no hardware hold, host, pen, OS Caps state or exact action transcript inferred"
+}

@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-SHIFT-15",
+  "continues": "TOUCH-V1-P10-FINGER-CN-CTRL-ALT-14",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Keep CN/variable, literal-entry OFF, ID legends. Each scenario starts with Clear and Shift/Ctrl/Alt unlit. Use sequential finger taps, release each before next; no candidate selection. Left/right Shift each tests enable/one-shot consumption and toggle-off from enabled state.",
+  "keys": [
+    {
+      "physicalKeyID": "R06K04",
+      "label": "左Shift",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear, no modifiers highlighted",
+          "action": "左Shift then M12 then M12, all sequential taps with release",
+          "expected": {
+            "raw": "]a",
+            "localOutput": "",
+            "ShiftConsumedAfterFirstM12": true
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear, no modifiers highlighted; first tap same 左Shift to enable Shift",
+          "action": "tap same 左Shift again to disable, then M12",
+          "expected": {
+            "raw": "a",
+            "localOutput": "",
+            "ShiftHighlighted": false
+          },
+          "status": "通过（用户报告）"
+        }
+      ],
+      "status": "通过（用户报告）",
+      "actual": "按四项顺序点击步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R06K17",
+      "label": "右Shift",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear, no modifiers highlighted",
+          "action": "右Shift then M12 then M12, all sequential taps with release",
+          "expected": {
+            "raw": "]a",
+            "localOutput": "",
+            "ShiftConsumedAfterFirstM12": true
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear, no modifiers highlighted; first tap same 右Shift to enable Shift",
+          "action": "tap same 右Shift again to disable, then M12",
+          "expected": {
+            "raw": "a",
+            "localOutput": "",
+            "ShiftHighlighted": false
+          },
+          "status": "通过（用户报告）"
+        }
+      ],
+      "status": "通过（用户报告）",
+      "actual": "按四项顺序点击步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "scenarioCount": 4,
+  "layerObservations": 4,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "canonical left/right Shift actions and M12 a/] actions",
+    "State.Up toggles Shift; semantic output consumes one-shot Shift",
+    "literal-entry OFF keeps ] in coding composition"
+  ],
+  "scope": "sequential one-shot and cancellation only; not held multi-touch, pen, English, host or full Shift acceptance",
+  "userReport": "user-reports/p10-finger-cn-shift-15-user-result.json",
+  "resultDate": "2026-10-28"
+}

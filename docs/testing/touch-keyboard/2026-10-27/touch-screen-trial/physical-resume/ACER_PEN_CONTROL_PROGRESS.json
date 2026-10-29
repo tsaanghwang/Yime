@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-28",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "passedControlScenarios": 37,
+  "completedBatches": [
+    "TOUCH-V1-ACER-PEN-CONTROL-NAV-60",
+    "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-61",
+    "TOUCH-V1-ACER-PEN-CONTROL-CN-GUARD-62",
+    "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63",
+    "TOUCH-V1-ACER-PEN-CONTROL-STATE-64",
+    "TOUCH-V1-ACER-PEN-CONTROL-PANELS-65",
+    "TOUCH-V1-ACER-PEN-CONTROL-LIFECYCLE-66",
+    "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67"
+  ],
+  "currentBatch": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67",
+  "currentBatchDefinition": "P10-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67.json",
+  "pendingCurrentBatchScenarios": 0,
+  "bodyStage": "ACER_PEN_BODY_STAGE_RESULT.json",
+  "bodyPassesUnchanged": 336,
+  "limits": "only explicitly observed preview scenarios; no inherited finger passes, setup-tap credit or blanket control/host acceptance",
+  "definedPreviewCheckpointTotal": 37,
+  "status": "defined 37-scenario Acer preview control checkpoint complete",
+  "stageReport": "ACER_PEN_CONTROL_STAGE_RESULT.json",
+  "nextPhasePlan": "NEXT_STAGE_AFTER_ACER_67.json"
+}

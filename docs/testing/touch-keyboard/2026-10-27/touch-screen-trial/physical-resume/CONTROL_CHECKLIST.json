@@ -1,0 +1,846 @@
+{
+  "scope": "14 new controls tracked separately from body four-layer coverage; no blanket control acceptance",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "controls": [
+    {
+      "physicalKeyID": "TU-SETTINGS",
+      "action": "settings",
+      "label": "设置",
+      "fingerStatus": "部分通过（预览CN/暂停EN开关保留状态）",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（CN/EN预览面板状态保留）",
+      "evidence": "",
+      "fingerEvidence": [
+        "user-reports/p10-finger-control-panels-24-user-result.json"
+      ],
+      "fingerCoverage": [
+        "cn-settings",
+        "en-settings"
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-panels-65-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "preview/cn-settings",
+        "preview/en-settings"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined preview panel state scenarios",
+          "scenarioIDs": [
+            "cn-settings",
+            "en-settings"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-panels-65-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-PANELS-65"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "TU-HELP",
+      "action": "help",
+      "label": "帮助",
+      "fingerStatus": "失败（r3系统弹窗关闭按钮不可触控）",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（CN/EN预览面板状态保留）",
+      "evidence": "",
+      "fingerEvidence": [
+        "user-reports/p10-finger-control-panels-24-user-result.json"
+      ],
+      "unspecifiedPenStatus": "同一关闭失败，型号未确认",
+      "mouseStatus": "用户报告可打开及关闭",
+      "versionedFingerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed two defined preview Help state scenarios",
+          "scenarioIDs": [
+            "help-preserves-active-CN",
+            "help-preserves-paused-EN"
+          ],
+          "evidence": "user-reports/p10-finger-control-help-state-29-user-result.json"
+        }
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-panels-65-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "preview/cn-help",
+        "preview/en-help"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined preview panel state scenarios",
+          "scenarioIDs": [
+            "cn-help",
+            "en-help"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-panels-65-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-PANELS-65"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "TU-BIND",
+      "action": "reset",
+      "label": "绑定",
+      "fingerStatus": "部分通过（已列明预览场景）",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（已列明CN/EN预览状态场景）",
+      "evidence": "",
+      "fingerEvidence": [
+        "user-reports/p10-finger-control-state-23-user-result.json"
+      ],
+      "fingerCoverage": [
+        "preview/clear-active",
+        "preview/clear-paused"
+      ],
+      "fingerRemaining": [
+        "real host target binding; preview Clear is not host binding"
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-state-64-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "preview/clear-active",
+        "preview/clear-paused"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined preview state scenarios",
+          "scenarioIDs": [
+            "clear-active",
+            "clear-paused"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-state-64-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-STATE-64"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "R01K02",
+      "action": "cancel",
+      "label": "取消",
+      "fingerStatus": "部分通过（已列明预览场景）",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（已列明CN/EN预览状态场景）",
+      "evidence": "",
+      "fingerEvidence": [
+        "user-reports/p10-finger-control-cn-guard-21-user-result.json",
+        "user-reports/p10-finger-control-paused-guard-22-user-result.json",
+        "user-reports/p10-finger-control-state-23-user-result.json"
+      ],
+      "fingerCoverage": [
+        "verification within CN guard cases: Cancel clears raw n, preserves confirmed document/caret",
+        "verification within paused guard cases: Cancel in EN removes paused n without committing or changing document/caret",
+        "preview/cancel-preserves-output"
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+        "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+        "user-reports/p10-acer-pen-control-state-64-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "verification within active CN guard: Cancel clears raw n and preserves document/caret",
+        "verification within paused EN guard: Cancel clears paused n preserving document/caret",
+        "preview/cancel-preserves-output"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "verified cancellation within seven CN guard scenarios, no extra scenario credit",
+          "evidence": "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-CN-GUARD-62"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "verified within seven paused EN guard scenarios, no extra scenario credit",
+          "evidence": "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined preview state scenarios",
+          "scenarioIDs": [
+            "cancel-preserves-output"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-state-64-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-STATE-64"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "R01K03",
+      "action": "language",
+      "label": "CN",
+      "fingerStatus": "部分通过（已列明预览场景）",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（已列明CN/EN预览状态场景）",
+      "evidence": "",
+      "fingerEvidence": [
+        "user-reports/p10-finger-control-paused-guard-22-user-result.json",
+        "user-reports/p10-finger-control-state-23-user-result.json"
+      ],
+      "fingerCoverage": [
+        "verification within paused guard cases: CN to EN retains paused n; return CN after cancellation preserves confirmed document/caret",
+        "preview/language-roundtrip",
+        "preview/clear-paused"
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+        "user-reports/p10-acer-pen-control-state-64-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "verification within paused EN guard: CN to EN preserves n; return CN after Cancel preserves document/caret",
+        "preview/language-roundtrip",
+        "preview/clear-paused"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "verified within seven paused EN guard scenarios, no extra scenario credit",
+          "evidence": "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined preview state scenarios",
+          "scenarioIDs": [
+            "language-roundtrip",
+            "clear-paused"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-state-64-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-STATE-64"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "TU-LEFT",
+      "action": "ArrowLeft",
+      "label": "←",
+      "fingerStatus": "部分通过（已列明预览场景）",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（已列明预览导航/选区场景）",
+      "evidence": "",
+      "fingerEvidence": [
+        "user-reports/p10-finger-control-nav-19-user-result.json",
+        "user-reports/p10-finger-control-selection-20-user-result.json",
+        "user-reports/p10-finger-control-cn-guard-21-user-result.json",
+        "user-reports/p10-finger-control-paused-guard-22-user-result.json"
+      ],
+      "fingerCoverage": [
+        "preview/empty-composition/selection-off navigation and digit insertion",
+        "preview/empty-composition/19-followup-selection-replace",
+        "preview/active-CN-composition guard with document/caret verification",
+        "preview/paused-English-composition guard with document/caret verification"
+      ],
+      "fingerRemaining": [
+        "real host behavior"
+      ],
+      "versionedFingerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed two defined shrinking/reversal cases",
+          "scenarioIDs": [
+            "shrink-selection",
+            "cross-selection-anchor"
+          ],
+          "evidence": "user-reports/p10-finger-control-selection-reverse-31-user-result.json"
+        }
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-nav-60-user-result.json",
+        "user-reports/p10-acer-pen-control-selection-61-user-result.json",
+        "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+        "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+        "user-reports/p10-acer-pen-control-selection-supplement-67-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "preview/empty-composition/selection-off navigation and digit insertion",
+        "preview/empty-composition/19-followup-selection-replace",
+        "preview/active-CN-composition guard",
+        "preview/paused-English-composition guard",
+        "preview/shrink-selection",
+        "preview/cross-selection-anchor"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed one defined navigation/insertion scenario",
+          "evidence": "user-reports/p10-acer-pen-control-nav-60-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-NAV-60"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection/edit scenarios",
+          "scenarioIDs": [
+            "19-followup-selection-replace"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-selection-61-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-61"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined active CN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-CN-GUARD-62"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined paused EN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection supplement scenarios",
+          "scenarioIDs": [
+            "shrink-selection",
+            "cross-selection-anchor"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-selection-supplement-67-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "TU-RIGHT",
+      "action": "ArrowRight",
+      "label": "→",
+      "fingerStatus": "部分通过（已列明预览场景）",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（已列明预览导航/选区场景）",
+      "evidence": "",
+      "fingerEvidence": [
+        "user-reports/p10-finger-control-nav-19-user-result.json",
+        "user-reports/p10-finger-control-selection-20-user-result.json",
+        "user-reports/p10-finger-control-cn-guard-21-user-result.json",
+        "user-reports/p10-finger-control-paused-guard-22-user-result.json"
+      ],
+      "fingerCoverage": [
+        "preview/empty-composition/selection-off navigation and digit insertion",
+        "preview/empty-composition/selection-delete",
+        "preview/active-CN-composition guard with document/caret verification",
+        "preview/paused-English-composition guard with document/caret verification"
+      ],
+      "fingerRemaining": [
+        "real host behavior"
+      ],
+      "versionedFingerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed two defined shrinking/reversal cases",
+          "scenarioIDs": [
+            "shrink-selection",
+            "cross-selection-anchor"
+          ],
+          "evidence": "user-reports/p10-finger-control-selection-reverse-31-user-result.json"
+        }
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-nav-60-user-result.json",
+        "user-reports/p10-acer-pen-control-selection-61-user-result.json",
+        "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+        "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+        "user-reports/p10-acer-pen-control-selection-supplement-67-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "preview/empty-composition/selection-off navigation and digit insertion",
+        "preview/empty-composition/selection-delete",
+        "preview/active-CN-composition guard",
+        "preview/paused-English-composition guard",
+        "preview/shrink-selection",
+        "preview/cross-selection-anchor"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed one defined navigation/insertion scenario",
+          "evidence": "user-reports/p10-acer-pen-control-nav-60-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-NAV-60"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection/edit scenarios",
+          "scenarioIDs": [
+            "selection-delete"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-selection-61-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-61"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined active CN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-CN-GUARD-62"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined paused EN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection supplement scenarios",
+          "scenarioIDs": [
+            "shrink-selection",
+            "cross-selection-anchor"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-selection-supplement-67-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "TU-HOME",
+      "action": "Home",
+      "label": "Home",
+      "fingerStatus": "部分通过（已列明预览场景）",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（已列明预览导航/选区场景）",
+      "evidence": "",
+      "fingerEvidence": [
+        "user-reports/p10-finger-control-nav-19-user-result.json",
+        "user-reports/p10-finger-control-selection-20-user-result.json",
+        "user-reports/p10-finger-control-cn-guard-21-user-result.json",
+        "user-reports/p10-finger-control-paused-guard-22-user-result.json"
+      ],
+      "fingerCoverage": [
+        "preview/empty-composition/selection-off navigation and digit insertion",
+        "preview/empty-composition/forward-delete",
+        "preview/active-CN-composition guard with document/caret verification",
+        "preview/paused-English-composition guard with document/caret verification"
+      ],
+      "fingerRemaining": [
+        "selection extension as applicable",
+        "real host behavior"
+      ],
+      "versionedFingerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection-extension cases",
+          "scenarioIDs": [
+            "select-to-Home-replace"
+          ],
+          "evidence": "user-reports/p10-finger-control-selection-home-end-30-user-result.json"
+        }
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-nav-60-user-result.json",
+        "user-reports/p10-acer-pen-control-selection-61-user-result.json",
+        "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+        "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+        "user-reports/p10-acer-pen-control-selection-supplement-67-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "preview/empty-composition/selection-off navigation and digit insertion",
+        "preview/empty-composition/forward-delete",
+        "preview/active-CN-composition guard",
+        "preview/paused-English-composition guard",
+        "preview/select-to-Home-replace"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed one defined navigation/insertion scenario",
+          "evidence": "user-reports/p10-acer-pen-control-nav-60-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-NAV-60"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection/edit scenarios",
+          "scenarioIDs": [
+            "forward-delete"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-selection-61-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-61"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined active CN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-CN-GUARD-62"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined paused EN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection supplement scenarios",
+          "scenarioIDs": [
+            "select-to-Home-replace"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-selection-supplement-67-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "TU-END",
+      "action": "End",
+      "label": "End",
+      "fingerStatus": "部分通过（已列明预览场景）",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（已列明预览导航/选区场景）",
+      "evidence": "",
+      "fingerEvidence": [
+        "user-reports/p10-finger-control-nav-19-user-result.json",
+        "user-reports/p10-finger-control-cn-guard-21-user-result.json",
+        "user-reports/p10-finger-control-paused-guard-22-user-result.json"
+      ],
+      "fingerCoverage": [
+        "preview/empty-composition/selection-off navigation and digit insertion",
+        "preview/active-CN-composition guard with document/caret verification",
+        "preview/paused-English-composition guard with document/caret verification"
+      ],
+      "fingerRemaining": [
+        "selection extension as applicable",
+        "real host behavior"
+      ],
+      "versionedFingerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection-extension cases",
+          "scenarioIDs": [
+            "select-to-End-replace"
+          ],
+          "evidence": "user-reports/p10-finger-control-selection-home-end-30-user-result.json"
+        }
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-nav-60-user-result.json",
+        "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+        "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+        "user-reports/p10-acer-pen-control-selection-supplement-67-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "preview/empty-composition/selection-off navigation and digit insertion",
+        "preview/active-CN-composition guard",
+        "preview/paused-English-composition guard",
+        "preview/select-to-End-replace"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed one defined navigation/insertion scenario",
+          "evidence": "user-reports/p10-acer-pen-control-nav-60-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-NAV-60"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined active CN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-CN-GUARD-62"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined paused EN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection supplement scenarios",
+          "scenarioIDs": [
+            "select-to-End-replace"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-selection-supplement-67-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "TU-SELECT",
+      "action": "select",
+      "label": "选区：关",
+      "fingerStatus": "部分通过（已列明预览场景）",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（已列明预览导航/选区场景）",
+      "evidence": "",
+      "fingerEvidence": [
+        "user-reports/p10-finger-control-selection-20-user-result.json",
+        "user-reports/p10-finger-control-cn-guard-21-user-result.json",
+        "user-reports/p10-finger-control-paused-guard-22-user-result.json"
+      ],
+      "fingerCoverage": [
+        "preview/empty-composition/19-followup-selection-replace",
+        "preview/empty-composition/selection-delete",
+        "preview/active-CN-composition guard with document/caret verification",
+        "preview/paused-English-composition guard with document/caret verification"
+      ],
+      "fingerRemaining": [
+        "real host behavior"
+      ],
+      "versionedFingerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection-extension cases",
+          "scenarioIDs": [
+            "select-to-Home-replace",
+            "select-to-End-replace"
+          ],
+          "evidence": "user-reports/p10-finger-control-selection-home-end-30-user-result.json"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed two defined shrinking/reversal cases",
+          "scenarioIDs": [
+            "shrink-selection",
+            "cross-selection-anchor"
+          ],
+          "evidence": "user-reports/p10-finger-control-selection-reverse-31-user-result.json"
+        }
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-selection-61-user-result.json",
+        "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+        "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+        "user-reports/p10-acer-pen-control-selection-supplement-67-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "preview/empty-composition/19-followup-selection-replace",
+        "preview/empty-composition/selection-delete",
+        "preview/active-CN-composition guard",
+        "preview/paused-English-composition guard",
+        "preview/select-to-Home-replace",
+        "preview/select-to-End-replace",
+        "preview/shrink-selection",
+        "preview/cross-selection-anchor"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection/edit scenarios",
+          "scenarioIDs": [
+            "19-followup-selection-replace",
+            "selection-delete"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-selection-61-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-61"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined active CN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-CN-GUARD-62"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined paused EN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection supplement scenarios",
+          "scenarioIDs": [
+            "select-to-Home-replace",
+            "select-to-End-replace",
+            "shrink-selection",
+            "cross-selection-anchor"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-selection-supplement-67-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "TU-ALL",
+      "action": "SelectAll",
+      "label": "全选",
+      "fingerStatus": "部分通过（已列明预览场景）",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（已列明CN/EN预览场景）",
+      "evidence": "",
+      "fingerEvidence": [
+        "user-reports/p10-finger-control-selection-20-user-result.json",
+        "user-reports/p10-finger-control-cn-guard-21-user-result.json",
+        "user-reports/p10-finger-control-paused-guard-22-user-result.json"
+      ],
+      "fingerCoverage": [
+        "preview/empty-composition/select-all-replace",
+        "preview/active-CN-composition guard with document/caret verification",
+        "preview/paused-English-composition guard with document/caret verification"
+      ],
+      "fingerRemaining": [
+        "real host behavior"
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-selection-61-user-result.json",
+        "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+        "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "preview/empty-composition/select-all-replace",
+        "preview/active-CN-composition guard",
+        "preview/paused-English-composition guard"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection/edit scenarios",
+          "scenarioIDs": [
+            "select-all-replace"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-selection-61-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-61"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined active CN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-CN-GUARD-62"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined paused EN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "TU-DELETE",
+      "action": "Delete",
+      "label": "Delete",
+      "fingerStatus": "部分通过（已列明预览场景）",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（已列明CN/EN预览场景）",
+      "evidence": "",
+      "fingerEvidence": [
+        "user-reports/p10-finger-control-selection-20-user-result.json",
+        "user-reports/p10-finger-control-cn-guard-21-user-result.json",
+        "user-reports/p10-finger-control-paused-guard-22-user-result.json"
+      ],
+      "fingerCoverage": [
+        "preview/empty-composition/selection-delete",
+        "preview/empty-composition/forward-delete",
+        "preview/active-CN-composition guard with document/caret verification",
+        "preview/paused-English-composition guard with document/caret verification"
+      ],
+      "fingerRemaining": [
+        "real host behavior"
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-selection-61-user-result.json",
+        "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+        "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "preview/empty-composition/selection-delete",
+        "preview/empty-composition/forward-delete",
+        "preview/active-CN-composition guard",
+        "preview/paused-English-composition guard"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined selection/edit scenarios",
+          "scenarioIDs": [
+            "selection-delete",
+            "forward-delete"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-selection-61-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-61"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined active CN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-CN-GUARD-62"
+        },
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined paused EN guard scenario",
+          "evidence": "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "TU-MINIMIZE",
+      "action": "minimize",
+      "label": "最小化",
+      "fingerStatus": "待记录",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（已列明预览最小化/恢复或退出/重开场景）",
+      "evidence": "",
+      "versionedFingerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined lifecycle scenarios",
+          "scenarioIDs": [
+            "minimize-active-CN",
+            "minimize-paused-EN"
+          ],
+          "evidence": "user-reports/p10-finger-control-lifecycle-28-user-result.json"
+        }
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-lifecycle-66-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "preview/minimize-active-CN",
+        "preview/minimize-paused-EN"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined lifecycle scenarios including subsequent numeric click audibility",
+          "scenarioIDs": [
+            "minimize-active-CN",
+            "minimize-paused-EN"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-lifecycle-66-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-LIFECYCLE-66"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "R01K17",
+      "action": "close",
+      "label": "退出",
+      "fingerStatus": "待记录",
+      "msiPenStatus": "待记录",
+      "acerPenStatus": "部分通过（已列明预览最小化/恢复或退出/重开场景）",
+      "evidence": "",
+      "versionedFingerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined lifecycle scenarios",
+          "scenarioIDs": [
+            "finger-exit-relaunch"
+          ],
+          "evidence": "user-reports/p10-finger-control-lifecycle-28-user-result.json"
+        }
+      ],
+      "acerPenEvidence": [
+        "user-reports/p10-acer-pen-control-lifecycle-66-user-result.json"
+      ],
+      "acerPenCoverage": [
+        "preview/acer-exit-relaunch"
+      ],
+      "versionedAcerResults": [
+        {
+          "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+          "status": "passed defined lifecycle scenarios including subsequent numeric click audibility",
+          "scenarioIDs": [
+            "acer-exit-relaunch"
+          ],
+          "evidence": "user-reports/p10-acer-pen-control-lifecycle-66-user-result.json",
+          "batchID": "TOUCH-V1-ACER-PEN-CONTROL-LIFECYCLE-66"
+        }
+      ]
+    }
+  ],
+  "versionScope": "root executable and original statuses remain r3; versionedFingerResults describe newer-package observations only",
+  "acerPenLatestCompletedBatch": "P10-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67.json",
+  "acerPenStageReport": "ACER_PEN_CONTROL_STAGE_RESULT.json"
+}

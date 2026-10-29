@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-ENTER-SPACES",
+  "inputMethod": "finger",
+  "target": "fixed-package preview only; English EN view, no composition; not Word or Edge",
+  "packageExecutableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "coverageLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "setup": "For each independent subcase clear output, remove selection and confirm Shift is not highlighted. Finger only.",
+  "keys": [
+    {
+      "physicalKeyID": "R05K17",
+      "label": "Enter",
+      "baseCase": "Type a, tap Enter, type b; expected a newline b (two lines)",
+      "shiftCase": "Type a, tap Shift then Enter, type b; expected a newline b (two lines in this preview)",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R07K05",
+      "label": "Left Space",
+      "baseCase": "Type a, tap left Space, type b; expected a b (one space)",
+      "shiftCase": "Type a, tap Shift then left Space, type b; expected a b (one space)",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R07K06",
+      "label": "Right Space",
+      "baseCase": "Type a, tap right Space, type b; expected a b (one space)",
+      "shiftCase": "Type a, tap Shift then right Space, type b; expected a b (one space)",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    }
+  ],
+  "status": "passed-user-reported",
+  "note": "Preview confirm action produces literal newline for English Enter and literal space for either English Space; preserve real-host Enter/Shift+Enter distinctions in separate host records.",
+  "userReport": "user-reports/p10-finger-en-enter-spaces-user-result.json"
+}

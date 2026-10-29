@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-ASCII-07",
+  "continues": "TOUCH-V1-P10-FINGER-CN-SYMBOL-06",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "CN, variable, literal-entry OFF, ID legends. Before every cell click Clear; ensure Shift unlit. Base key: exact ASCII raw, empty output, do not select candidates. Independently Clear; Shift then key: exact ASCII in local output, empty raw.",
+  "keys": [
+    {
+      "physicalKeyID": "R02K05",
+      "label": "N26",
+      "base": "`",
+      "shift": "~",
+      "baseExpected": {
+        "raw": "`",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "~"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R03K05",
+      "label": "N10",
+      "base": "k",
+      "shift": "~",
+      "baseExpected": {
+        "raw": "k",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "~"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R03K07",
+      "label": "M24",
+      "base": "?",
+      "shift": "@",
+      "baseExpected": {
+        "raw": "?",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "@"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R03K09",
+      "label": "M22",
+      "base": "!",
+      "shift": "$",
+      "baseExpected": {
+        "raw": "!",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "$"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R03K10",
+      "label": "N04",
+      "base": "m",
+      "shift": "%",
+      "baseExpected": {
+        "raw": "m",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "%"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R03K12",
+      "label": "M19",
+      "base": "<",
+      "shift": "&",
+      "baseExpected": {
+        "raw": "<",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "&"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "unmodified canonical CN action columns",
+    "generated LayoutAlphabet: base coding, shift noncoding",
+    "keyboardEngine literal with empty candidates commits punctuation text; ~ @ $ % & have no Chinese conversion mapping"
+  ],
+  "userReport": "user-reports/p10-finger-cn-ascii-07-user-result.json",
+  "resultDate": "2026-10-28"
+}

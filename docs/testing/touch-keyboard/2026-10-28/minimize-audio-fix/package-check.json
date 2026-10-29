@@ -1,0 +1,126 @@
+{
+  "scope": "relocated-complete-portable-package",
+  "sourceCommit": "9adc3cdd9634e0258b58c9a8945b3497fc8777ad",
+  "ci": null,
+  "sourceChanges": true,
+  "executableSHA256": "211bd619b587a9f845b522ce58a81d016362c438eced63fcf07134c0b0fd9a5c",
+  "manifestSHA256": "41e1fa7cea2f139101ff41c52ea8b2d94443082748dad55c4d68c6796477f29c",
+  "architecture": "windows-amd64",
+  "resourceArchiveSHA256": "9f01dc384aa2a52281a882a7fc5f675a0282bf073f9033610a3b0681b32b14bd",
+  "relocatedOutsideCheckout": true,
+  "emptyWorkingDirectory": true,
+  "runtime": {
+    "boardWidthU": 18,
+    "confirmedChineseInMemory": {
+      "full": "你",
+      "shorthand": "你",
+      "variable": "你"
+    },
+    "desktopChineseUI": false,
+    "hardwareAcceptance": false,
+    "hostInputSent": false,
+    "indexes": {
+      "full": {
+        "format_version": 1,
+        "mode": "full",
+        "source_path": "C:\\Users\\tsaan\\AppData\\Local\\Temp\\Yime portable 中文 pnplu44j\\keyboard folder\\data\\yime_full.dict.yaml",
+        "source_sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+        "source_bytes": 81236859,
+        "parsed_records": 2457605,
+        "indexed_records": 2457604,
+        "duplicate_records": 1,
+        "index_path": "C:\\Users\\tsaan\\AppData\\Local\\Temp\\yime-keyboard-lab-4208728569\\full.yidx",
+        "index_bytes": 103010423,
+        "record_payload_sha256": "c6964b464a1300fbfab9168200668848d37f4b8ff14cb049b82bb01fdab98c1e",
+        "index_sha256": "3f70b035a475b4bd3ac13516fdde84a7094ca90c5891cd12b6f9a647351ec0fb",
+        "build_elapsed_ns": 1958291300,
+        "peak_observed_heap_bytes": 644718256
+      },
+      "shorthand": {
+        "format_version": 1,
+        "mode": "shorthand",
+        "source_path": "C:\\Users\\tsaan\\AppData\\Local\\Temp\\Yime portable 中文 pnplu44j\\keyboard folder\\data\\yime_shorthand.dict.yaml",
+        "source_sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49",
+        "source_bytes": 75381670,
+        "parsed_records": 2457605,
+        "indexed_records": 2457604,
+        "duplicate_records": 1,
+        "index_path": "C:\\Users\\tsaan\\AppData\\Local\\Temp\\yime-keyboard-lab-4208728569\\shorthand.yidx",
+        "index_bytes": 97155230,
+        "record_payload_sha256": "40d43c7072e2db331de6c30a8e7e62280e8e3bcf8e8b81b840d92a269d9241a3",
+        "index_sha256": "57789ef2f31d581c98daa4cfbdc4ea6cc712c759c31a99cd0c445493a196faf7",
+        "build_elapsed_ns": 1872399600,
+        "peak_observed_heap_bytes": 722390104
+      },
+      "variable": {
+        "format_version": 1,
+        "mode": "variable",
+        "source_path": "C:\\Users\\tsaan\\AppData\\Local\\Temp\\Yime portable 中文 pnplu44j\\keyboard folder\\data\\yime_variable.dict.yaml",
+        "source_sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+        "source_bytes": 77254107,
+        "parsed_records": 2457605,
+        "indexed_records": 2457604,
+        "duplicate_records": 1,
+        "index_path": "C:\\Users\\tsaan\\AppData\\Local\\Temp\\yime-keyboard-lab-4208728569\\variable.yidx",
+        "index_bytes": 99027667,
+        "record_payload_sha256": "622471d1a6e2c39efdd69a114f007b451e499aa5715980261ae0c36928610ab6",
+        "index_sha256": "c4fee8dd6d31b455bb2479801cc62168bfeb1076e8d695e9d50f471102c78c25",
+        "build_elapsed_ns": 2079681700,
+        "peak_observed_heap_bytes": 609152600
+      }
+    },
+    "inputPolicy": "concept-keyboard-modes-v2",
+    "keyCount": 100,
+    "layoutId": "995f1a74f129249febbd09ca11a8266f6e0c94bac8c05c57754859fc3be3349c",
+    "portablePackageCheck": true,
+    "scope": "desktop-in-process-data-check"
+  },
+  "explicitBothGeometry": {
+    "boardWidthU": 24.75,
+    "keyCount": 134
+  },
+  "negativeChecks": [
+    {
+      "resource": "resources.json",
+      "exitCode": 1,
+      "error": "便携资源清单与程序不匹配；请完整重新解压同一包"
+    },
+    {
+      "resource": "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf",
+      "exitCode": 1,
+      "error": "便携资源校验失败: go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf"
+    },
+    {
+      "resource": "prototypes/touch-terminal/data/physical-layout.json",
+      "exitCode": 1,
+      "error": "便携资源校验失败: prototypes/touch-terminal/data/physical-layout.json"
+    },
+    {
+      "resource": "data/ascii_keyboard_manifest.json",
+      "exitCode": 1,
+      "error": "便携资源校验失败: data/ascii_keyboard_manifest.json"
+    },
+    {
+      "resource": "data/yime_variable.dict.yaml",
+      "exitCode": 1,
+      "error": "便携资源校验失败: data/yime_variable.dict.yaml"
+    },
+    {
+      "resource": "missing font",
+      "exitCode": 1
+    },
+    {
+      "option": "--root",
+      "exitCode": 1
+    },
+    {
+      "option": "--data-dir",
+      "exitCode": 1
+    }
+  ],
+  "hostInputSent": false,
+  "hardwareAcceptance": false,
+  "renderedPreview": true,
+  "controlledOwnEDIT": false,
+  "arm64NativeAcceptance": false
+}

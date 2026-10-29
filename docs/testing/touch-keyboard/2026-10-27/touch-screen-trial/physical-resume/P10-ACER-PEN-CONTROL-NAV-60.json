@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CONTROL-NAV-60",
+  "continues": "TOUCH-V1-ACER-PEN-CN-SHIFT-59",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "inputMode": "CN",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "Current preview CN/variable only. Each independent case Clear then main digits123, raw empty, selection off, modifiers unlit; use large top controls and insert9 to reveal caret position. Acer pen only.",
+  "keys": [
+    {
+      "physicalKeyID": "TU-LEFT",
+      "label": "←",
+      "setup": "Clear; main digits 1,2,3; output 123, raw empty, selection off, modifiers unlit",
+      "steps": [
+        "ArrowLeft",
+        "digit 9"
+      ],
+      "expected": {
+        "raw": "",
+        "localOutput": "1293"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "TU-RIGHT",
+      "label": "→",
+      "setup": "Clear; main digits 1,2,3; output 123, raw empty, selection off, modifiers unlit",
+      "steps": [
+        "Home (setup)",
+        "ArrowRight",
+        "digit 9"
+      ],
+      "expected": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "TU-HOME",
+      "label": "Home",
+      "setup": "Clear; main digits 1,2,3; output 123, raw empty, selection off, modifiers unlit",
+      "steps": [
+        "Home",
+        "digit 9"
+      ],
+      "expected": {
+        "raw": "",
+        "localOutput": "9123"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "TU-END",
+      "label": "End",
+      "setup": "Clear; main digits 1,2,3; output 123, raw empty, selection off, modifiers unlit",
+      "steps": [
+        "Home (setup)",
+        "End",
+        "digit 9"
+      ],
+      "expected": {
+        "raw": "",
+        "localOutput": "1239"
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 4,
+  "bodyLayerObservations": 0,
+  "controlObservations": 4,
+  "coverageScope": "preview empty-composition selection-off navigation only; composition guards, selection, settings and real host remain separate",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "touch control action map and preview.navigate",
+    "previewEditor arrows move one rune; preview Home/End are whole-text boundaries",
+    "empty-composition digit commits literal at current editor cursor"
+  ],
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-control-nav-60-user-result.json"
+}

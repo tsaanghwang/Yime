@@ -1,0 +1,39 @@
+{
+  "scope": "Preparation only; no physical key actions performed",
+  "date": "2026-10-26",
+  "sourceTemplate": "docs/testing/touch-keyboard/2026-10-20/p6/key-coverage-template.csv",
+  "sourceSHA256": "13df9ee7541305b790be464cb0f885fcafc1ecd92ff29e3a6607d08b47bb2e63",
+  "keys": 100,
+  "englishDisabledKeys": 23,
+  "outputs": [
+    {
+      "file": "finger-key-coverage.csv",
+      "inputMethod": "finger",
+      "rows": 100,
+      "pendingLayerObservations": 400,
+      "passedLayerObservations": 0,
+      "expectedColumnsUnchanged": true,
+      "sha256AtPreparation": "c5f72900e92c68b3d8fdbb022abbe274f10a93ff9f112fe280111802a82b692f"
+    },
+    {
+      "file": "msi-pen-key-coverage.csv",
+      "inputMethod": "MSI supplied pen",
+      "rows": 100,
+      "pendingLayerObservations": 400,
+      "passedLayerObservations": 0,
+      "expectedColumnsUnchanged": true,
+      "sha256AtPreparation": "f7f2e4808691b9c0cddd2a82d9c309b226f54d30c4ea29da472ae2db9e964a39"
+    },
+    {
+      "file": "acer-pen-key-coverage.csv",
+      "inputMethod": "Acer PE272XT supplied pen",
+      "rows": 100,
+      "pendingLayerObservations": 400,
+      "passedLayerObservations": 0,
+      "expectedColumnsUnchanged": true,
+      "sha256AtPreparation": "b8a395e0b2faccafe58e64b9027e8060dcf63c103b8c050184c42c1808ec8f71"
+    }
+  ],
+  "pendingIncludesDisabledAndControlLayers": true,
+  "result": "prepared; all physical observations pending"
+}

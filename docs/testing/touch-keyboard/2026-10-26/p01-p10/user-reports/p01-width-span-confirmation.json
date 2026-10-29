@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-26",
+  "responses": [
+    {
+      "question": "339 mm 是从哪里量到哪里的宽度？",
+      "answer": "整个键盘窗体的左右外缘"
+    },
+    {
+      "question": "约1.3 mm是窗体内每侧白边；余3 mm多是窗体外左右两侧屏幕空余的合计？",
+      "answer": "是，这样理解正确"
+    }
+  ],
+  "recorded": {
+    "windowOuterWidthMM": 339,
+    "insideWhiteMarginPerSideApproxMM": 1.3,
+    "outsideMarginsCombinedDescription": "3mm多"
+  },
+  "derivedOnly": {
+    "mainKeyAreaWidthApproxMM": 336.4,
+    "mainKeyAreaFormula": "339 - 2 * 1.3",
+    "activeDisplayWidthApproxDescription": "约342mm多（339mm窗体宽加外部两侧合计3mm多）",
+    "independentMainAreaMeasurement": false,
+    "independentActiveDisplayMeasurement": false
+  },
+  "status": "window and margin spans confirmed; precision, angle and direct key-area/display measurements incomplete"
+}

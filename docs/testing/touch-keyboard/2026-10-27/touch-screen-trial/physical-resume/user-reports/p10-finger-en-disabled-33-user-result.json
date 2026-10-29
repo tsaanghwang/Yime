@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-EN-DISABLED-33",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "finger",
+  "userReport": "正常",
+  "passedBodyLayers": 46,
+  "result": "both runs over23 blank disabled EN keys normal; sentinel a preserved, composition empty, Shift retained through shifted disabled run then manually cleared",
+  "scope": "grouped user observation; no per-key transcript or attempt counts, pen or host acceptance inferred"
+}

@@ -1,0 +1,23 @@
+{
+  "relatedGoTests": "go test ./cmd/yime-touch-keyboard ./internal/touchkeyboard ./internal/keyboardlab -timeout 90s: PASS",
+  "blockedDriverRegression": "controlled reset stall: minimize returns, repeated stop returns, no additional device opens, sound recovers after cleanup; PASS",
+  "blockedOpenRegression": "open on background worker can stall; stop returns and twenty retries do not create additional workers; PASS",
+  "realAudioNativeWindow": "YIME_TEST_LIVE_AUDIO=1 TestTaskbarMinimizeRestoreAndCancellation: toolbar/hotkey/system-menu all PASS; real stream closes and reopens; playback request accepted",
+  "realAudioLimits": "API and native-window evidence only; no user audibility result or physical touch acceptance inferred",
+  "packageCheck": "package-check.json",
+  "actualDesktop": {
+    "packageExecutableSHA256": "211bd619b587a9f845b522ce58a81d016362c438eced63fcf07134c0b0fd9a5c",
+    "testedProcessID": 26760,
+    "testedWindowID": 394802,
+    "observations": [
+      "automated mouse click on Minimize: window reported minimized",
+      "activate same returned window: restored",
+      "click main digit1 after restore: local output1",
+      "click Exit: window removed; read-only tasklist confirmed process26760 no longer running",
+      "launch same new executable again: process2044 and empty preview visible"
+    ],
+    "limits": "automated mouse development check; restoration via activate_window, not physical taskbar click; audibility and physical mouse/finger RETEST-26 pending"
+  },
+  "physicalRetest": "pending",
+  "packageCheckStatus": "PASS: relocated complete package, original/134 layouts, three modes, resource rejection, fonts and render checks"
+}

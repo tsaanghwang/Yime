@@ -1,0 +1,223 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CONTROL-CN-GUARD-21",
+  "continues": "TOUCH-V1-P10-FINGER-CONTROL-SELECTION-20",
+  "inputMethod": "finger",
+  "inputMode": "CN",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Current preview CN/variable; each case independently begins Clear. Build output 123, caret between 1/2 via Home then ArrowRight; input N08 to form active n. Tap one listed top editor control. It must refuse and preserve raw/document/caret/selection-off. Cancel removes n; digit 9 exposes original caret, yielding 1923. Do not pick candidates, Space or Enter.",
+  "cases": [
+    {
+      "physicalKeyID": "TU-LEFT",
+      "label": "←",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top ←",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按组合保护及取消后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-RIGHT",
+      "label": "→",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top →",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按组合保护及取消后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-HOME",
+      "label": "Home",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top Home",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按组合保护及取消后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-END",
+      "label": "End",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top End",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按组合保护及取消后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-SELECT",
+      "label": "选区",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top 选区",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按组合保护及取消后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-ALL",
+      "label": "全选",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top 全选",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按组合保护及取消后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-DELETE",
+      "label": "Delete",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top Delete",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按组合保护及取消后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "scenarioCount": 7,
+  "bodyLayerObservations": 0,
+  "verificationControls": [
+    "R01K02"
+  ],
+  "coverageScope": "active CN composition guard for seven top editing controls plus cancellation verification; English paused composition and real host guards remain separate",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "previewDown checks navigationEnabled before creating any navigation gesture",
+    "navigationEnabled requires empty raw regardless language; a.cancel clears transient modifiers but preserves editor/caret",
+    "top Cancel clears only unconfirmed composition; literal digit inserts at preserved caret"
+  ],
+  "userReport": "user-reports/p10-finger-control-cn-guard-21-user-result.json",
+  "resultDate": "2026-10-28"
+}

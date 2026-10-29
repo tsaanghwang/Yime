@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CONTROL-PANELS-24",
+  "continues": "TOUCH-V1-P10-FINGER-CONTROL-STATE-23",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "partial: settings 2 passed; native Help dismissal 2 failed for finger; unspecified pen same defect",
+  "setup": "Current preview only. Each case starts CN/Clear, digits12, N08. EN cases switch to EN to pause n. Settings cases only open/return without changing options; Help cases open visible instructions and close dialog. Compare raw/pause, output and language before/after. Finish by returning CN. Do not pick candidates, Space or Enter.",
+  "cases": [
+    {
+      "caseID": "cn-settings",
+      "controls": [
+        "TU-SETTINGS"
+      ],
+      "inputMode": "CN",
+      "setup": [
+        "CN; Clear; main digits12; N08 -> raw n"
+      ],
+      "steps": [
+        "open Settings; do not change any options; use top-left Return"
+      ],
+      "expected": {
+        "inputMode": "cn",
+        "raw": "n",
+        "rawPaused": false,
+        "localOutput": "12",
+        "noAutomaticCommitOrOtherInput": true,
+        "returnedToKeyboard": true
+      },
+      "status": "通过（用户报告）",
+      "actual": "按步骤反馈正常，未逐项转录"
+    },
+    {
+      "caseID": "en-settings",
+      "controls": [
+        "TU-SETTINGS"
+      ],
+      "inputMode": "EN",
+      "setup": [
+        "CN; Clear; main digits12; N08 -> raw n",
+        "switch language to EN; verify paused n"
+      ],
+      "steps": [
+        "open Settings; do not change any options; use top-left Return"
+      ],
+      "expected": {
+        "inputMode": "en",
+        "raw": "n",
+        "rawPaused": true,
+        "localOutput": "12",
+        "noAutomaticCommitOrOtherInput": true,
+        "returnedToKeyboard": true
+      },
+      "status": "通过（用户报告）",
+      "actual": "按步骤反馈正常，未逐项转录"
+    },
+    {
+      "caseID": "cn-help",
+      "controls": [
+        "TU-HELP"
+      ],
+      "inputMode": "CN",
+      "setup": [
+        "CN; Clear; main digits12; N08 -> raw n"
+      ],
+      "steps": [
+        "open Help; verify instructions visible; close Help using its own confirmation/close button"
+      ],
+      "expected": {
+        "inputMode": "cn",
+        "raw": "n",
+        "rawPaused": false,
+        "localOutput": "12",
+        "noAutomaticCommitOrOtherInput": true,
+        "returnedToKeyboard": true
+      },
+      "status": "失败（手指/笔无法操作弹窗确定或X）",
+      "actual": "帮助能打开；手指和未指明型号的笔不能关闭，鼠标可关闭；返回后状态未完成触控验证"
+    },
+    {
+      "caseID": "en-help",
+      "controls": [
+        "TU-HELP"
+      ],
+      "inputMode": "EN",
+      "setup": [
+        "CN; Clear; main digits12; N08 -> raw n",
+        "switch language to EN; verify paused n"
+      ],
+      "steps": [
+        "open Help; verify instructions visible; close Help using its own confirmation/close button"
+      ],
+      "expected": {
+        "inputMode": "en",
+        "raw": "n",
+        "rawPaused": true,
+        "localOutput": "12",
+        "noAutomaticCommitOrOtherInput": true,
+        "returnedToKeyboard": true
+      },
+      "status": "失败（手指/笔无法操作弹窗确定或X）",
+      "actual": "帮助能打开；手指和未指明型号的笔不能关闭，鼠标可关闭；返回后状态未完成触控验证"
+    }
+  ],
+  "scenarioCount": 4,
+  "bodyLayerObservations": 0,
+  "coverageScope": "preview panel/help access and composition/document/language preservation in CN and paused EN; not setting-option correctness, touch-through, host focus or real host Help behavior",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "touchImmediateAction cancels transient gestures without clearing engine raw/editor",
+    "settings toggles internal sheet only",
+    "showHelp preview path opens MessageBox without engine clear; host path separately loses target binding"
+  ],
+  "userReport": "user-reports/p10-finger-control-panels-24-user-result.json",
+  "resultDate": "2026-10-28",
+  "clarification": "具体是指：打开后“确定”和“退出”（X）按钮不能触控"
+}

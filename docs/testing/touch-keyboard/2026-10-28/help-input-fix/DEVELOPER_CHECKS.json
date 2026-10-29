@@ -1,0 +1,21 @@
+{
+  "relatedGoTests": "go test ./cmd/yime-touch-keyboard ./internal/touchkeyboard ./internal/keyboardlab -timeout 90s: passed",
+  "helpTests": "TestTouchHelp*: passed, including later native text fitting/offscreen render test",
+  "routes": [
+    "mouse",
+    "native finger WM_TOUCH",
+    "native primary pen WM_TOUCH plus duplicate promoted mouse messages"
+  ],
+  "checks": [
+    "CN and paused EN preserve raw n, local12 and revision across Help/next/Return",
+    "blank Help area does not type through; moved-out and duplicate UP rejected",
+    "all six instruction paragraphs retained across three pages",
+    "Settings/Help are mutually exclusive; page bounds",
+    "host Help still invalidates binding, clears unconfirmed state, never sends text",
+    "native font text fits pages at ppm3/4.82/8.2; three offscreen screenshots visually inspected"
+  ],
+  "packageCheck": "package-check.json",
+  "actualDesktop": "new process 24564/window4786446 visible; two automated clicks suppressed by user-input detection; no further desktop actions attempted",
+  "offscreenRenders": "C:/dev/Yime/.generated/touch-help-panel-layout-20261028/help-1.png through help-3.png",
+  "physicalAcceptance": false
+}

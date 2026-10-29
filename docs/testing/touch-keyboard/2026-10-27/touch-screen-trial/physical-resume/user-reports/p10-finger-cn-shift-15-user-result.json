@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-SHIFT-15",
+  "userVerbatim": "正常",
+  "interpretation": "all four sequential left/right Shift enable/one-shot and toggle-off cases reported normal",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "passedLayerObservations": 4,
+  "actualCharactersIndividuallyTranscribed": false,
+  "attemptCountsProvided": false,
+  "heldMultitouchOrPenAcceptance": false,
+  "fullPhysicalOrHostAcceptance": false
+}

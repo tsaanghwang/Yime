@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-27",
+  "scope": "Actual audio signal diagnosis, not physical finger/pen input coverage",
+  "status": "isolated stream failure confirmed; persistent-stream fix passed targeted actual keyboard audibility retest",
+  "ABUserResult": "AB_USER_RESULT.json",
+  "paddedUserResult": "PADDED_USER_RESULT.json",
+  "persistentStreamUserResult": "CONTINUOUS_STREAM_USER_RESULT.json",
+  "actualKeyboardResult": "../key-sound-stream/REAL_WINDOW_USER_RESULT.json",
+  "currentHandoff": "../key-sound-stream/HANDOFF.zh-CN.md",
+  "userCorrection": "USER_CORRECTION.json",
+  "longerReference": {
+    "report": "BENCHMARK.json",
+    "userHeard": "short-short-long rhythm explicitly confirmed",
+    "ownProcessSessionPeak": 0.14000262320041656
+  },
+  "isolatedProductionPlayback": {
+    "report": "DRIVER_PROBE_METER.json",
+    "log": "DRIVER_PROBE.log",
+    "implementation": "Temporary standalone diagnostic copies production makeKeyClickWave and playKeyClickWave plus the same pinned buffer initialization; removes UI dependencies, no replacement playback backend",
+    "intervalSeconds": 2,
+    "lifetimeBoundedAndExited": true,
+    "ownProcessSessionPeak": 0.43070530891418457,
+    "nonzeroMeterSamples": 60,
+    "interpretation": "The real Go/WinMM short waveform reaches the Windows session meter. This is stronger than API return alone, but does not establish physical audibility."
+  },
+  "continuousStreamComparison": {
+    "report": "CLICK_TRAIN_BENCHMARK.json",
+    "wave": "click-train.wav",
+    "implementation": "Four bit-identical gain-trial PCM clicks placed at 0.5, 1.25, 2.0 and 2.75 seconds inside one 3.4-second WAVE stream, otherwise silent",
+    "ownProcessSessionPeak": 0.43070530891418457,
+    "nonzeroMeterSamples": 91,
+    "userAudibility": "clear four clicks per explicit repeated B-group feedback"
+  },
+  "appMeterAttempt": "Direct attachment to prior preview PID failed because no matching running preview/session was available; not counted as an audio-meter result. The bounded same-function diagnostic was used instead.",
+  "pendingQuestion": null,
+  "noFurtherGainChanges": true,
+  "noSystemSettingsChanged": true,
+  "noAudioRecording": true,
+  "hostInputSent": false,
+  "P10PassedCountUnchanged": 250,
+  "resolved": true,
+  "resolutionScope": "The reported inaudible click case in the actual local preview; not full finger/pen/host or latency acceptance"
+}

@@ -1,0 +1,98 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CONTROL-STATE-64",
+  "continues": "TOUCH-V1-ACER-PEN-CONTROL-PAUSED-GUARD-63",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "Current preview only, CN/variable, ID legends. Each independent case starts CN, Clear, selection OFF, modifiers unlit; main digits12 then N08 for raw n. Observe language, composition and document separately; do not select candidates, Space or Enter. Acer pen only.",
+  "cases": [
+    {
+      "caseID": "language-roundtrip",
+      "controls": [
+        "R01K03"
+      ],
+      "setup": "CN; Clear; digits12; N08 -> raw n",
+      "steps": [
+        "switch EN; observe paused n, output12",
+        "switch CN without cancelling; observe active n, output12"
+      ],
+      "expected": {
+        "raw": "n",
+        "localOutput": "12",
+        "noAutomaticCommit": true,
+        "inputMode": "chinese"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "cancel-preserves-output",
+      "controls": [
+        "R01K02"
+      ],
+      "setup": "CN; Clear; digits12; N08 -> raw n",
+      "steps": [
+        "top Cancel"
+      ],
+      "expected": {
+        "raw": "",
+        "localOutput": "12",
+        "inputMode": "chinese"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "clear-active",
+      "controls": [
+        "TU-BIND"
+      ],
+      "setup": "CN; Clear; digits12; N08 -> raw n",
+      "steps": [
+        "top Clear"
+      ],
+      "expected": {
+        "raw": "",
+        "localOutput": "",
+        "inputMode": "chinese"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "clear-paused",
+      "controls": [
+        "TU-BIND",
+        "R01K03"
+      ],
+      "setup": "CN; Clear; digits12; N08 -> raw n; switch EN -> paused n",
+      "steps": [
+        "top Clear; check output and composition empty; language remains EN",
+        "switch CN to restore test starting mode"
+      ],
+      "expectedAfterClear": {
+        "raw": "",
+        "localOutput": "",
+        "inputMode": "english"
+      },
+      "expectedAfterReturn": {
+        "raw": "",
+        "localOutput": "",
+        "inputMode": "chinese"
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 4,
+  "bodyLayerObservations": 0,
+  "controlObservations": 4,
+  "coverageScope": "preview CN/EN roundtrip without committing, active cancellation versus full Clear, paused full Clear retaining language; not host binding or EN body layers",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "toggle-language changes modes without rewriting raw or committing",
+    "top Cancel clears engine composition only",
+    "preview top Clear additionally replaces editor with empty state, leaving input mode unchanged"
+  ],
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-control-state-64-user-result.json"
+}

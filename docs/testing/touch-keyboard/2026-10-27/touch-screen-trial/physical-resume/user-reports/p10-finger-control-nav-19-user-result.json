@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CONTROL-NAV-19",
+  "userVerbatim": "正常",
+  "interpretation": "all four large top-row navigation scenarios reported normal; insertion digit revealed expected caret position",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "passedControlScenarios": 4,
+  "passedBodyLayerObservations": 0,
+  "coverageScope": "preview empty-composition/selection-off navigation only; active or paused composition guard, selection extension and host navigation remain separate",
+  "actualTextIndividuallyTranscribed": false,
+  "attemptCountsProvided": false,
+  "hostNavigationAcceptance": false,
+  "fullPhysicalAcceptance": false
+}

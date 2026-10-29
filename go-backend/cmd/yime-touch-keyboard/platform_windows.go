@@ -86,30 +86,50 @@ type input struct {
 	Data [32]byte
 }
 type ui struct {
-	h                  uintptr
-	s                  *tk.State
-	ppm                float64
-	o                  options
-	status             string
-	owners             map[uint32]target
-	top, border        int
-	font               uintptr
-	monitorName        string
-	lastTarget         target
-	releasingCapture   bool
-	focusStarted       uint32
-	touchReader        func(uintptr, uintptr) ([]touch, error)
-	preview            *preview
-	previewTouches     map[uint32]*previewGesture
-	glyphFont          uintptr
-	glyphs             map[string]string
-	showGlyphs         bool
-	host               *deliveryGate
-	hostBusy           bool
-	navSelecting       bool // Applies only to auxiliary navigation, never character keys.
-	cancelGeneration   uint64
-	inputTrace         *inputTrace
-	nativePenOwnsMouse bool // Keep ownership through compatibility UP, even after cancellation.
+	h                   uintptr
+	s                   *tk.State
+	ppm                 float64
+	o                   options
+	status              string
+	owners              map[uint32]target
+	top, border         int
+	font                uintptr
+	keyFont             uintptr
+	monitorName         string
+	lastTarget          target
+	releasingCapture    bool
+	focusStarted        uint32
+	touchReader         func(uintptr, uintptr) ([]touch, error)
+	preview             *preview
+	previewTouches      map[uint32]*previewGesture
+	glyphFont           uintptr
+	glyphs              map[string]string
+	showGlyphs          bool
+	host                *deliveryGate
+	hostBusy            bool
+	navSelecting        bool // Applies only to auxiliary navigation, never character keys.
+	cancelGeneration    uint64
+	inputTrace          *inputTrace
+	nativePenOwnsMouse  bool // Keep ownership through compatibility UP, even after cancellation.
+	penRecontact        penRecontact
+	penClock            func() time.Time
+	acceptedInputSerial uint64
+	soundPlayer         func() bool
+	soundStream         clickSound
+	soundRetiring       <-chan struct{}
+	soundWindowReady    bool
+	soundTimerActive    bool
+	soundSuspended      bool
+	soundRetryAfter     time.Time
+	soundFactory        func() (clickSound, error)
+	soundUnavailable    bool
+	touchSettingsOpen   bool
+	touchHelpOpen       bool
+	touchHelpPage       int
+	touchRuler          bool
+	touchFontLevel      int
+	touchFont           uintptr
+	touchMessage        string
 }
 
 var active *ui
@@ -205,7 +225,11 @@ func run(o options) error {
 		return e
 	}
 	a := &ui{s: tk.NewState(b), ppm: ppm, o: o, owners: map[uint32]target{}, top: top, border: border, status: "English text / Ctrl Alt shortcuts. Chinese composition is not connected in this milestone.", monitorName: syscall.UTF16ToString(m.Device[:])}
+	defer a.stopKeySound()
 	a.s.Original = o.KeyView == "original"
+	if o.TouchUI {
+		a.touchFontLevel = 2
+	}
 	if o.InputTrace != "" {
 		var err error
 		a.inputTrace, err = openInputTrace(o.InputTrace)
@@ -228,6 +252,9 @@ func run(o options) error {
 		a.s.Semantic = true
 		a.s.Original = a.preview.original()
 		a.top = 300
+		if o.TouchUI {
+			a.top = touchHeaderHeight
+		}
 		a.previewTouches = map[uint32]*previewGesture{}
 		a.status = "中文预览：输出仅在下方文本区；无系统输入。鼠标/模拟检查不代表手指或笔验收。"
 		fontPath, err := filepath.Abs(filepath.Join(o.Root, "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf"))
@@ -268,6 +295,9 @@ func run(o options) error {
 	if o.InputTrace != "" {
 		title += "（触笔诊断）"
 	}
+	if o.PenRecontactMS != 0 {
+		title += fmt.Sprintf("（笔防回弹%dms）", o.PenRecontactMS)
+	}
 	h, _, err := U("CreateWindowExW").Call(keyboardWindowExStyle, ptr(c.Name), ptr(str(title)), keyboardWindowStyle, uintptr(m.Work.L+(m.Work.R-m.Work.L-int32(width))/2), uintptr(m.Work.B-int32(height)-8), uintptr(width), uintptr(height), 0, 0, instance, 0)
 	if h == 0 {
 		return fmt.Errorf("CreateWindow: %w", err)
@@ -278,8 +308,14 @@ func run(o options) error {
 		if a.font != 0 {
 			G("DeleteObject").Call(a.font)
 		}
+		if a.keyFont != 0 {
+			G("DeleteObject").Call(a.keyFont)
+		}
 		if a.glyphFont != 0 {
 			G("DeleteObject").Call(a.glyphFont)
+		}
+		if a.touchFont != 0 {
+			G("DeleteObject").Call(a.touchFont)
 		}
 	}()
 	if ok, _, err := U("RegisterTouchWindow").Call(h, 1); ok == 0 {
@@ -290,15 +326,30 @@ func run(o options) error {
 	fontHeight := int32(-15)
 	f, _, _ := G("CreateFontW").Call(uintptr(fontHeight), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
 	a.font = f
+	keyHeight := -int32(math.Round(tk.UnitMM * ppm * 0.20))
+	a.keyFont, _, _ = G("CreateFontW").Call(uintptr(keyHeight), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
+	if a.keyFont == 0 {
+		return fmt.Errorf("无法创建键面字体")
+	}
 	if o.Preview || o.Host {
-		glyphHeight := int32(-19)
+		glyphHeight := -int32(math.Round(tk.UnitMM * ppm * 0.23))
 		a.glyphFont, _, _ = G("CreateFontW").Call(uintptr(glyphHeight), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("YinYuan")))
 		if a.glyphFont == 0 {
 			return fmt.Errorf("无法创建 YinYuan 私有字体")
 		}
 	}
+	if o.TouchUI {
+		height := int32(-22)
+		a.touchFont, _, _ = G("CreateFontW").Call(uintptr(height), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
+		if a.touchFont == 0 {
+			return fmt.Errorf("无法创建触屏控制字体")
+		}
+	}
 	U("ShowWindow").Call(h, 4)
 	U("UpdateWindow").Call(h)
+	// Start only after dictionaries, fonts and the visible window are ready.
+	// Opening during the heavy startup load differs from a successful restore.
+	U("PostMessageW").Call(h, wmKeySoundReady, 0, 0)
 	if o.Shot != "" {
 		drain(100 * time.Millisecond)
 		return a.screenshot(o.Shot)
@@ -376,6 +427,7 @@ func (a *ui) invalidate() {
 	}
 }
 func (a *ui) cancel() {
+	a.penRecontact = penRecontact{}
 	a.traceInput("cancel", 0, 0, 0)
 	a.cancelGeneration++
 	a.s.Cancel()
@@ -426,7 +478,9 @@ func (a *ui) up(id uint32, x, y int32) {
 		return
 	}
 	a.move(id, x, y)
+	before := localKeyState(a.s)
 	out := a.s.Up(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
+	accepted := out == nil && before != localKeyState(a.s)
 	owner := a.owners[id]
 	delete(a.owners, id)
 	if out != nil {
@@ -438,7 +492,11 @@ func (a *ui) up(id uint32, x, y int32) {
 			a.cancel()
 		} else {
 			a.status = "Sent to the unchanged target focus. English literal text; Chinese bridge pending."
+			accepted = true
 		}
+	}
+	if accepted {
+		a.clickFeedback()
 	}
 	a.invalidate()
 }
@@ -471,19 +529,38 @@ func (a *ui) toolbar(x, y int32) {
 	case "close":
 		U("DestroyWindow").Call(a.h)
 	case "help":
-		help := desktopHelp
-		if a.preview != nil {
-			help = previewHelp
-		}
-		if a.host != nil {
-			a.loseHostFocus("帮助已打开；请重新绑定目标")
-			help = hostHelp
-		}
-		U("MessageBoxW").Call(a.h, ptr(str(help)), ptr(str("Yime 桌面键盘使用帮助")), 0x00040040)
+		a.showHelp()
 	}
 	a.invalidate()
 }
+func (a *ui) showHelp() {
+	if a.o.TouchUI {
+		// Do not enter a native modal loop from a touch/pen UP callback.
+		if !a.touchHelpOpen && a.host != nil {
+			a.loseHostFocus("帮助已打开；请重新绑定目标")
+		}
+		a.touchHelpOpen = !a.touchHelpOpen
+		a.touchSettingsOpen = false
+		a.touchHelpPage = 0
+		a.invalidate()
+		return
+	}
+	help := desktopHelp
+	if a.preview != nil {
+		help = previewHelp
+	}
+	if a.host != nil {
+		a.loseHostFocus("帮助已打开；请重新绑定目标")
+		help = hostHelp
+	}
+	if a.o.TouchUI {
+		help = touchHelp
+	}
+	U("MessageBoxW").Call(a.h, ptr(str(help)), ptr(str("Yime 桌面键盘使用帮助")), 0x00040040)
+}
 func (a *ui) suspendForMinimize() {
+	a.soundSuspended = true
+	a.stopKeySound()
 	if a.host != nil {
 		a.loseHostFocus("键盘已最小化；恢复后请重新绑定目标")
 	}
@@ -529,9 +606,22 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 		defer a.traceInput("after", msg, w, l)
 	}
 	switch msg {
+	case wmKeySoundReady:
+		a.soundWindowReady = true
+		a.ensureKeySound()
+		return 0
+	case 0x0113: // WM_TIMER: retry a failed startup without minimizing the window.
+		if w == keySoundTimer && a.soundWindowReady {
+			a.ensureKeySound()
+		}
 	case 0x0005: // WM_SIZE: also cover taskbar/system-menu minimization.
 		if w == 1 { // SIZE_MINIMIZED
 			a.suspendForMinimize()
+		} else {
+			a.soundSuspended = false
+			if a.soundWindowReady {
+				a.ensureKeySound()
+			}
 		}
 	case 0x0112: // WM_SYSCOMMAND
 		if w&0xfff0 == 0xf120 { // SC_RESTORE: taskbar click, without taking host focus.
@@ -539,6 +629,7 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 			return 0
 		}
 	case 0x0002:
+		a.stopKeySound()
 		if a.host != nil {
 			a.loseHostFocus("键盘已关闭")
 		}
@@ -644,6 +735,7 @@ func (a *ui) touch(w, l uintptr) {
 		a.cancel()
 		return
 	}
+	frameTime := a.penTime()
 	if a.inputTrace != nil {
 		for _, t := range v {
 			a.inputTrace.write(map[string]any{"stage": "touch-frame", "id": t.ID, "flags": fmt.Sprintf("0x%x", t.Flags), "x100": t.X, "y100": t.Y, "nativeTime": t.Time})
@@ -674,7 +766,9 @@ func (a *ui) touch(w, l uintptr) {
 				mod = action.Type == "shift" || action.Type == "unsupported" && (action.Label == "Ctrl" || action.Label == "Alt")
 			}
 			if mod == (pass == 0) {
-				a.down(t.ID+1, p.X, p.Y)
+				if !a.penContactDown(t, p, frameTime) {
+					a.down(t.ID+1, p.X, p.Y)
+				}
 			}
 		}
 	}
@@ -682,11 +776,16 @@ func (a *ui) touch(w, l uintptr) {
 	for _, t := range v {
 		p := point{t.X / 100, t.Y / 100}
 		U("ScreenToClient").Call(a.h, uintptr(unsafe.Pointer(&p)))
-		if t.Flags&1 != 0 {
+		blocked := a.penRecontact.blocked(t.ID)
+		if t.Flags&1 != 0 && !blocked {
 			a.move(t.ID+1, p.X, p.Y)
 		}
 		if t.Flags&4 != 0 {
-			a.up(t.ID+1, p.X, p.Y)
+			before := a.acceptedInputSerial
+			if !blocked {
+				a.up(t.ID+1, p.X, p.Y)
+			}
+			a.penRecontact.up(t.ID, a.acceptedInputSerial, frameTime, a.acceptedInputSerial != before)
 		}
 	}
 	a.invalidate()
@@ -867,48 +966,66 @@ func (a *ui) paint() {
 	G("DeleteDC").Call(mem)
 }
 func (a *ui) draw(dc uintptr, r rect) {
-	fill(dc, r, 0xF2F4EF)
+	palette := a.palette()
+	fill(dc, r, palette.background)
 	old, _, _ := G("SelectObject").Call(dc, a.font)
 	defer G("SelectObject").Call(dc, old)
 	G("SetBkMode").Call(dc, 1)
-	G("SetTextColor").Call(dc, 0x302C17)
-	title := "Yime desktop keyboard - ENGLISH TEXT"
-	if a.preview != nil {
-		title = "Yime 中文受控预览（不向其他应用输入）"
-	}
-	if a.host != nil {
-		title = "Yime 中文宿主输入实验（先绑定目标）"
-	}
-	if a.inputTrace != nil {
-		title += "（触笔诊断）"
-	}
-	text(dc, fmt.Sprintf("%s | 1u = 19.05 mm | %.2f mm | Ctrl+Alt+K", title, a.s.Board.Bounds.Width*tk.UnitMM), rect{10, 3, r.R - 10, 25}, 0x24)
-	for _, b := range toolButtons {
-		title := b.label
-		if b.action == "layout" {
-			title = "Keys: " + map[bool]string{true: "original", false: "English"}[a.s.Original]
+	G("SetTextColor").Call(dc, palette.text)
+	if a.o.TouchUI {
+		a.drawTouchHeader(dc, r)
+	} else {
+		title := "Yime desktop keyboard - ENGLISH TEXT"
+		if a.preview != nil {
+			title = "Yime 中文受控预览（不向其他应用输入）"
 		}
-		fill(dc, rect{b.l, 28, b.r, 72}, 0xE5EBE2)
-		text(dc, title, rect{b.l, 29, b.r, 71}, 0x25)
-	}
-	// Ruler is in physical-coordinate pixels, independent of Windows DPI scale.
-	x := int32(550)
-	rr := x + int32(math.Round(100*a.ppm))
-	fill(dc, rect{x, 62, rr, 64}, 0x306020)
-	text(dc, "100 mm - measure this line", rect{x, 30, rr, 56}, 0x25)
-	text(dc, a.status, rect{10, 80, r.R - 10, 104}, 0x24)
-	if a.preview != nil {
-		a.drawPreview(dc, r)
+		if a.host != nil {
+			title = "Yime 中文宿主输入实验（先绑定目标）"
+		}
+		if a.inputTrace != nil {
+			title += "（触笔诊断）"
+		}
+		text(dc, fmt.Sprintf("%s | 1u = 19.05 mm | %.2f mm | Ctrl+Alt+K", title, a.s.Board.Bounds.Width*tk.UnitMM), rect{10, 3, r.R - 10, 25}, 0x24)
+		for _, b := range toolButtons {
+			title := b.label
+			if b.action == "layout" {
+				title = "Keys: " + map[bool]string{true: "original", false: "English"}[a.s.Original]
+			}
+			fill(dc, rect{b.l, 28, b.r, 72}, palette.panel)
+			text(dc, title, rect{b.l, 29, b.r, 71}, 0x25)
+		}
+		// Ruler is in physical-coordinate pixels, independent of Windows DPI scale.
+		x := int32(550)
+		rr := x + int32(math.Round(100*a.ppm))
+		fill(dc, rect{x, 62, rr, 64}, palette.ruler)
+		text(dc, "100 mm - measure this line", rect{x, 30, rr, 56}, 0x25)
+		text(dc, a.status, rect{10, 80, r.R - 10, 104}, 0x24)
+		if a.preview != nil {
+			a.drawPreview(dc, r)
+		}
 	}
 	unit := tk.UnitMM * a.ppm
 	for i, k := range a.s.Board.Keys {
 		v := a.s.View(k)
-		c := color(k.Color)
+		if a.o.TouchUI {
+			v.Labels = a.touchLabels(k, v.Labels)
+		}
+		if a.preview != nil && v.Action.Type == "toggle-language" {
+			name := "CN"
+			if a.preview.snapshot.Modes.Input == "english" {
+				name = "EN"
+			}
+			v.Labels = []string{name}
+		}
+		c := palette.keyColor(k.Color, v.Action.Type != "input" && v.Action.Type != "symbol")
 		if a.preview == nil && !nativeEnabled(v) {
 			c = 0xE5E5E5
+			if palette.dark {
+				c = palette.disabled
+			}
 		}
-		if a.s.Pressed(i) || modifierHeld(a.s, v.Action) {
-			c = 0xA5CBB4
+		if a.s.Pressed(i) || modifierHeld(a.s, v.Action) || a.touchPressed(a.keyPixelRect(k)) || a.o.TouchUI && k.Action.Type == "touch-ui" && (k.Action.Key == "select" && a.navSelecting || k.Action.Key == "settings" && a.touchSettingsOpen) {
+			c = palette.pressed
 		}
 		region, _, _ := G("CreateRectRgn").Call(0, 0, 0, 0)
 		minx, miny, maxx, maxy := math.Inf(1), math.Inf(1), math.Inf(-1), math.Inf(-1)
@@ -928,7 +1045,7 @@ func (a *ui) draw(dc uintptr, r rect) {
 		brush, _, _ := G("CreateSolidBrush").Call(c)
 		G("FillRgn").Call(dc, region, brush)
 		G("DeleteObject").Call(brush)
-		outline, _, _ := G("CreateSolidBrush").Call(0xA0A0A0)
+		outline, _, _ := G("CreateSolidBrush").Call(palette.border)
 		G("FrameRgn").Call(dc, region, outline, 1, 1)
 		G("DeleteObject").Call(outline)
 		G("DeleteObject").Call(region)
@@ -937,9 +1054,9 @@ func (a *ui) draw(dc uintptr, r rect) {
 		}
 		// English legends use the same 12 normalized KLE positions as the browser.
 		if a.preview != nil || nativeEnabled(v) {
-			G("SetTextColor").Call(dc, 0x302C17)
+			G("SetTextColor").Call(dc, palette.text)
 		} else {
-			G("SetTextColor").Call(dc, 0x888888)
+			G("SetTextColor").Call(dc, palette.mutedText)
 		}
 		if a.preview == nil && v.Action.Type == "toggle-language" {
 			text(dc, "中文未接入", rect{int32(minx + 3), int32(miny + 3), int32(maxx - 3), int32(maxy - 3)}, 0x25)
@@ -947,36 +1064,58 @@ func (a *ui) draw(dc uintptr, r rect) {
 		}
 		for j, s := range v.Labels {
 			s = label(s)
+			font := a.keyFont
+			if font == 0 {
+				font = a.font
+			}
+			G("SelectObject").Call(dc, font)
 			if a.preview != nil && a.showGlyphs {
 				if glyph, ok := a.glyphs[s]; ok {
 					s = glyph
 					G("SelectObject").Call(dc, a.glyphFont)
-				} else {
-					G("SelectObject").Call(dc, a.font)
 				}
 			}
 			if s == "" {
 				continue
 			}
-			col := j % 3
-			row := j / 3
-			l := minx + 4
-			right := maxx - 4
-			flags := uintptr(0x20)
-			if col == 1 {
-				flags |= 1
-			} else if col == 2 {
-				flags |= 2
-			}
-			y := miny + 5
-			if row == 1 {
-				y = miny + (maxy-miny)/2 - 9
-			} else if row >= 2 {
-				y = maxy - 23
-			}
-			text(dc, s, rect{int32(l), int32(y), int32(right), int32(y + 20)}, flags)
+			drawKeyLegend(dc, s, rect{int32(minx), int32(miny), int32(maxx), int32(maxy)}, j)
 		}
 	}
+	if a.o.TouchUI && a.touchSettingsOpen {
+		a.drawTouchSettings(dc, r)
+	}
+	if a.o.TouchUI && a.touchHelpOpen {
+		a.drawTouchHelp(dc, r)
+	}
+}
+
+func drawKeyLegend(dc uintptr, s string, bounds rect, position int) {
+	v := utf16.Encode([]rune(s))
+	if len(v) == 0 {
+		return
+	}
+	size := point{}
+	if ok, _, _ := G("GetTextExtentPoint32W").Call(dc, uintptr(unsafe.Pointer(&v[0])), uintptr(len(v)), uintptr(unsafe.Pointer(&size))); ok == 0 {
+		return
+	}
+	// Private YinYuan glyphs have a taller cell than their requested em size.
+	// Anchor the complete measured cell inside the key, rather than clipping it
+	// to the old fixed 20px strip at the very bottom of the key.
+	padding := max(int32(4), (bounds.B-bounds.T)/20)
+	col, row := position%3, position/3
+	flags := uintptr(0x20)
+	if col == 1 {
+		flags |= 1
+	} else if col == 2 {
+		flags |= 2
+	}
+	y := bounds.T + padding
+	if row == 1 {
+		y = bounds.T + (bounds.B-bounds.T-size.Y)/2
+	} else if row >= 2 {
+		y = bounds.B - padding - size.Y
+	}
+	text(dc, s, rect{bounds.L + padding, y, bounds.R - padding, y + size.Y}, flags)
 }
 func modifierHeld(s *tk.State, a tk.Action) bool {
 	if a.Type == "shift" {

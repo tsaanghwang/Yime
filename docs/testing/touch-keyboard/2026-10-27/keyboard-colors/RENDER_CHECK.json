@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-27",
+  "scope": "Controlled own-window GDI render checks; no physical input or OS host input",
+  "renders": [
+    {
+      "name": "prior-original",
+      "path": "prior-original.png",
+      "width": 2830,
+      "height": 1442,
+      "sha256": "4e6712a95ded4a64421c94819393b222459b77a463de07241796acd7eca51d64",
+      "arguments": [
+        "--preview",
+        "--ruler-observed-mm",
+        "58.8",
+        "--screenshot",
+        "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-27\\keyboard-colors\\prior-original.png"
+      ]
+    },
+    {
+      "name": "new-original",
+      "path": "new-original.png",
+      "width": 2830,
+      "height": 1442,
+      "sha256": "4e6712a95ded4a64421c94819393b222459b77a463de07241796acd7eca51d64",
+      "arguments": [
+        "--preview",
+        "--ruler-observed-mm",
+        "58.8",
+        "--theme",
+        "original",
+        "--screenshot",
+        "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-27\\keyboard-colors\\new-original.png"
+      ]
+    },
+    {
+      "name": "new-dark",
+      "path": "new-dark.png",
+      "width": 2830,
+      "height": 1442,
+      "sha256": "ee5c676050646580908276e748b7245176ba7e7c6b04de7fefb98c75e4da3bee",
+      "arguments": [
+        "--preview",
+        "--ruler-observed-mm",
+        "58.8",
+        "--theme",
+        "dark",
+        "--screenshot",
+        "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-27\\keyboard-colors\\new-dark.png"
+      ]
+    }
+  ],
+  "originalPalettePixelIdenticalToPriorPackage": true,
+  "sameDimensionsAcrossThemes": true,
+  "invalidThemeRejected": true,
+  "physicalRetest": "pending"
+}

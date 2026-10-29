@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-27",
+  "scope": "Temporary same-Go-function comparison: original 24ms sound plus 500ms trailing zero PCM; no production source change",
+  "exitCode": 0,
+  "playbackReturns": [
+    "play 1 true",
+    "play 2 true",
+    "play 3 true",
+    "play 4 true"
+  ],
+  "intervalSeconds": 2,
+  "durationMS": 523.991,
+  "audibility": "pending user feedback",
+  "settingsChanged": false
+}

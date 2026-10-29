@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-27",
+  "scope": "Local x64 legend size and clipping fix; no CI or physical acceptance",
+  "manifest": {
+    "schemaVersion": 2,
+    "scope": "uninstalled-desktop-touch-keyboard-chinese-experiment",
+    "architecture": "windows-amd64",
+    "sourceCommit": "9adc3cdd9634e0258b58c9a8945b3497fc8777ad",
+    "sourceChanges": true,
+    "goVersion": "go version go1.25.14 windows/amd64",
+    "developmentBaseline": "main-18u",
+    "defaultLauncher": "Start Keyboard.cmd",
+    "defaultMode": "chinese-host-explicit-target-binding",
+    "defaultProfile": "prototypes/touch-terminal/desktop/profiles/main-only.json",
+    "unitMM": 19.05,
+    "mainWidthU": 18,
+    "mainWidthMM": 342.9,
+    "mainKeyCount": 100,
+    "main17Status": "frozen-optional-candidate",
+    "full23Status": "frozen-optional-candidate",
+    "resourceArchiveSHA256": "9f01dc384aa2a52281a882a7fc5f675a0282bf073f9033610a3b0681b32b14bd",
+    "portableResourcesSHA256": "b9ed01bce96d3ad539a0bee4e242b57812baaa6203cda9a811a4e541f399354c",
+    "completeChineseResources": true,
+    "hardwareAcceptance": false,
+    "installedProductAcceptance": false,
+    "arm64NativeAcceptance": false,
+    "files": {
+      "Check Package.cmd": "d7ce7a012ee463e83bc2f2f2d00a30cb66723b6ca95814ec39668985846d3c9f",
+      "data/ascii_keyboard_manifest.json": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843",
+      "data/yime_full.dict.yaml": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+      "data/yime_shorthand.dict.yaml": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49",
+      "data/yime_variable.dict.yaml": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+      "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d",
+      "internal_data/yime_syllable_decomposition.tsv": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+      "prototypes/touch-terminal/data/physical-layout.json": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+      "prototypes/touch-terminal/desktop/profiles/17u-provenance.json": "10c236d424334f256f5cf5ddfd4c1d9dc6680ba06cf51f934addaecee1cafc95",
+      "prototypes/touch-terminal/desktop/profiles/full-23u.json": "a9e6fed18a520481848ec57d733ad89377e17b456ce182e2495d9f8ecbc8d29c",
+      "prototypes/touch-terminal/desktop/profiles/full-size.json": "78476c64923c8ccaf43412a02b4433d89e27faacec102bb55f4de8796b068de2",
+      "prototypes/touch-terminal/desktop/profiles/main-17u.json": "67b57f33a8827771da02c3692e393643c40979ec93e29e9a86b194c5dea3653e",
+      "prototypes/touch-terminal/desktop/profiles/main-only.json": "25b76ef50d438c33f0a7551904d4c0c788442849ca010703e8cbc83de16cd55a",
+      "prototypes/touch-terminal/encoding/manual_key_layout.resolved.json": "59de8f802289611af47e0063b5124e942a068ce39b76df38085a1fe08b3139fa",
+      "prototypes/touch-terminal/encoding/yime_yinyuan_layout.json": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b",
+      "README.txt": "5e0e88c01320ceb6cd95603f0feb7de9ccd318d01a04bc6db2b97c55cca8ce9a",
+      "resources.json": "b9ed01bce96d3ad539a0bee4e242b57812baaa6203cda9a811a4e541f399354c",
+      "resources.lock.json": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313",
+      "Start 17u Main Area.cmd": "a63ed3ddd7587bbae32d4d8c3470f8d02f17fa14c710668c3c91367c1e5562a8",
+      "Start 23u Keyboard.cmd": "396a4a50d0caa2ab5c094b2dfe83a621d414083c3ebeb6209ba0460893116372",
+      "Start English Only.cmd": "e3dba711e3bf7eeece35aecfafb1a7b7b34cab8a63546d03755d66747d6a077c",
+      "Start Full Keyboard.cmd": "ea6827c0fed87c5a5a18bfff33863d3b744e6513d57b44f01cfecc887f910136",
+      "Start Keyboard.cmd": "225633cb4215eee8ca897ff9adc5819629c77427a5c3a76ec11b9d4909c84008",
+      "Start Left Area.cmd": "68ee55f2e58cf10a573e39b952b3522fc94077071d7daa701492bac5137d02e4",
+      "Start Main Area.cmd": "225633cb4215eee8ca897ff9adc5819629c77427a5c3a76ec11b9d4909c84008",
+      "Start Preview.cmd": "868650dd1507a0690e139ff08057626e47e6bfcadce26975adbe37f9a3c80d7c",
+      "Start Right Area.cmd": "46db556ae5740abe32847328711124f7dea59679194a4bcb1fde252f18420fd0",
+      "USER_GUIDE.zh-CN.md": "ed2b9f5105ebfffc81bc0e19ea6a5cdd7c2c8ebd5179c3af6a6d1482f3b866c6",
+      "YimeTouchKeyboard.exe": "161df413c9f6ae6cf4aad43e575ad55f00c227f105f187a74d6b70a1d5759469"
+    }
+  },
+  "executableSHA256": "161df413c9f6ae6cf4aad43e575ad55f00c227f105f187a74d6b70a1d5759469",
+  "priorExecutableSHA256": "e59bac7e4bc6c6e697324808136a6f84709df52a64595588d97779dcf58e1fa7",
+  "sourceBranch": "codex/touch-keyboard-p01-p10-20261026",
+  "sourceFilesSHA256": {
+    "go-backend/cmd/yime-touch-keyboard/platform_windows.go": "bd213feb480f811cde9187aa10cbb531510131c4cd46aee8d289f39228227bf9",
+    "go-backend/cmd/yime-touch-keyboard/legend_windows_test.go": "8414f77a987ddeed8432c8b1ec90fd3b9d59d774c9ab582f64a98d634329fa32",
+    "go-backend/cmd/yime-touch-keyboard/preview_corpus_windows_test.go": "7a1650c56870c4ea6aef3bdf06931a8df53aa565971adfe93194e2cf92ea62b7",
+    "go-backend/cmd/yime-touch-keyboard/palette_windows.go": "dfbd21e29f5ac4b4b829082daa9e69a7374548e64aa7db3e9587d684a64c00e1",
+    "go-backend/cmd/yime-touch-keyboard/main.go": "11a99573fcbcc44edba3dc258f4ec95ab50a1f34c9e38ae063c312e7524c9be2",
+    "prototypes/touch-terminal/desktop/USER_GUIDE.zh-CN.md": "ed2b9f5105ebfffc81bc0e19ea6a5cdd7c2c8ebd5179c3af6a6d1482f3b866c6"
+  },
+  "changedPayloads": [
+    "resources.json",
+    "USER_GUIDE.zh-CN.md",
+    "YimeTouchKeyboard.exe"
+  ],
+  "geometryAndFontsAndThreeDictionariesUnchanged": true,
+  "paletteUnchangedFromPriorTrial": true,
+  "observedArguments": [
+    "--preview",
+    "--theme",
+    "dark",
+    "--ruler-observed-mm",
+    "58.8"
+  ],
+  "keyFontPixelsAtObservedScale": {
+    "ascii": 31,
+    "yinyuan": 36,
+    "previousAscii": 15,
+    "previousYinyuan": 19
+  },
+  "renders": [
+    {
+      "file": "dark-glyphs.png",
+      "width": 2830,
+      "height": 1442,
+      "sha256": "c292138588f4cf7b62a7cd09d5ac90621f4ec8852e99bc02c1c9e8a3acd65f04",
+      "note": "CN initial view; English view preference flag does not change initial CN language"
+    },
+    {
+      "file": "dark-original-view-preference.png",
+      "width": 2830,
+      "height": 1442,
+      "sha256": "c292138588f4cf7b62a7cd09d5ac90621f4ec8852e99bc02c1c9e8a3acd65f04",
+      "note": "CN initial view; English view preference flag does not change initial CN language"
+    }
+  ],
+  "validation": {
+    "regression": "TestBottomYinyuanLegendKeepsCompleteGlyph: failed before, passed after; includes 19px/36px and no spill outside key",
+    "relatedGoTests": "passed desktop/touchkeyboard/keyboardlab",
+    "packageCheck": "package-check.json",
+    "developerVisualReview": "dark CN rendered image inspected: upper/lower ASCII and full private glyphs, long control labels visible",
+    "physicalRetest": "pending"
+  },
+  "originalP10EvidenceInherited": false,
+  "P10PassedCountUnchanged": 250
+}

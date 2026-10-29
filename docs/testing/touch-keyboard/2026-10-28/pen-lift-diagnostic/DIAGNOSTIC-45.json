@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-LIFT-DIAG-45",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "MSI supplied pen",
+  "status": "physical trace captured/analyzed; repeat stability unresolved",
+  "environment": {
+    "screenToDeskAngleDegreesApprox": 45,
+    "angleClarificationUserAnswer": "屏幕与桌面约45°",
+    "orientationUserReport": "翻转状态下的",
+    "pen": "MSI original supplied pen",
+    "scope": "current lift-repeat diagnostic environment only; do not replace previous flat-screen records or retroactively attribute all prior batches"
+  },
+  "setup": "new same-version preview with unique input trace; EN/English keycaps; same45-degree flipped position, MSI pen only",
+  "groups": [
+    {
+      "id": "natural-lift",
+      "steps": "Clear; tap a ten times using ordinary lift, approximately one second between intended taps; leave accidental repeats untouched",
+      "expectedIntendedContacts": 10,
+      "expectedOutputLengthIfNoRepeats": 10
+    },
+    {
+      "id": "intentional-pairs",
+      "steps": "Clear; deliberately tap a twice in quick succession, three pairs; pause about one second between pairs",
+      "expectedIntendedContacts": 6,
+      "expectedOutputLengthIfNoRepeats": 6
+    }
+  ],
+  "scope": "contact/timing diagnostic only; no new body-layer acceptance; unique trace metadata contains no text/audio/other-app input",
+  "bodyLayerObservations": 0,
+  "userResult": "USER_RESULT-45.json",
+  "findings": "FINDINGS.json"
+}

@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-SHIFT-BACKSPACE",
+  "userQuote": "正常",
+  "inputMethod": "finger",
+  "target": "fixed-package preview, English EN view, no composition",
+  "packageExecutableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "coveredLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "coveredKeyIDs": [
+    "R06K04",
+    "R06K17",
+    "R02K21"
+  ],
+  "coveredLayerObservations": 6,
+  "result": "passed-user-reported-for-requested-group",
+  "actual": "按前述六个子步骤反馈正常；实际字符串与尝试次数未另行逐项转录",
+  "independentObservation": false,
+  "exclusions": [
+    "CN layers",
+    "both pen files",
+    "other control keys",
+    "host input"
+  ]
+}

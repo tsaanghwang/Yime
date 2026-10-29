@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-27",
+  "reasonForRepeat": "听到声音，但没注意是否有两组。再测一次。",
+  "groupA": {
+    "question": "A 组已播放完：约每两秒单独敲一下，共四声。这一组你听到了吗？",
+    "answer": "没听到",
+    "playbackRecord": "REPEAT_A.json"
+  },
+  "groupB": {
+    "question": "B 组已播放完：连续音频里的四次敲击。这一组你听到了吗？",
+    "answer": "清楚听到四声",
+    "playbackRecord": "REPEAT_B.json"
+  },
+  "interpretation": "Isolated short playback is inaudible while the identical PCM inside a longer stream is audible. This supports investigating stream lifetime/transport handling; it does not establish a unique internal driver mechanism.",
+  "next": "Test minimal trailing-silence padding without changing click PCM or production source",
+  "P10PassedCountUnchanged": 250
+}

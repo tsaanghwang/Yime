@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CN-CODING-54",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "status": "passed within user-expanded all70 character key report",
+  "setup": "same original CN preview, variable mode, punctuation entry OFF, ID legends, same Acer pen only; Clear local output initially; each cell Cancel and ensure Shift OFF",
+  "keys": [
+    {
+      "physicalKeyID": "R06K10",
+      "label": "N24",
+      "base": "w",
+      "shift": "]",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K11",
+      "label": "N23",
+      "base": "y",
+      "shift": ",",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K12",
+      "label": "N08",
+      "base": "n",
+      "shift": ".",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K13",
+      "label": "M07",
+      "base": "V",
+      "shift": "/",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K14",
+      "label": "M08",
+      "base": "X",
+      "shift": "<",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K15",
+      "label": "M09",
+      "base": "v",
+      "shift": ">",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K16",
+      "label": "M33",
+      "base": "H",
+      "shift": "?",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    }
+  ],
+  "baseSteps": "target key only, compare base ASCII in composition",
+  "shiftSteps": "Cancel, Shift OFF, tap Shift once then target key, compare shifted ASCII",
+  "expected": "composition matches listed ASCII; confirmed output empty; do not confirm candidates",
+  "bodyLayerObservations": 14,
+  "scope": "seven further CN coding keys x2 layers only; action definitions cross-checked against this ledger, no finger physical result inherited, no literal/symbol/control/host or full repeat-stability acceptance",
+  "userReport": "全部 70 键 首测或复测了一遍，正常。看看有没有遗漏。",
+  "clarificationAnswer": "CN状态，上下两档都已测",
+  "evidence": "user-reports/p10-acer-pen-cn-all70-54-user-result.json",
+  "expandedScope": "P10-ACER-PEN-CN-ALL70-54-EXPANSION.json",
+  "counting": "requested14 are included in expanded140, no separate extra credit"
+}

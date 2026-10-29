@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-EN-EDIT-34",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "finger",
+  "userReport": " 正常",
+  "passedBodyLayers": 10,
+  "result": "five EN edit/space keys direct and Shift-modified runs normal as presented; expected a, a-tab-b, a-newline-b and a-space-b",
+  "scope": "preview only, grouped report; no exact text transcription, attempts, pen or host acceptance inferred"
+}

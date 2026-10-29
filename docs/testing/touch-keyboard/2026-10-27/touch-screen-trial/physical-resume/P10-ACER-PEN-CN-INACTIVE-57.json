@@ -1,0 +1,116 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CN-INACTIVE-57",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same original CN preview, variable mode, punctuation entry OFF, ID legends; Acer pen only; each independent case Clear, selection OFF, modifiers unlit, main digits12 then N08 for raw n; no candidate selection",
+  "keys": [
+    {
+      "physicalKeyID": "R05K04",
+      "label": "Caps Lock",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; tap main digits 1 then 2; tap N08. Local output 12, raw n. Do not select candidates.",
+          "action": "Caps Lock",
+          "expected": {
+            "raw": "n",
+            "localOutput": "12",
+            "noNewCharacters": true,
+            "noSystemActionOrMenu": true
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; tap main digits 1 then 2; tap N08. Local output 12, raw n. Do not select candidates.",
+          "action": "Shift then Caps Lock",
+          "expected": {
+            "raw": "n",
+            "localOutput": "12",
+            "noNewCharacters": true,
+            "noSystemActionOrMenu": true,
+            "oneShotShiftConsumed": true
+          },
+          "status": "passed-user-reported"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "R07K03",
+      "label": "左System",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; tap main digits 1 then 2; tap N08. Local output 12, raw n. Do not select candidates.",
+          "action": "左System",
+          "expected": {
+            "raw": "n",
+            "localOutput": "12",
+            "noNewCharacters": true,
+            "noSystemActionOrMenu": true
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; tap main digits 1 then 2; tap N08. Local output 12, raw n. Do not select candidates.",
+          "action": "Shift then 左System",
+          "expected": {
+            "raw": "n",
+            "localOutput": "12",
+            "noNewCharacters": true,
+            "noSystemActionOrMenu": true,
+            "oneShotShiftConsumed": true
+          },
+          "status": "passed-user-reported"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "R07K08",
+      "label": "右System",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; tap main digits 1 then 2; tap N08. Local output 12, raw n. Do not select candidates.",
+          "action": "右System",
+          "expected": {
+            "raw": "n",
+            "localOutput": "12",
+            "noNewCharacters": true,
+            "noSystemActionOrMenu": true
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; tap main digits 1 then 2; tap N08. Local output 12, raw n. Do not select candidates.",
+          "action": "Shift then 右System",
+          "expected": {
+            "raw": "n",
+            "localOutput": "12",
+            "noNewCharacters": true,
+            "noSystemActionOrMenu": true,
+            "oneShotShiftConsumed": true
+          },
+          "status": "passed-user-reported"
+        }
+      ]
+    }
+  ],
+  "bodyLayerObservations": 6,
+  "scenarioCount": 6,
+  "scope": "three inactive CN keys x2 layers preserve document/composition and cause no system action; shifted case consumes one-shot Shift per current semantic path; no OS Caps state, external host or inherited finger/EN acceptance",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-cn-inactive-57-user-result.json"
+}

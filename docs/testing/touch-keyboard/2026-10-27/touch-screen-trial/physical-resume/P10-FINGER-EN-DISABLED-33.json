@@ -1,0 +1,234 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-EN-DISABLED-33",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "finger",
+  "status": "passed-user-reported-group-result",
+  "setup": "same preview; Clear; EN, English keycaps EN, selection OFF, modifiers unlit; type lowercase a as sentinel",
+  "cases": [
+    {
+      "physicalKeyID": "R02K05",
+      "xU": "1",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K06",
+      "xU": "2",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K07",
+      "xU": "3",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K08",
+      "xU": "4",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K09",
+      "xU": "5",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K10",
+      "xU": "6",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K11",
+      "xU": "7",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K12",
+      "xU": "8",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K13",
+      "xU": "9",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K14",
+      "xU": "10",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K15",
+      "xU": "11",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K16",
+      "xU": "12",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K17",
+      "xU": "13",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K18",
+      "xU": "14",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K19",
+      "xU": "15",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R02K20",
+      "xU": "16",
+      "yU": "0.85",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K04",
+      "xU": "1.75",
+      "yU": "1.65",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K04",
+      "xU": "0",
+      "yU": "2.45",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K05",
+      "xU": "1.5",
+      "yU": "2.45",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K06",
+      "xU": "2.5",
+      "yU": "2.45",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K05",
+      "xU": "2.25",
+      "yU": "3.25",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K10",
+      "xU": "7.75",
+      "yU": "4.05",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K11",
+      "xU": "9.25",
+      "yU": "4.05",
+      "baseExpected": "disabled; preserve a and empty composition",
+      "shiftExpected": "disabled; preserve a and empty composition",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    }
+  ],
+  "runs": [
+    {
+      "layer": "EN_base",
+      "steps": "Shift OFF; tap each of23 blank disabled physical keys once",
+      "expected": "local output remains a; no composition/candidates"
+    },
+    {
+      "layer": "EN_shift",
+      "steps": "turn Shift ON; tap each of same23 blank disabled keys once; verify Shift remains ON; then turn Shift OFF",
+      "expected": "local output remains a; no composition/candidates; no hidden input"
+    }
+  ],
+  "bodyLayerObservations": 46,
+  "scope": "23 disabled EN physical keys x2 layers; only body blank keys, not settings/Help panel or margins; pending;14 other EN edit/modifier keys remain separate",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-finger-en-disabled-33-user-result.json"
+}

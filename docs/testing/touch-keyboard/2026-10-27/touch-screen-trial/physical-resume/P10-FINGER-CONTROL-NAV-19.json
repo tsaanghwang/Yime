@@ -1,0 +1,91 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CONTROL-NAV-19",
+  "continues": "TOUCH-V1-P10-FINGER-CN-CODING-18",
+  "inputMethod": "finger",
+  "inputMode": "CN",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Current preview only, CN/variable. Every scenario independently Clear then main digits 123. Use large top-row navigation controls, selection off. Insert digit 9 to reveal resulting caret position.",
+  "keys": [
+    {
+      "physicalKeyID": "TU-LEFT",
+      "label": "←",
+      "setup": "Clear; main digits 1,2,3; output 123, raw empty, selection off, modifiers unlit",
+      "steps": [
+        "ArrowLeft",
+        "digit 9"
+      ],
+      "expected": {
+        "raw": "",
+        "localOutput": "1293"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-RIGHT",
+      "label": "→",
+      "setup": "Clear; main digits 1,2,3; output 123, raw empty, selection off, modifiers unlit",
+      "steps": [
+        "Home (setup)",
+        "ArrowRight",
+        "digit 9"
+      ],
+      "expected": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-HOME",
+      "label": "Home",
+      "setup": "Clear; main digits 1,2,3; output 123, raw empty, selection off, modifiers unlit",
+      "steps": [
+        "Home",
+        "digit 9"
+      ],
+      "expected": {
+        "raw": "",
+        "localOutput": "9123"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-END",
+      "label": "End",
+      "setup": "Clear; main digits 1,2,3; output 123, raw empty, selection off, modifiers unlit",
+      "steps": [
+        "Home (setup)",
+        "End",
+        "digit 9"
+      ],
+      "expected": {
+        "raw": "",
+        "localOutput": "1239"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "scenarioCount": 4,
+  "bodyLayerObservations": 0,
+  "controlObservations": 4,
+  "coverageScope": "preview empty-composition/selection-off navigation only; active or paused composition guard, selection extension and host navigation remain separate",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "touch control action map and preview.navigate",
+    "previewEditor arrows move one rune; preview Home/End are whole-text boundaries",
+    "empty-composition digit commits literal at current editor cursor"
+  ],
+  "userReport": "user-reports/p10-finger-control-nav-19-user-result.json",
+  "resultDate": "2026-10-28"
+}

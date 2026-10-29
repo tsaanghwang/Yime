@@ -1,0 +1,228 @@
+{
+  "date": "2026-10-28",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "characterInventory": 70,
+  "confirmedCharacterLayers": 140,
+  "bodyInventory": 84,
+  "remainingFunctionalKeys": 14,
+  "remainingCNBodyLayers": 28,
+  "remainingKeys": [
+    {
+      "physicalKeyID": "R02K04",
+      "label": "Tab",
+      "action": {
+        "type": "local",
+        "ascii": "",
+        "key": "Tab",
+        "label": ""
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    },
+    {
+      "physicalKeyID": "R02K21",
+      "label": "Back Space",
+      "action": {
+        "type": "backspace",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    },
+    {
+      "physicalKeyID": "R05K04",
+      "label": "Caps Lock",
+      "action": {
+        "type": "unsupported",
+        "ascii": "",
+        "key": "",
+        "label": "Caps Lock"
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    },
+    {
+      "physicalKeyID": "R05K17",
+      "label": "Enter",
+      "action": {
+        "type": "confirm",
+        "ascii": "",
+        "key": "Enter",
+        "label": ""
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    },
+    {
+      "physicalKeyID": "R06K04",
+      "label": "Shift",
+      "action": {
+        "type": "shift",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    },
+    {
+      "physicalKeyID": "R06K17",
+      "label": "Shift",
+      "action": {
+        "type": "shift",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    },
+    {
+      "physicalKeyID": "R07K02",
+      "label": "Ctrl",
+      "action": {
+        "type": "unsupported",
+        "ascii": "",
+        "key": "",
+        "label": "Ctrl"
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    },
+    {
+      "physicalKeyID": "R07K03",
+      "label": "<i class='kb kb-logo-windows-7'></i>",
+      "action": {
+        "type": "unsupported",
+        "ascii": "",
+        "key": "",
+        "label": "System key"
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    },
+    {
+      "physicalKeyID": "R07K04",
+      "label": "Alt",
+      "action": {
+        "type": "unsupported",
+        "ascii": "",
+        "key": "",
+        "label": "Alt"
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    },
+    {
+      "physicalKeyID": "R07K05",
+      "label": "Space",
+      "action": {
+        "type": "confirm",
+        "ascii": "",
+        "key": "Space",
+        "label": ""
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    },
+    {
+      "physicalKeyID": "R07K06",
+      "label": "Space",
+      "action": {
+        "type": "confirm",
+        "ascii": "",
+        "key": "Space",
+        "label": ""
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    },
+    {
+      "physicalKeyID": "R07K07",
+      "label": "Alt",
+      "action": {
+        "type": "unsupported",
+        "ascii": "",
+        "key": "",
+        "label": "Alt"
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    },
+    {
+      "physicalKeyID": "R07K08",
+      "label": "<i class='kb kb-Hamburger-Menu'></i>",
+      "action": {
+        "type": "unsupported",
+        "ascii": "",
+        "key": "",
+        "label": "System key"
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    },
+    {
+      "physicalKeyID": "R07K09",
+      "label": "Ctrl",
+      "action": {
+        "type": "unsupported",
+        "ascii": "",
+        "key": "",
+        "label": "Ctrl"
+      },
+      "baseStatus": "待记录",
+      "shiftStatus": "待记录"
+    }
+  ],
+  "categories": [
+    {
+      "name": "editing/confirmation",
+      "keys": [
+        "Back Space",
+        "Tab",
+        "Enter",
+        "left Space",
+        "right Space"
+      ],
+      "count": 5
+    },
+    {
+      "name": "inactive",
+      "keys": [
+        "Caps Lock",
+        "left System",
+        "right System"
+      ],
+      "count": 3
+    },
+    {
+      "name": "Ctrl/Alt",
+      "keys": [
+        "left Ctrl",
+        "right Ctrl",
+        "left Alt",
+        "right Alt"
+      ],
+      "count": 4
+    },
+    {
+      "name": "Shift",
+      "keys": [
+        "left Shift",
+        "right Shift"
+      ],
+      "count": 2
+    }
+  ],
+  "CNFunctionalWhySeparate": "active composition edits, first-candidate confirmation and refusal semantics differ from the completed EN cases; do not inherit EN passes",
+  "outsideBodyAudit": [
+    "14 top controls have separate pen-specific scenario records; using them for setup does not fill formal scenario results",
+    "candidate selection/paging, contextual digits and quote-pair scenarios require distinct confirmation; all70 key-layer report alone does not establish those contexts",
+    "real host behavior is separate from local preview"
+  ],
+  "otherMethods": "finger336 kept by executable; MSI EN168/CN20 mapping observations and CN148 pending, with recontact caveat; no new credit to those methods",
+  "next": "P10-ACER-PEN-CN-EDIT-55.json"
+}

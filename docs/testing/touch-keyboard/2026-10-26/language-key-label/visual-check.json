@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-26",
+  "scope": "Developer UI visual check, mouse-operated isolated preview; not physical finger/pen acceptance",
+  "packageExecutableSHA256": "73c729b2948a37bc461c7cbcc7c3e1277424f9f5874b6d0285b241a02b1b6865",
+  "observedStates": [
+    {
+      "language": "chinese",
+      "view": "original",
+      "languageKey": "CN",
+      "result": "observed"
+    },
+    {
+      "language": "english",
+      "view": "EN",
+      "languageKey": "EN",
+      "result": "observed"
+    },
+    {
+      "language": "english",
+      "view": "original after Layout",
+      "languageKey": "EN",
+      "result": "observed"
+    },
+    {
+      "language": "chinese after switching back",
+      "view": "original",
+      "languageKey": "CN",
+      "result": "observed"
+    }
+  ],
+  "layoutAndColors": "same key positions and fills observed; only language-key legend follows input language",
+  "hostInputSent": false,
+  "livePreviewWindowId": 20712940,
+  "windowLeftOpen": "no; developer observation preview closed via its Close button after checks, allowing a fresh user launch",
+  "screenshotEvidence": "Screenshots displayed by Computer Use tool, not exported to repo files",
+  "physicalRetest": "pending"
+}

@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CN-CODING-53",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedBodyLayers": 20,
+  "result": "ten CN coding keys both base/Shift raw ASCII and empty confirmed output normal as presented",
+  "scope": "grouped preview report without actual character transcript/attempt counts, candidate confirmation, host or full pen repeat-stability acceptance; historical observations retained"
+}

@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-BASELINE-REPEAT-46",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "userReports": [
+    "已测",
+    "zheng'chang"
+  ],
+  "normalizedResult": "normal in immediate ten-intended-taps context",
+  "status": "ten-tap baseline comparison passed in this sample",
+  "targetKey": "R05K06 (EN a)",
+  "observedTargetContacts": 10,
+  "observedOutputIncreases": 10,
+  "eachOutputDelta": 1,
+  "finalOutputLength": 10,
+  "promotedMouseExtraOutput": 0,
+  "allNativeContactsIncludingNoncharacterSetup": 13,
+  "snapshot": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\raw\\acer-20261028T085228Z-2a990e58-through-350.jsonl",
+  "snapshotSHA256": "5458695073793077c8cb282120f873ff0ecc8b1a469fe786030e749adfd8fa3b",
+  "analysisReport": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\ANALYSIS-20261028T085228Z-2a990e58-through-350.json",
+  "bodyLayerObservations": 0,
+  "scope": "ten target taps only, with separate setup contacts; no all-key or long-run no-repeat acceptance and no closure of MSI issue; input method identified from user/declared run context"
+}

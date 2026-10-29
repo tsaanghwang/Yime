@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-EN-SHIFT-52",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedBodyLayers": 4,
+  "result": "both Shift keys one-shot uppercase Ab and double-toggle lowercase ab normal as presented",
+  "scope": "four sequential pen-tap cases only, no exact transcript/attempt count, simultaneous hold, host or long-run repeat-stability acceptance; prior native contact evidence and workflow clarification retained"
+}

@@ -203,7 +203,10 @@ func renderCorpusPreview(t *testing.T, root, mode string, p *preview) {
 	heightPx := int32(-15)
 	a.font, _, _ = G("CreateFontW").Call(uintptr(heightPx), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
 	defer G("DeleteObject").Call(a.font)
-	heightPx = -19
+	heightPx = -int32(math.Round(tk.UnitMM * a.ppm * 0.20))
+	a.keyFont, _, _ = G("CreateFontW").Call(uintptr(heightPx), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
+	defer G("DeleteObject").Call(a.keyFont)
+	heightPx = -int32(math.Round(tk.UnitMM * a.ppm * 0.23))
 	a.glyphFont, _, _ = G("CreateFontW").Call(uintptr(heightPx), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("YinYuan")))
 	defer G("DeleteObject").Call(a.glyphFont)
 	if err = a.screenshot(filepath.Join(*previewEvidenceDir, fmt.Sprintf("%s-preview.png", mode))); err != nil {

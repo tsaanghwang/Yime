@@ -1,0 +1,294 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-EN-ALL47-32",
+  "parentBatch": "TOUCH-V1-FINGER-EN-LETTERS-32",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "status": "passed-user-reported-expanded-scope",
+  "cases": [
+    {
+      "physicalKeyID": "R03K05",
+      "base": "`",
+      "shift": "~",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K06",
+      "base": "1",
+      "shift": "!",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K07",
+      "base": "2",
+      "shift": "@",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K08",
+      "base": "3",
+      "shift": "#",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K09",
+      "base": "4",
+      "shift": "$",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K10",
+      "base": "5",
+      "shift": "%",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K11",
+      "base": "6",
+      "shift": "^",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K12",
+      "base": "7",
+      "shift": "&",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K13",
+      "base": "8",
+      "shift": "*",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K14",
+      "base": "9",
+      "shift": "(",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K15",
+      "base": "0",
+      "shift": ")",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K16",
+      "base": "-",
+      "shift": "_",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R03K17",
+      "base": "=",
+      "shift": "+",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K07",
+      "base": "q",
+      "shift": "Q",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K08",
+      "base": "w",
+      "shift": "W",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K09",
+      "base": "e",
+      "shift": "E",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K10",
+      "base": "r",
+      "shift": "R",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K11",
+      "base": "t",
+      "shift": "T",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K12",
+      "base": "y",
+      "shift": "Y",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K13",
+      "base": "u",
+      "shift": "U",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K14",
+      "base": "i",
+      "shift": "I",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K15",
+      "base": "o",
+      "shift": "O",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K16",
+      "base": "p",
+      "shift": "P",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K17",
+      "base": "[",
+      "shift": "{",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K18",
+      "base": "]",
+      "shift": "}",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K19",
+      "base": "\\",
+      "shift": "|",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K06",
+      "base": "a",
+      "shift": "A",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K07",
+      "base": "s",
+      "shift": "S",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K08",
+      "base": "d",
+      "shift": "D",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K09",
+      "base": "f",
+      "shift": "F",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K10",
+      "base": "g",
+      "shift": "G",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K11",
+      "base": "h",
+      "shift": "H",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K12",
+      "base": "j",
+      "shift": "J",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K13",
+      "base": "k",
+      "shift": "K",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K14",
+      "base": "l",
+      "shift": "L",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K15",
+      "base": ";",
+      "shift": ":",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K16",
+      "base": "'",
+      "shift": "\"",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K05",
+      "base": "z",
+      "shift": "Z",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K06",
+      "base": "x",
+      "shift": "X",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K07",
+      "base": "c",
+      "shift": "C",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K08",
+      "base": "v",
+      "shift": "V",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K09",
+      "base": "b",
+      "shift": "B",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K12",
+      "base": "n",
+      "shift": "N",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K13",
+      "base": "m",
+      "shift": "M",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K14",
+      "base": ",",
+      "shift": "<",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K15",
+      "base": ".",
+      "shift": ">",
+      "status": "both EN layers passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K16",
+      "base": "/",
+      "shift": "?",
+      "status": "both EN layers passed-user-reported"
+    }
+  ],
+  "bodyLayerObservations": 94,
+  "evidence": "user-reports/p10-finger-en-all47-32-user-result.json",
+  "scope": "two-layer interpretation from immediately preceding base/Shift request; includes original ten keys, not an additional94 beyond them"
+}

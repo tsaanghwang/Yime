@@ -14,7 +14,7 @@ import (
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 )
 
-const previewHelp = "中文受控预览\n\n所有确认只写入本窗口内存文本，不调用系统输入，不写剪贴板或用户数据。\n变码/全码/简码切换会取消旧组合；CN EN 同时切换输入与标点，保留原始组合；英文暂停的候选不可选择。\n中文始终显示 CN；英文时 Layout 切换 CN/EN 键帽，偏好在本次运行内保留。\n点候选、空格/Enter 确认；空组合时空格/Enter 直接输出，非空无候选不提交。Esc 取消，退格编辑组合；翻页后旧候选及非编码主区输入触点取消。\n输出栏右侧提供左/右、Home/End 和选区开关；单指/单笔依次点按可选择，再输入替换或退格删除。辅助导航不继承盘面修饰键；其他操作关闭选区开关。有中文组合（含暂停组合）时不可用。Home/End 在预览到全文首尾。编辑按 Unicode 码点；本地输出用 ↵/⇥ 显示换行/Tab，单行随光标截取。\n侧数字区保持 literal 旁路。未标注标点入口开关默认关闭。\n音元字形来自实验解析文件，字体只在本进程加载；ID 按钮可恢复 ID 键帽。\n关闭即丢弃本地文本。不能将鼠标或模拟触摸记录为真实手指/触控笔验收。"
+const previewHelp = "中文受控预览\n\n所有确认只写入本窗口内存文本，不调用系统输入，不写剪贴板或用户数据。\n变码/全码/简码切换会取消旧组合；语言键随当前输入显示 CN 或 EN；点按同时切换输入与标点，保留原始组合；英文暂停的候选不可选择。\n中文始终显示 CN；英文时 Layout 切换 CN/EN 键帽，偏好在本次运行内保留。\n点候选、空格/Enter 确认；空组合时空格/Enter 直接输出，非空无候选不提交。Esc 取消，退格编辑组合；翻页后旧候选及非编码主区输入触点取消。\n输出栏右侧提供左/右、Home/End 和选区开关；单指/单笔依次点按可选择，再输入替换或退格删除。辅助导航不继承盘面修饰键；其他操作关闭选区开关。有中文组合（含暂停组合）时不可用。Home/End 在预览到全文首尾。编辑按 Unicode 码点；本地输出用 ↵/⇥ 显示换行/Tab，单行随光标截取。\n侧数字区保持 literal 旁路。未标注标点入口开关默认关闭。\n音元字形来自实验解析文件，字体只在本进程加载；ID 按钮可恢复 ID 键帽。\n关闭即丢弃本地文本。不能将鼠标或模拟触摸记录为真实手指/触控笔验收。"
 
 type previewGesture struct {
 	area             rect
@@ -33,6 +33,7 @@ var previewButtons = []toolButton{
 	{8, 90, "variable", "变码"}, {95, 177, "full", "全码"}, {182, 264, "shorthand", "简码"},
 	{275, 350, "language", ""}, {360, 485, "literal", ""}, {495, 610, "glyphs", ""},
 	{620, 690, "previous", "上一页"}, {695, 765, "next", "下一页"}, {775, 865, "reset", "清空输出"},
+	{875, 1010, "sound", ""},
 }
 
 func (a *ui) previewWidth() int32 {
@@ -40,6 +41,10 @@ func (a *ui) previewWidth() int32 {
 }
 func (a *ui) candidateRect(i int) rect {
 	w := (a.previewWidth() - 20) / 9
+	if a.o.TouchUI {
+		w = (a.previewWidth() - 200) / 9
+		return rect{100 + int32(i)*w, 34, 100 + int32(i+1)*w - 3, 94}
+	}
 	return rect{10 + int32(i)*w, 184, 10 + int32(i+1)*w - 3, 234}
 }
 func (a *ui) previewDown(id uint32, x, y int32) {
@@ -49,7 +54,7 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 	if _, exists := a.previewTouches[id]; exists {
 		return
 	}
-	if y < 104 {
+	if !a.o.TouchUI && y < 104 {
 		a.toolbar(x, y)
 		return
 	}
@@ -61,40 +66,61 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 		a.cancel()
 		if !a.preview.navigationEnabled() {
 			a.status = "请先确认或取消中文组合（含暂停组合），再使用辅助导航"
+			if a.o.TouchUI {
+				a.touchMessage = a.status
+			}
 			a.invalidate()
 			return
 		}
 		a.navSelecting = extend
+		if a.o.TouchUI {
+			a.touchSettingsOpen = false
+			a.touchHelpOpen = false
+		}
 		g.action, g.navigation, g.area = "navigation", key, area
 	} else {
 		if a.navSelecting || a.navigationPending() {
 			a.cancel()
 		}
-		if int(y) >= a.top {
-			g.action = "key"
-			g.area = rect{0, int32(a.top), a.previewWidth(), 1 << 30}
-			a.s.Down(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
-		} else {
-			for _, b := range previewButtons {
-				r := rect{b.l, 110, b.r, 150}
-				if inside(r, x, y) {
-					g.action, g.area = b.action, r
-					break
+		if a.o.TouchUI {
+			action, area, blocked := a.touchUIActionAt(x, y)
+			if blocked {
+				if action == "" {
+					a.invalidate()
+					return
 				}
+				g.action, g.area = action, area
 			}
-			if g.action == "" && a.preview.candidatesEnabled() {
-				for i := range a.preview.snapshot.State.Candidates {
-					r := a.candidateRect(i)
-					if inside(r, x, y) {
-						g.action, g.area, g.candidate = "candidate", r, a.preview.candidate(i)
-						break
+		}
+		if g.action == "" {
+			if int(y) >= a.top {
+				g.action = "key"
+				g.area = rect{0, int32(a.top), a.previewWidth(), 1 << 30}
+				a.s.Down(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
+			} else {
+				if !a.o.TouchUI {
+					for _, b := range previewButtons {
+						r := rect{b.l, 110, b.r, 150}
+						if inside(r, x, y) {
+							g.action, g.area = b.action, r
+							break
+						}
+					}
+				}
+				if g.action == "" && a.preview.candidatesEnabled() {
+					for i := range a.preview.snapshot.State.Candidates {
+						r := a.candidateRect(i)
+						if inside(r, x, y) {
+							g.action, g.area, g.candidate = "candidate", r, a.preview.candidate(i)
+							break
+						}
 					}
 				}
 			}
 		}
 	}
 	if g.action != "" {
-		if a.host != nil && g.action != "reset" {
+		if a.requiresHostTarget(g.action) {
 			g.delivery = a.host.ticket()
 			if !a.host.valid(g.delivery) {
 				a.loseHostFocus("请先在目标文本区放置光标，再点绑定目标")
@@ -117,16 +143,51 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 	}
 	a.move(id, x, y)
 	delete(a.previewTouches, id) // A duplicate UP has no action or commit.
+	if g.action == "sound" {
+		if !g.left {
+			a.cancel()
+			if a.o.KeySound == "click" {
+				a.o.KeySound = "off"
+				a.stopKeySound()
+			} else {
+				a.o.KeySound = "click"
+				a.clickFeedback() // One sample when turning sound on; muting stays silent.
+			}
+		}
+		a.invalidate()
+		return
+	}
+	if a.o.TouchUI && touchImmediateAction(g.action) {
+		if !g.left && g.stamp == a.preview.stamp() {
+			a.cancel()
+			a.touchMessage = ""
+			if err := a.applyTouchImmediate(g.action); err != nil {
+				a.touchMessage = err.Error()
+			} else if g.action != "close" && g.action != "minimize" && g.action != "help" {
+				a.clickFeedback()
+			}
+		}
+		a.invalidate()
+		return
+	}
 	if a.host != nil {
 		if g.action == "reset" {
 			if !g.left {
+				if a.o.TouchUI {
+					a.touchSettingsOpen = false
+					a.touchHelpOpen = false
+				}
 				if err := a.bindHost(); err != nil {
 					a.status = err.Error()
+				} else {
+					a.clickFeedback()
 				}
 			}
 			a.invalidate()
 			return
 		}
+	}
+	if a.requiresHostTarget(g.action) {
 		a.hostBusy = true
 		defer func() { a.hostBusy = false }()
 		if !pumpHostMessages() {
@@ -145,10 +206,14 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 		a.hostSink(g.delivery, g.cancelGeneration)
 	}
 	var err error
+	accepted := false
 	if g.action == "key" {
+		before := localKeyState(a.s)
 		out := a.s.Up(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
+		accepted = out == nil && !g.left && before != localKeyState(a.s)
 		if out != nil && !g.left {
 			err = a.preview.apply(*out, g.stamp)
+			accepted = out.Action.Type != "unsupported" && out.Action.Type != "disabled"
 			if out.Action.Type == "toggle-language" || out.Action.Type == "toggle-layout" {
 				a.cancel()
 			}
@@ -157,6 +222,7 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 		if g.stamp != a.preview.stamp() {
 			err = fmt.Errorf("状态已更新；本次触点取消")
 		} else {
+			accepted = true
 			switch g.action {
 			case "navigation":
 				if g.navigation == "select" {
@@ -176,6 +242,12 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 			case "language":
 				a.cancel()
 				err = a.preview.apply(tk.Output{Action: tk.Action{Type: "toggle-language"}}, g.stamp)
+			case "cancel":
+				a.cancel()
+				err = a.preview.apply(tk.Output{Action: tk.Action{Type: "clear"}}, g.stamp)
+			case "layout":
+				a.cancel()
+				a.preview.englishView = !a.preview.englishView
 			case "literal":
 				a.cancel()
 				a.preview.literalEntries = !a.preview.literalEntries
@@ -183,6 +255,10 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 				a.cancel()
 				a.showGlyphs = !a.showGlyphs
 			case "reset":
+				if a.o.TouchUI {
+					a.touchSettingsOpen = false
+					a.touchHelpOpen = false
+				}
 				a.cancel()
 				err = a.preview.apply(tk.Output{Action: tk.Action{Type: "clear"}}, g.stamp)
 				if err == nil {
@@ -196,23 +272,34 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 		a.loseHostFocus("会话/发送已停止；请核对正文后重新绑定")
 	}
 	if err != nil {
+		if a.o.TouchUI {
+			a.touchMessage = err.Error()
+		}
 		a.navSelecting = false
 		a.status = err.Error()
 	} else {
+		if a.o.TouchUI {
+			a.touchMessage = ""
+		}
 		a.status = "预览输出只在本窗口；真实手指/触控笔验收未记录。"
 		if a.host != nil {
 			a.status = a.host.last
 		}
 	}
+	if accepted && err == nil && !a.preview.fault {
+		a.acceptedInputSerial++
+		a.clickFeedback()
+	}
 	a.invalidate()
 }
 func (a *ui) drawPreview(dc uintptr, r rect) {
 	p := a.preview
+	palette := a.palette()
 	for _, b := range previewButtons {
 		title := b.label
-		c := uintptr(0xE5EBE2)
+		c := palette.panel
 		if b.action == p.mode {
-			c = 0xB3DDC5
+			c = palette.active
 		}
 		switch b.action {
 		case "language":
@@ -224,6 +311,14 @@ func (a *ui) drawPreview(dc uintptr, r rect) {
 		case "reset":
 			if a.host != nil {
 				title = "绑定目标"
+			}
+		case "sound":
+			title = "按键音：关"
+			if a.o.KeySound == "click" {
+				title = "按键音：开"
+				if a.soundUnavailable {
+					title = "按键音：不可用"
+				}
 			}
 		}
 		fill(dc, rect{b.l, 110, b.r, 150}, c)
@@ -239,15 +334,15 @@ func (a *ui) drawPreview(dc uintptr, r rect) {
 	text(dc, fmt.Sprintf("组合：%s    第 %d 页    rev %d", raw, p.snapshot.State.PageNumber+1, p.snapshot.Revision), rect{10, 155, r.R - 10, 181}, 0x24)
 	for i, c := range p.snapshot.State.Candidates {
 		box := a.candidateRect(i)
-		color, label := uintptr(0xFFFFFF), fmt.Sprintf("%d  %s", i+1, c.Text)
+		color, label := palette.candidate, fmt.Sprintf("%d  %s", i+1, c.Text)
 		if !p.candidatesEnabled() {
-			color, label = 0xDDDDDD, label+"（暂停）"
+			color, label = palette.disabled, label+"（暂停）"
 		}
 		fill(dc, box, color)
 		text(dc, label, box, 0x11) // wrap long candidates inside their own target
 	}
 	outputRight := a.navigationRect(navigationButtons[0]).L - 8
-	fill(dc, rect{10, 240, outputRight, 290}, 0xFFFFFF)
+	fill(dc, rect{10, 240, outputRight, 290}, palette.output)
 	output := ""
 	if a.host != nil {
 		output = fmt.Sprintf("目标 HWND %d / 焦点 %d / 世代 %d：%s", a.host.target.Window, a.host.target.Focus, a.host.epoch, a.host.last)

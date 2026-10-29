@@ -1,0 +1,116 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67",
+  "continues": "TOUCH-V1-ACER-PEN-CONTROL-LIFECYCLE-66",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "Same preview CN; each case independently Clear, selection OFF, modifiers unlit, digits1234, ArrowLeft twice to12|34, selection ON. Acer pen only. Then perform listed top navigation, observe selected text and insert9.",
+  "cases": [
+    {
+      "caseID": "select-to-Home-replace",
+      "controls": [
+        "TU-SELECT",
+        "TU-HOME"
+      ],
+      "setup": [
+        "CN; Clear; selection OFF; modifiers unlit; digits1234",
+        "ArrowLeft twice ->12|34; selection ON"
+      ],
+      "steps": [
+        "Home",
+        "verify 12 selected",
+        "main digit9"
+      ],
+      "expected": {
+        "selectedBefore9": "12",
+        "localOutput": "934",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "select-to-End-replace",
+      "controls": [
+        "TU-SELECT",
+        "TU-END"
+      ],
+      "setup": [
+        "CN; Clear; selection OFF; modifiers unlit; digits1234",
+        "ArrowLeft twice ->12|34; selection ON"
+      ],
+      "steps": [
+        "End",
+        "verify 34 selected",
+        "main digit9"
+      ],
+      "expected": {
+        "selectedBefore9": "34",
+        "localOutput": "129",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shrink-selection",
+      "controls": [
+        "TU-SELECT",
+        "TU-LEFT",
+        "TU-RIGHT"
+      ],
+      "setup": [
+        "CN; Clear; selection OFF; modifiers unlit; digits1234",
+        "ArrowLeft twice ->12|34; selection ON"
+      ],
+      "steps": [
+        "ArrowLeft twice",
+        "ArrowRight once",
+        "verify 2 selected",
+        "main digit9"
+      ],
+      "expected": {
+        "selectedBefore9": "2",
+        "localOutput": "1934",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "cross-selection-anchor",
+      "controls": [
+        "TU-SELECT",
+        "TU-LEFT",
+        "TU-RIGHT"
+      ],
+      "setup": [
+        "CN; Clear; selection OFF; modifiers unlit; digits1234",
+        "ArrowLeft twice ->12|34; selection ON"
+      ],
+      "steps": [
+        "ArrowLeft once",
+        "ArrowRight twice",
+        "verify 3 selected",
+        "main digit9"
+      ],
+      "expected": {
+        "selectedBefore9": "3",
+        "localOutput": "1294",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 4,
+  "bodyLayerObservations": 0,
+  "controlObservations": 4,
+  "coverageScope": "final four defined preview selection supplement cases: Home/End extension, shrinking and crossing anchor; not an open-ended selection matrix or real host acceptance",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "P10-FINGER-CONTROL-SELECTION-HOME-END-30.json two current-package expected paths, no results inherited",
+    "P10-FINGER-CONTROL-SELECTION-REVERSE-31.json two current-package expected paths, no results inherited"
+  ],
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-control-selection-supplement-67-user-result.json"
+}

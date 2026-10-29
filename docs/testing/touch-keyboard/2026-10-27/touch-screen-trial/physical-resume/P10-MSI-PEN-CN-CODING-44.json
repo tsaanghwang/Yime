@@ -1,0 +1,99 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-CN-CODING-44",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "MSI supplied pen",
+  "status": "character mapping reported normal with frequent lift-repeat issue unresolved",
+  "setup": "same preview/current geometry; same MSI original pen only; Clear local output, CN, variable mode, punctuation entry OFF, glyph display ID; each independent base/Shift cell Cancel and ensure Shift OFF",
+  "keys": [
+    {
+      "physicalKeyID": "R05K11",
+      "label": "N07",
+      "base": "l",
+      "shift": "=",
+      "baseStatus": "mapping correct-user-reported; repeat stability unresolved",
+      "shiftStatus": "mapping correct-user-reported; repeat stability unresolved"
+    },
+    {
+      "physicalKeyID": "R05K12",
+      "label": "M01",
+      "base": "I",
+      "shift": ",",
+      "baseStatus": "mapping correct-user-reported; repeat stability unresolved",
+      "shiftStatus": "mapping correct-user-reported; repeat stability unresolved"
+    },
+    {
+      "physicalKeyID": "R05K13",
+      "label": "M02",
+      "base": "J",
+      "shift": "-",
+      "baseStatus": "mapping correct-user-reported; repeat stability unresolved",
+      "shiftStatus": "mapping correct-user-reported; repeat stability unresolved"
+    },
+    {
+      "physicalKeyID": "R05K14",
+      "label": "M03",
+      "base": "i",
+      "shift": ".",
+      "baseStatus": "mapping correct-user-reported; repeat stability unresolved",
+      "shiftStatus": "mapping correct-user-reported; repeat stability unresolved"
+    },
+    {
+      "physicalKeyID": "R05K15",
+      "label": "M31",
+      "base": "G",
+      "shift": ":",
+      "baseStatus": "mapping correct-user-reported; repeat stability unresolved",
+      "shiftStatus": "mapping correct-user-reported; repeat stability unresolved"
+    },
+    {
+      "physicalKeyID": "R06K05",
+      "label": "M30",
+      "base": "N",
+      "shift": "[",
+      "baseStatus": "mapping correct-user-reported; repeat stability unresolved",
+      "shiftStatus": "mapping correct-user-reported; repeat stability unresolved"
+    },
+    {
+      "physicalKeyID": "R06K06",
+      "label": "M18",
+      "base": "e",
+      "shift": "}",
+      "baseStatus": "mapping correct-user-reported; repeat stability unresolved",
+      "shiftStatus": "mapping correct-user-reported; repeat stability unresolved"
+    },
+    {
+      "physicalKeyID": "R06K07",
+      "label": "M17",
+      "base": "F",
+      "shift": "|",
+      "baseStatus": "mapping correct-user-reported; repeat stability unresolved",
+      "shiftStatus": "mapping correct-user-reported; repeat stability unresolved"
+    },
+    {
+      "physicalKeyID": "R06K08",
+      "label": "M16",
+      "base": "E",
+      "shift": "{",
+      "baseStatus": "mapping correct-user-reported; repeat stability unresolved",
+      "shiftStatus": "mapping correct-user-reported; repeat stability unresolved"
+    },
+    {
+      "physicalKeyID": "R06K09",
+      "label": "N01",
+      "base": "b",
+      "shift": "\\",
+      "baseStatus": "mapping correct-user-reported; repeat stability unresolved",
+      "shiftStatus": "mapping correct-user-reported; repeat stability unresolved"
+    }
+  ],
+  "baseSteps": "tap target key only; compare raw composition with base ASCII",
+  "shiftSteps": "Cancel, Shift OFF, tap Shift once then target key; compare raw with shifted ASCII",
+  "expected": "only requested ASCII in composition, confirmed local output empty; no candidate selection/confirmation",
+  "bodyLayerObservations": 20,
+  "scope": "ten CN coding keys x2 layers only; finger04 instructions reused after action verification, no physical results inherited; no CN literal/symbol/controls, host or duplicate-free acceptance",
+  "userReport": "正常。但是，笔提起离开屏幕瞬间可能是屏幕角度旋转摆动和手抬起时自然抖动（抬起并保持不离得太远产生的起伏抖动）导致多数时候会产生重复。不是都有，注意慢一点或调整一下角度会好些。是不是第二次触发反应的时间留得短了一点。",
+  "evidence": "user-reports/p10-msi-pen-cn-coding-44-user-result.json",
+  "repetitionIssue": "../../../2026-10-28/pen-lift-diagnostic/ISSUE.json"
+}

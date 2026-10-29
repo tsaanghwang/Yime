@@ -1,0 +1,130 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CN-EDIT-55",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same original CN preview, variable mode, punctuation entry OFF, ID legends; Acer pen only; every case Clear, selection OFF, modifiers unlit; do not confirm candidates",
+  "cases": [
+    {
+      "layer": "CN_base",
+      "context": "composition",
+      "setup": "Clear; tap N08 then M03 to form raw ni, output empty",
+      "action": "Back Space",
+      "expected": {
+        "raw": "n",
+        "localOutput": ""
+      },
+      "status": "passed-user-reported",
+      "physicalKeyID": "R02K21",
+      "label": "Back Space"
+    },
+    {
+      "layer": "CN_base",
+      "context": "confirmed-output",
+      "setup": "Clear; tap main digits 1 then 2 with empty composition to form local output 12",
+      "action": "Back Space",
+      "expected": {
+        "raw": "",
+        "localOutput": "1"
+      },
+      "status": "passed-user-reported",
+      "physicalKeyID": "R02K21",
+      "label": "Back Space"
+    },
+    {
+      "layer": "CN_shift",
+      "context": "composition",
+      "setup": "Clear; tap N08 then M03 to form raw ni, output empty",
+      "action": "one-shot Shift then Back Space",
+      "expected": {
+        "raw": "n",
+        "localOutput": ""
+      },
+      "status": "passed-user-reported",
+      "physicalKeyID": "R02K21",
+      "label": "Back Space"
+    },
+    {
+      "layer": "CN_shift",
+      "context": "confirmed-output",
+      "setup": "Clear; tap main digits 1 then 2 with empty composition to form local output 12",
+      "action": "one-shot Shift then Back Space",
+      "expected": {
+        "raw": "",
+        "localOutput": "1"
+      },
+      "status": "passed-user-reported",
+      "physicalKeyID": "R02K21",
+      "label": "Back Space"
+    },
+    {
+      "layer": "CN_base",
+      "context": "empty-composition",
+      "setup": "Clear then main digit 1; raw empty",
+      "action": "Tab",
+      "expected": {
+        "raw": "",
+        "localOutput": "1\t",
+        "display": "1⇥ then caret"
+      },
+      "status": "passed-user-reported",
+      "physicalKeyID": "R02K04",
+      "label": "Tab"
+    },
+    {
+      "layer": "CN_base",
+      "context": "active-composition",
+      "setup": "Clear then N08 to form raw n; do not select candidate",
+      "action": "Tab",
+      "expected": {
+        "raw": "n",
+        "localOutput": "",
+        "compositionPreserved": true,
+        "noCandidateCommit": true,
+        "refusalHintAllowed": true
+      },
+      "status": "passed-user-reported",
+      "physicalKeyID": "R02K04",
+      "label": "Tab"
+    },
+    {
+      "layer": "CN_shift",
+      "context": "empty-composition",
+      "setup": "Clear then main digit 1; raw empty",
+      "action": "one-shot Shift then Tab",
+      "expected": {
+        "raw": "",
+        "localOutput": "1\t",
+        "display": "1⇥ then caret"
+      },
+      "status": "passed-user-reported",
+      "physicalKeyID": "R02K04",
+      "label": "Tab"
+    },
+    {
+      "layer": "CN_shift",
+      "context": "active-composition",
+      "setup": "Clear then N08 to form raw n; do not select candidate",
+      "action": "one-shot Shift then Tab",
+      "expected": {
+        "raw": "n",
+        "localOutput": "",
+        "compositionPreserved": true,
+        "noCandidateCommit": true,
+        "refusalHintAllowed": true
+      },
+      "status": "passed-user-reported",
+      "physicalKeyID": "R02K04",
+      "label": "Tab"
+    }
+  ],
+  "bodyLayerObservations": 4,
+  "scenarioCount": 8,
+  "counting": "two keys x2 CN layers, each tested in empty/active composition contexts; eight scenarios cover four ledger layers, not eight extra layers",
+  "scope": "only Back Space and Tab; other twelve CN function keys24 layers remain; no finger physical result inherited or real-host behavior inferred",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-cn-edit-55-user-result.json"
+}

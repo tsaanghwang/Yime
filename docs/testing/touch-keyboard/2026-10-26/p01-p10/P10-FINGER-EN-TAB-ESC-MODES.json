@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-TAB-ESC-MODES",
+  "inputMethod": "finger",
+  "target": "fixed-package preview only, English EN view when the tested control is pressed",
+  "packageExecutableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "coverageLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "setup": "Each independent case starts with cleared output/selection and no Shift latch; finger only. Restore English EN view after a mode/layout case. Chinese ni is fixture setup for an EN-paused Esc test, not CN layer coverage.",
+  "keys": [
+    {
+      "physicalKeyID": "R02K04",
+      "label": "Tab",
+      "baseCase": "English EN: type a, tap Tab, type b; preview displays a⇥b (one literal tab)",
+      "shiftCase": "English EN: type a, tap Shift then Tab, type b; preview displays a⇥b (one literal tab)",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K02",
+      "label": "Esc",
+      "baseCase": "Clear output; Chinese variable ni then switch to English EN, tap Esc: paused composition cleared and output stays empty",
+      "shiftCase": "Repeat same ni-to-English setup; tap Shift then Esc: composition cleared and output stays empty",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K03",
+      "label": "CN EN",
+      "baseCase": "From English EN with no composition tap CN EN: Chinese; tap again: English; no output",
+      "shiftCase": "From English EN with no composition tap Shift then CN EN: Chinese; tap CN EN again: English; no output",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K16",
+      "label": "Layout",
+      "baseCase": "While input language English with EN key view tap Layout: original key view; tap again: EN; geometry/colors retained, no output",
+      "shiftCase": "While input language English with EN view tap Shift then Layout: original key view; tap Layout again: EN; no output",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    }
+  ],
+  "status": "passed-user-reported",
+  "note": "Preview Tab always inserts a literal tab; Word/Edge focus movement is independent. CN EN couples language/punctuation, Layout only changes English view preference. Empty alternate Shift actions use base-action fallback. Functional pass does not close the old static CN EN display usability failure.",
+  "userReport": "user-reports/p10-finger-en-tab-esc-modes-and-label-issue.json",
+  "usabilityFinding": "../language-key-label/ISSUE_AND_FIX.json"
+}

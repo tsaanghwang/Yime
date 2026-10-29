@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-SELECTION-REVERSE-31",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "finger",
+  "status": "passed-user-reported-group-result",
+  "setup": "same preview CN; each case Clear, selection OFF, input1234, ArrowLeft twice to12|34, selection ON",
+  "cases": [
+    {
+      "id": "shrink-selection",
+      "steps": [
+        "ArrowLeft twice: select12",
+        "ArrowRight once: only2 remains selected",
+        "main digit9"
+      ],
+      "expected": "local output1934, composition empty",
+      "status": "passed-user-reported"
+    },
+    {
+      "id": "cross-selection-anchor",
+      "steps": [
+        "ArrowLeft once: select2",
+        "ArrowRight twice: cross original anchor and select3",
+        "main digit9"
+      ],
+      "expected": "local output1294, composition empty",
+      "status": "passed-user-reported"
+    }
+  ],
+  "bodyLayerObservations": 0,
+  "scope": "final two preview selection supplement cases for shrinking and reversing across anchor; after this group checkpoint controls and resume remaining body/pen/host stages from existing plan, not an open-ended selection matrix",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-finger-control-selection-reverse-31-user-result.json"
+}

@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-AUDIO-STARTUP-FIX-27",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "status": "both startup/relaunch audibility cases passed-user-reported",
+  "cases": [
+    {
+      "id": "first fresh launch",
+      "steps": "exit current preview; launch new Audio Startup Fixed Preview; do not minimize; press main digits1,2,3",
+      "expected": "output123 and audible clicks directly after launch",
+      "status": "audibility-passed-user-reported"
+    },
+    {
+      "id": "exit and relaunch again",
+      "steps": "exit current preview; launch new Audio Startup Fixed Preview; do not minimize; press main digits1,2,3",
+      "expected": "output123 and audible clicks directly after launch",
+      "status": "audibility-passed-user-reported"
+    }
+  ],
+  "minimizeKey": "silent by current explicit behavior; report other missing sounds separately",
+  "bodyLayerObservations": 0,
+  "scope": "audibility after fresh launch/relaunch only; no blanket lifecycle, host or method acceptance",
+  "userReport": "都有",
+  "inputMethod": "not specified; no method-specific acceptance inferred",
+  "outputVerification": "audibility explicitly confirmed; output123 not separately transcribed/confirmed"
+}

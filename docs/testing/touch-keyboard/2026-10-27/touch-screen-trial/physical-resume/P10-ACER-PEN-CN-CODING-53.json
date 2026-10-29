@@ -1,0 +1,99 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CN-CODING-53",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same original unfiltered preview; Acer pen only; Clear local output, CN, variable mode, punctuation entry OFF, glyph display ID; each base/Shift cell independently Cancel and ensure Shift OFF",
+  "keys": [
+    {
+      "physicalKeyID": "R05K11",
+      "label": "N07",
+      "base": "l",
+      "shift": "=",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K12",
+      "label": "M01",
+      "base": "I",
+      "shift": ",",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K13",
+      "label": "M02",
+      "base": "J",
+      "shift": "-",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K14",
+      "label": "M03",
+      "base": "i",
+      "shift": ".",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R05K15",
+      "label": "M31",
+      "base": "G",
+      "shift": ":",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K05",
+      "label": "M30",
+      "base": "N",
+      "shift": "[",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K06",
+      "label": "M18",
+      "base": "e",
+      "shift": "}",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K07",
+      "label": "M17",
+      "base": "F",
+      "shift": "|",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K08",
+      "label": "M16",
+      "base": "E",
+      "shift": "{",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K09",
+      "label": "N01",
+      "base": "b",
+      "shift": "\\",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    }
+  ],
+  "baseSteps": "tap target key only; compare raw composition with base ASCII",
+  "shiftSteps": "Cancel, Shift OFF, Shift once then target key; compare raw composition with shifted ASCII",
+  "expected": "only requested ASCII in composition; confirmed output empty; do not confirm/select candidates",
+  "bodyLayerObservations": 20,
+  "scope": "ten CN coding keys x2 layers only; action definitions verified against this pen ledger; no physical result inherited from finger/MSI, no literal/symbol/control, host or general repeat-stability acceptance",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-cn-coding-53-user-result.json"
+}

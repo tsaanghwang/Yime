@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-LIFECYCLE-28",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "finger",
+  "userReport": "正常",
+  "result": "three presented preview scenarios normal: active-CN minimize/cancel, paused-EN minimize/cancel, finger exit/relaunch",
+  "passedControlScenarios": 3,
+  "bodyLayerObservations": 0,
+  "scope": "confirmed output retained, unconfirmed composition cancelled, language retained, input after restore, exit/relaunch; audibility only as explicitly requested; no real-host or pen acceptance"
+}

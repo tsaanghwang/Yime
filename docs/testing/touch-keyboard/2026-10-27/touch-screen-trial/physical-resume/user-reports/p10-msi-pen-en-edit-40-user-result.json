@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-EN-EDIT-40",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "MSI supplied pen",
+  "userReport": "正常。",
+  "passedBodyLayers": 10,
+  "result": "five EN edit/space keys both direct and Shift runs normal as presented",
+  "scope": "local preview only, grouped report, no per-action transcript/attempt count or host result; earlier repeated-contact observation retained, no pen-wide duplicate-free claim"
+}

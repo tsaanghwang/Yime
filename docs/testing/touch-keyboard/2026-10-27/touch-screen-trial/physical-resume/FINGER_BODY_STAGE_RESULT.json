@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-28",
+  "status": "defined finger body four-layer ledger complete across two executables",
+  "screenView": "touch-screen-v1",
+  "physicalBodyKeys": 84,
+  "passedBodyLayerObservations": 336,
+  "pendingBodyLayerObservations": 0,
+  "passedByExecutable": {
+    "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146": {
+      "CN": 168,
+      "EN": 0
+    },
+    "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32": {
+      "CN": 0,
+      "EN": 168
+    }
+  },
+  "singleExecutableFourLayerAcceptance": false,
+  "currentExecutableAcceptance": "EN body168 and its specified scenarios; CN body observations remain on r3, not copied",
+  "controlScenarioObservations": {
+    "total": 37,
+    "byExecutable": {
+      "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146": 28,
+      "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32": 9
+    },
+    "separateFromBody": true
+  },
+  "ledger": "finger-key-coverage.csv",
+  "CNStage": "CN_BODY_STAGE_RESULT.zh-CN.md",
+  "ENBatches": [
+    "P10-FINGER-EN-ALL47-32-EXPANSION.json",
+    "P10-FINGER-EN-DISABLED-33.json",
+    "P10-FINGER-EN-EDIT-34.json",
+    "P10-FINGER-EN-INACTIVE-35.json",
+    "P10-FINGER-EN-CTRL-ALT-36.json",
+    "P10-FINGER-EN-SHIFT-37.json"
+  ],
+  "correctionsPreserved": [
+    "inactive35 redundant manual Shift-off instruction corrected; actual reported Shift consumption kept",
+    "all47 user-expanded32 includes original ten keys once;94 total",
+    "pinyin reply36 normalized from original zheng-cang spelling in context"
+  ],
+  "notCovered": [
+    "both named pens on current touch-screen view",
+    "all settings/candidate/fault and concurrent-contact branches",
+    "real Word/Edge current-view acceptance",
+    "new physical dimensions or speed/ergonomics claims",
+    "installed IME/product acceptance"
+  ],
+  "legacyFullView250": "retained separately, not added to336 or inherited",
+  "remainingPenBodyObservations": {
+    "MSI supplied pen": 336,
+    "Acer PE272XT supplied pen": 336
+  },
+  "next": "P10-MSI-PEN-EN-ALL47-38.json"
+}

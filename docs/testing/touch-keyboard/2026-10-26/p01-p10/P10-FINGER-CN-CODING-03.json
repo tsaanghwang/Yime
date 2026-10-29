@@ -1,0 +1,127 @@
+{
+  "date": "2026-10-27",
+  "batchID": "P10-FINGER-CN-CODING-03",
+  "inputMethod": "finger",
+  "target": "new language-label package preview; Chinese CN variable mode; literal-entry switch OFF",
+  "packageExecutableSHA256": "73c729b2948a37bc461c7cbcc7c3e1277424f9f5874b6d0285b241a02b1b6865",
+  "coverageLayers": [
+    "CN_base",
+    "CN_shift"
+  ],
+  "setup": "Before every table cell cancel composition, clear output and reset Shift. Locate keys by yinyuan ID. Tap base key or one-shot Shift+key only; inspect raw ASCII, do not select candidates; output stays empty.",
+  "keys": [
+    {
+      "physicalKeyID": "R04K14",
+      "label": "M05",
+      "base": "W",
+      "shift": "^",
+      "baseCase": "After independent reset, tap M05: raw composition W, output empty",
+      "shiftCase": "After independent reset, tap Shift then M05: raw composition ^, output empty",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K15",
+      "label": "M06",
+      "base": "u",
+      "shift": "+",
+      "baseCase": "After independent reset, tap M06: raw composition u, output empty",
+      "shiftCase": "After independent reset, tap Shift then M06: raw composition +, output empty",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K16",
+      "label": "N16",
+      "base": "Z",
+      "shift": ";",
+      "baseCase": "After independent reset, tap N16: raw composition Z, output empty",
+      "shiftCase": "After independent reset, tap Shift then N16: raw composition ;, output empty",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K17",
+      "label": "N17",
+      "base": "C",
+      "shift": "{",
+      "baseCase": "After independent reset, tap N17: raw composition C, output empty",
+      "shiftCase": "After independent reset, tap Shift then N17: raw composition {, output empty",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K18",
+      "label": "N18",
+      "base": "S",
+      "shift": "}",
+      "baseCase": "After independent reset, tap N18: raw composition S, output empty",
+      "shiftCase": "After independent reset, tap Shift then N18: raw composition }, output empty",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K19",
+      "label": "N19",
+      "base": "r",
+      "shift": "|",
+      "baseCase": "After independent reset, tap N19: raw composition r, output empty",
+      "shiftCase": "After independent reset, tap Shift then N19: raw composition |, output empty",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R05K07",
+      "label": "M12",
+      "base": "a",
+      "shift": "]",
+      "baseCase": "After independent reset, tap M12: raw composition a, output empty",
+      "shiftCase": "After independent reset, tap Shift then M12: raw composition ], output empty",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R05K08",
+      "label": "M11",
+      "base": "D",
+      "shift": "\\",
+      "baseCase": "After independent reset, tap M11: raw composition D, output empty",
+      "shiftCase": "After independent reset, tap Shift then M11: raw composition \\, output empty",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R05K09",
+      "label": "M10",
+      "base": "A",
+      "shift": "[",
+      "baseCase": "After independent reset, tap M10: raw composition A, output empty",
+      "shiftCase": "After independent reset, tap Shift then M10: raw composition [, output empty",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R05K10",
+      "label": "N02",
+      "base": "p",
+      "shift": "`",
+      "baseCase": "After independent reset, tap N02: raw composition p, output empty",
+      "shiftCase": "After independent reset, tap Shift then N02: raw composition `, output empty",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    }
+  ],
+  "status": "passed-user-reported",
+  "expectedSource": "Unmodified action columns from existing lab template plus generated LayoutAlphabet; no inferred pronunciation/code repair.",
+  "userReport": "user-reports/p10-finger-cn-coding-03-user-result.json"
+}

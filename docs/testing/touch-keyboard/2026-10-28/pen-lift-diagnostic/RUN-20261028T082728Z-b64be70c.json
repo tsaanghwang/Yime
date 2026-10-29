@@ -1,0 +1,22 @@
+{
+  "runID": "20261028T082728Z-b64be70c",
+  "createdUTC": "2026-10-28T08:27:28.377727+00:00",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "processID": 32048,
+  "trace": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\raw\\msi-pen-lift-20261028T082728Z-b64be70c.jsonl",
+  "arguments": [
+    "--preview",
+    "--touch-ui",
+    "--theme",
+    "dark",
+    "--key-sound",
+    "click",
+    "--ruler-observed-mm",
+    "58.8",
+    "--key-view",
+    "english",
+    "--input-trace",
+    "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\raw\\msi-pen-lift-20261028T082728Z-b64be70c.jsonl"
+  ],
+  "scope": "own controlled preview only; no text/audio recording or OS input; unique trace per launch; no installed settings changed"
+}

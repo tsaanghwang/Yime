@@ -1,0 +1,26 @@
+{
+  "goTests": {
+    "command": "go test ./cmd/yime-touch-keyboard ./internal/touchkeyboard ./internal/keyboardlab -timeout 90s",
+    "status": "passed",
+    "covers": [
+      "98-key geometry and non-overlap; canonical 84 body mappings unchanged",
+      "settings do not type through overlay; composition/language/mode state",
+      "large SelectAll/Delete and active/paused composition guards",
+      "unbound configuration never emits host input",
+      "move-out/duplicate-UP/old-toolbar hit suppression",
+      "menu fit at multiple scales",
+      "native GDI bottom-glyph completeness at 156px and 125px key heights",
+      "prior input/sound/taskbar/pen/host-ticket regressions"
+    ],
+    "testRepair": "Taskbar native-window subtests now lock their own OS thread; initial run hung because the parent lock does not pin a subtest goroutine."
+  },
+  "completePackageCheck": "r3-package-check.json",
+  "touchInProcessCheck": "r3-data-check.json",
+  "optionalNativeEdit": {
+    "status": "not passed: foreground automation restriction",
+    "message": "own target did not acquire foreground; no input sent",
+    "appliesTo": "r1 optional classic native EDIT package check; standard package check passed separately",
+    "notProductFailureOrHostAcceptance": true
+  },
+  "physicalAcceptance": false
+}

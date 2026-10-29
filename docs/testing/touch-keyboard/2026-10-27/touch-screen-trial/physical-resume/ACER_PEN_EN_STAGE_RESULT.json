@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-28",
+  "status": "defined Acer pen EN body168 observations complete; historical contact evidence and workflow clarification retained",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "physicalBodyKeys": 84,
+  "passedENBodyLayers": 168,
+  "pendingENBodyLayers": 0,
+  "pendingCNBodyLayers": 168,
+  "ledger": "acer-pen-key-coverage.csv",
+  "batches": [
+    {
+      "batch": 47,
+      "layers": 94,
+      "scope": "47 character input keys two layers"
+    },
+    {
+      "batch": 48,
+      "layers": 46,
+      "scope": "23 disabled keys two layers"
+    },
+    {
+      "batch": 49,
+      "layers": 10,
+      "scope": "five edit/space keys two layers"
+    },
+    {
+      "batch": 50,
+      "layers": 6,
+      "scope": "Caps/two System keys two layers"
+    },
+    {
+      "batch": 51,
+      "layers": 8,
+      "scope": "four Ctrl/Alt keys two contexts"
+    },
+    {
+      "batch": 52,
+      "layers": 4,
+      "scope": "two Shift keys toggle/consumption"
+    }
+  ],
+  "separateDiagnostic": "../../../2026-10-28/pen-lift-diagnostic/ACER_RESULT-46.json: ten-target-tap sample only,0 body layers added",
+  "historicalShiftObservation": "ACER_PEN_SHIFT_RECONTACT_OBSERVATION.json",
+  "userWorkflowClarification": "异常是没按操作流程测",
+  "withinProtocolFailureEstablished": false,
+  "limits": "keep26ms two-contact/two-toggle trace without inferring precise intent or deleting evidence; user normal reports are grouped, not per-action transcription/attempt counts; no blanket duplicate-free or hardware/driver cause determination",
+  "notCovered": [
+    "CN body168",
+    "current top control/candidate/settings and concurrent-contact branches",
+    "real Word/Edge host behavior",
+    "full hardware or installed-product acceptance"
+  ],
+  "otherMethodState": {
+    "MSI": "EN168 and CN20 mapping observations, CN148 remains with recontact caveat",
+    "finger": "CN168 r3 and EN168 current baseline kept by version"
+  },
+  "next": "P10-ACER-PEN-CN-CODING-53.json"
+}

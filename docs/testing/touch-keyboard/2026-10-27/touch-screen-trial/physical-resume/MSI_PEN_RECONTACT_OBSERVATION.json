@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-EN-ALL47-38",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "MSI supplied pen",
+  "userReport": "正常。重复属于手抖导致瞬间触及两次。这暂定属于没有完全掌握这支笔的使用情况。",
+  "observation": "some repeats during MSI pen testing; user describes two rapid contacts",
+  "userTentativeAttribution": "hand tremor and not yet fully familiar with this pen",
+  "diagnosticStatus": "extra native contact cycles observed; original hand-tremor attribution remains tentative; optional preview filter not physically accepted",
+  "duplicateFreeAcceptance": false,
+  "traceAvailable": false,
+  "frequency": null,
+  "runtimeChangeMade": false,
+  "followUp": "retain this caveat through later pen summaries; if unexpected repeats recur, identify key/layer and observed contact behavior before diagnosing",
+  "updates": [
+    {
+      "date": "2026-10-28",
+      "batchID": "TOUCH-V1-MSI-PEN-CN-CODING-44",
+      "userReport": "正常。但是，笔提起离开屏幕瞬间可能是屏幕角度旋转摆动和手抬起时自然抖动（抬起并保持不离得太远产生的起伏抖动）导致多数时候会产生重复。不是都有，注意慢一点或调整一下角度会好些。是不是第二次触发反应的时间留得短了一点。",
+      "environment": {
+        "screenToDeskAngleDegreesApprox": 45,
+        "angleClarificationUserAnswer": "屏幕与桌面约45°",
+        "orientationUserReport": "翻转状态下的",
+        "pen": "MSI original supplied pen",
+        "scope": "current lift-repeat diagnostic environment only; do not replace previous flat-screen records or retroactively attribute all prior batches"
+      }
+    },
+    {
+      "date": "2026-10-28",
+      "userReports": [
+        "已测。有重复。但似乎动作快一点好些。是不是原来我动作稍慢。怕动作过快过大过重损伤屏幕。",
+        "微星原装笔太小，不好把控，换成宏碁似乎好些。刚才测了几次，没有重复。"
+      ],
+      "traceFinding": "additional native pen cycles, no extra compatible mouse output in snapshot2990",
+      "causeStatus": "not independently established; Acer ad-hoc report qualitative only"
+    },
+    {
+      "date": "2026-10-28",
+      "scope": "Acer same-baseline comparison46",
+      "userReports": [
+        "已测",
+        "zheng'chang"
+      ],
+      "traceResult": "ten target contacts, ten one-character output increments, no promoted-mouse extra output; not an MSI issue resolution"
+    },
+    {
+      "date": "2026-10-28",
+      "userReport": "测了。正常。异常是没按操作流程测。我严重怀疑是微星原装笔反应太快。",
+      "scope": "user corrects abnormal procedure and suspects MSI pen reacts too fast",
+      "attributionStatus": "user hypothesis only; no measured latency/sampling/sensitivity comparison, no independent cause established"
+    }
+  ],
+  "qualitativeFrequency": "user says most times near lift, not all",
+  "currentDiagnostic": "../../../2026-10-28/pen-lift-diagnostic/ISSUE.json"
+}

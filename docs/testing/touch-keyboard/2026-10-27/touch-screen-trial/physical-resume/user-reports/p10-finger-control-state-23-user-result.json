@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CONTROL-STATE-23",
+  "userVerbatim": "正常",
+  "interpretation": "all four language roundtrip/Cancel/Clear scenarios reported normal, with no automatic raw or candidate commit",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "passedControlScenarios": 4,
+  "passedBodyLayerObservations": 0,
+  "coverageScope": "preview CN/EN roundtrip without committing, active cancellation versus full Clear, paused full Clear retaining language; not host binding or EN body layers",
+  "actualTextIndividuallyTranscribed": false,
+  "attemptCountsProvided": false,
+  "hostBindingAcceptance": false,
+  "ENBodyAcceptance": false
+}
