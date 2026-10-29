@@ -32,9 +32,13 @@
 
 120手指生命周期两项正常。新候选包宏碁29项及手指10项分别通过，105字体说明单列，见[阶段汇总](../../../docs/testing/touch-keyboard/2026-10-27/touch-screen-trial/physical-resume/ELLIPSIS_CHOICE_CHECKPOINT_120.zh-CN.md)。当前未发下一实测批次；新增源码和报告仍在本地，旧包与其它设备结果不继承，不声称全键盘或安装验收。
 
-## 2026-10-29 新触屏盘面 PR 与 ARM64 交付准备
+## 2026-10-29 主线接续与开发机同步
 
-当前新98键盘面以[ARM64新任务交接](../../../docs/testing/touch-keyboard/2026-10-29/arm64-touch-ui/HANDOFF.zh-CN.md)为入口，待本次CI产物固定后执行。已接入main的PR #80夹具修复及PR #81 ARM包检查/交付改进；ASUS已有ARM开发记录保留，但不继承为新盘面物理结果。下方PR #80包是历史完整100键视图，不能替代新入口。
+PR #77–#82 均已接入 main；本次核对的主线为 `5f98f289f9391da7460f5709f97d0d0f7aba8fdd`（PR #82 合并）。旧 H02 分支的最后修复 `7723c6f6031623316393804ec91d276d287e3e01` 已包含在 PR #82 固定包源码中，不再从旧分支重复开发。当前固定包、两条测试线的已归档版本和开发机职责见[本次接续核对](../../../docs/testing/touch-keyboard/2026-10-29/DEVELOPMENT_HOST_RECONCILIATION.zh-CN.md)。物理结果依各设备实际记录，开发机不代填通过。
+
+## 2026-10-29 新触屏盘面与 ARM64 固定交付
+
+当前新98键盘面以[ARM64新任务交接](../../../docs/testing/touch-keyboard/2026-10-29/arm64-touch-ui/HANDOFF.zh-CN.md)为入口，PR #82 的[固定 CI 包](../../../docs/testing/touch-keyboard/2026-10-29/arm64-touch-ui/CI_DELIVERY.zh-CN.md)已交付且 PR 已合并。已接入main的PR #80夹具修复及PR #81 ARM包检查/交付改进；ASUS已有ARM开发记录保留，但不继承为新盘面物理结果。下方PR #80包是历史完整100键视图，不能替代新入口。
 
 ## 2026-10-28 当前阶段：宏碁主体336与预览控制37项完成
 
