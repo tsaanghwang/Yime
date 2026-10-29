@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-EN-LETTERS-32",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "finger",
+  "status": "passed within user-expanded all47 result",
+  "setup": "same current preview; Clear; switch EN; Settings English keycaps EN, Return; selection OFF; modifiers unlit; no paused CN composition",
+  "cases": [
+    {
+      "physicalKeyID": "R04K07",
+      "base": "q",
+      "shift": "Q",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K08",
+      "base": "w",
+      "shift": "W",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K09",
+      "base": "e",
+      "shift": "E",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K10",
+      "base": "r",
+      "shift": "R",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K11",
+      "base": "t",
+      "shift": "T",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K12",
+      "base": "y",
+      "shift": "Y",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K13",
+      "base": "u",
+      "shift": "U",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K14",
+      "base": "i",
+      "shift": "I",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K15",
+      "base": "o",
+      "shift": "O",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R04K16",
+      "base": "p",
+      "shift": "P",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    }
+  ],
+  "bodyLayerObservations": 20,
+  "runs": [
+    {
+      "layer": "EN_base",
+      "steps": "Clear; tap q,w,e,r,t,y,u,i,o,p once each, no Shift",
+      "expectedOutput": "qwertyuiop",
+      "expectedComposition": "empty"
+    },
+    {
+      "layer": "EN_shift",
+      "steps": "Clear; tap Shift separately before EACH of q,w,e,r,t,y,u,i,o,p",
+      "expectedOutput": "QWERTYUIOP",
+      "expectedComposition": "empty"
+    }
+  ],
+  "scope": "ten physical keys x two EN layers only; not both whole EN layers, original-keycap preference, pens or host acceptance; old-view passes not inherited",
+  "expectedSource": "existing body ledger EN projections verified against each selected key; package identity checked; no mapping or code changes",
+  "userExpandedScope": "P10-FINGER-EN-ALL47-32-EXPANSION.json",
+  "userReport": "全部47键已测。正常。",
+  "evidence": "user-reports/p10-finger-en-all47-32-user-result.json",
+  "counting": "original20 included in expanded94, never added twice"
+}

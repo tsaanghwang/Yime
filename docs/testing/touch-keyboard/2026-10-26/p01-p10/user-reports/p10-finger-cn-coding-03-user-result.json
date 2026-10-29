@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-27",
+  "batchID": "P10-FINGER-CN-CODING-03",
+  "userQuote": "正常。目前适不适合调整键盘的前景和背景色？当前版本太亮，看不清楚。",
+  "inputMethod": "finger",
+  "target": "new language-label package preview; Chinese CN variable mode; literal-entry switch OFF",
+  "packageExecutableSHA256": "73c729b2948a37bc461c7cbcc7c3e1277424f9f5874b6d0285b241a02b1b6865",
+  "coveredLayers": ["CN_base", "CN_shift"],
+  "coveredKeyIDs": ["R04K14", "R04K15", "R04K16", "R04K17", "R04K18", "R04K19", "R05K07", "R05K08", "R05K09", "R05K10"],
+  "coveredLayerObservations": 20,
+  "result": "passed-user-reported-for-requested-group",
+  "actual": "按上一组逐格核对组合ASCII、正文保持空的步骤反馈正常；未逐格转录字符。",
+  "attemptCounts": "not supplied",
+  "independentObservation": false,
+  "usabilityFinding": "Current keyboard colors are too bright and difficult to read; user requests foreground/background adjustment using the MSI screen keyboard reference.",
+  "exclusions": ["other CN keys", "both pen files", "host input"]
+}

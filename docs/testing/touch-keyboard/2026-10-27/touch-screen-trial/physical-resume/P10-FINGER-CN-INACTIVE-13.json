@@ -1,0 +1,121 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-INACTIVE-13",
+  "continues": "TOUCH-V1-P10-FINGER-CN-TAB-12",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Current preview, CN/variable, literal-entry OFF, ID legends. Every cell begins with Clear and Shift unlit, then digits 1/2 and N08 to form local output 12 plus raw n. Test each inactive key directly and independently Shift+key.",
+  "keys": [
+    {
+      "physicalKeyID": "R05K04",
+      "label": "Caps Lock",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; tap main digits 1 then 2; tap N08. Local output 12, raw n. Do not select candidates.",
+          "action": "Caps Lock",
+          "expected": {
+            "raw": "n",
+            "localOutput": "12",
+            "noNewCharacters": true,
+            "noSystemActionOrMenu": true
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; tap main digits 1 then 2; tap N08. Local output 12, raw n. Do not select candidates.",
+          "action": "Shift then Caps Lock",
+          "expected": {
+            "raw": "n",
+            "localOutput": "12",
+            "noNewCharacters": true,
+            "noSystemActionOrMenu": true
+          },
+          "status": "通过（用户报告）"
+        }
+      ],
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R07K03",
+      "label": "左System",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; tap main digits 1 then 2; tap N08. Local output 12, raw n. Do not select candidates.",
+          "action": "左System",
+          "expected": {
+            "raw": "n",
+            "localOutput": "12",
+            "noNewCharacters": true,
+            "noSystemActionOrMenu": true
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; tap main digits 1 then 2; tap N08. Local output 12, raw n. Do not select candidates.",
+          "action": "Shift then 左System",
+          "expected": {
+            "raw": "n",
+            "localOutput": "12",
+            "noNewCharacters": true,
+            "noSystemActionOrMenu": true
+          },
+          "status": "通过（用户报告）"
+        }
+      ],
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R07K08",
+      "label": "右System",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; tap main digits 1 then 2; tap N08. Local output 12, raw n. Do not select candidates.",
+          "action": "右System",
+          "expected": {
+            "raw": "n",
+            "localOutput": "12",
+            "noNewCharacters": true,
+            "noSystemActionOrMenu": true
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; tap main digits 1 then 2; tap N08. Local output 12, raw n. Do not select candidates.",
+          "action": "Shift then 右System",
+          "expected": {
+            "raw": "n",
+            "localOutput": "12",
+            "noNewCharacters": true,
+            "noSystemActionOrMenu": true
+          },
+          "status": "通过（用户报告）"
+        }
+      ],
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "scenarioCount": 6,
+  "layerObservations": 6,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "canonical unsupported Caps Lock and two System actions; Ctrl/Alt excluded because they are modifiers",
+    "semantic unsupported actions are no-op in preview; no native OS key emission"
+  ],
+  "scope": "text/composition preservation and no accidental system action; not OS Caps state or complete modifier validation",
+  "userReport": "user-reports/p10-finger-cn-inactive-13-user-result.json",
+  "resultDate": "2026-10-28"
+}

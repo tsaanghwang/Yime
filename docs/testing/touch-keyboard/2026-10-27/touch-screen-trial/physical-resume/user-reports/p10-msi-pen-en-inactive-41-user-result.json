@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-EN-INACTIVE-41",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "MSI supplied pen",
+  "userReport": "正常",
+  "passedBodyLayers": 6,
+  "result": "Caps Lock and both System keys direct/Shift cases normal, expected abc; inactive action consumes one-shot Shift as specified",
+  "scope": "local preview only, grouped report without text transcription or attempt counts; no OS state, host or pen-wide duplicate-free acceptance; earlier recontact observation retained"
+}

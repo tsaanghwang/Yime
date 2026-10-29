@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CONTROL-SELECTION-20",
+  "continues": "TOUCH-V1-P10-FINGER-CONTROL-NAV-19",
+  "inputMethod": "finger",
+  "inputMode": "CN",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Current preview CN/variable. Each case independently Clear, selection OFF, modifiers unlit, then main digits 1234. Use large top-row controls. No candidates/composition.",
+  "cases": [
+    {
+      "caseID": "19-followup-selection-replace",
+      "controls": [
+        "TU-SELECT",
+        "TU-LEFT"
+      ],
+      "steps": [
+        "Clear; digits 1234",
+        "ArrowLeft once",
+        "selection ON",
+        "ArrowLeft twice",
+        "verify middle 23 selected",
+        "digit 9"
+      ],
+      "expected": {
+        "localOutput": "194",
+        "raw": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "caseID": "selection-delete",
+      "controls": [
+        "TU-SELECT",
+        "TU-RIGHT",
+        "TU-DELETE"
+      ],
+      "steps": [
+        "Clear; digits 1234",
+        "Home",
+        "selection ON",
+        "ArrowRight twice",
+        "verify 12 selected",
+        "top Delete"
+      ],
+      "expected": {
+        "localOutput": "34",
+        "raw": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "caseID": "select-all-replace",
+      "controls": [
+        "TU-ALL"
+      ],
+      "steps": [
+        "Clear; digits 1234",
+        "top SelectAll",
+        "verify 1234 selected",
+        "digit 9"
+      ],
+      "expected": {
+        "localOutput": "9",
+        "raw": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "caseID": "forward-delete",
+      "controls": [
+        "TU-HOME",
+        "TU-DELETE"
+      ],
+      "steps": [
+        "Clear; digits 1234",
+        "Home",
+        "top Delete"
+      ],
+      "expected": {
+        "localOutput": "234",
+        "raw": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "scenarioCount": 4,
+  "bodyLayerObservations": 0,
+  "coverageScope": "preview empty-composition selection replacement, selection delete, SelectAll replacement, forward Delete; not active/paused composition guards or host acceptance",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "navigation selection latch supplies Shift only to navigation",
+    "previewEditor extends selection per rune, replaces selection on insertion, and Delete removes selection or forward rune",
+    "preview SelectAll is Ctrl+a on empty raw; local digit is inserted at selection/caret"
+  ],
+  "userReport": "user-reports/p10-finger-control-selection-20-user-result.json",
+  "resultDate": "2026-10-28"
+}

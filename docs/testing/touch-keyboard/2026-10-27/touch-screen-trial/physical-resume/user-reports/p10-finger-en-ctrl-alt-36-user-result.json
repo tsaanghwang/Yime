@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-EN-CTRL-ALT-36",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "finger",
+  "userReport": "zheng'cang",
+  "normalizedMeaning": "normal in immediate eight-case test context",
+  "passedBodyLayers": 8,
+  "result": "left/right Ctrl/Alt in base and Shift contexts reported normal; local Ctrl+a/A selects for replacement, Alt path refuses shortcut, following c lowercase",
+  "scope": "grouped report without per-action text/attempt count; no external shortcut, pen, held multi-touch or host acceptance inferred"
+}

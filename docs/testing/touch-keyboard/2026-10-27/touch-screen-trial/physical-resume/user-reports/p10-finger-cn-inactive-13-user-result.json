@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-INACTIVE-13",
+  "userVerbatim": "zheng'chang",
+  "interpretation": "正常; all six Caps Lock/left System/right System base+Shift cases reported normal",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "passedLayerObservations": 6,
+  "actualCharactersIndividuallyTranscribed": false,
+  "attemptCountsProvided": false,
+  "fullPhysicalOrHostAcceptance": false
+}

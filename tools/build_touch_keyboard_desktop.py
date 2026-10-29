@@ -20,6 +20,8 @@ LAUNCHERS = {
     'Start Keyboard.cmd': '',
     'Start Main Area.cmd': '',
     'Start Preview.cmd': ' --preview',
+    'Start Touch Screen Keyboard.cmd': ' --touch-ui --theme dark --key-sound click',
+    'Start Touch Screen Preview.cmd': ' --preview --touch-ui --theme dark --key-sound click',
     'Start English Only.cmd': ' --english-only',
     'Start Full Keyboard.cmd': ' --profile '+PROFILE+'full-size.json',
     'Start Left Area.cmd': ' --numeric-zones left --remove-gutters',
@@ -54,6 +56,10 @@ def stage_resources(output, data):
 先阅读 USER_GUIDE.zh-CN.md。无需源码、Go、Python、网络或已安装输入法。
 
 Start Preview.cmd：只写窗口内文本，不向宿主发送。
+Start Touch Screen Keyboard.cmd / Start Touch Screen Preview.cmd：新增触屏试用视图。
+18u宽，主体84键纵向为原设计80%，加14个大控制键，共98键；设置、帮助、
+编辑和退出替换原功能行；顶部交互区100px。不会自动改变宿主窗口尺寸。
+省略 --touch-ui 仍是原完整100键视图。两种视图的测试记录不能互相继承。
 Start English Only.cmd：保留旧版英文输入路径。
 Start Full Keyboard.cmd：原 24.75u 全盘；Left/Right 保留一侧数字区。
 17u / 23u 为冻结候选，仍为旧英文路径，不开展另一条开发或验收路线。
@@ -104,6 +110,10 @@ def build(output: Path, arch: str, data: Path):
                 'developmentBaseline': 'main-18u', 'defaultLauncher': 'Start Keyboard.cmd',
                 'defaultMode': 'chinese-host-explicit-target-binding', 'defaultProfile': PROFILE+'main-only.json',
                 'unitMM': 19.05, 'mainWidthU': 18, 'mainWidthMM': 342.9, 'mainKeyCount': 100,
+                'touchScreenView': {'version': 'touch-screen-v1', 'flag': '--touch-ui',
+                    'mainWidthU': 18, 'boardHeightU': 5.65, 'bodyKeyHeightScale': 0.8,
+                    'controlHeightU': 0.75, 'keyCount': 98, 'headerHeightPixels': 100,
+                    'hardwareAcceptance': False},
                 'main17Status': 'frozen-optional-candidate', 'full23Status': 'frozen-optional-candidate',
                 'resourceArchiveSHA256': json.loads(LOCK.read_text())['archiveSHA256'],
                 'portableResourcesSHA256': digest(resource_file), 'completeChineseResources': True,

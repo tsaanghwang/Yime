@@ -16,6 +16,10 @@ type options struct {
 	Root, Profile, Zones, Shot, KeyView string
 	DataDir, DataReport                 string
 	InputTrace                          string
+	Theme                               string
+	KeySound                            string
+	TouchUI                             bool
+	PenRecontactMS                      int
 	ScreenMM, ObservedMM                float64
 	Gutters, Smoke, CheckData           bool
 	Preview                             bool
@@ -44,6 +48,10 @@ func main() {
 	flag.StringVar(&o.DataDir, "data-dir", "", "explicit experimental dictionary directory for --check-data, --preview or --host-input")
 	flag.StringVar(&o.DataReport, "data-report", "", "optional JSON result file for --check-data")
 	flag.StringVar(&o.InputTrace, "input-trace", "", "preview-only input diagnostics to a new JSONL file; no document text")
+	flag.StringVar(&o.Theme, "theme", "original", "original/dark drawing palette; no layout or input behavior changes")
+	flag.StringVar(&o.KeySound, "key-sound", "off", "off/click; optional local accepted-key feedback")
+	flag.BoolVar(&o.TouchUI, "touch-ui", false, "opt-in compact touchscreen view with settings and large editing controls")
+	flag.IntVar(&o.PenRecontactMS, "pen-recontact-ms", 0, "preview trial: suppress rapid same-pen same-key recontact; 0 disables, maximum250ms")
 	flag.Parse()
 	o.GeometryExplicit = hasGeometryOptions(flag.CommandLine)
 	if e := execute(o); e != nil {
@@ -67,6 +75,15 @@ func hasGeometryOptions(flags *flag.FlagSet) bool {
 }
 
 func execute(o options) error {
+	if o.PenRecontactMS < 0 || o.PenRecontactMS > 250 || o.PenRecontactMS != 0 && (!o.Preview || !o.TouchUI || o.Host || o.EnglishOnly || o.CheckData || o.CheckPackage || o.Smoke || o.HostSmoke || o.Shot != "") {
+		return fmt.Errorf("--pen-recontact-ms requires interactive --preview --touch-ui; use0..250")
+	}
+	if o.KeySound != "" && o.KeySound != "off" && o.KeySound != "click" {
+		return fmt.Errorf("unknown key-sound %q; use off or click", o.KeySound)
+	}
+	if o.Theme != "" && o.Theme != "original" && o.Theme != "dark" {
+		return fmt.Errorf("unknown theme %q; use original or dark", o.Theme)
+	}
 	if o.InputTrace != "" && (!o.Preview || o.Host || o.HostSmoke || o.EnglishOnly || o.CheckData || o.CheckPackage || o.Smoke || o.Shot != "") {
 		return fmt.Errorf("--input-trace requires interactive --preview only")
 	}
@@ -76,6 +93,9 @@ func execute(o options) error {
 	}
 	if err := preparePortable(&o, filepath.Dir(exe), portableResourcesSHA256); err != nil {
 		return err
+	}
+	if o.TouchUI && (o.EnglishOnly || o.Smoke || o.HostSmoke || (!o.Preview && !o.Host && !o.CheckData)) {
+		return fmt.Errorf("--touch-ui requires Chinese preview/host/data-check mode; classic self-tests and --english-only use the original view")
 	}
 	if o.EnglishOnly && (o.Host || o.Preview || o.CheckData || o.HostSmoke) {
 		return fmt.Errorf("--english-only cannot combine with Chinese session options")
@@ -121,5 +141,9 @@ func load(o options) (tk.Board, error) {
 	if e != nil {
 		return b, e
 	}
-	return tk.Arrange(b, p)
+	b, e = tk.Arrange(b, p)
+	if e == nil && o.TouchUI {
+		return touchScreenBoard(b)
+	}
+	return b, e
 }

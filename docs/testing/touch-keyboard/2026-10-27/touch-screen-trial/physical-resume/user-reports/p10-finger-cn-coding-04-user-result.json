@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-27",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-CODING-04",
+  "userVerbatim": "正常",
+  "interpretation": "response to immediately preceding full 10-key/two-layer test instructions; all 20 cases reported normal",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "passedObservations": 20,
+  "actualCharactersIndividuallyTranscribed": false,
+  "attemptCountsProvided": false,
+  "fullPhysicalOrHostAcceptance": false
+}

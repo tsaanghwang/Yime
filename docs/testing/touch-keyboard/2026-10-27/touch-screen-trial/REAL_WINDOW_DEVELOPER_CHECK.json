@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-27",
+  "package": "touch-screen-trial-r3-20261027-amd64",
+  "executableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "processIdAtCheck": 7956,
+  "windowIdAtCheck": 4916400,
+  "scope": "developer mouse simulation in actual preview window only",
+  "observations": [
+    "Full 98-key view visible after system touch keyboard was externally dismissed; no successful automated action was sent to the undiscoverable system keyboard",
+    "Settings open/return works; 12 large setting targets and enlarged text fit the panel",
+    "Reference ruler toggles on inside settings and is not clipped",
+    "CN to EN updates the large language key and existing body legends",
+    "Click on a outputs a in the compact local output line",
+    "Large SelectAll shows selected a; Delete empties the local output",
+    "Last completed developer action left empty EN preview with settings closed; attempted CN restoration was suppressed after user input detection, so no further automated action was sent",
+    "Intermediate trial previews exited using their Exit key; previous full sound-stream preview remains minimized"
+  ],
+  "physicalFingerOrPenAcceptance": false,
+  "hostInputSent": false,
+  "hostAcceptance": false,
+  "audibilityInThisCheckConfirmedByUser": false,
+  "P10PassesAdded": 0,
+  "systemKeyboardDismissalUserReply": "已收起",
+  "automaticHostWindowResize": false
+}

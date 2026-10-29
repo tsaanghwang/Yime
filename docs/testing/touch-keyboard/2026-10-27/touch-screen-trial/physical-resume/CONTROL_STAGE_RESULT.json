@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-28",
+  "status": "planned preview control basic/supplement scenarios checkpoint complete; not full keyboard acceptance",
+  "fingerPassedControlScenarios": 37,
+  "passedByExecutable": {
+    "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146": 28,
+    "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32": 9
+  },
+  "latestBatch": "TOUCH-V1-FINGER-SELECTION-REVERSE-31",
+  "currentPackagePassedScenarios": [
+    "minimize active CN",
+    "minimize paused EN",
+    "finger Exit/relaunch",
+    "Help CN state",
+    "Help paused EN state",
+    "Home selection extension",
+    "End selection extension",
+    "shrink selection",
+    "reverse selection across anchor"
+  ],
+  "separatelyTracked": [
+    "Help25 targeted finger/unspecified pen open/page/Return on older fix package",
+    "audio27 fresh/relaunch audibility, input method unspecified"
+  ],
+  "bodyCountsUnchanged": {
+    "fingerCNPassed": 168,
+    "fingerENPassed": 0,
+    "fingerENPending": 168,
+    "msiPenPending": 336,
+    "acerPenPending": 336,
+    "legacyFullViewPassed": 250
+  },
+  "limits": [
+    "passes stay attached to original executable; no wholesale inheritance",
+    "all user normal reports are grouped, with no attempt counts or text transcription invented",
+    "remaining settings/candidate/multitouch and real Word/Edge behavior remain separately scoped",
+    "old failures and partial lifecycle26 report remain historical"
+  ],
+  "next": "P10-FINGER-EN-LETTERS-32.json"
+}

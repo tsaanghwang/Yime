@@ -1,0 +1,11 @@
+{
+  "scope": "Production Go generator exported without playback; independent Python PCM parsing",
+  "format": "PCM signed 16-bit mono",
+  "sampleRate": 44100,
+  "frames": 1058,
+  "durationMS": 23.991,
+  "peakFraction": 0.4514,
+  "sha256": "1350ff573a60fa82759b7bbd2ba15f663f3f3a702b9023078f81006ad0a4b1e2",
+  "generatorSHA256": "fa252dbab2c7250ea2bda9d0fdc5a8ca0fc7490761e635356af80dfd360edf10",
+  "audibleAcceptance": "not measured"
+}

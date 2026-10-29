@@ -3,26 +3,35 @@
 package main
 
 import (
+	"os"
 	"runtime"
 	"testing"
+	"time"
 	"unsafe"
 
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 )
 
 func TestTaskbarMinimizeRestoreAndCancellation(t *testing.T) {
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	instance, _, _ := k32.NewProc("GetModuleHandleW").Call(0)
 	c := wc{Proc: callback, Instance: instance, Name: str("YimeTaskbarRegression")}
 	c.Size = uint32(unsafe.Sizeof(c))
 	U("RegisterClassExW").Call(uintptr(unsafe.Pointer(&c)))
 	for _, route := range []string{"toolbar", "hotkey", "system-menu"} {
 		t.Run(route, func(t *testing.T) {
-			// t.Run uses its own goroutine; the parent's lock does not pin it.
+			// Each subtest runs in its own goroutine. Keep window creation and
+			// synchronous messages on that goroutine's same native thread.
 			runtime.LockOSThread()
 			defer runtime.UnlockOSThread()
 			a := previewUI(t)
+			if os.Getenv("YIME_TEST_LIVE_AUDIO") == "1" {
+				a.o.KeySound = "click"
+				if !a.ensureKeySound() {
+					t.Fatal("audio stream not started")
+				}
+				// Let the real driver open and queue silent buffers before stopping.
+				time.Sleep(300 * time.Millisecond)
+			}
 			h, _, err := U("CreateWindowExW").Call(keyboardWindowExStyle, ptr(c.Name), ptr(str("Disposable taskbar regression")), keyboardWindowStyle, 50, 50, 600, 350, 0, 0, instance, 0)
 			if h == 0 {
 				t.Fatal(err)
@@ -81,6 +90,26 @@ func TestTaskbarMinimizeRestoreAndCancellation(t *testing.T) {
 			iconic, _, _ = U("IsIconic").Call(h)
 			if iconic != 0 {
 				t.Fatal("restore did not restore the same window")
+			}
+			if os.Getenv("YIME_TEST_LIVE_AUDIO") == "1" {
+				// Restore may precede driver cleanup; a later accepted key retries.
+				deadline := time.Now().Add(3 * time.Second)
+				for !a.ensureKeySound() && time.Now().Before(deadline) {
+					time.Sleep(10 * time.Millisecond)
+				}
+				if a.soundStream == nil {
+					t.Fatal("real audio did not recover after restore")
+				}
+				time.Sleep(100 * time.Millisecond)
+				if !a.soundStream.play() {
+					t.Fatal("restored real stream rejected click")
+				}
+				a.stopKeySound()
+				select {
+				case <-a.soundRetiring:
+				case <-time.After(3 * time.Second):
+					t.Fatal("real audio cleanup did not finish")
+				}
 			}
 		})
 	}

@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-27",
+  "gainQuestion": "刚才我在幅度提高约 3 倍的新版里模拟了三次 a，声音现在怎样？",
+  "userCorrection": "没有声音。上次可能也是，只是我把“其它”声音误以为是按键声了",
+  "effectOnEarlierReport": "Earlier apparent original-click audibility is withdrawn/uncertain; neither original nor gain trial has verified audible key feedback.",
+  "benchmarkQuestion": "刚才我特意播放了一组约 3 秒的“短、短、长”基准音（最后一声明显更长），你听到了这组明确节奏吗？",
+  "benchmarkAnswer": "听到短、短、长",
+  "benchmark": "BENCHMARK.json",
+  "interpretation": "Deliberate longer reference pattern is audible. This does not establish short-click audibility or identify the failure mechanism.",
+  "furtherGainIncrease": "stopped",
+  "systemSettingsChanged": false,
+  "P10PassedCountUnchanged": 250
+}

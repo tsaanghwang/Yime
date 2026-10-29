@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-CODING-17",
+  "userVerbatim": "zheng'chang",
+  "interpretation": "all 10 keys/base+Shift (20 observations) reported normal in new-view regression",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "passedLayerObservations": 20,
+  "actualCharactersIndividuallyTranscribed": false,
+  "attemptCountsProvided": false,
+  "oldResultsInherited": false,
+  "fullPhysicalOrHostAcceptance": false
+}

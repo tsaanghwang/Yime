@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-EN-INACTIVE-35",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "finger",
+  "status": "reported outputs and observed Shift clearing passed; redundant instruction corrected",
+  "setup": "same preview EN with English keycaps EN; independently Clear, selection OFF, modifiers unlit, type lowercase ab",
+  "cases": [
+    {
+      "physicalKeyID": "R05K04",
+      "label": "Caps Lock",
+      "baseStatus": "passed-user-reported with instruction correction",
+      "shiftStatus": "passed-user-reported with instruction correction"
+    },
+    {
+      "physicalKeyID": "R07K03",
+      "label": "左System",
+      "baseStatus": "passed-user-reported with instruction correction",
+      "shiftStatus": "passed-user-reported with instruction correction"
+    },
+    {
+      "physicalKeyID": "R07K08",
+      "label": "右System",
+      "baseStatus": "passed-user-reported with instruction correction",
+      "shiftStatus": "passed-user-reported with instruction correction"
+    }
+  ],
+  "runs": [
+    {
+      "layer": "EN_base",
+      "steps": "tap named inactive key; verify ab unchanged/no system action; tap c",
+      "expected": "abc, no composition/menu"
+    },
+    {
+      "layer": "EN_shift",
+      "steps": "tap Shift then named inactive key; verify ab unchanged/no system action; turn Shift OFF, then tap c",
+      "expected": "abc, no composition/menu"
+    }
+  ],
+  "bodyLayerObservations": 6,
+  "scope": "three inactive body keys x2 EN layers; Ctrl/Alt are modifiers and excluded; no OS Caps-state modification or host acceptance",
+  "userReport": "都能输出abc。不过，点击shift后再点目标功能键，shift 已经不能 hold （保持不住）了",
+  "evidence": "user-reports/p10-finger-en-inactive-35-user-result.json",
+  "instructionCorrection": {
+    "original": "turn Shift OFF after target inactive key",
+    "corrected": "target key already clears one-shot Shift; if highlight is off, do not toggle it on again; directly tap c",
+    "cause": "semantic State.Up calls output for unsupported action; State.output clears virtual modifiers;23 Disabled keys instead return at Down and preserve state",
+    "runtimeChanged": false,
+    "limits": "Keep original run definition and user words; no exact per-key action transcript supplied; do not invent an extra Shift tap or new physical hold test."
+  }
+}

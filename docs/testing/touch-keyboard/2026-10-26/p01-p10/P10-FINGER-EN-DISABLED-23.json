@@ -1,0 +1,451 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-DISABLED-23",
+  "inputMethod": "finger",
+  "coverageLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "status": "passed-user-reported",
+  "expected": "No text or composition from a disabled key in either layer; reset Shift before moving to next independent case",
+  "keys": [
+    {
+      "physicalKeyID": "R02K05",
+      "xU": "1",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K06",
+      "xU": "2",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K07",
+      "xU": "3",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K08",
+      "xU": "4",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K09",
+      "xU": "5",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K10",
+      "xU": "6",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K11",
+      "xU": "7",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K12",
+      "xU": "8",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K13",
+      "xU": "9",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K14",
+      "xU": "10",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K15",
+      "xU": "11",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K16",
+      "xU": "12",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K17",
+      "xU": "13",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K18",
+      "xU": "14",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K19",
+      "xU": "15",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R02K20",
+      "xU": "16",
+      "yU": "1.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R03K04",
+      "xU": "1.75",
+      "yU": "2.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R04K04",
+      "xU": "0",
+      "yU": "3.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R04K05",
+      "xU": "1.5",
+      "yU": "3.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R04K06",
+      "xU": "2.5",
+      "yU": "3.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R05K05",
+      "xU": "2.25",
+      "yU": "4.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R06K10",
+      "xU": "7.75",
+      "yU": "5.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    },
+    {
+      "physicalKeyID": "R06K11",
+      "xU": "9.25",
+      "yU": "5.25",
+      "baseExpectedAction": {
+        "type": "disabled",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "shiftExpectedAction": {
+        "type": "",
+        "ascii": "",
+        "key": "",
+        "label": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "无字符、无组合（用户明确反馈）"
+    }
+  ],
+  "userReport": "user-reports/p10-finger-en-disabled-23-user-result.json"
+}

@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-BACKSPACE-10",
+  "userVerbatim": "正常",
+  "interpretation": "all four Back Space scenarios reported normal: active composition and confirmed output, each without/with Shift",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "passedScenarios": 4,
+  "passedLayerObservations": 2,
+  "actualCharactersIndividuallyTranscribed": false,
+  "attemptCountsProvided": false,
+  "fullPhysicalOrHostAcceptance": false
+}

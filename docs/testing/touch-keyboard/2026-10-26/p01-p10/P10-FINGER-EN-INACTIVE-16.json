@@ -1,0 +1,161 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-INACTIVE-16",
+  "inputMethod": "finger",
+  "target": "new language-label package preview only; English EN, no composition",
+  "packageExecutableSHA256": "73c729b2948a37bc461c7cbcc7c3e1277424f9f5874b6d0285b241a02b1b6865",
+  "coverageLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "setup": "For each virtual key clear output/selection and reset modifiers, type ab, test base then tap Shift and the same key, inspecting unchanged ab after each. No physical keyboard shortcuts.",
+  "keys": [
+    {
+      "physicalKeyID": "R01K04",
+      "label": "F1",
+      "baseCase": "English EN, preview output ab; tap virtual F1; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual F1; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K05",
+      "label": "F2",
+      "baseCase": "English EN, preview output ab; tap virtual F2; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual F2; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K06",
+      "label": "F3",
+      "baseCase": "English EN, preview output ab; tap virtual F3; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual F3; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K07",
+      "label": "F4",
+      "baseCase": "English EN, preview output ab; tap virtual F4; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual F4; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K08",
+      "label": "F5",
+      "baseCase": "English EN, preview output ab; tap virtual F5; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual F5; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K09",
+      "label": "F6",
+      "baseCase": "English EN, preview output ab; tap virtual F6; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual F6; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K10",
+      "label": "F7",
+      "baseCase": "English EN, preview output ab; tap virtual F7; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual F7; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K11",
+      "label": "F8",
+      "baseCase": "English EN, preview output ab; tap virtual F8; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual F8; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K12",
+      "label": "F9",
+      "baseCase": "English EN, preview output ab; tap virtual F9; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual F9; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K13",
+      "label": "F10",
+      "baseCase": "English EN, preview output ab; tap virtual F10; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual F10; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K14",
+      "label": "F11",
+      "baseCase": "English EN, preview output ab; tap virtual F11; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual F11; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K15",
+      "label": "F12",
+      "baseCase": "English EN, preview output ab; tap virtual F12; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual F12; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R01K17",
+      "label": "Pause",
+      "baseCase": "English EN, preview output ab; tap virtual Pause; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual Pause; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R05K04",
+      "label": "Caps Lock",
+      "baseCase": "English EN, preview output ab; tap virtual Caps Lock; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual Caps Lock; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R07K03",
+      "label": "System key",
+      "baseCase": "English EN, preview output ab; tap virtual System key; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual System key; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R07K08",
+      "label": "System key",
+      "baseCase": "English EN, preview output ab; tap virtual System key; output stays ab, no application/system action",
+      "shiftCase": "English EN, preview output ab; tap Shift then virtual System key; output stays ab, no application/system action",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    }
+  ],
+  "status": "passed-user-reported",
+  "note": "F1-F12, Pause, Caps Lock and two System keys are unsupported no-ops in semantic preview. Ctrl and Alt are deliberately excluded because desktop treats them as modifiers despite static unsupported labels.",
+  "userReport": "user-reports/p10-finger-en-inactive-16-user-result.json"
+}

@@ -1,0 +1,355 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-EN-ALL47-38",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "MSI supplied pen",
+  "status": "input correctness passed-user-reported with repeated-contact observation",
+  "setup": "same current preview EN, English keycaps EN; all test contacts by MSI Prestige16 Flip supplied pen; no finger/mouse assistance for key actions; Clear, selection OFF, modifiers unlit",
+  "cases": [
+    {
+      "physicalKeyID": "R03K05",
+      "base": "`",
+      "shift": "~",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R03K06",
+      "base": "1",
+      "shift": "!",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R03K07",
+      "base": "2",
+      "shift": "@",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R03K08",
+      "base": "3",
+      "shift": "#",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R03K09",
+      "base": "4",
+      "shift": "$",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R03K10",
+      "base": "5",
+      "shift": "%",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R03K11",
+      "base": "6",
+      "shift": "^",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R03K12",
+      "base": "7",
+      "shift": "&",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R03K13",
+      "base": "8",
+      "shift": "*",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R03K14",
+      "base": "9",
+      "shift": "(",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R03K15",
+      "base": "0",
+      "shift": ")",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R03K16",
+      "base": "-",
+      "shift": "_",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R03K17",
+      "base": "=",
+      "shift": "+",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R04K07",
+      "base": "q",
+      "shift": "Q",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R04K08",
+      "base": "w",
+      "shift": "W",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R04K09",
+      "base": "e",
+      "shift": "E",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R04K10",
+      "base": "r",
+      "shift": "R",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R04K11",
+      "base": "t",
+      "shift": "T",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R04K12",
+      "base": "y",
+      "shift": "Y",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R04K13",
+      "base": "u",
+      "shift": "U",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R04K14",
+      "base": "i",
+      "shift": "I",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R04K15",
+      "base": "o",
+      "shift": "O",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R04K16",
+      "base": "p",
+      "shift": "P",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R04K17",
+      "base": "[",
+      "shift": "{",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R04K18",
+      "base": "]",
+      "shift": "}",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R04K19",
+      "base": "\\",
+      "shift": "|",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R05K06",
+      "base": "a",
+      "shift": "A",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R05K07",
+      "base": "s",
+      "shift": "S",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R05K08",
+      "base": "d",
+      "shift": "D",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R05K09",
+      "base": "f",
+      "shift": "F",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R05K10",
+      "base": "g",
+      "shift": "G",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R05K11",
+      "base": "h",
+      "shift": "H",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R05K12",
+      "base": "j",
+      "shift": "J",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R05K13",
+      "base": "k",
+      "shift": "K",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R05K14",
+      "base": "l",
+      "shift": "L",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R05K15",
+      "base": ";",
+      "shift": ":",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R05K16",
+      "base": "'",
+      "shift": "\"",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R06K05",
+      "base": "z",
+      "shift": "Z",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R06K06",
+      "base": "x",
+      "shift": "X",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R06K07",
+      "base": "c",
+      "shift": "C",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R06K08",
+      "base": "v",
+      "shift": "V",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R06K09",
+      "base": "b",
+      "shift": "B",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R06K12",
+      "base": "n",
+      "shift": "N",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R06K13",
+      "base": "m",
+      "shift": "M",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R06K14",
+      "base": ",",
+      "shift": "<",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R06K15",
+      "base": ".",
+      "shift": ">",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    },
+    {
+      "physicalKeyID": "R06K16",
+      "base": "/",
+      "shift": "?",
+      "baseStatus": "passed-input-correctness, repeated-contact caveat retained",
+      "shiftStatus": "passed-input-correctness, repeated-contact caveat retained"
+    }
+  ],
+  "runs": [
+    {
+      "layer": "EN_base",
+      "steps": "each of47 enabled character keys once without Shift, check lower/base keycap character"
+    },
+    {
+      "layer": "EN_shift",
+      "steps": "before EACH of47 enabled character keys tap virtual Shift with same pen, then target key; check upper keycap character"
+    }
+  ],
+  "bodyLayerObservations": 94,
+  "scope": "pen identity and physical observations pending; no result inherited from finger, earlier full view, other pen or targeted Help25; excludes23 disabled and14 edit/modifier keys; errors identify key/layer/actual and duplicate or missed contacts",
+  "userReport": "正常。重复属于手抖导致瞬间触及两次。这暂定属于没有完全掌握这支笔的使用情况。",
+  "evidence": "user-reports/p10-msi-pen-en-all47-38-user-result.json",
+  "repeatedContactObservation": "MSI_PEN_RECONTACT_OBSERVATION.json"
+}

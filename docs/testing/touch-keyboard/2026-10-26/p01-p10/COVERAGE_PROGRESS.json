@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-26",
+  "lastUpdatedDate": "2026-10-27",
+  "counts": {
+    "finger-key-coverage.csv": {
+      "passedLayerObservations": 250,
+      "pendingLayerObservations": 150,
+      "fullyCoveredFourLayerKeys": 25
+    },
+    "msi-pen-key-coverage.csv": {
+      "passedLayerObservations": 0,
+      "pendingLayerObservations": 400,
+      "fullyCoveredFourLayerKeys": 0
+    },
+    "acer-pen-key-coverage.csv": {
+      "passedLayerObservations": 0,
+      "pendingLayerObservations": 400,
+      "fullyCoveredFourLayerKeys": 0
+    }
+  },
+  "passedLayersByExecutable": {
+    "finger-key-coverage.csv": {
+      "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f": 160,
+      "73c729b2948a37bc461c7cbcc7c3e1277424f9f5874b6d0285b241a02b1b6865": 90
+    },
+    "msi-pen-key-coverage.csv": {},
+    "acer-pen-key-coverage.csv": {}
+  },
+  "fourLayerKeysWithinSingleExecutable": {
+    "finger-key-coverage.csv": {},
+    "msi-pen-key-coverage.csv": {},
+    "acer-pen-key-coverage.csv": {}
+  },
+  "aggregateFourLayerKeyCountMeaning": "All four layers observed across explicitly identified versions; not automatically single-package acceptance",
+  "lastBatch": "P10-FINGER-CN-CODING-03",
+  "note": "Actual evidence is identified per layer/package; aggregate counts do not imply one new package passed all prior observations. Remaining CN and pen observations stay pending; four-layer key totals can span explicitly identified packages"
+}

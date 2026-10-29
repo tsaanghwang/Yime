@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-28",
+  "status": "defined MSI original pen EN body168 observations complete; repeated-contact caveat retained",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "MSI supplied pen",
+  "physicalBodyKeys": 84,
+  "passedENBodyLayers": 168,
+  "pendingENBodyLayers": 0,
+  "CNBodyLayersPending": 168,
+  "ledger": "msi-pen-key-coverage.csv",
+  "batches": [
+    {
+      "batch": 38,
+      "scope": "47 input keys x2",
+      "layers": 94
+    },
+    {
+      "batch": 39,
+      "scope": "23 disabled keys x2",
+      "layers": 46
+    },
+    {
+      "batch": 40,
+      "scope": "5 edit/space keys x2",
+      "layers": 10
+    },
+    {
+      "batch": 41,
+      "scope": "Caps/two System keys x2",
+      "layers": 6
+    },
+    {
+      "batch": 42,
+      "scope": "four Ctrl/Alt keys x2",
+      "layers": 8
+    },
+    {
+      "batch": 43,
+      "scope": "two Shift keys x2",
+      "layers": 4
+    }
+  ],
+  "recontactObservation": "MSI_PEN_RECONTACT_OBSERVATION.json",
+  "duplicateFreeAcceptance": false,
+  "observationLimits": "user tentatively attributes earlier repeats to hand tremor/two rapid contacts/unfamiliarity; no raw-contact trace or independent attribution; later normal replies do not erase observation",
+  "notCovered": [
+    "CN body168",
+    "top control and further candidate/settings/concurrent contact paths",
+    "current real host behavior",
+    "Acer pen on current view",
+    "full hardware or installed-product acceptance"
+  ],
+  "sourceAndRuntimeChanges": false,
+  "next": "P10-MSI-PEN-CN-CODING-44.json"
+}

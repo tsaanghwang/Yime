@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-EN-SHIFT-37",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "finger",
+  "status": "passed-user-reported-group-result",
+  "setup": "same preview EN, English keycaps EN; every case Clear, selection OFF, all modifiers unlit; sequential finger taps, release before next",
+  "cases": [
+    {
+      "physicalKeyID": "R06K04",
+      "label": "左Shift",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "baseSteps": "tap this Shift once, then a, then b",
+      "baseExpected": "Ab; Shift consumed after a/A",
+      "shiftSteps": "tap this Shift to turn ON, tap same Shift again to turn OFF, then a, then b",
+      "shiftExpected": "ab; Shift unlit"
+    },
+    {
+      "physicalKeyID": "R06K17",
+      "label": "右Shift",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "baseSteps": "tap this Shift once, then a, then b",
+      "baseExpected": "Ab; Shift consumed after a/A",
+      "shiftSteps": "tap this Shift to turn ON, tap same Shift again to turn OFF, then a, then b",
+      "shiftExpected": "ab; Shift unlit"
+    }
+  ],
+  "bodyLayerObservations": 4,
+  "scope": "final two EN body Shift keys, one-shot toggle/consumption and toggle-off from ON; not simultaneous physical hold, pen or host acceptance; stage remains pending until report",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-finger-en-shift-37-user-result.json"
+}

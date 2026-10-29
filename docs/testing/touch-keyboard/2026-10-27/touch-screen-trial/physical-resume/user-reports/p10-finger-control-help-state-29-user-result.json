@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-HELP-STATE-29",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "finger",
+  "userReport": "正常",
+  "passedControlScenarios": 2,
+  "bodyLayerObservations": 0,
+  "result": "CN and paused EN keep language, confirmed12 and original unconfirmed composition across Help/next/previous/Return; cancellation then digit3 follows presented expected123",
+  "scope": "two defined preview cases only; no real-host or pen result; no per-action transcription or attempt count inferred"
+}

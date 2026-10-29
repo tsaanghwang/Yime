@@ -1,0 +1,193 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-DIGITS-09",
+  "continues": "TOUCH-V1-P10-FINGER-CN-PUNCTUATION-08",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Keep CN/variable, literal-entry OFF. Use main-area digit row. Every base/Shift cell independently begins with Clear: no composition/candidates and Shift unlit. Direct digit commits itself to local output with empty raw. Shift then digit: five coding symbols (# apostrophe * + comma) remain raw with empty output; other five ($ % & Chinese parentheses) commit mapped output with empty raw. Do not select candidates.",
+  "keys": [
+    {
+      "physicalKeyID": "R02K08",
+      "label": "1",
+      "base": "1",
+      "shiftASCII": "#",
+      "baseExpected": {
+        "raw": "",
+        "localOutput": "1"
+      },
+      "shiftExpected": {
+        "raw": "#",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R02K09",
+      "label": "2",
+      "base": "2",
+      "shiftASCII": "$",
+      "baseExpected": {
+        "raw": "",
+        "localOutput": "2"
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "$"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R02K10",
+      "label": "3",
+      "base": "3",
+      "shiftASCII": "%",
+      "baseExpected": {
+        "raw": "",
+        "localOutput": "3"
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "%"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R02K11",
+      "label": "4",
+      "base": "4",
+      "shiftASCII": "&",
+      "baseExpected": {
+        "raw": "",
+        "localOutput": "4"
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "&"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R02K12",
+      "label": "5",
+      "base": "5",
+      "shiftASCII": "'",
+      "baseExpected": {
+        "raw": "",
+        "localOutput": "5"
+      },
+      "shiftExpected": {
+        "raw": "'",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R02K13",
+      "label": "6",
+      "base": "6",
+      "shiftASCII": "(",
+      "baseExpected": {
+        "raw": "",
+        "localOutput": "6"
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "（"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R02K14",
+      "label": "7",
+      "base": "7",
+      "shiftASCII": ")",
+      "baseExpected": {
+        "raw": "",
+        "localOutput": "7"
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "）"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R02K15",
+      "label": "8",
+      "base": "8",
+      "shiftASCII": "*",
+      "baseExpected": {
+        "raw": "",
+        "localOutput": "8"
+      },
+      "shiftExpected": {
+        "raw": "*",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R02K16",
+      "label": "9",
+      "base": "9",
+      "shiftASCII": "+",
+      "baseExpected": {
+        "raw": "",
+        "localOutput": "9"
+      },
+      "shiftExpected": {
+        "raw": "+",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R02K17",
+      "label": "0",
+      "base": "0",
+      "shiftASCII": ",",
+      "baseExpected": {
+        "raw": "",
+        "localOutput": "0"
+      },
+      "shiftExpected": {
+        "raw": ",",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "layerObservations": 20,
+  "candidateSelectionTested": false,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "canonical CN action columns",
+    "LayoutAlphabet membership for shifted coding symbols",
+    "keyboardEngine.Apply: digits with no candidates become literal output",
+    "Chinese punctuation map: parentheses only among these noncoding shifts"
+  ],
+  "userReport": "user-reports/p10-finger-cn-digits-09-user-result.json",
+  "resultDate": "2026-10-28"
+}

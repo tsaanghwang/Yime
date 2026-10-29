@@ -1,0 +1,12 @@
+{
+  "userRequest": "这个布局的源头是做实体键盘仿真样机。但是现在专注做触摸键盘，先考虑在屏幕上做一个真正可用的触摸键盘。",
+  "changes": [
+    "取消12个F1–F12，增加设置并收纳相关设置",
+    "把编辑键和其它键放到功能行，扩大触摸目标",
+    "Pause/Break改退出",
+    "减少测试交互区行数；最终取消测试区；说明移入帮助，帮助可暂时独立"
+  ],
+  "authorization": "先按这个建议更改，看看效果再说",
+  "date": "2026-10-27",
+  "scope": "first local touch-view trial, retain classic view and canonical encoding"
+}

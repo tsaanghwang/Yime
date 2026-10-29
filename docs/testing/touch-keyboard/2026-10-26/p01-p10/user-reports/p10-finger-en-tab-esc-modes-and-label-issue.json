@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-TAB-ESC-MODES",
+  "userQuote": "四项测试正常。不过 CN EN 这个中英文切换键，在点击后，中文应只显示 CN，英文应只显示 EN。当前在两种状态下都一样不易辨认，导致乱按。",
+  "inputMethod": "finger",
+  "target": "fixed-package preview only, English EN view when the tested control is pressed",
+  "packageExecutableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "coveredLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "coveredKeyIDs": [
+    "R02K04",
+    "R01K02",
+    "R01K03",
+    "R01K16"
+  ],
+  "coveredLayerObservations": 8,
+  "result": "functional steps passed-user-reported; separate language-key display/usability failure",
+  "actual": "四项基础/Shift功能反馈正常，未另行逐字转录；CN EN键显示不能区分当前语言",
+  "independentObservation": false,
+  "usabilityFinding": {
+    "key": "R01K03",
+    "oldDisplay": "CN and EN both shown in either language",
+    "requestedDisplay": "Only CN for Chinese input; only EN for English input, including English original view"
+  },
+  "exclusions": [
+    "CN key-layer coverage",
+    "both pen files",
+    "display fix acceptance in a new package"
+  ]
+}

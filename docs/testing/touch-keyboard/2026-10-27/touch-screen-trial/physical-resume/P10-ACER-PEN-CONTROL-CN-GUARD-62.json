@@ -1,0 +1,211 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CONTROL-CN-GUARD-62",
+  "continues": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-61",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "inputMode": "CN",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "Current preview CN/variable, ID legends, literal-entry OFF. Each case independently Clear, selection OFF, modifiers unlit; digits123, Home then ArrowRight, N08 to raw n; tap one top editor control, preserve raw n/document123/caret/selection-off; Cancel (not Clear), digit9 yields1923. Acer pen only; no candidate selection.",
+  "cases": [
+    {
+      "physicalKeyID": "TU-LEFT",
+      "label": "←",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top ←",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "TU-RIGHT",
+      "label": "→",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top →",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "TU-HOME",
+      "label": "Home",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top Home",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "TU-END",
+      "label": "End",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top End",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "TU-SELECT",
+      "label": "选区",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top 选区",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "TU-ALL",
+      "label": "全选",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top 全选",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "TU-DELETE",
+      "label": "Delete",
+      "setup": [
+        "Clear; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n, local output 123 with original caret unchanged"
+      ],
+      "action": "tap top Delete",
+      "expectedBeforeCancel": {
+        "raw": "n",
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "observe raw n still present; selection remains OFF",
+        "tap Cancel, not Clear",
+        "tap digit 9"
+      ],
+      "expectedAfterVerification": {
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 7,
+  "bodyLayerObservations": 0,
+  "controlObservations": 7,
+  "verificationControls": [
+    "R01K02"
+  ],
+  "coverageScope": "active CN composition guard for seven top editing controls plus cancellation verification; English paused composition and real host guards remain separate",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "previewDown checks navigationEnabled before creating any navigation gesture",
+    "navigationEnabled requires empty raw regardless language; a.cancel clears transient modifiers but preserves editor/caret",
+    "top Cancel clears only unconfirmed composition; literal digit inserts at preserved caret"
+  ],
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json"
+}

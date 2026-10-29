@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-CTRL-ALT",
+  "userQuote": "正常",
+  "inputMethod": "finger",
+  "target": "new language-label package preview only; English EN, no composition",
+  "packageExecutableSHA256": "73c729b2948a37bc461c7cbcc7c3e1277424f9f5874b6d0285b241a02b1b6865",
+  "coveredLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "coveredKeyIDs": [
+    "R07K02",
+    "R07K09",
+    "R07K04",
+    "R07K07"
+  ],
+  "coveredLayerObservations": 8,
+  "result": "passed-user-reported",
+  "actual": "按前述左右Ctrl/Alt基础及先Shift步骤反馈正常；未另行逐项转录",
+  "attemptCounts": "not supplied",
+  "independentObservation": false,
+  "exclusions": [
+    "CN layers",
+    "both pen files",
+    "host or physical keyboard shortcuts"
+  ]
+}

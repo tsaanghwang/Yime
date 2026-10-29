@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-27",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-SYMBOL-06",
+  "continues": "TOUCH-V1-P10-FINGER-CN-CODING-05",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "CN, variable, literal-entry OFF, ID legends. Before every cell click Clear and ensure Shift unlit. Base: tap key; ASCII goes to raw composition and output remains empty; do not pick candidates. Shift: independently Clear, then one-shot Shift and key; exact reviewed Unicode symbol goes to local output and raw stays empty.",
+  "keys": [
+    {
+      "physicalKeyID": "R04K04",
+      "label": "N25",
+      "base": "Y",
+      "shift": "·",
+      "baseExpected": {
+        "raw": "Y",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "·"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K05",
+      "label": "N22",
+      "base": "x",
+      "shift": "、",
+      "baseExpected": {
+        "raw": "x",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "、"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K06",
+      "label": "N21",
+      "base": "q",
+      "shift": "—",
+      "baseExpected": {
+        "raw": "q",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "—"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K07",
+      "label": "N20",
+      "base": "j",
+      "shift": "×",
+      "baseExpected": {
+        "raw": "j",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "×"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R05K05",
+      "label": "M29",
+      "base": "L",
+      "shift": "√",
+      "baseExpected": {
+        "raw": "L",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "√"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R05K06",
+      "label": "M28",
+      "base": "T",
+      "shift": "÷",
+      "baseExpected": {
+        "raw": "T",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "÷"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "unchanged template CN_base=input and CN_shift=symbol actions",
+    "keyboardlab session explicit six-symbol allowlist and DirectSymbol",
+    "Chinese punctuation map has no remapping for these six Unicode symbols"
+  ],
+  "userReport": "user-reports/p10-finger-cn-symbol-06-user-result.json",
+  "resultDate": "2026-10-28"
+}

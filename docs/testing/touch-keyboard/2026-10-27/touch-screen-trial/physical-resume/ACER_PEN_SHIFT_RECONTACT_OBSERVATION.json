@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-EN-ALL47-47",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "userReport": "已测。正常。唯一一次例外是 shift 出现两次（响了两声）。",
+  "status": "double-contact trace retained; user attributes abnormal test to not following procedure; no established prescribed-workflow failure",
+  "observedKey": "R06K17",
+  "gapAfterUpMS": 26,
+  "firstContactID": 3202,
+  "secondContactID": 3202,
+  "observedStateSequence": [
+    "OFF",
+    "ON",
+    "OFF"
+  ],
+  "firstUpSequence": 3407,
+  "secondUpSequence": 3431,
+  "snapshot": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\raw\\acer-20261028T085228Z-2a990e58-through-4718.jsonl",
+  "snapshotSHA256": "db2ad61c933c930f1ec2c9d5d9779401bd173db218083fb421366fcea1bd6932",
+  "analysisReport": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\ANALYSIS-20261028T085228Z-2a990e58-through-4718.json",
+  "mouseExtraOutputChanges": [],
+  "limits": "two native contact cycles and latch transitions confirmed; exact mechanical/sensor cause unknown; two sounds are user-reported, not an audio recording; input47 mapping correctness separate from Shift repeat stability",
+  "currentTrialLimitation": "80ms trial filters native character keys only and cannot fix this Shift case; remains optional and physically unaccepted",
+  "duplicateFreeAcceptance": false,
+  "statusHistory": [
+    {
+      "priorStatus": "isolated right-Shift recontact/toggle issue open",
+      "date": "2026-10-28",
+      "reason": "later user workflow clarification"
+    }
+  ],
+  "userClarification": "测了。正常。异常是没按操作流程测。我严重怀疑是微星原装笔反应太快。",
+  "withinProtocolFailureEstablished": false,
+  "clarificationLimits": "User did not specify exact trace contact; do not delete the26ms two-cycle trace, infer precise intent, or relabel MSI frequent-repeat reports as resolved."
+}

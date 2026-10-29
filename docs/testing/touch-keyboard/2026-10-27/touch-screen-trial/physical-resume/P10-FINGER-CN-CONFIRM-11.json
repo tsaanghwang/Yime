@@ -1,0 +1,201 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-CONFIRM-11",
+  "continues": "TOUCH-V1-P10-FINGER-CN-BACKSPACE-10",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Keep CN/variable, literal-entry OFF, ID legends. Every scenario begins with Clear and Shift unlit. Each of left Space/right Space/Enter tests empty composition and first-candidate confirmation, both without and with one-shot Shift.",
+  "keys": [
+    {
+      "physicalKeyID": "R07K05",
+      "label": "左Space",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "context": "empty-composition",
+          "setup": "Clear then main digit 1; raw/candidates empty",
+          "action": "左Space",
+          "expected": {
+            "raw": "",
+            "localOutput": "1 ",
+            "displayHint": "space between 1 and caret"
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_base",
+          "context": "first-candidate-confirmation",
+          "setup": "Clear then N08, raw n. Verify candidates appear; remember exact first candidate before pressing. Do not click candidate. If none, report setup failure.",
+          "action": "左Space",
+          "expected": {
+            "raw": "",
+            "candidatesEmpty": true,
+            "localOutput": "exact first candidate text observed before action",
+            "extraWhitespaceOrNewline": false
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "empty-composition",
+          "setup": "Clear then main digit 1; raw/candidates empty",
+          "action": "Shift then 左Space",
+          "expected": {
+            "raw": "",
+            "localOutput": "1 ",
+            "displayHint": "space between 1 and caret"
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "first-candidate-confirmation",
+          "setup": "Clear then N08, raw n. Verify candidates appear; remember exact first candidate before pressing. Do not click candidate. If none, report setup failure.",
+          "action": "Shift then 左Space",
+          "expected": {
+            "raw": "",
+            "candidatesEmpty": true,
+            "localOutput": "exact first candidate text observed before action",
+            "extraWhitespaceOrNewline": false
+          },
+          "status": "通过（用户报告）"
+        }
+      ],
+      "status": "通过（用户报告）",
+      "actual": "空组合及首候选确认均按步骤反馈正常，未转录具体候选",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R07K06",
+      "label": "右Space",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "context": "empty-composition",
+          "setup": "Clear then main digit 1; raw/candidates empty",
+          "action": "右Space",
+          "expected": {
+            "raw": "",
+            "localOutput": "1 ",
+            "displayHint": "space between 1 and caret"
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_base",
+          "context": "first-candidate-confirmation",
+          "setup": "Clear then N08, raw n. Verify candidates appear; remember exact first candidate before pressing. Do not click candidate. If none, report setup failure.",
+          "action": "右Space",
+          "expected": {
+            "raw": "",
+            "candidatesEmpty": true,
+            "localOutput": "exact first candidate text observed before action",
+            "extraWhitespaceOrNewline": false
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "empty-composition",
+          "setup": "Clear then main digit 1; raw/candidates empty",
+          "action": "Shift then 右Space",
+          "expected": {
+            "raw": "",
+            "localOutput": "1 ",
+            "displayHint": "space between 1 and caret"
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "first-candidate-confirmation",
+          "setup": "Clear then N08, raw n. Verify candidates appear; remember exact first candidate before pressing. Do not click candidate. If none, report setup failure.",
+          "action": "Shift then 右Space",
+          "expected": {
+            "raw": "",
+            "candidatesEmpty": true,
+            "localOutput": "exact first candidate text observed before action",
+            "extraWhitespaceOrNewline": false
+          },
+          "status": "通过（用户报告）"
+        }
+      ],
+      "status": "通过（用户报告）",
+      "actual": "空组合及首候选确认均按步骤反馈正常，未转录具体候选",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R05K17",
+      "label": "Enter",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "context": "empty-composition",
+          "setup": "Clear then main digit 1; raw/candidates empty",
+          "action": "Enter",
+          "expected": {
+            "raw": "",
+            "localOutput": "1\n",
+            "displayHint": "1↵ then caret"
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_base",
+          "context": "first-candidate-confirmation",
+          "setup": "Clear then N08, raw n. Verify candidates appear; remember exact first candidate before pressing. Do not click candidate. If none, report setup failure.",
+          "action": "Enter",
+          "expected": {
+            "raw": "",
+            "candidatesEmpty": true,
+            "localOutput": "exact first candidate text observed before action",
+            "extraWhitespaceOrNewline": false
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "empty-composition",
+          "setup": "Clear then main digit 1; raw/candidates empty",
+          "action": "Shift then Enter",
+          "expected": {
+            "raw": "",
+            "localOutput": "1\n",
+            "displayHint": "1↵ then caret"
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "first-candidate-confirmation",
+          "setup": "Clear then N08, raw n. Verify candidates appear; remember exact first candidate before pressing. Do not click candidate. If none, report setup failure.",
+          "action": "Shift then Enter",
+          "expected": {
+            "raw": "",
+            "candidatesEmpty": true,
+            "localOutput": "exact first candidate text observed before action",
+            "extraWhitespaceOrNewline": false
+          },
+          "status": "通过（用户报告）"
+        }
+      ],
+      "status": "通过（用户报告）",
+      "actual": "空组合及首候选确认均按步骤反馈正常，未转录具体候选",
+      "attempts": null
+    }
+  ],
+  "scenarioCount": 12,
+  "layerObservations": 6,
+  "counting": "3 keys x 2 CN layers, each with 2 contexts; 12 scenarios cover 6 ledger layers.",
+  "expectedSources": [
+    "canonical three confirm actions with default Shift fallback",
+    "preview.apply confirm: empty raw emits literal space/newline; candidates select first with no extra whitespace",
+    "previewEditor displaySpan renders LF as ↵",
+    "packaged variable dictionary contains n-prefixed records; actual first candidate is observed dynamically, not hardcoded"
+  ],
+  "priorResultsInherited": false,
+  "userReport": "user-reports/p10-finger-cn-confirm-11-user-result.json",
+  "resultDate": "2026-10-28"
+}

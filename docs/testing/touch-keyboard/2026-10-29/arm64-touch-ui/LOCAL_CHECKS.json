@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-29",
+  "scope": "local development, not ARM64 native execution or new physical acceptance",
+  "mergedMain": "aa7aad58",
+  "runtimePackageSource": "8b00b944cc69e591796e4479c59e4e02e682fd69",
+  "checks": {
+    "offlinePrototype": "passed",
+    "canonicalProjection": "passed",
+    "profileGeneration": "passed",
+    "sharedGoAndTouchKeyboard": "passed",
+    "touchKeyboardShuffledCount3": "passed after test-thread pinning",
+    "packageCheckerUnitTests": "10 passed",
+    "completeX64Package": "passed; three modes, relocated resources, eight rejection checks",
+    "touchUIDataCheck": "passed98 keys/18u/three modes",
+    "arm64Build": "cross-build passed; no native execution"
+  },
+  "initialFailure": {
+    "test": "TestBottomYinyuanLegendKeepsCompleteGlyph",
+    "observed": "full suite once reported glyph ink mismatch; isolated retry passed",
+    "resolution": "pin memory-DC fixture to owning native thread, matching production UI; default and shuffled repeated suite pass",
+    "runtimeChangedByResolution": false
+  },
+  "packageExecutables": {
+    "amd64": "303da66aeefa1e87b070eb529f3f83415f6afdfb0f071b3e490a9be5bedaa08b",
+    "arm64": "956816de3dc5d01bcd33baf9213adcc4f4fe5f531ccfb734aa3fa71e67168d31"
+  },
+  "evidence": [
+    {
+      "path": "raw/delivery-generate_ascii_layout.log",
+      "sha256": "37c82c4920477f665346a1b7f1f6bfd9cf6d1408625ad88d3dcf75c2ee7a4b6b"
+    },
+    {
+      "path": "raw/delivery-validate.log",
+      "sha256": "d2167ff0c5f1b384ca6c551a83258bfca3c245eada0c05b433325ae3eff88b24"
+    },
+    {
+      "path": "raw/local-go-tests.log",
+      "sha256": "98688d36e2bb122b9a713ec6db0a28f5e647fab16d57b150432ee9d820950ab2"
+    }
+  ]
+}

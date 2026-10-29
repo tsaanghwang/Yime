@@ -1,0 +1,29 @@
+{
+  "relatedGoTests": "go test ./cmd/yime-touch-keyboard ./internal/touchkeyboard ./internal/keyboardlab -timeout90s: PASS",
+  "startupRegression": "native own window: resize before ready does not open audio; ready starts maintenance; asynchronous open failure is detected and retried after cooldown without minimize; queued timer cannot reopen minimized stream: PASS",
+  "deadlockRegression": "blocked reset/open, repeated close and single retiring stream checks retained and PASS",
+  "realAudioNativeWindow": "YIME_TEST_LIVE_AUDIO=1 taskbar toolbar/hotkey/system-menu minimize/restore/cancellation and real stream cleanup/reopen: PASS",
+  "actualDesktop": {
+    "coldStart": "PID15572, own new preview never minimized, mouse digit1 then2 yields12, then Exit and window absent",
+    "restart": "same package relaunched PID4632, never minimized, mouse digit1 yields1",
+    "readOnlyOwnProcessMeter": {
+      "cold-start": {
+        "PID": 15572,
+        "peak": 0.42141246795654297,
+        "nonzeroSamples": 27
+      },
+      "restart": {
+        "PID": 4632,
+        "peak": 0.42141246795654297,
+        "nonzeroSamples": 27
+      }
+    },
+    "traceFiles": [
+      "cold-start-input-trace.jsonl",
+      "restart-input-trace.jsonl"
+    ],
+    "laterMinimizeAttempt": "suppressed by user-input detection; no successful new desktop minimize operation claimed"
+  },
+  "packageCheck": "package-check.json: PASS",
+  "physicalAudibility": "pending; neither successful API calls nor nonzero meter proves heard sound"
+}

@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-LIFT-DIAG-45",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "userReports": [
+    {
+      "scope": "MSI physical diagnostic",
+      "message": "已测。有重复。但似乎动作快一点好些。是不是原来我动作稍慢。怕动作过快过大过重损伤屏幕。"
+    },
+    {
+      "scope": "later Acer ad-hoc comparison",
+      "message": "微星原装笔太小，不好把控，换成宏碁似乎好些。刚才测了几次，没有重复。"
+    }
+  ],
+  "bodyLayerObservations": 0,
+  "scope": "neither exact intended-tap count nor device-independent cause inferred; Acer few trials not a completed matrix"
+}

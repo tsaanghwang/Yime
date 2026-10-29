@@ -73,6 +73,11 @@ func (a *ui) traceInput(stage string, msg uint32, w, l uintptr) {
 		}
 	}
 	row["pressedKeys"] = pressed
+	if stream, ok := a.soundStream.(interface{ diagnostics() map[string]any }); ok {
+		row["audio"] = stream.diagnostics()
+	}
+	row["soundUnavailable"] = a.soundUnavailable
+	row["soundSuspended"] = a.soundSuspended
 	if a.preview != nil {
 		row["inputLanguage"] = a.preview.snapshot.Modes.Input
 		row["rawLength"] = utf8.RuneCountInString(a.preview.snapshot.State.RawInput)

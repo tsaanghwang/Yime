@@ -1,0 +1,13 @@
+{
+  "group": "A",
+  "scope": "Four separate production-function short clicks, about two seconds apart",
+  "exitCode": 0,
+  "playbackReturns": [
+    "play 1 true",
+    "play 2 true",
+    "play 3 true",
+    "play 4 true"
+  ],
+  "audibility": "pending user report",
+  "noSystemSettingsChanged": true
+}

@@ -1,0 +1,191 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CN-CONFIRM-56",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same original CN preview, variable, punctuation entry OFF, ID legends; same Acer pen; every independent case Clear, selection OFF, modifiers unlit",
+  "keys": [
+    {
+      "physicalKeyID": "R07K05",
+      "label": "左Space",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "context": "empty-composition",
+          "setup": "Clear then main digit 1; raw/candidates empty",
+          "action": "左Space; then tap main digit2",
+          "expected": {
+            "raw": "",
+            "localOutput": "1 2",
+            "displayHint": "1 2"
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_base",
+          "context": "first-candidate-confirmation",
+          "setup": "Clear then N08, raw n. Verify candidates appear; remember exact first candidate before pressing. Do not click candidate. If none, report setup failure.",
+          "action": "左Space",
+          "expected": {
+            "raw": "",
+            "candidatesEmpty": true,
+            "localOutput": "exact first candidate text observed before action",
+            "extraWhitespaceOrNewline": false
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "empty-composition",
+          "setup": "Clear then main digit 1; raw/candidates empty",
+          "action": "Shift then 左Space; then tap main digit2",
+          "expected": {
+            "raw": "",
+            "localOutput": "1 2",
+            "displayHint": "1 2"
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "first-candidate-confirmation",
+          "setup": "Clear then N08, raw n. Verify candidates appear; remember exact first candidate before pressing. Do not click candidate. If none, report setup failure.",
+          "action": "Shift then 左Space",
+          "expected": {
+            "raw": "",
+            "candidatesEmpty": true,
+            "localOutput": "exact first candidate text observed before action",
+            "extraWhitespaceOrNewline": false
+          },
+          "status": "passed-user-reported"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "R07K06",
+      "label": "右Space",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "context": "empty-composition",
+          "setup": "Clear then main digit 1; raw/candidates empty",
+          "action": "右Space; then tap main digit2",
+          "expected": {
+            "raw": "",
+            "localOutput": "1 2",
+            "displayHint": "1 2"
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_base",
+          "context": "first-candidate-confirmation",
+          "setup": "Clear then N08, raw n. Verify candidates appear; remember exact first candidate before pressing. Do not click candidate. If none, report setup failure.",
+          "action": "右Space",
+          "expected": {
+            "raw": "",
+            "candidatesEmpty": true,
+            "localOutput": "exact first candidate text observed before action",
+            "extraWhitespaceOrNewline": false
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "empty-composition",
+          "setup": "Clear then main digit 1; raw/candidates empty",
+          "action": "Shift then 右Space; then tap main digit2",
+          "expected": {
+            "raw": "",
+            "localOutput": "1 2",
+            "displayHint": "1 2"
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "first-candidate-confirmation",
+          "setup": "Clear then N08, raw n. Verify candidates appear; remember exact first candidate before pressing. Do not click candidate. If none, report setup failure.",
+          "action": "Shift then 右Space",
+          "expected": {
+            "raw": "",
+            "candidatesEmpty": true,
+            "localOutput": "exact first candidate text observed before action",
+            "extraWhitespaceOrNewline": false
+          },
+          "status": "passed-user-reported"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "R05K17",
+      "label": "Enter",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "context": "empty-composition",
+          "setup": "Clear then main digit 1; raw/candidates empty",
+          "action": "Enter; then tap main digit2",
+          "expected": {
+            "raw": "",
+            "localOutput": "1\n2",
+            "displayHint": "1↵2"
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_base",
+          "context": "first-candidate-confirmation",
+          "setup": "Clear then N08, raw n. Verify candidates appear; remember exact first candidate before pressing. Do not click candidate. If none, report setup failure.",
+          "action": "Enter",
+          "expected": {
+            "raw": "",
+            "candidatesEmpty": true,
+            "localOutput": "exact first candidate text observed before action",
+            "extraWhitespaceOrNewline": false
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "empty-composition",
+          "setup": "Clear then main digit 1; raw/candidates empty",
+          "action": "Shift then Enter; then tap main digit2",
+          "expected": {
+            "raw": "",
+            "localOutput": "1\n2",
+            "displayHint": "1↵2"
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "first-candidate-confirmation",
+          "setup": "Clear then N08, raw n. Verify candidates appear; remember exact first candidate before pressing. Do not click candidate. If none, report setup failure.",
+          "action": "Shift then Enter",
+          "expected": {
+            "raw": "",
+            "candidatesEmpty": true,
+            "localOutput": "exact first candidate text observed before action",
+            "extraWhitespaceOrNewline": false
+          },
+          "status": "passed-user-reported"
+        }
+      ]
+    }
+  ],
+  "bodyLayerObservations": 6,
+  "scenarioCount": 12,
+  "scope": "three Space/Enter keys x2 layers with empty-composition literal whitespace and first-candidate confirmation contexts; twelve scenarios cover six layers; exact first candidate is observed by user, not predetermined; no host or inherited finger/MSI acceptance",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-cn-confirm-56-user-result.json"
+}

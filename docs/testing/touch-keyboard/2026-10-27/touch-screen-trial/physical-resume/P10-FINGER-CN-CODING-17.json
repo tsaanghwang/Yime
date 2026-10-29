@@ -1,0 +1,192 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-CODING-17",
+  "continues": "TOUCH-V1-P10-FINGER-CN-CODING-16",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Keep CN/variable, literal-entry OFF, ID legends. Every cell starts with Clear and no modifiers. Base: direct key. Shift: independently Clear, then one-shot Shift and key. Inspect raw ASCII only; do not select candidates; local output stays empty.",
+  "keys": [
+    {
+      "physicalKeyID": "R04K09",
+      "label": "M14",
+      "base": "Q",
+      "shift": ";",
+      "baseExpected": {
+        "raw": "Q",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": ";",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组独立上下档步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K10",
+      "label": "M13",
+      "base": "O",
+      "shift": "#",
+      "baseExpected": {
+        "raw": "O",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "#",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组独立上下档步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K11",
+      "label": "N03",
+      "base": "f",
+      "shift": "'",
+      "baseExpected": {
+        "raw": "f",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "'",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组独立上下档步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K12",
+      "label": "N06",
+      "base": "t",
+      "shift": "-",
+      "baseExpected": {
+        "raw": "t",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "-",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组独立上下档步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K13",
+      "label": "M04",
+      "base": "U",
+      "shift": "*",
+      "baseExpected": {
+        "raw": "U",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "*",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组独立上下档步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K14",
+      "label": "M05",
+      "base": "W",
+      "shift": "^",
+      "baseExpected": {
+        "raw": "W",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "^",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组独立上下档步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K15",
+      "label": "M06",
+      "base": "u",
+      "shift": "+",
+      "baseExpected": {
+        "raw": "u",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "+",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组独立上下档步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K16",
+      "label": "N16",
+      "base": "Z",
+      "shift": ";",
+      "baseExpected": {
+        "raw": "Z",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": ";",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组独立上下档步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K17",
+      "label": "N17",
+      "base": "C",
+      "shift": "{",
+      "baseExpected": {
+        "raw": "C",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "{",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组独立上下档步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K18",
+      "label": "N18",
+      "base": "S",
+      "shift": "}",
+      "baseExpected": {
+        "raw": "S",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "}",
+        "localOutput": ""
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组独立上下档步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "layerObservations": 20,
+  "priorResultsInherited": false,
+  "purpose": "current-view regression of coding keys previously observed only in older full view; old passes preserved, not copied",
+  "expectedSources": [
+    "current body action columns retained unchanged",
+    "generated LayoutAlphabet confirms both layers are coding; literal-entry OFF"
+  ],
+  "remainingCurrentViewCNAfterLastBatch": 30,
+  "userReport": "user-reports/p10-finger-cn-coding-17-user-result.json",
+  "resultDate": "2026-10-28"
+}

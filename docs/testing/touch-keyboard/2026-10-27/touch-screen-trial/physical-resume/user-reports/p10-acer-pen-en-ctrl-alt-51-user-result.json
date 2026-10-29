@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-EN-CTRL-ALT-51",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedBodyLayers": 8,
+  "result": "left/right Ctrl/Alt direct/Shift runs normal as presented, local Ctrl+a/A replacement c and Alt refusal then abc",
+  "scope": "grouped preview observation only; no exact per-action transcript/attempt count, physical hold or real-host acceptance; previous contact observation/workflow clarification retained"
+}

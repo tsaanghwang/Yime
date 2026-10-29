@@ -1,0 +1,164 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-EN-DISABLED-48",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same original EN preview, English keycaps EN; Acer pen only; Clear, selection OFF, modifiers unlit; lowercase a sentinel; verify visible Shift state before each run",
+  "cases": [
+    {
+      "physicalKeyID": "R02K05",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K06",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K07",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K08",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K09",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K10",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K11",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K12",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K13",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K14",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K15",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K16",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K17",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K18",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K19",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R02K20",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R03K04",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R04K04",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R04K05",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R04K06",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R05K05",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R06K10",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    },
+    {
+      "physicalKeyID": "R06K11",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "disabled, preserve a, no composition"
+    }
+  ],
+  "runs": [
+    {
+      "layer": "EN_base",
+      "steps": "Shift visibly OFF, tap23 blank disabled keys once each"
+    },
+    {
+      "layer": "EN_shift",
+      "steps": "tap Shift and verify ON, tap same23 blank disabled keys, Shift stays ON, then turn OFF"
+    }
+  ],
+  "bodyLayerObservations": 46,
+  "scope": "23 disabled keys x2 EN layers only; report any unexpected Shift toggle separately; no no-repeat claim or inherited finger/MSI result",
+  "userReport": "测了。正常。异常是没按操作流程测。我严重怀疑是微星原装笔反应太快。",
+  "evidence": "user-reports/p10-acer-pen-en-disabled-48-user-result.json"
+}

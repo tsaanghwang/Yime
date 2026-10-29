@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-27",
+  "userQuote": "颜色暂时不深究。键面字符字号太小。下档太偏下，有一半没有露出来。",
+  "scope": "Desktop prototype legend drawing only",
+  "status": "fixed-in-local-trial; physical-retest-pending",
+  "cause": "A fixed 20px DrawText rectangle cropped private YinYuan font cells taller than 20px; bottom cells were anchored at key bottom minus 23px. Fixed 15px/19px font sizes did not scale with the physical keyboard calibration.",
+  "regression": {
+    "test": "TestBottomYinyuanLegendKeepsCompleteGlyph",
+    "before": [
+      {"glyph": "N12", "fontPixels": 19, "bottomInkPixels": 53, "completeInkPixels": 63},
+      {"glyph": "M12", "fontPixels": 19, "bottomInkPixels": 26, "completeInkPixels": 36},
+      {"glyph": "M05", "fontPixels": 19, "bottomInkPixels": 26, "completeInkPixels": 36},
+      {"glyph": "N12", "fontPixels": 36, "bottomInkPixels": 57, "completeInkPixels": 220},
+      {"glyph": "M12", "fontPixels": 36, "bottomInkPixels": 0, "completeInkPixels": 92},
+      {"glyph": "M05", "fontPixels": 36, "bottomInkPixels": 0, "completeInkPixels": 117}
+    ],
+    "after": "passed for all six cases: complete raster retained, no ink outside key bounds"
+  },
+  "fix": {
+    "fontSize": "ASCII em = 20% of calibrated 1u pixel size; YinYuan em = 23%; observed 16-inch scale produces 31px and 36px instead of 15px and 19px",
+    "position": "Use actual selected-font cell height; top/middle/bottom anchored inside key with 5% key-height padding, at least 4px",
+    "preserved": ["key identities and actions", "18u geometry and hit regions", "58.8 calibration argument", "font file and glyph mapping", "three isolated dictionaries", "trial colors"],
+    "systemSettingsOrInstalledProductChanges": false
+  },
+  "physicalRetest": "pending: size, complete upper/lower legends, no overlap; color discussion deferred by user"
+}

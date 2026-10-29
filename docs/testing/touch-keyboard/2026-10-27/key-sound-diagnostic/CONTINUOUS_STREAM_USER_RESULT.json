@@ -1,0 +1,7 @@
+{
+  "date": "2026-10-27",
+  "question": "刚才这组使用新的持续音频流，先静音运行一秒，再敲四下。现在能听到吗？",
+  "answer": "清楚听到四声",
+  "probe": "CONTINUOUS_STREAM_PROBE.json",
+  "scope": "User listening confirmation of the production persistent-stream implementation in a bounded standalone diagnostic, not yet keyboard-window or physical-touch acceptance"
+}

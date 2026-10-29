@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-27",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-CODING-05",
+  "continues": "TOUCH-V1-P10-FINGER-CN-CODING-04",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Use calibrated r3 preview, CN/variable, literal-entry OFF, ID legends. Clear local output initially. Before each independent base/Shift cell tap Cancel and ensure Shift unlit; base: key only; shift: one-shot Shift then key. Inspect raw ASCII, do not select candidates; local output stays empty.",
+  "keys": [
+    {
+      "physicalKeyID": "R06K10",
+      "label": "N24",
+      "base": "w",
+      "shift": "]",
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R06K11",
+      "label": "N23",
+      "base": "y",
+      "shift": ",",
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R06K12",
+      "label": "N08",
+      "base": "n",
+      "shift": ".",
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R06K13",
+      "label": "M07",
+      "base": "V",
+      "shift": "/",
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R06K14",
+      "label": "M08",
+      "base": "X",
+      "shift": "<",
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R06K15",
+      "label": "M09",
+      "base": "v",
+      "shift": ">",
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R06K16",
+      "label": "M33",
+      "base": "H",
+      "shift": "?",
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "old unresolved CN action cells, unchanged canonical physical-layout actions",
+    "generated LayoutAlphabet verifies both layers are coding",
+    "r3 source-mapping invariant and package identity"
+  ],
+  "bodyCoverage": "separate 84-key/four-layer ledgers; new 14 controls in separate checklist",
+  "userReport": "user-reports/p10-finger-cn-coding-05-user-result.json"
+}

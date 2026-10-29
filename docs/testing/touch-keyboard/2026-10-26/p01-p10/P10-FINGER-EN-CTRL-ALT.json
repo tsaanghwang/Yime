@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-CTRL-ALT",
+  "inputMethod": "finger",
+  "target": "new language-label package preview only; English EN, no composition",
+  "packageExecutableSHA256": "73c729b2948a37bc461c7cbcc7c3e1277424f9f5874b6d0285b241a02b1b6865",
+  "coverageLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "setup": "Before each independent subcase clear output/selection and reset Shift/Ctrl/Alt highlights. Use only virtual keys with finger, not physical keyboard shortcuts.",
+  "keys": [
+    {
+      "physicalKeyID": "R07K02",
+      "label": "Left Ctrl",
+      "baseCase": "Clear/reset; type ab; tap this Ctrl then a: ab selected; type x: output x",
+      "shiftCase": "Clear/reset; type ab; tap Shift then this Ctrl then a: ab selected; type x: output x",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R07K09",
+      "label": "Right Ctrl",
+      "baseCase": "Clear/reset; type ab; tap this Ctrl then a: ab selected; type x: output x",
+      "shiftCase": "Clear/reset; type ab; tap Shift then this Ctrl then a: ab selected; type x: output x",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R07K04",
+      "label": "Left Alt",
+      "baseCase": "Clear/reset; type ab; tap this Alt then a: output remains ab, preview rejects Alt shortcut; type x: output abx",
+      "shiftCase": "Clear/reset; type ab; tap Shift then this Alt then a: output remains ab, preview rejects Alt shortcut; type x: output abx",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R07K07",
+      "label": "Right Alt",
+      "baseCase": "Clear/reset; type ab; tap this Alt then a: output remains ab, preview rejects Alt shortcut; type x: output abx",
+      "shiftCase": "Clear/reset; type ab; tap Shift then this Alt then a: output remains ab, preview rejects Alt shortcut; type x: output abx",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    }
+  ],
+  "status": "passed-user-reported",
+  "expectedAltDiagnostic": "预览不执行 Alt 快捷键",
+  "note": "Desktop input.go treats Ctrl/Alt as modifiers even though static action metadata says unsupported. Preview supports Ctrl+A with case-insensitive a, rejects Alt chords without sending host input, and consumes one-shot modifier state before subsequent x.",
+  "userReport": "user-reports/p10-finger-en-ctrl-alt-user-result.json"
+}

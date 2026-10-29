@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-SHIFT-BACKSPACE",
+  "inputMethod": "finger",
+  "target": "fixed-package preview, English EN view, no composition",
+  "packageExecutableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "coverageLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "setup": "Before every independent subcase clear preview output, remove selection and confirm Shift highlight is off; finger only.",
+  "keys": [
+    {
+      "physicalKeyID": "R06K04",
+      "label": "Left Shift",
+      "baseCase": "Tap left Shift, then a, then a; expected Aa",
+      "shiftCase": "Tap left Shift twice, then a; expected a (second Shift cancels)",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R06K17",
+      "label": "Right Shift",
+      "baseCase": "Tap right Shift, then a, then a; expected Aa",
+      "shiftCase": "Tap right Shift twice, then a; expected a (second Shift cancels)",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R02K21",
+      "label": "Backspace",
+      "baseCase": "Type ab then Backspace; expected a",
+      "shiftCase": "Type ab then Shift and Backspace; expected a",
+      "status": "通过（用户报告）",
+      "actual": "按该组步骤反馈正常，未另行转录",
+      "attempts": null
+    }
+  ],
+  "status": "passed-user-reported",
+  "note": "Empty alternate Shift action uses existing base-action fallback; modifier keys are checked by latch-on/latch-off behavior, not printable output from the modifier itself.",
+  "userReport": "user-reports/p10-finger-en-shift-backspace-user-result.json"
+}

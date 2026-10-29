@@ -1,0 +1,238 @@
+{
+  "date": "2026-10-27",
+  "scope": "Pixel analysis of user-provided Windows touch keyboard screenshots; no display-brightness measurement",
+  "sources": [
+    {
+      "path": "C:/Users/tsaan/AppData/Local/Temp/codex-clipboard-43bc04a3-7ff6-451e-aaad-3d49f309b78e.png",
+      "sha256": "ce80e70ca6826442325c6a56f729a4390c3f5d11a8c2451a260a4e8e43b14b52",
+      "width": 2878,
+      "height": 772,
+      "samples": {
+        "keyboard_background": {
+          "rectangle": [
+            20,
+            240,
+            200,
+            500
+          ],
+          "dominantColors": [
+            {
+              "hex": "#212020",
+              "pixels": 26399
+            },
+            {
+              "hex": "#21201f",
+              "pixels": 20401
+            }
+          ]
+        },
+        "key_surface": {
+          "rectangle": [
+            640,
+            240,
+            700,
+            260
+          ],
+          "dominantColors": [
+            {
+              "hex": "#3e3b3b",
+              "pixels": 1103
+            },
+            {
+              "hex": "#d3d2d2",
+              "pixels": 72
+            },
+            {
+              "hex": "#7e7c7c",
+              "pixels": 19
+            },
+            {
+              "hex": "#bdbcbc",
+              "pixels": 4
+            },
+            {
+              "hex": "#a6a4a4",
+              "pixels": 2
+            }
+          ]
+        },
+        "control_surface": {
+          "rectangle": [
+            485,
+            250,
+            540,
+            300
+          ],
+          "dominantColors": [
+            {
+              "hex": "#343131",
+              "pixels": 2606
+            },
+            {
+              "hex": "#ffffff",
+              "pixels": 85
+            },
+            {
+              "hex": "#c1c0c0",
+              "pixels": 38
+            },
+            {
+              "hex": "#8c8a8a",
+              "pixels": 16
+            },
+            {
+              "hex": "#e2e1e1",
+              "pixels": 5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "C:/Users/tsaan/AppData/Local/Temp/codex-clipboard-6423db26-427b-49a0-853a-0abdea34322c.png",
+      "sha256": "75a091c2c01c11ecf479448de233b1e27d82ecab6872bd9374c619493bda033e",
+      "width": 700,
+      "height": 586,
+      "samples": {
+        "keyboard_background": {
+          "rectangle": [
+            45,
+            130,
+            650,
+            195
+          ],
+          "dominantColors": [
+            {
+              "hex": "#1f1e1e",
+              "pixels": 9596
+            },
+            {
+              "hex": "#1e1d1d",
+              "pixels": 9482
+            },
+            {
+              "hex": "#201f1f",
+              "pixels": 4032
+            },
+            {
+              "hex": "#1d1c1c",
+              "pixels": 3855
+            },
+            {
+              "hex": "#1e1e1e",
+              "pixels": 3363
+            }
+          ]
+        },
+        "key_surface": {
+          "rectangle": [
+            86,
+            300,
+            128,
+            320
+          ],
+          "dominantColors": [
+            {
+              "hex": "#3b3a3a",
+              "pixels": 290
+            },
+            {
+              "hex": "#3a3939",
+              "pixels": 274
+            },
+            {
+              "hex": "#3c3b3b",
+              "pixels": 133
+            },
+            {
+              "hex": "#393838",
+              "pixels": 110
+            },
+            {
+              "hex": "#383838",
+              "pixels": 17
+            }
+          ]
+        },
+        "control_surface": {
+          "rectangle": [
+            57,
+            390,
+            93,
+            410
+          ],
+          "dominantColors": [
+            {
+              "hex": "#313131",
+              "pixels": 262
+            },
+            {
+              "hex": "#313030",
+              "pixels": 242
+            },
+            {
+              "hex": "#323131",
+              "pixels": 95
+            },
+            {
+              "hex": "#302f2f",
+              "pixels": 91
+            },
+            {
+              "hex": "#2f2e2e",
+              "pixels": 18
+            }
+          ]
+        },
+        "white_legends": {
+          "rectangle": [
+            85,
+            320,
+            125,
+            350
+          ],
+          "dominantColors": [
+            {
+              "hex": "#3a3939",
+              "pixels": 404
+            },
+            {
+              "hex": "#3b3a3a",
+              "pixels": 329
+            },
+            {
+              "hex": "#3c3b3b",
+              "pixels": 150
+            },
+            {
+              "hex": "#393838",
+              "pixels": 137
+            },
+            {
+              "hex": "#ffffff",
+              "pixels": 75
+            }
+          ],
+          "brightGlyphColors": [
+            {
+              "hex": "#ffffff",
+              "pixels": 75
+            },
+            {
+              "hex": "#e2e2e2",
+              "pixels": 9
+            },
+            {
+              "hex": "#e3e2e2",
+              "pixels": 5
+            },
+            {
+              "hex": "#e3e3e3",
+              "pixels": 4
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

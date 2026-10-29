@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-27",
+  "userQuote": "是接着调整盘面（包括布局）还是先完成这能测试？我发现 F-F12 暂时用不上，而屏幕几乎被盘面占据没有给输入宿主合适的空间，导致不能看见输入内容和操控宿主应用。",
+  "scope": "18u desktop prototype usability and host workspace; no installed product/input-method/user-data changes",
+  "finding": "Keyboard footprint obstructs host content and controls, limiting meaningful host acceptance.",
+  "priorityRecommendation": "Record current stage, improve screen view/host workspace first, then resume remaining physical coverage after view stabilizes.",
+  "existingEvidence": {
+    "P10FingerPassedLayerObservations": 250,
+    "P10FingerPendingCNLayerObservations": 150,
+    "P10EachPenPendingLayerObservations": 400,
+    "latestPackageExecutableSHA256": "25d973f80d839f2ef2e9e399d577c3f9adc35b7739afff2374bc832cc37d18a5",
+    "reportedSoundFix": "Actual-preview three clicks clear per user; separate from physical input coverage"
+  },
+  "sizeEstimate": {
+    "source": "Previously recorded 2880x1800 environment and latest controlled 2830x1442 render; not a new physical screen measurement",
+    "windowHeightPixels": 1442,
+    "recordedScreenHeightPixels": 1800,
+    "fractionApprox": 0.8011,
+    "topFunctionRowAndGapU": 1.25,
+    "foldingWholeTopRowEstimatedSavedPixels": 195,
+    "note": "Only hiding F1-F12 does not remove full row: Esc, CN/EN, Layout and Pause/Break share it."
+  },
+  "proposedView": {
+    "mainWidthBaseline": "18u with existing 58.8 calibration; no automatic overall shrinking",
+    "functionRow": "Foldable screen view, complete original view retained",
+    "essentialControls": "Retain reachable Esc/cancel, CN/EN and Layout when top row is folded; preserve action semantics and key identities",
+    "header": "Compact normal-use controls; expand ruler/help/diagnostic information when needed; keep composition/candidates readable",
+    "hostWorkspace": "Keyboard at lower screen, host usable above it; choose explicit docking/window-management behavior during implementation, without assuming unrelated host windows can be changed",
+    "initialEvaluationTarget": "Approximately 40% upper-screen host space if achievable without shrinking main input keys; design target only, not an accepted physical measurement"
+  },
+  "validationOrder": [
+    "Developer layout/visibility/hit/cancellation regressions",
+    "Identified Word/Edge host text and caret visible, controls operable, focus binding/minimize recovery intact",
+    "Short finger and pen smoke checks on fixed view/package",
+    "Resume pending per-key physical layers, tracking view/package identity"
+  ],
+  "preservation": "Keep original 100-key view, 17u/23u frozen candidates, all old results and raw evidence. Do not relabel folded or moved keys as covered by earlier geometry results.",
+  "status": "priority recommendation recorded; no runtime view or canonical layout geometry change applied"
+}

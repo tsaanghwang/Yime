@@ -1,0 +1,193 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CN-CTRL-ALT-58",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same original CN preview, variable mode, punctuation entry OFF, ID legends; Acer pen only; each independent case Clear, selection OFF, modifiers unlit, digits12 with empty raw; do not switch EN or use top SelectAll",
+  "keys": [
+    {
+      "physicalKeyID": "R07K02",
+      "label": "左Ctrl",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "左Ctrl then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": true,
+            "shortcutRefused": false,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "3",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "Shift then 左Ctrl then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": false,
+            "shortcutRefused": true,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "123",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "passed-user-reported"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "R07K09",
+      "label": "右Ctrl",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "右Ctrl then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": true,
+            "shortcutRefused": false,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "3",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "Shift then 右Ctrl then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": false,
+            "shortcutRefused": true,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "123",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "passed-user-reported"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "R07K04",
+      "label": "左Alt",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "左Alt then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": false,
+            "shortcutRefused": true,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "123",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "Shift then 左Alt then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": false,
+            "shortcutRefused": true,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "123",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "passed-user-reported"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "R07K07",
+      "label": "右Alt",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "右Alt then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": false,
+            "shortcutRefused": true,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "123",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear; main digits 1 then 2; output 12, raw empty, no modifiers highlighted",
+          "action": "Shift then 右Alt then M12 (a base / ] shifted), then main digit 3",
+          "expectedBefore3": {
+            "raw": "",
+            "localOutput": "12",
+            "allSelected": false,
+            "shortcutRefused": true,
+            "noSystemAction": true
+          },
+          "expectedAfter3": {
+            "raw": "",
+            "localOutput": "123",
+            "oneShotModifiersConsumed": true
+          },
+          "status": "passed-user-reported"
+        }
+      ]
+    }
+  ],
+  "bodyLayerObservations": 8,
+  "scenarioCount": 8,
+  "scope": "four CN modifier keys x2 contexts; M12 base a supports local Ctrl+a, shifted ] makes Ctrl path refuse; Alt paths refuse; following digit3 verifies replacement/consumption; no external shortcut/host or inherited EN/finger acceptance",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-cn-ctrl-alt-58-user-result.json"
+}

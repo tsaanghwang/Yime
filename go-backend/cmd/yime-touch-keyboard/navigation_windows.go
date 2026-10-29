@@ -16,6 +16,13 @@ func (a *ui) navigationRect(b toolButton) rect {
 }
 
 func (a *ui) navigationAt(x, y int32) (string, rect) {
+	if a.o.TouchUI {
+		action, area := a.touchControlAt(x, y)
+		if touchNavigation(action) {
+			return action, area
+		}
+		return "", rect{}
+	}
 	for _, b := range navigationButtons {
 		r := a.navigationRect(b)
 		if inside(r, x, y) {
@@ -35,13 +42,14 @@ func (a *ui) navigationPending() bool {
 }
 
 func (a *ui) drawNavigation(dc uintptr) {
+	palette := a.palette()
 	for _, b := range navigationButtons {
-		label, color := b.label, uintptr(0xE5EBE2)
+		label, color := b.label, palette.panel
 		if b.action == "select" && a.navSelecting {
-			label, color = "选区：开", 0xB3DDC5
+			label, color = "选区：开", palette.active
 		}
 		if !a.preview.navigationEnabled() {
-			color = 0xDDDDDD
+			color = palette.disabled
 		}
 		r := a.navigationRect(b)
 		fill(dc, r, color)

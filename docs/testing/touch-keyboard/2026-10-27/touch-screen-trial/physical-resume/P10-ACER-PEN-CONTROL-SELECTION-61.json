@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-61",
+  "continues": "TOUCH-V1-ACER-PEN-CONTROL-NAV-60",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "inputMode": "CN",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "Current preview CN/variable. Each case independently Clear, selection OFF, modifiers unlit, then main digits1234. Use large top controls; raw empty, no candidates. Acer pen only.",
+  "cases": [
+    {
+      "caseID": "19-followup-selection-replace",
+      "controls": [
+        "TU-SELECT",
+        "TU-LEFT"
+      ],
+      "steps": [
+        "Clear; digits 1234",
+        "ArrowLeft once",
+        "selection ON",
+        "ArrowLeft twice",
+        "verify middle 23 selected",
+        "digit 9"
+      ],
+      "expected": {
+        "localOutput": "194",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "selection-delete",
+      "controls": [
+        "TU-SELECT",
+        "TU-RIGHT",
+        "TU-DELETE"
+      ],
+      "steps": [
+        "Clear; digits 1234",
+        "Home",
+        "selection ON",
+        "ArrowRight twice",
+        "verify 12 selected",
+        "top Delete"
+      ],
+      "expected": {
+        "localOutput": "34",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "select-all-replace",
+      "controls": [
+        "TU-ALL"
+      ],
+      "steps": [
+        "Clear; digits 1234",
+        "top SelectAll",
+        "verify 1234 selected",
+        "digit 9"
+      ],
+      "expected": {
+        "localOutput": "9",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "forward-delete",
+      "controls": [
+        "TU-HOME",
+        "TU-DELETE"
+      ],
+      "steps": [
+        "Clear; digits 1234",
+        "Home",
+        "top Delete"
+      ],
+      "expected": {
+        "localOutput": "234",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 4,
+  "bodyLayerObservations": 0,
+  "controlObservations": 4,
+  "coverageScope": "preview empty-composition selection replacement, selection delete, SelectAll replacement, forward Delete; not active/paused composition guards or host acceptance",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "navigation selection latch supplies Shift only to navigation",
+    "previewEditor extends selection per rune, replaces selection on insertion, and Delete removes selection or forward rune",
+    "preview SelectAll is Ctrl+a on empty raw; local digit is inserted at selection/caret"
+  ],
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-control-selection-61-user-result.json"
+}

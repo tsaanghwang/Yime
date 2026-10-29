@@ -1,0 +1,252 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CONTROL-PAUSED-GUARD-22",
+  "continues": "TOUCH-V1-P10-FINGER-CONTROL-CN-GUARD-21",
+  "inputMethod": "finger",
+  "inputMode": "CN setup -> EN paused -> CN verification",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Preview only. Each case independently starts CN/Clear, digits123, Home then ArrowRight, N08. Switch language to EN without confirming; paused n must survive. Test one of seven top editor controls; guard must preserve raw/document/caret/selection-off. Cancel in EN, return CN, digit9 must produce 1923. Do not select candidates, Space or Enter.",
+  "cases": [
+    {
+      "physicalKeyID": "TU-LEFT",
+      "label": "←",
+      "setup": [
+        "Clear while CN; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n; tap language button once to EN",
+        "verify EN and paused raw n retained"
+      ],
+      "action": "tap top ←",
+      "expectedBeforeCancel": {
+        "inputMode": "english",
+        "raw": "n",
+        "rawPaused": true,
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "tap Cancel while still EN; paused n disappears, confirmed text remains",
+        "tap language button back to CN",
+        "tap main digit 9"
+      ],
+      "expectedAfterVerification": {
+        "inputMode": "chinese",
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按EN暂停组合保护及返回CN后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-RIGHT",
+      "label": "→",
+      "setup": [
+        "Clear while CN; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n; tap language button once to EN",
+        "verify EN and paused raw n retained"
+      ],
+      "action": "tap top →",
+      "expectedBeforeCancel": {
+        "inputMode": "english",
+        "raw": "n",
+        "rawPaused": true,
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "tap Cancel while still EN; paused n disappears, confirmed text remains",
+        "tap language button back to CN",
+        "tap main digit 9"
+      ],
+      "expectedAfterVerification": {
+        "inputMode": "chinese",
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按EN暂停组合保护及返回CN后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-HOME",
+      "label": "Home",
+      "setup": [
+        "Clear while CN; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n; tap language button once to EN",
+        "verify EN and paused raw n retained"
+      ],
+      "action": "tap top Home",
+      "expectedBeforeCancel": {
+        "inputMode": "english",
+        "raw": "n",
+        "rawPaused": true,
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "tap Cancel while still EN; paused n disappears, confirmed text remains",
+        "tap language button back to CN",
+        "tap main digit 9"
+      ],
+      "expectedAfterVerification": {
+        "inputMode": "chinese",
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按EN暂停组合保护及返回CN后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-END",
+      "label": "End",
+      "setup": [
+        "Clear while CN; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n; tap language button once to EN",
+        "verify EN and paused raw n retained"
+      ],
+      "action": "tap top End",
+      "expectedBeforeCancel": {
+        "inputMode": "english",
+        "raw": "n",
+        "rawPaused": true,
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "tap Cancel while still EN; paused n disappears, confirmed text remains",
+        "tap language button back to CN",
+        "tap main digit 9"
+      ],
+      "expectedAfterVerification": {
+        "inputMode": "chinese",
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按EN暂停组合保护及返回CN后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-SELECT",
+      "label": "选区",
+      "setup": [
+        "Clear while CN; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n; tap language button once to EN",
+        "verify EN and paused raw n retained"
+      ],
+      "action": "tap top 选区",
+      "expectedBeforeCancel": {
+        "inputMode": "english",
+        "raw": "n",
+        "rawPaused": true,
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "tap Cancel while still EN; paused n disappears, confirmed text remains",
+        "tap language button back to CN",
+        "tap main digit 9"
+      ],
+      "expectedAfterVerification": {
+        "inputMode": "chinese",
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按EN暂停组合保护及返回CN后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-ALL",
+      "label": "全选",
+      "setup": [
+        "Clear while CN; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n; tap language button once to EN",
+        "verify EN and paused raw n retained"
+      ],
+      "action": "tap top 全选",
+      "expectedBeforeCancel": {
+        "inputMode": "english",
+        "raw": "n",
+        "rawPaused": true,
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "tap Cancel while still EN; paused n disappears, confirmed text remains",
+        "tap language button back to CN",
+        "tap main digit 9"
+      ],
+      "expectedAfterVerification": {
+        "inputMode": "chinese",
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按EN暂停组合保护及返回CN后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "TU-DELETE",
+      "label": "Delete",
+      "setup": [
+        "Clear while CN; digits 123; selection OFF; modifiers unlit",
+        "Home then ArrowRight: caret between 1 and 2",
+        "N08: raw n; tap language button once to EN",
+        "verify EN and paused raw n retained"
+      ],
+      "action": "tap top Delete",
+      "expectedBeforeCancel": {
+        "inputMode": "english",
+        "raw": "n",
+        "rawPaused": true,
+        "selectionLatch": "OFF",
+        "editorUnchanged": true,
+        "refusalHintAllowed": true
+      },
+      "verification": [
+        "tap Cancel while still EN; paused n disappears, confirmed text remains",
+        "tap language button back to CN",
+        "tap main digit 9"
+      ],
+      "expectedAfterVerification": {
+        "inputMode": "chinese",
+        "raw": "",
+        "localOutput": "1923"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按EN暂停组合保护及返回CN后1923验证步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "scenarioCount": 7,
+  "bodyLayerObservations": 0,
+  "verificationControls": [
+    "R01K02",
+    "R01K03"
+  ],
+  "coverageScope": "preview paused-English-composition guard plus language preservation and paused cancellation verification; not EN body-key coverage or host guard acceptance",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "toggle-language couples language/punctuation without rewriting raw",
+    "navigationEnabled requires empty raw even during English pause",
+    "Cancel dispatches internal clear regardless language; no automatic candidate/raw commit"
+  ],
+  "userReport": "user-reports/p10-finger-control-paused-guard-22-user-result.json",
+  "resultDate": "2026-10-28"
+}

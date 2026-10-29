@@ -1,0 +1,163 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-EN-DISABLED-39",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "MSI supplied pen",
+  "status": "passed-user-reported-group-result",
+  "setup": "same current preview EN, English keycaps EN; same MSI original pen only; Clear, selection OFF, modifiers unlit; tap lowercase a as sentinel",
+  "cases": [
+    {
+      "physicalKeyID": "R02K05",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K06",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K07",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K08",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K09",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K10",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K11",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K12",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K13",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K14",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K15",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K16",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K17",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K18",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K19",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R02K20",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R03K04",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R04K04",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R04K05",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R04K06",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R05K05",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R06K10",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    },
+    {
+      "physicalKeyID": "R06K11",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported",
+      "expected": "blank key disabled, no input; preserve a and empty composition"
+    }
+  ],
+  "runs": [
+    {
+      "layer": "EN_base",
+      "steps": "Shift OFF; tap all23 blank disabled keys once each"
+    },
+    {
+      "layer": "EN_shift",
+      "steps": "turn Shift ON; tap all23 blank disabled keys; Shift remains ON; then turn Shift OFF"
+    }
+  ],
+  "bodyLayerObservations": 46,
+  "scope": "23 disabled EN body keys x2 layers only; not inactive Caps/System or existing recontact cause verification; do not inherit finger results",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-msi-pen-en-disabled-39-user-result.json"
+}

@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-CN-CODING-01",
+  "userQuote": "正常。能输入上下档字符（ASCII）。",
+  "inputMethod": "finger",
+  "target": "new language-label package preview; Chinese CN variable mode; literal-entry switch OFF",
+  "packageExecutableSHA256": "73c729b2948a37bc461c7cbcc7c3e1277424f9f5874b6d0285b241a02b1b6865",
+  "coveredLayers": [
+    "CN_base",
+    "CN_shift"
+  ],
+  "coveredKeyIDs": [
+    "R02K06",
+    "R02K18",
+    "R02K19",
+    "R02K20",
+    "R03K06"
+  ],
+  "coveredLayerObservations": 10,
+  "result": "passed-user-reported-for-requested-group",
+  "actual": "用户明确上下档ASCII可输入；按前述组合栏/正文空步骤的正常反馈记录，未单独逐格转录组合与正文",
+  "attemptCounts": "not supplied",
+  "independentObservation": false,
+  "exclusions": [
+    "other CN keys",
+    "both pen files",
+    "host input"
+  ]
+}

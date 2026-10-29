@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-DIGITS-09",
+  "userVerbatim": "正常",
+  "interpretation": "response to full 10-key/two-layer empty-composition main-digit test; all 20 observations reported normal",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "passedObservations": 20,
+  "candidateSelectionTested": false,
+  "actualCharactersIndividuallyTranscribed": false,
+  "attemptCountsProvided": false,
+  "fullPhysicalOrHostAcceptance": false
+}

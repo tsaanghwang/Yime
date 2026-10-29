@@ -1,0 +1,356 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-EN-ALL47-47",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "status": "character input correctness passed-user-reported; Shift exception retained",
+  "setup": "same current original unfiltered preview, EN, English keycaps EN; Acer pen only; Clear, selection OFF, modifiers unlit; retain current screen position",
+  "cases": [
+    {
+      "physicalKeyID": "R03K05",
+      "base": "`",
+      "shift": "~",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R03K06",
+      "base": "1",
+      "shift": "!",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R03K07",
+      "base": "2",
+      "shift": "@",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R03K08",
+      "base": "3",
+      "shift": "#",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R03K09",
+      "base": "4",
+      "shift": "$",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R03K10",
+      "base": "5",
+      "shift": "%",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R03K11",
+      "base": "6",
+      "shift": "^",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R03K12",
+      "base": "7",
+      "shift": "&",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R03K13",
+      "base": "8",
+      "shift": "*",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R03K14",
+      "base": "9",
+      "shift": "(",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R03K15",
+      "base": "0",
+      "shift": ")",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R03K16",
+      "base": "-",
+      "shift": "_",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R03K17",
+      "base": "=",
+      "shift": "+",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R04K07",
+      "base": "q",
+      "shift": "Q",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R04K08",
+      "base": "w",
+      "shift": "W",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R04K09",
+      "base": "e",
+      "shift": "E",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R04K10",
+      "base": "r",
+      "shift": "R",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R04K11",
+      "base": "t",
+      "shift": "T",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R04K12",
+      "base": "y",
+      "shift": "Y",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R04K13",
+      "base": "u",
+      "shift": "U",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R04K14",
+      "base": "i",
+      "shift": "I",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R04K15",
+      "base": "o",
+      "shift": "O",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R04K16",
+      "base": "p",
+      "shift": "P",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R04K17",
+      "base": "[",
+      "shift": "{",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R04K18",
+      "base": "]",
+      "shift": "}",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R04K19",
+      "base": "\\",
+      "shift": "|",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R05K06",
+      "base": "a",
+      "shift": "A",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R05K07",
+      "base": "s",
+      "shift": "S",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R05K08",
+      "base": "d",
+      "shift": "D",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R05K09",
+      "base": "f",
+      "shift": "F",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R05K10",
+      "base": "g",
+      "shift": "G",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R05K11",
+      "base": "h",
+      "shift": "H",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R05K12",
+      "base": "j",
+      "shift": "J",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R05K13",
+      "base": "k",
+      "shift": "K",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R05K14",
+      "base": "l",
+      "shift": "L",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R05K15",
+      "base": ";",
+      "shift": ":",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R05K16",
+      "base": "'",
+      "shift": "\"",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R06K05",
+      "base": "z",
+      "shift": "Z",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R06K06",
+      "base": "x",
+      "shift": "X",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R06K07",
+      "base": "c",
+      "shift": "C",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R06K08",
+      "base": "v",
+      "shift": "V",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R06K09",
+      "base": "b",
+      "shift": "B",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R06K12",
+      "base": "n",
+      "shift": "N",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R06K13",
+      "base": "m",
+      "shift": "M",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R06K14",
+      "base": ",",
+      "shift": "<",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R06K15",
+      "base": ".",
+      "shift": ">",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    },
+    {
+      "physicalKeyID": "R06K16",
+      "base": "/",
+      "shift": "?",
+      "baseStatus": "passed-character-input, Shift exception retained",
+      "shiftStatus": "passed-character-input, Shift exception retained"
+    }
+  ],
+  "runs": [
+    {
+      "layer": "EN_base",
+      "steps": "47 enabled character keys, each checked against lower/base legend"
+    },
+    {
+      "layer": "EN_shift",
+      "steps": "same47 keys; tap virtual Shift with same pen before EACH key; check upper legend"
+    }
+  ],
+  "bodyLayerObservations": 94,
+  "scope": "first Acer current-view body group, no result inherited from short comparison46, finger, MSI or old full view; check mapping, missing/repeated/misdirected characters; no full repeat-stability guarantee",
+  "userReport": "已测。正常。唯一一次例外是 shift 出现两次（响了两声）。",
+  "evidence": "user-reports/p10-acer-pen-en-all47-47-user-result.json",
+  "shiftException": "ACER_PEN_SHIFT_RECONTACT_OBSERVATION.json"
+}

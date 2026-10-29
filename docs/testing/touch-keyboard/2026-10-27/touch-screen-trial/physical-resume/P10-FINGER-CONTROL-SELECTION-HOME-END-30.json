@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-SELECTION-HOME-END-30",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "finger",
+  "status": "passed-user-reported-group-result",
+  "setup": "same current preview, CN, composition empty; independently Clear, selection OFF, then digits1234; no source/package/calibration change",
+  "cases": [
+    {
+      "id": "select-to-Home-replace",
+      "steps": [
+        "Clear; selection OFF; input1234",
+        "ArrowLeft twice to12|34",
+        "selection ON; Home",
+        "verify12 selected; main digit9"
+      ],
+      "expected": "local output934, composition empty; no extra character",
+      "status": "passed-user-reported"
+    },
+    {
+      "id": "select-to-End-replace",
+      "steps": [
+        "Clear; selection OFF; input1234",
+        "ArrowLeft twice to12|34",
+        "selection ON; End",
+        "verify34 selected; main digit9"
+      ],
+      "expected": "local output129, composition empty; no extra character",
+      "status": "passed-user-reported"
+    }
+  ],
+  "bodyLayerObservations": 0,
+  "scope": "two previously unrecorded preview finger selection-extension paths, separate from old arrow-selection cases; no host or full control acceptance",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-finger-control-selection-home-end-30-user-result.json"
+}

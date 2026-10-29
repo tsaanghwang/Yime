@@ -1,0 +1,210 @@
+{
+  "date": "2026-10-26",
+  "scope": "P01 measurements and P10 physical finger coverage after PR79; results identified per layer and package",
+  "lastUpdatedDate": "2026-10-27",
+  "sourceBranch": "codex/touch-keyboard-p01-p10-20261026",
+  "sourceBaseline": "9adc3cdd9634e0258b58c9a8945b3497fc8777ad",
+  "precedingPR": {
+    "number": 79,
+    "merged": true,
+    "mergeCommit": "9adc3cdd9634e0258b58c9a8945b3497fc8777ad"
+  },
+  "package": {
+    "directory": ".generated/touch-pen-shift-fix-20261026-amd64",
+    "executableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+    "identity": "../pen-shift/fixed-package-identity.json",
+    "changedIdentitySourceFilesMatchMergedCheckout": true,
+    "newBuild": false,
+    "newCIPackageDelivered": false
+  },
+  "geometry": {
+    "profile": "main-only",
+    "mainWidthU": 18,
+    "mainKeyCount": 100,
+    "unitMM": 19.05,
+    "designMainWidthMM": 342.9,
+    "observedLauncherArgumentMM": 58.8,
+    "geometryChange": false
+  },
+  "measurement": {
+    "status": "partial-user-measurement-spans-confirmed",
+    "priorReferenceRulerObservedMM": 97,
+    "priorReferenceEvidence": "../../2026-10-25/taskbar-minimize/user-reports/h01-fresh-unbound-ruler-user-result.json",
+    "mainAreaOuterWidthMM": null,
+    "activeDisplayWidthMM": null,
+    "screenAngleFromDeskDegrees": 0,
+    "rulerSmallestGraduationMM": null,
+    "currentReferenceRulerRetestMM": null,
+    "tolerance": "not agreed; no inferred pass",
+    "userQuote": "总长339mm。本窗体左右各有1mm多，大约1.3mm。键盘窗体左右总长还余3mm多。",
+    "firstReport": "user-reports/p01-first-width-report.json",
+    "pendingClarification": [],
+    "windowOuterWidthMM": 339,
+    "insideWhiteMarginPerSideApproxMM": 1.3,
+    "outsideMarginsCombinedDescription": "3mm多",
+    "derivedEstimates": {
+      "mainKeyAreaWidthApproxMM": 336.4,
+      "mainKeyAreaFormula": "339 - 2 * 1.3",
+      "activeDisplayWidthApproxDescription": "约342mm多（339mm窗体宽加外部两侧合计3mm多）",
+      "independentMainAreaMeasurement": false,
+      "independentActiveDisplayMeasurement": false
+    },
+    "spanConfirmation": "user-reports/p01-width-span-confirmation.json",
+    "pendingFields": [
+      "numeric rulerSmallestGraduationMM (not explicit)",
+      "independent main-area outer width",
+      "independent active-display width"
+    ],
+    "rulerOrientation": "parallel to screen, user-reported",
+    "unit": "mm",
+    "toolReply": "user-reports/p01-ruler-orientation-unit.json",
+    "screenAngleApproximate": true,
+    "screenPosture": "翻转平放（用户报告）",
+    "screenPostureEvidence": "user-reports/p10-finger-en-47-and-flat-screen.json"
+  },
+  "coverage": {
+    "status": "in-progress; package identity recorded per observed layer",
+    "methods": [
+      "finger",
+      "MSI supplied pen",
+      "Acer PE272XT supplied pen"
+    ],
+    "keysPerMethod": 100,
+    "layersPerKey": 4,
+    "englishDisabledKeys": 23,
+    "actualPasses": 250,
+    "preparation": "COVERAGE_PREPARATION.json",
+    "noEarlierResultsInherited": true,
+    "progress": "COVERAGE_PROGRESS.json",
+    "completedBatches": [
+      "P10-FINGER-EN-01",
+      "P10-FINGER-EN-02 included in explicit 47-character-key report",
+      "P10-FINGER-EN-DISABLED-23",
+      "P10-FINGER-EN-SHIFT-BACKSPACE",
+      "P10-FINGER-EN-ENTER-SPACES",
+      "P10-FINGER-EN-TAB-ESC-MODES (functional; label issue separate)",
+      "P10-FINGER-EN-INACTIVE-16 (new label package)",
+      "P10-FINGER-EN-CTRL-ALT (new label package)",
+      "P10-FINGER-CN-CODING-01",
+      "P10-FINGER-CN-CODING-02",
+      "P10-FINGER-CN-CODING-03"
+    ],
+    "nextBatch": "../../2026-10-28/help-input-fix/RETEST-25.json",
+    "completedCharacterSet": "P10-FINGER-EN-47-CHARACTERS.json",
+    "fingerENKeysWithBothLayersPassed": 100,
+    "languageLabelIssue": "../language-key-label/ISSUE_AND_FIX.json",
+    "enStage": "completed for all 100 keys/base+Shift across explicitly identified packages",
+    "fingerCNPassedLayerObservations": 50,
+    "fingerFourLayerKeysAcrossRecordedPackages": 25,
+    "fingerFourLayerKeysWithinSinglePackage": 0
+  },
+  "keySoundStreamTrial": {
+    "date": "2026-10-27",
+    "directory": "touch-key-sound-stream-20261027-amd64",
+    "executableSHA256": "25d973f80d839f2ef2e9e399d577c3f9adc35b7739afff2374bc832cc37d18a5",
+    "identity": "../../2026-10-27/key-sound-stream/package-identity.json",
+    "handoff": "../../2026-10-27/key-sound-stream/HANDOFF.zh-CN.md",
+    "userAudibility": "three actual-preview automated clicks all clear per explicit user feedback",
+    "fingerOrPenAcceptance": false,
+    "hostAcceptance": false,
+    "P10ResultsInherited": false
+  },
+  "keySoundGainTrial": {
+    "date": "2026-10-27",
+    "directory": "touch-key-sound-gain-20261027-amd64",
+    "executableSHA256": "a4608b5057cc9b8da9339d3c8b724e9d4bdb19b2c8cc6981e73194f212438422",
+    "identity": "../../2026-10-27/key-sound-gain/package-identity.json",
+    "handoff": "../../2026-10-27/key-sound-gain/HANDOFF.zh-CN.md",
+    "physicalStatus": "user reports no sound; earlier apparent click audibility withdrawn as possible unrelated sound; longer benchmark audible; diagnosis continuing; no old P10 passes inherited",
+    "correction": "../../2026-10-27/key-sound-diagnostic/USER_CORRECTION.json"
+  },
+  "keySoundTrial": {
+    "date": "2026-10-27",
+    "directory": "touch-key-sound-20261027-amd64",
+    "executableSHA256": "8581365690d729165823ef9b3d108b915ca1a24312bc50b0d99ea0e2763571cd",
+    "identity": "../../2026-10-27/key-sound/package-identity.json",
+    "handoff": "../../2026-10-27/key-sound/HANDOFF.zh-CN.md",
+    "physicalStatus": "user heard real developer simulation but too quiet; option 2 tentatively identifies SoundWire listening route; increased waveform follow-up prepared; no old P10 passes inherited",
+    "audibilityResult": "../../2026-10-27/key-sound/USER_AUDIBILITY_RESULT.json",
+    "diagnostic": "../../2026-10-27/key-sound/ACTUAL_PLAYBACK_DIAGNOSTIC.json"
+  },
+  "legendReadabilityTrial": {
+    "date": "2026-10-27",
+    "directory": "touch-legend-readability-20261027-amd64",
+    "executableSHA256": "161df413c9f6ae6cf4aad43e575ad55f00c227f105f187a74d6b70a1d5759469",
+    "identity": "../../2026-10-27/legend-readability/package-identity.json",
+    "handoff": "../../2026-10-27/legend-readability/HANDOFF.zh-CN.md",
+    "physicalStatus": "pending; original P10 counts remain bound to prior packages"
+  },
+  "readabilityTrial": {
+    "date": "2026-10-27",
+    "directory": "touch-dark-palette-20261027-amd64",
+    "executableSHA256": "e59bac7e4bc6c6e697324808136a6f84709df52a64595588d97779dcf58e1fa7",
+    "identity": "../../2026-10-27/keyboard-colors/package-identity.json",
+    "handoff": "../../2026-10-27/keyboard-colors/HANDOFF.zh-CN.md",
+    "physicalStatus": "color discussion deferred by user; legend size/cropping issue carried into newer trial; no color acceptance inferred"
+  },
+  "currentFollowupPackage": {
+    "directory": "touch-language-label-20261026-amd64",
+    "executableSHA256": "73c729b2948a37bc461c7cbcc7c3e1277424f9f5874b6d0285b241a02b1b6865",
+    "identity": "../language-key-label/package-identity.json",
+    "purpose": "language-key single-state display",
+    "physicalStatus": "passed targeted language-label user retest; not full P10",
+    "retestEvidence": "../language-key-label/physical-retest-user-result.json"
+  },
+  "touchScreenTrial": {
+    "date": "2026-10-27",
+    "version": "touch-screen-v1",
+    "directory": "touch-screen-trial-r3-20261027-amd64",
+    "executableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+    "identity": "../../2026-10-27/touch-screen-trial/package-identity.json",
+    "handoff": "../../2026-10-27/touch-screen-trial/HANDOFF.zh-CN.md",
+    "status": "Acer body336 and defined preview control37 checkpoint complete; full physical acceptance remains open",
+    "keyCount": 98,
+    "P10ResultsInherited": false,
+    "physicalAcceptance": false,
+    "resume": "../../2026-10-27/touch-screen-trial/physical-resume/HANDOFF.zh-CN.md",
+    "fingerPassedBodyLayers": 336,
+    "nextBatch": null,
+    "lastPhysicalReportDate": "2026-10-28",
+    "fingerCNBodyStage": "complete per defined batch scenarios",
+    "fingerPassedControlScenarios": 37,
+    "helpFixPackage": "50b43e5040ed3a1eb36c8a851bbd11ffafbeaed7323d82c8f45e140407704d5a",
+    "minimizeFixPackage": "211bd619b587a9f845b522ce58a81d016362c438eced63fcf07134c0b0fd9a5c",
+    "currentFixHandoff": "../../2026-10-27/touch-screen-trial/physical-resume/HANDOFF.zh-CN.md",
+    "audioStartupFixPackage": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+    "audioStartupFixRetestStatus": "both audibility cases passed; method unspecified",
+    "fingerControlPassedByExecutable": {
+      "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146": 28,
+      "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32": 9
+    },
+    "fingerPassedENBodyLayers": 168,
+    "fingerPendingENBodyLayers": 0,
+    "bodyPassedByExecutable": {
+      "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146": {
+        "CN": 168,
+        "EN": 0
+      },
+      "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32": {
+        "CN": 0,
+        "EN": 168
+      }
+    },
+    "fingerBodyStage": "../../2026-10-27/touch-screen-trial/physical-resume/FINGER_BODY_STAGE_RESULT.json",
+    "msiPenPassedBodyLayers": 188,
+    "msiPenPendingBodyLayers": 148,
+    "msiPenRecontactObservation": "../../2026-10-27/touch-screen-trial/physical-resume/MSI_PEN_RECONTACT_OBSERVATION.json",
+    "msiPenENStage": "../../2026-10-27/touch-screen-trial/physical-resume/MSI_PEN_EN_STAGE_RESULT.json",
+    "penLiftIssue": "../../2026-10-28/pen-lift-diagnostic/ISSUE.json",
+    "acerBaselineRepeatResult": "../../2026-10-28/pen-lift-diagnostic/ACER_RESULT-46.json",
+    "acerPenPassedBodyLayers": 336,
+    "acerPenPendingBodyLayers": 0,
+    "acerShiftObservation": "../../2026-10-27/touch-screen-trial/physical-resume/ACER_PEN_SHIFT_RECONTACT_OBSERVATION.json",
+    "acerPenENStage": "../../2026-10-27/touch-screen-trial/physical-resume/ACER_PEN_EN_STAGE_RESULT.json",
+    "acerCNGaps": "../../2026-10-27/touch-screen-trial/physical-resume/ACER_CN_GAP_AUDIT_54.json",
+    "acerPenBodyStage": "../../2026-10-27/touch-screen-trial/physical-resume/ACER_PEN_BODY_STAGE_RESULT.json",
+    "acerPenPassedControlScenarios": 37,
+    "nextPhasePlan": "../../2026-10-27/touch-screen-trial/physical-resume/NEXT_STAGE_AFTER_ACER_67.json",
+    "acerPenControlStage": "../../2026-10-27/touch-screen-trial/physical-resume/ACER_PEN_CONTROL_STAGE_RESULT.json"
+  }
+}

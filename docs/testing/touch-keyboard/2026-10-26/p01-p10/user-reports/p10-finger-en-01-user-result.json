@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-01",
+  "userQuote": "各组正常。",
+  "inputMethod": "finger",
+  "target": "fixed-package preview, English EN view, no composition",
+  "packageExecutableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "requestedPairs": [
+    {
+      "physicalKeyID": "R05K06",
+      "expectedPair": "aA"
+    },
+    {
+      "physicalKeyID": "R06K09",
+      "expectedPair": "bB"
+    },
+    {
+      "physicalKeyID": "R06K07",
+      "expectedPair": "cC"
+    },
+    {
+      "physicalKeyID": "R05K08",
+      "expectedPair": "dD"
+    },
+    {
+      "physicalKeyID": "R04K09",
+      "expectedPair": "eE"
+    }
+  ],
+  "result": "passed-user-reported-for-all-five-requested-groups",
+  "actualText": "用户反馈各组正常；未另行逐字转录五组输出",
+  "coveredLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "coveredKeyCount": 5,
+  "coveredLayerObservations": 10,
+  "attemptCounts": "not supplied",
+  "independentObservation": false,
+  "exclusions": [
+    "CN_base",
+    "CN_shift",
+    "MSI pen",
+    "Acer pen",
+    "other keys or hosts"
+  ]
+}

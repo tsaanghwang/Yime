@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-EN-CTRL-ALT-42",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "MSI supplied pen",
+  "status": "passed-user-reported-group-result",
+  "setup": "same current EN preview, English keycaps EN; same MSI pen only, each case Clear, selection OFF, modifiers unlit, lowercase ab",
+  "cases": [
+    {
+      "physicalKeyID": "R07K02",
+      "label": "左Ctrl",
+      "steps": "tap modifier, tap a, then c",
+      "expectedBeforeC": "all ab selected",
+      "expectedAfterC": "c",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R07K09",
+      "label": "右Ctrl",
+      "steps": "tap modifier, tap a, then c",
+      "expectedBeforeC": "all ab selected",
+      "expectedAfterC": "c",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R07K04",
+      "label": "左Alt",
+      "steps": "tap modifier, tap a, then c",
+      "expectedBeforeC": "ab unchanged, preview refuses Alt shortcut",
+      "expectedAfterC": "abc",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R07K07",
+      "label": "右Alt",
+      "steps": "tap modifier, tap a, then c",
+      "expectedBeforeC": "ab unchanged, preview refuses Alt shortcut",
+      "expectedAfterC": "abc",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    }
+  ],
+  "runs": [
+    {
+      "layer": "EN_base",
+      "steps": "perform each case as listed"
+    },
+    {
+      "layer": "EN_shift",
+      "steps": "repeat each independent case, adding Shift immediately before the Ctrl/Alt key; a key yields uppercase A, preview Ctrl+A is case-insensitive, Alt is refused"
+    }
+  ],
+  "bodyLayerObservations": 8,
+  "scope": "four Ctrl/Alt keys x2 EN contexts on same pen, local Ctrl+a/A selection and Alt refusal; Shift remains after modifier and clears after a/A; no external shortcut, simultaneous hold, inherited finger result or duplicate-free acceptance",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-msi-pen-en-ctrl-alt-42-user-result.json"
+}

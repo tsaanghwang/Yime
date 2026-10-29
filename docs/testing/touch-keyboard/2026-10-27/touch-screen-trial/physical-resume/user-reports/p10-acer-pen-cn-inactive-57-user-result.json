@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CN-INACTIVE-57",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedBodyLayers": 6,
+  "result": "three inactive CN keys preserve document12 and raw n, no system menu, direct/Shift contexts normal; one-shot Shift consumed",
+  "scope": "six grouped preview observations without per-action transcript/attempt count, OS Caps state, host or whole-pen repeat-stability acceptance; historical observations retained"
+}

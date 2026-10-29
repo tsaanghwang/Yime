@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-28",
+  "run": "20261028T082728Z-b64be70c",
+  "processID": 32048,
+  "windowID": 21694732,
+  "readyState": "new empty diagnostic preview observed; own automated mouse toggled CN to EN; no pen input synthesized",
+  "sourceChecks": "existing TestNativePen and TestPenMouseFallback regressions PASS",
+  "physicalEvidence": "pending user groups A/B; earlier available trace contains only old touch frames and does not establish current pen repeat timing",
+  "currentEnvironment": "screen flipped, approximately45 degrees to desk; MSI original pen",
+  "runtimeChanged": false,
+  "launcher": "C:/dev/Yime/.generated/touch-validation-20261025-x64-16inch/Start MSI Pen Lift Diagnostic.cmd"
+}

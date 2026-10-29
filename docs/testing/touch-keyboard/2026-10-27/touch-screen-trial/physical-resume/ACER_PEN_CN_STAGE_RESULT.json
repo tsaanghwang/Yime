@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-28",
+  "status": "defined Acer pen CN body168 observations complete",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "physicalBodyKeys": 84,
+  "passedCNBodyLayers": 168,
+  "pendingCNBodyLayers": 0,
+  "ledger": "acer-pen-key-coverage.csv",
+  "batches": [
+    {
+      "batch": 53,
+      "newLayers": 20
+    },
+    {
+      "batch": 54,
+      "newLayers": 120,
+      "scope": "all70 character keys140 confirmed; includes prior20, only120 new credit"
+    },
+    {
+      "batch": 55,
+      "newLayers": 4
+    },
+    {
+      "batch": 56,
+      "newLayers": 6
+    },
+    {
+      "batch": 57,
+      "newLayers": 6
+    },
+    {
+      "batch": 58,
+      "newLayers": 8
+    },
+    {
+      "batch": 59,
+      "newLayers": 4
+    }
+  ],
+  "finalEvidence": "user-reports/p10-acer-pen-cn-shift-59-user-result.json",
+  "limits": "grouped human reports, no invented per-action text or attempt count; controls, candidate contexts, settings, concurrency and real host separate",
+  "historicalShiftObservation": "ACER_PEN_SHIFT_RECONTACT_OBSERVATION.json"
+}

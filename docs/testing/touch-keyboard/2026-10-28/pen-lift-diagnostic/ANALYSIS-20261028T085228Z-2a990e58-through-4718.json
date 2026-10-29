@@ -1,0 +1,4215 @@
+{
+  "run": {
+    "runID": "20261028T085228Z-2a990e58",
+    "createdUTC": "2026-10-28T08:52:28.735680+00:00",
+    "hardwareMethod": "Acer PE272XT supplied pen",
+    "filterMS": 0,
+    "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+    "processID": 23640,
+    "trace": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\raw\\acer-pen-lift-20261028T085228Z-2a990e58.jsonl",
+    "arguments": [
+      "--preview",
+      "--touch-ui",
+      "--theme",
+      "dark",
+      "--key-sound",
+      "click",
+      "--ruler-observed-mm",
+      "58.8",
+      "--key-view",
+      "english",
+      "--input-trace",
+      "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\raw\\acer-pen-lift-20261028T085228Z-2a990e58.jsonl"
+    ],
+    "scope": "own controlled preview only; no text/audio recording or OS input; unique trace per launch; no installed settings changed"
+  },
+  "sourceRows": 4718,
+  "contacts": [
+    {
+      "id": 3072,
+      "downSequence": 15,
+      "downMS": 162938.195,
+      "downTick": 72532125,
+      "x100": 254000,
+      "y100": 89900,
+      "flags": "0x1a",
+      "keys": [],
+      "language": "english",
+      "beforeLength": 0,
+      "upSequence": 48,
+      "upMS": 162983.6897,
+      "upTick": 72532176,
+      "durationMS": 51,
+      "outputDelta": 0,
+      "afterLength": 0
+    },
+    {
+      "id": 3076,
+      "downSequence": 64,
+      "downMS": 221206.1591,
+      "downTick": 72590423,
+      "x100": 50500,
+      "y100": 92300,
+      "flags": "0x5a",
+      "keys": [],
+      "language": "english",
+      "beforeLength": 0,
+      "upSequence": 82,
+      "upMS": 221262.188,
+      "upTick": 72590472,
+      "durationMS": 49,
+      "outputDelta": 0,
+      "afterLength": 0,
+      "gapAfterPreviousUpMS": 58247,
+      "previousKey": [],
+      "distancePixels": 2035.14
+    },
+    {
+      "id": 3077,
+      "downSequence": 94,
+      "downMS": 223067.9134,
+      "downTick": 72592256,
+      "x100": 61400,
+      "y100": 143900,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 0,
+      "upSequence": 106,
+      "upMS": 223085.7693,
+      "upTick": 72592275,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 1,
+      "gapAfterPreviousUpMS": 1784,
+      "previousKey": [],
+      "distancePixels": 527.39
+    },
+    {
+      "id": 3078,
+      "downSequence": 117,
+      "downMS": 223968.711,
+      "downTick": 72593163,
+      "x100": 64600,
+      "y100": 143200,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 1,
+      "upSequence": 129,
+      "upMS": 223985.3087,
+      "upTick": 72593179,
+      "durationMS": 16,
+      "outputDelta": 1,
+      "afterLength": 2,
+      "gapAfterPreviousUpMS": 888,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 32.76
+    },
+    {
+      "id": 3079,
+      "downSequence": 140,
+      "downMS": 224855.1583,
+      "downTick": 72594052,
+      "x100": 62900,
+      "y100": 143700,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 2,
+      "upSequence": 152,
+      "upMS": 224887.2441,
+      "upTick": 72594071,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 3,
+      "gapAfterPreviousUpMS": 873,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 17.72
+    },
+    {
+      "id": 3080,
+      "downSequence": 163,
+      "downMS": 225755.0041,
+      "downTick": 72594957,
+      "x100": 63700,
+      "y100": 143200,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 3,
+      "upSequence": 175,
+      "upMS": 225788.4355,
+      "upTick": 72594976,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 4,
+      "gapAfterPreviousUpMS": 886,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 9.43
+    },
+    {
+      "id": 3081,
+      "downSequence": 186,
+      "downMS": 226671.1944,
+      "downTick": 72595865,
+      "x100": 63100,
+      "y100": 143500,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 4,
+      "upSequence": 196,
+      "upMS": 226695.5005,
+      "upTick": 72595884,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 5,
+      "gapAfterPreviousUpMS": 889,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 6.71
+    },
+    {
+      "id": 3082,
+      "downSequence": 207,
+      "downMS": 227571.9385,
+      "downTick": 72596771,
+      "x100": 62700,
+      "y100": 143200,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 5,
+      "upSequence": 219,
+      "upMS": 227590.3472,
+      "upTick": 72596790,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 6,
+      "gapAfterPreviousUpMS": 887,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 5.0
+    },
+    {
+      "id": 3083,
+      "downSequence": 230,
+      "downMS": 228502.9523,
+      "downTick": 72597707,
+      "x100": 63200,
+      "y100": 143700,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 6,
+      "upSequence": 242,
+      "upMS": 228524.7669,
+      "upTick": 72597726,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 7,
+      "gapAfterPreviousUpMS": 917,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 7.07
+    },
+    {
+      "id": 3084,
+      "downSequence": 253,
+      "downMS": 229508.8636,
+      "downTick": 72598708,
+      "x100": 63100,
+      "y100": 143400,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 7,
+      "upSequence": 265,
+      "upMS": 229544.8828,
+      "upTick": 72598727,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 8,
+      "gapAfterPreviousUpMS": 982,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 3.16
+    },
+    {
+      "id": 3085,
+      "downSequence": 276,
+      "downMS": 230409.7428,
+      "downTick": 72599615,
+      "x100": 62800,
+      "y100": 143000,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 8,
+      "upSequence": 289,
+      "upMS": 230446.0759,
+      "upTick": 72599634,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 9,
+      "gapAfterPreviousUpMS": 888,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 5.0
+    },
+    {
+      "id": 3086,
+      "downSequence": 300,
+      "downMS": 231401.5149,
+      "downTick": 72600597,
+      "x100": 63000,
+      "y100": 143300,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 9,
+      "upSequence": 315,
+      "upMS": 231422.4231,
+      "upTick": 72600616,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 10,
+      "gapAfterPreviousUpMS": 963,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 3.61
+    },
+    {
+      "id": 3087,
+      "downSequence": 326,
+      "downMS": 234748.8543,
+      "downTick": 72603976,
+      "x100": 253300,
+      "y100": 91300,
+      "flags": "0x5a",
+      "keys": [],
+      "language": "english",
+      "beforeLength": 10,
+      "upSequence": 341,
+      "upMS": 234783.2483,
+      "upTick": 72604010,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 10,
+      "gapAfterPreviousUpMS": 3360,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 1972.77
+    },
+    {
+      "id": 3121,
+      "downSequence": 370,
+      "downMS": 845688.7087,
+      "downTick": 73214898,
+      "x100": 62800,
+      "y100": 141700,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 10,
+      "upSequence": 385,
+      "upMS": 845726.5732,
+      "upTick": 73214932,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 11,
+      "gapAfterPreviousUpMS": 610888,
+      "previousKey": [],
+      "distancePixels": 1970.54
+    },
+    {
+      "id": 3122,
+      "downSequence": 396,
+      "downMS": 846739.4059,
+      "downTick": 73215944,
+      "x100": 115500,
+      "y100": 156600,
+      "flags": "0x5a",
+      "keys": [
+        "R06K09"
+      ],
+      "language": "english",
+      "beforeLength": 11,
+      "upSequence": 414,
+      "upMS": 846785.281,
+      "upTick": 73215978,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 12,
+      "gapAfterPreviousUpMS": 1012,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 547.66
+    },
+    {
+      "id": 3123,
+      "downSequence": 425,
+      "downMS": 847595.2151,
+      "downTick": 73216803,
+      "x100": 84200,
+      "y100": 154200,
+      "flags": "0x5a",
+      "keys": [
+        "R06K07"
+      ],
+      "language": "english",
+      "beforeLength": 12,
+      "upSequence": 446,
+      "upMS": 847643.0171,
+      "upTick": 73216852,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 13,
+      "gapAfterPreviousUpMS": 825,
+      "previousKey": [
+        "R06K09"
+      ],
+      "distancePixels": 313.92
+    },
+    {
+      "id": 3123,
+      "downSequence": 453,
+      "downMS": 848390.4104,
+      "downTick": 73217599,
+      "x100": 92900,
+      "y100": 140500,
+      "flags": "0x5a",
+      "keys": [
+        "R05K08"
+      ],
+      "language": "english",
+      "beforeLength": 13,
+      "upSequence": 477,
+      "upMS": 848461.8521,
+      "upTick": 73217663,
+      "durationMS": 64,
+      "outputDelta": 1,
+      "afterLength": 14,
+      "gapAfterPreviousUpMS": 747,
+      "previousKey": [
+        "R06K07"
+      ],
+      "distancePixels": 162.29
+    },
+    {
+      "id": 3124,
+      "downSequence": 488,
+      "downMS": 850057.0739,
+      "downTick": 73219262,
+      "x100": 97800,
+      "y100": 127800,
+      "flags": "0x5a",
+      "keys": [
+        "R04K09"
+      ],
+      "language": "english",
+      "beforeLength": 14,
+      "upSequence": 500,
+      "upMS": 850087.9082,
+      "upTick": 73219281,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 15,
+      "gapAfterPreviousUpMS": 1599,
+      "previousKey": [
+        "R05K08"
+      ],
+      "distancePixels": 136.12
+    },
+    {
+      "id": 3124,
+      "downSequence": 507,
+      "downMS": 850793.158,
+      "downTick": 73219998,
+      "x100": 109800,
+      "y100": 142700,
+      "flags": "0x5a",
+      "keys": [
+        "R05K09"
+      ],
+      "language": "english",
+      "beforeLength": 15,
+      "upSequence": 519,
+      "upMS": 850823.6808,
+      "upTick": 73220017,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 16,
+      "gapAfterPreviousUpMS": 717,
+      "previousKey": [
+        "R04K09"
+      ],
+      "distancePixels": 191.31
+    },
+    {
+      "id": 3125,
+      "downSequence": 530,
+      "downMS": 852188.758,
+      "downTick": 73221393,
+      "x100": 124100,
+      "y100": 142100,
+      "flags": "0x5a",
+      "keys": [
+        "R05K10"
+      ],
+      "language": "english",
+      "beforeLength": 16,
+      "upSequence": 542,
+      "upMS": 852218.4747,
+      "upTick": 73221412,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 17,
+      "gapAfterPreviousUpMS": 1376,
+      "previousKey": [
+        "R05K09"
+      ],
+      "distancePixels": 143.13
+    },
+    {
+      "id": 3125,
+      "downSequence": 549,
+      "downMS": 853014.7008,
+      "downTick": 73222219,
+      "x100": 162500,
+      "y100": 141000,
+      "flags": "0x5a",
+      "keys": [
+        "R05K11"
+      ],
+      "language": "english",
+      "beforeLength": 17,
+      "upSequence": 564,
+      "upMS": 853045.1879,
+      "upTick": 73222238,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 18,
+      "gapAfterPreviousUpMS": 807,
+      "previousKey": [
+        "R05K10"
+      ],
+      "distancePixels": 384.16
+    },
+    {
+      "id": 3126,
+      "downSequence": 575,
+      "downMS": 854876.5341,
+      "downTick": 73224086,
+      "x100": 191200,
+      "y100": 127100,
+      "flags": "0x5a",
+      "keys": [
+        "R04K14"
+      ],
+      "language": "english",
+      "beforeLength": 18,
+      "upSequence": 587,
+      "upMS": 854906.7169,
+      "upTick": 73224105,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 19,
+      "gapAfterPreviousUpMS": 1848,
+      "previousKey": [
+        "R05K11"
+      ],
+      "distancePixels": 318.89
+    },
+    {
+      "id": 3126,
+      "downSequence": 594,
+      "downMS": 855642.2228,
+      "downTick": 73224852,
+      "x100": 177900,
+      "y100": 142200,
+      "flags": "0x5a",
+      "keys": [
+        "R05K12"
+      ],
+      "language": "english",
+      "beforeLength": 19,
+      "upSequence": 606,
+      "upMS": 855673.0235,
+      "upTick": 73224871,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 20,
+      "gapAfterPreviousUpMS": 747,
+      "previousKey": [
+        "R04K14"
+      ],
+      "distancePixels": 201.22
+    },
+    {
+      "id": 3126,
+      "downSequence": 613,
+      "downMS": 856332.3799,
+      "downTick": 73225543,
+      "x100": 195200,
+      "y100": 142100,
+      "flags": "0x5a",
+      "keys": [
+        "R05K13"
+      ],
+      "language": "english",
+      "beforeLength": 20,
+      "upSequence": 628,
+      "upMS": 856362.26,
+      "upTick": 73225562,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 21,
+      "gapAfterPreviousUpMS": 672,
+      "previousKey": [
+        "R05K12"
+      ],
+      "distancePixels": 173.0
+    },
+    {
+      "id": 3126,
+      "downSequence": 635,
+      "downMS": 856994.8769,
+      "downTick": 73226204,
+      "x100": 210500,
+      "y100": 141400,
+      "flags": "0x5a",
+      "keys": [
+        "R05K14"
+      ],
+      "language": "english",
+      "beforeLength": 21,
+      "upSequence": 648,
+      "upMS": 857012.7943,
+      "upTick": 73226222,
+      "durationMS": 18,
+      "outputDelta": 1,
+      "afterLength": 22,
+      "gapAfterPreviousUpMS": 642,
+      "previousKey": [
+        "R05K13"
+      ],
+      "distancePixels": 153.16
+    },
+    {
+      "id": 3126,
+      "downSequence": 655,
+      "downMS": 858404.8373,
+      "downTick": 73227615,
+      "x100": 187100,
+      "y100": 156500,
+      "flags": "0x5a",
+      "keys": [
+        "R06K13"
+      ],
+      "language": "english",
+      "beforeLength": 22,
+      "upSequence": 667,
+      "upMS": 858435.4958,
+      "upTick": 73227634,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 23,
+      "gapAfterPreviousUpMS": 1393,
+      "previousKey": [
+        "R05K14"
+      ],
+      "distancePixels": 278.49
+    },
+    {
+      "id": 3126,
+      "downSequence": 674,
+      "downMS": 859126.2972,
+      "downTick": 73228336,
+      "x100": 172100,
+      "y100": 155600,
+      "flags": "0x5a",
+      "keys": [
+        "R06K12"
+      ],
+      "language": "english",
+      "beforeLength": 23,
+      "upSequence": 686,
+      "upMS": 859156.8552,
+      "upTick": 73228355,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 24,
+      "gapAfterPreviousUpMS": 702,
+      "previousKey": [
+        "R06K13"
+      ],
+      "distancePixels": 150.27
+    },
+    {
+      "id": 3126,
+      "downSequence": 693,
+      "downMS": 860281.5712,
+      "downTick": 73229493,
+      "x100": 204800,
+      "y100": 128300,
+      "flags": "0x5a",
+      "keys": [
+        "R04K15"
+      ],
+      "language": "english",
+      "beforeLength": 24,
+      "upSequence": 711,
+      "upMS": 860328.3729,
+      "upTick": 73229526,
+      "durationMS": 33,
+      "outputDelta": 1,
+      "afterLength": 25,
+      "gapAfterPreviousUpMS": 1138,
+      "previousKey": [
+        "R06K12"
+      ],
+      "distancePixels": 425.98
+    },
+    {
+      "id": 3126,
+      "downSequence": 718,
+      "downMS": 860987.357,
+      "downTick": 73230198,
+      "x100": 222400,
+      "y100": 126700,
+      "flags": "0x5a",
+      "keys": [
+        "R04K16"
+      ],
+      "language": "english",
+      "beforeLength": 25,
+      "upSequence": 736,
+      "upMS": 861032.254,
+      "upTick": 73230232,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 26,
+      "gapAfterPreviousUpMS": 672,
+      "previousKey": [
+        "R04K15"
+      ],
+      "distancePixels": 176.73
+    },
+    {
+      "id": 3127,
+      "downSequence": 747,
+      "downMS": 862923.5859,
+      "downTick": 73232117,
+      "x100": 64900,
+      "y100": 127600,
+      "flags": "0x5a",
+      "keys": [
+        "R04K07"
+      ],
+      "language": "english",
+      "beforeLength": 26,
+      "upSequence": 762,
+      "upMS": 862959.7494,
+      "upTick": 73232151,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 27,
+      "gapAfterPreviousUpMS": 1885,
+      "previousKey": [
+        "R04K16"
+      ],
+      "distancePixels": 1575.03
+    },
+    {
+      "id": 3128,
+      "downSequence": 773,
+      "downMS": 863914.5856,
+      "downTick": 73233116,
+      "x100": 114400,
+      "y100": 127000,
+      "flags": "0x5a",
+      "keys": [
+        "R04K10"
+      ],
+      "language": "english",
+      "beforeLength": 27,
+      "upSequence": 791,
+      "upMS": 863961.2125,
+      "upTick": 73233150,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 28,
+      "gapAfterPreviousUpMS": 965,
+      "previousKey": [
+        "R04K07"
+      ],
+      "distancePixels": 495.04
+    },
+    {
+      "id": 3129,
+      "downSequence": 802,
+      "downMS": 865477.2121,
+      "downTick": 73234681,
+      "x100": 77500,
+      "y100": 143800,
+      "flags": "0x5a",
+      "keys": [
+        "R05K07"
+      ],
+      "language": "english",
+      "beforeLength": 28,
+      "upSequence": 817,
+      "upMS": 865506.5123,
+      "upTick": 73234700,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 29,
+      "gapAfterPreviousUpMS": 1531,
+      "previousKey": [
+        "R04K10"
+      ],
+      "distancePixels": 405.44
+    },
+    {
+      "id": 3130,
+      "downSequence": 828,
+      "downMS": 866632.7118,
+      "downTick": 73235839,
+      "x100": 128200,
+      "y100": 127600,
+      "flags": "0x5a",
+      "keys": [
+        "R04K11"
+      ],
+      "language": "english",
+      "beforeLength": 29,
+      "upSequence": 843,
+      "upMS": 866650.9695,
+      "upTick": 73235858,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 30,
+      "gapAfterPreviousUpMS": 1139,
+      "previousKey": [
+        "R05K07"
+      ],
+      "distancePixels": 532.25
+    },
+    {
+      "id": 3131,
+      "downSequence": 854,
+      "downMS": 868149.2029,
+      "downTick": 73237347,
+      "x100": 174600,
+      "y100": 125600,
+      "flags": "0x5a",
+      "keys": [
+        "R04K13"
+      ],
+      "language": "english",
+      "beforeLength": 30,
+      "upSequence": 866,
+      "upMS": 868180.0466,
+      "upTick": 73237366,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 31,
+      "gapAfterPreviousUpMS": 1489,
+      "previousKey": [
+        "R04K11"
+      ],
+      "distancePixels": 464.43
+    },
+    {
+      "id": 3132,
+      "downSequence": 877,
+      "downMS": 869305.1839,
+      "downTick": 73238507,
+      "x100": 100800,
+      "y100": 152900,
+      "flags": "0x5a",
+      "keys": [
+        "R06K08"
+      ],
+      "language": "english",
+      "beforeLength": 31,
+      "upSequence": 889,
+      "upMS": 869337.1461,
+      "upTick": 73238526,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 32,
+      "gapAfterPreviousUpMS": 1141,
+      "previousKey": [
+        "R04K13"
+      ],
+      "distancePixels": 786.88
+    },
+    {
+      "id": 3133,
+      "downSequence": 900,
+      "downMS": 870342.642,
+      "downTick": 73239549,
+      "x100": 80500,
+      "y100": 126700,
+      "flags": "0x5a",
+      "keys": [
+        "R04K08"
+      ],
+      "language": "english",
+      "beforeLength": 32,
+      "upSequence": 918,
+      "upMS": 870375.6666,
+      "upTick": 73239583,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 33,
+      "gapAfterPreviousUpMS": 1023,
+      "previousKey": [
+        "R06K08"
+      ],
+      "distancePixels": 331.44
+    },
+    {
+      "id": 3134,
+      "downSequence": 929,
+      "downMS": 871511.6407,
+      "downTick": 73240712,
+      "x100": 68400,
+      "y100": 153700,
+      "flags": "0x5a",
+      "keys": [
+        "R06K06"
+      ],
+      "language": "english",
+      "beforeLength": 33,
+      "upSequence": 941,
+      "upMS": 871542.0218,
+      "upTick": 73240731,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 34,
+      "gapAfterPreviousUpMS": 1129,
+      "previousKey": [
+        "R04K08"
+      ],
+      "distancePixels": 295.87
+    },
+    {
+      "id": 3135,
+      "downSequence": 952,
+      "downMS": 873793.9955,
+      "downTick": 73242991,
+      "x100": 158600,
+      "y100": 127100,
+      "flags": "0x5a",
+      "keys": [
+        "R04K12"
+      ],
+      "language": "english",
+      "beforeLength": 34,
+      "upSequence": 973,
+      "upMS": 873849.4032,
+      "upTick": 73243040,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 35,
+      "gapAfterPreviousUpMS": 2260,
+      "previousKey": [
+        "R06K06"
+      ],
+      "distancePixels": 940.4
+    },
+    {
+      "id": 3136,
+      "downSequence": 984,
+      "downMS": 875671.0585,
+      "downTick": 73244868,
+      "x100": 55600,
+      "y100": 154200,
+      "flags": "0x5a",
+      "keys": [
+        "R06K05"
+      ],
+      "language": "english",
+      "beforeLength": 35,
+      "upSequence": 999,
+      "upMS": 875689.7457,
+      "upTick": 73244887,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 36,
+      "gapAfterPreviousUpMS": 1828,
+      "previousKey": [
+        "R04K12"
+      ],
+      "distancePixels": 1065.05
+    },
+    {
+      "id": 3137,
+      "downSequence": 1010,
+      "downMS": 894784.937,
+      "downTick": 73263989,
+      "x100": 202400,
+      "y100": 156700,
+      "flags": "0x5a",
+      "keys": [
+        "R06K14"
+      ],
+      "language": "english",
+      "beforeLength": 36,
+      "upSequence": 1025,
+      "upMS": 894812.2235,
+      "upTick": 73264008,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 37,
+      "gapAfterPreviousUpMS": 19102,
+      "previousKey": [
+        "R06K05"
+      ],
+      "distancePixels": 1468.21
+    },
+    {
+      "id": 3137,
+      "downSequence": 1032,
+      "downMS": 895553.5225,
+      "downTick": 73264756,
+      "x100": 218300,
+      "y100": 157200,
+      "flags": "0x5a",
+      "keys": [
+        "R06K15"
+      ],
+      "language": "english",
+      "beforeLength": 37,
+      "upSequence": 1050,
+      "upMS": 895579.9409,
+      "upTick": 73264775,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 38,
+      "gapAfterPreviousUpMS": 748,
+      "previousKey": [
+        "R06K14"
+      ],
+      "distancePixels": 159.08
+    },
+    {
+      "id": 3137,
+      "downSequence": 1057,
+      "downMS": 896331.8622,
+      "downTick": 73265536,
+      "x100": 234100,
+      "y100": 155800,
+      "flags": "0x5a",
+      "keys": [
+        "R06K16"
+      ],
+      "language": "english",
+      "beforeLength": 38,
+      "upSequence": 1075,
+      "upMS": 896363.4085,
+      "upTick": 73265555,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 39,
+      "gapAfterPreviousUpMS": 761,
+      "previousKey": [
+        "R06K15"
+      ],
+      "distancePixels": 158.62
+    },
+    {
+      "id": 3137,
+      "downSequence": 1082,
+      "downMS": 897156.184,
+      "downTick": 73266363,
+      "x100": 226800,
+      "y100": 141900,
+      "flags": "0x5a",
+      "keys": [
+        "R05K15"
+      ],
+      "language": "english",
+      "beforeLength": 39,
+      "upSequence": 1094,
+      "upMS": 897186.8285,
+      "upTick": 73266382,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 40,
+      "gapAfterPreviousUpMS": 808,
+      "previousKey": [
+        "R06K16"
+      ],
+      "distancePixels": 157.0
+    },
+    {
+      "id": 3137,
+      "downSequence": 1101,
+      "downMS": 897937.4253,
+      "downTick": 73267144,
+      "x100": 241900,
+      "y100": 142600,
+      "flags": "0x5a",
+      "keys": [
+        "R05K16"
+      ],
+      "language": "english",
+      "beforeLength": 40,
+      "upSequence": 1113,
+      "upMS": 897968.4886,
+      "upTick": 73267162,
+      "durationMS": 18,
+      "outputDelta": 1,
+      "afterLength": 41,
+      "gapAfterPreviousUpMS": 762,
+      "previousKey": [
+        "R05K15"
+      ],
+      "distancePixels": 151.16
+    },
+    {
+      "id": 3137,
+      "downSequence": 1120,
+      "downMS": 898628.2309,
+      "downTick": 73267834,
+      "x100": 238800,
+      "y100": 129700,
+      "flags": "0x5a",
+      "keys": [
+        "R04K17"
+      ],
+      "language": "english",
+      "beforeLength": 41,
+      "upSequence": 1132,
+      "upMS": 898659.9824,
+      "upTick": 73267853,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 42,
+      "gapAfterPreviousUpMS": 672,
+      "previousKey": [
+        "R05K16"
+      ],
+      "distancePixels": 132.67
+    },
+    {
+      "id": 3137,
+      "downSequence": 1139,
+      "downMS": 899243.6822,
+      "downTick": 73268450,
+      "x100": 252700,
+      "y100": 129000,
+      "flags": "0x5a",
+      "keys": [
+        "R04K18"
+      ],
+      "language": "english",
+      "beforeLength": 42,
+      "upSequence": 1151,
+      "upMS": 899274.6918,
+      "upTick": 73268469,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 43,
+      "gapAfterPreviousUpMS": 597,
+      "previousKey": [
+        "R04K17"
+      ],
+      "distancePixels": 139.18
+    },
+    {
+      "id": 3137,
+      "downSequence": 1158,
+      "downMS": 899874.3917,
+      "downTick": 73269080,
+      "x100": 275100,
+      "y100": 128500,
+      "flags": "0x5a",
+      "keys": [
+        "R04K19"
+      ],
+      "language": "english",
+      "beforeLength": 43,
+      "upSequence": 1170,
+      "upMS": 899904.173,
+      "upTick": 73269099,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 44,
+      "gapAfterPreviousUpMS": 611,
+      "previousKey": [
+        "R04K18"
+      ],
+      "distancePixels": 224.06
+    },
+    {
+      "id": 3137,
+      "downSequence": 1177,
+      "downMS": 901150.4022,
+      "downTick": 73270358,
+      "x100": 232300,
+      "y100": 118800,
+      "flags": "0x5a",
+      "keys": [
+        "R03K16"
+      ],
+      "language": "english",
+      "beforeLength": 44,
+      "upSequence": 1192,
+      "upMS": 901167.7545,
+      "upTick": 73270373,
+      "durationMS": 15,
+      "outputDelta": 1,
+      "afterLength": 45,
+      "gapAfterPreviousUpMS": 1259,
+      "previousKey": [
+        "R04K19"
+      ],
+      "distancePixels": 438.85
+    },
+    {
+      "id": 3137,
+      "downSequence": 1199,
+      "downMS": 901765.7744,
+      "downTick": 73270974,
+      "x100": 250400,
+      "y100": 117100,
+      "flags": "0x5a",
+      "keys": [
+        "R03K17"
+      ],
+      "language": "english",
+      "beforeLength": 45,
+      "upSequence": 1211,
+      "upMS": 901796.4846,
+      "upTick": 73270993,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 46,
+      "gapAfterPreviousUpMS": 601,
+      "previousKey": [
+        "R03K16"
+      ],
+      "distancePixels": 181.8
+    },
+    {
+      "id": 3137,
+      "downSequence": 1218,
+      "downMS": 902516.5839,
+      "downTick": 73271725,
+      "x100": 219600,
+      "y100": 118000,
+      "flags": "0x5a",
+      "keys": [
+        "R03K15"
+      ],
+      "language": "english",
+      "beforeLength": 46,
+      "upSequence": 1230,
+      "upMS": 902548.023,
+      "upTick": 73271744,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 47,
+      "gapAfterPreviousUpMS": 732,
+      "previousKey": [
+        "R03K17"
+      ],
+      "distancePixels": 308.13
+    },
+    {
+      "id": 3137,
+      "downSequence": 1237,
+      "downMS": 903162.2018,
+      "downTick": 73272371,
+      "x100": 203300,
+      "y100": 118200,
+      "flags": "0x5a",
+      "keys": [
+        "R03K14"
+      ],
+      "language": "english",
+      "beforeLength": 47,
+      "upSequence": 1249,
+      "upMS": 903192.5606,
+      "upTick": 73272389,
+      "durationMS": 18,
+      "outputDelta": 1,
+      "afterLength": 48,
+      "gapAfterPreviousUpMS": 627,
+      "previousKey": [
+        "R03K15"
+      ],
+      "distancePixels": 163.01
+    },
+    {
+      "id": 3137,
+      "downSequence": 1256,
+      "downMS": 903808.1025,
+      "downTick": 73273016,
+      "x100": 187400,
+      "y100": 118700,
+      "flags": "0x5a",
+      "keys": [
+        "R03K13"
+      ],
+      "language": "english",
+      "beforeLength": 48,
+      "upSequence": 1271,
+      "upMS": 903838.1698,
+      "upTick": 73273035,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 49,
+      "gapAfterPreviousUpMS": 627,
+      "previousKey": [
+        "R03K14"
+      ],
+      "distancePixels": 159.08
+    },
+    {
+      "id": 3137,
+      "downSequence": 1278,
+      "downMS": 904438.7936,
+      "downTick": 73273647,
+      "x100": 171500,
+      "y100": 118900,
+      "flags": "0x5a",
+      "keys": [
+        "R03K12"
+      ],
+      "language": "english",
+      "beforeLength": 49,
+      "upSequence": 1296,
+      "upMS": 904482.8674,
+      "upTick": 73273681,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 50,
+      "gapAfterPreviousUpMS": 612,
+      "previousKey": [
+        "R03K13"
+      ],
+      "distancePixels": 159.01
+    },
+    {
+      "id": 3137,
+      "downSequence": 1303,
+      "downMS": 905054.1088,
+      "downTick": 73274262,
+      "x100": 155800,
+      "y100": 119200,
+      "flags": "0x5a",
+      "keys": [
+        "R03K11"
+      ],
+      "language": "english",
+      "beforeLength": 50,
+      "upSequence": 1321,
+      "upMS": 905114.7126,
+      "upTick": 73274311,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 51,
+      "gapAfterPreviousUpMS": 581,
+      "previousKey": [
+        "R03K12"
+      ],
+      "distancePixels": 157.03
+    },
+    {
+      "id": 3137,
+      "downSequence": 1328,
+      "downMS": 905789.8178,
+      "downTick": 73274999,
+      "x100": 130600,
+      "y100": 119800,
+      "flags": "0x5a",
+      "keys": [
+        "R03K10"
+      ],
+      "language": "english",
+      "beforeLength": 51,
+      "upSequence": 1349,
+      "upMS": 905848.4136,
+      "upTick": 73275047,
+      "durationMS": 48,
+      "outputDelta": 1,
+      "afterLength": 52,
+      "gapAfterPreviousUpMS": 688,
+      "previousKey": [
+        "R03K11"
+      ],
+      "distancePixels": 252.07
+    },
+    {
+      "id": 3137,
+      "downSequence": 1356,
+      "downMS": 906374.9473,
+      "downTick": 73275584,
+      "x100": 116200,
+      "y100": 118900,
+      "flags": "0x5a",
+      "keys": [
+        "R03K09"
+      ],
+      "language": "english",
+      "beforeLength": 52,
+      "upSequence": 1380,
+      "upMS": 906450.6196,
+      "upTick": 73275648,
+      "durationMS": 64,
+      "outputDelta": 1,
+      "afterLength": 53,
+      "gapAfterPreviousUpMS": 537,
+      "previousKey": [
+        "R03K10"
+      ],
+      "distancePixels": 144.28
+    },
+    {
+      "id": 3137,
+      "downSequence": 1387,
+      "downMS": 906991.0421,
+      "downTick": 73276200,
+      "x100": 102600,
+      "y100": 118800,
+      "flags": "0x5a",
+      "keys": [
+        "R03K08"
+      ],
+      "language": "english",
+      "beforeLength": 53,
+      "upSequence": 1408,
+      "upMS": 907049.7907,
+      "upTick": 73276249,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 54,
+      "gapAfterPreviousUpMS": 552,
+      "previousKey": [
+        "R03K09"
+      ],
+      "distancePixels": 136.0
+    },
+    {
+      "id": 3137,
+      "downSequence": 1415,
+      "downMS": 907620.7043,
+      "downTick": 73276831,
+      "x100": 86200,
+      "y100": 120300,
+      "flags": "0x5a",
+      "keys": [
+        "R03K07"
+      ],
+      "language": "english",
+      "beforeLength": 54,
+      "upSequence": 1436,
+      "upMS": 907680.6255,
+      "upTick": 73276880,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 55,
+      "gapAfterPreviousUpMS": 582,
+      "previousKey": [
+        "R03K08"
+      ],
+      "distancePixels": 164.68
+    },
+    {
+      "id": 3137,
+      "downSequence": 1443,
+      "downMS": 908282.4846,
+      "downTick": 73277491,
+      "x100": 71900,
+      "y100": 119500,
+      "flags": "0x5a",
+      "keys": [
+        "R03K06"
+      ],
+      "language": "english",
+      "beforeLength": 55,
+      "upSequence": 1458,
+      "upMS": 908326.7094,
+      "upTick": 73277525,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 56,
+      "gapAfterPreviousUpMS": 611,
+      "previousKey": [
+        "R03K07"
+      ],
+      "distancePixels": 143.22
+    },
+    {
+      "id": 3137,
+      "downSequence": 1465,
+      "downMS": 908867.7296,
+      "downTick": 73278077,
+      "x100": 54200,
+      "y100": 117100,
+      "flags": "0x5a",
+      "keys": [
+        "R03K05"
+      ],
+      "language": "english",
+      "beforeLength": 56,
+      "upSequence": 1495,
+      "upMS": 908956.609,
+      "upTick": 73278156,
+      "durationMS": 79,
+      "outputDelta": 1,
+      "afterLength": 57,
+      "gapAfterPreviousUpMS": 552,
+      "previousKey": [
+        "R03K06"
+      ],
+      "distancePixels": 178.62
+    },
+    {
+      "id": 3138,
+      "downSequence": 1506,
+      "downMS": 911570.2797,
+      "downTick": 73280820,
+      "x100": 30800,
+      "y100": 155000,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 57,
+      "upSequence": 1521,
+      "upMS": 911600.1542,
+      "upTick": 73280839,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 57,
+      "gapAfterPreviousUpMS": 2664,
+      "previousKey": [
+        "R03K05"
+      ],
+      "distancePixels": 445.42
+    },
+    {
+      "id": 3139,
+      "downSequence": 1532,
+      "downMS": 915173.528,
+      "downTick": 73284392,
+      "x100": 61800,
+      "y100": 141800,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 57,
+      "upSequence": 1544,
+      "upMS": 915204.2136,
+      "upTick": 73284411,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 58,
+      "gapAfterPreviousUpMS": 3553,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 336.93
+    },
+    {
+      "id": 3140,
+      "downSequence": 1555,
+      "downMS": 916569.5061,
+      "downTick": 73285773,
+      "x100": 35200,
+      "y100": 156600,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 58,
+      "upSequence": 1570,
+      "upMS": 916598.4016,
+      "upTick": 73285792,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 58,
+      "gapAfterPreviousUpMS": 1362,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 304.4
+    },
+    {
+      "id": 3142,
+      "downSequence": 1585,
+      "downMS": 920353.3513,
+      "downTick": 73289553,
+      "x100": 116800,
+      "y100": 156800,
+      "flags": "0x5a",
+      "keys": [
+        "R06K09"
+      ],
+      "language": "english",
+      "beforeLength": 58,
+      "upSequence": 1603,
+      "upMS": 920398.6495,
+      "upTick": 73289587,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 59,
+      "gapAfterPreviousUpMS": 3761,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 816.0
+    },
+    {
+      "id": 3143,
+      "downSequence": 1614,
+      "downMS": 921329.4073,
+      "downTick": 73290537,
+      "x100": 33200,
+      "y100": 155600,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 59,
+      "upSequence": 1635,
+      "upMS": 921389.8754,
+      "upTick": 73290586,
+      "durationMS": 49,
+      "outputDelta": 0,
+      "afterLength": 59,
+      "gapAfterPreviousUpMS": 950,
+      "previousKey": [
+        "R06K09"
+      ],
+      "distancePixels": 836.09
+    },
+    {
+      "id": 3144,
+      "downSequence": 1646,
+      "downMS": 923236.754,
+      "downTick": 73292429,
+      "x100": 85000,
+      "y100": 155100,
+      "flags": "0x5a",
+      "keys": [
+        "R06K07"
+      ],
+      "language": "english",
+      "beforeLength": 59,
+      "upSequence": 1670,
+      "upMS": 923299.4102,
+      "upTick": 73292493,
+      "durationMS": 64,
+      "outputDelta": 1,
+      "afterLength": 60,
+      "gapAfterPreviousUpMS": 1843,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 518.02
+    },
+    {
+      "id": 3145,
+      "downSequence": 1681,
+      "downMS": 924677.7288,
+      "downTick": 73293884,
+      "x100": 38100,
+      "y100": 155700,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 60,
+      "upSequence": 1699,
+      "upMS": 924722.6366,
+      "upTick": 73293918,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 60,
+      "gapAfterPreviousUpMS": 1391,
+      "previousKey": [
+        "R06K07"
+      ],
+      "distancePixels": 469.04
+    },
+    {
+      "id": 3146,
+      "downSequence": 1710,
+      "downMS": 925398.1388,
+      "downTick": 73294601,
+      "x100": 94800,
+      "y100": 141200,
+      "flags": "0x5a",
+      "keys": [
+        "R05K08"
+      ],
+      "language": "english",
+      "beforeLength": 60,
+      "upSequence": 1728,
+      "upMS": 925462.4058,
+      "upTick": 73294650,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 61,
+      "gapAfterPreviousUpMS": 683,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 585.25
+    },
+    {
+      "id": 3147,
+      "downSequence": 1739,
+      "downMS": 926148.5238,
+      "downTick": 73295352,
+      "x100": 33800,
+      "y100": 156400,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 61,
+      "upSequence": 1751,
+      "upMS": 926178.4219,
+      "upTick": 73295371,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 61,
+      "gapAfterPreviousUpMS": 702,
+      "previousKey": [
+        "R05K08"
+      ],
+      "distancePixels": 628.65
+    },
+    {
+      "id": 3148,
+      "downSequence": 1762,
+      "downMS": 926854.1877,
+      "downTick": 73296055,
+      "x100": 95900,
+      "y100": 126600,
+      "flags": "0x5a",
+      "keys": [
+        "R04K09"
+      ],
+      "language": "english",
+      "beforeLength": 61,
+      "upSequence": 1777,
+      "upMS": 926884.214,
+      "upTick": 73296074,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 62,
+      "gapAfterPreviousUpMS": 684,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 688.8
+    },
+    {
+      "id": 3149,
+      "downSequence": 1788,
+      "downMS": 927529.7441,
+      "downTick": 73296727,
+      "x100": 36500,
+      "y100": 155800,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 62,
+      "upSequence": 1812,
+      "upMS": 927599.9812,
+      "upTick": 73296791,
+      "durationMS": 64,
+      "outputDelta": 0,
+      "afterLength": 62,
+      "gapAfterPreviousUpMS": 653,
+      "previousKey": [
+        "R04K09"
+      ],
+      "distancePixels": 661.89
+    },
+    {
+      "id": 3150,
+      "downSequence": 1823,
+      "downMS": 928340.2109,
+      "downTick": 73297539,
+      "x100": 107700,
+      "y100": 140200,
+      "flags": "0x5a",
+      "keys": [
+        "R05K09"
+      ],
+      "language": "english",
+      "beforeLength": 62,
+      "upSequence": 1838,
+      "upMS": 928371.1963,
+      "upTick": 73297558,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 63,
+      "gapAfterPreviousUpMS": 748,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 728.89
+    },
+    {
+      "id": 3151,
+      "downSequence": 1849,
+      "downMS": 929076.8586,
+      "downTick": 73298274,
+      "x100": 33200,
+      "y100": 156000,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 63,
+      "upSequence": 1861,
+      "upMS": 929108.2887,
+      "upTick": 73298293,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 63,
+      "gapAfterPreviousUpMS": 716,
+      "previousKey": [
+        "R05K09"
+      ],
+      "distancePixels": 761.57
+    },
+    {
+      "id": 3152,
+      "downSequence": 1872,
+      "downMS": 929946.9,
+      "downTick": 73299149,
+      "x100": 122800,
+      "y100": 140400,
+      "flags": "0x5a",
+      "keys": [
+        "R05K10"
+      ],
+      "language": "english",
+      "beforeLength": 63,
+      "upSequence": 1884,
+      "upMS": 929977.8329,
+      "upTick": 73299167,
+      "durationMS": 18,
+      "outputDelta": 1,
+      "afterLength": 64,
+      "gapAfterPreviousUpMS": 856,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 909.48
+    },
+    {
+      "id": 3153,
+      "downSequence": 1895,
+      "downMS": 931538.649,
+      "downTick": 73300739,
+      "x100": 264600,
+      "y100": 154200,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 64,
+      "upSequence": 1907,
+      "upMS": 931569.8426,
+      "upTick": 73300757,
+      "durationMS": 18,
+      "outputDelta": 0,
+      "afterLength": 64,
+      "gapAfterPreviousUpMS": 1572,
+      "previousKey": [
+        "R05K10"
+      ],
+      "distancePixels": 1424.7
+    },
+    {
+      "id": 3154,
+      "downSequence": 1918,
+      "downMS": 932440.1038,
+      "downTick": 73301647,
+      "x100": 160400,
+      "y100": 139400,
+      "flags": "0x5a",
+      "keys": [
+        "R05K11"
+      ],
+      "language": "english",
+      "beforeLength": 64,
+      "upSequence": 1942,
+      "upMS": 932516.2415,
+      "upTick": 73301711,
+      "durationMS": 64,
+      "outputDelta": 1,
+      "afterLength": 65,
+      "gapAfterPreviousUpMS": 890,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 1052.46
+    },
+    {
+      "id": 3155,
+      "downSequence": 1953,
+      "downMS": 933310.0003,
+      "downTick": 73302509,
+      "x100": 258900,
+      "y100": 154100,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 65,
+      "upSequence": 1968,
+      "upMS": 933355.646,
+      "upTick": 73302543,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 65,
+      "gapAfterPreviousUpMS": 798,
+      "previousKey": [
+        "R05K11"
+      ],
+      "distancePixels": 995.91
+    },
+    {
+      "id": 3156,
+      "downSequence": 1979,
+      "downMS": 934286.2073,
+      "downTick": 73303486,
+      "x100": 189200,
+      "y100": 126700,
+      "flags": "0x5a",
+      "keys": [
+        "R04K14"
+      ],
+      "language": "english",
+      "beforeLength": 65,
+      "upSequence": 2006,
+      "upMS": 934359.6472,
+      "upTick": 73303550,
+      "durationMS": 64,
+      "outputDelta": 1,
+      "afterLength": 66,
+      "gapAfterPreviousUpMS": 943,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 748.92
+    },
+    {
+      "id": 3157,
+      "downSequence": 2017,
+      "downMS": 935067.0725,
+      "downTick": 73304274,
+      "x100": 266000,
+      "y100": 155000,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 66,
+      "upSequence": 2038,
+      "upMS": 935126.5232,
+      "upTick": 73304323,
+      "durationMS": 49,
+      "outputDelta": 0,
+      "afterLength": 66,
+      "gapAfterPreviousUpMS": 724,
+      "previousKey": [
+        "R04K14"
+      ],
+      "distancePixels": 818.48
+    },
+    {
+      "id": 3158,
+      "downSequence": 2049,
+      "downMS": 936118.7991,
+      "downTick": 73305321,
+      "x100": 179100,
+      "y100": 141300,
+      "flags": "0x5a",
+      "keys": [
+        "R05K12"
+      ],
+      "language": "english",
+      "beforeLength": 66,
+      "upSequence": 2067,
+      "upMS": 936164.6753,
+      "upTick": 73305355,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 67,
+      "gapAfterPreviousUpMS": 998,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 879.73
+    },
+    {
+      "id": 3159,
+      "downSequence": 2078,
+      "downMS": 936823.9815,
+      "downTick": 73306024,
+      "x100": 261000,
+      "y100": 153000,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 67,
+      "upSequence": 2096,
+      "upMS": 936871.1927,
+      "upTick": 73306058,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 67,
+      "gapAfterPreviousUpMS": 669,
+      "previousKey": [
+        "R05K12"
+      ],
+      "distancePixels": 827.31
+    },
+    {
+      "id": 3160,
+      "downSequence": 2107,
+      "downMS": 937589.6625,
+      "downTick": 73306789,
+      "x100": 196000,
+      "y100": 140100,
+      "flags": "0x5a",
+      "keys": [
+        "R05K13"
+      ],
+      "language": "english",
+      "beforeLength": 67,
+      "upSequence": 2143,
+      "upMS": 937705.3497,
+      "upTick": 73306898,
+      "durationMS": 109,
+      "outputDelta": 1,
+      "afterLength": 68,
+      "gapAfterPreviousUpMS": 731,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 662.68
+    },
+    {
+      "id": 3161,
+      "downSequence": 2154,
+      "downMS": 944617.8954,
+      "downTick": 73313835,
+      "x100": 264600,
+      "y100": 154800,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 68,
+      "upSequence": 2172,
+      "upMS": 944659.7535,
+      "upTick": 73313854,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 68,
+      "gapAfterPreviousUpMS": 6937,
+      "previousKey": [
+        "R05K13"
+      ],
+      "distancePixels": 701.57
+    },
+    {
+      "id": 3162,
+      "downSequence": 2183,
+      "downMS": 945458.8992,
+      "downTick": 73314664,
+      "x100": 208200,
+      "y100": 141400,
+      "flags": "0x5a",
+      "keys": [
+        "R05K14"
+      ],
+      "language": "english",
+      "beforeLength": 68,
+      "upSequence": 2201,
+      "upMS": 945517.0037,
+      "upTick": 73314683,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 69,
+      "gapAfterPreviousUpMS": 810,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 579.7
+    },
+    {
+      "id": 3163,
+      "downSequence": 2212,
+      "downMS": 946147.2097,
+      "downTick": 73315351,
+      "x100": 266700,
+      "y100": 154700,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 69,
+      "upSequence": 2230,
+      "upMS": 946192.2106,
+      "upTick": 73315384,
+      "durationMS": 33,
+      "outputDelta": 0,
+      "afterLength": 69,
+      "gapAfterPreviousUpMS": 668,
+      "previousKey": [
+        "R05K14"
+      ],
+      "distancePixels": 599.93
+    },
+    {
+      "id": 3164,
+      "downSequence": 2241,
+      "downMS": 946987.9558,
+      "downTick": 73316196,
+      "x100": 188700,
+      "y100": 153100,
+      "flags": "0x5a",
+      "keys": [
+        "R06K13"
+      ],
+      "language": "english",
+      "beforeLength": 69,
+      "upSequence": 2262,
+      "upMS": 947049.5199,
+      "upTick": 73316245,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 70,
+      "gapAfterPreviousUpMS": 812,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 780.16
+    },
+    {
+      "id": 3165,
+      "downSequence": 2273,
+      "downMS": 947693.9377,
+      "downTick": 73316899,
+      "x100": 267300,
+      "y100": 154100,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 70,
+      "upSequence": 2294,
+      "upMS": 947753.9069,
+      "upTick": 73316947,
+      "durationMS": 48,
+      "outputDelta": 0,
+      "afterLength": 70,
+      "gapAfterPreviousUpMS": 654,
+      "previousKey": [
+        "R06K13"
+      ],
+      "distancePixels": 786.06
+    },
+    {
+      "id": 3166,
+      "downSequence": 2305,
+      "downMS": 948520.7137,
+      "downTick": 73317726,
+      "x100": 171300,
+      "y100": 154500,
+      "flags": "0x5a",
+      "keys": [
+        "R06K12"
+      ],
+      "language": "english",
+      "beforeLength": 70,
+      "upSequence": 2323,
+      "upMS": 948566.3137,
+      "upTick": 73317760,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 71,
+      "gapAfterPreviousUpMS": 779,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 960.01
+    },
+    {
+      "id": 3167,
+      "downSequence": 2334,
+      "downMS": 949375.8547,
+      "downTick": 73318571,
+      "x100": 258000,
+      "y100": 155300,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 71,
+      "upSequence": 2352,
+      "upMS": 949422.8313,
+      "upTick": 73318605,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 71,
+      "gapAfterPreviousUpMS": 811,
+      "previousKey": [
+        "R06K12"
+      ],
+      "distancePixels": 867.04
+    },
+    {
+      "id": 3168,
+      "downSequence": 2363,
+      "downMS": 950141.4394,
+      "downTick": 73319336,
+      "x100": 205600,
+      "y100": 129600,
+      "flags": "0x5a",
+      "keys": [
+        "R04K15"
+      ],
+      "language": "english",
+      "beforeLength": 71,
+      "upSequence": 2384,
+      "upMS": 950189.233,
+      "upTick": 73319370,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 72,
+      "gapAfterPreviousUpMS": 731,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 583.63
+    },
+    {
+      "id": 3169,
+      "downSequence": 2395,
+      "downMS": 950906.8272,
+      "downTick": 73320101,
+      "x100": 261200,
+      "y100": 151700,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 72,
+      "upSequence": 2428,
+      "upMS": 951022.1149,
+      "upTick": 73320210,
+      "durationMS": 109,
+      "outputDelta": 0,
+      "afterLength": 72,
+      "gapAfterPreviousUpMS": 731,
+      "previousKey": [
+        "R04K15"
+      ],
+      "distancePixels": 598.31
+    },
+    {
+      "id": 3170,
+      "downSequence": 2439,
+      "downMS": 951703.3265,
+      "downTick": 73320896,
+      "x100": 222000,
+      "y100": 128500,
+      "flags": "0x5a",
+      "keys": [
+        "R04K16"
+      ],
+      "language": "english",
+      "beforeLength": 72,
+      "upSequence": 2454,
+      "upMS": 951748.0899,
+      "upTick": 73320930,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 73,
+      "gapAfterPreviousUpMS": 686,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 455.51
+    },
+    {
+      "id": 3171,
+      "downSequence": 2465,
+      "downMS": 953609.8816,
+      "downTick": 73322817,
+      "x100": 33100,
+      "y100": 157300,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 73,
+      "upSequence": 2489,
+      "upMS": 953670.2415,
+      "upTick": 73322866,
+      "durationMS": 49,
+      "outputDelta": 0,
+      "afterLength": 73,
+      "gapAfterPreviousUpMS": 1887,
+      "previousKey": [
+        "R04K16"
+      ],
+      "distancePixels": 1910.83
+    },
+    {
+      "id": 3172,
+      "downSequence": 2500,
+      "downMS": 954360.1646,
+      "downTick": 73323556,
+      "x100": 66000,
+      "y100": 126600,
+      "flags": "0x5a",
+      "keys": [
+        "R04K07"
+      ],
+      "language": "english",
+      "beforeLength": 73,
+      "upSequence": 2518,
+      "upMS": 954406.5101,
+      "upTick": 73323590,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 74,
+      "gapAfterPreviousUpMS": 690,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 449.99
+    },
+    {
+      "id": 3173,
+      "downSequence": 2529,
+      "downMS": 955157.6803,
+      "downTick": 73324352,
+      "x100": 36800,
+      "y100": 155700,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 74,
+      "upSequence": 2547,
+      "upMS": 955205.223,
+      "upTick": 73324386,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 74,
+      "gapAfterPreviousUpMS": 762,
+      "previousKey": [
+        "R04K07"
+      ],
+      "distancePixels": 412.24
+    },
+    {
+      "id": 3174,
+      "downSequence": 2558,
+      "downMS": 956088.18,
+      "downTick": 73325289,
+      "x100": 114000,
+      "y100": 126300,
+      "flags": "0x5a",
+      "keys": [
+        "R04K10"
+      ],
+      "language": "english",
+      "beforeLength": 74,
+      "upSequence": 2579,
+      "upMS": 956146.6483,
+      "upTick": 73325338,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 75,
+      "gapAfterPreviousUpMS": 903,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 826.09
+    },
+    {
+      "id": 3175,
+      "downSequence": 2590,
+      "downMS": 957063.0219,
+      "downTick": 73326267,
+      "x100": 33300,
+      "y100": 157600,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 75,
+      "upSequence": 2608,
+      "upMS": 957107.6018,
+      "upTick": 73326301,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 75,
+      "gapAfterPreviousUpMS": 929,
+      "previousKey": [
+        "R04K10"
+      ],
+      "distancePixels": 865.57
+    },
+    {
+      "id": 3176,
+      "downSequence": 2619,
+      "downMS": 958039.1824,
+      "downTick": 73327241,
+      "x100": 79000,
+      "y100": 139200,
+      "flags": "0x5a",
+      "keys": [
+        "R05K07"
+      ],
+      "language": "english",
+      "beforeLength": 75,
+      "upSequence": 2634,
+      "upMS": 958069.7433,
+      "upTick": 73327260,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 76,
+      "gapAfterPreviousUpMS": 940,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 492.65
+    },
+    {
+      "id": 3177,
+      "downSequence": 2645,
+      "downMS": 958698.5828,
+      "downTick": 73327899,
+      "x100": 34900,
+      "y100": 156800,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 76,
+      "upSequence": 2666,
+      "upMS": 958758.7957,
+      "upTick": 73327948,
+      "durationMS": 49,
+      "outputDelta": 0,
+      "afterLength": 76,
+      "gapAfterPreviousUpMS": 639,
+      "previousKey": [
+        "R05K07"
+      ],
+      "distancePixels": 474.82
+    },
+    {
+      "id": 3178,
+      "downSequence": 2677,
+      "downMS": 959570.3157,
+      "downTick": 73328774,
+      "x100": 127300,
+      "y100": 126000,
+      "flags": "0x5a",
+      "keys": [
+        "R04K11"
+      ],
+      "language": "english",
+      "beforeLength": 76,
+      "upSequence": 2692,
+      "upMS": 959600.4213,
+      "upTick": 73328793,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 77,
+      "gapAfterPreviousUpMS": 826,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 973.98
+    },
+    {
+      "id": 3179,
+      "downSequence": 2703,
+      "downMS": 960381.4669,
+      "downTick": 73329587,
+      "x100": 35200,
+      "y100": 156700,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 77,
+      "upSequence": 2718,
+      "upMS": 960411.2638,
+      "upTick": 73329606,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 77,
+      "gapAfterPreviousUpMS": 794,
+      "previousKey": [
+        "R04K11"
+      ],
+      "distancePixels": 970.82
+    },
+    {
+      "id": 3180,
+      "downSequence": 2729,
+      "downMS": 961433.7899,
+      "downTick": 73330633,
+      "x100": 174600,
+      "y100": 127600,
+      "flags": "0x5a",
+      "keys": [
+        "R04K13"
+      ],
+      "language": "english",
+      "beforeLength": 77,
+      "upSequence": 2747,
+      "upMS": 961478.7577,
+      "upTick": 73330667,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 78,
+      "gapAfterPreviousUpMS": 1027,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 1424.05
+    },
+    {
+      "id": 3181,
+      "downSequence": 2758,
+      "downMS": 962512.4396,
+      "downTick": 73331712,
+      "x100": 257000,
+      "y100": 153100,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 78,
+      "upSequence": 2776,
+      "upMS": 962558.5216,
+      "upTick": 73331746,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 78,
+      "gapAfterPreviousUpMS": 1045,
+      "previousKey": [
+        "R04K13"
+      ],
+      "distancePixels": 862.55
+    },
+    {
+      "id": 3182,
+      "downSequence": 2787,
+      "downMS": 963564.3362,
+      "downTick": 73332759,
+      "x100": 97900,
+      "y100": 153000,
+      "flags": "0x5a",
+      "keys": [
+        "R06K08"
+      ],
+      "language": "english",
+      "beforeLength": 78,
+      "upSequence": 2802,
+      "upMS": 963596.2277,
+      "upTick": 73332778,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 79,
+      "gapAfterPreviousUpMS": 1013,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 1591.0
+    },
+    {
+      "id": 3183,
+      "downSequence": 2813,
+      "downMS": 964464.9058,
+      "downTick": 73333665,
+      "x100": 33100,
+      "y100": 159700,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 79,
+      "upSequence": 2828,
+      "upMS": 964511.3074,
+      "upTick": 73333699,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 79,
+      "gapAfterPreviousUpMS": 887,
+      "previousKey": [
+        "R06K08"
+      ],
+      "distancePixels": 651.45
+    },
+    {
+      "id": 3184,
+      "downSequence": 2839,
+      "downMS": 965201.2007,
+      "downTick": 73334399,
+      "x100": 82000,
+      "y100": 127600,
+      "flags": "0x5a",
+      "keys": [
+        "R04K08"
+      ],
+      "language": "english",
+      "beforeLength": 79,
+      "upSequence": 2860,
+      "upMS": 965258.5459,
+      "upTick": 73334448,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 80,
+      "gapAfterPreviousUpMS": 700,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 584.95
+    },
+    {
+      "id": 3185,
+      "downSequence": 2871,
+      "downMS": 966267.8781,
+      "downTick": 73335470,
+      "x100": 33000,
+      "y100": 158000,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 80,
+      "upSequence": 2886,
+      "upMS": 966312.4863,
+      "upTick": 73335504,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 80,
+      "gapAfterPreviousUpMS": 1022,
+      "previousKey": [
+        "R04K08"
+      ],
+      "distancePixels": 576.64
+    },
+    {
+      "id": 3186,
+      "downSequence": 2897,
+      "downMS": 966927.2356,
+      "downTick": 73336134,
+      "x100": 72000,
+      "y100": 153200,
+      "flags": "0x5a",
+      "keys": [
+        "R06K06"
+      ],
+      "language": "english",
+      "beforeLength": 80,
+      "upSequence": 2915,
+      "upMS": 966970.8187,
+      "upTick": 73336168,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 81,
+      "gapAfterPreviousUpMS": 630,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 392.94
+    },
+    {
+      "id": 3187,
+      "downSequence": 2926,
+      "downMS": 967557.9335,
+      "downTick": 73336768,
+      "x100": 34900,
+      "y100": 154100,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 81,
+      "upSequence": 2950,
+      "upMS": 967632.6513,
+      "upTick": 73336832,
+      "durationMS": 64,
+      "outputDelta": 0,
+      "afterLength": 81,
+      "gapAfterPreviousUpMS": 600,
+      "previousKey": [
+        "R06K06"
+      ],
+      "distancePixels": 371.11
+    },
+    {
+      "id": 3188,
+      "downSequence": 2961,
+      "downMS": 968459.5276,
+      "downTick": 73337664,
+      "x100": 159800,
+      "y100": 127200,
+      "flags": "0x5a",
+      "keys": [
+        "R04K12"
+      ],
+      "language": "english",
+      "beforeLength": 81,
+      "upSequence": 2996,
+      "upMS": 968567.2869,
+      "upTick": 73337758,
+      "durationMS": 94,
+      "outputDelta": 1,
+      "afterLength": 82,
+      "gapAfterPreviousUpMS": 832,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 1277.64
+    },
+    {
+      "id": 3189,
+      "downSequence": 3007,
+      "downMS": 969240.4792,
+      "downTick": 73338446,
+      "x100": 258000,
+      "y100": 154000,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 82,
+      "upSequence": 3022,
+      "upMS": 969270.1807,
+      "upTick": 73338465,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 82,
+      "gapAfterPreviousUpMS": 688,
+      "previousKey": [
+        "R04K12"
+      ],
+      "distancePixels": 1017.91
+    },
+    {
+      "id": 3190,
+      "downSequence": 3033,
+      "downMS": 970305.62,
+      "downTick": 73339508,
+      "x100": 54200,
+      "y100": 151800,
+      "flags": "0x5a",
+      "keys": [
+        "R06K05"
+      ],
+      "language": "english",
+      "beforeLength": 82,
+      "upSequence": 3048,
+      "upMS": 970335.5828,
+      "upTick": 73339527,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 83,
+      "gapAfterPreviousUpMS": 1043,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 2038.12
+    },
+    {
+      "id": 3191,
+      "downSequence": 3059,
+      "downMS": 974269.3962,
+      "downTick": 73343476,
+      "x100": 32200,
+      "y100": 157000,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 83,
+      "upSequence": 3074,
+      "upMS": 974299.7476,
+      "upTick": 73343495,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 83,
+      "gapAfterPreviousUpMS": 3949,
+      "previousKey": [
+        "R06K05"
+      ],
+      "distancePixels": 226.06
+    },
+    {
+      "id": 3192,
+      "downSequence": 3085,
+      "downMS": 974989.6597,
+      "downTick": 73344196,
+      "x100": 56300,
+      "y100": 117100,
+      "flags": "0x5a",
+      "keys": [
+        "R03K05"
+      ],
+      "language": "english",
+      "beforeLength": 83,
+      "upSequence": 3097,
+      "upMS": 975021.13,
+      "upTick": 73344215,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 84,
+      "gapAfterPreviousUpMS": 701,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 466.14
+    },
+    {
+      "id": 3193,
+      "downSequence": 3108,
+      "downMS": 975590.8896,
+      "downTick": 73344790,
+      "x100": 32600,
+      "y100": 152900,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 84,
+      "upSequence": 3126,
+      "upMS": 975634.7646,
+      "upTick": 73344824,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 84,
+      "gapAfterPreviousUpMS": 575,
+      "previousKey": [
+        "R03K05"
+      ],
+      "distancePixels": 429.34
+    },
+    {
+      "id": 3193,
+      "downSequence": 3133,
+      "downMS": 976161.0165,
+      "downTick": 73345361,
+      "x100": 69700,
+      "y100": 116400,
+      "flags": "0x5a",
+      "keys": [
+        "R03K06"
+      ],
+      "language": "english",
+      "beforeLength": 84,
+      "upSequence": 3145,
+      "upMS": 976193.4751,
+      "upTick": 73345380,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 85,
+      "gapAfterPreviousUpMS": 537,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 520.45
+    },
+    {
+      "id": 3194,
+      "downSequence": 3156,
+      "downMS": 976761.896,
+      "downTick": 73345962,
+      "x100": 36000,
+      "y100": 152900,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 85,
+      "upSequence": 3171,
+      "upMS": 976806.9003,
+      "upTick": 73345996,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 85,
+      "gapAfterPreviousUpMS": 582,
+      "previousKey": [
+        "R03K06"
+      ],
+      "distancePixels": 496.78
+    },
+    {
+      "id": 3195,
+      "downSequence": 3182,
+      "downMS": 977363.0559,
+      "downTick": 73346571,
+      "x100": 88800,
+      "y100": 114000,
+      "flags": "0x5a",
+      "keys": [
+        "R03K07"
+      ],
+      "language": "english",
+      "beforeLength": 85,
+      "upSequence": 3200,
+      "upMS": 977410.131,
+      "upTick": 73346605,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 86,
+      "gapAfterPreviousUpMS": 575,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 655.82
+    },
+    {
+      "id": 3196,
+      "downSequence": 3211,
+      "downMS": 978007.4915,
+      "downTick": 73347205,
+      "x100": 34900,
+      "y100": 152700,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 86,
+      "upSequence": 3232,
+      "upMS": 978067.8114,
+      "upTick": 73347254,
+      "durationMS": 49,
+      "outputDelta": 0,
+      "afterLength": 86,
+      "gapAfterPreviousUpMS": 600,
+      "previousKey": [
+        "R03K07"
+      ],
+      "distancePixels": 663.54
+    },
+    {
+      "id": 3197,
+      "downSequence": 3243,
+      "downMS": 978593.0306,
+      "downTick": 73347791,
+      "x100": 102400,
+      "y100": 113900,
+      "flags": "0x5a",
+      "keys": [
+        "R03K08"
+      ],
+      "language": "english",
+      "beforeLength": 86,
+      "upSequence": 3261,
+      "upMS": 978638.3395,
+      "upTick": 73347826,
+      "durationMS": 35,
+      "outputDelta": 1,
+      "afterLength": 87,
+      "gapAfterPreviousUpMS": 537,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 778.57
+    },
+    {
+      "id": 3198,
+      "downSequence": 3272,
+      "downMS": 979254.0705,
+      "downTick": 73348462,
+      "x100": 37200,
+      "y100": 154200,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 87,
+      "upSequence": 3287,
+      "upMS": 979293.3703,
+      "upTick": 73348496,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 87,
+      "gapAfterPreviousUpMS": 636,
+      "previousKey": [
+        "R03K08"
+      ],
+      "distancePixels": 766.49
+    },
+    {
+      "id": 3199,
+      "downSequence": 3298,
+      "downMS": 979899.827,
+      "downTick": 73349102,
+      "x100": 119300,
+      "y100": 113900,
+      "flags": "0x5a",
+      "keys": [
+        "R03K09"
+      ],
+      "language": "english",
+      "beforeLength": 87,
+      "upSequence": 3316,
+      "upMS": 979942.083,
+      "upTick": 73349136,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 88,
+      "gapAfterPreviousUpMS": 606,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 914.58
+    },
+    {
+      "id": 3200,
+      "downSequence": 3327,
+      "downMS": 980620.2247,
+      "downTick": 73349821,
+      "x100": 36200,
+      "y100": 155200,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 88,
+      "upSequence": 3348,
+      "upMS": 980670.698,
+      "upTick": 73349870,
+      "durationMS": 49,
+      "outputDelta": 0,
+      "afterLength": 88,
+      "gapAfterPreviousUpMS": 685,
+      "previousKey": [
+        "R03K09"
+      ],
+      "distancePixels": 927.97
+    },
+    {
+      "id": 3201,
+      "downSequence": 3359,
+      "downMS": 981326.3508,
+      "downTick": 73350524,
+      "x100": 132800,
+      "y100": 117000,
+      "flags": "0x5a",
+      "keys": [
+        "R03K10"
+      ],
+      "language": "english",
+      "beforeLength": 88,
+      "upSequence": 3375,
+      "upMS": 981369.6169,
+      "upTick": 73350558,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 89,
+      "gapAfterPreviousUpMS": 654,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 1038.79
+    },
+    {
+      "id": 3202,
+      "downSequence": 3386,
+      "downMS": 983593.2243,
+      "downTick": 73352788,
+      "x100": 263400,
+      "y100": 152900,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 89,
+      "upSequence": 3407,
+      "upMS": 983652.1623,
+      "upTick": 73352837,
+      "durationMS": 49,
+      "outputDelta": 0,
+      "afterLength": 89,
+      "gapAfterPreviousUpMS": 2230,
+      "previousKey": [
+        "R03K10"
+      ],
+      "distancePixels": 1354.44
+    },
+    {
+      "id": 3202,
+      "downSequence": 3414,
+      "downMS": 983668.7463,
+      "downTick": 73352863,
+      "x100": 264200,
+      "y100": 152100,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 89,
+      "upSequence": 3431,
+      "upMS": 983698.0798,
+      "upTick": 73352882,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 89,
+      "gapAfterPreviousUpMS": 26,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 11.31
+    },
+    {
+      "id": 3203,
+      "downSequence": 3442,
+      "downMS": 986926.4531,
+      "downTick": 73356132,
+      "x100": 253800,
+      "y100": 155400,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 89,
+      "upSequence": 3457,
+      "upMS": 986958.7322,
+      "upTick": 73356151,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 89,
+      "gapAfterPreviousUpMS": 3250,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 109.11
+    },
+    {
+      "id": 3204,
+      "downSequence": 3468,
+      "downMS": 987828.827,
+      "downTick": 73357025,
+      "x100": 200500,
+      "y100": 157000,
+      "flags": "0x5a",
+      "keys": [
+        "R06K14"
+      ],
+      "language": "english",
+      "beforeLength": 89,
+      "upSequence": 3483,
+      "upMS": 987860.0207,
+      "upTick": 73357044,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 90,
+      "gapAfterPreviousUpMS": 874,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 533.24
+    },
+    {
+      "id": 3205,
+      "downSequence": 3494,
+      "downMS": 991146.812,
+      "downTick": 73360340,
+      "x100": 262400,
+      "y100": 153900,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 90,
+      "upSequence": 3512,
+      "upMS": 991192.6645,
+      "upTick": 73360374,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 90,
+      "gapAfterPreviousUpMS": 3296,
+      "previousKey": [
+        "R06K14"
+      ],
+      "distancePixels": 619.78
+    },
+    {
+      "id": 3205,
+      "downSequence": 3519,
+      "downMS": 991835.6703,
+      "downTick": 73361031,
+      "x100": 217300,
+      "y100": 157400,
+      "flags": "0x5a",
+      "keys": [
+        "R06K15"
+      ],
+      "language": "english",
+      "beforeLength": 90,
+      "upSequence": 3534,
+      "upMS": 991866.0832,
+      "upTick": 73361050,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 91,
+      "gapAfterPreviousUpMS": 657,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 452.36
+    },
+    {
+      "id": 3205,
+      "downSequence": 3541,
+      "downMS": 992436.5371,
+      "downTick": 73361632,
+      "x100": 257600,
+      "y100": 154400,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 91,
+      "upSequence": 3556,
+      "upMS": 992467.3812,
+      "upTick": 73361651,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 91,
+      "gapAfterPreviousUpMS": 582,
+      "previousKey": [
+        "R06K15"
+      ],
+      "distancePixels": 404.12
+    },
+    {
+      "id": 3205,
+      "downSequence": 3563,
+      "downMS": 993052.4691,
+      "downTick": 73362248,
+      "x100": 232700,
+      "y100": 155400,
+      "flags": "0x5a",
+      "keys": [
+        "R06K16"
+      ],
+      "language": "english",
+      "beforeLength": 91,
+      "upSequence": 3581,
+      "upMS": 993095.1784,
+      "upTick": 73362282,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 92,
+      "gapAfterPreviousUpMS": 597,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 249.2
+    },
+    {
+      "id": 3205,
+      "downSequence": 3588,
+      "downMS": 993713.1294,
+      "downTick": 73362909,
+      "x100": 259600,
+      "y100": 153600,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 92,
+      "upSequence": 3603,
+      "upMS": 993759.2297,
+      "upTick": 73362943,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 92,
+      "gapAfterPreviousUpMS": 627,
+      "previousKey": [
+        "R06K16"
+      ],
+      "distancePixels": 269.6
+    },
+    {
+      "id": 3205,
+      "downSequence": 3610,
+      "downMS": 994432.7688,
+      "downTick": 73363630,
+      "x100": 225900,
+      "y100": 141500,
+      "flags": "0x5a",
+      "keys": [
+        "R05K15"
+      ],
+      "language": "english",
+      "beforeLength": 92,
+      "upSequence": 3628,
+      "upMS": 994477.6292,
+      "upTick": 73363664,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 93,
+      "gapAfterPreviousUpMS": 687,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 358.06
+    },
+    {
+      "id": 3206,
+      "downSequence": 3639,
+      "downMS": 995079.1503,
+      "downTick": 73364272,
+      "x100": 259300,
+      "y100": 153500,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 93,
+      "upSequence": 3654,
+      "upMS": 995126.0073,
+      "upTick": 73364306,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 93,
+      "gapAfterPreviousUpMS": 608,
+      "previousKey": [
+        "R05K15"
+      ],
+      "distancePixels": 354.9
+    },
+    {
+      "id": 3206,
+      "downSequence": 3661,
+      "downMS": 995754.4152,
+      "downTick": 73364948,
+      "x100": 240300,
+      "y100": 140700,
+      "flags": "0x5a",
+      "keys": [
+        "R05K16"
+      ],
+      "language": "english",
+      "beforeLength": 93,
+      "upSequence": 3682,
+      "upMS": 995814.177,
+      "upTick": 73364997,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 94,
+      "gapAfterPreviousUpMS": 642,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 229.09
+    },
+    {
+      "id": 3206,
+      "downSequence": 3689,
+      "downMS": 996401.2629,
+      "downTick": 73365595,
+      "x100": 262600,
+      "y100": 153500,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 94,
+      "upSequence": 3707,
+      "upMS": 996460.4265,
+      "upTick": 73365644,
+      "durationMS": 49,
+      "outputDelta": 0,
+      "afterLength": 94,
+      "gapAfterPreviousUpMS": 598,
+      "previousKey": [
+        "R05K16"
+      ],
+      "distancePixels": 257.12
+    },
+    {
+      "id": 3207,
+      "downSequence": 3718,
+      "downMS": 997451.0958,
+      "downTick": 73366647,
+      "x100": 236200,
+      "y100": 130100,
+      "flags": "0x5a",
+      "keys": [
+        "R04K17"
+      ],
+      "language": "english",
+      "beforeLength": 94,
+      "upSequence": 3739,
+      "upMS": 997508.7569,
+      "upTick": 73366696,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 95,
+      "gapAfterPreviousUpMS": 1003,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 352.78
+    },
+    {
+      "id": 3208,
+      "downSequence": 3750,
+      "downMS": 998096.9641,
+      "downTick": 73367303,
+      "x100": 261300,
+      "y100": 153500,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 95,
+      "upSequence": 3789,
+      "upMS": 998228.2811,
+      "upTick": 73367427,
+      "durationMS": 124,
+      "outputDelta": 0,
+      "afterLength": 95,
+      "gapAfterPreviousUpMS": 607,
+      "previousKey": [
+        "R04K17"
+      ],
+      "distancePixels": 343.16
+    },
+    {
+      "id": 3208,
+      "downSequence": 3796,
+      "downMS": 998712.2268,
+      "downTick": 73367919,
+      "x100": 251000,
+      "y100": 127500,
+      "flags": "0x5a",
+      "keys": [
+        "R04K18"
+      ],
+      "language": "english",
+      "beforeLength": 95,
+      "upSequence": 3826,
+      "upMS": 998817.5846,
+      "upTick": 73368013,
+      "durationMS": 94,
+      "outputDelta": 1,
+      "afterLength": 96,
+      "gapAfterPreviousUpMS": 492,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 279.66
+    },
+    {
+      "id": 3208,
+      "downSequence": 3833,
+      "downMS": 999403.4097,
+      "downTick": 73368610,
+      "x100": 266000,
+      "y100": 150800,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 96,
+      "upSequence": 3851,
+      "upMS": 999448.6749,
+      "upTick": 73368644,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 96,
+      "gapAfterPreviousUpMS": 597,
+      "previousKey": [
+        "R04K18"
+      ],
+      "distancePixels": 277.11
+    },
+    {
+      "id": 3208,
+      "downSequence": 3858,
+      "downMS": 999974.6503,
+      "downTick": 73369181,
+      "x100": 273600,
+      "y100": 128500,
+      "flags": "0x5a",
+      "keys": [
+        "R04K19"
+      ],
+      "language": "english",
+      "beforeLength": 96,
+      "upSequence": 3873,
+      "upMS": 999992.9084,
+      "upTick": 73369200,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 97,
+      "gapAfterPreviousUpMS": 537,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 235.59
+    },
+    {
+      "id": 3209,
+      "downSequence": 3884,
+      "downMS": 1002165.6206,
+      "downTick": 73371374,
+      "x100": 254900,
+      "y100": 155200,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 97,
+      "upSequence": 3896,
+      "upMS": 1002197.3205,
+      "upTick": 73371393,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 97,
+      "gapAfterPreviousUpMS": 2174,
+      "previousKey": [
+        "R04K19"
+      ],
+      "distancePixels": 325.97
+    },
+    {
+      "id": 3210,
+      "downSequence": 3907,
+      "downMS": 1002931.7007,
+      "downTick": 73372134,
+      "x100": 250500,
+      "y100": 117900,
+      "flags": "0x5a",
+      "keys": [
+        "R03K17"
+      ],
+      "language": "english",
+      "beforeLength": 97,
+      "upSequence": 3919,
+      "upMS": 1002962.642,
+      "upTick": 73372153,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 98,
+      "gapAfterPreviousUpMS": 741,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 375.59
+    },
+    {
+      "id": 3211,
+      "downSequence": 3930,
+      "downMS": 1003592.1877,
+      "downTick": 73372789,
+      "x100": 258200,
+      "y100": 151800,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 98,
+      "upSequence": 3942,
+      "upMS": 1003621.7694,
+      "upTick": 73372808,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 98,
+      "gapAfterPreviousUpMS": 636,
+      "previousKey": [
+        "R03K17"
+      ],
+      "distancePixels": 347.63
+    },
+    {
+      "id": 3212,
+      "downSequence": 3953,
+      "downMS": 1004282.7008,
+      "downTick": 73373493,
+      "x100": 235600,
+      "y100": 116700,
+      "flags": "0x5a",
+      "keys": [
+        "R03K16"
+      ],
+      "language": "english",
+      "beforeLength": 98,
+      "upSequence": 3968,
+      "upMS": 1004312.0544,
+      "upTick": 73373512,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 99,
+      "gapAfterPreviousUpMS": 685,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 417.46
+    },
+    {
+      "id": 3213,
+      "downSequence": 3979,
+      "downMS": 1004973.2899,
+      "downTick": 73374180,
+      "x100": 251100,
+      "y100": 149700,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 99,
+      "upSequence": 3991,
+      "upMS": 1005004.7671,
+      "upTick": 73374199,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 99,
+      "gapAfterPreviousUpMS": 668,
+      "previousKey": [
+        "R03K16"
+      ],
+      "distancePixels": 364.59
+    },
+    {
+      "id": 3214,
+      "downSequence": 4002,
+      "downMS": 1005663.9578,
+      "downTick": 73374868,
+      "x100": 220400,
+      "y100": 116600,
+      "flags": "0x5a",
+      "keys": [
+        "R03K15"
+      ],
+      "language": "english",
+      "beforeLength": 99,
+      "upSequence": 4017,
+      "upMS": 1005710.5913,
+      "upTick": 73374902,
+      "durationMS": 34,
+      "outputDelta": 1,
+      "afterLength": 100,
+      "gapAfterPreviousUpMS": 669,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 451.45
+    },
+    {
+      "id": 3215,
+      "downSequence": 4028,
+      "downMS": 1006339.7572,
+      "downTick": 73375539,
+      "x100": 250400,
+      "y100": 153100,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 100,
+      "upSequence": 4040,
+      "upMS": 1006370.1719,
+      "upTick": 73375558,
+      "durationMS": 19,
+      "outputDelta": 0,
+      "afterLength": 100,
+      "gapAfterPreviousUpMS": 637,
+      "previousKey": [
+        "R03K15"
+      ],
+      "distancePixels": 472.47
+    },
+    {
+      "id": 3216,
+      "downSequence": 4051,
+      "downMS": 1007015.7815,
+      "downTick": 73376212,
+      "x100": 204400,
+      "y100": 117500,
+      "flags": "0x5a",
+      "keys": [
+        "R03K14"
+      ],
+      "language": "english",
+      "beforeLength": 100,
+      "upSequence": 4078,
+      "upMS": 1007089.327,
+      "upTick": 73376276,
+      "durationMS": 64,
+      "outputDelta": 1,
+      "afterLength": 101,
+      "gapAfterPreviousUpMS": 654,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 581.67
+    },
+    {
+      "id": 3217,
+      "downSequence": 4089,
+      "downMS": 1007765.4396,
+      "downTick": 73376961,
+      "x100": 253300,
+      "y100": 152400,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 101,
+      "upSequence": 4130,
+      "upMS": 1007899.8313,
+      "upTick": 73377085,
+      "durationMS": 124,
+      "outputDelta": 0,
+      "afterLength": 101,
+      "gapAfterPreviousUpMS": 685,
+      "previousKey": [
+        "R03K14"
+      ],
+      "distancePixels": 600.77
+    },
+    {
+      "id": 3218,
+      "downSequence": 4141,
+      "downMS": 1008486.8761,
+      "downTick": 73377689,
+      "x100": 187300,
+      "y100": 115900,
+      "flags": "0x5a",
+      "keys": [
+        "R03K13"
+      ],
+      "language": "english",
+      "beforeLength": 101,
+      "upSequence": 4162,
+      "upMS": 1008544.9735,
+      "upTick": 73377738,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 102,
+      "gapAfterPreviousUpMS": 604,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 754.2
+    },
+    {
+      "id": 3219,
+      "downSequence": 4173,
+      "downMS": 1009208.3635,
+      "downTick": 73378415,
+      "x100": 248100,
+      "y100": 153900,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 102,
+      "upSequence": 4203,
+      "upMS": 1009309.1432,
+      "upTick": 73378509,
+      "durationMS": 94,
+      "outputDelta": 0,
+      "afterLength": 102,
+      "gapAfterPreviousUpMS": 677,
+      "previousKey": [
+        "R03K13"
+      ],
+      "distancePixels": 716.98
+    },
+    {
+      "id": 3220,
+      "downSequence": 4214,
+      "downMS": 1009927.7624,
+      "downTick": 73379127,
+      "x100": 173600,
+      "y100": 117300,
+      "flags": "0x5a",
+      "keys": [
+        "R03K12"
+      ],
+      "language": "english",
+      "beforeLength": 102,
+      "upSequence": 4235,
+      "upMS": 1009987.9699,
+      "upTick": 73379176,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 103,
+      "gapAfterPreviousUpMS": 618,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 830.05
+    },
+    {
+      "id": 3221,
+      "downSequence": 4246,
+      "downMS": 1010648.3458,
+      "downTick": 73379852,
+      "x100": 255900,
+      "y100": 152900,
+      "flags": "0x5a",
+      "keys": [
+        "R06K17"
+      ],
+      "language": "english",
+      "beforeLength": 103,
+      "upSequence": 4264,
+      "upMS": 1010692.4158,
+      "upTick": 73379886,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 103,
+      "gapAfterPreviousUpMS": 676,
+      "previousKey": [
+        "R03K12"
+      ],
+      "distancePixels": 896.7
+    },
+    {
+      "id": 3222,
+      "downSequence": 4275,
+      "downMS": 1011519.7969,
+      "downTick": 73380726,
+      "x100": 156600,
+      "y100": 115600,
+      "flags": "0x5a",
+      "keys": [
+        "R03K11"
+      ],
+      "language": "english",
+      "beforeLength": 103,
+      "upSequence": 4299,
+      "upMS": 1011594.3281,
+      "upTick": 73380790,
+      "durationMS": 64,
+      "outputDelta": 1,
+      "afterLength": 104,
+      "gapAfterPreviousUpMS": 840,
+      "previousKey": [
+        "R06K17"
+      ],
+      "distancePixels": 1060.74
+    },
+    {
+      "id": 3223,
+      "downSequence": 4310,
+      "downMS": 1012600.4155,
+      "downTick": 73381798,
+      "x100": 32100,
+      "y100": 158500,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 104,
+      "upSequence": 4334,
+      "upMS": 1012673.7,
+      "upTick": 73381862,
+      "durationMS": 64,
+      "outputDelta": 0,
+      "afterLength": 104,
+      "gapAfterPreviousUpMS": 1008,
+      "previousKey": [
+        "R03K11"
+      ],
+      "distancePixels": 1316.84
+    },
+    {
+      "id": 3223,
+      "downSequence": 4341,
+      "downMS": 1013290.964,
+      "downTick": 73382489,
+      "x100": 51000,
+      "y100": 121600,
+      "flags": "0x5a",
+      "keys": [
+        "R03K05"
+      ],
+      "language": "english",
+      "beforeLength": 104,
+      "upSequence": 4362,
+      "upMS": 1013344.6787,
+      "upTick": 73382538,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 105,
+      "gapAfterPreviousUpMS": 627,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 414.59
+    },
+    {
+      "id": 3224,
+      "downSequence": 4373,
+      "downMS": 1014011.5933,
+      "downTick": 73383212,
+      "x100": 37600,
+      "y100": 155900,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 105,
+      "upSequence": 4394,
+      "upMS": 1014070.4552,
+      "upTick": 73383261,
+      "durationMS": 49,
+      "outputDelta": 0,
+      "afterLength": 105,
+      "gapAfterPreviousUpMS": 674,
+      "previousKey": [
+        "R03K05"
+      ],
+      "distancePixels": 368.25
+    },
+    {
+      "id": 3224,
+      "downSequence": 4401,
+      "downMS": 1014523.2944,
+      "downTick": 73383723,
+      "x100": 69100,
+      "y100": 117000,
+      "flags": "0x5a",
+      "keys": [
+        "R03K06"
+      ],
+      "language": "english",
+      "beforeLength": 105,
+      "upSequence": 4413,
+      "upMS": 1014540.7256,
+      "upTick": 73383742,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 106,
+      "gapAfterPreviousUpMS": 462,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 500.55
+    },
+    {
+      "id": 3225,
+      "downSequence": 4424,
+      "downMS": 1015154.0918,
+      "downTick": 73384352,
+      "x100": 37900,
+      "y100": 153800,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 106,
+      "upSequence": 4460,
+      "upMS": 1015269.1215,
+      "upTick": 73384461,
+      "durationMS": 109,
+      "outputDelta": 0,
+      "afterLength": 106,
+      "gapAfterPreviousUpMS": 610,
+      "previousKey": [
+        "R03K06"
+      ],
+      "distancePixels": 482.46
+    },
+    {
+      "id": 3225,
+      "downSequence": 4467,
+      "downMS": 1015723.385,
+      "downTick": 73384923,
+      "x100": 88000,
+      "y100": 114000,
+      "flags": "0x5a",
+      "keys": [
+        "R03K07"
+      ],
+      "language": "english",
+      "beforeLength": 106,
+      "upSequence": 4479,
+      "upMS": 1015753.5683,
+      "upTick": 73384942,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 107,
+      "gapAfterPreviousUpMS": 462,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 639.85
+    },
+    {
+      "id": 3226,
+      "downSequence": 4490,
+      "downMS": 1016401.7411,
+      "downTick": 73385602,
+      "x100": 39200,
+      "y100": 155600,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 107,
+      "upSequence": 4529,
+      "upMS": 1016531.6591,
+      "upTick": 73385726,
+      "durationMS": 124,
+      "outputDelta": 0,
+      "afterLength": 107,
+      "gapAfterPreviousUpMS": 660,
+      "previousKey": [
+        "R03K07"
+      ],
+      "distancePixels": 641.25
+    },
+    {
+      "id": 3227,
+      "downSequence": 4540,
+      "downMS": 1017045.0434,
+      "downTick": 73386243,
+      "x100": 101900,
+      "y100": 117400,
+      "flags": "0x5a",
+      "keys": [
+        "R03K08"
+      ],
+      "language": "english",
+      "beforeLength": 107,
+      "upSequence": 4564,
+      "upMS": 1017103.7326,
+      "upTick": 73386292,
+      "durationMS": 49,
+      "outputDelta": 1,
+      "afterLength": 108,
+      "gapAfterPreviousUpMS": 517,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 734.2
+    },
+    {
+      "id": 3228,
+      "downSequence": 4575,
+      "downMS": 1017705.8463,
+      "downTick": 73386914,
+      "x100": 37400,
+      "y100": 157300,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 108,
+      "upSequence": 4608,
+      "upMS": 1017822.5446,
+      "upTick": 73387023,
+      "durationMS": 109,
+      "outputDelta": 0,
+      "afterLength": 108,
+      "gapAfterPreviousUpMS": 622,
+      "previousKey": [
+        "R03K08"
+      ],
+      "distancePixels": 758.44
+    },
+    {
+      "id": 3229,
+      "downSequence": 4619,
+      "downMS": 1018380.9948,
+      "downTick": 73387587,
+      "x100": 117500,
+      "y100": 115400,
+      "flags": "0x5a",
+      "keys": [
+        "R03K09"
+      ],
+      "language": "english",
+      "beforeLength": 108,
+      "upSequence": 4634,
+      "upMS": 1018410.7189,
+      "upTick": 73387606,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 109,
+      "gapAfterPreviousUpMS": 564,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 903.97
+    },
+    {
+      "id": 3230,
+      "downSequence": 4645,
+      "downMS": 1019056.5186,
+      "downTick": 73388252,
+      "x100": 36900,
+      "y100": 155600,
+      "flags": "0x5a",
+      "keys": [
+        "R06K04"
+      ],
+      "language": "english",
+      "beforeLength": 109,
+      "upSequence": 4678,
+      "upMS": 1019175.3315,
+      "upTick": 73388361,
+      "durationMS": 109,
+      "outputDelta": 0,
+      "afterLength": 109,
+      "gapAfterPreviousUpMS": 646,
+      "previousKey": [
+        "R03K09"
+      ],
+      "distancePixels": 900.69
+    },
+    {
+      "id": 3231,
+      "downSequence": 4689,
+      "downMS": 1019792.3772,
+      "downTick": 73388993,
+      "x100": 131800,
+      "y100": 116900,
+      "flags": "0x5a",
+      "keys": [
+        "R03K10"
+      ],
+      "language": "english",
+      "beforeLength": 109,
+      "upSequence": 4701,
+      "upMS": 1019823.6738,
+      "upTick": 73389012,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 110,
+      "gapAfterPreviousUpMS": 632,
+      "previousKey": [
+        "R06K04"
+      ],
+      "distancePixels": 1024.88
+    }
+  ],
+  "mouseOutputChanges": [],
+  "nativeDecreaseEvents": [],
+  "limits": "Key IDs are observed pressed keys after native DOWN; top controls have no pressed body-key ID. Decreases may be Clear or deletion. User intended-tap count is not inferred from timing alone."
+}

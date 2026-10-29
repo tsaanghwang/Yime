@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-28",
+  "status": "defined Acer preview37 control scenarios complete",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "passedControlScenarios": 37,
+  "pendingWithinDefinedCheckpoint": 0,
+  "topControlPhysicalKeysObservedInDefinedContexts": 14,
+  "batches": [
+    {
+      "batch": 60,
+      "definition": "P10-ACER-PEN-CONTROL-NAV-60.json",
+      "passedScenarios": 4,
+      "evidence": "user-reports/p10-acer-pen-control-nav-60-user-result.json"
+    },
+    {
+      "batch": 61,
+      "definition": "P10-ACER-PEN-CONTROL-SELECTION-61.json",
+      "passedScenarios": 4,
+      "evidence": "user-reports/p10-acer-pen-control-selection-61-user-result.json"
+    },
+    {
+      "batch": 62,
+      "definition": "P10-ACER-PEN-CONTROL-CN-GUARD-62.json",
+      "passedScenarios": 7,
+      "evidence": "user-reports/p10-acer-pen-control-cn-guard-62-user-result.json"
+    },
+    {
+      "batch": 63,
+      "definition": "P10-ACER-PEN-CONTROL-PAUSED-GUARD-63.json",
+      "passedScenarios": 7,
+      "evidence": "user-reports/p10-acer-pen-control-paused-guard-63-user-result.json"
+    },
+    {
+      "batch": 64,
+      "definition": "P10-ACER-PEN-CONTROL-STATE-64.json",
+      "passedScenarios": 4,
+      "evidence": "user-reports/p10-acer-pen-control-state-64-user-result.json"
+    },
+    {
+      "batch": 65,
+      "definition": "P10-ACER-PEN-CONTROL-PANELS-65.json",
+      "passedScenarios": 4,
+      "evidence": "user-reports/p10-acer-pen-control-panels-65-user-result.json"
+    },
+    {
+      "batch": 66,
+      "definition": "P10-ACER-PEN-CONTROL-LIFECYCLE-66.json",
+      "passedScenarios": 3,
+      "evidence": "user-reports/p10-acer-pen-control-lifecycle-66-user-result.json"
+    },
+    {
+      "batch": 67,
+      "definition": "P10-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67.json",
+      "passedScenarios": 4,
+      "evidence": "user-reports/p10-acer-pen-control-selection-supplement-67-user-result.json"
+    }
+  ],
+  "bodyLayersUnchanged": 336,
+  "bodyStage": "ACER_PEN_BODY_STAGE_RESULT.json",
+  "userSummary": "ACER_STAGE_RESULT_67.zh-CN.md",
+  "historicalShiftObservation": "ACER_PEN_SHIFT_RECONTACT_OBSERVATION.json",
+  "limits": [
+    "only explicitly defined preview cases; human normal reports are grouped, without inferred attempt counts or per-action text transcripts",
+    "Settings means access/Return and state preservation, not correctness of every setting; preview Clear does not establish host binding",
+    "all results remain method/version specific; MSI repeated-contact issue and historical Acer contact evidence/clarification retained",
+    "no candidate-special-case, simultaneous-contact, real Word/Edge or installed-product acceptance from this checkpoint"
+  ],
+  "nextPhasePlan": "NEXT_STAGE_AFTER_ACER_67.json"
+}

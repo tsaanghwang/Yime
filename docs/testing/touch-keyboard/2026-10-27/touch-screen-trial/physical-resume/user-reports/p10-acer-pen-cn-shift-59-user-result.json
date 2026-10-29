@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CN-SHIFT-59",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedBodyLayers": 4,
+  "result": "CN left/right Shift sequential one-shot consumption and toggle-off normal; defined expected raw ]a / a and empty document",
+  "scope": "four grouped preview observations without individual transcript/attempt count; no held multitouch or general repeat-stability acceptance; historical Shift contact observation and workflow clarification retained"
+}

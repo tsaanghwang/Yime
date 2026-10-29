@@ -1,0 +1,142 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-PUNCTUATION-08",
+  "continues": "TOUCH-V1-P10-FINGER-CN-ASCII-07",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Keep CN/variable, literal-entry OFF, ID legends. Every independent base/Shift cell begins with Clear, Shift unlit. Base: tap key, exact ASCII raw, empty output, no selection. Shift: first three quote keys each receive TWO consecutive Shift+key activations; local output must be alternating Chinese double quotes in either orientation, raw empty. Other three Shift cells use ONE Shift+key activation with mapped Chinese output. Clear cancels composition/output but does not reset quote pairing.",
+  "keys": [
+    {
+      "physicalKeyID": "R02K07",
+      "label": "M25",
+      "base": "B",
+      "shiftASCII": "\"",
+      "baseExpected": {
+        "raw": "B",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutputOneOf": [
+          "“”",
+          "”“"
+        ],
+        "activations": 2,
+        "eachActivation": "tap one-shot Shift then key; do not clear between these two activations"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R03K04",
+      "label": "N11",
+      "base": "h",
+      "shiftASCII": "\"",
+      "baseExpected": {
+        "raw": "h",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutputOneOf": [
+          "“”",
+          "”“"
+        ],
+        "activations": 2,
+        "eachActivation": "tap one-shot Shift then key; do not clear between these two activations"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R05K16",
+      "label": "M32",
+      "base": "K",
+      "shiftASCII": "\"",
+      "baseExpected": {
+        "raw": "K",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutputOneOf": [
+          "“”",
+          "”“"
+        ],
+        "activations": 2,
+        "eachActivation": "tap one-shot Shift then key; do not clear between these two activations"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R03K14",
+      "label": "M21",
+      "base": ">",
+      "shiftASCII": "(",
+      "baseExpected": {
+        "raw": ">",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "（",
+        "activations": 1
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R03K15",
+      "label": "N13",
+      "base": "z",
+      "shiftASCII": ")",
+      "baseExpected": {
+        "raw": "z",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "）",
+        "activations": 1
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R03K16",
+      "label": "N14",
+      "base": "c",
+      "shiftASCII": "_",
+      "baseExpected": {
+        "raw": "c",
+        "localOutput": ""
+      },
+      "shiftExpected": {
+        "raw": "",
+        "localOutput": "——",
+        "activations": 1
+      },
+      "status": "通过（用户报告）",
+      "actual": "按整组步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "layerObservations": 12,
+  "quoteUpperCasesContainTwoActivationsEach": true,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "canonical action columns: input plus literalEntry metadata",
+    "LayoutAlphabet classifies base as coding and shift as noncoding",
+    "keyboardEngine.punctuation maps parentheses and underscore; double-quote pair state toggles on commit and survives Clear"
+  ],
+  "userReport": "user-reports/p10-finger-cn-punctuation-08-user-result.json",
+  "resultDate": "2026-10-28"
+}

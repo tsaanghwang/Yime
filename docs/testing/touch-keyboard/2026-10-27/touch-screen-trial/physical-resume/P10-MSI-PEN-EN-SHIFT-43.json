@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-EN-SHIFT-43",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "MSI supplied pen",
+  "status": "passed-user-reported-group-result",
+  "setup": "same current EN preview, English keycaps EN; same MSI original pen; every case Clear, selection OFF, modifiers unlit, sequential taps with pen tip released between actions",
+  "cases": [
+    {
+      "physicalKeyID": "R06K04",
+      "label": "左Shift",
+      "baseSteps": "tap this Shift once, then a, then b",
+      "baseExpected": "Ab; Shift consumed after a/A",
+      "shiftSteps": "tap this Shift to turn ON, tap same Shift again to turn OFF, then a, then b",
+      "shiftExpected": "ab; Shift unlit",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    },
+    {
+      "physicalKeyID": "R06K17",
+      "label": "右Shift",
+      "baseSteps": "tap this Shift once, then a, then b",
+      "baseExpected": "Ab; Shift consumed after a/A",
+      "shiftSteps": "tap this Shift to turn ON, tap same Shift again to turn OFF, then a, then b",
+      "shiftExpected": "ab; Shift unlit",
+      "baseStatus": "passed-user-reported",
+      "shiftStatus": "passed-user-reported"
+    }
+  ],
+  "bodyLayerObservations": 4,
+  "scope": "final left/right Shift EN body keys, one-shot uppercase/consumption and toggle-off; no finger result inherited, simultaneous hold, host or duplicate-free acceptance; EN stage remains pending until report",
+  "userReport": "四项完全正常",
+  "evidence": "user-reports/p10-msi-pen-en-shift-43-user-result.json"
+}

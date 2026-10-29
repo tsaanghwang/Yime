@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CONTROL-LIFECYCLE-66",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "initialAmbiguousReply": "z'c",
+  "clarificationQuestion": "“z'c”是指刚才3项全部正常，包括最小化恢复、退出重开，以及之后数字键的按键声吗？",
+  "userReport": "正常",
+  "passedControlScenarios": 3,
+  "passedBodyLayersAdded": 0,
+  "result": "CN and paused EN minimize/restore preserve confirmed document/language and clear composition; Exit/relaunch responsive; subsequent numeric input and click audibility confirmed in all three presented cases",
+  "scope": "three grouped physical preview observations after explicit clarification, no per-action transcript/attempt count; Minimize/Exit intentionally silent; no real host or installed-product acceptance"
+}

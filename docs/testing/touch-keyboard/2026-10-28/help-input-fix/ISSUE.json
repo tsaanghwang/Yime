@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-28",
+  "oldPackageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "initialUserVerbatim": "正常。不过“帮助”目前手指和感应笔不能触发。鼠标可以。",
+  "clarificationVerbatim": "具体是指：打开后“确定”和“退出”（X）按钮不能触控",
+  "correctedFinding": "Help opens; native MessageBox OK and X cannot be operated with finger/pen, while mouse can close it. Initial assistant interpretation as Help opener failure is withdrawn.",
+  "penModel": "unspecified; clarification identifies failure location, not pen model",
+  "oldSystemRootCause": "not established by developer reproduction",
+  "candidateChange": "Touch UI Help uses internal paginated sheet with Return instead of modal MessageBox OK/X; classic view retained",
+  "physicalFixVerified": false
+}

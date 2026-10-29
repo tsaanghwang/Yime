@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-HELP-STATE-29",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "finger",
+  "setup": "same Audio Startup Fixed Preview, finger; no source/build/calibration changes; each case starts CN and Clear",
+  "status": "passed-user-reported-group-result",
+  "cases": [
+    {
+      "id": "help-preserves-active-CN",
+      "steps": [
+        "CN; Clear; input confirmed12",
+        "tap a coding key and remember visible unconfirmed composition; do not confirm",
+        "Help; Next once; Previous once; Return",
+        "check CN, confirmed12, same unconfirmed composition",
+        "Cancel; main digit3"
+      ],
+      "expected": "Help opens/pages/returns by finger, same composition and confirmed12 retained; no text typed through help; after cancellation output123",
+      "status": "passed-user-reported"
+    },
+    {
+      "id": "help-preserves-paused-EN",
+      "steps": [
+        "CN; Clear; input confirmed12",
+        "tap a coding key; switch EN leaving paused composition unconfirmed",
+        "Help; Next once; Previous once; Return",
+        "check EN, confirmed12, same paused composition",
+        "Cancel while EN; switch CN; main digit3"
+      ],
+      "expected": "Help opens/pages/returns by finger, paused composition and confirmed12 retained; remains EN; after cancellation output123",
+      "status": "passed-user-reported"
+    }
+  ],
+  "bodyLayerObservations": 0,
+  "scope": "two defined preview Help state scenarios; host Help deliberately cancels/unbinds and is outside this preview check; old Help open/page pass not inherited as state-preservation evidence",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-finger-control-help-state-29-user-result.json",
+  "resultScope": "Both presented finger preview CN/paused-EN Help page/Return preservation cases normal; no attempt count or per-action text transcription supplied; no host/pen acceptance."
+}

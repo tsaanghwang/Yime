@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-MSI-PEN-EN-CTRL-ALT-42",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "MSI supplied pen",
+  "userReport": "正常",
+  "passedBodyLayers": 8,
+  "result": "left/right Ctrl and Alt in base/Shift contexts normal; local Ctrl+a/A selection then c, Alt refusal then abc; Shift consumed after a/A",
+  "scope": "grouped local-preview result, no per-action transcription/attempt count, external shortcut or pen-wide duplicate-free claim; earlier recontact observation retained"
+}

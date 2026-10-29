@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CN-BACKSPACE-10",
+  "continues": "TOUCH-V1-P10-FINGER-CN-DIGITS-09",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Keep CN/variable, literal-entry OFF, ID legends; every scenario starts with Clear and Shift unlit. Do not pick candidates, Space or Enter in composition cases.",
+  "keys": [
+    {
+      "physicalKeyID": "R02K21",
+      "label": "Back Space",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "context": "composition",
+          "setup": "Clear; tap N08 then M03 to form raw ni, output empty",
+          "action": "Back Space",
+          "expected": {
+            "raw": "n",
+            "localOutput": ""
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_base",
+          "context": "confirmed-output",
+          "setup": "Clear; tap main digits 1 then 2 with empty composition to form local output 12",
+          "action": "Back Space",
+          "expected": {
+            "raw": "",
+            "localOutput": "1"
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "composition",
+          "setup": "Clear; tap N08 then M03 to form raw ni, output empty",
+          "action": "one-shot Shift then Back Space",
+          "expected": {
+            "raw": "n",
+            "localOutput": ""
+          },
+          "status": "通过（用户报告）"
+        },
+        {
+          "layer": "CN_shift",
+          "context": "confirmed-output",
+          "setup": "Clear; tap main digits 1 then 2 with empty composition to form local output 12",
+          "action": "one-shot Shift then Back Space",
+          "expected": {
+            "raw": "",
+            "localOutput": "1"
+          },
+          "status": "通过（用户报告）"
+        }
+      ],
+      "status": "通过（用户报告）",
+      "actual": "四场景按步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "scenarioCount": 4,
+  "layerObservations": 2,
+  "counting": "Each CN base/Shift layer has both composition and local-output scenarios; four scenarios cover two ledger layers, not four new key/layer observations.",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "canonical Back Space action and default Shift fallback",
+    "N08/M03 actions produce raw n/i",
+    "preview.apply backspace removes composition when CN raw exists, otherwise edits local output; Shift does not select candidates"
+  ],
+  "userReport": "user-reports/p10-finger-cn-backspace-10-user-result.json",
+  "resultDate": "2026-10-28"
+}

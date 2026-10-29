@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-02",
+  "inputMethod": "finger",
+  "target": "fixed-package preview, English EN view, no composition",
+  "packageExecutableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "coverageLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "steps": "For each key separately clear output/reset modifiers, tap the base letter, tap one-shot Shift then the same letter; compare pair. Do not fill CN layers or either pen file.",
+  "keys": [
+    {
+      "physicalKeyID": "R05K09",
+      "base": "f",
+      "shift": "F",
+      "expectedPair": "fF",
+      "status": "通过（用户报告）",
+      "actual": "包含于47字符键整体正常反馈；未单独转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R05K10",
+      "base": "g",
+      "shift": "G",
+      "expectedPair": "gG",
+      "status": "通过（用户报告）",
+      "actual": "包含于47字符键整体正常反馈；未单独转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R05K11",
+      "base": "h",
+      "shift": "H",
+      "expectedPair": "hH",
+      "status": "通过（用户报告）",
+      "actual": "包含于47字符键整体正常反馈；未单独转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K14",
+      "base": "i",
+      "shift": "I",
+      "expectedPair": "iI",
+      "status": "通过（用户报告）",
+      "actual": "包含于47字符键整体正常反馈；未单独转录",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R05K12",
+      "base": "j",
+      "shift": "J",
+      "expectedPair": "jJ",
+      "status": "通过（用户报告）",
+      "actual": "包含于47字符键整体正常反馈；未单独转录",
+      "attempts": null
+    }
+  ],
+  "status": "passed-user-reported within expanded 47-key report",
+  "userReport": "user-reports/p10-finger-en-47-and-flat-screen.json"
+}

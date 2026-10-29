@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-28",
+  "userReport": "首次启动或重新启动后，任何键没有按键声。最小化并恢复后有按键声（但最小化键似乎没有按键声）。",
+  "affectedExecutableSHA256": "211bd619b587a9f845b522ce58a81d016362c438eced63fcf07134c0b0fd9a5c",
+  "sourceFindings": [
+    "first stream opened before dictionaries/fonts/window initialization; restore opens after initialization",
+    "an asynchronously failed stream remained non-nil, so ensureKeySound did not replace it",
+    "minimize/close/help explicitly excluded from touch immediate-action sounds"
+  ],
+  "limits": "Reported old live stream failure code was not captured; startup timing and missing recovery are source findings, not proof of a particular driver fault.",
+  "fix": [
+    "start audio through posted window-ready message after full UI initialization",
+    "periodic 250ms health check; failed stream retired and retries at least one second apart",
+    "never wait for driver on UI; do not reopen while previous worker drains; no retry while minimized or muted",
+    "opt-in existing input trace adds audio flags/error/counters, without recording audio or text"
+  ],
+  "minimizeKey": "kept silent intentionally; stops stream immediately; no unrelated delayed-minimize mechanism added"
+}

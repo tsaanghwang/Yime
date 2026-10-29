@@ -80,6 +80,13 @@ func checkData(o options) (err error) {
 		"desktopChineseUI": false, "hostInputSent": false, "hardwareAcceptance": false,
 		"portablePackageCheck": o.CheckPackage, "confirmedChineseInMemory": confirmed,
 	}
+	if o.TouchUI {
+		report["screenView"] = touchSurfaceVersion
+		report["boardHeightU"] = board.Bounds.Height
+		report["bodyKeyHeightScale"] = touchBodyHeightScale
+		report["preservedBodyKeys"] = 84
+		report["touchControls"] = len(touchControls)
+	}
 	body, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {
 		return err

@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-CN-SHIFT-59",
+  "continues": "TOUCH-V1-ACER-PEN-CN-CTRL-ALT-58",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same CN variable preview, literal-entry OFF, ID legends; each case Clear and all modifiers unlit; sequential Acer pen taps, release each before next; M12 base a / shifted ]; no candidate selection",
+  "keys": [
+    {
+      "physicalKeyID": "R06K04",
+      "label": "左Shift",
+      "status": "passed-user-reported",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear, no modifiers highlighted",
+          "action": "左Shift then M12 then M12, all sequential taps with release",
+          "expected": {
+            "raw": "]a",
+            "localOutput": "",
+            "ShiftConsumedAfterFirstM12": true
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear, no modifiers highlighted; first tap same 左Shift to enable Shift",
+          "action": "tap same 左Shift again to disable, then M12",
+          "expected": {
+            "raw": "a",
+            "localOutput": "",
+            "ShiftHighlighted": false
+          },
+          "status": "passed-user-reported"
+        }
+      ]
+    },
+    {
+      "physicalKeyID": "R06K17",
+      "label": "右Shift",
+      "status": "passed-user-reported",
+      "cases": [
+        {
+          "layer": "CN_base",
+          "setup": "Clear, no modifiers highlighted",
+          "action": "右Shift then M12 then M12, all sequential taps with release",
+          "expected": {
+            "raw": "]a",
+            "localOutput": "",
+            "ShiftConsumedAfterFirstM12": true
+          },
+          "status": "passed-user-reported"
+        },
+        {
+          "layer": "CN_shift",
+          "setup": "Clear, no modifiers highlighted; first tap same 右Shift to enable Shift",
+          "action": "tap same 右Shift again to disable, then M12",
+          "expected": {
+            "raw": "a",
+            "localOutput": "",
+            "ShiftHighlighted": false
+          },
+          "status": "passed-user-reported"
+        }
+      ]
+    }
+  ],
+  "bodyLayerObservations": 4,
+  "scenarioCount": 4,
+  "priorResultsInherited": false,
+  "scope": "left/right Shift one-shot consumption and toggle-off in CN preview only; prior finger/EN results not inherited, historical repeated-contact observations retained",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-cn-shift-59-user-result.json"
+}

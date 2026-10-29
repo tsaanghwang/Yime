@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-26",
+  "batchID": "P10-FINGER-EN-01",
+  "inputMethod": "finger",
+  "target": "fixed-package preview, English EN view, no composition",
+  "packageExecutableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "coverageLayers": [
+    "EN_base",
+    "EN_shift"
+  ],
+  "source": "finger-key-coverage.csv expected actions; values inspected before selecting this batch",
+  "steps": "For each key separately clear output/reset modifiers, tap the base letter, tap one-shot Shift then the same letter; compare pair. Do not fill CN layers or either pen file.",
+  "keys": [
+    {
+      "physicalKeyID": "R05K06",
+      "base": "a",
+      "shift": "A",
+      "expectedPair": "aA",
+      "status": "通过（用户报告）",
+      "actual": "用户反馈本组正常，未另行转录；预期aA",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R06K09",
+      "base": "b",
+      "shift": "B",
+      "expectedPair": "bB",
+      "status": "通过（用户报告）",
+      "actual": "用户反馈本组正常，未另行转录；预期bB",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R06K07",
+      "base": "c",
+      "shift": "C",
+      "expectedPair": "cC",
+      "status": "通过（用户报告）",
+      "actual": "用户反馈本组正常，未另行转录；预期cC",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R05K08",
+      "base": "d",
+      "shift": "D",
+      "expectedPair": "dD",
+      "status": "通过（用户报告）",
+      "actual": "用户反馈本组正常，未另行转录；预期dD",
+      "attempts": null
+    },
+    {
+      "physicalKeyID": "R04K09",
+      "base": "e",
+      "shift": "E",
+      "expectedPair": "eE",
+      "status": "通过（用户报告）",
+      "actual": "用户反馈本组正常，未另行转录；预期eE",
+      "attempts": null
+    }
+  ],
+  "status": "passed-user-reported",
+  "userReport": "user-reports/p10-finger-en-01-user-result.json"
+}

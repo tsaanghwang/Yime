@@ -1,0 +1,342 @@
+{
+  "run": {
+    "runID": "20261028T085228Z-2a990e58",
+    "createdUTC": "2026-10-28T08:52:28.735680+00:00",
+    "hardwareMethod": "Acer PE272XT supplied pen",
+    "filterMS": 0,
+    "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+    "processID": 23640,
+    "trace": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\raw\\acer-pen-lift-20261028T085228Z-2a990e58.jsonl",
+    "arguments": [
+      "--preview",
+      "--touch-ui",
+      "--theme",
+      "dark",
+      "--key-sound",
+      "click",
+      "--ruler-observed-mm",
+      "58.8",
+      "--key-view",
+      "english",
+      "--input-trace",
+      "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-28\\pen-lift-diagnostic\\raw\\acer-pen-lift-20261028T085228Z-2a990e58.jsonl"
+    ],
+    "scope": "own controlled preview only; no text/audio recording or OS input; unique trace per launch; no installed settings changed"
+  },
+  "sourceRows": 350,
+  "contacts": [
+    {
+      "id": 3072,
+      "downSequence": 15,
+      "downMS": 162938.195,
+      "downTick": 72532125,
+      "x100": 254000,
+      "y100": 89900,
+      "flags": "0x1a",
+      "keys": [],
+      "language": "english",
+      "beforeLength": 0,
+      "upSequence": 48,
+      "upMS": 162983.6897,
+      "upTick": 72532176,
+      "durationMS": 51,
+      "outputDelta": 0,
+      "afterLength": 0
+    },
+    {
+      "id": 3076,
+      "downSequence": 64,
+      "downMS": 221206.1591,
+      "downTick": 72590423,
+      "x100": 50500,
+      "y100": 92300,
+      "flags": "0x5a",
+      "keys": [],
+      "language": "english",
+      "beforeLength": 0,
+      "upSequence": 82,
+      "upMS": 221262.188,
+      "upTick": 72590472,
+      "durationMS": 49,
+      "outputDelta": 0,
+      "afterLength": 0,
+      "gapAfterPreviousUpMS": 58247,
+      "previousKey": [],
+      "distancePixels": 2035.14
+    },
+    {
+      "id": 3077,
+      "downSequence": 94,
+      "downMS": 223067.9134,
+      "downTick": 72592256,
+      "x100": 61400,
+      "y100": 143900,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 0,
+      "upSequence": 106,
+      "upMS": 223085.7693,
+      "upTick": 72592275,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 1,
+      "gapAfterPreviousUpMS": 1784,
+      "previousKey": [],
+      "distancePixels": 527.39
+    },
+    {
+      "id": 3078,
+      "downSequence": 117,
+      "downMS": 223968.711,
+      "downTick": 72593163,
+      "x100": 64600,
+      "y100": 143200,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 1,
+      "upSequence": 129,
+      "upMS": 223985.3087,
+      "upTick": 72593179,
+      "durationMS": 16,
+      "outputDelta": 1,
+      "afterLength": 2,
+      "gapAfterPreviousUpMS": 888,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 32.76
+    },
+    {
+      "id": 3079,
+      "downSequence": 140,
+      "downMS": 224855.1583,
+      "downTick": 72594052,
+      "x100": 62900,
+      "y100": 143700,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 2,
+      "upSequence": 152,
+      "upMS": 224887.2441,
+      "upTick": 72594071,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 3,
+      "gapAfterPreviousUpMS": 873,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 17.72
+    },
+    {
+      "id": 3080,
+      "downSequence": 163,
+      "downMS": 225755.0041,
+      "downTick": 72594957,
+      "x100": 63700,
+      "y100": 143200,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 3,
+      "upSequence": 175,
+      "upMS": 225788.4355,
+      "upTick": 72594976,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 4,
+      "gapAfterPreviousUpMS": 886,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 9.43
+    },
+    {
+      "id": 3081,
+      "downSequence": 186,
+      "downMS": 226671.1944,
+      "downTick": 72595865,
+      "x100": 63100,
+      "y100": 143500,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 4,
+      "upSequence": 196,
+      "upMS": 226695.5005,
+      "upTick": 72595884,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 5,
+      "gapAfterPreviousUpMS": 889,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 6.71
+    },
+    {
+      "id": 3082,
+      "downSequence": 207,
+      "downMS": 227571.9385,
+      "downTick": 72596771,
+      "x100": 62700,
+      "y100": 143200,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 5,
+      "upSequence": 219,
+      "upMS": 227590.3472,
+      "upTick": 72596790,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 6,
+      "gapAfterPreviousUpMS": 887,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 5.0
+    },
+    {
+      "id": 3083,
+      "downSequence": 230,
+      "downMS": 228502.9523,
+      "downTick": 72597707,
+      "x100": 63200,
+      "y100": 143700,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 6,
+      "upSequence": 242,
+      "upMS": 228524.7669,
+      "upTick": 72597726,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 7,
+      "gapAfterPreviousUpMS": 917,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 7.07
+    },
+    {
+      "id": 3084,
+      "downSequence": 253,
+      "downMS": 229508.8636,
+      "downTick": 72598708,
+      "x100": 63100,
+      "y100": 143400,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 7,
+      "upSequence": 265,
+      "upMS": 229544.8828,
+      "upTick": 72598727,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 8,
+      "gapAfterPreviousUpMS": 982,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 3.16
+    },
+    {
+      "id": 3085,
+      "downSequence": 276,
+      "downMS": 230409.7428,
+      "downTick": 72599615,
+      "x100": 62800,
+      "y100": 143000,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 8,
+      "upSequence": 289,
+      "upMS": 230446.0759,
+      "upTick": 72599634,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 9,
+      "gapAfterPreviousUpMS": 888,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 5.0
+    },
+    {
+      "id": 3086,
+      "downSequence": 300,
+      "downMS": 231401.5149,
+      "downTick": 72600597,
+      "x100": 63000,
+      "y100": 143300,
+      "flags": "0x5a",
+      "keys": [
+        "R05K06"
+      ],
+      "language": "english",
+      "beforeLength": 9,
+      "upSequence": 315,
+      "upMS": 231422.4231,
+      "upTick": 72600616,
+      "durationMS": 19,
+      "outputDelta": 1,
+      "afterLength": 10,
+      "gapAfterPreviousUpMS": 963,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 3.61
+    },
+    {
+      "id": 3087,
+      "downSequence": 326,
+      "downMS": 234748.8543,
+      "downTick": 72603976,
+      "x100": 253300,
+      "y100": 91300,
+      "flags": "0x5a",
+      "keys": [],
+      "language": "english",
+      "beforeLength": 10,
+      "upSequence": 341,
+      "upMS": 234783.2483,
+      "upTick": 72604010,
+      "durationMS": 34,
+      "outputDelta": 0,
+      "afterLength": 10,
+      "gapAfterPreviousUpMS": 3360,
+      "previousKey": [
+        "R05K06"
+      ],
+      "distancePixels": 1972.77
+    }
+  ],
+  "mouseOutputChanges": [],
+  "nativeDecreaseEvents": [],
+  "limits": "Key IDs are observed pressed keys after native DOWN; top controls have no pressed body-key ID. Decreases may be Clear or deletion. User intended-tap count is not inferred from timing alone."
+}

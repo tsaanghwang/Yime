@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-ACER-PEN-EN-DISABLED-48",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "filterMS": 0,
+  "userReport": "测了。正常。异常是没按操作流程测。我严重怀疑是微星原装笔反应太快。",
+  "passedBodyLayers": 46,
+  "result": "23 blank disabled EN keys both runs normal; user clarifies abnormal operation did not follow procedure",
+  "scope": "grouped report, no per-key transcript or attempts; exact earlier abnormal contact not identified; no independent proof of MSI response-speed cause"
+}

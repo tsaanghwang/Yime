@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-27",
+  "scope": "Actual new persistent-waveOut production implementation, one second silence warmup then four on-demand clicks",
+  "exitCode": 0,
+  "stdout": [
+    "play 1 true",
+    "play 2 true",
+    "play 3 true",
+    "play 4 true",
+    "retained 0",
+    "afterClose false"
+  ],
+  "stderr": "",
+  "sourceSHA256": {
+    "key_sound.go": "fa252dbab2c7250ea2bda9d0fdc5a8ca0fc7490761e635356af80dfd360edf10",
+    "key_sound_stream_windows.go": "e02e9735efc56f3a0af4235b893e0aa88caf45d5713b3fd1d890064fda088659"
+  },
+  "audibility": "pending user report",
+  "systemSettingsChanged": false
+}

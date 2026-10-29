@@ -1,0 +1,104 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-P10-FINGER-CONTROL-STATE-23",
+  "continues": "TOUCH-V1-P10-FINGER-CONTROL-PAUSED-GUARD-22",
+  "inputMethod": "finger",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "46e88c0f1983d7822aa96968ea47996f42b0583940b84a932475a02600116146",
+  "status": "passed-user-reported",
+  "setup": "Current preview only. Every case begins CN, Clear, main digits12, then N08 to form raw n. Do not pick candidates, Space or Enter. Observe language key, composition/pause, and local output separately.",
+  "cases": [
+    {
+      "caseID": "language-roundtrip",
+      "controls": [
+        "R01K03"
+      ],
+      "setup": "CN; Clear; digits12; N08 -> raw n",
+      "steps": [
+        "switch EN; observe paused n, output12",
+        "switch CN without cancelling; observe active n, output12"
+      ],
+      "expected": {
+        "raw": "n",
+        "localOutput": "12",
+        "noAutomaticCommit": true,
+        "inputMode": "chinese"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组状态与输出步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "caseID": "cancel-preserves-output",
+      "controls": [
+        "R01K02"
+      ],
+      "setup": "CN; Clear; digits12; N08 -> raw n",
+      "steps": [
+        "top Cancel"
+      ],
+      "expected": {
+        "raw": "",
+        "localOutput": "12",
+        "inputMode": "chinese"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组状态与输出步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "caseID": "clear-active",
+      "controls": [
+        "TU-BIND"
+      ],
+      "setup": "CN; Clear; digits12; N08 -> raw n",
+      "steps": [
+        "top Clear"
+      ],
+      "expected": {
+        "raw": "",
+        "localOutput": "",
+        "inputMode": "chinese"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组状态与输出步骤反馈正常，未逐项转录",
+      "attempts": null
+    },
+    {
+      "caseID": "clear-paused",
+      "controls": [
+        "TU-BIND",
+        "R01K03"
+      ],
+      "setup": "CN; Clear; digits12; N08 -> raw n; switch EN -> paused n",
+      "steps": [
+        "top Clear; check output and composition empty; language remains EN",
+        "switch CN to restore test starting mode"
+      ],
+      "expectedAfterClear": {
+        "raw": "",
+        "localOutput": "",
+        "inputMode": "english"
+      },
+      "expectedAfterReturn": {
+        "raw": "",
+        "localOutput": "",
+        "inputMode": "chinese"
+      },
+      "status": "通过（用户报告）",
+      "actual": "按本组状态与输出步骤反馈正常，未逐项转录",
+      "attempts": null
+    }
+  ],
+  "scenarioCount": 4,
+  "bodyLayerObservations": 0,
+  "coverageScope": "preview CN/EN roundtrip without committing, active cancellation versus full Clear, paused full Clear retaining language; not host binding or EN body layers",
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "toggle-language changes modes without rewriting raw or committing",
+    "top Cancel clears engine composition only",
+    "preview top Clear additionally replaces editor with empty state, leaving input mode unchanged"
+  ],
+  "userReport": "user-reports/p10-finger-control-state-23-user-result.json",
+  "resultDate": "2026-10-28"
+}

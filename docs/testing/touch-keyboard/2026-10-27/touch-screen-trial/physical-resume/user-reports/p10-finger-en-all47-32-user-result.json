@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-28",
+  "batchID": "TOUCH-V1-FINGER-EN-ALL47-32",
+  "requestedBatch": "TOUCH-V1-FINGER-EN-LETTERS-32",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "finger",
+  "userReport": "全部47键已测。正常。",
+  "interpretation": "User expanded requested ten EN keys to all47 input carriers in the current base/Shift two-layer test context.",
+  "passedBodyLayers": 94,
+  "originallyRequestedBodyLayers": 20,
+  "additionalUserTestedBodyLayers": 74,
+  "scope": "47 enabled EN character carriers only, both layers, counted once; not23 disabled or14 edit/modifier body keys; no pen/host acceptance or actual text/attempt counts inferred"
+}

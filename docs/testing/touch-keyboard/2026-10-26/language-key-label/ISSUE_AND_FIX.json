@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-26",
+  "kind": "usability-display-defect",
+  "physicalKeyID": "R01K03",
+  "sourceFeedback": "../p01-p10/user-reports/p10-finger-en-tab-esc-modes-and-label-issue.json",
+  "sourcePackageExecutableSHA256": "22e76c1b5a321e22665aa3e892ef053391f9915c86490740f21601c2dfe5313f",
+  "functionalGroup": "Tab/Esc/CN EN/Layout base and Shift passed per user report; label defect separate",
+  "requirement": "Language key displays only current input language: CN in Chinese, EN in English, even English original view",
+  "fix": "In the existing shared preview/host drawing loop, replace only the display-view label for toggle-language using snapshot.Modes.Input. Physical board metadata, actions, geometry, colors, encoding and dictionaries unchanged.",
+  "validation": {
+    "relatedGoTests": "passed: desktop, touchkeyboard, keyboardlab",
+    "completePackageCheck": "passed; package-check.json",
+    "visualCheck": "passed developer UI observation; visual-check.json",
+    "physicalRetest": "passed-user-reported for requested language-label cases; physical-retest-user-result.json",
+    "visualStateCheck": "passed developer UI observation; visual-check.json"
+  },
+  "oldEvidencePreserved": true,
+  "status": "resolved-targeted-user-retest"
+}
