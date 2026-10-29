@@ -1,24 +1,121 @@
 {
   "schemaVersion": 1,
   "scope": "ARM64 native touch-screen-v1 independent physical results",
-  "packageIdentity": {"pullRequest": null, "workflowRun": null, "sourceCommit": null, "artifactURL": null, "zipSHA256": null, "exeSHA256": null, "architecture": "windows-arm64"},
-  "environment": {"machine": null, "windowsVersion": null, "nativeArchitecture": null, "displayResolution": null, "displayScaling": null, "screenMM": null, "rulerObservedMM": null, "screenPosture": null, "penModel": null, "touchAvailable": null},
+  "packageIdentity": {
+    "pullRequest": "https://github.com/tsaanghwang/Yime/pull/82",
+    "workflowRun": "https://github.com/tsaanghwang/Yime/actions/runs/40802706324",
+    "sourceCommit": "e8e2c2d1519ec77157eef480484b1af1277d8630",
+    "artifactURL": "https://github.com/tsaanghwang/Yime/actions/runs/40802706324/artifacts/12866469047",
+    "zipSHA256": "0d8fec1bb6955b2758b293f4ab6925b27034024fb540e34e60b5a870eda02dd3",
+    "exeSHA256": "3fb3e4ce982d457abb0a4dd62f3073897a32a9ba49e31bf311f923f2395d3989",
+    "architecture": "windows-arm64"
+  },
+  "environment": {
+    "machine": null,
+    "windowsVersion": null,
+    "nativeArchitecture": null,
+    "displayResolution": null,
+    "displayScaling": null,
+    "screenMM": null,
+    "rulerObservedMM": null,
+    "screenPosture": null,
+    "penModel": null,
+    "touchAvailable": null
+  },
   "penRecontactMS": 0,
   "inheritedX64Passes": 0,
   "cases": [
-    {"id": "A00", "method": null, "status": "pending", "actual": null, "evidence": []},
-    {"id": "A01", "method": "package check; no physical input", "status": "pending", "actual": null, "evidence": []},
-    {"id": "A02", "method": null, "status": "pending", "actual": null, "evidence": []},
-    {"id": "A03", "method": "finger", "status": "pending", "actual": null, "evidence": []},
-    {"id": "A03", "method": "pen", "status": "pending", "actual": null, "evidence": []},
-    {"id": "A04", "method": "finger", "status": "pending", "actual": null, "evidence": []},
-    {"id": "A04", "method": "pen", "status": "pending", "actual": null, "evidence": []},
-    {"id": "A05", "method": "finger", "status": "pending", "actual": null, "evidence": []},
-    {"id": "A05", "method": "pen", "status": "pending", "actual": null, "evidence": []},
-    {"id": "A06", "method": "finger", "status": "pending", "actual": null, "evidence": []},
-    {"id": "A06", "method": "pen", "status": "pending", "actual": null, "evidence": []},
-    {"id": "A07", "method": "finger", "status": "pending", "actual": null, "evidence": []},
-    {"id": "A07", "method": "pen", "status": "pending", "actual": null, "evidence": []}
+    {
+      "id": "A00",
+      "method": null,
+      "status": "pending",
+      "actual": null,
+      "evidence": []
+    },
+    {
+      "id": "A01",
+      "method": "package check; no physical input",
+      "status": "pending",
+      "actual": null,
+      "evidence": []
+    },
+    {
+      "id": "A02",
+      "method": null,
+      "status": "pending",
+      "actual": null,
+      "evidence": []
+    },
+    {
+      "id": "A03",
+      "method": "finger",
+      "status": "pending",
+      "actual": null,
+      "evidence": []
+    },
+    {
+      "id": "A03",
+      "method": "pen",
+      "status": "pending",
+      "actual": null,
+      "evidence": []
+    },
+    {
+      "id": "A04",
+      "method": "finger",
+      "status": "pending",
+      "actual": null,
+      "evidence": []
+    },
+    {
+      "id": "A04",
+      "method": "pen",
+      "status": "pending",
+      "actual": null,
+      "evidence": []
+    },
+    {
+      "id": "A05",
+      "method": "finger",
+      "status": "pending",
+      "actual": null,
+      "evidence": []
+    },
+    {
+      "id": "A05",
+      "method": "pen",
+      "status": "pending",
+      "actual": null,
+      "evidence": []
+    },
+    {
+      "id": "A06",
+      "method": "finger",
+      "status": "pending",
+      "actual": null,
+      "evidence": []
+    },
+    {
+      "id": "A06",
+      "method": "pen",
+      "status": "pending",
+      "actual": null,
+      "evidence": []
+    },
+    {
+      "id": "A07",
+      "method": "finger",
+      "status": "pending",
+      "actual": null,
+      "evidence": []
+    },
+    {
+      "id": "A07",
+      "method": "pen",
+      "status": "pending",
+      "actual": null,
+      "evidence": []
+    }
   ],
   "packageCheckReport": null,
   "realHostResults": [],
