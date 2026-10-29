@@ -4,6 +4,7 @@ package main
 
 import (
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -11,6 +12,10 @@ import (
 // This catches clipped private-font descenders even when the text rectangle
 // itself remains within the key.
 func TestBottomYinyuanLegendKeepsCompleteGlyph(t *testing.T) {
+	// The memory DC belongs to its creating native thread. Keep its font,
+	// drawing and pixel comparisons on that thread, as the production UI does.
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	root, err := filepath.Abs("../../..")
 	if err != nil {
 		t.Fatal(err)
