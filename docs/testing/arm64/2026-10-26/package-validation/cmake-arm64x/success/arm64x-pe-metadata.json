@@ -1,0 +1,109 @@
+{
+  "path": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64x-20261026-194641-6bb6f5c1\\ec\\Release\\YimeTextServiceExperiment.dll",
+  "bytes": 1295872,
+  "sha256": "1a8d9f84ab615a60abd775e7e2e2d17177df2f5cffbbc9912a7cb06d6944ef06",
+  "machine": "0xaa64",
+  "optional_header_magic": "0x20b",
+  "image_base": 6442450944,
+  "load_config": {
+    "rva": 1055568,
+    "file_offset": 1045328,
+    "declared_size": 320,
+    "directory_size": 320,
+    "DynamicValueRelocTable": 0,
+    "CHPEMetadataPointer": 6443438288,
+    "CHPEMetadataFileOffset": 977104,
+    "CHPEMetadataVersion": 2,
+    "DynamicValueRelocTableOffset": 6408,
+    "DynamicValueRelocTableSection": 9
+  },
+  "dynamic_relocations": {
+    "file_offset": 1293576,
+    "version": 1,
+    "size_excludes_table_header": 2200,
+    "table_header_size": 8,
+    "entries": [
+      {
+        "header_offset": 1293584,
+        "header_size": 12,
+        "symbol": 6,
+        "base_reloc_size": 2188,
+        "payload_offset": 1293596
+      }
+    ]
+  },
+  "sections": [
+    {
+      "index": 1,
+      "name": ".text",
+      "virtual_size": 905270,
+      "rva": 4096,
+      "raw_size": 905728,
+      "raw_offset": 1024
+    },
+    {
+      "index": 2,
+      "name": ".hexpthk",
+      "virtual_size": 48,
+      "rva": 913408,
+      "raw_size": 512,
+      "raw_offset": 906752
+    },
+    {
+      "index": 3,
+      "name": ".rdata",
+      "virtual_size": 263632,
+      "rva": 917504,
+      "raw_size": 263680,
+      "raw_offset": 907264
+    },
+    {
+      "index": 4,
+      "name": ".data",
+      "virtual_size": 25404,
+      "rva": 1183744,
+      "raw_size": 14848,
+      "raw_offset": 1170944
+    },
+    {
+      "index": 5,
+      "name": ".pdata",
+      "virtual_size": 28256,
+      "rva": 1212416,
+      "raw_size": 28672,
+      "raw_offset": 1185792
+    },
+    {
+      "index": 6,
+      "name": ".fptable",
+      "virtual_size": 512,
+      "rva": 1241088,
+      "raw_size": 512,
+      "raw_offset": 1214464
+    },
+    {
+      "index": 7,
+      "name": ".a64xrm",
+      "virtual_size": 32,
+      "rva": 1245184,
+      "raw_size": 512,
+      "raw_offset": 1214976
+    },
+    {
+      "index": 8,
+      "name": ".rsrc",
+      "virtual_size": 71632,
+      "rva": 1249280,
+      "raw_size": 71680,
+      "raw_offset": 1215488
+    },
+    {
+      "index": 9,
+      "name": ".reloc",
+      "virtual_size": 8616,
+      "rva": 1323008,
+      "raw_size": 8704,
+      "raw_offset": 1287168
+    }
+  ]
+}

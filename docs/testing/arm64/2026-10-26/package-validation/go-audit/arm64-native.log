@@ -1,0 +1,260 @@
+=== RUN   TestARM64ProductContractAndLegacyIsolation
+--- PASS: TestARM64ProductContractAndLegacyIsolation (0.15s)
+=== RUN   TestARM64ProductRejectsIncompleteOrMixedContract
+=== RUN   TestARM64ProductRejectsIncompleteOrMixedContract/scope
+=== RUN   TestARM64ProductRejectsIncompleteOrMixedContract/native
+=== RUN   TestARM64ProductRejectsIncompleteOrMixedContract/target
+=== RUN   TestARM64ProductRejectsIncompleteOrMixedContract/plain-arm64
+=== RUN   TestARM64ProductRejectsIncompleteOrMixedContract/no-speech
+=== RUN   TestARM64ProductRejectsIncompleteOrMixedContract/missing-speech-index
+=== RUN   TestARM64ProductRejectsIncompleteOrMixedContract/x64-dll
+=== RUN   TestARM64ProductRejectsIncompleteOrMixedContract/identity
+--- PASS: TestARM64ProductRejectsIncompleteOrMixedContract (0.92s)
+    --- PASS: TestARM64ProductRejectsIncompleteOrMixedContract/scope (0.11s)
+    --- PASS: TestARM64ProductRejectsIncompleteOrMixedContract/native (0.14s)
+    --- PASS: TestARM64ProductRejectsIncompleteOrMixedContract/target (0.16s)
+    --- PASS: TestARM64ProductRejectsIncompleteOrMixedContract/plain-arm64 (0.08s)
+    --- PASS: TestARM64ProductRejectsIncompleteOrMixedContract/no-speech (0.12s)
+    --- PASS: TestARM64ProductRejectsIncompleteOrMixedContract/missing-speech-index (0.11s)
+    --- PASS: TestARM64ProductRejectsIncompleteOrMixedContract/x64-dll (0.07s)
+    --- PASS: TestARM64ProductRejectsIncompleteOrMixedContract/identity (0.13s)
+=== RUN   TestARM64XStaticMetadataAndLegacyBoundary
+--- PASS: TestARM64XStaticMetadataAndLegacyBoundary (0.07s)
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/arm64ec
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/amd64_ec_view
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/not_dll
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/short_directory
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/short_load_config
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/oversized_load_config
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/load_rva_overflow
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/zero_chpe
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/chpe_outside_image
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/unknown_chpe_version
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/zero_code_map
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/oversized_code_map
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/unmapped_code_map
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/ec_only
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/native_only
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/unknown_code_kind
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/invalid_dvrt_section
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/invalid_dvrt_offset
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/conflicting_dvrt_locators
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/unknown_dvrt_version
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/zero_dvrt_size
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/oversized_dvrt
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/not_arm64x_symbol
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/empty_fixups
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/truncated_fixups
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/unaligned_page
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/bad_block_size
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/unknown_fixup
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/truncated_value
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/invalid_value_width
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/wrong_machine_rewrite
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/no_machine_rewrite
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/truncated_section
+=== RUN   TestARM64XRejectsSingleABIAndMalformedMetadata/overlapping_sections
+--- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata (1.01s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/arm64ec (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/amd64_ec_view (0.04s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/not_dll (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/short_directory (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/short_load_config (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/oversized_load_config (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/load_rva_overflow (0.04s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/zero_chpe (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/chpe_outside_image (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/unknown_chpe_version (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/zero_code_map (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/oversized_code_map (0.02s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/unmapped_code_map (0.04s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/ec_only (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/native_only (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/unknown_code_kind (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/invalid_dvrt_section (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/invalid_dvrt_offset (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/conflicting_dvrt_locators (0.04s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/unknown_dvrt_version (0.02s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/zero_dvrt_size (0.05s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/oversized_dvrt (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/not_arm64x_symbol (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/empty_fixups (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/truncated_fixups (0.04s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/unaligned_page (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/bad_block_size (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/unknown_fixup (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/truncated_value (0.02s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/invalid_value_width (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/wrong_machine_rewrite (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/no_machine_rewrite (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/truncated_section (0.03s)
+    --- PASS: TestARM64XRejectsSingleABIAndMalformedMetadata/overlapping_sections (0.02s)
+=== RUN   TestARM64XAuditsBothImportViews
+--- PASS: TestARM64XAuditsBothImportViews (0.04s)
+=== RUN   TestARM64XIdentifiedNativeBuild
+    arm64x_pe_test.go:202: native ARM64X static evidence: &{CHPEVersion:2 CodeMapRanges:3 NativeAndECCode:true DynamicRelocationVersion:1 ARM64XEntries:1 Fixups:355 MachineRewriteVerified:true ECImportedLibraries:[ADVAPI32.dll ole32.dll OLEAUT32.dll USER32.dll GDI32.dll KERNEL32.dll]}
+--- PASS: TestARM64XIdentifiedNativeBuild (0.01s)
+=== RUN   TestLocalContractDoesNotWeakenLegacy
+--- PASS: TestLocalContractDoesNotWeakenLegacy (0.00s)
+=== RUN   TestLocalRequiredFilesMatchCanonicalBuildCatalog
+--- PASS: TestLocalRequiredFilesMatchCanonicalBuildCatalog (0.00s)
+=== RUN   TestLocalAuditCompleteAndMissingComponent
+    local_contract_test.go:152: native x64 static PE fixtures only
+--- SKIP: TestLocalAuditCompleteAndMissingComponent (0.00s)
+=== RUN   TestLocalAuditRejectsWrongArchitectureInBin
+    local_contract_test.go:174: native x64 static PE fixtures only
+--- SKIP: TestLocalAuditRejectsWrongArchitectureInBin (0.00s)
+=== RUN   TestLocalAuditRejectsWrongArchitectureInX86Surface
+    local_contract_test.go:200: native x64 static PE fixtures only
+--- SKIP: TestLocalAuditRejectsWrongArchitectureInX86Surface (0.00s)
+=== RUN   TestLocalDescriptorRejectsInstallabilityAndIdentityChanges
+=== RUN   TestLocalDescriptorRejectsInstallabilityAndIdentityChanges/installable
+=== RUN   TestLocalDescriptorRejectsInstallabilityAndIdentityChanges/missing-installable
+=== RUN   TestLocalDescriptorRejectsInstallabilityAndIdentityChanges/clsid
+=== RUN   TestLocalDescriptorRejectsInstallabilityAndIdentityChanges/scope
+=== RUN   TestLocalDescriptorRejectsInstallabilityAndIdentityChanges/frozen-payload
+=== RUN   TestLocalDescriptorRejectsInstallabilityAndIdentityChanges/installer
+--- PASS: TestLocalDescriptorRejectsInstallabilityAndIdentityChanges (0.10s)
+    --- PASS: TestLocalDescriptorRejectsInstallabilityAndIdentityChanges/installable (0.02s)
+    --- PASS: TestLocalDescriptorRejectsInstallabilityAndIdentityChanges/missing-installable (0.02s)
+    --- PASS: TestLocalDescriptorRejectsInstallabilityAndIdentityChanges/clsid (0.02s)
+    --- PASS: TestLocalDescriptorRejectsInstallabilityAndIdentityChanges/scope (0.02s)
+    --- PASS: TestLocalDescriptorRejectsInstallabilityAndIdentityChanges/frozen-payload (0.02s)
+    --- PASS: TestLocalDescriptorRejectsInstallabilityAndIdentityChanges/installer (0.01s)
+=== RUN   TestManifestRejectsAmbiguousWindowsPaths
+--- PASS: TestManifestRejectsAmbiguousWindowsPaths (0.00s)
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/null_default
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/unknown
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/duplicate_inner
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/duplicate_outer
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/case
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/trailing
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/array
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/missing_default
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/missing_path
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/enabled
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/alternate_path
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/escape
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/null
+=== RUN   TestLocalSpeechDescriptorOptionalAndStrict/empty
+--- PASS: TestLocalSpeechDescriptorOptionalAndStrict (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/null_default (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/unknown (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/duplicate_inner (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/duplicate_outer (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/case (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/trailing (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/array (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/missing_default (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/missing_path (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/enabled (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/alternate_path (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/escape (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/null (0.00s)
+    --- PASS: TestLocalSpeechDescriptorOptionalAndStrict/empty (0.00s)
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech-capability.json
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech/product.json
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech/admission.json
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech/forward-source.json
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech/admitted-records.json
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech/indexes/full-core.yidx
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech/indexes/full-stage5c.yidx
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech/indexes/variable-core.yidx
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech/indexes/variable-stage5c.yidx
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech/indexes/shorthand-core.yidx
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech/indexes/shorthand-stage5c.yidx
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech/unknown.json
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech/sources/formal.py
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/speech/YimeSpeechAdmission.exe
+=== RUN   TestLocalSpeechContractRequiresExactElevenFiles/unknown-product-file.json
+--- PASS: TestLocalSpeechContractRequiresExactElevenFiles (0.13s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech-capability.json (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech/product.json (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech/admission.json (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech/forward-source.json (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech/admitted-records.json (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech/indexes/full-core.yidx (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech/indexes/full-stage5c.yidx (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech/indexes/variable-core.yidx (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech/indexes/variable-stage5c.yidx (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech/indexes/shorthand-core.yidx (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech/indexes/shorthand-stage5c.yidx (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech/unknown.json (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech/sources/formal.py (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/speech/YimeSpeechAdmission.exe (0.00s)
+    --- PASS: TestLocalSpeechContractRequiresExactElevenFiles/unknown-product-file.json (0.00s)
+=== RUN   TestLocalSpeechContractRejectsUnboundResources
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/outer_hash
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/inner_hash
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/full_core
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/variable_core
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/shorthand_core
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/layout
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/records
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/records_layout
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/source_closure
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/annotations
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/capability_enabled
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/product_enabled
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/scope
+=== RUN   TestLocalSpeechContractRejectsUnboundResources/undeclared
+--- PASS: TestLocalSpeechContractRejectsUnboundResources (1.53s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/outer_hash (0.08s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/inner_hash (0.11s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/full_core (0.08s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/variable_core (0.19s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/shorthand_core (0.25s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/layout (0.09s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/records (0.08s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/records_layout (0.11s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/source_closure (0.11s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/annotations (0.07s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/capability_enabled (0.07s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/product_enabled (0.10s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/scope (0.08s)
+    --- PASS: TestLocalSpeechContractRejectsUnboundResources/undeclared (0.10s)
+=== RUN   TestLocalSpeechBuildBindingPinsOnlyArchivedDigests
+=== RUN   TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/missing
+=== RUN   TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/null
+=== RUN   TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/unknown
+=== RUN   TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/duplicate
+=== RUN   TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/schema
+=== RUN   TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/capability
+=== RUN   TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/product
+=== RUN   TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/external_path
+=== RUN   TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/upper_digest
+=== RUN   TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/missing_digest
+--- PASS: TestLocalSpeechBuildBindingPinsOnlyArchivedDigests (0.16s)
+    --- PASS: TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/missing (0.00s)
+    --- PASS: TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/null (0.01s)
+    --- PASS: TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/unknown (0.01s)
+    --- PASS: TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/duplicate (0.01s)
+    --- PASS: TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/schema (0.01s)
+    --- PASS: TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/capability (0.01s)
+    --- PASS: TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/product (0.01s)
+    --- PASS: TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/external_path (0.01s)
+    --- PASS: TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/upper_digest (0.02s)
+    --- PASS: TestLocalSpeechBuildBindingPinsOnlyArchivedDigests/missing_digest (0.01s)
+=== RUN   TestLocalSpeechContractRejectsIndirectResources
+    local_speech_contract_test.go:448: SYMLINK_FIXTURE_UNAVAILABLE windows_error=1314 rejection_exercised=false: symlink C:\dev\Yime\.tmp\arm64x-audit-unit-8aa46ebe5bb44caf8d629c6565d9a35e\tmp\TestLocalSpeechContractRejectsIndirectResources3579177389\002\synthetic-capability.json C:\dev\Yime\.tmp\arm64x-audit-unit-8aa46ebe5bb44caf8d629c6565d9a35e\tmp\TestLocalSpeechContractRejectsIndirectResources3579177389\001\speech-capability.json: A required privilege is not held by the client.
+--- SKIP: TestLocalSpeechContractRejectsIndirectResources (0.09s)
+=== RUN   TestLocalSpeechAuditorPreservesOuterIntegrityAndLegacyScope
+    local_speech_contract_test.go:453: native x64 static PE fixtures only
+--- SKIP: TestLocalSpeechAuditorPreservesOuterIntegrityAndLegacyScope (0.00s)
+=== RUN   TestSafeManifestPathRejectsEscape
+--- PASS: TestSafeManifestPathRejectsEscape (0.00s)
+=== RUN   TestAuditRejectsForbiddenArtifact
+--- PASS: TestAuditRejectsForbiddenArtifact (0.02s)
+=== RUN   TestAuditRejectsUnlistedPackageFile
+--- PASS: TestAuditRejectsUnlistedPackageFile (0.01s)
+=== RUN   TestValidateInstallMetadata
+--- PASS: TestValidateInstallMetadata (0.01s)
+=== RUN   TestAuditAcceptsPowerShellUTF8BOM
+--- PASS: TestAuditAcceptsPowerShellUTF8BOM (0.05s)
+=== RUN   TestAuditAcceptsCompleteIndependentPackage
+--- PASS: TestAuditAcceptsCompleteIndependentPackage (0.33s)
+PASS
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-independence-audit	6.246s

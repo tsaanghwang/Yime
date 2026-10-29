@@ -1,0 +1,58 @@
+{
+  "schema_version": "yimecore-arm64-independence-audit-test-summary-v1",
+  "evidence_kind": "derived-from-archived-go-test-logs",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-timeout=10m",
+    "-v",
+    "./cmd/yimecore-independence-audit"
+  ],
+  "go_version": "go1.25.14",
+  "run_environment": "Each run used private caches, temporary directories, APPDATA and LOCALAPPDATA; network dependency resolution was disabled.",
+  "runs": [
+    {
+      "log": "go-audit/arm64-native.log",
+      "goarch": "arm64",
+      "execution": "native ARM64 process on identified Windows ARM64 host",
+      "passed": true,
+      "passed_test_and_subtest_events": 121,
+      "skipped_test_and_subtest_events": 5,
+      "skipped_tests": [
+        "TestLocalAuditCompleteAndMissingComponent",
+        "TestLocalAuditRejectsWrongArchitectureInBin",
+        "TestLocalAuditRejectsWrongArchitectureInX86Surface",
+        "TestLocalSpeechContractRejectsIndirectResources",
+        "TestLocalSpeechAuditorPreservesOuterIntegrityAndLegacyScope"
+      ],
+      "real_arm64x_fixture_passed": true,
+      "raw_log_sha256": "cf384cc6b77dc7dc5bd6a0bb71375fe6f428b340a30ddcffce3f1d4391e5422f"
+    },
+    {
+      "log": "go-audit/amd64-emulated.log",
+      "goarch": "amd64",
+      "execution": "AMD64 process under Windows ARM64 emulation; not x64 hardware acceptance",
+      "passed": true,
+      "passed_test_and_subtest_events": 125,
+      "skipped_test_and_subtest_events": 1,
+      "skipped_tests": [
+        "TestLocalSpeechContractRejectsIndirectResources"
+      ],
+      "real_arm64x_fixture_passed": true,
+      "raw_log_sha256": "52c8fff547c5ade16df20e7eecad6523f44295c681825952b5c056cb6b5a0852"
+    }
+  ],
+  "arm64x_static_scope": "Parse bounded PE32+ load configuration, CHPE code ranges and ARM64X Symbol 6 fixups; inspect native and patched in-memory EC import views. Does not load the DLL or establish installed acceptance.",
+  "source_inventory_reference": "speech-admission/source-hashes-after.json",
+  "parser_source": {
+    "path": "go-backend/cmd/yimecore-independence-audit/arm64x_pe.go",
+    "bytes": 12870,
+    "sha256": "07464fe77543eaa7b079f77e978d7e1ec42c41338eacead200357035e8a489ff"
+  },
+  "test_source": {
+    "path": "go-backend/cmd/yimecore-independence-audit/arm64x_pe_test.go",
+    "bytes": 9397,
+    "sha256": "04ab4c60d9440e1fde4bad4915688d72c54461e3ba89a1242baec5e3261c7114"
+  }
+}

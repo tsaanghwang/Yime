@@ -4,6 +4,12 @@
 
 ## 当前任务
 
+**PR #78 后续：** 已合入 main 的 `9adc3cdd`，保留双方原始证据规则；复查补强了 ARM 制包的原生 admission 前置和 Go 持久配置隔离，并保留旧 x64 兼容。固定 R2 包未重制，详见[冲突与复查记录](../../docs/testing/arm64/2026-10-26/PR78-REVIEW.md)。
+
+**2026-10-26：YimeCore ARM64 R2 已安装，原生 Notepad 受控检查及用户回报的两项物理键盘检查通过，验收尚未封版。** registered-host 首轮 **8/9**，失败单格复测通过，首失败根因仍未知。候选代码注释显示问题待修；其他真实 x64/x86 应用、重启与日用稳定性待验证，不能据此宣称真实应用三模式通过。[固定 Release](https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-proart-20261026-r2) 的[完整 ZIP](https://github.com/tsaanghwang/Yime/releases/download/test-arm64-proart-20261026-r2/YimeCore-ARM64-20261026-r2.zip) SHA-256 为 `2c94d825c59bf768d8a00a13353d38fe65f3b67e2258d3fb9747014229049de1`；安装、来源、CI 与完整测试见[包与安装记录](../../docs/testing/arm64/2026-10-26/PACKAGE-AND-INSTALL-TEST.md)。下方源码阶段段落保留历史状态。
+
+**2026-10-26：华硕 ProArt 创 16 RTX Spark 的 ARM64 原生源码验证。** 系统型号为 `HUASHUONOTEBOOK` / ASUS ProArt P16 H7607BA。设备和固定桌面原型包首轮结果见[实机报告](../../docs/testing/arm64/2026-10-26/TEST-RESULT.md)；已接续完成 ARM64 Go/MSVC 工具链、27 个当前身份产物、305 个 Go test/subtest、DLL/COM、32 项失焦取消及三模式直接 TSF，见[原生源码报告](../../docs/testing/arm64/2026-10-26/NATIVE-SOURCE-TEST.md)。本地分支 `codex/arm64-native-test-20261026` 的证据通过相同 Git tree 的连接器快照发布至 [PR #78](https://github.com/tsaanghwang/Yime/pull/78)。下一步是 ARM64 包契约和完整包交付；当前 x64 安装器不用于此机，尚无安装态 registered-host、真实应用或重启输入结论。旧 `perf/i7-7820x-local` 仍仅作既有 x64 测试报告分支，本轮不向它写入 ARM 结果。
+
 **2026-09-28：touch-terminal KLE 模板导入与实屏基线开发中；测试端无安装任务。** 目标分支 `codex/touch-terminal-kle-baseline` 从已合并 PR #64 的当前主线 `af8ea73f` 创建，并接续 9 月 22 日隔离浏览器原型。范围仅为 KLE 触摸几何模板、离线生成/校验、浏览器交互与已连接触摸屏的本地基线；不连接或修改已安装输入法，不改变默认输入法、用户词库或桌面键位真源。接续入口为 [运行说明](../../prototypes/touch-terminal/README.md)，另见 [验证记录](../../prototypes/touch-terminal/VALIDATION.md)、[适配协议](../../prototypes/touch-terminal/PROTOCOL.md) 和 [硬件可行性](../../prototypes/touch-terminal/HARDWARE.md)。触摸屏已以复制显示模式连接，但在真实手指测试记录完成前，不宣称误触率、端到端延迟或宿主输入通过。
 
 **2026-09-27：current-readiness 双产品完整包已重建并发布为开发预发布；测试端无安装任务。** 目标分支 `codex/current-readiness-delivery-20260927` 从当前 main `0ab86312` 创建，两套运行源码和安装器均固定于完整提交 `0ab8631266736775bf1386f456d4a1d53e8e2eb3`。来源提交 [CI 35418522827](https://github.com/tsaanghwang/Yime/actions/runs/35418522827) 成功；交付记录提交 `a274730fd3230ff22c04632be62ffe18397555ec` 的 [CI](https://github.com/tsaanghwang/Yime/actions/runs/36280832479) 全部成功后，发布固定资产；远端 size 与 SHA-256 digest 已逐项匹配本地。

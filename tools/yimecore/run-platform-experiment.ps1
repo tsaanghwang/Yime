@@ -5,7 +5,9 @@ param(
     [string]$OutputRoot,
     [string]$SpeechAdmissionRoot,
     [string]$ExpectedSpeechAdmissionSummarySha256,
-    [string]$ExpectedSpeechSourceInventorySha256
+    [string]$ExpectedSpeechSourceInventorySha256,
+    [ValidateSet('Visual Studio 17 2022','Visual Studio 18 2026')][string]$NativeGenerator,
+    [string]$GoExecutable
 )
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'development-scope.ps1')
@@ -19,27 +21,40 @@ $plan=[ordered]@{target=$Target;status='active';architecture=$targetConfig.archi
     cloud_provisioning_authorized=$false;hardware_purchase_authorized=$false;
     note='Build produces current-identity source artifacts only. No registration, installation or target executable execution. Native acceptance requires an identified physical host.'}
 if($Action -eq 'Plan'){$plan|ConvertTo-Json -Depth 8;return}
-$scope=Get-YimeCoreExperimentBuildScope $Target
-$allowed=Join-Path $repo '.tmp\yimecore-platform-experiments'
-if(-not $OutputRoot){$prefix=if($Action -eq 'Package' -and $Target -eq 'mainstream_x64'){'mx64-package-'}else{$Target+'-'};$OutputRoot=Join-Path $allowed ($prefix+(Get-Date -Format 'yyyyMMdd-HHmmss')+'-'+[guid]::NewGuid().ToString('N').Substring(0,8))}
-$out=[IO.Path]::GetFullPath($OutputRoot)
-if(-not $out.StartsWith($allowed+'\',[StringComparison]::OrdinalIgnoreCase) -or (Test-Path -LiteralPath $out)){throw 'Use a new isolated platform-experiment output child.'}
-Assert-LocalProductPlainPath $out
-$expectedLeaf=if($Action -eq 'Package' -and $Target -eq 'mainstream_x64'){'^mx64-package-[0-9]{8}-[0-9]{6}-[a-f0-9]{8}$'}else{'^'+[regex]::Escape($Target)+'-[0-9]{8}-[0-9]{6}-[a-f0-9]{8}$'}
-if((Split-Path -Leaf $out) -cnotmatch $expectedLeaf){throw 'Output name must identify the isolated target and action.'}
 if($Action -eq 'Package'){
     if([string]::IsNullOrWhiteSpace($SpeechAdmissionRoot) -or $ExpectedSpeechAdmissionSummarySha256 -notmatch '^[a-fA-F0-9]{64}$' -or $ExpectedSpeechSourceInventorySha256 -notmatch '^[a-fA-F0-9]{64}$'){
         throw 'Package requires an explicit completed speech admission root and both SHA256 pins.'
     }
-    & (Join-Path $PSScriptRoot 'build-local-product.ps1') -OutputRoot $out -ExperimentTarget $Target `
-        -SpeechAdmissionRoot $SpeechAdmissionRoot -ExpectedSpeechAdmissionSummarySha256 $ExpectedSpeechAdmissionSummarySha256 `
-        -ExpectedSpeechSourceInventorySha256 $ExpectedSpeechSourceInventorySha256
+    if($Target -eq 'arm64' -and (-not $NativeGenerator -or -not $GoExecutable)){
+        throw 'ARM64 Package requires an explicit NativeGenerator and native GoExecutable.'
+    }
+}
+if($Action -eq 'Package' -and $Target -ne 'arm64' -and $NativeGenerator){throw 'NativeGenerator applies only to ARM64 packages or source Build.'}
+if($GoExecutable -and ($Action -ne 'Package' -or $Target -ne 'arm64')){throw 'GoExecutable applies only to the ARM64 Package action.'}
+$scope=Get-YimeCoreExperimentBuildScope $Target
+$selectedGenerator=if($Action -eq 'Build' -or $Target -eq 'arm64'){Resolve-YimeCorePlatformGenerator $Target $scope $NativeGenerator}else{$null}
+$allowed=Join-Path $repo '.tmp\yimecore-platform-experiments'
+if(-not $OutputRoot){$prefix=if($Action -eq 'Package'){if($Target -eq 'mainstream_x64'){'mx64-package-'}else{'arm64-package-'}}else{$Target+'-'};$OutputRoot=Join-Path $allowed ($prefix+(Get-Date -Format 'yyyyMMdd-HHmmss')+'-'+[guid]::NewGuid().ToString('N').Substring(0,8))}
+$out=[IO.Path]::GetFullPath($OutputRoot)
+if(-not $out.StartsWith($allowed+'\',[StringComparison]::OrdinalIgnoreCase) -or (Test-Path -LiteralPath $out)){throw 'Use a new isolated platform-experiment output child.'}
+Assert-LocalProductPlainPath $out
+$expectedLeaf=if($Action -eq 'Package'){if($Target -eq 'mainstream_x64'){'^mx64-package-[0-9]{8}-[0-9]{6}-[a-f0-9]{8}$'}else{'^arm64-package-[0-9]{8}-[0-9]{6}-[a-f0-9]{8}$'}}else{'^'+[regex]::Escape($Target)+'-[0-9]{8}-[0-9]{6}-[a-f0-9]{8}$'}
+if((Split-Path -Leaf $out) -cnotmatch $expectedLeaf){throw 'Output name must identify the isolated target and action.'}
+if($Action -eq 'Package'){
+    if($Target -eq 'arm64'){
+        & (Join-Path $PSScriptRoot 'build-arm64-product.ps1') -OutputRoot $out -NativeGenerator $selectedGenerator -GoExecutable $GoExecutable `
+            -SpeechAdmissionRoot $SpeechAdmissionRoot -ExpectedSpeechAdmissionSummarySha256 $ExpectedSpeechAdmissionSummarySha256 `
+            -ExpectedSpeechSourceInventorySha256 $ExpectedSpeechSourceInventorySha256
+    } else {
+        & (Join-Path $PSScriptRoot 'build-local-product.ps1') -OutputRoot $out -ExperimentTarget $Target `
+            -SpeechAdmissionRoot $SpeechAdmissionRoot -ExpectedSpeechAdmissionSummarySha256 $ExpectedSpeechAdmissionSummarySha256 `
+            -ExpectedSpeechSourceInventorySha256 $ExpectedSpeechSourceInventorySha256
+    }
     if($LASTEXITCODE -ne 0){throw 'Target package build failed; inspect its isolated evidence.'}
     Write-Output "Experiment package complete only; installation and host acceptance pending. Evidence: $out"
     return
 }
 $null=Get-Command cmake,go -ErrorAction Stop
-$nativeGenerator=if($Target -eq 'mainstream_x64'){'Visual Studio 18 2026'}else{'Visual Studio 17 2022'}
 New-Item -ItemType Directory -Path $out | Out-Null
 $before=Get-LocalProductProtectionEvidence
 $product=Get-LocalProductDescriptor (Join-Path $PSScriptRoot 'local-product.json')
@@ -53,7 +68,7 @@ $passed=$false;$failure=$null;$records=@();$protected=$false
 try {
     $env:GOOS='windows';$env:GOARCH=$targetConfig.go_arch;$env:CGO_ENABLED='0';$env:GOFLAGS=''
     $build=Join-Path $out 'tsf-build'
-    & cmake -S (Join-Path $repo 'YimeTextServiceExperiment') -B $build -G $nativeGenerator -A $targetConfig.cmake_platform -DYIME_LOCAL_PRODUCT=ON 2>&1 | Tee-Object -FilePath (Join-Path $out 'configure.txt')
+    & cmake -S (Join-Path $repo 'YimeTextServiceExperiment') -B $build -G $selectedGenerator -A $targetConfig.cmake_platform -DYIME_LOCAL_PRODUCT=ON 2>&1 | Tee-Object -FilePath (Join-Path $out 'configure.txt')
     if($LASTEXITCODE -ne 0){throw 'Target TSF configure failed; inspect the isolated configure log.'}
     & cmake --build $build --config Release --parallel 2>&1 | Tee-Object -FilePath (Join-Path $out 'build.txt')
     if($LASTEXITCODE -ne 0){throw 'Target TSF build failed.'}
@@ -87,7 +102,7 @@ finally {
     $after=Get-LocalProductProtectionEvidence
     $protected=($before|ConvertTo-Json -Depth 30 -Compress) -ceq ($after|ConvertTo-Json -Depth 30 -Compress)
     Write-LocalProductJson ([ordered]@{schema_version='yimecore-platform-source-build-v1';generated_at=[DateTime]::UtcNow.ToString('o');
-        target=$Target;development_scope=$scope;git_commit=(& git -C $repo rev-parse HEAD).Trim();git_dirty=[bool]((& git -C $repo status --porcelain).Count);
+        target=$Target;development_scope=$scope;native_generator=$selectedGenerator;git_commit=(& git -C $repo rev-parse HEAD).Trim();git_dirty=[bool]((& git -C $repo status --porcelain).Count);
         current_product_identity=$product.identity;source_build_passed=($passed -and $protected);failure=$failure;
         protected_registration_unchanged=$protected;artifacts=$records;target_executables_run=$false;installed=$false;
         native_contracts_passed=$null;target_package_passed=$null;physical_host_passed=$null;release_ready=$false}) (Join-Path $out 'summary.json')

@@ -1,0 +1,75 @@
+{
+  "schema_version": "yimecore-speech-isolated-bundle-v1",
+  "enabled": false,
+  "approved_records": 24,
+  "admission": {
+    "path": "admission.json",
+    "sha256": "cd8f510bf4122ab48d6c260c62c2d53363121d59488395fcc1366a1df62c914c"
+  },
+  "forward_source": {
+    "path": "forward-source.json",
+    "sha256": "73e2ec162b0bc3a114a5a9de902b14b68c505d736502d2940d6e29297ace56c2"
+  },
+  "generation": {
+    "version": "stage5c-enabled-v1",
+    "modes": {
+      "full": {
+        "core": {
+          "version": "stage5c-enabled-v1",
+          "mode": "full",
+          "path": "indexes/full-core.yidx",
+          "expected_sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1"
+        },
+        "modules": [
+          {
+            "id": "third-tone-stage5c",
+            "index": {
+              "version": "stage5c-enabled-v1",
+              "mode": "full",
+              "path": "indexes/full-stage5c.yidx",
+              "expected_sha256": "470ef8e58a0f61bde3e7437097b1c480be4962d3e9a4680984567d53e3a427b9"
+            }
+          }
+        ]
+      },
+      "shorthand": {
+        "core": {
+          "version": "stage5c-enabled-v1",
+          "mode": "shorthand",
+          "path": "indexes/shorthand-core.yidx",
+          "expected_sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec"
+        },
+        "modules": [
+          {
+            "id": "third-tone-stage5c",
+            "index": {
+              "version": "stage5c-enabled-v1",
+              "mode": "shorthand",
+              "path": "indexes/shorthand-stage5c.yidx",
+              "expected_sha256": "15929d0e62a882a4ce640b50d19e6a8af5ad5d1840b0f89e0e8a95ec0d8bc764"
+            }
+          }
+        ]
+      },
+      "variable": {
+        "core": {
+          "version": "stage5c-enabled-v1",
+          "mode": "variable",
+          "path": "indexes/variable-core.yidx",
+          "expected_sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada"
+        },
+        "modules": [
+          {
+            "id": "third-tone-stage5c",
+            "index": {
+              "version": "stage5c-enabled-v1",
+              "mode": "variable",
+              "path": "indexes/variable-stage5c.yidx",
+              "expected_sha256": "dd27f391102382a2ec2a5313d3cc7eaebb7ff6bd671e73623857ddb04ddc6371"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -4,10 +4,11 @@ function Get-LocalProductSpeechPayloadPaths {
     foreach ($mode in @('full','variable','shorthand')) { "speech/indexes/$mode-core.yidx"; "speech/indexes/$mode-stage5c.yidx" }
 }
 
-function Assert-LocalProductSpeechBuildInputs($Product,[string]$AdmissionRoot,[string]$SummarySHA256,[string]$SourceInventorySHA256) {
+function Assert-LocalProductSpeechBuildInputs($Product,[string]$AdmissionRoot,[string]$SummarySHA256,[string]$SourceInventorySHA256,
+    [ValidateSet('arm64')][string]$ExpectedTarget) {
     $declared = $null -ne $Product.PSObject.Properties['speech']
     if (-not $declared) {
-        if ($AdmissionRoot -or $SummarySHA256 -or $SourceInventorySHA256) { throw 'Speech inputs require a declared owning product capability.' }
+        if ($ExpectedTarget -or $AdmissionRoot -or $SummarySHA256 -or $SourceInventorySHA256) { throw 'Speech inputs require a declared owning product capability.' }
         return $false
     }
     if (-not [IO.Path]::IsPathRooted($AdmissionRoot) -or $SummarySHA256 -notmatch '^[a-fA-F0-9]{64}$' -or
@@ -25,6 +26,29 @@ function Assert-LocalProductSpeechBuildInputs($Product,[string]$AdmissionRoot,[s
     $inventoryPath = Resolve-LocalProductChild $AdmissionRoot 'source-hashes-after.json'
     if ((Get-FileHash -LiteralPath $inventoryPath -Algorithm SHA256).Hash -ine $SourceInventorySHA256 -or
         (Get-Item -LiteralPath $inventoryPath).Length -ne $summary.source_inventory.bytes) { throw 'Source inventory bytes do not match the summary.' }
+    if ($ExpectedTarget -ieq 'arm64') {
+        # The shared exporter retains historical AMD64 admissions. ARM packages
+        # must select their native admission before creating output or compiling.
+        $message = 'ARM64 product requires native ARM64 admission from the identified HUASHUONOTEBOOK scope.'
+        $scopeProperty = $summary.PSObject.Properties['development_scope']
+        if ($null -eq $scopeProperty -or $null -eq $scopeProperty.Value) { throw $message }
+        $scope = $scopeProperty.Value
+        $expected = @{id='yimecore-arm64-native-source-build-v1';target='arm64';computer_name='HUASHUONOTEBOOK'
+            native_architecture='ARM64';target_architecture='arm64';build_lane='arm64_native_source_build'}
+        foreach ($name in $expected.Keys) {
+            if (-not $scope.PSObject.Properties[$name] -or $scope.$name -cne $expected[$name]) { throw $message }
+        }
+        if (-not $scope.PSObject.Properties['active_architectures'] -or $null -eq $scope.active_architectures -or
+            @($scope.active_architectures).Count -ne 1 -or
+            $scope.active_architectures[0] -cne 'arm64' -or -not $scope.PSObject.Properties['machine_observation'] -or
+            $null -eq $scope.machine_observation) { throw $message }
+        $machine = $scope.machine_observation
+        foreach ($entry in @{source='IsWow64Process2';native_machine='0xaa64';native_architecture='ARM64'}.GetEnumerator()) {
+            if (-not $machine.PSObject.Properties[$entry.Key] -or $machine.($entry.Key) -cne $entry.Value) { throw $message }
+        }
+        if (-not $summary.PSObject.Properties['go_version'] -or
+            $summary.go_version -cnotmatch '^go version go[0-9][A-Za-z0-9.]* windows/arm64$') { throw $message }
+    }
     # The Go exporter independently checks exact JSON, sources, receipts, tools,
     # lifecycle results, all six indexes and the normal core/layout bindings.
     return $true

@@ -1,0 +1,73 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261026203501
+Username: HUASHUONOTEBOOK\tsaan
+RunAs User: HUASHUONOTEBOOK\tsaan
+Configuration Name: 
+Machine: HUASHUONOTEBOOK (Microsoft Windows NT 10.0.28000.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\dev\Yime\tools\powershell\preflight.ps1
+Process ID: 12020
+PSVersion: 5.1.28000.3231
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.28000.3231
+BuildVersion: 10.0.28000.3231
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\f770888112b24ee0bf3d3b5b0955b579.user.log
+Action: Check; package: C:\dev\Yime-deliveries\arm64-proart-20261026\YimeCore-ARM64
+PS>TerminatingError(): "Unable to find type [ushort]."
+>> TerminatingError(): "Unable to find type [ushort]."
+FAILED stage: package check
+
+
+PSMessageDetails      : 
+Exception             : System.Management.Automation.RuntimeException: Unable to find type [ushort].
+                           at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext f
+                        uncContext, Exception exception)
+                           at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame fra
+                        me)
+                           at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedF
+                        rame frame)
+                           at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedF
+                        rame frame)
+TargetObject          : ushort
+CategoryInfo          : InvalidOperation: (ushort:TypeName) [], RuntimeException
+FullyQualifiedErrorId : TypeNotFound
+ErrorDetails          : 
+InvocationInfo        : System.Management.Automation.InvocationInfo
+ScriptStackTrace      : at Get-NativeHostMachine, C:\dev\Yime-deliveries\arm64-proart-20261026\YimeCore-ARM64\Product.p
+                        sm1: line 64
+                        at Assert-PackageHost, C:\dev\Yime-deliveries\arm64-proart-20261026\YimeCore-ARM64\Product.psm1
+                        : line 71
+                        at <ScriptBlock>, C:\dev\Yime-deliveries\arm64-proart-20261026\YimeCore-ARM64\Setup.ps1: line 3
+                        3
+                        at <ScriptBlock>, C:\dev\Yime\tools\powershell\preflight.ps1: line 68
+PipelineIterationInfo : {}
+Exception: System.Management.Automation.RuntimeException: Unable to find type [ushort].
+   at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+   at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)
+   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
+   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
+C:\dev\Yime-deliveries\arm64-proart-20261026\YimeCore-ARM64\Setup.ps1 : Setup stopped: Unable to find type [ushort]. Log
+: C:\Users\tsaan\Yime Setup Logs\f770888112b24ee0bf3d3b5b0955b579.user.log
+At C:\dev\Yime\tools\powershell\preflight.ps1:68 char:28
++     if ($request.script) { & $path @parameters }
++                            ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,Setup.ps1
+C:\dev\Yime-deliveries\arm64-proart-20261026\YimeCore-ARM64\Setup.ps1 : Setup stopped: Unable to find type [ushort]. Lo
+g: C:\Users\tsaan\Yime Setup Logs\f770888112b24ee0bf3d3b5b0955b579.user.log
+At C:\dev\Yime\tools\powershell\preflight.ps1:68 char:28
++     if ($request.script) { & $path @parameters }
++                            ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,Setup.ps1
+
+Setup exit code: 1
+**********************
+Windows PowerShell transcript end
+End time: 20261026203504
+**********************

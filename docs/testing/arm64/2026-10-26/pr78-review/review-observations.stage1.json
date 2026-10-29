@@ -1,0 +1,107 @@
+{
+  "schema_version": "yimecore-pr78-review-stage1-v1",
+  "draft": true,
+  "reviewed_pr_head": "934126ff03c3583f9a119a17c10cd43eb16e8b56",
+  "reviewed_main": "9adc3cdd9634e0258b58c9a8945b3497fc8777ad",
+  "merged_source_commit": "2b256afdeb45795aafcf11641ba04cba149acb46",
+  "installer_ps5": {
+    "scripts": [
+      {
+        "script": "Test-Arm64Package.ps1",
+        "exit_code": 0
+      },
+      {
+        "script": "Test-Manage.ps1",
+        "exit_code": 0
+      },
+      {
+        "script": "Test-PackageValidation.ps1",
+        "exit_code": 0
+      }
+    ],
+    "passed": true,
+    "scope": "Source regression from the primary checkout using isolated fixtures; no live product or user-data operation.",
+    "source_inputs_compared_to_managed_worktree": [
+      {
+        "path": "installer/simple/Product.psm1",
+        "expected_sha256": "b29211a17f353946f01d9eeac1ac1671ac7b4320c05065d857669797d8d871d7",
+        "managed_worktree_sha256": "b29211a17f353946f01d9eeac1ac1671ac7b4320c05065d857669797d8d871d7",
+        "match": true
+      },
+      {
+        "path": "installer/simple/Setup.ps1",
+        "expected_sha256": "36b5c0a4ca56020dd3502c46c4423ed1b491762425fbf0dff187922902066b07",
+        "managed_worktree_sha256": "36b5c0a4ca56020dd3502c46c4423ed1b491762425fbf0dff187922902066b07",
+        "match": true
+      },
+      {
+        "path": "installer/simple/Build-Package.ps1",
+        "expected_sha256": "cbafb3a1ff457f2be108b6ac4ecf1208303f03bfd22f904d209ac6533831dbb8",
+        "managed_worktree_sha256": "cbafb3a1ff457f2be108b6ac4ecf1208303f03bfd22f904d209ac6533831dbb8",
+        "match": true
+      },
+      {
+        "path": "installer/simple/Manage-Products.ps1",
+        "expected_sha256": "8680aff1e2c44c687da082c02e18d70e43f5e28783acb3915891b4a493c3304e",
+        "managed_worktree_sha256": "8680aff1e2c44c687da082c02e18d70e43f5e28783acb3915891b4a493c3304e",
+        "match": true
+      },
+      {
+        "path": "installer/simple/Test-Arm64Package.ps1",
+        "expected_sha256": "e55879c6652757018ad269c7fcdfad07239ce752c229e88128905c38b815425b",
+        "managed_worktree_sha256": "67c6de9028b250fe611967be5a1e413afecbf1eb913856490713449fa91253dd",
+        "match": false
+      },
+      {
+        "path": "installer/simple/Test-Manage.ps1",
+        "expected_sha256": "6bb9720c941b34a051cede67c3ebfb6e4c052fbae95ac2eb73decc1a6ff616b0",
+        "managed_worktree_sha256": "6bb9720c941b34a051cede67c3ebfb6e4c052fbae95ac2eb73decc1a6ff616b0",
+        "match": true
+      },
+      {
+        "path": "installer/simple/Test-PackageValidation.ps1",
+        "expected_sha256": "8b9f55264bab1638653b7dc773b0bb9f1afafee06dee2cdad66bfa2743138c6e",
+        "managed_worktree_sha256": "8b9f55264bab1638653b7dc773b0bb9f1afafee06dee2cdad66bfa2743138c6e",
+        "match": true
+      }
+    ],
+    "comparison_boundary": "Six input files are byte-identical in the managed checkout. Test-Arm64Package.ps1 differs only by LF versus CRLF, has identical tracked Git blobs, and no working-tree diff. No functional modification is inferred from the raw-hash difference.",
+    "checkout_line_ending_observation": {
+      "path": "installer/simple/Test-Arm64Package.ps1",
+      "primary_source_sha256": "e55879c6652757018ad269c7fcdfad07239ce752c229e88128905c38b815425b",
+      "recorded_run_sha256": "e55879c6652757018ad269c7fcdfad07239ce752c229e88128905c38b815425b",
+      "managed_source_sha256": "67c6de9028b250fe611967be5a1e413afecbf1eb913856490713449fa91253dd",
+      "primary_bytes": 13098,
+      "managed_bytes": 13264,
+      "primary_crlf_count": 0,
+      "managed_crlf_count": 166,
+      "lf_normalized_bytes_equal": true,
+      "primary_commit": "cc760aca783f79dc732df262f8ef5f69f3da9146",
+      "merged_commit": "2b256afdeb45795aafcf11641ba04cba149acb46",
+      "primary_git_blob": "08a7b40011f0cedfcab279a7306a2c5db8cee102",
+      "merged_git_blob": "08a7b40011f0cedfcab279a7306a2c5db8cee102",
+      "tracked_blobs_equal": true,
+      "working_tree_git_diff_numstat": "",
+      "explanation": "Raw byte hashes differ because the primary file uses LF and the managed checkout uses CRLF. Normalization is diagnostic only; archived original bytes remain unchanged."
+    }
+  },
+  "merged_native_go": {
+    "package": "./cmd/yime-touch-keyboard",
+    "exit_code": 0,
+    "test_pass_events": 106,
+    "test_skip_events": 1,
+    "failed_events": 0,
+    "summary_log_hash_verified": true,
+    "scope": "Native ARM64 source regressions after merging main; disposable own-window fixtures, no real application or physical-input acceptance"
+  },
+  "pending": [
+    "Saved added ARM admission guard negative/repaired test runs",
+    "Final review index after all guard evidence is available"
+  ],
+  "boundaries": [
+    "Only exact listed logs, summaries and the review runner are copied.",
+    "No recursive temporary-directory, Go-cache, installed-product or user-settings scan is performed.",
+    "This source regression archive is not installation, real-app UI or physical-input acceptance.",
+    "Earlier installed-validation archive remains unchanged."
+  ]
+}

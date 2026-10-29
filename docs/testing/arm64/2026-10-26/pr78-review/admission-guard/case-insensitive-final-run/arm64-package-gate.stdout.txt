@@ -1,0 +1,1 @@
+PASS: 47 ARM64 speech admission host/toolchain/package contracts; no admission, installation or target process execution.

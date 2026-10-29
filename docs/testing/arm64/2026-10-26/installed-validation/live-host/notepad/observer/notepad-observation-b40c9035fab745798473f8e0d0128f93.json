@@ -1,0 +1,23 @@
+{
+  "captured_at": "2026-10-26T14:26:20.5300373Z",
+  "foreground_pid": 29208,
+  "processes": [
+    {
+      "pid": 13428,
+      "image": "C:\\Program Files\\WindowsApps\\Microsoft.WindowsNotepad_11.2607.14.0_arm64__8wekyb3d8bbwe\\Notepad\\Notepad.exe",
+      "foreground": false,
+      "has_main_window": false,
+      "loaded_current_tip": [],
+      "module_observation_error": null
+    },
+    {
+      "pid": 29208,
+      "image": "C:\\Program Files\\WindowsApps\\Microsoft.WindowsNotepad_11.2607.14.0_arm64__8wekyb3d8bbwe\\Notepad\\Notepad.exe",
+      "foreground": true,
+      "has_main_window": true,
+      "loaded_current_tip": [],
+      "module_observation_error": null
+    }
+  ],
+  "read_only": true
+}

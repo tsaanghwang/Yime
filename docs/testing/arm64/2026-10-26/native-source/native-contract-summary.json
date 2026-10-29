@@ -1,0 +1,10 @@
+{
+  "scope": "ARM64 source DLL/COM contracts and focus-cancellation fakes; own test UI may appear",
+  "generated_at": "2026-10-26T10:48:04.0534074Z",
+  "build_root": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-20261026-184609-ce50c301",
+  "passed": true,
+  "protected_registration_unchanged": true,
+  "installation_performed": false,
+  "registered_host_acceptance": null,
+  "physical_acceptance": false
+}

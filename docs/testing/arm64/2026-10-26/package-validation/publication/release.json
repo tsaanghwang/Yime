@@ -1,0 +1,25 @@
+{
+  "schema_version": "yimecore-arm64-publication-v1",
+  "source_commit": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+  "source_tree": "71fef246d310baf49c7b37f5819aca13c5642811",
+  "local_commit": "f855867d2cd048de1b74bc97ba92921b481fc82e",
+  "release_url": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-proart-20261026-r2",
+  "tag": "test-arm64-proart-20261026-r2",
+  "ci_passed": true,
+  "ci_checks": 13,
+  "assets": [
+    {
+      "name": "SHA256SUMS.txt",
+      "bytes": 98,
+      "digest": "sha256:8e2696b4739b5519e4e3433368473ec5c688e72fb9b937193de48a9d89dbc173",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-proart-20261026-r2/SHA256SUMS.txt"
+    },
+    {
+      "name": "YimeCore-ARM64-20261026-r2.zip",
+      "bytes": 168171619,
+      "digest": "sha256:2c94d825c59bf768d8a00a13353d38fe65f3b67e2258d3fb9747014229049de1",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-proart-20261026-r2/YimeCore-ARM64-20261026-r2.zip"
+    }
+  ],
+  "installed": false
+}

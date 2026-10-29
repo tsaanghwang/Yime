@@ -1,0 +1,24 @@
+{
+  "captured_at": "2026-10-26T14:54:59.243578+00:00",
+  "method": "Read-only PROCESS_QUERY_LIMITED_INFORMATION, IsWow64Process2 and PE headers; no input injection or process mutation.",
+  "notepad": {
+    "pid": 29208,
+    "image": "C:\\Program Files\\WindowsApps\\Microsoft.WindowsNotepad_11.2607.14.0_arm64__8wekyb3d8bbwe\\Notepad\\Notepad.exe",
+    "image_sha256": "229e2d1684e89f054c0907f73028b111819124376a3eb7b87027e996b16747c6",
+    "pe_machine": "0xaa64",
+    "process_machine": "0x0",
+    "native_machine": "0xaa64",
+    "creation_filetime": 134374980857434075,
+    "creation_time_utc": "2026-10-26T14:21:25.743407+00:00"
+  },
+  "focus_loss_foreground_process_postcheck": {
+    "pid": 6864,
+    "image": "C:\\Windows\\explorer.exe",
+    "image_sha256": "02533830681408b7b520900a4003e5eadb7f896cd23f19caa475c877f1ccde2e",
+    "pe_machine": "0xaa64",
+    "process_machine": "0x0",
+    "native_machine": "0xaa64",
+    "creation_filetime": 134374691270799870,
+    "creation_time_utc": "2026-10-26T06:18:47.079987+00:00"
+  }
+}

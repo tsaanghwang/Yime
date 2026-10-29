@@ -1,0 +1,803 @@
+{
+  "schema_version": "yimecore-speech-admission-isolated-v1",
+  "generated_at": "2026-10-26T20:17:11.5117065+08:00",
+  "passed": true,
+  "failure": null,
+  "stage": "complete",
+  "source_inventory": {
+    "path": "source-hashes-after.json",
+    "bytes": 113240,
+    "sha256": "d52f43b5d6ec5a9c088aa616a85e3927dc2f4291dce638e43e91126eaa00709e"
+  },
+  "source_inventory_before": {
+    "path": "source-hashes-before.json",
+    "bytes": 113240,
+    "sha256": "d52f43b5d6ec5a9c088aa616a85e3927dc2f4291dce638e43e91126eaa00709e"
+  },
+  "admission_artifacts": [
+    {
+      "path": "admission.json",
+      "bytes": 1295,
+      "sha256": "cd8f510bf4122ab48d6c260c62c2d53363121d59488395fcc1366a1df62c914c"
+    },
+    {
+      "path": "admitted-records.json",
+      "bytes": 62558,
+      "sha256": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d"
+    },
+    {
+      "path": "bundle-off.json",
+      "bytes": 2377,
+      "sha256": "4f6bced945eb0b5d6b31dae74724afd27bf8edefe091354e1881f91058525c17"
+    },
+    {
+      "path": "bundle-on.json",
+      "bytes": 2376,
+      "sha256": "a582e1f5822ff4519fb865084f6cf3ebcf927f4db661507444290c85ae841672"
+    },
+    {
+      "path": "forward-source.json",
+      "bytes": 17920,
+      "sha256": "73e2ec162b0bc3a114a5a9de902b14b68c505d736502d2940d6e29297ace56c2"
+    },
+    {
+      "path": "indexes/full-core.yidx",
+      "bytes": 40267102,
+      "sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1"
+    },
+    {
+      "path": "indexes/full-stage5c.yidx",
+      "bytes": 848,
+      "sha256": "470ef8e58a0f61bde3e7437097b1c480be4962d3e9a4680984567d53e3a427b9"
+    },
+    {
+      "path": "indexes/shorthand-core.yidx",
+      "bytes": 38209725,
+      "sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec"
+    },
+    {
+      "path": "indexes/shorthand-stage5c.yidx",
+      "bytes": 825,
+      "sha256": "15929d0e62a882a4ce640b50d19e6a8af5ad5d1840b0f89e0e8a95ec0d8bc764"
+    },
+    {
+      "path": "indexes/variable-core.yidx",
+      "bytes": 38801056,
+      "sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada"
+    },
+    {
+      "path": "indexes/variable-stage5c.yidx",
+      "bytes": 825,
+      "sha256": "dd27f391102382a2ec2a5313d3cc7eaebb7ff6bd671e73623857ddb04ddc6371"
+    },
+    {
+      "path": "prepare-outcome.json",
+      "bytes": 5961,
+      "sha256": "cc604e38b783a7cc302f3479ee72204a9c6730686ad66c711a621b7046005005"
+    },
+    {
+      "path": "process-outcome.json",
+      "bytes": 2131,
+      "sha256": "9d4e7aff14edecf3efecc6f06fc547dd8e47f9607ce9d1d1d668c674b3d53c02"
+    }
+  ],
+  "development_scope": {
+    "id": "yimecore-arm64-native-source-build-v1",
+    "target": "arm64",
+    "computer_name": "HUASHUONOTEBOOK",
+    "native_architecture": "ARM64",
+    "active_architectures": [
+      "arm64"
+    ],
+    "target_architecture": "arm64",
+    "build_lane": "arm64_native_source_build",
+    "machine_observation": {
+      "source": "IsWow64Process2",
+      "native_architecture": "ARM64",
+      "native_machine": "0xaa64",
+      "process_machine": "0x0000"
+    },
+    "output_policy": "Separate source-build output only; no target execution, installation, registration or default-input mutation."
+  },
+  "trial_root": "C:\\dev\\Yime\\.tmp\\yimecore-experiment\\speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779",
+  "install_root": null,
+  "installed_manifest_sha256": null,
+  "protection_baseline_mode": "clean-target-absence",
+  "module": "third-tone-stage5c",
+  "reviewed_records": 24,
+  "mode_alias_rows": 72,
+  "forward_source_passed": true,
+  "admission_prepare_passed": true,
+  "owned_process_acceptance_passed": true,
+  "dependency_boundary_passed": true,
+  "dependencies": [
+    {
+      "import_path": "internal/goarch",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "unsafe",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/abi",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/unsafeheader",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/cpu",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/bytealg",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/byteorder",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/chacha8rand",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/coverage/rtcov",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/godebugs",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/goexperiment",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/goos",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/profilerecord",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/runtime/atomic",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/runtime/exithook",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/runtime/gc",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/asan",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/msan",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/race",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/runtime/math",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/runtime/sys",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/runtime/maps",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/runtime/strconv",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/stringslite",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/trace/tracev2",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "runtime",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/reflectlite",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "errors",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "sync/atomic",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/sync",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/synctest",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "sync",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "io",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "iter",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "math/bits",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "unicode",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "unicode/utf8",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "bytes",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "strings",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "bufio",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/bisect",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/godebug",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/syscall/windows/sysdll",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/itoa",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/oserror",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "unicode/utf16",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "syscall",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/syscall/windows/registry",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "time",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "context",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "encoding",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "cmp",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "math",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "strconv",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "reflect",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "slices",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/fmtsort",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "structs",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/syscall/windows",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "path",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "io/fs",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/filepathlite",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/poll",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/syscall/execenv",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/testlog",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "os",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "fmt",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "flag",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "encoding/base64",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "encoding/json",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "hash",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140deps/godebug",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140/alias",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140deps/byteorder",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140deps/cpu",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/impl",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140/sha256",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140/subtle",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140/sha3",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140/sha512",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140/hmac",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140/check",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140/aes",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/sysrand",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/entropy",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "math/rand/v2",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/randutil",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140/drbg",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140/aes/gcm",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/fips140only",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/subtle",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/cipher",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/boring/sig",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/internal/boring",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/sha256",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "encoding/csv",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "encoding/hex",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "encoding/binary",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "internal/saferio",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "maps",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "encoding/gob",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "path/filepath",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "sort",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/systemlexicon",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "os/exec",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/learningmigration",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimechange",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "regexp/syntax",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "regexp",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimeidentity",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userlexicon",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/layoutdesigner",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/connectedspeech",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/candidateannotation",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userblocklist",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/candidatefilter",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/learningconfig",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/professionallexicon",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "math/rand",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "math/big",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "crypto/rand",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/input_methods/yime/speechruntime",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "os/signal",
+      "cgo_files": 0
+    },
+    {
+      "import_path": "github.com/tsaanghwang/Yime/go-backend/cmd/yimebroker",
+      "cgo_files": 0
+    }
+  ],
+  "directed_tests": [
+    {
+      "package": "./input_methods/yime/connectedspeech",
+      "selector": "^TestStage5CAdmission",
+      "passed_count": 45,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./input_methods/yime/layoutdesigner",
+      "selector": "^Test(ProjectIDRecord|ReencodeUsesYinyuanIDsAndSemanticShorthand$|ReencodePreservesVirtualShouyinAsSyllableBoundary$|DescribeIDDistinguishesRealAndVirtualShouyin$|ValidateRejectsReservedCandidateKey$)",
+      "passed_count": 6,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./input_methods/yime/yimecore",
+      "selector": "^Test",
+      "passed_count": 183,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./input_methods/yime/yimebroker",
+      "selector": "^Test(BundleGenerationManager|ConnectedSpeechReconnectBrokerBundleDurableLifecycle|ServeLines|ConnectionLimiter)",
+      "passed_count": 33,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./input_methods/yime/speechruntime",
+      "selector": "^TestSpeech(Manifest|Forward)",
+      "passed_count": 123,
+      "failed_count": 0,
+      "skipped_count": 1,
+      "skipped_tests": [
+        "TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink"
+      ],
+      "passed": true
+    },
+    {
+      "package": "./cmd/yimebroker",
+      "selector": "^Test(SpeechExperiment|EnabledUserModelHonorsLearningConfigWithoutDeletingModel$)",
+      "passed_count": 3,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "skipped_tests": [],
+      "passed": true
+    },
+    {
+      "package": "./cmd/yimecore-speech-admission",
+      "selector": "^TestSpeech(Exercise|Package|ProductExport)",
+      "passed_count": 119,
+      "failed_count": 0,
+      "skipped_count": 2,
+      "skipped_tests": [
+        "TestSpeechPackageRejectsSymlinkPayload",
+        "TestSpeechProductExportRejectsIndirectSources"
+      ],
+      "passed": true
+    }
+  ],
+  "tools": [
+    {
+      "path": "bin/YimeBroker-speech.exe",
+      "bytes": 4930560,
+      "sha256": "36fbee46da133524d667374d50bcc2e7e61ae9c7f75625954470cc497923b718"
+    },
+    {
+      "path": "bin/YimeSpeechAdmission.exe",
+      "bytes": 4868096,
+      "sha256": "55c998d0fd6af860959799112bb19ac02084580deb0d3053826162df4448342c"
+    }
+  ],
+  "go_toolchain": "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+  "go_version": "go version go1.25.14 windows/arm64",
+  "python": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+  "python_contracts_passed": true,
+  "helper_definition_allowlist": [
+    "Assert-SpeechPlainPath",
+    "Resolve-SpeechChild",
+    "Write-SpeechJson",
+    "Set-SpeechEnvironmentValue",
+    "Get-SpeechRecord",
+    "Assert-SpeechSameRecords",
+    "Get-SpeechDefinitions",
+    "Get-SpeechLockedInputs"
+  ],
+  "helper_source_sha256": "13120832d47bc60da1d0193fcb982768dc71165cba0ddd00704576728b57e360",
+  "installed_baseline_unchanged": true,
+  "locked_inputs_unchanged": true,
+  "source_set_unchanged": true,
+  "legacy_static_unchanged": true,
+  "private_environment_names": [
+    "TEMP",
+    "TMP",
+    "APPDATA",
+    "LOCALAPPDATA",
+    "GOCACHE",
+    "GOMODCACHE",
+    "GOPATH",
+    "GOOS",
+    "GOARCH",
+    "CGO_ENABLED",
+    "GOTOOLCHAIN",
+    "GOPROXY",
+    "GOSUMDB",
+    "GOWORK",
+    "GOENV",
+    "GOTELEMETRY",
+    "GOFLAGS",
+    "GOPRIVATE",
+    "GONOPROXY",
+    "GONOSUMDB",
+    "GOEXPERIMENT",
+    "GOAMD64",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONPATH",
+    "PYTHONHOME",
+    "YIME_RUN_REAL_RIME_TESTS",
+    "YIME_TEXTSERVICE_EXPERIMENT_TOOL_MENU_SMOKE",
+    "YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST",
+    "YIME_TEXTSERVICE_EXPERIMENT_PIPE",
+    "YIMECORE_TEST_PIPE_NAME",
+    "YIMECORE_TEST_STATE_ROOT",
+    "YIMECORE_TOOL_SMOKE_TEST",
+    "YIME_RUNTIME_JOB_HELPER",
+    "YIME_SPEECH_LATENCY_ROOT",
+    "YIME_SPEECH_LATENCY_OUTPUT",
+    "YIME_SYNTHETIC_PRODUCT_TEST_CHILD"
+  ],
+  "environment_restored": true,
+  "environment_restore_failures": [],
+  "real_rime_executed": false,
+  "registered_hosts_executed": false,
+  "frozen_targets_executed": false,
+  "default_input_method_changed": false,
+  "new_package_installed": false,
+  "daily_broker_connected": false,
+  "user_text_read": false,
+  "live_learning_data_read": false,
+  "live_config_read": false,
+  "product_or_registry_mutated": false,
+  "synthetic_learning_data_used": true,
+  "local_product_ready": false,
+  "public_release_ready": false,
+  "windows_reboot_gate_passed": null,
+  "installed_speech_gate_passed": null,
+  "limitations": [
+    "Only the 24 previously reviewed Stage5C records are admitted; other reserved modules remain unconnected.",
+    "Static dictionary syntax may be imported by YimeCore; no Rime library, generator, deployer or runtime is executed.",
+    "Process restarts, selection, paging, cancellation and learning use owned anonymous-pipe fixture processes and private state, not installed TSF or live hosts.",
+    "Skipped directed tests remain explicitly listed; no skipped path is inferred passed.",
+    "L5 final user confirmation, installed candidate acceptance, L6 sealing and registered/live ARM64 hosts remain separate gates."
+  ]
+}

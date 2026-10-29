@@ -1,0 +1,943 @@
+{
+  "schema_version": "yimecore-arm64-product-package-evidence-index-v1",
+  "revision": "R2",
+  "created_at": "2026-10-26T12:57:02.197Z",
+  "archive_root": "docs/testing/arm64/2026-10-26/package-validation/product-r2",
+  "readiness": "preinstallation-checks-passed-installed-acceptance-pending",
+  "installation_performed": false,
+  "validation_summary": "validation-summary.json",
+  "source_build_root": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202",
+  "byte_preserved_source_artifacts": 97,
+  "derived_summaries": 1,
+  "artifact_count": 98,
+  "artifact_bytes": 462459,
+  "earlier_indexes": [
+    {
+      "path": "../evidence-index.json",
+      "sha256": "15d95c4d9a3b5bfcc29b25b1e08f99427eb5ea2e239a9abf9dcc6dbd8561e712",
+      "modified": false
+    },
+    {
+      "path": "../product-r1/evidence-index.json",
+      "sha256": "5603c98749f34e5712b9cc1308552b87a766cc068c4e4d801850d5b05a5f2327",
+      "modified": false
+    }
+  ],
+  "checks": {
+    "all_archived_hashes_and_sizes_verified": true,
+    "all_raw_copies_equal_original_bytes": true,
+    "delivery_to_build_manifest_bindings_match": true,
+    "checksum_receipt_matches_delivery_json": true,
+    "build_passed": true,
+    "product_and_payload_audits_passed": true,
+    "isolated_payload_maintenance_passed": true,
+    "isolated_nine_tsf_combinations_passed": true,
+    "all_nine_owned_brokers_stopped": true,
+    "build_package_ps5_setup_check_passed": true,
+    "external_delivered_copy_ps5_setup_check_passed": true,
+    "installed_acceptance_performed": false
+  },
+  "boundaries": [
+    "Raw UTF-8 BOMs and CRLF bytes were preserved.",
+    "ZIP, EXE, DLL, large dictionaries, runtime .yidx indexes and private state are not copied.",
+    "Small JSON index-build receipts are archived; actual runtime index payloads are excluded.",
+    "Source and manifest hashes identify the R2 build snapshot; the final source-to-build comparison is recorded separately.",
+    "R1 failure evidence remains immutable and must not be treated as an install candidate.",
+    "R2 Check and fixture successes are preinstallation evidence, not registered/live-host or physical input acceptance.",
+    "Preserve this directory with the package-validation/** -text Git attributes rule."
+  ],
+  "artifacts": [
+    {
+      "path": "build/arm64-payload-maintenance.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/arm64-payload-maintenance.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 1270,
+      "sha256": "eba290282395ebc3fe4ec473faa39fea8971cd518733b54635d10b4ef4e6e4a9",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/build-arm64.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/build-arm64.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 3543,
+      "sha256": "d6794e80a74c21ee2df9b3c6120985bcb0a1e12244cf1d563d99e74b5f6d4dad",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/build-arm64ec.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/build-arm64ec.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 977,
+      "sha256": "167815a1b4a0d1955b81f3cd60387e6129b6466f42e897fa35d261773ab71d4e",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/build-x64-test.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/build-x64-test.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 3573,
+      "sha256": "5c51dac9c352ccc37481cdda6151198fa94f6387b07ec9b357be2d6b6fefbfd1",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/build-x86.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/build-x86.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 3523,
+      "sha256": "89da546f22d47d9da60120a6b82a601c6574d6a9ca638fa610a99ea8c9594e66",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/configure-arm64.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/configure-arm64.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 639,
+      "sha256": "ef771828400ba6b9412caeffbbd47c590f42c9f74fb6011bd7cb49d5c2c452fa",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/configure-arm64ec.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/configure-arm64ec.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 641,
+      "sha256": "fe804b2cf203b6af633a49580e306009ad480cee64be461131d7619cf6afb4ec",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/configure-x64-test.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/configure-x64-test.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 640,
+      "sha256": "37fbc35b4cd767b3801af98b38be38d0d45362fd71619fcc37d9c8af9420d0b6",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/configure-x86.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/configure-x86.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 635,
+      "sha256": "81442f3bd6d5543300ecbc1e4f772c99b382e78a88de438b8cb202f84359fa51",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/go-tests.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/go-tests.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 395,
+      "sha256": "48366334fd4c9d09ad722841daf82240905b04625c656eb8d45e2177d224769a",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/go-tests.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/go-tests.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 1061,
+      "sha256": "c6c98b741f257fdde8e6f66cce6bb667aaf044339c4c39c79096d3f41d465d69",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/independence-audit.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/independence-audit.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 5476,
+      "sha256": "0e7b4788c997f4bc52bd66c77d6f37301db04914d8fb690495896f881bb46d5a",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/index-full.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/index-full.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 1002,
+      "sha256": "2a8e691e464377a77758c76395f903303beb1bfda6e61ce17eb1b02581124375",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/index-shorthand.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/index-shorthand.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 1017,
+      "sha256": "fbd48f054839b0d7d2911a52f804fd0e9ea8aeac3e89140a00e3c7ffd4c8dd0c",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/index-variable.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/index-variable.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 1014,
+      "sha256": "2934b3fca94a94ce01462b2e5419f0af0b69b95df96e714ab14c515084666ab8",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/native-contract-arm64.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/native-contract-arm64.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 40,
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/native-contract-arm64.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/native-contract-arm64.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 1138,
+      "sha256": "03a0a41228b6bba29274a0553d9020edd6d60c08c6cad93ed9dd820cba98b25c",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/native-contract-x64-test.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/native-contract-x64-test.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 40,
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/native-contract-x64-test.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/native-contract-x64-test.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 1141,
+      "sha256": "613fff773b9e7875198b742622522b9a6126fbca22fd5e9f77ed9db6b48acfdc",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/native-contract-x86.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/native-contract-x86.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 40,
+      "sha256": "d8c9a618e954ae97bf53eb976db86ae729edfb7dd0a2a602532473d963eee4c8",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/native-contract-x86.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/native-contract-x86.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 1136,
+      "sha256": "cc1902d4c42ed992d7aa8d98b75645b4005dae3cccb2c58ee95e8949d36d708c",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/native-focus-arm64.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/native-focus-arm64.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 55,
+      "sha256": "c181518da6a5945f42345daeeac5830b742f09b5025bcd4daaeb00628d14137d",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/native-focus-arm64.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/native-focus-arm64.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 1136,
+      "sha256": "2b6e25692ac7ccfaf96c49c89f9752f994bb869b9ae92bf13b115a059e33cb54",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/native-focus-x64-test.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/native-focus-x64-test.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 55,
+      "sha256": "c181518da6a5945f42345daeeac5830b742f09b5025bcd4daaeb00628d14137d",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/native-focus-x64-test.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/native-focus-x64-test.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 1139,
+      "sha256": "ac2cc29f6cd2f1426d008300b120653eca2d2ded46b26cca037eac73af581f15",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/native-focus-x86.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/native-focus-x86.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 55,
+      "sha256": "c181518da6a5945f42345daeeac5830b742f09b5025bcd4daaeb00628d14137d",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/native-focus-x86.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/native-focus-x86.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 1134,
+      "sha256": "91d1ffda7accc34bbc64f48c72b80095d238b46a38587971308930353513fabd",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/protection-after.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/protection-after.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 2971,
+      "sha256": "7b27273ce1155eb105273bc618d0c123ec45e65dc3da6d1571c90300e8f6e35b",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/protection-before.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/protection-before.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 2971,
+      "sha256": "7b27273ce1155eb105273bc618d0c123ec45e65dc3da6d1571c90300e8f6e35b",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/rebuild-full.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/rebuild-full.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 992,
+      "sha256": "8aca842964dd7cee6a576f0f8e52f2925e37af948be6c52824d7d52b4d374a69",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/rebuild-shorthand.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/rebuild-shorthand.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 1007,
+      "sha256": "421ce3f0f104a2962d50f3026a35adc6e8a9ddb01b4d9e5b0968073e18392331",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/rebuild-variable.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/rebuild-variable.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 1004,
+      "sha256": "cdb2f4ba61459a36be1c0b8fd92d80fa08938fac3453dcd11f351a9e6cd7a1e3",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/simple-payload-audit.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/simple-payload-audit.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 5492,
+      "sha256": "e0d8658d7e85864787807e42d0124a2e503297e92675da830f9fd6d86ab142ac",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/speech-product-export-mapping.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/speech-product-export-mapping.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 6383,
+      "sha256": "074253f5416ab34b28707fb2880a7bc5340b3cfff0b882ccd245b7987f54a934",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/summary.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/summary.json",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 424,
+      "sha256": "6f97919db1f65e6f754697d03eaa006b6410af6a396b844473e3b1eefee49eca",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "build/transcript.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/transcript.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-output",
+      "bytes": 15977,
+      "sha256": "4adc0c3f487aad2e515b3f9e2e93d543cce6ebde62282601cb4a14f7486589aa",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "delivery/checked-copy/product-package.json",
+      "source_path": "C:/dev/Yime-deliveries/arm64-proart-20261026-r2/YimeCore-ARM64/product-package.json",
+      "source_path_base": "explicit absolute path supplied for this task",
+      "category": "original-successful-check-delivery-source",
+      "bytes": 11942,
+      "sha256": "2615facbb83553e5a49cf2d7a6730bb51dc17e25dba9ef8e2d12fe3bec2543d1",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "delivery/checked-copy/Product.psm1",
+      "source_path": "C:/dev/Yime-deliveries/arm64-proart-20261026-r2/YimeCore-ARM64/Product.psm1",
+      "source_path_base": "explicit absolute path supplied for this task",
+      "category": "original-successful-check-delivery-source",
+      "bytes": 21792,
+      "sha256": "b29211a17f353946f01d9eeac1ac1671ac7b4320c05065d857669797d8d871d7",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "delivery/checked-copy/Setup.cmd",
+      "source_path": "C:/dev/Yime-deliveries/arm64-proart-20261026-r2/YimeCore-ARM64/Setup.cmd",
+      "source_path_base": "explicit absolute path supplied for this task",
+      "category": "original-successful-check-delivery-source",
+      "bytes": 158,
+      "sha256": "f037e8fbad255f8c76d908a00b58500243aa72595d291504604242c8b81b7a97",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "delivery/checked-copy/Setup.ps1",
+      "source_path": "C:/dev/Yime-deliveries/arm64-proart-20261026-r2/YimeCore-ARM64/Setup.ps1",
+      "source_path_base": "explicit absolute path supplied for this task",
+      "category": "original-successful-check-delivery-source",
+      "bytes": 12985,
+      "sha256": "36b5c0a4ca56020dd3502c46c4423ed1b491762425fbf0dff187922902066b07",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "delivery/delivery.json",
+      "source_path": "C:/dev/Yime-deliveries/arm64-proart-20261026-r2/delivery.json",
+      "source_path_base": "explicit absolute path supplied for this task",
+      "category": "original-external-delivery-receipt",
+      "bytes": 800,
+      "sha256": "b16a4acad897ce64fe97bd4eb8b4364a383ef940222c2bfab218829d09705618",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "delivery/SHA256SUMS.txt",
+      "source_path": "C:/dev/Yime-deliveries/arm64-proart-20261026-r2/SHA256SUMS.txt",
+      "source_path_base": "explicit absolute path supplied for this task",
+      "category": "original-external-delivery-receipt",
+      "bytes": 98,
+      "sha256": "8e2696b4739b5519e4e3433368473ec5c688e72fb9b937193de48a9d89dbc173",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "package/build/build-inputs.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/package/build/build-inputs.json",
+      "source_path_base": "repository root",
+      "category": "original-build-input-or-source-manifest",
+      "bytes": 4424,
+      "sha256": "520ca8d3fdefd5a4482238b57a01969c3e99cfe4246ba58e0d219930ddf02204",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "package/build/go-runtime-dependencies.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/package/build/go-runtime-dependencies.txt",
+      "source_path_base": "repository root",
+      "category": "original-build-input-or-source-manifest",
+      "bytes": 5217,
+      "sha256": "2deefbc03328bbd9e2ff2429dcb05ed13323c4835f1158dc6b2083cdc5fa712e",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "package/build/source-manifest.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/package/build/source-manifest.json",
+      "source_path_base": "repository root",
+      "category": "original-build-input-or-source-manifest",
+      "bytes": 152150,
+      "sha256": "9283c3f60d2e04b669e27198b98b5381d7470ad1a371d503669ca0f7213ff2e7",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "package/local-product.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/package/local-product.json",
+      "source_path_base": "repository root",
+      "category": "original-runtime-package-manifest",
+      "bytes": 8045,
+      "sha256": "185616a39a341955157f705e5ff86b336bc619b958cb38b2788ffb0d1a14e796",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "package/package-manifest.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/package/package-manifest.json",
+      "source_path_base": "repository root",
+      "category": "original-runtime-package-manifest",
+      "bytes": 11926,
+      "sha256": "a54c8c323460b8a2644feb24dd7da1d8ad7f87cca87da30089049bf8bc4dd89c",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "package/speech-capability.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/package/speech-capability.json",
+      "source_path_base": "repository root",
+      "category": "original-runtime-package-manifest",
+      "bytes": 220,
+      "sha256": "7c7ec05a237d371c92d8659d431d9b8dfd74418f1c9a484936645ad214ddc7f7",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "package/speech/admission.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/package/speech/admission.json",
+      "source_path_base": "repository root",
+      "category": "original-packaged-speech-evidence",
+      "bytes": 1295,
+      "sha256": "cd8f510bf4122ab48d6c260c62c2d53363121d59488395fcc1366a1df62c914c",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "package/speech/admitted-records.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/package/speech/admitted-records.json",
+      "source_path_base": "repository root",
+      "category": "original-packaged-speech-evidence",
+      "bytes": 62558,
+      "sha256": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "package/speech/forward-source.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/package/speech/forward-source.json",
+      "source_path_base": "repository root",
+      "category": "original-packaged-speech-evidence",
+      "bytes": 17920,
+      "sha256": "73e2ec162b0bc3a114a5a9de902b14b68c505d736502d2940d6e29297ace56c2",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "package/speech/product.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/package/speech/product.json",
+      "source_path_base": "repository root",
+      "category": "original-packaged-speech-evidence",
+      "bytes": 2501,
+      "sha256": "9d56bbac5342a565913ca54b372263d5bb71d767079ee6b9dbd195eb6f4b7f2b",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "setup-check/build-package-ps5.user.log",
+      "source_path": "C:/Users/tsaan/Yime Setup Logs/d1f161d45e9543c6a4d4953eb0da6b9c.user.log",
+      "source_path_base": "explicit absolute path supplied for this task",
+      "category": "original-build-package-setup-check-log",
+      "bytes": 1119,
+      "sha256": "4d3d8bdd95cf5499e339f921d22f9694f7a34e4bb6358a603013f4f1b233be50",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "setup-check/delivery-copy-ps5.user.log",
+      "source_path": "C:/Users/tsaan/Yime Setup Logs/82c934799b76413b9bdb56ec8f470c45.user.log",
+      "source_path_base": "explicit absolute path supplied for this task",
+      "category": "original-delivered-package-setup-check-log",
+      "bytes": 1081,
+      "sha256": "1c1710a8df79013ccdf538d5207cf6c55813742c7dd62144a2e49ebf495e5c08",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "simple-package/payload/package-manifest.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/YimeCore-ARM64/payload/package-manifest.json",
+      "source_path_base": "repository root",
+      "category": "original-simple-payload-manifest",
+      "bytes": 11926,
+      "sha256": "a54c8c323460b8a2644feb24dd7da1d8ad7f87cca87da30089049bf8bc4dd89c",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "simple-package/product-package.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/YimeCore-ARM64/product-package.json",
+      "source_path_base": "repository root",
+      "category": "original-simple-product-manifest",
+      "bytes": 11942,
+      "sha256": "2615facbb83553e5a49cf2d7a6730bb51dc17e25dba9ef8e2d12fe3bec2543d1",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-export/speech-capability.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/speech-product-export-d0973376c37a4bd3b68b60d9466ad57d/speech-capability.json",
+      "source_path_base": "repository root",
+      "category": "original-speech-export-manifest",
+      "bytes": 220,
+      "sha256": "7c7ec05a237d371c92d8659d431d9b8dfd74418f1c9a484936645ad214ddc7f7",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-export/speech/admission.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/speech-product-export-d0973376c37a4bd3b68b60d9466ad57d/speech/admission.json",
+      "source_path_base": "repository root",
+      "category": "original-speech-export-manifest",
+      "bytes": 1295,
+      "sha256": "cd8f510bf4122ab48d6c260c62c2d53363121d59488395fcc1366a1df62c914c",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-export/speech/forward-source.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/speech-product-export-d0973376c37a4bd3b68b60d9466ad57d/speech/forward-source.json",
+      "source_path_base": "repository root",
+      "category": "original-speech-export-manifest",
+      "bytes": 17920,
+      "sha256": "73e2ec162b0bc3a114a5a9de902b14b68c505d736502d2940d6e29297ace56c2",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "speech-export/speech/product.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/speech-product-export-d0973376c37a4bd3b68b60d9466ad57d/speech/product.json",
+      "source_path_base": "repository root",
+      "category": "original-speech-export-manifest",
+      "bytes": 2501,
+      "sha256": "9d56bbac5342a565913ca54b372263d5bb71d767079ee6b9dbd195eb6f4b7f2b",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/arm64-full/broker-err.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/arm64-full/broker-err.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/arm64-full/broker-out.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/arm64-full/broker-out.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/arm64-full/tsf-arm64.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/arm64-full/tsf-arm64.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1112,
+      "sha256": "d120aebbe1b513521045a866d716f7193d7313696f2d98a8dcd3329e5dbd684d",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/arm64-full/tsf-arm64.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/arm64-full/tsf-arm64.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1133,
+      "sha256": "023a8d2186d67e5c04bcd02728516f21f480f218a5b3455ebeceae767a14c8ea",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/arm64-shorthand/broker-err.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/arm64-shorthand/broker-err.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/arm64-shorthand/broker-out.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/arm64-shorthand/broker-out.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/arm64-shorthand/tsf-arm64.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/arm64-shorthand/tsf-arm64.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1112,
+      "sha256": "d120aebbe1b513521045a866d716f7193d7313696f2d98a8dcd3329e5dbd684d",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/arm64-shorthand/tsf-arm64.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/arm64-shorthand/tsf-arm64.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1133,
+      "sha256": "c7b4c573ec9536b5bc468ec69e49d22167cf1ba8f01568af130c1e0bc8168c65",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/arm64-variable/broker-err.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/arm64-variable/broker-err.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/arm64-variable/broker-out.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/arm64-variable/broker-out.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/arm64-variable/tsf-arm64.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/arm64-variable/tsf-arm64.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1112,
+      "sha256": "d120aebbe1b513521045a866d716f7193d7313696f2d98a8dcd3329e5dbd684d",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/arm64-variable/tsf-arm64.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/arm64-variable/tsf-arm64.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1133,
+      "sha256": "12315e95d0035148d2db2c1f5ba4af4d594fe0e6cea4edc404cfc956d2b7c62a",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/summary.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/summary.json",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-summary",
+      "bytes": 7306,
+      "sha256": "f4fc0f99453acaa7aa139c0c17c8b7beea0c8a74bb9cf06c9f7cff5daf849fef",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x64-full/broker-err.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x64-full/broker-err.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x64-full/broker-out.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x64-full/broker-out.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x64-full/tsf-x64.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x64-full/tsf-x64.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1112,
+      "sha256": "d120aebbe1b513521045a866d716f7193d7313696f2d98a8dcd3329e5dbd684d",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x64-full/tsf-x64.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x64-full/tsf-x64.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1136,
+      "sha256": "9be5164d7889f808da9a38ab864d8b9df6fedb457f49d26a246c6fa436f17571",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x64-shorthand/broker-err.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x64-shorthand/broker-err.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x64-shorthand/broker-out.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x64-shorthand/broker-out.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x64-shorthand/tsf-x64.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x64-shorthand/tsf-x64.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1112,
+      "sha256": "d120aebbe1b513521045a866d716f7193d7313696f2d98a8dcd3329e5dbd684d",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x64-shorthand/tsf-x64.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x64-shorthand/tsf-x64.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1136,
+      "sha256": "c149c8149edea0e58ec0646e514a5d7ac01514324044ba7a2c8a4754f9fa2f58",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x64-variable/broker-err.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x64-variable/broker-err.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x64-variable/broker-out.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x64-variable/broker-out.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x64-variable/tsf-x64.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x64-variable/tsf-x64.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1112,
+      "sha256": "d120aebbe1b513521045a866d716f7193d7313696f2d98a8dcd3329e5dbd684d",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x64-variable/tsf-x64.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x64-variable/tsf-x64.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1136,
+      "sha256": "500a03da5e59649b7e1138005347efccd27f5665c22cc00b83c7b4dba0f59b04",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x86-full/broker-err.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x86-full/broker-err.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x86-full/broker-out.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x86-full/broker-out.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x86-full/tsf-x86.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x86-full/tsf-x86.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1112,
+      "sha256": "573fc6b8dbaa8edd703f1c514ea32c84ec533a46e1e7cbc3ef3737ca59b76b85",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x86-full/tsf-x86.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x86-full/tsf-x86.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1131,
+      "sha256": "1b36cc2790a6e22565a65e2a34bc35bb8daf0d7d8820c4259f8903e384c44654",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x86-shorthand/broker-err.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x86-shorthand/broker-err.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x86-shorthand/broker-out.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x86-shorthand/broker-out.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x86-shorthand/tsf-x86.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x86-shorthand/tsf-x86.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1112,
+      "sha256": "573fc6b8dbaa8edd703f1c514ea32c84ec533a46e1e7cbc3ef3737ca59b76b85",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x86-shorthand/tsf-x86.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x86-shorthand/tsf-x86.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1131,
+      "sha256": "f6c93d7c3dab96c260d2cfbb7f893ef0d61a1c3a5db3a7b40b29047cb0f8427c",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x86-variable/broker-err.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x86-variable/broker-err.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x86-variable/broker-out.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x86-variable/broker-out.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x86-variable/tsf-x86.txt",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x86-variable/tsf-x86.txt",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1112,
+      "sha256": "573fc6b8dbaa8edd703f1c514ea32c84ec533a46e1e7cbc3ef3737ca59b76b85",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "tsf-platform-modes/x86-variable/tsf-x86.txt.fixture.json",
+      "source_path": ".tmp/yimecore-platform-experiments/arm64-package-20261026-203953-48f90202/tsf-platform-modes/x86-variable/tsf-x86.txt.fixture.json",
+      "source_path_base": "repository root",
+      "category": "original-isolated-tsf-host-or-broker-log",
+      "bytes": 1131,
+      "sha256": "dc56aeb74c61e95d5ac6a2f7f40a9a3a0dc405043476c7ae63f7861b1fb0c900",
+      "byte_identical_to_source": true
+    },
+    {
+      "path": "validation-summary.json",
+      "category": "derived-evidence-summary",
+      "bytes": 3174,
+      "sha256": "f3a32a5c94ac1fe3a9085f65dbf820c10273abab76204d44ad7f85b28779ebc7",
+      "byte_identical_to_source": null,
+      "derived_from": [
+        "build/summary.json",
+        "build/independence-audit.json",
+        "build/simple-payload-audit.json",
+        "build/arm64-payload-maintenance.json",
+        "build/go-tests.txt",
+        "package/build/source-manifest.json",
+        "tsf-platform-modes/summary.json",
+        "delivery/delivery.json",
+        "setup-check/build-package-ps5.user.log",
+        "setup-check/delivery-copy-ps5.user.log"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": "yimecore-arm64-archived-tool-identities-v1",
+  "evidence_kind": "read-only-byte-hashes-and-PE-header-observations",
+  "binaries": [
+    {
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/bin/YimeBroker-speech.exe",
+      "role": "fresh native admission Broker",
+      "bytes": 4930560,
+      "sha256": "36fbee46da133524d667374d50bcc2e7e61ae9c7f75625954470cc497923b718",
+      "pe_machine": "0xaa64",
+      "binary_embedded": false
+    },
+    {
+      "source_path": ".tmp/yimecore-experiment/speech-admission-20261026-201515-5d821f4f168e4024af3615cffc00b779/bin/YimeSpeechAdmission.exe",
+      "role": "fresh native admission tool",
+      "bytes": 4868096,
+      "sha256": "55c998d0fd6af860959799112bb19ac02084580deb0d3053826162df4448342c",
+      "pe_machine": "0xaa64",
+      "binary_embedded": false
+    },
+    {
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/ec/Release/YimeTextServiceExperiment.dll",
+      "role": "same ARM64X DLL passed native ARM64 and x64-emulated contract hosts",
+      "bytes": 1295872,
+      "sha256": "1a8d9f84ab615a60abd775e7e2e2d17177df2f5cffbbc9912a7cb06d6944ef06",
+      "pe_machine": "0xaa64",
+      "binary_embedded": false
+    },
+    {
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/native/Release/YimeTextServiceContractTests.exe",
+      "role": "native ARM64 isolated contract host",
+      "bytes": 723968,
+      "sha256": "5d28d8213e8dae122d6a0419039be091875646527b8faa674ba45b727b608b88",
+      "pe_machine": "0xaa64",
+      "binary_embedded": false
+    },
+    {
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194641-6bb6f5c1/x64/Release/YimeTextServiceContractTests.exe",
+      "role": "AMD64 isolated contract host executed through emulation",
+      "bytes": 729088,
+      "sha256": "9f89f3325ed1f091a61fc71b8ec17c3df26b30e43585f482534d65c5ee92c4bf",
+      "pe_machine": "0x8664",
+      "binary_embedded": false
+    },
+    {
+      "source_path": ".tmp/yimecore-platform-experiments/arm64x-20261026-194311-27e9ed1f/ec/Release/YimeTextServiceExperiment.dll",
+      "role": "prior EC-only output rejected by native ARM64 contract host",
+      "bytes": 1276416,
+      "sha256": "a0cc453557dae21edd1d2950e5d41ca07c3f0121142df96f86e8e3f390a5ed32",
+      "pe_machine": "0x8664",
+      "binary_embedded": false
+    }
+  ],
+  "toolchain": {
+    "go_executable": "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+    "go_version": "go version go1.25.14 windows/arm64"
+  },
+  "binary_payloads_archived": false,
+  "interpreted_scope": "Only identified build and fixture outputs were read; no installed binary or user state was read."
+}

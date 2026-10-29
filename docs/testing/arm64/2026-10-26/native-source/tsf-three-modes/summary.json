@@ -1,0 +1,53 @@
+{
+  "scope": "ARM64 current-source direct TSF documents with private in-memory Broker; standard product dictionaries",
+  "generated_at": "2026-10-26T10:52:11.6698840Z",
+  "passed": true,
+  "failure": null,
+  "protected_registration_unchanged": true,
+  "runs": [
+    {
+      "mode": "full",
+      "architecture": "arm64",
+      "passed": true
+    },
+    {
+      "mode": "variable",
+      "architecture": "arm64",
+      "passed": true
+    },
+    {
+      "mode": "shorthand",
+      "architecture": "arm64",
+      "passed": true
+    }
+  ],
+  "brokers": [
+    {
+      "mode": "full",
+      "pid": 23280,
+      "image": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-20261026-184609-ce50c301\\bin\\YimeBroker.exe",
+      "started_at_utc": "2026-10-26T10:50:45.8823315Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.Arm64Source.67a3dad157b84edf83406e5dd596920f",
+      "stopped": true
+    },
+    {
+      "mode": "variable",
+      "pid": 35084,
+      "image": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-20261026-184609-ce50c301\\bin\\YimeBroker.exe",
+      "started_at_utc": "2026-10-26T10:51:14.5686326Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.Arm64Source.35223d7a3251405986ba1f01dcb74fbb",
+      "stopped": true
+    },
+    {
+      "mode": "shorthand",
+      "pid": 22872,
+      "image": "C:\\dev\\Yime\\.tmp\\yimecore-platform-experiments\\arm64-20261026-184609-ce50c301\\bin\\YimeBroker.exe",
+      "started_at_utc": "2026-10-26T10:51:42.6692405Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.Arm64Source.07308246e12c4525967497767f6f5530",
+      "stopped": true
+    }
+  ],
+  "registered_host_acceptance": null,
+  "physical_acceptance": false,
+  "installation_performed": false
+}

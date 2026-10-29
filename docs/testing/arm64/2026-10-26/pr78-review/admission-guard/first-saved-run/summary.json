@@ -1,0 +1,47 @@
+{
+  "reviewed_base_commit": "2b256afdeb45795aafcf11641ba04cba149acb46",
+  "working_patch_inputs": {
+    "build-arm64-product.ps1": "6494fea1239dae4277ced7d5ed939009f8ecc4a0a5a455016c159c6e2525876c",
+    "local-product-speech-build.ps1": "ee57073991064f74ff8588ef84cc33a98b4e876b2777c93d90d2095b0a8b0f1b",
+    "test-arm64-speech-admission.ps1": "ecff4c58cfcea8b8f32e86d1a3158a462e759b3692de75bb5f9497f7e1bc0124"
+  },
+  "tests": [
+    {
+      "name": "arm64-package-gate",
+      "command": [
+        "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "tools/yimecore/test-arm64-speech-admission.ps1",
+        "--edition",
+        "ps7"
+      ],
+      "exit_code": 1,
+      "stdout": "arm64-package-gate.stdout.txt",
+      "stderr": "arm64-package-gate.stderr.txt"
+    },
+    {
+      "name": "legacy-speech-build",
+      "command": [
+        "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "tools/yimecore/test-local-product-speech-build.ps1",
+        "--edition",
+        "ps5",
+        "--params-file",
+        "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-admission-final-9c8afbbd\\legacy.params.json"
+      ],
+      "exit_code": 0,
+      "stdout": "legacy-speech-build.stdout.txt",
+      "stderr": "legacy-speech-build.stderr.txt"
+    }
+  ],
+  "scope": "Synthetic admission envelopes and isolated staging contracts; no product build, registration, installation or live input",
+  "legacy_fixture_root": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\yimecore-experiment\\speech-build-contract-pr78-1ae3dfc5",
+  "passed": false
+}

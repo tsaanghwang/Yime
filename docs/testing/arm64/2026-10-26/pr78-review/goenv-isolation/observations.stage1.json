@@ -1,0 +1,59 @@
+{
+  "schema_version": "yimecore-pr78-goenv-isolation-observation-v1",
+  "draft": true,
+  "review_kind": "GOENV persistent-configuration counterexample and unchanged R2 build evidence",
+  "reproduction": {
+    "result": "REPRODUCED",
+    "evidence": "goenv-isolation/reproduction/result.json",
+    "synthetic_module": true,
+    "empty_process_GOFLAGS_with_persistent_GOENV": {
+      "observed_effective_GOFLAGS": "-overlay=<explicit synthetic overlay.json>",
+      "go_list_imports": [
+        "encoding/base64"
+      ],
+      "meaning": "An empty process GOFLAGS did not suppress the persistent synthetic GOENV setting; the replacement source outside the module changed the observed dependency list."
+    },
+    "GOENV_off_with_empty_process_GOFLAGS": {
+      "observed_effective_GOFLAGS": "",
+      "go_list_imports": [],
+      "meaning": "Disabling the persistent Go environment removed the synthetic overlay."
+    },
+    "nonempty_process_override": {
+      "observed_effective_GOFLAGS": "-trimpath",
+      "go_list_imports": [],
+      "meaning": "A nonempty process value overrode the synthetic persistent GOFLAGS."
+    },
+    "isolated_goenv_unchanged": true,
+    "user_goenv_touched": false,
+    "product_built": false
+  },
+  "fixed_r2_delivery": {
+    "evidence": "goenv-isolation/r2/build-inputs.json",
+    "source_path": "C:/dev/Yime-deliveries/arm64-proart-20261026-r2/YimeCore-ARM64/payload/build/build-inputs.json",
+    "sha256": "520ca8d3fdefd5a4482238b57a01969c3e99cfe4246ba58e0d219930ddf02204",
+    "recorded_effective_GOFLAGS": "",
+    "recorded_GOARCH": "arm64",
+    "recorded_GOHOSTARCH": "arm64",
+    "recorded_GOVERSION": "go1.25.14",
+    "record_semantics": "The original ARM builder records output from go env -json, rather than copying only the process GOFLAGS value.",
+    "producer_code_reference": {
+      "commit": "f855867d2cd048de1b74bc97ba92921b481fc82e",
+      "path": "tools/yimecore/build-arm64-product.ps1",
+      "go_env_capture_line": 91,
+      "record_write_line": 124
+    },
+    "conclusion": "The pinned R2 build recorded empty effective GOFLAGS, so this synthetic persisted-overlay reproduction is not evidence of overlay contamination in the delivered R2 package.",
+    "package_modified": false
+  },
+  "pending": [
+    "Post-fix GOENV isolation test logs and their exact source hashes"
+  ],
+  "boundaries": [
+    "The archive worker only reads the seven explicit files; it does not execute Go or the synthetic overlay.",
+    "The cache directory and all unlisted fixture directories are excluded.",
+    "Only the named synthetic module/go.mod and module/main.go are copied.",
+    "No actual user GOENV file, personal settings, installed payload or learning database is read or modified.",
+    "Existing PR78 review and installed-validation indexes are not overwritten.",
+    "The delivered R2 artifact and its build-inputs bytes are unchanged."
+  ]
+}

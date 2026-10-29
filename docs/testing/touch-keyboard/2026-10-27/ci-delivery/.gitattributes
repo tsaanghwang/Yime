@@ -1,0 +1,3 @@
+# Keep recorded stdout/stderr bytes stable for their SHA-256 evidence.
+.gitattributes text eol=lf
+*.log -text

@@ -1,0 +1,54 @@
+{
+  "root": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77",
+  "go": "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+  "isolated_goenv_unchanged": true,
+  "product_built": false,
+  "user_goenv_touched": false,
+  "cases": [
+    {
+      "case": "empty_process_flags_persisted_env",
+      "process_GOENV": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\go.env",
+      "process_GOFLAGS": "",
+      "go_env": {
+        "exit_code": 0,
+        "stdout": "-overlay=C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\overlay.json\narm64\n",
+        "stderr": ""
+      },
+      "go_list": {
+        "exit_code": 0,
+        "stdout": "encoding/base64\n",
+        "stderr": ""
+      }
+    },
+    {
+      "case": "goenv_off_empty_flags",
+      "process_GOENV": "off",
+      "process_GOFLAGS": "",
+      "go_env": {
+        "exit_code": 0,
+        "stdout": "\narm64\n",
+        "stderr": ""
+      },
+      "go_list": {
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "case": "nonempty_process_flags_override",
+      "process_GOENV": "C:\\dev\\Yime\\.tmp\\arm64-goenv-review-72cd66aafa77\\go.env",
+      "process_GOFLAGS": "-trimpath",
+      "go_env": {
+        "exit_code": 0,
+        "stdout": "-trimpath\narm64\n",
+        "stderr": ""
+      },
+      "go_list": {
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    }
+  ]
+}

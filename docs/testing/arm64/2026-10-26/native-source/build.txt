@@ -1,0 +1,64 @@
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  BrokerBridgeTests.cpp
+  BrokerClient.cpp
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  ContractTests.cpp
+  TsfCompositionTests.cpp
+  FocusCancellationTests.cpp
+  RegisteredHostTests.cpp
+  BrokerEndpoint.cpp
+  RegistrationTool.cpp
+  BrokerClient.cpp
+  RegistrationQueryTests.cpp
+  CompositionEditSession.cpp
+  ExperimentSettings.cpp
+  ExperimentSettings.cpp
+  ExperimentSettings.cpp
+  BrokerClient.cpp
+  正在生成代码...
+  YimeTextServiceRegistration.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-20261026-184609-ce50c301\tsf-build\Release\YimeTextServiceRegistration.exe
+  YimeFocusCancellationTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-20261026-184609-ce50c301\tsf-build\Release\YimeFocusCancellationTests.exe
+  CandidateListUIElement.cpp
+  YimeRegistrationQueryTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-20261026-184609-ce50c301\tsf-build\Release\YimeRegistrationQueryTests.exe
+  CandidatePopup.cpp
+  正在生成代码...
+  BrokerEndpoint.cpp
+  KeyContract.cpp
+  正在生成代码...
+  CandidateListUIElement.cpp
+  SurfaceSession.cpp
+  CompositionEditSession.cpp
+  CandidatePopup.cpp
+  正在生成代码...
+  DllEntry.cpp
+  ExperimentSettings.cpp
+  CompositionEditSession.cpp
+  ExperimentSettings.cpp
+  YimeRegisteredHostTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-20261026-184609-ce50c301\tsf-build\Release\YimeRegisteredHostTests.exe
+  YimeTsfCompositionTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-20261026-184609-ce50c301\tsf-build\Release\YimeTsfCompositionTests.exe
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  YimeBrokerBridgeTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-20261026-184609-ce50c301\tsf-build\Release\YimeBrokerBridgeTests.exe
+  OutputTransform.cpp
+  PunctuationPalette.cpp
+  OutputTransform.cpp
+  SurfaceSession.cpp
+  PunctuationPalette.cpp
+  TextService.cpp
+  正在生成代码...
+  正在生成代码...
+  YimeTextServiceContractTests.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-20261026-184609-ce50c301\tsf-build\Release\YimeTextServiceContractTests.exe
+    正在创建库 C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-20261026-184609-ce50c301/tsf-build/Release/YimeTextServiceExperiment.lib 和对象 C:/dev/Yime/.tmp/yimecore-platform-experiments/arm64-20261026-184609-ce50c301/tsf-build/Release/YimeTextServiceExperiment.exp
+  YimeTextServiceExperiment.vcxproj -> C:\dev\Yime\.tmp\yimecore-platform-experiments\arm64-20261026-184609-ce50c301\tsf-build\Release\YimeTextServiceExperiment.dll
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt

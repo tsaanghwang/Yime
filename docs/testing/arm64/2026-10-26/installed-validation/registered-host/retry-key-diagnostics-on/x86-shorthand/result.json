@@ -1,0 +1,175 @@
+{
+  "architecture": "x86",
+  "mode": "shorthand",
+  "started_at": "2026-10-26T14:18:02.4927148Z",
+  "completed": true,
+  "image": "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+  "image_record": {
+    "path": "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+    "bytes": 384000,
+    "sha256": "28cdaad8c0dccdd1a8402bdb0e6dda696e4dc525ec6bdcfe8b7da566bf643bfa"
+  },
+  "pe_machine": "0x014c",
+  "pid": 33732,
+  "pid_created_at": "2026-10-26T14:18:02.5220402Z",
+  "observed_process_machine": "0x014c",
+  "observed_native_machine": "0xaa64",
+  "expected_dll": "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll",
+  "expected_dll_sha256": "cb5e0238992e57191936f71773afe64b2bd5bb8c0846cfe532ba0b3eb4f533a0",
+  "module_observation_status": "verified",
+  "module_observations": [
+    {
+      "observed_at": "2026-10-26T14:18:02.6724960Z",
+      "path": "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll",
+      "sha256": "cb5e0238992e57191936f71773afe64b2bd5bb8c0846cfe532ba0b3eb4f533a0",
+      "bytes": 583680,
+      "matches_expected": true
+    }
+  ],
+  "module_observation_errors": [],
+  "module_observation_attempts": 2,
+  "module_verified": true,
+  "foreground_samples": [
+    {
+      "observed_at": "2026-10-26T14:18:02.5441736Z",
+      "window": "0x140744",
+      "process_id": 3740,
+      "belongs_to_test": false,
+      "note": "OS foreground PID only; no window title/text read. This does not directly prove TSF key focus."
+    },
+    {
+      "observed_at": "2026-10-26T14:18:02.6614585Z",
+      "window": "0xf90b1e",
+      "process_id": 33732,
+      "belongs_to_test": true,
+      "note": "OS foreground PID only; no window title/text read. This does not directly prove TSF key focus."
+    },
+    {
+      "observed_at": "2026-10-26T14:18:02.7873556Z",
+      "window": "0xf90b1e",
+      "process_id": 33732,
+      "belongs_to_test": true,
+      "note": "OS foreground PID only; no window title/text read. This does not directly prove TSF key focus."
+    },
+    {
+      "observed_at": "2026-10-26T14:18:02.8948148Z",
+      "window": "0xf90b1e",
+      "process_id": 33732,
+      "belongs_to_test": true,
+      "note": "OS foreground PID only; no window title/text read. This does not directly prove TSF key focus."
+    },
+    {
+      "observed_at": "2026-10-26T14:18:03.0047543Z",
+      "window": "0xf90b1e",
+      "process_id": 33732,
+      "belongs_to_test": true,
+      "note": "OS foreground PID only; no window title/text read. This does not directly prove TSF key focus."
+    },
+    {
+      "observed_at": "2026-10-26T14:18:03.1138333Z",
+      "window": "0xf90b1e",
+      "process_id": 33732,
+      "belongs_to_test": true,
+      "note": "OS foreground PID only; no window title/text read. This does not directly prove TSF key focus."
+    },
+    {
+      "observed_at": "2026-10-26T14:18:03.2239258Z",
+      "window": "0xf90b1e",
+      "process_id": 33732,
+      "belongs_to_test": true,
+      "note": "OS foreground PID only; no window title/text read. This does not directly prove TSF key focus."
+    },
+    {
+      "observed_at": "2026-10-26T14:18:03.3326699Z",
+      "window": "0xf90b1e",
+      "process_id": 33732,
+      "belongs_to_test": true,
+      "note": "OS foreground PID only; no window title/text read. This does not directly prove TSF key focus."
+    },
+    {
+      "observed_at": "2026-10-26T14:18:03.4420689Z",
+      "window": "0xf90b1e",
+      "process_id": 33732,
+      "belongs_to_test": true,
+      "note": "OS foreground PID only; no window title/text read. This does not directly prove TSF key focus."
+    },
+    {
+      "observed_at": "2026-10-26T14:18:03.5516076Z",
+      "window": "0xf90b1e",
+      "process_id": 33732,
+      "belongs_to_test": true,
+      "note": "OS foreground PID only; no window title/text read. This does not directly prove TSF key focus."
+    },
+    {
+      "observed_at": "2026-10-26T14:18:03.6600439Z",
+      "window": "0xf90b1e",
+      "process_id": 33732,
+      "belongs_to_test": true,
+      "note": "OS foreground PID only; no window title/text read. This does not directly prove TSF key focus."
+    }
+  ],
+  "selection_key_diagnostics_enabled": true,
+  "child_environment": {
+    "LOCALAPPDATA": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b\\x86-shorthand\\t\\l",
+    "APPDATA": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b\\x86-shorthand\\t\\r",
+    "TEMP": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b\\x86-shorthand\\t\\tmp",
+    "TMP": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b\\x86-shorthand\\t\\tmp"
+  },
+  "settings_before": {
+    "version": 1,
+    "revision": 1,
+    "experiment_mode": "shorthand",
+    "ascii_mode": false,
+    "full_shape": false,
+    "ascii_punctuation": true,
+    "traditionalization": false,
+    "candidate_page_size": 5,
+    "candidate_layout": "vertical",
+    "candidate_font_preset": "medium",
+    "candidate_font_family": "Microsoft YaHei UI",
+    "candidate_annotation": "key_sequence"
+  },
+  "settings_after": {
+    "ascii_mode": false,
+    "ascii_punctuation": true,
+    "candidate_annotation": "key_sequence",
+    "candidate_font_family": "Microsoft YaHei UI",
+    "candidate_font_preset": "medium",
+    "candidate_layout": "vertical",
+    "candidate_page_size": 5,
+    "experiment_mode": "shorthand",
+    "full_shape": true,
+    "revision": 1793024283196075700,
+    "source": "yimecore-language-bar",
+    "traditionalization": false,
+    "updated_at": "2026-10-26T14:18:03.196Z",
+    "version": 1
+  },
+  "timeout_seconds": 90,
+  "timed_out": false,
+  "owned_process_stopped": false,
+  "exit_code": 0,
+  "stdout": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b\\x86-shorthand\\stdout.txt",
+  "stderr": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b\\x86-shorthand\\stderr.txt",
+  "log_capture_complete": true,
+  "missing_or_false_flags": [],
+  "functional_passed": true,
+  "passed": true,
+  "error": null,
+  "stdout_record": {
+    "path": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b\\x86-shorthand\\stdout.txt",
+    "bytes": 1294,
+    "sha256": "87503dc94334702752c5b60d75990e8f4d116a13f4e4674f6938b6012453b0df"
+  },
+  "stderr_record": {
+    "path": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b\\x86-shorthand\\stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "selection_key_diagnostic_record": {
+    "path": "C:\\dev\\Yime\\.tmp\\arm64-reg-r2-x86-shorthand-retry-20261026-e17a5c6b\\x86-shorthand\\t\\l\\YimeCore Experimental Trial\\evidence\\tsf-key-host.log",
+    "bytes": 6078,
+    "sha256": "d518175fd6983e177c4bc810d5107d8c88393f441b5fcaff088fc863497d5ff9"
+  },
+  "finished_at": "2026-10-26T14:18:03.8382008Z"
+}

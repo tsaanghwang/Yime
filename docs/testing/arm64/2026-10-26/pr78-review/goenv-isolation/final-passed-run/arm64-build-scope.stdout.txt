@@ -1,0 +1,1 @@
+PASS: 21 ARM64 source-build scope contracts; no build, target execution or installation.

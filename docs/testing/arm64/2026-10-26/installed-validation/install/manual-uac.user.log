@@ -1,0 +1,26 @@
+﻿**********************
+Windows PowerShell 脚本开始
+开始时间: 20261026215101
+用户名: HUASHUONOTEBOOK\tsaan
+RunAs 用户: HUASHUONOTEBOOK\tsaan
+配置名称: 
+计算机: HUASHUONOTEBOOK (Microsoft Windows NT 10.0.28000.0)
+主机应用程序: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-deliveries\arm64-proart-20261026-r2\YimeCore-ARM64\Setup.ps1
+进程 ID: 14312
+PSVersion: 5.1.28000.3231
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.28000.3231
+BuildVersion: 10.0.28000.3231
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\e3d2f95ca1274c46ba7f8496dc9da645.user.log
+Action: Install; package: C:\dev\Yime-deliveries\arm64-proart-20261026-r2\YimeCore-ARM64
+Elevated setup log: C:\Users\tsaan\Yime Setup Logs\e3d2f95ca1274c46ba7f8496dc9da645.admin.log
+Elevated setup exit code: 0
+**********************
+Windows PowerShell 脚本结束
+结束时间: 20261026215118
+**********************

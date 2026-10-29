@@ -1,0 +1,29 @@
+{
+  "schema_version": "yimecore-arm64-post-build-source-review-v1",
+  "candidate": "product-r2",
+  "source_manifest_sha256": "9283c3f60d2e04b669e27198b98b5381d7470ad1a371d503669ca0f7213ff2e7",
+  "source_files": 741,
+  "unchanged_files": 738,
+  "runtime_and_installer_sources_unchanged": true,
+  "reviewed_differences": [
+    {
+      "path": "installer/simple/HANDOFF.md",
+      "packaged_source_sha256": "1d828baef80d4e81431a98f813e54566b1194a3e1f6b1bca32cdb999da06f8c1",
+      "current_sha256": "c7778b1bce1a3fa998cdb4b2301a2df40348cbc54f8d7e65e7ea15accc7e02ce",
+      "reason": "Post-build package identity and validation status documentation."
+    },
+    {
+      "path": "installer/simple/README.md",
+      "packaged_source_sha256": "aeb552979ccaf4331b0934fb3f8e509b1662d406901345232335fdf1b825641d",
+      "current_sha256": "14bf66b5e3f34c32217297ce0b40592d1b5a4450fd894426a788d41ab79e97dc",
+      "reason": "Post-build validation status documentation."
+    },
+    {
+      "path": "installer/simple/Test-Manage.ps1",
+      "packaged_source_sha256": "b609264af0ad80b1c391c8260535e02fd83111b88ca696cd373848e8b2ceaadd",
+      "current_sha256": "6bb9720c941b34a051cede67c3ebfb6e4c052fbae95ac2eb73decc1a6ff616b0",
+      "reason": "Test-only UTF-8 BOM preservation for English Windows PS5 CI; checked PS5 Test-Manage passed after the change."
+    }
+  ],
+  "installed": false
+}

@@ -38,7 +38,18 @@ func TestTaskbarMinimizeRestoreAndCancellation(t *testing.T) {
 			}
 			previous := active
 			a.h, active = h, a
-			defer func() { U("DestroyWindow").Call(h); active = previous }()
+			defer func() {
+				// Detach before WM_DESTROY can post the application's quit message.
+				active = previous
+				if ok, _, err := U("DestroyWindow").Call(h); ok == 0 {
+					t.Errorf("destroy taskbar fixture on its owning thread: %v", err)
+				}
+				var m message
+				// Remove a leaked WM_QUIT so a failing regression cannot poison later tests.
+				if quit, _, _ := U("PeekMessageW").Call(uintptr(unsafe.Pointer(&m)), 0, 0x0012, 0x0012, 1); quit != 0 {
+					t.Error("taskbar fixture teardown posted WM_QUIT")
+				}
+			}()
 			U("ShowWindow").Call(h, 4)
 			index := int32(-20) // GWL_EXSTYLE
 			style, _, _ := U("GetWindowLongPtrW").Call(h, uintptr(index))

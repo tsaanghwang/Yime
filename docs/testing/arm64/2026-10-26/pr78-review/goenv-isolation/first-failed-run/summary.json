@@ -1,0 +1,112 @@
+{
+  "schema_version": "yimecore-pr78-goenv-review-run-v1",
+  "started_at": "2026-10-26T16:34:07.371903+00:00",
+  "base_commit": "bb35633e211bfdd2c8a282aec9b19915b4737866",
+  "published_base_commit": "35cc358a0fbc9464e72ca0bd8cd2010d20ee1a5d",
+  "go_executable": "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+  "working_patch_inputs": {
+    "tools/yimecore/arm64-go-environment.ps1": "e73fbba1c3bb1d734d3e19b4a1a5352683cdeb2b2080084bb624fa9879b0ef9c",
+    "tools/yimecore/build-arm64-product.ps1": "468a76a4f295952e4712468ce9be0acf2b1f794ad24929620a4f73f0cf9e626f",
+    "tools/yimecore/development-scope.ps1": "f22791b3eccc8d2820a7c3456c7947ae9a7992d70d60019d254126e2dee83472",
+    "tools/yimecore/test-arm64-build-scope.ps1": "b0c9cf4700fd3a60311abbfd6a2af3f91d1434bd0438be8df97e1db9e8da479e",
+    "tools/yimecore/test-arm64-go-environment.ps1": "0024e8864797f1b9ae73a029eed656f175720b0bf01d4f9097bb62925c9a09aa",
+    "tools/yimecore/test-arm64-speech-admission.ps1": "278abffff00d2922486571d6e929cccfee2e194b01f8ba890daa8dfe82134391",
+    "tools/yimecore/test-development-scope.ps1": "34a63141dea8820be67304b3b683492ba8d3f2f9ad2d508967db24fbc35f185c",
+    "tools/yimecore/test-local-product-speech-build.ps1": "caa397c507f9fb4fc4242c42e09b842110f278de16ea047131b4832a4a792849",
+    "tools/yimecore/test-platform-experiment.ps1": "01c04f555e81e657c9b2ac3895f9e6d13a073aadefcd8a4b7942b70f660163fb"
+  },
+  "tests": [
+    {
+      "name": "arm64-admission-and-go-environment",
+      "command": [
+        "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "tools/yimecore/test-arm64-speech-admission.ps1",
+        "--edition",
+        "ps7"
+      ],
+      "exit_code": 1,
+      "stdout": "arm64-admission-and-go-environment.stdout.txt",
+      "stderr": "arm64-admission-and-go-environment.stderr.txt"
+    },
+    {
+      "name": "arm64-build-scope",
+      "command": [
+        "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "tools/yimecore/test-arm64-build-scope.ps1",
+        "--edition",
+        "ps7"
+      ],
+      "exit_code": 0,
+      "stdout": "arm64-build-scope.stdout.txt",
+      "stderr": "arm64-build-scope.stderr.txt"
+    },
+    {
+      "name": "platform-contract",
+      "command": [
+        "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "tools/yimecore/test-platform-experiment.ps1",
+        "--edition",
+        "ps7"
+      ],
+      "exit_code": 0,
+      "stdout": "platform-contract.stdout.txt",
+      "stderr": "platform-contract.stderr.txt"
+    },
+    {
+      "name": "development-scope",
+      "command": [
+        "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "tools/yimecore/test-development-scope.ps1",
+        "--edition",
+        "ps7"
+      ],
+      "exit_code": 1,
+      "stdout": "development-scope.stdout.txt",
+      "stderr": "development-scope.stderr.txt"
+    },
+    {
+      "name": "legacy-speech-build",
+      "command": [
+        "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-X",
+        "utf8",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "tools/yimecore/test-local-product-speech-build.ps1",
+        "--edition",
+        "ps5",
+        "--params-file",
+        "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\pr78-goenv-final-489edd96\\legacy.params.json"
+      ],
+      "exit_code": 0,
+      "stdout": "legacy-speech-build.stdout.txt",
+      "stderr": "legacy-speech-build.stderr.txt"
+    }
+  ],
+  "scope": "Synthetic Go environment/admission/platform contracts; no product build, registration, installation or live input",
+  "go_version": {
+    "exit_code": 0,
+    "stdout": "go version go1.25.14 windows/arm64\n",
+    "stderr": ""
+  },
+  "source_unchanged_during_tests": true,
+  "legacy_fixture_root": "C:\\Users\\tsaan\\.codex\\worktrees\\pr78-conflict-review\\Yime\\.tmp\\yimecore-experiment\\speech-build-contract-goenv-0d95fbd6",
+  "passed": false,
+  "finished_at": "2026-10-26T16:34:20.413312+00:00"
+}

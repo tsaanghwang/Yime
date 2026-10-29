@@ -1,0 +1,57 @@
+# Dual-ABI TSF DLL only. Registrars and test hosts remain architecture-specific.
+# Microsoft documents the two-stage /LINKREPROFULLPATHRSP workflow at
+# https://learn.microsoft.com/en-us/windows/arm/arm64x-build
+if(NOT MSVC OR MSVC_VERSION LESS 1941 OR NOT YIME_LOCAL_PRODUCT)
+    message(FATAL_ERROR "ARM64X requires current product identity and MSVC 19.41 or later")
+endif()
+
+if(YIME_ARM64X_STAGE STREQUAL "ARM64")
+    set(_yime_rsp_dir "${CMAKE_CURRENT_BINARY_DIR}/arm64x")
+    file(MAKE_DIRECTORY "${_yime_rsp_dir}")
+    target_link_options(YimeTextServiceExperiment PRIVATE
+        "/LINKREPROFULLPATHRSP:${_yime_rsp_dir}/YimeTextServiceExperiment.rsp")
+elseif(YIME_ARM64X_STAGE STREQUAL "ARM64EC")
+    set(YIME_ARM64X_NATIVE_LINK_RSP "" CACHE FILEPATH "Completed Release ARM64 linker input response file")
+    if(NOT IS_ABSOLUTE "${YIME_ARM64X_NATIVE_LINK_RSP}" OR
+       NOT EXISTS "${YIME_ARM64X_NATIVE_LINK_RSP}")
+        message(FATAL_ERROR "Build the ARM64 stage first and provide its absolute YIME_ARM64X_NATIVE_LINK_RSP")
+    endif()
+    file(STRINGS "${YIME_ARM64X_NATIVE_LINK_RSP}" _yime_native_lines)
+    set(_yime_native_objects)
+    set(_yime_native_libraries)
+    set(_yime_native_definition)
+    foreach(_yime_line IN LISTS _yime_native_lines)
+        string(STRIP "${_yime_line}" _yime_line)
+        string(REGEX REPLACE "^\"|\"$" "" _yime_line "${_yime_line}")
+        if(_yime_line MATCHES "^/[Dd][Ee][Ff]:(.*)$")
+            set(_yime_item "${CMAKE_MATCH_1}")
+            string(REGEX REPLACE "^\"|\"$" "" _yime_item "${_yime_item}")
+            list(APPEND _yime_native_definition "${_yime_item}")
+        else()
+            string(REGEX REPLACE "^\"|\"$" "" _yime_item "${_yime_line}")
+            string(TOLOWER "${_yime_item}" _yime_lower)
+            if(_yime_lower MATCHES "[.]obj$")
+                list(APPEND _yime_native_objects "${_yime_item}")
+            elseif(_yime_lower MATCHES "[.]lib$")
+                list(APPEND _yime_native_libraries "${_yime_item}")
+            endif()
+        endif()
+    endforeach()
+    list(LENGTH _yime_native_definition _yime_definition_count)
+    if(NOT _yime_native_objects OR NOT _yime_native_libraries OR NOT _yime_definition_count EQUAL 1)
+        message(FATAL_ERROR "Native response file must contain objects, libraries, and exactly one DEF file")
+    endif()
+    foreach(_yime_item IN LISTS _yime_native_objects _yime_native_libraries _yime_native_definition)
+        if(NOT IS_ABSOLUTE "${_yime_item}" OR NOT EXISTS "${_yime_item}")
+            message(FATAL_ERROR "Native linker input is not an existing absolute file: ${_yime_item}")
+        endif()
+    endforeach()
+    set_source_files_properties(${_yime_native_objects} PROPERTIES EXTERNAL_OBJECT TRUE GENERATED TRUE)
+    target_sources(YimeTextServiceExperiment PRIVATE ${_yime_native_objects})
+    # Keep the spelling used by Microsoft's CMake recipe. CMake's VS flag table
+    # converts uppercase /MACHINE into TargetMachine, before its injected
+    # /machine:ARM64EC AdditionalOptions, which would win and emit EC-only PE.
+    target_link_options(YimeTextServiceExperiment PRIVATE
+        /machine:arm64x "/defArm64Native:${_yime_native_definition}")
+    target_link_libraries(YimeTextServiceExperiment PRIVATE ${_yime_native_libraries})
+endif()
