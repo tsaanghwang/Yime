@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "scope": "PR84 host exact text supplement only",
+  "sourceCommit": "f01326e6c1976a4e67c9ff59693effc0e1110b1a",
+  "exeSHA256": "0e24a31e2088c5b19e39bae8ac78adcc28a9cb258d2f0034b2addac1ec8cbc07",
+  "physicalAcceptance": false,
+  "cases": [
+    {
+      "host": "Word",
+      "caseId": "W01",
+      "status": "pending",
+      "expectedCodepoints": [
+        "U+0031",
+        "U+0032",
+        "U+2026"
+      ],
+      "actualText": null,
+      "actualCodepoints": null,
+      "capturedAt": null,
+      "originalTextRetained": null,
+      "newInputPerformed": null,
+      "hostVersion": null,
+      "hostPid": null,
+      "hostArchitecture": null,
+      "architectureEvidence": null,
+      "keyboardProcessPath": null,
+      "packageBindingConfirmed": false,
+      "evidence": [],
+      "evidenceSHA256": {},
+      "notes": null
+    },
+    {
+      "host": "Word",
+      "caseId": "W02",
+      "status": "pending",
+      "expectedCodepoints": [
+        "U+0031",
+        "U+0032",
+        "U+22EF",
+        "U+22EF"
+      ],
+      "actualText": null,
+      "actualCodepoints": null,
+      "capturedAt": null,
+      "originalTextRetained": null,
+      "newInputPerformed": null,
+      "hostVersion": null,
+      "hostPid": null,
+      "hostArchitecture": null,
+      "architectureEvidence": null,
+      "keyboardProcessPath": null,
+      "packageBindingConfirmed": false,
+      "evidence": [],
+      "evidenceSHA256": {},
+      "notes": null
+    },
+    {
+      "host": "Firefox-WOW64",
+      "caseId": "W01",
+      "status": "pending",
+      "expectedCodepoints": [
+        "U+0031",
+        "U+0032",
+        "U+2026"
+      ],
+      "actualText": null,
+      "actualCodepoints": null,
+      "capturedAt": null,
+      "originalTextRetained": null,
+      "newInputPerformed": null,
+      "hostVersion": null,
+      "hostPid": null,
+      "hostArchitecture": null,
+      "architectureEvidence": null,
+      "keyboardProcessPath": null,
+      "packageBindingConfirmed": false,
+      "evidence": [],
+      "evidenceSHA256": {},
+      "notes": null
+    },
+    {
+      "host": "Firefox-WOW64",
+      "caseId": "W02",
+      "status": "pending",
+      "expectedCodepoints": [
+        "U+0031",
+        "U+0032",
+        "U+22EF",
+        "U+22EF"
+      ],
+      "actualText": null,
+      "actualCodepoints": null,
+      "capturedAt": null,
+      "originalTextRetained": null,
+      "newInputPerformed": null,
+      "hostVersion": null,
+      "hostPid": null,
+      "hostArchitecture": null,
+      "architectureEvidence": null,
+      "keyboardProcessPath": null,
+      "packageBindingConfirmed": false,
+      "evidence": [],
+      "evidenceSHA256": {},
+      "notes": null
+    }
+  ]
+}
