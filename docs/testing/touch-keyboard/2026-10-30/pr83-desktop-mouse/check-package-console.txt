@@ -1,0 +1,2 @@
+Package check PASSED - see package-check.json
+Press any key to continue . . . 

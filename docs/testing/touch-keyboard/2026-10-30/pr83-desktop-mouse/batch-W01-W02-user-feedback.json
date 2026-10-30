@@ -1,0 +1,11 @@
+{
+  "feedback": "已测试。正常。",
+  "host": "Word",
+  "method": "mouse",
+  "time": "2026-10-30T20:18:59.3193906+08:00",
+  "cases": [
+    "W01",
+    "W02"
+  ],
+  "codepointsVerified": false
+}
