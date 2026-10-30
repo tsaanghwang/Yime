@@ -1,0 +1,191 @@
+{
+  "mode": "full",
+  "results": [
+    {
+      "commit": "‘",
+      "quoteCandidate": "",
+      "quoteOrdinal": 0,
+      "raw": "",
+      "step": "direct opening"
+    },
+    {
+      "commit": "’",
+      "quoteCandidate": "",
+      "quoteOrdinal": 0,
+      "raw": "",
+      "step": "direct closing"
+    },
+    {
+      "commit": "",
+      "quoteCandidate": "‘",
+      "quoteOrdinal": 9,
+      "raw": "'",
+      "step": "coding entrance remains composition"
+    },
+    {
+      "commit": "‘",
+      "quoteCandidate": "’",
+      "quoteOrdinal": 9,
+      "raw": "'",
+      "step": "reserved entrance preserves composition and refreshes pair"
+    },
+    {
+      "commit": "’",
+      "quoteCandidate": "",
+      "quoteOrdinal": 0,
+      "raw": "",
+      "step": "choose refreshed closing"
+    }
+  ],
+  "scope": "development fixture using original c35 dictionaries and current lab engine; not physical/GUI/host evidence",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "packageLayoutSHA256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+  "relevantPhysicalKeys": [
+    {
+      "id": "R02K06",
+      "x": 5.25,
+      "y": 1.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "!",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "N12",
+        "",
+        "'",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "N12"
+      ],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [
+        "N12"
+      ],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "'"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "!",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
+      }
+    },
+    {
+      "id": "R04K11",
+      "x": 10.75,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "'",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "N03",
+        "",
+        "f",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "N03"
+      ],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [
+        "N03"
+      ],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "f"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "'",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "T",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "t",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "t"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "T"
+        }
+      }
+    }
+  ]
+}

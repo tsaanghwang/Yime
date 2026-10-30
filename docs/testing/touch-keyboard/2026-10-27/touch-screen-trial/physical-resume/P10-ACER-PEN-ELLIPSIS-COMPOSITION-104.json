@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-COMPOSITION-104",
+  "continues": "TOUCH-V1-ACER-PEN-ELLIPSIS-EDIT-CANCEL-103",
+  "status": "passed-user-reported-group-result",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for browser reset/caret, explicit keyboard Bind",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "setup": "Each case independently Reset Edge r3 textarea, click empty field, Bind. Current choice package78ef9124…, CN/variable/ID/literal entrancesOFF, selectionOFF/modifiers unlit,18u/58.8/filter0. Reapply Shift for each N25 symbol tap.",
+  "cases": [
+    {
+      "caseID": "ellipsis-matched-composition-restores-candidates",
+      "steps": [
+        "N08 then M03 ->raw ni with candidate你, textarea empty",
+        "Shift then N25 three times ->ellipsis choices overlay; raw ni retained, textarea still empty",
+        "tap second ellipsis candidate U+22EF ->textarea ⋯; raw ni retained and Chinese candidate你 visible again",
+        "tap Chinese candidate你"
+      ],
+      "expected": {
+        "rawDuringEllipsis": "ni",
+        "afterEllipsisText": "⋯",
+        "rawAfterEllipsis": "ni",
+        "finalText": "⋯你",
+        "finalCodepoints": [
+          "U+22EF",
+          "U+4F60"
+        ],
+        "finalRaw": "",
+        "noUnrequestedChineseCommit": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "ellipsis-unmatched-composition-restores-no-candidates",
+      "steps": [
+        "N08 then Shift then M12 ->raw n], no dictionary candidates, textarea empty",
+        "Shift then N25 three times ->ellipsis choices overlay, raw n] retained",
+        "tap first ellipsis candidate U+2026 ->textarea …; raw n] retained and no dictionary candidates",
+        "top Cancel ->raw empty; textarea remains …"
+      ],
+      "expected": {
+        "rawDuringEllipsis": "n]",
+        "afterEllipsisText": "…",
+        "rawAfterEllipsis": "n]",
+        "dictionaryCandidatesAfterEllipsis": 0,
+        "finalText": "…",
+        "finalCodepoints": [
+          "U+2026"
+        ],
+        "finalRaw": ""
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "hostObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "priorResultsInherited": false,
+  "scope": "two current-package actual Edge CN/variable matched/unmatched composition coexistence cases; no Word, other code modes, paging or concurrent-touch inheritance",
+  "onMismatch": "report raw, candidate list and textarea codepoints before/after symbol selection; stop without replay or clearing unexpected text",
+  "expectedSources": [
+    "canonical ni3 variable sample and unmatched n] probe71 as fixture expectations only",
+    "old/new package dictionary and physical-layout SHA256 equality checked; not a physical-result transfer",
+    "session symbol candidates are presentation overlay only and selection leaves underlying engine composition intact"
+  ],
+  "userReport": "正常",
+  "userResultDate": "2026-10-30",
+  "evidence": "user-reports/p10-acer-pen-ellipsis-composition-104-user-result.json"
+}

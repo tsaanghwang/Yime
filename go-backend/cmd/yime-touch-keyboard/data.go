@@ -75,7 +75,7 @@ func checkData(o options) (err error) {
 	}
 	report := map[string]any{
 		"scope": "desktop-in-process-data-check", "layoutId": runtime.LayoutID,
-		"inputPolicy": keyboardlab.InputPolicy, "indexes": runtime.Builds,
+		"inputPolicy": keyboardlab.InputPolicy, "sessionPolicy": keyboardlab.SessionPolicy, "indexes": runtime.Builds,
 		"boardWidthU": board.Bounds.Width, "keyCount": len(board.Keys),
 		"desktopChineseUI": false, "hostInputSent": false, "hardwareAcceptance": false,
 		"portablePackageCheck": o.CheckPackage, "confirmedChineseInMemory": confirmed,

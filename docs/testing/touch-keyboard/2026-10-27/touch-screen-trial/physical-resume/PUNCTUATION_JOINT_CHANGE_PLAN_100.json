@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-29",
+  "userInstruction": "继续测试顿号和破折号，然后，结合破折号的输出问题一起改动。",
+  "status": "dash-accepted-no-change; ellipsis-only-choice-implemented",
+  "currentPhysicalBatch": "P10-ACER-PEN-EDGE-SLASH-DASH-100.json",
+  "currentExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "nextJointChange": {
+    "ellipsis": "after3 taps offer U+2026 vs U+22EF; after6 offer doubled forms; commit only after explicit selection",
+    "dash": "no change per explicit user acceptance"
+  },
+  "dashObservationRequested": [
+    "first Shift+N21 visible text and codepoints",
+    "second Shift+N21 visible text and codepoints",
+    "whether raw remains empty"
+  ],
+  "interimFixedU22EFPackage": "local r2 package remains development-only; do not switch user to it ahead of joint patch",
+  "prepared101": "defer/revise after joint patch, not issued as active test",
+  "constraints": "no pass credit from requirement discussion, no presumed dash defect, preserve old evidence and c35 current package; no installation/default input-method/user-data changes",
+  "dashResult": "user-reports/p10-acer-pen-edge-slash-dash-100-user-result.json",
+  "latestDecision": "ELLIPSIS_CHOICE_DECISION_101.json"
+}

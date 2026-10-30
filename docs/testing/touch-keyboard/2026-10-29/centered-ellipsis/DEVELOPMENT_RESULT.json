@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-29",
+  "status": "local implementation and development checks passed; physical acceptance pending",
+  "decision": "../../2026-10-27/touch-screen-trial/physical-resume/MIDDLE_DOT_FINAL_DECISION_100.json",
+  "changes": [
+    "per-session2-tap buffer; third emits U+22EF; sixth emits second U+22EF",
+    "pendingMiddleDots response field and touch-header/web pending count",
+    "Backspace/cancel/language/session boundaries; flush before main text or edit, side literal independent",
+    "no Backspace/rewrite of already delivered host text to combine dots",
+    "web consumes shared session output instead of client-side replacement",
+    "API session-policy suffix prevents old/new web service/client mixing while data input policy remainsv2"
+  ],
+  "validation": {
+    "goAffectedPackages": "PASS keyboardlab and desktop after final policy change; related touchkeyboard/lab command/ASCIImetadata/product codemode checks passed earlier in same change",
+    "newRegressionCases": [
+      "three modes, six taps, retry byte-identical, composition preservation",
+      "partial backspace, side literal isolation, main text flush, clear/mode/close",
+      "invalid U22EF entrance/stale revision/candidate confirmation",
+      "preview cursor edit/session reset; host output never erased for grouping; failed flush stops following edit",
+      "web rejection resync keeps pending count and no commit replay"
+    ],
+    "javascript": "initial44 tests passed; changed input suite20 including new resync test passed; app syntax passed",
+    "relocatedPackage": "PASS three modes, exact resource files and8 rejection checks; render passed, no host input sent",
+    "touchUI": "PASS18u/98keys; session policy suffix present",
+    "gitDiffCheck": "PASS"
+  },
+  "limits": [
+    "not actual finger/pen or Word/Edge acceptance for new executable",
+    "no ARM64 native execution or new ARM package delivery",
+    "current c35 batch100 still pending; historical c35 passes not relabelled"
+  ],
+  "package": "package-identity.json",
+  "nextPhysicalDefinition": "../../2026-10-27/touch-screen-trial/physical-resume/P10-ACER-PEN-CENTERED-DOTS-101.json"
+}

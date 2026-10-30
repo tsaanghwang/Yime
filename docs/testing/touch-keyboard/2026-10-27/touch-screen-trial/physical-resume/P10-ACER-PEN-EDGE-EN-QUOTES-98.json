@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-EN-QUOTES-98",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-EN-PUNCTUATION-97",
+  "host": "same Edge local textarea, fixture r3",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for page reset/caret setup; explicit keyboard Bind",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "Note current English-keycap preference. Reset r3 page, click empty textarea, Bind. EN/variable/ID, English keycaps ORIGINAL layout, literal entrances OFF, raw empty, selection OFF/modifiers unlit. Reapply Shift before EACH key. Same c35/58.8.",
+  "cases": [
+    {
+      "caseID": "edge-en-straight-single-and-double-quotes",
+      "keys": [
+        {
+          "shiftThen": "N03"
+        },
+        {
+          "shiftThen": "N03"
+        },
+        {
+          "shiftThen": "N11"
+        },
+        {
+          "shiftThen": "N11"
+        }
+      ],
+      "expected": {
+        "textAfterEachKey": [
+          "'",
+          "''",
+          "''\"",
+          "''\"\""
+        ],
+        "finalText": "''\"\"",
+        "finalCodepoints": [
+          "U+0027",
+          "U+0027",
+          "U+0022",
+          "U+0022"
+        ],
+        "rawAlwaysEmpty": true,
+        "noCandidateConfirmationNeeded": true,
+        "noChineseQuoteConversion": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 1,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 1,
+  "priorResultsInherited": false,
+  "expectedFixture": "ACER_PEN_QUOTE_FIXTURE_90.json packaged N03/N11 Shift actions, original-view routing, keyboard_engine punctuation English branch",
+  "expectedSourceScope": "English input with original keycaps emits ASCII apostrophe/double-quote directly; English punctuation returns input unchanged; source/probe expectations only",
+  "scope": "one actual Edge EN/original-view straight-quote sequence, entrances OFF; not Word smart-quote behavior, all schemas or resolution of91 cause",
+  "afterBatch": "restore literal entrances OFF, CN/variable and prior English-keycap preference",
+  "onMismatch": "report raw and codepoint line, input language and keycap setting; stop, do not auto-replay",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-edge-en-quotes-98-user-result.json"
+}

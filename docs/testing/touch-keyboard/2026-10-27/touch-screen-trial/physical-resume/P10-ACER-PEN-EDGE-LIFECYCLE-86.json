@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-29",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "host": "same Edge local static textarea, revised fixture r2",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-LIFECYCLE-86",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-EDITING-85",
+  "status": "passed-user-reported-group-result",
+  "focusSetupMethod": "mouse allowed for page reset/caret setup and taskbar restoration; pen for keyboard controls/input",
+  "setup": "same c35 host Keyboard/58.8 ratio. Two independent disruption/rebind cases in the same temporary Edge textarea. Reset to12 before each. Host Help cancels unconfirmed composition and binding, unlike preview Help. No browser/system settings or installed input method changes.",
+  "cases": [
+    {
+      "caseID": "edge-minimize-restore-rebind",
+      "setup": [
+        "page Reset; click textarea and keyboard Bind",
+        "EN, raw empty, selection OFF/modifiers unlit; input12; verify textarea only12",
+        "CN/variable; N08 ->raw n with candidates; textarea remains12; do not confirm"
+      ],
+      "action": [
+        "pen Minimize keyboard",
+        "restore same keyboard from taskbar"
+      ],
+      "verification": [
+        "textarea still12, raw empty, old target binding invalid/rebind requested",
+        "click textarea after12, keyboard Bind",
+        "CN/variable; N08 then M03 ->ni; textarea still12 before confirmation",
+        "tap visible candidate 你 once; inspect textarea12你 exactly"
+      ],
+      "expected": {
+        "hostTextBeforeRebind": "12",
+        "rawAfterDisruption": "",
+        "oldBindingInvalid": true,
+        "hostTextAfterNewConfirmation": "12你",
+        "noHangOrAutomaticCommitOrReplay": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "edge-help-return-rebind",
+      "setup": [
+        "page Reset; click textarea and keyboard Bind",
+        "EN, raw empty, selection OFF/modifiers unlit; input12; verify textarea only12",
+        "CN/variable; N08 ->raw n with candidates; textarea remains12; do not confirm"
+      ],
+      "action": [
+        "pen Help",
+        "Next once, Previous once, Return"
+      ],
+      "verification": [
+        "textarea still12, raw empty, old target binding invalid/rebind requested",
+        "click textarea after12, keyboard Bind",
+        "CN/variable; N08 then M03 ->ni; textarea still12 before confirmation",
+        "tap visible candidate 你 once; inspect textarea12你 exactly"
+      ],
+      "expected": {
+        "hostTextBeforeRebind": "12",
+        "rawAfterDisruption": "",
+        "oldBindingInvalid": true,
+        "hostTextAfterNewConfirmation": "12你",
+        "noHangOrAutomaticCommitOrReplay": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 2,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "host suspendForMinimize/Help loseHostFocus cancels transient composition and invalidates binding",
+    "explicit Bind and newly confirmed candidate can resume delivery; Word80 is expectation reference only, no Edge result inheritance"
+  ],
+  "scope": "two sequential Edge lifecycle cases only; independent foreground-window switch, concurrency, shutdown/relaunch and other hosts remain separate",
+  "onMismatch": "stop and report actual textarea/raw/target status; do not replay old input or remove unexpected text automatically",
+  "userReport": "正常j",
+  "evidence": "user-reports/p10-acer-pen-edge-lifecycle-86-user-result.json"
+}

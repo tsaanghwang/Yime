@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-30",
+  "status": "defined four-case boundary group complete",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "host": "same Edge r3 local textarea",
+  "passedBoundaryScenarios": 4,
+  "subsetOfNewPackageHostCount": true,
+  "batches": {
+    "110": {
+      "passed": 2,
+      "evidence": "user-reports/p10-acer-pen-ellipsis-residual-110-user-result.json"
+    },
+    "111": {
+      "passed": 2,
+      "evidence": "user-reports/p10-acer-pen-ellipsis-cap-flush-111-user-result.json"
+    }
+  },
+  "scope": "4/5 remainders,6-tap cap/rejected7th and two-dot English text flush only",
+  "limits": "not every count/edit/flush route or concurrency; group confirmations without action transcripts"
+}

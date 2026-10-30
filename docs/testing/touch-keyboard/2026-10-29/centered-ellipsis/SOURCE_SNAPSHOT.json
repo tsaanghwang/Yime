@@ -1,0 +1,22 @@
+{
+  "baseHead": "e971f4d826c73d16351bb4bfffaf65579c418ab1",
+  "sourceChanges": true,
+  "files": {
+    "go-backend/internal/keyboardlab/session.go": "97f4c96b6f7b79150a9836eb6a5b6104e4a55cc85cd6250e5060bbf27d1f9dea",
+    "go-backend/internal/keyboardlab/http.go": "46b403b317b075fbf6f7366666127ebe45f754f77b505fbc413a568b7f678761",
+    "go-backend/internal/keyboardlab/modes_test.go": "3f6501177625a0b3640ad7882720376a4c0b760dfd317ec2ac23f62ed59d8e73",
+    "go-backend/internal/keyboardlab/middle_dots_test.go": "bb50e87f6b0c5d63c414c0c0dc821cad8ae46efcce70474ae1532bffc987d26e",
+    "go-backend/cmd/yime-touch-keyboard/preview.go": "10bd5d8224482245f83d4e9258b1db09e4ea2b1913feba37d2c44a0f22c990c7",
+    "go-backend/cmd/yime-touch-keyboard/host_windows.go": "e212250462b697d0a665f3302ac08ca0ca18b92d986aed02c688aa45b80200a1",
+    "go-backend/cmd/yime-touch-keyboard/data.go": "ce8cf5b19dc304d181ce4bbfef886e515650ed93566b7d5d4c98cb752abba3ad",
+    "go-backend/cmd/yime-touch-keyboard/touch_surface_windows.go": "949f26b151394adce42e5ce4d545a57389627c6f879102cade5bfa2309f3dad8",
+    "go-backend/cmd/yime-touch-keyboard/middle_dots_test.go": "f76376258b1dc7a64c77486f14628077851893be957b3b413684b0bfef069a7e",
+    "prototypes/touch-terminal/app.mjs": "a54bd61f97750f3d5bb37719a27199bb41b9e2215e9cc8318fdff609bdafb10e",
+    "prototypes/touch-terminal/input.mjs": "73e09720d8ce1cbd3c2432d98578e31e8d9ef0bbc7b21451bc641212675f8fb0",
+    "prototypes/touch-terminal/input.test.mjs": "8e3c175b35cd151ca6779ca106f3a2f3e5d84d6fb042737eafcf5bce7e9f0af2",
+    "prototypes/touch-terminal/README.md": "900c47b789ac627dce00c9579be41a0063b9389526627c276e63675144945cf9",
+    "prototypes/touch-terminal/desktop/USER_GUIDE.zh-CN.md": "fc4397a652f4b2419cbc6af83e5625fa6a66505cfbbc31fdce0a18b55756c870",
+    "prototypes/touch-terminal/desktop/PUNCTUATION_RULES_2026-10-29.zh-CN.md": "ee3f8b9559aa8dc56b1bf0a7563aff56a5c5440a4396ca71ba5a4f158a504a5e"
+  },
+  "note": "local working-source hashes; not a CI or committed artifact"
+}

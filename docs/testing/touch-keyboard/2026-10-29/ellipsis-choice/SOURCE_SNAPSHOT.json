@@ -1,0 +1,26 @@
+{
+  "sourceCommit": "e971f4d826c73d16351bb4bfffaf65579c418ab1",
+  "sourceChanges": true,
+  "files": {
+    "go-backend/internal/keyboardlab/session.go": "48173d8512dc92dcd4c4131749d55eedd6ca3b3f211b8b572c62290003deaccd",
+    "go-backend/internal/keyboardlab/http.go": "46b403b317b075fbf6f7366666127ebe45f754f77b505fbc413a568b7f678761",
+    "go-backend/internal/keyboardlab/modes_test.go": "3f6501177625a0b3640ad7882720376a4c0b760dfd317ec2ac23f62ed59d8e73",
+    "go-backend/internal/keyboardlab/middle_dots_test.go": "7070d50af9885d1b2ee9ae288216e34974041d1677ab70ef60d83114536b01ef",
+    "go-backend/internal/keyboardlab/ellipsis_choices_test.go": "66c00e1ceaea7ac5adb3cc29231867de7eb724d450fada74cccfa653b3347d9c",
+    "go-backend/cmd/yime-touch-keyboard/preview.go": "8187100051aaaba2eb4f84c1906af10427bf4bc158a252f34619dbcade9868fa",
+    "go-backend/cmd/yime-touch-keyboard/host_windows.go": "1b413411aab2e273ee9894017e580ff6cad36abc939e062196b6d245de727b35",
+    "go-backend/cmd/yime-touch-keyboard/preview_windows.go": "1028f7cb6a24bbdb9e144a3f4f842a22ee530af31a5c338b6bbc1e0d29dc92d6",
+    "go-backend/cmd/yime-touch-keyboard/touch_surface_windows.go": "dbe74df9e4cf1c890b7883c8aecd8f4a26d3427f042ac654c9e078958dc12ad0",
+    "go-backend/cmd/yime-touch-keyboard/middle_dots_test.go": "8f9b9f3d193fb8aa643243e0168dcd3820a541c1ae664bdcab5412c1ca380995",
+    "go-backend/cmd/yime-touch-keyboard/ellipsis_choices_test.go": "3e83d6bdef783e04b1512a453f0babc4ea363563c7977800fb4f63cec66727ee",
+    "go-backend/cmd/yime-touch-keyboard/ellipsis_choices_windows_test.go": "08685c04784765a3901de94c789d5933e40eca77448dfe883425ee5854dd7a3b",
+    "go-backend/cmd/yime-touch-keyboard/data.go": "ce8cf5b19dc304d181ce4bbfef886e515650ed93566b7d5d4c98cb752abba3ad",
+    "prototypes/touch-terminal/input.mjs": "70502f65da2b5b2a729433e69d8d76b93f682b11157bbe0e0dfc842c6a52b934",
+    "prototypes/touch-terminal/app.mjs": "5b324e183904f04f02e51ee04b3e0d4620eb12bf5532a0830e1b16c48faed414",
+    "prototypes/touch-terminal/input.test.mjs": "e9f9bec333ff70d55b4bf44e83eaab2d3494997ac0d9c7d1fcb3d2c0f7761348",
+    "prototypes/touch-terminal/README.md": "de54b70bb07bbb6c122f43aae9d1240b2bdb83473562f3a9f264a9cce4fafb0d",
+    "prototypes/touch-terminal/desktop/USER_GUIDE.zh-CN.md": "36699d9d55442ae04f3037753b2e3980bbc56193b9e6542be3c7f0c4090cfb52",
+    "prototypes/touch-terminal/desktop/PUNCTUATION_RULES_2026-10-29.zh-CN.md": "10eb41d6845954e9bc6c4178ce87af6d361c84544c63b0935cea3610935bb7d9"
+  },
+  "note": "uncommitted local source hashes; not CI source identity"
+}

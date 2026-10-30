@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-SYMBOL-ENTRANCE-91",
+  "status": "not-reproduced-after-fresh-binding-in92-and93; historical-cause-unresolved",
+  "userReport": "这项测试出现两个标点的方向相反。但是这个不是这个项目才有的问题。word 一直都有。其它应用也有。",
+  "evidence": "user-reports/p10-acer-pen-edge-symbol-entrance-91-user-issue.json",
+  "unknowns": [
+    "original textarea codepoint sequence vs rendering, not automatically read",
+    "whether fresh binding/session setup was performed as specified",
+    "candidate display before actual commit and actual pair state"
+  ],
+  "clarificationRequested": [
+    "which of the two cases",
+    "copy the actual two quote characters and identify browser or Word"
+  ],
+  "developmentEvidence": [
+    "ACER_PEN_SYMBOL_ENTRANCE_FIXTURE_91.json: isolated engine produces U+2018 then U+2019; pending quote candidate refresh verified",
+    "packaged N03 Shift is reserved literalEntry; N12 base is coding and not reserved",
+    "host_windows.go bindHost rebuilds engine session and should reset quote pair flags",
+    "platform_windows.go sendOutputTo encodes o.Text into UTF-16 input in order; no quote conversion there"
+  ],
+  "developmentEvidenceLimits": "source/probe do not establish actual GUI state, copied output code points, host acceptance or rendering",
+  "attribution": "undetermined; fresh binding now correct, historical state before91 not captured; no engine/runtime fix made",
+  "next": "preserve historical observation; monitor recurrence, no runtime fix attributed",
+  "priorResults": "historical user-normal reports preserved; do not erase or generalize them; batch91 gets zero pass credit",
+  "clarificationEvidence": "user-reports/p10-acer-pen-edge-symbol-entrance-91-clarification.json",
+  "actualHost": "Edge",
+  "messageSequence": [
+    "U+2019",
+    "U+2018"
+  ],
+  "messageSequenceQualification": "user-pasted message, not direct textarea retrieval",
+  "doubleQuotesThisRound": "unmeasured",
+  "screenshot": "docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\raw\\quote-direction-91-user.png",
+  "freshBindingDiagnostic": {
+    "definition": "P10-ACER-PEN-QUOTE-DIAGNOSTIC-92.json",
+    "evidence": "user-reports/p10-acer-pen-quote-diagnostic-92-user-result.json",
+    "reportedSequence": [
+      "U+2018",
+      "U+2018 U+2019"
+    ],
+    "credits": 0
+  },
+  "pendingCompositionRetest": {
+    "definition": "P10-ACER-PEN-EDGE-PENDING-QUOTE-RETEST-93.json",
+    "evidence": "user-reports/p10-acer-pen-edge-pending-quote-retest-93-user-result.json",
+    "result": "passed-user-reported"
+  }
+}

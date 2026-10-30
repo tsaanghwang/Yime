@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-29",
+  "scope": "development fixture discovery with original c35 package dictionaries via isolated in-process lab runtime; no UI or system input",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "raw": "n]",
+  "physicalInput": [
+    "N08",
+    "Shift",
+    "M12"
+  ],
+  "results": [
+    {
+      "candidateCount": 0,
+      "mode": "variable",
+      "raw": "n]"
+    },
+    {
+      "candidateCount": 0,
+      "mode": "full",
+      "raw": "n]"
+    },
+    {
+      "candidateCount": 0,
+      "mode": "shorthand",
+      "raw": "n]"
+    }
+  ],
+  "hardwareAcceptance": false,
+  "penAcceptance": false,
+  "source": "keyboardlab.OpenRuntime with explicit c35 package root/data; process-local Go overlay replaces only diagnostic command main, not runtime sources or global flags",
+  "notes": "synthetic raw test input, not a pronunciation/lexicon record; no canonical encoding or generated dictionary edited"
+}

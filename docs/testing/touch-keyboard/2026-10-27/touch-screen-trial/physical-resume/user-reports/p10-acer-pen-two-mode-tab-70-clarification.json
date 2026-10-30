@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-29",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "batchID": "TOUCH-V1-ACER-PEN-TWO-MODE-TAB-70-SUPPLEMENT",
+  "question": "你补测的 Tab，是否在全码、简码两种模式下，都按“清空→数字1→Tab→数字2”操作，正文显示为 1⇥2（一个制表符）、组合栏为空？",
+  "answer": "是，两种模式都这样测过且正常",
+  "passedCandidateContextScenariosAdded": 2,
+  "bodyLayersAdded": 0,
+  "controlScenariosAdded": 0,
+  "scope": "group confirmation of two explicit Tab contexts, no per-attempt transcript/count; current batch71 remains pending"
+}

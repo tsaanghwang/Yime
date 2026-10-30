@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-WORD-EDITING-79",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input as presented",
+  "focusSetupMethod": "mouse permitted, separate from keyboard input",
+  "host": "Word; same new unsaved test document",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedHostScenarios": 3,
+  "bodyLayersAdded": 0,
+  "controlScenariosAdded": 0,
+  "candidateScenariosAdded": 0,
+  "result": "Word partial selection replacement, selection Delete and forward Delete normal as presented; top SelectAll/1234 reset used as setup, not extra scenario credit",
+  "scope": "three grouped actual-Word single-line cases without per-action transcript/attempt count; not multiline, independent End/Tab/Enter, pure-pen caret positioning or lifecycle/focus acceptance"
+}

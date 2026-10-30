@@ -298,6 +298,33 @@ test('confirmed composition rejection keeps queued Backspace, selection and Clea
   }
 });
 
+test('rejected input resynchronizes pending dots before backspace and flush without replay',async () => {
+  const modes = {input:'chinese',punctuation:'chinese'};
+  const state = {raw_input:'',candidates:[]};
+  let revision=4, pending=2, ids=0;
+  const events=[], rendered=[];
+  const client=createLiveClient({idFactory:()=>`dots-${++ids}`,onResult:r=>rendered.push(r),fetcher:async(url,options)=>{
+    if (url.endsWith('/info')) return response({layoutId:'layout',token:'t',inputPolicy:INPUT_POLICY});
+    if (url.endsWith('/session')) return response({ok:true,sessionId:'s',revision:0,state,modes});
+    const event=JSON.parse(options.body); events.push(event);
+    if (event.type==='input') return response({ok:false,error:'stale revision',sessionId:'s',revision,state,modes,pendingMiddleDots:pending},409);
+    assert.equal(event.baseRevision,revision);
+    let commit='';
+    if (event.type==='backspace') pending--;
+    if (event.type==='flushSymbols') { commit='·'.repeat(pending); pending=0; }
+    return response({ok:true,sessionId:'s',revision:++revision,state,modes,pendingMiddleDots:pending,commit});
+  }});
+  await client.connect('layout');
+  await assert.rejects(client.dispatch({type:'input',ascii:'a'}),/stale revision/);
+  assert.equal(client.snapshot.pendingMiddleDots,2);
+  await client.dispatch({type:'backspace'});
+  assert.equal(client.snapshot.pendingMiddleDots,1);
+  assert.equal((await client.dispatch({type:'flushSymbols'})).commit,'·');
+  assert.equal(client.snapshot.pendingMiddleDots,0);
+  assert.deepEqual(events.map(e=>e.type),['input','backspace','flushSymbols']);
+  assert.equal(rendered.filter(r=>r.commit).length,1);
+});
+
 test('terminal and untrusted API failures remain disconnected without replaying input',async () => {
   const valid = {ok:false,error:'rejected',sessionId:'s',revision:0,state:{raw_input:'n'},modes:{input:'chinese',punctuation:'english'}};
   const failures = [
@@ -323,6 +350,25 @@ test('terminal and untrusted API failures remain disconnected without replaying 
     await assert.rejects(client.dispatch({type:'clear'}),/未连接/);
     assert.equal(posts,1);
   }
+});
+
+test('ellipsis choices survive a stale resync and remain selectable in English',async () => {
+  const modes={input:'english',punctuation:'english'};
+  const choices=[{id:'ellipsis:6:2026',text:'……'},{id:'ellipsis:6:22ef',text:'⋯⋯'}];
+  let ids=0;
+  const client=createLiveClient({idFactory:()=>`choice-${++ids}`,fetcher:async(url,options)=>{
+    if(url.endsWith('/info'))return response({layoutId:'layout',token:'t',inputPolicy:INPUT_POLICY});
+    if(url.endsWith('/session'))return response({ok:true,sessionId:'s',revision:0,state:{raw_input:'p',candidates:[]},modes});
+    const event=JSON.parse(options.body);
+    if(event.type==='input')return response({ok:false,error:'stale revision',sessionId:'s',revision:6,state:{raw_input:'p',candidates:choices},modes,pendingMiddleDots:6,symbolChoice:true},409);
+    assert.equal(event.type,'select');assert.equal(event.baseRevision,6);assert.equal(event.candidateId,choices[1].id);
+    return response({ok:true,sessionId:'s',revision:7,state:{raw_input:'p',candidates:[]},modes,commit:'⋯⋯'});
+  }});
+  await client.connect('layout');
+  await assert.rejects(client.dispatch({type:'input',ascii:'a'}),/stale revision/);
+  assert.equal(client.snapshot.symbolChoice,true);assert.equal(client.snapshot.pendingMiddleDots,6);
+  assert.equal((await client.dispatch({type:'select',candidateId:choices[1].id})).commit,'⋯⋯');
+  assert.equal(client.snapshot.state.raw_input,'p');assert.ok(!client.snapshot.symbolChoice);
 });
 
 function response(value,status=200) { return {ok:status>=200 && status<300,status,json:async () => value}; }

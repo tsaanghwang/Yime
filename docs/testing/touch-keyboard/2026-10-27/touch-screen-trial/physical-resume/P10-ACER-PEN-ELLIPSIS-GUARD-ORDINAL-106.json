@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-GUARD-ORDINAL-106",
+  "continues": "TOUCH-V1-ACER-PEN-ELLIPSIS-EN-105",
+  "status": "passed-user-reported-group-result",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for browser reset/caret, explicit keyboard Bind",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "setup": "Each case independently Reset Edge r3 page, click empty textarea, Bind. Current choice package78ef9124…, CN/variable/ID/literal entrancesOFF, raw empty, selection/modifiersOFF,18u/58.8/filter0. Main digits1 then2 with no candidates commit literal12; verify textarea12 and raw empty. Reapply Shift before each N25.",
+  "cases": [
+    {
+      "caseID": "ellipsis-choices-block-main-text-and-home-until-selection",
+      "steps": [
+        "Shift then N25 three times ->two ellipsis choices, textarea12",
+        "direct main M12 WITHOUT Shift ->ordinary coding input must be rejected, raw stays empty, choices remain and textarea stays12",
+        "top Home ->must be rejected while choices pending; choices/textarea unchanged",
+        "tap second U+22EF candidate"
+      ],
+      "expected": {
+        "beforeSelectionText": "12",
+        "rawAfterRejectedInput": "",
+        "choicesRemainAfterRejectedInputAndHome": true,
+        "noBindingInvalidationRequired": true,
+        "finalText": "12⋯",
+        "finalCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+22EF"
+        ],
+        "pendingDotsAfter": 0
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "ellipsis-six-taps-main-digit2-selects-not-literal",
+      "steps": [
+        "independently prepare textarea12 with raw empty",
+        "Shift then N25 six times; do not choose after third; textarea remains12",
+        "direct main digit2 key WITHOUT Shift, not the candidate button"
+      ],
+      "expected": {
+        "beforeSelectionText": "12",
+        "finalText": "12⋯⋯",
+        "finalCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+22EF",
+          "U+22EF"
+        ],
+        "noExtraLiteral2": true,
+        "rawEmpty": true,
+        "pendingDotsAfter": 0
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "hostObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "priorResultsInherited": false,
+  "scope": "two current-package actual Edge CN/variable guard and main-digit ordinal cases; not every modifier/confirmation route, other hosts or concurrency",
+  "onMismatch": "report actual field text/codepoints, raw, candidate presence and any rebind requirement; do not auto-replay or clear unexpected text",
+  "expectedSources": [
+    "session choice guard rejects ordinary main input/flush while choices pending",
+    "main ordinals route explicitly to current ellipsis choice without literal digit fallback",
+    "native navigation must stop on rejected symbol flush, preserving caret until selection"
+  ],
+  "afterBatch": "keep CN/variable/literal entrancesOFF",
+  "userReport": "正常",
+  "userResultDate": "2026-10-30",
+  "evidence": "user-reports/p10-acer-pen-ellipsis-guard-ordinal-106-user-result.json"
+}

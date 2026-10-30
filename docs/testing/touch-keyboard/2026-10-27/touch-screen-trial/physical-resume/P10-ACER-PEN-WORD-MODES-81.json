@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-WORD-MODES-81",
+  "continues": "TOUCH-V1-ACER-PEN-WORD-LIFECYCLE-80",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse allowed for original Word caret placement; explicit Bind",
+  "host": "original new unsaved Word A, no existing/private document",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same c35 host Keyboard/58.8 ratio. Two independent full/shorthand scenarios, reset only temporary test text to12 each time, CN mode. Actual Word text must stay12 during composition and become12你 only after explicit candidate tap. Scroll to keep caret visible if needed; do not change keyboard geometry. Finish variable mode.",
+  "cases": [
+    {
+      "caseID": "word-full-ni3",
+      "mode": "full",
+      "setup": [
+        "original unsaved Word A only; mouse place caret, Acer pen Bind",
+        "EN, raw empty, selection OFF/modifiers unlit; top SelectAll then main digits12; verify Word only12",
+        "switch CN; Settings choose requested mode/ID; Return"
+      ],
+      "keys": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "expectedBeforeConfirmation": {
+        "raw": "niii",
+        "actualWordText": "12"
+      },
+      "confirmation": "single visible candidate 你 tap with Acer pen",
+      "expectedAfterConfirmation": {
+        "actualWordText": "12你",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noDuplicateOrRawASCIISent": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "word-shorthand-ni3",
+      "mode": "shorthand",
+      "setup": [
+        "original unsaved Word A only; mouse place caret, Acer pen Bind",
+        "EN, raw empty, selection OFF/modifiers unlit; top SelectAll then main digits12; verify Word only12",
+        "switch CN; Settings choose requested mode/ID; Return"
+      ],
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedBeforeConfirmation": {
+        "raw": "ni",
+        "actualWordText": "12"
+      },
+      "confirmation": "single visible candidate 你 tap with Acer pen",
+      "expectedAfterConfirmation": {
+        "actualWordText": "12你",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noDuplicateOrRawASCIISent": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 2,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "canonical ni3 lab mode samples established in batch68: full niii, shorthand ni",
+    "host explicit binding preserves document and sends confirmed commit only",
+    "preview three-mode observations do not substitute for actual Word result"
+  ],
+  "scope": "two remaining Word mode candidate-click confirmations only; not all keys/modes/confirmation routes, other hosts or installed TIP acceptance",
+  "afterBatch": "checkpoint defined basic Word11 scenarios if normal, retain scroll adjustment and open editing/quote/settings/concurrent/Edge scopes separately",
+  "onMismatch": "stop, inspect actual Word and target status; no replay or changes to existing documents",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-word-modes-81-user-result.json"
+}

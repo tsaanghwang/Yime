@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-29",
+  "status": "implementation/development/package checks passed; actual pen acceptance pending",
+  "scope": "ellipsis-only change; one/two tap dash output untouched",
+  "changes": [
+    "three/six middle-dot taps expose U2026/U22EF choices; no automatic commit",
+    "temporary candidate view preserves underlying Chinese raw/dictionary/page ownership",
+    "CN and EN both allow explicit choice; main1/2 or candidate/confirm selection",
+    "ordinary text/edit/flush blocked while choice pending, side literal independent",
+    "current-revision candidate IDs prevent stale selection/replay, cached retries immutable",
+    "backspace updates choices, cancel/mode/focus/session boundaries discard unconfirmed buffer",
+    "count4/5 selection commits complete triple, keeps residual1/2; count6 requires selection before7"
+  ],
+  "validation": {
+    "Go": "PASS keyboardlab/desktop; related touchkeyboard/lab command/ASCIImetadata/product codemode checks passed",
+    "choiceMatrix": "3 code modes x2 input languages x2 tap counts x2 output codepoints plus exact retry/raw preservation",
+    "regressions": "stale candidate IDs, invalid ordinary input/no implicit commit, side bypass, selection residual,6-tap bound, backspace and mode cancel",
+    "nativeControlledPointer": "PASS own UI touch-handler fixture, English choices, stale/duplicate UP; not physical input",
+    "JS": "45-test suite passed, updated input suite21 passed (one additional test); app syntax passed",
+    "portablePackage": "PASS relocated package, three modes,8 resource rejection checks,render; no host input sent",
+    "touchUI": "PASS18u/98keys, choice session-policy present"
+  },
+  "activation": {
+    "oldC35": "normal Exit clicked; later inventory confirms old window absent",
+    "newPackage": "observed new executable path/window459340 displayed",
+    "settingsObserved": "CN,variable,ID,literal entrancesOFF,dark,soundON",
+    "args": [
+      "--touch-ui",
+      "--theme",
+      "dark",
+      "--key-sound",
+      "click",
+      "--ruler-observed-mm",
+      "58.8"
+    ],
+    "actualCharacterInputAutomated": false
+  },
+  "physicalAcceptance": false,
+  "installedProductChanges": false,
+  "package": "package-identity.json"
+}

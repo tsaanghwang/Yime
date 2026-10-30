@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-EN-105",
+  "continues": "TOUCH-V1-ACER-PEN-ELLIPSIS-COMPOSITION-104",
+  "status": "partial-second-case-passed-first-expected-codepoint-with-glyph-question",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for browser reset/caret, explicit keyboard Bind",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "setup": "Same choice package78ef9124…,18u/58.8/filter0. Note prior English-keycap preference. EACH case independently reset Edge r3/caret/Bind; choose EN/variable/ID and English keycaps ORIGINAL layout (so N25 Shift remains middle dot), literal entrancesOFF, raw empty, selection/modifiersOFF. Input12 before dot taps.",
+  "cases": [
+    {
+      "caseID": "ellipsis-en-3-taps-option1",
+      "setup": "independently Reset/refocus/Bind; EN/variable/ID, English keycaps ORIGINAL layout, literal entrancesOFF; raw empty and modifiers/selectionOFF; main digits12 ->textarea12",
+      "steps": [
+        "Shift then N25 3 times, reapply Shift each time; after third/sixth symbol choices are selectable in EN and textarea remains12",
+        "pen tap option1"
+      ],
+      "expected": {
+        "beforeSelectionText": "12",
+        "afterSelectionText": "12…",
+        "afterSelectionCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+2026"
+        ],
+        "rawAlwaysEmpty": true,
+        "pendingDotsAfter": 0
+      },
+      "status": "expected-codepoint-reported-glyph-appearance-question",
+      "reportedCodepoint": "U+2026",
+      "appearance": "vertically centered per user"
+    },
+    {
+      "caseID": "ellipsis-en-6-taps-option2",
+      "setup": "independently Reset/refocus/Bind; EN/variable/ID, English keycaps ORIGINAL layout, literal entrancesOFF; raw empty and modifiers/selectionOFF; main digits12 ->textarea12",
+      "steps": [
+        "Shift then N25 6 times, reapply Shift each time; after third/sixth symbol choices are selectable in EN and textarea remains12",
+        "pen tap option2"
+      ],
+      "expected": {
+        "beforeSelectionText": "12",
+        "afterSelectionText": "12⋯⋯",
+        "afterSelectionCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+22EF",
+          "U+22EF"
+        ],
+        "rawAlwaysEmpty": true,
+        "pendingDotsAfter": 0
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "hostObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "priorResultsInherited": false,
+  "scope": "two actual Edge EN original-view ellipsis choices,3-tap U2026 and6-tap U22EF; not every EN count/style combination or EN-remapped key positions",
+  "onMismatch": "report language, keycap setting, candidate labels, raw and textarea codepoints; stop without automatic retry",
+  "expectedSources": [
+    "packaged N25 original Shift action is reviewed symbol U+00B7",
+    "session symbol choice layer enabled independently of input language; existing raw/confirmed text not automatically consumed",
+    "development English choice regression tests are expectations, not inherited physical passes"
+  ],
+  "afterBatch": "restore CN/variable and prior English-keycap preference, keep literal entrancesOFF",
+  "userReport": "第二项正常。第一项似乎有问题：选中后标点看起来是上下居中，但显示 U+2026",
+  "evidence": "user-reports/p10-acer-pen-ellipsis-en-105-user-observation.json",
+  "observation": "ELLIPSIS_GLYPH_OBSERVATION_105.json"
+}

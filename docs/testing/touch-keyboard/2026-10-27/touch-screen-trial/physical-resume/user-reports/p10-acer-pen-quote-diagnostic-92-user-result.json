@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-QUOTE-DIAGNOSTIC-92",
+  "userReport": "正常。标点正确：U+2018 U+2019。第一个 U+2018 ",
+  "host": "Edge r3 local test page",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer pen for keyboard input; mouse allowed for browser refresh/caret setup",
+  "observedUserReportedSequence": [
+    "U+2018",
+    "U+2018 U+2019"
+  ],
+  "result": "fresh-binding direct quote pair correct per user-reported diagnostic codepoints",
+  "acceptanceCredits": 0,
+  "scope": "one diagnostic sequence; original91 mismatch preserved; no cause/fix conclusion, no double-quote or pending-composition acceptance inferred"
+}

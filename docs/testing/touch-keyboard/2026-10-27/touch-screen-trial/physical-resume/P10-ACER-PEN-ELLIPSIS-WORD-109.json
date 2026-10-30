@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-WORD-109",
+  "continues": "TOUCH-V1-ACER-PEN-ELLIPSIS-LIFECYCLE-108",
+  "status": "passed-user-reported-group-result",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for Word caret positioning; Acer pen for keyboard Bind/input/candidate selection",
+  "host": "two separate newly created blank unsaved Word documents, one per case; no existing/private document changes",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "setup": "Same choice package78ef9124…,18u/58.8/filter0. Each case in a separate new blank Word document, mouse body caret and explicit Bind; CN/variable/ID/literal entrancesOFF, raw empty/modifiersOFF/selectionOFF. Input12 first. Scroll if needed to see caret; keep keyboard geometry.",
+  "cases": [
+    {
+      "caseID": "word-ellipsis-3-taps-option1",
+      "setup": "create a separate new blank unsaved Word document for this case; mouse place caret in body, pen Bind; CN/variable/ID/literal entrancesOFF, selection/modifiersOFF; main digits12 ->Word12",
+      "steps": [
+        "Shift then N25 3 times, Shift reapplied per tap; do not choose after third for6-tap case",
+        "before explicit selection actual Word body remains12, symbol choices visible on keyboard",
+        "pen tap candidate1"
+      ],
+      "expected": {
+        "beforeSelectionWordText": "12",
+        "afterSelectionWordText": "12…",
+        "expectedUnicodeCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+2026"
+        ],
+        "rawEmpty": true,
+        "pendingDotsAfter": 0,
+        "noDuplicateOrUnrequestedCommit": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "word-ellipsis-6-taps-option2",
+      "setup": "create a separate new blank unsaved Word document for this case; mouse place caret in body, pen Bind; CN/variable/ID/literal entrancesOFF, selection/modifiersOFF; main digits12 ->Word12",
+      "steps": [
+        "Shift then N25 6 times, Shift reapplied per tap; do not choose after third for6-tap case",
+        "before explicit selection actual Word body remains12, symbol choices visible on keyboard",
+        "pen tap candidate2"
+      ],
+      "expected": {
+        "beforeSelectionWordText": "12",
+        "afterSelectionWordText": "12⋯⋯",
+        "expectedUnicodeCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+22EF",
+          "U+22EF"
+        ],
+        "rawEmpty": true,
+        "pendingDotsAfter": 0,
+        "noDuplicateOrUnrequestedCommit": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "hostObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "priorResultsInherited": false,
+  "scope": "two actual Word candidate-click output cases for new executable,3 taps/U2026 and6 taps/U22EF; not all Word paths, installed TIP, native pen caret positioning or complete new-package acceptance",
+  "onMismatch": "stop and report actual Word text, keyboard raw/candidates/target status; do not replay or touch existing documents",
+  "expectedSources": [
+    "same Unicode commits as previously reported Edge choice cases, used as expectations only",
+    "host emits chosen Unicode text only after explicit current candidate selection",
+    "glyph height may vary with Word font; candidate codepoint labels identify intended character, no independent Word codepoint capture claimed"
+  ],
+  "afterBatch": "keep CN/variable/literal entrancesOFF",
+  "userReport": "正常",
+  "userResultDate": "2026-10-30",
+  "evidence": "user-reports/p10-acer-pen-ellipsis-word-109-user-result.json"
+}

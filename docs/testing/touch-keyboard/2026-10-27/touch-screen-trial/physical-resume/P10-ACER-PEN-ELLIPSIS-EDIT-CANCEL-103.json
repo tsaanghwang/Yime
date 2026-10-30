@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-EDIT-CANCEL-103",
+  "continues": "TOUCH-V1-ACER-PEN-ELLIPSIS-SIX-TAP-102",
+  "status": "passed-user-reported-group-result",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for browser reset/caret, explicit keyboard Bind",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "setup": "new choice package activated,18u/58.8 unchanged. Each case independently clear/refocus/Bind; no old executable pass inheritance.",
+  "cases": [
+    {
+      "caseID": "ellipsis-backspace-hides-and-restores-choices",
+      "steps": [
+        "Shift then N25 three times ->two choices, textarea empty",
+        "main virtual Back Space once ->choices disappear, pending2/3, textarea empty",
+        "Shift then N25 once ->two choices return, textarea still empty",
+        "tap first U+2026 candidate"
+      ],
+      "expected": {
+        "textBeforeSelection": "",
+        "pendingAfterBackspace": 2,
+        "finalText": "…",
+        "finalCodepoints": [
+          "U+2026"
+        ],
+        "finalPendingDots": 0
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "ellipsis-cancel-discards-pending-and-restarts",
+      "steps": [
+        "independently Reset/refocus/Bind, then Shift then N25 three times ->two choices, textarea empty",
+        "top Cancel ->no symbol choices, no pending count, textarea remains empty",
+        "Shift then N25 once ->pending1/3 and textarea empty",
+        "Shift then N25 twice more ->two choices; choose second U+22EF"
+      ],
+      "expected": {
+        "afterCancelText": "",
+        "afterCancelPending": 0,
+        "firstNewTapPending": 1,
+        "finalText": "⋯",
+        "finalCodepoints": [
+          "U+22EF"
+        ],
+        "finalPendingDots": 0
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "hostObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "priorResultsInherited": false,
+  "scope": "two actual Edge new-package pending-symbol Backspace/Cancel recovery cases only; not all editing/lifecycle or raw-Chinese coexistence",
+  "onMismatch": "report visible choices, pending count, field codepoints and raw; stop, no auto retry",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-ellipsis-edit-cancel-103-user-result.json"
+}

@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-QUOTE-DIAGNOSTIC-92",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-SYMBOL-ENTRANCE-91",
+  "status": "user-reported-fresh-binding-diagnostic-normal",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "hardwareMethod": "Acer pen for keyboard input; mouse allowed for browser refresh/caret setup",
+  "steps": [
+    "refresh current test page; confirm codepoint line visible",
+    "clear page, click empty textarea and press keyboard Bind even if previously bound",
+    "CN/full/ID, literal entrances ON; return",
+    "Shift then N03 once; report codepoint line",
+    "Shift then N03 again; report codepoint line and visible pair"
+  ],
+  "expectedSequenceIfFreshPairCorrect": [
+    "U+2018",
+    "U+2018 U+2019"
+  ],
+  "request": "report both codepoint lines; no need to assess glyph direction by eye",
+  "acceptanceCredits": 0,
+  "scope": "diagnostic only; does not close batch91 or establish double-quote result",
+  "afterDiagnostic": "keep text for diagnosis; do not rebind between the two presses",
+  "userReport": "正常。标点正确：U+2018 U+2019。第一个 U+2018 ",
+  "evidence": "user-reports/p10-acer-pen-quote-diagnostic-92-user-result.json",
+  "observedUserReportedSequence": [
+    "U+2018",
+    "U+2018 U+2019"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-CENTERED-DOTS-101",
+  "status": "superseded-before-issue-by-explicit-choice101",
+  "packageExecutableSHA256": "6ecd2bc60e9959c054ca09c153d919f6759c67bcaed4c088bb643e3bc4f0a583",
+  "packageIdentity": "../../../2026-10-29/centered-ellipsis/package-identity.json",
+  "host": "Edge r3 local textarea",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "setup": "after recording old c35 batch100 result, close old keyboard via Exit, start new calibrated Centered Ellipsis Keyboard launcher. Each case: reset page, click textarea, Bind; CN/variable/ID, literal entrances OFF; Shift again before EVERY N25 tap. Same18u/58.8/filter0; no inheritance from old executable.",
+  "cases": [
+    {
+      "caseID": "three-middle-dot-taps",
+      "steps": [
+        "Shift then N25 once ->pending1/3 and textarea empty",
+        "Shift then N25 ->pending2/3 and textarea empty",
+        "Shift then N25 ->textarea one U+22EF, pending0"
+      ],
+      "expectedCodepoints": [
+        "U+22EF"
+      ],
+      "status": "pending"
+    },
+    {
+      "caseID": "six-middle-dot-taps",
+      "steps": [
+        "independently reset/refocus/Bind, then Shift then N25 six times",
+        "after3 one U+22EF, after6 two U+22EF; intermediate tap4/5 keeps one character and pending1/2"
+      ],
+      "expectedCodepoints": [
+        "U+22EF",
+        "U+22EF"
+      ],
+      "status": "pending"
+    }
+  ],
+  "hostObservations": 2,
+  "priorPhysicalResultsInherited": false,
+  "scope": "new executable middle-dot3/6 only; existing body/control/lifecycle not certified by these cases",
+  "supersedingPlan": "PUNCTUATION_JOINT_CHANGE_PLAN_100.json",
+  "supersededBy": "P10-ACER-PEN-ELLIPSIS-CHOICE-101.json"
+}

@@ -1,0 +1,595 @@
+{
+  "mode": "full",
+  "punctuation": "chinese",
+  "results": [
+    {
+      "candidates": [
+        {
+          "id": "'!:?\u001f二",
+          "text": "二",
+          "code": "'!:?",
+          "weight": 495101145,
+          "exact": false,
+          "score": {
+            "static": 495101145,
+            "context": 0,
+            "user": 0,
+            "total": 495101145
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'?:!\u001f而",
+          "text": "而",
+          "code": "'?:!",
+          "weight": 491041293,
+          "exact": false,
+          "score": {
+            "static": 491041293,
+            "context": 0,
+            "user": 0,
+            "total": 491041293
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'OOU\u001f区",
+          "text": "区",
+          "code": "'OOU",
+          "weight": 483755398,
+          "exact": false,
+          "score": {
+            "static": 483755398,
+            "context": 0,
+            "user": 0,
+            "total": 483755398
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'AAT\u001f安",
+          "text": "安",
+          "code": "'AAT",
+          "weight": 482209342,
+          "exact": false,
+          "score": {
+            "static": 482209342,
+            "context": 0,
+            "user": 0,
+            "total": 482209342
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'aai\u001f乃",
+          "text": "乃",
+          "code": "'aai",
+          "weight": 482146214,
+          "exact": false,
+          "score": {
+            "static": 482146214,
+            "context": 0,
+            "user": 0,
+            "total": 482146214
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'ADN\u001f干",
+          "text": "干",
+          "code": "'ADN",
+          "weight": 482020639,
+          "exact": false,
+          "score": {
+            "static": 482020639,
+            "context": 0,
+            "user": 0,
+            "total": 482020639
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'DDD\u001f啊",
+          "text": "啊",
+          "code": "'DDD",
+          "weight": 481981066,
+          "exact": false,
+          "score": {
+            "static": 481981066,
+            "context": 0,
+            "user": 0,
+            "total": 481981066
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'AAA\u001f啊",
+          "text": "啊",
+          "code": "'AAA",
+          "weight": 481980597,
+          "exact": false,
+          "score": {
+            "static": 481980597,
+            "context": 0,
+            "user": 0,
+            "total": 481980597
+          },
+          "annotations": {}
+        },
+        {
+          "id": "keyboard-lab:literal:27",
+          "text": "‘",
+          "code": "'",
+          "source_id": "keyboard-lab:literal",
+          "weight": 0,
+          "exact": true,
+          "score": {
+            "static": 0,
+            "context": 0,
+            "user": 0,
+            "total": 0
+          },
+          "annotations": {
+            "key_sequence": "'"
+          }
+        }
+      ],
+      "commit": "",
+      "raw": "'",
+      "step": "single preview"
+    },
+    {
+      "candidates": null,
+      "commit": "",
+      "raw": "",
+      "step": "cancel"
+    },
+    {
+      "candidates": [
+        {
+          "id": "'!:?\u001f二",
+          "text": "二",
+          "code": "'!:?",
+          "weight": 495101145,
+          "exact": false,
+          "score": {
+            "static": 495101145,
+            "context": 0,
+            "user": 0,
+            "total": 495101145
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'?:!\u001f而",
+          "text": "而",
+          "code": "'?:!",
+          "weight": 491041293,
+          "exact": false,
+          "score": {
+            "static": 491041293,
+            "context": 0,
+            "user": 0,
+            "total": 491041293
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'OOU\u001f区",
+          "text": "区",
+          "code": "'OOU",
+          "weight": 483755398,
+          "exact": false,
+          "score": {
+            "static": 483755398,
+            "context": 0,
+            "user": 0,
+            "total": 483755398
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'AAT\u001f安",
+          "text": "安",
+          "code": "'AAT",
+          "weight": 482209342,
+          "exact": false,
+          "score": {
+            "static": 482209342,
+            "context": 0,
+            "user": 0,
+            "total": 482209342
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'aai\u001f乃",
+          "text": "乃",
+          "code": "'aai",
+          "weight": 482146214,
+          "exact": false,
+          "score": {
+            "static": 482146214,
+            "context": 0,
+            "user": 0,
+            "total": 482146214
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'ADN\u001f干",
+          "text": "干",
+          "code": "'ADN",
+          "weight": 482020639,
+          "exact": false,
+          "score": {
+            "static": 482020639,
+            "context": 0,
+            "user": 0,
+            "total": 482020639
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'DDD\u001f啊",
+          "text": "啊",
+          "code": "'DDD",
+          "weight": 481981066,
+          "exact": false,
+          "score": {
+            "static": 481981066,
+            "context": 0,
+            "user": 0,
+            "total": 481981066
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'AAA\u001f啊",
+          "text": "啊",
+          "code": "'AAA",
+          "weight": 481980597,
+          "exact": false,
+          "score": {
+            "static": 481980597,
+            "context": 0,
+            "user": 0,
+            "total": 481980597
+          },
+          "annotations": {}
+        },
+        {
+          "id": "keyboard-lab:literal:27",
+          "text": "‘",
+          "code": "'",
+          "source_id": "keyboard-lab:literal",
+          "weight": 0,
+          "exact": true,
+          "score": {
+            "static": 0,
+            "context": 0,
+            "user": 0,
+            "total": 0
+          },
+          "annotations": {
+            "key_sequence": "'"
+          }
+        }
+      ],
+      "commit": "",
+      "raw": "'",
+      "step": "single preview after cancel"
+    },
+    {
+      "candidates": null,
+      "commit": "‘",
+      "raw": "",
+      "step": "single opening commit"
+    },
+    {
+      "candidates": [
+        {
+          "id": "'!:?\u001f二",
+          "text": "二",
+          "code": "'!:?",
+          "weight": 495101145,
+          "exact": false,
+          "score": {
+            "static": 495101145,
+            "context": 0,
+            "user": 0,
+            "total": 495101145
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'?:!\u001f而",
+          "text": "而",
+          "code": "'?:!",
+          "weight": 491041293,
+          "exact": false,
+          "score": {
+            "static": 491041293,
+            "context": 0,
+            "user": 0,
+            "total": 491041293
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'OOU\u001f区",
+          "text": "区",
+          "code": "'OOU",
+          "weight": 483755398,
+          "exact": false,
+          "score": {
+            "static": 483755398,
+            "context": 0,
+            "user": 0,
+            "total": 483755398
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'AAT\u001f安",
+          "text": "安",
+          "code": "'AAT",
+          "weight": 482209342,
+          "exact": false,
+          "score": {
+            "static": 482209342,
+            "context": 0,
+            "user": 0,
+            "total": 482209342
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'aai\u001f乃",
+          "text": "乃",
+          "code": "'aai",
+          "weight": 482146214,
+          "exact": false,
+          "score": {
+            "static": 482146214,
+            "context": 0,
+            "user": 0,
+            "total": 482146214
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'ADN\u001f干",
+          "text": "干",
+          "code": "'ADN",
+          "weight": 482020639,
+          "exact": false,
+          "score": {
+            "static": 482020639,
+            "context": 0,
+            "user": 0,
+            "total": 482020639
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'DDD\u001f啊",
+          "text": "啊",
+          "code": "'DDD",
+          "weight": 481981066,
+          "exact": false,
+          "score": {
+            "static": 481981066,
+            "context": 0,
+            "user": 0,
+            "total": 481981066
+          },
+          "annotations": {}
+        },
+        {
+          "id": "'AAA\u001f啊",
+          "text": "啊",
+          "code": "'AAA",
+          "weight": 481980597,
+          "exact": false,
+          "score": {
+            "static": 481980597,
+            "context": 0,
+            "user": 0,
+            "total": 481980597
+          },
+          "annotations": {}
+        },
+        {
+          "id": "keyboard-lab:literal:27",
+          "text": "’",
+          "code": "'",
+          "source_id": "keyboard-lab:literal",
+          "weight": 0,
+          "exact": true,
+          "score": {
+            "static": 0,
+            "context": 0,
+            "user": 0,
+            "total": 0
+          },
+          "annotations": {
+            "key_sequence": "'"
+          }
+        }
+      ],
+      "commit": "",
+      "raw": "'",
+      "step": "single closing preview"
+    },
+    {
+      "candidates": null,
+      "commit": "’",
+      "raw": "",
+      "step": "single closing commit"
+    },
+    {
+      "candidates": null,
+      "commit": "“",
+      "raw": "",
+      "step": "double opening commit"
+    },
+    {
+      "candidates": null,
+      "commit": "”",
+      "raw": "",
+      "step": "double closing commit"
+    }
+  ],
+  "scope": "isolated original c35 package dictionaries with current lab engine; expected-fixture development evidence only, no GUI/host/physical acceptance",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "packageLayoutSHA256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+  "relevantPhysicalKeys": [
+    {
+      "id": "R03K04",
+      "x": 5.0,
+      "y": 2.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "\"",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "N11",
+        "",
+        "h",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "N11"
+      ],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [
+        "N11"
+      ],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "h"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "\"",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "disabled"
+        },
+        "disabled": true
+      }
+    },
+    {
+      "id": "R04K11",
+      "x": 10.75,
+      "y": 3.25,
+      "width": 1.0,
+      "height": 1.0,
+      "rectangles": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1.0,
+          "height": 1.0
+        }
+      ],
+      "color": "#b5ecc6",
+      "textColor": "#000000",
+      "labels": [
+        "'",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "N03",
+        "",
+        "f",
+        "",
+        "",
+        ""
+      ],
+      "alignment": 4,
+      "homing": false,
+      "yinyuanIds": [
+        "N03"
+      ],
+      "zone": "main",
+      "disabledYinyuanIds": [],
+      "baseYinyuanIds": [
+        "N03"
+      ],
+      "shiftYinyuanIds": [],
+      "action": {
+        "type": "input",
+        "ascii": "f"
+      },
+      "shiftAction": {
+        "type": "input",
+        "ascii": "'",
+        "literalEntry": true
+      },
+      "english": {
+        "labels": [
+          "",
+          "T",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "t",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "action": {
+          "type": "input",
+          "ascii": "t"
+        },
+        "shiftAction": {
+          "type": "input",
+          "ascii": "T"
+        }
+      }
+    }
+  ]
+}

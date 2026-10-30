@@ -1,0 +1,172 @@
+{
+  "designExpectedThreeMiddleDots": "…",
+  "designGapConfirmedInCurrentLabEngine": true,
+  "mappings": [
+    {
+      "commit": "；",
+      "input": ";",
+      "raw": ""
+    },
+    {
+      "commit": "：",
+      "input": ":",
+      "raw": ""
+    },
+    {
+      "commit": "（",
+      "input": "(",
+      "raw": ""
+    },
+    {
+      "commit": "）",
+      "input": ")",
+      "raw": ""
+    },
+    {
+      "commit": "【",
+      "input": "[",
+      "raw": ""
+    },
+    {
+      "commit": "】",
+      "input": "]",
+      "raw": ""
+    },
+    {
+      "commit": "《",
+      "input": "<",
+      "raw": ""
+    },
+    {
+      "commit": "》",
+      "input": ">",
+      "raw": ""
+    },
+    {
+      "commit": "『",
+      "input": "{",
+      "raw": ""
+    },
+    {
+      "commit": "』",
+      "input": "}",
+      "raw": ""
+    },
+    {
+      "commit": "、",
+      "input": "/",
+      "raw": ""
+    },
+    {
+      "commit": "、",
+      "input": "\\",
+      "raw": ""
+    },
+    {
+      "commit": "……",
+      "input": "^",
+      "raw": ""
+    },
+    {
+      "commit": "——",
+      "input": "_",
+      "raw": ""
+    }
+  ],
+  "scope": "development fixture, original c35 dictionaries/current lab engine; no native host or physical evidence",
+  "threeMiddleDotsActual": "···",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "packagedLayoutSHA256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+  "relevantPhysicalKeys": [
+    {
+      "id": "N16",
+      "physicalKey": "R04K16",
+      "shiftAction": {
+        "type": "input",
+        "ascii": ";",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "M31",
+      "physicalKey": "R05K15",
+      "shiftAction": {
+        "type": "input",
+        "ascii": ":",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "M21",
+      "physicalKey": "R03K14",
+      "shiftAction": {
+        "type": "input",
+        "ascii": "(",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "N13",
+      "physicalKey": "R03K15",
+      "shiftAction": {
+        "type": "input",
+        "ascii": ")",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "M30",
+      "physicalKey": "R06K05",
+      "shiftAction": {
+        "type": "input",
+        "ascii": "[",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "N24",
+      "physicalKey": "R06K10",
+      "shiftAction": {
+        "type": "input",
+        "ascii": "]",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "M08",
+      "physicalKey": "R06K14",
+      "shiftAction": {
+        "type": "input",
+        "ascii": "<",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "M09",
+      "physicalKey": "R06K15",
+      "shiftAction": {
+        "type": "input",
+        "ascii": ">",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "N17",
+      "physicalKey": "R04K17",
+      "shiftAction": {
+        "type": "input",
+        "ascii": "{",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "N18",
+      "physicalKey": "R04K18",
+      "shiftAction": {
+        "type": "input",
+        "ascii": "}",
+        "literalEntry": true
+      }
+    }
+  ]
+}

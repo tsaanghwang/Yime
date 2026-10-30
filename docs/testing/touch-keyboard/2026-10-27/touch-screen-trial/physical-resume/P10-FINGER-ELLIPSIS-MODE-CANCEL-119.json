@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-FINGER-ELLIPSIS-MODE-CANCEL-119",
+  "continues": "TOUCH-V1-FINGER-ELLIPSIS-SELECT-ROUTES-118",
+  "status": "passed-user-reported-group-result",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "finger for keyboard inputs, language/settings mode changes and candidate selection; mouse allowed only for host setup",
+  "focusSetupMethod": "mouse permitted for browser reset/caret, explicit keyboard Bind",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "setup": "Same choice package78ef9124…, Edge r3, CN/variable/ID/literal entrancesOFF,18u/58.8/filter0. Each case independently reset/caret/Bind; finger main digits1 then2 ->12. Fresh finger Shift before EACH N25. No host switch/rebind between pending-state setup and mode-cancellation observation.",
+  "cases": [
+    {
+      "caseID": "finger-three-pending-language-roundtrip",
+      "steps": [
+        "Prepare bound textarea12 in CN/variable; Shift then N25 three times; do not select",
+        "Tap CN/EN to EN: choices and pending clear, textarea remains12; tap back to CN: old choices do not return",
+        "Shift then N25 once ->new pending1, no choices, textarea12; twice more ->new choices; choose SECOND U+22EF"
+      ],
+      "expected": {
+        "finalText": "12⋯",
+        "finalCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+22EF"
+        ],
+        "firstNewTapPending": 1,
+        "noOldReplay": true,
+        "finalRaw": "",
+        "finalPending": 0
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "finger-six-pending-code-mode-change",
+      "steps": [
+        "Independently prepare bound textarea12 in CN/variable; Shift then N25 six times; do not select",
+        "Open keyboard inline Settings, change variable to FULL, return keyboard without switching host or rebinding",
+        "Observe full mode, no symbol choices/pending, textarea remains12",
+        "Shift then N25 once ->new pending1, no choices, textarea12; twice more ->new choices; choose FIRST U+2026"
+      ],
+      "expected": {
+        "finalText": "12…",
+        "finalCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+2026"
+        ],
+        "firstNewTapPending": 1,
+        "noOldReplay": true,
+        "finalRaw": "",
+        "finalPending": 0
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "hostObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "priorResultsInherited": false,
+  "scope": "two new-package physical finger sequential mode-cancellation cases: CN/EN roundtrip and variable-to-full; not all mode directions, races or inherited Acer/old-package acceptance",
+  "onMismatch": "Stop and report case number, text/codepoints, pending/mode/binding status; do not rebind before observing cancellation because rebind itself clears pending",
+  "expectedSources": [
+    "session setModes discards pending middle dots without committing",
+    "desktop switchMode closes old session and opens fresh session; inline settings use same keyboard window"
+  ],
+  "afterBatch": "restore CN/variable/literal entrancesOFF after recording final result",
+  "userReport": "正常",
+  "userResultDate": "2026-10-30",
+  "evidence": "user-reports/p10-finger-ellipsis-mode-cancel-119-user-result.json"
+}

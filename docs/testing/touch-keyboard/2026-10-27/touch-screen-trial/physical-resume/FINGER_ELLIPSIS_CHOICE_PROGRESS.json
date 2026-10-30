@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-30",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "hardwareMethod": "finger for keyboard inputs, controls and choices; mouse allowed for host setup/taskbar restoration",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "passedHostScenarios": 10,
+  "currentBatch": "TOUCH-V1-FINGER-ELLIPSIS-LIFECYCLE-120",
+  "currentBatchDefinition": "P10-FINGER-ELLIPSIS-LIFECYCLE-120.json",
+  "pendingCurrentBatchScenarios": 0,
+  "completedBatches": [
+    "TOUCH-V1-FINGER-ELLIPSIS-BASIC-116",
+    "TOUCH-V1-FINGER-ELLIPSIS-EDIT-CANCEL-117",
+    "TOUCH-V1-FINGER-ELLIPSIS-SELECT-ROUTES-118",
+    "TOUCH-V1-FINGER-ELLIPSIS-MODE-CANCEL-119",
+    "TOUCH-V1-FINGER-ELLIPSIS-LIFECYCLE-120"
+  ],
+  "evidence": [
+    "user-reports/p10-finger-ellipsis-basic-116-user-result.json",
+    "user-reports/p10-finger-ellipsis-edit-cancel-117-user-result.json",
+    "user-reports/p10-finger-ellipsis-select-routes-118-user-result.json",
+    "user-reports/p10-finger-ellipsis-mode-cancel-119-user-result.json",
+    "user-reports/p10-finger-ellipsis-lifecycle-120-user-result.json"
+  ],
+  "priorPhysicalResultsInherited": false,
+  "status": "scoped finger checkpoint10 explicit Edge passes; no next physical batch issued",
+  "stageReport": "ELLIPSIS_CHOICE_STAGE_RESULT_120.json",
+  "nextPhasePlan": "NEXT_STAGE_AFTER_ELLIPSIS_120.json"
+}

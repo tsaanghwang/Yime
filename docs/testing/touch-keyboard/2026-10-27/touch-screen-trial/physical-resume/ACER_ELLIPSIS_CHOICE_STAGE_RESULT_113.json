@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-30",
+  "status": "scoped ellipsis functional and boundary checkpoint, not complete keyboard acceptance",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse allowed for caret/host setup; pen keyboard input/control, no pure-pen native caret claim",
+  "screenView": "touch-screen-v1",
+  "calibrationArgument": "ruler-observed-mm58.8",
+  "filterMS": 0,
+  "explicitlyPassedHostScenarios": 25,
+  "hostBreakdown": {
+    "Edge": 23,
+    "Word": 2
+  },
+  "passedByBatch": {
+    "101": 2,
+    "102-user-expansion": 2,
+    "103": 2,
+    "104": 2,
+    "105-second": 1,
+    "106": 2,
+    "107": 2,
+    "108": 2,
+    "109": 2,
+    "110": 2,
+    "111": 2,
+    "112": 2,
+    "113": 2
+  },
+  "qualifiedNotAddedToPassTotal": {
+    "case": "105 first EN three-tap U2026",
+    "observation": "ELLIPSIS_GLYPH_OBSERVATION_105.json",
+    "reportedCodepointMatches": true,
+    "note": "centered glyph appearance permitted in East Asian typography; no further full-case normal report or exact display-region capture inferred"
+  },
+  "earlierCheckpoint": "ACER_ELLIPSIS_CHOICE_STAGE_RESULT_109.json",
+  "boundaryCheckpoint": "ACER_ELLIPSIS_BOUNDARY_RESULT_111.json",
+  "evidence": [
+    "user-reports/p10-acer-pen-ellipsis-choice-101-102-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-edit-cancel-103-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-composition-104-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-en-105-user-observation.json",
+    "user-reports/p10-acer-pen-ellipsis-guard-ordinal-106-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-confirm-107-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-lifecycle-108-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-word-109-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-residual-110-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-cap-flush-111-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-code-modes-112-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-page-focus-113-user-result.json"
+  ],
+  "coveredContexts": [
+    "3/6 taps and both ellipsis outputs, initial6-tap user expansion",
+    "Backspace,Cancel and matched/unmatched Chinese composition",
+    "English symbol-choice selection; ordinary input/Home guard; main digit2",
+    "LEFT Space and Enter explicit first-choice without extra whitespace",
+    "minimize/Help/foreground-away cancellation and rebind",
+    "Word3/6-tap candidate clicks",
+    "4/5-tap residuals,6-tap cap, unfinished-dot flush before English text",
+    "full/shorthand composition and dictionary page2 restoration"
+  ],
+  "limits": [
+    "group reports, not captured per-action transcripts or attempt counts",
+    "6-tap initial expansion confirms output variants; intermediate timing not separately transcribed",
+    "Word limited to2 new-package candidate-click cases; finger/MSI, all-key, all confirmation and concurrent/focus-race coverage not established",
+    "main digit1/RIGHT Space and language/code-mode changes while choices pending not physically established here",
+    "new-package ARM64 native acceptance independent",
+    "no current installed input-method, default or user-data acceptance/change"
+  ],
+  "oldPackageResults": "c35 Edge27/Word13, preview body336/control37/candidate50 retain identities and are not inherited",
+  "sourceDeliveryStatus": "local working-source package; no new commit/push/CI delivery claimed by this record",
+  "next": "NEXT_STAGE_AFTER_ELLIPSIS_113.json"
+}

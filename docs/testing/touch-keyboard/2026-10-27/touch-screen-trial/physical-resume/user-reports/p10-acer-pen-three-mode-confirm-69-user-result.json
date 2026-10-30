@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-CONFIRM-69",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "userReport": "正常。另外，右space键也一起测了。正常。",
+  "passedScheduledCandidateScenarios": 6,
+  "passedExpandedCandidateScenarios": 3,
+  "passedCandidateScenarios": 9,
+  "bodyLayersAdded": 0,
+  "controlScenariosAdded": 0,
+  "result": "presented variable/full/shorthand left Space and Enter confirmation group normal; user also reports right Space tested alongside and normal",
+  "scope": "three-mode group report, including right Space expansion; no per-action first-candidate text transcription, attempts or claim for empty/no-candidate, Shift, ARM/CI package or real hosts"
+}

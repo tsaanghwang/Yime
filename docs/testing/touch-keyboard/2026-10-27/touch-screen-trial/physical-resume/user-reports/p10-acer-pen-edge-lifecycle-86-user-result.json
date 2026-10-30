@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-LIFECYCLE-86",
+  "userReport": "正常j",
+  "interpretedResult": "normal group confirmation; trailing j retained verbatim and not treated as an observed test-field character",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse allowed for page reset/caret setup and taskbar restoration; pen for keyboard controls/input",
+  "host": "same Edge local static textarea, revised fixture r2",
+  "testPageSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "passedHostScenarios": 2,
+  "observationGranularity": "group confirmation of two presented cases; no independently captured action transcript or attempt count",
+  "scope": "minimize/restore and Help/return only; not foreground-switch, concurrency or startup acceptance"
+}

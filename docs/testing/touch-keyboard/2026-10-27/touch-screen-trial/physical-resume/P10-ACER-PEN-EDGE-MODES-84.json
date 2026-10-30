@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-MODES-84",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-FIXTURE-RETEST-83",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse allowed for page Reset/caret placement; explicit keyboard Bind",
+  "host": "same Edge local static textarea, revised fixture r2",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "cases": [
+    {
+      "caseID": "edge-full-ni3",
+      "mode": "full",
+      "setup": [
+        "click page Reset; click textarea to place caret; keyboard Bind",
+        "EN, raw empty, selection OFF and modifiers unlit; input12; verify field12",
+        "CN; Settings choose requested encoding mode and ID legends; Return"
+      ],
+      "keys": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "expectedBeforeConfirmation": {
+        "raw": "niii",
+        "actualTextareaText": "12"
+      },
+      "confirmation": "single visible candidate 你 tap with Acer pen",
+      "expectedAfterConfirmation": {
+        "actualTextareaText": "12你",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noDuplicateOrRawASCIISent": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "edge-shorthand-ni3",
+      "mode": "shorthand",
+      "setup": [
+        "click page Reset; click textarea to place caret; keyboard Bind",
+        "EN, raw empty, selection OFF and modifiers unlit; input12; verify field12",
+        "CN; Settings choose requested encoding mode and ID legends; Return"
+      ],
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedBeforeConfirmation": {
+        "raw": "ni",
+        "actualTextareaText": "12"
+      },
+      "confirmation": "single visible candidate 你 tap with Acer pen",
+      "expectedAfterConfirmation": {
+        "actualTextareaText": "12你",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noDuplicateOrRawASCIISent": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 2,
+  "priorResultsInherited": false,
+  "setup": "same c35 host Keyboard and58.8 ratio. Each mode independently resets only temporary page text. Keep field12 until explicit candidate tap. Finish in variable mode.",
+  "expectedSources": [
+    "canonical ni3 full niii/shorthand ni established in batch68",
+    "confirmed-only host output; Word81 is specification reference, not Edge pass evidence"
+  ],
+  "scope": "two remaining encoding-mode candidate-click confirmations in actual Edge; no other confirmation/edit/lifecycle/host coverage implied",
+  "onMismatch": "stop and report mode, raw and actual textarea text; do not replay or change keyboard ratio",
+  "userReport": "上次未测任务和这次测试任务已测。正常。",
+  "evidence": "user-reports/p10-acer-pen-edge-modes-84-user-result.json"
+}

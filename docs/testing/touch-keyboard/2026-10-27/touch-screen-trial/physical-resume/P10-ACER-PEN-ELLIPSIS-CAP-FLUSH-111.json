@@ -1,0 +1,80 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-CAP-FLUSH-111",
+  "continues": "TOUCH-V1-ACER-PEN-ELLIPSIS-RESIDUAL-110",
+  "status": "passed-user-reported-group-result",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse allowed for returning to browser/reset/caret, explicit keyboard Bind; Acer pen input/selection",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "setup": "Each case independently Reset Edge r3, click empty textarea, Bind; same choice package78ef9124…,18u/58.8/filter0. Note prior English-keycap preference for case2 restoration. CN/variable/ID/literal entrancesOFF initially, raw empty/modifiersOFF/selectionOFF. Reapply Shift before EVERY N25 tap.",
+  "cases": [
+    {
+      "caseID": "ellipsis-six-tap-cap-rejects-seventh-without-carry",
+      "steps": [
+        "CN; Shift then N25 six times ->doubled options, textarea empty",
+        "attempt seventh Shift then N25 ->selection/cancel warning, no output, pending count remains6 and doubled choices remain",
+        "tap FIRST U+2026 candidate ->textarea …… and pending0",
+        "Shift then N25 once ->pending1/3, textarea still……",
+        "Cancel ->pending cleared, textarea remains……"
+      ],
+      "expected": {
+        "afterSeventhText": "",
+        "pendingAfterSeventh": 6,
+        "afterSelectionText": "……",
+        "afterSelectionCodepoints": [
+          "U+2026",
+          "U+2026"
+        ],
+        "firstNewTapPending": 1,
+        "finalText": "……",
+        "finalPending": 0,
+        "rawEmpty": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "ellipsis-two-unfinished-dots-flush-before-English-text",
+      "steps": [
+        "independently Reset/refocus/Bind; BEFORE any dots choose EN/variable/ID and English keycaps ORIGINAL layout, literal entrancesOFF",
+        "Shift then N25 twice ->pending2/3, textarea empty",
+        "direct M12 WITHOUT Shift ->English ASCII a after pending literal dots"
+      ],
+      "expected": {
+        "beforeTextInput": "",
+        "pendingBeforeTextInput": 2,
+        "finalText": "··a",
+        "finalCodepoints": [
+          "U+00B7",
+          "U+00B7",
+          "U+0061"
+        ],
+        "finalPending": 0,
+        "rawEmpty": true,
+        "noEllipsisChoiceOrConversion": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "hostObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "priorResultsInherited": false,
+  "scope": "two actual Edge current-package boundaries:6-tap cap/rejected7th and EN two-dot flush before ASCII; not all flush/edit/mode boundaries or Word",
+  "onMismatch": "report pending count, candidate presence, field codepoints and language/keycap preference; stop without blind retry",
+  "expectedSources": [
+    "session rejects middle-dot input at pending6 before increment; current choice selection clears complete triples",
+    "pending below3 is flushed in order when successful main input commits; English original M12 emits a",
+    "code-mode/language switch cancels buffer, so case2 must set EN before dot entry"
+  ],
+  "afterBatch": "restore CN/variable/literal entrancesOFF and prior English-keycap preference",
+  "userReport": "正常",
+  "userResultDate": "2026-10-30",
+  "evidence": "user-reports/p10-acer-pen-ellipsis-cap-flush-111-user-result.json"
+}

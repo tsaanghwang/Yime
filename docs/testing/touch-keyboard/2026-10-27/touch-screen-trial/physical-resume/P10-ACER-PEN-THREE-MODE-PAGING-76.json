@@ -1,0 +1,135 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-PAGING-76",
+  "continues": "TOUCH-V1-ACER-PEN-THREE-MODE-UNAVAILABLE-ORDINAL-75",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same c35 local CN preview/58.8 calibration. N08 alone supplies raw n and multiple pages in each mode. Use candidate-bar < > controls, not top editor ArrowLeft/ArrowRight. Two independent cases per mode; Clear/reenter before each, observe actual candidates and stop/report fixture mismatch. End variable mode.",
+  "cases": [
+    {
+      "caseID": "variable-page-roundtrip-click",
+      "mode": "variable",
+      "setup": "CN; choose mode/ID; Clear; selection OFF; modifiers unlit; N08 -> raw n; page1 visible, document empty",
+      "steps": [
+        "remember first-page second candidate",
+        "candidate-bar next >; remember second-page second candidate",
+        "candidate-bar previous <; first-page candidate list restored, raw n/document empty",
+        "candidate-bar next >; second-page candidate list restored",
+        "tap visible second-page second candidate once"
+      ],
+      "expected": {
+        "localOutput": "exact second-page second candidate observed",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noExtraCharacter": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "variable-page2-main-digit2",
+      "mode": "variable",
+      "setup": "independently CN/mode; Clear; selection OFF; modifiers unlit; N08 -> raw n",
+      "steps": [
+        "candidate-bar next >",
+        "remember second-page second candidate",
+        "main digit2 once, no Shift/candidate tap"
+      ],
+      "expected": {
+        "localOutput": "exact second-page second candidate observed",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noLiteralDigitAppended": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-page-roundtrip-click",
+      "mode": "full",
+      "setup": "CN; choose mode/ID; Clear; selection OFF; modifiers unlit; N08 -> raw n; page1 visible, document empty",
+      "steps": [
+        "remember first-page second candidate",
+        "candidate-bar next >; remember second-page second candidate",
+        "candidate-bar previous <; first-page candidate list restored, raw n/document empty",
+        "candidate-bar next >; second-page candidate list restored",
+        "tap visible second-page second candidate once"
+      ],
+      "expected": {
+        "localOutput": "exact second-page second candidate observed",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noExtraCharacter": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-page2-main-digit2",
+      "mode": "full",
+      "setup": "independently CN/mode; Clear; selection OFF; modifiers unlit; N08 -> raw n",
+      "steps": [
+        "candidate-bar next >",
+        "remember second-page second candidate",
+        "main digit2 once, no Shift/candidate tap"
+      ],
+      "expected": {
+        "localOutput": "exact second-page second candidate observed",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noLiteralDigitAppended": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-page-roundtrip-click",
+      "mode": "shorthand",
+      "setup": "CN; choose mode/ID; Clear; selection OFF; modifiers unlit; N08 -> raw n; page1 visible, document empty",
+      "steps": [
+        "remember first-page second candidate",
+        "candidate-bar next >; remember second-page second candidate",
+        "candidate-bar previous <; first-page candidate list restored, raw n/document empty",
+        "candidate-bar next >; second-page candidate list restored",
+        "tap visible second-page second candidate once"
+      ],
+      "expected": {
+        "localOutput": "exact second-page second candidate observed",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noExtraCharacter": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-page2-main-digit2",
+      "mode": "shorthand",
+      "setup": "independently CN/mode; Clear; selection OFF; modifiers unlit; N08 -> raw n",
+      "steps": [
+        "candidate-bar next >",
+        "remember second-page second candidate",
+        "main digit2 once, no Shift/candidate tap"
+      ],
+      "expected": {
+        "localOutput": "exact second-page second candidate observed",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noLiteralDigitAppended": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 6,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 6,
+  "priorResultsInherited": false,
+  "fixtureEvidence": "ACER_PEN_PAGING_FIXTURE_76.json",
+  "expectedSources": [
+    "preview.page dispatches page delta with current session/revision, candidate rect records candidate identity",
+    "keyboardEngine main digit ordinal selects current visible page candidate; index is per-page",
+    "original-package fixture distinguishes page1 second 年 and page2 second 内 in all modes and validates roundtrip/click/digit2 without physical pass credit"
+  ],
+  "scope": "six sequential first/second-page preview contexts only; not last-page bounds, held stale contacts, paused EN, mixed touch/pen or real hosts",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-three-mode-paging-76-user-result.json"
+}

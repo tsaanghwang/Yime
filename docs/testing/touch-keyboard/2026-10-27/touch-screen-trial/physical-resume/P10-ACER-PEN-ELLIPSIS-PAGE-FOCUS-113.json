@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-PAGE-FOCUS-113",
+  "continues": "TOUCH-V1-ACER-PEN-ELLIPSIS-CODE-MODES-112",
+  "status": "passed-user-reported-group-result",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse allowed for returning to browser/reset/caret, explicit keyboard Bind; Acer pen input/selection",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "setup": "Each case independently Reset Edge r3, click empty textarea, Bind. Current choice package78ef9124…, CN/variable/ID/literal entrancesOFF, selection/modifiersOFF,18u/58.8/filter0. Reapply Shift before each N25 tap. Use candidate-page ›, not top caret-navigation →.",
+  "cases": [
+    {
+      "caseID": "ellipsis-restores-chinese-page2-context",
+      "steps": [
+        "N08 ->raw n and dictionary candidates; candidate › once to page2",
+        "remember page2 second Chinese candidate (original fixture:内); textarea remains empty",
+        "Shift then N25 three times; choose FIRST U+2026",
+        "textarea …, raw n retained; previous page2 and its second candidate restored unchanged",
+        "tap that restored second Chinese candidate"
+      ],
+      "expected": {
+        "rawAfterEllipsis": "n",
+        "pageAfterEllipsis": 2,
+        "secondChineseCandidateRestored": true,
+        "textAfterEllipsis": "…",
+        "finalText": "… followed by remembered page2 second candidate",
+        "finalTextIfOriginalFixture": "…内",
+        "finalRaw": "",
+        "finalPending": 0
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "ellipsis-real-foreground-away-return-cancels-and-rebinds",
+      "steps": [
+        "independently prepare main digits12 ->textarea12",
+        "Shift then N25 six times, do not select; textarea remains12",
+        "lift pen and switch to existing File Explorer window; enter nothing; return original Edge page",
+        "inspect textarea still12, symbol choices/pending cleared, old binding invalid/rebind requested",
+        "click textarea after12, Bind; Shift then N25 once ->new pending1/3 and textarea12",
+        "Shift then N25 two more times; choose SECOND U+22EF"
+      ],
+      "expected": {
+        "afterForegroundReturnText": "12",
+        "afterForegroundReturnPending": 0,
+        "oldBindingInvalid": true,
+        "firstNewTapPending": 1,
+        "finalText": "12⋯",
+        "finalCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+22EF"
+        ],
+        "finalRaw": "",
+        "finalPending": 0,
+        "noOldSixTapReplay": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "hostObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "priorResultsInherited": false,
+  "scope": "two current-package actual Edge dictionary page-context restoration and sequential real focus-away/return cases; not concurrent focus race or cross-editable-host routing",
+  "onMismatch": "report actual page/candidate text or raw/pending/binding status, plus field codepoints; stop without replays or clearing unexpected output",
+  "expectedSources": [
+    "ELLIPSIS_PAGE_CONTEXT_EXPECTATION_113.json development regression",
+    "original package paging fixture76; no physical pass inheritance",
+    "host focus invalidation clears symbol view and delivery epoch; rebind opens new isolated session"
+  ],
+  "afterBatch": "keep CN/variable/literal entrancesOFF",
+  "userReport": "正常",
+  "userResultDate": "2026-10-30",
+  "evidence": "user-reports/p10-acer-pen-ellipsis-page-focus-113-user-result.json"
+}

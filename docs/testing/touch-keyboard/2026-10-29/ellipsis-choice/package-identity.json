@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-29",
+  "scope": "local x64 explicit ellipsis-choice package",
+  "packagePath": "C:\\dev\\Yime\\.generated\\touch-ellipsis-choice-20261029-amd64",
+  "executableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "manifestSHA256": "11ea3df7b6070268022de693d0fdec7cdd92d017914a397395c02d5dea2bbe39",
+  "portableResourcesSHA256": "99d651de267db39026bc5f584d1a3bacbc9d123de04d848e27c42b22a808ddbd",
+  "sourceCommit": "e971f4d826c73d16351bb4bfffaf65579c418ab1",
+  "sourceChanges": true,
+  "architecture": "windows-amd64",
+  "ci": null,
+  "hardwareAcceptance": false,
+  "installedProductAcceptance": false,
+  "oldPhysicalResultsInherited": false,
+  "supersededDevelopment": "fixed U22EF r2 package6ecd2bc6… retained but not activated for acceptance"
+}

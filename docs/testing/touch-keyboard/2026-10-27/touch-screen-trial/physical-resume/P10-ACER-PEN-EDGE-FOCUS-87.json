@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-29",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "host": "same Edge local static textarea, revised fixture r2",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-FOCUS-87",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-LIFECYCLE-86",
+  "status": "passed-user-reported-group-result",
+  "focusSetupMethod": "mouse or taskbar allowed for existing File Explorer switch and caret setup; pen for keyboard input",
+  "setup": "same c35 host Keyboard/58.8 ratio. In same temporary Edge textarea reset to12, CN/variable N08 leaves unconfirmed n. Switch to an existing File Explorer window without entering anything, return original Edge, inspect cancellation/binding before new input. No file operations, private document edits or system settings.",
+  "cases": [
+    {
+      "caseID": "edge-foreground-loss-return-rebind",
+      "setup": [
+        "page Reset; click textarea and keyboard Bind",
+        "EN, raw empty, selection OFF/modifiers unlit; input12; verify textarea only12",
+        "CN/variable; N08 ->raw n with candidates; textarea remains12; do not confirm"
+      ],
+      "action": [
+        "lift pen and switch to an existing File Explorer window; enter nothing",
+        "return to original Edge test page; do not click Bind until inspecting raw and target state"
+      ],
+      "verification": [
+        "textarea still12, raw empty, old target binding invalid/rebind requested",
+        "click textarea after12, keyboard Bind",
+        "CN/variable; N08 then M03 ->ni; textarea still12 before confirmation",
+        "tap visible candidate 你 once; inspect textarea12你 exactly"
+      ],
+      "expected": {
+        "hostTextBeforeRebind": "12",
+        "rawAfterDisruption": "",
+        "oldBindingInvalid": true,
+        "hostTextAfterNewConfirmation": "12你",
+        "noHangOrAutomaticCommitOrReplay": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 1,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 1,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "real host foreground loss invalidates binding and cancels transient composition",
+    "explicit new binding and candidate confirmation only resumes delivery; previous Word/Edge lifecycle results are expectations, not inherited pass evidence"
+  ],
+  "scope": "one sequential real foreground-window switch away from Edge and back; not simultaneous focus/confirmation race or another editable-host routing test",
+  "onMismatch": "stop and report actual textarea/raw/target status; do not replay old input or remove unexpected text automatically",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-edge-focus-87-user-result.json"
+}

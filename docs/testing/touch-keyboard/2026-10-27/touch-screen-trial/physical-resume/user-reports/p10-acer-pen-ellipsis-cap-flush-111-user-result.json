@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-CAP-FLUSH-111",
+  "userReport": "正常",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "passedNewPackageHostScenarios": 2,
+  "result": "seventh dot rejected at six without output/carry; next group starts1/3; two unfinished dots flush before English a in input order",
+  "observationGranularity": "group confirmation only; no captured per-action transcript/attempt count",
+  "priorPhysicalResultsInherited": false,
+  "scope": "two current-package Edge boundary cases; other modes, all flush routes or Word boundaries not inferred"
+}

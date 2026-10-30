@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-SYMBOL-ENTRANCE-91",
+  "caseReport": "第一项引号方向相反。第二项也反了。双引号未测。但是估计结果类似。",
+  "hostAndTextReport": "’‘ 浏览器。edge 。不过copy 过来看不出来。",
+  "copiedMessageCharacters": "’‘",
+  "messageCodepoints": [
+    "U+2019",
+    "U+2018"
+  ],
+  "codepointScope": "exact characters in user message; not an automated read of original textarea",
+  "host": "Edge",
+  "bothDefinedSingleQuoteCasesReportedReversed": true,
+  "doubleQuotesThisRound": "not tested; user prediction is not acceptance evidence",
+  "screenshot": "docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\raw\\quote-direction-91-user.png",
+  "screenshotSHA256": "d272e929fd525b7b0624a6c79bb32134ddb9b5c78f457707735f5c91163c7a02",
+  "visualObservation": "attached screenshot shows right-shaped single quote followed by left-shaped single quote; image alone does not establish Unicode code points",
+  "passedHostScenarios": 0
+}

@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-PAUSED-CANDIDATE-77",
+  "continues": "TOUCH-V1-ACER-PEN-THREE-MODE-PAGING-76",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same c35 local preview/58.8 calibration, three modes independently. CN document12/raw n page2 before EN. Candidate clicks and candidate-bar paging disabled while paused; main2 is English literal and does not consume paused composition. Return CN and explicitly select original page2 candidate. End variable mode.",
+  "cases": [
+    {
+      "caseID": "variable-page2-EN-pause-resume",
+      "mode": "variable",
+      "setup": [
+        "CN; choose mode/ID; Clear; selection OFF; modifiers unlit",
+        "main digits12; N08 -> raw n; candidate-bar next > -> page2",
+        "remember page2 second candidate; document remains12"
+      ],
+      "steps": [
+        "switch EN; raw n paused, page2 candidates retained",
+        "tap paused page2 second candidate once; verify document12/raw n/page2 unchanged",
+        "tap candidate-bar next > then previous <; verify still page2/document12/raw n",
+        "main digit2 once, no Shift; verify document122, paused raw n and same page2 retained",
+        "switch CN; verify raw n active and same page2 candidates",
+        "tap visible page2 second candidate once"
+      ],
+      "expected": {
+        "localOutput": "122 + exact remembered page2 second candidate",
+        "raw": "",
+        "candidatesEmpty": true,
+        "inputMode": "CN",
+        "noAutomaticChineseCommitDuringEN": true,
+        "noCandidatePageChangeDuringEN": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-page2-EN-pause-resume",
+      "mode": "full",
+      "setup": [
+        "CN; choose mode/ID; Clear; selection OFF; modifiers unlit",
+        "main digits12; N08 -> raw n; candidate-bar next > -> page2",
+        "remember page2 second candidate; document remains12"
+      ],
+      "steps": [
+        "switch EN; raw n paused, page2 candidates retained",
+        "tap paused page2 second candidate once; verify document12/raw n/page2 unchanged",
+        "tap candidate-bar next > then previous <; verify still page2/document12/raw n",
+        "main digit2 once, no Shift; verify document122, paused raw n and same page2 retained",
+        "switch CN; verify raw n active and same page2 candidates",
+        "tap visible page2 second candidate once"
+      ],
+      "expected": {
+        "localOutput": "122 + exact remembered page2 second candidate",
+        "raw": "",
+        "candidatesEmpty": true,
+        "inputMode": "CN",
+        "noAutomaticChineseCommitDuringEN": true,
+        "noCandidatePageChangeDuringEN": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-page2-EN-pause-resume",
+      "mode": "shorthand",
+      "setup": [
+        "CN; choose mode/ID; Clear; selection OFF; modifiers unlit",
+        "main digits12; N08 -> raw n; candidate-bar next > -> page2",
+        "remember page2 second candidate; document remains12"
+      ],
+      "steps": [
+        "switch EN; raw n paused, page2 candidates retained",
+        "tap paused page2 second candidate once; verify document12/raw n/page2 unchanged",
+        "tap candidate-bar next > then previous <; verify still page2/document12/raw n",
+        "main digit2 once, no Shift; verify document122, paused raw n and same page2 retained",
+        "switch CN; verify raw n active and same page2 candidates",
+        "tap visible page2 second candidate once"
+      ],
+      "expected": {
+        "localOutput": "122 + exact remembered page2 second candidate",
+        "raw": "",
+        "candidatesEmpty": true,
+        "inputMode": "CN",
+        "noAutomaticChineseCommitDuringEN": true,
+        "noCandidatePageChangeDuringEN": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 3,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 3,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "preview.candidatesEnabled requires chinese; selectCandidate rejects paused state",
+    "previewDown and touchUIActionAt reject paused candidate hits and candidate-bar paging",
+    "keyboardEngine.SetModes preserves state; English AppendCode commits literal without changing base composition/page, covered by TestIndependentModesAndLiteralBypassPreservePausedComposition",
+    "batch76 original-package fixture establishes page2 n candidates, no physical result inheritance for EN pause"
+  ],
+  "scope": "three sequential paused-candidate/page/literal/resume scenarios; not all EN keys, held contacts, focus changes or real hosts",
+  "afterBatch": "checkpoint defined basic candidate contexts at50 if normal, then prioritize new touch-ui real Word focus/visible workspace; quote/settings/concurrent-contact and paging edge branches remain separately open",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-three-mode-paused-candidate-77-user-result.json"
+}

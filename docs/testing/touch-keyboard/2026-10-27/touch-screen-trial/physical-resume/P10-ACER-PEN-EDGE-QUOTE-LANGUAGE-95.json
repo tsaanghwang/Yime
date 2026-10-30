@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-QUOTE-LANGUAGE-95",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-ENTRANCE-TOGGLE-94",
+  "host": "same Edge local textarea, fixture r3",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for page reset/caret setup; explicit keyboard Bind",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "Reset r3 page, click empty textarea, explicitly Bind for fresh quote state. CN/full/ID/literal entrances OFF, selection OFF/modifiers unlit. Same c35/58.8. Do not rebind, switch encoding mode or type unrelated characters during this case.",
+  "cases": [
+    {
+      "caseID": "edge-quote-candidate-language-pause-keeps-raw-and-pair-state",
+      "steps": [
+        "direct N12 ->raw ASCII apostrophe, textarea empty, last candidate ‘",
+        "CN/EN to EN ->same raw remains paused; tap paused quote candidate once ->no commit and raw unchanged",
+        "CN/EN back to CN ->last quote candidate still ‘; tap it ->textarea ‘, codepoint2018, raw empty",
+        "direct N12 ->raw apostrophe and last candidate ’",
+        "CN/EN to EN then back to CN without other input ->same raw and closing candidate ’, textarea still ‘",
+        "tap closing quote candidate ->textarea ‘’, codepoints2018/2019, raw empty"
+      ],
+      "expected": {
+        "pausedCandidateCannotCommit": true,
+        "rawWhilePaused": "'",
+        "openingCandidateAfterFirstRoundtrip": "‘",
+        "closingCandidateAfterSecondRoundtrip": "’",
+        "textAfterOpening": "‘",
+        "finalText": "‘’",
+        "finalCodepoints": [
+          "U+2018",
+          "U+2019"
+        ],
+        "finalRaw": ""
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 1,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 1,
+  "priorResultsInherited": false,
+  "expectedFixture": "ACER_PEN_QUOTE_FIXTURE_90.json and keyboardlab/modes_test.go quote-mode-switch regression",
+  "expectedSourceScope": "CN/EN setModes preserves raw and pairing state; EN disables candidate selection; punctuation display may be ASCII while paused, only CN symbols are asserted; source/development expectations do not count as physical evidence",
+  "scope": "one actual Edge full-mode quote CN/EN pause/return case; not EN direct quote input, other schemas or independent punctuation switch",
+  "afterBatch": "finish CN, restore variable mode, keep literal entrances OFF",
+  "onMismatch": "stop and report language, raw, candidate and codepoint line; do not rebind or replay midway",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-edge-quote-language-95-user-result.json"
+}

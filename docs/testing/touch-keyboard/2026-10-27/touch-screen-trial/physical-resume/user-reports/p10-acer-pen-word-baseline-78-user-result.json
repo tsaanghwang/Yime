@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-WORD-BASELINE-78",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input as presented",
+  "focusSetupMethod": "mouse allowed; method used for Word point selection not separately specified in reply",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "userReport": "正常。word 这次好多了，滚动后能看见光标，能点选。",
+  "passedHostScenarios": 3,
+  "bodyLayersAdded": 0,
+  "controlScenariosAdded": 0,
+  "candidateScenariosAdded": 0,
+  "result": "presented Word binding, ENabc and CN variable candidate commit normal; user explicitly reports improved Word usability and visible caret/point selection after scrolling",
+  "workspaceObservation": "WORD_WORKSPACE_OBSERVATION_78.json",
+  "scope": "three grouped actual-Word scenarios, without per-action text transcript/attempt count; scrolling adjustment retained; not initial unoccluded view, pure-pen caret positioning, other editing/focus paths or installed TIP acceptance"
+}

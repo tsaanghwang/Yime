@@ -1,0 +1,130 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-UNMATCHED-DIGITS-74",
+  "continues": "TOUCH-V1-ACER-PEN-THREE-MODE-ZERO-73",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same c35 local CN preview/58.8 calibration. Each mode independently document12, unmatched raw n]. Sequential main1 then main9, observe after each; stop/report any mismatch. Cancel removes only raw. No Shift for digit taps and no candidate clicking. End variable mode.",
+  "cases": [
+    {
+      "caseID": "variable-unmatched-main-digits",
+      "mode": "variable",
+      "setup": [
+        "CN; Settings choose mode/ID; punctuation entry OFF; Return",
+        "Clear; selection OFF; modifiers unlit; main digits12",
+        "N08 then Shift then M12 -> raw n], no candidates"
+      ],
+      "checks": [
+        {
+          "action": "main digit1 once, no Shift",
+          "expected": {
+            "localOutput": "121",
+            "raw": "n]",
+            "candidatesEmpty": true
+          }
+        },
+        {
+          "action": "main digit9 once, no Shift",
+          "expected": {
+            "localOutput": "1219",
+            "raw": "n]",
+            "candidatesEmpty": true
+          }
+        }
+      ],
+      "verification": "Cancel (not Clear)",
+      "expectedAfterCancel": {
+        "localOutput": "1219",
+        "raw": "",
+        "candidatesEmpty": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-unmatched-main-digits",
+      "mode": "full",
+      "setup": [
+        "CN; Settings choose mode/ID; punctuation entry OFF; Return",
+        "Clear; selection OFF; modifiers unlit; main digits12",
+        "N08 then Shift then M12 -> raw n], no candidates"
+      ],
+      "checks": [
+        {
+          "action": "main digit1 once, no Shift",
+          "expected": {
+            "localOutput": "121",
+            "raw": "n]",
+            "candidatesEmpty": true
+          }
+        },
+        {
+          "action": "main digit9 once, no Shift",
+          "expected": {
+            "localOutput": "1219",
+            "raw": "n]",
+            "candidatesEmpty": true
+          }
+        }
+      ],
+      "verification": "Cancel (not Clear)",
+      "expectedAfterCancel": {
+        "localOutput": "1219",
+        "raw": "",
+        "candidatesEmpty": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-unmatched-main-digits",
+      "mode": "shorthand",
+      "setup": [
+        "CN; Settings choose mode/ID; punctuation entry OFF; Return",
+        "Clear; selection OFF; modifiers unlit; main digits12",
+        "N08 then Shift then M12 -> raw n], no candidates"
+      ],
+      "checks": [
+        {
+          "action": "main digit1 once, no Shift",
+          "expected": {
+            "localOutput": "121",
+            "raw": "n]",
+            "candidatesEmpty": true
+          }
+        },
+        {
+          "action": "main digit9 once, no Shift",
+          "expected": {
+            "localOutput": "1219",
+            "raw": "n]",
+            "candidatesEmpty": true
+          }
+        }
+      ],
+      "verification": "Cancel (not Clear)",
+      "expectedAfterCancel": {
+        "localOutput": "1219",
+        "raw": "",
+        "candidatesEmpty": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 3,
+  "digitActionChecks": 6,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 3,
+  "priorResultsInherited": false,
+  "fixtureEvidence": "ACER_PEN_NO_CANDIDATE_FIXTURE_71.json",
+  "expectedSources": [
+    "keyboardEngine.Apply digits1..9 select ordinal only when candidate list is nonempty",
+    "noncoding digit without candidates routes to keyboardEngine.literal: commit digit, preserve unmatched raw",
+    "lab projection excludes1/9 from coding alphabet; original-package n] has no candidates in all modes"
+  ],
+  "scope": "three sequential unmatched-digit boundary scenarios with six digit action checks, counted3 not6; not every digit, unavailable ordinal on nonempty pages, Shift, later-page or real host acceptance",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-three-mode-unmatched-digits-74-user-result.json"
+}

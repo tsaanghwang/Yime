@@ -233,6 +233,11 @@ func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 			line = "暂停组合：" + raw
 		}
 	}
+	if p.snapshot.SymbolChoice {
+		line += fmt.Sprintf("  |  省略号：%d次，请选候选", p.snapshot.PendingMiddleDots)
+	} else if p.snapshot.PendingMiddleDots > 0 {
+		line += fmt.Sprintf("  |  中点待合并：%d/3", p.snapshot.PendingMiddleDots)
+	}
 	if a.touchMessage != "" {
 		line += "  |  " + a.touchMessage
 	} else if a.host != nil {
@@ -249,10 +254,10 @@ func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 		line += "  |  " + p.editor.fittedDisplay(func(s string) bool { return previewTextWidth(dc, s) < limit })
 	}
 	text(dc, line, rect{10, 0, r.R - 10, 32}, 0x8024)
-	for i, c := range p.snapshot.State.Candidates {
+	for i := range p.snapshot.State.Candidates {
 		box := a.candidateRect(i)
 		bg := palette.candidate
-		s := fmt.Sprintf("%d  %s", i+1, c.Text)
+		s := p.candidateLabel(i)
 		if !p.candidatesEnabled() {
 			bg = palette.disabled
 			s += "（暂停）"

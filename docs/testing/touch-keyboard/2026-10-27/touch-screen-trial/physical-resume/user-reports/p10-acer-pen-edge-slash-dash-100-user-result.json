@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-SLASH-DASH-100",
+  "userReport": "破折号输出符合设计预期，输入一次单横线(长度最宽的一个)，输入两次中文标准破折号。无需改动。测试结果：正常。秩序单独处理省略号。",
+  "followupCorrections": [
+    "秩序单独处理省略号输入问题。",
+    "只需"
+  ],
+  "interpretedInstruction": "only change ellipsis; dash output accepted, no dash change",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "host": "same Edge local textarea, fixture r3",
+  "passedHostScenarios": 2,
+  "observationGranularity": "normal group reply credits two presented cases; dash behavior explicitly described, no independent codepoint transcript or attempt count inferred",
+  "scope": "old c35 slash/dash100 only; no new-package ellipsis pass inferred"
+}

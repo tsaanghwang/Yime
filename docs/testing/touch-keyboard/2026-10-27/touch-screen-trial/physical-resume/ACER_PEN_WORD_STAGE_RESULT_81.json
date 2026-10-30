@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-29",
+  "status": "defined Word basic11-scenario checkpoint complete",
+  "host": "Word; version and process architecture not independently recorded here",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted; no claim of pure-pen native Word caret positioning",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "passedHostScenarios": 11,
+  "pendingWithinDefinedCheckpoint": 0,
+  "batches": [
+    {
+      "batch": 78,
+      "definition": "P10-ACER-PEN-WORD-BASELINE-78.json",
+      "passedScenarios": 3,
+      "evidence": "user-reports/p10-acer-pen-word-baseline-78-user-result.json"
+    },
+    {
+      "batch": 79,
+      "definition": "P10-ACER-PEN-WORD-EDITING-79.json",
+      "passedScenarios": 3,
+      "evidence": "user-reports/p10-acer-pen-word-editing-79-user-result.json"
+    },
+    {
+      "batch": 80,
+      "definition": "P10-ACER-PEN-WORD-LIFECYCLE-80.json",
+      "passedScenarios": 3,
+      "evidence": "user-reports/p10-acer-pen-word-lifecycle-80-user-result.json"
+    },
+    {
+      "batch": 81,
+      "definition": "P10-ACER-PEN-WORD-MODES-81.json",
+      "passedScenarios": 2,
+      "evidence": "user-reports/p10-acer-pen-word-modes-81-user-result.json"
+    }
+  ],
+  "workspaceObservation": "WORD_WORKSPACE_OBSERVATION_78.json",
+  "workspaceQualification": "user reports much improved Word usability; caret visible/point selection usable after scrolling, not unconditional initial no-occlusion acceptance",
+  "previewCountsUnchanged": {
+    "bodyLayers": 336,
+    "controlScenarios": 37,
+    "candidateScenarios": 50
+  },
+  "limits": [
+    "grouped actual Word observations with no inferred attempt count or per-action transcript",
+    "single-line editing and sequential cancellation/rebind paths; no guarantee for concurrent focus/commit race",
+    "multiline Enter/Tab and every modifier/confirmation route, other applications and installed TIP acceptance not established",
+    "MSI CN148/recontact observations, old Acer trace/clarification and method/version split remain unchanged"
+  ],
+  "next": "P10-ACER-PEN-EDGE-BASELINE-82.json"
+}

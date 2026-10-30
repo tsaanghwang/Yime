@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-BASELINE-82",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input as presented",
+  "host": "Edge local textarea",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "testPageSHA256": "096663c0899f662a458f15a9d03960d6efead592837ffc0e1fd63a01b7a2176d",
+  "testPageSnapshot": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\raw\\test-textarea-v1.html",
+  "userReport": "正常。不过，浏览器测试窗口“清空测试按钮”看不见。可以考虑把文本框高度减少一两行，或可滚动上来，或可字号小点。",
+  "passedHostScenarios": 2,
+  "partiallyObservedHostScenarios": 1,
+  "result": "binding and EN/CN input reported normal; old reset button not visible, so full reset/workspace scenario not credited as complete",
+  "scope": "two complete input cases plus qualified binding observation; actual reset click/visibility not assumed; no other host, fixture or method inheritance"
+}

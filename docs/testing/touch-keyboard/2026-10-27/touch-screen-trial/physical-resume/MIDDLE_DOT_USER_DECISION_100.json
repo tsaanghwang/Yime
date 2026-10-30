@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-29",
+  "source": "direct user replies to asynchronous clarification",
+  "representationAnswer": "保留为 ··· 和 ······（3个、6个 U+00B7）",
+  "conditionalAnswer": "可以等第三次再输出省略号",
+  "interpretation": "conditional answer was explicitly only if folding required; folding was rejected by first answer, so no buffering/delay is introduced",
+  "acceptedRule": {
+    "perTap": "one literal U+00B7",
+    "afterThreeTaps": "···",
+    "afterSixTaps": "······",
+    "foldToU2026": false,
+    "waitForThirdTap": false
+  },
+  "supersedes": "CN134 KLE notes7 middle-dot folding sentence and gap99 repair proposal, within this lab",
+  "scope": "middle-dot symbol key only; no geometry/encoding/dictionary/installed-product change; other explicit punctuation mappings unchanged",
+  "physicalAcceptance": "not established by requirement reply; current slash/dash100 still pending",
+  "runtimeChangeRequired": false,
+  "status": "superseded-by-final-single-codepoint-U22EF-decision",
+  "supersededBy": "MIDDLE_DOT_FINAL_DECISION_100.json"
+}

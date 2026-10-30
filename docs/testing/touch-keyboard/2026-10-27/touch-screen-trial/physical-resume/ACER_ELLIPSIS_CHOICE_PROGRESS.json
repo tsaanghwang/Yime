@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-29",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "passedHostScenarios": 29,
+  "completedBatches": [
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-CHOICE-101",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-SIX-TAP-102",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-EDIT-CANCEL-103",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-COMPOSITION-104",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-GUARD-ORDINAL-106",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-CONFIRM-107",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-LIFECYCLE-108",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-WORD-109",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-RESIDUAL-110",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-CAP-FLUSH-111",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-CODE-MODES-112",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-PAGE-FOCUS-113",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-SELECT-ROUTES-114",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-MODE-CANCEL-115"
+  ],
+  "evidence": [
+    "user-reports/p10-acer-pen-ellipsis-choice-101-102-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-edit-cancel-103-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-composition-104-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-en-105-user-observation.json",
+    "user-reports/p10-acer-pen-ellipsis-guard-ordinal-106-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-confirm-107-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-lifecycle-108-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-word-109-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-residual-110-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-cap-flush-111-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-code-modes-112-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-page-focus-113-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-select-routes-114-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-mode-cancel-115-user-result.json"
+  ],
+  "currentBatch": "TOUCH-V1-ACER-PEN-ELLIPSIS-MODE-CANCEL-115",
+  "currentBatchDefinition": "P10-ACER-PEN-ELLIPSIS-MODE-CANCEL-115.json",
+  "pendingCurrentBatchScenarios": 0,
+  "priorPhysicalResultsInherited": false,
+  "scope": "new executable host cases only; previous c35 counts and full body/control coverage not inherited",
+  "limits": [
+    "group reports, not captured per-action transcripts or attempt counts",
+    "6-tap initial expansion confirms output variants; intermediate timing not separately transcribed",
+    "Word limited to2 new-package candidate-click cases; finger/MSI, all-key, all confirmation and concurrent/focus-race coverage not established"
+  ],
+  "lastUpdatedDate": "2026-10-30",
+  "status": "29 explicit Acer pen passes plus105 qualified glyph observation; next method finger tracked independently",
+  "currentObservation": "ELLIPSIS_GLYPH_OBSERVATION_105.json",
+  "partialBatches": [
+    {
+      "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-EN-105",
+      "passedCases": 1,
+      "remainingCases": 1,
+      "observation": "ELLIPSIS_GLYPH_OBSERVATION_105.json"
+    }
+  ],
+  "priorQualifiedCase": "ELLIPSIS_GLYPH_OBSERVATION_105.json",
+  "hostBreakdown": {
+    "EdgeExplicitlyPassed": 27,
+    "WordPassed": 2
+  },
+  "stageReport": "ACER_ELLIPSIS_CHOICE_STAGE_RESULT_113.json",
+  "nextPhasePlan": "NEXT_STAGE_AFTER_ELLIPSIS_113.json",
+  "boundaryStageReport": "ACER_ELLIPSIS_BOUNDARY_RESULT_111.json"
+}

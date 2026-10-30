@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-ENTRANCE-TOGGLE-94",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-PENDING-QUOTE-RETEST-93",
+  "host": "same Edge local textarea, fixture r3",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for page reset/caret setup; explicit keyboard Bind",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "Reset r3 page, click empty textarea and explicitly Bind for fresh quote state. CN/full/ID/literal entrances OFF, selection OFF/modifiers unlit. Keep c35/58.8. Do not rebind or switch encoding/language midway.",
+  "cases": [
+    {
+      "caseID": "edge-entrance-setting-toggle-preserves-existing-coding-and-pair",
+      "steps": [
+        "direct N12 without Shift ->raw ASCII apostrophe, textarea empty, last candidate ‘",
+        "Settings: toggle literal entrances ON; Return; inspect raw apostrophe, empty textarea and same opening quote candidate",
+        "Settings: toggle literal entrances OFF; Return; inspect same raw/empty textarea/opening quote candidate",
+        "tap opening quote candidate ‘ ->textarea ‘ and raw empty",
+        "Shift then N03 (entrances OFF) ->raw apostrophe and closing quote candidate ’; tap that candidate ->textarea ‘’ and raw empty"
+      ],
+      "expected": {
+        "rawDuringBothToggles": "'",
+        "textDuringBothToggles": "",
+        "quoteCandidateDuringBothToggles": "‘",
+        "textAfterOpening": "‘",
+        "finalText": "‘’",
+        "finalCodepoints": [
+          "U+2018",
+          "U+2019"
+        ],
+        "finalRaw": ""
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 1,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 1,
+  "priorResultsInherited": false,
+  "expectedFixture": "ACER_PEN_QUOTE_FIXTURE_90.json; packaged N12/N03 actions and settings handler source",
+  "expectedSourceScope": "literal-entry option only changes routing of future reserved entrances; handler cancels gestures without dispatching composition clear; source review supplies expectation, not physical evidence",
+  "scope": "one actual Edge ON/OFF settings round-trip during pending quote composition; does not imply every setting preserves composition",
+  "afterBatch": "literal entrances already OFF; restore variable mode after verification",
+  "onMismatch": "stop and report raw, candidate, codepoint line and binding state; do not replay, rebind or change calibration midway",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-edge-entrance-toggle-94-user-result.json"
+}

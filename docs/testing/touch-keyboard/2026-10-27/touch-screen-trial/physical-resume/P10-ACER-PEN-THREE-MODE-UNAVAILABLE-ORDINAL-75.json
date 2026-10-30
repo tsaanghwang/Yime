@@ -1,0 +1,137 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-UNAVAILABLE-ORDINAL-75",
+  "continues": "TOUCH-V1-ACER-PEN-THREE-MODE-UNMATCHED-DIGITS-74",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same c35 local CN preview/58.8 calibration. Each mode independently prepares document12 and single coding symbol ] with exactly one literal candidate. Missing main ordinals2/9 must leave state unchanged; valid1 then confirms ]. No Shift for digit taps. End variable mode.",
+  "cases": [
+    {
+      "caseID": "variable-unavailable-ordinal",
+      "mode": "variable",
+      "setup": [
+        "CN; Settings choose mode/ID; punctuation entry OFF; Return",
+        "Clear; selection OFF; modifiers unlit; main digits12",
+        "Shift then M12 -> raw ]; verify exactly one candidate1: ]"
+      ],
+      "checks": [
+        {
+          "action": "main digit2 once, no Shift",
+          "expected": {
+            "localOutput": "12",
+            "raw": "]",
+            "candidateCount": 1,
+            "onlyCandidateText": "]"
+          }
+        },
+        {
+          "action": "main digit9 once, no Shift",
+          "expected": {
+            "localOutput": "12",
+            "raw": "]",
+            "candidateCount": 1,
+            "onlyCandidateText": "]"
+          }
+        }
+      ],
+      "verification": "main digit1 once, no Shift",
+      "expectedAfterVerification": {
+        "localOutput": "12]",
+        "raw": "",
+        "candidatesEmpty": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-unavailable-ordinal",
+      "mode": "full",
+      "setup": [
+        "CN; Settings choose mode/ID; punctuation entry OFF; Return",
+        "Clear; selection OFF; modifiers unlit; main digits12",
+        "Shift then M12 -> raw ]; verify exactly one candidate1: ]"
+      ],
+      "checks": [
+        {
+          "action": "main digit2 once, no Shift",
+          "expected": {
+            "localOutput": "12",
+            "raw": "]",
+            "candidateCount": 1,
+            "onlyCandidateText": "]"
+          }
+        },
+        {
+          "action": "main digit9 once, no Shift",
+          "expected": {
+            "localOutput": "12",
+            "raw": "]",
+            "candidateCount": 1,
+            "onlyCandidateText": "]"
+          }
+        }
+      ],
+      "verification": "main digit1 once, no Shift",
+      "expectedAfterVerification": {
+        "localOutput": "12]",
+        "raw": "",
+        "candidatesEmpty": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-unavailable-ordinal",
+      "mode": "shorthand",
+      "setup": [
+        "CN; Settings choose mode/ID; punctuation entry OFF; Return",
+        "Clear; selection OFF; modifiers unlit; main digits12",
+        "Shift then M12 -> raw ]; verify exactly one candidate1: ]"
+      ],
+      "checks": [
+        {
+          "action": "main digit2 once, no Shift",
+          "expected": {
+            "localOutput": "12",
+            "raw": "]",
+            "candidateCount": 1,
+            "onlyCandidateText": "]"
+          }
+        },
+        {
+          "action": "main digit9 once, no Shift",
+          "expected": {
+            "localOutput": "12",
+            "raw": "]",
+            "candidateCount": 1,
+            "onlyCandidateText": "]"
+          }
+        }
+      ],
+      "verification": "main digit1 once, no Shift",
+      "expectedAfterVerification": {
+        "localOutput": "12]",
+        "raw": "",
+        "candidatesEmpty": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 3,
+  "unavailableOrdinalChecks": 6,
+  "validOrdinalVerificationChecks": 3,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 3,
+  "priorResultsInherited": false,
+  "fixtureEvidence": "ACER_PEN_UNAVAILABLE_ORDINAL_FIXTURE_75.json",
+  "expectedSources": [
+    "keyboardEngine.Apply nonempty candidate page: ordinal>=candidate count is no-op, not digit literal fallback",
+    "single coding-symbol view provides one final-page literal candidate; literalID selection resets raw and commits symbol",
+    "original-package sparse fixture verifies ] candidate count1 in all modes and unavailable9 no-op"
+  ],
+  "scope": "three single-symbol current-page unavailable-ordinal scenarios; six missing-digit checks and three valid1 verifications counted3 scenarios, not9; not ordinary word pages, paging or real host acceptance",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-three-mode-unavailable-ordinal-75-user-result.json"
+}

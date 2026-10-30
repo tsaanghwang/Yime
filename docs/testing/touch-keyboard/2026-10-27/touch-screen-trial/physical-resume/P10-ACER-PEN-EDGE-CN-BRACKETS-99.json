@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-CN-BRACKETS-99",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-EN-QUOTES-98",
+  "status": "passed-user-reported-group-result",
+  "host": "same Edge local textarea, fixture r3",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for page reset/caret; explicit Bind",
+  "setup": "Each case independently Reset page, click empty textarea, Bind; CN/variable/ID/literal entrances ON. Selection OFF/modifiers unlit; Shift once before EVERY listed key. Same c35/58.8.",
+  "cases": [
+    {
+      "caseID": "edge-semicolon-colon-parentheses-square",
+      "keys": [
+        {
+          "shiftThen": "N16"
+        },
+        {
+          "shiftThen": "M31"
+        },
+        {
+          "shiftThen": "M21"
+        },
+        {
+          "shiftThen": "N13"
+        },
+        {
+          "shiftThen": "M30"
+        },
+        {
+          "shiftThen": "N24"
+        }
+      ],
+      "expected": {
+        "finalText": "；：（）【】",
+        "textAfterEachKey": [
+          "；",
+          "；：",
+          "；：（",
+          "；：（）",
+          "；：（）【",
+          "；：（）【】"
+        ],
+        "finalCodepoints": [
+          "U+FF1B",
+          "U+FF1A",
+          "U+FF08",
+          "U+FF09",
+          "U+3010",
+          "U+3011"
+        ],
+        "rawAlwaysEmpty": true,
+        "noCandidateConfirmationNeeded": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "edge-book-title-and-corner-brackets",
+      "keys": [
+        {
+          "shiftThen": "M08"
+        },
+        {
+          "shiftThen": "M09"
+        },
+        {
+          "shiftThen": "N17"
+        },
+        {
+          "shiftThen": "N18"
+        }
+      ],
+      "expected": {
+        "finalText": "《》『』",
+        "textAfterEachKey": [
+          "《",
+          "《》",
+          "《》『",
+          "《》『』"
+        ],
+        "finalCodepoints": [
+          "U+300A",
+          "U+300B",
+          "U+300E",
+          "U+300F"
+        ],
+        "rawAlwaysEmpty": true,
+        "noCandidateConfirmationNeeded": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 2,
+  "priorResultsInherited": false,
+  "expectedFixture": "ACER_PEN_PUNCTUATION_FIXTURE_99.json",
+  "expectedSourceScope": "isolated current lab engine using original c35 dictionaries plus exact packaged actions; no actual native host or physical pass inferred",
+  "scope": "two CN/variable direct punctuation sequences,10 keys; not all bracket contexts, EN mappings, composition preservation or middle-dot folding",
+  "afterBatch": "restore literal entrances OFF; keep CN/variable",
+  "onMismatch": "report key, raw, actual text/codepoints; stop, no blind retry or keyboard scaling",
+  "userReport": "正常。另外，三个中点省略号本项目采用连续单击三次输入三点省略号，连续6次输入双三点省略号。",
+  "evidence": "user-reports/p10-acer-pen-edge-cn-brackets-99-user-result.json"
+}

@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-PAUSED-CANDIDATE-77",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedCandidateScenarios": 3,
+  "bodyLayersAdded": 0,
+  "controlScenariosAdded": 0,
+  "result": "three modes retain page2/raw n during EN pause; paused candidate and paging taps do not commit or change page, main2 is literal; CN resumes original page and explicit selection appends remembered candidate",
+  "scope": "three grouped human preview reports, no per-action word transcript/attempt count; not focus, Word, installed-product or concurrent-contact acceptance"
+}

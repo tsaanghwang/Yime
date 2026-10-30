@@ -1,6 +1,6 @@
 /** Input adapter for the isolated Go engine. No OS keyboard synthesis is used. */
 export const CODE_MODES = Object.freeze(['variable', 'full', 'shorthand']);
-export const INPUT_POLICY = 'concept-keyboard-modes-v2';
+export const INPUT_POLICY = 'concept-keyboard-modes-v2+ellipsis-choice-v1';
 export const DEFAULT_MODES = Object.freeze({input:'chinese',punctuation:'english'});
 
 export function actionFromKeyboard(event) {
@@ -68,7 +68,7 @@ export function protocolAction(action, state, modes=DEFAULT_MODES) {
     if (!(action.delta < 0 ? state.has_previous : state.has_next)) return null;
     return {type:'page',delta:action.delta};
   }
-  if (['backspace','clear'].includes(action.type)) return {type:action.type};
+  if (['backspace','clear','flushSymbols'].includes(action.type)) return {type:action.type};
   return null;
 }
 
@@ -120,7 +120,7 @@ export function createLiveClient({fetcher=fetch, idFactory=() => crypto.randomUU
             && typeof candidate.text === 'string')))
         && ['chinese','english'].includes(result.modes?.input)
         && ['chinese','english'].includes(result.modes?.punctuation));
-      if (recoverable) snapshot = {...snapshot,state:result.state,revision:result.revision,modes:result.modes,commit:''};
+      if (recoverable) snapshot = {...snapshot,state:result.state,revision:result.revision,modes:result.modes,pendingMiddleDots:result.pendingMiddleDots || 0,symbolChoice:!!result.symbolChoice,commit:''};
       throw new APIRejection(typeof result?.error === 'string' ? result.error : `HTTP ${response.status}`,recoverable);
     }
     return result;

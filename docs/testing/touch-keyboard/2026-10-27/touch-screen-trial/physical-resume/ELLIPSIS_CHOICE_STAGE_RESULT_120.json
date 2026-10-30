@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-30",
+  "status": "scoped feature checkpoint; not complete keyboard acceptance",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "screenView": "touch-screen-v1",
+  "calibrationArgument": "ruler-observed-mm58.8",
+  "filterMS": 0,
+  "methods": {
+    "Acer PE272XT supplied pen": {
+      "passedHostScenarios": 29,
+      "hosts": {
+        "Edge": 27,
+        "Word": 2
+      },
+      "progress": "ACER_ELLIPSIS_CHOICE_PROGRESS.json",
+      "evidence": [
+        "user-reports/p10-acer-pen-ellipsis-choice-101-102-user-result.json",
+        "user-reports/p10-acer-pen-ellipsis-edit-cancel-103-user-result.json",
+        "user-reports/p10-acer-pen-ellipsis-composition-104-user-result.json",
+        "user-reports/p10-acer-pen-ellipsis-en-105-user-observation.json",
+        "user-reports/p10-acer-pen-ellipsis-guard-ordinal-106-user-result.json",
+        "user-reports/p10-acer-pen-ellipsis-confirm-107-user-result.json",
+        "user-reports/p10-acer-pen-ellipsis-lifecycle-108-user-result.json",
+        "user-reports/p10-acer-pen-ellipsis-word-109-user-result.json",
+        "user-reports/p10-acer-pen-ellipsis-residual-110-user-result.json",
+        "user-reports/p10-acer-pen-ellipsis-cap-flush-111-user-result.json",
+        "user-reports/p10-acer-pen-ellipsis-code-modes-112-user-result.json",
+        "user-reports/p10-acer-pen-ellipsis-page-focus-113-user-result.json",
+        "user-reports/p10-acer-pen-ellipsis-select-routes-114-user-result.json",
+        "user-reports/p10-acer-pen-ellipsis-mode-cancel-115-user-result.json"
+      ]
+    },
+    "finger": {
+      "passedHostScenarios": 10,
+      "hosts": {
+        "Edge": 10
+      },
+      "progress": "FINGER_ELLIPSIS_CHOICE_PROGRESS.json",
+      "evidence": [
+        "user-reports/p10-finger-ellipsis-basic-116-user-result.json",
+        "user-reports/p10-finger-ellipsis-edit-cancel-117-user-result.json",
+        "user-reports/p10-finger-ellipsis-select-routes-118-user-result.json",
+        "user-reports/p10-finger-ellipsis-mode-cancel-119-user-result.json",
+        "user-reports/p10-finger-ellipsis-lifecycle-120-user-result.json"
+      ],
+      "passedByBatch": {
+        "116": 2,
+        "117": 2,
+        "118": 2,
+        "119": 2,
+        "120": 2
+      }
+    }
+  },
+  "fingerCoveredContexts": [
+    "three-tap first U2026 and six-tap second U22EF candidate clicks",
+    "Backspace reduces/hides and restores choices; Cancel starts fresh group",
+    "main digit1 and RIGHT Space select first without extra digit/space",
+    "CN/EN roundtrip and variable-to-full discard pending choices",
+    "minimize/restore and Help return cancel pending and require rebind"
+  ],
+  "qualifiedObservation": "ELLIPSIS_GLYPH_OBSERVATION_105.json: reported U2026 correct, centered glyph appearance; not an added complete pass",
+  "limits": [
+    "group user confirmations only; no captured per-action transcript or attempt counts",
+    "mouse allowed for host caret/reset and taskbar restoration; no pure-finger/pen caret-location acceptance",
+    "finger10 limited Edge cases; no finger Word/EN, all coding directions, all-key, concurrent/mixed-contact or repeat-stability acceptance",
+    "Acer Word limited two candidate-click cases; sequential lifecycle tests do not establish focus-race handling",
+    "MSI CN remainder/recontact and new-package ARM64 native acceptance remain independent",
+    "old c35 body/control/candidate and host results not inherited; no installed input-method/default/user-data changes"
+  ],
+  "sourceDeliveryStatus": "local uncommitted source and records; no new push/CI/merge claimed",
+  "nextPhasePlan": "NEXT_STAGE_AFTER_ELLIPSIS_120.json"
+}

@@ -1,0 +1,168 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-ORDINAL-72",
+  "continues": "TOUCH-V1-ACER-PEN-THREE-MODE-NO-CANDIDATE-71",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same c35 local CN preview/58.8 calibration. Each independent case Clear and reenter complete mode-specific ni/niii sample; use main digits1/2 with no Shift. Expected selection follows actual visible ordinal; do not use side-pad, physical keyboard or candidate clicking. End variable mode.",
+  "cases": [
+    {
+      "caseID": "variable-main-digit1",
+      "mode": "variable",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; all modifiers unlit",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedBeforeConfirmation": {
+        "raw": "ni",
+        "localOutput": "",
+        "minimumCandidates": 2
+      },
+      "observation": "remember visible candidate at ordinal 1 before input; if candidate setup differs, report before confirming",
+      "action": "tap unshifted main-area digit1 once; do not click candidate bar",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact visible candidate at ordinal 1",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noLiteralDigitAppended": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "variable-main-digit2",
+      "mode": "variable",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; all modifiers unlit",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedBeforeConfirmation": {
+        "raw": "ni",
+        "localOutput": "",
+        "minimumCandidates": 2
+      },
+      "observation": "remember visible candidate at ordinal 2 before input; if candidate setup differs, report before confirming",
+      "action": "tap unshifted main-area digit2 once; do not click candidate bar",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact visible candidate at ordinal 2",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noLiteralDigitAppended": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-main-digit1",
+      "mode": "full",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; all modifiers unlit",
+      "keys": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "expectedBeforeConfirmation": {
+        "raw": "niii",
+        "localOutput": "",
+        "minimumCandidates": 2
+      },
+      "observation": "remember visible candidate at ordinal 1 before input; if candidate setup differs, report before confirming",
+      "action": "tap unshifted main-area digit1 once; do not click candidate bar",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact visible candidate at ordinal 1",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noLiteralDigitAppended": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-main-digit2",
+      "mode": "full",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; all modifiers unlit",
+      "keys": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "expectedBeforeConfirmation": {
+        "raw": "niii",
+        "localOutput": "",
+        "minimumCandidates": 2
+      },
+      "observation": "remember visible candidate at ordinal 2 before input; if candidate setup differs, report before confirming",
+      "action": "tap unshifted main-area digit2 once; do not click candidate bar",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact visible candidate at ordinal 2",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noLiteralDigitAppended": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-main-digit1",
+      "mode": "shorthand",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; all modifiers unlit",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedBeforeConfirmation": {
+        "raw": "ni",
+        "localOutput": "",
+        "minimumCandidates": 2
+      },
+      "observation": "remember visible candidate at ordinal 1 before input; if candidate setup differs, report before confirming",
+      "action": "tap unshifted main-area digit1 once; do not click candidate bar",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact visible candidate at ordinal 1",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noLiteralDigitAppended": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-main-digit2",
+      "mode": "shorthand",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; all modifiers unlit",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedBeforeConfirmation": {
+        "raw": "ni",
+        "localOutput": "",
+        "minimumCandidates": 2
+      },
+      "observation": "remember visible candidate at ordinal 2 before input; if candidate setup differs, report before confirming",
+      "action": "tap unshifted main-area digit2 once; do not click candidate bar",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact visible candidate at ordinal 2",
+        "raw": "",
+        "candidatesEmpty": true,
+        "noLiteralDigitAppended": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 6,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 6,
+  "priorResultsInherited": false,
+  "fixtureEvidence": "ACER_PEN_ORDINAL_FIXTURE_72.json",
+  "expectedSources": [
+    "keyboardEngine.Apply main digits1..9 selects current-page candidate when candidates exist; scoped keyboard-lab policy, not installed-product behavior",
+    "canonical ni3 mode samples established in batch68 and software original-package ordinal fixture"
+  ],
+  "scope": "six current-page main-digit1/2 selection contexts only; no unavailable ordinal, zero, Shift, later-page, no-candidate digit or host acceptance",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-three-mode-ordinal-72-user-result.json"
+}

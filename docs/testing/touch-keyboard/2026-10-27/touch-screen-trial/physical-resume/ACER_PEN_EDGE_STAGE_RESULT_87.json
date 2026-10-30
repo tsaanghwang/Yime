@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-29",
+  "status": "defined Edge basic11-scenario checkpoint complete",
+  "host": "Edge local static textarea; browser version/process architecture not independently recorded",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse/taskbar permitted; no pure-pen native caret-positioning claim",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "passedHostScenarios": 11,
+  "pendingWithinDefinedCheckpoint": 0,
+  "passedByFixtureSHA256": {
+    "096663c0899f662a458f15a9d03960d6efead592837ffc0e1fd63a01b7a2176d": 2,
+    "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393": 9
+  },
+  "historicalPartial": "batch82 original hidden reset button remains partial; r2 fixture retest83 separately passed",
+  "batches": [
+    {
+      "batch": 82,
+      "passedScenarios": 2,
+      "evidence": "user-reports/p10-acer-pen-edge-baseline-82-user-result.json"
+    },
+    {
+      "batch": 83,
+      "passedScenarios": 1,
+      "evidence": "user-reports/p10-acer-pen-edge-fixture-retest-83-user-result.json"
+    },
+    {
+      "batch": 84,
+      "passedScenarios": 2,
+      "evidence": "user-reports/p10-acer-pen-edge-modes-84-user-result.json"
+    },
+    {
+      "batch": 85,
+      "passedScenarios": 3,
+      "evidence": "user-reports/p10-acer-pen-edge-editing-85-user-result.json"
+    },
+    {
+      "batch": 86,
+      "passedScenarios": 2,
+      "evidence": "user-reports/p10-acer-pen-edge-lifecycle-86-user-result.json"
+    },
+    {
+      "batch": 87,
+      "passedScenarios": 1,
+      "evidence": "user-reports/p10-acer-pen-edge-focus-87-user-result.json"
+    }
+  ],
+  "previewCountsUnchanged": {
+    "bodyLayers": 336,
+    "controlScenarios": 37,
+    "candidateScenarios": 50
+  },
+  "wordPassedScenariosSeparate": 11,
+  "limits": [
+    "group observations, no inferred exact attempt count/action transcript",
+    "fixture version split retained; not11 cases on same page revision",
+    "single-line and sequential recovery only; multiline and concurrent contacts/races not established",
+    "other browsers, ARM64, installed input methods and MSI pen CN148/recontact remain separate"
+  ],
+  "next": "P10-ACER-PEN-EDGE-MULTILINE-88.json"
+}

@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-SYMBOL-ENTRANCE-91",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-QUOTES-90",
+  "host": "same Edge local textarea, fixture r2",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for page reset/caret setup; explicit keyboard Bind",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "both-cases-user-reported-reversed-single-quotes",
+  "setup": "EACH case independently: page Reset, click empty textarea, keyboard Bind for fresh quote pair state; CN/full/ID; Settings literal entrances ON; Return. Selection OFF, raw empty, modifiers unlit. Same c35/58.8. Do not rebind midway through a case.",
+  "cases": [
+    {
+      "caseID": "edge-reserved-single-quote-direct-pair",
+      "steps": [
+        "Shift then N03 ->direct opening quote ‘, raw empty",
+        "Shift then N03 again ->textarea ‘’ directly, raw empty"
+      ],
+      "expected": {
+        "afterFirst": "‘",
+        "afterSecond": "‘’",
+        "raw": "",
+        "noCandidateSelectionNeeded": true
+      },
+      "status": "user-reported-quote-order-mismatch"
+    },
+    {
+      "caseID": "edge-coding-entrance-retained-and-pending-quote-refresh",
+      "steps": [
+        "direct N12 WITHOUT Shift ->raw ASCII apostrophe, textarea empty, last candidate ‘",
+        "Shift then N03 ->direct textarea ‘; raw apostrophe remains; last candidate changes to closing ’",
+        "tap closing ’ candidate explicitly ->textarea ‘’ and raw empty"
+      ],
+      "expected": {
+        "codingRaw": "'",
+        "beforeDirectText": "",
+        "rawAfterDirect": "'",
+        "textAfterDirect": "‘",
+        "quoteCandidateAfterDirect": "’",
+        "textAfterConfirmation": "‘’",
+        "rawAfterConfirmation": ""
+      },
+      "status": "user-reported-quote-order-mismatch"
+    }
+  ],
+  "scenarioCount": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 2,
+  "priorResultsInherited": false,
+  "expectedFixture": "ACER_PEN_SYMBOL_ENTRANCE_FIXTURE_91.json",
+  "expectedSourceScope": "isolated original package dictionaries plus current lab engine and exact packaged key actions; development fixture only, not executable GUI/physical proof",
+  "scope": "two actual Edge CN/full reserved-entrance ON cases; coding entrance remains coding and pending composition survives direct symbol; punctuation subset of host counts, not extra preview candidate credits",
+  "afterBatch": "Settings literal entrances OFF and encoding variable; Return",
+  "onMismatch": "stop and report raw/candidate/actual textarea text; no rebind or replay midway, no other host/settings changes",
+  "userReport": "这项测试出现两个标点的方向相反。但是这个不是这个项目才有的问题。word 一直都有。其它应用也有。",
+  "evidence": "user-reports/p10-acer-pen-edge-symbol-entrance-91-user-issue.json",
+  "issue": "QUOTE_DIRECTION_OBSERVATION_91.json",
+  "clarificationEvidence": "user-reports/p10-acer-pen-edge-symbol-entrance-91-clarification.json"
+}

@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-QUOTES-90",
+  "continues": "TOUCH-V1-ACER-PEN-WORD-MULTILINE-89",
+  "host": "same Edge local textarea, fixture r2",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for page reset/caret setup; explicit keyboard Bind",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "EACH case independently: page Reset, click empty textarea, Bind (fresh session resets quote pair state), CN; Settings full mode, ID legends, literal entrances OFF; Return. Raw empty, selection OFF, modifiers unlit. Keep58.8 ratio. No Word/private text or installed settings changed.",
+  "cases": [
+    {
+      "caseID": "edge-coded-single-quote-cancel-and-pair",
+      "steps": [
+        "Shift then N03 ->ASCII apostrophe raw; textarea empty; first-page last candidate displays ‘, alongside dictionary candidates",
+        "Cancel ->raw empty, textarea empty",
+        "Shift then N03 ->same opening quote candidate ‘; tap that quote candidate explicitly, not a dictionary candidate ->textarea ‘, raw empty",
+        "Shift then N03 ->closing quote candidate ’; tap it ->textarea ‘’ and raw empty"
+      ],
+      "expected": {
+        "rawBeforeConfirmation": "'",
+        "textBeforeFirstConfirmation": "",
+        "cancelDoesNotAdvancePair": true,
+        "textAfterBothQuoteConfirmations": "‘’",
+        "rawAfter": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "edge-direct-double-quote-pair",
+      "steps": [
+        "Shift then N11 ->textarea “ immediately, raw empty",
+        "Shift then N11 again ->textarea “” immediately, raw empty"
+      ],
+      "expected": {
+        "afterFirst": "“",
+        "afterSecond": "“”",
+        "raw": "",
+        "noExtraCandidateConfirmationNeeded": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 2,
+  "priorResultsInherited": false,
+  "expectedFixture": "ACER_PEN_QUOTE_FIXTURE_90.json",
+  "expectedSourceScope": "isolated original package dictionaries plus current lab engine and exact packaged key actions; development fixture only, not executable GUI/physical proof",
+  "scope": "two full-mode CN quote contexts with reserved entrances OFF in actual Edge only; not all punctuation, EN modes, settings-ON bypass or other schemas",
+  "afterBatch": "return variable mode; keep literal entrances OFF",
+  "onMismatch": "stop and report key, raw, candidate symbol and actual textarea text; do not select a Chinese dictionary candidate or change calibration",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-edge-quotes-90-user-result.json"
+}

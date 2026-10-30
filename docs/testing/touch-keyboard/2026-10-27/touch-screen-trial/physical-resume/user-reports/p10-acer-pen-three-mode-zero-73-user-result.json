@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-ZERO-73",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedCandidateScenarios": 6,
+  "bodyLayersAdded": 0,
+  "controlScenariosAdded": 0,
+  "result": "three modes main0 confirms first candidate plus one literal0 when candidates exist; unmatched n] retained while0 appends to document12, Cancel preserves120",
+  "scope": "six grouped physical preview contexts, no per-action candidate transcript or attempt count; no claim for1..9 without candidates, missing ordinal, later-page selection or real hosts"
+}

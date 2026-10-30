@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-30",
+  "status": "scoped current-package ellipsis checkpoint recorded, not complete keyboard acceptance",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse allowed for caret placement/host setup; pen for keyboard input/selection",
+  "screenView": "touch-screen-v1",
+  "calibrationArgument": "ruler-observed-mm58.8",
+  "filterMS": 0,
+  "explicitlyPassedHostScenarios": 17,
+  "hostBreakdown": {
+    "Edge": 15,
+    "Word": 2
+  },
+  "passedByBatch": {
+    "101": 2,
+    "102-user-expansion": 2,
+    "103": 2,
+    "104": 2,
+    "105-second": 1,
+    "106": 2,
+    "107": 2,
+    "108": 2,
+    "109": 2
+  },
+  "qualifiedNotAddedToPassTotal": {
+    "case": "105 first EN three-tap U2026",
+    "observation": "ELLIPSIS_GLYPH_OBSERVATION_105.json",
+    "reportedCodepoint": "U+2026 matches target",
+    "qualification": "user questioned centered glyph; Unicode permits East Asian centered rendering; no additional full-case normal report inferred"
+  },
+  "evidence": [
+    "user-reports/p10-acer-pen-ellipsis-choice-101-102-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-edit-cancel-103-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-composition-104-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-en-105-user-observation.json",
+    "user-reports/p10-acer-pen-ellipsis-guard-ordinal-106-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-confirm-107-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-lifecycle-108-user-result.json",
+    "user-reports/p10-acer-pen-ellipsis-word-109-user-result.json"
+  ],
+  "confirmedScopes": [
+    "3-tap two output variants, user-expanded6-tap output variants",
+    "Backspace/Cancel recovery",
+    "matched/unmatched CN composition preservation and candidate restoration",
+    "EN six-tap second variant explicitly normal; first variant codepoint correct with glyph note",
+    "ordinary input/Home blocked until choice; main digit2 selection",
+    "LEFT Space/Enter first-choice confirmation without extra whitespace",
+    "minimize/Help discard pending choices; rebind resumes without replay",
+    "two real new blank Word candidate-click cases"
+  ],
+  "limits": [
+    "group observations, no exact attempt counts/action transcript inferred",
+    "6-tap user expansion did not separately transcribe intermediate timing",
+    "Word version/font/architecture not independently captured; no pure-pen caret-positioning claim",
+    "not every code mode, count/style/confirmation path, all-key regression, concurrent touch or focus/commit race",
+    "4/5 residual taps,6-tap cap and partial-dot flush require separate physical cases",
+    "finger/MSI pen and ARM64 new-package acceptance separate",
+    "old c35 Edge27/Word13 and preview body/control/candidate results remain independent"
+  ],
+  "next": "NEXT_STAGE_AFTER_ELLIPSIS_109.json"
+}

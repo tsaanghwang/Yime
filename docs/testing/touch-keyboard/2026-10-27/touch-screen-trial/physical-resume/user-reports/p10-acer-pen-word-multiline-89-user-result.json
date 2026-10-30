@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-WORD-MULTILINE-89",
+  "userReport": "两文档都正常。",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for Word caret setup; pen for keyboard Bind and input",
+  "host": "two separate newly created blank unsaved Word documents, one per case; no existing/private content",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "passedHostScenarios": 2,
+  "result": "two separate blank-document Word Enter and current-line Home/End scenarios reported normal",
+  "observationGranularity": "user confirms both documents; no independently captured action transcript or attempt count",
+  "scope": "Word89 two cases only; no Tab, soft-wrap, exact paragraph-spacing or installed TIP acceptance"
+}

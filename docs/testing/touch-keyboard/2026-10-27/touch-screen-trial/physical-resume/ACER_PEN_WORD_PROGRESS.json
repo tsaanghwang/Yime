@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-29",
+  "host": "Word",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "passedHostScenarios": 13,
+  "completedBatches": [
+    "TOUCH-V1-ACER-PEN-WORD-BASELINE-78",
+    "TOUCH-V1-ACER-PEN-WORD-EDITING-79",
+    "TOUCH-V1-ACER-PEN-WORD-LIFECYCLE-80",
+    "TOUCH-V1-ACER-PEN-WORD-MODES-81",
+    "TOUCH-V1-ACER-PEN-WORD-MULTILINE-89"
+  ],
+  "evidence": [
+    "user-reports/p10-acer-pen-word-baseline-78-user-result.json",
+    "user-reports/p10-acer-pen-word-editing-79-user-result.json",
+    "user-reports/p10-acer-pen-word-lifecycle-80-user-result.json",
+    "user-reports/p10-acer-pen-word-modes-81-user-result.json",
+    "user-reports/p10-acer-pen-word-multiline-89-user-result.json"
+  ],
+  "workspaceObservation": "WORD_WORKSPACE_OBSERVATION_78.json",
+  "currentBatch": "TOUCH-V1-ACER-PEN-WORD-MULTILINE-89",
+  "currentBatchDefinition": "P10-ACER-PEN-WORD-MULTILINE-89.json",
+  "pendingCurrentBatchScenarios": 0,
+  "bodyLayersUnchanged": 336,
+  "previewControlScenariosUnchanged": 37,
+  "candidateScenariosUnchanged": 50,
+  "scope": "actual new-view Word observations only; scroll adjustment preserved, no preview/other-method inheritance",
+  "plannedBasicCheckpointTotal": 11,
+  "status": "basic11 plus multiline2 complete",
+  "stageReport": "ACER_PEN_WORD_STAGE_RESULT_81.json",
+  "nextEdgeBatch": "P10-ACER-PEN-EDGE-BASELINE-82.json",
+  "multilineStageReport": "ACER_PEN_WORD_MULTILINE_RESULT_89.json"
+}

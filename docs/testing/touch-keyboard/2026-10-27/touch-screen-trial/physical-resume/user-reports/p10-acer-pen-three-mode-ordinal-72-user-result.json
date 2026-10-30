@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-ORDINAL-72",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedCandidateScenarios": 6,
+  "bodyLayersAdded": 0,
+  "controlScenariosAdded": 0,
+  "result": "variable/full/shorthand main digit1 and2 choose visible current-page first/second candidate; cleared composition/candidates and no literal digit appended, as presented",
+  "scope": "six grouped human preview observations without per-action candidate transcript or attempt count; not zero, unavailable ordinal, paging, unmatched-digit, ARM or host acceptance"
+}

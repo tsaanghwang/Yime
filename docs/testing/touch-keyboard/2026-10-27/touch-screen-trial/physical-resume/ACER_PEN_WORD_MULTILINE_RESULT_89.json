@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-29",
+  "status": "defined Word multiline extension2 complete",
+  "basicCheckpoint": "ACER_PEN_WORD_STAGE_RESULT_81.json",
+  "extensionDefinition": "P10-ACER-PEN-WORD-MULTILINE-89.json",
+  "evidence": "user-reports/p10-acer-pen-word-multiline-89-user-result.json",
+  "passedExtensionScenarios": 2,
+  "passedWordScenariosTotal": 13,
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for Word caret setup; pen for keyboard Bind and input",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "workspaceQualification": "prior Word caret visibility after scrolling remains qualified; no new unconditional no-occlusion claim",
+  "limits": [
+    "group confirmation without captured action transcript",
+    "not Tab, soft-wrap, quote/punctuation setting contexts or concurrent focus/confirmation race",
+    "browser13 is separate; ARM64 native and installed TIP acceptance not inherited"
+  ]
+}

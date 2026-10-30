@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-UNMATCHED-DIGITS-74",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedCandidateScenarios": 3,
+  "digitActionChecksWithinScenarios": 6,
+  "bodyLayersAdded": 0,
+  "controlScenariosAdded": 0,
+  "result": "three modes unmatched n] preserved while main1 and9 append literal digits to document12 yielding121 then1219; Cancel preserves document",
+  "scope": "three grouped scenarios, six digit checks not extra scenario credits; no per-action transcript/attempt count or unavailable-ordinal acceptance"
+}

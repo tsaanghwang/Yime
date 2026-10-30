@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-NO-CANDIDATE-71",
+  "continues": "TOUCH-V1-ACER-PEN-TWO-MODE-EMPTY-CONFIRM-70",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same local c35 CN preview and58.8 calibration. Each mode independently prepares document12/raw n] without candidates. Tap left Space, right Space, Enter sequentially, checking after each; stop/report if a check fails. Cancel then3 verifies confirmed text/caret retained. End variable mode.",
+  "cases": [
+    {
+      "caseID": "variable-unmatched-confirmation-guard",
+      "mode": "variable",
+      "setup": [
+        "CN; Settings choose mode; ID legends; punctuation entry OFF; Return",
+        "Clear; selection OFF; modifiers unlit; main digits12",
+        "N08 then Shift then M12 -> raw n]; verify no candidates"
+      ],
+      "actions": [
+        "left Space once; verify document12/raw n] unchanged",
+        "right Space once; verify document12/raw n] unchanged",
+        "Enter once; verify document12/raw n] unchanged"
+      ],
+      "expectedAfterEachAction": {
+        "localOutput": "12",
+        "raw": "n]",
+        "candidatesEmpty": true,
+        "noAdditionalWhitespaceOrRawCommit": true
+      },
+      "verification": [
+        "Cancel (not Clear)",
+        "main digit3"
+      ],
+      "expectedAfterVerification": {
+        "localOutput": "123",
+        "raw": "",
+        "candidatesEmpty": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-unmatched-confirmation-guard",
+      "mode": "full",
+      "setup": [
+        "CN; Settings choose mode; ID legends; punctuation entry OFF; Return",
+        "Clear; selection OFF; modifiers unlit; main digits12",
+        "N08 then Shift then M12 -> raw n]; verify no candidates"
+      ],
+      "actions": [
+        "left Space once; verify document12/raw n] unchanged",
+        "right Space once; verify document12/raw n] unchanged",
+        "Enter once; verify document12/raw n] unchanged"
+      ],
+      "expectedAfterEachAction": {
+        "localOutput": "12",
+        "raw": "n]",
+        "candidatesEmpty": true,
+        "noAdditionalWhitespaceOrRawCommit": true
+      },
+      "verification": [
+        "Cancel (not Clear)",
+        "main digit3"
+      ],
+      "expectedAfterVerification": {
+        "localOutput": "123",
+        "raw": "",
+        "candidatesEmpty": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-unmatched-confirmation-guard",
+      "mode": "shorthand",
+      "setup": [
+        "CN; Settings choose mode; ID legends; punctuation entry OFF; Return",
+        "Clear; selection OFF; modifiers unlit; main digits12",
+        "N08 then Shift then M12 -> raw n]; verify no candidates"
+      ],
+      "actions": [
+        "left Space once; verify document12/raw n] unchanged",
+        "right Space once; verify document12/raw n] unchanged",
+        "Enter once; verify document12/raw n] unchanged"
+      ],
+      "expectedAfterEachAction": {
+        "localOutput": "12",
+        "raw": "n]",
+        "candidatesEmpty": true,
+        "noAdditionalWhitespaceOrRawCommit": true
+      },
+      "verification": [
+        "Cancel (not Clear)",
+        "main digit3"
+      ],
+      "expectedAfterVerification": {
+        "localOutput": "123",
+        "raw": "",
+        "candidatesEmpty": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 3,
+  "confirmationActionChecks": 9,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 3,
+  "priorResultsInherited": false,
+  "fixtureEvidence": "ACER_PEN_NO_CANDIDATE_FIXTURE_71.json",
+  "expectedSources": [
+    "preview.apply confirm: nonempty active CN composition with no candidates returns without committing",
+    "M12 base a / Shift ] checked lab key mapping; N08 base n",
+    "original package dictionary fixture has zero candidates for n] in three modes; development evidence does not fill physical passes"
+  ],
+  "scope": "three sequential unmatched-composition guard scenarios, each containing three confirmation checks; count3 not9; no Shift+confirm, digit/paging, paused EN or host acceptance",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-three-mode-no-candidate-71-user-result.json"
+}

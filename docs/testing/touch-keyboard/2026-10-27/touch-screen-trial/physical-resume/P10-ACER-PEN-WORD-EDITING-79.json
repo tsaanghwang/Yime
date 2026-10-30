@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-WORD-EDITING-79",
+  "continues": "TOUCH-V1-ACER-PEN-WORD-BASELINE-78",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for caret placement; rebind after refocusing document",
+  "host": "same new unsaved Word test document only",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same c35 host Keyboard,58.8 ratio, EN, raw empty. Word scroll/arrangement may keep caret visible. Each case independently ensure selection OFF/modifiers unlit, top SelectAll then main digits1234; inspect actual Word now contains only1234, then do listed steps. This SelectAll replacement is observed setup, not extra scenario credit. If Word body was clicked/focus changed, place caret and Bind before input.",
+  "cases": [
+    {
+      "caseID": "word-partial-selection-replace",
+      "steps": [
+        "top ArrowLeft once ->123|4",
+        "selection ON",
+        "top ArrowLeft twice ->23 selected",
+        "main digit9"
+      ],
+      "expected": {
+        "hostText": "194",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "word-selection-delete",
+      "steps": [
+        "top Home",
+        "selection ON",
+        "top ArrowRight twice ->12 selected",
+        "top Delete"
+      ],
+      "expected": {
+        "hostText": "34",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "word-forward-delete",
+      "steps": [
+        "top Home, selection remains OFF",
+        "top Delete"
+      ],
+      "expected": {
+        "hostText": "234",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 3,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 3,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "preview.navigate emits native host navigation and Shift only when selection latch on",
+    "host Home follows Word current-line behavior; all test text is one line",
+    "empty English input replaces native selected text; Delete removes selected range or next character",
+    "preview control results are expectations only, not inherited Word passes"
+  ],
+  "scope": "three single-line Word editing scenarios using top SelectAll as setup; not multiline Home/End, independent pen caret positioning, other products or host focus/lifecycle acceptance",
+  "onMismatch": "stop if SelectAll baseline or selection differs; report actual Word text and target status; do not auto-replay or touch existing documents",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-word-editing-79-user-result.json"
+}

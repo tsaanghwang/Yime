@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-30",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "focusSetupMethod": "mouse permitted for browser reset/caret, explicit keyboard Bind",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "batchID": "TOUCH-V1-FINGER-ELLIPSIS-BASIC-116",
+  "continues": "TOUCH-V1-ACER-PEN-ELLIPSIS-MODE-CANCEL-115",
+  "status": "passed-user-reported-group-result",
+  "hardwareMethod": "finger for all keyboard dot/choice taps; no pen in this batch",
+  "setup": "Same new choice package, Edge r3,18u/58.8/filter0; CN/variable/ID/literal entrancesOFF. Each case independently reset textarea, click empty field, Bind; mouse allowed only for reset/caret setup. Use finger for keyboard inputs and choices. Fresh Shift before EACH N25.",
+  "scenarioCount": 2,
+  "hostObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "priorResultsInherited": false,
+  "scope": "two new-package finger functional cases only; no inherited Acer pen, old finger, full keyboard or repeat-stability acceptance",
+  "onMismatch": "report case number, actual text/codepoints, duplicate sound/output and pending count; stop without repeated attempts or clearing unexpected text",
+  "afterBatch": "keep CN/variable/literal entrancesOFF",
+  "cases": [
+    {
+      "caseID": "finger-three-taps-first-choice",
+      "steps": [
+        "With finger, main digits1 then2 ->12",
+        "With finger, Shift then N25 three times; first two show pending1/2, third shows two choices; textarea remains12",
+        "With finger, tap FIRST candidate U+2026 once"
+      ],
+      "expected": {
+        "finalText": "12…",
+        "finalCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+2026"
+        ],
+        "finalRaw": "",
+        "finalPending": 0
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "finger-six-taps-second-choice",
+      "steps": [
+        "Independently reset/caret/Bind; with finger, main digits1 then2 ->12",
+        "With finger, Shift then N25 six times; do not select at third tap; textarea remains12",
+        "With finger, tap SECOND candidate U+22EF once"
+      ],
+      "expected": {
+        "finalText": "12⋯⋯",
+        "finalCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+22EF",
+          "U+22EF"
+        ],
+        "finalRaw": "",
+        "finalPending": 0
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "userReport": "正常",
+  "userResultDate": "2026-10-30",
+  "evidence": "user-reports/p10-finger-ellipsis-basic-116-user-result.json"
+}

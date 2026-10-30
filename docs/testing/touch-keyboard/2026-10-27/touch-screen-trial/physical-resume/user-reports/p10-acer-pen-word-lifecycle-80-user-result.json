@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-WORD-LIFECYCLE-80",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input as presented",
+  "focusSetupMethod": "mouse/taskbar/window switching permitted, not pure-pen focus evidence",
+  "host": "original unsaved Word A and blank Word B",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedHostScenarios": 3,
+  "bodyLayersAdded": 0,
+  "controlScenariosAdded": 0,
+  "candidateScenariosAdded": 0,
+  "result": "Word Minimize/restore, internal Help/Return and other-window focus-loss/return cancel unconfirmed n and invalidate binding; original12 preserved, new explicit rebind/confirmation yields12你; other blank Word remains empty as presented",
+  "scope": "three grouped sequential real-Word recovery cases without individual transcript/attempt count; not simultaneous confirm/focus race, all lifecycle routes or other host/product acceptance"
+}

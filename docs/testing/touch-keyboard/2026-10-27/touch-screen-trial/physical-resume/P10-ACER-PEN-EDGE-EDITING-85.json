@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-29",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse allowed for page Reset/caret placement; explicit keyboard Bind",
+  "host": "same Edge local static textarea, revised fixture r2",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-EDITING-85",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-MODES-84",
+  "status": "passed-user-reported-group-result",
+  "setup": "same c35 host Keyboard/58.8 ratio. EN, raw empty. Before EACH case: page Reset, click textarea for caret, keyboard Bind, selection OFF/modifiers unlit; input1234 and verify only1234 with caret at end. Only temporary page text is changed.",
+  "cases": [
+    {
+      "caseID": "edge-partial-selection-replace",
+      "steps": [
+        "top ArrowLeft once ->123|4",
+        "selection ON",
+        "top ArrowLeft twice ->23 selected",
+        "main digit9"
+      ],
+      "expected": {
+        "hostText": "194",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "edge-selection-delete",
+      "steps": [
+        "top Home",
+        "selection ON",
+        "top ArrowRight twice ->12 selected",
+        "top Delete"
+      ],
+      "expected": {
+        "hostText": "34",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "edge-forward-delete",
+      "steps": [
+        "top Home, selection OFF",
+        "top Delete"
+      ],
+      "expected": {
+        "hostText": "234",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 3,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 3,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "native single-line caret/selection behavior in textarea",
+    "confirmed EN input replaces native selection; Delete removes selected range or next character",
+    "Word79/preview results supply expectations only and do not count as Edge passes"
+  ],
+  "scope": "three single-line editing cases in actual Edge textarea only; not multiline, other confirmation/lifecycle paths or independent pen caret placement",
+  "onMismatch": "stop and report actual text, selection and target state; do not replay or alter keyboard ratio",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-edge-editing-85-user-result.json"
+}

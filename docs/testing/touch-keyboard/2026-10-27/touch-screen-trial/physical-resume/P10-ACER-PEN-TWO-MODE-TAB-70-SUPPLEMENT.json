@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-TWO-MODE-TAB-70-SUPPLEMENT",
+  "parentBatch": "TOUCH-V1-ACER-PEN-TWO-MODE-EMPTY-CONFIRM-70",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "status": "passed-user-confirmed-supplement",
+  "cases": [
+    {
+      "caseID": "full-empty-Tab",
+      "mode": "full",
+      "setup": "CN; Clear; composition empty; modifiers unlit",
+      "steps": [
+        "main digit1",
+        "Tab once",
+        "main digit2"
+      ],
+      "expected": {
+        "localOutput": "1\t2",
+        "displayHint": "1⇥2",
+        "raw": "",
+        "exactlyOneTab": true
+      },
+      "status": "passed-user-confirmed"
+    },
+    {
+      "caseID": "shorthand-empty-Tab",
+      "mode": "shorthand",
+      "setup": "CN; Clear; composition empty; modifiers unlit",
+      "steps": [
+        "main digit1",
+        "Tab once",
+        "main digit2"
+      ],
+      "expected": {
+        "localOutput": "1\t2",
+        "displayHint": "1⇥2",
+        "raw": "",
+        "exactlyOneTab": true
+      },
+      "status": "passed-user-confirmed"
+    }
+  ],
+  "scenarioCount": 2,
+  "candidateObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "evidence": "user-reports/p10-acer-pen-two-mode-tab-70-clarification.json",
+  "scope": "explicitly confirmed two-mode empty-composition Tab supplement only; not nonempty/paused composition, Shift, candidate or host Tab behavior"
+}

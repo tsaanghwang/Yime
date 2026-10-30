@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-FINGER-ELLIPSIS-EDIT-CANCEL-117",
+  "continues": "TOUCH-V1-FINGER-ELLIPSIS-BASIC-116",
+  "status": "passed-user-reported-group-result",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "finger for keyboard dot, Backspace, Cancel and candidate taps; no pen",
+  "focusSetupMethod": "mouse permitted for browser reset/caret, explicit keyboard Bind",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "setup": "Same choice package78ef9124…, Edge r3, CN/variable/ID/literal entrancesOFF,18u/58.8/filter0. Each case independently Reset empty textarea/caret/Bind; mouse permitted only for host setup. Every middle dot requires fresh finger Shift then N25.",
+  "cases": [
+    {
+      "caseID": "finger-ellipsis-backspace-hides-and-restores-choices",
+      "steps": [
+        "Shift then N25 three times ->two choices, textarea empty",
+        "main virtual Back Space once ->choices disappear, pending2/3, textarea empty",
+        "Shift then N25 once ->two choices return, textarea still empty",
+        "tap first U+2026 candidate"
+      ],
+      "expected": {
+        "textBeforeSelection": "",
+        "pendingAfterBackspace": 2,
+        "finalText": "…",
+        "finalCodepoints": [
+          "U+2026"
+        ],
+        "finalPendingDots": 0
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "finger-ellipsis-cancel-discards-pending-and-restarts",
+      "steps": [
+        "independently Reset/refocus/Bind, then Shift then N25 three times ->two choices, textarea empty",
+        "top Cancel ->no symbol choices, no pending count, textarea remains empty",
+        "Shift then N25 once ->pending1/3 and textarea empty",
+        "Shift then N25 twice more ->two choices; choose second U+22EF"
+      ],
+      "expected": {
+        "afterCancelText": "",
+        "afterCancelPending": 0,
+        "firstNewTapPending": 1,
+        "finalText": "⋯",
+        "finalCodepoints": [
+          "U+22EF"
+        ],
+        "finalPendingDots": 0
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "hostObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "priorResultsInherited": false,
+  "scope": "two new-package physical finger Backspace/Cancel pending-symbol recovery cases only; no Acer/old-package pass inheritance",
+  "onMismatch": "report visible choices, pending count, field codepoints and raw; stop, no auto retry",
+  "afterBatch": "keep CN/variable/literal entrancesOFF",
+  "userReport": "正常",
+  "userResultDate": "2026-10-30",
+  "evidence": "user-reports/p10-finger-ellipsis-edit-cancel-117-user-result.json"
+}

@@ -1,5 +1,13 @@
 # 桌面触摸键盘阶段交接
 
+## 2026-10-30 交付接续：省略号双候选独立新PR
+
+用户授权提交、推送和开新PR。新分支`codex/touch-ellipsis-choice-20261030`从已合并PR #82后的main创建，Go及完整离线回归已通过。宏碁笔29项、手指10项结果分开，待反馈批次为0；[当前交付与范围](../../../docs/testing/touch-keyboard/2026-10-30/ellipsis-choice/HANDOFF.zh-CN.md)说明历史包及后续测试边界。
+
+## 2026-10-30 本机接续：省略号宏碁29项、手指10项阶段记录
+
+120手指生命周期两项正常。新候选包宏碁29项及手指10项分别通过，105字体说明单列，见[阶段汇总](../../../docs/testing/touch-keyboard/2026-10-27/touch-screen-trial/physical-resume/ELLIPSIS_CHOICE_CHECKPOINT_120.zh-CN.md)。当前未发下一实测批次；新增源码和报告仍在本地，旧包与其它设备结果不继承，不声称全键盘或安装验收。
+
 ## 2026-10-29 新触屏盘面 PR 与 ARM64 交付准备
 
 当前新98键盘面以[ARM64新任务交接](../../../docs/testing/touch-keyboard/2026-10-29/arm64-touch-ui/HANDOFF.zh-CN.md)为入口，待本次CI产物固定后执行。已接入main的PR #80夹具修复及PR #81 ARM包检查/交付改进；ASUS已有ARM开发记录保留，但不继承为新盘面物理结果。下方PR #80包是历史完整100键视图，不能替代新入口。

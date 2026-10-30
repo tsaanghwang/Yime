@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-CANDIDATE-68",
+  "continues": "TOUCH-V1-ACER-PEN-CONTROL-SELECTION-SUPPLEMENT-67",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "physicalBaseline": "existing local x64 Audio Startup Fixed Preview; keep ruler-observed-mm58.8; no CI package replacement",
+  "setup": "Each case independent, CN and chosen encoding mode, ID legends, no Shift/Ctrl/Alt. Clear before input. No candidate selection until raw verified; candidate missing or unexpected output requires actual observation, not guessed keys.",
+  "cases": [
+    {
+      "caseID": "variable-click-ni3",
+      "setup": "CN; Settings choose mode and ID legends, literal-entry OFF; Return; Clear; selection OFF; all modifiers unlit",
+      "mode": "variable",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedBeforeConfirmation": {
+        "raw": "ni",
+        "localOutput": "",
+        "candidateContains": "你"
+      },
+      "confirmation": "single Acer pen tap on visible candidate 你; do not use digit, Space or Enter",
+      "expectedAfterConfirmation": {
+        "raw": "",
+        "localOutput": "你",
+        "candidateListEmpty": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-click-ni3",
+      "setup": "CN; Settings choose mode and ID legends, literal-entry OFF; Return; Clear; selection OFF; all modifiers unlit",
+      "mode": "full",
+      "keys": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "expectedBeforeConfirmation": {
+        "raw": "niii",
+        "localOutput": "",
+        "candidateContains": "你"
+      },
+      "confirmation": "single Acer pen tap on visible candidate 你; do not use digit, Space or Enter",
+      "expectedAfterConfirmation": {
+        "raw": "",
+        "localOutput": "你",
+        "candidateListEmpty": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-click-ni3",
+      "setup": "CN; Settings choose mode and ID legends, literal-entry OFF; Return; Clear; selection OFF; all modifiers unlit",
+      "mode": "shorthand",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedBeforeConfirmation": {
+        "raw": "ni",
+        "localOutput": "",
+        "candidateContains": "你"
+      },
+      "confirmation": "single Acer pen tap on visible candidate 你; do not use digit, Space or Enter",
+      "expectedAfterConfirmation": {
+        "raw": "",
+        "localOutput": "你",
+        "candidateListEmpty": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 3,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 3,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "canonical admitted ni3 row in internal_data/yime_syllable_decomposition.tsv",
+    "lab projection prototypes/touch-terminal/encoding/yime_yinyuan_layout.json",
+    "cmd/yime-touch-keyboard/probe.go hostProbeCodes derives from canonical row and shared codemode.BuildRecord",
+    "existing c35 package diagnostics confirm 你 in all three modes; software evidence not inherited as physical passes"
+  ],
+  "scope": "three sequential physical candidate-click confirmation scenarios only; not ordinal selection, paging, Space/Enter, other hardware, real host or full candidate acceptance",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-three-mode-candidate-68-user-result.json"
+}
