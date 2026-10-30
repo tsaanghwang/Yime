@@ -1,0 +1,20 @@
+{
+  "time": "2026-10-30T16:52:22.0995831+08:00",
+  "exeSHA256": "0e24a31e2088c5b19e39bae8ac78adcc28a9cb258d2f0034b2addac1ec8cbc07",
+  "sourceChanges": false,
+  "os": {
+    "Caption": "Microsoft Windows 11 家庭版",
+    "Version": "10.0.26300",
+    "OSArchitecture": "64 位"
+  },
+  "sourceCommit": "f01326e6c1976a4e67c9ff59693effc0e1110b1a",
+  "payloadsVerified": 31,
+  "PEMachine": "0x8664",
+  "manifestVerified": true,
+  "computer": {
+    "Name": "计算机",
+    "Manufacturer": "System manufacturer",
+    "Model": "System Product Name"
+  },
+  "zipSHA256": "34491c3a8c77e887507f8dd40913eedc66394cf347ee08bb63b8888e948ca2ef"
+}

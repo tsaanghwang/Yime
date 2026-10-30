@@ -1,0 +1,4 @@
+* -text whitespace=cr-at-eol,-blank-at-eof
+.gitattributes text eol=lf
+README.zh-CN.md text eol=lf
+check-package-console.txt -whitespace

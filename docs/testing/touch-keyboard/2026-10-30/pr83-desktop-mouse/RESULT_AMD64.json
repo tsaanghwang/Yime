@@ -1,0 +1,606 @@
+{
+  "schemaVersion": 1,
+  "scope": "PR83 new CI package independent machine/method results",
+  "packageIdentity": {
+    "pullRequest": "https://github.com/tsaanghwang/Yime/pull/83",
+    "workflowRun": "https://github.com/tsaanghwang/Yime/actions/runs/41018028276",
+    "sourceCommit": "f01326e6c1976a4e67c9ff59693effc0e1110b1a",
+    "prHead": "7136cba1c9cececc339fb19da2d81e6789b14617",
+    "mainMergeCommit": "bbf64dd85a4618c95b03980e61b7b5acab166371",
+    "artifactURL": "https://github.com/tsaanghwang/Yime/actions/runs/41018028276/artifacts/12960636900",
+    "zipSHA256": "34491c3a8c77e887507f8dd40913eedc66394cf347ee08bb63b8888e948ca2ef",
+    "exeSHA256": "0e24a31e2088c5b19e39bae8ac78adcc28a9cb258d2f0034b2addac1ec8cbc07",
+    "architecture": "windows-amd64"
+  },
+  "environment": {
+    "machine": "计算机",
+    "windowsVersion": "Windows 11 Home 10.0.26300",
+    "nativeArchitecture": "x64",
+    "keyboardProcessArchitecture": null,
+    "displayResolution": null,
+    "displayScaling": null,
+    "screenActiveWidthMM": null,
+    "rulerObservedMM": null,
+    "calibrationArgument": null,
+    "screenPosture": null,
+    "touchAvailable": false,
+    "penModels": []
+  },
+  "penRecontactMS": 0,
+  "packageCheckReport": "package-check.json",
+  "inheritedPasses": 0,
+  "caseDefinitions": [
+    {
+      "id": "B00",
+      "purpose": "identity,architecture,Check Package"
+    },
+    {
+      "id": "B01",
+      "purpose": "fresh/restart input and key sound"
+    },
+    {
+      "id": "B02",
+      "purpose": "Help/settings touch interaction"
+    },
+    {
+      "id": "B03",
+      "purpose": "minimize/taskbar restore/exit/restart"
+    },
+    {
+      "id": "E01",
+      "purpose": "3 taps first2026"
+    },
+    {
+      "id": "E02",
+      "purpose": "3 taps second22EF"
+    },
+    {
+      "id": "E03",
+      "purpose": "6 taps first2026"
+    },
+    {
+      "id": "E04",
+      "purpose": "6 taps second22EF"
+    },
+    {
+      "id": "E05",
+      "purpose": "Backspace recovery"
+    },
+    {
+      "id": "E06",
+      "purpose": "Cancel fresh group"
+    },
+    {
+      "id": "E07",
+      "purpose": "main digit1"
+    },
+    {
+      "id": "E08",
+      "purpose": "RIGHT Space"
+    },
+    {
+      "id": "E09",
+      "purpose": "CN/EN roundtrip cancel"
+    },
+    {
+      "id": "E10",
+      "purpose": "variable-to-full cancel"
+    },
+    {
+      "id": "E11",
+      "purpose": "minimize/rebind"
+    },
+    {
+      "id": "E12",
+      "purpose": "Help/rebind"
+    },
+    {
+      "id": "W01",
+      "purpose": "new blank Word E01"
+    },
+    {
+      "id": "W02",
+      "purpose": "new blank Word E04"
+    }
+  ],
+  "methodRuns": [
+    {
+      "method": "finger",
+      "deviceModel": null,
+      "available": false,
+      "hostName": null,
+      "hostProcessArchitecture": null,
+      "cases": [
+        {
+          "id": "B01",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "B02",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "B03",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E01",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E02",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E03",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E04",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E05",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E06",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E07",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E08",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E09",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E10",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E11",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E12",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "W01",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "W02",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        }
+      ]
+    },
+    {
+      "method": "pen",
+      "deviceModel": null,
+      "available": false,
+      "hostName": null,
+      "hostProcessArchitecture": null,
+      "cases": [
+        {
+          "id": "B01",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "B02",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "B03",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E01",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E02",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E03",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E04",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E05",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E06",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E07",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E08",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E09",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E10",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E11",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "E12",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "W01",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        },
+        {
+          "id": "W02",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "未测：无相应硬件（用户确认无触摸屏，本轮仅鼠标）"
+        }
+      ]
+    },
+    {
+      "method": "mouse",
+      "deviceModel": null,
+      "available": true,
+      "hostName": null,
+      "hostProcessArchitecture": null,
+      "cases": [
+        {
+          "id": "B01",
+          "status": "passed",
+          "actual": "用户反馈：测试结果正常。针对上一批B01—B03的整体反馈；未提供逐动作记录或精确次数。",
+          "codepoints": null,
+          "evidence": [
+            "batch-B01-B03-user-feedback.json"
+          ],
+          "notRunReason": null
+        },
+        {
+          "id": "B02",
+          "status": "passed",
+          "actual": "用户反馈：测试结果正常。针对上一批B01—B03的整体反馈；未提供逐动作记录或精确次数。",
+          "codepoints": null,
+          "evidence": [
+            "batch-B01-B03-user-feedback.json"
+          ],
+          "notRunReason": null
+        },
+        {
+          "id": "B03",
+          "status": "passed",
+          "actual": "用户反馈：测试结果正常。针对上一批B01—B03的整体反馈；未提供逐动作记录或精确次数。",
+          "codepoints": null,
+          "evidence": [
+            "batch-B01-B03-user-feedback.json"
+          ],
+          "notRunReason": null
+        },
+        {
+          "id": "E01",
+          "status": "passed",
+          "actual": "用户对E01—E04本批反馈：正常。未逐项提供实际正文或码点转录；不补写独立读取证据。",
+          "codepoints": null,
+          "evidence": [
+            "batch-E01-E04-user-feedback.json"
+          ],
+          "notRunReason": null
+        },
+        {
+          "id": "E02",
+          "status": "passed",
+          "actual": "用户对E01—E04本批反馈：正常。未逐项提供实际正文或码点转录；不补写独立读取证据。",
+          "codepoints": null,
+          "evidence": [
+            "batch-E01-E04-user-feedback.json"
+          ],
+          "notRunReason": null
+        },
+        {
+          "id": "E03",
+          "status": "passed",
+          "actual": "用户对E01—E04本批反馈：正常。未逐项提供实际正文或码点转录；不补写独立读取证据。",
+          "codepoints": null,
+          "evidence": [
+            "batch-E01-E04-user-feedback.json"
+          ],
+          "notRunReason": null
+        },
+        {
+          "id": "E04",
+          "status": "passed",
+          "actual": "用户对E01—E04本批反馈：正常。未逐项提供实际正文或码点转录；不补写独立读取证据。",
+          "codepoints": null,
+          "evidence": [
+            "batch-E01-E04-user-feedback.json"
+          ],
+          "notRunReason": null
+        },
+        {
+          "id": "E05",
+          "status": "passed",
+          "actual": "用户本批反馈：正常；未提供实际正文及码点转录。",
+          "codepoints": null,
+          "evidence": [
+            "batch-E05-E08-user-feedback.json"
+          ],
+          "notRunReason": null
+        },
+        {
+          "id": "E06",
+          "status": "passed",
+          "actual": "用户本批反馈：正常；未提供实际正文及码点转录。",
+          "codepoints": null,
+          "evidence": [
+            "batch-E05-E08-user-feedback.json"
+          ],
+          "notRunReason": null
+        },
+        {
+          "id": "E07",
+          "status": "passed",
+          "actual": "用户本批反馈：正常；未提供实际正文及码点转录。",
+          "codepoints": null,
+          "evidence": [
+            "batch-E05-E08-user-feedback.json"
+          ],
+          "notRunReason": null
+        },
+        {
+          "id": "E08",
+          "status": "passed",
+          "actual": "用户本批反馈：正常；未提供实际正文及码点转录。",
+          "codepoints": null,
+          "evidence": [
+            "batch-E05-E08-user-feedback.json"
+          ],
+          "notRunReason": null
+        },
+        {
+          "id": "E09",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "按用户要求减少与触屏机重复的功能测试，本机跳过；不继承其它机器结果。"
+        },
+        {
+          "id": "E10",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "按用户要求减少与触屏机重复的功能测试，本机跳过；不继承其它机器结果。"
+        },
+        {
+          "id": "E11",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "按用户要求减少与触屏机重复的功能测试，本机跳过；不继承其它机器结果。"
+        },
+        {
+          "id": "E12",
+          "status": "not-run",
+          "actual": null,
+          "codepoints": null,
+          "evidence": [],
+          "notRunReason": "按用户要求减少与触屏机重复的功能测试，本机跳过；不继承其它机器结果。"
+        },
+        {
+          "id": "W01",
+          "status": "passed",
+          "actual": "用户反馈：已测试。正常。Word可见输出及光标检查正常；码点未读取，未核验。宿主WINWORD.EXE文件版本16.0.20527.20088，PE amd64。",
+          "codepoints": null,
+          "evidence": [
+            "batch-W01-W02-user-feedback.json",
+            "host-candidates.json"
+          ],
+          "notRunReason": null
+        },
+        {
+          "id": "W02",
+          "status": "passed",
+          "actual": "用户反馈：已测试。正常。Word可见输出及光标检查正常；码点未读取，未核验。宿主WINWORD.EXE文件版本16.0.20527.20088，PE amd64。",
+          "codepoints": null,
+          "evidence": [
+            "batch-W01-W02-user-feedback.json",
+            "host-candidates.json"
+          ],
+          "notRunReason": null
+        }
+      ]
+    }
+  ],
+  "packageIdentityCheck": {
+    "id": "B00",
+    "status": "passed",
+    "actual": "Windows x64; ZIP/exe/manifest SHA256 and 31 payload hashes match; PE 0x8664; sourceCommit matches; sourceChanges false; Check Package passed.",
+    "evidence": [
+      "identity-check.json",
+      "manifest.json",
+      "package-check.json",
+      "check-package-console.txt"
+    ]
+  },
+  "wow64Hosts": [
+    {
+      "version": "158.0",
+      "method": "mouse",
+      "architecture": "x86/WOW64",
+      "name": "Firefox",
+      "architectureEvidence": "firefox-process-architecture.json",
+      "cases": [
+        {
+          "id": "W01",
+          "actual": "用户反馈：正常。第一项：U+2026。",
+          "status": "passed"
+        },
+        {
+          "id": "W02",
+          "actual": "用户反馈：正常。第二项：U+22EF。确认码点类型，未单独转录两个码点序列。",
+          "status": "passed"
+        }
+      ]
+    }
+  ],
+  "unexpectedObservations": [],
+  "fullPhysicalAcceptance": false,
+  "instructions": "clone a methodRun for each extra pen/host; unsupported device ->not-run with reason; exact attempt counts only if supplied; WOW64 E01/E04 separately; no mouse-to-touch or cross-package inheritance"
+}
