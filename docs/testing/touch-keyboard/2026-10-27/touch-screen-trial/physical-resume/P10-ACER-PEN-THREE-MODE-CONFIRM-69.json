@@ -1,0 +1,145 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-CONFIRM-69",
+  "continues": "TOUCH-V1-ACER-PEN-THREE-MODE-CANDIDATE-68",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "Same local c35 preview and58.8 calibration, CN/ID. Every case independently Clear then full mode-specific sample; no Shift/Ctrl/Alt. Remember first visible candidate before pressing left main Space or main Enter once. Do not select a candidate first. End back in variable mode.",
+  "cases": [
+    {
+      "caseID": "variable-left-Space",
+      "mode": "variable",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; modifiers unlit",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedRawBeforeConfirmation": "ni",
+      "observationBeforeConfirmation": "document empty; remember first visible candidate text",
+      "confirmation": "left-Space",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact observed first visible candidate only",
+        "raw": "",
+        "candidateListEmpty": true,
+        "noAdditionalSpaceOrNewline": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "variable-Enter",
+      "mode": "variable",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; modifiers unlit",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedRawBeforeConfirmation": "ni",
+      "observationBeforeConfirmation": "document empty; remember first visible candidate text",
+      "confirmation": "Enter",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact observed first visible candidate only",
+        "raw": "",
+        "candidateListEmpty": true,
+        "noAdditionalSpaceOrNewline": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-left-Space",
+      "mode": "full",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; modifiers unlit",
+      "keys": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "expectedRawBeforeConfirmation": "niii",
+      "observationBeforeConfirmation": "document empty; remember first visible candidate text",
+      "confirmation": "left-Space",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact observed first visible candidate only",
+        "raw": "",
+        "candidateListEmpty": true,
+        "noAdditionalSpaceOrNewline": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-Enter",
+      "mode": "full",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; modifiers unlit",
+      "keys": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "expectedRawBeforeConfirmation": "niii",
+      "observationBeforeConfirmation": "document empty; remember first visible candidate text",
+      "confirmation": "Enter",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact observed first visible candidate only",
+        "raw": "",
+        "candidateListEmpty": true,
+        "noAdditionalSpaceOrNewline": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-left-Space",
+      "mode": "shorthand",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; modifiers unlit",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedRawBeforeConfirmation": "ni",
+      "observationBeforeConfirmation": "document empty; remember first visible candidate text",
+      "confirmation": "left-Space",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact observed first visible candidate only",
+        "raw": "",
+        "candidateListEmpty": true,
+        "noAdditionalSpaceOrNewline": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-Enter",
+      "mode": "shorthand",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; modifiers unlit",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedRawBeforeConfirmation": "ni",
+      "observationBeforeConfirmation": "document empty; remember first visible candidate text",
+      "confirmation": "Enter",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact observed first visible candidate only",
+        "raw": "",
+        "candidateListEmpty": true,
+        "noAdditionalSpaceOrNewline": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 6,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 6,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "canonical ni3 and lab projection verified in batch68",
+    "preview.apply confirm: active CN composition with candidates selects candidate0 and returns without emitting whitespace",
+    "existing c35 package three-mode diagnostics are development expectations, no new physical result credit"
+  ],
+  "scope": "six sequential first-candidate confirmation contexts only; does not establish empty/no-candidate, Shift+confirm, ordinal selection, paging, other methods, ARM or real hosts",
+  "userReport": "正常。另外，右space键也一起测了。正常。",
+  "evidence": "user-reports/p10-acer-pen-three-mode-confirm-69-user-result.json",
+  "userExpansion": "P10-ACER-PEN-THREE-MODE-CONFIRM-69-EXPANSION.json"
+}

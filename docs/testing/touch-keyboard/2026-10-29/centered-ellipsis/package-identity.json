@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-29",
+  "scope": "local uninstalled x64 centered-ellipsis development package",
+  "packagePath": "C:\\dev\\Yime\\.generated\\touch-middle-dot-centered-20261029-r2-amd64",
+  "executableSHA256": "6ecd2bc60e9959c054ca09c153d919f6759c67bcaed4c088bb643e3bc4f0a583",
+  "manifestSHA256": "676ecc1541b755e369fd3e53e60be2d85eaf49db2af99f44530e78fcfe2daf5c",
+  "portableResourcesSHA256": "a2a55159c4a5dddf512d0117935709cc41fff89076305e4ff0e4f68cd2c9345b",
+  "sourceCommit": "e971f4d826c73d16351bb4bfffaf65579c418ab1",
+  "sourceChanges": true,
+  "sourceSnapshot": "SOURCE_SNAPSHOT.json",
+  "architecture": "windows-amd64",
+  "ci": null,
+  "hardwareAcceptance": false,
+  "installedProductAcceptance": false,
+  "priorPhysicalExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "priorPhysicalResultsInherited": false,
+  "draftSuperseded": "earlier local f1c5bf15 draft predates final session-policy guard; use r2 package only"
+}

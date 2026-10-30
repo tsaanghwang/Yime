@@ -149,7 +149,7 @@ func TestModeRequestsAreValidatedAndIdempotent(t *testing.T) {
 	w := httptest.NewRecorder()
 	a.ServeHTTP(w, r)
 	var info map[string]any
-	if json.Unmarshal(w.Body.Bytes(), &info) != nil || info["inputPolicy"] != "concept-keyboard-modes-v2" {
+	if json.Unmarshal(w.Body.Bytes(), &info) != nil || info["inputPolicy"] != SessionPolicy {
 		t.Fatalf("protocol policy missing: %s", w.Body.String())
 	}
 	for i, bad := range []eventRequest{
@@ -185,10 +185,19 @@ func TestExplicitSymbolEntrancesPreserveCompositionAndRetry(t *testing.T) {
 	s := event(t, a, openSession(t, a, "variable"), "compose", "input", "p")
 	s = setModes(t, a, s, "zh", "chinese", "chinese")
 	before := s.State
+	pendingDot := false
 	for i, symbol := range []string{"!", ",", "·", "、", "—", "×", "√", "÷"} {
 		want := symbol
 		if value, ok := chinesePunctuation[symbol]; ok {
 			want = value
+		}
+		if pendingDot {
+			want = "·" + want
+			pendingDot = false
+		}
+		if symbol == "·" {
+			want = ""
+			pendingDot = true
 		}
 		s = event(t, a, s, fmt.Sprintf("symbol-%d", i), "symbol", symbol)
 		if s.Commit != want || !reflect.DeepEqual(s.State, before) {

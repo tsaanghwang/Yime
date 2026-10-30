@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-29",
+  "scope": "local Edge test fixture only, keyboard runtime unchanged",
+  "oldSnapshot": "raw/test-textarea-v1.html",
+  "oldSHA256": "096663c0899f662a458f15a9d03960d6efead592837ffc0e1fd63a01b7a2176d",
+  "currentPage": "test-textarea.html",
+  "currentSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "changes": [
+    "move reset button before textarea in normal document flow",
+    "textarea height160 to90 CSSpx and rows2, font28 to24 CSSpx",
+    "smaller page margins/title spacing; retain40 CSSpx minimum reset target and vertical resize/internal scrolling"
+  ],
+  "staticReview": "reset button precedes textarea; same textarea id, label, form reset behavior, no JavaScript/network/storage added",
+  "physicalVisibilityRetest": "passed-user-reported; revised page meets test requirements",
+  "physicalEvidence": "../../2026-10-27/touch-screen-trial/physical-resume/user-reports/p10-acer-pen-edge-fixture-retest-83-user-result.json",
+  "userReport": "正常。能满足测试要求。"
+}

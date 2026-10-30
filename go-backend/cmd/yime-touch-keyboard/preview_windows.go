@@ -332,9 +332,9 @@ func (a *ui) drawPreview(dc uintptr, r rect) {
 		raw = "[中文组合暂停] " + raw
 	}
 	text(dc, fmt.Sprintf("组合：%s    第 %d 页    rev %d", raw, p.snapshot.State.PageNumber+1, p.snapshot.Revision), rect{10, 155, r.R - 10, 181}, 0x24)
-	for i, c := range p.snapshot.State.Candidates {
+	for i := range p.snapshot.State.Candidates {
 		box := a.candidateRect(i)
-		color, label := palette.candidate, fmt.Sprintf("%d  %s", i+1, c.Text)
+		color, label := palette.candidate, p.candidateLabel(i)
 		if !p.candidatesEnabled() {
 			color, label = palette.disabled, label+"（暂停）"
 		}

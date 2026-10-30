@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-PENDING-QUOTE-RETEST-93",
+  "userReport": "这次与测试流程吻合。正常。",
+  "host": "Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for page reset/caret setup; explicit keyboard Bind",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "passedHostScenarios": 1,
+  "result": "fresh binding pending-composition quote refresh and confirmation follows specified sequence",
+  "observationGranularity": "group confirmation; no independently captured transcript or attempt count",
+  "scope": "one formal r3 retest credited once; diagnostic92 remains0 credits; original91 failures retained, no root-cause or runtime-fix claim"
+}

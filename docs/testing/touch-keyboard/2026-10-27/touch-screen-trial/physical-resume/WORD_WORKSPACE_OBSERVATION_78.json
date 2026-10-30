@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-29",
+  "host": "Word",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "screenView": "touch-screen-v1",
+  "userReport": "正常。word 这次好多了，滚动后能看见光标，能点选。",
+  "comparison": "user says Word much better this time; no measured before/after host area supplied",
+  "requiredAdjustmentObserved": "scroll Word body to reveal caret",
+  "caretVisibleAfterAdjustment": true,
+  "pointSelectionUsableAfterAdjustment": true,
+  "initialCaretVisibleWithoutAdjustment": null,
+  "pointingInputMethodConfirmed": false,
+  "keyboardRatioChangedForThisTest": false,
+  "scope": "subjective actual host usability report; no complete no-occlusion or all-application geometry acceptance"
+}

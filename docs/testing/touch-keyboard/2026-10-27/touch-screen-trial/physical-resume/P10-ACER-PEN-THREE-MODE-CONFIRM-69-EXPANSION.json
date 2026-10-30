@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-29",
+  "parentBatch": "TOUCH-V1-ACER-PEN-THREE-MODE-CONFIRM-69",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-expansion",
+  "scheduledCandidateScenarios": 6,
+  "additionalCandidateScenarios": 3,
+  "totalCandidateScenariosForGroup": 9,
+  "cases": [
+    {
+      "caseID": "variable-right-Space",
+      "mode": "variable",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; modifiers unlit",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedRawBeforeConfirmation": "ni",
+      "observationBeforeConfirmation": "document empty; remember first visible candidate text",
+      "confirmation": "right-Space",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact observed first visible candidate only",
+        "raw": "",
+        "candidateListEmpty": true,
+        "noAdditionalSpaceOrNewline": true
+      },
+      "status": "passed-user-reported-group-expansion"
+    },
+    {
+      "caseID": "full-right-Space",
+      "mode": "full",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; modifiers unlit",
+      "keys": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "expectedRawBeforeConfirmation": "niii",
+      "observationBeforeConfirmation": "document empty; remember first visible candidate text",
+      "confirmation": "right-Space",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact observed first visible candidate only",
+        "raw": "",
+        "candidateListEmpty": true,
+        "noAdditionalSpaceOrNewline": true
+      },
+      "status": "passed-user-reported-group-expansion"
+    },
+    {
+      "caseID": "shorthand-right-Space",
+      "mode": "shorthand",
+      "setup": "CN; Settings choose mode; ID legends; Return; Clear; selection OFF; modifiers unlit",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedRawBeforeConfirmation": "ni",
+      "observationBeforeConfirmation": "document empty; remember first visible candidate text",
+      "confirmation": "right-Space",
+      "expectedAfterConfirmation": {
+        "localOutput": "exact observed first visible candidate only",
+        "raw": "",
+        "candidateListEmpty": true,
+        "noAdditionalSpaceOrNewline": true
+      },
+      "status": "passed-user-reported-group-expansion"
+    }
+  ],
+  "evidence": "user-reports/p10-acer-pen-three-mode-confirm-69-user-result.json",
+  "scope": "right Space tested alongside the presented three-mode group, recorded in that group scope; no mode-by-mode transcript or attempt count supplied; no added body/control credit"
+}

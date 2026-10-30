@@ -1,0 +1,91 @@
+{
+  "date": "2026-10-29",
+  "status": "defined basic preview candidate/confirmation checkpoint complete",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "passedCandidateScenarios": 50,
+  "pendingWithinDefinedCheckpoint": 0,
+  "batches": [
+    {
+      "batch": 68,
+      "definition": "P10-ACER-PEN-THREE-MODE-CANDIDATE-68.json",
+      "passedScenarios": 3,
+      "evidence": "user-reports/p10-acer-pen-three-mode-candidate-68-user-result.json"
+    },
+    {
+      "batch": 69,
+      "definition": "P10-ACER-PEN-THREE-MODE-CONFIRM-69.json",
+      "passedScenarios": 6,
+      "evidence": "user-reports/p10-acer-pen-three-mode-confirm-69-user-result.json"
+    },
+    {
+      "batch": 70,
+      "definition": "P10-ACER-PEN-TWO-MODE-EMPTY-CONFIRM-70.json",
+      "passedScenarios": 6,
+      "evidence": "user-reports/p10-acer-pen-two-mode-empty-confirm-70-user-result.json"
+    },
+    {
+      "batch": 71,
+      "definition": "P10-ACER-PEN-THREE-MODE-NO-CANDIDATE-71.json",
+      "passedScenarios": 3,
+      "evidence": "user-reports/p10-acer-pen-three-mode-no-candidate-71-user-result.json"
+    },
+    {
+      "batch": 72,
+      "definition": "P10-ACER-PEN-THREE-MODE-ORDINAL-72.json",
+      "passedScenarios": 6,
+      "evidence": "user-reports/p10-acer-pen-three-mode-ordinal-72-user-result.json"
+    },
+    {
+      "batch": 73,
+      "definition": "P10-ACER-PEN-THREE-MODE-ZERO-73.json",
+      "passedScenarios": 6,
+      "evidence": "user-reports/p10-acer-pen-three-mode-zero-73-user-result.json"
+    },
+    {
+      "batch": 74,
+      "definition": "P10-ACER-PEN-THREE-MODE-UNMATCHED-DIGITS-74.json",
+      "passedScenarios": 3,
+      "evidence": "user-reports/p10-acer-pen-three-mode-unmatched-digits-74-user-result.json"
+    },
+    {
+      "batch": 75,
+      "definition": "P10-ACER-PEN-THREE-MODE-UNAVAILABLE-ORDINAL-75.json",
+      "passedScenarios": 3,
+      "evidence": "user-reports/p10-acer-pen-three-mode-unavailable-ordinal-75-user-result.json"
+    },
+    {
+      "batch": 76,
+      "definition": "P10-ACER-PEN-THREE-MODE-PAGING-76.json",
+      "passedScenarios": 6,
+      "evidence": "user-reports/p10-acer-pen-three-mode-paging-76-user-result.json"
+    },
+    {
+      "batch": 77,
+      "definition": "P10-ACER-PEN-THREE-MODE-PAUSED-CANDIDATE-77.json",
+      "passedScenarios": 3,
+      "evidence": "user-reports/p10-acer-pen-three-mode-paused-candidate-77-user-result.json"
+    }
+  ],
+  "additionalScopes": [
+    {
+      "definition": "P10-ACER-PEN-THREE-MODE-CONFIRM-69-EXPANSION.json",
+      "passedScenarios": 3
+    },
+    {
+      "definition": "P10-ACER-PEN-TWO-MODE-TAB-70-SUPPLEMENT.json",
+      "passedScenarios": 2
+    }
+  ],
+  "bodyLayersUnchanged": 336,
+  "controlScenariosUnchanged": 37,
+  "limits": [
+    "grouped physical preview observations, no inferred attempt counts or individual transcripts",
+    "extra key checks within scenarios do not inflate scenario counts",
+    "same c35 local package only; no ARM/CI or other-method inheritance",
+    "last-page bounds, overlapping/held or stale contacts, quote/symbol context, individual setting options and real hosts remain separately scoped"
+  ],
+  "next": "P10-ACER-PEN-WORD-BASELINE-78.json"
+}

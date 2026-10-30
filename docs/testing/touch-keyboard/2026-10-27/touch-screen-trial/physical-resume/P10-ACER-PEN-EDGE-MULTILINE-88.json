@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-29",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "host": "same Edge local static textarea, revised fixture r2",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-MULTILINE-88",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-FOCUS-87",
+  "status": "passed-user-reported-group-result",
+  "focusSetupMethod": "mouse permitted for page Reset/caret setup, pen for keyboard input",
+  "setup": "same c35 host Keyboard/58.8 ratio and r2 textarea. Each case independently page Reset, click textarea, Bind, EN, raw empty, selection OFF and modifiers unlit. No browser/system setting changes.",
+  "cases": [
+    {
+      "caseID": "edge-enter-two-lines",
+      "steps": [
+        "input12",
+        "keyboard Enter once",
+        "input34"
+      ],
+      "expected": {
+        "hostText": "12\n34",
+        "lineCount": 2,
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "edge-multiline-home-end",
+      "steps": [
+        "input12, keyboard Enter once, input34; verify two lines and caret at end of34",
+        "top Home; input9",
+        "top End; input8"
+      ],
+      "expected": {
+        "hostTextAfterHomeInsert": "12\n934",
+        "hostTextAfterEndInsert": "12\n9348",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 2,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "EN empty-composition Enter emits native host Enter",
+    "host navigation uses native Home/End interpreted by textarea, separate from previewEditor whole-buffer semantics"
+  ],
+  "scope": "two Edge EN multiline Enter/current-line Home-End scenarios only; not Tab, CN confirmation routes, wrapping or Word multiline acceptance",
+  "onMismatch": "stop and report actual lines/caret position and binding status; do not replay or alter keyboard ratio",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-edge-multiline-88-user-result.json"
+}

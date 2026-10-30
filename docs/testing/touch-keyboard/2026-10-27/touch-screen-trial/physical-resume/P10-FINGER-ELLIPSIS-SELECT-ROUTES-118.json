@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-FINGER-ELLIPSIS-SELECT-ROUTES-118",
+  "continues": "TOUCH-V1-FINGER-ELLIPSIS-EDIT-CANCEL-117",
+  "status": "passed-user-reported-group-result",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "finger for keyboard input, Shift, main digit1 and RIGHT Space; mouse allowed only for host setup",
+  "focusSetupMethod": "mouse permitted for browser reset/caret, explicit keyboard Bind",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "setup": "Current choice package78ef9124…, Edge r3, CN/variable/ID/literal entrancesOFF,18u/58.8/filter0. Each case independently reset/caret/Bind; finger main digits1 then2 ->12. Fresh finger Shift before EACH N25.",
+  "cases": [
+    {
+      "caseID": "finger-ellipsis-three-taps-main-digit1-selects-first",
+      "steps": [
+        "Prepare empty bound Edge textarea; main digits1 then2 ->12",
+        "Shift then N25 three times, reapply Shift before each dot; textarea remains12",
+        "With Shift off, tap MAIN-AREA digit1 once, not side numeric1 and not candidate button"
+      ],
+      "expected": {
+        "finalText": "12…",
+        "finalCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+2026"
+        ],
+        "noExtraDigit": true,
+        "rawEmpty": true,
+        "pendingDotsAfter": 0
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "finger-ellipsis-six-taps-right-space-confirms-first-only",
+      "steps": [
+        "Independently reset textarea, click field, Bind; main digits1 then2 ->12",
+        "Shift then N25 six times, reapply Shift before each dot; do not select at third tap; textarea remains12",
+        "Tap RIGHT main Space once"
+      ],
+      "expected": {
+        "finalText": "12……",
+        "finalCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+2026",
+          "U+2026"
+        ],
+        "noExtraSpace": true,
+        "rawEmpty": true,
+        "pendingDotsAfter": 0
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "hostObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "priorResultsInherited": false,
+  "scope": "two new-package physical finger selection routes only: main digit1 and RIGHT Space; no Acer/old-package pass inheritance",
+  "onMismatch": "report case number, actual text/codepoints, raw/pending state; do not repeat or clear unexpected text",
+  "expectedSources": [
+    "session pending-symbol main digit ordinal selection",
+    "desktop shared Space confirmation path used by both Space keys; physical RIGHT Space coverage pending"
+  ],
+  "afterBatch": "keep CN/variable/literal entrancesOFF",
+  "userReport": "正常",
+  "userResultDate": "2026-10-30",
+  "evidence": "user-reports/p10-finger-ellipsis-select-routes-118-user-result.json"
+}

@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-29",
+  "scope": "nine quote/punctuation/settings contexts passed; English straight-quote98 one pending; original91 retained",
+  "nextPriority": "quote/punctuation context and settings-option correctness",
+  "sourceReview": [
+    "go-backend/internal/keyboardlab/keyboard_engine.go quote state advances only on commit",
+    "go-backend/internal/keyboardlab/modes_test.go TestPunctuationSwitchOnlyChangesLiteralDisplayAndQuoteCommitAdvancesOnce",
+    "go-backend/cmd/yime-touch-keyboard/preview.go switchMode opens new session and couples input/punctuation",
+    "prototypes/touch-terminal/design/yime-cn-134k-24u-keyboard-layout.json N03 Shift apostrophe and reserved entrances"
+  ],
+  "preparationNeeded": [
+    "identify exact current-package key entrances and fresh-session quote-state baseline",
+    "separate coded literal-candidate route from opt-in reserved symbol entrance",
+    "define expected output and restore baseline settings before presenting physical cases"
+  ],
+  "otherOpenScopes": [
+    "mixed pen/finger and concurrent contacts separately labelled",
+    "native Word/Edge Tab and remaining confirmation routes",
+    "MSI original pen CN148 and repeated-contact stability",
+    "ARM64 native new-view acceptance independent"
+  ],
+  "constraints": "same18u/c35/58.8, filter0; no installation, default input-method or user-data changes; completed cases are not full-feature acceptance",
+  "scheduledNext": "P10-ACER-PEN-EDGE-EN-QUOTES-98.json",
+  "preparedFixture": "ACER_PEN_SYMBOL_ENTRANCE_FIXTURE_91.json"
+}

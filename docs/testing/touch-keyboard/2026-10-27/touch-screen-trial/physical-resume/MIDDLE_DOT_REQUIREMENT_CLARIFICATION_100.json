@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-29",
+  "userReport": "正常。另外，三个中点省略号本项目采用连续单击三次输入三点省略号，连续6次输入双三点省略号。",
+  "confirmedInteraction": "three consecutive individual key taps for one three-dot ellipsis, six for two",
+  "pendingClarifications": [],
+  "existingDesignNote": "CN134 layout notes7 describes folding3 middle dots into1 ellipsis",
+  "currentDevelopmentObservation": "isolated lab engine emits one middle dot per symbol event, three remain U+00B7 x3",
+  "status": "superseded-by-final-single-codepoint-U22EF-decision",
+  "questions": "asked asynchronously in this turn; do not treat preselection or time as answer",
+  "decision": "MIDDLE_DOT_USER_DECISION_100.json",
+  "acceptedOutput": [
+    "U+00B7 x3",
+    "U+00B7 x6"
+  ],
+  "conditionalSecondAnswer": "inapplicable because no folding; no delayed-output behavior selected",
+  "supersededBy": "MIDDLE_DOT_FINAL_DECISION_100.json"
+}

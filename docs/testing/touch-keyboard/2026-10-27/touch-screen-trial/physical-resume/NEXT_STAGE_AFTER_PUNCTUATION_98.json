@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-29",
+  "scope": "remaining coverage after punctuation checkpoint, not yet issued physical cases",
+  "scheduledPhysicalBatch": "P10-ACER-PEN-ELLIPSIS-WORD-109.json",
+  "completed": "Acer preview336/control37/candidate50; Word13; Edge23 incl punctuation10, per method/version/fixture scope",
+  "nextPriority": "remaining reviewed punctuation mappings and dash/ellipsis literal sequence behavior",
+  "preparationNeeded": [
+    "verify exact packaged literal entrance/key IDs and sequence-fold rules before presenting expectations",
+    "separate direct-symbol composition preservation, candidate/literal and side bypass contexts",
+    "prepare small explicit physical batches rather than inheriting unit tests"
+  ],
+  "otherOpenScopes": [
+    "native Word/Edge Tab and remaining confirmation routes",
+    "mixed pen/finger or concurrent contacts explicitly labelled",
+    "remaining settings behaviors",
+    "MSI original pen CN148 and repeated-contact stability",
+    "ARM64 native new-view acceptance"
+  ],
+  "historicalOpenObservation": "QUOTE_DIRECTION_OBSERVATION_91.json cause unresolved; do not treat fresh-binding retest as runtime fix",
+  "constraints": "same18u/c35/58.8 filter0; no installation/default input-method/user-data changes",
+  "implementationGap": "MIDDLE_DOT_SEQUENCE_GAP_99.json",
+  "preparationResult": "brackets99 two physical passes; slash/dash100 pending; determine latest user exact middle-dot output before implementation choice",
+  "middleDotClarification": "MIDDLE_DOT_REQUIREMENT_CLARIFICATION_100.json",
+  "middleDotDecision": "MIDDLE_DOT_USER_DECISION_100.json",
+  "implementationGapStatus": "implemented buffered U22EF per final decision; new exe physical acceptance pending",
+  "nextMiddleDotCase": "new-package actual Word3-tap U2026 and6-tap U22EF109",
+  "middleDotFinalDecision": "MIDDLE_DOT_FINAL_DECISION_100.json",
+  "jointChangePlan": "PUNCTUATION_JOINT_CHANGE_PLAN_100.json",
+  "middleDotCurrentDecision": "ELLIPSIS_CHOICE_DECISION_101.json",
+  "dash": "accepted unchanged by100",
+  "lastUpdatedDate": "2026-10-30"
+}

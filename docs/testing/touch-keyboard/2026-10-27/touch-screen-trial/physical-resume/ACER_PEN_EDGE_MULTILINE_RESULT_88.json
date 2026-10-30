@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-29",
+  "status": "defined Edge multiline extension2 complete",
+  "basicCheckpoint": "ACER_PEN_EDGE_STAGE_RESULT_87.json",
+  "extensionDefinition": "P10-ACER-PEN-EDGE-MULTILINE-88.json",
+  "evidence": "user-reports/p10-acer-pen-edge-multiline-88-user-result.json",
+  "passedExtensionScenarios": 2,
+  "passedEdgeScenariosTotal": 13,
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "passedByFixtureSHA256": {
+    "096663c0899f662a458f15a9d03960d6efead592837ffc0e1fd63a01b7a2176d": 2,
+    "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393": 11
+  },
+  "historicalPartial": "batch82 v1 hidden reset control remains partial; r2 retest separately passed",
+  "limits": [
+    "group confirmation without inferred action transcript",
+    "Tab, CN confirmation routes, wrap-specific navigation, concurrent input and other browsers not covered",
+    "Word multiline separate pending89; installed TIP and ARM64 acceptance not inherited"
+  ],
+  "next": "P10-ACER-PEN-WORD-MULTILINE-89.json"
+}

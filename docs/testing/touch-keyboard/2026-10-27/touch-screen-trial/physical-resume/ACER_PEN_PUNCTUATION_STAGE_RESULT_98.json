@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-29",
+  "status": "defined ten-scenario punctuation/quote/settings checkpoint complete",
+  "host": "Edge local static textarea, r2/r3 split retained",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for page reset/caret, explicit Bind; no pure-pen native caret-positioning claim",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "passedPunctuationContextScenarios": 10,
+  "subsetOfEdgeHostCount": true,
+  "passedEdgeHostScenariosTotal": 23,
+  "passedWordHostScenariosSeparate": 13,
+  "passedByBatch": {
+    "90": 2,
+    "93": 1,
+    "94": 1,
+    "95": 1,
+    "96": 2,
+    "97": 2,
+    "98": 1
+  },
+  "allEdgePassedByFixtureSHA256": {
+    "096663c0899f662a458f15a9d03960d6efead592837ffc0e1fd63a01b7a2176d": 2,
+    "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393": 13,
+    "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147": 8
+  },
+  "diagnostic92Credits": 0,
+  "original91": "two reported reversed-quote cases preserved;92 fresh-binding diagnostic correct;93 fresh-binding pending quote path passed; historical cause not determined and no runtime fix claimed",
+  "earlierStage": "ACER_PEN_QUOTE_SETTINGS_RESULT_95.json",
+  "limits": [
+    "group reports only, not independently captured action transcripts or inferred attempt counts",
+    "selected punctuation and quote contexts only; not every ASCII symbol, schema, host setting or path",
+    "Word-specific smart quote conversion, all schemas/confirmation routes and native Tab not established",
+    "remaining punctuation mappings, dash/ellipsis sequence folding and mixed/concurrent contacts separate",
+    "MSI pen CN148/recontact and ARM64 native new-view acceptance remain independent"
+  ],
+  "next": "NEXT_STAGE_AFTER_PUNCTUATION_98.json"
+}

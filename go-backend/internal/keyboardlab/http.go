@@ -48,7 +48,7 @@ func (a *lab) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.URL.Path == "/api/info" && r.Method == http.MethodGet {
-		writeJSON(w, http.StatusOK, map[string]any{"version": 1, "inputPolicy": inputPolicy, "layoutId": a.layoutID, "token": a.token, "modes": modes, "scope": "isolated-yimecore-page-only", "indexes": a.builds})
+		writeJSON(w, http.StatusOK, map[string]any{"version": 1, "inputPolicy": SessionPolicy, "layoutId": a.layoutID, "token": a.token, "modes": modes, "scope": "isolated-yimecore-page-only", "indexes": a.builds})
 		return
 	}
 	if strings.HasPrefix(r.URL.Path, "/api/") {

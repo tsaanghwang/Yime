@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-29",
+  "completed": "Acer preview body336/control37/candidate50, Word basic11 and Edge basic11, each per recorded version/method scope",
+  "scheduledNext": "P10-ACER-PEN-WORD-MULTILINE-89.json",
+  "openScopes": [
+    "quote/symbol contextual settings correctness",
+    "mixed pen/finger/concurrent contacts separately labelled",
+    "Word multiline/Tab and other confirmation routes",
+    "MSI original pen CN148 and repeated-contact observations",
+    "ARM64 native new-view acceptance separate"
+  ],
+  "constraints": "same18u/c35/58.8, filter0; no installation/default input-method/user-data changes; basic checkpoints do not imply all-feature acceptance",
+  "updatedDate": "2026-10-29",
+  "edgeMultilineCompleted": "ACER_PEN_EDGE_MULTILINE_RESULT_88.json"
+}

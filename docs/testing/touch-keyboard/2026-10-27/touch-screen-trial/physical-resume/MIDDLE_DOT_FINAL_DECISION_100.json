@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-29",
+  "userCorrection": "点击三次后应转换为三点的单码点字符。",
+  "followupQuestion": "三点上下居中的中文省略号字符有吗？我记得好像有。只是目前大多被英文省略号取代了。",
+  "finalSelection": "居中：⋯、⋯⋯（U+22EF）",
+  "bufferingAuthorization": "此前条件回答：可以等第三次再输出省略号；现单码点合并条件成立",
+  "acceptedRule": {
+    "firstTwoTaps": "buffer and show count, no host output",
+    "thirdTap": "one U+22EF",
+    "sixthTapTotal": "two U+22EF",
+    "backspace": "remove buffered tap first",
+    "cancelOrSessionBoundary": "discard unconfirmed buffered taps",
+    "mainTextOrEditingBoundary": "flush remaining literal middle dots before following action",
+    "sideLiteral": "independent bypass, does not consume buffer"
+  },
+  "supersedes": [
+    "MIDDLE_DOT_USER_DECISION_100.json literal-per-tap choice",
+    "interim U+2026 interpretation before final centered-character selection"
+  ],
+  "unicodeSource": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-6/",
+  "scope": "isolated lab and desktop; no encoding/dictionary/geometry/installed-product changes",
+  "physicalPassInferred": false,
+  "status": "superseded-by-explicit-two-codepoint-choice",
+  "supersededBy": "ELLIPSIS_CHOICE_DECISION_101.json"
+}

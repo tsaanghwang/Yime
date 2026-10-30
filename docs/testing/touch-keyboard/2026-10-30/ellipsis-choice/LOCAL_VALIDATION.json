@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-30",
+  "branch": "codex/touch-ellipsis-choice-20261030",
+  "baseCommit": "5f98f289f9391da7460f5709f97d0d0f7aba8fdd",
+  "scope": "isolated keyboard lab ellipsis candidate implementation and accumulated physical test evidence; dash/geometry/encoding/product runtime unchanged",
+  "localChecks": {
+    "go": "PASS: keyboardlab, desktop, touchkeyboard, lab command, experimental ASCII and product codemode packages",
+    "offlinePrototype": "PASS: generated CN/EN134 data,27 Python tests,46 JS tests, app and browser smoke syntax",
+    "canonicalProjection": "PASS tools/generate_ascii_layout.py --check",
+    "geometryProfiles": "PASS tools/generate_touch_keyboard_profiles.py --check; frozen profile preserved",
+    "gofmt": "PASS no changed Go file listed",
+    "json": "PASS changed/new JSON documents parse",
+    "diffWhitespace": "PASS git diff --check"
+  },
+  "environmentCorrection": "First offline run lacked gofmt in process PATH; added existing Go bin to this child process only and full validation passed. No source/test changes made for that error.",
+  "physicalPackageRuntimeHashesMatch": {
+    "go-backend/internal/keyboardlab/session.go": "48173d8512dc92dcd4c4131749d55eedd6ca3b3f211b8b572c62290003deaccd",
+    "go-backend/internal/keyboardlab/http.go": "46b403b317b075fbf6f7366666127ebe45f754f77b505fbc413a568b7f678761",
+    "go-backend/cmd/yime-touch-keyboard/preview.go": "8187100051aaaba2eb4f84c1906af10427bf4bc158a252f34619dbcade9868fa",
+    "go-backend/cmd/yime-touch-keyboard/host_windows.go": "1b413411aab2e273ee9894017e580ff6cad36abc939e062196b6d245de727b35",
+    "go-backend/cmd/yime-touch-keyboard/preview_windows.go": "1028f7cb6a24bbdb9e144a3f4f842a22ee530af31a5c338b6bbc1e0d29dc92d6",
+    "go-backend/cmd/yime-touch-keyboard/touch_surface_windows.go": "dbe74df9e4cf1c890b7883c8aecd8f4a26d3427f042ac654c9e078958dc12ad0",
+    "go-backend/cmd/yime-touch-keyboard/data.go": "ce8cf5b19dc304d181ce4bbfef886e515650ed93566b7d5d4c98cb752abba3ad",
+    "prototypes/touch-terminal/input.mjs": "70502f65da2b5b2a729433e69d8d76b93f682b11157bbe0e0dfc842c6a52b934",
+    "prototypes/touch-terminal/app.mjs": "5b324e183904f04f02e51ee04b3e0d4620eb12bf5532a0830e1b16c48faed414"
+  },
+  "physicalStage": "../../2026-10-27/touch-screen-trial/physical-resume/ELLIPSIS_CHOICE_STAGE_RESULT_120.json",
+  "physicalResults": {
+    "AcerPen": {
+      "Edge": 27,
+      "Word": 2
+    },
+    "finger": {
+      "Edge": 10
+    }
+  },
+  "physicalLimits": "qualified105 glyph note separate; group reports only; no CI-binary/ARM64 or whole-keyboard pass inheritance",
+  "ci": "await new PR checks; not established by local checks",
+  "packageHistory": "2026-10-29 development/package/source snapshots retained as immutable precommit evidence",
+  "installedProductChanges": false
+}

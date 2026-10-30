@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-EN-QUOTES-98",
+  "userReport": "正常",
+  "host": "same Edge local textarea, fixture r3",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for page reset/caret setup; explicit keyboard Bind",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "passedHostScenarios": 1,
+  "result": "English original-layout straight single/double quote sequence normal, raw empty",
+  "observationGranularity": "group confirmation only; expected codepoints remain specification, no independently captured per-action transcript or attempt count",
+  "scope": "one EN original-view quote sequence with entrances OFF; no Word smart-quote acceptance or cause/fix attribution for91"
+}

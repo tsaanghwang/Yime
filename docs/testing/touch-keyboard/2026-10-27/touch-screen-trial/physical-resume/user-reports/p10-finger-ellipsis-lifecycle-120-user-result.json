@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-FINGER-ELLIPSIS-LIFECYCLE-120",
+  "userReport": "正常",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "hardwareMethod": "finger for keyboard inputs, Minimize, Help navigation, Bind and candidate selection; mouse permitted for host caret/reset and taskbar restoration",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "passedNewPackageHostScenarios": 2,
+  "result": "finger minimize/restore and Help navigation/return discard old pending choices and invalidate binding; explicit rebind/new three taps commit selected U22EF or U2026 without replay",
+  "observationGranularity": "group confirmation only; no per-action transcript or exact attempt counts inferred",
+  "priorPhysicalResultsInherited": false
+}

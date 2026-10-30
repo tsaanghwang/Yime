@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-30",
+  "scope": "additional development-only test before physical batch113; executable unchanged",
+  "command": "go test ./internal/keyboardlab -run TestEllipsisSelectionRestoresUnderlyingCandidatePage -count=1",
+  "result": "PASS",
+  "sourceFile": "go-backend\\internal\\keyboardlab\\ellipsis_choices_test.go",
+  "sourceSHA256": "8bd1355f5bd0651c860319a6b9468fdfd69e3072d421c6cb3e86ed4b57d8df0e",
+  "assertions": [
+    "underlying page2 fixture before symbol choices",
+    "symbol presentation shows no dictionary paging flags",
+    "ellipsis choice restores complete prior raw/candidate/page state",
+    "selecting restored second candidate commits its original text"
+  ],
+  "dictionaryPageExpectation": "ACER_PEN_PAGING_FIXTURE_76.json original dictionaries, only as expectation; current package data/geometry hashes checked identical in104 preparation",
+  "hardwareAcceptance": false,
+  "note": "new regression test file change after package build; no runtime code/binary or prior immutable package snapshot changed"
+}

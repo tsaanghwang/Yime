@@ -8,8 +8,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -19,7 +21,10 @@ const (
 	maxEvents   = 4096
 	maxInput    = 128
 	InputPolicy = "concept-keyboard-modes-v2"
-	inputPolicy = InputPolicy
+	// Resource policy pins encoding/dictionaries. Session policy additionally
+	// prevents old web clients/servers from mixing symbol-buffer semantics.
+	SessionPolicy = InputPolicy + "+ellipsis-choice-v1"
+	inputPolicy   = InputPolicy
 )
 
 var modes = []string{"variable", "full", "shorthand"}
@@ -69,14 +74,15 @@ func NewService(layoutID string, factory func(string) (engineapi.Engine, error))
 }
 
 type labSession struct {
-	mu       sync.Mutex
-	id       string
-	engine   *keyboardEngine
-	revision uint64
-	state    engineapi.State
-	cached   map[string]cachedResponse
-	lastUsed time.Time
-	closed   bool
+	mu                sync.Mutex
+	id                string
+	engine            *keyboardEngine
+	revision          uint64
+	state             engineapi.State
+	cached            map[string]cachedResponse
+	lastUsed          time.Time
+	closed            bool
+	pendingMiddleDots int
 }
 type cachedResponse struct {
 	fingerprint [32]byte
@@ -95,13 +101,15 @@ type Event struct {
 	PunctuationMode string `json:"punctuationMode,omitempty"`
 }
 type Response struct {
-	OK        bool            `json:"ok"`
-	SessionID string          `json:"sessionId,omitempty"`
-	Revision  uint64          `json:"revision"`
-	State     engineapi.State `json:"state"`
-	Commit    string          `json:"commit,omitempty"`
-	Error     string          `json:"error,omitempty"`
-	Modes     keyboardModes   `json:"modes"`
+	OK                bool            `json:"ok"`
+	SessionID         string          `json:"sessionId,omitempty"`
+	Revision          uint64          `json:"revision"`
+	State             engineapi.State `json:"state"`
+	Commit            string          `json:"commit,omitempty"`
+	Error             string          `json:"error,omitempty"`
+	Modes             keyboardModes   `json:"modes"`
+	PendingMiddleDots int             `json:"pendingMiddleDots,omitempty"`
+	SymbolChoice      bool            `json:"symbolChoice,omitempty"`
 }
 
 // Internal aliases preserve the web protocol's existing regression fixtures.
@@ -179,7 +187,7 @@ func (a *Service) Dispatch(request Event) Reply {
 		return errorReply(http.StatusTooManyRequests, "session event limit reached; create a new session")
 	}
 	status := http.StatusOK
-	result := response{OK: false, SessionID: session.id, Revision: session.revision, State: session.state, Modes: session.engine.Modes()}
+	result := session.snapshot(false, "")
 	if request.BaseRevision != session.revision {
 		status, result.Error = http.StatusConflict, "stale revision; synchronize before another event"
 	} else {
@@ -189,7 +197,7 @@ func (a *Service) Dispatch(request Event) Reply {
 		} else {
 			session.revision++
 			session.state = applied.State
-			result = response{OK: true, SessionID: session.id, Revision: session.revision, State: session.state, Commit: applied.Commit, Modes: session.engine.Modes()}
+			result = session.snapshot(true, applied.Commit)
 		}
 	}
 	body, _ := json.Marshal(result)
@@ -198,6 +206,90 @@ func (a *Service) Dispatch(request Event) Reply {
 }
 
 func (s *labSession) apply(r eventRequest) (engineapi.Result, error) {
+	// Offer two explicit choices at three/six taps. No host text is rewritten
+	// or committed until a current choice is selected.
+	if r.Type == "symbol" && r.Code == "·" {
+		if s.pendingMiddleDots >= 6 {
+			return engineapi.Result{}, errors.New("请先选择省略号候选或取消")
+		}
+		s.pendingMiddleDots++
+		return engineapi.Result{State: s.state}, nil
+	}
+	if r.Type == "backspace" && s.pendingMiddleDots > 0 {
+		s.pendingMiddleDots--
+		return engineapi.Result{State: s.state}, nil
+	}
+	if r.Type == "clear" || r.Type == "close" || r.Type == "setModes" {
+		s.pendingMiddleDots = 0
+	}
+	if s.pendingMiddleDots >= 3 {
+		if r.Type == "select" {
+			return s.selectEllipsis(r.CandidateID)
+		}
+		if r.Type == "input" && len(r.Code) == 1 && r.Code[0] >= '1' && r.Code[0] <= '9' {
+			index := int(r.Code[0] - '1')
+			choices := s.ellipsisChoices()
+			if index >= len(choices) {
+				return engineapi.Result{State: s.state}, nil
+			}
+			return s.selectEllipsis(choices[index].ID)
+		}
+		if r.Type != "literal" {
+			return engineapi.Result{}, errors.New("请先选择省略号候选或取消")
+		}
+	}
+	if r.Type == "flushSymbols" {
+		return s.flushMiddleDots(), nil
+	}
+	result, err := s.applyCore(r)
+	if err == nil && (r.Type == "input" || r.Type == "symbol" || r.Type == "select") {
+		// Keep incomplete dots in input order when another main text action
+		// succeeds. Literal side-zone bypasses do not consume this buffer.
+		result.Commit = s.flushMiddleDots().Commit + result.Commit
+	}
+	return result, err
+}
+
+func (s *labSession) ellipsisChoices() []engineapi.Candidate {
+	groups := s.pendingMiddleDots / 3
+	if groups == 0 {
+		return nil
+	}
+	return []engineapi.Candidate{
+		{ID: fmt.Sprintf("keyboard-lab:ellipsis:%d:2026", s.pendingMiddleDots), Text: strings.Repeat("…", groups)},
+		{ID: fmt.Sprintf("keyboard-lab:ellipsis:%d:22ef", s.pendingMiddleDots), Text: strings.Repeat("⋯", groups)},
+	}
+}
+
+func (s *labSession) selectEllipsis(id string) (engineapi.Result, error) {
+	for _, c := range s.ellipsisChoices() {
+		if c.ID == id {
+			s.pendingMiddleDots %= 3
+			return engineapi.Result{State: s.state, Commit: c.Text}, nil
+		}
+	}
+	return engineapi.Result{}, errors.New("省略号候选已更新，请重新选择")
+}
+
+func (s *labSession) snapshot(ok bool, commit string) response {
+	state := s.state
+	choices := s.ellipsisChoices()
+	if len(choices) > 0 {
+		// Presentation overlay only; retain the engine's raw composition and
+		// candidate/page ownership underneath the temporary symbol choices.
+		state.Candidates = choices
+		state.HasNext, state.HasPrevious, state.PageNumber = false, false, 0
+	}
+	return response{OK: ok, SessionID: s.id, Revision: s.revision, State: state, Commit: commit, Modes: s.engine.Modes(), PendingMiddleDots: s.pendingMiddleDots, SymbolChoice: len(choices) > 0}
+}
+
+func (s *labSession) flushMiddleDots() engineapi.Result {
+	text := strings.Repeat("·", s.pendingMiddleDots)
+	s.pendingMiddleDots = 0
+	return engineapi.Result{State: s.state, Commit: text}
+}
+
+func (s *labSession) applyCore(r eventRequest) (engineapi.Result, error) {
 	switch r.Type {
 	case "input":
 		return s.engine.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: r.Code})
@@ -268,7 +360,7 @@ func validateEvent(r eventRequest) error {
 		if len(r.Code) == 1 && r.Code[0] >= 0x21 && r.Code[0] <= 0x7e && r.Delta == 0 && r.CandidateID == "" {
 			return nil
 		}
-	case "backspace", "clear", "close":
+	case "backspace", "clear", "close", "flushSymbols":
 		if r.Code == "" && r.Delta == 0 && r.CandidateID == "" {
 			return nil
 		}

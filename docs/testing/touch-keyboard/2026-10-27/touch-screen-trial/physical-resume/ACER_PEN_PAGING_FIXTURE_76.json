@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-29",
+  "scope": "isolated original-package paging fixture; no UI, host or physical acceptance",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "physicalInput": [
+    "N08"
+  ],
+  "results": [
+    {
+      "commit": "内",
+      "mode": "variable",
+      "page1Second": "年",
+      "page2Second": "内",
+      "raw": "n",
+      "rawAfter": "",
+      "route": "click"
+    },
+    {
+      "commit": "内",
+      "mode": "variable",
+      "page1Second": "年",
+      "page2Second": "内",
+      "raw": "n",
+      "rawAfter": "",
+      "route": "digit2"
+    },
+    {
+      "commit": "内",
+      "mode": "full",
+      "page1Second": "年",
+      "page2Second": "内",
+      "raw": "n",
+      "rawAfter": "",
+      "route": "click"
+    },
+    {
+      "commit": "内",
+      "mode": "full",
+      "page1Second": "年",
+      "page2Second": "内",
+      "raw": "n",
+      "rawAfter": "",
+      "route": "digit2"
+    },
+    {
+      "commit": "内",
+      "mode": "shorthand",
+      "page1Second": "年",
+      "page2Second": "内",
+      "raw": "n",
+      "rawAfter": "",
+      "route": "click"
+    },
+    {
+      "commit": "内",
+      "mode": "shorthand",
+      "page1Second": "年",
+      "page2Second": "内",
+      "raw": "n",
+      "rawAfter": "",
+      "route": "digit2"
+    }
+  ],
+  "hardwareAcceptance": false,
+  "penAcceptance": false,
+  "source": "original-package isolated runtime: page1/page2 have distinct second candidate; next/previous roundtrip snapshot and second-page click/ordinal dispatch verified; process-local diagnostic command overlay, no source/default changes"
+}

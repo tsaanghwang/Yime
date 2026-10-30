@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-29",
+  "status": "implemented-in-new-local-package; physical-acceptance-pending",
+  "requirementSource": "prototypes/touch-terminal/design/yime-cn-134k-24u-keyboard-layout.json notes7",
+  "requirement": "each tap emits one U+00B7; three/six taps retain three/six U+00B7",
+  "developmentActual": "three symbol events U+00B7 commit three U+00B7; no sequence folding found in DirectSymbol/host output path",
+  "developmentEvidence": "ACER_PEN_PUNCTUATION_FIXTURE_99.json",
+  "notPhysicalAcceptance": true,
+  "notNativeExecutableReproduction": true,
+  "scope": "lab only; direct caret ^ maps to …… already and is distinct from middle-dot sequence rule",
+  "nextWork": "complete old c35 batch100 result, then new-package middle-dot101 physical observations",
+  "currentTestPolicy": "new source/package development checks pass; no old physical result inheritance",
+  "noRuntimeChangeMade": false,
+  "latestRequirementEvidence": "MIDDLE_DOT_REQUIREMENT_CLARIFICATION_100.json",
+  "historicalRequirement": "three consecutive literal middle dots form one U+2026; six form two",
+  "historicalRepairProposal": "implement and separately validate owned literal-sequence handling without deleting unrelated host text or relying on blind Backspace; preserve coding state and side bypass ownership",
+  "resolutionDecision": "MIDDLE_DOT_FINAL_DECISION_100.json",
+  "currentRequirement": "three taps yield one U+22EF; six yield two; first two may buffer",
+  "implementationRecord": "../../../2026-10-29/centered-ellipsis/DEVELOPMENT_RESULT.json"
+}

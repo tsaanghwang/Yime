@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-MODES-84",
+  "userReport": "上次未测任务和这次测试任务已测。正常。",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse allowed for page Reset/caret placement; explicit keyboard Bind",
+  "host": "same Edge local static textarea, revised fixture r2",
+  "testPageSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "passedHostScenarios": 2,
+  "result": "full and shorthand candidate-confirmation cases reported normal",
+  "restartContext": "user reported system restart before resumption; prior and resumed instructions describe the same two cases, credited once only",
+  "observationGranularity": "group confirmation only; no per-action transcript or attempt count inferred",
+  "scope": "Edge84 two defined cases only; no automatic startup, unlisted prior task, other host or input-method acceptance inferred"
+}

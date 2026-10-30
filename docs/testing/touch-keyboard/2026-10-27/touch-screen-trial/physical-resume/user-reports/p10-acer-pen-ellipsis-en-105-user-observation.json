@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-EN-105",
+  "userReport": "第二项正常。第一项似乎有问题：选中后标点看起来是上下居中，但显示 U+2026",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "passedNewPackageHostScenarios": 1,
+  "firstCase": "expected U+2026 reported, centered glyph appearance questioned; no full normal confirmation recorded yet",
+  "secondCase": "explicit normal reply,6-tap second style credited",
+  "observationGranularity": "reported codepoint/appearance only; display region/font not independently read, no per-action transcript inferred",
+  "scope": "no output defect or automatic substitution concluded; no code/font changes made"
+}

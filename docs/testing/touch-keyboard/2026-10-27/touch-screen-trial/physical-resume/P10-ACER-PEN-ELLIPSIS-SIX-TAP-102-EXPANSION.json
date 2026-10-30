@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-SIX-TAP-102",
+  "status": "passed-user-reported-expanded-output-coverage",
+  "expands": "TOUCH-V1-ACER-PEN-ELLIPSIS-CHOICE-101",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "userReport": "两种情况都测了（包含6次点击的情况）。正常。",
+  "evidence": "user-reports/p10-acer-pen-ellipsis-choice-101-102-user-result.json",
+  "cases": [
+    {
+      "caseID": "six-tap-U2026-output",
+      "expectedText": "……",
+      "expectedCodepoints": [
+        "U+2026",
+        "U+2026"
+      ],
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "six-tap-U22EF-output",
+      "expectedText": "⋯⋯",
+      "expectedCodepoints": [
+        "U+22EF",
+        "U+22EF"
+      ],
+      "status": "passed-user-reported"
+    }
+  ],
+  "hostObservations": 2,
+  "priorResultsInherited": false,
+  "scope": "two user-expanded6-tap output variants; no independently observed intermediate timing or exact gesture transcript"
+}

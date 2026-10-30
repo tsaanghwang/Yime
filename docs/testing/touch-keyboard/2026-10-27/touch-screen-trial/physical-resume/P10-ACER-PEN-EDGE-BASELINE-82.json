@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-BASELINE-82",
+  "continues": "TOUCH-V1-ACER-PEN-WORD-MODES-81",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse allowed for Edge textarea placement; not pure-pen native caret evidence",
+  "host": "Microsoft Edge, local static textarea page only; actual browser version not yet recorded",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "partial-user-reported-reset-control-hidden",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "096663c0899f662a458f15a9d03960d6efead592837ffc0e1fd63a01b7a2176d",
+  "testPageProperties": "existing fixture copied byte-for-byte; static HTML textarea/reset form, no script/network/storage; reset before binding clears any restored form text",
+  "setup": "same c35 host keyboard/58.8 calibration. Open local fixture in Edge, not preview/source viewer. Reset test text, mouse click actual textarea, Acer pen Bind. Keep keyboard ratio; scroll/arrange browser as needed and record adjustments. No existing documents, website login, installed input-method or user-data changes.",
+  "cases": [
+    {
+      "caseID": "edge-visible-textarea-bind",
+      "steps": [
+        "open local test page in actual Edge",
+        "click page Reset then click Test text textarea, not address bar",
+        "Acer pen keyboard Bind; inspect explicit success and textarea/caret usability"
+      ],
+      "expected": "correct textarea bound; test text blank; caret/input content visible and field can be pointed to",
+      "status": "partially-observed-reset-visibility-failed"
+    },
+    {
+      "caseID": "edge-EN-abc",
+      "steps": [
+        "after explicit Bind switch EN",
+        "Acer pen a then b then c",
+        "inspect actual page textarea, no address-bar or other-target input"
+      ],
+      "expected": {
+        "textarea": "abc",
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "edge-CN-variable-ni3",
+      "steps": [
+        "same target, switch CN/variable with ID legends",
+        "N08 then M03 -> raw ni; textarea stillabc before confirmation",
+        "tap visible candidate 你 once; inspect actual textarea/caret"
+      ],
+      "expected": {
+        "textarea": "abc你",
+        "raw": "",
+        "noDuplicateOrRawLeak": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 3,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 3,
+  "priorResultsInherited": false,
+  "scope": "first new-view actual Edge workspace/binding, EN literal and CN variable commit only; no Word/old Edge inheritance, full editing/lifecycle or all websites acceptance",
+  "onMismatch": "stop input; report actual page text, target status or covered area; no automatic replay or real webpage/private data use",
+  "userReport": "正常。不过，浏览器测试窗口“清空测试按钮”看不见。可以考虑把文本框高度减少一两行，或可滚动上来，或可字号小点。",
+  "evidence": "user-reports/p10-acer-pen-edge-baseline-82-user-result.json",
+  "testPageOriginalSnapshot": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\raw\\test-textarea-v1.html",
+  "inputCasesPassed": 2,
+  "workspaceAndResetCasePartial": 1
+}

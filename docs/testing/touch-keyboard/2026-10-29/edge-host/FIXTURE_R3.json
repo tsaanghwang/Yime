@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-29",
+  "scope": "user-visible local quote codepoint diagnostic; no automatic browser access",
+  "priorSnapshot": "raw/test-textarea-r2.html",
+  "priorSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "currentPage": "test-textarea.html",
+  "currentSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "changes": [
+    "add one compact output line above textarea showing actual value codepoints and computed direction",
+    "local input/change/focus/reset listeners only; field value and direction not changed by script"
+  ],
+  "dataBoundary": "no fetch/network/storage/clipboard or form submission; no third-party dependencies",
+  "physicalVisibilityAndDiagnosticResult": "user92 reports first U+2018 then U+2018 U+2019; codepoint display usable",
+  "priorEvidence": "r2 pass/failure reports retain original page hash; no old result inherited for revised page",
+  "diagnosticEvidence": "../../2026-10-27/touch-screen-trial/physical-resume/user-reports/p10-acer-pen-quote-diagnostic-92-user-result.json"
+}

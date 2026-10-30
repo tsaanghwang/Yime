@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-29",
+  "batchIDs": [
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-CHOICE-101",
+    "TOUCH-V1-ACER-PEN-ELLIPSIS-SIX-TAP-102"
+  ],
+  "userReport": "两种情况都测了（包含6次点击的情况）。正常。",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "passedNewPackageHostScenarios": 4,
+  "breakdown": {
+    "presented3TapChoices": 2,
+    "userExpanded6TapOutputVariants": 2
+  },
+  "observedScope": "user group report confirms both output styles for3 and6 taps;6-tap extension is user-initiated",
+  "observationGranularity": "no action transcript or attempt count inferred;6-tap pre-selection timing/phase details were not separately transcribed",
+  "priorPhysicalResultsInherited": false,
+  "scope": "new choice package only; old c35 Edge27/Word13 remain separate, not all new-package body/control/lifecycle acceptance"
+}

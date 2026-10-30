@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-29",
+  "scope": "isolated original-package sparse-candidate fixture discovery; no UI, host or physical acceptance",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "raw": "]",
+  "physicalInput": [
+    "Shift",
+    "M12"
+  ],
+  "results": [
+    {
+      "candidateCount": 1,
+      "candidates": [
+        {
+          "id": "keyboard-lab:literal:5d",
+          "text": "]",
+          "code": "]",
+          "source_id": "keyboard-lab:literal",
+          "weight": 0,
+          "exact": true,
+          "score": {
+            "static": 0,
+            "context": 0,
+            "user": 0,
+            "total": 0
+          },
+          "annotations": {
+            "key_sequence": "]"
+          }
+        }
+      ],
+      "digit9NoOp": true,
+      "hasNext": false,
+      "mode": "variable",
+      "raw": "]"
+    },
+    {
+      "candidateCount": 1,
+      "candidates": [
+        {
+          "id": "keyboard-lab:literal:5d",
+          "text": "]",
+          "code": "]",
+          "source_id": "keyboard-lab:literal",
+          "weight": 0,
+          "exact": true,
+          "score": {
+            "static": 0,
+            "context": 0,
+            "user": 0,
+            "total": 0
+          },
+          "annotations": {
+            "key_sequence": "]"
+          }
+        }
+      ],
+      "digit9NoOp": true,
+      "hasNext": false,
+      "mode": "full",
+      "raw": "]"
+    },
+    {
+      "candidateCount": 1,
+      "candidates": [
+        {
+          "id": "keyboard-lab:literal:5d",
+          "text": "]",
+          "code": "]",
+          "source_id": "keyboard-lab:literal",
+          "weight": 0,
+          "exact": true,
+          "score": {
+            "static": 0,
+            "context": 0,
+            "user": 0,
+            "total": 0
+          },
+          "annotations": {
+            "key_sequence": "]"
+          }
+        }
+      ],
+      "digit9NoOp": true,
+      "hasNext": false,
+      "mode": "shorthand",
+      "raw": "]"
+    }
+  ],
+  "hardwareAcceptance": false,
+  "penAcceptance": false,
+  "source": "same original-package runtime fixture; single coding symbol offers itself as literal candidate; missing9 state preserved in software; not new dictionary/encoding data"
+}

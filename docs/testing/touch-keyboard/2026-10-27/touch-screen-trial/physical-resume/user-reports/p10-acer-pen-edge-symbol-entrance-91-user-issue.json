@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-SYMBOL-ENTRANCE-91",
+  "userReport": "这项测试出现两个标点的方向相反。但是这个不是这个项目才有的问题。word 一直都有。其它应用也有。",
+  "plannedHardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "plannedHost": "same Edge local textarea, fixture r2",
+  "actualHostNotYetConfirmed": true,
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "testPageSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "passedHostScenarios": 0,
+  "result": "user reports reversed directions of quote pair; which of two cases and exact characters not yet supplied",
+  "scope": "no inference that both cases failed, actual output equals a specific Unicode sequence, or Word/browser autocorrection is the cause; historical Word/other-app similarity is user observation, not independently reproduced"
+}

@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-PENDING-QUOTE-RETEST-93",
+  "continues": "TOUCH-V1-ACER-PEN-QUOTE-DIAGNOSTIC-92",
+  "host": "same Edge local textarea, fixture r3",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for page reset/caret setup; explicit keyboard Bind",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "r3 codepoint page; independently Reset, click empty textarea, keyboard Bind explicitly for a fresh quote session; CN/full/ID/literal entrances ON; selection OFF/modifiers unlit. Do not rebind during the three-step case. Same c35 and58.8.",
+  "cases": [
+    {
+      "caseID": "edge-pending-quote-refresh-fresh-binding-retest",
+      "steps": [
+        "direct N12 WITHOUT Shift ->raw ASCII apostrophe, textarea empty, last candidate ‘",
+        "Shift then N03 ->direct textarea ‘; raw apostrophe remains; last candidate changes to closing ’",
+        "tap closing ’ candidate explicitly ->textarea ‘’ and raw empty"
+      ],
+      "expected": {
+        "codingRaw": "'",
+        "beforeDirectText": "",
+        "rawAfterDirect": "'",
+        "textAfterDirect": "‘",
+        "quoteCandidateAfterDirect": "’",
+        "textAfterConfirmation": "‘’",
+        "rawAfterConfirmation": "",
+        "codepointsAfterDirect": [
+          "U+2018"
+        ],
+        "codepointsAfterConfirmation": [
+          "U+2018",
+          "U+2019"
+        ]
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 1,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 1,
+  "priorResultsInherited": false,
+  "expectedFixture": "ACER_PEN_SYMBOL_ENTRANCE_FIXTURE_91.json",
+  "expectedSourceScope": "isolated original package dictionaries plus current lab engine and exact packaged key actions; development fixture only, not executable GUI/physical proof",
+  "scope": "one fresh-binding retest of91 pending-composition path on r3; original91 failure remains historical, diagnostic92 has zero acceptance credits",
+  "afterBatch": "after checking output/codepoints, restore literal entrances OFF and variable mode",
+  "onMismatch": "report candidate symbol, raw, field codepoints; stop, preserve evidence, do not rebind/replay midway",
+  "userReport": "这次与测试流程吻合。正常。",
+  "evidence": "user-reports/p10-acer-pen-edge-pending-quote-retest-93-user-result.json",
+  "metadataCorrection": "fixture description corrected from r2 to r3; original testPageSHA256 already identifies r3 and is unchanged"
+}

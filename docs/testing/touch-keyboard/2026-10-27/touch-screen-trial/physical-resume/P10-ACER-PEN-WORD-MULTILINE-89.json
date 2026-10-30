@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-29",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "host": "two separate newly created blank unsaved Word documents, one per case; no existing/private content",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "batchID": "TOUCH-V1-ACER-PEN-WORD-MULTILINE-89",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-MULTILINE-88",
+  "status": "passed-user-reported-group-result",
+  "focusSetupMethod": "mouse permitted for Word caret setup; pen for keyboard Bind and input",
+  "setup": "same c35 host Keyboard/58.8 ratio. For EACH case create a new blank unsaved Word document, click body and Bind. EN, raw empty, selection OFF and modifiers unlit. Scroll to keep caret visible if needed; do not change keyboard geometry or installed input-method settings.",
+  "cases": [
+    {
+      "caseID": "word-enter-two-lines",
+      "steps": [
+        "input12",
+        "keyboard Enter once",
+        "input34"
+      ],
+      "expected": {
+        "visibleParagraphTexts": [
+          "12",
+          "34"
+        ],
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "word-multiline-home-end",
+      "steps": [
+        "input12, keyboard Enter once, input34; verify two lines and caret at end of34",
+        "top Home; input9",
+        "top End; input8"
+      ],
+      "expected": {
+        "visibleParagraphTextsAfterHomeInsert": [
+          "12",
+          "934"
+        ],
+        "visibleParagraphTextsAfterEndInsert": [
+          "12",
+          "9348"
+        ],
+        "raw": ""
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 2,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "native EN Enter and host Home/End forwarding",
+    "Word interprets Enter as paragraph break and Home/End as current-line navigation in these short unwrapped test paragraphs",
+    "Edge88 supplies expected behavior only, no Word pass inherited"
+  ],
+  "scope": "two Word EN paragraph/line Home-End cases only; not exact paragraph-spacing typography, soft-wrap navigation, Tab, CN confirmation or installed TIP acceptance",
+  "onMismatch": "stop and report visible paragraphs/caret/raw and binding state; do not replay or modify existing documents",
+  "userReport": "两文档都正常。",
+  "evidence": "user-reports/p10-acer-pen-word-multiline-89-user-result.json"
+}

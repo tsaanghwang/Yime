@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-30",
+  "status": "reported-codepoint-matches-target; rendering-variation-explained; full-case-qualification-retained",
+  "userReport": "第二项正常。第一项似乎有问题：选中后标点看起来是上下居中，但显示 U+2026",
+  "evidence": "user-reports/p10-acer-pen-ellipsis-en-105-user-observation.json",
+  "expectedFirstCodepoint": "U+2026",
+  "reportedFirstCodepoint": "U+2026",
+  "appearanceReported": "vertically centered",
+  "explanation": "Unicode describes East Asian typography rendering U+2026 on the text center line; visual height alone cannot distinguish it from U+22EF. Host font/rendering affects appearance, not the selected Unicode scalar.",
+  "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-6/",
+  "sourceSection": "6.2.9 Ellipsis, East Asian typographic traditions",
+  "specificFontObserved": false,
+  "codepointDisplayRegionIndependentlyObserved": false,
+  "codeChangesRequiredByThisObservation": false,
+  "next": "advance independent106 tests; keep first-case observation qualified, no additional physical pass inferred from request to continue",
+  "continuationRequest": "继续推送测试任务"
+}

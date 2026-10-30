@@ -1,0 +1,114 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-WORD-LIFECYCLE-80",
+  "continues": "TOUCH-V1-ACER-PEN-WORD-EDITING-79",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse/taskbar actions permitted, not pure-pen focus evidence",
+  "host": "original unsaved Word A; separate blank unsaved Word B for focus-only case",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same c35 host Keyboard/58.8 ratio. Each case independently binds original Word, resets its temporary test text to12, creates unconfirmed n in keyboard. Minimize, host Help or real foreground-window change cancel composition/invalidate binding; unlike preview Help, host Help does not preserve raw. Rebind original target and enter a new confirmed 你 once. No private/existing document or installed input-method changes.",
+  "cases": [
+    {
+      "caseID": "word-minimize-restore-rebind",
+      "setup": [
+        "same original new unsaved Word test document only",
+        "mouse place caret in Word, Acer pen Bind",
+        "EN, raw empty, selection OFF, modifiers unlit; top SelectAll then main digits12; verify Word only12",
+        "switch CN/variable; N08 -> raw n with candidates; Word remains12; do not confirm"
+      ],
+      "action": [
+        "Acer pen Minimize keyboard",
+        "restore same keyboard from taskbar"
+      ],
+      "verification": [
+        "inspect original Word still12, raw empty and old binding invalid/rebind requested",
+        "mouse place caret after12 in original Word; Acer pen Bind",
+        "CN/variable, N08 then M03; Word still12 until explicit candidate tap",
+        "tap visible candidate 你 once; inspect original Word12你 exactly"
+      ],
+      "expected": {
+        "hostTextBeforeRebind": "12",
+        "rawAfterDisruption": "",
+        "oldBindingInvalid": true,
+        "hostTextAfterNewConfirmation": "12你",
+        "noHangOrReplay": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "word-help-return-rebind",
+      "setup": [
+        "same original new unsaved Word test document only",
+        "mouse place caret in Word, Acer pen Bind",
+        "EN, raw empty, selection OFF, modifiers unlit; top SelectAll then main digits12; verify Word only12",
+        "switch CN/variable; N08 -> raw n with candidates; Word remains12; do not confirm"
+      ],
+      "action": [
+        "Acer pen Help",
+        "Next once, Previous once, Return"
+      ],
+      "verification": [
+        "inspect original Word still12, raw empty and old binding invalid/rebind requested",
+        "mouse place caret after12 in original Word; Acer pen Bind",
+        "CN/variable, N08 then M03; Word still12 until explicit candidate tap",
+        "tap visible candidate 你 once; inspect original Word12你 exactly"
+      ],
+      "expected": {
+        "hostTextBeforeRebind": "12",
+        "rawAfterDisruption": "",
+        "oldBindingInvalid": true,
+        "hostTextAfterNewConfirmation": "12你",
+        "noAutomaticCommit": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "word-focus-loss-return-rebind",
+      "setup": [
+        "same original new unsaved Word test document only",
+        "mouse place caret in Word, Acer pen Bind",
+        "EN, raw empty, selection OFF, modifiers unlit; top SelectAll then main digits12; verify Word only12",
+        "switch CN/variable; N08 -> raw n with candidates; Word remains12; do not confirm",
+        "separate second new blank unsaved Word window B available; original A remains test target"
+      ],
+      "action": [
+        "after lifting pen switch focus to blank Word window B; enter nothing",
+        "return original Word A; check B still blank"
+      ],
+      "verification": [
+        "inspect original Word still12, raw empty and old binding invalid/rebind requested",
+        "mouse place caret after12 in original Word; Acer pen Bind",
+        "CN/variable, N08 then M03; Word still12 until explicit candidate tap",
+        "tap visible candidate 你 once; inspect original Word12你 exactly"
+      ],
+      "expected": {
+        "originalWordBeforeRebind": "12",
+        "otherWordText": "",
+        "rawAfterDisruption": "",
+        "oldBindingInvalid": true,
+        "originalWordAfterNewConfirmation": "12你",
+        "noCrossTargetWriteOrReplay": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 3,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 3,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "suspendForMinimize invokes loseHostFocus for host mode",
+    "showHelp touch-ui host path explicitly loses host focus before displaying internal panel",
+    "loseHostFocus invalidates delivery gate, cancels transient state and clears displayed composition",
+    "bindHost rebuilds session without modifying Word; explicit new confirmation only after rebind"
+  ],
+  "scope": "three sequential real Word cancellation/recovery cases; not simultaneous confirm/focus race, all lifecycle routes, other host applications, installed TIP acceptance or native pointer positioning",
+  "onMismatch": "stop, inspect both temporary documents, report actual text/status; do not replay old input or remove unexpected text automatically",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-word-lifecycle-80-user-result.json"
+}

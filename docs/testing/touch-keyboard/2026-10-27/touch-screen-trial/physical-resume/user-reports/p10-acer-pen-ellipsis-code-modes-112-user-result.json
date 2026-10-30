@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-CODE-MODES-112",
+  "userReport": "正常",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "passedNewPackageHostScenarios": 2,
+  "result": "full niii and shorthand ni compositions retained after ellipsis selection, candidate你 restored and separately committed",
+  "observationGranularity": "group confirmation only; no per-action transcript or attempt count inferred",
+  "priorPhysicalResultsInherited": false,
+  "scope": "two actual Edge code-mode composition contexts; not paging/focus return, all dictionary entries or Word mode combinations"
+}

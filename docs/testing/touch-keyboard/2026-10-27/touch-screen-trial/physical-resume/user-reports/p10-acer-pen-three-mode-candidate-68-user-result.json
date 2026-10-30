@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-CANDIDATE-68",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedCandidateScenarios": 3,
+  "bodyLayersAdded": 0,
+  "controlScenariosAdded": 0,
+  "result": "variable/full/shorthand candidate-click confirmation cases reported normal; prescribed raw ni/niii/ni, empty document before confirmation, one 你 and cleared composition/candidates after clicking",
+  "scope": "grouped user report without per-action transcript or attempt counts; no ordinal, paging, Space/Enter, other device, CI-package or real-host acceptance"
+}

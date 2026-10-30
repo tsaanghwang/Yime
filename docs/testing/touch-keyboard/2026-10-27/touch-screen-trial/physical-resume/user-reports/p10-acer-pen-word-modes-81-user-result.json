@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-WORD-MODES-81",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input as presented",
+  "focusSetupMethod": "mouse permitted, separate from keyboard input",
+  "host": "original new unsaved Word test document",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "userReport": "正常",
+  "passedHostScenarios": 2,
+  "bodyLayersAdded": 0,
+  "controlScenariosAdded": 0,
+  "candidateScenariosAdded": 0,
+  "result": "full/shorthand mode compositions niii/ni stay in keyboard while Word remains12; explicit candidate 你 selection yields12你 without raw leakage or duplicate, as presented",
+  "scope": "two grouped real-Word cases, no per-action transcript/attempt count; no other host, all keys/confirmation routes or installed TIP acceptance"
+}

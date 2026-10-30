@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-FIXTURE-RETEST-83",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-BASELINE-82",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input; mouse allowed for page reset/caret setup",
+  "host": "same Edge local test page, revised fixture r2",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "status": "passed-user-reported-group-result",
+  "setup": "same c35 host Keyboard/58.8 ratio. Refresh current local page once; keyboard geometry unchanged. No Word/private content or browser/system setting changes.",
+  "cases": [
+    {
+      "caseID": "edge-r2-reset-visible-clear-refocus",
+      "steps": [
+        "refresh local test page; verify reset button visible above textarea, textarea about two lines",
+        "click reset to start blank, then textarea caret and keyboard Bind",
+        "EN; pen inputabc; inspect textareaabc",
+        "click page Reset; inspect textarea empty",
+        "click textarea again, keyboard Bind, EN pen inputa"
+      ],
+      "expected": {
+        "resetButtonVisibleAndReachable": true,
+        "textareaAfterReset": "",
+        "textareaAfterRebindInput": "a",
+        "inputRegionUsableWithKeyboard": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 1,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 1,
+  "priorResultsInherited": false,
+  "scope": "one revised-fixture reset/workspace and refocus/rebind smoke case; original fixture hidden control remains historical partial, not silently changed to pass; original EN/CN passes remain on v1",
+  "onMismatch": "report visible/covered area and actual field content; do not alter keyboard ratio to force a pass",
+  "userReport": "正常。能满足测试要求。",
+  "evidence": "user-reports/p10-acer-pen-edge-fixture-retest-83-user-result.json"
+}

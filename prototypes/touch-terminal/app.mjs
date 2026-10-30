@@ -13,7 +13,6 @@ const node = (tag,value,className) => {
 let layout, client, active = null, trace = [], touches = [], latencies = [], drill = null;
 let shiftArmed = false, layoutPreference = 'original', literalEntries = false;
 const layoutLatencies = [];
-let lastLiteral = null;
 try { if (localStorage.getItem('yime-lab-english-layout') === 'english') layoutPreference = 'english'; } catch {}
 const englishLayout = () => useEnglishLayout(currentModes().input,layoutPreference);
 const displayedKey = key => viewKey(key,englishLayout());
@@ -43,19 +42,7 @@ const effectiveShift = () => shiftArmed || ansiShift.size > 0 || [...shiftPointe
 
 function appendCommit(value, event) {
   const surface = $('committed');
-  const symbol = event?.type === 'symbol' ? event.code : null;
-  // Consolidate only consecutive explicit symbol commits at the same cursor.
-  // Editing, another action, or moving the cursor breaks the run.
-  if (symbol && ['—','·'].includes(symbol) && lastLiteral?.symbol === symbol &&
-      surface.selectionStart === surface.selectionEnd && surface.selectionStart === lastLiteral.end) {
-    const count = lastLiteral.count + 1;
-    const width = symbol === '—' ? 2 : 3;
-    if (count === width && surface.value.slice(surface.selectionStart-width+1,surface.selectionStart) === symbol.repeat(width-1)) {
-      surface.setSelectionRange(surface.selectionStart-width+1,surface.selectionEnd);
-      value = symbol === '—' ? '——' : '…';
-      lastLiteral = null;
-    } else lastLiteral = {symbol,count,end:surface.selectionStart+value.length};
-  } else lastLiteral = symbol && ['—','·'].includes(symbol) ? {symbol,count:1,end:surface.selectionStart+value.length} : null;
+  // The session owns symbol grouping. Never rewrite prior page text here.
   if (overwrite && !currentState().raw_input && surface.selectionStart === surface.selectionEnd) {
     const length = Array.from(value).length;
     const tail = Array.from(new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(surface.value.slice(surface.selectionEnd))).slice(0,length).map(part => part.segment).join('');
@@ -71,14 +58,17 @@ function render(result, event) {
   const paused = currentModes().input === 'english';
   $('code').textContent = state.raw_input || '—';
   $('composition').textContent = state.raw_input ? paused ? '中文组合已暂停并保留；当前英文字符直接写入正文。切回中文可继续。' : '正在组合；候选来自当前码制的 Go 引擎。' : paused ? '英文直输：Layout 切换原盘面／标准英文，选择保持至再次切换。' : '点按编码键，或在这里使用 ANSI 键盘。';
+  if (result.symbolChoice) $('composition').textContent += ` 省略号已点${result.pendingMiddleDots}次，请选择候选。`;
+  else if (result.pendingMiddleDots) $('composition').textContent += ` 中点待合并：${result.pendingMiddleDots}/3。`;
   $('candidates').replaceChildren();
   if (!candidates.length) $('candidates').append(node('p',state.raw_input ? '当前编码暂无候选，可继续输入、退格或取消。' : '候选将显示在这里。','hint'));
   candidates.forEach((candidate,index) => {
     const button = document.createElement('button');
     button.className = 'candidate';
-    button.disabled = paused;
+    button.disabled = paused && !result.symbolChoice;
     button.dataset.candidateId = candidate.id;
     button.append(node('span',String(index+1),'ordinal'),node('span',candidate.text));
+    if (result.symbolChoice) button.append(node('span',index === 0 ? 'U+2026' : 'U+22EF','hint'));
     button.title = `候选 ${index+1} · ANSI 直接按 ${index+1}`;
     button.addEventListener('click',() => {
       perform({type:'select',candidateId:candidate.id},'candidate');
@@ -86,8 +76,8 @@ function render(result, event) {
     });
     $('candidates').append(button);
   });
-  $('confirm').disabled = paused || !candidates.length;
-  $('clear').disabled = !state.raw_input && !shiftArmed;
+  $('confirm').disabled = (paused && !result.symbolChoice) || !candidates.length;
+  $('clear').disabled = !state.raw_input && !shiftArmed && !result.pendingMiddleDots;
   $('prev').disabled = paused || !state.has_previous;
   $('next').disabled = paused || !state.has_next;
   $('page-label').textContent = candidates.length ? `第 ${(state.page_number || 0)+1} 页` : '';
@@ -123,7 +113,6 @@ function localEdit(key) {
 let actions = Promise.resolve();
 function perform(action,source='virtual') {
   if (action?.type === 'toggle-layout') { toggleLayout(); return Promise.resolve(); }
-  if (action?.type !== 'symbol') lastLiteral = null;
   if ((action?.type === 'clear' && source !== 'drill') || ['toggle-language','toggle-punctuation','setModes'].includes(action?.type)) {
     cancelPointer('input-boundary');
     cancelShifts('input-boundary');
@@ -134,17 +123,24 @@ function perform(action,source='virtual') {
   return actions;
 }
 async function performOne(action,source) {
-  if (action?.type !== 'symbol') lastLiteral = null;
   if (!action || action.type === 'disabled') return;
   if (action.type === 'noop') { status('编辑模式下 5 不执行动作。'); return; }
   if (action.type === 'unsupported') {
     status(`${action.label || '此键'} 仅保留实体键位；没有发送系统快捷键。`);
     return;
   }
-  if (action.type === 'local') { localEdit(action.key); return; }
+  if (action.type === 'local') {
+    if (client?.snapshot?.pendingMiddleDots) {
+      if (!client.connected) { status('引擎未连接，请刷新后继续。'); return; }
+      await client.dispatch({type:'flushSymbols'});
+    }
+    localEdit(action.key); return;
+  }
   if (!client.connected) { status('引擎未连接，请使用项目的本地服务并刷新页面。'); return; }
+  if (action.type === 'confirm' && client.snapshot?.symbolChoice) action = {type:'select',candidateId:currentState().candidates[0].id};
+  if (action.type === 'confirm' && client.snapshot?.pendingMiddleDots && (!currentState().raw_input || currentModes().input === 'english')) await client.dispatch({type:'flushSymbols'});
   if (action.type === 'confirm' && !currentState().raw_input && currentModes().input !== 'english') { localEdit(action.key || 'Space'); return; }
-  if (action.type === 'backspace' && (!currentState().raw_input || currentModes().input === 'english')) { localEdit('Backspace'); return; }
+  if (action.type === 'backspace' && !client.snapshot?.pendingMiddleDots && (!currentState().raw_input || currentModes().input === 'english')) { localEdit('Backspace'); return; }
   const start = performance.now();
   try {
     const result = await client.dispatch(action);
@@ -533,7 +529,6 @@ async function init() {
   $('drill').addEventListener('click',() => startDrill('coverage'));
   $('target-drill').addEventListener('click',() => startDrill('targets'));
   $('stop-drill').addEventListener('click',() => { drill = null; renderDrill(); status('点按测量已停止，恢复正常输入。'); });
-  $('committed').addEventListener('pointerdown',() => { lastLiteral = null; });
   $('export').addEventListener('click',exportReport);
   $('layout-id').textContent = layout.layoutId;
   for (const source of layout.sources || []) $('sources').append(node('li',typeof source === 'string' ? source : `${source.path} · ${source.sha256 || ''}`));

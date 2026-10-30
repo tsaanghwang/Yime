@@ -1,0 +1,163 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-THREE-MODE-ZERO-73",
+  "continues": "TOUCH-V1-ACER-PEN-THREE-MODE-ORDINAL-72",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same local c35 CN preview/58.8 calibration. Three modes, two independent contexts each, Clear before each. Main digit0 only, no held modifier. Candidate context uses canonical ni/niii and observed first candidate; unmatched context uses document12/raw n]. End variable mode.",
+  "cases": [
+    {
+      "caseID": "variable-zero-with-candidates",
+      "mode": "variable",
+      "setup": "CN; choose mode/ID; Clear; selection OFF; modifiers unlit",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedBeforeZero": {
+        "raw": "ni",
+        "localOutput": "",
+        "candidatesNonempty": true
+      },
+      "observation": "remember exact first visible candidate",
+      "action": "main digit0 once, no Shift or candidate tap",
+      "expectedAfterZero": {
+        "localOutput": "exact first visible candidate + literal0",
+        "raw": "",
+        "candidatesEmpty": true,
+        "onlyOneCandidateAndOneZero": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "variable-zero-without-candidates",
+      "mode": "variable",
+      "setup": [
+        "CN; choose mode/ID; punctuation entry OFF; Clear; selection OFF; modifiers unlit",
+        "main digits12",
+        "N08 then Shift then M12 -> raw n], no candidates"
+      ],
+      "action": "main digit0 once",
+      "expectedAfterZero": {
+        "localOutput": "120",
+        "raw": "n]",
+        "candidatesEmpty": true
+      },
+      "verification": "Cancel (not Clear)",
+      "expectedAfterCancel": {
+        "localOutput": "120",
+        "raw": "",
+        "candidatesEmpty": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-zero-with-candidates",
+      "mode": "full",
+      "setup": "CN; choose mode/ID; Clear; selection OFF; modifiers unlit",
+      "keys": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "expectedBeforeZero": {
+        "raw": "niii",
+        "localOutput": "",
+        "candidatesNonempty": true
+      },
+      "observation": "remember exact first visible candidate",
+      "action": "main digit0 once, no Shift or candidate tap",
+      "expectedAfterZero": {
+        "localOutput": "exact first visible candidate + literal0",
+        "raw": "",
+        "candidatesEmpty": true,
+        "onlyOneCandidateAndOneZero": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-zero-without-candidates",
+      "mode": "full",
+      "setup": [
+        "CN; choose mode/ID; punctuation entry OFF; Clear; selection OFF; modifiers unlit",
+        "main digits12",
+        "N08 then Shift then M12 -> raw n], no candidates"
+      ],
+      "action": "main digit0 once",
+      "expectedAfterZero": {
+        "localOutput": "120",
+        "raw": "n]",
+        "candidatesEmpty": true
+      },
+      "verification": "Cancel (not Clear)",
+      "expectedAfterCancel": {
+        "localOutput": "120",
+        "raw": "",
+        "candidatesEmpty": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-zero-with-candidates",
+      "mode": "shorthand",
+      "setup": "CN; choose mode/ID; Clear; selection OFF; modifiers unlit",
+      "keys": [
+        "N08",
+        "M03"
+      ],
+      "expectedBeforeZero": {
+        "raw": "ni",
+        "localOutput": "",
+        "candidatesNonempty": true
+      },
+      "observation": "remember exact first visible candidate",
+      "action": "main digit0 once, no Shift or candidate tap",
+      "expectedAfterZero": {
+        "localOutput": "exact first visible candidate + literal0",
+        "raw": "",
+        "candidatesEmpty": true,
+        "onlyOneCandidateAndOneZero": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-zero-without-candidates",
+      "mode": "shorthand",
+      "setup": [
+        "CN; choose mode/ID; punctuation entry OFF; Clear; selection OFF; modifiers unlit",
+        "main digits12",
+        "N08 then Shift then M12 -> raw n], no candidates"
+      ],
+      "action": "main digit0 once",
+      "expectedAfterZero": {
+        "localOutput": "120",
+        "raw": "n]",
+        "candidatesEmpty": true
+      },
+      "verification": "Cancel (not Clear)",
+      "expectedAfterCancel": {
+        "localOutput": "120",
+        "raw": "",
+        "candidatesEmpty": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 6,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 6,
+  "priorResultsInherited": false,
+  "expectedSources": [
+    "keyboardEngine.Apply ordinal branch only1..9; zero outside lab coding alphabet routes to literal",
+    "keyboardEngine.literal confirms observed first candidate then appends literal0 in same commit, or preserves unmatched raw and commits only0",
+    "original-package fixture72 confirms matching ni/niii candidates; fixture71 confirms unmatched n] for all modes"
+  ],
+  "scope": "six main-zero literal contexts only; not unlabelled punctuation, unavailable1..9, Shift, later-page selection, other methods/packages or real host acceptance",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-three-mode-zero-73-user-result.json"
+}

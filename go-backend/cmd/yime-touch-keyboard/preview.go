@@ -105,7 +105,19 @@ func (p *preview) candidate(index int) candidatePress {
 	return candidatePress{p.stamp(), p.snapshot.State.Candidates[index].ID}
 }
 func (p *preview) candidatesEnabled() bool {
-	return !p.fault && p.snapshot.Modes.Input == "chinese"
+	return !p.fault && (p.snapshot.SymbolChoice || p.snapshot.Modes.Input == "chinese")
+}
+
+func (p *preview) candidateLabel(index int) string {
+	c := p.snapshot.State.Candidates[index]
+	if p.snapshot.SymbolChoice {
+		code := "U+2026"
+		if index == 1 {
+			code = "U+22EF"
+		}
+		return fmt.Sprintf("%d  %s\n%s", index+1, c.Text, code)
+	}
+	return fmt.Sprintf("%d  %s", index+1, c.Text)
 }
 func (p *preview) selectCandidate(c candidatePress) error {
 	if !p.candidatesEnabled() {
@@ -141,6 +153,10 @@ func (p *preview) navigate(key string, extend bool, down previewStamp) error {
 	if down != p.stamp() {
 		return fmt.Errorf("状态已更新；本次导航取消")
 	}
+	if err := p.flushMiddleDots(); err != nil {
+		return err
+	}
+	down = p.stamp()
 	switch key {
 	case "SelectAll":
 		return p.apply(tk.Output{Action: tk.Action{Type: "input", ASCII: "a"}, Ctrl: true}, down)
@@ -220,7 +236,13 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 		if p.snapshot.Modes.Input == "chinese" && down != p.stamp() {
 			return fmt.Errorf("确认前候选已更新；本次触点取消")
 		}
+		if p.snapshot.SymbolChoice {
+			return p.selectCandidate(p.candidate(0))
+		}
 		if p.snapshot.Modes.Input == "english" || p.snapshot.State.RawInput == "" {
+			if err := p.flushMiddleDots(); err != nil {
+				return err
+			}
 			code := " "
 			if a.Key == "Enter" {
 				if p.emit != nil {
@@ -237,11 +259,17 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 	case "clear":
 		return p.dispatch(keyboardlab.Event{Type: "clear"})
 	case "backspace":
+		if o.Zone != "left" && o.Zone != "right" && p.snapshot.PendingMiddleDots > 0 {
+			return p.dispatch(keyboardlab.Event{Type: "backspace"})
+		}
 		if o.Zone != "left" && o.Zone != "right" && p.snapshot.State.RawInput != "" && p.snapshot.Modes.Input == "chinese" {
 			return p.dispatch(keyboardlab.Event{Type: "backspace"})
 		}
 		if p.emit != nil {
 			return p.emitEdit(tk.Output{Key: "Backspace", Shift: o.Shift})
+		}
+		if err := p.flushMiddleDots(); err != nil {
+			return err
 		}
 		p.editor.edit("Backspace", o.Shift)
 		return nil
@@ -254,6 +282,9 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 				return p.page(1)
 			}
 			return fmt.Errorf("请先确认或取消组合，再编辑本地输出")
+		}
+		if err := p.flushMiddleDots(); err != nil {
+			return err
 		}
 		if a.Key == "Tab" {
 			if p.emit != nil {
@@ -271,12 +302,22 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 }
 
 func (p *preview) emitEdit(o tk.Output) error {
+	if err := p.flushMiddleDots(); err != nil {
+		return err
+	}
 	p.sequence++
 	err := p.emit(fmt.Sprintf("%s/edit-%d", p.snapshot.SessionID, p.sequence), o)
 	if err != nil {
 		p.fault = true
 	}
 	return err
+}
+
+func (p *preview) flushMiddleDots() error {
+	if p.snapshot.PendingMiddleDots == 0 {
+		return nil
+	}
+	return p.dispatch(keyboardlab.Event{Type: "flushSymbols"})
 }
 
 // Retire without consuming any reply output, including when the display was

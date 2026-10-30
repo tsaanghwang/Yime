@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-29",
+  "scope": "isolated original-package dictionary/ordinal fixture; no UI, host or physical acceptance",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "results": [
+    {
+      "candidateCountBefore": 9,
+      "commit": "你",
+      "digit": "1",
+      "first": "你",
+      "mode": "variable",
+      "raw": "ni",
+      "rawAfter": "",
+      "second": "尼"
+    },
+    {
+      "candidateCountBefore": 9,
+      "commit": "尼",
+      "digit": "2",
+      "first": "你",
+      "mode": "variable",
+      "raw": "ni",
+      "rawAfter": "",
+      "second": "尼"
+    },
+    {
+      "candidateCountBefore": 9,
+      "commit": "你",
+      "digit": "1",
+      "first": "你",
+      "mode": "full",
+      "raw": "niii",
+      "rawAfter": "",
+      "second": "尼"
+    },
+    {
+      "candidateCountBefore": 9,
+      "commit": "尼",
+      "digit": "2",
+      "first": "你",
+      "mode": "full",
+      "raw": "niii",
+      "rawAfter": "",
+      "second": "尼"
+    },
+    {
+      "candidateCountBefore": 9,
+      "commit": "你",
+      "digit": "1",
+      "first": "你",
+      "mode": "shorthand",
+      "raw": "ni",
+      "rawAfter": "",
+      "second": "尼"
+    },
+    {
+      "candidateCountBefore": 9,
+      "commit": "尼",
+      "digit": "2",
+      "first": "你",
+      "mode": "shorthand",
+      "raw": "ni",
+      "rawAfter": "",
+      "second": "尼"
+    }
+  ],
+  "source": "isolated keyboardlab runtime reading original c35 package dictionaries; process-local diagnostic command overlay only",
+  "hardwareAcceptance": false,
+  "penAcceptance": false,
+  "notes": "software fixture establishes first/second distinct candidates and expected main-digit dispatch, not physical passes"
+}

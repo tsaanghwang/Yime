@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-30",
+  "scope": "remaining coverage in progress; residual110 issued, no new passes inferred",
+  "scheduledPhysicalBatch": "P10-ACER-PEN-ELLIPSIS-PAGE-FOCUS-113.json",
+  "nextPriority": "Chinese dictionary page restoration and actual foreground-away/return113",
+  "otherScopes": [
+    "remaining direct-confirm routes and code modes",
+    "symbol choices with dictionary paging context",
+    "new-package focus-away/return beyond minimize/Help",
+    "finger or mixed/concurrent contacts separately labelled",
+    "MSI original pen CN148/recontact and ARM64 native new-view tests independent"
+  ],
+  "qualifiedObservation": "105 U2026 glyph note retained separately, not an output-defect finding",
+  "constraints": "same18u/58.8/filter0; no installed input-method/default/user-data changes; do not inherit old-package physical results",
+  "lastUpdatedDate": "2026-10-30",
+  "completedBoundaryBatch": "P10-ACER-PEN-ELLIPSIS-RESIDUAL-110.json",
+  "completedBoundaryBatches": [
+    "P10-ACER-PEN-ELLIPSIS-RESIDUAL-110.json",
+    "P10-ACER-PEN-ELLIPSIS-CAP-FLUSH-111.json"
+  ],
+  "completedCodeModeBatch": "P10-ACER-PEN-ELLIPSIS-CODE-MODES-112.json"
+}

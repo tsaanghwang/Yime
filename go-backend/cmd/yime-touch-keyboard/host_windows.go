@@ -60,6 +60,8 @@ func (a *ui) loseHostFocus(reason string) {
 	a.cancel()
 	a.preview.fault = true
 	a.preview.snapshot.State = engineapi.State{}
+	a.preview.snapshot.PendingMiddleDots = 0
+	a.preview.snapshot.SymbolChoice = false
 	a.status = reason
 	a.invalidate()
 }

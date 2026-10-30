@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-29",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "userReport": "正常。另外，tab 键已测。正常。",
+  "status": "passed-user-confirmed-two-mode-supplement",
+  "clarificationPending": false,
+  "question": "whether both full and shorthand were tested with Clear, main1, Tab, main2, output1\\t2 and raw empty",
+  "additionalFormalScenariosCredited": 2,
+  "scope": "user explicitly confirmed full and shorthand Clear/main1/Tab/main2, display1⇥2 and empty composition; no count or pass added to batch71",
+  "clarificationAnswer": "是，两种模式都这样测过且正常",
+  "definition": "P10-ACER-PEN-TWO-MODE-TAB-70-SUPPLEMENT.json",
+  "evidence": "user-reports/p10-acer-pen-two-mode-tab-70-clarification.json"
+}

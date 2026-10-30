@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-TWO-MODE-EMPTY-CONFIRM-70",
+  "continues": "TOUCH-V1-ACER-PEN-THREE-MODE-CONFIRM-69",
+  "hardwareMethod": "Acer PE272XT supplied pen",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "same c35 local CN preview,58.8 calibration. Test full and shorthand only; every independent case Clear, all modifiers unlit, selection OFF, main1 then named confirmation key then main2. End variable mode. No code composition.",
+  "cases": [
+    {
+      "caseID": "full-empty-left-Space",
+      "mode": "full",
+      "setup": "CN; Settings choose mode; Return; Clear; selection OFF; modifiers unlit; main digit1; raw/candidates empty",
+      "action": "left-Space once then main digit2",
+      "expected": {
+        "localOutput": "1 2",
+        "displayHint": "1 2",
+        "raw": "",
+        "candidatesEmpty": true,
+        "exactlyOneWhitespace": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-empty-right-Space",
+      "mode": "full",
+      "setup": "CN; Settings choose mode; Return; Clear; selection OFF; modifiers unlit; main digit1; raw/candidates empty",
+      "action": "right-Space once then main digit2",
+      "expected": {
+        "localOutput": "1 2",
+        "displayHint": "1 2",
+        "raw": "",
+        "candidatesEmpty": true,
+        "exactlyOneWhitespace": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "full-empty-Enter",
+      "mode": "full",
+      "setup": "CN; Settings choose mode; Return; Clear; selection OFF; modifiers unlit; main digit1; raw/candidates empty",
+      "action": "Enter once then main digit2",
+      "expected": {
+        "localOutput": "1\n2",
+        "displayHint": "1↵2",
+        "raw": "",
+        "candidatesEmpty": true,
+        "exactlyOneWhitespace": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-empty-left-Space",
+      "mode": "shorthand",
+      "setup": "CN; Settings choose mode; Return; Clear; selection OFF; modifiers unlit; main digit1; raw/candidates empty",
+      "action": "left-Space once then main digit2",
+      "expected": {
+        "localOutput": "1 2",
+        "displayHint": "1 2",
+        "raw": "",
+        "candidatesEmpty": true,
+        "exactlyOneWhitespace": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-empty-right-Space",
+      "mode": "shorthand",
+      "setup": "CN; Settings choose mode; Return; Clear; selection OFF; modifiers unlit; main digit1; raw/candidates empty",
+      "action": "right-Space once then main digit2",
+      "expected": {
+        "localOutput": "1 2",
+        "displayHint": "1 2",
+        "raw": "",
+        "candidatesEmpty": true,
+        "exactlyOneWhitespace": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "shorthand-empty-Enter",
+      "mode": "shorthand",
+      "setup": "CN; Settings choose mode; Return; Clear; selection OFF; modifiers unlit; main digit1; raw/candidates empty",
+      "action": "Enter once then main digit2",
+      "expected": {
+        "localOutput": "1\n2",
+        "displayHint": "1↵2",
+        "raw": "",
+        "candidatesEmpty": true,
+        "exactlyOneWhitespace": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 6,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 6,
+  "priorResultsInherited": false,
+  "existingVariableEmptyCompositionEvidence": {
+    "definition": "P10-ACER-PEN-CN-CONFIRM-56.json",
+    "scope": "same method/package variable empty-composition left/right Space/Enter already observed; no retest and no additional candidate/body/control credit"
+  },
+  "expectedSources": [
+    "preview.apply confirm: empty raw dispatches literal space or newline; no candidate selection",
+    "CN variable empty-context cases in batch56 establish prior coverage only, not new full/shorthand passes"
+  ],
+  "scope": "six empty-composition confirmation contexts in full/shorthand only; no nonempty-without-candidates, Shift, ordinal/paging or host acceptance",
+  "userReport": "正常。另外，tab 键已测。正常。",
+  "evidence": "user-reports/p10-acer-pen-two-mode-empty-confirm-70-user-result.json"
+}

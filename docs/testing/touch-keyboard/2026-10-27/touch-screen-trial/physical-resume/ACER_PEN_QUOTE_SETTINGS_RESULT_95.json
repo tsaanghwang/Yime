@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-29",
+  "status": "five defined quote/settings host contexts passed, historical observation retained",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "passedContextScenarios": 5,
+  "subsetOfEdgeHostCount": true,
+  "casesByBatch": {
+    "90": 2,
+    "93": 1,
+    "94": 1,
+    "95": 1
+  },
+  "diagnostic92Credits": 0,
+  "original91": "two reported mismatches preserved; fresh diagnostic92 and pending retest93 correct; original cause unconfirmed, no runtime fix claimed",
+  "edgeHostTotal": 18,
+  "wordHostTotal": 13,
+  "limits": [
+    "not all punctuation, EN direct symbols, all schemas/settings or concurrent contacts",
+    "90 r2,93-95 r3; no fixture-version inheritance",
+    "double-quote90 historical normal retained; no new double-quote measurement from91"
+  ],
+  "next": "P10-ACER-PEN-EDGE-CN-PUNCTUATION-96.json"
+}

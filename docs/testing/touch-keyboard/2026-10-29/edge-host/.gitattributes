@@ -1,0 +1,2 @@
+# Preserve the byte-identical fixture SHA-256 recorded in the physical test batch.
+/test-textarea.html -text !eol -whitespace

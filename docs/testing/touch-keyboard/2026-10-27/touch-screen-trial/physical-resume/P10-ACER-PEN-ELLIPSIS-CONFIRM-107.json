@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-CONFIRM-107",
+  "continues": "TOUCH-V1-ACER-PEN-ELLIPSIS-GUARD-ORDINAL-106",
+  "status": "passed-user-reported-group-result",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for browser reset/caret, explicit keyboard Bind",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "setup": "Each case independently Reset Edge r3 textarea, click empty field, Bind. Current choice package78ef9124…, CN/variable/ID/literal entrancesOFF, selection/modifiersOFF,18u/58.8/filter0. Main digits12 with raw empty ->textarea12. Reapply Shift before EACH N25.",
+  "cases": [
+    {
+      "caseID": "ellipsis-three-taps-left-space-confirms-first-only",
+      "steps": [
+        "Shift then N25 three times ->two choices, textarea remains12",
+        "tap LEFT main Space once"
+      ],
+      "expected": {
+        "finalText": "12…",
+        "finalCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+2026"
+        ],
+        "noExtraSpace": true,
+        "rawEmpty": true,
+        "pendingDotsAfter": 0
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "ellipsis-six-taps-enter-confirms-first-without-newline",
+      "steps": [
+        "independently prepare textarea12",
+        "Shift then N25 six times; leave choices unselected after third; textarea remains12",
+        "tap main Enter once"
+      ],
+      "expected": {
+        "finalText": "12……",
+        "finalCodepoints": [
+          "U+0031",
+          "U+0032",
+          "U+2026",
+          "U+2026"
+        ],
+        "noExtraNewline": true,
+        "rawEmpty": true,
+        "pendingDotsAfter": 0
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "hostObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "priorResultsInherited": false,
+  "scope": "two actual Edge CN/variable explicit first-choice confirmation routes: LEFT Space and Enter; not RIGHT Space or all modes/Word confirmation routes",
+  "onMismatch": "report selected text/codepoint line and any extra U+0020/U+000A/raw/pending state; stop rather than retry",
+  "expectedSources": [
+    "preview.apply confirm checks SymbolChoice before empty/English literal Space/Enter path",
+    "explicit first candidate selection returns only chosen ellipsis text and leaves no pending count",
+    "unit host emitter and current session choice tests provide expected behavior only"
+  ],
+  "afterBatch": "keep CN/variable/literal entrancesOFF",
+  "userReport": "正常",
+  "userResultDate": "2026-10-30",
+  "evidence": "user-reports/p10-acer-pen-ellipsis-confirm-107-user-result.json"
+}

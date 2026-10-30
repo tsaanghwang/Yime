@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-29",
+  "proposal": "输入三点给出两个选项，由输入者选择用哪个",
+  "approvalContext": "继续测试顿号和破折号，然后，结合破折号的输出问题一起改动。",
+  "latestInstruction": "破折号输出符合设计预期，输入一次单横线(长度最宽的一个)，输入两次中文标准破折号。无需改动。测试结果：正常。秩序单独处理省略号。",
+  "correction": "只需单独处理省略号输入问题",
+  "rule": {
+    "threeTaps": [
+      "U+2026",
+      "U+22EF"
+    ],
+    "sixTaps": [
+      "U+2026 U+2026",
+      "U+22EF U+22EF"
+    ],
+    "commit": "only explicit candidate/ordinal/confirm selection",
+    "ordinaryText": "does not auto-pick an ellipsis choice",
+    "dash": "unchanged;100 user accepts one em dash per tap"
+  },
+  "supersedes": "MIDDLE_DOT_FINAL_DECISION_100.json fixed U22EF automatic submission; source/package snapshots preserved",
+  "physicalAcceptance": "new executable independent; zero prior results inherited"
+}

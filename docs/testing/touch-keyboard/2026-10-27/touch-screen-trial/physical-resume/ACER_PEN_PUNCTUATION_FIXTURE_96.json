@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-29",
+  "scope": "source and exact packaged key-action review only, no new runtime/UI or physical pass",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "packagedLayoutSHA256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+  "keyActions": [
+    {
+      "id": "N23",
+      "physicalKey": "R06K11",
+      "shiftAction": {
+        "type": "input",
+        "ascii": ",",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "N08",
+      "physicalKey": "R06K12",
+      "shiftAction": {
+        "type": "input",
+        "ascii": ".",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "N12",
+      "physicalKey": "R02K06",
+      "shiftAction": {
+        "type": "input",
+        "ascii": "!",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "M33",
+      "physicalKey": "R06K16",
+      "shiftAction": {
+        "type": "input",
+        "ascii": "?",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "M24",
+      "physicalKey": "R03K07",
+      "shiftAction": {
+        "type": "input",
+        "ascii": "@",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "M22",
+      "physicalKey": "R03K09",
+      "shiftAction": {
+        "type": "input",
+        "ascii": "$",
+        "literalEntry": true
+      }
+    },
+    {
+      "id": "N04",
+      "physicalKey": "R03K10",
+      "shiftAction": {
+        "type": "input",
+        "ascii": "%",
+        "literalEntry": true
+      }
+    }
+  ],
+  "expectedMapping": {
+    ",": "，",
+    ".": "。",
+    "!": "！",
+    "?": "？",
+    "@": "@",
+    "$": "$",
+    "%": "%"
+  },
+  "source": "go-backend/internal/keyboardlab/keyboard_engine.go chinesePunctuation and DirectSymbol; unknown symbols unchanged"
+}

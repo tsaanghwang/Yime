@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-WORD-BASELINE-78",
+  "continues": "TOUCH-V1-ACER-PEN-THREE-MODE-PAUSED-CANDIDATE-77",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse allowed for Word caret placement; not claimed as pure pen focus positioning",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "host": "Microsoft Word; actual version/architecture not yet captured in this group",
+  "launcher": "C:\\dev\\Yime\\.generated\\touch-validation-20261025-x64-16inch\\Start Audio Startup Fixed Keyboard.cmd",
+  "launcherHashAndArgumentsVerified": true,
+  "setup": "Exit existing local preview, launch same c35 host Keyboard entry, open a new blank unsaved Word document. Keep keyboard geometry/calibration unchanged; may arrange Word window for visible text. Use mouse to place caret, Acer pen for keyboard Bind/input. No installed input-method/default or user-data changes.",
+  "cases": [
+    {
+      "caseID": "word-visible-workspace-bind",
+      "steps": [
+        "new blank unsaved Word document, only test content",
+        "same c35 host keyboard visible, main control says Bind rather than preview Clear",
+        "mouse place caret in Word body; pen tap Bind; inspect explicit successful target status",
+        "check current insertion line/caret visible and Word usable controls remain accessible"
+      ],
+      "expected": "new keyboard and host work area permit text/caret observation and operation; explicit target bound; no text sent merely by binding",
+      "status": "passed-user-reported-with-scroll-adjustment"
+    },
+    {
+      "caseID": "word-EN-abc",
+      "steps": [
+        "after successful binding switch EN",
+        "Acer pen a then b then c",
+        "inspect actual Word document, not only keyboard Sent status"
+      ],
+      "expected": {
+        "hostText": "abc",
+        "noOtherTargetWrite": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "word-CN-variable-ni3",
+      "steps": [
+        "same target, switch CN; variable mode/ID legends via Settings if needed, Return",
+        "N08 then M03 -> raw ni; before selecting Word remains abc",
+        "tap visible candidate 你 once",
+        "inspect actual Word text and insertion caret visibility"
+      ],
+      "expected": {
+        "hostText": "abc你",
+        "rawAfter": "",
+        "noDuplicateOrUnconfirmedRawLeak": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 3,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 3,
+  "priorResultsInherited": false,
+  "scope": "first new-view real Word workspace/binding, EN literal and CN variable commit only; other Word editing/focus lifecycle, Edge, pure pen caret positioning, other modes or installed TIP acceptance not established",
+  "onMismatch": "stop further input; report exact Word contents, binding/status and visible/covered area; no automatic replay or user-document modification",
+  "userReport": "正常。word 这次好多了，滚动后能看见光标，能点选。",
+  "evidence": "user-reports/p10-acer-pen-word-baseline-78-user-result.json",
+  "workspaceQualification": "caret visible and point selection usable after scrolling; no claim of initial visibility without adjustment"
+}

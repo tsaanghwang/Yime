@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-CN-PUNCTUATION-96",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-QUOTE-LANGUAGE-95",
+  "host": "same Edge local textarea, fixture r3",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for page reset/caret setup; explicit keyboard Bind",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "status": "passed-user-reported-group-result",
+  "setup": "Each case independently Reset r3 page, click empty textarea, explicit Bind, CN/variable/ID/literal entrances ON. Selection OFF/modifiers unlit. For EVERY listed key press Shift once then that ID; one-shot Shift must be reapplied each time. Same c35/58.8.",
+  "cases": [
+    {
+      "caseID": "edge-mapped-cn-punctuation",
+      "keys": [
+        {
+          "shiftThen": "N23"
+        },
+        {
+          "shiftThen": "N08"
+        },
+        {
+          "shiftThen": "N12"
+        },
+        {
+          "shiftThen": "M33"
+        }
+      ],
+      "expected": {
+        "textAfterEachKey": [
+          "，",
+          "，。",
+          "，。！",
+          "，。！？"
+        ],
+        "finalText": "，。！？",
+        "finalCodepoints": [
+          "U+FF0C",
+          "U+3002",
+          "U+FF01",
+          "U+FF1F"
+        ],
+        "rawAlwaysEmpty": true,
+        "noCandidateConfirmationNeeded": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "edge-unmapped-ascii-symbols",
+      "keys": [
+        {
+          "shiftThen": "M24"
+        },
+        {
+          "shiftThen": "M22"
+        },
+        {
+          "shiftThen": "N04"
+        }
+      ],
+      "expected": {
+        "textAfterEachKey": [
+          "@",
+          "@$",
+          "@$%"
+        ],
+        "finalText": "@$%",
+        "finalCodepoints": [
+          "U+0040",
+          "U+0024",
+          "U+0025"
+        ],
+        "rawAlwaysEmpty": true,
+        "noCandidateConfirmationNeeded": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 2,
+  "priorResultsInherited": false,
+  "expectedFixture": "ACER_PEN_PUNCTUATION_FIXTURE_96.json",
+  "expectedSourceScope": "reviewed explicit Chinese punctuation conversion table, no global full-width transformation; packaged reserved entrances map directly to symbol events with option ON",
+  "scope": "two empty-composition actual Edge CN/variable direct-symbol sequences, mapped punctuation4 and unchanged ASCII3; not CN/EN pause or every punctuation/schema",
+  "afterBatch": "restore literal entrances OFF, keep CN/variable",
+  "onMismatch": "report specific key, actual field codepoints, raw and literal-entrance status; do not retry/rebind midway",
+  "userReport": "正常",
+  "evidence": "user-reports/p10-acer-pen-edge-cn-punctuation-96-user-result.json"
+}

@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-ELLIPSIS-CHOICE-101",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-SLASH-DASH-100",
+  "status": "passed-user-reported-group-result",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "packageIdentity": "../../../2026-10-29/ellipsis-choice/package-identity.json",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for browser reset/caret, explicit keyboard Bind",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "filterMS": 0,
+  "setup": "new choice package activated,18u/58.8 unchanged. Each case independently clear/refocus/Bind; no old executable pass inheritance.",
+  "cases": [
+    {
+      "caseID": "ellipsis-three-taps-option1",
+      "setup": "independently reset browser page, click empty textarea, Bind; CN/variable/ID/literal entrancesOFF; Shift once before EACH N25 tap",
+      "steps": [
+        "Shift then N25 three times; first2 show pending count, body remains empty",
+        "third shows candidate1 … U+2026 and candidate2 ⋯ U+22EF; body remains empty",
+        "pen tap candidate1"
+      ],
+      "expected": {
+        "beforeSelectionText": "",
+        "afterSelectionText": "…",
+        "afterSelectionCodepoints": [
+          "U+2026"
+        ],
+        "rawEmpty": true,
+        "pendingDotsAfter": 0
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "ellipsis-three-taps-option2",
+      "setup": "independently reset browser page, click empty textarea, Bind; CN/variable/ID/literal entrancesOFF; Shift once before EACH N25 tap",
+      "steps": [
+        "Shift then N25 three times; first2 show pending count, body remains empty",
+        "third shows candidate1 … U+2026 and candidate2 ⋯ U+22EF; body remains empty",
+        "pen tap candidate2"
+      ],
+      "expected": {
+        "beforeSelectionText": "",
+        "afterSelectionText": "⋯",
+        "afterSelectionCodepoints": [
+          "U+22EF"
+        ],
+        "rawEmpty": true,
+        "pendingDotsAfter": 0
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "hostObservations": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "priorResultsInherited": false,
+  "scope": "new executable3-tap two-codepoint choice only;6 taps/lifecycle/old whole-body acceptance remain separate",
+  "onMismatch": "report candidate labels, actual codepoint line, raw and any auto-commit; stop rather than repeat blindly",
+  "userReport": "两种情况都测了（包含6次点击的情况）。正常。",
+  "evidence": "user-reports/p10-acer-pen-ellipsis-choice-101-102-user-result.json",
+  "expansion": "P10-ACER-PEN-ELLIPSIS-SIX-TAP-102-EXPANSION.json"
+}

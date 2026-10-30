@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-FIXTURE-RETEST-83",
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input; mouse allowed for page reset/caret setup",
+  "host": "same Edge local test page, revised fixture r2",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "testPageSHA256": "6cd9f323de304662f1a9c6dad134a6e3b0615b27cacb3db7dc50e5eb4e918393",
+  "userReport": "正常。能满足测试要求。",
+  "passedHostScenarios": 1,
+  "result": "user reports revised fixture/reset/refocus/rebind scenario normal and sufficient for testing",
+  "observationGranularity": "group confirmation of presented scenario; no independently captured action transcript or attempt count",
+  "scope": "revised fixture only; original v1 hidden-reset issue remains historical partial; no Word or other method inheritance"
+}

@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-29",
+  "batchID": "TOUCH-V1-ACER-PEN-EDGE-SLASH-DASH-100",
+  "continues": "TOUCH-V1-ACER-PEN-EDGE-CN-BRACKETS-99",
+  "status": "passed-user-reported-group-result",
+  "host": "same Edge local textarea, fixture r3",
+  "testPage": "C:\\dev\\Yime\\docs\\testing\\touch-keyboard\\2026-10-29\\edge-host\\test-textarea.html",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "screenView": "touch-screen-v1",
+  "packageExecutableSHA256": "c35a78126b215feb2ed21dac052dfc3225c44aac9d74e03153644ad76cb9af32",
+  "filterMS": 0,
+  "hardwareMethod": "Acer PE272XT supplied pen for keyboard input",
+  "focusSetupMethod": "mouse permitted for page reset/caret; explicit Bind",
+  "setup": "Each case independently Reset r3 page, click empty textarea, Bind; CN/variable/ID; selection OFF/modifiers unlit. Set literal entrances as specified for each case. Reapply Shift before EVERY key. Same c35/58.8.",
+  "cases": [
+    {
+      "caseID": "edge-slash-and-backslash-cn-comma",
+      "literalEntrances": "ON",
+      "keys": [
+        {
+          "shiftThen": "N01"
+        },
+        {
+          "shiftThen": "M07"
+        }
+      ],
+      "expected": {
+        "textAfterEachKey": [
+          "、",
+          "、、"
+        ],
+        "finalCodepoints": [
+          "U+3001",
+          "U+3001"
+        ],
+        "rawAlwaysEmpty": true
+      },
+      "status": "passed-user-reported"
+    },
+    {
+      "caseID": "edge-explicit-em-dash-two-individual-taps",
+      "literalEntrances": "OFF",
+      "keys": [
+        {
+          "shiftThen": "N21"
+        },
+        {
+          "shiftThen": "N21"
+        }
+      ],
+      "expected": {
+        "textAfterEachKey": [
+          "—",
+          "——"
+        ],
+        "finalCodepoints": [
+          "U+2014",
+          "U+2014"
+        ],
+        "rawAlwaysEmpty": true,
+        "oneCharacterPerTap": true
+      },
+      "status": "passed-user-reported"
+    }
+  ],
+  "scenarioCount": 2,
+  "bodyLayerObservations": 0,
+  "controlObservations": 0,
+  "candidateObservations": 0,
+  "hostObservations": 2,
+  "priorResultsInherited": false,
+  "expectedFixture": "ACER_PEN_PUNCTUATION_FIXTURE_99.json slash/backslash mapping; exact packaged N21 Shift action is symbol U+2014",
+  "expectedSourceScope": "slash/backslash CN direct symbols map to U+3001; explicit Unicode em dash is a symbol action independent of reserved-entrance switch, each event commits one; source/development expectations only",
+  "scope": "two actual Edge cases: slash/backslash mapping and two individual Unicode dash taps; middle-dot requirement not part of this batch",
+  "afterBatch": "restore literal entrances OFF, keep CN/variable",
+  "onMismatch": "report specific key, raw and codepoints; stop, do not change geometry or infer middle-dot behavior",
+  "userReport": "破折号输出符合设计预期，输入一次单横线(长度最宽的一个)，输入两次中文标准破折号。无需改动。测试结果：正常。秩序单独处理省略号。",
+  "evidence": "user-reports/p10-acer-pen-edge-slash-dash-100-user-result.json"
+}

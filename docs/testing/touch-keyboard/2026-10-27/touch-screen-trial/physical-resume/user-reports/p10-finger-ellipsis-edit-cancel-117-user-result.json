@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-30",
+  "batchID": "TOUCH-V1-FINGER-ELLIPSIS-EDIT-CANCEL-117",
+  "userReport": "正常",
+  "packageExecutableSHA256": "78ef9124a2dc18ecf0401f461531cd91c13ab16fda2c550ad46eaf063e1bf315",
+  "hardwareMethod": "finger for keyboard dot, Backspace, Cancel and candidate taps; no pen",
+  "host": "same Edge r3 local textarea",
+  "testPageSHA256": "d4de1520aeef9524b3adf3566d0bb03a33b1744396e1e1ad7ebccefb34410147",
+  "passedNewPackageHostScenarios": 2,
+  "result": "finger Backspace reduces three pending taps to two, choices restore after one new tap, first candidate commits U2026; Cancel clears choices/pending, new group starts at1 and second candidate commits U22EF",
+  "observationGranularity": "group confirmation only; no per-action transcript or attempt counts inferred",
+  "priorPhysicalResultsInherited": false
+}
