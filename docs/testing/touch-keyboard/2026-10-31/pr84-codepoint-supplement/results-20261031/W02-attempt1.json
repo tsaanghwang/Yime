@@ -1,0 +1,41 @@
+{
+    "schemaVersion":  1,
+    "capturedAt":  "2026-10-31T08:40:34.2599770+08:00",
+    "machine":  "计算机",
+    "host":  "Word",
+    "hostVersion":  "16.0",
+    "documentName":  "文档2",
+    "caseId":  "W02",
+    "method":  "mouse",
+    "readMethod":  "Word COM Document.Content.Text (read only)",
+    "sourceCommit":  "f01326e6c1976a4e67c9ff59693effc0e1110b1a",
+    "keyboardExeSHA256":  "0e24a31e2088c5b19e39bae8ac78adcc28a9cb258d2f0034b2addac1ec8cbc07",
+    "packageBinding":  "File hash checked; operator must confirm this executable produced the text",
+    "rawText":  "12⋯⋯\r",
+    "rawCodepoints":  [
+                          "U+0031",
+                          "U+0032",
+                          "U+22EF",
+                          "U+22EF",
+                          "U+000D"
+                      ],
+    "removedFinalParagraphMark":  true,
+    "actualText":  "12⋯⋯",
+    "actualCodepoints":  [
+                             "U+0031",
+                             "U+0032",
+                             "U+22EF",
+                             "U+22EF"
+                         ],
+    "scalarCount":  4,
+    "expectedText":  "12⋯⋯",
+    "expectedCodepoints":  [
+                               "U+0031",
+                               "U+0032",
+                               "U+22EF",
+                               "U+22EF"
+                           ],
+    "exactMatch":  true,
+    "acceptanceStatus":  "pending-operator-review",
+    "limitation":  "Final text detects extra/duplicate characters, not identical replacement events or future delayed commits"
+}

@@ -1,0 +1,37 @@
+{
+  "host": "Word",
+  "status": "passed",
+  "basis": "User completed the two specified test documents; independent COM read matches full expected text. Only final mandatory Word paragraph mark excluded.",
+  "userFeedback": "完成，两个文档都保持打开，请读取正文和Unicode码点。文档1：1，2，U+2026。文档2：1，2，U+22EF，U+22EF",
+  "cases": [
+    {
+      "caseId": "W01",
+      "status": "passed",
+      "actualText": "12…",
+      "actualCodepoints": [
+        "U+0031",
+        "U+0032",
+        "U+2026"
+      ],
+      "capturedAt": "2026-10-31T08:40:29.9717968+08:00",
+      "evidence": "W01-attempt1.json",
+      "sha256": "a7b713fd400038770f7b69fc63cbf31fc1e3c1a3d01a3f21de0e2b1854868b26"
+    },
+    {
+      "caseId": "W02",
+      "status": "passed",
+      "actualText": "12⋯⋯",
+      "actualCodepoints": [
+        "U+0031",
+        "U+0032",
+        "U+22EF",
+        "U+22EF"
+      ],
+      "capturedAt": "2026-10-31T08:40:34.2599770+08:00",
+      "evidence": "W02-attempt1.json",
+      "sha256": "048dd28aa148c0b51d6f7bff318584ba04932dbeaf165e6ff8d46fb11449f073"
+    }
+  ],
+  "firefoxStatus": "pending",
+  "scope": "Word final text only; no touch/pen/ARM64/installed-input-method acceptance"
+}
