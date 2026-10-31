@@ -1,0 +1,3 @@
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard	10.603s
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard	0.145s
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab	8.525s

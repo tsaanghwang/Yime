@@ -1,0 +1,1019 @@
+{
+  "schemaVersion": 1,
+  "createdAtUTC": "2026-10-31T06:45:01.941922+00:00",
+  "scope": "byte-preserving archive of external ARM64 development records and package manifests",
+  "sourceRoot": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031",
+  "versionMapping": {
+    "v1": "delivery root; original records and arm64 directories",
+    "v2": "v2 subdirectory",
+    "v3": "v3 subdirectory",
+    "v4": "v4 subdirectory",
+    "v5": "v5 subdirectory",
+    "v6": "v6 subdirectory",
+    "v7": "v7 subdirectory"
+  },
+  "fileCount": 125,
+  "totalBytes": 164595,
+  "files": [
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\build-v1.log",
+      "archiveRelativePath": "v1/records/build-v1.log",
+      "bytes": 194,
+      "sha256": "ba6bde5044a53589a173559214841405678875fc046a070d37df239aa6f33f41"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\full-v1.json",
+      "archiveRelativePath": "v1/records/full-v1.json",
+      "bytes": 546,
+      "sha256": "1d7b8b8a97d9629077d62b0a841b7556c201583d891550a5e09a24aa6258a8aa"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\full-v1.log",
+      "archiveRelativePath": "v1/records/full-v1.log",
+      "bytes": 222,
+      "sha256": "0f8b1b4ab4153a7b10350c63e641756f0d3adbf65490dde442003c668fcfb329"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\package-check-v1.json",
+      "archiveRelativePath": "v1/records/package-check-v1.json",
+      "bytes": 5769,
+      "sha256": "d24a3785e492a6dccb553b45f59821a6353e4903c9c1fd35492e920655c733a1"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\package-check-v1.log",
+      "archiveRelativePath": "v1/records/package-check-v1.log",
+      "bytes": 167,
+      "sha256": "420b501c7d7e14705238b119120dec6d14e641f0caa73525c4a908c64591e694"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\package-identity-v1.json",
+      "archiveRelativePath": "v1/records/package-identity-v1.json",
+      "bytes": 575,
+      "sha256": "ecf64d499b43c3213b7962b11189f8f16b319f3b2ea4fac0d27aadeca5f622d5"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\preview-launch-v1.json",
+      "archiveRelativePath": "v1/records/preview-launch-v1.json",
+      "bytes": 555,
+      "sha256": "55b71bd8e7cafa1b0c58562c61bbd99f0dbae73475f6bdb34aa2d1924820c033"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\preview-ready-v1.json",
+      "archiveRelativePath": "v1/records/preview-ready-v1.json",
+      "bytes": 973,
+      "sha256": "35eab054c3001f3712e3c39f4f0e79ee4aed4add966f9ec724632c85065aa91f"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\quote-readability-preview-plan-v1.json",
+      "archiveRelativePath": "v1/records/quote-readability-preview-plan-v1.json",
+      "bytes": 1012,
+      "sha256": "b438469e459bc3de38dea4e0dd93ed45575b72ddef3fa9202a49228bf9e4bb90"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\quote-readability-user-result-v1.json",
+      "archiveRelativePath": "v1/records/quote-readability-user-result-v1.json",
+      "bytes": 1187,
+      "sha256": "d767550b3827fb1f087b546c27384b0f637e9aefee0f1bccd63a8fdb3e0d3875"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\RESULTS.before-v1-feedback.json",
+      "archiveRelativePath": "v1/records/RESULTS.before-v1-feedback.json",
+      "bytes": 738,
+      "sha256": "cbc096032dd993f52001f5f679ba5893140cbb8d2ee5ff2c92977bd8d794769c"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\RESULTS.before-v2-ready.json",
+      "archiveRelativePath": "v1/records/RESULTS.before-v2-ready.json",
+      "bytes": 950,
+      "sha256": "4bedf667a77436d9cfb2a9b87f8455e116b5eb613bc684b59caa9f4472564926"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\RESULTS.before-v3-ready.json",
+      "archiveRelativePath": "v1/records/RESULTS.before-v3-ready.json",
+      "bytes": 1077,
+      "sha256": "a9dc04aba7dd71e9d43ffa8719579072c19b649254dc960a8a47d941216e526c"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\RESULTS.before-v4-ready.json",
+      "archiveRelativePath": "v1/records/RESULTS.before-v4-ready.json",
+      "bytes": 1244,
+      "sha256": "19a49bdc05d740e13ee57aae71f787e589e2259fcb6cce141d9f8cbcf56b6f53"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\RESULTS.before-v5-ready.json",
+      "archiveRelativePath": "v1/records/RESULTS.before-v5-ready.json",
+      "bytes": 1258,
+      "sha256": "31e7107ce21076c091c7a088705bb0eecf9dce520801fc8751a234ba6f644083"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\RESULTS.before-v6-ready.json",
+      "archiveRelativePath": "v1/records/RESULTS.before-v6-ready.json",
+      "bytes": 1255,
+      "sha256": "ee32957e2ca0dd6e04161c09e9fc44b6a2eb8e34da0a2f7083556df36cd10276"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\RESULTS.before-v7-ready.json",
+      "archiveRelativePath": "v1/records/RESULTS.before-v7-ready.json",
+      "bytes": 1230,
+      "sha256": "c786086f269e6ba20259c95f47fb7e948447573a427a85f82182d3b49d327f3b"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\RESULTS.json",
+      "archiveRelativePath": "v1/records/RESULTS.json",
+      "bytes": 1233,
+      "sha256": "7d9261970f0cf107feffcb79f0d7851dc9c360e14f6fc3ecda24475c8ebd7a58"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\targeted-v1.json",
+      "archiveRelativePath": "v1/records/targeted-v1.json",
+      "bytes": 506,
+      "sha256": "13e2c736847f2671496bdbdb61006902eb5bf3a5f651b3e138073556bce1eea3"
+    },
+    {
+      "version": "v1",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\records\\targeted-v1.log",
+      "archiveRelativePath": "v1/records/targeted-v1.log",
+      "bytes": 275,
+      "sha256": "ce8b9cac6e2cd010bd8488bc438b20e78c653df772f34a9c70f71421ccbe6203"
+    },
+    {
+      "version": "v1",
+      "kind": "package-manifest",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\arm64\\manifest.json",
+      "archiveRelativePath": "v1/arm64/manifest.json",
+      "bytes": 4677,
+      "sha256": "f7b39fdd1fcc132be386501aa5a83f765d47fb689230c5954b920b84b701cae0"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\build-v1.log",
+      "archiveRelativePath": "v2/records/build-v1.log",
+      "bytes": 194,
+      "sha256": "343809b83a639b221aa1850e90faa76d863f0eb5754c5547cf8aba0a40a76e90"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\package-check-v1.json",
+      "archiveRelativePath": "v2/records/package-check-v1.json",
+      "bytes": 5766,
+      "sha256": "53546476dadcb56483bdeac1ab83717373bd5b4fb8bb2e3f8db57babd76c3e45"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\package-check-v1.log",
+      "archiveRelativePath": "v2/records/package-check-v1.log",
+      "bytes": 170,
+      "sha256": "615f786d32b2863857f5621e1b860abe8cffc3ccee7cdb886e2a20d08a056f56"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\package-identity-v1.json",
+      "archiveRelativePath": "v2/records/package-identity-v1.json",
+      "bytes": 575,
+      "sha256": "58f9c4898239e02195c7fe5fe7232e64c3460ba0d2cf3bac87cce179ebabbd6f"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\preview-launch-v1.json",
+      "archiveRelativePath": "v2/records/preview-launch-v1.json",
+      "bytes": 559,
+      "sha256": "99e62dd24c072effa7fc6234c13c0cfc7900898ebe0b441e9ca19f597b56fbe3"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\preview-ready-v1.json",
+      "archiveRelativePath": "v2/records/preview-ready-v1.json",
+      "bytes": 1121,
+      "sha256": "a865822c781f9c0cc43e1083972e9e8ae598055c78546962eaa3cab173b042c9"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\regular-calibration-v1.json",
+      "archiveRelativePath": "v2/records/regular-calibration-v1.json",
+      "bytes": 554,
+      "sha256": "4eee9a421c545062359c4bc6ba3e9187b2e5fcf4ffb14b5fc28ffa5e102dc4e0"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\regular-calibration-v1.log",
+      "archiveRelativePath": "v2/records/regular-calibration-v1.log",
+      "bytes": 75,
+      "sha256": "e90bcfa207110a0402028d1285f21c0cadabdf7e9f92ec39f43e9a1fc108e536"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\regular-desktop-final-v1.json",
+      "archiveRelativePath": "v2/records/regular-desktop-final-v1.json",
+      "bytes": 499,
+      "sha256": "0308f887e88bc9e196f7c08820a8f5155d570fd812362c3e1ba2ad7db9cb2076"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\regular-desktop-final-v1.log",
+      "archiveRelativePath": "v2/records/regular-desktop-final-v1.log",
+      "bytes": 76,
+      "sha256": "3915cc959f84c82d28919ad8601ef241b2137d2f6ea6401786e5ed056a814145"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\regular-full-v1.json",
+      "archiveRelativePath": "v2/records/regular-full-v1.json",
+      "bytes": 554,
+      "sha256": "8665d763b332d543d465bae97f462b2f050250b48bb7b9769747add7de722b7c"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\regular-full-v1.log",
+      "archiveRelativePath": "v2/records/regular-full-v1.log",
+      "bytes": 222,
+      "sha256": "554843b71c6b05f4bf3466b63679c18ba5a567a7f1b7b3144647fd5b80b9742a"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\regular-header-preview-plan-v1.json",
+      "archiveRelativePath": "v2/records/regular-header-preview-plan-v1.json",
+      "bytes": 1114,
+      "sha256": "bef18497d78eddf182849efe5bddb38bcc2876b584d547701eb2511da92bb153"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\regular-header-user-result-v1.json",
+      "archiveRelativePath": "v2/records/regular-header-user-result-v1.json",
+      "bytes": 859,
+      "sha256": "e1825ec0479325e85890d5ec926a64164435ee668c37f415795f2da2357a7243"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\regular-targeted-v1.json",
+      "archiveRelativePath": "v2/records/regular-targeted-v1.json",
+      "bytes": 538,
+      "sha256": "6f997a32aaff79767701621cc827538c55da29dc1eb0108b04d9b300094d7924"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\regular-targeted-v1.log",
+      "archiveRelativePath": "v2/records/regular-targeted-v1.log",
+      "bytes": 75,
+      "sha256": "ca8e34fb7c1316a9607ff9cf90673aa9f62f22014a33702100f34134fdb83968"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\RESULTS.before-v2-feedback.json",
+      "archiveRelativePath": "v2/records/RESULTS.before-v2-feedback.json",
+      "bytes": 946,
+      "sha256": "d985b22fbf82ca4d04dcd5af516da0f45f0042243b363dc417e2e368254477b2"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\RESULTS.before-v3-ready.json",
+      "archiveRelativePath": "v2/records/RESULTS.before-v3-ready.json",
+      "bytes": 1150,
+      "sha256": "01803cc56afe8b0c114950114ad5aa09571644ab88a13eb0b4bb661565cb8f59"
+    },
+    {
+      "version": "v2",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\records\\RESULTS.json",
+      "archiveRelativePath": "v2/records/RESULTS.json",
+      "bytes": 1462,
+      "sha256": "e71479ec663b4230ae811e7602271bf398258a399811fca4c4fa35efed220646"
+    },
+    {
+      "version": "v2",
+      "kind": "package-manifest",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v2\\arm64\\manifest.json",
+      "archiveRelativePath": "v2/arm64/manifest.json",
+      "bytes": 4942,
+      "sha256": "88af5c2488160a04ffb955e8379e70b625eaab98bfec1b9b589d539ff366e383"
+    },
+    {
+      "version": "v3",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\build-v1.log",
+      "archiveRelativePath": "v3/records/build-v1.log",
+      "bytes": 194,
+      "sha256": "1f427dde5e76e64374f60daa3d4dfd2bf338b4caa693df0ceb0ec7dade7e5b0b"
+    },
+    {
+      "version": "v3",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\one-unit-pager-plan-v1.json",
+      "archiveRelativePath": "v3/records/one-unit-pager-plan-v1.json",
+      "bytes": 1089,
+      "sha256": "2c2d2f00e05819be33c4cfdaea64124f708bfc5ef9ae18e10cae8425f636f7a2"
+    },
+    {
+      "version": "v3",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\package-check-v1.json",
+      "archiveRelativePath": "v3/records/package-check-v1.json",
+      "bytes": 5769,
+      "sha256": "361e140dd1da21bff9c49e99bd3d2196f1dbbb1fc777dbde4914ed8f5d71dafa"
+    },
+    {
+      "version": "v3",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\package-check-v1.log",
+      "archiveRelativePath": "v3/records/package-check-v1.log",
+      "bytes": 170,
+      "sha256": "80406b6179bc4adaa3ea43d437a3110f14fdfb4884dda4a3977f603a4689b78f"
+    },
+    {
+      "version": "v3",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\package-identity-v1.json",
+      "archiveRelativePath": "v3/records/package-identity-v1.json",
+      "bytes": 575,
+      "sha256": "dc610742ed93479348b975c5b2d6ab6d36ecc83b6ccbd880b8775c04de7684e6"
+    },
+    {
+      "version": "v3",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\pager-1u-full-v1.json",
+      "archiveRelativePath": "v3/records/pager-1u-full-v1.json",
+      "bytes": 491,
+      "sha256": "e7c08f9392ee9f0c05f5d422e7ec10abe645e0be6e55b9cbd5f3b0e58357ddcf"
+    },
+    {
+      "version": "v3",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\pager-1u-full-v1.log",
+      "archiveRelativePath": "v3/records/pager-1u-full-v1.log",
+      "bytes": 76,
+      "sha256": "58c0817881bea1b3b3018149b304b8b84054e9e1cb6308e7d00890b92cd34311"
+    },
+    {
+      "version": "v3",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\preview-launch-v1.json",
+      "archiveRelativePath": "v3/records/preview-launch-v1.json",
+      "bytes": 559,
+      "sha256": "683486303081201ca0ff0f4402052b37039291d9449b1b2820aef626d6caaa09"
+    },
+    {
+      "version": "v3",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\preview-ready-v1.json",
+      "archiveRelativePath": "v3/records/preview-ready-v1.json",
+      "bytes": 998,
+      "sha256": "1b6f47d92f465d6fc3741554c9cec90e105a2f07e1d4423eb239f4793370cf1a"
+    },
+    {
+      "version": "v3",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\RESULTS.before-toolbar18.json",
+      "archiveRelativePath": "v3/records/RESULTS.before-toolbar18.json",
+      "bytes": 762,
+      "sha256": "1db61c273bef00aaa20c88b499102b6887dda1c86a753cfb39710187720dd54d"
+    },
+    {
+      "version": "v3",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\RESULTS.before-v4-ready.json",
+      "archiveRelativePath": "v3/records/RESULTS.before-v4-ready.json",
+      "bytes": 981,
+      "sha256": "81e4723595d942fbdb37364a6b788693a4bc2daa686b9369633dd65a7431329a"
+    },
+    {
+      "version": "v3",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\RESULTS.json",
+      "archiveRelativePath": "v3/records/RESULTS.json",
+      "bytes": 1307,
+      "sha256": "aeb5e3391cfd9b22f569f0b92c1e0efe0764e14a7d0966ad57770523ad05591e"
+    },
+    {
+      "version": "v3",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\toolbar18-user-request-v1.json",
+      "archiveRelativePath": "v3/records/toolbar18-user-request-v1.json",
+      "bytes": 932,
+      "sha256": "44487a05b99df6f7b60a08ce95e11ae7531ef8d14d43326eea4225dbd9fbfac6"
+    },
+    {
+      "version": "v3",
+      "kind": "package-manifest",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\arm64\\manifest.json",
+      "archiveRelativePath": "v3/arm64/manifest.json",
+      "bytes": 4959,
+      "sha256": "c6e6605fe8c0f918016e3b37428e8277ffbe8eec3e0f570c48f44f2be21933fa"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\build-v1.log",
+      "archiveRelativePath": "v4/records/build-v1.log",
+      "bytes": 194,
+      "sha256": "220b4e3d6cc36d202fe3361392671f198bd07415e18fa8adce311fb63b118839"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\keycap3d-user-request-v1.json",
+      "archiveRelativePath": "v4/records/keycap3d-user-request-v1.json",
+      "bytes": 841,
+      "sha256": "c90978d97c7f45044b462c5e7f96be0e49392763dc7938758803d269225e6c6a"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\package-check-v1.json",
+      "archiveRelativePath": "v4/records/package-check-v1.json",
+      "bytes": 5766,
+      "sha256": "a2c81b934d5156d9a14f435a9792998d75e170316b586762981c3720792f5fe1"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\package-check-v1.log",
+      "archiveRelativePath": "v4/records/package-check-v1.log",
+      "bytes": 170,
+      "sha256": "6b022bab34c049581dc485681f893f8addb70d671bb4891b9dc2f4dcc4b1cbcf"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\package-identity-v1.json",
+      "archiveRelativePath": "v4/records/package-identity-v1.json",
+      "bytes": 575,
+      "sha256": "5c0ec054d19438882570f151bfdad22eda51f0e654cb8e1fafce0e9ac52db698"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\preview-launch-v1.json",
+      "archiveRelativePath": "v4/records/preview-launch-v1.json",
+      "bytes": 559,
+      "sha256": "b0ee573e3bffec30b64f91b4dae3d39b42238415af843f76c75c3e40c4ec9c86"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\preview-ready-v1.json",
+      "archiveRelativePath": "v4/records/preview-ready-v1.json",
+      "bytes": 1102,
+      "sha256": "2fe2f29ae337e8fc86cb5a584f619ee52c0554219dc6004af78437a4b771ea24"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\RESULTS.before-v5-ready.json",
+      "archiveRelativePath": "v4/records/RESULTS.before-v5-ready.json",
+      "bytes": 1072,
+      "sha256": "524f750af8db7f5aec7599ca9dee7d158ce71b7447cd03436509956586bed9e6"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\RESULTS.json",
+      "archiveRelativePath": "v4/records/RESULTS.json",
+      "bytes": 1474,
+      "sha256": "2e5d71287b16fa2863129c73ddab332d2c8dcedb7fd1a4104cfbe189e8da51d8"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\toolbar18-full-v1.json",
+      "archiveRelativePath": "v4/records/toolbar18-full-v1.json",
+      "bytes": 556,
+      "sha256": "04e8fce8d0e4c9dd56a27cd258d1f28068f910870a45fc6648b387493fc3d118"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\toolbar18-full-v1.log",
+      "archiveRelativePath": "v4/records/toolbar18-full-v1.log",
+      "bytes": 222,
+      "sha256": "e93691d27c1daf7169df0cc92019c10eb7aad436577ea8e1e78659c4066ea5e5"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\toolbar18-preview-plan-v1.json",
+      "archiveRelativePath": "v4/records/toolbar18-preview-plan-v1.json",
+      "bytes": 1326,
+      "sha256": "6d2a8b986726becc6bbfc2423a1a19d9a517f904d31c8d79145ee77a72bf2363"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\touch-ui-check-v1.json",
+      "archiveRelativePath": "v4/records/touch-ui-check-v1.json",
+      "bytes": 3293,
+      "sha256": "7220ff018b09603ccccd8798250e137e0f91d9b9d3bbf12e75c94c5f6bd5d601"
+    },
+    {
+      "version": "v4",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\touch-ui-check-v1.log",
+      "archiveRelativePath": "v4/records/touch-ui-check-v1.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "version": "v4",
+      "kind": "package-manifest",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\arm64\\manifest.json",
+      "archiveRelativePath": "v4/arm64/manifest.json",
+      "bytes": 5041,
+      "sha256": "5909a853a4076a616432713f672923de3758270264df70dacbbfcdd6fcc11fa2"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\build-v1.log",
+      "archiveRelativePath": "v5/records/build-v1.log",
+      "bytes": 194,
+      "sha256": "2cdc1f84f38be452d910329e8bd28332c3d50301bb4d0e8a3cf215be9901a30c"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\keycap3d-full-v1.json",
+      "archiveRelativePath": "v5/records/keycap3d-full-v1.json",
+      "bytes": 555,
+      "sha256": "9f09c08692799643b8967b5cf44ef46e8dacf5f7b90d58d33280c8fcdeecf906"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\keycap3d-full-v1.log",
+      "archiveRelativePath": "v5/records/keycap3d-full-v1.log",
+      "bytes": 2163,
+      "sha256": "1b9181e05d1ee5f6aee1870a2fd98c091b344ec875658a64e5db10da9cbcd5d8"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\keycap3d-full-v2.json",
+      "archiveRelativePath": "v5/records/keycap3d-full-v2.json",
+      "bytes": 555,
+      "sha256": "a484040c0dcbf357a4b7cf9456f34be4bb142d346afea3ab8ca8561369618606"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\keycap3d-full-v2.log",
+      "archiveRelativePath": "v5/records/keycap3d-full-v2.log",
+      "bytes": 2141,
+      "sha256": "f000e1bddf81b7e53489a0deb8e57b31df482e80bc7bc6ed9626cabe28bc5bd3"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\keycap3d-full-v3.json",
+      "archiveRelativePath": "v5/records/keycap3d-full-v3.json",
+      "bytes": 555,
+      "sha256": "c93cc77c39b545af2e2e2ccea31efdb17ecb99b446c4817ba5a065e8fa79dfef"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\keycap3d-full-v3.log",
+      "archiveRelativePath": "v5/records/keycap3d-full-v3.log",
+      "bytes": 222,
+      "sha256": "af44cbf657d9b23c00398510fe97a1e5080bc32fbcba740a878ed49306d9f52e"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\keycap3d-initial-v1.json",
+      "archiveRelativePath": "v5/records/keycap3d-initial-v1.json",
+      "bytes": 494,
+      "sha256": "96e23ff84dd396c5ea87a1a634706ef5420c52224391fce9f64860f178eb394d"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\keycap3d-initial-v1.log",
+      "archiveRelativePath": "v5/records/keycap3d-initial-v1.log",
+      "bytes": 76,
+      "sha256": "029bc75bae2f4a07dc832f4f0e70c2fb56f08f93c50cbe6702e4a42e9ecda013"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\keycap3d-preview-plan-v1.json",
+      "archiveRelativePath": "v5/records/keycap3d-preview-plan-v1.json",
+      "bytes": 1107,
+      "sha256": "801460f65cff5ccb08b42536a7ed15cc6825dabb5a84636b4ffc4db777097b5c"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\keycapall-user-feedback-v1.json",
+      "archiveRelativePath": "v5/records/keycapall-user-feedback-v1.json",
+      "bytes": 732,
+      "sha256": "16f9bbd8477993d95d6fc001d75a80656143ab0940b3217a5696caafa2716773"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\package-check-v1.json",
+      "archiveRelativePath": "v5/records/package-check-v1.json",
+      "bytes": 5769,
+      "sha256": "4f2d7e03106840cb28de1630a54993a79802aff94c75fc10d080276def3b30aa"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\package-check-v1.log",
+      "archiveRelativePath": "v5/records/package-check-v1.log",
+      "bytes": 170,
+      "sha256": "280ffa504532d3fdd83f786b8b93ca4772f9a3e11a240b4e8ab38393939a3209"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\package-identity-v1.json",
+      "archiveRelativePath": "v5/records/package-identity-v1.json",
+      "bytes": 575,
+      "sha256": "e3b3e8eef63b7d783473e12d67d14fca3ede5ad111f0823cfe1355f76a44e381"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\preview-launch-v1.json",
+      "archiveRelativePath": "v5/records/preview-launch-v1.json",
+      "bytes": 559,
+      "sha256": "c120c7aa30739f6ed1ff913e68ba3fff874cf419b4438ad323c3b06e070d298e"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\preview-ready-v1.json",
+      "archiveRelativePath": "v5/records/preview-ready-v1.json",
+      "bytes": 1132,
+      "sha256": "4b32916c8de5edf6cd74c2e28a57ee0fc473cfb54aab15a636af80ee6e3186c8"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\RESULTS.before-v6-ready.json",
+      "archiveRelativePath": "v5/records/RESULTS.before-v6-ready.json",
+      "bytes": 1259,
+      "sha256": "6c2f77345b91682d4b6b1e74d13d7f14292cd9e2d8569335e87767efd8b97d07"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\RESULTS.json",
+      "archiveRelativePath": "v5/records/RESULTS.json",
+      "bytes": 1696,
+      "sha256": "34ca5d9168905d2f798b4108c6d95cb1f16abc657e7b6a4e5d2179b65241774d"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\touch-ui-check-v1.json",
+      "archiveRelativePath": "v5/records/touch-ui-check-v1.json",
+      "bytes": 3293,
+      "sha256": "cd94024e4eeca35ddcecbc3adeedb397d10397c8b16f55dcc1de7d222fd6e38e"
+    },
+    {
+      "version": "v5",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\records\\touch-ui-check-v1.log",
+      "archiveRelativePath": "v5/records/touch-ui-check-v1.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "version": "v5",
+      "kind": "package-manifest",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\arm64\\manifest.json",
+      "archiveRelativePath": "v5/arm64/manifest.json",
+      "bytes": 5335,
+      "sha256": "9fd10a87a6b0c5d3946c3b90a5d5dbcdce09ec02e026c589eb68a1230d855e96"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\build-v1.log",
+      "archiveRelativePath": "v6/records/build-v1.log",
+      "bytes": 194,
+      "sha256": "ebadce174e56da83416363afe55a76279953b950de6a8f3e61596f8bdf03e369"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\candidatecard-user-feedback-v1.json",
+      "archiveRelativePath": "v6/records/candidatecard-user-feedback-v1.json",
+      "bytes": 593,
+      "sha256": "ff5bce0084bc06b51ec7c2ab2c49f2569720fc6c875e7def589f6318e23a65e7"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\keycapall-full-v1.json",
+      "archiveRelativePath": "v6/records/keycapall-full-v1.json",
+      "bytes": 556,
+      "sha256": "4aa57df31b296d16d35f0e8b1677c285f85849bfe873d84a774fc92566b66c26"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\keycapall-full-v1.log",
+      "archiveRelativePath": "v6/records/keycapall-full-v1.log",
+      "bytes": 723,
+      "sha256": "debbdfc4d55781fd4d031818481e53382da8a8c4bfacc041aa7dc6edfcbedc03"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\keycapall-full-v2.json",
+      "archiveRelativePath": "v6/records/keycapall-full-v2.json",
+      "bytes": 556,
+      "sha256": "f700aea56bb6160489643642eef00a9f25074be03b37aa016254535b3738fe71"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\keycapall-full-v2.log",
+      "archiveRelativePath": "v6/records/keycapall-full-v2.log",
+      "bytes": 222,
+      "sha256": "887be9dcab9416cdf3b6297d54bce32c892555311c9b7a14454e530381fa9f6f"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\keycapall-preview-plan-v1.json",
+      "archiveRelativePath": "v6/records/keycapall-preview-plan-v1.json",
+      "bytes": 1135,
+      "sha256": "d6ee79151ad19382e0ff391332a6033c798c9c3404b5a6f53ad6008198224b77"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\package-check-v1.json",
+      "archiveRelativePath": "v6/records/package-check-v1.json",
+      "bytes": 5769,
+      "sha256": "ab6e614619394886a1c80d09c24a7d4803fb50ef136555b6be754fee2642e713"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\package-check-v1.log",
+      "archiveRelativePath": "v6/records/package-check-v1.log",
+      "bytes": 170,
+      "sha256": "e1280d647285c506c222ac6d44739d9f05a1ba42a8df76626415e317b0df29aa"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\package-identity-v1.json",
+      "archiveRelativePath": "v6/records/package-identity-v1.json",
+      "bytes": 575,
+      "sha256": "11085b044ad085925f5f3464af414f726d1dfa9ca206dad6497372a740f911c7"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\preview-launch-v1.json",
+      "archiveRelativePath": "v6/records/preview-launch-v1.json",
+      "bytes": 559,
+      "sha256": "988a43ab4c3a69cefa5d1e8f05b55aacf995f8f238331da01aeab1b5a212515c"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\preview-ready-v1.json",
+      "archiveRelativePath": "v6/records/preview-ready-v1.json",
+      "bytes": 1098,
+      "sha256": "07b3612ec38bdd194942ba1d21e9c14e36b24a0b4b389167e4d5f4a372c05e87"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\RESULTS.before-v7-ready.json",
+      "archiveRelativePath": "v6/records/RESULTS.before-v7-ready.json",
+      "bytes": 1234,
+      "sha256": "332741b6653d81c678383ce84c3dac2fb6a23d5cd33270e74caa15fa5f013316"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\RESULTS.json",
+      "archiveRelativePath": "v6/records/RESULTS.json",
+      "bytes": 1647,
+      "sha256": "799759c6db6a56bc200327daf70cb649f952d166af816cf3c5f8f7f4763e0db6"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\touch-ui-check-v1.json",
+      "archiveRelativePath": "v6/records/touch-ui-check-v1.json",
+      "bytes": 3293,
+      "sha256": "9e8222118fcfd05083c116e1a04fc45c5b57819729a328a93b107617953310f6"
+    },
+    {
+      "version": "v6",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\touch-ui-check-v1.log",
+      "archiveRelativePath": "v6/records/touch-ui-check-v1.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "version": "v6",
+      "kind": "package-manifest",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\arm64\\manifest.json",
+      "archiveRelativePath": "v6/arm64/manifest.json",
+      "bytes": 5417,
+      "sha256": "50f46420cfa6b8e9d29db117e7d7876cedc708cfa9fe7249c4fc1bc99d932b49"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\build-v1.log",
+      "archiveRelativePath": "v7/records/build-v1.log",
+      "bytes": 194,
+      "sha256": "96685ffab4a7e7c31ccc167006acc896a8c04af9dad2a6750f828b0534e8981a"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\candidatecard-full-v1.json",
+      "archiveRelativePath": "v7/records/candidatecard-full-v1.json",
+      "bytes": 560,
+      "sha256": "0e3b9147163e150445679938a1b7532660c66720e338fa73681b904969ea9684"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\candidatecard-full-v1.log",
+      "archiveRelativePath": "v7/records/candidatecard-full-v1.log",
+      "bytes": 1818,
+      "sha256": "bccece4d780c028876cda3b0b53cba98cd875a86efa9269a0a249167a565763c"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\candidatecard-full-v2.json",
+      "archiveRelativePath": "v7/records/candidatecard-full-v2.json",
+      "bytes": 560,
+      "sha256": "d2558f0222bec8cc6d9e19911a1329568a9be2175e30b4ff682d9702e4f759f3"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\candidatecard-full-v2.log",
+      "archiveRelativePath": "v7/records/candidatecard-full-v2.log",
+      "bytes": 809,
+      "sha256": "c9db5c10af636e508a5f09c9e73813e33d2bd14e1c932e9b6aa67c06ce0aea11"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\candidatecard-full-v3.json",
+      "archiveRelativePath": "v7/records/candidatecard-full-v3.json",
+      "bytes": 560,
+      "sha256": "6852644db738fa786eb0655899649a0a60be0bac8a6a87bc0cda0485a722b8a5"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\candidatecard-full-v3.log",
+      "archiveRelativePath": "v7/records/candidatecard-full-v3.log",
+      "bytes": 222,
+      "sha256": "1cbaa5c7799353ef1611d238113544f6e7ff5084a38727f8c0ec9839851a602d"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\candidatecard-preview-plan-v1.json",
+      "archiveRelativePath": "v7/records/candidatecard-preview-plan-v1.json",
+      "bytes": 1103,
+      "sha256": "9fbc9a8a351ee149dcee42397a4e22c0e31d531d3f0f5c0a9d94609564da47ac"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\package-check-v1.json",
+      "archiveRelativePath": "v7/records/package-check-v1.json",
+      "bytes": 5769,
+      "sha256": "8fb693d72a3d01c8d3e6c821ff6af5efa490bb93fec38ce2471e0036fd1b23a7"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\package-check-v1.log",
+      "archiveRelativePath": "v7/records/package-check-v1.log",
+      "bytes": 170,
+      "sha256": "65798dbad4782a77e31f2f22ce59615adccb5d21a2f006fe135ab9fcf6c5d012"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\package-identity-v1.json",
+      "archiveRelativePath": "v7/records/package-identity-v1.json",
+      "bytes": 575,
+      "sha256": "0bfec9fcf2e2ed1fc2f4154e95a09a4d6aee59e2a392eef0f1aa1f2794380eda"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\preview-launch-v1.json",
+      "archiveRelativePath": "v7/records/preview-launch-v1.json",
+      "bytes": 559,
+      "sha256": "7e66500638272362f22bb187c5c4da3e67cb1f61146c7c84b0c7e8c842e5d43c"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\preview-ready-v1.json",
+      "archiveRelativePath": "v7/records/preview-ready-v1.json",
+      "bytes": 1118,
+      "sha256": "0112508154b7a5365cfceab3ac8490a72c4b87c5926a5459b81272198200b71c"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\RESULTS.json",
+      "archiveRelativePath": "v7/records/RESULTS.json",
+      "bytes": 1147,
+      "sha256": "b2f8899b48ac2c3f2f974a84684063cc2048ec11030aa28262c2fb521658c30c"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\touch-ui-check-v1.json",
+      "archiveRelativePath": "v7/records/touch-ui-check-v1.json",
+      "bytes": 3293,
+      "sha256": "bc730f411005379fbdbbc302e724f0e0366a48729f3d213162b2de36c7728427"
+    },
+    {
+      "version": "v7",
+      "kind": "external-record",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\records\\touch-ui-check-v1.log",
+      "archiveRelativePath": "v7/records/touch-ui-check-v1.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "version": "v7",
+      "kind": "package-manifest",
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\arm64\\manifest.json",
+      "archiveRelativePath": "v7/arm64/manifest.json",
+      "bytes": 5668,
+      "sha256": "e9395c577c4e135c7e75954abde255bf85fbd0929b7822957f3fe619a95b4882"
+    }
+  ]
+}

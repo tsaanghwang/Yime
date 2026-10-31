@@ -1,0 +1,15 @@
+{
+  "id": "regular-header-readability-v2-user-result",
+  "recordedAtUTC": "2026-10-31T04:11:45.485389+00:00",
+  "plan": "regular-header-preview-plan-v1.json",
+  "sourceCommit": "cee2875080e655b83aaf049760ef371ae1125ee7",
+  "exeSHA256": "0c639174ebd31e07ae8557c0b7d7d0f78ce7118ec9b2dadb43e752f7ebfd75c4",
+  "userVerbatim": "字号改了字符能辨认。翻页键改成 1u 合适。",
+  "results": {
+    "characterReadability": "pass by user report after font change",
+    "pagerSizing": "requested change to 1u; existing size not accepted as final",
+    "pagingBehavior": "not separately confirmed by this feedback"
+  },
+  "scope": "visual readability only; no quote-direction, codepoint, pen or full physical acceptance inferred",
+  "nextAction": "keep the accepted regular font; make both pager targets 1u square in a new isolated package"
+}

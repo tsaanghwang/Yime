@@ -18,7 +18,7 @@ func touchUIFixture(t *testing.T) *ui {
 		t.Fatal(err)
 	}
 	a.o.TouchUI = true
-	a.top = touchHeaderHeight
+	a.top = a.touchHeaderLayout().height
 	a.touchFontLevel = 2
 	a.s = tk.NewState(b)
 	a.s.Semantic = true
@@ -55,7 +55,7 @@ func TestTouchSurfaceRetainsCanonicalInputAndHasNoOverlaps(t *testing.T) {
 	if string(before) != string(after) {
 		t.Fatal("canonical board mutated")
 	}
-	if len(b.Keys) != 98 || b.Bounds.Width != 18 || math.Abs(b.Bounds.Height-5.65) > 1e-6 {
+	if len(b.Keys) != 102 || b.Bounds.Width != 18 || math.Abs(b.Bounds.Height-5.7) > 1e-6 {
 		t.Fatal("unexpected touch geometry", b.Bounds, len(b.Keys))
 	}
 	byID := map[string]tk.Key{}
@@ -184,5 +184,20 @@ func TestTouchSettingsFitTheScreenViewAtDifferentScales(t *testing.T) {
 				t.Fatal("settings extend outside window", ppm, i, r, bottom)
 			}
 		}
+	}
+}
+
+func TestTouchHeaderCalibrationRejectionKeepsPreviousGeometry(t *testing.T) {
+	a := touchUIFixture(t)
+	// Deliberately outside any desktop work area: resize must reject before
+	// moving a window or committing a new board origin.
+	a.ppm = 1e6
+	beforePPM, beforeTop := a.ppm, a.top
+	beforeCandidate := a.candidateRect(0)
+	if err := a.applyTouchImmediate("larger"); err == nil {
+		t.Fatal("oversized calibration was accepted")
+	}
+	if math.Abs(a.ppm-beforePPM) > 1e-6 || a.top != beforeTop || a.candidateRect(0) != beforeCandidate {
+		t.Fatal("failed calibration retained changed geometry")
 	}
 }

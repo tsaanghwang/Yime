@@ -1,0 +1,23 @@
+{
+  "id": "regular-header-readability-v2",
+  "status": "pending user observation",
+  "sourceCommit": "cee2875080e655b83aaf049760ef371ae1125ee7",
+  "exeSHA256": "0c639174ebd31e07ae8557c0b7d7d0f78ce7118ec9b2dadb43e752f7ebfd75c4",
+  "mode": "preview only / CN variable / ID legends / large / dark",
+  "machine": "ASUS ProArt P16 built-in screen upright",
+  "calibrationParameters": {
+    "screenWidthMM": 597.73,
+    "observed100MM": 58,
+    "actualLitScreenWidthMeasured": false
+  },
+  "scope": "user visual readability and finger paging; no other physical results inherited",
+  "steps": [
+    "点主体R01的N12，观察组合/预览文字和第9项引号是否像盘面常规文字一样容易看清。",
+    "点右翻页，再点左翻页，观察放大的按钮是否容易点选且翻页正常。"
+  ],
+  "result": null,
+  "fullPhysicalAcceptance": false,
+  "priorV1Feedback": "nearby inspection only barely distinguishable; needs improvement",
+  "sourceIncludesMergedPR83": true,
+  "changes": "calibrated regular header text and larger header/pager targets; 18u body keys unchanged"
+}

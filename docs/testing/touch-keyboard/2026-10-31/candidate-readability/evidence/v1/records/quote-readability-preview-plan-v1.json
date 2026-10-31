@@ -1,0 +1,21 @@
+{
+  "id": "candidate-quote-readability-v1",
+  "status": "pending user observation",
+  "packageIdentity": "package-identity-v1.json",
+  "sourceCommit": "d8999f0407fb8979787479c08b80b4922fb1bb59",
+  "exeSHA256": "fad2e8d523ef98da037f57263deb1fc2f1cd79595106c7ebaddfba1b262aeed2",
+  "mode": "preview only / CN variable / ID legends / font large / dark",
+  "device": "ASUS built-in screen upright; 3840x2400; prior system scale 250%",
+  "screenWidthParameterMM": 597.73,
+  "rulerObservedParameterMM": 58,
+  "physicalScreenWidthMeasured": false,
+  "method": "finger; visual readability only",
+  "steps": [
+    "点主体 R01 的 N12 一次，观察第9项左单引号 ‘ 是否清楚且完整。",
+    "点第9项选定；再次点 N12，观察第9项右单引号 ’ 是否清楚且能区别方向。",
+    "回复两次字形是否清晰可分辨、有无裁切；不适时如实记录。"
+  ],
+  "physicalReadabilityPassed": null,
+  "inheritedPhysicalPasses": 0,
+  "userDataChanged": false
+}

@@ -25,7 +25,7 @@ func TestPenRecontactNativeAndCompatibilityRoutes(t *testing.T) {
 			a.s.Original = a.preview.original()
 			a.o.Preview = true
 			a.o.TouchUI = true
-			a.top = touchHeaderHeight
+			a.top = a.touchHeaderLayout().height
 			if route != "default-off-pen" {
 				a.o.PenRecontactMS = 80
 			}
@@ -86,7 +86,7 @@ func TestPenRecontactPreservesDifferentKeysAndShiftToggle(t *testing.T) {
 	a.s.Semantic = true
 	a.s.Original = a.preview.original()
 	a.o.Preview, a.o.TouchUI, a.o.PenRecontactMS = true, true, 80
-	a.top = touchHeaderHeight
+	a.top = a.touchHeaderLayout().height
 	now := time.Unix(100, 0)
 	a.penClock = func() time.Time { return now }
 	tap := func(action, ascii string) {
@@ -130,7 +130,7 @@ func TestPenRecontactCNCompositionAndCancel(t *testing.T) {
 	a.s.Semantic = true
 	a.s.Original = a.preview.original()
 	a.o.Preview, a.o.TouchUI, a.o.PenRecontactMS = true, true, 80
-	a.top = touchHeaderHeight
+	a.top = a.touchHeaderLayout().height
 	now := time.Unix(100, 0)
 	a.penClock = func() time.Time { return now }
 	x, y := previewKeyPoint(t, a, func(_ tk.Key, v tk.View) bool { return v.Action.Type == "input" && v.Action.ASCII == "a" })

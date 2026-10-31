@@ -1,0 +1,30 @@
+{
+  "recordedAtUTC": "2026-10-31T06:17:54.470929+00:00",
+  "windowId": 3736128,
+  "app": "process:C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7\\arm64\\YimeTouchKeyboard.exe",
+  "title": "Yime 18u 中文受控预览（不向其他应用输入）",
+  "visibleVerified": true,
+  "observedSettings": {
+    "input": "CN",
+    "mode": "variable",
+    "legends": "ID",
+    "font": "large",
+    "theme": "dark",
+    "sound": "on",
+    "literalPunctuationEntries": "off"
+  },
+  "composition": "'",
+  "confirmedLocalText": "empty",
+  "preparation": [
+    "launched v7",
+    "selected ID legends in settings",
+    "returned to body",
+    "clicked N12 in local preview to display candidates without selecting one"
+  ],
+  "visualObservation": "raised candidate frames with plain white ordinal and text centered in their faces; full 18-control row and bottom row visible",
+  "physicalInputPerformedByAutomation": false,
+  "hostInputSent": false,
+  "newVisualResult": "pending user",
+  "packagePayloadHashesRechecked": true,
+  "pendingPlan": "candidatecard-preview-plan-v1.json"
+}

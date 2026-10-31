@@ -129,6 +129,7 @@ type ui struct {
 	touchRuler          bool
 	touchFontLevel      int
 	touchFont           uintptr
+	candidateFont       uintptr
 	touchMessage        string
 }
 
@@ -253,7 +254,7 @@ func run(o options) error {
 		a.s.Original = a.preview.original()
 		a.top = 300
 		if o.TouchUI {
-			a.top = touchHeaderHeight
+			a.top = a.touchHeaderLayout().height
 		}
 		a.previewTouches = map[uint32]*previewGesture{}
 		a.status = "中文预览：输出仅在下方文本区；无系统输入。鼠标/模拟检查不代表手指或笔验收。"
@@ -317,6 +318,9 @@ func run(o options) error {
 		if a.touchFont != 0 {
 			G("DeleteObject").Call(a.touchFont)
 		}
+		if a.candidateFont != 0 {
+			G("DeleteObject").Call(a.candidateFont)
+		}
 	}()
 	if ok, _, err := U("RegisterTouchWindow").Call(h, 1); ok == 0 {
 		return fmt.Errorf("RegisterTouchWindow: %w", err)
@@ -339,10 +343,8 @@ func run(o options) error {
 		}
 	}
 	if o.TouchUI {
-		height := int32(-22)
-		a.touchFont, _, _ = G("CreateFontW").Call(uintptr(height), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
-		if a.touchFont == 0 {
-			return fmt.Errorf("无法创建触屏控制字体")
+		if err := a.updateTouchFonts(); err != nil {
+			return err
 		}
 	}
 	U("ShowWindow").Call(h, 4)
@@ -461,8 +463,13 @@ func (a *ui) down(id uint32, x, y int32) {
 	a.invalidate()
 }
 func (a *ui) move(id uint32, x, y int32) {
-	if p := a.previewTouches[id]; p != nil && !inside(p.area, x, y) {
+	if p := a.previewTouches[id]; p != nil && !p.left && !inside(p.area, x, y) {
 		p.left = true
+		if a.o.TouchUI && p.action == "candidate" {
+			// Promoted pen/mouse MOVE has no end-of-touch-frame repaint. Drop
+			// the card's pressed appearance as soon as its contact is cancelled.
+			a.invalidate()
+		}
 	}
 	a.s.Move(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
 }
@@ -581,7 +588,11 @@ func (a *ui) minimize() {
 func (a *ui) resize() bool {
 	m := currentMonitor(a.h)
 	w := int(math.Ceil(a.s.Board.Bounds.Width*tk.UnitMM*a.ppm)) + 2*a.border
-	h := int(math.Ceil(a.s.Board.Bounds.Height*tk.UnitMM*a.ppm)) + a.top + a.border
+	headerHeight := a.top
+	if a.o.TouchUI {
+		headerHeight = a.touchHeaderLayout().height
+	}
+	h := int(math.Ceil(a.s.Board.Bounds.Height*tk.UnitMM*a.ppm)) + headerHeight + a.border
 	if w > int(m.Work.R-m.Work.L) || h > int(m.Work.B-m.Work.T) {
 		a.status = "Calibration exceeds monitor; keyboard is not fitted/scaled automatically."
 		return false
@@ -589,7 +600,10 @@ func (a *ui) resize() bool {
 	current := rect{}
 	U("GetWindowRect").Call(a.h, uintptr(unsafe.Pointer(&current)))
 	position := clampWindow(current, m.Work, int32(w), int32(h))
+	oldTop := a.top
+	a.top = headerHeight // Synchronous WM_SIZE/paint sees the new board origin.
 	if ok, _, _ := U("SetWindowPos").Call(a.h, 0, uintptr(position.L), uintptr(position.T), uintptr(w), uintptr(h), 0x0014); ok == 0 {
+		a.top = oldTop
 		a.status = "Could not resize keyboard."
 		return false
 	}
@@ -1018,16 +1032,26 @@ func (a *ui) draw(dc uintptr, r rect) {
 			v.Labels = []string{name}
 		}
 		c := palette.keyColor(k.Color, v.Action.Type != "input" && v.Action.Type != "symbol")
+		if a.o.TouchUI && k.Action.Type == "touch-ui" && k.Action.Key == "reserved" {
+			c = palette.disabled
+		}
 		if a.preview == nil && !nativeEnabled(v) {
 			c = 0xE5E5E5
 			if palette.dark {
 				c = palette.disabled
 			}
 		}
-		if a.s.Pressed(i) || modifierHeld(a.s, v.Action) || a.touchPressed(a.keyPixelRect(k)) || a.o.TouchUI && k.Action.Type == "touch-ui" && (k.Action.Key == "select" && a.navSelecting || k.Action.Key == "settings" && a.touchSettingsOpen) {
+		pressed := a.s.Pressed(i) || modifierHeld(a.s, v.Action) || a.touchPressed(a.keyPixelRect(k)) || a.o.TouchUI && k.Action.Type == "touch-ui" && (k.Action.Key == "select" && a.navSelecting || k.Action.Key == "settings" && a.touchSettingsOpen)
+		if pressed {
 			c = palette.pressed
 		}
-		region, _, _ := G("CreateRectRgn").Call(0, 0, 0, 0)
+		raised := a.o.TouchUI && touchRaisedKey(k)
+		shaped := a.o.TouchUI && len(k.Rectangles) > 1
+		var parts []rect
+		var region uintptr
+		if !raised && !shaped {
+			region, _, _ = G("CreateRectRgn").Call(0, 0, 0, 0)
+		}
 		minx, miny, maxx, maxy := math.Inf(1), math.Inf(1), math.Inf(-1), math.Inf(-1)
 		for _, q := range k.Rectangles {
 			l := float64(a.border) + (k.X+q.X)*unit
@@ -1038,17 +1062,37 @@ func (a *ui) draw(dc uintptr, r rect) {
 			miny = math.Min(miny, t)
 			maxx = math.Max(maxx, right)
 			maxy = math.Max(maxy, bottom)
-			part, _, _ := G("CreateRectRgn").Call(uintptr(int(l+1)), uintptr(int(t+1)), uintptr(int(right-1)), uintptr(int(bottom-1)))
-			G("CombineRgn").Call(region, region, part, 2)
-			G("DeleteObject").Call(part)
+			if shaped {
+				parts = append(parts, rect{int32(l), int32(t), int32(right), int32(bottom)})
+			} else if !raised {
+				part, _, _ := G("CreateRectRgn").Call(uintptr(int(l+1)), uintptr(int(t+1)), uintptr(int(right-1)), uintptr(int(bottom-1)))
+				G("CombineRgn").Call(region, region, part, 2)
+				G("DeleteObject").Call(part)
+			}
 		}
-		brush, _, _ := G("CreateSolidBrush").Call(c)
-		G("FillRgn").Call(dc, region, brush)
-		G("DeleteObject").Call(brush)
-		outline, _, _ := G("CreateSolidBrush").Call(palette.border)
-		G("FrameRgn").Call(dc, region, outline, 1, 1)
-		G("DeleteObject").Call(outline)
-		G("DeleteObject").Call(region)
+		legendBounds := rect{int32(minx), int32(miny), int32(maxx), int32(maxy)}
+		if raised {
+			cap := touchKeycapLayout(legendBounds, unit, pressed)
+			drawTouchKeycap(dc, cap, c, pressed)
+			legendBounds = cap.legend
+			if k.Action.Type == "touch-ui" {
+				// Centered control captions need the full face, with the shared
+				// legend padding; the extra side inset is for corner legends.
+				legendBounds = cap.face
+			}
+		} else if shaped {
+			cap := touchShapedKeycapLayout(parts, unit, pressed)
+			drawTouchShapedKeycap(dc, cap, c, pressed)
+			legendBounds = cap.legend
+		} else {
+			brush, _, _ := G("CreateSolidBrush").Call(c)
+			G("FillRgn").Call(dc, region, brush)
+			G("DeleteObject").Call(brush)
+			outline, _, _ := G("CreateSolidBrush").Call(palette.border)
+			G("FrameRgn").Call(dc, region, outline, 1, 1)
+			G("DeleteObject").Call(outline)
+			G("DeleteObject").Call(region)
+		}
 		if v.Disabled {
 			continue
 		}
@@ -1078,7 +1122,11 @@ func (a *ui) draw(dc uintptr, r rect) {
 			if s == "" {
 				continue
 			}
-			drawKeyLegend(dc, s, rect{int32(minx), int32(miny), int32(maxx), int32(maxy)}, j)
+			if raised || shaped {
+				drawTouchKeyLegend(dc, s, legendBounds, j)
+			} else {
+				drawKeyLegend(dc, s, legendBounds, j)
+			}
 		}
 	}
 	if a.o.TouchUI && a.touchSettingsOpen {
@@ -1090,6 +1138,10 @@ func (a *ui) draw(dc uintptr, r rect) {
 }
 
 func drawKeyLegend(dc uintptr, s string, bounds rect, position int) {
+	drawKeyLegendFlags(dc, s, bounds, position, 0)
+}
+
+func drawKeyLegendFlags(dc uintptr, s string, bounds rect, position int, extraFlags uintptr) {
 	v := utf16.Encode([]rune(s))
 	if len(v) == 0 {
 		return
@@ -1103,7 +1155,7 @@ func drawKeyLegend(dc uintptr, s string, bounds rect, position int) {
 	// to the old fixed 20px strip at the very bottom of the key.
 	padding := max(int32(4), (bounds.B-bounds.T)/20)
 	col, row := position%3, position/3
-	flags := uintptr(0x20)
+	flags := uintptr(0x20) | extraFlags
 	if col == 1 {
 		flags |= 1
 	} else if col == 2 {

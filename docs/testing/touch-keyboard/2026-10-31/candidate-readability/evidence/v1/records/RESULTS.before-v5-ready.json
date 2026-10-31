@@ -1,0 +1,28 @@
+{
+  "scope": "ARM64 4K quote candidate readability follow-up",
+  "sourceCommit": "d8999f0407fb8979787479c08b80b4922fb1bb59",
+  "localCommitOnly": true,
+  "CIArtifact": false,
+  "automatedTestsPassed": [
+    "native ARM64 desktop keyboard/touchkeyboard/keyboardlab",
+    "new GDI candidate font and drawing regressions",
+    "relocated full package and 8 resource rejection checks"
+  ],
+  "newPackagePhysicalAcceptance": false,
+  "activeBatch": null,
+  "userResult": "quote-readability-user-result-v1.json",
+  "oldPR82Results": "preserved, not inherited",
+  "evidence": [
+    "package-identity-v1.json",
+    "full-v1.log",
+    "package-check-v1.json",
+    "preview-launch-v1.json",
+    "preview-ready-v1.json",
+    "quote-readability-user-result-v1.json"
+  ],
+  "nextAction": "v2 open with regular header and enlarged pagers; awaiting user observation",
+  "readabilityIssueStatus": "open; v1 insufficient",
+  "followUpDelivery": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4",
+  "followUpResults": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\records\\RESULTS.json",
+  "currentFollowUpStatus": "v4 equal 18-key controls and current-body-sized pagers open; awaiting user observation"
+}

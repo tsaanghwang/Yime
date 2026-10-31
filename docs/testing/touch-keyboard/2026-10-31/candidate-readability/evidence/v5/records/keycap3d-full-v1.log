@@ -1,0 +1,19 @@
+-test.shuffle 1793424174906797300
+--- FAIL: TestTouchKeycapLegendsKeepCompleteGlyphsAndSeparation (0.48s)
+    --- FAIL: TestTouchKeycapLegendsKeepCompleteGlyphsAndSeparation/ppm3.00/font0 (0.05s)
+        touch_keycap_windows_test.go:245: clipped R02K05 legend "`" position 8 CN=true glyphs=false pressed=false: actual={bounds:{L:66 T:48 R:68 B:50} count:4} complete={bounds:{L:10 T:13 R:13 B:15} count:5}
+    --- FAIL: TestTouchKeycapLegendsKeepCompleteGlyphsAndSeparation/ppm3.00/font1 (0.07s)
+        touch_keycap_windows_test.go:245: clipped R02K20 legend "R" position 8 CN=true glyphs=false pressed=false: actual={bounds:{L:62 T:48 R:68 B:55} count:38} complete={bounds:{L:10 T:13 R:17 B:20} count:39}
+    --- FAIL: TestTouchKeycapLegendsKeepCompleteGlyphsAndSeparation/ppm3.00/font2 (0.07s)
+        touch_keycap_windows_test.go:245: clipped R02K19 legend "P" position 8 CN=true glyphs=false pressed=false: actual={bounds:{L:62 T:47 R:68 B:55} count:36} complete={bounds:{L:10 T:13 R:17 B:21} count:39}
+    --- FAIL: TestTouchKeycapLegendsKeepCompleteGlyphsAndSeparation/ppm11.08/font0 (0.08s)
+        touch_keycap_windows_test.go:245: clipped R04K07 legend "j" position 8 CN=true glyphs=false pressed=false: actual={bounds:{L:193 T:136 R:203 B:169} count:130} complete={bounds:{L:10 T:22 R:16 B:55} count:118}
+    --- FAIL: TestTouchKeycapLegendsKeepCompleteGlyphsAndSeparation/ppm11.08/font1 (0.11s)
+        touch_keycap_windows_test.go:245: clipped R04K07 legend "j" position 8 CN=true glyphs=false pressed=false: actual={bounds:{L:191 T:132 R:203 B:169} count:171} complete={bounds:{L:10 T:23 R:17 B:60} count:157}
+    --- FAIL: TestTouchKeycapLegendsKeepCompleteGlyphsAndSeparation/ppm11.08/font2 (0.11s)
+        touch_keycap_windows_test.go:245: clipped R04K07 legend "j" position 8 CN=true glyphs=false pressed=false: actual={bounds:{L:190 T:128 R:203 B:169} count:193} complete={bounds:{L:10 T:25 R:18 B:66} count:175}
+FAIL
+FAIL	github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard	11.429s
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard	0.149s
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab	7.998s
+FAIL

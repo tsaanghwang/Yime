@@ -1,0 +1,28 @@
+{
+  "id": "one-unit-pager-v3",
+  "status": "pending user observation",
+  "sourceCommit": "8e9c60e299ad549972a243b3c474075219f4ac6e",
+  "exeSHA256": "148ee2a349acb3776da2f1f06e8464c7875217303c7be602d7fe1e3c07a796e9",
+  "mode": "preview only / CN variable / ID legends / large / dark",
+  "machine": "ASUS ProArt P16 built-in screen upright",
+  "calibrationParameters": {
+    "screenWidthMM": 597.73,
+    "observed100MM": 58,
+    "actualLitScreenWidthMeasured": false
+  },
+  "scope": "finger paging and 1u target size; regular font retained, no full physical acceptance inherited",
+  "steps": [
+    "用手指点主体R01的N12，显示候选。",
+    "点右翻页，再点左翻页，确认回到原页，并反馈1u方形翻页按钮是否合适、容易点选。"
+  ],
+  "result": null,
+  "fullPhysicalAcceptance": false,
+  "previousFeedback": "v2 character readability accepted; user requests 1u pager size",
+  "geometry": {
+    "pagerWidthU": 1,
+    "pagerHeightU": 1,
+    "candidateRowHeightU": 1,
+    "bodyChanged": false
+  },
+  "userDataChanged": false
+}

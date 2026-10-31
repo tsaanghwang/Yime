@@ -1,0 +1,26 @@
+{
+  "scope": "ARM64 raised candidate cards with centered plain white labels",
+  "sourceCommit": "c365c2609d997ed0abab65c6c519bb1fc41debf0",
+  "localCommitOnly": true,
+  "CIArtifact": false,
+  "automatedTestsPassed": [
+    "native ARM64 desktop/touchkeyboard/keyboardlab shuffled regressions",
+    "GDI multiline candidate completeness and centering across font levels and low/ASUS scales",
+    "raised candidate states and stale/paused/move-out cancellation",
+    "existing glyph/control/shape/pager regressions",
+    "relocated full package with 8 resource rejection checks",
+    "native touch-screen-v2 102 positions/18 controls/84 body keys and three-mode in-memory selection"
+  ],
+  "newPackagePhysicalAcceptance": false,
+  "activeBatch": "candidatecard-preview-plan-v1.json",
+  "userResult": null,
+  "priorFeedback": "v6 unified appearance accepted; user clarified candidate frames raised and text plain white",
+  "evidence": [
+    "package-identity-v1.json",
+    "candidatecard-full-v3.log",
+    "package-check-v1.json",
+    "touch-ui-check-v1.json",
+    "preview-launch-v1.json",
+    "preview-ready-v1.json"
+  ]
+}

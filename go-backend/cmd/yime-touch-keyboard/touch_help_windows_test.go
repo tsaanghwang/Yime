@@ -29,7 +29,7 @@ func TestTouchHelpNativeInputRoutesPreserveComposition(t *testing.T) {
 				a.s = tk.NewState(b)
 				a.s.Semantic = true
 				a.o.TouchUI = true
-				a.top = touchHeaderHeight
+				a.top = a.touchHeaderLayout().height
 				previewAction(t, a.preview, "toggle-language", "", "") // fixture starts EN
 				a.preview.editor.insert("12")
 				previewAction(t, a.preview, "input", "n", "")

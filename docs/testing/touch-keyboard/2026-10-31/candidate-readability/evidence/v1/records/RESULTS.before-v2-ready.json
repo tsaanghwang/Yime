@@ -1,0 +1,25 @@
+{
+  "scope": "ARM64 4K quote candidate readability follow-up",
+  "sourceCommit": "d8999f0407fb8979787479c08b80b4922fb1bb59",
+  "localCommitOnly": true,
+  "CIArtifact": false,
+  "automatedTestsPassed": [
+    "native ARM64 desktop keyboard/touchkeyboard/keyboardlab",
+    "new GDI candidate font and drawing regressions",
+    "relocated full package and 8 resource rejection checks"
+  ],
+  "newPackagePhysicalAcceptance": false,
+  "activeBatch": null,
+  "userResult": "quote-readability-user-result-v1.json",
+  "oldPR82Results": "preserved, not inherited",
+  "evidence": [
+    "package-identity-v1.json",
+    "full-v1.log",
+    "package-check-v1.json",
+    "preview-launch-v1.json",
+    "preview-ready-v1.json",
+    "quote-readability-user-result-v1.json"
+  ],
+  "nextAction": "scale preview/candidate text to normal key labels and enlarge pager targets in a new package",
+  "readabilityIssueStatus": "open; v1 insufficient"
+}
