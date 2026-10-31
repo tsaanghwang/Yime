@@ -42,8 +42,9 @@ func (a *ui) previewWidth() int32 {
 func (a *ui) candidateRect(i int) rect {
 	w := (a.previewWidth() - 20) / 9
 	if a.o.TouchUI {
-		w = (a.previewWidth() - 200) / 9
-		return rect{100 + int32(i)*w, 34, 100 + int32(i+1)*w - 3, 94}
+		h := a.touchHeaderLayout()
+		w = (h.candidates.R - h.candidates.L) / 9
+		return rect{h.candidates.L + int32(i)*w, h.candidates.T, h.candidates.L + int32(i+1)*w - h.gap, h.candidates.B}
 	}
 	return rect{10 + int32(i)*w, 184, 10 + int32(i+1)*w - 3, 234}
 }

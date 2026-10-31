@@ -9,7 +9,31 @@ import (
 	"unsafe"
 )
 
-const touchHeaderHeight = 100
+type touchHeaderLayout struct {
+	status, previous, next, candidates rect
+	height                             int
+	gap                                int32
+}
+
+// Scale the header with the calibrated board, so a high-density screen does
+// not leave tiny text and pager targets above otherwise readable keycaps.
+func (a *ui) touchHeaderLayout() touchHeaderLayout {
+	u := tk.UnitMM * a.ppm
+	margin := max(int32(6), int32(math.Round(.04*u)))
+	line := max(int32(32), int32(math.Round(.30*u)))
+	row := max(int32(60), int32(math.Round(.75*u)))
+	pager := max(int32(84), int32(math.Round(.85*u)))
+	width := a.previewWidth()
+	top, bottom := line+margin, line+margin+row
+	previous := rect{margin, top, margin + pager, bottom}
+	next := rect{width - margin - pager, top, width - margin, bottom}
+	return touchHeaderLayout{
+		status: rect{margin, 0, width - margin, line}, previous: previous, next: next,
+		candidates: rect{previous.R + margin, top, next.L - margin, bottom},
+		height:     int(bottom + margin), gap: 3,
+	}
+}
+
 const touchHelp = "触屏试用版\n\n顶部大键提供设置、帮助、绑定/清空、取消、CN/EN、左右移动、Home/End、选区、全选、Delete、最小化与退出。F1–F12不在本视图中。\n中文组合在顶部显示；点候选、空格或Enter确认，左右‹/›翻页。主区1–9按实验规则选择候选，0保持字面输入；未标注标点入口默认关闭。取消只取消未确认组合，保留已确认正文。\n编辑前先确认或取消组合；英文暂停的中文组合也会阻止编辑。点选区后，再依次点左右/Home/End扩展选区，输入替换或Delete/退格删除。预览Home/End到全文首尾，真实宿主按应用行为处理。\n设置中切换编码模式、英文键帽偏好、标点入口、字形/ID、声音、配色、字号及屏幕校准。切换编码模式取消原组合；中文始终使用原盘面，英文保留键帽偏好。点左上返回继续输入。\n预览只写本窗口内存，关闭即丢弃；正式宿主入口请先在正文放置光标，再点绑定。失焦、最小化、帮助或发送异常后须核对正文并重新绑定。\n输入键高为本次触屏试用的明确尺寸，不用校准按钮缩放盘面来凑尺寸。参考尺在设置内展开。"
 
 var touchSettings = []string{"variable", "full", "shorthand", "layout", "literal", "glyphs", "sound", "theme", "font", "smaller", "larger", "ruler"}
@@ -67,12 +91,13 @@ func (a *ui) touchUIActionAt(x, y int32) (string, rect, bool) {
 		}
 		return "", rect{}, true // Never type through the settings sheet.
 	}
-	if y >= 34 && y < 94 {
-		r := rect{8, 34, 92, 94}
+	header := a.touchHeaderLayout()
+	for _, next := range []bool{false, true} {
+		r := header.previous
 		action := "previous"
 		enabled := a.preview.snapshot.State.HasPrevious
-		if x >= a.previewWidth()-92 {
-			r = rect{a.previewWidth() - 92, 34, a.previewWidth() - 8, 94}
+		if next {
+			r = header.next
 			action = "next"
 			enabled = a.preview.snapshot.State.HasNext
 		}
@@ -177,16 +202,24 @@ func (a *ui) applyTouchImmediate(action string) error {
 			return err
 		}
 	case "smaller", "larger":
+		oldPPM, oldTop := a.ppm, a.top
 		factor := 1.01
 		if action == "smaller" {
 			factor = 1 / factor
 		}
 		a.ppm *= factor
 		if !a.resize() {
-			a.ppm /= factor
+			a.ppm, a.top = oldPPM, oldTop
 			return fmt.Errorf("当前尺寸超出屏幕；校准未改变")
 		}
-		return a.updateTouchFonts()
+		if err := a.updateTouchFonts(); err != nil {
+			a.ppm, a.top = oldPPM, oldTop
+			if !a.resize() {
+				return fmt.Errorf("%w；无法恢复窗口尺寸，请关闭后重新打开", err)
+			}
+			return err
+		}
+		return nil
 	}
 	return nil
 }
@@ -201,11 +234,10 @@ func (a *ui) updateTouchFonts() error {
 		return h
 	}
 	key, glyph := create("Segoe UI", 0.20), create("YinYuan", 0.23)
-	// The candidate row stays 60 logical pixels high regardless of board
-	// calibration. Enlarge short candidates without growing its hit regions.
-	height := -int32(math.Round(32 * scale))
-	candidate, _, _ := G("CreateFontW").Call(uintptr(height), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
-	if key == 0 || glyph == 0 || candidate == 0 {
+	// Header text uses the same regular size as the controls. The fallback
+	// for unusually long candidates also follows board calibration.
+	candidate, fallback := create("Segoe UI", .20), create("Segoe UI", .16)
+	if key == 0 || glyph == 0 || candidate == 0 || fallback == 0 {
 		if key != 0 {
 			G("DeleteObject").Call(key)
 		}
@@ -214,6 +246,9 @@ func (a *ui) updateTouchFonts() error {
 		}
 		if candidate != 0 {
 			G("DeleteObject").Call(candidate)
+		}
+		if fallback != 0 {
+			G("DeleteObject").Call(fallback)
 		}
 		return fmt.Errorf("无法更新键面与候选字号")
 	}
@@ -226,7 +261,10 @@ func (a *ui) updateTouchFonts() error {
 	if a.candidateFont != 0 {
 		G("DeleteObject").Call(a.candidateFont)
 	}
-	a.keyFont, a.glyphFont, a.candidateFont = key, glyph, candidate
+	if a.touchFont != 0 {
+		G("DeleteObject").Call(a.touchFont)
+	}
+	a.keyFont, a.glyphFont, a.candidateFont, a.touchFont = key, glyph, candidate, fallback
 	return nil
 }
 
@@ -240,8 +278,7 @@ func (a *ui) touchCandidateFont(dc uintptr, label string, box rect) uintptr {
 	// Measure with the same wrapping and prefix rules as the actual drawing.
 	height, _, _ := U("DrawTextW").Call(dc, ptr(str(label)), ^uintptr(0), uintptr(unsafe.Pointer(&measured)), 0x411|drawTextNoPrefix)
 	if height == 0 || measured.B > box.B || measured.R > box.R {
-		// Keep the previous wrapping for long words, paused labels and the
-		// two-line ellipsis descriptions instead of clipping newly enlarged text.
+		// Keep long candidates inside the row when the regular font cannot fit.
 		return a.touchFont
 	}
 	return a.candidateFont
@@ -255,7 +292,12 @@ func (a *ui) drawTouchCandidate(dc uintptr, label string, box rect) {
 
 func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 	p, palette := a.preview, a.palette()
-	old, _, _ := G("SelectObject").Call(dc, a.touchFont)
+	header := a.touchHeaderLayout()
+	font := a.candidateFont
+	if font == 0 {
+		font = a.keyFont
+	}
+	old, _, _ := G("SelectObject").Call(dc, font)
 	defer G("SelectObject").Call(dc, old)
 	G("SetTextColor").Call(dc, palette.text)
 	line := "CN"
@@ -282,13 +324,10 @@ func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 			line += "  |  已绑定目标"
 		}
 	} else {
-		limit := r.R - 350
-		if p.snapshot.State.RawInput != "" {
-			limit = r.R / 2
-		}
+		limit := header.status.R - header.status.L - previewTextWidth(dc, line+"  |  ")
 		line += "  |  " + p.editor.fittedDisplay(func(s string) bool { return previewTextWidth(dc, s) < limit })
 	}
-	text(dc, line, rect{10, 0, r.R - 10, 32}, 0x8024)
+	text(dc, line, header.status, 0x8024)
 	for i := range p.snapshot.State.Candidates {
 		box := a.candidateRect(i)
 		bg := palette.candidate
@@ -301,11 +340,11 @@ func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 		a.drawTouchCandidate(dc, s, box)
 	}
 	for _, next := range []bool{false, true} {
-		box := rect{8, 34, 92, 94}
+		box := header.previous
 		name := "‹"
 		enabled := p.snapshot.State.HasPrevious
 		if next {
-			box = rect{r.R - 92, 34, r.R - 8, 94}
+			box = header.next
 			name = "›"
 			enabled = p.snapshot.State.HasNext
 		}

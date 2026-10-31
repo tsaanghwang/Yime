@@ -4,10 +4,12 @@ package main
 
 import (
 	"encoding/json"
+	"math"
 	"runtime"
-	"strings"
 	"testing"
 	"unsafe"
+
+	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 )
 
 func candidateFontFixture(t *testing.T) (*ui, uintptr) {
@@ -19,12 +21,12 @@ func candidateFontFixture(t *testing.T) (*ui, uintptr) {
 	if font == 0 || dc == 0 {
 		t.Fatal("create candidate fixture font/DC")
 	}
-	a.font, a.touchFont = font, font
+	a.font = font
 	old, _, _ := G("SelectObject").Call(dc, font)
 	t.Cleanup(func() {
 		G("SelectObject").Call(dc, old)
 		G("DeleteDC").Call(dc)
-		for _, f := range []uintptr{font, a.keyFont, a.glyphFont, a.candidateFont} {
+		for _, f := range []uintptr{font, a.keyFont, a.glyphFont, a.candidateFont, a.touchFont} {
 			if f != 0 {
 				G("DeleteObject").Call(f)
 			}
@@ -40,10 +42,11 @@ func TestTouchCandidateFontFitsWithoutChangingCandidateIdentity(t *testing.T) {
 	previewAction(t, a.preview, "input", "a", "")
 	before, _ := json.Marshal(a.preview.snapshot)
 	press := a.preview.candidate(0)
-	for _, ppm := range []float64{3, 4.4, 8.2} {
+	for _, ppm := range []float64{3, 4.4, 8.2, 3840 / 597.73 * 100 / 58} {
 		a.ppm = ppm
 		box := a.candidateRect(0)
-		for level, want := range []int32{-26, -29, -32} {
+		for level, scale := range []float64{.8, .9, 1} {
+			want := -int32(math.Round(tk.UnitMM * ppm * .20 * scale))
 			a.touchFontLevel = level
 			if err := a.updateTouchFonts(); err != nil {
 				t.Fatal(err)
@@ -64,12 +67,15 @@ func TestTouchCandidateFontFitsWithoutChangingCandidateIdentity(t *testing.T) {
 				t.Fatal("font update changed hit region or candidate identity")
 			}
 		}
-		// Preserve the prior font/wrapping for descriptions, paused messages
-		// and long unbroken strings rather than introducing enlarged clipping.
-		for _, label := range []string{"1  …\nU+2026", "2  ⋯⋯\nU+22EF", "9  ‘（暂停）", "1  abcdefghijklmnopqrstuvwxyz"} {
-			if a.touchCandidateFont(dc, label, box) != a.touchFont && (ppm == 3 || strings.Contains(label, "\n")) {
-				t.Errorf("oversize candidate did not retain original font: %q", label)
+		// The taller row now fits the existing two-line symbol descriptions
+		// at regular key size, instead of always shrinking them on 4K screens.
+		for _, label := range []string{"1  …\nU+2026", "2  ⋯⋯\nU+22EF", "9  ‘（暂停）"} {
+			if a.touchCandidateFont(dc, label, box) != a.candidateFont {
+				t.Errorf("regular candidate unnecessarily shrunk: %q", label)
 			}
+		}
+		if a.touchCandidateFont(dc, "1  averylongunbrokenwordthatexceedsthecandidatecolumn", box) != a.touchFont {
+			t.Fatal("oversize candidate did not use the calibrated fallback")
 		}
 	}
 	after, _ := json.Marshal(a.preview.snapshot)
@@ -88,10 +94,12 @@ func TestTouchCandidateDrawEnlargesQuotesWithoutClipping(t *testing.T) {
 	runtime.LockOSThread()
 	t.Cleanup(runtime.UnlockOSThread)
 	a, dc := candidateFontFixture(t)
+	a.ppm = 3840 / 597.73 * 100 / 58
 	if err := a.updateTouchFonts(); err != nil {
 		t.Fatal(err)
 	}
-	const width, height = 200, 90
+	G("SelectObject").Call(dc, a.touchFont)
+	const width, height = 420, 200
 	bitmap, _, _ := G("CreateCompatibleBitmap").Call(dc, width, height)
 	if bitmap == 0 {
 		t.Fatal("create bitmap")
@@ -100,7 +108,7 @@ func TestTouchCandidateDrawEnlargesQuotesWithoutClipping(t *testing.T) {
 	t.Cleanup(func() { G("SelectObject").Call(dc, oldBitmap); G("DeleteObject").Call(bitmap) })
 	G("SetTextColor").Call(dc, 0)
 	G("SetBkMode").Call(dc, 1)
-	box := rect{20, 10, 165, 70} // ASUS calibrated candidate width, unchanged 60px height.
+	box := rect{20, 10, 395, 168} // Approximately the calibrated ASUS candidate row.
 	ink := func(checkBounds bool) int {
 		count := 0
 		for y := int32(0); y < height; y++ {
@@ -129,7 +137,7 @@ func TestTouchCandidateDrawEnlargesQuotesWithoutClipping(t *testing.T) {
 		}
 		fill(dc, rect{0, 0, width, height}, 0xffffff)
 		G("SelectObject").Call(dc, a.candidateFont)
-		text(dc, label, rect{20, 10, 165, 90}, 0x11)
+		text(dc, label, rect{20, 10, 395, height}, 0x11)
 		complete := ink(false)
 		G("SelectObject").Call(dc, a.touchFont)
 		if large != complete {

@@ -254,7 +254,7 @@ func run(o options) error {
 		a.s.Original = a.preview.original()
 		a.top = 300
 		if o.TouchUI {
-			a.top = touchHeaderHeight
+			a.top = a.touchHeaderLayout().height
 		}
 		a.previewTouches = map[uint32]*previewGesture{}
 		a.status = "中文预览：输出仅在下方文本区；无系统输入。鼠标/模拟检查不代表手指或笔验收。"
@@ -343,11 +343,6 @@ func run(o options) error {
 		}
 	}
 	if o.TouchUI {
-		height := int32(-22)
-		a.touchFont, _, _ = G("CreateFontW").Call(uintptr(height), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
-		if a.touchFont == 0 {
-			return fmt.Errorf("无法创建触屏控制字体")
-		}
 		if err := a.updateTouchFonts(); err != nil {
 			return err
 		}
@@ -588,7 +583,11 @@ func (a *ui) minimize() {
 func (a *ui) resize() bool {
 	m := currentMonitor(a.h)
 	w := int(math.Ceil(a.s.Board.Bounds.Width*tk.UnitMM*a.ppm)) + 2*a.border
-	h := int(math.Ceil(a.s.Board.Bounds.Height*tk.UnitMM*a.ppm)) + a.top + a.border
+	headerHeight := a.top
+	if a.o.TouchUI {
+		headerHeight = a.touchHeaderLayout().height
+	}
+	h := int(math.Ceil(a.s.Board.Bounds.Height*tk.UnitMM*a.ppm)) + headerHeight + a.border
 	if w > int(m.Work.R-m.Work.L) || h > int(m.Work.B-m.Work.T) {
 		a.status = "Calibration exceeds monitor; keyboard is not fitted/scaled automatically."
 		return false
@@ -596,7 +595,10 @@ func (a *ui) resize() bool {
 	current := rect{}
 	U("GetWindowRect").Call(a.h, uintptr(unsafe.Pointer(&current)))
 	position := clampWindow(current, m.Work, int32(w), int32(h))
+	oldTop := a.top
+	a.top = headerHeight // Synchronous WM_SIZE/paint sees the new board origin.
 	if ok, _, _ := U("SetWindowPos").Call(a.h, 0, uintptr(position.L), uintptr(position.T), uintptr(w), uintptr(h), 0x0014); ok == 0 {
+		a.top = oldTop
 		a.status = "Could not resize keyboard."
 		return false
 	}
