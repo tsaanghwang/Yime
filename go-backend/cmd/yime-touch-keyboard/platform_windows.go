@@ -1027,6 +1027,9 @@ func (a *ui) draw(dc uintptr, r rect) {
 			v.Labels = []string{name}
 		}
 		c := palette.keyColor(k.Color, v.Action.Type != "input" && v.Action.Type != "symbol")
+		if a.o.TouchUI && k.Action.Type == "touch-ui" && k.Action.Key == "reserved" {
+			c = palette.disabled
+		}
 		if a.preview == nil && !nativeEnabled(v) {
 			c = 0xE5E5E5
 			if palette.dark {

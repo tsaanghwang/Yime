@@ -55,6 +55,11 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 	if _, exists := a.previewTouches[id]; exists {
 		return
 	}
+	if a.o.TouchUI {
+		if action, _ := a.touchControlAt(x, y); action == "reserved" {
+			return // Inert slots do not cancel selection or acquire a host ticket.
+		}
+	}
 	if !a.o.TouchUI && y < 104 {
 		a.toolbar(x, y)
 		return

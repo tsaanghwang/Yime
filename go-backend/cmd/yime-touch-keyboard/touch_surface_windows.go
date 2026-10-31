@@ -21,10 +21,10 @@ func (a *ui) touchHeaderLayout() touchHeaderLayout {
 	u := tk.UnitMM * a.ppm
 	margin := max(int32(6), int32(math.Round(.04*u)))
 	line := max(int32(32), int32(math.Round(.30*u)))
-	// Both pager dimensions are exactly one calibrated unit, rounded to a
-	// drawing pixel. The shared candidate row keeps the same vertical bounds.
+	// Match the current ordinary body key: one column wide, compressed body
+	// height. This is not the original design's square unit.
 	pager := max(int32(1), int32(math.Round(u)))
-	row := pager
+	row := max(int32(1), int32(math.Round(touchBodyHeightScale*u)))
 	width := a.previewWidth()
 	top, bottom := line+margin, line+margin+row
 	previous := rect{margin, top, margin + pager, bottom}
@@ -36,7 +36,7 @@ func (a *ui) touchHeaderLayout() touchHeaderLayout {
 	}
 }
 
-const touchHelp = "触屏试用版\n\n顶部大键提供设置、帮助、绑定/清空、取消、CN/EN、左右移动、Home/End、选区、全选、Delete、最小化与退出。F1–F12不在本视图中。\n中文组合在顶部显示；点候选、空格或Enter确认，左右‹/›翻页。主区1–9按实验规则选择候选，0保持字面输入；未标注标点入口默认关闭。取消只取消未确认组合，保留已确认正文。\n编辑前先确认或取消组合；英文暂停的中文组合也会阻止编辑。点选区后，再依次点左右/Home/End扩展选区，输入替换或Delete/退格删除。预览Home/End到全文首尾，真实宿主按应用行为处理。\n设置中切换编码模式、英文键帽偏好、标点入口、字形/ID、声音、配色、字号及屏幕校准。切换编码模式取消原组合；中文始终使用原盘面，英文保留键帽偏好。点左上返回继续输入。\n预览只写本窗口内存，关闭即丢弃；正式宿主入口请先在正文放置光标，再点绑定。失焦、最小化、帮助或发送异常后须核对正文并重新绑定。\n输入键高为本次触屏试用的明确尺寸，不用校准按钮缩放盘面来凑尺寸。参考尺在设置内展开。"
+const touchHelp = "触屏试用版\n\n顶部大键提供设置、帮助、绑定/清空、取消、CN/EN、左右移动、Home/End、选区、全选、退格、Delete、最小化与退出；三个空闲键暂不执行操作。F1–F12不在本视图中。\n中文组合在顶部显示；点候选、空格或Enter确认，左右‹/›翻页。主区1–9按实验规则选择候选，0保持字面输入；未标注标点入口默认关闭。取消只取消未确认组合，保留已确认正文。\n编辑前先确认或取消组合；英文暂停的中文组合也会阻止编辑。点选区后，再依次点左右/Home/End扩展选区，输入替换或Delete/退格删除。预览Home/End到全文首尾，真实宿主按应用行为处理。\n设置中切换编码模式、英文键帽偏好、标点入口、字形/ID、声音、配色、字号及屏幕校准。切换编码模式取消原组合；中文始终使用原盘面，英文保留键帽偏好。点左上返回继续输入。\n预览只写本窗口内存，关闭即丢弃；正式宿主入口请先在正文放置光标，再点绑定。失焦、最小化、帮助或发送异常后须核对正文并重新绑定。\n输入键高为本次触屏试用的明确尺寸，不用校准按钮缩放盘面来凑尺寸。参考尺在设置内展开。"
 
 var touchSettings = []string{"variable", "full", "shorthand", "layout", "literal", "glyphs", "sound", "theme", "font", "smaller", "larger", "ruler"}
 
@@ -69,6 +69,9 @@ func (a *ui) touchSettingRect(i int) rect {
 }
 func (a *ui) touchUIActionAt(x, y int32) (string, rect, bool) {
 	if action, r := a.touchControlAt(x, y); action != "" {
+		if action == "reserved" {
+			return "", r, true
+		}
 		return action, r, true
 	}
 	if a.touchHelpOpen && y >= a.touchSettingsTop() {
@@ -428,7 +431,7 @@ func (a *ui) drawTouchSettings(dc uintptr, r rect) {
 		text(dc, a.touchSettingLabel(action), box, 0x25)
 	}
 	y := top + heading + 4*(h+gap) + 8
-	text(dc, "尺寸校准仅用于校准屏幕。视图：触屏试用 v1；字号、配色与声音仅本次运行有效。", rect{20, y, r.R - 20, y + 36}, 0x24)
+	text(dc, "尺寸校准仅用于校准屏幕。视图：触屏试用 v2；字号、配色与声音仅本次运行有效。", rect{20, y, r.R - 20, y + 36}, 0x24)
 	if a.touchRuler {
 		right := int32(30 + math.Round(100*a.ppm))
 		fill(dc, rect{30, y + 48, right, y + 51}, p.ruler)

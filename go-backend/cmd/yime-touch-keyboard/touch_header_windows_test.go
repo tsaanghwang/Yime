@@ -43,11 +43,11 @@ func TestTouchHeaderScalesWithoutChangingTheBody(t *testing.T) {
 			if layout.previous.R-layout.previous.L != layout.next.R-layout.next.L || layout.previous.T != layout.next.T || layout.previous.B != layout.next.B {
 				t.Fatal("paging targets are not symmetric", layout)
 			}
-			// Match one ordinary calibrated key unit on every screen, rather
-			// than a fixed-pixel minimum that changes the physical key size.
+			// Match the current compressed body key, not the original square.
 			unit := int32(math.Round(tk.UnitMM * ppm))
-			if layout.previous.R-layout.previous.L != unit || layout.previous.B-layout.previous.T != unit {
-				t.Fatal("paging target is not 1u square", layout, unit)
+			bodyHeight := int32(math.Round(tk.UnitMM * ppm * touchBodyHeightScale))
+			if layout.previous.R-layout.previous.L != unit || layout.previous.B-layout.previous.T != bodyHeight {
+				t.Fatal("paging target does not match the current ordinary key", layout, unit, bodyHeight)
 			}
 			for i := 0; i < 9; i++ {
 				r := a.candidateRect(i)
