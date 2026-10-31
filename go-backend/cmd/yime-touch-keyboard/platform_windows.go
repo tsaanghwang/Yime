@@ -1036,10 +1036,15 @@ func (a *ui) draw(dc uintptr, r rect) {
 				c = palette.disabled
 			}
 		}
-		if a.s.Pressed(i) || modifierHeld(a.s, v.Action) || a.touchPressed(a.keyPixelRect(k)) || a.o.TouchUI && k.Action.Type == "touch-ui" && (k.Action.Key == "select" && a.navSelecting || k.Action.Key == "settings" && a.touchSettingsOpen) {
+		pressed := a.s.Pressed(i) || modifierHeld(a.s, v.Action) || a.touchPressed(a.keyPixelRect(k)) || a.o.TouchUI && k.Action.Type == "touch-ui" && (k.Action.Key == "select" && a.navSelecting || k.Action.Key == "settings" && a.touchSettingsOpen)
+		if pressed {
 			c = palette.pressed
 		}
-		region, _, _ := G("CreateRectRgn").Call(0, 0, 0, 0)
+		raised := a.o.TouchUI && touchRaisedKey(k)
+		var region uintptr
+		if !raised {
+			region, _, _ = G("CreateRectRgn").Call(0, 0, 0, 0)
+		}
 		minx, miny, maxx, maxy := math.Inf(1), math.Inf(1), math.Inf(-1), math.Inf(-1)
 		for _, q := range k.Rectangles {
 			l := float64(a.border) + (k.X+q.X)*unit
@@ -1050,17 +1055,26 @@ func (a *ui) draw(dc uintptr, r rect) {
 			miny = math.Min(miny, t)
 			maxx = math.Max(maxx, right)
 			maxy = math.Max(maxy, bottom)
-			part, _, _ := G("CreateRectRgn").Call(uintptr(int(l+1)), uintptr(int(t+1)), uintptr(int(right-1)), uintptr(int(bottom-1)))
-			G("CombineRgn").Call(region, region, part, 2)
-			G("DeleteObject").Call(part)
+			if !raised {
+				part, _, _ := G("CreateRectRgn").Call(uintptr(int(l+1)), uintptr(int(t+1)), uintptr(int(right-1)), uintptr(int(bottom-1)))
+				G("CombineRgn").Call(region, region, part, 2)
+				G("DeleteObject").Call(part)
+			}
 		}
-		brush, _, _ := G("CreateSolidBrush").Call(c)
-		G("FillRgn").Call(dc, region, brush)
-		G("DeleteObject").Call(brush)
-		outline, _, _ := G("CreateSolidBrush").Call(palette.border)
-		G("FrameRgn").Call(dc, region, outline, 1, 1)
-		G("DeleteObject").Call(outline)
-		G("DeleteObject").Call(region)
+		legendBounds := rect{int32(minx), int32(miny), int32(maxx), int32(maxy)}
+		if raised {
+			cap := touchKeycapLayout(legendBounds, unit, pressed)
+			drawTouchKeycap(dc, cap, c, pressed)
+			legendBounds = cap.legend
+		} else {
+			brush, _, _ := G("CreateSolidBrush").Call(c)
+			G("FillRgn").Call(dc, region, brush)
+			G("DeleteObject").Call(brush)
+			outline, _, _ := G("CreateSolidBrush").Call(palette.border)
+			G("FrameRgn").Call(dc, region, outline, 1, 1)
+			G("DeleteObject").Call(outline)
+			G("DeleteObject").Call(region)
+		}
 		if v.Disabled {
 			continue
 		}
@@ -1090,7 +1104,11 @@ func (a *ui) draw(dc uintptr, r rect) {
 			if s == "" {
 				continue
 			}
-			drawKeyLegend(dc, s, rect{int32(minx), int32(miny), int32(maxx), int32(maxy)}, j)
+			if raised {
+				drawTouchKeyLegend(dc, s, legendBounds, j)
+			} else {
+				drawKeyLegend(dc, s, legendBounds, j)
+			}
 		}
 	}
 	if a.o.TouchUI && a.touchSettingsOpen {
@@ -1102,6 +1120,10 @@ func (a *ui) draw(dc uintptr, r rect) {
 }
 
 func drawKeyLegend(dc uintptr, s string, bounds rect, position int) {
+	drawKeyLegendFlags(dc, s, bounds, position, 0)
+}
+
+func drawKeyLegendFlags(dc uintptr, s string, bounds rect, position int, extraFlags uintptr) {
 	v := utf16.Encode([]rune(s))
 	if len(v) == 0 {
 		return
@@ -1115,7 +1137,7 @@ func drawKeyLegend(dc uintptr, s string, bounds rect, position int) {
 	// to the old fixed 20px strip at the very bottom of the key.
 	padding := max(int32(4), (bounds.B-bounds.T)/20)
 	col, row := position%3, position/3
-	flags := uintptr(0x20)
+	flags := uintptr(0x20) | extraFlags
 	if col == 1 {
 		flags |= 1
 	} else if col == 2 {
