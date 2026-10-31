@@ -1,0 +1,13 @@
+{
+  "source": "user chat feedback",
+  "time": "2026-10-30T19:56:47.7433869+08:00",
+  "feedback": "正常",
+  "scope": "User-reported batch result; actual text and codepoints not separately transcribed",
+  "cases": [
+    "E01",
+    "E02",
+    "E03",
+    "E04"
+  ],
+  "method": "mouse"
+}

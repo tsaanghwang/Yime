@@ -1,0 +1,10 @@
+Ordinal W01/W02: correct text accepted; U+00AD/U+200B/U+FEFF at start/middle/end rejected (18 negatives). Word identity: unique accepted; zero/multiple/mismatched/changed rejected (synthetic).
+Synthetic self-test passed; no Word or host acceptance executed.
+PASS synthetic gate: unique; content reads=1; rejected=False
+PASS synthetic gate: no process; content reads=0; rejected=True
+PASS synthetic gate: two same-name unsaved documents in different processes; content reads=0; rejected=True
+PASS synthetic gate: HWND owner mismatch; content reads=0; rejected=True
+PASS synthetic gate: missing HWND; content reads=0; rejected=True
+PASS synthetic gate: enumeration failure; content reads=0; rejected=True
+PASS synthetic gate: process changes during read; content reads=1; rejected=True
+Seven synthetic integration scenarios passed; no actual Word COM acceptance was performed.

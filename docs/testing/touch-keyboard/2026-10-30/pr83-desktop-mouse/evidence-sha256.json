@@ -1,0 +1,16 @@
+{
+  "batch-B01-B03-user-feedback.json": "058a6a2fe6393c14d6d9f8fe9e8aeec3638663c0dd702f7a861d2b3da363deda",
+  "batch-E01-E04-user-feedback.json": "eb809ed15052a8537e32f5b8eb2020c9b2bb4caef745c64e4f54aa6ccc961b7a",
+  "batch-E05-E08-user-feedback.json": "0e5d62fe992e283f46eaa611c42fec69fd3a8a52e39df85c8d3e2180d35f8ddc",
+  "batch-W01-W02-user-feedback.json": "37af52fc5f37492a07a7fd23b94adfe9fcca22ae4689a472d440464567533b8f",
+  "batch-WOW64-user-feedback.json": "13e99d52388fd85429aef160d6f9f72972d307d85753ab3419f29f07e8c10743",
+  "check-package-console.txt": "1b680986a8c33d61e8d44fa1d3c79882093d1c841d51d403c8f5cdc78f4d5590",
+  "firefox-process-architecture.json": "4e7f63ac4a54a890ba1ab62fac47dfaa73f94d168f1c34759894c46cde41c6eb",
+  "host-candidates.json": "c11938013a4f6d50283d618f1d91e5ce5c14b749d1e24562c9484494527f3bdf",
+  "identity-check.json": "26ff98e3a7caeb9b274bf4d0bd29a341b15bfc0474257c3b1b2ce14e1c7542ce",
+  "manifest.json": "80d065e0b6e34cc4009b88979ee3a1271f1cf621bab8929ba87a5a2be712af07",
+  "package-check.json": "e160b8509325552bb50caabf13cce6177e0a7312bdb122d0a39a48573dc74e30",
+  "RESULT_AMD64.json": "995b0dbb48e84603a10a9d0dd4c68a2a2493d4dea3de3701ea04ee0556f33510",
+  "SUMMARY.zh-CN.md": "687d38ac6ea1c40f89412efc99a8e4ff2e34daa55952026e5d9a3d85dce165e9",
+  "test-textarea.html": "f2ec33f7febea963775a8b38c4535021331c6c747e05b50fe24f932f2d4efd73"
+}

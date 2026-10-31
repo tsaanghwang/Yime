@@ -1,0 +1,66 @@
+[
+  {
+    "pid": 2008,
+    "path": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+    "version": "158.0",
+    "processMachine": "0x014c",
+    "nativeMachine": "0x8664",
+    "wow64": true
+  },
+  {
+    "pid": 3200,
+    "path": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+    "version": "158.0",
+    "processMachine": "0x014c",
+    "nativeMachine": "0x8664",
+    "wow64": true
+  },
+  {
+    "pid": 12632,
+    "path": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+    "version": "158.0",
+    "processMachine": "0x014c",
+    "nativeMachine": "0x8664",
+    "wow64": true
+  },
+  {
+    "pid": 16580,
+    "path": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+    "version": "158.0",
+    "processMachine": "0x014c",
+    "nativeMachine": "0x8664",
+    "wow64": true
+  },
+  {
+    "pid": 34396,
+    "path": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+    "version": "158.0",
+    "processMachine": "0x014c",
+    "nativeMachine": "0x8664",
+    "wow64": true
+  },
+  {
+    "pid": 35824,
+    "path": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+    "version": "158.0",
+    "processMachine": "0x014c",
+    "nativeMachine": "0x8664",
+    "wow64": true
+  },
+  {
+    "pid": 35880,
+    "path": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+    "version": "158.0",
+    "processMachine": "0x014c",
+    "nativeMachine": "0x8664",
+    "wow64": true
+  },
+  {
+    "pid": 36784,
+    "path": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+    "version": "158.0",
+    "processMachine": "0x014c",
+    "nativeMachine": "0x8664",
+    "wow64": true
+  }
+]

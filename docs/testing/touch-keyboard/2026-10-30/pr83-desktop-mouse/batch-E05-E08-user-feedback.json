@@ -1,0 +1,12 @@
+{
+  "method": "mouse",
+  "feedback": "正常。请尽量不再测试触控屏机型已测的事项，以免重复测试。",
+  "cases": [
+    "E05",
+    "E06",
+    "E07",
+    "E08"
+  ],
+  "time": "2026-10-30T20:05:32.6768692+08:00",
+  "decision": "Skip E09-E12 on this machine; retain host compatibility tests; no cross-machine pass inheritance"
+}

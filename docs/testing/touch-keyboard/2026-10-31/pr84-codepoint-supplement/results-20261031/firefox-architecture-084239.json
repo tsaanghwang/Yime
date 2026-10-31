@@ -1,0 +1,94 @@
+﻿{
+    "processes":  [
+                      {
+                          "pid":  2720,
+                          "path":  "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                          "version":  "159.0",
+                          "processMachine":  "0x014c",
+                          "nativeMachine":  "0x8664",
+                          "wow64":  true
+                      },
+                      {
+                          "pid":  8664,
+                          "path":  "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                          "version":  "159.0",
+                          "processMachine":  "0x014c",
+                          "nativeMachine":  "0x8664",
+                          "wow64":  true
+                      },
+                      {
+                          "pid":  15764,
+                          "path":  "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                          "version":  "159.0",
+                          "processMachine":  "0x014c",
+                          "nativeMachine":  "0x8664",
+                          "wow64":  true
+                      },
+                      {
+                          "pid":  17208,
+                          "path":  "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                          "version":  "159.0",
+                          "processMachine":  "0x014c",
+                          "nativeMachine":  "0x8664",
+                          "wow64":  true
+                      },
+                      {
+                          "pid":  20616,
+                          "path":  "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                          "version":  "159.0",
+                          "processMachine":  "0x014c",
+                          "nativeMachine":  "0x8664",
+                          "wow64":  true
+                      },
+                      {
+                          "pid":  21556,
+                          "path":  "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                          "version":  "159.0",
+                          "processMachine":  "0x014c",
+                          "nativeMachine":  "0x8664",
+                          "wow64":  true
+                      },
+                      {
+                          "pid":  27152,
+                          "path":  "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                          "version":  "159.0",
+                          "processMachine":  "0x014c",
+                          "nativeMachine":  "0x8664",
+                          "wow64":  true
+                      },
+                      {
+                          "pid":  29808,
+                          "path":  "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                          "version":  "159.0",
+                          "processMachine":  "0x014c",
+                          "nativeMachine":  "0x8664",
+                          "wow64":  true
+                      },
+                      {
+                          "pid":  30340,
+                          "path":  "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                          "version":  "159.0",
+                          "processMachine":  "0x014c",
+                          "nativeMachine":  "0x8664",
+                          "wow64":  true
+                      },
+                      {
+                          "pid":  32324,
+                          "path":  "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                          "version":  "159.0",
+                          "processMachine":  "0x014c",
+                          "nativeMachine":  "0x8664",
+                          "wow64":  true
+                      },
+                      {
+                          "pid":  34348,
+                          "path":  "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                          "version":  "159.0",
+                          "processMachine":  "0x014c",
+                          "nativeMachine":  "0x8664",
+                          "wow64":  true
+                      }
+                  ],
+    "pageSHA256":  "F2EC33F7FEBEA963775A8B38C4535021331C6C747E05B50FE24F932F2D4EFD73",
+    "capturedAt":  "2026-10-31T08:42:39.7205879+08:00"
+}

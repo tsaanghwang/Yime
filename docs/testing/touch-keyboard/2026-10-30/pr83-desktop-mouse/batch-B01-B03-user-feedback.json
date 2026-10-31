@@ -1,0 +1,12 @@
+{
+  "feedback": "测试结果正常",
+  "scope": "User-reported batch result; no inferred detailed transcript",
+  "source": "user chat feedback",
+  "cases": [
+    "B01",
+    "B02",
+    "B03"
+  ],
+  "time": "2026-10-30T19:26:18.4767999+08:00",
+  "method": "mouse"
+}
