@@ -463,8 +463,13 @@ func (a *ui) down(id uint32, x, y int32) {
 	a.invalidate()
 }
 func (a *ui) move(id uint32, x, y int32) {
-	if p := a.previewTouches[id]; p != nil && !inside(p.area, x, y) {
+	if p := a.previewTouches[id]; p != nil && !p.left && !inside(p.area, x, y) {
 		p.left = true
+		if a.o.TouchUI && p.action == "candidate" {
+			// Promoted pen/mouse MOVE has no end-of-touch-frame repaint. Drop
+			// the card's pressed appearance as soon as its contact is cancelled.
+			a.invalidate()
+		}
 	}
 	a.s.Move(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
 }

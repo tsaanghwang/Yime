@@ -138,6 +138,7 @@ func TestTouchHeaderRegularFontKeepsEllipsisDescriptions(t *testing.T) {
 				}
 				for i := range a.preview.snapshot.State.Candidates {
 					label, box := a.preview.candidateLabel(i), a.candidateRect(i)
+					box = touchCandidateTextBox(touchKeycapLayout(box, tk.UnitMM*ppm, false))
 					if a.touchCandidateFont(dc, label, box) != a.candidateFont {
 						t.Fatalf("PR83 two-line choice fell back to small text at level %d: %q", level, label)
 					}

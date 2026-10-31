@@ -279,10 +279,10 @@ func (a *ui) touchCandidateFont(dc uintptr, label string, box rect) uintptr {
 	}
 	old, _, _ := G("SelectObject").Call(dc, a.candidateFont)
 	defer G("SelectObject").Call(dc, old)
-	measured := box
+	measured := touchCandidateAlignmentBox(box)
 	// Measure with the same wrapping and prefix rules as the actual drawing.
 	height, _, _ := U("DrawTextW").Call(dc, ptr(str(label)), ^uintptr(0), uintptr(unsafe.Pointer(&measured)), 0x411|drawTextNoPrefix)
-	if height == 0 || measured.B > box.B || measured.R > box.R {
+	if height == 0 || measured.B > box.B || measured.R > touchCandidateAlignmentBox(box).R {
 		// Keep long candidates inside the row when the regular font cannot fit.
 		return a.touchFont
 	}
@@ -292,7 +292,76 @@ func (a *ui) touchCandidateFont(dc uintptr, label string, box rect) uintptr {
 func (a *ui) drawTouchCandidate(dc uintptr, label string, box rect) {
 	old, _, _ := G("SelectObject").Call(dc, a.touchCandidateFont(dc, label, box))
 	defer G("SelectObject").Call(dc, old)
-	text(dc, label, box, 0x11)
+	block := centeredTouchCandidateRect(dc, label, box)
+	if block.B <= block.T {
+		return
+	}
+	// Use the same wrapping width for measurement and drawing, while allowing
+	// glyph bearings outside the alignment rectangle within the content clip.
+	saved, _, _ := G("SaveDC").Call(dc)
+	if saved == 0 {
+		text(dc, label, box, 0x11)
+		return
+	}
+	defer G("RestoreDC").Call(dc, saved)
+	if result, _, _ := G("IntersectClipRect").Call(dc, uintptr(box.L), uintptr(box.T), uintptr(box.R), uintptr(box.B)); result == 0 {
+		text(dc, label, box, 0x11)
+		return
+	}
+	text(dc, label, block, 0x111) // CENTER | WORDBREAK | NOCLIP, inside the DC clip.
+}
+
+func centeredTouchCandidateRect(dc uintptr, label string, box rect) rect {
+	alignment := touchCandidateAlignmentBox(box)
+	measured := alignment
+	height, _, _ := U("DrawTextW").Call(dc, ptr(str(label)), ^uintptr(0), uintptr(unsafe.Pointer(&measured)), 0x411|drawTextNoPrefix)
+	// DT_VCENTER only centers SINGLELINE text. Measure the complete block so
+	// explicit symbol descriptions and wrapped candidates are centered too.
+	top := box.T + max(int32(0), (box.B-box.T-int32(height))/2)
+	return rect{alignment.L, top, alignment.R, top + int32(height)}
+}
+
+func touchCandidateAlignmentBox(box rect) rect {
+	// Reserve a little space beyond the measured advance width for glyph
+	// bearings; the outer content box remains the final, unchanged clip.
+	return rect{box.L + 2, box.T, box.R - 2, box.B}
+}
+
+func touchCandidateTextBox(cap touchKeycap) rect {
+	inset := max(int32(2), cap.bevel+1)
+	return rect{cap.face.L + inset, cap.face.T + inset, cap.face.R - inset, cap.face.B - inset}
+}
+
+func (a *ui) touchCandidatePressed(index int, box rect) bool {
+	current := a.preview.candidate(index)
+	if current.id == "" {
+		return false
+	}
+	for _, gesture := range a.previewTouches {
+		if gesture.action == "candidate" && !gesture.left && gesture.area == box &&
+			gesture.candidate == current && gesture.stamp == a.preview.stamp() && gesture.cancelGeneration == a.cancelGeneration {
+			return true
+		}
+	}
+	return false
+}
+
+func (a *ui) drawTouchCandidateItem(dc uintptr, index int) {
+	palette := a.palette()
+	box := a.candidateRect(index)
+	pressed := a.touchCandidatePressed(index, box)
+	bg := palette.candidate
+	label := a.preview.candidateLabel(index)
+	if !a.preview.candidatesEnabled() {
+		bg = palette.disabled
+		label += "（暂停）"
+	} else if pressed {
+		bg = palette.pressed
+	}
+	cap := touchKeycapLayout(box, tk.UnitMM*a.ppm, pressed)
+	drawTouchKeycap(dc, cap, bg, pressed)
+	G("SetTextColor").Call(dc, palette.text)
+	a.drawTouchCandidate(dc, label, touchCandidateTextBox(cap))
 }
 
 func (a *ui) drawTouchHeader(dc uintptr, r rect) {
@@ -334,15 +403,7 @@ func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 	}
 	text(dc, line, header.status, 0x8024)
 	for i := range p.snapshot.State.Candidates {
-		box := a.candidateRect(i)
-		bg := palette.candidate
-		s := p.candidateLabel(i)
-		if !p.candidatesEnabled() {
-			bg = palette.disabled
-			s += "（暂停）"
-		}
-		fill(dc, box, bg)
-		a.drawTouchCandidate(dc, s, box)
+		a.drawTouchCandidateItem(dc, i)
 	}
 	for _, next := range []bool{false, true} {
 		box := header.previous

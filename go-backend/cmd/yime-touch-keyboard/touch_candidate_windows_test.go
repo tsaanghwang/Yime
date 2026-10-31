@@ -45,6 +45,7 @@ func TestTouchCandidateFontFitsWithoutChangingCandidateIdentity(t *testing.T) {
 	for _, ppm := range []float64{3, 4.4, 8.2, 3840 / 597.73 * 100 / 58} {
 		a.ppm = ppm
 		box := a.candidateRect(0)
+		content := touchCandidateTextBox(touchKeycapLayout(box, tk.UnitMM*ppm, false))
 		for level, scale := range []float64{.8, .9, 1} {
 			want := -int32(math.Round(tk.UnitMM * ppm * .20 * scale))
 			a.touchFontLevel = level
@@ -59,7 +60,7 @@ func TestTouchCandidateFontFitsWithoutChangingCandidateIdentity(t *testing.T) {
 				t.Fatalf("candidate font level %d: got height %d, size %d", level, lf.height, n)
 			}
 			for _, label := range []string{"9  ‘", "9  ’", "9  “", "9  ”", "9  '\"", "1  你", "1  &"} {
-				if f := a.touchCandidateFont(dc, label, box); f != a.candidateFont {
+				if f := a.touchCandidateFont(dc, label, content); f != a.candidateFont {
 					t.Errorf("short candidate not enlarged at %.1f/%d: %q", ppm, level, label)
 				}
 			}
@@ -70,11 +71,11 @@ func TestTouchCandidateFontFitsWithoutChangingCandidateIdentity(t *testing.T) {
 		// The taller row now fits the existing two-line symbol descriptions
 		// at regular key size, instead of always shrinking them on 4K screens.
 		for _, label := range []string{"1  …\nU+2026", "2  ⋯⋯\nU+22EF", "9  ‘（暂停）"} {
-			if a.touchCandidateFont(dc, label, box) != a.candidateFont {
+			if a.touchCandidateFont(dc, label, content) != a.candidateFont {
 				t.Errorf("regular candidate unnecessarily shrunk: %q", label)
 			}
 		}
-		if a.touchCandidateFont(dc, "1  averylongunbrokenwordthatexceedsthecandidatecolumn", box) != a.touchFont {
+		if a.touchCandidateFont(dc, "1  averylongunbrokenwordthatexceedsthecandidatecolumn", content) != a.touchFont {
 			t.Fatal("oversize candidate did not use the calibrated fallback")
 		}
 	}
