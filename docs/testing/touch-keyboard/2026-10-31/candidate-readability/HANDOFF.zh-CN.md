@@ -2,6 +2,8 @@
 
 2026-10-31，用户决定先将本机几轮改版集中提交，交给 MyComputer 整合审查，再继续测试。本轮先冻结外观，不在两台机器上各做一套盘面。
 
+现已发布 [PR #87](https://github.com/tsaanghwang/Yime/pull/87)；固定两架构完整包、哈希、CI与本机原生检查见 [CI_DELIVERY.zh-CN.md](CI_DELIVERY.zh-CN.md)。MyComputer 可直接使用[接续任务提示](TASK_PROMPT.zh-CN.md)。PR未自动合并，新包真人测试仍待实际记录。
+
 ## 源码与范围
 
 - 分支：`codex/touch-candidate-readability-20261031`，基于 main `cbe625af761755d7d76579d57e163fc2abfe727b`（已包含 PR #82–#86）。交付准备时重新 fetch main，未发现额外待整合提交。

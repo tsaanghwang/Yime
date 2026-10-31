@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "scope": "PR87 fixed package, one identified machine and architecture",
+  "status": "not_started",
+  "package": {
+    "runID": 41178044364,
+    "sourceCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+    "architecture": null,
+    "artifactID": null,
+    "zipSHA256": null,
+    "executableSHA256": null
+  },
+  "machine": {
+    "name": null,
+    "model": null,
+    "windowsVersion": null,
+    "displayResolution": null,
+    "displayScale": null,
+    "screenUsed": null,
+    "screenPosture": null,
+    "penModel": null
+  },
+  "calibration": {
+    "screenWidthParameterMM": null,
+    "rulerBeforeMeasuredMM": null,
+    "rulerAfterMeasuredMM": null,
+    "measuredByHuman": false
+  },
+  "recordFields": [
+    "caseID",
+    "observedAt",
+    "inputMethod: finger|pen|mouse|automation|mixed",
+    "mode",
+    "host",
+    "action",
+    "expected",
+    "actual",
+    "result: pass|fail|pending",
+    "evidence"
+  ],
+  "records": [],
+  "physicalAcceptanceComplete": false,
+  "installedProductChanges": false,
+  "defaultInputMethodChanges": false,
+  "userDataChanges": false,
+  "notes": "Copy outside the immutable package. Fill only observed results. Old package results and automated checks do not imply physical acceptance."
+}
