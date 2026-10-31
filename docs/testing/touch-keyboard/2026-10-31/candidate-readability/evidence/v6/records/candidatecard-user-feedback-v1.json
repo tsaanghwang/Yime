@@ -1,0 +1,10 @@
+{
+  "recordedAtUTC": "2026-10-31T06:04:54.667116+00:00",
+  "sourceCommit": "cc670c977942b7823213450ecbf3881eae5176d0",
+  "rawUserFeedback": "可以。请继续把候选项文本框改成字体三维效果，并把候选文字和标签上下和左右居中",
+  "clarification": "候选框立体，文字保持清晰白字",
+  "result": "v6 unified key appearance accepted; candidate frame depth and centered text requested",
+  "inputMethodNotSpecified": true,
+  "fullPhysicalAcceptance": false,
+  "nextDelivery": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v7"
+}

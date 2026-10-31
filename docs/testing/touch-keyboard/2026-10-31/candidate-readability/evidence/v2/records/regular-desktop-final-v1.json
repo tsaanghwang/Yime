@@ -1,0 +1,15 @@
+{
+  "command": [
+    "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+    "test",
+    "./cmd/yime-touch-keyboard",
+    "-count=1",
+    "-shuffle=on",
+    "-timeout=180s"
+  ],
+  "exitCode": 0,
+  "toolchainPE": "ARM64",
+  "sourceHead": "d8999f0407fb8979787479c08b80b4922fb1bb59",
+  "sourceChanges": true,
+  "log": "C:\\Users\\tsaan\\.codex\\worktrees\\touch-candidate-readability\\Yime\\.generated\\candidate-readability-checks\\regular-desktop-final-v1.log"
+}

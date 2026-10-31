@@ -1,0 +1,19 @@
+-test.shuffle 1793426848633085000
+--- FAIL: TestTouchCandidateCardTextIsCompleteAndCentered (0.23s)
+    --- FAIL: TestTouchCandidateCardTextIsCompleteAndCentered/ppm3.00/font0 (0.04s)
+        touch_candidate_card_windows_test.go:72: candidate "9  ‘（暂停）" is horizontally displaced: ink={L:65 T:58 R:107 B:67} box={L:44 T:44 R:134 B:80}
+    --- FAIL: TestTouchCandidateCardTextIsCompleteAndCentered/ppm3.00/font1 (0.04s)
+        touch_candidate_card_windows_test.go:72: candidate "9  ‘（暂停）" is horizontally displaced: ink={L:62 T:57 R:109 B:67} box={L:44 T:44 R:134 B:80}
+    --- FAIL: TestTouchCandidateCardTextIsCompleteAndCentered/ppm3.00/font2 (0.04s)
+        touch_candidate_card_windows_test.go:72: candidate "9  ‘（暂停）" is horizontally displaced: ink={L:55 T:55 R:114 B:68} box={L:44 T:44 R:134 B:80}
+    --- FAIL: TestTouchCandidateCardTextIsCompleteAndCentered/ppm11.08/font0 (0.04s)
+        touch_candidate_card_windows_test.go:72: candidate "9  ‘（暂停）" is horizontally displaced: ink={L:134 T:106 R:295 B:142} box={L:52 T:50 R:398 B:194}
+    --- FAIL: TestTouchCandidateCardTextIsCompleteAndCentered/ppm11.08/font1 (0.03s)
+        touch_candidate_card_windows_test.go:72: candidate "9  ‘（暂停）" is horizontally displaced: ink={L:123 T:104 R:302 B:144} box={L:52 T:50 R:398 B:194}
+    --- FAIL: TestTouchCandidateCardTextIsCompleteAndCentered/ppm11.08/font2 (0.04s)
+        touch_candidate_card_windows_test.go:72: candidate "9  ‘（暂停）" is horizontally displaced: ink={L:109 T:102 R:313 B:147} box={L:52 T:50 R:398 B:194}
+FAIL
+FAIL	github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard	17.085s
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard	1.230s
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab	18.910s
+FAIL

@@ -1,0 +1,25 @@
+{
+  "id": "keycapall-visual-v6",
+  "status": "pending user observation",
+  "sourceCommit": "cc670c977942b7823213450ecbf3881eae5176d0",
+  "exeSHA256": "faa466bbe227db642e34f7816420c0b792822e3f105f9775a2e7819b85ccb23b",
+  "mode": "preview only / CN variable / ID legends / large / dark",
+  "machine": "ASUS ProArt P16 built-in screen upright",
+  "calibrationParameters": {
+    "screenWidthMM": 597.73,
+    "observed100MM": 58,
+    "actualLitScreenWidthMeasured": false
+  },
+  "scope": "consistent raised appearance of two L-shaped keys, two pagers and 18 controls; no new physical pass yet",
+  "steps": [
+    "查看两侧异形键、两个翻页键和设置同行18个键是否风格一致；Tab/Back Space与选区标签是否完整。",
+    "轻点设置并返回，查看按下反馈；再用主体N12产生候选，左右翻页，确认原点击位置和翻页正常。"
+  ],
+  "result": null,
+  "fullPhysicalAcceptance": false,
+  "geometryAndEncodingChanged": false,
+  "fontSizeChanged": false,
+  "boardKeyCount": 102,
+  "pagerCount": 2,
+  "hitRegions": "original full cells, including visible cap gaps"
+}

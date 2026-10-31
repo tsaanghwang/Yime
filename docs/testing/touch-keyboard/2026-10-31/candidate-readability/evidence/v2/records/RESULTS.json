@@ -1,0 +1,31 @@
+{
+  "scope": "ARM64 4K regular preview/candidate text and larger pager follow-up",
+  "sourceCommit": "cee2875080e655b83aaf049760ef371ae1125ee7",
+  "localCommitOnly": true,
+  "CIArtifact": false,
+  "automatedTestsPassed": [
+    "native ARM64 desktop/touchkeyboard/keyboardlab shuffled regressions",
+    "regular header metrics, GDI text, ellipsis and pager cancellation regressions",
+    "failed calibration rollback",
+    "relocated full package with 8 resource rejection checks"
+  ],
+  "newPackagePhysicalAcceptance": false,
+  "activeBatch": null,
+  "userResult": "regular-header-user-result-v1.json",
+  "earlierV1Result": "barely distinguishable at close distance; not accepted",
+  "evidence": [
+    "package-identity-v1.json",
+    "regular-full-v1.log",
+    "regular-desktop-final-v1.log",
+    "regular-calibration-v1.log",
+    "package-check-v1.json",
+    "preview-launch-v1.json",
+    "preview-ready-v1.json",
+    "regular-header-user-result-v1.json"
+  ],
+  "characterReadability": "pass by user report",
+  "nextAction": "keep the accepted regular font; make both pager targets 1u square in a new isolated package",
+  "followUpDelivery": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3",
+  "followUpResults": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\records\\RESULTS.json",
+  "currentFollowUpStatus": "v2 character readability accepted; v3 1u pager awaiting user observation"
+}

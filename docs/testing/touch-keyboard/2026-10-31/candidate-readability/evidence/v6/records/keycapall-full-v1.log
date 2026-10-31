@@ -1,0 +1,7 @@
+# github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard [github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard.test]
+cmd\yime-touch-keyboard\touch_control_keycap_windows_test.go:84:31: cannot use previewGesture{…} (value of struct type previewGesture) as *previewGesture value in assignment
+cmd\yime-touch-keyboard\touch_control_keycap_windows_test.go:198:28: cannot use previewGesture{…} (value of struct type previewGesture) as *previewGesture value in assignment
+FAIL	github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard [build failed]
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard	0.197s
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab	15.630s
+FAIL

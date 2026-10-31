@@ -1,0 +1,24 @@
+{
+  "id": "candidatecard-visual-v7",
+  "status": "pending user observation",
+  "sourceCommit": "c365c2609d997ed0abab65c6c519bb1fc41debf0",
+  "exeSHA256": "595f7083ec1924c45f6d3813e80951239004e08783ed7b51e742f8c4135152d1",
+  "mode": "preview only / CN variable / ID legends / large / dark",
+  "machine": "ASUS ProArt P16 built-in screen upright",
+  "calibrationParameters": {
+    "screenWidthMM": 597.73,
+    "observed100MM": 58,
+    "actualLitScreenWidthMeasured": false
+  },
+  "scope": "raised candidate frames with plain white centered ordinal and text",
+  "steps": [
+    "查看已打开的候选栏：候选框是否与盘面风格一致，序号和文字是否上下左右居中、清晰完整。",
+    "选择任一候选，确认候选文字与窗口内本地输出一致；可继续查看翻页后的候选。"
+  ],
+  "result": null,
+  "fullPhysicalAcceptance": false,
+  "geometryAndEncodingChanged": false,
+  "fontSizeChanged": false,
+  "whiteTextShadowOrEmboss": false,
+  "automatedPreparation": "local preview composition only; no host input or physical acceptance"
+}

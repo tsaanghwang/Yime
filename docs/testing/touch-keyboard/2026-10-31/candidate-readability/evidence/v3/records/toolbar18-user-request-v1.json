@@ -1,0 +1,8 @@
+{
+  "recordedAtUTC": "2026-10-31T04:50:04.976685+00:00",
+  "sourceCommit": "8e9c60e299ad549972a243b3c474075219f4ac6e",
+  "userVerbatim": "经过多次处理，目前的按键大小已不是最初设计的 1u 了。1. 请把左右两个翻页键改成与下面各行的键高一致。2. 把与“设置”键同行的键数由 14 键改成 18键，把所缺的重要编辑功能键补上（没有就先设置成空闲键或其它功能键等以后补或改功能），每键大小一致，平均分布。3. 把翻页键的宽度改成与“设置”行的 18 键之一或 数字键之一的键宽一致，也就是大多数基本键的一键宽度。",
+  "status": "superseded by explicit layout revision",
+  "pagingBehaviorResult": "not reported",
+  "nextScope": "pager uses current ordinary-key height/width; 18 equal control keys with Backspace and three inert spare keys; preserve ordinary body keys and accepted font"
+}

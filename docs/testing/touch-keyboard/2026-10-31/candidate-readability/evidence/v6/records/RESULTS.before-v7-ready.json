@@ -1,0 +1,27 @@
+{
+  "scope": "ARM64 complete raised keyboard style including L shapes, 18 controls and pagers",
+  "sourceCommit": "cc670c977942b7823213450ecbf3881eae5176d0",
+  "localCommitOnly": true,
+  "CIArtifact": false,
+  "automatedTestsPassed": [
+    "native ARM64 desktop/touchkeyboard/keyboardlab shuffled regressions",
+    "L shape union contour/notch/seam, complete labels and unchanged hits",
+    "18 controls and pager GDI styling/labels/pressed/disabled checks",
+    "existing full glyph, gesture, inert spares and composition protection regressions",
+    "relocated full package with 8 resource rejection checks",
+    "native touch-screen-v2 102 positions/18 controls/84 body keys and three-mode in-memory selection"
+  ],
+  "newPackagePhysicalAcceptance": false,
+  "activeBatch": "keycapall-preview-plan-v1.json",
+  "userResult": null,
+  "backspacePhysicalAcceptance": false,
+  "priorFeedback": "v5 raised body keycaps explicitly liked by user; input method unspecified; full physical acceptance not claimed",
+  "evidence": [
+    "package-identity-v1.json",
+    "keycapall-full-v2.log",
+    "package-check-v1.json",
+    "touch-ui-check-v1.json",
+    "preview-launch-v1.json",
+    "preview-ready-v1.json"
+  ]
+}

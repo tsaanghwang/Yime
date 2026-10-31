@@ -1,0 +1,20 @@
+{
+  "recordedAtUTC": "2026-10-31T05:47:59.5003810Z",
+  "pid": 10296,
+  "executable": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\arm64\\YimeTouchKeyboard.exe",
+  "sha256": "faa466bbe227db642e34f7816420c0b792822e3f105f9775a2e7819b85ccb23b",
+  "arguments": [
+    "--preview",
+    "--touch-ui",
+    "--theme",
+    "dark",
+    "--key-sound",
+    "click",
+    "--screen-width-mm",
+    "597.73",
+    "--ruler-observed-mm",
+    "58"
+  ],
+  "scope": "preview preparation; no physical result",
+  "verifiedVisible": false
+}

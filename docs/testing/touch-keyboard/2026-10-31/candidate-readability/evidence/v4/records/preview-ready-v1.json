@@ -1,0 +1,30 @@
+{
+  "recordedAtUTC": "2026-10-31T04:57:05.051361+00:00",
+  "windowId": 21890986,
+  "app": "process:C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v4\\arm64\\YimeTouchKeyboard.exe",
+  "title": "Yime 18u 中文受控预览（不向其他应用输入）",
+  "visibleVerified": true,
+  "observedSettings": {
+    "input": "CN",
+    "mode": "variable",
+    "legends": "ID",
+    "font": "large",
+    "theme": "dark",
+    "sound": "on",
+    "literalPunctuationEntries": "off"
+  },
+  "composition": "empty",
+  "confirmedLocalText": "empty",
+  "preparation": [
+    "previous v3 observed minimized",
+    "launched v4",
+    "opened settings",
+    "selected ID legends",
+    "returned to body"
+  ],
+  "visualObservation": "18 equal control positions visible including Backspace and three spare labels; pager dimensions visually match current ordinary keys; full bottom row visible",
+  "physicalInputPerformedByAutomation": false,
+  "newLayoutPhysicalResult": "pending user",
+  "packagePayloadHashesRechecked": true,
+  "pendingPlan": "toolbar18-preview-plan-v1.json"
+}

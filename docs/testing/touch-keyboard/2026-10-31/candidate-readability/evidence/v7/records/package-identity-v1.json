@@ -1,0 +1,13 @@
+{
+  "recordedAtUTC": "2026-10-31T06:14:58.544677+00:00",
+  "scope": "local development preview; not PR82 or CI artifact",
+  "sourceCommit": "c365c2609d997ed0abab65c6c519bb1fc41debf0",
+  "sourceChanges": false,
+  "architecture": "windows-arm64",
+  "exeSHA256": "595f7083ec1924c45f6d3813e80951239004e08783ed7b51e742f8c4135152d1",
+  "manifestSHA256": "e9395c577c4e135c7e75954abde255bf85fbd0929b7822957f3fe619a95b4882",
+  "oldFixedPR82PayloadsVerified": true,
+  "hardwareAcceptance": false,
+  "installedProductChanges": false,
+  "defaultInputMethodChanges": false
+}
