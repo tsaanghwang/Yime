@@ -1,6 +1,6 @@
 # PR84 宿主字符级证据最小补充
 
-仅补充 [PR84 原始记录](../../2026-10-30/pr83-desktop-mouse/README.zh-CN.md)，不改写旧反馈。原 PR 已合并为 `a562e3bc2b94624ce7b4ff944fbac21dd0c761da`。工具自测不是宿主验收，当前四项精确回读均 pending。
+仅补充 [PR84 原始记录](../../2026-10-30/pr83-desktop-mouse/README.zh-CN.md)，不改写旧反馈。原 PR 已合并为 `a562e3bc2b94624ce7b4ff944fbac21dd0c761da`。工具自测不是宿主验收；模板维持 pending。2026-10-31 完成的四项补测见[实际结果](RESULTS.zh-CN.md)，区分 Word COM 回读和 Firefox 用户截图编码行。
 
 ## 最少操作
 

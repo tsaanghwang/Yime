@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-10-31T08:51:40.463567+08:00",
+  "host": "Firefox",
+  "version": "159.0",
+  "architecture": "x86/WOW64",
+  "architectureEvidence": "firefox-architecture-084239.json",
+  "readMethod": "Visual inspection of user-supplied screenshots of original page diagnostic line; not automated DOM readback",
+  "scope": "Final text only; screenshots have no 12-character truncation marker. No touch, pen, ARM64 or installed IME acceptance.",
+  "cases": [
+    {
+      "caseId": "W01",
+      "status": "passed",
+      "actualText": "12…",
+      "actualCodepoints": [
+        "U+0031",
+        "U+0032",
+        "U+2026"
+      ],
+      "scalarCount": 3,
+      "evidence": "firefox-W01.png"
+    },
+    {
+      "caseId": "W02",
+      "status": "passed",
+      "actualText": "12⋯⋯",
+      "actualCodepoints": [
+        "U+0031",
+        "U+0032",
+        "U+22EF",
+        "U+22EF"
+      ],
+      "scalarCount": 4,
+      "evidence": "firefox-W02.png"
+    }
+  ],
+  "limitations": [
+    "Screenshot capture time not independently known; recordedAt is review time",
+    "Final text does not prove absence of replacement events or future delayed commits",
+    "Browser automation stopped due to unsupported URL policy enforcement; no bypass used"
+  ]
+}
