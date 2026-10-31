@@ -8,10 +8,10 @@ import (
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 )
 
-// Only the rectangular body caps are inset. The board, its hit rectangles and
-// the shared CN/EN key identities stay intact; L-shaped keys retain their union.
+// All rectangular caps share the same inset, including the 18 controls. The
+// board, its hit rectangles and the shared CN/EN key identities stay intact.
 func touchRaisedKey(k tk.Key) bool {
-	return k.Action.Type != "touch-ui" && k.Y >= touchBodyTopU && len(k.Rectangles) == 1
+	return len(k.Rectangles) == 1
 }
 
 type touchKeycap struct {

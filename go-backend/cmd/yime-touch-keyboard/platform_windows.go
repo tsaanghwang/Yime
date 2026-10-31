@@ -1041,8 +1041,10 @@ func (a *ui) draw(dc uintptr, r rect) {
 			c = palette.pressed
 		}
 		raised := a.o.TouchUI && touchRaisedKey(k)
+		shaped := a.o.TouchUI && len(k.Rectangles) > 1
+		var parts []rect
 		var region uintptr
-		if !raised {
+		if !raised && !shaped {
 			region, _, _ = G("CreateRectRgn").Call(0, 0, 0, 0)
 		}
 		minx, miny, maxx, maxy := math.Inf(1), math.Inf(1), math.Inf(-1), math.Inf(-1)
@@ -1055,7 +1057,9 @@ func (a *ui) draw(dc uintptr, r rect) {
 			miny = math.Min(miny, t)
 			maxx = math.Max(maxx, right)
 			maxy = math.Max(maxy, bottom)
-			if !raised {
+			if shaped {
+				parts = append(parts, rect{int32(l), int32(t), int32(right), int32(bottom)})
+			} else if !raised {
 				part, _, _ := G("CreateRectRgn").Call(uintptr(int(l+1)), uintptr(int(t+1)), uintptr(int(right-1)), uintptr(int(bottom-1)))
 				G("CombineRgn").Call(region, region, part, 2)
 				G("DeleteObject").Call(part)
@@ -1065,6 +1069,15 @@ func (a *ui) draw(dc uintptr, r rect) {
 		if raised {
 			cap := touchKeycapLayout(legendBounds, unit, pressed)
 			drawTouchKeycap(dc, cap, c, pressed)
+			legendBounds = cap.legend
+			if k.Action.Type == "touch-ui" {
+				// Centered control captions need the full face, with the shared
+				// legend padding; the extra side inset is for corner legends.
+				legendBounds = cap.face
+			}
+		} else if shaped {
+			cap := touchShapedKeycapLayout(parts, unit, pressed)
+			drawTouchShapedKeycap(dc, cap, c, pressed)
 			legendBounds = cap.legend
 		} else {
 			brush, _, _ := G("CreateSolidBrush").Call(c)
@@ -1104,7 +1117,7 @@ func (a *ui) draw(dc uintptr, r rect) {
 			if s == "" {
 				continue
 			}
-			if raised {
+			if raised || shaped {
 				drawTouchKeyLegend(dc, s, legendBounds, j)
 			} else {
 				drawKeyLegend(dc, s, legendBounds, j)

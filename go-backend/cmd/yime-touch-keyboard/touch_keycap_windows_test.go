@@ -97,14 +97,17 @@ func TestTouchKeycapPreservesBoardAndEdgeHitTargets(t *testing.T) {
 	before, _ := json.Marshal(a.s.Board)
 	raised, shaped, controls := 0, 0, 0
 	for i, k := range a.s.Board.Keys {
+		if k.Action.Type == "touch-ui" {
+			controls++
+			if !touchRaisedKey(k) {
+				t.Fatalf("control key has no matching raised cap: %s", k.ID)
+			}
+			continue
+		}
 		if !touchRaisedKey(k) {
-			if k.Action.Type == "touch-ui" {
-				controls++
-			} else {
-				shaped++
-				if len(k.Rectangles) != 2 || (k.Action.Key != "Tab" && k.Action.Type != "backspace") {
-					t.Fatalf("unexpected unraised body key: %s", k.ID)
-				}
+			shaped++
+			if len(k.Rectangles) != 2 || (k.Action.Key != "Tab" && k.Action.Type != "backspace") {
+				t.Fatalf("unexpected nonrectangular body key: %s", k.ID)
 			}
 			continue
 		}

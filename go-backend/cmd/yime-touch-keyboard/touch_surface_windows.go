@@ -353,15 +353,26 @@ func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 			name = "›"
 			enabled = p.snapshot.State.HasNext
 		}
-		fill(dc, box, palette.panel)
-		fg := palette.text
-		if !enabled || !p.candidatesEnabled() {
-			fg = palette.mutedText
-		}
-		G("SetTextColor").Call(dc, fg)
-		text(dc, name, box, 0x25)
+		a.drawTouchPager(dc, box, name, enabled && p.candidatesEnabled())
 	}
 }
+
+func (a *ui) drawTouchPager(dc uintptr, box rect, name string, enabled bool) {
+	palette := a.palette()
+	pressed := enabled && a.touchPressed(box)
+	bg, fg := palette.panel, palette.text
+	if pressed {
+		bg = palette.pressed
+	}
+	if !enabled {
+		fg = palette.mutedText
+	}
+	cap := touchKeycapLayout(box, tk.UnitMM*a.ppm, pressed)
+	drawTouchKeycap(dc, cap, bg, pressed)
+	G("SetTextColor").Call(dc, fg)
+	drawTouchKeyLegend(dc, name, cap.face, 4)
+}
+
 func (a *ui) touchSettingLabel(action string) string {
 	switch action {
 	case "variable":
