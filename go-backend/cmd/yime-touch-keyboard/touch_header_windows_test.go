@@ -5,9 +5,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"runtime"
 	"testing"
 	"unsafe"
+
+	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 )
 
 func headerRectsOverlap(a, b rect) bool {
@@ -40,10 +43,11 @@ func TestTouchHeaderScalesWithoutChangingTheBody(t *testing.T) {
 			if layout.previous.R-layout.previous.L != layout.next.R-layout.next.L || layout.previous.T != layout.next.T || layout.previous.B != layout.next.B {
 				t.Fatal("paging targets are not symmetric", layout)
 			}
-			// The targets must retain a useful physical extent when calibrated
-			// pixels/mm rises on a 4K screen; allow one pixel of rounding.
-			if float64(layout.previous.R-layout.previous.L+1)/ppm < 16 || float64(layout.previous.B-layout.previous.T+1)/ppm < 14 {
-				t.Fatal("paging targets shrank below the calibrated minimum", layout)
+			// Match one ordinary calibrated key unit on every screen, rather
+			// than a fixed-pixel minimum that changes the physical key size.
+			unit := int32(math.Round(tk.UnitMM * ppm))
+			if layout.previous.R-layout.previous.L != unit || layout.previous.B-layout.previous.T != unit {
+				t.Fatal("paging target is not 1u square", layout, unit)
 			}
 			for i := 0; i < 9; i++ {
 				r := a.candidateRect(i)

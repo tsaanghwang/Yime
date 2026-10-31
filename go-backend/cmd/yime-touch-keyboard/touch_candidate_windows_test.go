@@ -99,7 +99,7 @@ func TestTouchCandidateDrawEnlargesQuotesWithoutClipping(t *testing.T) {
 		t.Fatal(err)
 	}
 	G("SelectObject").Call(dc, a.touchFont)
-	const width, height = 420, 200
+	const width, height = 420, 260
 	bitmap, _, _ := G("CreateCompatibleBitmap").Call(dc, width, height)
 	if bitmap == 0 {
 		t.Fatal("create bitmap")
@@ -108,7 +108,8 @@ func TestTouchCandidateDrawEnlargesQuotesWithoutClipping(t *testing.T) {
 	t.Cleanup(func() { G("SelectObject").Call(dc, oldBitmap); G("DeleteObject").Call(bitmap) })
 	G("SetTextColor").Call(dc, 0)
 	G("SetBkMode").Call(dc, 1)
-	box := rect{20, 10, 395, 168} // Approximately the calibrated ASUS candidate row.
+	actual := a.candidateRect(0)
+	box := rect{20, 10, 20 + actual.R - actual.L, 10 + actual.B - actual.T}
 	ink := func(checkBounds bool) int {
 		count := 0
 		for y := int32(0); y < height; y++ {
@@ -137,7 +138,7 @@ func TestTouchCandidateDrawEnlargesQuotesWithoutClipping(t *testing.T) {
 		}
 		fill(dc, rect{0, 0, width, height}, 0xffffff)
 		G("SelectObject").Call(dc, a.candidateFont)
-		text(dc, label, rect{20, 10, 395, height}, 0x11)
+		text(dc, label, rect{box.L, box.T, box.R, height}, 0x11)
 		complete := ink(false)
 		G("SelectObject").Call(dc, a.touchFont)
 		if large != complete {

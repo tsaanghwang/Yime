@@ -21,8 +21,10 @@ func (a *ui) touchHeaderLayout() touchHeaderLayout {
 	u := tk.UnitMM * a.ppm
 	margin := max(int32(6), int32(math.Round(.04*u)))
 	line := max(int32(32), int32(math.Round(.30*u)))
-	row := max(int32(60), int32(math.Round(.75*u)))
-	pager := max(int32(84), int32(math.Round(.85*u)))
+	// Both pager dimensions are exactly one calibrated unit, rounded to a
+	// drawing pixel. The shared candidate row keeps the same vertical bounds.
+	pager := max(int32(1), int32(math.Round(u)))
+	row := pager
 	width := a.previewWidth()
 	top, bottom := line+margin, line+margin+row
 	previous := rect{margin, top, margin + pager, bottom}
