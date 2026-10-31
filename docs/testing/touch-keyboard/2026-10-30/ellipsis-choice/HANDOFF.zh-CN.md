@@ -1,5 +1,7 @@
 # 省略号双候选交付（2026-10-30）
 
+2026-10-31 接续：PR #83 已合并为 `bbf64dd85a4618c95b03980e61b7b5acab166371`。本轮已完成[给 MyComputer 的整合报告](MYCOMPUTER_INTEGRATION_REPORT.zh-CN.md)，固定包与接收端待测附件见[CI交付](../pr83-ci-handoff/CI_DELIVERY.zh-CN.md)。下面内容保留提交前状态；物理结果仅绑定原本地测试包，不继承给 CI 包。本轮只汇总及核对，没有启动新测试批次。
+
 当前交付分支 `codex/touch-ellipsis-choice-20261030` 从已合并PR #82后的main `5f98f289f9391da7460f5709f97d0d0f7aba8fdd` 开始。连续点中点3次或6次后，由用户明确选择普通U+2026或居中U+22EF，选择前不写入宿主；保留中文组合、候选和翻页状态，取消或模式/焦点边界清理暂存。破折号、18u几何、编码和产品运行时不改。
 
 [本次本地验证](LOCAL_VALIDATION.json)重新通过相关Go包、完整离线检查（27项Python、46项JS）、投影及profile检查。首次离线检查因进程PATH缺gofmt中断，补入已有工具目录后重跑通过；未为此修改源码。CI及新构建包以新PR实际检查为准。

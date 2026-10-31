@@ -1,5 +1,9 @@
 # 桌面触摸键盘阶段交接
 
+## 2026-10-31 MyComputer 整合接续
+
+省略号专项后下一授权步骤为审查剩余风险、汇总源码及测试交付；本轮按用户要求完成[本机开发测试整合报告](../../../docs/testing/touch-keyboard/2026-10-30/ellipsis-choice/MYCOMPUTER_INTEGRATION_REPORT.zh-CN.md)。#83 已合并，当前分支与远端跟踪 main 文件树一致；固定 CI 包、历史本地测试包及其结果分别记录。宏碁笔29项／手指10项不提升为新CI包、ARM64或全键盘通过；无新增物理批次。18u及冻结候选保持。下方“未提交／新PR”描述保留为当时状态。
+
 ## 2026-10-30 交付接续：省略号双候选独立新PR
 
 用户授权提交、推送和开新PR。新分支`codex/touch-ellipsis-choice-20261030`从已合并PR #82后的main创建，Go及完整离线回归已通过。宏碁笔29项、手指10项结果分开，待反馈批次为0；[当前交付与范围](../../../docs/testing/touch-keyboard/2026-10-30/ellipsis-choice/HANDOFF.zh-CN.md)说明历史包及后续测试边界。
