@@ -1,11 +1,11 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {spawnSync} from 'node:child_process';
-import {digest,validateTask,verifyPackage,receive,publish} from './runner.mjs';
+import {digest,validateTask,verifyPackage,receive,publish,gitFailureSummary} from './runner.mjs';
 const exec=(cwd,...args)=>{const r=spawnSync('git',['-c','core.hooksPath=','-c','commit.gpgSign=false','-c','core.autocrlf=false','-c','init.templateDir=',...args],{cwd,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
 function fixture(){
  const arch=/^(aarch64|arm64)$/i.test(os.machine())?'arm64':'amd64';
- const root=fs.mkdtempSync(path.join(os.tmpdir(),'yime-exchange-'));const remote=path.join(root,'remote.git'),src=path.join(root,'src'),pkg=path.join(root,'package');fs.mkdirSync(src);fs.mkdirSync(pkg);exec(root,'init','--bare',remote);exec(src,'init','-b','queue');exec(src,'config','user.name','Test');exec(src,'config','user.email','test@example.invalid');exec(src,'remote','add','origin',remote);
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'yime-exchange-'));const remote=path.join(root,'remote.git'),src=path.join(root,'src'),pkg=path.join(root,'package');fs.mkdirSync(src);fs.mkdirSync(pkg);exec(root,'init','--bare',remote);exec(remote,'config','uploadpack.allowFilter','true');exec(remote,'config','uploadpack.allowAnySHA1InWant','true');exec(src,'init','-b','queue');exec(src,'config','user.name','Test');exec(src,'config','user.email','test@example.invalid');exec(src,'remote','add','origin',remote);
  const exe=Buffer.alloc(128);exe.write('MZ');exe.writeUInt32LE(64,60);exe.write('PE\0\0',64);exe.writeUInt16LE(arch==='arm64'?0xaa64:0x8664,68);fs.writeFileSync(path.join(pkg,'YimeTouchKeyboard.exe'),exe);
  const manifest={sourceCommit:'a'.repeat(40),sourceChanges:false,architecture:'windows-'+arch,scope:'uninstalled-desktop-touch-keyboard-chinese-experiment',completeChineseResources:true,files:{'YimeTouchKeyboard.exe':digest(exe)}};const mb=JSON.stringify(manifest);fs.writeFileSync(path.join(pkg,'manifest.json'),mb);const zip=path.join(root,'fixture.zip');fs.writeFileSync(zip,'fixture-only-archive');
  const task={schemaVersion:1,id:'test-one',machine:'desktop',kind:'manual-test',expiresAt:'2099-01-01T00:00:00Z',package:{key:'fixture',architecture:arch,sourceCommit:'a'.repeat(40),runID:1,artifactID:2,zipSHA256:digest('fixture-only-archive'),zipBytes:20,manifestSHA256:digest(mb),executableSHA256:digest(exe),payloadCount:1},checks:['word-ni'],instructions:'Use a disposable document only.'};
@@ -38,3 +38,39 @@ test('manifest traversal and payload symlinks fail closed',()=>{const f=fixture(
  if(process.platform!=='win32'){m.files={'linked':digest('x')};fs.writeFileSync(p,JSON.stringify(m));f.task.package.manifestSHA256=digest(fs.readFileSync(p));fs.writeFileSync(path.join(f.root,'outside'),'x');fs.symlinkSync(path.join(f.root,'outside'),path.join(f.pkg,'linked'));assert.throws(()=>verifyPackage(f.task,f.config.packages.fixture),/Symlink/);}
  }finally{f.cleanup();}});
 test('stored task tampering is rejected before publish',()=>{const f=fixture();try{receive(f.config);const p=path.join(f.config.stateDir,'tasks/test-one/task.json');const t=JSON.parse(fs.readFileSync(p));t.checks=['another-check'];fs.writeFileSync(p,JSON.stringify(t));assert.throws(()=>publish(f.config,'test-one'),/Stored task changed/);}finally{f.cleanup();}});
+
+test('Git failures classify without disclosing raw stderr or credentials',()=>{
+ const samples=[
+  [{status:128,stderr:"fatal: could not read Username for 'https://alice:SECRET@github.com/x?token=SECRET': terminal prompts disabled"},'authentication'],
+  [{status:null,error:{code:'ETIMEDOUT'},stderr:'private path SECRET'},'timeout'],
+  [{status:128,stderr:'Could not resolve proxy: SECRET.proxy.invalid'},'proxy'],
+  [{status:128,stderr:'SSL certificate problem for https://SECRET'},'tls-certificate'],
+  [{status:128,stderr:"couldn't find remote ref SECRET"},'remote-ref-missing'],
+  [{status:128,stderr:'Authorization: Bearer SECRET'},'unclassified']
+ ];
+ for(const [result,category] of samples){const message=gitFailureSummary('fetch',result);assert.ok(message.includes('category='+category));assert.ok(!message.includes('SECRET'));assert.ok(!message.includes('https://'));}
+});
+
+test('partial transport keeps history without unrelated blobs and preserves v1 state',()=>{const f=fixture();try{
+ const big=Buffer.alloc(4*1024*1024,71);fs.writeFileSync(path.join(f.src,'unrelated-product.bin'),big);exec(f.src,'add','unrelated-product.bin');exec(f.src,'commit','-m','product blob');const blob=exec(f.src,'rev-parse','HEAD:unrelated-product.bin');exec(f.src,'push','origin','queue');
+ const old=path.join(f.config.stateDir,'transport.git');fs.mkdirSync(old,{recursive:true});exec(old,'init','--bare');exec(old,'remote','add','origin',f.remote);fs.writeFileSync(path.join(old,'failed-evidence.txt'),'preserve');
+ assert.equal(receive(f.config).outcomes[0].status,'awaiting-human');const repo=path.join(f.config.stateDir,'transport-partial-v2.git');
+ assert.equal(exec(repo,'rev-parse','--is-shallow-repository'),'false');assert.equal(exec(repo,'config','--get','remote.origin.promisor'),'true');
+ assert.ok(exec(repo,'rev-list','--objects','--all','--missing=print').split('\n').includes('?'+blob));assert.equal(fs.readFileSync(path.join(old,'failed-evidence.txt'),'utf8'),'preserve');
+ }finally{f.cleanup();}});
+test('partial transport rejects remote rewind without rewriting incoming',()=>{const f=fixture();try{
+ const original=exec(f.src,'rev-parse','HEAD');receive(f.config);fs.writeFileSync(path.join(f.src,'note.txt'),'next');exec(f.src,'add','note.txt');exec(f.src,'commit','-m','next');exec(f.src,'push','origin','queue');receive(f.config);const repo=path.join(f.config.stateDir,'transport-partial-v2.git'),latest=exec(repo,'rev-parse','incoming');
+ exec(f.src,'push','--force','origin',original+':refs/heads/queue');assert.throws(()=>receive(f.config),/Git operation failed: fetch/);assert.equal(exec(repo,'rev-parse','incoming'),latest);
+ }finally{f.cleanup();}});
+test('unsupported filtering never consumes queue tasks',()=>{const f=fixture();try{exec(f.remote,'config','uploadpack.allowFilter','false');assert.throws(()=>receive(f.config),/did not advertise protocol-v2 blob filtering/);assert.ok(!fs.existsSync(path.join(f.config.stateDir,'tasks/test-one/receipt.json')));assert.match(exec(path.join(f.config.stateDir,'transport-partial-v2.git'),'count-objects','-v'),/in-pack: 0/);}finally{f.cleanup();}});
+
+test('migration requires previous v1 tip ancestry',()=>{const f=fixture();try{
+ const old=path.join(f.config.stateDir,'transport.git');fs.mkdirSync(old,{recursive:true});exec(old,'init','--bare');exec(old,'remote','add','origin',f.remote);exec(old,'fetch','origin','queue:incoming');
+ exec(f.src,'checkout','--orphan','replacement');exec(f.src,'commit','-am','new unrelated root');exec(f.src,'push','--force','origin','replacement:queue');
+ assert.throws(()=>receive(f.config),/previous transport\/receipt anchor/);assert.ok(!fs.existsSync(path.join(f.config.stateDir,'tasks/test-one/receipt.json')));assert.ok(exec(old,'rev-parse','incoming'));
+ }finally{f.cleanup();}});
+
+test('result migration refuses missing previous remote result history',()=>{const f=fixture();try{
+ receive(f.config);publish(f.config,'test-one',{confirm:true});const old=path.join(f.config.stateDir,'transport.git');fs.mkdirSync(old);exec(old,'init','--bare');exec(old,'remote','add','origin',f.remote);exec(old,'fetch','origin','refs/heads/task-results/desktop:refs/heads/results');
+ exec(f.remote,'update-ref','-d','refs/heads/task-results/desktop');assert.throws(()=>publish(f.config,'test-one',{confirm:true}),/Previous results branch missing/);
+ }finally{f.cleanup();}});

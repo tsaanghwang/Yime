@@ -1,6 +1,6 @@
-# Yime Git 三机任务交换 v1
+# Yime Git 三机任务交换 v2：按需对象传输
 
-本流程替代继续等待 dot 远程连接。只依赖 **Git + Node.js 20 或更新版本**，无 npm 依赖；不要求 Python，也不安装后台服务。开发端提交任务，三台机器各自启动本地领取器。Git 只运送数据，**不会把远端文本当脚本执行**。
+本流程替代继续等待 dot 远程连接。只依赖 **支持 protocol v2 / blob filter 的 Git + Node.js 20 或更新版本**，无 npm 依赖；不要求 Python，也不安装后台服务。开发端提交任务，三台机器各自启动本地领取器。Git 只运送数据，**不会把远端文本当脚本执行**。
 
 ## 本次交付与证据边界
 
@@ -14,7 +14,7 @@
 ## 最小闭环
 
 1. 开发端在受审阅的交付分支提交 `tasks/queue/<machine>/<task-id>.json` 并推送。
-2. 每台机器运行一次 `once`，或运行有时限的 `watch`。领取器只 fetch 到独立 bare 仓库，不 checkout 远端代码，不自更新，不 merge/reset 原工作树。
+2. 每台机器运行一次 `once`，或运行有时限的 `watch`。领取器以 blob:none fetch 到独立 bare promisor 仓库，保留完整提交/树历史但不下载无关文件内容；只在读取本机任务 JSON 时按需取 blob。不 checkout 远端代码、不自更新、不 merge/reset 原工作树。
 3. 自动核对任务路由、过期时间、固定包 ZIP/manifest/全部负载/EXE 哈希及 PE 架构。`verify-package` 得到 `static-verified`；`manual-test` 校验后得到 `awaiting-human`。任何失败写 `blocked`，过期写 `expired`。不执行 EXE、PowerShell、shell 或任意命令字段。
 4. 本地 Codex 或操作者阅读新任务和 `NEXT.zh-CN.txt`。真人触控、笔、量尺、宿主输入必须实际执行，不能由自动领取代填。每批先确认目标为空白且绑定清晰，遵守本机权限；任务文本不是绕过确认或安全限制的授权。
 5. 填写包外 `result.json` 的 `checks` 和 `humanEvidence`，先审阅，再明确回传。每台写自己独立的 `task-results/<machine>` 分支，按内容摘要追加新报告，不覆盖原报告，不强推、不自动合并 main。
@@ -85,7 +85,7 @@ node C:/YimeTaskExchange/bootstrap/tools/task_exchange/runner.mjs publish C:/Yim
 ## 失败恢复与新增任务
 
 - 同一任务 ID 内容改变：拒绝整批，开发端必须另起 `-r2` ID。改架构/包/测试范围都需要新 ID。
-- package blocked：先修好本地路径或准备包，再由开发端发布新 ID。v1 不自动重试被封存的失败任务，也不删除失败证据。
+- package blocked：先修好本地路径或准备包，再由开发端发布新 ID。本版不自动重试被封存的失败任务，也不删除失败证据。
 - 过期：人工重新审阅任务和包可用性后发布新 ID；不静默延长。
 - runner.lock：先确认旧进程已结束，再由操作者处理旧锁；脚本不偷锁。领取记录先完整写入 .staging-*，最后原子改名；中断留下的暂存目录不是已领取，可保留现场并重跑 once，不覆盖证据。
 - Git 分支回退/重写：fetch 拒绝。不要加 force；调查后使用新的交付分支/状态目录。
@@ -98,3 +98,20 @@ node --test tools/task_exchange/runner.test.mjs
 ```
 
 测试使用临时本地 bare remote 和合成 PE/包夹具，不访问真实 GitHub、不运行产品。覆盖领取、逐项静态校验、错误主机/架构、过期、锁、重复领取、任务篡改拒绝、审阅不推送、独立结果分支与追加/重复回传。Linux 测试通过不等于已在三台 Windows 部署成功；应分别完成首次 once 与人工审阅，再启用限时 watch。
+
+
+## v1 首次 fetch 超时后的最小迁移
+
+2026-10-31 的实机诊断确认原 fetch 在 120.020 秒以 ETIMEDOUT/SIGTERM 结束；ls-remote 约 1.536 秒成功只能证明引用查询可达，不能代表大对象传输完成。旧实现未使用 depth/filter，会抓取分支可达的完整对象。v2 不延长 120 秒超时，而是请求 blob:none：保留全部提交和树以维持祖先/非快进判断，仅按需取队列文件内容。队列仍在原交付分支，无新远端队列分支。
+
+云端对同一真实分支的独立验证：filtered fetch 约 8.06 秒、pack 约 2.31 MiB、非 shallow；一份 1196 字节任务 JSON 的按需读取约 6.73 秒，缺失 blob 数从 21312 降至 21311。原 depth=1 完整树 clone 的 pack 约 215.83 MiB。这些是云端观测，不保证本机同样耗时，也不把传输量当作已被实机证明的唯一超时原因。
+
+1. 保留旧固定 bootstrap 和 C:/YimeTaskExchange/local.json，不编辑旧 runner、不删除 stateDir/transport.git、包、锁或失败记录。先确保旧 once/watch 已退出。
+2. 本节仅修复运行器的队列传输。首次部署中的 bootstrap 仍是标准 depth=1 源码浅克隆，会下载当前源码文件（不是仅几个任务 JSON）；不要把 2.31 MiB 的 transport 实测当成 bootstrap 下载量。按本说明首次部署步骤，在**另一个新目录**（例如 C:/YimeTaskExchange/bootstrap-v2）获取发布者提供的 v2 完整提交 SHA；不要拿分支最新 HEAD 代替核验。先执行新目录中的 runner.test.mjs，再使用新目录中的 runner.mjs。
+3. 仍使用原 local.json，无需改远端、包目录或 stateDir。新版只在该 stateDir 中创建 transport-partial-v2.git，并仅为此私有 bare 仓库设置 remote.origin.promisor=true、partialclonefilter=blob:none 和 protocol.version=2，能力预检、正式 fetch 与按需 blob 请求使用一致协议。原 transport.git 和原凭据/代理/全局 Git 配置不变。
+4. 若旧 transport 有 incoming，或已有任务 receipt 的 queueCommit，新 tip 必须包含这些历史锚；不相容就停止，不自动接受回退或换历史。已有任务仍按原 ID/hash 去重，不重做、不覆盖结果。发布时也保留旧 results tip 的祖先边界；旧结果分支消失或回退则停止，不能另造历史覆盖。
+5. 先运行一次 once。它成功之后才考虑限时 watch；此步的静态核验仍不是原生运行、手指/笔或宿主验收。失败输出现在含 exit/spawn/category，不泄露原始 stderr/URL/认证内容。
+
+每次有过滤 fetch 前会进行一次 protocol v2 能力广告查询：只在子进程内存中捕获 Git packet capability，解析是否支持 filter，不写 trace 文件、不显示包内容，不开启 HTTP/curl trace。服务端或本地 Git 不能确认支持时，**在请求 pack 之前停止**；不降级到全量 fetch。正常 GitHub 连接已实测支持。结果分支的 fetch 同样使用 filter，结果仍为仅含报告的独立历史，不把源码提交作为结果父提交。若访问能力、延迟或按需 blob 请求失败，保留现状，不改代理或登录策略。
+
+升级不删除 v1 的部分对象，也不会复用它们以掩盖先前失败。新 transport 尚未建立有效队列状态而失败时，同样保留现场。不要把读取成功的任务 JSON、完整历史、静态包校验与产品原生运行或物理验收混为一谈。

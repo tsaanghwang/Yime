@@ -50,9 +50,36 @@ export function verifyPackage(t,location){
   return {zipSHA256:t.package.zipSHA256,manifestSHA256:t.package.manifestSHA256,executableSHA256:t.package.executableSHA256,payloadFiles:Object.keys(m.files).length,packageArchitecture:t.package.architecture,executableStarted:false,hardwareAcceptance:false};
 }
 function writeNew(p,value){fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,JSON.stringify(value,null,2)+'\n',{flag:'wx'});}
+export function gitFailureSummary(operation,result){
+  // Inspect stderr only in memory. Never echo URLs, headers, credentials or paths.
+  const stderr=String(result.stderr??'');
+  const code=['ENOENT','EACCES','ETIMEDOUT','ENOBUFS'].includes(result.error?.code)?result.error.code:(result.error?'OTHER':null);
+  let category='unclassified';
+  if(code==='ETIMEDOUT')category='timeout';
+  else if(code==='ENOENT')category='git-not-found';
+  else if(code==='EACCES')category='process-permission';
+  else if(code==='ENOBUFS')category='output-limit';
+  else if(/could not read (Username|Password)|terminal prompts disabled|authentication failed|could not authenticate|credential.*(failed|unavailable)/i.test(stderr))category='authentication';
+  else if(/could not resolve proxy|proxy.*(407|authentication)|proxy CONNECT aborted/i.test(stderr))category='proxy';
+  else if(/could not resolve host/i.test(stderr))category='dns';
+  else if(/SSL certificate|certificate verify|unable to get local issuer/i.test(stderr))category='tls-certificate';
+  else if(/couldn.t find remote ref/i.test(stderr))category='remote-ref-missing';
+  else if(/not a git repository|does not appear to be a git repository/i.test(stderr))category='repository-or-remote';
+  else if(/failed to connect|connection timed out|connection reset|unable to access/i.test(stderr))category='transport';
+  const status=Number.isInteger(result.status)?result.status:'none';
+  return `Git operation failed: ${operation} (exit=${status}, spawn=${code??'none'}, category=${category}; inspect sanitized details locally; no automatic settings changes)`;
+}
 function git(repo,args,input){
-  const r=spawnSync('git',['-c','core.hooksPath=',...args],{cwd:repo,input,encoding:'utf8',timeout:120000,maxBuffer:8*1024*1024,env:{...process.env,GIT_TERMINAL_PROMPT:'0'}});
-  if(r.error||r.status!==0)throw new Error('Git operation failed: '+args[0]+' (inspect credentials/network locally; no automatic settings changes)');
+  if(args[0]==='fetch'&&args.includes('--filter=blob:none')){
+    // Packet capabilities only, held in memory and never logged. No HTTP/curl trace.
+    // Ref advertisement is small; reject before requesting a pack if filtering is absent.
+    const advertised=spawnSync('git',['-c','core.hooksPath=','-c','protocol.version=2','ls-remote','--heads','origin',args.at(-1).split(':')[0]],{cwd:repo,encoding:'utf8',timeout:120000,maxBuffer:8*1024*1024,env:{...process.env,GIT_TERMINAL_PROMPT:'0',GCM_INTERACTIVE:'Never',GIT_TRACE:'0',GIT_TRACE_CURL:'0',GIT_CURL_VERBOSE:'0',GIT_TRACE2:'0',GIT_TRACE2_EVENT:'0',GIT_TRACE2_PERF:'0',GIT_TRACE_PACKET:'1'}});
+    if(advertised.error||advertised.status!==0)throw new Error(gitFailureSummary('filter-capability-check',advertised));
+    insist(/packet:\s+(?:git|ls-remote)< fetch=[^\r\n]*\bfilter\b/.test(advertised.stderr??''),'Git server did not advertise protocol-v2 blob filtering; no pack requested and no tasks consumed');
+  }
+  const r=spawnSync('git',['-c','core.hooksPath=','-c','protocol.version=2',...args],{cwd:repo,input,encoding:'utf8',timeout:120000,maxBuffer:8*1024*1024,env:{...process.env,GIT_TERMINAL_PROMPT:'0',GCM_INTERACTIVE:'Never'}});
+  if(r.error||r.status!==0)throw new Error(gitFailureSummary(args[0],r));
+  if(args.includes('--filter=blob:none')&&/filtering not recognized by server|filter.*ignored/i.test(r.stderr??''))throw new Error('Git server did not support blob filtering; queue not consumed; no automatic full-fetch retry');
   return r.stdout.trim();
 }
 function configCheck(c){
@@ -70,16 +97,47 @@ function configCheck(c){
 function setup(c){
   configCheck(c); const state=path.resolve(c.stateDir); fs.mkdirSync(state,{recursive:true});
   insist(!fs.lstatSync(state).isSymbolicLink(),'Linked state directory rejected');
-  const repo=path.join(state,'transport.git');
-  if(!fs.existsSync(repo)){fs.mkdirSync(repo);git(repo,['init','--bare']);git(repo,['remote','add','origin',c.remote]);}
+  // Keep the failed v1 object store intact; never reuse it or delete its evidence.
+  const repo=path.join(state,'transport-partial-v2.git');
+  if(!fs.existsSync(repo)){
+    fs.mkdirSync(repo);git(repo,['init','--bare']);git(repo,['remote','add','origin',c.remote]);
+    // Scoped only to this private bare transport, never the user's source/global config.
+    git(repo,['config','remote.origin.promisor','true']);
+    git(repo,['config','remote.origin.partialclonefilter','blob:none']);
+    git(repo,['config','protocol.version','2']);
+  }
   insist(git(repo,['rev-parse','--is-bare-repository'])==='true'&&git(repo,['remote','get-url','origin'])===c.remote,'Transport identity mismatch');
+  insist(git(repo,['config','--get','remote.origin.promisor'])==='true'&&git(repo,['config','--get','remote.origin.partialclonefilter'])==='blob:none'&&git(repo,['config','--get','protocol.version'])==='2','Partial transport configuration mismatch; preserve it and inspect locally');
   return {state,repo};
 }
 function lock(state,fn){const p=path.join(state,'runner.lock');let fd;try{fd=fs.openSync(p,'wx');}catch{throw new Error('Runner lock exists; stop other runner first. Do not auto-steal a stale lock.');}try{fs.writeFileSync(fd,String(process.pid));return fn();}finally{fs.closeSync(fd);fs.unlinkSync(p);}}
+function migrationAnchors(c,state){
+  const anchors=new Set(),old=path.join(state,'transport.git');
+  if(fs.existsSync(old)){
+    insist(git(old,['rev-parse','--is-bare-repository'])==='true'&&git(old,['remote','get-url','origin'])===c.remote,'Legacy transport identity mismatch; preserve and inspect');
+    const tip=git(old,['for-each-ref','--format=%(objectname)','refs/heads/incoming']);
+    if(tip){insist(matches(COMMIT,tip),'Invalid legacy queue anchor');anchors.add(tip);}
+  }
+  const tasks=path.join(state,'tasks');
+  if(fs.existsSync(tasks))for(const id of fs.readdirSync(tasks)){
+    if(!matches(ID,id))continue;
+    const receipt=path.join(tasks,id,'receipt.json');if(!fs.existsSync(receipt))continue;
+    const r=json(receipt);insist(r.machine===c.machine&&matches(COMMIT,r.queueCommit),'Invalid existing receipt anchor');anchors.add(r.queueCommit);
+  }
+  return anchors;
+}
+function verifyAnchors(repo,anchors,commit){
+  for(const anchor of anchors){
+    const r=spawnSync('git',['-c','core.hooksPath=','merge-base','--is-ancestor',anchor,commit],{cwd:repo,encoding:'utf8',timeout:120000,maxBuffer:8*1024*1024,env:{...process.env,GIT_TERMINAL_PROMPT:'0',GCM_INTERACTIVE:'Never'}});
+    insist(!r.error&&r.status===0,'Queue history does not extend previous transport/receipt anchor; no tasks consumed');
+  }
+}
 export function receive(c,{now=Date.now()}={}){
   const {state,repo}=setup(c); return lock(state,()=>{
-    git(repo,['fetch','--no-tags','origin',`refs/heads/${c.queueBranch}:refs/heads/incoming`]);
+    const anchors=migrationAnchors(c,state);
+    git(repo,['fetch','--filter=blob:none','--no-tags','origin',`refs/heads/${c.queueBranch}:refs/heads/incoming`]);
     const commit=git(repo,['rev-parse','refs/heads/incoming']);
+    verifyAnchors(repo,anchors,commit);
     const paths=git(repo,['ls-tree','-r','--name-only',commit,'--',`tasks/queue/${c.machine}/`]).split('\n').filter(Boolean);
     const outcomes=[];
     for(const file of paths){
@@ -127,9 +185,15 @@ export function publish(c,id,{confirm=false}={}){
     insist(typeof c.authorName==='string'&&c.authorName.trim()&&typeof c.authorEmail==='string'&&c.authorEmail.includes('@'),'Set result commit author locally');
     // A fresh temporary index builds only a result tree, never stages the user's checkout.
     const refs=git(repo,['ls-remote','--heads','origin',`refs/heads/${branch}`]);let parent=null;
-    if(refs){git(repo,['fetch','--no-tags','origin',`refs/heads/${branch}:refs/heads/results`]);parent=git(repo,['rev-parse','refs/heads/results']);}
-    const index=path.join(state,'publish-index-'+crypto.randomUUID());const env={...process.env,GIT_INDEX_FILE:index,GIT_AUTHOR_NAME:c.authorName,GIT_AUTHOR_EMAIL:c.authorEmail,GIT_COMMITTER_NAME:c.authorName,GIT_COMMITTER_EMAIL:c.authorEmail,GIT_TERMINAL_PROMPT:'0'};
-    function plumbing(args,input){const r=spawnSync('git',['-c','core.hooksPath=',...args],{cwd:repo,input,encoding:'utf8',env,timeout:120000});if(r.error||r.status!==0)throw new Error('Result Git operation failed; local evidence retained, never force-push');return r.stdout.trim();}
+    let previousResults=null;const old=path.join(state,'transport.git');
+    if(fs.existsSync(old)){
+      insist(git(old,['rev-parse','--is-bare-repository'])==='true'&&git(old,['remote','get-url','origin'])===c.remote,'Legacy transport identity mismatch; preserve and inspect');
+      previousResults=git(old,['for-each-ref','--format=%(objectname)','refs/heads/results'])||null;
+      if(previousResults)insist(matches(COMMIT,previousResults)&&refs,'Previous results branch missing; do not replace its history');
+    }
+    if(refs){git(repo,['fetch','--filter=blob:none','--no-tags','origin',`refs/heads/${branch}:refs/heads/results`]);parent=git(repo,['rev-parse','refs/heads/results']);if(previousResults)verifyAnchors(repo,[previousResults],parent);}
+    const index=path.join(state,'publish-index-'+crypto.randomUUID());const env={...process.env,GIT_INDEX_FILE:index,GIT_AUTHOR_NAME:c.authorName,GIT_AUTHOR_EMAIL:c.authorEmail,GIT_COMMITTER_NAME:c.authorName,GIT_COMMITTER_EMAIL:c.authorEmail,GIT_TERMINAL_PROMPT:'0',GCM_INTERACTIVE:'Never'};
+    function plumbing(args,input){const r=spawnSync('git',['-c','core.hooksPath=','-c','protocol.version=2',...args],{cwd:repo,input,encoding:'utf8',env,timeout:120000});if(r.error||r.status!==0)throw new Error('Result Git operation failed; local evidence retained, never force-push');return r.stdout.trim();}
     try{
       if(parent)plumbing(['read-tree',parent]);else plumbing(['read-tree','--empty']);
       const blob=plumbing(['hash-object','-w','--stdin'],body);plumbing(['update-index','--add','--cacheinfo',`100644,${blob},${relative}`]);const tree=plumbing(['write-tree']);
