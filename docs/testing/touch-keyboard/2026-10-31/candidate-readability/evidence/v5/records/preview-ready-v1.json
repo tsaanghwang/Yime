@@ -1,0 +1,30 @@
+{
+  "recordedAtUTC": "2026-10-31T05:30:11.249931+00:00",
+  "windowId": 8913314,
+  "app": "process:C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v5\\arm64\\YimeTouchKeyboard.exe",
+  "title": "Yime 18u 中文受控预览（不向其他应用输入）",
+  "visibleVerified": true,
+  "observedSettings": {
+    "input": "CN",
+    "mode": "variable",
+    "legends": "ID",
+    "font": "large",
+    "theme": "dark",
+    "sound": "on",
+    "literalPunctuationEntries": "off"
+  },
+  "composition": "empty",
+  "confirmedLocalText": "empty",
+  "preparation": [
+    "previous v4 observed minimized and left intact",
+    "launched v5",
+    "observed default private-glyph body",
+    "selected ID legends in settings",
+    "returned to body"
+  ],
+  "visualObservation": "raised rectangular body keys and wider gaps visible; bottom row and 18-control row complete; ID and glyph views inspected without physical test input",
+  "physicalInputPerformedByAutomation": false,
+  "newVisualResult": "pending user",
+  "packagePayloadHashesRechecked": true,
+  "pendingPlan": "keycap3d-preview-plan-v1.json"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "candidate-quote-readability-v1-user-result",
+  "recordedAtUTC": "2026-10-31T03:46:20.240166+00:00",
+  "plan": "quote-readability-preview-plan-v1.json",
+  "sourceCommit": "d8999f0407fb8979787479c08b80b4922fb1bb59",
+  "exeSHA256": "fad2e8d523ef98da037f57263deb1fc2f1cd79595106c7ebaddfba1b262aeed2",
+  "userVerbatim": "就近看勉强能辨认，可以考虑把预览输入栏字号放大为“常规”字号。另外，候选栏字号也可改为“常规”，左右翻页键改大一点，太小不好点选。",
+  "clarificationQuestion": "“常规”是否指与盘面设置/帮助/CN接近，而非字号中档",
+  "clarificationAnswer": "按盘面常规文字大小调整",
+  "status": "needs improvement",
+  "physicalReadabilityPassed": false,
+  "observations": {
+    "quoteReadability": "barely distinguishable at close distance",
+    "pagerTargets": "reported too small to tap comfortably",
+    "clipping": "not explicitly reported"
+  },
+  "scope": "user-reported readability/usability; no automatic pointer or codepoint measurement",
+  "nextAction": "scale preview/candidate text to normal key labels and enlarge pager targets in a new package"
+}

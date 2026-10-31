@@ -1,0 +1,30 @@
+{
+  "recordedAtUTC": "2026-10-31T04:17:10.104257+00:00",
+  "windowId": 14812526,
+  "app": "process:C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v3\\arm64\\YimeTouchKeyboard.exe",
+  "title": "Yime 18u 中文受控预览（不向其他应用输入）",
+  "visibleVerified": true,
+  "observedSettings": {
+    "input": "CN",
+    "mode": "variable",
+    "legends": "ID",
+    "font": "large",
+    "theme": "dark",
+    "sound": "on",
+    "literalPunctuationEntries": "off"
+  },
+  "composition": "empty",
+  "confirmedLocalText": "empty",
+  "preparation": [
+    "minimized previous v2 preview",
+    "launched v3",
+    "opened settings",
+    "selected ID legends",
+    "returned to body"
+  ],
+  "visualObservation": "square left/right pager areas and complete bottom row visible",
+  "physicalInputPerformedByAutomation": false,
+  "physicalPagerResult": "pending user",
+  "packagePayloadHashesRechecked": true,
+  "pendingPlan": "one-unit-pager-plan-v1.json"
+}

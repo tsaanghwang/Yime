@@ -1,0 +1,9 @@
+{
+  "recordedAtUTC": "2026-10-31T05:20:10.502945+00:00",
+  "sourceCommit": "a51c99b5c9ff47baf0ed251eef0b155f9391b68d",
+  "rawUserFeedback": "能不能把按键主要是主键区字符键改成三维效果的按键，并让前后两键每键键帽每行行首和行末的文字间距加宽一些，当前效果是前一个键的行末与后一键的行首差不多靠拢了，看见来吃力，不便查找和辨认。或可以考虑把键间距加大不是像现在的几乎紧靠在一起。",
+  "resultType": "visual readability improvement request",
+  "interpretation": "rectangular body key bevel/depth, visual gaps and horizontal legend inset; preserve calibrated pitch, hit regions and readable font size",
+  "physicalPassClaimed": false,
+  "pendingToolbarBatch": "superseded for the next visual revision; no pass inferred"
+}

@@ -1,0 +1,24 @@
+{
+  "scope": "ARM64 1u square pager follow-up",
+  "sourceCommit": "8e9c60e299ad549972a243b3c474075219f4ac6e",
+  "localCommitOnly": true,
+  "CIArtifact": false,
+  "automatedTestsPassed": [
+    "native ARM64 desktop full shuffled regressions",
+    "exact 1u square geometry and existing pager gesture regressions",
+    "relocated full package with 8 resource rejection checks"
+  ],
+  "newPackagePhysicalAcceptance": false,
+  "activeBatch": null,
+  "userResult": "toolbar18-user-request-v1.json",
+  "priorV2Feedback": "character readability accepted; requested 1u pager size",
+  "evidence": [
+    "package-identity-v1.json",
+    "pager-1u-full-v1.log",
+    "package-check-v1.json",
+    "preview-launch-v1.json",
+    "preview-ready-v1.json",
+    "toolbar18-user-request-v1.json"
+  ],
+  "nextAction": "pager uses current ordinary-key height/width; 18 equal control keys with Backspace and three inert spare keys; preserve ordinary body keys and accepted font"
+}

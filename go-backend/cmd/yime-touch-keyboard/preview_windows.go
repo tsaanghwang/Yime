@@ -42,8 +42,9 @@ func (a *ui) previewWidth() int32 {
 func (a *ui) candidateRect(i int) rect {
 	w := (a.previewWidth() - 20) / 9
 	if a.o.TouchUI {
-		w = (a.previewWidth() - 200) / 9
-		return rect{100 + int32(i)*w, 34, 100 + int32(i+1)*w - 3, 94}
+		h := a.touchHeaderLayout()
+		w = (h.candidates.R - h.candidates.L) / 9
+		return rect{h.candidates.L + int32(i)*w, h.candidates.T, h.candidates.L + int32(i+1)*w - h.gap, h.candidates.B}
 	}
 	return rect{10 + int32(i)*w, 184, 10 + int32(i+1)*w - 3, 234}
 }
@@ -53,6 +54,11 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 	}
 	if _, exists := a.previewTouches[id]; exists {
 		return
+	}
+	if a.o.TouchUI {
+		if action, _ := a.touchControlAt(x, y); action == "reserved" {
+			return // Inert slots do not cancel selection or acquire a host ticket.
+		}
 	}
 	if !a.o.TouchUI && y < 104 {
 		a.toolbar(x, y)

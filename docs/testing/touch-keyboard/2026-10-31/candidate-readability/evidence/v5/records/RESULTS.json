@@ -1,0 +1,34 @@
+{
+  "scope": "ARM64 raised rectangular body keycaps and legend separation",
+  "sourceCommit": "b74a0c2ce666b7b0a9e1721ad70f3a43d4775a8e",
+  "localCommitOnly": true,
+  "CIArtifact": false,
+  "automatedTestsPassed": [
+    "native ARM64 desktop/touchkeyboard/keyboardlab shuffled regressions",
+    "DIB actual glyph/ID completeness and separation for CN/EN at three font levels and two scales",
+    "body edge hit targets, pressed depth, light/dark theme and classic rendering",
+    "relocated full package with 8 resource rejection checks",
+    "native touch-screen-v2 102 positions/18 controls/84 body keys and three-mode in-memory selection"
+  ],
+  "newPackagePhysicalAcceptance": false,
+  "activeBatch": null,
+  "userResult": "user: 不错，很爽; visual/use impression accepted; input method unspecified; remaining key styling requested",
+  "backspacePhysicalAcceptance": false,
+  "priorFeedback": "v4 adjacent key legend crowding; v2 regular font readability accepted; earlier physical results not inherited",
+  "evidence": [
+    "package-identity-v1.json",
+    "keycap3d-full-v3.log",
+    "package-check-v1.json",
+    "touch-ui-check-v1.json",
+    "preview-launch-v1.json",
+    "preview-ready-v1.json"
+  ],
+  "failedDevelopmentLogsPreserved": [
+    "keycap3d-full-v1.log",
+    "keycap3d-full-v2.log"
+  ],
+  "followUpDelivery": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6",
+  "followUpResults": "C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\records\\RESULTS.json",
+  "currentFollowUpStatus": "v6 unified raised keyboard open; awaiting user observation",
+  "feedbackRecord": "keycapall-user-feedback-v1.json"
+}

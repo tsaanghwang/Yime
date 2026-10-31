@@ -160,8 +160,8 @@ func (p *preview) navigate(key string, extend bool, down previewStamp) error {
 	switch key {
 	case "SelectAll":
 		return p.apply(tk.Output{Action: tk.Action{Type: "input", ASCII: "a"}, Ctrl: true}, down)
-	case "Delete":
-		return p.apply(tk.Output{Action: tk.Action{Type: "local", Key: "Delete"}}, down)
+	case "Delete", "Backspace":
+		return p.apply(tk.Output{Action: tk.Action{Type: "local", Key: key}}, down)
 	case "ArrowLeft", "ArrowRight", "Home", "End":
 		return p.apply(tk.Output{Action: tk.Action{Type: "local", Key: key}, Shift: extend}, down)
 	default:

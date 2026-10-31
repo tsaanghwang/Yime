@@ -1,0 +1,5 @@
+--- FAIL: TestTouchCandidateFontFitsWithoutChangingCandidateIdentity (0.15s)
+    touch_candidate_windows_test.go:79: candidate no longer selects the original text <nil> [20013 25991 131072]
+FAIL
+FAIL	github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard	1.871s
+FAIL

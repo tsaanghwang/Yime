@@ -1,0 +1,68 @@
+{
+  "runID": 41178044364,
+  "runURL": "https://github.com/tsaanghwang/Yime/actions/runs/41178044364",
+  "sourceHead": "8c7d26d67eff4b6650940b69963824141f565688",
+  "checkoutCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+  "packages": {
+    "amd64": {
+      "id": 13034145597,
+      "name": "touch-keyboard-windows-amd64-12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+      "size_in_bytes": 98830082,
+      "url": "https://api.github.com/repos/tsaanghwang/Yime/actions/artifacts/13034145597",
+      "archive_download_url": "https://api.github.com/repos/tsaanghwang/Yime/actions/artifacts/13034145597/zip",
+      "expired": false,
+      "created_at": "2026-10-31T06:50:58Z",
+      "expires_at": "2026-11-14T06:50:48Z",
+      "updated_at": "2026-10-31T06:50:58Z",
+      "digest": "sha256:e790c0fe0e245456e54163f348c969af93b3ac0ed91dda95e53e00655da4e34f",
+      "workflow_run": {
+        "id": 41178044364,
+        "repository_id": 1290551145,
+        "head_repository_id": 1290551145,
+        "head_branch": "codex/touch-candidate-readability-20261031",
+        "head_sha": "8c7d26d67eff4b6650940b69963824141f565688"
+      },
+      "localZip": "pr87-amd64.zip"
+    },
+    "arm64": {
+      "id": 13033634731,
+      "name": "touch-keyboard-windows-arm64-12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+      "size_in_bytes": 98499821,
+      "url": "https://api.github.com/repos/tsaanghwang/Yime/actions/artifacts/13033634731",
+      "archive_download_url": "https://api.github.com/repos/tsaanghwang/Yime/actions/artifacts/13033634731/zip",
+      "expired": false,
+      "created_at": "2026-10-31T06:51:11Z",
+      "expires_at": "2026-11-14T06:51:00Z",
+      "updated_at": "2026-10-31T06:51:11Z",
+      "digest": "sha256:9395e994382fe70a30c3bb9beecd57a8c074e88411f4d2b62732b8161c6ada7b",
+      "workflow_run": {
+        "id": 41178044364,
+        "repository_id": 1290551145,
+        "head_repository_id": 1290551145,
+        "head_branch": "codex/touch-candidate-readability-20261031",
+        "head_sha": "8c7d26d67eff4b6650940b69963824141f565688"
+      },
+      "localZip": "pr87-arm64.zip"
+    }
+  },
+  "verification": {
+    "id": 13034360087,
+    "name": "touch-keyboard-package-verification-12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+    "size_in_bytes": 2249,
+    "url": "https://api.github.com/repos/tsaanghwang/Yime/actions/artifacts/13034360087",
+    "archive_download_url": "https://api.github.com/repos/tsaanghwang/Yime/actions/artifacts/13034360087/zip",
+    "expired": false,
+    "created_at": "2026-10-31T06:50:59Z",
+    "expires_at": "2026-11-14T06:50:59Z",
+    "updated_at": "2026-10-31T06:50:59Z",
+    "digest": "sha256:e435c3248a1d7fd2b0e42c54170814b927dba75b4263edc055e04f22d5432474",
+    "workflow_run": {
+      "id": 41178044364,
+      "repository_id": 1290551145,
+      "head_repository_id": 1290551145,
+      "head_branch": "codex/touch-candidate-readability-20261031",
+      "head_sha": "8c7d26d67eff4b6650940b69963824141f565688"
+    },
+    "localZip": "pr87-package-verification.zip"
+  }
+}

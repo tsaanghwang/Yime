@@ -1,0 +1,31 @@
+{
+  "recordedAtUTC": "2026-10-31T03:32:58.603781+00:00",
+  "windowId": 2230146,
+  "app": "process:C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\arm64\\YimeTouchKeyboard.exe",
+  "title": "Yime 18u 中文受控预览（不向其他应用输入）",
+  "visibleVerified": true,
+  "observedSettings": {
+    "input": "CN",
+    "mode": "variable",
+    "legends": "ID",
+    "font": "large",
+    "theme": "dark",
+    "sound": "on",
+    "literalPunctuationEntries": "off"
+  },
+  "composition": "empty",
+  "confirmedLocalText": "empty",
+  "actionsPerformed": [
+    "open settings",
+    "toggle glyph legends to ID",
+    "return to keyboard"
+  ],
+  "physicalInputPerformedByAutomation": false,
+  "physicalReadabilityResult": "pending user",
+  "oldPR82Window": {
+    "windowId": 985884,
+    "observed": "minimized; left unchanged"
+  },
+  "packagePayloadHashesRechecked": true,
+  "pendingPlan": "quote-readability-preview-plan-v1.json"
+}

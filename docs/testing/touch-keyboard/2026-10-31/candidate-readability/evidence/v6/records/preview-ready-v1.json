@@ -1,0 +1,29 @@
+{
+  "recordedAtUTC": "2026-10-31T05:49:11.380422+00:00",
+  "windowId": 5703404,
+  "app": "process:C:\\dev\\Yime-deliveries\\touch-candidate-readability-20261031\\v6\\arm64\\YimeTouchKeyboard.exe",
+  "title": "Yime 18u 中文受控预览（不向其他应用输入）",
+  "visibleVerified": true,
+  "observedSettings": {
+    "input": "CN",
+    "mode": "variable",
+    "legends": "ID",
+    "font": "large",
+    "theme": "dark",
+    "sound": "on",
+    "literalPunctuationEntries": "off"
+  },
+  "composition": "empty",
+  "confirmedLocalText": "empty",
+  "preparation": [
+    "launched v6",
+    "observed complete raised board and both pagers",
+    "selected ID legends in settings",
+    "returned to body"
+  ],
+  "visualObservation": "both L shapes have a continuous raised contour and complete labels in lower wide feet; 18-control row and two pagers match body style; full bottom row visible",
+  "physicalInputPerformedByAutomation": false,
+  "newVisualResult": "pending user",
+  "packagePayloadHashesRechecked": true,
+  "pendingPlan": "keycapall-preview-plan-v1.json"
+}

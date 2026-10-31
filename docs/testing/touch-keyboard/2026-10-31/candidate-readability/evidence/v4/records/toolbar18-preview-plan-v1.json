@@ -1,0 +1,42 @@
+{
+  "id": "toolbar18-layout-v4",
+  "status": "pending user observation",
+  "sourceCommit": "a51c99b5c9ff47baf0ed251eef0b155f9391b68d",
+  "exeSHA256": "f3b457590be7ab1fce6823d3eeebe7769b8e2c1018daed6a973cf731d93816db",
+  "mode": "preview only / CN variable / ID legends / large / dark",
+  "machine": "ASUS ProArt P16 built-in screen upright",
+  "calibrationParameters": {
+    "screenWidthMM": 597.73,
+    "observed100MM": 58,
+    "actualLitScreenWidthMeasured": false
+  },
+  "scope": "visual 18-key row and pager sizing, then finger page forward/back; no new Backspace/pen/host physical result yet",
+  "steps": [
+    "查看设置同行是否为18个等宽、同高、均匀排布的键；翻页键宽高是否与当前普通键一致，底排是否完整。",
+    "用手指点主体R01的N12，右翻一页再左翻回来，确认翻页与点选手感。"
+  ],
+  "result": null,
+  "fullPhysicalAcceptance": false,
+  "controlActions": [
+    "设置",
+    "帮助",
+    "绑定/清空",
+    "取消",
+    "CN/EN",
+    "左",
+    "右",
+    "Home",
+    "End",
+    "选区",
+    "全选",
+    "退格",
+    "Delete",
+    "空闲1",
+    "空闲2",
+    "空闲3",
+    "最小化",
+    "退出"
+  ],
+  "newBackspacePhysicalAcceptance": false,
+  "bodyWidthHeightAndEncodingChanged": false
+}

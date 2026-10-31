@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "createdAtUTC": "2026-10-31T06:55:14.981841+00:00",
+  "scope": "byte-preserving PR87 fixed CI package evidence archive",
+  "runID": 41178044364,
+  "runURL": "https://github.com/tsaanghwang/Yime/actions/runs/41178044364",
+  "sourceHead": "8c7d26d67eff4b6650940b69963824141f565688",
+  "checkoutCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+  "sourceRoot": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031",
+  "fileCount": 10,
+  "totalBytes": 40397,
+  "files": [
+    {
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\artifact-metadata.json",
+      "archiveRelativePath": "artifact-metadata.json",
+      "bytes": 3007,
+      "sha256": "01874dbafaa458a8fa5d548b4dd50286bd7922ebd11a4f462dc6aab37eefca84"
+    },
+    {
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\records\\amd64-ci-package-check.json",
+      "archiveRelativePath": "records/amd64-ci-package-check.json",
+      "bytes": 5975,
+      "sha256": "78e38727633b28cd44c9e20ddcbddbc37a47834526968b11a4a9a383d9229a7e"
+    },
+    {
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\records\\amd64-manifest.json",
+      "archiveRelativePath": "records/amd64-manifest.json",
+      "bytes": 5875,
+      "sha256": "6c860aef9643fb50dd7b9f94bc0452a1350073139d51855811ab320c84ae4a75"
+    },
+    {
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\records\\arm64-manifest.json",
+      "archiveRelativePath": "records/arm64-manifest.json",
+      "bytes": 5875,
+      "sha256": "100e9c87bf900abe39bc099391b9380bf5b25364befd5be5bb8ed85437a9cd57"
+    },
+    {
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\records\\arm64-package-check.json",
+      "archiveRelativePath": "records/arm64-package-check.json",
+      "bytes": 5956,
+      "sha256": "6c34eda60ff98fe7a3ab33f3719b0bfeca1e88223dd26a72a0850057adef46e7"
+    },
+    {
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\records\\arm64-package-check.log",
+      "archiveRelativePath": "records/arm64-package-check.log",
+      "bytes": 162,
+      "sha256": "523aaf8a28c08ffbbe5671116b40c3e07b79cd211952eb45f8af19b25bd8a36d"
+    },
+    {
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\records\\arm64-touch-ui-check.json",
+      "archiveRelativePath": "records/arm64-touch-ui-check.json",
+      "bytes": 3221,
+      "sha256": "17536eeda05d36023967f4c2398b9aba22de41e0e3be7fe3f31ae2627d3c415a"
+    },
+    {
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\records\\arm64-touch-ui-check.log",
+      "archiveRelativePath": "records/arm64-touch-ui-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "sourceAbsolutePath": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\records\\package-identities.json",
+      "archiveRelativePath": "records/package-identities.json",
+      "bytes": 3588,
+      "sha256": "e00c06b944dd2b025185519688584c0f63d0e64b9dd52b581d9e996f52223626"
+    },
+    {
+      "sourceAbsolutePath": "C:\\Users\\tsaan\\.codex\\worktrees\\touch-candidate-readability\\Yime\\.tmp\\verify_pr87_delivery.py",
+      "archiveRelativePath": "reference/verify_pr87_delivery.py",
+      "bytes": 6738,
+      "sha256": "969847066ac9c7531bb06b957dcbe03cb3f179b5780a18488a5c79e167716dcf"
+    }
+  ]
+}
