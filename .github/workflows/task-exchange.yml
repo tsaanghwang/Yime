@@ -1,0 +1,30 @@
+name: Git task exchange
+on:
+  push:
+    branches: [main, 'codex/**']
+    paths: ['tools/task_exchange/**', 'tasks/**', '.github/workflows/task-exchange.yml']
+  pull_request:
+    branches: [main]
+    paths: ['tools/task_exchange/**', 'tasks/**', '.github/workflows/task-exchange.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  transport-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check runner syntax
+        run: node --check tools/task_exchange/runner.mjs
+      - name: Test isolated Git transport and package verification
+        run: node --test tools/task_exchange/runner.test.mjs

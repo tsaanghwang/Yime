@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "pr87-msi-x64-r1",
+  "machine": "msi-x64",
+  "kind": "manual-test",
+  "expiresAt": "2026-11-14T00:00:00Z",
+  "package": {
+    "key": "pr87-amd64",
+    "architecture": "amd64",
+    "sourceCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+    "runID": 41178044364,
+    "artifactID": 13034145597,
+    "zipSHA256": "e790c0fe0e245456e54163f348c969af93b3ac0ed91dda95e53e00655da4e34f",
+    "zipBytes": 98830082,
+    "manifestSHA256": "6c860aef9643fb50dd7b9f94bc0452a1350073139d51855811ab320c84ae4a75",
+    "executableSHA256": "b1210ca2c34f1a349ca12c65128a48e419ba74b4dee2b86848b916cc5c90a830",
+    "payloadCount": 31
+  },
+  "checks": [
+    "screen-calibration",
+    "finger-small-batch",
+    "pen-small-batch",
+    "word-edge-binding"
+  ],
+  "instructions": "核实 MSI FLIP 的实际主机、显示和笔；按本屏重新量尺。手指/笔分别检查候选按住/移出/翻页旧触点、正文退格/组合保护、空闲键及最小化恢复。使用主动准备的空白 Word/Edge 测试区并明确绑定；未测保持 not-run。 不安装、注册或改变默认输入法，不改已有正文；运行自检和 UI 需要本机明确执行，不由领取器代做。"
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "pr87-asus-arm64-r1",
+  "machine": "asus-arm64",
+  "kind": "manual-test",
+  "expiresAt": "2026-11-14T00:00:00Z",
+  "package": {
+    "key": "pr87-arm64",
+    "architecture": "arm64",
+    "sourceCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+    "runID": 41178044364,
+    "artifactID": 13033634731,
+    "zipSHA256": "9395e994382fe70a30c3bb9beecd57a8c074e88411f4d2b62732b8161c6ada7b",
+    "zipBytes": 98499821,
+    "manifestSHA256": "100e9c87bf900abe39bc099391b9380bf5b25364befd5be5bb8ed85437a9cd57",
+    "executableSHA256": "fbb8a8229f933dbafe0b14709b575818c868210be67c34a54423f8676dca257f",
+    "payloadCount": 31
+  },
+  "checks": [
+    "native-identity",
+    "screen-calibration",
+    "finger-small-batch",
+    "pen-small-batch",
+    "word-edge-binding"
+  ],
+  "instructions": "先确认本机确为 ARM64，静态 PE 匹配不代表原生执行。按本屏量尺校准，禁止复制其他机器参数。手指和笔分批记录候选移出/旧触点、退格保护、最小化恢复；Word/Edge 仅使用空白测试文档并明确绑定。原 PR87 开发检查不替代此轮物理结果。 不安装、注册或改变默认输入法，不改已有正文；运行自检和 UI 需要本机明确执行，不由领取器代做。"
+}

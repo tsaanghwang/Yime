@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "machine": "msi-x64",
+  "hostname": "WIN-JTKUT7KBVN7",
+  "architecture": "amd64",
+  "remote": "https://github.com/tsaanghwang/Yime.git",
+  "queueBranch": "codex/git-task-exchange-20261031",
+  "stateDir": "C:/YimeTaskExchange/msi-x64",
+  "packages": {
+    "pr87-amd64": {
+      "directory": "C:/YimeDeliveries/pr87/amd64",
+      "zip": "C:/YimeDeliveries/pr87/pr87-amd64.zip"
+    }
+  },
+  "authorName": "REPLACE_WITH_YOUR_GIT_NAME",
+  "authorEmail": "REPLACE_WITH_YOUR_GIT_EMAIL"
+}
