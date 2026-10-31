@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [ValidateSet('W01','W02')][string]$CaseId,
     [string]$DocumentName,
@@ -25,16 +25,68 @@ function Read-Body([string]$Raw) {
     if (!$Raw.EndsWith([string][char]13)) { throw 'Missing final Word paragraph mark.' }
     return $Raw.Substring(0, $Raw.Length - 1)
 }
+function Test-Exact([string]$Actual, [string]$Expected) {
+    return [string]::Equals($Actual, $Expected, [StringComparison]::Ordinal)
+}
+function Assert-UniqueWord([object[]]$Processes, [long]$OwnerId = 0, [long]$ExpectedId = 0) {
+    if ($Processes.Count -ne 1) { throw 'Cannot uniquely locate Word: exactly one WINWORD process is required.' }
+    $identity = [long]$Processes[0].Id
+    if ($identity -le 0 -or ($OwnerId -ne 0 -and $OwnerId -ne $identity) -or
+        ($ExpectedId -ne 0 -and $ExpectedId -ne $identity)) { throw 'Word process identity changed or HWND does not match.' }
+    return $identity
+}
+function Get-WordProcesses {
+    # Enumerate all processes; enumeration failure must stop the capture.
+    return @(Get-Process -ErrorAction Stop | Where-Object { $_.ProcessName -ieq 'WINWORD' })
+}
+function Assert-WordBinding($Application, [long]$ExpectedId) {
+    $handle = [long]$Application.Hwnd
+    if ($handle -eq 0) { throw 'Word HWND unavailable.' }
+    [uint32]$ownerId = 0
+    if ([WordCaptureNative]::GetWindowThreadProcessId([IntPtr]$handle, [ref]$ownerId) -eq 0 -or $ownerId -eq 0) { throw 'Cannot resolve Word HWND owner.' }
+    [void](Assert-UniqueWord @(Get-WordProcesses) $ownerId $ExpectedId)
+    return $handle
+}
+function Read-VerifiedWordText($Application, $Document, [long]$ProcessId, [long]$Hwnd) {
+    $content = $null
+    try {
+        if ((Assert-WordBinding $Application $ProcessId) -ne $Hwnd) { throw 'Word HWND changed.' }
+        $content = $Document.Content
+        $text = [string]$content.Text
+        if ((Assert-WordBinding $Application $ProcessId) -ne $Hwnd) { throw 'Word HWND changed during read.' }
+        return $text
+    } finally {
+        if ($null -ne $content -and [Runtime.InteropServices.Marshal]::IsComObject($content)) { [void][Runtime.InteropServices.Marshal]::ReleaseComObject($content) }
+    }
+}
 if ($SelfTest) {
     foreach ($id in @('W01','W02')) {
         $expected = Get-Expected $id
-        if ((Read-Body ($expected + [char]13)) -cne $expected) { throw 'Body mismatch' }
+        if (!(Test-Exact (Read-Body ($expected + [char]13)) $expected)) { throw 'Body mismatch' }
+        foreach ($position in @(0,1,$expected.Length)) {
+            foreach ($invisible in @(0x00AD,0x200B,0xFEFF)) {
+                $changed = $expected.Insert($position, [string][char]$invisible)
+                if (Test-Exact (Read-Body ($changed + [char]13)) $expected) { throw 'Invisible character hidden' }
+            }
+        }
         foreach ($extra in @(' ', [string][char]13, [string][char]0x2026)) {
-            if ((Read-Body ($expected + $extra + [char]13)) -ceq $expected) { throw 'Extra character hidden' }
+            if (Test-Exact (Read-Body ($expected + $extra + [char]13)) $expected) { throw 'Extra character hidden' }
         }
     }
     if ((Get-Scalars ([char]0x2026 + [string][char]0x22EF)) -join ' ' -ne 'U+2026 U+22EF') { throw 'Ellipsis confusion' }
     if ((Get-Scalars ([char]::ConvertFromUtf32(0x1F600))) -join ' ' -ne 'U+1F600') { throw 'Surrogate failure' }
+    if ((Assert-UniqueWord @([pscustomobject]@{Id=101}) 101 101) -ne 101) { throw 'Unique process failure' }
+    foreach ($scenario in @(
+        @{ Processes=@(); Owner=0; Expected=0 },
+        @{ Processes=@([pscustomobject]@{Id=101},[pscustomobject]@{Id=202}); Owner=101; Expected=101 },
+        @{ Processes=@([pscustomobject]@{Id=101}); Owner=202; Expected=101 },
+        @{ Processes=@([pscustomobject]@{Id=202}); Owner=202; Expected=101 }
+    )) {
+        $rejected = $false
+        try { [void](Assert-UniqueWord $scenario.Processes $scenario.Owner $scenario.Expected) } catch { $rejected = $true }
+        if (!$rejected) { throw 'Ambiguous/mismatched Word was accepted' }
+    }
+    Write-Output 'Ordinal W01/W02: correct text accepted; U+00AD/U+200B/U+FEFF at start/middle/end rejected (18 negatives). Word identity: unique accepted; zero/multiple/mismatched/changed rejected (synthetic).'
     Write-Output 'Synthetic self-test passed; no Word or host acceptance executed.'
     return
 }
@@ -47,16 +99,26 @@ if ($hash -ne '0e24a31e2088c5b19e39bae8ac78adcc28a9cb258d2f0034b2addac1ec8cbc07'
 $word = $null; $doc = $null; $range = $null; $docs = $null
 try {
     # Windows PowerShell 5.1: attach only, never create Word or open/save a document.
+    $wordProcessId = Assert-UniqueWord @(Get-WordProcesses)
+    Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+public static class WordCaptureNative {
+    [DllImport("user32.dll", SetLastError=true)]
+    public static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint processId);
+}
+'@
     $word = [Runtime.InteropServices.Marshal]::GetActiveObject('Word.Application')
+    $wordHwnd = Assert-WordBinding $word $wordProcessId
     $docs = $word.Documents
     $doc = $docs.Item($DocumentName)
-    if ($doc.Name -cne $DocumentName -or $doc.Path -ne '') { throw 'Use the exact name of an unsaved disposable test document.' }
-    $range = $doc.Content
-    $raw = [string]$range.Text
+    if (!(Test-Exact ([string]$doc.Name) $DocumentName) -or $doc.Path -ne '') { throw 'Use the exact name of an unsaved disposable test document.' }
+    $raw = Read-VerifiedWordText $word $doc $wordProcessId $wordHwnd
     $body = Read-Body $raw
     $expected = Get-Expected $CaseId
     $record = [ordered]@{
         schemaVersion=1; capturedAt=[DateTimeOffset]::Now.ToString('o'); machine=$env:COMPUTERNAME
+        wordProcessId=$wordProcessId; wordHwnd=$wordHwnd; identityPolicy='Unique WINWORD plus COM HWND/PID checked before and after read';
         host='Word'; hostVersion=[string]$word.Version; documentName=$DocumentName
         caseId=$CaseId; method='mouse'; readMethod='Word COM Document.Content.Text (read only)'
         sourceCommit='f01326e6c1976a4e67c9ff59693effc0e1110b1a'; keyboardExeSHA256=$hash
@@ -64,7 +126,7 @@ try {
         rawText=$raw; rawCodepoints=(Get-Scalars $raw); removedFinalParagraphMark=$true
         actualText=$body; actualCodepoints=(Get-Scalars $body); scalarCount=(Get-Scalars $body).Count
         expectedText=$expected; expectedCodepoints=(Get-Scalars $expected)
-        exactMatch=($body -ceq $expected); acceptanceStatus='pending-operator-review'
+        exactMatch=(Test-Exact $body $expected); acceptanceStatus='pending-operator-review'
         limitation='Final text detects extra/duplicate characters, not identical replacement events or future delayed commits'
     }
     $json = $record | ConvertTo-Json -Depth 8

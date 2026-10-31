@@ -1,0 +1,2 @@
+Ordinal W01/W02: correct text accepted; U+00AD/U+200B/U+FEFF at start/middle/end rejected (18 negatives). Word identity: unique accepted; zero/multiple/mismatched/changed rejected (synthetic).
+Synthetic self-test passed; no Word or host acceptance executed.

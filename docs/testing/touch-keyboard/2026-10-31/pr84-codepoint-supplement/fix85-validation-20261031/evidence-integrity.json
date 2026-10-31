@@ -1,0 +1,61 @@
+{
+  "baselineCommit": "cc613b04e80ed0f0430ce3c04f75582b894815d3",
+  "machine": "计算机",
+  "checkedAt": "2026-10-31T02:09:36.101270+00:00",
+  "files": {
+    ".gitattributes": {
+      "sha256": "0cd43ea5092bda172499fa6feb5f6d70445b6dde0b768ed7b0353fa10e6629c0",
+      "identicalToOriginalHead": false,
+      "note": "Existing checkout CRLF versus Git LF; file untouched",
+      "matchesHistoricalManifest": null
+    },
+    "evidence-sha256.json": {
+      "sha256": "76e526b68c558baacc7c91e885035e2f071dc5035cc99e95d599e7d27e24603f",
+      "identicalToOriginalHead": true,
+      "note": null,
+      "matchesHistoricalManifest": null
+    },
+    "firefox-architecture-084239.json": {
+      "sha256": "c8c7475a2ccfd4dd10ba8aae0b537023b3e82dbc5b21f14a83acc07e1bd70cb9",
+      "identicalToOriginalHead": true,
+      "note": null,
+      "matchesHistoricalManifest": true
+    },
+    "firefox-W01.png": {
+      "sha256": "618c7c12ea614ef369a059c17db9cf141d6299b2cc50e019d34e5c09d84278df",
+      "identicalToOriginalHead": true,
+      "note": null,
+      "matchesHistoricalManifest": true
+    },
+    "firefox-W02.png": {
+      "sha256": "dac435d9077076065c5a74a97f9aebe0371c64d12e2df2fcdbcf4e35cb501206",
+      "identicalToOriginalHead": true,
+      "note": null,
+      "matchesHistoricalManifest": true
+    },
+    "FIREFOX_REVIEW.json": {
+      "sha256": "98d41d6b907b4021899aca2b2a2e679115bc3b038314a23c81a349e4f14ed372",
+      "identicalToOriginalHead": true,
+      "note": null,
+      "matchesHistoricalManifest": true
+    },
+    "W01-attempt1.json": {
+      "sha256": "a7b713fd400038770f7b69fc63cbf31fc1e3c1a3d01a3f21de0e2b1854868b26",
+      "identicalToOriginalHead": true,
+      "note": null,
+      "matchesHistoricalManifest": true
+    },
+    "W02-attempt1.json": {
+      "sha256": "048dd28aa148c0b51d6f7bff318584ba04932dbeaf165e6ff8d46fb11449f073",
+      "identicalToOriginalHead": true,
+      "note": null,
+      "matchesHistoricalManifest": true
+    },
+    "WORD_REVIEW.json": {
+      "sha256": "12b0b7425b151e7c5a89cc86a862d45eb1e91bc92967c0afdc5b44e5b957741c",
+      "identicalToOriginalHead": true,
+      "note": null,
+      "matchesHistoricalManifest": true
+    }
+  }
+}
