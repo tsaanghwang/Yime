@@ -1,5 +1,9 @@
 # 桌面触摸键盘阶段交接
 
+## 2026-10-31 ASUS ARM64 候选可读性本地修正
+
+本机从最新 main 隔离接续 4K 引号难辨反馈，候选专用字号随三档设置增大，超限保留原字号；不改几何、编码或点击区域。[开发范围与验证](../../../docs/testing/touch-keyboard/2026-10-31/candidate-readability/DEVELOPMENT.zh-CN.md)记录 ARM64 原生回归通过。新本地预览包与 PR #82 固定包分开，人眼可辨性仍待新包反馈，不继承旧物理验收。
+
 ## 2026-10-31 MyComputer 整合接续
 
 省略号专项后下一授权步骤为审查剩余风险、汇总源码及测试交付；本轮按用户要求完成[本机开发测试整合报告](../../../docs/testing/touch-keyboard/2026-10-30/ellipsis-choice/MYCOMPUTER_INTEGRATION_REPORT.zh-CN.md)。#83 已合并，当前分支与远端跟踪 main 文件树一致；固定 CI 包、历史本地测试包及其结果分别记录。宏碁笔29项／手指10项不提升为新CI包、ARM64或全键盘通过；无新增物理批次。18u及冻结候选保持。下方“未提交／新PR”描述保留为当时状态。

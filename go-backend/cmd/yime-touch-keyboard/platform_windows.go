@@ -129,6 +129,7 @@ type ui struct {
 	touchRuler          bool
 	touchFontLevel      int
 	touchFont           uintptr
+	candidateFont       uintptr
 	touchMessage        string
 }
 
@@ -317,6 +318,9 @@ func run(o options) error {
 		if a.touchFont != 0 {
 			G("DeleteObject").Call(a.touchFont)
 		}
+		if a.candidateFont != 0 {
+			G("DeleteObject").Call(a.candidateFont)
+		}
 	}()
 	if ok, _, err := U("RegisterTouchWindow").Call(h, 1); ok == 0 {
 		return fmt.Errorf("RegisterTouchWindow: %w", err)
@@ -343,6 +347,9 @@ func run(o options) error {
 		a.touchFont, _, _ = G("CreateFontW").Call(uintptr(height), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
 		if a.touchFont == 0 {
 			return fmt.Errorf("无法创建触屏控制字体")
+		}
+		if err := a.updateTouchFonts(); err != nil {
+			return err
 		}
 	}
 	U("ShowWindow").Call(h, 4)

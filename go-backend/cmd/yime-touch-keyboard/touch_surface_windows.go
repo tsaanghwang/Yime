@@ -6,6 +6,7 @@ import (
 	"fmt"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 	"math"
+	"unsafe"
 )
 
 const touchHeaderHeight = 100
@@ -200,14 +201,21 @@ func (a *ui) updateTouchFonts() error {
 		return h
 	}
 	key, glyph := create("Segoe UI", 0.20), create("YinYuan", 0.23)
-	if key == 0 || glyph == 0 {
+	// The candidate row stays 60 logical pixels high regardless of board
+	// calibration. Enlarge short candidates without growing its hit regions.
+	height := -int32(math.Round(32 * scale))
+	candidate, _, _ := G("CreateFontW").Call(uintptr(height), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
+	if key == 0 || glyph == 0 || candidate == 0 {
 		if key != 0 {
 			G("DeleteObject").Call(key)
 		}
 		if glyph != 0 {
 			G("DeleteObject").Call(glyph)
 		}
-		return fmt.Errorf("无法更新键面字号")
+		if candidate != 0 {
+			G("DeleteObject").Call(candidate)
+		}
+		return fmt.Errorf("无法更新键面与候选字号")
 	}
 	if a.keyFont != 0 {
 		G("DeleteObject").Call(a.keyFont)
@@ -215,9 +223,36 @@ func (a *ui) updateTouchFonts() error {
 	if a.glyphFont != 0 {
 		G("DeleteObject").Call(a.glyphFont)
 	}
-	a.keyFont, a.glyphFont = key, glyph
+	if a.candidateFont != 0 {
+		G("DeleteObject").Call(a.candidateFont)
+	}
+	a.keyFont, a.glyphFont, a.candidateFont = key, glyph, candidate
 	return nil
 }
+
+func (a *ui) touchCandidateFont(dc uintptr, label string, box rect) uintptr {
+	if a.candidateFont == 0 {
+		return a.touchFont
+	}
+	old, _, _ := G("SelectObject").Call(dc, a.candidateFont)
+	defer G("SelectObject").Call(dc, old)
+	measured := box
+	// Measure with the same wrapping and prefix rules as the actual drawing.
+	height, _, _ := U("DrawTextW").Call(dc, ptr(str(label)), ^uintptr(0), uintptr(unsafe.Pointer(&measured)), 0x411|drawTextNoPrefix)
+	if height == 0 || measured.B > box.B || measured.R > box.R {
+		// Keep the previous wrapping for long words, paused labels and the
+		// two-line ellipsis descriptions instead of clipping newly enlarged text.
+		return a.touchFont
+	}
+	return a.candidateFont
+}
+
+func (a *ui) drawTouchCandidate(dc uintptr, label string, box rect) {
+	old, _, _ := G("SelectObject").Call(dc, a.touchCandidateFont(dc, label, box))
+	defer G("SelectObject").Call(dc, old)
+	text(dc, label, box, 0x11)
+}
+
 func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 	p, palette := a.preview, a.palette()
 	old, _, _ := G("SelectObject").Call(dc, a.touchFont)
@@ -263,7 +298,7 @@ func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 			s += "（暂停）"
 		}
 		fill(dc, box, bg)
-		text(dc, s, box, 0x11)
+		a.drawTouchCandidate(dc, s, box)
 	}
 	for _, next := range []bool{false, true} {
 		box := rect{8, 34, 92, 94}
@@ -320,7 +355,7 @@ func (a *ui) touchSettingLabel(action string) string {
 		}
 		return "配色：原色"
 	case "font":
-		return "键面字号：" + []string{"小", "中", "大"}[a.touchFontLevel]
+		return "键面/候选字号：" + []string{"小", "中", "大"}[a.touchFontLevel]
 	case "smaller":
 		return "校准 −1%"
 	case "larger":
