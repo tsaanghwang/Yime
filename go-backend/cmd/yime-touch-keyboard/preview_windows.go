@@ -50,17 +50,21 @@ func (a *ui) candidateRect(i int) rect {
 }
 func (a *ui) previewDown(id uint32, x, y int32) {
 	if a.hostBusy {
+		a.traceDecision("gesture-down", "host-busy", id, "")
 		return
 	}
 	if _, exists := a.previewTouches[id]; exists {
+		a.traceDecision("gesture-down", "duplicate-contact", id, "")
 		return
 	}
 	if a.o.TouchUI {
 		if action, _ := a.touchControlAt(x, y); action == "reserved" {
+			a.traceDecision("gesture-down", "reserved-control", id, "")
 			return // Inert slots do not cancel selection or acquire a host ticket.
 		}
 	}
 	if !a.o.TouchUI && y < 104 {
+		a.traceDecision("gesture-down", "classic-toolbar", id, "")
 		a.toolbar(x, y)
 		return
 	}
@@ -71,6 +75,7 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 		extend := a.navSelecting
 		a.cancel()
 		if !a.preview.navigationEnabled() {
+			a.traceDecision("gesture-down", "navigation-disabled", id, "navigation")
 			a.status = "请先确认或取消中文组合（含暂停组合），再使用辅助导航"
 			if a.o.TouchUI {
 				a.touchMessage = a.status
@@ -92,6 +97,7 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 			action, area, blocked := a.touchUIActionAt(x, y)
 			if blocked {
 				if action == "" {
+					a.traceDecision("gesture-down", "disabled-or-overlay-hit", id, "")
 					a.invalidate()
 					return
 				}
@@ -129,26 +135,37 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 		if a.requiresHostTarget(g.action) {
 			g.delivery = a.host.ticket()
 			if !a.host.valid(g.delivery) {
+				a.traceDecision("gesture-down", "host-target-invalid", id, g.action)
 				a.loseHostFocus("请先在目标文本区放置光标，再点绑定目标")
 				return
 			}
 		}
 		g.cancelGeneration = a.cancelGeneration
 		a.previewTouches[id] = g
+		a.traceDecision("gesture-down", "accepted", id, g.action)
+	} else {
+		a.traceDecision("gesture-down", "no-action-hit", id, "")
 	}
 	a.invalidate()
 }
 func (a *ui) previewUp(id uint32, x, y int32) {
 	if a.hostBusy {
+		a.traceDecision("gesture-up", "host-busy", id, "")
 		a.cancel()
 		return
 	}
 	g := a.previewTouches[id]
 	if g == nil {
+		a.traceDecision("gesture-up", "no-pending-gesture", id, "")
 		return
 	}
 	a.move(id, x, y)
 	delete(a.previewTouches, id) // A duplicate UP has no action or commit.
+	if g.left {
+		a.traceDecision("gesture-up", "moved-out", id, g.action)
+	} else {
+		a.traceDecision("gesture-up", "release-inside", id, g.action)
+	}
 	if g.action == "sound" {
 		if !g.left {
 			a.cancel()
@@ -226,6 +243,7 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 		}
 	} else if !g.left {
 		if g.stamp != a.preview.stamp() {
+			a.traceDecision("gesture-result", "stale-version", id, g.action)
 			err = fmt.Errorf("状态已更新；本次触点取消")
 		} else {
 			accepted = true
@@ -239,9 +257,9 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 			case "candidate":
 				err = a.preview.selectCandidate(g.candidate)
 			case "previous":
-				err = a.preview.page(-1)
+				err = a.tracePage(id, -1)
 			case "next":
-				err = a.preview.page(1)
+				err = a.tracePage(id, 1)
 			case "variable", "full", "shorthand":
 				a.cancel()
 				err = a.preview.switchMode(g.action)
@@ -291,6 +309,13 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 		if a.host != nil {
 			a.status = a.host.last
 		}
+	}
+	if err != nil {
+		a.traceDecision("gesture-result", "action-error", id, g.action)
+	} else if accepted && !a.preview.fault {
+		a.traceDecision("gesture-result", "accepted", id, g.action)
+	} else {
+		a.traceDecision("gesture-result", "no-action-or-fault", id, g.action)
 	}
 	if accepted && err == nil && !a.preview.fault {
 		a.acceptedInputSerial++

@@ -108,8 +108,14 @@ func (a *ui) touchUIActionAt(x, y int32) (string, rect, bool) {
 		}
 		if inside(r, x, y) {
 			if enabled && a.preview.candidatesEnabled() {
+				a.traceDecision("page-hit", "enabled", 0, action)
 				return action, r, true
 			}
+			reason := "candidates-disabled"
+			if !enabled {
+				reason = "boundary-unavailable"
+			}
+			a.traceDecision("page-hit", reason, 0, action)
 			return "", r, true
 		}
 	}

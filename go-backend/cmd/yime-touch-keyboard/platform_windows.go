@@ -239,6 +239,7 @@ func run(o options) error {
 		}
 		defer a.inputTrace.file.Close()
 		a.traceInput("start", 0, 0, 0)
+		a.traceLifecycle("started-preparation-required")
 	}
 	if o.Preview || o.Host {
 		r, err := keyboardlab.OpenRuntime(o.Root, o.DataDir)
@@ -465,6 +466,7 @@ func (a *ui) down(id uint32, x, y int32) {
 func (a *ui) move(id uint32, x, y int32) {
 	if p := a.previewTouches[id]; p != nil && !p.left && !inside(p.area, x, y) {
 		p.left = true
+		a.traceDecision("gesture-cancel", "moved-out", id, p.action)
 		if a.o.TouchUI && p.action == "candidate" {
 			// Promoted pen/mouse MOVE has no end-of-touch-frame repaint. Drop
 			// the card's pressed appearance as soon as its contact is cancelled.
@@ -566,6 +568,7 @@ func (a *ui) showHelp() {
 	U("MessageBoxW").Call(a.h, ptr(str(help)), ptr(str("Yime 桌面键盘使用帮助")), 0x00040040)
 }
 func (a *ui) suspendForMinimize() {
+	a.traceLifecycle("minimized")
 	a.soundSuspended = true
 	a.stopKeySound()
 	if a.host != nil {
@@ -615,9 +618,13 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 	if a == nil || a.h != h {
 		return def(h, msg, w, l)
 	}
-	if a.inputTrace != nil && tracedInputMessage(msg, len(a.previewTouches) != 0) {
+	if a.inputTrace != nil && a.inputTrace.err == nil && tracedInputMessage(msg, len(a.previewTouches) != 0) {
+		t := a.inputTrace
+		previous := t.messageID
+		t.messageSerial++
+		t.messageID = t.messageSerial
 		a.traceInput("before", msg, w, l)
-		defer a.traceInput("after", msg, w, l)
+		defer func() { a.traceInput("after", msg, w, l); t.messageID = previous }()
 	}
 	switch msg {
 	case wmKeySoundReady:
@@ -632,6 +639,7 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 		if w == 1 { // SIZE_MINIMIZED
 			a.suspendForMinimize()
 		} else {
+			a.traceLifecycle("size-visible")
 			a.soundSuspended = false
 			if a.soundWindowReady {
 				a.ensureKeySound()
@@ -643,6 +651,7 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 			return 0
 		}
 	case 0x0002:
+		a.traceLifecycle("destroyed")
 		a.stopKeySound()
 		if a.host != nil {
 			a.loseHostFocus("键盘已关闭")
@@ -696,8 +705,10 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 	case 0x0201, 0x0200, 0x0202:
 		extra, _, _ := U("GetMessageExtraInfo").Call()
 		if a.duplicatePromotedMouse(msg, extra) {
+			a.traceMouseRoute(msg, "compatibility-duplicate-suppressed")
 			return 0
 		}
+		a.traceMouseRoute(msg, "accepted")
 		x, y := int32(int16(l&0xffff)), int32(int16(l>>16))
 		if msg == 0x0201 {
 			a.down(0, x, y)
@@ -717,6 +728,7 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 		if msg == 0x0215 && a.releasingCapture {
 			return 0
 		}
+		a.traceDecision("gesture-cancel", "capture-lost-or-cancel-mode", 0, "")
 		a.cancel()
 		a.invalidate()
 		return 0
@@ -746,8 +758,12 @@ func (a *ui) touch(w, l uintptr) {
 	}
 	v, err := reader(w, l)
 	if err != nil {
+		a.traceDecision("touch-read", "failed", 0, "")
 		a.cancel()
 		return
+	}
+	if a.inputTrace != nil && a.inputTrace.err == nil {
+		a.inputTrace.write(map[string]any{"stage": "touch-read", "reason": "ok", "contactCount": len(v)})
 	}
 	frameTime := a.penTime()
 	if a.inputTrace != nil {
@@ -769,6 +785,9 @@ func (a *ui) touch(w, l uintptr) {
 	for pass := 0; pass < 2; pass++ {
 		for _, t := range v {
 			if t.Flags&2 == 0 || t.Flags&0x80 != 0 {
+				if pass == 0 && t.Flags&2 != 0 {
+					a.traceDecision("touch-route", "palm-down-skipped", t.ID, "")
+				}
 				continue
 			}
 			p := point{t.X / 100, t.Y / 100}
@@ -781,7 +800,10 @@ func (a *ui) touch(w, l uintptr) {
 			}
 			if mod == (pass == 0) {
 				if !a.penContactDown(t, p, frameTime) {
+					a.traceDecision("touch-route", "down-accepted", t.ID, "")
 					a.down(t.ID+1, p.X, p.Y)
+				} else {
+					a.traceDecision("touch-route", "pen-recontact-down-suppressed", t.ID, "")
 				}
 			}
 		}
@@ -791,13 +813,20 @@ func (a *ui) touch(w, l uintptr) {
 		p := point{t.X / 100, t.Y / 100}
 		U("ScreenToClient").Call(a.h, uintptr(unsafe.Pointer(&p)))
 		blocked := a.penRecontact.blocked(t.ID)
+		if t.Flags&1 != 0 && blocked {
+			a.traceDecision("touch-route", "pen-recontact-move-suppressed", t.ID, "")
+		}
 		if t.Flags&1 != 0 && !blocked {
+			a.traceDecision("touch-route", "move-accepted", t.ID, "")
 			a.move(t.ID+1, p.X, p.Y)
 		}
 		if t.Flags&4 != 0 {
 			before := a.acceptedInputSerial
 			if !blocked {
+				a.traceDecision("touch-route", "up-accepted", t.ID, "")
 				a.up(t.ID+1, p.X, p.Y)
+			} else {
+				a.traceDecision("touch-route", "pen-recontact-up-suppressed", t.ID, "")
 			}
 			a.penRecontact.up(t.ID, a.acceptedInputSerial, frameTime, a.acceptedInputSerial != before)
 		}
