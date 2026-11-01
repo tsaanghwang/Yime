@@ -1,0 +1,45 @@
+# 四机当前阶段汇总：固定 PR87 与笔保持专项
+
+更新：2026-11-01（UTC）。仅开发侧证据归档；不新增测试、诊断构建或代码修改，不合并 main。职责仍按[四机分工](FOUR_MACHINE_TEST_ROLES.zh-CN.md)，原18u、旧分支、r1任务/结果和包身份全部保留。
+
+## 当前状态
+
+| 机器 | 已完成的限定范围 | 未关闭事项与边界 |
+| --- | --- | --- |
+| “计算机”普通屏 / x64 | [r1桌面鼠标](DESKTOP_MOUSE_SUMMARY.zh-CN.md)：纯预览编辑保护、预览及空白Word恢复重绑的限定通过；r2只读性能条件表与未来方案已由开发侧审阅 | r2仅聊天提供两份JSON，尚未远端回传；未测性能、两个准备项仍not-run/humanEvidence=false，助手资料审核不改成人工性能通过。无新测量授权，不安排手指/笔 |
+| MSI / x64 FLIP | r1姿态/手指映射、恢复、组合保护、空闲键限定通过；**r2 Word基础绑定、Edge基础绑定、Word恢复重绑三项已完成并通过** | 仅本次指定手指步骤的用户反馈，未独立读回正文；MSI笔保持/翻页继续暂停，原装笔仍不安排。r2宿主通过不代表笔问题解决 |
+| ASUS / 原生ARM64 | r1已有原生运行、本屏校准及受限输入/宿主反馈；r2稳定保持、笔+手指混合翻页各一次人工样本通过 | 实际手别未单独确认；混合项不是纯笔，不推可靠性频率或MSI根因。已停止，不再重复已完成项 |
+| MyComputer + Acer PE270XT | 本屏参考尺初测100mm、无裁切；同笔稳定保持单次用户反馈符合预期 | 笔保持时手指前后均未翻页；手指保持时手指翻页正常。旧笔释放后正文/组合原报告未报，额外尝试次数不明；不同于MSI提前UP现象，不确定设备/系统/应用根因 |
+
+各机都是源 `12a9930ce4e84b5c7de35fb2816c201b1e72e8af` 的固定PR87交付语境；MSI/桌面/MyComputer对应 amd64 artifact `13034145597`，ASUS对应 ARM64 artifact `13033634731`，run `41178044364`。跨架构EXE哈希不同属预期。MyComputer原生身份为用户系统信息确认，具体OS/CPU未在该报告转录，不冒充进程级原生架构测量或已加入队列。
+
+## MSI r2：身份核验与完成登记
+
+- [提交 f7b4540b5efd3056ae816d35f461cb00791df6c9](https://github.com/tsaanghwang/Yime/commit/f7b4540b5efd3056ae816d35f461cb00791df6c9)仅新增[结果JSON](https://github.com/tsaanghwang/Yime/blob/f7b4540b5efd3056ae816d35f461cb00791df6c9/results/msi-x64/pr87-msi-host-posture-r2/be76a09efdbcd3863d53b385c06a49c35ef4e41f947527f0223e8e1b5c7571ea.json)。原文4092字节、SHA-256 `be76a09efdbcd3863d53b385c06a49c35ef4e41f947527f0223e8e1b5c7571ea`匹配文件名。
+- 任务 `pr87-msi-host-posture-r2`、machine `msi-x64`，queueCommit `7ed12d3ff79646d055e084ff15637592db5eed06`；按运行器去首尾空白算法复算 taskSHA256 `fc8cfc1c7bf524d12df66f9e952d12b64362d89d91906bad328506413e2587a2`。与[固定任务](https://github.com/tsaanghwang/Yime/blob/7ed12d3ff79646d055e084ff15637592db5eed06/tasks/queue/msi-x64/pr87-msi-host-posture-r2.json)的ID、完整package及三检查项次序一致。
+- 实际报告环境：MSI平放、开口端朝向用户；最近只读显示为横向翻转、2880×1800、200%，本屏校准58。不扩为所有姿态通过。
+- `word-basic-binding=pass`：专用空白Word明确绑定后ni首选一次，用户确认正文一个“你”。`edge-basic-binding=pass`：已有本地空白框明确绑定后同样一个“你”。`word-restore-rebind=pass`：同一专用Word原有一个“你”，最小化恢复要求重绑，明确重绑后追加，最终“你你”；首次简写回复后另行澄清获得确认。
+- 每组均指定手指，用户未另行复述设备；按实际observation保留此限定，不升级为独立设备核验。正文是人工反馈、非自动读回。没有笔测试，不继承笔结论。
+- `humanEvidence=true`；顶层 `awaiting-human`、`physicalAcceptance=false` 和 `verification.executableStarted=false`是原领取/静态字段，不回写为整体验收通过，也不否定后续真人完成。
+
+## ASUS r2：已核验回传
+
+[提交6585f326c9d90bc7c6eaa1194c48ba26ff005114](https://github.com/tsaanghwang/Yime/commit/6585f326c9d90bc7c6eaa1194c48ba26ff005114)在原r1之后仅新增[3133字节结果JSON](https://github.com/tsaanghwang/Yime/blob/6585f326c9d90bc7c6eaa1194c48ba26ff005114/results/asus-arm64/pr87-asus-pen-hold-r2/19cc37627dba722a656f226ddaa4beeaaaae1a4333f7bcb160f801ba4728b81c.json)，SHA-256 `19cc37627dba722a656f226ddaa4beeaaaae1a4333f7bcb160f801ba4728b81c`匹配。任务 `pr87-asus-pen-hold-r2` 与7ed固定队列、taskSHA256 `9919a7074830648a4ad6d45656c3d936d124529c89a6f91c2c60008e603462fc`及ARM64包对象一致。
+
+正常未翻转笔记本姿态、本屏344.8mm校准、同Acer随附笔：保持约1秒后释放一次提交“你”；随后混合翻页，旧笔释放正文空且ni仍在。两项pass各限一个用户反馈样本，无独立正文/接触时长/事件读回。输入方法枚举pen配合observation明确混合，不能算纯笔翻页；实际手别未单独确认。manual-context未上传，不能声称审阅了远端context文件。
+
+## MyComputer：提交证据与后续本地摘要分开
+
+[报告提交f3c3ccab66bb5b17d5cfbf45bbdefa7b0d2d02de](https://github.com/tsaanghwang/Yime/blob/f3c3ccab66bb5b17d5cfbf45bbdefa7b0d2d02de/docs/testing/touch-keyboard/2026-11-01/pe270xt-pr87/REPORT.zh-CN.md)只新增报告、两份结构化原记录、哈希索引及局部.gitattributes。两原件保留CRLF及无末尾换行，云端复算校准1823字节SHA `c5b7038017cbc0ff8a68ecc3f6c14333d2e9a24ea40b815336ebad24fba74284`，两项记录3161字节SHA `4cc1da158fecf86da8125a59fcdce4ec6579fa83867df715c3185624a27a4f79`，均匹配索引。固定run/artifact/source、报告ZIP/manifest哈希匹配原交付。没有完整负载核对原件，报告中的本机检查不冒充云端重验。
+
+本屏2560×1440、100%，同Acer笔，约85°倾斜（参考面未注明）、右手。初测100mm、未调整未复测，尺具精度未记，不称精确几何验收。稳定保持第一项通过；第二项手指未能在笔保持时翻页，因此旧笔触失效保护尚未验证。补充“用手按住，用笔直接选中，不翻页”目标语义不清，保留不扩写。原记录不是原生trace，无任务receipt/queueCommit；不能冒用ASUS或MSI身份。
+
+**该提交之后用户另行回报一次本地诊断摘要，尚未上传日志及其哈希原件。** 用户称重新准备后手指仍不能翻页，日志有笔消息，但手指是否到达/被过滤仍未知；结束窗口一个“你”、组合空，长度变化不能等同直接观察了物理抬笔瞬间。日志包含等待与准备约20分钟，不是短动作样本；诊断预览已关闭并停止，没有追加测试。本段来源仅是后续用户摘要，不归为f3c3ccab提交中的事件证据，开发侧未读本地日志。
+
+## 专项后续：不重复无信息增益的实机操作
+
+[PEN-HOLD-20261101](../../../../../tasks/batches/2026-11-01/PEN-HOLD-20261101.zh-CN.md)继续独立跟踪：ASUS已给出限定成功对照、MyComputer是笔在场时手指不翻页、MSI是预期保持却提前结束。不能归并成已确诊硬件敏感性或一个已证实代码缺陷；当前不自动追加对照。
+
+固定包trace有消息before/after、成功读取后的touch-frame ID/flags/坐标、部分pointerType及正文/组合长度，但没有逐触点过滤决定、分页命中/请求/拒绝理由或页码，触点读取失败也缺错误详情。此前希望凭现有trace区分到达/过滤/分页三个阶段的建议存在信息不足；不再要求用户重复同样诊断。若要补最小路由/过滤/分页决策日志，需要另行授权的独立诊断构建与新身份，不能冒充固定包；**此项代码尚未授权、未实现、未发布**，不改延迟/去抖参数。
+
+以后若另行授权人工操作，应一次给完整步骤：恢复预览后重新准备候选、完成动作、观察，再最小化反馈；最小化会取消未提交组合，不能预设跨Codex对话仍保留。当前四机均不因本汇总自动启动测试；desktop性能方案仍未执行，MSI三项宿主完成不重做，ASUS两项完成不重做，MyComputer保持项不重做。所有历史局限和原始证据继续保留。

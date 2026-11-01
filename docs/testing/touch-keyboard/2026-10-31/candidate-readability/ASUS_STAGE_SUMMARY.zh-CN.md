@@ -2,6 +2,10 @@
 
 更新：2026-11-01（UTC）。本轮只审阅已回传 JSON、核对身份并界定最小剩余范围；未执行新测试、启用事件跟踪、修代码或改包。本稿不代表新人工任务已经下发。
 
+## r2 对照已回传（2026-11-01）
+
+已核验结果 `6585f326c9d90bc7c6eaa1194c48ba26ff005114`：`pr87-asus-pen-hold-r2` 稳定保持、笔+手指混合翻页各一次人工样本通过，哈希/任务/固定ARM64包一致，详见[四机当前阶段汇总](FOUR_MACHINE_STAGE_SUMMARY.zh-CN.md)。实际手别未单独确认；混合不算纯笔，不推频率或MSI原因。两项已完成且停止，不再重复。下方r1历史内容保持原归属，条件退格建议仍不是当前执行任务。
+
 ## 来源与身份核对
 
 - 结果提交 [9b1cd504e256cae2c9475e0831468c3a58398649](https://github.com/tsaanghwang/Yime/commit/9b1cd504e256cae2c9475e0831468c3a58398649) 位于 `task-results/asus-arm64`，仅新增[一份 JSON](https://github.com/tsaanghwang/Yime/blob/9b1cd504e256cae2c9475e0831468c3a58398649/results/asus-arm64/pr87-asus-arm64-r1/ae99c77c9fc62aa1b09e832a7b8c2e49be37a0fd52b89497b55bc576e70d6cf2.json)。原文 UTF-8 含结尾换行 5222 字节，SHA-256 `ae99c77c9fc62aa1b09e832a7b8c2e49be37a0fd52b89497b55bc576e70d6cf2` 与文件名相同。

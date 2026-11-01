@@ -4,6 +4,10 @@
 
 现已发布 [PR #87](https://github.com/tsaanghwang/Yime/pull/87)；固定两架构完整包、哈希、CI与本机原生检查见 [CI_DELIVERY.zh-CN.md](CI_DELIVERY.zh-CN.md)。MyComputer 可直接使用[接续任务提示](TASK_PROMPT.zh-CN.md)。PR未自动合并，新包真人测试仍待实际记录。
 
+## 2026-11-01 当前阶段结果入口
+
+[四机当前阶段汇总](FOUR_MACHINE_STAGE_SUMMARY.zh-CN.md)已登记MSI r2三项宿主完成、ASUS r2两项限定对照通过、MyComputer已归档报告及后续仅本地摘要、桌面只读准备未测未推送。笔专项仍独立跟踪、根因未定；现有trace信息不足，不要求重复同样测试，诊断增强未授权未实现。以下各阶段发布记录保留，不将当时“未测”当作最新完成项的待办。
+
 ## 2026-11-01 四机专项分工更新
 
 用户确认大屏本机为 **MyComputer + Acer PE270XT**，主责手指/笔；“计算机”主责较旧 x86 系平台性能与鼠标（当前不自动启动新任务）；MSI 主责笔记本/翻转屏适配；ASUS 主责 ARM 原生适配。详见[四机测试分工与边界](FOUR_MACHINE_TEST_ROLES.zh-CN.md)。下方历史报告和原三机队列保持原样；MSI 四项接续建议不是已下发任务，共性交互后续优先由大屏规划，不要求各机全量重复。
