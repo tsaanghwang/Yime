@@ -28,7 +28,7 @@ func (a *ui) initOwnDemo() error {
 	if a.s.Board.LayoutID != identity.LayoutSHA256 {
 		return fmt.Errorf("UI layout and isolated dictionary identity mismatch")
 	}
-	c, e := startDemoClient(a.o.Root, identity)
+	c, e := startDemoClient(a.o.Root, identity, a.o.OwnTSFDemoSmoke)
 	if e != nil {
 		return e
 	}
@@ -201,18 +201,12 @@ func (a *ui) ownDemoSmoke() error {
 			return fmt.Errorf("actual own-host readback mismatch")
 		}
 		if n == 0 {
-			// Controlled real focus transfer to a disposable window owned by this parent.
-			temp, _, _ := U("CreateWindowExW").Call(0, ptr(str("STATIC")), ptr(str("Own demo focus-test window")), 0x10CF0000, 20, 20, 200, 100, 0, 0, 0, 0)
-			if temp == 0 {
-				return fmt.Errorf("create own focus-test window")
-			}
-			U("SetForegroundWindow").Call(temp)
-			if foreground().Window != temp {
-				U("DestroyWindow").Call(temp)
-				return fmt.Errorf("own focus-test window did not gain foreground")
+			// Test-only native operation transfers real foreground to a second
+			// window owned by the same child, without broad foreground grants.
+			if _, e = a.demo.client.call("test-focus-away", nil); e != nil {
+				return e
 			}
 			_ = a.pollOwnDemo()
-			U("DestroyWindow").Call(temp)
 			if a.demo.client.closed || a.demo.client.last.Active {
 				return fmt.Errorf("native did not observe real focus loss")
 			}

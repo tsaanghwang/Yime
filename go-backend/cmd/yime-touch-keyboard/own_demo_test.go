@@ -91,3 +91,24 @@ func TestOwnDemoPackageNeverFallsBack(t *testing.T) {
 		}
 	}
 }
+
+func TestOwnDemoChildSelfTestIsExplicit(t *testing.T) {
+	if len(demoHostArgs(false)) != 0 {
+		t.Fatal("ordinary demo enables native test mode")
+	}
+	args := demoHostArgs(true)
+	if len(args) != 1 || args[0] != "--self-test" {
+		t.Fatal("unexpected child arguments")
+	}
+	id := demoIdentity{"layout", "dictionary", "variable", "policy"}
+	r := demoReply{Version: 2, Seq: 3, Op: "test-focus-away", Epoch: 2, Identity: id, Context: "own-demo-host", OK: true, ReadbackMatch: true}
+	b, _ := json.Marshal(r)
+	if _, e := decodeDemoReply(b, r.Op, 3, 2, id); e != nil {
+		t.Fatal(e)
+	}
+	r.Active = true
+	b, _ = json.Marshal(r)
+	if _, e := decodeDemoReply(b, r.Op, 3, 2, id); e == nil {
+		t.Fatal("focus-away acknowledged while active")
+	}
+}

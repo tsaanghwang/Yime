@@ -154,6 +154,33 @@ struct Host final : IBrokerEditExecutionGuard {
         require(manager->SetFocus(document.Get()),"restore own TSF focus");
         ++epoch;bound=true;
     }
+    void testFocusAway(){
+        // Explicit self-test only: create a second window in this same process.
+        // Loss is produced by real foreground ownership, never by setting bound.
+        if(!hasFocus())throw std::runtime_error("focus probe requires bound own foreground");
+        struct ProbeWindow {
+            HWND value=nullptr;
+            ~ProbeWindow(){if(value)DestroyWindow(value);}
+        } probe;
+        probe.value=CreateWindowExW(0,L"STATIC",L"Yime isolated focus probe",WS_OVERLAPPEDWINDOW,
+            CW_USEDEFAULT,CW_USEDEFAULT,300,120,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr);
+        if(!probe.value)throw std::runtime_error("create own focus probe");
+        ShowWindow(probe.value,SW_SHOWNOACTIVATE);
+        if(!SetForegroundWindow(probe.value) || GetForegroundWindow()!=probe.value)
+            throw std::runtime_error("own focus probe did not gain actual foreground");
+        MSG message{};
+        for(unsigned n=0;n<64 && PeekMessageW(&message,nullptr,0,0,PM_REMOVE);++n){
+            TranslateMessage(&message);DispatchMessageW(&message);
+        }
+        if(GetForegroundWindow()!=probe.value)throw std::runtime_error("focus probe foreground changed");
+        observeFocus(); // Actual foreground is the different, verified own window.
+        if(bound)throw std::runtime_error("real focus loss did not invalidate binding");
+        if(!DestroyWindow(probe.value))throw std::runtime_error("destroy own focus probe");
+        probe.value=nullptr;
+        observeFocus();
+        if(bound)throw std::runtime_error("old binding revived after probe close");
+        verify();
+    }
     STDMETHODIMP QueryInterface(REFIID iid,void** out) override{
         if(!out)return E_POINTER;*out=nullptr;
         if(iid!=IID_IUnknown)return E_NOINTERFACE;
@@ -256,8 +283,10 @@ bool validIdentity(const json& identity){
         identity.at("sessionPolicy").is_string() && !identity.at("sessionPolicy").get<std::string>().empty() &&
         identity.at("sessionPolicy").get<std::string>().size()<=256;
 }
-int main(){
+int main(int argc,char** argv){
     try{
+        if(argc>2 || (argc==2 && std::string(argv[1])!="--self-test"))throw std::runtime_error("unsupported demo argument");
+        const bool selfTest=argc==2;
         nativeGate();Apartment apartment;ComPtr<Host> host;json identity;unsigned mutations=0;
         for(uint64_t sequence=1;;++sequence){
             if(sequence==UINT64_MAX)throw std::runtime_error("sequence exhausted");
@@ -288,6 +317,10 @@ int main(){
                 }else if(op=="invalidate"){
                     host->bound=false;require(host->manager->SetFocus(host->other.Get()),"invalidate own TSF focus");host->verify();
                 }else if(op=="rebind"){host->rebind();host->verify();}
+                else if(op=="test-focus-away"){
+                    if(!selfTest)throw std::runtime_error("focus probe requires explicit self-test mode");
+                    host->testFocusAway();
+                }
                 else if(op=="read")host->verify();
                 else if(op=="close")host->close();
                 else throw std::runtime_error("unsupported demo operation");

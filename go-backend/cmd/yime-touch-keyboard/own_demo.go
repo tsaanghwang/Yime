@@ -84,7 +84,7 @@ func demoHostPath(root, expected string) (string, error) {
 	}
 	return filepath.Join(root, ownDemoHostName), nil
 }
-func startDemoClient(root string, identity bridge.Identity) (*demoClient, error) {
+func startDemoClient(root string, identity bridge.Identity, selfTest bool) (*demoClient, error) {
 	if runtime.GOOS != "windows" || runtime.GOARCH != "amd64" {
 		return nil, fmt.Errorf("own TSF demo is Windows native x64 only")
 	}
@@ -93,7 +93,7 @@ func startDemoClient(root string, identity bridge.Identity) (*demoClient, error)
 		return nil, e
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	cmd := exec.CommandContext(ctx, path)
+	cmd := exec.CommandContext(ctx, path, demoHostArgs(selfTest)...)
 	cmd.Dir = root
 	cmd.Stderr = &demoDiscardLog{}
 	in, e := cmd.StdinPipe()
@@ -199,7 +199,7 @@ func decodeDemoReply(b []byte, op string, seq, epoch uint64, id demoIdentity) (r
 	} else if !r.OK || r.Outcome != "" || r.CallbackSeen {
 		return r, fmt.Errorf("invalid host acknowledgement")
 	}
-	if (op == "init" || op == "invalidate" || op == "close") && r.Active {
+	if (op == "init" || op == "invalidate" || op == "close" || op == "test-focus-away") && r.Active {
 		return r, fmt.Errorf("host unexpectedly active")
 	}
 	if op == "rebind" && !r.Active {
@@ -236,6 +236,15 @@ func (c *demoClient) close() error {
 	c.closed = true
 	if e != nil {
 		return fmt.Errorf("own host did not exit normally")
+	}
+	return nil
+}
+
+// The only optional child argument is selected by the explicit CI self-test
+// flag. Neither an arbitrary command line nor a target HWND is accepted.
+func demoHostArgs(selfTest bool) []string {
+	if selfTest {
+		return []string{"--self-test"}
 	}
 	return nil
 }
