@@ -168,3 +168,20 @@ set_property(TARGET YimeRegisteredHostTests PROPERTY MSVC_RUNTIME_LIBRARY "Multi
 if(YIME_ARM64X_STAGE)
     include("${CMAKE_CURRENT_LIST_DIR}/cmake/Arm64X.cmake")
 endif()
+
+# Explicit S2 own-context harness; not an installed product or registration test.
+# Opt in on native x64 Windows. No test is auto-registered because its paired Go
+# test supplies a real dedicated-layout engine commit over bounded test stdin.
+option(YIME_TOUCH_BRIDGE_OWN_HOST "Build isolated dedicated-touch TSF host harness" OFF)
+if(YIME_TOUCH_BRIDGE_OWN_HOST)
+    if(NOT CMAKE_GENERATOR_PLATFORM STREQUAL "x64")
+        message(FATAL_ERROR "Touch bridge own-host S2 currently requires native x64")
+    endif()
+    add_executable(YimeTouchBridgeOwnHost tests/TouchBridgeOwnHost.cpp CompositionEditSession.cpp)
+    target_compile_features(YimeTouchBridgeOwnHost PRIVATE cxx_std_17)
+    target_compile_definitions(YimeTouchBridgeOwnHost PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
+    target_compile_options(YimeTouchBridgeOwnHost PRIVATE /utf-8 /W4 /EHsc)
+    target_include_directories(YimeTouchBridgeOwnHost PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_LIST_DIR}/../json/single_include")
+    target_link_libraries(YimeTouchBridgeOwnHost PRIVATE ole32 oleaut32 user32)
+    set_property(TARGET YimeTouchBridgeOwnHost PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
