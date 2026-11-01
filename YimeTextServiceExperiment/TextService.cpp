@@ -22,6 +22,18 @@
 
 namespace {
 
+// Fixed stage literals only; opt-in isolated CI probe, never input or identity data.
+void ActivationFailureProbe(const char* stage, HRESULT result) noexcept {
+#if defined(YIME_TOUCH_PRODUCT) && defined(YIME_TOUCH_ACTIVATION_DIAGNOSTICS)
+    std::fprintf(stderr, "{\"stage\":\"activation-probe/%s\",\"kind\":\"hresult\",\"code\":%lu}\n",
+                 stage, static_cast<unsigned long>(result));
+    std::fflush(stderr);
+#else
+    (void)stage;
+    (void)result;
+#endif
+}
+
 std::wstring widenUtf8(const std::string& value) {
     if (value.empty()) return {};
     const int length = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, value.data(),
@@ -278,8 +290,9 @@ STDMETHODIMP YimeTextService::Activate(ITfThreadMgr* threadManager, TfClientId c
 }
 
 STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId clientId, DWORD flags) {
-    if (!threadManager || clientId == TF_CLIENTID_NULL) return E_INVALIDARG;
-    if (threadManager_) return TF_E_ALREADY_EXISTS;
+    if (!threadManager) { ActivationFailureProbe("null-manager", E_INVALIDARG); return E_INVALIDARG; }
+    if (clientId == TF_CLIENTID_NULL) { ActivationFailureProbe("null-client", E_INVALIDARG); return E_INVALIDARG; }
+    if (threadManager_) { ActivationFailureProbe("already-active", TF_E_ALREADY_EXISTS); return TF_E_ALREADY_EXISTS; }
     threadManager_ = threadManager;
     threadManager_->AddRef();
     clientId_ = clientId;
@@ -298,6 +311,9 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
             result = keystrokes->AdviseKeyEventSink(clientId_, this, TRUE);
             keySinkAdvised_ = SUCCEEDED(result);
             keystrokes->Release();
+            if (FAILED(result)) ActivationFailureProbe("advise-key-event-sink", result);
+        } else {
+            ActivationFailureProbe("query-keystroke-manager", result);
         }
     }
     if (FAILED(result)) {
@@ -314,7 +330,7 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
 #ifdef YIME_TOUCH_PRODUCT
     // Dedicated context generations rely on real TSF document/context events.
     // Do not activate this route without its revocation observer.
-    if(!threadEventSinkAdvised_){Deactivate();return E_FAIL;}
+    if(!threadEventSinkAdvised_){ActivationFailureProbe("thread-observer", E_FAIL);Deactivate();return E_FAIL;}
 #endif
 #ifndef YIME_TOUCH_PRODUCT
     AddLanguageBar();

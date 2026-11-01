@@ -79,3 +79,11 @@ TIP自行取得实际context与自身STA前台窗口，不接受外部HWND/conte
 依据：https://learn.microsoft.com/en-us/windows/win32/api/msctf/nf-msctf-itfkeystrokemgr-advisekeyeventsink 、 https://learn.microsoft.com/en-us/windows/win32/api/msctf/nf-msctf-itfclientid-getclientid
 
 同一a90b174普通Build `41316058471` 的Windows race job `124876418928` 另有新增测试 `TestDedicatedNamedPipeHandlerUsesActualSameLogonPeer` 等handler超时（10秒）；不是DATA RACE报告，不是前述两项旧清理断言。同提交非race实际OS认证通过。先补测试对认证错误/监听提前退出的固定分类诊断和失败清理，不增加超时、不放宽SID/PID/登录身份要求；根因仍待CI证据。
+
+## 第三轮结果与精确门槛探针
+
+`09839c04104b736deb8800eb2e46c10603d02e18` / 原生 run `41316988230` 仍是新7项在实际TIP激活返回E_INVALIDARG，旧10项和非race OS认证通过。失败artifact `13087363077` ZIP SHA-256 `794f968550ba2b48cb527b17163fd93df53b8dafdbc0313bf541e825d0ee5268`已下载保留。借用宿主激活client并未证明解决问题，不再猜换ID或跳过key sink。
+
+此次仅在独立18u DLL编译默认关闭的诊断开关：限定CI启用后记录固定阶段（null-manager/null-client/already-active/query-keystroke-manager/advise-key-event-sink/thread-observer）及原返回HRESULT；成功无输出。观察器标签仅表示原门返回E_FAIL，不细分其内部API。严格解析至多一条探针加一条对应失败；不输出正文/路径/凭据，不改变输入逻辑、激活参数、调用顺序或清理。若确认真实key sink门在此未注册路线拒绝，保留阻塞并另行申请隔离注册验证，不绕过激活门。
+
+同head普通Build `41316988238` race job `124879251558` 已将失败缩小为实际peer登录身份查询返回“Invalid access to memory location”，不是超时或DATA RACE警告。原TokenSessionId/TokenStatistics输出采用只保证字节对齐的byte数组；最小ABI修正改用uint32和完整对齐TOKEN_STATISTICS结构，保持SID、Windows session、AuthenticationId比较及little-endian字节编码不变。新增结构尺寸/偏移/对齐/编码等价与实际Token查询测试，并细分TokenUser/SessionId/Statistics错误。对齐缺口与race现象相符，但尚无原生证据证明具体根因或修复成功；不增加重试，不放宽认证。官方结构依据：https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-token_statistics

@@ -47,7 +47,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path .generated/s3c-evidence -Force -ErrorAction Stop | Out-Null
           $ErrorActionPreference = 'Stop'
-          cmake -S YimeTextServiceExperiment -B .generated/s3c-own-host -A x64 -DYIME_TOUCH_BRIDGE_OWN_HOST=ON -DYIME_TOUCH_BRIDGE_PERSISTENT_HOST=ON -DYIME_TOUCH_PRODUCT=ON 2>&1 | Tee-Object .generated/s3c-evidence/configure.log
+          cmake -S YimeTextServiceExperiment -B .generated/s3c-own-host -A x64 -DYIME_TOUCH_BRIDGE_OWN_HOST=ON -DYIME_TOUCH_BRIDGE_PERSISTENT_HOST=ON -DYIME_TOUCH_PRODUCT=ON -DYIME_TOUCH_ACTIVATION_DIAGNOSTICS=ON 2>&1 | Tee-Object .generated/s3c-evidence/configure.log
           if ($LASTEXITCODE -ne 0) { throw 'Native harness configure failed' }
           cmake --build .generated/s3c-own-host --config Release --target YimeTouchBridgeOwnHost YimeFocusCancellationTests YimeTouchBridgePersistentHost YimeTextServiceExperiment YimeTextService18u YimeTouchFormalHostTests 2>&1 | Tee-Object .generated/s3c-evidence/build.log
           if ($LASTEXITCODE -ne 0) { throw 'Native harness build failed' }
@@ -103,10 +103,10 @@ jobs:
             go test ./internal/touchbroker ./cmd/yimebroker-18u -count=1
             if ($LASTEXITCODE -ne 0) { throw 'Dedicated protocol regression failed' }
             $transport = Join-Path $PWD '../.generated/s3c-evidence/transport-go-test.jsonl'
-            go test ./input_methods/yime/yimebroker -run '^Test(ServeNamedPipe|ValidateNamedPipe|ServeLines|Dispatcher|DedicatedNamedPipe)' -count=1 -json 2>&1 | Tee-Object $transport
+            go test ./input_methods/yime/yimebroker -run '^Test(ServeNamedPipe|ValidateNamedPipe|ServeLines|Dispatcher|DedicatedNamedPipe|DedicatedTokenLogonIdentityABI)' -count=1 -json 2>&1 | Tee-Object $transport
             if ($LASTEXITCODE -ne 0) { throw 'Standard transport regression failed' }
             $events = @(Get-Content $transport | ForEach-Object { $_ | ConvertFrom-Json -ErrorAction Stop })
-            foreach ($name in @('TestDedicatedNamedPipeHandlerUsesActualSameLogonPeer', 'TestDedicatedNamedPipeRejectsOtherActualProcess')) {
+            foreach ($name in @('TestDedicatedTokenLogonIdentityABI', 'TestDedicatedNamedPipeHandlerUsesActualSameLogonPeer', 'TestDedicatedNamedPipeRejectsOtherActualProcess')) {
               if (@($events | Where-Object { $_.Test -ceq $name -and $_.Action -ceq 'pass' }).Count -ne 1 -or @($events | Where-Object { $_.Test -ceq $name -and $_.Action -in @('skip','fail') }).Count -ne 0) { throw "Actual OS peer verification missing or failed: $name" }
             }
           } finally { Pop-Location }
@@ -130,10 +130,10 @@ jobs:
           $env:YIME_FORMAL_18U_DATA = (Resolve-Path '.generated/touch-keyboard-resources').Path
           $report = Join-Path $PWD '.generated/s3c-evidence/formal-go-test.jsonl'
           Push-Location go-backend
-          try { go test ./internal/touchhostbridge -run '^(TestNativeFormal18uTIP|TestFormalFailureSummaryPrivacy)$' -count=1 -json -timeout=240s 2>&1 | Tee-Object $report; $code = $LASTEXITCODE } finally { Pop-Location }
+          try { go test ./internal/touchhostbridge -run '^(TestNativeFormal18uTIP|TestFormalFailureSummaryPrivacy|TestFormalActivationProbePrivacy)$' -count=1 -json -timeout=240s 2>&1 | Tee-Object $report; $code = $LASTEXITCODE } finally { Pop-Location }
           if ($code -ne 0) { throw 'Formal adapter integration failed' }
           $events = @(Get-Content $report | ForEach-Object { $_ | ConvertFrom-Json -ErrorAction Stop })
-          $expected = @('TestFormalFailureSummaryPrivacy', 'TestNativeFormal18uTIP', 'TestNativeFormal18uTIP/commit', 'TestNativeFormal18uTIP/duplicate', 'TestNativeFormal18uTIP/wrong-server-pid', 'TestNativeFormal18uTIP/wrong-server-image', 'TestNativeFormal18uTIP/deactivated', 'TestNativeFormal18uTIP/focus-lost', 'TestNativeFormal18uTIP/disconnect-before-action')
+          $expected = @('TestFormalActivationProbePrivacy', 'TestFormalFailureSummaryPrivacy', 'TestNativeFormal18uTIP', 'TestNativeFormal18uTIP/commit', 'TestNativeFormal18uTIP/duplicate', 'TestNativeFormal18uTIP/wrong-server-pid', 'TestNativeFormal18uTIP/wrong-server-image', 'TestNativeFormal18uTIP/deactivated', 'TestNativeFormal18uTIP/focus-lost', 'TestNativeFormal18uTIP/disconnect-before-action')
           foreach ($name in $expected) {
             $pass = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -ceq 'pass' })
             $bad = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -in @('skip', 'fail') })

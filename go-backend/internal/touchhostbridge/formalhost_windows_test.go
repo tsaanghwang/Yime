@@ -294,19 +294,38 @@ func formalCanonicalNi(root string) (string, error) {
 
 // Parse only the native harness's fixed diagnostic vocabulary, never echo raw stderr.
 func formalFailureSummary(raw []byte) string {
-	var d struct {
-		Stage string `json:"stage"`
-		Kind  string `json:"kind"`
-		Code  uint32 `json:"code"`
+	type diagnostic struct {
+		Stage string  `json:"stage"`
+		Kind  string  `json:"kind"`
+		Code  *uint32 `json:"code"`
 	}
+	var d diagnostic
 	decoder := json.NewDecoder(strings.NewReader(string(raw)))
 	decoder.DisallowUnknownFields()
-	if decoder.Decode(&d) != nil {
+	if decoder.Decode(&d) != nil || d.Code == nil {
 		return "diagnostic unavailable"
 	}
-	var extra any
-	if decoder.Decode(&extra) != io.EOF {
-		return "diagnostic unavailable"
+	var second diagnostic
+	secondErr := decoder.Decode(&second)
+	probeSummary := ""
+	if secondErr != io.EOF {
+		probes := map[string]bool{
+			"activation-probe/null-manager":            true,
+			"activation-probe/null-client":             true,
+			"activation-probe/already-active":          true,
+			"activation-probe/query-keystroke-manager": true,
+			"activation-probe/advise-key-event-sink":   true,
+			"activation-probe/thread-observer":         true,
+		}
+		if secondErr != nil || !probes[d.Stage] || d.Kind != "hresult" || *d.Code < 0x80000000 || second.Stage != "actual TIP activation" || second.Kind != "hresult" || second.Code == nil || *second.Code != *d.Code {
+			return "diagnostic unavailable"
+		}
+		var extra any
+		if decoder.Decode(&extra) != io.EOF {
+			return "diagnostic unavailable"
+		}
+		probeSummary = fmt.Sprintf("stage=%s kind=hresult code=0x%08X; ", d.Stage, *d.Code)
+		d = second
 	}
 	allowed := map[string]bool{
 		"UTF8 conversion":                       true,
@@ -359,7 +378,7 @@ func formalFailureSummary(raw []byte) string {
 	if !allowed[d.Stage] || (d.Kind != "hresult" && d.Kind != "win32" && d.Kind != "assertion" && d.Kind != "exception") {
 		return "diagnostic unavailable"
 	}
-	return fmt.Sprintf("stage=%s kind=%s code=0x%08X", d.Stage, d.Kind, d.Code)
+	return probeSummary + fmt.Sprintf("stage=%s kind=%s code=0x%08X", d.Stage, d.Kind, *d.Code)
 }
 
 func TestFormalFailureSummaryPrivacy(t *testing.T) {
@@ -369,6 +388,27 @@ func TestFormalFailureSummaryPrivacy(t *testing.T) {
 	for _, raw := range []string{`secret`, `{"stage":"C:/private/file","kind":"win32","code":1}`, `{"stage":"unexpected","kind":"exception","code":0,"text":"private"}`, `{"stage":"unexpected","kind":"exception","code":0} trailing`} {
 		if formalFailureSummary([]byte(raw)) != "diagnostic unavailable" {
 			t.Fatal("untrusted diagnostic escaped")
+		}
+	}
+}
+
+func TestFormalActivationProbePrivacy(t *testing.T) {
+	probe := `{"stage":"activation-probe/advise-key-event-sink","kind":"hresult","code":2147942487}`
+	final := `{"stage":"actual TIP activation","kind":"hresult","code":2147942487}`
+	if got := formalFailureSummary([]byte(probe + "\n" + final)); got != "stage=activation-probe/advise-key-event-sink kind=hresult code=0x80070057; stage=actual TIP activation kind=hresult code=0x80070057" {
+		t.Fatal("matched fixed probe not retained")
+	}
+	for _, raw := range []string{
+		probe, final + "\n" + probe, probe + "\n" + final + "\n" + final,
+		strings.Replace(probe, "advise-key-event-sink", "private/path", 1) + "\n" + final,
+		strings.Replace(probe, "2147942487", "2147500037", 1) + "\n" + final,
+		strings.Replace(probe, "hresult", "exception", 1) + "\n" + final,
+		strings.Replace(probe, `"code":2147942487`, `"code":2147942487,"text":"private"`, 1) + "\n" + final,
+		probe + "\n" + strings.Replace(final, "actual TIP activation", "actual TIP instance", 1),
+		`{"stage":"actual TIP activation","kind":"hresult"}`,
+	} {
+		if formalFailureSummary([]byte(raw)) != "diagnostic unavailable" {
+			t.Fatal("invalid probe escaped")
 		}
 	}
 }

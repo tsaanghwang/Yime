@@ -4,6 +4,7 @@ package yimebroker
 
 import (
 	"context"
+	"encoding/binary"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -480,29 +481,59 @@ func trustedSameLogonPeer(pipe syscall.Handle, expectedPID uint32) (TrustedClien
 	}
 	return TrustedClient{ID: fmt.Sprintf("windows:%s:session:%s:logon:%s:pid:%d:created:%08x%08x", sid, session, logon, pid, creation.HighDateTime, creation.LowDateTime)}, func() { syscall.CloseHandle(process) }, nil
 }
+
+// These are Win32 ABI output types, not byte-array scratch buffers. Byte
+// arrays guarantee only byte alignment, which is insufficient for typed token
+// information outputs (and can differ under race-instrumented allocation).
+type tokenLUID struct {
+	LowPart  uint32
+	HighPart int32
+}
+type tokenStatistics struct {
+	TokenID            tokenLUID
+	AuthenticationID   tokenLUID
+	ExpirationTime     int64
+	TokenType          uint32
+	ImpersonationLevel uint32
+	DynamicCharged     uint32
+	DynamicAvailable   uint32
+	GroupCount         uint32
+	PrivilegeCount     uint32
+	ModifiedID         tokenLUID
+}
+
+func encodedLogonIdentity(session uint32, authentication tokenLUID) (string, string) {
+	var sessionBytes [4]byte
+	var authenticationBytes [8]byte
+	binary.LittleEndian.PutUint32(sessionBytes[:], session)
+	binary.LittleEndian.PutUint32(authenticationBytes[:4], authentication.LowPart)
+	binary.LittleEndian.PutUint32(authenticationBytes[4:], uint32(authentication.HighPart))
+	return hex.EncodeToString(sessionBytes[:]), hex.EncodeToString(authenticationBytes[:])
+}
 func logonIdentity(token syscall.Token) (string, string, string, error) {
 	user, e := token.GetTokenUser()
 	if e != nil {
-		return "", "", "", e
+		return "", "", "", fmt.Errorf("GetTokenInformation(TokenUser): %w", e)
 	}
 	sid, e := user.User.Sid.String()
 	if e != nil {
-		return "", "", "", e
+		return "", "", "", fmt.Errorf("format TokenUser SID: %w", e)
 	}
-	var session [4]byte
+	var session uint32
 	var size uint32
-	if e = syscall.GetTokenInformation(token, syscall.TokenSessionId, &session[0], 4, &size); e != nil {
-		return "", "", "", e
+	if e = syscall.GetTokenInformation(token, syscall.TokenSessionId, (*byte)(unsafe.Pointer(&session)), uint32(unsafe.Sizeof(session)), &size); e != nil {
+		return "", "", "", fmt.Errorf("GetTokenInformation(TokenSessionId): %w", e)
 	}
-	if size != 4 {
-		return "", "", "", errors.New("short token session identity")
+	if size != uint32(unsafe.Sizeof(session)) {
+		return "", "", "", errors.New("unexpected TokenSessionId size")
 	}
-	var statistics [64]byte
-	if e = syscall.GetTokenInformation(token, syscall.TokenStatistics, &statistics[0], uint32(len(statistics)), &size); e != nil {
-		return "", "", "", e
+	var statistics tokenStatistics
+	if e = syscall.GetTokenInformation(token, syscall.TokenStatistics, (*byte)(unsafe.Pointer(&statistics)), uint32(unsafe.Sizeof(statistics)), &size); e != nil {
+		return "", "", "", fmt.Errorf("GetTokenInformation(TokenStatistics): %w", e)
 	}
-	if size < 16 {
-		return "", "", "", errors.New("short token statistics")
+	if size != uint32(unsafe.Sizeof(statistics)) {
+		return "", "", "", errors.New("unexpected TOKEN_STATISTICS size")
 	}
-	return sid, hex.EncodeToString(session[:]), hex.EncodeToString(statistics[8:16]), nil
+	sessionText, logonText := encodedLogonIdentity(session, statistics.AuthenticationID)
+	return sid, sessionText, logonText, nil
 }
