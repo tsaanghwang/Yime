@@ -1,3 +1,6 @@
+#ifdef YIME_TOUCH_PRODUCT
+#include "DedicatedTouchRoute.h"
+#endif
 #include "TextService.h"
 
 #include <cstdio>
@@ -251,6 +254,10 @@ STDMETHODIMP YimeTextService::QueryInterface(REFIID iid, void** object) {
         *object = static_cast<ITfCompositionSink*>(this);
     } else if (IsEqualIID(iid, __uuidof(ITfThreadMgrEventSink))) {
         *object = static_cast<ITfThreadMgrEventSink*>(this);
+#ifdef YIME_TOUCH_PRODUCT
+    } else if(IsEqualIID(iid,__uuidof(IDedicatedTouchService))) {
+        *object=static_cast<IDedicatedTouchService*>(this);
+#endif
     } else {
         return E_NOINTERFACE;
     }
@@ -278,6 +285,9 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
     clientId_ = clientId;
     activationFlags_ = flags;
     keyEventFocused_ = true;
+#ifdef YIME_TOUCH_PRODUCT
+    dedicatedThread_=GetCurrentThreadId();
+#endif
     selectionKeyDiagnosticsEnabled_ = yime::experiment::SelectionKeyDiagnosticsEnabled();
     HRESULT result = S_OK;
     const bool directTest = GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", nullptr, 0) > 0;
@@ -301,13 +311,23 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
             &threadEventSinkCookie_) == S_OK;
         source->Release();
     }
+#ifdef YIME_TOUCH_PRODUCT
+    // Dedicated context generations rely on real TSF document/context events.
+    // Do not activate this route without its revocation observer.
+    if(!threadEventSinkAdvised_){Deactivate();return E_FAIL;}
+#endif
+#ifndef YIME_TOUCH_PRODUCT
     AddLanguageBar();
     std::string ignoredError;
     surface_.Connect(yime::experiment::ResolveBrokerPipeName(), 2000, &ignoredError);
+#endif
     return S_OK;
 }
 
 STDMETHODIMP YimeTextService::Deactivate() {
+#ifdef YIME_TOUCH_PRODUCT
+    if(dedicated_){dedicated_->Disconnect();dedicated_->Release();dedicated_=nullptr;}
+#endif
     if (!threadManager_) return S_OK;
     shiftTap_.Reset();
     if (keySinkAdvised_) {
@@ -370,6 +390,9 @@ STDMETHODIMP YimeTextService::Deactivate() {
 }
 
 STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(!foreground && dedicated_)dedicated_->Disconnect();
+#endif
     keyEventFocused_ = foreground != FALSE;
     if (!keyEventFocused_) {
         shiftTap_.Reset();
@@ -389,6 +412,9 @@ STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
 STDMETHODIMP YimeTextService::OnInitDocumentMgr(ITfDocumentMgr*) { return S_OK; }
 
 STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(dedicated_)dedicated_->Disconnect();
+#endif
     bool punctuationDocumentClosing = false;
     if (document && punctuationPalette_.IsActive() && punctuationContext_) {
         ITfDocumentMgr* punctuationDocument = nullptr;
@@ -407,6 +433,9 @@ STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
 }
 
 STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(dedicated_)dedicated_->FocusChanged(focus);
+#endif
     shiftTap_.Reset();
     compositionDocumentFocused_ = !compositionDocument_ || focus == compositionDocument_;
     if (!compositionDocumentFocused_) CancelUnconfirmedComposition();
@@ -421,9 +450,17 @@ STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*)
     return S_OK;
 }
 
-STDMETHODIMP YimeTextService::OnPushContext(ITfContext*) { return S_OK; }
+STDMETHODIMP YimeTextService::OnPushContext(ITfContext* context) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(dedicated_)dedicated_->ContextChanged(context);
+#endif
+    return S_OK;
+}
 
 STDMETHODIMP YimeTextService::OnPopContext(ITfContext* context) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(dedicated_)dedicated_->Disconnect();
+#endif
     if (context && context == punctuationContext_) CancelPunctuationPalette(false);
     return S_OK;
 }
@@ -443,6 +480,9 @@ bool YimeTextService::ContextMatchesComposition(ITfContext* context) const noexc
 }
 
 HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) noexcept {
+#ifdef YIME_TOUCH_PRODUCT
+    if(!eaten)return E_POINTER;*eaten=FALSE;return S_OK;
+#endif
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
     try {
@@ -509,6 +549,9 @@ STDMETHODIMP YimeTextService::OnTestKeyDown(ITfContext* context, WPARAM wParam, 
 }
 
 STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(!eaten)return E_POINTER;*eaten=FALSE;return S_OK;
+#endif
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
     if (wParam == VK_SHIFT || wParam == VK_LSHIFT || wParam == VK_RSHIFT) {
@@ -636,6 +679,9 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
 }
 
 STDMETHODIMP YimeTextService::OnTestKeyUp(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(!eaten)return E_POINTER;*eaten=FALSE;return S_OK;
+#endif
     if (!eaten) return E_POINTER;
     *eaten = context && CanAcceptKeys() &&
              (wParam == VK_SHIFT || wParam == VK_LSHIFT || wParam == VK_RSHIFT) ? TRUE : FALSE;
@@ -643,6 +689,9 @@ STDMETHODIMP YimeTextService::OnTestKeyUp(ITfContext* context, WPARAM wParam, LP
 }
 
 STDMETHODIMP YimeTextService::OnKeyUp(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(!eaten)return E_POINTER;*eaten=FALSE;return S_OK;
+#endif
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
     if (!context || !CanAcceptKeys() ||
@@ -1219,3 +1268,24 @@ void YimeTextService::RemoveLanguageBar() noexcept {
     languageBarItem_->Release();
     languageBarItem_ = nullptr;
 }
+
+#ifdef YIME_TOUCH_PRODUCT
+STDMETHODIMP YimeTextService::ConnectDedicated(LPCWSTR pipe,DWORD pid,LPCWSTR image,BSTR* response){
+    if(!response)return E_POINTER;*response=nullptr;
+    if(!threadManager_ || !keyEventFocused_)return E_ABORT;
+    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    if(!dedicated_)dedicated_=new(std::nothrow) DedicatedTouchRoute(threadManager_,clientId_);
+    if(!dedicated_)return E_OUTOFMEMORY;
+    auto* route=dedicated_;route->AddRef();const HRESULT result=route->Connect(pipe,pid,image,response);route->Release();return result;
+}
+STDMETHODIMP YimeTextService::ActionDedicated(LPCSTR action,BSTR* response){
+    if(!response)return E_POINTER;*response=nullptr;
+    if(!dedicated_ || !threadManager_ || !keyEventFocused_)return E_ABORT;
+    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    auto* route=dedicated_;route->AddRef();const HRESULT result=route->Action(action,this,response);route->Release();return result;
+}
+STDMETHODIMP YimeTextService::DisconnectDedicated(){
+    if(threadManager_ && GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    if(dedicated_)dedicated_->Disconnect();return S_OK;
+}
+#endif

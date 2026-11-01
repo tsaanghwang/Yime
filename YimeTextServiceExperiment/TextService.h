@@ -8,6 +8,10 @@
 #include "ExperimentSettings.h"
 #include "PunctuationPalette.h"
 #include "SurfaceSession.h"
+#ifdef YIME_TOUCH_PRODUCT
+#include "DedicatedTouchService.h"
+class DedicatedTouchRoute;
+#endif
 
 class CandidateListUIElement;
 class LanguageBarItem;
@@ -15,7 +19,11 @@ class LanguageBarItem;
 class YimeTextService final : public ITfTextInputProcessorEx,
                               public ITfKeyEventSink,
                               public ITfCompositionSink,
-                              public ITfThreadMgrEventSink {
+                              public ITfThreadMgrEventSink
+#ifdef YIME_TOUCH_PRODUCT
+                              , public IDedicatedTouchService
+#endif
+                              {
 public:
     YimeTextService() noexcept;
 
@@ -41,7 +49,16 @@ public:
     STDMETHODIMP OnPushContext(ITfContext* context) override;
     STDMETHODIMP OnPopContext(ITfContext* context) override;
 
+#ifdef YIME_TOUCH_PRODUCT
+    STDMETHODIMP ConnectDedicated(LPCWSTR pipe,DWORD pid,LPCWSTR image,BSTR* response) override;
+    STDMETHODIMP ActionDedicated(LPCSTR action,BSTR* response) override;
+    STDMETHODIMP DisconnectDedicated() override;
+#endif
 private:
+#ifdef YIME_TOUCH_PRODUCT
+    DedicatedTouchRoute* dedicated_=nullptr;
+    DWORD dedicatedThread_=0;
+#endif
     ~YimeTextService();
     HRESULT SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) noexcept;
     void UpdateCandidateUI(ITfContext* context, const yime::experiment::BrokerUpdate& update,

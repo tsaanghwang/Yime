@@ -284,12 +284,17 @@ void BrokerClient::Disconnect() noexcept {
 }
 
 bool BrokerClient::Exchange(const std::string& request, std::string* response, std::string* error) {
+    return ExchangeBrokerPipeFrame(pipe_, ioTimeoutMs_, request, response, error);
+}
+
+bool ExchangeBrokerPipeFrame(HANDLE pipe, DWORD timeoutMs, const std::string& request,
+                             std::string* response, std::string* error) {
     const std::string frame = request + "\n";
-    const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(ioTimeoutMs_);
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeoutMs);
     size_t offset = 0;
     while (offset < frame.size()) {
         DWORD written = 0;
-        if (!writeWithDeadline(pipe_, frame.data() + offset,
+        if (!writeWithDeadline(pipe, frame.data() + offset,
                                static_cast<DWORD>(frame.size() - offset),
                                deadline, &written, error) || written == 0) {
             return false;
@@ -300,7 +305,7 @@ bool BrokerClient::Exchange(const std::string& request, std::string* response, s
     for (;;) {
         char buffer[4096];
         DWORD read = 0;
-        if (!readWithDeadline(pipe_, buffer, sizeof(buffer), deadline, &read, error) || read == 0) {
+        if (!readWithDeadline(pipe, buffer, sizeof(buffer), deadline, &read, error) || read == 0) {
             return false;
         }
         const char* newline = std::find(buffer, buffer + read, '\n');

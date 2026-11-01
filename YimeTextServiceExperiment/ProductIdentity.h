@@ -1,5 +1,7 @@
 #pragma once
-#ifdef YIME_LOCAL_PRODUCT
+#ifdef YIME_TOUCH_PRODUCT
+#include "TouchProductIdentity.h"
+#elif defined(YIME_LOCAL_PRODUCT)
 #include "LocalProductIdentity.h"
 #else
 // Historical trial builds keep their existing label and stable identifiers.
