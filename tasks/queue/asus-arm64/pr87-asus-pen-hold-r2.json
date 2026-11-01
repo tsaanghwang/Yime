@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "pr87-asus-pen-hold-r2",
+  "machine": "asus-arm64",
+  "kind": "manual-test",
+  "expiresAt": "2026-11-14T00:00:00Z",
+  "package": {
+    "key": "pr87-arm64",
+    "architecture": "arm64",
+    "sourceCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+    "runID": 41178044364,
+    "artifactID": 13033634731,
+    "zipSHA256": "9395e994382fe70a30c3bb9beecd57a8c074e88411f4d2b62732b8161c6ada7b",
+    "zipBytes": 98499821,
+    "manifestSHA256": "100e9c87bf900abe39bc099391b9380bf5b25364befd5be5bb8ed85437a9cd57",
+    "executableSHA256": "fbb8a8229f933dbafe0b14709b575818c868210be67c34a54423f8676dca257f",
+    "payloadCount": 31
+  },
+  "checks": [
+    "stable-pen-hold",
+    "mixed-page-stale-pen"
+  ],
+  "instructions": "专项PEN-HOLD-20261101；仅ASUS内屏同一支Acer PE270XT随附笔的受控对照，原生ARM64固定包。引用已核实本屏校准/原生身份，不重测其它已通过项目，不借MSI参数58。只纯预览，记录本屏、姿态、实际手别、笔来源及实际步骤。\n1 stable-pen-hold：空正文、ni组合，笔按候选有意保持约1秒再在原候选内主动释放。预期保持期间正文空、组合仍在；主动释放后恰好一个候选，清组合，无重复。若提前提交，记录fail并停止，不做第2步；只做一个匹配条件样本，不凭一次推可靠性或频率。\n2 mixed-page-stale-pen：仅第1步成功后，重新空正文/ni，笔按候选，另一手指翻页，释放旧笔触。预期页确实变化，旧笔释放不提交旧候选或新增正文，仍为未提交组合。标明笔+手指混合，不算纯笔。无法并发则blocked，前项失败则本项not-run并写明前提未满足。不要为通过反复尝试。 本任务只由人明确接续，领取器不会执行正文。保留全部r1及原始记录，不改安装/默认输入法/驱动/显示/网络/固定包；不启动watch，不启用新trace，不改pen-recontact/去抖延迟。缺包、身份不符、过期或异常即停，不自动换包重试。结果保留领取快照与physicalAcceptance=false；检查必须写实际设备/前后状态及人工或只读证据来源，不将其他机器结果继承。先审阅结果，不自动publish --confirm。"
+}

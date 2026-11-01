@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "pr87-desktop-perf-intake-r2",
+  "machine": "desktop-x64",
+  "kind": "manual-test",
+  "expiresAt": "2026-11-14T00:00:00Z",
+  "package": {
+    "key": "pr87-amd64",
+    "architecture": "amd64",
+    "sourceCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+    "runID": 41178044364,
+    "artifactID": 13034145597,
+    "zipSHA256": "e790c0fe0e245456e54163f348c969af93b3ac0ed91dda95e53e00655da4e34f",
+    "zipBytes": 98830082,
+    "manifestSHA256": "6c860aef9643fb50dd7b9f94bc0452a1350073139d51855811ab320c84ae4a75",
+    "executableSHA256": "b1210ca2c34f1a349ca12c65128a48e419ba74b4dee2b86848b916cc5c90a830",
+    "payloadCount": 31
+  },
+  "checks": [
+    "platform-baseline-inventory",
+    "bounded-measurement-plan"
+  ],
+  "instructions": "较旧x86系平台性能基线准备，不是性能验收；本机计算机原生x64，不视为32位系统。不运行产品/自测/benchmark/压力测试、不重复已通过鼠标，不触控。\n1 platform-baseline-inventory：只读核对OS版本、原生架构、CPU型号、内存容量、电源模式（可读则记，不改）及已有固定包路径/身份；不采集序列号、用户名目录清单、网络/凭据或无关进程。预期形成可复现条件表，缺字段注明未知，不补猜。\n2 bounded-measurement-plan：只读查看固定包已有帮助/文档或源码对应版本，确认--check-package是资源/会话正确性检查而非启动/输入延迟benchmark；拟未来最多1次冷/1次热的端到端耗时计划和明确超时停止方式，不执行，不清缓存、不杀无关进程、不设性能通过阈值。若无可安全使用的有界命令则blocked并说明，不编造基准。仅自动收集尚无人审阅时保持not-run、humanEvidence=false并在observation放摘要；经本机人员审阅可以inputMethod=observation/humanEvidence=true将准备项记pass，但必须注明只完成信息审阅，不是产品性能或物理验收通过。 本任务只由人明确接续，领取器不会执行正文。保留全部r1及原始记录，不改安装/默认输入法/驱动/显示/网络/固定包；不启动watch，不启用新trace，不改pen-recontact/去抖延迟。缺包、身份不符、过期或异常即停，不自动换包重试。结果保留领取快照与physicalAcceptance=false；检查必须写实际设备/前后状态及人工或只读证据来源，不将其他机器结果继承。先审阅结果，不自动publish --confirm。"
+}

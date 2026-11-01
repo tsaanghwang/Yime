@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "pr87-msi-host-posture-r2",
+  "machine": "msi-x64",
+  "kind": "manual-test",
+  "expiresAt": "2026-11-14T00:00:00Z",
+  "package": {
+    "key": "pr87-amd64",
+    "architecture": "amd64",
+    "sourceCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+    "runID": 41178044364,
+    "artifactID": 13034145597,
+    "zipSHA256": "e790c0fe0e245456e54163f348c969af93b3ac0ed91dda95e53e00655da4e34f",
+    "zipBytes": 98830082,
+    "manifestSHA256": "6c860aef9643fb50dd7b9f94bc0452a1350073139d51855811ab320c84ae4a75",
+    "executableSHA256": "b1210ca2c34f1a349ca12c65128a48e419ba74b4dee2b86848b916cc5c90a830",
+    "payloadCount": 31
+  },
+  "checks": [
+    "word-basic-binding",
+    "edge-basic-binding",
+    "word-restore-rebind"
+  ],
+  "instructions": "MSI笔记本/翻转屏宿主适配小批，限当前已经记录的姿态；先只读记录当前姿态/方向/缩放与既有校准58，若与计划不一致先说明而不改设置。最多3项，仅选择一种鼠标或手指输入方式并逐项注明，不用任何笔。MSI笔保持/翻页暂停，原装笔仍排除；不重复已通过布局/映射/纯预览恢复/组合退格/空闲键。\n1 word-basic-binding：新建专用空白Word文档，确认不是已有用户文件，放文字光标并明确绑定；空白ni首选一次，预期正文恰好一个你，无替换/重复/漏字。\n2 edge-basic-binding：使用已可用的本地空白测试框，先确认测试区为空并明确绑定；ni首选一次，预期恰好一个你。无现成测试框或本地URL被策略阻止则blocked，不关安全功能、不绕过或访问真实用户表单。\n3 word-restore-rebind：仅1成功后，用同一专用文档现有一个你；最小化/恢复后预期旧绑定失效/要求重新绑定，确认光标在字后再明确重绑，输入ni首选一次，预期变为你你只追加一个。不要在旧绑定时试发字符探测，不清空已有用户正文。失败即停止后续；用户目视不写自动读回，未完成项not-run/blocked。 本任务只由人明确接续，领取器不会执行正文。保留全部r1及原始记录，不改安装/默认输入法/驱动/显示/网络/固定包；不启动watch，不启用新trace，不改pen-recontact/去抖延迟。缺包、身份不符、过期或异常即停，不自动换包重试。结果保留领取快照与physicalAcceptance=false；检查必须写实际设备/前后状态及人工或只读证据来源，不将其他机器结果继承。先审阅结果，不自动publish --confirm。"
+}
