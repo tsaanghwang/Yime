@@ -1,0 +1,62 @@
+{
+  "host": "MyComputer",
+  "display": "Acer PE270XT",
+  "pen": "same Acer PE270XT bundled pen, user confirmed",
+  "package": "F:/fixed-pr87-41178044364/amd64",
+  "ciRun": 41178044364,
+  "artifact": 13034145597,
+  "sourceCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+  "calibrationRecord": "pe270xt-calibration-20261101.json",
+  "calibrationChanged": false,
+  "screenPosture": "User reports inclined, about 85 degrees; reference plane unspecified",
+  "penHand": "right",
+  "steps": [
+    {
+      "id": 1,
+      "name": "stable candidate hold",
+      "sampleCount": 1,
+      "inputMethod": "pen",
+      "status": "pass-user-reported",
+      "humanEvidence": true,
+      "userFeedback": "符合预期",
+      "observation": "User confirms expected sequence: while holding first candidate, output empty and ni retained; after intentional pen release inside candidate, exactly one 你 and composition cleared. No independent text readback or event trace.",
+      "holdDuration": "about 1 second, instructed human estimate; not instrumented",
+      "screenPosture": "User reports inclined, about 85 degrees; reference plane unspecified",
+      "penHand": "right"
+    },
+    {
+      "id": 2,
+      "name": "mixed pen and finger paging",
+      "sampleCount": null,
+      "inputMethod": "pen+finger",
+      "status": "fail-user-reported-page-did-not-change",
+      "humanEvidence": true,
+      "userFeedback": "用笔按住候选不抬，另一只手用手指点右翻页，翻不动。用手或笔先往后翻页后，用笔按住用手往前翻也翻不动。用手按住，手指前后翻页都没有问题。用手按住，用笔直接选中，不翻页。",
+      "observation": "Pen held on candidate blocks finger next-page; after first paging forward with finger or pen, pen held on candidate also blocks finger previous-page. Required page change did not occur. Output and composition after pen release were not reported.",
+      "postReleaseOutput": null,
+      "postReleaseComposition": null
+    }
+  ],
+  "physicalAcceptance": false,
+  "limitations": [
+    "Single conditional sample only; no frequency inference or MSI root-cause inference.",
+    "User additionally reported reverse-direction and mixed-input comparisons; exact attempt counts unknown, not represented as exactly one sample.",
+    "No instrumented trace or independent host/text readback; no occurrence-frequency or root-cause conclusion.",
+    "Post-release text/composition and meaning of final finger+pen observation remain unreported or ambiguous."
+  ],
+  "traceEnabled": false,
+  "status": "stopped-results-ready-for-review-with-evidence-gaps",
+  "additionalUserObservations": [
+    {
+      "inputMethod": "finger+finger",
+      "observation": "User reports paging in both directions works while finger holds candidate.",
+      "sampleCount": null
+    },
+    {
+      "inputMethod": "finger+pen",
+      "verbatim": "用手按住，用笔直接选中，不翻页。",
+      "interpretation": "Exact pen target and whether text was committed remain unclear; recorded verbatim only.",
+      "sampleCount": null
+    }
+  ]
+}
