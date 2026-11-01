@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "taskID": "pr87-asus-arm64-r1",
+  "machine": "asus-arm64",
+  "queueCommit": "c27d01b43e0eb337461f5c93184042282e081ae0",
+  "taskSHA256": "ce1f72d5dabe5a2bc7848f0fcdba45b45db84e0935c7a1fb9d370d2c5a15d45d",
+  "receivedAt": "2026-10-31T14:32:28.641Z",
+  "package": {
+    "key": "pr87-arm64",
+    "architecture": "arm64",
+    "sourceCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+    "runID": 41178044364,
+    "artifactID": 13033634731,
+    "zipSHA256": "9395e994382fe70a30c3bb9beecd57a8c074e88411f4d2b62732b8161c6ada7b",
+    "zipBytes": 98499821,
+    "manifestSHA256": "100e9c87bf900abe39bc099391b9380bf5b25364befd5be5bb8ed85437a9cd57",
+    "executableSHA256": "fbb8a8229f933dbafe0b14709b575818c868210be67c34a54423f8676dca257f",
+    "payloadCount": 31
+  },
+  "host": {
+    "hostname": "HuashuoNotebook",
+    "platform": "win32",
+    "nodeArchitecture": "arm64",
+    "osMachine": "arm64"
+  },
+  "physicalAcceptance": false,
+  "status": "awaiting-human",
+  "verification": {
+    "zipSHA256": "9395e994382fe70a30c3bb9beecd57a8c074e88411f4d2b62732b8161c6ada7b",
+    "manifestSHA256": "100e9c87bf900abe39bc099391b9380bf5b25364befd5be5bb8ed85437a9cd57",
+    "executableSHA256": "fbb8a8229f933dbafe0b14709b575818c868210be67c34a54423f8676dca257f",
+    "payloadFiles": 31,
+    "packageArchitecture": "arm64",
+    "executableStarted": false,
+    "hardwareAcceptance": false
+  },
+  "reason": null,
+  "checks": [
+    {
+      "id": "native-identity",
+      "status": "pass",
+      "inputMethod": "observation",
+      "actualText": null,
+      "observation": "进程级只读检查：PID41468，实际路径C:/YimeTaskExchange/packages/pr87-arm64-copy/arm64/YimeTouchKeyboard.exe；IsWow64Process2成功，processMachine=0x0000，nativeMachine=0xaa64，确认原生ARM64运行，非仅PE静态判断。证据：C:/YimeTaskExchange/arm-runtime-inspection.txt。"
+    },
+    {
+      "id": "screen-calibration",
+      "status": "pass",
+      "inputMethod": "observation",
+      "actualText": null,
+      "observation": "用户实体尺反馈：本机内置16寸4K屏（现已独立读回3840x2400），Windows缩放250%；发光区宽344.8mm，以--screen-width-mm 344.8启动触屏预览。100mm参考线复测100至不足100.5mm；两侧按钮外缘间距341mm，不等同设计边界；无明显裁切。本屏独立校准，未借用其他屏参数。 运行窗口DPI=240，与250%缩放一致。"
+    },
+    {
+      "id": "finger-small-batch",
+      "status": "not-run",
+      "inputMethod": null,
+      "actualText": null,
+      "observation": "阶段性部分完成；schema无partial状态，整项保留not-run，不表示以下子项未执行，也不宣称整项通过。用户本机纯手指反馈：连续n->ni，首选而->你，9候选；首选提交一个你，无重复遗漏；五个未逐一指定的候选入口移出松开均无提交；另一指翻页后旧触点松开，输出为空；有ni组合时顶部退格保留组合、输出为空并提示；最小化恢复清空未提交组合、输出为空且响应正常；已提交一个你在恢复后保留，无丢失重复。尚未覆盖其他退格场景或完成整项覆盖审定。最初n与i分开操作间因回复聊天而最小化，组合消失，不作为连续输入失败。"
+    },
+    {
+      "id": "pen-small-batch",
+      "status": "not-run",
+      "inputMethod": null,
+      "actualText": null,
+      "observation": "阶段性部分完成；schema无partial状态，整项保留not-run，不表示以下子项未执行。用户用Acer PE270XT随附笔在本机内置屏独立完成：ni首选提交一个你，无不响应重复遗漏；候选移出抬笔无提交；顶部退格保留ni、输出为空并提示；最小化恢复清空未提交组合、保留已提交的一个你，无丢失重复且响应正常。另列混合测试：笔尖按住候选，另一手指翻页，抬笔后输出为空，无误选提交，不计入纯笔覆盖。未独立核实程序收到的原生笔事件类型，未启用--pen-recontact-ms，其他退格场景及整项覆盖待审定。不得继承其他测试机结果。"
+    },
+    {
+      "id": "word-edge-binding",
+      "status": "pass",
+      "inputMethod": "observation",
+      "actualText": "Word：你你；Edge本地测试框：你你",
+      "observation": "本机用户实际反馈通过，限基础绑定和首候选提交：新建空白Word文档及Edge本地空白测试框中，手指明确绑定后输入ni、选首候选，选词前为空、选词后一个你；随后用笔在已有字后重新明确绑定、输入ni并选首候选，两处均从你变为你你，只新增一字，无替换、重复或遗漏。每项用户均反馈符合预期。此为用户观察，无独立正文读回，不代表所有宿主场景。Word用笔前需切换绘图中的选定/选择状态，请主开发补充帮助：Word用笔放置文字光标前，先在绘图中切到选定/选择、退出墨迹模式；确认文字插入光标后再明确绑定。若落笔出现墨迹应停止并检查工具。此为本机用户反馈，不泛化为全部Word版本的微软统一要求，官方依据待核实。固定包帮助未修改。"
+    }
+  ],
+  "humanEvidence": true
+}
