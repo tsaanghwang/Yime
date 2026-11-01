@@ -33,7 +33,7 @@ func TestNativeOwnTSFCommit(t *testing.T) {
 	if err != nil || !info.Mode().IsRegular() {
 		t.Fatalf("native harness unavailable: %v", err)
 	}
-	for _, scenario := range []string{"commit", "duplicate", "focus-lost"} {
+	for _, scenario := range []string{"commit", "duplicate", "focus-lost", "async-commit", "async-focus-lost", "async-cancel", "async-old-epoch"} {
 		t.Run(scenario, func(t *testing.T) {
 			s := session(t)
 			ticket := commit(t, s)
@@ -57,21 +57,35 @@ func TestNativeOwnTSFCommit(t *testing.T) {
 			var stdout, stderr limitedOutput
 			cmd.Stdout = &stdout
 			cmd.Stderr = &stderr
+			var next *Session
+			if scenario == "async-old-epoch" {
+				s.Invalidate()
+				next = session(t) // new logical activation exists before old native receipt arrives
+			}
 			if err = cmd.Run(); err != nil {
 				_ = s.Complete(ticket.ID, Unknown)
 				// Do not print raw child logs or candidate/host text into the test report.
 				t.Fatalf("native child failed; edit outcome unknown: %v (stderr bytes=%d)", err, stderr.Len())
 			}
 			var result struct {
-				ID                 string  `json:"id"`
-				Outcome            Outcome `json:"outcome"`
-				ReadbackMatches    bool    `json:"readbackMatches"`
-				ReadbackEmpty      bool    `json:"readbackEmpty"`
-				ActualEditRequests uint    `json:"actualEditRequests"`
-				EditCompleted      bool    `json:"editCompleted"`
-				DuplicateRejected  bool    `json:"duplicateRejected"`
-				Registered         bool    `json:"registered"`
-				SendInput          bool    `json:"sendInput"`
+				ID                     string  `json:"id"`
+				Outcome                Outcome `json:"outcome"`
+				ReadbackMatches        bool    `json:"readbackMatches"`
+				ReadbackEmpty          bool    `json:"readbackEmpty"`
+				ActualEditRequests     uint    `json:"actualEditRequests"`
+				EditCompleted          bool    `json:"editCompleted"`
+				DuplicateRejected      bool    `json:"duplicateRejected"`
+				Registered             bool    `json:"registered"`
+				SendInput              bool    `json:"sendInput"`
+				NewContextChecked      bool    `json:"newContextChecked"`
+				NewContextEmpty        bool    `json:"newContextEmpty"`
+				AsyncRequested         bool    `json:"asyncRequested"`
+				QueuedBeforeCompletion bool    `json:"queuedBeforeCompletion"`
+				ControlledDelay        bool    `json:"controlledDelay"`
+				GuardChecks            uint    `json:"guardChecks"`
+				GuardDenied            uint    `json:"guardDenied"`
+				CompletionEpoch        uint    `json:"completionEpoch"`
+				ActiveEpoch            uint    `json:"activeEpoch"`
 			}
 			decoder := json.NewDecoder(bytes.NewReader(stdout.Bytes()))
 			decoder.DisallowUnknownFields()
@@ -88,18 +102,43 @@ func TestNativeOwnTSFCommit(t *testing.T) {
 				_ = s.Complete(ticket.ID, Unknown)
 				t.Fatal("receipt identity or boundary mismatch")
 			}
-			if scenario == "focus-lost" {
-				if result.Outcome != Failed || !result.ReadbackEmpty || result.EditCompleted || result.ActualEditRequests != 0 {
-					_ = s.Complete(ticket.ID, Unknown)
-					t.Fatal("lost focus wrote or claimed completion")
+			switch scenario {
+			case "focus-lost":
+				if result.Outcome != Failed || !result.ReadbackEmpty || result.EditCompleted || result.ActualEditRequests != 0 || result.AsyncRequested || !result.NewContextChecked || !result.NewContextEmpty {
+					t.Fatal("prequeue focus loss wrote or completed")
 				}
-			} else if result.Outcome != Applied || !result.ReadbackMatches || !result.EditCompleted || result.ActualEditRequests != 1 || (scenario == "duplicate" && !result.DuplicateRejected) {
-				_ = s.Complete(ticket.ID, Unknown)
-				t.Fatal("native actual edit/readback or no-replay check failed")
+			case "async-focus-lost", "async-cancel", "async-old-epoch":
+				if result.Outcome != Failed || !result.ReadbackEmpty || !result.EditCompleted || result.ActualEditRequests != 1 || !result.AsyncRequested || !result.QueuedBeforeCompletion || !result.ControlledDelay || result.GuardChecks != 1 || result.GuardDenied != 1 || result.CompletionEpoch != 1 || !result.NewContextChecked || !result.NewContextEmpty {
+					t.Fatal("execution guard did not reject actual queued edit")
+				}
+				if scenario == "async-old-epoch" && result.ActiveEpoch != 2 {
+					t.Fatal("new activation epoch changed by old callback")
+				}
+			default:
+				if result.Outcome != Applied || !result.ReadbackMatches || !result.EditCompleted || result.ActualEditRequests != 1 || (scenario == "duplicate" && !result.DuplicateRejected) {
+					t.Fatal("native edit/readback or no replay failed")
+				}
+				if scenario == "async-commit" && (!result.AsyncRequested || !result.QueuedBeforeCompletion || result.ControlledDelay || result.GuardChecks != 1 || result.GuardDenied != 0 || result.ActiveEpoch != 1 || result.CompletionEpoch != 1) {
+					t.Fatal("actual async completion not established")
+				}
 			}
-			if err = s.Complete(ticket.ID, result.Outcome); err != nil {
+			if scenario == "async-old-epoch" {
+				// The old native request completes after logical invalidation.
+				// Neither its failure nor a hypothetical success may update a
+				// new Go activation or change the old Unknown receipt.
+				if err = s.Complete(ticket.ID, result.Outcome); err == nil {
+					t.Fatal("late old receipt accepted")
+				}
+				if err = next.Complete(ticket.ID, result.Outcome); err == nil {
+					t.Fatal("old receipt accepted by new activation")
+				}
+				if s.Receipt().Outcome != Unknown || next.Receipt().ID != "" {
+					t.Fatal("late completion contaminated activation state")
+				}
+			} else if err = s.Complete(ticket.ID, result.Outcome); err != nil {
 				t.Fatal(err)
 			}
+
 		})
 	}
 }

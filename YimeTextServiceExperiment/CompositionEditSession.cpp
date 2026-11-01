@@ -40,12 +40,14 @@ public:
                 bool* plannedTermination, const BrokerUpdate& update, RECT* compositionRect,
                 bool* compositionRectValid, BrokerEditCompletionHandler completionHandler,
                 void* completionContext, ITfComposition* expectedComposition = nullptr,
-                CompositionCancellationCompletionHandler cancellationHandler = nullptr)
+                CompositionCancellationCompletionHandler cancellationHandler = nullptr,
+                IBrokerEditExecutionGuard* executionGuard = nullptr)
         : context_(context), sink_(sink), composition_(composition),
           plannedTermination_(plannedTermination), update_(update), compositionRect_(compositionRect),
             compositionRectValid_(compositionRectValid), completionHandler_(completionHandler),
             completionContext_(completionContext), expectedComposition_(expectedComposition),
-            cancellationHandler_(cancellationHandler) {
+            cancellationHandler_(cancellationHandler), executionGuard_(executionGuard) {
+        if (executionGuard_) executionGuard_->AddRef();
         context_->AddRef();
         sink_->AddRef();
         if (expectedComposition_) expectedComposition_->AddRef();
@@ -65,6 +67,14 @@ public:
         return remaining;
     }
     STDMETHODIMP DoEditSession(TfEditCookie cookie) override {
+        if (executionGuard_) {
+            const HRESULT allowed = executionGuard_->ValidateExecution(context_);
+            if (allowed != S_OK) {
+                const HRESULT rejected = FAILED(allowed) ? allowed : E_ABORT;
+                NotifyCompletion(rejected);
+                return rejected;
+            }
+        }
         // A deferred focus cancellation belongs to this exact old composition.
         // A confirmed commit/external termination may already have ended it.
         // Holding a COM reference also prevents pointer reuse by a new one.
@@ -99,6 +109,7 @@ private:
         if (expectedComposition_) expectedComposition_->Release();
         sink_->Release();
         context_->Release();
+        if (executionGuard_) executionGuard_->Release();
     }
 
     HRESULT StartComposition(TfEditCookie cookie) {
@@ -232,6 +243,7 @@ private:
     void* completionContext_;
     ITfComposition* expectedComposition_;
     CompositionCancellationCompletionHandler cancellationHandler_;
+    IBrokerEditExecutionGuard* executionGuard_;
 };
 
 }  // namespace
@@ -261,13 +273,14 @@ HRESULT ApplyBrokerUpdateToContext(ITfContext* context, TfClientId clientId,
                                    RECT* compositionRect, bool* compositionRectValid,
                                    bool asynchronous,
                                    BrokerEditCompletionHandler completionHandler,
-                                   void* completionContext) noexcept {
+                                   void* completionContext,
+                                   IBrokerEditExecutionGuard* executionGuard) noexcept {
     if (!context || clientId == TF_CLIENTID_NULL || !sink || !composition || !plannedTermination) return E_INVALIDARG;
     if (asynchronous && (compositionRect || compositionRectValid)) return E_INVALIDARG;
     if (compositionRectValid) *compositionRectValid = false;
     auto* session = new (std::nothrow) EditSession(context, sink, composition, plannedTermination,
                                                    update, compositionRect, compositionRectValid,
-                                                   completionHandler, completionContext);
+                                                   completionHandler, completionContext, nullptr, nullptr, executionGuard);
     if (!session) return E_OUTOFMEMORY;
     HRESULT sessionResult = E_FAIL;
     const DWORD flags = (asynchronous ? TF_ES_ASYNC : TF_ES_SYNC) | TF_ES_READWRITE;

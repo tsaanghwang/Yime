@@ -18,6 +18,14 @@ using BrokerEditCompletionHandler = void (*)(void* context, ITfContext* editCont
 using CompositionCancellationCompletionHandler = void (*)(void* context,
     ITfComposition* expectedComposition, HRESULT result) noexcept;
 
+// Optional trusted adapter gate evaluated inside DoEditSession before any write.
+// The queued edit AddRefs this object. If it owns completionContext and the
+// composition/plannedTermination slots, those remain alive through completion.
+// Null preserves the existing product path; this is not a client-facing API.
+struct IBrokerEditExecutionGuard : IUnknown {
+    virtual HRESULT ValidateExecution(ITfContext* context) noexcept = 0;
+};
+
 HRESULT ApplyBrokerUpdateToContext(ITfContext* context, TfClientId clientId,
                                    ITfCompositionSink* sink, ITfComposition** composition,
                                    bool* plannedTermination, const BrokerUpdate& update,
@@ -25,7 +33,8 @@ HRESULT ApplyBrokerUpdateToContext(ITfContext* context, TfClientId clientId,
                                    bool* compositionRectValid = nullptr,
                                    bool asynchronous = false,
                                    BrokerEditCompletionHandler completionHandler = nullptr,
-                                   void* completionContext = nullptr) noexcept;
+                                   void* completionContext = nullptr,
+                                   IBrokerEditExecutionGuard* executionGuard = nullptr) noexcept;
 
 HRESULT CancelCompositionInContext(ITfContext* context, TfClientId clientId,
                                     ITfCompositionSink* sink, ITfComposition** composition,

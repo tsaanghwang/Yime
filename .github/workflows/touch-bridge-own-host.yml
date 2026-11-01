@@ -1,9 +1,9 @@
-name: Touch bridge own TSF host (S2a)
+name: Touch bridge own TSF host (S2b)
 
 on:
   workflow_dispatch:
   push:
-    branches: ['codex/18u-tsf-own-host-s2-20261101']
+    branches: ['codex/18u-tsf-async-s2b-20261101']
     paths:
       - '.github/workflows/touch-bridge-own-host.yml'
       - 'YimeTextServiceExperiment/**'
@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   native-own-host:
-    if: github.ref == 'refs/heads/codex/18u-tsf-own-host-s2-20261101'
+    if: github.ref == 'refs/heads/codex/18u-tsf-async-s2b-20261101'
     runs-on: windows-latest
     timeout-minutes: 20
     defaults:
@@ -38,31 +38,33 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path evidence -ErrorAction Stop | Out-Null
           $ErrorActionPreference = 'Stop'
-          cmake -S YimeTextServiceExperiment -B .generated/s2a-own-host -A x64 -DYIME_TOUCH_BRIDGE_OWN_HOST=ON 2>&1 | Tee-Object evidence/configure.log
+          cmake -S YimeTextServiceExperiment -B .generated/s2b-own-host -A x64 -DYIME_TOUCH_BRIDGE_OWN_HOST=ON 2>&1 | Tee-Object evidence/configure.log
           if ($LASTEXITCODE -ne 0) { throw 'Native harness configure failed' }
-          cmake --build .generated/s2a-own-host --config Release --target YimeTouchBridgeOwnHost 2>&1 | Tee-Object evidence/build.log
+          cmake --build .generated/s2b-own-host --config Release --target YimeTouchBridgeOwnHost YimeFocusCancellationTests 2>&1 | Tee-Object evidence/build.log
           if ($LASTEXITCODE -ne 0) { throw 'Native harness build failed' }
-          $exe = (Resolve-Path '.generated/s2a-own-host/Release/YimeTouchBridgeOwnHost.exe' -ErrorAction Stop).Path
-          @{ sourceCommit = '${{ github.sha }}'; runID = '${{ github.run_id }}'; harnessSHA256 = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLower(); goVersion = (go version); scope = 'S2a synchronous own TSF context; no installed product or real application acceptance' } | ConvertTo-Json | Set-Content evidence/identity.json -Encoding utf8
+          & '.generated/s2b-own-host/Release/YimeFocusCancellationTests.exe' 2>&1 | Tee-Object evidence/default-guard-regression.log
+          if ($LASTEXITCODE -ne 0) { throw 'Existing null-guard focus cancellation regression failed' }
+          $exe = (Resolve-Path '.generated/s2b-own-host/Release/YimeTouchBridgeOwnHost.exe' -ErrorAction Stop).Path
+          @{ sourceCommit = '${{ github.sha }}'; runID = '${{ github.run_id }}'; harnessSHA256 = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLower(); goVersion = (go version); scope = 'S2b own TSF context; sync plus actual async with controlled read-lock negatives; no installed product acceptance' } | ConvertTo-Json | Set-Content evidence/identity.json -Encoding utf8
       - name: Execute native TSF and reject skipped or missing scenarios
         run: |
           $ErrorActionPreference = 'Stop'
-          $env:YIME_TOUCH_BRIDGE_OWN_HOST = (Resolve-Path '.generated/s2a-own-host/Release/YimeTouchBridgeOwnHost.exe' -ErrorAction Stop).Path
+          $env:YIME_TOUCH_BRIDGE_OWN_HOST = (Resolve-Path '.generated/s2b-own-host/Release/YimeTouchBridgeOwnHost.exe' -ErrorAction Stop).Path
           $report = Join-Path $PWD 'evidence/native-go-test.jsonl'
           Push-Location go-backend
           try {
-            go test ./internal/touchhostbridge -run '^TestNativeOwnTSFCommit$' -count=1 -json -timeout=90s 2>&1 | Tee-Object $report
+            go test ./internal/touchhostbridge -run '^TestNativeOwnTSFCommit$' -count=1 -json -timeout=150s 2>&1 | Tee-Object $report
             $code = $LASTEXITCODE
           } finally { Pop-Location }
           if ($code -ne 0) { throw 'Native TSF integration test failed' }
           $events = @(Get-Content $report | ForEach-Object { $_ | ConvertFrom-Json -ErrorAction Stop })
-          $expected = @('TestNativeOwnTSFCommit', 'TestNativeOwnTSFCommit/commit', 'TestNativeOwnTSFCommit/duplicate', 'TestNativeOwnTSFCommit/focus-lost')
+          $expected = @('TestNativeOwnTSFCommit', 'TestNativeOwnTSFCommit/commit', 'TestNativeOwnTSFCommit/duplicate', 'TestNativeOwnTSFCommit/focus-lost', 'TestNativeOwnTSFCommit/async-commit', 'TestNativeOwnTSFCommit/async-focus-lost', 'TestNativeOwnTSFCommit/async-cancel', 'TestNativeOwnTSFCommit/async-old-epoch')
           foreach ($name in $expected) {
             $pass = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -ceq 'pass' })
             $bad = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -in @('skip', 'fail') })
             if ($pass.Count -ne 1 -or $bad.Count -ne 0) { throw "Required native scenario did not execute and pass: $name" }
           }
-          @{ sourceCommit = '${{ github.sha }}'; requiredTests = $expected; allExecutedAndPassed = $true; scope = 'native x64 own-context synchronous commit only'; physicalAcceptance = $false; installedProductAcceptance = $false } | ConvertTo-Json | Set-Content evidence/result.json -Encoding utf8
+          @{ sourceCommit = '${{ github.sha }}'; requiredTests = $expected; allExecutedAndPassed = $true; scope = 'native x64 own-context sync/async commit; controlled delay is not OS latency acceptance'; physicalAcceptance = $false; installedProductAcceptance = $false } | ConvertTo-Json | Set-Content evidence/result.json -Encoding utf8
       - name: Preserve scoped evidence even on failure
         if: always()
         uses: actions/upload-artifact@v6
