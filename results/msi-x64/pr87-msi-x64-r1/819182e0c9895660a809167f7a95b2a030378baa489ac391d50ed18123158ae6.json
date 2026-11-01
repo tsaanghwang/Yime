@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "taskID": "pr87-msi-x64-r1",
+  "machine": "msi-x64",
+  "queueCommit": "c27d01b43e0eb337461f5c93184042282e081ae0",
+  "taskSHA256": "fc2158b212a941987ab0c2ae89018f12d73bc8d7066fdcb0fe18be09d9066f34",
+  "receivedAt": "2026-10-31T14:15:36.593Z",
+  "package": {
+    "key": "pr87-amd64",
+    "architecture": "amd64",
+    "sourceCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+    "runID": 41178044364,
+    "artifactID": 13034145597,
+    "zipSHA256": "e790c0fe0e245456e54163f348c969af93b3ac0ed91dda95e53e00655da4e34f",
+    "zipBytes": 98830082,
+    "manifestSHA256": "6c860aef9643fb50dd7b9f94bc0452a1350073139d51855811ab320c84ae4a75",
+    "executableSHA256": "b1210ca2c34f1a349ca12c65128a48e419ba74b4dee2b86848b916cc5c90a830",
+    "payloadCount": 31
+  },
+  "host": {
+    "hostname": "WIN-JTKUT7KBVN7",
+    "platform": "win32",
+    "nodeArchitecture": "x64",
+    "osMachine": "x86_64"
+  },
+  "physicalAcceptance": false,
+  "status": "awaiting-human",
+  "verification": {
+    "zipSHA256": "e790c0fe0e245456e54163f348c969af93b3ac0ed91dda95e53e00655da4e34f",
+    "manifestSHA256": "6c860aef9643fb50dd7b9f94bc0452a1350073139d51855811ab320c84ae4a75",
+    "executableSHA256": "b1210ca2c34f1a349ca12c65128a48e419ba74b4dee2b86848b916cc5c90a830",
+    "payloadFiles": 31,
+    "packageArchitecture": "amd64",
+    "executableStarted": false,
+    "hardwareAcceptance": false
+  },
+  "reason": null,
+  "checks": [
+    {
+      "id": "screen-calibration",
+      "status": "pass",
+      "inputMethod": "observation",
+      "actualText": null,
+      "observation": "User physical measurements on MSI built-in 16-inch screen, 2880x1800 at 200% scaling. PR87 amd64 18u touch-ui preview (102 positions). Initial 100 mm reference measured 58 mm; restarted supported preview with --ruler-observed-mm 58. User remeasured reference at 100 mm. Main-area outer key edges approximately 340 mm versus design 342.90 mm (about -0.85%). Pass records completed screen calibration procedure and measured values, not an exact geometry match or finger/pen acceptance. Details: manual-batch-01/observations.json. Separate local automated development evidence (2026-11-01): fixed-package identity and 31 payload hashes verified; package and --touch-ui checks exited 0; touch-screen-v2, 102 positions/84 body/18 controls, 18u x 5.7u, all three modes returned 你, hostInputSent=false. Reports retained locally under C:/Users/tsaan/Documents/Codex/2026-11-01/2026-10-31-yime-pr-87/outputs/MSI-PR87-14302342de704ff093219a3c25ad83dd/records. Immutable receipt verification.executableStarted=false describes receipt-time static verification, not subsequent execution. Automated checks do not imply physical acceptance. Follow-up 2026-11-01: notebook approximately 75 degrees, 16 inch, landscape 2880x1800 at 200%; user reported exact fit and no layout defect. Horizontal tablet posture initially did not invert. Subsequent physical turn produced picture rotation, bottom toward user, keyboard complete. Read-only Windows current-primary-display query confirmed orientationCode=2 (landscape flipped), 2880x1800, system DPI=192 (200%). Existing calibration 58 retained; no display setting changed."
+    },
+    {
+      "id": "finger-small-batch",
+      "status": "not-run",
+      "inputMethod": "finger",
+      "actualText": "你",
+      "observation": "Partial physical finger evidence on MSI, batch01: n -> ni, first candidate 而 -> 你, no reported repetition or omission; first-candidate selection committed exactly one 你 and cleared composition. Move-out: user reported five selection entrances inserted no second 你; exact entrance identities and final composition were not specified. Hold candidate with one finger, page with another, release old touch: successful paging and no new input. Entire finger coverage incomplete, hence aggregate not-run retained (not absence of all evidence). Raw evidence: manual-batch-01/observations.json. No simulated input counted. Follow-up 2026-11-01, physical user feedback: finger hit correspondence normal in notebook, flat and rotated-flat postures; explicit EN a tap once had no neighboring activation or duplicate, normal sound. Minimize/restore empty-composition sequence passed: a/empty/EN retained, one a tap expected aa; user confirmed whole sequence rather than separately transcribing final text. Nonempty CN composition canceled on minimize, body unchanged, no accidental commit/duplicate, CN retained. Toolbar backspace with active CN composition and with EN-paused CN composition preserved body and composition, no candidate commit. Three idle keys tested sequentially after select-all: no action or sound, text and selection preserved. Actual posture carried forward as horizontal flipped and finger specified; not reconfirmed for each reply. Exact composition strings not transcribed. Local records: flip-screen-batch-20261101/ and toolbar-idle-batch-20261101/. Broader finger coverage remains incomplete; not-run is the aggregate, not absence of completed subcases."
+    },
+    {
+      "id": "pen-small-batch",
+      "status": "fail",
+      "inputMethod": "pen",
+      "actualText": null,
+      "observation": "2026-11-01 follow-up, fixed PR87 amd64. PRIOR EVIDENCE PRESERVED: first report commit 547a794a8694a233b1c4733bdae3bcd37a1004af recorded Acer supplied-pen three subcases passing (input/lift, hold then release, move-out cancel); these remain historical scoped passes, not overwritten. NEW FAILURE: while attempting candidate hold then finger-assisted paging on MSI, user reports Acer pen commits almost on contact; MSI original pen independently tried by user behaved similarly, occasionally held then committed on release. Release inside original candidate once is expected in isolation, not itself a failure. Finger equivalent reported normal. Initial operation used less-dexterous left hand; later dominant-hand procedure requested but actual hand not supplied, so controlled hand comparison is unverified. Pen stale-touch-after-paging remains BLOCKED: stable hold prerequisite not met. No exact trial counts or duplicate count established. MSI pen stays excluded from future assigned tests. User says large screen and ASUS almost never show this problem: historical comparison only, versions/devices/conditions not controlled. Hardware/driver sensitivity to slight motion is a hypothesis, not a diagnosis.\nDIAGNOSTIC RUN: same executable SHA-256 b1210ca2c34f1a349ca12c65128a48e419ba74b4dee2b86848b916cc5c90a830 verified; --preview --touch-ui --theme dark --key-sound click --ruler-observed-mm 58 plus --input-trace; pen-recontact remains default 0. User reports one-touch immediate commit. Immutable local snapshot pen-diagnostics/snapshot-early-commit-1793507761957.jsonl, 241216 bytes, SHA-256 210f1c457aa9e174e9478034f1d437378a8c503b99ace319da9c5887534a4ccf. Sequence 121: elapsedMS=144101.4701, before WM_POINTERDOWN 0x0246, pointerType=3, rawLength=2, localOutputLength=0. Sequence 125 after down still output=0. Sequence 133: elapsedMS=144130.9042, before WM_POINTERUP 0x0247, output=0. Associated touch frame seq135 flags=0x54 id=796; seq136 after frame rawLength=0 and outputLength=1. Sequence 140 next pen down at 144341.7759. Observed down-to-up 29.4341ms, up-to-next-down 210.8717ms. Output increased during up handling, not initial down; this run shows one character added, not proven duplicate submission. App-observed events do not establish actual physical lift or driver root cause. Raw full snapshot remains LOCAL; this published JSON includes the above event excerpt and hash, not the entire trace.\nSTOPPED pen hold tests; no code/display/driver changes. Existing inspected startup logs had no current event history. Old uncalibrated startup stderr exception from 2026-10-31 predates this batch and is not attributed to current pen behavior. Remaining: controlled same-version/same-Acer-pen comparison on other displays (use matching architecture package), pen paging stale-contact, confirmed-body backspace, and out-of-scope Word/Edge. No installation/default-input/existing-document changes, no watch. physicalAcceptance=false. Fail is scoped to observed early commit under intended hold, not all prior pen functions or established software defect."
+    },
+    {
+      "id": "word-edge-binding",
+      "status": "not-run",
+      "inputMethod": null,
+      "actualText": null,
+      "observation": "Not performed in this round; no Word/Edge physical host acceptance claimed."
+    }
+  ],
+  "humanEvidence": true
+}
