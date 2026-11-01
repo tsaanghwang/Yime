@@ -11,14 +11,26 @@ import subprocess
 import time
 
 
-def run_once(command, cwd, stdout_path, stderr_path, timeout, backend=None):
+def run_once(command, cwd, stdout_path, stderr_path, timeout, backend=None, on_root_created=None):
     if not command or timeout <= 0 or not Path(command[0]).is_absolute():
         raise ValueError('absolute executable and positive deadline required')
     result = {'started': False, 'timedOut': False, 'treeStopped': False,
-              'exitCode': None, 'errorCode': None}
+              'exitCode': None, 'errorCode': None, 'rootIdentity': None}
     backend = backend or WindowsJob(command, cwd, stdout_path, stderr_path)
     try:
         backend.start_suspended_assigned()
+        identity = backend.root_identity()
+        if (not isinstance(identity, dict) or set(identity) != {'pid', 'creationFileTime'}
+                or type(identity['pid']) is not int or identity['pid'] <= 0
+                or not isinstance(identity['creationFileTime'], str)
+                or not identity['creationFileTime'].isdigit()
+                or not 0 < int(identity['creationFileTime']) < 2**64):
+            raise ValueError('invalid root identity')
+        result['rootIdentity'] = dict(identity)
+        # Caller must durably save this identity before allowing the root to run.
+        # Callback failure closes the kill-on-close job without resuming root.
+        if on_root_created is not None:
+            on_root_created(dict(identity))
         backend.resume()
         result['started'] = True
         deadline = time.monotonic() + timeout
@@ -34,8 +46,8 @@ def run_once(command, cwd, stdout_path, stderr_path, timeout, backend=None):
         result['treeStopped'] = backend.active_processes() == 0
         if result['treeStopped']:
             result['exitCode'] = backend.exit_code()
-    except OSError as error:
-        result['errorCode'] = getattr(error, 'winerror', None) or error.errno or 1
+    except Exception as error:
+        result['errorCode'] = getattr(error, 'winerror', None) or getattr(error, 'errno', None) or 1
         # Fail closed: an exception never proves descendants have stopped.
     finally:
         backend.close()  # kill-on-close, including exceptions; not proof of quiescence
@@ -51,6 +63,7 @@ class WindowsJob:
         self.command, self.cwd = command, str(Path(cwd).resolve())
         self.paths = stdout_path, stderr_path
         self.job = self.process = self.thread = None
+        self.pid = None
         self.files = []
         k = self.k = ctypes.WinDLL('kernel32', use_last_error=True)
         U32, U64, SIZE, PTR = ctypes.c_uint32, ctypes.c_uint64, ctypes.c_size_t, ctypes.c_void_p
@@ -77,6 +90,7 @@ class WindowsJob:
             'TerminateProcess': ([PTR, U32], ctypes.c_int),
             'TerminateJobObject': ([PTR, U32], ctypes.c_int),
             'WaitForSingleObject': ([PTR, U32], U32),
+            'GetProcessTimes': ([PTR, PTR, PTR, PTR, PTR], ctypes.c_int),
             'GetExitCodeProcess': ([PTR, ctypes.POINTER(U32)], ctypes.c_int),
             'CloseHandle': ([PTR], ctypes.c_int),
         }
@@ -102,7 +116,7 @@ class WindowsJob:
         info = self.Process()
         try:
             self.checked(self.k.CreateProcessW(str(self.command[0]), ctypes.create_unicode_buffer(subprocess.list2cmdline(self.command)), None, None, True, 0x4 | 0x08000000, None, self.cwd, ctypes.byref(startup), ctypes.byref(info)))
-            self.process, self.thread = info.process, info.thread
+            self.process, self.thread, self.pid = info.process, info.thread, info.pid
         finally:
             for handle in handles:
                 os.set_handle_inheritable(handle, False)
@@ -112,6 +126,13 @@ class WindowsJob:
             self.k.TerminateProcess(self.process, 1)
             self.k.WaitForSingleObject(self.process, 30000)
             raise ctypes.WinError(error)
+
+    def root_identity(self):
+        # FILETIME is a 64-bit count of 100ns intervals since 1601 UTC. Preserve
+        # decimal text in JSON to avoid precision loss through JavaScript readers.
+        created, exited, kernel, user = (ctypes.c_uint64() for _ in range(4))
+        self.checked(self.k.GetProcessTimes(self.process, ctypes.byref(created), ctypes.byref(exited), ctypes.byref(kernel), ctypes.byref(user)))
+        return {'pid': int(self.pid), 'creationFileTime': str(created.value)}
 
     def resume(self):
         if self.k.ResumeThread(self.thread) == 0xFFFFFFFF:

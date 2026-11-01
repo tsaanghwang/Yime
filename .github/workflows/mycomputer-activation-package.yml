@@ -11,9 +11,11 @@ on:
       - 'tools/ci/*local_activation*'
       - 'tools/ci/windows_job_once.py'
       - 'tools/ci/test_windows_job_native.py'
+      - 'tools/ci/test_windows_job_identity.py'
       - 'tools/powershell/**'
       - 'docs/project/18u-self-developed-integration/S3C_MYCOMPUTER_LOCAL_PROBE.zh-CN.md'
       - 'docs/project/18u-self-developed-integration/MYCOMPUTER_STAGE2_PACKAGE.zh-CN.md'
+      - 'docs/project/18u-self-developed-integration/S3C_REGISTRATION_EXECUTION_GUARD.zh-CN.md'
 
 permissions:
   contents: read
@@ -58,7 +60,7 @@ jobs:
           if result.returncode != 0:
               raise SystemExit('Portable activation policy failed')
           sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
-          for name in ['test_mycomputer_activation_contract', 'test_local_activation_evidence', 'test_mycomputer_stage1_package', 'test_mycomputer_package_workflow', 'test_collect_mycomputer_preflight']:
+          for name in ['test_mycomputer_activation_contract', 'test_local_activation_evidence', 'test_mycomputer_stage1_package', 'test_mycomputer_package_workflow', 'test_collect_mycomputer_preflight', 'test_run_mycomputer_registration', 'test_windows_job_identity']:
               module = importlib.import_module(name)
               stream = io.StringIO()
               result = unittest.TextTestRunner(stream=stream, verbosity=2).run(unittest.defaultTestLoader.loadTestsFromModule(module))
@@ -112,7 +114,7 @@ jobs:
           root = pathlib.Path.cwd()
           evidence = root / '.generated/mycomputer-stage1-evidence'
           binaries = root / '.generated/mycomputer-stage1-build/Release'
-          args = [sys.executable, 'tools/ci/build_mycomputer_stage1_package.py', '--dll', str(binaries / 'YimeTextService18u.dll'), '--tool', str(binaries / 'YimeMyComputerActivationStage1.exe'), '--source-sha', os.environ['PACKAGE_SOURCE_SHA'], '--readme', str(root / 'docs/project/18u-self-developed-integration/MYCOMPUTER_STAGE2_PACKAGE.zh-CN.md'), '--collector', str(root / 'tools/ci/collect_mycomputer_preflight.py'), '--job-helper', str(root / 'tools/ci/windows_job_once.py'), '--signatures', str(evidence / 'authenticode.json'), '--output-dir', str(root / '.generated/mycomputer-stage1-package')]
+          args = [sys.executable, 'tools/ci/build_mycomputer_stage1_package.py', '--dll', str(binaries / 'YimeTextService18u.dll'), '--tool', str(binaries / 'YimeMyComputerActivationStage1.exe'), '--source-sha', os.environ['PACKAGE_SOURCE_SHA'], '--package-version', 'v2', '--registration-runner', str(root / 'tools/ci/run_mycomputer_registration.py'), '--evidence-validator', str(root / 'tools/ci/validate_local_activation_evidence.py'), '--readme', str(root / 'docs/project/18u-self-developed-integration/S3C_REGISTRATION_EXECUTION_GUARD.zh-CN.md'), '--collector', str(root / 'tools/ci/collect_mycomputer_preflight.py'), '--job-helper', str(root / 'tools/ci/windows_job_once.py'), '--signatures', str(evidence / 'authenticode.json'), '--output-dir', str(root / '.generated/mycomputer-protected-v2-package')]
           with (evidence / 'package.log').open('w', encoding='utf-8') as log:
               result = subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=False, timeout=60)
           if result.returncode != 0:
@@ -123,13 +125,13 @@ jobs:
         run: |
           import hashlib, json, os, pathlib, subprocess, sys, zipfile
           root = pathlib.Path.cwd()
-          package = root / '.generated/mycomputer-stage1-package'
+          package = root / '.generated/mycomputer-protected-v2-package'
           evidence = root / '.generated/mycomputer-stage1-evidence'
           build = json.loads((package / 'package-evidence.json').read_text(encoding='utf-8'))
-          archive = package / 'YimeMyComputerActivationStage1-x64.zip'
+          archive = package / 'YimeMyComputerActivationProtected-v2-x64.zip'
           if build.get('sourceCommit') != os.environ['PACKAGE_SOURCE_SHA'] or build.get('sha256') != hashlib.sha256(archive.read_bytes()).hexdigest():
               raise SystemExit('Package source or ZIP hash mismatch')
-          extracted = root / '.generated/mycomputer-stage1-package-check'
+          extracted = root / '.generated/mycomputer-protected-v2-package-check'
           extracted.mkdir(exist_ok=False)
           with zipfile.ZipFile(archive) as zipped:
               names = zipped.namelist()
@@ -147,6 +149,8 @@ jobs:
               raise SystemExit('Actual packaged read-only collector did not complete')
           receipt = json.loads((collected / 'collection.json').read_text(encoding='utf-8'))
           manifest = json.loads((extracted / 'manifest.json').read_text(encoding='utf-8'))
+          if manifest.get('schema') != 'mycomputer-activation-development-package-v2':
+              raise SystemExit('Protected v2 manifest required; do not substitute a v1 package')
           files = {entry['path']: entry['sha256'] for entry in manifest['files']}
           process = receipt.get('process', {})
           if receipt.get('status') != 'collected' or receipt.get('sourceCommit') != os.environ['PACKAGE_SOURCE_SHA'] or receipt.get('manifestSha256') != manifest_hash or receipt.get('registrationAttemptedByCollector') is not False or process.get('started') is not True or process.get('treeStopped') is not True or process.get('timedOut') is not False or process.get('errorCode') is not None or process.get('exitCode') != 0:
@@ -167,8 +171,8 @@ jobs:
       - name: Upload the fixed development package
         uses: actions/upload-artifact@v6
         with:
-          name: mycomputer-activation-x64-${{ github.sha }}
-          path: .generated/mycomputer-stage1-package/
+          name: mycomputer-activation-protected-v2-x64-${{ github.sha }}
+          path: .generated/mycomputer-protected-v2-package/
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14

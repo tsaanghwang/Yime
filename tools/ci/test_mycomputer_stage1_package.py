@@ -26,10 +26,10 @@ class PackageTests(unittest.TestCase):
             self.rows.append(dict(name=name,sha256=package.digest(self.paths[name].read_bytes()),status='NotSigned',signerCertificateThumbprint=None,timestampCertificateThumbprint=None))
         self.save_signatures()
     def save_signatures(self):self.signature_file.write_text(json.dumps(dict(schema='mycomputer-authenticode-v1',files=self.rows)))
-    def build(self):
+    def build(self, **kwargs):
         return package.build_package(self.paths[package.PE_NAMES[0]],self.paths[package.PE_NAMES[1]],'a'*40,
                                      self.paths['README.md'],self.paths[package.SCRIPT_NAMES[0]],self.paths[package.SCRIPT_NAMES[1]],
-                                     self.signature_file,self.root/'out')
+                                     self.signature_file,self.root/'out',**kwargs)
 
     def test_exact_members_roundtrip_hashes_and_unsigned_status(self):
         evidence=self.build();archive=self.root/'out'/evidence['zip']
@@ -52,6 +52,32 @@ class PackageTests(unittest.TestCase):
         evidence=self.build();unpacked=self.root/'unpacked';unpacked.mkdir()
         with zipfile.ZipFile(self.root/'out'/evidence['zip']) as z:z.extractall(unpacked)
         validate_package(unpacked,evidence['manifestSHA256'])
+
+    def test_v2_separate_seven_payload_package_and_collector_compatibility(self):
+        from collect_mycomputer_preflight import validate_package, SCHEMA_V2, PAYLOAD_V2
+        companions = []
+        for name in package.V2_SCRIPT_NAMES:
+            path = self.root / name
+            path.write_text('# synthetic v2 fixture\n')
+            companions.append(path)
+        evidence = self.build(package_version='v2', registration_runner=companions[0], evidence_validator=companions[1])
+        self.assertEqual(evidence['payloadCount'], 7)
+        self.assertEqual(evidence['zip'], 'YimeMyComputerActivationProtected-v2-x64.zip')
+        unpacked = self.root / 'unpacked'
+        unpacked.mkdir()
+        with zipfile.ZipFile(self.root / 'out' / evidence['zip']) as archive:
+            archive.extractall(unpacked)
+        manifest, files = validate_package(unpacked, evidence['manifestSHA256'])
+        self.assertEqual(manifest['schema'], SCHEMA_V2)
+        self.assertEqual(set(files), PAYLOAD_V2)
+        self.assertEqual(manifest['defaultOperation'], 'read-only-preflight')
+        self.assertFalse(manifest['registrationExecutionApproved'])
+
+    def test_version_companion_mismatch_rejected_before_output(self):
+        with self.assertRaises(ValueError): self.build(package_version='v2')
+        with self.assertRaises(ValueError): self.build(registration_runner=self.root/'unreviewed.py')
+        with self.assertRaises(ValueError): self.build(package_version='v3')
+        self.assertFalse((self.root/'out').exists())
 
     def test_wrong_architecture_kind_and_truncated_pe_rejected(self):
         for data in (pe(True,0xaa64),pe(False),b'MZ',pe(True)[:200]):

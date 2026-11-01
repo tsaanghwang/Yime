@@ -44,7 +44,17 @@ class PackageWorkflowContract(unittest.TestCase):
     def test_fixed_package_and_checked_signature_query(self):
         for required in ['build_mycomputer_stage1_package.py', 'collect_mycomputer_authenticode.ps1', 'run_checked.py', "'--edition', 'ps5'", "'--params-file'", "'--source-sha'", "'--signatures'", "'--job-helper'", 'test_collect_mycomputer_preflight', "report.get('caseCount') != 6"]:
             self.assertIn(required, self.text)
-        self.assertIn('mycomputer-activation-x64-${{ github.sha }}', self.text)
+        self.assertIn('mycomputer-activation-protected-v2-x64-${{ github.sha }}', self.text)
+    def test_v2_explicit_packaging_and_offline_only_companions(self):
+        for required in ["'--package-version', 'v2'", "'--registration-runner'", "'--evidence-validator'", 'S3C_REGISTRATION_EXECUTION_GUARD.zh-CN.md', 'YimeMyComputerActivationProtected-v2-x64.zip', 'mycomputer-activation-development-package-v2', 'test_run_mycomputer_registration', 'test_windows_job_identity']:
+            self.assertIn(required, self.text)
+        self.assertNotIn('YimeMyComputerActivationStage1-x64.zip', self.text)
+        # The execution orchestrator is a package input, never a CI command.
+        self.assertIn("'--registration-runner', str(root / 'tools/ci/run_mycomputer_registration.py')", self.text)
+        for block in scripts(self.text):
+            for node in ast.walk(ast.parse(block)):
+                if isinstance(node, ast.List) and len(node.elts) > 1 and ast.unparse(node.elts[0]) == 'sys.executable':
+                    self.assertNotIn('run_mycomputer_registration.py', ast.unparse(node.elts[1]))
     def test_actual_packaged_collector_readonly_gate(self):
         for required in ['Actual packaged read-only collector did not complete', "native.get('stage') != 'completed'", "['dllVerified', 'nativeX64', 'identityAbsent']", "native.get('actualDllActivationVerified') is not False", 'Read-only preflight emitted unexpected stderr', "'--manifest-sha256', manifest_hash", "process.get('treeStopped') is not True", "native.get('writesStarted') is not False", "native.get('prerequisitesSatisfied') is not False", "receipt.get('sourceCommit') != os.environ['PACKAGE_SOURCE_SHA']"]:
             self.assertIn(required, self.text)

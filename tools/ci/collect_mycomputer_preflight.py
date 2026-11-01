@@ -18,8 +18,10 @@ import sys
 
 
 SCHEMA = 'mycomputer-activation-development-package-v1'
+SCHEMA_V2 = 'mycomputer-activation-development-package-v2'
 IDENTITY = {'product': 'YimeCore18uTouch', 'clsid': '6DFACE1F-562E-4773-A9D6-D5753A314711', 'profile': '1BD904AC-3194-4419-B70A-5574100F18B3', 'languageId': '0x0804'}
 PAYLOAD = {'YimeTextService18u.dll', 'YimeMyComputerActivationStage1.exe', 'README.zh-CN.md', 'collect_mycomputer_preflight.py', 'windows_job_once.py'}
+PAYLOAD_V2 = PAYLOAD | {'run_mycomputer_registration.py', 'validate_local_activation_evidence.py'}
 EXE = 'YimeMyComputerActivationStage1.exe'
 DLL = 'YimeTextService18u.dll'
 MANIFEST = 'manifest.json'
@@ -79,7 +81,7 @@ def validate_package(package, expected_manifest):
     if manifest_path.stat().st_size > 1024 * 1024:
         raise ValueError('manifest too large')
     manifest = json.loads(manifest_path.read_text(encoding='utf-8'), object_pairs_hook=unique_object)
-    if manifest.get('schema') != SCHEMA or manifest.get('architecture') != 'native-x64' or manifest.get('scope') != 'registration-activation-only-development':
+    if manifest.get('schema') not in (SCHEMA, SCHEMA_V2) or manifest.get('architecture') != 'native-x64' or manifest.get('scope') != 'registration-activation-only-development':
         raise ValueError('unsupported package identity')
     if manifest.get('identity') != IDENTITY:
         raise ValueError('fixed 18u product identity required')
@@ -109,7 +111,8 @@ def validate_package(package, expected_manifest):
         if path.stat().st_size != size or digest(path) != sha:
             raise ValueError('payload identity mismatch')
         files[name] = entry
-    if set(files) != PAYLOAD or set(p.name for p in package.iterdir()) != PAYLOAD | {MANIFEST}:
+    expected_payload = PAYLOAD_V2 if manifest['schema'] == SCHEMA_V2 else PAYLOAD
+    if set(files) != expected_payload or set(p.name for p in package.iterdir()) != expected_payload | {MANIFEST}:
         raise ValueError('package file set mismatch')
     for name in (EXE, DLL, 'collect_mycomputer_preflight.py', 'windows_job_once.py'):
         if name not in files:

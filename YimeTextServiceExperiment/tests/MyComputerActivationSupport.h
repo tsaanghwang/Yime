@@ -49,15 +49,29 @@ struct LocalDllLock {
   for(BYTE b:digest){sha.push_back(digits[b>>4]);sha.push_back(digits[b&15]);}require(sha==localUtf8(expected),"dll-sha256-mismatch");
  }
 };
-void strictLocalComShape(const std::wstring& expected,bool profileAttempted){
+std::wstring localGeneration(const json& ledger){
+ const auto sha=ledger.at("dllSha256").get<std::string>();
+ const auto text=yime::stage1::Generation(ledger.at("pid").get<DWORD>(),ledger.at("creation").get<unsigned long long>(),std::wstring(sha.begin(),sha.end()));
+ require(!text.empty()&&text.size()<=96,"ledger-generation-bound");return text;
+}
+bool strictLocalComShape(const std::wstring& expected,bool profileAttempted,const std::wstring& generation){
  Key root;const std::wstring path=L"SOFTWARE\\Classes\\CLSID\\"+guid(CLSID_YimeTextServiceExperiment);
- LSTATUS status=RegOpenKeyExW(HKEY_LOCAL_MACHINE,path.c_str(),0,KEY_READ|KEY_WOW64_64KEY,&root.value);if(status==ERROR_FILE_NOT_FOUND||status==ERROR_PATH_NOT_FOUND)return;check(HRESULT_FROM_WIN32(status),"owned-com-root-query");
+ LSTATUS status=RegOpenKeyExW(HKEY_LOCAL_MACHINE,path.c_str(),0,KEY_READ|KEY_WOW64_64KEY,&root.value);if(status==ERROR_FILE_NOT_FOUND||status==ERROR_PATH_NOT_FOUND)return false;check(HRESULT_FROM_WIN32(status),"owned-com-root-query");
  DWORD children=0,values=0;check(HRESULT_FROM_WIN32(RegQueryInfoKeyW(root.value,nullptr,nullptr,nullptr,&children,nullptr,nullptr,&values,nullptr,nullptr,nullptr,nullptr)),"owned-com-root-shape");
- require(values==0&&children<=1,"owned-com-root-changed");if(children==0){require(!profileAttempted,"owned-com-incomplete-after-profile");return;}
+ require(values==1&&children<=1,"owned-com-root-changed");
+ DWORD generationType=0,generationBytes=0;
+ check(HRESULT_FROM_WIN32(RegQueryValueExW(root.value,L"YimeMyComputerGeneration",nullptr,&generationType,nullptr,&generationBytes)),"owned-generation-query");
+ require(generationType==REG_SZ&&generationBytes==(generation.size()+1)*sizeof(wchar_t),"owned-generation-shape");
+ std::wstring actualGeneration(generation.size()+1,L'\0');
+ check(HRESULT_FROM_WIN32(RegQueryValueExW(root.value,L"YimeMyComputerGeneration",nullptr,&generationType,reinterpret_cast<BYTE*>(actualGeneration.data()),&generationBytes)),"owned-generation-read");
+ require(generationType==REG_SZ&&generationBytes==actualGeneration.size()*sizeof(wchar_t)&&actualGeneration.back()==L'\0',"owned-generation-shape");actualGeneration.pop_back();
+ require(actualGeneration==generation,"owned-generation-mismatch");
+ if(children==0){require(!profileAttempted,"owned-com-incomplete-after-profile");return true;}
  wchar_t name[256]{};DWORD count=256;check(HRESULT_FROM_WIN32(RegEnumKeyExW(root.value,0,name,&count,nullptr,nullptr,nullptr,nullptr)),"owned-com-child-query");require(_wcsicmp(name,L"InprocServer32")==0,"owned-com-child-changed");
  Key server;check(HRESULT_FROM_WIN32(RegOpenKeyExW(root.value,L"InprocServer32",0,KEY_READ,&server.value)),"owned-com-server-query");
  check(HRESULT_FROM_WIN32(RegQueryInfoKeyW(server.value,nullptr,nullptr,nullptr,&children,nullptr,nullptr,&values,nullptr,nullptr,nullptr,nullptr)),"owned-com-server-shape");require(children==0&&values<=2&&(!profileAttempted||values==2),"owned-com-server-changed");
  for(DWORD i=0;i<values;++i){wchar_t field[256]{};DWORD chars=256,type=0,bytes=0;check(HRESULT_FROM_WIN32(RegEnumValueW(server.value,i,field,&chars,nullptr,&type,nullptr,&bytes)),"owned-com-value-query");require((chars==0||_wcsicmp(field,L"ThreadingModel")==0)&&(!(values==1)||chars==0)&&type==REG_SZ&&bytes>=2&&bytes<=65536&&bytes%sizeof(wchar_t)==0,"owned-com-value-changed");std::wstring value(bytes/sizeof(wchar_t),L'\0');check(HRESULT_FROM_WIN32(RegQueryValueExW(server.value,field,nullptr,&type,reinterpret_cast<BYTE*>(value.data()),&bytes)),"owned-com-value-read");require(type==REG_SZ&&bytes==value.size()*sizeof(wchar_t)&&value.back()==L'\0',"owned-com-value-shape");value.pop_back();const std::wstring wanted=chars?L"Apartment":expected;require(value.size()==wanted.size()&&_wcsicmp(value.c_str(),wanted.c_str())==0,"owned-com-binding-changed");}
+ return true;
 }
 std::vector<std::wstring> localChildren(HKEY key){
  std::vector<std::wstring> result;for(DWORD index=0;index<64;++index){wchar_t name[256]{};DWORD count=256;const LSTATUS status=RegEnumKeyExW(key,index,name,&count,nullptr,nullptr,nullptr,nullptr);if(status==ERROR_NO_MORE_ITEMS)return result;check(HRESULT_FROM_WIN32(status),"owned-tip-children-query");result.emplace_back(name,count);}throw Failure{"owned-tip-children-bound",E_FAIL};
@@ -90,4 +104,19 @@ void strictLocalTipShape(ITfInputProcessorProfiles* languages,ITfInputProcessorP
    }
   }
  }
+}
+
+std::string localCipherSha256(const std::string& bytes){
+ require(bytes.size()<=16384,"ledger-cipher-bound");BCRYPT_ALG_HANDLE algorithm=nullptr;
+ struct Cleanup{BCRYPT_ALG_HANDLE& value;~Cleanup(){if(value)BCryptCloseAlgorithmProvider(value,0);}}cleanup{algorithm};
+ require(BCryptOpenAlgorithmProvider(&algorithm,BCRYPT_SHA256_ALGORITHM,nullptr,0)==0,"ledger-hash-provider");
+ BYTE digest[32]{};require(BCryptHash(algorithm,nullptr,0,reinterpret_cast<PUCHAR>(const_cast<char*>(bytes.data())),static_cast<ULONG>(bytes.size()),digest,sizeof(digest))==0,"ledger-hash-query");
+ constexpr char digits[]="0123456789abcdef";std::string result;for(BYTE byte:digest){result.push_back(digits[byte>>4]);result.push_back(digits[byte&15]);}return result;
+}
+
+void localTipAbsent(ITfInputProcessorProfiles* languages,ITfInputProcessorProfileMgr* profiles,ITfCategoryMgr* categories){
+ for(HKEY hive:{HKEY_LOCAL_MACHINE,HKEY_CURRENT_USER})for(REGSAM view:{KEY_WOW64_32KEY,KEY_WOW64_64KEY}){
+  unsigned budget=0;scan(hive,L"SOFTWARE\\Microsoft\\CTF",view,0,budget);
+ }
+ apiAbsent(languages,profiles,categories);
 }

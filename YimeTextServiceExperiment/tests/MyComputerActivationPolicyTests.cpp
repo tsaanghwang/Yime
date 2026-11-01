@@ -19,10 +19,12 @@ void commandPolicy() {
  check(preflight.mode==Mode::Preflight && preflight.dll==dll && preflight.sha256==hash, "preflight binding");
  auto run=ParseArguments({L"--register-once",L"--dll",dll,L"--sha256",hash,L"--ledger",ledger});
  check(run.mode==Mode::RegisterOnce && run.dll==dll && run.sha256==hash && run.ledger==ledger, "explicit registration only");
- auto recover=ParseArguments({L"--recover",L"--ledger",ledger});
- check(recover.mode==Mode::Recover && recover.ledger==ledger, "explicit recovery only");
+ auto recover=ParseArguments({L"--recover",L"--ledger",ledger,L"--expected-ledger-sha256",hash});
+ check(recover.mode==Mode::Recover && recover.ledger==ledger && recover.ledgerSha256==hash, "explicit recovery only");
+ auto inspect=ParseArguments({L"--inspect-recovery",L"--ledger",ledger,L"--expected-ledger-sha256",hash});
+ check(inspect.mode==Mode::InspectRecovery && inspect.ledgerSha256==hash,"read-only pinned inspection");
  for(const auto& args: std::vector<std::vector<std::wstring>>{
-  {L"--register-once"},{L"--recover"},{L"--unknown"},{L"--verify",L"--register-once"},
+  {L"--register-once"},{L"--recover"},{L"--recover",L"--ledger",ledger},{L"--inspect-recovery",L"--ledger",ledger},{L"--recover",L"--ledger",ledger,L"--expected-ledger-sha256",L"bad"},{L"--unknown"},{L"--verify",L"--register-once"},
   {L"--dll",dll,L"--sha256",hash,L"--ledger",ledger},
   {L"--register-once",L"--dll",dll,L"--sha256",hash},
   {L"--register-once",L"--dll",dll,L"--sha256",hash,L"--ledger",ledger,L"--retry"},
@@ -32,6 +34,18 @@ void commandPolicy() {
  check(GoodHash(hash),"valid lowercase hash");
  for(const auto& bad: std::vector<std::wstring>{L"",std::wstring(63,L'a'),std::wstring(65,L'a'),std::wstring(64,L'A'),std::wstring(64,L'g')})
   check(!GoodHash(bad),"invalid hash rejected");
+}
+void generationPolicy() {
+ const std::wstring hash(64,L'a');
+ const auto value=Generation(10,20,hash);
+ check(value==L"10:20:"+hash,"exact generation encoding");
+ check(Generation(10,20,hash)==value,"same generation stable");
+ check(Generation(11,20,hash)!=value,"PID changes generation");
+ check(Generation(10,21,hash)!=value,"creation changes generation");
+ check(Generation(10,20,std::wstring(64,L'b'))!=value,"DLL changes generation");
+ check(Generation(0,20,hash).empty() && Generation(10,0,hash).empty(),"zero owner identity invalid");
+ check(Generation(0x100000000ULL,20,hash).empty(),"oversized PID invalid");
+ check(Generation(10,20,L"bad").empty(),"bad generation hash invalid");
 }
 void preflightPolicy() {
  PreflightFacts good{true,true,true,true,true,true,true,true};
@@ -64,6 +78,6 @@ void ledgerPolicy() {
 }
 }
 int main() {
- try {commandPolicy();preflightPolicy();ledgerPolicy();std::cout<<"3 portable policy groups passed; Windows APIs not exercised\n";return 0;}
+ try {commandPolicy();preflightPolicy();ledgerPolicy();generationPolicy();std::cout<<"4 portable policy groups passed; Windows APIs not exercised\n";return 0;}
  catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}
 }

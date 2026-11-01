@@ -108,6 +108,16 @@ class CollectionTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.collect()
         self.assertFalse(self.calls)
 
+    def test_v2_missing_companions_and_v1_extra_companions_rejected(self):
+        self.manifest['schema'] = collector.SCHEMA_V2
+        self.pin()
+        with self.assertRaises(ValueError): self.collect()
+        self.manifest['schema'] = collector.SCHEMA
+        (self.package / 'run_mycomputer_registration.py').write_text('# not a v1 payload')
+        self.pin()
+        with self.assertRaises(ValueError): self.collect()
+        self.assertFalse(self.calls)
+
     def test_wrong_product_identity_refused(self):
         self.manifest['identity']['clsid'] = '00000000-0000-0000-0000-000000000000'
         self.pin()

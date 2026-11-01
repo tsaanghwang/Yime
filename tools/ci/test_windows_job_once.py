@@ -20,6 +20,9 @@ class Backend:
             raise OSError(5, 'injected failure')
 
     def start_suspended_assigned(self): self.step('assign')
+    def root_identity(self):
+        self.step('identity')
+        return {'pid': 42, 'creationFileTime': '133000000000000000'}
     def resume(self): self.step('resume')
     def active_processes(self):
         self.step('query')
@@ -34,17 +37,17 @@ class Backend:
 
 
 class JobOnceTests(unittest.TestCase):
-    def run_backend(self, backend):
+    def run_backend(self, backend, callback=None):
         # Advancing fake clock avoids actual sleeps and Windows process launch.
         with patch.object(jobs.time, 'monotonic', side_effect=range(0, 1000, 10)), patch.object(jobs.time, 'sleep'):
-            return jobs.run_once([str(Path('/fake-owned-helper').resolve())], '.', 'out', 'err', 1, backend)
+            return jobs.run_once([str(Path('/fake-owned-helper').resolve())], '.', 'out', 'err', 1, backend, on_root_created=callback)
 
     def test_zero_and_nonzero_exit_preserved(self):
         for code in (0, 3, 1):
             b=Backend(exit_code=code)
             r=self.run_backend(b)
             self.assertEqual((r['started'], r['treeStopped'], r['exitCode'], r['timedOut']), (True, True, code, False))
-            self.assertEqual(b.calls[:2], ['assign', 'resume'])
+            self.assertEqual(b.calls[:3], ['assign', 'identity', 'resume'])
             self.assertEqual(b.calls[-1], 'close')
             self.assertNotIn('terminate', b.calls)
 

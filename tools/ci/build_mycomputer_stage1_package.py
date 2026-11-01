@@ -10,6 +10,7 @@ import zipfile
 
 PE_NAMES=('YimeTextService18u.dll','YimeMyComputerActivationStage1.exe')
 SCRIPT_NAMES=('collect_mycomputer_preflight.py','windows_job_once.py')
+V2_SCRIPT_NAMES=('run_mycomputer_registration.py','validate_local_activation_evidence.py')
 PRODUCT_IDENTITY={'product':'YimeCore18uTouch','clsid':'6DFACE1F-562E-4773-A9D6-D5753A314711',
                   'profile':'1BD904AC-3194-4419-B70A-5574100F18B3','languageId':'0x0804'}
 SIGNATURE_STATUSES={'Valid','UnknownError','NotSigned','HashMismatch','NotTrusted','NotSupportedFileFormat','Incompatible'}
@@ -69,14 +70,20 @@ def signatures(data,payload):
     return result
 
 
-def build_package(dll,tool,source_sha,readme,collector,job_helper,signature_file,output_dir):
+def build_package(dll,tool,source_sha,readme,collector,job_helper,signature_file,output_dir,package_version='v1',registration_runner=None,evidence_validator=None):
     require(isinstance(source_sha,str) and re.fullmatch('[0-9a-f]{40}',source_sha),'exact source SHA required')
     inputs={PE_NAMES[0]:dll,PE_NAMES[1]:tool,'README.zh-CN.md':readme,SCRIPT_NAMES[0]:collector,SCRIPT_NAMES[1]:job_helper}
-    for name in (*PE_NAMES,*SCRIPT_NAMES):require(Path(inputs[name]).name==name,'fixed input basename required')
+    require(package_version in ('v1','v2'),'explicit supported package version required')
+    if package_version=='v2':
+        require(registration_runner is not None and evidence_validator is not None,'v2 companion scripts required')
+        inputs.update({V2_SCRIPT_NAMES[0]:registration_runner,V2_SCRIPT_NAMES[1]:evidence_validator})
+    else:
+        require(registration_runner is None and evidence_validator is None,'v1 cannot include registration companions')
+    for name in (*PE_NAMES,*SCRIPT_NAMES,*(V2_SCRIPT_NAMES if package_version=='v2' else ())):require(Path(inputs[name]).name==name,'fixed input basename required')
     payload={name:read_file(path,128*1024*1024 if name in PE_NAMES else 1024*1024) for name,path in inputs.items()}
     architecture={name:pe_identity(payload[name],name.endswith('.dll')) for name in PE_NAMES}
     signing=signatures(read_file(signature_file,65536),payload)
-    manifest={'schema':'mycomputer-activation-development-package-v1','scope':'registration-activation-only-development',
+    manifest={'schema':'mycomputer-activation-development-package-'+package_version,'scope':'registration-activation-only-development',
               'sourceCommit':source_sha,'architecture':'native-x64','targetHost':'MyComputer','identity':dict(PRODUCT_IDENTITY),
               'defaultOperation':'read-only-preflight','userDesktopExecutionApproved':False,
               'registrationExecutionApproved':False,'brokerEditingVerified':False,'physicalAcceptance':False,
@@ -88,7 +95,7 @@ def build_package(dll,tool,source_sha,readme,collector,job_helper,signature_file
         manifest['files'].append(row)
     payload['manifest.json']=(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n').encode('utf-8')
     output=Path(output_dir);output.mkdir(parents=True,exist_ok=False)
-    archive=output/'YimeMyComputerActivationStage1-x64.zip'
+    archive=output/('YimeMyComputerActivationStage1-x64.zip' if package_version=='v1' else 'YimeMyComputerActivationProtected-v2-x64.zip')
     with zipfile.ZipFile(archive,'x',compression=zipfile.ZIP_DEFLATED) as z:
         for name,data in sorted(payload.items()):
             info=zipfile.ZipInfo(name,(1980,1,1,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED
@@ -110,8 +117,11 @@ def main():
     for flag in ('dll','tool','readme','collector','job-helper','signatures','output-dir'):
         parser.add_argument('--'+flag,type=Path,required=True)
     parser.add_argument('--source-sha',required=True)
+    parser.add_argument('--package-version',choices=('v1','v2'),default='v1')
+    parser.add_argument('--registration-runner',type=Path)
+    parser.add_argument('--evidence-validator',type=Path)
     a=parser.parse_args()
-    result=build_package(a.dll,a.tool,a.source_sha,a.readme,a.collector,a.job_helper,a.signatures,a.output_dir)
+    result=build_package(a.dll,a.tool,a.source_sha,a.readme,a.collector,a.job_helper,a.signatures,a.output_dir,a.package_version,a.registration_runner,a.evidence_validator)
     print(json.dumps(result,ensure_ascii=False))
 
 if __name__=='__main__':main()

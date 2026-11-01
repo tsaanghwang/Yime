@@ -124,8 +124,8 @@ def run_checks(exe: Path, results: list[dict]) -> list[dict]:
             ("explicit-preflight", ["--preflight"], "preflight"),
             ("readonly-verify", ["--verify"], "verify"),
             ("invalid-arguments", ["--unsupported-stage1-mode"], "invalid"),
-            ("missing-ledger-rejected", ["--recover", "--ledger", str(ledger)], "missing"),
-            ("malformed-ledger-rejected", ["--recover", "--ledger", str(ledger)], "malformed"),
+            ("missing-ledger-rejected", ["--recover", "--ledger", str(ledger), "--expected-ledger-sha256", "0" * 64], "missing"),
+            ("malformed-ledger-rejected", ["--recover", "--ledger", str(ledger), "--expected-ledger-sha256", hashlib.sha256(BAD_LEDGER).hexdigest()], "malformed"),
         ]
         for name, args, kind in cases:
             if kind == "malformed":

@@ -116,6 +116,10 @@ struct Ledger {
 #ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
  LocalDllLock dllLock;
  std::wstring expectedSha;
+ HANDLE cipherReadLock=INVALID_HANDLE_VALUE;
+ std::string cipherSha256;
+ std::wstring expectedCipherSha256;
+ ~Ledger(){if(cipherReadLock!=INVALID_HANDLE_VALUE)CloseHandle(cipherReadLock);}
  bool bindingVerified=false;
  yime::stage1::OwnerState ownerState=yime::stage1::OwnerState::Unknown;
 #endif
@@ -152,16 +156,22 @@ struct Ledger {
    {"preflightAbsent",false},{"comAttempted",false},{"comOwned",false},{"profileAttempted",false},{"categoryAttempted",false},{"enableAttempted",false},{"activationAttempted",false},{"cleanupVerified",false}};
 #ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
   require(dllLock.file!=INVALID_HANDLE_VALUE && !dllLock.sha.empty(),"verified-dll-required");
-  data["schema"]="18u-mycomputer-ledger-v2";data["host"]=localUtf8(localHostName());data["sid"]=localSid();data["dllSha256"]=dllLock.sha;
+  data["schema"]="18u-mycomputer-ledger-v3";data["host"]=localUtf8(localHostName());data["sid"]=localSid();data["dllSha256"]=dllLock.sha;
 #endif
   save();
  }
  void load(const std::wstring& input) {
   location(input);require(std::filesystem::is_regular_file(path) && std::filesystem::file_size(path)<=16384,"ledger-file");
 #ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
-  std::ifstream file{std::filesystem::path(path),std::ios::binary};
-  const std::string cipher((std::istreambuf_iterator<char>(file)),std::istreambuf_iterator<char>());data=json::parse(unprotectLocalJournal(cipher));
-  require(data.is_object() && data.size()==17 && data.at("schema")=="18u-mycomputer-ledger-v2","ledger-local-schema");
+  require(yime::stage1::GoodHash(expectedCipherSha256),"expected-ledger-hash-required");
+  cipherReadLock=CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
+  require(cipherReadLock!=INVALID_HANDLE_VALUE,"ledger-snapshot-read-lock");LARGE_INTEGER cipherSize{};
+  require(GetFileSizeEx(cipherReadLock,&cipherSize)!=FALSE && cipherSize.QuadPart>0 && cipherSize.QuadPart<=16384,"ledger-snapshot-bound");
+  std::string cipher(static_cast<size_t>(cipherSize.QuadPart),'\0');DWORD bytesRead=0;
+  require(ReadFile(cipherReadLock,cipher.data(),static_cast<DWORD>(cipher.size()),&bytesRead,nullptr)!=FALSE && bytesRead==cipher.size(),"ledger-snapshot-read");
+  cipherSha256=localCipherSha256(cipher);require(cipherSha256==localUtf8(expectedCipherSha256),"ledger-snapshot-hash-mismatch");
+  data=json::parse(unprotectLocalJournal(cipher));
+  require(data.is_object() && data.size()==17 && data.at("schema")=="18u-mycomputer-ledger-v3","ledger-local-schema");
   require(data.at("host")==localUtf8(localHostName()) && data.at("sid")==localSid(),"ledger-host-account-binding");
   const auto hash=data.at("dllSha256").get<std::string>();expectedSha.assign(hash.begin(),hash.end());require(yime::stage1::GoodHash(expectedSha),"ledger-dll-hash");
   require(data.is_object()
@@ -200,7 +210,7 @@ struct Ledger {
  }
  void validateOwnedCom() {
 #ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
-  strictLocalComShape(std::filesystem::u8path(data.at("dll").get<std::string>()).wstring(),data.at("profileAttempted").get<bool>());return;
+  require(strictLocalComShape(std::filesystem::u8path(data.at("dll").get<std::string>()).wstring(),data.at("profileAttempted").get<bool>(),localGeneration(data)),"owned-generation-missing");return;
 #endif
   const std::wstring root=L"SOFTWARE\\Classes\\CLSID\\"+guid(CLSID_YimeTextServiceExperiment);
   if(!exists(HKEY_LOCAL_MACHINE,root,KEY_WOW64_64KEY))return;
@@ -256,7 +266,16 @@ struct Transaction {
   writes=true; // A write API is now attempted; failure is not evidence of no writes.
   auto status=RegCreateKeyExW(HKEY_LOCAL_MACHINE,comPath.c_str(),0,nullptr,REG_OPTION_NON_VOLATILE,KEY_READ|KEY_WRITE|KEY_WOW64_64KEY,nullptr,&root.value,&disposition);
   check(HRESULT_FROM_WIN32(status),"create-com-root");
-  require(disposition==REG_CREATED_NEW_KEY,"com-race-existing");comOwned=true;ledger->mark("comOwned");
+  require(disposition==REG_CREATED_NEW_KEY,"com-race-existing");
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  const std::wstring generation=localGeneration(ledger->data);
+  check(HRESULT_FROM_WIN32(RegSetValueExW(root.value,L"YimeMyComputerGeneration",0,REG_SZ,reinterpret_cast<const BYTE*>(generation.c_str()),static_cast<DWORD>((generation.size()+1)*sizeof(wchar_t)))),"write-owned-generation");
+  // Do not claim ownership in memory until the marker and encrypted checkpoint
+  // are durable. A crash/flush failure in this gap remains unknown, not deletable.
+  ledger->mark("comOwned");comOwned=true;
+#else
+  comOwned=true;ledger->mark("comOwned");
+#endif
   Key server;disposition=0;
   check(HRESULT_FROM_WIN32(RegCreateKeyExW(root.value,L"InprocServer32",0,nullptr,REG_OPTION_NON_VOLATILE,KEY_WRITE|KEY_WOW64_64KEY,nullptr,&server.value,&disposition)),"create-com-server");
   require(disposition==REG_CREATED_NEW_KEY,"com-server-race");
@@ -309,7 +328,16 @@ struct Transaction {
    if(remaining)cleanupCheck(languages->Unregister(CLSID_YimeTextServiceExperiment),"cleanup-owned-service-residue");
   }catch(const Failure& f){cleanupCheck(f.code,f.stage);}catch(...){cleanupCheck(E_FAIL,"cleanup-service-query");}
 #endif
-  if(comOwned){Key parent;LSTATUS hr=RegOpenKeyExW(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Classes\\CLSID",0,KEY_READ|KEY_WRITE|KEY_WOW64_64KEY,&parent.value);if(hr==ERROR_SUCCESS)hr=RegDeleteTreeW(parent.value,clsidString.c_str());cleanupCheck(HRESULT_FROM_WIN32(hr),"cleanup-owned-com");}
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  // Keep the sole generation marker if any earlier cleanup failed or if TIP
+  // references cannot be proved absent. Never erase recovery provenance first.
+  if(comOwned && cleanupOK)try{ledger->validateOwnedCom();localTipAbsent(languages.Get(),profiles.Get(),categories.Get());}
+   catch(const Failure& failure){cleanupCheck(failure.code,failure.stage);}catch(...){cleanupCheck(E_FAIL,"cleanup-owned-tip-absence-unknown");}
+  if(comOwned && cleanupOK)
+#else
+  if(comOwned)
+#endif
+  {Key parent;LSTATUS hr=RegOpenKeyExW(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Classes\\CLSID",0,KEY_READ|KEY_WRITE|KEY_WOW64_64KEY,&parent.value);if(hr==ERROR_SUCCESS)hr=RegDeleteTreeW(parent.value,clsidString.c_str());cleanupCheck(HRESULT_FROM_WIN32(hr),"cleanup-owned-com");}
   if(writes)try{registryAbsent();apiAbsent(languages.Get(),profiles.Get(),categories.Get());}catch(const Failure& f){cleanupCheck(f.code,f.stage);}catch(...){cleanupCheck(E_FAIL,"cleanup-query-exception");}
  }
 };

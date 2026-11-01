@@ -15,11 +15,51 @@ yime::stage1::PreflightFacts inspectLocal(Transaction& transaction,Ledger& ledge
  if(!args.dll.empty())observe("dllVerified",facts.dllVerified,[&]{ledger.expectedSha=args.sha256;ledger.dllLock.open(args.dll,args.sha256);report["dllSha256"]=ledger.dllLock.sha;report["dllPresent"]=true;return true;});
  report["prerequisitesSatisfied"]=yime::stage1::CanRegister(facts);return facts;
 }
+yime::stage1::LedgerFlags inspectedFlags(const Ledger& ledger){
+ const auto& d=ledger.data;return {d.at("preflightAbsent").get<bool>(),d.at("comAttempted").get<bool>(),d.at("comOwned").get<bool>(),d.at("profileAttempted").get<bool>(),d.at("categoryAttempted").get<bool>(),d.at("enableAttempted").get<bool>(),d.at("activationAttempted").get<bool>(),d.at("cleanupVerified").get<bool>()};
+}
+bool currentAbsence(Transaction& transaction){
+ try{registryAbsent();apiAbsent(transaction.languages.Get(),transaction.profiles.Get(),transaction.categories.Get());return true;}
+ catch(const Failure& failure){
+  const std::string stage=failure.stage;
+  if(stage=="existing-com-identity"||stage=="existing-tip-identity"||stage=="existing-identity-value-name"||stage=="existing-identity-value-data"||stage=="existing-identity-binary-data"||stage=="existing-profile-identity")return false;
+  throw; // Access denial, malformed enumeration and unknown state are not presence evidence.
+ }
+}
+bool inspectOwnedScope(Transaction& transaction,Ledger& ledger){
+ const auto flags=inspectedFlags(ledger);
+ if(currentAbsence(transaction))return false;
+ require(!(flags.comAttempted&&!flags.comOwned&&!flags.cleanupVerified),"unconfirmed-com-creation-window");
+ require(!flags.cleanupVerified,"previous-cleanup-evidence-conflicts-with-residue");
+ require(flags.comAttempted&&flags.comOwned&&yime::stage1::CanRecover(flags,ledger.ownerState,ledger.bindingVerified),"inspection-ownership-not-proven");
+ ledger.validateOwnedCom();
+ if(flags.profileAttempted)strictLocalTipShape(transaction.languages.Get(),transaction.profiles.Get(),transaction.categories.Get());
+ else apiAbsent(transaction.languages.Get(),transaction.profiles.Get(),transaction.categories.Get());
+ return true;
+}
+json recoveryInspectionReport(){return {{"schema","mycomputer-recovery-inspection-v1"},{"scope","readonly-recovery-ownership"},{"status","blocked"},{"stage","completed"},{"code",0},{"ledgerSha256",nullptr},{"ownerPid",nullptr},{"ownerCreationTime",nullptr},{"dllSha256",nullptr},{"bindingVerified",false},{"ownerDeadVerified",false},{"ownedScopeVerified",false},{"cleanupVerified",nullptr},{"flags",nullptr},{"recoveryRequired",nullptr}};}
+int inspectRecoveryOnly(const yime::stage1::Arguments& args){
+ json report=recoveryInspectionReport();const HRESULT initialized=CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED);
+ if(FAILED(initialized)){report["stage"]="com-initialize";report["code"]=static_cast<unsigned long>(initialized);std::cout<<report.dump()<<std::endl;return 3;}
+ int exit=3;
+ {
+  Transaction transaction;Ledger ledger;transaction.ledger=&ledger;ledger.expectedCipherSha256=args.ledgerSha256;
+  try{
+   localMachineGate();ledger.load(args.ledger);transaction.initialize();
+   report["ledgerSha256"]=ledger.cipherSha256;report["ownerPid"]=ledger.data.at("pid");report["ownerCreationTime"]=ledger.data.at("creation");report["dllSha256"]=ledger.data.at("dllSha256");
+   report["bindingVerified"]=ledger.bindingVerified;report["ownerDeadVerified"]=ledger.ownerState==yime::stage1::OwnerState::DeadVerified;
+   json flags=json::object();for(const char* key:{"preflightAbsent","comAttempted","comOwned","profileAttempted","categoryAttempted","enableAttempted","activationAttempted","cleanupVerified"})flags[key]=ledger.data.at(key);report["flags"]=flags;report["cleanupVerified"]=flags.at("cleanupVerified");
+   report["recoveryRequired"]=inspectOwnedScope(transaction,ledger);report["ownedScopeVerified"]=true;report["status"]="verified";exit=0;
+  }catch(const Failure& failure){report["stage"]=failure.stage;report["code"]=static_cast<unsigned long>(failure.code);}catch(...){report["stage"]="inspection-query-exception";report["code"]=static_cast<unsigned long>(E_FAIL);}
+ }
+ CoUninitialize();std::cout<<report.dump()<<std::endl;return exit;
+}
 json localReport(const char* mode){return {{"schema","mycomputer-activation-stage1-v1"},{"scope","mycomputer-registration-activation-only"},{"mode",mode},{"status","failed"},{"stage","completed"},{"code",0},{"writesStarted",false},{"cleanupVerified",false},{"preconditions",localConditions()},{"prerequisitesSatisfied",false},{"actualHostName",nullptr},{"threadLanguage",nullptr},{"currentLanguage",nullptr},{"dllSha256",nullptr},{"dllPresent",nullptr},{"publisherTrust","not-established"},{"brokerEditingVerified",false},{"profileActivationApiVerified",false},{"actualDllActivationVerified",false}};}
 }
 int wmain(int argc,wchar_t** argv){
  std::vector<std::wstring> arguments;for(int i=1;i<argc;++i)arguments.emplace_back(argv[i]);
  const auto args=yime::stage1::ParseArguments(arguments);using Mode=yime::stage1::Mode;
+ if(args.mode==Mode::InspectRecovery)return inspectRecoveryOnly(args);
  const char* mode=args.mode==Mode::Preflight?"preflight":args.mode==Mode::RegisterOnce?"register-once":args.mode==Mode::Recover?"recover":args.mode==Mode::Verify?"verify":"invalid";
  json report=localReport(mode);if(args.mode==Mode::Invalid){report["status"]="blocked";report["stage"]="arguments";report["code"]=static_cast<unsigned long>(E_INVALIDARG);std::cout<<report.dump()<<std::endl;return 3;}
  HRESULT initialized=CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED);if(FAILED(initialized)){report["status"]="blocked";report["stage"]="com-initialize";report["code"]=static_cast<unsigned long>(initialized);std::cout<<report.dump()<<std::endl;return 3;}
@@ -39,18 +79,19 @@ int wmain(int argc,wchar_t** argv){
     }
    }else if(args.mode==Mode::Verify){localMachineGate();transaction.initialize();registryAbsent();apiAbsent(transaction.languages.Get(),transaction.profiles.Get(),transaction.categories.Get());report["cleanupVerified"]=true;completed=true;}
    else{
+    ledger.expectedCipherSha256=args.ledgerSha256;
     localMachineGate();ledger.load(args.ledger);transaction.initialize();report["dllSha256"]=ledger.data.at("dllSha256");report["dllPresent"]=ledger.dllLock.file!=INVALID_HANDLE_VALUE;
     transaction.writes=ledger.data.at("comAttempted").get<bool>();transaction.comOwned=ledger.data.at("comOwned").get<bool>();transaction.profileAttempted=ledger.data.at("profileAttempted").get<bool>();transaction.categoryAttempted=ledger.data.at("categoryAttempted").get<bool>();transaction.enableAttempted=ledger.data.at("enableAttempted").get<bool>();
     // load() proves the original PID+creation-time process is dead, not merely
     // unreachable. Process-local activation cannot survive its termination.
-    yime::stage1::LedgerFlags flags{ledger.data.at("preflightAbsent").get<bool>(),transaction.writes,transaction.comOwned,transaction.profileAttempted,transaction.categoryAttempted,transaction.enableAttempted,ledger.data.at("activationAttempted").get<bool>(),ledger.data.at("cleanupVerified").get<bool>()};
-    if(flags.cleanupVerified){registryAbsent();apiAbsent(transaction.languages.Get(),transaction.profiles.Get(),transaction.categories.Get());}
-    else{
-     require(yime::stage1::CanRecover(flags,ledger.ownerState,ledger.bindingVerified),"recovery-ownership-not-proven");
+    const bool recoveryRequired=inspectOwnedScope(transaction,ledger);
+    if(recoveryRequired){
      if(transaction.writes)require(elevated(),"recovery-elevation-required");transaction.cleanup();require(transaction.cleanupOK,"recovery-cleanup-failed");
      registryAbsent();apiAbsent(transaction.languages.Get(),transaction.profiles.Get(),transaction.categories.Get());
-     ledger.mark("cleanupVerified");
     }
+    // Preserve the original ciphertext/flags as historical evidence. The read
+    // lock remains held through cleanup. This receipt plus independent --verify,
+    // not a rewrite of the original journal, records the new cleanup result.
     recoveryUnknown=false;report["cleanupVerified"]=true;completed=true;
    }
   }catch(const Failure& failure){report["stage"]=failure.stage;report["code"]=static_cast<unsigned long>(failure.code);}catch(...){report["stage"]="unclassified-exception";report["code"]=static_cast<unsigned long>(E_FAIL);}

@@ -36,10 +36,23 @@ def report(text):
     return value
 
 
+def validate_absence(verify_stdout,verify_stderr,verify_exit):
+    require(type(verify_exit) is int and verify_exit==0,'verify-exit')
+    verification=report(verify_stdout)
+    require(verification['mode']=='verify' and verification['status']=='pass','verify-mode-status')
+    require(verification['cleanupVerified'] is True and verification['writesStarted'] is False,'verify-absence')
+    require(verification['prerequisitesSatisfied'] is False and verification['profileActivationApiVerified'] is False,'verify-claims')
+    require(all(value is None for value in verification['preconditions'].values()),'verify-preconditions')
+    for field in ('actualHostName','threadLanguage','currentLanguage','dllSha256','dllPresent'):
+        require(verification[field] is None,'verify-uncollected-field')
+    require(isinstance(verify_stderr,str) and not verify_stderr.strip(),'verify-stderr')
+    return verification
+
+
 def validate(register_stdout,register_stderr,register_exit,verify_stdout,verify_stderr,verify_exit,expected_dll_sha256):
     require(isinstance(expected_dll_sha256,str) and re.fullmatch('[0-9a-f]{64}',expected_dll_sha256),'expected-dll-sha256')
     require(type(register_exit) is int and register_exit==4 and type(verify_exit) is int and verify_exit==0,'exit-codes')
-    registration=report(register_stdout);verification=report(verify_stdout)
+    registration=report(register_stdout);validate_absence(verify_stdout,verify_stderr,verify_exit)
     require(registration['mode']=='register-once' and registration['status']=='activation-unconfirmed','registration-mode-status')
     for field in ('writesStarted','cleanupVerified','prerequisitesSatisfied','dllPresent','profileActivationApiVerified'):
         require(registration[field] is True,'registration-'+field)
@@ -50,13 +63,6 @@ def validate(register_stdout,register_stderr,register_exit,verify_stdout,verify_
     require(registration['dllSha256']==expected_dll_sha256,'registration-dll-hash')
     marker=strict_json(register_stderr)
     require(marker==MARKER and isinstance(marker,dict) and type(marker.get('code')) is int,'unique-actual-dll-marker')
-    require(verification['mode']=='verify' and verification['status']=='pass','verify-mode-status')
-    require(verification['cleanupVerified'] is True and verification['writesStarted'] is False,'verify-absence')
-    require(verification['prerequisitesSatisfied'] is False and verification['profileActivationApiVerified'] is False,'verify-claims')
-    require(all(value is None for value in verification['preconditions'].values()),'verify-preconditions')
-    for field in ('actualHostName','threadLanguage','currentLanguage','dllSha256','dllPresent'):
-        require(verification[field] is None,'verify-uncollected-field')
-    require(isinstance(verify_stderr,str) and not verify_stderr.strip(),'verify-stderr')
     return {'status':'evidence-consistent','scope':SCOPE,'dllSha256':expected_dll_sha256,
             'actualDllActivationEvidenceConsistent':True,'cleanupEvidenceConsistent':True,
             'sourceAuthenticityVerified':False,'sameInvocationProven':False,

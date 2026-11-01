@@ -64,4 +64,34 @@ class ActivationSourceContract(unittest.TestCase):
         self.assertIn('{"actualDllActivationVerified",false}',text)
         self.assertIn('{"brokerEditingVerified",false}',text)
 
+    def test_recovery_inspection_is_readonly_and_cleanup_rechecks_pinned_ledger(self):
+        main=(TESTS/'MyComputerActivationMain.h').read_text()
+        inspect=main.split('int inspectRecoveryOnly(',1)[1].split('json localReport(',1)[0]
+        self.assertIn('ledger.expectedCipherSha256=args.ledgerSha256',inspect)
+        self.assertIn('ledger.load(args.ledger)',inspect)
+        self.assertIn('inspectOwnedScope(transaction,ledger)',inspect)
+        for forbidden in ('transaction.cleanup(', 'ledger.mark(', 'ledger.create(', 'transaction.run('):
+            self.assertNotIn(forbidden,inspect)
+        recovery=main.split('}else if(args.mode==Mode::Verify)',1)[1].split('catch(const Failure& failure)',1)[0]
+        self.assertLess(recovery.index('ledger.load(args.ledger)'),recovery.index('transaction.cleanup()'))
+        self.assertLess(recovery.index('inspectOwnedScope(transaction,ledger)'),recovery.index('transaction.cleanup()'))
+        self.assertNotIn('ledger.mark(',recovery)
+        source=(TESTS/'RegistrationProbe.cpp').read_text()
+        self.assertIn('cipherReadLock=CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ',source)
+        self.assertIn('cipherSha256==localUtf8(expectedCipherSha256)',source)
+
+    def test_generation_marker_is_owned_before_cleanup_and_preserved_on_failure(self):
+        source=(TESTS/'RegistrationProbe.cpp').read_text()
+        self.assertIn('data.at("schema")=="18u-mycomputer-ledger-v3"',source)
+        self.assertNotIn('data.at("schema")=="18u-mycomputer-ledger-v2"',source)
+        local=source.split('const std::wstring generation=localGeneration(ledger->data);',1)[1].split('#else',1)[0]
+        self.assertLess(local.index('RegSetValueExW(root.value,L"YimeMyComputerGeneration"'),local.index('ledger->mark("comOwned")'))
+        self.assertLess(local.index('ledger->mark("comOwned")'),local.index('comOwned=true'))
+        support=(TESTS/'MyComputerActivationSupport.h').read_text()
+        self.assertIn('yime::stage1::Generation(',support)
+        self.assertIn('actualGeneration==generation,"owned-generation-mismatch"',support)
+        cleanup=source.split(' void cleanup() {',1)[1].split('\n};',1)[0]
+        self.assertIn('if(comOwned && cleanupOK)try{ledger->validateOwnedCom();localTipAbsent(',cleanup)
+        self.assertIn('if(comOwned && cleanupOK)\n#else',cleanup)
+
 if __name__=='__main__': unittest.main()
