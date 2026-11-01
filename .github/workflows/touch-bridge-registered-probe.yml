@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   registration-probe:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm == 'once-18u-registration' && inputs.expected_source_sha == github.sha && github.run_attempt == 1
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm == 'once-18u-registration' && github.event.inputs.confirm_18u_language_inventory == '' && inputs.expected_source_sha == github.sha && github.run_attempt == 1
     runs-on: windows-latest
     timeout-minutes: 15
     defaults:
