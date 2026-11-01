@@ -4,6 +4,10 @@
 
 现已发布 [PR #87](https://github.com/tsaanghwang/Yime/pull/87)；固定两架构完整包、哈希、CI与本机原生检查见 [CI_DELIVERY.zh-CN.md](CI_DELIVERY.zh-CN.md)。MyComputer 可直接使用[接续任务提示](TASK_PROMPT.zh-CN.md)。PR未自动合并，新包真人测试仍待实际记录。
 
+## 2026-11-01 桌面鼠标回传补充
+
+已核对 `pr87-desktop-x64-r1` 的结果提交 `176c4a25979e7de05d3210ec8ad2b9e632ad1bdf`，详见[桌面鼠标开发端汇总](DESKTOP_MOUSE_SUMMARY.zh-CN.md)。本机“计算机”非触摸屏，仅鼠标；**手指和笔不属于本机验收范围，不列为待测项**。工具栏编辑保护（纯预览）与最小化/重新绑定（纯预览及空白 Word）在各自范围内通过；候选状态部分覆盖，单鼠标无法构造按住候选时独立翻页，整体保留 not-run，不记为产品失败。本轮未测 Edge，不覆盖其历史结果。以下 2026-10-31 发布时的包和开发记录保留原归属，不将新结果反写为当时已完成。
+
 ## 源码与范围
 
 - 分支：`codex/touch-candidate-readability-20261031`，基于 main `cbe625af761755d7d76579d57e163fc2abfe727b`（已包含 PR #82–#86）。交付准备时重新 fetch main，未发现额外待整合提交。
