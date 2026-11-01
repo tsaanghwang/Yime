@@ -18,7 +18,7 @@ class DemoPackageTests(unittest.TestCase):
         self.patcher=patch.object(demo,'ROOT',self.root);self.patcher.start();self.addCleanup(self.patcher.stop)
 
     def test_host_rejects_wrong_arch_and_external_source(self):
-        self.assertEqual(demo.validate_host(self.host),self.host)
+        self.assertEqual(demo.validate_host(self.host),self.host.resolve())
         raw=bytearray(self.host.read_bytes());struct.pack_into('<H',raw,84,0xaa64);self.host.write_bytes(raw)
         with self.assertRaises(ValueError):demo.validate_host(self.host)
         outside=self.root/'outside.exe';outside.write_bytes(raw)
@@ -35,13 +35,13 @@ class DemoPackageTests(unittest.TestCase):
         with patch.object(demo,'generated',side_effect=lambda p:p),patch.object(demo,'verify') as verify,patch.object(demo,'stage_resources',side_effect=stage),patch.object(demo.subprocess,'check_output',side_effect=['a'*40+'\n','']),patch.object(demo.subprocess,'run',side_effect=compile),patch.dict(demo.os.environ,{'GITHUB_ACTIONS':'false'}):
             demo.build(out,data,self.host)
         verify.assert_called_once_with(data)
-        m=json.loads((out/'manifest.json').read_text());r=json.loads((out/'resources.json').read_text())
+        m=json.loads((out/'manifest.json').read_text(encoding='utf-8'));r=json.loads((out/'resources.json').read_text(encoding='utf-8'))
         self.assertEqual(m['scope'],demo.SCOPE)
         self.assertEqual(r['files'][demo.HOST],demo.digest(self.host))
         self.assertEqual(m['portableResourcesSHA256'],demo.digest(out/'resources.json'))
         self.assertFalse(m['userDesktopExecutionApproved'])
         for name in demo.LAUNCHERS:self.assertFalse((out/name).exists())
-        self.assertNotIn('old SendInput',(out/'USER_GUIDE.zh-CN.md').read_text())
+        self.assertNotIn('old SendInput',(out/'USER_GUIDE.zh-CN.md').read_text(encoding='utf-8'))
         for name,want in m['files'].items():self.assertEqual(demo.digest(out/name),want)
         with patch.object(checker,'verify'):
             checker.verify_inventory(out)
