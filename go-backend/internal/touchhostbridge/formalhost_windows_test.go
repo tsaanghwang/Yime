@@ -128,7 +128,9 @@ func TestNativeFormal18uTIP(t *testing.T) {
 			hr := bufio.NewReaderSize(hout, 65537)
 			line, e := formalReadLine(ctx, hr)
 			if e != nil {
-				t.Fatal("native connect response missing")
+				_ = host.Wait() // joins stderr copier before reading the bounded buffer
+				hostDone = true
+				t.Fatalf("native connect response missing: %s", formalFailureSummary(hostErr.Bytes()))
 			}
 			var connected struct {
 				Stage    string `json:"stage"`
@@ -151,7 +153,9 @@ func TestNativeFormal18uTIP(t *testing.T) {
 			hin.Close()
 			line, e = formalReadLine(ctx, hr)
 			if e != nil {
-				t.Fatal("native final result missing; no replay")
+				_ = host.Wait() // joins stderr copier; context bounds a stuck child
+				hostDone = true
+				t.Fatalf("native final result missing; no replay: %s", formalFailureSummary(hostErr.Bytes()))
 			}
 			var result struct {
 				Stage                          string `json:"stage"`
@@ -284,5 +288,86 @@ func formalCanonicalNi(root string) (string, error) {
 		}
 		record, e := codemode.BuildRecord(full)
 		return record.Variable, e
+	}
+}
+
+// Parse only the native harness's fixed diagnostic vocabulary, never echo raw stderr.
+func formalFailureSummary(raw []byte) string {
+	var d struct {
+		Stage string `json:"stage"`
+		Kind  string `json:"kind"`
+		Code  uint32 `json:"code"`
+	}
+	decoder := json.NewDecoder(strings.NewReader(string(raw)))
+	decoder.DisallowUnknownFields()
+	if decoder.Decode(&d) != nil {
+		return "diagnostic unavailable"
+	}
+	var extra any
+	if decoder.Decode(&extra) != io.EOF {
+		return "diagnostic unavailable"
+	}
+	allowed := map[string]bool{
+		"UTF8 conversion":                       true,
+		"actual TIP activation":                 true,
+		"actual TIP instance":                   true,
+		"actual edit and completion":            true,
+		"allocate dedicated service client ID":  true,
+		"associate own window":                  true,
+		"canonical ni candidate missing":        true,
+		"change own focus":                      true,
+		"class factory export":                  true,
+		"connect actual Broker":                 true,
+		"context":                               true,
+		"control":                               true,
+		"deactivate actual TIP":                 true,
+		"dedicated class factory":               true,
+		"dedicated private interface":           true,
+		"disconnected action accepted":          true,
+		"document":                              true,
+		"duplicate rewrote":                     true,
+		"engine input":                          true,
+		"engine rejected input":                 true,
+		"extended manager":                      true,
+		"independent readback mismatch":         true,
+		"initialize COM":                        true,
+		"input bound":                           true,
+		"invalid UTF8":                          true,
+		"invalid response":                      true,
+		"load dedicated DLL":                    true,
+		"missing actual receipt":                true,
+		"missing input":                         true,
+		"not actually applied":                  true,
+		"open rejected":                         true,
+		"own focus":                             true,
+		"own foreground not granted; no bypass": true,
+		"own foreground window":                 true,
+		"own manager activate":                  true,
+		"push":                                  true,
+		"query service client IDs":              true,
+		"read edit":                             true,
+		"read not completed":                    true,
+		"rejected operation wrote":              true,
+		"request read":                          true,
+		"scenario":                              true,
+		"stale focus accepted":                  true,
+		"thread manager":                        true,
+		"unexpected":                            true,
+		"wrong server accepted":                 true,
+	}
+	if !allowed[d.Stage] || (d.Kind != "hresult" && d.Kind != "win32" && d.Kind != "assertion" && d.Kind != "exception") {
+		return "diagnostic unavailable"
+	}
+	return fmt.Sprintf("stage=%s kind=%s code=0x%08X", d.Stage, d.Kind, d.Code)
+}
+
+func TestFormalFailureSummaryPrivacy(t *testing.T) {
+	if got := formalFailureSummary([]byte(`{"stage":"actual TIP activation","kind":"hresult","code":2147500037}`)); got != "stage=actual TIP activation kind=hresult code=0x80004005" {
+		t.Fatal("fixed diagnostic not retained")
+	}
+	for _, raw := range []string{`secret`, `{"stage":"C:/private/file","kind":"win32","code":1}`, `{"stage":"unexpected","kind":"exception","code":0,"text":"private"}`, `{"stage":"unexpected","kind":"exception","code":0} trailing`} {
+		if formalFailureSummary([]byte(raw)) != "diagnostic unavailable" {
+			t.Fatal("untrusted diagnostic escaped")
+		}
 	}
 }
