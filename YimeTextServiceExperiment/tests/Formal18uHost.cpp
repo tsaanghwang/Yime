@@ -82,9 +82,9 @@ struct Host {
   require(factory->CreateInstance(nullptr,__uuidof(ITfTextInputProcessorEx),reinterpret_cast<void**>(tip.GetAddressOf())),"actual TIP instance");
   require(CoCreateInstance(CLSID_TF_ThreadMgr,nullptr,CLSCTX_INPROC_SERVER,__uuidof(ITfThreadMgr),reinterpret_cast<void**>(manager.GetAddressOf())),"thread manager");
   ComPtr<ITfThreadMgrEx> extended;require(manager.As(&extended),"extended manager");require(extended->ActivateEx(&client,TF_TMAE_NOACTIVATETIP|TF_TMAE_NOACTIVATEKEYBOARDLAYOUT),"own manager activate");managerActive=true;
-  // The host owns the documents; the actual TIP uses its distinct CLSID client ID.
-  ComPtr<ITfClientId> clientIds;require(manager.As(&clientIds),"query service client IDs");
-  TfClientId serviceClientId=TF_CLIENTID_NULL;require(clientIds->GetClientId(CLSID_YimeTextServiceExperiment,&serviceClientId),"allocate dedicated service client ID");
+  // Direct-load component adapter only: use the actually activated host client.
+  // GetClientId(new CLSID) is not a Windows-activated text-service identity.
+  // Keep real AdviseKeyEventSink active; do not set DIRECT_TEST or register a TIP.
   create(document,context);create(other,otherContext);
   window=CreateWindowExW(0,L"STATIC",L"Isolated 18u formal host gate",WS_OVERLAPPEDWINDOW,40,40,400,120,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr);
   if(!window)winFail("own foreground window");
@@ -92,7 +92,7 @@ struct Host {
   ShowWindow(window,SW_SHOWNORMAL);SetForegroundWindow(window);::SetFocus(window);
   if(GetForegroundWindow()!=window)fail("own foreground not granted; no bypass");
   require(manager->SetFocus(document.Get()),"own focus");
-  require(tip->ActivateEx(manager.Get(),serviceClientId,0),"actual TIP activation");tipActive=true;require(tip.As(&route),"dedicated private interface");
+  require(tip->ActivateEx(manager.Get(),client,0),"actual TIP activation");tipActive=true;require(tip.As(&route),"dedicated private interface");
  }
  void create(ComPtr<ITfDocumentMgr>& doc,ComPtr<ITfContext>& ctx){TfEditCookie cookie=0;require(manager->CreateDocumentMgr(&doc),"document");require(doc->CreateContext(client,0,nullptr,&ctx,&cookie),"context");require(doc->Push(ctx.Get()),"push");}
  ~Host(){if(route)route->DisconnectDedicated();route.Reset();if(tipActive)tip->Deactivate();tip.Reset();if(window){ComPtr<ITfDocumentMgr> previous;manager->AssociateFocus(window,nullptr,&previous);DestroyWindow(window);}context.Reset();otherContext.Reset();document.Reset();other.Reset();if(managerActive)manager->Deactivate();manager.Reset();if(module)FreeLibrary(module);}
@@ -139,5 +139,5 @@ int main(){try{
  }
  bool empty=read(host.context.Get(),host.client).empty(),otherEmpty=read(host.otherContext.Get(),host.client).empty();
  if(rejected&&(!empty||!otherEmpty))fail("rejected operation wrote");
- std::cout<<json{{"stage","result"},{"scenario",scenario},{"actualDLLLoaded",true},{"registered",false},{"sendInput",false},{"outcome",outcome},{"rejected",rejected},{"duplicateRejected",duplicateRejected},{"readbackMatches",readMatches},{"readbackEmpty",empty},{"otherContextEmpty",otherEmpty},{"unknownAfterPendingEditCovered",false}}.dump()<<std::endl;return 0;
+ std::cout<<json{{"stage","result"},{"scenario",scenario},{"actualDLLLoaded",true},{"activationIdentity","owned-host-activation-client"},{"registered",false},{"sendInput",false},{"outcome",outcome},{"rejected",rejected},{"duplicateRejected",duplicateRejected},{"readbackMatches",readMatches},{"readbackEmpty",empty},{"otherContextEmpty",otherEmpty},{"unknownAfterPendingEditCovered",false}}.dump()<<std::endl;return 0;
  }catch(const GateFailure& failure){diagnostic(failure);return 1;}catch(...){diagnostic({"unexpected","exception",0});return 1;}}

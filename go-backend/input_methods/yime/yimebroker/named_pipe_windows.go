@@ -443,7 +443,7 @@ func trustedSameLogonPeer(pipe syscall.Handle, expectedPID uint32) (TrustedClien
 	}
 	process, e := syscall.OpenProcess(processQueryLimitedInfo|0x00100000, false, pid)
 	if e != nil {
-		return TrustedClient{}, noop, e
+		return TrustedClient{}, noop, fmt.Errorf("open authenticated peer process: %w", e)
 	}
 	fail := func(e error) (TrustedClient, func(), error) {
 		syscall.CloseHandle(process)
@@ -451,21 +451,21 @@ func trustedSameLogonPeer(pipe syscall.Handle, expectedPID uint32) (TrustedClien
 	}
 	var token syscall.Token
 	if e = syscall.OpenProcessToken(process, tokenQuery, &token); e != nil {
-		return fail(e)
+		return fail(fmt.Errorf("open authenticated peer token: %w", e))
 	}
 	defer token.Close()
 	current, e := syscall.OpenCurrentProcessToken()
 	if e != nil {
-		return fail(e)
+		return fail(fmt.Errorf("open server token: %w", e))
 	}
 	defer current.Close()
 	peerSID, peerSession, peerLogon, e := logonIdentity(token)
 	if e != nil {
-		return fail(e)
+		return fail(fmt.Errorf("query peer logon identity: %w", e))
 	}
 	sid, session, logon, e := logonIdentity(current)
 	if e != nil {
-		return fail(e)
+		return fail(fmt.Errorf("query server logon identity: %w", e))
 	}
 	if peerSID != sid || peerSession != session || peerLogon != logon {
 		return fail(errors.New("peer user/session/logon differs"))
@@ -476,7 +476,7 @@ func trustedSameLogonPeer(pipe syscall.Handle, expectedPID uint32) (TrustedClien
 	}
 	var creation, exit, kernel, user syscall.Filetime
 	if e = syscall.GetProcessTimes(process, &creation, &exit, &kernel, &user); e != nil {
-		return fail(e)
+		return fail(fmt.Errorf("query peer process creation identity: %w", e))
 	}
 	return TrustedClient{ID: fmt.Sprintf("windows:%s:session:%s:logon:%s:pid:%d:created:%08x%08x", sid, session, logon, pid, creation.HighDateTime, creation.LowDateTime)}, func() { syscall.CloseHandle(process) }, nil
 }

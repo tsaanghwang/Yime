@@ -67,3 +67,15 @@ TIP自行取得实际context与自身STA前台窗口，不接受外部HWND/conte
 远端 `c62fc20daa3a885f53dc31518fa195d83898108e`，run `41315522058`：MSVC实际编译（含新DLL/runner及原默认DLL）、旧7 TSF＋3 UI、2 OS认证、完整资源与Broker构建均通过；新7场景全部在connect响应前失败。原测试吞掉初始化阶段信息，当前无法确定具体原因。失败证据artifact `13087231981` ZIP SHA-256 `b80a40b119ccc1ca2a4bb1e20e5e1acbaeaf48df83915d552ffaaec677cb41cd`已下载核验并保留。
 
 补充仅测试诊断：固定阶段标签和数值HRESULT/Win32错误，Go等待stderr收集结束后严格白名单解析；不输出异常文本/路径/正文，不改变激活、身份或前台检查。增设隐私解析回归并纳入CI。此变更不声称修复了尚未定位的初始化原因。
+
+## 第二轮诊断与夹具ID修正
+
+`a90b174a16e5e809536429a4c9da7f77ac126eeb` / run `41316058606` 确认7项都在 `actual TIP activation` 返回 `E_INVALIDARG (0x80070057)`；辅助隐私测试通过。证据artifact `13086749489` ZIP SHA-256 `a08d1449cd054a6d2d9f466521bce2b797d94449d85beff88f0cce242f0f27ac`已下载保留。此时尚未进入Broker动作。
+
+纠正此前夹具和审阅中的ID假设：`GetClientId(new CLSID)`并不等于Windows激活注册文本服务时交给它的ID。旧TsfCompositionTests同时启用了DIRECT_TEST跳过key sink，不能仅照搬其ID分配。官方AdviseKeyEventSink要求激活所得client ID；GetClientId说明面向非应用、非文本服务类别的TSF对象。因此本片direct-load adapter改为借用测试宿主真实ThreadMgr ActivateEx取得的client，仍执行真实DLL的AdviseKeyEventSink及全部身份/前台/观察器检查，**不打开DIRECT_TEST、不注册、不跳过失败**。结果字段明确 `activationIdentity=owned-host-activation-client`，Go必须严格核对。
+
+此修正只能验证真实DLL组件链，不能宣称独立18u profile已被Windows激活；此前“独立serviceClientId”描述属于已纠正的历史夹具假设。修正是否解决初始化失败仍须下一次原生CI证明。
+
+依据：https://learn.microsoft.com/en-us/windows/win32/api/msctf/nf-msctf-itfkeystrokemgr-advisekeyeventsink 、 https://learn.microsoft.com/en-us/windows/win32/api/msctf/nf-msctf-itfclientid-getclientid
+
+同一a90b174普通Build `41316058471` 的Windows race job `124876418928` 另有新增测试 `TestDedicatedNamedPipeHandlerUsesActualSameLogonPeer` 等handler超时（10秒）；不是DATA RACE报告，不是前述两项旧清理断言。同提交非race实际OS认证通过。先补测试对认证错误/监听提前退出的固定分类诊断和失败清理，不增加超时、不放宽SID/PID/登录身份要求；根因仍待CI证据。

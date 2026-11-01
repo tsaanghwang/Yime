@@ -161,6 +161,7 @@ func TestNativeFormal18uTIP(t *testing.T) {
 				Stage                          string `json:"stage"`
 				Scenario                       string `json:"scenario"`
 				ActualDLLLoaded                bool   `json:"actualDLLLoaded"`
+				ActivationIdentity             string `json:"activationIdentity"`
 				Registered                     bool   `json:"registered"`
 				SendInput                      bool   `json:"sendInput"`
 				Outcome                        string `json:"outcome"`
@@ -176,7 +177,7 @@ func TestNativeFormal18uTIP(t *testing.T) {
 			if e = decoder.Decode(&result); e != nil {
 				t.Fatal("invalid native result")
 			}
-			if result.Stage != "result" || result.Scenario != scenario || !result.ActualDLLLoaded || result.Registered || result.SendInput || !result.OtherContextEmpty || result.UnknownAfterPendingEditCovered {
+			if result.Stage != "result" || result.Scenario != scenario || !result.ActualDLLLoaded || result.ActivationIdentity != "owned-host-activation-client" || result.Registered || result.SendInput || !result.OtherContextEmpty || result.UnknownAfterPendingEditCovered {
 				t.Fatal("native scope or identity mismatch")
 			}
 			if scenario == "commit" || scenario == "duplicate" {
