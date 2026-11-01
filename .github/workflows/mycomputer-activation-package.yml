@@ -1,0 +1,183 @@
+name: MyComputer activation x64 package (no registration)
+
+on:
+  push:
+    branches: ['codex/18u-formal-tip-s3c-20261101']
+    paths:
+      - '.github/workflows/mycomputer-activation-package.yml'
+      - 'YimeTextServiceExperiment/**'
+      - 'tools/yimecore/18u-touch-product.json'
+      - 'tools/ci/*mycomputer*'
+      - 'tools/ci/*local_activation*'
+      - 'tools/ci/windows_job_once.py'
+      - 'tools/ci/test_windows_job_native.py'
+      - 'tools/powershell/**'
+      - 'docs/project/18u-self-developed-integration/S3C_MYCOMPUTER_LOCAL_PROBE.zh-CN.md'
+      - 'docs/project/18u-self-developed-integration/MYCOMPUTER_STAGE2_PACKAGE.zh-CN.md'
+
+permissions:
+  contents: read
+
+jobs:
+  package-x64:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101'
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: python {0}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Build only the independent x64 DLL, local tool and portable policy tests
+        env:
+          PACKAGE_SOURCE_SHA: ${{ github.sha }}
+          PACKAGE_RUN_ID: ${{ github.run_id }}
+        run: |
+          import json, os, pathlib, subprocess
+          evidence = pathlib.Path('.generated/mycomputer-stage1-evidence')
+          evidence.mkdir(parents=True, exist_ok=False)
+          for args, name in [
+              (['cmake', '-S', 'YimeTextServiceExperiment', '-B', '.generated/mycomputer-stage1-build', '-A', 'x64', '-DYIME_TOUCH_PRODUCT=ON', '-DYIME_MYCOMPUTER_ACTIVATION_STAGE1=ON'], 'configure.log'),
+              (['cmake', '--build', '.generated/mycomputer-stage1-build', '--config', 'Release', '--target', 'YimeTextService18u', 'YimeMyComputerActivationStage1', 'MyComputerActivationPolicyTests'], 'build.log')]:
+              with (evidence / name).open('w', encoding='utf-8') as log:
+                  result = subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=False, timeout=240)
+              if result.returncode != 0:
+                  raise SystemExit('Independent x64 build failed')
+          (evidence / 'source.json').write_text(json.dumps({'sourceCommit': os.environ['PACKAGE_SOURCE_SHA'], 'runID': os.environ['PACKAGE_RUN_ID'], 'scope': 'compile-readonly-negative-tests-package', 'registrationExecuted': False, 'userMachineExecuted': False}), encoding='utf-8')
+      - name: Run portable policy and offline contracts without registration
+        run: |
+          import importlib, io, pathlib, subprocess, sys, unittest
+          evidence = pathlib.Path('.generated/mycomputer-stage1-evidence')
+          with (evidence / 'portable-policy.log').open('w', encoding='utf-8') as log:
+              result = subprocess.run([str(pathlib.Path('.generated/mycomputer-stage1-build/Release/MyComputerActivationPolicyTests.exe').resolve())], stdout=log, stderr=subprocess.STDOUT, check=False, timeout=30)
+          if result.returncode != 0:
+              raise SystemExit('Portable activation policy failed')
+          sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
+          for name in ['test_mycomputer_activation_contract', 'test_local_activation_evidence', 'test_mycomputer_stage1_package', 'test_mycomputer_package_workflow', 'test_collect_mycomputer_preflight']:
+              module = importlib.import_module(name)
+              stream = io.StringIO()
+              result = unittest.TextTestRunner(stream=stream, verbosity=2).run(unittest.defaultTestLoader.loadTestsFromModule(module))
+              (evidence / (name + '.log')).write_text(stream.getvalue(), encoding='utf-8')
+              if result.testsRun == 0 or result.skipped or not result.wasSuccessful():
+                  raise SystemExit('Required offline contract missing, skipped or failed: ' + name)
+      - name: Require both actual Windows containment tests without skips
+        run: |
+          import io, json, os, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
+          import test_windows_job_native
+          stream = io.StringIO()
+          result = unittest.TextTestRunner(stream=stream, verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(test_windows_job_native.WindowsJobTests))
+          evidence = pathlib.Path('.generated/mycomputer-stage1-evidence')
+          (evidence / 'job-native.log').write_text(stream.getvalue(), encoding='utf-8')
+          passed = os.name == 'nt' and result.testsRun == 2 and not result.skipped and result.wasSuccessful()
+          (evidence / 'job-native.json').write_text(json.dumps({'testsRun': result.testsRun, 'skips': len(result.skipped), 'passed': passed}), encoding='utf-8')
+          if not passed:
+              raise SystemExit('Actual Windows process containment did not execute and pass')
+      - name: Execute only read-only and guaranteed-invalid native cases
+        run: |
+          import json, pathlib, subprocess, sys
+          evidence = pathlib.Path('.generated/mycomputer-stage1-evidence').resolve()
+          exe = pathlib.Path('.generated/mycomputer-stage1-build/Release/YimeMyComputerActivationStage1.exe').resolve()
+          with (evidence / 'native-negative-tests.log').open('w', encoding='utf-8') as log:
+              result = subprocess.run([sys.executable, 'tools/ci/test_mycomputer_activation_native.py', '--exe', str(exe), '--output', str(evidence / 'native-negative-tests.json')], stdout=log, stderr=subprocess.STDOUT, check=False, timeout=210)
+          if result.returncode != 0:
+              raise SystemExit('Read-only/invalid native gate failed; do not package')
+          report = json.loads((evidence / 'native-negative-tests.json').read_text(encoding='utf-8'))
+          if report.get('schema') != 'mycomputer-native-nonregistration-tests-v1' or report.get('status') != 'passed' or report.get('caseCount') != 6 or len(report.get('cases', [])) != 6 or report.get('registrationRequested') is not False or report.get('validRecoveryRequested') is not False or report.get('successfulActivationTested') is not False:
+              raise SystemExit('Six mandatory nonregistration native cases not proven')
+      - name: Read actual Authenticode status through checked PS5
+        run: |
+          import json, pathlib, sys
+          sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
+          from windows_job_once import run_once
+          root = pathlib.Path.cwd()
+          evidence = (root / '.generated/mycomputer-stage1-evidence').resolve()
+          binaries = root / '.generated/mycomputer-stage1-build/Release'
+          params = evidence / 'signature-params.json'
+          params.write_text(json.dumps({'DllPath': str(binaries / 'YimeTextService18u.dll'), 'ToolPath': str(binaries / 'YimeMyComputerActivationStage1.exe'), 'OutputPath': str(evidence / 'authenticode.json')}), encoding='utf-8')
+          state = run_once([sys.executable, str(root / 'tools/powershell/run_checked.py'), '--edition', 'ps5', '--script', str(root / 'tools/ci/collect_mycomputer_authenticode.ps1'), '--params-file', str(params)], root, evidence / 'signature-stdout.log', evidence / 'signature-stderr.log', 60)
+          (evidence / 'signature-process.json').write_text(json.dumps(state, indent=2), encoding='utf-8')
+          if not state['started'] or not state['treeStopped'] or state['timedOut'] or state['errorCode'] is not None or state['exitCode'] != 0:
+              raise SystemExit('Authenticode observation failed or incomplete')
+      - name: Package fixed x64 files without executing package payload
+        env:
+          PACKAGE_SOURCE_SHA: ${{ github.sha }}
+        run: |
+          import os, pathlib, subprocess, sys
+          root = pathlib.Path.cwd()
+          evidence = root / '.generated/mycomputer-stage1-evidence'
+          binaries = root / '.generated/mycomputer-stage1-build/Release'
+          args = [sys.executable, 'tools/ci/build_mycomputer_stage1_package.py', '--dll', str(binaries / 'YimeTextService18u.dll'), '--tool', str(binaries / 'YimeMyComputerActivationStage1.exe'), '--source-sha', os.environ['PACKAGE_SOURCE_SHA'], '--readme', str(root / 'docs/project/18u-self-developed-integration/MYCOMPUTER_STAGE2_PACKAGE.zh-CN.md'), '--collector', str(root / 'tools/ci/collect_mycomputer_preflight.py'), '--job-helper', str(root / 'tools/ci/windows_job_once.py'), '--signatures', str(evidence / 'authenticode.json'), '--output-dir', str(root / '.generated/mycomputer-stage1-package')]
+          with (evidence / 'package.log').open('w', encoding='utf-8') as log:
+              result = subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=False, timeout=60)
+          if result.returncode != 0:
+              raise SystemExit('Fixed x64 package validation failed')
+      - name: Validate the actual fixed package with its read-only collector
+        env:
+          PACKAGE_SOURCE_SHA: ${{ github.sha }}
+        run: |
+          import hashlib, json, os, pathlib, subprocess, sys, zipfile
+          root = pathlib.Path.cwd()
+          package = root / '.generated/mycomputer-stage1-package'
+          evidence = root / '.generated/mycomputer-stage1-evidence'
+          build = json.loads((package / 'package-evidence.json').read_text(encoding='utf-8'))
+          archive = package / 'YimeMyComputerActivationStage1-x64.zip'
+          if build.get('sourceCommit') != os.environ['PACKAGE_SOURCE_SHA'] or build.get('sha256') != hashlib.sha256(archive.read_bytes()).hexdigest():
+              raise SystemExit('Package source or ZIP hash mismatch')
+          extracted = root / '.generated/mycomputer-stage1-package-check'
+          extracted.mkdir(exist_ok=False)
+          with zipfile.ZipFile(archive) as zipped:
+              names = zipped.namelist()
+              if len(set(names)) != len(names) or any(pathlib.PurePosixPath(name).name != name or '/' in name or chr(92) in name for name in names):
+                  raise SystemExit('Unexpected ZIP paths')
+              for name in names:
+                  (extracted / name).write_bytes(zipped.read(name))
+          manifest_hash = build['manifestSHA256']
+          if hashlib.sha256((extracted / 'manifest.json').read_bytes()).hexdigest() != manifest_hash:
+              raise SystemExit('Fixed manifest hash mismatch')
+          collected = evidence / 'package-preflight'
+          with (evidence / 'package-preflight-collector.log').open('w', encoding='utf-8') as log:
+              result = subprocess.run([sys.executable, str(extracted / 'collect_mycomputer_preflight.py'), '--package', str(extracted), '--evidence', str(collected), '--manifest-sha256', manifest_hash], stdout=log, stderr=subprocess.STDOUT, check=False, timeout=90)
+          if result.returncode != 0:
+              raise SystemExit('Actual packaged read-only collector did not complete')
+          receipt = json.loads((collected / 'collection.json').read_text(encoding='utf-8'))
+          manifest = json.loads((extracted / 'manifest.json').read_text(encoding='utf-8'))
+          files = {entry['path']: entry['sha256'] for entry in manifest['files']}
+          process = receipt.get('process', {})
+          if receipt.get('status') != 'collected' or receipt.get('sourceCommit') != os.environ['PACKAGE_SOURCE_SHA'] or receipt.get('manifestSha256') != manifest_hash or receipt.get('registrationAttemptedByCollector') is not False or process.get('started') is not True or process.get('treeStopped') is not True or process.get('timedOut') is not False or process.get('errorCode') is not None or process.get('exitCode') != 0:
+              raise SystemExit('Packaged preflight process/source identity not established')
+          for field, name in [('collectorSha256', 'collect_mycomputer_preflight.py'), ('jobHelperSha256', 'windows_job_once.py'), ('exeSha256', 'YimeMyComputerActivationStage1.exe'), ('dllSha256', 'YimeTextService18u.dll')]:
+              if receipt.get(field) != files[name]:
+                  raise SystemExit('Packaged preflight payload hash mismatch')
+          for stream in ['stdout', 'stderr']:
+              raw = (collected / (stream + '.txt')).read_bytes()
+              if receipt[stream]['sha256'] != hashlib.sha256(raw).hexdigest() or receipt[stream]['bytes'] != len(raw):
+                  raise SystemExit('Collected output hash mismatch')
+          if (collected / 'stderr.txt').read_bytes() != b'':
+              raise SystemExit('Read-only preflight emitted unexpected stderr')
+          native = json.loads((collected / 'stdout.txt').read_text(encoding='utf-8-sig'))
+          if native.get('schema') != 'mycomputer-activation-stage1-v1' or native.get('mode') != 'preflight' or native.get('status') != 'checked' or native.get('writesStarted') is not False or native.get('prerequisitesSatisfied') is not False or native.get('dllSha256') != files['YimeTextService18u.dll'] or native.get('stage') != 'completed' or type(native.get('code')) is not int or native['code'] != 0 or native.get('profileActivationApiVerified') is not False or native.get('actualDllActivationVerified') is not False or any(native.get('preconditions', {}).get(key) is not True for key in ['dllVerified', 'nativeX64', 'identityAbsent']):
+              raise SystemExit('Expected read-only CI preflight result not established')
+          (evidence / 'package-preflight-check.json').write_text(json.dumps({'sourceCommit': os.environ['PACKAGE_SOURCE_SHA'], 'manifestSha256': manifest_hash, 'actualPackagedCollectorChecked': True, 'registrationExecuted': False, 'userMachineValidated': False}), encoding='utf-8')
+      - name: Upload the fixed development package
+        uses: actions/upload-artifact@v6
+        with:
+          name: mycomputer-activation-x64-${{ github.sha }}
+          path: .generated/mycomputer-stage1-package/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve scoped evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: mycomputer-activation-evidence-${{ github.sha }}
+          path: .generated/mycomputer-stage1-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

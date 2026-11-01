@@ -1,4 +1,5 @@
-// One disposable elevated Windows CI transaction. Never a user-machine installer.
+// Shared registration transaction: original disposable CI entry or explicitly
+// compiled MyComputer stage-1 entry. Neither is a general-purpose installer.
 #include <windows.h>
 #include <msctf.h>
 #include <wrl/client.h>
@@ -11,6 +12,13 @@
 #include <cstring>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+#include <bcrypt.h>
+#include <wincrypt.h>
+#include <sddl.h>
+#include <iterator>
+#include "MyComputerActivationPolicy.h"
+#endif
 #include "YimeTextServiceIds.h"
 #include "ProductIdentity.h"
 using Microsoft::WRL::ComPtr;
@@ -99,19 +107,37 @@ bool elevated() {
  TOKEN_ELEVATION value{};DWORD size=0;BOOL ok=GetTokenInformation(token,TokenElevation,&value,sizeof(value),&size);DWORD error=GetLastError();CloseHandle(token);
  check(ok?S_OK:HRESULT_FROM_WIN32(error),"token-elevation");return value.TokenIsElevated!=0;
 }
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+#include "MyComputerActivationSupport.h"
+#endif
 struct Ledger {
  std::wstring path;
  json data;
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+ LocalDllLock dllLock;
+ std::wstring expectedSha;
+ bool bindingVerified=false;
+ yime::stage1::OwnerState ownerState=yime::stage1::OwnerState::Unknown;
+#endif
  static unsigned long long creation(HANDLE process) {
   FILETIME made{},exit{},kernel{},user{};require(GetProcessTimes(process,&made,&exit,&kernel,&user)!=FALSE,"process-time-query");
   return (static_cast<unsigned long long>(made.dwHighDateTime)<<32)|made.dwLowDateTime;
  }
  void location(const std::wstring& input) {
   const std::filesystem::path value(input);
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  require(value.is_absolute() && value.filename()==L"registration-ledger.dpapi" && std::filesystem::is_directory(value.parent_path()),"ledger-location");path=value.lexically_normal().wstring();
+#else
   require(value.is_absolute() && value.filename()==L"registration-ledger.json" && std::filesystem::is_directory(value.parent_path()),"ledger-location");path=value.lexically_normal().wstring();
+#endif
  }
  void save() {
-  const std::wstring temporary=path+L".tmp";const auto text=data.dump();
+  const std::wstring temporary=path+L".tmp";
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  const auto text=protectLocalJournal(data.dump());
+#else
+  const auto text=data.dump();
+#endif
   HANDLE file=CreateFileW(temporary.c_str(),GENERIC_WRITE,0,nullptr,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,nullptr);
   require(file!=INVALID_HANDLE_VALUE,"ledger-temporary-create");DWORD written=0;
   BOOL ok=WriteFile(file,text.data(),static_cast<DWORD>(text.size()),&written,nullptr);if(ok)ok=FlushFileBuffers(file);CloseHandle(file);
@@ -123,26 +149,59 @@ struct Ledger {
   require(file!=INVALID_HANDLE_VALUE,"ledger-must-be-new");CloseHandle(file);
   data={{"schema","18u-registration-ledger-v1"},{"clsid","6DFACE1F-562E-4773-A9D6-D5753A314711"},{"profile","1BD904AC-3194-4419-B70A-5574100F18B3"},
    {"pid",GetCurrentProcessId()},{"creation",creation(GetCurrentProcess())},{"dll",std::filesystem::path(dll).u8string()},
-   {"preflightAbsent",false},{"comAttempted",false},{"comOwned",false},{"profileAttempted",false},{"categoryAttempted",false},{"enableAttempted",false},{"activationAttempted",false},{"cleanupVerified",false}};save();
+   {"preflightAbsent",false},{"comAttempted",false},{"comOwned",false},{"profileAttempted",false},{"categoryAttempted",false},{"enableAttempted",false},{"activationAttempted",false},{"cleanupVerified",false}};
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  require(dllLock.file!=INVALID_HANDLE_VALUE && !dllLock.sha.empty(),"verified-dll-required");
+  data["schema"]="18u-mycomputer-ledger-v2";data["host"]=localUtf8(localHostName());data["sid"]=localSid();data["dllSha256"]=dllLock.sha;
+#endif
+  save();
  }
  void load(const std::wstring& input) {
   location(input);require(std::filesystem::is_regular_file(path) && std::filesystem::file_size(path)<=16384,"ledger-file");
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  std::ifstream file{std::filesystem::path(path),std::ios::binary};
+  const std::string cipher((std::istreambuf_iterator<char>(file)),std::istreambuf_iterator<char>());data=json::parse(unprotectLocalJournal(cipher));
+  require(data.is_object() && data.size()==17 && data.at("schema")=="18u-mycomputer-ledger-v2","ledger-local-schema");
+  require(data.at("host")==localUtf8(localHostName()) && data.at("sid")==localSid(),"ledger-host-account-binding");
+  const auto hash=data.at("dllSha256").get<std::string>();expectedSha.assign(hash.begin(),hash.end());require(yime::stage1::GoodHash(expectedSha),"ledger-dll-hash");
+  require(data.is_object()
+#else
   std::ifstream file{std::filesystem::path(path)};data=json::parse(file);
-  require(data.is_object() && data.size()==14 && data.at("schema")=="18u-registration-ledger-v1" && data.at("clsid")=="6DFACE1F-562E-4773-A9D6-D5753A314711" && data.at("profile")=="1BD904AC-3194-4419-B70A-5574100F18B3","ledger-identity");
+  require(data.is_object() && data.size()==14 && data.at("schema")=="18u-registration-ledger-v1"
+#endif
+   && data.at("clsid")=="6DFACE1F-562E-4773-A9D6-D5753A314711" && data.at("profile")=="1BD904AC-3194-4419-B70A-5574100F18B3","ledger-identity");
   for(const char* key:{"preflightAbsent","comAttempted","comOwned","profileAttempted","categoryAttempted","enableAttempted","activationAttempted","cleanupVerified"})require(data.at(key).is_boolean(),"ledger-boolean");
   require(data.at("pid").is_number_unsigned() && data.at("pid").get<unsigned long long>()<=MAXDWORD && data.at("creation").is_number_unsigned(),"ledger-process-identity");
-  auto dll=std::filesystem::u8path(data.at("dll").get<std::string>());require(dll.is_absolute() && dll.filename()==L"YimeTextService18u.dll" && std::filesystem::is_regular_file(dll),"ledger-dll");
+  auto dll=std::filesystem::u8path(data.at("dll").get<std::string>());require(dll.is_absolute() && dll.filename()==L"YimeTextService18u.dll"
+#ifndef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+   && std::filesystem::is_regular_file(dll)
+#endif
+   ,"ledger-dll");
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  const DWORD attributes=GetFileAttributesW(dll.c_str());
+  if(attributes!=INVALID_FILE_ATTRIBUTES)dllLock.open(dll.wstring(),expectedSha);
+  else require(GetLastError()==ERROR_FILE_NOT_FOUND||GetLastError()==ERROR_PATH_NOT_FOUND,"ledger-dll-presence-unknown");
+#endif
   const bool preflight=data.at("preflightAbsent").get<bool>(),attempt=data.at("comAttempted").get<bool>(),owned=data.at("comOwned").get<bool>();
   require((!attempt||preflight) && (!owned||attempt) && (!data.at("profileAttempted").get<bool>()||owned) &&
           (!data.at("categoryAttempted").get<bool>()||data.at("profileAttempted").get<bool>()) &&
           (!data.at("enableAttempted").get<bool>()||data.at("categoryAttempted").get<bool>()) &&
           (!data.at("activationAttempted").get<bool>()||data.at("enableAttempted").get<bool>()),"ledger-order");
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  require(yime::stage1::ValidLedgerOrder({preflight,attempt,owned,data.at("profileAttempted").get<bool>(),data.at("categoryAttempted").get<bool>(),data.at("enableAttempted").get<bool>(),data.at("activationAttempted").get<bool>(),data.at("cleanupVerified").get<bool>()}),"ledger-policy-order");
+#endif
   const DWORD pid=data.at("pid").get<DWORD>();require(pid!=0 && pid!=GetCurrentProcessId(),"ledger-process-id");
   HANDLE process=OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION|SYNCHRONIZE,FALSE,pid);
   if(process){const auto made=creation(process);DWORD wait=WaitForSingleObject(process,0);CloseHandle(process);require(made!=data.at("creation").get<unsigned long long>() || wait==WAIT_OBJECT_0,"original-process-still-running");}
   else require(GetLastError()==ERROR_INVALID_PARAMETER,"original-process-state-unknown");
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  bindingVerified=true;ownerState=yime::stage1::OwnerState::DeadVerified;
+#endif
  }
  void validateOwnedCom() {
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  strictLocalComShape(std::filesystem::u8path(data.at("dll").get<std::string>()).wstring(),data.at("profileAttempted").get<bool>());return;
+#endif
   const std::wstring root=L"SOFTWARE\\Classes\\CLSID\\"+guid(CLSID_YimeTextServiceExperiment);
   if(!exists(HKEY_LOCAL_MACHINE,root,KEY_WOW64_64KEY))return;
   // Only the original exact 64-bit COM binding is eligible for recovery deletion.
@@ -174,6 +233,9 @@ struct Transaction {
   check(CoCreateInstance(CLSID_TF_CategoryMgr,nullptr,CLSCTX_INPROC_SERVER,IID_PPV_ARGS(&categories)),"category-manager");
  }
  void run(const std::wstring& dll) {
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  localMachineGate();require(ledger->dllLock.file!=INVALID_HANDLE_VALUE,"write-dll-lock-required");
+#endif
   require(GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST",nullptr,0)==0,"direct-test-bypass-forbidden");
   require(sizeof(void*)==8,"native-x64");USHORT process=0,native=0;
   require(IsWow64Process2(GetCurrentProcess(),&process,&native) && process==IMAGE_FILE_MACHINE_UNKNOWN && native==IMAGE_FILE_MACHINE_AMD64,"native-x64");
@@ -183,6 +245,9 @@ struct Transaction {
   initialize();check(languages->GetCurrentLanguage(&currentLanguage),"current-language-query");require(currentLanguage==language,"current-language-required");
   require(std::filesystem::path(dll).is_absolute() && std::filesystem::is_regular_file(dll) && std::filesystem::path(dll).filename()==L"YimeTextService18u.dll","dedicated-dll-path");
   registryAbsent();apiAbsent(languages.Get(),profiles.Get(),categories.Get());
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  require(yime::stage1::CanRegister({localNative(),_wcsicmp(localHostName().c_str(),L"MyComputer")==0,threadLanguage==language,currentLanguage==language,elevated(),true,ledger->dllLock.file!=INVALID_HANDLE_VALUE,GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST",nullptr,0)==0}),"write-policy-preflight");
+#endif
   ledger->mark("preflightAbsent");
   // Last absence check before exclusive new-key creation; existing keys are never overwritten.
   require(exists(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Classes\\CLSID",KEY_WOW64_64KEY),"com-parent-required");
@@ -222,6 +287,10 @@ struct Transaction {
  void cleanup() {
   // Attempt flags are recorded before each API: partial writes after an API failure
   // belong to the previously absent exact identity, and must not be silently left behind.
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  // Refuse all cleanup mutations when the original COM binding has changed.
+  if(writes && comOwned){ledger->validateOwnedCom();if(profileAttempted)strictLocalTipShape(languages.Get(),profiles.Get(),categories.Get());}
+#endif
   if(activationAttempted) {
    TF_INPUTPROCESSORPROFILE active{};HRESULT hr=profiles->GetActiveProfile(GUID_TFCAT_TIP_KEYBOARD,&active);
    if(hr==S_OK && IsEqualGUID(active.clsid,CLSID_YimeTextServiceExperiment))
@@ -233,11 +302,13 @@ struct Transaction {
   if(enableAttempted)cleanupCheck(languages->EnableLanguageProfile(CLSID_YimeTextServiceExperiment,language,GUID_YimeTextServiceExperimentProfile,FALSE),"cleanup-disable-own");
   if(categoryAttempted)cleanupCheck(categories->UnregisterCategory(CLSID_YimeTextServiceExperiment,GUID_TFCAT_TIP_KEYBOARD,CLSID_YimeTextServiceExperiment),"cleanup-category");
   if(profileAttempted)cleanupCheck(profiles->UnregisterProfile(CLSID_YimeTextServiceExperiment,language,GUID_YimeTextServiceExperimentProfile,0),"cleanup-profile");
+#ifndef YIME_MYCOMPUTER_ACTIVATION_STAGE1
   if(profileAttempted)try{
    bool remaining=false;for(HKEY hive:{HKEY_LOCAL_MACHINE,HKEY_CURRENT_USER})for(REGSAM view:{KEY_WOW64_32KEY,KEY_WOW64_64KEY})
     remaining=exists(hive,L"SOFTWARE\\Microsoft\\CTF\\TIP\\"+clsidString,view)||remaining;
    if(remaining)cleanupCheck(languages->Unregister(CLSID_YimeTextServiceExperiment),"cleanup-owned-service-residue");
   }catch(const Failure& f){cleanupCheck(f.code,f.stage);}catch(...){cleanupCheck(E_FAIL,"cleanup-service-query");}
+#endif
   if(comOwned){Key parent;LSTATUS hr=RegOpenKeyExW(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Classes\\CLSID",0,KEY_READ|KEY_WRITE|KEY_WOW64_64KEY,&parent.value);if(hr==ERROR_SUCCESS)hr=RegDeleteTreeW(parent.value,clsidString.c_str());cleanupCheck(HRESULT_FROM_WIN32(hr),"cleanup-owned-com");}
   if(writes)try{registryAbsent();apiAbsent(languages.Get(),profiles.Get(),categories.Get());}catch(const Failure& f){cleanupCheck(f.code,f.stage);}catch(...){cleanupCheck(E_FAIL,"cleanup-query-exception");}
  }
@@ -248,6 +319,7 @@ json output(const char* status,bool writes,bool clean,const char* stage,HRESULT 
   {"threadLanguage",t?t->threadLanguage:0},{"currentLanguage",t?t->currentLanguage:0},
   {"ledger",{{"comOwned",t&&t->comOwned},{"profileAttempted",t&&t->profileAttempted},{"categoryAttempted",t&&t->categoryAttempted},{"enableAttempted",t&&t->enableAttempted},{"activationAttempted",t&&t->activationAttempted}}}};
 }
+#ifndef YIME_MYCOMPUTER_ACTIVATION_STAGE1
 int wmain(int argc,wchar_t** argv) {
  const bool normal=argc==5 && wcscmp(argv[1],L"--dll")==0 && wcscmp(argv[3],L"--ledger")==0;
  const bool recovery=argc==4 && wcscmp(argv[1],L"--cleanup-only")==0 && wcscmp(argv[2],L"--ledger")==0;
@@ -294,3 +366,8 @@ int wmain(int argc,wchar_t** argv) {
  }
  CoUninitialize();return exit;
 }
+
+#endif
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+#include "MyComputerActivationMain.h"
+#endif
