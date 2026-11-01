@@ -41,21 +41,21 @@ jobs:
           python-version: '3.14'
       - name: Build isolated x64 harness (no installation)
         run: |
-          New-Item -ItemType Directory -Path evidence -ErrorAction Stop | Out-Null
+          New-Item -ItemType Directory -Path .generated/s3b-evidence -Force -ErrorAction Stop | Out-Null
           $ErrorActionPreference = 'Stop'
-          cmake -S YimeTextServiceExperiment -B .generated/s3b-own-host -A x64 -DYIME_TOUCH_BRIDGE_OWN_HOST=ON -DYIME_TOUCH_BRIDGE_PERSISTENT_HOST=ON -DYIME_TOUCH_BRIDGE_DEMO_HOST=ON 2>&1 | Tee-Object evidence/configure.log
+          cmake -S YimeTextServiceExperiment -B .generated/s3b-own-host -A x64 -DYIME_TOUCH_BRIDGE_OWN_HOST=ON -DYIME_TOUCH_BRIDGE_PERSISTENT_HOST=ON -DYIME_TOUCH_BRIDGE_DEMO_HOST=ON 2>&1 | Tee-Object .generated/s3b-evidence/configure.log
           if ($LASTEXITCODE -ne 0) { throw 'Native harness configure failed' }
-          cmake --build .generated/s3b-own-host --config Release --target YimeTouchBridgeOwnHost YimeFocusCancellationTests YimeTouchBridgePersistentHost YimeTouchBridgeDemoHost 2>&1 | Tee-Object evidence/build.log
+          cmake --build .generated/s3b-own-host --config Release --target YimeTouchBridgeOwnHost YimeFocusCancellationTests YimeTouchBridgePersistentHost YimeTouchBridgeDemoHost 2>&1 | Tee-Object .generated/s3b-evidence/build.log
           if ($LASTEXITCODE -ne 0) { throw 'Native harness build failed' }
-          & '.generated/s3b-own-host/Release/YimeFocusCancellationTests.exe' 2>&1 | Tee-Object evidence/default-guard-regression.log
+          & '.generated/s3b-own-host/Release/YimeFocusCancellationTests.exe' 2>&1 | Tee-Object .generated/s3b-evidence/default-guard-regression.log
           if ($LASTEXITCODE -ne 0) { throw 'Existing null-guard focus cancellation regression failed' }
           $exe = (Resolve-Path '.generated/s3b-own-host/Release/YimeTouchBridgeOwnHost.exe' -ErrorAction Stop).Path
-          @{ sourceCommit = '${{ github.sha }}'; runID = '${{ github.run_id }}'; harnessSHA256 = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLower(); goVersion = (go version); scope = 'S2b own TSF context; sync plus actual async with controlled read-lock negatives; no installed product acceptance' } | ConvertTo-Json | Set-Content evidence/identity.json -Encoding utf8
+          @{ sourceCommit = '${{ github.sha }}'; runID = '${{ github.run_id }}'; harnessSHA256 = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLower(); goVersion = (go version); scope = 'S2b own TSF context; sync plus actual async with controlled read-lock negatives; no installed product acceptance' } | ConvertTo-Json | Set-Content .generated/s3b-evidence/identity.json -Encoding utf8
       - name: Execute native TSF and reject skipped or missing scenarios
         run: |
           $ErrorActionPreference = 'Stop'
           $env:YIME_TOUCH_BRIDGE_OWN_HOST = (Resolve-Path '.generated/s3b-own-host/Release/YimeTouchBridgeOwnHost.exe' -ErrorAction Stop).Path
-          $report = Join-Path $PWD 'evidence/native-go-test.jsonl'
+          $report = Join-Path $PWD '.generated/s3b-evidence/native-go-test.jsonl'
           Push-Location go-backend
           try {
             go test ./internal/touchhostbridge -run '^TestNativeOwnTSFCommit$' -count=1 -json -timeout=150s 2>&1 | Tee-Object $report
@@ -69,12 +69,12 @@ jobs:
             $bad = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -in @('skip', 'fail') })
             if ($pass.Count -ne 1 -or $bad.Count -ne 0) { throw "Required native scenario did not execute and pass: $name" }
           }
-          @{ sourceCommit = '${{ github.sha }}'; requiredTests = $expected; allExecutedAndPassed = $true; scope = 'native x64 own-context sync/async commit; controlled delay is not OS latency acceptance'; physicalAcceptance = $false; installedProductAcceptance = $false } | ConvertTo-Json | Set-Content evidence/result.json -Encoding utf8
+          @{ sourceCommit = '${{ github.sha }}'; requiredTests = $expected; allExecutedAndPassed = $true; scope = 'native x64 own-context sync/async commit; controlled delay is not OS latency acceptance'; physicalAcceptance = $false; installedProductAcceptance = $false } | ConvertTo-Json | Set-Content .generated/s3b-evidence/result.json -Encoding utf8
       - name: Execute existing 18u UI path with persistent own TSF context
         run: |
           $ErrorActionPreference = 'Stop'
           $env:YIME_TOUCH_BRIDGE_UI_HOST = (Resolve-Path '.generated/s3b-own-host/Release/YimeTouchBridgePersistentHost.exe' -ErrorAction Stop).Path
-          $report = Join-Path $PWD 'evidence/ui-go-test.jsonl'
+          $report = Join-Path $PWD '.generated/s3b-evidence/ui-go-test.jsonl'
           Push-Location go-backend
           try {
             go test ./cmd/yime-touch-keyboard -run '^TestTouchBridgePersistentOwnHostUI$' -count=1 -json -timeout=180s 2>&1 | Tee-Object $report
@@ -88,7 +88,7 @@ jobs:
             $bad = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -in @('skip', 'fail') })
             if ($pass.Count -ne 1 -or $bad.Count -ne 0) { throw "Required UI scenario missing or failed: $name" }
           }
-          @{ sourceCommit = '${{ github.sha }}'; requiredTests = $expected; allExecutedAndPassed = $true; hostSHA256 = (Get-FileHash $env:YIME_TOUCH_BRIDGE_UI_HOST -Algorithm SHA256).Hash.ToLower(); scope = 'synthetic mouse messages through existing UI into persistent own TSF context; not physical or installed-product acceptance'; physicalAcceptance = $false; installedProductAcceptance = $false } | ConvertTo-Json | Set-Content evidence/ui-result.json -Encoding utf8
+          @{ sourceCommit = '${{ github.sha }}'; requiredTests = $expected; allExecutedAndPassed = $true; hostSHA256 = (Get-FileHash $env:YIME_TOUCH_BRIDGE_UI_HOST -Algorithm SHA256).Hash.ToLower(); scope = 'synthetic mouse messages through existing UI into persistent own TSF context; not physical or installed-product acceptance'; physicalAcceptance = $false; installedProductAcceptance = $false } | ConvertTo-Json | Set-Content .generated/s3b-evidence/ui-result.json -Encoding utf8
       - name: Check demo packaging boundaries
         run: python -m unittest discover -s tools -p test_build_touch_keyboard_demo.py -v
       - name: Restore locked complete dedicated dictionaries
@@ -98,15 +98,16 @@ jobs:
       - name: Build independently identified x64 demo package
         run: python -X utf8 tools/build_touch_keyboard_demo.py --host .generated/s3b-own-host/Release/YimeTouchBridgeDemoHost.exe
       - name: Verify relocated complete package without TSF startup
-        run: python -X utf8 tools/check_touch_keyboard_demo.py --package .generated/touch-keyboard-own-tsf-demo --report evidence/demo-package-check.json
+        run: python -X utf8 tools/check_touch_keyboard_demo.py --package .generated/touch-keyboard-own-tsf-demo --report .generated/s3b-evidence/demo-package-check.json
       - name: Run actual demo entry in this isolated runner only
         run: |
-          python -c "import subprocess,pathlib; exe=pathlib.Path('.generated/touch-keyboard-own-tsf-demo/YimeTouchKeyboard.exe').resolve(); r=subprocess.run([str(exe),'--own-tsf-demo','--own-tsf-demo-self-test','--touch-ui'],cwd=exe.parent,capture_output=True,timeout=240); pathlib.Path('evidence/demo-ui.log').write_bytes(r.stdout+r.stderr); assert r.returncode==0, 'demo entry failed'; assert r.stdout.count(b'PASS own-tsf-demo-package-ui')==1, 'actual demo UI marker missing'"
+          python -c "import subprocess,pathlib; exe=pathlib.Path('.generated/touch-keyboard-own-tsf-demo/YimeTouchKeyboard.exe').resolve(); r=subprocess.run([str(exe),'--own-tsf-demo','--own-tsf-demo-self-test','--touch-ui'],cwd=exe.parent,capture_output=True,timeout=240); pathlib.Path('.generated/s3b-evidence/demo-ui.log').write_bytes(r.stdout+r.stderr); assert r.returncode==0, 'demo entry failed'; assert r.stdout.count(b'PASS own-tsf-demo-package-ui')==1, 'actual demo UI marker missing'"
       - name: Retain isolated development package (not approved for user desktops)
         uses: actions/upload-artifact@v6
         with:
           name: own-tsf-demo-isolated-windows-amd64-${{ github.sha }}
           path: .generated/touch-keyboard-own-tsf-demo/
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
       - name: Preserve scoped evidence even on failure
@@ -114,6 +115,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: touch-bridge-demo-evidence-${{ github.sha }}
-          path: evidence/
+          path: .generated/s3b-evidence/
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
