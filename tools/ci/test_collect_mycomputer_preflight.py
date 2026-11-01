@@ -58,8 +58,10 @@ class CollectionTests(unittest.TestCase):
         receipt = self.collect()
         self.assertEqual(len(self.calls), 1)
         command, cwd, timeout = self.calls[0]
-        self.assertEqual(command, [str(self.package / collector.EXE), '--preflight', '--dll', str(self.package / collector.DLL), '--sha256', collector.digest(self.package / collector.DLL)])
-        self.assertEqual(cwd, self.root / 'evidence')
+        # Windows TEMP may use an 8.3 alias; production deliberately resolves it.
+        package = self.package.resolve(strict=True)
+        self.assertEqual(command, [str(package / collector.EXE), '--preflight', '--dll', str(package / collector.DLL), '--sha256', collector.digest(package / collector.DLL)])
+        self.assertEqual(cwd, (self.root / 'evidence').resolve(strict=True))
         self.assertEqual(timeout, 30)
         self.assertEqual(receipt['status'], 'collected')
         self.assertFalse(receipt['noWritesProven'])
