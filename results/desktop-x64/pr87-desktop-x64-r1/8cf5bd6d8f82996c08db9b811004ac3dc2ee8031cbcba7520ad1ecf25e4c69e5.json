@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "taskID": "pr87-desktop-x64-r1",
+  "machine": "desktop-x64",
+  "queueCommit": "c27d01b43e0eb337461f5c93184042282e081ae0",
+  "taskSHA256": "e3b1b24661e523b5b9201acc65500fa875f5155b50f15e21bbbea32a265f263c",
+  "receivedAt": "2026-10-31T12:35:36.469Z",
+  "package": {
+    "key": "pr87-amd64",
+    "architecture": "amd64",
+    "sourceCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+    "runID": 41178044364,
+    "artifactID": 13034145597,
+    "zipSHA256": "e790c0fe0e245456e54163f348c969af93b3ac0ed91dda95e53e00655da4e34f",
+    "zipBytes": 98830082,
+    "manifestSHA256": "6c860aef9643fb50dd7b9f94bc0452a1350073139d51855811ab320c84ae4a75",
+    "executableSHA256": "b1210ca2c34f1a349ca12c65128a48e419ba74b4dee2b86848b916cc5c90a830",
+    "payloadCount": 31
+  },
+  "host": {
+    "hostname": "计算机",
+    "platform": "win32",
+    "nodeArchitecture": "x64",
+    "osMachine": "x86_64"
+  },
+  "physicalAcceptance": false,
+  "status": "awaiting-human",
+  "verification": {
+    "zipSHA256": "e790c0fe0e245456e54163f348c969af93b3ac0ed91dda95e53e00655da4e34f",
+    "manifestSHA256": "6c860aef9643fb50dd7b9f94bc0452a1350073139d51855811ab320c84ae4a75",
+    "executableSHA256": "b1210ca2c34f1a349ca12c65128a48e419ba74b4dee2b86848b916cc5c90a830",
+    "payloadFiles": 31,
+    "packageArchitecture": "amd64",
+    "executableStarted": false,
+    "hardwareAcceptance": false
+  },
+  "reason": null,
+  "checks": [
+    {
+      "id": "candidate-states",
+      "status": "not-run",
+      "inputMethod": "mouse",
+      "actualText": null,
+      "observation": "本机计算机不是触摸屏，本批仅桌面鼠标；手指和触控笔不在本机范围内，不列为待测。部分覆盖，整体保持not-run，不宣称整个candidate-states通过。自动鼠标截图观察候选移出松开无提交；用户确认按住凹下、移出恢复、移回松开无提交，本地输出为空；普通下一页/上一页往返无提交。按住候选期间另行翻页需要独立并发操作；本批单鼠标单指针路径未能构造此场景，旧按压失效未验证，记录为鼠标操作条件限制，不转为手指或笔待测。普通翻页不能替代此场景。人工反馈与自动截图观察分开，不宣称自动文本读回。"
+    },
+    {
+      "id": "toolbar-edit-guards",
+      "status": "pass",
+      "inputMethod": "mouse",
+      "actualText": "x",
+      "observation": "本机计算机不是触摸屏，本批仅桌面鼠标；手指和触控笔不在本机范围内，不列为待测。本批纯预览鼠标范围通过，依据为人工反馈，非自动文本或音频读回：CN活动ni及EN暂停ni时工具栏退格保护组合；取消清除活动或暂停组合；无组合时工具栏退格删除已确认a；主体Back Space将ni逐次退为n和空组合，候选消失，输出为空。空闲1/2/3在空白预览无声音无反应；在abc全选状态下逐个点击均保持选区和正文且无声，随后x替换整个选区，最终输出恰好x。原反馈及用户更正均保留在本地记录。通过范围不包括宿主编辑保护或更广Unicode编辑。"
+    },
+    {
+      "id": "minimize-rebind",
+      "status": "pass",
+      "inputMethod": "mouse",
+      "actualText": "a",
+      "observation": "本机计算机不是触摸屏，本批仅桌面鼠标；手指和触控笔不在本机范围内，不列为待测。本批纯预览及新建空白Word文档1范围通过，依据为人工鼠标反馈：预览最小化及恢复正常，EN无组合和空白输出保持；Word绑定后最小化正常，恢复提示需重新绑定；明确重新绑定文档1后单击a，实际正文恰好a，无重复漏字或错误提示。回复Codex需再次最小化，不能认定当前仍有效绑定。本轮未测Edge；此前鼠标预览及用户反馈Word/Edge最小批次保留历史归属，不改写为本轮或自动读回。verification中的executableStarted=false属于首次静态领取的不可变记录；本批经用户授权实际启动固定包进行测试，不能将该旧字段解释为本批未启动。"
+    }
+  ],
+  "humanEvidence": true
+}
