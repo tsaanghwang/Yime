@@ -14,22 +14,35 @@ BASE_PROBE_GATE = ("github.event_name == 'workflow_dispatch' && "
               "inputs.confirm_18u_registration == 'once-18u-registration' && "
               "inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1")
 
-PROBE_GATE = BASE_PROBE_GATE.replace(" && inputs.expected_18u_source_sha", " && inputs.confirm_18u_language_inventory == '' && inputs.expected_18u_source_sha")
 OPTIONAL_INVENTORY = 'one-shot-18u-language-inventory'
 INVENTORY_PATH = './.github/workflows/touch-bridge-language-inventory.yml'
-INVENTORY_GATE = (BASE_PROBE_GATE.replace('confirm_18u_registration', 'confirm_18u_language_inventory')
-                  .replace('once-18u-registration', 'once-18u-language-inventory')
-                  .replace(" && inputs.expected_18u_source_sha", " && inputs.confirm_18u_registration == '' && inputs.expected_18u_source_sha"))
+OPTIONAL_PREPARE = 'one-shot-18u-language-prepare'
+PREPARE_PATH = './.github/workflows/touch-bridge-language-prepare.yml'
+
+def caller_gate(confirm, value, others):
+    gate = BASE_PROBE_GATE.replace('confirm_18u_registration', confirm).replace('once-18u-registration', value)
+    exclusive = ''.join(" && inputs." + other + " == ''" for other in others)
+    return gate.replace(' && inputs.expected_18u_source_sha', exclusive + ' && inputs.expected_18u_source_sha')
+
+PROBE_OTHERS = ('confirm_18u_language_inventory', 'confirm_18u_language_prepare')
+INVENTORY_OTHERS = ('confirm_18u_registration', 'confirm_18u_language_prepare')
+PREPARE_OTHERS = ('confirm_18u_registration', 'confirm_18u_language_inventory')
+PROBE_GATE = caller_gate('confirm_18u_registration', 'once-18u-registration', PROBE_OTHERS)
+INVENTORY_GATE = caller_gate('confirm_18u_language_inventory', 'once-18u-language-inventory', INVENTORY_OTHERS)
+PREPARE_GATE = caller_gate('confirm_18u_language_prepare', 'once-18u-language-prepare', PREPARE_OTHERS)
 OPTIONAL = {
-    OPTIONAL_PROBE: (PROBE_PATH, PROBE_GATE, 'confirm_18u_registration', 'registration-probe', 'confirm_18u_language_inventory'),
-    OPTIONAL_INVENTORY: (INVENTORY_PATH, INVENTORY_GATE, 'confirm_18u_language_inventory', 'language-inventory', 'confirm_18u_registration'),
+    OPTIONAL_PROBE: (PROBE_PATH, PROBE_GATE, 'confirm_18u_registration', 'registration-probe', PROBE_OTHERS),
+    OPTIONAL_INVENTORY: (INVENTORY_PATH, INVENTORY_GATE, 'confirm_18u_language_inventory', 'language-inventory', INVENTORY_OTHERS),
+    OPTIONAL_PREPARE: (PREPARE_PATH, PREPARE_GATE, 'confirm_18u_language_prepare', 'language-prepare', PREPARE_OTHERS),
 }
 
 def callee_gate(spec):
-    _, gate, confirm, _, other = spec
-    return (gate.replace('inputs.' + confirm, 'inputs.confirm')
-            .replace('inputs.expected_18u_source_sha', 'inputs.expected_source_sha')
-            .replace('inputs.' + other, 'github.event.inputs.' + other))
+    _, gate, confirm, _, others = spec
+    gate = (gate.replace('inputs.' + confirm, 'inputs.confirm')
+            .replace('inputs.expected_18u_source_sha', 'inputs.expected_source_sha'))
+    for other in others:
+        gate = gate.replace('inputs.' + other, 'github.event.inputs.' + other)
+    return gate
 
 def job_blocks(text):
     if text.count("\njobs:\n") != 1: raise ValueError("Duplicate or absent jobs mapping")
@@ -39,7 +52,7 @@ def job_blocks(text):
     return jobs
 
 def validate_probe_workflow(text, spec=OPTIONAL[OPTIONAL_PROBE]):
-    # Only the two fixed local reusable workflows, never an arbitrary exception.
+    # Only the three fixed local reusable workflows, never an arbitrary exception.
     if text.count('\non:\n') != 1: raise ValueError('Duplicate or absent probe events')
     events = text.split('\non:\n')[1].split('\npermissions:')[0]
     if re.findall(r'^  ([a-z_]+):', events, re.M) != ['workflow_call']:
@@ -68,7 +81,7 @@ def validate(text):
         if jobs[name].strip() != expected.strip():
             raise ValueError('Optional caller must retain exact mutually exclusive gate and local target')
     dispatch = text.split('  workflow_dispatch:\n')[1].split('  push:')[0]
-    for name in ('confirm_18u_registration', 'confirm_18u_language_inventory', 'expected_18u_source_sha'):
+    for name in ('confirm_18u_registration', 'confirm_18u_language_inventory', 'confirm_18u_language_prepare', 'expected_18u_source_sha'):
         match = re.search(r'^      ' + name + r':\n(.*?)(?=^      [a-z0-9_]+:|\Z)', dispatch, re.M|re.S)
         if not match or not all(value in match[1] for value in ("        default: ''\n", '        required: false\n', '        type: string\n')):
             raise ValueError('Probe dispatch input must default to disabled')

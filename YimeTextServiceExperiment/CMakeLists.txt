@@ -297,3 +297,16 @@ if(YIME_INPUT_LANGUAGE_INVENTORY)
     target_link_libraries(YimeInputLanguageInventory PRIVATE ole32 user32)
     set_property(TARGET YimeInputLanguageInventory PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
+
+
+# Query-only installed Microsoft Pinyin proof; no product activation/registration.
+option(YIME_CHINESE_INPUT_COMPONENT_QUERY "Build existing-system Chinese input component query" OFF)
+if(YIME_CHINESE_INPUT_COMPONENT_QUERY)
+    add_executable(YimeChineseInputComponentQuery tests/ChineseInputComponentQuery.cpp)
+    target_compile_features(YimeChineseInputComponentQuery PRIVATE cxx_std_17)
+    target_compile_definitions(YimeChineseInputComponentQuery PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
+    target_compile_options(YimeChineseInputComponentQuery PRIVATE /utf-8 /W4 /EHsc)
+    target_include_directories(YimeChineseInputComponentQuery PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../json/single_include")
+    target_link_libraries(YimeChineseInputComponentQuery PRIVATE advapi32 ole32 user32)
+    set_property(TARGET YimeChineseInputComponentQuery PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()

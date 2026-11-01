@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   language-inventory:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm == 'once-18u-language-inventory' && github.event.inputs.confirm_18u_registration == '' && inputs.expected_source_sha == github.sha && github.run_attempt == 1
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm == 'once-18u-language-inventory' && github.event.inputs.confirm_18u_registration == '' && github.event.inputs.confirm_18u_language_prepare == '' && inputs.expected_source_sha == github.sha && github.run_attempt == 1
     runs-on: windows-latest
     timeout-minutes: 10
     defaults:

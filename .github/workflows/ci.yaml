@@ -13,6 +13,11 @@ on:
         required: false
         default: ''
         type: string
+      confirm_18u_language_prepare:
+        description: 'Optional once-only existing-component Chinese input preparation; other confirmations must be empty'
+        required: false
+        default: ''
+        type: string
       expected_18u_source_sha:
         description: 'Exact reviewed 40-character commit SHA for the one-shot probe'
         required: false
@@ -35,17 +40,24 @@ concurrency:
 
 jobs:
   one-shot-18u-registration-probe:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_registration == 'once-18u-registration' && inputs.confirm_18u_language_inventory == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_registration == 'once-18u-registration' && inputs.confirm_18u_language_inventory == '' && inputs.confirm_18u_language_prepare == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1
     uses: ./.github/workflows/touch-bridge-registered-probe.yml
     with:
       confirm: ${{ inputs.confirm_18u_registration }}
       expected_source_sha: ${{ inputs.expected_18u_source_sha }}
 
   one-shot-18u-language-inventory:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_language_inventory == 'once-18u-language-inventory' && inputs.confirm_18u_registration == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_language_inventory == 'once-18u-language-inventory' && inputs.confirm_18u_registration == '' && inputs.confirm_18u_language_prepare == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1
     uses: ./.github/workflows/touch-bridge-language-inventory.yml
     with:
       confirm: ${{ inputs.confirm_18u_language_inventory }}
+      expected_source_sha: ${{ inputs.expected_18u_source_sha }}
+
+  one-shot-18u-language-prepare:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_language_prepare == 'once-18u-language-prepare' && inputs.confirm_18u_registration == '' && inputs.confirm_18u_language_inventory == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1
+    uses: ./.github/workflows/touch-bridge-language-prepare.yml
+    with:
+      confirm: ${{ inputs.confirm_18u_language_prepare }}
       expected_source_sha: ${{ inputs.expected_18u_source_sha }}
 
   build-contract:
@@ -65,6 +77,16 @@ jobs:
         run: python .\tools\lexicon\verify_external_archive_lock.py
       - name: Test CI scheduling and failure propagation
         run: python .\tools\ci\test_workflow_contract.py
+      - name: Test language preparation contracts without Windows configuration changes
+        shell: python {0}
+        run: |
+          import pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
+          import test_chinese_environment_contract, test_windows_job_once, test_run_language_prepare
+          suite = unittest.TestSuite([unittest.defaultTestLoader.loadTestsFromModule(module) for module in [test_chinese_environment_contract, test_windows_job_once, test_run_language_prepare]])
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if result.testsRun < 24 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('Static/mock language preparation contracts missing or failed')
       - name: Test shard coverage rejection paths
         run: python -m unittest discover -s tools/ci -p test_shard_coverage.py
       - name: Guard and track libIME2 component commits
