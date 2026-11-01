@@ -13,6 +13,7 @@ import (
 // The trusted sink owns an isolated native host, not an external HWND. It must
 // report Applied only after actual edit completion and independent readback.
 type bridgePreview struct {
+	before  func() error
 	session *bridge.Session
 	focus   bridge.Focus
 	submit  func(bridge.Commit) (bridge.Outcome, error)
@@ -26,7 +27,7 @@ func newBridgePreview(root, data string, focus bridge.Focus, submit func(bridge.
 	if err != nil {
 		return nil, err
 	}
-	return &preview{bridge: &bridgePreview{s, focus, submit}, layout: s.Identity().LayoutSHA256, mode: "variable", snapshot: s.Snapshot()}, nil
+	return &preview{bridge: &bridgePreview{session: s, focus: focus, submit: submit}, layout: s.Identity().LayoutSHA256, mode: "variable", snapshot: s.Snapshot()}, nil
 }
 func (p *preview) bridgeActionAllowed(o tk.Output) error {
 	if o.Ctrl || o.Alt || o.Shift {
@@ -51,6 +52,11 @@ func (p *preview) bridgeActionAllowed(o tk.Output) error {
 	return fmt.Errorf("unsupported own-host UI action; no local or SendInput fallback")
 }
 func (p *preview) bridgeDispatch(e keyboardlab.Event) error {
+	if p.bridge.before != nil {
+		if err := p.bridge.before(); err != nil {
+			return err
+		}
+	}
 	if p.fault {
 		return fmt.Errorf("own-host session stopped; no replay")
 	}

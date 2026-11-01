@@ -12,7 +12,11 @@ import (
 	"path/filepath"
 )
 
+var ownTSFDemoPackage string // Set only by the isolated demo builder.
+
 type options struct {
+	OwnTSFDemoSmoke                     bool
+	OwnTSFDemo                          bool
 	Root, Profile, Zones, Shot, KeyView string
 	DataDir, DataReport                 string
 	InputTrace                          string
@@ -40,6 +44,8 @@ func main() {
 	flag.StringVar(&o.Shot, "screenshot", "", "render this keyboard to PNG and exit")
 	flag.BoolVar(&o.Smoke, "self-test", false, "run isolated Win32 target-window input/focus checks and exit")
 	flag.BoolVar(&o.CheckData, "check-data", false, "validate isolated Chinese dictionaries and in-process sessions, without a window or OS input")
+	flag.BoolVar(&o.OwnTSFDemoSmoke, "own-tsf-demo-self-test", false, "isolated CI only: actual own-demo package UI path")
+	flag.BoolVar(&o.OwnTSFDemo, "own-tsf-demo", false, "isolated native x64 own-host TSF demo; never writes to other applications")
 	flag.BoolVar(&o.Preview, "preview", false, "Chinese desktop preview; output stays in this window, never sends OS input")
 	flag.BoolVar(&o.Host, "host-input", false, "Chinese host-input lab; explicitly bind target before sending confirmed text")
 	flag.BoolVar(&o.HostSmoke, "host-self-test", false, "with --host-input, test only disposable own EDIT windows and exit")
@@ -55,7 +61,7 @@ func main() {
 	flag.Parse()
 	o.GeometryExplicit = hasGeometryOptions(flag.CommandLine)
 	if e := execute(o); e != nil {
-		if o.Smoke || o.HostSmoke || o.Shot != "" || o.CheckData || o.CheckPackage {
+		if o.OwnTSFDemoSmoke || o.Smoke || o.HostSmoke || o.Shot != "" || o.CheckData || o.CheckPackage {
 			fmt.Fprintln(os.Stderr, e)
 		} else {
 			showError(e)
@@ -75,6 +81,19 @@ func hasGeometryOptions(flags *flag.FlagSet) bool {
 }
 
 func execute(o options) error {
+	if o.OwnTSFDemoSmoke && !o.OwnTSFDemo {
+		return fmt.Errorf("demo self-test requires --own-tsf-demo")
+	}
+	if ownTSFDemoPackage != "" && !o.OwnTSFDemo && !o.CheckPackage && !o.CheckData {
+		return fmt.Errorf("this isolated demo requires explicit --own-tsf-demo; no legacy host fallback")
+	}
+	if o.OwnTSFDemo {
+		if o.Host || o.Preview || o.EnglishOnly || o.Smoke || o.HostSmoke || o.CheckData || o.CheckPackage || o.InputTrace != "" || o.Shot != "" || o.PenRecontactMS != 0 || o.DataReport != "" {
+			return fmt.Errorf("own TSF demo cannot combine with other execution modes")
+		}
+		o.TouchUI = true
+		o.KeyView = "original"
+	}
 	if o.PenRecontactMS < 0 || o.PenRecontactMS > 250 || o.PenRecontactMS != 0 && (!o.Preview || !o.TouchUI || o.Host || o.EnglishOnly || o.CheckData || o.CheckPackage || o.Smoke || o.HostSmoke || o.Shot != "") {
 		return fmt.Errorf("--pen-recontact-ms requires interactive --preview --touch-ui; use0..250")
 	}
@@ -94,7 +113,7 @@ func execute(o options) error {
 	if err := preparePortable(&o, filepath.Dir(exe), portableResourcesSHA256); err != nil {
 		return err
 	}
-	if o.TouchUI && (o.EnglishOnly || o.Smoke || o.HostSmoke || (!o.Preview && !o.Host && !o.CheckData)) {
+	if o.TouchUI && (o.EnglishOnly || o.Smoke || o.HostSmoke || (!o.Preview && !o.Host && !o.CheckData && !o.OwnTSFDemo)) {
 		return fmt.Errorf("--touch-ui requires Chinese preview/host/data-check mode; classic self-tests and --english-only use the original view")
 	}
 	if o.EnglishOnly && (o.Host || o.Preview || o.CheckData || o.HostSmoke) {
@@ -112,8 +131,13 @@ func execute(o options) error {
 	if o.CheckData {
 		return checkData(o)
 	}
-	if !o.Preview && !o.Host && (o.DataDir != "" || o.DataReport != "") {
+	if !o.Preview && !o.Host && !o.OwnTSFDemo && (o.DataDir != "" || o.DataReport != "") {
 		return fmt.Errorf("data options require --check-data, --preview or --host-input")
+	}
+	if o.OwnTSFDemo {
+		if _, err := demoHostPath(o.Root, portableResourcesSHA256); err != nil {
+			return err
+		}
 	}
 	return run(o)
 }

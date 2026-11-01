@@ -99,10 +99,10 @@ func preparePortable(o *options, root, expected string) error {
 	if o.CheckPackage {
 		o.CheckData = true
 	}
-	if !o.EnglishOnly && !o.Preview && !o.CheckData && !o.Smoke && o.Shot == "" {
+	if !o.OwnTSFDemo && !o.EnglishOnly && !o.Preview && !o.CheckData && !o.Smoke && o.Shot == "" {
 		o.Host = true
 	}
-	if o.Host || o.Preview || o.CheckData {
+	if o.OwnTSFDemo || o.Host || o.Preview || o.CheckData {
 		data := filepath.Join(root, "data")
 		if o.DataDir != "" && !samePortablePath(o.DataDir, data) {
 			return fmt.Errorf("便携程序只使用包内完整词典，不接受外部 --data-dir")
