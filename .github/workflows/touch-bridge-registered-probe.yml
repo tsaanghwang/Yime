@@ -1,0 +1,143 @@
+name: 18u one-shot isolated registration probe
+
+on:
+  workflow_call:
+    inputs:
+      confirm:
+        description: 'One authorized isolated run only: once-18u-registration'
+        required: true
+        type: string
+      expected_source_sha:
+        description: 'Exact reviewed source SHA; must match the caller run'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: 18u-one-shot-registration-probe
+  cancel-in-progress: false
+
+jobs:
+  registration-probe:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm == 'once-18u-registration' && inputs.expected_source_sha == github.sha && github.run_attempt == 1
+    runs-on: windows-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: python {0}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Build only the independent x64 profile probe
+        env:
+          PROBE_SOURCE_SHA: ${{ github.sha }}
+          PROBE_RUN_ID: ${{ github.run_id }}
+        run: |
+          import hashlib, json, os, pathlib, subprocess
+          evidence = pathlib.Path('.generated/registered-probe-evidence')
+          evidence.mkdir(parents=True, exist_ok=False)
+          def run_build(args, name):
+              with (evidence / name).open('w', encoding='utf-8') as log:
+                  result = subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=False)
+              if result.returncode != 0:
+                  raise SystemExit('Build failed before registration; see build artifact')
+          run_build(['cmake', '-S', 'YimeTextServiceExperiment', '-B', '.generated/registered-probe-build', '-A', 'x64', '-DYIME_TOUCH_PRODUCT=ON', '-DYIME_TOUCH_REGISTRATION_PROBE=ON'], 'configure.log')
+          run_build(['cmake', '--build', '.generated/registered-probe-build', '--config', 'Release', '--target', 'YimeTextService18u', 'Yime18uRegistrationProbe'], 'build.log')
+          files = []
+          for name in ['YimeTextService18u.dll', 'Yime18uRegistrationProbe.exe']:
+              path = pathlib.Path('.generated/registered-probe-build/Release') / name
+              files.append({'name': name, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
+          (evidence / 'identity.json').write_text(json.dumps({'sourceCommit': os.environ['PROBE_SOURCE_SHA'], 'runID': os.environ['PROBE_RUN_ID'], 'files': files, 'scope': 'profile-activation-only', 'physicalAcceptance': False, 'brokerCommitValidated': False}, indent=2), encoding='utf-8')
+      - name: Invoke exactly one registration transaction; blocked is not a pass
+        run: |
+          import json, pathlib, subprocess
+          
+          evidence = pathlib.Path('.generated/registered-probe-evidence')
+          binary = pathlib.Path('.generated/registered-probe-build/Release')
+          exe = str((binary / 'Yime18uRegistrationProbe.exe').resolve())
+          ledger_path = str((evidence / 'registration-ledger.json').resolve())
+          ledger_keys = {'comOwned', 'profileAttempted', 'categoryAttempted', 'enableAttempted', 'activationAttempted'}
+          record_keys = {'status', 'writesStarted', 'cleanupVerified', 'stage', 'code', 'scope', 'ledger', 'threadLanguage', 'currentLanguage'}
+          
+          def unique_fields(pairs):
+              record = {}
+              for key, value in pairs:
+                  if key in record:
+                      raise ValueError('Duplicate diagnostic field')
+                  record[key] = value
+              return record
+          
+          def parse(raw, scope):
+              try:
+                  record = json.loads(raw.decode('utf-8-sig'), object_pairs_hook=unique_fields)
+                  ledger = record.get('ledger', {}) if isinstance(record, dict) else {}
+                  valid = isinstance(record, dict) and set(record) == record_keys and record['scope'] == scope
+                  valid = valid and isinstance(record['stage'], str) and type(record['code']) is int and 0 <= record['code'] <= 4294967295
+                  valid = valid and type(record['writesStarted']) is bool and type(record['cleanupVerified']) is bool
+                  valid = valid and isinstance(ledger, dict) and set(ledger) == ledger_keys and all(type(value) is bool for value in ledger.values())
+                  valid = valid and all(type(record[key]) is int and 0 <= record[key] <= 65535 for key in ['threadLanguage', 'currentLanguage'])
+                  return record if valid else None
+              except (ValueError, UnicodeError):
+                  return None
+          
+          def invoke(args, name, seconds):
+              # subprocess.run timeout kills AND waits for this owned process before return.
+              # Neither recovery mode registers; each mode is invoked at most once.
+              code, out, err, timed_out = None, b'', b'', False
+              try:
+                  result = subprocess.run([exe] + args, capture_output=True, check=False, timeout=seconds)
+                  code, out, err = result.returncode, result.stdout, result.stderr
+              except subprocess.TimeoutExpired as failure:
+                  out, err, timed_out = failure.stdout or b'', failure.stderr or b'', True
+              except OSError:
+                  pass  # Unknown execution status is never no-write evidence.
+              (evidence / (name + '-stdout.json')).write_bytes(out)
+              (evidence / (name + '-stderr.log')).write_bytes(err)
+              meta = {'exitCode': code, 'timedOut': timed_out, 'invocations': 1}
+              (evidence / (name + '-process.json')).write_text(json.dumps(meta, indent=2), encoding='utf-8')
+              return code, out, err
+          
+          registration = cleanup = verification = None
+          try:
+              registration = invoke(['--dll', str((binary / 'YimeTextService18u.dll').resolve()), '--ledger', ledger_path], 'registration', 180)
+          finally:
+              try:
+                  cleanup = invoke(['--cleanup-only', '--ledger', ledger_path], 'cleanup', 60)
+              finally:
+                  verification = invoke(['--verify-absent'], 'absence', 60)
+          
+          summary = {'status': 'failed', 'registrationInvocations': 1, 'cleanupOnlyInvocations': 1, 'absenceOnlyInvocations': 1, 'scope': 'profile-activation-only', 'actualActivateSuccessMarker': False, 'cleanupPassed': False, 'absencePassed': False}
+          if registration and cleanup and verification:
+              record = parse(registration[1], 'profile-activation-only')
+              clean = parse(cleanup[1], 'profile-cleanup-only')
+              absent = parse(verification[1], 'profile-absence-only')
+              try:
+                  marker = json.loads(registration[2].decode('utf-8-sig'), object_pairs_hook=unique_fields)
+                  summary['actualActivateSuccessMarker'] = isinstance(marker, dict) and type(marker.get('code')) is int and marker == {'stage': 'registered-probe/actual-activate-success', 'kind': 'marker', 'code': 0}
+              except (ValueError, UnicodeError):
+                  pass
+              summary['cleanupPassed'] = bool(clean and cleanup[0] == 0 and clean['status'] == 'pass' and clean['cleanupVerified'] and clean['code'] == 0 and cleanup[2] == b'')
+              summary['absencePassed'] = bool(absent and verification[0] == 0 and absent['status'] == 'pass' and not absent['writesStarted'] and absent['cleanupVerified'] and not any(absent['ledger'].values()) and absent['threadLanguage'] == 0 and absent['currentLanguage'] == 0 and absent['code'] == 0 and verification[2] == b'')
+              if record and registration[0] == 3 and record['status'] == 'blocked' and not record['writesStarted'] and not any(record['ledger'].values()) and summary['absencePassed']:
+                  summary['status'] = 'blocked'  # Still non-green; missing ledger never implies no writes.
+              elif record and registration[0] == 0 and record['status'] == 'pass' and record['writesStarted'] and record['cleanupVerified'] and all(record['ledger'].values()) and record['threadLanguage'] == 2052 and record['currentLanguage'] == 2052 and record['stage'] == 'completed' and record['code'] == 0 and summary['actualActivateSuccessMarker'] and summary['cleanupPassed'] and summary['absencePassed']:
+                  summary['status'] = 'pass'
+          (evidence / 'workflow-result.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
+          print(json.dumps(summary))
+          if summary['status'] != 'pass':
+              raise SystemExit('Probe did not pass. Preserve evidence; no registration retry or language change.')
+      - name: Preserve build, blocked, failure and cleanup evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: 18u-registration-probe-${{ github.sha }}-${{ github.run_id }}
+          path: .generated/registered-probe-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

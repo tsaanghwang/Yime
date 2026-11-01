@@ -337,6 +337,11 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
     std::string ignoredError;
     surface_.Connect(yime::experiment::ResolveBrokerPipeName(), 2000, &ignoredError);
 #endif
+#if defined(YIME_TOUCH_PRODUCT) && defined(YIME_TOUCH_REGISTRATION_PROBE)
+    // Only the isolated registration-gate build emits this fixed success marker.
+    std::fputs("{\"stage\":\"registered-probe/actual-activate-success\",\"kind\":\"marker\",\"code\":0}\n", stderr);
+    std::fflush(stderr);
+#endif
     return S_OK;
 }
 
