@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "taskID": "pr87-msi-host-posture-r2",
+  "machine": "msi-x64",
+  "queueCommit": "7ed12d3ff79646d055e084ff15637592db5eed06",
+  "taskSHA256": "fc8cfc1c7bf524d12df66f9e952d12b64362d89d91906bad328506413e2587a2",
+  "receivedAt": "2026-11-01T05:18:09.431Z",
+  "package": {
+    "key": "pr87-amd64",
+    "architecture": "amd64",
+    "sourceCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+    "runID": 41178044364,
+    "artifactID": 13034145597,
+    "zipSHA256": "e790c0fe0e245456e54163f348c969af93b3ac0ed91dda95e53e00655da4e34f",
+    "zipBytes": 98830082,
+    "manifestSHA256": "6c860aef9643fb50dd7b9f94bc0452a1350073139d51855811ab320c84ae4a75",
+    "executableSHA256": "b1210ca2c34f1a349ca12c65128a48e419ba74b4dee2b86848b916cc5c90a830",
+    "payloadCount": 31
+  },
+  "host": {
+    "hostname": "WIN-JTKUT7KBVN7",
+    "platform": "win32",
+    "nodeArchitecture": "x64",
+    "osMachine": "x86_64"
+  },
+  "physicalAcceptance": false,
+  "status": "awaiting-human",
+  "verification": {
+    "zipSHA256": "e790c0fe0e245456e54163f348c969af93b3ac0ed91dda95e53e00655da4e34f",
+    "manifestSHA256": "6c860aef9643fb50dd7b9f94bc0452a1350073139d51855811ab320c84ae4a75",
+    "executableSHA256": "b1210ca2c34f1a349ca12c65128a48e419ba74b4dee2b86848b916cc5c90a830",
+    "payloadFiles": 31,
+    "packageArchitecture": "amd64",
+    "executableStarted": false,
+    "hardwareAcceptance": false
+  },
+  "reason": null,
+  "checks": [
+    {
+      "id": "word-basic-binding",
+      "status": "pass",
+      "inputMethod": "finger",
+      "actualText": "你",
+      "observation": "User feedback: 已测。符合预期. Instructed sequence: fresh dedicated blank Word document, place caret, explicitly bind fixed PR87 host keyboard, CN n then i, select first candidate 你 once, inspect before minimizing to reply. Expected exactly one 你, no duplicates, omissions or other text; user confirmed expected outcome, no independent document readback. Finger was specified; user did not separately restate device. Posture user confirmed flat with opening edge toward user; latest read-only display landscape flipped, 2880x1800, 200%; calibration58. Same test document to be retained for restore/rebind. No pen assigned, no new trace."
+    },
+    {
+      "id": "edge-basic-binding",
+      "status": "pass",
+      "inputMethod": "finger",
+      "actualText": "你",
+      "observation": "User feedback: 符合预期. Instructed Edge sequence: open existing local host-browser-test.html, verify empty test textarea, restore host keyboard, finger place caret and explicitly rebind, CN ni and first candidate once, inspect before minimizing. Expected exactly one 你, no duplicate or omission; user confirmed whole expected sequence. User observation, not independent readback; finger prescribed, not separately restated. Existing static test page inspected read-only: empty textarea, no scripts or external resources. Flat posture with opening edge toward user, landscape flipped 2880x1800 200%, calibration58 carried forward; no pen or new trace, no policy bypass."
+    },
+    {
+      "id": "word-restore-rebind",
+      "status": "pass",
+      "inputMethod": "finger",
+      "actualText": "你你",
+      "observation": "User first replied f h y q in transliterated notation; clarification explicitly asked whether restored binding required rebind and final Word text was 你你. User confirmed 符合预期. Instructed sequence: same dedicated Word document containing one 你, restore keyboard and explicitly bind Word without input, minimize/restore keyboard, observe stale binding invalidation, place caret after existing character and explicitly rebind, CN ni first candidate once. Expected rebind required and exactly one character appended, yielding 你你. Pass by user confirmation, not independent readback. Finger specified; actual input device not separately restated. Flat posture opening edge toward user, last measured landscape flipped 2880x1800 200%, calibration58 retained. No probing text sent against stale binding, no pen or new trace instructed."
+    }
+  ],
+  "humanEvidence": true
+}
