@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  contents: read
   actions: write
 
 concurrency:
@@ -19,90 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - name: Delete CI runs and artifacts older than seven days
-        shell: python
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test retention protection before deletion
+        run: python -m unittest discover -s tools/ci -p "test_*.py"
+      - name: Delete ordinary CI data older than seven days
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          import datetime as dt
-          import json
-          import os
-          import urllib.error
-          import urllib.request
-          
-          cutoff = dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=7)
-          base = os.environ["GITHUB_API_URL"] + "/repos/" + os.environ["GITHUB_REPOSITORY"]
-          headers = {
-              "Authorization": "Bearer " + os.environ["GH_TOKEN"],
-              "Accept": "application/vnd.github+json",
-              "X-GitHub-Api-Version": "2022-11-28",
-              "User-Agent": "Yime-CI-cleanup",
-          }
-          
-          def api(path, method="GET"):
-              request = urllib.request.Request(base + path, headers=headers, method=method)
-              try:
-                  with urllib.request.urlopen(request, timeout=60) as response:
-                      return json.loads(response.read() or "null")
-              except urllib.error.HTTPError as error:
-                  if error.code == 404:
-                      return None  # Already removed by another cleanup.
-                  raise
-          
-          def listing(path, key):
-              # Snapshot every page before deleting, so pagination cannot skip entries.
-              result = []
-              page = 1
-              while True:
-                  data = api(f"{path}?per_page=100&page={page}")
-                  if data is None:
-                      raise RuntimeError(f"Cannot list {path}")
-                  items = data[key]
-                  result.extend(items)
-                  if len(items) < 100:
-                      return result
-                  page += 1
-          
-          def old(timestamp):
-              return dt.datetime.fromisoformat(timestamp.replace("Z", "+00:00")) < cutoff
-          
-          def eligible_run(run):
-              return (run["status"] == "completed"
-                      and old(run["created_at"]) and old(run["updated_at"])
-                      and str(run["id"]) != os.environ["GITHUB_RUN_ID"])
-          
-          artifacts = listing("/actions/artifacts", "artifacts")
-          runs = listing("/actions/runs", "workflow_runs")
-          counts = {"artifacts": 0, "runs": 0}
-          print(f"Removing completed CI data older than {cutoff.isoformat()}", flush=True)
-          for artifact in artifacts:
-              if not old(artifact["created_at"]):
-                  continue
-              path = f'/actions/artifacts/{artifact["id"]}'
-              current = api(path)
-              if current is not None and old(current["created_at"]):
-                  api(path, "DELETE")
-                  counts["artifacts"] += 1
-                  print(f'Deleted artifact {artifact["id"]}', flush=True)
-          
-          for run in runs:
-              if not eligible_run(run):
-                  continue
-              path = f'/actions/runs/{run["id"]}'
-              current = api(path)
-              if current is None or not eligible_run(current):
-                  continue
-              # Deleting a run also removes its artifacts; preserve any recent upload.
-              attached = listing(path + "/artifacts", "artifacts")
-              if any(not old(a["created_at"]) for a in attached):
-                  continue
-              api(path, "DELETE")
-              counts["runs"] += 1
-              print(f'Deleted run {run["id"]}', flush=True)
-          
-          summary = (f"Cutoff (UTC): {cutoff.isoformat()}\n\n"
-                     f"Deleted runs: {counts['runs']}\n\n"
-                     f"Deleted artifacts: {counts['artifacts']}\n")
-          print(summary)
-          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as stream:
-              stream.write(summary)
+        run: python tools/ci/cleanup_actions.py --delete
