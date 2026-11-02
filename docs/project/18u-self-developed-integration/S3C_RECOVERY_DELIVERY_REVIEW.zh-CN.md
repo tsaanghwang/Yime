@@ -96,10 +96,22 @@ CTF 由 TSF 同时写 32/64 位视图，所以残留在两视图都可见；`Unr
 - 恢复通过不补造 `71a4a252` 轮次的激活成功；该轮结果保持 failed。
 - 不触碰标准键位 YimeCore、Rime/PIME 的任何注册项、默认输入法与用户数据。
 
-## 4. 未决问题（需用户决定）
+## 4. 决定（2026-11-02，用户委托后确定）
 
-1. 是否接受在 stage1 工具加入 `Unregister(CLSID)`＋四视图 `RegDeleteTree`
-   的受门控清除？替代方案是只保留 `Unregister` 而把 HKCU 残留留给人工审阅。
-2. 残留快照是否允许记录值名（不记值数据）？若否，仅记键路径与计数。
-3. 新固定包是否沿用 `MyComputer activation x64 package (no registration)`
-   workflow 产出，还是另开 recovery-only workflow。
+1. **接受**在 stage1 工具加入受门控的 `Unregister(CLSID)` → 四视图
+   `RegDeleteTree` 清除。`Unregister` 是 TSF 的整树注销入口；HKCU 残留若其不处理，
+   `RegDeleteTree` 只允许作用于 `strictLocalTipShape` 通过的空壳，二者均以再读
+   不存在判成功。只保留 `Unregister` 而把 HKCU 残留交人工，会使 `--verify`
+   无法绝对，方案不闭环，故不采用。
+2. 残留快照**记录值名**，不记值数据（只记类型、长度、SHA-256）。TIP 子树下的
+   值名为 TSF 标准名（`Enable`、`Description` 等）；DLL 路径属于值数据，不记录。
+3. 新固定包**沿用** `MyComputer activation x64 package (no registration)`
+   workflow，以新版本号产出同一工具的 v3 包；`--inspect-recovery/--recover`
+   与注册模式本在同一 EXE，不另开 recovery-only workflow。
+4. `18u formal TIP adapter (S3c.1)` workflow 的分支钉定**本批不改**。在具备
+   已获准中文独立 profile 的隔离环境前，该测试必失败；改钉到新分支只会产生
+   确定为红的运行。保留 `workflow_dispatch`，待本机残留清理与注册态环境就绪后
+   再重新钉定，届时仍保持失败即失败。
+
+下一步：按第 3 节实现原生工具与编排脚本变更，并补第 3.3 节前两层测试；
+本机只读检查与恢复执行各自另行确认。
