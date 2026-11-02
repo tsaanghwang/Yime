@@ -205,6 +205,7 @@ std::string localSha256Hex(const BYTE* bytes,size_t size){
 }
 // Read-only snapshot of only the owned subtrees: key paths, subkey names and value
 // names/types/lengths with a SHA-256 of the data. Value data itself is never recorded.
+std::string localSnapshotName(const std::wstring& value){return value.empty()?std::string():localUtf8(value);} // Default values have empty names.
 void localSnapshotKey(HKEY hive,const std::wstring& path,REGSAM view,const char* hiveName,const char* viewName,unsigned depth,unsigned& budget,json& entries){
  require(depth<=8&&budget++<256,"snapshot-bound");
  Key key;const LSTATUS opened=RegOpenKeyExW(hive,path.c_str(),0,KEY_READ|view,&key.value);
@@ -218,14 +219,14 @@ void localSnapshotKey(HKEY hive,const std::wstring& path,REGSAM view,const char*
   check(HRESULT_FROM_WIN32(status),"snapshot-value-enumerate");require(bytes<=1048576,"snapshot-value-bound");
   std::vector<BYTE> data(bytes);nameCount=16384;
   check(HRESULT_FROM_WIN32(RegEnumValueW(key.value,index,name,&nameCount,nullptr,&type,data.data(),&bytes)),"snapshot-value-read");
-  entry["values"].push_back({{"name",localUtf8(std::wstring(name,nameCount))},{"type",type},{"bytes",bytes},{"sha256",localSha256Hex(data.data(),bytes)}});
+  entry["values"].push_back({{"name",localSnapshotName(std::wstring(name,nameCount))},{"type",type},{"bytes",bytes},{"sha256",localSha256Hex(data.data(),bytes)}});
  }
  std::vector<std::wstring> children;
  for(DWORD index=0;;++index){
   wchar_t name[256]{};DWORD count=256;
   const LSTATUS status=RegEnumKeyExW(key.value,index,name,&count,nullptr,nullptr,nullptr,nullptr);
   if(status==ERROR_NO_MORE_ITEMS)break;
-  check(HRESULT_FROM_WIN32(status),"snapshot-key-enumerate");children.emplace_back(name,count);entry["subkeys"].push_back(localUtf8(std::wstring(name,count)));
+  check(HRESULT_FROM_WIN32(status),"snapshot-key-enumerate");children.emplace_back(name,count);entry["subkeys"].push_back(localSnapshotName(std::wstring(name,count)));
  }
  entries.push_back(entry);
  for(const auto& child:children)localSnapshotKey(hive,path+L"\\"+child,view,hiveName,viewName,depth+1,budget,entries);

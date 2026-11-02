@@ -127,5 +127,20 @@ CTF 由 TSF 同时写 32/64 位视图，所以残留在两视图都可见；`Unr
 | 编排 | `run_mycomputer_registration.py`：先只读检查，不具备能力或形状 not-owned 则拒绝且**不创建声明**；声明 → 快照 → 恢复 → 核验；快照字段严格校验、拒绝值数据；`recoverableRegistrations` 四哈希钉定允许较新包恢复旧注册，DLL 仍由原生工具按账本原路径校验 | 19 项流程测试通过（新增 5 项） |
 | 包 | `build_mycomputer_stage1_package.py --pinned-registrations`，读取审阅文件 `tools/ci/mycomputer_recoverable_registrations.json`（当前钉定 `71a4a252` 注册的 manifest／源码／EXE／DLL 哈希）；包 workflow 重新钉到 `codex/18u-native-async-gates-20261102` 并传入该文件 | 包测试 2 项新增通过；workflow 契约测试通过（共 77 项） |
 
-未做：实机 `--inspect-recovery`／`--snapshot-residue` 只读检查、CI 一次性注入失败场景、本机恢复执行。
+未做：CI 一次性注入失败场景、本机恢复执行。
 原证据目录 `mycomputer-activation-71a4a2-v2-r1/` 未被触碰，仍无 `recovery-claim.json`。
+
+## 6. 实机只读检查（2026-11-02，用户授权）
+
+直接调用本地编译的新工具（源 `8fdaf905` + 快照空值名修复），不经编排脚本，未创建声明；
+检查前后账本密文哈希一致；输出保存在仓库外 `Yime-evidence/mycomputer-recovery-readonly-20261102/`。
+
+| 入口 | 结果 |
+| --- | --- |
+| `--inspect-recovery` | exit 0，`status=verified`，`recoveryRequired=true`，**`residueShape=owned-empty-shell`，`recoveryToolCapable=true`**；八个账本标志全为 true（含 `activationAttempted`），`cleanupVerified=false`；stderr 为空 |
+| `--snapshot-residue`（首次） | exit 3，`stage=identity-encoding`：注册表默认值名为空字符串被 `localUtf8` 拒绝。已修复为空名直接记空串；只读、无副作用 |
+| `--snapshot-residue`（修复后） | exit 0，`captured`，26 项：HKLM 32/64 `TIP\{C}` 下 `Category\{Category\{TFCAT_TIP_KEYBOARD},Item\{C}}` 与空 `LanguageProfile\0x00000804`；HKCU 32/64 `LanguageProfile\0x00000804\{P}` 带 `Enable`(REG_DWORD, 4B)；HKLM 64 COM 根含 `YimeMyComputerGeneration` 与 `InprocServer32` 两值。无其他键、无外来 GUID |
+
+结论：实机残留与第 2 节推演一致，新工具可判定且有能力清除。`activationAttempted=true`
+将首次失败收窄到 `activate-own-profile-forprocess` 之后（`get-active-profile`／`active-profile-mismatch`
+或消息泵期间）。本检查不是恢复执行。
