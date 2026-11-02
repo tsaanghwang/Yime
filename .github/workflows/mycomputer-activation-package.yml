@@ -45,7 +45,7 @@ jobs:
           evidence.mkdir(parents=True, exist_ok=False)
           for args, name in [
               (['cmake', '-S', 'YimeTextServiceExperiment', '-B', '.generated/mycomputer-stage1-build', '-A', 'x64', '-DYIME_TOUCH_PRODUCT=ON', '-DYIME_MYCOMPUTER_ACTIVATION_STAGE1=ON'], 'configure.log'),
-              (['cmake', '--build', '.generated/mycomputer-stage1-build', '--config', 'Release', '--target', 'YimeTextService18u', 'YimeMyComputerActivationStage1', 'MyComputerActivationPolicyTests'], 'build.log')]:
+              (['cmake', '--build', '.generated/mycomputer-stage1-build', '--config', 'Release', '--target', 'YimeTextService18u', 'YimeMyComputerActivationStage1', 'MyComputerActivationPolicyTests', 'YimeResidueFixtureTests'], 'build.log')]:
               with (evidence / name).open('w', encoding='utf-8') as log:
                   result = subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=False, timeout=240)
               if result.returncode != 0:
@@ -168,6 +168,21 @@ jobs:
           if native.get('schema') != 'mycomputer-activation-stage1-v1' or native.get('mode') != 'preflight' or native.get('status') != 'checked' or native.get('writesStarted') is not False or native.get('prerequisitesSatisfied') is not False or native.get('dllSha256') != files['YimeTextService18u.dll'] or native.get('stage') != 'completed' or type(native.get('code')) is not int or native['code'] != 0 or native.get('profileActivationApiVerified') is not False or native.get('actualDllActivationVerified') is not False or any(native.get('preconditions', {}).get(key) is not True for key in ['dllVerified', 'nativeX64', 'identityAbsent']):
               raise SystemExit('Expected read-only CI preflight result not established')
           (evidence / 'package-preflight-check.json').write_text(json.dumps({'sourceCommit': os.environ['PACKAGE_SOURCE_SHA'], 'manifestSha256': manifest_hash, 'actualPackagedCollectorChecked': True, 'registrationExecuted': False, 'userMachineValidated': False}), encoding='utf-8')
+      - name: Drill residue classification, removal and snapshot on synthetic keys under the 18u CLSID only
+        run: |
+          import json, pathlib, subprocess
+          # Real registry and real TSF COM objects, synthetic CTF\TIP\{18u CLSID} shells only.
+          # No profile is registered; the drill refuses to run if any real residue exists.
+          evidence = pathlib.Path('.generated/mycomputer-stage1-evidence')
+          exe = pathlib.Path('.generated/mycomputer-stage1-build/Release/YimeResidueFixtureTests.exe').resolve()
+          result = subprocess.run([str(exe)], capture_output=True, text=True, encoding='utf-8', check=False, timeout=120)
+          (evidence / 'residue-fixture-drill.json').write_text(result.stdout, encoding='utf-8')
+          (evidence / 'residue-fixture-drill-stderr.log').write_text(result.stderr, encoding='utf-8')
+          report = json.loads(result.stdout)
+          cases = {case.get('case'): case.get('result') for case in report.get('cases', [])}
+          expected = ['absent-baseline', 'owned-shell-classified-snapshotted-removed', 'removal-of-absent-residue-refused', 'foreign-language-kept', 'foreign-category-kept', 'foreign-profile-kept', 'unknown-child-kept']
+          if result.returncode != 0 or report.get('status') != 'pass' or report.get('registration') is not False or result.stderr.strip() or any(cases.get(name) != 'pass' for name in expected) or len(cases) != len(expected):
+              raise SystemExit('Residue fixture drill did not pass; keep evidence, do not package a recovery-capable tool from this run')
       - name: Upload the fixed development package
         uses: actions/upload-artifact@v6
         with:

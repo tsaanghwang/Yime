@@ -359,4 +359,13 @@ if(YIME_MYCOMPUTER_ACTIVATION_STAGE1)
     set_property(TARGET YimeMyComputerActivationStage1 PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     add_executable(MyComputerActivationPolicyTests tests/MyComputerActivationPolicyTests.cpp)
     target_compile_features(MyComputerActivationPolicyTests PRIVATE cxx_std_17)
+    # CI-only drill of residue classification/removal/snapshot on synthetic keys under
+    # the 18u CLSID; no MyComputer entry point, no registration, refuses real residue.
+    add_executable(YimeResidueFixtureTests tests/ResidueFixtureTests.cpp)
+    target_compile_features(YimeResidueFixtureTests PRIVATE cxx_std_17)
+    target_compile_definitions(YimeResidueFixtureTests PRIVATE YIME_TOUCH_PRODUCT=1 YIME_MYCOMPUTER_ACTIVATION_STAGE1=1 UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
+    target_compile_options(YimeResidueFixtureTests PRIVATE /utf-8 /W4 /EHsc)
+    target_include_directories(YimeResidueFixtureTests PRIVATE "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/tests" "${CMAKE_CURRENT_LIST_DIR}/../json/single_include")
+    target_link_libraries(YimeResidueFixtureTests PRIVATE advapi32 bcrypt crypt32 ole32 oleaut32 user32)
+    set_property(TARGET YimeResidueFixtureTests PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()

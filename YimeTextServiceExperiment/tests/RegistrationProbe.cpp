@@ -427,6 +427,6 @@ int wmain(int argc,wchar_t** argv) {
 }
 
 #endif
-#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+#if defined(YIME_MYCOMPUTER_ACTIVATION_STAGE1) && !defined(YIME_RESIDUE_FIXTURE_TESTS)
 #include "MyComputerActivationMain.h"
 #endif

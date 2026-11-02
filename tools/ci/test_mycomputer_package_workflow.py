@@ -36,6 +36,11 @@ class PackageWorkflowContract(unittest.TestCase):
         for required in ['-DYIME_TOUCH_PRODUCT=ON', '-DYIME_MYCOMPUTER_ACTIVATION_STAGE1=ON', "'YimeTextService18u', 'YimeMyComputerActivationStage1', 'MyComputerActivationPolicyTests'", 'test_mycomputer_activation_native.py', 'result.testsRun == 2 and not result.skipped', 'test_mycomputer_stage1_package', 'test_local_activation_evidence', 'result.testsRun == 0 or result.skipped']:
             self.assertIn(required, self.text)
         self.assertNotIn('continue-on-error:', self.text)
+    def test_residue_fixture_drill_is_bounded_and_gates_the_package_upload(self):
+        for required in ["'YimeResidueFixtureTests'", 'YimeResidueFixtureTests.exe', 'residue-fixture-drill.json', "report.get('registration') is not False", "'owned-shell-classified-snapshotted-removed'", "'foreign-language-kept'", "'foreign-category-kept'", "'foreign-profile-kept'", "'unknown-child-kept'", "'removal-of-absent-residue-refused'"]:
+            self.assertIn(required, self.text)
+        self.assertLess(self.text.index('Drill residue classification'), self.text.index('Upload the fixed development package'))
+        self.assertLess(self.text.index('Validate the actual fixed package with its read-only collector'), self.text.index('Drill residue classification'))
     def test_python_blocks_parse_and_no_raw_powershell(self):
         blocks = scripts(self.text); self.assertGreaterEqual(len(blocks), 4)
         for block in blocks: ast.parse(block)
