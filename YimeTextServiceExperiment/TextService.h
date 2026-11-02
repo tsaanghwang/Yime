@@ -22,6 +22,7 @@ class YimeTextService final : public ITfTextInputProcessorEx,
                               public ITfThreadMgrEventSink
 #ifdef YIME_TOUCH_PRODUCT
                               , public IDedicatedTouchService
+                              , public ITfFunctionProvider
 #endif
                               {
 public:
@@ -50,6 +51,9 @@ public:
     STDMETHODIMP OnPopContext(ITfContext* context) override;
 
 #ifdef YIME_TOUCH_PRODUCT
+    STDMETHODIMP GetType(GUID* type) override;
+    STDMETHODIMP GetDescription(BSTR* description) override;
+    STDMETHODIMP GetFunction(REFGUID function, REFIID iid, IUnknown** object) override;
     STDMETHODIMP ConnectDedicated(LPCWSTR pipe,DWORD pid,LPCWSTR image,BSTR* response) override;
     STDMETHODIMP ActionDedicated(LPCSTR action,BSTR* response) override;
     STDMETHODIMP DisconnectDedicated() override;
@@ -58,6 +62,7 @@ private:
 #ifdef YIME_TOUCH_PRODUCT
     DedicatedTouchRoute* dedicated_=nullptr;
     DWORD dedicatedThread_=0;
+    bool dedicatedProviderAdvised_=false;
 #endif
     ~YimeTextService();
     HRESULT SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) noexcept;

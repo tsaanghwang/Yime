@@ -1,4 +1,6 @@
 // S3c.1 isolated CI gate: loads the actual independent TextService DLL.
+// A separately named, default-OFF target uses an already registered profile.
+// Neither target registers/enables profiles or changes the default input method.
 // No registration, external target, arbitrary text commit, or SendInput.
 // Never run on a user PC; ActivateEx flags do not sandbox asynchronous TIPs.
 #include <windows.h>
@@ -75,11 +77,20 @@ struct Host {
  ComPtr<ITfThreadMgr> manager;ComPtr<ITfDocumentMgr> document,other;ComPtr<ITfContext> context,otherContext;
  ComPtr<ITfTextInputProcessorEx> tip;ComPtr<IDedicatedTouchService> route;TfClientId client=TF_CLIENTID_NULL;
  HMODULE module=nullptr;HWND window=nullptr;bool managerActive=false,tipActive=false;
+#ifdef YIME_TOUCH_REGISTERED_FORMAL_HOST
+ ComPtr<ITfInputProcessorProfileMgr> profiles;
+ static constexpr bool registered=true;
+#else
+ static constexpr bool registered=false;
+#endif
  void initialize(const std::wstring& dll){
+  if(GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST",nullptr,0))fail("direct test bypass forbidden");
   module=LoadLibraryExW(dll.c_str(),nullptr,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);if(!module)winFail("load dedicated DLL");
+#ifndef YIME_TOUCH_REGISTERED_FORMAL_HOST
   auto entry=reinterpret_cast<HRESULT(STDAPICALLTYPE*)(REFCLSID,REFIID,LPVOID*)>(GetProcAddress(module,"DllGetClassObject"));if(!entry)winFail("class factory export");
   ComPtr<IClassFactory> factory;require(entry(CLSID_YimeTextServiceExperiment,IID_IClassFactory,reinterpret_cast<void**>(factory.GetAddressOf())),"dedicated class factory");
   require(factory->CreateInstance(nullptr,__uuidof(ITfTextInputProcessorEx),reinterpret_cast<void**>(tip.GetAddressOf())),"actual TIP instance");
+#endif
   require(CoCreateInstance(CLSID_TF_ThreadMgr,nullptr,CLSCTX_INPROC_SERVER,__uuidof(ITfThreadMgr),reinterpret_cast<void**>(manager.GetAddressOf())),"thread manager");
   ComPtr<ITfThreadMgrEx> extended;require(manager.As(&extended),"extended manager");require(extended->ActivateEx(&client,TF_TMAE_NOACTIVATETIP|TF_TMAE_NOACTIVATEKEYBOARDLAYOUT),"own manager activate");managerActive=true;
   // Direct-load component adapter only: use the actually activated host client.
@@ -92,10 +103,49 @@ struct Host {
   ShowWindow(window,SW_SHOWNORMAL);SetForegroundWindow(window);::SetFocus(window);
   if(GetForegroundWindow()!=window)fail("own foreground not granted; no bypass");
   require(manager->SetFocus(document.Get()),"own focus");
+#ifdef YIME_TOUCH_REGISTERED_FORMAL_HOST
+  require(CoCreateInstance(CLSID_TF_InputProcessorProfiles,nullptr,CLSCTX_INPROC_SERVER,IID_PPV_ARGS(&profiles)),"registered profile manager");
+  ComPtr<ITfInputProcessorProfiles> languages;require(profiles.As(&languages),"registered language manager");
+  LANGID language=0;require(languages->GetCurrentLanguage(&language),"registered current language");
+  if(language!=0x0804 || LOWORD(reinterpret_cast<ULONG_PTR>(GetKeyboardLayout(0)))!=0x0804)fail("registered language precondition");
+  BOOL enabled=FALSE;require(languages->IsEnabledLanguageProfile(CLSID_YimeTextServiceExperiment,0x0804,GUID_YimeTextServiceExperimentProfile,&enabled),"registered profile query");
+  if(!enabled)fail("registered profile disabled");
+  // Exactly one process-scoped activation. This does not register or enable it.
+  const HRESULT activated=profiles->ActivateProfile(TF_PROFILETYPE_INPUTPROCESSOR,0x0804,CLSID_YimeTextServiceExperiment,GUID_YimeTextServiceExperimentProfile,nullptr,TF_IPPMF_FORPROCESS);
+  require(activated,"registered profile activation");if(activated!=S_OK)fail("registered profile activation incomplete");tipActive=true;
+  ComPtr<ITfFunctionProvider> provider;
+  const ULONGLONG deadline=GetTickCount64()+1000;
+  do {
+   MSG message{};while(PeekMessageW(&message,nullptr,0,0,PM_REMOVE)){TranslateMessage(&message);DispatchMessageW(&message);}
+   if(manager->GetFunctionProvider(CLSID_YimeTextServiceExperiment,&provider)==S_OK && provider)break;
+   provider.Reset();Sleep(10);
+  }while(GetTickCount64()<deadline);
+  if(!provider)fail("registered provider unavailable");
+  TF_INPUTPROCESSORPROFILE active{};require(profiles->GetActiveProfile(GUID_TFCAT_TIP_KEYBOARD,&active),"registered active profile");
+  if(active.dwProfileType!=TF_PROFILETYPE_INPUTPROCESSOR || active.langid!=0x0804 || !IsEqualGUID(active.clsid,CLSID_YimeTextServiceExperiment) || !IsEqualGUID(active.guidProfile,GUID_YimeTextServiceExperimentProfile))fail("registered profile mismatch");
+  GUID providerType{};require(provider->GetType(&providerType),"registered provider type");
+  if(!IsEqualGUID(providerType,CLSID_YimeTextServiceExperiment))fail("registered provider mismatch");
+  ComPtr<IUnknown> function;require(provider->GetFunction(GUID_NULL,__uuidof(IDedicatedTouchService),&function),"registered route lookup");
+  require(function.As(&route),"dedicated private interface");require(route.As(&tip),"registered TIP interface");
+  // Reject a stale registration pointing at a different DLL, even with our GUID.
+  HMODULE actual=nullptr;const auto address=(*reinterpret_cast<void***>(route.Get()))[0];
+  if(!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(address),&actual) || actual!=module)fail("registered DLL mismatch");
+#else
   require(tip->ActivateEx(manager.Get(),client,0),"actual TIP activation");tipActive=true;require(tip.As(&route),"dedicated private interface");
+#endif
+ }
+ HRESULT deactivate(){
+  if(!tipActive)return S_OK;
+#ifdef YIME_TOUCH_REGISTERED_FORMAL_HOST
+  const HRESULT hr=profiles->DeactivateProfile(TF_PROFILETYPE_INPUTPROCESSOR,0x0804,CLSID_YimeTextServiceExperiment,GUID_YimeTextServiceExperimentProfile,nullptr,TF_IPPMF_FORPROCESS);
+#else
+  const HRESULT hr=tip->Deactivate();
+#endif
+  if(hr==S_OK){tipActive=false;return S_OK;}
+  return FAILED(hr)?hr:E_FAIL;
  }
  void create(ComPtr<ITfDocumentMgr>& doc,ComPtr<ITfContext>& ctx){TfEditCookie cookie=0;require(manager->CreateDocumentMgr(&doc),"document");require(doc->CreateContext(client,0,nullptr,&ctx,&cookie),"context");require(doc->Push(ctx.Get()),"push");}
- ~Host(){if(route)route->DisconnectDedicated();route.Reset();if(tipActive)tip->Deactivate();tip.Reset();if(window){ComPtr<ITfDocumentMgr> previous;manager->AssociateFocus(window,nullptr,&previous);DestroyWindow(window);}context.Reset();otherContext.Reset();document.Reset();other.Reset();if(managerActive)manager->Deactivate();manager.Reset();if(module)FreeLibrary(module);}
+ ~Host(){if(route)route->DisconnectDedicated();route.Reset();if(tipActive)deactivate();tip.Reset();if(window){ComPtr<ITfDocumentMgr> previous;manager->AssociateFocus(window,nullptr,&previous);DestroyWindow(window);}context.Reset();otherContext.Reset();document.Reset();other.Reset();if(managerActive)manager->Deactivate();manager.Reset();if(module)FreeLibrary(module);}
  json action(const json& request,HRESULT& hr){BSTR value=nullptr;const auto body=request.dump();hr=route->ActionDedicated(body.c_str(),&value);if(!value)return json::object();return response(value);}
 };
 }
@@ -115,7 +165,7 @@ int main(){try{
   require(hr,"connect actual Broker");if(!state.value("ok",false))fail("open rejected");
   auto revision=state.at("snapshot").at("revision");
   json request={{"kind","input"},{"code",config.at("code")},{"revision",revision}};
-  if(scenario=="deactivated"){require(host.tip->Deactivate(),"deactivate actual TIP");host.tipActive=false;}
+  if(scenario=="deactivated")require(host.deactivate(),"deactivate actual TIP");
   if(scenario=="disconnect-before-action"||scenario=="deactivated"){
    state=host.action(request,hr);rejected=FAILED(hr)||!state.value("ok",false);if(!rejected)fail("disconnected action accepted");
   }else{
@@ -139,5 +189,6 @@ int main(){try{
  }
  bool empty=read(host.context.Get(),host.client).empty(),otherEmpty=read(host.otherContext.Get(),host.client).empty();
  if(rejected&&(!empty||!otherEmpty))fail("rejected operation wrote");
- std::cout<<json{{"stage","result"},{"scenario",scenario},{"actualDLLLoaded",true},{"activationIdentity","owned-host-activation-client"},{"registered",false},{"sendInput",false},{"outcome",outcome},{"rejected",rejected},{"duplicateRejected",duplicateRejected},{"readbackMatches",readMatches},{"readbackEmpty",empty},{"otherContextEmpty",otherEmpty},{"unknownAfterPendingEditCovered",false}}.dump()<<std::endl;return 0;
+ require(host.deactivate(),"deactivate actual TIP");
+ std::cout<<json{{"stage","result"},{"scenario",scenario},{"actualDLLLoaded",true},{"activationIdentity",Host::registered?"windows-activated-profile":"owned-host-activation-client"},{"registered",Host::registered},{"sendInput",false},{"outcome",outcome},{"rejected",rejected},{"duplicateRejected",duplicateRejected},{"readbackMatches",readMatches},{"readbackEmpty",empty},{"otherContextEmpty",otherEmpty},{"unknownAfterPendingEditCovered",false}}.dump()<<std::endl;return 0;
  }catch(const GateFailure& failure){diagnostic(failure);return 1;}catch(...){diagnostic({"unexpected","exception",0});return 1;}}

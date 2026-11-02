@@ -269,6 +269,8 @@ STDMETHODIMP YimeTextService::QueryInterface(REFIID iid, void** object) {
 #ifdef YIME_TOUCH_PRODUCT
     } else if(IsEqualIID(iid,__uuidof(IDedicatedTouchService))) {
         *object=static_cast<IDedicatedTouchService*>(this);
+    } else if(IsEqualIID(iid,__uuidof(ITfFunctionProvider))) {
+        *object=static_cast<ITfFunctionProvider*>(this);
 #endif
     } else {
         return E_NOINTERFACE;
@@ -331,6 +333,23 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
     // Dedicated context generations rely on real TSF document/context events.
     // Do not activate this route without its revocation observer.
     if(!threadEventSinkAdvised_){ActivationFailureProbe("thread-observer", E_FAIL);Deactivate();return E_FAIL;}
+    // The registered host must obtain the instance Windows activated. Creating
+    // another class-factory instance and passing the application's client ID is
+    // not that activation. Publish only this thread's active dedicated route.
+    ITfSourceSingle* single = nullptr;
+    result = threadManager_->QueryInterface(__uuidof(ITfSourceSingle), reinterpret_cast<void**>(&single));
+    if (SUCCEEDED(result)) {
+        result = single->AdviseSingleSink(clientId_, __uuidof(ITfFunctionProvider),
+            static_cast<ITfFunctionProvider*>(this));
+        single->Release();
+    }
+    dedicatedProviderAdvised_ = result == S_OK;
+    if (!dedicatedProviderAdvised_) {
+        if (SUCCEEDED(result)) result = E_FAIL;
+        ActivationFailureProbe("function-provider", result);
+        Deactivate();
+        return result;
+    }
 #endif
 #ifndef YIME_TOUCH_PRODUCT
     AddLanguageBar();
@@ -347,6 +366,17 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
 
 STDMETHODIMP YimeTextService::Deactivate() {
 #ifdef YIME_TOUCH_PRODUCT
+    // Revoke lookup before releasing callbacks. A host may retain the provider;
+    // GetFunction must reject that retained object after deactivation.
+    const bool removeProvider = dedicatedProviderAdvised_;
+    dedicatedProviderAdvised_ = false;
+    if (threadManager_ && removeProvider) {
+        ITfSourceSingle* single = nullptr;
+        if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfSourceSingle), reinterpret_cast<void**>(&single)))) {
+            single->UnadviseSingleSink(clientId_, __uuidof(ITfFunctionProvider));
+            single->Release();
+        }
+    }
     if(dedicated_){dedicated_->Disconnect();dedicated_->Release();dedicated_=nullptr;}
 #endif
     if (!threadManager_) return S_OK;
@@ -409,6 +439,31 @@ STDMETHODIMP YimeTextService::Deactivate() {
     threadManager_ = nullptr;
     return S_OK;
 }
+
+#ifdef YIME_TOUCH_PRODUCT
+STDMETHODIMP YimeTextService::GetType(GUID* type) {
+    if (!type) return E_POINTER;
+    *type = CLSID_YimeTextServiceExperiment;
+    return S_OK;
+}
+
+STDMETHODIMP YimeTextService::GetDescription(BSTR* description) {
+    if (!description) return E_POINTER;
+    *description = SysAllocString(L"Yime 18u dedicated route");
+    return *description ? S_OK : E_OUTOFMEMORY;
+}
+
+STDMETHODIMP YimeTextService::GetFunction(REFGUID function, REFIID iid, IUnknown** object) {
+    if (!object) return E_POINTER;
+    *object = nullptr;
+    if (!threadManager_ || !dedicatedProviderAdvised_) return TF_E_DISCONNECTED;
+    if (GetCurrentThreadId() != dedicatedThread_) return RPC_E_WRONG_THREAD;
+    if (!IsEqualGUID(function, GUID_NULL) || !IsEqualIID(iid, __uuidof(IDedicatedTouchService))) return E_NOINTERFACE;
+    *object = static_cast<IDedicatedTouchService*>(this);
+    AddRef();
+    return S_OK;
+}
+#endif
 
 STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
 #ifdef YIME_TOUCH_PRODUCT

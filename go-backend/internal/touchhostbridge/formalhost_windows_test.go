@@ -25,7 +25,25 @@ import (
 // writes, installed-profile activation, existing document or user process target.
 // Run only in isolated Windows CI. These are not registered-host acceptance tests.
 func TestNativeFormal18uTIP(t *testing.T) {
+	testNativeFormal18uTIP(t, false)
+}
+
+// Separate opt-in gate for an already provisioned disposable registration.
+// This test does not register/enable anything and never falls back to direct load.
+func TestNativeRegisteredFormal18uTIP(t *testing.T) {
+	if os.Getenv("YIME_REGISTERED_FORMAL_18U_HOST") == "" {
+		t.Skip("registered native gate not selected; provisioning and execution require separate authorization")
+	}
+	testNativeFormal18uTIP(t, true)
+}
+
+func testNativeFormal18uTIP(t *testing.T, registered bool) {
 	names := []string{"YIME_FORMAL_18U_HOST", "YIME_FORMAL_18U_DLL", "YIME_FORMAL_18U_BROKER", "YIME_FORMAL_18U_DATA"}
+	expectedIdentity := "owned-host-activation-client"
+	if registered {
+		names[0] = "YIME_REGISTERED_FORMAL_18U_HOST"
+		expectedIdentity = "windows-activated-profile"
+	}
 	enabled := false
 	for _, n := range names {
 		enabled = enabled || os.Getenv(n) != ""
@@ -177,7 +195,7 @@ func TestNativeFormal18uTIP(t *testing.T) {
 			if e = decoder.Decode(&result); e != nil {
 				t.Fatal("invalid native result")
 			}
-			if result.Stage != "result" || result.Scenario != scenario || !result.ActualDLLLoaded || result.ActivationIdentity != "owned-host-activation-client" || result.Registered || result.SendInput || !result.OtherContextEmpty || result.UnknownAfterPendingEditCovered {
+			if result.Stage != "result" || result.Scenario != scenario || !result.ActualDLLLoaded || result.ActivationIdentity != expectedIdentity || result.Registered != registered || result.SendInput || !result.OtherContextEmpty || result.UnknownAfterPendingEditCovered {
 				t.Fatal("native scope or identity mismatch")
 			}
 			if scenario == "commit" || scenario == "duplicate" {
@@ -316,6 +334,7 @@ func formalFailureSummary(raw []byte) string {
 			"activation-probe/query-keystroke-manager": true,
 			"activation-probe/advise-key-event-sink":   true,
 			"activation-probe/thread-observer":         true,
+			"activation-probe/function-provider":       true,
 		}
 		if secondErr != nil || !probes[d.Stage] || d.Kind != "hresult" || *d.Code < 0x80000000 || second.Stage != "actual TIP activation" || second.Kind != "hresult" || second.Code == nil || *second.Code != *d.Code {
 			return "diagnostic unavailable"
@@ -328,52 +347,69 @@ func formalFailureSummary(raw []byte) string {
 		d = second
 	}
 	allowed := map[string]bool{
-		"UTF8 conversion":                       true,
-		"actual TIP activation":                 true,
-		"actual TIP instance":                   true,
-		"actual edit and completion":            true,
-		"allocate dedicated service client ID":  true,
-		"associate own window":                  true,
-		"canonical ni candidate missing":        true,
-		"change own focus":                      true,
-		"class factory export":                  true,
-		"connect actual Broker":                 true,
-		"context":                               true,
-		"control":                               true,
-		"deactivate actual TIP":                 true,
-		"dedicated class factory":               true,
-		"dedicated private interface":           true,
-		"disconnected action accepted":          true,
-		"document":                              true,
-		"duplicate rewrote":                     true,
-		"engine input":                          true,
-		"engine rejected input":                 true,
-		"extended manager":                      true,
-		"independent readback mismatch":         true,
-		"initialize COM":                        true,
-		"input bound":                           true,
-		"invalid UTF8":                          true,
-		"invalid response":                      true,
-		"load dedicated DLL":                    true,
-		"missing actual receipt":                true,
-		"missing input":                         true,
-		"not actually applied":                  true,
-		"open rejected":                         true,
-		"own focus":                             true,
-		"own foreground not granted; no bypass": true,
-		"own foreground window":                 true,
-		"own manager activate":                  true,
-		"push":                                  true,
-		"query service client IDs":              true,
-		"read edit":                             true,
-		"read not completed":                    true,
-		"rejected operation wrote":              true,
-		"request read":                          true,
-		"scenario":                              true,
-		"stale focus accepted":                  true,
-		"thread manager":                        true,
-		"unexpected":                            true,
-		"wrong server accepted":                 true,
+		"direct test bypass forbidden":             true,
+		"registered profile manager":               true,
+		"registered language manager":              true,
+		"registered current language":              true,
+		"registered language precondition":         true,
+		"registered profile query":                 true,
+		"registered profile disabled":              true,
+		"registered profile activation":            true,
+		"registered profile activation incomplete": true,
+		"registered provider unavailable":          true,
+		"registered active profile":                true,
+		"registered profile mismatch":              true,
+		"registered provider type":                 true,
+		"registered provider mismatch":             true,
+		"registered route lookup":                  true,
+		"registered TIP interface":                 true,
+		"registered DLL mismatch":                  true,
+		"UTF8 conversion":                          true,
+		"actual TIP activation":                    true,
+		"actual TIP instance":                      true,
+		"actual edit and completion":               true,
+		"allocate dedicated service client ID":     true,
+		"associate own window":                     true,
+		"canonical ni candidate missing":           true,
+		"change own focus":                         true,
+		"class factory export":                     true,
+		"connect actual Broker":                    true,
+		"context":                                  true,
+		"control":                                  true,
+		"deactivate actual TIP":                    true,
+		"dedicated class factory":                  true,
+		"dedicated private interface":              true,
+		"disconnected action accepted":             true,
+		"document":                                 true,
+		"duplicate rewrote":                        true,
+		"engine input":                             true,
+		"engine rejected input":                    true,
+		"extended manager":                         true,
+		"independent readback mismatch":            true,
+		"initialize COM":                           true,
+		"input bound":                              true,
+		"invalid UTF8":                             true,
+		"invalid response":                         true,
+		"load dedicated DLL":                       true,
+		"missing actual receipt":                   true,
+		"missing input":                            true,
+		"not actually applied":                     true,
+		"open rejected":                            true,
+		"own focus":                                true,
+		"own foreground not granted; no bypass":    true,
+		"own foreground window":                    true,
+		"own manager activate":                     true,
+		"push":                                     true,
+		"query service client IDs":                 true,
+		"read edit":                                true,
+		"read not completed":                       true,
+		"rejected operation wrote":                 true,
+		"request read":                             true,
+		"scenario":                                 true,
+		"stale focus accepted":                     true,
+		"thread manager":                           true,
+		"unexpected":                               true,
+		"wrong server accepted":                    true,
 	}
 	if !allowed[d.Stage] || (d.Kind != "hresult" && d.Kind != "win32" && d.Kind != "assertion" && d.Kind != "exception") {
 		return "diagnostic unavailable"

@@ -47,12 +47,16 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path .generated/s3c-evidence -Force -ErrorAction Stop | Out-Null
           $ErrorActionPreference = 'Stop'
-          cmake -S YimeTextServiceExperiment -B .generated/s3c-own-host -A x64 -DYIME_TOUCH_BRIDGE_OWN_HOST=ON -DYIME_TOUCH_BRIDGE_PERSISTENT_HOST=ON -DYIME_TOUCH_PRODUCT=ON -DYIME_TOUCH_ACTIVATION_DIAGNOSTICS=ON 2>&1 | Tee-Object .generated/s3c-evidence/configure.log
+          cmake -S YimeTextServiceExperiment -B .generated/s3c-own-host -A x64 -DYIME_TOUCH_BRIDGE_OWN_HOST=ON -DYIME_TOUCH_BRIDGE_PERSISTENT_HOST=ON -DYIME_TOUCH_PRODUCT=ON -DYIME_TOUCH_ACTIVATION_DIAGNOSTICS=ON -DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON 2>&1 | Tee-Object .generated/s3c-evidence/configure.log
           if ($LASTEXITCODE -ne 0) { throw 'Native harness configure failed' }
-          cmake --build .generated/s3c-own-host --config Release --target YimeTouchBridgeOwnHost YimeFocusCancellationTests YimeTouchBridgePersistentHost YimeTextServiceExperiment YimeTextService18u YimeTouchFormalHostTests 2>&1 | Tee-Object .generated/s3c-evidence/build.log
+          cmake --build .generated/s3c-own-host --config Release --target YimeTouchBridgeOwnHost YimeFocusCancellationTests YimeTouchBridgePersistentHost YimeTextServiceExperiment YimeTextService18u YimeTouchFormalHostTests YimeTouchRegisteredFormalHostTests YimeDedicatedActivationTests 2>&1 | Tee-Object .generated/s3c-evidence/build.log
           if ($LASTEXITCODE -ne 0) { throw 'Native harness build failed' }
           & '.generated/s3c-own-host/Release/YimeFocusCancellationTests.exe' 2>&1 | Tee-Object .generated/s3c-evidence/default-guard-regression.log
           if ($LASTEXITCODE -ne 0) { throw 'Existing null-guard focus cancellation regression failed' }
+          # The registered target is COMPILE-ONLY here. This executable uses only
+          # substitute TSF interfaces; it neither registers nor activates TSF.
+          & '.generated/s3c-own-host/Release/YimeDedicatedActivationTests.exe' (Resolve-Path '.generated/s3c-own-host/Release/YimeTextService18u.dll').Path 2>&1 | Tee-Object .generated/s3c-evidence/provider-contract.log
+          if ($LASTEXITCODE -ne 0) { throw 'Dedicated provider lifecycle regression failed' }
           $exe = (Resolve-Path '.generated/s3c-own-host/Release/YimeTouchBridgeOwnHost.exe' -ErrorAction Stop).Path
           @{ sourceCommit = '${{ github.sha }}'; runID = '${{ github.run_id }}'; harnessSHA256 = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLower(); goVersion = (go version); scope = 'S2b own TSF context; sync plus actual async with controlled read-lock negatives; no installed product acceptance' } | ConvertTo-Json | Set-Content .generated/s3c-evidence/identity.json -Encoding utf8
       - name: Execute native TSF and reject skipped or missing scenarios
