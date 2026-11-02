@@ -347,9 +347,49 @@ void testRangeAndRequestFailures() {
            "external clear accepted a null composition");
 }
 
+// Explicitly synthetic guard contract regression, separate from native TSF.
+class FakeExecutionGuard final : public yime::experiment::IBrokerEditExecutionGuard {
+public:
+    ULONG references=1;
+    unsigned calls=0,completions=0;
+    HRESULT allowed=S_FALSE,completed=E_PENDING;
+    ITfContext* expected=nullptr;
+    STDMETHODIMP QueryInterface(REFIID iid,void** out) override {
+        if(!out)return E_POINTER;*out=nullptr;
+        if(iid!=IID_IUnknown)return E_NOINTERFACE;
+        *out=static_cast<yime::experiment::IBrokerEditExecutionGuard*>(this);AddRef();return S_OK;
+    }
+    STDMETHODIMP_(ULONG) AddRef() override{return ++references;}
+    STDMETHODIMP_(ULONG) Release() override{return --references;}
+    HRESULT ValidateExecution(ITfContext* context) noexcept override {
+        ++calls;return context==expected?allowed:E_UNEXPECTED;
+    }
+    static void complete(void* state,ITfContext*,const yime::experiment::BrokerUpdate&,HRESULT hr) noexcept {
+        auto* self=static_cast<FakeExecutionGuard*>(state);++self->completions;self->completed=hr;
+    }
+};
+void testExecutionGuardLifetimeAndDenial() {
+    // Fixture drains pending edits before this stack guard is destroyed.
+    FakeExecutionGuard guard;
+    Fixture f;guard.expected=&f.context;
+    yime::experiment::BrokerUpdate update;update.commit="must-not-write";
+    const auto request=[&](){return yime::experiment::ApplyBrokerUpdateToContext(&f.context,1,&f.sink,
+        &f.active,&f.planned,update,nullptr,nullptr,true,FakeExecutionGuard::complete,&guard,&guard);};
+    expect(request()==TF_S_ASYNC && guard.references==2 && guard.calls==0,
+        "queued edit failed to retain execution guard or checked it early");
+    expect(f.context.drainOne()==E_ABORT && guard.calls==1 && guard.completions==1 && guard.completed==E_ABORT,
+        "S_FALSE guard did not reject at execution with E_ABORT completion");
+    expect(f.range.writes==0 && f.composition.ends==0 && f.document==f.prefix+f.raw+f.suffix && guard.references==1,
+        "denied guard mutated text or leaked its queued reference");
+    f.context.requestResult=E_ACCESSDENIED;
+    expect(request()==E_ACCESSDENIED && guard.references==1 && guard.completions==1 && f.context.pending.empty(),
+        "failed queue request leaked guard or fabricated completion");
+}
+
 }  // namespace
 
 int main() {
+    testExecutionGuardLifetimeAndDenial();
     testDeferredCancellation();
     testImmediateCancellation();
     testDuplicateCancellation();

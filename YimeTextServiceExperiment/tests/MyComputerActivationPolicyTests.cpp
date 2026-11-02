@@ -1,0 +1,101 @@
+// Portable tests of the production decision policy, not Windows registration evidence.
+#include "MyComputerActivationPolicy.h"
+#include <iostream>
+#include <stdexcept>
+#include <vector>
+
+using namespace yime::stage1;
+namespace {
+void check(bool condition, const char* name) {
+ if (!condition) throw std::runtime_error(name);
+}
+void commandPolicy() {
+ check(ParseArguments({}).mode == Mode::Preflight, "no arguments must only preflight");
+ check(ParseArguments({L"--preflight"}).mode == Mode::Preflight, "explicit preflight");
+ check(ParseArguments({L"--verify"}).mode == Mode::Verify, "verify only");
+ const std::wstring hash(64, L'a');
+ const std::wstring dll=L"C:\\stage1\\YimeTextService18u.dll", ledger=L"C:\\stage1\\registration-ledger.json";
+ auto preflight=ParseArguments({L"--preflight",L"--dll",dll,L"--sha256",hash});
+ check(preflight.mode==Mode::Preflight && preflight.dll==dll && preflight.sha256==hash, "preflight binding");
+ auto run=ParseArguments({L"--register-once",L"--dll",dll,L"--sha256",hash,L"--ledger",ledger});
+ check(run.mode==Mode::RegisterOnce && run.dll==dll && run.sha256==hash && run.ledger==ledger, "explicit registration only");
+ auto recover=ParseArguments({L"--recover",L"--ledger",ledger,L"--expected-ledger-sha256",hash});
+ check(recover.mode==Mode::Recover && recover.ledger==ledger && recover.ledgerSha256==hash, "explicit recovery only");
+ auto inspect=ParseArguments({L"--inspect-recovery",L"--ledger",ledger,L"--expected-ledger-sha256",hash});
+ check(inspect.mode==Mode::InspectRecovery && inspect.ledgerSha256==hash,"read-only pinned inspection");
+ auto snapshot=ParseArguments({L"--snapshot-residue",L"--ledger",ledger,L"--expected-ledger-sha256",hash});
+ check(snapshot.mode==Mode::SnapshotResidue && snapshot.ledger==ledger && snapshot.ledgerSha256==hash,"read-only pinned residue snapshot");
+ for(const auto& args: std::vector<std::vector<std::wstring>>{
+  {L"--register-once"},{L"--recover"},{L"--recover",L"--ledger",ledger},{L"--inspect-recovery",L"--ledger",ledger},{L"--recover",L"--ledger",ledger,L"--expected-ledger-sha256",L"bad"},{L"--unknown"},{L"--verify",L"--register-once"},
+  {L"--snapshot-residue"},{L"--snapshot-residue",L"--ledger",ledger},{L"--snapshot-residue",L"--ledger",ledger,L"--expected-ledger-sha256",L"bad"},{L"--snapshot-residue",L"--ledger",ledger,L"--expected-ledger-sha256",hash,L"--recover"},
+  {L"--dll",dll,L"--sha256",hash,L"--ledger",ledger},
+  {L"--register-once",L"--dll",dll,L"--sha256",hash},
+  {L"--register-once",L"--dll",dll,L"--sha256",hash,L"--ledger",ledger,L"--retry"},
+  {L"--recover",L"--ledger",ledger,L"--register-once"},
+  {L"--preflight",L"--dll",dll,L"--sha256",L"bad"}})
+  check(ParseArguments(args).mode==Mode::Invalid,"unknown/incomplete/combined commands must reject");
+ check(GoodHash(hash),"valid lowercase hash");
+ for(const auto& bad: std::vector<std::wstring>{L"",std::wstring(63,L'a'),std::wstring(65,L'a'),std::wstring(64,L'A'),std::wstring(64,L'g')})
+  check(!GoodHash(bad),"invalid hash rejected");
+}
+void generationPolicy() {
+ const std::wstring hash(64,L'a');
+ const auto value=Generation(10,20,hash);
+ check(value==L"10:20:"+hash,"exact generation encoding");
+ check(Generation(10,20,hash)==value,"same generation stable");
+ check(Generation(11,20,hash)!=value,"PID changes generation");
+ check(Generation(10,21,hash)!=value,"creation changes generation");
+ check(Generation(10,20,std::wstring(64,L'b'))!=value,"DLL changes generation");
+ check(Generation(0,20,hash).empty() && Generation(10,0,hash).empty(),"zero owner identity invalid");
+ check(Generation(0x100000000ULL,20,hash).empty(),"oversized PID invalid");
+ check(Generation(10,20,L"bad").empty(),"bad generation hash invalid");
+}
+void preflightPolicy() {
+ PreflightFacts good{true,true,true,true,true,true,true,true};
+ check(CanRegister(good),"all preconditions permit explicit register gate");
+ const std::vector<bool PreflightFacts::*> fields={&PreflightFacts::nativeX64,&PreflightFacts::hostMatches,
+  &PreflightFacts::hkl0804,&PreflightFacts::tsf0804,&PreflightFacts::elevated,
+  &PreflightFacts::identityAbsent,&PreflightFacts::dllVerified,&PreflightFacts::directTestAbsent};
+ for(auto field:fields) {auto bad=good;bad.*field=false;check(!CanRegister(bad),"each missing/unknown fact must block");}
+ check(!CanRegister(PreflightFacts{}),"unknown facts cannot permit registration");
+ // nativeX64=false represents ARM64, x86, emulation or unknown; detecting which
+ // requires Windows APIs and is deliberately not claimed by these bool tests.
+}
+void ledgerPolicy() {
+ const std::vector<bool LedgerFlags::*> fields={&LedgerFlags::preflightAbsent,&LedgerFlags::comAttempted,
+  &LedgerFlags::comOwned,&LedgerFlags::profileAttempted,&LedgerFlags::categoryAttempted,
+  &LedgerFlags::enableAttempted,&LedgerFlags::activationAttempted,&LedgerFlags::cleanupVerified};
+ // Exhaust all flag combinations: no child attempt is valid without its prior
+ // durable ownership/attempt facts. cleanupVerified is independent evidence.
+ for(unsigned mask=0;mask<256;++mask) {
+  LedgerFlags f{};for(unsigned i=0;i<fields.size();++i)f.*fields[i]=(mask&(1u<<i))!=0;
+  const bool ordered=(!f.comAttempted||f.preflightAbsent)&&(!f.comOwned||f.comAttempted)&&
+   (!f.profileAttempted||f.comOwned)&&(!f.categoryAttempted||f.profileAttempted)&&
+   (!f.enableAttempted||f.categoryAttempted)&&(!f.activationAttempted||f.enableAttempted);
+  check(ValidLedgerOrder(f)==ordered,"ledger dependency order");
+  check(!CanRecover(f,OwnerState::Alive,true),"live owner forbids cleanup");
+  check(!CanRecover(f,OwnerState::Unknown,true),"unknown owner never guessed dead");
+  check(!CanRecover(f,OwnerState::DeadVerified,false),"unauthenticated binding cannot recover");
+  check(CanRecover(f,OwnerState::DeadVerified,true)==(ordered&&(!f.comAttempted||f.comOwned)),"recovery ownership policy");
+ }
+}
+void residuePolicy() {
+ check(std::string(ResidueShapeName(ResidueShape::Absent))=="absent" && std::string(ResidueShapeName(ResidueShape::OwnedEmptyShell))=="owned-empty-shell" &&
+       std::string(ResidueShapeName(ResidueShape::NotOwned))=="not-owned" && std::string(ResidueShapeName(ResidueShape::Unknown))=="unknown","stable residue shape names");
+ check(RecoveryToolCapable(ResidueShape::Absent) && RecoveryToolCapable(ResidueShape::OwnedEmptyShell),"tool handles absent or owned shell");
+ check(!RecoveryToolCapable(ResidueShape::NotOwned) && !RecoveryToolCapable(ResidueShape::Unknown),"foreign or unknown residue is never deletable");
+ LedgerFlags owned{true,true,true,true,true,true,true,false};
+ check(CanRemoveResidue(owned,true,ResidueShape::OwnedEmptyShell,true),"complete ownership permits shell removal");
+ check(!CanRemoveResidue(owned,false,ResidueShape::OwnedEmptyShell,true),"changed COM generation blocks removal");
+ check(!CanRemoveResidue(owned,true,ResidueShape::OwnedEmptyShell,false),"profile still enumerated blocks removal");
+ for(ResidueShape shape:{ResidueShape::Absent,ResidueShape::NotOwned,ResidueShape::Unknown})check(!CanRemoveResidue(owned,true,shape,true),"only an owned shell is removable");
+ LedgerFlags verified=owned;verified.cleanupVerified=true;check(!CanRemoveResidue(verified,true,ResidueShape::OwnedEmptyShell,true),"verified cleanup conflicts with residue");
+ LedgerFlags noProfile=owned;noProfile.profileAttempted=false;check(!CanRemoveResidue(noProfile,true,ResidueShape::OwnedEmptyShell,true),"profile never attempted means shell is not ours");
+ LedgerFlags notOwned=owned;notOwned.comOwned=false;check(!CanRemoveResidue(notOwned,true,ResidueShape::OwnedEmptyShell,true),"unowned COM blocks removal");
+ check(ResidueStepSucceeded(false) && !ResidueStepSucceeded(true),"deletion judged by re-read absence only");
+}
+}
+int main() {
+ try {commandPolicy();preflightPolicy();ledgerPolicy();generationPolicy();residuePolicy();std::cout<<"5 portable policy groups passed; Windows APIs not exercised\n";return 0;}
+ catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}
+}

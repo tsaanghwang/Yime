@@ -1,3 +1,6 @@
+#ifdef YIME_TOUCH_PRODUCT
+#include "DedicatedTouchRoute.h"
+#endif
 #include "TextService.h"
 
 #include <cstdio>
@@ -18,6 +21,18 @@
 #include "YimeTextServiceIds.h"
 
 namespace {
+
+// Fixed stage literals only; opt-in isolated CI probe, never input or identity data.
+void ActivationFailureProbe(const char* stage, HRESULT result) noexcept {
+#if defined(YIME_TOUCH_PRODUCT) && defined(YIME_TOUCH_ACTIVATION_DIAGNOSTICS)
+    std::fprintf(stderr, "{\"stage\":\"activation-probe/%s\",\"kind\":\"hresult\",\"code\":%lu}\n",
+                 stage, static_cast<unsigned long>(result));
+    std::fflush(stderr);
+#else
+    (void)stage;
+    (void)result;
+#endif
+}
 
 std::wstring widenUtf8(const std::string& value) {
     if (value.empty()) return {};
@@ -251,6 +266,12 @@ STDMETHODIMP YimeTextService::QueryInterface(REFIID iid, void** object) {
         *object = static_cast<ITfCompositionSink*>(this);
     } else if (IsEqualIID(iid, __uuidof(ITfThreadMgrEventSink))) {
         *object = static_cast<ITfThreadMgrEventSink*>(this);
+#ifdef YIME_TOUCH_PRODUCT
+    } else if(IsEqualIID(iid,__uuidof(IDedicatedTouchService))) {
+        *object=static_cast<IDedicatedTouchService*>(this);
+    } else if(IsEqualIID(iid,__uuidof(ITfFunctionProvider))) {
+        *object=static_cast<ITfFunctionProvider*>(this);
+#endif
     } else {
         return E_NOINTERFACE;
     }
@@ -271,13 +292,17 @@ STDMETHODIMP YimeTextService::Activate(ITfThreadMgr* threadManager, TfClientId c
 }
 
 STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId clientId, DWORD flags) {
-    if (!threadManager || clientId == TF_CLIENTID_NULL) return E_INVALIDARG;
-    if (threadManager_) return TF_E_ALREADY_EXISTS;
+    if (!threadManager) { ActivationFailureProbe("null-manager", E_INVALIDARG); return E_INVALIDARG; }
+    if (clientId == TF_CLIENTID_NULL) { ActivationFailureProbe("null-client", E_INVALIDARG); return E_INVALIDARG; }
+    if (threadManager_) { ActivationFailureProbe("already-active", TF_E_ALREADY_EXISTS); return TF_E_ALREADY_EXISTS; }
     threadManager_ = threadManager;
     threadManager_->AddRef();
     clientId_ = clientId;
     activationFlags_ = flags;
     keyEventFocused_ = true;
+#ifdef YIME_TOUCH_PRODUCT
+    dedicatedThread_=GetCurrentThreadId();
+#endif
     selectionKeyDiagnosticsEnabled_ = yime::experiment::SelectionKeyDiagnosticsEnabled();
     HRESULT result = S_OK;
     const bool directTest = GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", nullptr, 0) > 0;
@@ -288,6 +313,9 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
             result = keystrokes->AdviseKeyEventSink(clientId_, this, TRUE);
             keySinkAdvised_ = SUCCEEDED(result);
             keystrokes->Release();
+            if (FAILED(result)) ActivationFailureProbe("advise-key-event-sink", result);
+        } else {
+            ActivationFailureProbe("query-keystroke-manager", result);
         }
     }
     if (FAILED(result)) {
@@ -301,13 +329,56 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
             &threadEventSinkCookie_) == S_OK;
         source->Release();
     }
+#ifdef YIME_TOUCH_PRODUCT
+    // Dedicated context generations rely on real TSF document/context events.
+    // Do not activate this route without its revocation observer.
+    if(!threadEventSinkAdvised_){ActivationFailureProbe("thread-observer", E_FAIL);Deactivate();return E_FAIL;}
+    // The registered host must obtain the instance Windows activated. Creating
+    // another class-factory instance and passing the application's client ID is
+    // not that activation. Publish only this thread's active dedicated route.
+    ITfSourceSingle* single = nullptr;
+    result = threadManager_->QueryInterface(__uuidof(ITfSourceSingle), reinterpret_cast<void**>(&single));
+    if (SUCCEEDED(result)) {
+        result = single->AdviseSingleSink(clientId_, __uuidof(ITfFunctionProvider),
+            static_cast<ITfFunctionProvider*>(this));
+        single->Release();
+    }
+    dedicatedProviderAdvised_ = result == S_OK;
+    if (!dedicatedProviderAdvised_) {
+        if (SUCCEEDED(result)) result = E_FAIL;
+        ActivationFailureProbe("function-provider", result);
+        Deactivate();
+        return result;
+    }
+#endif
+#ifndef YIME_TOUCH_PRODUCT
     AddLanguageBar();
     std::string ignoredError;
     surface_.Connect(yime::experiment::ResolveBrokerPipeName(), 2000, &ignoredError);
+#endif
+#if defined(YIME_TOUCH_PRODUCT) && defined(YIME_TOUCH_REGISTRATION_PROBE)
+    // Only the isolated registration-gate build emits this fixed success marker.
+    std::fputs("{\"stage\":\"registered-probe/actual-activate-success\",\"kind\":\"marker\",\"code\":0}\n", stderr);
+    std::fflush(stderr);
+#endif
     return S_OK;
 }
 
 STDMETHODIMP YimeTextService::Deactivate() {
+#ifdef YIME_TOUCH_PRODUCT
+    // Revoke lookup before releasing callbacks. A host may retain the provider;
+    // GetFunction must reject that retained object after deactivation.
+    const bool removeProvider = dedicatedProviderAdvised_;
+    dedicatedProviderAdvised_ = false;
+    if (threadManager_ && removeProvider) {
+        ITfSourceSingle* single = nullptr;
+        if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfSourceSingle), reinterpret_cast<void**>(&single)))) {
+            single->UnadviseSingleSink(clientId_, __uuidof(ITfFunctionProvider));
+            single->Release();
+        }
+    }
+    if(dedicated_){dedicated_->Disconnect();dedicated_->Release();dedicated_=nullptr;}
+#endif
     if (!threadManager_) return S_OK;
     shiftTap_.Reset();
     if (keySinkAdvised_) {
@@ -369,7 +440,35 @@ STDMETHODIMP YimeTextService::Deactivate() {
     return S_OK;
 }
 
+#ifdef YIME_TOUCH_PRODUCT
+STDMETHODIMP YimeTextService::GetType(GUID* type) {
+    if (!type) return E_POINTER;
+    *type = CLSID_YimeTextServiceExperiment;
+    return S_OK;
+}
+
+STDMETHODIMP YimeTextService::GetDescription(BSTR* description) {
+    if (!description) return E_POINTER;
+    *description = SysAllocString(L"Yime 18u dedicated route");
+    return *description ? S_OK : E_OUTOFMEMORY;
+}
+
+STDMETHODIMP YimeTextService::GetFunction(REFGUID function, REFIID iid, IUnknown** object) {
+    if (!object) return E_POINTER;
+    *object = nullptr;
+    if (!threadManager_ || !dedicatedProviderAdvised_) return TF_E_DISCONNECTED;
+    if (GetCurrentThreadId() != dedicatedThread_) return RPC_E_WRONG_THREAD;
+    if (!IsEqualGUID(function, GUID_NULL) || !IsEqualIID(iid, __uuidof(IDedicatedTouchService))) return E_NOINTERFACE;
+    *object = static_cast<IDedicatedTouchService*>(this);
+    AddRef();
+    return S_OK;
+}
+#endif
+
 STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(!foreground && dedicated_)dedicated_->Disconnect();
+#endif
     keyEventFocused_ = foreground != FALSE;
     if (!keyEventFocused_) {
         shiftTap_.Reset();
@@ -389,6 +488,9 @@ STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
 STDMETHODIMP YimeTextService::OnInitDocumentMgr(ITfDocumentMgr*) { return S_OK; }
 
 STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(dedicated_)dedicated_->Disconnect();
+#endif
     bool punctuationDocumentClosing = false;
     if (document && punctuationPalette_.IsActive() && punctuationContext_) {
         ITfDocumentMgr* punctuationDocument = nullptr;
@@ -407,6 +509,9 @@ STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
 }
 
 STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(dedicated_)dedicated_->FocusChanged(focus);
+#endif
     shiftTap_.Reset();
     compositionDocumentFocused_ = !compositionDocument_ || focus == compositionDocument_;
     if (!compositionDocumentFocused_) CancelUnconfirmedComposition();
@@ -421,9 +526,17 @@ STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*)
     return S_OK;
 }
 
-STDMETHODIMP YimeTextService::OnPushContext(ITfContext*) { return S_OK; }
+STDMETHODIMP YimeTextService::OnPushContext(ITfContext* context) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(dedicated_)dedicated_->ContextChanged(context);
+#endif
+    return S_OK;
+}
 
 STDMETHODIMP YimeTextService::OnPopContext(ITfContext* context) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(dedicated_)dedicated_->Disconnect();
+#endif
     if (context && context == punctuationContext_) CancelPunctuationPalette(false);
     return S_OK;
 }
@@ -443,6 +556,9 @@ bool YimeTextService::ContextMatchesComposition(ITfContext* context) const noexc
 }
 
 HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) noexcept {
+#ifdef YIME_TOUCH_PRODUCT
+    if(!eaten)return E_POINTER;*eaten=FALSE;return S_OK;
+#endif
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
     try {
@@ -509,6 +625,9 @@ STDMETHODIMP YimeTextService::OnTestKeyDown(ITfContext* context, WPARAM wParam, 
 }
 
 STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(!eaten)return E_POINTER;*eaten=FALSE;return S_OK;
+#endif
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
     if (wParam == VK_SHIFT || wParam == VK_LSHIFT || wParam == VK_RSHIFT) {
@@ -636,6 +755,9 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
 }
 
 STDMETHODIMP YimeTextService::OnTestKeyUp(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(!eaten)return E_POINTER;*eaten=FALSE;return S_OK;
+#endif
     if (!eaten) return E_POINTER;
     *eaten = context && CanAcceptKeys() &&
              (wParam == VK_SHIFT || wParam == VK_LSHIFT || wParam == VK_RSHIFT) ? TRUE : FALSE;
@@ -643,6 +765,9 @@ STDMETHODIMP YimeTextService::OnTestKeyUp(ITfContext* context, WPARAM wParam, LP
 }
 
 STDMETHODIMP YimeTextService::OnKeyUp(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(!eaten)return E_POINTER;*eaten=FALSE;return S_OK;
+#endif
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
     if (!context || !CanAcceptKeys() ||
@@ -1219,3 +1344,31 @@ void YimeTextService::RemoveLanguageBar() noexcept {
     languageBarItem_->Release();
     languageBarItem_ = nullptr;
 }
+
+#ifdef YIME_TOUCH_PRODUCT
+STDMETHODIMP YimeTextService::ConnectDedicated(LPCWSTR pipe,DWORD pid,LPCWSTR image,BSTR* response){
+    if(!response)return E_POINTER;*response=nullptr;
+    if(!threadManager_ || !keyEventFocused_)return E_ABORT;
+    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    if(!dedicated_)dedicated_=new(std::nothrow) DedicatedTouchRoute(threadManager_,clientId_);
+    if(!dedicated_)return E_OUTOFMEMORY;
+    auto* route=dedicated_;route->AddRef();const HRESULT result=route->Connect(pipe,pid,image,response);route->Release();return result;
+}
+STDMETHODIMP YimeTextService::ActionDedicated(LPCSTR action,BSTR* response){
+    if(!response)return E_POINTER;*response=nullptr;
+    if(!dedicated_ || !threadManager_ || !keyEventFocused_)return E_ABORT;
+    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    auto* route=dedicated_;route->AddRef();const HRESULT result=route->Action(action,response);route->Release();return result;
+}
+STDMETHODIMP YimeTextService::PollDedicated(BSTR* response){
+    if(!response)return E_POINTER;*response=nullptr;
+    if(!dedicated_ || !threadManager_)return E_ABORT;
+    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    // A lost key focus must still let the caller consume the revoked result.
+    auto* route=dedicated_;route->AddRef();const HRESULT result=route->Poll(this,response);route->Release();return result;
+}
+STDMETHODIMP YimeTextService::DisconnectDedicated(){
+    if(threadManager_ && GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    if(dedicated_)dedicated_->Disconnect();return S_OK;
+}
+#endif

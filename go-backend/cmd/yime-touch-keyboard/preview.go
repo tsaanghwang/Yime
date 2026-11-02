@@ -18,6 +18,7 @@ type previewSessions interface {
 // supplies an epoch-bound emitter, without putting host HWND/SendInput into the
 // engine. Commits are consumed once; unknown outcomes are never retried.
 type preview struct {
+	bridge                      *bridgePreview // Explicit isolated own-host test seam; nil preserves P3/P4.
 	sessions                    previewSessions
 	layout, mode                string
 	snapshot                    keyboardlab.Response
@@ -46,6 +47,9 @@ func (p *preview) stamp() previewStamp {
 }
 func (p *preview) original() bool { return p.snapshot.Modes.Input != "english" || !p.englishView }
 func (p *preview) dispatch(e keyboardlab.Event) error {
+	if p.bridge != nil {
+		return p.bridgeDispatch(e)
+	}
 	if p.fault || p.snapshot.SessionID == "" {
 		return fmt.Errorf("会话已断开；重新启动预览，不重放输入")
 	}
@@ -77,6 +81,9 @@ func (p *preview) dispatch(e keyboardlab.Event) error {
 	return fmt.Errorf("会话响应无效或已关闭（%d）；没有重放或追加输出", r.Status)
 }
 func (p *preview) switchMode(mode string) error {
+	if p.bridge != nil {
+		return fmt.Errorf("own-host slice fixes variable/CN mode")
+	}
 	if mode != "variable" && mode != "full" && mode != "shorthand" {
 		return fmt.Errorf("unknown mode")
 	}
@@ -143,7 +150,7 @@ func (p *preview) toggleLayout() {
 
 func (p *preview) navigationEnabled() bool {
 	// A paused Chinese composition still owns its candidate context.
-	return !p.fault && p.snapshot.State.RawInput == ""
+	return p.bridge == nil && !p.fault && p.snapshot.State.RawInput == ""
 }
 
 func (p *preview) navigate(key string, extend bool, down previewStamp) error {
@@ -169,6 +176,14 @@ func (p *preview) navigate(key string, extend bool, down previewStamp) error {
 	}
 }
 func (p *preview) apply(o tk.Output, down previewStamp) error {
+	if p.bridge != nil {
+		if down != p.stamp() {
+			return fmt.Errorf("own-host action revision changed; gesture cancelled")
+		}
+		if err := p.bridgeActionAllowed(o); err != nil {
+			return err
+		}
+	}
 	a := o.Action
 	if p.fault {
 		return fmt.Errorf("会话已断开；请重新启动预览")
@@ -323,6 +338,12 @@ func (p *preview) flushMiddleDots() error {
 // Retire without consuming any reply output, including when the display was
 // invalidated while a response was pending. The service owns final cleanup.
 func (p *preview) retire() {
+	if p.bridge != nil {
+		p.bridge.session.Invalidate()
+		_ = p.bridge.session.Close()
+		p.fault = true
+		return
+	}
 	if p.snapshot.SessionID == "" {
 		return
 	}

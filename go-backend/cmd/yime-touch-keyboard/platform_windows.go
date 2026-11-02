@@ -86,6 +86,7 @@ type input struct {
 	Data [32]byte
 }
 type ui struct {
+	demo                *ownDemo
 	h                   uintptr
 	s                   *tk.State
 	ppm                 float64
@@ -240,15 +241,23 @@ func run(o options) error {
 		defer a.inputTrace.file.Close()
 		a.traceInput("start", 0, 0, 0)
 	}
-	if o.Preview || o.Host {
-		r, err := keyboardlab.OpenRuntime(o.Root, o.DataDir)
-		if err != nil {
-			return err
-		}
-		defer r.Close()
-		a.preview, err = newPreview(r.Sessions, b.LayoutID, o.KeyView != "original")
-		if err != nil {
-			return err
+	if o.Preview || o.Host || o.OwnTSFDemo {
+		var err error
+		if o.OwnTSFDemo {
+			if err = a.initOwnDemo(); err != nil {
+				return err
+			}
+			defer a.closeOwnDemo()
+		} else {
+			r, err := keyboardlab.OpenRuntime(o.Root, o.DataDir)
+			if err != nil {
+				return err
+			}
+			defer r.Close()
+			a.preview, err = newPreview(r.Sessions, b.LayoutID, o.KeyView != "original")
+			if err != nil {
+				return err
+			}
 		}
 		a.s.Semantic = true
 		a.s.Original = a.preview.original()
@@ -258,6 +267,9 @@ func run(o options) error {
 		}
 		a.previewTouches = map[uint32]*previewGesture{}
 		a.status = "中文预览：输出仅在下方文本区；无系统输入。鼠标/模拟检查不代表手指或笔验收。"
+		if a.demo != nil {
+			a.status = "独立 TSF 自有宿主演示；先显式重绑；非安装输入法"
+		}
 		fontPath, err := filepath.Abs(filepath.Join(o.Root, "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf"))
 		if err != nil {
 			return err
@@ -293,6 +305,9 @@ func run(o options) error {
 	if o.Host {
 		title = "Yime 18u 中文宿主输入实验"
 	}
+	if o.OwnTSFDemo {
+		title = "Yime 18u 独立 TSF 自有宿主演示（非安装输入法）"
+	}
 	if o.InputTrace != "" {
 		title += "（触笔诊断）"
 	}
@@ -304,6 +319,11 @@ func run(o options) error {
 		return fmt.Errorf("CreateWindow: %w", err)
 	}
 	a.h = h
+	if a.demo != nil {
+		if n, _, _ := U("SetTimer").Call(h, ownDemoTimer, 250, 0); n == 0 {
+			return fmt.Errorf("own demo focus timer unavailable")
+		}
+	}
 	defer func() {
 		U("DestroyWindow").Call(h)
 		if a.font != 0 {
@@ -335,7 +355,7 @@ func run(o options) error {
 	if a.keyFont == 0 {
 		return fmt.Errorf("无法创建键面字体")
 	}
-	if o.Preview || o.Host {
+	if o.Preview || o.Host || o.OwnTSFDemo {
 		glyphHeight := -int32(math.Round(tk.UnitMM * ppm * 0.23))
 		a.glyphFont, _, _ = G("CreateFontW").Call(uintptr(glyphHeight), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("YinYuan")))
 		if a.glyphFont == 0 {
@@ -365,7 +385,7 @@ func run(o options) error {
 		}
 	}()
 	for _, event := range []uintptr{3, 0x8005} {
-		if o.Preview {
+		if o.Preview || o.OwnTSFDemo {
 			break
 		} // Controlled output has no external focus owner.
 		hook, _, err := U("SetWinEventHook").Call(event, event, 0, focusCallback, 0, 0, 0)
@@ -373,6 +393,9 @@ func run(o options) error {
 			return fmt.Errorf("focus monitor unavailable: %v", err)
 		}
 		hooks = append(hooks, hook)
+	}
+	if o.OwnTSFDemoSmoke {
+		return a.ownDemoSmoke()
 	}
 	if o.Smoke {
 		return a.smoke(instance)
@@ -397,6 +420,9 @@ func run(o options) error {
 		}
 		U("TranslateMessage").Call(uintptr(unsafe.Pointer(&msg)))
 		U("DispatchMessageW").Call(uintptr(unsafe.Pointer(&msg)))
+	}
+	if a.demo != nil {
+		return a.demo.closeErr
 	}
 	return nil
 }
@@ -566,6 +592,9 @@ func (a *ui) showHelp() {
 	U("MessageBoxW").Call(a.h, ptr(str(help)), ptr(str("Yime 桌面键盘使用帮助")), 0x00040040)
 }
 func (a *ui) suspendForMinimize() {
+	if a.demo != nil {
+		a.invalidateOwnDemo()
+	}
 	a.soundSuspended = true
 	a.stopKeySound()
 	if a.host != nil {
@@ -625,6 +654,11 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 		a.ensureKeySound()
 		return 0
 	case 0x0113: // WM_TIMER: retry a failed startup without minimizing the window.
+		if w == ownDemoTimer && a.demo != nil {
+			_ = a.pollOwnDemo()
+			a.invalidate()
+			return 0
+		}
 		if w == keySoundTimer && a.soundWindowReady {
 			a.ensureKeySound()
 		}
@@ -643,6 +677,10 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 			return 0
 		}
 	case 0x0002:
+		if a.demo != nil {
+			U("KillTimer").Call(h, ownDemoTimer)
+			a.closeOwnDemo()
+		}
 		a.stopKeySound()
 		if a.host != nil {
 			a.loseHostFocus("键盘已关闭")

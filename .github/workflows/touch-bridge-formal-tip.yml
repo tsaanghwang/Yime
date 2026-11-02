@@ -1,0 +1,156 @@
+name: 18u formal TIP adapter (S3c.1)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['codex/18u-formal-tip-s3c-20261101']
+    paths:
+      - '.github/workflows/touch-bridge-formal-tip.yml'
+      - 'tools/yimecore/18u-touch-product.json'
+      - 'tools/test_18u_product_identity.py'
+      - 'go-backend/internal/touchbroker/**'
+      - 'go-backend/cmd/yimebroker-18u/**'
+      - 'go-backend/input_methods/yime/yimebroker/**'
+      - 'go-backend/cmd/yime-touch-keyboard/**'
+      - 'YimeTextServiceExperiment/**'
+      - 'go-backend/internal/touchhostbridge/**'
+      - 'go-backend/internal/keyboardlab/**'
+      - 'go-backend/internal/asciicodemode/**'
+      - 'go-backend/input_methods/yime/yimecore/**'
+      - 'go-backend/input_methods/yime/engineapi/**'
+      - 'go-backend/go.mod'
+      - 'go-backend/go.sum'
+
+permissions:
+  contents: read
+
+jobs:
+  native-own-host:
+    if: github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101'
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go-backend/go.mod
+          cache: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Build isolated x64 harness (no installation)
+        run: |
+          New-Item -ItemType Directory -Path .generated/s3c-evidence -Force -ErrorAction Stop | Out-Null
+          $ErrorActionPreference = 'Stop'
+          cmake -S YimeTextServiceExperiment -B .generated/s3c-own-host -A x64 -DYIME_TOUCH_BRIDGE_OWN_HOST=ON -DYIME_TOUCH_BRIDGE_PERSISTENT_HOST=ON -DYIME_TOUCH_PRODUCT=ON -DYIME_TOUCH_ACTIVATION_DIAGNOSTICS=ON -DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON 2>&1 | Tee-Object .generated/s3c-evidence/configure.log
+          if ($LASTEXITCODE -ne 0) { throw 'Native harness configure failed' }
+          cmake --build .generated/s3c-own-host --config Release --target YimeTouchBridgeOwnHost YimeFocusCancellationTests YimeTouchBridgePersistentHost YimeTextServiceExperiment YimeTextService18u YimeTouchFormalHostTests YimeTouchRegisteredFormalHostTests YimeDedicatedActivationTests 2>&1 | Tee-Object .generated/s3c-evidence/build.log
+          if ($LASTEXITCODE -ne 0) { throw 'Native harness build failed' }
+          & '.generated/s3c-own-host/Release/YimeFocusCancellationTests.exe' 2>&1 | Tee-Object .generated/s3c-evidence/default-guard-regression.log
+          if ($LASTEXITCODE -ne 0) { throw 'Existing null-guard focus cancellation regression failed' }
+          # The registered target is COMPILE-ONLY here. This executable uses only
+          # substitute TSF interfaces; it neither registers nor activates TSF.
+          & '.generated/s3c-own-host/Release/YimeDedicatedActivationTests.exe' (Resolve-Path '.generated/s3c-own-host/Release/YimeTextService18u.dll').Path 2>&1 | Tee-Object .generated/s3c-evidence/provider-contract.log
+          if ($LASTEXITCODE -ne 0) { throw 'Dedicated provider lifecycle regression failed' }
+          $exe = (Resolve-Path '.generated/s3c-own-host/Release/YimeTouchBridgeOwnHost.exe' -ErrorAction Stop).Path
+          @{ sourceCommit = '${{ github.sha }}'; runID = '${{ github.run_id }}'; harnessSHA256 = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLower(); goVersion = (go version); scope = 'S2b own TSF context; sync plus actual async with controlled read-lock negatives; no installed product acceptance' } | ConvertTo-Json | Set-Content .generated/s3c-evidence/identity.json -Encoding utf8
+      - name: Execute native TSF and reject skipped or missing scenarios
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:YIME_TOUCH_BRIDGE_OWN_HOST = (Resolve-Path '.generated/s3c-own-host/Release/YimeTouchBridgeOwnHost.exe' -ErrorAction Stop).Path
+          $report = Join-Path $PWD '.generated/s3c-evidence/native-go-test.jsonl'
+          Push-Location go-backend
+          try {
+            go test ./internal/touchhostbridge -run '^TestNativeOwnTSFCommit$' -count=1 -json -timeout=150s 2>&1 | Tee-Object $report
+            $code = $LASTEXITCODE
+          } finally { Pop-Location }
+          if ($code -ne 0) { throw 'Native TSF integration test failed' }
+          $events = @(Get-Content $report | ForEach-Object { $_ | ConvertFrom-Json -ErrorAction Stop })
+          $expected = @('TestNativeOwnTSFCommit', 'TestNativeOwnTSFCommit/commit', 'TestNativeOwnTSFCommit/duplicate', 'TestNativeOwnTSFCommit/focus-lost', 'TestNativeOwnTSFCommit/async-commit', 'TestNativeOwnTSFCommit/async-focus-lost', 'TestNativeOwnTSFCommit/async-cancel', 'TestNativeOwnTSFCommit/async-old-epoch')
+          foreach ($name in $expected) {
+            $pass = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -ceq 'pass' })
+            $bad = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -in @('skip', 'fail') })
+            if ($pass.Count -ne 1 -or $bad.Count -ne 0) { throw "Required native scenario did not execute and pass: $name" }
+          }
+          @{ sourceCommit = '${{ github.sha }}'; requiredTests = $expected; allExecutedAndPassed = $true; scope = 'native x64 own-context sync/async commit; controlled delay is not OS latency acceptance'; physicalAcceptance = $false; installedProductAcceptance = $false } | ConvertTo-Json | Set-Content .generated/s3c-evidence/result.json -Encoding utf8
+      - name: Execute existing 18u UI path with persistent own TSF context
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:YIME_TOUCH_BRIDGE_UI_HOST = (Resolve-Path '.generated/s3c-own-host/Release/YimeTouchBridgePersistentHost.exe' -ErrorAction Stop).Path
+          $report = Join-Path $PWD '.generated/s3c-evidence/ui-go-test.jsonl'
+          Push-Location go-backend
+          try {
+            go test ./cmd/yime-touch-keyboard -run '^TestTouchBridgePersistentOwnHostUI$' -count=1 -json -timeout=180s 2>&1 | Tee-Object $report
+            $code = $LASTEXITCODE
+          } finally { Pop-Location }
+          if ($code -ne 0) { throw 'Persistent own-host UI integration failed' }
+          $events = @(Get-Content $report | ForEach-Object { $_ | ConvertFrom-Json -ErrorAction Stop })
+          $expected = @('TestTouchBridgePersistentOwnHostUI', 'TestTouchBridgePersistentOwnHostUI/continuous-commit', 'TestTouchBridgePersistentOwnHostUI/stale-candidate', 'TestTouchBridgePersistentOwnHostUI/invalidate-rebind')
+          foreach ($name in $expected) {
+            $pass = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -ceq 'pass' })
+            $bad = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -in @('skip', 'fail') })
+            if ($pass.Count -ne 1 -or $bad.Count -ne 0) { throw "Required UI scenario missing or failed: $name" }
+          }
+          @{ sourceCommit = '${{ github.sha }}'; requiredTests = $expected; allExecutedAndPassed = $true; hostSHA256 = (Get-FileHash $env:YIME_TOUCH_BRIDGE_UI_HOST -Algorithm SHA256).Hash.ToLower(); scope = 'synthetic mouse messages through existing UI into persistent own TSF context; not physical or installed-product acceptance'; physicalAcceptance = $false; installedProductAcceptance = $false } | ConvertTo-Json | Set-Content .generated/s3c-evidence/ui-result.json -Encoding utf8
+      - name: Validate independent development identity
+        run: python -m unittest discover -s tools -p test_18u_product_identity.py -v
+      - name: Dedicated protocol and standard transport regressions
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Push-Location go-backend
+          try {
+            go test ./internal/touchbroker ./cmd/yimebroker-18u -count=1
+            if ($LASTEXITCODE -ne 0) { throw 'Dedicated protocol regression failed' }
+            $transport = Join-Path $PWD '../.generated/s3c-evidence/transport-go-test.jsonl'
+            go test ./input_methods/yime/yimebroker -run '^Test(ServeNamedPipe|ValidateNamedPipe|ServeLines|Dispatcher|DedicatedNamedPipe|DedicatedTokenLogonIdentityABI)' -count=1 -json 2>&1 | Tee-Object $transport
+            if ($LASTEXITCODE -ne 0) { throw 'Standard transport regression failed' }
+            $events = @(Get-Content $transport | ForEach-Object { $_ | ConvertFrom-Json -ErrorAction Stop })
+            foreach ($name in @('TestDedicatedTokenLogonIdentityABI', 'TestDedicatedNamedPipeHandlerUsesActualSameLogonPeer', 'TestDedicatedNamedPipeRejectsOtherActualProcess')) {
+              if (@($events | Where-Object { $_.Test -ceq $name -and $_.Action -ceq 'pass' }).Count -ne 1 -or @($events | Where-Object { $_.Test -ceq $name -and $_.Action -in @('skip','fail') }).Count -ne 0) { throw "Actual OS peer verification missing or failed: $name" }
+            }
+          } finally { Pop-Location }
+      - name: Restore locked complete dedicated dictionaries
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python -X utf8 tools/touch_keyboard_resources.py fetch --output-dir .generated/touch-keyboard-resources
+      - name: Build dedicated broker (not installed)
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $output = Join-Path $PWD '.generated/s3c-own-host/YimeBroker18u.exe'
+          Push-Location go-backend
+          try { go build -o $output ./cmd/yimebroker-18u; $code = $LASTEXITCODE } finally { Pop-Location }
+          if ($code -ne 0) { throw 'Dedicated broker build failed' }
+      - name: Execute real DLL to broker to TSF and reject skips
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:YIME_FORMAL_18U_HOST = (Resolve-Path '.generated/s3c-own-host/Release/YimeTouchFormalHostTests.exe').Path
+          $env:YIME_FORMAL_18U_DLL = (Resolve-Path '.generated/s3c-own-host/Release/YimeTextService18u.dll').Path
+          $env:YIME_FORMAL_18U_BROKER = (Resolve-Path '.generated/s3c-own-host/YimeBroker18u.exe').Path
+          $env:YIME_FORMAL_18U_DATA = (Resolve-Path '.generated/touch-keyboard-resources').Path
+          $report = Join-Path $PWD '.generated/s3c-evidence/formal-go-test.jsonl'
+          Push-Location go-backend
+          try { go test ./internal/touchhostbridge -run '^(TestNativeFormal18uTIP|TestFormalFailureSummaryPrivacy|TestFormalActivationProbePrivacy|TestFormalResultEvidence|TestFormalPostWriteBarrierEvidence)$' -count=1 -json -timeout=240s 2>&1 | Tee-Object $report; $code = $LASTEXITCODE } finally { Pop-Location }
+          if ($code -ne 0) { throw 'Formal adapter integration failed' }
+          $events = @(Get-Content $report | ForEach-Object { $_ | ConvertFrom-Json -ErrorAction Stop })
+          $expected = @('TestFormalActivationProbePrivacy', 'TestFormalFailureSummaryPrivacy', 'TestFormalResultEvidence', 'TestFormalPostWriteBarrierEvidence', 'TestNativeFormal18uTIP', 'TestNativeFormal18uTIP/commit', 'TestNativeFormal18uTIP/duplicate', 'TestNativeFormal18uTIP/wrong-server-pid', 'TestNativeFormal18uTIP/wrong-server-image', 'TestNativeFormal18uTIP/deactivated', 'TestNativeFormal18uTIP/focus-lost', 'TestNativeFormal18uTIP/disconnect-before-action', 'TestNativeFormal18uTIP/pending-focus-away-back', 'TestNativeFormal18uTIP/pending-deactivated', 'TestNativeFormal18uTIP/disconnect-after-edit')
+          foreach ($name in $expected) {
+            $pass = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -ceq 'pass' })
+            $bad = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -in @('skip', 'fail') })
+            if ($pass.Count -ne 1 -or $bad.Count -ne 0) { throw "Required formal adapter scenario missing or failed: $name" }
+          }
+          $files = @($env:YIME_FORMAL_18U_HOST, $env:YIME_FORMAL_18U_DLL, $env:YIME_FORMAL_18U_BROKER) | ForEach-Object { @{ name = (Split-Path $_ -Leaf); sha256 = (Get-FileHash $_ -Algorithm SHA256).Hash.ToLower() } }
+          @{ sourceCommit = '${{ github.sha }}'; runID = '${{ github.run_id }}'; files = $files; requiredTests = $expected; allExecutedAndPassed = $true; scope = 'directly loaded actual 18u TIP DLL with dedicated named-pipe broker and owned TSF context; no registration, UI route, installation or user-machine acceptance'; registrationValidated = $false; physicalAcceptance = $false } | ConvertTo-Json -Depth 5 | Set-Content .generated/s3c-evidence/formal-result.json -Encoding utf8
+      - name: Preserve scoped evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: 18u-formal-tip-evidence-${{ github.sha }}
+          path: .generated/s3c-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

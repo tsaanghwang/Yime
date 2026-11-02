@@ -39,6 +39,9 @@ struct BrokerUpdate {
     int activeSegmentEnd = -1;
 };
 
+// Shared bounded framing only; dedicated products keep independent protocols.
+bool ExchangeBrokerPipeFrame(HANDLE pipe, DWORD timeoutMs, const std::string& request,
+                             std::string* response, std::string* error, HANDLE cancel = nullptr);
 bool IsBrokerPipeTransportAlive(HANDLE pipe) noexcept;
 DWORD BrokerPipeClientOpenFlags() noexcept;
 DWORD BrokerConnectRetryDelay(DWORD errorCode, DWORD remainingMs) noexcept;

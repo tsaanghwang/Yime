@@ -1,0 +1,121 @@
+name: 18u once-only read-only input language inventory
+
+on:
+  workflow_call:
+    inputs:
+      confirm:
+        description: 'Independent once-only read-only authorization'
+        required: true
+        type: string
+      expected_source_sha:
+        description: 'Exact reviewed source SHA'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: 18u-once-readonly-language-inventory
+  cancel-in-progress: false
+
+jobs:
+  language-inventory:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm == 'once-18u-language-inventory' && github.event.inputs.confirm_18u_registration == '' && github.event.inputs.confirm_18u_language_prepare == '' && inputs.expected_source_sha == github.sha && github.run_attempt == 1
+    runs-on: windows-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: python {0}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Build only the read-only inventory executable
+        env:
+          INVENTORY_SOURCE_SHA: ${{ github.sha }}
+          INVENTORY_RUN_ID: ${{ github.run_id }}
+        run: |
+          import hashlib, json, os, pathlib, subprocess
+          evidence = pathlib.Path('.generated/language-inventory-evidence')
+          evidence.mkdir(parents=True, exist_ok=False)
+          for args, name in [
+              (['cmake', '-S', 'YimeTextServiceExperiment', '-B', '.generated/language-inventory-build', '-A', 'x64', '-DYIME_INPUT_LANGUAGE_INVENTORY=ON'], 'configure.log'),
+              (['cmake', '--build', '.generated/language-inventory-build', '--config', 'Release', '--target', 'YimeInputLanguageInventory'], 'build.log')]:
+              with (evidence / name).open('w', encoding='utf-8') as log:
+                  result = subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=False)
+              if result.returncode != 0:
+                  raise SystemExit('Read-only inventory build failed; no inventory invocation')
+          exe = pathlib.Path('.generated/language-inventory-build/Release/YimeInputLanguageInventory.exe')
+          (evidence / 'identity.json').write_text(json.dumps({'sourceCommit': os.environ['INVENTORY_SOURCE_SHA'], 'runID': os.environ['INVENTORY_RUN_ID'], 'name': exe.name, 'sha256': hashlib.sha256(exe.read_bytes()).hexdigest(), 'scope': 'loaded-input-language-inventory-readonly'}, indent=2), encoding='utf-8')
+      - name: Query loaded layouts and associated profiles once without activation
+        run: |
+          import json, pathlib, subprocess
+          evidence = pathlib.Path('.generated/language-inventory-evidence')
+          exe = pathlib.Path('.generated/language-inventory-build/Release/YimeInputLanguageInventory.exe').resolve()
+          code, out, err, timed_out = None, b'', b'', False
+          try:
+              result = subprocess.run([str(exe)], capture_output=True, check=False, timeout=60)
+              code, out, err = result.returncode, result.stdout, result.stderr
+          except subprocess.TimeoutExpired as failure:
+              out, err, timed_out = failure.stdout or b'', failure.stderr or b'', True
+          except OSError:
+              pass
+          (evidence / 'inventory.json').write_bytes(out)
+          (evidence / 'inventory-stderr.log').write_bytes(err)
+          summary = {'exitCode': code, 'timedOut': timed_out, 'invocations': 1, 'queryCompleted': False, 'environmentSuitabilityEstablished': False, 'scope': 'loaded-input-language-inventory-readonly'}
+          def unique_fields(pairs):
+              record = {}
+              for key, value in pairs:
+                  if key in record:
+                      raise ValueError('Duplicate field')
+                  record[key] = value
+              return record
+          def uint(value, bits):
+              return type(value) is int and 0 <= value < (1 << bits)
+          def valid_inventory(record):
+              keys = {'schema', 'scope', 'status', 'stage', 'code', 'currentHkl', 'currentTsfLanguage', 'loadedLayouts', 'profiles', 'queriedLanguages'}
+              if not isinstance(record, dict) or set(record) != keys:
+                  return False
+              if not uint(record['currentHkl'], 64) or not uint(record['currentTsfLanguage'], 16):
+                  return False
+              layouts, profiles, languages = record['loadedLayouts'], record['profiles'], record['queriedLanguages']
+              if not isinstance(layouts, list) or not 0 < len(layouts) <= 256 or not isinstance(profiles, list) or len(profiles) > 1024 or not isinstance(languages, list) or len(languages) > 64 or not all(uint(value, 16) for value in languages):
+                  return False
+              for profile in profiles:
+                  if not isinstance(profile, dict) or set(profile) != {'queryLanguage', 'language', 'type', 'clsid', 'profileId', 'categoryId', 'hkl', 'hklSubstitute', 'flags', 'enabled', 'active'}:
+                      return False
+                  if not all(uint(profile[key], 16) for key in ['queryLanguage', 'language']) or not all(uint(profile[key], 32) for key in ['type', 'flags']) or not all(uint(profile[key], 64) for key in ['hkl', 'hklSubstitute']) or not all(type(profile[key]) is bool for key in ['enabled', 'active']):
+                      return False
+                  if not all(isinstance(profile[key], str) and len(profile[key]) == 38 for key in ['clsid', 'profileId', 'categoryId']):
+                      return False
+              for layout in layouts:
+                  if not isinstance(layout, dict) or set(layout) != {'hkl', 'hklLowWordLanguageHint', 'isCurrentHkl', 'association', 'exactKeyboardProfileIndices', 'substituteReferenceProfileIndices'}:
+                      return False
+                  if not uint(layout['hkl'], 64) or not uint(layout['hklLowWordLanguageHint'], 16) or type(layout['isCurrentHkl']) is not bool or layout['association'] not in ['unknown', 'exact-keyboard-profile-hkl', 'substitute-reference-only']:
+                      return False
+                  for key in ['exactKeyboardProfileIndices', 'substituteReferenceProfileIndices']:
+                      if not isinstance(layout[key], list) or not all(uint(index, 32) and index < len(profiles) for index in layout[key]):
+                          return False
+              return True
+          try:
+              record = json.loads(out.decode('utf-8-sig'), object_pairs_hook=unique_fields)
+              summary['queryCompleted'] = bool(code == 0 and err == b'' and valid_inventory(record) and record['schema'] == 'input-language-inventory-v1' and record['scope'] == 'loaded-input-language-inventory-readonly' and record['status'] == 'complete' and record['stage'] == 'completed' and type(record['code']) is int and record['code'] == 0)
+          except (ValueError, UnicodeError):
+              pass
+          (evidence / 'workflow-result.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
+          print(json.dumps(summary))
+          if not summary['queryCompleted']:
+              raise SystemExit('Read-only inventory incomplete; preserve evidence and do not retry automatically')
+      - name: Preserve read-only evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: 18u-language-inventory-${{ github.sha }}-${{ github.run_id }}
+          path: .generated/language-inventory-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

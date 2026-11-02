@@ -149,6 +149,11 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 	}
 	a.move(id, x, y)
 	delete(a.previewTouches, id) // A duplicate UP has no action or commit.
+	if a.demo != nil && demoUnsupportedControl(g.action) {
+		a.touchMessage = "本演示固定 CN/变码；正文只读，此控制未开放"
+		a.invalidate()
+		return
+	}
 	if g.action == "sound" {
 		if !g.left {
 			a.cancel()
@@ -171,6 +176,16 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 				a.touchMessage = err.Error()
 			} else if g.action != "close" && g.action != "minimize" && g.action != "help" {
 				a.clickFeedback()
+			}
+		}
+		a.invalidate()
+		return
+	}
+	if a.demo != nil && g.action == "reset" {
+		if !g.left {
+			if err := a.rebindOwnDemo(); err != nil {
+				a.touchMessage = err.Error()
+				a.status = err.Error()
 			}
 		}
 		a.invalidate()
@@ -252,9 +267,17 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 				a.cancel()
 				err = a.preview.apply(tk.Output{Action: tk.Action{Type: "clear"}}, g.stamp)
 			case "layout":
+				if a.demo != nil {
+					err = fmt.Errorf("own demo layout is fixed")
+					break
+				}
 				a.cancel()
 				a.preview.englishView = !a.preview.englishView
 			case "literal":
+				if a.demo != nil {
+					err = fmt.Errorf("own demo literal entry is disabled")
+					break
+				}
 				a.cancel()
 				a.preview.literalEntries = !a.preview.literalEntries
 			case "glyphs":
@@ -288,6 +311,9 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 			a.touchMessage = ""
 		}
 		a.status = "预览输出只在本窗口；真实手指/触控笔验收未记录。"
+		if a.demo != nil {
+			a.status = "自有 TSF 宿主实际读回；非其他应用、安装或物理验收"
+		}
 		if a.host != nil {
 			a.status = a.host.last
 		}
@@ -315,7 +341,9 @@ func (a *ui) drawPreview(dc uintptr, r rect) {
 		case "glyphs":
 			title = map[bool]string{true: "字形 → ID", false: "ID → 字形"}[a.showGlyphs]
 		case "reset":
-			if a.host != nil {
+			if a.demo != nil {
+				title = "显式重绑"
+			} else if a.host != nil {
 				title = "绑定目标"
 			}
 		case "sound":
@@ -350,7 +378,10 @@ func (a *ui) drawPreview(dc uintptr, r rect) {
 	outputRight := a.navigationRect(navigationButtons[0]).L - 8
 	fill(dc, rect{10, 240, outputRight, 290}, palette.output)
 	output := ""
-	if a.host != nil {
+	if a.demo != nil {
+		output = a.ownDemoOutput()
+		text(dc, output, rect{14, 242, outputRight - 4, 288}, 0x24)
+	} else if a.host != nil {
 		output = fmt.Sprintf("目标 HWND %d / 焦点 %d / 世代 %d：%s", a.host.target.Window, a.host.target.Focus, a.host.epoch, a.host.last)
 		text(dc, output, rect{14, 242, outputRight - 4, 288}, 0x10)
 	} else {

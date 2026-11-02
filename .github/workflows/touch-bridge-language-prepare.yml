@@ -1,0 +1,110 @@
+name: 18u once-only conditional Chinese input environment preparation
+
+on:
+  workflow_call:
+    inputs:
+      confirm:
+        description: 'One authorized existing-component environment preparation'
+        required: true
+        type: string
+      expected_source_sha:
+        description: 'Exact reviewed source SHA'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: 18u-once-language-prepare
+  cancel-in-progress: false
+
+jobs:
+  language-prepare:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm == 'once-18u-language-prepare' && github.event.inputs.confirm_18u_registration == '' && github.event.inputs.confirm_18u_language_inventory == '' && inputs.expected_source_sha == github.sha && github.run_attempt == 1
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: python {0}
+    steps:
+      - name: Reserve recovery budget before checkout or build
+        run: |
+          import os, time
+          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as env:
+              env.write('LANGUAGE_PREPARE_START_MONOTONIC=' + repr(time.monotonic()) + '\n')
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Build only the read-only existing-component query
+        env:
+          PREPARE_SOURCE_SHA: ${{ github.sha }}
+          PREPARE_RUN_ID: ${{ github.run_id }}
+        run: |
+          import hashlib, json, os, pathlib, subprocess
+          evidence = pathlib.Path('.generated/language-prepare-evidence')
+          evidence.mkdir(parents=True, exist_ok=False)
+          for args, name in [
+              (['cmake', '-S', 'YimeTextServiceExperiment', '-B', '.generated/language-prepare-build', '-A', 'x64', '-DYIME_CHINESE_INPUT_COMPONENT_QUERY=ON'], 'configure.log'),
+              (['cmake', '--build', '.generated/language-prepare-build', '--config', 'Release', '--target', 'YimeChineseInputComponentQuery'], 'build.log')]:
+              with (evidence / name).open('w', encoding='utf-8') as log:
+                  result = subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=False, timeout=180)
+              if result.returncode != 0:
+                  raise SystemExit('Read-only helper build failed; no preparation')
+          exe = pathlib.Path('.generated/language-prepare-build/Release/YimeChineseInputComponentQuery.exe')
+          (evidence / 'identity.json').write_text(json.dumps({'sourceCommit': os.environ['PREPARE_SOURCE_SHA'], 'runID': os.environ['PREPARE_RUN_ID'], 'name': exe.name, 'sha256': hashlib.sha256(exe.read_bytes()).hexdigest(), 'scope': 'existing-components-only-user-language-preparation', 'ourTipRegistration': False}, indent=2), encoding='utf-8')
+      - name: Validate bounded orchestration without configuration writes
+        run: |
+          import io, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
+          import test_windows_job_once, test_run_language_prepare
+          suite = unittest.TestSuite([unittest.defaultTestLoader.loadTestsFromModule(module) for module in [test_windows_job_once, test_run_language_prepare]])
+          stream = io.StringIO()
+          result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
+          pathlib.Path('.generated/language-prepare-evidence/orchestration-tests.log').write_text(stream.getvalue(), encoding='utf-8')
+          if result.testsRun != 17 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('Bounded orchestration tests missing or failed; no preparation')
+      - name: Require both actual Windows job containment tests before any preparation
+        run: |
+          import io, json, os, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
+          import test_windows_job_native
+          stream = io.StringIO()
+          suite = unittest.defaultTestLoader.loadTestsFromTestCase(test_windows_job_native.WindowsJobTests)
+          result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
+          evidence = pathlib.Path('.generated/language-prepare-evidence')
+          (evidence / 'job-native-selftests.log').write_text(stream.getvalue(), encoding='utf-8')
+          passed = os.name == 'nt' and result.testsRun == 2 and not result.skipped and result.wasSuccessful()
+          (evidence / 'job-native-selftests.json').write_text(json.dumps({'testsRun': result.testsRun, 'skips': len(result.skipped), 'actualWindowsContainmentPassed': passed}), encoding='utf-8')
+          if not passed:
+              raise SystemExit('Required actual Windows job containment did not execute and pass; no preparation')
+      - name: Prepare once then independently restore and verify through checked PS5
+        run: |
+          import json, os, pathlib, sys, time
+          sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
+          from run_language_prepare import run_prepare
+          root = pathlib.Path.cwd()
+          evidence = root / '.generated/language-prepare-evidence'
+          gate = json.loads((evidence / 'job-native-selftests.json').read_text(encoding='utf-8'))
+          if gate.get('actualWindowsContainmentPassed') is not True or gate.get('testsRun') != 2 or gate.get('skips') != 0:
+              raise SystemExit('Missing actual containment gate')
+          started = float(os.environ['LANGUAGE_PREPARE_START_MONOTONIC'])
+          elapsed = time.monotonic() - started
+          if not 0 <= elapsed <= 600:
+              raise SystemExit('Setup exceeded ten minutes; reserve recovery window and do not prepare')
+          summary = run_prepare(root, evidence, root / '.generated/language-prepare-build/Release/YimeChineseInputComponentQuery.exe')
+          print(json.dumps(summary))
+          if summary['status'] != 'prepared-and-restored':
+              raise SystemExit('Preparation blocked, failed, or not observably restored; no retry')
+      - name: Preserve backups, observations and process evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: 18u-language-prepare-${{ github.sha }}-${{ github.run_id }}
+          path: .generated/language-prepare-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

@@ -134,6 +134,11 @@ func (a *ui) touchLabels(k tk.Key, labels []string) []string {
 		return labels
 	}
 	name := ""
+	if a.demo != nil && demoUnsupportedControl(k.Action.Key) {
+		result := make([]string, 12)
+		result[4] = "未开放"
+		return result
+	}
 	switch k.Action.Key {
 	case "help":
 		if a.touchHelpOpen {
@@ -154,7 +159,9 @@ func (a *ui) touchLabels(k tk.Key, labels []string) []string {
 			name = "选区：开"
 		}
 	case "reset":
-		if a.host == nil {
+		if a.demo != nil {
+			name = "重绑"
+		} else if a.host == nil {
 			name = "清空"
 		}
 	}
@@ -178,6 +185,9 @@ func (a *ui) applyTouchImmediate(action string) error {
 		a.touchHelpOpen = false
 		a.touchSettingsOpen = !a.touchSettingsOpen
 	case "help":
+		if a.demo != nil {
+			return fmt.Errorf("独立 TSF 演示：先重绑，仅 CN/变码及候选提交；正文来自宿主读回且只读。失焦须重绑，不向其他应用输入；关闭丢弃正文。")
+		}
 		a.showHelp()
 	case "help-previous", "help-next":
 		if a.touchHelpOpen {
@@ -391,6 +401,8 @@ func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 	}
 	if a.touchMessage != "" {
 		line += "  |  " + a.touchMessage
+	} else if a.demo != nil {
+		line += "  |  " + a.ownDemoOutput()
 	} else if a.host != nil {
 		if a.host.target.Window == 0 {
 			line += "  |  先在正文点光标，再点“绑定”"
@@ -435,6 +447,9 @@ func (a *ui) drawTouchPager(dc uintptr, box rect, name string, enabled bool) {
 }
 
 func (a *ui) touchSettingLabel(action string) string {
+	if a.demo != nil && demoUnsupportedControl(action) {
+		return "固定 CN/变码（未开放）"
+	}
 	switch action {
 	case "variable":
 		return "变码"

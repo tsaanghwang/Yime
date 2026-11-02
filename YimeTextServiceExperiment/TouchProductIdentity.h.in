@@ -1,0 +1,14 @@
+#pragma once
+// Generated from the independent 18u-touch-product.json; never hand-edit build output.
+#define YIME_PRODUCT_NAME L"@TOUCH_NAME@"
+inline constexpr GUID CLSID_YimeTextServiceExperiment =
+    {0x@TOUCH_CLSID_D1@, 0x@TOUCH_CLSID_D2@, 0x@TOUCH_CLSID_D3@,
+     {0x@TOUCH_CLSID_B0@, 0x@TOUCH_CLSID_B1@, 0x@TOUCH_CLSID_B2@, 0x@TOUCH_CLSID_B3@,
+      0x@TOUCH_CLSID_B4@, 0x@TOUCH_CLSID_B5@, 0x@TOUCH_CLSID_B6@, 0x@TOUCH_CLSID_B7@}};
+inline constexpr GUID GUID_YimeTextServiceExperimentProfile =
+    {0x@TOUCH_PROFILE_D1@, 0x@TOUCH_PROFILE_D2@, 0x@TOUCH_PROFILE_D3@,
+     {0x@TOUCH_PROFILE_B0@, 0x@TOUCH_PROFILE_B1@, 0x@TOUCH_PROFILE_B2@, 0x@TOUCH_PROFILE_B3@,
+      0x@TOUCH_PROFILE_B4@, 0x@TOUCH_PROFILE_B5@, 0x@TOUCH_PROFILE_B6@, 0x@TOUCH_PROFILE_B7@}};
+
+#define YIME_TOUCH_LAYOUT_SHA "@TOUCH_LAYOUT@"
+#define YIME_TOUCH_DICTIONARY_SHA "@TOUCH_DICTIONARY@"

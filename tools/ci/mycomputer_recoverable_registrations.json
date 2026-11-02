@@ -1,0 +1,12 @@
+{
+  "schema": "mycomputer-recoverable-registrations-v1",
+  "registrations": [
+    {
+      "manifestSha256": "e3e634f2f49a6b0c5fc96c04fa931b58a0b2e4dcfbf02950e8d4d6b705af7327",
+      "sourceCommit": "71a4a252641159753b0eff41b871254233c6efd2",
+      "exeSha256": "3977cd362543f6c6e799e7e1bdd6b35e7b16dfb6234c093f6ea1363b0678e965",
+      "dllSha256": "267cf20a78960fd9ff2970830ac6897042f974402240bd5520c51ac0d493055d",
+      "note": "MyComputer 2026-11-02 register-once (v2 package) failed at existing-tip-identity, writesStarted=true, cleanupVerified=false; read-only --inspect-recovery verified ownership and an owned empty TIP shell. See S3C_RECOVERY_DELIVERY_REVIEW.zh-CN.md. Pinning permits one reviewed recovery by a newer tool; it does not execute it."
+    }
+  ]
+}

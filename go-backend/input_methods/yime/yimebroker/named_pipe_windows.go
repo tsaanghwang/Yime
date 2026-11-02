@@ -4,8 +4,11 @@ package yimebroker
 
 import (
 	"context"
+	"encoding/binary"
+	"encoding/hex"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"sync"
@@ -40,6 +43,8 @@ var (
 // NamedPipeConfig configures the E6-A Windows transport. Client identity is
 // always derived from the connected pipe handle, never from request JSON.
 type NamedPipeConfig struct {
+	ExpectedClientProcessID uint32 // Controlled bootstrap allowlist; never taken from JSON.
+	RequireSameLogon        bool   // Opt-in: OS SID, Windows session and token authentication ID; not application-role authentication.
 	Name                    string
 	MaxConnections          int
 	MaxConnectionsPerClient int
@@ -55,6 +60,53 @@ func ServeNamedPipe(ctx context.Context, dispatcher *Dispatcher, config NamedPip
 	if dispatcher == nil {
 		return errors.New("dispatcher is required")
 	}
+	return ServeNamedPipeHandler(ctx, config, func(ctx context.Context, in io.Reader, out io.Writer, client TrustedClient) error {
+		return ServeLines(ctx, in, out, dispatcher, client)
+	})
+}
+
+// ServeNamedPipeHandler reuses the authenticated local transport without
+// changing the standard protocol dispatcher or accepting identity in JSON.
+func ServeNamedPipeHandler(ctx context.Context, config NamedPipeConfig, handler func(context.Context, io.Reader, io.Writer, TrustedClient) error) error {
+	if handler == nil {
+		return errors.New("connection handler required")
+	}
+	if config.ExpectedClientProcessID != 0 {
+		pinned, e := syscall.OpenProcess(processQueryLimitedInfo|0x00100000, false, config.ExpectedClientProcessID)
+		if e != nil {
+			return e
+		}
+		defer syscall.CloseHandle(pinned)
+		status, e := syscall.WaitForSingleObject(pinned, 0)
+		if e != nil || status != syscall.WAIT_TIMEOUT {
+			return errors.New("bootstrap TIP process is not alive")
+		}
+		if !config.RequireSameLogon {
+			return errors.New("PID allowlist requires same-logon authentication")
+		}
+
+		// This controlled lane belongs to one bootstrap host. Its exit revokes
+		// the listener and all connections; never kill the host or alter the
+		// lifetime of the standard ExpectedClientProcessID==0 server.
+		watched, cancel := context.WithCancel(ctx)
+		ctx = watched
+		done := make(chan struct{})
+		go func() {
+			defer close(done)
+			for {
+				if ctx.Err() != nil {
+					return
+				}
+				status, e := syscall.WaitForSingleObject(pinned, 50)
+				if e != nil || status != syscall.WAIT_TIMEOUT {
+					cancel()
+					return
+				}
+			}
+		}()
+		defer func() { cancel(); <-done }()
+	}
+
 	if err := validatePipeConfig(&config); err != nil {
 		return err
 	}
@@ -111,7 +163,14 @@ func ServeNamedPipe(ctx context.Context, dispatcher *Dispatcher, config NamedPip
 			}
 			return fmt.Errorf("accept named pipe connection: %w", connectErr)
 		}
-		client, identityErr := trustedClientFromPipe(handle)
+		var client TrustedClient
+		var identityErr error
+		releasePeer := func() {}
+		if config.RequireSameLogon {
+			client, releasePeer, identityErr = trustedSameLogonPeer(handle, config.ExpectedClientProcessID)
+		} else {
+			client, identityErr = trustedClientFromPipe(handle)
+		}
 		if identityErr != nil {
 			_ = syscall.CloseHandle(handle)
 			releaseGlobal()
@@ -120,6 +179,7 @@ func ServeNamedPipe(ctx context.Context, dispatcher *Dispatcher, config NamedPip
 		}
 		release, accepted := limiter.acquire(client.ID)
 		if !accepted {
+			releasePeer()
 			_ = syscall.CloseHandle(handle)
 			releaseGlobal()
 			reportPipeError(config, fmt.Errorf("reject named pipe client %q: connection quota exceeded", client.ID))
@@ -127,18 +187,20 @@ func ServeNamedPipe(ctx context.Context, dispatcher *Dispatcher, config NamedPip
 		}
 		file := os.NewFile(uintptr(handle), config.Name)
 		if file == nil {
+			releasePeer()
 			release()
 			releaseGlobal()
 			_ = syscall.CloseHandle(handle)
 			return errors.New("wrap named pipe handle")
 		}
 		connections.Add(1)
-		go func(file *os.File, client TrustedClient, release, releaseGlobal func()) {
+		go func(file *os.File, client TrustedClient, release, releaseGlobal, releasePeer func()) {
+			defer releasePeer()
 			defer connections.Done()
 			defer release()
 			defer releaseGlobal()
-			servePipeFile(serveContext, file, dispatcher, client, config)
-		}(file, client, release, releaseGlobal)
+			servePipeFile(serveContext, file, handler, client, config)
+		}(file, client, release, releaseGlobal, releasePeer)
 	}
 }
 
@@ -296,7 +358,7 @@ func trustedClientFromPipe(handle syscall.Handle) (TrustedClient, error) {
 	return TrustedClient{ID: fmt.Sprintf("windows:%s:pid:%d", sid, processID)}, nil
 }
 
-func servePipeFile(ctx context.Context, file *os.File, dispatcher *Dispatcher, client TrustedClient, config NamedPipeConfig) {
+func servePipeFile(ctx context.Context, file *os.File, handler func(context.Context, io.Reader, io.Writer, TrustedClient) error, client TrustedClient, config NamedPipeConfig) {
 	closed := make(chan struct{})
 	go func() {
 		select {
@@ -305,7 +367,7 @@ func servePipeFile(ctx context.Context, file *os.File, dispatcher *Dispatcher, c
 		case <-closed:
 		}
 	}()
-	err := ServeLines(ctx, file, file, dispatcher, client)
+	err := handler(ctx, file, file, client)
 	close(closed)
 	_ = file.Close()
 	if err != nil && ctx.Err() == nil && !errors.Is(err, syscall.ERROR_BROKEN_PIPE) {
@@ -366,4 +428,112 @@ func (s *pipeSecurity) close() {
 		_, _, _ = procLocalFree.Call(s.descriptor)
 		s.descriptor = 0
 	}
+}
+
+// Same user alone is insufficient across logons. Hold the authenticated peer
+// process object for the connection lifetime, and never trust payload PID/SID.
+func trustedSameLogonPeer(pipe syscall.Handle, expectedPID uint32) (TrustedClient, func(), error) {
+	noop := func() {}
+	var pid uint32
+	ok, _, e := procGetNamedPipeClientProcessID.Call(uintptr(pipe), uintptr(unsafe.Pointer(&pid)))
+	if ok == 0 || pid == 0 {
+		return TrustedClient{}, noop, fmt.Errorf("peer PID unavailable: %v", e)
+	}
+	if expectedPID != 0 && pid != expectedPID {
+		return TrustedClient{}, noop, errors.New("peer is not bootstrap TIP host process")
+	}
+	process, e := syscall.OpenProcess(processQueryLimitedInfo|0x00100000, false, pid)
+	if e != nil {
+		return TrustedClient{}, noop, fmt.Errorf("open authenticated peer process: %w", e)
+	}
+	fail := func(e error) (TrustedClient, func(), error) {
+		syscall.CloseHandle(process)
+		return TrustedClient{}, noop, e
+	}
+	var token syscall.Token
+	if e = syscall.OpenProcessToken(process, tokenQuery, &token); e != nil {
+		return fail(fmt.Errorf("open authenticated peer token: %w", e))
+	}
+	defer token.Close()
+	current, e := syscall.OpenCurrentProcessToken()
+	if e != nil {
+		return fail(fmt.Errorf("open server token: %w", e))
+	}
+	defer current.Close()
+	peerSID, peerSession, peerLogon, e := logonIdentity(token)
+	if e != nil {
+		return fail(fmt.Errorf("query peer logon identity: %w", e))
+	}
+	sid, session, logon, e := logonIdentity(current)
+	if e != nil {
+		return fail(fmt.Errorf("query server logon identity: %w", e))
+	}
+	if peerSID != sid || peerSession != session || peerLogon != logon {
+		return fail(errors.New("peer user/session/logon differs"))
+	}
+	status, e := syscall.WaitForSingleObject(process, 0)
+	if e != nil || status != syscall.WAIT_TIMEOUT {
+		return fail(errors.New("peer process is not alive"))
+	}
+	var creation, exit, kernel, user syscall.Filetime
+	if e = syscall.GetProcessTimes(process, &creation, &exit, &kernel, &user); e != nil {
+		return fail(fmt.Errorf("query peer process creation identity: %w", e))
+	}
+	return TrustedClient{ID: fmt.Sprintf("windows:%s:session:%s:logon:%s:pid:%d:created:%08x%08x", sid, session, logon, pid, creation.HighDateTime, creation.LowDateTime)}, func() { syscall.CloseHandle(process) }, nil
+}
+
+// These are Win32 ABI output types, not byte-array scratch buffers. Byte
+// arrays guarantee only byte alignment, which is insufficient for typed token
+// information outputs (and can differ under race-instrumented allocation).
+type tokenLUID struct {
+	LowPart  uint32
+	HighPart int32
+}
+type tokenStatistics struct {
+	TokenID            tokenLUID
+	AuthenticationID   tokenLUID
+	ExpirationTime     int64
+	TokenType          uint32
+	ImpersonationLevel uint32
+	DynamicCharged     uint32
+	DynamicAvailable   uint32
+	GroupCount         uint32
+	PrivilegeCount     uint32
+	ModifiedID         tokenLUID
+}
+
+func encodedLogonIdentity(session uint32, authentication tokenLUID) (string, string) {
+	var sessionBytes [4]byte
+	var authenticationBytes [8]byte
+	binary.LittleEndian.PutUint32(sessionBytes[:], session)
+	binary.LittleEndian.PutUint32(authenticationBytes[:4], authentication.LowPart)
+	binary.LittleEndian.PutUint32(authenticationBytes[4:], uint32(authentication.HighPart))
+	return hex.EncodeToString(sessionBytes[:]), hex.EncodeToString(authenticationBytes[:])
+}
+func logonIdentity(token syscall.Token) (string, string, string, error) {
+	user, e := token.GetTokenUser()
+	if e != nil {
+		return "", "", "", fmt.Errorf("GetTokenInformation(TokenUser): %w", e)
+	}
+	sid, e := user.User.Sid.String()
+	if e != nil {
+		return "", "", "", fmt.Errorf("format TokenUser SID: %w", e)
+	}
+	var session uint32
+	var size uint32
+	if e = syscall.GetTokenInformation(token, syscall.TokenSessionId, (*byte)(unsafe.Pointer(&session)), uint32(unsafe.Sizeof(session)), &size); e != nil {
+		return "", "", "", fmt.Errorf("GetTokenInformation(TokenSessionId): %w", e)
+	}
+	if size != uint32(unsafe.Sizeof(session)) {
+		return "", "", "", errors.New("unexpected TokenSessionId size")
+	}
+	var statistics tokenStatistics
+	if e = syscall.GetTokenInformation(token, syscall.TokenStatistics, (*byte)(unsafe.Pointer(&statistics)), uint32(unsafe.Sizeof(statistics)), &size); e != nil {
+		return "", "", "", fmt.Errorf("GetTokenInformation(TokenStatistics): %w", e)
+	}
+	if size != uint32(unsafe.Sizeof(statistics)) {
+		return "", "", "", errors.New("unexpected TOKEN_STATISTICS size")
+	}
+	sessionText, logonText := encodedLogonIdentity(session, statistics.AuthenticationID)
+	return sid, sessionText, logonText, nil
 }
