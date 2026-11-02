@@ -1,0 +1,155 @@
+name: Publish verified 18u ZIP without rebuild or execution
+
+on:
+  workflow_call:
+    inputs:
+      confirm:
+        required: true
+        type: string
+      expected_workflow_sha:
+        required: true
+        type: string
+permissions: {}
+concurrency:
+  group: publish-verified-18u-5853b2b
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'tsaanghwang/Yime' && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/delivery/18u-activated-loop-20261102' && github.run_attempt == 1 && inputs.confirm == 'publish-verified-5853b2b' && inputs.expected_workflow_sha == github.sha
+    permissions:
+      contents: write
+      actions: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Verify exact existing package and publish one prerelease asset
+        shell: python {0}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONFIRM: ${{ inputs.confirm }}
+          EXPECTED_WORKFLOW_SHA: ${{ inputs.expected_workflow_sha }}
+        run: |
+          import hashlib, io, json, os, urllib.error, urllib.parse, urllib.request, zipfile
+          REPO = 'tsaanghwang/Yime'
+          SOURCE = '5853b2bcb0ac0878987e9ca97f4f3a8461a6714f'
+          RUN = 41400229173
+          ARTIFACT = 13121197246
+          TAG = 'test-18u-activated-loop-5853b2b'
+          NAME = 'Yime18uActivatedLoop-x64.zip'
+          ZIP_SHA = '99e0bf8358e5edb54450436cb561a5d49f3efe53f2130455b90af4c6eae204ed'
+          OUTER_SHA = 'c9702143efbf99ad47499570b3659743d21e4ed5baefa68d6a889f5a59a7ae0e'
+          MANIFEST_SHA = '2b455439aa5dd1a2455bc44aa9f58e264ea8481151e903fd7783a1b1c4381013'
+          BASE = 'https://api.github.com/repos/' + REPO
+          assert os.environ['GITHUB_REPOSITORY'] == REPO
+          assert os.environ['GITHUB_EVENT_NAME'] == 'workflow_dispatch'
+          assert os.environ['GITHUB_REF'] == 'refs/heads/delivery/18u-activated-loop-20261102'
+          assert os.environ['GITHUB_RUN_ATTEMPT'] == '1'
+          assert os.environ['CONFIRM'] == 'publish-verified-5853b2b'
+          assert os.environ['EXPECTED_WORKFLOW_SHA'] == os.environ['GITHUB_SHA']
+          
+          class SafeRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  if urllib.parse.urlsplit(newurl).scheme != 'https':
+                      raise RuntimeError('Non-HTTPS redirect rejected')
+                  result = super().redirect_request(req, fp, code, msg, headers, newurl)
+                  if urllib.parse.urlsplit(newurl).netloc != urllib.parse.urlsplit(req.full_url).netloc:
+                      result.remove_header('Authorization')
+                  return result
+          opener = urllib.request.build_opener(SafeRedirect())
+          
+          def request(path, method='GET', body=None, raw=False, missing=False, upload=False):
+              url = path if upload else BASE + path
+              if urllib.parse.urlsplit(url).netloc != ('uploads.github.com' if upload else 'api.github.com'):
+                  raise RuntimeError('Unexpected API destination')
+              headers = {'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                         'Accept': 'application/octet-stream' if raw else 'application/vnd.github+json',
+                         'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'Yime-fixed-package-delivery'}
+              if isinstance(body, dict):
+                  body = json.dumps(body).encode(); headers['Content-Type'] = 'application/json'
+              elif body is not None:
+                  headers['Content-Type'] = 'application/zip'
+              try:
+                  with opener.open(urllib.request.Request(url, data=body, headers=headers, method=method), timeout=180) as response:
+                      data = response.read(110_000_001)
+                      if len(data) > 110_000_000:
+                          raise RuntimeError('Response exceeds fixed delivery bound')
+                      return data if raw else json.loads(data)
+              except urllib.error.HTTPError as error:
+                  if missing and method == 'GET' and error.code == 404:
+                      return None
+                  # Never retry ambiguous writes or print signed URLs/token headers.
+                  raise RuntimeError(f'GitHub {method} failed with HTTP {error.code}') from None
+          
+          def require_hash(data, expected):
+              if hashlib.sha256(data).hexdigest() != expected:
+                  raise RuntimeError('Fixed-byte SHA256 mismatch')
+          
+          # Every read/validation precedes creation; a prior draft/tag is not overwritten.
+          if request('/releases/tags/' + TAG, missing=True) is not None:
+              raise RuntimeError('Release already exists; stop without replacing it')
+          if request('/git/ref/tags/' + TAG, missing=True) is not None:
+              raise RuntimeError('Tag already exists; stop without replacing it')
+          run = request('/actions/runs/' + str(RUN))
+          assert run['head_sha'] == SOURCE and run['status'] == 'completed' and run['conclusion'] == 'success'
+          assert run['path'] == '.github/workflows/activated-broker-loop-build.yml'
+          assert run['head_repository']['full_name'] == REPO
+          artifact = request('/actions/artifacts/' + str(ARTIFACT))
+          assert artifact['id'] == ARTIFACT and artifact['expired'] is False
+          assert artifact['name'] == 'activated-loop-x64-package-' + SOURCE
+          assert artifact['size_in_bytes'] == 92123357
+          assert artifact['digest'] == 'sha256:' + OUTER_SHA
+          assert artifact['workflow_run']['id'] == RUN and artifact['workflow_run']['head_sha'] == SOURCE
+          outer = request('/actions/artifacts/' + str(ARTIFACT) + '/zip', raw=True)
+          assert len(outer) == 92123357
+          require_hash(outer, OUTER_SHA)
+          with zipfile.ZipFile(io.BytesIO(outer)) as archive:
+              assert sorted(archive.namelist()) == [NAME, 'package-identity.json']
+              payload = archive.read(NAME)
+          assert len(payload) == 92104071
+          require_hash(payload, ZIP_SHA)
+          with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+              names = archive.namelist()
+              assert len(names) == len(set(names)) == 20
+              manifest_raw = archive.read('manifest.json')
+              require_hash(manifest_raw, MANIFEST_SHA)
+              manifest = json.loads(manifest_raw)
+              assert manifest['sourceCommit'] == SOURCE and manifest['architecture'] == 'native-x64'
+              assert manifest['registrationExecuted'] is False and manifest['userMachineExecutionApproved'] is False
+              assert set(names) == set(manifest['files']) | {'manifest.json'}
+              for name, identity in manifest['files'].items():
+                  data = archive.read(name)
+                  assert len(data) == identity['bytes']
+                  require_hash(data, identity['sha256'])
+          # Nothing extracted, rebuilt, imported from the package or executed.
+          print('Validated exact existing artifact, ZIP, manifest and all 19 payloads; package execution: false', flush=True)
+          notes = f'''独立 18u 激活/Broker 单次编辑开发测试包，不是安装器或稳定发行。
+          仅 MyComputer 原生 x64；不是 ARM64 包，不派发到其他机器。EXE/DLL 未签名。
+          源码: {SOURCE}；原构建 run {RUN}；artifact {ARTIFACT}。
+          原字节 ZIP（未重建）: {NAME}，92104071 bytes。
+          SHA256: {ZIP_SHA}
+          manifest SHA256: {MANIFEST_SHA}
+          编译/非注册测试已过；真实注册、一次编辑、撤销和独立残留核验尚未执行。
+          下载不等于运行授权；预检/注册各需明确范围，异常恢复另行确认，不自动重试。
+          交付说明: https://github.com/{REPO}/blob/{os.environ['GITHUB_SHA']}/delivery/18u-activated-loop-5853b2b/README.zh-CN.md
+          只下载命名 ZIP；自动 Source code ZIP 不是测试包。'''
+          release = request('/releases', 'POST', {'tag_name': TAG, 'target_commitish': SOURCE,
+              'name': '18u activated Broker loop x64 — development test 5853b2b',
+              'body': notes, 'draft': True, 'prerelease': True, 'make_latest': 'false'})
+          release_id = release['id']
+          print(f'Created draft release {release_id}; any later failure leaves draft for inspection, no automatic retry/delete.', flush=True)
+          upload = release['upload_url'].split('{')[0] + '?name=' + urllib.parse.quote(NAME)
+          asset = request(upload, 'POST', payload, upload=True)
+          assert asset['name'] == NAME and asset['state'] == 'uploaded' and asset['size'] == len(payload)
+          assert asset['digest'] == 'sha256:' + ZIP_SHA
+          roundtrip = request('/releases/assets/' + str(asset['id']), raw=True)
+          assert len(roundtrip) == len(payload)
+          require_hash(roundtrip, ZIP_SHA)
+          assets = request('/releases/' + str(release_id) + '/assets')
+          assert len(assets) == 1 and assets[0]['id'] == asset['id']
+          release = request('/releases/' + str(release_id), 'PATCH', {'draft': False, 'prerelease': True, 'make_latest': 'false'})
+          assert release['draft'] is False and release['prerelease'] is True and release['tag_name'] == TAG
+          ref = request('/git/ref/tags/' + TAG)
+          assert ref['object']['type'] == 'commit' and ref['object']['sha'] == SOURCE
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as report:
+              report.write(f"Release: {release['html_url']}\n\nAsset: {asset['browser_download_url']}\n\nSHA256: {ZIP_SHA}\n\nSource: {SOURCE}\n\nPackage executed: false; registration: not run.\n")
+          print(json.dumps({'releaseId': release_id, 'assetId': asset['id'], 'downloadUrl': asset['browser_download_url'], 'sha256': ZIP_SHA, 'packageExecuted': False}))

@@ -1,0 +1,28 @@
+{
+  "schema": "fixed-development-delivery-v1",
+  "repository": "tsaanghwang/Yime",
+  "sourceCommit": "5853b2bcb0ac0878987e9ca97f4f3a8461a6714f",
+  "baseImplementation": "e3962604d333df098f31ad689e11801c8b1622c5",
+  "buildRun": 41400229173,
+  "artifactId": 13121197246,
+  "artifactOuterSha256": "c9702143efbf99ad47499570b3659743d21e4ed5baefa68d6a889f5a59a7ae0e",
+  "releaseTag": "test-18u-activated-loop-5853b2b",
+  "downloadUrl": "https://github.com/tsaanghwang/Yime/releases/download/test-18u-activated-loop-5853b2b/Yime18uActivatedLoop-x64.zip",
+  "filename": "Yime18uActivatedLoop-x64.zip",
+  "bytes": 92104071,
+  "sha256": "99e0bf8358e5edb54450436cb561a5d49f3efe53f2130455b90af4c6eae204ed",
+  "manifestSha256": "2b455439aa5dd1a2455bc44aa9f58e264ea8481151e903fd7783a1b1c4381013",
+  "nativeArchitecture": "x64",
+  "eligibleHost": "MyComputer",
+  "signatureStatus": "NotSigned",
+  "packageRebuilt": false,
+  "registrationExecuted": false,
+  "automaticExecution": false,
+  "machineTasks": {
+    "MyComputer": "Download and hash identity only; any execution requires separate authorization",
+    "desktop-x64": "standby; not assigned this package",
+    "msi-x64": "standby; not assigned this package",
+    "asus-arm64": "not compatible with native ARM64; no execution"
+  },
+  "releaseState": "planned; verify published Release and asset before download; this static record is not a publication receipt"
+}

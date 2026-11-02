@@ -3,6 +3,11 @@ name: Build
 on:
   workflow_dispatch:
     inputs:
+      confirm_18u_release:
+        description: 'Publish only the verified 5853b2b ZIP; all other confirmations stay empty'
+        required: false
+        default: ''
+        type: string
       confirm_18u_registration:
         description: 'Optional single isolated 18u registration probe; otherwise leave empty'
         required: false
@@ -40,27 +45,28 @@ concurrency:
 
 jobs:
   one-shot-18u-registration-probe:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_registration == 'once-18u-registration' && inputs.confirm_18u_language_inventory == '' && inputs.confirm_18u_language_prepare == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1
+    if: ${{ github.ref != 'refs/heads/delivery/18u-activated-loop-20261102' && (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_registration == 'once-18u-registration' && inputs.confirm_18u_language_inventory == '' && inputs.confirm_18u_language_prepare == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1) }}
     uses: ./.github/workflows/touch-bridge-registered-probe.yml
     with:
       confirm: ${{ inputs.confirm_18u_registration }}
       expected_source_sha: ${{ inputs.expected_18u_source_sha }}
 
   one-shot-18u-language-inventory:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_language_inventory == 'once-18u-language-inventory' && inputs.confirm_18u_registration == '' && inputs.confirm_18u_language_prepare == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1
+    if: ${{ github.ref != 'refs/heads/delivery/18u-activated-loop-20261102' && (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_language_inventory == 'once-18u-language-inventory' && inputs.confirm_18u_registration == '' && inputs.confirm_18u_language_prepare == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1) }}
     uses: ./.github/workflows/touch-bridge-language-inventory.yml
     with:
       confirm: ${{ inputs.confirm_18u_language_inventory }}
       expected_source_sha: ${{ inputs.expected_18u_source_sha }}
 
   one-shot-18u-language-prepare:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_language_prepare == 'once-18u-language-prepare' && inputs.confirm_18u_registration == '' && inputs.confirm_18u_language_inventory == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1
+    if: ${{ github.ref != 'refs/heads/delivery/18u-activated-loop-20261102' && (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_language_prepare == 'once-18u-language-prepare' && inputs.confirm_18u_registration == '' && inputs.confirm_18u_language_inventory == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1) }}
     uses: ./.github/workflows/touch-bridge-language-prepare.yml
     with:
       confirm: ${{ inputs.confirm_18u_language_prepare }}
       expected_source_sha: ${{ inputs.expected_18u_source_sha }}
 
   build-contract:
+    if: github.ref != 'refs/heads/delivery/18u-activated-loop-20261102'
     name: build-contract / validate-build-contract
     runs-on: windows-2022
     timeout-minutes: 15
@@ -112,6 +118,7 @@ jobs:
         run: .\tools\test-libime2-change-boundary.ps1
 
   lexicon-offline-tooling:
+    if: github.ref != 'refs/heads/delivery/18u-activated-loop-20261102'
     name: lexicon-offline-tooling
     runs-on: windows-2022
     timeout-minutes: 30
@@ -152,6 +159,7 @@ jobs:
         run: .\tools\lexicon\invoke-python.ps1 tools\lexicon\verify_release_readiness.py --require-release
 
   rust-i686-host:
+    if: github.ref != 'refs/heads/delivery/18u-activated-loop-20261102'
     name: rust-i686-host
     runs-on: windows-2022
     timeout-minutes: 20
@@ -176,6 +184,7 @@ jobs:
           rustup run stable-i686-pc-windows-msvc cargo test --verbose
 
   go-tests:
+    if: github.ref != 'refs/heads/delivery/18u-activated-loop-20261102'
     name: go-tests
     runs-on: windows-2022
     timeout-minutes: 20
@@ -204,6 +213,7 @@ jobs:
         run: .\tools\test-installed-particle-a-stage6d-verifier.ps1
 
   real-rime-tests:
+    if: github.ref != 'refs/heads/delivery/18u-activated-loop-20261102'
     name: real-rime-tests / ${{ matrix.shard }}
     runs-on: windows-2022
     timeout-minutes: 30
@@ -235,6 +245,7 @@ jobs:
           retention-days: 14
 
   go-race-msys2:
+    if: github.ref != 'refs/heads/delivery/18u-activated-loop-20261102'
     name: go-race-msys2
     runs-on: windows-2022
     timeout-minutes: 20
@@ -260,6 +271,7 @@ jobs:
           .\tools\test-go-race.ps1 -GccPath $gcc -TimeoutSeconds 300
 
   native-build:
+    if: github.ref != 'refs/heads/delivery/18u-activated-loop-20261102'
     name: native-build
     runs-on: windows-2022
     timeout-minutes: 20
@@ -339,6 +351,7 @@ jobs:
           retention-days: 14
 
   shard-coverage:
+    if: github.ref != 'refs/heads/delivery/18u-activated-loop-20261102'
     name: shard-coverage
     runs-on: windows-2022
     timeout-minutes: 5
@@ -356,6 +369,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Required shard coverage did not pass' }
 
   simple-installer:
+    if: github.ref != 'refs/heads/delivery/18u-activated-loop-20261102'
     runs-on: windows-2022
     timeout-minutes: 10
     needs: [build-contract]
@@ -393,7 +407,7 @@ jobs:
 
   core-build:
     name: core-build
-    if: ${{ always() }}
+    if: ${{ github.ref != 'refs/heads/delivery/18u-activated-loop-20261102' && (always()) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [build-contract, lexicon-offline-tooling, rust-i686-host, go-tests, real-rime-tests, go-race-msys2, native-build, shard-coverage, simple-installer]
@@ -402,3 +416,13 @@ jobs:
         env:
           RESULTS: ${{ toJSON(needs) }}
         run: python -c "import json,os; assert all(v['result']=='success' for v in json.loads(os.environ['RESULTS']).values())"
+
+  publish-verified-18u-release:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/delivery/18u-activated-loop-20261102' && inputs.confirm_18u_release == 'publish-verified-5853b2b' && inputs.expected_18u_source_sha == github.sha && inputs.confirm_18u_registration == '' && inputs.confirm_18u_language_inventory == '' && inputs.confirm_18u_language_prepare == '' && github.run_attempt == 1
+    permissions:
+      contents: write
+      actions: read
+    uses: ./.github/workflows/publish-verified-18u-package.yml
+    with:
+      confirm: ${{ inputs.confirm_18u_release }}
+      expected_workflow_sha: ${{ inputs.expected_18u_source_sha }}
