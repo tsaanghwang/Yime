@@ -58,6 +58,9 @@ actualDllActivationVerified=false、profileActivationApiVerified=false，
 但本批未尝试扩大清理范围或修改原恢复程序，不能宣布清理根因已通过实机验证。
 后续需专门审查幂等清理与所有权保护，形成固定可审阅的恢复交付后，
 再按明确的系统恢复授权执行。当前不应重复注册来覆盖这些残留。
+该审查已于 2026-11-02 完成为[恢复交付方案](S3C_RECOVERY_DELIVERY_REVIEW.zh-CN.md)：
+现有 `--recover` 对此残留必失败且会消耗唯一恢复声明，须先交付受门控的
+`Unregister`＋四视图清理工具。
 
 ## 已修复的诊断遮蔽
 
