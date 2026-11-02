@@ -176,3 +176,19 @@ MyComputer 现已回到“独立 18u 身份绝对缺席”状态，可作为下�
 `architecture_bits` 正确、stderr 为空；安装载荷哈希与运行时/Broker PID 前后不变
 （[记录](INSTALLED_REGISTERED_HOST_X64_X86_2026-11-02.json)）。该回归证明恢复未触及标准产品，
 并满足 PR #88 的合并前提；它运行的是已安装基线二进制，不是本分支源码构建。
+
+## 9. 本分支源码构建、测试安装与注册宿主回归（2026-11-02）
+
+用户选择更强证据：在开发机从本分支 `fdd075cd`（干净树）构建标准产品并测试安装，再跑同一矩阵。
+
+| 步骤 | 结果 |
+| --- | --- |
+| 连读准入 `run-connected-speech-admission.ps1`（ps7） | PASS，24 记录／72 行，源清单哈希绑定（跨工作树复用被导出器拒绝 `export evidence source changed`，改在同一树重新准入） |
+| `build-local-product.ps1`（ps7，`.tmp\yimecore-local-product\20261102-113927-pr88`） | PASS：Go 测试、x64/x86 原生契约与失焦取消测试、三模式索引重建校验、连读导出、独立性审计；`source-manifest` `dirty=false`。首次在长路径工作树失败于 `Test TEMP is too long`（120 字符限制），改用 `C:\dev\Yime` detached HEAD |
+| `Build-Package.ps1` → `C:\dev\Yime-deliveries\pr88-fdd075cd-20261102\yimecore` | 版本 `0.1.0-local.14-pr88`，65 文件；`Setup.ps1 -Action Check` PASS |
+| 安装（自提升 UAC） | exit 0；x64/x86 COM 与类别注册 hresult 0x0；运行时与 Broker 由安装器重启 |
+| 注册宿主矩阵 | 第 1 次：观察器读不到提升运行时的映像路径（wrapper 改用 `PROCESS_QUERY_LIMITED_INFORMATION`+`QueryFullProcessImageNameW`）；第 2 次 1/6、第 3 次 5/6，失败均为 `registered TIP did not become foreground`（已知前台抢占类自动化限制，非功能失败）；`x64-full` 单格复测 1/1；**第 2 次完整运行 6/6**（[记录](INSTALLED_REGISTERED_HOST_X64_X86_PR88_BUILD_2026-11-02.json)），20 个 `*_verified` 全 true，载荷与运行时 PID 前后不变 |
+
+结论：本分支共享 TIP 源码（`BrokerClient`／`CompositionEditSession`／`TextService` 的加法式改动）在已安装 x64/x86
+标准产品上的注册宿主回归通过。开发机现安装 `0.1.0-local.14-pr88`；原 `0.1.0-local.13` 包仍在
+`C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312` 可回滚。本次不是物理应用验收，也不改默认输入法。

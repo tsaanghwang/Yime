@@ -3,7 +3,8 @@ param(
     [Parameter(Mandatory)][string]$EvidenceRoot,
     [Parameter(Mandatory)][string]$InstallRoot,
     [Parameter(Mandatory)][string]$Pipe,
-    [ValidateRange(15,300)][int]$TimeoutSeconds = 120
+    [ValidateRange(15,300)][int]$TimeoutSeconds = 120,
+    [string[]]$Only = @() # Optional single-case retry such as 'x64-full'; the summary then expects only those cases.
 )
 # Installed x64/x86 registered-host regression on the pinned development host (PS5).
 # The child activates the registered TIP and commits synthetic text to the installed
@@ -14,6 +15,25 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 $utf8 = [Text.UTF8Encoding]::new($false)
 $currentClsid = '{E40FA752-BB96-461D-A51D-F40EB437EC65}'
+# The installer-started runtime is owned by an elevated token; Process.Path is empty
+# from a standard observer. Query the image with the narrow supported access right.
+Add-Type -Namespace YimeRegisteredHost -Name Native -MemberDefinition @'
+[System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+public static extern System.IntPtr OpenProcess(uint desiredAccess, bool inheritHandle, uint processId);
+[System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true, CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+public static extern bool QueryFullProcessImageNameW(System.IntPtr process, uint flags, System.Text.StringBuilder exeName, ref uint size);
+[System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+public static extern bool CloseHandle(System.IntPtr handle);
+'@
+function Get-ProcessImagePath([uint32]$ProcessId) {
+    $handle = [YimeRegisteredHost.Native]::OpenProcess(0x1000,$false,$ProcessId)
+    if ($handle -eq [IntPtr]::Zero) { throw ('OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION) could not observe PID ' + $ProcessId + '; Win32=' + [Runtime.InteropServices.Marshal]::GetLastWin32Error()) }
+    try {
+        $buffer = [Text.StringBuilder]::new(32768); [uint32]$capacity = 32768
+        if (-not [YimeRegisteredHost.Native]::QueryFullProcessImageNameW($handle,0,$buffer,[ref]$capacity)) { throw ('QueryFullProcessImageNameW failed for PID ' + $ProcessId) }
+        return $buffer.ToString()
+    } finally { $null = [YimeRegisteredHost.Native]::CloseHandle($handle) }
+}
 
 function Write-EvidenceJson($Value,[string]$Path) { [IO.File]::WriteAllText($Path,(ConvertTo-Json -InputObject $Value -Depth 20),$utf8) }
 function Get-FileRecord([string]$Path) {
@@ -52,8 +72,9 @@ function Get-RuntimeObservation {
     if ($status.state -cne 'running' -or $status.install_root -ine $InstallRoot -or $status.pipe_name -cne $Pipe) { throw 'Runtime status does not identify the installed runtime and requested pipe.' }
     $processes = @(foreach ($member in @(@{id=[int]$status.runtime_pid;relative='bin\YimeCoreTrialRuntime.exe'},@{id=[int]$status.broker_pid;relative='bin\YimeBroker.exe'})) {
         $process = Get-Process -Id $member.id -ErrorAction Stop
-        if ($process.Path -ine (Join-Path $InstallRoot $member.relative)) { throw ('Runtime status PID does not belong to the installed image: ' + $member.id) }
-        [ordered]@{pid=$process.Id;image=$process.Path;started_utc=$process.StartTime.ToUniversalTime().ToString('o')}
+        $image = Get-ProcessImagePath ([uint32]$process.Id)
+        if ($image -ine (Join-Path $InstallRoot $member.relative)) { throw ('Runtime status PID does not belong to the installed image: ' + $member.id + ' -> ' + $image) }
+        [ordered]@{pid=$process.Id;image=$image;started_utc=$process.StartTime.ToUniversalTime().ToString('o')}
     })
     return [ordered]@{status_updated_at=[string]$status.updated_at;processes=$processes}
 }
@@ -64,7 +85,7 @@ $null = [IO.Directory]::CreateDirectory($evidence)
 $cases = [Collections.Generic.List[object]]::new()
 $summary = [ordered]@{
     schema_version='yimecore-installed-registered-host-x64-x86-v1';started_at=[DateTime]::UtcNow.ToString('o');host=$env:COMPUTERNAME
-    completed=$false;passed=$false;attempted_cases=0;passed_cases=0;expected_cases=6;install_root=$InstallRoot;pipe=$Pipe
+    completed=$false;passed=$false;attempted_cases=0;passed_cases=0;expected_cases=$(if($Only.Count){$Only.Count}else{6});only=$Only;install_root=$InstallRoot;pipe=$Pipe
     scope='Installed x64/x86 COM/TIP with installed Broker on the pinned development host; synthetic host text and input injection, not physical application acceptance. Installed baseline build, not the PR source build.'
     installed_broker_learning_may_be_written=$true;profile_activation_performed_by_test=$true;installer_or_registration_command_run=$false
     foreground_hosts_before=@(Get-Process -Name WINWORD,EXCEL,POWERPNT -ErrorAction SilentlyContinue | ForEach-Object { $_.ProcessName })
@@ -81,6 +102,7 @@ try {
     foreach ($architecture in @('x64','x86')) {
         foreach ($mode in @('full','variable','shorthand')) {
             $caseName = $architecture + '-' + $mode
+            if ($Only.Count -and $caseName -cnotin $Only) { continue }
             $caseRoot = Join-Path $evidence $caseName
             $null = [IO.Directory]::CreateDirectory($caseRoot)
             $fixture = Join-Path $caseRoot 't'
@@ -163,8 +185,8 @@ try {
     $summary['payload_unchanged'] = (ConvertTo-Json -InputObject $summary.payload_before -Compress -Depth 5) -ceq (ConvertTo-Json -InputObject $summary.payload_after -Compress -Depth 5)
     $summary['runtime_processes_unchanged'] = (ConvertTo-Json -InputObject $summary.runtime_before.processes -Compress -Depth 5) -ceq (ConvertTo-Json -InputObject $summary.runtime_after.processes -Compress -Depth 5)
     $summary.completed = $true
-    $summary.passed = $cases.Count -eq 6 -and $summary.passed_cases -eq 6 -and $summary.runtime_processes_unchanged -and $summary.payload_unchanged
+    $summary.passed = $cases.Count -eq $summary.expected_cases -and $summary.passed_cases -eq $summary.expected_cases -and $summary.runtime_processes_unchanged -and $summary.payload_unchanged
 } catch { $summary.error = $_.Exception.ToString() }
 finally { $summary['finished_at'] = [DateTime]::UtcNow.ToString('o'); Write-EvidenceJson $summary $summaryPath }
 if (-not $summary.passed) { throw ('Installed registered-host regression did not pass; preserve ' + $summaryPath) }
-Write-Host ('PASS: six installed x64/x86 registered-host cases. Summary: ' + $summaryPath)
+Write-Host ('PASS: ' + $summary.expected_cases + ' installed x64/x86 registered-host case(s). Summary: ' + $summaryPath)
