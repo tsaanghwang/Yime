@@ -80,6 +80,7 @@ int snapshotResidueOnly(const yime::stage1::Arguments& args){
 }
 json localReport(const char* mode){return {{"schema","mycomputer-activation-stage1-v1"},{"scope","mycomputer-registration-activation-only"},{"mode",mode},{"status","failed"},{"stage","completed"},{"code",0},{"writesStarted",false},{"cleanupVerified",false},{"preconditions",localConditions()},{"prerequisitesSatisfied",false},{"actualHostName",nullptr},{"threadLanguage",nullptr},{"currentLanguage",nullptr},{"dllSha256",nullptr},{"dllPresent",nullptr},{"publisherTrust","not-established"},{"brokerEditingVerified",false},{"profileActivationApiVerified",false},{"actualDllActivationVerified",false}};}
 }
+#ifndef YIME_ACTIVATED_LOOP
 int wmain(int argc,wchar_t** argv){
  std::vector<std::wstring> arguments;for(int i=1;i<argc;++i)arguments.emplace_back(argv[i]);
  const auto args=yime::stage1::ParseArguments(arguments);using Mode=yime::stage1::Mode;
@@ -142,3 +143,5 @@ int wmain(int argc,wchar_t** argv){
  }
  CoUninitialize();std::cout<<report.dump()<<std::endl;return exit;
 }
+
+#endif

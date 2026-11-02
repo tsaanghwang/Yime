@@ -11,6 +11,10 @@
 #include <cwctype>
 #include <cstring>
 #include <fstream>
+#ifdef YIME_ACTIVATED_LOOP
+#include <functional>
+#include "ActivatedLoop.h"
+#endif
 #include <nlohmann/json.hpp>
 #ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
 #include <bcrypt.h>
@@ -242,7 +246,11 @@ struct Transaction {
   check(profiles.As(&languages),"language-manager");
   check(CoCreateInstance(CLSID_TF_CategoryMgr,nullptr,CLSCTX_INPROC_SERVER,IID_PPV_ARGS(&categories)),"category-manager");
  }
- void run(const std::wstring& dll) {
+ void run(const std::wstring& dll
+#ifdef YIME_ACTIVATED_LOOP
+ ,const std::function<void()>& activatedLoop={}
+#endif
+ ) {
 #ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
   localMachineGate();require(ledger->dllLock.file!=INVALID_HANDLE_VALUE,"write-dll-lock-required");
 #endif
@@ -290,6 +298,14 @@ struct Transaction {
   check(categories->RegisterCategory(CLSID_YimeTextServiceExperiment,GUID_TFCAT_TIP_KEYBOARD,CLSID_YimeTextServiceExperiment),"register-own-keyboard-category");
   enableAttempted=true;ledger->mark("enableAttempted");
   check(languages->EnableLanguageProfile(CLSID_YimeTextServiceExperiment,language,GUID_YimeTextServiceExperimentProfile,TRUE),"enable-own-profile");
+#ifdef YIME_ACTIVATED_LOOP
+  if(activatedLoop){
+   activationAttempted=true;ledger->mark("activationAttempted");
+   activatedLoop();
+   activationAttempted=false; // callback returned only after checked host deactivation; journal remains historical true
+   return;
+  }
+#endif
   check(CoCreateInstance(CLSID_TF_ThreadMgr,nullptr,CLSCTX_INPROC_SERVER,IID_PPV_ARGS(&manager)),"thread-manager");
   TfClientId client=TF_CLIENTID_NULL;
   check(manager->ActivateEx(&client,TF_TMAE_NOACTIVATETIP|TF_TMAE_NOACTIVATEKEYBOARDLAYOUT),"activate-manager");managerActive=true;
@@ -429,4 +445,8 @@ int wmain(int argc,wchar_t** argv) {
 #endif
 #if defined(YIME_MYCOMPUTER_ACTIVATION_STAGE1) && !defined(YIME_RESIDUE_FIXTURE_TESTS)
 #include "MyComputerActivationMain.h"
+#endif
+
+#ifdef YIME_ACTIVATED_LOOP
+#include "ActivatedLoopMain.h"
 #endif

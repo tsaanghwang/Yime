@@ -14,6 +14,9 @@
 #include <stdexcept>
 #include <string>
 #include "DedicatedTouchService.h"
+#ifdef YIME_ACTIVATED_LOOP
+#include "ActivatedLoop.h"
+#endif
 #include "YimeTextServiceIds.h"
 using Microsoft::WRL::ComPtr;
 using nlohmann::json;
@@ -145,6 +148,18 @@ struct Host {
   if(hr==S_OK){tipActive=false;return S_OK;}
   return FAILED(hr)?hr:E_FAIL;
  }
+ void closeChecked(){
+  const auto exact=[](HRESULT hr,const char* stage){require(hr,stage);if(hr!=S_OK)fail(stage);};
+  if(route)exact(route->DisconnectDedicated(),"close dedicated route");
+  exact(deactivate(),"close registered profile");route.Reset();tip.Reset();
+  if(manager){exact(manager->SetFocus(nullptr),"close manager focus");}
+  if(window){ComPtr<ITfDocumentMgr> previous;exact(manager->AssociateFocus(window,nullptr,&previous),"close window association");if(!DestroyWindow(window))winFail("close own window");window=nullptr;}
+  if(document)exact(document->Pop(TF_POPF_ALL),"close own context");
+  if(other)exact(other->Pop(TF_POPF_ALL),"close other context");
+  context.Reset();otherContext.Reset();document.Reset();other.Reset();
+  if(managerActive){exact(manager->Deactivate(),"close host manager");managerActive=false;}manager.Reset();
+  if(module){if(!FreeLibrary(module))winFail("close dedicated module");module=nullptr;}
+ }
  void create(ComPtr<ITfDocumentMgr>& doc,ComPtr<ITfContext>& ctx){TfEditCookie cookie=0;require(manager->CreateDocumentMgr(&doc),"document");require(doc->CreateContext(client,0,nullptr,&ctx,&cookie),"context");require(doc->Push(ctx.Get()),"push");}
  ~Host(){if(route)route->DisconnectDedicated();route.Reset();if(tipActive)deactivate();tip.Reset();if(window){ComPtr<ITfDocumentMgr> previous;manager->AssociateFocus(window,nullptr,&previous);DestroyWindow(window);}context.Reset();otherContext.Reset();document.Reset();other.Reset();if(managerActive)manager->Deactivate();manager.Reset();if(module)FreeLibrary(module);}
  HRESULT awaitResult(HRESULT hr,BSTR* value,DWORD timeout=15000,const std::function<void()>& beforePoll={}){
@@ -165,8 +180,21 @@ struct Host {
  json action(const json& request,HRESULT& hr){BSTR value=nullptr;const auto body=request.dump();hr=awaitResult(route->ActionDedicated(body.c_str(),&value),&value);if(!value)return json::object();return response(value);}
 };
 }
-int main(){try{
- Apartment apartment;auto config=input();const std::string scenario=config.at("scenario");
+namespace {
+json routeBinding(const json& state){
+ const auto& session=state.at("sessionId");const auto& identity=state.at("identity");const auto& focus=state.at("focus");
+ if(!session.is_string()||session.get_ref<const std::string&>().empty()||session.get_ref<const std::string&>().size()>256)fail("session binding shape");
+ if(!identity.is_object()||identity.size()!=4||!focus.is_object()||focus.size()!=2)fail("route binding shape");
+ for(const char* key:{"layoutSHA256","dictionarySHA256"}){
+  if(!identity.at(key).is_string())fail("route identity hash");const auto hash=identity.at(key).get<std::string>();
+  if(hash.size()!=64||hash.find_first_not_of("0123456789abcdef")!=std::string::npos)fail("route identity hash");
+ }
+ if(identity.at("mode")!="variable"||identity.at("sessionPolicy")!="concept-keyboard-modes-v2+ellipsis-choice-v1")fail("route identity policy");
+ if(!focus.at("context").is_string()||focus.at("context").get_ref<const std::string&>().empty()||focus.at("context").get_ref<const std::string&>().size()>256||!focus.at("epoch").is_number_unsigned()||focus.at("epoch").get<std::uint64_t>()==0)fail("route focus shape");
+ return {{"sessionId",session},{"identity",identity},{"focus",focus}};
+}
+json runFormalHost(const json& config,bool controlledOnce){
+ Apartment apartment;const std::string scenario=config.at("scenario");
  if(scenario!="commit"&&scenario!="duplicate"&&scenario!="wrong-server-pid"&&scenario!="wrong-server-image"&&scenario!="deactivated"&&scenario!="focus-lost"&&scenario!="disconnect-before-action"&&scenario!="pending-focus-away-back"&&scenario!="pending-deactivated"&&scenario!="disconnect-after-edit")fail("scenario");
  Host host;host.initialize(widen(config.at("dll").get<std::string>()));
  DWORD pid=config.at("brokerPID");if(scenario=="wrong-server-pid")pid=GetCurrentProcessId();
@@ -174,13 +202,14 @@ int main(){try{
  hr=host.awaitResult(hr,&initial,95000);
  json state=initial?response(initial):json::object();bool connected=hr==S_OK;
  std::cout<<json{{"stage","connected"},{"accepted",connected}}.dump()<<std::endl;
- if(!input().value("proceed",false))fail("control");
+ if(!controlledOnce && !input().value("proceed",false))fail("control");
  bool rejected=false,duplicateRejected=false,readMatches=false;std::string outcome="not-applied";
- bool pendingObserved=false,postWriteDisconnect=false,replayRejected=false;
+ bool pendingObserved=false,postWriteDisconnect=false,replayRejected=false;json binding=nullptr;
  if(scenario=="wrong-server-pid"||scenario=="wrong-server-image"){
   if(connected)fail("wrong server accepted");rejected=true;
  }else{
   require(hr,"connect actual Broker");if(!state.value("ok",false))fail("open rejected");
+  if(controlledOnce)binding=routeBinding(state);
   auto revision=state.at("snapshot").at("revision");
   json request={{"kind","input"},{"code",config.at("code")},{"revision",revision}};
   if(scenario=="deactivated")require(host.deactivate(),"deactivate actual TIP");
@@ -188,6 +217,7 @@ int main(){try{
    state=host.action(request,hr);rejected=FAILED(hr)||!state.value("ok",false);if(!rejected)fail("disconnected action accepted");
   }else{
    state=host.action(request,hr);require(hr,"engine input");if(!state.value("ok",false))fail("engine rejected input");
+   if(controlledOnce&&routeBinding(state)!=binding)fail("input session binding changed");
    json selected;for(const auto& c:state.at("snapshot").at("state").at("candidates")){if(c.at("text").get<std::string>()=="你"){selected=c;break;}}
    if(selected.is_null())fail("canonical ni candidate missing");
    request={{"kind","select"},{"candidateId",selected.at("id")},{"revision",state.at("snapshot").at("revision")}};
@@ -230,6 +260,7 @@ int main(){try{
     if(!replayRejected || read(host.context.Get(),host.client)!=L"你")fail("unknown outcome replayed");
    }else{
     require(hr,"actual edit and completion");if(!state.value("ok",false)||!state.contains("receipt"))fail("missing actual receipt");
+    if(controlledOnce&&routeBinding(state)!=binding)fail("completion session binding changed");
     outcome=state.at("receipt").at("outcome").get<std::string>();if(outcome!="applied")fail("not actually applied");
     readMatches=read(host.context.Get(),host.client)==L"你";if(!readMatches)fail("independent readback mismatch");
     if(scenario=="duplicate"){
@@ -241,5 +272,28 @@ int main(){try{
  bool empty=read(host.context.Get(),host.client).empty(),otherEmpty=read(host.otherContext.Get(),host.client).empty();
  if(rejected&&(!empty||!otherEmpty))fail("rejected operation wrote");
  require(host.deactivate(),"deactivate actual TIP");
- std::cout<<json{{"stage","result"},{"scenario",scenario},{"actualDLLLoaded",true},{"activationIdentity",Host::registered?"windows-activated-profile":"owned-host-activation-client"},{"registered",Host::registered},{"sendInput",false},{"outcome",outcome},{"rejected",rejected},{"duplicateRejected",duplicateRejected},{"readbackMatches",readMatches},{"readbackEmpty",empty},{"otherContextEmpty",otherEmpty},{"unknownAfterPendingEditCovered",postWriteDisconnect},{"operationPendingObserved",pendingObserved},{"postWriteDisconnectObserved",postWriteDisconnect},{"replayRejected",replayRejected}}.dump()<<std::endl;return 0;
+ if(controlledOnce)host.closeChecked();
+ auto result=json{{"stage","result"},{"scenario",scenario},{"actualDLLLoaded",true},{"activationIdentity",Host::registered?"windows-activated-profile":"owned-host-activation-client"},{"registered",Host::registered},{"sendInput",false},{"outcome",outcome},{"rejected",rejected},{"duplicateRejected",duplicateRejected},{"readbackMatches",readMatches},{"readbackEmpty",empty},{"otherContextEmpty",otherEmpty},{"unknownAfterPendingEditCovered",postWriteDisconnect},{"operationPendingObserved",pendingObserved},{"postWriteDisconnectObserved",postWriteDisconnect},{"replayRejected",replayRejected}};
+ if(controlledOnce){result["hostCleanupVerified"]=true;result["sessionBinding"]=binding;}
+ return result;
+}
+}
+#ifndef YIME_ACTIVATED_LOOP
+int main(){try{std::cout<<runFormalHost(input(),false).dump()<<std::endl;return 0;
  }catch(const GateFailure& failure){diagnostic(failure);return 1;}catch(...){diagnostic({"unexpected","exception",0});return 1;}}
+#else
+ActivatedLoopResult RunActivatedRegisteredHost(const std::string& config,const std::wstring& pinnedDll){
+ try{
+  auto request=json::parse(config);
+  request["scenario"]="commit";
+  // Path is the caller's locked/canonical DLL, never an stdin-selected DLL.
+  const int count=WideCharToMultiByte(CP_UTF8,WC_ERR_INVALID_CHARS,pinnedDll.data(),static_cast<int>(pinnedDll.size()),nullptr,0,nullptr,nullptr);
+  if(count<=0)fail("pinned DLL encoding");std::string path(count,'\0');
+  if(WideCharToMultiByte(CP_UTF8,WC_ERR_INVALID_CHARS,pinnedDll.data(),static_cast<int>(pinnedDll.size()),path.data(),count,nullptr,nullptr)!=count)fail("pinned DLL encoding");
+  request["dll"]=path;
+  auto result=runFormalHost(request,true);
+  return {true,"completed","hresult",0,result.dump()};
+ }catch(const GateFailure& f){return {false,f.stage,f.kind,f.code,{}};}
+ catch(...){return {false,"registered-host-exception","exception",0,{}};}
+}
+#endif

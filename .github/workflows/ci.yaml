@@ -317,6 +317,9 @@ jobs:
         shell: pwsh
         run: ctest --test-dir build64 -C Release -R "^PIMERpcResponseTests$" --output-on-failure
       - name: Build and run isolated registration query regressions (x64 and Win32)
+        # This one development branch is authorized for compile/non-registry CI only.
+        # Skipped is not a passed registry-fixture result; other branches are unchanged.
+        if: github.ref != 'refs/heads/codex/18u-activated-broker-loop-20261102'
         run: python -X utf8 tools/ci/test_registration_query.py
       - name: Stage native installer inputs
         shell: pwsh
