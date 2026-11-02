@@ -1,0 +1,143 @@
+name: One-shot disposable HKCU registry adapter test
+
+on:
+  workflow_call:
+    inputs:
+      confirm:
+        required: true
+        type: string
+      expected_source_sha:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: once-owned-residue-registry-adapter
+  cancel-in-progress: false
+
+jobs:
+  registry-adapter:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm == 'once-18u-registry-adapter' && github.event.inputs.confirm_18u_registration == '' && github.event.inputs.confirm_18u_language_inventory == '' && github.event.inputs.confirm_18u_language_prepare == '' && inputs.expected_source_sha == github.sha && github.run_attempt == 1
+    runs-on: windows-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: python {0}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Build only the explicitly selected registry adapter test
+        run: |
+          import pathlib, subprocess
+          evidence = pathlib.Path('.generated/registry-adapter-evidence')
+          evidence.mkdir(parents=True, exist_ok=False)
+          for args, name in [
+              (['cmake', '-S', 'YimeTextServiceExperiment', '-B', '.generated/registry-adapter-build', '-A', 'x64', '-DYIME_OWNED_RESIDUE_REGISTRY_TESTS=ON'], 'configure.log'),
+              (['cmake', '--build', '.generated/registry-adapter-build', '--config', 'Release', '--target', 'YimeOwnedResidueRegistryTests'], 'build.log')]:
+              with (evidence / name).open('w', encoding='utf-8') as log:
+                  result = subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=False, timeout=180)
+              if result.returncode != 0:
+                  raise SystemExit('Adapter build failed; no test invocation')
+      - name: Require two actual process-containment selftests without skips
+        run: |
+          import io, json, os, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
+          import test_windows_job_native
+          stream = io.StringIO()
+          result = unittest.TextTestRunner(stream=stream, verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(test_windows_job_native.WindowsJobTests))
+          evidence = pathlib.Path('.generated/registry-adapter-evidence')
+          (evidence / 'containment.log').write_text(stream.getvalue(), encoding='utf-8')
+          passed = os.name == 'nt' and result.testsRun == 2 and not result.skipped and result.wasSuccessful()
+          (evidence / 'containment.json').write_text(json.dumps({'testsRun': result.testsRun, 'skipped': len(result.skipped), 'passed': passed}), encoding='utf-8')
+          if not passed:
+              raise SystemExit('Actual containment not proven; no registry adapter invocation')
+      - name: Invoke the disposable HKCU adapter once and require explicit cleanup evidence
+        env:
+          ADAPTER_SOURCE_SHA: ${{ github.sha }}
+          ADAPTER_EXPECTED_SHA: ${{ inputs.expected_source_sha }}
+          ADAPTER_RUN_ID: ${{ github.run_id }}
+          ADAPTER_RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          import hashlib, json, os, pathlib, re, subprocess, sys
+          sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
+          from windows_job_once import run_once
+          def validate_adapter(rows, state, stderr, unchanged):
+              expected = ['absent', 'empty', 'enable-dword-zero', 'extra-value', 'subkey', 'query-access-denied', 'actual-view-observation', 'empty-disabled-delete', 'unexpected-shape-rejected', 'partial-delete-failure-stops']
+              if state.get('started') is not True or state.get('treeStopped') is not True or state.get('timedOut') is not False or state.get('errorCode') is not None or type(state.get('exitCode')) is not int or state['exitCode'] != 0 or stderr != b'' or not unchanged:
+                  raise ValueError('Process or executable evidence incomplete')
+              if not isinstance(rows, list) or len(rows) != 2 or any(not isinstance(row, dict) for row in rows):
+                  raise ValueError('Exactly two native evidence events required')
+              before, result = rows
+              if set(before) != {'schema', 'event', 'root'} or before.get('schema') != 'owned-residue-registry-test-v1' or before.get('event') != 'before-first-write':
+                  raise ValueError('Missing pre-write root evidence')
+              root = before.get('root')
+              if not isinstance(root, str) or re.fullmatch(r'HKCU\\Software\\YimeOwnedResidueAdapterTest-\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\}', root) is None:
+                  raise ValueError('Unexpected root identity')
+              fields = {'schema', 'event', 'root', 'status', 'writesAttempted', 'creationUnknown', 'cleanupVerified', 'view32Aliases64Observed', 'atomicCompareDelete', 'firstFailure', 'cleanupFailure', 'completedCases'}
+              if set(result) != fields or result.get('schema') != before['schema'] or result.get('event') != 'result' or result.get('root') != root or result.get('status') != 'passed' or result.get('writesAttempted') is not True or result.get('creationUnknown') is not False or result.get('cleanupVerified') is not True or type(result.get('view32Aliases64Observed')) is not bool or result.get('atomicCompareDelete') is not False or result.get('firstFailure') is not None or result.get('cleanupFailure') is not None or result.get('completedCases') != expected:
+                  raise ValueError('Cases, ownership or cleanup evidence incomplete')
+              return root
+          def unique(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError('Duplicate native JSON field')
+                  result[key] = value
+              return result
+          evidence = pathlib.Path('.generated/registry-adapter-evidence').resolve()
+          exe = pathlib.Path('.generated/registry-adapter-build/Release/YimeOwnedResidueRegistryTests.exe').resolve()
+          source = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          if source != os.environ['ADAPTER_SOURCE_SHA'] or source != os.environ['ADAPTER_EXPECTED_SHA'] or re.fullmatch('[0-9a-f]{40}', source) is None or os.environ['ADAPTER_RUN_ATTEMPT'] != '1':
+              raise SystemExit('Source/attempt gate failed before invocation')
+          containment = json.loads((evidence / 'containment.json').read_text(encoding='utf-8'))
+          if containment != {'testsRun': 2, 'skipped': 0, 'passed': True}:
+              raise SystemExit('Actual containment prerequisite missing')
+          digest = hashlib.sha256(exe.read_bytes()).hexdigest()
+          identity = {'schema': 'owned-residue-adapter-run-v1', 'sourceCommit': source, 'runID': os.environ['ADAPTER_RUN_ID'], 'runAttempt': 1, 'exeSHA256': digest, 'exeName': exe.name, 'invocations': 1, 'rootIdentity': None}
+          def save_identity(root_identity):
+              identity['rootIdentity'] = root_identity
+              with (evidence / 'invocation.json').open('x', encoding='utf-8') as stream:
+                  json.dump(identity, stream, indent=2)
+                  stream.flush()
+                  os.fsync(stream.fileno())
+          state = {'started': False, 'treeStopped': False, 'timedOut': False, 'exitCode': None, 'errorCode': 1, 'rootIdentity': None}
+          summary = {'status': 'failed', 'cleanupVerified': False, 'atomicCompareDelete': False, 'oldV2RecoveryValidated': False, 'productRegistrationExecuted': False, 'sourceCommit': source, 'runID': identity['runID'], 'runAttempt': 1, 'exeSHA256': digest}
+          try:
+              state = run_once([str(exe), '--confirm-disposable-hkcu-adapter-test'], evidence, evidence / 'stdout.jsonl', evidence / 'stderr.log', 60, on_root_created=save_identity)
+              rows = [json.loads(line, object_pairs_hook=unique) for line in (evidence / 'stdout.jsonl').read_text(encoding='utf-8-sig').splitlines()]
+              root = validate_adapter(rows, state, (evidence / 'stderr.log').read_bytes(), hashlib.sha256(exe.read_bytes()).hexdigest() == digest)
+              if identity['rootIdentity'] is None or identity['rootIdentity'] != state.get('rootIdentity'):
+                  raise ValueError('Owned process identity mismatch')
+              summary.update(status='passed', cleanupVerified=True, root=root, sourceCommit=source, runID=identity['runID'], runAttempt=1, exeSHA256=digest)
+          except OSError:
+              summary['failureReason'] = 'evidence-file-or-process-error'
+          except ValueError as error:
+              reasons = {'Process or executable evidence incomplete', 'Exactly two native evidence events required', 'Missing pre-write root evidence', 'Unexpected root identity', 'Cases, ownership or cleanup evidence incomplete', 'Owned process identity mismatch', 'Duplicate native JSON field'}
+              summary['failureReason'] = str(error) if str(error) in reasons else 'malformed-native-evidence'
+              # Fixed labels only; preserve raw logs, never retry or recover registry items.
+          finally:
+              summary['logs'] = {}
+              for name in ['stdout.jsonl', 'stderr.log']:
+                  path = evidence / name
+                  if path.is_file():
+                      raw = path.read_bytes()
+                      summary['logs'][name] = {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+              (evidence / 'process.json').write_text(json.dumps(state, indent=2), encoding='utf-8')
+              (evidence / 'result.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
+          if summary['status'] != 'passed':
+              raise SystemExit('Adapter did not pass with verified cleanup; inspect preserved pre-write root, do not retry')
+      - name: Preserve native root, process and cleanup evidence on every outcome
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: owned-residue-registry-adapter-${{ github.sha }}-${{ github.run_id }}
+          path: .generated/registry-adapter-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

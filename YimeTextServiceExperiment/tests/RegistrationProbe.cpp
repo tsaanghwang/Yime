@@ -20,6 +20,7 @@
 #include "MyComputerActivationPolicy.h"
 #include "ActivationDiagnostics.h"
 #include "OwnedResiduePolicy.h"
+#include "OwnedResidueRegistry.h"
 #endif
 #include "YimeTextServiceIds.h"
 #include "ProductIdentity.h"
@@ -389,7 +390,8 @@ struct Transaction {
       yime::stage1::ResidueObservation observe(const std::string& id){return observeLocalResidue(find(id));}
       void eraseOne(const std::string& id){
        const auto& p=find(id);
-       check(HRESULT_FROM_WIN32(RegDeleteKeyExW(p.hive,p.path.c_str(),p.view,0)),"cleanup-residue-delete-one");
+       try { yime::stage1::registry::EraseOne(p.hive,p.path.c_str(),p.view,check); }
+       catch(const yime::stage1::registry::Error& e){throw Failure{e.stage,e.code};}
       }
       void record(const std::string& id,const char* outcome){localDiagnostics.record("residue/"+id+"/"+outcome,0);}
      } backend{*ledger};

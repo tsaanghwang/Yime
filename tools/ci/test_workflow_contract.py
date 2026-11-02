@@ -24,13 +24,17 @@ def caller_gate(confirm, value, others):
     exclusive = ''.join(" && inputs." + other + " == ''" for other in others)
     return gate.replace(' && inputs.expected_18u_source_sha', exclusive + ' && inputs.expected_18u_source_sha')
 
-PROBE_OTHERS = ('confirm_18u_language_inventory', 'confirm_18u_language_prepare')
-INVENTORY_OTHERS = ('confirm_18u_registration', 'confirm_18u_language_prepare')
-PREPARE_OTHERS = ('confirm_18u_registration', 'confirm_18u_language_inventory')
+PROBE_OTHERS = ('confirm_18u_language_inventory', 'confirm_18u_language_prepare', 'confirm_18u_registry_adapter')
+INVENTORY_OTHERS = ('confirm_18u_registration', 'confirm_18u_language_prepare', 'confirm_18u_registry_adapter')
+PREPARE_OTHERS = ('confirm_18u_registration', 'confirm_18u_language_inventory', 'confirm_18u_registry_adapter')
 PROBE_GATE = caller_gate('confirm_18u_registration', 'once-18u-registration', PROBE_OTHERS)
 INVENTORY_GATE = caller_gate('confirm_18u_language_inventory', 'once-18u-language-inventory', INVENTORY_OTHERS)
 PREPARE_GATE = caller_gate('confirm_18u_language_prepare', 'once-18u-language-prepare', PREPARE_OTHERS)
+ADAPTER_PATH = './.github/workflows/owned-residue-registry-adapter.yml'
+ADAPTER_OTHERS = ('confirm_18u_registration', 'confirm_18u_language_inventory', 'confirm_18u_language_prepare')
+ADAPTER_GATE = caller_gate('confirm_18u_registry_adapter', 'once-18u-registry-adapter', ADAPTER_OTHERS)
 OPTIONAL = {
+    'one-shot-18u-registry-adapter': (ADAPTER_PATH, ADAPTER_GATE, 'confirm_18u_registry_adapter', 'registry-adapter', ADAPTER_OTHERS),
     OPTIONAL_PROBE: (PROBE_PATH, PROBE_GATE, 'confirm_18u_registration', 'registration-probe', PROBE_OTHERS),
     OPTIONAL_INVENTORY: (INVENTORY_PATH, INVENTORY_GATE, 'confirm_18u_language_inventory', 'language-inventory', INVENTORY_OTHERS),
     OPTIONAL_PREPARE: (PREPARE_PATH, PREPARE_GATE, 'confirm_18u_language_prepare', 'language-prepare', PREPARE_OTHERS),
@@ -42,6 +46,10 @@ def callee_gate(spec):
             .replace('inputs.expected_18u_source_sha', 'inputs.expected_source_sha'))
     for other in others:
         gate = gate.replace('inputs.' + other, 'github.event.inputs.' + other)
+    # Retain existing callee contracts; new fourth mutual exclusion is enforced
+    # at their only approved callers, without changing old workflows.
+    if spec[0] != ADAPTER_PATH:
+        gate = gate.replace(" && github.event.inputs.confirm_18u_registry_adapter == ''", '')
     return gate
 
 def job_blocks(text):
@@ -52,7 +60,7 @@ def job_blocks(text):
     return jobs
 
 def validate_probe_workflow(text, spec=OPTIONAL[OPTIONAL_PROBE]):
-    # Only the three fixed local reusable workflows, never an arbitrary exception.
+    # Only the four fixed local reusable workflows, never an arbitrary exception.
     if text.count('\non:\n') != 1: raise ValueError('Duplicate or absent probe events')
     events = text.split('\non:\n')[1].split('\npermissions:')[0]
     if re.findall(r'^  ([a-z_]+):', events, re.M) != ['workflow_call']:
@@ -81,7 +89,7 @@ def validate(text):
         if jobs[name].strip() != expected.strip():
             raise ValueError('Optional caller must retain exact mutually exclusive gate and local target')
     dispatch = text.split('  workflow_dispatch:\n')[1].split('  push:')[0]
-    for name in ('confirm_18u_registration', 'confirm_18u_language_inventory', 'confirm_18u_language_prepare', 'expected_18u_source_sha'):
+    for name in ('confirm_18u_registration', 'confirm_18u_language_inventory', 'confirm_18u_language_prepare', 'confirm_18u_registry_adapter', 'expected_18u_source_sha'):
         match = re.search(r'^      ' + name + r':\n(.*?)(?=^      [a-z0-9_]+:|\Z)', dispatch, re.M|re.S)
         if not match or not all(value in match[1] for value in ("        default: ''\n", '        required: false\n', '        type: string\n')):
             raise ValueError('Probe dispatch input must default to disabled')
@@ -143,5 +151,78 @@ class WorkflowTests(unittest.TestCase):
                 with self.subTest(job=name, clause=clause), self.assertRaises(ValueError):
                     validate_probe_workflow(changed,spec)
             with self.assertRaises(ValueError): validate_probe_workflow(text.replace('  workflow_call:', '  push:\n  workflow_call:'),spec)
+
+
+class AdapterWorkflowTests(unittest.TestCase):
+    def setUp(self):
+        self.text = (ROOT / ADAPTER_PATH).read_text()
+    def execution_block(self):
+        import ast
+        lines = self.text.splitlines(); blocks = []; i = 0
+        while i < len(lines):
+            if lines[i] == '        run: |':
+                i += 1; block = []
+                while i < len(lines) and (lines[i].startswith('          ') or not lines[i].strip()):
+                    block.append(lines[i][10:]); i += 1
+                code = '\n'.join(block); ast.parse(code); blocks.append(code)
+            else: i += 1
+        return next(code for code in blocks if 'def validate_adapter(' in code)
+    def test_explicit_single_target_and_execution_only(self):
+        self.execution_block()
+        self.assertIn("'-DYIME_OWNED_RESIDUE_REGISTRY_TESTS=ON'", self.text)
+        self.assertIn("'--target', 'YimeOwnedResidueRegistryTests'", self.text)
+        self.assertEqual(self.text.count('state = run_once('), 1)
+        self.assertIn('result.testsRun == 2 and not result.skipped', self.text)
+        self.assertIn('if: always()', self.text)
+        for forbidden in ['--register-once', '--recover', 'regsvr32', 'Set-WinUserLanguageList', 'RegDeleteTree', 'SetSecurityInfo', '-DYIME_TOUCH_PRODUCT=ON', 'continue-on-error:']:
+            self.assertNotIn(forbidden, self.text)
+    def test_real_execution_block_with_fake_owned_runner(self):
+        import copy, json, os, sys, tempfile
+        from unittest.mock import patch
+        sys.path.insert(0, str(ROOT / 'tools/ci'))
+        import windows_job_once
+        root = 'HKCU\\Software\\YimeOwnedResidueAdapterTest-{12345678-1234-1234-1234-123456789abc}'
+        cases = ['absent', 'empty', 'enable-dword-zero', 'extra-value', 'subkey', 'query-access-denied', 'actual-view-observation', 'empty-disabled-delete', 'unexpected-shape-rejected', 'partial-delete-failure-stops']
+        before = dict(schema='owned-residue-registry-test-v1', event='before-first-write', root=root)
+        final = dict(schema=before['schema'], event='result', root=root, status='passed', writesAttempted=True, creationUnknown=False, cleanupVerified=True, view32Aliases64Observed=False, atomicCompareDelete=False, firstFailure=None, cleanupFailure=None, completedCases=cases)
+        variants = [('pass', [before, final], False, True),
+                    ('missing-case', [before, dict(final, completedCases=cases[:-1])], False, False),
+                    ('cleanup-failed', [before, dict(final, cleanupVerified=False)], False, False),
+                    ('timeout', [before, final], True, False),
+                    ('missing-before-write', [final], False, False),
+                    ('wrong-root', [before, dict(final, root='HKCU\\Software\\other')], False, False),
+                    ('ownership-unknown', [before, dict(final, creationUnknown=True)], False, False),
+                    ('duplicate-event', [before, before, final], False, False)]
+        original = Path.cwd(); code = self.execution_block()
+        for label, rows, timeout, expected in variants:
+            with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
+                work = Path(directory)
+                evidence = work / '.generated/registry-adapter-evidence'; evidence.mkdir(parents=True)
+                (evidence / 'containment.json').write_text(json.dumps(dict(testsRun=2, skipped=0, passed=True)))
+                binary = work / '.generated/registry-adapter-build/Release/YimeOwnedResidueRegistryTests.exe'; binary.parent.mkdir(parents=True); binary.write_bytes(b'non-executable-fixture')
+                calls = []
+                def fake(command, cwd, stdout, stderr, deadline, on_root_created=None):
+                    calls.append(command)
+                    identity = dict(pid=123, creationFileTime='123456789')
+                    on_root_created(identity)
+                    Path(stdout).write_text('\n'.join(json.dumps(row) for row in rows)+'\n')
+                    Path(stderr).write_bytes(b'')
+                    return dict(started=True, treeStopped=True, timedOut=timeout, errorCode=None, exitCode=0, rootIdentity=identity)
+                env = dict(ADAPTER_SOURCE_SHA='a'*40, ADAPTER_EXPECTED_SHA='a'*40, ADAPTER_RUN_ID='123', ADAPTER_RUN_ATTEMPT='1')
+                try:
+                    os.chdir(work)
+                    with patch.dict(os.environ, env), patch('subprocess.check_output', return_value='a'*40+'\n'), patch.object(windows_job_once, 'run_once', side_effect=fake):
+                        if expected: exec(compile(code, '<adapter-workflow>', 'exec'), {})
+                        else:
+                            with self.assertRaises(SystemExit): exec(compile(code, '<adapter-workflow>', 'exec'), {})
+                    self.assertEqual(len(calls), 1)
+                    self.assertEqual(calls[0][1:], ['--confirm-disposable-hkcu-adapter-test'])
+                    report = json.loads((evidence / 'result.json').read_text())
+                    self.assertEqual(report['status'], 'passed' if expected else 'failed')
+                    self.assertEqual(report['cleanupVerified'], expected)
+                    if not expected: self.assertTrue(report.get('failureReason'))
+                    self.assertFalse(report['atomicCompareDelete']); self.assertFalse(report['oldV2RecoveryValidated'])
+                    self.assertTrue((evidence / 'stdout.jsonl').is_file())
+                finally: os.chdir(original)
 
 if __name__ == '__main__': unittest.main()
