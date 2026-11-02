@@ -36,16 +36,18 @@ function Invoke-LocalProductIsolatedTestTool {
     $log = Join-Path $evidence $LogName
     $metadata = $log + '.fixture.json'
     if ((Test-Path -LiteralPath $log) -or (Test-Path -LiteralPath $metadata)) { throw 'Do not overwrite earlier test evidence.' }
-    # Keep TEMP short enough for native MAX_PATH state helpers, even when the
-    # direct TSF test adds its own fresh GUID-named subdirectory.
-    # Runtime verification writes logs below a descriptive evidence child, but
-    # native state APIs still need a short TEMP. Anchor fixtures at the already
-    # validated build root and retain attribution through the GUID metadata.
-    $fixture = Join-Path $build ('t\' + [guid]::NewGuid().ToString('N').Substring(0,16))
+    # Native state helpers use MAX_PATH APIs, so TEMP must stay short no matter how
+    # deep the repository or build root lives (worktrees, long branch names). Run
+    # against a short per-invocation root outside the repository, then move the
+    # retained synthetic state under the build root so evidence stays attributable.
+    $fixtureBase = Get-LocalProductFixtureBase
+    $fixtureId = [guid]::NewGuid().ToString('N').Substring(0,16)
+    $fixture = Join-Path $fixtureBase $fixtureId
+    $retained = Join-Path $build ('t\' + $fixtureId)
     $fixtureTemp = Join-Path $fixture 'tmp'
-    if ($fixtureTemp.Length -gt 120) { throw 'Test TEMP is too long for native state-file APIs.' }
+    if ($fixtureTemp.Length -gt 120) { throw ('Test TEMP is too long for native state-file APIs (' + $fixtureTemp.Length + ' chars): ' + $fixtureTemp) }
     Assert-LocalProductPlainPath $fixture
-    if (Test-Path -LiteralPath $fixture) { throw 'Test state must be new for every invocation.' }
+    if ((Test-Path -LiteralPath $fixture) -or (Test-Path -LiteralPath $retained)) { throw 'Test state must be new for every invocation.' }
     $environment = [ordered]@{
         TEMP=$fixtureTemp; TMP=$fixtureTemp
         LOCALAPPDATA=(Join-Path $fixture 'local'); APPDATA=(Join-Path $fixture 'roaming')
@@ -57,10 +59,10 @@ function Invoke-LocalProductIsolatedTestTool {
         $previous[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
     }
     $record = [ordered]@{
-        executable=$image; fixture_root=$fixture; environment=$environment
+        executable=$image; fixture_root=$retained; fixture_runtime_root=$fixture; fixture_retained=$false; environment=$environment
         environment_isolated=$false; environment_restored=$false
         executed=$false; exit_code=$null; passed=$false
-        scope='Fresh per-invocation TEMP/TMP/LOCALAPPDATA/APPDATA; retain synthetic state, never record previous environment values.'
+        scope='Fresh per-invocation TEMP/TMP/LOCALAPPDATA/APPDATA at a short runtime root; synthetic state is moved under the build root afterwards; previous environment values are never recorded.'
     }
     try {
         foreach ($name in $environment.Keys) {
@@ -87,7 +89,27 @@ function Invoke-LocalProductIsolatedTestTool {
         }
         $record.environment_restored = $restored
         $record.passed = [bool]($record.passed -and $restored)
+        # Retain the synthetic state next to the build for attribution. A failed move
+        # keeps the runtime root in place and is recorded; it never discards evidence.
+        try {
+            $null = New-Item -ItemType Directory -Path (Split-Path -Parent $retained) -Force
+            Move-Item -LiteralPath $fixture -Destination $retained
+            $record.fixture_retained = [bool]((Test-Path -LiteralPath $retained -PathType Container) -and -not (Test-Path -LiteralPath $fixture))
+        } catch { $record['fixture_retention_error'] = $_.Exception.Message }
         Write-LocalProductJson $record $metadata
         if (-not $restored) { throw 'Calling process environment was not restored after an isolated test.' }
     }
+}
+
+# Short, repository-independent root for per-invocation synthetic state. The
+# caller's own LOCALAPPDATA is only the anchor; each fixture is a fresh child that
+# never touches a product state directory.
+function Get-LocalProductFixtureBase {
+    $anchor = [Environment]::GetEnvironmentVariable('LOCALAPPDATA', 'Process')
+    if (-not $anchor -or -not [IO.Path]::IsPathRooted($anchor)) { throw 'LOCALAPPDATA is required to anchor short test fixtures.' }
+    $base = Join-Path ([IO.Path]::GetFullPath($anchor).TrimEnd('\')) 'YimeBuildFixtures'
+    if ($base.Length -gt 90) { throw ('Fixture anchor is too long for native state-file APIs: ' + $base) }
+    if (-not (Test-Path -LiteralPath $base -PathType Container)) { New-Item -ItemType Directory -Path $base | Out-Null }
+    Assert-LocalProductPlainPath $base
+    return $base
 }

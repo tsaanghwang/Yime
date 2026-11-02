@@ -104,7 +104,7 @@ ctest --test-dir build64 -C Release -R "^PIMERpcResponseTests$" --output-on-fail
 
 Win32 PIMELauncher 必须使用 `stable-i686-pc-windows-msvc` host 工具链和仓库固定的 Corrosion；不能用默认 x64 工具链添加 i686 target 代替。构建前置及制包步骤以[安装维护说明](../installer/simple/README.md)为准。
 
-YimeCore 使用[源码工具入口](../tools/yimecore/README.md)。`build-local-product.ps1` 为当前身份构建 x64 Runtime/Broker 与 x64/x86 TSF，并运行隔离契约、焦点取消等检查；其输出不是已安装宿主证据。平台实验经 `run-platform-experiment.ps1` 选择批准目标并写入新输出。不要直接复用旧身份产物或恢复已退役的阶段编排。涉及 TSF 写入、焦点或宿主生命周期时，还须选择 [YimeCore 原生测试](../YimeTextServiceExperiment/tests/)中的对应测试并记录实际运行层级。
+YimeCore 使用[源码工具入口](../tools/yimecore/README.md)。`build-local-product.ps1` 为当前身份构建 x64 Runtime/Broker 与 x64/x86 TSF，并运行隔离契约、焦点取消等检查；其输出不是已安装宿主证据。连读准入（`run-connected-speech-admission.ps1`）必须在同一源码树内先于构建运行：导出器按构建树的相对路径与哈希绑定准入，跨工作树复用会被拒绝。隔离测试的 TEMP/LOCALAPPDATA 运行在与仓库路径无关的短根 `%LOCALAPPDATA%\YimeBuildFixtures\<id>`，测试后移回构建根 `t\<id>`。平台实验经 `run-platform-experiment.ps1` 选择批准目标并写入新输出。不要直接复用旧身份产物或恢复已退役的阶段编排。涉及 TSF 写入、焦点或宿主生命周期时，还须选择 [YimeCore 原生测试](../YimeTextServiceExperiment/tests/)中的对应测试并记录实际运行层级。
 
 ## 4. 必须保留的回归约束
 
