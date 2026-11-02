@@ -33,7 +33,7 @@ jobs:
           import json, os, pathlib
           evidence = pathlib.Path('.generated/activated-loop-evidence')
           evidence.mkdir(parents=True, exist_ok=False)
-          (evidence / 'scope.json').write_text(json.dumps({'sourceCommit': os.environ['SOURCE_SHA'], 'registrationExecuted': False, 'registryTestsExecuted': False, 'nativeHostExecuted': False, 'executableDelivery': False}), encoding='utf-8')
+          (evidence / 'scope.json').write_text(json.dumps({'sourceCommit': os.environ['SOURCE_SHA'], 'registrationExecuted': False, 'registryTestsExecuted': False, 'nativeHostExecuted': False, 'executableDeliveryPlanned': True, 'packageExecuted': False}), encoding='utf-8')
       - name: Require nine Go mock tests without skips
         run: |
           import json, pathlib, subprocess
@@ -80,7 +80,92 @@ jobs:
                   run = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, timeout=300)
               if run.returncode:
                   raise SystemExit('MSVC compile-only step failed: ' + name)
-      - name: Preserve logs only - never upload executable package
+      - name: Require package builder and entry offline contracts
+        run: |
+          import importlib, io, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
+          for name in ['test_build_activated_loop_package', 'test_prepare_activated_loop_package']:
+              stream = io.StringIO()
+              result = unittest.TextTestRunner(stream=stream, verbosity=2).run(unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module(name)))
+              pathlib.Path('.generated/activated-loop-evidence/' + name + '.log').write_text(stream.getvalue(), encoding='utf-8')
+              if result.testsRun == 0 or result.skipped or not result.wasSuccessful():
+                  raise SystemExit('Package offline contracts failed: ' + name)
+      - name: Fetch existing complete locked resources without generating dictionaries
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import pathlib, subprocess, sys
+          with pathlib.Path('.generated/activated-loop-evidence/resources.log').open('w', encoding='utf-8') as log:
+              result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/touch_keyboard_resources.py', 'fetch', '--output-dir', '.generated/touch-keyboard-resources'], stdout=log, stderr=subprocess.STDOUT, timeout=240)
+          if result.returncode:
+              raise SystemExit('Locked resources unavailable; no substitute data')
+      - name: Stage fixed files and observe actual Authenticode status without execution
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          import json, os, pathlib, shutil, sys
+          root = pathlib.Path.cwd()
+          evidence = (root / '.generated/activated-loop-evidence').resolve()
+          binary = root / '.generated/activated-loop-package-bin'
+          binary.mkdir(exist_ok=False)
+          for name in ['YimeActivatedLoopController.exe', 'YimeBroker18u.exe']:
+              shutil.copyfile(root / '.generated/activated-loop-build' / name, binary / name)
+          for name in ['YimeActivatedLoopOnce.exe', 'YimeTextService18u.dll', 'YimeMyComputerActivationStage1.exe']:
+              shutil.copyfile(root / '.generated/activated-loop-native/Release' / name, binary / name)
+          for name in ['windows_job_once.py', 'validate_local_activation_evidence.py']:
+              shutil.copyfile(root / 'tools/ci' / name, binary / name)
+          params = evidence / 'signature-params.json'
+          params.write_text(json.dumps({'BinaryDirectory': str(binary), 'OutputPath': str(evidence / 'signatures.json'), 'SourceCommit': os.environ['SOURCE_SHA']}), encoding='utf-8')
+          sys.path.insert(0, str(root / 'tools/ci'))
+          from windows_job_once import run_once
+          state = run_once([sys.executable, str(root / 'tools/powershell/run_checked.py'), '--edition', 'ps5', '--script', str(root / 'tools/ci/collect_activated_loop_signatures.ps1'), '--params-file', str(params)], root, evidence / 'signatures-stdout.log', evidence / 'signatures-stderr.log', 90)
+          (evidence / 'signature-process.json').write_text(json.dumps(state), encoding='utf-8')
+          if not state['started'] or not state['treeStopped'] or state['timedOut'] or state['errorCode'] is not None or state['exitCode'] != 0:
+              raise SystemExit('Signature observation did not complete')
+      - name: Build and independently hash the complete development ZIP - do not launch package
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          import hashlib, json, os, pathlib, subprocess, sys, zipfile
+          root = pathlib.Path.cwd()
+          evidence = root / '.generated/activated-loop-evidence'
+          output = root / '.generated/activated-loop-package'
+          output.mkdir(exist_ok=False)
+          archive = output / 'Yime18uActivatedLoop-x64.zip'
+          args = [sys.executable, 'tools/ci/build_activated_loop_package.py', '--binary-directory', str(root / '.generated/activated-loop-package-bin'), '--source-root', str(root), '--data-directory', str(root / '.generated/touch-keyboard-resources'), '--runner', str(root / 'tools/ci/run_activated_registration_loop.py'), '--prepare', str(root / 'tools/ci/prepare_activated_loop_package.py'), '--readme', str(root / 'docs/project/18u-self-developed-integration/ACTIVATED_LOOP_PACKAGE.zh-CN.md'), '--signatures', str(evidence / 'signatures.json'), '--output', str(archive), '--source-commit', os.environ['SOURCE_SHA']]
+          with (evidence / 'package-build.log').open('w', encoding='utf-8') as log:
+              result = subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, timeout=240)
+          if result.returncode:
+              raise SystemExit('Package creation failed')
+          with zipfile.ZipFile(archive) as zipped:
+              names = zipped.namelist()
+              if len(names) != 20 or len(set(names)) != 20:
+                  raise SystemExit('Unexpected package file set')
+              raw = zipped.read('manifest.json'); manifest = json.loads(raw)
+              if manifest['sourceCommit'] != os.environ['SOURCE_SHA'] or set(names) != set(manifest['files']) | {'manifest.json'}:
+                  raise SystemExit('Package source/files mismatch')
+              for name, record in manifest['files'].items():
+                  digest = hashlib.sha256(); size = 0
+                  with zipped.open(name) as stream:
+                      for block in iter(lambda: stream.read(1024 * 1024), b''):
+                          size += len(block); digest.update(block)
+                  if record != {'bytes': size, 'sha256': digest.hexdigest()}:
+                      raise SystemExit('Package payload hash mismatch: ' + name)
+          digest = hashlib.sha256()
+          with archive.open('rb') as stream:
+              for block in iter(lambda: stream.read(1024 * 1024), b''): digest.update(block)
+          identity = {'sourceCommit': os.environ['SOURCE_SHA'], 'baseImplementation': manifest['baseImplementation'], 'sha256': digest.hexdigest(), 'bytes': archive.stat().st_size, 'manifestSHA256': hashlib.sha256(raw).hexdigest(), 'registrationExecuted': False, 'packageExecuted': False}
+          (output / 'package-identity.json').write_text(json.dumps(identity, indent=2), encoding='utf-8')
+          (evidence / 'package-identity.json').write_text(json.dumps(identity, indent=2), encoding='utf-8')
+      - name: Retain fixed development package - no execution approval implied
+        uses: actions/upload-artifact@v6
+        with:
+          name: activated-loop-x64-package-${{ github.sha }}
+          path: .generated/activated-loop-package/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve build and package evidence
         if: always()
         uses: actions/upload-artifact@v6
         with:
