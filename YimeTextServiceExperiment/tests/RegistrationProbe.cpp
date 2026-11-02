@@ -318,9 +318,40 @@ struct Transaction {
   }
   if(managerActive){cleanupCheck(manager->SetFocus(nullptr),"cleanup-focus");if(document)cleanupCheck(document->Pop(TF_POPF_ALL),"cleanup-pop");context.Reset();document.Reset();cleanupCheck(manager->Deactivate(),"cleanup-manager");managerActive=false;}
   manager.Reset();
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  // Idempotent re-run (recovery after a partial first cleanup): a failed API call
+  // counts as success only when the target is re-read as already absent.
+  auto idempotent=[&](HRESULT hr,const char* stage,auto absent){
+   if(hr==S_OK)return;bool gone=false;
+   try{gone=absent();}catch(...){gone=false;}
+   if(!gone)cleanupCheck(hr,stage);
+  };
+  if(enableAttempted)idempotent(languages->EnableLanguageProfile(CLSID_YimeTextServiceExperiment,language,GUID_YimeTextServiceExperimentProfile,FALSE),"cleanup-disable-own",[&]{
+   BOOL enabled=TRUE;if(languages->IsEnabledLanguageProfile(CLSID_YimeTextServiceExperiment,language,GUID_YimeTextServiceExperimentProfile,&enabled)==S_OK)return enabled==FALSE;
+   return !localProfileListed(languages.Get(),profiles.Get());});
+  if(categoryAttempted)idempotent(categories->UnregisterCategory(CLSID_YimeTextServiceExperiment,GUID_TFCAT_TIP_KEYBOARD,CLSID_YimeTextServiceExperiment),"cleanup-category",[&]{return !localCategoryListed(categories.Get());});
+  if(profileAttempted)idempotent(profiles->UnregisterProfile(CLSID_YimeTextServiceExperiment,language,GUID_YimeTextServiceExperimentProfile,0),"cleanup-profile",[&]{return !localProfileListed(languages.Get(),profiles.Get());});
+#else
   if(enableAttempted)cleanupCheck(languages->EnableLanguageProfile(CLSID_YimeTextServiceExperiment,language,GUID_YimeTextServiceExperimentProfile,FALSE),"cleanup-disable-own");
   if(categoryAttempted)cleanupCheck(categories->UnregisterCategory(CLSID_YimeTextServiceExperiment,GUID_TFCAT_TIP_KEYBOARD,CLSID_YimeTextServiceExperiment),"cleanup-category");
   if(profileAttempted)cleanupCheck(profiles->UnregisterProfile(CLSID_YimeTextServiceExperiment,language,GUID_YimeTextServiceExperimentProfile,0),"cleanup-profile");
+#endif
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  // Owned residue removal. UnregisterProfile/UnregisterCategory leave CTF\TIP\{CLSID}
+  // shells in all four views; delete them only with every ownership fact proven.
+  // Any doubt keeps the shell and the COM generation marker for later review.
+  if(cleanupOK && writes && comOwned && profileAttempted && ledger)try{
+   if(localTipResidueExists()){
+    const auto& d=ledger->data;
+    const yime::stage1::LedgerFlags flags{d.at("preflightAbsent").get<bool>(),d.at("comAttempted").get<bool>(),d.at("comOwned").get<bool>(),d.at("profileAttempted").get<bool>(),d.at("categoryAttempted").get<bool>(),d.at("enableAttempted").get<bool>(),d.at("activationAttempted").get<bool>(),d.at("cleanupVerified").get<bool>()};
+    bool ownedCom=false;try{ledger->validateOwnedCom();ownedCom=true;}catch(const Failure&){ownedCom=false;}
+    const auto shape=localResidueShape(languages.Get(),profiles.Get(),categories.Get());
+    const bool enumerationAbsent=localProfileEnumerationAbsent(languages.Get(),profiles.Get(),categories.Get());
+    require(yime::stage1::CanRemoveResidue(flags,ownedCom,shape,enumerationAbsent),"cleanup-residue-ownership-not-proven");
+    localRemoveOwnedTipResidue(languages.Get(),profiles.Get(),categories.Get());
+   }
+  }catch(const Failure& f){cleanupCheck(f.code,f.stage);}catch(...){cleanupCheck(E_FAIL,"cleanup-residue-exception");}
+#endif
 #ifndef YIME_MYCOMPUTER_ACTIVATION_STAGE1
   if(profileAttempted)try{
    bool remaining=false;for(HKEY hive:{HKEY_LOCAL_MACHINE,HKEY_CURRENT_USER})for(REGSAM view:{KEY_WOW64_32KEY,KEY_WOW64_64KEY})

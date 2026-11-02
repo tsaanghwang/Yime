@@ -38,7 +38,7 @@ bool inspectOwnedScope(Transaction& transaction,Ledger& ledger){
  else apiAbsent(transaction.languages.Get(),transaction.profiles.Get(),transaction.categories.Get());
  return true;
 }
-json recoveryInspectionReport(){return {{"schema","mycomputer-recovery-inspection-v1"},{"scope","readonly-recovery-ownership"},{"status","blocked"},{"stage","completed"},{"code",0},{"ledgerSha256",nullptr},{"ownerPid",nullptr},{"ownerCreationTime",nullptr},{"dllSha256",nullptr},{"bindingVerified",false},{"ownerDeadVerified",false},{"ownedScopeVerified",false},{"cleanupVerified",nullptr},{"flags",nullptr},{"recoveryRequired",nullptr}};}
+json recoveryInspectionReport(){return {{"schema","mycomputer-recovery-inspection-v1"},{"scope","readonly-recovery-ownership"},{"status","blocked"},{"stage","completed"},{"code",0},{"ledgerSha256",nullptr},{"ownerPid",nullptr},{"ownerCreationTime",nullptr},{"dllSha256",nullptr},{"bindingVerified",false},{"ownerDeadVerified",false},{"ownedScopeVerified",false},{"cleanupVerified",nullptr},{"flags",nullptr},{"recoveryRequired",nullptr},{"residueShape",nullptr},{"recoveryToolCapable",nullptr}};}
 int inspectRecoveryOnly(const yime::stage1::Arguments& args){
  json report=recoveryInspectionReport();const HRESULT initialized=CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED);
  if(FAILED(initialized)){report["stage"]="com-initialize";report["code"]=static_cast<unsigned long>(initialized);std::cout<<report.dump()<<std::endl;return 3;}
@@ -50,8 +50,31 @@ int inspectRecoveryOnly(const yime::stage1::Arguments& args){
    report["ledgerSha256"]=ledger.cipherSha256;report["ownerPid"]=ledger.data.at("pid");report["ownerCreationTime"]=ledger.data.at("creation");report["dllSha256"]=ledger.data.at("dllSha256");
    report["bindingVerified"]=ledger.bindingVerified;report["ownerDeadVerified"]=ledger.ownerState==yime::stage1::OwnerState::DeadVerified;
    json flags=json::object();for(const char* key:{"preflightAbsent","comAttempted","comOwned","profileAttempted","categoryAttempted","enableAttempted","activationAttempted","cleanupVerified"})flags[key]=ledger.data.at(key);report["flags"]=flags;report["cleanupVerified"]=flags.at("cleanupVerified");
-   report["recoveryRequired"]=inspectOwnedScope(transaction,ledger);report["ownedScopeVerified"]=true;report["status"]="verified";exit=0;
+   report["recoveryRequired"]=inspectOwnedScope(transaction,ledger);report["ownedScopeVerified"]=true;
+   // Residue shape tells the orchestrator whether this tool can clear what remains
+   // before it consumes the single recovery claim; "not-owned" must stop there.
+   const auto shape=localResidueShape(transaction.languages.Get(),transaction.profiles.Get(),transaction.categories.Get());
+   report["residueShape"]=yime::stage1::ResidueShapeName(shape);report["recoveryToolCapable"]=yime::stage1::RecoveryToolCapable(shape);
+   report["status"]="verified";exit=0;
   }catch(const Failure& failure){report["stage"]=failure.stage;report["code"]=static_cast<unsigned long>(failure.code);}catch(...){report["stage"]="inspection-query-exception";report["code"]=static_cast<unsigned long>(E_FAIL);}
+ }
+ CoUninitialize();std::cout<<report.dump()<<std::endl;return exit;
+}
+// Read-only snapshot of the owned residue for the recovery evidence directory. It
+// binds to the pinned ledger like inspection and records no value data.
+int snapshotResidueOnly(const yime::stage1::Arguments& args){
+ json report={{"schema","mycomputer-residue-snapshot-v1"},{"scope","readonly-owned-residue-snapshot"},{"status","blocked"},{"stage","completed"},{"code",0},{"ledgerSha256",nullptr},{"dllSha256",nullptr},{"residueShape",nullptr},{"entries",nullptr}};
+ const HRESULT initialized=CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED);
+ if(FAILED(initialized)){report["stage"]="com-initialize";report["code"]=static_cast<unsigned long>(initialized);std::cout<<report.dump()<<std::endl;return 3;}
+ int exit=3;
+ {
+  Transaction transaction;Ledger ledger;transaction.ledger=&ledger;ledger.expectedCipherSha256=args.ledgerSha256;
+  try{
+   localMachineGate();ledger.load(args.ledger);transaction.initialize();
+   report["ledgerSha256"]=ledger.cipherSha256;report["dllSha256"]=ledger.data.at("dllSha256");
+   report["residueShape"]=yime::stage1::ResidueShapeName(localResidueShape(transaction.languages.Get(),transaction.profiles.Get(),transaction.categories.Get()));
+   report["entries"]=localResidueSnapshot();report["status"]="captured";exit=0;
+  }catch(const Failure& failure){report["stage"]=failure.stage;report["code"]=static_cast<unsigned long>(failure.code);}catch(...){report["stage"]="snapshot-query-exception";report["code"]=static_cast<unsigned long>(E_FAIL);}
  }
  CoUninitialize();std::cout<<report.dump()<<std::endl;return exit;
 }
@@ -61,6 +84,7 @@ int wmain(int argc,wchar_t** argv){
  std::vector<std::wstring> arguments;for(int i=1;i<argc;++i)arguments.emplace_back(argv[i]);
  const auto args=yime::stage1::ParseArguments(arguments);using Mode=yime::stage1::Mode;
  if(args.mode==Mode::InspectRecovery)return inspectRecoveryOnly(args);
+ if(args.mode==Mode::SnapshotResidue)return snapshotResidueOnly(args);
  const char* mode=args.mode==Mode::Preflight?"preflight":args.mode==Mode::RegisterOnce?"register-once":args.mode==Mode::Recover?"recover":args.mode==Mode::Verify?"verify":"invalid";
  json report=localReport(mode);if(args.mode==Mode::Invalid){report["status"]="blocked";report["stage"]="arguments";report["code"]=static_cast<unsigned long>(E_INVALIDARG);std::cout<<report.dump()<<std::endl;return 3;}
  HRESULT initialized=CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED);if(FAILED(initialized)){report["status"]="blocked";report["stage"]="com-initialize";report["code"]=static_cast<unsigned long>(initialized);std::cout<<report.dump()<<std::endl;return 3;}

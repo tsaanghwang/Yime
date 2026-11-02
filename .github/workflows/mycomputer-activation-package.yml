@@ -2,7 +2,7 @@ name: MyComputer activation x64 package (no registration)
 
 on:
   push:
-    branches: ['codex/18u-formal-tip-s3c-20261101']
+    branches: ['codex/18u-native-async-gates-20261102']
     paths:
       - '.github/workflows/mycomputer-activation-package.yml'
       - 'YimeTextServiceExperiment/**'
@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   package-x64:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/18u-native-async-gates-20261102'
     runs-on: windows-latest
     timeout-minutes: 20
     defaults:
@@ -114,7 +114,7 @@ jobs:
           root = pathlib.Path.cwd()
           evidence = root / '.generated/mycomputer-stage1-evidence'
           binaries = root / '.generated/mycomputer-stage1-build/Release'
-          args = [sys.executable, 'tools/ci/build_mycomputer_stage1_package.py', '--dll', str(binaries / 'YimeTextService18u.dll'), '--tool', str(binaries / 'YimeMyComputerActivationStage1.exe'), '--source-sha', os.environ['PACKAGE_SOURCE_SHA'], '--package-version', 'v2', '--registration-runner', str(root / 'tools/ci/run_mycomputer_registration.py'), '--evidence-validator', str(root / 'tools/ci/validate_local_activation_evidence.py'), '--readme', str(root / 'docs/project/18u-self-developed-integration/S3C_REGISTRATION_EXECUTION_GUARD.zh-CN.md'), '--collector', str(root / 'tools/ci/collect_mycomputer_preflight.py'), '--job-helper', str(root / 'tools/ci/windows_job_once.py'), '--signatures', str(evidence / 'authenticode.json'), '--output-dir', str(root / '.generated/mycomputer-protected-v2-package')]
+          args = [sys.executable, 'tools/ci/build_mycomputer_stage1_package.py', '--dll', str(binaries / 'YimeTextService18u.dll'), '--tool', str(binaries / 'YimeMyComputerActivationStage1.exe'), '--source-sha', os.environ['PACKAGE_SOURCE_SHA'], '--package-version', 'v2', '--registration-runner', str(root / 'tools/ci/run_mycomputer_registration.py'), '--evidence-validator', str(root / 'tools/ci/validate_local_activation_evidence.py'), '--pinned-registrations', str(root / 'tools/ci/mycomputer_recoverable_registrations.json'), '--readme', str(root / 'docs/project/18u-self-developed-integration/S3C_REGISTRATION_EXECUTION_GUARD.zh-CN.md'), '--collector', str(root / 'tools/ci/collect_mycomputer_preflight.py'), '--job-helper', str(root / 'tools/ci/windows_job_once.py'), '--signatures', str(evidence / 'authenticode.json'), '--output-dir', str(root / '.generated/mycomputer-protected-v2-package')]
           with (evidence / 'package.log').open('w', encoding='utf-8') as log:
               result = subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=False, timeout=60)
           if result.returncode != 0:

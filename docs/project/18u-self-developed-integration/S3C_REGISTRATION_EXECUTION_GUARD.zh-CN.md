@@ -24,6 +24,12 @@
 
 若编排本身中断而最终子树状态缺失、账本损坏／缺失、PID 状态不可查询或当前注册内容发生变化，**保守停止，不承诺自动恢复所有崩溃状态**。需要另行审查证据，不能按 GUID 猜测清理。恢复保持原账本密文和历史标志不变，以新的恢复回执和独立缺席核验记录结果。恢复通过也不能补造此前激活成功。
 
+### 残留形状与恢复顺序（2026-11-02 补充）
+
+`UnregisterProfile`／`UnregisterCategory` 只删叶节点，会在四个注册表视图留下 `CTF\TIP\{CLSID}` 空壳。只读检查新增 `residueShape`（`absent`／`owned-empty-shell`／`not-owned`）与 `recoveryToolCapable`；只有“TSF 已不再枚举本 profile、且子树仅含本 CLSID／本 profile／0x0804／键盘类别”的空壳才可由本工具清除。编排顺序改为：只读检查 → 不具备能力即拒绝（不创建声明）→ 创建单次声明 → 只读残留快照（键路径、子键名、值名／类型／长度／SHA-256，不记值数据）→ 恢复 → 独立缺席核验。
+
+恢复中的注销步骤以再次读取目标是否存在判定成功，不以 HRESULT 为准；残留清除先 `ITfInputProcessorProfiles::Unregister`，仍存在的视图再次通过形状校验后才 `RegDeleteTree`。任何归属事实缺失都保留空壳与 COM 世代标记。较新的 v2 包只能恢复其 manifest `recoverableRegistrations` 中以 manifest／源码／EXE／DLL 四哈希显式钉定的旧注册；来源是经审阅的 `tools/ci/mycomputer_recoverable_registrations.json`。钉定不是执行指令。
+
 ## 验证与交付边界
 
 - 本地测试覆盖生产编排的成功／失败／超时／未知／拒绝恢复和证据合同；模拟不等于 Windows DPAPI 或真实注册清理验证。

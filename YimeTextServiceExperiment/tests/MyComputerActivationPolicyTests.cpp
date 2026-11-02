@@ -23,8 +23,11 @@ void commandPolicy() {
  check(recover.mode==Mode::Recover && recover.ledger==ledger && recover.ledgerSha256==hash, "explicit recovery only");
  auto inspect=ParseArguments({L"--inspect-recovery",L"--ledger",ledger,L"--expected-ledger-sha256",hash});
  check(inspect.mode==Mode::InspectRecovery && inspect.ledgerSha256==hash,"read-only pinned inspection");
+ auto snapshot=ParseArguments({L"--snapshot-residue",L"--ledger",ledger,L"--expected-ledger-sha256",hash});
+ check(snapshot.mode==Mode::SnapshotResidue && snapshot.ledger==ledger && snapshot.ledgerSha256==hash,"read-only pinned residue snapshot");
  for(const auto& args: std::vector<std::vector<std::wstring>>{
   {L"--register-once"},{L"--recover"},{L"--recover",L"--ledger",ledger},{L"--inspect-recovery",L"--ledger",ledger},{L"--recover",L"--ledger",ledger,L"--expected-ledger-sha256",L"bad"},{L"--unknown"},{L"--verify",L"--register-once"},
+  {L"--snapshot-residue"},{L"--snapshot-residue",L"--ledger",ledger},{L"--snapshot-residue",L"--ledger",ledger,L"--expected-ledger-sha256",L"bad"},{L"--snapshot-residue",L"--ledger",ledger,L"--expected-ledger-sha256",hash,L"--recover"},
   {L"--dll",dll,L"--sha256",hash,L"--ledger",ledger},
   {L"--register-once",L"--dll",dll,L"--sha256",hash},
   {L"--register-once",L"--dll",dll,L"--sha256",hash,L"--ledger",ledger,L"--retry"},
@@ -76,8 +79,23 @@ void ledgerPolicy() {
   check(CanRecover(f,OwnerState::DeadVerified,true)==(ordered&&(!f.comAttempted||f.comOwned)),"recovery ownership policy");
  }
 }
+void residuePolicy() {
+ check(std::string(ResidueShapeName(ResidueShape::Absent))=="absent" && std::string(ResidueShapeName(ResidueShape::OwnedEmptyShell))=="owned-empty-shell" &&
+       std::string(ResidueShapeName(ResidueShape::NotOwned))=="not-owned" && std::string(ResidueShapeName(ResidueShape::Unknown))=="unknown","stable residue shape names");
+ check(RecoveryToolCapable(ResidueShape::Absent) && RecoveryToolCapable(ResidueShape::OwnedEmptyShell),"tool handles absent or owned shell");
+ check(!RecoveryToolCapable(ResidueShape::NotOwned) && !RecoveryToolCapable(ResidueShape::Unknown),"foreign or unknown residue is never deletable");
+ LedgerFlags owned{true,true,true,true,true,true,true,false};
+ check(CanRemoveResidue(owned,true,ResidueShape::OwnedEmptyShell,true),"complete ownership permits shell removal");
+ check(!CanRemoveResidue(owned,false,ResidueShape::OwnedEmptyShell,true),"changed COM generation blocks removal");
+ check(!CanRemoveResidue(owned,true,ResidueShape::OwnedEmptyShell,false),"profile still enumerated blocks removal");
+ for(ResidueShape shape:{ResidueShape::Absent,ResidueShape::NotOwned,ResidueShape::Unknown})check(!CanRemoveResidue(owned,true,shape,true),"only an owned shell is removable");
+ LedgerFlags verified=owned;verified.cleanupVerified=true;check(!CanRemoveResidue(verified,true,ResidueShape::OwnedEmptyShell,true),"verified cleanup conflicts with residue");
+ LedgerFlags noProfile=owned;noProfile.profileAttempted=false;check(!CanRemoveResidue(noProfile,true,ResidueShape::OwnedEmptyShell,true),"profile never attempted means shell is not ours");
+ LedgerFlags notOwned=owned;notOwned.comOwned=false;check(!CanRemoveResidue(notOwned,true,ResidueShape::OwnedEmptyShell,true),"unowned COM blocks removal");
+ check(ResidueStepSucceeded(false) && !ResidueStepSucceeded(true),"deletion judged by re-read absence only");
+}
 }
 int main() {
- try {commandPolicy();preflightPolicy();ledgerPolicy();generationPolicy();std::cout<<"4 portable policy groups passed; Windows APIs not exercised\n";return 0;}
+ try {commandPolicy();preflightPolicy();ledgerPolicy();generationPolicy();residuePolicy();std::cout<<"5 portable policy groups passed; Windows APIs not exercised\n";return 0;}
  catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}
 }

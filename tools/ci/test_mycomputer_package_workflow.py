@@ -23,8 +23,8 @@ def scripts(text):
 class PackageWorkflowContract(unittest.TestCase):
     def setUp(self): self.text = PATH.read_text(encoding='utf-8')
     def test_only_fixed_branch_push_and_read_permission(self):
-        self.assertIn("branches: ['codex/18u-formal-tip-s3c-20261101']", self.text)
-        self.assertIn("if: github.event_name == 'push' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101'", self.text)
+        self.assertIn("branches: ['codex/18u-native-async-gates-20261102']", self.text)
+        self.assertIn("if: github.event_name == 'push' && github.ref == 'refs/heads/codex/18u-native-async-gates-20261102'", self.text)
         self.assertIn('permissions:\n  contents: read\n', self.text)
         for forbidden in ['workflow_dispatch:', 'workflow_call:', 'pull_request:', 'contents: write', 'secrets:', 'secrets.']:
             self.assertNotIn(forbidden, self.text)
@@ -51,6 +51,7 @@ class PackageWorkflowContract(unittest.TestCase):
         self.assertNotIn('YimeMyComputerActivationStage1-x64.zip', self.text)
         # The execution orchestrator is a package input, never a CI command.
         self.assertIn("'--registration-runner', str(root / 'tools/ci/run_mycomputer_registration.py')", self.text)
+        self.assertIn("'--pinned-registrations', str(root / 'tools/ci/mycomputer_recoverable_registrations.json')", self.text)
         for block in scripts(self.text):
             for node in ast.walk(ast.parse(block)):
                 if isinstance(node, ast.List) and len(node.elts) > 1 and ast.unparse(node.elts[0]) == 'sys.executable':

@@ -79,6 +79,34 @@ class PackageTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.build(package_version='v3')
         self.assertFalse((self.root/'out').exists())
 
+    def v2_companions(self):
+        companions=[]
+        for name in package.V2_SCRIPT_NAMES:
+            path=self.root/name;path.write_text('# synthetic v2 fixture\n');companions.append(path)
+        return dict(package_version='v2',registration_runner=companions[0],evidence_validator=companions[1])
+
+    def recoverable(self,rows):
+        path=self.root/'recoverable.json';path.write_text(json.dumps(dict(schema='mycomputer-recoverable-registrations-v1',registrations=rows)));return path
+
+    def test_reviewed_older_registrations_are_pinned_exactly_into_v2_manifest(self):
+        from collect_mycomputer_preflight import validate_package
+        row=dict(manifestSha256='1'*64,sourceCommit='2'*40,exeSha256='3'*64,dllSha256='4'*64,note='MyComputer 2026-11-02 failed register-once; owned TIP shell remains')
+        evidence=self.build(recoverable=self.recoverable([row]),**self.v2_companions())
+        unpacked=self.root/'unpacked';unpacked.mkdir()
+        with zipfile.ZipFile(self.root/'out'/evidence['zip']) as archive:archive.extractall(unpacked)
+        manifest,_=validate_package(unpacked,evidence['manifestSHA256'])
+        self.assertEqual(manifest['recoverableRegistrations'],[dict(manifestSha256='1'*64,sourceCommit='2'*40,exeSha256='3'*64,dllSha256='4'*64)])
+
+    def test_unreviewed_or_self_referencing_recoverable_registrations_rejected(self):
+        good=dict(manifestSha256='1'*64,sourceCommit='2'*40,exeSha256='3'*64,dllSha256='4'*64,note='reviewed')
+        current_tool=package.digest(self.paths[package.PE_NAMES[1]].read_bytes())
+        for rows in ([],[dict(good,exeSha256=current_tool)],[dict(good,note='')],[{k:v for k,v in good.items() if k!='dllSha256'}],[dict(good,extra=1)],[good,good],[dict(good,sourceCommit='x'*40)]):
+            with self.subTest(rows=rows),self.assertRaises(ValueError):self.build(recoverable=self.recoverable(rows),**self.v2_companions())
+        with self.assertRaises(ValueError):self.build(recoverable=self.recoverable([good])) # v1 never pins recoveries
+        self.assertFalse((self.root/'out').exists())
+        evidence=self.build(**self.v2_companions())
+        with zipfile.ZipFile(self.root/'out'/evidence['zip']) as archive:self.assertNotIn('recoverableRegistrations',json.loads(archive.read('manifest.json')))
+
     def test_wrong_architecture_kind_and_truncated_pe_rejected(self):
         for data in (pe(True,0xaa64),pe(False),b'MZ',pe(True)[:200]):
             with self.subTest(data=data[:20]):

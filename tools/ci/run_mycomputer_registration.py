@@ -143,8 +143,10 @@ def register(package,evidence,anchor,confirmation,timeout=30,runner=None):
     finally:save(receipt_path,receipt)
     return receipt
 
-INSPECT_FIELDS={'schema','scope','status','stage','code','ledgerSha256','ownerPid','ownerCreationTime','dllSha256','bindingVerified','ownerDeadVerified','ownedScopeVerified','cleanupVerified','flags','recoveryRequired'}
+INSPECT_FIELDS={'schema','scope','status','stage','code','ledgerSha256','ownerPid','ownerCreationTime','dllSha256','bindingVerified','ownerDeadVerified','ownedScopeVerified','cleanupVerified','flags','recoveryRequired','residueShape','recoveryToolCapable'}
 LEDGER_FLAGS={'preflightAbsent','comAttempted','comOwned','profileAttempted','categoryAttempted','enableAttempted','activationAttempted','cleanupVerified'}
+RESIDUE_SHAPES={'absent','owned-empty-shell','not-owned'}
+SNAPSHOT_FIELDS={'schema','scope','status','stage','code','ledgerSha256','dllSha256','residueShape','entries'}
 
 
 def validate_inspection(data,receipt,ledger_hash):
@@ -154,11 +156,46 @@ def validate_inspection(data,receipt,ledger_hash):
     require(data['ledgerSha256']==ledger_hash and data['dllSha256']==receipt['dllSha256'],'inspection hash mismatch')
     root=receipt['rootIdentity']
     require(type(data['ownerPid']) is int and data['ownerPid']==root['pid'] and type(data['ownerCreationTime']) is int and data['ownerCreationTime']==int(root['creationFileTime']),'inspection original owner mismatch')
-    require(type(data['cleanupVerified']) is bool and type(data['recoveryRequired']) is bool,'inspection bool fields')
+    require(type(data['cleanupVerified']) is bool and type(data['recoveryRequired']) is bool and type(data['recoveryToolCapable']) is bool,'inspection bool fields')
+    require(data['residueShape'] in RESIDUE_SHAPES,'inspection residue shape')
     flags=data['flags'];require(isinstance(flags,dict) and set(flags)==LEDGER_FLAGS and all(type(value) is bool for value in flags.values()),'inspection ledger flags')
     require(data['cleanupVerified']==flags['cleanupVerified'],'inspection cleanup contradiction')
     require(not data['recoveryRequired'] or flags['comAttempted'] and flags['comOwned'] and not flags['cleanupVerified'],'inspection recovery contradiction')
+    # The tool itself decides capability; the orchestrator only refuses contradictions.
+    require(data['recoveryToolCapable']==(data['residueShape'] in ('absent','owned-empty-shell')),'inspection capability contradiction')
+    require(not data['recoveryRequired'] or data['recoveryToolCapable'],'recovery tool cannot clear residue shape '+data['residueShape']+'; engineering review required')
     return data['recoveryRequired']
+
+
+def validate_snapshot(data,inspection,ledger_hash):
+    require(isinstance(data,dict) and set(data)==SNAPSHOT_FIELDS,'snapshot fields')
+    require(data['schema']=='mycomputer-residue-snapshot-v1' and data['scope']=='readonly-owned-residue-snapshot' and data['status']=='captured' and data['stage']=='completed' and type(data['code']) is int and data['code']==0,'snapshot incomplete')
+    require(data['ledgerSha256']==ledger_hash and data['dllSha256']==inspection['dllSha256'] and data['residueShape']==inspection['residueShape'],'snapshot binding mismatch')
+    entries=data['entries'];require(isinstance(entries,list) and len(entries)<=256,'snapshot entries')
+    for entry in entries:
+        require(isinstance(entry,dict) and set(entry)=={'hive','view','path','subkeys','values'},'snapshot entry fields')
+        require(entry['hive'] in ('HKLM','HKCU') and entry['view'] in ('32','64') and isinstance(entry['path'],str),'snapshot entry identity')
+        require(isinstance(entry['subkeys'],list) and all(isinstance(name,str) for name in entry['subkeys']),'snapshot subkeys')
+        for value in entry['values']:
+            # Value names, types, lengths and hashes only; data itself must never appear.
+            require(isinstance(value,dict) and set(value)=={'name','type','bytes','sha256'} and isinstance(value['name'],str) and type(value['type']) is int and type(value['bytes']) is int and isinstance(value['sha256'],str) and HEX.fullmatch(value['sha256']),'snapshot value record')
+
+
+def registration_binding_allowed(receipt,manifest,files,anchor):
+    """Same package, or a registration explicitly pinned by this package's manifest.
+
+    A pinned record binds the original package's manifest, source, tool and DLL hashes.
+    The native tool separately re-opens and hash-checks the DLL at the ledger's path."""
+    current=(receipt.get('manifestSha256'),receipt.get('sourceCommit'),receipt.get('exeSha256'),receipt.get('dllSha256'))
+    if current==(anchor,manifest['sourceCommit'],files[EXE]['sha256'],files[DLL]['sha256']):return 'same-package'
+    rows=manifest.get('recoverableRegistrations')
+    require(isinstance(rows,list) and rows,'original package binding mismatch')
+    for row in rows:
+        require(isinstance(row,dict) and set(row)=={'manifestSha256','sourceCommit','exeSha256','dllSha256'} and all(isinstance(row[k],str) for k in row),'recoverable registration record')
+        require(HEX.fullmatch(row['manifestSha256']) and re.fullmatch(r'[0-9a-f]{40}',row['sourceCommit']) and HEX.fullmatch(row['exeSha256']) and HEX.fullmatch(row['dllSha256']),'recoverable registration identity')
+        require(row['exeSha256']!=files[EXE]['sha256'],'recoverable registration must name an older tool')
+        if current==(row['manifestSha256'],row['sourceCommit'],row['exeSha256'],row['dllSha256']):return 'pinned-older-package'
+    raise ValueError('original package binding mismatch')
 
 
 def recover(package,original_evidence,evidence,anchor,confirmation,timeout=30,runner=None):
@@ -169,8 +206,7 @@ def recover(package,original_evidence,evidence,anchor,confirmation,timeout=30,ru
     require(original!=package and package not in original.parents,'original evidence inside package')
     receipt=read_json(original/'registration.json')
     require(receipt.get('schema')=='mycomputer-registration-run-v1' and receipt.get('mode')=='register-once','original registration receipt required')
-    for field,value in (('manifestSha256',anchor),('sourceCommit',manifest['sourceCommit']),('exeSha256',files[EXE]['sha256']),('dllSha256',files[DLL]['sha256'])):
-        require(receipt.get(field)==value,'original package binding mismatch')
+    binding=registration_binding_allowed(receipt,manifest,files,anchor)
     process=receipt.get('process');root=receipt.get('rootIdentity')
     require(valid_root(root) and isinstance(process,dict) and process.get('rootIdentity')==root and process.get('started') is True and process.get('treeStopped') is True,'original process tree not proven stopped; manual engineering review required')
     require(read_json(original/'register-process.json')==process,'original process receipt mismatch')
@@ -181,24 +217,34 @@ def recover(package,original_evidence,evidence,anchor,confirmation,timeout=30,ru
     ledger=original/'ledger'/'registration-ledger.dpapi'
     require(receipt.get('ledgerPath')==str(ledger),'original ledger location mismatch')
     ledger_hash=sha(read_bytes(ledger,65536));require(receipt.get('ledgerSha256')==ledger_hash,'original ledger changed or checkpoint missing')
+    claim=original/'recovery-claim.json'
+    require(not claim.exists(),'recovery already claimed for this registration; manual engineering review required')
     directory=fresh_directory(evidence,[package,original])
     result={'schema':'mycomputer-recovery-run-v1','status':'incomplete','originalEvidence':str(original),
-            'manifestSha256':anchor,'originalLedgerSha256':ledger_hash,'recoveryInvocations':0,
-            'cleanupEvidenceConsistent':False,'activationEvidenceConsistent':False,'sourceAuthenticityVerified':False}
-    # A persistent claim is consumed even on later failure. Never delete it or
-    # silently replay a recovery after a partial mutation or uncertain outcome.
-    claim=original/'recovery-claim.json'
-    with claim.open('x',encoding='utf-8') as stream:
-        json.dump({'schema':'mycomputer-recovery-claim-v1','evidence':str(directory),'ledgerSha256':ledger_hash},stream)
-        stream.flush();os.fsync(stream.fileno())
+            'manifestSha256':anchor,'originalLedgerSha256':ledger_hash,'packageBinding':binding,'recoveryInvocations':0,
+            'claimCreated':False,'residueShape':None,'cleanupEvidenceConsistent':False,'activationEvidenceConsistent':False,'sourceAuthenticityVerified':False}
     save(directory/'recovery.json',result);runner=runner or job.run_once
     try:
+        # Read-only inspection runs before any claim so an incapable tool or foreign
+        # residue refuses here without consuming the single recovery opportunity.
         inspection=invoke(runner,[str(package/EXE),'--inspect-recovery','--ledger',str(ledger),'--expected-ledger-sha256',ledger_hash],directory,'inspect',timeout)
         require(completed(inspection,0),'inspection process incomplete')
         require(not read_bytes(directory/'inspect-stderr.txt').strip(),'inspection stderr')
-        required=validate_inspection(read_json(directory/'inspect-stdout.txt'),receipt,ledger_hash)
+        inspected=read_json(directory/'inspect-stdout.txt')
+        required=validate_inspection(inspected,receipt,ledger_hash);result['residueShape']=inspected['residueShape']
         require(sha(read_bytes(ledger,65536))==ledger_hash,'ledger changed after inspection')
         if required:
+            # A persistent claim is consumed even on later failure. Never delete it or
+            # silently replay a recovery after a partial mutation or uncertain outcome.
+            with claim.open('x',encoding='utf-8') as stream:
+                json.dump({'schema':'mycomputer-recovery-claim-v1','evidence':str(directory),'ledgerSha256':ledger_hash},stream)
+                stream.flush();os.fsync(stream.fileno())
+            result['claimCreated']=True;save(directory/'recovery.json',result)
+            snapshot=invoke(runner,[str(package/EXE),'--snapshot-residue','--ledger',str(ledger),'--expected-ledger-sha256',ledger_hash],directory,'snapshot',timeout)
+            require(completed(snapshot,0),'residue snapshot process incomplete')
+            require(not read_bytes(directory/'snapshot-stderr.txt').strip(),'residue snapshot stderr')
+            validate_snapshot(read_json(directory/'snapshot-stdout.txt'),inspected,ledger_hash)
+            require(sha(read_bytes(ledger,65536))==ledger_hash,'ledger changed after snapshot')
             result['recoveryInvocations']=1;save(directory/'recovery.json',result)
             cleanup=invoke(runner,[str(package/EXE),'--recover','--ledger',str(ledger),'--expected-ledger-sha256',ledger_hash],directory,'recover',timeout)
             require(completed(cleanup,0),'recovery process incomplete')

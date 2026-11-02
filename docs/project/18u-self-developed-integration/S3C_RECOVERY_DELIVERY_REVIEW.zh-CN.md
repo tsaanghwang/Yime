@@ -115,3 +115,17 @@ CTF 由 TSF 同时写 32/64 位视图，所以残留在两视图都可见；`Unr
 
 下一步：按第 3 节实现原生工具与编排脚本变更，并补第 3.3 节前两层测试；
 本机只读检查与恢复执行各自另行确认。
+
+## 5. 实现状态（2026-11-02，同分支后续提交）
+
+| 项 | 实现 | 验证 |
+| --- | --- | --- |
+| 策略 | `MyComputerActivationPolicy.h`：`Mode::SnapshotResidue`、`ResidueShape`、`RecoveryToolCapable`、`CanRemoveResidue`（需 comAttempted／comOwned／profileAttempted／未 cleanupVerified／COM 形状／空壳形状／profile 已不枚举）、`ResidueStepSucceeded`（只看再读） | `MyComputerActivationPolicyTests` 5 组通过 |
+| 形状与清除 | `MyComputerActivationSupport.h`：`localResidueShape`（外来引用阶段与查询失败阶段显式区分）、`localRemoveOwnedTipResidue`（`Unregister` → 逐视图再校验形状 → `RegDeleteTree` → 再读绝对）、`localResidueSnapshot`（值名／类型／长度／SHA-256，无值数据） | MSVC x64 编译通过；未在实机运行 |
+| 清理路径 | `RegistrationProbe.cpp` stage1：disable／UnregisterCategory／UnregisterProfile 以再读缺席判成功（恢复可重入）；`UnregisterProfile` 后、`localTipAbsent` 前插入受门控残留清除；任何门失败记 `cleanup-residue-*` 并保留空壳与 COM 标记 | 编译通过；契约测试通过 |
+| 报告 | `--inspect-recovery` 新增 `residueShape`／`recoveryToolCapable`；新增只读 `--snapshot-residue`（与检查同样绑定账本） | 编译通过；参数解析测试通过 |
+| 编排 | `run_mycomputer_registration.py`：先只读检查，不具备能力或形状 not-owned 则拒绝且**不创建声明**；声明 → 快照 → 恢复 → 核验；快照字段严格校验、拒绝值数据；`recoverableRegistrations` 四哈希钉定允许较新包恢复旧注册，DLL 仍由原生工具按账本原路径校验 | 19 项流程测试通过（新增 5 项） |
+| 包 | `build_mycomputer_stage1_package.py --pinned-registrations`，读取审阅文件 `tools/ci/mycomputer_recoverable_registrations.json`（当前钉定 `71a4a252` 注册的 manifest／源码／EXE／DLL 哈希）；包 workflow 重新钉到 `codex/18u-native-async-gates-20261102` 并传入该文件 | 包测试 2 项新增通过；workflow 契约测试通过（共 77 项） |
+
+未做：实机 `--inspect-recovery`／`--snapshot-residue` 只读检查、CI 一次性注入失败场景、本机恢复执行。
+原证据目录 `mycomputer-activation-71a4a2-v2-r1/` 未被触碰，仍无 `recovery-claim.json`。

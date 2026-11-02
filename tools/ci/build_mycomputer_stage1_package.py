@@ -70,7 +70,25 @@ def signatures(data,payload):
     return result
 
 
-def build_package(dll,tool,source_sha,readme,collector,job_helper,signature_file,output_dir,package_version='v1',registration_runner=None,evidence_validator=None):
+def recoverable_registrations(path):
+    """Reviewed older registrations this package may recover. The native tool still opens
+    and hash-checks the DLL at the ledger's original path; the shipped DLL is not reused."""
+    if path is None:return []
+    value=json.loads(read_file(path,65536).decode('utf-8'))
+    require(isinstance(value,dict) and set(value)=={'schema','registrations'} and value['schema']=='mycomputer-recoverable-registrations-v1','recoverable registrations schema')
+    rows=value['registrations'];require(isinstance(rows,list) and 0<len(rows)<=8,'recoverable registrations count')
+    result=[];seen=set()
+    for row in rows:
+        require(isinstance(row,dict) and set(row)=={'manifestSha256','sourceCommit','exeSha256','dllSha256','note'},'recoverable registration fields')
+        for key in ('manifestSha256','exeSha256','dllSha256'):require(isinstance(row[key],str) and re.fullmatch('[0-9a-f]{64}',row[key]),'recoverable registration hash')
+        require(isinstance(row['sourceCommit'],str) and re.fullmatch('[0-9a-f]{40}',row['sourceCommit']),'recoverable registration source')
+        require(isinstance(row['note'],str) and 0<len(row['note'])<=400,'recoverable registration note')
+        require(row['exeSha256'] not in seen,'duplicate recoverable registration');seen.add(row['exeSha256'])
+        result.append({key:row[key] for key in ('manifestSha256','sourceCommit','exeSha256','dllSha256')})
+    return result
+
+
+def build_package(dll,tool,source_sha,readme,collector,job_helper,signature_file,output_dir,package_version='v1',registration_runner=None,evidence_validator=None,recoverable=None):
     require(isinstance(source_sha,str) and re.fullmatch('[0-9a-f]{40}',source_sha),'exact source SHA required')
     inputs={PE_NAMES[0]:dll,PE_NAMES[1]:tool,'README.zh-CN.md':readme,SCRIPT_NAMES[0]:collector,SCRIPT_NAMES[1]:job_helper}
     require(package_version in ('v1','v2'),'explicit supported package version required')
@@ -79,16 +97,20 @@ def build_package(dll,tool,source_sha,readme,collector,job_helper,signature_file
         inputs.update({V2_SCRIPT_NAMES[0]:registration_runner,V2_SCRIPT_NAMES[1]:evidence_validator})
     else:
         require(registration_runner is None and evidence_validator is None,'v1 cannot include registration companions')
+        require(recoverable is None,'v1 cannot pin recoverable registrations')
     for name in (*PE_NAMES,*SCRIPT_NAMES,*(V2_SCRIPT_NAMES if package_version=='v2' else ())):require(Path(inputs[name]).name==name,'fixed input basename required')
     payload={name:read_file(path,128*1024*1024 if name in PE_NAMES else 1024*1024) for name,path in inputs.items()}
     architecture={name:pe_identity(payload[name],name.endswith('.dll')) for name in PE_NAMES}
     signing=signatures(read_file(signature_file,65536),payload)
+    pinned=recoverable_registrations(recoverable)
+    for row in pinned:require(row['exeSha256']!=digest(payload[PE_NAMES[1]]),'recoverable registration must name an older tool')
     manifest={'schema':'mycomputer-activation-development-package-'+package_version,'scope':'registration-activation-only-development',
               'sourceCommit':source_sha,'architecture':'native-x64','targetHost':'MyComputer','identity':dict(PRODUCT_IDENTITY),
               'defaultOperation':'read-only-preflight','userDesktopExecutionApproved':False,
               'registrationExecutionApproved':False,'brokerEditingVerified':False,'physicalAcceptance':False,
               'signatureEvidenceSource':'Windows Get-AuthenticodeSignature; hash-bound supplied build evidence',
               'files':[]}
+    if pinned:manifest['recoverableRegistrations']=pinned
     for name,data in sorted(payload.items()):
         row={'path':name,'bytes':len(data),'sha256':digest(data)}
         if name in architecture:row.update(pe=architecture[name],authenticode=signing[name])
@@ -120,8 +142,9 @@ def main():
     parser.add_argument('--package-version',choices=('v1','v2'),default='v1')
     parser.add_argument('--registration-runner',type=Path)
     parser.add_argument('--evidence-validator',type=Path)
+    parser.add_argument('--pinned-registrations',type=Path,help='reviewed JSON naming older registrations this v2 tool may recover')
     a=parser.parse_args()
-    result=build_package(a.dll,a.tool,a.source_sha,a.readme,a.collector,a.job_helper,a.signatures,a.output_dir,a.package_version,a.registration_runner,a.evidence_validator)
+    result=build_package(a.dll,a.tool,a.source_sha,a.readme,a.collector,a.job_helper,a.signatures,a.output_dir,a.package_version,a.registration_runner,a.evidence_validator,a.pinned_registrations)
     print(json.dumps(result,ensure_ascii=False))
 
 if __name__=='__main__':main()

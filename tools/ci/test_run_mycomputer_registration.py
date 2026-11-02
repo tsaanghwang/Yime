@@ -25,6 +25,7 @@ class RegistrationFlowTests(unittest.TestCase):
         self.pin();location=patch.object(flow,'__file__',str(self.package/'run_mycomputer_registration.py'));location.start();self.addCleanup(location.stop)
         self.calls=[];self.root_identity={'pid':1234,'creationFileTime':'123456789'}
         self.register_state={};self.missing_marker=False;self.inspect_changes={};self.recover_state={};self.required=True
+        self.snapshot_changes={};self.snapshot_state={}
 
     def pin(self):
         self.manifest['files']=[dict(path=p.name,bytes=p.stat().st_size,sha256=flow.sha(p.read_bytes())) for p in self.package.iterdir() if p.name!='manifest.json']
@@ -48,8 +49,16 @@ class RegistrationFlowTests(unittest.TestCase):
             flags={key:True for key in flow.LEDGER_FLAGS};flags['cleanupVerified']=not self.required
             record=dict(schema='mycomputer-recovery-inspection-v1',scope='readonly-recovery-ownership',status='verified',stage='completed',code=0,
                         ledgerSha256=flow.sha(ledger.read_bytes()),ownerPid=self.root_identity['pid'],ownerCreationTime=int(self.root_identity['creationFileTime']),dllSha256=self.dll_sha,
-                        bindingVerified=True,ownerDeadVerified=True,ownedScopeVerified=True,cleanupVerified=not self.required,flags=flags,recoveryRequired=self.required)
+                        bindingVerified=True,ownerDeadVerified=True,ownedScopeVerified=True,cleanupVerified=not self.required,flags=flags,recoveryRequired=self.required,
+                        residueShape='owned-empty-shell' if self.required else 'absent',recoveryToolCapable=True)
             record.update(self.inspect_changes);stdout.write_text(json.dumps(record))
+        elif op=='--snapshot-residue':
+            ledger=Path(command[3]);self.assertEqual(command[4],'--expected-ledger-sha256')
+            self.assertTrue((self.root/'original/recovery-claim.json').is_file(),'snapshot must follow the claim')
+            entry=dict(hive='HKLM',view='64',path='SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}',subkeys=['Category','LanguageProfile'],values=[dict(name='Enable',type=4,bytes=4,sha256='c'*64)])
+            record=dict(schema='mycomputer-residue-snapshot-v1',scope='readonly-owned-residue-snapshot',status='captured',stage='completed',code=0,
+                        ledgerSha256=flow.sha(ledger.read_bytes()),dllSha256=self.dll_sha,residueShape='owned-empty-shell',entries=[entry])
+            record.update(self.snapshot_changes);stdout.write_text(json.dumps(record));state.update(self.snapshot_state)
         elif op=='--recover':
             verification.update(mode='recover',writesStarted=True)
             stdout.write_text(json.dumps(verification));state.update(self.recover_state)
@@ -93,12 +102,84 @@ class RegistrationFlowTests(unittest.TestCase):
     def test_recovery_is_separate_inspect_once_then_verify(self):
         self.register_state={'timedOut':True,'exitCode':124};before=self.register();original=(self.root/'original/registration.json').read_bytes()
         result=self.recover()
-        self.assertEqual(self.calls,['--register-once','--inspect-recovery','--recover','--verify'])
+        self.assertEqual(self.calls,['--register-once','--inspect-recovery','--snapshot-residue','--recover','--verify'])
         self.assertTrue(result['cleanupEvidenceConsistent']);self.assertFalse(result['activationEvidenceConsistent'])
+        self.assertEqual(result['packageBinding'],'same-package');self.assertEqual(result['residueShape'],'owned-empty-shell');self.assertTrue(result['claimCreated'])
         self.assertEqual((self.root/'original/registration.json').read_bytes(),original)
         self.assertTrue((self.root/'original/recovery-claim.json').is_file())
-        with self.assertRaises(FileExistsError):flow.recover(self.package,self.root/'original',self.root/'recovery2',self.anchor,flow.RECOVER_CONFIRM,runner=self.runner)
-        self.assertEqual(self.calls.count('--recover'),1)
+        self.assertTrue((self.root/'recovery/snapshot-stdout.txt').is_file())
+        with self.assertRaises(ValueError):flow.recover(self.package,self.root/'original',self.root/'recovery2',self.anchor,flow.RECOVER_CONFIRM,runner=self.runner)
+        self.assertFalse((self.root/'recovery2').exists());self.assertEqual(self.calls.count('--recover'),1)
+
+    def test_incapable_residue_shape_refuses_before_claim(self):
+        self.register_state={'timedOut':True,'exitCode':124};self.register()
+        self.inspect_changes={'residueShape':'not-owned','recoveryToolCapable':False}
+        result=self.recover()
+        self.assertEqual(self.calls,['--register-once','--inspect-recovery'])
+        self.assertEqual(result['status'],'failed-or-inconclusive');self.assertIn('not-owned',result['failureReason'])
+        self.assertFalse(result['claimCreated']);self.assertFalse((self.root/'original/recovery-claim.json').exists())
+        self.assertEqual(result['recoveryInvocations'],0)
+        # The claim was never consumed, so a later reviewed attempt remains possible.
+        self.inspect_changes={};result=flow.recover(self.package,self.root/'original',self.root/'recovery2',self.anchor,flow.RECOVER_CONFIRM,runner=self.runner)
+        self.assertTrue(result['cleanupEvidenceConsistent'])
+
+    def test_inspection_capability_contradictions_refused(self):
+        self.register_state={'timedOut':True,'exitCode':124};receipt=self.register();self.recover()
+        valid=json.loads((self.root/'recovery/inspect-stdout.txt').read_text())
+        for changes in ({'recoveryToolCapable':False},{'residueShape':'not-owned'},{'residueShape':'unknown','recoveryToolCapable':False},{'recoveryToolCapable':'true'}):
+            changed=copy.deepcopy(valid);changed.update(changes)
+            with self.subTest(changes=changes),self.assertRaises(ValueError):flow.validate_inspection(changed,receipt,receipt['ledgerSha256'])
+        # Only the COM generation root may remain: recovery is required although no TIP residue exists.
+        changed=copy.deepcopy(valid);changed['residueShape']='absent';self.assertTrue(flow.validate_inspection(changed,receipt,receipt['ledgerSha256']))
+        changed=copy.deepcopy(valid);changed.update(recoveryRequired=False,cleanupVerified=True,residueShape='absent');changed['flags']=dict(valid['flags'],cleanupVerified=True)
+        self.assertFalse(flow.validate_inspection(changed,receipt,receipt['ledgerSha256']))
+
+    def test_snapshot_failure_after_claim_stops_before_recover(self):
+        self.register_state={'timedOut':True,'exitCode':124};self.register()
+        leaked=dict(hive='HKLM',view='64',path='x',subkeys=[],values=[dict(name='Enable',type=4,bytes=4,sha256='c'*64,data='AQAAAA==')])
+        for index,(changes,state) in enumerate((({'entries':[leaked]},{}),({'residueShape':'absent'},{}),({},{'timedOut':True,'exitCode':124}))):
+            self.calls.clear();self.snapshot_changes=changes;self.snapshot_state=state
+            with self.subTest(changes=changes,state=state):
+                result=flow.recover(self.package,self.root/'original',self.root/('recovery-'+str(index)),self.anchor,flow.RECOVER_CONFIRM,runner=self.runner)
+                self.assertEqual(result['status'],'failed-or-inconclusive');self.assertEqual(result['recoveryInvocations'],0);self.assertTrue(result['claimCreated'])
+                self.assertEqual(self.calls,['--inspect-recovery','--snapshot-residue'])
+            (self.root/'original/recovery-claim.json').unlink() # Test-only reset; the product never deletes a claim.
+
+    def newer_package(self,pin):
+        """Rebuild the package with different tool and DLL binaries; pin names the original registration."""
+        receipt=json.loads((self.root/'original/registration.json').read_text())
+        for name in (flow.EXE,flow.DLL):(self.package/name).write_bytes((self.package/name).read_bytes()+b'\0')
+        self.manifest['sourceCommit']='b'*40
+        if pin is None:self.manifest.pop('recoverableRegistrations',None)
+        else:self.manifest['recoverableRegistrations']=pin(receipt)
+        self.pin();self.dll_sha=receipt['dllSha256'] # The native tool binds the ledger's original DLL, not the shipped one.
+
+    @staticmethod
+    def exact_pin(r,**changes):
+        row=dict(manifestSha256=r['manifestSha256'],sourceCommit=r['sourceCommit'],exeSha256=r['exeSha256'],dllSha256=r['dllSha256']);row.update(changes)
+        return [{k:v for k,v in row.items() if v is not None}]
+
+    def test_pinned_older_registration_recoverable_by_newer_package(self):
+        self.register_state={'timedOut':True,'exitCode':124};self.register()
+        self.newer_package(lambda r:self.exact_pin(r))
+        result=self.recover()
+        self.assertTrue(result['cleanupEvidenceConsistent']);self.assertEqual(result['packageBinding'],'pinned-older-package')
+        self.assertEqual(self.calls,['--register-once','--inspect-recovery','--snapshot-residue','--recover','--verify'])
+
+    def test_unpinned_or_mismatched_newer_package_refused_before_launch(self):
+        pins=(None,lambda r:[],lambda r:self.exact_pin(r,sourceCommit='c'*40),lambda r:self.exact_pin(r,manifestSha256='d'*64),
+              lambda r:self.exact_pin(r,dllSha256='e'*64),lambda r:self.exact_pin(r,dllSha256=None),
+              lambda r:self.exact_pin(r,exeSha256=flow.sha((self.package/flow.EXE).read_bytes()+b'\0')))
+        for index,pin in enumerate(pins):
+            with self.subTest(index=index):
+                if index:self.setUp()
+                self.register_state={'timedOut':True,'exitCode':124};self.register();self.newer_package(pin)
+                with self.assertRaises(ValueError):self.recover()
+                self.assertEqual(self.calls,['--register-once']);self.assertFalse((self.root/'original/recovery-claim.json').exists())
+        self.setUp();self.register_state={'timedOut':True,'exitCode':124};self.register()
+        receipt_path=self.root/'original/registration.json';receipt=json.loads(receipt_path.read_text());receipt['dllSha256']='e'*64;receipt_path.write_text(json.dumps(receipt))
+        with self.assertRaises(ValueError):self.recover() # A different DLL is never the same registration, even within one package.
+        self.assertEqual(self.calls,['--register-once'])
 
     def test_unknown_tree_or_missing_final_receipt_blocks_before_inspection(self):
         self.register_state={'treeStopped':False,'timedOut':True,'exitCode':None};self.register()
@@ -117,7 +198,7 @@ class RegistrationFlowTests(unittest.TestCase):
     def test_timed_out_recovery_never_verifies_or_retries(self):
         self.register_state={'timedOut':True,'exitCode':124};self.register();self.recover_state={'timedOut':True,'exitCode':124}
         result=self.recover();self.assertFalse(result['cleanupEvidenceConsistent'])
-        self.assertEqual(self.calls,['--register-once','--inspect-recovery','--recover'])
+        self.assertEqual(self.calls,['--register-once','--inspect-recovery','--snapshot-residue','--recover'])
 
     def test_changed_original_log_or_ledger_refused(self):
         self.register_state={'timedOut':True,'exitCode':124};self.register()
