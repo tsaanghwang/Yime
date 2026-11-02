@@ -41,7 +41,7 @@ class PackageTests(unittest.TestCase):
         self.calls.append(command)
         self.assertEqual(command[2:4], ['--script', str(self.f.repo / 'installer/simple/Build-Package.ps1')])
         self.assertEqual(command[4:6], ['--edition', 'ps7'])
-        self.assertTrue(command[1].endswith('tools/powershell/run_checked.py'))
+        self.assertEqual(Path(command[1]), self.f.repo / 'tools/powershell/run_checked.py', f'checked runner path mismatch: {command[1]!r}')
         self.assertTrue(kwargs['check']); self.assertEqual(kwargs['timeout'],180)
         args=json.loads(Path(command[-1]).read_text())
         self.assertEqual(args['Product'],'yimecore-18u');self.assertEqual(args['Version'],p.VERSION)
