@@ -27,8 +27,8 @@ func(c *fakeChild)Input()io.WriteCloser{return &c.input}
 func(c *fakeChild)Wait()error{c.waits++;return c.waitErr}
 func(c *fakeChild)Stop(){c.stops++}
 func validNative()NativeResult{
- broker:=uint32(22);owner:=uint32(11);session:=uint32(1);made:=uint64(100)
- return NativeResult{Schema:"activated-loop-result-v1",Status:"passed",WritesStarted:true,CleanupVerified:true,HostPID:11,BrokerPID:&broker,WindowsSessionID:&session,BrokerCreationTime:&made,LedgerOwnerPID:&owner,LedgerOwnerCreationTime:&made,PublisherTrust:"not-established",HostResult:&HostResult{Stage:"result",Scenario:"commit",ActualDLLLoaded:true,ActivationIdentity:"windows-activated-profile",Registered:true,Outcome:"applied",ReadbackMatches:true,OtherContextEmpty:true,HostCleanupVerified:true,SessionBinding:SessionBinding{SessionID:"test-session",Identity:SessionIdentity{LayoutSHA256:DedicatedLayoutSHA256,DictionarySHA256:DedicatedDictionarySHA256,Mode:"variable",SessionPolicy:"concept-keyboard-modes-v2+ellipsis-choice-v1"},Focus:SessionFocus{Context:"test-own-context",Epoch:1}}}}
+ broker:=uint32(22);owner:=uint32(11);session:=uint32(1);made:=uint64(100);disconnected:=DisconnectedHRESULT
+ return NativeResult{PostCleanupRouteRevoked:true,PostCleanupRouteCode:&disconnected,Schema:"activated-loop-result-v1",Status:"passed",WritesStarted:true,CleanupVerified:true,HostPID:11,BrokerPID:&broker,WindowsSessionID:&session,BrokerCreationTime:&made,LedgerOwnerPID:&owner,LedgerOwnerCreationTime:&made,PublisherTrust:"not-established",HostResult:&HostResult{EditAttempts:1,Stage:"result",Scenario:"commit",ActualDLLLoaded:true,ActivationIdentity:"windows-activated-profile",Registered:true,Outcome:"applied",ReadbackMatches:true,OtherContextEmpty:true,HostCleanupVerified:true,SessionBinding:SessionBinding{SessionID:"test-session",Identity:SessionIdentity{LayoutSHA256:DedicatedLayoutSHA256,DictionarySHA256:DedicatedDictionarySHA256,Mode:"variable",SessionPolicy:"concept-keyboard-modes-v2+ellipsis-choice-v1"},Focus:SessionFocus{Context:"test-own-context",Epoch:1}}}}
 }
 func nativeBytes(t *testing.T,n NativeResult)[]byte{t.Helper();b,e:=json.Marshal(n);if e!=nil{t.Fatal(e)};return b}
 func fixture(t *testing.T)Options{
@@ -66,4 +66,32 @@ func TestControllerTerminalFailureBeforeConnectIsNotKilled(t *testing.T){
  host:=&fakeChild{pid:11,output:strings.NewReader(string(nativeBytes(t,n))+"\n"),waitErr:errors.New("exit3")};broker:=&fakeChild{pid:22,output:strings.NewReader("READY yimebroker-18u\n")}
  start:=func(_ context.Context,path string,_ []string,_ string,_ io.Writer)(Child,error){if filepath.Base(path)==HostName{return host,nil};return broker,nil}
  r:=Run(context.Background(),o,start);if r.Status!="failed"||host.waits!=1||broker.waits!=1||host.stops!=0||r.NativeResult==nil{t.Fatal("blocked terminal lost or normally exiting host killed")}
+}
+
+func TestExactEditAttemptAndRevokedRouteEvidence(t *testing.T){
+ for _,change:=range []func(*NativeResult){
+  func(n *NativeResult){n.HostResult.EditAttempts=0},
+  func(n *NativeResult){n.HostResult.EditAttempts=2},
+  func(n *NativeResult){n.PostCleanupRouteRevoked=false},
+  func(n *NativeResult){n.PostCleanupRouteCode=nil},
+  func(n *NativeResult){v:=uint32(0);n.PostCleanupRouteCode=&v},
+  func(n *NativeResult){v:=uint32(0x80004005);n.PostCleanupRouteCode=&v},
+ }{n:=validNative();change(&n);if ValidateNative(nativeBytes(t,n),11,22)==nil{t.Fatal("insufficient exact edit/revocation evidence accepted")}}
+ raw:=string(nativeBytes(t,validNative()))
+ for _,bad:=range []string{
+  strings.Replace(raw,`"editAttempts":1,`,"",1),
+  strings.Replace(raw,`"editAttempts":1`,`"editAttempts":null`,1),
+  strings.Replace(raw,`"editAttempts":1`,`"editAttempts":true`,1),
+  strings.Replace(raw,`"editAttempts":1`,`"editAttempts":-1`,1),
+  strings.Replace(raw,`"editAttempts":1`,`"editAttempts":4294967297`,1),
+  strings.Replace(raw,`"postCleanupRouteRevoked":true,`,"",1),
+  strings.Replace(raw,`"postCleanupRouteRevoked":true`,`"postCleanupRouteRevoked":1`,1),
+  strings.Replace(raw,`"postCleanupRouteCode":2147747076,`,"",1),
+  strings.Replace(raw,`"postCleanupRouteCode":2147747076`,`"postCleanupRouteCode":"2147747076"`,1),
+  strings.Replace(raw,`"postCleanupRouteCode":2147747076`,`"postCleanupRouteCode":6442714372`,1),
+ }{if bad==raw{t.Fatal("negative fixture did not alter field")};if ValidateNative([]byte(bad),11,22)==nil{t.Fatal("missing/wrongly typed refinement evidence accepted")}}
+ // An unqueried route is valid failure evidence, never successful evidence.
+ n:=validNative();n.Status="failed";n.PostCleanupRouteRevoked=false;n.PostCleanupRouteCode=nil
+ if _,err:=DecodeNative(nativeBytes(t,n));err!=nil{t.Fatal("unqueried failure evidence rejected")}
+ if ValidateNative(nativeBytes(t,n),11,22)==nil{t.Fatal("failure evidence accepted as success")}
 }

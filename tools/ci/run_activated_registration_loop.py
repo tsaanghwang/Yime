@@ -15,6 +15,7 @@ import stat
 import sys
 
 CONFIRM = 'once-activated-18u-loop'
+TF_E_DISCONNECTED = 0x80040504  # msctf.h: MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0504)
 LAYOUT_SHA = '995f1a74f129249febbd09ca11a8266f6e0c94bac8c05c57754859fc3be3349c'
 DICTIONARY_SHA = '43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353'
 BINARIES = {'YimeActivatedLoopController.exe', 'YimeActivatedLoopOnce.exe', 'YimeTextService18u.dll', 'YimeBroker18u.exe', 'YimeMyComputerActivationStage1.exe', 'windows_job_once.py', 'validate_local_activation_evidence.py'}
@@ -222,10 +223,11 @@ def validate_controller(report, manifest, root):
         require(type(report[field]) is int and 0 < report[field] <= 0xffffffff, 'child-pid-required')
     require(len({report['hostPID'], report['brokerPID'], root['pid']}) == 3, 'distinct-owned-processes-required')
     native = report['nativeResult']
-    fields = {'schema', 'status', 'writesStarted', 'cleanupVerified', 'operationFailure', 'cleanupFailure', 'hostResult', 'hostPID', 'brokerPID', 'windowsSessionID', 'brokerCreationTime', 'ledgerOwnerPID', 'ledgerOwnerCreationTime', 'publisherTrust'}
+    fields = {'schema', 'status', 'writesStarted', 'cleanupVerified', 'operationFailure', 'cleanupFailure', 'hostResult', 'hostPID', 'brokerPID', 'windowsSessionID', 'brokerCreationTime', 'ledgerOwnerPID', 'ledgerOwnerCreationTime', 'publisherTrust', 'postCleanupRouteRevoked', 'postCleanupRouteCode'}
     require(isinstance(native, dict) and set(native) == fields, 'native-terminal-fields')
     require(native['schema'] == 'activated-loop-result-v1' and native['status'] == 'passed' and native['publisherTrust'] == 'not-established', 'native-terminal-identity')
     require(native['writesStarted'] is True and native['cleanupVerified'] is True and native['operationFailure'] is None and native['cleanupFailure'] is None, 'native-operation-or-cleanup-failed')
+    require(native['postCleanupRouteRevoked'] is True and type(native['postCleanupRouteCode']) is int and native['postCleanupRouteCode'] == TF_E_DISCONNECTED, 'post-cleanup-provider-revocation-required')
     for key, expected in [('hostPID', report['hostPID']), ('brokerPID', report['brokerPID']), ('ledgerOwnerPID', report['hostPID'])]:
         require(type(native[key]) is int and native[key] == expected, 'native-owner-pid-binding')
     require(type(native['windowsSessionID']) is int and 0 <= native['windowsSessionID'] <= 0xffffffff, 'native-session-required')
@@ -234,9 +236,11 @@ def validate_controller(report, manifest, root):
     host = native['hostResult']
     true_fields = {'actualDLLLoaded', 'registered', 'readbackMatches', 'otherContextEmpty', 'hostCleanupVerified'}
     false_fields = {'sendInput', 'rejected', 'duplicateRejected', 'readbackEmpty', 'unknownAfterPendingEditCovered', 'operationPendingObserved', 'postWriteDisconnectObserved', 'replayRejected'}
-    require(isinstance(host, dict) and set(host) == true_fields | false_fields | {'stage', 'scenario', 'activationIdentity', 'outcome', 'sessionBinding'}, 'formal-host-result-fields')
+    require(isinstance(host, dict) and set(host) == true_fields | false_fields | {'stage', 'scenario', 'activationIdentity', 'outcome', 'sessionBinding', 'editAttempts'}, 'formal-host-result-fields')
     require(host['stage'] == 'result' and host['scenario'] == 'commit' and host['activationIdentity'] == 'windows-activated-profile' and host['outcome'] == 'applied', 'activated-commit-only-required')
     require(all(host[field] is True for field in true_fields) and all(host[field] is False for field in false_fields), 'actual-edit-readback-or-host-cleanup-unproven')
+    # Counts real select ActionDedicated calls, not internal DoEditSession callbacks.
+    require(type(host['editAttempts']) is int and host['editAttempts'] == 1, 'exactly-one-edit-attempt-required')
     binding = host['sessionBinding']
     require(isinstance(binding, dict) and set(binding) == {'sessionId', 'identity', 'focus'}, 'session-binding-fields')
     require(isinstance(binding['sessionId'], str) and 0 < len(binding['sessionId']) <= 256, 'session-id-required')

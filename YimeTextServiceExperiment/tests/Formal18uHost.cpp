@@ -77,10 +77,32 @@ struct Apartment {
     Apartment(){require(CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED),"initialize COM");}
     ~Apartment(){CoUninitialize();}
 };
+#ifdef YIME_ACTIVATED_LOOP
+// Retain the actual Windows-provided object and code until the transaction has
+// finished unregistering. Releasing the object must precede unloading its code.
+struct RetainedProvider final : ActivatedProviderProbe {
+ ComPtr<ITfFunctionProvider> provider;HMODULE module=nullptr;
+ RetainedProvider(ITfFunctionProvider* value,HMODULE expected):provider(value){
+  const auto address=(*reinterpret_cast<void***>(value))[0];
+  if(!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,reinterpret_cast<LPCWSTR>(address),&module))winFail("retain provider module");
+  if(module!=expected){FreeLibrary(module);module=nullptr;fail("retained provider module mismatch");}
+ }
+ ~RetainedProvider() override {provider.Reset();if(module)FreeLibrary(module);}
+ HRESULT CheckDisconnected(bool& outputNull) override {
+  ComPtr<IUnknown> output;
+  const HRESULT hr=provider->GetFunction(GUID_NULL,__uuidof(IDedicatedTouchService),&output);
+  outputNull=!output;return hr;
+ }
+};
+#endif
 struct Host {
  ComPtr<ITfThreadMgr> manager;ComPtr<ITfDocumentMgr> document,other;ComPtr<ITfContext> context,otherContext;
  ComPtr<ITfTextInputProcessorEx> tip;ComPtr<IDedicatedTouchService> route;TfClientId client=TF_CLIENTID_NULL;
  HMODULE module=nullptr;HWND window=nullptr;bool managerActive=false,tipActive=false;
+ unsigned editAttempts=0; // actual select dispatches, not Polls or DLL callback count
+#ifdef YIME_ACTIVATED_LOOP
+ std::shared_ptr<ActivatedProviderProbe> retainedProvider;
+#endif
 #ifdef YIME_TOUCH_REGISTERED_FORMAL_HOST
  ComPtr<ITfInputProcessorProfileMgr> profiles;
  static constexpr bool registered=true;
@@ -134,6 +156,9 @@ struct Host {
   // Reject a stale registration pointing at a different DLL, even with our GUID.
   HMODULE actual=nullptr;const auto address=(*reinterpret_cast<void***>(route.Get()))[0];
   if(!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(address),&actual) || actual!=module)fail("registered DLL mismatch");
+#ifdef YIME_ACTIVATED_LOOP
+  retainedProvider=std::make_shared<RetainedProvider>(provider.Get(),module);
+#endif
 #else
   require(tip->ActivateEx(manager.Get(),client,0),"actual TIP activation");tipActive=true;require(tip.As(&route),"dedicated private interface");
 #endif
@@ -177,7 +202,7 @@ struct Host {
   // S_FALSE is not a completed operation. Never replay a lost operation.
   return hr==S_FALSE?E_UNEXPECTED:hr;
  }
- json action(const json& request,HRESULT& hr){BSTR value=nullptr;const auto body=request.dump();hr=awaitResult(route->ActionDedicated(body.c_str(),&value),&value);if(!value)return json::object();return response(value);}
+ json action(const json& request,HRESULT& hr){BSTR value=nullptr;const auto body=request.dump();if(request.value("kind",std::string())=="select")++editAttempts;hr=awaitResult(route->ActionDedicated(body.c_str(),&value),&value);if(!value)return json::object();return response(value);}
 };
 }
 namespace {
@@ -193,10 +218,17 @@ json routeBinding(const json& state){
  if(!focus.at("context").is_string()||focus.at("context").get_ref<const std::string&>().empty()||focus.at("context").get_ref<const std::string&>().size()>256||!focus.at("epoch").is_number_unsigned()||focus.at("epoch").get<std::uint64_t>()==0)fail("route focus shape");
  return {{"sessionId",session},{"identity",identity},{"focus",focus}};
 }
-json runFormalHost(const json& config,bool controlledOnce){
+json runFormalHost(const json& config,bool controlledOnce
+#ifdef YIME_ACTIVATED_LOOP
+ ,std::shared_ptr<ActivatedProviderProbe>* retained=nullptr
+#endif
+ ){
  Apartment apartment;const std::string scenario=config.at("scenario");
  if(scenario!="commit"&&scenario!="duplicate"&&scenario!="wrong-server-pid"&&scenario!="wrong-server-image"&&scenario!="deactivated"&&scenario!="focus-lost"&&scenario!="disconnect-before-action"&&scenario!="pending-focus-away-back"&&scenario!="pending-deactivated"&&scenario!="disconnect-after-edit")fail("scenario");
  Host host;host.initialize(widen(config.at("dll").get<std::string>()));
+#ifdef YIME_ACTIVATED_LOOP
+ if(controlledOnce){if(!retained||!host.retainedProvider)fail("missing retained provider");*retained=host.retainedProvider;}
+#endif
  DWORD pid=config.at("brokerPID");if(scenario=="wrong-server-pid")pid=GetCurrentProcessId();
  BSTR initial=nullptr;HRESULT hr=host.route->ConnectDedicated(widen(config.at("pipe").get<std::string>()).c_str(),pid,widen(config.at(scenario=="wrong-server-image"?"dll":"brokerImage").get<std::string>()).c_str(),&initial);
  hr=host.awaitResult(hr,&initial,95000);
@@ -224,7 +256,7 @@ json runFormalHost(const json& config,bool controlledOnce){
    if(scenario=="focus-lost")require(host.manager->SetFocus(host.other.Get()),"change own focus");
    if(scenario=="pending-focus-away-back" || scenario=="pending-deactivated" || scenario=="disconnect-after-edit"){
     BSTR value=nullptr;const auto body=request.dump();
-    hr=host.route->ActionDedicated(body.c_str(),&value);
+    ++host.editAttempts;hr=host.route->ActionDedicated(body.c_str(),&value);
     pendingObserved=hr==E_PENDING && value==nullptr;
     if(!pendingObserved){if(value)SysFreeString(value);fail("action did not become pending");}
     if(scenario=="pending-focus-away-back"){
@@ -272,9 +304,9 @@ json runFormalHost(const json& config,bool controlledOnce){
  bool empty=read(host.context.Get(),host.client).empty(),otherEmpty=read(host.otherContext.Get(),host.client).empty();
  if(rejected&&(!empty||!otherEmpty))fail("rejected operation wrote");
  require(host.deactivate(),"deactivate actual TIP");
- if(controlledOnce)host.closeChecked();
+ if(controlledOnce){if(host.editAttempts!=1)fail("single edit dispatch required");host.closeChecked();}
  auto result=json{{"stage","result"},{"scenario",scenario},{"actualDLLLoaded",true},{"activationIdentity",Host::registered?"windows-activated-profile":"owned-host-activation-client"},{"registered",Host::registered},{"sendInput",false},{"outcome",outcome},{"rejected",rejected},{"duplicateRejected",duplicateRejected},{"readbackMatches",readMatches},{"readbackEmpty",empty},{"otherContextEmpty",otherEmpty},{"unknownAfterPendingEditCovered",postWriteDisconnect},{"operationPendingObserved",pendingObserved},{"postWriteDisconnectObserved",postWriteDisconnect},{"replayRejected",replayRejected}};
- if(controlledOnce){result["hostCleanupVerified"]=true;result["sessionBinding"]=binding;}
+ if(controlledOnce){result["hostCleanupVerified"]=true;result["sessionBinding"]=binding;result["editAttempts"]=host.editAttempts;}
  return result;
 }
 }
@@ -291,8 +323,9 @@ ActivatedLoopResult RunActivatedRegisteredHost(const std::string& config,const s
   if(count<=0)fail("pinned DLL encoding");std::string path(count,'\0');
   if(WideCharToMultiByte(CP_UTF8,WC_ERR_INVALID_CHARS,pinnedDll.data(),static_cast<int>(pinnedDll.size()),path.data(),count,nullptr,nullptr)!=count)fail("pinned DLL encoding");
   request["dll"]=path;
-  auto result=runFormalHost(request,true);
-  return {true,"completed","hresult",0,result.dump()};
+  std::shared_ptr<ActivatedProviderProbe> retained;
+  auto result=runFormalHost(request,true,&retained);
+  return {true,"completed","hresult",0,result.dump(),retained};
  }catch(const GateFailure& f){return {false,f.stage,f.kind,f.code,{}};}
  catch(...){return {false,"registered-host-exception","exception",0,{}};}
 }

@@ -34,7 +34,7 @@ jobs:
           evidence = pathlib.Path('.generated/activated-loop-evidence')
           evidence.mkdir(parents=True, exist_ok=False)
           (evidence / 'scope.json').write_text(json.dumps({'sourceCommit': os.environ['SOURCE_SHA'], 'registrationExecuted': False, 'registryTestsExecuted': False, 'nativeHostExecuted': False, 'executableDelivery': False}), encoding='utf-8')
-      - name: Require eight Go mock tests without skips
+      - name: Require nine Go mock tests without skips
         run: |
           import json, pathlib, subprocess
           output = pathlib.Path('.generated/activated-loop-evidence/go-tests.jsonl')
@@ -42,9 +42,9 @@ jobs:
               run = subprocess.run(['go', 'test', '-count=1', '-json', './internal/activatedloop'], cwd='go-backend', stdout=log, stderr=subprocess.STDOUT, timeout=240)
           events = [json.loads(line) for line in output.read_text(encoding='utf-8').splitlines() if line.strip()]
           passed = {e['Test'] for e in events if e.get('Action') == 'pass' and 'Test' in e}
-          if run.returncode or len(passed) != 8 or any(e.get('Action') in ['skip', 'fail'] for e in events):
-              raise SystemExit('Eight mandatory Go mock tests did not pass')
-      - name: Require fifty-two Python synthetic tests without skips
+          if run.returncode or len(passed) != 9 or any(e.get('Action') in ['skip', 'fail'] for e in events):
+              raise SystemExit('Nine mandatory Go mock tests did not pass')
+      - name: Require fifty-four Python synthetic tests without skips
         run: |
           import importlib, io, pathlib, sys, unittest
           sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
@@ -54,8 +54,8 @@ jobs:
           stream = io.StringIO()
           result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
           pathlib.Path('.generated/activated-loop-evidence/python-tests.log').write_text(stream.getvalue(), encoding='utf-8')
-          if result.testsRun != 52 or result.skipped or not result.wasSuccessful():
-              raise SystemExit('Fifty-two mandatory synthetic tests did not pass')
+          if result.testsRun != 54 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('Fifty-four mandatory synthetic tests did not pass')
       - name: Compile fixed Go controller and Broker without execution
         env:
           GOARCH: amd64

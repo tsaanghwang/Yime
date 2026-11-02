@@ -13,9 +13,9 @@ def hash_bytes(value): return hashlib.sha256(value).hexdigest()
 
 
 def native_fixture():
-    host = dict(stage='result', scenario='commit', actualDLLLoaded=True, activationIdentity='windows-activated-profile', registered=True, sendInput=False, outcome='applied', rejected=False, duplicateRejected=False, readbackMatches=True, readbackEmpty=False, otherContextEmpty=True, unknownAfterPendingEditCovered=False, operationPendingObserved=False, postWriteDisconnectObserved=False, replayRejected=False, hostCleanupVerified=True,
+    host = dict(stage='result', scenario='commit', actualDLLLoaded=True, activationIdentity='windows-activated-profile', registered=True, sendInput=False, outcome='applied', rejected=False, duplicateRejected=False, readbackMatches=True, readbackEmpty=False, otherContextEmpty=True, unknownAfterPendingEditCovered=False, operationPendingObserved=False, postWriteDisconnectObserved=False, replayRejected=False, hostCleanupVerified=True, editAttempts=1,
                 sessionBinding={'sessionId': 'synthetic-session', 'identity': {'layoutSHA256': loop.LAYOUT_SHA, 'dictionarySHA256': loop.DICTIONARY_SHA, 'mode': 'variable', 'sessionPolicy': 'concept-keyboard-modes-v2+ellipsis-choice-v1'}, 'focus': {'context': 'synthetic-owned-context', 'epoch': 1}})
-    return dict(schema='activated-loop-result-v1', status='passed', writesStarted=True, cleanupVerified=True, operationFailure=None, cleanupFailure=None, hostResult=host, hostPID=101, brokerPID=102, windowsSessionID=1, brokerCreationTime=200, ledgerOwnerPID=101, ledgerOwnerCreationTime=100, publisherTrust='not-established')
+    return dict(schema='activated-loop-result-v1', status='passed', writesStarted=True, cleanupVerified=True, operationFailure=None, cleanupFailure=None, hostResult=host, hostPID=101, brokerPID=102, windowsSessionID=1, brokerCreationTime=200, ledgerOwnerPID=101, ledgerOwnerCreationTime=100, publisherTrust='not-established', postCleanupRouteRevoked=True, postCleanupRouteCode=0x80040504)
 
 
 def report_fixture():
@@ -99,6 +99,23 @@ class SyntheticLoopTests(unittest.TestCase):
         for mutate in [lambda r: r['nativeResult'].update(ledgerOwnerPID=999), lambda r: r['nativeResult']['hostResult'].update(activationIdentity='owned-host-activation-client')]:
             candidate = report_fixture(); mutate(candidate)
             with self.assertRaises(ValueError): loop.validate_controller(candidate, self.manifest, root)
+    def test_exactly_one_edit_attempt_required(self):
+        for value in [0, 2, True, False, None, 1.0, '1']:
+            with self.subTest(value=value):
+                candidate = report_fixture()
+                candidate['nativeResult']['hostResult']['editAttempts'] = value
+                with self.assertRaisesRegex(ValueError, 'exactly-one-edit-attempt-required'):
+                    loop.validate_controller(candidate, self.manifest, dict(pid=100, creationFileTime='10'))
+    def test_cleanup_without_exact_old_provider_revocation_rejected(self):
+        for revoked, code in [(False, 0x80040504), (1, 0x80040504), (None, None),
+                              (True, None), (True, True), (True, 0x80010108),
+                              (True, 0x80040504 + 1), (True, float(0x80040504)),
+                              (True, str(0x80040504))]:
+            with self.subTest(revoked=revoked, code=code):
+                candidate = report_fixture()
+                candidate['nativeResult'].update(postCleanupRouteRevoked=revoked, postCleanupRouteCode=code)
+                with self.assertRaisesRegex(ValueError, 'post-cleanup-provider-revocation-required'):
+                    loop.validate_controller(candidate, self.manifest, dict(pid=100, creationFileTime='10'))
     def test_session_identity_and_focus_are_required(self):
         for mutate in [lambda b: b.update(sessionId=''), lambda b: b['identity'].update(dictionarySHA256='0'*64), lambda b: b['focus'].update(epoch=False)]:
             candidate = report_fixture(); mutate(candidate['nativeResult']['hostResult']['sessionBinding'])

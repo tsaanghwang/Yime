@@ -14,7 +14,11 @@ const DedicatedDictionarySHA256 = "43a74f4e47c7100f222a744f487762f1c31222c5f80b9
 type SessionIdentity struct { LayoutSHA256 string `json:"layoutSHA256"`; DictionarySHA256 string `json:"dictionarySHA256"`; Mode string `json:"mode"`; SessionPolicy string `json:"sessionPolicy"` }
 type SessionFocus struct { Context string `json:"context"`; Epoch uint64 `json:"epoch"` }
 type SessionBinding struct { SessionID string `json:"sessionId"`; Identity SessionIdentity `json:"identity"`; Focus SessionFocus `json:"focus"` }
+// TF_E_DISCONNECTED: MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0504).
+// https://raw.githubusercontent.com/microsoft/win32metadata/main/generation/WinSDK/RecompiledIdlHeaders/um/msctf.h
+const DisconnectedHRESULT uint32 = 0x80040504
 type HostResult struct {
+ EditAttempts uint32 `json:"editAttempts"`
  Stage string `json:"stage"`; Scenario string `json:"scenario"`; ActualDLLLoaded bool `json:"actualDLLLoaded"`
  ActivationIdentity string `json:"activationIdentity"`; Registered bool `json:"registered"`; SendInput bool `json:"sendInput"`
  Outcome string `json:"outcome"`; Rejected bool `json:"rejected"`; DuplicateRejected bool `json:"duplicateRejected"`
@@ -23,6 +27,7 @@ type HostResult struct {
  PostWriteDisconnectObserved bool `json:"postWriteDisconnectObserved"`; ReplayRejected bool `json:"replayRejected"`; HostCleanupVerified bool `json:"hostCleanupVerified"`; SessionBinding SessionBinding `json:"sessionBinding"`
 }
 type NativeResult struct {
+ PostCleanupRouteRevoked bool `json:"postCleanupRouteRevoked"`; PostCleanupRouteCode *uint32 `json:"postCleanupRouteCode"`
  Schema string `json:"schema"`; Status string `json:"status"`; WritesStarted bool `json:"writesStarted"`; CleanupVerified bool `json:"cleanupVerified"`
  OperationFailure *Failure `json:"operationFailure"`; CleanupFailure *Failure `json:"cleanupFailure"`; HostResult *HostResult `json:"hostResult"`
  HostPID uint32 `json:"hostPID"`; BrokerPID *uint32 `json:"brokerPID"`; WindowsSessionID *uint32 `json:"windowsSessionID"`
@@ -50,7 +55,7 @@ func decodeExact(raw []byte,target any,nullable map[string]bool)error {
 }
 func DecodeNative(raw []byte)(NativeResult,error){
  var n NativeResult
- nullable:=map[string]bool{"operationFailure":true,"cleanupFailure":true,"hostResult":true,"brokerPID":true,"windowsSessionID":true,"brokerCreationTime":true,"ledgerOwnerPID":true,"ledgerOwnerCreationTime":true}
+ nullable:=map[string]bool{"postCleanupRouteCode":true,"operationFailure":true,"cleanupFailure":true,"hostResult":true,"brokerPID":true,"windowsSessionID":true,"brokerCreationTime":true,"ledgerOwnerPID":true,"ledgerOwnerCreationTime":true}
  if err:=decodeExact(raw,&n,nullable);err!=nil{return n,err}
  var fields map[string]json.RawMessage;_ = json.Unmarshal(raw,&fields)
  if n.HostResult!=nil {
@@ -67,10 +72,12 @@ func DecodeNative(raw []byte)(NativeResult,error){
 }
 func ValidateNative(raw []byte,hostPID,brokerPID int)error {
  n,err:=DecodeNative(raw);if err!=nil{return err}
+ if !n.PostCleanupRouteRevoked||n.PostCleanupRouteCode==nil||*n.PostCleanupRouteCode!=DisconnectedHRESULT{return errors.New("old provider route not revoked after cleanup")}
  if n.Status!="passed"||!n.WritesStarted||!n.CleanupVerified||n.OperationFailure!=nil||n.CleanupFailure!=nil||n.HostResult==nil||n.HostPID!=uint32(hostPID)||n.BrokerPID==nil||*n.BrokerPID!=uint32(brokerPID)||n.LedgerOwnerPID==nil||*n.LedgerOwnerPID!=uint32(hostPID)||n.WindowsSessionID==nil||n.BrokerCreationTime==nil||*n.BrokerCreationTime==0||n.LedgerOwnerCreationTime==nil||*n.LedgerOwnerCreationTime==0{return errors.New("native operation/ownership/cleanup")}
  h:=n.HostResult
  binding:=h.SessionBinding
  if len(binding.SessionID)==0||len(binding.SessionID)>256||len(binding.Focus.Context)==0||len(binding.Focus.Context)>256||binding.Focus.Epoch==0||binding.Identity.LayoutSHA256!=DedicatedLayoutSHA256||binding.Identity.DictionarySHA256!=DedicatedDictionarySHA256||binding.Identity.Mode!="variable"||binding.Identity.SessionPolicy!="concept-keyboard-modes-v2+ellipsis-choice-v1"{return errors.New("dedicated session identity/focus")}
+ if h.EditAttempts!=1{return errors.New("exactly one edit attempt required")}
  if h.Stage!="result"||h.Scenario!="commit"||!h.ActualDLLLoaded||h.ActivationIdentity!="windows-activated-profile"||!h.Registered||h.SendInput||h.Outcome!="applied"||h.Rejected||h.DuplicateRejected||!h.ReadbackMatches||h.ReadbackEmpty||!h.OtherContextEmpty||h.UnknownAfterPendingEditCovered||h.OperationPendingObserved||h.PostWriteDisconnectObserved||h.ReplayRejected||!h.HostCleanupVerified{return errors.New("actual edit/readback unproven")}
  return nil
 }

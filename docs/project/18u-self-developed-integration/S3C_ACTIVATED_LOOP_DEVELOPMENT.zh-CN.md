@@ -40,3 +40,16 @@
 ## 下一最小阶段
 
 先批准源码发布与限定的编译／非注册 CI：Go 1.25 编译及模拟测试、MSVC 显式编译新目标和固定 Broker/DLL/只读核验工具、Python 合成测试。若增加 workflow，需另列准确新增文件供审阅；不能运行通用 CTest 或现存注册表 fixture，也不能自动调用本次注册编排器。通过之后才讨论已满足前置条件的单一 Windows 目标、单次真实注册编辑撤销范围及异常处置授权。当前代码候选不是可交用户执行的注册包。
+
+## 后续小修：一次选择及旧 provider 撤销证据
+
+修订基线为 `c59832e9c974f30ad65f4aef8f5bb4d603228283`，其 [编译／离线 CI](https://github.com/tsaanghwang/Yime/actions/runs/41394749611)、[替代 TSF 合同](https://github.com/tsaanghwang/Yime/actions/runs/41394749645) 和 [普通 Build](https://github.com/tsaanghwang/Yime/actions/runs/41394749740) 已通过；注册表 fixture 明确跳过，不算通过。CI 记录可能受仓库七天清理策略影响。
+
+仅吸收平行 a05 分支的两项证据，不混入其明文账本或隔离环境入口：
+
+1. `hostResult.editAttempts == 1`：在真实 select `ActionDedicated` 调用前计数；input 与 Poll 不计。这是提交一次候选选择请求的证据，不是 DLL 内部 `DoEditSession` 回调次数。
+2. 保留同一次 Windows 激活的旧 provider 及模块引用到正常事务撤销完成，随后调用该旧 provider 的 `GetFunction`。必须返回准确 `TF_E_DISCONNECTED`（SDK 定义 `0x80040504`），且输出接口为空，才将 `postCleanupRouteRevoked` 记真；未查询时 `postCleanupRouteCode` 为 null。不能把单独 Deactivate 或 cleanup 成功当作旧路由失效证据。
+
+旧 provider 先释放，模块引用后释放，均在 COM apartment 退出前完成。新增检查不重新激活、不提交第二次编辑、不重试撤销。新证据失败不会抹掉已发生的清理结果，但全链仍失败。v3 DPAPI／机器绑定账本、清理及恢复协议、180/240 秒预算保持原样。
+
+该小修仍仅开发与非注册测试。新版 9 项 Go 模拟测试、MSVC 编译及实际 Windows 运行需要后续验证；不能继承 c598 CI 为本修订已验证。Python 新增类型／次数／错误返回码负例后共 54 项合成测试；实际结果另随候选证据记录。固定包尚未制作，发布、CI 和真实注册分别待批准。

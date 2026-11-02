@@ -2,6 +2,7 @@
 #include "ActivatedLoopConfig.h"
 // Separate opt-in entry. No recovery, no registration mode on the old tool changes.
 namespace {
+static_assert(static_cast<unsigned long>(TF_E_DISCONNECTED)==0x80040504UL,"TSF disconnected evidence contract");
 struct LoopHandle {HANDLE value=nullptr;~LoopHandle(){if(value&&value!=INVALID_HANDLE_VALUE)CloseHandle(value);}};
 std::wstring loopWide(const std::string& value){
  int size=MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,value.data(),static_cast<int>(value.size()),nullptr,0);
@@ -39,7 +40,7 @@ std::string loopInput(){std::string line;char c;bool ended=false;while(std::cin.
 json loopFailure(const char* stage,const char* kind,unsigned long code){return {{"stage",stage},{"kind",kind},{"code",code}};}
 }
 int wmain(int argc,wchar_t** argv){
- json report={{"schema","activated-loop-result-v1"},{"status","blocked"},{"writesStarted",false},{"cleanupVerified",false},{"operationFailure",nullptr},{"cleanupFailure",nullptr},{"hostResult",nullptr},{"hostPID",GetCurrentProcessId()},{"brokerPID",nullptr},{"windowsSessionID",nullptr},{"brokerCreationTime",nullptr},{"ledgerOwnerPID",nullptr},{"ledgerOwnerCreationTime",nullptr},{"publisherTrust","not-established"}};
+ json report={{"schema","activated-loop-result-v1"},{"status","blocked"},{"writesStarted",false},{"cleanupVerified",false},{"operationFailure",nullptr},{"cleanupFailure",nullptr},{"hostResult",nullptr},{"hostPID",GetCurrentProcessId()},{"brokerPID",nullptr},{"windowsSessionID",nullptr},{"brokerCreationTime",nullptr},{"ledgerOwnerPID",nullptr},{"ledgerOwnerCreationTime",nullptr},{"publisherTrust","not-established"},{"postCleanupRouteRevoked",false},{"postCleanupRouteCode",nullptr}};
  std::vector<std::wstring> arguments;for(int i=1;i<argc;++i)arguments.emplace_back(argv[i]);
  if(arguments.size()!=7||arguments[0]!=L"--register-edit-once"){
   report["operationFailure"]=loopFailure("loop-arguments","hresult",static_cast<unsigned long>(E_INVALIDARG));std::cout<<report.dump()<<std::endl;return 3;
@@ -49,7 +50,7 @@ int wmain(int argc,wchar_t** argv){
  HRESULT initialized=CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED);if(FAILED(initialized)){report["operationFailure"]=loopFailure("loop-com-initialize","hresult",static_cast<unsigned long>(initialized));std::cout<<report.dump()<<std::endl;return 3;}
  bool complete=false;int result=1;
  {
-  Transaction transaction;Ledger ledger;transaction.ledger=&ledger;LoopBroker broker;
+  Transaction transaction;Ledger ledger;transaction.ledger=&ledger;LoopBroker broker;std::shared_ptr<ActivatedProviderProbe> retainedProvider;
   try{
    json config;try{config=yime::activated::ParseConfig(loopInput());}catch(const Failure&){throw;}catch(...){throw Failure{"loop-config-invalid",E_INVALIDARG};}
    require(config.at("hostPID").get<DWORD>()==GetCurrentProcessId(),"loop-host-pid");broker.open(config);
@@ -61,7 +62,7 @@ int wmain(int argc,wchar_t** argv){
    transaction.run(ledger.dllLock.canonical,[&]{
     broker.alive();auto host=RunActivatedRegisteredHost(config.dump(),ledger.dllLock.canonical);
     if(!host.completed){report["operationFailure"]=loopFailure(host.stage,host.kind,host.code);throw Failure{"loop-registered-host-failed",E_FAIL};}
-    report["hostResult"]=json::parse(host.hostResult);complete=true;
+    report["hostResult"]=json::parse(host.hostResult);retainedProvider=host.retainedProvider;require(retainedProvider!=nullptr,"loop-provider-retention");complete=true;
    });
   }catch(const Failure& f){if(report["operationFailure"].is_null())report["operationFailure"]=loopFailure(f.stage,"hresult",static_cast<unsigned long>(f.code));}
    catch(...){if(report["operationFailure"].is_null())report["operationFailure"]=loopFailure("loop-exception","exception",0);}
@@ -70,8 +71,18 @@ int wmain(int argc,wchar_t** argv){
    catch(const Failure& f){transaction.cleanupCheck(f.code,f.stage);}catch(...){transaction.cleanupCheck(E_FAIL,"loop-cleanup-exception");}
    if(!transaction.cleanupOK)report["cleanupFailure"]=loopFailure(transaction.cleanupStage,"hresult",static_cast<unsigned long>(transaction.cleanupCode));
   }
+  // Deliberately after full Transaction.cleanup and durable cleanup checkpoint,
+  // not merely after Host.deactivate. Never query a newly instantiated TIP.
+  if(report["cleanupVerified"]==true&&retainedProvider){
+   try{bool outputNull=false;const HRESULT hr=retainedProvider->CheckDisconnected(outputNull);
+    report["postCleanupRouteCode"]=static_cast<unsigned long>(hr);
+    report["postCleanupRouteRevoked"]=hr==TF_E_DISCONNECTED&&outputNull;
+    if(!report["postCleanupRouteRevoked"].get<bool>()&&report["operationFailure"].is_null())report["operationFailure"]=loopFailure("loop-old-provider-not-disconnected","hresult",static_cast<unsigned long>(hr));
+   }catch(...){if(report["operationFailure"].is_null())report["operationFailure"]=loopFailure("loop-old-provider-query-exception","exception",0);}
+  }
+  retainedProvider.reset(); // provider before module; both before CoUninitialize
   report["writesStarted"]=transaction.writes;
-  const bool passed=complete&&report["operationFailure"].is_null()&&report["cleanupFailure"].is_null()&&report["cleanupVerified"]==true;
+  const bool passed=complete&&report["postCleanupRouteRevoked"]==true&&report["operationFailure"].is_null()&&report["cleanupFailure"].is_null()&&report["cleanupVerified"]==true;
   report["status"]=passed?"passed":transaction.writes?"failed":"blocked";result=passed?0:transaction.writes?1:3;
  }
  CoUninitialize();std::cout<<report.dump()<<std::endl;return result;
