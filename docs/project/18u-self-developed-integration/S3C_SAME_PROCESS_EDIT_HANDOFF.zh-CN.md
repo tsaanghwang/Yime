@@ -81,5 +81,24 @@ Python 合成记录验证只报告一致性，不认证执行来源，也不证�
 选词恰好一次且失败不重放、清理后旧 provider 必须 `TF_E_DISCONNECTED`、缺席核验独立于清理结果，
 对象析构顺序保证 DLL 模块最后释放。
 
+## 接续说明（2026-11-02 开发机，供下一轮）
+
+**分支状态**：`codex/18u-same-process-edit-20261102` 头 `294d4e0c`，基线 `81a61011`（即 PR #88 合并前的最后提交；main 现为 `733f66cb`，已含 #88/#89/#90）。与 main 的差异只有本分支两个提交，预计无冲突；开 PR 前可 `update-branch` 一次。工作树位于 `.worktrees\18u-activation-repair-20261102`（已关闭稀疏检出），构建缓存 `.generated\activation-repair`（MSVC x64，上述五个选项均为 ON）。
+
+**已完成**：源码接线、Python/Go/MSVC 三层静态与隔离验证（见上表）。未开 PR、未触发任何一次性 CI、未注册、未运行 Broker 真实编辑。
+
+**下一步（按顺序，均需用户明确授权才可执行第 3 步）**
+1. 开 PR 到 main；CI 只会编译/运行隔离测试，不会进入 `YIME_TOUCH_REGISTERED_EDIT_PROBE` 真实路径。
+2. 固定并审阅同一版本的四件套：`Yime18uRegisteredEditProbe.exe`、`YimeTextService18u.dll`、18u Broker、实验词典目录；记录各自 SHA-256。当前开发机 `.generated\activation-repair\Release` 下的产物只是本轮编译结果，不是固定交付。
+3. 在明确指定的一次性隔离 Windows x64 环境（提升权限、线程与 TSF 当前语言均为 `0x0804`、18u 身份绝对缺席）单独选择 `TestNativeSameProcessRegisteredEdit`，按本文“后续原生验证入口”六个环境变量执行一次。证据目录独占创建、不可复用。
+4. 结果解读：通过须同时满足 `appliedReceipt`、`readbackMatches`、`editAttempts==1`、`routeRevoked`、`cleanupVerified`，且 `registrationOwnerPID==brokerTargetPID==` 实际宿主 PID；任一缺失即失败。失败保留 `registration-ledger.json` 与两份 jsonl，不重试、不自动恢复。
+
+**已知风险与处置**
+- `edit-window-foreground-required`：同日注册宿主回归出现过同类前台抢占失败（首案例失败、单格复测通过）。真实运行若因此失败属 fail-closed，允许在确认清理与缺席核验通过后做一次单格复测；不要为此放宽前台要求。
+- 本探针不是 MyComputer 历史残留恢复器，使用非 DPAPI 的 `registration-ledger.json`；若在 MyComputer 执行并失败留下写入，恢复需另行审阅（stage1 恢复协议不直接适用）。
+- `YIME_TOUCH_REGISTERED_EDIT_PROBE` 默认 OFF 且要求 `YIME_TOUCH_PRODUCT`；现有注册工作流与 stage1 入口不会进入该路径，保持不变。
+
+**不改变**：标准键位 YimeCore（开发机现装 `0.1.0-local.14-pr88`）、Rime/PIME、默认输入法、用户数据；MyComputer 下一次 18u 注册仍按 `S3C_NEXT_REGISTRATION_HANDOFF.zh-CN.md` 等待批准，与本分支的隔离环境验证是两件事。
+
 本补丁只准备一次成功编辑的闭环，不继承历史替身测试的原生结论，也不覆盖原十场景、
 Word/Edge、ARM64 或物理触控验收。下一步仍是编译新目标后进行受控原生实测。
