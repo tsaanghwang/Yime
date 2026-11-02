@@ -63,6 +63,26 @@ jobs:
           pathlib.Path('.generated/installed-18u-evidence/package-tests.log').write_text(stream.getvalue(), encoding='utf-8')
           if result.testsRun != 12 or result.skipped or not result.wasSuccessful():
               raise SystemExit('All twelve wrapper mock checks must pass without skips')
+      - name: Require six lifecycle source contracts
+        run: |
+          import importlib, io, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/yimecore').resolve()))
+          suite = unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module('test_installed_18u_lifecycle'))
+          stream = io.StringIO()
+          result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
+          pathlib.Path('.generated/installed-18u-evidence/lifecycle-contracts.log').write_text(stream.getvalue(), encoding='utf-8')
+          if result.testsRun != 6 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('All six lifecycle source contracts must execute and pass')
+      - name: Run eleven filesystem-only ownership cases in PS5 and PS7
+        run: |
+          import pathlib, subprocess, sys
+          marker = 'PASS actual ownership function: 1 old-manifest acceptance and 10 refusal cases; PE/resource helpers mocked; no system lifecycle execution'
+          for edition in ('ps5', 'ps7'):
+              output = pathlib.Path('.generated/installed-18u-evidence/ownership-' + edition + '.log')
+              with output.open('w', encoding='utf-8') as log:
+                  result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-Installed18uOwnership.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
+              if result.returncode or output.read_text(encoding='utf-8').count(marker) != 1:
+                  raise SystemExit('Filesystem-only ownership cases failed or did not execute: ' + edition)
       - name: Run only explicit mock and pure standard-runtime tests
         run: |
           import json, pathlib, subprocess
@@ -147,6 +167,7 @@ jobs:
           if policy.count('product registration policy: CLI, absence, removal sequencing, bounded residue passed') != 1:
               raise SystemExit('Pure policy success marker missing')
       - name: Fetch existing content-locked desktop resources
+        if: ${{ false }} # This validation round explicitly does not create or deliver a package.
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -156,6 +177,7 @@ jobs:
           if result.returncode:
               raise SystemExit('Locked resources unavailable; no substitute')
       - name: Observe signatures and build installer archive without installation
+        if: ${{ false }} # This validation round explicitly does not create or deliver a package.
         env:
           SOURCE_SHA: ${{ github.sha }}
         run: |
@@ -198,6 +220,7 @@ jobs:
           scope['packageGenerated'] = True
           scope_path.write_text(json.dumps(scope, indent=2), encoding='utf-8')
       - name: Preserve independent installer test archive - do not execute
+        if: ${{ false }} # This validation round explicitly does not create or deliver a package.
         uses: actions/upload-artifact@v6
         with:
           name: installed-18u-x64-test-package-${{ github.sha }}

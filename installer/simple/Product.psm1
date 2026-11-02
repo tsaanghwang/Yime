@@ -338,6 +338,43 @@ function Assert-OwnedDirectory([string]$Root,[string]$Product,[string]$Target){
     }
     $null=@(Get-ProductFiles $root)
 }
+function Assert-Installed18uOwnership([string]$Root){
+    # Local installation consistency, not publisher authentication or a recovery ticket.
+    # Use the OLD installation's own manifest: an upgrade package has different hashes.
+    $root=Assert-PlainPath $Root
+    Assert-OwnedDirectory $root 'yimecore-18u' 'windows-amd64'
+    $marker=Get-Content -LiteralPath (Join-Path $root '.yime-product.json') -Raw -Encoding UTF8|ConvertFrom-Json
+    $maintenance=Read-MaintenancePackage (Join-Path $root '.setup')
+    $manifest=$maintenance.manifest
+    if($maintenance.product.id -cne 'yimecore-18u' -or $maintenance.contract.target -cne 'windows-amd64' -or
+       -not ($marker.version -is [string]) -or [string]::IsNullOrWhiteSpace($marker.version) -or
+       $marker.version -cne $manifest.version){throw 'Installed 18u marker and maintenance manifest disagree'}
+    $expected=@('x64/YimeTextService18u.dll','x64/Yime18uProductRegistration.exe','x64/YimeTouchRegisteredFormalHostTests.exe',
+        'bin/YimeBroker18u.exe','bin/Yime18uInstalledRuntime.exe','profile-icon.ico','installed-18u-product.json',
+        'source/prototypes/touch-terminal/desktop/resources.lock.json','source/tools/yimecore/18u-touch-product.json',
+        'source/prototypes/touch-terminal/data/physical-layout.json','source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json',
+        'source/internal_data/yime_syllable_decomposition.tsv','data/ascii_keyboard_manifest.json','data/yime_variable.dict.yaml',
+        'data/yime_full.dict.yaml','data/yime_shorthand.dict.yaml')
+    $seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach($row in $manifest.files){
+        if(-not ($row.path -is [string]) -or $row.path -cnotin $expected -or -not $seen.Add($row.path) -or
+           $row.sha256 -cnotmatch '^[0-9a-f]{64}$' -or $row.bytes -lt 0){throw 'Invalid installed 18u manifest member'}
+        $path=Assert-PlainPath (Join-Path $root $row.path)
+        if(-not $path.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Installed member escaped product root'}
+        if((Get-Item -LiteralPath $path).Length -ne $row.bytes -or (Get-ContentHash $path) -cne $row.sha256){throw ('Installed 18u payload damaged: '+$row.path)}
+        if($row.path -match '\.(exe|dll)$'){Assert-ProductPe $path 'x64'}
+    }
+    if($seen.Count -ne $expected.Count){throw 'Incomplete installed 18u manifest'}
+    Assert-18uPackageIdentity $root $manifest $maintenance.product $seen
+    # User data is outside this program directory. Unknown program files stop removal.
+    $allowed=@($expected)+@('.yime-product.json','.setup/Product.psm1','.setup/Setup.ps1','.setup/Setup.cmd',
+        '.setup/product-package.json','.setup/native/x64/Yime18uProductRegistration.exe')
+    foreach($file in Get-ProductFiles $root){
+        $relative=$file.FullName.Substring($root.Length+1).Replace('\','/')
+        if($relative -cnotin $allowed){throw ('Unknown installed 18u file: '+$relative)}
+    }
+    Write-Output ('Installed ownership verified: product=yimecore-18u; version='+$marker.version+'; payload_count='+$seen.Count+'; publisher_authentication=false')
+}
 function Wait-ProductFiles([string]$Root,[switch]$Silent){
     if(-not (Test-Path -LiteralPath $Root)){return}
     while($true){

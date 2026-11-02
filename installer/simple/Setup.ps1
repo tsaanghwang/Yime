@@ -51,6 +51,9 @@ $state=if($product.id -in @('yimecore','yimecore-18u')){Join-Path $env:LOCALAPPD
 $root=Assert-PlainPath $root;$state=Assert-PlainPath $state
 if($installedEntry -and [IO.Path]::GetDirectoryName($PSScriptRoot) -ine $root){throw 'Uninstaller is outside this product directory'}
 Assert-OwnedDirectory $root $product.id $contract.target
+if($product.id -eq 'yimecore-18u' -and (Test-Path -LiteralPath (Join-Path $root '.yime-product.json'))){
+    Assert-Installed18uOwnership $root
+}
 # Never replace a different installation using the same CLSID implicitly.
 $hasRegistration=$false
 foreach($view in @('Registry64','Registry32')){

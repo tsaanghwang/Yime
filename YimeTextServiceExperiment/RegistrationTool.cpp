@@ -31,6 +31,18 @@ REGSAM registryView() {
     return sizeof(void*) == 8 ? KEY_WOW64_64KEY : KEY_WOW64_32KEY;
 }
 
+#ifdef YIME_18U_PRODUCT_REGISTRATION
+HRESULT traceRegistrationStep(std::wstring_view step,HRESULT result) noexcept {
+    try {
+        std::wcerr << L"registration_step=" << step << L"; architecture_bits=" << sizeof(void*)*8
+            << L"; hresult=0x" << std::hex << std::uppercase << static_cast<unsigned long>(result) << std::dec << L"\n";
+    } catch (...) {} // Logging must never replace the API result/first failure.
+    return result;
+}
+void traceProductCategory(std::wstring_view step,REFGUID category,HRESULT result) noexcept {
+    try {traceRegistrationStep(std::wstring(step)+L":"+guidText(category),result);}catch(...){}
+}
+#else
 HRESULT traceRegistrationStep(std::wstring_view step, HRESULT result) {
     std::wcout << L"registration_step=" << step
                << L"; architecture_bits=" << sizeof(void*) * 8
@@ -38,6 +50,7 @@ HRESULT traceRegistrationStep(std::wstring_view step, HRESULT result) {
                << static_cast<unsigned long>(result) << std::dec << L"\n";
     return result;
 }
+#endif
 
 std::wstring comRegistryPath() {
     return L"SOFTWARE\\Classes\\CLSID\\" + guidText(CLSID_YimeTextServiceExperiment) + L"\\InprocServer32";
@@ -153,6 +166,9 @@ HRESULT registerProfileAndCategories(const wchar_t* dllPath) {
     ITfInputProcessorProfileMgr* profiles = nullptr;
     HRESULT result = CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
                                       __uuidof(ITfInputProcessorProfileMgr), reinterpret_cast<void**>(&profiles));
+#ifdef YIME_18U_PRODUCT_REGISTRATION
+    traceRegistrationStep(L"create-profile-manager",result);
+#endif
     if (FAILED(result)) return result;
 #ifndef YIME_18U_PRODUCT_REGISTRATION
     traceRegistrationStep(L"prepare-unregister-profile",
@@ -166,17 +182,32 @@ HRESULT registerProfileAndCategories(const wchar_t* dllPath) {
         nullptr, 0, TRUE, 0);
     profiles->Release();
     traceRegistrationStep(L"register-profile", result);
+#ifdef YIME_18U_PRODUCT_REGISTRATION
+    if (result != S_OK) return result;
+#else
     if (FAILED(result)) return result;
+#endif
 
     ITfCategoryMgr* categories = nullptr;
     result = CoCreateInstance(CLSID_TF_CategoryMgr, nullptr, CLSCTX_INPROC_SERVER,
                               __uuidof(ITfCategoryMgr), reinterpret_cast<void**>(&categories));
+#ifdef YIME_18U_PRODUCT_REGISTRATION
+    traceRegistrationStep(L"create-category-manager",result);
+#endif
     if (FAILED(result)) return result;
     for (const GUID* category : kTipCategories) {
         result = categories->RegisterCategory(CLSID_YimeTextServiceExperiment, *category,
                                               CLSID_YimeTextServiceExperiment);
+#ifdef YIME_18U_PRODUCT_REGISTRATION
+        traceProductCategory(L"register-category",*category,result);
+#else
         traceRegistrationStep(L"register-category:" + guidText(*category), result);
+#endif
+#ifdef YIME_18U_PRODUCT_REGISTRATION
+        if (result != S_OK) break;
+#else
         if (FAILED(result)) break;
+#endif
     }
     categories->Release();
     return result;
