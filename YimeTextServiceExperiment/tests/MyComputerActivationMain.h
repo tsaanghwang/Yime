@@ -121,7 +121,9 @@ int wmain(int argc,wchar_t** argv){
    }
   }catch(const Failure& failure){report["stage"]=failure.stage;report["code"]=static_cast<unsigned long>(failure.code);}catch(...){report["stage"]="unclassified-exception";report["code"]=static_cast<unsigned long>(E_FAIL);}
   // Preserve the operation failure before cleanup potentially replaces stage/code.
-  yime::stage1::WriteFailureTrace(report,yime::stage1::FailurePhase::Operation,std::cerr);
+  // Only register-once has a cleanup that can mask it; read-only and recovery
+  // modes keep their terminal stage in stdout and must stay silent on stderr.
+  if(args.mode==Mode::RegisterOnce)yime::stage1::WriteFailureTrace(report,yime::stage1::FailurePhase::Operation,std::cerr);
   if(args.mode==Mode::RegisterOnce && transaction.writes){
    try{transaction.cleanup();if(transaction.cleanupOK){ledger.mark("cleanupVerified");report["cleanupVerified"]=true;}}
    catch(const Failure& failure){transaction.cleanupCheck(failure.code,failure.stage);}catch(...){transaction.cleanupCheck(E_FAIL,"cleanup-exception");}
