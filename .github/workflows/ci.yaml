@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm_18u_release:
-        description: 'Publish only the verified installer bb7cc13 ZIP; all other confirmations stay empty'
+        description: 'Publish only the verified installer da3223e ZIP; all other confirmations stay empty'
         required: false
         default: ''
         type: string
@@ -418,7 +418,7 @@ jobs:
         run: python -c "import json,os; assert all(v['result']=='success' for v in json.loads(os.environ['RESULTS']).values())"
 
   publish-verified-18u-release:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/delivery/18u-activated-loop-20261102' && inputs.confirm_18u_release == 'publish-verified-installer-bb7cc13' && inputs.expected_18u_source_sha == github.sha && inputs.confirm_18u_registration == '' && inputs.confirm_18u_language_inventory == '' && inputs.confirm_18u_language_prepare == '' && github.run_attempt == 1
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/delivery/18u-activated-loop-20261102' && inputs.confirm_18u_release == 'publish-verified-installer-da3223e' && inputs.expected_18u_source_sha == github.sha && inputs.confirm_18u_registration == '' && inputs.confirm_18u_language_inventory == '' && inputs.confirm_18u_language_prepare == '' && github.run_attempt == 1
     permissions:
       contents: write
       actions: read
