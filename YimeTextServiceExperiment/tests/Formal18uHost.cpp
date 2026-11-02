@@ -9,6 +9,8 @@
 #include <wrl/client.h>
 #include <nlohmann/json.hpp>
 #include <atomic>
+#include <cstdio>
+#include "RegisteredProfileObservation.h"
 #include <functional>
 #include <iostream>
 #include <stdexcept>
@@ -27,6 +29,35 @@ struct GateFailure { const char* stage; const char* kind; unsigned long code; };
 [[noreturn]] void winFail(const char* stage){const DWORD error=GetLastError();throw GateFailure{stage,"win32",error};}
 void require(HRESULT hr,const char* operation){if(FAILED(hr))throw GateFailure{operation,"hresult",static_cast<unsigned long>(hr)};}
 void diagnostic(const GateFailure& failure){std::cerr<<json{{"stage",failure.stage},{"kind",failure.kind},{"code",failure.code}}.dump()<<std::endl;}
+namespace profileobs=yime::profile_observation;
+profileobs::Guid profileGuid(const GUID& value) noexcept {
+ return {value.Data1,value.Data2,value.Data3,{value.Data4[0],value.Data4[1],value.Data4[2],value.Data4[3],value.Data4[4],value.Data4[5],value.Data4[6],value.Data4[7]}};
+}
+std::string profileGuidText(const profileobs::Guid& value){
+ char text[39]{};
+ const int count=std::snprintf(text,sizeof(text),"{%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}",
+  static_cast<unsigned>(value.data1),static_cast<unsigned>(value.data2),static_cast<unsigned>(value.data3),
+  static_cast<unsigned>(value.data4[0]),static_cast<unsigned>(value.data4[1]),static_cast<unsigned>(value.data4[2]),static_cast<unsigned>(value.data4[3]),
+  static_cast<unsigned>(value.data4[4]),static_cast<unsigned>(value.data4[5]),static_cast<unsigned>(value.data4[6]),static_cast<unsigned>(value.data4[7]));
+ if(count!=38)throw std::runtime_error("profile diagnostic GUID formatting");return text;
+}
+json profileFields(const profileobs::Profile& value){return {{"type",value.type},{"language",value.language},{"clsid",profileGuidText(value.clsid)},{"profile",profileGuidText(value.profile)}};}
+void verifyRegisteredProfile(HRESULT hr,const TF_INPUTPROCESSORPROFILE& active){
+ const profileobs::Profile expected{TF_PROFILETYPE_INPUTPROCESSOR,0x0804,profileGuid(CLSID_YimeTextServiceExperiment),profileGuid(GUID_YimeTextServiceExperimentProfile)};
+ // S_FALSE/FAILED outputs are undefined evidence: the lambda is never called.
+ const auto observation=profileobs::Observe(static_cast<std::uint32_t>(hr),expected,[&]{
+  return profileobs::Profile{active.dwProfileType,active.langid,profileGuid(active.clsid),profileGuid(active.guidProfile)};
+ });
+ const auto failure=profileobs::Decide(observation);
+ if(!failure)return; // Successful runs retain the existing single-marker contract.
+ const GateFailure original{failure->stage,failure->kind,failure->code};
+ profileobs::Reject(observation,*failure,original,[](const auto& value,const auto&){
+  const json actual=value.actual?profileFields(*value.actual):json(nullptr);
+  std::cerr<<json{{"event","registered-active-profile-observation"},{"hresult",value.hresult},
+   {"expected",profileFields(value.expected)},{"actualValid",value.actual.has_value()},{"actual",actual}}.dump()<<std::endl;
+ });
+ // Reject preserves the already determined GateFailure even if the sink throws.
+}
 std::wstring widen(const std::string& value){
  int n=MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,value.data(),static_cast<int>(value.size()),nullptr,0);
  if(n<=0)fail("invalid UTF8");std::wstring out(n,L'\0');
@@ -147,8 +178,8 @@ struct Host {
    provider.Reset();Sleep(10);
   }while(GetTickCount64()<deadline);
   if(!provider)fail("registered provider unavailable");
-  TF_INPUTPROCESSORPROFILE active{};require(profiles->GetActiveProfile(GUID_TFCAT_TIP_KEYBOARD,&active),"registered active profile");
-  if(active.dwProfileType!=TF_PROFILETYPE_INPUTPROCESSOR || active.langid!=0x0804 || !IsEqualGUID(active.clsid,CLSID_YimeTextServiceExperiment) || !IsEqualGUID(active.guidProfile,GUID_YimeTextServiceExperimentProfile))fail("registered profile mismatch");
+  TF_INPUTPROCESSORPROFILE active{};const HRESULT activeResult=profiles->GetActiveProfile(GUID_TFCAT_TIP_KEYBOARD,&active);
+  verifyRegisteredProfile(activeResult,active);
   GUID providerType{};require(provider->GetType(&providerType),"registered provider type");
   if(!IsEqualGUID(providerType,CLSID_YimeTextServiceExperiment))fail("registered provider mismatch");
   ComPtr<IUnknown> function;require(provider->GetFunction(GUID_NULL,__uuidof(IDedicatedTouchService),&function),"registered route lookup");

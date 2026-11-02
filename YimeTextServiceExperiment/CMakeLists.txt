@@ -385,3 +385,11 @@ if(YIME_ACTIVATED_LOOP_ONCE)
     target_link_libraries(YimeActivatedLoopOnce PRIVATE advapi32 bcrypt crypt32 ole32 oleaut32 user32)
     set_property(TARGET YimeActivatedLoopOnce PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
+
+# Pure value/diagnostic tests: no Windows API, registry, COM or product execution.
+if(YIME_ACTIVATED_LOOP_ONCE)
+    add_executable(YimeRegisteredProfileObservationTests EXCLUDE_FROM_ALL tests/RegisteredProfileObservationTests.cpp)
+    target_compile_features(YimeRegisteredProfileObservationTests PRIVATE cxx_std_17)
+    target_compile_options(YimeRegisteredProfileObservationTests PRIVATE /utf-8 /W4 /WX /EHsc)
+    set_property(TARGET YimeRegisteredProfileObservationTests PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()

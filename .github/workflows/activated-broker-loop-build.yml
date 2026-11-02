@@ -74,12 +74,24 @@ jobs:
           import pathlib, subprocess
           commands = [
               (['cmake', '-S', 'YimeTextServiceExperiment', '-B', '.generated/activated-loop-native', '-A', 'x64', '-DYIME_TOUCH_PRODUCT=ON', '-DYIME_MYCOMPUTER_ACTIVATION_STAGE1=ON', '-DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON', '-DYIME_ACTIVATED_LOOP_ONCE=ON'], 'configure.log'),
-              (['cmake', '--build', '.generated/activated-loop-native', '--config', 'Release', '--target', 'YimeActivatedLoopOnce', 'YimeTextService18u', 'YimeMyComputerActivationStage1'], 'msvc-build.log')]
+              (['cmake', '--build', '.generated/activated-loop-native', '--config', 'Release', '--target', 'YimeActivatedLoopOnce', 'YimeTextService18u', 'YimeMyComputerActivationStage1', 'YimeRegisteredProfileObservationTests'], 'msvc-build.log')]
           for command, name in commands:
               with pathlib.Path('.generated/activated-loop-evidence/' + name).open('w', encoding='utf-8') as log:
                   run = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, timeout=300)
               if run.returncode:
                   raise SystemExit('MSVC compile-only step failed: ' + name)
+      - name: Run only the pure-value profile observation tests - no Windows registry or TSF
+        run: |
+          import pathlib, subprocess
+          executable = pathlib.Path('.generated/activated-loop-native/Release/YimeRegisteredProfileObservationTests.exe').resolve()
+          if not executable.is_file():
+              raise SystemExit('Mandatory offline-only observation test binary missing')
+          with pathlib.Path('.generated/activated-loop-evidence/profile-observation-tests.log').open('w', encoding='utf-8') as log:
+              result = subprocess.run([str(executable)], stdout=log, stderr=subprocess.STDOUT, timeout=30)
+          text = pathlib.Path('.generated/activated-loop-evidence/profile-observation-tests.log').read_text(encoding='utf-8')
+          expected = 'profile observation: exact match, four-field mismatch, S_FALSE, positive incomplete, FAILED, throwing sink passed (offline only)'
+          if result.returncode or text.strip() != expected:
+              raise SystemExit('Mandatory offline-only observation cases failed or did not execute')
       - name: Require package builder and entry offline contracts
         run: |
           import importlib, io, pathlib, sys, unittest
