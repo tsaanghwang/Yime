@@ -234,6 +234,10 @@ struct Transaction {
  bool writes=false,comOwned=false,profileAttempted=false,categoryAttempted=false,enableAttempted=false,activationAttempted=false,managerActive=false;
  bool cleanupOK=true;const char* cleanupStage="none";HRESULT cleanupCode=S_OK;
  LANGID threadLanguage=0,currentLanguage=0;
+#ifdef YIME_REGISTERED_EDIT_PROBE
+ HWND editWindow=nullptr;
+ TfClientId editClient=TF_CLIENTID_NULL;
+#endif
  const std::wstring clsidString=guid(CLSID_YimeTextServiceExperiment);
  std::wstring comPath=L"SOFTWARE\\Classes\\CLSID\\"+clsidString;
  void cleanupCheck(HRESULT hr,const char* stage){if(hr!=S_OK){cleanupOK=false;if(cleanupCode==S_OK){cleanupStage=stage;cleanupCode=hr;}}}
@@ -295,6 +299,16 @@ struct Transaction {
   check(manager->ActivateEx(&client,TF_TMAE_NOACTIVATETIP|TF_TMAE_NOACTIVATEKEYBOARDLAYOUT),"activate-manager");managerActive=true;
   check(manager->CreateDocumentMgr(&document),"create-document");TfEditCookie cookie=0;
   check(document->CreateContext(client,0,nullptr,&context,&cookie),"create-context");check(document->Push(context.Get()),"push-context");check(manager->SetFocus(document.Get()),"set-own-document");
+#ifdef YIME_REGISTERED_EDIT_PROBE
+  editClient=client;
+  editWindow=CreateWindowExW(0,L"STATIC",L"Isolated registered 18u edit",WS_OVERLAPPEDWINDOW,40,40,400,120,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr);
+  require(editWindow!=nullptr,"create-edit-window");
+  ComPtr<ITfDocumentMgr> previous;
+  check(manager->AssociateFocus(editWindow,document.Get(),&previous),"associate-edit-window");
+  ShowWindow(editWindow,SW_SHOWNORMAL);SetForegroundWindow(editWindow);::SetFocus(editWindow);
+  require(GetForegroundWindow()==editWindow,"edit-window-foreground-required");
+  check(manager->SetFocus(document.Get()),"focus-edit-document");
+#endif
   activationAttempted=true;ledger->mark("activationAttempted");
   check(profiles->ActivateProfile(TF_PROFILETYPE_INPUTPROCESSOR,language,CLSID_YimeTextServiceExperiment,GUID_YimeTextServiceExperimentProfile,nullptr,TF_IPPMF_FORPROCESS),"activate-own-profile-forprocess");
   // Bounded message delivery permits Windows, not this runner, to create/activate the TIP.
@@ -316,6 +330,13 @@ struct Transaction {
     cleanupCheck(profiles->DeactivateProfile(TF_PROFILETYPE_INPUTPROCESSOR,language,CLSID_YimeTextServiceExperiment,GUID_YimeTextServiceExperimentProfile,nullptr,TF_IPPMF_FORPROCESS),"cleanup-deactivate");
    else if(hr!=S_OK)cleanupCheck(hr,"cleanup-active-query");
   }
+#ifdef YIME_REGISTERED_EDIT_PROBE
+  if(editWindow){
+   if(manager){ComPtr<ITfDocumentMgr> previous;cleanupCheck(manager->AssociateFocus(editWindow,nullptr,&previous),"cleanup-edit-window-focus");}
+   if(IsWindow(editWindow))cleanupCheck(DestroyWindow(editWindow)?S_OK:HRESULT_FROM_WIN32(GetLastError()),"cleanup-edit-window");
+   editWindow=nullptr;
+  }
+#endif
   if(managerActive){cleanupCheck(manager->SetFocus(nullptr),"cleanup-focus");if(document)cleanupCheck(document->Pop(TF_POPF_ALL),"cleanup-pop");context.Reset();document.Reset();cleanupCheck(manager->Deactivate(),"cleanup-manager");managerActive=false;}
   manager.Reset();
 #ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
@@ -378,7 +399,7 @@ json output(const char* status,bool writes,bool clean,const char* stage,HRESULT 
   {"threadLanguage",t?t->threadLanguage:0},{"currentLanguage",t?t->currentLanguage:0},
   {"ledger",{{"comOwned",t&&t->comOwned},{"profileAttempted",t&&t->profileAttempted},{"categoryAttempted",t&&t->categoryAttempted},{"enableAttempted",t&&t->enableAttempted},{"activationAttempted",t&&t->activationAttempted}}}};
 }
-#ifndef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+#if !defined(YIME_MYCOMPUTER_ACTIVATION_STAGE1) && !defined(YIME_REGISTERED_EDIT_PROBE)
 int wmain(int argc,wchar_t** argv) {
  const bool normal=argc==5 && wcscmp(argv[1],L"--dll")==0 && wcscmp(argv[3],L"--ledger")==0;
  const bool recovery=argc==4 && wcscmp(argv[1],L"--cleanup-only")==0 && wcscmp(argv[2],L"--ledger")==0;
@@ -429,4 +450,7 @@ int wmain(int argc,wchar_t** argv) {
 #endif
 #if defined(YIME_MYCOMPUTER_ACTIVATION_STAGE1) && !defined(YIME_RESIDUE_FIXTURE_TESTS)
 #include "MyComputerActivationMain.h"
+#endif
+#ifdef YIME_REGISTERED_EDIT_PROBE
+#include "RegisteredEditProbeMain.h"
 #endif

@@ -25,7 +25,7 @@ import (
 // writes, installed-profile activation, existing document or user process target.
 // Run only in isolated Windows CI. These are not registered-host acceptance tests.
 func TestNativeFormal18uTIP(t *testing.T) {
-	testNativeFormal18uTIP(t, false)
+	testNativeFormal18uTIP(t, false, false)
 }
 
 // Separate opt-in gate for an already provisioned disposable registration.
@@ -34,13 +34,28 @@ func TestNativeRegisteredFormal18uTIP(t *testing.T) {
 	if os.Getenv("YIME_REGISTERED_FORMAL_18U_HOST") == "" {
 		t.Skip("registered native gate not selected; provisioning and execution require separate authorization")
 	}
-	testNativeFormal18uTIP(t, true)
+	testNativeFormal18uTIP(t, true, false)
 }
 
-func testNativeFormal18uTIP(t *testing.T, registered bool) {
+// This distinct opt-in owns a registration transaction. It is not enabled by
+// the previous direct-load or pre-provisioned-profile environment variables.
+func TestNativeSameProcessRegisteredEdit(t *testing.T) {
+	if os.Getenv("YIME_SAME_PROCESS_REGISTERED_EDIT_HOST") == "" {
+		t.Skip("same-process registration/edit gate not selected")
+	}
+	if os.Getenv("YIME_SAME_PROCESS_REGISTERED_EDIT_CONFIRM") != "once-registered-edit" {
+		t.Fatal("explicit one-time registration/edit confirmation required")
+	}
+	testNativeFormal18uTIP(t, true, true)
+}
+
+func testNativeFormal18uTIP(t *testing.T, registered, sameProcess bool) {
 	names := []string{"YIME_FORMAL_18U_HOST", "YIME_FORMAL_18U_DLL", "YIME_FORMAL_18U_BROKER", "YIME_FORMAL_18U_DATA"}
 	if registered {
 		names[0] = "YIME_REGISTERED_FORMAL_18U_HOST"
+	}
+	if sameProcess {
+		names[0] = "YIME_SAME_PROCESS_REGISTERED_EDIT_HOST"
 	}
 	enabled := false
 	for _, n := range names {
@@ -86,12 +101,33 @@ func testNativeFormal18uTIP(t *testing.T, registered bool) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	for _, scenario := range formalScenarios {
+	scenarios := formalScenarios
+	if sameProcess {
+		scenarios = []string{"commit"}
+	}
+	for _, scenario := range scenarios {
 		t.Run(scenario, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 			defer cancel()
-			dir := t.TempDir()
-			host := exec.CommandContext(ctx, paths[names[0]])
+			var dir string
+			if sameProcess {
+				dir = os.Getenv("YIME_SAME_PROCESS_REGISTERED_EDIT_EVIDENCE")
+				if !filepath.IsAbs(dir) {
+					t.Fatal("persistent absolute registration evidence directory required")
+				}
+				// Never use TempDir: a failed registration must retain its ledger.
+				// Exclusive creation also consumes the one-attempt evidence location.
+				if err := os.Mkdir(dir, 0700); err != nil {
+					t.Fatal("registration evidence directory must be new")
+				}
+			} else {
+				dir = t.TempDir()
+			}
+			var hostArgs []string
+			if sameProcess {
+				hostArgs = []string{"--dll", paths[names[1]], "--ledger", filepath.Join(dir, "registration-ledger.json"), "--confirm-once-registered-edit"}
+			}
+			host := exec.CommandContext(ctx, paths[names[0]], hostArgs...)
 			host.Dir = dir
 			hin, e := host.StdinPipe()
 			if e != nil {
@@ -110,8 +146,17 @@ func testNativeFormal18uTIP(t *testing.T, registered bool) {
 			defer func() {
 				hin.Close()
 				if !hostDone {
-					_ = host.Process.Kill()
+					// EOF lets the registration owner unwind its transaction. The
+					// existing process deadline still bounds a stuck cleanup.
+					if !sameProcess {
+						_ = host.Process.Kill()
+					}
 					_ = host.Wait()
+				}
+				if sameProcess {
+					if err := os.WriteFile(filepath.Join(dir, "host-stderr.jsonl"), hostErr.Bytes(), 0600); err != nil {
+						t.Error("cannot preserve registration diagnostics")
+					}
 				}
 			}()
 			pipe := fmt.Sprintf(`\\.\pipe\YimeBroker.18uTouch.v1.gate-%d-%d`, os.Getpid(), time.Now().UnixNano())
@@ -141,7 +186,16 @@ func testNativeFormal18uTIP(t *testing.T, registered bool) {
 			if e = json.NewEncoder(hin).Encode(config); e != nil {
 				t.Fatal("native configuration write")
 			}
-			hr := bufio.NewReaderSize(hout, 65537)
+			var hostOutput io.Reader = hout
+			if sameProcess {
+				file, err := os.OpenFile(filepath.Join(dir, "host-stdout.jsonl"), os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+				if err != nil {
+					t.Fatal("cannot preserve registration stdout")
+				}
+				defer file.Close()
+				hostOutput = io.TeeReader(hout, file)
+			}
+			hr := bufio.NewReaderSize(hostOutput, 65537)
 			line, e := formalReadLine(ctx, hr)
 			if e != nil {
 				_ = host.Wait() // joins stderr copier before reading the bounded buffer
@@ -189,8 +243,14 @@ func testNativeFormal18uTIP(t *testing.T, registered bool) {
 				hostDone = true
 				t.Fatalf("native final result missing; no replay: %s", formalFailureSummary(hostErr.Bytes()))
 			}
-			if err := validateFormalResult(line, scenario, registered); err != nil {
-				t.Fatal(err)
+			var resultError error
+			if sameProcess {
+				resultError = validateSameProcessEditResult(line, uint32(host.Process.Pid))
+			} else {
+				resultError = validateFormalResult(line, scenario, registered)
+			}
+			if resultError != nil {
+				t.Fatal(resultError)
 			}
 			// Drain stdout before Wait closes StdoutPipe; the process deadline bounds EOF.
 			if extra, e := hr.ReadByte(); e != io.EOF {
