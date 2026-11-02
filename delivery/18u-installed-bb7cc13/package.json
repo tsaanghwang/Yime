@@ -1,0 +1,30 @@
+{
+  "schema": "fixed-development-delivery-v1",
+  "repository": "tsaanghwang/Yime",
+  "sourceCommit": "bb7cc136c284a5d5ee3a764749119b0b423da482",
+  "buildRun": 41472435711,
+  "artifactId": 13156106297,
+  "artifactOuterBytes": 92384525,
+  "artifactOuterSha256": "f7ab317ff31279a1a4cb93ad5def72090200268d9ce6f3a101320002349bf009",
+  "releaseTag": "test-18u-installed-bb7cc13",
+  "filename": "YimeCore-18u-0.1.0-18u-test.2-windows-amd64.zip",
+  "bytes": 92365687,
+  "sha256": "8e3dd31fd74df54a091afa3cf2e1806422f5d1e15b1a4fcb8260e43fb6ca1ea3",
+  "manifestSha256": "e133ea4531139cdddfa48213481c83ee11172aa9fcc1f6213a6ff03c584b0484",
+  "installedDescriptorSha256": "89928fe4c4496462d9198e4be9be28b72ddb9816594b6eab7986fac766844adf",
+  "nativeArchitecture": "x64",
+  "eligibleHost": "MyComputer",
+  "signatureStatus": "NotSigned",
+  "packageRebuilt": false,
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "automaticExecution": false,
+  "releaseState": "planned; verify published Release and asset before download; not a publication receipt",
+  "machineTasks": {
+    "MyComputer": "download and hash only; execution separately authorized",
+    "desktop-x64": "standby",
+    "msi-x64": "standby",
+    "asus-arm64": "not compatible; no execution"
+  },
+  "downloadUrl": "https://github.com/tsaanghwang/Yime/releases/download/test-18u-installed-bb7cc13/YimeCore-18u-0.1.0-18u-test.2-windows-amd64.zip"
+}

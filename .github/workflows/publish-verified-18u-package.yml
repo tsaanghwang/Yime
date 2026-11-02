@@ -11,11 +11,11 @@ on:
         type: string
 permissions: {}
 concurrency:
-  group: publish-verified-18u-installer-399f9a3
+  group: publish-verified-18u-installer-bb7cc13
   cancel-in-progress: false
 jobs:
   publish:
-    if: github.repository == 'tsaanghwang/Yime' && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/delivery/18u-activated-loop-20261102' && github.run_attempt == 1 && inputs.confirm == 'publish-verified-installer-399f9a3' && inputs.expected_workflow_sha == github.sha
+    if: github.repository == 'tsaanghwang/Yime' && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/delivery/18u-activated-loop-20261102' && github.run_attempt == 1 && inputs.confirm == 'publish-verified-installer-bb7cc13' && inputs.expected_workflow_sha == github.sha
     permissions:
       contents: write
       actions: read
@@ -31,20 +31,20 @@ jobs:
         run: |
           import hashlib, io, json, os, urllib.error, urllib.parse, urllib.request, zipfile
           REPO = 'tsaanghwang/Yime'
-          SOURCE = '399f9a325fd4fbd84f04d8c2d837332d69e8dfde'
-          RUN = 41452443018
-          ARTIFACT = 13145486668
-          TAG = 'test-18u-installed-399f9a3'
-          NAME = 'YimeCore-18u-0.1.0-18u-test.1-windows-amd64.zip'
-          ZIP_SHA = '69aa09170c9febbc4078a058ffc42edceea15755ea59c00a2fd197e1deca6914'
-          OUTER_SHA = '5518eabaf51aabdf2fe4e1f4b548390b38fa727c8632f294a3e6680a8a10b019'
-          MANIFEST_SHA = 'f816af6719b28bdef2dfde6decaa1a8cb2b3b63bfdf9727f3bf5b2bec52325bf'
+          SOURCE = 'bb7cc136c284a5d5ee3a764749119b0b423da482'
+          RUN = 41472435711
+          ARTIFACT = 13156106297
+          TAG = 'test-18u-installed-bb7cc13'
+          NAME = 'YimeCore-18u-0.1.0-18u-test.2-windows-amd64.zip'
+          ZIP_SHA = '8e3dd31fd74df54a091afa3cf2e1806422f5d1e15b1a4fcb8260e43fb6ca1ea3'
+          OUTER_SHA = 'f7ab317ff31279a1a4cb93ad5def72090200268d9ce6f3a101320002349bf009'
+          MANIFEST_SHA = 'e133ea4531139cdddfa48213481c83ee11172aa9fcc1f6213a6ff03c584b0484'
           BASE = 'https://api.github.com/repos/' + REPO
           assert os.environ['GITHUB_REPOSITORY'] == REPO
           assert os.environ['GITHUB_EVENT_NAME'] == 'workflow_dispatch'
           assert os.environ['GITHUB_REF'] == 'refs/heads/delivery/18u-activated-loop-20261102'
           assert os.environ['GITHUB_RUN_ATTEMPT'] == '1'
-          assert os.environ['CONFIRM'] == 'publish-verified-installer-399f9a3'
+          assert os.environ['CONFIRM'] == 'publish-verified-installer-bb7cc13'
           assert os.environ['EXPECTED_WORKFLOW_SHA'] == os.environ['GITHUB_SHA']
           
           class SafeRedirect(urllib.request.HTTPRedirectHandler):
@@ -96,16 +96,16 @@ jobs:
           artifact = request('/actions/artifacts/' + str(ARTIFACT))
           assert artifact['id'] == ARTIFACT and artifact['expired'] is False
           assert artifact['name'] == 'installed-18u-x64-test-package-' + SOURCE
-          assert artifact['size_in_bytes'] == 92305973
+          assert artifact['size_in_bytes'] == 92384525
           assert artifact['digest'] == 'sha256:' + OUTER_SHA
           assert artifact['workflow_run']['id'] == RUN and artifact['workflow_run']['head_sha'] == SOURCE
           outer = request('/actions/artifacts/' + str(ARTIFACT) + '/zip', raw=True)
-          assert len(outer) == 92305973
+          assert len(outer) == 92384525
           require_hash(outer, OUTER_SHA)
           with zipfile.ZipFile(io.BytesIO(outer)) as archive:
               assert sorted(archive.namelist()) == [NAME]
               payload = archive.read(NAME)
-          assert len(payload) == 92287102
+          assert len(payload) == 92365687
           require_hash(payload, ZIP_SHA)
           with zipfile.ZipFile(io.BytesIO(payload)) as archive:
               names = archive.namelist()
@@ -115,7 +115,7 @@ jobs:
               manifest = json.loads(manifest_raw)
               assert manifest['schema'] == 'installed-18u-package-evidence-v1'
               assert manifest['sourceCommit'] == SOURCE and manifest['architecture'] == 'native-x64'
-              assert manifest['product'] == 'yimecore-18u' and manifest['version'] == '0.1.0-18u-test.1'
+              assert manifest['product'] == 'yimecore-18u' and manifest['version'] == '0.1.0-18u-test.2'
               assert manifest['installationExecuted'] is False and manifest['registrationExecuted'] is False and manifest['installedHostAcceptance'] is False
               assert set(names) == set(manifest['files']) | {'package-evidence.json'}
               for name, identity in manifest['files'].items():
@@ -123,7 +123,7 @@ jobs:
                   assert len(data) == identity['bytes']
                   require_hash(data, identity['sha256'])
               descriptor_raw = archive.read('payload/installed-18u-product.json')
-              require_hash(descriptor_raw, '9ea6b44e6dd5aae819d8aacf8d80f80ca2eb6e05bad2e7e1cedbc5c361585b9c')
+              require_hash(descriptor_raw, '89928fe4c4496462d9198e4be9be28b72ddb9816594b6eab7986fac766844adf')
               descriptor = json.loads(descriptor_raw)
               assert descriptor['schema'] == 'installed-18u-product-v1' and descriptor['sourceCommit'] == SOURCE
               assert descriptor['product'] == 'yimecore-18u' and descriptor['architecture'] == 'native-x64'
@@ -131,7 +131,7 @@ jobs:
               assert descriptor['autostart'] is False and descriptor['language'] == 'CN' and descriptor['mode'] == 'variable'
               simple = json.loads(archive.read('product-package.json'))
               assert simple['format'] == 'yime-simple-package-18u-1' and simple['product'] == 'yimecore-18u'
-              assert simple['version'] == '0.1.0-18u-test.1' and simple['target'] == 'windows-amd64'
+              assert simple['version'] == '0.1.0-18u-test.2' and simple['target'] == 'windows-amd64'
               assert len(simple['files']) == 16 and len(descriptor['files']) == 15
               actual_payload = {n for n in names if n.startswith('payload/')}
               assert actual_payload == {'payload/' + r['path'] for r in simple['files']}
@@ -161,18 +161,19 @@ jobs:
           # Nothing extracted, rebuilt, imported from the package or executed.
           print('Validated exact existing installer ZIP, all 23 files, 16 payloads and observed unsigned PE identity; execution: false', flush=True)
           notes = f'''独立 18u 持久安装开发测试包，不是稳定发行，不是旧激活身份诊断包。
+          test.2 修正维护生命周期与诊断；保留旧 test.1，原现场失败原因未唯一确定，真实修复效果尚未验证。
           仅 MyComputer 原生 x64 先行验证；不派发其他机器，不支持 ARM64。五个 EXE/DLL 未签名。
           源码: {SOURCE}；原构建 run {RUN}；artifact {ARTIFACT}。
-          原字节 ZIP（未重建）: {NAME}，92287102 bytes。
+          原字节 ZIP（未重建）: {NAME}，92365687 bytes。
           SHA256: {ZIP_SHA}
           package-evidence SHA256: {MANIFEST_SHA}
           编译及非注册测试通过，不代表安装、重启、已安装 TSF 激活或输入验收通过。
           发布/下载不授权执行。Setup 默认 Install 且可能请求提权，不要双击；安装、重启和宿主验收须另行确认。
           旧诊断包及既有记录保持不变；标准自研版、Rime/PIME 与各自用户数据不改动。
-          交付说明: https://github.com/{REPO}/blob/{os.environ['GITHUB_SHA']}/delivery/18u-installed-399f9a3/README.zh-CN.md
+          交付说明: https://github.com/{REPO}/blob/{os.environ['GITHUB_SHA']}/delivery/18u-installed-bb7cc13/README.zh-CN.md
           只下载命名 ZIP；自动 Source code ZIP 不是安装测试包。'''
           release = request('/releases', 'POST', {'tag_name': TAG, 'target_commitish': SOURCE,
-              'name': '18u independent installer x64 — development test 399f9a3',
+              'name': '18u independent installer x64 — development test bb7cc13',
               'body': notes, 'draft': True, 'prerelease': True, 'make_latest': 'false'})
           release_id = release['id']
           print(f'Created draft release {release_id}; any later failure leaves draft for inspection, no automatic retry/delete.', flush=True)
