@@ -1,4 +1,5 @@
 #pragma once
+#include "ActivationFailureTrace.h"
 // Only compiled for the separately named, default-OFF local stage-1 tool.
 namespace {
 json localConditions(){return {{"nativeX64",nullptr},{"hostMatches",nullptr},{"hkl0804",nullptr},{"tsf0804",nullptr},{"elevated",nullptr},{"identityAbsent",nullptr},{"dllVerified",nullptr},{"directTestAbsent",nullptr}};}
@@ -95,10 +96,15 @@ int wmain(int argc,wchar_t** argv){
     recoveryUnknown=false;report["cleanupVerified"]=true;completed=true;
    }
   }catch(const Failure& failure){report["stage"]=failure.stage;report["code"]=static_cast<unsigned long>(failure.code);}catch(...){report["stage"]="unclassified-exception";report["code"]=static_cast<unsigned long>(E_FAIL);}
+  // Preserve the operation failure before cleanup potentially replaces stage/code.
+  yime::stage1::WriteFailureTrace(report,yime::stage1::FailurePhase::Operation,std::cerr);
   if(args.mode==Mode::RegisterOnce && transaction.writes){
    try{transaction.cleanup();if(transaction.cleanupOK){ledger.mark("cleanupVerified");report["cleanupVerified"]=true;}}
    catch(const Failure& failure){transaction.cleanupCheck(failure.code,failure.stage);}catch(...){transaction.cleanupCheck(E_FAIL,"cleanup-exception");}
-   if(!transaction.cleanupOK){report["stage"]=transaction.cleanupStage;report["code"]=static_cast<unsigned long>(transaction.cleanupCode);completed=false;}
+   if(!transaction.cleanupOK){
+    report["stage"]=transaction.cleanupStage;report["code"]=static_cast<unsigned long>(transaction.cleanupCode);completed=false;
+    yime::stage1::WriteFailureTrace(report,yime::stage1::FailurePhase::Cleanup,std::cerr);
+   }
   }
   report["writesStarted"]=recoveryUnknown?json(nullptr):json(transaction.writes);
   if(args.mode!=Mode::Preflight){report["status"]=completed?"pass":(!transaction.writes&&!recoveryUnknown?"blocked":"failed");exit=completed?0:(!transaction.writes&&!recoveryUnknown?3:1);}

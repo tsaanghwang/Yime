@@ -39,10 +39,8 @@ func TestNativeRegisteredFormal18uTIP(t *testing.T) {
 
 func testNativeFormal18uTIP(t *testing.T, registered bool) {
 	names := []string{"YIME_FORMAL_18U_HOST", "YIME_FORMAL_18U_DLL", "YIME_FORMAL_18U_BROKER", "YIME_FORMAL_18U_DATA"}
-	expectedIdentity := "owned-host-activation-client"
 	if registered {
 		names[0] = "YIME_REGISTERED_FORMAL_18U_HOST"
-		expectedIdentity = "windows-activated-profile"
 	}
 	enabled := false
 	for _, n := range names {
@@ -88,7 +86,7 @@ func testNativeFormal18uTIP(t *testing.T, registered bool) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	for _, scenario := range []string{"commit", "duplicate", "wrong-server-pid", "wrong-server-image", "deactivated", "focus-lost", "disconnect-before-action"} {
+	for _, scenario := range formalScenarios {
 		t.Run(scenario, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 			defer cancel()
@@ -168,6 +166,22 @@ func testNativeFormal18uTIP(t *testing.T, registered bool) {
 			if e = json.NewEncoder(hin).Encode(map[string]bool{"proceed": true}); e != nil {
 				t.Fatal("native continuation write")
 			}
+			if scenario == "disconnect-after-edit" {
+				barrier, err := formalReadLine(ctx, hr)
+				if err != nil || validateFormalPostWriteBarrier(barrier) != nil {
+					t.Fatal("actual edit/readback barrier missing; no forced disconnect or replay")
+				}
+				// Only our own broker child, after the host independently observed
+				// its actual text. The TIP has not sent its completion yet.
+				if err := broker.Process.Kill(); err != nil {
+					t.Fatal("could not stop owned broker at post-write barrier")
+				}
+				_ = broker.Wait()
+				brokerDone = true
+				if err := json.NewEncoder(hin).Encode(map[string]bool{"brokerStopped": true}); err != nil {
+					t.Fatal("post-write continuation failed")
+				}
+			}
 			hin.Close()
 			line, e = formalReadLine(ctx, hr)
 			if e != nil {
@@ -175,35 +189,8 @@ func testNativeFormal18uTIP(t *testing.T, registered bool) {
 				hostDone = true
 				t.Fatalf("native final result missing; no replay: %s", formalFailureSummary(hostErr.Bytes()))
 			}
-			var result struct {
-				Stage                          string `json:"stage"`
-				Scenario                       string `json:"scenario"`
-				ActualDLLLoaded                bool   `json:"actualDLLLoaded"`
-				ActivationIdentity             string `json:"activationIdentity"`
-				Registered                     bool   `json:"registered"`
-				SendInput                      bool   `json:"sendInput"`
-				Outcome                        string `json:"outcome"`
-				Rejected                       bool   `json:"rejected"`
-				DuplicateRejected              bool   `json:"duplicateRejected"`
-				ReadbackMatches                bool   `json:"readbackMatches"`
-				ReadbackEmpty                  bool   `json:"readbackEmpty"`
-				OtherContextEmpty              bool   `json:"otherContextEmpty"`
-				UnknownAfterPendingEditCovered bool   `json:"unknownAfterPendingEditCovered"`
-			}
-			decoder := json.NewDecoder(strings.NewReader(string(line)))
-			decoder.DisallowUnknownFields()
-			if e = decoder.Decode(&result); e != nil {
-				t.Fatal("invalid native result")
-			}
-			if result.Stage != "result" || result.Scenario != scenario || !result.ActualDLLLoaded || result.ActivationIdentity != expectedIdentity || result.Registered != registered || result.SendInput || !result.OtherContextEmpty || result.UnknownAfterPendingEditCovered {
-				t.Fatal("native scope or identity mismatch")
-			}
-			if scenario == "commit" || scenario == "duplicate" {
-				if result.Outcome != "applied" || !result.ReadbackMatches || result.Rejected || result.ReadbackEmpty || scenario == "duplicate" && !result.DuplicateRejected {
-					t.Fatal("actual commit/readback or duplicate rejection not proven")
-				}
-			} else if !result.Rejected || !result.ReadbackEmpty || result.Outcome == "applied" {
-				t.Fatal("negative case wrote or was accepted")
+			if err := validateFormalResult(line, scenario, registered); err != nil {
+				t.Fatal(err)
 			}
 			// Drain stdout before Wait closes StdoutPipe; the process deadline bounds EOF.
 			if extra, e := hr.ReadByte(); e != io.EOF {
@@ -347,6 +334,11 @@ func formalFailureSummary(raw []byte) string {
 		d = second
 	}
 	allowed := map[string]bool{
+		"action did not become pending":            true,
+		"restore own focus":                        true,
+		"post-write disconnect control":            true,
+		"lost completion not unknown":              true,
+		"unknown outcome replayed":                 true,
 		"direct test bypass forbidden":             true,
 		"registered profile manager":               true,
 		"registered language manager":              true,

@@ -134,10 +134,10 @@ jobs:
           $env:YIME_FORMAL_18U_DATA = (Resolve-Path '.generated/touch-keyboard-resources').Path
           $report = Join-Path $PWD '.generated/s3c-evidence/formal-go-test.jsonl'
           Push-Location go-backend
-          try { go test ./internal/touchhostbridge -run '^(TestNativeFormal18uTIP|TestFormalFailureSummaryPrivacy|TestFormalActivationProbePrivacy)$' -count=1 -json -timeout=240s 2>&1 | Tee-Object $report; $code = $LASTEXITCODE } finally { Pop-Location }
+          try { go test ./internal/touchhostbridge -run '^(TestNativeFormal18uTIP|TestFormalFailureSummaryPrivacy|TestFormalActivationProbePrivacy|TestFormalResultEvidence|TestFormalPostWriteBarrierEvidence)$' -count=1 -json -timeout=240s 2>&1 | Tee-Object $report; $code = $LASTEXITCODE } finally { Pop-Location }
           if ($code -ne 0) { throw 'Formal adapter integration failed' }
           $events = @(Get-Content $report | ForEach-Object { $_ | ConvertFrom-Json -ErrorAction Stop })
-          $expected = @('TestFormalActivationProbePrivacy', 'TestFormalFailureSummaryPrivacy', 'TestNativeFormal18uTIP', 'TestNativeFormal18uTIP/commit', 'TestNativeFormal18uTIP/duplicate', 'TestNativeFormal18uTIP/wrong-server-pid', 'TestNativeFormal18uTIP/wrong-server-image', 'TestNativeFormal18uTIP/deactivated', 'TestNativeFormal18uTIP/focus-lost', 'TestNativeFormal18uTIP/disconnect-before-action')
+          $expected = @('TestFormalActivationProbePrivacy', 'TestFormalFailureSummaryPrivacy', 'TestFormalResultEvidence', 'TestFormalPostWriteBarrierEvidence', 'TestNativeFormal18uTIP', 'TestNativeFormal18uTIP/commit', 'TestNativeFormal18uTIP/duplicate', 'TestNativeFormal18uTIP/wrong-server-pid', 'TestNativeFormal18uTIP/wrong-server-image', 'TestNativeFormal18uTIP/deactivated', 'TestNativeFormal18uTIP/focus-lost', 'TestNativeFormal18uTIP/disconnect-before-action', 'TestNativeFormal18uTIP/pending-focus-away-back', 'TestNativeFormal18uTIP/pending-deactivated', 'TestNativeFormal18uTIP/disconnect-after-edit')
           foreach ($name in $expected) {
             $pass = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -ceq 'pass' })
             $bad = @($events | Where-Object { $_.Test -ceq $name -and $_.Action -in @('skip', 'fail') })

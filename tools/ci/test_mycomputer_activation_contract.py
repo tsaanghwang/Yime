@@ -64,6 +64,12 @@ class ActivationSourceContract(unittest.TestCase):
         self.assertIn('{"actualDllActivationVerified",false}',text)
         self.assertIn('{"brokerEditingVerified",false}',text)
 
+    def test_primary_failure_is_recorded_before_cleanup_can_mask_it(self):
+        text=(TESTS/'MyComputerActivationMain.h').read_text()
+        registration_cleanup=text.split('if(args.mode==Mode::RegisterOnce && transaction.writes)',1)
+        self.assertIn('WriteFailureTrace(report,yime::stage1::FailurePhase::Operation,std::cerr)',registration_cleanup[0])
+        self.assertIn('WriteFailureTrace(report,yime::stage1::FailurePhase::Cleanup,std::cerr)',registration_cleanup[1])
+
     def test_recovery_inspection_is_readonly_and_cleanup_rechecks_pinned_ledger(self):
         main=(TESTS/'MyComputerActivationMain.h').read_text()
         inspect=main.split('int inspectRecoveryOnly(',1)[1].split('json localReport(',1)[0]

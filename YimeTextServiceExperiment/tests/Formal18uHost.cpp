@@ -9,6 +9,7 @@
 #include <wrl/client.h>
 #include <nlohmann/json.hpp>
 #include <atomic>
+#include <functional>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -146,7 +147,7 @@ struct Host {
  }
  void create(ComPtr<ITfDocumentMgr>& doc,ComPtr<ITfContext>& ctx){TfEditCookie cookie=0;require(manager->CreateDocumentMgr(&doc),"document");require(doc->CreateContext(client,0,nullptr,&ctx,&cookie),"context");require(doc->Push(ctx.Get()),"push");}
  ~Host(){if(route)route->DisconnectDedicated();route.Reset();if(tipActive)deactivate();tip.Reset();if(window){ComPtr<ITfDocumentMgr> previous;manager->AssociateFocus(window,nullptr,&previous);DestroyWindow(window);}context.Reset();otherContext.Reset();document.Reset();other.Reset();if(managerActive)manager->Deactivate();manager.Reset();if(module)FreeLibrary(module);}
- HRESULT awaitResult(HRESULT hr,BSTR* value,DWORD timeout=15000){
+ HRESULT awaitResult(HRESULT hr,BSTR* value,DWORD timeout=15000,const std::function<void()>& beforePoll={}){
   const auto deadline=GetTickCount64()+timeout;
   while(hr==E_PENDING){
    MSG message;while(PeekMessageW(&message,nullptr,0,0,PM_REMOVE)){
@@ -154,6 +155,7 @@ struct Host {
     TranslateMessage(&message);DispatchMessageW(&message);
    }
    if(GetTickCount64()>=deadline){route->DisconnectDedicated();return HRESULT_FROM_WIN32(ERROR_TIMEOUT);}
+   if(beforePoll)beforePoll();
    hr=route->PollDedicated(value);
    if(hr==E_PENDING)MsgWaitForMultipleObjectsEx(0,nullptr,5,QS_ALLINPUT,MWMO_INPUTAVAILABLE);
   }
@@ -165,7 +167,7 @@ struct Host {
 }
 int main(){try{
  Apartment apartment;auto config=input();const std::string scenario=config.at("scenario");
- if(scenario!="commit"&&scenario!="duplicate"&&scenario!="wrong-server-pid"&&scenario!="wrong-server-image"&&scenario!="deactivated"&&scenario!="focus-lost"&&scenario!="disconnect-before-action")fail("scenario");
+ if(scenario!="commit"&&scenario!="duplicate"&&scenario!="wrong-server-pid"&&scenario!="wrong-server-image"&&scenario!="deactivated"&&scenario!="focus-lost"&&scenario!="disconnect-before-action"&&scenario!="pending-focus-away-back"&&scenario!="pending-deactivated"&&scenario!="disconnect-after-edit")fail("scenario");
  Host host;host.initialize(widen(config.at("dll").get<std::string>()));
  DWORD pid=config.at("brokerPID");if(scenario=="wrong-server-pid")pid=GetCurrentProcessId();
  BSTR initial=nullptr;HRESULT hr=host.route->ConnectDedicated(widen(config.at("pipe").get<std::string>()).c_str(),pid,widen(config.at(scenario=="wrong-server-image"?"dll":"brokerImage").get<std::string>()).c_str(),&initial);
@@ -174,6 +176,7 @@ int main(){try{
  std::cout<<json{{"stage","connected"},{"accepted",connected}}.dump()<<std::endl;
  if(!input().value("proceed",false))fail("control");
  bool rejected=false,duplicateRejected=false,readMatches=false;std::string outcome="not-applied";
+ bool pendingObserved=false,postWriteDisconnect=false,replayRejected=false;
  if(scenario=="wrong-server-pid"||scenario=="wrong-server-image"){
   if(connected)fail("wrong server accepted");rejected=true;
  }else{
@@ -189,9 +192,42 @@ int main(){try{
    if(selected.is_null())fail("canonical ni candidate missing");
    request={{"kind","select"},{"candidateId",selected.at("id")},{"revision",state.at("snapshot").at("revision")}};
    if(scenario=="focus-lost")require(host.manager->SetFocus(host.other.Get()),"change own focus");
-   state=host.action(request,hr);
-   if(scenario=="focus-lost"){
+   if(scenario=="pending-focus-away-back" || scenario=="pending-deactivated" || scenario=="disconnect-after-edit"){
+    BSTR value=nullptr;const auto body=request.dump();
+    hr=host.route->ActionDedicated(body.c_str(),&value);
+    pendingObserved=hr==E_PENDING && value==nullptr;
+    if(!pendingObserved){if(value)SysFreeString(value);fail("action did not become pending");}
+    if(scenario=="pending-focus-away-back"){
+     require(host.manager->SetFocus(host.other.Get()),"change own focus");
+     require(host.manager->SetFocus(host.document.Get()),"restore own focus");
+    }
+    if(scenario=="pending-deactivated")require(host.deactivate(),"deactivate actual TIP");
+    const auto beforePoll=[&]{
+     if(scenario!="disconnect-after-edit" || postWriteDisconnect)return;
+     const auto text=read(host.context.Get(),host.client);
+     if(text.empty())return;
+     if(text!=L"你")fail("independent readback mismatch");
+     // Test controller barrier only. The real edit has completed; Poll has
+     // not yet sent completion to the broker. Never invent an Applied receipt.
+     std::cout<<json{{"stage","edit-written"},{"readbackMatches",true},{"operationPending",true}}.dump()<<std::endl;
+     if(!input().value("brokerStopped",false))fail("post-write disconnect control");
+     postWriteDisconnect=true;
+    };
+    hr=host.awaitResult(hr,&value,15000,beforePoll);
+    state=value?response(value):json::object();
+   }else state=host.action(request,hr);
+   if(scenario=="focus-lost" || scenario=="pending-focus-away-back" || scenario=="pending-deactivated"){
     rejected=FAILED(hr)||!state.value("ok",false);if(!rejected)fail("stale focus accepted");
+   }else if(scenario=="disconnect-after-edit"){
+    if(!postWriteDisconnect || !FAILED(hr) || state.value("ok",true) ||
+       state.value("outcome","")!="unknown" || state.value("localEditOutcome","")!="applied" ||
+       state.value("retryAllowed",true))fail("lost completion not unknown");
+    outcome="unknown";
+    readMatches=read(host.context.Get(),host.client)==L"你";
+    if(!readMatches)fail("independent readback mismatch");
+    auto again=host.action(request,hr);
+    replayRejected=FAILED(hr) && !again.value("ok",false);
+    if(!replayRejected || read(host.context.Get(),host.client)!=L"你")fail("unknown outcome replayed");
    }else{
     require(hr,"actual edit and completion");if(!state.value("ok",false)||!state.contains("receipt"))fail("missing actual receipt");
     outcome=state.at("receipt").at("outcome").get<std::string>();if(outcome!="applied")fail("not actually applied");
@@ -205,5 +241,5 @@ int main(){try{
  bool empty=read(host.context.Get(),host.client).empty(),otherEmpty=read(host.otherContext.Get(),host.client).empty();
  if(rejected&&(!empty||!otherEmpty))fail("rejected operation wrote");
  require(host.deactivate(),"deactivate actual TIP");
- std::cout<<json{{"stage","result"},{"scenario",scenario},{"actualDLLLoaded",true},{"activationIdentity",Host::registered?"windows-activated-profile":"owned-host-activation-client"},{"registered",Host::registered},{"sendInput",false},{"outcome",outcome},{"rejected",rejected},{"duplicateRejected",duplicateRejected},{"readbackMatches",readMatches},{"readbackEmpty",empty},{"otherContextEmpty",otherEmpty},{"unknownAfterPendingEditCovered",false}}.dump()<<std::endl;return 0;
+ std::cout<<json{{"stage","result"},{"scenario",scenario},{"actualDLLLoaded",true},{"activationIdentity",Host::registered?"windows-activated-profile":"owned-host-activation-client"},{"registered",Host::registered},{"sendInput",false},{"outcome",outcome},{"rejected",rejected},{"duplicateRejected",duplicateRejected},{"readbackMatches",readMatches},{"readbackEmpty",empty},{"otherContextEmpty",otherEmpty},{"unknownAfterPendingEditCovered",postWriteDisconnect},{"operationPendingObserved",pendingObserved},{"postWriteDisconnectObserved",postWriteDisconnect},{"replayRejected",replayRejected}}.dump()<<std::endl;return 0;
  }catch(const GateFailure& failure){diagnostic(failure);return 1;}catch(...){diagnostic({"unexpected","exception",0});return 1;}}

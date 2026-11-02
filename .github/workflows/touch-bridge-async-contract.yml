@@ -6,6 +6,9 @@ on:
     paths:
       - '.github/workflows/touch-bridge-async-contract.yml'
       - 'YimeTextServiceExperiment/**'
+      - 'go-backend/internal/touchhostbridge/**'
+      - 'go-backend/go.mod'
+      - 'go-backend/go.sum'
       - 'tools/yimecore/18u-touch-product.json'
       - 'prototypes/touch-terminal/desktop/resources.lock.json'
       - 'prototypes/touch-terminal/encoding/**'
@@ -14,6 +17,9 @@ on:
     paths:
       - '.github/workflows/touch-bridge-async-contract.yml'
       - 'YimeTextServiceExperiment/**'
+      - 'go-backend/internal/touchhostbridge/**'
+      - 'go-backend/go.mod'
+      - 'go-backend/go.sum'
       - 'tools/yimecore/18u-touch-product.json'
       - 'prototypes/touch-terminal/desktop/resources.lock.json'
       - 'prototypes/touch-terminal/encoding/**'
@@ -32,10 +38,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go-backend/go.mod
+          cache: false
       - name: Configure x64 source contracts
         run: cmake -S YimeTextServiceExperiment -B .generated/async-contract -A x64 -DYIME_TOUCH_PRODUCT=ON -DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON
       - name: Build contracts and compile-only formal hosts
-        run: cmake --build .generated/async-contract --config Release --target YimeTextService18u YimeTextServiceExperiment YimeDedicatedActivationTests YimeDedicatedAsyncTests YimeFocusCancellationTests YimeTouchFormalHostTests YimeTouchRegisteredFormalHostTests --parallel 4
+        run: cmake --build .generated/async-contract --config Release --target YimeTextService18u YimeTextServiceExperiment YimeDedicatedActivationTests YimeDedicatedAsyncTests YimeFocusCancellationTests YimeTouchFormalHostTests YimeTouchRegisteredFormalHostTests YimeActivationFailureTraceTests --parallel 4
       # No real TSF activation or registration. The two FormalHostTests targets
       # above are compile-only and must not be executed by this workflow.
       - name: Provider lifecycle with substitute TSF
@@ -44,3 +54,8 @@ jobs:
         run: .generated\async-contract\Release\YimeDedicatedAsyncTests.exe
       - name: Existing focus cancellation contracts
         run: .generated\async-contract\Release\YimeFocusCancellationTests.exe
+      - name: Failure diagnostics without registration
+        run: .generated\async-contract\Release\YimeActivationFailureTraceTests.exe
+      - name: Native result evidence rejection (no host launch)
+        working-directory: go-backend
+        run: go test ./internal/touchhostbridge -run "^TestFormal" -count=1
