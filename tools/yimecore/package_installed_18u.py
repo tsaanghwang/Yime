@@ -10,13 +10,13 @@ import zipfile
 
 import assemble_installed_18u as a
 
-VERSION = '0.1.0-18u-test.2'
-ZIP_NAME = 'YimeCore-18u-0.1.0-18u-test.2-windows-amd64.zip'
+VERSION = '0.1.0-18u-test.3'
+ZIP_NAME = 'YimeCore-18u-0.1.0-18u-test.3-windows-amd64.zip'
 INSTALLER = ('Product.psm1', 'Setup.ps1', 'Setup.cmd')
 SIGNATURE_STATUSES = {'Valid', 'UnknownError', 'NotSigned', 'HashMismatch', 'NotTrusted', 'NotSupportedFileFormat', 'Incompatible'}
 README = r'''# 独立 18u 持久安装开发候选包
 
-版本：0.1.0-18u-test.2；仅原生 Windows x64，中文 variable 模式。
+版本：0.1.0-18u-test.3；仅原生 Windows x64，中文 variable 模式。
 这是复用 installer/simple 的独立 18u 产品，不是标准键盘版、Rime/PIME、
 PR87 预览包或临时注册诊断包。保留原产品与各自数据、注册身份。
 
