@@ -154,9 +154,11 @@ HRESULT registerProfileAndCategories(const wchar_t* dllPath) {
     HRESULT result = CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
                                       __uuidof(ITfInputProcessorProfileMgr), reinterpret_cast<void**>(&profiles));
     if (FAILED(result)) return result;
+#ifndef YIME_18U_PRODUCT_REGISTRATION
     traceRegistrationStep(L"prepare-unregister-profile",
         profiles->UnregisterProfile(CLSID_YimeTextServiceExperiment, kLanguageId,
                                     GUID_YimeTextServiceExperimentProfile, 0));
+#endif
     result = profiles->RegisterProfile(
         CLSID_YimeTextServiceExperiment, kLanguageId, GUID_YimeTextServiceExperimentProfile,
         kProfileName, static_cast<ULONG>(std::size(kProfileName) - 1), profileIcon.c_str(),
@@ -189,10 +191,16 @@ HRESULT unregisterProfileAndCategories() {
         for (const GUID* category : kTipCategories) {
             result = categories->UnregisterCategory(CLSID_YimeTextServiceExperiment, *category,
                                                     CLSID_YimeTextServiceExperiment);
+#ifdef YIME_18U_PRODUCT_REGISTRATION
+            if (FAILED(result)) { categories->Release(); return result; }
+#endif
             if (FAILED(result) && SUCCEEDED(firstFailure)) firstFailure = result;
         }
         categories->Release();
     } else {
+#ifdef YIME_18U_PRODUCT_REGISTRATION
+        return result;
+#endif
         firstFailure = result;
     }
     ITfInputProcessorProfileMgr* profiles = nullptr;
@@ -282,6 +290,9 @@ void writeResult(std::wstring_view operation, HRESULT result) {
 
 }  // namespace
 
+#ifdef YIME_18U_PRODUCT_REGISTRATION
+#include "ProductRegistrationMain.h"
+#else
 int wmain(int argc, wchar_t** argv) {
     const HRESULT initialized = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
     if (FAILED(initialized) && initialized != RPC_E_CHANGED_MODE) {
@@ -343,3 +354,5 @@ int wmain(int argc, wchar_t** argv) {
     if (uninitialize) CoUninitialize();
     return exitCode;
 }
+
+#endif // YIME_18U_PRODUCT_REGISTRATION

@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][ValidateSet('yimecore','rime-pime')][string]$Product,
+param([Parameter(Mandatory)][ValidateSet('yimecore','rime-pime','yimecore-18u')][string]$Product,
     [Parameter(Mandatory)][string]$PayloadRoot,[Parameter(Mandatory)][string]$OutputRoot,
     [Parameter(Mandatory)][string]$Version,
     [ValidateSet('windows-amd64','windows-arm64')][string]$Target='windows-amd64')
@@ -15,7 +15,7 @@ if($Product -eq 'yimecore'){
     if($descriptor.identity.clsid -ine $productInfo.clsid -or $descriptor.identity.profile -ine $productInfo.profile){throw 'Use current-identity YimeCore artifacts, not the legacy trial'}
 }
 # Only application resources. Old installer/recovery directories are not shipped.
-$allowed=if($Product -eq 'yimecore'){@('bin','data','indexes','x64','x86','help','professional-lexicons','speech','speech-capability.json','local-product.json','profile-icon.ico')}else{@('PIMELauncher.exe','backends.json','version.txt','go-backend','x64','x86','licenses')}
+$allowed=if($Product -eq 'yimecore-18u'){@('bin','data','source','x64','installed-18u-product.json','profile-icon.ico')}elseif($Product -eq 'yimecore'){@('bin','data','indexes','x64','x86','help','professional-lexicons','speech','speech-capability.json','local-product.json','profile-icon.ico')}else{@('PIMELauncher.exe','backends.json','version.txt','go-backend','x64','x86','licenses')}
 if($Target -ceq 'windows-arm64'){
     if(Test-Path -LiteralPath (Join-Path $source 'x64')){throw 'ARM64 packages must not contain a separate x64 COM payload'}
     $allowed=@($allowed | Where-Object {$_ -cne 'x64'})+@('arm64','build','package-manifest.json')
@@ -30,6 +30,9 @@ $files=@(foreach($file in Get-ProductFiles $source){
     [ordered]@{path=$relative;bytes=$file.Length;sha256=(Get-ContentHash $targetPath)}
 })
 $manifest=[ordered]@{format='yime-simple-package-1';product=$Product;version=$Version;files=$files}
+if($Product -ceq 'yimecore-18u'){
+    $manifest.format='yime-simple-package-18u-1';$manifest.target='windows-amd64';$manifest.host_architecture='amd64';$manifest.tsf64_architecture='x64'
+}
 if($Target -ceq 'windows-arm64'){
     $manifest.format='yime-simple-package-2';$manifest.target=$Target
     $manifest.host_architecture='arm64';$manifest.tsf64_architecture='arm64x'
@@ -38,3 +41,4 @@ if($Target -ceq 'windows-arm64'){
 foreach($name in @('Product.psm1','Setup.ps1','Setup.cmd')){[IO.File]::Copy((Join-Path $PSScriptRoot $name),(Join-Path $output $name),$false)}
 $null=Read-Package $output
 Write-Output ('Package ready: '+$output)
+
