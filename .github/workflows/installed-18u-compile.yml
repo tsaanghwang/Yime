@@ -2,14 +2,14 @@ name: Installed 18u compile and offline checks
 
 on:
   push:
-    branches: ['validation/18u-simple-installer-20261102']
+    branches: ['validation/18u-simple-installer-20261102', 'codex/18u-installed-input-events-20261103']
 
 permissions:
   contents: read
 
 jobs:
   compile-offline:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/validation/18u-simple-installer-20261102'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/validation/18u-simple-installer-20261102' || github.ref == 'refs/heads/codex/18u-installed-input-events-20261103')
     runs-on: windows-2025
     timeout-minutes: 25
     defaults:
@@ -98,6 +98,8 @@ jobs:
           import json, pathlib, subprocess
           groups = [
               ('./internal/touchbroker', [
+                  'TestTIPRejectsWholeCodeInputWithoutEdit',
+                  'TestTIPConnectionCommitRequiresActualOwnerReceipt',
                   'TestDiagnosticKnownDispatchReasons',
                   'TestDiagnosticRequestBranches',
                   'TestDiagnosticUnknownDataNeverCopied',
@@ -172,7 +174,8 @@ jobs:
           import pathlib, subprocess
           commands = [
               (['cmake', '-S', 'YimeTextServiceExperiment', '-B', '.generated/installed-18u-native', '-A', 'x64', '-DYIME_TOUCH_PRODUCT=ON', '-DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON', '-DYIME_18U_PRODUCT_REGISTRATION=ON'], 'configure.log'),
-              (['cmake', '--build', '.generated/installed-18u-native', '--config', 'Release', '--target', 'YimeTextService18u', 'Yime18uProductRegistration', 'YimeTouchRegisteredFormalHostTests', 'Yime18uProductRegistrationPolicyTests', 'Yime18uInputAbortDiagnosticTests', 'Yime18uActionFailureObservationTests'], 'msvc-build.log'),
+              (['cmake', '--build', '.generated/installed-18u-native', '--config', 'Release', '--target', 'YimeTextService18u', 'Yime18uProductRegistration', 'YimeTouchRegisteredFormalHostTests', 'YimeFormalInputSequenceTests', 'Yime18uProductRegistrationPolicyTests', 'Yime18uInputAbortDiagnosticTests', 'Yime18uActionFailureObservationTests'], 'msvc-build.log'),
+              ([str(pathlib.Path('.generated/installed-18u-native/Release/YimeFormalInputSequenceTests.exe').resolve())], 'formal-input-sequence.log'),
               ([str(pathlib.Path('.generated/installed-18u-native/Release/Yime18uProductRegistrationPolicyTests.exe').resolve())], 'pure-policy.log'),
               ([str(pathlib.Path('.generated/installed-18u-native/Release/Yime18uInputAbortDiagnosticTests.exe').resolve())], 'input-abort-pure.log'),
               ([str(pathlib.Path('.generated/installed-18u-native/Release/Yime18uActionFailureObservationTests.exe').resolve())], 'action-observation-pure.log')]
@@ -185,6 +188,7 @@ jobs:
           if policy.count('product registration policy: CLI, absence, removal sequencing, bounded residue passed') != 1:
               raise SystemExit('Pure policy success marker missing')
           markers = {
+              'formal-input-sequence.log': 'PASS formal input: one key per event, acknowledged revisions, first failure stops without replay',
               'input-abort-pure.log': 'diagnostic helper: fixed vocabulary, redaction, bounded output, throwing sink passed',
               'action-observation-pure.log': 'ActionFailureObservation: safe enums/types, malformed/missing, WM_QUIT and sink-failure checks passed'}
           for name, marker in markers.items():
@@ -200,6 +204,16 @@ jobs:
               result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/touch_keyboard_resources.py', 'fetch', '--output-dir', '.generated/touch-keyboard-resources'], stdout=log, stderr=subprocess.STDOUT, timeout=240)
           if result.returncode:
               raise SystemExit('Locked resources unavailable; no substitute')
+      - name: Verify multi-key canonical input against full dedicated resources without TSF
+        run: |
+          import os, pathlib, subprocess
+          env = os.environ.copy()
+          env['YIME_18U_FULL_DATA'] = str(pathlib.Path('.generated/touch-keyboard-resources').resolve())
+          output = pathlib.Path('.generated/installed-18u-evidence/full-resource-input.log')
+          with output.open('w', encoding='utf-8') as log:
+              result = subprocess.run(['go', 'test', '-count=1', '-v', '-timeout=180s', './internal/touchbroker', '-run', '^TestFullResourceDedicatedBroker$'], cwd='go-backend', env=env, stdout=log, stderr=subprocess.STDOUT, timeout=240)
+          if result.returncode or '--- PASS: TestFullResourceDedicatedBroker' not in output.read_text(encoding='utf-8'):
+              raise SystemExit('Full-resource canonical input regression failed or skipped')
       - name: Observe signatures and build installer archive without installation
         env:
           SOURCE_SHA: ${{ github.sha }}
