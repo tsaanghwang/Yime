@@ -144,3 +144,24 @@ CTF 由 TSF 同时写 32/64 位视图，所以残留在两视图都可见；`Unr
 结论：实机残留与第 2 节推演一致，新工具可判定且有能力清除。`activationAttempted=true`
 将首次失败收窄到 `activate-own-profile-forprocess` 之后（`get-active-profile`／`active-profile-mismatch`
 或消息泵期间）。本检查不是恢复执行。
+
+## 7. CI 夹具演练与本机恢复执行（2026-11-02，用户授权 1/2/3）
+
+**CI 范围修正**：原计划“CI 注册→注入失败→恢复”在当前 CI 不可执行：runner 仅有 `0x0409`
+环境、中文准备流程未派发，且 stage1 全部入口带 MyComputer 主机门。改为
+`YimeResidueFixtureTests`：直接编译 stage1 残留代码（不带主入口），在真实注册表与真实 TSF
+COM 对象上构造合成空壳，不注册任何 profile，存在真实残留或 COM 根时主动 `blocked`。
+包 workflow 在打包与只读校验之后、上传之前运行它，失败则不交付包。
+
+| 层 | 运行 | 结果 |
+| --- | --- | --- |
+| CI 夹具演练（run 41379529964，源 `660ed0ac`） | 7 案例：absent-baseline、owned-shell-classified-snapshotted-removed（四视图空壳 → 24 键快照含 `Enable` 与空名默认值 → 清除 → 绝对）、removal-of-absent-residue-refused、foreign-language／foreign-category／foreign-profile／unknown-child-kept（均 not-owned，清除被拒且空壳保留） | 全部 pass，stderr 空；只读负例门 6 案例 passed |
+| 包核验 | ZIP／manifest 哈希与构建证据一致；`recoverableRegistrations` 四哈希与原回执一致；EXE/DLL NotSigned（开发件） | 通过 |
+| 恢复前只读预检 | 独立脚本扫描 HKLM/HKCU × 32/64 `CTF` 全树及 `Classes\CLSID`：仅 TIP 空壳 8 处键名命中与 HKLM/64 COM 根，无 SortOrder 等外部引用 | 通过 |
+| 本机恢复（提升进程，一次） | 包内 `run_mycomputer_registration.py recover`，`--original-evidence` 指向原证据目录 | `recovery-and-absence-evidence-consistent`；`packageBinding=pinned-older-package`；`residueShape=owned-empty-shell`；`recoveryInvocations=1`；inspect／snapshot(26 项)／recover(`pass`,`cleanupVerified=true`)／verify(`pass`) 四步 stderr 均空 |
+| 恢复后独立复核 | 同一只读扫描 | **0 命中**；原账本密文哈希不变；`recovery-claim.json` 已创建并指向新证据目录 |
+
+证据位于仓库外 `Yime-evidence/mycomputer-recovery-package-660ed0ac/`（包与 CI 证据）与
+`Yime-evidence/mycomputer-recovery-run-20261102/`（恢复回执）。原 `71a4a252` 轮次结果保持
+failed；本次恢复不补造激活成功，不改变任何已安装输入法、默认设置或用户数据。
+MyComputer 现已回到“独立 18u 身份绝对缺席”状态，可作为下一次经批准注册的起点。

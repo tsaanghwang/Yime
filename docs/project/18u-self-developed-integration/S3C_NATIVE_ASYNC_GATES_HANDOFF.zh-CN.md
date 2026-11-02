@@ -60,7 +60,8 @@ actualDllActivationVerified=false、profileActivationApiVerified=false，
 再按明确的系统恢复授权执行。当前不应重复注册来覆盖这些残留。
 该审查已于 2026-11-02 完成为[恢复交付方案](S3C_RECOVERY_DELIVERY_REVIEW.zh-CN.md)：
 现有 `--recover` 对此残留必失败且会消耗唯一恢复声明，须先交付受门控的
-`Unregister`＋四视图清理工具。
+`Unregister`＋四视图清理工具。同日该工具已实现、经 CI 夹具演练后，以固定包
+`660ed0ac` 在本机执行一次恢复并通过独立缺席核验；残留已清除（见方案第 7 节）。
 
 ## 已修复的诊断遮蔽
 
