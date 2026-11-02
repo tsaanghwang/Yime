@@ -31,9 +31,12 @@ Check ($text -match 'Get-LocalProductProtectionEvidence' -and $text -match 'prot
 Check ($text -notmatch 'Start-Process|Stop-Process|register-com|regsvr32|ctest') 'build entry cannot execute target or maintenance'
 Check ($text -match '0xaa64' -and $text -match '0x8664') 'both PE machines verified'
 $isolationText=Get-Content (Join-Path $PSScriptRoot 'local-product-test-isolation.ps1') -Raw
-Check ($isolationText -match '\$fixture = Join-Path \$build \(''t\\''' -and
-    $isolationText -match '\$fixtureTemp\.Length -gt 120') `
-    'runtime evidence can remain descriptive while native TEMP stays below its path limit'
+Check ($isolationText -match '\$fixture = Join-Path \$fixtureBase \$fixtureId' -and
+    $isolationText -match '\$retained = Join-Path \$build \(''t\\''' -and
+    $isolationText -match 'YimeBuildFixtures' -and
+    $isolationText -match '\$fixtureTemp\.Length -gt 120' -and
+    $isolationText -match 'Move-Item -LiteralPath \$fixture -Destination \$retained') `
+    'native TEMP runs at a short repository-independent root and the synthetic state is retained under the build root'
 $cmake=Get-Content (Join-Path $PSScriptRoot '../../YimeTextServiceExperiment/CMakeLists.txt') -Raw
 Check ($cmake -match 'CMAKE_GENERATOR_PLATFORM STREQUAL "ARM64"' -and $cmake -match 'YIME_LOCAL_PRODUCT') 'ARM64 current-identity CMake lane'
 try {
