@@ -131,6 +131,12 @@ def register(package,evidence,anchor,confirmation,timeout=30,runner=None):
         require(valid_root(receipt['rootIdentity']) and process.get('rootIdentity')==receipt['rootIdentity'],'root receipt mismatch')
         if process.get('treeStopped') is True and ledger.is_file():receipt['ledgerSha256']=sha(read_bytes(ledger,65536))
         receipt['status']='failed-or-inconclusive'
+        native=read_json(directory/'register-stdout.txt')
+        require(isinstance(native,dict),'native-output-not-object')
+        receipt['nativeStatus']=native.get('status')
+        receipt['diagnostics']=native.get('diagnostics')
+        if not completed(process,4):
+            receipt['failureReason']='native-registration-incomplete'
         if completed(process,4):
             verify=invoke(runner,[str(package/EXE),'--verify'],directory,'verify',timeout)
             if completed(verify,0):

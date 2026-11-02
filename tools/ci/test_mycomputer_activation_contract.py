@@ -72,7 +72,7 @@ class ActivationSourceContract(unittest.TestCase):
         self.assertIn('inspectOwnedScope(transaction,ledger)',inspect)
         for forbidden in ('transaction.cleanup(', 'ledger.mark(', 'ledger.create(', 'transaction.run('):
             self.assertNotIn(forbidden,inspect)
-        recovery=main.split('}else if(args.mode==Mode::Verify)',1)[1].split('catch(const Failure& failure)',1)[0]
+        recovery=main.split('}else if(args.mode==Mode::Verify)',1)[1].split('\n  },[&](const char* stage,std::uint32_t code)',1)[0]
         self.assertLess(recovery.index('ledger.load(args.ledger)'),recovery.index('transaction.cleanup()'))
         self.assertLess(recovery.index('inspectOwnedScope(transaction,ledger)'),recovery.index('transaction.cleanup()'))
         self.assertNotIn('ledger.mark(',recovery)
@@ -80,9 +80,20 @@ class ActivationSourceContract(unittest.TestCase):
         self.assertIn('cipherReadLock=CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ',source)
         self.assertIn('cipherSha256==localUtf8(expectedCipherSha256)',source)
 
+    def test_actual_observation_operation_and_cleanup_use_tested_capture_boundary(self):
+        main=(TESTS/'MyComputerActivationMain.h').read_text()
+        observation=main.split('auto observe=',1)[1].split('observe("nativeX64"',1)[0]
+        operation=main.split('int wmain(',1)[1]
+        self.assertIn('CaptureStage<Failure>(localDiagnostics,"preflight-query-exception"',observation)
+        self.assertIn('CaptureStage<Failure>(localDiagnostics,"unclassified-exception"',operation)
+        self.assertIn('CaptureStage<Failure>(localDiagnostics,"cleanup-exception"',operation)
+        self.assertIn('transaction.cleanupCheck(static_cast<HRESULT>(code),stage,true)',operation)
+
     def test_generation_marker_is_owned_before_cleanup_and_preserved_on_failure(self):
         source=(TESTS/'RegistrationProbe.cpp').read_text()
-        self.assertIn('data.at("schema")=="18u-mycomputer-ledger-v3"',source)
+        self.assertIn('data.at("schema")=="18u-mycomputer-ledger-v4"',source)
+        self.assertIn('legacy-v2-no-item-provenance',source)
+        self.assertIn('validateLocalAbsence(data.at("itemAbsence"))',source)
         self.assertNotIn('data.at("schema")=="18u-mycomputer-ledger-v2"',source)
         local=source.split('const std::wstring generation=localGeneration(ledger->data);',1)[1].split('#else',1)[0]
         self.assertLess(local.index('RegSetValueExW(root.value,L"YimeMyComputerGeneration"'),local.index('ledger->mark("comOwned")'))
@@ -92,6 +103,8 @@ class ActivationSourceContract(unittest.TestCase):
         self.assertIn('actualGeneration==generation,"owned-generation-mismatch"',support)
         cleanup=source.split(' void cleanup() {',1)[1].split('\n};',1)[0]
         self.assertIn('if(comOwned && cleanupOK)try{ledger->validateOwnedCom();localTipAbsent(',cleanup)
-        self.assertIn('if(comOwned && cleanupOK)\n#else',cleanup)
+        self.assertIn('if(comOwned && cleanupOK){',cleanup)
+        self.assertIn('RegDeleteKeyExW(HKEY_LOCAL_MACHINE,comPath.c_str()',cleanup)
+        self.assertIn('cleanup-com-root-absence',cleanup)
 
 if __name__=='__main__': unittest.main()

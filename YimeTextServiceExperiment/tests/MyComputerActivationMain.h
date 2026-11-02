@@ -1,10 +1,22 @@
 #pragma once
 // Only compiled for the separately named, default-OFF local stage-1 tool.
 namespace {
+json diagnosticEntry(const yime::stage1::StageResult& v){return {{"phase",v.phase},{"stage",v.stage},{"code",v.code}};}
+json diagnosticReport(){
+ json results=json::array(),failures=json::array();
+ for(const auto& v:localDiagnostics.results)results.push_back(diagnosticEntry(v));
+ for(const auto& v:localDiagnostics.cleanupFailures)failures.push_back(diagnosticEntry(v));
+ return {{"schema","activation-diagnostics-v1"},{"primaryFailure",localDiagnostics.hasPrimaryFailure?diagnosticEntry(localDiagnostics.primaryFailure):json(nullptr)},{"cleanupFailures",failures},{"stages",results},{"registryMatch",localRegistryMatch}};
+}
+
 json localConditions(){return {{"nativeX64",nullptr},{"hostMatches",nullptr},{"hkl0804",nullptr},{"tsf0804",nullptr},{"elevated",nullptr},{"identityAbsent",nullptr},{"dllVerified",nullptr},{"directTestAbsent",nullptr}};}
 yime::stage1::PreflightFacts inspectLocal(Transaction& transaction,Ledger& ledger,const yime::stage1::Arguments& args,json& report){
  yime::stage1::PreflightFacts facts;report["preconditions"]=localConditions();
- auto observe=[&](const char* key,bool& fact,auto action){try{fact=action();report["preconditions"][key]=fact;}catch(const Failure& f){if(report["stage"]=="completed"){report["stage"]=f.stage;report["code"]=static_cast<unsigned long>(f.code);}}catch(...){if(report["stage"]=="completed"){report["stage"]="preflight-query-exception";report["code"]=static_cast<unsigned long>(E_FAIL);}}};
+ auto observe=[&](const char* key,bool& fact,auto action){
+  yime::stage1::CaptureStage<Failure>(localDiagnostics,"preflight-query-exception",static_cast<unsigned long>(E_FAIL),
+   [&]{fact=action();report["preconditions"][key]=fact;},
+   [&](const char* stage,std::uint32_t code){if(report["stage"]=="completed"){report["stage"]=stage;report["code"]=code;}});
+ };
  observe("nativeX64",facts.nativeX64,[]{return localNative();});
  observe("hostMatches",facts.hostMatches,[&]{const auto host=localHostName();report["actualHostName"]=localUtf8(host);return _wcsicmp(host.c_str(),L"MyComputer")==0;});
  observe("elevated",facts.elevated,[]{return elevated();});
@@ -19,10 +31,16 @@ yime::stage1::LedgerFlags inspectedFlags(const Ledger& ledger){
  const auto& d=ledger.data;return {d.at("preflightAbsent").get<bool>(),d.at("comAttempted").get<bool>(),d.at("comOwned").get<bool>(),d.at("profileAttempted").get<bool>(),d.at("categoryAttempted").get<bool>(),d.at("enableAttempted").get<bool>(),d.at("activationAttempted").get<bool>(),d.at("cleanupVerified").get<bool>()};
 }
 bool currentAbsence(Transaction& transaction){
+ const auto before=localDiagnostics;const auto previousMatch=localRegistryMatch;
  try{registryAbsent();apiAbsent(transaction.languages.Get(),transaction.profiles.Get(),transaction.categories.Get());return true;}
  catch(const Failure& failure){
   const std::string stage=failure.stage;
-  if(stage=="existing-com-identity"||stage=="existing-tip-identity"||stage=="existing-identity-value-name"||stage=="existing-identity-value-data"||stage=="existing-identity-binary-data"||stage=="existing-profile-identity")return false;
+  if(stage=="existing-com-identity"||stage=="existing-tip-identity"||stage=="existing-identity-value-name"||stage=="existing-identity-value-data"||stage=="existing-identity-binary-data"||stage=="existing-profile-identity"){
+   // Presence is the expected result of this ownership inspection, not a
+   // registration failure. Query failures still propagate without suppression.
+   localDiagnostics=before;localRegistryMatch=previousMatch;
+   localDiagnostics.record("owned-residue-observed",0);return false;
+  }
   throw; // Access denial, malformed enumeration and unknown state are not presence evidence.
  }
 }
@@ -66,7 +84,7 @@ int wmain(int argc,wchar_t** argv){
  int exit=1;
  {
   Transaction transaction;Ledger ledger;transaction.ledger=&ledger;bool recoveryUnknown=args.mode==Mode::Recover;bool completed=false;
-  try{
+  yime::stage1::CaptureStage<Failure>(localDiagnostics,"unclassified-exception",static_cast<unsigned long>(E_FAIL),[&]{
    if(args.mode==Mode::Preflight || args.mode==Mode::RegisterOnce){
     const auto facts=inspectLocal(transaction,ledger,args,report);
     if(args.mode==Mode::Preflight){report["status"]=report["stage"]=="completed"?"checked":"blocked";exit=report["stage"]=="completed"?0:3;completed=true;}
@@ -74,8 +92,8 @@ int wmain(int argc,wchar_t** argv){
      require(yime::stage1::CanRegister(facts),"registration-preconditions-not-proven");
      // No ledger is created until all read-only preconditions passed. run()
      // repeats actual machine/language/elevation/absence checks before writing.
-     ledger.create(args.ledger,ledger.dllLock.canonical);
-     transaction.run(ledger.dllLock.canonical);report["profileActivationApiVerified"]=true;completed=true;
+     localDiagnostics.phase="registration";ledger.create(args.ledger,ledger.dllLock.canonical);localDiagnostics.record("ledger-created",0);
+     localDiagnostics.phase="registration";transaction.run(ledger.dllLock.canonical);report["profileActivationApiVerified"]=true;completed=true;
     }
    }else if(args.mode==Mode::Verify){localMachineGate();transaction.initialize();registryAbsent();apiAbsent(transaction.languages.Get(),transaction.profiles.Get(),transaction.categories.Get());report["cleanupVerified"]=true;completed=true;}
    else{
@@ -86,7 +104,7 @@ int wmain(int argc,wchar_t** argv){
     // unreachable. Process-local activation cannot survive its termination.
     const bool recoveryRequired=inspectOwnedScope(transaction,ledger);
     if(recoveryRequired){
-     if(transaction.writes)require(elevated(),"recovery-elevation-required");transaction.cleanup();require(transaction.cleanupOK,"recovery-cleanup-failed");
+     if(transaction.writes)require(elevated(),"recovery-elevation-required");localDiagnostics.phase="cleanup";transaction.cleanup();require(transaction.cleanupOK,"recovery-cleanup-failed");
      registryAbsent();apiAbsent(transaction.languages.Get(),transaction.profiles.Get(),transaction.categories.Get());
     }
     // Preserve the original ciphertext/flags as historical evidence. The read
@@ -94,10 +112,12 @@ int wmain(int argc,wchar_t** argv){
     // not a rewrite of the original journal, records the new cleanup result.
     recoveryUnknown=false;report["cleanupVerified"]=true;completed=true;
    }
-  }catch(const Failure& failure){report["stage"]=failure.stage;report["code"]=static_cast<unsigned long>(failure.code);}catch(...){report["stage"]="unclassified-exception";report["code"]=static_cast<unsigned long>(E_FAIL);}
+  },[&](const char* stage,std::uint32_t code){report["stage"]=stage;report["code"]=code;});
   if(args.mode==Mode::RegisterOnce && transaction.writes){
-   try{transaction.cleanup();if(transaction.cleanupOK){ledger.mark("cleanupVerified");report["cleanupVerified"]=true;}}
-   catch(const Failure& failure){transaction.cleanupCheck(failure.code,failure.stage);}catch(...){transaction.cleanupCheck(E_FAIL,"cleanup-exception");}
+   localDiagnostics.phase="cleanup";
+   yime::stage1::CaptureStage<Failure>(localDiagnostics,"cleanup-exception",static_cast<unsigned long>(E_FAIL),
+    [&]{transaction.cleanup();if(transaction.cleanupOK){ledger.mark("cleanupVerified");report["cleanupVerified"]=true;}},
+    [&](const char* stage,std::uint32_t code){transaction.cleanupCheck(static_cast<HRESULT>(code),stage,true);});
    if(!transaction.cleanupOK){report["stage"]=transaction.cleanupStage;report["code"]=static_cast<unsigned long>(transaction.cleanupCode);completed=false;}
   }
   report["writesStarted"]=recoveryUnknown?json(nullptr):json(transaction.writes);
@@ -108,5 +128,5 @@ int wmain(int argc,wchar_t** argv){
    report["status"]="activation-unconfirmed";exit=4;
   }
  }
- CoUninitialize();std::cout<<report.dump()<<std::endl;return exit;
+ report["diagnostics"]=diagnosticReport();CoUninitialize();std::cout<<report.dump()<<std::endl;return exit;
 }

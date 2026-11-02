@@ -28,7 +28,14 @@ def strict_json(text):
 
 def report(text):
     value=strict_json(text)
-    require(isinstance(value,dict) and set(value)==FIELDS,'report-fields')
+    require(isinstance(value,dict) and set(value) in (FIELDS,FIELDS|{'diagnostics'}),'report-fields')
+    if 'diagnostics' in value:
+        d=value['diagnostics']
+        require(isinstance(d,dict) and set(d)=={'schema','primaryFailure','cleanupFailures','stages','registryMatch'} and d['schema']=='activation-diagnostics-v1','diagnostic-fields')
+        require(d['primaryFailure'] is None and d['cleanupFailures']==[] and d['registryMatch'] is None,'diagnostic-failure')
+        require(isinstance(d['stages'],list),'diagnostic-stages')
+        for row in d['stages']:
+            require(isinstance(row,dict) and set(row)=={'phase','stage','code'} and isinstance(row['phase'],str) and isinstance(row['stage'],str) and type(row['code']) is int and row['code']==0,'diagnostic-stage-failure')
     require(value['schema']==SCHEMA and value['scope']==SCOPE,'report-identity')
     require(value['stage']=='completed' and type(value['code']) is int and value['code']==0,'report-completion')
     require(value['publisherTrust']=='not-established' and value['brokerEditingVerified'] is False and value['actualDllActivationVerified'] is False,'report-claims')

@@ -41,6 +41,22 @@ class PackageWorkflowContract(unittest.TestCase):
         for block in blocks: ast.parse(block)
         self.assertIn('shell: python {0}', self.text)
         self.assertNotRegex(self.text, r'shell:\s*(pwsh|powershell)')
+    def test_new_fault_targets_are_built_and_executed_without_registration(self):
+        names={'MyComputerActivationPolicyTests','ActivationDiagnosticsTests','OwnedResiduePolicyTests'}
+        blocks=scripts(self.text)
+        build=next(block for block in blocks if "'--build'" in block)
+        run=next(block for block in blocks if 'portable_tests =' in block)
+        tree=ast.parse(run)
+        assignment=next(node for node in tree.body if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='portable_tests' for t in node.targets))
+        self.assertEqual(set(ast.literal_eval(assignment.value)),names)
+        cmake=(ROOT/'YimeTextServiceExperiment/CMakeLists.txt').read_text()
+        for name in names:
+            self.assertIn("'"+name+"'",build)
+            self.assertIn('add_executable('+name+' tests/'+name+'.cpp)',cmake)
+        self.assertIn('for test_name in portable_tests:',run)
+        self.assertIn('if result.returncode != 0:',run)
+        self.assertIn("raise SystemExit('Portable nonregistration test failed: ' + test_name)",run)
+        self.assertNotIn('YimeMyComputerActivationStage1.exe',run)
     def test_fixed_package_and_checked_signature_query(self):
         for required in ['build_mycomputer_stage1_package.py', 'collect_mycomputer_authenticode.ps1', 'run_checked.py', "'--edition', 'ps5'", "'--params-file'", "'--source-sha'", "'--signatures'", "'--job-helper'", 'test_collect_mycomputer_preflight', "report.get('caseCount') != 6"]:
             self.assertIn(required, self.text)

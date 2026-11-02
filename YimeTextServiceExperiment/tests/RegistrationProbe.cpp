@@ -18,6 +18,8 @@
 #include <sddl.h>
 #include <iterator>
 #include "MyComputerActivationPolicy.h"
+#include "ActivationDiagnostics.h"
+#include "OwnedResiduePolicy.h"
 #endif
 #include "YimeTextServiceIds.h"
 #include "ProductIdentity.h"
@@ -26,8 +28,30 @@ using nlohmann::json;
 namespace {
 constexpr LANGID language = 0x0804;
 struct Failure { const char* stage; HRESULT code; };
-void check(HRESULT result,const char* stage) { if(result!=S_OK) throw Failure{stage,result}; }
-void require(bool value,const char* stage) { if(!value) throw Failure{stage,E_FAIL}; }
+
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+thread_local yime::stage1::Diagnostics localDiagnostics;
+thread_local json localRegistryMatch=nullptr;
+std::string localUtf8(const std::wstring&);
+void diagnosticResult(const char* stage,HRESULT result) {
+ // Record every failure and each mutation/activation API result. Registry scan
+ // enumeration successes are not individual transaction stages.
+ const std::string name=stage;
+ if(result!=S_OK || name.rfind("cleanup-",0)==0 || name.rfind("create-com-",0)==0 ||
+    name.rfind("write-",0)==0 || name=="register-disabled-profile" ||
+    name=="verify-profile-disabled" || name=="register-own-keyboard-category" ||
+    name=="enable-own-profile" || name=="thread-manager" || name=="activate-manager" ||
+    name=="create-document" || name=="create-context" || name=="push-context" ||
+    name=="set-own-document" || name=="activate-own-profile-forprocess" ||
+    name=="get-active-profile" || name=="active-profile-mismatch")
+  localDiagnostics.record(stage,static_cast<unsigned long>(result));
+}
+#else
+void diagnosticResult(const char*,HRESULT) {}
+#endif
+void check(HRESULT result,const char* stage) { diagnosticResult(stage,result);if(result!=S_OK) throw Failure{stage,result}; }
+void require(bool value,const char* stage) { diagnosticResult(stage,value?S_OK:E_FAIL);if(!value) throw Failure{stage,E_FAIL}; }
+
 std::wstring guid(REFGUID id) { wchar_t text[39]{}; require(StringFromGUID2(id,text,39)==39,"guid");return text; }
 struct Key { HKEY value=nullptr; ~Key(){if(value)RegCloseKey(value);} };
 bool exists(HKEY hive,const std::wstring& path,REGSAM view) {
@@ -67,8 +91,16 @@ void scan(HKEY hive,const std::wstring& path,REGSAM view,unsigned depth,unsigned
   result=RegEnumKeyExW(key.value,index,name,&count,nullptr,nullptr,nullptr,nullptr);
   if(result==ERROR_NO_MORE_ITEMS)break;
   check(HRESULT_FROM_WIN32(result),"registry-scan-enumerate");
-  require(_wcsicmp(name,guid(CLSID_YimeTextServiceExperiment).c_str())!=0 &&
-          _wcsicmp(name,guid(GUID_YimeTextServiceExperimentProfile).c_str())!=0,"existing-tip-identity");
+  const bool identityMatch=_wcsicmp(name,guid(CLSID_YimeTextServiceExperiment).c_str())==0 ||
+          _wcsicmp(name,guid(GUID_YimeTextServiceExperimentProfile).c_str())==0;
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  if(identityMatch){
+   const auto full=path+L"\\"+name;
+   localRegistryMatch={{"hive",hive==HKEY_LOCAL_MACHINE?"HKLM":"HKCU"},{"view",view==KEY_WOW64_64KEY?64:32},
+     {"path",localUtf8(full)},{"matchedIdentity",localUtf8(name)}};
+  }
+#endif
+  require(!identityMatch,"existing-tip-identity");
   scan(hive,path+L"\\"+name,view,depth+1,budget);
  }
 }
@@ -109,6 +141,7 @@ bool elevated() {
 }
 #ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
 #include "MyComputerActivationSupport.h"
+#include "NewTransactionResidue.h"
 #endif
 struct Ledger {
  std::wstring path;
@@ -156,7 +189,7 @@ struct Ledger {
    {"preflightAbsent",false},{"comAttempted",false},{"comOwned",false},{"profileAttempted",false},{"categoryAttempted",false},{"enableAttempted",false},{"activationAttempted",false},{"cleanupVerified",false}};
 #ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
   require(dllLock.file!=INVALID_HANDLE_VALUE && !dllLock.sha.empty(),"verified-dll-required");
-  data["schema"]="18u-mycomputer-ledger-v3";data["host"]=localUtf8(localHostName());data["sid"]=localSid();data["dllSha256"]=dllLock.sha;
+  data["schema"]="18u-mycomputer-ledger-v4";data["itemAbsence"]=json::array();data["host"]=localUtf8(localHostName());data["sid"]=localSid();data["dllSha256"]=dllLock.sha;
 #endif
   save();
  }
@@ -171,7 +204,9 @@ struct Ledger {
   require(ReadFile(cipherReadLock,cipher.data(),static_cast<DWORD>(cipher.size()),&bytesRead,nullptr)!=FALSE && bytesRead==cipher.size(),"ledger-snapshot-read");
   cipherSha256=localCipherSha256(cipher);require(cipherSha256==localUtf8(expectedCipherSha256),"ledger-snapshot-hash-mismatch");
   data=json::parse(unprotectLocalJournal(cipher));
-  require(data.is_object() && data.size()==17 && data.at("schema")=="18u-mycomputer-ledger-v3","ledger-local-schema");
+  require(data.is_object() && data.value("schema",std::string())!="18u-mycomputer-ledger-v3","legacy-v2-no-item-provenance");
+   require(data.is_object() && data.size()==18 && data.at("schema")=="18u-mycomputer-ledger-v4","ledger-local-schema");
+   validateLocalAbsence(data.at("itemAbsence"));
   require(data.at("host")==localUtf8(localHostName()) && data.at("sid")==localSid(),"ledger-host-account-binding");
   const auto hash=data.at("dllSha256").get<std::string>();expectedSha.assign(hash.begin(),hash.end());require(yime::stage1::GoodHash(expectedSha),"ledger-dll-hash");
   require(data.is_object()
@@ -225,7 +260,11 @@ struct Ledger {
    require(_wcsicmp(value.c_str(),expected.c_str())==0 && value.size()==expected.size(),"recovery-com-identity-mismatch");
   }
  }
- void mark(const char* field){data[field]=true;save();}
+ void mark(const char* field){data[field]=true;save();
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  localDiagnostics.record(std::string("ledger/")+field,0);
+#endif
+ }
 };
 struct Transaction {
  ComPtr<ITfInputProcessorProfileMgr> profiles;ComPtr<ITfInputProcessorProfiles> languages;ComPtr<ITfCategoryMgr> categories;
@@ -236,7 +275,14 @@ struct Transaction {
  LANGID threadLanguage=0,currentLanguage=0;
  const std::wstring clsidString=guid(CLSID_YimeTextServiceExperiment);
  std::wstring comPath=L"SOFTWARE\\Classes\\CLSID\\"+clsidString;
- void cleanupCheck(HRESULT hr,const char* stage){if(hr!=S_OK){cleanupOK=false;if(cleanupCode==S_OK){cleanupStage=stage;cleanupCode=hr;}}}
+ void cleanupCheck(HRESULT hr,const char* stage,bool alreadyRecorded=false){if(!alreadyRecorded)diagnosticResult(stage,hr);if(hr!=S_OK){cleanupOK=false;if(cleanupCode==S_OK){cleanupStage=stage;cleanupCode=hr;}}}
+ void cleanupApi(HRESULT hr,const char* stage){
+#ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  check(hr,stage); // Stop at the first failed API; no further mutation.
+#else
+  cleanupCheck(hr,stage);
+#endif
+ }
  void initialize(){
   check(CoCreateInstance(CLSID_TF_InputProcessorProfiles,nullptr,CLSCTX_INPROC_SERVER,IID_PPV_ARGS(&profiles)),"profile-manager");
   check(profiles.As(&languages),"language-manager");
@@ -258,7 +304,10 @@ struct Transaction {
 #ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
   require(yime::stage1::CanRegister({localNative(),_wcsicmp(localHostName().c_str(),L"MyComputer")==0,threadLanguage==language,currentLanguage==language,elevated(),true,ledger->dllLock.file!=INVALID_HANDLE_VALUE,GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST",nullptr,0)==0}),"write-policy-preflight");
 #endif
-  ledger->mark("preflightAbsent");
+  #ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+   ledger->data["itemAbsence"]=captureLocalAbsence();ledger->save();
+#endif
+   ledger->mark("preflightAbsent");
   // Last absence check before exclusive new-key creation; existing keys are never overwritten.
   require(exists(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Classes\\CLSID",KEY_WOW64_64KEY),"com-parent-required");
   Key root;DWORD disposition=0;
@@ -313,14 +362,14 @@ struct Transaction {
   if(activationAttempted) {
    TF_INPUTPROCESSORPROFILE active{};HRESULT hr=profiles->GetActiveProfile(GUID_TFCAT_TIP_KEYBOARD,&active);
    if(hr==S_OK && IsEqualGUID(active.clsid,CLSID_YimeTextServiceExperiment))
-    cleanupCheck(profiles->DeactivateProfile(TF_PROFILETYPE_INPUTPROCESSOR,language,CLSID_YimeTextServiceExperiment,GUID_YimeTextServiceExperimentProfile,nullptr,TF_IPPMF_FORPROCESS),"cleanup-deactivate");
-   else if(hr!=S_OK)cleanupCheck(hr,"cleanup-active-query");
+    cleanupApi(profiles->DeactivateProfile(TF_PROFILETYPE_INPUTPROCESSOR,language,CLSID_YimeTextServiceExperiment,GUID_YimeTextServiceExperimentProfile,nullptr,TF_IPPMF_FORPROCESS),"cleanup-deactivate");
+   else if(hr!=S_OK)cleanupApi(hr,"cleanup-active-query");
   }
-  if(managerActive){cleanupCheck(manager->SetFocus(nullptr),"cleanup-focus");if(document)cleanupCheck(document->Pop(TF_POPF_ALL),"cleanup-pop");context.Reset();document.Reset();cleanupCheck(manager->Deactivate(),"cleanup-manager");managerActive=false;}
+  if(managerActive){cleanupApi(manager->SetFocus(nullptr),"cleanup-focus");if(document)cleanupApi(document->Pop(TF_POPF_ALL),"cleanup-pop");context.Reset();document.Reset();cleanupApi(manager->Deactivate(),"cleanup-manager");managerActive=false;}
   manager.Reset();
-  if(enableAttempted)cleanupCheck(languages->EnableLanguageProfile(CLSID_YimeTextServiceExperiment,language,GUID_YimeTextServiceExperimentProfile,FALSE),"cleanup-disable-own");
-  if(categoryAttempted)cleanupCheck(categories->UnregisterCategory(CLSID_YimeTextServiceExperiment,GUID_TFCAT_TIP_KEYBOARD,CLSID_YimeTextServiceExperiment),"cleanup-category");
-  if(profileAttempted)cleanupCheck(profiles->UnregisterProfile(CLSID_YimeTextServiceExperiment,language,GUID_YimeTextServiceExperimentProfile,0),"cleanup-profile");
+  if(enableAttempted)cleanupApi(languages->EnableLanguageProfile(CLSID_YimeTextServiceExperiment,language,GUID_YimeTextServiceExperimentProfile,FALSE),"cleanup-disable-own");
+  if(categoryAttempted)cleanupApi(categories->UnregisterCategory(CLSID_YimeTextServiceExperiment,GUID_TFCAT_TIP_KEYBOARD,CLSID_YimeTextServiceExperiment),"cleanup-category");
+  if(profileAttempted)cleanupApi(profiles->UnregisterProfile(CLSID_YimeTextServiceExperiment,language,GUID_YimeTextServiceExperimentProfile,0),"cleanup-profile");
 #ifndef YIME_MYCOMPUTER_ACTIVATION_STAGE1
   if(profileAttempted)try{
    bool remaining=false;for(HKEY hive:{HKEY_LOCAL_MACHINE,HKEY_CURRENT_USER})for(REGSAM view:{KEY_WOW64_32KEY,KEY_WOW64_64KEY})
@@ -329,15 +378,46 @@ struct Transaction {
   }catch(const Failure& f){cleanupCheck(f.code,f.stage);}catch(...){cleanupCheck(E_FAIL,"cleanup-service-query");}
 #endif
 #ifdef YIME_MYCOMPUTER_ACTIVATION_STAGE1
+  if(comOwned && cleanupOK){
+    try{
+     require(ledger->data.at("schema")=="18u-mycomputer-ledger-v4","legacy-v2-no-item-provenance");
+     validateLocalAbsence(ledger->data.at("itemAbsence"));
+     struct Backend {
+      Ledger& ledger;const std::vector<LocalResiduePath> paths=localResiduePaths();
+      const LocalResiduePath& find(const std::string& id){for(const auto& p:paths)if(p.id()==id)return p;throw Failure{"residue-path-not-allowed",E_FAIL};}
+      void checkOwner(){ledger.validateOwnedCom();}
+      yime::stage1::ResidueObservation observe(const std::string& id){return observeLocalResidue(find(id));}
+      void eraseOne(const std::string& id){
+       const auto& p=find(id);
+       check(HRESULT_FROM_WIN32(RegDeleteKeyExW(p.hive,p.path.c_str(),p.view,0)),"cleanup-residue-delete-one");
+      }
+      void record(const std::string& id,const char* outcome){localDiagnostics.record("residue/"+id+"/"+outcome,0);}
+     } backend{*ledger};
+     std::vector<yime::stage1::ResidueTarget> targets;
+     for(const auto& p:backend.paths)targets.push_back({p.id(),true,ledger->data.at(p.attempt).get<bool>(),p.disabled});
+     yime::stage1::CleanNewResidue(4,targets,backend);
+    }catch(const Failure& failure){cleanupCheck(failure.code,failure.stage);}
+     catch(const std::exception& e){localDiagnostics.record(std::string("residue-policy/")+e.what(),static_cast<unsigned long>(E_FAIL));cleanupCheck(E_FAIL,"cleanup-residue-policy");}
+  }
   // Keep the sole generation marker if any earlier cleanup failed or if TIP
   // references cannot be proved absent. Never erase recovery provenance first.
   if(comOwned && cleanupOK)try{ledger->validateOwnedCom();localTipAbsent(languages.Get(),profiles.Get(),categories.Get());}
    catch(const Failure& failure){cleanupCheck(failure.code,failure.stage);}catch(...){cleanupCheck(E_FAIL,"cleanup-owned-tip-absence-unknown");}
-  if(comOwned && cleanupOK)
+  if(comOwned && cleanupOK){
+    ledger->validateOwnedCom();
+    const auto server=comPath+L"\\InprocServer32";
+    if(exists(HKEY_LOCAL_MACHINE,server,KEY_WOW64_64KEY)){
+     check(HRESULT_FROM_WIN32(RegDeleteKeyExW(HKEY_LOCAL_MACHINE,server.c_str(),KEY_WOW64_64KEY,0)),"cleanup-com-server-one");
+     require(!exists(HKEY_LOCAL_MACHINE,server,KEY_WOW64_64KEY),"cleanup-com-server-absence");
+    }
+    require(strictLocalComShape(std::filesystem::u8path(ledger->data.at("dll").get<std::string>()).wstring(),false,localGeneration(ledger->data)),"cleanup-com-root-binding");
+    check(HRESULT_FROM_WIN32(RegDeleteKeyExW(HKEY_LOCAL_MACHINE,comPath.c_str(),KEY_WOW64_64KEY,0)),"cleanup-com-root-one");
+    require(!exists(HKEY_LOCAL_MACHINE,comPath,KEY_WOW64_64KEY),"cleanup-com-root-absence");
+  }
 #else
   if(comOwned)
-#endif
   {Key parent;LSTATUS hr=RegOpenKeyExW(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Classes\\CLSID",0,KEY_READ|KEY_WRITE|KEY_WOW64_64KEY,&parent.value);if(hr==ERROR_SUCCESS)hr=RegDeleteTreeW(parent.value,clsidString.c_str());cleanupCheck(HRESULT_FROM_WIN32(hr),"cleanup-owned-com");}
+#endif
   if(writes)try{registryAbsent();apiAbsent(languages.Get(),profiles.Get(),categories.Get());}catch(const Failure& f){cleanupCheck(f.code,f.stage);}catch(...){cleanupCheck(E_FAIL,"cleanup-query-exception");}
  }
 };

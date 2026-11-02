@@ -59,11 +59,61 @@ class RegistrationFlowTests(unittest.TestCase):
     def register(self,**kwargs):return flow.register(self.package,self.root/'original',self.anchor,flow.REGISTER_CONFIRM,runner=self.runner,**kwargs)
     def recover(self,**kwargs):return flow.recover(self.package,self.root/'original',self.root/'recovery',self.anchor,flow.RECOVER_CONFIRM,runner=self.runner,**kwargs)
 
+    def test_native_failure_receipt_keeps_original_and_cleanup_diagnostics(self):
+        def fail_runner(command,cwd,stdout,stderr,timeout,on_root_created=None):
+            state=self.runner(command,cwd,stdout,stderr,timeout,on_root_created)
+            value=json.loads(stdout.read_text())
+            value.update(status='failed',stage='existing-tip-identity',code=2147500037)
+            value['diagnostics']=dict(schema='activation-diagnostics-v1',primaryFailure=dict(phase='registration',stage='activate',code=5),cleanupFailures=[dict(phase='cleanup',stage='existing-tip-identity',code=2147500037)],stages=[],registryMatch=None)
+            stdout.write_text(json.dumps(value));state['exitCode']=1
+            return state
+        result=flow.register(self.package,self.root/'original',self.anchor,flow.REGISTER_CONFIRM,runner=fail_runner)
+        self.assertEqual(self.calls,['--register-once'])
+        self.assertEqual(result['diagnostics']['primaryFailure']['stage'],'activate')
+        self.assertEqual(result['diagnostics']['cleanupFailures'][0]['stage'],'existing-tip-identity')
+        self.assertEqual(result['failureReason'],'native-registration-incomplete')
+        self.assertFalse(result['automaticRecoveryAttempted'])
+
     def test_registration_once_and_separate_verify(self):
         result=self.register()
         self.assertEqual(self.calls,['--register-once','--verify']);self.assertTrue(result['activationEvidenceConsistent'])
         self.assertFalse(result['automaticRecoveryAttempted']);self.assertFalse(result['sourceAuthenticityVerified'])
         self.assertEqual(json.loads((self.root/'original/registration.json').read_text()),result)
+
+    def test_invalid_native_json_preserves_receipt_and_never_verifies(self):
+        samples=['', '{"status":', '[]', 'null', 'true', '1', '"text"', '{"status":1,"status":2}']
+        for number,raw in enumerate(samples):
+            for exit_code in (1,4):
+                with self.subTest(raw=raw,exit_code=exit_code):
+                    evidence=self.root/f'invalid-{number}-{exit_code}'
+                    def invalid_runner(command,cwd,stdout,stderr,timeout,on_root_created=None):
+                        state=self.runner(command,cwd,stdout,stderr,timeout,on_root_created)
+                        stdout.write_text(raw);state['exitCode']=exit_code
+                        return state
+                    before=len(self.calls)
+                    result=flow.register(self.package,evidence,self.anchor,flow.REGISTER_CONFIRM,runner=invalid_runner)
+                    self.assertEqual(self.calls[before:],['--register-once'])
+                    self.assertEqual(result['status'],'failed-or-inconclusive')
+                    self.assertTrue(result['failureReason'])
+                    self.assertEqual(result['process']['exitCode'],exit_code)
+                    self.assertFalse(result['automaticRecoveryAttempted'])
+                    self.assertFalse(result['activationEvidenceConsistent'])
+                    self.assertEqual(result['stdout']['sha256'],flow.sha(raw.encode()))
+                    self.assertEqual(json.loads((evidence/'registration.json').read_text()),result)
+
+    def test_timeout_with_truncated_json_keeps_process_and_ledger_evidence(self):
+        self.register_state={'timedOut':True,'exitCode':124}
+        def truncated_runner(command,cwd,stdout,stderr,timeout,on_root_created=None):
+            state=self.runner(command,cwd,stdout,stderr,timeout,on_root_created)
+            stdout.write_text('{"status":');return state
+        result=flow.register(self.package,self.root/'truncated',self.anchor,flow.REGISTER_CONFIRM,runner=truncated_runner)
+        self.assertEqual(self.calls,['--register-once'])
+        self.assertTrue(result['process']['timedOut'])
+        self.assertTrue(result['process']['treeStopped'])
+        self.assertEqual(result['process']['exitCode'],124)
+        self.assertIsNotNone(result['ledgerSha256'])
+        self.assertTrue(result['failureReason'])
+        self.assertFalse(result['automaticRecoveryAttempted'])
 
     def test_timeout_keeps_ledger_and_never_auto_recovers(self):
         self.register_state={'timedOut':True,'exitCode':124}

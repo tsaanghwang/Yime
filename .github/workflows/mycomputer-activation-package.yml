@@ -45,7 +45,7 @@ jobs:
           evidence.mkdir(parents=True, exist_ok=False)
           for args, name in [
               (['cmake', '-S', 'YimeTextServiceExperiment', '-B', '.generated/mycomputer-stage1-build', '-A', 'x64', '-DYIME_TOUCH_PRODUCT=ON', '-DYIME_MYCOMPUTER_ACTIVATION_STAGE1=ON'], 'configure.log'),
-              (['cmake', '--build', '.generated/mycomputer-stage1-build', '--config', 'Release', '--target', 'YimeTextService18u', 'YimeMyComputerActivationStage1', 'MyComputerActivationPolicyTests'], 'build.log')]:
+              (['cmake', '--build', '.generated/mycomputer-stage1-build', '--config', 'Release', '--target', 'YimeTextService18u', 'YimeMyComputerActivationStage1', 'MyComputerActivationPolicyTests', 'ActivationDiagnosticsTests', 'OwnedResiduePolicyTests'], 'build.log')]:
               with (evidence / name).open('w', encoding='utf-8') as log:
                   result = subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=False, timeout=240)
               if result.returncode != 0:
@@ -55,10 +55,13 @@ jobs:
         run: |
           import importlib, io, pathlib, subprocess, sys, unittest
           evidence = pathlib.Path('.generated/mycomputer-stage1-evidence')
-          with (evidence / 'portable-policy.log').open('w', encoding='utf-8') as log:
-              result = subprocess.run([str(pathlib.Path('.generated/mycomputer-stage1-build/Release/MyComputerActivationPolicyTests.exe').resolve())], stdout=log, stderr=subprocess.STDOUT, check=False, timeout=30)
-          if result.returncode != 0:
-              raise SystemExit('Portable activation policy failed')
+          portable_tests = ('MyComputerActivationPolicyTests', 'ActivationDiagnosticsTests', 'OwnedResiduePolicyTests')
+          for test_name in portable_tests:
+              image = pathlib.Path('.generated/mycomputer-stage1-build/Release') / (test_name + '.exe')
+              with (evidence / (test_name + '.log')).open('w', encoding='utf-8') as log:
+                  result = subprocess.run([str(image.resolve())], stdout=log, stderr=subprocess.STDOUT, check=False, timeout=30)
+              if result.returncode != 0:
+                  raise SystemExit('Portable nonregistration test failed: ' + test_name)
           sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
           for name in ['test_mycomputer_activation_contract', 'test_local_activation_evidence', 'test_mycomputer_stage1_package', 'test_mycomputer_package_workflow', 'test_collect_mycomputer_preflight', 'test_run_mycomputer_registration', 'test_windows_job_identity']:
               module = importlib.import_module(name)

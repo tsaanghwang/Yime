@@ -25,6 +25,14 @@ class EvidenceTests(unittest.TestCase):
         return gate.validate(json.dumps(r if register is None else register),json.dumps(gate.MARKER) if stderr is None else stderr,
                              register_exit,json.dumps(v if verify is None else verify),verify_stderr,verify_exit,sha)
 
+    def test_new_diagnostics_preserve_strict_success_gate(self):
+        r,_=fixtures()
+        r['diagnostics']=dict(schema='activation-diagnostics-v1',primaryFailure=None,cleanupFailures=[],stages=[dict(phase='registration',stage='activate-own-profile-forprocess',code=0)],registryMatch=None)
+        self.assertEqual(self.validate(register=r)['status'],'evidence-consistent')
+        for field,bad in [('primaryFailure',dict(phase='registration',stage='activate',code=1)),('cleanupFailures',[dict(phase='cleanup',stage='absent',code=1)]),('registryMatch',dict(path='owned-tip')),('stages',[dict(phase='registration',stage='activate',code=1)])]:
+            changed=copy.deepcopy(r);changed['diagnostics'][field]=bad
+            with self.subTest(field=field),self.assertRaises(ValueError):self.validate(register=changed)
+
     def test_consistent_evidence_does_not_authenticate_source(self):
         result=self.validate()
         self.assertEqual(result['status'],'evidence-consistent')

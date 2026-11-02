@@ -68,7 +68,7 @@ def validate(stdout: str, stderr: str, code: int, kind: str) -> dict:
                             parse_constant=lambda _: (_ for _ in ()).throw(GateFailure("nonfinite-json")))
     except (ValueError, TypeError) as exc:
         raise GateFailure("native-json-invalid") from exc
-    need(type(report) is dict and set(report) == FIELDS, "native-json-schema")
+    need(type(report) is dict and set(report) in (FIELDS, FIELDS | {"diagnostics"}), "native-json-schema")
     need(report["schema"] == "mycomputer-activation-stage1-v1" and
          report["scope"] == "mycomputer-registration-activation-only", "native-identity")
     need(type(report["code"]) is int and 0 <= report["code"] <= 0xFFFFFFFF, "hresult-shape")
