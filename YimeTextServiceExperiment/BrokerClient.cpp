@@ -24,14 +24,25 @@ DWORD remainingMilliseconds(RequestDeadline deadline) {
 
 bool finishOverlapped(HANDLE pipe, OVERLAPPED* overlapped, BOOL started,
                       const char* operation, RequestDeadline deadline,
-                      DWORD* transferred, std::string* error) {
+                      DWORD* transferred, std::string* error, HANDLE cancel) {
     if (!started) {
         const DWORD code = GetLastError();
         if (code != ERROR_IO_PENDING) {
             if (error) *error = windowsError(operation);
             return false;
         }
-        const DWORD waitResult = WaitForSingleObject(overlapped->hEvent, remainingMilliseconds(deadline));
+        const HANDLE handles[]{overlapped->hEvent, cancel};
+        const DWORD waitResult = WaitForMultipleObjects(cancel ? 2 : 1, handles, FALSE, remainingMilliseconds(deadline));
+        if (cancel && waitResult == WAIT_OBJECT_0 + 1) {
+            CancelIoEx(pipe, overlapped);
+            // Cancellation is not completion. Drain before stack OVERLAPPED and
+            // buffers expire. Dedicated callers run this on their worker only.
+            WaitForSingleObject(overlapped->hEvent, INFINITE);
+            DWORD ignored = 0;
+            GetOverlappedResult(pipe, overlapped, &ignored, FALSE);
+            if (error) *error = "Broker transport cancelled";
+            return false;
+        }
         if (waitResult == WAIT_TIMEOUT) {
             CancelIoEx(pipe, overlapped);
             WaitForSingleObject(overlapped->hEvent, INFINITE);
@@ -62,7 +73,7 @@ bool finishOverlapped(HANDLE pipe, OVERLAPPED* overlapped, BOOL started,
 
 bool writeWithDeadline(HANDLE pipe, const char* data, DWORD size,
                        RequestDeadline deadline, DWORD* transferred,
-                       std::string* error) {
+                       std::string* error, HANDLE cancel) {
     HANDLE event = CreateEventW(nullptr, TRUE, FALSE, nullptr);
     if (!event) {
         if (error) *error = windowsError("CreateEventW");
@@ -73,14 +84,14 @@ bool writeWithDeadline(HANDLE pipe, const char* data, DWORD size,
     DWORD immediate = 0;
     const BOOL started = WriteFile(pipe, data, size, &immediate, &overlapped);
     const bool finished = finishOverlapped(pipe, &overlapped, started, "WriteFile",
-                                           deadline, transferred, error);
+                                           deadline, transferred, error, cancel);
     CloseHandle(event);
     return finished;
 }
 
 bool readWithDeadline(HANDLE pipe, char* data, DWORD size,
                       RequestDeadline deadline, DWORD* transferred,
-                      std::string* error) {
+                      std::string* error, HANDLE cancel) {
     HANDLE event = CreateEventW(nullptr, TRUE, FALSE, nullptr);
     if (!event) {
         if (error) *error = windowsError("CreateEventW");
@@ -91,7 +102,7 @@ bool readWithDeadline(HANDLE pipe, char* data, DWORD size,
     DWORD immediate = 0;
     const BOOL started = ReadFile(pipe, data, size, &immediate, &overlapped);
     const bool finished = finishOverlapped(pipe, &overlapped, started, "ReadFile",
-                                           deadline, transferred, error);
+                                           deadline, transferred, error, cancel);
     CloseHandle(event);
     return finished;
 }
@@ -288,24 +299,26 @@ bool BrokerClient::Exchange(const std::string& request, std::string* response, s
 }
 
 bool ExchangeBrokerPipeFrame(HANDLE pipe, DWORD timeoutMs, const std::string& request,
-                             std::string* response, std::string* error) {
+                             std::string* response, std::string* error, HANDLE cancel) {
     const std::string frame = request + "\n";
     const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeoutMs);
     size_t offset = 0;
     while (offset < frame.size()) {
+        if (cancel && WaitForSingleObject(cancel, 0) != WAIT_TIMEOUT) return false;
         DWORD written = 0;
         if (!writeWithDeadline(pipe, frame.data() + offset,
                                static_cast<DWORD>(frame.size() - offset),
-                               deadline, &written, error) || written == 0) {
+                               deadline, &written, error, cancel) || written == 0) {
             return false;
         }
         offset += written;
     }
     response->clear();
     for (;;) {
+        if (cancel && WaitForSingleObject(cancel, 0) != WAIT_TIMEOUT) return false;
         char buffer[4096];
         DWORD read = 0;
-        if (!readWithDeadline(pipe, buffer, sizeof(buffer), deadline, &read, error) || read == 0) {
+        if (!readWithDeadline(pipe, buffer, sizeof(buffer), deadline, &read, error, cancel) || read == 0) {
             return false;
         }
         const char* newline = std::find(buffer, buffer + read, '\n');

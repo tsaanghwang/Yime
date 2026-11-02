@@ -1358,7 +1358,14 @@ STDMETHODIMP YimeTextService::ActionDedicated(LPCSTR action,BSTR* response){
     if(!response)return E_POINTER;*response=nullptr;
     if(!dedicated_ || !threadManager_ || !keyEventFocused_)return E_ABORT;
     if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
-    auto* route=dedicated_;route->AddRef();const HRESULT result=route->Action(action,this,response);route->Release();return result;
+    auto* route=dedicated_;route->AddRef();const HRESULT result=route->Action(action,response);route->Release();return result;
+}
+STDMETHODIMP YimeTextService::PollDedicated(BSTR* response){
+    if(!response)return E_POINTER;*response=nullptr;
+    if(!dedicated_ || !threadManager_)return E_ABORT;
+    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    // A lost key focus must still let the caller consume the revoked result.
+    auto* route=dedicated_;route->AddRef();const HRESULT result=route->Poll(this,response);route->Release();return result;
 }
 STDMETHODIMP YimeTextService::DisconnectDedicated(){
     if(threadManager_ && GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;

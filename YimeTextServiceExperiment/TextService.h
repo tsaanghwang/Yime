@@ -57,6 +57,7 @@ public:
     STDMETHODIMP ConnectDedicated(LPCWSTR pipe,DWORD pid,LPCWSTR image,BSTR* response) override;
     STDMETHODIMP ActionDedicated(LPCSTR action,BSTR* response) override;
     STDMETHODIMP DisconnectDedicated() override;
+    STDMETHODIMP PollDedicated(BSTR* response) override;
 #endif
 private:
 #ifdef YIME_TOUCH_PRODUCT

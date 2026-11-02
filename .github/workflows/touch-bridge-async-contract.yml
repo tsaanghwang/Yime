@@ -1,0 +1,46 @@
+name: 18u async route contracts
+
+on:
+  push:
+    branches: [main, 'codex/**']
+    paths:
+      - '.github/workflows/touch-bridge-async-contract.yml'
+      - 'YimeTextServiceExperiment/**'
+      - 'tools/yimecore/18u-touch-product.json'
+      - 'prototypes/touch-terminal/desktop/resources.lock.json'
+      - 'prototypes/touch-terminal/encoding/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/touch-bridge-async-contract.yml'
+      - 'YimeTextServiceExperiment/**'
+      - 'tools/yimecore/18u-touch-product.json'
+      - 'prototypes/touch-terminal/desktop/resources.lock.json'
+      - 'prototypes/touch-terminal/encoding/**'
+
+permissions:
+  contents: read
+
+jobs:
+  substitute-tsf:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure x64 source contracts
+        run: cmake -S YimeTextServiceExperiment -B .generated/async-contract -A x64 -DYIME_TOUCH_PRODUCT=ON -DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON
+      - name: Build contracts and compile-only formal hosts
+        run: cmake --build .generated/async-contract --config Release --target YimeTextService18u YimeTextServiceExperiment YimeDedicatedActivationTests YimeDedicatedAsyncTests YimeFocusCancellationTests YimeTouchFormalHostTests YimeTouchRegisteredFormalHostTests --parallel 4
+      # No real TSF activation or registration. The two FormalHostTests targets
+      # above are compile-only and must not be executed by this workflow.
+      - name: Provider lifecycle with substitute TSF
+        run: .generated\async-contract\Release\YimeDedicatedActivationTests.exe "%CD%\.generated\async-contract\Release\YimeTextService18u.dll"
+      - name: Actual pipes and deferred mock edits
+        run: .generated\async-contract\Release\YimeDedicatedAsyncTests.exe
+      - name: Existing focus cancellation contracts
+        run: .generated\async-contract\Release\YimeFocusCancellationTests.exe

@@ -103,6 +103,11 @@ void success(IClassFactory* factory) {
     check(provider->GetFunction(GUID_NULL,__uuidof(IDedicatedTouchService),nullptr)==E_POINTER,"route null rejected");
     check(provider->GetFunction(CLSID_YimeTextServiceExperiment,__uuidof(IDedicatedTouchService),&route)==E_NOINTERFACE && !route,"unknown function rejected");
     check(provider->GetFunction(GUID_NULL,IID_IUnknown,&route)==E_NOINTERFACE && !route,"unknown route interface rejected");
+    IID oldSynchronous{};
+    check(SUCCEEDED(IIDFromString(L"{A1FB7854-777D-4B34-9B23-04F5BBCA2B92}",&oldSynchronous)),"old interface ID");
+    check(provider->GetFunction(GUID_NULL,oldSynchronous,&route)==E_NOINTERFACE && !route,"old synchronous ABI must not masquerade as async");
+    ComPtr<IUnknown> oldRoute;
+    check(tip->QueryInterface(oldSynchronous,&oldRoute)==E_NOINTERFACE && !oldRoute,"old synchronous QI rejected");
     check(provider->GetFunction(GUID_NULL,__uuidof(IDedicatedTouchService),&route)==S_OK,"route supplied");
     ComPtr<IUnknown> original,returned;check(tip.As(&original)==S_OK && route.As(&returned)==S_OK && original.Get()==returned.Get(),"same COM instance, not a new TIP");
     HRESULT wrongThread=S_OK;std::thread worker([&]{ComPtr<IUnknown> value;wrongThread=provider->GetFunction(GUID_NULL,__uuidof(IDedicatedTouchService),&value);});worker.join();

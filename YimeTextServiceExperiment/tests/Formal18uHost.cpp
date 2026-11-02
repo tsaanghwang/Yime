@@ -146,7 +146,21 @@ struct Host {
  }
  void create(ComPtr<ITfDocumentMgr>& doc,ComPtr<ITfContext>& ctx){TfEditCookie cookie=0;require(manager->CreateDocumentMgr(&doc),"document");require(doc->CreateContext(client,0,nullptr,&ctx,&cookie),"context");require(doc->Push(ctx.Get()),"push");}
  ~Host(){if(route)route->DisconnectDedicated();route.Reset();if(tipActive)deactivate();tip.Reset();if(window){ComPtr<ITfDocumentMgr> previous;manager->AssociateFocus(window,nullptr,&previous);DestroyWindow(window);}context.Reset();otherContext.Reset();document.Reset();other.Reset();if(managerActive)manager->Deactivate();manager.Reset();if(module)FreeLibrary(module);}
- json action(const json& request,HRESULT& hr){BSTR value=nullptr;const auto body=request.dump();hr=route->ActionDedicated(body.c_str(),&value);if(!value)return json::object();return response(value);}
+ HRESULT awaitResult(HRESULT hr,BSTR* value,DWORD timeout=15000){
+  const auto deadline=GetTickCount64()+timeout;
+  while(hr==E_PENDING){
+   MSG message;while(PeekMessageW(&message,nullptr,0,0,PM_REMOVE)){
+    if(message.message==WM_QUIT){route->DisconnectDedicated();return E_ABORT;}
+    TranslateMessage(&message);DispatchMessageW(&message);
+   }
+   if(GetTickCount64()>=deadline){route->DisconnectDedicated();return HRESULT_FROM_WIN32(ERROR_TIMEOUT);}
+   hr=route->PollDedicated(value);
+   if(hr==E_PENDING)MsgWaitForMultipleObjectsEx(0,nullptr,5,QS_ALLINPUT,MWMO_INPUTAVAILABLE);
+  }
+  // S_FALSE is not a completed operation. Never replay a lost operation.
+  return hr==S_FALSE?E_UNEXPECTED:hr;
+ }
+ json action(const json& request,HRESULT& hr){BSTR value=nullptr;const auto body=request.dump();hr=awaitResult(route->ActionDedicated(body.c_str(),&value),&value);if(!value)return json::object();return response(value);}
 };
 }
 int main(){try{
@@ -155,7 +169,8 @@ int main(){try{
  Host host;host.initialize(widen(config.at("dll").get<std::string>()));
  DWORD pid=config.at("brokerPID");if(scenario=="wrong-server-pid")pid=GetCurrentProcessId();
  BSTR initial=nullptr;HRESULT hr=host.route->ConnectDedicated(widen(config.at("pipe").get<std::string>()).c_str(),pid,widen(config.at(scenario=="wrong-server-image"?"dll":"brokerImage").get<std::string>()).c_str(),&initial);
- json state=initial?response(initial):json::object();bool connected=SUCCEEDED(hr);
+ hr=host.awaitResult(hr,&initial,95000);
+ json state=initial?response(initial):json::object();bool connected=hr==S_OK;
  std::cout<<json{{"stage","connected"},{"accepted",connected}}.dump()<<std::endl;
  if(!input().value("proceed",false))fail("control");
  bool rejected=false,duplicateRejected=false,readMatches=false;std::string outcome="not-applied";
