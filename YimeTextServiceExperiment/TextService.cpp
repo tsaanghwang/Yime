@@ -1346,24 +1346,37 @@ void YimeTextService::RemoveLanguageBar() noexcept {
 }
 
 #ifdef YIME_TOUCH_PRODUCT
+#include "InputAbortDiagnostic.h"
 STDMETHODIMP YimeTextService::ConnectDedicated(LPCWSTR pipe,DWORD pid,LPCWSTR image,BSTR* response){
-    if(!response)return E_POINTER;*response=nullptr;
-    if(!threadManager_ || !keyEventFocused_)return E_ABORT;
-    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    const auto diagnostic=[&](yime::abortdiag::Reason reason,HRESULT hr) noexcept {
+        yime::abortdiag::State state;state.manager=threadManager_!=nullptr;state.keyFocus=keyEventFocused_;
+        yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceConnect,reason,static_cast<uint32_t>(hr),state);
+    };
+    if(!response){yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceConnect,yime::abortdiag::Reason::MissingOutput,static_cast<uint32_t>(E_POINTER));return E_POINTER;}*response=nullptr;
+    if(!threadManager_ || !keyEventFocused_){diagnostic(!threadManager_?yime::abortdiag::Reason::NoManager:yime::abortdiag::Reason::KeyFocusMissing,E_ABORT);return E_ABORT;}
+    if(GetCurrentThreadId()!=dedicatedThread_){yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceConnect,yime::abortdiag::Reason::WrongThread,static_cast<uint32_t>(RPC_E_WRONG_THREAD));return RPC_E_WRONG_THREAD;}
     if(!dedicated_)dedicated_=new(std::nothrow) DedicatedTouchRoute(threadManager_,clientId_);
     if(!dedicated_)return E_OUTOFMEMORY;
     auto* route=dedicated_;route->AddRef();const HRESULT result=route->Connect(pipe,pid,image,response);route->Release();return result;
 }
 STDMETHODIMP YimeTextService::ActionDedicated(LPCSTR action,BSTR* response){
-    if(!response)return E_POINTER;*response=nullptr;
-    if(!dedicated_ || !threadManager_ || !keyEventFocused_)return E_ABORT;
-    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    const auto diagnostic=[&](yime::abortdiag::Reason reason,HRESULT hr) noexcept {
+        yime::abortdiag::State state;state.route=dedicated_!=nullptr;state.manager=threadManager_!=nullptr;state.keyFocus=keyEventFocused_;
+        yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceAction,reason,static_cast<uint32_t>(hr),state);
+    };
+    if(!response){yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceAction,yime::abortdiag::Reason::MissingOutput,static_cast<uint32_t>(E_POINTER));return E_POINTER;}*response=nullptr;
+    if(!dedicated_ || !threadManager_ || !keyEventFocused_){diagnostic(!dedicated_?yime::abortdiag::Reason::NoRoute:!threadManager_?yime::abortdiag::Reason::NoManager:yime::abortdiag::Reason::KeyFocusMissing,E_ABORT);return E_ABORT;}
+    if(GetCurrentThreadId()!=dedicatedThread_){yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceAction,yime::abortdiag::Reason::WrongThread,static_cast<uint32_t>(RPC_E_WRONG_THREAD));return RPC_E_WRONG_THREAD;}
     auto* route=dedicated_;route->AddRef();const HRESULT result=route->Action(action,response);route->Release();return result;
 }
 STDMETHODIMP YimeTextService::PollDedicated(BSTR* response){
-    if(!response)return E_POINTER;*response=nullptr;
-    if(!dedicated_ || !threadManager_)return E_ABORT;
-    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    const auto diagnostic=[&](yime::abortdiag::Reason reason,HRESULT hr) noexcept {
+        yime::abortdiag::State state;state.route=dedicated_!=nullptr;state.manager=threadManager_!=nullptr;
+        yime::abortdiag::Emit(yime::abortdiag::Stage::ServicePoll,reason,static_cast<uint32_t>(hr),state);
+    };
+    if(!response){yime::abortdiag::Emit(yime::abortdiag::Stage::ServicePoll,yime::abortdiag::Reason::MissingOutput,static_cast<uint32_t>(E_POINTER));return E_POINTER;}*response=nullptr;
+    if(!dedicated_ || !threadManager_){diagnostic(!dedicated_?yime::abortdiag::Reason::NoRoute:yime::abortdiag::Reason::NoManager,E_ABORT);return E_ABORT;}
+    if(GetCurrentThreadId()!=dedicatedThread_){yime::abortdiag::Emit(yime::abortdiag::Stage::ServicePoll,yime::abortdiag::Reason::WrongThread,static_cast<uint32_t>(RPC_E_WRONG_THREAD));return RPC_E_WRONG_THREAD;}
     // A lost key focus must still let the caller consume the revoked result.
     auto* route=dedicated_;route->AddRef();const HRESULT result=route->Poll(this,response);route->Release();return result;
 }
