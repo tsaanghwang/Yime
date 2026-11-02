@@ -8,22 +8,22 @@ import (
 )
 
 type sameProcessEditResult struct {
-	Schema string `json:"schema"`
-	Stage string `json:"stage"`
-	Scenario string `json:"scenario"`
-	Status string `json:"status"`
-	ActivationIdentity string `json:"activationIdentity"`
-	WindowsActivatedInstance bool `json:"windowsActivatedInstance"`
-	SendInput bool `json:"sendInput"`
-	OperationPendingObserved bool `json:"operationPendingObserved"`
-	EditAttempts uint32 `json:"editAttempts"`
-	AppliedReceipt bool `json:"appliedReceipt"`
-	ReadbackMatches bool `json:"readbackMatches"`
-	RegistrationOwnerPID uint32 `json:"registrationOwnerPID"`
-	BrokerTargetPID uint32 `json:"brokerTargetPID"`
-	RegistrationLifecycleOwned bool `json:"registrationLifecycleOwned"`
-	CleanupVerified bool `json:"cleanupVerified"`
-	RouteRevoked bool `json:"routeRevoked"`
+	Schema                     string `json:"schema"`
+	Stage                      string `json:"stage"`
+	Scenario                   string `json:"scenario"`
+	Status                     string `json:"status"`
+	ActivationIdentity         string `json:"activationIdentity"`
+	WindowsActivatedInstance   bool   `json:"windowsActivatedInstance"`
+	SendInput                  bool   `json:"sendInput"`
+	OperationPendingObserved   bool   `json:"operationPendingObserved"`
+	EditAttempts               uint32 `json:"editAttempts"`
+	AppliedReceipt             bool   `json:"appliedReceipt"`
+	ReadbackMatches            bool   `json:"readbackMatches"`
+	RegistrationOwnerPID       uint32 `json:"registrationOwnerPID"`
+	BrokerTargetPID            uint32 `json:"brokerTargetPID"`
+	RegistrationLifecycleOwned bool   `json:"registrationLifecycleOwned"`
+	CleanupVerified            bool   `json:"cleanupVerified"`
+	RouteRevoked               bool   `json:"routeRevoked"`
 }
 
 func validateSameProcessEditResult(raw []byte, expectedPID uint32) error {

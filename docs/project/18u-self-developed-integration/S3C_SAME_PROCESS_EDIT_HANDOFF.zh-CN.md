@@ -66,14 +66,20 @@ Python 合成记录验证只报告一致性，不认证执行来源，也不证�
 | `test_mycomputer_activation_contract.py` | 8 项通过；保留现有注册恢复约束 |
 | `test_workflow_contract.py` | 6 项通过；未扩展注册工作流 |
 | `RegisteredEditEvidenceTests.cpp` | 便携 C++17 构建与运行通过；正常顺序、十类失败和清理前不得成功 |
-| Go 编译、测试、vet、gofmt | 本轮未执行 |
-| MSVC/Windows 原生目标编译 | 本轮未执行 |
-| Windows 注册、真实 TIP、Broker 编辑和撤销 | 本轮未执行 |
+| Go gofmt、vet、测试（2026-11-02 开发机补做） | `same_process_edit_windows_test.go` 仅有 gofmt 对齐差异，已修正；`go vet ./internal/touchhostbridge/...` 通过；`TestFormalSameProcessEvidence` 等 5 项证据测试通过；`TestNativeSameProcessRegisteredEdit` 未选择门时正确跳过 |
+| MSVC x64 原生编译（2026-11-02 开发机补做） | `YIME_TOUCH_PRODUCT=ON`＋`YIME_TOUCH_REGISTERED_EDIT_PROBE=ON`＋`YIME_TOUCH_REGISTRATION_PROBE=ON`＋`YIME_MYCOMPUTER_ACTIVATION_STAGE1=ON`＋`YIME_TOUCH_REGISTERED_FORMAL_HOST=ON`：含 `Yime18uRegisteredEditProbe` 在内 21 个目标全部编译通过，/W4 无新增警告；MSVC 构建的 `RegisteredEditEvidenceTests`、`MyComputerActivationPolicyTests`、`YimeActivationFailureTraceTests`、`YimeDedicatedActivationTests`（固定 DLL）、`YimeDedicatedAsyncTests` 运行通过 |
+| `Yime18uRegisteredEditProbe` 参数门 | 无参数或旧注册参数均返回 3，不进入 COM 初始化或任何写入 |
+| Windows 注册、真实 TIP、Broker 编辑和撤销 | **未执行**；仅限明确授权的一次性隔离环境 |
 
 便携测试只使用标准 C++，以现有 UCRT64 g++ 的进程局部 PATH 编译，
 启用 `-std=c++17 -Wall -Wextra -Werror -pedantic -static`。
 首次直接调用因编译器运行环境未完成构建；补齐该进程的工具目录后构建、运行通过。
 未安装工具或修改全局 PATH。
+
+开发机补做的 Go 与 MSVC 检查未发现源码缺陷；入口审阅确认：参数门先于 COM 初始化、
+账本在注册前创建、Windows 激活实例按 provider CLSID／IUnknown 同一性／接口所属 DLL 三重核对、
+选词恰好一次且失败不重放、清理后旧 provider 必须 `TF_E_DISCONNECTED`、缺席核验独立于清理结果，
+对象析构顺序保证 DLL 模块最后释放。
 
 本补丁只准备一次成功编辑的闭环，不继承历史替身测试的原生结论，也不覆盖原十场景、
 Word/Edge、ARM64 或物理触控验收。下一步仍是编译新目标后进行受控原生实测。
