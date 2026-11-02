@@ -87,6 +87,16 @@ jobs:
           result = unittest.TextTestRunner(verbosity=2).run(suite)
           if result.testsRun < 24 or result.skipped or not result.wasSuccessful():
               raise SystemExit('Static/mock language preparation contracts missing or failed')
+      - name: Test activation receipts with synthetic packages and processes only
+        shell: python {0}
+        run: |
+          import pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
+          import test_run_mycomputer_registration, test_local_activation_evidence
+          suite = unittest.TestSuite([unittest.defaultTestLoader.loadTestsFromModule(module) for module in [test_run_mycomputer_registration, test_local_activation_evidence]])
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if result.testsRun < 24 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('Synthetic activation receipt contracts missing or failed')
       - name: Test shard coverage rejection paths
         run: python -m unittest discover -s tools/ci -p test_shard_coverage.py
       - name: Guard and track libIME2 component commits
