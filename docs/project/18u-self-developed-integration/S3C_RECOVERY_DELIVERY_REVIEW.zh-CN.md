@@ -162,6 +162,17 @@ COM 对象上构造合成空壳，不注册任何 profile，存在真实残留�
 | 恢复后独立复核 | 同一只读扫描 | **0 命中**；原账本密文哈希不变；`recovery-claim.json` 已创建并指向新证据目录 |
 
 证据位于仓库外 `Yime-evidence/mycomputer-recovery-package-660ed0ac/`（包与 CI 证据）与
-`Yime-evidence/mycomputer-recovery-run-20261102/`（恢复回执）。原 `71a4a252` 轮次结果保持
+`Yime-evidence/mycomputer-recovery-run-20261102/`（恢复回执）。原证据目录
+`mycomputer-activation-71a4a2-v2-r1/` 于恢复完成后已整体移出仓库到同一位置（账本路径绑定不再需要）。
+原 `71a4a252` 轮次结果保持
 failed；本次恢复不补造激活成功，不改变任何已安装输入法、默认设置或用户数据。
-MyComputer 现已回到“独立 18u 身份绝对缺席”状态，可作为下一次经批准注册的起点。
+MyComputer 现已回到“独立 18u 身份绝对缺席”状态，可作为下一次经批准注册的起点；
+下一次注册的前置条件与入口见[交接](S3C_NEXT_REGISTRATION_HANDOFF.zh-CN.md)。
+
+## 8. 恢复后标准产品回归（2026-11-02）
+
+同机已安装 YimeCore（2026-09-27 构建，`C:\Program Files\YimeCore`）x64/x86 × full/variable/shorthand
+六案例注册宿主回归 **6/6 通过**：20 个 `*_verified` 标志全 true、`registered_focus_outcome=unconfirmed_input_cancelled`、
+`architecture_bits` 正确、stderr 为空；安装载荷哈希与运行时/Broker PID 前后不变
+（[记录](INSTALLED_REGISTERED_HOST_X64_X86_2026-11-02.json)）。该回归证明恢复未触及标准产品，
+并满足 PR #88 的合并前提；它运行的是已安装基线二进制，不是本分支源码构建。

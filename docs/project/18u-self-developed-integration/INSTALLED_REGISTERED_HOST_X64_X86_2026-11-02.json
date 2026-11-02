@@ -1,0 +1,487 @@
+{
+    "schema_version":  "yimecore-installed-registered-host-x64-x86-v1",
+    "started_at":  "2026-11-02T03:15:32.6265941Z",
+    "host":  "MYCOMPUTER",
+    "completed":  true,
+    "passed":  true,
+    "attempted_cases":  6,
+    "passed_cases":  6,
+    "expected_cases":  6,
+    "install_root":  "C:\\Program Files\\YimeCore",
+    "pipe":  "\\\\.\\pipe\\YimeBroker.YimeCoreTrial.v1",
+    "scope":  "Installed x64/x86 COM/TIP with installed Broker on the pinned development host; synthetic host text and input injection, not physical application acceptance. Installed baseline build, not the PR source build.",
+    "installed_broker_learning_may_be_written":  true,
+    "profile_activation_performed_by_test":  true,
+    "installer_or_registration_command_run":  false,
+    "foreground_hosts_before":  [
+
+                                ],
+    "payload_before":  {
+                           "x64\\YimeTextServiceExperiment.dll":  {
+                                                                      "path":  "C:\\Program Files\\YimeCore\\x64\\YimeTextServiceExperiment.dll",
+                                                                      "bytes":  670720,
+                                                                      "sha256":  "661e829ad836c759c239d399905372c2bb29e68072f596e5e3169f64ea9de13c",
+                                                                      "last_write_utc":  "2026-09-26T23:44:13.8394179Z"
+                                                                  },
+                           "x64\\YimeRegisteredHostTests.exe":  {
+                                                                    "path":  "C:\\Program Files\\YimeCore\\x64\\YimeRegisteredHostTests.exe",
+                                                                    "bytes":  459264,
+                                                                    "sha256":  "76b8821fe78418272d136eba219259d9ac287cffb0ba69da5616d1683c047e5b",
+                                                                    "last_write_utc":  "2026-09-26T23:44:04.9802168Z"
+                                                                },
+                           "x86\\YimeTextServiceExperiment.dll":  {
+                                                                      "path":  "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll",
+                                                                      "bytes":  582144,
+                                                                      "sha256":  "124dba099a99d5976304ecff88853a0a1bf8041e85db018e8ca13a2ce14e5b34",
+                                                                      "last_write_utc":  "2026-09-26T23:44:31.0911133Z"
+                                                                  },
+                           "x86\\YimeRegisteredHostTests.exe":  {
+                                                                    "path":  "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+                                                                    "bytes":  384512,
+                                                                    "sha256":  "6198614e49b9879ea1001ef4f5a45d60877b014d7088b9c2d27631d69337f715",
+                                                                    "last_write_utc":  "2026-09-26T23:44:22.5350624Z"
+                                                                },
+                           "bin\\YimeBroker.exe":  {
+                                                       "path":  "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+                                                       "bytes":  5465600,
+                                                       "sha256":  "5dadb24ff6c54784d2325833d4355a1ab1c0763ed8231bbaec63ed9d6a10b730",
+                                                       "last_write_utc":  "2026-09-26T23:44:46.1240106Z"
+                                                   },
+                           "bin\\YimeCoreTrialRuntime.exe":  {
+                                                                 "path":  "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+                                                                 "bytes":  4371456,
+                                                                 "sha256":  "bf9fbc5029aa40d5890a503c2e28e87bdad096f686191978079767e58ed6a6e8",
+                                                                 "last_write_utc":  "2026-09-26T23:44:49.6265602Z"
+                                                             }
+                       },
+    "payload_after":  {
+                          "x64\\YimeTextServiceExperiment.dll":  {
+                                                                     "path":  "C:\\Program Files\\YimeCore\\x64\\YimeTextServiceExperiment.dll",
+                                                                     "bytes":  670720,
+                                                                     "sha256":  "661e829ad836c759c239d399905372c2bb29e68072f596e5e3169f64ea9de13c",
+                                                                     "last_write_utc":  "2026-09-26T23:44:13.8394179Z"
+                                                                 },
+                          "x64\\YimeRegisteredHostTests.exe":  {
+                                                                   "path":  "C:\\Program Files\\YimeCore\\x64\\YimeRegisteredHostTests.exe",
+                                                                   "bytes":  459264,
+                                                                   "sha256":  "76b8821fe78418272d136eba219259d9ac287cffb0ba69da5616d1683c047e5b",
+                                                                   "last_write_utc":  "2026-09-26T23:44:04.9802168Z"
+                                                               },
+                          "x86\\YimeTextServiceExperiment.dll":  {
+                                                                     "path":  "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll",
+                                                                     "bytes":  582144,
+                                                                     "sha256":  "124dba099a99d5976304ecff88853a0a1bf8041e85db018e8ca13a2ce14e5b34",
+                                                                     "last_write_utc":  "2026-09-26T23:44:31.0911133Z"
+                                                                 },
+                          "x86\\YimeRegisteredHostTests.exe":  {
+                                                                   "path":  "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+                                                                   "bytes":  384512,
+                                                                   "sha256":  "6198614e49b9879ea1001ef4f5a45d60877b014d7088b9c2d27631d69337f715",
+                                                                   "last_write_utc":  "2026-09-26T23:44:22.5350624Z"
+                                                               },
+                          "bin\\YimeBroker.exe":  {
+                                                      "path":  "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+                                                      "bytes":  5465600,
+                                                      "sha256":  "5dadb24ff6c54784d2325833d4355a1ab1c0763ed8231bbaec63ed9d6a10b730",
+                                                      "last_write_utc":  "2026-09-26T23:44:46.1240106Z"
+                                                  },
+                          "bin\\YimeCoreTrialRuntime.exe":  {
+                                                                "path":  "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+                                                                "bytes":  4371456,
+                                                                "sha256":  "bf9fbc5029aa40d5890a503c2e28e87bdad096f686191978079767e58ed6a6e8",
+                                                                "last_write_utc":  "2026-09-26T23:44:49.6265602Z"
+                                                            }
+                      },
+    "registration_before":  {
+                                "Registry64":  "C:\\Program Files\\YimeCore\\x64\\YimeTextServiceExperiment.dll",
+                                "Registry32":  "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll"
+                            },
+    "registration_after":  {
+                               "Registry64":  "C:\\Program Files\\YimeCore\\x64\\YimeTextServiceExperiment.dll",
+                               "Registry32":  "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll"
+                           },
+    "runtime_before":  {
+                           "status_updated_at":  "2026-11-01T15:21:29.3814324Z",
+                           "processes":  [
+                                             {
+                                                 "pid":  32204,
+                                                 "image":  "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+                                                 "started_utc":  "2026-11-01T15:21:28.6147025Z"
+                                             },
+                                             {
+                                                 "pid":  32572,
+                                                 "image":  "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+                                                 "started_utc":  "2026-11-01T15:21:29.3792035Z"
+                                             }
+                                         ]
+                       },
+    "runtime_after":  {
+                          "status_updated_at":  "2026-11-01T15:21:29.3814324Z",
+                          "processes":  [
+                                            {
+                                                "pid":  32204,
+                                                "image":  "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+                                                "started_utc":  "2026-11-01T15:21:28.6147025Z"
+                                            },
+                                            {
+                                                "pid":  32572,
+                                                "image":  "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+                                                "started_utc":  "2026-11-01T15:21:29.3792035Z"
+                                            }
+                                        ]
+                      },
+    "cases":  [
+                  {
+                      "architecture":  "x64",
+                      "mode":  "full",
+                      "started_at":  "2026-11-02T03:15:33.2881208Z",
+                      "completed":  true,
+                      "image":  "C:\\Program Files\\YimeCore\\x64\\YimeRegisteredHostTests.exe",
+                      "image_record":  {
+                                           "path":  "C:\\Program Files\\YimeCore\\x64\\YimeRegisteredHostTests.exe",
+                                           "bytes":  459264,
+                                           "sha256":  "76b8821fe78418272d136eba219259d9ac287cffb0ba69da5616d1683c047e5b",
+                                           "last_write_utc":  "2026-09-26T23:44:04.9802168Z"
+                                       },
+                      "pe_machine":  "0x8664",
+                      "pid":  44824,
+                      "timeout_seconds":  120,
+                      "timed_out":  false,
+                      "owned_process_stopped":  false,
+                      "exit_code":  0,
+                      "flags":  {
+                                    "candidate_popup_ownership_guard_verified":  "true",
+                                    "change_language_hresult":  "0x0",
+                                    "enable_profile_hresult":  "0x0",
+                                    "activate_profile_hresult":  "0x0",
+                                    "activate_process_profile_hresult":  "0x0",
+                                    "current_language_hresult":  "0x0",
+                                    "current_language":  "0x804",
+                                    "active_profile_hresult":  "0x0",
+                                    "active_profile_language":  "0x804",
+                                    "registered_english_shift_passthrough_verified":  "true",
+                                    "physical_mouse_candidate_selection_verified":  "true",
+                                    "delayed_async_edit_completion_verified":  "true",
+                                    "punctuation_text_extent_anchor_verified":  "true",
+                                    "registered_key_sink_verified":  "true",
+                                    "registered_language_bar_accepted":  "true",
+                                    "registered_text_extent_anchor":  "true",
+                                    "registered_focus_callbacks_verified":  "true",
+                                    "registered_focus_outcome":  "unconfirmed_input_cancelled",
+                                    "registered_focus_cancellation_preserves_committed_text_verified":  "true",
+                                    "registered_candidate_commit":  "true",
+                                    "registered_default_candidate_keys_verified":  "true",
+                                    "registered_invalid_initial_code_rejection_verified":  "true",
+                                    "registered_invalid_code_rejection_verified":  "true",
+                                    "registered_invalid_code_backspace_recovery_verified":  "true",
+                                    "registered_direction_and_page_keys_verified":  "true",
+                                    "architecture_bits":  "64",
+                                    "registered_delayed_focus_cancellation_verified":  "true",
+                                    "failed_async_edit_recovery_verified":  "true",
+                                    "registered_failed_focus_cancellation_text_preservation_verified":  "true",
+                                    "retained_language_bar_after_deactivation_verified":  "true"
+                                },
+                      "false_or_missing":  [
+
+                                           ],
+                      "functional_passed":  true,
+                      "passed":  true,
+                      "error":  null,
+                      "finished_at":  "2026-11-02T03:15:35.9070877Z"
+                  },
+                  {
+                      "architecture":  "x64",
+                      "mode":  "variable",
+                      "started_at":  "2026-11-02T03:15:35.9271117Z",
+                      "completed":  true,
+                      "image":  "C:\\Program Files\\YimeCore\\x64\\YimeRegisteredHostTests.exe",
+                      "image_record":  {
+                                           "path":  "C:\\Program Files\\YimeCore\\x64\\YimeRegisteredHostTests.exe",
+                                           "bytes":  459264,
+                                           "sha256":  "76b8821fe78418272d136eba219259d9ac287cffb0ba69da5616d1683c047e5b",
+                                           "last_write_utc":  "2026-09-26T23:44:04.9802168Z"
+                                       },
+                      "pe_machine":  "0x8664",
+                      "pid":  5324,
+                      "timeout_seconds":  120,
+                      "timed_out":  false,
+                      "owned_process_stopped":  false,
+                      "exit_code":  0,
+                      "flags":  {
+                                    "candidate_popup_ownership_guard_verified":  "true",
+                                    "change_language_hresult":  "0x0",
+                                    "enable_profile_hresult":  "0x0",
+                                    "activate_profile_hresult":  "0x0",
+                                    "activate_process_profile_hresult":  "0x0",
+                                    "current_language_hresult":  "0x0",
+                                    "current_language":  "0x804",
+                                    "active_profile_hresult":  "0x0",
+                                    "active_profile_language":  "0x804",
+                                    "registered_english_shift_passthrough_verified":  "true",
+                                    "physical_mouse_candidate_selection_verified":  "true",
+                                    "delayed_async_edit_completion_verified":  "true",
+                                    "punctuation_text_extent_anchor_verified":  "true",
+                                    "registered_key_sink_verified":  "true",
+                                    "registered_language_bar_accepted":  "true",
+                                    "registered_text_extent_anchor":  "true",
+                                    "registered_focus_callbacks_verified":  "true",
+                                    "registered_focus_outcome":  "unconfirmed_input_cancelled",
+                                    "registered_focus_cancellation_preserves_committed_text_verified":  "true",
+                                    "registered_candidate_commit":  "true",
+                                    "registered_default_candidate_keys_verified":  "true",
+                                    "registered_invalid_initial_code_rejection_verified":  "true",
+                                    "registered_invalid_code_rejection_verified":  "true",
+                                    "registered_invalid_code_backspace_recovery_verified":  "true",
+                                    "registered_direction_and_page_keys_verified":  "true",
+                                    "architecture_bits":  "64",
+                                    "registered_delayed_focus_cancellation_verified":  "true",
+                                    "failed_async_edit_recovery_verified":  "true",
+                                    "registered_failed_focus_cancellation_text_preservation_verified":  "true",
+                                    "retained_language_bar_after_deactivation_verified":  "true"
+                                },
+                      "false_or_missing":  [
+
+                                           ],
+                      "functional_passed":  true,
+                      "passed":  true,
+                      "error":  null,
+                      "finished_at":  "2026-11-02T03:15:37.0140992Z"
+                  },
+                  {
+                      "architecture":  "x64",
+                      "mode":  "shorthand",
+                      "started_at":  "2026-11-02T03:15:37.0176106Z",
+                      "completed":  true,
+                      "image":  "C:\\Program Files\\YimeCore\\x64\\YimeRegisteredHostTests.exe",
+                      "image_record":  {
+                                           "path":  "C:\\Program Files\\YimeCore\\x64\\YimeRegisteredHostTests.exe",
+                                           "bytes":  459264,
+                                           "sha256":  "76b8821fe78418272d136eba219259d9ac287cffb0ba69da5616d1683c047e5b",
+                                           "last_write_utc":  "2026-09-26T23:44:04.9802168Z"
+                                       },
+                      "pe_machine":  "0x8664",
+                      "pid":  15908,
+                      "timeout_seconds":  120,
+                      "timed_out":  false,
+                      "owned_process_stopped":  false,
+                      "exit_code":  0,
+                      "flags":  {
+                                    "candidate_popup_ownership_guard_verified":  "true",
+                                    "change_language_hresult":  "0x0",
+                                    "enable_profile_hresult":  "0x0",
+                                    "activate_profile_hresult":  "0x0",
+                                    "activate_process_profile_hresult":  "0x0",
+                                    "current_language_hresult":  "0x0",
+                                    "current_language":  "0x804",
+                                    "active_profile_hresult":  "0x0",
+                                    "active_profile_language":  "0x804",
+                                    "registered_english_shift_passthrough_verified":  "true",
+                                    "physical_mouse_candidate_selection_verified":  "true",
+                                    "delayed_async_edit_completion_verified":  "true",
+                                    "punctuation_text_extent_anchor_verified":  "true",
+                                    "registered_key_sink_verified":  "true",
+                                    "registered_language_bar_accepted":  "true",
+                                    "registered_text_extent_anchor":  "true",
+                                    "registered_focus_callbacks_verified":  "true",
+                                    "registered_focus_outcome":  "unconfirmed_input_cancelled",
+                                    "registered_focus_cancellation_preserves_committed_text_verified":  "true",
+                                    "registered_candidate_commit":  "true",
+                                    "registered_default_candidate_keys_verified":  "true",
+                                    "registered_invalid_initial_code_rejection_verified":  "true",
+                                    "registered_invalid_code_rejection_verified":  "true",
+                                    "registered_invalid_code_backspace_recovery_verified":  "true",
+                                    "registered_direction_and_page_keys_verified":  "true",
+                                    "architecture_bits":  "64",
+                                    "registered_delayed_focus_cancellation_verified":  "true",
+                                    "failed_async_edit_recovery_verified":  "true",
+                                    "registered_failed_focus_cancellation_text_preservation_verified":  "true",
+                                    "retained_language_bar_after_deactivation_verified":  "true"
+                                },
+                      "false_or_missing":  [
+
+                                           ],
+                      "functional_passed":  true,
+                      "passed":  true,
+                      "error":  null,
+                      "finished_at":  "2026-11-02T03:15:38.1989182Z"
+                  },
+                  {
+                      "architecture":  "x86",
+                      "mode":  "full",
+                      "started_at":  "2026-11-02T03:15:38.2202643Z",
+                      "completed":  true,
+                      "image":  "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+                      "image_record":  {
+                                           "path":  "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+                                           "bytes":  384512,
+                                           "sha256":  "6198614e49b9879ea1001ef4f5a45d60877b014d7088b9c2d27631d69337f715",
+                                           "last_write_utc":  "2026-09-26T23:44:22.5350624Z"
+                                       },
+                      "pe_machine":  "0x014c",
+                      "pid":  47548,
+                      "timeout_seconds":  120,
+                      "timed_out":  false,
+                      "owned_process_stopped":  false,
+                      "exit_code":  0,
+                      "flags":  {
+                                    "candidate_popup_ownership_guard_verified":  "true",
+                                    "change_language_hresult":  "0x0",
+                                    "enable_profile_hresult":  "0x0",
+                                    "activate_profile_hresult":  "0x0",
+                                    "activate_process_profile_hresult":  "0x0",
+                                    "current_language_hresult":  "0x0",
+                                    "current_language":  "0x804",
+                                    "active_profile_hresult":  "0x0",
+                                    "active_profile_language":  "0x804",
+                                    "registered_english_shift_passthrough_verified":  "true",
+                                    "physical_mouse_candidate_selection_verified":  "true",
+                                    "delayed_async_edit_completion_verified":  "true",
+                                    "punctuation_text_extent_anchor_verified":  "true",
+                                    "registered_key_sink_verified":  "true",
+                                    "registered_language_bar_accepted":  "true",
+                                    "registered_text_extent_anchor":  "true",
+                                    "registered_focus_callbacks_verified":  "true",
+                                    "registered_focus_outcome":  "unconfirmed_input_cancelled",
+                                    "registered_focus_cancellation_preserves_committed_text_verified":  "true",
+                                    "registered_candidate_commit":  "true",
+                                    "registered_default_candidate_keys_verified":  "true",
+                                    "registered_invalid_initial_code_rejection_verified":  "true",
+                                    "registered_invalid_code_rejection_verified":  "true",
+                                    "registered_invalid_code_backspace_recovery_verified":  "true",
+                                    "registered_direction_and_page_keys_verified":  "true",
+                                    "architecture_bits":  "32",
+                                    "registered_delayed_focus_cancellation_verified":  "true",
+                                    "failed_async_edit_recovery_verified":  "true",
+                                    "registered_failed_focus_cancellation_text_preservation_verified":  "true",
+                                    "retained_language_bar_after_deactivation_verified":  "true"
+                                },
+                      "false_or_missing":  [
+
+                                           ],
+                      "functional_passed":  true,
+                      "passed":  true,
+                      "error":  null,
+                      "finished_at":  "2026-11-02T03:15:39.4451486Z"
+                  },
+                  {
+                      "architecture":  "x86",
+                      "mode":  "variable",
+                      "started_at":  "2026-11-02T03:15:39.4481492Z",
+                      "completed":  true,
+                      "image":  "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+                      "image_record":  {
+                                           "path":  "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+                                           "bytes":  384512,
+                                           "sha256":  "6198614e49b9879ea1001ef4f5a45d60877b014d7088b9c2d27631d69337f715",
+                                           "last_write_utc":  "2026-09-26T23:44:22.5350624Z"
+                                       },
+                      "pe_machine":  "0x014c",
+                      "pid":  7868,
+                      "timeout_seconds":  120,
+                      "timed_out":  false,
+                      "owned_process_stopped":  false,
+                      "exit_code":  0,
+                      "flags":  {
+                                    "candidate_popup_ownership_guard_verified":  "true",
+                                    "change_language_hresult":  "0x0",
+                                    "enable_profile_hresult":  "0x0",
+                                    "activate_profile_hresult":  "0x0",
+                                    "activate_process_profile_hresult":  "0x0",
+                                    "current_language_hresult":  "0x0",
+                                    "current_language":  "0x804",
+                                    "active_profile_hresult":  "0x0",
+                                    "active_profile_language":  "0x804",
+                                    "registered_english_shift_passthrough_verified":  "true",
+                                    "physical_mouse_candidate_selection_verified":  "true",
+                                    "delayed_async_edit_completion_verified":  "true",
+                                    "punctuation_text_extent_anchor_verified":  "true",
+                                    "registered_key_sink_verified":  "true",
+                                    "registered_language_bar_accepted":  "true",
+                                    "registered_text_extent_anchor":  "true",
+                                    "registered_focus_callbacks_verified":  "true",
+                                    "registered_focus_outcome":  "unconfirmed_input_cancelled",
+                                    "registered_focus_cancellation_preserves_committed_text_verified":  "true",
+                                    "registered_candidate_commit":  "true",
+                                    "registered_default_candidate_keys_verified":  "true",
+                                    "registered_invalid_initial_code_rejection_verified":  "true",
+                                    "registered_invalid_code_rejection_verified":  "true",
+                                    "registered_invalid_code_backspace_recovery_verified":  "true",
+                                    "registered_direction_and_page_keys_verified":  "true",
+                                    "architecture_bits":  "32",
+                                    "registered_delayed_focus_cancellation_verified":  "true",
+                                    "failed_async_edit_recovery_verified":  "true",
+                                    "registered_failed_focus_cancellation_text_preservation_verified":  "true",
+                                    "retained_language_bar_after_deactivation_verified":  "true"
+                                },
+                      "false_or_missing":  [
+
+                                           ],
+                      "functional_passed":  true,
+                      "passed":  true,
+                      "error":  null,
+                      "finished_at":  "2026-11-02T03:15:40.6049329Z"
+                  },
+                  {
+                      "architecture":  "x86",
+                      "mode":  "shorthand",
+                      "started_at":  "2026-11-02T03:15:40.6089372Z",
+                      "completed":  true,
+                      "image":  "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+                      "image_record":  {
+                                           "path":  "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+                                           "bytes":  384512,
+                                           "sha256":  "6198614e49b9879ea1001ef4f5a45d60877b014d7088b9c2d27631d69337f715",
+                                           "last_write_utc":  "2026-09-26T23:44:22.5350624Z"
+                                       },
+                      "pe_machine":  "0x014c",
+                      "pid":  6464,
+                      "timeout_seconds":  120,
+                      "timed_out":  false,
+                      "owned_process_stopped":  false,
+                      "exit_code":  0,
+                      "flags":  {
+                                    "candidate_popup_ownership_guard_verified":  "true",
+                                    "change_language_hresult":  "0x0",
+                                    "enable_profile_hresult":  "0x0",
+                                    "activate_profile_hresult":  "0x0",
+                                    "activate_process_profile_hresult":  "0x0",
+                                    "current_language_hresult":  "0x0",
+                                    "current_language":  "0x804",
+                                    "active_profile_hresult":  "0x0",
+                                    "active_profile_language":  "0x804",
+                                    "registered_english_shift_passthrough_verified":  "true",
+                                    "physical_mouse_candidate_selection_verified":  "true",
+                                    "delayed_async_edit_completion_verified":  "true",
+                                    "punctuation_text_extent_anchor_verified":  "true",
+                                    "registered_key_sink_verified":  "true",
+                                    "registered_language_bar_accepted":  "true",
+                                    "registered_text_extent_anchor":  "true",
+                                    "registered_focus_callbacks_verified":  "true",
+                                    "registered_focus_outcome":  "unconfirmed_input_cancelled",
+                                    "registered_focus_cancellation_preserves_committed_text_verified":  "true",
+                                    "registered_candidate_commit":  "true",
+                                    "registered_default_candidate_keys_verified":  "true",
+                                    "registered_invalid_initial_code_rejection_verified":  "true",
+                                    "registered_invalid_code_rejection_verified":  "true",
+                                    "registered_invalid_code_backspace_recovery_verified":  "true",
+                                    "registered_direction_and_page_keys_verified":  "true",
+                                    "architecture_bits":  "32",
+                                    "registered_delayed_focus_cancellation_verified":  "true",
+                                    "failed_async_edit_recovery_verified":  "true",
+                                    "registered_failed_focus_cancellation_text_preservation_verified":  "true",
+                                    "retained_language_bar_after_deactivation_verified":  "true"
+                                },
+                      "false_or_missing":  [
+
+                                           ],
+                      "functional_passed":  true,
+                      "passed":  true,
+                      "error":  null,
+                      "finished_at":  "2026-11-02T03:15:41.7543264Z"
+                  }
+              ],
+    "error":  null,
+    "payload_unchanged":  true,
+    "runtime_processes_unchanged":  true,
+    "finished_at":  "2026-11-02T03:15:41.7965563Z"
+}
