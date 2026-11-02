@@ -14,6 +14,9 @@ func fixture(t *testing.T)Options{
   put(t,filepath.Join(root,filepath.FromSlash(name)),raw);sum:=sha256.Sum256(raw);m.Files=append(m.Files,File{Path:name,Bytes:int64(len(raw)),SHA256:hex.EncodeToString(sum[:])})
  }
  raw,e:=json.Marshal(m);if e!=nil{t.Fatal(e)};put(t,filepath.Join(root,Descriptor),raw);sum:=sha256.Sum256(raw)
+ // Match Run's canonical installation path, including Windows TEMP aliases.
+ root,e=filepath.EvalSymlinks(root);if e!=nil{t.Fatalf("canonical fixture root: %v",e)}
+ parent=filepath.Dir(root)
  return Options{Root:root,ManifestSHA256:hex.EncodeToString(sum[:]),EvidenceDir:filepath.Join(parent,"evidence"),Confirmation:Confirm}
 }
 func validResult()formalResult{return formalResult{Stage:"result",Scenario:"commit",ActualDLLLoaded:true,ActivationIdentity:"windows-activated-profile",Registered:true,Outcome:"applied",ReadbackMatches:true,OtherContextEmpty:true}}
@@ -24,7 +27,7 @@ func(f *fakeChild)PID()int{return f.pid};func(f *fakeChild)Input()io.WriteCloser
 func children(t *testing.T)(*fakeChild,*fakeChild){raw,e:=json.Marshal(validResult());if e!=nil{t.Fatal(e)};return &fakeChild{pid:111,output:strings.NewReader("{\"stage\":\"connected\",\"accepted\":true}\n"+string(raw)+"\n")},&fakeChild{pid:222,output:strings.NewReader("READY yimebroker-18u\n")}}
 func TestInstalledCheckSingleExistingProtocol(t *testing.T){
  o:=fixture(t);host,broker:=children(t);count:=0
- start:=func(ctx context.Context,path string,args []string,dir string,stderr io.Writer)(Child,error){count++;if count==1{if path!=filepath.Join(o.Root,filepath.FromSlash(HostPath))||len(args)!=0{t.Fatal("not existing host")};return host,nil};if count!=2||path!=filepath.Join(o.Root,filepath.FromSlash(BrokerPath))||len(args)!=8||args[6]!="--tip-host-pid"||args[7]!="111"||args[1]!=filepath.Join(o.Root,"source")||args[3]!=filepath.Join(o.Root,"data")||!strings.HasPrefix(args[5],`\\.\pipe\YimeBroker.18uTouch.v1.installed-check-`){t.Fatal("broker owner/identity")};return broker,nil}
+ start:=func(ctx context.Context,path string,args []string,dir string,stderr io.Writer)(Child,error){count++;if count==1{if path!=filepath.Join(o.Root,filepath.FromSlash(HostPath))||len(args)!=0{t.Fatalf("not existing host: want path=%q args=[], got path=%q args=%q",filepath.Join(o.Root,filepath.FromSlash(HostPath)),path,args)};return host,nil};if count!=2||path!=filepath.Join(o.Root,filepath.FromSlash(BrokerPath))||len(args)!=8||args[6]!="--tip-host-pid"||args[7]!="111"||args[1]!=filepath.Join(o.Root,"source")||args[3]!=filepath.Join(o.Root,"data")||!strings.HasPrefix(args[5],`\\.\pipe\YimeBroker.18uTouch.v1.installed-check-`){t.Fatal("broker owner/identity")};return broker,nil}
  r:=Run(context.Background(),o,start);if r.Status!="evidence-consistent"||count!=2||!host.waited||!broker.waited||host.stopped||broker.stopped||r.RegistrationMutationRequested||r.InstalledProfilePresenceVerified{t.Fatalf("wrong result %+v",r)}
  dec:=json.NewDecoder(&host.input.Buffer);var config map[string]any;if dec.Decode(&config)!=nil||len(config)!=6||config["scenario"]!="commit"||config["brokerPID"]!=float64(222){t.Fatal("wrong config")};record,e:=codemode.BuildRecord("abcd");if e!=nil||config["code"]!=record.Variable{t.Fatal("canonical algorithm changed")};var next map[string]bool;if dec.Decode(&next)!=nil||len(next)!=1||!next["proceed"]{t.Fatal("continuation")};var extra any;if dec.Decode(&extra)!=io.EOF||!host.input.closed{t.Fatal("replay/extra config")}
  raw,e:=os.ReadFile(filepath.Join(o.EvidenceDir,"installed-host-result.json"));if e!=nil{t.Fatal(e)};var saved Report;if json.Unmarshal(raw,&saved)!=nil||saved.Status!=r.Status{t.Fatal("report")}
