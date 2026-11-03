@@ -24,7 +24,7 @@
     {"id": "user-reboot-and-verification", "status": "passed", "startedAt": "2026-11-03T12:30:03+08:00", "completedAt": "2026-11-03T12:31:19.5000000+08:00", "exitCode": 0, "observation": "User confirmed work saved. A normal restart without forced close completed; the new boot time was later than maintenance completion. Installed and protected product identities remained valid.", "evidenceNames": ["reboot-request.json", "postreboot-verification.json"]},
     {"id": "single-installed-host", "status": "passed", "startedAt": null, "completedAt": null, "exitCode": 0, "observation": "The user ran the fixed installed-host command once in a foreground ordinary PowerShell. Raw evidence was complete and matched every fixed success field; host and broker stderr were empty.", "evidenceNames": ["evidence/installed-host-20261103-1240-r1/installed-host-result.json", "evidence/installed-host-20261103-1240-r1/host-stdout.jsonl", "evidence/installed-host-20261103-1240-r1/host-stderr.jsonl", "evidence/installed-host-20261103-1240-r1/broker-stdout.txt", "evidence/installed-host-20261103-1240-r1/broker-stderr.jsonl", "evidence/installed-host-20261103-1240-r1.exit-code.txt"]}
   ],
-  "baseline": {"independent18uBefore": "absent", "standardAndRimePreserved": true, "userDataPreserved": true, "defaultAndLanguagePreserved": true, "bootTimeAfterMaintenance": "2026-11-03T12:31:19.5000000+08:00"},
+  "baseline": {"independent18uBefore": "absent", "standardAndRimePreserved": true, "userDataPreserved": null, "userContentResetDetected": false, "standardRuntimeStateChanged": true, "defaultAndLanguagePreserved": true, "bootTimeAfterMaintenance": "2026-11-03T12:31:19.5000000+08:00"},
   "installedHost": {
     "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
     "manifestSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
@@ -47,7 +47,7 @@
   "notes": [
     "The original local result.json and UAC failure log remain unchanged; this file records the explicitly authorized manual continuation.",
     "No automatic retry was performed and ResetData was never requested.",
-    "Standard YimeCore updated diagnostic/startup state after reboot; no user-content reset was detected.",
+    "Standard YimeCore updated diagnostic/startup state after reboot. Stable user content and historical evidence remained present and no user-content reset was detected; locked live files were not byte-read, so full byte-for-byte user-data preservation is not claimed.",
     "No performance, finger, pen, mouse, Word, Edge, flipped-panel or other testing was run or inherited. This is not overall product or physical acceptance."
   ]
 }
