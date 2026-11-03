@@ -32,9 +32,15 @@ $product=$package.product
 $contract=$package.contract
 Assert-PackageHost $contract
 if($Action -eq 'Check'){Write-Output ('PASS: package files, required binaries and native host '+$contract.target);exit 0}
-$setupShell=Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+$setupShell=Get-SetupShell $product $contract ([Diagnostics.Process]::GetCurrentProcess().MainModule.FileName) $PSVersionTable.PSVersion.Major
 $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value
 if($InitiatingSid -and $InitiatingSid -cne $sid){throw 'Run with the same Windows account that started setup'}
+if($InitiatingSid -and -not $administrator){throw 'Elevated setup did not receive an administrator token'}
+if($product.id -ceq 'yimecore-18u' -and $contract.target -ceq 'windows-arm64' -and $Action -in @('Install','Uninstall')){
+    # Neither a user-writable package script nor the old installed uninstall
+    # command is an authenticated elevated entry. Wait for a protected launcher.
+    throw 'ARM64 18u maintenance requires an authenticated protected native entry; no files or registration changed'
+}
 if(-not $administrator){
     $stage='UAC elevation'
     Write-Output ('Elevated setup log: '+(Join-Path $logRoot ($LogId+'.admin.log')))

@@ -86,6 +86,86 @@ function Assert-PackageHost($Contract){
     }
     if($Contract.PSObject.Properties['requireNativeProcess'] -and $Contract.requireNativeProcess -and $hostMachine.processMachine -ne 0){throw 'Independent 18u requires a native, non-emulated process'}
 }
+function Get-SetupShell($Product,$Contract,[string]$CurrentShell,[int]$PowerShellMajor,
+    [scriptblock]$VerifyArm64Pe={param([string]$Path) Assert-ProductPe $Path 'arm64'}){
+    $systemShell=Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+    if($Product.id -cne 'yimecore-18u' -or $Contract.target -cne 'windows-arm64'){return $systemShell}
+    if($PowerShellMajor -lt 7 -or [IO.Path]::GetFileName($CurrentShell) -ine 'pwsh.exe'){
+        throw 'Independent ARM64 18u elevation requires the current native PowerShell 7 process'
+    }
+    $shell=Assert-PlainPath $CurrentShell
+    if(-not (Test-Path -LiteralPath $shell -PathType Leaf)){throw 'Current PowerShell 7 executable is unavailable'}
+    & $VerifyArm64Pe $shell
+    return $shell
+}
+function Assert-Arm64ProtectedFile([string]$Path){
+    $path=Assert-PlainPath $Path
+    $trusted=@('S-1-5-18','S-1-5-32-544') # SYSTEM and Administrators
+    $trustedInstaller=([Security.Principal.NTAccount]'NT SERVICE\TrustedInstaller').Translate([Security.Principal.SecurityIdentifier]).Value
+    $trusted+= $trustedInstaller
+    $write=[Security.AccessControl.FileSystemRights]::Write -bor [Security.AccessControl.FileSystemRights]::Modify -bor
+        [Security.AccessControl.FileSystemRights]::Delete -bor [Security.AccessControl.FileSystemRights]::ChangePermissions -bor
+        [Security.AccessControl.FileSystemRights]::TakeOwnership
+    for($item=$path;$item;$item=[IO.Path]::GetDirectoryName($item)){
+        $acl=Get-Acl -LiteralPath $item
+        $owner=$acl.GetOwner([Security.Principal.SecurityIdentifier]).Value
+        if($owner -cnotin $trusted){throw ('Untrusted owner: '+$item)}
+        foreach($rule in $acl.Access){
+            if($rule.AccessControlType -ne [Security.AccessControl.AccessControlType]::Allow -or
+               -not ($rule.FileSystemRights -band $write)){continue}
+            $sid=$rule.IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value
+            if($sid -cnotin $trusted){throw ('Writable by an unapproved principal: '+$item)}
+        }
+    }
+}
+function Assert-Arm64FixedPackage([string]$Root,[string]$ExpectedRoot,[string]$ApprovalPath,
+    [string]$ExpectedApprovalPath,[string]$CurrentSid,[bool]$Administrator,
+    [scriptblock]$VerifyProtected={param([string]$Path) Assert-Arm64ProtectedFile $Path}){
+    if(-not $Administrator){throw 'Native administrator token required before ARM64 maintenance'}
+    $root=Assert-PlainPath $Root;$expected=Assert-PlainPath $ExpectedRoot
+    $approval=Assert-PlainPath $ApprovalPath;$expectedApproval=Assert-PlainPath $ExpectedApprovalPath
+    if($root -cne $expected -or $approval -cne $expectedApproval -or
+       $approval.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)){
+        throw 'ARM64 package or independent approval location mismatch'
+    }
+    & $VerifyProtected $root
+    & $VerifyProtected $approval
+    $record=Get-Content -LiteralPath $approval -Raw -Encoding UTF8 | ConvertFrom-Json
+    if($record.schema -cne 'yime-18u-arm64-manual-approval-v1' -or $record.product -cne 'yimecore-18u' -or
+       $record.target -cne 'windows-arm64' -or $record.approvedUserSid -cne $CurrentSid -or
+       $record.sourceCommit -cne '2bc222d92321daa29cea9951761cc1063db5f045' -or
+       $record.archiveSha256 -cnotmatch '^[0-9a-f]{64}$'){
+        throw 'Independent ARM64 approval identity or user mismatch'
+    }
+    $manifest=Get-Content -LiteralPath (Join-Path $root 'product-package.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+    $descriptor=Get-Content -LiteralPath (Join-Path $root 'payload/installed-18u-product.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+    if($manifest.product -cne 'yimecore-18u' -or $manifest.target -cne 'windows-arm64' -or
+       $manifest.host_architecture -cne 'arm64' -or $manifest.tsf64_architecture -cne 'arm64' -or
+       $descriptor.sourceCommit -cne $record.sourceCommit -or $descriptor.architecture -cne 'native-arm64' -or
+       $descriptor.identity.clsid -ine '{6DFACE1F-562E-4773-A9D6-D5753A314711}' -or
+       $descriptor.identity.profile -ine '{1BD904AC-3194-4419-B70A-5574100F18B3}'){
+        throw 'Fixed ARM64 package contract differs from independent approval'
+    }
+    $seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach($row in $record.files){
+        if(-not ($row.path -is [string]) -or $row.path -match '(^[/\\]|:|(^|[/\\])\.\.?([/\\]|$))' -or
+           -not $seen.Add($row.path) -or $row.sha256 -cnotmatch '^[0-9a-f]{64}$' -or $row.bytes -le 0){
+            throw 'Invalid independent ARM64 approval member'
+        }
+        $file=Assert-PlainPath (Join-Path $root $row.path)
+        if(-not $file.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Approved member escaped fixed package'}
+        & $VerifyProtected $file
+        if((Get-Item -LiteralPath $file).Length -ne $row.bytes -or (Get-ContentHash $file) -cne $row.sha256){
+            throw ('Independent ARM64 approval hash mismatch: '+$row.path)
+        }
+    }
+    $files=@(Get-ProductFiles $root)
+    if($seen.Count -ne $files.Count){throw 'Fixed ARM64 package contains unapproved files'}
+    foreach($file in $files){
+        $relative=$file.FullName.Substring($root.Length+1).Replace('\','/')
+        if(-not $seen.Contains($relative)){throw ('Unapproved ARM64 package member: '+$relative)}
+    }
+}
 function Get-MaintenanceMembers($Product,$Contract){
     $name=if($Product.id -eq 'yimecore-18u'){'Yime18uProductRegistration.exe'}elseif($Product.id -eq 'yimecore'){'YimeTextServiceRegistration.exe'}else{$Product.dll}
     foreach($arch in $Contract.nativeDirectories){$arch+'/'+$name}

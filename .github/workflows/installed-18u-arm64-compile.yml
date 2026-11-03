@@ -91,6 +91,22 @@ jobs:
           stream=io.StringIO(); result=unittest.TextTestRunner(stream=stream,verbosity=2).run(suite)
           pathlib.Path('.generated/installed-18u-evidence/arm64-package-tests.log').write_text(stream.getvalue(),encoding='utf-8')
           if result.testsRun != 7 or result.skipped or not result.wasSuccessful(): raise SystemExit('ARM64 packaging tests missing, skipped, or failed')
+      - name: Exercise protected maintenance trust model without elevation
+        run: |
+          import importlib, io, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/yimecore').resolve()))
+          suite=unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module('test_arm64_maintenance_model'))
+          stream=io.StringIO(); result=unittest.TextTestRunner(stream=stream,verbosity=2).run(suite)
+          pathlib.Path('.generated/installed-18u-evidence/arm64-maintenance-model.log').write_text(stream.getvalue(),encoding='utf-8')
+          if result.testsRun != 5 or result.skipped or not result.wasSuccessful(): raise SystemExit('ARM64 maintenance model failed')
+      - name: Verify independent ARM64 approval draft failures
+        run: |
+          import importlib, io, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('.').resolve()))
+          suite=unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module('tools.yimecore.test_make_arm64_manual_approval'))
+          stream=io.StringIO(); result=unittest.TextTestRunner(stream=stream,verbosity=2).run(suite)
+          pathlib.Path('.generated/installed-18u-evidence/arm64-approval-draft.log').write_text(stream.getvalue(),encoding='utf-8')
+          if result.testsRun != 4 or result.skipped or not result.wasSuccessful(): raise SystemExit('ARM64 approval draft tests failed')
       - name: Run ARM64 architecture contract PowerShell test
         run: |
           import pathlib, subprocess, sys
@@ -99,6 +115,24 @@ jobs:
           with output.open('w',encoding='utf-8') as log:
               result=subprocess.run([sys.executable,'tools/powershell/run_checked.py','--edition','ps7','--script',str(script)],stdout=log,stderr=subprocess.STDOUT,timeout=60)
           if result.returncode: raise SystemExit('ARM64 PowerShell contract failed')
+      - name: Check native ARM64 PowerShell elevation selection without UAC
+        run: |
+          import pathlib, subprocess, sys
+          script=pathlib.Path('installer/simple/tests/Test-18uArm64ElevationShell.ps1').resolve()
+          output=pathlib.Path('.generated/installed-18u-evidence/arm64-elevation-shell.log')
+          with output.open('w',encoding='utf-8') as log:
+              result=subprocess.run([sys.executable,'tools/powershell/run_checked.py','--edition','ps7','--script',str(script)],stdout=log,stderr=subprocess.STDOUT,timeout=60)
+          if result.returncode or output.read_text(encoding='utf-8').count('PASS ARM64 native PS7 shell selection, opposite-PE refusal, x64 preservation and pre-mutation gate') != 1:
+              raise SystemExit('ARM64 elevation shell contract failed')
+      - name: Check fixed ARM64 package refusal before maintenance
+        run: |
+          import pathlib, subprocess, sys
+          script=pathlib.Path('installer/simple/tests/Test-18uArm64FixedPackage.ps1').resolve()
+          output=pathlib.Path('.generated/installed-18u-evidence/arm64-fixed-package.log')
+          with output.open('w',encoding='utf-8') as log:
+              result=subprocess.run([sys.executable,'tools/powershell/run_checked.py','--edition','ps7','--script',str(script)],stdout=log,stderr=subprocess.STDOUT,timeout=60)
+          if result.returncode or output.read_text(encoding='utf-8').count('PASS ARM64 fixed package preflight: 1 valid fixture, 8 pre-mutation refusals') != 1:
+              raise SystemExit('ARM64 fixed-package preflight contract failed')
       - name: Run eleven filesystem-only ownership cases in PS5 and PS7
         run: |
           import pathlib, subprocess, sys
