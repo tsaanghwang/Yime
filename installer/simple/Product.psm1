@@ -243,6 +243,42 @@ function Assert-Arm64ProductPayload([string]$Root,$Manifest,$Product,$Members){
         Assert-ProductPe (Join-Path $Root ('payload/'+$row.path)) $expected
     }
 }
+function Get-18uFrontendMembers([string]$Root,$Manifest){
+    $rows=@($Manifest.files|Where-Object {$_.path -cmatch '^frontend/'})
+    if($rows.Count -eq 0){return}
+    $front=Get-Content -LiteralPath (Assert-PlainPath (Join-Path $Root 'frontend/manifest.json')) -Raw -Encoding UTF8|ConvertFrom-Json
+    $descriptor=Get-Content -LiteralPath (Assert-PlainPath (Join-Path $Root 'installed-18u-product.json')) -Raw -Encoding UTF8|ConvertFrom-Json
+    if($front.schemaVersion -ne 2 -or $front.scope -cne 'installed-18u-tsf-frontend-candidate' -or
+       $front.architecture -cne 'windows-amd64' -or $front.sourceCommit -cne $descriptor.sourceCommit -or
+       $front.sourceChanges -ne $false -or $front.sendInputFallback -ne $false){throw '18u frontend source/scope mismatch'}
+    $expected=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    $null=$expected.Add('frontend/manifest.json')
+    foreach($entry in $front.files.PSObject.Properties){
+        $name=$entry.Name
+        if($name -match '(^[/\\]|:|(^|[/\\])\.\.?([/\\]|$))' -or $name.Contains('\') -or
+           $entry.Value -cnotmatch '^[0-9a-f]{64}$' -or -not $expected.Add('frontend/'+$name)){throw 'Invalid frontend member'}
+        $matches=@($rows|Where-Object {$_.path -ceq ('frontend/'+$name)})
+        if($matches.Count -ne 1 -or $matches[0].sha256 -cne $entry.Value){throw '18u frontend member hash mismatch'}
+    }
+    foreach($name in @('YimeTouchKeyboard.exe','resources.json','resources.lock.json','USER_GUIDE.zh-CN.md',
+        'Start Installed Touch Keyboard.cmd','Start Local Preview.cmd','data/ascii_keyboard_manifest.json',
+        'data/yime_variable.dict.yaml','data/yime_full.dict.yaml','data/yime_shorthand.dict.yaml')){
+        if(-not $expected.Contains('frontend/'+$name)){throw 'Incomplete 18u frontend'}
+    }
+    if($rows.Count -ne $expected.Count){throw '18u frontend inventory mismatch'}
+    foreach($row in $rows){if(-not $expected.Contains($row.path)){throw 'Unlisted 18u frontend member'}}
+    foreach($name in @('ascii_keyboard_manifest.json','yime_variable.dict.yaml','yime_full.dict.yaml','yime_shorthand.dict.yaml')){
+        $base=@($Manifest.files|Where-Object {$_.path -ceq ('data/'+$name)})
+        $copy=@($rows|Where-Object {$_.path -ceq ('frontend/data/'+$name)})
+        if($base.Count -ne 1 -or $copy.Count -ne 1 -or $base[0].sha256 -cne $copy[0].sha256 -or $base[0].bytes -ne $copy[0].bytes){throw '18u frontend dictionary mismatch'}
+    }
+    foreach($name in @('prototypes/touch-terminal/data/physical-layout.json','prototypes/touch-terminal/encoding/yime_yinyuan_layout.json')){
+        $base=@($Manifest.files|Where-Object {$_.path -ceq ('source/'+$name)})
+        $copy=@($rows|Where-Object {$_.path -ceq ('frontend/'+$name)})
+        if($base.Count -ne 1 -or $copy.Count -ne 1 -or $base[0].sha256 -cne $copy[0].sha256 -or $base[0].bytes -ne $copy[0].bytes){throw '18u frontend layout mismatch'}
+    }
+    return @($expected)
+}
 function Assert-18uPackageIdentity([string]$Root,$Manifest,$Product,$Members){
     $descriptor=Get-Content -LiteralPath (Join-Path $Root 'installed-18u-product.json') -Raw -Encoding UTF8|ConvertFrom-Json
     if($descriptor.schema -cne 'installed-18u-product-v1' -or $descriptor.product -cne 'yimecore-18u' -or
@@ -271,6 +307,7 @@ function Assert-18uPackageIdentity([string]$Root,$Manifest,$Product,$Members){
         if($matches.Count -ne 1 -or $row.sha256 -cne $matches[0].sha256 -or $row.bytes -ne $matches[0].bytes){throw '18u descriptor hash mismatch'}
     }
     if($seen.Count -ne $Members.Count-1 -or $seen.Contains('installed-18u-product.json')){throw '18u descriptor must cover every other payload exactly'}
+    $null=Get-18uFrontendMembers $Root $Manifest
     if(@($Manifest.files|Where-Object {$_.path -match '^(indexes|x86|arm64)/|YimeCoreTrialRuntime|YimeBroker\.exe|RegistrationProbe|ActivationStage1|ActivatedLoopOnce'}).Count){throw 'Standard, foreign-architecture or temporary-registration payload forbidden in installed 18u'}
 }
 function Read-Package([string]$Root){
@@ -355,6 +392,7 @@ function Assert-Installed18uOwnership([string]$Root){
         'source/prototypes/touch-terminal/data/physical-layout.json','source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json',
         'source/internal_data/yime_syllable_decomposition.tsv','data/ascii_keyboard_manifest.json','data/yime_variable.dict.yaml',
         'data/yime_full.dict.yaml','data/yime_shorthand.dict.yaml')
+    $expected+=@(Get-18uFrontendMembers $root $manifest)
     $seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
     foreach($row in $manifest.files){
         if(-not ($row.path -is [string]) -or $row.path -cnotin $expected -or -not $seen.Add($row.path) -or

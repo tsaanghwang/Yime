@@ -15,7 +15,7 @@ if($Product -eq 'yimecore'){
     if($descriptor.identity.clsid -ine $productInfo.clsid -or $descriptor.identity.profile -ine $productInfo.profile){throw 'Use current-identity YimeCore artifacts, not the legacy trial'}
 }
 # Only application resources. Old installer/recovery directories are not shipped.
-$allowed=if($Product -eq 'yimecore-18u'){@('bin','data','source','x64','installed-18u-product.json','profile-icon.ico')}elseif($Product -eq 'yimecore'){@('bin','data','indexes','x64','x86','help','professional-lexicons','speech','speech-capability.json','local-product.json','profile-icon.ico')}else{@('PIMELauncher.exe','backends.json','version.txt','go-backend','x64','x86','licenses')}
+$allowed=if($Product -eq 'yimecore-18u'){@('bin','data','source','x64','frontend','installed-18u-product.json','profile-icon.ico')}elseif($Product -eq 'yimecore'){@('bin','data','indexes','x64','x86','help','professional-lexicons','speech','speech-capability.json','local-product.json','profile-icon.ico')}else{@('PIMELauncher.exe','backends.json','version.txt','go-backend','x64','x86','licenses')}
 if($Target -ceq 'windows-arm64'){
     if(Test-Path -LiteralPath (Join-Path $source 'x64')){throw 'ARM64 packages must not contain a separate x64 COM payload'}
     $allowed=@($allowed | Where-Object {$_ -cne 'x64'})+@('arm64','build','package-manifest.json')

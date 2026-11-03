@@ -122,6 +122,16 @@ jobs:
                   result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-FileAccess.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
               if result.returncode or output.read_text(encoding='utf-8').count('PASS file access:') != 1:
                   raise SystemExit('File access checks failed: ' + edition)
+      - name: Verify optional frontend installed ownership without installation
+        run: |
+          import pathlib, subprocess, sys
+          marker = 'PASS frontend ownership: 1 complete and 8 refusals'
+          for edition in ('ps5', 'ps7'):
+              output = pathlib.Path('.generated/installed-18u-evidence/frontend-ownership-' + edition + '.log')
+              with output.open('w', encoding='utf-8') as log:
+                  result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-Installed18uFrontend.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
+              if result.returncode or output.read_text(encoding='utf-8').count(marker) != 1:
+                  raise SystemExit('Frontend ownership checks failed: ' + edition)
       - name: Check fresh-process 18u unregistration sequence
         run: |
           import pathlib, subprocess, sys
