@@ -1,0 +1,71 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-msi-flip-readiness-r1",
+  "fixedReferenceResultCommit": "776cf3f00929aaa18629ffadab4373bab8624394",
+  "files": [
+    {
+      "name": "collect_flip_readiness_r2.py",
+      "bytes": 24754,
+      "sha256": "99338ac2b74462e434fc33686cb4903cea0aee5df5df43f943d39f0f5a6bba52",
+      "kind": "read-only-collector-source",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "raw-flip-readiness.json",
+      "bytes": 4306,
+      "sha256": "f6d20f92194e2f6e661246c4cfadb61ce3734360142148874264bf0bab835b92",
+      "kind": "raw-readiness-snapshot",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "status-stdout.txt",
+      "bytes": 236,
+      "sha256": "853a539b049365dbcd2e895d5722b497f08285988e0d9d7fe844a30d33b51319",
+      "kind": "registration-status-stdout",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "status-stderr.txt",
+      "bytes": 4915,
+      "sha256": "b4c6f140ce75fa8ea749f15e25fa7a8483eab49939b15936ce23a4f868e7cd58",
+      "kind": "registration-status-stderr",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "status-exit.json",
+      "bytes": 23,
+      "sha256": "ea61d7736f0b7ecb9b35158f03de77013db6b100cf1d36c957e78e6c8817c5b6",
+      "kind": "registration-status-exit",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "language-stdout.txt",
+      "bytes": 350,
+      "sha256": "0403783d297f9404dca618724e00cf87aa860bc5d0bc5aa2003d0c4bc7d6273a",
+      "kind": "language-settings-stdout",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "language-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "language-settings-stderr",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "language-exit.json",
+      "bytes": 23,
+      "sha256": "ea61d7736f0b7ecb9b35158f03de77013db6b100cf1d36c957e78e6c8817c5b6",
+      "kind": "language-settings-exit",
+      "readLocally": true,
+      "uploaded": false
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "installed-18u-flip-readiness-result-v1",
+  "taskID": "installed18u-msi-flip-readiness-r1",
+  "recordedAt": "2026-11-03T06:54:22.203236+00:00",
+  "status": "completed-read-only",
+  "machine": {
+    "hostName": "WIN-JTKUT7KBVN7",
+    "nativeArchitecture": "AMD64",
+    "nativeMachineCode": "8664"
+  },
+  "fixedReference": {
+    "acceptedResultCommit": "776cf3f00929aaa18629ffadab4373bab8624394",
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "version": "0.1.0-18u-test.6",
+    "descriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "clsid": "{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+    "profileGuid": "{1BD904AC-3194-4419-B70A-5574100F18B3}",
+    "profileLanguage": "0804",
+    "categoryGuids": [
+      "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+      "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+      "{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+      "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+      "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}"
+    ],
+    "all16PayloadsMatch": true,
+    "registrationAndProtectedBaselineMatch": true
+  },
+  "display": {
+    "currentPrimaryPhysicalPixels": {
+      "width": 2880,
+      "height": 1800
+    },
+    "primarySystemMetricPixels": {
+      "width": 1440,
+      "height": 900
+    },
+    "scalePercent": 200,
+    "orientation": "default",
+    "orientationRaw": 0,
+    "monitorCount": 1,
+    "source": "Windows read-only display and scaling APIs",
+    "note": "Current display only; physical mode pixels and process-visible system metric pixels are distinguished."
+  },
+  "posture": {
+    "systemConvertibleSlateMode": "laptop/non-slate",
+    "systemConvertibleSlateModeRaw": 1,
+    "userVisualObservation": "screen reclined approximately 70 degrees",
+    "userVisualSource": "user report in task chat",
+    "otherPosturesObserved": false
+  },
+  "touchCapability": {
+    "integratedTouchReported": true,
+    "integratedPenReported": true,
+    "digitizerReadyReported": true,
+    "maximumTouchesReported": 10,
+    "rawDigitizerFlags": 197,
+    "physicalFingerOrPenTestPerformed": false
+  },
+  "nextStage": {
+    "status": "blocked",
+    "touchFrontendVerified": false,
+    "ordinaryApplicationInputEntryVerified": false,
+    "missing": [
+      "verifiable touch frontend in a new fixed installed package",
+      "supported ordinary-application input entry in that package"
+    ],
+    "basis": "The fixed test.6 payload has no touch frontend, and its installed runtime accepts only the explicit own-host check; ordinary runtime fallback is disabled in fixed source."
+  },
+  "acceptanceScope": {
+    "flipAcceptance": false,
+    "wordOrEdgeAcceptance": false,
+    "fingerAcceptance": false,
+    "penAcceptance": false,
+    "overallProductAcceptance": false
+  },
+  "mutationPerformed": false,
+  "installedHostCheckRepeated": false,
+  "originalEvidenceUploaded": false,
+  "previousFailedCollectorPreservedLocally": true,
+  "evidenceIndexFile": "evidence-index.json"
+}
