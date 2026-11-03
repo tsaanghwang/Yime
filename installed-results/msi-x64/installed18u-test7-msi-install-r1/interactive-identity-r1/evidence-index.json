@@ -1,0 +1,28 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "recordID": "installed18u-test7-msi-interactive-identity-r1",
+  "localEvidenceDirectory": ".generated/installed18u-test7-msi-interactive-identity-r1",
+  "identityBaselineExcluded": true,
+  "rawLogsUploaded": false,
+  "files": [
+    {
+      "name": "evidence/comparison.json",
+      "bytes": 218,
+      "sha256": "e9887626d8f88e3b3499da34ea4bdec0fca10637f4795cd254b820f1a386e683",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/launch-result.json",
+      "bytes": 43,
+      "sha256": "488c13c27a4b90d8f05ac6d11258b819e75f26d80f00a13b882fd203054863e5",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/elevation-attempt.json",
+      "bytes": 43,
+      "sha256": "5ed2cb31ba088c9d0dd6a65679bec6c377e0b435831cc9dd07a6f155a13588f7",
+      "uploaded": false
+    }
+  ]
+}

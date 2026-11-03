@@ -1,0 +1,41 @@
+{
+  "schema": "installed-18u-interactive-identity-handoff-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "recordID": "installed18u-test7-msi-interactive-identity-r1",
+  "preparedAtUTC": "2026-11-03T13:39:28.640932+00:00",
+  "status": "interactive-identity-match-only",
+  "comparison": {
+    "status": "MATCH",
+    "sameWindowsUser": true,
+    "sessionMatches": true,
+    "elevatedTokenObserved": true,
+    "recordedAtUTC": "2026-11-03T13:36:50.6096410Z",
+    "installationExecuted": false
+  },
+  "launch": {
+    "exitCode": 0,
+    "installationExecuted": false
+  },
+  "attempt": {
+    "attempts": 1,
+    "installationExecuted": false
+  },
+  "executionOrigin": "user-operated ordinary desktop PowerShell; checked PS5 entry; one UAC comparison",
+  "oldBaselineIssue": "automation sandbox token was used instead of interactive-session identity",
+  "oldElevatedAccountRetrospectivelyIdentified": false,
+  "oldEvidencePreserved": true,
+  "currentOccupancyState": "unknown",
+  "exclusiveOpenCheckExecutedThisRun": false,
+  "installationExecuted": false,
+  "inputTestExecuted": false,
+  "processesTerminated": false,
+  "securitySettingsChanged": false,
+  "rebootPerformed": false,
+  "baselineReuseLimitMinutes": 30,
+  "nextAction": "report only; no automatic continuation",
+  "privacy": {
+    "SIDOrAccountNamesDisclosed": false,
+    "rawIdentityBaselineUploaded": false,
+    "rawLogsUploaded": false
+  }
+}
