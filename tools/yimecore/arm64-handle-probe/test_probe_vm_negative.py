@@ -68,6 +68,18 @@ def main():
     assert not root.exists(), "root must be absent; refusing to reuse evidence"
     root.mkdir()
 
+    # First prove this Windows/NTFS build accepts the documented directory options.
+    created = root / "probe-directory-contract"
+    result = run(probe, pwsh, created, "directory-contract")
+    (root / "directory-contract.stdout.bin").write_bytes(result.stdout)
+    (root / "directory-contract.stderr.bin").write_bytes(result.stderr)
+    (root / "directory-contract.exit.txt").write_text(f"{result.returncode}\n", encoding="ascii")
+    assert result.returncode == 0, "documented NtCreateFile directory options failed on VM"
+    created_rows = [json.loads(line) for line in (created / "events.jsonl").read_text(encoding="utf-8").splitlines()]
+    identity = next(row for row in created_rows if row.get("event") == "output-directory")
+    assert identity["volume"] and identity["file_id"] and identity["final_path"]
+    assert created_rows[-1]["event"] == "case-passed"
+
     existing = root / "probe-existing"
     existing.mkdir()
     (existing / "failure.txt").write_bytes(b"preexisting failure sentinel\n")
@@ -94,7 +106,8 @@ def main():
         assert "terminated and reaped" in failure["reason"], f"{case} stop not confirmed"
         pid = next(row["pid"] for row in rows if row.get("event") == event)
         assert_stopped(pid)
-    print("VM negative tests: existing directory unchanged; child and actor timed out and reaped")
+    print("VM checks: directory create/identity passed; existing directory unchanged; child and actor reaped")
+    print("NOT VERIFIED: ancestor directory replacement and later absolute-path opens")
 
 
 if __name__ == "__main__":

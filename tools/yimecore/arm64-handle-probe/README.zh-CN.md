@@ -26,7 +26,9 @@ python tools/yimecore/arm64-handle-probe/test_source_contract.py
 
 ## 场景与期望
 
-先在同一可丢弃 VM 的另一个新输出根运行 `test_probe_vm_negative.py --probe <探针绝对路径> --pwsh <PS7绝对路径> --root <不存在的新目录>`。它核对被拒绝的已有目录及原有 `failure.txt` 完全不变，并用 `timeout-child`、`timeout-actor` 两个仅供故障注入的场景检查私有 Job 终止、回收和 PID 停止。故障注入的非零退出是预期结果；脚本仅在全部检查成立时报告成功。此脚本不在 ASUS 运行。
+先在同一可丢弃 VM 的另一个新输出根运行 `test_probe_vm_negative.py --probe <探针绝对路径> --pwsh <PS7绝对路径> --root <不存在的新目录>`。它首先以 `directory-contract` 仅创建目录并核对从创建句柄读取的卷号、文件 ID 和最终路径，不启动子进程；再核对被拒绝的已有目录及原有 `failure.txt` 完全不变，并用 `timeout-child`、`timeout-actor` 两个仅供故障注入的场景检查私有 Job 终止、回收和 PID 停止。故障注入的非零退出是预期结果；脚本仅在全部检查成立时报告成功。此脚本不在 ASUS 运行。
+
+目录创建使用 `NtCreateFile` 的 `FILE_CREATE`、`FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT` 和 `SYNCHRONIZE`。微软发布的目录选项兼容列表没有 `FILE_OPEN_REPARSE_POINT`，故创建调用不再组合该选项。相对创建所用的父目录句柄先由另一次 `NtCreateFile` 取得，并与先前不跟随末端重解析点打开的父目录句柄比较卷号和文件 ID。`FILE_CREATE` 对已存在名称应拒绝，但链接和文件系统筛选器的具体结果仍需在 VM 观察；编译通过不算运行证据。
 
 | 场景 | 期望 |
 | --- | --- |
@@ -42,4 +44,4 @@ python tools/yimecore/arm64-handle-probe/test_source_contract.py
 
 拒绝非本地 NTFS、重解析点、非 ARM64 PE 或进程、参数或输出目录不合约、文件 ID/哈希与标记不一致、超时及任一意外 Win32 错误。每个子进程先在挂起状态加入本轮私有 Job，随后才运行；超时或启动后异常时只终止该 Job 并限时核实进程退出。无法确认停止时明确报告 `STOP UNCONFIRMED` 并保留现场，不操作无关进程。停止后不要清理或继续其他场景。VM 用完后按预先批准的流程丢弃快照。
 
-结果只能说明该 VM 上合成文件的句柄共享、替换后的对象身份和可观察加载结果。它不能证明 Yime 未来维护入口加载了已核准对象，也不能消除 PowerShell 按路径重开、既存可写映射或特权进程造成的窗口。真实 NTFS ACL 与不同账户、重解析点攻击、UAC、设置页卸载和实机输入仍需独立验证。
+结果只能说明该 VM 上合成文件的句柄共享、替换后的对象身份和可观察加载结果。持有输出目录句柄并不固定所有祖先目录：创建时使用的父目录句柄在返回后释放，后续日志、合成文件和子进程仍有按绝对路径打开的步骤。现有负例尚未覆盖祖先目录被替换；受控 VM 应另设同步点，在目录句柄持有期间尝试替换可写祖先，记录是否被拒绝及后续绝对路径实际解析到的文件 ID，首个异常即停。完成该试验前，不能声称探针已保护整条路径，更不能据此声称产品级路径保护完成。它也不能证明 Yime 未来维护入口加载了已核准对象，或消除 PowerShell 按路径重开、既存可写映射及特权进程造成的窗口。真实 NTFS ACL 与不同账户、重解析点攻击、UAC、设置页卸载和实机输入仍需独立验证。

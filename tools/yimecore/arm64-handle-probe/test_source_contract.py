@@ -75,6 +75,21 @@ class SourceContract(unittest.TestCase):
         self.assertNotIn('output / L"failure.txt"', self.probe)
         self.assertNotIn("fs::exists(output) && fs::is_directory(output)", self.probe)
 
+    def test_documented_directory_create_option_pair(self):
+        create = self.probe.split("Handle createHeldDirectory(", 1)[1].split("Identity identify(", 1)[0]
+        self.assertIn("FILE_CREATE, FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT,", create)
+        self.assertIn("FILE_SHARE_READ, FILE_OPEN,", create)
+        self.assertIn("FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES | SYNCHRONIZE", create)
+        self.assertIn("validatedId.VolumeSerialNumber != ntId.VolumeSerialNumber", create)
+        self.assertIn("parent identity changed", create)
+        self.assertNotIn("FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT |", create)
+        self.assertIn('L"directory-contract"', self.probe)
+
+    def test_ancestor_path_limit_is_explicit(self):
+        readme = (ROOT / "README.zh-CN.md").read_text(encoding="utf-8")
+        self.assertIn("持有输出目录句柄并不固定所有祖先目录", readme)
+        self.assertIn("现有负例尚未覆盖祖先目录被替换", readme)
+
     def test_both_launch_sites_have_bounded_cleanup(self):
         for token in ("CREATE_SUSPENDED", "AssignProcessToJobObject", "JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE",
                       "TerminateJobObject", "TerminateProcess", "QueryInformationJobObject",

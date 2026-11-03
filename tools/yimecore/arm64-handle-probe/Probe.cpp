@@ -116,7 +116,40 @@ Handle openRead(const fs::path& path, bool directory = false) {
 // NtCreateFile atomically returns the newly created directory object. Win32
 // CreateDirectoryW followed by CreateFileW leaves a replacement window.
 Handle createHeldDirectory(const fs::path& output) {
-    Handle parent = openRead(output.parent_path(), true);
+    Handle validatedParent = openRead(output.parent_path(), true);
+    HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+    if (!ntdll) fail("GetModuleHandleW ntdll");
+    auto ntCreateFile = reinterpret_cast<decltype(&NtCreateFile)>(GetProcAddress(ntdll, "NtCreateFile"));
+    if (!ntCreateFile) fail("GetProcAddress NtCreateFile");
+    // RootDirectory is documented as a directory handle from an earlier
+    // NtCreateFile call. Reopen and compare identity while both handles live.
+    const std::wstring parentPath = L"\\??\\" + output.parent_path().wstring();
+    if (parentPath.size() * sizeof(wchar_t) > USHRT_MAX) fail("parent path too long", 0);
+    UNICODE_STRING parentName{};
+    parentName.Length = static_cast<USHORT>(parentPath.size() * sizeof(wchar_t));
+    parentName.MaximumLength = parentName.Length;
+    parentName.Buffer = const_cast<PWSTR>(parentPath.c_str());
+    OBJECT_ATTRIBUTES parentAttributes{};
+    InitializeObjectAttributes(&parentAttributes, &parentName, OBJ_CASE_INSENSITIVE, nullptr, nullptr);
+    IO_STATUS_BLOCK parentIo{};
+    HANDLE parentRaw = INVALID_HANDLE_VALUE;
+    const NTSTATUS parentStatus = ntCreateFile(&parentRaw, FILE_TRAVERSE | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
+                                              &parentAttributes, &parentIo, nullptr, FILE_ATTRIBUTE_NORMAL,
+                                              FILE_SHARE_READ, FILE_OPEN,
+                                              FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, nullptr, 0);
+    if (parentStatus < 0) {
+        std::ostringstream message;
+        message << "NtCreateFile parent failed (NTSTATUS=0x" << std::hex
+                << static_cast<ULONG>(parentStatus) << ")";
+        throw std::runtime_error(message.str());
+    }
+    Handle parent(parentRaw);
+    FILE_ID_INFO validatedId{}, ntId{};
+    if (!GetFileInformationByHandleEx(validatedParent.value, FileIdInfo, &validatedId, sizeof(validatedId)) ||
+        !GetFileInformationByHandleEx(parent.value, FileIdInfo, &ntId, sizeof(ntId))) fail("parent FileIdInfo");
+    if (validatedId.VolumeSerialNumber != ntId.VolumeSerialNumber ||
+        !std::equal(std::begin(validatedId.FileId.Identifier), std::end(validatedId.FileId.Identifier),
+                    std::begin(ntId.FileId.Identifier))) fail("parent identity changed", 0);
     const std::wstring leaf = output.filename().wstring();
     if (leaf.empty() || leaf.find(L'\\') != std::wstring::npos || leaf.find(L'/') != std::wstring::npos ||
         leaf.size() * sizeof(wchar_t) > USHRT_MAX) fail("invalid output leaf", 0);
@@ -127,15 +160,14 @@ Handle createHeldDirectory(const fs::path& output) {
     OBJECT_ATTRIBUTES attributes{};
     InitializeObjectAttributes(&attributes, &name, OBJ_CASE_INSENSITIVE, parent.value, nullptr);
     IO_STATUS_BLOCK io{};
-    HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
-    if (!ntdll) fail("GetModuleHandleW ntdll");
-    auto ntCreateFile = reinterpret_cast<decltype(&NtCreateFile)>(GetProcAddress(ntdll, "NtCreateFile"));
-    if (!ntCreateFile) fail("GetProcAddress NtCreateFile");
     HANDLE raw = INVALID_HANDLE_VALUE;
+    // FILE_DIRECTORY_FILE permits FILE_SYNCHRONOUS_IO_NONALERT in the published
+    // NtCreateFile contract. FILE_OPEN_REPARSE_POINT is not in that list.
+    // FILE_CREATE refuses an existing leaf; link/filter behavior remains a VM check.
     const NTSTATUS status = ntCreateFile(&raw, FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
                                         &attributes, &io, nullptr, FILE_ATTRIBUTE_DIRECTORY, FILE_SHARE_READ,
-                                        FILE_CREATE, FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT |
-                                        FILE_OPEN_REPARSE_POINT, nullptr, 0);
+                                        FILE_CREATE, FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT,
+                                        nullptr, 0);
     if (status < 0) {
         std::ostringstream message;
         message << "NtCreateFile new output directory failed (NTSTATUS=0x" << std::hex
@@ -380,6 +412,7 @@ void makeScripts(const fs::path& dir) {
 
 void runCase(const std::wstring& name, const fs::path& pwsh, const fs::path& output,
              const fs::path& binaryDir, std::ofstream& log) {
+    if (name == L"directory-contract") return; // VM-only API smoke check; no child or fixture.
     if (name == L"timeout-child") {
         child(binaryDir / L"YimeSyntheticToolA.exe", L"--stall", output, "timeout-child", log, 200);
         fail("fault injection did not time out", 0);
@@ -500,7 +533,7 @@ int wmain(int argc, wchar_t** argv) {
         fs::path pwsh(argv[2]); output = fs::path(argv[4]);
         const std::wstring name(argv[6]);
         if (name != L"share" && name != L"replace" && name != L"script-module" && name != L"tool" && name != L"dll" &&
-            name != L"timeout-child" && name != L"timeout-actor") fail("unknown case", 0);
+            name != L"timeout-child" && name != L"timeout-actor" && name != L"directory-contract") fail("unknown case", 0);
         if (!nativeArm64(GetCurrentProcess())) fail("native ARM64 process required", 0);
         requireLocalNtfs(pwsh); requireLocalNtfs(output);
         if (_wcsicmp(pwsh.filename().c_str(), L"pwsh.exe") != 0 || !fs::is_regular_file(pwsh)) fail("fixed pwsh.exe file required", 0);
