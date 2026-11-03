@@ -87,6 +87,8 @@ def signatures(path, source, package):
     if set(doc) != {'schema', 'sourceCommit', 'files'} or doc['schema'] != 'installed-18u-signatures-v1' or doc['sourceCommit'] != source or not isinstance(doc['files'], list):
         raise ValueError('signature source/schema')
     expected = {'payload/' + name for name in a.BINARIES}
+    if (package / 'payload/frontend/YimeTouchKeyboard.exe').is_file():
+        expected.add('payload/frontend/YimeTouchKeyboard.exe')
     seen = set()
     for row in doc['files']:
         if not isinstance(row, dict) or set(row) != {'path', 'bytes', 'sha256', 'status', 'signerThumbprint'}:
@@ -109,7 +111,7 @@ def signatures(path, source, package):
     return doc
 
 
-def build(repo, native, go, data, work, signature_file, source_commit, runner=subprocess.run):
+def build(repo, native, go, data, work, signature_file, source_commit, runner=subprocess.run, frontend=None):
     repo = Path(repo).absolute()
     work = Path(work).absolute()
     for p in (work, *work.parents):
@@ -125,12 +127,14 @@ def build(repo, native, go, data, work, signature_file, source_commit, runner=su
             raise ValueError('work overlaps inputs')
     payload = work / 'assembled'
     package = work / 'package'
-    descriptor = a.assemble(repo, native, go, data, payload, source_commit)
+    descriptor = a.assemble(repo, native, go, data, payload, source_commit) if frontend is None else a.assemble(repo, native, go, data, payload, source_commit, frontend)
+    version = VERSION if frontend is None else '0.1.0-18u-test.7'
+    zip_name = ZIP_NAME if frontend is None else 'YimeCore-18u-0.1.0-18u-test.7-windows-amd64.zip'
     expected_payload = {row['path']: {k: row[k] for k in ('bytes', 'sha256')} for row in descriptor['files']}
     expected_payload['installed-18u-product.json'] = a.digest(payload / 'installed-18u-product.json')
     installer_before = {name: a.digest(repo / 'installer/simple' / name) for name in INSTALLER}
     params = work / 'build-parameters.json'
-    params.write_text(json.dumps({'Product': 'yimecore-18u', 'PayloadRoot': str(payload), 'OutputRoot': str(package), 'Version': VERSION, 'Target': 'windows-amd64'}), encoding='utf-8')
+    params.write_text(json.dumps({'Product': 'yimecore-18u', 'PayloadRoot': str(payload), 'OutputRoot': str(package), 'Version': version, 'Target': 'windows-amd64'}), encoding='utf-8')
     runner([sys.executable, str(repo / 'tools/powershell/run_checked.py'), '--script', str(repo / 'installer/simple/Build-Package.ps1'), '--edition', 'ps7', '--params-file', str(params)], cwd=repo, check=True, timeout=180)
     expected = {'payload/' + name: value for name, value in expected_payload.items()}
     expected.update(installer_before)
@@ -138,7 +142,7 @@ def build(repo, native, go, data, work, signature_file, source_commit, runner=su
     if set(actual) != set(expected) | {'product-package.json'} or any(actual[name] != value for name, value in expected.items()):
         raise ValueError('simple package differs from exact assembled payload/installer')
     simple = a.load_json(package / 'product-package.json')
-    if set(simple) != {'format', 'product', 'version', 'files', 'target', 'host_architecture', 'tsf64_architecture'} or (simple['format'], simple['product'], simple['version'], simple['target'], simple['host_architecture'], simple['tsf64_architecture']) != ('yime-simple-package-18u-1', 'yimecore-18u', VERSION, 'windows-amd64', 'amd64', 'x64'):
+    if set(simple) != {'format', 'product', 'version', 'files', 'target', 'host_architecture', 'tsf64_architecture'} or (simple['format'], simple['product'], simple['version'], simple['target'], simple['host_architecture'], simple['tsf64_architecture']) != ('yime-simple-package-18u-1', 'yimecore-18u', version, 'windows-amd64', 'amd64', 'x64'):
         raise ValueError('simple manifest identity')
     rows = simple['files']
     if not isinstance(rows, list) or len(rows) != len(expected_payload) or any(not isinstance(r, dict) or set(r) != {'path', 'bytes', 'sha256'} for r in rows):
@@ -147,12 +151,18 @@ def build(repo, native, go, data, work, signature_file, source_commit, runner=su
         raise ValueError('simple manifest payload mismatch')
     sig = signatures(signature_file, source_commit, package)
     (package / 'signatures.json').write_text(json.dumps(sig, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    (package / 'README.zh-CN.md').write_text(README, encoding='utf-8')
+    readme = README
+    if frontend is not None:
+        readme = readme.replace(VERSION, version).replace('中文 variable 模式。', '安装后检查仍为中文 variable；触控前端支持三模式和 CN/EN。')
+        readme = readme.replace('此包不是完整日用触摸 UI，\n不包含 Word/Edge 或全量物理验收结论。', '本包新增 frontend/ 完整触控 UI 与 TSF 接入候选；不包含 Word/Edge 或物理验收通过结论。')
+        readme = readme.replace('五个 PE', '六个 PE')
+        readme += '\n安装完成后，从安装目录 frontend/Start Installed Touch Keyboard.cmd 启动。完整语义和限制见 frontend/USER_GUIDE.zh-CN.md。\n'
+    (package / 'README.zh-CN.md').write_text(readme, encoding='utf-8')
     files = inventory(package)
-    evidence = {'schema': 'installed-18u-package-evidence-v1', 'sourceCommit': source_commit, 'version': VERSION, 'product': 'yimecore-18u', 'architecture': 'native-x64', 'installationExecuted': False, 'registrationExecuted': False, 'installedHostAcceptance': False, 'publisherTrust': 'not-established', 'nonPESignatureStatus': 'not-evaluated', 'files': files}
+    evidence = {'schema': 'installed-18u-package-evidence-v1', 'sourceCommit': source_commit, 'version': version, 'product': 'yimecore-18u', 'architecture': 'native-x64', 'installationExecuted': False, 'registrationExecuted': False, 'installedHostAcceptance': False, 'publisherTrust': 'not-established', 'nonPESignatureStatus': 'not-evaluated', 'files': files}
     (package / 'package-evidence.json').write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     files['package-evidence.json'] = a.digest(package / 'package-evidence.json')
-    archive = work / ZIP_NAME
+    archive = work / zip_name
     with zipfile.ZipFile(archive, 'x', compression=zipfile.ZIP_DEFLATED, compresslevel=6) as z:
         for name in sorted(files):
             if a.digest(package / name) != files[name]:
@@ -166,7 +176,7 @@ def build(repo, native, go, data, work, signature_file, source_commit, runner=su
             with z.open(name) as stream:
                 if z.getinfo(name).file_size != record['bytes'] or hashlib.file_digest(stream, 'sha256').hexdigest() != record['sha256']:
                     raise ValueError('ZIP byte mismatch')
-    summary = {'sourceCommit': source_commit, 'zip': ZIP_NAME, **a.digest(archive), 'packageEvidence': a.digest(package / 'package-evidence.json'), 'installedDescriptor': expected_payload['installed-18u-product.json']}
+    summary = {'sourceCommit': source_commit, 'zip': zip_name, **a.digest(archive), 'packageEvidence': a.digest(package / 'package-evidence.json'), 'installedDescriptor': expected_payload['installed-18u-product.json']}
     (work / 'package-receipt.json').write_text(json.dumps(summary, indent=2) + '\n', encoding='utf-8')
     return summary
 
@@ -175,8 +185,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('repo', 'native', 'go', 'data', 'work', 'signatures', 'source-commit'):
         parser.add_argument('--' + name, required=True)
+    parser.add_argument('--frontend', help='complete matching-source installed TSF frontend; produces test.7')
     args = parser.parse_args()
-    print(json.dumps(build(args.repo, args.native, args.go, args.data, args.work, args.signatures, args.source_commit), indent=2))
+    print(json.dumps(build(args.repo, args.native, args.go, args.data, args.work, args.signatures, args.source_commit, frontend=args.frontend), indent=2))
 
 if __name__ == '__main__':
     main()

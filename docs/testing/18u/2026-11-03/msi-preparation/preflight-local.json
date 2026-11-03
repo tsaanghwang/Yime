@@ -1,0 +1,49 @@
+{
+  "schema": "msi-18u-test6-preparation-v1",
+  "recordedAtUTC": "2026-11-03T09:20:32.722176+00:00",
+  "host": "WIN-JTKUT7KBVN7",
+  "installRoot": "C:\\Program Files\\YimeCore 18u Touch",
+  "baselineVerified": true,
+  "physicalAcceptancePerformed": false,
+  "appInputPerformed": false,
+  "installedHostRetested": false,
+  "systemMutationPerformed": false,
+  "readyForInstalledTouchAppTest": false,
+  "blockers": [
+    "test.6 has no packaged touch frontend",
+    "ordinary-application installed input entry is not delivered by test.6"
+  ],
+  "manualChecks": [
+    "current pen charge and response",
+    "screen posture and ruler calibration",
+    "new frontend package identity and ordinary-app TSF route"
+  ],
+  "payload": {
+    "version": "0.1.0-18u-test.6",
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "descriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "verifiedMembers": 15,
+    "descriptorAlsoVerified": true,
+    "markerMatches": true,
+    "scope": "descriptor-listed payload only; maintenance resources and extra files not certified"
+  },
+  "environment": {
+    "nativeArchitecture": "AMD64",
+    "windowsVersion": "10.0.26300",
+    "comPathMatches": true,
+    "profileRegistryKeyPresent": true,
+    "registrationScope": "read-only HKLM view; not live TSF activation or category verification",
+    "displayMetrics": {
+      "processVisibleWidth": 1440,
+      "processVisibleHeight": 900,
+      "monitorCount": 1,
+      "digitizerFlags": 197,
+      "maximumTouches": 10,
+      "convertibleSlateMode": 1
+    },
+    "displayScope": "process-visible dimensions, not physical pixels or ruler calibration",
+    "touchReported": true,
+    "penReported": true,
+    "digitizerReadyReported": true
+  }
+}

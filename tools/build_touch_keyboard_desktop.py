@@ -83,13 +83,25 @@ ARM64 包仅交叉构建。未修改已安装输入法、默认输入法或用�
 ''', encoding='utf-8', newline='\n')
 
 
-def build(output: Path, arch: str, data: Path):
+def build(output: Path, arch: str, data: Path, installed_tsf=False):
     output = generated(output)
     if output == ROOT/'.generated' or output.exists() and any(output.iterdir()):
         raise ValueError('Choose a new empty package directory under .generated/; existing packages are preserved')
     verify(data)
     output.mkdir(parents=True, exist_ok=True)
     stage_resources(output, data)
+    if installed_tsf:
+        if arch != 'amd64':
+            raise ValueError('installed TSF frontend is native x64 only')
+        # Remove only the launchers just generated in this fresh output.
+        # The installed build itself also refuses legacy SendInput entry modes.
+        for name in LAUNCHERS:
+            (output / name).unlink()
+        (output / 'Start Installed Touch Keyboard.cmd').write_bytes(b'@echo off\r\nstart "" /d "%~dp0" "%~dp0YimeTouchKeyboard.exe" --touch-ui --theme dark --key-sound click\r\n')
+        (output / 'Start Local Preview.cmd').write_bytes(b'@echo off\r\nstart "" /d "%~dp0" "%~dp0YimeTouchKeyboard.exe" --preview --touch-ui --theme dark\r\n')
+        guide = ROOT / 'prototypes/touch-terminal/desktop/INSTALLED_TSF.zh-CN.md'
+        shutil.copyfile(guide, output / 'USER_GUIDE.zh-CN.md')
+        (output / 'README.txt').write_text('18u installed TSF frontend candidate. Install the matching complete package first.\nStart Installed Touch Keyboard.cmd requires its own installation descriptor and active 18u profile.\nStart Local Preview.cmd stays inside the keyboard window. No SendInput fallback.\nSee USER_GUIDE.zh-CN.md. Not physical or ordinary-application acceptance evidence.\n', encoding='utf-8')
     git = ['git', '-c', 'core.fsmonitor=false']
     head = subprocess.check_output(git+['rev-parse','HEAD'], cwd=ROOT, text=True).strip()
     dirty = bool(subprocess.check_output(git+['status','--porcelain'], cwd=ROOT, text=True).strip())
@@ -102,7 +114,8 @@ def build(output: Path, arch: str, data: Path):
     resource_file.write_text(json.dumps(resources, ensure_ascii=False, indent=2)+'\n', encoding='utf-8', newline='\n')
     env = dict(os.environ, GOOS='windows', GOARCH=arch, CGO_ENABLED='0')
     exe = output/'YimeTouchKeyboard.exe'
-    subprocess.run(['go','build','-trimpath',f'-ldflags=-H=windowsgui -X main.portableResourcesSHA256={digest(resource_file)}',
+    extra = ' -X main.installedTSFOnly=1' if installed_tsf else ''
+    subprocess.run(['go','build','-trimpath',f'-ldflags=-H=windowsgui -X main.portableResourcesSHA256={digest(resource_file)}{extra}',
                     '-o',str(exe),'./cmd/yime-touch-keyboard'], cwd=ROOT/'go-backend', env=env, check=True)
     manifest = {'schemaVersion': 2, 'scope': 'uninstalled-desktop-touch-keyboard-chinese-experiment',
                 'architecture': 'windows-'+arch, 'sourceCommit': head, 'sourceChanges': dirty,
@@ -138,6 +151,9 @@ def build(output: Path, arch: str, data: Path):
                           'event': os.environ.get('GITHUB_EVENT_NAME'),
                           'attempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
                           'checkoutCommit': head}
+    if installed_tsf:
+        manifest.update(scope='installed-18u-tsf-frontend-candidate', defaultLauncher='Start Installed Touch Keyboard.cmd',
+                        defaultMode='installed-tsf-explicit-target-binding', sendInputFallback=False)
     (output/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
     print(output)
     print('Executable SHA-256:',digest(exe))
@@ -148,5 +164,6 @@ if __name__ == '__main__':
     parser.add_argument('--output-dir',type=Path,default=ROOT/'.generated/touch-keyboard-desktop')
     parser.add_argument('--arch',choices=['amd64','arm64'],default='amd64')
     parser.add_argument('--data-dir',type=Path,default=ROOT/'.generated/touch-keyboard-resources')
+    parser.add_argument('--installed-tsf',action='store_true',help='build the independent installed TSF frontend, no SendInput entry')
     args=parser.parse_args()
-    build(args.output_dir,args.arch,args.data_dir)
+    build(args.output_dir,args.arch,args.data_dir,args.installed_tsf)

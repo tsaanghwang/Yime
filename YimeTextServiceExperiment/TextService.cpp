@@ -1,6 +1,9 @@
 #ifdef YIME_TOUCH_PRODUCT
 #include "DedicatedTouchRoute.h"
 #endif
+#ifdef YIME_TOUCH_FRONTEND
+#include "TouchFrontendEndpoint.h"
+#endif
 #include "TextService.h"
 
 #include <cstdio>
@@ -356,6 +359,10 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
     std::string ignoredError;
     surface_.Connect(yime::experiment::ResolveBrokerPipeName(), 2000, &ignoredError);
 #endif
+#ifdef YIME_TOUCH_FRONTEND
+    try { touchFrontend_ = new TouchFrontendEndpoint(threadManager_, clientId_); }
+    catch (...) { Deactivate(); return E_FAIL; }
+#endif
 #if defined(YIME_TOUCH_PRODUCT) && defined(YIME_TOUCH_REGISTRATION_PROBE)
     // Only the isolated registration-gate build emits this fixed success marker.
     std::fputs("{\"stage\":\"registered-probe/actual-activate-success\",\"kind\":\"marker\",\"code\":0}\n", stderr);
@@ -365,6 +372,9 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
 }
 
 STDMETHODIMP YimeTextService::Deactivate() {
+#ifdef YIME_TOUCH_FRONTEND
+    delete touchFrontend_; touchFrontend_ = nullptr;
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     // Revoke lookup before releasing callbacks. A host may retain the provider;
     // GetFunction must reject that retained object after deactivation.
@@ -466,6 +476,9 @@ STDMETHODIMP YimeTextService::GetFunction(REFGUID function, REFIID iid, IUnknown
 #endif
 
 STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
+#ifdef YIME_TOUCH_FRONTEND
+    if (!foreground && touchFrontend_) touchFrontend_->Invalidate();
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     if(!foreground && dedicated_)dedicated_->Disconnect();
 #endif
@@ -488,6 +501,9 @@ STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
 STDMETHODIMP YimeTextService::OnInitDocumentMgr(ITfDocumentMgr*) { return S_OK; }
 
 STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
+#ifdef YIME_TOUCH_FRONTEND
+    if (touchFrontend_) touchFrontend_->Invalidate();
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     if(dedicated_)dedicated_->Disconnect();
 #endif
@@ -509,6 +525,9 @@ STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
 }
 
 STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*) {
+#ifdef YIME_TOUCH_FRONTEND
+    if (touchFrontend_) touchFrontend_->Invalidate();
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     if(dedicated_)dedicated_->FocusChanged(focus);
 #endif
@@ -527,6 +546,9 @@ STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*)
 }
 
 STDMETHODIMP YimeTextService::OnPushContext(ITfContext* context) {
+#ifdef YIME_TOUCH_FRONTEND
+    if (touchFrontend_) touchFrontend_->Invalidate();
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     if(dedicated_)dedicated_->ContextChanged(context);
 #endif
@@ -534,6 +556,9 @@ STDMETHODIMP YimeTextService::OnPushContext(ITfContext* context) {
 }
 
 STDMETHODIMP YimeTextService::OnPopContext(ITfContext* context) {
+#ifdef YIME_TOUCH_FRONTEND
+    if (touchFrontend_) touchFrontend_->Invalidate();
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     if(dedicated_)dedicated_->Disconnect();
 #endif

@@ -15,6 +15,7 @@ class DedicatedTouchRoute;
 
 class CandidateListUIElement;
 class LanguageBarItem;
+class TouchFrontendEndpoint;
 
 class YimeTextService final : public ITfTextInputProcessorEx,
                               public ITfKeyEventSink,
@@ -60,6 +61,9 @@ public:
     STDMETHODIMP PollDedicated(BSTR* response) override;
 #endif
 private:
+#ifdef YIME_TOUCH_FRONTEND
+    TouchFrontendEndpoint* touchFrontend_ = nullptr;
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     DedicatedTouchRoute* dedicated_=nullptr;
     DWORD dedicatedThread_=0;

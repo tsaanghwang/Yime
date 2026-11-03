@@ -195,7 +195,7 @@ func (a *ui) applyTouchImmediate(action string) error {
 			if action == "help-next" {
 				delta = 1
 			}
-			a.touchHelpPage = max(0, min(len(touchHelpPages())-1, a.touchHelpPage+delta))
+			a.touchHelpPage = max(0, min(len(a.helpPages())-1, a.touchHelpPage+delta))
 		}
 	case "minimize":
 		a.minimize()

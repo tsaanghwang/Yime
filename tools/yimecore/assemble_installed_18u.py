@@ -58,7 +58,7 @@ def amd64(path):
     if offset + 26 > len(raw) or raw[offset:offset+4] != b'PE\0\0' or struct.unpack_from('<H', raw, offset+4)[0] != 0x8664 or struct.unpack_from('<H', raw, offset+24)[0] != 0x20b:
         raise ValueError('native AMD64 PE required')
 
-def assemble(repo, native, go, data, output, source_commit):
+def assemble(repo, native, go, data, output, source_commit, frontend=None):
     if not re.fullmatch('[0-9a-f]{40}', source_commit):
         raise ValueError('full source commit required')
     output = Path(output).absolute()
@@ -75,6 +75,23 @@ def assemble(repo, native, go, data, output, source_commit):
         inputs[dest] = regular(Path(repo) / src)
     for name in DATA:
         inputs['data/' + name] = regular(Path(data) / name)
+    if frontend is not None:
+        front = Path(frontend).absolute()
+        info = load_json(front / 'manifest.json')
+        if (info.get('scope') != 'installed-18u-tsf-frontend-candidate'
+                or info.get('sourceCommit') != source_commit or info.get('sourceChanges') is not False
+                or info.get('architecture') != 'windows-amd64' or info.get('sendInputFallback') is not False):
+            raise ValueError('frontend must be a clean, matching-source x64 TSF build')
+        inventory = info.get('files', {})
+        names = {p.relative_to(front).as_posix() for p in front.rglob('*') if p.is_file()}
+        if names != set(inventory) | {'manifest.json'} or 'YimeTouchKeyboard.exe' not in inventory:
+            raise ValueError('frontend inventory mismatch')
+        for name in names:
+            path = regular(front / name)
+            if name != 'manifest.json' and digest(path)['sha256'] != inventory[name]:
+                raise ValueError('frontend file mismatch: ' + name)
+            inputs['frontend/' + name] = path
+        amd64(front / 'YimeTouchKeyboard.exe')
     # This descriptor is a build-source assertion, not publisher authentication.
     # Runtime independently checks its content locks through the canonical loader.
     product = load_json(inputs['source/tools/yimecore/18u-touch-product.json'])
@@ -89,6 +106,16 @@ def assemble(repo, native, go, data, output, source_commit):
     for name in DATA:
         if digest(inputs['data/' + name]) != lock['files'][name]:
             raise ValueError('locked resource mismatch: ' + name)
+        if frontend is not None:
+            member = inputs.get('frontend/data/' + name)
+            if member is None or digest(member) != lock['files'][name]:
+                raise ValueError('frontend locked resource mismatch: ' + name)
+    if frontend is not None:
+        for name in ('prototypes/touch-terminal/data/physical-layout.json',
+                     'prototypes/touch-terminal/encoding/yime_yinyuan_layout.json'):
+            member = inputs.get('frontend/' + name)
+            if member is None or digest(member) != digest(inputs['source/' + name]):
+                raise ValueError('frontend projection mismatch: ' + name)
     projection = product['data']
     if projection.get('standard_index_fallback') is not False or projection.get('layout_sha256') != LAYOUT_SHA or projection.get('dictionary_sha256') != DICTIONARY_SHA:
         raise ValueError('fixed dedicated resource identity required')
@@ -120,8 +147,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('repo', 'native', 'go', 'data', 'output', 'source-commit'):
         parser.add_argument('--' + name, required=True)
+    parser.add_argument('--frontend', help='optional complete matching-source installed TSF frontend')
     args = parser.parse_args()
-    assemble(args.repo, args.native, args.go, args.data, args.output, args.source_commit)
+    assemble(args.repo, args.native, args.go, args.data, args.output, args.source_commit, args.frontend)
 
 if __name__ == '__main__':
     main()

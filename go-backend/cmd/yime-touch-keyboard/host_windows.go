@@ -9,6 +9,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 	"github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
+	"github.com/tsaanghwang/Yime/go-backend/internal/tsffrontend"
 )
 
 const hostHelp = "P4 中文宿主输入实验\n\n先在目标应用文本区点好光标，再点“绑定目标”。键盘不改变已安装输入法或默认选择。语言键只显示当前输入语言：CN 或 EN。\n组合仅显示在键盘内；候选/空格/Enter 确认后一次性发送 Unicode。Esc 只取消键盘组合。\n焦点离开（即使再返回）、最小化、显示环境变化或帮助打开后取消组合与旧触点；需要重新绑定。重新绑定不会清空宿主正文。\n无中文组合时，编辑键和 Ctrl/Alt 快捷键发往绑定目标；侧区仍保持 literal 旁路。输出栏右侧的左/右、Home/End、选区开关支持单指/单笔依次导航和选择；Home/End 由宿主解释。暂停组合也须先取消。选区开关只影响辅助导航，其他操作及失焦/失败会关闭；导航会取消重叠的旧触点。\n发送失败、部分发送或发送期间失焦会停止后续提交。先人工核对正文，再重新绑定；绝不自动重放或回滚。\nSendInput 发送数不等于应用接受。Windows 没有原子绑定 HWND 的 SendInput，发送瞬间切换焦点有结果不明风险；不要在确认时切换应用。真实宿主、手指/笔和 ARM64 原生验收仍须分别记录。"
@@ -31,9 +32,22 @@ func (a *ui) initHost() {
 		if currentHostTarget(a.h) != t {
 			return fmt.Errorf("绑定目标身份已变化，未发送")
 		}
+		if a.o.InstalledTSF {
+			if a.tsf == nil {
+				return fmt.Errorf("尚未连接当前应用的18u TSF，请选择专用输入法后绑定")
+			}
+			text, key, extend, err := tsfEdit(o)
+			if err != nil {
+				return err
+			}
+			return a.tsf.Edit(text, key, extend)
+		}
 		return sendOutputTo(o, target{t.Window, t.Focus})
 	}
 	a.status = "请在目标文本区点光标，再点“绑定目标”；组合不会自动提交"
+	if a.o.InstalledTSF {
+		a.status = "请在目标应用选择独立18u输入法并点正文，再绑定；提交经 TSF，失败不补发"
+	}
 }
 
 // Pump already queued focus callbacks before validating an action/commit. UI
@@ -56,6 +70,10 @@ func pumpHostMessages() bool {
 	return false
 }
 func (a *ui) loseHostFocus(reason string) {
+	if a.tsf != nil {
+		_ = a.tsf.Close()
+		a.tsf = nil
+	}
 	a.host.invalidate(reason)
 	a.cancel()
 	a.preview.fault = true
@@ -99,6 +117,19 @@ func (a *ui) bindHost() error {
 	if err := a.host.bind(currentHostTarget(a.h)); err != nil {
 		a.loseHostFocus("绑定失败；请在目标文本区放置光标")
 		return err
+	}
+	if a.o.InstalledTSF {
+		if a.tsf != nil {
+			_ = a.tsf.Close()
+			a.tsf = nil
+		}
+		t := a.host.target
+		client, err := tsffrontend.Dial(t.Process, t.Thread, uint64(t.Window))
+		if err != nil {
+			a.loseHostFocus("TSF绑定失败；请确认已选择本包专用18u输入法")
+			return err
+		}
+		a.tsf = client
 	}
 	tick, _, _ := k32.NewProc("GetTickCount").Call()
 	a.focusStarted = uint32(tick)

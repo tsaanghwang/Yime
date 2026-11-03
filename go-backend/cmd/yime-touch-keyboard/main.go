@@ -15,6 +15,8 @@ import (
 var ownTSFDemoPackage string // Set only by the isolated demo builder.
 
 type options struct {
+	InstalledTSF                        bool
+	InstallRoot, InstallManifestSHA     string
 	OwnTSFDemoSmoke                     bool
 	OwnTSFDemo                          bool
 	Root, Profile, Zones, Shot, KeyView string
@@ -34,6 +36,9 @@ type options struct {
 
 func main() {
 	var o options
+	flag.BoolVar(&o.InstalledTSF, "installed-tsf", false, "use the installed independent 18u TIP; no SendInput fallback")
+	flag.StringVar(&o.InstallRoot, "install-root", "", "absolute matching 18u installation root")
+	flag.StringVar(&o.InstallManifestSHA, "manifest-sha256", "", "independent installed descriptor SHA-256")
 	flag.StringVar(&o.Root, "root", "", "source root (source builds); portable builds use the executable directory")
 	flag.StringVar(&o.KeyView, "key-view", "english", "english/original keycaps; in --preview this sets the English-input view preference")
 	flag.StringVar(&o.Profile, "profile", "", "optional geometry profile JSON")
@@ -108,6 +113,9 @@ func execute(o options) error {
 	}
 	exe, err := os.Executable()
 	if err != nil {
+		return err
+	}
+	if err := prepareInstalledFrontend(&o, exe); err != nil {
 		return err
 	}
 	if err := preparePortable(&o, filepath.Dir(exe), portableResourcesSHA256); err != nil {

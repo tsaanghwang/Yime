@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
+	"github.com/tsaanghwang/Yime/go-backend/internal/tsffrontend"
 	"html"
 	"image"
 	"image/png"
@@ -86,6 +87,7 @@ type input struct {
 	Data [32]byte
 }
 type ui struct {
+	tsf                 *tsffrontend.Client
 	demo                *ownDemo
 	h                   uintptr
 	s                   *tk.State
@@ -285,6 +287,11 @@ func run(o options) error {
 		a.showGlyphs = true
 		if o.Host {
 			a.initHost()
+			defer func() {
+				if a.tsf != nil {
+					_ = a.tsf.Close()
+				}
+			}()
 		}
 	}
 	active = a
@@ -304,6 +311,9 @@ func run(o options) error {
 	}
 	if o.Host {
 		title = "Yime 18u 中文宿主输入实验"
+	}
+	if o.InstalledTSF {
+		title = "Yime 18u 安装版触控键盘 · TSF"
 	}
 	if o.OwnTSFDemo {
 		title = "Yime 18u 独立 TSF 自有宿主演示（非安装输入法）"
@@ -588,6 +598,9 @@ func (a *ui) showHelp() {
 	}
 	if a.o.TouchUI {
 		help = touchHelp
+	}
+	if a.o.InstalledTSF {
+		help = installedTouchHelp
 	}
 	U("MessageBoxW").Call(a.h, ptr(str(help)), ptr(str("Yime 桌面键盘使用帮助")), 0x00040040)
 }
@@ -874,6 +887,9 @@ func sendOutput(o tk.Output) error {
 // Only the host delivery adapter supplies a previously captured destination.
 // The legacy English route captures it immediately above; P3 remains blocked.
 func sendOutputTo(o tk.Output, destination target) error {
+	if installedTSFOnly != "" || active != nil && active.o.InstalledTSF {
+		return errors.New("installed TSF route never uses SendInput")
+	}
 	if active != nil && active.preview != nil && active.host == nil {
 		return errors.New("controlled preview cannot send OS input")
 	}
