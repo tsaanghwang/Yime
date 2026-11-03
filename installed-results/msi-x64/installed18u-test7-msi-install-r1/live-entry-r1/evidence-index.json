@@ -1,0 +1,291 @@
+{
+  "localOnlyFiles": [
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/entry-lock.json",
+      "bytes": 985,
+      "sha256": "e285cc3a828b7d6a793b7eba312574349e1cafdae06a0ef1f750c86064d9efdd"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/actual-user-after.json",
+      "bytes": 4118,
+      "sha256": "3fe9cff61b139c9a4af978a698d32dad78e36747856401a03a511034e813ccdb"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/actual-user-before.json",
+      "bytes": 4007,
+      "sha256": "3e88886bf2966b59251dfe5772d7c479bcde68b3903371661e02e5931b365a17"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/after-uninstall.json",
+      "bytes": 2387,
+      "sha256": "d22221c98bf07e2e8225a99163479f175941bb90621255405a67a0ed05c9ddd5"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/fresh-package-check.json",
+      "bytes": 172,
+      "sha256": "aadad23d3f0749a888ffbaef6a280107754aa82c8d38cda166f46278fa1d1bc6"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/gate-file-opens.jsonl",
+      "bytes": 2846,
+      "sha256": "056ff43475a753dae85e5426d028b61bf7b7f5eb69048611144dc7f8323b516f"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/gate.json",
+      "bytes": 7057,
+      "sha256": "ddd1c19636595cc394de9bea74fcb96006a7cad1e4dae16a73bf7be0bf0aaa26"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/install-exit.json",
+      "bytes": 428,
+      "sha256": "bfd2ade1d2215bcb5d9116c86617058b3be78e0615dcbe2957cad7f81266b5e4"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/install-started.json",
+      "bytes": 147,
+      "sha256": "7e1e7d071636a26e9ee7377398b21eefc6a60ef97dede6c01d41d5cd915bbd24"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/install.stderr.log",
+      "bytes": 69927,
+      "sha256": "7fde044a9abf381183c114c6a858a70ed5467ce65afd47547c93af34494a5bcf"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/install.stdout.log",
+      "bytes": 682,
+      "sha256": "0e048d8cbb5861db042653378ee531b9e29579896540c4e1ef8b4126b31361e8"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/installed-verified.json",
+      "bytes": 329,
+      "sha256": "a5bcbd7869a81abe198e056ecd28eae4d78ffe5934363b3ca2791f8085967b98"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/live-authorization.json",
+      "bytes": 231,
+      "sha256": "40813967ddc8b961041871b9b1c58b5ce205d536e04f2cd54115503bf46dd640"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/live-entry-launch/exit.json",
+      "bytes": 663,
+      "sha256": "a11ab9627ffe57b90ccbf6bfaeedf8e1ab7e4135944e28ad15ce517b2233ba6c"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/live-entry-launch/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/live-entry-launch/stdout.bin",
+      "bytes": 59,
+      "sha256": "9fbd1fdcdb7d0bcf965bcacf5a2e6d78c0725b4117e2cbd33de0fda5e41c9703"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/live-flow/result.json",
+      "bytes": 406,
+      "sha256": "08ac395f86430517ffcc7bf697c3a3ec4c50233f05f1f41fea1b5db9c14771b5"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/live-flow/stages.jsonl",
+      "bytes": 476,
+      "sha256": "1451ad5856c282a4f3b80f118c34a1f061cafaaa73dc868287c96173063b5c96"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/live-gate/exit.json",
+      "bytes": 729,
+      "sha256": "ce02de9562ed16cd8beee25fe1e16fbbea87a0960742b47d5f5a5ec78a0e4c74"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/live-gate/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/live-gate/stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/live-modules.json",
+      "bytes": 1113,
+      "sha256": "69c287dc9c0992890c4e9fbc2ce6a8a0ba3f6d25eb8081f5d624c5746e0d6c53"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/live-outer/exit.json",
+      "bytes": 663,
+      "sha256": "1c0f74436b532d2021332b722f9ee3929fd29ba68b13fbbb9ab7a8fea1b436e2"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/live-outer/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/live-outer/stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/managed-inventory.json",
+      "bytes": 3987,
+      "sha256": "fedec1dee4ab260da1d0c9bc042b031313eeeabb798a7e2040682f61841f63b4"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/product-processes.json",
+      "bytes": 6,
+      "sha256": "b423bb45501e0fa49d3b77e635f800a29f1fdcf5a58e00c7e04a7ff7833045f2"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/uninstall-exit.json",
+      "bytes": 430,
+      "sha256": "d96e8fbc9a584ee4eaf0ddeeb2095f61d0ce7e71906693d18fbf02d8c069b8b9"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/uninstall-started.json",
+      "bytes": 149,
+      "sha256": "23f773614b8ebfe83dbaee831baa51ceaa3405b5456025f35064cf11c9325d6d"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/uninstall.stderr.log",
+      "bytes": 608127,
+      "sha256": "f2a2aff6272717c9933217ce5514f7d981e0f1b9039f7566332d86d2dc2f27db"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/uninstall.stdout.log",
+      "bytes": 836,
+      "sha256": "03859a881d394e170b0a16353c10f7c8eb7742459876908169444164bdd95efd"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/evidence/user-confirmation.json",
+      "bytes": 141,
+      "sha256": "992d165f935d4937a40dcb1abf5811529585d6d4af6ea45f0da0115e0bf51e99"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/install-params.json",
+      "bytes": 82,
+      "sha256": "d204e349e34019cb26ec64f6d7e88bc123c3499b37efc3f555149dab8127177f"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/publication/evidence-index.json",
+      "bytes": 8726,
+      "sha256": "bd71e73213cd712213f47007497ba8d9160130d5270cb607267cd1adc321add4"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/publication/result.json",
+      "bytes": 7577,
+      "sha256": "9e49c22f510ad8ac525f5ba8452a10cfc1d83cb4e657f64f3f30df70f27b81d5"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/tools/__pycache__/capture.cpython-313.pyc",
+      "bytes": 3733,
+      "sha256": "bbf9bc6af3ffbcad204028947053bf2daf5c9089b97601070d957fe7f7f6758a"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/tools/capture.py",
+      "bytes": 1727,
+      "sha256": "1bcbf9c2a66728a962a267f825b4a462996afdbff5284d58b458e49126ca73e2"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/tools/controller.py",
+      "bytes": 1254,
+      "sha256": "adacc6dde55ac0299d299c43ee2fcf9af74201074feb8d42f6cceee37ed75b2a"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/tools/entry.py",
+      "bytes": 1179,
+      "sha256": "ef7f4b6a8216b907bc566801ed4ec5bee1c4373034d191d70730234f75e49a9e"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/tools/gate.ps1",
+      "bytes": 7508,
+      "sha256": "549f771ec7cb5287a8ee440acb23d8f6f663bd953dbb9b50f44e33a37a5ae481"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/tools/maintain.py",
+      "bytes": 4060,
+      "sha256": "6df00bf2656db027cb4549335862f2a4b42e2d10b19720b6f392816548a3bcf0"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/tools/observe.py",
+      "bytes": 7676,
+      "sha256": "607d7370244651868548880b0e183523ffc1878c8be8f41bd9ab33464dd9fb3b"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/tools/prepare.py",
+      "bytes": 1252,
+      "sha256": "ade129bc75d92725a73209f2575babd91a4e225bf88deab395b9b2a2857d318a"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/tools/rehearse.py",
+      "bytes": 2285,
+      "sha256": "dd5dbb60635a98f449629f5f21ed2db631a897a841a3a4b4a62425feab652ed4"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/tools/report.py",
+      "bytes": 4692,
+      "sha256": "801c1fa79efdbf0a961d57ebfa95247e2e52ebe20ed348ed3c7bdd61ffc3073c"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/tools/snapshot.py",
+      "bytes": 5206,
+      "sha256": "75549a2e677e863e7695d89706beee2c10239425170a8135424961489a8ed448"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/tools/syntax_check.py",
+      "bytes": 284,
+      "sha256": "8b0ed5f8bf07137c4ae0d22e2f1a6e37b8fda5fbe920e3198cb60dc91760f5f9"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/tools/worker.py",
+      "bytes": 5601,
+      "sha256": "48d5212c05981b48e2ccfeffc01657eb977b2710cafe7c1c4d0c0482dbe603e7"
+    },
+    {
+      "localPath": "installed18u-test7-msi-executor-entry-r1/uninstall-params.json",
+      "bytes": 84,
+      "sha256": "508840bf3aa7715bdc5ae2d65be3310fdfa475c28d1d8335c0da9c5ef5e8be92"
+    },
+    {
+      "localPath": "installed18u-test7-msi-live-launch-r1/attempt-started.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "localPath": "installed18u-test7-msi-live-launch-r1/launch-once.ps1",
+      "bytes": 1311,
+      "sha256": "c78633ba7b39ddd5e238e2d653bb521687ba4812d81f6da9fc1bbcafaaddc493"
+    },
+    {
+      "localPath": "installed18u-test7-msi-live-launch-r1/launch-result.json",
+      "bytes": 166,
+      "sha256": "507e66d51fe6a0dd6e795901d2a9564e71c6b584efd67b101279539f6e3c56ad"
+    },
+    {
+      "localPath": "installed18u-test7-msi-live-launch-r1/prepare.py",
+      "bytes": 2295,
+      "sha256": "467fb7e341f8e80031d96d0b3e2e61f7650282bc3440b80985b57674b3f97241"
+    },
+    {
+      "localPath": "installed18u-test7-msi-live-launch-r1/report.py",
+      "bytes": 3628,
+      "sha256": "4d71effaf2c7d5bbefb331447c03ae49346448481be34b60f9456e073d855759"
+    }
+  ],
+  "setupTranscriptsInInitiatingUserSetupLogDirectory": {
+    "uninstall": [
+      {
+        "file": "99a3db588f104f89a890cef26f868668.admin.log",
+        "bytes": 1673,
+        "sha256": "e300e29acf90cd8b8735caa8bc99daec6b7f49496a476850181f5be7378401fb"
+      }
+    ],
+    "install": [
+      {
+        "file": "0dac17a922684dc0a59e6b43c58dd18b.admin.log",
+        "bytes": 1519,
+        "sha256": "74cf28b760032d7df7c48ff60946aba4ff880a988da3a58b7638fd68ffb555fc"
+      }
+    ]
+  },
+  "rawLogsUploaded": false
+}

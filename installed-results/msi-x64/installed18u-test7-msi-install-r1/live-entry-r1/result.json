@@ -1,0 +1,81 @@
+{
+  "taskID": "installed18u-test7-msi-install-r1",
+  "continuation": "live-entry-r1",
+  "status": "installation-and-static-postcheck-pass",
+  "host": "WIN-JTKUT7KBVN7",
+  "nativeArchitecture": "AMD64",
+  "sameInteractiveUserAndSession": true,
+  "administratorVerified": true,
+  "userSavedAndClosed": true,
+  "entryLockSHA256": "e285cc3a828b7d6a793b7eba312574349e1cafdae06a0ef1f750c86064d9efdd",
+  "freshPackages": {
+    "atUTC": "2026-11-03T14:27:08.160596+00:00",
+    "entryFiles": 11,
+    "test7ArchivesVerified": 2,
+    "test7PackageFilesVerified": 46,
+    "test6ArchiveVerified": true
+  },
+  "exclusiveOpen": {
+    "passed": 22,
+    "total": 22,
+    "guaranteesOnlyCheckInstant": true
+  },
+  "observedProductProcessesBeforeSetup": 0,
+  "flow": {
+    "status": "pass",
+    "attempts": {
+      "preconditions": 1,
+      "uninstall": 1,
+      "verify_absent": 1,
+      "install": 1,
+      "verify_installed": 1
+    },
+    "completed": [
+      "preconditions",
+      "uninstall",
+      "verify_absent",
+      "install",
+      "verify_installed"
+    ],
+    "automaticRetry": false,
+    "stage": "verify_installed",
+    "finishedAtUTC": "2026-11-03T14:30:08.111624+00:00"
+  },
+  "uac": {
+    "uacRequested": true,
+    "childStarted": true,
+    "exitCode": 0,
+    "automaticRetry": false,
+    "finishedAtUTC": "2026-11-03T14:30:08.1471584Z"
+  },
+  "uninstallExitCode": 0,
+  "installExitCode": 0,
+  "installed": {
+    "version": "0.1.0-18u-test.7",
+    "sourceCommit": "33b7113c8b76d6c95447856c2d5cca374b542507",
+    "payloadFilesVerified": 39,
+    "totalInstalledFilesVerified": 45,
+    "comPathMatches": true,
+    "profileRegistryPresent": true,
+    "scope": "static installed file hashes and registry; no active TIP, load or input acceptance"
+  },
+  "protection": {
+    "selectedRegistryUnchanged": true,
+    "protectedExistingProgramAndDataTreesUnchanged": true,
+    "newEmptyIndependentDataDirectories": [
+      "independentUserData"
+    ],
+    "scope": "selected product trees and registry snapshots; no user content published"
+  },
+  "limitations": {
+    "sixPEsPreviouslyVerifiedNotSigned": true,
+    "publisherTrustEstablished": false,
+    "rebootPerformed": false,
+    "inputAcceptancePerformed": false,
+    "securitySettingsChanged": false,
+    "automaticRollbackPerformed": false
+  },
+  "rawEvidenceLocalOnly": true,
+  "priorRecordsPreserved": true,
+  "test6ArchiveRetained": true
+}
