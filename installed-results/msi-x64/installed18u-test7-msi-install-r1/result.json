@@ -1,0 +1,135 @@
+{
+  "schema": "installed-18u-install-result-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "recordedAtUTC": "2026-11-03T12:41:08.873406+00:00",
+  "status": "stopped-before-installation",
+  "machine": {
+    "hostName": "WIN-JTKUT7KBVN7",
+    "nativeArchitecture": "AMD64",
+    "processEmulation": false
+  },
+  "package": {
+    "version": "0.1.0-18u-test.7",
+    "sourceCommit": "33b7113c8b76d6c95447856c2d5cca374b542507",
+    "documentationCommit": "cf70cae66706587ec9db07b89fe9769d491a86ea",
+    "archiveIdentity": {
+      "artifact.zip": {
+        "bytes": 192176992,
+        "sha256": "166779e2bef48ac2302acc079aca32dc64e1c68b3ec74dd3c79ae0fb37678c11"
+      },
+      "YimeCore-18u-0.1.0-18u-test.7-windows-amd64.zip": {
+        "bytes": 192137872,
+        "sha256": "a9ee98aefc93bd3b579dcbd388bc7de34a8a2fcb5839666598d660b4e9d39e8a"
+      }
+    },
+    "all46FilesFreshlyVerified": true,
+    "priorLocalSignatureResultCommit": "9603b46c1cda464ccafb8b3f1040b37db1a545de",
+    "priorSixPEStatus": "NotSigned",
+    "signatureObservationRepeatedThisTask": false,
+    "publisherTrustEstablished": false
+  },
+  "existingInstallation": {
+    "version": "0.1.0-18u-test.6",
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "descriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "verifiedMembers": 15,
+    "descriptorAlsoVerified": true,
+    "markerMatches": true,
+    "scope": "descriptor-listed payload only; maintenance resources and extra files not certified",
+    "maintenanceListedMembersVerified": 16
+  },
+  "existingRegistration": {
+    "comPathMatches": true,
+    "profileRegistryKeyPresent": true,
+    "scope": "registry-only; no active TIP or executable queried"
+  },
+  "test6RecoveryPackage": {
+    "status": "pass",
+    "version": "0.1.0-18u-test.6",
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "zipBytes": 92394419,
+    "zipSHA256": "df03629e0bc1512e265beb43b80c58c7d53ada21b1ee3776b6b73bdbfeaa7282",
+    "packageFilesVerified": 23,
+    "retainedCopy": "YimeCore-18u-0.1.0-18u-test.6-windows-amd64.zip",
+    "originalPreserved": true,
+    "automaticRollbackAuthorized": false
+  },
+  "protection": {
+    "beforeRecordedAtUTC": "2026-11-03T12:33:28.452871+00:00",
+    "afterRecordedAtUTC": "2026-11-03T12:40:45.075835+00:00",
+    "knownProgramAndUserDataTreesUnchanged": true,
+    "selectedRegistrySnapshotsUnchanged": true,
+    "knownPaths": {
+      "standardProgram": {
+        "exists": false
+      },
+      "standardUserData": {
+        "exists": false
+      },
+      "rimeProgram": {
+        "exists": false
+      },
+      "rimeProgramX86": {
+        "exists": false
+      },
+      "rimeLegacyProgramX86": {
+        "exists": false
+      },
+      "rimeUserData": {
+        "exists": false
+      },
+      "independentProgram": {
+        "exists": true,
+        "fileCount": 22
+      },
+      "independentUserData": {
+        "exists": false
+      }
+    },
+    "scope": "explicit product/data paths and selected registry keys only; no claim about arbitrary custom locations"
+  },
+  "maintenanceReadiness": {
+    "saveAndCloseRequested": true,
+    "saveAndCloseConfirmationReceived": false,
+    "fileOccupancyConfirmedClear": false,
+    "processesTerminated": false
+  },
+  "stop": {
+    "stage": "pre-install-file-occupancy-query",
+    "interface": "Windows Restart Manager RmStartSession",
+    "nativeReturnCode": 29,
+    "processExitCode": 1,
+    "errorType": "AssertionError",
+    "message": "RmStartSession returned 29 before occupancy information could be obtained.",
+    "cause": "not-established",
+    "occupancyState": "unknown",
+    "retryPerformed": false,
+    "notEvidenceOfSecurityCenterBlock": true
+  },
+  "execution": {
+    "uacAttempted": false,
+    "uninstallAttempted": false,
+    "installAttempted": false,
+    "setupExitCode": null,
+    "setupLogsGenerated": false,
+    "registrationChanged": false,
+    "defaultInputChanged": false,
+    "securitySettingChanged": false,
+    "securityCenterBlockObserved": false,
+    "rebootPerformed": false,
+    "inputTestPerformed": false,
+    "automaticRetryPerformed": false,
+    "automaticRollbackPerformed": false
+  },
+  "disposition": {
+    "test7Installed": false,
+    "followup": "Resolve occupancy-query failure and obtain saved-work/normal-close confirmation before a newly authorized continuation; do not infer files are free or retry automatically."
+  },
+  "privacy": {
+    "rawLogsUploaded": false,
+    "rawSnapshotsUploaded": false,
+    "onlySanitizedResultAndEvidenceIndex": true
+  },
+  "priorRecordsPreserved": true,
+  "evidenceIndexFile": "evidence-index.json"
+}
