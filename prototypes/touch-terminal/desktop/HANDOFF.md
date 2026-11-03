@@ -3,7 +3,7 @@
 ## 2026-11-03 安装版前端接线开发
 
 已新增完整触控前端的安装启动校验、三模式/CN/EN 复用及普通应用专用 TIP 最终编辑接口。
-Go 与原生内存 TSF 回归、完整前端资源检查通过；完整 MSVC DLL、CI 整包和普通应用实测尚待完成。
+Go 与原生内存 TSF 回归、完整前端资源检查通过；最终 `33b7113c` 的 MSVC/离线/制包 CI 已通过，见[固定 test.7 完整交付](../../../docs/testing/18u/2026-11-03/msi-preparation/TEST7-DELIVERY.zh-CN.md)。普通应用和真人指笔仍待实测。
 代码与构建接续见[前端开发交接](../../../docs/testing/18u/2026-11-03/msi-preparation/FRONTEND-DEVELOPMENT.zh-CN.md)。
 现有 MSI test.6 不变，下面准备记录中的“缺口”指当时状态及当前已安装包，不等于新源码尚未开始实现。
 

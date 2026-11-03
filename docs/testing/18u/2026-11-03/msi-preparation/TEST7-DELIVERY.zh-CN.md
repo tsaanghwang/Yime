@@ -1,0 +1,36 @@
+# MSI test.7：完整触控前端开发候选交付
+
+固定源码 `33b7113c8b76d6c95447856c2d5cca374b542507`，分支 `codex/msi-18u-test-preparation-20261103`。
+[专用 MSVC/离线/制包 CI 41617296801](https://github.com/tsaanghwang/Yime/actions/runs/41617296801) 全部通过；[桌面原型 CI 41617296829](https://github.com/tsaanghwang/Yime/actions/runs/41617296829) 通过。
+[通用 Build 41617297028](https://github.com/tsaanghwang/Yime/actions/runs/41617297028) 的 Go、竞争检测、三组真实 Rime、分片覆盖、原生 Win32、Rust i686、离线词典及安装器检查均通过；无需执行的一次性注册/语言环境任务按条件跳过。
+本页交付源代码及完整候选包，不是本机安装或普通应用/指笔验收通过记录。
+
+## 固定包
+
+[下载完整 GitHub Artifact](https://github.com/tsaanghwang/Yime/actions/runs/41617296801/artifacts/13221664045)，名称 `installed-18u-x64-test-package-33b7113c8b76d6c95447856c2d5cca374b542507`，保留至 2026-11-17。Artifact 外层 ZIP 内含产品 ZIP，两个文件的哈希不同。
+
+| 对象 | 字节数 | SHA-256 |
+|---|---:|---|
+| GitHub Artifact 外层 ZIP | 192176992 | `166779e2bef48ac2302acc079aca32dc64e1c68b3ec74dd3c79ae0fb37678c11` |
+| `YimeCore-18u-0.1.0-18u-test.7-windows-amd64.zip` | 192137872 | `a9ee98aefc93bd3b579dcbd388bc7de34a8a2fcb5839666598d660b4e9d39e8a` |
+| `payload/frontend/YimeTouchKeyboard.exe` | 7843840 | `8c5067ce0b4bd1ef3453b5c4c77efee84e0331802941f3ea55622ea12241ef8a` |
+| `payload/installed-18u-product.json` | 7383 | `29c3cce5f62c77d287c4410fdea8665e58f961e46e5dbc53b2ab5133beb1cef2` |
+| `package-evidence.json` | 8136 | `876748ab46401a387244803bb427b958d3828afb393dc2c27e4155baa44dada5` |
+
+包内六个 PE 的 Authenticode 观察均为 `NotSigned`，见[签名记录](ci-33b7113c/signatures.json)。哈希证明固定内容一致性，不是发布者签名。上表产品 ZIP 哈希来自 CI 实际归档后逐成员校验的[原始回执](ci-33b7113c/package-receipt.json)，本机没有下载或运行整个安装包。
+
+## 验证范围
+
+专用 CI 执行了旧版 15 项组装回归、12 项制包回归、新增 7 项前端制包回归、9 项 MSI 预检拒绝路径、Go 前端/TSF 客户端回归、完整 MSVC DLL/前端构建、原生内存 TSF 编辑回归、锁定全量词典输入检查，以及实际 PowerShell 制包与 ZIP 逐成员核对。新前端所有权的 1 个接受和 8 个拒绝用例在 PS5/PS7 均通过，旧版所有权回归保留。
+
+保留[原生编辑输出](ci-33b7113c/frontend-memory-edits.txt)、[PS5 所有权输出](ci-33b7113c/frontend-ownership-ps5.txt)、[PS7 所有权输出](ci-33b7113c/frontend-ownership-ps7.txt)及[范围记录](ci-33b7113c/scope.json)。[完整 CI 证据 Artifact](https://github.com/tsaanghwang/Yime/actions/runs/41617296801/artifacts/13221673900) SHA-256 为 `519b2d7c5a39242868d906831a45947b8b03931caa639ccb76fa8b20718a49a9`；本机下载并核对该哈希后摘录上述原始文件。
+
+首轮 CI 发现旧制包白名单漏带 `frontend/`，现已修复并补齐安装后所有权边界。`b254ce1c` 曾通过专用 CI，但其检查快捷入口仍向安装目录写报告；最终 `33b7113c` 改为写当前用户临时目录。`ci-b254ce1c/` 仅保存早期成功制包的历史回执，不作为本次固定交付。
+
+## 本机接续边界
+
+WIN-JTKUT7KBVN7 当前仍安装 test.6。本轮未执行新安装、注册、重启、默认输入法修改、Word/Edge 输入或真人指笔实测。旧安装成功记录保持，不重复、不转记为 test.7。
+
+本候选支持原生 x64、同用户/登录会话/权限级别的可写 TSF context。触控前端三模式、CN/EN、候选等复用专用引擎；最终文本和支持的编辑动作通过激活 TIP 的实际 DoEditSession 提交。Home/End 为文档首尾，Enter/Tab 为文本；其它 Ctrl/Alt 快捷键、上下方向及功能键尚不支持，明确报错，不回退 SendInput。没有宣称所有应用兼容或完整系统键盘替代。
+
+以后安装此固定包并准备真实应用验证时，先按正常维护流程关闭前端和相关文档，再使用安装目录 `frontend/Start Installed Touch Keyboard.cmd`。不能复制新 exe 到 test.6，也不能把预览或内存回归当成新链路已通过。实际进程间认证/激活 TIP/普通应用读回与每种指笔输入仍需独立观察。操作语义见[安装版说明](../../../../../prototypes/touch-terminal/desktop/INSTALLED_TSF.zh-CN.md)，实测使用本目录空白结果表。

@@ -6,7 +6,7 @@
 
 **2026-11-03：MSI 完整触控前端与普通应用 TSF 接入开发。** 分支 `codex/msi-18u-test-preparation-20261103`。
 新增安装版前端、专用 TIP 线程内最终编辑端点、同源完整 test.7 制包路径及隔离回归。
-本机完整前端三模式内存检查、Go 回归与原生内存 TSF 编辑回归通过；完整 DLL 的 MSVC/CI 与新整包交付仍待验证。
+本机完整前端三模式内存检查、Go 回归与原生内存 TSF 编辑回归通过；最终 `33b7113c` 的完整 MSVC/离线/制包 CI 已通过，完整 test.7 下载及哈希见[固定交付](../../docs/testing/18u/2026-11-03/msi-preparation/TEST7-DELIVERY.zh-CN.md)。
 当前 MSI `WIN-JTKUT7KBVN7` 的 test.6 安装保留，没有新安装、默认输入法修改或真人实测。
 当前实现、边界和验证入口见[前端开发交接](../../docs/testing/18u/2026-11-03/msi-preparation/FRONTEND-DEVELOPMENT.zh-CN.md)。
 下方 MyComputer 记录仍仅属于该机器，不代表 MSI 或新版前端验收。
