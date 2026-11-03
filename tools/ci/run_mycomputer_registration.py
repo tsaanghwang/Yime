@@ -109,12 +109,13 @@ def collect_failure_trace(path,gate):
     """
     records=[];complete=True
     try:
-        lines=read_bytes(path,65536).decode('utf-8-sig').splitlines()
+        lines=read_bytes(path,65536).splitlines()
     except (OSError,ValueError):
         return records,False
-    for line in lines:
-        if not line.strip():continue
+    for index,line in enumerate(lines):
         try:
+            line=line.decode('utf-8-sig' if index==0 else 'utf-8')
+            if not line.strip():continue
             row=gate.strict_json(line)
             if row==gate.MARKER and type(row.get('code')) is int:continue
             require(isinstance(row,dict) and set(row)=={'schema','phase','stage','code'},'trace-fields')

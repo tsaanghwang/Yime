@@ -97,6 +97,28 @@ class RegistrationFlowTests(unittest.TestCase):
         self.assertEqual(result['failureReason'],'native-registration-incomplete')
         self.assertFalse(result['automaticRecoveryAttempted']);self.assertFalse(result['activationEvidenceConsistent'])
 
+    def test_damaged_stderr_line_keeps_valid_failure_events(self):
+        operation,cleanup=self.failure_trace()
+        for name,raw,expected in (
+            ('invalid-tail',json.dumps(operation).encode()+b'\n\xff',[operation]),
+            ('invalid-middle',json.dumps(operation).encode()+b'\n\xff\n'+json.dumps(cleanup).encode(),[operation,cleanup]),
+        ):
+            with self.subTest(name=name):
+                evidence=self.root/name
+                def failed(command,cwd,stdout,stderr,timeout,on_root_created=None):
+                    state=self.runner(command,cwd,stdout,stderr,timeout,on_root_created)
+                    native=json.loads(stdout.read_text());native.update(status='failed',stage=cleanup['stage'],code=cleanup['code'])
+                    stdout.write_text(json.dumps(native));stderr.write_bytes(raw);state['exitCode']=1
+                    return state
+                before=len(self.calls)
+                result=flow.register(self.package,evidence,self.anchor,flow.REGISTER_CONFIRM,runner=failed)
+                self.assertEqual(self.calls[before:],['--register-once'])
+                self.assertEqual(result['failureTrace'],expected)
+                self.assertFalse(result['failureTraceComplete'])
+                self.assertEqual(result['stderr']['sha256'],flow.sha(raw))
+                self.assertEqual((evidence/'register-stderr.txt').read_bytes(),raw)
+                self.assertFalse(result['activationEvidenceConsistent'])
+
     def test_invalid_native_json_keeps_logs_process_and_ledger_without_verifying(self):
         samples=['','{"status":','[]','null','true','1','"text"','{"status":1,"status":2}',
                  '{"code":NaN}','{"code":Infinity}']
