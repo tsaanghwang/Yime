@@ -1,0 +1,9 @@
+{
+  "launcherPID": 46236,
+  "launcherStartedAt": "2026-11-03T07:59:53.6707310+08:00",
+  "observation": "Launcher and its direct children absent when queried; no foreground-r2-started.json, ready.json, not-started.json, or native-fixed-host-r2 directory was produced.",
+  "validationStarted": false,
+  "rootCause": "not established",
+  "automaticRelaunchPerformed": false,
+  "limitations": "Start-Process returned a PID but no child stderr or exit code was captured. This is not TSF activation or edit/readback evidence."
+}

@@ -10,6 +10,19 @@ FIXTURE = (ROOT / 'installer/simple/tests/Test-Installed18uOwnership.ps1').read_
 
 
 class LifecycleSourceContracts(unittest.TestCase):
+    def test_tip_phase_retains_com_and_final_absence_guard(self):
+        source = (ROOT / 'YimeTextServiceExperiment/ProductRegistrationMain.h').read_text()
+        remove = source.split('void productRemove(', 1)[1].split('\nint wmain(', 1)[0]
+        phase = remove.index('if(tipOnly)')
+        final = remove.index('const auto api=productSnapshot();')
+        self.assertLess(remove.index('if(finalPersistent.anyTip)'), phase)
+        self.assertIn('return;', remove[phase:final])
+        self.assertIn('com_retained=true', remove[phase:final])
+        self.assertLess(final, remove.index('COM-delete-last'))
+        self.assertIn('FinalApiAbsent(api.categoriesKnown,api.categories,api.profilesKnown,api.profiles)', remove)
+        self.assertIn('productComOwned(dll);', remove[final:])
+        self.assertLess(SETUP.index("@('unregister-tip',$dll)"), SETUP.index("@('unregister',$dll)"))
+
     def test_old_installed_manifest_not_incoming_package(self):
         self.assertIn("Read-MaintenancePackage (Join-Path $root '.setup')", OWNERSHIP)
         self.assertIn('$manifest=$maintenance.manifest', OWNERSHIP)

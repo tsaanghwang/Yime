@@ -2,14 +2,14 @@ name: Installed 18u compile and offline checks
 
 on:
   push:
-    branches: ['validation/18u-simple-installer-20261102']
+    branches: ['validation/18u-simple-installer-20261102', 'codex/18u-installed-input-events-20261103']
 
 permissions:
   contents: read
 
 jobs:
   compile-offline:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/validation/18u-simple-installer-20261102'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/validation/18u-simple-installer-20261102' || github.ref == 'refs/heads/codex/18u-installed-input-events-20261103')
     runs-on: windows-2025
     timeout-minutes: 25
     defaults:
@@ -63,7 +63,7 @@ jobs:
           pathlib.Path('.generated/installed-18u-evidence/package-tests.log').write_text(stream.getvalue(), encoding='utf-8')
           if result.testsRun != 12 or result.skipped or not result.wasSuccessful():
               raise SystemExit('All twelve wrapper mock checks must pass without skips')
-      - name: Require six lifecycle source contracts
+      - name: Require seven lifecycle source contracts
         run: |
           import importlib, io, pathlib, sys, unittest
           sys.path.insert(0, str(pathlib.Path('tools/yimecore').resolve()))
@@ -71,8 +71,8 @@ jobs:
           stream = io.StringIO()
           result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
           pathlib.Path('.generated/installed-18u-evidence/lifecycle-contracts.log').write_text(stream.getvalue(), encoding='utf-8')
-          if result.testsRun != 6 or result.skipped or not result.wasSuccessful():
-              raise SystemExit('All six lifecycle source contracts must execute and pass')
+          if result.testsRun != 7 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('All seven lifecycle source contracts must execute and pass')
       - name: Require five input-abort static wiring checks
         run: |
           import importlib, io, pathlib, sys, unittest
@@ -93,11 +93,31 @@ jobs:
                   result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-Installed18uOwnership.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
               if result.returncode or output.read_text(encoding='utf-8').count(marker) != 1:
                   raise SystemExit('Filesystem-only ownership cases failed or did not execute: ' + edition)
+      - name: Run isolated file access and loaded DLL checks in PS5 and PS7
+        run: |
+          import pathlib, subprocess, sys
+          for edition in ('ps5', 'ps7'):
+              output = pathlib.Path('.generated/installed-18u-evidence/file-access-' + edition + '.log')
+              with output.open('w', encoding='utf-8') as log:
+                  result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-FileAccess.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
+              if result.returncode or output.read_text(encoding='utf-8').count('PASS file access:') != 1:
+                  raise SystemExit('File access checks failed: ' + edition)
+      - name: Check fresh-process 18u unregistration sequence
+        run: |
+          import pathlib, subprocess, sys
+          for edition in ('ps5', 'ps7'):
+              output = pathlib.Path('.generated/installed-18u-evidence/unregister-sequence-' + edition + '.log')
+              with output.open('w', encoding='utf-8') as log:
+                  result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-18uUnregisterSequence.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
+              if result.returncode or output.read_text(encoding='utf-8').count('PASS 18u unregister:') != 1:
+                  raise SystemExit('Unregister sequence checks failed: ' + edition)
       - name: Run only explicit mock and pure standard-runtime tests
         run: |
           import json, pathlib, subprocess
           groups = [
               ('./internal/touchbroker', [
+                  'TestTIPRejectsWholeCodeInputWithoutEdit',
+                  'TestTIPConnectionCommitRequiresActualOwnerReceipt',
                   'TestDiagnosticKnownDispatchReasons',
                   'TestDiagnosticRequestBranches',
                   'TestDiagnosticUnknownDataNeverCopied',
@@ -172,7 +192,8 @@ jobs:
           import pathlib, subprocess
           commands = [
               (['cmake', '-S', 'YimeTextServiceExperiment', '-B', '.generated/installed-18u-native', '-A', 'x64', '-DYIME_TOUCH_PRODUCT=ON', '-DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON', '-DYIME_18U_PRODUCT_REGISTRATION=ON'], 'configure.log'),
-              (['cmake', '--build', '.generated/installed-18u-native', '--config', 'Release', '--target', 'YimeTextService18u', 'Yime18uProductRegistration', 'YimeTouchRegisteredFormalHostTests', 'Yime18uProductRegistrationPolicyTests', 'Yime18uInputAbortDiagnosticTests', 'Yime18uActionFailureObservationTests'], 'msvc-build.log'),
+              (['cmake', '--build', '.generated/installed-18u-native', '--config', 'Release', '--target', 'YimeTextService18u', 'Yime18uProductRegistration', 'YimeTouchRegisteredFormalHostTests', 'YimeFormalInputSequenceTests', 'Yime18uProductRegistrationPolicyTests', 'Yime18uInputAbortDiagnosticTests', 'Yime18uActionFailureObservationTests'], 'msvc-build.log'),
+              ([str(pathlib.Path('.generated/installed-18u-native/Release/YimeFormalInputSequenceTests.exe').resolve())], 'formal-input-sequence.log'),
               ([str(pathlib.Path('.generated/installed-18u-native/Release/Yime18uProductRegistrationPolicyTests.exe').resolve())], 'pure-policy.log'),
               ([str(pathlib.Path('.generated/installed-18u-native/Release/Yime18uInputAbortDiagnosticTests.exe').resolve())], 'input-abort-pure.log'),
               ([str(pathlib.Path('.generated/installed-18u-native/Release/Yime18uActionFailureObservationTests.exe').resolve())], 'action-observation-pure.log')]
@@ -185,6 +206,7 @@ jobs:
           if policy.count('product registration policy: CLI, absence, removal sequencing, bounded residue passed') != 1:
               raise SystemExit('Pure policy success marker missing')
           markers = {
+              'formal-input-sequence.log': 'PASS formal input: one key per event, acknowledged revisions, first failure stops without replay',
               'input-abort-pure.log': 'diagnostic helper: fixed vocabulary, redaction, bounded output, throwing sink passed',
               'action-observation-pure.log': 'ActionFailureObservation: safe enums/types, malformed/missing, WM_QUIT and sink-failure checks passed'}
           for name, marker in markers.items():
@@ -200,6 +222,16 @@ jobs:
               result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/touch_keyboard_resources.py', 'fetch', '--output-dir', '.generated/touch-keyboard-resources'], stdout=log, stderr=subprocess.STDOUT, timeout=240)
           if result.returncode:
               raise SystemExit('Locked resources unavailable; no substitute')
+      - name: Verify multi-key canonical input against full dedicated resources without TSF
+        run: |
+          import os, pathlib, subprocess
+          env = os.environ.copy()
+          env['YIME_18U_FULL_DATA'] = str(pathlib.Path('.generated/touch-keyboard-resources').resolve())
+          output = pathlib.Path('.generated/installed-18u-evidence/full-resource-input.log')
+          with output.open('w', encoding='utf-8') as log:
+              result = subprocess.run(['go', 'test', '-count=1', '-v', '-timeout=180s', './internal/touchbroker', '-run', '^TestFullResourceDedicatedBroker$'], cwd='go-backend', env=env, stdout=log, stderr=subprocess.STDOUT, timeout=240)
+          if result.returncode or '--- PASS: TestFullResourceDedicatedBroker' not in output.read_text(encoding='utf-8'):
+              raise SystemExit('Full-resource canonical input regression failed or skipped')
       - name: Observe signatures and build installer archive without installation
         env:
           SOURCE_SHA: ${{ github.sha }}

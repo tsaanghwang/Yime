@@ -71,7 +71,14 @@ function Set-Registration([bool]$Install,[string]$Payload){
     if($product.id -eq 'yimecore-18u'){
         $tool=Join-Path $Payload 'x64\Yime18uProductRegistration.exe'
         $dll=Join-Path $root ('x64\'+$product.dll)
-        if($Install){Run-Native $tool @('register',$dll)}else{Run-Native $tool @('unregister',$dll);Run-Native $tool @('verify-absent')}
+        if($Install){Run-Native $tool @('register',$dll)}else{
+            # TSF APIs can cache pre-removal categories/profiles in one process.
+            # First remove the owned TIP, then finish COM removal in a fresh process.
+            # Both phases verify ownership; final API absence is never bypassed.
+            Run-Native $tool @('unregister-tip',$dll)
+            Run-Native $tool @('unregister',$dll)
+            Run-Native $tool @('verify-absent')
+        }
     }elseif($product.id -eq 'yimecore'){
         if($Install){
             # ARM64 and x64 hosts share Registry64 on Windows ARM. Register the

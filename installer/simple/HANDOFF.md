@@ -4,6 +4,20 @@
 
 ## 当前任务
 
+**2026-11-03：MyComputer 正常升级接续 PR #95。** 用户已授权修复、正常卸载、升级及重启；
+test.2 仍完整，管理员独占打开及占用查询确认当前已释放。test.3 原失败未记录错误码，不能追认历史占用者。
+test.5 正常卸载已越过文件占用点，但移除 TIP 后同进程 API 缓存导致最终检查失败，COM/旧文件保留。
+已定位并修复为独立进程完成最终注销，test.6 同源 CI 和完整包交付通过。
+10:21 本机已从部分卸载状态完成正常卸载续行和 test.6 安装，双退出码 0，载荷/注册及保护基线通过。
+10:47 已核验 10:28:22 的实际重启，重启后载荷/注册及保护基线通过。
+11:02 固定 test.6 已安装入口前台执行通过：实际 profile/DLL 激活、TSF 提交及非空读回一致，
+runtime/host/Broker 正常退出，载荷及保护基线未变。本轮闭环完成，无需重测。
+范围限 CN/variable 自有宿主，暂不分发其他三台；保留所有旧包、数据和证据，
+后续状态与固定包见 [test.6 交付](../../docs/testing/18u/2026-11-03/upgrade/TEST6.zh-CN.md)。
+阶段状态与验证见[升级交接](../../docs/testing/18u/2026-11-03/upgrade/HANDOFF.zh-CN.md)。此前逐键输入成功用例不重测。
+
+**2026-11-03：独立 18u installed-host 的整段输入错误已修复，重启后的提交读回用例通过。** 开发分支 `codex/18u-installed-input-events-20261103`，修复提交 `6915f8b9fc1d0978c578f06363e65244b5fe7cd5`，[PR #95](https://github.com/tsaanghwang/Yime/pull/95)。用户于 08:14 +08:00 在前台执行一次修复宿主，实际激活 Windows 注册 profile、加载已安装 DLL、完成 TSF 编辑并读回匹配；host/Broker 均退出 0，安装载荷未改变。**通过组合为新开发检查宿主 + 原 test.2 DLL/Broker，不是 test.4 整包安装验收。** 没有重装、替换标准版或改变默认输入法；旧包内检查器仍未替换，不要重复旧失败命令。接续者先读[本轮交接与原始证据](../../docs/testing/18u/2026-11-03/installed-input-fix/HANDOFF.zh-CN.md)。当前无需重复该用例；后续包交付或真实应用/物理输入须明确范围，不能继承本轮结论。
+
 **2026-11-02：开发机安装本分支构建 `0.1.0-local.14-pr88`（源 `fdd075cd`，PR #88 合并前验证）。** 连读准入、`build-local-product.ps1`、`Build-Package.ps1`、`Setup.ps1 -Action Check`、自提升安装与已安装 x64/x86 注册宿主矩阵 6/6 均通过，记录见 [S3c 恢复方案 §9](../../docs/project/18u-self-developed-integration/S3C_RECOVERY_DELIVERY_REVIEW.zh-CN.md)。用户确认开发测试使用新版本正常，**保留为日常使用，不回滚**；`0.1.0-local.13` 固定包仍在 `C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312` 备用。本次为开发机自建自装，不是测试端完整包交付，不改默认输入法。
 
 两项构建链路说明：连读准入必须在**同一源码树**内运行后再构建——导出器把准入绑定到构建树的相对路径与哈希，跨工作树复用会被 `export evidence source changed` 拒绝，这是设计意图；测试夹具运行根已改为 `%LOCALAPPDATA%\YimeBuildFixtures\<id>` 并在测试后移回构建根 `t\<id>`，长路径工作树不再触发 `Test TEMP is too long`。

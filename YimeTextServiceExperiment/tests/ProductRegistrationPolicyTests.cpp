@@ -9,6 +9,8 @@ int main() {
     check(Parse(3,L"check-owned")==Operation::CheckOwned);
     check(Parse(3,L"register")==Operation::Register);
     check(Parse(3,L"unregister")==Operation::Unregister);
+    check(Parse(3,L"unregister-tip")==Operation::UnregisterTip);
+    check(Parse(2,L"unregister-tip")==Operation::Invalid);
     check(Parse(2,L"unregister")==Operation::Invalid);
     check(Parse(3,L"repoint")==Operation::Invalid);
     check(Parse(3,L"register-com")==Operation::Invalid);

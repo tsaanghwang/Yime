@@ -15,6 +15,7 @@
 #include <string>
 #include "DedicatedTouchService.h"
 #include "ActionFailureObservation.h"
+#include "FormalInputSequence.h"
 #include "YimeTextServiceIds.h"
 using Microsoft::WRL::ComPtr;
 using nlohmann::json;
@@ -219,13 +220,17 @@ int main(){try{
   if(connected)fail("wrong server accepted");rejected=true;
  }else{
   require(hr,"connect actual Broker");if(!state.value("ok",false))fail("open rejected");
-  auto revision=state.at("snapshot").at("revision");
-  json request={{"kind","input"},{"code",config.at("code")},{"revision",revision}};
+  const auto code=config.at("code").get<std::string>();
+  if(code.empty() || code.size()>16)fail("canonical input bound");
+  json request={{"kind","input"},{"code",code.substr(0,1)},{"revision",state.at("snapshot").at("revision")}};
   if(scenario=="deactivated")require(host.deactivate(),"deactivate actual TIP");
   if(scenario=="disconnect-before-action"||scenario=="deactivated"){
    state=host.action(request,hr,yimeactionfailure::Action::Input);rejected=FAILED(hr)||!state.value("ok",false);if(!rejected)fail("disconnected action accepted");
   }else{
-   state=host.action(request,hr,yimeactionfailure::Action::Input);require(hr,"engine input");if(!state.value("ok",false))fail("engine rejected input");
+   state=FormalInputSequence(code,std::move(state),[&](const json& key){
+    auto next=host.action(key,hr,yimeactionfailure::Action::Input);
+    require(hr,"engine input");return next;
+   });
    json selected;for(const auto& c:state.at("snapshot").at("state").at("candidates")){if(c.at("text").get<std::string>()=="你"){selected=c;break;}}
    if(selected.is_null())fail("canonical ni candidate missing");
    request={{"kind","select"},{"candidateId",selected.at("id")},{"revision",state.at("snapshot").at("revision")}};
