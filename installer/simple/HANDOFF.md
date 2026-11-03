@@ -4,6 +4,11 @@
 
 ## 当前任务
 
+**2026-11-03：MyComputer 正常升级接续 PR #95。** 用户已授权修复、正常卸载、升级及重启；
+test.2 仍完整，管理员独占打开及占用查询确认当前已释放。test.3 原失败未记录错误码，不能追认历史占用者。
+本轮补文件访问及占用诊断，交付 test.5 后按正常卸载/安装/重启执行，保留旧包、用户数据和其他产品。
+阶段状态与验证见[升级交接](../../docs/testing/18u/2026-11-03/upgrade/HANDOFF.zh-CN.md)。此前逐键输入成功用例不重测。
+
 **2026-11-03：独立 18u installed-host 的整段输入错误已修复，重启后的提交读回用例通过。** 开发分支 `codex/18u-installed-input-events-20261103`，修复提交 `6915f8b9fc1d0978c578f06363e65244b5fe7cd5`，[PR #95](https://github.com/tsaanghwang/Yime/pull/95)。用户于 08:14 +08:00 在前台执行一次修复宿主，实际激活 Windows 注册 profile、加载已安装 DLL、完成 TSF 编辑并读回匹配；host/Broker 均退出 0，安装载荷未改变。**通过组合为新开发检查宿主 + 原 test.2 DLL/Broker，不是 test.4 整包安装验收。** 没有重装、替换标准版或改变默认输入法；旧包内检查器仍未替换，不要重复旧失败命令。接续者先读[本轮交接与原始证据](../../docs/testing/18u/2026-11-03/installed-input-fix/HANDOFF.zh-CN.md)。当前无需重复该用例；后续包交付或真实应用/物理输入须明确范围，不能继承本轮结论。
 
 **2026-11-02：开发机安装本分支构建 `0.1.0-local.14-pr88`（源 `fdd075cd`，PR #88 合并前验证）。** 连读准入、`build-local-product.ps1`、`Build-Package.ps1`、`Setup.ps1 -Action Check`、自提升安装与已安装 x64/x86 注册宿主矩阵 6/6 均通过，记录见 [S3c 恢复方案 §9](../../docs/project/18u-self-developed-integration/S3C_RECOVERY_DELIVERY_REVIEW.zh-CN.md)。用户确认开发测试使用新版本正常，**保留为日常使用，不回滚**；`0.1.0-local.13` 固定包仍在 `C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312` 备用。本次为开发机自建自装，不是测试端完整包交付，不改默认输入法。

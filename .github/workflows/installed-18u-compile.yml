@@ -93,6 +93,15 @@ jobs:
                   result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-Installed18uOwnership.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
               if result.returncode or output.read_text(encoding='utf-8').count(marker) != 1:
                   raise SystemExit('Filesystem-only ownership cases failed or did not execute: ' + edition)
+      - name: Run isolated file access and loaded DLL checks in PS5 and PS7
+        run: |
+          import pathlib, subprocess, sys
+          for edition in ('ps5', 'ps7'):
+              output = pathlib.Path('.generated/installed-18u-evidence/file-access-' + edition + '.log')
+              with output.open('w', encoding='utf-8') as log:
+                  result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-FileAccess.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
+              if result.returncode or output.read_text(encoding='utf-8').count('PASS file access:') != 1:
+                  raise SystemExit('File access checks failed: ' + edition)
       - name: Run only explicit mock and pure standard-runtime tests
         run: |
           import json, pathlib, subprocess

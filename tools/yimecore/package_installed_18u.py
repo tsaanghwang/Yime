@@ -10,26 +10,26 @@ import zipfile
 
 import assemble_installed_18u as a
 
-VERSION = '0.1.0-18u-test.4'
-ZIP_NAME = 'YimeCore-18u-0.1.0-18u-test.4-windows-amd64.zip'
+VERSION = '0.1.0-18u-test.5'
+ZIP_NAME = 'YimeCore-18u-0.1.0-18u-test.5-windows-amd64.zip'
 INSTALLER = ('Product.psm1', 'Setup.ps1', 'Setup.cmd')
 SIGNATURE_STATUSES = {'Valid', 'UnknownError', 'NotSigned', 'HashMismatch', 'NotTrusted', 'NotSupportedFileFormat', 'Incompatible'}
 README = r'''# 独立 18u 持久安装开发候选包
 
-版本：0.1.0-18u-test.4；仅原生 Windows x64，中文 variable 模式。
+版本：0.1.0-18u-test.5；仅原生 Windows x64，中文 variable 模式。
 这是复用 installer/simple 的独立 18u 产品，不是标准键盘版、Rime/PIME、
 PR87 预览包或临时注册诊断包。保留原产品与各自数据、注册身份。
 
-本轮仅构建与静态制包。下载、解压不代表获准安装或运行。
-不要双击 Setup.cmd、执行 Setup.ps1、注册工具或宿主 EXE；
-本机安装、管理员操作、重启和安装后验收均须分别确认后按专门步骤进行。
+CI 仅构建与静态制包，下载、解压不代表已通过实机验收。
+在已获授权的设备上，按固定交付说明执行正常卸载、安装和重启；
+同一任务已有的授权不需重复确认。其他设备的安装仍需对应授权。
 注意 Setup 默认 Action=Install，会请求 UAC 提权；没有参数不等于只读。
-未来另行获准后的操作语义（不是现在执行指令）：
+维护操作语义：
 - Setup.ps1 的 -Action Check：核对包和原生宿主架构；会写安装日志，
-  不是注册/激活验收，也不能代替后续审批。
+  不是注册/激活验收。
 - -Action Install：管理员持久安装独立 18u 及注册，不能当静态检查。
 - -Action Uninstall：按所有权移除独立 18u，保留个人数据；不支持 ResetData。
-这些操作应经仓库受检 PowerShell 入口和届时专门步骤执行，不能直接双击。
+这些操作应经仓库受检 PowerShell 入口和固定交付步骤执行。
 
 固定安装目录：%ProgramFiles%\YimeCore 18u Touch
 独立用户数据目录：%LOCALAPPDATA%\YimeCore 18u Touch
@@ -38,10 +38,16 @@ CLSID：{6DFACE1F-562E-4773-A9D6-D5753A314711}
 Profile：{1BD904AC-3194-4419-B70A-5574100F18B3}；语言 0804。
 不要把标准版或 Rime 的安装目录、配置和数据复制进此目录。
 
-未来顺序：先核对固定交付哈希及签名状态，再单独确认安装；
-安装日志和退出状态须明确，失败就停。重启须用户另行许可，工具不自动重启。
+维护顺序：先核对固定交付哈希及签名状态，再运行获准的维护操作；
+Install 内部依次注销旧版、移除旧载荷、复制并注册新版。
+需要独立卸载时使用 Action Uninstall，保留旧包及用户数据后再 Install。
+安装日志和退出状态须明确。文件占用时取消，保存工作后正常重启，再维护；
+不强杀系统或文档宿主、不放宽权限、不覆盖已加载 DLL。
+日志记录完整路径、HRESULT/Win32 错误及 Restart Manager 占用查询；
+拒绝访问不自动等同 ACL 错误，未查到进程也不能放行失败的文件检查。
+重启沿用任务授权，Setup 本身不会自动重启。
 重启后先确认仍为同一固定安装、中文输入环境和独立 18u 身份，
-再另行显式启动一次已安装宿主验收，使用全新包外证据目录。
+再按授权显式启动一次新包的已安装宿主验收，使用全新包外证据目录。
 未知、残留、身份不符或验收失败时保留证据，不自动重试或重装。
 Setup 不自动启动验收或开机常驻。此包不是完整日用触摸 UI，
 不包含 Word/Edge 或全量物理验收结论。

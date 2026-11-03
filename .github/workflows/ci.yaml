@@ -384,6 +384,8 @@ jobs:
       - name: Test persistent setup error logs
         shell: powershell
         run: .\installer\simple\Test-Logging.ps1
+      - name: Test file access and loaded DLL maintenance diagnostics
+        run: python -X utf8 tools/powershell/run_checked.py --script installer/simple/tests/Test-FileAccess.ps1 --edition ps5
       - name: Test installer wait with a surviving child process
         shell: powershell
         run: .\installer\simple\Test-ProcessWait.ps1

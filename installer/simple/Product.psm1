@@ -375,18 +375,99 @@ function Assert-Installed18uOwnership([string]$Root){
     }
     Write-Output ('Installed ownership verified: product=yimecore-18u; version='+$marker.version+'; payload_count='+$seen.Count+'; publisher_authentication=false')
 }
+function Get-ProductFileUsers([string[]]$Paths){
+    # Query only. Never ask Restart Manager to close or restart an application.
+    if(-not ('YimeSimple.FileUsers' -as [type])){
+        Add-Type -TypeDefinition @'
+using System;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+using System.Text;
+namespace YimeSimple {
+    public static class FileUsers {
+        [StructLayout(LayoutKind.Sequential)]
+        public struct UniqueProcess { public uint Pid; public System.Runtime.InteropServices.ComTypes.FILETIME Start; }
+        [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
+        public struct ProcessInfo {
+            public UniqueProcess Process;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst=256)] public string Application;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst=64)] public string Service;
+            public int Type; public uint Status; public uint Session;
+            [MarshalAs(UnmanagedType.Bool)] public bool Restartable;
+        }
+        [DllImport("rstrtmgr.dll", CharSet=CharSet.Unicode)]
+        static extern int RmStartSession(out uint session, uint flags, StringBuilder key);
+        [DllImport("rstrtmgr.dll", CharSet=CharSet.Unicode)]
+        static extern int RmRegisterResources(uint session, uint count, string[] paths,
+            uint applications, IntPtr processes, uint services, IntPtr names);
+        [DllImport("rstrtmgr.dll")]
+        static extern int RmGetList(uint session, out uint needed, ref uint count,
+            [In, Out] ProcessInfo[] processes, ref uint rebootReasons);
+        [DllImport("rstrtmgr.dll")] static extern int RmEndSession(uint session);
+        public static ProcessInfo[] Query(string[] paths) {
+            uint session; int error=RmStartSession(out session, 0, new StringBuilder(33));
+            if(error!=0) throw new Win32Exception(error, "RmStartSession");
+            try {
+                error=RmRegisterResources(session, (uint)paths.Length, paths, 0, IntPtr.Zero, 0, IntPtr.Zero);
+                if(error!=0) throw new Win32Exception(error, "RmRegisterResources");
+                uint needed=0, count=0, reasons=0;
+                ProcessInfo[] rows=null;
+                // The process list can change during enumeration; bound retries.
+                for(int attempt=0; attempt<3; attempt++) {
+                    error=RmGetList(session, out needed, ref count, rows, ref reasons);
+                    if(error==0) {
+                        if(rows==null) return new ProcessInfo[0];
+                        Array.Resize(ref rows, checked((int)count)); return rows;
+                    }
+                    if(error!=234) throw new Win32Exception(error, "RmGetList");
+                    rows=new ProcessInfo[needed]; count=needed;
+                }
+                throw new Win32Exception(error, "RmGetList changed repeatedly");
+            } finally { RmEndSession(session); }
+        }
+    }
+}
+'@
+    }
+    [YimeSimple.FileUsers]::Query($Paths)
+}
+function Get-ProductFileAccessFailure([string]$Path,[Exception]$Exception){
+    $cause=$Exception
+    while($cause.InnerException){$cause=$cause.InnerException}
+    $hr=$cause.HResult
+    $code=if(($hr -band 0xffff0000L) -eq 0x80070000L){$hr -band 0xffff}else{$null}
+    $kind=switch($code){
+        32 {'sharing-violation'}
+        33 {'lock-violation'}
+        5 {'access-denied-or-mapped-image'}
+        default {'other-file-error'}
+    }
+    [pscustomobject]@{path=$Path;kind=$kind;exception=$cause.GetType().FullName;
+        hresult=('0x{0:X8}' -f $hr);win32=$code;message=$cause.Message}
+}
 function Wait-ProductFiles([string]$Root,[switch]$Silent){
     if(-not (Test-Path -LiteralPath $Root)){return}
     while($true){
         $busy=@(foreach($file in Get-ProductFiles $Root){
             try{$s=[IO.File]::Open($file.FullName,'Open','ReadWrite','None');$s.Dispose()}
-            catch{$file.Name}
+            catch{Get-ProductFileAccessFailure $file.FullName $_.Exception}
         })
         if(-not $busy.Count){return}
-        Write-Output ('Files unavailable under '+$Root+': '+($busy -join ', '))
-        if($Silent){throw ('Files unavailable: '+($busy -join ', '))}
+        foreach($failure in $busy){Write-Output ('File access failure: '+($failure|ConvertTo-Json -Compress))}
+        try{
+            $users=@(Get-ProductFileUsers @($busy.path))
+            Write-Output ('File users query: '+(@{source='RestartManager';status='ok';count=$users.Count;users=@($users|ForEach-Object {
+                [ordered]@{pid=$_.Process.Pid;startTimeHigh=$_.Process.Start.dwHighDateTime;startTimeLow=$_.Process.Start.dwLowDateTime;
+                    application=$_.Application;service=$_.Service;session=$_.Session}
+            })}|ConvertTo-Json -Depth 5 -Compress))
+        }catch{Write-Output ('File users query unavailable: '+$_.Exception.Message)}
+        # An empty/inaccessible process list never makes the failed open safe.
+        # Error 5 alone does not prove an ACL fault (mapped images may also deny writes).
+        $paths=@($busy.path)
+        Write-Output ('Files unavailable under '+$Root+': '+($paths -join ', '))
+        if($Silent){throw ('Files unavailable: '+($paths -join ', '))}
         Add-Type -AssemblyName System.Windows.Forms
-        $text="请保存工作并退出正在使用本输入法的应用，再选择重试。`r`n仍被占用或不可写：`r`n"+($busy -join "`r`n")+"`r`n无法释放时可以取消，正常重启后再运行。不会强制关闭文档应用。"
+        $text="请保存工作并退出正在使用本输入法的应用，再选择重试。`r`n仍被占用或不可写：`r`n"+($paths -join "`r`n")+"`r`n错误码和占用查询已写入日志。无法释放时请取消，正常重启后再安装或卸载。不会强制关闭文档应用，也不会覆盖已加载 DLL。"
         if([Windows.Forms.MessageBox]::Show($text,'输入法安装维护','RetryCancel','Warning') -ne 'Retry'){throw [OperationCanceledException]::new('Cancelled')}
     }
 }
