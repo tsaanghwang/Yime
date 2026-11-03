@@ -7,6 +7,7 @@ PRODUCT = (ROOT / 'installer/simple/Product.psm1').read_text(encoding='utf-8-sig
 SETUP = (ROOT / 'installer/simple/Setup.ps1').read_text(encoding='utf-8-sig')
 OWNERSHIP = PRODUCT.split('function Assert-Installed18uOwnership(', 1)[1].split('function Wait-ProductFiles(', 1)[0]
 FIXTURE = (ROOT / 'installer/simple/tests/Test-Installed18uOwnership.ps1').read_text()
+SEQUENCE = (ROOT / 'installer/simple/tests/Test-18uUnregisterSequence.ps1').read_text()
 
 
 class LifecycleSourceContracts(unittest.TestCase):
@@ -54,6 +55,22 @@ class LifecycleSourceContracts(unittest.TestCase):
         self.assertIn("if($product.id -ne 'yimecore-18u'){Set-UserStartup", SETUP)
         end = SETUP.index("$stage='start installed runtime'")
         self.assertIn('exit 0', SETUP[SETUP.index("Write-Output ('Installed persistent independent 18u:"):end])
+
+    def test_full_old_upgrade_stops_before_file_copy_and_preserves_evidence(self):
+        start = SETUP.index("$stage='unregister selected product'")
+        removed = SETUP.index('Remove-ProductDirectory $root $product.id', start)
+        copied = SETUP.index('Copy-ProductPayload $package $root', removed)
+        self.assertLess(SETUP.index('Set-Registration $false', start), removed)
+        self.assertLess(removed, copied)
+        self.assertIn('& $Path @Arguments', SETUP)
+        self.assertIn("[guid]::NewGuid().ToString('N')", SETUP)
+        self.assertIn('Start-Transcript -LiteralPath $logPath -Append', SETUP)
+        self.assertLess(SETUP.index("if($ResetData){throw '18u maintenance preserves user data", 0), start)
+        self.assertIn('oldFiles', SEQUENCE)
+        self.assertIn('userData', SEQUENCE)
+        self.assertIn('evidence', SEQUENCE)
+        self.assertIn("$script:fail='register'", SEQUENCE)
+        self.assertNotIn('Remove-Item', SEQUENCE)
 
     def test_actual_ps_fixture_is_nonsystem_and_honestly_mocked(self):
         self.assertIn('Assert-Installed18uOwnership $root', FIXTURE)
