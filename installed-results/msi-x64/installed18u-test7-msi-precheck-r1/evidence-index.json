@@ -1,0 +1,51 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test7-msi-precheck-r1",
+  "localEvidenceDirectory": ".generated/installed18u-test7-msi-precheck-r1",
+  "files": [
+    {
+      "name": "evidence/host-after.json",
+      "bytes": 6932,
+      "sha256": "82b45a653675e3c9ae5f9fdce931e6625323d876994f66e73130e11f5727342d",
+      "uploaded": false,
+      "kind": "local-observation-or-task-tool"
+    },
+    {
+      "name": "evidence/host-before.json",
+      "bytes": 6901,
+      "sha256": "94b3e16753de1891d749da2a7696e3faadbcc366310e6aab2bfee4e8be9df94d",
+      "uploaded": false,
+      "kind": "local-observation-or-task-tool"
+    },
+    {
+      "name": "evidence/run-reference.json",
+      "bytes": 220,
+      "sha256": "ada54fb0b9052d18fbf3984a49ed16123775c0f9b2f667bd39fdfb566239ff2c",
+      "uploaded": false,
+      "kind": "local-observation-or-task-tool"
+    },
+    {
+      "name": "evidence/stop.json",
+      "bytes": 620,
+      "sha256": "533aa575c393df0089e412b0a687f1cdfa8592ed4471f807c7555b0143399df5",
+      "uploaded": false,
+      "kind": "local-observation-or-task-tool"
+    },
+    {
+      "name": "tools/observe.py",
+      "bytes": 7555,
+      "sha256": "9051e173b4cdc10266e0c18da190770871fd8db931d08b767593766ac67f3178",
+      "uploaded": false,
+      "kind": "local-observation-or-task-tool"
+    },
+    {
+      "name": "tools/report.py",
+      "bytes": 5662,
+      "sha256": "2dbe1fa28da40b8c2de7cdf747d2923e941db8880c4e101fcfa10b16e7023c5f",
+      "uploaded": false,
+      "kind": "local-observation-or-task-tool"
+    }
+  ],
+  "artifactBytesObtained": false,
+  "rawLogsUploaded": false
+}

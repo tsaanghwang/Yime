@@ -1,0 +1,132 @@
+{
+  "schema": "installed-18u-static-precheck-result-v1",
+  "taskID": "installed18u-test7-msi-precheck-r1",
+  "recordedAtUTC": "2026-11-03T10:47:11.124576+00:00",
+  "status": "stopped-before-download",
+  "machine": {
+    "hostName": "WIN-JTKUT7KBVN7",
+    "nativeArchitecture": "AMD64",
+    "processEmulation": false
+  },
+  "deliveryReference": {
+    "documentationCommit": "cf70cae66706587ec9db07b89fe9769d491a86ea",
+    "packageSourceCommit": "33b7113c8b76d6c95447856c2d5cca374b542507",
+    "version": "0.1.0-18u-test.7",
+    "type": "x64 ZIP, not Windows Installer MSI",
+    "runID": 41617296801,
+    "artifactID": 13221664045,
+    "workflowSuccessFreshlyObserved": true,
+    "artifactMetadataFreshlyVerified": false,
+    "expectedOuterZIP": {
+      "bytes": 192176992,
+      "sha256": "166779e2bef48ac2302acc079aca32dc64e1c68b3ec74dd3c79ae0fb37678c11"
+    },
+    "expectedInnerZIP": {
+      "name": "YimeCore-18u-0.1.0-18u-test.7-windows-amd64.zip",
+      "bytes": 192137872,
+      "sha256": "a9ee98aefc93bd3b579dcbd388bc7de34a8a2fcb5839666598d660b4e9d39e8a"
+    },
+    "identityScope": "expected values from fixed delivery; no downloaded bytes validated in this task"
+  },
+  "existingInstallation": {
+    "version": "0.1.0-18u-test.6",
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "descriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "descriptorMembersVerified": 15,
+    "maintenanceListedMembersVerified": 16,
+    "comPathMatches": true,
+    "profileRegistryKeyPresent": true,
+    "observationTimeUTC": "2026-11-03T10:44:53.683415+00:00",
+    "scope": "fresh file hashes and read-only registry; no executable, active TIP, category or host-input check"
+  },
+  "protection": {
+    "beforeRecordedAtUTC": "2026-11-03T10:44:53.683415+00:00",
+    "afterRecordedAtUTC": "2026-11-03T10:45:30.785720+00:00",
+    "knownPaths": {
+      "standardProgram": {
+        "exists": false
+      },
+      "standardUserData": {
+        "exists": false
+      },
+      "rimeProgram": {
+        "exists": false
+      },
+      "rimeProgramX86": {
+        "exists": false
+      },
+      "rimeLegacyProgramX86": {
+        "exists": false
+      },
+      "rimeUserData": {
+        "exists": false
+      },
+      "independentProgram": {
+        "exists": true,
+        "fileCount": 22
+      },
+      "independentUserData": {
+        "exists": false
+      }
+    },
+    "knownProgramAndUserDataTreesUnchanged": true,
+    "knownProductRegistryViewsUnchanged": true,
+    "preloadUserProfileAndStartupSnapshotsUnchanged": true,
+    "scope": "only explicitly named product/data roots and selected registry keys, including x86/x64 views; no claim about arbitrary custom locations or out-of-process startup verification",
+    "comparisonBasis": "fresh before/after observations in this task, not inherited test.6 acceptance",
+    "userDataContentsAndNamesDisclosed": false,
+    "credentialsCollected": false
+  },
+  "packageVerification": {
+    "downloadAttempted": false,
+    "outerZIPVerified": false,
+    "innerZIPVerified": false,
+    "safeExtractionPerformed": false,
+    "manifestAndAllPayloadsVerified": false,
+    "frontendVerified": false,
+    "reason": "stopped at artifact metadata response parsing"
+  },
+  "signatureLimitation": {
+    "ciRecordedUnsignedPECount": 6,
+    "source": "fixed delivery signature record, not current local Authenticode observation",
+    "localSignatureCheckPerformed": false,
+    "machineLoadPolicyVerified": false,
+    "systemProtectionChanged": false
+  },
+  "stop": {
+    "taskID": "installed18u-test7-msi-precheck-r1",
+    "recordedAtUTC": "2026-11-03T10:47:11.124576+00:00",
+    "stage": "artifact-metadata-response-parsing",
+    "status": "stopped",
+    "errorType": "SyntaxError",
+    "message": "JSON.parse received undefined at the expected tool response field structuredContent.content for artifact metadata.",
+    "attribution": "orchestration/response parsing; not a package hash or payload failure",
+    "underlyingArtifactResponseRetained": false,
+    "underlyingRemoteCause": "not-established",
+    "retryPerformed": false,
+    "downloadReferenceObtained": false,
+    "artifactDownloaded": false
+  },
+  "actions": {
+    "setupIncludingCheckExecuted": false,
+    "packageProgramExecuted": false,
+    "installationPerformed": false,
+    "registrationPerformed": false,
+    "rebootPerformed": false,
+    "defaultInputChanged": false,
+    "wordEdgeInputPerformed": false,
+    "fingerPenTestPerformed": false,
+    "automaticRetryPerformed": false
+  },
+  "disposition": {
+    "readyForInstallation": false,
+    "readyForInputAcceptance": false,
+    "followup": "Requires reviewed new continuation authorization after diagnosing the metadata-response handling; this r1 is preserved and must not be overwritten."
+  },
+  "privacyReview": {
+    "rawLogsUploaded": false,
+    "rawSnapshotsUploaded": false,
+    "onlySanitizedResultAndEvidenceIndex": true
+  },
+  "evidenceIndexFile": "evidence-index.json"
+}
