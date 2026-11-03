@@ -356,7 +356,7 @@ void productRemoveResidue() {
         productRemoveResidueLeaf(hive,view,root,false);
     }
 }
-void productRemove(const std::wstring& dll) {
+void productRemove(const std::wstring& dll, bool tipOnly) {
     const auto owned=productOwned(dll);
     // Persisted exact relationships decide which removal APIs are applicable.
     // Snapshot counts may lag and never turn a missing record into an API request.
@@ -391,6 +391,13 @@ void productRemove(const std::wstring& dll) {
     productRemoveResidue(); // Exact empty/Enable=0 leaves only; nonrecursive; COM retained on failure.
     const auto finalPersistent=productPersistent(dll);
     if(finalPersistent.anyTip) throw ProductError{HRESULT_FROM_WIN32(ERROR_DIR_NOT_EMPTY)};
+    if(tipOnly) {
+        // TSF enumeration can retain the pre-removal snapshot in this process.
+        // This phase succeeds only for persisted TIP removal, never COM removal.
+        // Setup starts a fresh unregister process for the unchanged final guards.
+        std::wcout<<L"tip_removal_complete=true\ncom_retained=true\ncompletion_required=true\n";
+        return;
+    }
     const auto api=productSnapshot();
     productStage=L"final-API-absence-before-COM";
     if(!yime18ureg::FinalApiAbsent(api.categoriesKnown,api.categories,api.profilesKnown,api.profiles))
@@ -449,7 +456,7 @@ int wmain(int argc,wchar_t** argv) {
                     productStage=L"register-persistent-postcondition";
                     if(yime18ureg::ClassifyPersistent(true,registered.anyTip,registered.completeMachineProfile,registered.machinePairedMask,true)!=yime18ureg::PersistentKind::Complete)
                         throw ProductError{E_UNEXPECTED};
-                } else productRemove(dll);
+                } else productRemove(dll,operation==yime18ureg::Operation::UnregisterTip);
                 productWriteResult(argv[1],S_OK);
             }
         }

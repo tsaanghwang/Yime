@@ -1,5 +1,34 @@
 # MyComputer 独立 18u 正常升级
 
+## 09:53 正常卸载暴露的新阻塞及修复
+
+test.5 同源完整 CI 已通过并交付，实际执行 `Action Uninstall`，文件释放检查通过。
+五项 UnregisterCategory 和 UnregisterProfile 均 S_OK，持久 TIP 已移除；
+同一进程最终枚举仍为 5 categories / 1 profile，触发 `final-API-absence-before-COM` 的
+`0x8000FFFF`，退出 1。COM、全部旧文件和卸载项保留；没有执行 Install。
+
+随后独立新进程只读 status 为 `com_registered=true`、`tip_registered=false`、
+`profile_count=0`、`categories_registered_count=0`。这确认本次为进程内 TSF 枚举缓存滞后，
+不是 DLL 占用或权限。旧文件树与两个标准产品文件树仍与维护前完全相同。
+
+修复正常卸载：新增 `unregister-tip` 完成有所有权的持久 TIP 注销，明确报告 COM 保留、
+仍需完成。Setup 随后启动独立 `unregister` 进程，重新验证安装绑定/所有权、
+持久状态和最终 API 缺失，最后删除 COM；最后仍执行 `verify-absent`。
+没有放宽 FinalApiAbsent、没有通用注册表清理、没有隐藏失败/轮询/整次自动重试。
+任一阶段失败停止。安装和标准产品路径不变。
+
+新完整候选包改为 test.6；test.5 包及失败证据保留。
+新增 PS5/PS7 实际 Setup 函数的模拟调用顺序及各阶段失败回归；
+native CLI policy 覆盖新操作，生命周期静态契约保护 COM 保留和最终缺失门槛。
+须待 test.6 同源 CI、完整包交付后再从已确认的部分卸载状态正常续行。
+
+原始证据目录 `C:\dev\Yime-evidence\18u-upgrade-20261103`：
+`uninstall.stdout.log`、`uninstall.stderr.log`、`uninstall-exit.json`、
+`post-uninstall-failure-status.stdout.log` 和 `maintenance-failure.json`。
+安装器原日志 `C:\Users\tsaan\Yime Setup Logs\0f7bdf715dfc4b8baa7259b15ec2545a.admin.log`。
+
+以下为首次准备与已完成的历史阶段，不能把 test.5 写成已安装。
+
 本轮接续 PR #95。用户已明确授权修复、正常卸载、升级和必要的正常重启；
 不重复请求同一授权。保留 test.2 旧包、用户数据、标准 YimeCore/Rime 和此前成功证据。
 不得强杀系统或文档宿主、放宽权限、通用清理注册表或覆盖加载中的 DLL。

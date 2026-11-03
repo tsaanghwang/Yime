@@ -1,7 +1,7 @@
 #pragma once
 #include <string_view>
 namespace yime18ureg {
-enum class Operation { Invalid, Status, VerifyAbsent, Register, Unregister, CheckOwned };
+enum class Operation { Invalid, Status, VerifyAbsent, Register, UnregisterTip, Unregister, CheckOwned };
 inline Operation Parse(int argc, const wchar_t* action) noexcept {
     const std::wstring_view a = action ? action : L"";
     if (argc == 2 && a == L"status") return Operation::Status;
@@ -9,6 +9,7 @@ inline Operation Parse(int argc, const wchar_t* action) noexcept {
     if (argc == 3 && a == L"check-owned") return Operation::CheckOwned;
     if (argc == 3 && a == L"register") return Operation::Register;
     if (argc == 3 && a == L"unregister") return Operation::Unregister;
+    if (argc == 3 && a == L"unregister-tip") return Operation::UnregisterTip;
     return Operation::Invalid;
 }
 // Uses actual adapter observations; unknown queries never imply absence.

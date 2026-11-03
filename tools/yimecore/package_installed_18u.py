@@ -10,13 +10,13 @@ import zipfile
 
 import assemble_installed_18u as a
 
-VERSION = '0.1.0-18u-test.5'
-ZIP_NAME = 'YimeCore-18u-0.1.0-18u-test.5-windows-amd64.zip'
+VERSION = '0.1.0-18u-test.6'
+ZIP_NAME = 'YimeCore-18u-0.1.0-18u-test.6-windows-amd64.zip'
 INSTALLER = ('Product.psm1', 'Setup.ps1', 'Setup.cmd')
 SIGNATURE_STATUSES = {'Valid', 'UnknownError', 'NotSigned', 'HashMismatch', 'NotTrusted', 'NotSupportedFileFormat', 'Incompatible'}
 README = r'''# 独立 18u 持久安装开发候选包
 
-版本：0.1.0-18u-test.5；仅原生 Windows x64，中文 variable 模式。
+版本：0.1.0-18u-test.6；仅原生 Windows x64，中文 variable 模式。
 这是复用 installer/simple 的独立 18u 产品，不是标准键盘版、Rime/PIME、
 PR87 预览包或临时注册诊断包。保留原产品与各自数据、注册身份。
 
@@ -40,6 +40,8 @@ Profile：{1BD904AC-3194-4419-B70A-5574100F18B3}；语言 0804。
 
 维护顺序：先核对固定交付哈希及签名状态，再运行获准的维护操作；
 Install 内部依次注销旧版、移除旧载荷、复制并注册新版。
+注销 TIP 后，由独立的新进程复核 API 缺失并完成 COM 注销，避免同进程 TSF 枚举缓存误报；
+任一阶段失败均保留文件，不跳过最终缺失检查。
 需要独立卸载时使用 Action Uninstall，保留旧包及用户数据后再 Install。
 安装日志和退出状态须明确。文件占用时取消，保存工作后正常重启，再维护；
 不强杀系统或文档宿主、不放宽权限、不覆盖已加载 DLL。
