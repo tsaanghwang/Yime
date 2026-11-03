@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "repository": "tsaanghwang/Yime",
+  "artifacts": [
+    {
+      "id": 13034145597,
+      "run_id": 41178044364,
+      "sha256": "e790c0fe0e245456e54163f348c969af93b3ac0ed91dda95e53e00655da4e34f",
+      "reason": "PR #87 fixed amd64 cross-machine acceptance package; independent receipt incomplete"
+    },
+    {
+      "id": 13033634731,
+      "run_id": 41178044364,
+      "sha256": "9395e994382fe70a30c3bb9beecd57a8c074e88411f4d2b62732b8161c6ada7b",
+      "reason": "PR #87 fixed ARM64 cross-machine acceptance package; independent receipt incomplete"
+    },
+    {
+      "id": 13034360087,
+      "run_id": 41178044364,
+      "sha256": "e435c3248a1d7fd2b0e42c54170814b927dba75b4263edc055e04f22d5432474",
+      "reason": "PR #87 original package verification report accompanying both fixed packages"
+    }
+  ]
+}
