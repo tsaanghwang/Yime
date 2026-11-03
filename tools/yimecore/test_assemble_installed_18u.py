@@ -87,7 +87,12 @@ class SetupContracts(unittest.TestCase):
         self.assertNotIn('once-installed-18u-host',s)
         self.assertIn("if($product.id -ne 'yimecore-18u' -or $full18u){Set-UserStartup",s)
         self.assertIn(".schema -ceq 'installed-18u-product-v2'",s)
-        self.assertLess(s.index('No startup task or acceptance run'),s.index("$stage='start installed runtime'"))
+        installed_tail=s[s.index("Write-Output ('Installed persistent independent 18u:"):]
+        self.assertIn('No startup task or acceptance run',installed_tail)
+        self.assertIn('exit 0',installed_tail)
+        self.assertNotIn('Start-Process',installed_tail)
+        self.assertIn("if($code -eq 0 -and $Action -eq 'Install')",s)
+        self.assertIn('Start-VerifiedInstalledRuntime $package $packageManifestHash',s)
     def test_data_preserved(self):
         s=Path(__file__).parents[2].joinpath('installer/simple/Setup.ps1').read_text(encoding='utf-8-sig')
         self.assertIn("if($ResetData){throw '18u maintenance preserves user data",s)
