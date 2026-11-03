@@ -1,0 +1,15 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-arm64-readiness-r1",
+  "dispatchCommit": "fc61b5168429ba490cf9cd2050531da31dc6bb09",
+  "files": [
+    {
+      "name": "readiness-observation.json",
+      "bytes": 1422,
+      "sha256": "49018de7158183a3575991fc3792ad5bd85402fe4bce629089a243832169236e",
+      "kind": "read-only identity and related-product baseline",
+      "readLocally": true,
+      "uploaded": false
+    }
+  ]
+}

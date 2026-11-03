@@ -1,0 +1,41 @@
+{
+  "schema": "installed-18u-readiness-result-v1",
+  "taskID": "installed18u-arm64-readiness-r1",
+  "machineID": "asus-arm64",
+  "dispatchCommit": "fc61b5168429ba490cf9cd2050531da31dc6bb09",
+  "recordedAt": "2026-11-03T11:31:28.7569299+08:00",
+  "status": "blocked",
+  "host": {
+    "reportedName": "HUASHUONOTEBOOK",
+    "expectedIdentityConfirmed": true,
+    "nativeArchitecture": "ARM64",
+    "processArchitecture": "ARM64"
+  },
+  "readiness": {
+    "status": "pass",
+    "observation": "ASUS ProArt P16 H7607BA; native ARM64 Windows and ARM64 PowerShell process confirmed. Existing related-product baseline collected read-only.",
+    "existingRelatedProductsSummary": "Standard YimeCore installed (0.1.0-local.13-arm64); independent 18u installation, user-data directory, CLSID and TIP absent; common Rime program and user-data directories absent.",
+    "evidenceNames": [
+      "readiness-observation.json"
+    ]
+  },
+  "installation": {
+    "status": "blocked",
+    "reason": "native ARM64 test.6 installation package not supplied",
+    "executed": false
+  },
+  "installedHost": {
+    "status": "blocked",
+    "reason": "native ARM64 installation package unavailable",
+    "executed": false
+  },
+  "amd64EmulationUsed": false,
+  "pr87Substituted": false,
+  "physicalAcceptance": false,
+  "overallProductAcceptance": false,
+  "evidenceIndexFile": "evidence-index.json",
+  "notes": [
+    "Readiness only. No package installed, no product or user data modified.",
+    "Previous local Codex attempt stopped after a Python lookup error before identity checks; this result records the later user-requested read-only run."
+  ]
+}
