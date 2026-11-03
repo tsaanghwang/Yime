@@ -118,17 +118,12 @@ function Assert-Arm64ProtectedFile([string]$Path){
         }
     }
 }
-function Assert-Arm64FixedPackage([string]$Root,[string]$ExpectedRoot,[string]$ApprovalPath,
-    [string]$ExpectedApprovalPath,[string]$CurrentSid,[bool]$Administrator,
+function Read-Arm64IndependentApproval([string]$ApprovalPath,[string]$ExpectedApprovalPath,
+    [string]$CurrentSid,[bool]$Administrator,
     [scriptblock]$VerifyProtected={param([string]$Path) Assert-Arm64ProtectedFile $Path}){
     if(-not $Administrator){throw 'Native administrator token required before ARM64 maintenance'}
-    $root=Assert-PlainPath $Root;$expected=Assert-PlainPath $ExpectedRoot
     $approval=Assert-PlainPath $ApprovalPath;$expectedApproval=Assert-PlainPath $ExpectedApprovalPath
-    if($root -cne $expected -or $approval -cne $expectedApproval -or
-       $approval.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)){
-        throw 'ARM64 package or independent approval location mismatch'
-    }
-    & $VerifyProtected $root
+    if($approval -cne $expectedApproval){throw 'Independent ARM64 approval location mismatch'}
     & $VerifyProtected $approval
     $record=Get-Content -LiteralPath $approval -Raw -Encoding UTF8 | ConvertFrom-Json
     if($record.schema -cne 'yime-18u-arm64-manual-approval-v1' -or $record.product -cne 'yimecore-18u' -or
@@ -137,6 +132,26 @@ function Assert-Arm64FixedPackage([string]$Root,[string]$ExpectedRoot,[string]$A
        $record.archiveSha256 -cnotmatch '^[0-9a-f]{64}$'){
         throw 'Independent ARM64 approval identity or user mismatch'
     }
+    if(@($record.files).Count -eq 0){throw 'Independent ARM64 approval has no members'}
+    $seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach($row in $record.files){
+        if(-not ($row.path -is [string]) -or $row.path -match '(^[/\\]|:|(^|[/\\])\.\.?([/\\]|$))' -or
+           -not $seen.Add($row.path) -or $row.sha256 -cnotmatch '^[0-9a-f]{64}$' -or $row.bytes -le 0){
+            throw 'Invalid independent ARM64 approval member'
+        }
+    }
+    return $record
+}
+function Assert-Arm64FixedPackage([string]$Root,[string]$ExpectedRoot,[string]$ApprovalPath,
+    [string]$ExpectedApprovalPath,[string]$CurrentSid,[bool]$Administrator,
+    [scriptblock]$VerifyProtected={param([string]$Path) Assert-Arm64ProtectedFile $Path}){
+    $root=Assert-PlainPath $Root;$expected=Assert-PlainPath $ExpectedRoot
+    $approval=Assert-PlainPath $ApprovalPath
+    if($root -cne $expected -or $approval.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)){
+        throw 'ARM64 package or independent approval location mismatch'
+    }
+    $record=Read-Arm64IndependentApproval $approval $ExpectedApprovalPath $CurrentSid $Administrator $VerifyProtected
+    & $VerifyProtected $root
     $manifest=Get-Content -LiteralPath (Join-Path $root 'product-package.json') -Raw -Encoding UTF8 | ConvertFrom-Json
     $descriptor=Get-Content -LiteralPath (Join-Path $root 'payload/installed-18u-product.json') -Raw -Encoding UTF8 | ConvertFrom-Json
     if($manifest.product -cne 'yimecore-18u' -or $manifest.target -cne 'windows-arm64' -or
@@ -148,10 +163,7 @@ function Assert-Arm64FixedPackage([string]$Root,[string]$ExpectedRoot,[string]$A
     }
     $seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
     foreach($row in $record.files){
-        if(-not ($row.path -is [string]) -or $row.path -match '(^[/\\]|:|(^|[/\\])\.\.?([/\\]|$))' -or
-           -not $seen.Add($row.path) -or $row.sha256 -cnotmatch '^[0-9a-f]{64}$' -or $row.bytes -le 0){
-            throw 'Invalid independent ARM64 approval member'
-        }
+        $null=$seen.Add($row.path)
         $file=Assert-PlainPath (Join-Path $root $row.path)
         if(-not $file.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Approved member escaped fixed package'}
         & $VerifyProtected $file
@@ -165,6 +177,79 @@ function Assert-Arm64FixedPackage([string]$Root,[string]$ExpectedRoot,[string]$A
         $relative=$file.FullName.Substring($root.Length+1).Replace('\','/')
         if(-not $seen.Contains($relative)){throw ('Unapproved ARM64 package member: '+$relative)}
     }
+}
+function Get-Arm64StageIdentity {
+    $machine=Get-NativeHostMachine
+    $windowsIdentity=[Security.Principal.WindowsIdentity]::GetCurrent()
+    return [pscustomobject]@{source=$machine.source;nativeMachine=$machine.nativeMachine;
+        processMachine=$machine.processMachine;is64BitProcess=$machine.is64BitProcess;
+        sid=$windowsIdentity.User.Value;
+        administrator=([Security.Principal.WindowsPrincipal]$windowsIdentity).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator);
+        shellPath=[Diagnostics.Process]::GetCurrentProcess().MainModule.FileName}
+}
+function Assert-Arm64StageIdentity($Observed,[string]$ExpectedSid,$Initial){
+    if($Observed.source -cne 'IsWow64Process2' -or $Observed.nativeMachine -ne 0xaa64 -or
+       $Observed.processMachine -ne 0 -or -not $Observed.is64BitProcess -or
+       -not $Observed.administrator -or $Observed.sid -cne $ExpectedSid -or
+       -not $Observed.shellPath){throw 'ARM64 stage requires the same native administrator identity'}
+    if($Initial -and ($Observed.sid -cne $Initial.sid -or $Observed.shellPath -cne $Initial.shellPath -or
+       $Observed.nativeMachine -ne $Initial.nativeMachine -or $Observed.processMachine -ne $Initial.processMachine -or
+       $Observed.administrator -ne $Initial.administrator)){
+        throw 'ARM64 stage process identity changed'
+    }
+}
+function New-Arm64ProtectedStage([string]$SourceRoot,[string]$StageRoot,[string]$ExpectedStageRoot,
+    [string]$ApprovalPath,[string]$ExpectedApprovalPath,[string]$CurrentSid,
+    [scriptblock]$ObserveIdentity={Get-Arm64StageIdentity},
+    [scriptblock]$VerifyProtected={param([string]$Path) Assert-Arm64ProtectedFile $Path}){
+    $source=Assert-PlainPath $SourceRoot;$stage=Assert-PlainPath $StageRoot
+    $expected=Assert-PlainPath $ExpectedStageRoot;$approval=Assert-PlainPath $ApprovalPath
+    if($stage -cne $expected -or $stage.StartsWith($source+'\',[StringComparison]::OrdinalIgnoreCase) -or
+       $source.StartsWith($stage+'\',[StringComparison]::OrdinalIgnoreCase) -or
+       $approval.StartsWith($stage+'\',[StringComparison]::OrdinalIgnoreCase) -or
+       $approval.StartsWith($source+'\',[StringComparison]::OrdinalIgnoreCase) -or
+       (Test-Path -LiteralPath $stage)){
+        throw 'A fresh, separate fixed ARM64 stage is required'
+    }
+    $before=& $ObserveIdentity
+    Assert-Arm64StageIdentity $before $CurrentSid $null
+    $record=Read-Arm64IndependentApproval $approval $ExpectedApprovalPath $CurrentSid $before.administrator $VerifyProtected
+    & $VerifyProtected ([IO.Path]::GetDirectoryName($stage))
+    $approved=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach($row in $record.files){$null=$approved.Add($row.path)}
+    $sourceFiles=@(Get-ProductFiles $source)
+    if($sourceFiles.Count -ne $approved.Count){throw 'Extracted ARM64 package differs from independent approval'}
+    foreach($file in $sourceFiles){
+        $relative=$file.FullName.Substring($source.Length+1).Replace('\','/')
+        if(-not $approved.Contains($relative)){throw ('Unapproved extracted ARM64 member: '+$relative)}
+    }
+    $null=[IO.Directory]::CreateDirectory($stage)
+    & $VerifyProtected $stage
+    foreach($row in $record.files){
+        $from=Assert-PlainPath (Join-Path $source $row.path)
+        if(-not $from.StartsWith($source+'\',[StringComparison]::OrdinalIgnoreCase)){
+            throw 'Extracted ARM64 member escaped source'
+        }
+        $to=Join-Path $stage $row.path
+        $directory=[IO.Path]::GetDirectoryName($to)
+        $null=[IO.Directory]::CreateDirectory($directory)
+        & $VerifyProtected $directory
+        [IO.File]::Copy($from,$to,$false)
+        & $VerifyProtected $to
+    }
+    Assert-Arm64FixedPackage $stage $expected $approval $ExpectedApprovalPath $CurrentSid $before.administrator $VerifyProtected
+    $after=& $ObserveIdentity
+    Assert-Arm64StageIdentity $after $CurrentSid $before
+    return [pscustomobject]@{root=$stage;approval=$approval;sid=$CurrentSid;identity=$before}
+}
+function Assert-Arm64ProtectedStageBoundary($Stage,
+    [scriptblock]$ObserveIdentity={Get-Arm64StageIdentity},
+    [scriptblock]$VerifyProtected={param([string]$Path) Assert-Arm64ProtectedFile $Path}){
+    $now=& $ObserveIdentity
+    Assert-Arm64StageIdentity $now $Stage.sid $Stage.identity
+    Assert-Arm64FixedPackage $Stage.root $Stage.root $Stage.approval $Stage.approval $Stage.sid $now.administrator $VerifyProtected
+    $again=& $ObserveIdentity
+    Assert-Arm64StageIdentity $again $Stage.sid $Stage.identity
 }
 function Get-MaintenanceMembers($Product,$Contract){
     $name=if($Product.id -eq 'yimecore-18u'){'Yime18uProductRegistration.exe'}elseif($Product.id -eq 'yimecore'){'YimeTextServiceRegistration.exe'}else{$Product.dll}

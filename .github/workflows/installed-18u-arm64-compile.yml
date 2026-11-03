@@ -133,6 +133,15 @@ jobs:
               result=subprocess.run([sys.executable,'tools/powershell/run_checked.py','--edition','ps7','--script',str(script)],stdout=log,stderr=subprocess.STDOUT,timeout=60)
           if result.returncode or output.read_text(encoding='utf-8').count('PASS ARM64 fixed package preflight: 1 valid fixture, 8 pre-mutation refusals') != 1:
               raise SystemExit('ARM64 fixed-package preflight contract failed')
+      - name: Check protected ARM64 staging candidate without maintenance
+        run: |
+          import pathlib, subprocess, sys
+          script=pathlib.Path('installer/simple/tests/Test-18uArm64ProtectedStage.ps1').resolve()
+          output=pathlib.Path('.generated/installed-18u-evidence/arm64-protected-stage.log')
+          with output.open('w',encoding='utf-8') as log:
+              result=subprocess.run([sys.executable,'tools/powershell/run_checked.py','--edition','ps7','--script',str(script)],stdout=log,stderr=subprocess.STDOUT,timeout=60)
+          if result.returncode or output.read_text(encoding='utf-8').count('PASS ARM64 protected staging candidate: 1 valid stage, 7 fault refusals and source separation') != 1:
+              raise SystemExit('ARM64 protected stage contract failed')
       - name: Run eleven filesystem-only ownership cases in PS5 and PS7
         run: |
           import pathlib, subprocess, sys
