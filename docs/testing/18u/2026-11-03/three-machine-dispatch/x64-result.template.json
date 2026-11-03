@@ -1,0 +1,91 @@
+{
+  "schema": "installed-18u-manual-task-result-v1",
+  "taskID": null,
+  "machineID": null,
+  "dispatchCommit": null,
+  "recordedAt": null,
+  "status": "not-run",
+  "host": {
+    "reportedName": null,
+    "expectedIdentityConfirmed": null,
+    "nativeArchitecture": null,
+    "processArchitecture": null
+  },
+  "evidenceOrigin": "local-executor-and-user-observation; fields must be supported individually",
+  "package": {
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "version": "0.1.0-18u-test.6",
+    "buildRun": 41563052934,
+    "artifactID": 13198347201,
+    "zipSHA256": "df03629e0bc1512e265beb43b80c58c7d53ada21b1ee3776b6b73bdbfeaa7282",
+    "packageEvidenceSHA256": "64c5996cfc3ab71ff0ffe7df54bd8ee0786d0ed0226816329cfbf37bde8c31a6",
+    "installedDescriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "verifiedLocally": null,
+    "signatureStatus": null
+  },
+  "phases": [
+    {
+      "id": "package-and-local-baseline",
+      "status": "not-run",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCode": null,
+      "observation": null,
+      "evidenceNames": []
+    },
+    {
+      "id": "normal-install",
+      "status": "not-run",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCode": null,
+      "observation": null,
+      "evidenceNames": []
+    },
+    {
+      "id": "user-reboot-and-verification",
+      "status": "not-run",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCode": null,
+      "observation": null,
+      "evidenceNames": []
+    },
+    {
+      "id": "single-installed-host",
+      "status": "not-run",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCode": null,
+      "observation": null,
+      "evidenceNames": []
+    }
+  ],
+  "baseline": {
+    "independent18uBefore": null,
+    "standardAndRimePreserved": null,
+    "userDataPreserved": null,
+    "defaultAndLanguagePreserved": null,
+    "bootTimeAfterMaintenance": null
+  },
+  "installedHost": {
+    "sourceCommit": null,
+    "manifestSHA256": null,
+    "status": null,
+    "stage": null,
+    "hostExitSucceeded": null,
+    "brokerExitSucceeded": null,
+    "readbackEvidenceConsistent": null,
+    "registrationMutationRequested": null,
+    "installedProfilePresenceVerified": null,
+    "nativeResult": null,
+    "rawEvidenceRead": null
+  },
+  "physicalAcceptance": false,
+  "overallProductAcceptance": false,
+  "stopReason": null,
+  "retryPerformed": false,
+  "resetDataRequested": false,
+  "evidenceIndexFile": "evidence-index.json",
+  "notes": []
+}

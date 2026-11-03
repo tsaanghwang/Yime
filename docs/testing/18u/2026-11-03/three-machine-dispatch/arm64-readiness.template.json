@@ -1,0 +1,36 @@
+{
+  "schema": "installed-18u-readiness-result-v1",
+  "taskID": "installed18u-arm64-readiness-r1",
+  "machineID": "asus-arm64",
+  "dispatchCommit": null,
+  "recordedAt": null,
+  "status": "not-run",
+  "host": {
+    "reportedName": null,
+    "expectedIdentityConfirmed": null,
+    "nativeArchitecture": null,
+    "processArchitecture": null
+  },
+  "readiness": {
+    "status": "not-run",
+    "observation": null,
+    "existingRelatedProductsSummary": null,
+    "evidenceNames": []
+  },
+  "installation": {
+    "status": "blocked",
+    "reason": "native ARM64 test.6 installation package not supplied",
+    "executed": false
+  },
+  "installedHost": {
+    "status": "blocked",
+    "reason": "native ARM64 installation package unavailable",
+    "executed": false
+  },
+  "amd64EmulationUsed": false,
+  "pr87Substituted": false,
+  "physicalAcceptance": false,
+  "overallProductAcceptance": false,
+  "evidenceIndexFile": "evidence-index.json",
+  "notes": []
+}
