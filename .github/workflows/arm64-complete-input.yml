@@ -155,9 +155,18 @@ jobs:
                       *packages, *arguments], cwd=root / 'go-backend', env=env, stdout=stream, stderr=subprocess.STDOUT, timeout=600)
               events = [json.loads(line) for line in log.read_text(encoding='utf-8').splitlines() if line.strip()]
               passed = {e['Test'] for e in events if e.get('Action') == 'pass' and 'Test' in e}
-              if result.returncode or any(e.get('Action') in ('skip', 'fail') for e in events) or not required.issubset(passed):
+              # Go emits a package-level skip for this compiled command, which
+              # has no test files. Never treat a named test skip the same way.
+              build_only = {'github.com/tsaanghwang/Yime/go-backend/cmd/yimebroker-18u'}
+              empty_packages = {e['Package'] for e in events if e.get('Action') == 'output'
+                  and 'Test' not in e and '[no test files]' in e.get('Output', '')}
+              rejected = [e for e in events if e.get('Action') == 'fail' or
+                  (e.get('Action') == 'skip' and ('Test' in e or e.get('Package') not in build_only & empty_packages))]
+              if result.returncode or rejected or not required.issubset(passed):
                   print(log.read_text(encoding='utf-8'))
                   raise SystemExit('Required Go tests failed, skipped or missing: ' + name)
+              if empty_packages:
+                  print(name + ': compiled without test files: ' + ', '.join(sorted(empty_packages)))
               print(name + ': passed ' + str(len(passed)) + ' tests/subtests; no executed test skipped')
       - name: Preserve contract evidence
         if: always()
