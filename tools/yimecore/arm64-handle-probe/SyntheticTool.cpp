@@ -12,12 +12,14 @@
 namespace {
 constexpr DWORD kWaitMilliseconds = 30000;
 
-int actor(int argc, wchar_t** argv) {
+int actor(int argc, wchar_t** argv, bool stall) {
     if (argc != 6) return 2;
     HANDLE ready = OpenEventW(EVENT_MODIFY_STATE, FALSE, argv[3]);
     HANDLE go = OpenEventW(SYNCHRONIZE, FALSE, argv[4]);
     if (!ready || !go) return 3;
-    if (!SetEvent(ready) || WaitForSingleObject(go, kWaitMilliseconds) != WAIT_OBJECT_0) {
+    if (!SetEvent(ready)) { CloseHandle(ready); CloseHandle(go); return 4; }
+    if (stall) Sleep(INFINITE);
+    if (WaitForSingleObject(go, kWaitMilliseconds) != WAIT_OBJECT_0) {
         CloseHandle(ready); CloseHandle(go); return 4;
     }
     CloseHandle(ready); CloseHandle(go);
@@ -66,7 +68,9 @@ int wmain(int argc, wchar_t** argv) {
         return 0;
     }
     const std::wstring mode = argv[1];
-    if (mode == L"--actor") return actor(argc, argv);
+    if (mode == L"--actor") return actor(argc, argv, false);
+    if (mode == L"--actor-stall") return actor(argc, argv, true);
+    if (mode == L"--stall" && argc == 2) { Sleep(INFINITE); return 10; }
     if (mode == L"--load-dll" && argc == 3) return loadDll(argv[2]);
     return 2;
 }

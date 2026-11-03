@@ -48,7 +48,8 @@ class SourceContract(unittest.TestCase):
         self.assertRegex(self.probe, r"Handle h = openRead\(path, directory\);\s*return identify\(h\.value, directory\)")
 
     def test_share_conflicts_and_same_byte_replacement(self):
-        self.assertIn("GENERIC_READ, FILE_SHARE_READ", self.probe)
+        self.assertIn("GENERIC_READ | (directory ? FILE_TRAVERSE : 0)", self.probe)
+        self.assertIn("FILE_SHARE_READ, nullptr, OPEN_EXISTING", self.probe)
         for token in ("MOVEFILE_WRITE_THROUGH",
                       "before.hash != after.hash", "before.fileId == after.fileId"):
             self.assertIn(token, self.probe)
@@ -56,12 +57,32 @@ class SourceContract(unittest.TestCase):
             self.assertIn(token, self.tool)
 
     def test_fresh_native_process_and_markers(self):
-        for token in ("-NoProfile -NonInteractive -File", "Import-Module -LiteralPath",
+        for token in ("-NoProfile -NonInteractive -File", "Import-Module -Name $modulePath",
+                      "[System.IO.Path]::GetFullPath",
                       "MODULE_MARKER=A", "MODULE_MARKER=B", "DLL_MARKER=A", "DLL_MARKER=B",
-                      "TOOL_MARKER=A", "TOOL_MARKER=B", "nativeArm64(process.value)"):
+                      "TOOL_MARKER=A", "TOOL_MARKER=B", "nativeArm64(childProcess.process.value)"):
             self.assertIn(token, self.probe)
+        self.assertNotIn("Import-Module -LiteralPath", self.probe)
         self.assertIn("LoadLibraryExW", self.tool)
         self.assertIn("GetMappedFileNameW", self.tool)
+
+    def test_rejected_output_cannot_write_failure_by_path(self):
+        self.assertIn("createdDirectory = true", self.probe)
+        self.assertIn("ownedDirectory = createHeldDirectory(output)", self.probe)
+        self.assertIn("FILE_CREATE, FILE_DIRECTORY_FILE", self.probe)
+        self.assertIn("io.Information != FILE_CREATED", self.probe)
+        self.assertIn("createdDirectory && ownedDirectory.valid() && log.is_open()", self.probe)
+        self.assertNotIn('output / L"failure.txt"', self.probe)
+        self.assertNotIn("fs::exists(output) && fs::is_directory(output)", self.probe)
+
+    def test_both_launch_sites_have_bounded_cleanup(self):
+        for token in ("CREATE_SUSPENDED", "AssignProcessToJobObject", "JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE",
+                      "TerminateJobObject", "TerminateProcess", "QueryInformationJobObject",
+                      "STOP UNCONFIRMED", 'waitExit("child"', 'waitExit("actor"',
+                      'L"timeout-child"', 'L"timeout-actor"'):
+            self.assertIn(token, self.probe)
+        self.assertIn("--actor-stall", self.tool)
+        self.assertIn("--stall", self.tool)
 
     def test_no_product_or_maintenance_apis(self):
         combined = self.probe + self.tool + self.module + self.cmake

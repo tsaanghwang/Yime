@@ -26,6 +26,8 @@ python tools/yimecore/arm64-handle-probe/test_source_contract.py
 
 ## 场景与期望
 
+先在同一可丢弃 VM 的另一个新输出根运行 `test_probe_vm_negative.py --probe <探针绝对路径> --pwsh <PS7绝对路径> --root <不存在的新目录>`。它核对被拒绝的已有目录及原有 `failure.txt` 完全不变，并用 `timeout-child`、`timeout-actor` 两个仅供故障注入的场景检查私有 Job 终止、回收和 PID 停止。故障注入的非零退出是预期结果；脚本仅在全部检查成立时报告成功。此脚本不在 ASUS 运行。
+
 | 场景 | 期望 |
 | --- | --- |
 | `share` | 主进程持 `GENERIC_READ` 且只分享读取句柄；同步后的独立 ARM64 子进程写入、请求删除权限和同路径移走均失败；前两项错误为 `ERROR_SHARING_VIOLATION=32`。 |
@@ -34,10 +36,10 @@ python tools/yimecore/arm64-handle-probe/test_source_contract.py
 | `tool` | 每次新原生 ARM64 工具进程从同一路径返回对应 A/B 编译标记。 |
 | `dll` | 每次新原生 ARM64 工具进程加载同一路径的合成 DLL，返回对应 A/B 导出标记，并记录模块路径和映射路径。 |
 
-每个输出目录保留 `events.jsonl`、原始 `.stdout.bin`、`.stderr.bin`、`.exit.txt`、合成文件和失败时的 `failure.txt`。`events.jsonl` 记录句柄所得卷序列号、文件 ID、最终路径、SHA-256、进程架构、退出码与标记；应对照原始字节、文件 ID 和标记，不仅看路径字符串。程序成功结束写入 `case-passed`。运行者还应记录 VM 快照 ID、Windows/PS7/工具版本、探针及五个 PE 的哈希。A/B 文件 ID 是执行前从路径打开的快照，标记是进程返回的可观察结果；两者的对应关系是受控实验的推断，并非从 PowerShell 或 DLL 加载器内部取得同一文件对象句柄。
+已创建并持有目录句柄的输出目录保留 `events.jsonl`、原始 `.stdout.bin`、`.stderr.bin`、`.exit.txt` 和合成文件。失败写入已打开的日志句柄中的 `case-failed`；在目录创建或持有前失败时仅写标准错误，不按未经核准的路径创建 `failure.txt`。`events.jsonl` 记录句柄所得卷序列号、文件 ID、最终路径、SHA-256、进程架构、退出码与标记；应对照原始字节、文件 ID 和标记，不仅看路径字符串。程序成功结束写入 `case-passed`。运行者还应记录 VM 快照 ID、Windows/PS7/工具版本、探针及五个 PE 的哈希。A/B 文件 ID 是执行前从路径打开的快照，标记是进程返回的可观察结果；两者的对应关系是受控实验的推断，并非从 PowerShell 或 DLL 加载器内部取得同一文件对象句柄。
 
 ## 停止与结论边界
 
-拒绝非本地 NTFS、重解析点、非 ARM64 PE 或进程、参数或输出目录不合约、文件 ID/哈希与标记不一致、超时及任一意外 Win32 错误。停止后不要清理或继续其他场景。VM 用完后按预先批准的流程丢弃快照。
+拒绝非本地 NTFS、重解析点、非 ARM64 PE 或进程、参数或输出目录不合约、文件 ID/哈希与标记不一致、超时及任一意外 Win32 错误。每个子进程先在挂起状态加入本轮私有 Job，随后才运行；超时或启动后异常时只终止该 Job 并限时核实进程退出。无法确认停止时明确报告 `STOP UNCONFIRMED` 并保留现场，不操作无关进程。停止后不要清理或继续其他场景。VM 用完后按预先批准的流程丢弃快照。
 
 结果只能说明该 VM 上合成文件的句柄共享、替换后的对象身份和可观察加载结果。它不能证明 Yime 未来维护入口加载了已核准对象，也不能消除 PowerShell 按路径重开、既存可写映射或特权进程造成的窗口。真实 NTFS ACL 与不同账户、重解析点攻击、UAC、设置页卸载和实机输入仍需独立验证。

@@ -1,5 +1,6 @@
 #define NOMINMAX
 #include <windows.h>
+#include <winternl.h>
 #include <bcrypt.h>
 #include <filesystem>
 #include <fstream>
@@ -103,12 +104,47 @@ struct Identity {
 
 Handle openRead(const fs::path& path, bool directory = false) {
     DWORD flags = FILE_FLAG_OPEN_REPARSE_POINT | (directory ? FILE_FLAG_BACKUP_SEMANTICS : 0);
-    Handle h(CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, flags, nullptr));
+    Handle h(CreateFileW(path.c_str(), GENERIC_READ | (directory ? FILE_TRAVERSE : 0),
+                         FILE_SHARE_READ, nullptr, OPEN_EXISTING, flags, nullptr));
     if (!h.valid()) fail("CreateFileW " + utf8(path.wstring()));
     FILE_ATTRIBUTE_TAG_INFO tag{};
     if (!GetFileInformationByHandleEx(h.value, FileAttributeTagInfo, &tag, sizeof(tag))) fail("FileAttributeTagInfo");
     if (tag.FileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) fail("reparse point rejected", ERROR_REPARSE_TAG_INVALID);
     return h;
+}
+
+// NtCreateFile atomically returns the newly created directory object. Win32
+// CreateDirectoryW followed by CreateFileW leaves a replacement window.
+Handle createHeldDirectory(const fs::path& output) {
+    Handle parent = openRead(output.parent_path(), true);
+    const std::wstring leaf = output.filename().wstring();
+    if (leaf.empty() || leaf.find(L'\\') != std::wstring::npos || leaf.find(L'/') != std::wstring::npos ||
+        leaf.size() * sizeof(wchar_t) > USHRT_MAX) fail("invalid output leaf", 0);
+    UNICODE_STRING name{};
+    name.Length = static_cast<USHORT>(leaf.size() * sizeof(wchar_t));
+    name.MaximumLength = name.Length;
+    name.Buffer = const_cast<PWSTR>(leaf.c_str());
+    OBJECT_ATTRIBUTES attributes{};
+    InitializeObjectAttributes(&attributes, &name, OBJ_CASE_INSENSITIVE, parent.value, nullptr);
+    IO_STATUS_BLOCK io{};
+    HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+    if (!ntdll) fail("GetModuleHandleW ntdll");
+    auto ntCreateFile = reinterpret_cast<decltype(&NtCreateFile)>(GetProcAddress(ntdll, "NtCreateFile"));
+    if (!ntCreateFile) fail("GetProcAddress NtCreateFile");
+    HANDLE raw = INVALID_HANDLE_VALUE;
+    const NTSTATUS status = ntCreateFile(&raw, FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
+                                        &attributes, &io, nullptr, FILE_ATTRIBUTE_DIRECTORY, FILE_SHARE_READ,
+                                        FILE_CREATE, FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT |
+                                        FILE_OPEN_REPARSE_POINT, nullptr, 0);
+    if (status < 0) {
+        std::ostringstream message;
+        message << "NtCreateFile new output directory failed (NTSTATUS=0x" << std::hex
+                << static_cast<ULONG>(status) << ")";
+        throw std::runtime_error(message.str());
+    }
+    Handle created(raw);
+    if (!created.valid() || io.Information != FILE_CREATED) fail("output directory was not newly created", 0);
+    return created;
 }
 
 Identity identify(HANDLE h, bool directory = false) {
@@ -183,6 +219,89 @@ std::wstring quoted(const fs::path& path) { return L"\"" + path.wstring() + L"\"
 
 struct ChildResult { DWORD code; std::string stdoutText; std::string stderrText; };
 
+// Every launched process is suspended until it is inside this private job.
+// The job owns only this invocation's child and its ordinary descendants.
+struct OwnedProcess {
+    Handle job;
+    Handle process;
+    Handle thread;
+    DWORD pid = 0;
+    bool assigned = false;
+    bool settled = false;
+
+    OwnedProcess(const fs::path& exe, std::vector<wchar_t>& command,
+                 STARTUPINFOW& startup, const fs::path& workDir) {
+        job = Handle(CreateJobObjectW(nullptr, nullptr));
+        if (!job.valid()) fail("CreateJobObjectW");
+        JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits{};
+        limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+        if (!SetInformationJobObject(job.value, JobObjectExtendedLimitInformation, &limits, sizeof(limits)))
+            fail("SetInformationJobObject");
+        PROCESS_INFORMATION pi{};
+        if (!CreateProcessW(exe.c_str(), command.data(), nullptr, nullptr, TRUE,
+                            CREATE_NO_WINDOW | CREATE_SUSPENDED, nullptr, workDir.c_str(), &startup, &pi))
+            fail("CreateProcessW");
+        process = Handle(pi.hProcess); thread = Handle(pi.hThread); pid = pi.dwProcessId;
+        if (!AssignProcessToJobObject(job.value, process.value)) {
+            const DWORD error = GetLastError();
+            const std::string status = stop();
+            throw std::runtime_error("AssignProcessToJobObject failed (Win32=" + std::to_string(error) + "); " + status);
+        }
+        assigned = true;
+        if (ResumeThread(thread.value) == static_cast<DWORD>(-1)) {
+            const DWORD error = GetLastError();
+            const std::string status = stop();
+            throw std::runtime_error("ResumeThread failed (Win32=" + std::to_string(error) + "); " + status);
+        }
+    }
+
+    std::string stop() noexcept {
+        if (settled || !process.valid()) return "already stopped";
+        BOOL terminated = assigned ? TerminateJobObject(job.value, ERROR_TIMEOUT)
+                                   : TerminateProcess(process.value, ERROR_TIMEOUT);
+        const DWORD terminationError = terminated ? 0 : GetLastError();
+        const DWORD rootWait = WaitForSingleObject(process.value, kWaitMs);
+        bool empty = !assigned;
+        if (assigned) {
+            const ULONGLONG deadline = GetTickCount64() + kWaitMs;
+            do {
+                JOBOBJECT_BASIC_ACCOUNTING_INFORMATION count{};
+                if (!QueryInformationJobObject(job.value, JobObjectBasicAccountingInformation,
+                                               &count, sizeof(count), nullptr)) break;
+                if (count.ActiveProcesses == 0) { empty = true; break; }
+                Sleep(10);
+            } while (GetTickCount64() < deadline);
+        }
+        settled = rootWait == WAIT_OBJECT_0 && empty;
+        return std::string(settled ? "terminated and reaped" : "STOP UNCONFIRMED") +
+               " (termination Win32=" + std::to_string(terminationError) +
+               ", root_wait=" + std::to_string(rootWait) + ", job_empty=" +
+               (empty ? "true" : "false") + ", pid=" + std::to_string(pid) + ")";
+    }
+
+    DWORD waitExit(const char* label, DWORD timeoutMs = kWaitMs) {
+        const DWORD wait = WaitForSingleObject(process.value, timeoutMs);
+        if (wait != WAIT_OBJECT_0) {
+            const std::string status = stop();
+            throw std::runtime_error(std::string(label) + " wait=" + std::to_string(wait) + "; " + status);
+        }
+        JOBOBJECT_BASIC_ACCOUNTING_INFORMATION count{};
+        if (!QueryInformationJobObject(job.value, JobObjectBasicAccountingInformation,
+                                       &count, sizeof(count), nullptr) || count.ActiveProcesses != 0) {
+            const std::string status = stop();
+            throw std::runtime_error(std::string(label) + " descendant/query state unexpected; " + status);
+        }
+        settled = true;
+        DWORD code = 0;
+        if (!GetExitCodeProcess(process.value, &code)) fail("GetExitCodeProcess");
+        return code;
+    }
+
+    ~OwnedProcess() {
+        if (!settled && process.valid()) std::cerr << "STOP-CLEANUP: " << stop() << "\n";
+    }
+};
+
 std::string readBytes(const fs::path& path) {
     std::ifstream input(path, std::ios::binary);
     if (!input) fail("read child log", 0);
@@ -190,7 +309,7 @@ std::string readBytes(const fs::path& path) {
 }
 
 ChildResult child(const fs::path& exe, const std::wstring& arguments, const fs::path& output,
-                  const std::string& label, std::ofstream& log, HANDLE ready = nullptr) {
+                  const std::string& label, std::ofstream& log, DWORD timeoutMs = kWaitMs) {
     requireArm64Pe(exe);
     SECURITY_ATTRIBUTES sa{sizeof(sa), nullptr, TRUE};
     fs::path outPath = output / fs::path(label + ".stdout.bin");
@@ -201,24 +320,18 @@ ChildResult child(const fs::path& exe, const std::wstring& arguments, const fs::
     STARTUPINFOW startup{}; startup.cb = sizeof(startup);
     startup.dwFlags = STARTF_USESTDHANDLES; startup.hStdOutput = out.value; startup.hStdError = err.value;
     startup.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
-    PROCESS_INFORMATION pi{};
     std::wstring command = quoted(exe) + L" " + arguments;
     std::vector<wchar_t> commandBuffer(command.begin(), command.end()); commandBuffer.push_back(L'\0');
-    if (!CreateProcessW(exe.c_str(), commandBuffer.data(), nullptr, nullptr, TRUE, CREATE_NO_WINDOW,
-                        nullptr, output.c_str(), &startup, &pi)) fail("CreateProcessW");
-    Handle process(pi.hProcess), thread(pi.hThread);
-    if (!nativeArm64(process.value)) fail("child process is not native ARM64", 0);
+    OwnedProcess childProcess(exe, commandBuffer, startup, output);
+    if (!nativeArm64(childProcess.process.value)) fail("child process is not native ARM64", 0);
     std::wstring actualPath(32768, L'\0');
     DWORD actualLength = static_cast<DWORD>(actualPath.size());
-    if (!QueryFullProcessImageNameW(process.value, 0, actualPath.data(), &actualLength)) fail("QueryFullProcessImageNameW");
+    if (!QueryFullProcessImageNameW(childProcess.process.value, 0, actualPath.data(), &actualLength)) fail("QueryFullProcessImageNameW");
     actualPath.resize(actualLength);
     log << "{\"event\":" << quoteJson(label + "-process") << ",\"native_arm64\":true,\"exe\":"
         << quoteJson(utf8(exe.wstring())) << ",\"actual_exe\":" << quoteJson(utf8(actualPath))
-        << ",\"pid\":" << pi.dwProcessId << "}\n"; log.flush();
-    if (ready && WaitForSingleObject(ready, kWaitMs) != WAIT_OBJECT_0) fail("actor ready timeout");
-    if (WaitForSingleObject(process.value, kWaitMs) != WAIT_OBJECT_0) fail("child timeout");
-    DWORD code = 0;
-    if (!GetExitCodeProcess(process.value, &code)) fail("GetExitCodeProcess");
+        << ",\"pid\":" << childProcess.pid << "}\n"; log.flush();
+    const DWORD code = childProcess.waitExit("child", timeoutMs);
     out = Handle(); err = Handle();
     std::ofstream exitFile(output / fs::path(label + ".exit.txt"), std::ios::binary);
     exitFile << code << "\n"; exitFile.close();
@@ -253,7 +366,8 @@ void makeScripts(const fs::path& dir) {
     for (const char marker : {'A', 'B'}) {
         const std::string m(1, marker);
         writeText(dir / fs::path("script-" + m + ".ps1"),
-                  "Import-Module -LiteralPath (Join-Path $PSScriptRoot 'active.psm1') -Force -ErrorAction Stop\r\n"
+                  "$modulePath = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'active.psm1'))\r\n"
+                  "Import-Module -Name $modulePath -Force -ErrorAction Stop\r\n"
                   "Write-Output ('PROCESS_PATH=' + (Get-Process -Id $PID).Path)\r\n"
                   "Write-Output ('SCRIPT_PATH=' + $PSCommandPath)\r\n"
                   "Write-Output ('MODULE_PATH=' + (Get-Module -Name active).Path)\r\n"
@@ -266,7 +380,11 @@ void makeScripts(const fs::path& dir) {
 
 void runCase(const std::wstring& name, const fs::path& pwsh, const fs::path& output,
              const fs::path& binaryDir, std::ofstream& log) {
-    if (name == L"share" || name == L"replace") {
+    if (name == L"timeout-child") {
+        child(binaryDir / L"YimeSyntheticToolA.exe", L"--stall", output, "timeout-child", log, 200);
+        fail("fault injection did not time out", 0);
+    }
+    if (name == L"share" || name == L"replace" || name == L"timeout-actor") {
         const fs::path active = output / L"active.txt", replacement = output / L"replacement.txt", old = output / L"archived.txt";
         writeText(active, "synthetic-identical-bytes\n");
         writeText(replacement, "synthetic-identical-bytes\n");
@@ -288,17 +406,17 @@ void runCase(const std::wstring& name, const fs::path& pwsh, const fs::path& out
         if (!out.valid() || !err.valid()) fail("create actor logs");
         STARTUPINFOW startup{}; startup.cb = sizeof(startup); startup.dwFlags = STARTF_USESTDHANDLES;
         startup.hStdOutput = out.value; startup.hStdError = err.value; startup.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
-        std::wstring command = quoted(actor) + L" --actor " + quoted(active) + L" \"" + readyName + L"\" \"" + goName + L"\" " + quoted(old);
+        const std::wstring actorMode = name == L"timeout-actor" ? L"--actor-stall" : L"--actor";
+        std::wstring command = quoted(actor) + L" " + actorMode + L" " + quoted(active) + L" \"" + readyName + L"\" \"" + goName + L"\" " + quoted(old);
         std::vector<wchar_t> buffer(command.begin(), command.end()); buffer.push_back(L'\0');
-        PROCESS_INFORMATION pi{};
-        if (!CreateProcessW(actor.c_str(), buffer.data(), nullptr, nullptr, TRUE, CREATE_NO_WINDOW,
-                            nullptr, output.c_str(), &startup, &pi)) fail("CreateProcessW actor");
-        Handle process(pi.hProcess), thread(pi.hThread);
-        if (!nativeArm64(process.value)) fail("actor process is not native ARM64", 0);
+        OwnedProcess actorProcess(actor, buffer, startup, output);
+        if (!nativeArm64(actorProcess.process.value)) fail("actor process is not native ARM64", 0);
+        log << "{\"event\":\"actor-process\",\"native_arm64\":true,\"pid\":"
+            << actorProcess.pid << "}\n"; log.flush();
         if (WaitForSingleObject(ready.value, kWaitMs) != WAIT_OBJECT_0) fail("actor ready timeout");
-        if (!SetEvent(go.value)) fail("signal actor");
-        if (WaitForSingleObject(process.value, kWaitMs) != WAIT_OBJECT_0) fail("actor timeout");
-        DWORD code = 0; if (!GetExitCodeProcess(process.value, &code)) fail("actor exit");
+        if (name != L"timeout-actor" && !SetEvent(go.value)) fail("signal actor");
+        const DWORD code = actorProcess.waitExit("actor", name == L"timeout-actor" ? 200 : kWaitMs);
+        if (name == L"timeout-actor") fail("actor fault injection did not time out", 0);
         out = Handle(); err = Handle();
         writeText(output / L"actor.exit.txt", std::to_string(code) + "\n");
         const std::string actorOutput = readBytes(outPath);
@@ -373,12 +491,16 @@ void runCase(const std::wstring& name, const fs::path& pwsh, const fs::path& out
 
 int wmain(int argc, wchar_t** argv) {
     fs::path output;
+    Handle ownedDirectory;
+    std::ofstream log;
+    bool createdDirectory = false;
     try {
         if (argc != 7 || std::wstring(argv[1]) != L"--pwsh" ||
             std::wstring(argv[3]) != L"--output" || std::wstring(argv[5]) != L"--case") fail("exact CLI required", 0);
         fs::path pwsh(argv[2]); output = fs::path(argv[4]);
         const std::wstring name(argv[6]);
-        if (name != L"share" && name != L"replace" && name != L"script-module" && name != L"tool" && name != L"dll") fail("unknown case", 0);
+        if (name != L"share" && name != L"replace" && name != L"script-module" && name != L"tool" && name != L"dll" &&
+            name != L"timeout-child" && name != L"timeout-actor") fail("unknown case", 0);
         if (!nativeArm64(GetCurrentProcess())) fail("native ARM64 process required", 0);
         requireLocalNtfs(pwsh); requireLocalNtfs(output);
         if (_wcsicmp(pwsh.filename().c_str(), L"pwsh.exe") != 0 || !fs::is_regular_file(pwsh)) fail("fixed pwsh.exe file required", 0);
@@ -393,21 +515,23 @@ int wmain(int argc, wchar_t** argv) {
         for (const wchar_t* file : {L"YimeSyntheticToolA.exe", L"YimeSyntheticToolB.exe",
                                     L"YimeSyntheticModuleA.dll", L"YimeSyntheticModuleB.dll"})
             requireArm64Pe(binaryDir / file);
-        if (!fs::create_directory(output)) fail("create new output directory", 0);
-        std::ofstream log(output / L"events.jsonl", std::ios::binary);
+        ownedDirectory = createHeldDirectory(output);
+        createdDirectory = true;
+        requireLocalNtfs(output);
+        log.open(output / L"events.jsonl", std::ios::binary);
         if (!log) fail("create event log", 0);
         log << "{\"event\":\"probe-process\",\"native_arm64\":true,\"pid\":"
             << GetCurrentProcessId() << "}\n"; log.flush();
-        record(log, "output-directory", identifyPath(output, true));
+        record(log, "output-directory", identify(ownedDirectory.value, true));
         record(log, "pwsh-file", identifyPath(pwsh));
         runCase(name, pwsh, output, binaryDir, log);
         log << "{\"event\":\"case-passed\"}\n"; log.flush();
         return 0;
     } catch (const std::exception& e) {
         std::cerr << "STOP: " << e.what() << "\n";
-        if (!output.empty() && fs::exists(output) && fs::is_directory(output)) {
-            std::ofstream failure(output / L"failure.txt", std::ios::binary | std::ios::app);
-            failure << e.what() << "\n";
+        if (createdDirectory && ownedDirectory.valid() && log.is_open()) {
+            log << "{\"event\":\"case-failed\",\"reason\":" << quoteJson(e.what()) << "}\n";
+            log.flush();
         }
         return 1;
     }
