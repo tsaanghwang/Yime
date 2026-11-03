@@ -1,0 +1,145 @@
+{
+  "schema": "installed-18u-manual-task-result-v1",
+  "taskID": "installed18u-test6-msi-x64-r1",
+  "machineID": "WIN-JTKUT7KBVN7",
+  "dispatchCommit": "fc61b5168429ba490cf9cd2050531da31dc6bb09",
+  "recordedAt": "2026-11-03T04:53:18.805247+00:00",
+  "status": "partial",
+  "host": {
+    "reportedName": "WIN-JTKUT7KBVN7",
+    "expectedIdentityConfirmed": true,
+    "nativeArchitecture": "AMD64",
+    "processArchitecture": "AMD64"
+  },
+  "evidenceOrigin": "local-executor-and-user-observation; fields must be supported individually",
+  "package": {
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "version": "0.1.0-18u-test.6",
+    "buildRun": 41563052934,
+    "artifactID": 13198347201,
+    "zipSHA256": "df03629e0bc1512e265beb43b80c58c7d53ada21b1ee3776b6b73bdbfeaa7282",
+    "packageEvidenceSHA256": "64c5996cfc3ab71ff0ffe7df54bd8ee0786d0ed0226816329cfbf37bde8c31a6",
+    "installedDescriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "verifiedLocally": true,
+    "signatureStatus": "five-PE-NotSigned"
+  },
+  "phases": [
+    {
+      "id": "package-and-local-baseline",
+      "status": "pass",
+      "startedAt": null,
+      "completedAt": "2026-11-03T03:54:06.396767+00:00",
+      "exitCode": 0,
+      "observation": "User-authorized continuation: corrected baseline collector passed no-pyc syntax check, then one scoped read-only execution. Relevant product and user-data roots and queried product registrations were absent; default preload was 00000804.",
+      "evidenceNames": [
+        "baseline-continuation.json",
+        "snapshot_baseline.py",
+        "package-verification.json",
+        "read-only-host.json"
+      ]
+    },
+    {
+      "id": "normal-install",
+      "status": "pass",
+      "startedAt": "2026-11-03T04:11:06.039649+00:00",
+      "completedAt": "2026-11-03T04:37:10.559724+00:00",
+      "exitCode": 0,
+      "observation": "Same-user normal Install and elevated Setup returned 0. Authorized single supplemental read-only check passed: complete registration stdout/stderr and explicit zero exit, exact 0804 Profile and five paired category identities, installed payload/COM/uninstall proof from prior verifier, protected standard/Rime paths/registrations/user data and default/language settings preserved.",
+      "evidenceNames": [
+        "supplemental-verification.json",
+        "status-stdout.txt",
+        "status-stderr.txt",
+        "status-exit.json",
+        "language-stdout.txt",
+        "language-stderr.txt",
+        "language-exit.json"
+      ]
+    },
+    {
+      "id": "user-reboot-and-verification",
+      "status": "pass",
+      "startedAt": "2026-11-03T04:42:31.182450+00:00",
+      "completedAt": "2026-11-03T04:53:18.805247+00:00",
+      "exitCode": 0,
+      "observation": "User confirmed normal reboot. Actual boot time followed completed Install and supplemental verification. One read-only post-reboot check passed: all 16 fixed package payloads and 15 descriptor members, marker, maintenance files, COM/uninstall bindings, exact 0804 Profile and five paired categories, protected standard/Rime paths and registrations, user data, language settings and default override.",
+      "evidenceNames": [
+        "postreboot-verification.json",
+        "status-stdout.txt",
+        "status-stderr.txt",
+        "status-exit.json",
+        "language-stdout.txt",
+        "language-stderr.txt",
+        "language-exit.json"
+      ]
+    },
+    {
+      "id": "single-installed-host",
+      "status": "not-run",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCode": null,
+      "observation": null,
+      "evidenceNames": []
+    }
+  ],
+  "baseline": {
+    "independent18uBefore": "absent-in-scoped-paths-and-registrations",
+    "standardAndRimePreserved": true,
+    "userDataPreserved": true,
+    "defaultAndLanguagePreserved": true,
+    "bootTimeAfterMaintenance": "2026-11-03T04:42:31.182450+00:00"
+  },
+  "installedHost": {
+    "sourceCommit": null,
+    "manifestSHA256": null,
+    "status": null,
+    "stage": null,
+    "hostExitSucceeded": null,
+    "brokerExitSucceeded": null,
+    "readbackEvidenceConsistent": null,
+    "registrationMutationRequested": null,
+    "installedProfilePresenceVerified": null,
+    "nativeResult": null,
+    "rawEvidenceRead": null
+  },
+  "physicalAcceptance": false,
+  "overallProductAcceptance": false,
+  "stopReason": null,
+  "retryPerformed": false,
+  "resetDataRequested": false,
+  "evidenceIndexFile": "evidence-index.json",
+  "notes": [
+    "Original failed records, successful baseline continuation, Install logs and failed verifier source/error remain unchanged.",
+    "A new verifier with the correct tool_version field passed a no-pyc syntax check and ran once. It read the original complete status stdout/stderr; the original status exit 0 follows from the prior verifier reaching line 59 after its explicit nonzero-exit guard. A fresh read-only status invocation recorded exit 0, identical status values and identical 61-line stderr hash.",
+    "The fixed status tool source checks the exact product CLSID, Profile GUID and 0804 language and rejects foreign/duplicate Profile or category identities. Persisted Profile path/values and all five category forward/reverse pairs were also checked locally; counts alone were not used.",
+    "Named standard YimeCore and Rime/PIME program/data roots and registrations remain absent as before. Keyboard preload remains 00000804; user language tags remain zh-Hans-CN, en-US, und-Latn; default input method override remains absent.",
+    "Stage 3 passed after one read-only post-reboot check. Test-thread HKL, TSF language and foreground focus remain unverified, and no installed-host check was run."
+  ],
+  "continuation": {
+    "ofResultCommit": "d3f95871da1295d390c2c4517c7c0484913074b1",
+    "priorRecordsPreserved": true,
+    "userAuthorized": true,
+    "postRebootReadOnlyExecutions": 1,
+    "installExecutionsThisContinuation": 0,
+    "rebootPerformed": true,
+    "installedHostExecuted": false
+  },
+  "registrationIdentity": {
+    "clsid": "{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+    "profile": "{1BD904AC-3194-4419-B70A-5574100F18B3}",
+    "language": "0804",
+    "categoryGuids": [
+      "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+      "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+      "{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+      "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+      "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}"
+    ],
+    "categoryPairsComplete": true,
+    "originalStatusExitCode": 0,
+    "originalStatusExitCodeSource": "inferred from prior verifier control flow before line 59",
+    "freshStatusExitCode": 0,
+    "stdoutMatchesPrior": true,
+    "stderrMatchesPriorSHA256": true
+  }
+}

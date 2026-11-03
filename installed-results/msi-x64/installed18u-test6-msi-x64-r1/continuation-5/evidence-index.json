@@ -1,0 +1,71 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test6-msi-x64-r1",
+  "dispatchCommit": "fc61b5168429ba490cf9cd2050531da31dc6bb09",
+  "files": [
+    {
+      "name": "postreboot_readonly_r5.py",
+      "bytes": 17222,
+      "sha256": "0c0ea05275cbced71031cbb748a872480fb9ee3ef7902c3c04d38e98ffbffbe8",
+      "kind": "post-reboot-verifier-source",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "status-stdout.txt",
+      "bytes": 236,
+      "sha256": "853a539b049365dbcd2e895d5722b497f08285988e0d9d7fe844a30d33b51319",
+      "kind": "registration-status-stdout",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "status-stderr.txt",
+      "bytes": 4915,
+      "sha256": "b4c6f140ce75fa8ea749f15e25fa7a8483eab49939b15936ce23a4f868e7cd58",
+      "kind": "registration-status-stderr",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "status-exit.json",
+      "bytes": 23,
+      "sha256": "ea61d7736f0b7ecb9b35158f03de77013db6b100cf1d36c957e78e6c8817c5b6",
+      "kind": "registration-status-exit",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "language-stdout.txt",
+      "bytes": 350,
+      "sha256": "0403783d297f9404dca618724e00cf87aa860bc5d0bc5aa2003d0c4bc7d6273a",
+      "kind": "language-settings-stdout",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "language-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "language-settings-stderr",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "language-exit.json",
+      "bytes": 23,
+      "sha256": "ea61d7736f0b7ecb9b35158f03de77013db6b100cf1d36c957e78e6c8817c5b6",
+      "kind": "language-settings-exit",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "postreboot-verification.json",
+      "bytes": 2633,
+      "sha256": "5f779bf0b4028bd39cfb17f4fb38b907a1cb35e5ba3b79dd9617b13ab7fa3bcc",
+      "kind": "read-only-post-reboot-result",
+      "readLocally": true,
+      "uploaded": false
+    }
+  ]
+}
