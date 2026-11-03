@@ -1,0 +1,194 @@
+{
+  "schema": "installed-18u-entry-rehearsal-result-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "recordID": "executor-entry-r1",
+  "recordedAtUTC": "2026-11-03T14:20:57.141375+00:00",
+  "status": "syntax-and-no-product-rehearsal-passed",
+  "entry": "tools/entry.py",
+  "worker": "tools/worker.py",
+  "entryLockSHA256": "e285cc3a828b7d6a793b7eba312574349e1cafdae06a0ef1f750c86064d9efdd",
+  "design": {
+    "exactPathAndSHA256PinnedImports": true,
+    "cachedTaskModulesRejected": true,
+    "outerLogsOpenedBeforeWorkerImport": true,
+    "subprocessArgumentArrays": true,
+    "shellInterpolationUsed": false,
+    "singleUseOutputDirectory": true,
+    "sharedControllerForRehearsalAndLive": true,
+    "firstFailureStopsRemainingStages": true,
+    "automaticRetry": false,
+    "liveRequiresSeparateAuthorizationRecord": true
+  },
+  "rehearsal": {
+    "status": "pass",
+    "scenarios": {
+      "success": {
+        "expectedExitCode": 0,
+        "actualExitCode": 0,
+        "stages": [
+          "preconditions",
+          "uninstall",
+          "verify_absent",
+          "install",
+          "verify_installed"
+        ],
+        "logsVerified": true,
+        "noProductAccess": true
+      },
+      "failure": {
+        "expectedExitCode": 1,
+        "actualExitCode": 1,
+        "stages": [
+          "preconditions",
+          "uninstall"
+        ],
+        "logsVerified": true,
+        "noProductAccess": true
+      }
+    },
+    "actualMaintenanceExecuted": false
+  },
+  "actualModules": {
+    "success": [
+      {
+        "name": "observe",
+        "file": "C:\\dev\\Yime\\.generated\\installed18u-test7-msi-executor-entry-r1\\tools\\observe.py",
+        "sha256": "607d7370244651868548880b0e183523ffc1878c8be8f41bd9ab33464dd9fb3b"
+      },
+      {
+        "name": "snapshot",
+        "file": "C:\\dev\\Yime\\.generated\\installed18u-test7-msi-executor-entry-r1\\tools\\snapshot.py",
+        "sha256": "75549a2e677e863e7695d89706beee2c10239425170a8135424961489a8ed448"
+      },
+      {
+        "name": "maintain",
+        "file": "C:\\dev\\Yime\\.generated\\installed18u-test7-msi-executor-entry-r1\\tools\\maintain.py",
+        "sha256": "6df00bf2656db027cb4549335862f2a4b42e2d10b19720b6f392816548a3bcf0"
+      },
+      {
+        "name": "capture",
+        "file": "C:\\dev\\Yime\\.generated\\installed18u-test7-msi-executor-entry-r1\\tools\\capture.py",
+        "sha256": "1bcbf9c2a66728a962a267f825b4a462996afdbff5284d58b458e49126ca73e2"
+      },
+      {
+        "name": "controller",
+        "file": "C:\\dev\\Yime\\.generated\\installed18u-test7-msi-executor-entry-r1\\tools\\controller.py",
+        "sha256": "adacc6dde55ac0299d299c43ee2fcf9af74201074feb8d42f6cceee37ed75b2a"
+      }
+    ],
+    "failure": [
+      {
+        "name": "observe",
+        "file": "C:\\dev\\Yime\\.generated\\installed18u-test7-msi-executor-entry-r1\\tools\\observe.py",
+        "sha256": "607d7370244651868548880b0e183523ffc1878c8be8f41bd9ab33464dd9fb3b"
+      },
+      {
+        "name": "snapshot",
+        "file": "C:\\dev\\Yime\\.generated\\installed18u-test7-msi-executor-entry-r1\\tools\\snapshot.py",
+        "sha256": "75549a2e677e863e7695d89706beee2c10239425170a8135424961489a8ed448"
+      },
+      {
+        "name": "maintain",
+        "file": "C:\\dev\\Yime\\.generated\\installed18u-test7-msi-executor-entry-r1\\tools\\maintain.py",
+        "sha256": "6df00bf2656db027cb4549335862f2a4b42e2d10b19720b6f392816548a3bcf0"
+      },
+      {
+        "name": "capture",
+        "file": "C:\\dev\\Yime\\.generated\\installed18u-test7-msi-executor-entry-r1\\tools\\capture.py",
+        "sha256": "1bcbf9c2a66728a962a267f825b4a462996afdbff5284d58b458e49126ca73e2"
+      },
+      {
+        "name": "controller",
+        "file": "C:\\dev\\Yime\\.generated\\installed18u-test7-msi-executor-entry-r1\\tools\\controller.py",
+        "sha256": "adacc6dde55ac0299d299c43ee2fcf9af74201074feb8d42f6cceee37ed75b2a"
+      }
+    ]
+  },
+  "captureIntegrity": {
+    "syntax-all": {
+      "exitCode": 0,
+      "stdout": {
+        "bytes": 205,
+        "sha256": "d4af4edd8b9eb44c608635f0ffb483ab0afca49f96a43282ddae33de56db7598"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "syntax-gate": {
+      "exitCode": 0,
+      "stdout": {
+        "bytes": 72,
+        "sha256": "d2bf20e1cbcca5b359a64daf89a090684881a7526c79b94bb5964c463a07377a"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "rehearsal-driver": {
+      "exitCode": 0,
+      "stdout": {
+        "bytes": 342,
+        "sha256": "0a8a01d8c8c1cac0749e29ca08204ab2680fcef5b04ef8b9cd09f2cd4ba5c6c5"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "success-outer": {
+      "exitCode": 0,
+      "stdout": {
+        "bytes": 141,
+        "sha256": "3ddca06dec621f766fc1605295ba4d6b9c3181e6f19f015dc20ab8c2781b86b8"
+      },
+      "stderr": {
+        "bytes": 18,
+        "sha256": "ee87a73ceaa5431211866c286d814418c2d58c095480dc11d5ff45499936a85e"
+      }
+    },
+    "failure-outer": {
+      "exitCode": 1,
+      "stdout": {
+        "bytes": 66,
+        "sha256": "146c5f515619a20ce71b47d9a54f2b9fa3111f72a310039109b80bcb25111d54"
+      },
+      "stderr": {
+        "bytes": 621,
+        "sha256": "a40cc15effdf2ed43365b206d7f72880fa8dc38657ef6500bada34ea888df6a8"
+      }
+    }
+  },
+  "expectedFailureExplanation": "Exit 1 is the planned mock exception ExpectedRehearsalFailure at uninstall; driver verified no verify_absent/install/verify_installed ran. It is not a product or unexpected tool failure.",
+  "scope": {
+    "elevationAttempted": false,
+    "productFilesOpenedByRehearsal": false,
+    "registryAccessByRehearsal": false,
+    "setupExecuted": false,
+    "uninstallExecuted": false,
+    "installExecuted": false,
+    "processesTerminated": false,
+    "securitySettingsChanged": false,
+    "rebootPerformed": false
+  },
+  "limits": [
+    "Simulated callbacks exercise real sequencing/capture but do not verify actual installer behavior.",
+    "Live branch and elevated environment have not run.",
+    "No fresh host, installed-product or occupancy acceptance is claimed."
+  ],
+  "continuationPlan": [
+    "Do not rerun the old launcher. Keep this lock and existing evidence.",
+    "Before any future live use, prepare a fresh explicit continuation authorization tied to entry-lock SHA-256 and a new saved-work confirmation; live authorization is absent now.",
+    "Start the new entry inside the verified interactive-user administrator context; its outer capture precedes all maintenance imports.",
+    "Live preconditions run the identity/process/exclusive-file gate, verify retained test.6 and fixed test.7 files, and capture actual-user protection state.",
+    "Only after all prerequisites succeed, controller performs one Uninstall, absence/protection verification, one Install, then read-only installed/protection verification; any failure stops.",
+    "Preserve raw stdout/stderr, exit codes and Setup transcripts locally; publish only redacted results. No automatic reboot or input test."
+  ],
+  "priorRecordsPreserved": true,
+  "privacy": {
+    "SIDOrCredentialsDisclosed": false,
+    "rawLogsUploaded": false
+  }
+}
