@@ -1,0 +1,110 @@
+{
+  "schema": "installed-18u-manual-task-result-v1",
+  "taskID": "installed18u-test6-msi-x64-r1",
+  "machineID": "WIN-JTKUT7KBVN7",
+  "dispatchCommit": "fc61b5168429ba490cf9cd2050531da31dc6bb09",
+  "recordedAt": "2026-11-03T03:55:40.950411+00:00",
+  "status": "partial",
+  "host": {
+    "reportedName": "WIN-JTKUT7KBVN7",
+    "expectedIdentityConfirmed": true,
+    "nativeArchitecture": "AMD64",
+    "processArchitecture": "AMD64"
+  },
+  "evidenceOrigin": "local-executor-and-user-observation; fields must be supported individually",
+  "package": {
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "version": "0.1.0-18u-test.6",
+    "buildRun": 41563052934,
+    "artifactID": 13198347201,
+    "zipSHA256": "df03629e0bc1512e265beb43b80c58c7d53ada21b1ee3776b6b73bdbfeaa7282",
+    "packageEvidenceSHA256": "64c5996cfc3ab71ff0ffe7df54bd8ee0786d0ed0226816329cfbf37bde8c31a6",
+    "installedDescriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "verifiedLocally": true,
+    "signatureStatus": "five-PE-NotSigned"
+  },
+  "phases": [
+    {
+      "id": "package-and-local-baseline",
+      "status": "pass",
+      "startedAt": null,
+      "completedAt": "2026-11-03T03:54:06.396767+00:00",
+      "exitCode": 0,
+      "observation": "User-authorized continuation: corrected baseline collector passed no-pyc syntax check, then one scoped read-only execution. Relevant product and user-data roots and queried product registrations were absent; default preload was 00000804.",
+      "evidenceNames": [
+        "baseline-continuation.json",
+        "snapshot_baseline.py",
+        "package-verification.json",
+        "read-only-host.json"
+      ]
+    },
+    {
+      "id": "normal-install",
+      "status": "not-run",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCode": null,
+      "observation": null,
+      "evidenceNames": []
+    },
+    {
+      "id": "user-reboot-and-verification",
+      "status": "not-run",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCode": null,
+      "observation": null,
+      "evidenceNames": []
+    },
+    {
+      "id": "single-installed-host",
+      "status": "not-run",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCode": null,
+      "observation": null,
+      "evidenceNames": []
+    }
+  ],
+  "baseline": {
+    "independent18uBefore": "absent-in-scoped-paths-and-registrations",
+    "standardAndRimePreserved": null,
+    "userDataPreserved": null,
+    "defaultAndLanguagePreserved": null,
+    "bootTimeAfterMaintenance": null
+  },
+  "installedHost": {
+    "sourceCommit": null,
+    "manifestSHA256": null,
+    "status": null,
+    "stage": null,
+    "hostExitSucceeded": null,
+    "brokerExitSucceeded": null,
+    "readbackEvidenceConsistent": null,
+    "registrationMutationRequested": null,
+    "installedProfilePresenceVerified": null,
+    "nativeResult": null,
+    "rawEvidenceRead": null
+  },
+  "physicalAcceptance": false,
+  "overallProductAcceptance": false,
+  "stopReason": null,
+  "retryPerformed": false,
+  "resetDataRequested": false,
+  "evidenceIndexFile": "evidence-index.json",
+  "notes": [
+    "This is a continuation of the preserved failed result at c0f4330f; the original result was not changed.",
+    "Original failure: snapshot_baseline.py line 68 had a raw string ending in a backslash before its quote, causing SyntaxError: unexpected character after line continuation character.",
+    "The corrected collector was checked with python -B and ast.parse; no pyc was generated. It ran once with the continuation label and wrote a new local evidence file exclusively.",
+    "Read-only baseline covers named standard YimeCore, Rime/PIME and independent 18u program/user-data roots; related COM/TIP/profile/uninstall keys in both machine views, user TIP keys and default keyboard preload. All named roots and product keys were absent; preload was 00000804.",
+    "This continuation stops after the baseline. Installation, reboot and installed-host input check remain not-run. No protected product or user data was changed.",
+    "Stage 1 exact invocation start time was not separately captured; completedAt is the collector recordedAt. The previous fixed package verification remains referenced."
+  ],
+  "continuation": {
+    "ofResultCommit": "c0f4330f",
+    "originalFailurePreserved": true,
+    "userAuthorized": true,
+    "collectorExecutionsThisContinuation": 1,
+    "syntaxCheckWithoutPyc": true
+  }
+}

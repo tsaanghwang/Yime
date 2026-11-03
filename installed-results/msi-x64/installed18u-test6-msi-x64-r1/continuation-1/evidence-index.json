@@ -1,0 +1,55 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test6-msi-x64-r1",
+  "dispatchCommit": "fc61b5168429ba490cf9cd2050531da31dc6bb09",
+  "files": [
+    {
+      "name": "artifact.zip",
+      "bytes": 92412989,
+      "sha256": "5834bf583b12048c3c436a4dd36b03b3770b509f52b93a71d6acc5e08aaab002",
+      "kind": "official-artifact-archive",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "YimeCore-18u-0.1.0-18u-test.6-windows-amd64.zip",
+      "bytes": 92394419,
+      "sha256": "df03629e0bc1512e265beb43b80c58c7d53ada21b1ee3776b6b73bdbfeaa7282",
+      "kind": "fixed-inner-package",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "package-verification.json",
+      "bytes": 746,
+      "sha256": "dd5958ead1837863c2a3dbf7bb0840a310236e941affbbdcc267138b7c8ea1b8",
+      "kind": "package-verification",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "read-only-host.json",
+      "bytes": 1108,
+      "sha256": "f6a289cd4e33683e199393b9e52e4b0e596b7bfc5fd091eb552013472a15d9b0",
+      "kind": "local-host-observation",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "snapshot_baseline.py",
+      "bytes": 4411,
+      "sha256": "c982b64f5662426cf33c31c784a11e1e5ffee2786bb5e10fbb25b56b5085112a",
+      "kind": "collector-source",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "baseline-continuation.json",
+      "bytes": 3070,
+      "sha256": "d4602b271248a2fb9da783ab4efcf23f091a17612e38e872f8653c2df72ee406",
+      "kind": "scoped-protected-baseline",
+      "readLocally": true,
+      "uploaded": false
+    }
+  ]
+}
