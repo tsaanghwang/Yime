@@ -1,0 +1,53 @@
+{
+  "schema": "installed-18u-manual-task-result-v1",
+  "taskID": "installed18u-test6-desktop-x64-r1",
+  "machineID": "desktop-x64",
+  "dispatchCommit": "fc61b5168429ba490cf9cd2050531da31dc6bb09",
+  "recordedAt": "2026-11-03T12:41:01+08:00",
+  "status": "passed",
+  "host": {"reportedName": "计算机", "expectedIdentityConfirmed": true, "nativeArchitecture": "AMD64", "processArchitecture": "X64"},
+  "evidenceOrigin": "local-executor-and-user-observation; fields must be supported individually",
+  "package": {
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "version": "0.1.0-18u-test.6",
+    "buildRun": 41563052934,
+    "artifactID": 13198347201,
+    "zipSHA256": "df03629e0bc1512e265beb43b80c58c7d53ada21b1ee3776b6b73bdbfeaa7282",
+    "packageEvidenceSHA256": "64c5996cfc3ab71ff0ffe7df54bd8ee0786d0ed0226816329cfbf37bde8c31a6",
+    "installedDescriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "verifiedLocally": true,
+    "signatureStatus": "NotSigned"
+  },
+  "phases": [
+    {"id": "package-and-local-baseline", "status": "passed", "startedAt": "2026-11-03T11:33:00+08:00", "completedAt": "2026-11-03T11:52:00+08:00", "exitCode": 0, "observation": "Fixed package identity, AMD64 payload and local protection baseline matched the dispatch contract.", "evidenceNames": ["preinstall-baseline.json"]},
+    {"id": "normal-install", "status": "passed", "startedAt": null, "completedAt": null, "exitCode": 0, "observation": "After the preserved UAC-elevation failure, the user explicitly authorized a manual continuation and ran the fixed command once in an administrator PowerShell under the same Windows user. Output reported succeeded=true and the expected persistent independent 18u installation. Post-install payload, ownership, COM, TIP, profile, category and protection checks passed.", "evidenceNames": ["postinstall-verification.json"]},
+    {"id": "user-reboot-and-verification", "status": "passed", "startedAt": "2026-11-03T12:30:03+08:00", "completedAt": "2026-11-03T12:31:19.5000000+08:00", "exitCode": 0, "observation": "User confirmed work saved. A normal restart without forced close completed; the new boot time was later than maintenance completion. Installed and protected product identities remained valid.", "evidenceNames": ["reboot-request.json", "postreboot-verification.json"]},
+    {"id": "single-installed-host", "status": "passed", "startedAt": null, "completedAt": null, "exitCode": 0, "observation": "The user ran the fixed installed-host command once in a foreground ordinary PowerShell. Raw evidence was complete and matched every fixed success field; host and broker stderr were empty.", "evidenceNames": ["evidence/installed-host-20261103-1240-r1/installed-host-result.json", "evidence/installed-host-20261103-1240-r1/host-stdout.jsonl", "evidence/installed-host-20261103-1240-r1/host-stderr.jsonl", "evidence/installed-host-20261103-1240-r1/broker-stdout.txt", "evidence/installed-host-20261103-1240-r1/broker-stderr.jsonl", "evidence/installed-host-20261103-1240-r1.exit-code.txt"]}
+  ],
+  "baseline": {"independent18uBefore": "absent", "standardAndRimePreserved": true, "userDataPreserved": true, "defaultAndLanguagePreserved": true, "bootTimeAfterMaintenance": "2026-11-03T12:31:19.5000000+08:00"},
+  "installedHost": {
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "manifestSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "status": "evidence-consistent",
+    "stage": "completed",
+    "hostExitSucceeded": true,
+    "brokerExitSucceeded": true,
+    "readbackEvidenceConsistent": true,
+    "registrationMutationRequested": false,
+    "installedProfilePresenceVerified": false,
+    "nativeResult": {"activationIdentity":"windows-activated-profile","actualDLLLoaded":true,"duplicateRejected":false,"operationPendingObserved":false,"otherContextEmpty":true,"outcome":"applied","postWriteDisconnectObserved":false,"readbackEmpty":false,"readbackMatches":true,"registered":true,"rejected":false,"replayRejected":false,"scenario":"commit","sendInput":false,"stage":"result","unknownAfterPendingEditCovered":false},
+    "rawEvidenceRead": true
+  },
+  "physicalAcceptance": false,
+  "overallProductAcceptance": false,
+  "stopReason": null,
+  "retryPerformed": true,
+  "resetDataRequested": false,
+  "evidenceIndexFile": "evidence-index.json",
+  "notes": [
+    "The original local result.json and UAC failure log remain unchanged; this file records the explicitly authorized manual continuation.",
+    "No automatic retry was performed and ResetData was never requested.",
+    "Standard YimeCore updated diagnostic/startup state after reboot; no user-content reset was detected.",
+    "No performance, finger, pen, mouse, Word, Edge, flipped-panel or other testing was run or inherited. This is not overall product or physical acceptance."
+  ]
+}

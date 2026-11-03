@@ -1,0 +1,18 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test6-desktop-x64-r1",
+  "dispatchCommit": "fc61b5168429ba490cf9cd2050531da31dc6bb09",
+  "files": [
+    {"name":"postinstall-verification.json","bytes":1700,"sha256":"71fcb2ef638f4079eb5b0f23e347e78165c96d3d529aeecf65de545cef160ca3","kind":"postinstall-verification","readLocally":true,"uploaded":false},
+    {"name":"reboot-request.json","bytes":340,"sha256":"298206bd08c7e848bc9d652ee309450e1e161b0f344464b1319db0003420730b","kind":"reboot-record","readLocally":true,"uploaded":false},
+    {"name":"postreboot-verification.json","bytes":1302,"sha256":"20e1bf97414557dde2af5f6ce6bb4a99ebd5d164c155d4ed754321894dfd0726","kind":"postreboot-verification","readLocally":true,"uploaded":false},
+    {"name":"evidence/installed-host-20261103-1240-r1/installed-host-result.json","bytes":858,"sha256":"5f14f67c50f4b9e6fe1f29892964128f3553278df03e13dd7cc83bb23db12492","kind":"installed-host-summary","readLocally":true,"uploaded":false},
+    {"name":"evidence/installed-host-20261103-1240-r1/host-stdout.jsonl","bytes":451,"sha256":"886129eb73fca8f1235d22902c7227714506d7d72c2b7dc799f6b4726abfd3c0","kind":"installed-host-raw","readLocally":true,"uploaded":false},
+    {"name":"evidence/installed-host-20261103-1240-r1/host-stderr.jsonl","bytes":0,"sha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","kind":"installed-host-raw","readLocally":true,"uploaded":false},
+    {"name":"evidence/installed-host-20261103-1240-r1/broker-stdout.txt","bytes":21,"sha256":"23176aba570a7341edf1eeddda1c98c276273a563ab717bc3671d6813e6a6faa","kind":"installed-host-raw","readLocally":true,"uploaded":false},
+    {"name":"evidence/installed-host-20261103-1240-r1/broker-stderr.jsonl","bytes":0,"sha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","kind":"installed-host-raw","readLocally":true,"uploaded":false},
+    {"name":"evidence/installed-host-20261103-1240-r1.stdout.txt","bytes":858,"sha256":"5f14f67c50f4b9e6fe1f29892964128f3553278df03e13dd7cc83bb23db12492","kind":"invocation-stdout","readLocally":true,"uploaded":false},
+    {"name":"evidence/installed-host-20261103-1240-r1.stderr.txt","bytes":0,"sha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","kind":"invocation-stderr","readLocally":true,"uploaded":false},
+    {"name":"evidence/installed-host-20261103-1240-r1.exit-code.txt","bytes":3,"sha256":"13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354","kind":"invocation-exit-code","readLocally":true,"uploaded":false}
+  ]
+}
