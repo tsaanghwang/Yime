@@ -1,0 +1,14 @@
+Setup log: C:\Users\tsaan\Yime Setup Logs\ce6dac027c4c43db8903c647f19d9263.admin.log
+Action: Install; package: C:\dev\Yime-deliveries\18u-test6-5367accd\package
+tool_version=yime-18u-product-registration-v1
+mutation_performed=false
+com_registered=false
+tip_registered=false
+profile_count=0
+categories_registered_count=0
+com_path=
+operation=register
+hresult=0x0
+succeeded=true
+Installed persistent independent 18u: C:\Program Files\YimeCore 18u Touch
+No startup task or acceptance run was started. Keep the previous same-product package. Reboot when requested, then explicitly run the installed-host check from the delivery instructions.

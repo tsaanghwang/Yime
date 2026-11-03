@@ -1,5 +1,28 @@
 # test.6 正常维护交付与执行
 
+## 最新结果：10:21 本机卸载续行及安装通过
+
+MYCOMPUTER 从已核实的部分卸载状态续行，正常 Uninstall 和 Install 均退出 0。
+Uninstall 的 `unregister-tip`、新进程 `unregister`、`verify-absent` 全部通过，
+旧目录/COM/卸载项均确认不存在后才安装。test.6 的全部 16 个载荷哈希、COM 路径、
+版本卸载项、1 个 profile 和 5 个 category 已核验。
+标准 YimeCore/Rime 的文件及注册、独立用户数据和默认覆盖基线完全一致。
+默认输入法仍为微软拼音，没有更改默认选择。
+
+实际通过范围为**从部分卸载状态完成正常卸载，再安装 test.6**；
+不将本次扩大为完整旧 profile 尚在场时的升级实测，也不继承旧 test.2 的输入结果。
+重启和 test.6 输入尚待各自验证，暂不分发其他三台。
+
+必要原始证据已按字节纳入 [raw](raw/)，索引见 [inventory.json](raw/inventory.json)。
+保留 test.5 首失败、其后新进程只读状态、test.6 现场前提、卸载/安装输出及退出码、
+安装状态和保护基线。体积较大的原生 stderr 未复制，其原路径/大小/SHA-256 留在索引中。
+
+正常重启后接续入口（只读，必须确认 boot time 晚于 10:21:49）：
+`python -X utf8 C:\dev\Yime-evidence\18u-upgrade-20261103\test6\verify_after_reboot.py`。
+之后对固定 test.6 的已安装入口单独验证输入；不要调用旧 test.2 手动检查脚本。
+
+以下保留固定包身份与此前 UAC 取消历史。
+
 源码：[5367accdb6f18bb298f2282df67d4cc6d342aa5e](https://github.com/tsaanghwang/Yime/commit/5367accdb6f18bb298f2282df67d4cc6d342aa5e)。
 这是包含文件访问诊断、TIP/COM 分进程注销和 PR #95 宿主修复的完整包。
 
@@ -31,7 +54,7 @@ artifact 外层摘要 `5834bf583b12048c3c436a4dd36b03b3770b509f52b93a71d6acc5e08
 正常重启后运行同目录 `verify_after_reboot.py`，只读核实启动时间、test.6 载荷/注册及保护基线，
 `reboot-verified.json` 存在且内容通过才是重启核验完成。此过程不重跑旧 test.2 输入用例。
 
-## 系统提权阶段
+## 首次系统提权阶段（历史，后续已获准并完成维护）
 
 10:04 发起 test.6 维护的 UAC；Windows 后来返回“操作已被用户取消”，启动器退出 1。
 `maintain.py` 未启动，没有 test.6 卸载、安装或重启结果。没有自动重新弹出或绕过 UAC。
