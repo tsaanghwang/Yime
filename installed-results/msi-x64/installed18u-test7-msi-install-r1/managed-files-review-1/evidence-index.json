@@ -1,0 +1,57 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "reviewID": "managed-files-review-1",
+  "localEvidenceDirectory": ".generated/installed18u-test7-msi-install-r1-managed-files-review-1",
+  "rawLogsUploaded": false,
+  "files": [
+    {
+      "name": "evidence/exclusive-open.json",
+      "bytes": 1248,
+      "sha256": "fb5e91f6a5492190e09cbb314b6aa9c1bb096c203cb79569faf6434d09808474",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/host-after.json",
+      "bytes": 6931,
+      "sha256": "845ca352867182ce0159e6e2e460ef43b2a2b2bd974f635b5af4539a8d507ed7",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/host-before.json",
+      "bytes": 6900,
+      "sha256": "1211ba24af7b7dfe54475613df4400bedb9f7fb94f62b76352cfd2883ecefb73",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/process-modules.json",
+      "bytes": 1025,
+      "sha256": "0f3554a435cff4dfad86a83451bb201b8fd681eb59db8ab65eb088aa77a64b74",
+      "uploaded": false
+    },
+    {
+      "name": "tools/exclusive.py",
+      "bytes": 3141,
+      "sha256": "34324945aa60d2f8f2e2d7431c41bb572986c7f5da8adb89eb3e0290b7409383",
+      "uploaded": false
+    },
+    {
+      "name": "tools/observe.py",
+      "bytes": 7676,
+      "sha256": "607d7370244651868548880b0e183523ffc1878c8be8f41bd9ab33464dd9fb3b",
+      "uploaded": false
+    },
+    {
+      "name": "tools/process_modules.py",
+      "bytes": 4567,
+      "sha256": "0c014355319509c2a85c52a20e7de32c534351593837ff36cf6988411d39633f",
+      "uploaded": false
+    },
+    {
+      "name": "tools/report.py",
+      "bytes": 5144,
+      "sha256": "9fcfb6bb42a51de993ceff6a58df301455f7645ba9bb877cc1326ff9aa62d911",
+      "uploaded": false
+    }
+  ]
+}

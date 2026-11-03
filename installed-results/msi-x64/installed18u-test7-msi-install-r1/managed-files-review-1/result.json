@@ -1,0 +1,135 @@
+{
+  "schema": "installed-18u-managed-files-review-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "reviewID": "managed-files-review-1",
+  "recordedAtUTC": "2026-11-03T12:56:27.283303+00:00",
+  "status": "review-complete-exclusive-check-incomplete",
+  "host": "WIN-JTKUT7KBVN7",
+  "nativeArchitecture": "AMD64",
+  "installedTest6": {
+    "version": "0.1.0-18u-test.6",
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "descriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "verifiedMembers": 15,
+    "descriptorAlsoVerified": true,
+    "markerMatches": true,
+    "scope": "descriptor-listed payload only; maintenance resources and extra files not certified",
+    "maintenanceListedMembersVerified": 16
+  },
+  "productRoot": "C:/Program Files/YimeCore 18u Touch",
+  "managedFileCount": 22,
+  "exactManagedInventoryMatched": true,
+  "installerReview": {
+    "installedTest6AndTest7SetupBytesIdentical": true,
+    "setupSHA256": "303948487dde4d26525cf7edf94960d175e5cd96b595e50f5f8aad5766b59b9f",
+    "processScope": "Every process whose executable path begins with the product root plus directory separator, case-insensitive; not just a fixed executable-name allowlist.",
+    "ownershipCheck": "Queries process owner SID; failed owner query or a different user stops maintenance.",
+    "terminationFor18u": "For a same-user matching process still running, Kill() then waits up to 5 seconds. The graceful -stop branch applies to standard yimecore, not yimecore-18u.",
+    "excludedFromThatKillBranch": "Host executable outside the product root, even if it loads the product DLL; other product roots and package-directory executables are not included by this path predicate.",
+    "unreadableProcessPath": "Path read errors are skipped by installer; therefore this loop is not proof of complete process visibility.",
+    "order": "Product/registration ownership checks, then stop matching product processes, then Wait-ProductFiles, then unregister profile/TIP/COM and delete product files.",
+    "fileCheck": "All files under product root including .setup; File.Open(Open, ReadWrite, None), immediately disposed.",
+    "onFileFailure": "Does not unregister/delete past the file gate; Silent throws. Non-silent mode offers Retry/Cancel and can loop if the user chooses Retry.",
+    "notReadOnlyInstaller": true
+  },
+  "processObservation": {
+    "status": "observation-completed-with-coverage-limits",
+    "recordedAtUTC": "2026-11-03T12:55:26.310852+00:00",
+    "host": "WIN-JTKUT7KBVN7",
+    "processIDsEnumerated": 392,
+    "processNamesRead": 147,
+    "processModuleListsRead": 137,
+    "relatedProcesses": [],
+    "matchingLoadedModules": [],
+    "coverageErrors": {
+      "query-open:5": 244,
+      "module-open:5": 253,
+      "module-enum:299": 1
+    },
+    "occupancyState": "unknown",
+    "method": "existing Python ctypes with Windows PSAPI and read-only process handles; no debug privilege elevation",
+    "limitations": [
+      "Snapshot is non-atomic and processes/modules may change.",
+      "Protected or inaccessible processes are not proven clear.",
+      "Loaded modules are not all open file handles or data mappings.",
+      "No negative result establishes installation files are unoccupied."
+    ],
+    "restartManagerCalled": false,
+    "installationAttempted": false,
+    "processTerminated": false,
+    "systemSettingsChanged": false,
+    "newToolInstalled": false
+  },
+  "exclusiveOpenObservation": {
+    "status": "stopped-incomplete",
+    "startedAtUTC": "2026-11-03T12:55:48.006892+00:00",
+    "endedAtUTC": "2026-11-03T12:55:48.006986+00:00",
+    "root": "%ProgramFiles%/YimeCore 18u Touch",
+    "managedFiles": 22,
+    "attemptedFiles": 1,
+    "rows": [
+      {
+        "path": ".setup/native/x64/Yime18uProductRegistration.exe",
+        "opened": false,
+        "winerror": 5
+      }
+    ],
+    "method": {
+      "api": "CreateFileW",
+      "desiredAccess": "GENERIC_READ | GENERIC_WRITE",
+      "shareMode": 0,
+      "creationDisposition": "OPEN_EXISTING",
+      "closeImmediately": true
+    },
+    "complete": false,
+    "occupancyState": "unknown",
+    "bytesReadOrWrittenThroughTestHandles": 0,
+    "newFileCreated": false,
+    "installerExecuted": false,
+    "processTerminated": false,
+    "restartManagerCalled": false,
+    "elevationRequested": false,
+    "automaticRetry": false,
+    "limitations": [
+      "Write access is requested but no content is written.",
+      "An open handle briefly denies other incompatible opens.",
+      "Access denied does not uniquely establish a lock, ACL problem, image mapping, or execution-environment restriction.",
+      "Handles are sequential and immediately closed; success cannot guarantee later install conditions."
+    ]
+  },
+  "effects": {
+    "requestedReadWriteAccess": true,
+    "testHandleContentReadOrWritten": false,
+    "anyTestHandleObtained": false,
+    "temporarySharingRestrictionPossibleIfOpenSucceeds": true,
+    "userDataModified": false,
+    "processesTerminated": false,
+    "installerExecuted": false,
+    "RestartManagerCalled": false,
+    "elevationRequested": false,
+    "systemSettingsChanged": false
+  },
+  "protection": {
+    "beforeRecordedAtUTC": "2026-11-03T12:55:24.508159+00:00",
+    "afterRecordedAtUTC": "2026-11-03T12:55:56.181204+00:00",
+    "knownProductAndUserDataTreesUnchanged": true,
+    "selectedRegistrySnapshotsUnchanged": true,
+    "scope": "Known paths and selected keys only; file hashes do not certify all filesystem metadata unchanged."
+  },
+  "conclusion": {
+    "occupancyState": "unknown",
+    "allManagedFilesExclusivelyOpenable": false,
+    "installationStarted": false,
+    "reason": "First of 22 files returned access denied (5); remaining 21 not attempted. Partial process visibility also cannot establish no product processes.",
+    "accessDeniedCause": "not-established; may involve permissions, mapping or execution restrictions; not proof of a lock or security-center block",
+    "followup": "Keep installation pending. No automatic elevated repeat or install. Any further diagnostic execution conditions should be explained before proceeding."
+  },
+  "evidenceLimitations": {
+    "initialOrchestrationReadAttempt": "JavaScript syntax error occurred before any shell command; subsequent static reads succeeded. No installation or file-check retry resulted."
+  },
+  "priorRecordsPreserved": true,
+  "privacy": {
+    "rawLogsUploaded": false,
+    "unrelatedProcessPathsOrUserDataDisclosed": false
+  }
+}
