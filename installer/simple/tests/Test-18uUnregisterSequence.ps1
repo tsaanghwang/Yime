@@ -11,8 +11,8 @@ if(-not $function){throw 'Registration function missing'}
 . ([scriptblock]::Create($function.Extent.Text))
 $product=[pscustomobject]@{id='yimecore-18u';dll='YimeTextService18u.dll'}
 $root='C:\synthetic-18u'
-$dll='C:\synthetic-18u\x64\YimeTextService18u.dll'
-$tool='C:\synthetic-package\x64\Yime18uProductRegistration.exe'
+$script:dll='C:\synthetic-18u\x64\YimeTextService18u.dll'
+$script:tool='C:\synthetic-package\x64\Yime18uProductRegistration.exe'
 function New-OldState {
     $script:state=@{com=$true;tip=$true;profile=1;categories=5;oldFiles='old-payload';userData='user-lexicon';evidence='original-failure-logs';newFiles=$false}
     $script:calls=[Collections.Generic.List[string]]::new()
@@ -26,9 +26,9 @@ function Assert-State([bool]$com,[bool]$tip,[int]$profile,[int]$categories,[stri
        $script:state.evidence -cne 'original-failure-logs' -or $script:state.newFiles){throw ('Protected data changed: '+$label)}
 }
 function Run-Native([string]$Path,[string[]]$Arguments){
-    if($Path -cne $tool){throw 'Wrong registration tool'}
+    if($Path -cne $script:tool){throw 'Wrong registration tool'}
     $action=$Arguments[0]
-    if($action -ne 'verify-absent' -and ($Arguments.Count -ne 2 -or $Arguments[1] -cne $dll)){throw 'Wrong DLL binding'}
+    if($action -ne 'verify-absent' -and ($Arguments.Count -ne 2 -or $Arguments[1] -cne $script:dll)){throw 'Wrong DLL binding'}
     if($action -eq 'verify-absent' -and $Arguments.Count -ne 1){throw 'Wrong absence arguments'}
     $script:calls.Add($action)
     # Every Run-Native invocation stands for one new process. Only a later process
@@ -54,6 +54,29 @@ function Run-Native([string]$Path,[string[]]$Arguments){
         }
         default {throw 'Unexpected native action'}
     }
+}
+# Local names deliberately shadow the fixture values, as Set-Registration's do.
+# Each negative case must fail on its own path check before changing mock state.
+function Invoke-WrongToolPath {
+    $tool='C:\synthetic-wrong-package\x64\Yime18uProductRegistration.exe'
+    Run-Native $tool @('unregister-tip',$script:dll)
+}
+function Invoke-WrongDllPath {
+    $dll='C:\synthetic-wrong-18u\x64\YimeTextService18u.dll'
+    Run-Native $script:tool @('unregister-tip',$dll)
+}
+foreach($case in @('tool','dll')){
+    New-OldState
+    $expected=if($case -eq 'tool'){'Wrong registration tool'}else{'Wrong DLL binding'}
+    $rejected=$false
+    try{
+        if($case -eq 'tool'){Invoke-WrongToolPath}else{Invoke-WrongDllPath}
+    }catch{
+        if($_.Exception.Message -cne $expected){throw}
+        $rejected=$true
+    }
+    if(-not $rejected -or $script:calls.Count -ne 0 -or $script:processes.Count -ne 0){throw ('Wrong path accepted: '+$case)}
+    Assert-State $true $true 1 5 ('wrong-'+$case)
 }
 foreach($case in @('success','unregister-tip','unregister','stale-final-api','verify-absent')){
     New-OldState
@@ -88,4 +111,4 @@ try{Set-Registration $true 'C:\synthetic-package'}catch{
 }
 if(-not $failed -or ($script:calls -join ',') -cne 'unregister-tip,unregister,verify-absent,register'){throw 'Install failure was not propagated after old removal'}
 Assert-State $false $false 0 0 'register-failure'
-Write-Output 'PASS 18u full-old-state mock: three fresh removal phases, failures stop, COM last, install failure preserves evidence/user data; native operations simulated'
+Write-Output 'PASS 18u full-old-state mock: wrong tool/DLL paths rejected, three fresh removal phases, failures stop, COM last, install failure preserves evidence/user data; native operations simulated'
