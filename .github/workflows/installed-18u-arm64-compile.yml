@@ -142,6 +142,15 @@ jobs:
               result=subprocess.run([sys.executable,'tools/powershell/run_checked.py','--edition','ps7','--script',str(script)],stdout=log,stderr=subprocess.STDOUT,timeout=60)
           if result.returncode or output.read_text(encoding='utf-8').count('PASS ARM64 protected staging candidate: 1 valid stage, 7 fault refusals and source separation') != 1:
               raise SystemExit('ARM64 protected stage contract failed')
+      - name: Check ARM64 protected-path ACL mutation rights without changing NTFS
+        run: |
+          import pathlib, subprocess, sys
+          script=pathlib.Path('installer/simple/tests/Test-18uArm64ProtectedAcl.ps1').resolve()
+          output=pathlib.Path('.generated/installed-18u-evidence/arm64-protected-acl.log')
+          with output.open('w',encoding='utf-8') as log:
+              result=subprocess.run([sys.executable,'tools/powershell/run_checked.py','--edition','ps7','--script',str(script)],stdout=log,stderr=subprocess.STDOUT,timeout=60)
+          if result.returncode or output.read_text(encoding='utf-8').count('PASS ARM64 ACL mutation contract: 8 granular refusals, 2 composite refusals, read-only allow') != 1:
+              raise SystemExit('ARM64 ACL mutation contract failed')
       - name: Run eleven filesystem-only ownership cases in PS5 and PS7
         run: |
           import pathlib, subprocess, sys

@@ -98,24 +98,34 @@ function Get-SetupShell($Product,$Contract,[string]$CurrentShell,[int]$PowerShel
     & $VerifyArm64Pe $shell
     return $shell
 }
+function Test-Arm64MutatingRight([int]$Rights){
+    # WriteData/CreateFiles and AppendData/CreateDirectories share their bits.
+    # Modify also contains read rights, so it must not be used as an overlap mask.
+    $mutation=[int][Security.AccessControl.FileSystemRights]::Write -bor
+        [int][Security.AccessControl.FileSystemRights]::DeleteSubdirectoriesAndFiles -bor
+        [int][Security.AccessControl.FileSystemRights]::Delete -bor
+        [int][Security.AccessControl.FileSystemRights]::ChangePermissions -bor
+        [int][Security.AccessControl.FileSystemRights]::TakeOwnership -bor
+        0x10000000 -bor 0x40000000 # GENERIC_ALL and GENERIC_WRITE if not mapped
+    return [bool]($Rights -band $mutation)
+}
+function Assert-Arm64ProtectedAcl([Security.AccessControl.FileSystemSecurity]$Acl,[string]$Path,[string[]]$Trusted){
+    $owner=$Acl.GetOwner([Security.Principal.SecurityIdentifier]).Value
+    if($owner -cnotin $Trusted){throw ('Untrusted owner: '+$Path)}
+    foreach($rule in $Acl.GetAccessRules($true,$true,[Security.Principal.SecurityIdentifier])){
+        if($rule.AccessControlType -ne [Security.AccessControl.AccessControlType]::Allow -or
+           -not (Test-Arm64MutatingRight $rule.FileSystemRights)){continue}
+        if($rule.IdentityReference.Value -cnotin $Trusted){throw ('Writable by an unapproved principal: '+$Path)}
+    }
+}
 function Assert-Arm64ProtectedFile([string]$Path){
     $path=Assert-PlainPath $Path
     $trusted=@('S-1-5-18','S-1-5-32-544') # SYSTEM and Administrators
     $trustedInstaller=([Security.Principal.NTAccount]'NT SERVICE\TrustedInstaller').Translate([Security.Principal.SecurityIdentifier]).Value
     $trusted+= $trustedInstaller
-    $write=[Security.AccessControl.FileSystemRights]::Write -bor [Security.AccessControl.FileSystemRights]::Modify -bor
-        [Security.AccessControl.FileSystemRights]::Delete -bor [Security.AccessControl.FileSystemRights]::ChangePermissions -bor
-        [Security.AccessControl.FileSystemRights]::TakeOwnership
     for($item=$path;$item;$item=[IO.Path]::GetDirectoryName($item)){
         $acl=Get-Acl -LiteralPath $item
-        $owner=$acl.GetOwner([Security.Principal.SecurityIdentifier]).Value
-        if($owner -cnotin $trusted){throw ('Untrusted owner: '+$item)}
-        foreach($rule in $acl.Access){
-            if($rule.AccessControlType -ne [Security.AccessControl.AccessControlType]::Allow -or
-               -not ($rule.FileSystemRights -band $write)){continue}
-            $sid=$rule.IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value
-            if($sid -cnotin $trusted){throw ('Writable by an unapproved principal: '+$item)}
-        }
+        Assert-Arm64ProtectedAcl $acl $item $trusted
     }
 }
 function Read-Arm64IndependentApproval([string]$ApprovalPath,[string]$ExpectedApprovalPath,
