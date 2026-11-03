@@ -133,5 +133,65 @@
     "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\post-reboot-status.stderr.log",
     "bytes": 5812,
     "sha256": "4a4290d3cb6f46131834582152f58f6a69c1007642de0e81a9221cfcbdae6e92"
+  },
+  {
+    "file": "test6-input-result.json",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\input-result.json",
+    "bytes": 1253,
+    "sha256": "80f8845742368ee4520e3aed412aa9d2010b97d8c4106cf45054b8e66e67fac4"
+  },
+  {
+    "file": "test6-input-started.json",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\input-started.json",
+    "bytes": 219,
+    "sha256": "a8c6d201948f4184fdddf2b83912426dad9f7eb205c85e34a4e65771669c3bf9"
+  },
+  {
+    "file": "test6-input-runtime.stdout.log",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\input-runtime.stdout.log",
+    "bytes": 859,
+    "sha256": "3f9e75811f01745473cae50692cdb6dd4502cea2e10fac7b2bb0969e5ebcd2e3"
+  },
+  {
+    "file": "test6-input-runtime.stderr.log",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\input-runtime.stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "test6-after-input.json",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\after-input.json",
+    "bytes": 23909,
+    "sha256": "49a05e6347dfa814c6607328ef13444e47a886e5e76786a35050d4ba63da9e3d"
+  },
+  {
+    "file": "test6-broker-stderr.jsonl",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\installed-host-test6\\broker-stderr.jsonl",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "test6-broker-stdout.txt",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\installed-host-test6\\broker-stdout.txt",
+    "bytes": 21,
+    "sha256": "23176aba570a7341edf1eeddda1c98c276273a563ab717bc3671d6813e6a6faa"
+  },
+  {
+    "file": "test6-host-stderr.jsonl",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\installed-host-test6\\host-stderr.jsonl",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "test6-host-stdout.jsonl",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\installed-host-test6\\host-stdout.jsonl",
+    "bytes": 451,
+    "sha256": "886129eb73fca8f1235d22902c7227714506d7d72c2b7dc799f6b4726abfd3c0"
+  },
+  {
+    "file": "test6-installed-host-result.json",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\installed-host-test6\\installed-host-result.json",
+    "bytes": 859,
+    "sha256": "3f9e75811f01745473cae50692cdb6dd4502cea2e10fac7b2bb0969e5ebcd2e3"
   }
 ]
