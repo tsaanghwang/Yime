@@ -1,0 +1,47 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test6-msi-x64-r1",
+  "dispatchCommit": "fc61b5168429ba490cf9cd2050531da31dc6bb09",
+  "files": [
+    {
+      "name": "artifact.zip",
+      "bytes": 92412989,
+      "sha256": "5834bf583b12048c3c436a4dd36b03b3770b509f52b93a71d6acc5e08aaab002",
+      "kind": "official-artifact-archive",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "YimeCore-18u-0.1.0-18u-test.6-windows-amd64.zip",
+      "bytes": 92394419,
+      "sha256": "df03629e0bc1512e265beb43b80c58c7d53ada21b1ee3776b6b73bdbfeaa7282",
+      "kind": "fixed-inner-package",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "baseline-continuation.json",
+      "bytes": 3070,
+      "sha256": "d4602b271248a2fb9da783ab4efcf23f091a17612e38e872f8653c2df72ee406",
+      "kind": "scoped-protected-baseline",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "preinstall-gate.json",
+      "bytes": 436,
+      "sha256": "86eda47d4048f775396e962df14867ba3a3a0c721a39d1f75537772a4eab5158",
+      "kind": "preinstall-read-only-gate",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "install-params-error.txt",
+      "bytes": 542,
+      "sha256": "14ecde26b9286811f894932067fcec74d205be1617bbe46f8e0751004bf64515",
+      "kind": "preparation-error",
+      "readLocally": true,
+      "uploaded": false
+    }
+  ]
+}

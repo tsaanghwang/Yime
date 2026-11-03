@@ -1,0 +1,114 @@
+{
+  "schema": "installed-18u-manual-task-result-v1",
+  "taskID": "installed18u-test6-msi-x64-r1",
+  "machineID": "WIN-JTKUT7KBVN7",
+  "dispatchCommit": "fc61b5168429ba490cf9cd2050531da31dc6bb09",
+  "recordedAt": "2026-11-03T04:06:10.612748+00:00",
+  "status": "failed",
+  "host": {
+    "reportedName": "WIN-JTKUT7KBVN7",
+    "expectedIdentityConfirmed": true,
+    "nativeArchitecture": "AMD64",
+    "processArchitecture": "AMD64"
+  },
+  "evidenceOrigin": "local-executor-and-user-observation; fields must be supported individually",
+  "package": {
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "version": "0.1.0-18u-test.6",
+    "buildRun": 41563052934,
+    "artifactID": 13198347201,
+    "zipSHA256": "df03629e0bc1512e265beb43b80c58c7d53ada21b1ee3776b6b73bdbfeaa7282",
+    "packageEvidenceSHA256": "64c5996cfc3ab71ff0ffe7df54bd8ee0786d0ed0226816329cfbf37bde8c31a6",
+    "installedDescriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "verifiedLocally": true,
+    "signatureStatus": "five-PE-NotSigned"
+  },
+  "phases": [
+    {
+      "id": "package-and-local-baseline",
+      "status": "pass",
+      "startedAt": null,
+      "completedAt": "2026-11-03T03:54:06.396767+00:00",
+      "exitCode": 0,
+      "observation": "User-authorized continuation: corrected baseline collector passed no-pyc syntax check, then one scoped read-only execution. Relevant product and user-data roots and queried product registrations were absent; default preload was 00000804.",
+      "evidenceNames": [
+        "baseline-continuation.json",
+        "snapshot_baseline.py",
+        "package-verification.json",
+        "read-only-host.json"
+      ]
+    },
+    {
+      "id": "normal-install",
+      "status": "failed",
+      "startedAt": "2026-11-03T04:04:44.079952+00:00",
+      "completedAt": "2026-11-03T04:06:10.612748+00:00",
+      "exitCode": 1,
+      "observation": "Preinstall package/first-install gate passed. Creating install-params.json failed with Python SyntaxError from command-line JSON quoting. This exit code belongs to preparation; Setup and UAC were not invoked.",
+      "evidenceNames": [
+        "preinstall-gate.json",
+        "install-params-error.txt"
+      ]
+    },
+    {
+      "id": "user-reboot-and-verification",
+      "status": "not-run",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCode": null,
+      "observation": null,
+      "evidenceNames": []
+    },
+    {
+      "id": "single-installed-host",
+      "status": "not-run",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCode": null,
+      "observation": null,
+      "evidenceNames": []
+    }
+  ],
+  "baseline": {
+    "independent18uBefore": "absent-in-scoped-paths-and-registrations",
+    "standardAndRimePreserved": null,
+    "userDataPreserved": null,
+    "defaultAndLanguagePreserved": null,
+    "bootTimeAfterMaintenance": null
+  },
+  "installedHost": {
+    "sourceCommit": null,
+    "manifestSHA256": null,
+    "status": null,
+    "stage": null,
+    "hostExitSucceeded": null,
+    "brokerExitSucceeded": null,
+    "readbackEvidenceConsistent": null,
+    "registrationMutationRequested": null,
+    "installedProfilePresenceVerified": null,
+    "nativeResult": null,
+    "rawEvidenceRead": null
+  },
+  "physicalAcceptance": false,
+  "overallProductAcceptance": false,
+  "stopReason": "Install-stage preparation failed before Setup invocation: Python SyntaxError while creating install-params.json; stopped without retry.",
+  "retryPerformed": false,
+  "resetDataRequested": false,
+  "evidenceIndexFile": "evidence-index.json",
+  "notes": [
+    "Original failed result and successful baseline continuation are preserved in their existing files.",
+    "Fixed outer/inner package and all extracted members were rechecked; host and same-user identity, first-install absence and protected named paths/registrations passed the read-only preinstall gate.",
+    "The exact Install command and expected outcome were displayed. Parameter-file creation returned exit 1 before the file existed; no UAC prompt or Setup process was started.",
+    "The phase exitCode is the parameter-file preparation command, not Setup. Setup exit code was not collected and is null.",
+    "No ResetData, installation, reboot or installed-host check occurred. No installed product or user data was changed.",
+    "The local preparation error text and protected baseline remain local; only this sanitized result and index are uploaded."
+  ],
+  "continuation": {
+    "ofResultCommit": "e510bddb",
+    "originalFailurePreserved": true,
+    "priorBaselineContinuationPreserved": true,
+    "installAttempted": false,
+    "setupExitCode": null,
+    "userAuthorized": true
+  }
+}
