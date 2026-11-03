@@ -1,0 +1,75 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "recordID": "installed18u-test7-msi-exclusive-check-r2",
+  "localEvidenceDirectory": ".generated/installed18u-test7-msi-exclusive-check-r2",
+  "rawLogsUploaded": false,
+  "files": [
+    {
+      "name": "evidence/attempts.jsonl",
+      "bytes": 2846,
+      "sha256": "8d3c672b8004d5bfa5d0cabeba73441557ed3b0ed61df6f3c0831aea73537dd9",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/elevation-attempt.json",
+      "bytes": 40,
+      "sha256": "0b26f39a9daabfb7304ff3c0239ae25313d9082811220f03df8bff29492bdd7f",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/elevation-result.json",
+      "bytes": 87,
+      "sha256": "ff9444b15593f416dd89453cda59379b01c23533217e18a4ea8053d3b832a86c",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/host-after.json",
+      "bytes": 6931,
+      "sha256": "0bbc3f9b09b4db8e93f44259ea6729d6873fbe4f96163bb4ee642976e3eda61e",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/host-before.json",
+      "bytes": 6900,
+      "sha256": "f37cab46a303d665bd40428344ff78d1ad053fc6ae7af0f59304acd6ec4a86c7",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/managed-inventory.json",
+      "bytes": 3987,
+      "sha256": "fedec1dee4ab260da1d0c9bc042b031313eeeabb798a7e2040682f61841f63b4",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/result-local.json",
+      "bytes": 7077,
+      "sha256": "4f8b1b332c0d19713fe045b30f05b7da2ef82f6515a82d40ca13363da326a12b",
+      "uploaded": false
+    },
+    {
+      "name": "tools/check-once.ps1",
+      "bytes": 6595,
+      "sha256": "34004af955cb18f0b4ec9370fa54c9547f46f1bf6f23869d4ba69b4803e56a2f",
+      "uploaded": false
+    },
+    {
+      "name": "tools/launch-once.ps1",
+      "bytes": 1384,
+      "sha256": "af0be8a192bc1dde60f85962f165a421682113803ed9609e641e883c07b91f6e",
+      "uploaded": false
+    },
+    {
+      "name": "tools/observe.py",
+      "bytes": 7676,
+      "sha256": "607d7370244651868548880b0e183523ffc1878c8be8f41bd9ab33464dd9fb3b",
+      "uploaded": false
+    },
+    {
+      "name": "tools/report.py",
+      "bytes": 3670,
+      "sha256": "ca264aac6aeffdb55279142804ea28963f05de44d6235364c8d392e113f26880",
+      "uploaded": false
+    }
+  ]
+}

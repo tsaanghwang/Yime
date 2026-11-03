@@ -1,0 +1,212 @@
+{
+  "schema": "installed-18u-exclusive-open-result-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "recordID": "installed18u-test7-msi-exclusive-check-r2",
+  "recordedAtUTC": "2026-11-03T13:43:56.827850+00:00",
+  "status": "pass-at-observation-time",
+  "host": "WIN-JTKUT7KBVN7",
+  "nativeArchitecture": "AMD64",
+  "identity": {
+    "sameInteractiveUser": true,
+    "samePreviouslyVerifiedUser": true,
+    "sessionMatches": true,
+    "administratorVerified": true
+  },
+  "identityBasis": "Fresh WTS interactive-session identity compared with current elevated token; also matched the prior user-operated interactive baseline. Sandbox identity not used.",
+  "installedVersion": "0.1.0-18u-test.6",
+  "managedInventoryVerified": true,
+  "managedFiles": 22,
+  "attemptedFiles": 22,
+  "successfulOpenAndCloseCount": 22,
+  "method": "System.IO.File.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None); immediately Dispose; no content read or written through these handles.",
+  "rows": [
+    {
+      "path": ".setup/native/x64/Yime18uProductRegistration.exe",
+      "atUTC": "2026-11-03T13:43:26.8137485Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": ".setup/Product.psm1",
+      "atUTC": "2026-11-03T13:43:26.8424608Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": ".setup/product-package.json",
+      "atUTC": "2026-11-03T13:43:26.8424608Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": ".setup/Setup.cmd",
+      "atUTC": "2026-11-03T13:43:26.8434639Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": ".setup/Setup.ps1",
+      "atUTC": "2026-11-03T13:43:26.8434639Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": ".yime-product.json",
+      "atUTC": "2026-11-03T13:43:26.8434639Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "bin/Yime18uInstalledRuntime.exe",
+      "atUTC": "2026-11-03T13:43:26.8434639Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "bin/YimeBroker18u.exe",
+      "atUTC": "2026-11-03T13:43:26.8444631Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "data/ascii_keyboard_manifest.json",
+      "atUTC": "2026-11-03T13:43:26.8444631Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "data/yime_full.dict.yaml",
+      "atUTC": "2026-11-03T13:43:26.8444631Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "data/yime_shorthand.dict.yaml",
+      "atUTC": "2026-11-03T13:43:26.8444631Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "data/yime_variable.dict.yaml",
+      "atUTC": "2026-11-03T13:43:26.8444631Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "installed-18u-product.json",
+      "atUTC": "2026-11-03T13:43:26.8444631Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "profile-icon.ico",
+      "atUTC": "2026-11-03T13:43:26.8454632Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "source/internal_data/yime_syllable_decomposition.tsv",
+      "atUTC": "2026-11-03T13:43:26.8454632Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "source/prototypes/touch-terminal/data/physical-layout.json",
+      "atUTC": "2026-11-03T13:43:26.8454632Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "source/prototypes/touch-terminal/desktop/resources.lock.json",
+      "atUTC": "2026-11-03T13:43:26.8454632Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json",
+      "atUTC": "2026-11-03T13:43:26.8454632Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "source/tools/yimecore/18u-touch-product.json",
+      "atUTC": "2026-11-03T13:43:26.8454632Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "x64/Yime18uProductRegistration.exe",
+      "atUTC": "2026-11-03T13:43:26.8464645Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "x64/YimeTextService18u.dll",
+      "atUTC": "2026-11-03T13:43:26.8464645Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    },
+    {
+      "path": "x64/YimeTouchRegisteredFormalHostTests.exe",
+      "atUTC": "2026-11-03T13:43:26.8464645Z",
+      "opened": true,
+      "closed": true,
+      "winerror": null
+    }
+  ],
+  "exitCode": 0,
+  "elevationAttempts": 1,
+  "automaticRetry": false,
+  "protection": {
+    "beforeRecordedAtUTC": "2026-11-03T13:43:12.499712+00:00",
+    "afterRecordedAtUTC": "2026-11-03T13:43:33.928507+00:00",
+    "knownProductAndUserDataTreesUnchanged": true,
+    "selectedRegistrySnapshotsUnchanged": true,
+    "scope": "Explicit product/data roots and selected registry keys; no claim about all filesystem metadata or arbitrary custom locations."
+  },
+  "actions": {
+    "installerExecuted": false,
+    "packageProgramsExecuted": false,
+    "processesTerminated": false,
+    "contentWritten": false,
+    "rebootPerformed": false,
+    "securitySettingsChanged": false,
+    "RestartManagerCalled": false,
+    "inputTestsExecuted": false
+  },
+  "conclusion": {
+    "filesOpenableAtRecordedTimes": true,
+    "futureOccupancyGuaranteed": false,
+    "absenceOfAllRelatedProcessesProven": false,
+    "installationPerformed": false,
+    "test7Installed": false,
+    "scope": "Sequential short-lived handles; success proves only each recorded open succeeded at that moment. No automatic installation follows."
+  },
+  "priorRecordsPreserved": true,
+  "privacy": {
+    "SIDOrAccountNamesDisclosed": false,
+    "rawLogsUploaded": false,
+    "rawSnapshotsUploaded": false
+  }
+}
