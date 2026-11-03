@@ -1,0 +1,81 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test7-msi-precheck-r1",
+  "continuation": 2,
+  "localEvidenceDirectory": ".generated/installed18u-test7-msi-precheck-r1-continuation-2",
+  "rawLogsUploaded": false,
+  "files": [
+    {
+      "name": "artifact.zip",
+      "bytes": 192176992,
+      "sha256": "166779e2bef48ac2302acc079aca32dc64e1c68b3ec74dd3c79ae0fb37678c11",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/archive.json",
+      "bytes": 739,
+      "sha256": "545754f89601eca44440041dd6134a5d246e4aab6cb982b7307327badd9e7936",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/host-after.json",
+      "bytes": 6932,
+      "sha256": "e8bdc5e0a800bc605ae505a6dd5c3eccd001ada06bfaf733f5338f12247e2c68",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/host-before.json",
+      "bytes": 6901,
+      "sha256": "f367b082bf2cd00c45d2522a172264f5f4b7ae76b3c4b1f0864b0702cb86922f",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/stop.json",
+      "bytes": 551,
+      "sha256": "05b9cdd8c75145a70bf38fa8c2ffb00f46e119d855682b40d2b0c6e92ef0a761",
+      "uploaded": false
+    },
+    {
+      "name": "package/signatures.json",
+      "bytes": 1596,
+      "sha256": "e1020e64bfa3f58cfa133af76a81ac9c35870935dddfb9c193706374cf640d9b",
+      "uploaded": false
+    },
+    {
+      "name": "tools/extract.py",
+      "bytes": 2793,
+      "sha256": "abd1198126dd0b209a12d7a44e55dba280b7cc1ab97d6474c748c9a8a2595cb9",
+      "uploaded": false
+    },
+    {
+      "name": "tools/observe.py",
+      "bytes": 7555,
+      "sha256": "9051e173b4cdc10266e0c18da190770871fd8db931d08b767593766ac67f3178",
+      "uploaded": false
+    },
+    {
+      "name": "tools/report.py",
+      "bytes": 4090,
+      "sha256": "df8f17bdb017391e7d4ed5ef20893143bd5231c6c82c31d9e952bf93b4e579e2",
+      "uploaded": false
+    },
+    {
+      "name": "tools/signatures.ps1",
+      "bytes": 946,
+      "sha256": "0474873d7dd683e54190adac20f1dfbea7fa5e1f50b45d2c154dc3c688b086d5",
+      "uploaded": false
+    },
+    {
+      "name": "tools/static.py",
+      "bytes": 3859,
+      "sha256": "40de801357a571a0122ad7944a9fbcd8f92e0153d5a624d338796264ed004888",
+      "uploaded": false
+    },
+    {
+      "name": "YimeCore-18u-0.1.0-18u-test.7-windows-amd64.zip",
+      "bytes": 192137872,
+      "sha256": "a9ee98aefc93bd3b579dcbd388bc7de34a8a2fcb5839666598d660b4e9d39e8a",
+      "uploaded": false
+    }
+  ]
+}

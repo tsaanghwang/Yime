@@ -1,0 +1,161 @@
+{
+  "schema": "installed-18u-static-precheck-result-v1",
+  "taskID": "installed18u-test7-msi-precheck-r1",
+  "recordedAtUTC": "2026-11-03T11:27:37.805754+00:00",
+  "status": "stopped-at-reference-receipt-comparison",
+  "machine": {
+    "hostName": "WIN-JTKUT7KBVN7",
+    "nativeArchitecture": "AMD64",
+    "processEmulation": false
+  },
+  "deliveryReference": {
+    "documentationCommit": "cf70cae66706587ec9db07b89fe9769d491a86ea",
+    "packageSourceCommit": "33b7113c8b76d6c95447856c2d5cca374b542507",
+    "version": "0.1.0-18u-test.7",
+    "type": "x64 ZIP, not Windows Installer MSI",
+    "runID": 41617296801,
+    "artifactID": 13221664045,
+    "expectedOuterZIP": {
+      "bytes": 192176992,
+      "sha256": "166779e2bef48ac2302acc079aca32dc64e1c68b3ec74dd3c79ae0fb37678c11"
+    },
+    "expectedInnerZIP": {
+      "name": "YimeCore-18u-0.1.0-18u-test.7-windows-amd64.zip",
+      "bytes": 192137872,
+      "sha256": "a9ee98aefc93bd3b579dcbd388bc7de34a8a2fcb5839666598d660b4e9d39e8a"
+    },
+    "identityScope": "Both ZIP sizes and SHA-256 verified against fixed delivery; source identity verified statically."
+  },
+  "existingInstallation": {
+    "version": "0.1.0-18u-test.6",
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "descriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "descriptorMembersVerified": 15,
+    "maintenanceListedMembersVerified": 16,
+    "comPathMatches": true,
+    "profileRegistryKeyPresent": true,
+    "observationTimeUTC": "2026-11-03T11:17:00.001534+00:00",
+    "scope": "Fresh current test.6 descriptor and maintenance payload verification; read-only registry, no active TIP or runtime acceptance."
+  },
+  "protection": {
+    "beforeRecordedAtUTC": "2026-11-03T11:17:00.001534+00:00",
+    "afterRecordedAtUTC": "2026-11-03T11:25:52.966189+00:00",
+    "knownPaths": {
+      "standardProgram": {
+        "exists": false
+      },
+      "standardUserData": {
+        "exists": false
+      },
+      "rimeProgram": {
+        "exists": false
+      },
+      "rimeProgramX86": {
+        "exists": false
+      },
+      "rimeLegacyProgramX86": {
+        "exists": false
+      },
+      "rimeUserData": {
+        "exists": false
+      },
+      "independentProgram": {
+        "exists": true,
+        "fileCount": 22
+      },
+      "independentUserData": {
+        "exists": false
+      }
+    },
+    "knownProgramAndUserDataTreesUnchanged": true,
+    "knownProductRegistryViewsUnchanged": true,
+    "preloadUserProfileAndStartupSnapshotsUnchanged": true,
+    "scope": "only explicitly named product/data roots and selected registry keys, including x86/x64 views; no claim about arbitrary custom locations or out-of-process startup verification",
+    "comparisonBasis": "fresh before/after snapshots within continuation 2",
+    "userDataContentsAndNamesDisclosed": false,
+    "credentialsCollected": false
+  },
+  "packageVerification": {
+    "outerZIPVerified": true,
+    "innerZIPVerified": true,
+    "safeExtractionPerformed": true,
+    "safeExtractedFiles": 46,
+    "all46FilesCoveredByPinnedEvidenceAndHashes": true,
+    "productAndDescriptorMemberSetsAndHashesVerified": true,
+    "frontendAndResourcesMemberSetsAndHashesVerified": true,
+    "frontendSourceCommitAnd18uBaselineVerified": true,
+    "resourceCopiesMatch": true,
+    "sixPEHeadersNativeAMD64": true,
+    "referenceSignatureReceiptBytesMatch": false,
+    "localSignatureCheckPerformed": false,
+    "overallStaticPrecheckComplete": false,
+    "evidenceBasis": "extract.py succeeded; static.py reached line 47 after all preceding assertions passed; static.py did not complete or emit a pass report"
+  },
+  "signatureLimitation": {
+    "ciRecordedUnsignedPECount": 6,
+    "source": "fixed delivery signature record, not current local Authenticode observation",
+    "localSignatureCheckPerformed": false,
+    "machineLoadPolicyVerified": false,
+    "systemProtectionChanged": false
+  },
+  "stop": {
+    "stage": "static-reference-signature-receipt-byte-comparison",
+    "errorType": "AssertionError",
+    "script": "tools/static.py",
+    "line": 47,
+    "message": "Package signatures.json bytes differ from worktree delivery receipt bytes.",
+    "cause": "not-investigated; stopped without retry",
+    "scope": "package signatures.json passed the pinned package-evidence size/hash check; this mismatch is to the local worktree reference, not a demonstrated payload hash failure",
+    "localAuthenticodeCheckPerformed": false,
+    "retryPerformed": false
+  },
+  "actions": {
+    "setupIncludingCheckExecuted": false,
+    "packageProgramExecuted": false,
+    "installationPerformed": false,
+    "registrationPerformed": false,
+    "rebootPerformed": false,
+    "defaultInputChanged": false,
+    "wordEdgeInputPerformed": false,
+    "fingerPenTestPerformed": false,
+    "automaticRetryPerformed": false
+  },
+  "disposition": {
+    "readyForInstallation": false,
+    "readyForInputAcceptance": false,
+    "followup": "Review the signature-receipt byte comparison failure before authorizing continuation; no automatic retry."
+  },
+  "privacyReview": {
+    "rawLogsUploaded": false,
+    "rawSnapshotsUploaded": false,
+    "onlySanitizedResultAndEvidenceIndex": true
+  },
+  "evidenceIndexFile": "evidence-index.json",
+  "continuation": 2,
+  "previousResultCommit": "43574391f92785a90f72ab6a40d7e0caffe1d7c9",
+  "previousResultsPreserved": true,
+  "input": "user-supplied local ZIP copied to a fresh task directory; no network download this continuation",
+  "verifiedArchiveIdentity": {
+    "outerZIP": {
+      "bytes": 192176992,
+      "sha256": "166779e2bef48ac2302acc079aca32dc64e1c68b3ec74dd3c79ae0fb37678c11"
+    },
+    "innerZIP": {
+      "bytes": 192137872,
+      "sha256": "a9ee98aefc93bd3b579dcbd388bc7de34a8a2fcb5839666598d660b4e9d39e8a"
+    },
+    "safeExtractedFiles": 46,
+    "package-evidence.json": {
+      "bytes": 8136,
+      "sha256": "876748ab46401a387244803bb427b958d3828afb393dc2c27e4155baa44dada5"
+    },
+    "payload/installed-18u-product.json": {
+      "bytes": 7383,
+      "sha256": "29c3cce5f62c77d287c4410fdea8665e58f961e46e5dbc53b2ab5133beb1cef2"
+    },
+    "payload/frontend/YimeTouchKeyboard.exe": {
+      "bytes": 7843840,
+      "sha256": "8c5067ce0b4bd1ef3453b5c4c77efee84e0331802941f3ea55622ea12241ef8a"
+    }
+  }
+}
