@@ -1,0 +1,87 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test6-msi-x64-r1",
+  "dispatchCommit": "fc61b5168429ba490cf9cd2050531da31dc6bb09",
+  "files": [
+    {
+      "name": "install-params.json",
+      "bytes": 34,
+      "sha256": "c5e9fdb7ed71a3c59a57a3ec403f33d26bbcf7cc5e5d270406939114b5e6c290",
+      "kind": "installation-parameters",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "install-execution.json",
+      "bytes": 699,
+      "sha256": "cd6ce29a03a908a3054ee68ed81608076f37348fc6f1f77e84223100bdaa6aac",
+      "kind": "installation-command-receipt",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "install-stdout.txt",
+      "bytes": 300,
+      "sha256": "9c27033a2ab93cf8ac84139e624c667e228c9f3f2e45f72c953c2e410a260c5f",
+      "kind": "installation-stdout",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "install-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "installation-stderr",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "setup-user.log",
+      "bytes": 1160,
+      "sha256": "1f455405bf2324bc309a48bdb3e4fedd55267e5c1dae5b859e933fac40ebe415",
+      "kind": "user-setup-transcript",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "setup-admin.log",
+      "bytes": 1634,
+      "sha256": "75c3a6cd06ebf1cfe23dfc6d00fd21154bad0c2fdbcf54797fff7ddf0c0eefa0",
+      "kind": "elevated-setup-transcript",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "registration-status-stdout.txt",
+      "bytes": 236,
+      "sha256": "853a539b049365dbcd2e895d5722b497f08285988e0d9d7fe844a30d33b51319",
+      "kind": "registration-status-stdout",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "registration-status-stderr.txt",
+      "bytes": 4915,
+      "sha256": "b4c6f140ce75fa8ea749f15e25fa7a8483eab49939b15936ce23a4f868e7cd58",
+      "kind": "registration-status-stderr",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "postinstall_verify.py",
+      "bytes": 6331,
+      "sha256": "dd8e5343d4df2f6530d091ac28938d63d2a9d49592ec3a2bd775797431c6e797",
+      "kind": "verifier-source",
+      "readLocally": true,
+      "uploaded": false
+    },
+    {
+      "name": "postinstall-verify-error.txt",
+      "bytes": 518,
+      "sha256": "6b4b1acf2dc8f259d9175f1133888d8656ee021a966eb29a784a05256b6d3c47",
+      "kind": "verifier-error",
+      "readLocally": true,
+      "uploaded": false
+    }
+  ]
+}

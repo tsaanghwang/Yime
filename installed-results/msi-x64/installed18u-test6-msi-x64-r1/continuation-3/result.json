@@ -1,0 +1,127 @@
+{
+  "schema": "installed-18u-manual-task-result-v1",
+  "taskID": "installed18u-test6-msi-x64-r1",
+  "machineID": "WIN-JTKUT7KBVN7",
+  "dispatchCommit": "fc61b5168429ba490cf9cd2050531da31dc6bb09",
+  "recordedAt": "2026-11-03T04:15:26.203766+00:00",
+  "status": "failed",
+  "host": {
+    "reportedName": "WIN-JTKUT7KBVN7",
+    "expectedIdentityConfirmed": true,
+    "nativeArchitecture": "AMD64",
+    "processArchitecture": "AMD64"
+  },
+  "evidenceOrigin": "local-executor-and-user-observation; fields must be supported individually",
+  "package": {
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "version": "0.1.0-18u-test.6",
+    "buildRun": 41563052934,
+    "artifactID": 13198347201,
+    "zipSHA256": "df03629e0bc1512e265beb43b80c58c7d53ada21b1ee3776b6b73bdbfeaa7282",
+    "packageEvidenceSHA256": "64c5996cfc3ab71ff0ffe7df54bd8ee0786d0ed0226816329cfbf37bde8c31a6",
+    "installedDescriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "verifiedLocally": true,
+    "signatureStatus": "five-PE-NotSigned"
+  },
+  "phases": [
+    {
+      "id": "package-and-local-baseline",
+      "status": "pass",
+      "startedAt": null,
+      "completedAt": "2026-11-03T03:54:06.396767+00:00",
+      "exitCode": 0,
+      "observation": "User-authorized continuation: corrected baseline collector passed no-pyc syntax check, then one scoped read-only execution. Relevant product and user-data roots and queried product registrations were absent; default preload was 00000804.",
+      "evidenceNames": [
+        "baseline-continuation.json",
+        "snapshot_baseline.py",
+        "package-verification.json",
+        "read-only-host.json"
+      ]
+    },
+    {
+      "id": "normal-install",
+      "status": "failed",
+      "startedAt": "2026-11-03T04:11:06.039649+00:00",
+      "completedAt": "2026-11-03T04:15:26.203766+00:00",
+      "exitCode": 1,
+      "observation": "Normal Install ran once under same-user UAC and returned 0; elevated Setup log reported persistent independent 18u installed. Post-install verifier stopped at registration-status parsing because it expected ptool_version but the tool emitted tool_version. The phase exitCode is verifier exit 1, not Setup exit; protected baseline verification was not completed.",
+      "evidenceNames": [
+        "install-params.json",
+        "install-execution.json",
+        "install-stdout.txt",
+        "install-stderr.txt",
+        "setup-user.log",
+        "setup-admin.log",
+        "registration-status-stdout.txt",
+        "registration-status-stderr.txt",
+        "postinstall_verify.py",
+        "postinstall-verify-error.txt"
+      ]
+    },
+    {
+      "id": "user-reboot-and-verification",
+      "status": "not-run",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCode": null,
+      "observation": null,
+      "evidenceNames": []
+    },
+    {
+      "id": "single-installed-host",
+      "status": "not-run",
+      "startedAt": null,
+      "completedAt": null,
+      "exitCode": null,
+      "observation": null,
+      "evidenceNames": []
+    }
+  ],
+  "baseline": {
+    "independent18uBefore": "absent-in-scoped-paths-and-registrations",
+    "standardAndRimePreserved": null,
+    "userDataPreserved": null,
+    "defaultAndLanguagePreserved": null,
+    "bootTimeAfterMaintenance": null
+  },
+  "installedHost": {
+    "sourceCommit": null,
+    "manifestSHA256": null,
+    "status": null,
+    "stage": null,
+    "hostExitSucceeded": null,
+    "brokerExitSucceeded": null,
+    "readbackEvidenceConsistent": null,
+    "registrationMutationRequested": null,
+    "installedProfilePresenceVerified": null,
+    "nativeResult": null,
+    "rawEvidenceRead": null
+  },
+  "physicalAcceptance": false,
+  "overallProductAcceptance": false,
+  "stopReason": "New post-install verifier error at line 59 (wrong status field name); stopped without retry before protected baseline/language verification.",
+  "retryPerformed": false,
+  "resetDataRequested": false,
+  "evidenceIndexFile": "evidence-index.json",
+  "notes": [
+    "Original two failed records and successful baseline continuation remain unchanged.",
+    "A new JSON parameter file was generated with json.dump, read back as exactly Action=Install and Silent=true, and contained no ResetData. Fixed run_checked.py and preflight.ps1 matched the product source commit.",
+    "The Install command ran once under the same login user; wrapper exit 0, elevated Setup exit 0, admin log reports persistent independent 18u installation.",
+    "The one post-install verifier passed its 16 payload hashes, installed marker, maintenance files, exact installed file set, COM DLL path and uninstall entry before failing its status-field comparison.",
+    "Saved registration status output says com_registered=true, tip_registered=true, profile_count=1 and categories_registered_count=5. The verifier falsely expected ptool_version instead of the emitted tool_version.",
+    "Protected standard/Rime product and user-data baseline, default/language settings and boot state were not verified after install. No reboot or installed-host check occurred.",
+    "Raw logs remain local and are referenced by SHA256 only; only sanitized result and evidence index are uploaded."
+  ],
+  "continuation": {
+    "ofResultCommit": "bc7f5664",
+    "priorFailuresPreserved": true,
+    "baselineContinuationPreserved": true,
+    "userAuthorized": true,
+    "installCommandExecutions": 1,
+    "installAttempted": true,
+    "installCommandExitCode": 0,
+    "elevatedSetupExitCode": 0,
+    "postinstallVerifierExitCode": 1,
+    "resetDataRequested": false
+  }
+}
