@@ -4,6 +4,8 @@
 测试机为 HUASHUONOTEBOOK / ASUS ProArt P16 H7607BA / Windows ARM64 build 28000。
 本目录只记录本轮实际完成的工作；安装和真实输入结果随执行另行追加。
 
+最终完整包、固定来源、远端 SHA-256 与 CI 见 [最终交付](FINAL-DELIVERY.md)。下文首次标准包和启动问题保留为历史执行记录。
+
 ## 标准 YimeCore 固定来源
 
 源码：`64a785a7ede5fb2a53e2560b873075950160668b`，来自独立干净主线工作树。

@@ -1,0 +1,58 @@
+{
+  "source": "6c1c01220b77406cfa5a90df111ea914882fa372",
+  "verifiedAtUTC": "2026-11-03T14:47:20.125196+00:00",
+  "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-complete-6c1c0122-20261103",
+  "draft": false,
+  "prerelease": true,
+  "assets": [
+    {
+      "name": "YimeCore-0.1.0-local.13-main64a785a7-arm64-maint.1-6c1c01220b77.zip",
+      "size": 168192962,
+      "digest": "sha256:a1f6aa2eee5c0f3fd473de81a2218b02557c2b7445a91e47e9d254ac7beb8c6f",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-complete-6c1c0122-20261103/YimeCore-0.1.0-local.13-main64a785a7-arm64-maint.1-6c1c01220b77.zip",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-rime-pime-windows-arm64-6c1c01220b77.zip",
+      "size": 179501174,
+      "digest": "sha256:5f01d3e55f24e88075550eea584546319a50c88c6a89aaa0486173d9cd8c3185",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-complete-6c1c0122-20261103/yime-rime-pime-windows-arm64-6c1c01220b77.zip",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-yimecore-18u-windows-arm64-6c1c01220b77.zip",
+      "size": 219896457,
+      "digest": "sha256:81ebca8d0c699090765004d78049e766a0516217522df3571d4739e9e1c50da8",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-complete-6c1c0122-20261103/yime-yimecore-18u-windows-arm64-6c1c01220b77.zip",
+      "state": "uploaded"
+    },
+    {
+      "name": "standard-repack-receipt.json",
+      "size": 13939,
+      "digest": "sha256:75580a4533266a4d490495d7ce133cdd5e87508d18b4e268b9aac0530f04e1c2",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-complete-6c1c0122-20261103/standard-repack-receipt.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-rime-pime-windows-arm64-6c1c01220b77.identity.json",
+      "size": 280899,
+      "digest": "sha256:2458d2230544813fb66b3fd9af2776976fa5b1254efc9c72368b8bf37915ed76",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-complete-6c1c0122-20261103/yime-rime-pime-windows-arm64-6c1c01220b77.identity.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-yimecore-18u-windows-arm64-6c1c01220b77.identity.json",
+      "size": 219346,
+      "digest": "sha256:5c1312e9be9751bd3dd2b69cba9fd1561394ee4f4d3d97bc7e7dc47b094141b0",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-complete-6c1c0122-20261103/yime-yimecore-18u-windows-arm64-6c1c01220b77.identity.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "source-ci-6c1c0122.json",
+      "size": 11740,
+      "digest": "sha256:d891ee983e806d8843e61045c126e87fb02d98232cc56b60cee34a79ae0321fe",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-complete-6c1c0122-20261103/source-ci-6c1c0122.json",
+      "state": "uploaded"
+    }
+  ]
+}
