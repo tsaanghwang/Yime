@@ -99,6 +99,7 @@ def build(output: Path, arch: str, data: Path, installed_tsf=False):
             (output / name).unlink()
         (output / 'Start Installed Touch Keyboard.cmd').write_bytes(b'@echo off\r\nstart "" /d "%~dp0" "%~dp0YimeTouchKeyboard.exe" --touch-ui --theme dark --key-sound click\r\n')
         (output / 'Start Local Preview.cmd').write_bytes(b'@echo off\r\nstart "" /d "%~dp0" "%~dp0YimeTouchKeyboard.exe" --preview --touch-ui --theme dark\r\n')
+        (output / 'Check Package.cmd').write_bytes(b'@echo off\r\nset "YIME18U_CHECK_REPORT=%TEMP%\\Yime18u-package-check-%RANDOM%-%RANDOM%.json"\r\n"%~dp0YimeTouchKeyboard.exe" --check-package --data-report "%YIME18U_CHECK_REPORT%"\r\nif errorlevel 1 (echo Package check FAILED) else (echo Package check PASSED)\r\necho Report: %YIME18U_CHECK_REPORT%\r\npause\r\n')
         guide = ROOT / 'prototypes/touch-terminal/desktop/INSTALLED_TSF.zh-CN.md'
         shutil.copyfile(guide, output / 'USER_GUIDE.zh-CN.md')
         (output / 'README.txt').write_text('18u installed TSF frontend candidate. Install the matching complete package first.\nStart Installed Touch Keyboard.cmd requires its own installation descriptor and active 18u profile.\nStart Local Preview.cmd stays inside the keyboard window. No SendInput fallback.\nSee USER_GUIDE.zh-CN.md. Not physical or ordinary-application acceptance evidence.\n', encoding='utf-8')
