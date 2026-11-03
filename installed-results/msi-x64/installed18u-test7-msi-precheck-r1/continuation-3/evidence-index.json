@@ -1,0 +1,64 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test7-msi-precheck-r1",
+  "continuation": 3,
+  "localEvidenceDirectory": ".generated/installed18u-test7-msi-precheck-r1-continuation-3",
+  "rawLogsUploaded": false,
+  "retainedPackageEvidenceDirectory": ".generated/installed18u-test7-msi-precheck-r1-continuation-2",
+  "files": [
+    {
+      "name": "evidence/host-after.json",
+      "bytes": 6932,
+      "sha256": "638944cf6591237d940f61692ec4e31a55e1538805991fd085d3fa98b1700cdb",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/host-before.json",
+      "bytes": 6901,
+      "sha256": "4a11312df7c21c9267b814cbd536f13d06eb236dddcb0fd74b1f2750355736a4",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/signatures-fixed-original.json",
+      "bytes": 1547,
+      "sha256": "54fec8649758a279e93b87c2ade2b83cbdf5fbf9ef544c73a8459421728501f1",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/stop.json",
+      "bytes": 370,
+      "sha256": "2320e75e377e3d4c0b53635cd9a89e6fc27f88506955032f0dd83013e17efb92",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/verification.json",
+      "bytes": 2730,
+      "sha256": "74dbb1f87e6c8e8ca2c92e2ba3fd57f7241aaab9338a4c137aa0e7bdbf09a951",
+      "uploaded": false
+    },
+    {
+      "name": "tools/observe.py",
+      "bytes": 7555,
+      "sha256": "9051e173b4cdc10266e0c18da190770871fd8db931d08b767593766ac67f3178",
+      "uploaded": false
+    },
+    {
+      "name": "tools/report.py",
+      "bytes": 4360,
+      "sha256": "f262d619b7f2ab076287c013ce3535fec3eec479e6ac5488b2853be1b4278874",
+      "uploaded": false
+    },
+    {
+      "name": "tools/signatures.ps1",
+      "bytes": 1893,
+      "sha256": "556ba92dc7ddef8ecddbb023c152f565011d77e7dcbe339d4287aa6cb14c4e18",
+      "uploaded": false
+    },
+    {
+      "name": "tools/verify.py",
+      "bytes": 3856,
+      "sha256": "8920365d3a91850d9fd028602ddc5a3f332338a4666707d067c1cbb78f389588",
+      "uploaded": false
+    }
+  ]
+}
