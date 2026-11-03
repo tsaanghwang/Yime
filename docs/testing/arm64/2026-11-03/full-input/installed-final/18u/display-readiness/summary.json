@@ -1,0 +1,50 @@
+{
+  "schema": "18u-display-readiness-summary-v1",
+  "reportedAtUTC": "2026-11-03T15:17:55.005150+00:00",
+  "computer": "HUASHUONOTEBOOK",
+  "context": "sandbox native ARM64, local session 2, not a Remote Desktop session",
+  "digitizerRaw": "0xc5",
+  "reportedCapabilities": {
+    "NID_INTEGRATED_TOUCH": true,
+    "NID_EXTERNAL_TOUCH": false,
+    "NID_INTEGRATED_PEN": true,
+    "NID_EXTERNAL_PEN": false,
+    "NID_MULTI_INPUT": true,
+    "NID_READY": true
+  },
+  "reportedMaximumTouches": 10,
+  "reportedMonitorCount": 1,
+  "unknownDigitizerBits": 0,
+  "sdkConstantSource": "C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um/WinUser.h:7365,15915",
+  "previousDisplayEvidence": {
+    "path": "C:\\dev\\Yime\\.wt\\armfull\\docs\\testing\\arm64\\2026-11-03\\full-input\\INSTALLED-RESULT.md",
+    "sha256": "76f47cb6b2dfa5b84c10551d063cb06576b61eaa6c245ccf4f5c85d43cf6233f",
+    "observations": [
+      {
+        "line": 37,
+        "text": "当前只检测到 3840×2400 内置屏；18u 主区设计键距为 19.05 mm/u，宽 342.90 mm。目标触摸屏及尺标校准尚未确认，未通过缩放或修改几何冒充实际尺寸验收。"
+      }
+    ],
+    "currentWMIRefreshed": false
+  },
+  "processScreenMetrics": {
+    "width": 1536,
+    "height": 960,
+    "dpiAwarenessChanged": false,
+    "physicalMeasurement": false
+  },
+  "interpretation": "Windows reports integrated touch, integrated pen, multi-input and ready capability. One monitor is reported. This is a capability declaration, not observed finger/pen input or panel-to-digitizer association proof.",
+  "limitations": [
+    "No human touch or pen event observed",
+    "No per-monitor digitizer association verified",
+    "No pen pressure, tilt, palm rejection, latency or multi-contact behaviour measured",
+    "No 18u UI hit testing or registered input route exercised",
+    "No ruler, physical millimetre calibration or geometry change",
+    "Process screen metrics are not used as evidence of native panel resolution or physical dimensions; earlier display evidence reports 3840x2400"
+  ],
+  "uiAutomation": false,
+  "calibrationChanged": false,
+  "geometryChanged": false,
+  "physicalAcceptance": false,
+  "trackedFilesChanged": false
+}

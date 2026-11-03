@@ -1,0 +1,70 @@
+{
+  "sourceCommit": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+  "manifestSHA256": "afd950556cfc70afbdb8d62d8e7514c08173cb9f0b60146d3a7243680ab932fd",
+  "hostSHA256": "9787e27b3c61edede951faa0788f4b8abbe838c8a1b5285bf1e5a1389684d05a",
+  "token": {
+    "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+    "integrity": 8192,
+    "elevated": 0,
+    "session": 2,
+    "authenticationLuid": "df453c0100000000"
+  },
+  "previousProcesses": [
+    {
+      "relative": "bin/Yime18uInstalledRuntime.exe",
+      "pid": 34768,
+      "creationTicks": 134381939772110254
+    },
+    {
+      "relative": "bin/YimeBroker18u.exe",
+      "pid": 39328,
+      "creationTicks": 134381939791319500
+    },
+    {
+      "relative": "bin/YimeTouchKeyboard.exe",
+      "pid": 38228,
+      "creationTicks": 134381939926523467
+    }
+  ],
+  "sendInput": false,
+  "physicalAcceptance": false,
+  "checkpoints": 0,
+  "broker": {
+    "pid": 39536,
+    "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+    "creationTicks": 134381946585052034,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "host": {
+    "pid": 3488,
+    "image": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\touch-full-native\\Release\\YimeTouchInstalledFrontendHostTests.exe",
+    "creationTicks": 134381946727530333,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "error": "unexpected child image in test Job",
+  "testJobEmptyBeforeRestore": true,
+  "restoredRuntime": {
+    "pid": 13308,
+    "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+    "creationTicks": 134381946728009580,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  }
+}

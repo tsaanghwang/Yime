@@ -1,0 +1,153 @@
+{
+  "sourceCommit": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+  "manifestSHA256": "afd950556cfc70afbdb8d62d8e7514c08173cb9f0b60146d3a7243680ab932fd",
+  "hostSHA256": "9787e27b3c61edede951faa0788f4b8abbe838c8a1b5285bf1e5a1389684d05a",
+  "token": {
+    "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+    "integrity": 8192,
+    "elevated": 0,
+    "session": 2,
+    "authenticationLuid": "df453c0100000000"
+  },
+  "previousProcesses": [
+    {
+      "relative": "bin/Yime18uInstalledRuntime.exe",
+      "pid": 13308,
+      "creationTicks": 134381946728009580
+    },
+    {
+      "relative": "bin/YimeBroker18u.exe",
+      "pid": 29732,
+      "creationTicks": 134381946738388604
+    },
+    {
+      "relative": "bin/YimeTouchKeyboard.exe",
+      "pid": 24268,
+      "creationTicks": 134381946862190909
+    }
+  ],
+  "sendInput": false,
+  "physicalAcceptance": false,
+  "checkpoints": 18,
+  "controllerPath": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\touch-full-tools\\run_installed_frontend_checkpoints.py",
+  "controllerSHA256": "a97d8fcc7a9e85ed9f4ecd6166dabe4c03cd05ece756fa79666618633cf0a349",
+  "spawnFlags": {
+    "launcher": 8,
+    "nativeChild": 8
+  },
+  "broker": {
+    "pid": 29724,
+    "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+    "creationTicks": 134381960453001861,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "host": {
+    "pid": 27952,
+    "image": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\touch-full-native\\Release\\YimeTouchInstalledFrontendHostTests.exe",
+    "creationTicks": 134381960585105902,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "testJobProcesses": [
+    {
+      "pid": 32552,
+      "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+      "creationTicks": 134381960450993910,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    },
+    {
+      "pid": 29724,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+      "creationTicks": 134381960453001861,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    },
+    {
+      "pid": 39060,
+      "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+      "creationTicks": 134381960583847779,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    },
+    {
+      "pid": 27952,
+      "image": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\touch-full-native\\Release\\YimeTouchInstalledFrontendHostTests.exe",
+      "creationTicks": 134381960585105902,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    },
+    {
+      "pid": 39724,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+      "creationTicks": 134381960591772644,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    }
+  ],
+  "hostResult": {
+    "activationIdentity": "windows-activated-profile",
+    "actualDLLLoaded": true,
+    "checkpoints": 18,
+    "focusCancellation": true,
+    "frontendPipeChain": true,
+    "hostEditing": true,
+    "nonCompositionProtected": true,
+    "ok": true,
+    "physicalAcceptance": false,
+    "preeditReadback": true,
+    "registered": true,
+    "sendInput": false,
+    "stage": "result",
+    "threeModes": true
+  },
+  "testJobEmptyBeforeRestore": true,
+  "restoredRuntime": {
+    "pid": 29648,
+    "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+    "creationTicks": 134381960691135151,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  }
+}

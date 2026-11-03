@@ -1,0 +1,89 @@
+{
+  "schema": "18u-no-input-host-spawn-probe-v1",
+  "observedUtc": "2026-11-03T16:11:18.826561+00:00",
+  "controller": {
+    "pid": 34008,
+    "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "creationTicks": 134381958786951733,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "sysExecutable": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+  "hostExe": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\touch-full-native\\Release\\YimeTouchInstalledFrontendHostTests.exe",
+  "hostSHA256": "9787e27b3c61edede951faa0788f4b8abbe838c8a1b5285bf1e5a1389684d05a",
+  "launcherFlags": 134217728,
+  "hostFlags": 134217728,
+  "nativeConfigBytesSent": 0,
+  "inputReplayed": false,
+  "registeredHostInitializationRequested": false,
+  "productRuntimeChanged": false,
+  "observedMembers": [
+    {
+      "pid": 38116,
+      "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+      "creationTicks": 134381958788330640,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    },
+    {
+      "pid": 20264,
+      "image": "C:\\Windows\\System32\\conhost.exe",
+      "creationTicks": 134381958788513000,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    },
+    {
+      "pid": 15224,
+      "image": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\touch-full-native\\Release\\YimeTouchInstalledFrontendHostTests.exe",
+      "creationTicks": 134381958790002894,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    },
+    {
+      "pid": 30096,
+      "image": "C:\\Windows\\System32\\conhost.exe",
+      "creationTicks": 134381958790300706,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    }
+  ],
+  "observationErrors": [],
+  "launcherPID": 38116,
+  "nativeHost": {
+    "pid": 15224,
+    "image": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\touch-full-native\\Release\\YimeTouchInstalledFrontendHostTests.exe",
+    "creationTicks": 134381958790002894,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  }
+}

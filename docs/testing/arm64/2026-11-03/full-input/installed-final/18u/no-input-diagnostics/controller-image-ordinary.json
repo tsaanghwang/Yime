@@ -1,0 +1,148 @@
+{
+  "observedUtc": "2026-11-03T16:05:55.554652+00:00",
+  "observation": {
+    "pid": 41196,
+    "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "creationTicks": 134381955554006941,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "sysExecutable": {
+    "path": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "absolute": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "resolved": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "sha256": "ef9e93f6ef033c190bf3cab9dd9f7206ba431332deee6be7ba8d36a5e54e186c",
+    "statDevice": 6842881173032273261,
+    "statInode": 844424930453443,
+    "ancestors": [
+      {
+        "path": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users\\tsaan\\.cache\\codex-runtimes",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users\\tsaan\\.cache",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users\\tsaan",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      }
+    ]
+  },
+  "processImage": {
+    "path": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "absolute": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "resolved": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "sha256": "ef9e93f6ef033c190bf3cab9dd9f7206ba431332deee6be7ba8d36a5e54e186c",
+    "statDevice": 6842881173032273261,
+    "statInode": 844424930453443,
+    "ancestors": [
+      {
+        "path": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users\\tsaan\\.cache\\codex-runtimes",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users\\tsaan\\.cache",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users\\tsaan",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\Users",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      },
+      {
+        "path": "C:\\",
+        "reparsePoint": false,
+        "reparseTag": 0,
+        "isSymlink": false
+      }
+    ]
+  },
+  "pathObjectEqual": true,
+  "sameFile": true,
+  "processChanges": false,
+  "hostStarted": false,
+  "inputReplayed": false
+}

@@ -1,0 +1,24 @@
+{
+  "installRoot": "C:\\Program Files\\YimeCore 18u Touch",
+  "manifestSHA256": "afd950556cfc70afbdb8d62d8e7514c08173cb9f0b60146d3a7243680ab932fd",
+  "sourceCommit": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+  "hostExe": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\touch-full-native\\Release\\YimeTouchInstalledFrontendHostTests.exe",
+  "hostSHA256": "9787e27b3c61edede951faa0788f4b8abbe838c8a1b5285bf1e5a1389684d05a",
+  "runningProcesses": [
+    {
+      "relative": "bin/Yime18uInstalledRuntime.exe",
+      "pid": 29648,
+      "creationTicks": 134381960691135151
+    },
+    {
+      "relative": "bin/YimeBroker18u.exe",
+      "pid": 6744,
+      "creationTicks": 134381960701691251
+    },
+    {
+      "relative": "bin/YimeTouchKeyboard.exe",
+      "pid": 29520,
+      "creationTicks": 134381960827344529
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "observedUTC": "2026-11-03T16:49:37.922464+00:00",
+  "readOnly": true,
+  "uninstallExecuted": false,
+  "profiles": [
+    {
+      "id": "yimecore",
+      "DisplayName": "YimeCore",
+      "DisplayVersion": "0.1.0-local.13-main64a785a7-arm64-maint.1",
+      "InstallLocation": "C:\\Program Files\\YimeCore",
+      "UninstallString": "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -ExecutionPolicy Bypass -File \"C:\\Program Files\\YimeCore\\.setup\\Setup.ps1\" -Action Uninstall",
+      "profileDescription": "音元拼音"
+    },
+    {
+      "id": "rime-pime",
+      "DisplayName": "Yime Rime-PIME",
+      "DisplayVersion": "0.1.0-rime-arm64.1",
+      "InstallLocation": "C:\\Program Files\\Yime Rime-PIME",
+      "UninstallString": "\"C:\\Program Files\\Yime Maintenance\\rime-pime\\f4a0147ed0fc63540dda0b6b18b088996830d7d7d65496288baaebf4aebb307b\\YimeMaintenance.exe\" -action Uninstall",
+      "profileDescription": "音元"
+    },
+    {
+      "id": "yimecore-18u",
+      "DisplayName": "YimeCore 18u Touch (development)",
+      "DisplayVersion": "0.2.0-18u-arm64.1",
+      "InstallLocation": "C:\\Program Files\\YimeCore 18u Touch",
+      "UninstallString": "\"C:\\Program Files\\Yime Maintenance\\yimecore-18u\\55e88d8fec795c95f73625be9922f69e3f6d9162a8ff9dd6673a069ef610ea90\\YimeMaintenance.exe\" -action Uninstall",
+      "profileDescription": "音元拼音·18u触摸"
+    }
+  ]
+}

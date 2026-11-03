@@ -1,0 +1,67 @@
+{
+  "schema": "18u-installed-frontend-identity-v1",
+  "sourceCommit": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+  "manifestSHA256": "afd950556cfc70afbdb8d62d8e7514c08173cb9f0b60146d3a7243680ab932fd",
+  "hostSHA256": "9787e27b3c61edede951faa0788f4b8abbe838c8a1b5285bf1e5a1389684d05a",
+  "controller": {
+    "pid": 41860,
+    "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "creationTicks": 134381974383098635,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "runtimeAndDirectChildren": [
+    {
+      "relative": "bin/Yime18uInstalledRuntime.exe",
+      "pid": 29648,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+      "creationTicks": 134381960691135151,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    },
+    {
+      "relative": "bin/YimeBroker18u.exe",
+      "pid": 6744,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+      "creationTicks": 134381960701691251,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    },
+    {
+      "relative": "bin/YimeTouchKeyboard.exe",
+      "pid": 29520,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+      "creationTicks": 134381960827344529,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    }
+  ],
+  "creationTicksUnit": "Windows FILETIME: unsigned integer 100ns ticks since 1601-01-01 UTC",
+  "allInstalledPayloadHashesVerified": true,
+  "controllerKeyboardLanguage": "0x804",
+  "hostRequiresChinese0804": true,
+  "processChanges": false,
+  "installationExecuted": false,
+  "registeredHostExecuted": false,
+  "physicalAcceptance": false
+}

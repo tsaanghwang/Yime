@@ -2,9 +2,9 @@
 
 当前 Rime/PIME 继续使用 [defbf9f8 用户阶段验证包](RIME-USER-VERIFY-DELIVERY.md)。标准 maint.1 与已安装的 18u 46dd 保持，下方 46dd Rime 是第二次安装历史候选。
 
-## 当前有效组合：标准 maint.1 加 46dd 维护修复
+## 46dd 阶段记录：18u 当前包、Rime 历史候选
 
-标准 YimeCore 继续使用下表中已安装验证的 6c1c0122 maint.1 包。Rime/PIME 与 18u 使用[46dd 固定发行版](https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-maintenance-46dd5896-20261103)，替代后文首次交付的对应两包。
+标准 YimeCore 使用下表中已安装验证的 6c1c0122 maint.1 包。18u 使用[46dd 固定发行版](https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-maintenance-46dd5896-20261103)。该发行版中的 Rime 包仅保留为第二次安装历史候选；当前 Rime 使用已成功安装的 [defbf9f8 包](RIME-USER-VERIFY-DELIVERY.md)。
 修复源码为 `46dd58967266edcab3f0d3bb131015d81dc4b951`，仅为原生维护入口固定环境补充 `PATHEXT=.EXE` 并增加回归，保留用户环境隔离。
 该提交 [Build](https://github.com/tsaanghwang/Yime/actions/runs/41659402658) 与 [complete-input](https://github.com/tsaanghwang/Yime/actions/runs/41659402358) 完整通过：19 success、3 既有手动任务 skipped、0 fail。core 112、touch 243、Python 65、PowerShell 15；命名测试无跳过。
 

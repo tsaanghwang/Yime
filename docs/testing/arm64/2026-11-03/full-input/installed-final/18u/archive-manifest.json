@@ -1,0 +1,301 @@
+{
+  "schema": "18u-installed-evidence-archive-v1",
+  "productSourceCommit": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+  "copiedFileCount": 42,
+  "copiedBytes": 97797,
+  "copiedFiles": [
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints/broker.stderr.log",
+      "archive": "checkpoint-r1/broker.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints/broker.stdout.log",
+      "archive": "checkpoint-r1/broker.stdout.log",
+      "bytes": 29,
+      "sha256": "16f643eba6b74ca57b41dba767172d667dafc9e34ec2d0a4a9df992057b5ffd6"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints/controller-used.py",
+      "archive": "checkpoint-r1/controller-used.py",
+      "bytes": 16995,
+      "sha256": "e0aabf69fc9bbbd367d2c8315c930f3d4f8a72d5bc4909a58ae330bf27abdf77"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints/controller-used.sha256.json",
+      "archive": "checkpoint-r1/controller-used.sha256.json",
+      "bytes": 119,
+      "sha256": "6d2b4f0b989543f2730b4282986a6cce92e9985e5a388215da8d00b3fc4abe7c"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints/host.stderr.log",
+      "archive": "checkpoint-r1/host.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints/host.stdout.log",
+      "archive": "checkpoint-r1/host.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints/receipt.json",
+      "archive": "checkpoint-r1/receipt.json",
+      "bytes": 2161,
+      "sha256": "b5c5fdc5111673767c84103f61daf6ab26be4cbe4d9d5ec81f5566dc16c6b022"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints/restored-runtime.log",
+      "archive": "checkpoint-r1/restored-runtime.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": ".generated/18u-host-diagnostics/blocked-host-start/host.stderr.log",
+      "archive": "no-input-diagnostics/blocked-host-start/host.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": ".generated/18u-host-diagnostics/blocked-host-start/host.stdout.log",
+      "archive": "no-input-diagnostics/blocked-host-start/host.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": ".generated/18u-host-diagnostics/blocked-host-start/observations.json",
+      "archive": "no-input-diagnostics/blocked-host-start/observations.json",
+      "bytes": 3078,
+      "sha256": "fd6cadd878289488ca17d0a42b6f7367faac58efb8aeb0651012969dd564e78b"
+    },
+    {
+      "source": ".generated/18u-host-diagnostics/blocked-host-start/receipt.json",
+      "archive": "no-input-diagnostics/blocked-host-start/receipt.json",
+      "bytes": 3135,
+      "sha256": "6ebb32fa8df72c34c8edd4b4d29034a85d46d39588b30bdf0d0c9e773d9da864"
+    },
+    {
+      "source": ".generated/18u-host-diagnostics/blocked-host-start-detached/host.stderr.log",
+      "archive": "no-input-diagnostics/blocked-host-start-detached/host.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": ".generated/18u-host-diagnostics/blocked-host-start-detached/host.stdout.log",
+      "archive": "no-input-diagnostics/blocked-host-start-detached/host.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": ".generated/18u-host-diagnostics/blocked-host-start-detached/observations.json",
+      "archive": "no-input-diagnostics/blocked-host-start-detached/observations.json",
+      "bytes": 2360,
+      "sha256": "56fe0c96591f8ed48d2c914f089c04b30f091dff294721ddf12439342e49e4bc"
+    },
+    {
+      "source": ".generated/18u-host-diagnostics/blocked-host-start-detached/receipt.json",
+      "archive": "no-input-diagnostics/blocked-host-start-detached/receipt.json",
+      "bytes": 2417,
+      "sha256": "75c3511e1df5e6853fb7893e9d0810710627fe8a768a9a5a550f99413180f599"
+    },
+    {
+      "source": ".generated/18u-host-diagnostics/controller-image-ordinary.json",
+      "archive": "no-input-diagnostics/controller-image-ordinary.json",
+      "bytes": 4813,
+      "sha256": "22e8bed4e3d21878ee15a2eaa1c88876dc568bf141cdcf2fa42ff61c4f119afa"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints-r2/broker.stderr.log",
+      "archive": "checkpoint-r2/broker.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints-r2/broker.stdout.log",
+      "archive": "checkpoint-r2/broker.stdout.log",
+      "bytes": 29,
+      "sha256": "16f643eba6b74ca57b41dba767172d667dafc9e34ec2d0a4a9df992057b5ffd6"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints-r2/controller-used.py",
+      "archive": "checkpoint-r2/controller-used.py",
+      "bytes": 17983,
+      "sha256": "a97d8fcc7a9e85ed9f4ecd6166dabe4c03cd05ece756fa79666618633cf0a349"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints-r2/host.stderr.log",
+      "archive": "checkpoint-r2/host.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints-r2/host.stdout.log",
+      "archive": "checkpoint-r2/host.stdout.log",
+      "bytes": 323,
+      "sha256": "bc70cdc3ce94f7db1768633b779cbfcd5ec904a0e0bf4af3425883fef7e98445"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints-r2/job-members.json",
+      "archive": "checkpoint-r2/job-members.json",
+      "bytes": 2051,
+      "sha256": "b78140389b53f7f807cbb758bfa6f106f518b1fea36828fe21c018da547be7f2"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints-r2/receipt.json",
+      "archive": "checkpoint-r2/receipt.json",
+      "bytes": 4872,
+      "sha256": "e22ef958b6c5ee109a0797c52ec03f723fe332fb2371ba0c0649105bddbda87d"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints-r2/restored-runtime.log",
+      "archive": "checkpoint-r2/restored-runtime.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-checkpoints-r2/summary.json",
+      "archive": "checkpoint-r2/summary.json",
+      "bytes": 2848,
+      "sha256": "4ea89c2f286c6ee61814ba768cadaa6401bbb5c52bc65d6f31498bd81709b940"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-identity/config.json",
+      "archive": "identity-initial/config.json",
+      "bytes": 840,
+      "sha256": "da6bb9d38ba3cba0b80a421041566ebe65e89bb09092fdc1514af50fa5b9e27c"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-identity/identity.json",
+      "archive": "identity-initial/identity.json",
+      "bytes": 2374,
+      "sha256": "c7d00aa33be3351141df1a8afedff827c688d2a3527144b1480db5aaab18319f"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-identity/summary.json",
+      "archive": "identity-initial/summary.json",
+      "bytes": 2234,
+      "sha256": "8ee86a8aa9df511edfb5126781fe476d88f488c867cf83e1fd76350e21f56e82"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-identity/validation.json",
+      "archive": "identity-initial/validation.json",
+      "bytes": 270,
+      "sha256": "accbff9449c8dea0349a26c3357f12f3d70fe9002fd5dd96978e265e1bb5670f"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-identity/validation.stderr.log",
+      "archive": "identity-initial/validation.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-restored-identity/config.json",
+      "archive": "identity-restored-r1/config.json",
+      "bytes": 840,
+      "sha256": "df0457560bec1c1df09c41493bcdf3140c8afe940c50bb7586fa2c0d9577cfbc"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-restored-identity/identity.json",
+      "archive": "identity-restored-r1/identity.json",
+      "bytes": 2374,
+      "sha256": "843ec4b8ad48dfae32079a65b4a1cd5f661d13887fd62984bbc489eefbbf2da7"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-restored-r2-identity/config.json",
+      "archive": "identity-restored-r2/config.json",
+      "bytes": 839,
+      "sha256": "f776645640b151a6ea23ba970279496c963e9a300bc906b4370132e884807aa2"
+    },
+    {
+      "source": ".generated/18u-installed-46dd-restored-r2-identity/identity.json",
+      "archive": "identity-restored-r2/identity.json",
+      "bytes": 2373,
+      "sha256": "ed7b5a5593530f3f2ce3842cfa1839fd29906cc4713a2694d8548ef6a2a1308c"
+    },
+    {
+      "source": ".generated/18u-display-readiness/summary.json",
+      "archive": "display-readiness/summary.json",
+      "bytes": 2271,
+      "sha256": "ffcbeccf7d3634d115dcbf8c9eed338fdcaa7a60b45bfaff8e20718cde759ab8"
+    },
+    {
+      "source": ".generated/18u-display-readiness/win32-sandbox.json",
+      "archive": "display-readiness/win32-sandbox.json",
+      "bytes": 1340,
+      "sha256": "90446aefe55ea788afdc0a66dc21bb93aec516e31711fae6792c89c052d7973a"
+    },
+    {
+      "source": ".generated/touch-full-tools/capture_installed_frontend_identity.py",
+      "archive": "support-tools/capture_installed_frontend_identity.py",
+      "bytes": 5861,
+      "sha256": "38283c254f5b3cc51ad91b422497e7628c0cb48d1b23b0fe3d46ec576b381c37"
+    },
+    {
+      "source": ".generated/touch-full-tools/observe_controller_image.py",
+      "archive": "support-tools/observe_controller_image.py",
+      "bytes": 1474,
+      "sha256": "aad5c832ed4f69b645b327b579fd7a4421bc72d80bd1d06b557354aabfb87967"
+    },
+    {
+      "source": ".generated/touch-full-tools/probe_blocked_frontend_host.py",
+      "archive": "support-tools/probe_blocked_frontend_host.py",
+      "bytes": 4156,
+      "sha256": "ff037492017e3cdde7676dae762557197edab5c753a7f522d724497bc024041a"
+    },
+    {
+      "source": ".generated/touch-full-tools/probe_blocked_frontend_host_detached.py",
+      "archive": "support-tools/probe_blocked_frontend_host_detached.py",
+      "bytes": 4521,
+      "sha256": "d235ebf1c583e93982440bc784e6aa553c0976c6310d946c7eb8831c13d025de"
+    },
+    {
+      "source": ".generated/touch-full-tools/read_display_capabilities.py",
+      "archive": "support-tools/read_display_capabilities.py",
+      "bytes": 2817,
+      "sha256": "fc932f2add5efeeb3fdd75aa3ea0dafe41cef7f0e4a9278e0307cb4b3bbb333f"
+    }
+  ],
+  "preservedExistingInstallerFiles": {
+    "after-capture.log": {
+      "bytes": 397,
+      "sha256": "daf0d5127deea21d391e6f836033427b8964c2a0578ee0df1b4c8c4fb22b5fb5"
+    },
+    "after-params.json": {
+      "bytes": 109,
+      "sha256": "5758a9b487d3823caed9334823a8c24023417b99e565005b1d5c270f94e1d550"
+    },
+    "after.json": {
+      "bytes": 149626,
+      "sha256": "cc010b482860403c20e36cb0854225120be9fca15ad832e1385244f10c112bbe"
+    },
+    "before-capture.log": {
+      "bytes": 381,
+      "sha256": "a3b3ab3674bf04bd2fb90d9347cc21124a3c8803d00e77508b052e16c79a93b8"
+    },
+    "before-params.json": {
+      "bytes": 110,
+      "sha256": "02522d88b60472881d1e71b54a41f0bf855379ee73c839f880274914822a9b09"
+    },
+    "before.json": {
+      "bytes": 142466,
+      "sha256": "c5de969a4d0897910def7226fe8b2ca827f51df9e02e184e22cada6476a6fcfe"
+    },
+    "setup-output.log": {
+      "bytes": 124,
+      "sha256": "48118d909a4ae3fab6f3f29bc5a7bc36a80376b6f56ef0f89f568435bcc04cf3"
+    },
+    "setup-result.json": {
+      "bytes": 527,
+      "sha256": "a429bcc7ed6a6376a3c7ab3c76d614ac26e672c57f3778277f3a35dc55286315"
+    }
+  },
+  "readme": {
+    "bytes": 2492,
+    "sha256": "1ab70adc2ac6d55b906b3b21d418cbad0019deda89f103f35e62ad4a27710a2c"
+  },
+  "productsExecutedDuringArchive": false,
+  "binariesDictionariesCachesIncluded": false,
+  "gitCommitExecuted": false
+}

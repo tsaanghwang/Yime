@@ -1,0 +1,51 @@
+{
+  "schema": "18u-win32-display-readiness-v1",
+  "observedUtc": "2026-11-03T15:17:55.005150+00:00",
+  "computer": "HUASHUONOTEBOOK",
+  "observationContext": "sandbox",
+  "pid": 26352,
+  "sessionId": 2,
+  "processMachine": "0x0",
+  "nativeMachine": "0xaa64",
+  "SM_DIGITIZER": {
+    "index": 94,
+    "decimal": 197,
+    "hex": "0xc5",
+    "flags": {
+      "NID_INTEGRATED_TOUCH": true,
+      "NID_EXTERNAL_TOUCH": false,
+      "NID_INTEGRATED_PEN": true,
+      "NID_EXTERNAL_PEN": false,
+      "NID_MULTI_INPUT": true,
+      "NID_READY": true
+    },
+    "unknownBits": "0x0"
+  },
+  "SM_MAXIMUMTOUCHES": {
+    "index": 95,
+    "value": 10
+  },
+  "SM_CMONITORS": {
+    "index": 80,
+    "value": 1
+  },
+  "SM_REMOTESESSION": {
+    "index": 4096,
+    "value": 0
+  },
+  "screenMetricsForThisProcess": {
+    "width": 1536,
+    "height": 960,
+    "dpiAwarenessChanged": false,
+    "physicalMeasurement": false
+  },
+  "constantSource": "C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um/WinUser.h:7365,15915",
+  "systemReportedCapabilitiesOnly": true,
+  "perMonitorDigitizerMappingEstablished": false,
+  "fingerInputObserved": false,
+  "penInputObserved": false,
+  "touchKeyboardAcceptance": false,
+  "calibrationChanged": false,
+  "geometryChanged": false,
+  "uiAutomation": false
+}

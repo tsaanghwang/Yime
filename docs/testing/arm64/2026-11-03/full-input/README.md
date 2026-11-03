@@ -6,7 +6,7 @@
 
 最终完整包、固定来源、远端 SHA-256 与 CI 见 [最终交付](FINAL-DELIVERY.md)。下文首次标准包和启动问题保留为历史执行记录。
 
-实际安装、普通权限运行及失败定位见 [本机安装执行记录](INSTALLED-RESULT.md)。6c1c0122 的 Rime/PIME 和 18u 维护入口需要修复固定环境的 `PATHEXT`；标准 maint.1 已安装并通过定向验证。
+实际安装、普通权限运行及失败定位见 [本机安装执行记录](INSTALLED-RESULT.md)。当前三套均已安装：标准 maint.1 为 6c1c0122，18u 为 46dd5896（真实 TSF 18/18），Rime 为 defbf9f8（普通父进程双架构严格验证通过后启动）。前两次 Rime 失败和 18u 控制器首失败均保留。
 
 ## 标准 YimeCore 固定来源
 

@@ -1,0 +1,11 @@
+{
+  "source": "defbf9f805b52146bd79048620058f48c6c29f23",
+  "product": "rime",
+  "package": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\rime-final-defbf9f8\\package",
+  "archiveSHA256": "dec4ee78504cee238e54b18fd6265f2571309ba17d14630bc66b24ece68d2efc",
+  "deliveryURL": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-rime-user-defbf9f8-20261104",
+  "startedUTC": "2026-11-03T16:45:41.926539+00:00",
+  "completedUTC": "2026-11-03T16:46:42.251979+00:00",
+  "exitCode": 0,
+  "resetData": false
+}

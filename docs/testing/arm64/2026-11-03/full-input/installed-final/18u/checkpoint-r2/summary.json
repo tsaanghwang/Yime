@@ -1,0 +1,83 @@
+{
+  "sourceCommit": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+  "manifestSHA256": "afd950556cfc70afbdb8d62d8e7514c08173cb9f0b60146d3a7243680ab932fd",
+  "controllerSHA256": "a97d8fcc7a9e85ed9f4ecd6166dabe4c03cd05ece756fa79666618633cf0a349",
+  "verifiedCheckpoints": 18,
+  "modes": [
+    "full",
+    "variable",
+    "shorthand"
+  ],
+  "checksPerMode": [
+    "preedit-readback",
+    "candidate-commit",
+    "English-literal",
+    "host-edit",
+    "cancel",
+    "focus-cancel"
+  ],
+  "hostResult": {
+    "activationIdentity": "windows-activated-profile",
+    "actualDLLLoaded": true,
+    "checkpoints": 18,
+    "focusCancellation": true,
+    "frontendPipeChain": true,
+    "hostEditing": true,
+    "nonCompositionProtected": true,
+    "ok": true,
+    "physicalAcceptance": false,
+    "preeditReadback": true,
+    "registered": true,
+    "sendInput": false,
+    "stage": "result",
+    "threeModes": true
+  },
+  "testJobEmptyBeforeRestore": true,
+  "restoredProcesses": [
+    {
+      "relative": "bin/Yime18uInstalledRuntime.exe",
+      "pid": 29648,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+      "creationTicks": 134381960691135151,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    },
+    {
+      "relative": "bin/YimeBroker18u.exe",
+      "pid": 6744,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+      "creationTicks": 134381960701691251,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    },
+    {
+      "relative": "bin/YimeTouchKeyboard.exe",
+      "pid": 29520,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+      "creationTicks": 134381960827344529,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    }
+  ],
+  "installedPayloadReverified": true,
+  "failedFirstRunPreserved": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\18u-installed-46dd-checkpoints",
+  "firstRunVerifiedCheckpoints": 0,
+  "controllerFix": "DETACHED_PROCESS instead of CREATE_NO_WINDOW for the two explicit-pipe console process launches; strict image/token checks retained; full Job evidence persisted before refusal",
+  "noInputProbeEvidence": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\18u-host-diagnostics\\blocked-host-start-detached\\receipt.json",
+  "physicalAcceptance": false
+}

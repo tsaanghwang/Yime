@@ -1,0 +1,30 @@
+{
+  "schema": "yime-arm64-installed-suite-summary-v1",
+  "preparedLocalDate": "2026-11-04",
+  "snapshotObservedUTC": "2026-11-03T16:46:44.7967851Z",
+  "computer": "HUASHUONOTEBOOK",
+  "allThreeProductsInstalled": true,
+  "installedPayloadCounts": {
+    "yimecore": 69,
+    "rime-pime": 366,
+    "yimecore-18u": 20
+  },
+  "installedPayloadHashMismatches": 0,
+  "defaultInputOverrideUnchanged": true,
+  "standardAnd18uSnapshotsUnchangedAcrossFinalRimeInstall": true,
+  "rimeOrdinaryParentDualRegistrationPassedBeforeLaunch": true,
+  "rimeLiveProcessesOrdinaryMediumNativeARM64": true,
+  "touchInstalledRegisteredHostCheckpointsPassed": 18,
+  "touchTestJobEmptyAndOrdinaryRuntimeRestored": true,
+  "physicalAcceptanceCompleted": false,
+  "rimeRealDocumentInputAcceptanceCompleted": false,
+  "rebootAcceptanceCompleted": false,
+  "uninstallExecuted": false,
+  "evidence": [
+    "rime-success/before.json",
+    "rime-success/after.json",
+    "rime-success/summary.json",
+    "18u/checkpoint-r2/summary.json",
+    "final-maintenance-entries.json"
+  ]
+}

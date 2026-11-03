@@ -1,0 +1,37 @@
+**********************
+PowerShell 记录开始
+开始时间: 20261103233927
+用户名: HUASHUONOTEBOOK\tsaan
+RunAs 用户: HUASHUONOTEBOOK\tsaan
+配置名称: 
+计算机: HUASHUONOTEBOOK (Microsoft Windows NT 10.0.28000.0)
+主机应用程序: C:\Program Files\Yime Maintenance\yimecore-18u\55e88d8fec795c95f73625be9922f69e3f6d9162a8ff9dd6673a069ef610ea90\maintenance\powershell\pwsh.dll -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\Program Files\Yime Maintenance\yimecore-18u\55e88d8fec795c95f73625be9922f69e3f6d9162a8ff9dd6673a069ef610ea90\maintenance\preflight.ps1
+进程 ID: 23512
+PSVersion: 7.6.9
+PSEdition: Core
+GitCommitId: 7.6.9
+OS: Microsoft Windows 10.0.28000
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\efb04c63a2b84cec8c2e584c7a16605e.admin.log
+Action: Install; package: C:\Program Files\Yime Maintenance\yimecore-18u\55e88d8fec795c95f73625be9922f69e3f6d9162a8ff9dd6673a069ef610ea90
+tool_version=yime-18u-product-registration-v1
+mutation_performed=false
+com_registered=false
+tip_registered=false
+profile_count=0
+categories_registered_count=0
+com_path=
+operation=register
+hresult=0x0
+succeeded=true
+Installed persistent independent 18u: C:\Program Files\YimeCore 18u Touch
+User startup configured. The initiating non-elevated entry starts the touch runtime; installed-host acceptance remains separate.
+**********************
+PowerShell 记录结束
+结束时间: 20261103233934
+**********************

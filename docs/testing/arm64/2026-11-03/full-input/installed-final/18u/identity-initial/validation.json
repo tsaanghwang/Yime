@@ -1,0 +1,12 @@
+{
+  "validated": true,
+  "installation": false,
+  "processChanges": false,
+  "token": {
+    "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+    "integrity": 8192,
+    "elevated": 0,
+    "session": 2,
+    "authenticationLuid": "df453c0100000000"
+  }
+}

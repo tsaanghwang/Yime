@@ -4,6 +4,8 @@
 
 ## 当前任务
 
+**2026-11-04：本机 ARM64 三产品安装完成，准备真人实测。** 标准 YimeCore maint.1、独立 Rime/PIME 与 18u 触摸前端均已安装；默认输入和既有数据保留。标准注册宿主验证通过，Rime 最终普通父进程双架构 profile 验证通过后启动，18u 已安装完整 TSF 通路 18/18 通过。各自固定包与来源见[当前结果](../../docs/testing/arm64/2026-11-03/full-input/INSTALLED-RESULT.md)及[交付索引](../../docs/testing/arm64/2026-11-03/full-input/FINAL-DELIVERY.md)。真人手指/笔、100 mm 尺标、重启和日用仍分别待验；18u 当前只确认原生 ARM64 宿主。保留失败证据，不再将历史候选包作为当前安装入口。
+
 **2026-11-03：本机 ARM64 全套输入准备。** 用户明确选择标准键盘 YimeCore + Rime/PIME 两个独立产品，并补齐完整 YimeCore 输入链和 18u 触摸前端。当前分支 `codex/arm64-complete-input-20261103`，从主线 `64a785a7` 整合 18u ARM 候选后开发；原工作树及 17u 历史材料保持。接续入口为[本机完整输入准备](../../docs/project/ARM64_COMPLETE_INPUT_INSTALL_2026-11-03.md)。安装要使用本任务同源 CI 通过后的固定完整包及 SHA-256；鼠标/受控 TSF 测试与真人手指、笔验收分开。下方 MyComputer 交接属于另一台机器，不能直接套用到 ASUS ARM64 本机。
 
 **2026-11-03：MyComputer 正常升级接续 PR #95。** 用户已授权修复、正常卸载、升级及重启；

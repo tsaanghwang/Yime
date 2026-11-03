@@ -1,0 +1,97 @@
+{
+  "schema": "yime-rime-installed-live-process-identity-v1",
+  "capturedAtUTC": "2026-11-03T16:54:38.681362+00:00",
+  "sourceCommit": "defbf9f805b52146bd79048620058f48c6c29f23",
+  "installRoot": "C:\\Program Files\\Yime Rime-PIME",
+  "packageRoot": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\rime-final-defbf9f8\\package",
+  "archiveSHA256": "dec4ee78504cee238e54b18fd6265f2571309ba17d14630bc66b24ece68d2efc",
+  "afterSnapshot": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\final-defbf9f8-rime\\after.json",
+  "afterSnapshotSHA256": "d0fed06e878ca2f79e1efda0c6809ffd6bd06906f8d4c38ba352f1c3c2206482",
+  "processUtility": {
+    "path": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\touch-full-tools\\run_installed_frontend_checkpoints.py",
+    "sha256": "a97d8fcc7a9e85ed9f4ecd6166dabe4c03cd05ece756fa79666618633cf0a349",
+    "calledFunctions": [
+      "observe",
+      "same_token",
+      "read-only Win32 process/token queries"
+    ],
+    "controllerRunCalled": false
+  },
+  "observer": {
+    "pid": 30712,
+    "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "creationTicks": 134381984784753772,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "watchdogPID": 39884,
+  "workerPIDs": [
+    38684
+  ],
+  "backendPIDs": [],
+  "backendNote": "Backend is lazy; absence before profile activation is not a failure.",
+  "processes": [
+    {
+      "pid": 38684,
+      "image": "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe",
+      "creationTicks": 134381980021612017,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      },
+      "relative": "PIMELauncher.exe",
+      "parentPID": 39884,
+      "imageSHA256": "3a3c440e3600c00ababac70bfa61d2132e8e6e64164d5164182ada2553ec43ed",
+      "imageBytes": 662528,
+      "peMachine": "0xaa64",
+      "processMachine": "0x0",
+      "nativeMachine": "0xaa64",
+      "nativeARM64": true,
+      "matchesFinalPackage": true,
+      "matchesAfterSnapshot": true,
+      "sameOrdinaryUserSessionLogon": true,
+      "role": "direct Launcher child, worker role inferred from PIMELauncher/src/main.rs:18-27"
+    },
+    {
+      "pid": 39884,
+      "image": "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe",
+      "creationTicks": 134381980021375694,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      },
+      "relative": "PIMELauncher.exe",
+      "parentPID": 30744,
+      "imageSHA256": "3a3c440e3600c00ababac70bfa61d2132e8e6e64164d5164182ada2553ec43ed",
+      "imageBytes": 662528,
+      "peMachine": "0xaa64",
+      "processMachine": "0x0",
+      "nativeMachine": "0xaa64",
+      "nativeARM64": true,
+      "matchesFinalPackage": true,
+      "matchesAfterSnapshot": true,
+      "sameOrdinaryUserSessionLogon": true,
+      "role": "launcher started by ordinary installation parent"
+    }
+  ],
+  "passed": true,
+  "scope": {
+    "readOnly": true,
+    "registrationProbeRepeated": false,
+    "processStartedOrStopped": false,
+    "profileActivated": false,
+    "documentInputExecuted": false,
+    "physicalAcceptance": false
+  }
+}

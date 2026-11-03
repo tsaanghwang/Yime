@@ -1,0 +1,65 @@
+{
+  "schema": "yime-installed-evidence-inventory-v1",
+  "files": {
+    "after-capture.log": {
+      "bytes": 398,
+      "sha256": "9f43d1b9e3c4b13be114423754fb3873cc8692bbe70fac231946af0e8f3bbe33"
+    },
+    "after-params.json": {
+      "bytes": 110,
+      "sha256": "09a8624d4d3fd333af20b34c9ad361481d2f15f62dd600a90eb87e0c7707d4d9"
+    },
+    "after.json": {
+      "bytes": 150264,
+      "sha256": "d0fed06e878ca2f79e1efda0c6809ffd6bd06906f8d4c38ba352f1c3c2206482"
+    },
+    "archive_success_defb.py": {
+      "bytes": 6782,
+      "sha256": "c197f75739b48cd51e92698ab0d2ed1f78ce5ed2085b61d3ddd0e7db7ccf35eb"
+    },
+    "before-capture.log": {
+      "bytes": 399,
+      "sha256": "65f51c204a52d5bb2e219941112a14185b543d9e1e676157579a76dbb8b9e61b"
+    },
+    "before-params.json": {
+      "bytes": 111,
+      "sha256": "19f3c467d986192c08ddff546b84f30a85187be3311df89fa441188a8492ece6"
+    },
+    "before.json": {
+      "bytes": 149845,
+      "sha256": "41331d33c97c49d3f6026638322b375dde237607c1f29b82c20d40519cd14ed6"
+    },
+    "live-process-identity.json": {
+      "bytes": 3606,
+      "sha256": "b6c0a7afb688ab27f793f1cf03481ca26c3567d31d74a1fe0bd20066bd9ff564"
+    },
+    "observe_success_defb.py": {
+      "bytes": 7388,
+      "sha256": "c6eea380d003d42c9b346b7cfbebeda14f85fa250a94322bf9f8685a62aaee74"
+    },
+    "process-utility-source.py": {
+      "bytes": 17983,
+      "sha256": "a97d8fcc7a9e85ed9f4ecd6166dabe4c03cd05ece756fa79666618633cf0a349"
+    },
+    "README.md": {
+      "bytes": 1655,
+      "sha256": "511a0c601546c50f38d0e547f5aa57e776f83c2fcca7cde9676e1d874c08f2ee"
+    },
+    "setup-admin.log": {
+      "bytes": 1492,
+      "sha256": "cadfc4aaa178a63ae5020f3fe9d16c3793b2bca488af7c2e6492e5c9a9ff13d9"
+    },
+    "setup-output.log": {
+      "bytes": 1415,
+      "sha256": "9d76f1986e665db7d640bc9cbe30aeffc9baf73bcd3ed9c06a271a84bd5db469"
+    },
+    "setup-result.json": {
+      "bytes": 517,
+      "sha256": "170c707ebb02da6f942f48690b341fdc91c54cef3430a92661c3833af111c77f"
+    },
+    "summary.json": {
+      "bytes": 2905,
+      "sha256": "289a563acf505d803f6062dc4e771d7ad2bbac3eb3db04302fb7e2dca39516f5"
+    }
+  }
+}

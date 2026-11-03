@@ -1,0 +1,35 @@
+{
+  "schema": "yime-release-note-final-install-update-v1",
+  "localDate": "2026-11-04",
+  "assetMutationPerformed": false,
+  "updates": [
+    {
+      "tag": "test-arm64-complete-6c1c0122-20261103",
+      "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-complete-6c1c0122-20261103",
+      "notesSHA256": "68ce12a378eee4ba3d5e710b524e1292c63defe2033a54945b4728a4f5c7f81d",
+      "remoteNotesMatched": true,
+      "assetsUnchanged": true
+    },
+    {
+      "tag": "test-arm64-maintenance-46dd5896-20261103",
+      "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-maintenance-46dd5896-20261103",
+      "notesSHA256": "26be2230d42bc8ee19050698d0e8e94edba1f489cdd14e88f018fda1a43bb1be",
+      "remoteNotesMatched": true,
+      "assetsUnchanged": true
+    },
+    {
+      "tag": "test-arm64-rime-user-defbf9f8-20261104",
+      "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-rime-user-defbf9f8-20261104",
+      "notesSHA256": "8aa88347a71928caa1943d457249be1a2b2a40685eb411115acd255fc96f1da8",
+      "remoteNotesMatched": true,
+      "assetsUnchanged": true
+    },
+    {
+      "tag": "test-standard-arm64-64a785a7-20261103",
+      "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-standard-arm64-64a785a7-20261103",
+      "notesSHA256": "3a99976241152041a617b0eaf8043ca1c82538f39ca8425724ce8ad0a93f38c9",
+      "remoteNotesMatched": true,
+      "assetsUnchanged": true
+    }
+  ]
+}
