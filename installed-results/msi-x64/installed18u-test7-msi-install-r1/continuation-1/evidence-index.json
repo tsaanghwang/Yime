@@ -1,0 +1,135 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "continuation": 1,
+  "localEvidenceDirectory": ".generated/installed18u-test7-msi-install-r1-continuation-1",
+  "rawLogsUploaded": false,
+  "files": [
+    {
+      "name": "evidence/elevation-attempt.json",
+      "bytes": 40,
+      "sha256": "0b26f39a9daabfb7304ff3c0239ae25313d9082811220f03df8bff29492bdd7f",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/elevation-result.json",
+      "bytes": 85,
+      "sha256": "43a0b603a55ad25e750647b6d4459a7d4f7ab30254a8c9c1fa3d90757b2f642e",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/gate-file-opens.jsonl",
+      "bytes": 2846,
+      "sha256": "13cf39eb1f1bc39acda8a7166d75afc48b6db8ab7540f4ee43cf834f139ed6a9",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/gate.json",
+      "bytes": 7057,
+      "sha256": "65bc6ef3ea4d87c971d6d5a4758ad2510b63b80b10b62dc9e44b587c9af22caa",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/host-after.json",
+      "bytes": 6961,
+      "sha256": "c360ba914cbbc6d587e4ce7d8755f13a3f67986cd5a569b67592983128eed176",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/managed-inventory.json",
+      "bytes": 3987,
+      "sha256": "fedec1dee4ab260da1d0c9bc042b031313eeeabb798a7e2040682f61841f63b4",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/product-processes.json",
+      "bytes": 6,
+      "sha256": "b423bb45501e0fa49d3b77e635f800a29f1fdcf5a58e00c7e04a7ff7833045f2",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/signatures-fixed-original.json",
+      "bytes": 1547,
+      "sha256": "54fec8649758a279e93b87c2ade2b83cbdf5fbf9ef544c73a8459421728501f1",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/stop.json",
+      "bytes": 580,
+      "sha256": "6686be6428e283f64adf478bac976465313e6a67f8f05afe494e36f30715fdc8",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/test6-package.json",
+      "bytes": 402,
+      "sha256": "fe38c35eeabf798e7a1427e1f63689adfa15e7229990d100f89ef33f34f8a8ac",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/user-confirmation.json",
+      "bytes": 127,
+      "sha256": "1a42cec8c078ffe93109ce36f4e1eb9c362ada4a142f47a6544b50d9f4dc25ac",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/verification.json",
+      "bytes": 2730,
+      "sha256": "74dbb1f87e6c8e8ca2c92e2ba3fd57f7241aaab9338a4c137aa0e7bdbf09a951",
+      "uploaded": false
+    },
+    {
+      "name": "tools/gate-and-maintain.ps1",
+      "bytes": 7668,
+      "sha256": "c75df211f10a56a9e737a93cde50e0d627256c9cd09e0e7469711fe904767d20",
+      "uploaded": false
+    },
+    {
+      "name": "tools/launch-once.ps1",
+      "bytes": 1619,
+      "sha256": "5a6d6e7384e4f9e9c32033764886ee0fdc7c649e63794a23108daa8cbf780455",
+      "uploaded": false
+    },
+    {
+      "name": "tools/maintain.py",
+      "bytes": 3848,
+      "sha256": "62ea2673776e0c2ea68ced86874c0453b88a1ce7b760dd062892ae8176d96d45",
+      "uploaded": false
+    },
+    {
+      "name": "tools/observe.py",
+      "bytes": 7676,
+      "sha256": "607d7370244651868548880b0e183523ffc1878c8be8f41bd9ab33464dd9fb3b",
+      "uploaded": false
+    },
+    {
+      "name": "tools/prepare_execution.py",
+      "bytes": 2548,
+      "sha256": "65b159ea5f6cc5310562168b33d93bf048a256e36baaf25aad604e02eeda2a10",
+      "uploaded": false
+    },
+    {
+      "name": "tools/report.py",
+      "bytes": 4734,
+      "sha256": "288ba0644a0315346085e21f73d748078b8442abc9908279349d81dafb300960",
+      "uploaded": false
+    },
+    {
+      "name": "tools/snapshot.py",
+      "bytes": 5206,
+      "sha256": "75549a2e677e863e7695d89706beee2c10239425170a8135424961489a8ed448",
+      "uploaded": false
+    },
+    {
+      "name": "tools/verify.py",
+      "bytes": 3910,
+      "sha256": "af0162aa45837f2e142a2dc6ff1a379feecf08983bd3e4a786ec6bdad557103b",
+      "uploaded": false
+    },
+    {
+      "name": "tools/verify_old.py",
+      "bytes": 1820,
+      "sha256": "3d106e7e93cb563781b96181d2219cca5b4213a88efb8057f8d5a11fac239690",
+      "uploaded": false
+    }
+  ]
+}

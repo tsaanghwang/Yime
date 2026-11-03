@@ -1,0 +1,84 @@
+{
+  "schema": "installed-18u-install-result-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "continuation": 1,
+  "recordedAtUTC": "2026-11-03T13:55:10.737291+00:00",
+  "status": "stopped-at-maintenance-executor-startup",
+  "host": "WIN-JTKUT7KBVN7",
+  "nativeArchitecture": "AMD64",
+  "savedWorkAndClosedAppsConfirmed": true,
+  "preconditions": {
+    "test7All46FilesVerified": true,
+    "test6RetainedPackageVerified": true,
+    "sameInteractiveUser": true,
+    "sessionMatches": true,
+    "administratorVerified": true,
+    "matchingProductProcessesObserved": [],
+    "exclusiveOpenSuccessCount": 22,
+    "fileOpenScope": "point-in-time only; no future occupancy guarantee"
+  },
+  "uac": {
+    "attempts": 1,
+    "elevatedChildStarted": true,
+    "exitCode": 1
+  },
+  "stop": {
+    "stage": "maintenance-executor-startup",
+    "exitCode": 1,
+    "staticDiagnosis": "Embedded Python isolated ._pth omits this task tools directory; snapshot is not discoverable. maintain.py imports snapshot before its try/finally and log initialization.",
+    "rootCauseAttribution": "executor preparation, not a package, file-occupancy or Windows security failure",
+    "inferenceLimit": "Elevated child stderr was not captured. Diagnosis is based on inspected code, interpreter configuration and missing stage records, not a preserved traceback.",
+    "retryPerformed": false
+  },
+  "maintenanceExecution": {
+    "uninstallStageStarted": false,
+    "installStageStarted": false,
+    "setupExitCode": null,
+    "setupStageLogsGenerated": false,
+    "maintenanceResultGenerated": false,
+    "basis": "Executor imports precede all Setup invocations; no stage-start or Setup log records exist.",
+    "launcherFieldCaveat": "installerExecuted=false in the launch/gate records is an initializer, not independent runtime proof."
+  },
+  "currentInstallation": {
+    "version": "0.1.0-18u-test.6",
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "descriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "verifiedMembers": 15,
+    "descriptorAlsoVerified": true,
+    "markerMatches": true,
+    "scope": "descriptor-listed payload only; maintenance resources and extra files not certified",
+    "maintenanceListedMembersVerified": 16
+  },
+  "currentRegistration": {
+    "comPathMatches": true,
+    "profileRegistryKeyPresent": true,
+    "scope": "registry-only; no active TIP or executable queried"
+  },
+  "postStopObservation": {
+    "snapshotCollected": true,
+    "recordedAtUTC": "2026-11-03T13:54:28.658231+00:00",
+    "wrapperStatus": "stopped",
+    "wrapperError": "Missing this continuation host-before.json during comparison; no retry.",
+    "currentKnownPathsMatchPriorExclusiveR2": true,
+    "currentSelectedRegistryMatchPriorExclusiveR2": true,
+    "scope": "Comparisons use the previous exclusive-check-r2 snapshot, not a fresh current-task or elevated-user before snapshot. Do not claim full same-user before/after installation protection evidence."
+  },
+  "actions": {
+    "automaticRetry": false,
+    "processesTerminated": false,
+    "securitySettingsChanged": false,
+    "rebootPerformed": false,
+    "inputTestPerformed": false
+  },
+  "disposition": {
+    "test7Installed": false,
+    "followup": "Preserve failed executor and evidence. Review module-path initialization and complete logging before any separately arranged continuation; no automatic retry."
+  },
+  "additionalPreparationIssue": "An earlier shell quoting error occurred before preparation helper execution; corrected helper wrote scripts. No Setup or UAC was triggered by that preparation error.",
+  "privacy": {
+    "SIDOrAccountNamesDisclosed": false,
+    "rawLogsUploaded": false,
+    "rawSnapshotsUploaded": false
+  },
+  "priorRecordsPreserved": true
+}
