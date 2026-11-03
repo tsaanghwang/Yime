@@ -1,0 +1,17 @@
+{
+  "schema_version": "yimecore-trial-runtime-v1",
+  "state": "running",
+  "updated_at": "2026-11-03T14:48:47.7889193Z",
+  "runtime_pid": 19916,
+  "broker_pid": 21076,
+  "toolbar_pid": 7952,
+  "toolbar_state": "running",
+  "install_root": "C:\\Program Files\\YimeCore",
+  "broker_path": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+  "state_root": "C:\\Users\\tsaan\\AppData\\Local\\YimeCore Experimental Trial",
+  "pipe_name": "\\\\.\\pipe\\YimeBroker.YimeCoreTrial.v1",
+  "restarts": 0,
+  "index_root": "C:\\Program Files\\YimeCore\\indexes",
+  "data_dir": "C:\\Program Files\\YimeCore\\data",
+  "index_version": "installed-v1"
+}

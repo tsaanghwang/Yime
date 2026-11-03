@@ -1,0 +1,36 @@
+{
+  "schema": "yime-rime-registration-observation-context-v1",
+  "capturedAtUTC": "2026-11-03T14:55:16.808683+00:00",
+  "context": "ordinary-host",
+  "observerTokenElevated": false,
+  "productSourceCommit": "6c1c01220b77406cfa5a90df111ea914882fa372",
+  "readOnly": true,
+  "registrationMutated": false,
+  "profileActivated": false,
+  "probeResults": [
+    {
+      "architecture": "x86",
+      "command": [
+        "C:\\Program Files\\Yime Rime-PIME\\x86\\PIMERegistrationStatus.exe",
+        "verify-present"
+      ],
+      "exitCode": 0,
+      "probeSHA256": "32eebffe58780ecf375549c708d2c5e78dd599521d6b0fba789d18de7017e8b7",
+      "matchesFinalPackage": true,
+      "stdoutFile": "ordinary-host-x86.stdout.txt",
+      "stderrFile": "ordinary-host-x86.stderr.txt"
+    },
+    {
+      "architecture": "arm64",
+      "command": [
+        "C:\\Program Files\\Yime Rime-PIME\\arm64\\PIMERegistrationStatus.exe",
+        "verify-present"
+      ],
+      "exitCode": 0,
+      "probeSHA256": "92face5fd7675372c7035d99ba84f5d2bcc4088889d67ce914eb03ab01b9136f",
+      "matchesFinalPackage": true,
+      "stdoutFile": "ordinary-host-arm64.stdout.txt",
+      "stderrFile": "ordinary-host-arm64.stderr.txt"
+    }
+  ]
+}

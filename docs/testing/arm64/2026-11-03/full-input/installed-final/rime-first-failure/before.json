@@ -1,0 +1,577 @@
+{
+  "schema": "yime-installed-protection-snapshot-v1",
+  "observedUtc": "2026-11-03T14:50:45.9112847Z",
+  "computer": "HUASHUONOTEBOOK",
+  "defaultInputOverride": "",
+  "products": [
+    {
+      "id": "yimecore",
+      "root": "C:\\Program Files\\YimeCore",
+      "exists": true,
+      "version": "0.1.0-local.13-main64a785a7-arm64-maint.1",
+      "payload": [
+        {
+          "path": "local-product.json",
+          "exists": true,
+          "sha256": "185616a39a341955157f705e5ff86b336bc619b958cb38b2788ffb0d1a14e796",
+          "expected": "185616a39a341955157f705e5ff86b336bc619b958cb38b2788ffb0d1a14e796",
+          "match": true
+        },
+        {
+          "path": "package-manifest.json",
+          "exists": true,
+          "sha256": "7e307cc974f94e79f0c10787409ec589dbdd030dca06308cb68870c1ac9fdc26",
+          "expected": "7e307cc974f94e79f0c10787409ec589dbdd030dca06308cb68870c1ac9fdc26",
+          "match": true
+        },
+        {
+          "path": "profile-icon.ico",
+          "exists": true,
+          "sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+          "expected": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+          "match": true
+        },
+        {
+          "path": "speech-capability.json",
+          "exists": true,
+          "sha256": "7c7ec05a237d371c92d8659d431d9b8dfd74418f1c9a484936645ad214ddc7f7",
+          "expected": "7c7ec05a237d371c92d8659d431d9b8dfd74418f1c9a484936645ad214ddc7f7",
+          "match": true
+        },
+        {
+          "path": "x86/YimeRegisteredHostTests.exe",
+          "exists": true,
+          "sha256": "ee26a038f789e3eae38a34beaa595ed667f18d79eb201f5d5b45b1404d1d5aba",
+          "expected": "ee26a038f789e3eae38a34beaa595ed667f18d79eb201f5d5b45b1404d1d5aba",
+          "match": true
+        },
+        {
+          "path": "x86/YimeTextServiceExperiment.dll",
+          "exists": true,
+          "sha256": "50f6f98275340ca6eba98b128f257e76158f3f09c11b3beb1391791c5ea3fa9c",
+          "expected": "50f6f98275340ca6eba98b128f257e76158f3f09c11b3beb1391791c5ea3fa9c",
+          "match": true
+        },
+        {
+          "path": "x86/YimeTextServiceRegistration.exe",
+          "exists": true,
+          "sha256": "b7949aae8965a45a401975b7e52cab898b9fea0364b975d85107975e610983ca",
+          "expected": "b7949aae8965a45a401975b7e52cab898b9fea0364b975d85107975e610983ca",
+          "match": true
+        },
+        {
+          "path": "speech/admission.json",
+          "exists": true,
+          "sha256": "cd8f510bf4122ab48d6c260c62c2d53363121d59488395fcc1366a1df62c914c",
+          "expected": "cd8f510bf4122ab48d6c260c62c2d53363121d59488395fcc1366a1df62c914c",
+          "match": true
+        },
+        {
+          "path": "speech/admitted-records.json",
+          "exists": true,
+          "sha256": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d",
+          "expected": "7efe7e715b534cbeafc1c58299136a057ec4f86398b3282541a953b6cbf8275d",
+          "match": true
+        },
+        {
+          "path": "speech/forward-source.json",
+          "exists": true,
+          "sha256": "73e2ec162b0bc3a114a5a9de902b14b68c505d736502d2940d6e29297ace56c2",
+          "expected": "73e2ec162b0bc3a114a5a9de902b14b68c505d736502d2940d6e29297ace56c2",
+          "match": true
+        },
+        {
+          "path": "speech/product.json",
+          "exists": true,
+          "sha256": "9d56bbac5342a565913ca54b372263d5bb71d767079ee6b9dbd195eb6f4b7f2b",
+          "expected": "9d56bbac5342a565913ca54b372263d5bb71d767079ee6b9dbd195eb6f4b7f2b",
+          "match": true
+        },
+        {
+          "path": "speech/indexes/full-core.yidx",
+          "exists": true,
+          "sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+          "expected": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+          "match": true
+        },
+        {
+          "path": "speech/indexes/full-stage5c.yidx",
+          "exists": true,
+          "sha256": "470ef8e58a0f61bde3e7437097b1c480be4962d3e9a4680984567d53e3a427b9",
+          "expected": "470ef8e58a0f61bde3e7437097b1c480be4962d3e9a4680984567d53e3a427b9",
+          "match": true
+        },
+        {
+          "path": "speech/indexes/shorthand-core.yidx",
+          "exists": true,
+          "sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+          "expected": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+          "match": true
+        },
+        {
+          "path": "speech/indexes/shorthand-stage5c.yidx",
+          "exists": true,
+          "sha256": "15929d0e62a882a4ce640b50d19e6a8af5ad5d1840b0f89e0e8a95ec0d8bc764",
+          "expected": "15929d0e62a882a4ce640b50d19e6a8af5ad5d1840b0f89e0e8a95ec0d8bc764",
+          "match": true
+        },
+        {
+          "path": "speech/indexes/variable-core.yidx",
+          "exists": true,
+          "sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+          "expected": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+          "match": true
+        },
+        {
+          "path": "speech/indexes/variable-stage5c.yidx",
+          "exists": true,
+          "sha256": "dd27f391102382a2ec2a5313d3cc7eaebb7ff6bd671e73623857ddb04ddc6371",
+          "expected": "dd27f391102382a2ec2a5313d3cc7eaebb7ff6bd671e73623857ddb04ddc6371",
+          "match": true
+        },
+        {
+          "path": "professional-lexicons/catalog.json",
+          "exists": true,
+          "sha256": "81fb1d223b5dca05cd968fd4c117dbc0cee83865e2088d545fdb1fdcd03b3c2e",
+          "expected": "81fb1d223b5dca05cd968fd4c117dbc0cee83865e2088d545fdb1fdcd03b3c2e",
+          "match": true
+        },
+        {
+          "path": "indexes/full.yidx",
+          "exists": true,
+          "sha256": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+          "expected": "81a27bfb8fda165d0f753e4a83313272433e10533ca602ce18a414629b81ffb1",
+          "match": true
+        },
+        {
+          "path": "indexes/shorthand.yidx",
+          "exists": true,
+          "sha256": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+          "expected": "b735b96bbf72f6195274d0d16078f1d1ad6043b9248f302e31e2ce2db59045ec",
+          "match": true
+        },
+        {
+          "path": "indexes/variable.yidx",
+          "exists": true,
+          "sha256": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+          "expected": "159a873c85d6784740568100b2af1fa0be1b8101d82402d95609050011d6aada",
+          "match": true
+        },
+        {
+          "path": "help/diagnostics.html",
+          "exists": true,
+          "sha256": "1d7c33f93d70b8f2f9c04dff80b1d4eb4a0244576327664843b5477873759afd",
+          "expected": "1d7c33f93d70b8f2f9c04dff80b1d4eb4a0244576327664843b5477873759afd",
+          "match": true
+        },
+        {
+          "path": "help/README.html",
+          "exists": true,
+          "sha256": "9481a48b12a6d26af7bd42adaff2cda533f4a4107b249441866522e59eb9e5a2",
+          "expected": "9481a48b12a6d26af7bd42adaff2cda533f4a4107b249441866522e59eb9e5a2",
+          "match": true
+        },
+        {
+          "path": "help/settings-and-data.html",
+          "exists": true,
+          "sha256": "511fe388c648e4ecd878a37f14b27e9afb1e3e80ddcc7b83fc3cb6f78362b130",
+          "expected": "511fe388c648e4ecd878a37f14b27e9afb1e3e80ddcc7b83fc3cb6f78362b130",
+          "match": true
+        },
+        {
+          "path": "help/trial-feedback.html",
+          "exists": true,
+          "sha256": "0147684c7c812a5b677db12c8a8c1042618b845867f8357cb123c1a3903ccd40",
+          "expected": "0147684c7c812a5b677db12c8a8c1042618b845867f8357cb123c1a3903ccd40",
+          "match": true
+        },
+        {
+          "path": "data/dynamic_sentence_cases.json",
+          "exists": true,
+          "sha256": "8193a4096f4af139ce64b6f853ec4f33952f366e282fd365bb8ac3be5b524412",
+          "expected": "8193a4096f4af139ce64b6f853ec4f33952f366e282fd365bb8ac3be5b524412",
+          "match": true
+        },
+        {
+          "path": "data/pinyin_normalized.json",
+          "exists": true,
+          "sha256": "01bb8e95f124b42c3b1187cfe3872940ab73ebf83a6fe4bebfeac4139bc38422",
+          "expected": "01bb8e95f124b42c3b1187cfe3872940ab73ebf83a6fe4bebfeac4139bc38422",
+          "match": true
+        },
+        {
+          "path": "data/yime_core_source_manifest.json",
+          "exists": true,
+          "sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97",
+          "expected": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97",
+          "match": true
+        },
+        {
+          "path": "data/yime_full.dict.yaml",
+          "exists": true,
+          "sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+          "expected": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f",
+          "match": true
+        },
+        {
+          "path": "data/yime_full.schema.yaml",
+          "exists": true,
+          "sha256": "5889514c808199a00c1c1618a4f940c71acd1e69eb8dc9592788e67a346114c0",
+          "expected": "5889514c808199a00c1c1618a4f940c71acd1e69eb8dc9592788e67a346114c0",
+          "match": true
+        },
+        {
+          "path": "data/yime_lexicon_manifest.json",
+          "exists": true,
+          "sha256": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8",
+          "expected": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8",
+          "match": true
+        },
+        {
+          "path": "data/yime_pinyin_codes.tsv",
+          "exists": true,
+          "sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+          "expected": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+          "match": true
+        },
+        {
+          "path": "data/yime_pua_pinyin.json",
+          "exists": true,
+          "sha256": "c60f4acc864e2c699eefcf796feaf855e2c19770191d8417fb7d51d17ceb3699",
+          "expected": "c60f4acc864e2c699eefcf796feaf855e2c19770191d8417fb7d51d17ceb3699",
+          "match": true
+        },
+        {
+          "path": "data/yime_shorthand.dict.yaml",
+          "exists": true,
+          "sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+          "expected": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c",
+          "match": true
+        },
+        {
+          "path": "data/yime_shorthand.schema.yaml",
+          "exists": true,
+          "sha256": "d3b2fb6b39e958f30a0479de411ea65c6b4578b2548da106d1b23fda89910eaf",
+          "expected": "d3b2fb6b39e958f30a0479de411ea65c6b4578b2548da106d1b23fda89910eaf",
+          "match": true
+        },
+        {
+          "path": "data/yime_syllable_decomposition.tsv",
+          "exists": true,
+          "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+          "expected": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+          "match": true
+        },
+        {
+          "path": "data/yime_variable.dict.yaml",
+          "exists": true,
+          "sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+          "expected": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b",
+          "match": true
+        },
+        {
+          "path": "data/yime_variable.schema.yaml",
+          "exists": true,
+          "sha256": "2a0d05769a3aee860ed14b503a24d295749f3f788cecf2fd792018094cd0f330",
+          "expected": "2a0d05769a3aee860ed14b503a24d295749f3f788cecf2fd792018094cd0f330",
+          "match": true
+        },
+        {
+          "path": "data/yime_yinyuan_layout.json",
+          "exists": true,
+          "sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+          "expected": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+          "match": true
+        },
+        {
+          "path": "data/trainer/curriculum.json",
+          "exists": true,
+          "sha256": "6b57e56d91686fdf244b9df273477b73c53f19558fa4c40fc164b01bbec1ca51",
+          "expected": "6b57e56d91686fdf244b9df273477b73c53f19558fa4c40fc164b01bbec1ca51",
+          "match": true
+        },
+        {
+          "path": "data/trainer/foundation.json",
+          "exists": true,
+          "sha256": "94c110348e6c6eb081b1b24707d3024d8bf199dbde6f7f5ff484176a5b581555",
+          "expected": "94c110348e6c6eb081b1b24707d3024d8bf199dbde6f7f5ff484176a5b581555",
+          "match": true
+        },
+        {
+          "path": "data/trainer/yinyuan_catalog.json",
+          "exists": true,
+          "sha256": "adcbbca053785bf189c6ca834aef27fadb9c4ccf3a55c0acfeb352a5743ea5c3",
+          "expected": "adcbbca053785bf189c6ca834aef27fadb9c4ccf3a55c0acfeb352a5743ea5c3",
+          "match": true
+        },
+        {
+          "path": "data/trainer/yinyuan_groups.json",
+          "exists": true,
+          "sha256": "0821ce4e8da0149af75ae8e78e0ed579d15f3c04039f1de3acf5c3e717f8ab0c",
+          "expected": "0821ce4e8da0149af75ae8e78e0ed579d15f3c04039f1de3acf5c3e717f8ab0c",
+          "match": true
+        },
+        {
+          "path": "data/fonts/YinYuan-Regular.ttf",
+          "exists": true,
+          "sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d",
+          "expected": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d",
+          "match": true
+        },
+        {
+          "path": "build/build-inputs.json",
+          "exists": true,
+          "sha256": "837c5481d4f44f19314884e2f1412edef800b04d0ad0c9a126419b2d8fa9b942",
+          "expected": "837c5481d4f44f19314884e2f1412edef800b04d0ad0c9a126419b2d8fa9b942",
+          "match": true
+        },
+        {
+          "path": "build/go-runtime-dependencies.txt",
+          "exists": true,
+          "sha256": "2deefbc03328bbd9e2ff2429dcb05ed13323c4835f1158dc6b2083cdc5fa712e",
+          "expected": "2deefbc03328bbd9e2ff2429dcb05ed13323c4835f1158dc6b2083cdc5fa712e",
+          "match": true
+        },
+        {
+          "path": "build/source-manifest.json",
+          "exists": true,
+          "sha256": "0d3bbd30fc4b7ba653f35166685b945c4417017d99f381b2052b0d7ac3de4faf",
+          "expected": "0d3bbd30fc4b7ba653f35166685b945c4417017d99f381b2052b0d7ac3de4faf",
+          "match": true
+        },
+        {
+          "path": "bin/YimeBroker.exe",
+          "exists": true,
+          "sha256": "8c92ad4c6eb6b69fcf99d93519c4d4804290cd89a28d4a4b961944ad90e09504",
+          "expected": "8c92ad4c6eb6b69fcf99d93519c4d4804290cd89a28d4a4b961944ad90e09504",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreBlocklistManager.exe",
+          "exists": true,
+          "sha256": "9ecf802865c2a1104902bb4abd3f49d4f8702c602c9a57db5658a1a44c624349",
+          "expected": "9ecf802865c2a1104902bb4abd3f49d4f8702c602c9a57db5658a1a44c624349",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreDiagnostics.exe",
+          "exists": true,
+          "sha256": "8b36847224ee48dff0d1feb57a24ca6f81546e474e8c77f6e51f8b5940c7e0e6",
+          "expected": "8b36847224ee48dff0d1feb57a24ca6f81546e474e8c77f6e51f8b5940c7e0e6",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreExplain.exe",
+          "exists": true,
+          "sha256": "021cd26a840774db9f1bdde8401ea8e47e0e56ab55559809276d67f9797a44e9",
+          "expected": "021cd26a840774db9f1bdde8401ea8e47e0e56ab55559809276d67f9797a44e9",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreIndependenceAudit.exe",
+          "exists": true,
+          "sha256": "40c617b1437036807e636cc730216d689d54775e70be1efbfb6f24603ff6c1b5",
+          "expected": "40c617b1437036807e636cc730216d689d54775e70be1efbfb6f24603ff6c1b5",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreInputToolbar.exe",
+          "exists": true,
+          "sha256": "76ff96eea1a492f91082ff3e6f6c37a1b3c38e1f8d6c11faaa87e2cb5da1d97e",
+          "expected": "76ff96eea1a492f91082ff3e6f6c37a1b3c38e1f8d6c11faaa87e2cb5da1d97e",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreLayoutDesigner.exe",
+          "exists": true,
+          "sha256": "24f790851e5aebc07d0856b72fc9c631fff0140ab43ea71bafc57fd23d4c67e2",
+          "expected": "24f790851e5aebc07d0856b72fc9c631fff0140ab43ea71bafc57fd23d4c67e2",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreLearningManager.exe",
+          "exists": true,
+          "sha256": "41f2c3d941d048b1e5bbffeccbaddfc177e0f8c4696001bc9347106d5e8a6b44",
+          "expected": "41f2c3d941d048b1e5bbffeccbaddfc177e0f8c4696001bc9347106d5e8a6b44",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreLexiconCenter.exe",
+          "exists": true,
+          "sha256": "dca348a752f7c42d582a76d9c787276ca6fc8f779e48eaa14c2cfec99546f331",
+          "expected": "dca348a752f7c42d582a76d9c787276ca6fc8f779e48eaa14c2cfec99546f331",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreLexiconManager.exe",
+          "exists": true,
+          "sha256": "63f89a738a454c2a81fa5bb7b9aeb5e6f6a5a98d4b6ac72922055420d52e291a",
+          "expected": "63f89a738a454c2a81fa5bb7b9aeb5e6f6a5a98d4b6ac72922055420d52e291a",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreProfessionalLexicon.exe",
+          "exists": true,
+          "sha256": "7013b69cfa656e7c81fb82416b582e4f0d0c1a5a10b210c4946a1cce9212649d",
+          "expected": "7013b69cfa656e7c81fb82416b582e4f0d0c1a5a10b210c4946a1cce9212649d",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCorePromotionScan.exe",
+          "exists": true,
+          "sha256": "51f2ab246906d6e3b5c40b55aeac4f76deda359f5f38173a3ff39a4b3f6772d3",
+          "expected": "51f2ab246906d6e3b5c40b55aeac4f76deda359f5f38173a3ff39a4b3f6772d3",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreReverseLookup.exe",
+          "exists": true,
+          "sha256": "36a60ee929f4afcee50ac7f62c858ab7150e24662872a7959b37e3c002083e66",
+          "expected": "36a60ee929f4afcee50ac7f62c858ab7150e24662872a7959b37e3c002083e66",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreSentenceRegression.exe",
+          "exists": true,
+          "sha256": "330f9d679ab950abdc2bda818dd70454620501cdad42680d748b5dcde44ab1bb",
+          "expected": "330f9d679ab950abdc2bda818dd70454620501cdad42680d748b5dcde44ab1bb",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreSettingsTool.exe",
+          "exists": true,
+          "sha256": "b7a2b3857b12b1bae69b852cc024950a4eee52e1fe82ce22a09667c3bb266bb3",
+          "expected": "b7a2b3857b12b1bae69b852cc024950a4eee52e1fe82ce22a09667c3bb266bb3",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreSystemLexiconAudit.exe",
+          "exists": true,
+          "sha256": "a7f16395ca00bf9f2515cd4164f979a17a9bc9ac427bea90a9372fa88a3260be",
+          "expected": "a7f16395ca00bf9f2515cd4164f979a17a9bc9ac427bea90a9372fa88a3260be",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreToolCenter.exe",
+          "exists": true,
+          "sha256": "dca348a752f7c42d582a76d9c787276ca6fc8f779e48eaa14c2cfec99546f331",
+          "expected": "dca348a752f7c42d582a76d9c787276ca6fc8f779e48eaa14c2cfec99546f331",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreTrainer.exe",
+          "exists": true,
+          "sha256": "3340740b814dccb5b01787762a34c5f6843d1a6c04ea3ac09e8caef8eced1839",
+          "expected": "3340740b814dccb5b01787762a34c5f6843d1a6c04ea3ac09e8caef8eced1839",
+          "match": true
+        },
+        {
+          "path": "bin/YimeCoreTrialRuntime.exe",
+          "exists": true,
+          "sha256": "001932262b9a8de28a68040dbef27655648d6ad370cbe5a5d60d0e345d4a89b7",
+          "expected": "001932262b9a8de28a68040dbef27655648d6ad370cbe5a5d60d0e345d4a89b7",
+          "match": true
+        },
+        {
+          "path": "arm64/YimeRegisteredHostTests.exe",
+          "exists": true,
+          "sha256": "fe92b9218a6c4e33397075955ef59282936745a76f91e53422cbe28e53d304fa",
+          "expected": "fe92b9218a6c4e33397075955ef59282936745a76f91e53422cbe28e53d304fa",
+          "match": true
+        },
+        {
+          "path": "arm64/YimeTextServiceExperiment.dll",
+          "exists": true,
+          "sha256": "df20d0a567d19eec99488bbd733c7f97dfb164a2e5ddae69a64788c14dce5e65",
+          "expected": "df20d0a567d19eec99488bbd733c7f97dfb164a2e5ddae69a64788c14dce5e65",
+          "match": true
+        },
+        {
+          "path": "arm64/YimeTextServiceRegistration.exe",
+          "exists": true,
+          "sha256": "7070c9dfde6eafb13fd471d3c6d31c8360ffd7d38c0858f760c4aaa51382d281",
+          "expected": "7070c9dfde6eafb13fd471d3c6d31c8360ffd7d38c0858f760c4aaa51382d281",
+          "match": true
+        }
+      ],
+      "registrations": [
+        {
+          "view": "Registry64",
+          "path": "C:\\Program Files\\YimeCore\\arm64\\YimeTextServiceExperiment.dll"
+        },
+        {
+          "view": "Registry32",
+          "path": "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll"
+        }
+      ],
+      "startup": {
+        "result": 0,
+        "value": "\"C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe\" -install-root \"C:\\Program Files\\YimeCore\" -state-root \"C:\\Users\\tsaan\\AppData\\Local\\YimeCore Experimental Trial\""
+      },
+      "processes": [
+        {
+          "pid": 21076,
+          "path": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+          "startUtc": "2026-11-03T14:48:47.7773089Z",
+          "elevated": false
+        },
+        {
+          "pid": 7952,
+          "path": "C:\\Program Files\\YimeCore\\bin\\YimeCoreInputToolbar.exe",
+          "startUtc": "2026-11-03T14:48:47.6944195Z",
+          "elevated": false
+        },
+        {
+          "pid": 19916,
+          "path": "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+          "startUtc": "2026-11-03T14:48:46.5930364Z",
+          "elevated": false
+        }
+      ]
+    },
+    {
+      "id": "rime-pime",
+      "root": "C:\\Program Files\\Yime Rime-PIME",
+      "exists": false,
+      "version": null,
+      "payload": [],
+      "registrations": [
+        {
+          "view": "Registry64",
+          "path": null
+        },
+        {
+          "view": "Registry32",
+          "path": null
+        }
+      ],
+      "startup": {
+        "result": 2,
+        "value": null
+      },
+      "processes": []
+    },
+    {
+      "id": "yimecore-18u",
+      "root": "C:\\Program Files\\YimeCore 18u Touch",
+      "exists": false,
+      "version": null,
+      "payload": [],
+      "registrations": [
+        {
+          "view": "Registry64",
+          "path": null
+        },
+        {
+          "view": "Registry32",
+          "path": null
+        }
+      ],
+      "startup": {
+        "result": 2,
+        "value": null
+      },
+      "processes": []
+    }
+  ]
+}

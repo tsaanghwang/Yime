@@ -1,0 +1,11 @@
+{
+  "source": "6c1c01220b77406cfa5a90df111ea914882fa372",
+  "product": "rime",
+  "package": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\rime-final-6c1c0122\\package",
+  "archiveSHA256": "5f01d3e55f24e88075550eea584546319a50c88c6a89aaa0486173d9cd8c3185",
+  "deliveryURL": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-complete-6c1c0122-20261103",
+  "startedUTC": "2026-11-03T14:50:46.070523+00:00",
+  "completedUTC": "2026-11-03T14:51:33.943660+00:00",
+  "exitCode": 1,
+  "resetData": false
+}

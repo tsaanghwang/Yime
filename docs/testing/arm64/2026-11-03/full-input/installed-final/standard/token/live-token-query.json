@@ -1,0 +1,23 @@
+[
+  {
+    "role": "runtime_pid",
+    "pid": 19916,
+    "image": "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+    "elevated": false,
+    "integrity_rid": 8192
+  },
+  {
+    "role": "broker_pid",
+    "pid": 21076,
+    "image": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+    "elevated": false,
+    "integrity_rid": 8192
+  },
+  {
+    "role": "toolbar_pid",
+    "pid": 7952,
+    "image": "C:\\Program Files\\YimeCore\\bin\\YimeCoreInputToolbar.exe",
+    "elevated": false,
+    "integrity_rid": 8192
+  }
+]

@@ -1,0 +1,100 @@
+{
+  "schema": "standard-maint1-installed-validation-v1",
+  "installerSourceCommit": "6c1c01220b77406cfa5a90df111ea914882fa372",
+  "runtimeSourceCommit": "64a785a7ede5fb2a53e2560b873075950160668b",
+  "packageManifestSHA256": "edb9f35fa878732bbd693052fedb93facd50987ad62a80354486046988a876a9",
+  "passed": true,
+  "liveRuntimeBrokerToolbarMedium": true,
+  "liveProcesses": [
+    {
+      "role": "runtime_pid",
+      "pid": 19916,
+      "image": "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+      "elevated": false,
+      "integrity_rid": 8192
+    },
+    {
+      "role": "broker_pid",
+      "pid": 21076,
+      "image": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+      "elevated": false,
+      "integrity_rid": 8192
+    },
+    {
+      "role": "toolbar_pid",
+      "pid": 7952,
+      "image": "C:\\Program Files\\YimeCore\\bin\\YimeCoreInputToolbar.exe",
+      "elevated": false,
+      "integrity_rid": 8192
+    }
+  ],
+  "registeredHostRuns": 1,
+  "architecture": "arm64",
+  "mode": "full",
+  "otherProductsAndDefaultPreserved": true,
+  "ownedPrivateBrokerStopped": true,
+  "allNineSamePayloadRunsPreviouslyPassed": true,
+  "scope": "Token check queries actual live image paths and Windows tokens for the current diagnostic PIDs. One registered-host run loads the installed standard ARM64 DLL, uses fresh synthetic settings and a private installed Broker with the installed full index. It verifies COM/69 payload hashes before activation and compares default/other-product snapshots. No installer or registrar runs in this check; no existing process is stopped or document closed.",
+  "notClaimed": [
+    "Live document acceptance",
+    "Physical input acceptance",
+    "Reboot or daily-use acceptance"
+  ],
+  "fixturesRetainedLocally": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\standard-maint1-6c1c0122-host\\full\\fixture-arm64",
+  "scriptSHA256": {
+    "standard_registered_host_once.ps1": "78af3a32a8ea7c3667c360d2017c61d17dbd3100e6728fb21aeaae97e9dc255a",
+    "inspect-standard-live-token.py": "bf09cf30fb46ca30c2147c7adadee48a0c4205ba13975c807fe6755d186704d4"
+  },
+  "files": [
+    {
+      "path": "token/live-status.json",
+      "bytes": 654,
+      "sha256": "81e29825e37a160a656b661af9f3a7a7049615d89e3c9daaa20f61ad4fc609cb"
+    },
+    {
+      "path": "token/live-token-query.json",
+      "bytes": 546,
+      "sha256": "d26af315cbf339abc50e928dd287097b491954ced064ee80126f5fd7ec14cd5d"
+    },
+    {
+      "path": "targeted-host/summary.json",
+      "bytes": 1310,
+      "sha256": "87db0b4934e884933b43cbd5dd379f4c9dd0c22ee0cd4c11fad6879d4cee5562"
+    },
+    {
+      "path": "targeted-host/inputs.json",
+      "bytes": 634,
+      "sha256": "e8bc5dca0ae23f59472dd461519a0307dc0b658b8902896366bbbe3d0cca567f"
+    },
+    {
+      "path": "targeted-host/protection-before.json",
+      "bytes": 2196,
+      "sha256": "4d5b2d93055bac379a715ee6b0ef79cb66394e5777eaa6e5a6a10ab12016fa3c"
+    },
+    {
+      "path": "targeted-host/protection-after.json",
+      "bytes": 2196,
+      "sha256": "4d5b2d93055bac379a715ee6b0ef79cb66394e5777eaa6e5a6a10ab12016fa3c"
+    },
+    {
+      "path": "targeted-host/full/broker-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "targeted-host/full/broker-out.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "targeted-host/full/host-arm64-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "targeted-host/full/host-arm64.txt",
+      "bytes": 1294,
+      "sha256": "ac4199941e674d5ac58b307c88c8d77c987ee0ea08f33dbd0d35b051addfe4f8"
+    }
+  ]
+}

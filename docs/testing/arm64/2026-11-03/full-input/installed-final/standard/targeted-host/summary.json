@@ -1,0 +1,33 @@
+{
+  "schema": "standard-arm64-maint1-targeted-host-v1",
+  "passed": true,
+  "failure": null,
+  "runs": [
+    {
+      "mode": "full",
+      "architecture": "arm64",
+      "executable": "C:\\Program Files\\YimeCore\\arm64\\YimeRegisteredHostTests.exe",
+      "sha256": "fe92b9218a6c4e33397075955ef59282936745a76f91e53422cbe28e53d304fa",
+      "fixture": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\standard-maint1-6c1c0122-host\\full\\fixture-arm64",
+      "passed": true,
+      "exit_code": 0
+    }
+  ],
+  "owned_private_brokers": [
+    {
+      "mode": "full",
+      "pid": 3256,
+      "image": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+      "started": "2026-11-03T14:50:04.0764867Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.StandardRegistered.df126158dabd45e685b3c60bb8e2b6f8",
+      "stopped": true
+    }
+  ],
+  "other_products_and_default_preserved": true,
+  "installer_executed": false,
+  "registration_executed": false,
+  "registered_host_executed": true,
+  "live_document_acceptance": false,
+  "physical_acceptance": false,
+  "scope": "Installed current standard DLLs, fresh owned TSF hosts, one installed full index and a private in-memory Broker. No existing process stopped, document app closed, default input set, live user state read or test state merged."
+}

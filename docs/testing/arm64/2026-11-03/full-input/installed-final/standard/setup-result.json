@@ -1,0 +1,11 @@
+{
+  "source": "6c1c01220b77406cfa5a90df111ea914882fa372",
+  "product": "standard",
+  "package": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\standard-arm64-final-6c1c0122\\package",
+  "archiveSHA256": "a1f6aa2eee5c0f3fd473de81a2218b02557c2b7445a91e47e9d254ac7beb8c6f",
+  "deliveryURL": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-complete-6c1c0122-20261103",
+  "startedUTC": "2026-11-03T14:48:29.619227+00:00",
+  "completedUTC": "2026-11-03T14:48:47.611719+00:00",
+  "exitCode": 0,
+  "resetData": false
+}

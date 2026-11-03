@@ -1,0 +1,28 @@
+**********************
+PowerShell 记录开始
+开始时间: 20261103224830
+用户名: HUASHUONOTEBOOK\tsaan
+RunAs 用户: HUASHUONOTEBOOK\tsaan
+配置名称: 
+计算机: HUASHUONOTEBOOK (Microsoft Windows NT 10.0.28000.0)
+主机应用程序: C:\Program Files\WindowsApps\Microsoft.PowerShell_7.6.9.0_arm64__8wekyb3d8bbwe\pwsh.dll -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\dev\Yime\.wt\armfull\tools\powershell\preflight.ps1
+进程 ID: 28932
+PSVersion: 7.6.9
+PSEdition: Core
+GitCommitId: 7.6.9
+OS: Microsoft Windows 10.0.28000
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\1bdda146ebc34c2fa8e0e0594528b000.user.log
+Action: Install; package: C:\dev\Yime\.wt\armfull\.generated\standard-arm64-final-6c1c0122\package
+Elevated setup log: C:\Users\tsaan\Yime Setup Logs\1bdda146ebc34c2fa8e0e0594528b000.admin.log
+Elevated setup exit code: 0
+Installed: YimeCore. Started by the original non-elevated user. Select it from the Windows input-method menu.
+**********************
+PowerShell 记录结束
+结束时间: 20261103224847
+**********************

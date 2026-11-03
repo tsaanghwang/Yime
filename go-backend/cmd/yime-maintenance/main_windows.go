@@ -458,8 +458,7 @@ func maintain(action, planPath, initiatingSID string, elevated bool) error {
 	systemRoot := filepath.Dir(systemDirectory)
 	// Explicit environment: no user module path, CLR startup hooks, package
 	// current directory or inherited executable search path enters elevation.
-	env := []string{"SystemRoot=" + systemRoot, "WINDIR=" + systemRoot, "ProgramFiles=" + programFiles, "USERPROFILE=" + profile, "LOCALAPPDATA=" + local, "APPDATA=" + roaming, "PATH=" + filepath.Join(systemRoot, "System32"), "TEMP=" + filepath.Join(systemRoot, "Temp"), "TMP=" + filepath.Join(systemRoot, "Temp")}
-	env = append(env, "PSModulePath="+filepath.Join(filepath.Dir(shellPath), "Modules")+";"+filepath.Join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "Modules"))
+	env := maintenanceEnvironment(systemRoot, programFiles, profile, local, roaming, shellPath)
 	request := map[string]any{"script": filepath.Join(stage, "Setup.ps1"), "command": nil, "check_only": false, "parameters": map[string]any{"Action": action, "Silent": true, "InitiatingSid": sid, "NativeMaintenanceRoot": stage, "NativeMaintenanceSHA256": selfHash, "NativeMaintenancePlanSHA256": expectedPlanSHA}}
 	input, err := json.Marshal(request)
 	if err != nil {
@@ -480,6 +479,20 @@ func maintain(action, planPath, initiatingSID string, elevated bool) error {
 		fmt.Println("Runtime was not started from the elevated process; the original non-administrator caller starts it after verification.")
 	}
 	return nil
+}
+
+func maintenanceEnvironment(systemRoot, programFiles, profile, local, roaming, shellPath string) []string {
+	// Without an explicit PATHEXT, PowerShell can initialize it as .CPL and
+	// reject an .exe in a pipeline as a document. All maintenance native
+	// commands use explicit .exe paths; never inherit user extension handlers.
+	return []string{
+		"SystemRoot=" + systemRoot, "WINDIR=" + systemRoot,
+		"ProgramFiles=" + programFiles, "USERPROFILE=" + profile,
+		"LOCALAPPDATA=" + local, "APPDATA=" + roaming,
+		"PATH=" + filepath.Join(systemRoot, "System32"), "PATHEXT=.EXE",
+		"TEMP=" + filepath.Join(systemRoot, "Temp"), "TMP=" + filepath.Join(systemRoot, "Temp"),
+		"PSModulePath=" + filepath.Join(filepath.Dir(shellPath), "Modules") + ";" + filepath.Join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "Modules"),
+	}
 }
 
 func syscallPathSystemDirectory() string {

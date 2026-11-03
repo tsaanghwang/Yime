@@ -1,0 +1,5 @@
+Setup log: C:\Users\tsaan\Yime Setup Logs\1bdda146ebc34c2fa8e0e0594528b000.user.log
+Action: Install; package: C:\dev\Yime\.wt\armfull\.generated\standard-arm64-final-6c1c0122\package
+Elevated setup log: C:\Users\tsaan\Yime Setup Logs\1bdda146ebc34c2fa8e0e0594528b000.admin.log
+Elevated setup exit code: 0
+Installed: YimeCore. Started by the original non-elevated user. Select it from the Windows input-method menu.

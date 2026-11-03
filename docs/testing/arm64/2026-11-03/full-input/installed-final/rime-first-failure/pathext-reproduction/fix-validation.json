@@ -1,0 +1,89 @@
+{
+  "schema": "native-maintenance-pathext-fix-v1",
+  "scope": "Only native helper environment construction and its Windows unit test changed. Setup, registration binaries, product payloads and installed products were not modified by this task.",
+  "rootCause": "Helper omitted PATHEXT from its explicit elevated environment. In protected-stage PowerShell 7.6.9 the observed variable becomes .CPL, so both ARM64 and x86 .exe paths are classified as documents and refused in the native output pipeline.",
+  "fix": "Set PATHEXT=.EXE in the fixed environment. Do not inherit user PATHEXT, PATH, PSModulePath or CLR hooks.",
+  "probeIdentity": {
+    "shell": "C:\\Program Files\\Yime Maintenance\\rime-pime\\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\\maintenance\\powershell\\pwsh.EXE",
+    "version": "7.6.9",
+    "architecture": "Arm64",
+    "privilege": "ordinary same-account process, outside tool sandbox",
+    "executables": [
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\SysWOW64\\cmd.exe"
+    ],
+    "command": "/d /c echo yime-native-exe-probe, piped through Out-Host",
+    "productOrRegistrationExecutableRun": false
+  },
+  "results": {
+    "absent": {
+      "cases": 2,
+      "observedPATHEXT": ".CPL",
+      "error": "CantActivateDocumentInPipeline"
+    },
+    "fixedEXE": {
+      "cases": 2,
+      "observedPATHEXT": ".EXE;.CPL",
+      "exitCode": 0
+    },
+    "fixedNativeList": {
+      "cases": 2,
+      "observedPATHEXT": ".COM;.EXE;.BAT;.CMD;.CPL",
+      "exitCode": 0
+    }
+  },
+  "regression": {
+    "command": "go test ./cmd/yime-maintenance",
+    "toolchain": "Go 1.25.14 windows/arm64",
+    "exitCode": 0,
+    "namedTests": 11,
+    "stdout": "ok  github.com/tsaanghwang/Yime/go-backend/cmd/yime-maintenance 1.494s",
+    "goVet": "PASS: go vet ./cmd/yime-maintenance",
+    "newTest": "TestMaintenanceEnvironmentKeepsExecutablePipelineAndIsolation",
+    "newTestBoundary": "Uses hostile parent PATHEXT/PATH/PSModulePath/DOTNET_STARTUP_HOOKS and verifies actual production environment builder provides .EXE and the fixed 11-entry allowlist."
+  },
+  "primarySource": "https://github.com/PowerShell/PowerShell/blob/v7.6.9/src/System.Management.Automation/engine/NativeCommandProcessor.cs#L1483",
+  "sourceExplanation": "IsExecutable checks the current PATHEXT list; non-executable classification in a pipeline throws CantActivateDocumentInPipeline before CreateProcess. The actual .CPL initialization was observed locally, not inferred from this method.",
+  "files": [
+    {
+      "path": "absent-arm64.log",
+      "bytes": 351,
+      "sha256": "704a59931b818704400551f3803921030482067c4897c1924e66f869aaee8c1f"
+    },
+    {
+      "path": "absent-x86.log",
+      "bytes": 351,
+      "sha256": "856f124540eb33262a6ff87a149b12c9c95334aac1d595a691d75475c6e55a24"
+    },
+    {
+      "path": "exe-only-arm64.log",
+      "bytes": 347,
+      "sha256": "f697f9c90ca4aff3534b7078384aee173990e56ae2c7469fbea05e326eec6337"
+    },
+    {
+      "path": "exe-only-x86.log",
+      "bytes": 347,
+      "sha256": "b55db679d10f5dd87e83896e0ac319dca7a75d075fdb8021e6a58d6edc2e4c01"
+    },
+    {
+      "path": "fixed-native-list-arm64.log",
+      "bytes": 362,
+      "sha256": "828daff022fd15d08732aa678f3f9fac6a28170c216ee9cfab0342162a421c16"
+    },
+    {
+      "path": "fixed-native-list-x86.log",
+      "bytes": 362,
+      "sha256": "5a0d17c1f6ad8319e86dc8db6a473aafc5db82f98bc83e21ffddd46ce175d917"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 3686,
+      "sha256": "b460331c437280a61af8a61234894b832b5a065f5ed99f133ca8abde758fca6c"
+    }
+  ],
+  "sourceSHA256": {
+    "go-backend/cmd/yime-maintenance/main_windows.go": "bebe00f36f21a82e027268521ef79b3fdec928f4f45ccd6c95e93d5ca6b84e1a",
+    "go-backend/cmd/yime-maintenance/staging_windows_test.go": "d72073589a37954d9ed62e1dfb79247fa6e1f31ce1c2747edd0fb5590a417b72"
+  },
+  "installationRetried": false
+}

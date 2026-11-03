@@ -1,0 +1,62 @@
+**********************
+PowerShell 记录开始
+开始时间: 20261103225124
+用户名: HUASHUONOTEBOOK\tsaan
+RunAs 用户: HUASHUONOTEBOOK\tsaan
+配置名称: 
+计算机: HUASHUONOTEBOOK (Microsoft Windows NT 10.0.28000.0)
+主机应用程序: C:\Program Files\Yime Maintenance\rime-pime\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\maintenance\powershell\pwsh.dll -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\Program Files\Yime Maintenance\rime-pime\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\maintenance\preflight.ps1
+进程 ID: 26100
+PSVersion: 7.6.9
+PSEdition: Core
+GitCommitId: 7.6.9
+OS: Microsoft Windows 10.0.28000
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\7f49612bcf8a4479a689a94f166ffbba.admin.log
+Action: Install; package: C:\Program Files\Yime Maintenance\rime-pime\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df
+PS>TerminatingError(): "无法在管道中间运行文档: C:\Program Files\Yime Rime-PIME\x86\PIMERegistrationStatus.exe。"
+>> TerminatingError(): "无法在管道中间运行文档: C:\Program Files\Yime Rime-PIME\x86\PIMERegistrationStatus.exe。"
+FAILED stage: write user startup and uninstall entry
+
+PSMessageDetails      : 
+Exception             : System.Management.Automation.RuntimeException: 无法在管道中间运行文档: C:\Program Files\Yime Rime-PIME\x86\PIMERegistrationStatus.exe。
+                           at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+                           at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)
+                           at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
+                           at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
+TargetObject          : C:\Program Files\Yime Rime-PIME\x86\PIMERegistrationStatus.exe
+CategoryInfo          : InvalidOperation: (C:\Program Files\Yi…istrationStatus.exe:String) [], RuntimeException
+FullyQualifiedErrorId : CantActivateDocumentInPipeline
+ErrorDetails          : 
+InvocationInfo        : System.Management.Automation.InvocationInfo
+ScriptStackTrace      : 位于 Run-Native，C:\Program Files\Yime Maintenance\rime-pime\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\Setup.ps1: 行 84
+                        位于 <ScriptBlock>，C:\Program Files\Yime Maintenance\rime-pime\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\Setup.ps1: 行 233
+                        位于 <ScriptBlock>，C:\Program Files\Yime Maintenance\rime-pime\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\maintenance\preflight.ps1: 行 68
+PipelineIterationInfo : {}
+Exception: System.Management.Automation.RuntimeException: 无法在管道中间运行文档: C:\Program Files\Yime Rime-PIME\x86\PIMERegistrationStatus.exe。
+   at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+   at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)
+   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
+   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
+Write-Error: C:\Program Files\Yime Maintenance\rime-pime\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\maintenance\preflight.ps1:68
+Line |
+  68 |      if ($request.script) { & $path @parameters }
+     |                             ~~~~~~~~~~~~~~~~~~~
+     | Setup stopped: 无法在管道中间运行文档: C:\Program Files\Yime Rime-PIME\x86\PIMERegistrationStatus.exe。 Log: C:\Users\tsaan\Yime Setup Logs\7f49612bcf8a4479a689a94f166ffbba.admin.log
+Write-Error: C:\Program Files\Yime Maintenance\rime-pime\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\maintenance\preflight.ps1:68
+Line |
+  68 |      if ($request.script) { & $path @parameters }
+     |                             ~~~~~~~~~~~~~~~~~~~
+     | Setup stopped: 无法在管道中间运行文档: C:\Program Files\Yime Rime-PIME\x86\PIMERegistrationStatus.exe。 Log:
+     | C:\Users\tsaan\Yime Setup Logs\7f49612bcf8a4479a689a94f166ffbba.admin.log
+
+Setup exit code: 1
+**********************
+PowerShell 记录结束
+结束时间: 20261103225133
+**********************

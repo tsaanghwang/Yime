@@ -6,8 +6,42 @@ import (
 	"encoding/binary"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
+
+func TestMaintenanceEnvironmentKeepsExecutablePipelineAndIsolation(t *testing.T) {
+	// Parent-supplied values must never replace the elevated allowlist.
+	t.Setenv("PATHEXT", ".CPL;.PS1;.UNTRUSTED")
+	t.Setenv("PATH", `C:\untrusted\bin`)
+	t.Setenv("PSModulePath", `C:\untrusted\modules`)
+	t.Setenv("DOTNET_STARTUP_HOOKS", `C:\untrusted\hook.dll`)
+	env := maintenanceEnvironment(`C:\Windows`, `C:\Program Files`, `C:\Users\tester`,
+		`C:\Users\tester\AppData\Local`, `C:\Users\tester\AppData\Roaming`,
+		`C:\Program Files\Yime Maintenance\owned\maintenance\powershell\pwsh.exe`)
+	values := make(map[string]string)
+	for _, entry := range env {
+		name, value, ok := strings.Cut(entry, "=")
+		key := strings.ToUpper(name)
+		if !ok || values[key] != "" {
+			t.Fatalf("invalid or duplicate environment entry: %q", entry)
+		}
+		values[key] = value
+		if strings.Contains(strings.ToLower(value), "untrusted") {
+			t.Fatalf("inherited user environment entered maintenance: %q", entry)
+		}
+	}
+	if values["PATHEXT"] != ".EXE" {
+		t.Fatalf("native .exe pipeline requires the fixed extension: %q", values["PATHEXT"])
+	}
+	if values["PATH"] != `C:\Windows\System32` || values["DOTNET_STARTUP_HOOKS"] != "" {
+		t.Fatal("maintenance executable search or CLR isolation changed")
+	}
+	wantModules := `C:\Program Files\Yime Maintenance\owned\maintenance\powershell\Modules;C:\Windows\System32\WindowsPowerShell\v1.0\Modules`
+	if values["PSMODULEPATH"] != wantModules || len(values) != 11 {
+		t.Fatalf("maintenance allowlist changed: %v", values)
+	}
+}
 
 func TestLockedFilesAndAncestorsDenyReplacement(t *testing.T) {
 	root := t.TempDir()

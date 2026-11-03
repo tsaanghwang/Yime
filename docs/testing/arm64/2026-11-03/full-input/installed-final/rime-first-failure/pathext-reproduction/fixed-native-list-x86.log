@@ -1,0 +1,2 @@
+yime-native-exe-probe
+PROBE_JSON={"shell":"C:\\Program Files\\Yime Maintenance\\rime-pime\\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\\maintenance\\powershell\\pwsh.EXE","version":"7.6.9","architecture":"Arm64","pathext":".COM;.EXE;.BAT;.CMD;.CPL","executable":"C:\\Windows\\SysWOW64\\cmd.exe","success":true,"exitCode":0,"errorId":null}

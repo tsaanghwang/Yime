@@ -1,0 +1,86 @@
+{
+  "scope": "Ordinary-user protected-stage ARM64 PS7 runs only system-owned cmd.exe /d /c echo through the same native pipeline. No package executable, installer, registrar or product maintenance executed. Child environment matches helper allowlist except an initial PSHOME PATH entry used solely by run_checked shell discovery; command immediately resets PATH to System32.",
+  "processGlobalEnvironmentChanged": false,
+  "sourceChanged": false,
+  "rows": [
+    {
+      "shell": "C:\\Program Files\\Yime Maintenance\\rime-pime\\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\\maintenance\\powershell\\pwsh.EXE",
+      "version": "7.6.9",
+      "architecture": "Arm64",
+      "pathext": ".CPL",
+      "executable": "C:\\Windows\\System32\\cmd.exe",
+      "success": false,
+      "exitCode": null,
+      "errorId": "CantActivateDocumentInPipeline",
+      "case": "absent",
+      "executableArchitecture": "arm64",
+      "entryExit": 0
+    },
+    {
+      "shell": "C:\\Program Files\\Yime Maintenance\\rime-pime\\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\\maintenance\\powershell\\pwsh.EXE",
+      "version": "7.6.9",
+      "architecture": "Arm64",
+      "pathext": ".CPL",
+      "executable": "C:\\Windows\\SysWOW64\\cmd.exe",
+      "success": false,
+      "exitCode": null,
+      "errorId": "CantActivateDocumentInPipeline",
+      "case": "absent",
+      "executableArchitecture": "x86",
+      "entryExit": 0
+    },
+    {
+      "shell": "C:\\Program Files\\Yime Maintenance\\rime-pime\\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\\maintenance\\powershell\\pwsh.EXE",
+      "version": "7.6.9",
+      "architecture": "Arm64",
+      "pathext": ".EXE;.CPL",
+      "executable": "C:\\Windows\\System32\\cmd.exe",
+      "success": true,
+      "exitCode": 0,
+      "errorId": null,
+      "case": "exe-only",
+      "executableArchitecture": "arm64",
+      "entryExit": 0
+    },
+    {
+      "shell": "C:\\Program Files\\Yime Maintenance\\rime-pime\\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\\maintenance\\powershell\\pwsh.EXE",
+      "version": "7.6.9",
+      "architecture": "Arm64",
+      "pathext": ".EXE;.CPL",
+      "executable": "C:\\Windows\\SysWOW64\\cmd.exe",
+      "success": true,
+      "exitCode": 0,
+      "errorId": null,
+      "case": "exe-only",
+      "executableArchitecture": "x86",
+      "entryExit": 0
+    },
+    {
+      "shell": "C:\\Program Files\\Yime Maintenance\\rime-pime\\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\\maintenance\\powershell\\pwsh.EXE",
+      "version": "7.6.9",
+      "architecture": "Arm64",
+      "pathext": ".COM;.EXE;.BAT;.CMD;.CPL",
+      "executable": "C:\\Windows\\System32\\cmd.exe",
+      "success": true,
+      "exitCode": 0,
+      "errorId": null,
+      "case": "fixed-native-list",
+      "executableArchitecture": "arm64",
+      "entryExit": 0
+    },
+    {
+      "shell": "C:\\Program Files\\Yime Maintenance\\rime-pime\\039ad1d05244980b1ee49c2c4e88fd4551134899621eda0b3da462ef327ca4df\\maintenance\\powershell\\pwsh.EXE",
+      "version": "7.6.9",
+      "architecture": "Arm64",
+      "pathext": ".COM;.EXE;.BAT;.CMD;.CPL",
+      "executable": "C:\\Windows\\SysWOW64\\cmd.exe",
+      "success": true,
+      "exitCode": 0,
+      "errorId": null,
+      "case": "fixed-native-list",
+      "executableArchitecture": "x86",
+      "entryExit": 0
+    }
+  ],
+  "conclusion": "Absent PATHEXT reproduces exact CantActivateDocumentInPipeline for both ARM64 and x86 .exe. Fixed .EXE alone suffices for both architectures without user PATHEXT inheritance."
+}
