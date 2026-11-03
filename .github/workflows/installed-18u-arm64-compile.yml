@@ -107,6 +107,14 @@ jobs:
           stream=io.StringIO(); result=unittest.TextTestRunner(stream=stream,verbosity=2).run(suite)
           pathlib.Path('.generated/installed-18u-evidence/arm64-approval-draft.log').write_text(stream.getvalue(),encoding='utf-8')
           if result.testsRun != 5 or result.skipped or not result.wasSuccessful(): raise SystemExit('ARM64 approval draft tests failed')
+      - name: Exercise stage file-identity design without ACL or maintenance
+        run: |
+          import importlib, io, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('.').resolve()))
+          suite=unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module('tools.yimecore.test_arm64_stage_handle_design'))
+          stream=io.StringIO(); result=unittest.TextTestRunner(stream=stream,verbosity=2).run(suite)
+          pathlib.Path('.generated/installed-18u-evidence/arm64-stage-handle-design.log').write_text(stream.getvalue(),encoding='utf-8')
+          if result.testsRun != 5 or result.skipped or not result.wasSuccessful(): raise SystemExit('ARM64 stage handle design tests failed')
       - name: Run ARM64 architecture contract PowerShell test
         run: |
           import pathlib, subprocess, sys
