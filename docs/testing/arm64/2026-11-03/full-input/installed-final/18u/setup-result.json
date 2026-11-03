@@ -1,0 +1,11 @@
+{
+  "source": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+  "product": "18u",
+  "package": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\18u-complete-simple-46dd5896\\package",
+  "archiveSHA256": "be1ea916a780bc9896521ea18854b28daa62f70098b679839918e31e17c7416e",
+  "deliveryURL": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-maintenance-46dd5896-20261103",
+  "startedUTC": "2026-11-03T15:38:51.131093+00:00",
+  "completedUTC": "2026-11-03T15:39:37.293158+00:00",
+  "exitCode": 0,
+  "resetData": false
+}

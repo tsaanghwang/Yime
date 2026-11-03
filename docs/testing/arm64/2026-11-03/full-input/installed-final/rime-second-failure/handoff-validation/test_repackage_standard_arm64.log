@@ -1,0 +1,11 @@
+test_archive_pin_and_payload_are_both_verified (test_repackage_standard_arm64.RepackTests.test_archive_pin_and_payload_are_both_verified) ... ok
+test_builder_cannot_substitute_runtime_or_add_members (test_repackage_standard_arm64.RepackTests.test_builder_cannot_substitute_runtime_or_add_members) ... ok
+test_formal_source_requires_matching_clean_HEAD (test_repackage_standard_arm64.RepackTests.test_formal_source_requires_matching_clean_HEAD) ... ok
+test_success_preserves_payload_and_records_two_sources (test_repackage_standard_arm64.RepackTests.test_success_preserves_payload_and_records_two_sources) ... ok
+test_unlisted_original_package_file_rejected (test_repackage_standard_arm64.RepackTests.test_unlisted_original_package_file_rejected) ... ok
+test_wrong_archive_fails_before_builder_or_output (test_repackage_standard_arm64.RepackTests.test_wrong_archive_fails_before_builder_or_output) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.633s
+
+OK

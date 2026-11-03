@@ -4,11 +4,96 @@ package main
 
 import (
 	"encoding/binary"
+	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"testing"
 )
+
+func TestOrdinaryCallerHandleRequiresLiveMatchingProcess(t *testing.T) {
+	self, err := syscall.GetCurrentProcess()
+	if err != nil {
+		t.Fatal(err)
+	}
+	started, err := processStarted(self)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sid, elevated, err := processIdentity(self)
+	if err != nil {
+		t.Fatal(err)
+	}
+	image, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	h, err := holdOrdinaryCaller(uint(os.Getpid()), started, sid, image)
+	if elevated {
+		if err == nil {
+			syscall.CloseHandle(h)
+			t.Fatal("accepted elevated caller")
+		}
+	} else {
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err = requireLiveProcess(h); err != nil {
+			t.Fatal(err)
+		}
+		syscall.CloseHandle(h)
+	}
+	for _, tc := range []struct {
+		pid        uint
+		time       uint64
+		sid, image string
+	}{
+		{0, started, sid, image}, {uint(os.Getpid()), 0, sid, image},
+		{uint(os.Getpid()), started + 1, sid, image},
+		{uint(os.Getpid()), started, "another-sid", image},
+		{uint(os.Getpid()), started, sid, image + ".foreign"},
+	} {
+		if h, err := holdOrdinaryCaller(tc.pid, tc.time, tc.sid, tc.image); err == nil {
+			syscall.CloseHandle(h)
+			t.Fatalf("accepted mismatched caller: %+v", tc)
+		}
+	}
+	// An isolated copy of this test process exits without any product operation.
+	cmd := exec.Command(image, "-test.run=^TestOrdinaryCallerExitFixture$")
+	cmd.Env = append(os.Environ(), "YIME_CALLER_EXIT_FIXTURE=1")
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	input, err := cmd.StdinPipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := cmd.Start(); err != nil {
+		input.Close()
+		t.Fatal(err)
+	}
+	dead, err := syscall.OpenProcess(syscall.SYNCHRONIZE, false, uint32(cmd.Process.Pid))
+	// EOF explicitly releases the fixture only after its handle has been opened.
+	input.Close()
+	if err != nil {
+		cmd.Wait()
+		t.Fatal(err)
+	}
+	defer syscall.CloseHandle(dead)
+	if err := cmd.Wait(); err != nil {
+		t.Fatal(err)
+	}
+	if err := requireLiveProcess(dead); err == nil {
+		t.Fatal("accepted an exited parent handle")
+	}
+}
+
+func TestOrdinaryCallerExitFixture(t *testing.T) {
+	if os.Getenv("YIME_CALLER_EXIT_FIXTURE") == "1" {
+		_, _ = io.Copy(io.Discard, os.Stdin)
+		os.Exit(0)
+	}
+}
 
 func TestMaintenanceEnvironmentKeepsExecutablePipelineAndIsolation(t *testing.T) {
 	// Parent-supplied values must never replace the elevated allowlist.

@@ -1,0 +1,26 @@
+{
+  "schema": "yime-rime-protected-powershell-readonly-observation-v1",
+  "capturedAtUTC": "2026-11-03T15:43:01.2665467Z",
+  "administrator": true,
+  "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+  "process": "C:\\Program Files\\Yime Maintenance\\rime-pime\\cb5bdf84f792130086fc86de41248c739dc94acfa089331183ee3137ab3c2dbd\\maintenance\\powershell\\pwsh.exe",
+  "pshome": "C:\\Program Files\\Yime Maintenance\\rime-pime\\cb5bdf84f792130086fc86de41248c739dc94acfa089331183ee3137ab3c2dbd\\maintenance\\powershell",
+  "processArchitecture": "Arm64",
+  "environmentPath": "C:\\Program Files\\Yime Maintenance\\rime-pime\\cb5bdf84f792130086fc86de41248c739dc94acfa089331183ee3137ab3c2dbd\\maintenance\\powershell;C:\\Windows\\System32",
+  "environmentPathExt": ".EXE;.CPL",
+  "readOnly": true,
+  "registrationMutated": false,
+  "profileActivated": false,
+  "results": [
+    {
+      "error": "",
+      "exitCode": 0,
+      "architecture": "x86"
+    },
+    {
+      "error": "",
+      "exitCode": 0,
+      "architecture": "arm64"
+    }
+  ]
+}

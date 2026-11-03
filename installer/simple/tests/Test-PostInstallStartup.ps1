@@ -102,6 +102,50 @@ try{
     $setup=[IO.File]::ReadAllText($setupPath)
     if($setup.Substring($setup.IndexOf("`$stage='copy new product files'")).Contains('Start-Process')){throw 'Elevated installation tail must never launch runtime'}
     if(-not $setup.Contains('Installed from an administrator process. No runtime was started.')){throw 'Direct administrator caller must receive explicit no-start guidance'}
+    # Execute the real, inert guard and verification-dispatch AST blocks. Native
+    # probes are mocked; no registry, installed payload or product is accessed.
+    & {
+        $guards=@($ast.FindAll({param($n) $n -is [Management.Automation.Language.IfStatementAst] -and $n.Clauses[0].Item1.Extent.Text.StartsWith('$NativeRimeValidationDeferred -and')},$true))
+        $dispatch=@($ast.FindAll({param($n) $n -is [Management.Automation.Language.IfStatementAst] -and $n.Clauses[0].Item1.Extent.Text -ceq '$product.id -eq ''rime-pime''' -and $n.Extent.Text.Contains('verify-registered')},$true))
+        if($guards.Count -ne 1 -or $dispatch.Count -ne 1){throw 'Expected one guarded Rime stage handoff and registration dispatch'}
+        foreach($case in @('parent','direct-admin','uninstall','check','18u','legacy','not-admin','no-sid','no-native-guard')){
+            $Action='Install';$product=[pscustomobject]@{id='rime-pime'}
+            $contract=[pscustomobject]@{target='windows-arm64';nativeDirectory='arm64'}
+            $administrator=$true;$InitiatingSid='same-sid';$nativeMaintenance='verified native entry'
+            $NativeRimeValidationDeferred=$true
+            switch($case){
+                'direct-admin' {$NativeRimeValidationDeferred=$false}
+                'uninstall' {$Action='Uninstall'}
+                'check' {$Action='Check'}
+                '18u' {$product.id='yimecore-18u'}
+                'legacy' {$contract.target='windows-amd64'}
+                'not-admin' {$administrator=$false}
+                'no-sid' {$InitiatingSid=''}
+                'no-native-guard' {$nativeMaintenance=''}
+            }
+            $refused=$false;try{. ([scriptblock]::Create($guards[0].Extent.Text))}catch{$refused=$true}
+            if($refused -ne ($case -notin @('parent','direct-admin'))){throw ('Unexpected stage handoff guard: '+$case)}
+        }
+        function Run-Native([string]$Path,[string[]]$Arguments){$script:rimeCalls+=,[pscustomobject]@{path=$Path;arguments=$Arguments}}
+        foreach($case in @('parent','direct-admin','legacy','18u')){
+            $product=[pscustomobject]@{id='rime-pime'};$contract=[pscustomobject]@{nativeDirectory='arm64'}
+            $NativeRimeValidationDeferred=($case -eq 'parent')
+            if($case -eq 'legacy'){$contract.nativeDirectory='x64'}
+            if($case -eq '18u'){$product.id='yimecore-18u'}
+            $root=Join-Path $base 'inert-rime-dispatch';$script:rimeCalls=@()
+            . ([scriptblock]::Create($dispatch[0].Extent.Text))
+            $expectedCount=if($case -in @('parent','18u')){0}else{2}
+            if($script:rimeCalls.Count -ne $expectedCount){throw ('Rime verification dispatched in wrong stage: '+$case)}
+            if($expectedCount){
+                for($i=0;$i -lt 2;$i++){
+                    $arch=@('x86',$contract.nativeDirectory)[$i]
+                    if($script:rimeCalls[$i].path -cne (Join-Path $root ($arch+'\PIMERegistrationStatus.exe')) -or
+                       ($script:rimeCalls[$i].arguments -join '|') -cne 'verify-registered'){throw 'Direct-admin or legacy strong registration check changed'}
+                }
+            }
+        }
+        Write-Output 'PASS 9 real Rime handoff guard cases and 4 registration dispatch cases; native calls mocked, no product execution.'
+    }
     Write-Output 'PASS 13 isolated startup cases plus 3 actual post-UAC branch scenarios: normal standard/legacy Rime/full 18u, v1 no-start, administrator and 8 installed-integrity refusals; failed Install/Uninstall never launch. Token/process calls mocked; no system lifecycle.'
 }finally{
     $resolved=Assert-PlainPath $base

@@ -1,0 +1,11 @@
+{
+  "source": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+  "product": "rime",
+  "package": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\rime-final-46dd5896\\package",
+  "archiveSHA256": "50d7189e0e94d4f14e9ad916eca9d0756192833588ff770c052e40af633a50f4",
+  "deliveryURL": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-maintenance-46dd5896-20261103",
+  "startedUTC": "2026-11-03T15:29:41.396795+00:00",
+  "completedUTC": "2026-11-03T15:30:34.284840+00:00",
+  "exitCode": 1,
+  "resetData": false
+}

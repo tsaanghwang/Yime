@@ -1,0 +1,69 @@
+**********************
+PowerShell 记录开始
+开始时间: 20261103233023
+用户名: HUASHUONOTEBOOK\tsaan
+RunAs 用户: HUASHUONOTEBOOK\tsaan
+配置名称: 
+计算机: HUASHUONOTEBOOK (Microsoft Windows NT 10.0.28000.0)
+主机应用程序: C:\Program Files\Yime Maintenance\rime-pime\cb5bdf84f792130086fc86de41248c739dc94acfa089331183ee3137ab3c2dbd\maintenance\powershell\pwsh.dll -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\Program Files\Yime Maintenance\rime-pime\cb5bdf84f792130086fc86de41248c739dc94acfa089331183ee3137ab3c2dbd\maintenance\preflight.ps1
+进程 ID: 14028
+PSVersion: 7.6.9
+PSEdition: Core
+GitCommitId: 7.6.9
+OS: Microsoft Windows 10.0.28000
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\79d72165c1d9409896f00eea816c8828.admin.log
+Action: Install; package: C:\Program Files\Yime Maintenance\rime-pime\cb5bdf84f792130086fc86de41248c739dc94acfa089331183ee3137ab3c2dbd
+schema_version=yime-rime-pime-registration-status-v1
+architecture=x86
+architecture_bits=32
+service_profiles_registered_count=0
+exact_profile_registered_count=0
+profile_description_matches=false
+profile_enabled_for_current_user=false
+categories_registered_count=6
+expected_categories_registered_count=6
+category_set_exact=true
+categories_expected_count=6
+profile_query_hresult=0x0
+description_query_hresult=0x0
+enabled_query_hresult=0x0
+category_query_hresult=0x0
+mutation_performed=false
+PS>TerminatingError(): "Native operation failed: PIMERegistrationStatus.exe (7)"
+FAILED stage: write user startup and uninstall entry
+
+PSMessageDetails      : 
+Exception             : System.Management.Automation.RuntimeException: Native operation failed: PIMERegistrationStatus.exe (7)
+TargetObject          : Native operation failed: PIMERegistrationStatus.exe (7)
+CategoryInfo          : OperationStopped: (Native operation fa…ationStatus.exe (7):String) [], RuntimeException
+FullyQualifiedErrorId : Native operation failed: PIMERegistrationStatus.exe (7)
+ErrorDetails          : 
+InvocationInfo        : System.Management.Automation.InvocationInfo
+ScriptStackTrace      : 位于 Run-Native，C:\Program Files\Yime Maintenance\rime-pime\cb5bdf84f792130086fc86de41248c739dc94acfa089331183ee3137ab3c2dbd\Setup.ps1: 行 85
+                        位于 <ScriptBlock>，C:\Program Files\Yime Maintenance\rime-pime\cb5bdf84f792130086fc86de41248c739dc94acfa089331183ee3137ab3c2dbd\Setup.ps1: 行 233
+                        位于 <ScriptBlock>，C:\Program Files\Yime Maintenance\rime-pime\cb5bdf84f792130086fc86de41248c739dc94acfa089331183ee3137ab3c2dbd\maintenance\preflight.ps1: 行 68
+PipelineIterationInfo : {}
+Exception: System.Management.Automation.RuntimeException: Native operation failed: PIMERegistrationStatus.exe (7)
+Write-Error: C:\Program Files\Yime Maintenance\rime-pime\cb5bdf84f792130086fc86de41248c739dc94acfa089331183ee3137ab3c2dbd\maintenance\preflight.ps1:68
+Line |
+  68 |      if ($request.script) { & $path @parameters }
+     |                             ~~~~~~~~~~~~~~~~~~~
+     | Setup stopped: Native operation failed: PIMERegistrationStatus.exe (7) Log: C:\Users\tsaan\Yime Setup Logs\79d72165c1d9409896f00eea816c8828.admin.log
+Write-Error: C:\Program Files\Yime Maintenance\rime-pime\cb5bdf84f792130086fc86de41248c739dc94acfa089331183ee3137ab3c2dbd\maintenance\preflight.ps1:68
+Line |
+  68 |      if ($request.script) { & $path @parameters }
+     |                             ~~~~~~~~~~~~~~~~~~~
+     | Setup stopped: Native operation failed: PIMERegistrationStatus.exe (7) Log: C:\Users\tsaan\Yime Setup
+     | Logs\79d72165c1d9409896f00eea816c8828.admin.log
+
+Setup exit code: 1
+**********************
+PowerShell 记录结束
+结束时间: 20261103233033
+**********************

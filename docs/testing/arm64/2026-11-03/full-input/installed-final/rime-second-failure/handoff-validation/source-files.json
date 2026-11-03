@@ -1,0 +1,12 @@
+{
+  "go-backend/cmd/yime-maintenance/main.go": "08a661e21174918e25cdcb2148195e584f7ffc745c0c43c30155fa1db9c4a290",
+  "go-backend/cmd/yime-maintenance/main_other.go": "7df98be1d57a5f3fcc954b6a74541c468d63c8314574725288e24830a660cd04",
+  "go-backend/cmd/yime-maintenance/main_windows.go": "cdbf6250588a5198cfe97eb05fe267eaa1df9f8cc8d1495f9ae3517f68ef4ded",
+  "go-backend/cmd/yime-maintenance/staging_windows.go": "1b0e53be9bbf0b9ccb7c42353154f987cdfa4e556303ec5148667fbf93219329",
+  "go-backend/cmd/yime-maintenance/staging_windows_test.go": "d314d8d38ec4e8a85f24884bda6814019e205cd02096b79cc5331bc03a6bd462",
+  "go-backend/cmd/yime-maintenance/rime_validation.go": "c764c7ce69290433141a7bd7ad9eae0056d44b341f383720b6bf0f0215163c06",
+  "go-backend/cmd/yime-maintenance/rime_validation_windows.go": "b0039707ef039e7145cc7acf2cb382074e647e88ee99fce59dfe98c27d267e06",
+  "go-backend/cmd/yime-maintenance/rime_validation_test.go": "88a795d7d80d22ee05b1cb903b390c4a699a5edacb6ecd818edbf2bbc5ef0080",
+  "installer/simple/Setup.ps1": "bc890ae1a3beb43144a8902840a3a34b27283dfad5156d8acf07a48c8b9231db",
+  "installer/simple/tests/Test-PostInstallStartup.ps1": "62bde04bda2882e6e346b51de539151427b270d56aa304c1e9eb69ccdee67089"
+}

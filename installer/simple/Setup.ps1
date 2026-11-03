@@ -2,7 +2,8 @@
 param([ValidateSet('Install','Uninstall','Check')][string]$Action='Install',
     [switch]$ResetData,[switch]$Silent,[string]$InitiatingSid,
     [ValidatePattern('^[a-f0-9]{32}$')][string]$LogId,
-    [string]$NativeMaintenanceRoot,[string]$NativeMaintenanceSHA256,[string]$NativeMaintenancePlanSHA256)
+    [string]$NativeMaintenanceRoot,[string]$NativeMaintenanceSHA256,[string]$NativeMaintenancePlanSHA256,
+    [switch]$NativeRimeValidationDeferred)
 $ErrorActionPreference='Stop';Set-StrictMode -Version 2.0
 function Wait-SetupExit([Diagnostics.Process]$Process){
     # Hold the process handle while waiting for this process, not its descendants.
@@ -47,6 +48,10 @@ $nativeMaintenance=''
 if($product.id -in @('yimecore-18u','rime-pime') -and $contract.target -ceq 'windows-arm64' -and $Action -in @('Install','Uninstall')){
     if(-not $administrator -or -not $InitiatingSid){throw 'ARM64 maintenance requires the same-account elevated native entry'}
     $nativeMaintenance=Assert-NativeMaintenanceEntry $package $NativeMaintenanceRoot $NativeMaintenanceSHA256 $NativeMaintenancePlanSHA256
+}
+if($NativeRimeValidationDeferred -and ($Action -cne 'Install' -or $product.id -cne 'rime-pime' -or
+   $contract.target -cne 'windows-arm64' -or -not $administrator -or -not $InitiatingSid -or -not $nativeMaintenance)){
+    throw 'Rime user validation handoff requires the guarded native ARM64 installation entry'
 }
 if(-not $administrator){
     $stage='UAC elevation'
@@ -229,8 +234,14 @@ $stage='stop selected product background programs'
         if($nativeMaintenance){$key.SetValue('UninstallString',('"'+$nativeMaintenance+'" -action Uninstall'))}
         else{$key.SetValue('UninstallString',('"'+$setupShell+'" -NoProfile -ExecutionPolicy Bypass -File "'+(Join-Path $maintenance 'Setup.ps1')+'" -Action Uninstall'))}
     }finally{$key.Dispose()}
-    foreach($arch in @('x86',$contract.nativeDirectory)){
-        if($product.id -eq 'rime-pime'){Run-Native (Join-Path $root ($arch+'\PIMERegistrationStatus.exe')) @('verify-registered')}
+    if($product.id -eq 'rime-pime'){
+        if($NativeRimeValidationDeferred){
+            Write-Output 'System installation stage completed. The original ordinary native caller must verify both installed registration probes before runtime startup and overall success.'
+        }else{
+            foreach($arch in @('x86',$contract.nativeDirectory)){
+                Run-Native (Join-Path $root ($arch+'\PIMERegistrationStatus.exe')) @('verify-registered')
+            }
+        }
     }
     if($product.id -eq 'yimecore-18u'){
         Write-Output ('Installed persistent independent 18u: '+$root)
@@ -242,7 +253,9 @@ $stage='stop selected product background programs'
         exit 0
     }
     if($nativeMaintenance){
-        Write-Output 'Installed. The initiating non-elevated native entry starts this product runtime.'
+        if($product.id -eq 'rime-pime' -and -not $NativeRimeValidationDeferred){
+            Write-Output 'Installed from an administrator process. No runtime was started. Start this product from a non-elevated user session.'
+        }else{Write-Output 'System stage complete. The initiating non-elevated native entry verifies this product before runtime startup.'}
         exit 0
     }
     if($InitiatingSid){Write-Output 'Installed. The original non-elevated setup caller will verify installed files and start this product runtime.'}

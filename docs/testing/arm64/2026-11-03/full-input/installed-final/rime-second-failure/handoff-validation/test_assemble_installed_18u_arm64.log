@@ -1,0 +1,10 @@
+test_native_inventory_and_descriptor (test_assemble_installed_18u_arm64.Arm64AssemblyTests.test_native_inventory_and_descriptor) ... ok
+test_reject_amd64_member_before_output (test_assemble_installed_18u_arm64.Arm64AssemblyTests.test_reject_amd64_member_before_output) ... ok
+test_reject_opposite_architecture_descriptor (test_assemble_installed_18u_arm64.Arm64AssemblyTests.test_reject_opposite_architecture_descriptor) ... ok
+test_reject_other_product_changes (test_assemble_installed_18u_arm64.Arm64AssemblyTests.test_reject_other_product_changes) ... ok
+test_reject_unknown_architecture (test_assemble_installed_18u_arm64.Arm64AssemblyTests.test_reject_unknown_architecture) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.295s
+
+OK

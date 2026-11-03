@@ -1,0 +1,249 @@
+{
+  "scope": "source and inert fixture validation only; no product probe, install, registration or runtime execution",
+  "firstRunnerNote": "All 33 child commands/test suites exited successfully. Initial summary serialization failed only on the existing unittest skip object; raw logs preserved. The generated runner now serializes skip names.",
+  "firstPass": [
+    {
+      "name": "18u-architecture-contract-ps5",
+      "exitCode": 0,
+      "log": "18u-architecture-contract-ps5.log",
+      "successMarker": true
+    },
+    {
+      "name": "18u-architecture-contract-ps7",
+      "exitCode": 0,
+      "log": "18u-architecture-contract-ps7.log",
+      "successMarker": true
+    },
+    {
+      "name": "maintenance-go-test",
+      "exitCode": 0,
+      "log": "maintenance-go-test.log",
+      "successMarker": true
+    },
+    {
+      "name": "maintenance-go-vet",
+      "exitCode": 0,
+      "log": "maintenance-go-vet.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-18uArm64ElevationShell-ps7",
+      "exitCode": 0,
+      "log": "Test-18uArm64ElevationShell-ps7.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-18uArm64FixedPackage-ps5",
+      "exitCode": 0,
+      "log": "Test-18uArm64FixedPackage-ps5.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-18uArm64FixedPackage-ps7",
+      "exitCode": 0,
+      "log": "Test-18uArm64FixedPackage-ps7.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-18uArm64ProtectedAcl-ps5",
+      "exitCode": 0,
+      "log": "Test-18uArm64ProtectedAcl-ps5.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-18uArm64ProtectedAcl-ps7",
+      "exitCode": 0,
+      "log": "Test-18uArm64ProtectedAcl-ps7.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-18uArm64ProtectedStage-ps5",
+      "exitCode": 0,
+      "log": "Test-18uArm64ProtectedStage-ps5.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-18uArm64ProtectedStage-ps7",
+      "exitCode": 0,
+      "log": "Test-18uArm64ProtectedStage-ps7.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-18uUnregisterSequence-ps5",
+      "exitCode": 0,
+      "log": "Test-18uUnregisterSequence-ps5.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-18uUnregisterSequence-ps7",
+      "exitCode": 0,
+      "log": "Test-18uUnregisterSequence-ps7.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-Arm64Package-ps5",
+      "exitCode": 0,
+      "log": "Test-Arm64Package-ps5.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-Arm64Package-ps7",
+      "exitCode": 0,
+      "log": "Test-Arm64Package-ps7.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-FileAccess-ps5",
+      "exitCode": 0,
+      "log": "Test-FileAccess-ps5.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-FileAccess-ps7",
+      "exitCode": 0,
+      "log": "Test-FileAccess-ps7.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-Installed18uOwnership-ps5",
+      "exitCode": 0,
+      "log": "Test-Installed18uOwnership-ps5.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-Installed18uOwnership-ps7",
+      "exitCode": 0,
+      "log": "Test-Installed18uOwnership-ps7.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-PackageValidation-ps5",
+      "exitCode": 0,
+      "log": "Test-PackageValidation-ps5.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-PackageValidation-ps7",
+      "exitCode": 0,
+      "log": "Test-PackageValidation-ps7.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-PostInstallStartup-ps5",
+      "exitCode": 0,
+      "log": "Test-PostInstallStartup-ps5.log",
+      "successMarker": true
+    },
+    {
+      "name": "Test-PostInstallStartup-ps7",
+      "exitCode": 0,
+      "log": "Test-PostInstallStartup-ps7.log",
+      "successMarker": true
+    },
+    {
+      "name": "test_18u_product_identity",
+      "exitCode": 0,
+      "log": "test_18u_product_identity.log",
+      "tests": 5,
+      "successMarker": true,
+      "skipped": 0
+    },
+    {
+      "name": "test_assemble_installed_18u",
+      "exitCode": 0,
+      "log": "test_assemble_installed_18u.log",
+      "tests": 15,
+      "successMarker": true,
+      "skipped": 1
+    },
+    {
+      "name": "test_assemble_installed_18u_arm64",
+      "exitCode": 0,
+      "log": "test_assemble_installed_18u_arm64.log",
+      "tests": 5,
+      "successMarker": true,
+      "skipped": 0
+    },
+    {
+      "name": "test_build_inputs",
+      "exitCode": 0,
+      "log": "test_build_inputs.log",
+      "tests": 3,
+      "successMarker": true,
+      "skipped": 0
+    },
+    {
+      "name": "test_installed_18u_lifecycle",
+      "exitCode": 0,
+      "log": "test_installed_18u_lifecycle.log",
+      "tests": 8,
+      "successMarker": true,
+      "skipped": 0
+    },
+    {
+      "name": "test_package_installed_18u",
+      "exitCode": 0,
+      "log": "test_package_installed_18u.log",
+      "tests": 12,
+      "successMarker": true,
+      "skipped": 0
+    },
+    {
+      "name": "test_package_installed_18u_arm64",
+      "exitCode": 0,
+      "log": "test_package_installed_18u_arm64.log",
+      "tests": 2,
+      "successMarker": true,
+      "skipped": 0
+    },
+    {
+      "name": "test_package_installed_18u_frontend",
+      "exitCode": 0,
+      "log": "test_package_installed_18u_frontend.log",
+      "tests": 5,
+      "successMarker": true,
+      "skipped": 0
+    },
+    {
+      "name": "test_package_native_maintenance",
+      "exitCode": 0,
+      "log": "test_package_native_maintenance.log",
+      "tests": 4,
+      "successMarker": true,
+      "skipped": 0
+    },
+    {
+      "name": "test_repackage_standard_arm64",
+      "exitCode": 0,
+      "log": "test_repackage_standard_arm64.log",
+      "tests": 6,
+      "successMarker": true,
+      "skipped": 0
+    }
+  ],
+  "finalTargetedChecks": [
+    {
+      "name": "maintenance-go-test-final",
+      "exitCode": 0
+    },
+    {
+      "name": "maintenance-go-vet-final",
+      "exitCode": 0
+    },
+    {
+      "name": "Test-PostInstallStartup-ps5-final",
+      "exitCode": 0
+    },
+    {
+      "name": "Test-PostInstallStartup-ps7-final",
+      "exitCode": 0
+    }
+  ],
+  "goNamedTests": 16,
+  "goSubtests": 22,
+  "pythonTests": 65,
+  "pythonSkipped": 1,
+  "skipReason": "Existing Windows token has no symbolic-link privilege; linked-input case not claimed.",
+  "powershellExecutions": 21,
+  "passed": true
+}

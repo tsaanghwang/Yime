@@ -149,6 +149,8 @@ func main() {
 	planPath := flag.String("plan", "", "package plan bound into this executable")
 	initiator := flag.String("initiating-sid", "", "same-account elevation binding")
 	elevated := flag.Bool("elevated", false, "internal same-account elevated invocation")
+	parentPID := flag.Uint("parent-pid", 0, "internal ordinary installation caller")
+	parentStarted := flag.Uint64("parent-started", 0, "internal caller creation time")
 	flag.Parse()
 	if flag.NArg() != 0 || (*action != "Check" && *action != "Install" && *action != "Uninstall") {
 		fmt.Fprintln(os.Stderr, "invalid maintenance operation")
@@ -162,7 +164,7 @@ func main() {
 		}
 		*planPath = filepath.Join(filepath.Dir(exe), "maintenance-plan.json")
 	}
-	if err := maintain(*action, *planPath, *initiator, *elevated); err != nil {
+	if err := maintain(*action, *planPath, *initiator, *elevated, *parentPID, *parentStarted); err != nil {
 		fmt.Fprintln(os.Stderr, "maintenance stopped:", err)
 		os.Exit(1)
 	}

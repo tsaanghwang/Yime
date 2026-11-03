@@ -141,15 +141,38 @@ func startInstalledRuntime(plan maintenancePlan) error {
 	root := filepath.Join(programFiles, spec.directory)
 	held := new(heldFiles)
 	defer held.close()
-	var manifestHash string
-	runtimePresent := false
-	for name, row := range plan.Files {
-		if !strings.HasPrefix(name, "payload/") {
-			continue
+	var args []string
+	return completeInstalledStartup(plan, root, func() error {
+		var verifyErr error
+		args, verifyErr = verifyInstalledRuntime(plan, root, spec, held)
+		return verifyErr
+	}, func(path string, arguments []string) error {
+		fmt.Printf("Verify installed Rime registration as original ordinary caller: %s %s\n", path, strings.Join(arguments, " "))
+		cmd := exec.Command(path, arguments...)
+		cmd.Dir = root
+		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
+		cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+		return cmd.Run()
+	}, func() error {
+		cmd := exec.Command(filepath.Join(root, filepath.FromSlash(spec.executable)), args...)
+		cmd.Dir = root
+		cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+		if err := cmd.Start(); err != nil {
+			return fmt.Errorf("installed but runtime start failed: %w", err)
 		}
-		rel := strings.TrimPrefix(name, "payload/")
+		pid := cmd.Process.Pid
+		if err := cmd.Process.Release(); err != nil {
+			return err
+		}
+		fmt.Printf("Started installed %s runtime as the original non-administrator account; pid=%d. Input acceptance is separate.\n", plan.Product, pid)
+		return nil
+	})
+}
+
+func verifyInstalledRuntime(plan maintenancePlan, root string, spec runtimeSpec, held *heldFiles) ([]string, error) {
+	return verifyInstalledRuntimePayload(plan, root, spec, func(rel string, row fileRecord) error {
 		path := filepath.Join(root, filepath.FromSlash(rel))
-		if err = held.parentsWithin(path, true, root); err != nil {
+		if err := held.parentsWithin(path, true, root); err != nil {
 			return err
 		}
 		f, e := openLocked(path, false)
@@ -157,53 +180,9 @@ func startInstalledRuntime(plan maintenancePlan) error {
 			return e
 		}
 		held.add(f)
-		if err = checkACL(f, true); err != nil {
+		if err := checkACL(f, true); err != nil {
 			return err
 		}
-		if err = verifyStream(f, row); err != nil {
-			return fmt.Errorf("installed %s: %w", rel, err)
-		}
-		if rel == spec.executable {
-			runtimePresent = true
-		}
-		if rel == spec.manifest {
-			manifestHash = row.SHA256
-		}
-	}
-	if !runtimePresent {
-		return errors.New("installed runtime is absent from the bound payload")
-	}
-	// The installed maintenance manifest binds the actual selected package, so a
-	// concurrent upgrade cannot silently hand off a different package version.
-	manifest := filepath.Join(root, ".setup", "product-package.json")
-	if err = held.parentsWithin(manifest, true, root); err != nil {
-		return err
-	}
-	f, err := openLocked(manifest, false)
-	if err != nil {
-		return err
-	}
-	held.add(f)
-	if err = checkACL(f, true); err != nil {
-		return err
-	}
-	if err = verifyStream(f, plan.Files["product-package.json"]); err != nil {
-		return err
-	}
-	args, err := runtimeArguments(spec, root, manifestHash)
-	if err != nil {
-		return err
-	}
-	cmd := exec.Command(filepath.Join(root, filepath.FromSlash(spec.executable)), args...)
-	cmd.Dir = root
-	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-	if err = cmd.Start(); err != nil {
-		return fmt.Errorf("installed but runtime start failed: %w", err)
-	}
-	pid := cmd.Process.Pid
-	if err = cmd.Process.Release(); err != nil {
-		return err
-	}
-	fmt.Printf("Started installed %s runtime as the original non-administrator account; pid=%d. Input acceptance is separate.\n", plan.Product, pid)
-	return nil
+		return verifyStream(f, row)
+	})
 }

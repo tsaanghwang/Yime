@@ -1,0 +1,9 @@
+test_formal_archive_refuses_dirty_or_different_source (test_package_native_maintenance.NativeMaintenancePackageTests.test_formal_archive_refuses_dirty_or_different_source) ... ok
+test_rejects_windows_ambiguous_or_escaping_member_names (test_package_native_maintenance.NativeMaintenancePackageTests.test_rejects_windows_ambiguous_or_escaping_member_names) ... ok
+test_shared_shell_cache_rejects_changed_file (test_package_native_maintenance.NativeMaintenancePackageTests.test_shared_shell_cache_rejects_changed_file) ... ok
+test_zip_roundtrip_and_prior_evidence_keep_exact_bytes (test_package_native_maintenance.NativeMaintenancePackageTests.test_zip_roundtrip_and_prior_evidence_keep_exact_bytes) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.099s
+
+OK

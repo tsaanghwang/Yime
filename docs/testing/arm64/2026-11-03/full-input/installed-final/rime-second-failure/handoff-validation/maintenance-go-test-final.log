@@ -1,0 +1,78 @@
+=== RUN   TestMaintenanceMemberBoundary
+--- PASS: TestMaintenanceMemberBoundary (0.00s)
+=== RUN   TestPlanRequiresCompiledBytesAndCompleteEntry
+--- PASS: TestPlanRequiresCompiledBytesAndCompleteEntry (0.00s)
+=== RUN   TestVerifyStreamRejectsSameSizeReplacement
+--- PASS: TestVerifyStreamRejectsSameSizeReplacement (0.01s)
+=== RUN   TestRimeCallerBindingAndStageParameters
+=== RUN   TestRimeCallerBindingAndStageParameters/ordinary-parent
+=== RUN   TestRimeCallerBindingAndStageParameters/direct-admin
+=== RUN   TestRimeCallerBindingAndStageParameters/internal-flag-without-parent
+=== RUN   TestRimeCallerBindingAndStageParameters/no-elevation
+=== RUN   TestRimeCallerBindingAndStageParameters/no-admin-token
+=== RUN   TestRimeCallerBindingAndStageParameters/missing-time
+=== RUN   TestRimeCallerBindingAndStageParameters/missing-pid
+=== RUN   TestRimeCallerBindingAndStageParameters/uninstall
+=== RUN   TestRimeCallerBindingAndStageParameters/check
+=== RUN   TestRimeCallerBindingAndStageParameters/18u
+=== RUN   TestRimeCallerBindingAndStageParameters/legacy
+--- PASS: TestRimeCallerBindingAndStageParameters (0.00s)
+    --- PASS: TestRimeCallerBindingAndStageParameters/ordinary-parent (0.00s)
+    --- PASS: TestRimeCallerBindingAndStageParameters/direct-admin (0.00s)
+    --- PASS: TestRimeCallerBindingAndStageParameters/internal-flag-without-parent (0.00s)
+    --- PASS: TestRimeCallerBindingAndStageParameters/no-elevation (0.00s)
+    --- PASS: TestRimeCallerBindingAndStageParameters/no-admin-token (0.00s)
+    --- PASS: TestRimeCallerBindingAndStageParameters/missing-time (0.00s)
+    --- PASS: TestRimeCallerBindingAndStageParameters/missing-pid (0.00s)
+    --- PASS: TestRimeCallerBindingAndStageParameters/uninstall (0.00s)
+    --- PASS: TestRimeCallerBindingAndStageParameters/check (0.00s)
+    --- PASS: TestRimeCallerBindingAndStageParameters/18u (0.00s)
+    --- PASS: TestRimeCallerBindingAndStageParameters/legacy (0.00s)
+=== RUN   TestOrdinaryCallerIdentityRejectsMismatchedContext
+--- PASS: TestOrdinaryCallerIdentityRejectsMismatchedContext (0.00s)
+=== RUN   TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed
+=== RUN   TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/success
+=== RUN   TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/x86-failure
+=== RUN   TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/arm64-failure
+=== RUN   TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/probe-start-error
+=== RUN   TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/missing-plan-probe
+=== RUN   TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/missing-installed-probe
+=== RUN   TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/tampered-probe
+=== RUN   TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/tampered-other-payload
+=== RUN   TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/tampered-installed-manifest
+=== RUN   TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/runtime-start-error
+=== RUN   TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/18u
+--- PASS: TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed (0.13s)
+    --- PASS: TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/success (0.03s)
+    --- PASS: TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/x86-failure (0.02s)
+    --- PASS: TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/arm64-failure (0.01s)
+    --- PASS: TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/probe-start-error (0.01s)
+    --- PASS: TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/missing-plan-probe (0.01s)
+    --- PASS: TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/missing-installed-probe (0.01s)
+    --- PASS: TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/tampered-probe (0.01s)
+    --- PASS: TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/tampered-other-payload (0.02s)
+    --- PASS: TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/tampered-installed-manifest (0.01s)
+    --- PASS: TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/runtime-start-error (0.01s)
+    --- PASS: TestRimeInstalledValidationPrecedesRuntimeAndFailsClosed/18u (0.01s)
+=== RUN   TestInterruptedStagingCanRetrySamePlan
+--- PASS: TestInterruptedStagingCanRetrySamePlan (0.00s)
+=== RUN   TestUnverifiedStageNeverPublished
+--- PASS: TestUnverifiedStageNeverPublished (0.00s)
+=== RUN   TestProtectedContentAndOrdinaryAncestorACLPolicy
+--- PASS: TestProtectedContentAndOrdinaryAncestorACLPolicy (0.00s)
+=== RUN   TestRuntimeLaunchArgumentsStayProductSpecific
+--- PASS: TestRuntimeLaunchArgumentsStayProductSpecific (0.00s)
+=== RUN   TestOrdinaryCallerHandleRequiresLiveMatchingProcess
+--- PASS: TestOrdinaryCallerHandleRequiresLiveMatchingProcess (0.04s)
+=== RUN   TestOrdinaryCallerExitFixture
+--- PASS: TestOrdinaryCallerExitFixture (0.00s)
+=== RUN   TestMaintenanceEnvironmentKeepsExecutablePipelineAndIsolation
+--- PASS: TestMaintenanceEnvironmentKeepsExecutablePipelineAndIsolation (0.00s)
+=== RUN   TestLockedFilesAndAncestorsDenyReplacement
+--- PASS: TestLockedFilesAndAncestorsDenyReplacement (0.00s)
+=== RUN   TestAtomicPublicationNeverReplacesExistingDirectory
+--- PASS: TestAtomicPublicationNeverReplacesExistingDirectory (0.00s)
+=== RUN   TestBundledShellPEMustBeARM64
+--- PASS: TestBundledShellPEMustBeARM64 (0.04s)
+PASS
+ok  	github.com/tsaanghwang/Yime/go-backend/cmd/yime-maintenance	1.426s

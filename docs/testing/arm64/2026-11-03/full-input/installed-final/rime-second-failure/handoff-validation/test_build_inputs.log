@@ -1,0 +1,8 @@
+test_archive_does_not_overwrite_an_existing_unmarked_tree (test_build_inputs.BuildInputTests.test_archive_does_not_overwrite_an_existing_unmarked_tree) ... ok
+test_archive_rejects_traversal_and_links (test_build_inputs.BuildInputTests.test_archive_rejects_traversal_and_links) ... ok
+test_cached_download_rejects_changed_bytes (test_build_inputs.BuildInputTests.test_cached_download_rejects_changed_bytes) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.090s
+
+OK

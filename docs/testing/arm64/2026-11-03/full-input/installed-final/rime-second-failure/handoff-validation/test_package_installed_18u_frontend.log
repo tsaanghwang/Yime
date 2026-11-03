@@ -1,0 +1,10 @@
+test_complete_three_mode_frontend_and_gui_signature (test_package_installed_18u_frontend.FrontendPackageTests.test_complete_three_mode_frontend_and_gui_signature) ... ok
+test_emulated_gui_rejected (test_package_installed_18u_frontend.FrontendPackageTests.test_emulated_gui_rejected) ... ok
+test_gui_required_before_output (test_package_installed_18u_frontend.FrontendPackageTests.test_gui_required_before_output) ... ok
+test_missing_gui_signature_rejected (test_package_installed_18u_frontend.FrontendPackageTests.test_missing_gui_signature_rejected) ... ok
+test_v1_scope_cannot_be_relabelled_complete (test_package_installed_18u_frontend.FrontendPackageTests.test_v1_scope_cannot_be_relabelled_complete) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 1.051s
+
+OK

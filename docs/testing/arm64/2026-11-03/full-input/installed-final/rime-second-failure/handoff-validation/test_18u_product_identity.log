@@ -1,0 +1,10 @@
+test_arm64_descriptor_changes_only_native_architecture (test_18u_product_identity.ProductIdentityTests.test_arm64_descriptor_changes_only_native_architecture) ... ok
+test_exact_dedicated_resource_identity (test_18u_product_identity.ProductIdentityTests.test_exact_dedicated_resource_identity) ... ok
+test_full_frontend_scope_is_distinct_from_acceptance (test_18u_product_identity.ProductIdentityTests.test_full_frontend_scope_is_distinct_from_acceptance) ... ok
+test_independent_product_identity (test_18u_product_identity.ProductIdentityTests.test_independent_product_identity) ... ok
+test_legacy_check_is_explicit_and_never_the_resident_default (test_18u_product_identity.ProductIdentityTests.test_legacy_check_is_explicit_and_never_the_resident_default) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.005s
+
+OK

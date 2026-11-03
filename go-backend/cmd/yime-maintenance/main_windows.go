@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"syscall"
 	"unsafe"
@@ -42,8 +43,12 @@ func nativeIdentity() (string, bool, error) {
 	if ok == 0 || process != 0 || native != 0xaa64 {
 		return "", false, fmt.Errorf("native ARM64 identity unavailable: %v", err)
 	}
+	return processIdentity(p)
+}
+
+func processIdentity(p syscall.Handle) (string, bool, error) {
 	var token syscall.Token
-	if err = syscall.OpenProcessToken(p, syscall.TOKEN_QUERY, &token); err != nil {
+	if err := syscall.OpenProcessToken(p, syscall.TOKEN_QUERY, &token); err != nil {
 		return "", false, err
 	}
 	defer token.Close()
@@ -264,10 +269,21 @@ type shellExecuteInfo struct {
 	Process                           syscall.Handle
 }
 
-func elevate(exe, plan, action, sid string) error {
+func elevate(exe, plan, action, sid string, bindParent bool) error {
 	verb, _ := syscall.UTF16PtrFromString("runas")
 	file, _ := syscall.UTF16PtrFromString(exe)
 	args := []string{"-action", action, "-plan", plan, "-initiating-sid", sid, "-elevated"}
+	if bindParent {
+		process, err := syscall.GetCurrentProcess()
+		if err != nil {
+			return err
+		}
+		started, err := processStarted(process)
+		if err != nil {
+			return err
+		}
+		args = append(args, "-parent-pid", strconv.Itoa(os.Getpid()), "-parent-started", strconv.FormatUint(started, 10))
+	}
 	for i := range args {
 		args[i] = syscall.EscapeArg(args[i])
 	}
@@ -292,7 +308,7 @@ func elevate(exe, plan, action, sid string) error {
 	return nil
 }
 
-func maintain(action, planPath, initiatingSID string, elevated bool) error {
+func maintain(action, planPath, initiatingSID string, elevated bool, parentPID uint, parentStarted uint64) error {
 	sid, admin, err := nativeIdentity()
 	if err != nil {
 		return err
@@ -367,18 +383,30 @@ func maintain(action, planPath, initiatingSID string, elevated bool) error {
 	if err != nil {
 		return err
 	}
+	bindCaller, err := rimeCallerBinding(plan, action, elevated, admin, parentPID, parentStarted)
+	if err != nil {
+		return err
+	}
 	if action == "Check" {
 		fmt.Println("PASS native ARM64 maintenance: bound plan, all files and bundled ARM64 shell PE; no shell execution or product mutation")
 		return nil
 	}
 	if !admin {
-		if err = elevate(exe, planPath, action, sid); err != nil {
+		if err = elevate(exe, planPath, action, sid, plan.Product == "rime-pime" && action == "Install"); err != nil {
 			return err
 		}
 		if action == "Install" {
 			return startInstalledRuntime(plan)
 		}
 		return nil
+	}
+	var ordinaryParent syscall.Handle
+	if bindCaller {
+		ordinaryParent, err = holdOrdinaryCaller(parentPID, parentStarted, sid, exe)
+		if err != nil {
+			return err
+		}
+		defer syscall.CloseHandle(ordinaryParent)
 	}
 	programFiles, err := knownFolder(programFilesID)
 	if err != nil {
@@ -459,7 +487,8 @@ func maintain(action, planPath, initiatingSID string, elevated bool) error {
 	// Explicit environment: no user module path, CLR startup hooks, package
 	// current directory or inherited executable search path enters elevation.
 	env := maintenanceEnvironment(systemRoot, programFiles, profile, local, roaming, shellPath)
-	request := map[string]any{"script": filepath.Join(stage, "Setup.ps1"), "command": nil, "check_only": false, "parameters": map[string]any{"Action": action, "Silent": true, "InitiatingSid": sid, "NativeMaintenanceRoot": stage, "NativeMaintenanceSHA256": selfHash, "NativeMaintenancePlanSHA256": expectedPlanSHA}}
+	parameters := maintenanceParameters(action, sid, stage, selfHash, expectedPlanSHA, ordinaryParent != 0)
+	request := map[string]any{"script": filepath.Join(stage, "Setup.ps1"), "command": nil, "check_only": false, "parameters": parameters}
 	input, err := json.Marshal(request)
 	if err != nil {
 		return err
@@ -473,6 +502,13 @@ func maintain(action, planPath, initiatingSID string, elevated bool) error {
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	if err = cmd.Run(); err != nil {
 		return fmt.Errorf("protected setup: %w", err)
+	}
+	if ordinaryParent != 0 {
+		if err = requireLiveProcess(ordinaryParent); err != nil {
+			return fmt.Errorf("installation caller exited before user validation: %w", err)
+		}
+		fmt.Println("Protected system installation completed; mandatory Rime user registration validation remains with the original ordinary caller.")
+		return nil
 	}
 	fmt.Println("PASS protected maintenance completed:", action, plan.Product)
 	if action == "Install" {
