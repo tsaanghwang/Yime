@@ -1,0 +1,88 @@
+{
+  "schema": "installed-18u-static-precheck-result-v1",
+  "taskID": "installed18u-test7-msi-precheck-r1",
+  "continuation": 1,
+  "recordedAtUTC": "2026-11-03T11:04:51.302082+00:00",
+  "status": "stopped-during-download",
+  "previousResultCommit": "c48ce5282980451c78135e6df7dac164ce978c86",
+  "previousResultPreserved": true,
+  "deliveryReference": {
+    "documentationCommit": "cf70cae66706587ec9db07b89fe9769d491a86ea",
+    "packageSourceCommit": "33b7113c8b76d6c95447856c2d5cca374b542507",
+    "version": "0.1.0-18u-test.7",
+    "type": "x64 ZIP, not Windows Installer MSI",
+    "runID": 41617296801,
+    "artifactID": 13221664045,
+    "expectedOuterZIP": {
+      "bytes": 192176992,
+      "sha256": "166779e2bef48ac2302acc079aca32dc64e1c68b3ec74dd3c79ae0fb37678c11"
+    },
+    "expectedInnerZIP": {
+      "name": "YimeCore-18u-0.1.0-18u-test.7-windows-amd64.zip",
+      "bytes": 192137872,
+      "sha256": "a9ee98aefc93bd3b579dcbd388bc7de34a8a2fcb5839666598d660b4e9d39e8a"
+    },
+    "identityScope": "expected values from fixed delivery; no downloaded bytes validated in this task"
+  },
+  "hostAndProtection": {
+    "freshObservationPerformedThisContinuation": false,
+    "previousObservationsRemainHistorical": true,
+    "scope": "stopped on download error; no claim that previous test.6, host or protection snapshots remain current",
+    "installedProductsOrUserDataModifiedByTask": false
+  },
+  "packageVerification": {
+    "downloadAttempted": true,
+    "artifactBytesObtained": false,
+    "outerZIPVerified": false,
+    "innerZIPVerified": false,
+    "safeExtractionPerformed": false,
+    "manifestAndAllPayloadsVerified": false,
+    "frontendVerified": false,
+    "localSignatureCheckPerformed": false
+  },
+  "signatureLimitation": {
+    "ciRecordedUnsignedPECount": 6,
+    "source": "fixed delivery signature record, not current local Authenticode observation",
+    "localSignatureCheckPerformed": false,
+    "machineLoadPolicyVerified": false,
+    "systemProtectionChanged": false
+  },
+  "stop": {
+    "recordedAtUTC": "2026-11-03T11:04:51.302082+00:00",
+    "stage": "download-from-artifact-file-reference",
+    "status": "stopped",
+    "artifactID": 13221664045,
+    "downloadReferenceObtained": true,
+    "downloadAttempts": 1,
+    "curlExitCode": 22,
+    "httpStatus": 403,
+    "receivedBytesReportedByCurl": 0,
+    "localArtifactFileExists": false,
+    "localArtifactFileBytes": null,
+    "retryPerformed": false,
+    "attribution": "temporary file download returned HTTP 403; underlying cause not established; no package corruption conclusion",
+    "temporaryURLAndCredentialsRetainedInEvidence": false
+  },
+  "actions": {
+    "setupIncludingCheckExecuted": false,
+    "packageProgramExecuted": false,
+    "installationPerformed": false,
+    "registrationPerformed": false,
+    "rebootPerformed": false,
+    "defaultInputChanged": false,
+    "wordEdgeInputPerformed": false,
+    "fingerPenTestPerformed": false,
+    "automaticRetryPerformed": false
+  },
+  "disposition": {
+    "readyForInstallation": false,
+    "readyForInputAcceptance": false,
+    "followup": "Download stopped at HTTP 403. No automatic retry or URL refresh. Fixed hashes remain expected values only."
+  },
+  "privacyReview": {
+    "rawLogsUploaded": false,
+    "rawSnapshotsUploaded": false,
+    "onlySanitizedResultAndEvidenceIndex": true
+  },
+  "evidenceIndexFile": "evidence-index.json"
+}

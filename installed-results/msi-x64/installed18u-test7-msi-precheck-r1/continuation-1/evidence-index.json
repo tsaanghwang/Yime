@@ -1,0 +1,23 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test7-msi-precheck-r1",
+  "continuation": 1,
+  "localEvidenceDirectory": ".generated/installed18u-test7-msi-precheck-r1-continuation-1",
+  "files": [
+    {
+      "name": "evidence/stop.json",
+      "bytes": 601,
+      "sha256": "c9d17d5cbca28944eae75c4e21d645d1be3c1f27ef73dfa0c4c6e942a080f86c",
+      "uploaded": false
+    },
+    {
+      "name": "tools/report.py",
+      "bytes": 3645,
+      "sha256": "ccadbef29a7858b0158a900418846a5ca815e8bb7d9de0224f9a23aaa323c80d",
+      "uploaded": false
+    }
+  ],
+  "artifactBytesObtained": false,
+  "rawLogsUploaded": false,
+  "previousEvidencePreserved": true
+}
