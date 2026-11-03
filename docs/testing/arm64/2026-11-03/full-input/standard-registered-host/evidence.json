@@ -1,0 +1,214 @@
+{
+  "schema": "standard-installed-arm64-evidence-v1",
+  "sourceCommit": "64a785a7ede5fb2a53e2560b873075950160668b",
+  "packageZIP_SHA256": "7a8cff04fcc09f8a9908257c1f8ac7b8f5a37f123c192eebea62089f39a45e25",
+  "registeredHostRuns": 9,
+  "passed": 9,
+  "installedPayloadHashesVerified": 69,
+  "architectures": [
+    "arm64",
+    "x64 using ARM64X",
+    "x86"
+  ],
+  "modes": [
+    "full",
+    "variable",
+    "shorthand"
+  ],
+  "ordinaryInstalledRuntimeAccepted": false,
+  "runtimeFinding": "Runtime 39468, Broker 40224 and Toolbar 38460 were live at their installed paths with TokenElevation=true and integrity RID 12288 (High). CIM omitted their image paths, so path-filtered process snapshots initially returned zero. An explicitly launched medium-integrity normal-user runtime exited 0 because the installed instance already owned the singleton; no existing process was stopped. Actual token result is from limited process query plus token information, not persisted status alone.",
+  "protectionObservation": "Other-product registration and default-input registry hashes remained equal. The peer-runtime snapshot covers processes whose CIM ExecutablePath was readable; it is not proof that elevated peer processes with hidden CIM paths were absent. No peer process was manipulated by this script.",
+  "limits": [
+    "Synthetic registered-host evidence; no live document, physical finger/pen, reboot or daily-use acceptance claim.",
+    "Each test uses fresh isolated settings and private in-memory Broker; the installed elevated default Broker is not the tested IPC endpoint.",
+    "No installer or registrar executed by this validation script.",
+    "Retained synthetic fixture directories remain in the local evidence root; committed evidence contains raw host/Broker logs, hashes and snapshots."
+  ],
+  "files": [
+    {
+      "path": "summary.json",
+      "bytes": 5565,
+      "sha256": "f29d6f00f84735ced8bb90234502290595de5ce8d51e6d9c10b5d15ec5608086"
+    },
+    {
+      "path": "inputs.json",
+      "bytes": 634,
+      "sha256": "c7b93715eb18ed86f6794eb2ccddc7f98a6e71438bc928a7fe12d08269556729"
+    },
+    {
+      "path": "protection-before.json",
+      "bytes": 2196,
+      "sha256": "4d5b2d93055bac379a715ee6b0ef79cb66394e5777eaa6e5a6a10ab12016fa3c"
+    },
+    {
+      "path": "protection-after.json",
+      "bytes": 2196,
+      "sha256": "4d5b2d93055bac379a715ee6b0ef79cb66394e5777eaa6e5a6a10ab12016fa3c"
+    },
+    {
+      "path": "full\\broker-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full\\broker-out.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full\\host-arm64-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full\\host-arm64.txt",
+      "bytes": 1294,
+      "sha256": "ac4199941e674d5ac58b307c88c8d77c987ee0ea08f33dbd0d35b051addfe4f8"
+    },
+    {
+      "path": "full\\host-x64-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full\\host-x64.txt",
+      "bytes": 1294,
+      "sha256": "ac4199941e674d5ac58b307c88c8d77c987ee0ea08f33dbd0d35b051addfe4f8"
+    },
+    {
+      "path": "full\\host-x86-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full\\host-x86.txt",
+      "bytes": 1294,
+      "sha256": "87503dc94334702752c5b60d75990e8f4d116a13f4e4674f6938b6012453b0df"
+    },
+    {
+      "path": "shorthand\\broker-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "shorthand\\broker-out.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "shorthand\\host-arm64-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "shorthand\\host-arm64.txt",
+      "bytes": 1294,
+      "sha256": "ac4199941e674d5ac58b307c88c8d77c987ee0ea08f33dbd0d35b051addfe4f8"
+    },
+    {
+      "path": "shorthand\\host-x64-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "shorthand\\host-x64.txt",
+      "bytes": 1294,
+      "sha256": "ac4199941e674d5ac58b307c88c8d77c987ee0ea08f33dbd0d35b051addfe4f8"
+    },
+    {
+      "path": "shorthand\\host-x86-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "shorthand\\host-x86.txt",
+      "bytes": 1294,
+      "sha256": "87503dc94334702752c5b60d75990e8f4d116a13f4e4674f6938b6012453b0df"
+    },
+    {
+      "path": "variable\\broker-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "variable\\broker-out.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "variable\\host-arm64-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "variable\\host-arm64.txt",
+      "bytes": 1294,
+      "sha256": "ac4199941e674d5ac58b307c88c8d77c987ee0ea08f33dbd0d35b051addfe4f8"
+    },
+    {
+      "path": "variable\\host-x64-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "variable\\host-x64.txt",
+      "bytes": 1294,
+      "sha256": "ac4199941e674d5ac58b307c88c8d77c987ee0ea08f33dbd0d35b051addfe4f8"
+    },
+    {
+      "path": "variable\\host-x86-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "variable\\host-x86.txt",
+      "bytes": 1294,
+      "sha256": "87503dc94334702752c5b60d75990e8f4d116a13f4e4674f6938b6012453b0df"
+    },
+    {
+      "path": "installed-runtime-startup/live-token-query.json",
+      "bytes": 547,
+      "sha256": "e5fead4df57eaa559e2fb4169d4cfca2932bd463bc427833e4cda95360eb9047"
+    },
+    {
+      "path": "installed-runtime-startup/runtime-status-after.json",
+      "bytes": 640,
+      "sha256": "74a1f29b28faa82e0ca4e1709d7239368599ca82fae7ebf5069a0cb7a7938cdc"
+    },
+    {
+      "path": "installed-runtime-startup/runtime-status-before.json",
+      "bytes": 640,
+      "sha256": "74a1f29b28faa82e0ca4e1709d7239368599ca82fae7ebf5069a0cb7a7938cdc"
+    },
+    {
+      "path": "installed-runtime-startup/startup-err.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "installed-runtime-startup/startup-out.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "installed-runtime-startup/startup.json",
+      "bytes": 530,
+      "sha256": "a94afe6640e9f82031f518454766654a607fd12a49e93feaa77c361939dbac92"
+    },
+    {
+      "path": "standard_registered_hosts.ps1",
+      "bytes": 14729,
+      "sha256": "c6b6616e1db48e5ab7f3091d9f10bba4da1e0abc70794a60b7b2546955beaa76"
+    },
+    {
+      "path": "start-standard-runtime.ps1",
+      "bytes": 4974,
+      "sha256": "58e798dd77f9c0c700eab8e3c15d07cfb816094e592ef7a6df0da2153d69471e"
+    },
+    {
+      "path": "inspect-standard-token.py",
+      "bytes": 2145,
+      "sha256": "ddf420dcee74040ad40b5b32dea92a32466ddb5c67448c39c7609f2d1624bc25"
+    }
+  ]
+}

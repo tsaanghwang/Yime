@@ -1,2 +1,3 @@
 *.json -text whitespace=cr-at-eol,-blank-at-eof
 *.log -text -diff
+*.txt -text -diff

@@ -150,13 +150,15 @@ type aceHeader struct {
 }
 
 func checkACL(f *os.File, content bool) error {
-	var owner, dacl, sd uintptr
+	// These are pointers returned by Windows, not integer handles. Preserve
+	// their pointer type while the self-relative security descriptor is alive.
+	var owner, dacl, sd unsafe.Pointer
 	result, _, _ := securityInfo.Call(f.Fd(), 1, 5, uintptr(unsafe.Pointer(&owner)), 0, uintptr(unsafe.Pointer(&dacl)), 0, uintptr(unsafe.Pointer(&sd)))
-	if result != 0 || owner == 0 || dacl == 0 {
+	if result != 0 || owner == nil || dacl == nil {
 		return errors.New("protected ownership/DACL unavailable")
 	}
-	defer localFree.Call(sd)
-	s, err := (*syscall.SID)(unsafe.Pointer(owner)).String()
+	defer localFree.Call(uintptr(sd))
+	s, err := (*syscall.SID)(owner).String()
 	if err != nil || !trustedSID(s) {
 		return errors.New("untrusted protected object owner")
 	}
@@ -164,28 +166,28 @@ func checkACL(f *os.File, content bool) error {
 	// protected child or changing its owner/ACL/attributes is not. Directory
 	// handles additionally deny deletion/rename while maintenance is active.
 	mask := mutatingAccessMask(content)
-	acl := (*aclHeader)(unsafe.Pointer(dacl))
+	acl := (*aclHeader)(dacl)
 	for i := uint16(0); i < acl.Count; i++ {
-		var ptr uintptr
-		ok, _, _ := getACE.Call(dacl, uintptr(i), uintptr(unsafe.Pointer(&ptr)))
-		if ok == 0 || ptr == 0 {
+		var ptr unsafe.Pointer
+		ok, _, _ := getACE.Call(uintptr(dacl), uintptr(i), uintptr(unsafe.Pointer(&ptr)))
+		if ok == 0 || ptr == nil {
 			return errors.New("ACL entry unavailable")
 		}
-		a := (*aceHeader)(unsafe.Pointer(ptr))
+		a := (*aceHeader)(ptr)
 		if a.Flags&8 != 0 || a.Type == 1 {
 			continue
 		}
 		if a.Size < 8 {
 			return errors.New("invalid ACL entry")
 		}
-		rights := *(*uint32)(unsafe.Pointer(ptr + 4))
+		rights := *(*uint32)(unsafe.Add(ptr, 4))
 		if rights&mask == 0 {
 			continue
 		}
 		if a.Type != 0 {
 			return errors.New("unsupported mutating ACL entry")
 		}
-		sid, err := (*syscall.SID)(unsafe.Pointer(ptr + 8)).String()
+		sid, err := (*syscall.SID)(unsafe.Add(ptr, 8)).String()
 		if err != nil || !trustedSID(sid) {
 			return errors.New("non-administrator can mutate protected object")
 		}

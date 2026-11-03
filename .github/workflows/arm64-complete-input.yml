@@ -85,7 +85,8 @@ jobs:
               'tools/yimecore': ['test_assemble_installed_18u', 'test_assemble_installed_18u_arm64',
                   'test_package_installed_18u', 'test_package_installed_18u_arm64',
                   'test_package_installed_18u_frontend', 'test_installed_18u_lifecycle'],
-              'tools/rime-pime': ['test_build_inputs', 'test_package_native_maintenance']}
+              'tools/rime-pime': ['test_build_inputs', 'test_package_native_maintenance'],
+              'tools': ['test_repackage_standard_arm64', 'test_18u_product_identity']}
           for directory, modules in groups.items():
               sys.path.insert(0, str(root / directory))
               for name in modules:
@@ -105,6 +106,7 @@ jobs:
               'installer/simple/tests/18u-architecture-contract.ps1',
               'installer/simple/tests/Test-18uArm64ElevationShell.ps1',
               'installer/simple/tests/Test-Installed18uOwnership.ps1',
+              'installer/simple/tests/Test-PostInstallStartup.ps1',
               'installer/simple/tests/Test-FileAccess.ps1',
               'installer/simple/tests/Test-18uUnregisterSequence.ps1']
           for edition in ('ps5', 'ps7'):

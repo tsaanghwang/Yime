@@ -20,7 +20,14 @@ if((Get-SetupShell $product $x64 $shell 7 $rejectPe) -cne $legacy){throw 'x64 el
 if((Get-SetupShell $product $x64 $legacy 5 $rejectPe) -cne $legacy){throw 'x64 PS5 elevation path changed'}
 if((Get-SetupShell ([pscustomobject]@{id='yimecore'}) $arm $shell 7 $rejectPe) -cne $legacy){throw 'standard product elevation path changed'}
 if((Get-SetupShell $product $arm $shell 7 $acceptPe) -cne $shell){throw 'ARM64 did not select current native PS7'}
-if((Get-SetupShell $product $arm $shell 7) -cne $shell){throw 'ARM64 PE verification rejected current native PS7'}
+# Both host classes exercise the actual PE gate. An x64 CI shell is a real
+# negative case, not an ARM64 positive or a skipped contract. The native ARM64
+# development host retains the real, non-mocked positive check.
+$machine=Get-NativeHostMachine
+$actualArm64Positive=$machine.nativeMachine -eq 0xaa64 -and $machine.processMachine -eq 0
+if($actualArm64Positive){
+    if((Get-SetupShell $product $arm $shell 7) -cne $shell){throw 'ARM64 PE verification rejected current native PS7'}
+}else{MustReject {Get-SetupShell $product $arm $shell 7}}
 MustReject {Get-SetupShell $product $arm $shell 5 $acceptPe}
 MustReject {Get-SetupShell $product $arm $legacy 7 $acceptPe}
 MustReject {Get-SetupShell $product $arm $shell 7 $rejectPe}
@@ -41,3 +48,4 @@ if($packageGate -lt 0 -or $sidGate -le $packageGate -or $adminGate -le $sidGate 
    $bothActions -le $adminGate -or $maintenanceGate -le $bothActions -or
    $elevation -le $maintenanceGate -or $installedWork -le $elevation){throw 'Elevated pre-mutation checks changed'}
 Write-Output 'PASS ARM64 native PS7 shell selection, opposite-PE refusal, x64 preservation and pre-mutation gate'
+Write-Output ('Actual current-process ARM64 positive exercised='+$actualArm64Positive+'; nativeMachine=0x'+$machine.nativeMachine.ToString('x4')+'; processMachine=0x'+$machine.processMachine.ToString('x4')+'; other hosts exercise real opposite-PE refusal, not ARM64 execution acceptance')

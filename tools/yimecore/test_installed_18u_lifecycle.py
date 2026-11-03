@@ -56,9 +56,11 @@ class LifecycleSourceContracts(unittest.TestCase):
         self.assertIn("if($product.id -ne 'yimecore-18u' -or $full18u){Set-UserStartup ('\"'+$exe+'\" '+$arguments)}", SETUP)
         self.assertIn("$manifestHash=Get-ContentHash (Join-Path $root 'installed-18u-product.json')", SETUP)
         self.assertIn('--installed-18u-run --install-root "{0}" --manifest-sha256 {1}', SETUP)
-        end = SETUP.index("$stage='start installed runtime'")
-        self.assertIn('exit 0', SETUP[SETUP.index("Write-Output ('Installed persistent independent 18u:"):end])
-        self.assertIn('exit 0', SETUP[SETUP.index('if($nativeMaintenance){\n'):end])
+        installed = SETUP[SETUP.index("Write-Output ('Installed persistent independent 18u:"):]
+        self.assertIn('exit 0', installed)
+        self.assertIn('exit 0', installed[installed.index('if($nativeMaintenance){\n'):])
+        self.assertNotIn('Start-Process', installed)
+        self.assertIn('Start-VerifiedInstalledRuntime $package $packageManifestHash', SETUP)
         self.assertNotIn('--installed-18u-check', SETUP)
 
     def test_native_architecture_contract_is_explicit_and_bound(self):

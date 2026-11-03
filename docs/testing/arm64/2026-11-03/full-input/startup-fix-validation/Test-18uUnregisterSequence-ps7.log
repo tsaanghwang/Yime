@@ -1,0 +1,1 @@
+PASS 18u unregister: separate TIP and final COM processes; all phase failures stop; install unchanged; native operations mocked

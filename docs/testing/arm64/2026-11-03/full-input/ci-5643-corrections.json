@@ -1,0 +1,191 @@
+{
+  "schema": "armfull-ci-correction-v1",
+  "sourceCommit": "5643f5ae00f9ffd2a486fb372ffbc47cbf593107",
+  "checkedAtUTC": "2026-11-03T13:54:20.090Z",
+  "checks": [
+    {
+      "name": "core-build",
+      "id": 125958759558,
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125958759558"
+    },
+    {
+      "name": "shard-coverage",
+      "id": 125958487820,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125958487820"
+    },
+    {
+      "name": "complete-input",
+      "id": 125956484017,
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973680/job/125956484017"
+    },
+    {
+      "name": "go-race-msys2",
+      "id": 125955451371,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125955451371"
+    },
+    {
+      "name": "real-rime-tests / 2",
+      "id": 125955451257,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125955451257"
+    },
+    {
+      "name": "native-build",
+      "id": 125955451212,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125955451212"
+    },
+    {
+      "name": "real-rime-tests / 1",
+      "id": 125955451194,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125955451194"
+    },
+    {
+      "name": "simple-installer",
+      "id": 125955451190,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125955451190"
+    },
+    {
+      "name": "real-rime-tests / 0",
+      "id": 125955451066,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125955451066"
+    },
+    {
+      "name": "go-tests",
+      "id": 125955451053,
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125955451053"
+    },
+    {
+      "name": "rust-i686-host",
+      "id": 125955451012,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125955451012"
+    },
+    {
+      "name": "lexicon-offline-tooling",
+      "id": 125955450985,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125955450985"
+    },
+    {
+      "name": "one-shot-18u-language-inventory",
+      "id": 125954807065,
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125954807065"
+    },
+    {
+      "name": "one-shot-18u-language-prepare",
+      "id": 125954761330,
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125954761330"
+    },
+    {
+      "name": "one-shot-18u-registration-probe",
+      "id": 125954760804,
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125954760804"
+    },
+    {
+      "name": "native-rime (ARM64)",
+      "id": 125954759873,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973680/job/125954759873"
+    },
+    {
+      "name": "native-rime (x64)",
+      "id": 125954759804,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973680/job/125954759804"
+    },
+    {
+      "name": "contracts",
+      "id": 125954759745,
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973680/job/125954759745"
+    },
+    {
+      "name": "native-rime (Win32)",
+      "id": 125954759716,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973680/job/125954759716"
+    },
+    {
+      "name": "native-18u (ARM64, arm64)",
+      "id": 125954759657,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973680/job/125954759657"
+    },
+    {
+      "name": "native-18u (x64, amd64)",
+      "id": 125954759246,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973680/job/125954759246"
+    },
+    {
+      "name": "build-contract / validate-build-contract",
+      "id": 125954758612,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973367/job/125954758612"
+    },
+    {
+      "name": "offline-prototype",
+      "id": 125954758230,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973429/job/125954758230"
+    },
+    {
+      "name": "substitute-tsf",
+      "id": 125954757827,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41646973566/job/125954757827"
+    }
+  ],
+  "failures": [
+    {
+      "job": 125954759745,
+      "cause": "ARM64 elevation-shell contract incorrectly required current x64 CI pwsh to be native ARM64.",
+      "fix": "Keep mocked positive and opposite-PE rejection; require actual PE success on native ARM64 PS7 and actual PE rejection on non-native-ARM64 hosts. No test skipped.",
+      "localResult": "PASS nativeMachine=0xaa64/processMachine=0x0000; actual ARM64 positive exercised=true; x64 execution observation remains pending next CI."
+    },
+    {
+      "job": 125955451053,
+      "cause": "go vet reported five uintptr-to-unsafe.Pointer conversions for Windows-owned ACL output pointers.",
+      "fix": "Use unsafe.Pointer for GetSecurityInfo/GetAce pointer outputs and unsafe.Add for ACE offsets; retain API lifetime and lock semantics.",
+      "localResult": "Go 1.25.14 Windows/ARM64 go vet ./cmd/yime-maintenance and go test ./cmd/yime-maintenance PASS. Go 1.26.4 hosted rerun pending next CI."
+    }
+  ],
+  "aggregates": "complete-input and core-build failed because dependencies above failed.",
+  "scope": "No installer, registrar, registered host or physical acceptance performed by the CI workflow. ARM64 C++ is cross-build; x64/Win32 native execution is recorded by each job."
+}

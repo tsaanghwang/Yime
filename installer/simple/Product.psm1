@@ -32,6 +32,58 @@ function Get-ContentHash([string]$Path){
     try{return ([BitConverter]::ToString($sha.ComputeHash($stream))).Replace('-','').ToLowerInvariant()}
     finally{$sha.Dispose();$stream.Dispose()}
 }
+function Test-SetupAdministrator {
+    return ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+function Get-ProductInstallPaths($Product){
+    $root=Join-Path ([Environment]::GetFolderPath('ProgramFiles')) $Product.directory
+    $folder=if($Product.id -eq 'rime-pime'){'ApplicationData'}else{'LocalApplicationData'}
+    $state=Join-Path ([Environment]::GetFolderPath($folder)) $Product.state
+    return [pscustomobject]@{root=(Assert-PlainPath $root);state=(Assert-PlainPath $state)}
+}
+function Start-VerifiedInstalledRuntime($Package,[string]$ExpectedManifestHash){
+    # Only the original ordinary-user caller may launch a product after UAC.
+    # A successful elevated exit code alone is not proof of installed bytes.
+    if(Test-SetupAdministrator){throw 'The installed runtime must be started by a non-elevated user process'}
+    if($ExpectedManifestHash -cnotmatch '^[a-f0-9]{64}$'){throw 'Missing original package manifest hash'}
+    $product=Get-Product $Package.manifest.product
+    $contract=Get-PackageContract $Package.manifest
+    $paths=Get-ProductInstallPaths $product
+    $root=Assert-PlainPath $paths.root;$state=Assert-PlainPath $paths.state
+    $manifestPath=Assert-PlainPath (Join-Path $root '.setup/product-package.json')
+    if((Get-ContentHash $manifestPath) -cne $ExpectedManifestHash){throw 'Installed maintenance manifest differs from the original checked package'}
+    # Assert-OwnedDirectory permits an empty directory during installation;
+    # startup additionally requires its actual completed-install marker.
+    Assert-OwnedDirectory $root $product.id $contract.target
+    $marker=Get-Content -LiteralPath (Join-Path $root '.yime-product.json') -Raw -Encoding UTF8|ConvertFrom-Json
+    if($marker.version -cne $Package.manifest.version){throw 'Installed marker version differs from the checked package'}
+    $seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach($row in $Package.manifest.files){
+        if($row.path -match '(^[/\\]|:|(^|[/\\])\.\.?([/\\]|$))' -or -not $seen.Add($row.path)){throw 'Invalid installed startup member'}
+        $path=Assert-PlainPath (Join-Path $root $row.path)
+        if(-not $path.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Installed startup member escaped product root'}
+        if((Get-Item -LiteralPath $path).Length -ne $row.bytes -or (Get-ContentHash $path) -cne $row.sha256){throw ('Installed startup payload damaged: '+$row.path)}
+    }
+    if(-not $seen.Contains($product.exe.Replace('\','/'))){throw 'Installed startup runtime is not a checked payload member'}
+    $arguments=if($product.id -eq 'yimecore'){'-install-root "{0}" -state-root "{1}"' -f $root,$state}else{''}
+    if($product.id -eq 'yimecore-18u'){
+        $descriptor=Join-Path $root 'installed-18u-product.json'
+        if(-not $seen.Contains('installed-18u-product.json')){throw 'Installed 18u descriptor is not checked'}
+        if((Get-Content -LiteralPath $descriptor -Raw -Encoding UTF8|ConvertFrom-Json).schema -cne 'installed-18u-product-v2'){
+            Write-Output 'Installed 18u version one does not start a runtime automatically.'
+            return
+        }
+        $arguments='--installed-18u-run --install-root "{0}" --manifest-sha256 {1}' -f $root,(Get-ContentHash $descriptor)
+    }
+    $start=@{FilePath=(Join-Path $root $product.exe);WorkingDirectory=$root;WindowStyle='Hidden';PassThru=$true}
+    if($arguments){$start.ArgumentList=$arguments}
+    $process=Start-Process @start
+    try{
+        Start-Sleep -Milliseconds 800
+        if($process.HasExited){throw 'Installed runtime exited at startup; inspect its log, then reinstall'}
+    }finally{$process.Dispose()}
+    Write-Output ('Installed: '+$product.name+'. Started by the original non-elevated user. Select it from the Windows input-method menu.')
+}
 function Get-PackageContract($Manifest){
     $product=Get-Product $Manifest.product
     if($product.id -ceq 'yimecore-18u'){

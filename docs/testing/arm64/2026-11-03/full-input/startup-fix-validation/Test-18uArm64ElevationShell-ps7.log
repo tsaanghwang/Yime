@@ -1,0 +1,2 @@
+PASS ARM64 native PS7 shell selection, opposite-PE refusal, x64 preservation and pre-mutation gate
+Actual current-process ARM64 positive exercised=True; nativeMachine=0xaa64; processMachine=0x0000; other hosts exercise real opposite-PE refusal, not ARM64 execution acceptance

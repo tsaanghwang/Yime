@@ -1,0 +1,99 @@
+{
+  "scope": "ordinary-parent post-install startup source and isolated regression; no real install, registration or runtime launch",
+  "checks": [
+    {
+      "name": "Test-PostInstallStartup-ps5",
+      "exitCode": 0,
+      "seconds": 5.78,
+      "passMarker": true
+    },
+    {
+      "name": "Test-Arm64Package-ps5",
+      "exitCode": 0,
+      "seconds": 13.98,
+      "passMarker": true
+    },
+    {
+      "name": "Test-PackageValidation-ps5",
+      "exitCode": 0,
+      "seconds": 3.14,
+      "passMarker": true
+    },
+    {
+      "name": "Test-Installed18uOwnership-ps5",
+      "exitCode": 0,
+      "seconds": 4.86,
+      "passMarker": true
+    },
+    {
+      "name": "Test-18uUnregisterSequence-ps5",
+      "exitCode": 0,
+      "seconds": 1.38,
+      "passMarker": true
+    },
+    {
+      "name": "Test-PostInstallStartup-ps7",
+      "exitCode": 0,
+      "seconds": 1.75,
+      "passMarker": true
+    },
+    {
+      "name": "Test-Arm64Package-ps7",
+      "exitCode": 0,
+      "seconds": 6.28,
+      "passMarker": true
+    },
+    {
+      "name": "Test-PackageValidation-ps7",
+      "exitCode": 0,
+      "seconds": 2.17,
+      "passMarker": true
+    },
+    {
+      "name": "Test-Installed18uOwnership-ps7",
+      "exitCode": 0,
+      "seconds": 2.83,
+      "passMarker": true
+    },
+    {
+      "name": "Test-18uUnregisterSequence-ps7",
+      "exitCode": 0,
+      "seconds": 0.69,
+      "passMarker": true
+    },
+    {
+      "name": "Test-Logging-ps5",
+      "exitCode": 0,
+      "seconds": 5.62,
+      "passMarker": true
+    },
+    {
+      "name": "Test-ProcessWait-ps5",
+      "exitCode": 0,
+      "seconds": 5.27,
+      "passMarker": true
+    },
+    {
+      "name": "Test-ProfileRemoval-ps5",
+      "exitCode": 0,
+      "seconds": 1.62,
+      "passMarker": true
+    },
+    {
+      "name": "Test-18uArm64ElevationShell-ps7",
+      "exitCode": 0,
+      "seconds": 1.16,
+      "passMarker": true
+    },
+    {
+      "name": "python-lifecycle",
+      "exitCode": 0,
+      "seconds": 0.17,
+      "passMarker": true
+    }
+  ],
+  "passed": true,
+  "tokenAndStartProcessMockedInNewFixture": true,
+  "newFixtureCasesPerEdition": 13,
+  "actualPostUACBranchScenariosPerEdition": 3
+}

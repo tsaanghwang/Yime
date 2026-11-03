@@ -1,0 +1,6 @@
+Installed: YimeCore. Started by the original non-elevated user. Select it from the Windows input-method menu.
+Installed: Yime Rime-PIME. Started by the original non-elevated user. Select it from the Windows input-method menu.
+Installed 18u version one does not start a runtime automatically.
+Installed: YimeCore 18u Touch (development). Started by the original non-elevated user. Select it from the Windows input-method menu.
+Installed: YimeCore. Started by the original non-elevated user. Select it from the Windows input-method menu.
+PASS 13 isolated startup cases plus 3 actual post-UAC branch scenarios: normal standard/legacy Rime/full 18u, v1 no-start, administrator and 8 installed-integrity refusals; failed Install/Uninstall never launch. Token/process calls mocked; no system lifecycle.

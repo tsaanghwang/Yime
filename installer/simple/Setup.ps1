@@ -31,6 +31,7 @@ if($installedEntry){
 }else{$package=Read-Package $PSScriptRoot}
 $product=$package.product
 $contract=$package.contract
+$packageManifestHash=Get-ContentHash (Join-Path $package.root 'product-package.json')
 $full18u=$false
 if($product.id -ceq 'yimecore-18u'){
     $descriptorPath=if($installedEntry){Join-Path ([IO.Path]::GetDirectoryName($PSScriptRoot)) 'installed-18u-product.json'}else{Join-Path $PSScriptRoot 'payload/installed-18u-product.json'}
@@ -53,8 +54,12 @@ if(-not $administrator){
     $args='-NoProfile -ExecutionPolicy Bypass -File "{0}" -Action {1} -InitiatingSid "{2}" -LogId {3}' -f $PSCommandPath,$Action,$sid,$LogId
     if($ResetData){$args+=' -ResetData'};if($Silent){$args+=' -Silent'}
     $p=Start-Process -FilePath $setupShell -ArgumentList $args -Verb RunAs -PassThru -WindowStyle Hidden
-    $code=Wait-SetupExit $p
+    try{$code=Wait-SetupExit $p}finally{$p.Dispose()}
     Write-Output ('Elevated setup exit code: '+$code)
+    if($code -eq 0 -and $Action -eq 'Install'){
+        $stage='verify installed product and start ordinary runtime'
+        Start-VerifiedInstalledRuntime $package $packageManifestHash
+    }
     exit $code
 }
 $stage='installed product ownership check'
@@ -229,7 +234,10 @@ $stage='stop selected product background programs'
     }
     if($product.id -eq 'yimecore-18u'){
         Write-Output ('Installed persistent independent 18u: '+$root)
-        if($full18u){Write-Output 'User startup configured. The initiating non-elevated native entry starts the touch runtime; installed-host acceptance remains separate.'}
+        if($full18u){
+            if($InitiatingSid){Write-Output 'User startup configured. The initiating non-elevated entry starts the touch runtime; installed-host acceptance remains separate.'}
+            else{Write-Output 'Installed from an administrator process. No runtime was started. Start this product from a non-elevated user session.'}
+        }
         else{Write-Output 'No startup task or acceptance run was started. Keep the previous same-product package. Reboot when requested, then explicitly run the installed-host check from the delivery instructions.'}
         exit 0
     }
@@ -237,13 +245,8 @@ $stage='stop selected product background programs'
         Write-Output 'Installed. The initiating non-elevated native entry starts this product runtime.'
         exit 0
     }
-    $stage='start installed runtime'
-    $start=@{FilePath=$exe;WindowStyle='Hidden';PassThru=$true}
-    if($arguments){$start.ArgumentList=$arguments}
-    $p=Start-Process @start
-    Start-Sleep -Milliseconds 800
-    if($p.HasExited){throw 'Installed runtime exited at startup; inspect its log, then reinstall'}
-    Write-Output ('Installed: '+$product.name+'. Select it from the Windows input-method menu.')
+    if($InitiatingSid){Write-Output 'Installed. The original non-elevated setup caller will verify installed files and start this product runtime.'}
+    else{Write-Output 'Installed from an administrator process. No runtime was started. Start this product from a non-elevated user session.'}
 }catch{
     Write-Output ('FAILED stage: '+$stage)
     Write-Output ($_ | Format-List * -Force | Out-String)

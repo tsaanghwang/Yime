@@ -1,0 +1,15 @@
+{
+  "schema": "standard-installed-runtime-start-v1",
+  "installRoot": "C:\\Program Files\\YimeCore",
+  "stateRoot": "C:\\Users\\tsaan\\AppData\\Local\\YimeCore Experimental Trial",
+  "manifestSHA256": "5f976f70ace424340b6d9f7138a63e57eb4167b493e1a56afa0b277386fd994b",
+  "payloadsVerified": 69,
+  "parentPid": 41464,
+  "parentElevated": false,
+  "parentIntegrityRid": 8192,
+  "launchedPid": 17072,
+  "launchedProcessExited": true,
+  "exitCode": 0,
+  "processes": [],
+  "observedUtc": "2026-11-03T13:51:04.4523956Z"
+}

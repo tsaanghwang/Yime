@@ -1,0 +1,10 @@
+{
+  "source_commit": "64a785a7ede5fb2a53e2560b873075950160668b",
+  "package_manifest_sha256": "5f976f70ace424340b6d9f7138a63e57eb4167b493e1a56afa0b277386fd994b",
+  "installed_root": "C:\\Program Files\\YimeCore",
+  "x64_host": "C:\\dev\\Yime\\.generated\\arm64-standard-src\\.tmp\\yimecore-platform-experiments\\arm64-package-20261103-204612-a5f1a434\\native-x64-test\\Release\\YimeRegisteredHostTests.exe",
+  "x64_host_sha256": "464068c26fc559efac3982d9437003cefa6b637a091b9a41d1aabfc7211c5fd5",
+  "installed_payload_hashes_verified": 69,
+  "registration_executed": false,
+  "registered_host_activation_authorized": true
+}

@@ -1,0 +1,103 @@
+{
+  "schema": "post-install-ordinary-runtime-fix-v1",
+  "baseCommit": "5643f5ae00f9ffd2a486fb372ffbc47cbf593107",
+  "trigger": "The actual installed fixed-main standard Runtime/Broker/Toolbar inherited High integrity from elevated Setup. An ordinary caller then exited due to the existing singleton. Raw observations are preserved in ../standard-registered-host/installed-runtime-startup/.",
+  "change": "Elevated PowerShell installs and configures user startup but never launches runtime. On successful Install only, original nonadmin PowerShell verifies the original manifest hash, installed ownership marker/product/target/version and every payload before starting the product from known installation/state roots. Direct administrator invocation reports that no runtime was started. Native ARM64 Rime/18u helper path and version-one 18u no-start remain intact.",
+  "localChecks": "14 checked PowerShell runs PASS, including PS5/PS7 each exercising 13 isolated cases plus 3 real post-UAC branch scenarios; 8 Python lifecycle tests PASS; workflow 8 inline Python blocks parse; git diff --check PASS.",
+  "ciCorrectionChecks": "ACL pointer correction: Go 1.25.14 Windows/ARM64 go vet and go test ./cmd/yime-maintenance PASS. ElevationShell real ARM64 PS7 positive observed. Hosted Go 1.26.4 and x64 opposite-PE observation pending new immutable commit CI.",
+  "independentReadReview": "architecture agent reviewed installer diff: no native ARM64 Rime/18u attachment or Uninstall/Check path regression found; confirms tests mock token/process and real UAC/Medium-token observation remains required.",
+  "realInstallationAfterFixExecuted": false,
+  "preFixHighInstancesStopped": false,
+  "acceptanceStillRequired": "Commit and CI, package with explicit fixed-main payload/new-installer provenance, normal product upgrade, then actual ordinary Runtime/Broker token/live-process verification. The existing 9/9 installed synthetic host evidence belongs to the unchanged fixed-main payload.",
+  "sourceSHA256": {
+    "installer/simple/Product.psm1": "a0b3c82b2e3d539f18b3dacbd9f65025b0541d667a2edd9bdc4fb9ed40dc1c22",
+    "installer/simple/Setup.ps1": "fc922accf0f58a22c913e5c460b88db0657cd5aa9303ebaeea592d5706bc9229",
+    "installer/simple/tests/Test-PostInstallStartup.ps1": "42867f6cb53d1e6c78177e3f407ccc1c1b8f04b6b19d39da3ff0ea850d88b504",
+    "installer/simple/tests/Test-18uArm64ElevationShell.ps1": "95b6a766bc90b6c5188d5da67fc12c767de08d8a8f92be69009a5facb472bfd5",
+    "go-backend/cmd/yime-maintenance/main_windows.go": "e2f746450bd82d70b4f7b64fd76d89e28bd1f30f773c70842895a3b34b57e118",
+    "tools/yimecore/test_installed_18u_lifecycle.py": "111b33649ef1dcca837bd127ec17d26c4585809e6de385006a00090e030ee15c",
+    ".github/workflows/arm64-complete-input.yml": "4ce83f5e459a954cad299334e8018c070ce09f60c0f31c2d79e824fe178a4bfd"
+  },
+  "files": [
+    {
+      "path": "python-lifecycle.log",
+      "bytes": 111,
+      "sha256": "9f19866c8af7bd0425354480972b9749c259e92bd47393c4d7e76dcf44f46db3"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 2276,
+      "sha256": "7a90e75e1f0eefb10918a7bf4cdeae7c85d60dc0127c7658d07c25e1ee3df734"
+    },
+    {
+      "path": "Test-18uArm64ElevationShell-ps7.log",
+      "bytes": 278,
+      "sha256": "05e82bae229c28206c82543ecc86314697b456266216992820a87e316fc7bc1e"
+    },
+    {
+      "path": "Test-18uUnregisterSequence-ps5.log",
+      "bytes": 129,
+      "sha256": "07bc86f0a972f40031babf8d527c4e8b317391f554bc8563783e2bed2732873f"
+    },
+    {
+      "path": "Test-18uUnregisterSequence-ps7.log",
+      "bytes": 129,
+      "sha256": "07bc86f0a972f40031babf8d527c4e8b317391f554bc8563783e2bed2732873f"
+    },
+    {
+      "path": "Test-Arm64Package-ps5.log",
+      "bytes": 510,
+      "sha256": "08b878904f7b58d811824ada7085c5e839a71d99d614c02889d582ef12cbb750"
+    },
+    {
+      "path": "Test-Arm64Package-ps7.log",
+      "bytes": 510,
+      "sha256": "e1a38c4204babb04e94d1e791be65ff6046d446d50b6f65422778577c34658e3"
+    },
+    {
+      "path": "Test-Installed18uOwnership-ps5.log",
+      "bytes": 139,
+      "sha256": "93f4a307f1686fc685db20be588f5bc91c82415c28818a1861bcedde5f21bebc"
+    },
+    {
+      "path": "Test-Installed18uOwnership-ps7.log",
+      "bytes": 139,
+      "sha256": "93f4a307f1686fc685db20be588f5bc91c82415c28818a1861bcedde5f21bebc"
+    },
+    {
+      "path": "Test-Logging-ps5.log",
+      "bytes": 141,
+      "sha256": "2f1ef8143688c33c6c4e217356624ce45fd96a16669dfc8e59fde1e54f23cbb4"
+    },
+    {
+      "path": "Test-PackageValidation-ps5.log",
+      "bytes": 157,
+      "sha256": "08950ff5ebe7af3252cd7ca6214f5b6e9e0e95f58765cfafed34df3d890c6518"
+    },
+    {
+      "path": "Test-PackageValidation-ps7.log",
+      "bytes": 157,
+      "sha256": "08950ff5ebe7af3252cd7ca6214f5b6e9e0e95f58765cfafed34df3d890c6518"
+    },
+    {
+      "path": "Test-PostInstallStartup-ps5.log",
+      "bytes": 803,
+      "sha256": "979da17d596f4cfe207b67310e6f22592a35f39f7efb2ac6fbbb4c883d9e846d"
+    },
+    {
+      "path": "Test-PostInstallStartup-ps7.log",
+      "bytes": 803,
+      "sha256": "979da17d596f4cfe207b67310e6f22592a35f39f7efb2ac6fbbb4c883d9e846d"
+    },
+    {
+      "path": "Test-ProcessWait-ps5.log",
+      "bytes": 116,
+      "sha256": "dca731c39f6479ecde19644d49188714a80c4215dc14581b08ff2cb83ebc2959"
+    },
+    {
+      "path": "Test-ProfileRemoval-ps5.log",
+      "bytes": 161,
+      "sha256": "53f80d08356ae9c828d79b3b4315037eee104973ebc52afcdefd564cd5331c48"
+    }
+  ]
+}

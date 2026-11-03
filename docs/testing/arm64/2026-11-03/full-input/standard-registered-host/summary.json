@@ -1,0 +1,121 @@
+{
+  "schema": "standard-arm64-registered-host-v1",
+  "passed": true,
+  "failure": null,
+  "runs": [
+    {
+      "mode": "full",
+      "architecture": "arm64",
+      "executable": "C:\\Program Files\\YimeCore\\arm64\\YimeRegisteredHostTests.exe",
+      "sha256": "fe92b9218a6c4e33397075955ef59282936745a76f91e53422cbe28e53d304fa",
+      "fixture": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\standard-registered-host-final-20261103\\full\\fixture-arm64",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "mode": "full",
+      "architecture": "x64",
+      "executable": "C:\\dev\\Yime\\.generated\\arm64-standard-src\\.tmp\\yimecore-platform-experiments\\arm64-package-20261103-204612-a5f1a434\\native-x64-test\\Release\\YimeRegisteredHostTests.exe",
+      "sha256": "464068c26fc559efac3982d9437003cefa6b637a091b9a41d1aabfc7211c5fd5",
+      "fixture": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\standard-registered-host-final-20261103\\full\\fixture-x64",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "mode": "full",
+      "architecture": "x86",
+      "executable": "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+      "sha256": "ee26a038f789e3eae38a34beaa595ed667f18d79eb201f5d5b45b1404d1d5aba",
+      "fixture": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\standard-registered-host-final-20261103\\full\\fixture-x86",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "mode": "variable",
+      "architecture": "arm64",
+      "executable": "C:\\Program Files\\YimeCore\\arm64\\YimeRegisteredHostTests.exe",
+      "sha256": "fe92b9218a6c4e33397075955ef59282936745a76f91e53422cbe28e53d304fa",
+      "fixture": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\standard-registered-host-final-20261103\\variable\\fixture-arm64",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "mode": "variable",
+      "architecture": "x64",
+      "executable": "C:\\dev\\Yime\\.generated\\arm64-standard-src\\.tmp\\yimecore-platform-experiments\\arm64-package-20261103-204612-a5f1a434\\native-x64-test\\Release\\YimeRegisteredHostTests.exe",
+      "sha256": "464068c26fc559efac3982d9437003cefa6b637a091b9a41d1aabfc7211c5fd5",
+      "fixture": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\standard-registered-host-final-20261103\\variable\\fixture-x64",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "mode": "variable",
+      "architecture": "x86",
+      "executable": "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+      "sha256": "ee26a038f789e3eae38a34beaa595ed667f18d79eb201f5d5b45b1404d1d5aba",
+      "fixture": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\standard-registered-host-final-20261103\\variable\\fixture-x86",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "mode": "shorthand",
+      "architecture": "arm64",
+      "executable": "C:\\Program Files\\YimeCore\\arm64\\YimeRegisteredHostTests.exe",
+      "sha256": "fe92b9218a6c4e33397075955ef59282936745a76f91e53422cbe28e53d304fa",
+      "fixture": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\standard-registered-host-final-20261103\\shorthand\\fixture-arm64",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "mode": "shorthand",
+      "architecture": "x64",
+      "executable": "C:\\dev\\Yime\\.generated\\arm64-standard-src\\.tmp\\yimecore-platform-experiments\\arm64-package-20261103-204612-a5f1a434\\native-x64-test\\Release\\YimeRegisteredHostTests.exe",
+      "sha256": "464068c26fc559efac3982d9437003cefa6b637a091b9a41d1aabfc7211c5fd5",
+      "fixture": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\standard-registered-host-final-20261103\\shorthand\\fixture-x64",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "mode": "shorthand",
+      "architecture": "x86",
+      "executable": "C:\\Program Files\\YimeCore\\x86\\YimeRegisteredHostTests.exe",
+      "sha256": "ee26a038f789e3eae38a34beaa595ed667f18d79eb201f5d5b45b1404d1d5aba",
+      "fixture": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\standard-registered-host-final-20261103\\shorthand\\fixture-x86",
+      "passed": true,
+      "exit_code": 0
+    }
+  ],
+  "owned_private_brokers": [
+    {
+      "mode": "full",
+      "pid": 19880,
+      "image": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+      "started": "2026-11-03T13:52:35.7848187Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.StandardRegistered.6c089beb6c704b4590fc29178bc5670d",
+      "stopped": true
+    },
+    {
+      "mode": "variable",
+      "pid": 41952,
+      "image": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+      "started": "2026-11-03T13:52:46.7951580Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.StandardRegistered.68794d549e964e5d95daa941be08300e",
+      "stopped": true
+    },
+    {
+      "mode": "shorthand",
+      "pid": 41712,
+      "image": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+      "started": "2026-11-03T13:52:51.8899839Z",
+      "pipe": "\\\\.\\pipe\\YimeBroker.StandardRegistered.7081b621d07047b6a39b71968d201d7e",
+      "stopped": true
+    }
+  ],
+  "other_products_and_default_preserved": true,
+  "installer_executed": false,
+  "registration_executed": false,
+  "registered_host_executed": true,
+  "live_document_acceptance": false,
+  "physical_acceptance": false,
+  "scope": "Installed current standard DLLs, fresh owned TSF hosts, three installed indexes and private in-memory Brokers. No existing process stopped, document app closed, default input set, live user state read or test state merged."
+}
