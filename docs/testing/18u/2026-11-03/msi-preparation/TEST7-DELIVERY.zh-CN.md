@@ -3,11 +3,17 @@
 固定源码 `33b7113c8b76d6c95447856c2d5cca374b542507`，分支 `codex/msi-18u-test-preparation-20261103`。
 [专用 MSVC/离线/制包 CI 41617296801](https://github.com/tsaanghwang/Yime/actions/runs/41617296801) 全部通过；[桌面原型 CI 41617296829](https://github.com/tsaanghwang/Yime/actions/runs/41617296829) 通过。
 [通用 Build 41617297028](https://github.com/tsaanghwang/Yime/actions/runs/41617297028) 的 Go、竞争检测、三组真实 Rime、分片覆盖、原生 Win32、Rust i686、离线词典及安装器检查均通过；无需执行的一次性注册/语言环境任务按条件跳过。
-本页交付源代码及完整候选包，不是本机安装或普通应用/指笔验收通过记录。
+本页固定源代码及完整候选包；下方另列 MSI 本地自有宿主新进展，不将其扩展为普通应用或指笔验收。
 
 这里的 MSI 指微星测试机 WIN-JTKUT7KBVN7；交付物是 x64 ZIP，不是 Windows Installer `.msi` 文件。安装仍由包内 `installer/simple` 维护入口承担，下载和解压不等于授权执行该入口。
 
-## 固定包
+## MSI 本地进展：自有宿主一次通过（脱敏回传已固定）
+
+2026-11-03 22:50 +08:00，MSI 本地 Codex 审阅确认 test.7 的一次 CN/variable 自有宿主检查通过。当前桌面用户与安装用户一致，以非管理员身份执行；固定包及 45 个安装文件核验通过，Windows 实际激活注册 profile 并加载已安装 DLL，一次提交为 `applied`、非空读回匹配，Runtime/host/Broker 正常退出。没有自动重试，默认输入法相关注册、受保护文件及机器注册比较未变。
+
+固定提交 `ff7349be` 的[脱敏审阅结果](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/REVIEW.zh-CN.md)及[证据索引](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/evidence-index.json)已回传。**原始报告和日志留在 MSI 本机；索引哈希用于固定本机证据，不代表原始内容已公开可取，本地路径不是公开核验链接。** 本次范围仅限自有宿主；Word／Edge、翻转、手指与笔仍未据此验收。以下交付与安装前状态按形成时间保留，不覆盖本次新进展。
+
+## 固定包身份
 
 [下载完整 GitHub Artifact](https://github.com/tsaanghwang/Yime/actions/runs/41617296801/artifacts/13221664045)，名称 `installed-18u-x64-test-package-33b7113c8b76d6c95447856c2d5cca374b542507`，保留至 2026-11-17。Artifact 外层 ZIP 内含产品 ZIP，两个文件的哈希不同。
 
@@ -19,7 +25,7 @@
 | `payload/installed-18u-product.json` | 7383 | `29c3cce5f62c77d287c4410fdea8665e58f961e46e5dbc53b2ab5133beb1cef2` |
 | `package-evidence.json` | 8136 | `876748ab46401a387244803bb427b958d3828afb393dc2c27e4155baa44dada5` |
 
-包内六个 PE 的 Authenticode 观察均为 `NotSigned`，见[签名记录](ci-33b7113c/signatures.json)。哈希证明固定内容一致性，不是发布者签名。上表产品 ZIP 哈希来自 CI 实际归档后逐成员校验的[原始回执](ci-33b7113c/package-receipt.json)，本机没有下载或运行整个安装包。
+包内六个 PE 的 Authenticode 观察均为 `NotSigned`，见[签名记录](ci-33b7113c/signatures.json)。哈希证明固定内容一致性，不是发布者签名。上表产品 ZIP 哈希来自 CI 实际归档后逐成员校验的[原始回执](ci-33b7113c/package-receipt.json)；“本机没有下载或运行整个安装包”属于首次交付时状态，后续 MSI 本地进展见上方记录。
 
 ## 验证范围
 
@@ -31,7 +37,7 @@
 
 ## 本机接续边界
 
-### 安装前检查与派测条件
+### 安装前检查与派测条件（历史交付时状态）
 
 2026-11-03 再次只读核对远端：上述 CI 仍为 success，包 Artifact 的 ID、大小、SHA-256 与本页一致，尚未过期。此查询没有下载、运行或安装包内程序。
 
@@ -45,10 +51,10 @@
 | 未签名可执行文件 | 已知限制 | 六个 PE 均为 NotSigned；实际机器是否允许加载尚未验证，不能据 CI 成功判定，也不通过关闭系统保护来放行 |
 | 新版输入验收 | 未执行 | 安装后的身份、真实进程间连接、普通应用输入/读回及指笔分别建立新证据；test.6 结果不继承 |
 
-**派测结论：可以作为下一批候选交付核对，尚不能标为“本机已安装可测”或“输入验收通过”。** 本页不是安装指令；此轮不运行 `Setup.cmd`、`Setup.ps1`、注册工具或包内检查程序。现有 `prepare_msi_18u_test6.py` 只核验旧基线，不能用于认证 test.7；安装器的 `-Action Check` 也会生成日志，不能当成零写入静态核对。
+**首次交付时的派测结论：可以作为下一批候选交付核对，当时尚不能标为“本机已安装可测”或“输入验收通过”。** 此历史结论不覆盖上方单次自有宿主进展。本页不是新的安装或实测指令；首次交付轮次未运行 `Setup.cmd`、`Setup.ps1`、注册工具或包内检查程序。现有 `prepare_msi_18u_test6.py` 只核验旧基线，不能用于认证 test.7；安装器的 `-Action Check` 也会生成日志，不能当成零写入静态核对。
 
-WIN-JTKUT7KBVN7 当前仍安装 test.6。本轮未执行新安装、注册、重启、默认输入法修改、Word/Edge 输入或真人指笔实测。旧安装成功记录保持，不重复、不转记为 test.7。
+首次交付时 WIN-JTKUT7KBVN7 仍安装 test.6，该轮未执行新安装、注册、重启、默认输入法修改、Word/Edge 输入或真人指笔实测。旧安装成功记录保持，不重复、不转记为 test.7；当前 test.7 的新增结论仅取自上方本机单次检查。
 
 本候选支持原生 x64、同用户/登录会话/权限级别的可写 TSF context。触控前端三模式、CN/EN、候选等复用专用引擎；最终文本和支持的编辑动作通过激活 TIP 的实际 DoEditSession 提交。Home/End 为文档首尾，Enter/Tab 为文本；其它 Ctrl/Alt 快捷键、上下方向及功能键尚不支持，明确报错，不回退 SendInput。没有宣称所有应用兼容或完整系统键盘替代。
 
-以后安装此固定包并准备真实应用验证时，先按正常维护流程关闭前端和相关文档，再使用安装目录 `frontend/Start Installed Touch Keyboard.cmd`。不能复制新 exe 到 test.6，也不能把预览或内存回归当成新链路已通过。实际进程间认证/激活 TIP/普通应用读回与每种指笔输入仍需独立观察。操作语义见[安装版说明](../../../../../prototypes/touch-terminal/desktop/INSTALLED_TSF.zh-CN.md)，实测使用本目录空白结果表。
+对于未来的新安装，或已安装 test.7 后另行安排的真实应用验证，先按正常维护流程关闭前端和相关文档，再使用安装目录 `frontend/Start Installed Touch Keyboard.cmd`。这不表示本机尚未安装，也不自动触发新检查。不能复制新 exe 到 test.6，也不能把预览、内存回归或本次自有宿主结果当成普通应用链路已通过。普通应用中的进程间认证、TIP 激活及读回，以及每种指笔输入仍需独立观察。操作语义见[安装版说明](../../../../../prototypes/touch-terminal/desktop/INSTALLED_TSF.zh-CN.md)，实测使用本目录空白结果表。

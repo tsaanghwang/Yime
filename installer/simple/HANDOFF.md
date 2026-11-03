@@ -4,10 +4,13 @@
 
 ## 当前任务
 
+**2026-11-03 22:50 +08:00：MSI test.7 自有宿主单次闭环通过，脱敏回传已固定。** MSI 本地 Codex 审阅确认：当前桌面用户与安装用户一致，以非管理员身份执行；固定包与 45 个安装文件核验通过，Windows 实际激活注册 profile、加载已安装 DLL，一次 CN/variable 提交为 `applied`，非空读回匹配，Runtime/host/Broker 正常退出。仅执行一次，无自动重试；默认输入法相关注册、受保护文件与机器注册比较未变。
+已取得固定提交 `ff7349be` 的[脱敏审阅结果](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/REVIEW.zh-CN.md)及[证据索引](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/evidence-index.json)。原始报告和日志留在 MSI 本机；索引哈希用于固定本机证据，不代表原始内容已公开可取，本地路径也不是公开核验链接。本次仅覆盖自有宿主，不代表 Word／Edge、翻转、手指或笔通过；不重复已通过用例。
+
 **2026-11-03：MSI 完整触控前端与普通应用 TSF 接入开发。** 分支 `codex/msi-18u-test-preparation-20261103`。
 新增安装版前端、专用 TIP 线程内最终编辑端点、同源完整 test.7 制包路径及隔离回归。
 本机完整前端三模式内存检查、Go 回归与原生内存 TSF 编辑回归通过；最终 `33b7113c` 的完整 MSVC/离线/制包 CI 已通过，完整 test.7 下载及哈希见[固定交付](../../docs/testing/18u/2026-11-03/msi-preparation/TEST7-DELIVERY.zh-CN.md)。
-当前 MSI `WIN-JTKUT7KBVN7` 的 test.6 安装保留，没有新安装、默认输入法修改或真人实测。
+本段开发交付时 MSI `WIN-JTKUT7KBVN7` 仍保留 test.6、尚未新安装；这是历史状态，当前 test.7 自有宿主进展以上方 22:50 本地审阅记录为准，真人实测仍未完成。
 当前实现、边界和验证入口见[前端开发交接](../../docs/testing/18u/2026-11-03/msi-preparation/FRONTEND-DEVELOPMENT.zh-CN.md)。
 下方 MyComputer 记录仍仅属于该机器，不代表 MSI 或新版前端验收。
 
