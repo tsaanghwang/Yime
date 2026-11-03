@@ -65,7 +65,7 @@ class RegistrationFlowTests(unittest.TestCase):
         else:self.fail('unexpected native operation '+op)
         return state
 
-    def register(self,**kwargs):return flow.register(self.package,self.root/'original',self.anchor,flow.REGISTER_CONFIRM,runner=self.runner,**kwargs)
+    def register(self,**kwargs):return flow.register(self.package,self.root/'original',self.anchor,flow.REGISTER_CONFIRM,runner=kwargs.pop('runner',self.runner),**kwargs)
     def recover(self,**kwargs):return flow.recover(self.package,self.root/'original',self.root/'recovery',self.anchor,flow.RECOVER_CONFIRM,runner=self.runner,**kwargs)
 
     def test_registration_once_and_separate_verify(self):
@@ -73,6 +73,112 @@ class RegistrationFlowTests(unittest.TestCase):
         self.assertEqual(self.calls,['--register-once','--verify']);self.assertTrue(result['activationEvidenceConsistent'])
         self.assertFalse(result['automaticRecoveryAttempted']);self.assertFalse(result['sourceAuthenticityVerified'])
         self.assertEqual(json.loads((self.root/'original/registration.json').read_text()),result)
+
+    @staticmethod
+    def failure_trace():
+        return [dict(schema='18u-activation-failure-v1',phase='operation',stage='activate-own-profile-forprocess',code=0x80070057),
+                dict(schema='18u-activation-failure-v1',phase='cleanup',stage='existing-tip-identity',code=0x80004005)]
+
+    def test_mainline_failure_trace_keeps_original_and_cleanup_in_receipt(self):
+        rows=self.failure_trace()
+        raw='\n'.join(json.dumps(row) for row in rows)+'\n'
+        def failed(command,cwd,stdout,stderr,timeout,on_root_created=None):
+            state=self.runner(command,cwd,stdout,stderr,timeout,on_root_created)
+            native=json.loads(stdout.read_text());native.update(status='failed',stage=rows[1]['stage'],code=rows[1]['code'])
+            stdout.write_text(json.dumps(native));stderr.write_bytes(raw.encode());state['exitCode']=1
+            return state
+        result=self.register(runner=failed)
+        self.assertEqual(self.calls,['--register-once'])
+        self.assertEqual(result['nativeStatus'],'failed')
+        self.assertEqual(result['nativeFailure'],dict(stage=rows[1]['stage'],code=rows[1]['code']))
+        self.assertEqual(result['failureTrace'],rows);self.assertTrue(result['failureTraceComplete'])
+        self.assertEqual(result['stderr']['sha256'],flow.sha(raw.encode()))
+        self.assertEqual((self.root/'original/register-stderr.txt').read_bytes(),raw.encode())
+        self.assertEqual(result['failureReason'],'native-registration-incomplete')
+        self.assertFalse(result['automaticRecoveryAttempted']);self.assertFalse(result['activationEvidenceConsistent'])
+
+    def test_damaged_stderr_line_keeps_valid_failure_events(self):
+        operation,cleanup=self.failure_trace()
+        for name,raw,expected in (
+            ('invalid-tail',json.dumps(operation).encode()+b'\n\xff',[operation]),
+            ('invalid-middle',json.dumps(operation).encode()+b'\n\xff\n'+json.dumps(cleanup).encode(),[operation,cleanup]),
+        ):
+            with self.subTest(name=name):
+                evidence=self.root/name
+                def failed(command,cwd,stdout,stderr,timeout,on_root_created=None):
+                    state=self.runner(command,cwd,stdout,stderr,timeout,on_root_created)
+                    native=json.loads(stdout.read_text());native.update(status='failed',stage=cleanup['stage'],code=cleanup['code'])
+                    stdout.write_text(json.dumps(native));stderr.write_bytes(raw);state['exitCode']=1
+                    return state
+                before=len(self.calls)
+                result=flow.register(self.package,evidence,self.anchor,flow.REGISTER_CONFIRM,runner=failed)
+                self.assertEqual(self.calls[before:],['--register-once'])
+                self.assertEqual(result['failureTrace'],expected)
+                self.assertFalse(result['failureTraceComplete'])
+                self.assertEqual(result['stderr']['sha256'],flow.sha(raw))
+                self.assertEqual((evidence/'register-stderr.txt').read_bytes(),raw)
+                self.assertFalse(result['activationEvidenceConsistent'])
+
+    def test_invalid_native_json_keeps_logs_process_and_ledger_without_verifying(self):
+        samples=['','{"status":','[]','null','true','1','"text"','{"status":1,"status":2}',
+                 '{"code":NaN}','{"code":Infinity}']
+        for number,raw in enumerate(samples):
+            for exit_code in (1,4):
+                with self.subTest(raw=raw,exit_code=exit_code):
+                    evidence=self.root/f'invalid-{number}-{exit_code}'
+                    def invalid(command,cwd,stdout,stderr,timeout,on_root_created=None):
+                        state=self.runner(command,cwd,stdout,stderr,timeout,on_root_created)
+                        stdout.write_bytes(raw.encode());state['exitCode']=exit_code
+                        return state
+                    before=len(self.calls)
+                    result=flow.register(self.package,evidence,self.anchor,flow.REGISTER_CONFIRM,runner=invalid)
+                    self.assertEqual(self.calls[before:],['--register-once'])
+                    self.assertEqual(result['status'],'failed-or-inconclusive');self.assertTrue(result['failureReason'])
+                    self.assertEqual(result['process']['exitCode'],exit_code);self.assertIsNotNone(result['ledgerSha256'])
+                    self.assertFalse(result['automaticRecoveryAttempted']);self.assertFalse(result['activationEvidenceConsistent'])
+                    self.assertEqual(result['stdout']['sha256'],flow.sha(raw.encode()))
+                    self.assertEqual((evidence/'register-stdout.txt').read_bytes(),raw.encode())
+                    self.assertEqual(json.loads((evidence/'registration.json').read_text()),result)
+
+    def test_timeout_with_truncated_stdout_keeps_original_failure_trace(self):
+        self.register_state={'timedOut':True,'exitCode':124}
+        row=self.failure_trace()[0]
+        def truncated(command,cwd,stdout,stderr,timeout,on_root_created=None):
+            state=self.runner(command,cwd,stdout,stderr,timeout,on_root_created)
+            stdout.write_text('{"status":');stderr.write_text(json.dumps(row)+'\n{"schema":')
+            return state
+        result=self.register(runner=truncated)
+        self.assertEqual(self.calls,['--register-once']);self.assertEqual(result['failureTrace'],[row])
+        self.assertFalse(result['failureTraceComplete']);self.assertTrue(result['process']['timedOut'])
+        self.assertTrue(result['process']['treeStopped']);self.assertEqual(result['process']['exitCode'],124)
+        self.assertIsNotNone(result['ledgerSha256']);self.assertTrue(result['failureReason'])
+
+    def test_trace_parser_rejects_unknown_fields_duplicates_bad_codes_and_order(self):
+        operation,cleanup=self.failure_trace();path=self.root/'trace.txt'
+        for bad in [dict(operation,code=True),dict(operation,code=0),dict(operation,code=-1),dict(operation,code=2**32),
+                    dict(operation,stage='private path'),dict(operation,privatePath='secret'),dict(operation,phase='other'),
+                    dict(operation,schema='other'),[],None]:
+            with self.subTest(bad=bad):
+                path.write_text(json.dumps(bad));self.assertEqual(flow.collect_failure_trace(path,gate),([],False))
+        for rows in ([operation,operation],[cleanup,operation]):
+            path.write_text('\n'.join(json.dumps(row) for row in rows))
+            self.assertEqual(flow.collect_failure_trace(path,gate),([rows[0]],False))
+        path.write_text(json.dumps(cleanup));self.assertEqual(flow.collect_failure_trace(path,gate),([cleanup],True))
+        path.write_text('{"schema":1,"schema":2}');self.assertEqual(flow.collect_failure_trace(path,gate),([],False))
+        for raw in (b'\xff',b'x'*65537):
+            path.write_bytes(raw);self.assertEqual(flow.collect_failure_trace(path,gate),([],False))
+
+    def test_failure_trace_cannot_be_promoted_by_exit_four_or_activation_marker(self):
+        for index,trace in enumerate((json.dumps(self.failure_trace()[0]),'{"schema":')):
+            def contradictory(command,cwd,stdout,stderr,timeout,on_root_created=None):
+                state=self.runner(command,cwd,stdout,stderr,timeout,on_root_created)
+                stderr.write_text(json.dumps(gate.MARKER)+'\n'+trace)
+                return state
+            before=len(self.calls)
+            result=flow.register(self.package,self.root/f'contradiction-{index}',self.anchor,flow.REGISTER_CONFIRM,runner=contradictory)
+            self.assertEqual(self.calls[before:],['--register-once'])
+            self.assertFalse(result['activationEvidenceConsistent']);self.assertFalse(result['automaticRecoveryAttempted'])
+            self.assertEqual(result['failureReason'],'native-failure-trace')
 
     def test_timeout_keeps_ledger_and_never_auto_recovers(self):
         self.register_state={'timedOut':True,'exitCode':124}

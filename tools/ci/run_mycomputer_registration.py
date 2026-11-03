@@ -101,6 +101,35 @@ def evidence_file(path):
     return {'path':path.name,'bytes':len(data),'sha256':sha(data)}
 
 
+def collect_failure_trace(path,gate):
+    """Summarize mainline's bounded stderr events; raw logs remain authoritative.
+
+    A damaged/unknown line must not erase earlier failures or become success
+    evidence. These summaries never authorize execution or prove success.
+    """
+    records=[];complete=True
+    try:
+        lines=read_bytes(path,65536).splitlines()
+    except (OSError,ValueError):
+        return records,False
+    for index,line in enumerate(lines):
+        try:
+            line=line.decode('utf-8-sig' if index==0 else 'utf-8')
+            if not line.strip():continue
+            row=gate.strict_json(line)
+            if row==gate.MARKER and type(row.get('code')) is int:continue
+            require(isinstance(row,dict) and set(row)=={'schema','phase','stage','code'},'trace-fields')
+            require(row['schema']=='18u-activation-failure-v1' and row['phase'] in ('operation','cleanup'),'trace-identity')
+            require(isinstance(row['stage'],str) and re.fullmatch(r'[A-Za-z0-9_/-]{1,128}',row['stage']),'trace-stage')
+            require(type(row['code']) is int and 0<row['code']<=0xffffffff,'trace-code')
+            require(len(records)<2 and row['phase'] not in {r['phase'] for r in records},'trace-count')
+            require(not records or row['phase']=='cleanup','trace-order')
+            records.append(row)
+        except (ValueError,TypeError,KeyError):
+            complete=False
+    return records,complete
+
+
 def invoke(runner,command,directory,prefix,timeout,callback=None):
     kwargs={'on_root_created':callback} if callback is not None else {}
     state=runner(command,directory,directory/(prefix+'-stdout.txt'),directory/(prefix+'-stderr.txt'),timeout,**kwargs)
@@ -118,6 +147,7 @@ def register(package,evidence,anchor,confirmation,timeout=30,runner=None):
              'manifestSha256':anchor,'sourceCommit':manifest['sourceCommit'],'exeSha256':files[EXE]['sha256'],
              'dllSha256':files[DLL]['sha256'],'ledgerPath':str(ledger),'rootIdentity':None,'process':None,
              'stdout':None,'stderr':None,'ledgerSha256':None,'automaticRecoveryAttempted':False,
+             'nativeStatus':None,'nativeFailure':None,'failureTrace':[],'failureTraceComplete':False,
              'activationEvidenceConsistent':False,'sourceAuthenticityVerified':False}
     receipt_path=directory/'registration.json';save(receipt_path,receipt)
     def root_created(root):
@@ -131,7 +161,22 @@ def register(package,evidence,anchor,confirmation,timeout=30,runner=None):
         require(valid_root(receipt['rootIdentity']) and process.get('rootIdentity')==receipt['rootIdentity'],'root receipt mismatch')
         if process.get('treeStopped') is True and ledger.is_file():receipt['ledgerSha256']=sha(read_bytes(ledger,65536))
         receipt['status']='failed-or-inconclusive'
+        receipt['failureTrace'],receipt['failureTraceComplete']=collect_failure_trace(directory/'register-stderr.txt',gate)
+        native=gate.strict_json(read_bytes(directory/'register-stdout.txt',65536).decode('utf-8-sig'))
+        require(isinstance(native,dict),'native-output-not-object')
+        require(native.get('schema')==gate.SCHEMA and native.get('scope')==gate.SCOPE and native.get('mode')=='register-once','native-output-identity')
+        require(native.get('status') in ('failed','blocked','activation-unconfirmed'),'native-output-status')
+        require(isinstance(native.get('stage'),str) and re.fullmatch(r'[A-Za-z0-9_/-]{1,128}',native['stage']) and type(native.get('code')) is int and 0<=native['code']<=0xffffffff,'native-output-failure')
+        receipt['nativeStatus']=native['status']
+        if native['stage']!='completed' or native['code']!=0:
+            receipt['nativeFailure']={'stage':native['stage'],'code':native['code']}
+        if not completed(process,4):receipt['failureReason']='native-registration-incomplete'
         if completed(process,4):
+            # Reject malformed reports before launching even the read-only verifier.
+            # The complete, unchanged evidence gate below still decides success.
+            gate.report(read_bytes(directory/'register-stdout.txt',65536).decode('utf-8-sig'))
+            require(receipt['nativeStatus']=='activation-unconfirmed','native-registration-not-completed')
+            require(receipt['failureTraceComplete'] and not receipt['failureTrace'],'native-failure-trace')
             verify=invoke(runner,[str(package/EXE),'--verify'],directory,'verify',timeout)
             if completed(verify,0):
                 result=gate.validate(read_bytes(directory/'register-stdout.txt').decode('utf-8-sig'),read_bytes(directory/'register-stderr.txt').decode('utf-8-sig'),4,
