@@ -6,6 +6,7 @@ This tool does not authenticate that channel, grant approval, or install Yime.
 
 import argparse
 import hashlib
+import io
 import json
 from pathlib import Path, PurePosixPath
 import re
@@ -29,12 +30,13 @@ def make_draft(archive: Path, expected_sha256: str, approved_user_sid: str) -> d
             raise ValueError('linked archive path refused')
     if not archive.is_file():
         raise ValueError('regular archive required')
-    digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+    archive_bytes = archive.read_bytes()
+    digest = hashlib.sha256(archive_bytes).hexdigest()
     if digest != expected_sha256:
         raise ValueError('archive differs from independently supplied SHA-256')
     rows = []
     seen = set()
-    with zipfile.ZipFile(archive) as package:
+    with zipfile.ZipFile(io.BytesIO(archive_bytes)) as package:
         for info in package.infolist():
             name = info.filename
             part = PurePosixPath(name)

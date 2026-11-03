@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 import zipfile
 
 from tools.yimecore.make_arm64_manual_approval import COMMIT, make_draft
@@ -42,6 +43,29 @@ class ApprovalDraftTests(unittest.TestCase):
         self.write()
         with self.assertRaisesRegex(ValueError, 'independently supplied'):
             make_draft(self.archive, '0' * 64, 'S-1-5-21-100-200-300-400')
+
+    def test_replacement_after_hash_read_cannot_change_inventory(self):
+        original_sha = self.write()
+        replacement = Path(self.temp.name) / 'replacement.zip'
+        with zipfile.ZipFile(replacement, 'w') as package:
+            for name, data in {**self.files, 'Setup.ps1': b'replaced setup'}.items():
+                package.writestr(name, data)
+        original_read_bytes = Path.read_bytes
+
+        def replace_after_read(path):
+            snapshot = original_read_bytes(path)
+            if path == self.archive:
+                replacement.replace(self.archive)
+            return snapshot
+
+        with patch.object(Path, 'read_bytes', replace_after_read):
+            draft = make_draft(self.archive, original_sha, 'S-1-5-21-100-200-300-400')
+        rows = {row['path']: row for row in draft['files']}
+        self.assertEqual(draft['archiveSha256'], original_sha)
+        self.assertEqual(rows['Setup.ps1']['sha256'], hashlib.sha256(b'setup').hexdigest())
+        self.assertNotEqual(hashlib.sha256(self.archive.read_bytes()).hexdigest(), original_sha)
+        with zipfile.ZipFile(self.archive) as package:
+            self.assertEqual(package.read('Setup.ps1'), b'replaced setup')
 
     def test_zip_traversal_refused(self):
         sha = self.write({'../Setup.ps1': b'bad'})
