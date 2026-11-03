@@ -1,0 +1,97 @@
+{
+  "schema": "installed-18u-occupancy-review-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "reviewID": "occupancy-review-1",
+  "recordedAtUTC": "2026-11-03T12:48:50.030720+00:00",
+  "status": "review-complete-occupancy-unknown",
+  "priorResultCommit": "88d82c5c7cd6bec93e8033534e96e4637e7f0b40",
+  "originalScriptAndRecordsPreserved": true,
+  "scriptReview": {
+    "scriptSHA256": "3863ec086026d1404b5cf5212bdc54e84b2c3de1ed82d182a09eab5793389478",
+    "callingConvention": "ctypes.WinDLL (Windows convention)",
+    "parameters": "DWORD pointer, DWORD zero flags, writable WCHAR[33] for session key",
+    "argumentDeclarationConsistentWithDocumentation": true,
+    "returnDeclaration": "restype omitted; ctypes defaults to signed c_int. Windows DWORD and c_int are both 32 bits here; error 29 is represented identically. Explicit DWORD return type is preferable in future tooling, but omission does not explain this result.",
+    "returnValueHandling": "29 came directly from RmStartSession, not GetLastError; assertion stopped execution",
+    "target": "%ProgramFiles%/YimeCore 18u Touch; every regular file including .setup",
+    "targetFileCountAtReview": 22,
+    "resourcesRegistered": false,
+    "RmGetListReached": false,
+    "exclusiveFileOpenReached": false,
+    "failureBeforeTargetSubmission": true,
+    "readOnlyQualification": "RmStartSession creates a Restart Manager session and is not a purely observational API. It was not called in this review.",
+    "rootCauseEstablished": false
+  },
+  "errorInterpretation": {
+    "code": 29,
+    "symbol": "ERROR_WRITE_FAULT",
+    "meaning": "The system cannot write to the specified device.",
+    "doesNotEstablish": [
+      "file occupancy",
+      "security-center blocking",
+      "disk failure",
+      "sandbox cause"
+    ],
+    "source": "https://learn.microsoft.com/en-us/windows/win32/api/restartmanager/nf-restartmanager-rmstartsession"
+  },
+  "originalOutputReview": {
+    "originalToolOutput": "Traceback ended at occupancy.py line 22 with AssertionError: (RmStartSession, 29); process exit code 1.",
+    "onDiskOccupancyErrorFile": "post-hoc concise error record, not a full original stdout/stderr capture",
+    "occupancyInitialJSONExists": false,
+    "fullRawTranscriptPersistedByOriginalScript": false
+  },
+  "readOnlyProcessObservation": {
+    "status": "observation-completed-with-coverage-limits",
+    "recordedAtUTC": "2026-11-03T12:47:22.787001+00:00",
+    "host": "WIN-JTKUT7KBVN7",
+    "processIDsEnumerated": 390,
+    "processNamesRead": 147,
+    "processModuleListsRead": 137,
+    "relatedProcesses": [],
+    "matchingLoadedModules": [],
+    "coverageErrors": {
+      "query-open:5": 242,
+      "module-open:5": 251,
+      "module-enum:299": 1
+    },
+    "occupancyState": "unknown",
+    "method": "existing Python ctypes with Windows PSAPI and read-only process handles; no debug privilege elevation",
+    "limitations": [
+      "Snapshot is non-atomic and processes/modules may change.",
+      "Protected or inaccessible processes are not proven clear.",
+      "Loaded modules are not all open file handles or data mappings.",
+      "No negative result establishes installation files are unoccupied."
+    ],
+    "restartManagerCalled": false,
+    "installationAttempted": false,
+    "processTerminated": false,
+    "systemSettingsChanged": false,
+    "newToolInstalled": false
+  },
+  "conclusion": {
+    "occupancyState": "unknown",
+    "installationMayProceedOnThisEvidence": false,
+    "newToolsNeededForThisReview": false,
+    "errorReproductionAttempted": false,
+    "nextStep": "No further action taken. A future diagnostic needing changed execution privileges, a Restart Manager reproduction, or a new tool must be explained first; current partial module visibility cannot prove files are free."
+  },
+  "actions": {
+    "installationAttempted": false,
+    "setupExecuted": false,
+    "packageProgramExecuted": false,
+    "processesTerminated": false,
+    "systemSettingsChanged": false,
+    "toolsInstalled": false,
+    "RestartManagerRetried": false
+  },
+  "privacy": {
+    "userDataOrCredentialsDisclosed": false,
+    "rawLogsUploaded": false,
+    "unrelatedProcessNamesOrPathsUploaded": false
+  },
+  "references": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/restartmanager/nf-restartmanager-rmstartsession",
+    "https://learn.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-enumprocessmodulesex",
+    "https://learn.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-getmodulefilenameexw"
+  ]
+}

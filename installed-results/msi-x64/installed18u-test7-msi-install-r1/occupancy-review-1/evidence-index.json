@@ -1,0 +1,47 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "reviewID": "occupancy-review-1",
+  "localEvidenceDirectory": ".generated/installed18u-test7-msi-install-r1-occupancy-review-1",
+  "rawLogsUploaded": false,
+  "files": [
+    {
+      "name": "evidence/process-modules.json",
+      "bytes": 1025,
+      "sha256": "854c7080711bcdffa33369719b7d74f74bd752cc4c85ae7d2689608265c70334",
+      "uploaded": false
+    },
+    {
+      "name": "tools/process_modules.py",
+      "bytes": 4567,
+      "sha256": "0c014355319509c2a85c52a20e7de32c534351593837ff36cf6988411d39633f",
+      "uploaded": false
+    },
+    {
+      "name": "tools/report.py",
+      "bytes": 4820,
+      "sha256": "5220c327061e4216637f0c2f6c1a43ec6653f6dae9f39f72f06b44e7cf7dac35",
+      "uploaded": false
+    }
+  ],
+  "preservedPriorEvidence": [
+    {
+      "name": "tools/occupancy.py",
+      "bytes": 3093,
+      "sha256": "3863ec086026d1404b5cf5212bdc54e84b2c3de1ed82d182a09eab5793389478",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/occupancy-error.txt",
+      "bytes": 142,
+      "sha256": "b1cfb10c6bd3ea612f33d9773d39d71d37639050a40bea5c93de081bf68d4437",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/stop.json",
+      "bytes": 423,
+      "sha256": "45e5691390544d74373847495bd0fdcedd1c931338c4dd60634054c176830387",
+      "uploaded": false
+    }
+  ]
+}
