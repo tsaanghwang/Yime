@@ -63,7 +63,7 @@ jobs:
           pathlib.Path('.generated/installed-18u-evidence/package-tests.log').write_text(stream.getvalue(), encoding='utf-8')
           if result.testsRun != 12 or result.skipped or not result.wasSuccessful():
               raise SystemExit('All twelve wrapper mock checks must pass without skips')
-      - name: Require seven lifecycle source contracts
+      - name: Require eight lifecycle source contracts
         run: |
           import importlib, io, pathlib, sys, unittest
           sys.path.insert(0, str(pathlib.Path('tools/yimecore').resolve()))
@@ -71,8 +71,8 @@ jobs:
           stream = io.StringIO()
           result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
           pathlib.Path('.generated/installed-18u-evidence/lifecycle-contracts.log').write_text(stream.getvalue(), encoding='utf-8')
-          if result.testsRun != 7 or result.skipped or not result.wasSuccessful():
-              raise SystemExit('All seven lifecycle source contracts must execute and pass')
+          if result.testsRun != 8 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('All eight lifecycle source contracts must execute and pass')
       - name: Require five input-abort static wiring checks
         run: |
           import importlib, io, pathlib, sys, unittest
@@ -109,7 +109,7 @@ jobs:
               output = pathlib.Path('.generated/installed-18u-evidence/unregister-sequence-' + edition + '.log')
               with output.open('w', encoding='utf-8') as log:
                   result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-18uUnregisterSequence.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
-              if result.returncode or output.read_text(encoding='utf-8').count('PASS 18u unregister:') != 1:
+              if result.returncode or output.read_text(encoding='utf-8').count('PASS 18u full-old-state mock:') != 1:
                   raise SystemExit('Unregister sequence checks failed: ' + edition)
       - name: Run only explicit mock and pure standard-runtime tests
         run: |
