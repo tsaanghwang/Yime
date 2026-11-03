@@ -48,5 +48,19 @@ manifest SHA-256 `89928fe4c4496462d9198e4be9be28b72ddb9816594b6eab7986fac766844a
 其中 `native-fixed-host-r1` 保存输入身份、进程 PID、stdout/stderr、退出结果及
 安装载荷未变核验。证据不可覆盖；该前台失败不被源码/离线测试成功抹去。
 
-实际安装态编辑读回仍需获准后在能够取得前台的运行环境中执行一次。
-不据此宣称固定 test.4 安装、Word/Edge 或物理触摸验收通过。
+上述为首次运行的历史结果。用户随后明确允许一次前台验证；原生启动器没有进入
+验证脚本，保留记录且没有自动重新启动。用户于 2026-11-03 08:14 +08:00
+从本机前台终端手动执行一次性脚本，修复宿主的 commit 用例通过：
+`actualDLLLoaded=true`、`activationIdentity=windows-activated-profile`、
+`registered=true`、`outcome=applied`、`readbackMatches=true`、
+`readbackEmpty=false`、`otherContextEmpty=true`、`sendInput=false`；
+宿主与 Broker 均退出 0，安装载荷不变。此结果来自真实注册宿主，非模拟编辑回执。
+
+修复提交 `6915f8b9fc1d0978c578f06363e65244b5fe7cd5` 的
+[专用 CI](https://github.com/tsaanghwang/Yime/actions/runs/41548776549) 已通过，
+包括完整固定字典与 33 项制包/维护 Python 测试；本地权限失败记录仍保留。
+
+交接入口、原始结果与 SHA-256 索引见
+[本轮验收交接](../../testing/18u/2026-11-03/installed-input-fix/HANDOFF.zh-CN.md)。
+该用例无需重复。通过范围仅为修复开发宿主配合原 test.2 已安装 DLL/Broker；
+旧包内宿主没有替换，不据此宣称固定 test.4 安装、负面故障矩阵、Word/Edge 或物理触摸验收通过。

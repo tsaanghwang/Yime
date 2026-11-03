@@ -1,0 +1,2 @@
+{"accepted":true,"stage":"connected"}
+{"activationIdentity":"windows-activated-profile","actualDLLLoaded":true,"duplicateRejected":false,"operationPendingObserved":false,"otherContextEmpty":true,"outcome":"applied","postWriteDisconnectObserved":false,"readbackEmpty":false,"readbackMatches":true,"registered":true,"rejected":false,"replayRejected":false,"scenario":"commit","sendInput":false,"stage":"result","unknownAfterPendingEditCovered":false}
