@@ -35,8 +35,14 @@ function Get-ContentHash([string]$Path){
 function Get-PackageContract($Manifest){
     $product=Get-Product $Manifest.product
     if($product.id -ceq 'yimecore-18u'){
-        if($Manifest.format -cne 'yime-simple-package-18u-1' -or $Manifest.target -cne 'windows-amd64' -or $Manifest.host_architecture -cne 'amd64' -or $Manifest.tsf64_architecture -cne 'x64'){throw 'Independent 18u requires its explicit native x64 contract'}
-        return [pscustomobject]@{target='windows-amd64';hostArchitecture='amd64';nativeDirectory='x64';nativeDirectories=@('x64');tsf64Architecture='x64'}
+        if($Manifest.format -cne 'yime-simple-package-18u-1'){throw 'Unsupported independent 18u contract'}
+        if($Manifest.target -ceq 'windows-amd64' -and $Manifest.host_architecture -ceq 'amd64' -and $Manifest.tsf64_architecture -ceq 'x64'){
+            return [pscustomobject]@{target='windows-amd64';hostArchitecture='amd64';nativeDirectory='x64';nativeDirectories=@('x64');tsf64Architecture='x64';requireNativeProcess=$true}
+        }
+        if($Manifest.target -ceq 'windows-arm64' -and $Manifest.host_architecture -ceq 'arm64' -and $Manifest.tsf64_architecture -ceq 'arm64'){
+            return [pscustomobject]@{target='windows-arm64';hostArchitecture='arm64';nativeDirectory='arm64';nativeDirectories=@('arm64');tsf64Architecture='arm64';requireNativeProcess=$true}
+        }
+        throw 'Independent 18u requires an exact native architecture contract'
     }
     if($Manifest.format -ceq 'yime-simple-package-1'){
         foreach($name in @('target','host_architecture','tsf64_architecture')){
@@ -78,6 +84,7 @@ function Assert-PackageHost($Contract){
     if($hostMachine.source -cne 'IsWow64Process2' -or -not $hostMachine.is64BitProcess -or $hostMachine.nativeMachine -ne $expected){
         throw ('Package '+$Contract.target+' requires matching native Windows and 64-bit PowerShell')
     }
+    if($Contract.PSObject.Properties['requireNativeProcess'] -and $Contract.requireNativeProcess -and $hostMachine.processMachine -ne 0){throw 'Independent 18u requires a native, non-emulated process'}
 }
 function Get-MaintenanceMembers($Product,$Contract){
     $name=if($Product.id -eq 'yimecore-18u'){'Yime18uProductRegistration.exe'}elseif($Product.id -eq 'yimecore'){'YimeTextServiceRegistration.exe'}else{$Product.dll}
@@ -244,16 +251,19 @@ function Assert-Arm64ProductPayload([string]$Root,$Manifest,$Product,$Members){
     }
 }
 function Assert-18uPackageIdentity([string]$Root,$Manifest,$Product,$Members){
+    $contract=Get-PackageContract $Manifest
+    $expectedArchitecture=if($contract.hostArchitecture -ceq 'arm64'){'native-arm64'}else{'native-x64'}
     $descriptor=Get-Content -LiteralPath (Join-Path $Root 'installed-18u-product.json') -Raw -Encoding UTF8|ConvertFrom-Json
     if($descriptor.schema -cne 'installed-18u-product-v1' -or $descriptor.product -cne 'yimecore-18u' -or
        $descriptor.sourceCommit -cnotmatch '^[0-9a-f]{40}$' -or $descriptor.identity.clsid -ine $Product.clsid -or
-       $descriptor.identity.profile -ine $Product.profile -or $descriptor.architecture -cne 'native-x64' -or
+       $descriptor.identity.profile -ine $Product.profile -or $descriptor.architecture -cne $expectedArchitecture -or
        $descriptor.language -cne 'CN' -or $descriptor.mode -cne 'variable' -or $descriptor.autostart -ne $false){throw 'Independent 18u source identity or scope mismatch'}
-    $sourceProduct=Get-Content -LiteralPath (Join-Path $Root 'source/tools/yimecore/18u-touch-product.json') -Raw -Encoding UTF8|ConvertFrom-Json
+    $sourceProductName=if($contract.nativeDirectory -ceq 'arm64'){'18u-touch-product-arm64.json'}else{'18u-touch-product.json'}
+    $sourceProduct=Get-Content -LiteralPath (Join-Path $Root ('source/tools/yimecore/'+$sourceProductName)) -Raw -Encoding UTF8|ConvertFrom-Json
     $lock=Get-Content -LiteralPath (Join-Path $Root 'source/prototypes/touch-terminal/desktop/resources.lock.json') -Raw -Encoding UTF8|ConvertFrom-Json
     $layout='995f1a74f129249febbd09ca11a8266f6e0c94bac8c05c57754859fc3be3349c'
     $dictionary='43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353'
-    if($sourceProduct.identity.clsid -ine $Product.clsid -or $sourceProduct.identity.profile -ine $Product.profile -or $sourceProduct.data.layout_sha256 -cne $layout -or $sourceProduct.data.dictionary_sha256 -cne $dictionary -or $sourceProduct.data.standard_index_fallback -ne $false -or $lock.schemaVersion -ne 1 -or $lock.layoutProjectionSHA256 -cne $layout){throw '18u canonical source identity mismatch'}
+    if($sourceProduct.identity.clsid -ine $Product.clsid -or $sourceProduct.identity.profile -ine $Product.profile -or $sourceProduct.scope.architecture -cne $contract.nativeDirectory -or $sourceProduct.data.layout_sha256 -cne $layout -or $sourceProduct.data.dictionary_sha256 -cne $dictionary -or $sourceProduct.data.standard_index_fallback -ne $false -or $lock.schemaVersion -ne 1 -or $lock.layoutProjectionSHA256 -cne $layout){throw '18u canonical source identity mismatch'}
     $names=@('ascii_keyboard_manifest.json','yime_variable.dict.yaml','yime_full.dict.yaml','yime_shorthand.dict.yaml')
     if(@($lock.files.PSObject.Properties).Count -ne $names.Count){throw 'Incomplete dedicated resource lock'}
     foreach($name in $names){
@@ -271,7 +281,8 @@ function Assert-18uPackageIdentity([string]$Root,$Manifest,$Product,$Members){
         if($matches.Count -ne 1 -or $row.sha256 -cne $matches[0].sha256 -or $row.bytes -ne $matches[0].bytes){throw '18u descriptor hash mismatch'}
     }
     if($seen.Count -ne $Members.Count-1 -or $seen.Contains('installed-18u-product.json')){throw '18u descriptor must cover every other payload exactly'}
-    if(@($Manifest.files|Where-Object {$_.path -match '^(indexes|x86|arm64)/|YimeCoreTrialRuntime|YimeBroker\.exe|RegistrationProbe|ActivationStage1|ActivatedLoopOnce'}).Count){throw 'Standard, foreign-architecture or temporary-registration payload forbidden in installed 18u'}
+    $foreign=if($contract.nativeDirectory -ceq 'arm64'){'x64'}else{'arm64'}
+    if(@($Manifest.files|Where-Object {$_.path -match ('^(indexes|x86|'+$foreign+')/|YimeCoreTrialRuntime|YimeBroker\.exe|RegistrationProbe|ActivationStage1|ActivatedLoopOnce')}).Count){throw 'Standard, foreign-architecture or temporary-registration payload forbidden in installed 18u'}
 }
 function Read-Package([string]$Root){
     $root=Assert-PlainPath $Root
@@ -294,15 +305,16 @@ function Read-Package([string]$Root){
         if($product.id -eq 'rime-pime' -and -not $seen.Contains($arch+'/PIMERegistrationStatus.exe')){throw 'Missing native registration verifier'}
     }
     if(-not $seen.Contains($product.exe.Replace('\','/'))){throw 'Missing runtime'}
-    $required=if($product.id -eq 'yimecore-18u'){@('profile-icon.ico','source/prototypes/touch-terminal/desktop/resources.lock.json','bin/YimeBroker18u.exe','x64/YimeTouchRegisteredFormalHostTests.exe','installed-18u-product.json','source/tools/yimecore/18u-touch-product.json','source/prototypes/touch-terminal/data/physical-layout.json','source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json','source/internal_data/yime_syllable_decomposition.tsv','data/ascii_keyboard_manifest.json','data/yime_variable.dict.yaml','data/yime_full.dict.yaml','data/yime_shorthand.dict.yaml')}elseif($product.id -eq 'yimecore'){@('bin/YimeBroker.exe','bin/YimeCoreInputToolbar.exe','bin/YimeCoreTrainer.exe','bin/YimeCoreToolCenter.exe','profile-icon.ico','indexes/full.yidx','indexes/variable.yidx','indexes/shorthand.yidx','data/yime_pinyin_codes.tsv','data/fonts/YinYuan-Regular.ttf')}else{@('backends.json','go-backend/server.exe','go-backend/input_methods/yime/ime.json','go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf')}
+    $sourceProductName=if($contract.nativeDirectory -ceq 'arm64'){'18u-touch-product-arm64.json'}else{'18u-touch-product.json'}
+    $required=if($product.id -eq 'yimecore-18u'){@('profile-icon.ico','source/prototypes/touch-terminal/desktop/resources.lock.json','bin/YimeBroker18u.exe',($contract.nativeDirectory+'/YimeTouchRegisteredFormalHostTests.exe'),'installed-18u-product.json',('source/tools/yimecore/'+$sourceProductName),'source/prototypes/touch-terminal/data/physical-layout.json','source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json','source/internal_data/yime_syllable_decomposition.tsv','data/ascii_keyboard_manifest.json','data/yime_variable.dict.yaml','data/yime_full.dict.yaml','data/yime_shorthand.dict.yaml')}elseif($product.id -eq 'yimecore'){@('bin/YimeBroker.exe','bin/YimeCoreInputToolbar.exe','bin/YimeCoreTrainer.exe','bin/YimeCoreToolCenter.exe','profile-icon.ico','indexes/full.yidx','indexes/variable.yidx','indexes/shorthand.yidx','data/yime_pinyin_codes.tsv','data/fonts/YinYuan-Regular.ttf')}else{@('backends.json','go-backend/server.exe','go-backend/input_methods/yime/ime.json','go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf')}
     foreach($name in $required){if(-not $seen.Contains($name)){throw ('Missing product resource: '+$name)}}
     if($product.id -ceq 'yimecore-18u'){
         Assert-18uPackageIdentity (Join-Path $root 'payload') $manifest $product $seen
-        foreach($row in $manifest.files){if($row.path -match '\.(exe|dll)$'){Assert-ProductPe (Join-Path $root ('payload/'+$row.path)) 'x64'}}
+        foreach($row in $manifest.files){if($row.path -match '\.(exe|dll)$'){Assert-ProductPe (Join-Path $root ('payload/'+$row.path)) $contract.nativeDirectory}}
     }
-    if($contract.target -ceq 'windows-arm64'){
+    if($contract.target -ceq 'windows-arm64' -and $product.id -ceq 'yimecore'){
         Assert-Arm64ProductPayload $root $manifest $product $seen
-    }elseif(@($manifest.files | Where-Object {$_.path -match '^arm64/'}).Count){throw 'ARM64 payload cannot use the legacy x64 contract'}
+    }elseif($contract.target -cne 'windows-arm64' -and @($manifest.files | Where-Object {$_.path -match '^arm64/'}).Count){throw 'ARM64 payload cannot use the legacy x64 contract'}
     return [pscustomobject]@{root=$root;manifest=$manifest;product=$product;contract=$contract}
 }
 function Read-MaintenancePackage([string]$Root){
@@ -314,8 +326,8 @@ function Read-MaintenancePackage([string]$Root){
         if($rows.Count -ne 1){throw ('Missing maintenance manifest member: '+$member)}
         $path=Assert-PlainPath (Join-Path $root ('native/'+$member))
         if((Get-Item -LiteralPath $path).Length -ne $rows[0].bytes -or (Get-ContentHash $path) -cne $rows[0].sha256){throw ('Maintenance resource damaged: '+$member)}
-        if($product.id -ceq 'yimecore-18u'){Assert-ProductPe $path 'x64'}
-        if($contract.target -ceq 'windows-arm64'){
+        if($product.id -ceq 'yimecore-18u'){Assert-ProductPe $path $contract.nativeDirectory}
+        if($contract.target -ceq 'windows-arm64' -and $product.id -ceq 'yimecore'){
             $expected=if($member.StartsWith('arm64/')){'arm64'}else{'x86'}
             Assert-ProductPe $path $expected
         }
@@ -342,16 +354,18 @@ function Assert-Installed18uOwnership([string]$Root){
     # Local installation consistency, not publisher authentication or a recovery ticket.
     # Use the OLD installation's own manifest: an upgrade package has different hashes.
     $root=Assert-PlainPath $Root
-    Assert-OwnedDirectory $root 'yimecore-18u' 'windows-amd64'
     $marker=Get-Content -LiteralPath (Join-Path $root '.yime-product.json') -Raw -Encoding UTF8|ConvertFrom-Json
     $maintenance=Read-MaintenancePackage (Join-Path $root '.setup')
     $manifest=$maintenance.manifest
-    if($maintenance.product.id -cne 'yimecore-18u' -or $maintenance.contract.target -cne 'windows-amd64' -or
+    Assert-OwnedDirectory $root 'yimecore-18u' $maintenance.contract.target
+    if($maintenance.product.id -cne 'yimecore-18u' -or
        -not ($marker.version -is [string]) -or [string]::IsNullOrWhiteSpace($marker.version) -or
        $marker.version -cne $manifest.version){throw 'Installed 18u marker and maintenance manifest disagree'}
-    $expected=@('x64/YimeTextService18u.dll','x64/Yime18uProductRegistration.exe','x64/YimeTouchRegisteredFormalHostTests.exe',
+    $arch=$maintenance.contract.nativeDirectory
+    $sourceProductName=if($arch -ceq 'arm64'){'18u-touch-product-arm64.json'}else{'18u-touch-product.json'}
+    $expected=@(($arch+'/YimeTextService18u.dll'),($arch+'/Yime18uProductRegistration.exe'),($arch+'/YimeTouchRegisteredFormalHostTests.exe'),
         'bin/YimeBroker18u.exe','bin/Yime18uInstalledRuntime.exe','profile-icon.ico','installed-18u-product.json',
-        'source/prototypes/touch-terminal/desktop/resources.lock.json','source/tools/yimecore/18u-touch-product.json',
+        'source/prototypes/touch-terminal/desktop/resources.lock.json',('source/tools/yimecore/'+$sourceProductName),
         'source/prototypes/touch-terminal/data/physical-layout.json','source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json',
         'source/internal_data/yime_syllable_decomposition.tsv','data/ascii_keyboard_manifest.json','data/yime_variable.dict.yaml',
         'data/yime_full.dict.yaml','data/yime_shorthand.dict.yaml')
@@ -362,13 +376,13 @@ function Assert-Installed18uOwnership([string]$Root){
         $path=Assert-PlainPath (Join-Path $root $row.path)
         if(-not $path.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Installed member escaped product root'}
         if((Get-Item -LiteralPath $path).Length -ne $row.bytes -or (Get-ContentHash $path) -cne $row.sha256){throw ('Installed 18u payload damaged: '+$row.path)}
-        if($row.path -match '\.(exe|dll)$'){Assert-ProductPe $path 'x64'}
+        if($row.path -match '\.(exe|dll)$'){Assert-ProductPe $path $arch}
     }
     if($seen.Count -ne $expected.Count){throw 'Incomplete installed 18u manifest'}
     Assert-18uPackageIdentity $root $manifest $maintenance.product $seen
     # User data is outside this program directory. Unknown program files stop removal.
     $allowed=@($expected)+@('.yime-product.json','.setup/Product.psm1','.setup/Setup.ps1','.setup/Setup.cmd',
-        '.setup/product-package.json','.setup/native/x64/Yime18uProductRegistration.exe')
+        '.setup/product-package.json',('.setup/native/'+$arch+'/Yime18uProductRegistration.exe'))
     foreach($file in Get-ProductFiles $root){
         $relative=$file.FullName.Substring($root.Length+1).Replace('\','/')
         if($relative -cnotin $allowed){throw ('Unknown installed 18u file: '+$relative)}

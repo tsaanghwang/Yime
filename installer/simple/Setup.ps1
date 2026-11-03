@@ -69,8 +69,8 @@ function Run-Native([string]$Path,[string[]]$Arguments){
 }
 function Set-Registration([bool]$Install,[string]$Payload){
     if($product.id -eq 'yimecore-18u'){
-        $tool=Join-Path $Payload 'x64\Yime18uProductRegistration.exe'
-        $dll=Join-Path $root ('x64\'+$product.dll)
+        $tool=Join-Path $Payload ($contract.nativeDirectory+'\Yime18uProductRegistration.exe')
+        $dll=Join-Path $root ($contract.nativeDirectory+'\'+$product.dll)
         if($Install){Run-Native $tool @('register',$dll)}else{
             # TSF APIs can cache pre-removal categories/profiles in one process.
             # First remove the owned TIP, then finish COM removal in a fresh process.
@@ -102,10 +102,10 @@ function Set-Registration([bool]$Install,[string]$Payload){
 # A matching DLL path alone is not installation ownership.
 if($product.id -eq 'yimecore-18u'){
     if($ResetData){throw '18u maintenance preserves user data; explicit reset is not part of this slice'}
-    $registrationTool=Join-Path $package.root $(if($installedEntry){'native\x64\Yime18uProductRegistration.exe'}else{'payload\x64\Yime18uProductRegistration.exe'})
+    $registrationTool=Join-Path $package.root $(if($installedEntry){'native\'+$contract.nativeDirectory+'\Yime18uProductRegistration.exe'}else{'payload\'+$contract.nativeDirectory+'\Yime18uProductRegistration.exe'})
     if($hasRegistration){
         if(-not (Test-Path -LiteralPath (Join-Path $root '.yime-product.json'))){throw 'Existing 18u registration has no owned installation marker; stop without uninstalling'}
-        Run-Native $registrationTool @('check-owned',(Join-Path $root ('x64\'+$product.dll)))
+        Run-Native $registrationTool @('check-owned',(Join-Path $root ($contract.nativeDirectory+'\'+$product.dll)))
     }else{Run-Native $registrationTool @('verify-absent')}
 }
 Add-Type @'

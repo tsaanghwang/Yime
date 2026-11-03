@@ -13,6 +13,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker"
 	"github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab"
@@ -91,7 +92,9 @@ func NewProduction(root, data string) (*Service, error) {
 	if !filepath.IsAbs(root) || !filepath.IsAbs(data) {
 		return nil, errors.New("absolute dedicated root and data directory required")
 	}
-	raw, e := os.ReadFile(filepath.Join(root, "tools/yimecore/18u-touch-product.json"))
+	descriptorPath := productDescriptorPath(runtime.GOARCH)
+	if descriptorPath == "" { return nil, errors.New("unsupported native product architecture") }
+	raw, e := os.ReadFile(filepath.Join(root, descriptorPath))
 	if e != nil {
 		return nil, e
 	}
@@ -114,7 +117,7 @@ func NewProduction(root, data string) (*Service, error) {
 			Fallback   bool   `json:"standard_index_fallback"`
 		} `json:"data"`
 	}
-	if json.Unmarshal(raw, &product) != nil || product.Schema != "yimecore-18u-touch-product-v1" || product.Identity.Key != Product || product.Identity.CLSID != "{6DFACE1F-562E-4773-A9D6-D5753A314711}" || product.Identity.Profile != "{1BD904AC-3194-4419-B70A-5574100F18B3}" || product.Data.Layout != LayoutSHA || product.Data.Dictionary != DictionarySHA || product.Data.Fallback || product.Scope.Architecture != "x64" || product.Scope.Language != "CN" || product.Scope.Mode != "variable" || product.Scope.Learning {
+	if json.Unmarshal(raw, &product) != nil || product.Schema != "yimecore-18u-touch-product-v1" || product.Identity.Key != Product || product.Identity.CLSID != "{6DFACE1F-562E-4773-A9D6-D5753A314711}" || product.Identity.Profile != "{1BD904AC-3194-4419-B70A-5574100F18B3}" || product.Data.Layout != LayoutSHA || product.Data.Dictionary != DictionarySHA || product.Data.Fallback || !matchesProductArchitecture(runtime.GOARCH, product.Scope.Architecture) || product.Scope.Language != "CN" || product.Scope.Mode != "variable" || product.Scope.Learning {
 		return nil, errors.New("dedicated product identity mismatch")
 	}
 	return &Service{open: func(f bridge.Focus) (*bridge.Session, error) { return bridge.Open(root, data, "variable", f) }, expected: Identity{LayoutSHA, DictionarySHA, "variable", keyboardlab.SessionPolicy}}, nil

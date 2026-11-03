@@ -3,6 +3,7 @@
 // No registry writes, DLL loading, repair, backup, or recovery actions.
 #include <windows.h>
 #include <bcrypt.h>
+#include "Installed18uArchitecture.h"
 #include <nlohmann/json.hpp>
 #include <algorithm>
 #include <cstdint>
@@ -136,7 +137,7 @@ struct Diagnostic {
 };
 inline void VerifyImpl(const std::wstring& dll,Diagnostic& diagnostic) {
     const std::filesystem::path dllPath(dll);PlainPath(dllPath);
-    Need(dllPath.filename()==L"YimeTextService18u.dll"&&dllPath.parent_path().filename()==L"x64");
+    Need(dllPath.filename()==L"YimeTextService18u.dll"&&dllPath.parent_path().filename()==kInstalled18uDirectory);
     const auto root=dllPath.parent_path().parent_path();
     diagnostic.stage="marker";
     File markerFile(root/L".yime-product.json",2*1024*1024);
@@ -148,14 +149,14 @@ inline void VerifyImpl(const std::wstring& dll,Diagnostic& diagnostic) {
     File descriptorFile(root/L"installed-18u-product.json",2*1024*1024);
     const auto descriptor=Parse(descriptorFile);
     diagnostic.stage="marker";
-    Need(String(marker,"format")=="yime-simple-install-1"&&String(marker,"product")=="yimecore-18u"&&String(marker,"target")=="windows-amd64");
+    Need(String(marker,"format")=="yime-simple-install-1"&&String(marker,"product")=="yimecore-18u"&&String(marker,"target")==kInstalled18uTarget);
     const auto version=String(marker,"version");Need(!version.empty()&&version.size()<=128);
     diagnostic.stage="maintenance-manifest";
-    Need(String(manifest,"format")=="yime-simple-package-18u-1"&&String(manifest,"product")=="yimecore-18u"&&String(manifest,"target")=="windows-amd64"&&String(manifest,"version")==version);
-    Need(String(manifest,"host_architecture")=="amd64"&&String(manifest,"tsf64_architecture")=="x64");
+    Need(String(manifest,"format")=="yime-simple-package-18u-1"&&String(manifest,"product")=="yimecore-18u"&&String(manifest,"target")==kInstalled18uTarget&&String(manifest,"version")==version);
+    Need(String(manifest,"host_architecture")==kInstalled18uHostArchitecture&&String(manifest,"tsf64_architecture")==kInstalled18uTsfArchitecture);
     diagnostic.stage="descriptor-identity";
     Need(String(descriptor,"schema")=="installed-18u-product-v1"&&String(descriptor,"product")=="yimecore-18u");
-    Need(Hex(String(descriptor,"sourceCommit"),40)&&String(descriptor,"architecture")=="native-x64"&&String(descriptor,"language")=="CN"&&String(descriptor,"mode")=="variable");
+    Need(Hex(String(descriptor,"sourceCommit"),40)&&String(descriptor,"architecture")==kInstalled18uDescriptorArchitecture&&String(descriptor,"language")=="CN"&&String(descriptor,"mode")=="variable");
     Need(descriptor.contains("autostart")&&descriptor.at("autostart").is_boolean()&&!descriptor.at("autostart").get<bool>());
     Need(descriptor.contains("identity")&&descriptor.at("identity").is_object());
     Need(String(descriptor.at("identity"),"clsid")=="{6DFACE1F-562E-4773-A9D6-D5753A314711}"&&String(descriptor.at("identity"),"profile")=="{1BD904AC-3194-4419-B70A-5574100F18B3}");
@@ -165,7 +166,7 @@ inline void VerifyImpl(const std::wstring& dll,Diagnostic& diagnostic) {
     diagnostic.SetHash(descriptorRow.bytes,descriptorRow.sha,descriptorFile.bytes,descriptorHash);
     Need(descriptorRow.bytes==descriptorFile.bytes&&descriptorRow.sha==descriptorHash);
     diagnostic.hashAvailable=false;diagnostic.stage="DLL-row-hash";
-    const auto manifestDll=Find(manifest,"x64/YimeTextService18u.dll"),descriptorDll=Find(descriptor,"x64/YimeTextService18u.dll");
+    const auto manifestDll=Find(manifest,kInstalled18uDllMember),descriptorDll=Find(descriptor,kInstalled18uDllMember);
     diagnostic.SetHash(manifestDll.bytes,manifestDll.sha,descriptorDll.bytes,descriptorDll.sha);
     Need(manifestDll.bytes==descriptorDll.bytes&&manifestDll.sha==descriptorDll.sha);
     diagnostic.hashAvailable=false;diagnostic.stage="DLL-byte-hash";

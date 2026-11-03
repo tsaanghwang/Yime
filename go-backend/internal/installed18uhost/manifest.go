@@ -1,9 +1,9 @@
 package installed18uhost
 
 import("bytes";"crypto/sha256";"encoding/hex";"encoding/json";"errors";"io";"os";"path/filepath";"regexp";"strings")
-const HostPath="x64/YimeTouchRegisteredFormalHostTests.exe"
+
 const BrokerPath="bin/YimeBroker18u.exe"
-const DLLPath="x64/YimeTextService18u.dll"
+
 const ControllerPath="bin/Yime18uInstalledRuntime.exe"
 const Descriptor="installed-18u-product.json"
 var hex64=regexp.MustCompile(`^[0-9a-f]{64}$`)
@@ -31,8 +31,8 @@ func VerifyInstallation(root,anchor string)(Manifest,error){
  path:=filepath.Join(root,Descriptor);h,n,e:=hashFile(path);if e!=nil||h!=anchor||n>1<<20{return m,errors.New("manifest hash/size")};raw,e:=os.ReadFile(path);if e!=nil{return m,e};if e=strictJSON(raw,&m);e!=nil{return m,e}
  // False-valued autostart must be present, not a zero-value from missing data.
  var fields map[string]json.RawMessage;_ = json.Unmarshal(raw,&fields)
- if len(fields)!=9||m.Schema!="installed-18u-product-v1"||m.Product!="yimecore-18u"||!hex40.MatchString(m.SourceCommit)||m.Identity.CLSID!="{6DFACE1F-562E-4773-A9D6-D5753A314711}"||m.Identity.Profile!="{1BD904AC-3194-4419-B70A-5574100F18B3}"||m.Architecture!="native-x64"||m.Language!="CN"||m.Mode!="variable"||m.Autostart||fields["autostart"]==nil{return m,errors.New("dedicated manifest identity")}
- required:=map[string]bool{HostPath:false,BrokerPath:false,DLLPath:false,ControllerPath:false,"profile-icon.ico":false,"x64/Yime18uProductRegistration.exe":false,"source/prototypes/touch-terminal/desktop/resources.lock.json":false,"source/tools/yimecore/18u-touch-product.json":false,"source/prototypes/touch-terminal/data/physical-layout.json":false,"source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json":false,"source/internal_data/yime_syllable_decomposition.tsv":false,"data/ascii_keyboard_manifest.json":false,"data/yime_variable.dict.yaml":false,"data/yime_full.dict.yaml":false,"data/yime_shorthand.dict.yaml":false}
+ if len(fields)!=9||m.Schema!="installed-18u-product-v1"||m.Product!="yimecore-18u"||!hex40.MatchString(m.SourceCommit)||m.Identity.CLSID!="{6DFACE1F-562E-4773-A9D6-D5753A314711}"||m.Identity.Profile!="{1BD904AC-3194-4419-B70A-5574100F18B3}"||nativeDirectory==""||m.Architecture!=nativeDescriptor||m.Language!="CN"||m.Mode!="variable"||m.Autostart||fields["autostart"]==nil{return m,errors.New("dedicated manifest identity")}
+ required:=map[string]bool{HostPath:false,BrokerPath:false,DLLPath:false,ControllerPath:false,"profile-icon.ico":false,nativeDirectory+"/Yime18uProductRegistration.exe":false,"source/prototypes/touch-terminal/desktop/resources.lock.json":false,"source/tools/yimecore/"+nativeProductDescriptor:false,"source/prototypes/touch-terminal/data/physical-layout.json":false,"source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json":false,"source/internal_data/yime_syllable_decomposition.tsv":false,"data/ascii_keyboard_manifest.json":false,"data/yime_variable.dict.yaml":false,"data/yime_full.dict.yaml":false,"data/yime_shorthand.dict.yaml":false}
  seen:=map[string]bool{}
  for _,f:=range m.Files{key:=strings.ToLower(f.Path);if f.Path==""||strings.ContainsAny(f.Path,`\:`)||strings.HasPrefix(f.Path,"/")||filepath.ToSlash(filepath.Clean(f.Path))!=f.Path||strings.HasPrefix(f.Path,"../")||f.Path==".."||key==Descriptor||seen[key]||!hex64.MatchString(f.SHA256)||f.Bytes<=0{return m,errors.New("payload record")};seen[key]=true;h,n,e:=hashFile(filepath.Join(root,filepath.FromSlash(f.Path)));if e!=nil||n!=f.Bytes||h!=f.SHA256{return m,errors.New("payload mismatch")};if _,ok:=required[f.Path];ok{required[f.Path]=true}}
  for _,found:=range required{if !found{return m,errors.New("required payload missing")}}

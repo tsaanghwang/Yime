@@ -1,0 +1,30 @@
+{
+  "schema_version": "yimecore-18u-touch-product-v1",
+  "version": "0.1.0-s3c-development",
+  "display_name": "音元拼音·18u触摸",
+  "installable": false,
+  "identity": {
+    "product_key": "YimeCore18uTouch",
+    "clsid": "{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+    "profile": "{1BD904AC-3194-4419-B70A-5574100F18B3}",
+    "language_id": "0804",
+    "state_directory": "YimeCore 18u Touch",
+    "install_directory": "YimeCore 18u Touch",
+    "endpoint_family": "YimeBroker.18uTouch.v1",
+    "model_source_id": "yimecore-18u-cn-variable-v1"
+  },
+  "scope": {
+    "architecture": "arm64",
+    "language": "CN",
+    "mode": "variable",
+    "persistent_learning": false,
+    "registration_validated": false,
+    "user_machine_execution_approved": false
+  },
+  "data": {
+    "projection": "prototypes/touch-terminal/encoding/manual_key_layout.json",
+    "layout_sha256": "995f1a74f129249febbd09ca11a8266f6e0c94bac8c05c57754859fc3be3349c",
+    "dictionary_sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+    "standard_index_fallback": false
+  }
+}

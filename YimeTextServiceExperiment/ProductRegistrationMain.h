@@ -90,7 +90,7 @@ void productNativeGate() {
         throw ProductError{E_UNEXPECTED};
     USHORT process = 0, native = 0;
     if (!IsWow64Process2(GetCurrentProcess(), &process, &native) ||
-        process != IMAGE_FILE_MACHINE_UNKNOWN || native != IMAGE_FILE_MACHINE_AMD64 || sizeof(void*) != 8)
+        process != IMAGE_FILE_MACHINE_UNKNOWN || native != kInstalled18uMachine || sizeof(void*) != 8)
         throw ProductError{HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED)};
 }
 unsigned productCategories() {
@@ -294,7 +294,7 @@ struct ProductDllReadLock {
         LARGE_INTEGER offset{}; offset.QuadPart=dos.e_lfanew;
         IMAGE_NT_HEADERS64 nt{};
         if(!SetFilePointerEx(file,offset,nullptr,FILE_BEGIN) || !ReadFile(file,&nt,sizeof(nt),&read,nullptr) || read!=sizeof(nt) ||
-           nt.Signature!=IMAGE_NT_SIGNATURE || nt.FileHeader.Machine!=IMAGE_FILE_MACHINE_AMD64 ||
+           nt.Signature!=IMAGE_NT_SIGNATURE || nt.FileHeader.Machine!=kInstalled18uMachine ||
            !(nt.FileHeader.Characteristics&IMAGE_FILE_DLL) || nt.OptionalHeader.Magic!=IMAGE_NT_OPTIONAL_HDR64_MAGIC)
             throw ProductError{E_INVALIDARG};
         // This verifies architecture/shape, not publisher identity. Setup verifies manifest/hash.

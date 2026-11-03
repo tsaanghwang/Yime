@@ -50,15 +50,34 @@ def digest(path):
     raw = regular(path).read_bytes()
     return {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
 
-def amd64(path):
+def check_pe(path, architecture):
     raw = regular(path).read_bytes()
     if len(raw) < 64 or raw[:2] != b'MZ':
         raise ValueError('PE DOS header')
     offset = struct.unpack_from('<I', raw, 60)[0]
-    if offset + 26 > len(raw) or raw[offset:offset+4] != b'PE\0\0' or struct.unpack_from('<H', raw, offset+4)[0] != 0x8664 or struct.unpack_from('<H', raw, offset+24)[0] != 0x20b:
-        raise ValueError('native AMD64 PE required')
+    if offset + 26 > len(raw) or raw[offset:offset+4] != b'PE\0\0' or struct.unpack_from('<H', raw, offset+4)[0] != {'x64': 0x8664, 'arm64': 0xaa64}[architecture] or struct.unpack_from('<H', raw, offset+24)[0] != 0x20b:
+        raise ValueError('native ' + ('AMD64' if architecture == 'x64' else 'ARM64') + ' PE required')
 
-def assemble(repo, native, go, data, output, source_commit):
+def amd64(path):
+    return check_pe(path, 'x64')
+
+
+def binary_map(architecture):
+    if architecture not in ('x64', 'arm64'):
+        raise ValueError('unsupported native architecture')
+    return {(architecture + name[3:] if name.startswith('x64/') else name): value for name, value in BINARIES.items()}
+
+
+def resource_map(architecture):
+    binary_map(architecture)  # fail closed for unknown targets
+    result = dict(RESOURCES)
+    if architecture == 'arm64':
+        del result['source/tools/yimecore/18u-touch-product.json']
+        result['source/tools/yimecore/18u-touch-product-arm64.json'] = 'tools/yimecore/18u-touch-product-arm64.json'
+    return result
+
+
+def assemble(repo, native, go, data, output, source_commit, architecture='x64'):
     if not re.fullmatch('[0-9a-f]{40}', source_commit):
         raise ValueError('full source commit required')
     output = Path(output).absolute()
@@ -68,16 +87,26 @@ def assemble(repo, native, go, data, output, source_commit):
     if output.exists():
         raise ValueError('new output required; no overwrite')
     inputs = {}
-    for dest, (kind, name) in BINARIES.items():
+    for dest, (kind, name) in binary_map(architecture).items():
         inputs[dest] = regular(Path(native if kind == 'native' else go) / name)
-        amd64(inputs[dest])
-    for dest, src in RESOURCES.items():
+        check_pe(inputs[dest], architecture)
+    for dest, src in resource_map(architecture).items():
         inputs[dest] = regular(Path(repo) / src)
     for name in DATA:
         inputs['data/' + name] = regular(Path(data) / name)
     # This descriptor is a build-source assertion, not publisher authentication.
     # Runtime independently checks its content locks through the canonical loader.
-    product = load_json(inputs['source/tools/yimecore/18u-touch-product.json'])
+    descriptor_name = 'source/tools/yimecore/18u-touch-product' + ('-arm64' if architecture == 'arm64' else '') + '.json'
+    product = load_json(inputs[descriptor_name])
+    if architecture == 'arm64':
+        if product.get('scope', {}).get('architecture') != architecture:
+            raise ValueError('descriptor architecture mismatch')
+        canonical = load_json(Path(repo) / 'tools/yimecore/18u-touch-product.json')
+        expected = dict(canonical)
+        expected['scope'] = dict(canonical['scope'])
+        expected['scope']['architecture'] = 'arm64'
+        if product != expected:
+            raise ValueError('ARM descriptor differs from canonical product beyond architecture')
     identity = product['identity']
     if identity['clsid'].upper().strip('{}') != '6DFACE1F-562E-4773-A9D6-D5753A314711' or identity['profile'].upper().strip('{}') != '1BD904AC-3194-4419-B70A-5574100F18B3':
         raise ValueError('independent product identity required')
@@ -112,7 +141,7 @@ def assemble(repo, native, go, data, output, source_commit):
         rows.append({'path': dest, 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()})
     manifest = {'schema': 'installed-18u-product-v1', 'product': 'yimecore-18u', 'sourceCommit': source_commit,
                 'identity': {'clsid': '{6DFACE1F-562E-4773-A9D6-D5753A314711}', 'profile': '{1BD904AC-3194-4419-B70A-5574100F18B3}'},
-                'architecture': 'native-x64', 'language': 'CN', 'mode': 'variable', 'autostart': False, 'files': rows}
+                'architecture': 'native-' + architecture, 'language': 'CN', 'mode': 'variable', 'autostart': False, 'files': rows}
     (output / 'installed-18u-product.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     return manifest
 
@@ -120,8 +149,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('repo', 'native', 'go', 'data', 'output', 'source-commit'):
         parser.add_argument('--' + name, required=True)
+    parser.add_argument('--architecture', choices=('x64', 'arm64'), default='x64')
     args = parser.parse_args()
-    assemble(args.repo, args.native, args.go, args.data, args.output, args.source_commit)
+    assemble(args.repo, args.native, args.go, args.data, args.output, args.source_commit, args.architecture)
 
 if __name__ == '__main__':
     main()
