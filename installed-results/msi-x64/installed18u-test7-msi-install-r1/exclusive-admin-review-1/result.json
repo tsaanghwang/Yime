@@ -1,0 +1,39 @@
+{
+  "schema": "installed-18u-exclusive-open-result-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "reviewID": "exclusive-admin-review-1",
+  "recordedAtUTC": "2026-11-03T13:08:34.410227+00:00",
+  "status": "stopped-at-same-user-validation",
+  "userConfirmedSingleElevatedAttempt": true,
+  "elevationLaunchAttempts": 1,
+  "elevatedChildStarted": true,
+  "childExitCode": 1,
+  "sameUserSIDComparisonPassed": false,
+  "causeOfIdentityMismatch": "not-established",
+  "administratorRoleCheckReached": false,
+  "rawDefaultBooleanCaveat": "Raw result administrator=false is the initializer; execution stopped before administrator-role validation. It is not evidence of a non-admin token.",
+  "baseline": "Preparation-stage SID stored locally; no SID or username published.",
+  "exclusiveOpen": {
+    "expectedFiles": 22,
+    "attemptedFiles": 0,
+    "notAttemptedFiles": 22,
+    "productHandlesObtained": 0,
+    "occupancyState": "unknown"
+  },
+  "actions": {
+    "installerExecuted": false,
+    "processesTerminated": false,
+    "productFileContentWritten": false,
+    "securitySettingsChanged": false,
+    "rebootPerformed": false,
+    "automaticRetry": false,
+    "identityGuardModified": false
+  },
+  "priorRecordsPreserved": true,
+  "nextStep": "No retry. Identity mismatch needs separate read-only diagnosis before any further elevated file check or installation.",
+  "privacy": {
+    "rawLogsUploaded": false,
+    "SIDOrCredentialsDisclosed": false,
+    "onlySanitizedResultAndEvidenceIndex": true
+  }
+}

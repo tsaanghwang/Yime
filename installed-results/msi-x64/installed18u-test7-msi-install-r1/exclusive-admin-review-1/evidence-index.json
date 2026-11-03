@@ -1,0 +1,63 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "reviewID": "exclusive-admin-review-1",
+  "localEvidenceDirectory": ".generated/installed18u-test7-msi-install-r1-exclusive-admin-review-1",
+  "rawLogsUploaded": false,
+  "files": [
+    {
+      "name": "evidence/approved-baseline.json",
+      "bytes": 5822,
+      "sha256": "29b330b1ab5004078a6290e87064b78252dc0870edabd13b5ffb6ff9a7e866b5",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/elevation-attempt.json",
+      "bytes": 86,
+      "sha256": "4a99e37bb7bd29984e7050b407e4fa171b52479478342363767fe7b07c5812bb",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/elevation-result.json",
+      "bytes": 85,
+      "sha256": "43a0b603a55ad25e750647b6d4459a7d4f7ab30254a8c9c1fa3d90757b2f642e",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/exclusive-attempts.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/exclusive-result.json",
+      "bytes": 702,
+      "sha256": "5a1b290fa5cec03b1038679b2d008afa31d4b1c79d6cb4f3de614f41c481fd59",
+      "uploaded": false
+    },
+    {
+      "name": "tools/check-once.ps1",
+      "bytes": 4630,
+      "sha256": "710a8a8b65c2265b30a3d0acc44d61fb10c920642ef445d6235f8bf219b13701",
+      "uploaded": false
+    },
+    {
+      "name": "tools/launch-once.ps1",
+      "bytes": 1561,
+      "sha256": "f01de5188a9b07ec766dc1361b593f9b731703b040505f801833068a96e4e367",
+      "uploaded": false
+    },
+    {
+      "name": "tools/prepare.ps1",
+      "bytes": 2460,
+      "sha256": "baba788d4c8075339fb38b16f52b2816d5abd3fb8b00b203a7f33a4ca0cf976e",
+      "uploaded": false
+    },
+    {
+      "name": "tools/report.py",
+      "bytes": 2522,
+      "sha256": "ffdd1d75003d055da908db63da5131b9683d467aaf4fd87b48ce7c79cf0e63a0",
+      "uploaded": false
+    }
+  ]
+}
