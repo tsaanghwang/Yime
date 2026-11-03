@@ -1,0 +1,106 @@
+{
+  "schema": "installed-18u-executor-import-selftest-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "recordID": "executor-repair-r2",
+  "recordedAtUTC": "2026-11-03T14:10:09.961538+00:00",
+  "status": "syntax-and-import-selftest-passed",
+  "stages": {
+    "syntax-tools": {
+      "exitCode": 0,
+      "stdout": {
+        "bytes": 124,
+        "sha256": "a30cf4d4212bae247aa046860243124ac53eac876a7cadd4ec8ba4b54c9042e3"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "prepare": {
+      "exitCode": 0,
+      "stdout": {
+        "bytes": 97,
+        "sha256": "f7ce934e9ab6fe476bb90b1b1a9c4cdb8ddbf866386bbc21d6cdf5c2a9184d39"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "syntax-all": {
+      "exitCode": 0,
+      "stdout": {
+        "bytes": 168,
+        "sha256": "86e2dfe0371b74c58302ecbe3f4a81741bfd01b15541199f220d12f3e2d602ba"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "import-selftest": {
+      "exitCode": 0,
+      "stdout": {
+        "bytes": 929,
+        "sha256": "1a9ad0b96ef3e2f3920b66917ce330502a893e145d2592562a984ef05ba08bca"
+      },
+      "stderr": {
+        "bytes": 34,
+        "sha256": "095df31607988571747108600d4ff599d7ff9d8695520e6d7f998436ac2e99cd"
+      }
+    }
+  },
+  "moduleResolution": [
+    {
+      "module": "observe",
+      "file": "C:\\dev\\Yime\\.generated\\installed18u-test7-msi-executor-repair-r2\\tools\\observe.py",
+      "sha256": "607d7370244651868548880b0e183523ffc1878c8be8f41bd9ab33464dd9fb3b"
+    },
+    {
+      "module": "snapshot",
+      "file": "C:\\dev\\Yime\\.generated\\installed18u-test7-msi-executor-repair-r2\\tools\\snapshot.py",
+      "sha256": "75549a2e677e863e7695d89706beee2c10239425170a8135424961489a8ed448"
+    },
+    {
+      "module": "maintain",
+      "file": "C:\\dev\\Yime\\.generated\\installed18u-test7-msi-executor-repair-r2\\tools\\maintain.py",
+      "sha256": "6df00bf2656db027cb4549335862f2a4b42e2d10b19720b6f392816548a3bcf0"
+    }
+  ],
+  "sharedModuleIdentityVerified": true,
+  "stdoutStderrByteIntegrityVerified": true,
+  "stderrProbeIsIntentional": true,
+  "loader": "Explicit absolute-path imports pinned by SHA-256; existing same-name module rejected. observe loads before snapshot, then maintain. No global sys.path or ._pth edits.",
+  "maintenanceRefactor": "Original top-level maintenance body moved into main(); direct entry disabled in review copy. Import self-test never calls main().",
+  "capture": "Standalone parent opens separate binary stdout/stderr files before spawning child with argv array and shell=False; records real exit code and log sizes/hashes. No retries.",
+  "scope": {
+    "productFileAccessDuringSelftest": false,
+    "registryAccessDuringSelftest": false,
+    "maintenanceMainCalled": false,
+    "setupExecuted": false,
+    "uninstallExecuted": false,
+    "installExecuted": false,
+    "elevationAttempted": false,
+    "processesTerminated": false,
+    "systemSettingsChanged": false
+  },
+  "oldScriptsUnchangedHashVerified": true,
+  "priorRecordsPreserved": true,
+  "limitations": [
+    "No elevated-context execution in this self-test.",
+    "No installation readiness or package acceptance claim.",
+    "Only import self-test is enabled in bootstrap; old installation launcher must not be rerun.",
+    "Capture was verified on successful import plus intentional stderr output; no maintenance subprocess was launched."
+  ],
+  "nextSteps": [
+    "Keep this successful self-test as evidence; do not invoke maintenance now.",
+    "Prepare a separate reviewed once-only continuation whose elevated child starts the capture wrapper before importing task modules or running the identity gate.",
+    "Use fresh actual interactive-user identity and before snapshot; retain previous packets and check current test.6/test.7 identities and package hashes.",
+    "After user saved-work/closed-program confirmation, recheck processes and file exclusivity, then only under continuation authorization execute one Uninstall followed by one Install; stop on any error.",
+    "Keep each Setup stdout/stderr/transcript/exit code plus outer bootstrap logs locally; collect same-user read-only post-state and redact publication. No automatic restart/input test."
+  ],
+  "privacy": {
+    "rawLogsUploaded": false,
+    "SIDOrCredentialsDisclosed": false
+  }
+}

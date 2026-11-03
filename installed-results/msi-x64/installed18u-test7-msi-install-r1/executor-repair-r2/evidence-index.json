@@ -1,0 +1,135 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test7-msi-install-r1",
+  "recordID": "executor-repair-r2",
+  "localEvidenceDirectory": ".generated/installed18u-test7-msi-executor-repair-r2",
+  "rawLogsUploaded": false,
+  "files": [
+    {
+      "name": "evidence/import-selftest/exit.json",
+      "bytes": 641,
+      "sha256": "4d6525b0533f8aff439935e17495ee8d853af8dabc70411028018a649bfefd5d",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/import-selftest/stderr.bin",
+      "bytes": 34,
+      "sha256": "095df31607988571747108600d4ff599d7ff9d8695520e6d7f998436ac2e99cd",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/import-selftest/stdout.bin",
+      "bytes": 929,
+      "sha256": "1a9ad0b96ef3e2f3920b66917ce330502a893e145d2592562a984ef05ba08bca",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/prepare/exit.json",
+      "bytes": 617,
+      "sha256": "a79fb721cd4bfdb32bb5fbd4250848b6d53f57adb8add1f693b980ae549ad2b2",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/prepare/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/prepare/stdout.bin",
+      "bytes": 97,
+      "sha256": "f7ce934e9ab6fe476bb90b1b1a9c4cdb8ddbf866386bbc21d6cdf5c2a9184d39",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/syntax-all/exit.json",
+      "bytes": 623,
+      "sha256": "d8fb456dfceac84fc2659e615f928a32a01080330ae20c6c3ce9ad9a6410b5f4",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/syntax-all/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/syntax-all/stdout.bin",
+      "bytes": 168,
+      "sha256": "86e2dfe0371b74c58302ecbe3f4a81741bfd01b15541199f220d12f3e2d602ba",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/syntax-tools/exit.json",
+      "bytes": 623,
+      "sha256": "c20519d1c0a98d19a2e81fe8534f0894cae5d84fc58ffb81bbf0c4f17084029d",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/syntax-tools/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/syntax-tools/stdout.bin",
+      "bytes": 124,
+      "sha256": "a30cf4d4212bae247aa046860243124ac53eac876a7cadd4ec8ba4b54c9042e3",
+      "uploaded": false
+    },
+    {
+      "name": "module-lock.json",
+      "bytes": 825,
+      "sha256": "11616eda0c9a8735b02cf0789694b1845e7e8174bcacf6afa1bb485c10892e1d",
+      "uploaded": false
+    },
+    {
+      "name": "tools/bootstrap.py",
+      "bytes": 3005,
+      "sha256": "d9eea38e69904d83f2420488e204e3305bd7634f42aef6789337d1ff620cc4ff",
+      "uploaded": false
+    },
+    {
+      "name": "tools/capture.py",
+      "bytes": 1727,
+      "sha256": "1bcbf9c2a66728a962a267f825b4a462996afdbff5284d58b458e49126ca73e2",
+      "uploaded": false
+    },
+    {
+      "name": "tools/maintain.py",
+      "bytes": 4060,
+      "sha256": "6df00bf2656db027cb4549335862f2a4b42e2d10b19720b6f392816548a3bcf0",
+      "uploaded": false
+    },
+    {
+      "name": "tools/observe.py",
+      "bytes": 7676,
+      "sha256": "607d7370244651868548880b0e183523ffc1878c8be8f41bd9ab33464dd9fb3b",
+      "uploaded": false
+    },
+    {
+      "name": "tools/prepare.py",
+      "bytes": 1574,
+      "sha256": "42da80ef96a9682f8255febe8ad3d132d7705cc7de0c72e9afa4e9849dcb9f34",
+      "uploaded": false
+    },
+    {
+      "name": "tools/report.py",
+      "bytes": 4774,
+      "sha256": "d80885590d89f4bad890a52c7643e74be5ccc1e1005ad503946b2265a0b32c67",
+      "uploaded": false
+    },
+    {
+      "name": "tools/snapshot.py",
+      "bytes": 5206,
+      "sha256": "75549a2e677e863e7695d89706beee2c10239425170a8135424961489a8ed448",
+      "uploaded": false
+    },
+    {
+      "name": "tools/syntax_check.py",
+      "bytes": 387,
+      "sha256": "42ab416c91e3b9207113f19ac067af7080ac91a7a04c7b98e808af7081b6f1ce",
+      "uploaded": false
+    }
+  ]
+}
