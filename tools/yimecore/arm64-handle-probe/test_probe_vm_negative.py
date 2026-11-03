@@ -13,10 +13,17 @@ from pathlib import Path
 import subprocess
 import sys
 
+from directory_identity_contract import reopen_directory_identity, validate_directory_contract
+
 
 WAIT_OBJECT_0 = 0
 SYNCHRONIZE = 0x00100000
 ERROR_INVALID_PARAMETER = 87
+
+
+def require(condition, reason):
+    if not condition:
+        raise AssertionError(reason)
 
 
 def snapshot(directory: Path):
@@ -51,7 +58,7 @@ def assert_stopped(pid: int):
             return
         raise AssertionError(f"cannot confirm pid {pid} stopped: Win32={error}")
     try:
-        assert kernel32.WaitForSingleObject(handle, 0) == WAIT_OBJECT_0, f"pid {pid} still running"
+        require(kernel32.WaitForSingleObject(handle, 0) == WAIT_OBJECT_0, f"pid {pid} still running")
     finally:
         kernel32.CloseHandle(handle)
 
@@ -65,7 +72,7 @@ def main():
     args = parser.parse_args()
     probe, pwsh, root = (p.resolve(strict=True) for p in (args.probe, args.pwsh, args.root.parent))
     root = root / args.root.name
-    assert not root.exists(), "root must be absent; refusing to reuse evidence"
+    require(not root.exists(), "root must be absent; refusing to reuse evidence")
     root.mkdir()
 
     # First prove this Windows/NTFS build accepts the documented directory options.
@@ -74,11 +81,15 @@ def main():
     (root / "directory-contract.stdout.bin").write_bytes(result.stdout)
     (root / "directory-contract.stderr.bin").write_bytes(result.stderr)
     (root / "directory-contract.exit.txt").write_text(f"{result.returncode}\n", encoding="ascii")
-    assert result.returncode == 0, "documented NtCreateFile directory options failed on VM"
+    require(result.returncode == 0, "documented NtCreateFile directory options failed on VM")
     created_rows = [json.loads(line) for line in (created / "events.jsonl").read_text(encoding="utf-8").splitlines()]
+    creation = next(row for row in created_rows if row.get("event") == "directory-create")
     identity = next(row for row in created_rows if row.get("event") == "output-directory")
-    assert identity["volume"] and identity["file_id"] and identity["final_path"]
-    assert created_rows[-1]["event"] == "case-passed"
+    independently_reopened = reopen_directory_identity(created)
+    (root / "directory-contract-independent.json").write_text(
+        json.dumps(independently_reopened, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    validate_directory_contract(identity, independently_reopened, created, creation)
+    require(created_rows[-1]["event"] == "case-passed", "directory case did not pass")
 
     existing = root / "probe-existing"
     existing.mkdir()
@@ -89,8 +100,8 @@ def main():
     (root / "existing.stdout.bin").write_bytes(result.stdout)
     (root / "existing.stderr.bin").write_bytes(result.stderr)
     (root / "existing.exit.txt").write_text(f"{result.returncode}\n", encoding="ascii")
-    assert result.returncode != 0, "existing directory was accepted"
-    assert snapshot(existing) == before, "rejected existing directory changed"
+    require(result.returncode != 0, "existing directory was accepted")
+    require(snapshot(existing) == before, "rejected existing directory changed")
 
     for case, event in (("timeout-child", "timeout-child-process"),
                         ("timeout-actor", "actor-process")):
@@ -99,11 +110,11 @@ def main():
         (root / f"{case}.stdout.bin").write_bytes(result.stdout)
         (root / f"{case}.stderr.bin").write_bytes(result.stderr)
         (root / f"{case}.exit.txt").write_text(f"{result.returncode}\n", encoding="ascii")
-        assert result.returncode != 0, f"{case} unexpectedly passed"
+        require(result.returncode != 0, f"{case} unexpectedly passed")
         rows = [json.loads(line) for line in (output / "events.jsonl").read_text(encoding="utf-8").splitlines()]
-        assert not any(row.get("event") == "case-passed" for row in rows), f"{case} claimed success"
+        require(not any(row.get("event") == "case-passed" for row in rows), f"{case} claimed success")
         failure = next(row for row in rows if row.get("event") == "case-failed")
-        assert "terminated and reaped" in failure["reason"], f"{case} stop not confirmed"
+        require("terminated and reaped" in failure["reason"], f"{case} stop not confirmed")
         pid = next(row["pid"] for row in rows if row.get("event") == event)
         assert_stopped(pid)
     print("VM checks: directory create/identity passed; existing directory unchanged; child and actor reaped")

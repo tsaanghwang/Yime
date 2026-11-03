@@ -26,7 +26,7 @@ python tools/yimecore/arm64-handle-probe/test_source_contract.py
 
 ## 场景与期望
 
-先在同一可丢弃 VM 的另一个新输出根运行 `test_probe_vm_negative.py --probe <探针绝对路径> --pwsh <PS7绝对路径> --root <不存在的新目录>`。它首先以 `directory-contract` 仅创建目录并核对从创建句柄读取的卷号、文件 ID 和最终路径，不启动子进程；再核对被拒绝的已有目录及原有 `failure.txt` 完全不变，并用 `timeout-child`、`timeout-actor` 两个仅供故障注入的场景检查私有 Job 终止、回收和 PID 停止。故障注入的非零退出是预期结果；脚本仅在全部检查成立时报告成功。此脚本不在 ASUS 运行。
+先在同一可丢弃 VM 的另一个新输出根运行 `test_probe_vm_negative.py --probe <探针绝对路径> --pwsh <PS7绝对路径> --root <不存在的新目录>`。它首先以 `directory-contract` 仅创建目录，不启动子进程；从预期路径以 `CreateFileW` 的不跟随末端重解析点选项独立重开，保存第二个句柄的原始字段，并与创建句柄记录的卷号、完整 128 位文件 ID 和最终路径比较，同时检查 `FILE_CREATED`、目录属性及重解析标志。失败即停止。之后才核对被拒绝的已有目录及原有 `failure.txt` 完全不变，并用 `timeout-child`、`timeout-actor` 两个仅供故障注入的场景检查私有 Job 终止、回收和 PID 停止。故障注入的非零退出是预期结果；脚本仅在全部检查成立时报告成功。离线 `test_directory_identity_contract.py` 覆盖匹配对照、卷号与文件 ID 两半不一致、路径不一致及异常字段；它不执行探针，也不替代 VM 结果。此脚本不在 ASUS 运行。
 
 目录创建使用 `NtCreateFile` 的 `FILE_CREATE`、`FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT` 和 `SYNCHRONIZE`。微软发布的目录选项兼容列表没有 `FILE_OPEN_REPARSE_POINT`，故创建调用不再组合该选项。相对创建所用的父目录句柄先由另一次 `NtCreateFile` 取得，并与先前不跟随末端重解析点打开的父目录句柄比较卷号和文件 ID。`FILE_CREATE` 对已存在名称应拒绝，但链接和文件系统筛选器的具体结果仍需在 VM 观察；编译通过不算运行证据。
 

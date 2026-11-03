@@ -68,9 +68,12 @@ class SourceContract(unittest.TestCase):
 
     def test_rejected_output_cannot_write_failure_by_path(self):
         self.assertIn("createdDirectory = true", self.probe)
-        self.assertIn("ownedDirectory = createHeldDirectory(output)", self.probe)
+        self.assertIn("ownedDirectory = createHeldDirectory(output, creationInformation)", self.probe)
         self.assertIn("FILE_CREATE, FILE_DIRECTORY_FILE", self.probe)
         self.assertIn("io.Information != FILE_CREATED", self.probe)
+        self.assertIn('"create_information"', self.probe.replace('\\"', '"'))
+        self.assertIn('"attributes"', self.probe.replace('\\"', '"'))
+        self.assertIn('"reparse_tag"', self.probe.replace('\\"', '"'))
         self.assertIn("createdDirectory && ownedDirectory.valid() && log.is_open()", self.probe)
         self.assertNotIn('output / L"failure.txt"', self.probe)
         self.assertNotIn("fs::exists(output) && fs::is_directory(output)", self.probe)

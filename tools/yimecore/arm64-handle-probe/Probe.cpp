@@ -100,6 +100,8 @@ struct Identity {
     std::string fileId;
     std::string finalPath;
     std::string hash;
+    DWORD attributes;
+    DWORD reparseTag;
 };
 
 Handle openRead(const fs::path& path, bool directory = false) {
@@ -115,7 +117,7 @@ Handle openRead(const fs::path& path, bool directory = false) {
 
 // NtCreateFile atomically returns the newly created directory object. Win32
 // CreateDirectoryW followed by CreateFileW leaves a replacement window.
-Handle createHeldDirectory(const fs::path& output) {
+Handle createHeldDirectory(const fs::path& output, ULONG& creationInformation) {
     Handle validatedParent = openRead(output.parent_path(), true);
     HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
     if (!ntdll) fail("GetModuleHandleW ntdll");
@@ -176,12 +178,18 @@ Handle createHeldDirectory(const fs::path& output) {
     }
     Handle created(raw);
     if (!created.valid() || io.Information != FILE_CREATED) fail("output directory was not newly created", 0);
+    creationInformation = static_cast<ULONG>(io.Information);
     return created;
 }
 
 Identity identify(HANDLE h, bool directory = false) {
     FILE_ID_INFO id{};
     if (!GetFileInformationByHandleEx(h, FileIdInfo, &id, sizeof(id))) fail("FileIdInfo");
+    FILE_ATTRIBUTE_TAG_INFO tag{};
+    if (!GetFileInformationByHandleEx(h, FileAttributeTagInfo, &tag, sizeof(tag))) fail("FileAttributeTagInfo");
+    if (directory && (!(tag.FileAttributes & FILE_ATTRIBUTE_DIRECTORY) ||
+                      (tag.FileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) || tag.ReparseTag != 0))
+        fail("directory type or reparse attribute mismatch", 0);
     DWORD length = GetFinalPathNameByHandleW(h, nullptr, 0, FILE_NAME_NORMALIZED);
     if (!length) fail("GetFinalPathNameByHandleW length");
     std::wstring path(length + 1, L'\0');
@@ -190,7 +198,8 @@ Identity identify(HANDLE h, bool directory = false) {
     path.resize(used);
     std::array<unsigned char, 8> volume{};
     for (size_t i = 0; i < volume.size(); ++i) volume[i] = static_cast<unsigned char>(id.VolumeSerialNumber >> (8 * i));
-    Identity result{hex(volume.data(), volume.size()), hex(id.FileId.Identifier, sizeof(id.FileId.Identifier)), utf8(path), {}};
+    Identity result{hex(volume.data(), volume.size()), hex(id.FileId.Identifier, sizeof(id.FileId.Identifier)),
+                    utf8(path), {}, tag.FileAttributes, tag.ReparseTag};
     if (!directory) result.hash = sha256(h);
     return result;
 }
@@ -203,7 +212,8 @@ Identity identifyPath(const fs::path& path, bool directory = false) {
 void record(std::ofstream& log, const std::string& label, const Identity& id) {
     log << "{\"event\":" << quoteJson(label) << ",\"volume\":" << quoteJson(id.volume)
         << ",\"file_id\":" << quoteJson(id.fileId) << ",\"final_path\":" << quoteJson(id.finalPath)
-        << ",\"sha256\":" << quoteJson(id.hash) << "}\n";
+        << ",\"sha256\":" << quoteJson(id.hash) << ",\"attributes\":" << id.attributes
+        << ",\"reparse_tag\":" << id.reparseTag << "}\n";
     log.flush();
     if (!log) fail("write identity log", 0);
 }
@@ -548,13 +558,16 @@ int wmain(int argc, wchar_t** argv) {
         for (const wchar_t* file : {L"YimeSyntheticToolA.exe", L"YimeSyntheticToolB.exe",
                                     L"YimeSyntheticModuleA.dll", L"YimeSyntheticModuleB.dll"})
             requireArm64Pe(binaryDir / file);
-        ownedDirectory = createHeldDirectory(output);
+        ULONG creationInformation = 0;
+        ownedDirectory = createHeldDirectory(output, creationInformation);
         createdDirectory = true;
         requireLocalNtfs(output);
         log.open(output / L"events.jsonl", std::ios::binary);
         if (!log) fail("create event log", 0);
         log << "{\"event\":\"probe-process\",\"native_arm64\":true,\"pid\":"
             << GetCurrentProcessId() << "}\n"; log.flush();
+        log << "{\"event\":\"directory-create\",\"create_information\":"
+            << creationInformation << "}\n"; log.flush();
         record(log, "output-directory", identify(ownedDirectory.value, true));
         record(log, "pwsh-file", identifyPath(pwsh));
         runCase(name, pwsh, output, binaryDir, log);
