@@ -1,0 +1,88 @@
+{
+  "schema": "installed-18u-evidence-index-v1",
+  "taskID": "installed18u-test7-msi-precheck-r1",
+  "continuation": 4,
+  "localEvidenceDirectory": ".generated/installed18u-test7-msi-precheck-r1-continuation-4",
+  "rawLogsUploaded": false,
+  "retainedPackageEvidenceDirectory": ".generated/installed18u-test7-msi-precheck-r1-continuation-2",
+  "files": [
+    {
+      "name": "evidence/environment.json",
+      "bytes": 706,
+      "sha256": "5415f4c40fdebd6e43ddd982d0fec4235938a64dd669c3e6002c883804890bdc",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/host-after.json",
+      "bytes": 6932,
+      "sha256": "499102b784a61e12d62e558f6efd296bb7908da9f62bf2b488fba709666a6a92",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/host-before.json",
+      "bytes": 6901,
+      "sha256": "6a36200bdd26fb668bb527ceb05cdafcb7a5beaa6375aa0c7db680f8d306daf6",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/postcheck.json",
+      "bytes": 166,
+      "sha256": "8738d8e1be479a9d22b1967d09e56e4dbba50a9671284144cb17ab9985cf4239",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/signatures-fixed-original.json",
+      "bytes": 1547,
+      "sha256": "54fec8649758a279e93b87c2ade2b83cbdf5fbf9ef544c73a8459421728501f1",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/signatures-local.json",
+      "bytes": 1590,
+      "sha256": "38a37418325034f46e8abcedc6046a194f121a92facffa7fc920f8669b21039e",
+      "uploaded": false
+    },
+    {
+      "name": "evidence/verification.json",
+      "bytes": 2730,
+      "sha256": "74dbb1f87e6c8e8ca2c92e2ba3fd57f7241aaab9338a4c137aa0e7bdbf09a951",
+      "uploaded": false
+    },
+    {
+      "name": "tools/environment.ps1",
+      "bytes": 2265,
+      "sha256": "9ca445c231b64caec10d845cf243fb462ae36dd690d479f98a6af797a29909e7",
+      "uploaded": false
+    },
+    {
+      "name": "tools/observe.py",
+      "bytes": 7555,
+      "sha256": "9051e173b4cdc10266e0c18da190770871fd8db931d08b767593766ac67f3178",
+      "uploaded": false
+    },
+    {
+      "name": "tools/postcheck.py",
+      "bytes": 1105,
+      "sha256": "adbcf363d9b52ee65ec5e218c0e7690bbc2df38bf8d79972e36161d82b1c1977",
+      "uploaded": false
+    },
+    {
+      "name": "tools/report.py",
+      "bytes": 4153,
+      "sha256": "2852dddec4d4ad82286382e931781aba9a72af39dd5bc8a439fc149fc27a96a2",
+      "uploaded": false
+    },
+    {
+      "name": "tools/signatures.ps1",
+      "bytes": 2595,
+      "sha256": "e1ca7bb76efeb07f6fa02ee1fbfa2f9167727e91aee0aec7c8dff557116f2860",
+      "uploaded": false
+    },
+    {
+      "name": "tools/verify.py",
+      "bytes": 3856,
+      "sha256": "8920365d3a91850d9fd028602ddc5a3f332338a4666707d067c1cbb78f389588",
+      "uploaded": false
+    }
+  ]
+}

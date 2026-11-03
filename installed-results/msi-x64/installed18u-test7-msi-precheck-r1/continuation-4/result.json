@@ -1,0 +1,248 @@
+{
+  "schema": "installed-18u-static-precheck-result-v1",
+  "taskID": "installed18u-test7-msi-precheck-r1",
+  "recordedAtUTC": "2026-11-03T12:13:47.385624+00:00",
+  "status": "static-precheck-complete-unsigned-candidate",
+  "machine": {
+    "hostName": "WIN-JTKUT7KBVN7",
+    "nativeArchitecture": "AMD64",
+    "processEmulation": false
+  },
+  "deliveryReference": {
+    "documentationCommit": "cf70cae66706587ec9db07b89fe9769d491a86ea",
+    "packageSourceCommit": "33b7113c8b76d6c95447856c2d5cca374b542507",
+    "version": "0.1.0-18u-test.7",
+    "type": "x64 ZIP, not Windows Installer MSI",
+    "runID": 41617296801,
+    "artifactID": 13221664045,
+    "expectedOuterZIP": {
+      "bytes": 192176992,
+      "sha256": "166779e2bef48ac2302acc079aca32dc64e1c68b3ec74dd3c79ae0fb37678c11"
+    },
+    "expectedInnerZIP": {
+      "name": "YimeCore-18u-0.1.0-18u-test.7-windows-amd64.zip",
+      "bytes": 192137872,
+      "sha256": "a9ee98aefc93bd3b579dcbd388bc7de34a8a2fcb5839666598d660b4e9d39e8a"
+    },
+    "identityScope": "Both ZIP sizes and SHA-256 verified against fixed delivery; source identity verified statically."
+  },
+  "existingInstallation": {
+    "version": "0.1.0-18u-test.6",
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "descriptorSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "descriptorMembersVerified": 15,
+    "maintenanceListedMembersVerified": 16,
+    "comPathMatches": true,
+    "profileRegistryKeyPresent": true,
+    "observationTimeUTC": "2026-11-03T12:08:17.406167+00:00",
+    "scope": "Fresh current test.6 descriptor and maintenance payload verification; read-only registry, no active TIP or runtime acceptance."
+  },
+  "protection": {
+    "beforeRecordedAtUTC": "2026-11-03T12:08:17.406167+00:00",
+    "afterRecordedAtUTC": "2026-11-03T12:08:56.577637+00:00",
+    "knownPaths": {
+      "standardProgram": {
+        "exists": false
+      },
+      "standardUserData": {
+        "exists": false
+      },
+      "rimeProgram": {
+        "exists": false
+      },
+      "rimeProgramX86": {
+        "exists": false
+      },
+      "rimeLegacyProgramX86": {
+        "exists": false
+      },
+      "rimeUserData": {
+        "exists": false
+      },
+      "independentProgram": {
+        "exists": true,
+        "fileCount": 22
+      },
+      "independentUserData": {
+        "exists": false
+      }
+    },
+    "knownProgramAndUserDataTreesUnchanged": true,
+    "knownProductRegistryViewsUnchanged": true,
+    "preloadUserProfileAndStartupSnapshotsUnchanged": true,
+    "scope": "only explicitly named product/data roots and selected registry keys, including x86/x64 views; no claim about arbitrary custom locations or out-of-process startup verification",
+    "comparisonBasis": "fresh before/after snapshots within continuation 4",
+    "userDataContentsAndNamesDisclosed": false,
+    "credentialsCollected": false
+  },
+  "packageVerification": {
+    "outerZIPVerified": true,
+    "innerZIPVerified": true,
+    "safeExtractionPerformed": true,
+    "safeExtractedFiles": 46,
+    "all46FilesCoveredByPinnedEvidenceAndHashes": true,
+    "productAndDescriptorMemberSetsAndHashesVerified": true,
+    "frontendAndResourcesMemberSetsAndHashesVerified": true,
+    "frontendSourceCommitAnd18uBaselineVerified": true,
+    "resourceCopiesMatch": true,
+    "sixPEHeadersNativeAMD64": true,
+    "referenceSignatureReceiptBytesMatch": false,
+    "localSignatureCheckPerformed": true,
+    "overallStaticPrecheckComplete": true,
+    "evidenceBasis": "Continuation 4 reverified both fixed ZIPs and all 46 extracted files against pinned package evidence, receipt hashes/semantics, and six PE headers. Earlier detailed manifest checks remain applicable because their exact bytes reverified. Six local Authenticode observations completed; PE hashes unchanged afterward.",
+    "referenceSignatureReceiptSemanticEquality": true,
+    "originalAndPackagedReceiptsIndependentlyHashVerified": true,
+    "sourceSerializationReproducesPackagedReceipt": true
+  },
+  "signatureLimitation": {
+    "ciRecordedUnsignedPECount": 6,
+    "source": "fresh Windows Authenticode observations in continuation 4; distinct from CI JSON and hash verification",
+    "localSignatureCheckPerformed": true,
+    "machineLoadPolicyVerified": false,
+    "systemProtectionChanged": false,
+    "localSignatureCheckAttempted": true,
+    "localObservedPECount": 6,
+    "publisherTrustEstablished": false,
+    "localObservedNotSignedCount": 6
+  },
+  "actions": {
+    "setupIncludingCheckExecuted": false,
+    "packageProgramExecuted": false,
+    "installationPerformed": false,
+    "registrationPerformed": false,
+    "rebootPerformed": false,
+    "defaultInputChanged": false,
+    "wordEdgeInputPerformed": false,
+    "fingerPenTestPerformed": false,
+    "automaticRetryPerformed": false
+  },
+  "disposition": {
+    "staticPrecheckComplete": true,
+    "readyForInstallation": false,
+    "readyForInputAcceptance": false,
+    "followup": "Static delivery review is complete. Package remains unsigned; no Setup, registration, load-policy, ordinary-app or physical-input acceptance has run. Any installation remains a separate authorized stage."
+  },
+  "privacyReview": {
+    "rawLogsUploaded": false,
+    "rawSnapshotsUploaded": false,
+    "onlySanitizedResultAndEvidenceIndex": true
+  },
+  "evidenceIndexFile": "evidence-index.json",
+  "continuation": 4,
+  "previousResultCommit": "5046d986aeca12fc16da5df2c4f82026ba8c5100",
+  "previousResultsPreserved": true,
+  "input": "retained local ZIPs and extracted package from continuation 2, freshly hash-verified; no download",
+  "verifiedArchiveIdentity": {
+    "outerZIP": {
+      "bytes": 192176992,
+      "sha256": "166779e2bef48ac2302acc079aca32dc64e1c68b3ec74dd3c79ae0fb37678c11"
+    },
+    "innerZIP": {
+      "bytes": 192137872,
+      "sha256": "a9ee98aefc93bd3b579dcbd388bc7de34a8a2fcb5839666598d660b4e9d39e8a"
+    },
+    "safeExtractedFiles": 46,
+    "package-evidence.json": {
+      "bytes": 8136,
+      "sha256": "876748ab46401a387244803bb427b958d3828afb393dc2c27e4155baa44dada5"
+    },
+    "payload/installed-18u-product.json": {
+      "bytes": 7383,
+      "sha256": "29c3cce5f62c77d287c4410fdea8665e58f961e46e5dbc53b2ab5133beb1cef2"
+    },
+    "payload/frontend/YimeTouchKeyboard.exe": {
+      "bytes": 7843840,
+      "sha256": "8c5067ce0b4bd1ef3453b5c4c77efee84e0331802941f3ea55622ea12241ef8a"
+    }
+  },
+  "signatureReceiptResolution": {
+    "originalReceipt": {
+      "bytes": 1547,
+      "sha256": "54fec8649758a279e93b87c2ade2b83cbdf5fbf9ef544c73a8459421728501f1",
+      "basis": "immutable documentation Git blob"
+    },
+    "packagedReceipt": {
+      "bytes": 1596,
+      "sha256": "e1020e64bfa3f58cfa133af76a81ac9c35870935dddfb9c193706374cf640d9b",
+      "basis": "fixed package-evidence and inner ZIP"
+    },
+    "worktreeReceipt": {
+      "bytes": 1594,
+      "sha256": "e5ebd6448d40d9cc1c8b828e212b13ec1a3004afdf5f86e34cf392445d8f3a37",
+      "matchesFixedBlobWithCRLF": true
+    },
+    "jsonSemanticEquality": true,
+    "sourceJSONReserializationWithCRLFMatches": true,
+    "explanation": "Original Git blob is LF; worktree copy is CRLF; packaging JSON reserialization adds its final newline and uses CRLF. Equality of JSON does not establish publisher trust or local Authenticode status."
+  },
+  "localSignatureObservation": {
+    "status": "pass",
+    "method": "Microsoft.PowerShell.Security\\Get-AuthenticodeSignature",
+    "recordedAtUTC": "2026-11-03T12:08:51.4915267Z",
+    "files": [
+      {
+        "path": "payload/x64/YimeTextService18u.dll",
+        "status": "NotSigned",
+        "signerThumbprint": null
+      },
+      {
+        "path": "payload/x64/Yime18uProductRegistration.exe",
+        "status": "NotSigned",
+        "signerThumbprint": null
+      },
+      {
+        "path": "payload/x64/YimeTouchRegisteredFormalHostTests.exe",
+        "status": "NotSigned",
+        "signerThumbprint": null
+      },
+      {
+        "path": "payload/bin/YimeBroker18u.exe",
+        "status": "NotSigned",
+        "signerThumbprint": null
+      },
+      {
+        "path": "payload/bin/Yime18uInstalledRuntime.exe",
+        "status": "NotSigned",
+        "signerThumbprint": null
+      },
+      {
+        "path": "payload/frontend/YimeTouchKeyboard.exe",
+        "status": "NotSigned",
+        "signerThumbprint": null
+      }
+    ],
+    "executableLaunched": false,
+    "publisherTrustEstablished": false,
+    "systemLoadPolicyTested": false
+  },
+  "powershellEnvironment": {
+    "status": "pass",
+    "version": "5.1.26100.9818",
+    "edition": "Desktop",
+    "process64Bit": true,
+    "languageMode": "FullLanguage",
+    "initialHashCmdletCount": 0,
+    "initialSignatureCmdletCount": 0,
+    "signatureCmdletCountAfterExplicitBuiltInImport": 1,
+    "moduleName": "Microsoft.PowerShell.Security",
+    "moduleVersion": "3.0.0.0",
+    "moduleOriginUnderPSHOME": true,
+    "commandType": "Cmdlet",
+    "signatureCommand": "Microsoft.PowerShell.Security\\Get-AuthenticodeSignature",
+    "hashMethod": "Python hashlib.file_digest SHA-256, independently verified",
+    "environmentOrPolicyPersistentlyChanged": false,
+    "packageCodeExecuted": false
+  },
+  "postSignatureIntegrity": {
+    "status": "pass",
+    "sixPEBytesAndHashesUnchangedAfterSignatureObservation": true,
+    "localObservedNotSignedCount": 6,
+    "publisherTrustEstablished": false
+  },
+  "maintenanceConditions": {
+    "test6Preserved": true,
+    "knownOtherProductsAndUserDataUnchanged": true,
+    "openDocumentAndFrontendShutdownNotAssessed": true,
+    "scope": "Current read-only snapshots do not authorize installation or prove future installation-time conditions; no process terminated and no user data reset."
+  }
+}
