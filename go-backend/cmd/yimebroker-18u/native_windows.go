@@ -1,9 +1,10 @@
-//go:build windows && amd64
+//go:build windows && (amd64 || arm64)
 
 package main
 
 import (
 	"fmt"
+	"runtime"
 	"syscall"
 	"unsafe"
 )
@@ -19,8 +20,12 @@ func requireNativeX64() error {
 	}
 	var machine, native uint16
 	ok, _, _ := p.Call(uintptr(process), uintptr(unsafe.Pointer(&machine)), uintptr(unsafe.Pointer(&native)))
-	if ok == 0 || machine != 0 || native != 0x8664 {
-		return fmt.Errorf("dedicated broker requires native Windows x64, not emulation")
+	expected := uint16(0x8664)
+	if runtime.GOARCH == "arm64" {
+		expected = 0xaa64
+	}
+	if ok == 0 || machine != 0 || native != expected {
+		return fmt.Errorf("dedicated broker requires matching native Windows architecture, not emulation")
 	}
 	return nil
 }

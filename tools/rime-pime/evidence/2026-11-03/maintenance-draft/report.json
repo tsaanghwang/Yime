@@ -1,0 +1,37 @@
+{
+  "schema": "yime-native-maintenance-draft-evidence-v1",
+  "date": "2026-11-03",
+  "draft": true,
+  "sourceFrozen": false,
+  "published": false,
+  "installed": false,
+  "checkedPowerShell": true,
+  "sharedShell": {
+    "version": "7.6.9",
+    "machine": "0xaa64",
+    "files": 1123,
+    "bytes": 323984983,
+    "nativeMicrosoftSignedComponents": 5,
+    "portablePSHOMEConfirmed": true
+  },
+  "package": {
+    "product": "rime-pime",
+    "files": 1499,
+    "nativeCheck": "PASS",
+    "zipEveryMemberRehashed": true,
+    "helperMatchesFinalValidationSource": true
+  },
+  "unitTests": {
+    "passed": 4,
+    "failed": 0
+  },
+  "evidence": {
+    "final-helper-source-confirmation.json": "1673233499b5ebe6c6d87f5ea031b6e8263a357207a7135638f9cb250a18c552",
+    "maintenance-check.log": "3f56ef1dfbfd84c85bc873bbe2a1436ed2bead066b9f85ce46dd2e8c2b7ba308",
+    "package-signatures.json": "786752313cc3185e8dce36d488a66f65c62aeafd3575c1db0134f1ffb4c816f3",
+    "portable-signatures.json": "6492a2739f2aec3ac0b8cdc6c9b5bdc49a9c73ba9989ab7967ca3804683e1a6f",
+    "shell-lock.json": "9d7504044ae31a9abea8977e2ecf7ddc6d91c3de4ca0d75daf75650211548d08",
+    "source-signatures.json": "99104a153c79dfe5ff920b5a02fc458d196bad9e4cba6098425291755bc10541",
+    "yime-rime-pime-windows-arm64-64a785a7ede5-draft.identity.json": "4535cbc268a46928aa9d223f616d2c8080e75b3320e290171258127691c0386d"
+  }
+}

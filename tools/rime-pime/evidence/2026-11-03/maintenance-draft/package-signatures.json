@@ -1,0 +1,160 @@
+{
+  "schema": 1,
+  "observedUtc": "2026-11-03T13:12:12.0524848Z",
+  "files": [
+    {
+      "path": "YimeMaintenance.exe",
+      "status": "NotSigned",
+      "sha256": "60aad491d385bb060433a536b856de4413125ca8eceeb21bb0d763e6526e4dec",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "maintenance/powershell/pwsh.exe",
+      "status": "Valid",
+      "sha256": "bbdf538aea81c09f60732219b451a26c64f6f2b22bee05eeece13dba909d36e4",
+      "subject": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "thumbprint": "1D77A9B9E8FE2075D9AD15123257FB90DB0DA4A1"
+    },
+    {
+      "path": "payload/PIMELauncher.exe",
+      "status": "NotSigned",
+      "sha256": "3a3c440e3600c00ababac70bfa61d2132e8e6e64164d5164182ada2553ec43ed",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/arm64/PIMERegistrationStatus.exe",
+      "status": "NotSigned",
+      "sha256": "92face5fd7675372c7035d99ba84f5d2bcc4088889d67ce914eb03ab01b9136f",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/arm64/PIMETextService.dll",
+      "status": "NotSigned",
+      "sha256": "3f1d76c7c3be6dfdfb0065ed61f4f855f8fb8215e6b4edd55da01723aac45c55",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/blocklist-manager.exe",
+      "status": "NotSigned",
+      "sha256": "9c49e9df6634703cd77c51c0b7d4837a44a3cb497dacedf424a6825eb9c3bc4c",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/diagnostics-tool.exe",
+      "status": "NotSigned",
+      "sha256": "da86b1353b91aed50e0fd0840cbadea26f514d2cff9527f9da2771d6537fd369",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/input-toolbar.exe",
+      "status": "NotSigned",
+      "sha256": "ea4dd7485b2df27a8082fabdf3322c0c98c0ff1ec0be55b2aba1eeecd766416a",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/lexicon-manager.exe",
+      "status": "NotSigned",
+      "sha256": "4c32572de9211a971909c1871d183372df3b6bc91e401553886e73c0aa2127e3",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/lexicon-promotion-scan.exe",
+      "status": "NotSigned",
+      "sha256": "9eec5cadc8cf6087d0cc7b007fc795cd91147c092043db1e0dce189561479439",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/reverse-lookup.exe",
+      "status": "NotSigned",
+      "sha256": "a4e5fe0691a157e04a1b43771f210370d92fbe9c4b18bbaf6cb1b25ad5d0fc27",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/server.exe",
+      "status": "NotSigned",
+      "sha256": "f8f3e4c98501b43e4e9a2ef5a027a0c90794b3a0cc5d7f9988dd439ad72e294d",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/settings-tool.exe",
+      "status": "NotSigned",
+      "sha256": "24f42cdee12acc6f9316e10b23b3b7e937b985a0e02df375ed084cf72107bab5",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/system-lexicon-audit.exe",
+      "status": "NotSigned",
+      "sha256": "819eab19046a1da36032ae13ba407e8cb23afe69f5f2de1ca203c2e134615179",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/tool-hub.exe",
+      "status": "NotSigned",
+      "sha256": "605d83c53c06637c35b2758e8a7b996b96eb8d9bc4445e96771da949a543ec90",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/yime-layout-designer.exe",
+      "status": "NotSigned",
+      "sha256": "6e6401227c001cb55faa80350f7ef7a0301155e518dcd3bbd3358fc9cbdc8335",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/yime-trainer.exe",
+      "status": "NotSigned",
+      "sha256": "c7392399a9467f091699ff1f4eec23eca7fd20ccb0804227c2598faf7debacc2",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/input_methods/yime/rime_deployer.exe",
+      "status": "NotSigned",
+      "sha256": "9dee4cfc75d7e0b5b4430767c683cffdc51c152b8d91463d3ab8e7c8eecb4b3d",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/input_methods/yime/rime_dict_manager.exe",
+      "status": "NotSigned",
+      "sha256": "9ad654dc78b758228b29de9dda3cd5ca9402163260c98066678376c5e7259011",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/go-backend/input_methods/yime/rime.dll",
+      "status": "NotSigned",
+      "sha256": "aa2a4d64dcc98fd07a76d7830b249550fa90016931f9a31492ffce9627873486",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/x86/PIMERegistrationStatus.exe",
+      "status": "NotSigned",
+      "sha256": "32eebffe58780ecf375549c708d2c5e78dd599521d6b0fba789d18de7017e8b7",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/x86/PIMETextService.dll",
+      "status": "NotSigned",
+      "sha256": "98ab6da6d9b822e3148988b4cedd9be70d905365b2ae4f599479944129f2e7ab",
+      "subject": "",
+      "thumbprint": ""
+    }
+  ]
+}

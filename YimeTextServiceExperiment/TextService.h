@@ -11,6 +11,7 @@
 #ifdef YIME_TOUCH_PRODUCT
 #include "DedicatedTouchService.h"
 class DedicatedTouchRoute;
+class InstalledTouchFrontend;
 #endif
 
 class CandidateListUIElement;
@@ -64,6 +65,7 @@ private:
     DedicatedTouchRoute* dedicated_=nullptr;
     DWORD dedicatedThread_=0;
     bool dedicatedProviderAdvised_=false;
+    InstalledTouchFrontend* installedTouch_=nullptr;
 #endif
     ~YimeTextService();
     HRESULT SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) noexcept;

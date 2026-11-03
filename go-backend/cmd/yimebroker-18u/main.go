@@ -23,9 +23,24 @@ func run() error {
 	data := flag.String("data-dir", "", "absolute isolated dictionary directory")
 	pipe := flag.String("pipe-name", "", "unique controlled dedicated named pipe")
 	pid := flag.Uint("tip-host-pid", 0, "actual controlled bootstrap TIP host process PID")
+	desktop := flag.Bool("installed-desktop", false, "complete installed frontend/TIP service")
+	installRoot := flag.String("install-root", "", "verified installed product root")
+	anchor := flag.String("manifest-sha256", "", "independent installed manifest hash")
 	flag.Parse()
-	if runtime.GOOS != "windows" || runtime.GOARCH != "amd64" {
-		return fmt.Errorf("dedicated broker requires Windows x64")
+	if runtime.GOOS != "windows" || (runtime.GOARCH != "amd64" && runtime.GOARCH != "arm64") {
+		return fmt.Errorf("dedicated broker requires native Windows x64 or ARM64")
+	}
+	if e := requireNativeX64(); e != nil {
+		return e
+	}
+	if *desktop {
+		if *root != "" || *data != "" || *pipe != "" || *pid != 0 {
+			return fmt.Errorf("installed desktop cannot use controlled-host options")
+		}
+		return touchbroker.ServeDesktop(context.Background(), *installRoot, *anchor, func() { fmt.Println("READY yimebroker-18u-desktop") })
+	}
+	if *installRoot != "" || *anchor != "" {
+		return fmt.Errorf("installation options require installed-desktop")
 	}
 	if !strings.HasPrefix(*pipe, `\\.\pipe\YimeBroker.18uTouch.v1.`) || len(*pipe) <= len(`\\.\pipe\YimeBroker.18uTouch.v1.`) || *pid == 0 || uint64(*pid) > 0xffffffff {
 		return fmt.Errorf("dedicated endpoint and explicit TIP host PID required")

@@ -58,6 +58,9 @@ type runtimeStatus struct {
 	IndexVersion  string `json:"index_version,omitempty"`
 }
 
+// Set only for the independent 18u installation payload; standard builds keep empty.
+var installed18uOnly string
+
 func main() {
 	installRoot := flag.String("install-root", "", "full YimeCore experimental package root")
 	brokerPath := flag.String("broker", "", "optional Broker executable override")
@@ -66,7 +69,50 @@ func main() {
 	noToolbar := flag.Bool("no-toolbar", false, "do not start the native Desktop Tools window")
 	stop := flag.Bool("stop", false, "stop the active trial runtime")
 	status := flag.Bool("status", false, "print the last runtime status")
+	installedCheck := flag.Bool("installed-18u-check", false, "explicit single installed 18u own-host verification")
+	installedRun := flag.Bool("installed-18u-run", false, "run the installed 18u touchscreen and dedicated Broker")
+	manifestSHA := flag.String("manifest-sha256", "", "independent installed 18u descriptor SHA-256")
+	evidenceDir := flag.String("evidence-dir", "", "new evidence directory outside installation")
+	confirm := flag.String("confirm", "", "explicit verification confirmation")
 	flag.Parse()
+	if *installedRun {
+		allowed := map[string]bool{"installed-18u-run": true, "install-root": true, "manifest-sha256": true, "stop": true}
+		mixed := flag.NArg() != 0
+		flag.Visit(func(f *flag.Flag) {
+			if !allowed[f.Name] {
+				mixed = true
+			}
+		})
+		if mixed {
+			fail(errors.New("installed 18u desktop does not accept standard runtime or check options"))
+			return
+		}
+		if err := runInstalled18uDesktop(*installRoot, *manifestSHA, *stop); err != nil {
+			fail(err)
+		}
+		return
+	}
+	if *installedCheck {
+		allowed := map[string]bool{"installed-18u-check": true, "install-root": true, "manifest-sha256": true, "evidence-dir": true, "confirm": true}
+		mixed := flag.NArg() != 0
+		flag.Visit(func(f *flag.Flag) {
+			if !allowed[f.Name] {
+				mixed = true
+			}
+		})
+		if mixed {
+			fail(errors.New("installed 18u verification does not accept standard runtime options"))
+			return
+		}
+		if err := runInstalled18uCheck(*installRoot, *manifestSHA, *evidenceDir, *confirm); err != nil {
+			fail(err)
+		}
+		return
+	}
+	if installed18uOnly != "" || *manifestSHA != "" || *evidenceDir != "" || *confirm != "" {
+		fail(errors.New("18u package requires installed-18u-run or explicit installed-18u-check; no standard fallback"))
+		return
+	}
 
 	resolved, err := resolveOptions(options{
 		installRoot: *installRoot, brokerPath: *brokerPath, stateRoot: *stateRoot,

@@ -37,8 +37,13 @@ add_library(PIMETextService SHARED
 )
 
 target_link_libraries(PIMETextService
-    libIME2_static
+    PRIVATE libIME2_static
 )
+
+set(PIME_ARM64X_STAGE "" CACHE STRING "Optional ARM64 or ARM64EC stage for the ARM64X TSF DLL")
+if(PIME_ARM64X_STAGE)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/Arm64X.cmake")
+endif()
 
 # Regression tests: RPC responses / menu JSON must never throw into the host.
 add_executable(PIMERpcResponseTests
@@ -51,6 +56,11 @@ add_executable(PIMERpcResponseTests
 )
 target_compile_options(PIMERpcResponseTests PRIVATE /utf-8)
 add_test(NAME PIMERpcResponseTests COMMAND PIMERpcResponseTests)
+
+# Isolated loader probe: never registers a profile or opens a user dictionary.
+add_executable(PIMEAbiLoadTests tests/PIMEAbiLoadTests.cpp)
+target_compile_features(PIMEAbiLoadTests PRIVATE cxx_std_17)
+target_compile_options(PIMEAbiLoadTests PRIVATE /utf-8 /W4 /EHsc)
 
 # Read-only TSF registration convergence probe. The installer uses the
 # architecture-matched copies for pre-mutation admission and for post-register

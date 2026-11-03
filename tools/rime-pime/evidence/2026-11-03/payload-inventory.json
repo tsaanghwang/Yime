@@ -1,0 +1,1486 @@
+{
+  "backends.json": {
+    "bytes": 136,
+    "sha256": "72e66ef3a8b582a554e711b0ee46bdd758702f60f827a1f6a5b9aa48cb1968d3"
+  },
+  "PIMELauncher.exe": {
+    "bytes": 662528,
+    "sha256": "3a3c440e3600c00ababac70bfa61d2132e8e6e64164d5164182ada2553ec43ed",
+    "machine": "0xaa64"
+  },
+  "version.txt": {
+    "bytes": 13,
+    "sha256": "229337341bf32e8ff90a04512f831d0e0f83add4a0bf2ce10b84b971946c164d"
+  },
+  "arm64/PIMERegistrationStatus.exe": {
+    "bytes": 252416,
+    "sha256": "92face5fd7675372c7035d99ba84f5d2bcc4088889d67ce914eb03ab01b9136f",
+    "machine": "0xaa64"
+  },
+  "arm64/PIMETextService.dll": {
+    "bytes": 1173504,
+    "sha256": "3f1d76c7c3be6dfdfb0065ed61f4f855f8fb8215e6b4edd55da01723aac45c55",
+    "machine": "0xaa64"
+  },
+  "go-backend/blocklist-manager.exe": {
+    "bytes": 1963520,
+    "sha256": "9c49e9df6634703cd77c51c0b7d4837a44a3cb497dacedf424a6825eb9c3bc4c",
+    "machine": "0xaa64"
+  },
+  "go-backend/diagnostics-tool.exe": {
+    "bytes": 2288640,
+    "sha256": "da86b1353b91aed50e0fd0840cbadea26f514d2cff9527f9da2771d6537fd369",
+    "machine": "0xaa64"
+  },
+  "go-backend/input-toolbar.exe": {
+    "bytes": 2364928,
+    "sha256": "ea4dd7485b2df27a8082fabdf3322c0c98c0ff1ec0be55b2aba1eeecd766416a",
+    "machine": "0xaa64"
+  },
+  "go-backend/lexicon-manager.exe": {
+    "bytes": 2722304,
+    "sha256": "4c32572de9211a971909c1871d183372df3b6bc91e401553886e73c0aa2127e3",
+    "machine": "0xaa64"
+  },
+  "go-backend/lexicon-promotion-scan.exe": {
+    "bytes": 2539008,
+    "sha256": "9eec5cadc8cf6087d0cc7b007fc795cd91147c092043db1e0dce189561479439",
+    "machine": "0xaa64"
+  },
+  "go-backend/reverse-lookup.exe": {
+    "bytes": 2756608,
+    "sha256": "a4e5fe0691a157e04a1b43771f210370d92fbe9c4b18bbaf6cb1b25ad5d0fc27",
+    "machine": "0xaa64"
+  },
+  "go-backend/server.exe": {
+    "bytes": 3325440,
+    "sha256": "f8f3e4c98501b43e4e9a2ef5a027a0c90794b3a0cc5d7f9988dd439ad72e294d",
+    "machine": "0xaa64"
+  },
+  "go-backend/settings-tool.exe": {
+    "bytes": 3072512,
+    "sha256": "24f42cdee12acc6f9316e10b23b3b7e937b985a0e02df375ed084cf72107bab5",
+    "machine": "0xaa64"
+  },
+  "go-backend/system-lexicon-audit.exe": {
+    "bytes": 2318336,
+    "sha256": "819eab19046a1da36032ae13ba407e8cb23afe69f5f2de1ca203c2e134615179",
+    "machine": "0xaa64"
+  },
+  "go-backend/tool-hub.exe": {
+    "bytes": 2558976,
+    "sha256": "605d83c53c06637c35b2758e8a7b996b96eb8d9bc4445e96771da949a543ec90",
+    "machine": "0xaa64"
+  },
+  "go-backend/yime-layout-designer.exe": {
+    "bytes": 3176448,
+    "sha256": "6e6401227c001cb55faa80350f7ef7a0301155e518dcd3bbd3358fc9cbdc8335",
+    "machine": "0xaa64"
+  },
+  "go-backend/yime-trainer.exe": {
+    "bytes": 2962944,
+    "sha256": "c7392399a9467f091699ff1f4eec23eca7fd20ccb0804227c2598faf7debacc2",
+    "machine": "0xaa64"
+  },
+  "licenses/arm64-sources.lock.json": {
+    "bytes": 6120,
+    "sha256": "9657075924554b4f810817daaced43bb6749888b5919f1aeac8b9682f27c1454"
+  },
+  "licenses/PIME-UPSTREAM-LICENSE.txt": {
+    "bytes": 1578,
+    "sha256": "16484810b635e209f3d1615e4a7a27d752dd3702a0bb0a4b93ecd6c96ceb5bb7"
+  },
+  "licenses/RIME-BSD-3-Clause.txt": {
+    "bytes": 1543,
+    "sha256": "44c39955377bb15d825f8142de500ed832309178ce34624c5d1a1f00761bb1ee"
+  },
+  "licenses/RIME-FROST-GPL-3.0.txt": {
+    "bytes": 35823,
+    "sha256": "230184f60bae2feaf244f10a8bac053c8ff33a183bcc365b4d8b876d2b7f4809"
+  },
+  "licenses/RUST-DEPENDENCIES.md": {
+    "bytes": 10928,
+    "sha256": "40099e7c6f18fb8de662ce15c83b89274d60c9a59255b70601a21f1f89d16041"
+  },
+  "licenses/SIL-OFL-1.1.txt": {
+    "bytes": 4559,
+    "sha256": "1953855bf1927e7214385bbdd8adb04cc5e8a0ecd0e6eaedeb1bdc281b009481"
+  },
+  "licenses/UNICODE-3.0.txt": {
+    "bytes": 2074,
+    "sha256": "6b01fcc8d6b15bf5fe6799d7889d38c92307becae6a4b28cd32808d71741890f"
+  },
+  "x86/PIMERegistrationStatus.exe": {
+    "bytes": 213504,
+    "sha256": "32eebffe58780ecf375549c708d2c5e78dd599521d6b0fba789d18de7017e8b7",
+    "machine": "0x14c"
+  },
+  "x86/PIMETextService.dll": {
+    "bytes": 485888,
+    "sha256": "98ab6da6d9b822e3148988b4cedd9be70d905365b2ae4f599479944129f2e7ab",
+    "machine": "0x14c"
+  },
+  "go-backend/input_methods/yime/icon.ico": {
+    "bytes": 62966,
+    "sha256": "d7700838dc9a00524e0d7d1d11be069fbf8f16b922ee94c8935d57204a5af77a"
+  },
+  "go-backend/input_methods/yime/ime.json": {
+    "bytes": 319,
+    "sha256": "ea07f281bc8633cafa0b6c58c7fd0b14d25b4e801d49c692a1f9ce77459b07e3"
+  },
+  "go-backend/input_methods/yime/rime.dll": {
+    "bytes": 3788800,
+    "sha256": "aa2a4d64dcc98fd07a76d7830b249550fa90016931f9a31492ffce9627873486",
+    "machine": "0xaa64"
+  },
+  "go-backend/input_methods/yime/rime_deployer.exe": {
+    "bytes": 446464,
+    "sha256": "9dee4cfc75d7e0b5b4430767c683cffdc51c152b8d91463d3ab8e7c8eecb4b3d",
+    "machine": "0xaa64"
+  },
+  "go-backend/input_methods/yime/rime_dict_manager.exe": {
+    "bytes": 259584,
+    "sha256": "9ad654dc78b758228b29de9dda3cd5ca9402163260c98066678376c5e7259011",
+    "machine": "0xaa64"
+  },
+  "go-backend/input_methods/yime/rime_runtime.lock.json": {
+    "bytes": 769,
+    "sha256": "019f641faa2166f2496ea66f203c77050309826710d79c7177f66c0b50b48c72"
+  },
+  "go-backend/input_methods/yime/data/cangjie5.dict.yaml": {
+    "bytes": 789090,
+    "sha256": "2dbc120d838ea1e30286f565060d6f84c11623ff1798fd52c97d50e370b833dd"
+  },
+  "go-backend/input_methods/yime/data/cangjie5.schema.yaml": {
+    "bytes": 2357,
+    "sha256": "e112cc9624923befde28be408222d3bc3ca95df7c270c508d735570403e8b272"
+  },
+  "go-backend/input_methods/yime/data/default.yaml": {
+    "bytes": 4299,
+    "sha256": "1fc2111f23ebbdadd9527214a80daf1b5f738ac00b6f62a421a587fe1ead3f99"
+  },
+  "go-backend/input_methods/yime/data/essay.txt": {
+    "bytes": 4096600,
+    "sha256": "1d66c47e76009aed63ce50de2b8fb8c7d54fc2de8f4e9b4336a6bc5bf014402b"
+  },
+  "go-backend/input_methods/yime/data/luna_pinyin.dict.yaml": {
+    "bytes": 282450,
+    "sha256": "971baa1f38a42d3d82f858b5bbdcad6482371f8d93a2f5d5c4ab341046419e3b"
+  },
+  "go-backend/input_methods/yime/data/luna_pinyin.schema.yaml": {
+    "bytes": 3585,
+    "sha256": "f08549cd3275da3889cea302c6ec3ecc99346d5dae2a79b65e83d37f2c04d0a7"
+  },
+  "go-backend/input_methods/yime/data/pinyin_normalized.json": {
+    "bytes": 31697,
+    "sha256": "01bb8e95f124b42c3b1187cfe3872940ab73ebf83a6fe4bebfeac4139bc38422"
+  },
+  "go-backend/input_methods/yime/data/symbols.yaml": {
+    "bytes": 24410,
+    "sha256": "e4cda5663039e284ce62d7febe207bf6b788df6a9705ca174fabd7f8c140ed30"
+  },
+  "go-backend/input_methods/yime/data/yime_core_source_manifest.json": {
+    "bytes": 1842,
+    "sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97"
+  },
+  "go-backend/input_methods/yime/data/yime_erhua_mixed_full.dict.yaml": {
+    "bytes": 4710,
+    "sha256": "8b65157cbdc489d97faa4a769972a2d74c5878c1bb5bdbcf4a537e7460fcf36a"
+  },
+  "go-backend/input_methods/yime/data/yime_erhua_mixed_full.schema.yaml": {
+    "bytes": 357,
+    "sha256": "d1e00c4187a3241952636cc7d92867a8bdc885e2642507d3da8ebab3c071dc0e"
+  },
+  "go-backend/input_methods/yime/data/yime_erhua_mixed_manifest.json": {
+    "bytes": 4044,
+    "sha256": "0a1f89dc4df28682924a62f62f2cc224bcf97ca09443ea4e6ee659acbe16091c"
+  },
+  "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_full.dict.yaml": {
+    "bytes": 3181,
+    "sha256": "b67f2cee5e3d9f7dbf2ba471d4bde890239902143d00eb27f91c8437991bc0c1"
+  },
+  "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_shorthand.dict.yaml": {
+    "bytes": 3046,
+    "sha256": "b84bf88ac11a8b4539f0dcd978f676b874c8efac52b5fa12ab88cad872020705"
+  },
+  "go-backend/input_methods/yime/data/yime_erhua_mixed_sentence_variable.dict.yaml": {
+    "bytes": 3072,
+    "sha256": "aec8483fa49c159007b564b264c2a1f9e3755fbb9be1c91e6626f6258fba8d76"
+  },
+  "go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.dict.yaml": {
+    "bytes": 4373,
+    "sha256": "eee94ba46bed6495477f45d7d5b7deabf4be0041197d3a0128a90d6072c6b570"
+  },
+  "go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.schema.yaml": {
+    "bytes": 372,
+    "sha256": "ca22d7d16b6bedff767972329ef53bb880c187ce5b821ebf57022d4f165a8bbb"
+  },
+  "go-backend/input_methods/yime/data/yime_erhua_mixed_variable.dict.yaml": {
+    "bytes": 4411,
+    "sha256": "011448c018f309303af488fa143c31e82803f76a3734ca301c3b73a9599ca51d"
+  },
+  "go-backend/input_methods/yime/data/yime_erhua_mixed_variable.schema.yaml": {
+    "bytes": 369,
+    "sha256": "aed6d0a4953b6a7fc55054b1d0711088f9dffce49f961972913bdf59914babbc"
+  },
+  "go-backend/input_methods/yime/data/yime_erhua_reverse_source.tsv": {
+    "bytes": 40241,
+    "sha256": "896d69089125826e4d2d83601ad4ee60d23ba2f556a9888551097546bc0f3f05"
+  },
+  "go-backend/input_methods/yime/data/yime_full.dict.yaml": {
+    "bytes": 31621303,
+    "sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f"
+  },
+  "go-backend/input_methods/yime/data/yime_full.schema.yaml": {
+    "bytes": 1959,
+    "sha256": "5889514c808199a00c1c1618a4f940c71acd1e69eb8dc9592788e67a346114c0"
+  },
+  "go-backend/input_methods/yime/data/yime_lexicon_manifest.json": {
+    "bytes": 667,
+    "sha256": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8"
+  },
+  "go-backend/input_methods/yime/data/yime_particle_a_stage6d_full.dict.yaml": {
+    "bytes": 150994,
+    "sha256": "e570b452543845542f0dc0e04233e44aa0ab9cfab12d655d9e811019fbc8064b"
+  },
+  "go-backend/input_methods/yime/data/yime_particle_a_stage6d_manifest.json": {
+    "bytes": 2549,
+    "sha256": "e176793b2359b3d32cef397a8d20a7fc24c24f9c52cf98e381ce240c4b2bba11"
+  },
+  "go-backend/input_methods/yime/data/yime_particle_a_stage6d_shorthand.dict.yaml": {
+    "bytes": 132044,
+    "sha256": "e8e34cd76847bfb2cc2b6a3df4f5a76641a40f402fb818a099e06dec24e86b7d"
+  },
+  "go-backend/input_methods/yime/data/yime_particle_a_stage6d_variable.dict.yaml": {
+    "bytes": 134218,
+    "sha256": "1b80e35ea9c04a3600fd0a5e60cdba3a2cd6b5743c6c376ddfcfbb478cd53cd0"
+  },
+  "go-backend/input_methods/yime/data/yime_pinyin_codes.tsv": {
+    "bytes": 19448,
+    "sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071"
+  },
+  "go-backend/input_methods/yime/data/yime_pinyin_reverse_source.tsv": {
+    "bytes": 2039059,
+    "sha256": "85c9b28b2e46752d56d84fcd924160d260cc9e5cfcbc3c5606d0f4d47c6a319a"
+  },
+  "go-backend/input_methods/yime/data/yime_psc_peripheral_full.dict.yaml": {
+    "bytes": 2842,
+    "sha256": "339caa6828e0ce569bd81a1f93d3a1b3b4c9e69c468f65108690fbee9e83cf15"
+  },
+  "go-backend/input_methods/yime/data/yime_psc_peripheral_full.schema.yaml": {
+    "bytes": 367,
+    "sha256": "53134bf8ee5134f3e2615a53c794b162e8a249520a52937a4145ae5c47daed0e"
+  },
+  "go-backend/input_methods/yime/data/yime_psc_peripheral_manifest.json": {
+    "bytes": 2073,
+    "sha256": "2e4a3ac0dba4bf497519dc2f60f89ae899f2e34d1bdecbe776490b2273052807"
+  },
+  "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_full.dict.yaml": {
+    "bytes": 3038,
+    "sha256": "1dac84cb9de9565d54768688fec9f712279a6e8e78801c1f511e74f56d18622d"
+  },
+  "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_shorthand.dict.yaml": {
+    "bytes": 2734,
+    "sha256": "41c39164c0a8cbc2a038d08dbaef4d14d2002a03efd60accc7316dc332e56f78"
+  },
+  "go-backend/input_methods/yime/data/yime_psc_peripheral_sentence_variable.dict.yaml": {
+    "bytes": 2759,
+    "sha256": "22929e9c35a0daf6918ede8fe2de4b800ba78154bc195eaa2e22ecaf3362c22d"
+  },
+  "go-backend/input_methods/yime/data/yime_psc_peripheral_shorthand.dict.yaml": {
+    "bytes": 2538,
+    "sha256": "1ff18ea29b4be8b9a9979941018042d4a1b333be8e4a5a43aaa4fd312eb7fa73"
+  },
+  "go-backend/input_methods/yime/data/yime_psc_peripheral_shorthand.schema.yaml": {
+    "bytes": 377,
+    "sha256": "bbd7176d482772f6655d153752892b0cf539ab0979f7a6ad4aad49db7261104c"
+  },
+  "go-backend/input_methods/yime/data/yime_psc_peripheral_variable.dict.yaml": {
+    "bytes": 2563,
+    "sha256": "96850c6e75d07250fcf0aba1bed685c13592556ee4742a61a929254212ae9026"
+  },
+  "go-backend/input_methods/yime/data/yime_psc_peripheral_variable.schema.yaml": {
+    "bytes": 375,
+    "sha256": "515abf7f3c4e92aefa67764bd25a51b077d5a8dee72908d5d8c72173cd521279"
+  },
+  "go-backend/input_methods/yime/data/yime_pua_pinyin.json": {
+    "bytes": 62686,
+    "sha256": "c60f4acc864e2c699eefcf796feaf855e2c19770191d8417fb7d51d17ceb3699"
+  },
+  "go-backend/input_methods/yime/data/yime_runtime_profile.json": {
+    "bytes": 3764,
+    "sha256": "f40b40e001bea799a45877f524d380e229d1c0499c3ba50a16c5d8ef19091741"
+  },
+  "go-backend/input_methods/yime/data/yime_sentence_full.dict.yaml": {
+    "bytes": 368,
+    "sha256": "bdcc06ecb949eb589884f2de1f0d591ac42b331b9327b8a9f2424f5a9375603e"
+  },
+  "go-backend/input_methods/yime/data/yime_sentence_shorthand.dict.yaml": {
+    "bytes": 398,
+    "sha256": "ca26b480507b90b6be0d47e0138ad463d0b367cc5fa1bdbb9b6ef47c232243ab"
+  },
+  "go-backend/input_methods/yime/data/yime_sentence_variable.dict.yaml": {
+    "bytes": 392,
+    "sha256": "3a1569ec196835195a13ea2ccb55f719faf08a4ccb3b8cb82506e1b7bd921e57"
+  },
+  "go-backend/input_methods/yime/data/yime_shorthand.dict.yaml": {
+    "bytes": 29563931,
+    "sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c"
+  },
+  "go-backend/input_methods/yime/data/yime_shorthand.schema.yaml": {
+    "bytes": 1996,
+    "sha256": "d3b2fb6b39e958f30a0479de411ea65c6b4578b2548da106d1b23fda89910eaf"
+  },
+  "go-backend/input_methods/yime/data/yime_syllable_decomposition.tsv": {
+    "bytes": 177143,
+    "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7"
+  },
+  "go-backend/input_methods/yime/data/yime_syllable_inventory_manifest.json": {
+    "bytes": 557,
+    "sha256": "516a4e3c993845875e3b59856835425b6456f2e771cd2a89e4168cf4981f7617"
+  },
+  "go-backend/input_methods/yime/data/yime_system_candidate_exclusions.tsv": {
+    "bytes": 6051,
+    "sha256": "a8ea7cb186ce8e27ba4848e608fdedf260e8d4b2010a38ce8aabc893bc1f22b2"
+  },
+  "go-backend/input_methods/yime/data/yime_third_tone_stage5c_full.dict.yaml": {
+    "bytes": 694,
+    "sha256": "e6a478b4d8fc0474ae02b13dc6a5cffaf62ff7ca3ad1ba0f75b937cf75854f89"
+  },
+  "go-backend/input_methods/yime/data/yime_third_tone_stage5c_manifest.json": {
+    "bytes": 1551,
+    "sha256": "b53b46ef49da894d019b5db4dc281b19aaceec9fe9ec570b26653b8e0c54d82e"
+  },
+  "go-backend/input_methods/yime/data/yime_third_tone_stage5c_shorthand.dict.yaml": {
+    "bytes": 676,
+    "sha256": "4b9e428a09b8f5be8478a6d7d947f54760c2e395eeb1117b8a3702d04c840253"
+  },
+  "go-backend/input_methods/yime/data/yime_third_tone_stage5c_variable.dict.yaml": {
+    "bytes": 675,
+    "sha256": "052b5b75cc0c8e1d5deae9f3c05a1ed45d36b02339630f130860a1204f011f84"
+  },
+  "go-backend/input_methods/yime/data/yime_variable.dict.yaml": {
+    "bytes": 30155261,
+    "sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b"
+  },
+  "go-backend/input_methods/yime/data/yime_variable.schema.yaml": {
+    "bytes": 2067,
+    "sha256": "2a0d05769a3aee860ed14b503a24d295749f3f788cecf2fd792018094cd0f330"
+  },
+  "go-backend/input_methods/yime/data/yime_yinyuan_layout.json": {
+    "bytes": 1023,
+    "sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0"
+  },
+  "go-backend/input_methods/yime/help/diagnostics.html": {
+    "bytes": 3546,
+    "sha256": "397d79c461a105f01d5a6864ea4ec4bd60291a57f543f42aafba5bfb57102a0e"
+  },
+  "go-backend/input_methods/yime/help/diagnostics.md": {
+    "bytes": 4985,
+    "sha256": "8ae36fb4774e3b3924b5f8de9cc2c82b3d096f9b99db8f1c9e6555f445d5b370"
+  },
+  "go-backend/input_methods/yime/help/README.html": {
+    "bytes": 7437,
+    "sha256": "e3b1b537915b2fa2c587f40c046e6fb348f66ed5678a44eca960e8c94a16bbae"
+  },
+  "go-backend/input_methods/yime/help/README.md": {
+    "bytes": 5824,
+    "sha256": "1e4ae85cecf3c686d161591b4880b98816d8b065ba6ae6d10e9ddc01033b4d7f"
+  },
+  "go-backend/input_methods/yime/help/settings-and-data.html": {
+    "bytes": 10982,
+    "sha256": "5f44cd6168479dbfa8d33444a3418d44bbd852899b64b622db36c7bb0d1dbe27"
+  },
+  "go-backend/input_methods/yime/help/settings-and-data.md": {
+    "bytes": 11848,
+    "sha256": "9a176509a71c811fd8c58b897f41bd27b7988b16e94f7cf2d33ef3e67b8c0868"
+  },
+  "go-backend/input_methods/yime/help/trial-feedback.html": {
+    "bytes": 2456,
+    "sha256": "a6611e47481f2eebcfb673fd261de0cf5c23dd05a4fde0e330d441bad9dee059"
+  },
+  "go-backend/input_methods/yime/help/trial-feedback.md": {
+    "bytes": 882,
+    "sha256": "56b2157af3a8575b658dbf80e4ebb2871033286d0091f88d6a5b751ea550e915"
+  },
+  "go-backend/input_methods/yime/icons/chi.ico": {
+    "bytes": 17542,
+    "sha256": "d15134b92044f5d461ef5f0004166c8892ae2f1c2469d6fba3b3612dc5434f39"
+  },
+  "go-backend/input_methods/yime/icons/chi_full_capsoff.ico": {
+    "bytes": 17542,
+    "sha256": "5670ea56fc3885a23cc1eab8394318762c1e2aa8f0391a265554c235c470b628"
+  },
+  "go-backend/input_methods/yime/icons/chi_full_capson.ico": {
+    "bytes": 17542,
+    "sha256": "9fc3598031aa6ef83dd197d9b109e78f0e755cbbd3a45862aa0202851fdbb132"
+  },
+  "go-backend/input_methods/yime/icons/chi_half_capsoff.ico": {
+    "bytes": 17542,
+    "sha256": "359bd741a89bee4fc0147f741de78b00cf5e469d63e6f3b56a5a92b239ea2721"
+  },
+  "go-backend/input_methods/yime/icons/chi_half_capson.ico": {
+    "bytes": 17542,
+    "sha256": "f18bd377d148dcf98f41ec6d4705ddafc1194e0e2c95a3734c4bdce0f9211880"
+  },
+  "go-backend/input_methods/yime/icons/config.ico": {
+    "bytes": 1406,
+    "sha256": "e4b92538f15a2456f03b7138d22708c939a2977e739850cbec0f8d1641461d0d"
+  },
+  "go-backend/input_methods/yime/icons/eng.ico": {
+    "bytes": 1406,
+    "sha256": "43644407945e044ad3ec50d172eafb9c80f09027750506fc8ca7dcac85151e86"
+  },
+  "go-backend/input_methods/yime/icons/eng_full_capsoff.ico": {
+    "bytes": 17542,
+    "sha256": "d9904b84b8effde669be732f9b38cc06caba9f362985bcc0d24c5d186002c60e"
+  },
+  "go-backend/input_methods/yime/icons/eng_full_capson.ico": {
+    "bytes": 17542,
+    "sha256": "672c7e5d5894fb014278adf0e787e1eec60f04b93b625f1dd76670e431a35d3d"
+  },
+  "go-backend/input_methods/yime/icons/eng_half_capsoff.ico": {
+    "bytes": 17542,
+    "sha256": "f03896add520532ae4d903a6d8c328dddfca2c3a2ba21d9d523c1d0f06fdeee2"
+  },
+  "go-backend/input_methods/yime/icons/eng_half_capson.ico": {
+    "bytes": 17542,
+    "sha256": "543e8df861da6bb109b3f214709f49847d8ddf76c3d7e8fa7ed40b7557536f29"
+  },
+  "go-backend/input_methods/yime/icons/full.ico": {
+    "bytes": 894,
+    "sha256": "905e7ece5468265b5cbc43bd3a85518ba76a8dd1b680361f78afc1670327ff41"
+  },
+  "go-backend/input_methods/yime/icons/half.ico": {
+    "bytes": 1406,
+    "sha256": "8126e19feb23ba0f5aa05e1293a175d1db6b0e95a1c54a5535d15608acf2859c"
+  },
+  "go-backend/input_methods/yime/icons/layout_horizontal.ico": {
+    "bytes": 655,
+    "sha256": "36e4d276ce7ca755203131211bee03fd744cf3854bade79efd0c39338bd65aca"
+  },
+  "go-backend/input_methods/yime/icons/layout_vertical.ico": {
+    "bytes": 690,
+    "sha256": "4bfce90dd2af785d8bfce644c08e5a1bcec8531a15c69bd34919791a4a5b10b3"
+  },
+  "go-backend/input_methods/yime/icons/lexicon.ico": {
+    "bytes": 2141,
+    "sha256": "6ee1ef6ad89381a8b5a2df70fcdbdc8adb2d77aa5f63fd121e100fa67b670275"
+  },
+  "go-backend/input_methods/yime/icons/punct_chi.ico": {
+    "bytes": 5430,
+    "sha256": "eb382e466a064fc431e2e8ee3ea9d56384a7f135f8ef9ac46e6d25cf02b51060"
+  },
+  "go-backend/input_methods/yime/icons/punct_eng.ico": {
+    "bytes": 5430,
+    "sha256": "206de2fabff086533b9d0db51bdfd2f8ae7d59ea96d568992b39313a716e9162"
+  },
+  "go-backend/input_methods/yime/icons/reverse-lookup.ico": {
+    "bytes": 669,
+    "sha256": "c7f20db9831c64ea75525f126ffc59dd33f514fa46616c1ad388be556655c99f"
+  },
+  "go-backend/input_methods/yime/icons/tools.ico": {
+    "bytes": 2334,
+    "sha256": "80207f517c706e4eb861e9b35d6b509fe82c45e9ef5ce20757c7415cb48a1c4e"
+  },
+  "go-backend/input_methods/yime/icons/yime_qin_seal_yin.ico": {
+    "bytes": 19067,
+    "sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e"
+  },
+  "go-backend/input_methods/yime/icons/yime_qin_seal_yin.png": {
+    "bytes": 14334,
+    "sha256": "4930a312b6e9b1852da8a16431217fc99dab9d5f6a36924adfe01beef82f325d"
+  },
+  "go-backend/input_methods/yime/icons/yin.png": {
+    "bytes": 1196,
+    "sha256": "ca61581f0d13d0a4e1281dbe602ad55a02697d52318a541cc6f492ab05d2b275"
+  },
+  "go-backend/input_methods/yime/layoutdesigner/README.md": {
+    "bytes": 3596,
+    "sha256": "32f958b7d8f1550f4843f77cdbe876dadea1cbd550cc74d14c4b1207113e97d4"
+  },
+  "go-backend/input_methods/yime/lexiconpromotion/README.md": {
+    "bytes": 1189,
+    "sha256": "92630ce3b92299a17f46f11b7084bf1c72dde22aa3050dc5d0bde5cd973fde9f"
+  },
+  "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf": {
+    "bytes": 16024176,
+    "sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d"
+  },
+  "go-backend/input_methods/yime/data/opencc/hk2s.json": {
+    "bytes": 643,
+    "sha256": "71d5f687e1ca78d3af0e64850e84000555848744e41a09f98d33849a7f126be3"
+  },
+  "go-backend/input_methods/yime/data/opencc/hk2t.json": {
+    "bytes": 450,
+    "sha256": "2a3456a87414f2995fd3f9aefd0e089f5be8f80be53259e07246815bcf7334eb"
+  },
+  "go-backend/input_methods/yime/data/opencc/HKVariants.ocd2": {
+    "bytes": 4893,
+    "sha256": "1b71281a9a093619eda66c3d65ddedbe8f9be5383bb02cd1c2ebadee320f179a"
+  },
+  "go-backend/input_methods/yime/data/opencc/HKVariantsRev.ocd2": {
+    "bytes": 4923,
+    "sha256": "b879b0a7f7d2f6031b38523cd6430440e32e9b819ca052e4c7d156ad5b0c099b"
+  },
+  "go-backend/input_methods/yime/data/opencc/HKVariantsRevPhrases.ocd2": {
+    "bytes": 7030,
+    "sha256": "a6b0675755b1df44b2af090c6e15672b7184c03f74b3c226e57f94391b4d0ec1"
+  },
+  "go-backend/input_methods/yime/data/opencc/jp2t.json": {
+    "bytes": 540,
+    "sha256": "3f9b091520ba0d55ecfe6fca719a672bb2691b1eb9b0c0a43a4aa4326b15fd9e"
+  },
+  "go-backend/input_methods/yime/data/opencc/JPShinjitaiCharacters.ocd2": {
+    "bytes": 4263,
+    "sha256": "6c97633ec8a1087a4041a8677cbc3c872b68804ebace6c4b30aa2d02c484b8d1"
+  },
+  "go-backend/input_methods/yime/data/opencc/JPShinjitaiPhrases.ocd2": {
+    "bytes": 7462,
+    "sha256": "6caef7c983668e43799498104062ede559033ca759665600f5be18ede4821016"
+  },
+  "go-backend/input_methods/yime/data/opencc/JPVariants.ocd2": {
+    "bytes": 7993,
+    "sha256": "14f32b4906b1fe22d3a4f96c6cb5c64c39a8726a73df556570ff7653fb9ce732"
+  },
+  "go-backend/input_methods/yime/data/opencc/JPVariantsRev.ocd2": {
+    "bytes": 7991,
+    "sha256": "3aa7d165035e584b701487c6512866425d1c711ba3afb91ab0c9c109f5d3c15d"
+  },
+  "go-backend/input_methods/yime/data/opencc/s2hk.json": {
+    "bytes": 507,
+    "sha256": "3708e756ea01783e9cf6b3cce527580810b3d539b8c7fcc3594dd1517aa05bff"
+  },
+  "go-backend/input_methods/yime/data/opencc/s2t.json": {
+    "bytes": 406,
+    "sha256": "710bb970e406d9c0a3dd33c609248686cf1c5578d064b7b7fc89e70fbb9ea75d"
+  },
+  "go-backend/input_methods/yime/data/opencc/s2tw.json": {
+    "bytes": 505,
+    "sha256": "67ce1f5aa3d6b21ebb523084b40e66f80bec27bb2dc6b540d44dac2e27f7194e"
+  },
+  "go-backend/input_methods/yime/data/opencc/s2twp.json": {
+    "bytes": 599,
+    "sha256": "72d187574510542be608c862d5359d29480ee61f137082df8a06d74f7bcfc79c"
+  },
+  "go-backend/input_methods/yime/data/opencc/STCharacters.ocd2": {
+    "bytes": 45310,
+    "sha256": "e2bcc2f3b6a552abf2c21f1e9d4bc232ea57e9836151fb381eff703d88c12425"
+  },
+  "go-backend/input_methods/yime/data/opencc/STPhrases.ocd2": {
+    "bytes": 925143,
+    "sha256": "5e8d8289beacc7d4ab7baa7193ebb589f3d5a956449ed9c81ccff431ae503f6e"
+  },
+  "go-backend/input_methods/yime/data/opencc/t2hk.json": {
+    "bytes": 304,
+    "sha256": "a8531beb7430fe1afed0294a893af529c7b7fd2ad41567b5daccb8399c8ef2f0"
+  },
+  "go-backend/input_methods/yime/data/opencc/t2jp.json": {
+    "bytes": 318,
+    "sha256": "4fb22429d63173715fec30524111ec141c0577b66c9f090513ea8bac4741ad77"
+  },
+  "go-backend/input_methods/yime/data/opencc/t2s.json": {
+    "bytes": 406,
+    "sha256": "b818534194f27c2d95f01001edb0a5ec49b9050119892cb30a0504bb202cc07c"
+  },
+  "go-backend/input_methods/yime/data/opencc/t2tw.json": {
+    "bytes": 302,
+    "sha256": "11495bf144cd932a9568810822a5af0fbba2db9c2e06a2bb2871583423fac24a"
+  },
+  "go-backend/input_methods/yime/data/opencc/TSCharacters.ocd2": {
+    "bytes": 46126,
+    "sha256": "64aee2ead703e0734525decf0a11891f3dad07930433c8b1672274a9b22963bc"
+  },
+  "go-backend/input_methods/yime/data/opencc/TSPhrases.ocd2": {
+    "bytes": 9776,
+    "sha256": "edafc46f5c3eca61a754c78e47117e7c73995cacd6c99aadcb8a219d7ae3e53d"
+  },
+  "go-backend/input_methods/yime/data/opencc/tw2s.json": {
+    "bytes": 641,
+    "sha256": "05ac8731e870babac8118d9a79ebf06c616576bf4c8b378cf36d0359b5d9ebe5"
+  },
+  "go-backend/input_methods/yime/data/opencc/tw2sp.json": {
+    "bytes": 727,
+    "sha256": "8bb1ce11c560f623a7d07593affe575ee936be0fe63cda0983a672000adf68ec"
+  },
+  "go-backend/input_methods/yime/data/opencc/tw2t.json": {
+    "bytes": 448,
+    "sha256": "3ca6a912f9da989ce3e83dab11084f2473af2a1ea6f9e67675ba48ad2f3c3e51"
+  },
+  "go-backend/input_methods/yime/data/opencc/TWPhrases.ocd2": {
+    "bytes": 15610,
+    "sha256": "14ce3a5beded4e387f571ff6aa0473d631c02b6e9af019960c87e1cd278640c5"
+  },
+  "go-backend/input_methods/yime/data/opencc/TWPhrasesRev.ocd2": {
+    "bytes": 15597,
+    "sha256": "966115eab0dc898754e25acb55590d55346e126c5325c12e3a44b5d8c183319d"
+  },
+  "go-backend/input_methods/yime/data/opencc/TWVariants.ocd2": {
+    "bytes": 4595,
+    "sha256": "4845dffeeb7efe1ba46e655b80580edd73191cd33cc8ade20451047cb398702a"
+  },
+  "go-backend/input_methods/yime/data/opencc/TWVariantsRev.ocd2": {
+    "bytes": 4627,
+    "sha256": "60f6b6bf9aa17756356a0f6fbb4299cce774431ea84d7eeb767e7a0411494485"
+  },
+  "go-backend/input_methods/yime/data/opencc/TWVariantsRevPhrases.ocd2": {
+    "bytes": 5333,
+    "sha256": "8cfd338887d3b6b3e035f1cccf3821bf2b2581c6024a530c6c1b243a189d06f8"
+  },
+  "go-backend/input_methods/yime/data/trainer/curriculum.json": {
+    "bytes": 994,
+    "sha256": "6b57e56d91686fdf244b9df273477b73c53f19558fa4c40fc164b01bbec1ca51"
+  },
+  "go-backend/input_methods/yime/data/trainer/foundation.json": {
+    "bytes": 2015,
+    "sha256": "94c110348e6c6eb081b1b24707d3024d8bf199dbde6f7f5ff484176a5b581555"
+  },
+  "go-backend/input_methods/yime/data/trainer/README.md": {
+    "bytes": 4659,
+    "sha256": "6eedbe4730d28d9a6b43cb70a7ae041ecf0f59da0a8c9f6280b17f97723a729a"
+  },
+  "go-backend/input_methods/yime/data/trainer/yinyuan_catalog.json": {
+    "bytes": 8358,
+    "sha256": "adcbbca053785bf189c6ca834aef27fadb9c4ccf3a55c0acfeb352a5743ea5c3"
+  },
+  "go-backend/input_methods/yime/data/trainer/yinyuan_groups.json": {
+    "bytes": 3093,
+    "sha256": "0821ce4e8da0149af75ae8e78e0ed579d15f3c04039f1de3acf5c3e717f8ab0c"
+  },
+  "licenses/rust/Cargo.lock": {
+    "bytes": 26813,
+    "sha256": "c6deb098e77964451b013d972e41252f481671f56648e1ea19377b3df5aec8d0"
+  },
+  "licenses/arm64-sources/boost/LICENSE_1_0.txt": {
+    "bytes": 1338,
+    "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566"
+  },
+  "licenses/arm64-sources/librime/LICENSE": {
+    "bytes": 1513,
+    "sha256": "f67d27a6d2d586fcfed4b4c886a83747095396a39b6641e18e855086be2ec400"
+  },
+  "licenses/arm64-sources/lua/lua.h": {
+    "bytes": 15949,
+    "sha256": "06138352a12f0710bc214eb3a2e134889979cadc9a7a761a4e43dafa926419af"
+  },
+  "licenses/arm64-sources/librime/deps/glog/COPYING": {
+    "bytes": 1479,
+    "sha256": "136d48dea7a681413691f3db3098f6cf5ffaa3119d96d97bb83b8cff3ce38c4a"
+  },
+  "licenses/arm64-sources/librime/deps/googletest/LICENSE": {
+    "bytes": 1475,
+    "sha256": "9702de7e4117a8e2b20dafab11ffda58c198aede066406496bef670d40a22138"
+  },
+  "licenses/arm64-sources/librime/deps/leveldb/LICENSE": {
+    "bytes": 1484,
+    "sha256": "ccc19f1da0798ed666609b65a5b44dd8b3abe6fc08b9c0592eb76e82e174db19"
+  },
+  "licenses/arm64-sources/librime/deps/marisa-trie/COPYING.md": {
+    "bytes": 2275,
+    "sha256": "edf58dab34c3dc239ba4ba2d5d3d844d8c5b442aa4dd1149fac81b2d8c6cb8d1"
+  },
+  "licenses/arm64-sources/librime/deps/opencc/LICENSE": {
+    "bytes": 9165,
+    "sha256": "b534e465949558eec2597b04f5092b5e161236a68dfbfd04d547592ac3964308"
+  },
+  "licenses/arm64-sources/librime/deps/yaml-cpp/LICENSE": {
+    "bytes": 1061,
+    "sha256": "aa6fcc27be034e41e21dd832f9175bfe694a48491d9e14ff0fa278e19ad14f1b"
+  },
+  "licenses/arm64-sources/librime/deps/leveldb/third_party/benchmark/LICENSE": {
+    "bytes": 11358,
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  "licenses/arm64-sources/librime/deps/leveldb/third_party/googletest/LICENSE": {
+    "bytes": 1475,
+    "sha256": "9702de7e4117a8e2b20dafab11ffda58c198aede066406496bef670d40a22138"
+  },
+  "licenses/arm64-sources/librime/plugins/lua/LICENSE": {
+    "bytes": 1520,
+    "sha256": "c6bd4f58b13ae9d45c5e53adddeea5049114a25862797c6c6f64920431eea249"
+  },
+  "licenses/arm64-sources/librime/plugins/octagram/LICENSE": {
+    "bytes": 35147,
+    "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+  },
+  "licenses/arm64-sources/librime/plugins/predict/LICENSE": {
+    "bytes": 1502,
+    "sha256": "9b1bbdf15a381884b47dfd9422e68f6382170b2841c476afc076f2d448c7a59f"
+  },
+  "licenses/rust/anyhow/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/anyhow/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/bitflags/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/bitflags/LICENSE-MIT": {
+    "bytes": 1071,
+    "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb"
+  },
+  "licenses/rust/bumpalo/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/bumpalo/LICENSE-MIT": {
+    "bytes": 1059,
+    "sha256": "65f94e99ddaf4f5d1782a6dae23f35d4293a9a01444a13135a6887017d353cee"
+  },
+  "licenses/rust/bytes/LICENSE": {
+    "bytes": 1055,
+    "sha256": "45f522cacecb1023856e46df79ca625dfc550c94910078bd8aec6e02880b3d42"
+  },
+  "licenses/rust/cfg-if/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/cfg-if/LICENSE-MIT": {
+    "bytes": 1057,
+    "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+  },
+  "licenses/rust/equivalent/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/equivalent/LICENSE-MIT": {
+    "bytes": 1049,
+    "sha256": "7365cc8878a1d7ce155a58c4ca09c3d7a6be413efa5334a80ea842912b669349"
+  },
+  "licenses/rust/errno/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/errno/LICENSE-MIT": {
+    "bytes": 1054,
+    "sha256": "8764a597675778ddfd4e25f81b08a05dbcf089ac05662df7613fe67f150e3aa2"
+  },
+  "licenses/rust/fastrand/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/fastrand/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/foldhash/LICENSE": {
+    "bytes": 856,
+    "sha256": "b1181a40b2a7b25cf66fd01481713bc1005df082c53ef73e851e55071b102744"
+  },
+  "licenses/rust/futures/LICENSE-APACHE": {
+    "bytes": 10874,
+    "sha256": "275c491d6d1160553c32fd6127061d7f9606c3ea25abfad6ca3f6ed088785427"
+  },
+  "licenses/rust/futures/LICENSE-MIT": {
+    "bytes": 1094,
+    "sha256": "6652c868f35dfe5e8ef636810a4e576b9d663f3a17fb0f5613ad73583e1b88fd"
+  },
+  "licenses/rust/futures-channel/LICENSE-APACHE": {
+    "bytes": 10874,
+    "sha256": "275c491d6d1160553c32fd6127061d7f9606c3ea25abfad6ca3f6ed088785427"
+  },
+  "licenses/rust/futures-channel/LICENSE-MIT": {
+    "bytes": 1094,
+    "sha256": "6652c868f35dfe5e8ef636810a4e576b9d663f3a17fb0f5613ad73583e1b88fd"
+  },
+  "licenses/rust/futures-core/LICENSE-APACHE": {
+    "bytes": 10874,
+    "sha256": "275c491d6d1160553c32fd6127061d7f9606c3ea25abfad6ca3f6ed088785427"
+  },
+  "licenses/rust/futures-core/LICENSE-MIT": {
+    "bytes": 1094,
+    "sha256": "6652c868f35dfe5e8ef636810a4e576b9d663f3a17fb0f5613ad73583e1b88fd"
+  },
+  "licenses/rust/futures-executor/LICENSE-APACHE": {
+    "bytes": 10874,
+    "sha256": "275c491d6d1160553c32fd6127061d7f9606c3ea25abfad6ca3f6ed088785427"
+  },
+  "licenses/rust/futures-executor/LICENSE-MIT": {
+    "bytes": 1094,
+    "sha256": "6652c868f35dfe5e8ef636810a4e576b9d663f3a17fb0f5613ad73583e1b88fd"
+  },
+  "licenses/rust/futures-io/LICENSE-APACHE": {
+    "bytes": 10874,
+    "sha256": "275c491d6d1160553c32fd6127061d7f9606c3ea25abfad6ca3f6ed088785427"
+  },
+  "licenses/rust/futures-io/LICENSE-MIT": {
+    "bytes": 1094,
+    "sha256": "6652c868f35dfe5e8ef636810a4e576b9d663f3a17fb0f5613ad73583e1b88fd"
+  },
+  "licenses/rust/futures-macro/LICENSE-APACHE": {
+    "bytes": 10874,
+    "sha256": "275c491d6d1160553c32fd6127061d7f9606c3ea25abfad6ca3f6ed088785427"
+  },
+  "licenses/rust/futures-macro/LICENSE-MIT": {
+    "bytes": 1094,
+    "sha256": "6652c868f35dfe5e8ef636810a4e576b9d663f3a17fb0f5613ad73583e1b88fd"
+  },
+  "licenses/rust/futures-sink/LICENSE-APACHE": {
+    "bytes": 10874,
+    "sha256": "275c491d6d1160553c32fd6127061d7f9606c3ea25abfad6ca3f6ed088785427"
+  },
+  "licenses/rust/futures-sink/LICENSE-MIT": {
+    "bytes": 1094,
+    "sha256": "6652c868f35dfe5e8ef636810a4e576b9d663f3a17fb0f5613ad73583e1b88fd"
+  },
+  "licenses/rust/futures-task/LICENSE-APACHE": {
+    "bytes": 10874,
+    "sha256": "275c491d6d1160553c32fd6127061d7f9606c3ea25abfad6ca3f6ed088785427"
+  },
+  "licenses/rust/futures-task/LICENSE-MIT": {
+    "bytes": 1094,
+    "sha256": "6652c868f35dfe5e8ef636810a4e576b9d663f3a17fb0f5613ad73583e1b88fd"
+  },
+  "licenses/rust/futures-util/LICENSE-APACHE": {
+    "bytes": 10874,
+    "sha256": "275c491d6d1160553c32fd6127061d7f9606c3ea25abfad6ca3f6ed088785427"
+  },
+  "licenses/rust/futures-util/LICENSE-MIT": {
+    "bytes": 1094,
+    "sha256": "6652c868f35dfe5e8ef636810a4e576b9d663f3a17fb0f5613ad73583e1b88fd"
+  },
+  "licenses/rust/getrandom/LICENSE-APACHE": {
+    "bytes": 10849,
+    "sha256": "aaff376532ea30a0cd5330b9502ad4a4c8bf769c539c87ffe78819d188a18ebf"
+  },
+  "licenses/rust/getrandom/LICENSE-MIT": {
+    "bytes": 1130,
+    "sha256": "523a42c25d245dde9c015f882cec7f4555aad883382a6cf19b4b7d9b2cd5419b"
+  },
+  "licenses/rust/hashbrown/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/hashbrown/LICENSE-MIT": {
+    "bytes": 1060,
+    "sha256": "ff8f68cb076caf8cefe7a6430d4ac086ce6af2ca8ce2c4e5a2004d4552ef52a2"
+  },
+  "licenses/rust/hashbrown-0.15.5/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/hashbrown-0.15.5/LICENSE-MIT": {
+    "bytes": 1060,
+    "sha256": "ff8f68cb076caf8cefe7a6430d4ac086ce6af2ca8ce2c4e5a2004d4552ef52a2"
+  },
+  "licenses/rust/heck/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/heck/LICENSE-MIT": {
+    "bytes": 1071,
+    "sha256": "7b63ecd5f1902af1b63729947373683c32745c16a10e8e6292e2e2dcd7e90ae0"
+  },
+  "licenses/rust/id-arena/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/id-arena/LICENSE-MIT": {
+    "bytes": 1057,
+    "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+  },
+  "licenses/rust/indexmap/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/indexmap/LICENSE-MIT": {
+    "bytes": 1049,
+    "sha256": "ecc269ef87fd38a1d98e30bfac9ba964a9dbd9315c3770fed98d4d7cb5882055"
+  },
+  "licenses/rust/itoa/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/itoa/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/js-sys/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/js-sys/LICENSE-MIT": {
+    "bytes": 1057,
+    "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+  },
+  "licenses/rust/lazy_static/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/lazy_static/LICENSE-MIT": {
+    "bytes": 1071,
+    "sha256": "0621878e61f0d0fda054bcbe02df75192c28bde1ecc8289cbd86aeba2dd72720"
+  },
+  "licenses/rust/leb128fmt/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/leb128fmt/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/libc/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/libc/LICENSE-MIT": {
+    "bytes": 1066,
+    "sha256": "123a331b5dbf04c30097fa43b8f858bc85df671fe776de498d01f3d6b7c1f69e"
+  },
+  "licenses/rust/linux-raw-sys/COPYRIGHT": {
+    "bytes": 881,
+    "sha256": "3290ae0fbc9ddb77d2239121d710f0bb9d31b3b4744e6d97fe01e652b4c1870b"
+  },
+  "licenses/rust/linux-raw-sys/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/linux-raw-sys/LICENSE-Apache-2.0_WITH_LLVM-exception": {
+    "bytes": 12243,
+    "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5"
+  },
+  "licenses/rust/linux-raw-sys/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/log/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/log/LICENSE-MIT": {
+    "bytes": 1071,
+    "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb"
+  },
+  "licenses/rust/memchr/COPYING": {
+    "bytes": 126,
+    "sha256": "01c266bced4a434da0051174d6bee16a4c82cf634e2679b6155d40d75012390f"
+  },
+  "licenses/rust/memchr/LICENSE-MIT": {
+    "bytes": 1081,
+    "sha256": "0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f"
+  },
+  "licenses/rust/mio/LICENSE": {
+    "bytes": 1082,
+    "sha256": "07919255c7e04793d8ea760d6c2ce32d19f9ff02bdbdde3ce90b1e1880929a9b"
+  },
+  "licenses/rust/nu-ansi-term/LICENSE": {
+    "bytes": 1157,
+    "sha256": "284465860407420254e39be4e1bdcaaf2e7f2d18e06f9bab75bc75341a5d8501"
+  },
+  "licenses/rust/once_cell/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/once_cell/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/pin-project-lite/LICENSE-APACHE": {
+    "bytes": 10174,
+    "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+  },
+  "licenses/rust/pin-project-lite/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/prettyplease/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/prettyplease/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/proc-macro2/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/proc-macro2/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/quote/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/quote/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/rustix/COPYRIGHT": {
+    "bytes": 853,
+    "sha256": "377c2e7c53250cc5905c0b0532d35973392af16ffb9596a41d99d202cf3617c9"
+  },
+  "licenses/rust/rustix/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/rustix/LICENSE-Apache-2.0_WITH_LLVM-exception": {
+    "bytes": 12243,
+    "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5"
+  },
+  "licenses/rust/rustix/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/rustversion/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/rustversion/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/semver/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/semver/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/serde/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/serde/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/serde_core/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/serde_core/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/serde_derive/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/serde_derive/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/serde_json/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/serde_json/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/serde_spanned/LICENSE-APACHE": {
+    "bytes": 11358,
+    "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+  },
+  "licenses/rust/serde_spanned/LICENSE-MIT": {
+    "bytes": 1062,
+    "sha256": "6efb0476a1cc085077ed49357026d8c173bf33017278ef440f222fb9cbcb66e6"
+  },
+  "licenses/rust/sharded-slab/LICENSE": {
+    "bytes": 1057,
+    "sha256": "eafbfa606bc005ed7fd2f623d65af17ffe4ef7c017221ac14405bf4140771ea9"
+  },
+  "licenses/rust/signal-hook-registry/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/signal-hook-registry/LICENSE-MIT": {
+    "bytes": 1068,
+    "sha256": "503558bfefe66ca15e4e3f7955b3cb0ec87fd52f29bf24b336af7bd00e946d5c"
+  },
+  "licenses/rust/slab/LICENSE": {
+    "bytes": 1055,
+    "sha256": "8ce0830173fdac609dfb4ea603fdc002c2f4af0dc9b1a005653f5da9cf534b18"
+  },
+  "licenses/rust/smallvec/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/smallvec/LICENSE-MIT": {
+    "bytes": 1072,
+    "sha256": "0b28172679e0009b655da42797c03fd163a3379d5cfa67ba1f1655e974a2a1a9"
+  },
+  "licenses/rust/socket2/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/socket2/LICENSE-MIT": {
+    "bytes": 1057,
+    "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+  },
+  "licenses/rust/syn/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/syn/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/tempfile/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/tempfile/LICENSE-MIT": {
+    "bytes": 1056,
+    "sha256": "8b427f5bc501764575e52ba4f9d95673cf8f6d80a86d0d06599852e1a9a20a36"
+  },
+  "licenses/rust/thread_local/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/thread_local/LICENSE-MIT": {
+    "bytes": 1071,
+    "sha256": "c9a75f18b9ab2927829a208fc6aa2cf4e63b8420887ba29cdb265d6619ae82d5"
+  },
+  "licenses/rust/tokio/LICENSE": {
+    "bytes": 1070,
+    "sha256": "253cd04c6714889df2d32f3f64d669179a1c95c76ac43c40882c52eb06bc3552"
+  },
+  "licenses/rust/tokio-macros/LICENSE": {
+    "bytes": 1102,
+    "sha256": "0b83dc40cba89b9922bb84b0a9c7d2768ce37c1d7e138b7424fd4549915778c9"
+  },
+  "licenses/rust/tokio-stream/LICENSE": {
+    "bytes": 1070,
+    "sha256": "253cd04c6714889df2d32f3f64d669179a1c95c76ac43c40882c52eb06bc3552"
+  },
+  "licenses/rust/tokio-test/LICENSE": {
+    "bytes": 1070,
+    "sha256": "253cd04c6714889df2d32f3f64d669179a1c95c76ac43c40882c52eb06bc3552"
+  },
+  "licenses/rust/tokio-util/LICENSE": {
+    "bytes": 1070,
+    "sha256": "253cd04c6714889df2d32f3f64d669179a1c95c76ac43c40882c52eb06bc3552"
+  },
+  "licenses/rust/toml/LICENSE-APACHE": {
+    "bytes": 11358,
+    "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+  },
+  "licenses/rust/toml/LICENSE-MIT": {
+    "bytes": 1062,
+    "sha256": "6efb0476a1cc085077ed49357026d8c173bf33017278ef440f222fb9cbcb66e6"
+  },
+  "licenses/rust/toml_datetime/LICENSE-APACHE": {
+    "bytes": 11358,
+    "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+  },
+  "licenses/rust/toml_datetime/LICENSE-MIT": {
+    "bytes": 1062,
+    "sha256": "6efb0476a1cc085077ed49357026d8c173bf33017278ef440f222fb9cbcb66e6"
+  },
+  "licenses/rust/toml_parser/LICENSE-APACHE": {
+    "bytes": 11358,
+    "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+  },
+  "licenses/rust/toml_parser/LICENSE-MIT": {
+    "bytes": 1062,
+    "sha256": "6efb0476a1cc085077ed49357026d8c173bf33017278ef440f222fb9cbcb66e6"
+  },
+  "licenses/rust/toml_writer/LICENSE-APACHE": {
+    "bytes": 11358,
+    "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+  },
+  "licenses/rust/toml_writer/LICENSE-MIT": {
+    "bytes": 1062,
+    "sha256": "6efb0476a1cc085077ed49357026d8c173bf33017278ef440f222fb9cbcb66e6"
+  },
+  "licenses/rust/tracing/LICENSE": {
+    "bytes": 1062,
+    "sha256": "898b1ae9821e98daf8964c8d6c7f61641f5f5aa78ad500020771c0939ee0dea1"
+  },
+  "licenses/rust/tracing-attributes/LICENSE": {
+    "bytes": 1062,
+    "sha256": "898b1ae9821e98daf8964c8d6c7f61641f5f5aa78ad500020771c0939ee0dea1"
+  },
+  "licenses/rust/tracing-core/LICENSE": {
+    "bytes": 1062,
+    "sha256": "898b1ae9821e98daf8964c8d6c7f61641f5f5aa78ad500020771c0939ee0dea1"
+  },
+  "licenses/rust/tracing-log/LICENSE": {
+    "bytes": 1062,
+    "sha256": "898b1ae9821e98daf8964c8d6c7f61641f5f5aa78ad500020771c0939ee0dea1"
+  },
+  "licenses/rust/tracing-subscriber/LICENSE": {
+    "bytes": 1062,
+    "sha256": "898b1ae9821e98daf8964c8d6c7f61641f5f5aa78ad500020771c0939ee0dea1"
+  },
+  "licenses/rust/unicode-ident/LICENSE-APACHE": {
+    "bytes": 9723,
+    "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+  },
+  "licenses/rust/unicode-ident/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/unicode-ident/LICENSE-UNICODE": {
+    "bytes": 1995,
+    "sha256": "f7db81051789b729fea528a63ec4c938fdcb93d9d61d97dc8cc2e9df6d47f2a1"
+  },
+  "licenses/rust/unicode-xid/COPYRIGHT": {
+    "bytes": 321,
+    "sha256": "23860c2a7b5d96b21569afedf033469bab9fe14a1b24a35068b8641c578ce24d"
+  },
+  "licenses/rust/unicode-xid/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/unicode-xid/LICENSE-MIT": {
+    "bytes": 1071,
+    "sha256": "7b63ecd5f1902af1b63729947373683c32745c16a10e8e6292e2e2dcd7e90ae0"
+  },
+  "licenses/rust/uuid/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/uuid/LICENSE-MIT": {
+    "bytes": 1157,
+    "sha256": "436bc5a105d8e57dcd8778730f3754f7bf39c14d2f530e4cde4bd2d17a83ec3d"
+  },
+  "licenses/rust/version_check/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/version_check/LICENSE-MIT": {
+    "bytes": 1085,
+    "sha256": "b7e650f3fce5c53249d1cdc608b54df156a97edd636cf9d23498d0cfe7aec63e"
+  },
+  "licenses/rust/wasi/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/wasi/LICENSE-Apache-2.0_WITH_LLVM-exception": {
+    "bytes": 12243,
+    "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5"
+  },
+  "licenses/rust/wasi/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/wasip2/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/wasip2/LICENSE-Apache-2.0_WITH_LLVM-exception": {
+    "bytes": 12243,
+    "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5"
+  },
+  "licenses/rust/wasip2/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/wasm-bindgen/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/wasm-bindgen/LICENSE-MIT": {
+    "bytes": 1057,
+    "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+  },
+  "licenses/rust/wasm-bindgen-macro/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/wasm-bindgen-macro/LICENSE-MIT": {
+    "bytes": 1057,
+    "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+  },
+  "licenses/rust/wasm-bindgen-macro-support/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/wasm-bindgen-macro-support/LICENSE-MIT": {
+    "bytes": 1057,
+    "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+  },
+  "licenses/rust/wasm-bindgen-shared/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/wasm-bindgen-shared/LICENSE-MIT": {
+    "bytes": 1057,
+    "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+  },
+  "licenses/rust/windows/license-apache-2.0": {
+    "bytes": 11351,
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  "licenses/rust/windows/license-mit": {
+    "bytes": 1141,
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  "licenses/rust/windows-core/license-apache-2.0": {
+    "bytes": 11351,
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  "licenses/rust/windows-core/license-mit": {
+    "bytes": 1141,
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  "licenses/rust/windows-link/license-apache-2.0": {
+    "bytes": 11351,
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  "licenses/rust/windows-link/license-mit": {
+    "bytes": 1141,
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  "licenses/rust/windows-sys/license-apache-2.0": {
+    "bytes": 11351,
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  "licenses/rust/windows-sys/license-mit": {
+    "bytes": 1141,
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  "licenses/rust/windows-targets/license-apache-2.0": {
+    "bytes": 11351,
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  "licenses/rust/windows-targets/license-mit": {
+    "bytes": 1141,
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  "licenses/rust/windows_aarch64_gnullvm/license-apache-2.0": {
+    "bytes": 11351,
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  "licenses/rust/windows_aarch64_gnullvm/license-mit": {
+    "bytes": 1141,
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  "licenses/rust/windows_aarch64_msvc/license-apache-2.0": {
+    "bytes": 11351,
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  "licenses/rust/windows_aarch64_msvc/license-mit": {
+    "bytes": 1141,
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  "licenses/rust/windows_i686_gnu/license-apache-2.0": {
+    "bytes": 11351,
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  "licenses/rust/windows_i686_gnu/license-mit": {
+    "bytes": 1141,
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  "licenses/rust/windows_i686_gnullvm/license-apache-2.0": {
+    "bytes": 11351,
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  "licenses/rust/windows_i686_gnullvm/license-mit": {
+    "bytes": 1141,
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  "licenses/rust/windows_i686_msvc/license-apache-2.0": {
+    "bytes": 11351,
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  "licenses/rust/windows_i686_msvc/license-mit": {
+    "bytes": 1141,
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  "licenses/rust/windows_x86_64_gnu/license-apache-2.0": {
+    "bytes": 11351,
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  "licenses/rust/windows_x86_64_gnu/license-mit": {
+    "bytes": 1141,
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  "licenses/rust/windows_x86_64_gnullvm/license-apache-2.0": {
+    "bytes": 11351,
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  "licenses/rust/windows_x86_64_gnullvm/license-mit": {
+    "bytes": 1141,
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  "licenses/rust/windows_x86_64_msvc/license-apache-2.0": {
+    "bytes": 11351,
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  "licenses/rust/windows_x86_64_msvc/license-mit": {
+    "bytes": 1141,
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  "licenses/rust/winnow/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "cb5aedb296c5246d1f22e9099f925a65146f9f0d6b4eebba97fd27a6cdbbab2d"
+  },
+  "licenses/rust/winresource/LICENSE": {
+    "bytes": 1049,
+    "sha256": "3564da09711c475669c15346bb25a1530a7de683c13f4a51489c15a6d74438fa"
+  },
+  "licenses/rust/wit-bindgen/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/wit-bindgen/LICENSE-Apache-2.0_WITH_LLVM-exception": {
+    "bytes": 12243,
+    "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5"
+  },
+  "licenses/rust/wit-bindgen/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/wit-bindgen-0.51.0/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/wit-bindgen-0.51.0/LICENSE-Apache-2.0_WITH_LLVM-exception": {
+    "bytes": 12243,
+    "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5"
+  },
+  "licenses/rust/wit-bindgen-0.51.0/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/wit-bindgen-core/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/wit-bindgen-core/LICENSE-Apache-2.0_WITH_LLVM-exception": {
+    "bytes": 12243,
+    "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5"
+  },
+  "licenses/rust/wit-bindgen-core/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/wit-bindgen-rust/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/wit-bindgen-rust/LICENSE-Apache-2.0_WITH_LLVM-exception": {
+    "bytes": 12243,
+    "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5"
+  },
+  "licenses/rust/wit-bindgen-rust/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/wit-bindgen-rust-macro/LICENSE-APACHE": {
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "licenses/rust/wit-bindgen-rust-macro/LICENSE-Apache-2.0_WITH_LLVM-exception": {
+    "bytes": 12243,
+    "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5"
+  },
+  "licenses/rust/wit-bindgen-rust-macro/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  },
+  "licenses/rust/zmij/LICENSE-MIT": {
+    "bytes": 1023,
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+  }
+}

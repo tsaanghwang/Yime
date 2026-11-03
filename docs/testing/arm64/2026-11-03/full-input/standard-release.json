@@ -1,0 +1,30 @@
+{
+  "tag": "test-standard-arm64-64a785a7-20261103",
+  "sourceCommit": "64a785a7ede5fb2a53e2560b873075950160668b",
+  "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-standard-arm64-64a785a7-20261103",
+  "draft": false,
+  "publishedAt": "2026-11-03T13:34:25Z",
+  "assets": [
+    {
+      "name": "standard-arm64-evidence-64a785a7-20261103.zip",
+      "size": 172241,
+      "digest": "sha256:9cc864673ce27bb5297f09de82dd65fd16e7345c4c6e23f2d6d0dd8ab6358613",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-standard-arm64-64a785a7-20261103/standard-arm64-evidence-64a785a7-20261103.zip",
+      "state": "uploaded"
+    },
+    {
+      "name": "YimeCore-0.1.0-local.13-main64a785a7-arm64-20261103.zip",
+      "size": 168189960,
+      "digest": "sha256:7a8cff04fcc09f8a9908257c1f8ac7b8f5a37f123c192eebea62089f39a45e25",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-standard-arm64-64a785a7-20261103/YimeCore-0.1.0-local.13-main64a785a7-arm64-20261103.zip",
+      "state": "uploaded"
+    },
+    {
+      "name": "YimeCore-0.1.0-local.13-main64a785a7-arm64-20261103.zip.sha256",
+      "size": 123,
+      "digest": "sha256:3e914cce1df85bd5c53bf108584fc85108de83e91ec4b73b40b9c20478b44819",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-standard-arm64-64a785a7-20261103/YimeCore-0.1.0-local.13-main64a785a7-arm64-20261103.zip.sha256",
+      "state": "uploaded"
+    }
+  ]
+}

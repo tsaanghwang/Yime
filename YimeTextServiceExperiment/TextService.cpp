@@ -1,5 +1,6 @@
 #ifdef YIME_TOUCH_PRODUCT
 #include "DedicatedTouchRoute.h"
+#include "InstalledTouchFrontend.h"
 #endif
 #include "TextService.h"
 
@@ -350,6 +351,7 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
         Deactivate();
         return result;
     }
+    installedTouch_=InstalledTouchFrontend::Create(threadManager_,clientId_,this);
 #endif
 #ifndef YIME_TOUCH_PRODUCT
     AddLanguageBar();
@@ -366,6 +368,7 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
 
 STDMETHODIMP YimeTextService::Deactivate() {
 #ifdef YIME_TOUCH_PRODUCT
+    delete installedTouch_;installedTouch_=nullptr;
     // Revoke lookup before releasing callbacks. A host may retain the provider;
     // GetFunction must reject that retained object after deactivation.
     const bool removeProvider = dedicatedProviderAdvised_;
@@ -467,6 +470,7 @@ STDMETHODIMP YimeTextService::GetFunction(REFGUID function, REFIID iid, IUnknown
 
 STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
 #ifdef YIME_TOUCH_PRODUCT
+    if(installedTouch_)installedTouch_->Focus(foreground!=FALSE);
     if(!foreground && dedicated_)dedicated_->Disconnect();
 #endif
     keyEventFocused_ = foreground != FALSE;
@@ -489,6 +493,7 @@ STDMETHODIMP YimeTextService::OnInitDocumentMgr(ITfDocumentMgr*) { return S_OK; 
 
 STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
 #ifdef YIME_TOUCH_PRODUCT
+    if(installedTouch_)installedTouch_->Revoke();
     if(dedicated_)dedicated_->Disconnect();
 #endif
     bool punctuationDocumentClosing = false;
@@ -510,6 +515,7 @@ STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
 
 STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*) {
 #ifdef YIME_TOUCH_PRODUCT
+    if(installedTouch_)installedTouch_->Revoke();
     if(dedicated_)dedicated_->FocusChanged(focus);
 #endif
     shiftTap_.Reset();
@@ -528,6 +534,7 @@ STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*)
 
 STDMETHODIMP YimeTextService::OnPushContext(ITfContext* context) {
 #ifdef YIME_TOUCH_PRODUCT
+    if(installedTouch_)installedTouch_->Revoke();
     if(dedicated_)dedicated_->ContextChanged(context);
 #endif
     return S_OK;
@@ -535,6 +542,7 @@ STDMETHODIMP YimeTextService::OnPushContext(ITfContext* context) {
 
 STDMETHODIMP YimeTextService::OnPopContext(ITfContext* context) {
 #ifdef YIME_TOUCH_PRODUCT
+    if(installedTouch_)installedTouch_->Revoke();
     if(dedicated_)dedicated_->Disconnect();
 #endif
     if (context && context == punctuationContext_) CancelPunctuationPalette(false);
@@ -792,6 +800,9 @@ STDMETHODIMP YimeTextService::OnPreservedKey(ITfContext*, REFGUID, BOOL* eaten) 
 }
 
 STDMETHODIMP YimeTextService::OnCompositionTerminated(TfEditCookie cookie, ITfComposition* composition) {
+#ifdef YIME_TOUCH_PRODUCT
+    if(installedTouch_){const HRESULT hr=installedTouch_->CompositionTerminated(cookie,composition);if(hr!=S_FALSE)return hr;}
+#endif
     HRESULT result = S_OK;
     if (composition_ == composition) {
         // Host-driven termination can arrive before the focus callback. Its
@@ -1346,24 +1357,37 @@ void YimeTextService::RemoveLanguageBar() noexcept {
 }
 
 #ifdef YIME_TOUCH_PRODUCT
+#include "InputAbortDiagnostic.h"
 STDMETHODIMP YimeTextService::ConnectDedicated(LPCWSTR pipe,DWORD pid,LPCWSTR image,BSTR* response){
-    if(!response)return E_POINTER;*response=nullptr;
-    if(!threadManager_ || !keyEventFocused_)return E_ABORT;
-    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    const auto diagnostic=[&](yime::abortdiag::Reason reason,HRESULT hr) noexcept {
+        yime::abortdiag::State state;state.manager=threadManager_!=nullptr;state.keyFocus=keyEventFocused_;
+        yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceConnect,reason,static_cast<uint32_t>(hr),state);
+    };
+    if(!response){yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceConnect,yime::abortdiag::Reason::MissingOutput,static_cast<uint32_t>(E_POINTER));return E_POINTER;}*response=nullptr;
+    if(!threadManager_ || !keyEventFocused_){diagnostic(!threadManager_?yime::abortdiag::Reason::NoManager:yime::abortdiag::Reason::KeyFocusMissing,E_ABORT);return E_ABORT;}
+    if(GetCurrentThreadId()!=dedicatedThread_){yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceConnect,yime::abortdiag::Reason::WrongThread,static_cast<uint32_t>(RPC_E_WRONG_THREAD));return RPC_E_WRONG_THREAD;}
     if(!dedicated_)dedicated_=new(std::nothrow) DedicatedTouchRoute(threadManager_,clientId_);
     if(!dedicated_)return E_OUTOFMEMORY;
     auto* route=dedicated_;route->AddRef();const HRESULT result=route->Connect(pipe,pid,image,response);route->Release();return result;
 }
 STDMETHODIMP YimeTextService::ActionDedicated(LPCSTR action,BSTR* response){
-    if(!response)return E_POINTER;*response=nullptr;
-    if(!dedicated_ || !threadManager_ || !keyEventFocused_)return E_ABORT;
-    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    const auto diagnostic=[&](yime::abortdiag::Reason reason,HRESULT hr) noexcept {
+        yime::abortdiag::State state;state.route=dedicated_!=nullptr;state.manager=threadManager_!=nullptr;state.keyFocus=keyEventFocused_;
+        yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceAction,reason,static_cast<uint32_t>(hr),state);
+    };
+    if(!response){yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceAction,yime::abortdiag::Reason::MissingOutput,static_cast<uint32_t>(E_POINTER));return E_POINTER;}*response=nullptr;
+    if(!dedicated_ || !threadManager_ || !keyEventFocused_){diagnostic(!dedicated_?yime::abortdiag::Reason::NoRoute:!threadManager_?yime::abortdiag::Reason::NoManager:yime::abortdiag::Reason::KeyFocusMissing,E_ABORT);return E_ABORT;}
+    if(GetCurrentThreadId()!=dedicatedThread_){yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceAction,yime::abortdiag::Reason::WrongThread,static_cast<uint32_t>(RPC_E_WRONG_THREAD));return RPC_E_WRONG_THREAD;}
     auto* route=dedicated_;route->AddRef();const HRESULT result=route->Action(action,response);route->Release();return result;
 }
 STDMETHODIMP YimeTextService::PollDedicated(BSTR* response){
-    if(!response)return E_POINTER;*response=nullptr;
-    if(!dedicated_ || !threadManager_)return E_ABORT;
-    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    const auto diagnostic=[&](yime::abortdiag::Reason reason,HRESULT hr) noexcept {
+        yime::abortdiag::State state;state.route=dedicated_!=nullptr;state.manager=threadManager_!=nullptr;
+        yime::abortdiag::Emit(yime::abortdiag::Stage::ServicePoll,reason,static_cast<uint32_t>(hr),state);
+    };
+    if(!response){yime::abortdiag::Emit(yime::abortdiag::Stage::ServicePoll,yime::abortdiag::Reason::MissingOutput,static_cast<uint32_t>(E_POINTER));return E_POINTER;}*response=nullptr;
+    if(!dedicated_ || !threadManager_){diagnostic(!dedicated_?yime::abortdiag::Reason::NoRoute:yime::abortdiag::Reason::NoManager,E_ABORT);return E_ABORT;}
+    if(GetCurrentThreadId()!=dedicatedThread_){yime::abortdiag::Emit(yime::abortdiag::Stage::ServicePoll,yime::abortdiag::Reason::WrongThread,static_cast<uint32_t>(RPC_E_WRONG_THREAD));return RPC_E_WRONG_THREAD;}
     // A lost key focus must still let the caller consume the revoked result.
     auto* route=dedicated_;route->AddRef();const HRESULT result=route->Poll(this,response);route->Release();return result;
 }

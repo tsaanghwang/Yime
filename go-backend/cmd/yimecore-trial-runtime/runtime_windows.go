@@ -78,14 +78,19 @@ func createChildProcessJob() (*runtimeHandle, error) {
 }
 
 func startProcessInJob(path string, arguments []string, output *os.File, job *runtimeHandle) (*runtimeProcess, error) {
-	if output == nil || job == nil || job.value == 0 {
-		return nil, errors.New("process output and runtime job are required")
-	}
-	input, err := os.OpenFile(os.DevNull, os.O_RDONLY, 0)
-	if err != nil {
-		return nil, err
-	}
-	defer input.Close()
+ input, err := os.OpenFile(os.DevNull, os.O_RDONLY, 0)
+ if err != nil { return nil, err }
+ defer input.Close()
+ return startProcessInJobStreams(path, arguments, input, output, output, "", job)
+}
+
+// The standard wrapper retains NUL input and merged output. The explicit 18u
+// verification mode supplies anonymous pipes, still using the same atomic
+// PROC_THREAD_ATTRIBUTE_JOB_LIST containment at CreateProcess.
+func startProcessInJobStreams(path string, arguments []string, input, output, errorOutput *os.File, directory string, job *runtimeHandle) (*runtimeProcess, error) {
+ if input == nil || output == nil || errorOutput == nil || job == nil || job.value == 0 {
+  return nil, errors.New("process streams and runtime job are required")
+ }
 	stdin, err := duplicateInheritableHandle(syscall.Handle(input.Fd()))
 	if err != nil {
 		return nil, err
@@ -96,13 +101,15 @@ func startProcessInJob(path string, arguments []string, output *os.File, job *ru
 		return nil, err
 	}
 	defer syscall.CloseHandle(stdout)
+	stderr, err := duplicateInheritableHandle(syscall.Handle(errorOutput.Fd()))
+	if err != nil { return nil, err }; defer syscall.CloseHandle(stderr)
 
 	attributeList, attributeStorage, err := newProcessAttributeList(2)
 	if err != nil {
 		return nil, err
 	}
 	defer procDeleteAttributes.Call(uintptr(attributeList))
-	handles := []syscall.Handle{stdin, stdout}
+	handles := []syscall.Handle{stdin, stdout, stderr}
 	if err := updateProcessAttribute(attributeList, procThreadAttributeHandleList,
 		unsafe.Pointer(&handles[0]), uintptr(len(handles))*unsafe.Sizeof(handles[0])); err != nil {
 		return nil, err
@@ -131,11 +138,13 @@ func startProcessInJob(path string, arguments []string, output *os.File, job *ru
 	startup.Flags = startfUseStdHandles | startfUseShowWindow
 	startup.StdInput = stdin
 	startup.StdOutput = stdout
-	startup.StdErr = stdout
+	startup.StdErr = stderr
+	var cwd *uint16
+	if directory != "" { cwd, err = syscall.UTF16PtrFromString(directory); if err != nil { return nil, err } }
 	var processInfo syscall.ProcessInformation
 	err = syscall.CreateProcess(application, &commandLine[0], nil, nil, true,
 		createNoWindow|createUnicodeEnvironment|extendedStartupInfoPresent,
-		nil, nil, &startup.StartupInfo, &processInfo)
+		nil, cwd, &startup.StartupInfo, &processInfo)
 	if err != nil {
 		return nil, err
 	}

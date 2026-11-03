@@ -191,6 +191,19 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 		a.invalidate()
 		return
 	}
+	if a.installed != nil && g.action == "reset" {
+		if !g.left {
+			if err := a.bindInstalled(); err != nil {
+				a.status = err.Error()
+				a.touchMessage = err.Error()
+			} else {
+				a.touchMessage = ""
+				a.clickFeedback()
+			}
+		}
+		a.invalidate()
+		return
+	}
 	if a.host != nil {
 		if g.action == "reset" {
 			if !g.left {
@@ -204,6 +217,13 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 					a.clickFeedback()
 				}
 			}
+			a.invalidate()
+			return
+		}
+	}
+	if a.installed != nil && g.action != "sound" && !(a.o.TouchUI && touchLocalConfiguration(g.action)) {
+		if !pumpHostMessages() || g.cancelGeneration != a.cancelGeneration || a.installed.lease == "" || a.preview.fault {
+			a.status = "TIP绑定或触点状态已失效；请重新绑定"
 			a.invalidate()
 			return
 		}
@@ -317,6 +337,9 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 		if a.host != nil {
 			a.status = a.host.last
 		}
+		if a.installed != nil {
+			a.status = "已由当前18u TIP处理；正文编辑等待实际TSF完成后返回"
+		}
 	}
 	if accepted && err == nil && !a.preview.fault {
 		a.acceptedInputSerial++
@@ -343,7 +366,7 @@ func (a *ui) drawPreview(dc uintptr, r rect) {
 		case "reset":
 			if a.demo != nil {
 				title = "显式重绑"
-			} else if a.host != nil {
+			} else if a.host != nil || a.installed != nil {
 				title = "绑定目标"
 			}
 		case "sound":
@@ -381,6 +404,8 @@ func (a *ui) drawPreview(dc uintptr, r rect) {
 	if a.demo != nil {
 		output = a.ownDemoOutput()
 		text(dc, output, rect{14, 242, outputRight - 4, 288}, 0x24)
+	} else if a.installed != nil {
+		text(dc, a.status, rect{14, 242, outputRight - 4, 288}, 0x10)
 	} else if a.host != nil {
 		output = fmt.Sprintf("目标 HWND %d / 焦点 %d / 世代 %d：%s", a.host.target.Window, a.host.target.Focus, a.host.epoch, a.host.last)
 		text(dc, output, rect{14, 242, outputRight - 4, 288}, 0x10)

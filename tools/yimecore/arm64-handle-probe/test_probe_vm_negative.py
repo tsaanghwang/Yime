@@ -1,0 +1,129 @@
+"""Run only in a disposable native Windows ARM64 VM. Never run on ASUS.
+
+The first unexpected result stops the script and leaves every output directory intact.
+This is a real native negative test; test_source_contract.py is the offline check.
+"""
+
+import argparse
+import ctypes
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+from directory_identity_contract import reopen_directory_identity, validate_directory_contract
+
+
+WAIT_OBJECT_0 = 0
+SYNCHRONIZE = 0x00100000
+ERROR_INVALID_PARAMETER = 87
+
+
+def require(condition, reason):
+    if not condition:
+        raise AssertionError(reason)
+
+
+def snapshot(directory: Path):
+    result = {}
+    for path in [directory, *sorted(directory.rglob("*"))]:
+        stat = path.stat()
+        result[str(path.relative_to(directory))] = (
+            path.is_dir(), stat.st_size, stat.st_mtime_ns,
+            hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None,
+        )
+    return result
+
+
+def run(probe: Path, pwsh: Path, output: Path, case: str):
+    return subprocess.run(
+        [str(probe), "--pwsh", str(pwsh), "--output", str(output), "--case", case],
+        cwd=str(probe.parent), capture_output=True, timeout=90, check=False,
+    )
+
+
+def assert_stopped(pid: int):
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel32.OpenProcess.argtypes = (ctypes.c_uint32, ctypes.c_int, ctypes.c_uint32)
+    kernel32.OpenProcess.restype = ctypes.c_void_p
+    kernel32.WaitForSingleObject.argtypes = (ctypes.c_void_p, ctypes.c_uint32)
+    kernel32.WaitForSingleObject.restype = ctypes.c_uint32
+    kernel32.CloseHandle.argtypes = (ctypes.c_void_p,)
+    handle = kernel32.OpenProcess(SYNCHRONIZE, False, pid)
+    if not handle:
+        error = ctypes.get_last_error()
+        if error == ERROR_INVALID_PARAMETER:
+            return
+        raise AssertionError(f"cannot confirm pid {pid} stopped: Win32={error}")
+    try:
+        require(kernel32.WaitForSingleObject(handle, 0) == WAIT_OBJECT_0, f"pid {pid} still running")
+    finally:
+        kernel32.CloseHandle(handle)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--probe", required=True, type=Path)
+    parser.add_argument("--pwsh", required=True, type=Path)
+    parser.add_argument("--root", required=True, type=Path,
+                        help="new output root on local NTFS; never reused")
+    args = parser.parse_args()
+    probe, pwsh, root = (p.resolve(strict=True) for p in (args.probe, args.pwsh, args.root.parent))
+    root = root / args.root.name
+    require(not root.exists(), "root must be absent; refusing to reuse evidence")
+    root.mkdir()
+
+    # First prove this Windows/NTFS build accepts the documented directory options.
+    created = root / "probe-directory-contract"
+    result = run(probe, pwsh, created, "directory-contract")
+    (root / "directory-contract.stdout.bin").write_bytes(result.stdout)
+    (root / "directory-contract.stderr.bin").write_bytes(result.stderr)
+    (root / "directory-contract.exit.txt").write_text(f"{result.returncode}\n", encoding="ascii")
+    require(result.returncode == 0, "documented NtCreateFile directory options failed on VM")
+    created_rows = [json.loads(line) for line in (created / "events.jsonl").read_text(encoding="utf-8").splitlines()]
+    creation = next(row for row in created_rows if row.get("event") == "directory-create")
+    identity = next(row for row in created_rows if row.get("event") == "output-directory")
+    independently_reopened = reopen_directory_identity(created)
+    (root / "directory-contract-independent.json").write_text(
+        json.dumps(independently_reopened, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    validate_directory_contract(identity, independently_reopened, created, creation)
+    require(created_rows[-1]["event"] == "case-passed", "directory case did not pass")
+
+    existing = root / "probe-existing"
+    existing.mkdir()
+    (existing / "failure.txt").write_bytes(b"preexisting failure sentinel\n")
+    (existing / "keep.bin").write_bytes(b"unchanged\x00\xff")
+    before = snapshot(existing)
+    result = run(probe, pwsh, existing, "share")
+    (root / "existing.stdout.bin").write_bytes(result.stdout)
+    (root / "existing.stderr.bin").write_bytes(result.stderr)
+    (root / "existing.exit.txt").write_text(f"{result.returncode}\n", encoding="ascii")
+    require(result.returncode != 0, "existing directory was accepted")
+    require(snapshot(existing) == before, "rejected existing directory changed")
+
+    for case, event in (("timeout-child", "timeout-child-process"),
+                        ("timeout-actor", "actor-process")):
+        output = root / f"probe-{case}"
+        result = run(probe, pwsh, output, case)
+        (root / f"{case}.stdout.bin").write_bytes(result.stdout)
+        (root / f"{case}.stderr.bin").write_bytes(result.stderr)
+        (root / f"{case}.exit.txt").write_text(f"{result.returncode}\n", encoding="ascii")
+        require(result.returncode != 0, f"{case} unexpectedly passed")
+        rows = [json.loads(line) for line in (output / "events.jsonl").read_text(encoding="utf-8").splitlines()]
+        require(not any(row.get("event") == "case-passed" for row in rows), f"{case} claimed success")
+        failure = next(row for row in rows if row.get("event") == "case-failed")
+        require("terminated and reaped" in failure["reason"], f"{case} stop not confirmed")
+        pid = next(row["pid"] for row in rows if row.get("event") == event)
+        assert_stopped(pid)
+    print("VM checks: directory create/identity passed; existing directory unchanged; child and actor reaped")
+    print("NOT VERIFIED: ancestor directory replacement and later absolute-path opens")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as exc:
+        print(f"STOP: {exc}", file=sys.stderr)
+        raise SystemExit(1)

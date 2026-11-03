@@ -1,0 +1,119 @@
+["C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe", "test", "-overlay", "C:\\dev\\Yime\\.wt\\armfull\\.generated\\arm64-rime\\real-rime-overlay.json", "-count=1", "-timeout=30m", "-v", "-run", "^(TestNativeBackendKeepsRimeOwnedCandidatePaging|TestRealRimeCanCommitText|TestRealRimeAllSchemasComposeSentence|TestRealRimeNeutralToneEntryAcrossAllThreeSchemas|TestRealRimePrintableLayoutKeysAreNeverPagingBindings|TestRealRimeBackspaceUpdatesComposition|TestRealRimeEscapeClearsComposition|TestRealRimePunctuationKeys|TestRealRimeRedeployAppliesPageSize|TestRealRimeExternalBuildAppliesPageSize|TestRealRimeEndSessionPersistsLearningAcrossRestart)$", "./input_methods/yime"]
+=== RUN   TestNativeBackendKeepsRimeOwnedCandidatePaging
+--- PASS: TestNativeBackendKeepsRimeOwnedCandidatePaging (0.00s)
+=== RUN   TestRealRimeCanCommitText
+2026/11/03 20:58:02 已验证 librime 1.17.0 (33e78140250125871856cdc5b42ddc6a5fcd3cd4), Windows-msvc-arm64
+    rime_runtime_test.go:70: runtime test user dir: C:\dev\Yime\.wt\armfull\.generated\arm64-rime\test-temp\TestRealRimeCanCommitText3061462537\001\Rime
+    rime_runtime_test.go:70: ascii_mode before typing: false
+    rime_runtime_test.go:70: full_shape before typing: false
+    rime_runtime_test.go:70: ascii_mode after forcing off: false
+=== RUN   TestRealRimeCanCommitText/bj
+    rime_runtime_test.go:170: candidates after bj: []yime.RimeCandidate{yime.RimeCandidate{Text:"幅", Comment:""}, yime.RimeCandidate{Text:"逼", Comment:""}, yime.RimeCandidate{Text:"偪", Comment:""}, yime.RimeCandidate{Text:"媲", Comment:""}, yime.RimeCandidate{Text:"楅", Comment:""}}
+    rime_runtime_test.go:180: commit text for bj: "幅"
+=== RUN   TestRealRimeCanCommitText/guew
+    rime_runtime_test.go:170: candidates after guew: []yime.RimeCandidate{yime.RimeCandidate{Text:"过", Comment:""}, yime.RimeCandidate{Text:"划", Comment:""}, yime.RimeCandidate{Text:"過", Comment:""}, yime.RimeCandidate{Text:"鐹", Comment:""}, yime.RimeCandidate{Text:"腂", Comment:""}}
+    rime_runtime_test.go:180: commit text for guew: "过"
+=== RUN   TestRealRimeCanCommitText/\lda
+    rime_runtime_test.go:170: candidates after \lda: []yime.RimeCandidate{yime.RimeCandidate{Text:"联", Comment:""}, yime.RimeCandidate{Text:"令", Comment:""}, yime.RimeCandidate{Text:"连", Comment:""}, yime.RimeCandidate{Text:"廉", Comment:""}, yime.RimeCandidate{Text:"零", Comment:""}}
+    rime_runtime_test.go:180: commit text for \lda: "联"
+--- PASS: TestRealRimeCanCommitText (11.12s)
+    --- PASS: TestRealRimeCanCommitText/bj (0.00s)
+    --- PASS: TestRealRimeCanCommitText/guew (0.00s)
+    --- PASS: TestRealRimeCanCommitText/\lda (0.00s)
+=== RUN   TestRealRimeNeutralToneEntryAcrossAllThreeSchemas
+2026/11/03 20:58:13 已验证 librime 1.17.0 (33e78140250125871856cdc5b42ddc6a5fcd3cd4), Windows-msvc-arm64
+    rime_runtime_test.go:70: runtime test user dir: C:\dev\Yime\.wt\armfull\.generated\arm64-rime\test-temp\TestRealRimeNeutralToneEntryAcrossAllThreeSchemas96940662\001\Rime
+    rime_runtime_test.go:70: ascii_mode before typing: false
+    rime_runtime_test.go:70: full_shape before typing: false
+    rime_runtime_test.go:70: ascii_mode after forcing off: false
+=== RUN   TestRealRimeNeutralToneEntryAcrossAllThreeSchemas/yime_variable
+=== RUN   TestRealRimeNeutralToneEntryAcrossAllThreeSchemas/yime_full
+=== RUN   TestRealRimeNeutralToneEntryAcrossAllThreeSchemas/yime_shorthand
+--- PASS: TestRealRimeNeutralToneEntryAcrossAllThreeSchemas (10.24s)
+    --- PASS: TestRealRimeNeutralToneEntryAcrossAllThreeSchemas/yime_variable (0.03s)
+    --- PASS: TestRealRimeNeutralToneEntryAcrossAllThreeSchemas/yime_full (0.03s)
+    --- PASS: TestRealRimeNeutralToneEntryAcrossAllThreeSchemas/yime_shorthand (0.02s)
+=== RUN   TestRealRimeAllSchemasComposeSentence
+2026/11/03 20:58:23 已验证 librime 1.17.0 (33e78140250125871856cdc5b42ddc6a5fcd3cd4), Windows-msvc-arm64
+    rime_runtime_test.go:70: runtime test user dir: C:\dev\Yime\.wt\armfull\.generated\arm64-rime\test-temp\TestRealRimeAllSchemasComposeSentence1895175876\001\Rime
+    rime_runtime_test.go:70: ascii_mode before typing: false
+    rime_runtime_test.go:70: full_shape before typing: false
+    rime_runtime_test.go:70: ascii_mode after forcing off: false
+=== RUN   TestRealRimeAllSchemasComposeSentence/yime_variable/幅幅
+=== RUN   TestRealRimeAllSchemasComposeSentence/yime_full/幅幅
+=== RUN   TestRealRimeAllSchemasComposeSentence/yime_shorthand/幅幅
+=== RUN   TestRealRimeAllSchemasComposeSentence/yime_variable/幅啊
+=== RUN   TestRealRimeAllSchemasComposeSentence/yime_full/幅啊
+=== RUN   TestRealRimeAllSchemasComposeSentence/yime_shorthand/幅啊
+=== RUN   TestRealRimeAllSchemasComposeSentence/yime_variable/打出了三只手
+--- PASS: TestRealRimeAllSchemasComposeSentence (10.37s)
+    --- PASS: TestRealRimeAllSchemasComposeSentence/yime_variable/幅幅 (0.03s)
+    --- PASS: TestRealRimeAllSchemasComposeSentence/yime_full/幅幅 (0.02s)
+    --- PASS: TestRealRimeAllSchemasComposeSentence/yime_shorthand/幅幅 (0.02s)
+    --- PASS: TestRealRimeAllSchemasComposeSentence/yime_variable/幅啊 (0.01s)
+    --- PASS: TestRealRimeAllSchemasComposeSentence/yime_full/幅啊 (0.02s)
+    --- PASS: TestRealRimeAllSchemasComposeSentence/yime_shorthand/幅啊 (0.02s)
+    --- PASS: TestRealRimeAllSchemasComposeSentence/yime_variable/打出了三只手 (0.02s)
+=== RUN   TestRealRimePrintableLayoutKeysAreNeverPagingBindings
+2026/11/03 20:58:34 已验证 librime 1.17.0 (33e78140250125871856cdc5b42ddc6a5fcd3cd4), Windows-msvc-arm64
+    rime_runtime_test.go:70: runtime test user dir: C:\dev\Yime\.wt\armfull\.generated\arm64-rime\test-temp\TestRealRimePrintableLayoutKeysAreNeverPagingBindings2008679196\001\Rime
+    rime_runtime_test.go:70: ascii_mode before typing: false
+    rime_runtime_test.go:70: full_shape before typing: false
+    rime_runtime_test.go:70: ascii_mode after forcing off: false
+=== RUN   TestRealRimePrintableLayoutKeysAreNeverPagingBindings/`
+=== RUN   TestRealRimePrintableLayoutKeysAreNeverPagingBindings/-
+=== RUN   TestRealRimePrintableLayoutKeysAreNeverPagingBindings/=
+=== RUN   TestRealRimePrintableLayoutKeysAreNeverPagingBindings/,
+=== RUN   TestRealRimePrintableLayoutKeysAreNeverPagingBindings/.
+=== RUN   TestRealRimePrintableLayoutKeysAreNeverPagingBindings//
+--- PASS: TestRealRimePrintableLayoutKeysAreNeverPagingBindings (10.07s)
+    --- PASS: TestRealRimePrintableLayoutKeysAreNeverPagingBindings/` (0.00s)
+    --- PASS: TestRealRimePrintableLayoutKeysAreNeverPagingBindings/- (0.00s)
+    --- PASS: TestRealRimePrintableLayoutKeysAreNeverPagingBindings/= (0.00s)
+    --- PASS: TestRealRimePrintableLayoutKeysAreNeverPagingBindings/, (0.00s)
+    --- PASS: TestRealRimePrintableLayoutKeysAreNeverPagingBindings/. (0.00s)
+    --- PASS: TestRealRimePrintableLayoutKeysAreNeverPagingBindings// (0.00s)
+=== RUN   TestRealRimeBackspaceUpdatesComposition
+2026/11/03 20:58:44 已验证 librime 1.17.0 (33e78140250125871856cdc5b42ddc6a5fcd3cd4), Windows-msvc-arm64
+    rime_runtime_test.go:70: runtime test user dir: C:\dev\Yime\.wt\armfull\.generated\arm64-rime\test-temp\TestRealRimeBackspaceUpdatesComposition2030453948\001\Rime
+    rime_runtime_test.go:70: ascii_mode before typing: false
+    rime_runtime_test.go:70: full_shape before typing: false
+    rime_runtime_test.go:70: ascii_mode after forcing off: false
+--- PASS: TestRealRimeBackspaceUpdatesComposition (10.15s)
+=== RUN   TestRealRimeEscapeClearsComposition
+2026/11/03 20:58:54 已验证 librime 1.17.0 (33e78140250125871856cdc5b42ddc6a5fcd3cd4), Windows-msvc-arm64
+    rime_runtime_test.go:70: runtime test user dir: C:\dev\Yime\.wt\armfull\.generated\arm64-rime\test-temp\TestRealRimeEscapeClearsComposition2190150080\001\Rime
+    rime_runtime_test.go:70: ascii_mode before typing: false
+    rime_runtime_test.go:70: full_shape before typing: false
+    rime_runtime_test.go:70: ascii_mode after forcing off: false
+--- PASS: TestRealRimeEscapeClearsComposition (10.40s)
+=== RUN   TestRealRimePunctuationKeys
+2026/11/03 20:59:04 已验证 librime 1.17.0 (33e78140250125871856cdc5b42ddc6a5fcd3cd4), Windows-msvc-arm64
+    rime_runtime_test.go:70: runtime test user dir: C:\dev\Yime\.wt\armfull\.generated\arm64-rime\test-temp\TestRealRimePunctuationKeys1011297947\001\Rime
+    rime_runtime_test.go:70: ascii_mode before typing: false
+    rime_runtime_test.go:70: full_shape before typing: false
+    rime_runtime_test.go:70: ascii_mode after forcing off: false
+=== RUN   TestRealRimePunctuationKeys/grave
+    rime_runtime_test.go:2213: request=grave handled=true commit=yime.RimeCommit{Text:""} composition=yime.RimeComposition{Length:1, CursorPos:1, SelStart:0, SelEnd:1, Preedit:"`", CommitTextPreview:"雨点儿"} menu=yime.RimeMenu{PageSize:5, PageNo:0, IsLastPage:false, HighlightedCandidateIndex:0, NumCandidates:5, Candidates:[]yime.RimeCandidate{yime.RimeCandidate{Text:"雨点儿", Comment:"~.]lS"}, yime.RimeCandidate{Text:"鱼漂儿", Comment:"~.,mpjFP"}, yime.RimeCandidate{Text:"于", Comment:""}, yime.RimeCandidate{Text:"曰", Comment:""}, yime.RimeCandidate{Text:"元", Comment:""}}, SelectKeys:""}
+=== RUN   TestRealRimePunctuationKeys/pipe
+    rime_runtime_test.go:2213: request=pipe handled=true commit=yime.RimeCommit{Text:""} composition=yime.RimeComposition{Length:3, CursorPos:3, SelStart:0, SelEnd:3, Preedit:"・", CommitTextPreview:"・"} menu=yime.RimeMenu{PageSize:5, PageNo:0, IsLastPage:true, HighlightedCandidateIndex:0, NumCandidates:5, Candidates:[]yime.RimeCandidate{yime.RimeCandidate{Text:"・", Comment:"〔全角〕"}, yime.RimeCandidate{Text:"|", Comment:"〔半角〕"}, yime.RimeCandidate{Text:"｜", Comment:"〔全角〕"}, yime.RimeCandidate{Text:"§", Comment:""}, yime.RimeCandidate{Text:"¦", Comment:"〔半角〕"}}, SelectKeys:""}
+--- PASS: TestRealRimePunctuationKeys (10.23s)
+    --- PASS: TestRealRimePunctuationKeys/grave (0.00s)
+    --- PASS: TestRealRimePunctuationKeys/pipe (0.00s)
+=== RUN   TestRealRimeEndSessionPersistsLearningAcrossRestart
+2026/11/03 20:59:14 已验证 librime 1.17.0 (33e78140250125871856cdc5b42ddc6a5fcd3cd4), Windows-msvc-arm64
+2026/11/03 20:59:25 已验证 librime 1.17.0 (33e78140250125871856cdc5b42ddc6a5fcd3cd4), Windows-msvc-arm64
+--- PASS: TestRealRimeEndSessionPersistsLearningAcrossRestart (10.44s)
+=== RUN   TestRealRimeRedeployAppliesPageSize
+2026/11/03 20:59:25 已验证 librime 1.17.0 (33e78140250125871856cdc5b42ddc6a5fcd3cd4), Windows-msvc-arm64
+    rime_runtime_test.go:2484: baseline input="bj" page size=5 candidates=5
+    rime_runtime_test.go:2510: after redeploy input="bj" page size=8 candidates=8
+--- PASS: TestRealRimeRedeployAppliesPageSize (11.02s)
+=== RUN   TestRealRimeExternalBuildAppliesPageSize
+2026/11/03 20:59:36 已验证 librime 1.17.0 (33e78140250125871856cdc5b42ddc6a5fcd3cd4), Windows-msvc-arm64
+    rime_runtime_test.go:2547: baseline input="bj" page size=5 candidates=5
+    rime_runtime_test.go:2564: external build output: 
+    rime_runtime_test.go:2581: after external build input="bj" page size=8 candidates=8
+--- PASS: TestRealRimeExternalBuildAppliesPageSize (12.63s)
+PASS
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime	107.808s

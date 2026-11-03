@@ -1,0 +1,16 @@
+{
+  "command": [
+    "C:\\dev\\Yime\\.wt\\armfull\\.generated\\arm64-rime\\cargo-home\\bin\\rustup.exe",
+    "run",
+    "1.97.0-aarch64-pc-windows-msvc",
+    "cargo",
+    "test",
+    "--locked",
+    "--offline",
+    "--target",
+    "aarch64-pc-windows-msvc"
+  ],
+  "exitCode": 0,
+  "seconds": 42.18,
+  "cwd": "C:\\dev\\Yime\\.wt\\armfull\\PIMELauncher"
+}

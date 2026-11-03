@@ -2,8 +2,12 @@
 // Never registers or activates a TIP, opens a window, or edits user text.
 #include "DedicatedTouchRoute.h"
 #include "TouchProductIdentity.h"
+#include "TouchEditSession.h"
 #include <iostream>
 #include <stdexcept>
+#include <vector>
+#include <algorithm>
+#include <memory>
 using Microsoft::WRL::ComPtr;
 using json=nlohmann::json;
 namespace {
@@ -22,50 +26,7 @@ public:
 class Sink final : public StackCom<ITfCompositionSink> {
     STDMETHODIMP OnCompositionTerminated(TfEditCookie,ITfComposition*) override {return S_OK;}
 };
-class Context final : public StackCom<ITfContext>,public ITfInsertAtSelection {
-public:
-    ComPtr<ITfEditSession> pending;
-    std::wstring text;
-    unsigned writes=0,requests=0;
-    HRESULT writeResult=S_OK,requestResult=S_OK;
-    DWORD owner=GetCurrentThreadId();
-    STDMETHODIMP QueryInterface(REFIID iid,void** out) override {
-        if(!out)return E_POINTER;
-        if(iid==__uuidof(ITfInsertAtSelection)){*out=static_cast<ITfInsertAtSelection*>(this);AddRef();return S_OK;}
-        return StackCom::QueryInterface(iid,out);
-    }
-    STDMETHODIMP_(ULONG) AddRef() override {return StackCom::AddRef();}
-    STDMETHODIMP_(ULONG) Release() override {return StackCom::Release();}
-    STDMETHODIMP RequestEditSession(TfClientId,ITfEditSession* session,DWORD flags,HRESULT* result) override {
-        check(GetCurrentThreadId()==owner,"TSF request left owning STA");
-        check(flags==(TF_ES_ASYNC|TF_ES_READWRITE) && !pending,"must queue exactly one asynchronous edit");
-        ++requests;if(FAILED(requestResult))return requestResult;
-        pending=session;*result=TF_S_ASYNC;return S_OK;
-    }
-    HRESULT drain(){
-        check(pending!=nullptr,"no edit to drain");auto session=pending;pending.Reset();return session->DoEditSession(73);
-    }
-    STDMETHODIMP InsertTextAtSelection(TfEditCookie cookie,DWORD flags,const WCHAR* value,LONG length,ITfRange** range) override {
-        check(GetCurrentThreadId()==owner && cookie==73 && flags==0,"invalid STA write");
-        *range=nullptr;if(FAILED(writeResult))return writeResult;
-        ++writes;text.append(value,length);return S_OK;
-    }
-    STDMETHODIMP InsertEmbeddedAtSelection(TfEditCookie,DWORD,IDataObject*,ITfRange**) override {return E_NOTIMPL;}
-    STDMETHODIMP InWriteSession(TfClientId,BOOL*) override {return E_NOTIMPL;}
-    STDMETHODIMP GetSelection(TfEditCookie,ULONG,ULONG,TF_SELECTION*,ULONG*) override {return E_NOTIMPL;}
-    STDMETHODIMP SetSelection(TfEditCookie,ULONG,const TF_SELECTION*) override {return E_NOTIMPL;}
-    STDMETHODIMP GetStart(TfEditCookie,ITfRange**) override {return E_NOTIMPL;}
-    STDMETHODIMP GetEnd(TfEditCookie,ITfRange**) override {return E_NOTIMPL;}
-    STDMETHODIMP GetActiveView(ITfContextView**) override {return E_NOTIMPL;}
-    STDMETHODIMP EnumViews(IEnumTfContextViews**) override {return E_NOTIMPL;}
-    STDMETHODIMP GetStatus(TF_STATUS*) override {return E_NOTIMPL;}
-    STDMETHODIMP GetProperty(REFGUID,ITfProperty**) override {return E_NOTIMPL;}
-    STDMETHODIMP GetAppProperty(REFGUID,ITfReadOnlyProperty**) override {return E_NOTIMPL;}
-    STDMETHODIMP TrackProperties(const GUID**,ULONG,const GUID**,ULONG,ITfReadOnlyProperty**) override {return E_NOTIMPL;}
-    STDMETHODIMP EnumProperties(IEnumTfProperties**) override {return E_NOTIMPL;}
-    STDMETHODIMP GetDocumentMgr(ITfDocumentMgr**) override {return E_NOTIMPL;}
-    STDMETHODIMP CreateRangeBackup(TfEditCookie,ITfRange*,ITfRangeBackup**) override {return E_NOTIMPL;}
-};
+#include "TouchSyntheticStore.h"
 class Document final : public StackCom<ITfDocumentMgr> {
 public:
     Context context;
@@ -136,9 +97,10 @@ int broker(const std::wstring& id,const std::wstring& scenario){
             {"identity",{{"layoutSHA256",YIME_TOUCH_LAYOUT_SHA},{"dictionarySHA256",YIME_TOUCH_DICTIONARY_SHA},
              {"mode","variable"},{"sessionPolicy","concept-keyboard-modes-v2+ellipsis-choice-v1"}}},
             {"focus",request.at("focus")},{"sessionId","isolated-test-session"},{"snapshot",{{"revision",1}}}};
+        if(scenario==L"desktop-preedit")response["snapshot"]["state"]={{"raw_input",op=="action"?"ab":""}};
         if(op=="action"){
             check(++actions==1,"unexpected action replay");
-            response["commit"]={{"id","isolated-commit"},{"text","one-write"},{"focus",request.at("focus")}};
+            if(scenario!=L"desktop-preedit")response["commit"]={{"id","isolated-commit"},{"text","one-write"},{"focus",request.at("focus")}};
         }
         if(op=="complete"){
             check(++completions==1 && actions==1,"completion count");
@@ -191,7 +153,7 @@ struct Route {
     void close(){
         if(value){value->Disconnect();value->Release();value=nullptr;}
         // Pending callback owns the route after release and must remain safe.
-        if(context.pending)check(context.drain()==E_ABORT,"revoked edit after owner release");
+        while(context.pending){const auto expected=context.pendingCancel?S_OK:E_ABORT;check(context.drain()==expected,"revoked edit after owner release");}
         check(manager.refs==1 && manager.document.refs==1 && context.refs==1 && sink.refs==1,"COM lifetime leak");
     }
     HRESULT poll(json* response=nullptr){
@@ -294,11 +256,69 @@ void standardFrame(){
     check(json::parse(response).at("ok")==true,"default framing response");
     CloseHandle(pipe.value);pipe.value=INVALID_HANDLE_VALUE;peer.finish();
 }
+void touchSelectionPlans(){
+    const std::wstring s=L"a\U0001f600b\r\nsecond line\r\nlast";
+    auto p=PlanTouchSelection(s,3,3,false,{"Backspace",false,false});check(p.replace&&p.start==1&&p.end==3,"backspace split surrogate");
+    p=PlanTouchSelection(s,1,1,false,{"Delete",false,false});check(p.replace&&p.start==1&&p.end==3,"delete split surrogate");
+    p=PlanTouchSelection(s,3,3,false,{"ArrowLeft",true,false});check(p.start==1&&p.end==3&&p.activeStart,"shift selection direction");
+    p=PlanTouchSelection(s,1,3,true,{"ArrowRight",false,false});check(p.start==3&&p.end==3,"selection collapse");
+    p=PlanTouchSelection(s,6,6,false,{"End",false,false});check(p.start==17,"logical end");
+    p=PlanTouchSelection(s,13,13,false,{"Backspace",false,true});check(p.start==6&&p.end==13&&p.replace,"ctrl backspace word");
+    p=PlanTouchSelection(s,2,4,false,{"SelectAll",false,false});check(p.start==0&&p.end==s.size(),"select all");
+    p=PlanTouchSelection(s,0,0,false,{"Enter",false,false});check(p.replace&&p.text==L"\r","enter text");
+    p=PlanTouchSelection(s,0,0,false,{"Tab",false,false});check(p.replace&&p.text==L"\t","tab text");
+}
+void cancellationFailure(bool deniedRequest){
+    Peer peer(L"desktop-preedit");Route route;route.context.text=L"KEEP|";
+    BSTR out=nullptr;auto hr=route.value->ConnectDesktop(peer.pipe.c_str(),peer.pid,image().c_str(),"variable",&out);take(out);
+    check(hr==E_PENDING&&route.wait()==S_OK,"desktop open");
+    hr=route.value->Action(R"({"kind":"input","code":"a","revision":1})",&out);take(out);check(hr==E_PENDING,"desktop preedit start");
+    const auto deadline=GetTickCount64()+5000;while(!route.context.pending){check(route.poll()==E_PENDING,"desktop preedit queued");check(GetTickCount64()<deadline,"preedit deadline");Sleep(1);}
+    check(route.context.text==L"KEEP|","preedit changed before actual write");
+    check(route.context.drain()==S_OK&&route.wait()==S_OK&&route.context.text==L"KEEP|ab","actual desktop preedit");
+    if(deniedRequest)route.context.cancelRequestResult=E_ACCESSDENIED;else route.context.cancelWriteResult=E_ACCESSDENIED;
+    route.value->Disconnect();
+    if(!deniedRequest)check(route.context.drain()==E_ACCESSDENIED,"cancel write rejection");
+    check(route.value->DesktopCancellationResult()==E_ACCESSDENIED&&!route.value->DesktopSettled(),"cancellation failure must be observable, not endlessly pending");
+    check(route.context.text==L"KEEP|ab","failed cancellation changed host text");
+    check(route.value->ConnectDesktop(peer.pipe.c_str(),peer.pid,image().c_str(),"variable",&out)==HRESULT_FROM_WIN32(ERROR_BUSY),"new composition replaced failed old cancellation");take(out);
+    route.context.text+=L"|OTHER";route.context.cancelRequestResult=route.context.cancelWriteResult=S_OK;
+    route.value->Disconnect();check(route.value->DesktopCancellationResult()==E_PENDING,"explicit rebind did not retry original cancellation");
+    check(route.context.drain()==S_OK&&route.value->DesktopSettled()&&route.value->DesktopCancellationResult()==S_OK,"original cancellation did not recover");
+    check(route.context.text==L"KEEP||OTHER","recovery erased non-composition text");route.close();peer.finish();
+}
+class EditGuard final:public yime::experiment::IBrokerEditExecutionGuard{
+public:
+ ULONG refs=1;unsigned checks=0;
+ STDMETHODIMP QueryInterface(REFIID id,void**out)override{if(!out)return E_POINTER;*out=nullptr;if(id!=IID_IUnknown)return E_NOINTERFACE;*out=this;AddRef();return S_OK;}
+ STDMETHODIMP_(ULONG) AddRef()override{return ++refs;}STDMETHODIMP_(ULONG) Release()override{return --refs;}
+ HRESULT ValidateExecution(ITfContext*)noexcept override{++checks;return S_OK;}
+};
+struct EditCompletion{unsigned count=0;HRESULT result=E_PENDING;static void done(void*value,ITfContext*,const yime::experiment::BrokerUpdate&,HRESULT hr)noexcept{auto*self=static_cast<EditCompletion*>(value);++self->count;self->result=hr;}};
+void hostEditFailuresBeforeText(){
+    for(unsigned fault=0;fault<5;++fault){Context context;Sink sink;EditGuard guard;EditCompletion completion;context.text=L"KEEP|ab";
+        if(fault==1)context.selectionResult=E_ACCESSDENIED;
+        if(fault==2)context.collapseResult=E_ACCESSDENIED;
+        if(fault==3)context.gravityResult=E_ACCESSDENIED;
+        if(fault==4)context.writeResult=E_ACCESSDENIED;
+        const auto queued=ApplyTouchEditToContext(&context,37,&sink,{"Backspace",false,false},EditCompletion::done,&completion,&guard);
+        check(queued==TF_S_ASYNC&&completion.count==0&&context.text==L"KEEP|ab","host edit falsely completed while queued");
+        const auto hr=context.drain();
+        check(completion.count==1&&completion.result==hr&&guard.checks==1,"actual edit completion/guard count");
+        if(fault)check(hr==E_ACCESSDENIED&&context.writes==0&&context.text==L"KEEP|ab","failed caret preparation or write altered text");
+        else check(hr==S_OK&&context.writes==1&&context.text==L"KEEP|a"&&context.selection&&context.selection->first==6&&context.selection->last==6,"successful edit did not retain correct forward-gravity caret");
+        check(guard.refs==1&&sink.refs==1&&context.refs==1,"host edit lifetime leak");
+    }
+}
 }
 int wmain(int argc,wchar_t** argv){
     try{
         if(argc==4 && !wcscmp(argv[1],L"--broker"))return broker(argv[2],argv[3]);
         check(argc==1,"unexpected test arguments");
+        touchSelectionPlans();std::cout<<"PASS TSF edit selection: Unicode, selection direction, word deletion, line and text operations\n";
+        hostEditFailuresBeforeText();std::cout<<"PASS host edit: all caret failures precede text write; failed writes preserve body; actual completion only\n";
+        cancellationFailure(true);std::cout<<"PASS rejected cancellation request: explicit failure, exact original range recovery\n";
+        cancellationFailure(false);std::cout<<"PASS failed cancellation write: unchanged body, explicit failure, protected unrelated text\n";
         delayed(L"open");std::cout<<"PASS pending open: STA heartbeat and away/back revocation\n";
         delayed(L"action");std::cout<<"PASS pending action: STA heartbeat and away/back revocation\n";
         delayed(L"action",true);std::cout<<"PASS pending action: context replacement revocation\n";
@@ -310,6 +330,6 @@ int wmain(int argc,wchar_t** argv){
         queuedRevoked(true);std::cout<<"PASS queued edit lifetime after owner release\n";
         destroyPending();std::cout<<"PASS transport lifetime after pending route destruction\n";
         standardFrame();std::cout<<"PASS shared framing with original null-cancel argument\n";
-        std::cout<<"11 scenarios passed; real pipes, substitute TSF; no registration or native-host acceptance\n";return 0;
+        std::cout<<"15 scenarios passed; real pipes, substitute TSF; no registration or native-host acceptance\n";return 0;
     }catch(const std::exception& error){std::cerr<<error.what()<<'\n';return 1;}
 }

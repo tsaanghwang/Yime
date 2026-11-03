@@ -1,0 +1,124 @@
+{
+  "schema": 1,
+  "sources": {
+    "librime": {
+      "url": "https://codeload.github.com/rime/librime/tar.gz/33e78140250125871856cdc5b42ddc6a5fcd3cd4",
+      "sha256": "d3f48c2c58f718402229031d8d95fde9cac07ababa8fecf7d18b91946f27fee6",
+      "bytes": 2653260,
+      "repository": "rime/librime",
+      "commit": "33e78140250125871856cdc5b42ddc6a5fcd3cd4",
+      "requestedRef": "1.17.0"
+    },
+    "librime/deps/glog": {
+      "url": "https://codeload.github.com/google/glog/tar.gz/7b134a5c82c0c0b5698bb6bf7a835b230c5638e4",
+      "sha256": "9c48c7c631be5af3502a19d06ebdb5c2f67d8d0bf216f896848089c1792e6193",
+      "bytes": 182928,
+      "repository": "google/glog",
+      "commit": "7b134a5c82c0c0b5698bb6bf7a835b230c5638e4",
+      "requestedRef": "7b134a5c82c0c0b5698bb6bf7a835b230c5638e4"
+    },
+    "librime/deps/leveldb": {
+      "url": "https://codeload.github.com/google/leveldb/tar.gz/99b3c03b3284f5886f9ef9a4ef703d57373e61be",
+      "sha256": "bc87b9bbc5674c91246a89813355e78401759761342cc049e1c3d56350a8a9d1",
+      "bytes": 243094,
+      "repository": "google/leveldb",
+      "commit": "99b3c03b3284f5886f9ef9a4ef703d57373e61be",
+      "requestedRef": "99b3c03b3284f5886f9ef9a4ef703d57373e61be"
+    },
+    "librime/deps/leveldb/third_party/googletest": {
+      "url": "https://codeload.github.com/google/googletest/tar.gz/c27acebba3b3c7d94209e0467b0a801db4af73ed",
+      "sha256": "378144b644835f6d4fa6d8bc8993a1135a1f2738efade4c9149a5ce1ffbafe7a",
+      "bytes": 875385,
+      "repository": "google/googletest",
+      "commit": "c27acebba3b3c7d94209e0467b0a801db4af73ed",
+      "requestedRef": "c27acebba3b3c7d94209e0467b0a801db4af73ed"
+    },
+    "librime/deps/leveldb/third_party/benchmark": {
+      "url": "https://codeload.github.com/google/benchmark/tar.gz/bf585a2789e30585b4e3ce6baf11ef2750b54677",
+      "sha256": "8222ebe7d9049c4b8bb3f930e3ca08e232f5587ad4121619f73f6ce374391c70",
+      "bytes": 163313,
+      "repository": "google/benchmark",
+      "commit": "bf585a2789e30585b4e3ce6baf11ef2750b54677",
+      "requestedRef": "bf585a2789e30585b4e3ce6baf11ef2750b54677"
+    },
+    "librime/deps/yaml-cpp": {
+      "url": "https://codeload.github.com/jbeder/yaml-cpp/tar.gz/2f86d13775d119edbb69af52e5f566fd65c6953b",
+      "sha256": "923b2298148581b14ef21d9ce29d83eca102ff671a547dfdbd227245a199bcd8",
+      "bytes": 1050633,
+      "repository": "jbeder/yaml-cpp",
+      "commit": "2f86d13775d119edbb69af52e5f566fd65c6953b",
+      "requestedRef": "2f86d13775d119edbb69af52e5f566fd65c6953b"
+    },
+    "librime/deps/googletest": {
+      "url": "https://codeload.github.com/google/googletest/tar.gz/f8d7d77c06936315286eb55f8de22cd23c188571",
+      "sha256": "7ff5db23de232a39cbb5c9f5143c355885e30ac596161a6b9fc50c4538bfbf01",
+      "bytes": 868904,
+      "repository": "google/googletest",
+      "commit": "f8d7d77c06936315286eb55f8de22cd23c188571",
+      "requestedRef": "f8d7d77c06936315286eb55f8de22cd23c188571"
+    },
+    "librime/deps/marisa-trie": {
+      "url": "https://codeload.github.com/s-yata/marisa-trie/tar.gz/3e87d53b78e15f2f43783d5e376561a8c9722051",
+      "sha256": "c24516edc43be8049ef4e23e50a574d4670036fe3595c49c0f01d4d87ce58f57",
+      "bytes": 212943,
+      "repository": "s-yata/marisa-trie",
+      "commit": "3e87d53b78e15f2f43783d5e376561a8c9722051",
+      "requestedRef": "3e87d53b78e15f2f43783d5e376561a8c9722051"
+    },
+    "librime/deps/opencc": {
+      "url": "https://codeload.github.com/BYVoid/OpenCC/tar.gz/556ed22496d650bd0b13b6c163be9814637970ae",
+      "sha256": "2792fc0944359c5d099bd79e08bfffce250bf3760aa0ec306e975cc58314482a",
+      "bytes": 3424904,
+      "repository": "BYVoid/OpenCC",
+      "commit": "556ed22496d650bd0b13b6c163be9814637970ae",
+      "requestedRef": "556ed22496d650bd0b13b6c163be9814637970ae"
+    },
+    "librime/plugins/lua": {
+      "url": "https://codeload.github.com/hchunhui/librime-lua/tar.gz/ec52e48ea18f11af37717a01c337f853215cf70b",
+      "sha256": "73247eb0b506934f8518459d303fe4a31f681a9c1623867b20889a985c4b6e8e",
+      "bytes": 50524,
+      "repository": "hchunhui/librime-lua",
+      "commit": "ec52e48ea18f11af37717a01c337f853215cf70b",
+      "requestedRef": "ec52e48"
+    },
+    "librime/plugins/octagram": {
+      "url": "https://codeload.github.com/lotem/librime-octagram/tar.gz/dfcc15115788c828d9dd7b4bff68067d3ce2ffb8",
+      "sha256": "7da3df7a5dae82557f7a4842b94dfe81dd21ef7e036b132df0f462f2dae18393",
+      "bytes": 17426,
+      "repository": "lotem/librime-octagram",
+      "commit": "dfcc15115788c828d9dd7b4bff68067d3ce2ffb8",
+      "requestedRef": "dfcc151"
+    },
+    "librime/plugins/predict": {
+      "url": "https://codeload.github.com/rime/librime-predict/tar.gz/920bd41ebf6f9bf6855d14fbe80212e54e749791",
+      "sha256": "38b2f32254e1a35ac04dba376bc8999915c8fbdb35be489bffdf09079983400c",
+      "bytes": 9790,
+      "repository": "rime/librime-predict",
+      "commit": "920bd41ebf6f9bf6855d14fbe80212e54e749791",
+      "requestedRef": "920bd41"
+    },
+    "librime/plugins/lua/thirdparty": {
+      "url": "https://codeload.github.com/hchunhui/librime-lua/tar.gz/9e5bb71db1544913f8005dadc3df8439c00d08b7",
+      "sha256": "3f9aaa51680553bec679e283b1eac9426148f3357f23ecc39d83e98958ecc271",
+      "bytes": 658995,
+      "repository": "hchunhui/librime-lua",
+      "commit": "9e5bb71db1544913f8005dadc3df8439c00d08b7",
+      "requestedRef": "thirdparty"
+    }
+  },
+  "boost": {
+    "url": "https://archives.boost.io/release/1.89.0/source/boost_1_89_0.tar.gz",
+    "sha256": "9de758db755e8330a01d995b0a24d09798048400ac25c03fc5ea9be364b13c93",
+    "bytes": 190099283
+  },
+  "rustup": {
+    "url": "https://static.rust-lang.org/rustup/dist/aarch64-pc-windows-msvc/rustup-init.exe",
+    "sha256": "58005a321c5dcb9c4457c0a13bb5d6a56a5793efaef429004edaa1db33019b59",
+    "bytes": 11277824
+  },
+  "rustManifest": {
+    "url": "https://static.rust-lang.org/dist/channel-rust-1.97.0.toml",
+    "sha256": "3804d2666f7c12ce64205baa69b6be52f910b45b158091013264beb7aa1de7f5",
+    "bytes": 845916
+  }
+}

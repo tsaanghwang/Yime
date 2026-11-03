@@ -123,6 +123,23 @@ func TestTIPConnectionCommitRequiresActualOwnerReceipt(t *testing.T) {
 		t.Fatal("duplicate receipt accepted")
 	}
 }
+
+// Reproduces the formal host's former whole-syllable input. The production lab
+// accepts exactly one key per input event, even when no native TSF is involved.
+func TestTIPRejectsWholeCodeInputWithoutEdit(t *testing.T) {
+	c := testConnection(t)
+	before := c.session.Snapshot()
+	q := request(c, "action")
+	q.Action = &Action{Kind: "input", Code: "ab", Revision: before.Revision}
+	r := c.dispatch(c.owner, q)
+	if r.OK || r.Error != "action rejected" || r.Commit != nil {
+		t.Fatal("whole-code request was not rejected without a commit")
+	}
+	after := c.session.Snapshot()
+	if after.Revision != before.Revision || after.State.RawInput != "" || c.session.Receipt().ID != "" {
+		t.Fatal("invalid batch changed composition or created an edit")
+	}
+}
 func TestTIPRejectsForeignSessionIdentityFocusSequenceAndRevision(t *testing.T) {
 	c := testConnection(t)
 	action(t, c, "input")
@@ -267,11 +284,19 @@ func TestFullResourceDedicatedBroker(t *testing.T) {
 	if code == "" {
 		t.Fatal("canonical probe not found")
 	}
+	if len(code) < 2 {
+		t.Fatal("canonical regression must exercise a multi-key code")
+	}
+	t.Logf("canonical ni3 requires %d single-key input events", len(code))
 	for _, key := range code {
+		before := c.session.Snapshot().Revision
 		q := request(c, "action")
 		q.Action = &Action{Kind: "input", Code: string(key), Revision: c.session.Snapshot().Revision}
 		if r = c.dispatch(c.owner, q); !r.OK {
 			t.Fatal(r)
+		}
+		if r.Commit != nil || r.Snapshot.Revision != before+1 {
+			t.Fatal("input must advance once without requesting a host edit")
 		}
 	}
 	candidate := ""

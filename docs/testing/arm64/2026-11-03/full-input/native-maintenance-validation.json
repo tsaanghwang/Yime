@@ -1,0 +1,46 @@
+{
+  "scope": "ordinary correctness and privilege boundary review; no installation or registration",
+  "goCommand": "go test -count=1 -v ./cmd/yime-maintenance",
+  "nativeGo": "go1.25.14 windows/arm64",
+  "testsPassed": 10,
+  "testsSkipped": 0,
+  "sandboxBoundary": "Ancestor lock fixture initially denied in sandbox; repeated outside sandbox under ordinary user token and passed. No developer-mode or global environment change.",
+  "files": [
+    {
+      "path": "go-backend/cmd/yime-maintenance/main.go",
+      "sha256": "c26447e80c1e43c58d6ad1c28f4528d6ecef1824eb18771245aa18711c269d1e"
+    },
+    {
+      "path": "go-backend/cmd/yime-maintenance/main_other.go",
+      "sha256": "f703a2d5a1143432adda3390ec14d3d50578a221bc292909d5e213b232af4eb3"
+    },
+    {
+      "path": "go-backend/cmd/yime-maintenance/main_test.go",
+      "sha256": "e33e838e36d02fc49a8fb3019d4d9d8e026b663e48af543774693ed06922ce00"
+    },
+    {
+      "path": "go-backend/cmd/yime-maintenance/main_windows.go",
+      "sha256": "5105c49e0d92f65b78f57db0f4c3f77de1b73f1ae69353e32b842f9fc76a9657"
+    },
+    {
+      "path": "go-backend/cmd/yime-maintenance/staging.go",
+      "sha256": "b0d91a1dbf893878dfb328b1b532900c2d0e8ca085834ad7e9dd34d6b3c91a77"
+    },
+    {
+      "path": "go-backend/cmd/yime-maintenance/staging_test.go",
+      "sha256": "4c3c1c168b51683c2c159bbc29facb7dbffcfae560d3d1303f3985a43083c5b2"
+    },
+    {
+      "path": "go-backend/cmd/yime-maintenance/staging_windows.go",
+      "sha256": "c77881f86cd38b0632ca74bee401d4500bb18f7e4b4abafadb0b0d226d2f5eaa"
+    },
+    {
+      "path": "go-backend/cmd/yime-maintenance/staging_windows_test.go",
+      "sha256": "8a16152c2b63de670ae13f1c43558b114f7697992c755fde878c9813c057b3b3"
+    }
+  ],
+  "limitations": [
+    "Plan-bound package Check and elevated protected-stage execution belong to the package/install task.",
+    "No installed runtime launch or registered-host acceptance executed by these unit tests."
+  ]
+}

@@ -1,0 +1,238 @@
+["C:\\dev\\Yime\\.wt\\armfull\\.generated\\arm64-rime\\cargo-home\\bin\\rustup.exe", "run", "1.97.0-aarch64-pc-windows-msvc", "cargo", "test", "--locked", "--offline", "--target", "aarch64-pc-windows-msvc"]
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.45
+   Compiling windows-link v0.2.1
+   Compiling serde_core v1.0.228
+   Compiling pin-project-lite v0.2.17
+   Compiling futures-core v0.3.32
+   Compiling windows_aarch64_msvc v0.52.6
+   Compiling cfg-if v1.0.4
+   Compiling winnow v1.0.4
+   Compiling once_cell v1.21.4
+   Compiling futures-sink v0.3.32
+   Compiling memchr v2.8.0
+   Compiling bytes v1.11.1
+   Compiling getrandom v0.4.2
+   Compiling futures-task v0.3.32
+   Compiling slab v0.4.12
+   Compiling futures-io v0.3.32
+   Compiling version_check v0.9.5
+   Compiling windows-sys v0.61.2
+   Compiling tracing-core v0.1.36
+   Compiling futures-channel v0.3.32
+   Compiling zmij v1.0.21
+   Compiling serde v1.0.228
+   Compiling toml_parser v1.1.2+spec-1.1.0
+   Compiling lazy_static v1.5.0
+   Compiling log v0.4.29
+   Compiling serde_json v1.0.149
+   Compiling thread_local v1.1.9
+   Compiling smallvec v1.15.1
+   Compiling itoa v1.0.18
+   Compiling fastrand v2.4.1
+   Compiling sharded-slab v0.1.7
+   Compiling tracing-log v0.2.0
+   Compiling mio v1.2.0
+   Compiling socket2 v0.6.3
+   Compiling nu-ansi-term v0.50.3
+   Compiling windows-targets v0.52.6
+   Compiling windows-core v0.52.0
+   Compiling uuid v1.23.1
+   Compiling tempfile v3.27.0
+   Compiling tracing-subscriber v0.3.23
+   Compiling syn v2.0.117
+   Compiling windows v0.52.0
+   Compiling serde_spanned v1.1.1
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+   Compiling toml v1.1.3+spec-1.1.0
+   Compiling winresource v0.1.31
+   Compiling pimelauncher v0.1.0 (C:\dev\Yime\.wt\armfull\PIMELauncher)
+   Compiling tokio-macros v2.7.0
+   Compiling futures-macro v0.3.32
+   Compiling tracing-attributes v0.1.31
+   Compiling serde_derive v1.0.228
+   Compiling tokio v1.52.1
+   Compiling futures-util v0.3.32
+   Compiling tracing v0.1.44
+   Compiling futures-executor v0.3.32
+   Compiling futures v0.3.32
+   Compiling tokio-util v0.7.18
+   Compiling tokio-stream v0.1.18
+   Compiling tokio-test v0.4.5
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 21.96s
+     Running unittests src\lib.rs (C:\dev\Yime\.wt\armfull\.generated\arm64-rime\cargo-target\aarch64-pc-windows-msvc\debug\deps\pimelauncher-02ca1f6da891b7d4.exe)
+
+running 15 tests
+test protocol::tests::test_parse_backend_output_invalid ... ok
+test protocol::tests::test_parse_backend_output_valid ... ok
+test protocol::tests::test_parse_client_handshake_invalid ... ok
+test protocol::tests::test_parse_client_handshake_init ... ok
+test protocol::tests::test_launcher_overwrites_client_claimed_capabilities ... ok
+test pipe_server::tests::test_handle_client_fragmented ... ok
+test pipe_server::tests::test_handle_client_utf8_split ... ok
+test backend_manager::tests::test_client_registration ... ok
+test client_identity::tests::limiter_bounds_each_process_and_releases_capacity ... ok
+test protocol::tests::test_format_backend_input ... ok
+test pipe_server::tests::test_oversized_pre_authentication_line_is_rejected ... ok
+test acl::tests::test_create_security_attributes ... ok
+test backend_registry::tests::test_registry_load_with_utf8_bom ... ok
+test backend_registry::tests::test_registry_load ... ok
+test pipe_server::tests::test_idle_client_is_rejected_after_handshake_timeout ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running unittests src\main.rs (C:\dev\Yime\.wt\armfull\.generated\arm64-rime\cargo-target\aarch64-pc-windows-msvc\debug\deps\PIMELauncher-fa5b16996da19c99.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\mock_backend.rs (C:\dev\Yime\.wt\armfull\.generated\arm64-rime\cargo-target\aarch64-pc-windows-msvc\debug\deps\mock_backend-189ae26b21ee4158.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\integration_test.rs (C:\dev\Yime\.wt\armfull\.generated\arm64-rime\cargo-target\aarch64-pc-windows-msvc\debug\deps\integration_test-794b16236a22cea4.exe)
+
+running 2 tests
+2026-11-03T12:51:00.122374Z  INFO pimelauncher::pipe_server: Client connection accepted on pipe instance (first_instance=true, pid=39388, trust=desktop).
+2026-11-03T12:51:00.122519Z  INFO pimelauncher::pipe_server: Client connection accepted on pipe instance (first_instance=true, pid=39388, trust=desktop).
+2026-11-03T12:51:00.122564Z  INFO pimelauncher::pipe_server: Client connected: id=30c612a3-25bc-4da1-bf95-df7de8d1da85
+2026-11-03T12:51:00.122587Z  INFO pimelauncher::pipe_server: Client connected: id=edc91702-1ed7-494a-ad67-3bf18c9da24b
+2026-11-03T12:51:00.122784Z  INFO pimelauncher::pipe_server: Client 30c612a3-25bc-4da1-bf95-df7de8d1da85 handshake successful, mapped to backend: echo, trust=desktop
+2026-11-03T12:51:00.122884Z  INFO pimelauncher::backend_manager: Spawning backend: echo (exe: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmp39UGtw\\mock_backend.exe", cwd: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmp39UGtw\\", params: --scenario echo)
+2026-11-03T12:51:00.185686Z  INFO pimelauncher::pipe_server: Client edc91702-1ed7-494a-ad67-3bf18c9da24b handshake successful, mapped to backend: echo, trust=desktop
+2026-11-03T12:51:00.185794Z  INFO pimelauncher::backend_manager: Spawning backend: echo (exe: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmpBmHZNI\\mock_backend.exe", cwd: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmpBmHZNI\\", params: --scenario echo)
+2026-11-03T12:51:00.742134Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 201. req_t=1793710260742
+2026-11-03T12:51:00.742645Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260741, req_t=1793710260742, now=1793710260742, delta=0
+2026-11-03T12:51:00.760613Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 50. req_t=1793710260760
+2026-11-03T12:51:00.761084Z  INFO pimelauncher::pipe_server: Client connection accepted on pipe instance (first_instance=false, pid=39388, trust=desktop).
+2026-11-03T12:51:00.761187Z  INFO pimelauncher::pipe_server: Client connected: id=38070f59-dfea-46e4-af9b-b3c30865ed00
+2026-11-03T12:51:00.761296Z  INFO pimelauncher::pipe_server: Client disconnected: id=30c612a3-25bc-4da1-bf95-df7de8d1da85, backend=echo
+2026-11-03T12:51:00.761396Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 55. req_t=1793710260761
+2026-11-03T12:51:00.761547Z  INFO pimelauncher::pipe_server: Client 38070f59-dfea-46e4-af9b-b3c30865ed00 handshake successful, mapped to backend: crash, trust=desktop
+2026-11-03T12:51:00.761616Z  INFO pimelauncher::backend_manager: Spawning backend: crash (exe: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmp39UGtw\\mock_backend.exe", cwd: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmp39UGtw\\", params: --scenario crash)
+2026-11-03T12:51:00.797353Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 201. req_t=1793710260797
+2026-11-03T12:51:00.798214Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260797, req_t=1793710260797, now=1793710260798, delta=1
+2026-11-03T12:51:00.806899Z  INFO pimelauncher::backend_manager: Backend crash received request from channel. Data len: 201. req_t=1793710260806
+2026-11-03T12:51:00.807117Z  WARN pimelauncher::backend_manager: Received message for unknown client 30c612a3-25bc-4da1-bf95-df7de8d1da85: REPLY: {"method":"close"}
+2026-11-03T12:51:00.807178Z ERROR pimelauncher::backend_manager: [echo stderr] Mock backend received CLOSE for client 30c612a3-25bc-4da1-bf95-df7de8d1da85
+2026-11-03T12:51:00.814280Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710260806, req_t=1793710260806, now=1793710260814, delta=8
+2026-11-03T12:51:00.829750Z  INFO pimelauncher::backend_manager: Backend crash received request from channel. Data len: 46. req_t=1793710260829
+2026-11-03T12:51:00.830533Z  INFO pimelauncher::backend_manager: Backend output routing stopped for a backend instance.
+2026-11-03T12:51:00.830667Z  INFO pimelauncher::backend_manager: Backend crash stderr stream closed.
+2026-11-03T12:51:00.831226Z  WARN pimelauncher::backend_manager: Backend crash exited with status Ok(ExitStatus(ExitStatus(1)))
+2026-11-03T12:51:00.831259Z  WARN pimelauncher::backend_manager: Restarting backend crash
+2026-11-03T12:51:00.879801Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 48. req_t=1793710260879
+2026-11-03T12:51:00.943853Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 49. req_t=1793710260943
+test test_fragmented_messages ... ok
+2026-11-03T12:51:01.753261Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710261753, delta=992
+2026-11-03T12:51:01.834603Z  INFO pimelauncher::backend_manager: Spawning backend: crash (exe: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmp39UGtw\\mock_backend.exe", cwd: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmp39UGtw\\", params: --scenario crash)
+2026-11-03T12:51:02.335867Z  INFO pimelauncher::backend_manager: Backend crash received request from channel. Data len: 47. req_t=1793710262335
+2026-11-03T12:51:02.336534Z  INFO pimelauncher::pipe_server: Client connection accepted on pipe instance (first_instance=false, pid=39388, trust=desktop).
+2026-11-03T12:51:02.336655Z  INFO pimelauncher::pipe_server: Client connected: id=619a1629-6f27-4135-966e-03abcc2572b8
+2026-11-03T12:51:02.336761Z  INFO pimelauncher::pipe_server: Client disconnected: id=38070f59-dfea-46e4-af9b-b3c30865ed00, backend=crash
+2026-11-03T12:51:02.336835Z  INFO pimelauncher::backend_manager: Backend crash received request from channel. Data len: 55. req_t=1793710262336
+2026-11-03T12:51:02.337013Z  INFO pimelauncher::pipe_server: Client 619a1629-6f27-4135-966e-03abcc2572b8 handshake successful, mapped to backend: hang, trust=desktop
+2026-11-03T12:51:02.337076Z  INFO pimelauncher::backend_manager: Spawning backend: hang (exe: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmp39UGtw\\mock_backend.exe", cwd: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmp39UGtw\\", params: --scenario hang)
+2026-11-03T12:51:02.351433Z  INFO pimelauncher::backend_manager: Backend hang received request from channel. Data len: 201. req_t=1793710262351
+2026-11-03T12:51:02.351600Z  WARN pimelauncher::backend_manager: Received message for unknown client 38070f59-dfea-46e4-af9b-b3c30865ed00: REPLY: {"method":"close"}
+2026-11-03T12:51:02.366539Z  INFO pimelauncher::backend_manager: Watchdog tick for hang: last_out=1793710262351, req_t=1793710262351, now=1793710262366, delta=15
+2026-11-03T12:51:02.376433Z  INFO pimelauncher::backend_manager: Backend hang received request from channel. Data len: 45. req_t=1793710262376
+2026-11-03T12:51:02.378234Z  INFO pimelauncher::backend_manager: Backend hang received request from channel. Data len: 131109. req_t=1793710262378
+2026-11-03T12:51:02.752880Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710262752, delta=1991
+2026-11-03T12:51:02.851677Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710262351, req_t=1793710262336, now=1793710262851, delta=515
+2026-11-03T12:51:03.752877Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710263752, delta=2991
+2026-11-03T12:51:03.849627Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710262351, req_t=1793710262336, now=1793710263849, delta=1513
+2026-11-03T12:51:04.755589Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710264755, delta=3994
+2026-11-03T12:51:04.850740Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710262351, req_t=1793710262336, now=1793710264850, delta=2514
+2026-11-03T12:51:05.752883Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710265752, delta=4991
+2026-11-03T12:51:05.847552Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710262351, req_t=1793710262336, now=1793710265847, delta=3511
+2026-11-03T12:51:06.746684Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710266746, delta=5985
+2026-11-03T12:51:06.841428Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710262351, req_t=1793710262336, now=1793710266841, delta=4505
+2026-11-03T12:51:07.384904Z ERROR pimelauncher::backend_manager: Timeout writing to backend hang. Forcing restart.
+2026-11-03T12:51:07.385875Z  INFO pimelauncher::backend_manager: Backend hang stderr stream closed.
+2026-11-03T12:51:07.386161Z  INFO pimelauncher::backend_manager: Backend output routing stopped for a backend instance.
+2026-11-03T12:51:07.386397Z  WARN pimelauncher::backend_manager: Restarting backend hang
+2026-11-03T12:51:07.747852Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710267747, delta=6986
+2026-11-03T12:51:07.845329Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710262351, req_t=1793710262336, now=1793710267845, delta=5509
+2026-11-03T12:51:08.399033Z  INFO pimelauncher::backend_manager: Spawning backend: hang (exe: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmp39UGtw\\mock_backend.exe", cwd: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmp39UGtw\\", params: --scenario hang)
+2026-11-03T12:51:08.749550Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710268749, delta=7988
+2026-11-03T12:51:08.845819Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710262351, req_t=1793710262336, now=1793710268845, delta=6509
+2026-11-03T12:51:09.750119Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710269750, delta=8989
+2026-11-03T12:51:09.845706Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710262351, req_t=1793710262336, now=1793710269845, delta=7509
+2026-11-03T12:51:10.746766Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710270746, delta=9985
+2026-11-03T12:51:10.849995Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710262351, req_t=1793710262336, now=1793710270849, delta=8513
+2026-11-03T12:51:11.750563Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710271750, delta=10989
+2026-11-03T12:51:11.850789Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710262351, req_t=1793710262336, now=1793710271850, delta=9514
+2026-11-03T12:51:12.752529Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710272752, delta=11991
+2026-11-03T12:51:12.849965Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710262351, req_t=1793710262336, now=1793710272849, delta=10513
+2026-11-03T12:51:13.753492Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710273753, delta=12992
+2026-11-03T12:51:13.851104Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710262351, req_t=1793710262336, now=1793710273851, delta=11515
+2026-11-03T12:51:14.388000Z  INFO pimelauncher::backend_manager: Backend hang received request from channel. Data len: 48. req_t=1793710274387
+2026-11-03T12:51:14.388613Z  INFO pimelauncher::pipe_server: Client connection accepted on pipe instance (first_instance=false, pid=39388, trust=desktop).
+2026-11-03T12:51:14.388740Z  INFO pimelauncher::pipe_server: Client connected: id=82a85551-f146-463b-b24d-44246e35984f
+2026-11-03T12:51:14.388853Z  INFO pimelauncher::pipe_server: Client disconnected: id=619a1629-6f27-4135-966e-03abcc2572b8, backend=hang
+2026-11-03T12:51:14.389043Z  INFO pimelauncher::backend_manager: Backend hang received request from channel. Data len: 55. req_t=1793710274389
+2026-11-03T12:51:14.389251Z  INFO pimelauncher::pipe_server: Client 82a85551-f146-463b-b24d-44246e35984f handshake successful, mapped to backend: fail, trust=desktop
+2026-11-03T12:51:14.389331Z  INFO pimelauncher::backend_manager: Spawning backend: fail (exe: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmp39UGtw\\non_existent.exe", cwd: "C:\\Users\\tsaan\\AppData\\Local\\Temp\\.tmp39UGtw\\", params: )
+2026-11-03T12:51:14.392211Z ERROR pimelauncher::backend_manager: Failed to spawn backend fail: 系统找不到指定的文件。 (os error 2)
+2026-11-03T12:51:14.392276Z  WARN pimelauncher::backend_manager: Received message for unknown client 619a1629-6f27-4135-966e-03abcc2572b8: REPLY: {"method":"close"}
+2026-11-03T12:51:14.419632Z  INFO pimelauncher::backend_manager: Watchdog tick for hang: last_out=1793710274392, req_t=1793710274389, now=1793710274419, delta=30
+2026-11-03T12:51:14.753531Z  INFO pimelauncher::backend_manager: Watchdog tick for echo: last_out=1793710260807, req_t=1793710260761, now=1793710274753, delta=13992
+2026-11-03T12:51:14.850475Z  INFO pimelauncher::backend_manager: Watchdog tick for crash: last_out=1793710262351, req_t=1793710262336, now=1793710274850, delta=12514
+2026-11-03T12:51:14.898501Z  INFO pimelauncher::pipe_server: Client connection accepted on pipe instance (first_instance=false, pid=39388, trust=desktop).
+2026-11-03T12:51:14.898689Z  INFO pimelauncher::pipe_server: Client connected: id=1870bc44-01d3-46d7-aa56-3890d032c817
+2026-11-03T12:51:14.898824Z  INFO pimelauncher::pipe_server: Client disconnected: id=82a85551-f146-463b-b24d-44246e35984f, backend=fail
+2026-11-03T12:51:14.899047Z  INFO pimelauncher::pipe_server: Client 1870bc44-01d3-46d7-aa56-3890d032c817 handshake successful, mapped to backend: echo, trust=desktop
+2026-11-03T12:51:14.899112Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 201. req_t=1793710274899
+2026-11-03T12:51:14.899422Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 55. req_t=1793710274899
+2026-11-03T12:51:14.899582Z ERROR pimelauncher::backend_manager: [echo stderr] Mock backend received CLOSE for client 1870bc44-01d3-46d7-aa56-3890d032c817
+2026-11-03T12:51:14.899641Z  INFO pimelauncher::pipe_server: Client disconnected: id=1870bc44-01d3-46d7-aa56-3890d032c817, backend=echo
+2026-11-03T12:51:14.899674Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 55. req_t=1793710274899
+2026-11-03T12:51:14.899795Z  WARN pimelauncher::backend_manager: Received message for unknown client 1870bc44-01d3-46d7-aa56-3890d032c817: REPLY: {"method":"close"}
+2026-11-03T12:51:14.899833Z ERROR pimelauncher::backend_manager: [echo stderr] Mock backend received CLOSE for client 1870bc44-01d3-46d7-aa56-3890d032c817
+2026-11-03T12:51:15.003331Z  INFO pimelauncher::pipe_server: Client connection accepted on pipe instance (first_instance=false, pid=39388, trust=desktop).
+2026-11-03T12:51:15.003514Z  INFO pimelauncher::pipe_server: Client connected: id=e8ea0bab-a575-47c6-804c-a742108abc9c
+2026-11-03T12:51:15.003804Z  INFO pimelauncher::pipe_server: Client e8ea0bab-a575-47c6-804c-a742108abc9c handshake successful, mapped to backend: echo, trust=desktop
+2026-11-03T12:51:15.003900Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 201. req_t=1793710275003
+2026-11-03T12:51:15.004607Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275004
+2026-11-03T12:51:15.019592Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275019
+2026-11-03T12:51:15.036095Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275036
+2026-11-03T12:51:15.051765Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275051
+2026-11-03T12:51:15.068094Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275068
+2026-11-03T12:51:15.084171Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275084
+2026-11-03T12:51:15.100197Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275100
+2026-11-03T12:51:15.116102Z  INFO pimelauncher::pipe_server: Client connection accepted on pipe instance (first_instance=false, pid=39388, trust=desktop).
+2026-11-03T12:51:15.116270Z  INFO pimelauncher::pipe_server: Client connected: id=3dd80a5f-7852-48d4-af18-1abe63243cdd
+2026-11-03T12:51:15.116341Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275116
+2026-11-03T12:51:15.116418Z  INFO pimelauncher::pipe_server: Client 3dd80a5f-7852-48d4-af18-1abe63243cdd handshake successful, mapped to backend: echo, trust=desktop
+2026-11-03T12:51:15.116510Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 201. req_t=1793710275116
+2026-11-03T12:51:15.117004Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275117
+2026-11-03T12:51:15.132881Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275132
+2026-11-03T12:51:15.133192Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275133
+2026-11-03T12:51:15.147834Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275147
+2026-11-03T12:51:15.164298Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275164
+2026-11-03T12:51:15.164432Z  INFO pimelauncher::pipe_server: Client disconnected: id=e8ea0bab-a575-47c6-804c-a742108abc9c, backend=echo
+2026-11-03T12:51:15.164572Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 55. req_t=1793710275164
+2026-11-03T12:51:15.164713Z  WARN pimelauncher::backend_manager: Received message for unknown client e8ea0bab-a575-47c6-804c-a742108abc9c: REPLY: {"method":"close"}
+2026-11-03T12:51:15.164746Z ERROR pimelauncher::backend_manager: [echo stderr] Mock backend received CLOSE for client e8ea0bab-a575-47c6-804c-a742108abc9c
+2026-11-03T12:51:15.180460Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275180
+2026-11-03T12:51:15.197148Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275197
+2026-11-03T12:51:15.213645Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275213
+2026-11-03T12:51:15.229760Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275229
+2026-11-03T12:51:15.245810Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275245
+2026-11-03T12:51:15.277563Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275277
+2026-11-03T12:51:15.293547Z  INFO pimelauncher::backend_manager: Backend echo received request from channel. Data len: 44. req_t=1793710275293
+test test_integration_full ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.40s
+
+   Doc-tests pimelauncher
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

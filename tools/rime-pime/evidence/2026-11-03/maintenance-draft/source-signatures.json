@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sourceRoot": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.9.0_arm64__8wekyb3d8bbwe",
+  "observedUtc": "2026-11-03T13:07:37.6251164Z",
+  "processArchitecture": "arm64",
+  "powerShellVersion": "7.6.9",
+  "processPSHOME": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.9.0_arm64__8wekyb3d8bbwe",
+  "files": [
+    {
+      "path": "pwsh.exe",
+      "machine": "0xaa64",
+      "sha256": "bbdf538aea81c09f60732219b451a26c64f6f2b22bee05eeece13dba909d36e4",
+      "signatureStatus": "Valid",
+      "subject": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "certificateThumbprint": "1D77A9B9E8FE2075D9AD15123257FB90DB0DA4A1",
+      "certificateNotAfter": "2027-04-15T18:59:41.0000000Z"
+    },
+    {
+      "path": "coreclr.dll",
+      "machine": "0xaa64",
+      "sha256": "c8d6680d8580e60fd78d977391902cca6846a91a38770df067c9ff7becd03611",
+      "signatureStatus": "Valid",
+      "subject": "CN=.NET, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "certificateThumbprint": "BB793DB742624269BB5F4515BBE9A3DF418F588D",
+      "certificateNotAfter": "2027-04-15T18:57:41.0000000Z"
+    },
+    {
+      "path": "clrjit.dll",
+      "machine": "0xaa64",
+      "sha256": "2180519becde472b5e1efac25dd7e95c8d9591bcd1b0a12d838838e57201f6f7",
+      "signatureStatus": "Valid",
+      "subject": "CN=.NET, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "certificateThumbprint": "43A50DB15AC95D0C1D187616AE187467975846D0",
+      "certificateNotAfter": "2027-04-15T18:57:39.0000000Z"
+    },
+    {
+      "path": "hostfxr.dll",
+      "machine": "0xaa64",
+      "sha256": "e9dda6b38e927fa1265472fbe9abcd03d9dba3507d38a7e38c2562d30abf1cd8",
+      "signatureStatus": "Valid",
+      "subject": "CN=.NET, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "certificateThumbprint": "BB793DB742624269BB5F4515BBE9A3DF418F588D",
+      "certificateNotAfter": "2027-04-15T18:57:41.0000000Z"
+    },
+    {
+      "path": "hostpolicy.dll",
+      "machine": "0xaa64",
+      "sha256": "6900ae71b558bf494fe03f9042c0a83e910c465dfdee21e87f862ead80e3b32f",
+      "signatureStatus": "Valid",
+      "subject": "CN=.NET, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "certificateThumbprint": "BB793DB742624269BB5F4515BBE9A3DF418F588D",
+      "certificateNotAfter": "2027-04-15T18:57:41.0000000Z"
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "18u-source-validation-v1",
+  "recordedAtUTC": "2026-11-03T13:42:15.852800+00:00",
+  "sourceBase": "64a785a7ede5fb2a53e2560b873075950160668b",
+  "sourceFrozen": false,
+  "architecture": "native-arm64",
+  "go": {
+    "testedPackageCount": 5,
+    "compiledPackageWithoutTestsCount": 1,
+    "testedPackages": [
+      "internal/touchhostbridge",
+      "internal/touchbroker",
+      "internal/installed18uhost",
+      "cmd/yime-touch-keyboard",
+      "cmd/yimecore-trial-runtime"
+    ],
+    "compiledPackagesWithoutTests": [
+      "cmd/yimebroker-18u"
+    ],
+    "exitCode": 0,
+    "scope": "unit and substitute transport; optional installed host gates not executed"
+  },
+  "native": {
+    "scenarioCount": 15,
+    "hostEditCases": 5,
+    "hostEditInjectedFailureCases": 4,
+    "cancellationFailureRecoveryScenarios": 2,
+    "exitCode": 0,
+    "log": "18u-native-async-failure-regression.log",
+    "scope": "real OS pipes and substitute TSF text store; no registration"
+  },
+  "completeResources": {
+    "archiveSHA256": "9f01dc384aa2a52281a882a7fc5f675a0282bf073f9033610a3b0681b32b14bd",
+    "fileCount": 4,
+    "modeCount": 3,
+    "sourceReadings": 2457474,
+    "exitCode": 0,
+    "modes": [
+      {
+        "mode": "full",
+        "canonicalNi3Keys": 4,
+        "dictionarySHA256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790"
+      },
+      {
+        "mode": "variable",
+        "canonicalNi3Keys": 2,
+        "dictionarySHA256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353"
+      },
+      {
+        "mode": "shorthand",
+        "canonicalNi3Keys": 2,
+        "dictionarySHA256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49"
+      }
+    ],
+    "checks": [
+      "source-locked layout and three full dictionary identities",
+      "canonical ni3 derived via reviewed projection and three-mode algorithm",
+      "real YimeCore candidate selection yields 你",
+      "commit remains pending until synthetic host completion",
+      "English A input via same engine"
+    ]
+  },
+  "identityDescriptorTests": {
+    "testCount": 5,
+    "exitCode": 0
+  },
+  "installedFrontendHost": {
+    "built": true,
+    "plannedCheckpointCount": 18,
+    "executed": false
+  },
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "physicalTouchAcceptance": false,
+  "artifacts": [
+    {
+      "path": ".generated/touch-full-native/Release/YimeTextService18u.dll",
+      "bytes": 700928,
+      "sha256": "83bd48bf38fa9653ad87ee75112e5d1f467f549ca87d99ccdd4ce55a1a179b8a"
+    },
+    {
+      "path": ".generated/touch-full-native/Release/YimeDedicatedAsyncTests.exe",
+      "bytes": 484352,
+      "sha256": "95d4872ff9df9c0d040430c649b7c9ecc1296a0d50356cf9aa2405d1670ee7a5"
+    },
+    {
+      "path": ".generated/touch-full-native/Release/YimeTouchInstalledFrontendHostTests.exe",
+      "bytes": 383488,
+      "sha256": "9787e27b3c61edede951faa0788f4b8abbe838c8a1b5285bf1e5a1389684d05a"
+    },
+    {
+      "path": ".generated/touch-full-bin/YimeBroker18u.exe",
+      "bytes": 6394880,
+      "sha256": "a039efb4dd08ebb3566fda0a6ba5119e104db52f21de2a416a7c992eb53bdee8"
+    },
+    {
+      "path": ".generated/touch-full-bin/YimeTouchKeyboard.exe",
+      "bytes": 7278080,
+      "sha256": "21025128702295ead46be752c4b58e12927be4dd1da330096fbb93ca50dc67c5"
+    },
+    {
+      "path": ".generated/touch-full-bin/Yime18uInstalledRuntime.exe",
+      "bytes": 6158336,
+      "sha256": "3053f9e2b00558cd11d3260f02c0cfac7ad918931d1292c901fe7c0dd317c9ff"
+    }
+  ]
+}

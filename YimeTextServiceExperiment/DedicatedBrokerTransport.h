@@ -13,16 +13,18 @@ struct DedicatedExchangeResult {
 };
 class DedicatedBrokerTransport final : public std::enable_shared_from_this<DedicatedBrokerTransport> {
 public:
-    DedicatedBrokerTransport(std::wstring pipe,DWORD pid,std::wstring image);
+    DedicatedBrokerTransport(std::wstring pipe,DWORD pid,std::wstring image,bool discover=false);
     ~DedicatedBrokerTransport();
     std::shared_ptr<DedicatedExchangeResult> Start(std::string request,DWORD timeout,bool connect);
     void Cancel() noexcept;
+    DWORD ServerPID() const noexcept { return pid_; }
 private:
     struct Work;
     static DWORD WINAPI Run(void* parameter) noexcept;
     void Open();
     std::wstring name_,image_;
     DWORD pid_;
+    bool discover_=false;
     HANDLE cancel_=nullptr,pipe_=INVALID_HANDLE_VALUE,server_=nullptr;
     std::atomic<bool> running_{false};
 };

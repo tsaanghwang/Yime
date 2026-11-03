@@ -6,10 +6,12 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/tsaanghwang/Yime/go-backend/internal/installed18uhost"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 var ownTSFDemoPackage string // Set only by the isolated demo builder.
@@ -17,6 +19,10 @@ var ownTSFDemoPackage string // Set only by the isolated demo builder.
 type options struct {
 	OwnTSFDemoSmoke                     bool
 	OwnTSFDemo                          bool
+	InstalledTSF                        bool
+	InstalledSmoke                      bool
+	InstallRoot, ManifestSHA            string
+	BrokerPID                           uint
 	Root, Profile, Zones, Shot, KeyView string
 	DataDir, DataReport                 string
 	InputTrace                          string
@@ -46,6 +52,11 @@ func main() {
 	flag.BoolVar(&o.CheckData, "check-data", false, "validate isolated Chinese dictionaries and in-process sessions, without a window or OS input")
 	flag.BoolVar(&o.OwnTSFDemoSmoke, "own-tsf-demo-self-test", false, "isolated CI only: actual own-demo package UI path")
 	flag.BoolVar(&o.OwnTSFDemo, "own-tsf-demo", false, "isolated native x64 own-host TSF demo; never writes to other applications")
+	flag.BoolVar(&o.InstalledTSF, "installed-tsf", false, "complete installed 18u TIP frontend; no SendInput fallback")
+	flag.BoolVar(&o.InstalledSmoke, "installed-smoke", false, "fixed installed frontend verification; requires the separate registered test host controller")
+	flag.StringVar(&o.InstallRoot, "install-root", "", "installed 18u product root")
+	flag.StringVar(&o.ManifestSHA, "manifest-sha256", "", "independent installed manifest hash")
+	flag.UintVar(&o.BrokerPID, "broker-pid", 0, "runtime-owned installed broker PID")
 	flag.BoolVar(&o.Preview, "preview", false, "Chinese desktop preview; output stays in this window, never sends OS input")
 	flag.BoolVar(&o.Host, "host-input", false, "Chinese host-input lab; explicitly bind target before sending confirmed text")
 	flag.BoolVar(&o.HostSmoke, "host-self-test", false, "with --host-input, test only disposable own EDIT windows and exit")
@@ -61,7 +72,7 @@ func main() {
 	flag.Parse()
 	o.GeometryExplicit = hasGeometryOptions(flag.CommandLine)
 	if e := execute(o); e != nil {
-		if o.OwnTSFDemoSmoke || o.Smoke || o.HostSmoke || o.Shot != "" || o.CheckData || o.CheckPackage {
+		if o.InstalledSmoke || o.OwnTSFDemoSmoke || o.Smoke || o.HostSmoke || o.Shot != "" || o.CheckData || o.CheckPackage {
 			fmt.Fprintln(os.Stderr, e)
 		} else {
 			showError(e)
@@ -81,6 +92,28 @@ func hasGeometryOptions(flags *flag.FlagSet) bool {
 }
 
 func execute(o options) error {
+	if o.InstalledTSF {
+		if o.OwnTSFDemo || o.OwnTSFDemoSmoke || o.Host || o.Preview || o.EnglishOnly || o.Smoke || o.HostSmoke || o.CheckData || o.CheckPackage || o.InputTrace != "" || o.Shot != "" || o.DataReport != "" || o.DataDir != "" || o.Root != "" || o.Profile != "" || o.BrokerPID == 0 || uint64(o.BrokerPID) > 0xffffffff {
+			return fmt.Errorf("installed TSF mode requires its runtime and cannot combine with lab execution modes")
+		}
+		if _, e := installed18uhost.VerifyDesktopInstallation(o.InstallRoot, o.ManifestSHA); e != nil {
+			return e
+		}
+		exe, e := os.Executable()
+		if e != nil {
+			return e
+		}
+		if !strings.EqualFold(filepath.Clean(exe), filepath.Join(o.InstallRoot, filepath.FromSlash(installed18uhost.FrontendPath))) {
+			return fmt.Errorf("frontend must run from the verified installed payload")
+		}
+		o.Root = filepath.Join(o.InstallRoot, "source")
+		o.Profile = filepath.Join(o.Root, "prototypes/touch-terminal/desktop/profiles/main-only.json")
+		o.TouchUI = true
+		return run(o)
+	}
+	if o.InstalledSmoke || o.InstallRoot != "" || o.ManifestSHA != "" || o.BrokerPID != 0 {
+		return fmt.Errorf("installed options require --installed-tsf")
+	}
 	if o.OwnTSFDemoSmoke && !o.OwnTSFDemo {
 		return fmt.Errorf("demo self-test requires --own-tsf-demo")
 	}

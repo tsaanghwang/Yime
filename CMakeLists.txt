@@ -63,7 +63,8 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/libIME2)
 add_subdirectory(${PROJECT_SOURCE_DIR}/PIMETextService)
 
 # only build the following components for 32-bit x86 platform
-if("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
+option(PIME_BUILD_LAUNCHER "Build the pinned Win32 Launcher with the Win32 surface" ON)
+if("${CMAKE_SIZEOF_VOID_P}" EQUAL "4" AND PIME_BUILD_LAUNCHER)
     # Pin the Rust toolchain to the 32-bit (i686) host so that host == target ==
     # i686-pc-windows-msvc (target set by PIMELauncher/.cargo/config.toml). This
     # AVOIDS cross-compilation: with an x86_64 host, Corrosion (even v0.6.1) leaks
@@ -81,4 +82,4 @@ if("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
     add_subdirectory(${PROJECT_SOURCE_DIR}/third_party/corrosion)
 
     add_subdirectory(${PROJECT_SOURCE_DIR}/PIMELauncher)
-endif("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
+endif()

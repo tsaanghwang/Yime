@@ -1,0 +1,121 @@
+{
+  "scope": "local workflow script and contract validation; remote workflow run pending push",
+  "pythonInlineSyntaxBlocks": 8,
+  "pythonModules": [
+    {
+      "module": "test_assemble_installed_18u",
+      "tests": 15,
+      "skipped": 1,
+      "passed": true
+    },
+    {
+      "module": "test_assemble_installed_18u_arm64",
+      "tests": 5,
+      "skipped": 0,
+      "passed": true
+    },
+    {
+      "module": "test_build_inputs",
+      "tests": 3,
+      "skipped": 0,
+      "passed": true
+    },
+    {
+      "module": "test_installed_18u_lifecycle",
+      "tests": 8,
+      "skipped": 0,
+      "passed": true
+    },
+    {
+      "module": "test_package_installed_18u",
+      "tests": 12,
+      "skipped": 0,
+      "passed": true
+    },
+    {
+      "module": "test_package_installed_18u_arm64",
+      "tests": 2,
+      "skipped": 0,
+      "passed": true
+    },
+    {
+      "module": "test_package_installed_18u_frontend",
+      "tests": 5,
+      "skipped": 0,
+      "passed": true
+    },
+    {
+      "module": "test_package_native_maintenance",
+      "tests": 4,
+      "skipped": 0,
+      "passed": true
+    }
+  ],
+  "pythonPassed": 53,
+  "pythonSkipped": 1,
+  "pythonSkipReason": "Existing local Windows symbolic-link privilege limitation; no acceptance claim; remote CI rejects all skips",
+  "powershellRuns": [
+    {
+      "file": "18u-architecture-contract-ps5.log",
+      "passed": true
+    },
+    {
+      "file": "18u-architecture-contract-ps7.log",
+      "passed": true
+    },
+    {
+      "file": "Test-18uArm64ElevationShell-ps7.log",
+      "passed": true
+    },
+    {
+      "file": "Test-18uUnregisterSequence-ps5.log",
+      "passed": true
+    },
+    {
+      "file": "Test-18uUnregisterSequence-ps7.log",
+      "passed": true
+    },
+    {
+      "file": "Test-Arm64Package-ps5.log",
+      "passed": true
+    },
+    {
+      "file": "Test-Arm64Package-ps7.log",
+      "passed": true
+    },
+    {
+      "file": "Test-FileAccess-ps5.log",
+      "passed": true
+    },
+    {
+      "file": "Test-FileAccess-ps7.log",
+      "passed": true
+    },
+    {
+      "file": "Test-Installed18uOwnership-ps5.log",
+      "passed": true
+    },
+    {
+      "file": "Test-Installed18uOwnership-ps7.log",
+      "passed": true
+    },
+    {
+      "file": "Test-PackageValidation-ps5.log",
+      "passed": true
+    },
+    {
+      "file": "Test-PackageValidation-ps7.log",
+      "passed": true
+    }
+  ],
+  "powershellPassCount": 13,
+  "nativeMaintenanceTestsPassed": 10,
+  "nativeMaintenanceTestsSkipped": 0,
+  "remoteCppBuildMatricesNotRunByThisLocalValidation": true,
+  "historicalLocalConfigurationAttempts": [
+    "The PS7-only elevation-shell contract was initially attempted under PS5 and then correctly scoped to PS7. Its original log remains Test-18uArm64ElevationShell-ps5.log.",
+    "The old installed descriptor fixture was plain text; fixed to actual version-one JSON.",
+    "Two lifecycle source assertions were updated to preserve v1 and explicitly cover v2 startup and independent Rime ARM64 architecture."
+  ],
+  "workflowSHA256": "ba4b0661afb5f3ef1b82601ff664a75e007bf8decaf8802d3f87f93d8ae85e47"
+}

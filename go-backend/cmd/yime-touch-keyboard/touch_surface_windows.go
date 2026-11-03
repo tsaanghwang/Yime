@@ -161,7 +161,7 @@ func (a *ui) touchLabels(k tk.Key, labels []string) []string {
 	case "reset":
 		if a.demo != nil {
 			name = "重绑"
-		} else if a.host == nil {
+		} else if a.host == nil && a.installed == nil {
 			name = "清空"
 		}
 	}
@@ -403,6 +403,12 @@ func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 		line += "  |  " + a.touchMessage
 	} else if a.demo != nil {
 		line += "  |  " + a.ownDemoOutput()
+	} else if a.installed != nil {
+		if a.installed.lease == "" {
+			line += "  |  选择18u输入法并在正文点光标，再点绑定"
+		} else {
+			line += "  |  已绑定18u TIP"
+		}
 	} else if a.host != nil {
 		if a.host.target.Window == 0 {
 			line += "  |  先在正文点光标，再点“绑定”"

@@ -40,34 +40,55 @@ type Commit struct {
 	Focus    Focus
 	Identity Identity
 	Text     string
+	Edit     *HostEdit
+}
+
+// HostEdit is an operation on the current TSF selection. It contains no target
+// window or document identity; the activated TIP owns and checks those values.
+type HostEdit struct {
+	Key   string `json:"key"`
+	Shift bool   `json:"shift,omitempty"`
+	Ctrl  bool   `json:"ctrl,omitempty"`
 }
 type Receipt struct {
 	ID      string
 	Outcome Outcome
 }
 type Action struct {
-	SessionID               string
-	Revision                uint64
-	Kind, Code, CandidateID string
-	Delta                   int
+	SessionID                  string
+	Revision                   uint64
+	Kind, Code, CandidateID    string
+	Delta                      int
+	InputMode, PunctuationMode string
+	Edit                       *HostEdit
 }
 
 // Session exclusively owns its runtime. It serializes mutations; callers must
 // not turn Pending into Applied merely because an edit was queued (TF_S_ASYNC).
 type Session struct {
-	mu       sync.Mutex
-	runtime  *keyboardlab.Runtime
-	identity Identity
-	focus    Focus
-	state    keyboardlab.Response
-	sequence uint64
-	receipt  Receipt
-	stopped  bool
+	mu            sync.Mutex
+	runtime       *keyboardlab.Runtime
+	identity      Identity
+	focus         Focus
+	state         keyboardlab.Response
+	sequence      uint64
+	receipt       Receipt
+	stopped       bool
+	desktop       bool
+	sharedRuntime bool
 }
 
 // Open validates all three experimental dictionaries using the existing loader,
 // then opens one mode. Each Session is isolated from installed product state.
 func Open(root, dataDir, mode string, focus Focus) (*Session, error) {
+	return open(root, dataDir, mode, focus, false)
+}
+
+func OpenDesktop(root, dataDir, mode string, focus Focus) (*Session, error) {
+	return open(root, dataDir, mode, focus, true)
+}
+
+func open(root, dataDir, mode string, focus Focus, desktop bool) (*Session, error) {
 	if focus.Context == "" || focus.Epoch == 0 {
 		return nil, errors.New("trusted focus context and nonzero epoch required")
 	}
@@ -75,13 +96,27 @@ func Open(root, dataDir, mode string, focus Focus) (*Session, error) {
 	if err != nil {
 		return nil, err
 	}
+	s, err := OpenDesktopRuntime(r, mode, focus)
+	if err != nil {
+		_ = r.Close()
+		return nil, err
+	}
+	s.desktop, s.sharedRuntime = desktop, false
+	return s, nil
+}
+
+// OpenDesktopRuntime shares immutable mapped indexes across focused TIP
+// sessions. The broker owns their lifetime; every composition stays separate.
+func OpenDesktopRuntime(r *keyboardlab.Runtime, mode string, focus Focus) (*Session, error) {
+	if r == nil || focus.Context == "" || focus.Epoch == 0 {
+		return nil, errors.New("runtime and trusted focus required")
+	}
 	reply := r.Sessions.Open(mode, r.LayoutID)
 	state, err := reply.Decode()
 	if err != nil || reply.Status != 200 || !state.OK {
-		_ = r.Close()
 		return nil, errors.New("cannot open isolated mode session")
 	}
-	return &Session{runtime: r, identity: Identity{r.LayoutID, r.Builds[mode].SourceSHA256, mode, keyboardlab.SessionPolicy}, focus: focus, state: state}, nil
+	return &Session{runtime: r, identity: Identity{r.LayoutID, r.Builds[mode].SourceSHA256, mode, keyboardlab.SessionPolicy}, focus: focus, state: state, desktop: true, sharedRuntime: true}, nil
 }
 func (s *Session) Identity() Identity { s.mu.Lock(); defer s.mu.Unlock(); return s.identity }
 
@@ -126,12 +161,38 @@ func (s *Session) Dispatch(identity Identity, focus Focus, a Action) (*Commit, e
 	}
 	switch a.Kind {
 	case "input", "backspace", "clear", "page", "select":
+	case "literal", "symbol", "setModes", "flushSymbols":
+		if !s.desktop {
+			return nil, errors.New("unsupported first-phase action")
+		}
+	case "hostEdit":
+		if !s.desktop || s.state.State.RawInput != "" || s.state.PendingMiddleDots != 0 || a.Edit == nil || a.Code != "" || a.CandidateID != "" || a.Delta != 0 || a.InputMode != "" || a.PunctuationMode != "" {
+			return nil, errors.New("host editing requires empty composition and an edit action")
+		}
+		if err := ValidateHostEdit(*a.Edit); err != nil {
+			return nil, err
+		}
+		s.sequence++
+		id := fmt.Sprintf("%s/edit-%d", s.state.SessionID, s.sequence)
+		reply := s.runtime.Sessions.Dispatch(keyboardlab.Event{SessionID: s.state.SessionID, EventID: id, BaseRevision: s.state.Revision, Type: "flushSymbols"})
+		next, err := reply.Decode()
+		if err != nil || reply.Status != 200 || !next.OK || next.Commit != "" || next.Revision != s.state.Revision+1 {
+			s.stopped = true
+			return nil, errors.New("host edit revision preparation failed; no replay")
+		}
+		s.state = next
+		s.receipt = Receipt{id, Pending}
+		edit := *a.Edit
+		return &Commit{ID: id, Focus: s.focus, Identity: s.identity, Edit: &edit}, nil
 	default:
 		return nil, errors.New("unsupported first-phase action")
 	}
+	if a.Edit != nil {
+		return nil, errors.New("edit fields require hostEdit")
+	}
 	s.sequence++
 	id := fmt.Sprintf("bridge-%d", s.sequence)
-	e := keyboardlab.Event{SessionID: s.state.SessionID, EventID: id, BaseRevision: a.Revision, Type: a.Kind, Code: a.Code, Delta: a.Delta, CandidateID: a.CandidateID}
+	e := keyboardlab.Event{SessionID: s.state.SessionID, EventID: id, BaseRevision: a.Revision, Type: a.Kind, Code: a.Code, Delta: a.Delta, CandidateID: a.CandidateID, InputMode: a.InputMode, PunctuationMode: a.PunctuationMode}
 	reply := s.runtime.Sessions.Dispatch(e)
 	next, err := reply.Decode()
 	if err != nil || next.SessionID != s.state.SessionID {
@@ -153,7 +214,25 @@ func (s *Session) Dispatch(identity Identity, focus Focus, a Action) (*Commit, e
 	}
 	commitID := s.state.SessionID + "/" + id
 	s.receipt = Receipt{commitID, Pending}
-	return &Commit{commitID, s.focus, s.identity, text}, nil
+	return &Commit{ID: commitID, Focus: s.focus, Identity: s.identity, Text: text}, nil
+}
+
+func ValidateHostEdit(e HostEdit) error {
+	switch e.Key {
+	case "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "PageUp", "PageDown":
+		return nil
+	case "Backspace", "Delete":
+		return nil
+	case "Enter", "Tab":
+		if !e.Ctrl {
+			return nil
+		}
+	case "SelectAll", "Copy", "Cut", "Paste":
+		if !e.Ctrl && !e.Shift {
+			return nil
+		}
+	}
+	return errors.New("unsupported TSF edit operation")
 }
 
 // Complete is an in-process trusted-host adapter operation, never a public
@@ -186,4 +265,14 @@ func (s *Session) stop() {
 		s.receipt.Outcome = Unknown
 	}
 }
-func (s *Session) Close() error { s.mu.Lock(); defer s.mu.Unlock(); s.stop(); return s.runtime.Close() }
+func (s *Session) Close() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.stop()
+	if s.sharedRuntime {
+		s.sequence++
+		s.runtime.Sessions.Dispatch(keyboardlab.Event{SessionID: s.state.SessionID, EventID: fmt.Sprintf("bridge-close-%d", s.sequence), BaseRevision: s.state.Revision, Type: "close"})
+		return nil
+	}
+	return s.runtime.Close()
+}

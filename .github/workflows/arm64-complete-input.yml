@@ -1,0 +1,320 @@
+name: ARM64 complete input contracts
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, 'codex/**']
+    paths:
+      - '.github/workflows/arm64-complete-input.yml'
+      - 'go-backend/**'
+      - 'installer/simple/**'
+      - 'YimeTextServiceExperiment/**'
+      - 'PIMETextService/**'
+      - 'libIME/**'
+      - 'CMakeLists.txt'
+      - 'tools/yimecore/**'
+      - 'tools/rime-pime/**'
+      - 'tools/powershell/**'
+      - 'tools/touch_keyboard_resources.py'
+      - 'prototypes/touch-terminal/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/arm64-complete-input.yml'
+      - 'go-backend/**'
+      - 'installer/simple/**'
+      - 'YimeTextServiceExperiment/**'
+      - 'PIMETextService/**'
+      - 'libIME/**'
+      - 'CMakeLists.txt'
+      - 'tools/yimecore/**'
+      - 'tools/rime-pime/**'
+      - 'tools/powershell/**'
+      - 'tools/touch_keyboard_resources.py'
+      - 'prototypes/touch-terminal/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event_name == 'workflow_dispatch' && github.run_id || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+
+defaults:
+  run:
+    shell: python {0}
+
+jobs:
+  contracts:
+    runs-on: windows-2022
+    timeout-minutes: 25
+    env:
+      GOTOOLCHAIN: local
+      CGO_ENABLED: '0'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go-backend/go.mod
+          cache: false
+      - name: Record source-only scope
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          import json, os, pathlib
+          out = pathlib.Path('.generated/complete-input-evidence')
+          out.mkdir(parents=True)
+          (out / 'scope.json').write_text(json.dumps({
+              'sourceCommit': os.environ['SOURCE_SHA'], 'host': 'windows-2022 amd64',
+              'scope': 'unit, synthetic maintenance and full-resource offline engine tests',
+              'installed': False, 'registrationExecuted': False, 'registeredHostExecuted': False,
+              'nativeARM64Execution': False, 'physicalAcceptance': False,
+              'excludedOptInHostTests': ['TestNativeFormal18uTIP', 'TestNativeRegisteredFormal18uTIP',
+                  'TestNativeOwnTSFCommit', 'TestTouchBridgePersistentOwnHostUI']}, indent=2), encoding='utf-8')
+      - name: Run current Python installer and complete frontend packaging contracts
+        run: |
+          import importlib, io, pathlib, sys, unittest
+          root = pathlib.Path.cwd()
+          groups = {
+              'tools/yimecore': ['test_assemble_installed_18u', 'test_assemble_installed_18u_arm64',
+                  'test_package_installed_18u', 'test_package_installed_18u_arm64',
+                  'test_package_installed_18u_frontend', 'test_installed_18u_lifecycle'],
+              'tools/rime-pime': ['test_build_inputs', 'test_package_native_maintenance']}
+          for directory, modules in groups.items():
+              sys.path.insert(0, str(root / directory))
+              for name in modules:
+                  suite = unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module(name))
+                  stream = io.StringIO()
+                  result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
+                  (root / '.generated/complete-input-evidence' / (name + '.log')).write_text(stream.getvalue(), encoding='utf-8')
+                  print(stream.getvalue())
+                  if not result.testsRun or result.skipped or not result.wasSuccessful():
+                      raise SystemExit('Mandatory Python contracts failed or skipped: ' + name)
+      - name: Run package, architecture, ownership and file access contracts without installation
+        run: |
+          import pathlib, subprocess, sys
+          scripts = [
+              'installer/simple/Test-Arm64Package.ps1',
+              'installer/simple/Test-PackageValidation.ps1',
+              'installer/simple/tests/18u-architecture-contract.ps1',
+              'installer/simple/tests/Test-18uArm64ElevationShell.ps1',
+              'installer/simple/tests/Test-Installed18uOwnership.ps1',
+              'installer/simple/tests/Test-FileAccess.ps1',
+              'installer/simple/tests/Test-18uUnregisterSequence.ps1']
+          for edition in ('ps5', 'ps7'):
+              for script in scripts:
+                  # This contract deliberately requires its current PS7 process.
+                  if edition == 'ps5' and script.endswith('Test-18uArm64ElevationShell.ps1'):
+                      continue
+                  log = pathlib.Path('.generated/complete-input-evidence') / (pathlib.Path(script).stem + '-' + edition + '.log')
+                  with log.open('w', encoding='utf-8') as stream:
+                      result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py',
+                          '--edition', edition, '--script', script], stdout=stream, stderr=subprocess.STDOUT, timeout=180)
+                  print(log.read_text(encoding='utf-8'))
+                  if result.returncode:
+                      raise SystemExit('PowerShell isolated contract failed: ' + str(log))
+      - name: Restore exact locked CN134 full resources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import pathlib, subprocess, sys
+          log = pathlib.Path('.generated/complete-input-evidence/resources.log')
+          with log.open('w', encoding='utf-8') as stream:
+              result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/touch_keyboard_resources.py',
+                  'fetch', '--output-dir', '.generated/ascii-keyboard-134/data'], stdout=stream, stderr=subprocess.STDOUT, timeout=300)
+          print(log.read_text(encoding='utf-8'))
+          if result.returncode:
+              raise SystemExit('Locked resources unavailable; no substituted dictionaries')
+      - name: Require maintenance and complete three-mode frontend Go regressions
+        run: |
+          import json, os, pathlib, subprocess
+          root = pathlib.Path.cwd()
+          env = os.environ.copy()
+          env['YIME_18U_FULL_DATA'] = str(root / '.generated/ascii-keyboard-134/data')
+          groups = [
+              ('core', ['./cmd/yime-maintenance', './cmd/yimecore-trial-runtime', './cmd/yimebroker-18u',
+                  './internal/touchbroker', './internal/touchhostbridge', './internal/installed18uhost',
+                  './internal/touchkeyboard', './internal/asciicodemode'],
+                  '^(TestNativeFormal18uTIP|TestNativeRegisteredFormal18uTIP|TestNativeOwnTSFCommit)$', [],
+                  {'TestFullResourceDedicatedBroker', 'TestDesktopFullResourcesThreeModes',
+                   'TestInterruptedStagingCanRetrySamePlan', 'TestLockedFilesAndAncestorsDenyReplacement'}),
+              ('touch', ['./cmd/yime-touch-keyboard'], '^TestTouchBridgePersistentOwnHostUI$',
+                  ['-args', '-desktop-preview-integration-root', str(root)], {'TestPreviewCompleteCorpus'})]
+          for name, packages, excluded, arguments, required in groups:
+              log = root / '.generated/complete-input-evidence' / (name + '-go.jsonl')
+              with log.open('w', encoding='utf-8') as stream:
+                  result = subprocess.run(['go', 'test', '-count=1', '-json', '-timeout=240s', '-skip', excluded,
+                      *packages, *arguments], cwd=root / 'go-backend', env=env, stdout=stream, stderr=subprocess.STDOUT, timeout=600)
+              events = [json.loads(line) for line in log.read_text(encoding='utf-8').splitlines() if line.strip()]
+              passed = {e['Test'] for e in events if e.get('Action') == 'pass' and 'Test' in e}
+              if result.returncode or any(e.get('Action') in ('skip', 'fail') for e in events) or not required.issubset(passed):
+                  print(log.read_text(encoding='utf-8'))
+                  raise SystemExit('Required Go tests failed, skipped or missing: ' + name)
+              print(name + ': passed ' + str(len(passed)) + ' tests/subtests; no executed test skipped')
+      - name: Preserve contract evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: complete-input-contracts-${{ github.sha }}
+          path: .generated/complete-input-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  native-18u:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: x64
+            goarch: amd64
+          - platform: ARM64
+            goarch: arm64
+    env:
+      GOTOOLCHAIN: local
+      CGO_ENABLED: '0'
+      PLATFORM: ${{ matrix.platform }}
+      GOARCH: ${{ matrix.goarch }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go-backend/go.mod
+          cache: false
+      - name: Compile complete frontend and installed-host targets without registration
+        run: |
+          import json, os, pathlib, subprocess
+          root = pathlib.Path.cwd()
+          out = root / '.generated/complete-input-native'
+          evidence = out / 'evidence'
+          evidence.mkdir(parents=True)
+          build = out / 'cpp'
+          targets = ['YimeTextService18u', 'Yime18uProductRegistration', 'YimeTouchRegisteredFormalHostTests',
+              'YimeTouchInstalledFrontendHostTests', 'YimeTouchFormalHostTests', 'YimeDedicatedActivationTests',
+              'YimeDedicatedAsyncTests', 'YimeFormalInputSequenceTests', 'Yime18uProductRegistrationPolicyTests',
+              'Yime18uArchitectureContractTests', 'Yime18uInputAbortDiagnosticTests', 'Yime18uActionFailureObservationTests']
+          jobs = [(['cmake', '-S', 'YimeTextServiceExperiment', '-B', str(build), '-G', 'Visual Studio 17 2022',
+              '-A', os.environ['PLATFORM'], '-DYIME_TOUCH_PRODUCT=ON', '-DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON',
+              '-DYIME_18U_PRODUCT_REGISTRATION=ON'], 'configure'),
+              (['cmake', '--build', str(build), '--config', 'Release', '--parallel', '4', '--target', *targets], 'cpp-build')]
+          for name, package, flags in [('Yime18uInstalledRuntime', './cmd/yimecore-trial-runtime', ['-ldflags=-X main.installed18uOnly=1']),
+                  ('YimeBroker18u', './cmd/yimebroker-18u', []), ('YimeTouchKeyboard', './cmd/yime-touch-keyboard', []),
+                  ('YimeMaintenance-unbound', './cmd/yime-maintenance', [])]:
+              jobs.append((['go', '-C', 'go-backend', 'build', '-trimpath', *flags, '-o', str(out / (name + '.exe')), package], name))
+          for command, name in jobs:
+              with (evidence / (name + '.log')).open('w', encoding='utf-8') as stream:
+                  result = subprocess.run(command, stdout=stream, stderr=subprocess.STDOUT, timeout=600)
+              if result.returncode:
+                  print((evidence / (name + '.log')).read_text(encoding='utf-8'))
+                  raise SystemExit('Compilation failed: ' + name)
+          # Only pure policy/serializer tests execute. Registrar and registered-host
+          # binaries are compiled, never run; ARM64 files are cross-build evidence.
+          pure = ['YimeFormalInputSequenceTests', 'Yime18uProductRegistrationPolicyTests',
+              'Yime18uArchitectureContractTests', 'Yime18uInputAbortDiagnosticTests', 'Yime18uActionFailureObservationTests']
+          if os.environ['PLATFORM'] == 'x64':
+              for name in pure:
+                  with (evidence / (name + '.log')).open('w', encoding='utf-8') as stream:
+                      result = subprocess.run([str(build / 'Release' / (name + '.exe'))], stdout=stream, stderr=subprocess.STDOUT, timeout=60)
+                  if result.returncode:
+                      raise SystemExit('Native pure test failed: ' + name)
+          (evidence / 'scope.json').write_text(json.dumps({'platform': os.environ['PLATFORM'],
+              'targets': targets, 'pureTestsExecuted': pure if os.environ['PLATFORM'] == 'x64' else [],
+              'registeredHostExecuted': False, 'registrationExecuted': False, 'installed': False,
+              'nativeARM64Execution': False, 'maintenanceEntryUnboundAndNotDeliverable': True}, indent=2), encoding='utf-8')
+      - if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: complete-input-18u-${{ matrix.platform }}-${{ github.sha }}
+          path: .generated/complete-input-native/evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  native-rime:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [Win32, x64, ARM64]
+    env:
+      PLATFORM: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Compile independent PIME surfaces and verify native ABI without registration
+        run: |
+          import json, os, pathlib, subprocess
+          root = pathlib.Path.cwd()
+          out = root / '.generated/complete-input-pime'
+          evidence = out / 'evidence'
+          evidence.mkdir(parents=True)
+          build = out / 'native'
+          configure = ['cmake', '-S', '.', '-B', str(build), '-G', 'Visual Studio 17 2022', '-A', os.environ['PLATFORM'],
+              '-DPIME_BUILD_LAUNCHER=OFF', '-DCMAKE_CONFIGURATION_TYPES=Release']
+          if os.environ['PLATFORM'] == 'ARM64':
+              configure += ['-DPIME_ARM64X_STAGE=ARM64']
+          jobs = [(configure, 'configure'), (['cmake', '--build', str(build), '--config', 'Release', '--parallel', '4',
+              '--target', 'PIMETextService', 'PIMERegistrationStatus', 'PIMERpcResponseTests', 'PIMEAbiLoadTests'], 'build')]
+          if os.environ['PLATFORM'] == 'ARM64':
+              ec = out / 'ec'
+              jobs += [(['cmake', '-S', '.', '-B', str(ec), '-G', 'Visual Studio 17 2022', '-A', 'ARM64EC',
+                  '-DPIME_BUILD_LAUNCHER=OFF', '-DPIME_ARM64X_STAGE=ARM64EC', '-DCMAKE_CONFIGURATION_TYPES=Release',
+                  '-DPIME_ARM64X_NATIVE_LINK_RSP=' + str(build / 'PIMETextService/arm64x/PIMETextService.rsp')], 'configure-ec'),
+                  (['cmake', '--build', str(ec), '--config', 'Release', '--parallel', '4', '--target', 'PIMETextService'], 'build-arm64x')]
+          else:
+              release = build / 'PIMETextService/Release'
+              jobs += [([str(release / 'PIMERpcResponseTests.exe')], 'rpc'),
+                  ([str(release / 'PIMEAbiLoadTests.exe'), str(release / 'PIMETextService.dll')], 'abi-load')]
+          for command, name in jobs:
+              with (evidence / (name + '.log')).open('w', encoding='utf-8') as stream:
+                  result = subprocess.run(command, stdout=stream, stderr=subprocess.STDOUT, timeout=600)
+              if result.returncode:
+                  print((evidence / (name + '.log')).read_text(encoding='utf-8'))
+                  raise SystemExit('PIME surface step failed: ' + name)
+          (evidence / 'scope.json').write_text(json.dumps({'platform': os.environ['PLATFORM'],
+              'registrationExecuted': False, 'installed': False, 'nativeARM64Execution': False,
+              'abiLoadExecuted': os.environ['PLATFORM'] != 'ARM64',
+              'launcherExcludedFromSurfaceBuild': True, 'pinnedRustMainCIRemainsRequired': True}, indent=2), encoding='utf-8')
+      - if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: complete-input-pime-${{ matrix.platform }}-${{ github.sha }}
+          path: .generated/complete-input-pime/evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  complete-input:
+    if: always()
+    needs: [contracts, native-18u, native-rime]
+    runs-on: windows-2022
+    steps:
+      - name: Require all current source gates
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          import json, os
+          results = json.loads(os.environ['NEEDS_JSON'])
+          if len(results) != 3 or any(row['result'] != 'success' for row in results.values()):
+              raise SystemExit('Complete-input source checks did not all succeed: ' + str(results))
+          print('PASS complete-input source contracts. Installation and registered/live host acceptance remain separate.')

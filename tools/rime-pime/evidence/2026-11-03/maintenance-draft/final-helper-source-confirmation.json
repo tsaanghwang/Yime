@@ -1,0 +1,39 @@
+{
+  "currentSourceBuildSHA256": "60aad491d385bb060433a536b856de4413125ca8eceeb21bb0d763e6526e4dec",
+  "packagedSHA256": "60aad491d385bb060433a536b856de4413125ca8eceeb21bb0d763e6526e4dec",
+  "sameBytes": true,
+  "sourceFiles": {
+    "main.go": {
+      "bytes": 5687,
+      "sha256": "c26447e80c1e43c58d6ad1c28f4528d6ecef1824eb18771245aa18711c269d1e"
+    },
+    "main_other.go": {
+      "bytes": 192,
+      "sha256": "f703a2d5a1143432adda3390ec14d3d50578a221bc292909d5e213b232af4eb3"
+    },
+    "main_test.go": {
+      "bytes": 2671,
+      "sha256": "e33e838e36d02fc49a8fb3019d4d9d8e026b663e48af543774693ed06922ce00"
+    },
+    "main_windows.go": {
+      "bytes": 15470,
+      "sha256": "5105c49e0d92f65b78f57db0f4c3f77de1b73f1ae69353e32b842f9fc76a9657"
+    },
+    "staging.go": {
+      "bytes": 2991,
+      "sha256": "b0d91a1dbf893878dfb328b1b532900c2d0e8ca085834ad7e9dd34d6b3c91a77"
+    },
+    "staging_test.go": {
+      "bytes": 3907,
+      "sha256": "4c3c1c168b51683c2c159bbc29facb7dbffcfae560d3d1303f3985a43083c5b2"
+    },
+    "staging_windows.go": {
+      "bytes": 5418,
+      "sha256": "c77881f86cd38b0632ca74bee401d4500bb18f7e4b4abafadb0b0d226d2f5eaa"
+    },
+    "staging_windows_test.go": {
+      "bytes": 3085,
+      "sha256": "8a16152c2b63de670ae13f1c43558b114f7697992c755fde878c9813c057b3b3"
+    }
+  }
+}

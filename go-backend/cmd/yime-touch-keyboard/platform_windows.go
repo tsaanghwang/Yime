@@ -86,6 +86,7 @@ type input struct {
 	Data [32]byte
 }
 type ui struct {
+	installed           *installedPreviewSessions
 	demo                *ownDemo
 	h                   uintptr
 	s                   *tk.State
@@ -146,6 +147,12 @@ const keyboardWindowStyle = 0x800A0000   // POPUP | SYSMENU | MINIMIZEBOX
 
 var focusCallback = syscall.NewCallback(func(hook, event, hwnd, object, child, thread, tick uintptr) uintptr {
 	a := active
+	if a != nil && a.installed != nil {
+		if a.installed.lease != "" && int32(uint32(tick)-a.focusStarted) >= 0 {
+			a.invalidateInstalled("焦点已变化；请重新绑定18u输入法")
+		}
+		return 0
+	}
 	if a != nil && a.host != nil {
 		if a.host.target.Window != 0 && int32(uint32(tick)-a.focusStarted) >= 0 {
 			a.loseHostFocus("焦点已变化；未确认组合已取消，请重新绑定目标")
@@ -241,9 +248,14 @@ func run(o options) error {
 		defer a.inputTrace.file.Close()
 		a.traceInput("start", 0, 0, 0)
 	}
-	if o.Preview || o.Host || o.OwnTSFDemo {
+	if o.Preview || o.Host || o.OwnTSFDemo || o.InstalledTSF {
 		var err error
-		if o.OwnTSFDemo {
+		if o.InstalledTSF {
+			if err = a.initInstalled(); err != nil {
+				return err
+			}
+			defer a.installed.client.Close()
+		} else if o.OwnTSFDemo {
 			if err = a.initOwnDemo(); err != nil {
 				return err
 			}
@@ -269,6 +281,9 @@ func run(o options) error {
 		a.status = "中文预览：输出仅在下方文本区；无系统输入。鼠标/模拟检查不代表手指或笔验收。"
 		if a.demo != nil {
 			a.status = "独立 TSF 自有宿主演示；先显式重绑；非安装输入法"
+		}
+		if a.installed != nil {
+			a.status = "请在目标应用选择音元拼音18u并放置光标，再点绑定；由TSF写入"
 		}
 		fontPath, err := filepath.Abs(filepath.Join(o.Root, "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf"))
 		if err != nil {
@@ -304,6 +319,9 @@ func run(o options) error {
 	}
 	if o.Host {
 		title = "Yime 18u 中文宿主输入实验"
+	}
+	if o.InstalledTSF {
+		title = "音元拼音18u — 已安装TSF触屏键盘"
 	}
 	if o.OwnTSFDemo {
 		title = "Yime 18u 独立 TSF 自有宿主演示（非安装输入法）"
@@ -355,7 +373,7 @@ func run(o options) error {
 	if a.keyFont == 0 {
 		return fmt.Errorf("无法创建键面字体")
 	}
-	if o.Preview || o.Host || o.OwnTSFDemo {
+	if o.Preview || o.Host || o.OwnTSFDemo || o.InstalledTSF {
 		glyphHeight := -int32(math.Round(tk.UnitMM * ppm * 0.23))
 		a.glyphFont, _, _ = G("CreateFontW").Call(uintptr(glyphHeight), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("YinYuan")))
 		if a.glyphFont == 0 {
@@ -396,6 +414,9 @@ func run(o options) error {
 	}
 	if o.OwnTSFDemoSmoke {
 		return a.ownDemoSmoke()
+	}
+	if o.InstalledSmoke {
+		return a.installedSmoke()
 	}
 	if o.Smoke {
 		return a.smoke(instance)
@@ -567,6 +588,9 @@ func (a *ui) toolbar(x, y int32) {
 	a.invalidate()
 }
 func (a *ui) showHelp() {
+	if a.installed != nil && !a.touchHelpOpen {
+		a.closeInstalledLease("帮助已打开；请重新绑定")
+	}
 	if a.o.TouchUI {
 		// Do not enter a native modal loop from a touch/pen UP callback.
 		if !a.touchHelpOpen && a.host != nil {
@@ -592,6 +616,9 @@ func (a *ui) showHelp() {
 	U("MessageBoxW").Call(a.h, ptr(str(help)), ptr(str("Yime 桌面键盘使用帮助")), 0x00040040)
 }
 func (a *ui) suspendForMinimize() {
+	if a.installed != nil {
+		a.closeInstalledLease("键盘已最小化；恢复后重新绑定")
+	}
 	if a.demo != nil {
 		a.invalidateOwnDemo()
 	}
@@ -677,6 +704,10 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 			return 0
 		}
 	case 0x0002:
+		if a.installed != nil {
+			a.installed.client.Close()
+			a.invalidateInstalled("键盘已关闭")
+		}
 		if a.demo != nil {
 			U("KillTimer").Call(h, ownDemoTimer)
 			a.closeOwnDemo()
@@ -709,6 +740,9 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 		a.paint()
 		return 0
 	case 0x007E, 0x02E0:
+		if a.installed != nil {
+			a.closeInstalledLease("显示环境已变化；请重新绑定")
+		}
 		if a.host != nil {
 			a.loseHostFocus("显示环境已变化；请复核后重新绑定")
 		}

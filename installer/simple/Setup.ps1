@@ -1,7 +1,8 @@
 ﻿[CmdletBinding()]
 param([ValidateSet('Install','Uninstall','Check')][string]$Action='Install',
     [switch]$ResetData,[switch]$Silent,[string]$InitiatingSid,
-    [ValidatePattern('^[a-f0-9]{32}$')][string]$LogId)
+    [ValidatePattern('^[a-f0-9]{32}$')][string]$LogId,
+    [string]$NativeMaintenanceRoot,[string]$NativeMaintenanceSHA256,[string]$NativeMaintenancePlanSHA256)
 $ErrorActionPreference='Stop';Set-StrictMode -Version 2.0
 function Wait-SetupExit([Diagnostics.Process]$Process){
     # Hold the process handle while waiting for this process, not its descendants.
@@ -30,11 +31,22 @@ if($installedEntry){
 }else{$package=Read-Package $PSScriptRoot}
 $product=$package.product
 $contract=$package.contract
+$full18u=$false
+if($product.id -ceq 'yimecore-18u'){
+    $descriptorPath=if($installedEntry){Join-Path ([IO.Path]::GetDirectoryName($PSScriptRoot)) 'installed-18u-product.json'}else{Join-Path $PSScriptRoot 'payload/installed-18u-product.json'}
+    $full18u=((Get-Content -LiteralPath $descriptorPath -Raw -Encoding UTF8|ConvertFrom-Json).schema -ceq 'installed-18u-product-v2')
+}
 Assert-PackageHost $contract
 if($Action -eq 'Check'){Write-Output ('PASS: package files, required binaries and native host '+$contract.target);exit 0}
-$setupShell=Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+$setupShell=Get-SetupShell $product $contract ([Diagnostics.Process]::GetCurrentProcess().MainModule.FileName) $PSVersionTable.PSVersion.Major
 $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value
 if($InitiatingSid -and $InitiatingSid -cne $sid){throw 'Run with the same Windows account that started setup'}
+if($InitiatingSid -and -not $administrator){throw 'Elevated setup did not receive an administrator token'}
+$nativeMaintenance=''
+if($product.id -in @('yimecore-18u','rime-pime') -and $contract.target -ceq 'windows-arm64' -and $Action -in @('Install','Uninstall')){
+    if(-not $administrator -or -not $InitiatingSid){throw 'ARM64 maintenance requires the same-account elevated native entry'}
+    $nativeMaintenance=Assert-NativeMaintenanceEntry $package $NativeMaintenanceRoot $NativeMaintenanceSHA256 $NativeMaintenancePlanSHA256
+}
 if(-not $administrator){
     $stage='UAC elevation'
     Write-Output ('Elevated setup log: '+(Join-Path $logRoot ($LogId+'.admin.log')))
@@ -47,10 +59,13 @@ if(-not $administrator){
 }
 $stage='installed product ownership check'
 $root=Join-Path $env:ProgramFiles $product.directory
-$state=if($product.id -eq 'yimecore'){Join-Path $env:LOCALAPPDATA $product.state}else{Join-Path $env:APPDATA $product.state}
+$state=if($product.id -in @('yimecore','yimecore-18u')){Join-Path $env:LOCALAPPDATA $product.state}else{Join-Path $env:APPDATA $product.state}
 $root=Assert-PlainPath $root;$state=Assert-PlainPath $state
 if($installedEntry -and [IO.Path]::GetDirectoryName($PSScriptRoot) -ine $root){throw 'Uninstaller is outside this product directory'}
 Assert-OwnedDirectory $root $product.id $contract.target
+if($product.id -eq 'yimecore-18u' -and (Test-Path -LiteralPath (Join-Path $root '.yime-product.json'))){
+    Assert-Installed18uOwnership $root
+}
 # Never replace a different installation using the same CLSID implicitly.
 $hasRegistration=$false
 foreach($view in @('Registry64','Registry32')){
@@ -65,7 +80,18 @@ function Run-Native([string]$Path,[string[]]$Arguments){
     if($LASTEXITCODE -ne 0){throw ('Native operation failed: '+[IO.Path]::GetFileName($Path)+' ('+$LASTEXITCODE+')')}
 }
 function Set-Registration([bool]$Install,[string]$Payload){
-    if($product.id -eq 'yimecore'){
+    if($product.id -eq 'yimecore-18u'){
+        $tool=Join-Path $Payload ($contract.nativeDirectory+'\Yime18uProductRegistration.exe')
+        $dll=Join-Path $root ($contract.nativeDirectory+'\'+$product.dll)
+        if($Install){Run-Native $tool @('register',$dll)}else{
+            # TSF APIs can cache pre-removal categories/profiles in one process.
+            # First remove the owned TIP, then finish COM removal in a fresh process.
+            # Both phases verify ownership; final API absence is never bypassed.
+            Run-Native $tool @('unregister-tip',$dll)
+            Run-Native $tool @('unregister',$dll)
+            Run-Native $tool @('verify-absent')
+        }
+    }elseif($product.id -eq 'yimecore'){
         if($Install){
             # ARM64 and x64 hosts share Registry64 on Windows ARM. Register the
             # merged ARM64X DLL once; only x86 has a separate COM view.
@@ -75,7 +101,7 @@ function Set-Registration([bool]$Install,[string]$Payload){
             foreach($arch in @('x86',$contract.nativeDirectory)){Run-Native (Join-Path $Payload ($arch+'\YimeTextServiceRegistration.exe')) @('unregister')}
         }
     }else{
-        foreach($arch in @('x86','x64')){
+        foreach($arch in @('x86',$contract.nativeDirectory)){
             $regsvr=Join-Path $env:SystemRoot $(if($arch -eq 'x86'){'SysWOW64\regsvr32.exe'}else{'System32\regsvr32.exe'})
             $args='/s';if(-not $Install){$args+=' /u'}
             $args+=' "'+(Join-Path $Payload ($arch+'\'+$product.dll))+'"'
@@ -83,6 +109,16 @@ function Set-Registration([bool]$Install,[string]$Payload){
             if($registration.ExitCode -ne 0){throw ('Native registration failed: '+$arch+' ('+$registration.ExitCode+')')}
         }
     }
+}
+# Independent 18u must prove ownership before stopping processes or removing TIP.
+# A matching DLL path alone is not installation ownership.
+if($product.id -eq 'yimecore-18u'){
+    if($ResetData){throw '18u maintenance preserves user data; explicit reset is not part of this slice'}
+    $registrationTool=Join-Path $package.root $(if($installedEntry){'native\'+$contract.nativeDirectory+'\Yime18uProductRegistration.exe'}else{'payload\'+$contract.nativeDirectory+'\Yime18uProductRegistration.exe'})
+    if($hasRegistration){
+        if(-not (Test-Path -LiteralPath (Join-Path $root '.yime-product.json'))){throw 'Existing 18u registration has no owned installation marker; stop without uninstalling'}
+        Run-Native $registrationTool @('check-owned',(Join-Path $root ($contract.nativeDirectory+'\'+$product.dll)))
+    }else{Run-Native $registrationTool @('verify-absent')}
 }
 Add-Type @'
 using System.Runtime.InteropServices;
@@ -144,9 +180,9 @@ $stage='stop selected product background programs'
     # Registration tools run from the new package even after an interrupted copy.
     $stage='unregister selected product'
     # Remove the user profile before its COM server; refusal must keep both files and registration.
-    if(-not [SimpleInputProfile]::InstallLayoutOrTip($tip,1)){throw 'Could not remove the input profile; product files and COM registration were kept'}
+    if(($product.id -ne 'yimecore-18u' -or $hasRegistration) -and -not [SimpleInputProfile]::InstallLayoutOrTip($tip,1)){throw 'Could not remove the input profile; product files and COM registration were kept'}
     if($hasRegistration){Set-Registration $false (Join-Path $package.root $(if($installedEntry){'native'}else{'payload'}))}
-    Set-UserStartup ''
+    if($product.id -ne 'yimecore-18u' -or $full18u){Set-UserStartup ''}
     $stage='remove selected product files'
     Remove-ProductDirectory $root $product.id
     if($ResetData -and (Test-Path -LiteralPath $state)){Remove-Item -LiteralPath (Assert-PlainPath $state) -Recurse -Force}
@@ -171,20 +207,35 @@ $stage='stop selected product background programs'
     $null=[IO.Directory]::CreateDirectory($state)
     $exe=Join-Path $root $product.exe
     $arguments=if($product.id -eq 'yimecore'){'-install-root "{0}" -state-root "{1}"' -f $root,$state}else{''}
+    if($full18u){
+        $manifestHash=Get-ContentHash (Join-Path $root 'installed-18u-product.json')
+        $arguments='--installed-18u-run --install-root "{0}" --manifest-sha256 {1}' -f $root,$manifestHash
+    }
     if($product.id -eq 'yimecore'){
         [IO.File]::WriteAllText((Join-Path $state 'runtime-config.json'),(@{install_root=$root;state_root=$state;runtime_path=$exe;broker_path=(Join-Path $root 'bin\YimeBroker.exe')}|ConvertTo-Json),[Text.UTF8Encoding]::new($false))
     }
     $stage='write user startup and uninstall entry'
-    Set-UserStartup ('"'+$exe+'" '+$arguments)
+    if($product.id -ne 'yimecore-18u' -or $full18u){Set-UserStartup ('"'+$exe+'" '+$arguments)}
     # Small installed uninstaller; no downloaded package or recovery archive required.
     $key=[Microsoft.Win32.Registry]::LocalMachine.CreateSubKey($uninstallKey)
     try{
         $key.SetValue('DisplayName',$product.name);$key.SetValue('DisplayVersion',$package.manifest.version)
         $key.SetValue('InstallLocation',$root)
-        $key.SetValue('UninstallString',('"'+$setupShell+'" -NoProfile -ExecutionPolicy Bypass -File "'+(Join-Path $maintenance 'Setup.ps1')+'" -Action Uninstall'))
+        if($nativeMaintenance){$key.SetValue('UninstallString',('"'+$nativeMaintenance+'" -action Uninstall'))}
+        else{$key.SetValue('UninstallString',('"'+$setupShell+'" -NoProfile -ExecutionPolicy Bypass -File "'+(Join-Path $maintenance 'Setup.ps1')+'" -Action Uninstall'))}
     }finally{$key.Dispose()}
-    foreach($arch in @('x86','x64')){
+    foreach($arch in @('x86',$contract.nativeDirectory)){
         if($product.id -eq 'rime-pime'){Run-Native (Join-Path $root ($arch+'\PIMERegistrationStatus.exe')) @('verify-registered')}
+    }
+    if($product.id -eq 'yimecore-18u'){
+        Write-Output ('Installed persistent independent 18u: '+$root)
+        if($full18u){Write-Output 'User startup configured. The initiating non-elevated native entry starts the touch runtime; installed-host acceptance remains separate.'}
+        else{Write-Output 'No startup task or acceptance run was started. Keep the previous same-product package. Reboot when requested, then explicitly run the installed-host check from the delivery instructions.'}
+        exit 0
+    }
+    if($nativeMaintenance){
+        Write-Output 'Installed. The initiating non-elevated native entry starts this product runtime.'
+        exit 0
     }
     $stage='start installed runtime'
     $start=@{FilePath=$exe;WindowStyle='Hidden';PassThru=$true}

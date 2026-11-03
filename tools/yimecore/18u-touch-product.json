@@ -1,8 +1,8 @@
 {
-  "schema_version": "yimecore-18u-touch-product-v1",
-  "version": "0.1.0-s3c-development",
+  "schema_version": "yimecore-18u-touch-product-v2",
+  "version": "0.2.0-installed-frontend-development",
   "display_name": "音元拼音·18u触摸",
-  "installable": false,
+  "installable": true,
   "identity": {
     "product_key": "YimeCore18uTouch",
     "clsid": "{6DFACE1F-562E-4773-A9D6-D5753A314711}",
@@ -11,20 +11,57 @@
     "state_directory": "YimeCore 18u Touch",
     "install_directory": "YimeCore 18u Touch",
     "endpoint_family": "YimeBroker.18uTouch.v1",
-    "model_source_id": "yimecore-18u-cn-variable-v1"
+    "model_source_id": "yimecore-18u-three-mode-v2"
   },
   "scope": {
     "architecture": "x64",
-    "language": "CN",
-    "mode": "variable",
+    "languages": [
+      "CN",
+      "EN"
+    ],
+    "modes": [
+      "full",
+      "variable",
+      "shorthand"
+    ],
+    "capabilities": [
+      "installed-tsf-frontend",
+      "composition",
+      "candidates",
+      "literal",
+      "host-editing"
+    ],
+    "installed_frontend": true,
     "persistent_learning": false,
-    "registration_validated": false,
-    "user_machine_execution_approved": false
+    "registration_validated": false
   },
   "data": {
     "projection": "prototypes/touch-terminal/encoding/manual_key_layout.json",
     "layout_sha256": "995f1a74f129249febbd09ca11a8266f6e0c94bac8c05c57754859fc3be3349c",
     "dictionary_sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
-    "standard_index_fallback": false
+    "standard_index_fallback": false,
+    "dictionary_sha256_by_mode": {
+      "variable": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+      "full": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+      "shorthand": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49"
+    },
+    "dictionary_sha256_legacy_role": "controlled_host_variable_identity"
+  },
+  "controlled_host_scope": {
+    "language": "CN",
+    "mode": "variable",
+    "persistent_learning": false,
+    "entry": "installed-18u-check",
+    "default": false
+  },
+  "runtime": {
+    "entry": "bin/Yime18uInstalledRuntime.exe",
+    "argument": "--installed-18u-run",
+    "frontend": "bin/YimeTouchKeyboard.exe",
+    "broker": "bin/YimeBroker18u.exe",
+    "initiating_user": true,
+    "autostart": true,
+    "manifest_schema": "installed-18u-product-v2",
+    "changes_default_profile": false
   }
 }

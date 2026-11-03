@@ -1,0 +1,169 @@
+{
+  "schema": "yime-source-ci-observation-v1",
+  "observedAt": "2026-11-03T12:47:56.008Z",
+  "sourceCommit": "64a785a7ede5fb2a53e2560b873075950160668b",
+  "apiURL": "https://api.github.com/repos/tsaanghwang/Yime/commits/64a785a7ede5fb2a53e2560b873075950160668b/check-runs?per_page=100",
+  "totalCount": 16,
+  "checks": [
+    {
+      "id": 125752308534,
+      "name": "core-build",
+      "status": "completed",
+      "conclusion": "success",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125752308534",
+      "startedAt": "2026-11-03T05:50:36Z",
+      "completedAt": "2026-11-03T05:50:38Z"
+    },
+    {
+      "id": 125752137359,
+      "name": "shard-coverage",
+      "status": "completed",
+      "conclusion": "success",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125752137359",
+      "startedAt": "2026-11-03T05:50:03Z",
+      "completedAt": "2026-11-03T05:50:33Z"
+    },
+    {
+      "id": 125750650750,
+      "name": "rust-i686-host",
+      "status": "completed",
+      "conclusion": "success",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125750650750",
+      "startedAt": "2026-11-03T05:45:26Z",
+      "completedAt": "2026-11-03T05:47:02Z"
+    },
+    {
+      "id": 125750650732,
+      "name": "go-tests",
+      "status": "completed",
+      "conclusion": "success",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125750650732",
+      "startedAt": "2026-11-03T05:45:16Z",
+      "completedAt": "2026-11-03T05:48:53Z"
+    },
+    {
+      "id": 125750650716,
+      "name": "real-rime-tests / 2",
+      "status": "completed",
+      "conclusion": "success",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125750650716",
+      "startedAt": "2026-11-03T05:45:17Z",
+      "completedAt": "2026-11-03T05:50:01Z"
+    },
+    {
+      "id": 125750650696,
+      "name": "lexicon-offline-tooling",
+      "status": "completed",
+      "conclusion": "success",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125750650696",
+      "startedAt": "2026-11-03T05:45:16Z",
+      "completedAt": "2026-11-03T05:47:36Z"
+    },
+    {
+      "id": 125750650654,
+      "name": "real-rime-tests / 0",
+      "status": "completed",
+      "conclusion": "success",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125750650654",
+      "startedAt": "2026-11-03T05:45:16Z",
+      "completedAt": "2026-11-03T05:49:14Z"
+    },
+    {
+      "id": 125750650641,
+      "name": "simple-installer",
+      "status": "completed",
+      "conclusion": "success",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125750650641",
+      "startedAt": "2026-11-03T05:45:17Z",
+      "completedAt": "2026-11-03T05:46:28Z"
+    },
+    {
+      "id": 125750650626,
+      "name": "native-build",
+      "status": "completed",
+      "conclusion": "success",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125750650626",
+      "startedAt": "2026-11-03T05:45:16Z",
+      "completedAt": "2026-11-03T05:48:54Z"
+    },
+    {
+      "id": 125750650625,
+      "name": "real-rime-tests / 1",
+      "status": "completed",
+      "conclusion": "success",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125750650625",
+      "startedAt": "2026-11-03T05:45:16Z",
+      "completedAt": "2026-11-03T05:49:57Z"
+    },
+    {
+      "id": 125750650616,
+      "name": "go-race-msys2",
+      "status": "completed",
+      "conclusion": "success",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125750650616",
+      "startedAt": "2026-11-03T05:45:16Z",
+      "completedAt": "2026-11-03T05:48:37Z"
+    },
+    {
+      "id": 125750324559,
+      "name": "one-shot-18u-registration-probe",
+      "status": "completed",
+      "conclusion": "skipped",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125750324559",
+      "startedAt": "2026-11-03T05:44:11Z",
+      "completedAt": "2026-11-03T05:44:11Z"
+    },
+    {
+      "id": 125750324429,
+      "name": "one-shot-18u-language-prepare",
+      "status": "completed",
+      "conclusion": "skipped",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125750324429",
+      "startedAt": "2026-11-03T05:44:11Z",
+      "completedAt": "2026-11-03T05:44:11Z"
+    },
+    {
+      "id": 125750324427,
+      "name": "one-shot-18u-language-inventory",
+      "status": "completed",
+      "conclusion": "skipped",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125750324427",
+      "startedAt": "2026-11-03T05:44:11Z",
+      "completedAt": "2026-11-03T05:44:11Z"
+    },
+    {
+      "id": 125750323246,
+      "name": "build-contract / validate-build-contract",
+      "status": "completed",
+      "conclusion": "success",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667/job/125750323246",
+      "startedAt": "2026-11-03T05:44:13Z",
+      "completedAt": "2026-11-03T05:45:14Z"
+    },
+    {
+      "id": 125750322781,
+      "name": "test",
+      "status": "completed",
+      "conclusion": "success",
+      "headSHA": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633625/job/125750322781",
+      "startedAt": "2026-11-03T05:44:13Z",
+      "completedAt": "2026-11-03T05:44:28Z"
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "schema": "yime-standard-arm64-validation-v1",
+  "generatedAt": "2026-11-03T13:01:31.829394+00:00",
+  "passed": true,
+  "sourceCommit": "64a785a7ede5fb2a53e2560b873075950160668b",
+  "sourceDirty": false,
+  "package": {
+    "package": "C:\\dev\\Yime\\.generated\\arm64-standard-src\\.generated\\standard-arm64-validation\\YimeCore-0.1.0-local.13-main64a785a7-arm64-20261103",
+    "archive": "C:\\dev\\Yime\\.generated\\arm64-standard-src\\.generated\\standard-arm64-validation\\YimeCore-0.1.0-local.13-main64a785a7-arm64-20261103.zip",
+    "archive_bytes": 168189960,
+    "archive_sha256": "7a8cff04fcc09f8a9908257c1f8ac7b8f5a37f123c192eebea62089f39a45e25",
+    "package_manifest_sha256": "5f976f70ace424340b6d9f7138a63e57eb4167b493e1a56afa0b277386fd994b",
+    "source_manifest_sha256": "0d3bbd30fc4b7ba653f35166685b945c4417017d99f381b2052b0d7ac3de4faf",
+    "payload_count": 69,
+    "archive_file_count": 73
+  },
+  "nativeToolchain": {
+    "go": "go version go1.25.14 windows/arm64",
+    "cmakeGenerator": "Visual Studio 17 2022",
+    "msvc": "14.44.35207",
+    "powershell": "7.6.9 native ARM64; package Check/maintenance PS5"
+  },
+  "admission": {
+    "root": "C:\\dev\\Yime\\.generated\\arm64-standard-src\\.tmp\\yimecore-experiment\\speech-admission-20261103-204253-5869911f8fa64411812147063653524b",
+    "passedGoTestsAndSubtests": 512,
+    "failed": 0,
+    "skipped": [
+      "TestSpeechManifestRejectsOutsideAndIndirectPaths/symlink",
+      "TestSpeechPackageRejectsSymlinkPayload",
+      "TestSpeechProductExportRejectsIndirectSources"
+    ],
+    "skipReason": "Existing symlink privilege checks; retained as skipped, not passed. No global Developer Mode change or extra privilege retest.",
+    "pythonContractTests": 11,
+    "reviewedRecords": 24,
+    "modeAliasRows": 72,
+    "sourceInventorySha256": "9db2b8a80b665cfa838389a18a8a6008553fd86abe30c7f79c8a62c975640055",
+    "summarySha256": "66dcc7b67c54bab81e6610a83f7729832a9edd33aa25d5af4731d9518334ee41"
+  },
+  "sourceContracts": {
+    "goEnvironment": 35,
+    "speechAdmission": 53,
+    "packagePEHostMockedMaintenance": 37
+  },
+  "build": {
+    "root": "C:\\dev\\Yime\\.generated\\arm64-standard-src\\.tmp\\yimecore-platform-experiments\\arm64-package-20261103-204612-a5f1a434",
+    "nativeBuilds": [
+      "arm64",
+      "arm64ec",
+      "x64-test",
+      "x86"
+    ],
+    "dllContracts": 3,
+    "focusMockChecksPerArchitecture": 36,
+    "goPackages": 5,
+    "indexModes": 3,
+    "recordsPerMode": 1166753,
+    "eachIndexRebuiltByteIdentically": true,
+    "speechExportFiles": 11,
+    "independenceAudits": [
+      "raw payload",
+      "simple payload"
+    ]
+  },
+  "packageValidation": {
+    "setupCheck": true,
+    "actualPayloadIsolatedMaintenanceChecks": 12,
+    "rehashPayloadFiles": 69,
+    "rehashZIPMembers": 73,
+    "rehashSourceFiles": 820
+  },
+  "directTSF": {
+    "runs": 9,
+    "architectures": [
+      "arm64",
+      "x64 emulated",
+      "x86"
+    ],
+    "modes": [
+      "full",
+      "variable",
+      "shorthand"
+    ],
+    "actualFinalPackageDLLs": true,
+    "ownedBrokersStopped": true,
+    "registrationAndDefaultPreserved": true,
+    "report": "C:\\dev\\Yime\\.generated\\arm64-standard-src\\.tmp\\yimecore-platform-experiments\\arm64-package-20261103-204612-a5f1a434\\direct-tsf\\summary.json"
+  },
+  "ci": {
+    "observedAt": "2026-11-03T12:47:56.008Z",
+    "success": 13,
+    "skippedManual18uJobs": [
+      "one-shot-18u-registration-probe",
+      "one-shot-18u-language-prepare",
+      "one-shot-18u-language-inventory"
+    ],
+    "url": "https://github.com/tsaanghwang/Yime/actions/runs/41585633667"
+  },
+  "limitations": [
+    "No installation or registration executed by this validation task.",
+    "No registered/live host or physical acceptance claimed.",
+    "real Rime not executed by local standard YimeCore admission; exact-source CI real-Rime jobs passed.",
+    "Runtime descriptor retains 0.1.0-local.13; only simple package version identifies this main source build.",
+    "Package is locally complete and sealed; parent task handles fixed artifact delivery and installation.",
+    "One sandbox-only initial PS7 preflight failed because WindowsApps alias was inaccessible; approved native execution passed. Original product/build evidence retained."
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "date": "2026-11-03",
+  "host": "native Windows ARM64 development machine",
+  "payload": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\arm64-rime\\payload",
+  "toolchains": {
+    "msvc": "MSVC 19.44, toolset directory 14.44.35207",
+    "sdk": "10.0.26100.0",
+    "cmake": "3.31.6",
+    "go": "go1.25.14 windows/arm64",
+    "rust": "1.97.0-aarch64-pc-windows-msvc"
+  },
+  "passed": {
+    "realRimeTopLevelTests": 11,
+    "rustUnitTests": 15,
+    "rustIntegrationTests": 2,
+    "archiveBoundaryTests": 3,
+    "rpcArchitectures": [
+      "arm64",
+      "x86"
+    ],
+    "dllLoadHosts": [
+      "arm64 native",
+      "x64 emulated",
+      "x86 emulated"
+    ]
+  },
+  "productRegistered": false,
+  "installedInputAcceptance": false,
+  "sourceModificationsToThirdParty": false,
+  "evidence": {
+    "arm64-payload-audit.json": "1f464c207d9147febf7797e363da53ea93d5345f4f18fca704989c6380237eb9",
+    "launcher-tests.json": "f572af008be0a02e32dcc171665098fc7417d0ffe3f8c4a5189c1834d35d7097",
+    "launcher-tests.log": "ceb7343eb18358b059ddff5d55db5f8e0687229d2438cb82198611756d60bbc9",
+    "payload-inventory.json": "f229b8f0a1a2fe9e9af05e384a243b028aed1e3bc066e8052130445ffd6f4c27",
+    "pime-arm64x-loadconfig.log": "2d6f9f94f57e90e8cf3bfbde2c60f8de3467de9feb6e7fa0b6d182c32ca8e6d9",
+    "pime-load-arm64.log": "395008d996ef7f1e201de717cba5031e398c4d66139124f4fb1824bdc29a14bd",
+    "pime-load-win32.log": "34547f3ea0b61b9244f1dafeb1aa8a56f50adc9f485533330a02652815889630",
+    "pime-load-x64.log": "d67424df9d523fc7af575284d0d2298dac2a00a841dc64f3ea81d458abcfbc9e",
+    "pime-rpc-arm64.log": "193e9ecc9bb46cc7ae4d7df10601967df1fc265cc562285f41359e5328336ba7",
+    "pime-rpc-win32.log": "73fd89bfd395318f5e136ec5ac6f19397b663d6582fae47592d523feb03e90c3",
+    "real-rime-tests.json": "36962172605df5b78f9ab88c98646f64dc8c779f6ba2694086608ddca374d661",
+    "real-rime-tests.log": "dccd26f5d16ae63d3ab7f23529e7bc449b5a08cc2e18ac4d1437ed69250724eb"
+  }
+}

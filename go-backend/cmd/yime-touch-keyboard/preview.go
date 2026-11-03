@@ -24,6 +24,7 @@ type preview struct {
 	snapshot                    keyboardlab.Response
 	sequence                    uint64
 	fault                       bool
+	installed                   bool // Remote TIP revisions gate every gesture, including coding keys.
 	englishView, literalEntries bool
 	editor                      previewEditor
 	emit                        func(string, tk.Output) error // nil keeps P3's in-memory sink.
@@ -176,6 +177,9 @@ func (p *preview) navigate(key string, extend bool, down previewStamp) error {
 	}
 }
 func (p *preview) apply(o tk.Output, down previewStamp) error {
+	if p.installed && down != p.stamp() {
+		return fmt.Errorf("TIP 状态已更新；本次触点取消")
+	}
 	if p.bridge != nil {
 		if down != p.stamp() {
 			return fmt.Errorf("own-host action revision changed; gesture cancelled")

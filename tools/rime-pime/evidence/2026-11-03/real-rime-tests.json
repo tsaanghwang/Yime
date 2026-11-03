@@ -1,0 +1,17 @@
+{
+  "command": [
+    "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+    "test",
+    "-overlay",
+    "C:\\dev\\Yime\\.wt\\armfull\\.generated\\arm64-rime\\real-rime-overlay.json",
+    "-count=1",
+    "-timeout=30m",
+    "-v",
+    "-run",
+    "^(TestNativeBackendKeepsRimeOwnedCandidatePaging|TestRealRimeCanCommitText|TestRealRimeAllSchemasComposeSentence|TestRealRimeNeutralToneEntryAcrossAllThreeSchemas|TestRealRimePrintableLayoutKeysAreNeverPagingBindings|TestRealRimeBackspaceUpdatesComposition|TestRealRimeEscapeClearsComposition|TestRealRimePunctuationKeys|TestRealRimeRedeployAppliesPageSize|TestRealRimeExternalBuildAppliesPageSize|TestRealRimeEndSessionPersistsLearningAcrossRestart)$",
+    "./input_methods/yime"
+  ],
+  "exitCode": 0,
+  "seconds": 116.95,
+  "cwd": "C:\\dev\\Yime\\.wt\\armfull\\go-backend"
+}

@@ -13,6 +13,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker"
 	"github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab"
@@ -40,11 +41,14 @@ type Focus struct {
 	Epoch   uint64 `json:"epoch"`
 }
 type Action struct {
-	Kind        string `json:"kind"`
-	Code        string `json:"code,omitempty"`
-	CandidateID string `json:"candidateId,omitempty"`
-	Revision    uint64 `json:"revision"`
-	Delta       int    `json:"delta,omitempty"`
+	Kind            string           `json:"kind"`
+	Code            string           `json:"code,omitempty"`
+	CandidateID     string           `json:"candidateId,omitempty"`
+	Revision        uint64           `json:"revision"`
+	Delta           int              `json:"delta,omitempty"`
+	InputMode       string           `json:"inputMode,omitempty"`
+	PunctuationMode string           `json:"punctuationMode,omitempty"`
+	Edit            *bridge.HostEdit `json:"edit,omitempty"`
 }
 type Request struct {
 	Version   int            `json:"version"`
@@ -57,11 +61,13 @@ type Request struct {
 	Action    *Action        `json:"action,omitempty"`
 	CommitID  string         `json:"commitId,omitempty"`
 	Outcome   bridge.Outcome `json:"outcome,omitempty"`
+	Mode      string         `json:"mode,omitempty"`
 }
 type Commit struct {
-	ID    string `json:"id"`
-	Text  string `json:"text"`
-	Focus Focus  `json:"focus"`
+	ID    string           `json:"id"`
+	Text  string           `json:"text"`
+	Focus Focus            `json:"focus"`
+	Edit  *bridge.HostEdit `json:"edit,omitempty"`
 }
 type Receipt struct {
 	ID      string         `json:"id"`
@@ -80,8 +86,10 @@ type Response struct {
 	Receipt   *Receipt              `json:"receipt,omitempty"`
 }
 type Service struct {
-	open     func(bridge.Focus) (*bridge.Session, error)
-	expected Identity
+	open          func(bridge.Focus) (*bridge.Session, error)
+	expected      Identity
+	openMode      func(string, bridge.Focus) (*bridge.Session, error)
+	expectedModes map[string]Identity
 }
 
 // NewProduction checks the independent product descriptor and every session's
@@ -91,7 +99,11 @@ func NewProduction(root, data string) (*Service, error) {
 	if !filepath.IsAbs(root) || !filepath.IsAbs(data) {
 		return nil, errors.New("absolute dedicated root and data directory required")
 	}
-	raw, e := os.ReadFile(filepath.Join(root, "tools/yimecore/18u-touch-product.json"))
+	descriptorPath := productDescriptorPath(runtime.GOARCH)
+	if descriptorPath == "" {
+		return nil, errors.New("unsupported native product architecture")
+	}
+	raw, e := os.ReadFile(filepath.Join(root, descriptorPath))
 	if e != nil {
 		return nil, e
 	}
@@ -108,13 +120,26 @@ func NewProduction(root, data string) (*Service, error) {
 			Mode         string `json:"mode"`
 			Learning     bool   `json:"persistent_learning"`
 		} `json:"scope"`
+		ControlledScope struct {
+			Language string `json:"language"`
+			Mode     string `json:"mode"`
+			Learning bool   `json:"persistent_learning"`
+		} `json:"controlled_host_scope"`
 		Data struct {
 			Layout     string `json:"layout_sha256"`
 			Dictionary string `json:"dictionary_sha256"`
 			Fallback   bool   `json:"standard_index_fallback"`
 		} `json:"data"`
 	}
-	if json.Unmarshal(raw, &product) != nil || product.Schema != "yimecore-18u-touch-product-v1" || product.Identity.Key != Product || product.Identity.CLSID != "{6DFACE1F-562E-4773-A9D6-D5753A314711}" || product.Identity.Profile != "{1BD904AC-3194-4419-B70A-5574100F18B3}" || product.Data.Layout != LayoutSHA || product.Data.Dictionary != DictionarySHA || product.Data.Fallback || product.Scope.Architecture != "x64" || product.Scope.Language != "CN" || product.Scope.Mode != "variable" || product.Scope.Learning {
+	if json.Unmarshal(raw, &product) != nil {
+		return nil, errors.New("dedicated product descriptor malformed")
+	}
+	if product.Schema == "yimecore-18u-touch-product-v2" {
+		product.Scope.Language = product.ControlledScope.Language
+		product.Scope.Mode = product.ControlledScope.Mode
+		product.Scope.Learning = product.ControlledScope.Learning
+	}
+	if (product.Schema != "yimecore-18u-touch-product-v1" && product.Schema != "yimecore-18u-touch-product-v2") || product.Identity.Key != Product || product.Identity.CLSID != "{6DFACE1F-562E-4773-A9D6-D5753A314711}" || product.Identity.Profile != "{1BD904AC-3194-4419-B70A-5574100F18B3}" || product.Data.Layout != LayoutSHA || product.Data.Dictionary != DictionarySHA || product.Data.Fallback || !matchesProductArchitecture(runtime.GOARCH, product.Scope.Architecture) || product.Scope.Language != "CN" || product.Scope.Mode != "variable" || product.Scope.Learning {
 		return nil, errors.New("dedicated product identity mismatch")
 	}
 	return &Service{open: func(f bridge.Focus) (*bridge.Session, error) { return bridge.Open(root, data, "variable", f) }, expected: Identity{LayoutSHA, DictionarySHA, "variable", keyboardlab.SessionPolicy}}, nil
@@ -128,6 +153,7 @@ type connection struct {
 	focus           Focus
 	id              string
 	opened, stopped bool
+	expected        Identity
 }
 
 func (s *Service) newConnection(owner yimebroker.TrustedClient) (*connection, error) {
@@ -151,7 +177,11 @@ func (c *connection) close() {
 }
 func (c *connection) dispatch(owner yimebroker.TrustedClient, q Request) Response {
 	r := Response{Version: 2, Sequence: q.Sequence}
-	reject := func(reason string) Response { r.Error = reason; return r }
+	reject := func(reason string) Response {
+		writeRejectionDiagnostic(os.Stderr, "request", errors.New(reason))
+		r.Error = reason
+		return r
+	}
 	if owner != c.owner {
 		return reject("connection owner mismatch")
 	}
@@ -166,11 +196,30 @@ func (c *connection) dispatch(owner yimebroker.TrustedClient, q Request) Respons
 		if c.opened || c.stopped || q.SessionID != "" || q.Identity != nil || q.Action != nil || q.CommitID != "" || q.Outcome != "" {
 			return reject("invalid open")
 		}
-		s, e := c.service.open(bridge.Focus{Context: q.Focus.Context, Epoch: q.Focus.Epoch})
+		var s *bridge.Session
+		var e error
+		c.expected = c.service.expected
+		if c.service.openMode != nil {
+			mode := q.Mode
+			if mode == "" {
+				mode = "variable"
+			}
+			var ok bool
+			c.expected, ok = c.service.expectedModes[mode]
+			if !ok {
+				return reject("unsupported mode")
+			}
+			s, e = c.service.openMode(mode, bridge.Focus{Context: q.Focus.Context, Epoch: q.Focus.Epoch})
+		} else {
+			if q.Mode != "" {
+				return reject("mode requires desktop protocol")
+			}
+			s, e = c.service.open(bridge.Focus{Context: q.Focus.Context, Epoch: q.Focus.Epoch})
+		}
 		if e != nil {
 			return reject("dedicated runtime unavailable")
 		}
-		if identity(s.Identity()) != c.service.expected {
+		if identity(s.Identity()) != c.expected {
 			_ = s.Close()
 			return reject("loaded resource identity mismatch")
 		}
@@ -179,7 +228,7 @@ func (c *connection) dispatch(owner yimebroker.TrustedClient, q Request) Respons
 		c.id = s.Snapshot().SessionID
 		c.opened = true
 	} else {
-		if !c.opened || q.SessionID != c.id || q.Identity == nil || *q.Identity != c.service.expected || q.Focus != c.focus {
+		if q.Mode != "" || !c.opened || q.SessionID != c.id || q.Identity == nil || *q.Identity != c.expected || q.Focus != c.focus {
 			return reject("session identity or lease mismatch")
 		}
 		if c.stopped && q.Operation != "close" {
@@ -191,12 +240,13 @@ func (c *connection) dispatch(owner yimebroker.TrustedClient, q Request) Respons
 				return reject("invalid action")
 			}
 			a := q.Action
-			ticket, e := c.session.Dispatch(c.session.Identity(), bridge.Focus{Context: c.focus.Context, Epoch: c.focus.Epoch}, bridge.Action{SessionID: q.SessionID, Revision: a.Revision, Kind: a.Kind, Code: a.Code, CandidateID: a.CandidateID, Delta: a.Delta})
+			ticket, e := c.session.Dispatch(c.session.Identity(), bridge.Focus{Context: c.focus.Context, Epoch: c.focus.Epoch}, bridge.Action{SessionID: q.SessionID, Revision: a.Revision, Kind: a.Kind, Code: a.Code, CandidateID: a.CandidateID, Delta: a.Delta, InputMode: a.InputMode, PunctuationMode: a.PunctuationMode, Edit: a.Edit})
 			if e != nil {
+				writeRejectionDiagnostic(os.Stderr, "dispatch", e)
 				return reject("action rejected")
 			}
 			if ticket != nil {
-				r.Commit = &Commit{ticket.ID, ticket.Text, c.focus}
+				r.Commit = &Commit{ID: ticket.ID, Text: ticket.Text, Focus: c.focus, Edit: ticket.Edit}
 			}
 		case "complete":
 			if q.Action != nil || q.CommitID == "" {
@@ -218,7 +268,7 @@ func (c *connection) dispatch(owner yimebroker.TrustedClient, q Request) Respons
 		}
 	}
 	st := c.session.Snapshot()
-	id := c.service.expected
+	id := c.expected
 	f := c.focus
 	receipt := c.session.Receipt()
 	r.OK = true

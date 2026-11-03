@@ -4,6 +4,10 @@ target = "i686-pc-windows-msvc"
 [target.i686-pc-windows-msvc]
 rustflags = ["-C", "target-feature=+crt-static"]
 
+# Explicit native ARM64 builds use --target; the normal Win32 default is retained.
+[target.aarch64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]
+
 [net]
 offline = true
 

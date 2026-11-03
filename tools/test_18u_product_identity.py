@@ -36,15 +36,48 @@ class ProductIdentityTests(unittest.TestCase):
         self.assertEqual(data['layout_sha256'], lock['layoutProjectionSHA256'])
         self.assertEqual(data['layout_sha256'], physical['layoutId'])
         self.assertEqual(data['dictionary_sha256'], lock['files']['yime_variable.dict.yaml']['sha256'])
+        self.assertEqual(data['dictionary_sha256_by_mode'], {
+            mode: lock['files']['yime_' + mode + '.dict.yaml']['sha256']
+            for mode in ('full', 'variable', 'shorthand')
+        })
+        self.assertEqual(data['dictionary_sha256_legacy_role'], 'controlled_host_variable_identity')
         self.assertEqual(data['projection'], 'prototypes/touch-terminal/encoding/manual_key_layout.json')
         self.assertIs(data['standard_index_fallback'], False)
 
-    def test_not_installation_or_multiplatform_acceptance(self):
-        self.assertIs(self.product['installable'], False)
+    def test_full_frontend_scope_is_distinct_from_acceptance(self):
+        self.assertEqual(self.product['schema_version'], 'yimecore-18u-touch-product-v2')
+        self.assertIs(self.product['installable'], True)
         scope = self.product['scope']
-        self.assertEqual((scope['architecture'], scope['language'], scope['mode']), ('x64', 'CN', 'variable'))
-        for key in ('persistent_learning', 'registration_validated', 'user_machine_execution_approved'):
+        self.assertEqual(scope['architecture'], 'x64')
+        self.assertEqual(scope['languages'], ['CN', 'EN'])
+        self.assertEqual(scope['modes'], ['full', 'variable', 'shorthand'])
+        self.assertEqual(scope['capabilities'], ['installed-tsf-frontend', 'composition', 'candidates', 'literal', 'host-editing'])
+        self.assertIs(scope['installed_frontend'], True)
+        for key in ('persistent_learning', 'registration_validated'):
             self.assertIs(scope[key], False)
+        for key in ('language', 'mode', 'user_machine_execution_approved'):
+            self.assertNotIn(key, scope)
+
+    def test_legacy_check_is_explicit_and_never_the_resident_default(self):
+        self.assertEqual(self.product['controlled_host_scope'], {
+            'language': 'CN', 'mode': 'variable', 'persistent_learning': False,
+            'entry': 'installed-18u-check', 'default': False,
+        })
+        runtime = self.product['runtime']
+        self.assertEqual(runtime['entry'], 'bin/Yime18uInstalledRuntime.exe')
+        self.assertEqual(runtime['argument'], '--installed-18u-run')
+        self.assertEqual(runtime['frontend'], 'bin/YimeTouchKeyboard.exe')
+        self.assertEqual(runtime['broker'], 'bin/YimeBroker18u.exe')
+        self.assertEqual(runtime['manifest_schema'], 'installed-18u-product-v2')
+        self.assertIs(runtime['initiating_user'], True)
+        self.assertIs(runtime['autostart'], True)
+        self.assertIs(runtime['changes_default_profile'], False)
+
+    def test_arm64_descriptor_changes_only_native_architecture(self):
+        arm = read('tools/yimecore/18u-touch-product-arm64.json')
+        expected = json.loads(json.dumps(self.product))
+        expected['scope']['architecture'] = 'arm64'
+        self.assertEqual(arm, expected)
 
 
 if __name__ == '__main__':
