@@ -1,0 +1,44 @@
+{
+  "source": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+  "verifiedAtUTC": "2026-11-03T15:25:09.176011+00:00",
+  "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-maintenance-46dd5896-20261103",
+  "draft": false,
+  "prerelease": true,
+  "assets": [
+    {
+      "name": "source-ci-46dd5896.json",
+      "size": 11596,
+      "digest": "sha256:2a73980fe11e7f39f4402a8167b7853c89d2fa2bb60e0e59186321512693dca3",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-maintenance-46dd5896-20261103/source-ci-46dd5896.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-rime-pime-windows-arm64-46dd58967266.identity.json",
+      "size": 280899,
+      "digest": "sha256:aea48bcd8727cf762f406a6cb3554fea49d59a1a274ff542f01657cf642dcaa8",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-maintenance-46dd5896-20261103/yime-rime-pime-windows-arm64-46dd58967266.identity.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-rime-pime-windows-arm64-46dd58967266.zip",
+      "size": 179501523,
+      "digest": "sha256:50d7189e0e94d4f14e9ad916eca9d0756192833588ff770c052e40af633a50f4",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-maintenance-46dd5896-20261103/yime-rime-pime-windows-arm64-46dd58967266.zip",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-yimecore-18u-windows-arm64-46dd58967266.identity.json",
+      "size": 219346,
+      "digest": "sha256:8f3ea44c8d0bb51fbd90db2207e73d768f001677997bbb27b2be948f4870050c",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-maintenance-46dd5896-20261103/yime-yimecore-18u-windows-arm64-46dd58967266.identity.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-yimecore-18u-windows-arm64-46dd58967266.zip",
+      "size": 219896811,
+      "digest": "sha256:be1ea916a780bc9896521ea18854b28daa62f70098b679839918e31e17c7416e",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-maintenance-46dd5896-20261103/yime-yimecore-18u-windows-arm64-46dd58967266.zip",
+      "state": "uploaded"
+    }
+  ]
+}

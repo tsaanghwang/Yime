@@ -1,5 +1,22 @@
 # ARM64 三产品最终测试包
 
+## 当前有效组合：标准 maint.1 加 46dd 维护修复
+
+标准 YimeCore 继续使用下表中已安装验证的 6c1c0122 maint.1 包。Rime/PIME 与 18u 使用[46dd 固定发行版](https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-maintenance-46dd5896-20261103)，替代后文首次交付的对应两包。
+修复源码为 `46dd58967266edcab3f0d3bb131015d81dc4b951`，仅为原生维护入口固定环境补充 `PATHEXT=.EXE` 并增加回归，保留用户环境隔离。
+该提交 [Build](https://github.com/tsaanghwang/Yime/actions/runs/41659402658) 与 [complete-input](https://github.com/tsaanghwang/Yime/actions/runs/41659402358) 完整通过：19 success、3 既有手动任务 skipped、0 fail。core 112、touch 243、Python 65、PowerShell 15；命名测试无跳过。
+
+| 产品 | ZIP | 大小（bytes） | SHA-256 |
+| --- | --- | ---: | --- |
+| Rime/PIME 修复包 | `yime-rime-pime-windows-arm64-46dd58967266.zip` | 179501523 | `50d7189e0e94d4f14e9ad916eca9d0756192833588ff770c052e40af633a50f4` |
+| 18u 修复包 | `yime-yimecore-18u-windows-arm64-46dd58967266.zip` | 219896811 | `be1ea916a780bc9896521ea18854b28daa62f70098b679839918e31e17c7416e` |
+
+两包及身份文件、CI 回执均已核对 GitHub 远端 uploaded 状态、大小和 SHA-256 后公开预发布，见 `maintenance-fix-delivery-receipt.json` 与 `maintenance-fix-source-ci.json`。
+Rime/PIME 366 个产品载荷全部字节不变；18u 的既有程序、词典和资源不变，描述符只更新源码身份。18u 归档 1156 个成员中 1149 个不变，7 个维护/身份成员更新，完整差异见 `18u-maintenance-only-diff.json`。
+旧 6c 包、首次失败日志及沙箱观察限制全部保留，未覆盖历史资产。安装执行结果单独见 [本机记录](INSTALLED-RESULT.md)。
+
+## 6c 首次交付记录（历史）
+
 源码与维护程序提交：`6c1c01220b77406cfa5a90df111ea914882fa372`。
 该提交 CI 为 19 项成功、3 项预期的历史手动任务跳过、0 失败；命名测试无跳过。
 见 [Build](https://github.com/tsaanghwang/Yime/actions/runs/41653532297) 与 [ARM64 complete input contracts](https://github.com/tsaanghwang/Yime/actions/runs/41653532148)，原始记录为 `final-source-ci.json`。
