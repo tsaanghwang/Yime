@@ -2,6 +2,7 @@
 // real thread manager activation, foreground change, or user-document access.
 #include "../TouchFrontendEndpoint.cpp"
 #include <iostream>
+#include <functional>
 
 static long moduleRefs = 0;
 void YimeModuleAddRef() noexcept { ++moduleRefs; }
@@ -21,7 +22,7 @@ public:
     STDMETHODIMP_(ULONG) AddRef() override { return ++refs; }
     STDMETHODIMP_(ULONG) Release() override { return --refs; }
 };
-struct Memory { std::wstring text; LONG first=0, last=0; TfActiveSelEnd active=TF_AE_END; HRESULT write=S_OK; unsigned writes=0; };
+struct Memory { std::wstring text; LONG first=0, last=0; TfActiveSelEnd active=TF_AE_END; HRESULT write=S_OK; unsigned writes=0,selections=0; std::function<void()> afterWrite; };
 class Range final : public FakeCom<ITfRange> {
 public:
     Memory& m; LONG first, last;
@@ -29,7 +30,7 @@ public:
     STDMETHODIMP_(ULONG) Release() override { ULONG n=--refs; if(!n)delete this; return n; }
     STDMETHODIMP SetText(TfEditCookie cookie,DWORD,const WCHAR* value,LONG n) override {
         check(cookie==73,"write cookie"); if(FAILED(m.write))return m.write;
-        m.text.replace(first,last-first,value,n);last=first+n;++m.writes;return S_OK;
+        m.text.replace(first,last-first,value,n);last=first+n;++m.writes;if(m.afterWrite)m.afterWrite();return S_OK;
     }
     STDMETHODIMP GetText(TfEditCookie,DWORD,WCHAR* out,ULONG max,ULONG* count) override {
         *count=std::min(max,static_cast<ULONG>(last-first));std::copy_n(m.text.data()+first,*count,out);return S_OK;
@@ -69,7 +70,7 @@ public:
         out->range=new Range(m,m.first,m.last);out->style={m.active,FALSE};*count=1;return S_OK;
     }
     STDMETHODIMP SetSelection(TfEditCookie,ULONG,const TF_SELECTION* value) override {
-        auto* r=static_cast<Range*>(value->range);m.first=r->first;m.last=r->last;m.active=value->style.ase;return S_OK;
+        auto* r=static_cast<Range*>(value->range);m.first=r->first;m.last=r->last;m.active=value->style.ase;++m.selections;return S_OK;
     }
     STDMETHODIMP GetStart(TfEditCookie,ITfRange** out) override {*out=new Range(m,0,0);return S_OK;}
     STDMETHODIMP GetEnd(TfEditCookie,ITfRange** out) override {LONG n=static_cast<LONG>(m.text.size());*out=new Range(m,n,n);return S_OK;}
@@ -145,5 +146,10 @@ void failures(){
     f.manager.document.replaced=false;f.m.write=E_ACCESSDENIED;f.queue(L"new");check(f.context.drain()==E_ACCESSDENIED && f.lease->completed && f.m.text==L"keep" && f.m.writes==0,"failed write");
     f.m.write=S_OK;f.queue(L"new");auto old=f.lease;old->active=false;f.lease.reset();check(f.context.drain()==E_ABORT && f.m.text==L"keep","callback after owner release");
 }
+void reentrantRevocation(){
+    Fixture f;f.m.text=L"keep";f.m.afterWrite=[&]{f.lease->active=false;};f.queue(L"new");
+    check(f.context.drain()==E_ABORT && f.lease->attempted && f.lease->completed,"reentrant invalidation outcome");
+    check(f.m.writes==1 && f.m.selections==0 && f.m.text==L"newkeep","do not select or replay after reentrant revocation");
 }
-int main(){try{edits();failures();check(moduleRefs==0,"module lifetime leak");std::cout<<"PASS frontend edits: memory TSF, Unicode, selection, delayed revocation, write failure; no native-host acceptance\n";return 0;}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
+}
+int main(){try{edits();failures();reentrantRevocation();check(moduleRefs==0,"module lifetime leak");std::cout<<"PASS frontend edits: memory TSF, Unicode, selection, delayed/reentrant revocation, write failure; no native-host acceptance\n";return 0;}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

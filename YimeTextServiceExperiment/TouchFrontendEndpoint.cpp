@@ -140,6 +140,7 @@ private:
         if (FAILED(hr) || fetched != 1 || !selection.range) return FAILED(hr) ? hr : E_FAIL;
         ComPtr<ITfRange> range; range.Attach(selection.range);
         auto select = [&](ITfRange* r, TfActiveSelEnd end) {
+            if (!lease_->valid()) return E_ABORT;
             TF_SELECTION value{}; value.range = r; value.style.ase = end; value.style.fInterimChar = FALSE;
             return context->SetSelection(cookie, 1, &value);
         };
@@ -196,7 +197,7 @@ private:
 };
 }
 
-struct TouchFrontendEndpoint::Impl {
+struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendEndpoint::Impl> {
     enum class Phase { Connecting, Reading, Editing, Writing };
     ComPtr<ITfThreadMgr> manager;
     TfClientId client;
@@ -213,12 +214,14 @@ struct TouchFrontendEndpoint::Impl {
     std::shared_ptr<Lease> lease;
     Impl(ITfThreadMgr* m, TfClientId c) : manager(m), client(c) {
         io.hEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr); require(io.hEvent != nullptr);
+        YimeModuleAddRef();
     }
     ~Impl() {
         invalidate(); closePipe();
         if (window) { KillTimer(window, 1); DestroyWindow(window); }
         if (module) UnregisterClassW(L"Yime18uFrontendThread.v1", module);
         if (io.hEvent) CloseHandle(io.hEvent);
+        YimeModuleRelease();
     }
     void invalidate() noexcept { if (lease) lease->active = false; }
     void closePipe() noexcept {
@@ -236,7 +239,14 @@ struct TouchFrontendEndpoint::Impl {
             self = static_cast<Impl*>(reinterpret_cast<CREATESTRUCTW*>(l)->lpCreateParams);
             SetWindowLongPtrW(h, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(self));
         }
-        if (message == WM_TIMER && self && w == 1) { self->tick(); return 0; }
+        if (message == WM_TIMER && self && w == 1) {
+            // RequestEditSession may synchronously reenter profile deactivation.
+            // Pin the dispatcher until that entire host callback has returned.
+            auto keep = self->weak_from_this().lock();
+            if (keep) keep->tick();
+            return 0;
+        }
+        if (message == WM_NCDESTROY) SetWindowLongPtrW(h, GWLP_USERDATA, 0);
         return DefWindowProcW(h, message, w, l);
     }
     void start() {
@@ -343,6 +353,6 @@ struct TouchFrontendEndpoint::Impl {
     }
 };
 TouchFrontendEndpoint::TouchFrontendEndpoint(ITfThreadMgr* manager, TfClientId client)
-    : impl_(std::make_unique<Impl>(manager, client)) { impl_->start(); }
-TouchFrontendEndpoint::~TouchFrontendEndpoint() = default;
+    : impl_(std::make_shared<Impl>(manager, client)) { impl_->start(); }
+TouchFrontendEndpoint::~TouchFrontendEndpoint() { impl_->invalidate(); }
 void TouchFrontendEndpoint::Invalidate() noexcept { impl_->invalidate(); }
