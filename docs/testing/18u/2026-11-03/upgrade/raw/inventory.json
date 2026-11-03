@@ -109,5 +109,29 @@
     "bytes": 72995,
     "sha256": "4db5f493330f1272c2e93293ad003e3961b5e1fc6ddf3b53334ca51ea7305f71",
     "included": false
+  },
+  {
+    "file": "test6-reboot-verified.json",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\reboot-verified.json",
+    "bytes": 365,
+    "sha256": "8d30ac9d3a0ad8ea10724c3454fe565de41815616b7eb7cbc2a8a859c937bb83"
+  },
+  {
+    "file": "test6-after-reboot.json",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\after-reboot.json",
+    "bytes": 23910,
+    "sha256": "69f77e09410c590351368e769e9f28f64688dd7a62b08aa769ed4a297eda8c82"
+  },
+  {
+    "file": "test6-post-reboot-status.stdout.log",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\post-reboot-status.stdout.log",
+    "bytes": 236,
+    "sha256": "853a539b049365dbcd2e895d5722b497f08285988e0d9d7fe844a30d33b51319"
+  },
+  {
+    "file": "test6-post-reboot-status.stderr.log",
+    "source": "C:\\dev\\Yime-evidence\\18u-upgrade-20261103\\test6\\post-reboot-status.stderr.log",
+    "bytes": 5812,
+    "sha256": "4a4290d3cb6f46131834582152f58f6a69c1007642de0e81a9221cfcbdae6e92"
   }
 ]

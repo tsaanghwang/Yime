@@ -1,0 +1,13 @@
+{
+  "verifiedAt": "2026-11-03T10:47:54.579704+08:00",
+  "boot": {
+    "CSName": "MYCOMPUTER",
+    "BootTime": "2026-11-03T10:28:22.5000000+08:00"
+  },
+  "version": "0.1.0-18u-test.6",
+  "payloadsVerified": 16,
+  "registrationVerified": true,
+  "invariantsUnchanged": true,
+  "newPackageInputAcceptance": false,
+  "oldSuccessfulEvidencePreserved": true
+}

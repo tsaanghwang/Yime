@@ -1,6 +1,31 @@
 # test.6 正常维护交付与执行
 
-## 最新结果：10:21 本机卸载续行及安装通过
+## 最新结果：重启核验通过，test.6 输入待前台执行
+
+2026-11-03 10:47 +08:00 执行重启前准备的只读核验入口，退出 0。
+MYCOMPUTER 的实际 BootTime 为 `2026-11-03T10:28:22.5000000+08:00`，
+晚于本次维护完成时间。test.6 的 16 个安装载荷哈希匹配；COM/TIP 存在，
+profile 为 1、category 为 5，COM 指向独立 18u 安装目录。
+标准产品文件/注册、独立用户数据、默认覆盖均与维护前基线一致。
+原始结果见 [重启核验](raw/test6-reboot-verified.json)、
+[注册查询](raw/test6-post-reboot-status.stdout.log) 和
+[保护基线](raw/test6-after-reboot.json)。重启核验已经完成，不要重跑。
+
+test.6 输入检查尚未启动。此前后台启动修复宿主曾被 Windows 拒绝前台权限，
+该历史失败不属于 test.6 输入结果。请在本机前台 PowerShell 执行一次并保持前台：
+
+```powershell
+& 'C:\Users\tsaan\AppData\Local\Programs\Python\Python314\python.exe' -X utf8 'C:\dev\Yime-evidence\18u-upgrade-20261103\test6\check_input_once.py'
+```
+
+该入口验证重启记录、固定 descriptor 及安装载荷后，调用已安装的
+`Yime18uInstalledRuntime.exe -installed-18u-check`，证据写入同目录
+`installed-host-test6/` 和 `input-result.json`。一次执行，异常即停，不自动重试。
+只有退出 0、`inputPassed=true`，并核对实际 Windows profile/DLL 激活、
+TSF 编辑完成和非空读回一致后，才记录这个新包的自有宿主输入通过。
+不扩大到 Word/Edge、其他模式或物理手指/笔；暂不分发其他三台。
+
+## 10:21 本机卸载续行及安装通过
 
 MYCOMPUTER 从已核实的部分卸载状态续行，正常 Uninstall 和 Install 均退出 0。
 Uninstall 的 `unregister-tip`、新进程 `unregister`、`verify-absent` 全部通过，
@@ -11,7 +36,7 @@ Uninstall 的 `unregister-tip`、新进程 `unregister`、`verify-absent` 全部
 
 实际通过范围为**从部分卸载状态完成正常卸载，再安装 test.6**；
 不将本次扩大为完整旧 profile 尚在场时的升级实测，也不继承旧 test.2 的输入结果。
-重启和 test.6 输入尚待各自验证，暂不分发其他三台。
+当时重启和 test.6 输入均待验证；重启现已通过，输入仍待验证，暂不分发其他三台。
 
 必要原始证据已按字节纳入 [raw](raw/)，索引见 [inventory.json](raw/inventory.json)。
 保留 test.5 首失败、其后新进程只读状态、test.6 现场前提、卸载/安装输出及退出码、
