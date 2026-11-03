@@ -1,0 +1,30 @@
+{
+  "source": "defbf9f805b52146bd79048620058f48c6c29f23",
+  "verifiedAtUTC": "2026-11-03T16:45:33.678485+00:00",
+  "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-rime-user-defbf9f8-20261104",
+  "draft": false,
+  "prerelease": true,
+  "assets": [
+    {
+      "name": "source-ci-defbf9f8.json",
+      "size": 13479,
+      "digest": "sha256:c69e53f7ad4aa8ff0a1dbdd6eb0bee86d3e04565d5cf64ff0222f68eb356fab9",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-rime-user-defbf9f8-20261104/source-ci-defbf9f8.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-rime-pime-windows-arm64-defbf9f805b5.identity.json",
+      "size": 280899,
+      "digest": "sha256:467e3dc3ef5666160a3106b005b10929163fe3902895e7b50b862379704a2bf7",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-rime-user-defbf9f8-20261104/yime-rime-pime-windows-arm64-defbf9f805b5.identity.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-rime-pime-windows-arm64-defbf9f805b5.zip",
+      "size": 179508340,
+      "digest": "sha256:dec4ee78504cee238e54b18fd6265f2571309ba17d14630bc66b24ece68d2efc",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-rime-user-defbf9f8-20261104/yime-rime-pime-windows-arm64-defbf9f805b5.zip",
+      "state": "uploaded"
+    }
+  ]
+}

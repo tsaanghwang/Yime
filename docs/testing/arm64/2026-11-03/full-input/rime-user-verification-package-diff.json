@@ -1,0 +1,60 @@
+{
+  "schema": "yime-rime-maintenance-only-package-diff-v1",
+  "oldSourceCommit": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+  "newSourceCommit": "defbf9f805b52146bd79048620058f48c6c29f23",
+  "oldIdentity": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\rime-final-46dd5896\\archive\\yime-rime-pime-windows-arm64-46dd58967266.identity.json",
+  "newIdentity": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\rime-final-defbf9f8\\archive\\yime-rime-pime-windows-arm64-defbf9f805b5.identity.json",
+  "oldIdentitySHA256": "aea48bcd8727cf762f406a6cb3554fea49d59a1a274ff542f01657cf642dcaa8",
+  "newIdentitySHA256": "467e3dc3ef5666160a3106b005b10929163fe3902895e7b50b862379704a2bf7",
+  "addedFiles": [],
+  "removedFiles": [],
+  "changedFiles": {
+    "README.md": {
+      "old": {
+        "bytes": 938,
+        "sha256": "efebb95654b3f5788cefb798572634a2b7e08209670814b58332ddcde5b2cb3a"
+      },
+      "new": {
+        "bytes": 938,
+        "sha256": "13c27492dc7676c3a0796797cab840e0bf888806b9499050c82aff93fc1378c3"
+      }
+    },
+    "Setup.ps1": {
+      "old": {
+        "bytes": 17420,
+        "sha256": "fc922accf0f58a22c913e5c460b88db0657cd5aa9303ebaeea592d5706bc9229"
+      },
+      "new": {
+        "bytes": 18346,
+        "sha256": "bc890ae1a3beb43144a8902840a3a34b27283dfad5156d8acf07a48c8b9231db"
+      }
+    },
+    "YimeMaintenance.exe": {
+      "old": {
+        "bytes": 2821632,
+        "sha256": "370c5759f624c388d4a161de7e02fa35438c4284e8f3341e6f705a2f58318916"
+      },
+      "new": {
+        "bytes": 2835456,
+        "sha256": "b3af0e6607b9af3ebf0583e7c675c3142f7334e07429704ceecf31a55625ce10"
+      }
+    },
+    "maintenance-plan.json": {
+      "old": {
+        "bytes": 279924,
+        "sha256": "cb5bdf84f792130086fc86de41248c739dc94acfa089331183ee3137ab3c2dbd"
+      },
+      "new": {
+        "bytes": 279924,
+        "sha256": "f4a0147ed0fc63540dda0b6b18b088996830d7d7d65496288baaebf4aebb307b"
+      }
+    }
+  },
+  "unchangedPayloadFiles": 366,
+  "allRuntimePayloadBytesIdentical": true,
+  "readmeChange": "source commit identity only",
+  "totalFiles": 1499,
+  "sourceCleanAfterVerification": true,
+  "installed": false,
+  "published": false
+}
