@@ -25,7 +25,7 @@ type frontendDiagnostic struct {
 
 func diagnosticTarget() frontendDiagnostic {
 	t := foreground()
-	d := frontendDiagnostic{Time: time.Now().Format(time.RFC3339Nano), Build: "18u-test.9", Window: t.Window, Focus: t.Focus}
+	d := frontendDiagnostic{Time: time.Now().Format(time.RFC3339Nano), Build: "18u-test.10", Window: t.Window, Focus: t.Focus}
 	thread, _, _ := U("GetWindowThreadProcessId").Call(t.Focus, uintptr(unsafe.Pointer(&d.Process)))
 	d.Thread = uint32(thread)
 	thread, _, _ = U("GetWindowThreadProcessId").Call(t.Window, uintptr(unsafe.Pointer(&d.WindowProcess)))

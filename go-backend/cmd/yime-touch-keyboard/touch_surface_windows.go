@@ -28,8 +28,11 @@ func (a *ui) touchHeaderLayout() touchHeaderLayout {
 	row := max(int32(1), int32(math.Round(touchBodyHeightScale*u)))
 	width := a.previewWidth()
 	top, bottom := line+margin, line+margin+row
-	previous := rect{margin, top, margin + pager, bottom}
-	next := rect{width - margin - pager, top, width - margin, bottom}
+	// Use the board edges so the pager caps align with the outer body keys.
+	left := int32(a.border)
+	right := int32(float64(a.border) + a.s.Board.Bounds.Width*u)
+	previous := rect{left, top, left + pager, bottom}
+	next := rect{right - pager, top, right, bottom}
 	return touchHeaderLayout{
 		status: rect{margin, 0, width - margin, line}, previous: previous, next: next,
 		candidates: rect{previous.R + margin, top, next.L - margin, bottom},
