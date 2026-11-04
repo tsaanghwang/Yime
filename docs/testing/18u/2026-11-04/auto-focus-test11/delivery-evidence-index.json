@@ -260,6 +260,10 @@
     "verification/verify_package.py": {
       "bytes": 26954,
       "sha256": "410ae2b711752e546c5fcfcb31ba254ff18cfa85bae8d90d375f46f94021c4bb"
+    },
+    ".gitattributes": {
+      "bytes": 101,
+      "sha256": "52418f4c3f21df351e10fe7c77cdf833300364eff208eef0ba036dd14fb81ab1"
     }
   }
 }
