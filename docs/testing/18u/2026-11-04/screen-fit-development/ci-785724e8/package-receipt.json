@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "785724e8b0ed62f15994ed96da774b7a2b1c779b",
+  "zip": "YimeCore-18u-0.1.0-18u-test.9-windows-amd64.zip",
+  "bytes": 192163821,
+  "sha256": "126b998ad1be899846cb7b2c8b748abc7e76ed8a1b9392bf8fb7aa2e3df18d11",
+  "packageEvidence": {
+    "bytes": 8136,
+    "sha256": "7a812157fff0654898f31a2bec1388298563923ed4a13fb47ea2e5d54d26e8ab"
+  },
+  "installedDescriptor": {
+    "bytes": 7383,
+    "sha256": "2ddd4cd336916043e2fa52be9b1a0b19ce335c86feaee54e222889cc59bd5aca"
+  }
+}
