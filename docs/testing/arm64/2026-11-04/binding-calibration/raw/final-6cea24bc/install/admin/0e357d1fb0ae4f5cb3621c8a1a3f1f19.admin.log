@@ -1,0 +1,50 @@
+**********************
+PowerShell 记录开始
+开始时间: 20261104125121
+用户名: HUASHUONOTEBOOK\tsaan
+RunAs 用户: HUASHUONOTEBOOK\tsaan
+配置名称: 
+计算机: HUASHUONOTEBOOK (Microsoft Windows NT 10.0.28000.0)
+主机应用程序: C:\Program Files\Yime Maintenance\yimecore-18u\b8dfe0c0822ee24c22ffb8aa9700bfcc77a7b2ae08c8b05a26b2188a1bc1ea62\maintenance\powershell\pwsh.dll -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\Program Files\Yime Maintenance\yimecore-18u\b8dfe0c0822ee24c22ffb8aa9700bfcc77a7b2ae08c8b05a26b2188a1bc1ea62\maintenance\preflight.ps1
+进程 ID: 33272
+PSVersion: 7.6.9
+PSEdition: Core
+GitCommitId: 7.6.9
+OS: Microsoft Windows 10.0.28000
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\0e357d1fb0ae4f5cb3621c8a1a3f1f19.admin.log
+Action: Install; package: C:\Program Files\Yime Maintenance\yimecore-18u\b8dfe0c0822ee24c22ffb8aa9700bfcc77a7b2ae08c8b05a26b2188a1bc1ea62
+Installed ownership verified: product=yimecore-18u; version=0.2.0-18u-arm64.1; payload_count=20; publisher_authentication=false
+owned=true
+mutation_performed=false
+com_path=C:\Program Files\YimeCore 18u Touch\arm64\YimeTextService18u.dll
+tip_removal_complete=true
+com_retained=true
+completion_required=true
+operation=unregister-tip
+hresult=0x0
+succeeded=true
+operation=unregister
+hresult=0x0
+succeeded=true
+tool_version=yime-18u-product-registration-v1
+mutation_performed=false
+com_registered=false
+tip_registered=false
+profile_count=0
+categories_registered_count=0
+com_path=
+operation=register
+hresult=0x0
+succeeded=true
+Installed persistent independent 18u: C:\Program Files\YimeCore 18u Touch
+User startup configured. The initiating non-elevated entry starts the touch runtime; installed-host acceptance remains separate.
+**********************
+PowerShell 记录结束
+结束时间: 20261104125139
+**********************

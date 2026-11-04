@@ -1,0 +1,11 @@
+{
+  "sourceCommit": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "version": "0.2.0-18u-arm64.4",
+  "stage": "hashes-locked-awaiting-explicit-execution",
+  "runnable": true,
+  "productsExecuted": false,
+  "manifestSHA256": "572f66e68ad91effbdc994c6fbe1ca71a705d7ee4c5194b10d41447480ad83f3",
+  "hostSHA256": "d316e0fb04308806a74160a15e5e047f49424189c555b72a05c97ca9a8ac7c91",
+  "scriptSHA256": "78468a60c6f0277b358a09b16e2f0353b3ea683a22ad6c67c80c9bb6397b2291",
+  "planSHA256": "95e8b4088febbf1fe857ff86e6574a5223fe489ca0cb2dbed9fd5e3b63ee70ba"
+}

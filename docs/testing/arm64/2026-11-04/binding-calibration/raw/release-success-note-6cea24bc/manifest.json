@@ -1,0 +1,84 @@
+{
+  "schema": "yime-byte-exact-evidence-manifest-v1",
+  "sourceCommit": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "members": [
+    {
+      "path": "apply-once/after-release.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/apply-once/after-release.json",
+      "bytes": 13586,
+      "sha256": "6673bc30288442f2de118e63254a6b8112e524220b5c7eeed92df36d60cc6544"
+    },
+    {
+      "path": "apply-once/after-tag.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/apply-once/after-tag.json",
+      "bytes": 478,
+      "sha256": "90f1529b213b57283153dfba0fd77b2e83ccad78fd25c2b6a46b8ea5d46f976c"
+    },
+    {
+      "path": "apply-once/before-release.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/apply-once/before-release.json",
+      "bytes": 12223,
+      "sha256": "b55d0d8aa91d3fe9f0d6f073bd7674070f032746e404236fa6076320b8ffb2a9"
+    },
+    {
+      "path": "apply-once/before-tag.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/apply-once/before-tag.json",
+      "bytes": 478,
+      "sha256": "90f1529b213b57283153dfba0fd77b2e83ccad78fd25c2b6a46b8ea5d46f976c"
+    },
+    {
+      "path": "apply-once/success-note-update-receipt.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/apply-once/success-note-update-receipt.json",
+      "bytes": 630,
+      "sha256": "f63e36716893835f0a676b77a6ce7ace1a0dca2aaeca5273dd248896ef4d0e93"
+    },
+    {
+      "path": "original-body.md",
+      "source": ".generated/18u-release-success-note-6cea24bc/original-body.md",
+      "bytes": 2500,
+      "sha256": "0859601508409600bbb57b44ed7682b78eeac844673325ef99286b752ed4535d"
+    },
+    {
+      "path": "prepared-remote-release.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/prepared-remote-release.json",
+      "bytes": 10746,
+      "sha256": "68df3901c3868d48dd6b6aeb55cbd4be2998c704926fdf99fcf77249a30008b7"
+    },
+    {
+      "path": "prepared-remote-tag.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/prepared-remote-tag.json",
+      "bytes": 440,
+      "sha256": "551ceb486611b25f935de60565afede36d8e0bb6e250a38c66e0f93c7b2ffb6c"
+    },
+    {
+      "path": "release-notes-after-install-success.md",
+      "source": ".generated/18u-release-success-note-6cea24bc/release-notes-after-install-success.md",
+      "bytes": 3839,
+      "sha256": "9c0518c9229dc0a32b0093203499d54e086e7a49af98e1cb32080bf7993f0a18"
+    },
+    {
+      "path": "review-plan.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/review-plan.json",
+      "bytes": 2682,
+      "sha256": "446533577472a04d2bb8919e8a54ec747287d2fc00d8e9dab8f9ea39ce50725a"
+    },
+    {
+      "path": "source-snapshots/gh_repo.py",
+      "source": ".generated/18u-release-success-note-6cea24bc/source-snapshots/gh_repo.py",
+      "bytes": 942,
+      "sha256": "4e5164e27b69a5f183f2ff6ec15c4860830ca3ae7220f474090a88371071608c"
+    },
+    {
+      "path": "source-snapshots/mark-6cea-install-success.py",
+      "source": ".generated/18u-release-success-note-6cea24bc/source-snapshots/mark-6cea-install-success.py",
+      "bytes": 12561,
+      "sha256": "41dc15f292c5cc2cf6fbac4d8d2bc7e9ea80a53dacbae21d3e62612ed8b7fa29"
+    },
+    {
+      "path": "success-update.md",
+      "source": ".generated/18u-release-success-note-6cea24bc/success-update.md",
+      "bytes": 1339,
+      "sha256": "826af13ef732d6818b8d28575dca0b1ce59d2e6550d09eef8ae82e51f2c70949"
+    }
+  ]
+}

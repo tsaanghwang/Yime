@@ -1,0 +1,32 @@
+{
+  "source": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "stage": "draft",
+  "verifiedAtUTC": "2026-11-04T04:49:23.112404+00:00",
+  "url": "https://github.com/tsaanghwang/Yime/releases/tag/untagged-1591a26ebc7d96436f6f",
+  "draft": true,
+  "prerelease": true,
+  "ciCounts": null,
+  "assets": [
+    {
+      "name": "native-build-6cea24bc.json",
+      "size": 4400,
+      "digest": "sha256:8a49f7bdec985e3fd0a54c7d7fe8a6d2c01e2805026a9ab9b8323e03bf97e3fe",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/untagged-1591a26ebc7d96436f6f/native-build-6cea24bc.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-yimecore-18u-windows-arm64-6cea24bc665a.identity.json",
+      "size": 219346,
+      "digest": "sha256:5df7ab584b57c42153f4efdf4ba9b772f0c5a8e731bb45b01fb526886c94394d",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/untagged-1591a26ebc7d96436f6f/yime-yimecore-18u-windows-arm64-6cea24bc665a.identity.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-yimecore-18u-windows-arm64-6cea24bc665a.zip",
+      "size": 219929065,
+      "digest": "sha256:432db184c1a9fcb7a981522f08f5aa3bb6e933169e2e7961e51afb2f614d10be",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/untagged-1591a26ebc7d96436f6f/yime-yimecore-18u-windows-arm64-6cea24bc665a.zip",
+      "state": "uploaded"
+    }
+  ]
+}

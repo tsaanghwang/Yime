@@ -1,0 +1,124 @@
+{
+  "yimecore": {
+    "metadataSHA256": {
+      ".yime-product.json": "eb17470d5f74c922c639845706658d02fafeaaa29b9c38a0216fcfa64344a0f7",
+      ".setup/product-package.json": "edb9f35fa878732bbd693052fedb93facd50987ad62a80354486046988a876a9",
+      ".setup/Product.psm1": "a0b3c82b2e3d539f18b3dacbd9f65025b0541d667a2edd9bdc4fb9ed40dc1c22",
+      ".setup/Setup.cmd": "f037e8fbad255f8c76d908a00b58500243aa72595d291504604242c8b81b7a97",
+      ".setup/Setup.ps1": "fc922accf0f58a22c913e5c460b88db0657cd5aa9303ebaeea592d5706bc9229",
+      ".setup/native/arm64/YimeTextServiceRegistration.exe": "7070c9dfde6eafb13fd471d3c6d31c8360ffd7d38c0858f760c4aaa51382d281",
+      ".setup/native/x86/YimeTextServiceRegistration.exe": "b7949aae8965a45a401975b7e52cab898b9fea0364b975d85107975e610983ca"
+    },
+    "liveProcesses": [
+      {
+        "pid": 7952,
+        "image": "C:\\Program Files\\YimeCore\\bin\\YimeCoreInputToolbar.exe",
+        "creationTicks": 134381909276944195,
+        "token": {
+          "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+          "integrity": 8192,
+          "elevated": 0,
+          "session": 2,
+          "authenticationLuid": "df453c0100000000"
+        }
+      },
+      {
+        "pid": 19916,
+        "image": "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+        "creationTicks": 134381909265930364,
+        "token": {
+          "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+          "integrity": 8192,
+          "elevated": 0,
+          "session": 2,
+          "authenticationLuid": "df453c0100000000"
+        }
+      },
+      {
+        "pid": 21076,
+        "image": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+        "creationTicks": 134381909277773089,
+        "token": {
+          "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+          "integrity": 8192,
+          "elevated": 0,
+          "session": 2,
+          "authenticationLuid": "df453c0100000000"
+        }
+      }
+    ]
+  },
+  "rime-pime": {
+    "metadataSHA256": {
+      ".yime-product.json": "3b218f4852d85c6875c1d09e8d62a2bd0bd70397ac98e6a92d18fdea5319b31a",
+      ".setup/product-package.json": "8f0b1c3b76198a80b728e1072e737ee40cefffaa14c9922131f25984784b1427",
+      ".setup/Product.psm1": "a0b3c82b2e3d539f18b3dacbd9f65025b0541d667a2edd9bdc4fb9ed40dc1c22",
+      ".setup/Setup.cmd": "7fd83101391058db412a6cef9b28adb9450c5b71a0421df29d91219312f14eb8",
+      ".setup/Setup.ps1": "bc890ae1a3beb43144a8902840a3a34b27283dfad5156d8acf07a48c8b9231db",
+      ".setup/native/arm64/PIMETextService.dll": "3f1d76c7c3be6dfdfb0065ed61f4f855f8fb8215e6b4edd55da01723aac45c55",
+      ".setup/native/x86/PIMETextService.dll": "98ab6da6d9b822e3148988b4cedd9be70d905365b2ae4f599479944129f2e7ab"
+    },
+    "liveProcesses": [
+      {
+        "pid": 22240,
+        "image": "C:\\Program Files\\Yime Rime-PIME\\go-backend\\server.exe",
+        "creationTicks": 134382306601361816,
+        "token": {
+          "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+          "integrity": 8192,
+          "elevated": 0,
+          "session": 2,
+          "authenticationLuid": "df453c0100000000"
+        }
+      },
+      {
+        "pid": 38684,
+        "image": "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe",
+        "creationTicks": 134381980021612017,
+        "token": {
+          "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+          "integrity": 8192,
+          "elevated": 0,
+          "session": 2,
+          "authenticationLuid": "df453c0100000000"
+        }
+      },
+      {
+        "pid": 39884,
+        "image": "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe",
+        "creationTicks": 134381980021375694,
+        "token": {
+          "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+          "integrity": 8192,
+          "elevated": 0,
+          "session": 2,
+          "authenticationLuid": "df453c0100000000"
+        }
+      }
+    ]
+  },
+  "yimecore-18u": {
+    "metadataSHA256": {
+      ".yime-product.json": "7f490cc57882eb5f325510eb9708a8695490f94fc1be67ce40042daeac316dfb",
+      ".setup/product-package.json": "0026a8d347167473b43c66a85a26cd68ee4e4428596a3ddcd3d3f9ea11e548c1",
+      ".setup/Product.psm1": "a0b3c82b2e3d539f18b3dacbd9f65025b0541d667a2edd9bdc4fb9ed40dc1c22",
+      ".setup/Setup.cmd": "7fd83101391058db412a6cef9b28adb9450c5b71a0421df29d91219312f14eb8",
+      ".setup/Setup.ps1": "4aa3f547cb4649510723c758a1580ae5aa216ccb4172ae9123888735da2fcb24",
+      ".setup/native/arm64/Yime18uProductRegistration.exe": "7d8830691d95846498a81b61034c1bf6c17d7252996d8fdd8a08f89542fe71ff"
+    },
+    "liveProcesses": [
+      {
+        "pid": 37664,
+        "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+        "creationTicks": 134382415019570885,
+        "token": {
+          "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+          "integrity": 8192,
+          "elevated": 0,
+          "session": 2,
+          "authenticationLuid": "df453c0100000000"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "sourceCommit": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "manifestSHA256": "572f66e68ad91effbdc994c6fbe1ca71a705d7ee4c5194b10d41447480ad83f3",
+  "packageVersion": "0.2.0-18u-arm64.4",
+  "controller": {
+    "pid": 44040,
+    "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "creationTicks": 134382416709882261,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "runRequested": true,
+  "physicalAcceptance": false,
+  "registrationChanged": false,
+  "defaultProfileChanged": false,
+  "scriptSHA256": "78468a60c6f0277b358a09b16e2f0353b3ea683a22ad6c67c80c9bb6397b2291",
+  "planSHA256": "95e8b4088febbf1fe857ff86e6574a5223fe489ca0cb2dbed9fd5e3b63ee70ba",
+  "checkpoints": 18,
+  "initialProcesses": [
+    {
+      "relative": "bin/Yime18uInstalledRuntime.exe",
+      "pid": 37664,
+      "creationTicks": 134382415019570885
+    },
+    {
+      "relative": "bin/YimeBroker18u.exe",
+      "pid": 39380,
+      "creationTicks": 134382415068818828
+    },
+    {
+      "relative": "bin/YimeTouchKeyboard.exe",
+      "pid": 11252,
+      "creationTicks": 134382415212167129
+    }
+  ],
+  "installerReceiptSHA256": "5b4cc5d7629a6bfee4e6d3848f3e8b60b3ded10772b66bfaec0e9c3395b9b2a5",
+  "onceGuard": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-prepared-6cea24bc\\run-once.guard",
+  "priorCalibrationFiles": [],
+  "calibrationSaver": {
+    "pid": 20828,
+    "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+    "creationTicks": 134382416726012590,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "calibrationExitCode": 0,
+  "calibration": {
+    "path": "C:\\Users\\tsaan\\AppData\\Local\\YimeCore 18u Touch\\display-calibration\\1c5b04c107a7252df243d812bf66aadfa8d5e4f43213e9da282db1ffad1ba762.json",
+    "sha256": "463d624053325f98146cf6458b5782ed518e377a209cb9cb3e3961ef2c7ff01b",
+    "measurement": {
+      "schema": "yimecore-18u-display-calibration-v1",
+      "monitorDevice": "\\\\.\\DISPLAY1",
+      "monitorInterfaceID": "\\\\?\\DISPLAY#SDC4235#5&18c0927a&0&UID4353#{e6f07b5f-ee97-4a90-b076-33f57bf4eaa7}",
+      "widthPixels": 3840,
+      "heightPixels": 2400,
+      "baselineScreenWidthMM": 597.73,
+      "referenceMM": 100,
+      "observedMM": 57.5,
+      "measurementSource": "physical-ruler",
+      "recordedUTC": "2026-11-04T04:54:33Z"
+    },
+    "physicalAcceptance": false
+  },
+  "checkpointsControllerExitCode": 0,
+  "checkpointReceiptSHA256": "bca1a80326c25f0d2266be59332e836b82815a9bb9b73075d6ffd5fee0884819",
+  "testJobEmptyBeforeRestore": true,
+  "restorationAttemptedByInnerControllerOnly": true,
+  "restoredProcesses": [
+    {
+      "relative": "bin/Yime18uInstalledRuntime.exe",
+      "pid": 45260,
+      "creationTicks": 134382417013587973
+    },
+    {
+      "relative": "bin/YimeBroker18u.exe",
+      "pid": 21596,
+      "creationTicks": 134382417023995290
+    },
+    {
+      "relative": "bin/YimeTouchKeyboard.exe",
+      "pid": 6888,
+      "creationTicks": 134382417147899609
+    }
+  ],
+  "ok": true
+}

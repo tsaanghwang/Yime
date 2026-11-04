@@ -14,6 +14,551 @@
       "source": ".generated/armfull-tools/observe-notepad-binding-stop.py",
       "path": "raw/first-binding-failure-observer.py",
       "sha256": "56eff4419348a0c96acbefd0e85559a6bc39a02e55e6d59c45c54792111a2c4a"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/build-artifacts/build-receipt.json",
+      "sha256": "8a49f7bdec985e3fd0a54c7d7fe8a6d2c01e2805026a9ab9b8323e03bf97e3fe"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/build-artifacts/complete-maintenance.log",
+      "sha256": "df9dd96d72fb0d70deda959da89cddb1f8d79c2553d3bdacbac62870c25c573e"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/build-artifacts/complete-package-receipt.json",
+      "sha256": "6299758854bf60fa592c9a73c4c5225b5af55c78250d8d8d5149afbbc2861f98"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/build-artifacts/native-build.log",
+      "sha256": "074f817f5ae4c7b62a904ea4fea1ab7fe4c51bb2775ae899813d29497f7884ae"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/build-artifacts/native-configure.log",
+      "sha256": "4ea278d5a60f590cafa8de8743b7d59c40755c735ab5528fa9ffe71558d18231"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/build-artifacts/signatures-params.json",
+      "sha256": "d7fd6786478f02df2431c169bd89dbbe55b7b094a4561e38e0b7c281372f9d7a"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/build-artifacts/signatures.log",
+      "sha256": "bc2f2c14f2475701530932d6bb46500be96611d76194a8e049b37abc843e9d59"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/build-artifacts/simple-package.log",
+      "sha256": "b35930253a3738bf82a4a709b6d7bd724ae1730f2920b9b94b19fc7dea1b4c3a"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/build-artifacts/six-signatures.json",
+      "sha256": "a1d0151c457f2714bee98f8a8815376ab16578ad4657867ced5ccb5383813b2c"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/build-artifacts/Yime18uInstalledRuntime-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/build-artifacts/YimeBroker18u-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/build-artifacts/YimeTouchKeyboard-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/calibration.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/calibration.stdout.log",
+      "sha256": "e29ba0f300da7449c81e4630ccc902e73472268d6f208c8855072b135636c2af"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/checkpoints/broker.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/checkpoints/broker.stdout.log",
+      "sha256": "16f643eba6b74ca57b41dba767172d667dafc9e34ec2d0a4a9df992057b5ffd6"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/checkpoints/controller-used.py",
+      "sha256": "a97d8fcc7a9e85ed9f4ecd6166dabe4c03cd05ece756fa79666618633cf0a349"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/checkpoints/host.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/checkpoints/host.stdout.log",
+      "sha256": "bc70cdc3ce94f7db1768633b779cbfcd5ec904a0e0bf4af3425883fef7e98445"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/checkpoints/job-members.json",
+      "sha256": "d3746c922b5757131eb1d5850346e81ce1777e8a40b83eb2464bc2751dfe164c"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/checkpoints/receipt.json",
+      "sha256": "bca1a80326c25f0d2266be59332e836b82815a9bb9b73075d6ffd5fee0884819"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/checkpoints/restored-runtime.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/checkpoints-controller.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/checkpoints-controller.stdout.log",
+      "sha256": "bca1a80326c25f0d2266be59332e836b82815a9bb9b73075d6ffd5fee0884819"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/initial-identity/config.json",
+      "sha256": "972d2af337b0d82d6c3eabcfe93d4fafc265c9217913be094415ddaa182c9ac2"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/initial-identity/identity.json",
+      "sha256": "c3a0089960cd5f7bc00150b5ca559ba41422ef915662d9d149e25e25deeed8fe"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/initial-identity.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/initial-identity.stdout.log",
+      "sha256": "5ca18a04328353fbd1ad6c21e8bc2eb60b47cae57e8a46a7603deab73075d343"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/receipt.json",
+      "sha256": "588d5bfba846ade67f93308b4f358015fa5898db1c38f5bc2bd6e6a675090ed8"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/restored-identity/config.json",
+      "sha256": "2068dd5e534784fee9b137d9b3f959ceb2edb1b16c3b83828aabdba65adbdc47"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/restored-identity/identity.json",
+      "sha256": "9ae413d739160f8d438beb96bbb1b446bc76f78bbd7eb6946e1b2c67f8c4bb40"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/restored-identity.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-checks/restored-identity.stdout.log",
+      "sha256": "d9fa6ea4c26d4862c3565d18e3e5285d9fac4475886b93f6ab22553a0009f460"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-prepared/capture_installed_frontend_identity.py",
+      "sha256": "38283c254f5b3cc51ad91b422497e7628c0cb48d1b23b0fe3d46ec576b381c37"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-prepared/frontend-checkpoints.template.json",
+      "sha256": "1e529ef3e0d070b298d9aef0742db0ddd80a4679bc2df0a6e7d9344b83205bfd"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-prepared/preparation-status.json",
+      "sha256": "52557be2dc319cfa1dd011ee08ff6e075c2c8552ded839b995521edbff8c24dd"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-prepared/prepared-plan.json",
+      "sha256": "95e8b4088febbf1fe857ff86e6574a5223fe489ca0cb2dbed9fd5e3b63ee70ba"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-prepared/run_calibrated_frontend_once.py",
+      "sha256": "78468a60c6f0277b358a09b16e2f0353b3ea683a22ad6c67c80c9bb6397b2291"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-prepared/run_installed_frontend_checkpoints.py",
+      "sha256": "a97d8fcc7a9e85ed9f4ecd6166dabe4c03cd05ece756fa79666618633cf0a349"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-prepared/test_outer_receipt_errors.py",
+      "sha256": "d2513176b9d13199be4975148805dfe41b6e2e76ed0bd19d16aac0acc2b5dada"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/calibration-settings/1c5b04c107a7252df243d812bf66aadfa8d5e4f43213e9da282db1ffad1ba762.json",
+      "sha256": "463d624053325f98146cf6458b5782ed518e377a209cb9cb3e3961ef2c7ff01b"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/ci/source-ci.json",
+      "sha256": "5ff159535d61e36d41c707dd2bcc9ded44d12091ab6b56319d97d1cd7e63a30b"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/admin/0e357d1fb0ae4f5cb3621c8a1a3f1f19.admin.log",
+      "sha256": "bb08f4086d741060f07cd4446c6d13bd51efcc6eac47acb39e86452018ee26a7"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/after-capture.log",
+      "sha256": "239cec67b468ee228a052ec799fe4ac918140c758074bc00242d97d0a4b3d505"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/after-extra.json",
+      "sha256": "e8284238bb27be1cf59606fbe2f5d53bef15c34cf1268c7f64d8dc510b629e03"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/after-params.json",
+      "sha256": "339d0476f7bc1d0e6b34cf1d250e369c82585951d5d76f9fcebbdd6659865fec"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/after.json",
+      "sha256": "cf0f8fff4672afc88bd63bfb492b7cc64e007856f7268df50e114a7d0b96b1d2"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/before-capture.log",
+      "sha256": "724fbd26376fcdb620ea819ff865b3a1fa450c9d3aa84f4745177958c063adaf"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/before-extra.json",
+      "sha256": "5fe3bd82415012255cd8a9824461d9a3239c4a3d7b504ccda4565ee8700dfda1"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/before-install-dll-users-capture.log",
+      "sha256": "916cd82fd1192c4d89fdbc1cfc69fb54fb0c97bdecd6dbb2f5856908f7e3f160"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/before-install-dll-users-params.json",
+      "sha256": "a3ab0e6212ea74239d32d8ba519659e5206feda6699d939fc89651d6afef93cb"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/before-install-dll-users.json",
+      "sha256": "343fc58ff41704cc07736ed6bd87539ee99b197dda46ddd74be50cde4b4f0b03"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/before-params.json",
+      "sha256": "e4972cb2b8ec11e6e1f2db3371d099a1420ad01aa6f0c6402b7f13f0c8555e65"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/before.json",
+      "sha256": "0b02e19b958e99fa32b0e08f1d7861767c4ad0b4e6ca435d2608a98064b7eb89"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/ci-receipt.json",
+      "sha256": "5ff159535d61e36d41c707dd2bcc9ded44d12091ab6b56319d97d1cd7e63a30b"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/delivery-receipt.json",
+      "sha256": "7b8821f5b81bc17964d766731352353ad46b7205de16e5693afbce7e5b1c76ab"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/dll-users-capture.log",
+      "sha256": "916cd82fd1192c4d89fdbc1cfc69fb54fb0c97bdecd6dbb2f5856908f7e3f160"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/dll-users-params.json",
+      "sha256": "4a04c320ffa963d04a1358a80b84517cbc48beb814eba00ec4c2ca5f3b96d2fa"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/dll-users.json",
+      "sha256": "3272656d0fa3e795f427a74dd427b826c7eee1bd27b24b0296ae49e7a50a108f"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/initial-capture.log",
+      "sha256": "08425e7c1f6dcb1a5e9c21aedf5dbfb7e66418b2fe4bd8655fe1dc6c26e335ad"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/initial-extra.json",
+      "sha256": "d2fa21f12edfdc983b2302fa946bb5ac640ac13b0efd29cdcd599d2dc0413965"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/initial-params.json",
+      "sha256": "91e562da7aeb73cf715f15f9a129e17d12b4a07a34267e5aeb713ac3d863ec6d"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/initial.json",
+      "sha256": "b20d30c29da2dad7f80a632a3277070d7906b17d4fb0a83c8e0139524e2a228b"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/install-result.json",
+      "sha256": "5b4cc5d7629a6bfee4e6d3848f3e8b60b3ded10772b66bfaec0e9c3395b9b2a5"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/original-runtime-family.json",
+      "sha256": "1e967025ca5b316065a81555e5f04ea0d6b4aad39d645c622d2ce509116d043e"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/original-runtime-restore.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/install/setup-output.log",
+      "sha256": "87302acf1e37905dbe1f006f3b5532809cd98123671b436aff2eaf6ca9f378a1"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/manifest.json",
+      "sha256": "60f064ea8957a5b8ae39390b5fbd4bd89a2d50b89002b71a146d404af798dac5"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/package/maintenance-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/package/maintenance-check.log",
+      "sha256": "3f56ef1dfbfd84c85bc873bbe2a1436ed2bead066b9f85ce46dd2e8c2b7ba308"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/package/package-signatures.json",
+      "sha256": "cc60b6e8574b6e6286d3926f5cb435e353a2aba678076dc070e4e2ebb3d4421f"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/package/source-snapshots/maintenance-plan.json",
+      "sha256": "b8dfe0c0822ee24c22ffb8aa9700bfcc77a7b2ae08c8b05a26b2188a1bc1ea62"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/package/source-snapshots/product-package.json",
+      "sha256": "0026a8d347167473b43c66a85a26cd68ee4e4428596a3ddcd3d3f9ea11e548c1"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/package/source-snapshots/Product.psm1",
+      "sha256": "a0b3c82b2e3d539f18b3dacbd9f65025b0541d667a2edd9bdc4fb9ed40dc1c22"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/package/source-snapshots/Setup.cmd",
+      "sha256": "7fd83101391058db412a6cef9b28adb9450c5b71a0421df29d91219312f14eb8"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/package/source-snapshots/Setup.ps1",
+      "sha256": "4aa3f547cb4649510723c758a1580ae5aa216ccb4172ae9123888735da2fcb24"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/package/yime-yimecore-18u-windows-arm64-6cea24bc665a.identity.json",
+      "sha256": "5df7ab584b57c42153f4efdf4ba9b772f0c5a8e731bb45b01fb526886c94394d"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/release/delivery-receipt.json",
+      "sha256": "7b8821f5b81bc17964d766731352353ad46b7205de16e5693afbce7e5b1c76ab"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/release/draft-receipt.json",
+      "sha256": "5b0b39ad87b98a2c6820ae926f689f0feeabb3d476e955bcf33575eb00f9fa52"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/release/native-build-6cea24bc.json",
+      "sha256": "8a49f7bdec985e3fd0a54c7d7fe8a6d2c01e2805026a9ab9b8323e03bf97e3fe"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/release/release-notes-draft.md",
+      "sha256": "a571561705b5e8b5dd84c8ac832e300794e185dcf60e24adb980181d476de219"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/release/release-notes-publish.md",
+      "sha256": "0859601508409600bbb57b44ed7682b78eeac844673325ef99286b752ed4535d"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/release/source-ci-6cea24bc.json",
+      "sha256": "5ff159535d61e36d41c707dd2bcc9ded44d12091ab6b56319d97d1cd7e63a30b"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/runners/bind-installer-6cea24bc.py",
+      "sha256": "0bed7cccc71e135127d2bf8035da970ebe5c2ca671902d44e7f155f1d9b09b9a"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/runners/build-asus-18u-wait-repair.py",
+      "sha256": "b29028f3707ce7279c9bf04965688d59ab22f576cc840ed9e4a8d4caf6037b9d"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/runners/install-asus-18u-6cea24bc.audit.json",
+      "sha256": "6c6365ec3df20358aa7e00d5262506cd1a038c6b8e250d0ccc65f958f959373f"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/runners/install-asus-18u-6cea24bc.py",
+      "sha256": "75144f6337917a496777d791aba48109b2a93b0a3791432afefa171c61a49876"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/runners/package-asus-18u-wait-repair.py",
+      "sha256": "b9723ff58f81da4962fc18a31920e34ea798bf709a268c35f2f725bc50d4cd86"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/runners/prepare-final-18u-6cea-evidence.py",
+      "sha256": "da46f33ace972831061a3891209454b6316a1378e8bbe6bc5c46e8e9f2ee5f80"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/runners/publish-asus-18u-wait-repair.py",
+      "sha256": "da34f9ea647a02a6e3fc3d156195a7d6acc5ad05d9a8d08ddc8cd8552195702c"
+    },
+    {
+      "source": "candidate archive from completed .4 receipts",
+      "path": "raw/final-6cea24bc/summary.json",
+      "sha256": "0f2f692ff8e53603dfd039f5592048860ee37a6acbaa9c2bb6135824d1bf334b"
+    },
+    {
+      "source": ".generated/asus-18u-human-retest-6cea24bc/candidate-tree/docs/testing/arm64/2026-11-04/binding-calibration/raw/post-upgrade-notepad-6cea24bc/archive-manifest.json",
+      "path": "raw/post-upgrade-notepad-6cea24bc/archive-manifest.json",
+      "sha256": "52589d02558d2a27109801ba253d9c393229451573d496c5e6e600ad76927481"
+    },
+    {
+      "source": ".generated/asus-18u-human-retest-6cea24bc/candidate-tree/docs/testing/arm64/2026-11-04/binding-calibration/raw/post-upgrade-notepad-6cea24bc/observation.json",
+      "path": "raw/post-upgrade-notepad-6cea24bc/observation.json",
+      "sha256": "8d6494ce52a9df75d7b72446b855b1bdf482903eb266a729ce32e5868b262ac5"
+    },
+    {
+      "source": ".generated/asus-18u-human-retest-6cea24bc/candidate-tree/docs/testing/arm64/2026-11-04/binding-calibration/raw/post-upgrade-notepad-6cea24bc/script-used.py",
+      "path": "raw/post-upgrade-notepad-6cea24bc/script-used.py",
+      "sha256": "456b52a463df2d39e2e20c69944779ce38d35aa4922eb3adca0717a4b93011fd"
+    },
+    {
+      "source": ".generated/asus-18u-human-retest-6cea24bc/candidate-tree/docs/testing/arm64/2026-11-04/binding-calibration/raw/post-upgrade-notepad-6cea24bc/ui-agent-observation.json",
+      "path": "raw/post-upgrade-notepad-6cea24bc/ui-agent-observation.json",
+      "sha256": "aa8370ef894bf5b5010a0b7db058d455c15a256928de111db1303d8d534fa25f"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/apply-once/after-release.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/apply-once/after-release.json",
+      "sha256": "6673bc30288442f2de118e63254a6b8112e524220b5c7eeed92df36d60cc6544"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/apply-once/after-tag.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/apply-once/after-tag.json",
+      "sha256": "90f1529b213b57283153dfba0fd77b2e83ccad78fd25c2b6a46b8ea5d46f976c"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/apply-once/before-release.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/apply-once/before-release.json",
+      "sha256": "b55d0d8aa91d3fe9f0d6f073bd7674070f032746e404236fa6076320b8ffb2a9"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/apply-once/before-tag.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/apply-once/before-tag.json",
+      "sha256": "90f1529b213b57283153dfba0fd77b2e83ccad78fd25c2b6a46b8ea5d46f976c"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/apply-once/success-note-update-receipt.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/apply-once/success-note-update-receipt.json",
+      "sha256": "f63e36716893835f0a676b77a6ce7ace1a0dca2aaeca5273dd248896ef4d0e93"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/original-body.md",
+      "source": ".generated/18u-release-success-note-6cea24bc/original-body.md",
+      "sha256": "0859601508409600bbb57b44ed7682b78eeac844673325ef99286b752ed4535d"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/prepared-remote-release.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/prepared-remote-release.json",
+      "sha256": "68df3901c3868d48dd6b6aeb55cbd4be2998c704926fdf99fcf77249a30008b7"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/prepared-remote-tag.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/prepared-remote-tag.json",
+      "sha256": "551ceb486611b25f935de60565afede36d8e0bb6e250a38c66e0f93c7b2ffb6c"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/release-notes-after-install-success.md",
+      "source": ".generated/18u-release-success-note-6cea24bc/release-notes-after-install-success.md",
+      "sha256": "9c0518c9229dc0a32b0093203499d54e086e7a49af98e1cb32080bf7993f0a18"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/review-plan.json",
+      "source": ".generated/18u-release-success-note-6cea24bc/review-plan.json",
+      "sha256": "446533577472a04d2bb8919e8a54ec747287d2fc00d8e9dab8f9ea39ce50725a"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/source-snapshots/gh_repo.py",
+      "source": ".generated/18u-release-success-note-6cea24bc/source-snapshots/gh_repo.py",
+      "sha256": "4e5164e27b69a5f183f2ff6ec15c4860830ca3ae7220f474090a88371071608c"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/source-snapshots/mark-6cea-install-success.py",
+      "source": ".generated/18u-release-success-note-6cea24bc/source-snapshots/mark-6cea-install-success.py",
+      "sha256": "41dc15f292c5cc2cf6fbac4d8d2bc7e9ea80a53dacbae21d3e62612ed8b7fa29"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/success-update.md",
+      "source": ".generated/18u-release-success-note-6cea24bc/success-update.md",
+      "sha256": "826af13ef732d6818b8d28575dca0b1ce59d2e6550d09eef8ae82e51f2c70949"
+    },
+    {
+      "path": "raw/release-success-note-6cea24bc/manifest.json",
+      "source": ".generated/armfull-tools/archive-6cea-success-note.py",
+      "sha256": "abcb4e5dacc281195d14aaa335da6d60554d8554919967c7486ccfd2162fc9a2"
     }
   ]
 }

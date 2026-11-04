@@ -1,0 +1,16 @@
+{
+  "sourceCommit": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "version": "0.2.0-18u-arm64.4",
+  "package": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-wait-repair-6cea24bc\\simple\\package",
+  "identity": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-wait-repair-6cea24bc\\complete\\yime-yimecore-18u-windows-arm64-6cea24bc665a.identity.json",
+  "zip": {
+    "bytes": 219929065,
+    "name": "yime-yimecore-18u-windows-arm64-6cea24bc665a.zip",
+    "sha256": "432db184c1a9fcb7a981522f08f5aa3bb6e933169e2e7961e51afb2f614d10be"
+  },
+  "installedManifestSHA256": "572f66e68ad91effbdc994c6fbe1ca71a705d7ee4c5194b10d41447480ad83f3",
+  "payloadCount": 20,
+  "planSHA256": "b8dfe0c0822ee24c22ffb8aa9700bfcc77a7b2ae08c8b05a26b2188a1bc1ea62",
+  "maintenanceSHA256": "b10c6048419a58d9d2078822170d27415343d79051e324b8ca3edc21d8099852",
+  "installed": false
+}

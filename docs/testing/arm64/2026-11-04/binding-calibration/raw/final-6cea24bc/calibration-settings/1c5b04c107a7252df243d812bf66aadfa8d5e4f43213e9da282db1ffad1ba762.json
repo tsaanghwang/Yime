@@ -1,0 +1,12 @@
+{
+  "schema": "yimecore-18u-display-calibration-v1",
+  "monitorDevice": "\\\\.\\DISPLAY1",
+  "monitorInterfaceID": "\\\\?\\DISPLAY#SDC4235#5\u002618c0927a\u00260\u0026UID4353#{e6f07b5f-ee97-4a90-b076-33f57bf4eaa7}",
+  "widthPixels": 3840,
+  "heightPixels": 2400,
+  "baselineScreenWidthMM": 597.73,
+  "referenceMM": 100,
+  "observedMM": 57.5,
+  "measurementSource": "physical-ruler",
+  "recordedUTC": "2026-11-04T04:54:33Z"
+}

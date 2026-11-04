@@ -1,0 +1,38 @@
+{
+  "schema": "asus-18u-post-upgrade-notepad-archive-v1",
+  "recordedUTC": "2026-11-04T05:07:17.114754+00:00",
+  "sourceCommit": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "packageVersion": "0.2.0-18u-arm64.4",
+  "manifestSHA256": "572f66e68ad91effbdc994c6fbe1ca71a705d7ee4c5194b10d41447480ad83f3",
+  "fileCount": 3,
+  "files": [
+    {
+      "path": "observation.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-notepad-prepared-6cea24bc\\observation.json",
+      "bytes": 4672,
+      "sha256": "8d6494ce52a9df75d7b72446b855b1bdf482903eb266a729ce32e5868b262ac5",
+      "byteExactCopy": true
+    },
+    {
+      "path": "script-used.py",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\armfull-tools\\observe-notepad-prepared-6cea24bc.py",
+      "bytes": 5781,
+      "sha256": "456b52a463df2d39e2e20c69944779ce38d35aa4922eb3adca0717a4b93011fd",
+      "byteExactCopy": true
+    },
+    {
+      "path": "ui-agent-observation.json",
+      "bytes": 1901,
+      "sha256": "aa8370ef894bf5b5010a0b7db058d455c15a256928de111db1303d8d534fa25f",
+      "byteExactCopy": false,
+      "evidenceType": "agent-authored"
+    }
+  ],
+  "referencedSoftwareReceipt": {
+    "sourcePath": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-installed-6cea24bc-run\\receipt.json",
+    "bytes": 3418,
+    "sha256": "588d5bfba846ade67f93308b4f358015fa5898db1c38f5bc2bd6e6a675090ed8",
+    "copiedHere": false
+  },
+  "productActionsPerformedByArchivePreparation": false
+}

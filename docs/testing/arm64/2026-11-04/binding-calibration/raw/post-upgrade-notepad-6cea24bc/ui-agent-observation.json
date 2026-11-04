@@ -1,0 +1,54 @@
+{
+  "schema": "asus-18u-human-retest-ui-observation-v1",
+  "evidenceType": "agent-authored",
+  "author": "Codex /root/lab_data",
+  "observationSource": "UI observations reported by parent agent /root in its task message",
+  "rawToolTranscriptIncluded": false,
+  "recordedUTC": "2026-11-04T05:07:17.114754+00:00",
+  "observedUTC": null,
+  "recordedTimeIsNotObservationTime": true,
+  "sourceCommit": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "packageVersion": "0.2.0-18u-arm64.4",
+  "manifestSHA256": "572f66e68ad91effbdc994c6fbe1ca71a705d7ee4c5194b10d41447480ad83f3",
+  "gui": {
+    "skyWindowID": 8914218,
+    "pid": 6888,
+    "headerReported": "尺标校准57.5→100mm·待实体尺复核",
+    "wholeKeyboardVisible": true,
+    "actionsReported": [
+      "Sky clicked 设置",
+      "Sky selected 音元显示：ID",
+      "Sky expanded the 100 mm reference ruler"
+    ],
+    "bindingAttempted": false,
+    "textInputAttempted": false
+  },
+  "notepad": {
+    "pid": 28936,
+    "creationTicks": 134382279754397239,
+    "stateBeforeActivationAttempt": "minimized",
+    "activationAttemptResult": "interrupted by user input detected",
+    "stateOnReadback": "minimized",
+    "activationRetried": false,
+    "bindingRetried": false,
+    "textInputAttempted": false
+  },
+  "humanInstructions": {
+    "deliveredOnceViaAsync": true,
+    "result": "pending"
+  },
+  "physicalRulerRemeasurement": {
+    "status": "pending",
+    "observedMM": null
+  },
+  "fingerInputAcceptance": {
+    "status": "pending",
+    "expectedBody": "你",
+    "actualBody": null
+  },
+  "limits": [
+    "This is an agent-authored record, not a raw UI automation tool response.",
+    "The module snapshot did not observe the 18u DLL at that instant; it does not prove it was never loaded or activated.",
+    "Saved calibration and 18 software checks do not establish a new physical ruler measurement or finger acceptance."
+  ]
+}

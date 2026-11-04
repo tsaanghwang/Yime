@@ -1,0 +1,63 @@
+{
+  "schema": "asus-18u-calibrated-installed-checks-plan-v1",
+  "sourceCommit": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "manifestSHA256": "572f66e68ad91effbdc994c6fbe1ca71a705d7ee4c5194b10d41447480ad83f3",
+  "packageVersion": "0.2.0-18u-arm64.4",
+  "packageZIP_SHA256": "432db184c1a9fcb7a981522f08f5aa3bb6e933169e2e7961e51afb2f614d10be",
+  "files": [
+    {
+      "path": "capture_installed_frontend_identity.py",
+      "bytes": 5861,
+      "sha256": "38283c254f5b3cc51ad91b422497e7628c0cb48d1b23b0fe3d46ec576b381c37"
+    },
+    {
+      "path": "run_installed_frontend_checkpoints.py",
+      "bytes": 17983,
+      "sha256": "a97d8fcc7a9e85ed9f4ecd6166dabe4c03cd05ece756fa79666618633cf0a349"
+    },
+    {
+      "path": "run_calibrated_frontend_once.py",
+      "bytes": 14552,
+      "sha256": "78468a60c6f0277b358a09b16e2f0353b3ea683a22ad6c67c80c9bb6397b2291"
+    },
+    {
+      "path": "frontend-checkpoints.template.json",
+      "bytes": 474,
+      "sha256": "1e529ef3e0d070b298d9aef0742db0ddd80a4679bc2df0a6e7d9344b83205bfd"
+    }
+  ],
+  "runtimePIDSource": ".generated/complete-input-install/asus-18u-6cea24bc/install-result.json:runtimePID",
+  "baselinePhysicalMeasurement": {
+    "referenceMM": 100,
+    "observedMM": 57.5,
+    "screenWidthMM": 597.73,
+    "displayPixels": [
+      3840,
+      2400
+    ],
+    "measurementSource": "user physical ruler reading; not inferred from Windows scale"
+  },
+  "steps": [
+    "read-only capture current installed three processes and every manifest payload",
+    "consume fixed once-only guard before any calibration save or runtime stop",
+    "save57.5 through verified installed GUI CLI; no window, Broker or registration change",
+    "private Job installed Broker + exact native frontend host + installed smoke GUI: 18 real TSF readbacks",
+    "prove private Job empty, restore ordinary Runtime once, read-only capture its three processes"
+  ],
+  "noAutomaticRetries": true,
+  "physicalAcceptance": false,
+  "defaultWithoutRun": "read-only installed validation",
+  "executionPreparedOnly": true,
+  "preparedFromReviewedController": {
+    "source": "cb77b675",
+    "wrapperSHA256": "74327b2e6157a729abec09bc7f9f16729118a7745edafcd1dad5c7051b49c666",
+    "logicChanges": false,
+    "changedInputs": [
+      "source commit",
+      "package version",
+      "manifest hash",
+      "native host path and hash",
+      "installation receipt and generated output paths"
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "installRoot": "C:\\Program Files\\YimeCore 18u Touch",
+  "manifestSHA256": "572f66e68ad91effbdc994c6fbe1ca71a705d7ee4c5194b10d41447480ad83f3",
+  "sourceCommit": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "hostExe": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-wait-repair-6cea24bc\\native\\Release\\YimeTouchInstalledFrontendHostTests.exe",
+  "hostSHA256": "d316e0fb04308806a74160a15e5e047f49424189c555b72a05c97ca9a8ac7c91",
+  "runningProcesses": [
+    {
+      "relative": "bin/Yime18uInstalledRuntime.exe",
+      "pid": 45260,
+      "creationTicks": 134382417013587973
+    },
+    {
+      "relative": "bin/YimeBroker18u.exe",
+      "pid": 21596,
+      "creationTicks": 134382417023995290
+    },
+    {
+      "relative": "bin/YimeTouchKeyboard.exe",
+      "pid": 6888,
+      "creationTicks": 134382417147899609
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "validated": true,
+  "config": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-installed-6cea24bc-run\\restored-identity\\config.json",
+  "identity": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-installed-6cea24bc-run\\restored-identity\\identity.json",
+  "processes": [
+    {
+      "relative": "bin/Yime18uInstalledRuntime.exe",
+      "pid": 45260,
+      "creationTicks": 134382417013587973
+    },
+    {
+      "relative": "bin/YimeBroker18u.exe",
+      "pid": 21596,
+      "creationTicks": 134382417023995290
+    },
+    {
+      "relative": "bin/YimeTouchKeyboard.exe",
+      "pid": 6888,
+      "creationTicks": 134382417147899609
+    }
+  ],
+  "processChanges": false
+}

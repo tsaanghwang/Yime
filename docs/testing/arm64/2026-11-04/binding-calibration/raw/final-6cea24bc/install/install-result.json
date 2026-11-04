@@ -1,0 +1,110 @@
+{
+  "schema": "asus-18u-upgrade-attempt-v1",
+  "sourceCommit": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "version": "0.2.0-18u-arm64.4",
+  "mode": "install",
+  "startedUTC": "2026-11-04T04:50:20.649575+00:00",
+  "package": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-wait-repair-6cea24bc\\simple\\package",
+  "archiveSHA256": "432db184c1a9fcb7a981522f08f5aa3bb6e933169e2e7961e51afb2f614d10be",
+  "releaseURL": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-18u-wait-6cea24bc-20261104",
+  "installCalled": true,
+  "resetData": false,
+  "otherProductsRequested": false,
+  "automaticRetry": false,
+  "report": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-6cea24bc",
+  "ordinaryParent": {
+    "pid": 42752,
+    "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "creationTicks": 134382414205030425,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "packageVerified": true,
+  "ciVerified": true,
+  "releasePublished": true,
+  "dllUsers": [],
+  "prerequisites": [],
+  "runtimeRestoration": {
+    "requested": true,
+    "launched": true,
+    "firstBeforeSHA256": "81f70be3701615c2fa7dd3946fe267de9ff38e396958a518b77f30d7170dcbb5",
+    "arguments": [
+      "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+      "--installed-18u-run",
+      "--install-root",
+      "C:\\Program Files\\YimeCore 18u Touch",
+      "--manifest-sha256",
+      "afd950556cfc70afbdb8d62d8e7514c08173cb9f0b60146d3a7243680ab932fd"
+    ],
+    "creationFlags": 8,
+    "pid": 13708,
+    "verifiedFamily": [
+      {
+        "relative": "bin/Yime18uInstalledRuntime.exe",
+        "pid": 13708,
+        "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+        "creationTicks": 134382414277038160,
+        "token": {
+          "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+          "integrity": 8192,
+          "elevated": 0,
+          "session": 2,
+          "authenticationLuid": "df453c0100000000"
+        }
+      },
+      {
+        "relative": "bin/YimeBroker18u.exe",
+        "pid": 32008,
+        "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+        "creationTicks": 134382414287884692,
+        "token": {
+          "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+          "integrity": 8192,
+          "elevated": 0,
+          "session": 2,
+          "authenticationLuid": "df453c0100000000"
+        }
+      },
+      {
+        "relative": "bin/YimeTouchKeyboard.exe",
+        "pid": 38640,
+        "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+        "creationTicks": 134382414412656826,
+        "token": {
+          "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+          "integrity": 8192,
+          "elevated": 0,
+          "session": 2,
+          "authenticationLuid": "df453c0100000000"
+        }
+      }
+    ]
+  },
+  "runtimeRestoreAttempted": true,
+  "runningUpgradeBaselineVerified": true,
+  "installStartedUTC": "2026-11-04T04:50:45.318571+00:00",
+  "maintenancePID": 38680,
+  "installerExitCode": 0,
+  "installCompletedUTC": "2026-11-04T04:51:42.047390+00:00",
+  "unrelatedProductsAndDefaultUnchanged": true,
+  "runtimePID": 37664,
+  "runtimeCreationTicks": 134382415019570885,
+  "runtimeImage": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+  "runtimeToken": {
+    "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+    "integrity": 8192,
+    "elevated": 0,
+    "session": 2,
+    "authenticationLuid": "df453c0100000000"
+  },
+  "runtimeSHA256": "9a398b33e1cf790a1bdfef81e8c600821653a7bbc7be3785181661b6677fc49e",
+  "only18uChanged": true,
+  "postInstallVerified": true,
+  "completedUTC": "2026-11-04T04:51:44.761827+00:00",
+  "exitCode": 0
+}

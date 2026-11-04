@@ -1,0 +1,18 @@
+{
+  "schema": "asus-18u-final-record-v1",
+  "sourceCommit": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "version": "0.2.0-18u-arm64.4",
+  "installVerified": true,
+  "installedVersionObserved": "0.2.0-18u-arm64.4",
+  "matchedPayloads": 20,
+  "payloadCount": 20,
+  "calibratedFrontend18CheckpointsPassed": true,
+  "calibrationExecuted": true,
+  "physicalAcceptanceClaimed": false,
+  "historicalBrokerSharingViolationCauseProven": false,
+  "installCompletedUTC": "2026-11-04T04:51:44.761827+00:00",
+  "publishedRelease": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-18u-wait-6cea24bc-20261104",
+  "archivePath": "docs/testing/arm64/2026-11-04/binding-calibration/raw/final-6cea24bc",
+  "statusText": "ASUS 18u `.4` 安装成功。结束快照为 `0.2.0-18u-arm64.4`，20/20 项载荷匹配。其他两产品及默认输入覆盖值保持未变。随后已依据 100 mm 参考线实测 57.5 mm 保存校准，已安装前端的软件检查 18/18 通过，测试 Job 已清空并重新核验恢复后的三个普通用户进程。",
+  "limits": "软件校准保存与受控 TSF 检查不代表实体尺复测、真实记事本正文或真人手指输入通过；这些仍须单独记录。历史 `.2`/`.3` 首失败保留，未据 `.4` 的结果追认 `.3` 的锁来源。"
+}

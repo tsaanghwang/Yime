@@ -1,0 +1,14 @@
+{
+  "source": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-18u-wait-6cea24bc-20261104",
+  "completedAtUTC": "2026-11-04T05:10:41.926537+00:00",
+  "notesSHA256": "9c0518c9229dc0a32b0093203499d54e086e7a49af98e1cb32080bf7993f0a18",
+  "originalBodySHA256": "0859601508409600bbb57b44ed7682b78eeac844673325ef99286b752ed4535d",
+  "originalBodyExactSuffix": true,
+  "bodyReadbackMatchedExactly": true,
+  "fourAssetIdentitiesUnchanged": true,
+  "assetsChanged": false,
+  "remoteMutations": 1,
+  "physicalAcceptanceClaimed": false,
+  "historicalLockCauseProven": false
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "fixed-installer-rebind-audit-v1",
+  "sourceCommit": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "version": "0.2.0-18u-arm64.4",
+  "baseInstallerSHA256": "15a6a3bbab0dfb980b59b7bac390d807278640d97a2a255b4339569891ea704d",
+  "installer": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\armfull-tools\\install-asus-18u-6cea24bc.py",
+  "installerSHA256": "75144f6337917a496777d791aba48109b2a93b0a3791432afefa171c61a49876",
+  "identityConstants": {
+    "ZIP_SHA": "432db184c1a9fcb7a981522f08f5aa3bb6e933169e2e7961e51afb2f614d10be",
+    "ZIP_BYTES": 219929065,
+    "IDENTITY_SHA": "5df7ab584b57c42153f4efdf4ba9b772f0c5a8e731bb45b01fb526886c94394d",
+    "IDENTITY_BYTES": 219346,
+    "PLAN_SHA": "b8dfe0c0822ee24c22ffb8aa9700bfcc77a7b2ae08c8b05a26b2188a1bc1ea62",
+    "HELPER_SHA": "b10c6048419a58d9d2078822170d27415343d79051e324b8ca3edc21d8099852",
+    "MANIFEST_SHA": "572f66e68ad91effbdc994c6fbe1ca71a705d7ee4c5194b10d41447480ad83f3"
+  },
+  "allowedSourceVersionPrefixAndIdentityChangesOnly": true,
+  "restoreAndSingleInstallLogicUnchanged": true,
+  "compilePassed": true,
+  "mainExecuted": false,
+  "productCalls": 0
+}
