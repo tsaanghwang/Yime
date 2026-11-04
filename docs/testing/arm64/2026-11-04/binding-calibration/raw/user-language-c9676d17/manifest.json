@@ -1,0 +1,64 @@
+{
+  "schema": "yime-readonly-observation-archive-v1",
+  "scope": "user-language-c9676d17",
+  "sourceCommit": "c9676d17e7ac396aba294980bc183c2bb4b08fca",
+  "newObservationExecuted": false,
+  "bytePreservationRule": "binding-calibration/.gitattributes raw/** -text !eol -whitespace",
+  "notes": [
+    "Exactly one actual-user checked PS7 query ran at 2026-11-04T03:23:48Z. No activation, registration, input, product launch/stop or default change occurred.",
+    "Original observation, executed query source/parameters, summary and original inventory are copied byte-for-byte.",
+    "Exact 18u TIP membership and TSF enabled=true are established. The source serialized language properties as arrays, so per-language TIP partition was not preserved.",
+    "TSF activeInQueryProcess is not Notepad active-profile evidence. Notepad module absence at one snapshot does not establish whether loading never occurred."
+  ],
+  "members": [
+    {
+      "path": "observation/inventory.json",
+      "bytes": 558,
+      "sha256": "4ffb5f7629dde794be193f2238bc898682ab268de18559bc70dc5e9b82dd700e",
+      "source": ".generated/asus-18u-user-language-c9676d17/inventory.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/observation.json",
+      "bytes": 3982,
+      "sha256": "c4bad66684a86f5e598aca9610f974788f1a767e9f27f77ade819cf9f472ef19",
+      "source": ".generated/asus-18u-user-language-c9676d17/observation.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/read-18u-user-language.params.json",
+      "bytes": 95,
+      "sha256": "01226faf8e0f16cec398e83c3bc1ac609920ec4a301bec5bcfc4b217f8e291a3",
+      "source": ".generated/asus-18u-user-language-c9676d17/read-18u-user-language.params.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/read-18u-user-language.ps1",
+      "bytes": 6473,
+      "sha256": "08f51d58d02cd95705ee83b1f4d2847473e3989776ea1420a0e05488797c2c3c",
+      "source": ".generated/asus-18u-user-language-c9676d17/read-18u-user-language.ps1",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/summary.json",
+      "bytes": 919,
+      "sha256": "8fd041f7f67800357fa0f555bb3f628948547de553ecfb6964bc969d96a4b0e2",
+      "source": ".generated/asus-18u-user-language-c9676d17/summary.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "runners/run_checked_local.py",
+      "bytes": 535,
+      "sha256": "2965e0ba391380d79b42df0ace657210d3d2624085c675fed926b7c3c98a14d5",
+      "source": ".generated/armfull-tools/run_checked_local.py",
+      "kind": "corresponding-runner-or-read-source"
+    },
+    {
+      "path": "runners/run_checked.py",
+      "bytes": 3014,
+      "sha256": "09ed4b1cc4e6c05b90019bd69f12a0cb68b9ac825dc8f47dfcbfcff4a3d6d261",
+      "source": "tools/powershell/run_checked.py",
+      "kind": "corresponding-runner-or-read-source"
+    }
+  ]
+}

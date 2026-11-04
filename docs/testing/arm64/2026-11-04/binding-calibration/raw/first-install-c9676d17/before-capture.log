@@ -1,0 +1,4 @@
+Snapshot: C:\dev\Yime\.wt\armfull\.generated\complete-input-install\asus-18u-c9676d17\before.json
+yimecore: exists=True; version=0.1.0-local.13-main64a785a7-arm64-maint.1; payload=69; mismatches=0; processes=3
+rime-pime: exists=True; version=0.1.0-rime-arm64.1; payload=366; mismatches=0; processes=3
+yimecore-18u: exists=True; version=0.2.0-18u-arm64.1; payload=20; mismatches=0; processes=3

@@ -401,6 +401,8 @@ jobs:
       - name: Test installer wait with a surviving child process
         shell: powershell
         run: .\installer\simple\Test-ProcessWait.ps1
+      - name: Test owned process stop races without installed products
+        run: python -X utf8 tools/powershell/run_checked.py --script installer/simple/tests/Test-StopProductProcesses.ps1 --edition ps5
 
   core-build:
     name: core-build

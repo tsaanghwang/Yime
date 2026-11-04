@@ -1,0 +1,15 @@
+Package ready: C:\dev\Yime\.wt\armfull\.generated\asus-18u-repair-c9676d17\simple\package
+{
+  "sourceCommit": "c9676d17e7ac396aba294980bc183c2bb4b08fca",
+  "zip": "YimeCore-18u-0.2.0-18u-arm64.2-windows-arm64.zip",
+  "bytes": 105214705,
+  "sha256": "4c3a3fc9b208fd2bb500db4379fd13263c391004a36e20c2365d63589878ba5a",
+  "packageEvidence": {
+    "bytes": 4783,
+    "sha256": "b0f95b6354d74b4c610063af4a1660c51e8bed9f5769143bdd7c4c782cbbdd03"
+  },
+  "installedDescriptor": {
+    "bytes": 4096,
+    "sha256": "af790b803c45c935843c2821bd3f42c075499ac6aafd26f3e48cec5ba74c5e77"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "18u-user-language-readonly-summary-v1",
+  "observationUTC": "2026-11-04T03:23:48.7919731Z",
+  "exact18uInCurrentUserTips": true,
+  "profileEnabledHRESULT": 0,
+  "profileEnabled": true,
+  "exact0804Profiles": 1,
+  "notepadPID": 28936,
+  "notepad18uModuleObserved": false,
+  "limits": [
+    "Get-WinUserLanguageList returned a collection serialized as property arrays; exact TIP membership is established, per-language partition is not preserved.",
+    "TSF activeInQueryProcess belongs to the observer process and is not Notepad active-profile proof.",
+    "No profile activation, registration, default change, product launch/stop or input occurred.",
+    "Missing module at one snapshot does not establish whether the DLL was never loaded or previously unloaded.",
+    "Earlier cold registered-host success does not prove packaged Notepad activation or physical input acceptance."
+  ]
+}

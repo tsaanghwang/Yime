@@ -1,0 +1,38 @@
+{
+  "schema": "asus-18u-upgrade-attempt-v1",
+  "sourceCommit": "c9676d17e7ac396aba294980bc183c2bb4b08fca",
+  "version": "0.2.0-18u-arm64.2",
+  "mode": "preflight",
+  "startedUTC": "2026-11-04T03:14:59.468844+00:00",
+  "package": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-repair-c9676d17\\simple\\package",
+  "archiveSHA256": "3f31f089a8526c369521003242ec092e54eaa9ec621b43e29a9826dd85c2d01f",
+  "releaseURL": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-18u-calibration-c9676d17-20261104",
+  "installCalled": false,
+  "resetData": false,
+  "otherProductsRequested": false,
+  "automaticRetry": false,
+  "report": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-preflight-c9676d17\\20261104T031459467111Z",
+  "ordinaryParent": {
+    "pid": 45192,
+    "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "creationTicks": 134382356991982648,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "packageVerified": true,
+  "ciVerified": true,
+  "releasePublished": false,
+  "dllUsers": [],
+  "prerequisites": [
+    "The exact source/ZIP/identity release must be published and its delivery receipt verified."
+  ],
+  "readyForInstall": false,
+  "readOnlySnapshotsStable": true,
+  "completedUTC": "2026-11-04T03:15:26.252920+00:00",
+  "exitCode": 0
+}

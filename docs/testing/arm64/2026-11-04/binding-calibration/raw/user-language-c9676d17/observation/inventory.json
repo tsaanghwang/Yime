@@ -1,0 +1,18 @@
+{
+  "observation.json": {
+    "bytes": 3982,
+    "sha256": "c4bad66684a86f5e598aca9610f974788f1a767e9f27f77ade819cf9f472ef19"
+  },
+  "read-18u-user-language.params.json": {
+    "bytes": 95,
+    "sha256": "01226faf8e0f16cec398e83c3bc1ac609920ec4a301bec5bcfc4b217f8e291a3"
+  },
+  "read-18u-user-language.ps1": {
+    "bytes": 6473,
+    "sha256": "08f51d58d02cd95705ee83b1f4d2847473e3989776ea1420a0e05488797c2c3c"
+  },
+  "summary.json": {
+    "bytes": 919,
+    "sha256": "8fd041f7f67800357fa0f555bb3f628948547de553ecfb6964bc969d96a4b0e2"
+  }
+}

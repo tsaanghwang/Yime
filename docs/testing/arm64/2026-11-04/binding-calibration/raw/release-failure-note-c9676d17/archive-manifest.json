@@ -1,0 +1,20 @@
+{
+  "files": [
+    {
+      "path": "release-notes-after-install-failure.md",
+      "bytes": 2764,
+      "sha256": "a39c83fa29a255c7ca8e0154835af2d812ffdcca7a0a4d44895358553189a849"
+    },
+    {
+      "path": "failure-note-update-receipt.json",
+      "bytes": 373,
+      "sha256": "4272d2856e647d5c0b5cab7f56da4aa605831722f9f2fcacbbc59fcae3a607b0"
+    },
+    {
+      "path": "mark-c967-install-failure.py",
+      "bytes": 2410,
+      "sha256": "4f377c164890ecedcaa68ae0ef63f313079cef0b7c0f7b3315ab313ff96664b1"
+    }
+  ],
+  "assetsChanged": false
+}

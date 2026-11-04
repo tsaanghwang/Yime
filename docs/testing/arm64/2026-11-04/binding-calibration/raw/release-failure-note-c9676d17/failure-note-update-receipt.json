@@ -1,0 +1,8 @@
+{
+  "source": "c9676d17e7ac396aba294980bc183c2bb4b08fca",
+  "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-18u-calibration-c9676d17-20261104",
+  "notesSHA256": "a39c83fa29a255c7ca8e0154835af2d812ffdcca7a0a4d44895358553189a849",
+  "assetsChanged": false,
+  "installationOutcome": "failed before unregister/copy",
+  "bodyReadbackMatched": true
+}

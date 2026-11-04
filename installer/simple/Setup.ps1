@@ -167,21 +167,65 @@ function Set-UserStartup([string]$Value){
         if($read.ReturnValue -ne 0 -or $read.sValue -cne $Value){throw ('Startup write readback failed: code='+$read.ReturnValue+'; actual='+$read.sValue)}
     }
 }
-$stage='stop selected product background programs'
-    # Only this product's own executable paths; never terminate a typing host.
-    foreach($p in Get-Process){
-        try{$path=$p.Path}catch{continue}
-        if($path -and $path.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)){
-            $null=$p.Handle
-            $record=Get-CimInstance Win32_Process -Filter ('ProcessId = '+$p.Id)
-            $owner=Invoke-CimMethod -InputObject $record -MethodName GetOwnerSid
-            if($owner.ReturnValue -ne 0 -or $owner.Sid -cne $sid){throw 'Another user is using this product; ask them to exit first'}
-            if($product.id -eq 'yimecore' -and $path -ieq (Join-Path $root $product.exe)){
-                Run-Native $path @('-stop','-state-root',$state)
-                $null=$p.WaitForExit(10000)
-            }elseif(-not $p.HasExited){$p.Kill();$null=$p.WaitForExit(5000)}
+function Stop-SetupProductProcesses($Product,[string]$Root,[string]$State,[string]$Sid){
+    $observed=@();$selected=@()
+    try{
+        # Pin every selected process before stopping any runtime: its job may
+        # close other selected processes. Kill and exit confirmation stay bound
+        # to these retained handles, never a later process lookup by PID.
+        foreach($p in Get-Process){
+            $observed+=,$p
+            try{$path=$p.Path}catch{continue}
+            if($path -and $path.StartsWith($Root+'\',[StringComparison]::OrdinalIgnoreCase)){
+                $null=$p.Handle
+                # The first path was only a filter. Refresh clears the PS5
+                # module cache but retains the handle; identify its target now.
+                $p.Refresh();$path=$p.Path
+                if($path -and $path.StartsWith($Root+'\',[StringComparison]::OrdinalIgnoreCase)){
+                    $selected+=,[pscustomobject]@{process=$p;path=$path}
+                }
+            }
         }
-    }
+        foreach($entry in $selected){
+            $p=$entry.process;$path=$entry.path
+            if($p.HasExited){continue}
+            try{
+                $record=Get-CimInstance Win32_Process -Filter ('ProcessId = '+$p.Id)
+                if($null -eq $record){
+                    if($p.HasExited){continue}
+                    throw 'Selected product process is still alive but its ownership record is missing'
+                }
+                $owner=Invoke-CimMethod -InputObject $record -MethodName GetOwnerSid
+            }catch [Microsoft.Management.Infrastructure.CimException]{
+                # A stale CIM instance after an owned runtime closes its job is
+                # benign only when this exact pinned process has already exited.
+                # NativeErrorCode is MI NotFound (6), not WBEM HRESULT 0x80041002.
+                if($_.Exception.NativeErrorCode -eq [Microsoft.Management.Infrastructure.NativeErrorCode]::NotFound -and $p.HasExited){continue}
+                throw
+            }
+            if($owner.ReturnValue -ne 0 -or $owner.Sid -cne $Sid){throw 'Another user is using this product; ask them to exit first'}
+            if($Product.id -eq 'yimecore' -and $path -ieq (Join-Path $Root $Product.exe)){
+                if(-not $p.HasExited){
+                    Run-Native $path @('-stop','-state-root',$State)
+                    if(-not $p.WaitForExit(10000)){throw 'Selected product runtime did not exit'}
+                }
+            }elseif(-not $p.HasExited){
+                try{$p.Kill()}
+                catch [ComponentModel.Win32Exception]{
+                    $failure=$_.Exception
+                    if($failure -is [Management.Automation.MethodInvocationException]){$failure=$failure.InnerException}
+                    # TerminateProcess on an already exited handle returns 5.
+                    # A live process's access denial must still fail closed.
+                    if($failure.NativeErrorCode -ne 5 -or -not $p.HasExited){throw}
+                }
+                catch [InvalidOperationException]{if(-not $p.HasExited){throw}}
+                if(-not $p.WaitForExit(5000)){throw 'Selected product process did not exit'}
+            }
+        }
+    }finally{foreach($p in $observed){$p.Dispose()}}
+}
+$stage='stop selected product background programs'
+    Stop-SetupProductProcesses $product $root $state $sid
     $stage='wait for installed files to be released'
     Wait-ProductFiles $root -Silent:$Silent
     if($ResetData){

@@ -1,0 +1,57 @@
+**********************
+PowerShell 记录开始
+开始时间: 20261104114224
+用户名: HUASHUONOTEBOOK\tsaan
+RunAs 用户: HUASHUONOTEBOOK\tsaan
+配置名称: 
+计算机: HUASHUONOTEBOOK (Microsoft Windows NT 10.0.28000.0)
+主机应用程序: C:\Program Files\Yime Maintenance\yimecore-18u\b66195a6cd4220532ecafad112ff64f134d7835f006296416b70a1cdd00a64a2\maintenance\powershell\pwsh.dll -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\Program Files\Yime Maintenance\yimecore-18u\b66195a6cd4220532ecafad112ff64f134d7835f006296416b70a1cdd00a64a2\maintenance\preflight.ps1
+进程 ID: 30784
+PSVersion: 7.6.9
+PSEdition: Core
+GitCommitId: 7.6.9
+OS: Microsoft Windows 10.0.28000
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\2bbea2925cf74eb19023f814528293f0.admin.log
+Action: Install; package: C:\Program Files\Yime Maintenance\yimecore-18u\b66195a6cd4220532ecafad112ff64f134d7835f006296416b70a1cdd00a64a2
+Installed ownership verified: product=yimecore-18u; version=0.2.0-18u-arm64.1; payload_count=20; publisher_authentication=false
+owned=true
+mutation_performed=false
+com_path=C:\Program Files\YimeCore 18u Touch\arm64\YimeTextService18u.dll
+PS>TerminatingError(Invoke-CimMethod): "已停止正在运行的命令，因为首选变量“ErrorActionPreference”或通用参数设置为“停止”: 找不到 "
+FAILED stage: stop selected product background programs
+
+PSMessageDetails      : 
+Exception             : Microsoft.Management.Infrastructure.CimException: 找不到 
+                           at Microsoft.Management.Infrastructure.Internal.Operations.CimAsyncObserverProxyBase`1.ProcessNativeCallback(OperationCallbackProcessingContext callbackProcessingContext, T currentItem, Boolean moreResults, MiResult operationResult, String errorMessage, InstanceHandle errorDetailsHandle)
+TargetObject          : Win32_Process: YimeBroker18u.exe (Handle = "6744")
+CategoryInfo          : ObjectNotFound: (Win32_Process: Yime…e (Handle = "6744"):CimInstance) [Invoke-CimMethod], CimException
+FullyQualifiedErrorId : HRESULT 0x80041002,Microsoft.Management.Infrastructure.CimCmdlets.InvokeCimMethodCommand
+ErrorDetails          : 
+InvocationInfo        : System.Management.Automation.InvocationInfo
+ScriptStackTrace      : 位于 <ScriptBlock>，C:\Program Files\Yime Maintenance\yimecore-18u\b66195a6cd4220532ecafad112ff64f134d7835f006296416b70a1cdd00a64a2\Setup.ps1: 行 177
+                        位于 <ScriptBlock>，C:\Program Files\Yime Maintenance\yimecore-18u\b66195a6cd4220532ecafad112ff64f134d7835f006296416b70a1cdd00a64a2\maintenance\preflight.ps1: 行 68
+PipelineIterationInfo : {}
+Exception: Microsoft.Management.Infrastructure.CimException: 找不到 
+   at Microsoft.Management.Infrastructure.Internal.Operations.CimAsyncObserverProxyBase`1.ProcessNativeCallback(OperationCallbackProcessingContext callbackProcessingContext, T currentItem, Boolean moreResults, MiResult operationResult, String errorMessage, InstanceHandle errorDetailsHandle)
+Write-Error: C:\Program Files\Yime Maintenance\yimecore-18u\b66195a6cd4220532ecafad112ff64f134d7835f006296416b70a1cdd00a64a2\maintenance\preflight.ps1:68
+Line |
+  68 |      if ($request.script) { & $path @parameters }
+     |                             ~~~~~~~~~~~~~~~~~~~
+     | Setup stopped: 找不到  Log: C:\Users\tsaan\Yime Setup Logs\2bbea2925cf74eb19023f814528293f0.admin.log
+Write-Error: C:\Program Files\Yime Maintenance\yimecore-18u\b66195a6cd4220532ecafad112ff64f134d7835f006296416b70a1cdd00a64a2\maintenance\preflight.ps1:68
+Line |
+  68 |      if ($request.script) { & $path @parameters }
+     |                             ~~~~~~~~~~~~~~~~~~~
+     | Setup stopped: 找不到  Log: C:\Users\tsaan\Yime Setup Logs\2bbea2925cf74eb19023f814528293f0.admin.log
+
+Setup exit code: 1
+**********************
+PowerShell 记录结束
+结束时间: 20261104114241
+**********************

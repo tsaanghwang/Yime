@@ -1,0 +1,43 @@
+{
+  "source": "c9676d17e7ac396aba294980bc183c2bb4b08fca",
+  "verifiedAtUTC": "2026-11-04T03:26:14.738746+00:00",
+  "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-18u-calibration-c9676d17-20261104",
+  "draft": false,
+  "prerelease": true,
+  "ciCounts": {
+    "success": 21,
+    "expectedManualOnlySkipped": 3,
+    "failed": 0,
+    "pending": 0
+  },
+  "assets": [
+    {
+      "name": "native-build-c9676d17.json",
+      "size": 4300,
+      "digest": "sha256:ebbfa7e872f16142d5895e6cb46a50c08934f52de8256d22f075fc725605c4d9",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-calibration-c9676d17-20261104/native-build-c9676d17.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "source-ci-c9676d17.json",
+      "size": 15442,
+      "digest": "sha256:f62a2b7a3f1de7966dfa201f9d1cc96828f3c91b367be42c7d40df47424c6e07",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-calibration-c9676d17-20261104/source-ci-c9676d17.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-yimecore-18u-windows-arm64-c9676d17e7ac.identity.json",
+      "size": 219346,
+      "digest": "sha256:058f2f0aee9e4e1c806c23c28d4bb6d51b44fa460a18517b31907a8c5539e62b",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-calibration-c9676d17-20261104/yime-yimecore-18u-windows-arm64-c9676d17e7ac.identity.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-yimecore-18u-windows-arm64-c9676d17e7ac.zip",
+      "size": 219928196,
+      "digest": "sha256:3f31f089a8526c369521003242ec092e54eaa9ec621b43e29a9826dd85c2d01f",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-calibration-c9676d17-20261104/yime-yimecore-18u-windows-arm64-c9676d17e7ac.zip",
+      "state": "uploaded"
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "schema": "18u-user-language-readonly-v1",
+  "observedUTC": "2026-11-04T03:23:48.7919731Z",
+  "userSID": "S-1-5-21-2466658430-60932705-3086004269-1001",
+  "observerPID": 45644,
+  "readOnly": true,
+  "profileActivationRequested": false,
+  "registrationRequested": false,
+  "defaultChangeRequested": false,
+  "inputSent": false,
+  "expected18uTip": "0804:{6DFACE1F-562E-4773-A9D6-D5753A314711}{1BD904AC-3194-4419-B70A-5574100F18B3}",
+  "errors": [],
+  "languages": [
+    {
+      "LanguageTag": [
+        "zh-Hans-CN",
+        "en-US",
+        "und-Latn"
+      ],
+      "Autonym": [
+        "中文(中华人民共和国)",
+        "English (United States)",
+        ""
+      ],
+      "EnglishName": [
+        "Chinese",
+        "English",
+        "Undetermined (und-Latn)"
+      ],
+      "LocalizedName": [
+        "简体中文(中国大陆)",
+        "英语(美国)",
+        ""
+      ],
+      "ScriptName": [
+        "中文(简体)",
+        "拉丁文",
+        "拉丁文"
+      ],
+      "InputMethodTips": [
+        "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+        "0804:{E40FA752-BB96-461D-A51D-F40EB437EC65}{126F54C6-E9B1-4E22-8652-03224CBD49F9}",
+        "0804:{6DFACE1F-562E-4773-A9D6-D5753A314711}{1BD904AC-3194-4419-B70A-5574100F18B3}",
+        "0804:{35F67E9D-A54D-4177-9697-8B0AB71A9E04}{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}"
+      ],
+      "Spellchecking": [
+        true,
+        true,
+        true
+      ],
+      "Handwriting": [
+        true,
+        false,
+        false
+      ]
+    }
+  ],
+  "exact18uInUserInputMethodTips": true,
+  "defaultInputOverride": "",
+  "tsf": {
+    "comInitializeHRESULT": 1,
+    "createHRESULT": 0,
+    "isEnabledHRESULT": 0,
+    "enabled": true,
+    "enum0804HRESULT": 0,
+    "profiles0804": [
+      {
+        "clsid": "{6a498709-e00b-4c45-a018-8f9e4081ae40}",
+        "profile": "{82590c13-f4dd-44f4-ba1d-8667246fdf8e}",
+        "language": 2052,
+        "category": "{34745c63-b2f0-4784-8b67-5e12c8701a31}",
+        "activeInQueryProcess": false,
+        "exact18u": false
+      },
+      {
+        "clsid": "{81d4e9c9-1d3b-41bc-9e6c-4b40bf79e35e}",
+        "profile": "{fa550b04-5ad7-411f-a5ac-ca038ec515d7}",
+        "language": 2052,
+        "category": "{34745c63-b2f0-4784-8b67-5e12c8701a31}",
+        "activeInQueryProcess": true,
+        "exact18u": false
+      },
+      {
+        "clsid": "{e40fa752-bb96-461d-a51d-f40eb437ec65}",
+        "profile": "{126f54c6-e9b1-4e22-8652-03224cbd49f9}",
+        "language": 2052,
+        "category": "{34745c63-b2f0-4784-8b67-5e12c8701a31}",
+        "activeInQueryProcess": false,
+        "exact18u": false
+      },
+      {
+        "clsid": "{6dface1f-562e-4773-a9d6-d5753a314711}",
+        "profile": "{1bd904ac-3194-4419-b70a-5574100f18b3}",
+        "language": 2052,
+        "category": "{34745c63-b2f0-4784-8b67-5e12c8701a31}",
+        "activeInQueryProcess": false,
+        "exact18u": true
+      },
+      {
+        "clsid": "{35f67e9d-a54d-4177-9697-8b0ab71a9e04}",
+        "profile": "{3f6b5a12-8d44-4e71-9a2e-6b4f9c1d2a30}",
+        "language": 2052,
+        "category": "{34745c63-b2f0-4784-8b67-5e12c8701a31}",
+        "activeInQueryProcess": false,
+        "exact18u": false
+      }
+    ],
+    "enumComplete": true
+  },
+  "notepad": [
+    {
+      "pid": 28936,
+      "path": "C:\\Program Files\\WindowsApps\\Microsoft.WindowsNotepad_11.2607.14.0_arm64__8wekyb3d8bbwe\\Notepad\\Notepad.exe",
+      "startUTC": "2026-11-04T01:06:15.4397239Z",
+      "relatedModules": [
+        {
+          "name": "MSCTF.dll",
+          "path": "C:\\Windows\\System32\\MSCTF.dll",
+          "sha256": "87a0bd6860af417be77384ecc435f4c318eab6f14def3b13135d4b0a3c349c7f"
+        }
+      ],
+      "modulePresenceIsNotActiveProfileProof": true,
+      "modulesExamined": 136,
+      "installed18uDLLObserved": false
+    }
+  ]
+}

@@ -107,6 +107,7 @@ jobs:
               'installer/simple/tests/Test-18uArm64ElevationShell.ps1',
               'installer/simple/tests/Test-Installed18uOwnership.ps1',
               'installer/simple/tests/Test-PostInstallStartup.ps1',
+              'installer/simple/tests/Test-StopProductProcesses.ps1',
               'installer/simple/tests/Test-FileAccess.ps1',
               'installer/simple/tests/Test-18uUnregisterSequence.ps1']
           for edition in ('ps5', 'ps7'):

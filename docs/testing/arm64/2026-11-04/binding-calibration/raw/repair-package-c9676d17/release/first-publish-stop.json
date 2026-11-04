@@ -1,0 +1,10 @@
+{
+  "source": "c9676d17e7ac396aba294980bc183c2bb4b08fca",
+  "stage": "first draft query after successful release create",
+  "exitCode": 1,
+  "stderr": "gh: Not Found (HTTP 404)",
+  "independentReadback": {"isDraft": true, "assetCount": 0, "targetCommitish": "c9676d17e7ac396aba294980bc183c2bb4b08fca"},
+  "cause": "REST tag endpoint cannot locate this unpublished draft; gh release view found the uniquely named draft",
+  "correction": "Use gh release view and explicit --resume-confirmed-draft; do not recreate or replace assets",
+  "installed": false
+}

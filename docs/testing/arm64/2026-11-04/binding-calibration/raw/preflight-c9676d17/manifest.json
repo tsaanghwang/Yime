@@ -1,0 +1,163 @@
+{
+  "schema": "yime-readonly-observation-archive-v1",
+  "scope": "preflight-c9676d17",
+  "sourceCommit": "c9676d17e7ac396aba294980bc183c2bb4b08fca",
+  "newObservationExecuted": false,
+  "bytePreservationRule": "binding-calibration/.gitattributes raw/** -text !eol -whitespace",
+  "notes": [
+    "Exactly one read-only preflight ran at 2026-11-04T03:14:59-03:15:26Z. No install was called.",
+    "Observation files are copied byte-for-byte. No new query or verification process was run by this archive operation.",
+    "The executed orchestrator was not independently snapshotted before execution. The as-run-reconstructed file removes the sole subsequent seven-line install-failure isolation-report addition from the final runner. It is explicitly reconstructed, not an original on-disk historical snapshot. The addition is inside installCalled and cannot affect the recorded preflight path.",
+    "The final runner is also preserved. Shared observer was imported only for observe(), not its product/controller run path.",
+    "At observation time package/CI checks passed, old DLL users were empty, snapshots remained stable, and the release receipt had not yet been published."
+  ],
+  "members": [
+    {
+      "path": "observation/after-capture.log",
+      "bytes": 406,
+      "sha256": "db8d85eb319252cad0023d4641006b39086481ad9f72823511d2aa55eedb51df",
+      "source": ".generated/asus-18u-preflight-c9676d17/20261104T031459467111Z/after-capture.log",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/after-extra.json",
+      "bytes": 5937,
+      "sha256": "a2327ddc36d55678ea9b61f769bffbada71cf037442cb2bf06e55a8c8484ddb4",
+      "source": ".generated/asus-18u-preflight-c9676d17/20261104T031459467111Z/after-extra.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/after-params.json",
+      "bytes": 126,
+      "sha256": "28d429f3d78d52c9082ad4fe19c536dcf50fd96e41bac2d7924ab64881d8f8b6",
+      "source": ".generated/asus-18u-preflight-c9676d17/20261104T031459467111Z/after-params.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/after.json",
+      "bytes": 150476,
+      "sha256": "96f5eaed7af6ed79888e9fbc518f62ac89554f122e305727b1808599d7a147dd",
+      "source": ".generated/asus-18u-preflight-c9676d17/20261104T031459467111Z/after.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/before-capture.log",
+      "bytes": 407,
+      "sha256": "89e9c36c5d534ee5889aa8aff7273d758a3bb39b570907ce8d797c81aa8a399e",
+      "source": ".generated/asus-18u-preflight-c9676d17/20261104T031459467111Z/before-capture.log",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/before-extra.json",
+      "bytes": 5937,
+      "sha256": "a2327ddc36d55678ea9b61f769bffbada71cf037442cb2bf06e55a8c8484ddb4",
+      "source": ".generated/asus-18u-preflight-c9676d17/20261104T031459467111Z/before-extra.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/before-params.json",
+      "bytes": 127,
+      "sha256": "3fc26704cb708ffba2a7de278cc44b9a0bb592e39d61afb8373bb7d195a926ac",
+      "source": ".generated/asus-18u-preflight-c9676d17/20261104T031459467111Z/before-params.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/before.json",
+      "bytes": 150476,
+      "sha256": "1273687a756ba180f02cc7aa0664f621fae7506b66bbeafe8fde4e4018e0f496",
+      "source": ".generated/asus-18u-preflight-c9676d17/20261104T031459467111Z/before.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/ci-receipt.json",
+      "bytes": 15442,
+      "sha256": "f62a2b7a3f1de7966dfa201f9d1cc96828f3c91b367be42c7d40df47424c6e07",
+      "source": ".generated/asus-18u-preflight-c9676d17/20261104T031459467111Z/ci-receipt.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/dll-users-capture.log",
+      "bytes": 38,
+      "sha256": "916cd82fd1192c4d89fdbc1cfc69fb54fb0c97bdecd6dbb2f5856908f7e3f160",
+      "source": ".generated/asus-18u-preflight-c9676d17/20261104T031459467111Z/dll-users-capture.log",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/dll-users-params.json",
+      "bytes": 130,
+      "sha256": "a0d170564018d9ae021e5f55ae96a884c3fac0d466166d5fc9ec117fc3962ed3",
+      "source": ".generated/asus-18u-preflight-c9676d17/20261104T031459467111Z/dll-users-params.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/dll-users.json",
+      "bytes": 264,
+      "sha256": "449c9422725a843c180929a9e7171ea2adc41c49cec0a777c5396422a7407c98",
+      "source": ".generated/asus-18u-preflight-c9676d17/20261104T031459467111Z/dll-users.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "observation/install-result.json",
+      "bytes": 1520,
+      "sha256": "9d9c80ad19061f2605e0e7a7a5971ad6b3eaccd92cb938a0045f16f881e265cf",
+      "source": ".generated/asus-18u-preflight-c9676d17/20261104T031459467111Z/install-result.json",
+      "kind": "original-observation-bytes"
+    },
+    {
+      "path": "runners/install-asus-18u-c9676d17-final.py",
+      "bytes": 16230,
+      "sha256": "d6234bfb78cd5e685ecdce1d7ab9cd84907b08a9c596778dd86e863fc93a71be",
+      "source": ".generated/armfull-tools/install-asus-18u-c9676d17.py",
+      "kind": "corresponding-runner-or-read-source"
+    },
+    {
+      "path": "runners/capture-installed.ps1",
+      "bytes": 5104,
+      "sha256": "c75b66779a9db0990a8fb88864fdc2683debf734e7139225943688910fd5c2c1",
+      "source": ".generated/armfull-tools/capture-installed.ps1",
+      "kind": "corresponding-runner-or-read-source"
+    },
+    {
+      "path": "runners/query-asus-18u-locks.ps1",
+      "bytes": 1092,
+      "sha256": "70742862887a68973592a252bf991db1ed4a6888cb86a79bbd495e38991c60dd",
+      "source": ".generated/armfull-tools/query-asus-18u-locks.ps1",
+      "kind": "corresponding-runner-or-read-source"
+    },
+    {
+      "path": "runners/run_checked_local.py",
+      "bytes": 535,
+      "sha256": "2965e0ba391380d79b42df0ace657210d3d2624085c675fed926b7c3c98a14d5",
+      "source": ".generated/armfull-tools/run_checked_local.py",
+      "kind": "corresponding-runner-or-read-source"
+    },
+    {
+      "path": "runners/run_checked.py",
+      "bytes": 3014,
+      "sha256": "09ed4b1cc4e6c05b90019bd69f12a0cb68b9ac825dc8f47dfcbfcff4a3d6d261",
+      "source": "tools/powershell/run_checked.py",
+      "kind": "corresponding-runner-or-read-source"
+    },
+    {
+      "path": "read-source/Product.psm1",
+      "bytes": 59416,
+      "sha256": "a0b3c82b2e3d539f18b3dacbd9f65025b0541d667a2edd9bdc4fb9ed40dc1c22",
+      "source": "installer/simple/Product.psm1",
+      "kind": "corresponding-runner-or-read-source"
+    },
+    {
+      "path": "read-source/run_installed_frontend_checkpoints.py",
+      "bytes": 17983,
+      "sha256": "a97d8fcc7a9e85ed9f4ecd6166dabe4c03cd05ece756fa79666618633cf0a349",
+      "source": ".generated/touch-full-tools/run_installed_frontend_checkpoints.py",
+      "kind": "corresponding-runner-or-read-source"
+    },
+    {
+      "path": "runners/install-asus-18u-c9676d17-as-run-reconstructed.py",
+      "bytes": 15501,
+      "sha256": "ee674d99c5a7437d6d35470c18c9dbda1402da981048888fa9fecf913845c7c5",
+      "source": ".generated/armfull-tools/install-asus-18u-c9676d17.py minus documented post-preflight seven-line addition",
+      "kind": "reconstructed-pre-observation-runner-see-provenance"
+    }
+  ]
+}
