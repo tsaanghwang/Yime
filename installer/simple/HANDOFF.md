@@ -4,6 +4,8 @@
 
 ## 当前任务
 
+**2026-11-04 test.11 自动跟随完整包准备。** PR #99 已合入 MSI 准备分支，合并提交 `c0e67e47`。本轮获准生成新版本完整包并提供固定下载和 SHA-256，前端与 TIP 必须同源且均为 v2；见[准备记录](../../docs/testing/18u/2026-11-04/auto-focus-test11/DEVELOPMENT.zh-CN.md)。不安装、不改输入法注册或默认设置、不重复 test.8 实测。下方旧版本交付保持历史范围。
+
 **2026-11-04 test.10 翻页键对齐。** 按用户新要求将左右翻页键分别向内移动，与盘面各行首／末键的外沿对齐，继承 test.9 自动适配。前端现有回归、包装器与离屏绘制检查通过，见[本轮记录](../../docs/testing/18u/2026-11-04/pager-alignment/DEVELOPMENT.zh-CN.md)。源码 `853eb017` 的三项 CI 已通过，test.10 完整包已下载并核验；见[固定交付](../../docs/testing/18u/2026-11-04/pager-alignment/DELIVERY.zh-CN.md)。当前安装仍为 test.8。
 
 **2026-11-04 当前交付：test.9 自动适应屏幕。** 用户确认 test.8 重启后选输入法、绑定和声音正常；剩余盘面默认尺寸问题已加入安装版自动适配工作区、等比放大与设置入口，保留独立毫米校准。见[开发与验证](../../docs/testing/18u/2026-11-04/screen-fit-development/DEVELOPMENT.zh-CN.md)。固定源码 `785724e8` 的三项 CI 已通过，完整 test.9 包已下载并核验；见[固定交付](../../docs/testing/18u/2026-11-04/screen-fit-development/DELIVERY.zh-CN.md)。当前安装仍是 test.8，尚未执行新包维护；不单独替换 EXE。

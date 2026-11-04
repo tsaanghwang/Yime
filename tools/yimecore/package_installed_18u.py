@@ -12,6 +12,8 @@ import assemble_installed_18u as a
 
 VERSION = '0.1.0-18u-test.6'
 ZIP_NAME = 'YimeCore-18u-0.1.0-18u-test.6-windows-amd64.zip'
+FRONTEND_VERSION = '0.1.0-18u-test.11'
+FRONTEND_ZIP_NAME = 'YimeCore-18u-' + FRONTEND_VERSION + '-windows-amd64.zip'
 INSTALLER = ('Product.psm1', 'Setup.ps1', 'Setup.cmd')
 SIGNATURE_STATUSES = {'Valid', 'UnknownError', 'NotSigned', 'HashMismatch', 'NotTrusted', 'NotSupportedFileFormat', 'Incompatible'}
 README = r'''# 独立 18u 持久安装开发候选包
@@ -128,8 +130,8 @@ def build(repo, native, go, data, work, signature_file, source_commit, runner=su
     payload = work / 'assembled'
     package = work / 'package'
     descriptor = a.assemble(repo, native, go, data, payload, source_commit) if frontend is None else a.assemble(repo, native, go, data, payload, source_commit, frontend)
-    version = VERSION if frontend is None else '0.1.0-18u-test.10'
-    zip_name = ZIP_NAME if frontend is None else 'YimeCore-18u-0.1.0-18u-test.10-windows-amd64.zip'
+    version = VERSION if frontend is None else FRONTEND_VERSION
+    zip_name = ZIP_NAME if frontend is None else FRONTEND_ZIP_NAME
     expected_payload = {row['path']: {k: row[k] for k in ('bytes', 'sha256')} for row in descriptor['files']}
     expected_payload['installed-18u-product.json'] = a.digest(payload / 'installed-18u-product.json')
     installer_before = {name: a.digest(repo / 'installer/simple' / name) for name in INSTALLER}
@@ -157,9 +159,12 @@ def build(repo, native, go, data, work, signature_file, source_commit, runner=su
         readme = readme.replace('此包不是完整日用触摸 UI，\n不包含 Word/Edge 或全量物理验收结论。', '本包新增 frontend/ 完整触控 UI 与 TSF 接入候选；不包含 Word/Edge 或物理验收通过结论。')
         readme = readme.replace('五个 PE', '六个 PE')
         readme += '\n安装完成后，从安装目录 frontend/Start Installed Touch Keyboard.cmd 启动。完整语义和限制见 frontend/USER_GUIDE.zh-CN.md。\n'
+        readme += '\n本包前端与专用 TIP 同源配套使用 v2 协议，不与旧 v1 组件混用。选择专用18u输入法并在宿主正文放置光标后，键盘自动跟随，无需日常手动绑定。\n焦点变化会取消旧组合与触点；未知提交结果保持锁定。核对正文后点“核对后继续”只接受新输入，旧提交永不重放。\n'
     (package / 'README.zh-CN.md').write_text(readme, encoding='utf-8')
     files = inventory(package)
     evidence = {'schema': 'installed-18u-package-evidence-v1', 'sourceCommit': source_commit, 'version': version, 'product': 'yimecore-18u', 'architecture': 'native-x64', 'installationExecuted': False, 'registrationExecuted': False, 'installedHostAcceptance': False, 'publisherTrust': 'not-established', 'nonPESignatureStatus': 'not-evaluated', 'files': files}
+    if frontend is not None:
+        evidence['frontendProtocol'] = dict(a.FRONTEND_PROTOCOL)
     (package / 'package-evidence.json').write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     files['package-evidence.json'] = a.digest(package / 'package-evidence.json')
     archive = work / zip_name
@@ -177,6 +182,8 @@ def build(repo, native, go, data, work, signature_file, source_commit, runner=su
                 if z.getinfo(name).file_size != record['bytes'] or hashlib.file_digest(stream, 'sha256').hexdigest() != record['sha256']:
                     raise ValueError('ZIP byte mismatch')
     summary = {'sourceCommit': source_commit, 'zip': zip_name, **a.digest(archive), 'packageEvidence': a.digest(package / 'package-evidence.json'), 'installedDescriptor': expected_payload['installed-18u-product.json']}
+    if frontend is not None:
+        summary['frontendProtocol'] = dict(a.FRONTEND_PROTOCOL)
     (work / 'package-receipt.json').write_text(json.dumps(summary, indent=2) + '\n', encoding='utf-8')
     return summary
 
@@ -185,7 +192,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('repo', 'native', 'go', 'data', 'work', 'signatures', 'source-commit'):
         parser.add_argument('--' + name, required=True)
-    parser.add_argument('--frontend', help='complete matching-source installed TSF frontend; produces test.10')
+    parser.add_argument('--frontend', help='complete matching-source v2 installed TSF frontend; produces test.11')
     args = parser.parse_args()
     print(json.dumps(build(args.repo, args.native, args.go, args.data, args.work, args.signatures, args.source_commit, frontend=args.frontend), indent=2))
 

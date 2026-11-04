@@ -1,5 +1,9 @@
 # 桌面触摸键盘阶段交接
 
+## 2026-11-04 test.11 自动跟随完整包准备
+
+PR #99 已以 `c0e67e47` 合入 MSI 准备分支，正在准备前端与 TIP 同源 v2 的完整 test.11 包；见[本轮范围](../../../docs/testing/18u/2026-11-04/auto-focus-test11/DEVELOPMENT.zh-CN.md)。本次允许构建与下载核验，不安装、不改注册或默认输入法，不重复 test.8 实测。下方源码阶段与旧包记录保留为历史。
+
 ## 2026-11-04 自动跟随源码开发
 
 独立分支 `codex/18u-auto-focus-20261104` 从 test.10 交付记录提交 `0bd56504` 接续：前端自动发现焦点，TIP 确认 profile/context，新增只读 v2 状态查询；普通失焦自动新建会话，未知编辑仍需核对且永不重放。详见[开发与验证范围](../../../docs/project/18u-self-developed-integration/AUTO_FOCUS_FRONTEND.zh-CN.md)。本轮只开发与离线验证，不生成新的安装交付，不安装、不改注册或默认输入法，不重复 test.8 实测。下方历史交付与实测保持原范围。

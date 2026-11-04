@@ -9,6 +9,8 @@ import struct
 
 LAYOUT_SHA = '995f1a74f129249febbd09ca11a8266f6e0c94bac8c05c57754859fc3be3349c'
 DICTIONARY_SHA = '43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353'
+FRONTEND_PROTOCOL = {'version': 2, 'pipePrefix': 'Yime18u.Frontend.v2.'}
+FRONTEND_MODE = 'installed-tsf-auto-focus'
 
 BINARIES = {
     'x64/YimeTextService18u.dll': ('native', 'YimeTextService18u.dll'),
@@ -58,6 +60,21 @@ def amd64(path):
     if offset + 26 > len(raw) or raw[offset:offset+4] != b'PE\0\0' or struct.unpack_from('<H', raw, offset+4)[0] != 0x8664 or struct.unpack_from('<H', raw, offset+24)[0] != 0x20b:
         raise ValueError('native AMD64 PE required')
 
+def frontend_protocol(info, frontend_exe, tip_dll):
+    protocol = info.get('frontendProtocol')
+    if (info.get('defaultMode') != FRONTEND_MODE or not isinstance(protocol, dict)
+            or type(protocol.get('version')) is not int or protocol != FRONTEND_PROTOCOL):
+        raise ValueError('frontend v2 protocol metadata required')
+    # Static pairing guard, not publisher authentication or live-host acceptance.
+    # Both binaries are built from the clean source commit in the same CI job.
+    for path, encoding in ((frontend_exe, 'ascii'), (tip_dll, 'utf-16-le')):
+        raw = regular(path).read_bytes()
+        if any('Yime18u.Frontend.v1.'.encode(e) in raw for e in ('ascii', 'utf-16-le')):
+            raise ValueError('frontend v1 binary protocol refused: ' + Path(path).name)
+        if FRONTEND_PROTOCOL['pipePrefix'].encode(encoding) not in raw:
+            raise ValueError('frontend v2 binary protocol marker missing: ' + Path(path).name)
+
+
 def assemble(repo, native, go, data, output, source_commit, frontend=None):
     if not re.fullmatch('[0-9a-f]{40}', source_commit):
         raise ValueError('full source commit required')
@@ -92,6 +109,7 @@ def assemble(repo, native, go, data, output, source_commit, frontend=None):
                 raise ValueError('frontend file mismatch: ' + name)
             inputs['frontend/' + name] = path
         amd64(front / 'YimeTouchKeyboard.exe')
+        frontend_protocol(info, front / 'YimeTouchKeyboard.exe', inputs['x64/YimeTextService18u.dll'])
     # This descriptor is a build-source assertion, not publisher authentication.
     # Runtime independently checks its content locks through the canonical loader.
     product = load_json(inputs['source/tools/yimecore/18u-touch-product.json'])

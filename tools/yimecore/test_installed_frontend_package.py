@@ -18,6 +18,10 @@ class FrontendTests(unittest.TestCase):
         self.front = f.root / 'frontend'
         self.front.mkdir()
         shutil.copyfile(f.native / 'YimeTextService18u.dll', self.front / 'YimeTouchKeyboard.exe')
+        # Add only the expected encoding to each synthetic PE, never execute it.
+        for path, encoding in ((self.front / 'YimeTouchKeyboard.exe', 'ascii'),
+                               (f.native / 'YimeTextService18u.dll', 'utf-16-le')):
+            path.write_bytes(path.read_bytes() + 'Yime18u.Frontend.v2.'.encode(encoding))
         for name in fixtures.a.DATA:
             target = self.front / 'data' / name
             target.parent.mkdir(exist_ok=True)
@@ -28,7 +32,9 @@ class FrontendTests(unittest.TestCase):
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(f.repo / name, target)
         self.info = dict(scope='installed-18u-tsf-frontend-candidate', sourceCommit='b'*40,
-                         sourceChanges=False, architecture='windows-amd64', sendInputFallback=False)
+                         sourceChanges=False, architecture='windows-amd64', sendInputFallback=False,
+                         defaultMode='installed-tsf-auto-focus',
+                         frontendProtocol={'version': 2, 'pipePrefix': 'Yime18u.Frontend.v2.'})
         self.inventory()
 
     def inventory(self):
@@ -62,6 +68,48 @@ class FrontendTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'file mismatch'):
             self.build()
 
+    def test_protocol_metadata_refused(self):
+        original = dict(self.info)
+        variants = [
+            ('defaultMode', None),
+            ('defaultMode', 'installed-tsf-explicit-target-binding'),
+            ('frontendProtocol', None),
+            ('frontendProtocol', {'version': 1, 'pipePrefix': 'Yime18u.Frontend.v1.'}),
+            ('frontendProtocol', {'version': 2, 'pipePrefix': 'Yime18u.Frontend.v1.'}),
+            ('frontendProtocol', {'version': 2.0, 'pipePrefix': 'Yime18u.Frontend.v2.'}),
+        ]
+        for field, value in variants:
+            with self.subTest(field=field, value=value):
+                self.info = dict(original)
+                if value is None:
+                    self.info.pop(field)
+                else:
+                    self.info[field] = value
+                self.inventory()
+                with self.assertRaisesRegex(ValueError, 'v2 protocol metadata'):
+                    self.build()
+                self.assertFalse(self.fixture.out.exists())
+
+    def test_binary_protocol_missing_v1_or_wrong_encoding_refused(self):
+        pairs = ((self.front / 'YimeTouchKeyboard.exe', 'ascii', 'utf-16-le'),
+                 (self.fixture.native / 'YimeTextService18u.dll', 'utf-16-le', 'ascii'))
+        for path, encoding, other_encoding in pairs:
+            original = path.read_bytes()
+            marker = 'Yime18u.Frontend.v2.'.encode(encoding)
+            for kind, replacement, reason in (
+                    ('missing', b'', 'v2 binary protocol marker missing'),
+                    ('v1', 'Yime18u.Frontend.v1.'.encode(encoding), 'v1 binary protocol refused'),
+                    ('wrong-encoding', 'Yime18u.Frontend.v2.'.encode(other_encoding), 'v2 binary protocol marker missing'),
+                    ('mixed', marker + 'Yime18u.Frontend.v1.'.encode(other_encoding), 'v1 binary protocol refused')):
+                with self.subTest(path=path.name, kind=kind):
+                    path.write_bytes(original.replace(marker, replacement))
+                    self.inventory()  # Reject even a self-consistent wrong PE.
+                    with self.assertRaisesRegex(ValueError, reason):
+                        self.build()
+                    self.assertFalse(self.fixture.out.exists())
+                    path.write_bytes(original)
+                    self.inventory()
+
     def test_self_consistent_wrong_dictionary_refused(self):
         (self.front / 'data/yime_full.dict.yaml').write_text('wrong')
         self.inventory()
@@ -79,7 +127,7 @@ class FrontendTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'inventory mismatch'):
             self.build()
 
-    def test_test7_archive_and_six_signatures(self):
+    def test_test11_archive_and_six_signatures(self):
         f = self.fixture
         for name in ('LAYOUT_SHA', 'DICTIONARY_SHA'):
             self.addCleanup(patch.stopall)
@@ -98,7 +146,7 @@ class FrontendTests(unittest.TestCase):
 
         def runner(command, **kwargs):
             args = json.loads(Path(command[-1]).read_text())
-            self.assertEqual(args['Version'], '0.1.0-18u-test.10')
+            self.assertEqual(args['Version'], '0.1.0-18u-test.11')
             output = Path(args['OutputRoot'])
             shutil.copytree(args['PayloadRoot'], output / 'payload')
             for name in package.INSTALLER:
@@ -108,11 +156,19 @@ class FrontendTests(unittest.TestCase):
 
         work = f.root / 'work'
         receipt = package.build(f.repo, f.native, f.go, f.data, work, signature_file, 'b'*40, runner=runner, frontend=self.front)
+        self.assertEqual(receipt['zip'], 'YimeCore-18u-0.1.0-18u-test.11-windows-amd64.zip')
+        self.assertEqual(receipt['frontendProtocol'], self.info['frontendProtocol'])
         with zipfile.ZipFile(work / receipt['zip']) as archive:
             self.assertIn('payload/frontend/YimeTouchKeyboard.exe', archive.namelist())
             self.assertEqual(len(json.loads(archive.read('signatures.json'))['files']), 6)
             evidence = json.loads(archive.read('package-evidence.json'))
-            self.assertEqual(evidence['version'], '0.1.0-18u-test.10')
+            self.assertEqual(evidence['version'], '0.1.0-18u-test.11')
+            self.assertEqual(evidence['frontendProtocol'], self.info['frontendProtocol'])
+            descriptor = json.loads(archive.read('payload/installed-18u-product.json'))
+            self.assertEqual(len(descriptor), 9)
+            readme = archive.read('README.zh-CN.md').decode('utf-8')
+            self.assertIn('无需日常手动绑定', readme)
+            self.assertIn('未知提交结果保持锁定', readme)
             self.assertFalse(evidence['installationExecuted'])
             self.assertFalse(evidence['installedHostAcceptance'])
 

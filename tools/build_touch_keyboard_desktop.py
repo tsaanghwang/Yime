@@ -154,7 +154,8 @@ def build(output: Path, arch: str, data: Path, installed_tsf=False):
                           'checkoutCommit': head}
     if installed_tsf:
         manifest.update(scope='installed-18u-tsf-frontend-candidate', defaultLauncher='Start Installed Touch Keyboard.cmd',
-                        defaultMode='installed-tsf-explicit-target-binding', sendInputFallback=False,
+                        defaultMode='installed-tsf-auto-focus', sendInputFallback=False,
+                        frontendProtocol={'version': 2, 'pipePrefix': 'Yime18u.Frontend.v2.'},
                         defaultWindowSizing='fit-work-area', physicalCalibrationIndependent=True)
     (output/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
     print(output)
