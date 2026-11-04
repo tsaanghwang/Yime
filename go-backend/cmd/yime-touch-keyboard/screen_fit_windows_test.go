@@ -109,10 +109,13 @@ func TestScreenFitResizesOwnWindowAndRestoresManualMode(t *testing.T) {
 	if err := a.changeCalibration(1e6); err == nil || !a.fitScreen || a.ppm != original {
 		t.Fatal("rejected manual calibration did not preserve fitted mode")
 	}
-	if err := a.changeCalibration(original); err != nil || a.fitScreen {
+	// The runner's monitor may be smaller than the fixture's original
+	// calibrated board. Choose a valid manual size for this monitor.
+	calibrated := math.Min(original, a.displayPPM()*0.8)
+	if err := a.changeCalibration(calibrated); err != nil || a.fitScreen {
 		t.Fatal("explicit manual calibration did not select calibrated mode", err)
 	}
-	if math.Abs(a.displayPPM()-original) > 1e-9 {
+	if math.Abs(a.displayPPM()-calibrated) > 1e-9 {
 		t.Fatal("manual mode retained display zoom")
 	}
 	if err := a.applyTouchImmediate("fit-screen"); err != nil {
@@ -122,7 +125,7 @@ func TestScreenFitResizesOwnWindowAndRestoresManualMode(t *testing.T) {
 	a.down(78, x, y)
 	a.displayChanged()
 	a.up(78, x, y)
-	if a.preview.snapshot.State.RawInput != "" || len(a.previewTouches) != 0 || !a.fitScreen || a.ppm != original {
+	if a.preview.snapshot.State.RawInput != "" || len(a.previewTouches) != 0 || !a.fitScreen || a.ppm != calibrated {
 		t.Fatal("display change accepted an old touch or lost sizing/calibration mode")
 	}
 }
