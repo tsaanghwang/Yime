@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "scope": "isolated-cn134-complete-derived-runtime",
+  "repository": "tsaanghwang/Yime",
+  "releaseTag": "touch-keyboard-cn134-data-20261020",
+  "asset": "cn134-runtime-995f1a74.zip",
+  "url": "https://github.com/tsaanghwang/Yime/releases/download/touch-keyboard-cn134-data-20261020/cn134-runtime-995f1a74.zip",
+  "archiveSHA256": "9f01dc384aa2a52281a882a7fc5f675a0282bf073f9033610a3b0681b32b14bd",
+  "archiveBytes": 85390528,
+  "sourceCommit": "e4ce7971543d72ad6d1da15499fe9bec89c58fd8",
+  "layoutProjectionSHA256": "995f1a74f129249febbd09ca11a8266f6e0c94bac8c05c57754859fc3be3349c",
+  "sourceReadingCount": 2457474,
+  "files": {
+    "ascii_keyboard_manifest.json": {
+      "bytes": 3927,
+      "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843"
+    },
+    "yime_full.dict.yaml": {
+      "bytes": 81236859,
+      "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790"
+    },
+    "yime_variable.dict.yaml": {
+      "bytes": 77254107,
+      "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353"
+    },
+    "yime_shorthand.dict.yaml": {
+      "bytes": 75381670,
+      "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49"
+    }
+  }
+}

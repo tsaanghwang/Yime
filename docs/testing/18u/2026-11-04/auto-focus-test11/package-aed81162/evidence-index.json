@@ -1,0 +1,54 @@
+{
+  "18u-touch-product.json": {
+    "bytes": 1078,
+    "sha256": "0d1ebda36938ec83bd834865bdf8d86bf1d95f1ebe874499ee02106fa0a20a2c"
+  },
+  "README.zh-CN.md": {
+    "bytes": 4469,
+    "sha256": "9b74ed04db713304546f11dc62369126413e71bf68b4f57ca085194099e1b191"
+  },
+  "artifact-metadata.json": {
+    "bytes": 851,
+    "sha256": "6feb980be5c0e06e345c5a78e4343f3764b669943f7f1b1b0ede90cc33af268d"
+  },
+  "ascii_keyboard_manifest.json": {
+    "bytes": 3927,
+    "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843"
+  },
+  "frontend-USER_GUIDE.zh-CN.md": {
+    "bytes": 7016,
+    "sha256": "b784d868242d0689a0fb60097acc93a96659c03fee98a0978a7d21b29bd48fec"
+  },
+  "frontend-manifest.json": {
+    "bytes": 5182,
+    "sha256": "1b6b5c60def9aeae89d4ad3883bfaf1409b2d8926639bf1e9fcd58db681023bd"
+  },
+  "frontend-resources.json": {
+    "bytes": 2538,
+    "sha256": "a3350a2c1ebd86e7d1fc3bb3d19229f945af60d761375bafab0b26acd44d62ba"
+  },
+  "installed-18u-product.json": {
+    "bytes": 7383,
+    "sha256": "2337cb30c9bf400344dc6c1b8e0054f2247676e4ae86354afc51660681c440b2"
+  },
+  "package-evidence.json": {
+    "bytes": 8229,
+    "sha256": "5c51aa0a1aaadd77788d05c6a825a4f5ff15513bd0bebc24aba5f061c5464b53"
+  },
+  "package-receipt.json": {
+    "bytes": 594,
+    "sha256": "a1bc450d9d0605cc5c2eca9e7332734f6e85a1cd75ca21004ace80f767810596"
+  },
+  "product-package.json": {
+    "bytes": 7379,
+    "sha256": "a80b41d68bc73092f13858c32ee721ae0faf60ce535407cfe46b518073434956"
+  },
+  "resources.lock.json": {
+    "bytes": 1251,
+    "sha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313"
+  },
+  "signatures.json": {
+    "bytes": 1596,
+    "sha256": "62b20c018099ec88fb9b9551315f1f766737c7c3af9ecfb0dd4f9ba36498ecf5"
+  }
+}
