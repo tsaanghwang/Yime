@@ -18,10 +18,12 @@ type Transport interface {
 	Close() error
 }
 type Client struct {
-	mu        sync.Mutex
-	transport Transport
-	sequence  uint64
-	closed    bool
+	mu           sync.Mutex
+	transport    Transport
+	sequence     uint64
+	activationID string
+	generation   uint64
+	closed       bool
 }
 type Reply struct {
 	Version      int    `json:"version"`
@@ -29,6 +31,8 @@ type Reply struct {
 	OK           bool   `json:"ok"`
 	Outcome      string `json:"outcome"`
 	RetryAllowed bool   `json:"retryAllowed"`
+	ActivationID string `json:"activationId"`
+	Generation   uint64 `json:"generation"`
 	Reason       string `json:"reason,omitempty"`
 }
 
@@ -47,14 +51,17 @@ func (c *Client) call(operation string, fields map[string]any, outcome string) e
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.closed {
-		return errors.New("TSF session stopped; bind explicitly, no replay")
+		return errors.New("TSF session stopped; a new session is required, no replay")
 	}
 	fail := func(err error) error { c.closed = true; _ = c.transport.Close(); return err }
 	if c.sequence == ^uint64(0) {
 		return fail(errors.New("TSF sequence exhausted"))
 	}
 	c.sequence++
-	request := map[string]any{"version": 1, "sequence": c.sequence, "operation": operation}
+	request := map[string]any{"version": 2, "sequence": c.sequence, "operation": operation}
+	if operation != "bind" {
+		request["activationId"], request["generation"] = c.activationID, c.generation
+	}
 	for k, v := range fields {
 		request[k] = v
 	}
@@ -78,17 +85,33 @@ func (c *Client) call(operation string, fields map[string]any, outcome string) e
 	var r Reply
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.DisallowUnknownFields()
-	if decoder.Decode(&r) != nil || decoder.Decode(new(any)) != io.EOF || r.Version != 1 || r.Sequence != c.sequence || r.RetryAllowed {
+	if decoder.Decode(&r) != nil || decoder.Decode(new(any)) != io.EOF || r.Version != 2 || r.Sequence != c.sequence || r.RetryAllowed || !validActivationID(r.ActivationID) || r.Generation == 0 {
 		return fail(errors.New("invalid TSF response; session stopped, no replay"))
+	}
+	// A new activation or context generation is never adopted from a response.
+	// Only a fresh bind may establish an identity for future user actions.
+	if operation != "bind" && (r.ActivationID != c.activationID || r.Generation != c.generation) {
+		return fail(fmt.Errorf("TSF %s identity changed; session stopped, no replay", operation))
 	}
 	if !r.OK || r.Outcome != outcome || r.Reason != "" {
 		if !r.OK && operation == "bind" && r.Outcome == "bind-rejected" && knownBindReason(r.Reason) {
 			return fail(fmt.Errorf("TSF bind rejected: %s", r.Reason))
 		}
-		return fail(errors.New("TSF edit was not confirmed; session stopped, no replay"))
+		if operation == "status" && r.OK && r.Outcome == "unavailable" && knownStatusReason(r.Reason) {
+			return fail(fmt.Errorf("TSF target unavailable: %s", r.Reason))
+		}
+		return fail(fmt.Errorf("TSF %s was not confirmed; session stopped, no replay", operation))
+	}
+	if operation == "bind" {
+		c.activationID, c.generation = r.ActivationID, r.Generation
 	}
 	return nil
 }
+
+func validActivationID(id string) bool {
+	return len(id) > 0 && len(id) <= 128 && utf8.ValidString(id) && !strings.ContainsRune(id, 0)
+}
+
 func validReplyObject(raw []byte) bool {
 	d := json.NewDecoder(bytes.NewReader(raw))
 	t, err := d.Token()
@@ -109,7 +132,7 @@ func validReplyObject(raw []byte) bool {
 		}
 	}
 	t, err = d.Token()
-	return err == nil && t == json.Delim('}') && seen["version"] && seen["sequence"] && seen["ok"] && seen["outcome"] && seen["retryAllowed"] && (len(seen) == 5 || len(seen) == 6 && seen["reason"]) && d.Decode(new(any)) == io.EOF
+	return err == nil && t == json.Delim('}') && seen["version"] && seen["sequence"] && seen["ok"] && seen["outcome"] && seen["retryAllowed"] && seen["activationId"] && seen["generation"] && (len(seen) == 7 || len(seen) == 8 && seen["reason"]) && d.Decode(new(any)) == io.EOF
 }
 
 func knownBindReason(reason string) bool {
@@ -118,8 +141,21 @@ func knownBindReason(reason string) bool {
 		return true
 	case "lease-inactive", "callback-thread-mismatch", "foreground-changed", "focus-changed", "focus-owner-mismatch", "no-focused-document", "document-changed", "no-top-context", "context-changed":
 		return true
+	case "activation-ended", "key-focus-missing", "thread-focus-unavailable", "thread-focus-missing", "profile-unavailable", "profile-inactive", "generation-exhausted", "context-status-unavailable", "context-read-only", "context-loading":
+		return true
 	}
 	return false
+}
+
+func knownStatusReason(reason string) bool {
+	return knownBindReason(reason) || reason == "stale-activation" || reason == "stale-generation"
+}
+
+// Status checks the bound TIP's current identity without editing the document.
+// It shares the request sequence and serialization lock with Edit. An unavailable
+// target retires this client; it never silently rebinds or clears an edit fault.
+func (c *Client) Status() error {
+	return c.call("status", nil, "ready")
 }
 func (c *Client) Edit(text, key string, extend bool) error {
 	if (text == "") == (key == "") || len(text) > 4096 || !utf8.ValidString(text) || strings.ContainsRune(text, 0) {

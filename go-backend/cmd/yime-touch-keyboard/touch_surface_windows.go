@@ -167,6 +167,11 @@ func (a *ui) touchLabels(k tk.Key, labels []string) []string {
 	case "reset":
 		if a.demo != nil {
 			name = "重绑"
+		} else if a.follow != nil {
+			name = "重连"
+			if a.host.blocked {
+				name = "核对后继续"
+			}
 		} else if a.host == nil {
 			name = "清空"
 		}
@@ -200,12 +205,19 @@ func (a *ui) applyTouchImmediate(action string) error {
 		a.diagnosticOpen = false
 		a.touchHelpOpen = false
 		a.touchSettingsOpen = !a.touchSettingsOpen
+		if a.follow != nil && a.touchSettingsOpen {
+			a.loseHostFocus("设置已打开；返回后自动跟随正文")
+		}
 	case "calibrate":
 		a.calibrationInput = ""
 		a.calibrationOpen = true
 	case "diagnostics":
 		if a.host != nil {
-			a.loseHostFocus("诊断已打开；请重新绑定目标")
+			if a.follow != nil {
+				a.loseHostFocus("诊断已打开；返回后自动跟随正文")
+			} else {
+				a.loseHostFocus("诊断已打开；请重新绑定目标")
+			}
 		}
 		a.calibrationOpen = false
 		a.diagnosticOpen = true
@@ -415,8 +427,12 @@ func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 	} else if p.snapshot.PendingMiddleDots > 0 {
 		line += fmt.Sprintf("  |  中点待合并：%d/3", p.snapshot.PendingMiddleDots)
 	}
-	if a.touchMessage != "" {
+	if a.follow != nil && a.host.blocked {
+		line += "  |  " + autoFocusReviewMessage
+	} else if a.touchMessage != "" {
 		line += "  |  " + a.touchMessage
+	} else if a.follow != nil {
+		line += "  |  " + a.status
 	} else if a.diagnosticSummary != "" {
 		line += "  |  " + a.diagnosticSummary
 	} else if a.demo != nil {
@@ -556,7 +572,7 @@ func (a *ui) drawTouchSettings(dc uintptr, r rect) {
 	for i, action := range a.settingsActions() {
 		box := a.touchSettingRect(i)
 		bg := p.panel
-		if action == a.preview.mode || a.touchPressed(box) {
+		if action == a.previewMode() || a.touchPressed(box) {
 			bg = p.active
 		}
 		fill(dc, box, bg)

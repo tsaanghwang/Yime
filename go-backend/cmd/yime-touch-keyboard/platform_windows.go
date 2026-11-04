@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
-	"github.com/tsaanghwang/Yime/go-backend/internal/tsffrontend"
 	"html"
 	"image"
 	"image/png"
@@ -87,7 +86,11 @@ type input struct {
 	Data [32]byte
 }
 type ui struct {
-	tsf                 *tsffrontend.Client
+	tsf                 frontendSession
+	follow              *focusFollower
+	autoMinimized       bool
+	autoDiagnostic      string
+	preferredHostMode   string
 	demo                *ownDemo
 	h                   uintptr
 	s                   *tk.State
@@ -157,6 +160,12 @@ const keyboardWindowStyle = 0x800A0000   // POPUP | SYSMENU | MINIMIZEBOX
 var focusCallback = syscall.NewCallback(func(hook, event, hwnd, object, child, thread, tick uintptr) uintptr {
 	a := active
 	if a != nil && a.host != nil {
+		if a.follow != nil {
+			if int32(uint32(tick)-a.focusStarted) >= 0 {
+				a.autoFocusChanged()
+			}
+			return 0
+		}
 		if a.host.target.Window != 0 && int32(uint32(tick)-a.focusStarted) >= 0 {
 			a.loseHostFocus("焦点已变化；未确认组合已取消，请重新绑定目标")
 		}
@@ -299,11 +308,7 @@ func run(o options) error {
 		a.showGlyphs = true
 		if o.Host {
 			a.initHost()
-			defer func() {
-				if a.tsf != nil {
-					_ = a.tsf.Close()
-				}
-			}()
+			defer a.stopAutoFocus()
 		}
 	}
 	active = a
@@ -352,6 +357,12 @@ func run(o options) error {
 		return fmt.Errorf("CreateWindow: %w", err)
 	}
 	a.h = h
+	if a.follow != nil {
+		if n, _, _ := U("SetTimer").Call(h, autoFocusTimer, 100, 0); n == 0 {
+			U("DestroyWindow").Call(h)
+			return fmt.Errorf("automatic focus monitor unavailable")
+		}
+	}
 	if a.demo != nil {
 		if n, _, _ := U("SetTimer").Call(h, ownDemoTimer, 250, 0); n == 0 {
 			return fmt.Errorf("own demo focus timer unavailable")
@@ -603,7 +614,11 @@ func (a *ui) showHelp() {
 	if a.o.TouchUI {
 		// Do not enter a native modal loop from a touch/pen UP callback.
 		if !a.touchHelpOpen && a.host != nil {
-			a.loseHostFocus("帮助已打开；请重新绑定目标")
+			if a.follow != nil {
+				a.loseHostFocus("帮助已打开；返回后自动跟随正文")
+			} else {
+				a.loseHostFocus("帮助已打开；请重新绑定目标")
+			}
 		}
 		a.touchHelpOpen = !a.touchHelpOpen
 		a.touchSettingsOpen = false
@@ -628,13 +643,18 @@ func (a *ui) showHelp() {
 	U("MessageBoxW").Call(a.h, ptr(str(help)), ptr(str("Yime 桌面键盘使用帮助")), 0x00040040)
 }
 func (a *ui) suspendForMinimize() {
+	a.autoMinimized = true
 	if a.demo != nil {
 		a.invalidateOwnDemo()
 	}
 	a.soundSuspended = true
 	a.stopKeySound()
 	if a.host != nil {
-		a.loseHostFocus("键盘已最小化；恢复后请重新绑定目标")
+		if a.follow != nil {
+			a.loseHostFocus("键盘已最小化；恢复后自动跟随正文")
+		} else {
+			a.loseHostFocus("键盘已最小化；恢复后请重新绑定目标")
+		}
 	}
 	if a.host == nil && a.preview != nil && !a.preview.fault && a.preview.snapshot.State.RawInput != "" {
 		if err := a.preview.dispatch(keyboardlab.Event{Type: "clear"}); err != nil {
@@ -692,6 +712,10 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 		a.ensureKeySound()
 		return 0
 	case 0x0113: // WM_TIMER: retry a failed startup without minimizing the window.
+		if w == autoFocusTimer && a.follow != nil {
+			a.pollAutoFocus(time.Now())
+			return 0
+		}
 		if w == ownDemoTimer && a.demo != nil {
 			_ = a.pollOwnDemo()
 			a.invalidate()
@@ -704,6 +728,7 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 		if w == 1 { // SIZE_MINIMIZED
 			a.suspendForMinimize()
 		} else {
+			a.autoMinimized = false
 			a.soundSuspended = false
 			if a.soundWindowReady {
 				a.ensureKeySound()
@@ -715,6 +740,7 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 			return 0
 		}
 	case 0x0002:
+		a.stopAutoFocus()
 		if a.demo != nil {
 			U("KillTimer").Call(h, ownDemoTimer)
 			a.closeOwnDemo()

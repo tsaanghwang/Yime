@@ -90,10 +90,56 @@ ForegroundIdentity foregroundIdentity() noexcept {
     DWORD thread = GetWindowThreadProcessId(gui.hwndFocus, &process);
     return {window, thread, process, gui.hwndFocus, GetAncestor(gui.hwndFocus, GA_ROOT)};
 }
+struct Eligibility;
+const char* actualEligibility(const Eligibility&) noexcept;
+struct Eligibility {
+    ComPtr<ITfThreadMgr> manager;
+    ComPtr<ITfInputProcessorProfileMgr> profiles;
+    GUID clsid{}, profile{};
+    bool alive = true, keyFocused = true, threadFocused = true;
+    const char* (*query)(const Eligibility&) noexcept = actualEligibility;
+    const char* rejection() const noexcept {
+        if (!alive) return "activation-ended";
+        if (!keyFocused) return "key-focus-missing";
+        if (!threadFocused) return "thread-focus-missing";
+        return query(*this);
+    }
+};
+const char* actualEligibility(const Eligibility& state) noexcept {
+    BOOL focused = FALSE;
+    if (!state.manager || state.manager->IsThreadFocus(&focused) != S_OK) return "thread-focus-unavailable";
+    if (!focused) return "thread-focus-missing";
+    TF_INPUTPROCESSORPROFILE active{};
+    if (!state.profiles) return "profile-unavailable";
+    const HRESULT result = state.profiles->GetActiveProfile(GUID_TFCAT_TIP_KEYBOARD, &active);
+    if (FAILED(result)) return "profile-unavailable";
+    if (result != S_OK || active.dwProfileType != TF_PROFILETYPE_INPUTPROCESSOR ||
+        !IsEqualGUID(active.clsid, state.clsid) || !IsEqualGUID(active.guidProfile, state.profile))
+        return "profile-inactive";
+    return nullptr;
+}
+struct SessionIdentity {
+    std::string activationId;
+    uint64_t generation = 1;
+    bool exhausted = false;
+    bool advance() noexcept {
+        if (generation == UINT64_MAX) { exhausted = true; return false; }
+        ++generation; return true;
+    }
+    const char* rejection(const json& request) const {
+        if (exhausted) return "generation-exhausted";
+        if (!request.contains("activationId") || !request["activationId"].is_string() ||
+            request["activationId"].get<std::string>() != activationId) return "stale-activation";
+        if (!request.contains("generation") || !request["generation"].is_number_unsigned() ||
+            request["generation"].get<uint64_t>() != generation) return "stale-generation";
+        return nullptr;
+    }
+};
 struct Lease {
     ComPtr<ITfThreadMgr> manager;
     ComPtr<ITfDocumentMgr> document;
     ComPtr<ITfContext> context;
+    std::shared_ptr<Eligibility> eligibility;
     DWORD thread = GetCurrentThreadId();
     HWND window = nullptr;
     HWND focus = nullptr;
@@ -104,6 +150,8 @@ struct Lease {
         const auto current = foreground();
         if (!active) return "lease-inactive";
         if (GetCurrentThreadId() != thread) return "callback-thread-mismatch";
+        if (!eligibility) return "profile-unavailable";
+        if (const auto why = eligibility->rejection()) return why;
         if (current.window != window) return "foreground-changed";
         if (!focus || current.focus != focus || current.root != window) return "focus-changed";
         if (current.thread != thread || current.process != GetCurrentProcessId()) return "focus-owner-mismatch";
@@ -112,10 +160,23 @@ struct Lease {
         if (doc.Get() != document.Get()) return "document-changed";
         if (FAILED(doc->GetTop(&top)) || !top) return "no-top-context";
         if (top.Get() != context.Get()) return "context-changed";
+        TF_STATUS status{};
+        if (context->GetStatus(&status) != S_OK) return "context-status-unavailable";
+        if (status.dwDynamicFlags & TS_SD_READONLY) return "context-read-only";
+        if (status.dwDynamicFlags & TS_SD_LOADING) return "context-loading";
+        // A host COM call above may reenter a TSF revocation notification.
+        if (!active || !eligibility->alive) return "lease-inactive";
         return nullptr;
     }
     bool valid() const noexcept { return rejection() == nullptr; }
 };
+// Pure observation: querying status cannot bind, revive, advance a generation,
+// perform an edit, or erase an uncertain outcome in the frontend.
+const char* sessionRejection(const SessionIdentity& identity, const std::shared_ptr<Lease>& lease,
+    const json& request) {
+    if (const auto why = identity.rejection(request)) return why;
+    return lease ? lease->rejection() : "lease-inactive";
+}
 
 // Navigation/deletion use Unicode scalar boundaries, not half a surrogate pair.
 HRESULT step(ITfRange* range, TfEditCookie cookie, int direction) {
@@ -163,6 +224,7 @@ private:
             return context->SetSelection(cookie, 1, &value);
         };
         if (!text_.empty()) {
+            if (!lease_->valid()) return E_ABORT;
             hr = range->SetText(cookie, 0, text_.data(), static_cast<LONG>(text_.size()));
             if (SUCCEEDED(hr)) hr = range->Collapse(cookie, TF_ANCHOR_END);
             return SUCCEEDED(hr) ? select(range.Get(), TF_AE_END) : hr;
@@ -183,6 +245,7 @@ private:
                     : range->ShiftEndToRange(cookie, edge.Get(), TF_ANCHOR_END);
                 if (FAILED(hr)) return hr;
             }
+            if (!lease_->valid()) return E_ABORT;
             hr = range->SetText(cookie, 0, L"", 0); if (FAILED(hr)) return hr;
             hr = range->Collapse(cookie, TF_ANCHOR_START);
             return SUCCEEDED(hr) ? select(range.Get(), TF_AE_END) : hr;
@@ -228,20 +291,43 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
     std::string input, output;
     char buffer[MaxFrame + 1]{};
     uint64_t sequence = 0;
+    SessionIdentity identity;
+    std::shared_ptr<Eligibility> eligibility = std::make_shared<Eligibility>();
     ULONGLONG deadline = 0;
     std::shared_ptr<Lease> lease;
-    Impl(ITfThreadMgr* m, TfClientId c) : manager(m), client(c) {
+#ifdef YIME_TOUCH_FRONTEND_MEMORY_TEST
+    bool memoryOnly = false;
+    json memoryResponse;
+    ForegroundIdentity (*memoryForeground)() noexcept = nullptr;
+    // No COM activation, pipe, timer, real focus, or authentication in this path.
+    Impl(ITfThreadMgr* m, TfClientId c, std::shared_ptr<Eligibility> state,
+        const std::string& activation, ForegroundIdentity (*foreground)() noexcept)
+        : manager(m), client(c), eligibility(std::move(state)), memoryOnly(true), memoryForeground(foreground) {
+        identity.activationId = activation; YimeModuleAddRef();
+    }
+#endif
+    Impl(ITfThreadMgr* m, TfClientId c, REFCLSID clsid, REFGUID profile, bool keyFocused) : manager(m), client(c) {
+        eligibility->manager = m; eligibility->clsid = clsid; eligibility->profile = profile;
+        eligibility->keyFocused = keyFocused;
+        require(SUCCEEDED(CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
+            IID_PPV_ARGS(&eligibility->profiles))));
+        GUID activation{}; require(SUCCEEDED(CoCreateGuid(&activation)));
+        wchar_t value[40]{}; require(StringFromGUID2(activation, value, 40) != 0);
+        for (const auto* p = value; *p; ++p) identity.activationId.push_back(static_cast<char>(*p));
         io.hEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr); require(io.hEvent != nullptr);
         YimeModuleAddRef();
     }
     ~Impl() {
+        eligibility->alive = false;
         invalidate(); closePipe();
         if (window) { KillTimer(window, 1); DestroyWindow(window); }
         if (module) UnregisterClassW(L"Yime18uFrontendThread.v1", module);
         if (io.hEvent) CloseHandle(io.hEvent);
         YimeModuleRelease();
     }
-    void invalidate() noexcept { if (lease) lease->active = false; }
+    void invalidate() noexcept {
+        if (lease && lease->active) { lease->active = false; identity.advance(); }
+    }
     void closePipe() noexcept {
         invalidate(); lease.reset();
         if (pipe != INVALID_HANDLE_VALUE) {
@@ -278,8 +364,11 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
     }
     void resetIO() { require(!pending); ResetEvent(io.hEvent); io.Internal = io.InternalHigh = 0; io.Offset = io.OffsetHigh = 0; }
     void listen() {
+#ifdef YIME_TOUCH_FRONTEND_MEMORY_TEST
+        if (memoryOnly) { closePipe(); phase = Phase::Connecting; return; }
+#endif
         closePipe(); resetIO();
-        std::wstring name = L"\\\\.\\pipe\\Yime18u.Frontend.v1." + std::to_wstring(GetCurrentProcessId()) + L"." + std::to_wstring(GetCurrentThreadId());
+        std::wstring name = L"\\\\.\\pipe\\Yime18u.Frontend.v2." + std::to_wstring(GetCurrentProcessId()) + L"." + std::to_wstring(GetCurrentThreadId());
         pipe = CreateNamedPipeW(name.c_str(), PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED | FILE_FLAG_FIRST_PIPE_INSTANCE,
             PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT | PIPE_REJECT_REMOTE_CLIENTS, 1, MaxFrame, MaxFrame, 0, nullptr);
         require(pipe != INVALID_HANDLE_VALUE);
@@ -293,22 +382,31 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
         else { require(GetLastError() == ERROR_IO_PENDING); pending = true; }
     }
     void reply(bool ok, const char* outcome, const char* reason = nullptr) {
-        json response{{"version", 1}, {"sequence", sequence}, {"ok", ok}, {"outcome", outcome}, {"retryAllowed", false}};
+        json response{{"version", 2}, {"sequence", sequence}, {"ok", ok}, {"outcome", outcome}, {"retryAllowed", false},
+            {"activationId", identity.activationId}, {"generation", identity.generation}};
         if (reason) response["reason"] = reason;
         output = response.dump() + "\n";
-        phase = Phase::Writing; resetIO(); DWORD n = 0;
+        phase = Phase::Writing;
+#ifdef YIME_TOUCH_FRONTEND_MEMORY_TEST
+        if (memoryOnly) { memoryResponse = json::parse(output); return; }
+#endif
+        resetIO(); DWORD n = 0;
         if (WriteFile(pipe, output.data(), static_cast<DWORD>(output.size()), &n, &io)) { io.InternalHigh = n; SetEvent(io.hEvent); }
         else { require(GetLastError() == ERROR_IO_PENDING); pending = true; }
     }
     void dispatch() {
         const auto q = json::parse(input); input.clear();
-        require(q.is_object() && q.size() >= 3 && q.value("version", 0) == 1 &&
+        require(q.is_object() && q.size() >= 3 && q.value("version", 0) == 2 &&
             q.at("sequence").is_number_unsigned() && sequence < UINT64_MAX && q.at("sequence").get<uint64_t>() == sequence + 1);
         ++sequence;
         const auto op = q.at("operation").get<std::string>();
         if (op == "bind") {
             require(sequence == 1 && q.size() == 5 && q.at("window").is_number_unsigned() && q.at("focus").is_number_unsigned());
-            lease = std::make_shared<Lease>(); lease->manager = manager;
+            require(identity.advance());
+            lease = std::make_shared<Lease>(); lease->manager = manager; lease->eligibility = eligibility;
+#ifdef YIME_TOUCH_FRONTEND_MEMORY_TEST
+            if (memoryOnly) lease->foreground = memoryForeground;
+#endif
             lease->window = reinterpret_cast<HWND>(q.at("window").get<uint64_t>());
             lease->focus = reinterpret_cast<HWND>(q.at("focus").get<uint64_t>());
             auto reject = [&](const char* why) { invalidate(); closeAfterWrite = true; reply(false, "bind-rejected", why); };
@@ -318,9 +416,16 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
             if (const auto why = lease->rejection()) { reject(why); return; }
             reply(true, "bound"); return;
         }
-        require(lease && lease->valid());
-        if (op == "close") { require(q.size() == 3); invalidate(); closeAfterWrite = true; reply(true, "closed"); return; }
-        require(op == "edit" && q.size() == 6);
+        if (op == "status") {
+            require(q.size() == 5);
+            const auto why = sessionRejection(identity, lease, q);
+            reply(true, why ? "unavailable" : "ready", why); return;
+        }
+        if (const auto why = sessionRejection(identity, lease, q)) {
+            closeAfterWrite = true; reply(false, "failed", why); return;
+        }
+        if (op == "close") { require(q.size() == 5); closeAfterWrite = true; reply(true, "closed"); invalidate(); return; }
+        require(op == "edit" && q.size() == 8);
         const auto text = q.at("text").get<std::string>();
         auto key = q.at("key").get<std::string>();
         const bool extend = q.at("extend").get<bool>();
@@ -346,8 +451,12 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
     }
     void tick() noexcept {
         try {
-            if (pipe == INVALID_HANDLE_VALUE) return;
-            if (lease && !lease->valid()) invalidate();
+            if (pipe == INVALID_HANDLE_VALUE
+#ifdef YIME_TOUCH_FRONTEND_MEMORY_TEST
+                && !memoryOnly
+#endif
+                ) return;
+            if (lease && lease->active && !lease->valid()) invalidate();
             if (peer && WaitForSingleObject(peer, 0) != WAIT_TIMEOUT) { listen(); return; }
             if (deadline && GetTickCount64() > deadline) { listen(); return; }
             if (phase == Phase::Editing) {
@@ -356,6 +465,9 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
                 closeAfterWrite = !ok;
                 reply(ok, ok ? "applied" : lease->attempted ? "unknown" : "failed"); return;
             }
+#ifdef YIME_TOUCH_FRONTEND_MEMORY_TEST
+            if (memoryOnly) return;
+#endif
             if (WaitForSingleObject(io.hEvent, 0) != WAIT_OBJECT_0) return;
             DWORD n = static_cast<DWORD>(io.InternalHigh);
             if (pending) { require(GetOverlappedResult(pipe, &io, &n, FALSE) != FALSE); pending = false; }
@@ -387,7 +499,16 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
         } catch (...) { closePipe(); try { listen(); } catch (...) { closePipe(); } }
     }
 };
-TouchFrontendEndpoint::TouchFrontendEndpoint(ITfThreadMgr* manager, TfClientId client)
-    : impl_(std::make_shared<Impl>(manager, client)) { impl_->start(); }
-TouchFrontendEndpoint::~TouchFrontendEndpoint() { impl_->invalidate(); }
+TouchFrontendEndpoint::TouchFrontendEndpoint(ITfThreadMgr* manager, TfClientId client,
+    REFCLSID clsid, REFGUID profile, bool keyFocused)
+    : impl_(std::make_shared<Impl>(manager, client, clsid, profile, keyFocused)) { impl_->start(); }
+TouchFrontendEndpoint::~TouchFrontendEndpoint() { impl_->eligibility->alive = false; impl_->invalidate(); }
 void TouchFrontendEndpoint::Invalidate() noexcept { impl_->invalidate(); }
+void TouchFrontendEndpoint::SetKeyFocus(bool focused) noexcept {
+    impl_->eligibility->keyFocused = focused;
+    if (!focused) impl_->invalidate();
+}
+void TouchFrontendEndpoint::SetThreadFocus(bool focused) noexcept {
+    impl_->eligibility->threadFocused = focused;
+    impl_->invalidate();
+}

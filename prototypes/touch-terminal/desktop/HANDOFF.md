@@ -1,5 +1,9 @@
 # 桌面触摸键盘阶段交接
 
+## 2026-11-04 自动跟随源码开发
+
+独立分支 `codex/18u-auto-focus-20261104` 从 test.10 交付记录提交 `0bd56504` 接续：前端自动发现焦点，TIP 确认 profile/context，新增只读 v2 状态查询；普通失焦自动新建会话，未知编辑仍需核对且永不重放。详见[开发与验证范围](../../../docs/project/18u-self-developed-integration/AUTO_FOCUS_FRONTEND.zh-CN.md)。本轮只开发与离线验证，不生成新的安装交付，不安装、不改注册或默认输入法，不重复 test.8 实测。下方历史交付与实测保持原范围。
+
 ## 2026-11-04 test.10 翻页键对齐
 
 左右翻页键向内移动，分别与各行首键左沿、末键右沿对齐，宽高与翻页行为保持。继承 test.9 自动适配，现有前端回归、包装器与离屏检查已通过；见[本轮记录](../../../docs/testing/18u/2026-11-04/pager-alignment/DEVELOPMENT.zh-CN.md)。源码 `853eb017` 三项 CI 与完整包核验通过；见[固定交付](../../../docs/testing/18u/2026-11-04/pager-alignment/DELIVERY.zh-CN.md)。本机仍为 test.8，尚未升级。

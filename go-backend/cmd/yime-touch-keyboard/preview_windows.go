@@ -129,7 +129,15 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 		if a.requiresHostTarget(g.action) {
 			g.delivery = a.host.ticket()
 			if !a.host.valid(g.delivery) {
-				a.loseHostFocus("请先在目标文本区放置光标，再点绑定目标")
+				if a.follow != nil {
+					a.cancel()
+					a.status = "等待当前正文就绪；请先选择专用18u输入法"
+					if a.host.blocked {
+						a.status = autoFocusReviewMessage
+					}
+				} else {
+					a.loseHostFocus("请先在目标文本区放置光标，再点绑定目标")
+				}
 				return
 			}
 		}
@@ -221,7 +229,14 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 			return
 		}
 		if !a.host.valid(g.delivery) {
-			a.loseHostFocus("目标已变化；本次动作取消，请重新绑定")
+			if a.follow != nil {
+				a.autoFocusChanged()
+			} else {
+				a.loseHostFocus("目标已变化；本次动作取消，请重新绑定")
+			}
+			return
+		}
+		if !a.validateAutoFocus(g.delivery, g.cancelGeneration) {
 			return
 		}
 		a.hostSink(g.delivery, g.cancelGeneration)
@@ -259,7 +274,7 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 				err = a.preview.page(1)
 			case "variable", "full", "shorthand":
 				a.cancel()
-				err = a.preview.switchMode(g.action)
+				err = a.switchPreviewMode(g.action)
 			case "language":
 				a.cancel()
 				err = a.preview.apply(tk.Output{Action: tk.Action{Type: "toggle-language"}}, g.stamp)
@@ -298,7 +313,11 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 	}
 	a.s.Original = a.preview.original()
 	if a.host != nil && a.preview.fault {
-		a.loseHostFocus("会话/发送已停止；请核对正文后重新绑定")
+		if a.follow != nil {
+			a.loseHostFocus("旧输入会话已结束；等待当前正文")
+		} else {
+			a.loseHostFocus("会话/发送已停止；请核对正文后重新绑定")
+		}
 	}
 	if err != nil {
 		if a.o.TouchUI {
@@ -316,6 +335,9 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 		}
 		if a.host != nil {
 			a.status = a.host.last
+			if a.follow != nil && a.host.blocked {
+				a.status = autoFocusReviewMessage
+			}
 		}
 	}
 	if accepted && err == nil && !a.preview.fault {
@@ -324,13 +346,41 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 	}
 	a.invalidate()
 }
+
+// The installed keyboard can choose a mode while its host session is revoked.
+// Keep that local preference separate from the faulted engine; only the next
+// clean connection may create the replacement engine and accept new input.
+func (a *ui) previewMode() string {
+	if a.follow != nil && a.preferredHostMode != "" {
+		return a.preferredHostMode
+	}
+	return a.preview.mode
+}
+
+func (a *ui) switchPreviewMode(mode string) error {
+	if a.follow != nil && a.preview.fault {
+		if mode != "variable" && mode != "full" && mode != "shorthand" {
+			return fmt.Errorf("unknown mode")
+		}
+		a.preferredHostMode = mode
+		return nil
+	}
+	if err := a.preview.switchMode(mode); err != nil {
+		return err
+	}
+	if a.follow != nil {
+		a.preferredHostMode = mode
+	}
+	return nil
+}
+
 func (a *ui) drawPreview(dc uintptr, r rect) {
 	p := a.preview
 	palette := a.palette()
 	for _, b := range previewButtons {
 		title := b.label
 		c := palette.panel
-		if b.action == p.mode {
+		if b.action == a.previewMode() {
 			c = palette.active
 		}
 		switch b.action {
@@ -343,6 +393,11 @@ func (a *ui) drawPreview(dc uintptr, r rect) {
 		case "reset":
 			if a.demo != nil {
 				title = "显式重绑"
+			} else if a.follow != nil {
+				title = "重新连接"
+				if a.host.blocked {
+					title = "核对后继续"
+				}
 			} else if a.host != nil {
 				title = "绑定目标"
 			}

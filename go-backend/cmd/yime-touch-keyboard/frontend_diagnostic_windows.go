@@ -25,7 +25,7 @@ type frontendDiagnostic struct {
 
 func diagnosticTarget() frontendDiagnostic {
 	t := foreground()
-	d := frontendDiagnostic{Time: time.Now().Format(time.RFC3339Nano), Build: "18u-test.10", Window: t.Window, Focus: t.Focus}
+	d := frontendDiagnostic{Time: time.Now().Format(time.RFC3339Nano), Build: "18u-auto-focus-dev", Window: t.Window, Focus: t.Focus}
 	thread, _, _ := U("GetWindowThreadProcessId").Call(t.Focus, uintptr(unsafe.Pointer(&d.Process)))
 	d.Thread = uint32(thread)
 	thread, _, _ = U("GetWindowThreadProcessId").Call(t.Window, uintptr(unsafe.Pointer(&d.WindowProcess)))
@@ -78,5 +78,5 @@ func (a *ui) recordFrontendDiagnostic(d frontendDiagnostic, stage string, err er
 	if e != nil {
 		storage = "诊断保存失败：" + e.Error()
 	}
-	a.diagnosticPages = []string{fmt.Sprintf("%s\n阶段：%s\n时间：%s", result, stage, d.Time), fmt.Sprintf("顶层 HWND=%x PID=%d TID=%d 类=%s\n正文 HWND=%x PID=%d TID=%d 类=%s", d.Window, d.WindowProcess, d.WindowThread, d.WindowClass, d.Focus, d.Process, d.Thread, d.FocusClass), storage + "\n不含正文、标题或组码。失败后不自动重试。"}
+	a.diagnosticPages = []string{fmt.Sprintf("%s\n阶段：%s\n时间：%s", result, stage, d.Time), fmt.Sprintf("顶层 HWND=%x PID=%d TID=%d 类=%s\n正文 HWND=%x PID=%d TID=%d 类=%s", d.Window, d.WindowProcess, d.WindowThread, d.WindowClass, d.Focus, d.Process, d.Thread, d.FocusClass), storage + "\n不含正文、标题或组码。文字提交不自动补发；连接状态查询不修改正文。"}
 }

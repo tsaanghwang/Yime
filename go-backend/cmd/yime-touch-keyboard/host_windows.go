@@ -30,15 +30,19 @@ func (a *ui) initHost() {
 	a.host = &deliveryGate{current: func() hostTarget { return currentHostTarget(a.h) }}
 	a.host.send = func(t hostTarget, o tk.Output) error {
 		if currentHostTarget(a.h) != t {
-			return fmt.Errorf("绑定目标身份已变化，未发送")
+			err := fmt.Errorf("绑定目标身份已变化，未发送")
+			if a.o.InstalledTSF {
+				return hostEditNotSent{err}
+			}
+			return err
 		}
 		if a.o.InstalledTSF {
 			if a.tsf == nil {
-				return fmt.Errorf("尚未连接当前应用的18u TSF，请选择专用输入法后绑定")
+				return hostEditNotSent{fmt.Errorf("尚未连接当前正文，请选择专用18u输入法")}
 			}
 			text, key, extend, err := tsfEdit(o)
 			if err != nil {
-				return err
+				return hostEditNotSent{err}
 			}
 			return a.tsf.Edit(text, key, extend)
 		}
@@ -46,7 +50,14 @@ func (a *ui) initHost() {
 	}
 	a.status = "请在目标文本区点光标，再点“绑定目标”；组合不会自动提交"
 	if a.o.InstalledTSF {
-		a.status = "请在目标应用选择独立18u输入法并点正文，再绑定；提交经 TSF，失败不补发"
+		a.follow = newFocusFollower(func(t hostTarget) (frontendSession, error) {
+			client, err := tsffrontend.Dial(t.Process, t.Thread, uint64(t.Window), uint64(t.Focus))
+			if err != nil {
+				return nil, err
+			}
+			return client, nil
+		})
+		a.status = "请在目标应用选择独立18u输入法并点正文；键盘自动跟随，失败不补发"
 	}
 }
 
@@ -70,9 +81,19 @@ func pumpHostMessages() bool {
 	return false
 }
 func (a *ui) loseHostFocus(reason string) {
+	if a.follow != nil {
+		a.follow.revoke()
+	}
 	if a.tsf != nil {
-		_ = a.tsf.Close()
+		client := a.tsf
 		a.tsf = nil
+		if a.follow != nil {
+			// A status worker may own the IPC lock. Revocation on the UI thread
+			// must not wait for that read-only request or a disconnected host.
+			go client.Close()
+		} else {
+			_ = client.Close()
+		}
 	}
 	a.host.invalidate(reason)
 	a.cancel()
@@ -80,6 +101,9 @@ func (a *ui) loseHostFocus(reason string) {
 	a.preview.snapshot.State = engineapi.State{}
 	a.preview.snapshot.PendingMiddleDots = 0
 	a.preview.snapshot.SymbolChoice = false
+	if a.o.InstalledTSF && a.host.blocked {
+		reason = autoFocusReviewMessage
+	}
 	a.status = reason
 	a.invalidate()
 }
@@ -105,11 +129,12 @@ func (a *ui) hostSink(ticket deliveryTicket, generation uint64) {
 		return a.host.deliver(ticket, id, o)
 	}
 }
-func (a *ui) bindHost() (result error) {
-	diagnostic := diagnosticTarget()
-	stage := "target-validation"
+func (a *ui) bindHost() error {
 	if a.o.InstalledTSF {
-		defer func() { a.recordFrontendDiagnostic(diagnostic, stage, result) }()
+		// In the installed frontend this button is an explicit acknowledgement,
+		// not a mutation retry. The timer discovers a completely new session.
+		a.resumeAutoFocus()
+		return nil
 	}
 	// No queued focus notification from the old epoch may be accepted as new.
 	a.hostBusy = true
@@ -123,32 +148,22 @@ func (a *ui) bindHost() (result error) {
 		a.loseHostFocus("绑定失败；请在目标文本区放置光标")
 		return err
 	}
-	if a.o.InstalledTSF {
-		if a.tsf != nil {
-			_ = a.tsf.Close()
-			a.tsf = nil
-		}
-		t := a.host.target
-		stage = "endpoint-connect-and-bind"
-		client, err := tsffrontend.Dial(t.Process, t.Thread, uint64(t.Window), uint64(t.Focus))
-		if err != nil {
-			a.loseHostFocus("TSF绑定失败；请确认已选择本包专用18u输入法")
-			return err
-		}
-		a.tsf = client
-	}
 	tick, _, _ := k32.NewProc("GetTickCount").Call()
 	a.focusStarted = uint32(tick)
+	return a.rebuildHostPreview()
+}
+
+func (a *ui) rebuildHostPreview() error {
 	old := a.preview
-	stage = "composition-session"
+	mode := a.previewMode()
 	old.retire()
 	p, err := newPreview(old.sessions, old.layout, old.englishView)
 	if err != nil {
 		a.host.invalidate("会话重建失败")
 		return err
 	}
-	if old.mode != "variable" {
-		if err = p.switchMode(old.mode); err != nil {
+	if mode != "variable" {
+		if err = p.switchMode(mode); err != nil {
 			p.retire()
 			a.host.invalidate("会话重建失败")
 			return err
@@ -166,6 +181,5 @@ func (a *ui) bindHost() (result error) {
 	a.hostSink(a.host.ticket(), a.cancelGeneration)
 	a.s.Original = p.original()
 	a.status = a.host.last
-	stage = "bound"
 	return nil
 }
