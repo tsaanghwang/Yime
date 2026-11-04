@@ -1,0 +1,153 @@
+{
+  "schema": "sha256-file-inventory-v1",
+  "self": "sha256-inventory.json",
+  "selfExcluded": true,
+  "count": 29,
+  "files": [
+    {
+      "path": "activation-once/input.json",
+      "bytes": 111,
+      "sha256": "b074ca8222841e45d657c8526f96e954c172c6bfab3ef3ec97bef37afce75cc5"
+    },
+    {
+      "path": "activation-once/result.json",
+      "bytes": 6143,
+      "sha256": "752ba7280a9d9c1c5c15288052f084397de93a00dba71ec3e0099e3762e1ab5d"
+    },
+    {
+      "path": "activation-once/stderr.jsonl",
+      "bytes": 276,
+      "sha256": "052f148b46d07afe34195076b2f84163ea57421146dda2908e0f34f2e315bc1c"
+    },
+    {
+      "path": "activation-once/stdout.jsonl",
+      "bytes": 624,
+      "sha256": "fc6acf09e9b10e29a7ada59f82e029eb88e46d70fd15ec12c90702cd668df40e"
+    },
+    {
+      "path": "build/CMakeCache.txt",
+      "bytes": 14665,
+      "sha256": "ea261bf5e184129678a087528f2f5632beeb3801620350f28c4b3a745e67d15a"
+    },
+    {
+      "path": "build/LastTest.log",
+      "bytes": 1128,
+      "sha256": "c128a5f52f0d83a69d1fcaeba09644548834a88b5095b1ec13bcc6c1f18b0468"
+    },
+    {
+      "path": "build/TouchProductIdentity.h",
+      "bytes": 675,
+      "sha256": "971b92bd4a00f6d1e40ef995ebc3dfb408a9b107b9a7f071e62d56124a929c65"
+    },
+    {
+      "path": "build/YimeTouchRegisteredFormalHostTests.vcxproj",
+      "bytes": 84061,
+      "sha256": "f9b65dc5152979fb4caf2585d7d4b79eb3f9e9750fbed7860bdce901cf251d1d"
+    },
+    {
+      "path": "logs/build-receipt.json",
+      "bytes": 3533,
+      "sha256": "ca9d41add62fa01351dd34d54e4bfe7c31f90735ab64dd91b242799cc1e66822"
+    },
+    {
+      "path": "logs/build.log",
+      "bytes": 1013,
+      "sha256": "b471a0fda7e18e85db039175f2246a68e95d34be626c7187c71f8f3501581173"
+    },
+    {
+      "path": "logs/configure.log",
+      "bytes": 594,
+      "sha256": "abd2c5f5071380d63799c438d1a33b246ca6c12788fe0cfdf58a7ab080516930"
+    },
+    {
+      "path": "logs/ctest-cold-module.log",
+      "bytes": 395,
+      "sha256": "a2ce6a42366a3c940639c506e9aa39852fee01dd23966d77d0882722323dc1c0"
+    },
+    {
+      "path": "logs/YimeTouchFormalHostTests-module-contract.log",
+      "bytes": 176,
+      "sha256": "9e70b58344aefdb0536b15ecdc19ce0e8d5f09de51ba4978a28e00152c25da04"
+    },
+    {
+      "path": "logs/YimeTouchRegisteredFormalHostTests-module-contract.log",
+      "bytes": 176,
+      "sha256": "9e70b58344aefdb0536b15ecdc19ce0e8d5f09de51ba4978a28e00152c25da04"
+    },
+    {
+      "path": "runners/archive_cold.py",
+      "bytes": 5290,
+      "sha256": "5a1f5f8b14d21e8bb83e0d85f9336855847e44b84ae070b293c5f4fa61e439ac"
+    },
+    {
+      "path": "runners/build_cold.py",
+      "bytes": 2147,
+      "sha256": "ea5112a982a7e09546e05dc1d6cb701a4e2dfbd6b717563d64ade10c644212a0"
+    },
+    {
+      "path": "runners/read-identity-utility-snapshot.py",
+      "bytes": 17983,
+      "sha256": "a97d8fcc7a9e85ed9f4ecd6166dabe4c03cd05ece756fa79666618633cf0a349"
+    },
+    {
+      "path": "runners/run_activation_once.py",
+      "bytes": 4330,
+      "sha256": "ffe7ea285033b3f1cd40cac107e4710f2eb0fbd5cf10f309c9233ccbfa1e90ea"
+    },
+    {
+      "path": "source/18u-touch-product-arm64.json",
+      "bytes": 2233,
+      "sha256": "bd7621ed07c14ea3a57b56cc617a6d8c52d1098ed8de07c449b686a833c9ab51"
+    },
+    {
+      "path": "source/host-change.patch",
+      "bytes": 12718,
+      "sha256": "fcd0d5648f26bf5f9699d41e23113d0a93f93119790401b8a54a117edaaf4a03"
+    },
+    {
+      "path": "source/YimeTextServiceExperiment/CMakeLists.txt",
+      "bytes": 29276,
+      "sha256": "05ff5403d94d2ddf3ea5144c98f8719c8dd24fcd24fee4e80f525d52a7ee3ce1"
+    },
+    {
+      "path": "source/YimeTextServiceExperiment/DedicatedTouchService.h",
+      "bytes": 1108,
+      "sha256": "6b0a97378c79e2626b3064767b3a603ed3662664d8f7480fb823417d6d74d136"
+    },
+    {
+      "path": "source/YimeTextServiceExperiment/tests/ActionFailureObservation.h",
+      "bytes": 2944,
+      "sha256": "54ed64d88aef24f1dfa702d54d88d6aff54934043d7884682c9be47d03e63049"
+    },
+    {
+      "path": "source/YimeTextServiceExperiment/tests/Formal18uHost.cpp",
+      "bytes": 26088,
+      "sha256": "691e426727d104c45187d990bea5794a637b70610380e0d4d3f9642f8cb41e92"
+    },
+    {
+      "path": "source/YimeTextServiceExperiment/tests/FormalInputSequence.h",
+      "bytes": 1647,
+      "sha256": "fa3938b0f36f85b31820a7dd713a67515458d9024de3e9404a40fc503464ea3d"
+    },
+    {
+      "path": "source/YimeTextServiceExperiment/tests/InstalledFrontendHost.cpp",
+      "bytes": 6977,
+      "sha256": "0dab280069619f8ae5c7da6af3bf39d2b947af2dd6b37e97458a597e83f56c9b"
+    },
+    {
+      "path": "source/YimeTextServiceExperiment/TouchProductIdentity.h.in",
+      "bytes": 878,
+      "sha256": "bfad63e13ef38136c230ccd9765c76865881981e831009b45423bd271db72cfe"
+    },
+    {
+      "path": "source/YimeTextServiceExperiment/YimeTextServiceIds.h",
+      "bytes": 1682,
+      "sha256": "91c19a842847039b97c0b4577e2f3f08a3f9a4a608e7518597c0dc73e8877067"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 2356,
+      "sha256": "76132bd9f87e735b2b71e1fc37316eb7dfffc3b4ada88aadd969772ef7d15f81"
+    }
+  ]
+}

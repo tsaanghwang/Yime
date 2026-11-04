@@ -1,0 +1,16 @@
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/.wt/armfull/YimeTextServiceExperiment/CMakeLists.txt
+  Formal18uHost.cpp
+  YimeTouchFormalHostTests.vcxproj -> C:\dev\Yime\.wt\armfull\.generated\18u-cold-load-20261104-r2\build\Release\YimeTouchFormalHostTests.exe
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  Building Custom Rule C:/dev/Yime/.wt/armfull/YimeTextServiceExperiment/CMakeLists.txt
+  Formal18uHost.cpp
+  YimeTouchRegisteredFormalHostTests.vcxproj -> C:\dev\Yime\.wt\armfull\.generated\18u-cold-load-20261104-r2\build\Release\YimeTouchRegisteredFormalHostTests.exe
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  Building Custom Rule C:/dev/Yime/.wt/armfull/YimeTextServiceExperiment/CMakeLists.txt
+  InstalledFrontendHost.cpp
+  YimeTouchInstalledFrontendHostTests.vcxproj -> C:\dev\Yime\.wt\armfull\.generated\18u-cold-load-20261104-r2\build\Release\YimeTouchInstalledFrontendHostTests.exe

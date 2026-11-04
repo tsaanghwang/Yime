@@ -1,0 +1,8 @@
+Internal ctest changing into directory: C:/dev/Yime/.wt/armfull/.generated/18u-cold-load-20261104-r2/build
+Test project C:/dev/Yime/.wt/armfull/.generated/18u-cold-load-20261104-r2/build
+    Start 5: Yime18uRegisteredColdModuleIdentityTests
+1/1 Test #5: Yime18uRegisteredColdModuleIdentityTests ...   Passed    0.03 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.08 sec

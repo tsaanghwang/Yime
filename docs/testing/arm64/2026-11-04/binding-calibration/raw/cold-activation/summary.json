@@ -1,0 +1,50 @@
+{
+  "schema": "18u-cold-activation-archive-v1",
+  "archivedUTC": "2026-11-04T01:58:54.562705+00:00",
+  "sourceBaseCommit": "3c0659b61300c32dd326652f71cbdc6ee82ab9bb",
+  "hostSourceState": "working-tree test change; exact source SHA in logs/build-receipt.json and source snapshots",
+  "installedProductSourceCommit": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+  "installedDLL": {
+    "path": "C:\\Program Files\\YimeCore 18u Touch\\arm64\\YimeTextService18u.dll",
+    "sha256": "83bd48bf38fa9653ad87ee75112e5d1f467f549ca87d99ccdd4ce55a1a179b8a",
+    "bytes": 700928
+  },
+  "newHostTest": {
+    "path": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\18u-cold-load-20261104\\build\\Release\\YimeTouchRegisteredFormalHostTests.exe",
+    "sha256": "9a8d0c04b53b2412ca8cacc3ecbb2445e4d305779fee49bd11c5d030a3405ec7",
+    "bytes": 434176
+  },
+  "scope": "Old installed 46dd DLL with newly built ARM64 test host. One process-scoped cold activation only. This is not a new product package or new-package acceptance.",
+  "outcome": {
+    "activationHResult": 0,
+    "deactivationHResult": 0,
+    "processExitCode": 0,
+    "preloadedByHost": false,
+    "profileProviderAndDLLIdentityVerified": true,
+    "ownDocumentsEmpty": true,
+    "textActions": 0,
+    "protectedProcessesUnchanged": true
+  },
+  "validation": {
+    "directHostModuleContract": "PASS",
+    "registeredHostModuleContract": "PASS",
+    "registeredColdModuleCTest": "PASS",
+    "nativeHostBuildTargets": 3,
+    "independentSourceReview": "validation agent: no blocker; reference ownership and existing stdin/stdout protocol checked"
+  },
+  "limits": [
+    "Does not establish packaged Notepad activation or binding.",
+    "No physical finger input or document text acceptance.",
+    "No registration/install/default changes; no other process stopped.",
+    "Existing runtime adapter may connect to its existing Broker; no new Broker or GUI launched."
+  ],
+  "stderr": "TransportCancelled on teardown; original stderr retained.",
+  "runners": "Snapshots are provenance only. Do not run automatically; the read-identity utility snapshot also contains an unrelated full frontend controller entry point that was never invoked here.",
+  "archiveExcludes": [
+    "executables",
+    "DLLs",
+    "PDBs",
+    "dictionaries"
+  ],
+  "inventorySelfExcluded": true
+}

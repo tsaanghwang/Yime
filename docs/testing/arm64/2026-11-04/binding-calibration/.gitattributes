@@ -1,0 +1,2 @@
+raw/** -text !eol -whitespace
+*.json -text !eol whitespace=cr-at-eol,-blank-at-eof

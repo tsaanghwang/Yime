@@ -1,0 +1,5 @@
+{"expectedDLLLoaded":false,"registeredProfileEnabled":true,"stage":"registered-cold-before-activation"}
+{"hresult":0,"stage":"registered-cold-activation"}
+{"actualDLLFileMatches":true,"preloadedByHost":false,"profileMatches":true,"providerMatches":true,"stage":"registered-cold-module-verified"}
+{"hresult":0,"stage":"registered-cold-deactivation"}
+{"coldLoadVerified":true,"hostReferencesReleased":true,"newBrokerOrFrontend":false,"ok":true,"ownDocumentsEmpty":true,"preloadedByHost":false,"registered":true,"registrationMutation":false,"scenario":"activation-only","sendInput":false,"stage":"result","textActions":0}

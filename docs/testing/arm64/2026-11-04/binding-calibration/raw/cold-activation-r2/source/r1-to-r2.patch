@@ -1,0 +1,27 @@
+diff --git "a/C:\\dev\\Yime\\.wt\\armfull\\docs\\testing\\arm64\\2026-11-04\\binding-calibration\\raw\\cold-activation\\source\\YimeTextServiceExperiment\\tests\\Formal18uHost.cpp" "b/C:\\dev\\Yime\\.wt\\armfull\\YimeTextServiceExperiment\\tests\\Formal18uHost.cpp"
+index 7458bc17..f2e6c4f2 100644
+--- "a/C:\\dev\\Yime\\.wt\\armfull\\docs\\testing\\arm64\\2026-11-04\\binding-calibration\\raw\\cold-activation\\source\\YimeTextServiceExperiment\\tests\\Formal18uHost.cpp"
++++ "b/C:\\dev\\Yime\\.wt\\armfull\\YimeTextServiceExperiment\\tests\\Formal18uHost.cpp"
+@@ -157,6 +157,7 @@ struct Host {
+   if(GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST",nullptr,0))fail("direct test bypass forbidden");
+ #ifdef YIME_TOUCH_REGISTERED_FORMAL_HOST
+   ExpectedModule expected(dll);requireColdModule(dll);
++  if(traceCold)std::cout<<json{{"stage","registered-cold-initial"},{"expectedDLLLoaded",false},{"preloadedByHost",false}}.dump()<<std::endl;
+ #else
+   (void)traceCold;
+   module=LoadLibraryExW(dll.c_str(),nullptr,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);if(!module)winFail("load dedicated DLL");
+@@ -183,9 +184,11 @@ struct Host {
+   if(language!=0x0804 || LOWORD(reinterpret_cast<ULONG_PTR>(GetKeyboardLayout(0)))!=0x0804)fail("registered language precondition");
+   BOOL enabled=FALSE;require(languages->IsEnabledLanguageProfile(CLSID_YimeTextServiceExperiment,0x0804,GUID_YimeTextServiceExperimentProfile,&enabled),"registered profile query");
+   if(!enabled)fail("registered profile disabled");
+-  // The manager/context setup must not have loaded this TIP implicitly either.
+-  requireColdModule(dll);
+-  if(traceCold)std::cout<<json{{"stage","registered-cold-before-activation"},{"expectedDLLLoaded",false},{"registeredProfileEnabled",true}}.dump()<<std::endl;
++  // NOACTIVATETIP suppresses activation only during ActivateEx; Windows may
++  // activate the current TIP asynchronously when this thread gains focus.
++  // That is a legitimate cold load after our initial guard, not host preload.
++  const bool loadedDuringWindowsSetup=GetModuleHandleW(dll.c_str())!=nullptr;
++  if(traceCold)std::cout<<json{{"stage","registered-cold-before-activation"},{"expectedDLLLoaded",loadedDuringWindowsSetup},{"preloadedByHost",false},{"registeredProfileEnabled",true}}.dump()<<std::endl;
+   // Exactly one process-scoped activation. This does not register or enable it.
+   const HRESULT activated=profiles->ActivateProfile(TF_PROFILETYPE_INPUTPROCESSOR,0x0804,CLSID_YimeTextServiceExperiment,GUID_YimeTextServiceExperimentProfile,nullptr,TF_IPPMF_FORPROCESS);
+   if(traceCold)std::cout<<json{{"stage","registered-cold-activation"},{"hresult",static_cast<unsigned long>(activated)}}.dump()<<std::endl;

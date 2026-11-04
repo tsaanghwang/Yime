@@ -250,7 +250,7 @@ func (r *DesktopRelay) call(ctx context.Context, owner yimebroker.TrustedClient,
 	}
 	if selected == nil {
 		r.mu.Unlock()
-		return DesktopResponse{Error: "请在目标应用选择音元拼音18u并放置光标，再绑定"}
+		return DesktopResponse{Error: "请在目标应用选择“音元拼音·18u触摸”，点正文放置光标后再绑定"}
 	}
 	if selected.pending != nil {
 		r.mu.Unlock()

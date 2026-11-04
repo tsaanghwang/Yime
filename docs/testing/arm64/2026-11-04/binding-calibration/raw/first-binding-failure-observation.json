@@ -1,0 +1,142 @@
+{
+  "schema": "asus-notepad-binding-stop-observation-v1",
+  "observedUTC": "2026-11-04T01:15:41.797698+00:00",
+  "readOnly": true,
+  "inputSent": false,
+  "bindRetried": false,
+  "processesLaunchedOrStopped": false,
+  "notepad": [
+    {
+      "pid": 28936,
+      "image": "C:\\Program Files\\WindowsApps\\Microsoft.WindowsNotepad_11.2607.14.0_arm64__8wekyb3d8bbwe\\Notepad\\Notepad.exe",
+      "creationTicks": 134382279754397239,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      },
+      "name": "Notepad.exe",
+      "parentPID": 4928,
+      "processMachine": "0x0",
+      "nativeMachine": "0xaa64",
+      "imagePE": {
+        "machine": "0xaa64",
+        "machineName": "ARM64",
+        "sha256": "229e2d1684e89f054c0907f73028b111819124376a3eb7b87027e996b16747c6"
+      },
+      "nativeARM64Confirmed": true,
+      "relatedLoadedModules": [
+        {
+          "name": "MSCTF.dll",
+          "path": "C:\\Windows\\System32\\MSCTF.dll",
+          "imagePE": {
+            "machine": "0xaa64",
+            "machineName": "ARM64",
+            "sha256": "87a0bd6860af417be77384ecc435f4c318eab6f14def3b13135d4b0a3c349c7f"
+          }
+        }
+      ],
+      "installed18uDLLLoaded": false,
+      "modulePresenceDoesNotProveActiveProfile": true
+    }
+  ],
+  "touchProcesses": [
+    {
+      "pid": 29648,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+      "creationTicks": 134381960691135151,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      },
+      "name": "Yime18uInstalledRuntime.exe",
+      "parentPID": 40488,
+      "processMachine": "0x0",
+      "nativeMachine": "0xaa64",
+      "imagePE": {
+        "machine": "0xaa64",
+        "machineName": "ARM64",
+        "sha256": "3053f9e2b00558cd11d3260f02c0cfac7ad918931d1292c901fe7c0dd317c9ff"
+      },
+      "nativeARM64Confirmed": true
+    },
+    {
+      "pid": 6744,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+      "creationTicks": 134381960701691251,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      },
+      "name": "YimeBroker18u.exe",
+      "parentPID": 29648,
+      "processMachine": "0x0",
+      "nativeMachine": "0xaa64",
+      "imagePE": {
+        "machine": "0xaa64",
+        "machineName": "ARM64",
+        "sha256": "a039efb4dd08ebb3566fda0a6ba5119e104db52f21de2a416a7c992eb53bdee8"
+      },
+      "nativeARM64Confirmed": true
+    },
+    {
+      "pid": 29520,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+      "creationTicks": 134381960827344529,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      },
+      "name": "YimeTouchKeyboard.exe",
+      "parentPID": 29648,
+      "processMachine": "0x0",
+      "nativeMachine": "0xaa64",
+      "imagePE": {
+        "machine": "0xaa64",
+        "machineName": "ARM64",
+        "sha256": "21025128702295ead46be752c4b58e12927be4dd1da330096fbb93ca50dc67c5"
+      },
+      "nativeARM64Confirmed": true
+    }
+  ],
+  "userObservation": {
+    "screenResolution": "3840x2400",
+    "windowsScalePercent": 250,
+    "rulerPrecisionMM": 1,
+    "referenceNominalMM": 100,
+    "referenceObservedMM": 57.5,
+    "wholeKeyboardVisible": true,
+    "architectureReported": "unknown",
+    "PIDReported": "秋其秋千秋秋",
+    "binding": "cannot bind",
+    "expectedBody": "你",
+    "actualBody": "",
+    "stoppedAt": "binding",
+    "physicalCalibrationPassed": false,
+    "fingerInputPassed": false
+  },
+  "observer": {
+    "pid": 26564,
+    "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "creationTicks": 134382285416495354,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "completed": true
+}

@@ -313,6 +313,8 @@ if(YIME_TOUCH_PRODUCT)
         target_include_directories(YimeTouchRegisteredFormalHostTests PRIVATE "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_LIST_DIR}/../json/single_include")
         target_link_libraries(YimeTouchRegisteredFormalHostTests PRIVATE advapi32 ole32 oleaut32 user32)
         set_property(TARGET YimeTouchRegisteredFormalHostTests PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+        # Inert loader/file-identity regression: never activates a product or opens a window.
+        add_test(NAME Yime18uRegisteredColdModuleIdentityTests COMMAND YimeTouchRegisteredFormalHostTests --module-identity-contract)
         add_executable(YimeTouchInstalledFrontendHostTests tests/InstalledFrontendHost.cpp)
         target_compile_features(YimeTouchInstalledFrontendHostTests PRIVATE cxx_std_17)
         target_compile_definitions(YimeTouchInstalledFrontendHostTests PRIVATE YIME_TOUCH_PRODUCT=1 YIME_TOUCH_REGISTERED_FORMAL_HOST=1 UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)

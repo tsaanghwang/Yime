@@ -1,0 +1,43 @@
+{
+  "schema": "18u-calibration-test-archive-v1",
+  "physicalAcceptance": false,
+  "installedPayloadChanged": false,
+  "productGUIStarted": false,
+  "files": [
+    {
+      "path": "calibration-and-entry-contracts.log",
+      "source": ".generated/18u-calibration-validation-r2/calibration-and-entry-contracts.log",
+      "bytes": 31098,
+      "sha256": "dd24e88ecc20d570fc6d8e0c1dd11de91c38f88a1d4d3653746394d7b472f5e0"
+    },
+    {
+      "path": "touchkeyboard-complete.log",
+      "source": ".generated/18u-calibration-validation-r2/touchkeyboard-complete.log",
+      "bytes": 8881,
+      "sha256": "15707181259541f6a61f1838af61dfd25ffa690c715dd931af29610169aedb5f"
+    },
+    {
+      "path": "vet.log",
+      "source": ".generated/18u-calibration-validation-r2/vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "summary.json",
+      "source": ".generated/18u-calibration-validation-r2/summary.json",
+      "bytes": 1223,
+      "sha256": "cc490e59a5083cd4fb5e69303406b5fd86bf46704cb4ab832975d20f15494237"
+    },
+    {
+      "path": "validate_calibration_r2.py",
+      "source": ".generated/touch-full-tools/validate_calibration_r2.py",
+      "bytes": 2451,
+      "sha256": "efd58e9563c903c6686f19f56d5bdd15e720803f8500fd5301c36d6874d6ca80"
+    },
+    {
+      "path": "source-sha256.json",
+      "bytes": 1490,
+      "sha256": "eeaadc240bdf305574e4624be87b3559d7f18a1bacab5b47ad82373d28813b74"
+    }
+  ]
+}

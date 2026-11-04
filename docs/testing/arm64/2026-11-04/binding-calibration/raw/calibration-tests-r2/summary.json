@@ -1,0 +1,48 @@
+{
+  "product": "yimecore-18u",
+  "physicalAcceptance": false,
+  "installedPayloadChanged": false,
+  "productGUIStarted": false,
+  "commands": {
+    "calibration-and-entry-contracts": {
+      "arguments": [
+        "test",
+        "-json",
+        "-count=1",
+        "./cmd/yime-touch-keyboard",
+        "-run",
+        "TestCalibration|TestTouchSettingsFitTheScreenViewAtDifferentScales|TestTouchHeaderCalibrationRejectionKeepsPreviousGeometry|TestProfilesRejectTyposAndUnreviewed17U|TestPortable|TestInstalled"
+      ],
+      "exitCode": 0,
+      "passedTopLevel": 17,
+      "passedSubtests": 15,
+      "skipped": [],
+      "failed": []
+    },
+    "touchkeyboard-complete": {
+      "arguments": [
+        "test",
+        "-json",
+        "-count=1",
+        "./internal/touchkeyboard"
+      ],
+      "exitCode": 0,
+      "passedTopLevel": 9,
+      "passedSubtests": 0,
+      "skipped": [],
+      "failed": []
+    },
+    "vet": {
+      "arguments": [
+        "vet",
+        "./cmd/yime-touch-keyboard",
+        "./internal/touchkeyboard"
+      ],
+      "exitCode": 0,
+      "passedTopLevel": 0,
+      "passedSubtests": 0,
+      "skipped": [],
+      "failed": []
+    }
+  }
+}

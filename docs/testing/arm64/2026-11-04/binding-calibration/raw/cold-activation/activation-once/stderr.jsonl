@@ -1,0 +1,1 @@
+{"schema":"18u-input-abort-diagnostic-v1","stage":"Transport","reason":"TransportCancelled","result":0,"resultKnown":false,"epoch":0,"pendingEpoch":0,"editEpoch":0,"phase":0,"active":false,"bound":false,"editOutstanding":false,"route":false,"manager":false,"keyFocus":false}

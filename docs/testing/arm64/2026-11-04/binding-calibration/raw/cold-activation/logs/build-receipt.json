@@ -1,0 +1,98 @@
+{
+  "schema": "18u-cold-host-build-v1",
+  "timeUTC": "2026-11-04T01:46:58.378373+00:00",
+  "results": [
+    {
+      "stage": "configure",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+        "-S",
+        "C:\\dev\\Yime\\.wt\\armfull\\YimeTextServiceExperiment",
+        "-B",
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\18u-cold-load-20261104\\build",
+        "-G",
+        "Visual Studio 17 2022",
+        "-A",
+        "ARM64",
+        "-DYIME_TOUCH_PRODUCT=ON",
+        "-DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON"
+      ],
+      "exitCode": 0
+    },
+    {
+      "stage": "build",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+        "--build",
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\18u-cold-load-20261104\\build",
+        "--config",
+        "Release",
+        "--target",
+        "YimeTouchFormalHostTests",
+        "YimeTouchRegisteredFormalHostTests",
+        "YimeTouchInstalledFrontendHostTests",
+        "--parallel",
+        "3"
+      ],
+      "exitCode": 0
+    },
+    {
+      "stage": "YimeTouchFormalHostTests-module-contract",
+      "command": [
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\18u-cold-load-20261104\\build\\Release\\YimeTouchFormalHostTests.exe",
+        "--module-identity-contract"
+      ],
+      "exitCode": 0
+    },
+    {
+      "stage": "YimeTouchRegisteredFormalHostTests-module-contract",
+      "command": [
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\18u-cold-load-20261104\\build\\Release\\YimeTouchRegisteredFormalHostTests.exe",
+        "--module-identity-contract"
+      ],
+      "exitCode": 0
+    },
+    {
+      "stage": "ctest-cold-module",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\ctest.exe",
+        "--test-dir",
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\18u-cold-load-20261104\\build",
+        "-C",
+        "Release",
+        "-R",
+        "^Yime18uRegisteredColdModuleIdentityTests$",
+        "--output-on-failure"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "sources": [
+    {
+      "path": "YimeTextServiceExperiment\\tests\\Formal18uHost.cpp",
+      "sha256": "691e426727d104c45187d990bea5794a637b70610380e0d4d3f9642f8cb41e92"
+    },
+    {
+      "path": "YimeTextServiceExperiment\\CMakeLists.txt",
+      "sha256": "05ff5403d94d2ddf3ea5144c98f8719c8dd24fcd24fee4e80f525d52a7ee3ce1"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\18u-cold-load-20261104\\build\\Release\\YimeTouchFormalHostTests.exe",
+      "bytes": 423424,
+      "sha256": "bb7b1da079aa41a9f8456a89e10e43dfbdc641740a40588f38653798d534c1fa"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\18u-cold-load-20261104\\build\\Release\\YimeTouchRegisteredFormalHostTests.exe",
+      "bytes": 434176,
+      "sha256": "9a8d0c04b53b2412ca8cacc3ecbb2445e4d305779fee49bd11c5d030a3405ec7"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\18u-cold-load-20261104\\build\\Release\\YimeTouchInstalledFrontendHostTests.exe",
+      "bytes": 389120,
+      "sha256": "e804fdb9b13ff38fa2a179dd330af5648af21dd2437374cdcea96bbfab380555"
+    }
+  ],
+  "productActivated": false
+}

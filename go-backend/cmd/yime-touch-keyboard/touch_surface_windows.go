@@ -217,18 +217,18 @@ func (a *ui) applyTouchImmediate(action string) error {
 			return err
 		}
 	case "smaller", "larger":
-		oldPPM, oldTop := a.ppm, a.top
+		oldPPM, oldTop, oldBorder := a.ppm, a.top, a.border
 		factor := 1.01
 		if action == "smaller" {
 			factor = 1 / factor
 		}
 		a.ppm *= factor
 		if !a.resize() {
-			a.ppm, a.top = oldPPM, oldTop
+			a.ppm, a.top, a.border = oldPPM, oldTop, oldBorder
 			return fmt.Errorf("当前尺寸超出屏幕；校准未改变")
 		}
 		if err := a.updateTouchFonts(); err != nil {
-			a.ppm, a.top = oldPPM, oldTop
+			a.ppm, a.top, a.border = oldPPM, oldTop, oldBorder
 			if !a.resize() {
 				return fmt.Errorf("%w；无法恢复窗口尺寸，请关闭后重新打开", err)
 			}
@@ -394,6 +394,9 @@ func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 			line = "暂停组合：" + raw
 		}
 	}
+	if a.calibrationNotice != "" {
+		line += "  |  " + a.calibrationNotice
+	}
 	if p.snapshot.SymbolChoice {
 		line += fmt.Sprintf("  |  省略号：%d次，请选候选", p.snapshot.PendingMiddleDots)
 	} else if p.snapshot.PendingMiddleDots > 0 {
@@ -405,7 +408,7 @@ func (a *ui) drawTouchHeader(dc uintptr, r rect) {
 		line += "  |  " + a.ownDemoOutput()
 	} else if a.installed != nil {
 		if a.installed.lease == "" {
-			line += "  |  选择18u输入法并在正文点光标，再点绑定"
+			line += "  |  选择“音元拼音·18u触摸”，点正文光标后再绑定"
 		} else {
 			line += "  |  已绑定18u TIP"
 		}

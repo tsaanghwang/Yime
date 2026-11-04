@@ -91,6 +91,8 @@ type ui struct {
 	h                   uintptr
 	s                   *tk.State
 	ppm                 float64
+	calibrationApplied  bool
+	calibrationNotice   string
 	o                   options
 	status              string
 	owners              map[uint32]target
@@ -233,7 +235,22 @@ func run(o options) error {
 	if e != nil {
 		return e
 	}
+	var calibration *calibrationRecord
+	var calibrationPath string
+	if o.InstalledTSF {
+		ppm, calibration, calibrationPath, e = installedCalibration(o, m, ppm)
+		if e != nil {
+			return fmt.Errorf("18u display calibration: %w", e)
+		}
+	}
 	a := &ui{s: tk.NewState(b), ppm: ppm, o: o, owners: map[uint32]target{}, top: top, border: border, status: "English text / Ctrl Alt shortcuts. Chinese composition is not connected in this milestone.", monitorName: syscall.UTF16ToString(m.Device[:])}
+	if calibration != nil {
+		a.calibrationApplied = true
+		a.calibrationNotice = fmt.Sprintf("尺标校准 %.4g→100mm · 待实体尺复核", calibration.ObservedMM)
+	}
+	if o.SaveRulerObservedMM != "" {
+		return a.saveInstalledCalibration(calibrationPath, *calibration, m)
+	}
 	defer a.stopKeySound()
 	a.s.Original = o.KeyView == "original"
 	if o.TouchUI {
@@ -283,7 +300,7 @@ func run(o options) error {
 			a.status = "独立 TSF 自有宿主演示；先显式重绑；非安装输入法"
 		}
 		if a.installed != nil {
-			a.status = "请在目标应用选择音元拼音18u并放置光标，再点绑定；由TSF写入"
+			a.status = "请在目标应用选择“音元拼音·18u触摸”，点正文光标后再绑定；由TSF写入"
 		}
 		fontPath, err := filepath.Abs(filepath.Join(o.Root, "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf"))
 		if err != nil {
@@ -308,11 +325,11 @@ func run(o options) error {
 	c := wc{Proc: callback, Instance: instance, Name: str("YimeTouchKeyboardLab")}
 	c.Size = uint32(unsafe.Sizeof(c))
 	U("RegisterClassExW").Call(uintptr(unsafe.Pointer(&c)))
-	width := int(math.Ceil(b.Bounds.Width*tk.UnitMM*ppm)) + border*2
-	height := int(math.Ceil(b.Bounds.Height*tk.UnitMM*ppm)) + a.top + border
-	if width > int(m.Work.R-m.Work.L) || height > int(m.Work.B-m.Work.T) {
-		return fmt.Errorf("%.2f x %.2f mm keyboard does not fit this monitor at 19.05mm/u; choose a numeric-zone profile or calibrate the monitor; no automatic shrinking", b.Bounds.Width*tk.UnitMM, b.Bounds.Height*tk.UnitMM)
+	width, height, margin, e := calibratedWindowSize(b.Bounds.Width, b.Bounds.Height, ppm, a.top, border, int(m.Work.R-m.Work.L), int(m.Work.B-m.Work.T), a.calibrationApplied)
+	if e != nil {
+		return fmt.Errorf("%.2f x %.2f mm keyboard does not fit this monitor at 19.05mm/u; no automatic shrinking: %w", b.Bounds.Width*tk.UnitMM, b.Bounds.Height*tk.UnitMM, e)
 	}
+	a.border = margin
 	title := "Yime desktop touch keyboard - English milestone"
 	if o.Preview {
 		title = "Yime 18u 中文受控预览（不向其他应用输入）"
@@ -643,23 +660,28 @@ func (a *ui) minimize() {
 
 func (a *ui) resize() bool {
 	m := currentMonitor(a.h)
-	w := int(math.Ceil(a.s.Board.Bounds.Width*tk.UnitMM*a.ppm)) + 2*a.border
 	headerHeight := a.top
 	if a.o.TouchUI {
 		headerHeight = a.touchHeaderLayout().height
 	}
-	h := int(math.Ceil(a.s.Board.Bounds.Height*tk.UnitMM*a.ppm)) + headerHeight + a.border
-	if w > int(m.Work.R-m.Work.L) || h > int(m.Work.B-m.Work.T) {
+	preferredBorder := a.border
+	if a.calibrationApplied {
+		preferredBorder = border
+	}
+	w, h, margin, err := calibratedWindowSize(a.s.Board.Bounds.Width, a.s.Board.Bounds.Height, a.ppm, headerHeight, preferredBorder, int(m.Work.R-m.Work.L), int(m.Work.B-m.Work.T), a.calibrationApplied)
+	if err != nil {
 		a.status = "Calibration exceeds monitor; keyboard is not fitted/scaled automatically."
 		return false
 	}
 	current := rect{}
 	U("GetWindowRect").Call(a.h, uintptr(unsafe.Pointer(&current)))
 	position := clampWindow(current, m.Work, int32(w), int32(h))
-	oldTop := a.top
+	oldTop, oldBorder := a.top, a.border
 	a.top = headerHeight // Synchronous WM_SIZE/paint sees the new board origin.
+	a.border = margin
 	if ok, _, _ := U("SetWindowPos").Call(a.h, 0, uintptr(position.L), uintptr(position.T), uintptr(w), uintptr(h), 0x0014); ok == 0 {
 		a.top = oldTop
+		a.border = oldBorder
 		a.status = "Could not resize keyboard."
 		return false
 	}

@@ -1,0 +1,42 @@
+{
+  "schema": "18u-calibration-source-snapshot-v1",
+  "baseHead": "3c0659b61300c32dd326652f71cbdc6ee82ab9bb",
+  "uncommittedSourceSnapshot": true,
+  "files": [
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/calibration.go",
+      "bytes": 6851,
+      "sha256": "60a5d373bea553deb27dda32123c0d6a12522819d3d81f553050bd890e240399"
+    },
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/calibration_windows.go",
+      "bytes": 3891,
+      "sha256": "bf1bed81c665958d44d281d1b26f28ba34a870fc5de83066000971b14404689a"
+    },
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/calibration_test.go",
+      "bytes": 7194,
+      "sha256": "9748efb5204dc759c672f2af39c7fb8ae1e1750ca18e3921769ae1d1c4ddc228"
+    },
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/calibration_windows_test.go",
+      "bytes": 1485,
+      "sha256": "517f7686b9aa6691de3890199954194dbdb2f7cacc0cff9fe5c0f56609653f84"
+    },
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/main.go",
+      "bytes": 10892,
+      "sha256": "e5b7cb837a1cc2a1bacdc6e5c500edf1884be703fb1dfe2a7e8d405f46bba060"
+    },
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/platform_windows.go",
+      "bytes": 46420,
+      "sha256": "e34d93026280fec0afa3dc92cffb452e3ac1d0a6e7b6e323942b543b291a513c"
+    },
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/touch_surface_windows.go",
+      "bytes": 17591,
+      "sha256": "752e5286ca7074b9432c1069fb60fd4cc1438a2729156feaa873a5e7df34ed96"
+    }
+  ]
+}

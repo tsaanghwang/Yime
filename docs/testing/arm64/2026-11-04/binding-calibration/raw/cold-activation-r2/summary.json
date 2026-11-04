@@ -1,0 +1,35 @@
+{
+  "schema": "18u-cold-activation-r2-archive-v1",
+  "archivedUTC": "2026-11-04T02:02:14.314820+00:00",
+  "sourceBaseCommit": "3c0659b61300c32dd326652f71cbdc6ee82ab9bb",
+  "reason": "TF_TMAE_NOACTIVATETIP suppresses activation only within ActivateEx; Windows may asynchronously activate the selected TIP after this thread gains focus. A second warm-module rejection after context/focus setup would reject a valid Windows cold load.",
+  "officialContract": "https://learn.microsoft.com/en-us/windows/win32/api/msctf/nf-msctf-itfthreadmgrex-activateex",
+  "change": "The initial requireColdModule remains mandatory before ThreadMgr creation. The later observation records expectedDLLLoaded instead of rejecting. Explicit ActivateProfile and active profile/provider/vtable file identity checks are unchanged. No registered-path LoadLibrary was added.",
+  "validation": {
+    "arm64HostBuildTargets": 3,
+    "directModuleContract": "PASS",
+    "registeredModuleContract": "PASS",
+    "registeredColdModuleCTest": "PASS",
+    "initialWarmModuleRejectedByInertContract": true,
+    "installedActivationRun": false
+  },
+  "previousLiveEvidence": {
+    "path": "../cold-activation",
+    "inventorySHA256": "21eec02598580ae26b98619bd5a732c2ed8db43e3546a586b23f3c46350a6151",
+    "all29MembersUnchanged": true,
+    "installedProductSourceCommit": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+    "scope": "r1 only: old installed DLL + newly built r1 test host, one activation-only PASS; not rerun or relabelled as r2 live acceptance"
+  },
+  "limits": [
+    "No installed product call or UI operation in r2.",
+    "No new package, Notepad, document-input, or physical acceptance claim.",
+    "The asynchronous Windows-load branch is allowed by the official API contract; no new live run was performed to force it."
+  ],
+  "excluded": [
+    "exe",
+    "dll",
+    "pdb",
+    "dictionaries"
+  ],
+  "inventorySelfExcluded": true
+}

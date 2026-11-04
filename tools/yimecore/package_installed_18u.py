@@ -11,7 +11,7 @@ import zipfile
 import assemble_installed_18u as a
 
 VERSION = '0.1.0-18u-test.6'
-FRONTEND_VERSION = '0.2.0-18u-arm64.1'
+FRONTEND_VERSION = '0.2.0-18u-arm64.2'
 ZIP_NAME = 'YimeCore-18u-0.1.0-18u-test.6-windows-amd64.zip'
 INSTALLER = ('Product.psm1', 'Setup.ps1', 'Setup.cmd')
 SIGNATURE_STATUSES = {'Valid', 'UnknownError', 'NotSigned', 'HashMismatch', 'NotTrusted', 'NotSupportedFileFormat', 'Incompatible'}
@@ -178,6 +178,19 @@ Uninstall 卸载此产品并保留个人数据，Check 仅验证包和本机架�
 供系统应用列表卸载使用。它不依赖另一个产品或临时下载目录。
 
 输入前须在目标应用选择独立 18u 输入法，不能将自动启动视为已经激活。
+输入法完整名称为“音元拼音·18u触摸”；点正文放置光标后，在触屏键盘点“绑定”。
+绑定成功及键盘候选显示不替代应用正文的实际输入结果。
+
+本屏精确校准：先用实体尺测量尚未调过校准按钮的基准 100 mm 参考线，
+记录当前显示器、分辨率、Windows 缩放、实测毫米数和盘面是否完整。
+从普通用户进程运行已安装的 bin/YimeTouchKeyboard.exe，传入
+--installed-tsf --install-root <安装根> --manifest-sha256 <固定安装清单SHA256>
+--save-ruler-observed-mm <基准参考线实测毫米数>。
+此显式操作核对安装身份后保存当前显示器的校准值并退出，不启动第二个键盘。
+正常 Runtime 下次启动自动读取；不叠加已有校准，不把其他显示器或分辨率的记录套用过来。
+校准值保存在当前用户 LocalAppData/YimeCore 18u Touch/display-calibration，维护保留此数据。
+仅窗口外留白可按可用屏宽收紧，18u 键距与几何保持；键区自身超屏仍拒绝。
+保存成功只证明设置已写入，应用后仍须重新用实体尺核对，不能宣称真人校准通过。
 本包的 TSF 为原生 ARM64；x64、x86、ARM64EC 应用兼容性没有由此包证明。
 构建、隔离测试和自有宿主测试均不等于真实手指/笔验收。
 签名观察、源提交、逐文件哈希和最终 ZIP 哈希随交付提供；哈希不是发布者签名。

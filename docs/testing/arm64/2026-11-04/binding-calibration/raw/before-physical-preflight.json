@@ -1,0 +1,216 @@
+{
+  "schema": "asus-18u-two-checks-preflight-v1",
+  "observedUTC": "2026-11-04T00:22:15.381253+00:00",
+  "readOnly": true,
+  "productProcessesLaunched": false,
+  "inputSent": false,
+  "physicalAcceptance": false,
+  "automaticRetry": false,
+  "observer": {
+    "pid": 5732,
+    "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "creationTicks": 134382253351718852,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "installed": {
+    "root": "C:\\Program Files\\YimeCore 18u Touch",
+    "version": "0.2.0-18u-arm64.1",
+    "sourceCommit": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+    "identity": {
+      "clsid": "{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+      "profile": "{1BD904AC-3194-4419-B70A-5574100F18B3}"
+    },
+    "manifestSHA256": "afd950556cfc70afbdb8d62d8e7514c08173cb9f0b60146d3a7243680ab932fd",
+    "files": [
+      {
+        "path": "installed-18u-product.json",
+        "sha256": "afd950556cfc70afbdb8d62d8e7514c08173cb9f0b60146d3a7243680ab932fd",
+        "match": true
+      },
+      {
+        "path": "profile-icon.ico",
+        "sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+        "match": true
+      },
+      {
+        "path": "source/tools/yimecore/18u-touch-product-arm64.json",
+        "sha256": "bd7621ed07c14ea3a57b56cc617a6d8c52d1098ed8de07c449b686a833c9ab51",
+        "match": true
+      },
+      {
+        "path": "source/prototypes/touch-terminal/encoding/manual_key_layout.resolved.json",
+        "sha256": "59de8f802289611af47e0063b5124e942a068ce39b76df38085a1fe08b3139fa",
+        "match": true
+      },
+      {
+        "path": "source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json",
+        "sha256": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b",
+        "match": true
+      },
+      {
+        "path": "source/prototypes/touch-terminal/desktop/resources.lock.json",
+        "sha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313",
+        "match": true
+      },
+      {
+        "path": "source/prototypes/touch-terminal/desktop/profiles/main-only.json",
+        "sha256": "25b76ef50d438c33f0a7551904d4c0c788442849ca010703e8cbc83de16cd55a",
+        "match": true
+      },
+      {
+        "path": "source/prototypes/touch-terminal/data/physical-layout.json",
+        "sha256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+        "match": true
+      },
+      {
+        "path": "source/internal_data/yime_syllable_decomposition.tsv",
+        "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+        "match": true
+      },
+      {
+        "path": "source/go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf",
+        "sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d",
+        "match": true
+      },
+      {
+        "path": "data/ascii_keyboard_manifest.json",
+        "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843",
+        "match": true
+      },
+      {
+        "path": "data/yime_full.dict.yaml",
+        "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+        "match": true
+      },
+      {
+        "path": "data/yime_shorthand.dict.yaml",
+        "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49",
+        "match": true
+      },
+      {
+        "path": "data/yime_variable.dict.yaml",
+        "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+        "match": true
+      },
+      {
+        "path": "bin/Yime18uInstalledRuntime.exe",
+        "sha256": "3053f9e2b00558cd11d3260f02c0cfac7ad918931d1292c901fe7c0dd317c9ff",
+        "match": true
+      },
+      {
+        "path": "bin/YimeBroker18u.exe",
+        "sha256": "a039efb4dd08ebb3566fda0a6ba5119e104db52f21de2a416a7c992eb53bdee8",
+        "match": true
+      },
+      {
+        "path": "bin/YimeTouchKeyboard.exe",
+        "sha256": "21025128702295ead46be752c4b58e12927be4dd1da330096fbb93ca50dc67c5",
+        "match": true
+      },
+      {
+        "path": "arm64/Yime18uProductRegistration.exe",
+        "sha256": "c046f26a417a7523104fde598652a29c4aa904057fd62dcfbc00f422870dc2c4",
+        "match": true
+      },
+      {
+        "path": "arm64/YimeTextService18u.dll",
+        "sha256": "83bd48bf38fa9653ad87ee75112e5d1f467f549ca87d99ccdd4ce55a1a179b8a",
+        "match": true
+      },
+      {
+        "path": "arm64/YimeTouchRegisteredFormalHostTests.exe",
+        "sha256": "0c32e9de8f03fbd61aad619b576ffe4d6676c7c50e2da79fe1bf900e9d33a1ba",
+        "match": true
+      }
+    ],
+    "registeredDLL": "C:\\Program Files\\YimeCore 18u Touch\\arm64\\YimeTextService18u.dll"
+  },
+  "runtimeAndDirectChildren": [
+    {
+      "parentPID": 40488,
+      "pid": 29648,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+      "creationTicks": 134381960691135151,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      },
+      "processMachine": "0x0",
+      "nativeMachine": "0xaa64",
+      "imagePE": {
+        "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+        "machine": "0xaa64",
+        "nativeARM64": true,
+        "sha256": "3053f9e2b00558cd11d3260f02c0cfac7ad918931d1292c901fe7c0dd317c9ff"
+      }
+    },
+    {
+      "parentPID": 29648,
+      "pid": 6744,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+      "creationTicks": 134381960701691251,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      },
+      "processMachine": "0x0",
+      "nativeMachine": "0xaa64",
+      "imagePE": {
+        "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+        "machine": "0xaa64",
+        "nativeARM64": true,
+        "sha256": "a039efb4dd08ebb3566fda0a6ba5119e104db52f21de2a416a7c992eb53bdee8"
+      }
+    },
+    {
+      "parentPID": 29648,
+      "pid": 29520,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+      "creationTicks": 134381960827344529,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      },
+      "processMachine": "0x0",
+      "nativeMachine": "0xaa64",
+      "imagePE": {
+        "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+        "machine": "0xaa64",
+        "nativeARM64": true,
+        "sha256": "21025128702295ead46be752c4b58e12927be4dd1da330096fbb93ca50dc67c5"
+      }
+    }
+  ],
+  "application": {
+    "Name": "Microsoft.WindowsNotepad",
+    "Version": "11.2607.14.0",
+    "Architecture": 12,
+    "InstallLocation": "C:\\Program Files\\WindowsApps\\Microsoft.WindowsNotepad_11.2607.14.0_arm64__8wekyb3d8bbwe",
+    "PackageFullName": "Microsoft.WindowsNotepad_11.2607.14.0_arm64__8wekyb3d8bbwe",
+    "executable": {
+      "path": "C:\\Program Files\\WindowsApps\\Microsoft.WindowsNotepad_11.2607.14.0_arm64__8wekyb3d8bbwe\\Notepad\\Notepad.exe",
+      "machine": "0xaa64",
+      "nativeARM64": true,
+      "sha256": "229e2d1684e89f054c0907f73028b111819124376a3eb7b87027e996b16747c6"
+    },
+    "liveProcesses": [],
+    "newBlankDocumentConfirmed": false,
+    "profileActivationConfirmed": false
+  },
+  "passed": true
+}

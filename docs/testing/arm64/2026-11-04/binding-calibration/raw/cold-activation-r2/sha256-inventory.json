@@ -1,0 +1,77 @@
+{
+  "schema": "sha256-file-inventory-v1",
+  "selfExcluded": true,
+  "count": 14,
+  "files": [
+    {
+      "path": "build/CMakeCache.txt",
+      "bytes": 14677,
+      "sha256": "3f97aad0d2f7a95203f1dc465db040e0bb50f0cab9f2d367522f1252b507ce98"
+    },
+    {
+      "path": "build/LastTest.log",
+      "bytes": 1134,
+      "sha256": "a8055c985059e7d1c82956e9326888e6b7f0b14a1c269effb498ceca2347a30b"
+    },
+    {
+      "path": "logs/build-receipt.json",
+      "bytes": 3557,
+      "sha256": "e0dc6c943ecbc40744937214ad18d7d45567516742dc274cc7fe46566c09e7c9"
+    },
+    {
+      "path": "logs/build.log",
+      "bytes": 1022,
+      "sha256": "57ad07919fdc9ce27b073e082e6cb993978cd7a894abaacae5f9e04613d39972"
+    },
+    {
+      "path": "logs/configure.log",
+      "bytes": 597,
+      "sha256": "5483ed1180155ca9e7803d19141a7e36cd8aa84e174707251bdd8d13e5cf3922"
+    },
+    {
+      "path": "logs/ctest-cold-module.log",
+      "bytes": 401,
+      "sha256": "1ccecec83e9a772302d3e2d1ef8122dd51988cea1514d502e916897a7384b23f"
+    },
+    {
+      "path": "logs/YimeTouchFormalHostTests-module-contract.log",
+      "bytes": 176,
+      "sha256": "9e70b58344aefdb0536b15ecdc19ce0e8d5f09de51ba4978a28e00152c25da04"
+    },
+    {
+      "path": "logs/YimeTouchRegisteredFormalHostTests-module-contract.log",
+      "bytes": 176,
+      "sha256": "9e70b58344aefdb0536b15ecdc19ce0e8d5f09de51ba4978a28e00152c25da04"
+    },
+    {
+      "path": "runners/archive_cold_r2.py",
+      "bytes": 4497,
+      "sha256": "b70675b86ee29bc2ace4f68fa8d5750a118c90670f3ebcfeaad16e0cb03143b9"
+    },
+    {
+      "path": "runners/build_cold_r2.py",
+      "bytes": 2180,
+      "sha256": "d3ca0b50b12dddacef4d7761f8b2a888bdb7a82d64a77d0bcc0273674a1a9279"
+    },
+    {
+      "path": "source/r1-to-r2.patch",
+      "bytes": 2736,
+      "sha256": "ff0d47701a81f37e04f295fe6ceada0d72bfa9c64a2a0ac8ef3fb29189cba689"
+    },
+    {
+      "path": "source/YimeTextServiceExperiment/CMakeLists.txt",
+      "bytes": 29276,
+      "sha256": "05ff5403d94d2ddf3ea5144c98f8719c8dd24fcd24fee4e80f525d52a7ee3ce1"
+    },
+    {
+      "path": "source/YimeTextServiceExperiment/tests/Formal18uHost.cpp",
+      "bytes": 26480,
+      "sha256": "6d393a0e27777317a59c1ffa1747a128f09e34062f854126cec7f43d8aa3eb8b"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 1949,
+      "sha256": "25dce6c89cfcdd2f1a5a952ebc3fce5b93fbe5deb628b0fc8fc9d680f48f8db4"
+    }
+  ]
+}

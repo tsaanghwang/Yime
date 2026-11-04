@@ -11,6 +11,7 @@
 #include <atomic>
 #include <functional>
 #include <iostream>
+#include <iterator>
 #include <stdexcept>
 #include <string>
 #include "DedicatedTouchService.h"
@@ -98,6 +99,49 @@ struct Apartment {
     Apartment(){require(CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED),"initialize COM");}
     ~Apartment(){CoUninitialize();}
 };
+// Compare the file Windows actually loaded, without loading the expected path.
+// The expected-file handle also prevents replacement during activation/checking.
+struct ExpectedModule {
+ HANDLE file=INVALID_HANDLE_VALUE;
+ explicit ExpectedModule(const std::wstring& path){
+  file=CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
+  if(file==INVALID_HANDLE_VALUE)winFail("open expected DLL identity");
+ }
+ ~ExpectedModule(){if(file!=INVALID_HANDLE_VALUE)CloseHandle(file);}
+ ExpectedModule(const ExpectedModule&)=delete;
+ ExpectedModule& operator=(const ExpectedModule&)=delete;
+ bool matches(HMODULE actual)const{
+  wchar_t path[32768]{};const DWORD n=GetModuleFileNameW(actual,path,static_cast<DWORD>(std::size(path)));
+  if(!n||n>=std::size(path))winFail("loaded DLL path");
+  HANDLE loaded=CreateFileW(path,GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
+  if(loaded==INVALID_HANDLE_VALUE)winFail("open loaded DLL identity");
+  BY_HANDLE_FILE_INFORMATION expected{},observed{};
+  const BOOL first=GetFileInformationByHandle(file,&expected);const DWORD firstError=first?ERROR_SUCCESS:GetLastError();
+  const BOOL second=GetFileInformationByHandle(loaded,&observed);const DWORD secondError=second?ERROR_SUCCESS:GetLastError();
+  CloseHandle(loaded);
+  if(!first||!second)throw GateFailure{"loaded DLL file identity","win32",!first?firstError:secondError};
+  return expected.dwVolumeSerialNumber==observed.dwVolumeSerialNumber&&expected.nFileIndexHigh==observed.nFileIndexHigh&&expected.nFileIndexLow==observed.nFileIndexLow;
+ }
+};
+void requireColdModule(const std::wstring& path){
+ if(GetModuleHandleW(path.c_str()))fail("registered DLL already loaded before activation");
+}
+// Inert Win32 regression: no TIP, profile, window, or installed product is used.
+void moduleIdentityContract(){
+ HMODULE system=GetModuleHandleW(L"ntdll.dll"),different=GetModuleHandleW(L"kernel32.dll");
+ if(!system||!different||system==different)fail("module contract system modules");
+ wchar_t path[32768]{};const DWORD n=GetModuleFileNameW(system,path,static_cast<DWORD>(std::size(path)));
+ if(!n||n>=std::size(path))winFail("module contract system path");
+ ExpectedModule expected(path);
+ if(!expected.matches(system)||expected.matches(different))fail("module contract identity mismatch");
+ bool rejected=false;try{requireColdModule(path);}catch(const GateFailure&failure){rejected=std::string(failure.stage)=="registered DLL already loaded before activation";}
+ if(!rejected)fail("module contract accepted warm module");
+ HMODULE pinned=nullptr;
+ if(!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,reinterpret_cast<LPCWSTR>(system),&pinned))winFail("module contract pin");
+ const bool matches=expected.matches(pinned);FreeLibrary(pinned);
+ if(!matches)fail("module contract pinned identity");
+ std::cout<<json{{"stage","module-identity-contract"},{"ok",true},{"sameFileAccepted",true},{"differentFileRejected",true},{"warmModuleRejected",true},{"ownedPinReleased",true},{"productActivated",false}}.dump()<<std::endl;
+}
 struct Host {
  bool lastAwaitWmQuit=false; // Diagnostic only; never gates input or focus.
  ComPtr<ITfThreadMgr> manager;ComPtr<ITfDocumentMgr> document,other;ComPtr<ITfContext> context,otherContext;
@@ -109,10 +153,14 @@ struct Host {
 #else
  static constexpr bool registered=false;
 #endif
- void initialize(const std::wstring& dll){
+  void initialize(const std::wstring& dll,bool traceCold=false){
   if(GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST",nullptr,0))fail("direct test bypass forbidden");
+#ifdef YIME_TOUCH_REGISTERED_FORMAL_HOST
+  ExpectedModule expected(dll);requireColdModule(dll);
+  if(traceCold)std::cout<<json{{"stage","registered-cold-initial"},{"expectedDLLLoaded",false},{"preloadedByHost",false}}.dump()<<std::endl;
+#else
+  (void)traceCold;
   module=LoadLibraryExW(dll.c_str(),nullptr,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);if(!module)winFail("load dedicated DLL");
-#ifndef YIME_TOUCH_REGISTERED_FORMAL_HOST
   auto entry=reinterpret_cast<HRESULT(STDAPICALLTYPE*)(REFCLSID,REFIID,LPVOID*)>(GetProcAddress(module,"DllGetClassObject"));if(!entry)winFail("class factory export");
   ComPtr<IClassFactory> factory;require(entry(CLSID_YimeTextServiceExperiment,IID_IClassFactory,reinterpret_cast<void**>(factory.GetAddressOf())),"dedicated class factory");
   require(factory->CreateInstance(nullptr,__uuidof(ITfTextInputProcessorEx),reinterpret_cast<void**>(tip.GetAddressOf())),"actual TIP instance");
@@ -136,8 +184,14 @@ struct Host {
   if(language!=0x0804 || LOWORD(reinterpret_cast<ULONG_PTR>(GetKeyboardLayout(0)))!=0x0804)fail("registered language precondition");
   BOOL enabled=FALSE;require(languages->IsEnabledLanguageProfile(CLSID_YimeTextServiceExperiment,0x0804,GUID_YimeTextServiceExperimentProfile,&enabled),"registered profile query");
   if(!enabled)fail("registered profile disabled");
+  // NOACTIVATETIP suppresses activation only during ActivateEx; Windows may
+  // activate the current TIP asynchronously when this thread gains focus.
+  // That is a legitimate cold load after our initial guard, not host preload.
+  const bool loadedDuringWindowsSetup=GetModuleHandleW(dll.c_str())!=nullptr;
+  if(traceCold)std::cout<<json{{"stage","registered-cold-before-activation"},{"expectedDLLLoaded",loadedDuringWindowsSetup},{"preloadedByHost",false},{"registeredProfileEnabled",true}}.dump()<<std::endl;
   // Exactly one process-scoped activation. This does not register or enable it.
   const HRESULT activated=profiles->ActivateProfile(TF_PROFILETYPE_INPUTPROCESSOR,0x0804,CLSID_YimeTextServiceExperiment,GUID_YimeTextServiceExperimentProfile,nullptr,TF_IPPMF_FORPROCESS);
+  if(traceCold)std::cout<<json{{"stage","registered-cold-activation"},{"hresult",static_cast<unsigned long>(activated)}}.dump()<<std::endl;
   require(activated,"registered profile activation");if(activated!=S_OK)fail("registered profile activation incomplete");tipActive=true;
   ComPtr<ITfFunctionProvider> provider;
   const ULONGLONG deadline=GetTickCount64()+1000;
@@ -153,9 +207,12 @@ struct Host {
   if(!IsEqualGUID(providerType,CLSID_YimeTextServiceExperiment))fail("registered provider mismatch");
   ComPtr<IUnknown> function;require(provider->GetFunction(GUID_NULL,__uuidof(IDedicatedTouchService),&function),"registered route lookup");
   require(function.As(&route),"dedicated private interface");require(route.As(&tip),"registered TIP interface");
-  // Reject a stale registration pointing at a different DLL, even with our GUID.
-  HMODULE actual=nullptr;const auto address=(*reinterpret_cast<void***>(route.Get()))[0];
-  if(!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(address),&actual) || actual!=module)fail("registered DLL mismatch");
+  // Pin the Windows-activated module only now. Host owns this additional reference
+  // until every TSF/COM reference has been released; no LoadLibrary in this path.
+  const auto address=(*reinterpret_cast<void***>(route.Get()))[0];
+  if(!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,reinterpret_cast<LPCWSTR>(address),&module))winFail("pin registered DLL");
+  if(!expected.matches(module))fail("registered DLL mismatch");
+  if(traceCold)std::cout<<json{{"stage","registered-cold-module-verified"},{"profileMatches",true},{"providerMatches",true},{"actualDLLFileMatches",true},{"preloadedByHost",false}}.dump()<<std::endl;
 #else
   require(tip->ActivateEx(manager.Get(),client,0),"actual TIP activation");tipActive=true;require(tip.As(&route),"dedicated private interface");
 #endif
@@ -171,7 +228,11 @@ struct Host {
   return FAILED(hr)?hr:E_FAIL;
  }
  void create(ComPtr<ITfDocumentMgr>& doc,ComPtr<ITfContext>& ctx){TfEditCookie cookie=0;require(manager->CreateDocumentMgr(&doc),"document");require(doc->CreateContext(client,0,nullptr,&ctx,&cookie),"context");require(doc->Push(ctx.Get()),"push");}
- ~Host(){if(route)route->DisconnectDedicated();route.Reset();if(tipActive)deactivate();tip.Reset();if(window){ComPtr<ITfDocumentMgr> previous;manager->AssociateFocus(window,nullptr,&previous);DestroyWindow(window);}context.Reset();otherContext.Reset();document.Reset();other.Reset();if(managerActive)manager->Deactivate();manager.Reset();if(module)FreeLibrary(module);}
+  ~Host(){if(route)route->DisconnectDedicated();route.Reset();if(tipActive)deactivate();tip.Reset();if(window){ComPtr<ITfDocumentMgr> previous;manager->AssociateFocus(window,nullptr,&previous);DestroyWindow(window);}context.Reset();otherContext.Reset();document.Reset();other.Reset();if(managerActive)manager->Deactivate();manager.Reset();
+#ifdef YIME_TOUCH_REGISTERED_FORMAL_HOST
+   profiles.Reset();
+#endif
+   if(module)FreeLibrary(module);}
  HRESULT awaitResult(HRESULT hr,BSTR* value,DWORD timeout=15000,const std::function<void()>& beforePoll={}){
   lastAwaitWmQuit=false;
   const auto deadline=GetTickCount64()+timeout;
@@ -205,9 +266,25 @@ struct Host {
 };
 }
 #ifndef YIME_TOUCH_FRONTEND_HOST
-int main(){try{
- Apartment apartment;auto config=input();const std::string scenario=config.at("scenario");
+int main(int argc,char**argv){try{
+ if(argc==2&&std::string(argv[1])=="--module-identity-contract"){moduleIdentityContract();return 0;}
+ if(argc!=1)fail("arguments");
+ auto config=input();const std::string scenario=config.at("scenario");
+#ifdef YIME_TOUCH_REGISTERED_FORMAL_HOST
+ if(scenario=="activation-only"){
+  const auto dll=widen(config.at("dll").get<std::string>());
+  {
+   Apartment apartment;Host host;host.initialize(dll,true);
+   if(!read(host.context.Get(),host.client).empty()||!read(host.otherContext.Get(),host.client).empty())fail("activation-only document not empty");
+   const HRESULT deactivated=host.deactivate();
+   std::cout<<json{{"stage","registered-cold-deactivation"},{"hresult",static_cast<unsigned long>(deactivated)}}.dump()<<std::endl;
+   require(deactivated,"activation-only deactivation");
+  }
+  std::cout<<json{{"stage","result"},{"scenario","activation-only"},{"ok",true},{"registered",true},{"coldLoadVerified",true},{"preloadedByHost",false},{"hostReferencesReleased",true},{"ownDocumentsEmpty",true},{"textActions",0},{"newBrokerOrFrontend",false},{"registrationMutation",false},{"sendInput",false}}.dump()<<std::endl;return 0;
+ }
+#endif
  if(scenario!="commit"&&scenario!="duplicate"&&scenario!="wrong-server-pid"&&scenario!="wrong-server-image"&&scenario!="deactivated"&&scenario!="focus-lost"&&scenario!="disconnect-before-action"&&scenario!="pending-focus-away-back"&&scenario!="pending-deactivated"&&scenario!="disconnect-after-edit")fail("scenario");
+ Apartment apartment;
  Host host;host.initialize(widen(config.at("dll").get<std::string>()));
  DWORD pid=config.at("brokerPID");if(scenario=="wrong-server-pid")pid=GetCurrentProcessId();
  BSTR initial=nullptr;HRESULT hr=host.route->ConnectDedicated(widen(config.at("pipe").get<std::string>()).c_str(),pid,widen(config.at(scenario=="wrong-server-image"?"dll":"brokerImage").get<std::string>()).c_str(),&initial);

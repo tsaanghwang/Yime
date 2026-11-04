@@ -31,6 +31,7 @@ type options struct {
 	TouchUI                             bool
 	PenRecontactMS                      int
 	ScreenMM, ObservedMM                float64
+	SaveRulerObservedMM                 string
 	Gutters, Smoke, CheckData           bool
 	Preview                             bool
 	Host, HostSmoke                     bool
@@ -45,8 +46,9 @@ func main() {
 	flag.StringVar(&o.Profile, "profile", "", "optional geometry profile JSON")
 	flag.StringVar(&o.Zones, "numeric-zones", "both", "both/left/right/none")
 	flag.BoolVar(&o.Gutters, "remove-gutters", false, "remove reviewed central and side gutters without scaling keys")
-	flag.Float64Var(&o.ScreenMM, "screen-width-mm", 597.73, "monitor physical width in mm (27-inch 16:9 estimate; ruler calibration required)")
+	flag.Float64Var(&o.ScreenMM, "screen-width-mm", defaultScreenWidthMM, "monitor physical width in mm (27-inch 16:9 estimate; ruler calibration required)")
 	flag.Float64Var(&o.ObservedMM, "ruler-observed-mm", 100, "actual measured length of the previous 100mm reference")
+	flag.StringVar(&o.SaveRulerObservedMM, "save-ruler-observed-mm", "", "installed 18u only: save a physical measurement of the uncalibrated 100mm reference for this display, then exit without opening the keyboard")
 	flag.StringVar(&o.Shot, "screenshot", "", "render this keyboard to PNG and exit")
 	flag.BoolVar(&o.Smoke, "self-test", false, "run isolated Win32 target-window input/focus checks and exit")
 	flag.BoolVar(&o.CheckData, "check-data", false, "validate isolated Chinese dictionaries and in-process sessions, without a window or OS input")
@@ -72,7 +74,7 @@ func main() {
 	flag.Parse()
 	o.GeometryExplicit = hasGeometryOptions(flag.CommandLine)
 	if e := execute(o); e != nil {
-		if o.InstalledSmoke || o.OwnTSFDemoSmoke || o.Smoke || o.HostSmoke || o.Shot != "" || o.CheckData || o.CheckPackage {
+		if o.SaveRulerObservedMM != "" || o.InstalledSmoke || o.OwnTSFDemoSmoke || o.Smoke || o.HostSmoke || o.Shot != "" || o.CheckData || o.CheckPackage {
 			fmt.Fprintln(os.Stderr, e)
 		} else {
 			showError(e)
@@ -92,8 +94,14 @@ func hasGeometryOptions(flags *flag.FlagSet) bool {
 }
 
 func execute(o options) error {
+	if o.SaveRulerObservedMM != "" && (!o.InstalledTSF || o.InstalledSmoke || o.BrokerPID != 0) {
+		return fmt.Errorf("saving calibration requires installed TSF mode without a Broker or smoke session")
+	}
+	if o.SaveRulerObservedMM != "" && o.ScreenMM != defaultScreenWidthMM {
+		return fmt.Errorf("saving installed calibration requires the ordinary Runtime baseline --screen-width-mm %.2f; nondefault baseline was not saved", defaultScreenWidthMM)
+	}
 	if o.InstalledTSF {
-		if o.OwnTSFDemo || o.OwnTSFDemoSmoke || o.Host || o.Preview || o.EnglishOnly || o.Smoke || o.HostSmoke || o.CheckData || o.CheckPackage || o.InputTrace != "" || o.Shot != "" || o.DataReport != "" || o.DataDir != "" || o.Root != "" || o.Profile != "" || o.BrokerPID == 0 || uint64(o.BrokerPID) > 0xffffffff {
+		if o.OwnTSFDemo || o.OwnTSFDemoSmoke || o.Host || o.Preview || o.EnglishOnly || o.Smoke || o.HostSmoke || o.CheckData || o.CheckPackage || o.InputTrace != "" || o.Shot != "" || o.DataReport != "" || o.DataDir != "" || o.Root != "" || o.Profile != "" || (o.BrokerPID == 0 && o.SaveRulerObservedMM == "") || uint64(o.BrokerPID) > 0xffffffff {
 			return fmt.Errorf("installed TSF mode requires its runtime and cannot combine with lab execution modes")
 		}
 		if _, e := installed18uhost.VerifyDesktopInstallation(o.InstallRoot, o.ManifestSHA); e != nil {

@@ -1,0 +1,45 @@
+{
+  "schema": "yime-readonly-evidence-archive-v1",
+  "files": [
+    {
+      "source": ".generated/18u-notepad-load-audit-20261104-0949/observation.json",
+      "archive": "initial/observation.json",
+      "bytes": 22003,
+      "sha256": "013983c93eb60a5dd37aba4a60487ebc63b150f96dec0a95d4ca55da9c02a1d9"
+    },
+    {
+      "source": ".generated/18u-notepad-load-audit-20261104-0949-r2/observation.json",
+      "archive": "corrected-r2/observation.json",
+      "bytes": 20960,
+      "sha256": "42a183e34cfbcc31345453885d664b4dc80a590d3d8c6f4625d340221f53b65f"
+    },
+    {
+      "source": ".generated/armfull-tools/read-18u-notepad-audit.ps1",
+      "archive": "collector-r2.ps1",
+      "bytes": 9501,
+      "sha256": "73495a4e23fcb67f66a2fce1b8bdfcc21b9bda8ac410ca0e54132b13157021e8"
+    },
+    {
+      "source": ".generated/armfull-tools/read-18u-notepad-audit-params.json",
+      "archive": "initial/parameters.json",
+      "bytes": 134,
+      "sha256": "0e057b2c5441c04b3e6966b8aa8f55941739bde82676fb3ff1762d82a1c93993"
+    },
+    {
+      "source": ".generated/armfull-tools/read-18u-notepad-audit-params-r2.json",
+      "archive": "corrected-r2/parameters.json",
+      "bytes": 137,
+      "sha256": "c2e11850e107359c64655f065240ea75002220bc38a1f7aab7de291ec9d6169c"
+    },
+    {
+      "source": "derived from corrected-r2/observation.json",
+      "archive": "summary.json",
+      "bytes": 3196,
+      "sha256": "c00f9570812ab5024855e5ee18f0d06245e71b8e691cb1263a6641b80bc8e065"
+    }
+  ],
+  "copiedSourceBytesUnchanged": true,
+  "originalFailedCapturePreserved": true,
+  "collectorSnapshotAppliesTo": "corrected-r2",
+  "productOperationExecuted": false
+}

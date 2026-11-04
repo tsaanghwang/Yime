@@ -1,0 +1,484 @@
+{
+  "schema": "18u-notepad-readonly-load-audit-v1",
+  "observedUTC": "2026-11-04T01:47:16.1482433Z",
+  "startUTC": "2026-11-04T00:22:00.0000000Z",
+  "readOnly": true,
+  "productProcessesStartedOrStopped": false,
+  "profileActivated": false,
+  "registrationProbeExecuted": false,
+  "inputSent": false,
+  "notepadPID": 28936,
+  "logs": [
+    {
+      "name": "Microsoft-Windows-CodeIntegrity/Operational",
+      "querySucceeded": true,
+      "eventsExamined": 0,
+      "targetEvents": [],
+      "hostOnlyEvents": [],
+      "configuration": {
+        "enabled": true,
+        "recordCount": 289,
+        "lastWriteTime": "2026-11-01T22:43:13.7074962+08:00",
+        "logMode": "Circular"
+      },
+      "noEventsInTimeRange": true
+    },
+    {
+      "name": "Application",
+      "querySucceeded": true,
+      "eventsExamined": 15,
+      "targetEvents": [],
+      "hostOnlyEvents": [],
+      "configuration": {
+        "enabled": true,
+        "recordCount": 17180,
+        "lastWriteTime": "2026-11-04T09:43:18.5726566+08:00",
+        "logMode": "Circular"
+      }
+    }
+  ],
+  "registration": [
+    {
+      "hive": "LocalMachine",
+      "view": "Registry64",
+      "tree": {
+        "path": "SOFTWARE\\Classes\\CLSID\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+        "exists": true,
+        "values": {},
+        "children": [
+          {
+            "path": "SOFTWARE\\Classes\\CLSID\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\InprocServer32",
+            "exists": true,
+            "values": {
+              "": {
+                "kind": "String",
+                "value": "C:\\Program Files\\YimeCore 18u Touch\\arm64\\YimeTextService18u.dll"
+              },
+              "ThreadingModel": {
+                "kind": "String",
+                "value": "Apartment"
+              }
+            },
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "hive": "LocalMachine",
+      "view": "Registry64",
+      "tree": {
+        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+        "exists": true,
+        "values": {},
+        "children": [
+          {
+            "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category",
+            "exists": true,
+            "values": {},
+            "children": [
+              {
+                "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category",
+                "exists": true,
+                "values": {},
+                "children": [
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                    "exists": true,
+                    "values": {},
+                    "children": [
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                    "exists": true,
+                    "values": {},
+                    "children": [
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                    "exists": true,
+                    "values": {},
+                    "children": [
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                    "exists": true,
+                    "values": {},
+                    "children": [
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                    "exists": true,
+                    "values": {},
+                    "children": [
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item",
+                "exists": true,
+                "values": {},
+                "children": [
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+                    "exists": true,
+                    "values": {},
+                    "children": [
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      },
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      },
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      },
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      },
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\LanguageProfile",
+            "exists": true,
+            "values": {},
+            "children": [
+              {
+                "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\LanguageProfile\\0x00000804",
+                "exists": true,
+                "values": {},
+                "children": [
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\LanguageProfile\\0x00000804\\{1BD904AC-3194-4419-B70A-5574100F18B3}",
+                    "exists": true,
+                    "values": {
+                      "Description": {
+                        "kind": "String",
+                        "value": "音元拼音·18u触摸"
+                      },
+                      "IconFile": {
+                        "kind": "String",
+                        "value": "C:\\Program Files\\YimeCore 18u Touch\\profile-icon.ico"
+                      },
+                      "IconIndex": {
+                        "kind": "DWord",
+                        "value": 0
+                      },
+                      "Enable": {
+                        "kind": "DWord",
+                        "value": 1
+                      }
+                    },
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "hive": "LocalMachine",
+      "view": "Registry32",
+      "tree": {
+        "path": "SOFTWARE\\Classes\\CLSID\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+        "exists": false
+      }
+    },
+    {
+      "hive": "LocalMachine",
+      "view": "Registry32",
+      "tree": {
+        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+        "exists": true,
+        "values": {},
+        "children": [
+          {
+            "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category",
+            "exists": true,
+            "values": {},
+            "children": [
+              {
+                "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category",
+                "exists": true,
+                "values": {},
+                "children": [
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                    "exists": true,
+                    "values": {},
+                    "children": [
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                    "exists": true,
+                    "values": {},
+                    "children": [
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                    "exists": true,
+                    "values": {},
+                    "children": [
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{34745C63-B2F0-4784-8B67-5E12C8701A31}\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                    "exists": true,
+                    "values": {},
+                    "children": [
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                    "exists": true,
+                    "values": {},
+                    "children": [
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Category\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item",
+                "exists": true,
+                "values": {},
+                "children": [
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+                    "exists": true,
+                    "values": {},
+                    "children": [
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\{13A016DF-560B-46CD-947A-4C3AF1E0E35D}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      },
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      },
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\{34745C63-B2F0-4784-8B67-5E12C8701A31}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      },
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      },
+                      {
+                        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\Category\\Item\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\{CCF05DD7-4A87-11D7-A6E2-00065B84435C}",
+                        "exists": true,
+                        "values": {},
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\LanguageProfile",
+            "exists": true,
+            "values": {},
+            "children": [
+              {
+                "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\LanguageProfile\\0x00000804",
+                "exists": true,
+                "values": {},
+                "children": [
+                  {
+                    "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}\\LanguageProfile\\0x00000804\\{1BD904AC-3194-4419-B70A-5574100F18B3}",
+                    "exists": true,
+                    "values": {
+                      "Description": {
+                        "kind": "String",
+                        "value": "音元拼音·18u触摸"
+                      },
+                      "IconFile": {
+                        "kind": "String",
+                        "value": "C:\\Program Files\\YimeCore 18u Touch\\profile-icon.ico"
+                      },
+                      "IconIndex": {
+                        "kind": "DWord",
+                        "value": 0
+                      },
+                      "Enable": {
+                        "kind": "DWord",
+                        "value": 1
+                      }
+                    },
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "hive": "CurrentUser",
+      "view": "Registry64",
+      "tree": {
+        "path": "SOFTWARE\\Classes\\CLSID\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+        "exists": false
+      }
+    },
+    {
+      "hive": "CurrentUser",
+      "view": "Registry64",
+      "tree": {
+        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+        "exists": false
+      }
+    },
+    {
+      "hive": "CurrentUser",
+      "view": "Registry32",
+      "tree": {
+        "path": "SOFTWARE\\Classes\\CLSID\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+        "exists": false
+      }
+    },
+    {
+      "hive": "CurrentUser",
+      "view": "Registry32",
+      "tree": {
+        "path": "SOFTWARE\\Microsoft\\CTF\\TIP\\{6DFACE1F-562E-4773-A9D6-D5753A314711}",
+        "exists": false
+      }
+    }
+  ],
+  "notepad": {
+    "pid": 28936,
+    "image": "C",
+    "creationTicks": 134382279754397239,
+    "processMachine": "0x0",
+    "nativeMachine": "0xaa64",
+    "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+    "integritySID": "S-1-16-8192",
+    "elevated": false,
+    "session": 2,
+    "tokenIsAppContainer": false,
+    "appContainerSID": null
+  },
+  "notepadError": "System.Management.Automation.MethodInvocationException: 调用“OpenRead”并传入“1”个参数时发生异常：“Could not find file 'C:\\dev\\Yime\\.wt\\armfull\\C'.”\r\n ---> System.IO.FileNotFoundException: Could not find file 'C:\\dev\\Yime\\.wt\\armfull\\C'.\r\nFile name: 'C:\\dev\\Yime\\.wt\\armfull\\C'\r\n   at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)\r\n   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)\r\n   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)\r\n   at CallSite.Target(Closure, CallSite, Type, String)\r\n   --- End of inner exception stack trace ---\r\n   at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)\r\n   at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)\r\n   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)\r\n   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)",
+  "modules": {
+    "querySucceeded": true,
+    "examined": 135,
+    "related": [
+      {
+        "path": "C:\\Windows\\System32\\MSCTF.dll",
+        "bytes": 2766672,
+        "machine": "0xaa64",
+        "sha256": "87a0bd6860af417be77384ecc435f4c318eab6f14def3b13135d4b0a3c349c7f"
+      }
+    ],
+    "installed18uDLLObserved": false,
+    "presenceIsNotActiveProfileProof": true
+  },
+  "installedDLL": {
+    "path": "C:\\Program Files\\YimeCore 18u Touch\\arm64\\YimeTextService18u.dll",
+    "bytes": 700928,
+    "machine": "0xaa64",
+    "sha256": "83bd48bf38fa9653ad87ee75112e5d1f467f549ca87d99ccdd4ce55a1a179b8a"
+  }
+}

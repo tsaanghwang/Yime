@@ -1,0 +1,19 @@
+{
+  "files": [
+    {
+      "source": ".generated/asus-two-checks-20261104/preflight.json",
+      "path": "raw/before-physical-preflight.json",
+      "sha256": "3fa413b8928a15e4bfe1c2f223f292baa722c3697cbba4247247699b6556b752"
+    },
+    {
+      "source": ".generated/asus-notepad-binding-stop-20261104/observation.json",
+      "path": "raw/first-binding-failure-observation.json",
+      "sha256": "d5c58d09956639c682f4a0694dace734356ca5d241883858ddd55d093a6753dd"
+    },
+    {
+      "source": ".generated/armfull-tools/observe-notepad-binding-stop.py",
+      "path": "raw/first-binding-failure-observer.py",
+      "sha256": "56eff4419348a0c96acbefd0e85559a6bc39a02e55e6d59c45c54792111a2c4a"
+    }
+  ]
+}
