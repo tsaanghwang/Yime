@@ -1,0 +1,163 @@
+{
+  "schema": "msi-18u-test11-minimal-acceptance-v1",
+  "status": "not-run",
+  "preparedDate": "2026-11-05",
+  "timezone": "Asia/Shanghai",
+  "scope": "handoff-only-no-installation-authorized",
+  "developmentMachine": {
+    "name": "MyComputer",
+    "type": "desktop",
+    "isMsiTestLaptop": false
+  },
+  "testMachine": {
+    "role": "MSI laptop",
+    "hostname": null,
+    "model": null,
+    "architecture": null,
+    "identityConfirmedLocally": false,
+    "interactiveUser": null
+  },
+  "package": {
+    "version": "0.1.0-18u-test.11",
+    "sourceCommit": "aed8116262ab5ddce2395f533ee6309baa2f1969",
+    "deliveryCommit": "862bf7f26ea0acd4008f4b0485602d35ab624d2e",
+    "artifactURL": "https://github.com/tsaanghwang/Yime/actions/runs/41837039112/artifacts/13327157015",
+    "ciURL": "https://github.com/tsaanghwang/Yime/actions/runs/41837039112",
+    "expiresAt": "2026-11-18T13:22:47Z",
+    "outer": {
+      "bytes": 192248039,
+      "sha256": "911680c4d1f94f935c6429f0bcd0b229930b481af30f2a4bc4994bf1c9a23563",
+      "msiPath": null,
+      "verifiedOnMsi": false
+    },
+    "inner": {
+      "name": "YimeCore-18u-0.1.0-18u-test.11-windows-amd64.zip",
+      "bytes": 192209196,
+      "sha256": "7fba42fbe954e3c5d6df5c3a9b220f93bf9e5c2f7a5be8c7c69aed1ddb9742fc",
+      "msiPath": null,
+      "verifiedOnMsi": false
+    },
+    "frontendProtocol": {
+      "version": 2,
+      "pipePrefix": "Yime18u.Frontend.v2."
+    },
+    "brokerEndpointFamily": "YimeBroker.18uTouch.v1"
+  },
+  "installation": {
+    "currentVersion": null,
+    "root": null,
+    "matchingTest11PayloadVerified": false,
+    "evidence": []
+  },
+  "environment": {
+    "mode": null,
+    "language": null,
+    "inputMethod": null,
+    "display": null,
+    "posture": null,
+    "mouseOrAutomationAssistance": null,
+    "hosts": {
+      "A": {
+        "app": null,
+        "version": null,
+        "architecture": null,
+        "pid": null,
+        "bodyHwnd": null,
+        "bodyTid": null
+      },
+      "B": {
+        "app": null,
+        "version": null,
+        "architecture": null,
+        "pid": null,
+        "bodyHwnd": null,
+        "bodyTid": null
+      }
+    }
+  },
+  "batch": {
+    "id": null,
+    "authorizedScope": null,
+    "authorizationReference": null,
+    "startedAt": null,
+    "finishedAt": null,
+    "userFeedback": null,
+    "continueAuthorized": false
+  },
+  "caseStatus": {
+    "P1": "not-run",
+    "P2": "not-run",
+    "P3": "not-run",
+    "A1": "not-run",
+    "A2": "not-run",
+    "A3": "not-run",
+    "U1": "not-run",
+    "U2": "not-run"
+  },
+  "caseRecords": [],
+  "caseRecordShape": {
+    "id": null,
+    "status": "not-run",
+    "inputMethod": null,
+    "actions": [],
+    "rawComposition": null,
+    "visibleCandidates": null,
+    "expectedCommit": null,
+    "beforeText": {
+      "A": null,
+      "B": null
+    },
+    "afterText": {
+      "A": null,
+      "B": null
+    },
+    "statusText": null,
+    "targetIdentityEvidence": [],
+    "evidence": [],
+    "stopReason": null,
+    "limitations": []
+  },
+  "unknownResult": {
+    "triggered": false,
+    "transportPhaseConfirmed": false,
+    "triggerEvidence": [],
+    "originalTarget": null,
+    "originalRequestText": null,
+    "observedOriginalOccurrences": null,
+    "lockPersisted": null,
+    "blockedNewAction": null,
+    "humanTextReview": null,
+    "explicitContinueCount": 0,
+    "newRequestText": null,
+    "oldRequestReplayed": null
+  },
+  "preservation": {
+    "oldPackageLocations": [],
+    "oldEvidenceLocations": [],
+    "protectedProductsAndUserDataEvidence": []
+  },
+  "execution": {
+    "installationExecuted": false,
+    "registrationChanged": false,
+    "defaultInputChanged": false,
+    "test8Repeated": false,
+    "faultInjectionExecuted": false
+  },
+  "acceptance": {
+    "realHostAutoFollowAccepted": false,
+    "focusLossCancellationAccepted": false,
+    "unknownResultLockAccepted": false,
+    "physicalAcceptance": false
+  },
+  "evidenceFileShape": {
+    "path": null,
+    "bytes": null,
+    "sha256": null,
+    "capturedAt": null,
+    "source": null
+  },
+  "limitations": [
+    "Prepared on MyComputer desktop; no MSI execution evidence",
+    "Unknown-result cases require an observed qualifying event; absence is not a pass"
+  ]
+}
