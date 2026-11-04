@@ -559,6 +559,11 @@
       "path": "raw/release-success-note-6cea24bc/manifest.json",
       "source": ".generated/armfull-tools/archive-6cea-success-note.py",
       "sha256": "abcb4e5dacc281195d14aaa335da6d60554d8554919967c7486ccfd2162fc9a2"
+    },
+    {
+      "source": "user message in this conversation, transcribed without adding unreported results",
+      "path": "raw/user-retest-20261104.json",
+      "sha256": "7faa4e901e91f24fc5fa8b0ab8b07e0c2e1f1f3f21f8efd7b3cf003df2cfed69"
     }
   ]
 }

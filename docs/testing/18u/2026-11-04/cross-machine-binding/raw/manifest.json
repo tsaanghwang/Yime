@@ -1,0 +1,42 @@
+{
+  "schema": "yime-cross-machine-doc-evidence-v1",
+  "evidenceScope": "existing committed records; not a new observation of MSI live processes or installation",
+  "members": [
+    {
+      "path": "msi-preparation.md",
+      "sourceCommit": "cef68506c26e84e3c6d66c03c9399a11b391dee4",
+      "sourcePath": "docs/testing/18u/2026-11-03/msi-preparation/README.zh-CN.md",
+      "gitBlob": "b64fad1113a58511fb9399fbe9414471dc212de2",
+      "bytes": 13543,
+      "sha256": "36a8e71688bbf8bfbf6e60f0955828c8602f6e434807d88aca7caa4410c97dd6",
+      "url": "https://github.com/tsaanghwang/Yime/blob/cef68506c26e84e3c6d66c03c9399a11b391dee4/docs/testing/18u/2026-11-03/msi-preparation/README.zh-CN.md"
+    },
+    {
+      "path": "msi-finger-notepad-result.md",
+      "sourceCommit": "cef68506c26e84e3c6d66c03c9399a11b391dee4",
+      "sourcePath": "docs/testing/18u/2026-11-04/msi-finger-notepad/RESULT.zh-CN.md",
+      "gitBlob": "49154fc6ccecd1a11e152859f707147ff7acf0f3",
+      "bytes": 4468,
+      "sha256": "320ca60dcc26dbda41369f3f572ba3610be9c04d62d51b1ac9239990cc29eec4",
+      "url": "https://github.com/tsaanghwang/Yime/blob/cef68506c26e84e3c6d66c03c9399a11b391dee4/docs/testing/18u/2026-11-04/msi-finger-notepad/RESULT.zh-CN.md"
+    },
+    {
+      "path": "msi-test8-delivery.md",
+      "sourceCommit": "cef68506c26e84e3c6d66c03c9399a11b391dee4",
+      "sourcePath": "docs/testing/18u/2026-11-04/test8-development/DELIVERY.zh-CN.md",
+      "gitBlob": "cd958f25f9564cb3ed8420fcc99a9e67ed802082",
+      "bytes": 4442,
+      "sha256": "d73643661aa40063a12e9dcfcab8e578b67f213b6ac98782423672a08c28b70a",
+      "url": "https://github.com/tsaanghwang/Yime/blob/cef68506c26e84e3c6d66c03c9399a11b391dee4/docs/testing/18u/2026-11-04/test8-development/DELIVERY.zh-CN.md"
+    },
+    {
+      "path": "msi-test7-install-result.json",
+      "sourceCommit": "86049049ca6f336cbdd70ca3d64e8a2b5511223b",
+      "sourcePath": "installed-results/msi-x64/installed18u-test7-msi-install-r1/live-entry-r1/result.json",
+      "gitBlob": "08bff15f59a305eb8baae00943522005692a4791",
+      "bytes": 2390,
+      "sha256": "117da78e65b533ecb8a8fc5d40f3eb4f722b972d221ac3cc2cfdb242eb8d128c",
+      "url": "https://github.com/tsaanghwang/Yime/blob/86049049ca6f336cbdd70ca3d64e8a2b5511223b/installed-results/msi-x64/installed18u-test7-msi-install-r1/live-entry-r1/result.json"
+    }
+  ]
+}

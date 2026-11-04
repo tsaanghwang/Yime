@@ -1,0 +1,35 @@
+{
+  "schema": "yime-user-physical-retest-report-v1",
+  "recordedUTC": "2026-11-04T05:36:42.676678+00:00",
+  "observedUTC": null,
+  "evidenceType": "user-message-transcription",
+  "verbatim": "参考尺：100mm. 还不能绑定，微星那台也不行，是不是要汇总一下？",
+  "asus": {
+    "lastVerifiedVersion": "0.2.0-18u-arm64.4",
+    "lastVerifiedSource": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+    "identityReobservedThisTurn": false,
+    "referenceNominalMM": 100,
+    "referenceObservedMM": 100,
+    "referenceLengthCheck": "met nominal length per user report",
+    "binding": "failed per user report",
+    "completeErrorText": null,
+    "actualBody": null,
+    "fingerInputAccepted": false,
+    "wholeKeyboardVisibleReconfirmed": null,
+    "previousContext": {
+      "resolution": "3840x2400",
+      "windowsScalePercent": 250,
+      "rulerPrecisionMM": 1
+    },
+    "previousContextReconfirmedInThisMessage": false
+  },
+  "msi": {
+    "binding": "failed per user report",
+    "currentVersionInThisMessage": null,
+    "hostApplicationInThisMessage": null,
+    "completeErrorText": null
+  },
+  "commonRootCauseProven": false,
+  "software18ChecksRemainSoftwareEvidence": true,
+  "automaticallyRetried": false
+}
