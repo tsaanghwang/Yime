@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"strings"
 
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 )
@@ -82,8 +83,11 @@ func touchNavigation(action string) bool {
 }
 
 func touchLocalConfiguration(action string) bool {
+	if strings.HasPrefix(action, "measure:") {
+		return true
+	}
 	switch action {
-	case "settings", "help", "help-previous", "help-next", "minimize", "close", "cancel", "language", "variable", "full", "shorthand", "literal", "glyphs", "layout", "theme", "font", "ruler", "smaller", "larger", "sound":
+	case "settings", "help", "help-previous", "help-next", "minimize", "close", "cancel", "language", "variable", "full", "shorthand", "literal", "glyphs", "layout", "theme", "font", "ruler", "smaller", "larger", "sound", "calibrate", "diagnostics":
 		return true
 	}
 	return false

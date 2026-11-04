@@ -98,7 +98,7 @@ class FrontendTests(unittest.TestCase):
 
         def runner(command, **kwargs):
             args = json.loads(Path(command[-1]).read_text())
-            self.assertEqual(args['Version'], '0.1.0-18u-test.7')
+            self.assertEqual(args['Version'], '0.1.0-18u-test.8')
             output = Path(args['OutputRoot'])
             shutil.copytree(args['PayloadRoot'], output / 'payload')
             for name in package.INSTALLER:
@@ -112,7 +112,7 @@ class FrontendTests(unittest.TestCase):
             self.assertIn('payload/frontend/YimeTouchKeyboard.exe', archive.namelist())
             self.assertEqual(len(json.loads(archive.read('signatures.json'))['files']), 6)
             evidence = json.loads(archive.read('package-evidence.json'))
-            self.assertEqual(evidence['version'], '0.1.0-18u-test.7')
+            self.assertEqual(evidence['version'], '0.1.0-18u-test.8')
             self.assertFalse(evidence['installationExecuted'])
             self.assertFalse(evidence['installedHostAcceptance'])
 

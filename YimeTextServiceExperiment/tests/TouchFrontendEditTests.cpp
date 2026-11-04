@@ -110,12 +110,12 @@ public:
     STDMETHODIMP EnumFunctionProviders(IEnumTfFunctionProviders**) override{return E_NOTIMPL;}
     STDMETHODIMP GetGlobalCompartment(ITfCompartmentMgr**) override{return E_NOTIMPL;}
 };
-ForegroundIdentity fakeForeground() noexcept{return {reinterpret_cast<HWND>(1),GetCurrentThreadId(),GetCurrentProcessId()};}
+ForegroundIdentity fakeForeground() noexcept{return {reinterpret_cast<HWND>(1),GetCurrentThreadId(),GetCurrentProcessId(),reinterpret_cast<HWND>(2),reinterpret_cast<HWND>(1)};}
 struct Fixture {
     Manager manager;
     std::shared_ptr<Lease> lease=std::make_shared<Lease>();
     Context& context=manager.document.context; Memory& m=context.m;
-    Fixture(){lease->manager=&manager;lease->document=&manager.document;lease->context=&context;lease->window=reinterpret_cast<HWND>(1);lease->active=true;lease->foreground=fakeForeground;}
+    Fixture(){lease->manager=&manager;lease->document=&manager.document;lease->context=&context;lease->window=reinterpret_cast<HWND>(1);lease->focus=reinterpret_cast<HWND>(2);lease->active=true;lease->foreground=fakeForeground;}
     void queue(std::wstring text={},std::string key={},bool extend=false){
         lease->completed=lease->attempted=false;lease->outcome=E_PENDING;
         ComPtr<ITfEditSession> edit;edit.Attach(new Edit(lease,std::move(text),key,extend));HRESULT result;
@@ -139,6 +139,27 @@ void edits(){
     f.apply({},"Home");f.apply({},"Backspace");check(f.m.text==L"AB","document start boundary");
     f.apply({},"End");f.apply({},"Delete");check(f.m.text==L"AB","document end boundary");
 }
+ForegroundIdentity changingIdentity{};
+ForegroundIdentity changedForeground() noexcept { return changingIdentity; }
+void focusedChildLease() {
+    Fixture f;
+    // The root HWND is only an identity/ancestry anchor. Endpoint ownership
+    // follows the child focus thread, not the root's window thread.
+    changingIdentity=fakeForeground(); f.lease->foreground=changedForeground;
+    check(f.lease->valid(), "focused child lease");
+    f.apply(L"child");
+    changingIdentity.focus=reinterpret_cast<HWND>(3);
+    check(std::string(f.lease->rejection())=="focus-changed", "same-thread focus replacement");
+    f.queue(L"wrong"); check(f.context.drain()==E_ABORT && f.m.text==L"child", "no cross-control edit");
+    changingIdentity=fakeForeground(); changingIdentity.thread++;
+    check(std::string(f.lease->rejection())=="focus-owner-mismatch", "foreign focus thread");
+    changingIdentity=fakeForeground(); changingIdentity.process++;
+    check(!f.lease->valid(), "foreign focus process");
+    changingIdentity=fakeForeground(); changingIdentity.root=reinterpret_cast<HWND>(9);
+    check(!f.lease->valid(), "unrelated foreground ancestry");
+    changingIdentity=fakeForeground(); changingIdentity.window=reinterpret_cast<HWND>(9);
+    check(!f.lease->valid(), "foreground changed");
+}
 void failures(){
     Fixture f;f.m.text=L"keep";f.queue(L"new");check(f.m.text==L"keep" && f.m.writes==0,"queued must not write");
     f.lease->active=false;check(f.context.drain()==E_ABORT && !f.lease->attempted && f.m.text==L"keep","revoked callback");
@@ -152,4 +173,4 @@ void reentrantRevocation(){
     check(f.m.writes==1 && f.m.selections==0 && f.m.text==L"newkeep","do not select or replay after reentrant revocation");
 }
 }
-int main(){try{edits();failures();reentrantRevocation();check(moduleRefs==0,"module lifetime leak");std::cout<<"PASS frontend edits: memory TSF, Unicode, selection, delayed/reentrant revocation, write failure; no native-host acceptance\n";return 0;}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
+int main(){try{edits();focusedChildLease();failures();reentrantRevocation();check(moduleRefs==0,"module lifetime leak");std::cout<<"PASS frontend edits: memory TSF, focused-child identity, Unicode, selection, delayed/reentrant revocation, write failure; no native-host acceptance\n";return 0;}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

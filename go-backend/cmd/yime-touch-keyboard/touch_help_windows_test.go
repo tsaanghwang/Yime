@@ -214,5 +214,15 @@ func TestTouchHelpTextFitsNativeFont(t *testing.T) {
 				t.Fatal(err)
 			}
 		}
+		a.touchHelpOpen = false
+		a.touchSettingsOpen = true
+		a.touchRuler = true
+		for _, measuring := range []bool{false, true} {
+			a.calibrationOpen = measuring
+			a.calibrationInput = "58"
+			if err := a.screenshot(filepath.Join(abs, fmt.Sprintf("settings-measure-%t.png", measuring))); err != nil {
+				t.Fatal(err)
+			}
+		}
 	}
 }

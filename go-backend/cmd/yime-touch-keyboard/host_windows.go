@@ -105,7 +105,12 @@ func (a *ui) hostSink(ticket deliveryTicket, generation uint64) {
 		return a.host.deliver(ticket, id, o)
 	}
 }
-func (a *ui) bindHost() error {
+func (a *ui) bindHost() (result error) {
+	diagnostic := diagnosticTarget()
+	stage := "target-validation"
+	if a.o.InstalledTSF {
+		defer func() { a.recordFrontendDiagnostic(diagnostic, stage, result) }()
+	}
 	// No queued focus notification from the old epoch may be accepted as new.
 	a.hostBusy = true
 	defer func() { a.hostBusy = false }()
@@ -124,7 +129,8 @@ func (a *ui) bindHost() error {
 			a.tsf = nil
 		}
 		t := a.host.target
-		client, err := tsffrontend.Dial(t.Process, t.Thread, uint64(t.Window))
+		stage = "endpoint-connect-and-bind"
+		client, err := tsffrontend.Dial(t.Process, t.Thread, uint64(t.Window), uint64(t.Focus))
 		if err != nil {
 			a.loseHostFocus("TSF绑定失败；请确认已选择本包专用18u输入法")
 			return err
@@ -134,6 +140,7 @@ func (a *ui) bindHost() error {
 	tick, _, _ := k32.NewProc("GetTickCount").Call()
 	a.focusStarted = uint32(tick)
 	old := a.preview
+	stage = "composition-session"
 	old.retire()
 	p, err := newPreview(old.sessions, old.layout, old.englishView)
 	if err != nil {
@@ -159,5 +166,6 @@ func (a *ui) bindHost() error {
 	a.hostSink(a.host.ticket(), a.cancelGeneration)
 	a.s.Original = p.original()
 	a.status = a.host.last
+	stage = "bound"
 	return nil
 }

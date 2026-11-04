@@ -3,6 +3,7 @@ package tsffrontend
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 	"testing"
 )
 
@@ -11,6 +12,23 @@ type fakeTransport struct {
 	closed   bool
 	mutate   func(map[string]any)
 	writeErr bool
+}
+
+func TestBindReasonSurvivesWithoutReplayOrArbitraryText(t *testing.T) {
+	for _, reason := range []string{"focus-owner-mismatch", "no-focused-document", "no-top-context", "focus-changed", "private-document-text"} {
+		tr := &fakeTransport{mutate: func(r map[string]any) { r["ok"] = false; r["outcome"] = "bind-rejected"; r["reason"] = reason }}
+		_, err := Bind(tr, 42, 43)
+		if err == nil || !tr.closed || tr.calls != 1 {
+			t.Fatal("bind failure retried or accepted")
+		}
+		if strings.Contains(err.Error(), reason) != knownBindReason(reason) {
+			t.Fatal("reason not safely preserved", err)
+		}
+	}
+	tr := &fakeTransport{}
+	if _, err := Bind(tr, 42, 0); err == nil || tr.calls != 0 || !tr.closed {
+		t.Fatal("missing focus sent")
+	}
 }
 
 func (f *fakeTransport) Close() error { f.closed = true; return nil }
@@ -35,7 +53,7 @@ func TestCommitRequiresAppliedAndNeverReplays(t *testing.T) {
 	for _, outcome := range []string{"pending", "unknown", "failed", "queued"} {
 		t.Run(outcome, func(t *testing.T) {
 			tr := &fakeTransport{}
-			c, e := Bind(tr, 42)
+			c, e := Bind(tr, 42, 43)
 			if e != nil {
 				t.Fatal(e)
 			}
@@ -52,7 +70,7 @@ func TestCommitRequiresAppliedAndNeverReplays(t *testing.T) {
 }
 func TestTransportLossStopsSession(t *testing.T) {
 	tr := &fakeTransport{}
-	c, _ := Bind(tr, 42)
+	c, _ := Bind(tr, 42, 43)
 	tr.writeErr = true
 	if c.Edit("a", "", false) == nil {
 		t.Fatal("accepted lost reply")
@@ -76,7 +94,7 @@ func TestIdentityAndReplyShape(t *testing.T) {
 					delete(r, "retryAllowed")
 				}
 			}}
-			if _, e := Bind(tr, 42); e == nil || !tr.closed {
+			if _, e := Bind(tr, 42, 43); e == nil || !tr.closed {
 				t.Fatal("accepted malformed bind")
 			}
 		})
@@ -84,7 +102,7 @@ func TestIdentityAndReplyShape(t *testing.T) {
 }
 func TestTextAndEditingContracts(t *testing.T) {
 	tr := &fakeTransport{}
-	c, e := Bind(tr, 42)
+	c, e := Bind(tr, 42, 43)
 	if e != nil {
 		t.Fatal(e)
 	}

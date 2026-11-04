@@ -134,6 +134,11 @@ type ui struct {
 	touchFont           uintptr
 	candidateFont       uintptr
 	touchMessage        string
+	diagnosticSummary   string
+	diagnosticPages     []string
+	diagnosticOpen      bool
+	calibrationOpen     bool
+	calibrationInput    string
 }
 
 var active *ui
@@ -641,7 +646,7 @@ func (a *ui) resize() bool {
 	}
 	current := rect{}
 	U("GetWindowRect").Call(a.h, uintptr(unsafe.Pointer(&current)))
-	position := clampWindow(current, m.Work, int32(w), int32(h))
+	position := centeredResize(current, m.Work, int32(w), int32(h))
 	oldTop := a.top
 	a.top = headerHeight // Synchronous WM_SIZE/paint sees the new board origin.
 	if ok, _, _ := U("SetWindowPos").Call(a.h, 0, uintptr(position.L), uintptr(position.T), uintptr(w), uintptr(h), 0x0014); ok == 0 {

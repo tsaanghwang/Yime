@@ -29,15 +29,16 @@ type Reply struct {
 	OK           bool   `json:"ok"`
 	Outcome      string `json:"outcome"`
 	RetryAllowed bool   `json:"retryAllowed"`
+	Reason       string `json:"reason,omitempty"`
 }
 
-func Bind(t Transport, window uint64) (*Client, error) {
+func Bind(t Transport, window, focus uint64) (*Client, error) {
 	c := &Client{transport: t}
-	if window == 0 {
+	if window == 0 || focus == 0 {
 		t.Close()
-		return nil, errors.New("missing foreground window")
+		return nil, errors.New("missing foreground/focus window")
 	}
-	if err := c.call("bind", map[string]any{"window": window}, "bound"); err != nil {
+	if err := c.call("bind", map[string]any{"window": window, "focus": focus}, "bound"); err != nil {
 		return nil, err
 	}
 	return c, nil
@@ -63,7 +64,10 @@ func (c *Client) call(operation string, fields map[string]any, outcome string) e
 	}
 	raw, err = c.transport.Exchange(append(raw, '\n'))
 	if err != nil {
-		return fail(fmt.Errorf("TSF result unknown; no replay: %w", err))
+		if operation == "edit" {
+			return fail(fmt.Errorf("TSF edit result unknown; no replay: %w", err))
+		}
+		return fail(fmt.Errorf("TSF %s transport failed; no replay: %w", operation, err))
 	}
 	if len(raw) > 4096 {
 		return fail(errors.New("TSF response exceeds limit"))
@@ -74,7 +78,13 @@ func (c *Client) call(operation string, fields map[string]any, outcome string) e
 	var r Reply
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.DisallowUnknownFields()
-	if decoder.Decode(&r) != nil || decoder.Decode(new(any)) != io.EOF || r.Version != 1 || r.Sequence != c.sequence || r.RetryAllowed || !r.OK || r.Outcome != outcome {
+	if decoder.Decode(&r) != nil || decoder.Decode(new(any)) != io.EOF || r.Version != 1 || r.Sequence != c.sequence || r.RetryAllowed {
+		return fail(errors.New("invalid TSF response; session stopped, no replay"))
+	}
+	if !r.OK || r.Outcome != outcome || r.Reason != "" {
+		if !r.OK && operation == "bind" && r.Outcome == "bind-rejected" && knownBindReason(r.Reason) {
+			return fail(fmt.Errorf("TSF bind rejected: %s", r.Reason))
+		}
 		return fail(errors.New("TSF edit was not confirmed; session stopped, no replay"))
 	}
 	return nil
@@ -99,7 +109,17 @@ func validReplyObject(raw []byte) bool {
 		}
 	}
 	t, err = d.Token()
-	return err == nil && t == json.Delim('}') && len(seen) == 5 && d.Decode(new(any)) == io.EOF
+	return err == nil && t == json.Delim('}') && seen["version"] && seen["sequence"] && seen["ok"] && seen["outcome"] && seen["retryAllowed"] && (len(seen) == 5 || len(seen) == 6 && seen["reason"]) && d.Decode(new(any)) == io.EOF
+}
+
+func knownBindReason(reason string) bool {
+	switch reason {
+	case "peer-process-unavailable", "peer-image-mismatch", "peer-session-mismatch", "peer-token-unavailable", "peer-user-mismatch", "peer-logon-mismatch", "peer-integrity-mismatch":
+		return true
+	case "lease-inactive", "callback-thread-mismatch", "foreground-changed", "focus-changed", "focus-owner-mismatch", "no-focused-document", "document-changed", "no-top-context", "context-changed":
+		return true
+	}
+	return false
 }
 func (c *Client) Edit(text, key string, extend bool) error {
 	if (text == "") == (key == "") || len(text) > 4096 || !utf8.ValidString(text) || strings.ContainsRune(text, 0) {

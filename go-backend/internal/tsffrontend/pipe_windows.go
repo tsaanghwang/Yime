@@ -23,7 +23,7 @@ type pipeTransport struct {
 	closed bool
 }
 
-func Dial(pid, thread uint32, window uint64) (*Client, error) {
+func Dial(pid, thread uint32, window, focus uint64) (*Client, error) {
 	var processMachine, nativeMachine uint16
 	current, _ := syscall.GetCurrentProcess()
 	valid, _, _ := kernel.NewProc("IsWow64Process2").Call(uintptr(current), uintptr(unsafe.Pointer(&processMachine)), uintptr(unsafe.Pointer(&nativeMachine)))
@@ -36,7 +36,16 @@ func Dial(pid, thread uint32, window uint64) (*Client, error) {
 	name, _ := syscall.UTF16PtrFromString(fmt.Sprintf(`\\.\pipe\Yime18u.Frontend.v1.%d.%d`, pid, thread))
 	h, err := syscall.CreateFile(name, syscall.GENERIC_READ|syscall.GENERIC_WRITE, 0, nil, syscall.OPEN_EXISTING, syscall.FILE_FLAG_OVERLAPPED|0x00100000|0x00010000, 0)
 	if err != nil {
-		return nil, fmt.Errorf("active 18u TSF endpoint unavailable; select matching input profile: %w", err)
+		code := "endpoint-open-failed"
+		switch err {
+		case syscall.ERROR_FILE_NOT_FOUND:
+			code = "endpoint-not-found"
+		case syscall.ERROR_ACCESS_DENIED:
+			code = "endpoint-access-denied"
+		case syscall.Errno(231):
+			code = "endpoint-busy"
+		}
+		return nil, fmt.Errorf("%s (PID=%d TID=%d): %w", code, pid, thread, err)
 	}
 	var actual uint32
 	ok, _, _ := serverPID.Call(uintptr(h), uintptr(unsafe.Pointer(&actual)))
@@ -44,7 +53,7 @@ func Dial(pid, thread uint32, window uint64) (*Client, error) {
 		syscall.CloseHandle(h)
 		return nil, errors.New("TSF server process mismatch")
 	}
-	return Bind(&pipeTransport{handle: h}, window)
+	return Bind(&pipeTransport{handle: h}, window, focus)
 }
 func (p *pipeTransport) transfer(buffer []byte, write bool) (uint32, error) {
 	event, _, err := eventCreate.Call(0, 1, 0, 0)

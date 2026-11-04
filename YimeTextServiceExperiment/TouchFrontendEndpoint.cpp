@@ -38,22 +38,29 @@ std::wstring frontendImage() {
     split = root.find_last_of(L"\\/"); require(split != std::wstring::npos); root.resize(split);
     return root + L"\\frontend\\YimeTouchKeyboard.exe";
 }
-HANDLE authenticate(HANDLE pipe) {
+HANDLE authenticate(HANDLE pipe, const char*& reason) {
+    reason = "peer-process-unavailable";
     ULONG pid = 0; require(GetNamedPipeClientProcessId(pipe, &pid) && pid && pid != GetCurrentProcessId());
     Handle process; process.h = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, pid);
     require(process.h && WaitForSingleObject(process.h, 0) == WAIT_TIMEOUT);
     wchar_t image[32768]; DWORD size = 32768;
     require(QueryFullProcessImageNameW(process.h, 0, image, &size) != FALSE);
+    reason = "peer-image-mismatch";
     require(_wcsicmp(std::wstring(image, size).c_str(), frontendImage().c_str()) == 0);
     DWORD a = 0, b = 0;
+    reason = "peer-session-mismatch";
     require(ProcessIdToSessionId(pid, &a) && ProcessIdToSessionId(GetCurrentProcessId(), &b) && a == b);
     Handle left, right;
+    reason = "peer-token-unavailable";
     require(OpenProcessToken(process.h, TOKEN_QUERY, &left.h) && OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &right.h));
     auto lu = userToken(left.h), ru = userToken(right.h);
+    reason = "peer-user-mismatch";
     require(EqualSid(reinterpret_cast<TOKEN_USER*>(lu.data())->User.Sid, reinterpret_cast<TOKEN_USER*>(ru.data())->User.Sid) != FALSE);
     TOKEN_STATISTICS ls{}, rs{}; DWORD n = 0;
+    reason = "peer-token-unavailable";
     require(GetTokenInformation(left.h, TokenStatistics, &ls, sizeof(ls), &n) && n == sizeof(ls));
     require(GetTokenInformation(right.h, TokenStatistics, &rs, sizeof(rs), &n) && n == sizeof(rs));
+    reason = "peer-logon-mismatch";
     require(ls.AuthenticationId.LowPart == rs.AuthenticationId.LowPart && ls.AuthenticationId.HighPart == rs.AuthenticationId.HighPart);
     // A normal frontend must not gain an elevated application's edit rights.
     auto integrity = [](HANDLE token) {
@@ -64,6 +71,7 @@ HANDLE authenticate(HANDLE pipe) {
         require(IsValidSid(sid) && *GetSidSubAuthorityCount(sid) > 0);
         return *GetSidSubAuthority(sid, *GetSidSubAuthorityCount(sid) - 1);
     };
+    reason = "peer-integrity-mismatch";
     require(integrity(left.h) == integrity(right.h));
     HANDLE result = process.h; process.h = nullptr; return result;
 }
@@ -74,11 +82,13 @@ std::wstring wide(const std::string& text) {
     require(MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.data(), static_cast<int>(text.size()), &result[0], n) == n);
     return result;
 }
-struct ForegroundIdentity { HWND window; DWORD thread; DWORD process; };
+struct ForegroundIdentity { HWND window; DWORD thread; DWORD process; HWND focus; HWND root; };
 ForegroundIdentity foregroundIdentity() noexcept {
     HWND window = GetForegroundWindow(); DWORD process = 0;
-    DWORD thread = GetWindowThreadProcessId(window, &process);
-    return {window, thread, process};
+    GUITHREADINFO gui{sizeof(gui)};
+    if (!GetGUIThreadInfo(0, &gui)) return {window, 0, 0, nullptr, nullptr};
+    DWORD thread = GetWindowThreadProcessId(gui.hwndFocus, &process);
+    return {window, thread, process, gui.hwndFocus, GetAncestor(gui.hwndFocus, GA_ROOT)};
 }
 struct Lease {
     ComPtr<ITfThreadMgr> manager;
@@ -86,17 +96,25 @@ struct Lease {
     ComPtr<ITfContext> context;
     DWORD thread = GetCurrentThreadId();
     HWND window = nullptr;
+    HWND focus = nullptr;
     bool active = false, completed = false, attempted = false;
     HRESULT outcome = E_PENDING;
     ForegroundIdentity (*foreground)() noexcept = foregroundIdentity;
-    bool valid() const noexcept {
+    const char* rejection() const noexcept {
         const auto current = foreground();
-        if (!active || GetCurrentThreadId() != thread || current.window != window) return false;
-        if (current.thread != thread || current.process != GetCurrentProcessId()) return false;
+        if (!active) return "lease-inactive";
+        if (GetCurrentThreadId() != thread) return "callback-thread-mismatch";
+        if (current.window != window) return "foreground-changed";
+        if (!focus || current.focus != focus || current.root != window) return "focus-changed";
+        if (current.thread != thread || current.process != GetCurrentProcessId()) return "focus-owner-mismatch";
         ComPtr<ITfDocumentMgr> doc; ComPtr<ITfContext> top;
-        return SUCCEEDED(manager->GetFocus(&doc)) && doc.Get() == document.Get() && doc &&
-            SUCCEEDED(doc->GetTop(&top)) && top.Get() == context.Get();
+        if (!manager || FAILED(manager->GetFocus(&doc)) || !doc) return "no-focused-document";
+        if (doc.Get() != document.Get()) return "document-changed";
+        if (FAILED(doc->GetTop(&top)) || !top) return "no-top-context";
+        if (top.Get() != context.Get()) return "context-changed";
+        return nullptr;
     }
+    bool valid() const noexcept { return rejection() == nullptr; }
 };
 
 // Navigation/deletion use Unicode scalar boundaries, not half a surrogate pair.
@@ -274,8 +292,10 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
         if (ReadFile(pipe, buffer, MaxFrame - static_cast<DWORD>(input.size()), &n, &io)) { io.InternalHigh = n; SetEvent(io.hEvent); }
         else { require(GetLastError() == ERROR_IO_PENDING); pending = true; }
     }
-    void reply(bool ok, const char* outcome) {
-        output = json{{"version", 1}, {"sequence", sequence}, {"ok", ok}, {"outcome", outcome}, {"retryAllowed", false}}.dump() + "\n";
+    void reply(bool ok, const char* outcome, const char* reason = nullptr) {
+        json response{{"version", 1}, {"sequence", sequence}, {"ok", ok}, {"outcome", outcome}, {"retryAllowed", false}};
+        if (reason) response["reason"] = reason;
+        output = response.dump() + "\n";
         phase = Phase::Writing; resetIO(); DWORD n = 0;
         if (WriteFile(pipe, output.data(), static_cast<DWORD>(output.size()), &n, &io)) { io.InternalHigh = n; SetEvent(io.hEvent); }
         else { require(GetLastError() == ERROR_IO_PENDING); pending = true; }
@@ -287,12 +307,16 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
         ++sequence;
         const auto op = q.at("operation").get<std::string>();
         if (op == "bind") {
-            require(sequence == 1 && q.size() == 4 && q.at("window").is_number_unsigned());
+            require(sequence == 1 && q.size() == 5 && q.at("window").is_number_unsigned() && q.at("focus").is_number_unsigned());
             lease = std::make_shared<Lease>(); lease->manager = manager;
             lease->window = reinterpret_cast<HWND>(q.at("window").get<uint64_t>());
-            require(SUCCEEDED(manager->GetFocus(&lease->document)) && lease->document &&
-                SUCCEEDED(lease->document->GetTop(&lease->context)) && lease->context);
-            lease->active = true; require(lease->valid()); reply(true, "bound"); return;
+            lease->focus = reinterpret_cast<HWND>(q.at("focus").get<uint64_t>());
+            auto reject = [&](const char* why) { invalidate(); closeAfterWrite = true; reply(false, "bind-rejected", why); };
+            if (FAILED(manager->GetFocus(&lease->document)) || !lease->document) { reject("no-focused-document"); return; }
+            if (FAILED(lease->document->GetTop(&lease->context)) || !lease->context) { reject("no-top-context"); return; }
+            lease->active = true;
+            if (const auto why = lease->rejection()) { reject(why); return; }
+            reply(true, "bound"); return;
         }
         require(lease && lease->valid());
         if (op == "close") { require(q.size() == 3); invalidate(); closeAfterWrite = true; reply(true, "closed"); return; }
@@ -336,7 +360,18 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
             DWORD n = static_cast<DWORD>(io.InternalHigh);
             if (pending) { require(GetOverlappedResult(pipe, &io, &n, FALSE) != FALSE); pending = false; }
             switch (phase) {
-            case Phase::Connecting: peer = authenticate(pipe); deadline = GetTickCount64() + 5000; read(); break;
+            case Phase::Connecting: {
+                const char* reason = "peer-process-unavailable";
+                deadline = GetTickCount64() + 5000;
+                try { peer = authenticate(pipe, reason); }
+                catch (...) {
+                    // Fixed vocabulary only. No peer path, token, or document
+                    // data is disclosed and no request is dispatched.
+                    sequence = 1; closeAfterWrite = true;
+                    reply(false, "bind-rejected", reason); break;
+                }
+                read(); break;
+            }
             case Phase::Reading:
                 if (!deadline) deadline = GetTickCount64() + 5000;
                 require(n && input.size() + n <= MaxFrame); input.append(buffer, n);

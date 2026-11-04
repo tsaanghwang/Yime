@@ -13,6 +13,12 @@ func touchHelpPages() []string {
 	return splitTouchHelpPages(touchHelp)
 }
 func (a *ui) helpPages() []string {
+	if a.diagnosticOpen {
+		if len(a.diagnosticPages) == 0 {
+			return []string{"本次运行尚无绑定记录。绑定后记录会自动保存；不需为补记录立即重试。"}
+		}
+		return a.diagnosticPages
+	}
 	if a.o.InstalledTSF {
 		return splitTouchHelpPages(installedTouchHelp)
 	}
